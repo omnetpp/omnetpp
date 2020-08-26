@@ -75,8 +75,8 @@ void MessageAnimator::redrawMessages()
                     && msg->getArrivalGateId() >= 0) {
                 cGate *arrivalGate = msg->getArrivalGate();
 
-                auto messageItem = new MessageItem(moduleInsp->getAnimationLayer());
-                MessageItemUtil::setupFromDisplayString(messageItem, msg, moduleInsp->getImageSizeFactor());
+                auto messageItem = new SymbolMessageItem(moduleInsp->getAnimationLayer());
+                MessageItemUtil::setupSymbolFromDisplayString(messageItem, msg, moduleInsp->getImageSizeFactor());
 
                 // if arrivalGate is connected, msg arrived on a connection, otherwise via sendDirect()
                 messageItem->setPos(arrivalGate->getPreviousGate()

@@ -20,18 +20,19 @@
 #include "qtenv.h"
 #include "graphicsitems.h"
 #include "omnetpp/cdisplaystring.h"
+#include "omnetpp/cpacket.h"
 
 namespace omnetpp {
 namespace qtenv {
 
-QVector<QColor> MessageItemUtil::msgKindColors = {"red", "green", "blue", "white", "yellow", "cyan", "magenta", "black"};
 
-void MessageItemUtil::setupFromDisplayString(MessageItem *mi, cMessage *msg, double imageSizeFactor)
+// -------- MessageItemUtil --------
+
+
+const QVector<QColor> MessageItemUtil::msgKindColors = {"red", "green", "blue", "white", "yellow", "cyan", "magenta", "black"};
+
+void MessageItemUtil::setupMessageCommon(MessageItem *mi, cMessage *msg)
 {
-    cDisplayString ds = msg->getDisplayString();
-
-    mi->setData(ITEMDATA_COBJECT, QVariant::fromValue((cObject *)msg));
-
     QtenvOptions *opt = getQtenv()->opt;
 
     QString label;
@@ -39,7 +40,49 @@ void MessageItemUtil::setupFromDisplayString(MessageItem *mi, cMessage *msg, dou
         label += QString("(") + getObjectShortTypeName(msg) + ")";
     if (opt->animationMsgNames)
         label += msg->getFullName();
+
+    if (msg->isPacket()) {
+        cPacket *pack = static_cast<cPacket *>(msg);
+        if (pack->isUpdate())
+            label += ("\n(updating #" + std::to_string(pack->getOrigPacketId()) + ")").c_str();
+    }
     mi->setText(label);
+}
+
+void MessageItemUtil::setupLineFromDisplayString(LineMessageItem *mi, cMessage *msg)
+{
+    cDisplayString ds = msg->getDisplayString();
+
+    mi->setData(ITEMDATA_COBJECT, QVariant::fromValue((cObject *)msg));
+
+    QtenvOptions *opt = getQtenv()->opt;
+
+    setupMessageCommon(mi, msg);
+
+    QColor kindColor = msgKindColors[msg->getKind() % msgKindColors.size()];
+
+    if (!ds.str()[0]) {  // default red line
+        QColor color = opt->animationMsgColors ? kindColor : "red";
+        mi->setColor(color);
+    }
+    else {  // as defined in the dispstr
+        QString fillColorName = ds.getTagArg("b", 3);
+        QColor fillColor = fillColorName == "kind"
+                            ? kindColor
+                            : parseColor(fillColorName, "red");
+        mi->setColor(fillColor);
+    }
+}
+
+void MessageItemUtil::setupSymbolFromDisplayString(SymbolMessageItem *mi, cMessage *msg, double imageSizeFactor)
+{
+    cDisplayString ds = msg->getDisplayString();
+
+    mi->setData(ITEMDATA_COBJECT, QVariant::fromValue((cObject *)msg));
+
+    QtenvOptions *opt = getQtenv()->opt;
+
+    setupMessageCommon(mi, msg);
 
     if (!ds.str()[0] && opt->penguinMode)
         ds = "i=abstract/penguin_s";  // ^^,
@@ -51,7 +94,7 @@ void MessageItemUtil::setupFromDisplayString(MessageItem *mi, cMessage *msg, dou
 
     if (!ds.str()[0]) {  // default little red dot
         QColor color = opt->animationMsgColors ? kindColor : "red";
-        mi->setShape(MessageItem::SHAPE_OVAL);
+        mi->setShape(SymbolMessageItem::SHAPE_OVAL);
         mi->setWidth(10);
         mi->setHeight(10);
         mi->setFillColor(color);
@@ -78,10 +121,10 @@ void MessageItemUtil::setupFromDisplayString(MessageItem *mi, cMessage *msg, dou
         QString shapeName = QString(ds.getTagArg("b", 2)).toLower();
 
         auto shape = (ds.getNumArgs("b") <= 0)
-                       ? MessageItem::SHAPE_NONE
+                       ? SymbolMessageItem::SHAPE_NONE
                        : shapeName[0] == 'r'
-                           ? MessageItem::SHAPE_RECT
-                           : MessageItem::SHAPE_OVAL; // if unknown, this is the default
+                           ? SymbolMessageItem::SHAPE_RECT
+                           : SymbolMessageItem::SHAPE_OVAL; // if unknown, this is the default
         mi->setShape(shape);
 
         QString fillColorName = ds.getTagArg("b", 3);
@@ -109,37 +152,20 @@ void MessageItemUtil::setupFromDisplayString(MessageItem *mi, cMessage *msg, dou
     }
 }
 
+
+// -------- MessageItem --------
+
+
 MessageItem::MessageItem(QGraphicsItem *parent) :
     QGraphicsObject(parent)
 {
     textItem = new OutlinedTextItem(this);
-    shapeItem = new QGraphicsEllipseItem(this);
-    imageItem = new QGraphicsPixmapItem(this);
-    lineItem = new QGraphicsLineItem(this);
-    arrowheadItem = new ArrowheadItem(this);
-    arrowheadItem->setFillRatio(1);
-    arrowheadItem->setPen(Qt::NoPen);
-
     textItem->setZValue(1);
-
-    updateShapeItem();
 }
 
 MessageItem::~MessageItem()
 {
-    delete shapeItem;
-    delete imageItem;
     delete textItem;
-    delete lineItem;
-    delete arrowheadItem;
-}
-
-void MessageItem::setImageSizeFactor(double imageSize)
-{
-    if (imageSizeFactor != imageSize) {
-        imageSizeFactor = imageSize;
-        updateImageItem();
-    }
 }
 
 void MessageItem::setText(const QString& text)
@@ -150,55 +176,54 @@ void MessageItem::setText(const QString& text)
     }
 }
 
-void MessageItem::setShape(Shape shape)
+void MessageItem::updateTextItem()
 {
-    if (this->shapeType != shape) {
-        this->shapeType = shape;
-        updateShapeItem();
+    textItem->setText(text);
+    QRectF textRect = textItem->textRect();
+    QPointF textPos = getTextPosition();
+    textItem->setPos(textPos.x() - textRect.width() / 2, textPos.y());
+}
+
+
+// -------- LineMessageItem --------
+
+
+LineMessageItem::LineMessageItem(QGraphicsItem *parent) : MessageItem(parent)
+{
+    lineItem = new QGraphicsLineItem(this);
+    txUpdateMarkerItem = new QGraphicsLineItem(this);
+    arrowheadItem = new ArrowheadItem(this);
+
+    arrowheadItem->setFillRatio(1);
+    arrowheadItem->setPen(Qt::NoPen);
+
+    txUpdateMarkerItem->setZValue(0.5);
+}
+
+LineMessageItem::~LineMessageItem()
+{
+    delete lineItem;
+    delete txUpdateMarkerItem;
+    delete arrowheadItem;
+}
+
+void LineMessageItem::setColor(const QColor& color)
+{
+    if (this->color != color) {
+        this->color = color;
+        updateLineItem();
     }
 }
 
-void MessageItem::setWidth(double width)
+void LineMessageItem::setLineEnabled(bool enabled)
 {
-    if (shapeWidth != width) {
-        shapeWidth = width;
-        updateShapeItem();
+    if (lineEnabled != enabled) {
+        lineEnabled = enabled;
+        updateLineItem();
     }
 }
 
-void MessageItem::setHeight(double height)
-{
-    if (shapeHeight != height) {
-        shapeHeight = height;
-        updateShapeItem();
-    }
-}
-
-void MessageItem::setFillColor(const QColor& color)
-{
-    if (this->shapeFillColor != color) {
-        this->shapeFillColor = color;
-        updateShapeItem();
-    }
-}
-
-void MessageItem::setOutlineColor(const QColor& color)
-{
-    if (this->shapeOutlineColor != color) {
-        this->shapeOutlineColor = color;
-        updateShapeItem();
-    }
-}
-
-void MessageItem::setOutlineWidth(double width)
-{
-    if (shapeOutlineWidth != width) {
-        shapeOutlineWidth = width;
-        updateShapeItem();
-    }
-}
-
-void MessageItem::setArrowheadEnabled(bool enabled)
+void LineMessageItem::setArrowheadEnabled(bool enabled)
 {
     if (arrowheadEnabled != enabled) {
         arrowheadEnabled = enabled;
@@ -206,7 +231,196 @@ void MessageItem::setArrowheadEnabled(bool enabled)
     }
 }
 
-void MessageItem::setImage(QImage *image)
+void LineMessageItem::setTxUpdateMarkerEnabled(bool enabled)
+{
+    if (txUpdateMarkerEnabled != enabled) {
+        txUpdateMarkerEnabled = enabled;
+        updateLineItem();
+    }
+}
+
+QPointF LineMessageItem::getTextPosition()
+{
+    QPointF offset = getSideOffsetForWidth((txUpdateMarkerEnabled) ? 12 : 6);
+    return offset + QPointF(0, 3);
+}
+
+void LineMessageItem::positionOntoLine(const QLineF& line, double t1, double t2, bool asUpdatePacket)
+{
+    QLineF packetLine(line.pointAt(t1), line.pointAt(t2));
+
+    bool lineEnabled = true;
+
+    if (t1 == t2 && asUpdatePacket) {// we are marker-only
+        packetLine = QLineF(line.pointAt(t1), line.pointAt(t1-0.001));
+        lineEnabled = false; // the packetLine is fake
+    }
+
+    setLine(packetLine);
+    setLineEnabled(lineEnabled);
+    setArrowheadEnabled(t1 > 0.0 && t1 < 1.0 && !asUpdatePacket);
+    setTxUpdateMarkerEnabled(t1 > 0.0 && t1 < 1.0 && asUpdatePacket);
+}
+
+QRectF LineMessageItem::boundingRect() const
+{
+    QRectF result;
+    if (lineEnabled)
+        result = result.united(lineItem->boundingRect());
+    if (arrowheadEnabled)
+        result = result.united(arrowheadItem->boundingRect());
+    if (txUpdateMarkerEnabled)
+        result = result.united(txUpdateMarkerItem->boundingRect());
+    return result;
+}
+
+QPainterPath LineMessageItem::shape() const
+{
+    QPainterPath result;
+    if (lineEnabled)
+        result = result.united(lineItem->shape());
+    if (arrowheadEnabled)
+        result = result.united(arrowheadItem->shape());
+    if (txUpdateMarkerEnabled)
+        result = result.united(txUpdateMarkerItem->shape());
+    return result;
+}
+
+void LineMessageItem::setLine(const QLineF& line)
+{
+    if (this->line != line) {
+        this->line = line;
+        setPos(line.pointAt(0.5));
+        updateLineItem();
+        updateTextItem();
+    }
+}
+
+QPointF LineMessageItem::getSideOffsetForWidth(float width) const
+{
+    return (width / 2 + 2) * line.normalVector().unitVector().translated(-line.p1()).p2();
+}
+
+void LineMessageItem::updateLineItem()
+{
+    setPos(line.pointAt(0.5));
+
+    double width = 6;
+
+    // to make it go on the right side of the connection, with a bit of spacing
+    QPointF sideOffset = getSideOffsetForWidth(width);
+
+    QPen pen(color, width, Qt::SolidLine, Qt::FlatCap);
+
+    // relative to pos, center is always in origin
+    auto localLine = line.translated(-pos());
+    localLine = QLineF(localLine.p2(), localLine.p1());
+
+    double arrowheadLength = arrowheadEnabled ? width : 0;
+
+    // don't let it get too short (1 px for the line, 1 for the arrowhead, why not...)
+    if (localLine.length() < 2) {
+        localLine.setLength(2);
+        localLine.translate(-localLine.pointAt(0.5));
+    }
+
+    arrowheadLength = std::min(arrowheadLength, localLine.length()/2);
+
+    localLine = localLine.translated(sideOffset);
+    arrowheadItem->setEndPoints(localLine.p1(), localLine.p2());
+    localLine.setLength(localLine.length()-arrowheadLength);
+
+    lineItem->setLine(localLine);
+    lineItem->setVisible(lineEnabled);
+    lineItem->setPen(pen);
+
+    arrowheadItem->setBrush(color);
+    arrowheadItem->setArrowWidth(width);
+    arrowheadItem->setArrowLength(arrowheadLength + 0.5); // +0.5 is just to make it "watertight" (AA and imprecision and stuff)
+
+    arrowheadItem->setVisible(arrowheadEnabled);
+
+    txUpdateMarkerItem->setLine(QLineF(localLine.p2() + sideOffset * 1.5, localLine.p2() - sideOffset * 1.5));
+    txUpdateMarkerItem->setVisible(txUpdateMarkerEnabled);
+    pen.setWidth(width / 2);
+    txUpdateMarkerItem->setPen(pen);
+}
+
+
+// -------- SymbolMessageItem --------
+
+
+SymbolMessageItem::SymbolMessageItem(QGraphicsItem *parent) : MessageItem(parent)
+{
+    shapeItem = new QGraphicsEllipseItem(this);
+    imageItem = new QGraphicsPixmapItem(this);
+
+    updateShapeItem();
+}
+
+SymbolMessageItem::~SymbolMessageItem()
+{
+    delete shapeItem;
+    delete imageItem;
+}
+
+void SymbolMessageItem::setImageSizeFactor(double imageSize)
+{
+    if (imageSizeFactor != imageSize) {
+        imageSizeFactor = imageSize;
+        updateImageItem();
+    }
+}
+
+void SymbolMessageItem::setShape(Shape shape)
+{
+    if (this->shapeType != shape) {
+        this->shapeType = shape;
+        updateShapeItem();
+    }
+}
+
+void SymbolMessageItem::setWidth(double width)
+{
+    if (shapeWidth != width) {
+        shapeWidth = width;
+        updateShapeItem();
+    }
+}
+
+void SymbolMessageItem::setHeight(double height)
+{
+    if (shapeHeight != height) {
+        shapeHeight = height;
+        updateShapeItem();
+    }
+}
+
+void SymbolMessageItem::setFillColor(const QColor& color)
+{
+    if (this->shapeFillColor != color) {
+        this->shapeFillColor = color;
+        updateShapeItem();
+    }
+}
+
+void SymbolMessageItem::setOutlineColor(const QColor& color)
+{
+    if (this->shapeOutlineColor != color) {
+        this->shapeOutlineColor = color;
+        updateShapeItem();
+    }
+}
+
+void SymbolMessageItem::setOutlineWidth(double width)
+{
+    if (shapeOutlineWidth != width) {
+        shapeOutlineWidth = width;
+        updateShapeItem();
+    }
+}
+
+void SymbolMessageItem::setImage(QImage *image)
 {
     if (this->image != image) {
         this->image = image;
@@ -215,47 +429,46 @@ void MessageItem::setImage(QImage *image)
     }
 }
 
-void MessageItem::setImageColor(const QColor& color)
+void SymbolMessageItem::setImageColor(const QColor& color)
 {
     if (colorizeEffect) {
         colorizeEffect->setColor(color);
     }
 }
 
-void MessageItem::setImageColorPercentage(int percent)
+void SymbolMessageItem::setImageColorPercentage(int percent)
 {
     if (colorizeEffect) {
         colorizeEffect->setStrength(percent / 100.0f);
     }
 }
 
-void MessageItem::setLine(const QLineF& line, bool showAsLine)
+QPointF SymbolMessageItem::getTextPosition()
 {
-    if (this->line != line || this->showAsLine != showAsLine) {
-        this->line = line;
-        this->showAsLine = showAsLine;
-        setPos(line.pointAt(0.5));
-        updateLineItem();
-        updateShapeItem();
-    }
+    return QPointF(0, shapeImageBoundingRect().bottom());
 }
 
-QRectF MessageItem::boundingRect() const
+void SymbolMessageItem::positionOntoLine(const QLineF& line, double t1, double t2, bool asUpdatePacket)
 {
-    return lineItem->isVisible() ? lineItem->boundingRect() : shapeImageBoundingRect();
+    ASSERT(t1 == t2);
+    ASSERT(!asUpdatePacket);
+
+    setPos(line.pointAt(t1));
 }
 
-QPainterPath MessageItem::shape() const
+QRectF SymbolMessageItem::boundingRect() const
 {
-    if (lineItem->isVisible())
-        return lineItem->shape();
+    return shapeImageBoundingRect();
+}
 
+QPainterPath SymbolMessageItem::shape() const
+{
     QPainterPath path;
     path.addRect(shapeImageBoundingRect());
     return path;
 }
 
-QRectF MessageItem::shapeImageBoundingRect() const
+QRectF SymbolMessageItem::shapeImageBoundingRect() const
 {
     QRectF rect;
     if (imageItem) {
@@ -274,15 +487,7 @@ QRectF MessageItem::shapeImageBoundingRect() const
     return rect;
 }
 
-void MessageItem::updateTextItem()
-{
-    textItem->setText(text);
-    QRectF textRect = textItem->textRect();
-    QRectF mainRect = shapeImageBoundingRect();
-    textItem->setPos(-textRect.width() / 2, mainRect.height() / 2);
-}
-
-void MessageItem::updateShapeItem()
+void SymbolMessageItem::updateShapeItem()
 {
     delete shapeItem;
     shapeItem = nullptr;
@@ -306,10 +511,9 @@ void MessageItem::updateShapeItem()
                            : Qt::NoPen);
     }
     updateTextItem();
-    updateLineItem();
 }
 
-void MessageItem::updateImageItem()
+void SymbolMessageItem::updateImageItem()
 {
     delete imageItem;
     imageItem = nullptr;
@@ -327,50 +531,6 @@ void MessageItem::updateImageItem()
     updateTextItem();
 }
 
-void MessageItem::updateLineItem()
-{
-    setPos(line.pointAt(0.5));
-
-    double width = 6;
-
-    // to make it go on the right side of the connection, with a bit of spacing
-    QPointF sideOffset = (width / 2 + 2) * line.normalVector().unitVector().translated(-line.p1()).p2();
-
-    QPen pen(shapeFillColor, width, Qt::SolidLine, Qt::FlatCap);
-
-    // relative to pos, center is always in origin
-    auto localLine = line.translated(-pos());
-    localLine = QLineF(localLine.p2(), localLine.p1());
-
-    double arrowheadLength = arrowheadEnabled ? width : 0;
-
-    // don't let it get too short (1 px for the line, 1 for the arrowhead, why not...)
-    if (localLine.length() < 2) {
-        localLine.setLength(2);
-        localLine.translate(-localLine.pointAt(0.5));
-    }
-
-    arrowheadLength = std::min(arrowheadLength, localLine.length()/2);
-
-    localLine = localLine.translated(sideOffset);
-    arrowheadItem->setEndPoints(localLine.p1(), localLine.p2());
-    localLine.setLength(localLine.length()-arrowheadLength);
-
-    lineItem->setLine(localLine);
-    lineItem->setPen(pen);
-
-    arrowheadItem->setBrush(shapeFillColor);
-    arrowheadItem->setArrowWidth(width);
-    arrowheadItem->setArrowLength(arrowheadLength + 0.5); // +0.5 is just to make it "watertight" (AA and imprecision and stuff)
-
-    lineItem->setVisible(showAsLine);
-    arrowheadItem->setVisible(showAsLine && arrowheadEnabled);
-
-    if (shapeItem)
-        shapeItem->setVisible(!showAsLine);
-    if (imageItem)
-        imageItem->setVisible(!showAsLine);
-}
 
 }  // namespace qtenv
 }  // namespace omnetpp

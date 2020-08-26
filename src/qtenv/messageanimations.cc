@@ -856,8 +856,18 @@ void SendOnConnAnimation::addToInspector(Inspector *insp)
 
     if (auto mi = isModuleInspectorFor(mod, insp)) {
         auto layer = mi->getAnimationLayer();
-        MessageItem *messageItem = new MessageItem(layer);
-        MessageItemUtil::setupFromDisplayString(messageItem, msgToUse(), mi->getImageSizeFactor());
+        MessageItem *messageItem;
+        if (trans.isZero() && !isUpdatePacket) {
+            SymbolMessageItem *item = new SymbolMessageItem(layer);
+            MessageItemUtil::setupSymbolFromDisplayString(item, msg, mi->getImageSizeFactor());
+            messageItem = item;
+        }
+        else {
+            LineMessageItem *item = new LineMessageItem(layer);
+            MessageItemUtil::setupLineFromDisplayString(item, msg);
+            messageItem = item;
+        }
+
         // so the message will be above any connection lines
         messageItem->setZValue(1);
         messageItem->setVisible(state == PLAYING);
@@ -1054,8 +1064,17 @@ void SendDirectAnimation::addToInspector(Inspector *insp)
 
         if (auto mi = isModuleInspectorFor(showIn, insp)) {
             auto layer = mi->getAnimationLayer();
-            auto messageItem = new MessageItem(layer);
-            MessageItemUtil::setupFromDisplayString(messageItem, msgToUse(), mi->getImageSizeFactor());
+            MessageItem *messageItem;
+            if (trans.isZero() && !isUpdatePacket) {
+                SymbolMessageItem *item = new SymbolMessageItem(layer);
+                MessageItemUtil::setupSymbolFromDisplayString(item, msg, mi->getImageSizeFactor());
+                messageItem = item;
+            }
+            else {
+                LineMessageItem *item = new LineMessageItem(layer);
+                MessageItemUtil::setupLineFromDisplayString(item, msg);
+                messageItem = item;
+            }
             messageItem->setVisible(state == PLAYING);
             messageItem->setZValue(1);
             messageItems[mi] = messageItem;
@@ -1193,8 +1212,8 @@ void DeliveryAnimation::addToInspector(Inspector *insp)
 
     if (auto mi = isModuleInspectorFor(mod, insp)) {
         auto layer = mi->getAnimationLayer();
-        MessageItem *messageItem = new MessageItem(layer);
-        MessageItemUtil::setupFromDisplayString(messageItem, msgToUse(), mi->getImageSizeFactor());
+        SymbolMessageItem *messageItem = new SymbolMessageItem(layer);
+        MessageItemUtil::setupSymbolFromDisplayString(messageItem, msgToUse(), mi->getImageSizeFactor());
         // so the message will be above any connection lines
         messageItem->setZValue(1);
         messageItem->setVisible(state == PLAYING);
