@@ -328,7 +328,9 @@ class QTENV_API SendDirectAnimation : public MessageAnimation
     std::map<ModuleInspector *, ConnectionItem *> connectionItems;
 
 public:
+    // The holding variant with 0 delays.
     SendDirectAnimation(cModule *src, cMessage *msg, cGate *dest);
+    // The non-holding variant with finite delay(s).
     SendDirectAnimation(cModule *src, cMessage *msg, cGate *dest, SimTime start, SimTime prop, SimTime trans);
 
     void init() override;
