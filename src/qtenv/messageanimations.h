@@ -329,6 +329,8 @@ public:
     void removeMessagePointer(cMessage *msg) override;
     void messageDuplicated(cMessage *msg, cMessage *dup) override;
 
+    virtual SimTime getStartTime() const = 0;
+
     virtual SimTime getTransmissionDuration() const = 0;
     virtual void setTransmissionDuration(SimTime duration) = 0;
 
@@ -361,6 +363,8 @@ public:
     void begin() override;
     void update() override;
 
+    SimTime getStartTime() const override { return start; }
+
     SimTime getTransmissionDuration() const override { return trans; }
     void setTransmissionDuration(SimTime duration) override { trans = duration; }
 
@@ -391,6 +395,8 @@ public:
     void update() override;
     void end() override;
 
+    SimTime getStartTime() const override { return start; }
+
     SimTime getTransmissionDuration() const override { return trans; }
     void setTransmissionDuration(SimTime duration) override { trans = duration; }
 
@@ -420,6 +426,8 @@ public:
 
     void begin() override;
     void update() override;
+
+    SimTime getStartTime() const override { ASSERT(false); return SimTime::ZERO; }
 
     SimTime getTransmissionDuration() const override { ASSERT(false); return SimTime::ZERO; }
     void setTransmissionDuration(SimTime duration) override { ASSERT(false); (void)duration; }
