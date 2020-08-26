@@ -237,6 +237,13 @@ public:
         return keys.find(k) != keys.end();
     }
 
+    std::vector<K> getKeys() const {
+        std::vector<K> result;
+        for (auto it = keys.begin(); it != keys.end(); it = keys.upper_bound(it->first))
+            result.push_back(it->first);
+        return result;
+    }
+
     void removeFirst(const K& k) {
         //ASSERT(containsKey(k));
         auto it = keys.find(k);
