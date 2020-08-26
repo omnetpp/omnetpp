@@ -151,6 +151,9 @@ class SIM_API cEnvir
      * and finally an endSend(). At least one call to either messageSendDirect()
      * or messageSendHop() must occur between corresponding
      * beginSend()/endSend() pairs.
+     * If the result.discard parameter (member) is true in a messageSendHop()
+     * call, the sequence ends there without a call to endSend(), and a
+     * messageDeleted() call will follow.
      */
     virtual void beginSend(cMessage *msg, const SendOptions& options) = 0;
 
