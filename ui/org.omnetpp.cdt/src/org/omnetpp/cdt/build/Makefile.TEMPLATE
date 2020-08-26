@@ -87,7 +87,7 @@ include $(CONFIGFILE)
 COPTS_FILE = $O/.last-copts
 ifneq ("$(COPTS)","$(shell cat $(COPTS_FILE) 2>/dev/null || echo '')")
   $(shell $(MKPATH) "$O")
-  $(file >$(COPTS_FILE),$(COPTS))
+  $(shell echo "$(subst ",\",$(subst \,\\,$(COPTS)))" >$(COPTS_FILE))
 endif
 
 #------------------------------------------------------------------------------
