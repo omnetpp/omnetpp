@@ -10,6 +10,7 @@ NoisyListener::NoisyListener()
 NoisyListener::~NoisyListener()
 {
     EV << "NOISYLISTENER DESTRUCTOR\n";
+    unsubscribeAll();
 }
 
 void NoisyListener::printFrom(cComponent *source, simsignal_t signalID)

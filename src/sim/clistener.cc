@@ -22,70 +22,17 @@
 
 namespace omnetpp {
 
-struct Subscription
-{
-    cComponent *component;
-    simsignal_t signalID;
-};
-typedef std::vector<Subscription> SubscriptionList;
-
-static void findListenerOccurences(cComponent *component, cIListener *listener, SubscriptionList& result)
-{
-    std::vector<simsignal_t> signals = component->getLocalListenedSignals();
-    for (int signalID : signals) {
-        if (component->isSubscribed(signalID, listener)) {
-            result.push_back(Subscription());
-            result.back().component = component;
-            result.back().signalID = signalID;
-        }
-    }
-
-    if (component->isModule()) {
-        cModule *module = (cModule *)component;
-        for (cModule::SubmoduleIterator it(module); !it.end(); ++it)
-            findListenerOccurences(*it, listener, result);
-        for (cModule::ChannelIterator it(module); !it.end(); ++it)
-            findListenerOccurences(*it, listener, result);
-    }
-}
-
-//---
-
-cIListener::cIListener()
-{
-    subscribeCount = 0;
-}
-
 cIListener::~cIListener()
 {
-    if (subscribeCount) {
-        // note: throwing an exception would is risky here: it would typically
-        // cause other exceptions, and eventually crash
-        if (subscribeCount < 0) {
-            getEnvir()->printfmsg(
-                    "cListener destructor: internal error: negative subscription "
-                    "count (%d) in listener at address %p", subscribeCount, this);
-            return;
-        }
+    unsubscribeAll();
+}
 
-        // subscribecount > 0:
-        getEnvir()->printfmsg(
-                "cListener destructor: listener at address %p is still added to "
-                "%d listener list(s). This will likely result in a crash: "
-                "Listeners must be fully unsubscribed before deletion. "
-                "Trying to determine components where this listener is subscribed...",
-                this, subscribeCount);
-
-        // print components and signals where this listener is subscribed
-        std::stringstream out;
-        SubscriptionList subscriptionList;
-        findListenerOccurences(getSimulation()->getSystemModule(), this, subscriptionList);
-        for (auto & subscription : subscriptionList) {
-            out << "- signal \"" << cComponent::getSignalName(subscription.signalID) << "\" (id=" << subscription.signalID << ") ";
-            out << "at (" << subscription.component->getClassName() << ")" << subscription.component->getFullPath() << "\n";
-        }
-        getEnvir()->printfmsg("Subscriptions for listener at address %p:\n%s", this, out.str().c_str());
-    }
+void cIListener::unsubscribeAll()
+{
+    auto copy = subscriptions;
+    for (auto subscription: copy)
+        subscription.first->unsubscribe(subscription.second, this); // affects the subscriptions list, hence the copy above!
+    subscriptions.clear();
 }
 
 //---

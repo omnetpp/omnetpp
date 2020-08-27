@@ -16,6 +16,9 @@
 #ifndef __OMNETPP_CLISTENER_H
 #define __OMNETPP_CLISTENER_H
 
+#include <vector>
+#include <utility>
+#include "simtime_t.h"
 #include "simtime_t.h"
 #include "cobject.h"
 
@@ -58,8 +61,8 @@ enum SimsignalType
 /**
  * @brief Interface for listeners in a simulation model.
  *
- * This class performs subscription counting, in order to make sure that
- * when the destructor runs, the object is no longer subscribed anywhere.
+ * Note that the destructor automatically unsubscribes the listener from all
+ * signals it is subscribed to, so it is not necessary to do it manually.
  *
  * @see cComponent::subscribe(), cComponent::unsubscribe()
  *
@@ -70,9 +73,34 @@ class SIM_API cIListener
     friend class cComponent; // for subscribecount
     friend class cResultFilter; // for subscribecount
   private:
-    int subscribeCount;
+    std::vector<std::pair<cComponent*,simsignal_t>> subscriptions;
+
+  protected:
+    /**
+     * Unsubscribes from all components and signals this listener is
+     * subscribed to.
+     */
+    virtual void unsubscribeAll();
+
   public:
-    cIListener();
+    /**
+     * Constructor.
+     */
+    cIListener() {}
+
+    /**
+     * Copy constructor.
+     */
+    cIListener(const cIListener& other) {}
+
+    /**
+     * The destructor automatically unsubscribes from all places
+     * this listener is subscribed to.
+     *
+     * Note that due to the way C++ destructors work, unsubscribedFrom()
+     * won't be called in the way one might expect it. See its documentation
+     * for details.
+     */
     virtual ~cIListener();
 
     /**
@@ -87,7 +115,7 @@ class SIM_API cIListener
      * the signal being received -- it will cause an error to be thrown.
      * (This is to prevent interesting cases when the listener list is being
      * modified while the component iterates on it. The alternative would be
-     * to make a temporary copy of the listener list each time, but this is
+     * to make a temporary copy of the listener list each time, but that is
      * not desirable for performance reasons.)
      */
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, bool b, cObject *details) = 0;
@@ -121,32 +149,33 @@ class SIM_API cIListener
 
     /**
      * Called when this object was added to the given component's given signal
-     * as a listener. Note that this method will only be called from subscribe()
-     * if this listener was not already subscribed.
+     * as a listener. (It won't be called from subscribe() if this listener
+     * was already subscribed.)
      */
     virtual void subscribedTo(cComponent *component, simsignal_t signalID) {}
 
     /**
      * Called when this object was removed from the given component's listener
-     * list for the given signal. Note that it will not be called from
-     * unsubscribe() if this listener was not actually subscribed before.
-     *
-     * This method is also called from cComponent's destructor for all
-     * listeners, so at this point it is not safe to cast the component pointer
-     * to any other type. Also, the method may be called several times (i.e.
-     * if the listener was subscribed to multiple signals).
+     * list for the given signal. (It won't be called from unsubscribe() if this
+     * listener was already unsubscribed.)
      *
      * It is OK for the listener to delete itself in this method (<tt>delete
-     * this</tt>). However, since this method may be called more than once
-     * if the listener is subscribed multiple times (see above), one must be
-     * careful to prevent double deletion, e.g. by reference counting.
+     * this</tt>). However, in that case, since this method is called more than once
+     * if the listener is subscribed multiple times, one must be
+     * careful to prevent double deletion.
+     *
+     * Note that due to the way C++ destructors work with regard to inheritance,
+     * overrides of this method won't be called if the unsubscription takes
+     * place from within the destructor of the super class (usually cIListener).
+     * A workaround is to redefine the destructor in your listener class,
+     * and already call unsubscribeAll() from there.
      */
     virtual void unsubscribedFrom(cComponent *component, simsignal_t signalID) {}
 
     /**
      * Returns the number of listener lists that contain this listener.
      */
-    int getSubscribeCount() const  { return subscribeCount; }
+    virtual int getSubscribeCount() const  {return subscriptions.size();}
 };
 
 /**

@@ -15,6 +15,7 @@
 
 #include <algorithm>
 #include "common/stringutil.h"
+#include "common/stlutil.h"
 #include "omnetpp/ccomponent.h"
 #include "omnetpp/ccomponenttype.h"
 #include "omnetpp/ccontextswitcher.h"
@@ -681,7 +682,7 @@ void cComponent::subscribe(simsignal_t signalID, cIListener *listener)
     if (!listenerList->addListener(listener))
         throw cRuntimeError(this, "subscribe(): Listener already subscribed at this component to signal '%s' (id=%d)", getSignalName(signalID), signalID);
     signalListenerCounts[signalID]++;
-    listener->subscribeCount++;
+    listener->subscriptions.push_back(std::pair<cComponent*,simsignal_t>(this,signalID));
     listener->subscribedTo(this, signalID);
 }
 
@@ -703,9 +704,10 @@ void cComponent::unsubscribe(simsignal_t signalID, cIListener *listener)
         removeListenerList(signalID);
 
     signalListenerCounts[signalID]--;
-    listener->subscribeCount--;
     ASSERT(signalListenerCounts[signalID] >= 0);
-    ASSERT(listener->subscribeCount >= 0);
+    auto subscription = std::pair<cComponent*,simsignal_t>(this,signalID);
+    ASSERT(contains(listener->subscriptions, subscription));
+    remove(listener->subscriptions, subscription);
     listener->unsubscribedFrom(this, signalID);
 }
 

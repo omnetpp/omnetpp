@@ -34,9 +34,10 @@ class cComponent;
 class SIM_API cResultListener : public cObject, public cIListener
 {
         friend class cResultFilter;
+    private:
+        int delegatedCount = 0;
     protected:
         static const char *getPooled(const char *s);
-
     public:
         // simplified API that better supports chaining (needs to be public due to DemuxFilter)
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details) = 0;
@@ -62,6 +63,9 @@ class SIM_API cResultListener : public cObject, public cIListener
         virtual void subscribedTo(cComponent *component, simsignal_t signalID) override;
         virtual void unsubscribedFrom(cComponent *component, simsignal_t signalID) override;
         virtual void finish(cComponent *component, simsignal_t signalID) override;
+
+        virtual int getSubscribeCount() const override  {return cIListener::getSubscribeCount() + delegatedCount;}
+        virtual int getDelegatedCount() const  {return delegatedCount;}
 
         // make a "clean" copy which inherits configuration but not result collection state
         virtual cResultListener *clone() const = 0;

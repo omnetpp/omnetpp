@@ -143,16 +143,19 @@ void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, cO
 
 void cResultListener::subscribedTo(cComponent *component, simsignal_t signalID)
 {
+    cIListener::subscribedTo(component, signalID);
     subscribedTo(nullptr);
 }
 
 void cResultListener::unsubscribedFrom(cComponent *component, simsignal_t signalID)
 {
+    cIListener::unsubscribedFrom(component, signalID);
     unsubscribedFrom(nullptr);
 }
 
 void cResultListener::finish(cComponent *component, simsignal_t signalID)
 {
+    cIListener::finish(component, signalID);
     callFinish(nullptr);
 }
 

@@ -57,7 +57,7 @@ void cResultFilter::addDelegate(cResultListener *delegate)
     v[n+1] = nullptr;
     delete[] delegates;
     delegates = v;
-    delegate->subscribeCount++;
+    delegate->delegatedCount++;
     delegate->subscribedTo(this);
 }
 
@@ -88,7 +88,7 @@ std::vector<cResultListener *> cResultFilter::getDelegates() const
 cResultFilter::~cResultFilter()
 {
     for (int i = 0; delegates[i]; i++) {
-        delegates[i]->subscribeCount--;
+        delegates[i]->delegatedCount--;
         delegates[i]->unsubscribedFrom(this);
     }
     delete[] delegates;
