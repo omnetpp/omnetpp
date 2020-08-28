@@ -17,6 +17,7 @@
 #define __OMNETPP_COBJECT_H
 
 #include <string>
+#include <iostream>
 #include "simkerneldefs.h"
 #include "cvisitor.h"
 
@@ -182,10 +183,22 @@ class SIM_API cObject
     const cObject *getThisPtr() const  {return this;}  //Note: nonvirtual
 
     /**
-     * Produce a one-line description of the object. The string is displayed
-     * at various places e.g. in graphical user interfaces.
+     * Returns a brief, one-line description of the object. The returned string
+     * does (should) NOT include the object's name and class. This method is
+     * used to display object information at several places in the Qtenv GUI,
+     * among others.
      */
     virtual std::string str() const;
+
+    /**
+     * Prints the object on the given stream. The default implementation prints
+     * the class name, the object full name, and the brief description.
+     * The default stream output operator (operator<<) for cObject descendants
+     * delegates to this method.
+     *
+     * @see getClassName(), getFullName, str()
+     */
+    virtual std::ostream& printOn(std::ostream& os) const;
 
     /**
      * Should be redefined in subclasses to create an exact copy of this object.
@@ -331,6 +344,20 @@ class SIM_API cObject
     //@}
 };
 
+template<typename T>
+typename std::enable_if<std::is_base_of<cObject, T>::value, std::ostream&>::type
+operator<<(std::ostream& os, const T *p) {
+    if (p)
+        return p->printOn(os);
+    else
+        return os << "<nullptr>";
+}
+
+template<typename T>
+typename std::enable_if<std::is_base_of<cObject, T>::value, std::ostream&>::type
+operator<<(std::ostream& os, const T& o) {
+    return o.printOn(os);
+}
 
 /**
  * @brief Utility class, to make it impossible to call the operator= and copy

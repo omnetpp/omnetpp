@@ -72,6 +72,11 @@ std::string cObject::str() const
     return std::string();
 }
 
+std::ostream& cObject::printOn(std::ostream& os) const
+{
+    return os << "(" << getClassName() << ")" << getFullName() << " " << str();
+}
+
 cObject *cObject::dup() const
 {
     throw cRuntimeError("The dup() method, declared in cObject, is not "

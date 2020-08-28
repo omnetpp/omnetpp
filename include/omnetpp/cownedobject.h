@@ -16,6 +16,7 @@
 #ifndef __OMNETPP_COWNEDOBJECT_H
 #define __OMNETPP_COWNEDOBJECT_H
 
+#include <utility>
 #include <typeinfo>
 #include <iostream>
 #include "simkerneldefs.h"
@@ -277,17 +278,6 @@ class SIM_API cStaticFlag
     static bool isExiting() {return exitingFlag;}
     static void setExiting() {exitingFlag = true;}
 };
-
-SIM_API std::ostream& operator<< (std::ostream& os, const cOwnedObject *p);
-SIM_API std::ostream& operator<< (std::ostream& os, const cOwnedObject& o);
-
-inline std::ostream& operator<< (std::ostream& os, cOwnedObject *p) {
-    return os << (const cOwnedObject *)p;
-}
-
-inline std::ostream& operator<< (std::ostream& os, cOwnedObject& o) {
-    return os << (const cOwnedObject&)o;
-}
 
 }  // namespace omnetpp
 

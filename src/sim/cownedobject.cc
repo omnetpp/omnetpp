@@ -186,20 +186,6 @@ void cNoncopyableOwnedObject::parsimUnpack(cCommBuffer *buffer)
 
 //-----
 
-ostream& operator<<(ostream& os, const cOwnedObject *p)
-{
-    if (!p)
-        return os << "(nullptr)";
-    return os << "(" << p->getClassName() << ")" << p->getFullName();
-}
-
-ostream& operator<<(ostream& os, const cOwnedObject& o)
-{
-    return os << "(" << o.getClassName() << ")" << o.getFullName();
-}
-
-//-----
-
 /* Debug code:
 static struct X {
     ~X() {if (cStaticFlag::isSet()) printf("<!> Warning: cStaticFlag flag still set while shutting down! Make sure it always gets cleared at latest when exiting main().\n");}
