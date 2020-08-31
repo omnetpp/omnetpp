@@ -3546,7 +3546,7 @@ if ac_fn_cxx_try_link "$LINENO"; then :
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
         CXX="$ac_save_CXX"
-        CFLAGS_DEBUG="$CFLAGS_DEBUG -gdb3"
+        CFLAGS_DEBUG="$CFLAGS_DEBUG -ggdb3"
 
 else
 

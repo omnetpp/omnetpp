@@ -445,7 +445,7 @@ AC_PROG_CXX_OPTION(-fno-omit-frame-pointer, CFLAGS_ARCH="$CFLAGS_ARCH -fno-omit-
 # check for debugger specific debug info generation for better debugging support
 #----------------------
 AC_PROG_CXX_OPTION(-glldb, CFLAGS_DEBUG="$CFLAGS_DEBUG -glldb",
-   AC_PROG_CXX_OPTION(-ggdb3, CFLAGS_DEBUG="$CFLAGS_DEBUG -gdb3", CFLAGS_DEBUG="$CFLAGS_DEBUG -g")
+   AC_PROG_CXX_OPTION(-ggdb3, CFLAGS_DEBUG="$CFLAGS_DEBUG -ggdb3", CFLAGS_DEBUG="$CFLAGS_DEBUG -g")
 )
 
 # if supported, generate debug info for standallone debugging (i.e. typeinfo for std:: classes)
