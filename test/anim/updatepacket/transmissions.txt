@@ -1,0 +1,24 @@
+# Each line is a single transmission, with any number of updates.
+# Transmission start times are not prescribed.
+
+# Line format:
+# <initial duration>; +<delay>: -<new remaining duration>; +<delay>: -<new remaining duration> [...]| description
+# Example:
+# 20ms; +12ms: -5ms; +3ms: -6ms | example
+# times are parsed as SimTime
+
+0ms | a simple 0-length message
+17ms | a simple transmission
+
+10ms; +10ms: -0ms | a transmission with an explicit end notification
+15ms; +13ms: -0ms | a transmission that is cut short (aborted)
+
+9ms; +9ms: -3ms | a transmission that is appended to right at the end
+9ms; +5ms: -1ms | a transmission that is updated halfway to become shorter
+9ms; +5ms: -7ms | a transmission that is updated halfway to become longer
+
+15ms; +7ms: -10ms; +0ms: -3ms; +0ms: -8ms | a transmission that is updated twice in the same moment of time in the middle (to different non-zero lengths)
+15ms; +7ms: -10ms; +0ms: -0ms; +0ms: -8ms | a transmission that is updated twice in the same moment of time in the middle (but the first one aborts it, then the next one appends to it)
+15ms; +7ms: -10ms; +0ms: -3ms; +0ms: -0ms | a transmission that is updated twice in the same moment of time in the middle (the first one changes it then the next one aborts it)
+
+20ms; +8ms: -10ms; +4ms: -3ms; +2ms: -5ms | a transmission that is updated multiple times at different moments of time to different lengths
