@@ -17,4 +17,4 @@ cover:
 	perl -i~ -pe "s/\@product\@/$(PRODUCT)/g" cover.svg
 	perl -i~ -pe "s/\@title\@/$(TITLE)/g" cover.svg
 	perl -i~ -pe "s/\@version\@/$(VERSION_TEXT)/g" cover.svg
-	inkscape cover.svg -A cover.pdf
+	inkscape cover.svg --export-area-page --export-filename=cover.pdf
