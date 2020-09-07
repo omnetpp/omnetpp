@@ -698,6 +698,11 @@ void Qtenv::doRun()
     // saving the open toplevel inspectors to the .qtenvrc file
     storeInspectors(false);
 
+    // delete network if not yet done
+    if (simulationState != SIM_NONET && simulationState != SIM_FINISHCALLED)
+        notifyLifecycleListeners(LF_ON_RUN_END);
+    getSimulation()->deleteNetwork();
+
     // close all inspectors before exiting,
     // making a copy of the list to avoid iterator invalidation
     // (inspectors will be removed from the main list when tey are deleted)
@@ -717,11 +722,6 @@ void Qtenv::doRun()
     messageAnimator = nullptr;
     delete displayUpdateController;
     displayUpdateController = nullptr;
-
-    // delete network if not yet done
-    if (simulationState != SIM_NONET && simulationState != SIM_FINISHCALLED)
-        notifyLifecycleListeners(LF_ON_RUN_END);
-    getSimulation()->deleteNetwork();
 
     // pull down inspector factories
     inspectorfactories.clear();
