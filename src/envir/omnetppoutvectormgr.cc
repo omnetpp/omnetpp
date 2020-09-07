@@ -146,6 +146,9 @@ void OmnetppOutputVectorManager::setVectorAttribute(void *vectorhandle, const ch
 
 bool OmnetppOutputVectorManager::record(void *vectorhandle, simtime_t t, double value)
 {
+    if (state == ENDED)
+        return false;    // ignore writes during network teardown
+
     Assert(state == STARTED || state == OPENED);
 
     ASSERT(vectorhandle != nullptr);

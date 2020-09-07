@@ -166,6 +166,9 @@ void SqliteOutputVectorManager::setVectorAttribute(void *vectorhandle, const cha
 
 bool SqliteOutputVectorManager::record(void *vectorhandle, simtime_t t, double value)
 {
+    if (state == ENDED)
+        return false;    // ignore writes during network teardown
+
     Assert(state == STARTED || state == OPENED);
 
     ASSERT(vectorhandle != nullptr);

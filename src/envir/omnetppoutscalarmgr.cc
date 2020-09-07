@@ -105,6 +105,9 @@ void OmnetppOutputScalarManager::closeFile()
 
 void OmnetppOutputScalarManager::recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes)
 {
+    if (state == ENDED)
+        return;    // ignore writes during network teardown
+
     Assert(state == STARTED || state == OPENED);
 
     if (state != OPENED)
@@ -124,6 +127,9 @@ void OmnetppOutputScalarManager::recordScalar(cComponent *component, const char 
 
 void OmnetppOutputScalarManager::recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes)
 {
+    if (state == ENDED)
+        return;    // ignore writes during network teardown
+
     Assert(state == STARTED || state == OPENED);
 
     if (state != OPENED)
@@ -176,6 +182,9 @@ void OmnetppOutputScalarManager::recordStatistic(cComponent *component, const ch
 
 void OmnetppOutputScalarManager::recordParameter(cPar *par)
 {
+    if (state == ENDED)
+        return;    // ignore writes during network teardown
+
     Assert(state == STARTED || state == OPENED);
 
     if (state != OPENED)
@@ -193,6 +202,9 @@ void OmnetppOutputScalarManager::recordParameter(cPar *par)
 
 void OmnetppOutputScalarManager::recordComponentType(cComponent *component)
 {
+    if (state == ENDED)
+        return;    // ignore writes during network teardown
+
     Assert(state == STARTED || state == OPENED);
 
     if (state != OPENED)

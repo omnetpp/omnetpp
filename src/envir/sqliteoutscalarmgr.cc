@@ -98,6 +98,9 @@ void SqliteOutputScalarManager::closeFile()
 
 void SqliteOutputScalarManager::recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes)
 {
+    if (state == ENDED)
+        return;    // ignore writes during network teardown
+
     Assert(state == STARTED || state == OPENED);
 
     if (state != OPENED)
@@ -117,6 +120,9 @@ void SqliteOutputScalarManager::recordScalar(cComponent *component, const char *
 
 void SqliteOutputScalarManager::recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes)
 {
+    if (state == ENDED)
+        return;    // ignore writes during network teardown
+
     Assert(state == STARTED || state == OPENED);
 
     if (state != OPENED)
@@ -169,6 +175,9 @@ void SqliteOutputScalarManager::recordStatistic(cComponent *component, const cha
 
 void SqliteOutputScalarManager::recordParameter(cPar *par)
 {
+    if (state == ENDED)
+        return;    // ignore writes during network teardown
+
     Assert(state == STARTED || state == OPENED);
 
     if (state != OPENED)
@@ -186,6 +195,9 @@ void SqliteOutputScalarManager::recordParameter(cPar *par)
 
 void SqliteOutputScalarManager::recordComponentType(cComponent *component)
 {
+    if (state == ENDED)
+        return;    // ignore writes during network teardown
+
     Assert(state == STARTED || state == OPENED);
 
     if (state != OPENED)
