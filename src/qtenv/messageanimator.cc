@@ -125,7 +125,7 @@ void MessageAnimator::redrawMessages()
     int fesLen = fes->getLength();
     for (int i = 0; i < fesLen; i++) {
         cEvent *event = fes->get(i);
-        if (!event->isMessage())
+        if (!event->isMessage() || event->getArrivalTime() != simTime())
             continue;
         cMessage *msg = (cMessage *)event;
 
