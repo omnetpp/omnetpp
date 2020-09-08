@@ -24,7 +24,7 @@
 
 #include <QDebug>
 #include <omnetpp/cfutureeventset.h>
-#include <omnetpp/cmessage.h>
+#include <omnetpp/cpacket.h>
 #include <omnetpp/csimplemodule.h>
 #include <utility>
 #include <common/stlutil.h>
@@ -37,6 +37,78 @@ namespace omnetpp {
 using namespace common;
 
 namespace qtenv {
+
+const MessageAnimator::MessageSendKey MessageAnimator::METHODCALL = {-1, -1, -1, -1, -1};
+
+// --------  MessageAnimator::MessageSendPath::Hop  --------
+
+std::string MessageAnimator::MessageSendPath::Hop::str() const
+{
+    std::stringstream ss;
+    ss << "Hop {";
+
+    ss << " directSrcModule: " << directSrcModule;
+    ss << " directDestGate: " << directDestGate;
+    ss << " connSrcGate: " << connSrcGate;
+    ss << " isLastHop: " << std::boolalpha << isLastHop;
+    ss << " discard: " << std::boolalpha << discard;
+    ss << " hopStartTime: " << hopStartTime;
+    ss << " propDelay: " << propDelay;
+    ss << " transDuration: " << transDuration;
+
+    ss << "}";
+    return ss.str();
+}
+
+
+// --------  MessageAnimator::MessageSendPath  --------
+
+
+simtime_t MessageAnimator::MessageSendPath::getStartArrivalTime()
+{
+    return hops.empty() ? simTime() : (hops.back().hopStartTime + hops.back().propDelay);
+}
+
+void MessageAnimator::MessageSendPath::messageDuplicated(cMessage *msg, cMessage *dup)
+{
+    if (this->msg == msg) {
+        ASSERT(this->dupMsg == nullptr);
+        this->dupMsg = dup;
+    }
+}
+
+void MessageAnimator::MessageSendPath::removeMessagePointer(cMessage *msg)
+{
+    if (this->dupMsg == msg)
+        this->dupMsg = nullptr;
+    if (this->msg == msg)
+        this->msg = nullptr;
+}
+
+
+// --------  MessageAnimator::MessageSendKey  --------
+
+
+MessageAnimator::MessageSendKey MessageAnimator::MessageSendKey::fromMessage(cMessage *msg)
+{
+    return MessageAnimator::MessageSendKey {
+                msg->getId(),
+                msg->getSenderModuleId(), msg->getSenderGateId(),
+                msg->getArrivalModuleId(), msg->getArrivalGateId()
+            };
+}
+
+std::string MessageAnimator::MessageSendKey::str() const
+{
+    return "{" + std::to_string(messageId)
+        + ", "   + std::to_string(senderModuleId)  + "(" + getSimulation()->getComponent(senderModuleId)->getFullPath()  + ")." + std::to_string(senderGateId)
+        + " -> " + std::to_string(arrivalModuleId) + "(" + getSimulation()->getComponent(arrivalModuleId)->getFullPath() + ")." + std::to_string(arrivalGateId)
+        + "}";
+}
+
+
+// --------  MessageAnimator  --------
+
 
 void MessageAnimator::redrawMessages()
 {
@@ -104,13 +176,6 @@ void MessageAnimator::skipCurrentHoldingAnims()
     holdRequests.clear();
 
     currentMethodCall = nullptr;
-
-    /*
-    lastHopTime = -1;
-    currentMessageSend = nullptr;
-
-    clearMessages();
-    */
 }
 
 void MessageAnimator::methodcallBegin(cComponent *fromComp, cComponent *toComp, const char *methodText, bool silent)
@@ -134,7 +199,7 @@ void MessageAnimator::methodcallEnd()
         for (auto insp : getQtenv()->getInspectors())
             currentMethodCall->addToInspector(insp);
 
-        animations.putMulti(nullptr, currentMethodCall);
+        animations.putMulti(METHODCALL, currentMethodCall);
     }
 
     currentMethodCall = parent;
@@ -144,75 +209,150 @@ void MessageAnimator::methodcallEnd()
 
 void MessageAnimator::beginSend(cMessage *msg, const SendOptions& options)
 {
-    ASSERT(!currentMessageSend);
-    currentMessageSend = new AnimationSequence();
-
-    ASSERT(lastHopTime == -1);
-    lastHopTime = msg->getSendingTime();
+    ASSERT(!currentSending);
+    currentSending = new MessageSendPath(msg);
 }
 
 void MessageAnimator::sendDirect(cMessage *msg, cModule *srcModule, cGate *destGate, const cChannel::Result& result)
 {
-    ASSERT(currentMessageSend);
-    currentMessageSend->addAnimation(
-        (result.delay + result.duration).isZero()
-            ? new SendDirectAnimation(srcModule, msg, destGate)
-            : new SendDirectAnimation(srcModule, msg, destGate, lastHopTime, result.delay, result.duration));
-
-    lastHopTime += result.delay;
-    lastHopTime += result.duration;
+    ASSERT(currentSending);
+    ASSERT(currentSending->msg == msg);
+    currentSending->addHop(MessageSendPath::Hop(currentSending->getStartArrivalTime(), srcModule, destGate, result.delay, result.remainingDuration));
 }
 
 void MessageAnimator::sendHop(cMessage *msg, cGate *srcGate, bool isLastHop)
 {
-    ASSERT(currentMessageSend);
-    currentMessageSend->addAnimation(new SendOnConnAnimation(srcGate, msg));
+    ASSERT(currentSending);
+    ASSERT(currentSending->msg == msg);
+    currentSending->addHop(MessageSendPath::Hop(currentSending->getStartArrivalTime(), srcGate, isLastHop));
 }
 
 void MessageAnimator::sendHop(cMessage *msg, cGate *srcGate, bool isLastHop, const cChannel::Result& result)
 {
-    ASSERT(currentMessageSend);
-    if ((result.delay + result.duration).isZero())
-        sendHop(msg, srcGate, isLastHop);
+    ASSERT(currentSending);
+    ASSERT(currentSending->msg == msg);
+    if (result.discard)
+        endSend(msg); // At the moment, the animation of a discarded message simply ends halfway on the path
     else
-        currentMessageSend->addAnimation(new SendOnConnAnimation(srcGate, msg, lastHopTime, result.delay, result.duration, result.discard));
-
-    lastHopTime += result.delay;
-    lastHopTime += result.duration;
+        currentSending->addHop(MessageSendPath::Hop(currentSending->getStartArrivalTime(), srcGate, isLastHop, result.delay, result.remainingDuration, result.discard));
 }
 
 void MessageAnimator::endSend(cMessage *msg)
 {
-    ASSERT(currentMessageSend);
-    ASSERT2(currentMessageSend->getNumParts() > 0, "No messageSendDirect() nor messageSendHop() was called between beginSend() and endSend()");
+    ASSERT(currentSending);
+    ASSERT(currentSending->msg == msg);
+    ASSERT2(!(currentSending->hops.empty()), "No messageSendDirect() nor messageSendHop() was called between beginSend() and endSend()");
 
-    updateAnimations();
+    bool isUpdatePacket = false;
+    if (msg->isPacket()) {
+        cPacket *packet = static_cast<cPacket *>(msg);
+        if (packet->isUpdate()) {
+            cutUpdatedPacketAnimation(packet);
+            isUpdatePacket = true;
+        }
+    }
 
     auto dup = getQtenv()->getLogBuffer()->getLastMessageDup(msg);
     ASSERT(dup);
-
+    // have to do it before turning the sending into an animation, because  ???? TODO
     messageDuplicated(msg, dup);
 
+    updateAnimations();
+
+    // extract the transmission duration from the single hop that may have it as a non-zero value
+    simtime_t transDuration = 0;
+    for (const auto& h : currentSending->hops) {
+        if (!h.transDuration.isZero()) {
+            ASSERT(transDuration.isZero() || transDuration == h.transDuration);
+            transDuration = h.transDuration;
+            // TODO break as optimization? - then the ASSERT above makes less sense...
+        }
+    }
+
+    // turn the collected hops into either a sequence or a group animation
+    Animation *sendAnim;
+    if (transDuration.isZero()) {
+        // not a transmission
+
+        AnimationSequence *animSeq = new AnimationSequence();
+        sendAnim = animSeq;
+
+        for (const auto& h : currentSending->hops) {
+            if (h.directSrcModule) {
+                ASSERT(h.directDestGate);
+                ASSERT(!h.connSrcGate);
+
+                if (h.propDelay.isZero() && transDuration.isZero() && !isUpdatePacket)
+                    animSeq->addAnimation(new SendDirectAnimation(h.directSrcModule, msg, h.directDestGate));
+                else
+                    animSeq->addAnimation(new SendDirectAnimation(h.directSrcModule, msg, h.directDestGate, h.hopStartTime, h.propDelay, transDuration));
+            }
+            else {
+                // it was sent on a connection
+                ASSERT(!h.directDestGate);
+                ASSERT(h.connSrcGate);
+
+                if (h.propDelay.isZero() && transDuration.isZero() && !isUpdatePacket)
+                    animSeq->addAnimation(new SendOnConnAnimation(h.connSrcGate, msg));
+                else
+                    animSeq->addAnimation(new SendOnConnAnimation(h.connSrcGate, msg, h.hopStartTime, h.propDelay, transDuration, h.discard));
+            }
+        }
+
+        if (!animSeq->isEmpty())
+            animSeq->advance();
+    }
+    else {
+        // a transmission
+
+        // an AnimationGroup is needed here, so the transmission (message in line form)
+        // can be shown and animated on multiple connections on the same path at the same time
+        AnimationGroup *animGroup = new AnimationGroup();
+        sendAnim = animGroup;
+
+        for (const auto& h : currentSending->hops) {
+            if (h.directSrcModule) {
+                ASSERT(h.directDestGate);
+                ASSERT(!h.connSrcGate);
+
+                animGroup->addAnimation(new SendDirectAnimation(h.directSrcModule, msg, h.directDestGate, h.hopStartTime, h.propDelay, transDuration));
+            }
+            else {
+                ASSERT(h.connSrcGate);
+                ASSERT(!h.directDestGate);
+
+                animGroup->addAnimation(new SendOnConnAnimation(h.connSrcGate, msg, h.hopStartTime, h.propDelay, transDuration, h.discard));
+            }
+        }
+
+        if (!animGroup->isEmpty())
+            animGroup->advance();
+    }
+
+    sendAnim->messageDuplicated(msg, dup);
+
     for (auto insp : getQtenv()->getInspectors())
-        currentMessageSend->addToInspector(insp);
+        sendAnim->addToInspector(insp);
 
     // if we are in a method, and this whole message sequence will take 0 SimTime, performing it in the method
-    if (currentMethodCall && currentMessageSend->isHoldingOnly())
-        currentMethodCall->addOperation(currentMessageSend);
+    if (currentMethodCall && sendAnim->isHolding() && transDuration.isZero())
+        currentMethodCall->addOperation(sendAnim);
     else {
         // otherwise after the method.
         // XXX maybe split it in two, so if the first few parts are instantaneous, play them, and continue later?
-        animations.putMulti(msg, currentMessageSend);
+        MessageSendKey key = MessageSendKey::fromMessage(msg);
+        animations.putMulti(key, sendAnim);
     }
 
-    currentMessageSend = nullptr;
-    lastHopTime = -1;
+    delete currentSending;
+    currentSending = nullptr;
+
     updateAnimations();
 }
 
 void MessageAnimator::deliveryDirect(cMessage *msg)
 {
-    ASSERT(!currentMessageSend);
+    ASSERT(!currentSending);
 
     cGate *g = msg->getArrivalGate();
     ASSERT(g);
@@ -224,7 +364,7 @@ void MessageAnimator::deliveryDirect(cMessage *msg)
 
 void MessageAnimator::delivery(cMessage *msg)
 {
-    ASSERT(!currentMessageSend);
+    ASSERT(!currentSending);
 
     cGate *g = msg->getArrivalGate();
     ASSERT(g);
@@ -244,7 +384,7 @@ bool MessageAnimator::willAnimate(cMessage *msg)
         if (p && p->willAnimate(msg))
             return true;
 
-    return currentMessageSend && currentMessageSend->willAnimate(msg);
+    return currentSending && currentSending->msg == msg;
 }
 
 void MessageAnimator::setMarkedModule(cModule *mod)
@@ -409,35 +549,42 @@ void MessageAnimator::addDeliveryAnimation(cMessage *msg, cModule *showIn, Deliv
     if (!deliveries)
         deliveries = new AnimationSequence();
 
-    // If the mesage that is getting delivered right now
-    // already has a "sending" animation, we are chopping the
-    // end of that animation off, and appending it before
-    // the delivery animation.
-    // This way if a message arrived to a host on a channel
-    // that has prop/trans delay, and got delivered into a
-    // submodule of the host, the delivery will not be animated
-    // before the end of the sending sequence (inside the host).
-    if (animations.containsKey(msg)) {
-        auto seq = dynamic_cast<AnimationSequence*>(animations.getLast(msg));
-        ASSERT(seq);
-        auto tail = seq->chopHoldingTail();
-        // If there was a sending animation for the message, and it ended
-        // with some zero length hops, we append the delivery to those last
-        // parts and act as if this whole thing was the delivery.
-        if (tail) {
-            tail->addAnimation(anim);
-            deliveries->addAnimation(tail);
-        } else {
-            // Otherwise just adding the delivery animation itself.
-            deliveries->addAnimation(anim);
-        }
-    } else {
-        deliveries->addAnimation(anim);
-    }
+    deliveries->addAnimation(anim);
 
     anim->removeMessagePointer(msg);
 
     updateAnimations();
+}
+
+void MessageAnimator::cutUpdatedPacketAnimation(cPacket *updatePacket)
+{
+    // the original animation was supposed to take the same path
+    MessageSendKey key = MessageSendKey::fromMessage(updatePacket);
+    // but had a different ID
+    key.messageId = updatePacket->getOrigPacketId();
+
+    if (animations.containsKey(key)) {
+        // This getLast() will make sure that always the last (of the previous ones) animation
+        // will be cut short (in case this is not the first update packet of this transmission).
+        auto group = dynamic_cast<AnimationGroup*>(animations.getLast(key));
+        ASSERT(group != nullptr);
+
+        SimTime duration;
+        for (Animation *part : group->getParts())
+            if (MessageAnimation *msgAnim = dynamic_cast<MessageAnimation *>(part)) {
+                duration = simTime() - msgAnim->getStartTime();
+                break;
+            }
+
+        for (Animation *part : group->getParts())
+            if (MessageAnimation *msgAnim = dynamic_cast<MessageAnimation *>(part))
+                if (!msgAnim->getTransmissionDuration().isZero())
+                    msgAnim->setTransmissionDuration(duration);
+    }
+    else {
+        // The animation for the updated packet has already ended, or this is a
+        // bogus update. Either way, we ignore it now. Should we be stricter?
+    }
 }
 
 MethodcallAnimation *MessageAnimator::getCurrentMethodCallRoot() const
@@ -499,8 +646,8 @@ void MessageAnimator::clear()
     currentMethodCall = nullptr;
     markedModule = nullptr;
 
-    lastHopTime = -1;
-    currentMessageSend = nullptr;
+    delete currentSending;
+    currentSending = nullptr;
 
     clearMessages();
 }
@@ -554,8 +701,8 @@ void MessageAnimator::messageDuplicated(cMessage *msg, cMessage *dup)
     for (auto a : animations)
         a->messageDuplicated(msg, dup);
 
-    if (currentMessageSend)
-        currentMessageSend->messageDuplicated(msg, dup);
+    if (currentSending)
+        currentSending->messageDuplicated(msg, dup);
 
     MethodcallAnimation *methodCallRoot = getCurrentMethodCallRoot();
     if (methodCallRoot)
@@ -574,8 +721,9 @@ void MessageAnimator::removeMessagePointer(cMessage *msg)
     for (auto a : animations)
         a->removeMessagePointer(msg);
 
-    if (currentMessageSend)
-        currentMessageSend->removeMessagePointer(msg);
+    if (currentSending)
+        // most likely a channel was disabled, or discarded the message for some other reason - between a beginSend()/endSend() pair.
+        currentSending->removeMessagePointer(msg);
 
     MethodcallAnimation *methodCallRoot = getCurrentMethodCallRoot();
     if (methodCallRoot)

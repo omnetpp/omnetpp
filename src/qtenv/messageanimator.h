@@ -25,6 +25,7 @@
 #include <functional>
 #include <QGraphicsRectItem>
 #include "omnetpp/cchannel.h"
+#include "omnetpp/cmodule.h"
 #include "omnetpp/simtime_t.h"
 #include "qtutil.h"
 
@@ -56,16 +57,84 @@ class QTENV_API MessageAnimator
     // cursor in the tree - NOT necessarily the root
     MethodcallAnimation *currentMethodCall = nullptr;
 
-    // Used to keep track of time in the current send sequence.
-    // -1 if not between a beginSend / endSend pair.
-    SimTime lastHopTime = -1;
-    // For accumulation of message hop animations between beginSend / endSend.
-    AnimationSequence *currentMessageSend = nullptr;
+    // to collect the hops between beginSend()/endSend() for a single transmission animation
+    struct MessageSendPath {
+
+        struct Hop {
+            // for the optional first direct "hop"
+            cModule *directSrcModule = nullptr;
+            cGate *directDestGate = nullptr;
+
+            // for hops on connections
+            cGate *connSrcGate = nullptr;
+            bool isLastHop = false; // currently unused
+            bool discard = false; // currently unused
+
+            // for both kinds of "hops" (direct or on-conn)
+            simtime_t hopStartTime;
+            simtime_t propDelay;
+            simtime_t transDuration; // only ONE of the hops can have a non-zero of this, and it will apply to all hops!
+
+            // for the optional sendDirect "hops"
+            Hop(const simtime_t &startTime, cModule *srcModule, cGate *destGate, simtime_t prop, simtime_t trans) :
+              directSrcModule(srcModule), directDestGate(destGate), hopStartTime(startTime), propDelay(prop), transDuration(trans) { }
+
+            // for send hops on connections without channels
+            Hop(const simtime_t &startTime, cGate *srcGate, bool isLastHop) :
+              connSrcGate(srcGate), isLastHop(isLastHop), hopStartTime(startTime) { }
+
+            // for send hops on connections with channels
+            Hop(const simtime_t &startTime, cGate *srcGate, bool isLastHop, simtime_t prop, simtime_t trans, bool discard) :
+              connSrcGate(srcGate), isLastHop(isLastHop), discard(discard), hopStartTime(startTime), propDelay(prop), transDuration(trans) { }
+
+            std::string str() const;
+        };
+
+        cMessage *msg;
+        cMessage *dupMsg = nullptr;
+
+        std::vector<Hop> hops; // also includes the optional first direct "hop"
+
+        explicit MessageSendPath(cMessage *msg) : msg(msg) { }
+
+        void addHop(const Hop& hop) { hops.push_back(hop); }
+
+        // When the "first part" arrived at the destination, NOT counting transmission duration!
+        simtime_t getStartArrivalTime();
+        void messageDuplicated(cMessage *msg, cMessage *dup);
+        void removeMessagePointer(cMessage *msg);
+    };
+
+    // non-null if between a beginSend()/endSend() pair, the path hops are collected into this
+    MessageSendPath *currentSending = nullptr;
+
+    // to identify the transmissions so we can find them when they need to be updated by another send
+    struct MessageSendKey {
+        long messageId = 0; // TODO: long -> msgid_t when present
+
+        int senderModuleId = 0;
+        int senderGateId = 0; // this will be -1 when sendDirect() is called
+        int arrivalModuleId = 0;
+        int arrivalGateId = 0;
+
+        static MessageSendKey fromMessage(cMessage *msg);
+
+        // to make implemementing operator < easier
+        std::tuple<long, int, int, int, int> asTuple() const {
+            return { messageId, senderModuleId, senderGateId, arrivalModuleId, arrivalGateId };
+        }
+
+        // just so we can use it as a key for an std::map
+        bool operator < (const MessageSendKey& other) const { return asTuple() < other.asTuple(); }
+
+        std::string str() const;
+    };
+    static const MessageSendKey METHODCALL; // a special "invalid" key instance for the MethodCall animations
 
     // The non-delivery animations.
-    // Additionally, nullptr is used as a key for methodcall animations,
+    // Additionally, METHODCALL is used as a key for methodcall animations,
     // since they are potentially interleaved.
-    OrderedMultiMap<cMessage *, Animation *> animations;
+    OrderedMultiMap<MessageSendKey, Animation *> animations;
 
     // The delivery animation(s), these take precedence over the rest.
     AnimationSequence *deliveries = nullptr;
@@ -82,6 +151,7 @@ class QTENV_API MessageAnimator
 
     // Simple utility function to deduplicate the delivery functions.
     void addDeliveryAnimation(cMessage *msg, cModule *showIn, DeliveryAnimation *anim);
+    void cutUpdatedPacketAnimation(cPacket *packetUpdate);
 
     cModule *markedModule = nullptr; // the next event marker will be drawn around this, and its parents. none if nullptr
 

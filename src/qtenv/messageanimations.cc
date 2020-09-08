@@ -22,6 +22,7 @@
 #include "connectionitem.h"
 #include "graphicsitems.h"
 #include "common/stlutil.h"
+#include "omnetpp/cpacket.h"
 
 namespace omnetpp {
 using namespace common;
@@ -773,9 +774,14 @@ void SendOnConnAnimation::begin()
     }
 }
 
+
 void SendOnConnAnimation::update()
 {
     MessageAnimation::update();
+
+    cMessage *msg = msgToUse();
+    if (!msg)
+        return;
 
     if (holding) {
         if (isEmpty() || holdExpired()) {
@@ -829,23 +835,25 @@ void SendOnConnAnimation::update()
         if (!isEmpty())
             requestAnimationSpeed(animSpeed);
 
+        bool visible = t1 > 0.0 && t2 < 1.0;
         t1 = clip(0.0, t1, 1.0);
         t2 = clip(0.0, t2, t1);
 
         for (auto p : messageItems) {
-            QLineF line = p.first->getConnectionLine(gate);
-            bool showAsLine = !trans.isZero();
-            p.second->setVisible(!(showAsLine && t1 == t2));
-            p.second->setLine(QLineF(line.pointAt(t1), line.pointAt(t2)), showAsLine);
-            p.second->setArrowheadEnabled(t1 < 1.0);
+            QLineF connLine = p.first->getConnectionLine(gate);
+            p.second->positionOntoLine(connLine, t1, t2, msg->isPacket() && static_cast<cPacket*>(msg)->isUpdate());
+            p.second->setVisible(visible);
         }
     }
 }
 
 void SendOnConnAnimation::addToInspector(Inspector *insp)
 {
-    if (!msgToUse())
+    cMessage *msg = msgToUse();
+    if (!msg)
         return;
+
+    bool isUpdatePacket = msg->isPacket() && static_cast<cPacket *>(msg)->isUpdate();
 
     cModule *mod = gate->getOwnerModule();
     if (gate->getType() == cGate::OUTPUT)
@@ -941,9 +949,16 @@ void SendDirectAnimation::update()
 {
     MessageAnimation::update();
 
+    cMessage *msg = msgToUse();
+    if (!msg)
+        return;
+
     auto path = findDirectPath(getSimulation()->getModule(srcModuleId), dest->getOwnerModule());
 
-    double t1, t2;
+    // the "forward", and "backward" end of the message line on the given (connection) line, range is 0.0 .. 1.0
+    double t1, t2; // typically t1 >= t2, otherwise the message would travel "backward"
+
+    bool visible = true;
 
     if (holding) {
         if (isEmpty() || holdExpired()) {
@@ -952,6 +967,7 @@ void SendDirectAnimation::update()
         }
 
         t1 = t2 = getHoldPosition();
+        visible = t1 > 0.0 && t2 < 1.0;
     }
     else {
         SimTime progr = simTime() - start;
@@ -961,8 +977,6 @@ void SendDirectAnimation::update()
             return;
         }
 
-        // the "forward", and "backward" end of the message line on the given (connection) line, range is 0.0 .. 1.0
-        double t1, t2; // typically t1 >= t2, otherwise the message would travel "backward"
 
         if (prop.isZero()) {
             // either the entire line is visible, or none of it
@@ -994,6 +1008,8 @@ void SendDirectAnimation::update()
         if (!isEmpty())
             requestAnimationSpeed(animSpeed);
 
+        visible = t1 > 0.0 && t2 < 1.0;
+
         t1 = clip(0.0, t1, 1.0);
         t2 = clip(0.0, t2, t1);
     }
@@ -1022,11 +1038,10 @@ void SendDirectAnimation::update()
                 if (!p.to)
                     dest = QPointF(src.x() + src.y() / 4 + 4, -16);
 
-                QLineF line(src, dest);
-                bool showAsLine = !trans.isZero();
-                m.second->setLine(QLineF(line.pointAt(t1), line.pointAt(t2)), showAsLine);
-                m.second->setVisible(!(showAsLine && t1 == t2));
-                m.second->setArrowheadEnabled(t1 < 1.0);
+                QLineF fullLine(src, dest);
+
+                m.second->positionOntoLine(fullLine, t1, t2, msg->isPacket() && static_cast<cPacket*>(msg)->isUpdate());
+                m.second->setVisible(visible);
             }
     }
 }
@@ -1041,11 +1056,13 @@ void SendDirectAnimation::end()
 
 void SendDirectAnimation::addToInspector(Inspector *insp)
 {
-    if (!msgToUse())
+    cMessage *msg = msgToUse();
+    if (!msg)
         return;
 
     auto path = findDirectPath(getSimulation()->getModule(srcModuleId), dest->getOwnerModule());
 
+    bool isUpdatePacket = msg->isPacket() && static_cast<cPacket *>(msg)->isUpdate();
     for (auto & segment : path) {
         cModule *from = segment.from;
         cModule *to = segment.to;
