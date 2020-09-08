@@ -188,45 +188,58 @@ cChannel::Result cDatarateChannel::processMessage(cMessage *msg, const SendOptio
         // indicate that packet has traversed a transmission channel
         pkt->setTxChannelEncountered();
 
-        // compute duration
+        // compute duration and remainingDuration
         simtime_t duration;
-        if (options.duration_ != SendOptions::DURATION_UNSPEC) {
-            duration = options.duration_;
-            if (duration < SIMTIME_ZERO)
-                throw cRuntimeError(this, "Cannot send packet (%s)%s: Negative duration (%s) specified", msg->getClassName(), msg->getName(), duration.ustr().c_str());
-        }
-        else if (flags & FL_DATARATE_PRESENT)
-            duration = pkt->getBitLength() / datarate;
-        else if (isUpdate)
-            duration = SendOptions::DURATION_UNSPEC; // we might be able to compute it as elapsed+remaining transmission time
-        else
-            throw cRuntimeError(this, "Cannot send packet (%s)%s: Unknown duration: No channel datarate, and no explicit duration supplied in the send call", msg->getClassName(), msg->getName());
-
-        // compute remainingDuration
         simtime_t remainingDuration;
+        bool durationSpecified  = options.duration_ != SendOptions::DURATION_UNSPEC;
         if (!isUpdate) {
+            if (durationSpecified) {
+                duration = options.duration_;
+                if (duration < SIMTIME_ZERO)
+                    throw cRuntimeError(this, "Cannot send packet (%s)%s: Negative duration (%s) specified", msg->getClassName(), msg->getName(), duration.ustr().c_str());
+            }
+            else if (flags & FL_DATARATE_PRESENT)
+                duration = pkt->getBitLength() / datarate;
+            else
+                throw cRuntimeError(this, "Cannot send packet (%s)%s: Unknown duration: No channel datarate, and no explicit duration supplied in the send call", msg->getClassName(), msg->getName());
             lastOrigPacketId = pkt->getId();
             txStartTime = t;
             remainingDuration = duration;
         }
-        else {
+        else { // update
+            bool remainingDurationSpecified  = options.remainingDuration != SendOptions::DURATION_UNSPEC;
+            if (durationSpecified) {
+                duration = options.duration_;
+                if (duration < SIMTIME_ZERO)
+                    throw cRuntimeError(this, "Cannot send transmission update packet (%s)%s: Negative duration (%s) specified", msg->getClassName(), msg->getName(), duration.ustr().c_str());
+            }
+
+            if (remainingDurationSpecified) {
+                remainingDuration = options.remainingDuration;
+                if (remainingDuration < SIMTIME_ZERO)
+                    throw cRuntimeError(this, "Cannot send transmission update packet (%s)%s: Negative remainingDuration (%s) specified", msg->getClassName(), msg->getName(), remainingDuration.ustr().c_str());
+            }
+
             simtime_t elapsedTxTime = t - txStartTime;
-            if (options.remainingDuration == SendOptions::DURATION_UNSPEC) {
-                if (duration == SendOptions::DURATION_UNSPEC)
-                    throw cRuntimeError(this, "Cannot send transmission update packet (%s)%s: Unknown duration: No channel datarate and no explicit duration or remainingDuration supplied in the send call", msg->getClassName(), msg->getName());
+
+            if (durationSpecified && remainingDurationSpecified) {
+                if (duration != elapsedTxTime + remainingDuration)
+                    throw cRuntimeError(this, "Cannot send transmission update packet (%s)%s: Both duration and remainingDuration are specified, and duration (%s) != elapsedTxTime (%s) + remainingDuration (%s)",
+                            msg->getClassName(), msg->getName(), duration.ustr().c_str(), elapsedTxTime.ustr().c_str(), remainingDuration.ustr().c_str());
+            }
+            else if (durationSpecified) { // but not remainingDuration
                 remainingDuration = duration - elapsedTxTime;
                 if (remainingDuration < SIMTIME_ZERO)
                     throw cRuntimeError(this, "Cannot send transmission update packet (%s)%s: Duration (%s) is smaller than already elapsed transmission time (%s)", msg->getClassName(), msg->getName(), duration.ustr().c_str(), elapsedTxTime.ustr().c_str());
             }
-            else {
-                remainingDuration = options.remainingDuration;
-                if (remainingDuration < SIMTIME_ZERO)
-                    throw cRuntimeError(this, "Cannot send transmission update packet (%s)%s: Negative remainingDuration (%s) specified", msg->getClassName(), msg->getName(), remainingDuration.ustr().c_str());
-                if (duration == SendOptions::DURATION_UNSPEC)
-                    duration = elapsedTxTime + remainingDuration;
-                else if (duration != elapsedTxTime + remainingDuration)
-                    throw cRuntimeError(this, "Cannot send transmission update packet (%s)%s: Both duration and remainingDuration are specified, and duration (%s) != elapsedTxTime (%s) + remainingDuration (%s)",
-                            msg->getClassName(), msg->getName(), duration.ustr().c_str(), elapsedTxTime.ustr().c_str(), remainingDuration.ustr().c_str());
+            else if (remainingDurationSpecified) { // but not duration
+                duration = elapsedTxTime + remainingDuration;
+            }
+            else { // neither
+                if (!(flags & FL_DATARATE_PRESENT))
+                    throw cRuntimeError(this, "Cannot send transmission update packet (%s)%s: Unknown duration: No channel datarate and no explicit duration or remainingDuration supplied in the send call", msg->getClassName(), msg->getName());
+                duration = pkt->getBitLength() / datarate;
+                remainingDuration = duration - elapsedTxTime;
             }
         }
 
