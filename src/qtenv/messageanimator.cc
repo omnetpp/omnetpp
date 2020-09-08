@@ -244,11 +244,13 @@ void MessageAnimator::endSend(cMessage *msg)
     ASSERT2(!(currentSending->hops.empty()), "No messageSendDirect() nor messageSendHop() was called between beginSend() and endSend()");
 
     bool isUpdatePacket = false;
+    long origPacketId = -1;
     if (msg->isPacket()) {
         cPacket *packet = static_cast<cPacket *>(msg);
         if (packet->isUpdate()) {
             cutUpdatedPacketAnimation(packet);
             isUpdatePacket = true;
+            origPacketId = packet->getOrigPacketId();
         }
     }
 
@@ -341,6 +343,8 @@ void MessageAnimator::endSend(cMessage *msg)
         // otherwise after the method.
         // XXX maybe split it in two, so if the first few parts are instantaneous, play them, and continue later?
         MessageSendKey key = MessageSendKey::fromMessage(msg);
+        if (isUpdatePacket)
+            key.messageId = origPacketId;
         animations.putMulti(key, sendAnim);
     }
 
