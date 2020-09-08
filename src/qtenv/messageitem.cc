@@ -40,12 +40,6 @@ void MessageItemUtil::setupMessageCommon(MessageItem *mi, cMessage *msg)
         label += QString("(") + getObjectShortTypeName(msg) + ")";
     if (opt->animationMsgNames)
         label += msg->getFullName();
-
-    if (msg->isPacket()) {
-        cPacket *pack = static_cast<cPacket *>(msg);
-        if (pack->isUpdate())
-            label += ("\n(updating #" + std::to_string(pack->getOrigPacketId()) + ")").c_str();
-    }
     mi->setText(label);
 }
 
