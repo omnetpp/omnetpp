@@ -570,20 +570,28 @@ void MessageAnimator::cutUpdatedPacketAnimation(cPacket *updatePacket)
     if (animations.containsKey(key)) {
         // This getLast() will make sure that always the last (of the previous ones) animation
         // will be cut short (in case this is not the first update packet of this transmission).
-        auto group = dynamic_cast<AnimationGroup*>(animations.getLast(key));
-        ASSERT(group != nullptr);
+        Animation *lastAnim = animations.getLast(key);
 
-        SimTime duration;
-        for (Animation *part : group->getParts())
-            if (MessageAnimation *msgAnim = dynamic_cast<MessageAnimation *>(part)) {
-                duration = simTime() - msgAnim->getStartTime();
-                break;
-            }
+        auto group = dynamic_cast<AnimationGroup*>(lastAnim);
+        auto sequence = dynamic_cast<AnimationSequence*>(lastAnim);
+        ASSERT(group != nullptr || sequence != nullptr);
 
-        for (Animation *part : group->getParts())
-            if (MessageAnimation *msgAnim = dynamic_cast<MessageAnimation *>(part))
-                if (!msgAnim->getTransmissionDuration().isZero())
-                    msgAnim->setTransmissionDuration(duration);
+        if (group) {
+            SimTime duration;
+            for (Animation *part : group->getParts())
+                if (MessageAnimation *msgAnim = dynamic_cast<MessageAnimation *>(part)) {
+                    duration = simTime() - msgAnim->getStartTime();
+                    break;
+                }
+
+            for (Animation *part : group->getParts())
+                if (MessageAnimation *msgAnim = dynamic_cast<MessageAnimation *>(part))
+                    if (!msgAnim->getTransmissionDuration().isZero())
+                        msgAnim->setTransmissionDuration(duration);
+        }
+
+        // we have nothing to do in case it is a sequence, that only
+        // animates zero-length (non-transmission) sends anyway
     }
     else {
         // The animation for the updated packet has already ended, or this is a
