@@ -57,8 +57,6 @@ private:
     int maxExponentX;
     int axisY;
     QVector<int> messageXCoords;
-    QVector<QColor> msgKindFillColors;
-    QVector<QColor> msgKindBorderColors;
 
     QVector<cMessage *> getMessages();
     bool matches(cMessage *object);

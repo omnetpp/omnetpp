@@ -28,8 +28,8 @@ namespace qtenv {
 
 // -------- MessageItemUtil --------
 
-
-const QVector<QColor> MessageItemUtil::msgKindColors = {"red", "green", "blue", "white", "yellow", "cyan", "magenta", "black"};
+// these colors were chosen to be consistent with the tool and object icons
+const QVector<QColor> MessageItemUtil::msgKindColors = {"#C00000", "#379143", "#6060ff", "#f0f0f0", "#c0c000", "#00c0c0", "#c000c0", "#404040"};
 
 void MessageItemUtil::setupMessageCommon(MessageItem *mi, cMessage *msg)
 {
@@ -90,7 +90,7 @@ void MessageItemUtil::setupSymbolFromDisplayString(SymbolMessageItem *mi, cMessa
     // no zoom factor, it doesn't affect messages
     mi->setImageSizeFactor(imageSizeFactor);
 
-    QColor kindColor = msgKindColors[msg->getKind() % msgKindColors.size()];
+    QColor kindColor = MessageItemUtil::getColorForMessageKind(msg->getKind());
 
     if (!ds.str()[0]) {  // default little red dot
         QColor color = opt->animationMsgColors ? kindColor : "red";
@@ -152,9 +152,17 @@ void MessageItemUtil::setupSymbolFromDisplayString(SymbolMessageItem *mi, cMessa
     }
 }
 
+// -------- MessageItemUtil --------
+
+const QColor& MessageItemUtil::getColorForMessageKind(int messageKind)
+{
+    int colorIndex = messageKind % msgKindColors.size();
+    if (colorIndex < 0)
+        colorIndex += msgKindColors.size();
+    return msgKindColors[colorIndex];
+}
 
 // -------- MessageItem --------
-
 
 MessageItem::MessageItem(QGraphicsItem *parent) :
     QGraphicsObject(parent)

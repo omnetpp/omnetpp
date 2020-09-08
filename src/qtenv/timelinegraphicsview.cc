@@ -25,6 +25,7 @@
 #include "mainwindow.h"
 #include "qtutil.h"
 #include "graphicsitems.h"
+#include "messageitem.h"
 
 #include <QDebug>
 
@@ -44,17 +45,7 @@ TimeLineGraphicsView::TimeLineGraphicsView() :
     defaultNumMessageLabelRows(2)
 {
     messageLabelFont = tickLabelFont = getQtenv()->getTimelineFont();
-    QVector<QColor> colorList;
-    colorList.append(Qt::GlobalColor::red);
-    colorList.append(Qt::GlobalColor::green);
-    colorList.append(Qt::GlobalColor::blue);
-    colorList.append(Qt::GlobalColor::white);
-    colorList.append(Qt::GlobalColor::yellow);
-    colorList.append(Qt::GlobalColor::cyan);
-    colorList.append(Qt::GlobalColor::magenta);
-    colorList.append(Qt::GlobalColor::black);
-    msgKindFillColors = colorList;
-    msgKindBorderColors = colorList;
+
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);  // TODO it can still be scrolled with the mouse however...
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 }
@@ -404,10 +395,10 @@ bool TimeLineGraphicsView::matches(cMessage *object)
 
 void TimeLineGraphicsView::drawMessageSymbol(cMessage *message, bool active, int x, int y)
 {
-    int colorIndex = message->getKind() & 0x07;  // not "x % 8" because it yields negative numbers for negative msgkind!
-    QColor brushColor = msgKindFillColors[colorIndex];
+    QColor brushColor = MessageItemUtil::getColorForMessageKind(message->getKind());
+    QColor penColor = brushColor;
+
     brushColor.setAlpha(active ? 255 : 40);
-    QColor penColor = msgKindBorderColors[colorIndex];
     penColor.setAlpha(active ? 255 : 40);
 
     QGraphicsItem *ellipse = scene()->addEllipse(x-2, y-4, 5, 9, QPen(penColor), QBrush(brushColor));

@@ -37,12 +37,12 @@ class SymbolMessageItem;
 
 class QTENV_API MessageItemUtil {
     static const QVector<QColor> msgKindColors;
-
     static void setupMessageCommon(MessageItem *mi, cMessage *msg);
 
 public:
     static void setupLineFromDisplayString(LineMessageItem *mi, cMessage *msg);
     static void setupSymbolFromDisplayString(SymbolMessageItem *mi, cMessage *msg, double imageSizeFactor);
+    static const QColor& getColorForMessageKind(int messageKind);
 };
 
 /**
