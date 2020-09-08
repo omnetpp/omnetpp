@@ -147,6 +147,7 @@ protected:
     static cMessagePrinter *chooseMessagePrinter(cMessage *msg);
 
     const cMessagePrinter::Options *messagePrinterOptions;
+    static SimTime referenceTime;
 
     bool isMatchingMessageSend(const LogBuffer::MessageSend& msgSend);
     std::vector<int> findRelevantHopModuleIds(const LogBuffer::MessageSend& msgSend, bool *lastHopIncluded = nullptr);
@@ -163,6 +164,9 @@ public:
     QString getLineText(LogBuffer::Entry *entry, int lineIndex) override;
 
     cMessage *getMessageForLine(LogBuffer::Entry *entry, int lineIndex) override;
+
+    static void setReferenceTime(SimTime rt);
+    static SimTime getReferenceTime() { return referenceTime; }
 };
 
 

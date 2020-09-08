@@ -728,6 +728,13 @@ QString stripFormatting(const QString& input)
     return output;
 }
 
+QString stripSuffixes(const QString& from, const QString& suffix)
+{
+    QString result = from;
+    while (result.endsWith(suffix))
+        result = result.left(result.length() - suffix.length());
+    return result;
+}
 
 } // namespace qtenv
 } // namespace omnetpp

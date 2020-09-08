@@ -304,7 +304,7 @@ void LogInspector::fastRunUntil()
 void LogInspector::refresh()
 {
     Inspector::refresh();
-    textWidget->onContentChanged();
+    contentProvider->refresh();
     textWidget->update();
     textWidget->viewport()->update();
 }
@@ -355,6 +355,32 @@ void LogInspector::onRightClicked(QPoint globalPos, int lineIndex, int column)
     auto msg = (cMessage *)textWidget->getContentProvider()->getUserData(lineIndex);
     if (msg) {
         QMenu *menu = InspectorUtil::createInspectorContextMenu(msg, this);
+
+        if (mode == LogInspector::MESSAGES) {
+            menu->addSeparator();
+            menu->addAction("Set sending time as reference", [=]() {
+                EventEntryMessageLinesProvider::setReferenceTime(msg->getSendingTime());
+            });
+
+            SimTime refTime = EventEntryMessageLinesProvider::getReferenceTime();
+            if (refTime > 0) {
+                QString refTimeStr = refTime.format(SimTime::getScaleExp(), ".", "'").c_str();
+                refTimeStr = stripSuffixes(refTimeStr, "'000");
+                menu->addAction("Clear time reference (=" + refTimeStr + ")", [=]() {
+                    EventEntryMessageLinesProvider::setReferenceTime(0);
+                });
+            }
+
+            menu->addSeparator();
+            QAction *reverseHopsActions = menu->addAction("Allow backward arrows for hops", [=](bool checked) {
+                getQtenv()->opt->allowBackwardArrowsForHops = checked;
+                getQtenv()->refreshInspectors();
+            });
+
+            reverseHopsActions->setCheckable(true);
+            reverseHopsActions->setChecked(getQtenv()->opt->allowBackwardArrowsForHops);
+        }
+
         menu->exec(globalPos);
     }
 }

@@ -17,11 +17,16 @@
 #include "textviewerproviders.h"
 #include "common/stlutil.h"
 #include "common/sgr_macro.h"
+#include "qtutil.h"
 #include "qtenv.h"
 #include <QDebug>
 
 namespace omnetpp {
 namespace qtenv {
+
+// must use the default ctor because it is static
+SimTime EventEntryMessageLinesProvider::referenceTime;
+
 
 QStringList ModuleOutputContentProvider::gatherEnabledColumnNames()
 {
@@ -543,24 +548,82 @@ int EventEntryMessageLinesProvider::getNumLines(LogBuffer::Entry *entry)
     return n;
 }
 
+static inline int getNumWholeDigits(double x)
+{
+    // even 0 is one digit
+    return std::max(1, (int)std::ceil(std::log10(std::floor(std::abs(x)) + 1)));
+}
+
+static inline int getLengthWithSeparators(int digits)
+{
+    int numGroups = std::ceil(digits / 3.0);
+    return digits + std::max(0, numGroups - 1);
+}
+
 QString EventEntryMessageLinesProvider::getLineText(LogBuffer::Entry *entry, int lineIndex)
 {
+    // ---- formatting the Event# column ----
+    int eventNumberLength = getNumWholeDigits(cSimulation::getActiveSimulation()->getEventNumber()) + 1; // + 1 is for the #
+    QString eventNumberText = ("#" + QString::number(entry->eventNumber)).rightJustified(eventNumberLength);
+
+    // ---- formatting the Time column ----
+    SimTime refTime = getReferenceTime();
+    SimTime timeToPrint = entry->simtime;
+    bool timeIsReference = false;
+
+    if (refTime > 0) {
+        if (timeToPrint == refTime)
+            timeIsReference = true;
+        else
+            timeToPrint -= refTime;
+    }
+
+    // between groups of 3
+    const char *digitSeparator = SGR(FG_WHITE) "'" SGR(FG_DEFAULT); // FG_WHITE is actually gray
+
+    QString simTimeText = timeToPrint.format(SimTime::getScaleExp(), ".", digitSeparator).c_str();
+
+    if (refTime > 0) {
+        if (timeIsReference)
+            // timeToPrint was not modified
+            simTimeText = "=" + simTimeText;
+        else if (timeToPrint > 0) // already relative
+            simTimeText = "+" + simTimeText;
+        // else nothing, "-" is already there if needed
+    }
+
+    // make it decimal-justified
+    int maxNumWholeDigits = (refTime > 0)
+        // In case of relative display, get the max. of the numDigits for:
+        //    refTime: for the "=" line
+        //    simTime()-refTime: for the "+" lines
+        //    (the length of "-" lines is covered by the "=" line...)
+        ? maxNumWholeDigits = std::max(getNumWholeDigits(refTime.dbl()), getNumWholeDigits((simTime() - refTime).dbl()))
+        // we assume that the current simTime() is a maximum for the absolute times that can occur
+        : maxNumWholeDigits = getNumWholeDigits(simTime().dbl());
+
+    int numWholeDigits = getNumWholeDigits(std::abs(timeToPrint.dbl()));
+
+    int maxNumDigitsWithSep = getLengthWithSeparators(maxNumWholeDigits);
+    int numDigitsWithSep = getLengthWithSeparators(numWholeDigits);
+    ASSERT(maxNumDigitsWithSep >= numDigitsWithSep);
+    simTimeText = QString(" ").repeated(maxNumDigitsWithSep - numDigitsWithSep) + simTimeText;
+
+    // remove all trailing '000 groups (incl. escape sequences)
+    QString suffix = QString(digitSeparator) + "000";
+    simTimeText = stripSuffixes(simTimeText, suffix);
+
+    // highlight the reference time
+    if (timeIsReference)
+        simTimeText = SGR(BOLD) + simTimeText + SGR(REGULAR);
+
+    // ---- putting the content of the fixed columns together ----
     LogBuffer::MessageSend& messageSend = messageSendForLineIndex(entry, lineIndex);
     cMessage *msg = messageSend.msg;
 
-    QString eventNumber = QString::number(entry->eventNumber);
+    QString text = QString(SGR(FG_WHITE) "%1\t" SGR(FG_DEFAULT) "%2\t" SGR(FG_GREEN) "%3\t"                  SGR(FG_RED) "%4\t" SGR(FG_DEFAULT))
+                      .arg(               eventNumberText,       simTimeText,         getRelevantHopsString(messageSend), msg->getFullName());
 
-    QString text = QString(
-                "\x1b[37m" // gray
-                "#%1\t%2\t" // first and second arg, and tabs
-                "\x1b[32m" // green
-                "%3\t" //
-                "\x1b[31m" // red
-                "%4\t"
-                "\x1b[0m" // reset
-                ).arg(
-                eventNumber, entry->simtime.str().c_str(),
-                getRelevantHopsString(messageSend), msg->getFullName());
 
     cMessagePrinter *printer = chooseMessagePrinter(msg);
     std::stringstream os;
@@ -584,6 +647,13 @@ cMessage *EventEntryMessageLinesProvider::getMessageForLine(LogBuffer::Entry *en
 {
     return messageSendForLineIndex(entry, lineIndex).msg;
 }
+
+void EventEntryMessageLinesProvider::setReferenceTime(SimTime rt)
+{
+    referenceTime = rt;
+    getQtenv()->refreshInspectors();
+}
+
 
 ModulePathsEventEntryFilter::ModulePathsEventEntryFilter(const QStringList& moduleFullPaths, ComponentHistory *componentHistory)
     : moduleFullPaths(moduleFullPaths), componentHistory(componentHistory)
