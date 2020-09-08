@@ -161,4 +161,10 @@
 /samples/petrinets/,                 ./petrinets -f omnetpp.ini -c ExampleWorkflow -r 1,        1s,         fe4b-4c11/tplx,PASS,
 #/samples/petrinets/,                 ./petrinets -f omnetpp.ini -c MailboxBounded -r 0,       1s,         1669-90c4/tplx,PASS, # Stays in t=0s forever; same for most other models
 
+/samples/wiredphy/,                  ./wiredphy -f omnetpp.ini -c StandardEnd -r 0,                      100s,         fa6c-f215/tplx,PASS,
+/samples/wiredphy/,                  ./wiredphy -f omnetpp.ini -c StandardEndWithPreemption -r 0,        100s,         8934-7019/tplx,PASS,
+/samples/wiredphy/,                  ./wiredphy -f omnetpp.ini -c StandardStart -r 0,                    100s,         fc6f-5468/tplx,PASS,
+/samples/wiredphy/,                  ./wiredphy -f omnetpp.ini -c StandardStartWithPreemption -r 0,      100s,         e098-ea50/tplx,PASS,
+/samples/wiredphy/,                  ./wiredphy -f omnetpp.ini -c StandardStartWithCutthrough -r 0,      100s,         1db0-58bc/tplx,PASS,
+/samples/wiredphy/,                  ./wiredphy -f omnetpp.ini -c StandardStartWithPreemptionAndCutthrough -r 0, 100s, 3f0f-d1c4/tplx,PASS,
 
