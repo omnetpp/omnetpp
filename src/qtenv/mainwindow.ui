@@ -425,6 +425,7 @@ Total number of messages created since start of the simulation</string>
    <addaction name="actionPreferences"/>
    <addaction name="separator"/>
    <addaction name="actionRecordVideo"/>
+   <addaction name="actionShowAnimationParams"/>
   </widget>
   <action name="actionQuit">
    <property name="text">
