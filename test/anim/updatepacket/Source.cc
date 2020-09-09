@@ -89,7 +89,6 @@ void SourceBase::initialize()
     if (file.is_open()) {
         std::string line;
         while (std::getline(file, line)) {
-
             // strip comments
             int hashmark = line.find("#");
             if (hashmark != std::string::npos)
@@ -100,11 +99,9 @@ void SourceBase::initialize()
                 continue;
 
             txInfos.push_back(TxInfo(line));
-
         }
         file.close();
     }
-
 }
 
 void SourceBase::handleMessage(cMessage *msg)
@@ -123,28 +120,29 @@ void SourceBase::handleMessage(cMessage *msg)
         nextTxIndex %= txInfos.size();
         nextUpdateIndex = 0;
 
-        if (curTxInfo->updates.empty()) {
+        if (curTxInfo->updates.empty())
+            // no updates for this transmission, the next thing to do is to transmit the next packet
             scheduleAt(simTime() + 1, nextTxTimer);
-        }
-        else {
+        else
+            // the next thing to do is to update this transmission
             scheduleAt(simTime() + curTxInfo->updates[0].first, nextUpdateTimer);
-        }
     }
     else if (msg == nextUpdateTimer) {
-
         cPacket *packet = new cPacket(("update-" + std::to_string(nextTxIndex-1) + "-" + std::to_string(nextUpdateIndex)).c_str());
-        outputPacket(packet, SendOptions().updateTx(lastSentOrigPacketId, curTxInfo->updates[nextUpdateIndex].second)
-            .duration(simTime() - lastTxStartTime + curTxInfo->updates[nextUpdateIndex].second) // <-- XXX: WHY DOES THIS HAVE TO BE HERE?!?!
+        SimTime remainingDuration = curTxInfo->updates[nextUpdateIndex].second;
+        outputPacket(packet, SendOptions()
+            .updateTx(lastSentOrigPacketId, remainingDuration)
+            .duration(simTime() - lastTxStartTime + remainingDuration) // This only needs to be here for the sendDirect() case
         );
 
         ++nextUpdateIndex;
 
-        // we are done with this transmission, on to the next one
-        if (nextUpdateIndex == curTxInfo->updates.size()) {
+        if (nextUpdateIndex == curTxInfo->updates.size())
+            // we are done with this transmission, on to the next one
             scheduleAt(simTime() + 1, nextTxTimer);
-        } else {
+        else
+            // this transmission has some further update(s)
             scheduleAt(simTime() + curTxInfo->updates[nextUpdateIndex].first, nextUpdateTimer);
-        }
     }
     else {
         ASSERT(false);
