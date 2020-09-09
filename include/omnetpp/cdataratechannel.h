@@ -45,19 +45,17 @@ namespace omnetpp {
  * (see SendOptions). If both datarate and explicit duration are present,
  * the explicit duration takes precedence.
  *
- * allowing to override the duration is useful for a few cases: account for
- * artifacts in packets (preamble, padding, PHY-layer header with different
- * datarate, etc) and for aborting at arbitrary time (i.e. at a fractional bit time).
+ * Allowing to override the duration is useful for a few cases: to account for
+ * certain parts in the frame (preamble, padding, PHY-layer header with different
+ * datarate, etc.) and for aborting at arbitrary time (for example at a
+ * fractional bit time).
  *
- * The channel supports updating transmissions transmission update packets (see SendOptions). The
- * remainingDuration can be automatic (computed as duration minus elapsed transmission time),
- * or explicit.
- *
- * sanity checks exists (duration/remainingDuration cannot be negative, duration >= remainingDuration, etc)
- *
- * how bit errors/packet errors are computed
- *
- * how to override duration computation
+ * The channel supports updating the ongoing transmission (see SendOptions).
+ * Duration and remainingDuration are optional, as long as the missing one(s)
+ * can be computed from the others. For example, duration can be computed as
+ * the elapsed transmission time plus remainingDuration. Sanity checks
+ * (e.g. duration/remainingDuration cannot be negative, duration >=
+ * remainingDuration, etc.) are included.
  *
  * @ingroup SimCore
  */
