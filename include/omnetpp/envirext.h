@@ -203,24 +203,28 @@ class SIM_API cIOutputScalarManager : public cObject, public cISimulationLifecyc
 
     /**
      * Records a double scalar result, in a default configuration into the scalar result file.
+     * The return value indicates whether the recording has actually taken place (true=yes).
      */
-    virtual void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=nullptr) = 0;
+    virtual bool recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=nullptr) = 0;
 
     /**
      * Records a histogram or statistic object into the scalar result file.
      * This operation may invoke the setUpBins() method on the histogram object.
+     * The return value indicates whether the recording has actually taken place (true=yes).
      */
-    virtual void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=nullptr) = 0;
+    virtual bool recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=nullptr) = 0;
 
     /**
      * Records a module or channel parameter, in a default configuration into the scalar result file.
+     * The return value indicates whether the recording has actually taken place (true=yes).
      */
-    virtual void recordParameter(cPar *par) = 0;
+    virtual bool recordParameter(cPar *par) = 0;
 
     /**
      * Records the runtime NED type of module or channel, in a default configuration into the scalar result file.
+     * The return value indicates whether the recording has actually taken place (true=yes).
      */
-    virtual void recordComponentType(cComponent *component) = 0;
+    virtual bool recordComponentType(cComponent *component) = 0;
 
     /**
      * Returns the output scalar file name. Returns nullptr if this object is not

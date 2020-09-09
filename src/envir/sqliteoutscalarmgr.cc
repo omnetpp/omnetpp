@@ -96,10 +96,10 @@ void SqliteOutputScalarManager::closeFile()
     writer.close();
 }
 
-void SqliteOutputScalarManager::recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes)
+bool SqliteOutputScalarManager::recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes)
 {
     if (state == ENDED)
-        return;    // ignore writes during network teardown
+        return false;    // ignore writes during network teardown
 
     Assert(state == STARTED || state == OPENED);
 
@@ -107,21 +107,24 @@ void SqliteOutputScalarManager::recordScalar(cComponent *component, const char *
         openFileForRun();
 
     if (isBad())
-        return;
+        return false;
 
     if (!name || !name[0])
         name = "(unnamed)";
 
     std::string componentFullPath = component->getFullPath();
     bool enabled = getEnvir()->getConfig()->getAsBool((componentFullPath+"."+name).c_str(), CFGID_SCALAR_RECORDING);
-    if (enabled)
-        writer.recordScalar(componentFullPath, name, value, ResultFileUtils::convertMap(attributes));
+    if (!enabled)
+        return false;
+
+    writer.recordScalar(componentFullPath, name, value, ResultFileUtils::convertMap(attributes));
+    return true;
 }
 
-void SqliteOutputScalarManager::recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes)
+bool SqliteOutputScalarManager::recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes)
 {
     if (state == ENDED)
-        return;    // ignore writes during network teardown
+        return false;    // ignore writes during network teardown
 
     Assert(state == STARTED || state == OPENED);
 
@@ -129,7 +132,7 @@ void SqliteOutputScalarManager::recordStatistic(cComponent *component, const cha
         openFileForRun();
 
     if (isBad())
-        return;
+        return false;
 
     if (!name)
         name = statistic->getFullName();
@@ -141,7 +144,7 @@ void SqliteOutputScalarManager::recordStatistic(cComponent *component, const cha
     std::string objectFullPath = componentFullPath + "." + name;
     bool enabled = getEnvir()->getConfig()->getAsBool(objectFullPath.c_str(), CFGID_SCALAR_RECORDING);
     if (!enabled)
-        return;
+        return false;
 
     Statistics stats;
     if (!statistic->isWeighted())
@@ -171,12 +174,13 @@ void SqliteOutputScalarManager::recordStatistic(cComponent *component, const cha
 
     if (!savedAsHistogram)
         writer.recordStatistic(componentFullPath, name, stats, ResultFileUtils::convertMap(attributes));
+    return true;
 }
 
-void SqliteOutputScalarManager::recordParameter(cPar *par)
+bool SqliteOutputScalarManager::recordParameter(cPar *par)
 {
     if (state == ENDED)
-        return;    // ignore writes during network teardown
+        return false;    // ignore writes during network teardown
 
     Assert(state == STARTED || state == OPENED);
 
@@ -184,19 +188,22 @@ void SqliteOutputScalarManager::recordParameter(cPar *par)
         openFileForRun();
 
     if (isBad())
-        return;
+        return false;
 
     std::string componentFullPath = par->getOwner()->getFullPath();
     const char *name = par->getName();
     bool enabled = getEnvir()->getConfig()->getAsBool((componentFullPath+"."+name).c_str(), CFGID_PARAM_RECORDING);
-    if (enabled)
-        writer.recordParameter(componentFullPath, name, par->str(), ResultFileUtils::convertProperties(par->getProperties()));
+    if (!enabled)
+        return false;
+
+    writer.recordParameter(componentFullPath, name, par->str(), ResultFileUtils::convertProperties(par->getProperties()));
+    return true;
 }
 
-void SqliteOutputScalarManager::recordComponentType(cComponent *component)
+bool SqliteOutputScalarManager::recordComponentType(cComponent *component)
 {
     if (state == ENDED)
-        return;    // ignore writes during network teardown
+        return false;    // ignore writes during network teardown
 
     Assert(state == STARTED || state == OPENED);
 
@@ -204,15 +211,17 @@ void SqliteOutputScalarManager::recordComponentType(cComponent *component)
         openFileForRun();
 
     if (isBad())
-        return;
+        return false;
 
     std::string componentFullPath = component->getFullPath();
     const char *name = "typename";
     bool enabled = getEnvir()->getConfig()->getAsBool((componentFullPath+"."+name).c_str(), CFGID_PARAM_RECORDING);
-    if (enabled) {
-        const char *nedType = component->getComponentType()->getFullName();
-        writer.recordParameter(componentFullPath, name, nedType, StringMap());
-    }
+    if (!enabled)
+        return false;
+
+    const char *nedType = component->getComponentType()->getFullName();
+    writer.recordParameter(componentFullPath, name, nedType, StringMap());
+    return true;
 }
 
 void SqliteOutputScalarManager::flush()

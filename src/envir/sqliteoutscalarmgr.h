@@ -80,28 +80,28 @@ class SqliteOutputScalarManager : public cIOutputScalarManager
     /**
      * Records a double scalar result into the scalar result file.
      */
-    virtual void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=nullptr) override;
+    virtual bool recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=nullptr) override;
 
     /**
      * Records a histogram or statistic object into the scalar result file.
      * This operation may invoke the setUpBins() method on the histogram object.
      */
-    virtual void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=nullptr) override;
+    virtual bool recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=nullptr) override;
 
     /**
      * Records a module or channel parameter into the scalar result file.
      */
-    virtual void recordParameter(cPar *par) override;
+    virtual bool recordParameter(cPar *par) override;
 
     /**
      * Records the runtime NED type of module or channel into the scalar result file.
      */
-    virtual void recordComponentType(cComponent *component) override;
+    virtual bool recordComponentType(cComponent *component) override;
 
     /**
      * Returns the file name.
      */
-    const virtual char* getFileName() const override {return fname.c_str();}
+    const virtual char *getFileName() const override {return fname.c_str();}
 
     /**
      * Calls fflush().
