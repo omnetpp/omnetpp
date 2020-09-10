@@ -303,7 +303,7 @@ class SIM_API cComponent : public cDefaultOwner //implies noncopyable
      * those related to visualization, may be declared mutable to allow that).
      *
      * Qtenv invokes refreshDisplay() in Step and Run mode, after each event;
-     * in Fast Run and Express Run mode, every time the screen is refereshed,
+     * in Fast Run and Express Run mode, every time the screen is refreshed,
      * which is typically on the order of once per second.
      * Cmdenv does not invoke refreshDisplay() at all.
      *
@@ -314,6 +314,22 @@ class SIM_API cComponent : public cDefaultOwner //implies noncopyable
      * not only the one which has just processed an event.)
      */
     virtual void refreshDisplay() const;
+
+    /**
+     * This method is called when a module tree or a channel object is deleted
+     * (see cModule::deleteModule() and cGate::disconnect()) before any change
+     * is done. The default implementation recurses on all modules and channels
+     * that are going to be deleted. This method can be viewed as a dual of
+     * component initialization, i.e. the initialize() function.
+     *
+     * The argument contains the module on which deleteModule() was called,
+     * or the channel which being deleted e.g. due to gate disconnection.
+     *
+     * Overriding this method allows one to unsubscribe from model change
+     * notifications or perform other deinitialization tasks to simplify
+     * the job of the destructors.
+     */
+    virtual void preDelete(cComponent *root);
     //@}
 
   public:

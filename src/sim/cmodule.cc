@@ -129,6 +129,8 @@ void cModule::deleteModule()
     if (activeModule != nullptr && this->containsModule(activeModule))
         throw cDeleteModuleException(this);
 
+    preDelete(this);
+
     doDeleteModule();
 }
 
@@ -207,6 +209,14 @@ void cModule::releaseListeners()
         (*it)->releaseLocalListeners();
     for (SubmoduleIterator it(this); !it.end(); ++it)
         (*it)->releaseListeners();
+}
+
+void cModule::preDelete(cComponent *root)
+{
+    for (ChannelIterator it(this); !it.end(); ++it)
+        (*it)->preDelete(root);
+    for (SubmoduleIterator it(this); !it.end(); ++it)
+        (*it)->preDelete(root);
 }
 
 void cModule::forEachChild(cVisitor *v)

@@ -357,6 +357,9 @@ void cGate::disconnect()
     if (!nextGate)
         return;
 
+    if (channel)
+        channel->preDelete(channel);
+
     // notify pre-change listeners
     cModule *mod = getOwnerModule();
     if (mod->hasListeners(PRE_MODEL_CHANGE)) {

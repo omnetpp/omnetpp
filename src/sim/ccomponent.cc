@@ -156,6 +156,10 @@ void cComponent::refreshDisplay() const
     // Can be redefined by the user.
 }
 
+void cComponent::preDelete(cComponent *root)
+{
+}
+
 cComponentType *cComponent::getComponentType() const
 {
     if (!componentType)
