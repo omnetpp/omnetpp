@@ -25,7 +25,7 @@ pdf: $(ALLTEX) $(PDFPICS) figures/*.png cover
 	rm -f *.aux *.idx *.ilg *.ind *.log *.out *.toc *.blg
 
 %.pdf: %.svg
-	$(INKSCAPE) $< -A $@
+	$(INKSCAPE) $< --without-gui --export-pdf=$@
 
 %.svg: %.dot
 	$(DOT) -Tsvg $< >$@
@@ -38,7 +38,7 @@ pdf: $(ALLTEX) $(PDFPICS) figures/*.png cover
 #       copy usman.bbl usman-bibl.bbl
 
 %.png: %.svg
-	$(INKSCAPE) $< -e $@
+	$(INKSCAPE) $< --without-gui --export-png=$@
 
 %.png: %.dot
 	$(DOT) -Tpng $< >$@
