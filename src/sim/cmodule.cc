@@ -79,42 +79,33 @@ cModule::cModule()
     // gates and parameters will be added by cModuleType
 }
 
+static void alert(cModule *module, const char *msg)
+{
+    // called from the destructor.
+    // note: C++ forbids throwing in a destructor, and noexcept(false) is not workable
+    getEnvir()->alert(cRuntimeError(module, msg).getFormattedMessage().c_str());
+}
+
 cModule::~cModule()
 {
     // ensure we are invoked from deleteModule()
     if (componentId !=-1 && (flags&FL_DELETING) == 0) {
-        // note: C++ forbids throwing in a destructor, and noexcept(false) is not workable
-        getEnvir()->alert(cRuntimeError(this, "Fatal: Direct deletion of a module is illegal, use deleteModule() instead; ABORTING").getFormattedMessage().c_str());
+        alert(this, "Fatal: Direct deletion of a module is illegal, use deleteModule() instead; ABORTING");
         abort();
     }
 
-    // notify envir while module object (or rather, its remains) still exist
-    EVCB.moduleDeleted(this);
+    // when control gets here, all submodules, connected gates, and listeners should
+    // have been already destroyed by deleteModule(). If one still exists, it can only
+    // have been added by a subclass destructor. Warn the user about this.
 
-    // delete submodules
-    for (SubmoduleIterator it(this); !it.end(); ) {
-        cModule *submodule = *it;
-        ++it;
-        submodule->doDeleteModule();
-    }
+    if (firstSubmodule != nullptr)
+        alert(this, "~cModule(): module should not have submodules at the time cModule destructor runs");
+    if (gateDescArraySize != 0)
+        alert(this, "~cModule(): module should not to have gates at the time cModule destructor runs");
+    if (signalTable)
+        alert(this, "~cModule(): module should not have listeners at the time cModule destructor runs");
 
-    // adjust gates that were directed here
-    for (GateIterator it(this); !it.end(); ++it) {
-        cGate *gate = *it;
-        if (gate->getNextGate() && gate->getNextGate()->getPreviousGate() == gate)
-            gate->disconnect();
-        if (gate->getPreviousGate() && gate->getPreviousGate()->getNextGate() == gate)
-            gate->getPreviousGate()->disconnect();
-    }
-
-    // delete all gates
-    clearGates();
-
-    // releasing listeners must be after deleting submodules etc, because our local listeners
-    // may be interested in getting notified about submodule deletions
-    releaseLocalListeners();
-
-    // deregister ourselves
+    // remove from parent
     if (getParentModule())
         getParentModule()->removeSubmodule(this);
 
@@ -150,6 +141,40 @@ void cModule::doDeleteModule()
         emit(PRE_MODEL_CHANGE, &tmp);
     }
 
+    // notify envir while the module object still exists
+    EVCB.moduleDeleted(this);
+
+    // delete external connections
+    for (GateIterator it(this); !it.end(); ++it) {
+        cGate *gate = *it;
+        if (gate->isConnectedOutside())
+            gate->disconnect();
+    }
+
+    // delete submodules
+    for (SubmoduleIterator it(this); !it.end(); ) {
+        cModule *submodule = *it;
+        ++it;
+        submodule->doDeleteModule();
+    }
+
+    // delete remaining connections
+    for (GateIterator it(this); !it.end(); ++it) {
+        cGate *gate = *it;
+        if (gate->getNextGate())
+            gate->disconnect();
+        if (gate->getPreviousGate())
+            gate->getPreviousGate()->disconnect();
+    }
+
+    // delete all gates
+    clearGates();
+
+    // releasing listeners must be after deleting submodules etc, because our local listeners
+    // may be interested in getting notified about submodule deletions
+    releaseLocalListeners();
+
+    // delete module object itself
     cModule *parent = getParentModule();
     if (!parent || !parent->hasListeners(POST_MODEL_CHANGE)) {
         // no listeners, just do it
