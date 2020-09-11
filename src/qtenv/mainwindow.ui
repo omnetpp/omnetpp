@@ -408,11 +408,13 @@ Total number of messages created since start of the simulation</string>
    <addaction name="actionExpressRun"/>
    <addaction name="actionRunUntil"/>
    <addaction name="actionStop"/>
+   <addaction name="actionDebugNextEvent"/>
    <addaction name="separator"/>
    <addaction name="actionConcludeSimulation"/>
    <addaction name="actionRebuildNetwork"/>
    <addaction name="separator"/>
    <addaction name="actionEventlogRecording"/>
+   <addaction name="actionDebugOnErrors"/>
    <addaction name="separator"/>
    <addaction name="actionFindInspectObjects"/>
    <addaction name="separator"/>
