@@ -831,6 +831,10 @@ Total number of messages created since start of the simulation</string>
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/tools/debugger</normaloff>:/tools/debugger</iconset>
+   </property>
    <property name="text">
     <string>Debug On Errors</string>
    </property>
