@@ -703,6 +703,10 @@ Total number of messages created since start of the simulation</string>
    </property>
   </action>
   <action name="actionDebugNextEvent">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/tools/debugnextevent</normaloff>:/tools/debugnextevent</iconset>
+   </property>
    <property name="text">
     <string>&amp;Debug Next Event</string>
    </property>

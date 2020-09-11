@@ -38,6 +38,7 @@
         <file alias="copy">icons/tools/copy.svg</file>
         <file alias="copyptr">icons/tools/copyptr.svg</file>
         <file alias="debugger">icons/tools/debugger.svg</file>
+        <file alias="debugnextevent">icons/tools/debugnextevent.svg</file>
         <file alias="express">icons/tools/express.svg</file>
         <file alias="fast">icons/tools/fast.svg</file>
         <file alias="fes">icons/tools/fes.svg</file>
