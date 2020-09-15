@@ -228,24 +228,39 @@ const QString Inspector::PREF_GEOM = "geom";
 
 QString Inspector::getFullPrefKey(const QString& pref, bool topLevel)
 {
+    return "InspectorPreferences/type" + QString::number(type) + "-"
+            + (topLevel ? "-toplevel" : "-embedded") + "-"
+            + pref;
+}
+
+QString Inspector::getFullPrefKeyPerType(const QString& pref, bool topLevel)
+{
     return "InspectorPreferences/type" + QString::number(type)
             + (topLevel ? "-toplevel" : "-embedded") + "-"
             + (object ? getObjectShortTypeName(object, STRIPNAMESPACE_NONE) : "nullptr") + "-"
             + pref;
 }
 
-QVariant Inspector::getPref(const QString& pref, const QVariant& defaultValue)
+QVariant Inspector::getPref(const QString& pref, const QVariant& defaultValue, bool perType)
 {
-    auto value = getQtenv()->getPref(getFullPrefKey(pref, isTopLevel()));
+    QString fullPrefKey = perType
+                ? getFullPrefKeyPerType(pref, isTopLevel())
+                : getFullPrefKey(pref, isTopLevel());
+    QString embeddedFullPrefKey = perType
+                ? getFullPrefKeyPerType(pref, false)
+                : getFullPrefKey(pref, false);
+
+    auto value = getQtenv()->getPref(fullPrefKey);
     // inheriting from the embedded inspector if not found for the toplevel
     if (isTopLevel() && !value.isValid())
-        value = getQtenv()->getPref(getFullPrefKey(pref, false));
+        value = getQtenv()->getPref(embeddedFullPrefKey);
     return value.isValid() ? value : defaultValue;
 }
 
-void Inspector::setPref(const QString& pref, const QVariant& value)
+void Inspector::setPref(const QString& pref, const QVariant& value, bool perType)
 {
-    getQtenv()->setPref(getFullPrefKey(pref, isTopLevel()), value);
+    QString key = perType ? getFullPrefKeyPerType(pref, isTopLevel()) : getFullPrefKey(pref, isTopLevel());
+    getQtenv()->setPref(key, value);
 }
 
 void Inspector::refreshTitle()

@@ -114,7 +114,7 @@ LogInspector::LogInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f
 
     connect(getQtenv(), SIGNAL(fontChanged()), this, SLOT(onFontChanged()));
 
-    setMode(LOG);
+    setMode((Mode)getPref(PREF_MODE, QVariant::fromValue(0), false).toInt());
 }
 
 LogInspector::~LogInspector()
@@ -257,7 +257,7 @@ void LogInspector::setMode(Mode mode)
 
     configureMessagePrinterAction->setEnabled(mode == MESSAGES);
 
-    setPref(PREF_MODE, mode);
+    setPref(PREF_MODE, mode, false);
 
     if (atEnd)
         textWidget->followOutput();
@@ -275,7 +275,7 @@ void LogInspector::doSetObject(cObject *obj)
 {
     Inspector::doSetObject(obj);
     excludedModuleIds.clear();
-    setMode((Mode)getPref(PREF_MODE, getMode()).toInt());
+    setMode(mode); // this is to rebuild the model
     restoreExcludedModules();
     restoreMessagePrinterOptions();
 }

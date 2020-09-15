@@ -68,8 +68,9 @@ class QTENV_API Inspector : public QWidget
       static const QString PREF_GEOM;
 
       QString getFullPrefKey(const QString &pref, bool topLevel);
-      QVariant getPref(const QString &pref, const QVariant &defaultValue);
-      void setPref(const QString &pref, const QVariant &value);
+      QString getFullPrefKeyPerType(const QString &pref, bool topLevel);
+      QVariant getPref(const QString &pref, const QVariant &defaultValue, bool perType = true);
+      void setPref(const QString &pref, const QVariant &value, bool perType = true);
 
       virtual void refreshTitle();
 

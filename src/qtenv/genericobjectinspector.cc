@@ -150,6 +150,8 @@ GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel,
 
     proxyModel = new PropertyFilteredGenericObjectTreeModel(this);
 
+    mode = (Mode)getPref(PREF_MODE, QVariant::fromValue(0), false).toInt();
+
     doSetMode(mode);
     recreateModel();
 
@@ -200,7 +202,7 @@ void GenericObjectInspector::doSetMode(Mode mode)
 {
     if (this->mode != mode) {
         this->mode = mode;
-        setPref(PREF_MODE, (int)mode);
+        setPref(PREF_MODE, (int)mode, false);
     }
 
     toGroupedModeAction->setChecked(mode == Mode::GROUPED);
@@ -431,24 +433,20 @@ void GenericObjectInspector::doSetObject(cObject *obj)
     Inspector::doSetObject(obj);
 
     if (!obj) {
-        doSetMode((Mode)getPref(PREF_MODE, (int)Mode::GROUPED).toInt());
         recreateModel();
         return;
     }
 
     QSet<QString> expanded = getExpandedNodes();
 
-    bool isContainerLike = contains(containerTypes, std::string(getObjectBaseClass(obj)));
-    auto defaultMode = isContainerLike ? Mode::CHILDREN : Mode::GROUPED;
-
-    Mode mode = (Mode)getPref(PREF_MODE, (int)defaultMode).toInt();
-
     bool isPacket = dynamic_cast<cPacket *>(obj);
-    if (!isPacket && mode == Mode::PACKET)
-        mode = defaultMode;
     toPacketModeAction->setEnabled(isPacket);
 
-    doSetMode(mode);
+    if (!isPacket && mode == Mode::PACKET) {
+        bool isContainerLike = contains(containerTypes, std::string(getObjectBaseClass(obj)));
+        doSetMode(isContainerLike ? Mode::CHILDREN : Mode::GROUPED);
+    }
+
     recreateModel();
 
     expandNodes(expanded);
