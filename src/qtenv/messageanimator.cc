@@ -231,10 +231,10 @@ void MessageAnimator::sendHop(cMessage *msg, cGate *srcGate, bool isLastHop, con
 {
     ASSERT(currentSending);
     ASSERT(currentSending->msg == msg);
+    currentSending->addHop(MessageSendPath::Hop(currentSending->getStartArrivalTime(), srcGate, isLastHop, result.delay, result.remainingDuration, result.discard));
+
     if (result.discard)
         endSend(msg); // At the moment, the animation of a discarded message simply ends halfway on the path
-    else
-        currentSending->addHop(MessageSendPath::Hop(currentSending->getStartArrivalTime(), srcGate, isLastHop, result.delay, result.remainingDuration, result.discard));
 }
 
 void MessageAnimator::endSend(cMessage *msg)
