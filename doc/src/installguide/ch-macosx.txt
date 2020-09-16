@@ -14,7 +14,7 @@ The following releases are covered:
  * Install the Java Runtime from http://support.apple.com/kb/DL1572 , because
    masOS does not provide it by default. Additionally you must install the latest
    version of Java Runtime Environment from http://java.com (version 8 or later.)
- * Install the command line developer tools for masOS from
+ * Install the command line developer tools for macOS from
    http://developer.apple.com/downloads/index.action?=Command%20Line%20Tools
    (you will need a free Apple Developer Account for the download.)
 
@@ -62,6 +62,12 @@ Now sign the executable:
 
     $ sudo codesign -s gdb-cert /usr/local/bin/gdb
 
+[NOTE]
+==============================================================
+The signing procedure has changed on later versions of macOS.
+Please consult the following URL for details:
+https://sourceware.org/gdb/wiki/PermissionsDarwin
+==============================================================
 
 === Downloading and Unpacking @OMNETPP@
 
