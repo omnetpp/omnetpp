@@ -16,6 +16,7 @@
 
 #include "textviewerproviders.h"
 #include "common/stlutil.h"
+#include "common/sgr_macro.h"
 #include "qtenv.h"
 #include <QDebug>
 
@@ -121,7 +122,7 @@ QString ModuleOutputContentProvider::getLineText(int lineIndex)
     int numDiscarded = logBuffer->getNumEntriesDiscarded();
     if (numDiscarded > 0) {
         if (lineIndex == 0)
-            return QString("\x1b[31m[Partial history, %1 earlier entries already discarded]\x1b[0m").arg(numDiscarded);
+            return QString(SGR(FG_RED) "[Partial history, %1 earlier entries already discarded]" SGR(RESET)).arg(numDiscarded);
         --lineIndex;
     }
 
@@ -347,7 +348,7 @@ QString EventEntryLinesProvider::getLineText(LogBuffer::Entry *entry, int lineIn
 {
     if (entry->banner) {
         if (lineIndex == 0) // it's an event banner, or if no component, an info line
-            return (entry->componentId <= 0 ? "\x1b[32m" : "\x1b[94m") + QString(entry->banner) + "\x1b[0m";
+            return (entry->componentId <= 0 ? SGR(FG_GREEN) : SGR(FG_BRIGHT_BLUE)) + QString(entry->banner) + SGR(RESET);
         else
             lineIndex--;
     }
@@ -358,14 +359,14 @@ QString EventEntryLinesProvider::getLineText(LogBuffer::Entry *entry, int lineIn
         QString text;
         if (line.prefix) {
             switch (entry->lines[lineIndex].logLevel) {
-                case LOGLEVEL_WARN: text += "\x1b[33m"; break;
-                case LOGLEVEL_ERROR: text += "\x1b[31m"; break;
-                case LOGLEVEL_FATAL: text += "\x1b[91m"; break;
-                default: text += "\x1b[37m"; break;
+                case LOGLEVEL_WARN: text += SGR(FG_YELLOW); break;
+                case LOGLEVEL_ERROR: text += SGR(FG_RED); break;
+                case LOGLEVEL_FATAL: text += SGR(FG_BRIGHT_RED); break;
+                default: text += SGR(FG_WHITE); break;
             }
 
             text += line.prefix;
-            text += "\x1b[0m";
+            text += SGR(RESET);
         }
 
         // TODO: This still prints the context component path twice for some reason,
@@ -569,7 +570,7 @@ QString EventEntryMessageLinesProvider::getLineText(LogBuffer::Entry *entry, int
             printer->printMessage(os, msg, messagePrinterOptions);
         }
         catch (cRuntimeError &e) {
-            os << "\x1b[91mERROR: " << e.getFormattedMessage() << "\x1b[0m";
+            os << SGR(FG_BRIGHT_RED)"ERROR: " << e.getFormattedMessage() << SGR(RESET);
         }
     else
         os << "[no message printer for this object]";
