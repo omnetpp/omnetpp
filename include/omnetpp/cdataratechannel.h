@@ -33,8 +33,11 @@ namespace omnetpp {
  * method returns true. There can be at most one transmission channel
  * in a connection path.
  *
- * It supports a single channel, meaning that at most one transmission
- * can be active at any given time. Overlapping transmissions are not permitted.
+ * The treatment of packets depends on the mode setting. In mode=SINGLE,
+ * at most one transmission can be active at any given time, and overlapping
+ * transmissions are not permitted. In mode=UNCHECKED, the channel allows
+ * concurrent transmissions. In that mode, the channel does not keep track
+ * of ongoing transmissions, and does not emit channelBusy signals.
  *
  * Non-packet messages are let through at any time, after applying propagation
  * delay only. They do not interfere with ongoing transmissions in any way.
@@ -53,8 +56,9 @@ namespace omnetpp {
  * The channel supports updating the ongoing transmission (see SendOptions).
  * Duration and remainingDuration are optional, as long as the missing one(s)
  * can be computed from the others. For example, duration can be computed as
- * the elapsed transmission time plus remainingDuration. Sanity checks
- * (e.g. duration/remainingDuration cannot be negative, duration >=
+ * the elapsed transmission time plus remainingDuration (unless in UNCHECKED
+ * mode, when the channel doesn't keep the needed information around). Sanity
+ * checks (e.g. duration/remainingDuration cannot be negative, duration >=
  * remainingDuration, etc.) are included.
  *
  * @ingroup SimCore
@@ -65,6 +69,23 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
     static simsignal_t channelBusySignal;
     static simsignal_t messageSentSignal;
     static simsignal_t messageDiscardedSignal;
+
+  public:
+    /**
+     * Channel operating mode
+     */
+    enum Mode {
+        /**
+         * Allow a single transmission at a time.
+         */
+        SINGLE,
+
+        /**
+         * Allow concurrent transmissions. In this mode, the channel does not
+         * keep track of ongoing transmissions, and does not emit channelBusy signals.
+         */
+        UNCHECKED
+    };
 
   private:
     enum {
@@ -81,7 +102,9 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
     double ber;      // bit error rate
     double per;      // packet error rate
 
-    // data of the last/ongoing transmission
+    Mode mode = SINGLE;
+
+    // data of the last/ongoing transmission (only for mode=SINGLE)
     simtime_t txStartTime;
     simtime_t txFinishTime;
     long lastOrigPacketId = -1;
@@ -140,6 +163,12 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
     virtual bool isTransmissionChannel() const override {return true;}
 
     /**
+     * Sets the operating mode. Switching operating mode during simulation
+     * (when the channel is in use) is not allowed.
+     */
+    virtual void setMode(Mode mode);
+
+    /**
      * Sets the propagation delay of the channel, in seconds.
      */
     virtual void setDelay(double d);
@@ -169,6 +198,11 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
      * Disables or enables the channel.
      */
     virtual void setDisabled(bool d);
+
+    /**
+     * Returns the operating mode.
+     */
+    virtual Mode getMode() const {return mode;}
 
     /**
      * Returns the propagation delay of the channel, in seconds.
@@ -231,14 +265,18 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
      *
      * The transmission duration of a message depends on the message length
      * and the data rate assigned to the channel.
+     *
+     * This method is unsupported (throws exception) in the UNCHECKED mode.
      */
-    virtual simtime_t getTransmissionFinishTime() const override {return txFinishTime;}
+    virtual simtime_t getTransmissionFinishTime() const override;
 
     /**
      * Returns whether the sender gate is currently transmitting, ie. whether
      * transmissionFinishTime() is greater than the current simulation time.
+     *
+     * This method is unsupported (throws exception) in the UNCHECKED mode.
      */
-    virtual bool isBusy() const override {return simTime() < txFinishTime;}
+    virtual bool isBusy() const override;
     //@}
 
     /** @name Implementation methods */

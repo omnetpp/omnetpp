@@ -53,14 +53,6 @@ cDatarateChannel::~cDatarateChannel()
 {
 }
 
-void cDatarateChannel::finish()
-{
-    if (txFinishTime != -1 && mayHaveListeners(channelBusySignal)) {
-        cTimestampedValue tmp(std::min(txFinishTime, simTime()), (intval_t)0);
-        emit(channelBusySignal, &tmp);
-    }
-}
-
 cDatarateChannel *cDatarateChannel::create(const char *name)
 {
     return dynamic_cast<cDatarateChannel *>(cChannelType::getDatarateChannelType()->create(name));
@@ -109,6 +101,11 @@ void cDatarateChannel::handleParameterChange(const char *)
     rereadPars();
 }
 
+void cDatarateChannel::setMode(Mode mode)
+{
+    this->mode = mode;
+}
+
 void cDatarateChannel::setDelay(double d)
 {
     par("delay").setDoubleValue(d);
@@ -142,6 +139,20 @@ simtime_t cDatarateChannel::calculateDuration(cMessage *msg) const
         return SIMTIME_ZERO;
 }
 
+simtime_t cDatarateChannel::getTransmissionFinishTime() const
+{
+    if (mode == UNCHECKED)
+        throw cRuntimeError(this, "getTransmissionFinishTime() is unsupported in mode=UNCHECKED");
+    return txFinishTime;
+}
+
+bool cDatarateChannel::isBusy() const
+{
+    if (mode == UNCHECKED)
+        throw cRuntimeError(this, "isBusy() is unsupported in mode=UNCHECKED");
+    return simTime() < txFinishTime;
+}
+
 cChannel::Result cDatarateChannel::processMessage(cMessage *msg, const SendOptions& options, simtime_t t)
 {
     Result result;
@@ -152,18 +163,20 @@ cChannel::Result cDatarateChannel::processMessage(cMessage *msg, const SendOptio
 
     // channel must be idle, or in the case of tx update, referenced tx must still be in progress
     if (isPacket) {
-        if (isUpdate) {
-            if (pkt->getOrigPacketId() != lastOrigPacketId)
-                throw cRuntimeError("Cannot send transmission update packet (%s)%s: origPacketId=%ld does not match that of the last transmission on the channel", msg->getClassName(), msg->getFullName(), pkt->getOrigPacketId());
-            if (t > txFinishTime) // note: if they are equal and it's a problem, we'll catch that in cSimpleModule::deleteObsoletedTransmissionFromFES()
-                throw cRuntimeError("Cannot send transmission update packet (%s)%s: It has missed the end of the transmission to be updated", msg->getClassName(), msg->getFullName());
-        }
-        else {
-            if (t < txFinishTime)
-                throw cRuntimeError("Cannot send packet (%s)%s: Channel is currently busy with an ongoing transmission -- "
-                        "please rewrite the sender module to only send when the previous transmission has already finished, "
-                        "using cGate::getTransmissionFinishTime(), scheduleAt(), and possibly a cPacketQueue for storing packets "
-                        "waiting to be transmitted", msg->getClassName(), msg->getFullName());
+        if (mode == SINGLE) {
+            if (isUpdate) {
+                if (pkt->getOrigPacketId() != lastOrigPacketId)
+                    throw cRuntimeError("Cannot send transmission update packet (%s)%s: origPacketId=%ld does not match that of the last transmission on the channel", msg->getClassName(), msg->getFullName(), pkt->getOrigPacketId());
+                if (t > txFinishTime) // note: if they are equal and it's a problem, we'll catch that in cSimpleModule::deleteObsoletedTransmissionFromFES()
+                    throw cRuntimeError("Cannot send transmission update packet (%s)%s: It has missed the end of the transmission to be updated", msg->getClassName(), msg->getFullName());
+            }
+            else {
+                if (t < txFinishTime)
+                    throw cRuntimeError("Cannot send packet (%s)%s: Channel is currently busy with an ongoing transmission -- "
+                            "please rewrite the sender module to only send when the previous transmission has already finished, "
+                            "using cGate::getTransmissionFinishTime(), scheduleAt(), and possibly a cPacketQueue for storing packets "
+                            "waiting to be transmitted", msg->getClassName(), msg->getFullName());
+            }
         }
     }
 
@@ -180,9 +193,11 @@ cChannel::Result cDatarateChannel::processMessage(cMessage *msg, const SendOptio
     // datarate modeling
     if (isPacket) {
         // signal end of previous transmission (unless this is a tx update)
-        if (!isUpdate && txFinishTime != -1 && mayHaveListeners(channelBusySignal)) {
-            cTimestampedValue tmp(txFinishTime, (intval_t)0);
-            emit(channelBusySignal, &tmp);
+        if (mode == SINGLE) {
+            if (!isUpdate && txFinishTime != -1 && mayHaveListeners(channelBusySignal)) {
+                cTimestampedValue tmp(txFinishTime, (intval_t)0);
+                emit(channelBusySignal, &tmp);
+            }
         }
 
         // indicate that packet has traversed a transmission channel
@@ -202,8 +217,10 @@ cChannel::Result cDatarateChannel::processMessage(cMessage *msg, const SendOptio
                 duration = pkt->getBitLength() / datarate;
             else
                 throw cRuntimeError(this, "Cannot send packet (%s)%s: Unknown duration: No channel datarate, and no explicit duration supplied in the send call", msg->getClassName(), msg->getName());
-            lastOrigPacketId = pkt->getId();
-            txStartTime = t;
+            if (mode == SINGLE) {
+                lastOrigPacketId = pkt->getId();
+                txStartTime = t;
+            }
             remainingDuration = duration;
         }
         else { // update
@@ -220,32 +237,39 @@ cChannel::Result cDatarateChannel::processMessage(cMessage *msg, const SendOptio
                     throw cRuntimeError(this, "Cannot send transmission update packet (%s)%s: Negative remainingDuration (%s) specified", msg->getClassName(), msg->getName(), remainingDuration.ustr().c_str());
             }
 
-            simtime_t elapsedTxTime = t - txStartTime;
+            if (mode == UNCHECKED) {
+                if (!durationSpecified || !remainingDurationSpecified)
+                    throw cRuntimeError(this, "Cannot send transmission update packet (%s)%s: Either duration or remainingDuration is unspecified", msg->getClassName(), msg->getName());
+            }
+            else if (mode == SINGLE) {
+                simtime_t elapsedTxTime = t - txStartTime;
 
-            if (durationSpecified && remainingDurationSpecified) {
-                if (duration != elapsedTxTime + remainingDuration)
-                    throw cRuntimeError(this, "Cannot send transmission update packet (%s)%s: Both duration and remainingDuration are specified, and duration (%s) != elapsedTxTime (%s) + remainingDuration (%s)",
-                            msg->getClassName(), msg->getName(), duration.ustr().c_str(), elapsedTxTime.ustr().c_str(), remainingDuration.ustr().c_str());
-            }
-            else if (durationSpecified) { // but not remainingDuration
-                remainingDuration = duration - elapsedTxTime;
-                if (remainingDuration < SIMTIME_ZERO)
-                    throw cRuntimeError(this, "Cannot send transmission update packet (%s)%s: Duration (%s) is smaller than already elapsed transmission time (%s)", msg->getClassName(), msg->getName(), duration.ustr().c_str(), elapsedTxTime.ustr().c_str());
-            }
-            else if (remainingDurationSpecified) { // but not duration
-                duration = elapsedTxTime + remainingDuration;
-            }
-            else { // neither
-                if (!(flags & FL_DATARATE_PRESENT))
-                    throw cRuntimeError(this, "Cannot send transmission update packet (%s)%s: Unknown duration: No channel datarate and no explicit duration or remainingDuration supplied in the send call", msg->getClassName(), msg->getName());
-                duration = pkt->getBitLength() / datarate;
-                remainingDuration = duration - elapsedTxTime;
+                if (durationSpecified && remainingDurationSpecified) {
+                    if (duration != elapsedTxTime + remainingDuration)
+                        throw cRuntimeError(this, "Cannot send transmission update packet (%s)%s: Both duration and remainingDuration are specified, and duration (%s) != elapsedTxTime (%s) + remainingDuration (%s)",
+                                msg->getClassName(), msg->getName(), duration.ustr().c_str(), elapsedTxTime.ustr().c_str(), remainingDuration.ustr().c_str());
+                }
+                else if (durationSpecified) { // but not remainingDuration
+                    remainingDuration = duration - elapsedTxTime;
+                    if (remainingDuration < SIMTIME_ZERO)
+                        throw cRuntimeError(this, "Cannot send transmission update packet (%s)%s: Duration (%s) is smaller than already elapsed transmission time (%s)", msg->getClassName(), msg->getName(), duration.ustr().c_str(), elapsedTxTime.ustr().c_str());
+                }
+                else if (remainingDurationSpecified) { // but not duration
+                    duration = elapsedTxTime + remainingDuration;
+                }
+                else { // neither
+                    if (!(flags & FL_DATARATE_PRESENT))
+                        throw cRuntimeError(this, "Cannot send transmission update packet (%s)%s: Unknown duration: No channel datarate and no explicit duration or remainingDuration supplied in the send call", msg->getClassName(), msg->getName());
+                    duration = pkt->getBitLength() / datarate;
+                    remainingDuration = duration - elapsedTxTime;
+                }
             }
         }
 
         pkt->setDuration(duration);
         pkt->setRemainingDuration(remainingDuration);
-        txFinishTime = t + remainingDuration;
+        if (mode == SINGLE)
+            txFinishTime = t + remainingDuration;
 
         result.duration = duration;
         result.remainingDuration = remainingDuration;
@@ -270,12 +294,20 @@ cChannel::Result cDatarateChannel::processMessage(cMessage *msg, const SendOptio
         MessageSentSignalValue tmp(t, msg, &result);
         emit(messageSentSignal, &tmp);
     }
-    if (mayHaveListeners(channelBusySignal)) {
+    if (mode == SINGLE && mayHaveListeners(channelBusySignal)) {
         cTimestampedValue tmp(t, (intval_t)1);
         emit(channelBusySignal, &tmp);
     }
 
     return result;
+}
+
+void cDatarateChannel::finish()
+{
+    if (mode == SINGLE && txFinishTime != -1 && mayHaveListeners(channelBusySignal)) {
+        cTimestampedValue tmp(std::min(txFinishTime, simTime()), (intval_t)0);
+        emit(channelBusySignal, &tmp);
+    }
 }
 
 }  // namespace omnetpp
