@@ -174,6 +174,23 @@ static bool moduleContains(cModule *potentialparent, cModule *mod)
     return false;
 }
 
+static void checkQSettingsStatus(QSettings *settings)
+{
+    switch (settings->status()) {
+        case QSettings::NoError:
+            // nothing
+            break;
+        case QSettings::FormatError:
+            std::cerr << "Qtenv: Format error with settings file: " << settings->fileName().toStdString() << std::endl;
+            std::cerr << "Check that said file is valid INI." << std::endl;
+            break;
+        case QSettings::AccessError:
+            std::cerr << "Qtenv: Access error with settings file: " << settings->fileName().toStdString() << std::endl;
+            std::cerr << "Check that you have full read/write/create permissions on said file." << std::endl;
+            break;
+    }
+}
+
 bool Qtenv::isLocalPrefKey(const QString& key)
 {
     return (key == "last-configname") || (key == "last-runnumber") || key.startsWith("RunModeProfiles");
@@ -222,6 +239,11 @@ void Qtenv::storeOptsInPrefs()
     setPref("loglevel", cLog::getLogLevelName(opt->logLevel));
 
     setPref("logbuffer_maxnumevents", logBuffer.getMaxNumEntries());
+
+    globalPrefs->sync();
+    checkQSettingsStatus(globalPrefs);
+    localPrefs->sync();
+    checkQSettingsStatus(localPrefs);
 }
 
 void Qtenv::restoreOptsFromPrefs()
@@ -552,9 +574,18 @@ Qtenv::Qtenv() : opt((QtenvOptions *&)EnvirBase::opt), icons(out)
 
 Qtenv::~Qtenv()
 {
+    if (globalPrefs) {
+        globalPrefs->sync();
+        checkQSettingsStatus(globalPrefs);
+        delete globalPrefs;
+    }
+    if (localPrefs) {
+        localPrefs->sync();
+        checkQSettingsStatus(localPrefs);
+        delete localPrefs;
+    }
+
     delete messageAnimator;
-    delete localPrefs;  // will sync it to disk
-    delete globalPrefs;  // will sync it to disk
     for (auto & silentEventFilter : silentEventFilters)
         delete silentEventFilter;
 }
@@ -620,7 +651,9 @@ void Qtenv::doRun()
 #endif
 
         globalPrefs = new QSettings(QDir::homePath() + "/.qtenvrc", QSettings::IniFormat);
+        checkQSettingsStatus(globalPrefs);
         localPrefs = new QSettings(".qtenvrc", QSettings::IniFormat);
+        checkQSettingsStatus(localPrefs);
 
         restoreOptsFromPrefs();
         setLogLevel(opt->logLevel); // we have to tell cLog the level we want
