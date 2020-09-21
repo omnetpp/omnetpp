@@ -1836,11 +1836,13 @@ void Qtenv::simulationEvent(cEvent *event)
             if (loggingEnabled)
                 logBuffer.delivery(msg);
 
-            // if arrivalgate is connected, msg arrived on a connection, otherwise via sendDirect()
-            if (arrivalGate->getPreviousGate())
-                messageAnimator->delivery(msg);
-            else
-                messageAnimator->deliveryDirect(msg);
+            if (!isSilentEvent(msg)) {
+                // if arrivalgate is connected, msg arrived on a connection, otherwise via sendDirect()
+                if (arrivalGate->getPreviousGate())
+                    messageAnimator->delivery(msg);
+                else
+                    messageAnimator->deliveryDirect(msg);
+            }
 
             // deliveries must be played immediately, since we
             // are right before the processing of the message,
