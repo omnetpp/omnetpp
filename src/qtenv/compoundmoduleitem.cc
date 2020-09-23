@@ -351,6 +351,12 @@ void CompoundModuleItemUtil::setupFromDisplayString(CompoundModuleItem *cmi, cMo
     if (heightOk)
         border.setHeight(height);
 
+    // round all sides to whole pixels to avoid unnecessary anti-aliasing blur on the border lines
+    border.setTop(std::floor(border.top()));
+    border.setLeft(std::floor(border.left()));
+    border.setBottom(std::ceil(border.bottom()));
+    border.setRight(std::ceil(border.right()));
+
     cmi->setZoomFactor(zoomFactor);
     cmi->setArea(border);
 
