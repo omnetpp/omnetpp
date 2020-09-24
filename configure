@@ -3354,28 +3354,6 @@ if test "$TOOLCHAIN" = "mingw"; then
 else
     jni_platform=$host_os
     case $host in
-    i686-*-mingw*)
-        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT/tools/win32"
-        mingw=yes
-        jni_platform=win32
-        PLATFORM=win32.x86
-        EXE_SUFFIX=".exe"
-        SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
-        # on MinGW dll auto importing MUST be used with shared gcc and stdc++
-        # otherwise exceptions can't be thrown across dll boundaries
-        LDFLAGS_ARCH="$LDFLAGS_ARCH -Wl,--enable-auto-import -L/usr/bin"
-
-        # If we are building on windows (native compile) we have to add the /usr/lib and
-        # /usr/include directories as they are not added by default, but they are needed
-        # to properly find the LibXML2 libraries.
-        if test "$cross_compiling" = no ; then
-            CFLAGS_ARCH="$CFLAGS_ARCH -isystem /usr/include -isystem /mingw32/include"
-            LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L/mingw32/lib"
-        fi
-            # NOTE: if we are cross-compiling we may need to add the lib and include path
-            # to the cross-compiled Xml libs here. They should NOT reside in the default
-            # /usr/lib directory as that would interfere with the native build.
-        ;;
     x86_64-*-mingw*)
         OMNETPP_TOOLS_DIR="$OMNETPP_ROOT/tools/win64"
         mingw=yes
@@ -3423,13 +3401,6 @@ else
         jni_platform=linux
         PLATFORM=linux.x86_64
         ;;
-    *-linux*)
-        OMNETPP_TOOLS_DIR="\$(OMNETPP_TOOLS_DIR)/linux32"
-        # add long file support on 32 bit linux
-        DEFINES="$DEFINES -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64"
-        jni_platform=linux
-        PLATFORM=linux.x86
-        ;;
     *darwin*)
         OMNETPP_TOOLS_DIR="$OMNETPP_ROOT/tools/macosx"
         CFLAGS_ARCH="$CFLAGS_ARCH -isystem \$(OMNETPP_TOOLS_DIR)/include"
@@ -3447,11 +3418,11 @@ else
 fi
 
 #----------------------
-# Check whether LLD linker is available as it is a much faster linker thanthe system one.
+# Check whether LLD linker is available as it is a much faster linker than the system one.
 #
-# NOTE: On Windows, LLD 10.0 cannot properly generate export libs so the queueingext example fails.
-# The Windows toolschain alsready contains LLD, so we have to explicitly disable it, otherwise it would be
-# detected and used. Once this bug is fixed, we can re-enable LLD detection and Windows.
+# NOTE: On Windows, LLD 10.0 cannot properly generate export libs so the queueinglibext example fails.
+# The Windows toolschain already contains LLD, so we have to explicitly disable it, otherwise it would be
+# detected and used. Once this bug is fixed, we can re-enable LLD detection on Windows.
 #----------------------
 if test "$PLATFORM" != "win32.x86_64"; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether LLD linker is available" >&5
