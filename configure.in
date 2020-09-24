@@ -400,8 +400,8 @@ else
             # /usr/include directories as they are not added by default, but they are needed
             # to properly find the LibXML2 libraries.
             if test "$cross_compiling" = no ; then
-                CFLAGS_ARCH="$CFLAGS_ARCH -isystem /usr/include -isystem /mingw64/include"
-                LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L/mingw64/lib"
+                CFLAGS_ARCH="$CFLAGS_ARCH -isystem /mingw64/include -isystem /opt/mingw64/include"
+                LDFLAGS_ARCH="$LDFLAGS_ARCH -L/mingw64/lib -L/opt/mingw64/lib"
             fi
             # NOTE: if we are cross-compiling we may need to add the lib and include path
             # to the cross-compiled Xml libs here. They should NOT reside in the default
