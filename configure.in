@@ -272,17 +272,6 @@ AC_COMPILE_IFELSE(
          AC_MSG_RESULT(no); AC_MSG_ERROR([Please adjust CXXFLAGS in configure.user to enable C++14 compilation or install a C++14-capable compiler (e.g. clang 3.4+ or gcc 6.1+)]))]
 )
 
-#----------------------
-# Check whether LLD linker is available
-#----------------------
-AC_MSG_CHECKING(whether LLD linker is available)
-LDFLAGS_SAVE="$LDFLAGS"
-LDFLAGS="$LDFLAGS -fuse-ld=lld"
-AC_LINK_IFELSE(
-   [AC_LANG_PROGRAM()],
-   [AC_MSG_RESULT(yes)],
-   [AC_MSG_RESULT(no); LDFLAGS="$LDFLAGS_SAVE"])
-
 if test "$TOOLCHAIN" = "mingw"; then
     AS=${AS:-i586-mingw32msvc-as}
     AR=${AR:-i586-mingw32msvc-ar cr}
@@ -434,6 +423,23 @@ else
     *)
         ;;
     esac
+fi
+
+#----------------------
+# Check whether LLD linker is available as it is a much faster linker thanthe system one.
+#
+# NOTE: On Windows, LLD 10.0 cannot properly generate export libs so the queueingext example fails.
+# The Windows toolschain alsready contains LLD, so we have to explicitly disable it, otherwise it would be
+# detected and used. Once this bug is fixed, we can re-enable LLD detection and Windows.
+#----------------------
+if test "$PLATFORM" != "win32.x86_64"; then
+  AC_MSG_CHECKING(whether LLD linker is available)
+  LDFLAGS_SAVE="$LDFLAGS"
+  LDFLAGS="$LDFLAGS -fuse-ld=lld"
+  AC_LINK_IFELSE(
+     [AC_LANG_PROGRAM()],
+     [AC_MSG_RESULT(yes)],
+     [AC_MSG_RESULT(no); LDFLAGS="$LDFLAGS_SAVE"])
 fi
 
 # test if we are running on mingw using gcc as we have to force the use of shared libgcc
