@@ -5,6 +5,6 @@ OMNETPP_ROOT=`pwd`
 
 docker run --network none -v "$OMNETPP_ROOT":/root/omnetpp-repo -e what -e GIT_VERSION -e BUILD_DOC \
        -e BUILD_CORE_DISTRO -e BUILD_LINUX_DISTRO -e BUILD_WIN64_DISTRO -e BUILD_MACOSX_DISTRO \
-       omnetpp/distrobuild:eclipse4.16-tools190729-200805 && \
+       omnetpp/distrobuild:eclipse4.17-tools200921-200921 && \
 docker cp $(docker ps -lq):/root/omnetpp/out/dist/ releng && \
 docker rm $(docker ps -lq)
