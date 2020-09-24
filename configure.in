@@ -176,6 +176,7 @@ done
 A_LIB_SUFFIX=${A_LIB_SUFFIX:-".a"}
 SO_LIB_SUFFIX=${SO_LIB_SUFFIX:-".so"}
 DLL_LIB_SUFFIX=${DLL_LIB_SUFFIX:-".dll"}
+IMPLIB_SUFFIX=${IMPLIB_SUFFIX:-".dll.a"}
 EXE_SUFFIX=
 SHARED_LIB_SUFFIX='$(SO_LIB_SUFFIX)'
 LIB_PREFIX="lib"
@@ -271,6 +272,16 @@ AC_COMPILE_IFELSE(
          AC_MSG_RESULT(no); AC_MSG_ERROR([Please adjust CXXFLAGS in configure.user to enable C++14 compilation or install a C++14-capable compiler (e.g. clang 3.4+ or gcc 6.1+)]))]
 )
 
+#----------------------
+# Check whether LLD linker is available
+#----------------------
+AC_MSG_CHECKING(whether LLD linker is available)
+LDFLAGS_SAVE="$LDFLAGS"
+LDFLAGS="$LDFLAGS -fuse-ld=lld"
+AC_LINK_IFELSE(
+   [AC_LANG_PROGRAM()],
+   [AC_MSG_RESULT(yes)],
+   [AC_MSG_RESULT(no); LDFLAGS="$LDFLAGS_SAVE"])
 
 if test "$TOOLCHAIN" = "mingw"; then
     AS=${AS:-i586-mingw32msvc-as}
@@ -378,6 +389,7 @@ else
             ARFLAG_OUT="-out:"
             RANLIB="test"
             A_LIB_SUFFIX=".lib"
+            IMPLIB_SUFFIX=".lib"
             LIB_PREFIX=""
         else # mingw compiler (clang or gcc) with GCC compatible ABI
             # on MinGW dll auto importing MUST be used with shared gcc and stdc++
@@ -682,19 +694,6 @@ else
 fi
 rm -f conftest_a.* conftest_m.* libconftest_a.a conftest
 
-
-#----------------------
-# Check whether LLD linker is available
-#----------------------
-if test "$PLATFORM" = "linux.x86_64"; then
-  AC_MSG_CHECKING(whether LLD linker is available)
-  LDFLAGS_SAVE="$LDFLAGS"
-  LDFLAGS="$LDFLAGS -fuse-ld=lld"
-  AC_LINK_IFELSE(
-     [AC_LANG_PROGRAM()],
-     [AC_MSG_RESULT(yes)],
-     [AC_MSG_RESULT(no); LDFLAGS="$LDFLAGS_SAVE"])
-fi
 
 #----------------------
 # Check for rpath
@@ -1207,6 +1206,7 @@ AC_SUBST(SHARED_LIB_SUFFIX)
 AC_SUBST(JNI_LIB_SUFFIX)
 AC_SUBST(SO_LIB_SUFFIX)
 AC_SUBST(DLL_LIB_SUFFIX)
+AC_SUBST(IMPLIB_SUFFIX)
 AC_SUBST(EXE_SUFFIX)
 AC_SUBST(LIB_PREFIX)
 
