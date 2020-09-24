@@ -618,6 +618,7 @@ QT_CFLAGS
 HAVE_DLOPEN
 LIB_PREFIX
 EXE_SUFFIX
+IMPLIB_SUFFIX
 DLL_LIB_SUFFIX
 SO_LIB_SUFFIX
 JNI_LIB_SUFFIX
@@ -711,7 +712,6 @@ infodir
 docdir
 oldincludedir
 includedir
-runstatedir
 localstatedir
 sharedstatedir
 sysconfdir
@@ -790,7 +790,6 @@ datadir='${datarootdir}'
 sysconfdir='${prefix}/etc'
 sharedstatedir='${prefix}/com'
 localstatedir='${prefix}/var'
-runstatedir='${localstatedir}/run'
 includedir='${prefix}/include'
 oldincludedir='/usr/include'
 docdir='${datarootdir}/doc/${PACKAGE}'
@@ -1043,15 +1042,6 @@ do
   | -silent | --silent | --silen | --sile | --sil)
     silent=yes ;;
 
-  -runstatedir | --runstatedir | --runstatedi | --runstated \
-  | --runstate | --runstat | --runsta | --runst | --runs \
-  | --run | --ru | --r)
-    ac_prev=runstatedir ;;
-  -runstatedir=* | --runstatedir=* | --runstatedi=* | --runstated=* \
-  | --runstate=* | --runstat=* | --runsta=* | --runst=* | --runs=* \
-  | --run=* | --ru=* | --r=*)
-    runstatedir=$ac_optarg ;;
-
   -sbindir | --sbindir | --sbindi | --sbind | --sbin | --sbi | --sb)
     ac_prev=sbindir ;;
   -sbindir=* | --sbindir=* | --sbindi=* | --sbind=* | --sbin=* \
@@ -1189,7 +1179,7 @@ fi
 for ac_var in	exec_prefix prefix bindir sbindir libexecdir datarootdir \
 		datadir sysconfdir sharedstatedir localstatedir includedir \
 		oldincludedir docdir infodir htmldir dvidir pdfdir psdir \
-		libdir localedir mandir runstatedir
+		libdir localedir mandir
 do
   eval ac_val=\$$ac_var
   # Remove trailing slashes.
@@ -1342,7 +1332,6 @@ Fine tuning of the installation directories:
   --sysconfdir=DIR        read-only single-machine data [PREFIX/etc]
   --sharedstatedir=DIR    modifiable architecture-independent data [PREFIX/com]
   --localstatedir=DIR     modifiable single-machine data [PREFIX/var]
-  --runstatedir=DIR       modifiable per-process data [LOCALSTATEDIR/run]
   --libdir=DIR            object code libraries [EPREFIX/lib]
   --includedir=DIR        C header files [PREFIX/include]
   --oldincludedir=DIR     C header files for non-gcc [/usr/include]
@@ -2185,6 +2174,7 @@ done
 A_LIB_SUFFIX=${A_LIB_SUFFIX:-".a"}
 SO_LIB_SUFFIX=${SO_LIB_SUFFIX:-".so"}
 DLL_LIB_SUFFIX=${DLL_LIB_SUFFIX:-".dll"}
+IMPLIB_SUFFIX=${IMPLIB_SUFFIX:-".dll.a"}
 EXE_SUFFIX=
 SHARED_LIB_SUFFIX='$(SO_LIB_SUFFIX)'
 LIB_PREFIX="lib"
@@ -3200,6 +3190,33 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 
+#----------------------
+# Check whether LLD linker is available
+#----------------------
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether LLD linker is available" >&5
+$as_echo_n "checking whether LLD linker is available... " >&6; }
+LDFLAGS_SAVE="$LDFLAGS"
+LDFLAGS="$LDFLAGS -fuse-ld=lld"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }; LDFLAGS="$LDFLAGS_SAVE"
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
 
 if test "$TOOLCHAIN" = "mingw"; then
     AS=${AS:-i586-mingw32msvc-as}
@@ -3398,6 +3415,7 @@ else
             ARFLAG_OUT="-out:"
             RANLIB="test"
             A_LIB_SUFFIX=".lib"
+            IMPLIB_SUFFIX=".lib"
             LIB_PREFIX=""
         else # mingw compiler (clang or gcc) with GCC compatible ABI
             # on MinGW dll auto importing MUST be used with shared gcc and stdc++
@@ -4010,36 +4028,6 @@ $as_echo "test failed" >&6; }
 fi
 rm -f conftest_a.* conftest_m.* libconftest_a.a conftest
 
-
-#----------------------
-# Check whether LLD linker is available
-#----------------------
-if test "$PLATFORM" = "linux.x86_64"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether LLD linker is available" >&5
-$as_echo_n "checking whether LLD linker is available... " >&6; }
-  LDFLAGS_SAVE="$LDFLAGS"
-  LDFLAGS="$LDFLAGS -fuse-ld=lld"
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-int
-main ()
-{
-
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }; LDFLAGS="$LDFLAGS_SAVE"
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-fi
 
 #----------------------
 # Check for rpath
@@ -5009,7 +4997,7 @@ test -n "$RCC" || RCC="nope"
         QT_INSTALL_HEADERS=`$QMAKE -query QT_INSTALL_HEADERS`
         QT_INSTALL_LIBS=`$QMAKE -query QT_INSTALL_LIBS`
         QT_CFLAGS=${QT_CFLAGS:-"-isystem $QT_INSTALL_HEADERS -isystem $QT_INSTALL_HEADERS/QtCore -isystem $QT_INSTALL_HEADERS/QtGui -isystem $QT_INSTALL_HEADERS/QtWidgets -isystem $QT_INSTALL_HEADERS/QtOpenGL -isystem $QT_INSTALL_HEADERS/QtPrintSupport"}
-        QT_LIBS=${QT_LIBS:-"-lQt5Gui -lQt5Core -lQt5Widgets -lQt5PrintSupport -lQt5OpenGL $LDFLAG_LIBPATH$QT_INSTALL_LIBS -Wl,-rpath=$QT_INSTALL_LIBS"}
+        QT_LIBS=${QT_LIBS:-"-lQt5Gui -lQt5Core -lQt5Widgets -lQt5PrintSupport -lQt5OpenGL $LDFLAG_LIBPATH$QT_INSTALL_LIBS"}
         if test -z "$RPATH_UNSUPPORTED"; then
             QTENV_LDFLAGS="-Wl,-rpath-link=$QT_INSTALL_LIBS"
         fi
@@ -6139,6 +6127,7 @@ ac_config_files="$ac_config_files Makefile.inc src/qtenv/qtenv.pri"
 #----------------------
 # Substitutions.
 #----------------------
+
 
 
 
@@ -7474,7 +7463,7 @@ fi
 # Check if the rpath option is unsupported. in this warn the user to provide the LD_LIBRARY_PATH variable
 # (we do not care about this if we are using the clang-msabi toolchain)
 #----------------------
-if test -n "$RPATH_UNSUPPORTED" -a "$TOOLCHAIN_NAME" != "clang-msabi" ; then
+if test -n "$RPATH_UNSUPPORTED" -a "$PLATFORM" != "win32.x86_64" ; then
 
     cat 1>&2 << EOT
 

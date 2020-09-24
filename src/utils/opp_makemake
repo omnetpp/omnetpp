@@ -1157,7 +1157,7 @@ include $(CONFIGFILE)
 {~nolink:}{~staticlib:}# Simulation kernel and user interface libraries
 {exe:}OMNETPP_LIBS = $(OPPMAIN_LIB) $(USERIF_LIBS) $(KERNEL_LIBS) $(SYS_LIBS)
 {sharedlib:}OMNETPP_LIBS = -loppenvir$D $(KERNEL_LIBS) $(SYS_LIBS)
-{~nolink:}{~staticlib:}{libpathdirs:}ifneq ($(TOOLCHAIN_NAME),clang-msabi)
+{~nolink:}{~staticlib:}{libpathdirs:}ifneq ($(PLATFORM),win32.x86_64)
 {~nolink:}{~staticlib:}{libpathdirs:}LIBS +={@dir:libpathdirs} -Wl,-rpath,$(abspath {dir}){/@}
 {~nolink:}{~staticlib:}{libpathdirs:}endif
 
