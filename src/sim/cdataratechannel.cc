@@ -159,39 +159,51 @@ cChannel::Result cDatarateChannel::processMessage(cMessage *msg, const SendOptio
 
     bool isPacket = msg->isPacket();
     cPacket *pkt = isPacket ? static_cast<cPacket *>(msg) : nullptr;
-    bool isUpdate = isPacket ? pkt->isUpdate() : false;
 
-    // channel must be idle, or in the case of tx update, referenced tx must still be in progress
-    if (isPacket) {
-        if (mode == SINGLE) {
-            if (isUpdate) {
-                if (pkt->getOrigPacketId() != lastOrigPacketId)
-                    throw cRuntimeError("Cannot send transmission update packet (%s)%s: origPacketId=%ld does not match that of the last transmission on the channel", msg->getClassName(), msg->getFullName(), pkt->getOrigPacketId());
-                if (t > txFinishTime) // note: if they are equal and it's a problem, we'll catch that in cSimpleModule::deleteObsoletedTransmissionFromFES()
-                    throw cRuntimeError("Cannot send transmission update packet (%s)%s: It has missed the end of the transmission to be updated", msg->getClassName(), msg->getFullName());
-            }
-            else {
-                if (t < txFinishTime)
-                    throw cRuntimeError("Cannot send packet (%s)%s: Channel is currently busy with an ongoing transmission -- "
-                            "please rewrite the sender module to only send when the previous transmission has already finished, "
-                            "using cGate::getTransmissionFinishTime(), scheduleAt(), and possibly a cPacketQueue for storing packets "
-                            "waiting to be transmitted", msg->getClassName(), msg->getFullName());
-            }
-        }
-    }
-
-    // if channel is disabled, signal that message should be deleted; however, tx updates must
-    // be allowed to go through to make it possible for the transmitter module to abort the
-    // ongoing packet transmission.
-    if (flags & FL_ISDISABLED && !isUpdate) {
+    // if channel is disabled, signal that message should be deleted
+    if (flags & FL_ISDISABLED && !isPacket) {
         result.discard = true;
         cTimestampedValue tmp(t, msg);
         emit(messageDiscardedSignal, &tmp);
         return result;
     }
 
-    // datarate modeling
+    // propagation delay modeling
+    result.delay = delay;
+
+    // transmission duration and error modeling
     if (isPacket) {
+        bool isUpdate = pkt->isUpdate();
+
+        // channel must be idle, or in the case of tx update, referenced tx must still be in progress
+        if (mode == SINGLE) {
+            if (!isUpdate) {
+                if (t < txFinishTime)
+                    throw cRuntimeError("Cannot send packet (%s)%s: Channel is currently busy with an ongoing transmission -- "
+                            "please rewrite the sender module to only send when the previous transmission has already finished, "
+                            "using cGate::getTransmissionFinishTime(), scheduleAt(), and possibly a cPacketQueue for storing packets "
+                            "waiting to be transmitted", msg->getClassName(), msg->getFullName());
+            }
+            else {
+                if (pkt->getOrigPacketId() != lastOrigPacketId)
+                    throw cRuntimeError("Cannot send transmission update packet (%s)%s: origPacketId=%ld does not match that of the last transmission on the channel", msg->getClassName(), msg->getFullName(), pkt->getOrigPacketId());
+                if (t > txFinishTime) // note: if they are equal and it's a problem, we'll catch that in cSimpleModule::deleteObsoletedTransmissionFromFES()
+                    throw cRuntimeError("Cannot send transmission update packet (%s)%s: It has missed the end of the transmission to be updated", msg->getClassName(), msg->getFullName());
+            }
+        }
+
+        // if channel is disabled, signal that message should be deleted; however, tx updates must
+        // be allowed to go through to make it possible for the transmitter module to abort the
+        // ongoing packet transmission.
+        if (flags & FL_ISDISABLED && !isUpdate) {
+            result.discard = true;
+            cTimestampedValue tmp(t, msg);
+            emit(messageDiscardedSignal, &tmp);
+            return result;
+        }
+
+        // datarate modeling
+
         // signal end of previous transmission (unless this is a tx update)
         if (mode == SINGLE) {
             if (!isUpdate && txFinishTime != -1 && mayHaveListeners(channelBusySignal)) {
@@ -273,30 +285,28 @@ cChannel::Result cDatarateChannel::processMessage(cMessage *msg, const SendOptio
 
         result.duration = duration;
         result.remainingDuration = remainingDuration;
-    }
 
-    // propagation delay modeling
-    result.delay = delay;
+        // bit error modeling
+        if (flags & (FL_BER_NONZERO | FL_PER_NONZERO)) {
+            if (flags & FL_BER_NONZERO)
+                if (dblrand() < 1.0 - pow(1.0 - ber, (double)pkt->getBitLength()))
+                    pkt->setBitError(true);
 
-    // bit error modeling
-    if (isPacket && (flags & (FL_BER_NONZERO | FL_PER_NONZERO))) {
-        if (flags & FL_BER_NONZERO)
-            if (dblrand() < 1.0 - pow(1.0 - ber, (double)pkt->getBitLength()))
-                pkt->setBitError(true);
+            if (flags & FL_PER_NONZERO)
+                if (dblrand() < per)
+                    pkt->setBitError(true);
+        }
 
-        if (flags & FL_PER_NONZERO)
-            if (dblrand() < per)
-                pkt->setBitError(true);
+        if (mode == SINGLE && mayHaveListeners(channelBusySignal)) {
+            cTimestampedValue tmp(t, (intval_t)1);
+            emit(channelBusySignal, &tmp);
+        }
     }
 
     // emit signals
     if (mayHaveListeners(messageSentSignal)) {
         MessageSentSignalValue tmp(t, msg, &result);
         emit(messageSentSignal, &tmp);
-    }
-    if (mode == SINGLE && mayHaveListeners(channelBusySignal)) {
-        cTimestampedValue tmp(t, (intval_t)1);
-        emit(channelBusySignal, &tmp);
     }
 
     return result;
