@@ -35,9 +35,12 @@ namespace omnetpp {
  *
  * The treatment of packets depends on the mode setting. In mode=SINGLE,
  * at most one transmission can be active at any given time, and overlapping
- * transmissions are not permitted. In mode=UNCHECKED, the channel allows
- * concurrent transmissions. In that mode, the channel does not keep track
- * of ongoing transmissions, and does not emit channelBusy signals.
+ * transmissions are not permitted. In mode=MULTI, multiple concurrent
+ * transmissions are allowed, with consistency checking (transmission updates
+ * must refer to existing and active transmissions). The UNCHECKED mode is the
+ * low-overhead version of MULTI: the channel does not keep track of ongoing
+ * transmissions, so there are no consistency checks, and certain functionality
+ * is unavailable (e.g. the channel does not emit channelBusy signals).
  *
  * Non-packet messages are let through at any time, after applying propagation
  * delay only. They do not interfere with ongoing transmissions in any way.
@@ -81,8 +84,16 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
         SINGLE,
 
         /**
-         * Allow concurrent transmissions. In this mode, the channel does not
-         * keep track of ongoing transmissions, and does not emit channelBusy signals.
+         * Allow multiple concurrent transmissions, with consistency checks.
+         */
+        MULTI,
+
+        /**
+         * Allow multiple concurrent transmissions, with low overhead. In this mode,
+         * the channel does not keep track of ongoing transmissions, so there are
+         * no consistency checks, the isBusy() and getTransmissionFinishTime()
+         * methods are not supported, and the channel does not emit channelBusy
+         * signals.
          */
         UNCHECKED
     };
@@ -97,17 +108,22 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
     };
 
     // cached values of parameters (note: parameters are non-volatile)
-    simtime_t delay; // propagation delay
-    double datarate; // data rate
-    double ber;      // bit error rate
-    double per;      // packet error rate
+    simtime_t delay = 0; // propagation delay
+    double datarate = 0; // data rate
+    double ber = 0;      // bit error rate
+    double per = 0;      // packet error rate
 
     Mode mode = SINGLE;
 
     // data of the last/ongoing transmission (only for mode=SINGLE)
-    simtime_t txStartTime;
-    simtime_t txFinishTime;
-    long lastOrigPacketId = -1;
+    struct Tx {
+        simtime_t startTime;
+        simtime_t finishTime;
+        long origPacketId = -1;
+    };
+    Tx singleTx; // for SINGLE
+    std::vector<Tx> txList; // for MULTI
+    simtime_t channelFinishTime; // for both SINGLE and MULTI
 
   private:
     // internal: checks whether parameters have been set up
