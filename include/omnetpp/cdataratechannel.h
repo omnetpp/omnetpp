@@ -120,6 +120,9 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
     // internal: react to parameter changes
     virtual void handleParameterChange(const char *parname) override;
 
+    // internal: helper to processMessage()
+    virtual void processPacket(cPacket *pkt, const SendOptions& options, simtime_t t, Result& inoutResult);
+
     // internal: emits last busy signal
     virtual void finish() override;
 
