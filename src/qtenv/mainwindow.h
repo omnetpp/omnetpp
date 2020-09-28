@@ -70,6 +70,7 @@ public:
     QWidget *getTimeLineArea() { return ui->timeLine; }
     QAction *getStopAction() { return ui->actionStop; }
     QAction *getFindObjectsAction() { return ui->actionFindInspectObjects; }
+    QAction *getShowAnimationParamsDialogAction() { return ui->actionShowAnimationParams; }
 
     void storeGeometry();
     void restoreGeometry();

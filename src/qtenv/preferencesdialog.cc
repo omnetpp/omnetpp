@@ -17,6 +17,7 @@
 #include "preferencesdialog.h"
 #include "ui_preferencesdialog.h"
 #include "qtenv.h"
+#include "mainwindow.h"
 #include "inspectorutil.h"
 
 #include <QDebug>
@@ -90,6 +91,9 @@ void PreferencesDialog::init()
     ui->colorMsg->setChecked(getQtenv()->opt->animationMsgColors);
     ui->penguinMode->setChecked(getQtenv()->opt->penguinMode);
     ui->delayEdit->setText(QString::number(getQtenv()->opt->methodCallAnimDuration));
+    // there is only one link in that label, and we know what it should do
+    connect(ui->animationSpeedNoteLabel, &QLabel::linkActivated,
+            getQtenv()->getMainWindow()->getShowAnimationParamsDialogAction(), &QAction::trigger);
 
     // Filtering tab
     variant = getQtenv()->getPref("timeline-wantselfmsgs");

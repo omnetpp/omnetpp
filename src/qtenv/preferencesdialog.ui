@@ -623,6 +623,19 @@ Padding with spaces:
         </widget>
        </item>
        <item>
+        <widget class="QLabel" name="animationSpeedNoteLabel">
+         <property name="text">
+          <string>The speed of the animations is influenced by the values set in the &lt;a href=&quot;#toggleAnimParamsDialog&quot;&gt;Animation Parameters dialog&lt;/a&gt; and the &lt;code&gt;cCanvas::setAnimationSpeed()&lt;/code&gt; calls made by the model.</string>
+         </property>
+         <property name="textFormat">
+          <enum>Qt::RichText</enum>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
         <spacer name="animSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
