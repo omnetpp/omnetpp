@@ -106,11 +106,13 @@ LogInspector::LogInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f
     connect(findAgainReverseAction, SIGNAL(triggered()), this, SLOT(findAgainReverse()));
     addAction(findAgainReverseAction);
 
-    QAction *copySelectionUnformattedAction = new QAction(this);
+    QAction *copySelectionWithFormattingAction = new QAction(this);
     // we do this opposite of the usual: Hold shift to copy _formatted_ text
-    copySelectionUnformattedAction->setShortcut(Qt::ControlModifier + Qt::ShiftModifier + Qt::Key_C);
-    connect(copySelectionUnformattedAction, SIGNAL(triggered()), textWidget, SLOT(copySelection()));
-    addAction(copySelectionUnformattedAction);
+    // (because it's not a proper rich-text MIME content, only ANSI control sequences inline plain text)
+    copySelectionWithFormattingAction->setShortcut(Qt::ControlModifier + Qt::ShiftModifier + Qt::Key_C);
+    copySelectionWithFormattingAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    connect(copySelectionWithFormattingAction, SIGNAL(triggered()), textWidget, SLOT(copySelection()));
+    addAction(copySelectionWithFormattingAction);
 
     connect(getQtenv(), SIGNAL(fontChanged()), this, SLOT(onFontChanged()));
 
@@ -180,8 +182,13 @@ QToolBar *LogInspector::createToolbar(bool isTopLevel)
 
 void LogInspector::addOwnActions(QToolBar *toolBar)
 {
-    toolBar->addAction(QIcon(":/tools/copy"), "Copy selected text to clipboard (Ctrl+C)\nUse Ctrl+Shift+C to include formatting",
-                       textWidget, SLOT(copySelectionUnformatted()))->setShortcut(Qt::ControlModifier + Qt::Key_C);
+    // strips the ANSI control sequences, as expected
+    QAction *copySelectionAction = toolBar->addAction(QIcon(":/tools/copy"), "Copy selected text to clipboard (Ctrl+C)\nUse Ctrl+Shift+C to include formatting",
+                       textWidget, SLOT(copySelectionUnformatted()));
+    copySelectionAction->setShortcut(Qt::ControlModifier + Qt::Key_C);
+    copySelectionAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    addAction(copySelectionAction);
+
     toolBar->addAction(QIcon(":/tools/find"), "Find string in window (Ctrl+F)",
                        this, SLOT(onFindButton()))->setShortcut(Qt::ControlModifier + Qt::Key_F);
     if (isTopLevel()) // looks like we don't need this in embedded mode, for whatever reason...
@@ -189,10 +196,8 @@ void LogInspector::addOwnActions(QToolBar *toolBar)
                            this, SLOT(saveContent()));
     toolBar->addAction(QIcon(":/tools/filter"), "Filter window contents (Ctrl+H)",
                        this, SLOT(onFilterButton()))->setShortcut(Qt::ControlModifier + Qt::Key_H);
-    configureMessagePrinterAction
-            = toolBar->addAction(QIcon(":/tools/winconfig"), "Configure message display",
+    configureMessagePrinterAction = toolBar->addAction(QIcon(":/tools/winconfig"), "Configure message display",
                                  this, SLOT(onMessagePrinterTagsButton()));
-
     toolBar->addSeparator();
 
     toMessagesModeAction = new QAction(toolBar);

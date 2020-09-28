@@ -58,6 +58,9 @@ protected:
     // (internalPointer, then static_cast) requires index mapping (mapToSource) first.
     PropertyFilteredGenericObjectTreeModel *proxyModel = nullptr;
 
+    QAction *copyLineAction;
+    QAction *copyLineHighlightedAction;
+
     void mousePressEvent(QMouseEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
     void closeEvent(QCloseEvent *event) override; // DELETES THIS INSPECTOR
@@ -78,6 +81,7 @@ protected slots:
     void onDataEdited();
     void gatherVisibleDataIfSafe();
     void createContextMenu(QPoint pos);
+    void copySelectedLineToClipboard(bool onlyHighlightedPart);
 
     void setMode(Mode mode);
 

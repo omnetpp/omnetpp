@@ -148,6 +148,20 @@ GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel,
     layout->setSpacing(0);
     parent->setMinimumSize(20, 20);
 
+    copyLineAction = new QAction("Copy &Line", this);
+    copyLineAction->setShortcut(QKeySequence::Copy);
+    copyLineAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    // lambda because it is easier than binding the parameter value
+    connect(copyLineAction, &QAction::triggered, [this]() { copySelectedLineToClipboard(false); });
+    addAction(copyLineAction);
+
+    copyLineHighlightedAction = new QAction("&Copy Value", this);
+    copyLineHighlightedAction->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_C);
+    copyLineHighlightedAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    // lambda because it is easier than binding the parameter value
+    connect(copyLineHighlightedAction, &QAction::triggered, [this]() { copySelectedLineToClipboard(true); });
+    addAction(copyLineHighlightedAction);
+
     proxyModel = new PropertyFilteredGenericObjectTreeModel(this);
 
     mode = (Mode)getPref(PREF_MODE, QVariant::fromValue(0), false).toInt();
@@ -270,33 +284,48 @@ void GenericObjectInspector::gatherVisibleDataIfSafe()
 
 void GenericObjectInspector::createContextMenu(QPoint pos)
 {
-    cObject *object = sourceModel->getCObjectPointer(proxyModel->mapToSource(treeView->indexAt(pos)));
-    if (object) {
-        QVector<cObject *> objects;
-        objects.push_back(object);
-        QMenu *menu = InspectorUtil::createInspectorContextMenu(objects, this);
+    QModelIndex sourceIndex = proxyModel->mapToSource(treeView->indexAt(pos));
+    TreeNode *node = static_cast<TreeNode*>(sourceIndex.internalPointer());
+
+    if (node) {
+        QMenu *menu;
+
+        cObject *object = node->getCObjectPointer();
+        if (object) {
+            QVector<cObject *> objects;
+            objects.push_back(object);
+            menu = InspectorUtil::createInspectorContextMenu(objects, this);
+            menu->addSeparator();
+        }
+        else {
+            menu = new QMenu(this);
+        }
+
+        QString text = node->getData(Qt::DisplayRole).toString();
+
+        menu->addAction(copyLineAction);
+        menu->addAction(copyLineHighlightedAction);
+
         menu->exec(treeView->mapToGlobal(pos));
         delete menu;
     }
-    else {
-        TreeNode *node = static_cast<TreeNode*>(proxyModel->mapToSource(treeView->indexAt(pos)).internalPointer());
-        if (node) {
-            QString text = node->getData(Qt::DisplayRole).toString();
+}
 
-            // extractiong the "highlighted" blue region - the value
+void GenericObjectInspector::copySelectedLineToClipboard(bool onlyHighlightedPart)
+{
+    QModelIndexList selection = treeView->selectionModel()->selectedIndexes();
+
+    if (!selection.isEmpty()) {
+        TreeNode *node = static_cast<TreeNode*>(proxyModel->mapToSource(selection.first()).internalPointer());
+        QString text = node->getData(Qt::DisplayRole).toString();
+
+        if (onlyHighlightedPart) {
+            // extracting the "highlighted" blue region - the "value"
             HighlightRange range = node->getData(Qt::UserRole).value<HighlightRange>();
             text = text.mid(range.start, range.length);
-
-            QMenu *menu = new QMenu(this);
-            // The QMenu::addAction overload taking a lambda directly was only
-            // added in Qt 5.6, but we only require 5.4, so doing it this way.
-            QAction *copyAction = menu->addAction("&Copy Value");
-            connect(copyAction, &QAction::triggered, [text]() {
-                QApplication::clipboard()->setText(text, QClipboard::Clipboard);
-            });
-            menu->exec(treeView->mapToGlobal(pos));
-            delete menu;
         }
+
+        QApplication::clipboard()->setText(text, QClipboard::Clipboard);
     }
 }
 
