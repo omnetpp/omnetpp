@@ -60,9 +60,9 @@ rm -rf ide/win32 ide/win64 ide/linux ide/linux64 ide/macosx
 tar xfz $TOOLS_DIR/$TOOLS_VERSION/macosx/jre-*-macosx.tar.gz --directory=ide/opp_ide.app/Contents/MacOS || { echo --- error extracting JRE directory ---; exit 1;}
 
 # copy the self extracting toolchain file into the distro
-mkdir -p tools
+mkdir -p tools/macosx
 echo "Extracting tools archive..."
-tar xfz $TOOLS_DIR/$TOOLS_VERSION/macosx/opp-tools-macosx.tar.gz --directory tools || { echo --- error extracting opp-tools-macosx.tar.gz ---; exit 1;}
+tar xfz $TOOLS_DIR/$TOOLS_VERSION/macosx/opp-tools-macosx.tar.gz --directory tools/macosx || { echo --- error extracting opp-tools-macosx.tar.gz ---; exit 1;}
 
 # pack the distro
 cd ..
