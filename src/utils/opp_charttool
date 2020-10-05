@@ -184,7 +184,12 @@ if __name__ == "__main__":
                 p = "/" + p
 
             if i.startswith(p):
-                inputfiles.extend(glob.glob(pv + "/" + i[len(p):]))
+                pattern = pv + "/" + i[len(p):]
+
+                if os.path.isdir(pattern):
+                    pattern += "/**"
+
+                inputfiles.extend(glob.glob(pattern, recursive=True))
                 mapped = True
                 break
 
