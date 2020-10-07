@@ -360,7 +360,7 @@ QSet<QString> GenericObjectInspector::getExpandedNodes(const QModelIndex &index)
         result.insert(static_cast<TreeNode *>(proxyModel->mapToSource(index).internalPointer())->getNodeIdentifier());
         int numChildren = proxyModel->rowCount(index);
         for (int i = 0; i < numChildren; ++i) {
-            result.unite(getExpandedNodes(index.child(i, 0)));
+            result.unite(getExpandedNodes(proxyModel->index(i, 0, index)));
         }
     }
     return result;
@@ -383,7 +383,7 @@ void GenericObjectInspector::expandNodes(const QSet<QString> &ids, const QModelI
 
         int numChildren = proxyModel->rowCount(index);
         for (int i = 0; i < numChildren; ++i)
-            expandNodes(ids, index.child(i, 0));
+            expandNodes(ids, proxyModel->index(i, 0, index));
     }
 }
 

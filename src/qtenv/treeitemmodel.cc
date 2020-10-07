@@ -178,7 +178,7 @@ void TreeItemModel::getExpandedItems(QTreeView *view, QList<QVariant>& list, QMo
 
             // this is not the root node, so we iterate on all of its children
             for (int row = 0; row < rowCount(idx); ++row)
-                getExpandedItems(view, list, idx.child(row, 0));
+                getExpandedItems(view, list, index(row, 0, idx));
         }
 }
 
@@ -191,7 +191,7 @@ void TreeItemModel::expandItems(QTreeView *view, const QList<QVariant>& list, QM
         if (idx.isValid()) {
             // this is not the root node, so we iterate on all of its children
             for (int row = 0; row < rowCount(idx); ++row) {
-                expandItems(view, list, idx.child(row, 0));
+                expandItems(view, list, index(row, 0, idx));
             }
         }
         else {
