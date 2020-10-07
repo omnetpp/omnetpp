@@ -55,7 +55,7 @@ void HighlighterItemDelegate::paint(QPainter *painter, const QStyleOptionViewIte
     QString text = index.data(Qt::DisplayRole).toString();
 
     // the formatted regions
-    QList<QTextLayout::FormatRange> formats;
+    QVector<QTextLayout::FormatRange> formats;
 
     QTextLayout::FormatRange f;
 
@@ -79,7 +79,7 @@ void HighlighterItemDelegate::paint(QPainter *painter, const QStyleOptionViewIte
     QTextLayout layout;
 
     // applying the format ranges
-    layout.setAdditionalFormats(formats);
+    layout.setFormats(formats);
 
     layout.setFont(option.font);
     layout.setText(option.fontMetrics.elidedText(text, option.textElideMode, option.rect.width() - textOffset - 3));
