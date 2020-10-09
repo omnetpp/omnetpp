@@ -37,8 +37,8 @@
 
 #include <QMetaType>
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 4, 0)
-#error Qtenv requires Qt 5.4 or later.
+#if QT_VERSION < QT_VERSION_CHECK(5, 6, 0)
+#error Qtenv requires Qt 5.6 or later.
 #endif
 
 namespace omnetpp {

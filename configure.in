@@ -866,7 +866,7 @@ if test "$WITH_QTENV" = "yes"; then
 
 QT_VERSIONCHECK_CODE=$(cat <<-EOT
     qVersion();
-    #if QT_VERSION < QT_VERSION_CHECK(5,4,0)
+    #if QT_VERSION < QT_VERSION_CHECK(5,6,0)
     #error
     #endif
 EOT
@@ -888,7 +888,7 @@ EOT
         fi
 
         if test $qt_ok = no; then
-            AC_MSG_ERROR([Cannot build Qt apps, probably due to missing or too old Qt packages. Make sure Qt development packages are installed and newer than Qt 5.4. You can disable Qtenv by setting the WITH_QTENV variable to "no" in configure.user, or try setting the QT_PATH variable to a valid location.])
+            AC_MSG_ERROR([Cannot build Qt apps, probably due to missing or too old Qt packages. Make sure Qt development packages are installed and newer than Qt 5.6. You can disable Qtenv by setting the WITH_QTENV variable to "no" in configure.user, or try setting the QT_PATH variable to a valid location.])
         fi
     fi
 fi # WITH_QTENV
