@@ -632,9 +632,7 @@ void Qtenv::doRun()
         static char *argv[] = { arg, nullptr };
 
         QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps, true);
-        #if QT_VERSION >= QT_VERSION_CHECK(5,6,0)
-            QApplication::setAttribute(Qt::AA_EnableHighDpiScaling, true);
-        #endif
+        QApplication::setAttribute(Qt::AA_EnableHighDpiScaling, true);
 
         app = new QApplication(argc, argv);
 

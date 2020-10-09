@@ -125,11 +125,7 @@ QString VideoRecordingDialog::makeEncodingCommand()
     QString cropArg = "";
 
     float scaleFactor;
-    #if QT_VERSION >= QT_VERSION_CHECK(5,6,0)
-        scaleFactor = getQtenv()->getMainWindow()->devicePixelRatioF();
-    #else
-        scaleFactor = getQtenv()->getMainWindow()->devicePixelRatio();
-    #endif
+    scaleFactor = getQtenv()->getMainWindow()->devicePixelRatioF();
 
     if (!cropArea.isNull())
         cropArg = QString("-filter:v \"crop=%1:%2:%3:%4\" ")

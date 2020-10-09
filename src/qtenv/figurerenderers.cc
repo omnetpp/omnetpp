@@ -1277,7 +1277,6 @@ void PixmapFigureRenderer::refreshInputData(const FigureRenderingArgs& args)
     cPixmapFigure *pixmapFigure = static_cast<cPixmapFigure *>(args.figure);
     QGraphicsPixmapItem *pixmapItem = static_cast<QGraphicsPixmapItem *>(args.item);
 
-    // Qt 5.2.0 is required for this, but 5.4.0 is our minimum anyways
     const cFigure::Pixmap& pixmap = pixmapFigure->getPixmap();
     QImage image(pixmap.buffer(), pixmap.getWidth(), pixmap.getHeight(), QImage::Format_RGBA8888);
 

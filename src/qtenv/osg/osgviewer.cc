@@ -85,17 +85,7 @@ static QSurfaceFormat traitsToSurfaceFormat(const osg::GraphicsContext::Traits *
     format.setAlphaBufferSize(traits->alpha);
     format.setDepthBufferSize(traits->depth);
     format.setStencilBufferSize(traits->stencil);
-
-    // Enabling multisampling breaks OpenGL (osgCanvas) video recording,
-    // specifically grabFramebuffer() with Qt versions prior 5.6.0.
-    // see https://bugreports.qt.io/browse/QTBUG-48450
-    // I think this should check the version Qtenv is running with, not
-    // the one it has been compiled with, but that seemed nontrivial.
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 6, 0))
     format.setSamples(traits->samples);
-#else
-    format.setSamples(1);
-#endif
 
     format.setSwapBehavior(traits->doubleBuffer
                            ? QSurfaceFormat::DoubleBuffer
@@ -490,11 +480,7 @@ void OsgViewer::disable()
 
 float OsgViewer::scaleFactor() const
 {
-    #if QT_VERSION >= QT_VERSION_CHECK(5,6,0)
-        return devicePixelRatioF();
-    #else
-        return devicePixelRatio();
-    #endif
+    return devicePixelRatioF();
 }
 
 float OsgViewer::widgetAspectRatio() const
