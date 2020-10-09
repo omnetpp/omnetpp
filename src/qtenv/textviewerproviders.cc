@@ -630,6 +630,7 @@ QString EventEntryMessageLinesProvider::getLineText(LogBuffer::Entry *entry, int
 
     if (printer)
         try {
+            DisableDebugOnErrors dummy;
             printer->printMessage(os, msg, messagePrinterOptions);
         }
         catch (cRuntimeError &e) {

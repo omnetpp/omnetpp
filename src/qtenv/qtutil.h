@@ -108,6 +108,13 @@ QDebug& operator<<(QDebug& d, const SimTime& t);
 inline char *ptrToStr(cObject *ptr, char *buffer=nullptr) {return voidPtrToStr((void *)ptr, buffer);}
 inline cObject *strToPtr(const char *s) {return (cObject *)strToVoidPtr(s);}
 
+// Prevent the Debug dialog from kicking in if there is an exception in GUI code
+struct DisableDebugOnErrors {
+    bool oldValue;
+    DisableDebugOnErrors();
+    ~DisableDebugOnErrors();
+};
+
 cModule *findCommonAncestor(cModule *src, cModule *dest);
 
 void resolveSendDirectHops(cModule *src, cModule *dest, std::vector<cModule*>& hops);

@@ -358,6 +358,17 @@ QString getMessageShortInfoString(cMessage *msg)
         return "msg for " + modname;
 }
 
+DisableDebugOnErrors::DisableDebugOnErrors()
+{
+    oldValue = getQtenv()->debugOnErrors;
+    getQtenv()->debugOnErrors = false;
+}
+
+DisableDebugOnErrors::~DisableDebugOnErrors()
+{
+    getQtenv()->debugOnErrors = oldValue;
+}
+
 cModule *findCommonAncestor(cModule *src, cModule *dest)
 {
     cModule *candidate = src;

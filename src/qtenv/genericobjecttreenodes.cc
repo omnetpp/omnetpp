@@ -612,15 +612,9 @@ bool FieldNode::isEditable()
            : false;
 }
 
-struct DisableDebugOnErrors {
-    bool oldValue;
-    DisableDebugOnErrors() {oldValue = getQtenv()->debugOnErrors; getQtenv()->debugOnErrors = false;}
-    ~DisableDebugOnErrors() {getQtenv()->debugOnErrors = oldValue;}
-};
-
 bool FieldNode::setData(const QVariant& value, int role)
 {
-    DisableDebugOnErrors dummy; // prevent the Debug dialog from kicking in if there is an exception inside setFieldValueAsString()
+    DisableDebugOnErrors dummy;
     if (!containingDesc)
         return false;
     containingDesc->setFieldValueAsString(containingObject, fieldIndex, 0, value.toString().toStdString().c_str());
