@@ -1,0 +1,61 @@
+%description:
+Tests the checked_int_cast function in intutil.h
+
+%includes:
+#include <limits>
+#include "common/intutil.h"
+
+%global:
+using namespace omnetpp::common;
+
+
+template<typename T>
+void checkOverflowed(T number) {
+    // an implicit rounding occurs, possibly to _just_ outside of int64_t range (to int64_t::max + 1)
+    double numberAsDouble = number;
+    // we convert it back, and with the tested values, we should
+    // always detect either a rounding error, or even an overflow
+    T numberCastedBack = numberAsDouble;
+    if (numberCastedBack == number)
+        throw opp_runtime_error("the value %f could be represented exactly as double", numberAsDouble);
+
+    try {
+        T castedInt = common::checked_int_cast<T>(numberAsDouble, "overflow check tripped");
+        (void)castedInt; // prevent "unused variable" warning
+        std::cout << "there was no overflow" << std::endl;
+    } catch (std::runtime_error &e) {
+        std::cout << e.what() << std::endl;
+    }
+}
+
+%activity:
+
+// int64_t
+
+int64_t maxInt = std::numeric_limits<int64_t>::max();
+int64_t almostMaxInt = maxInt - 500; // this is still too big for double (it only has 53 bits, so we have 10 zero bits on the right)
+int64_t lessThanMaxInt = maxInt - 2000; // this will be rounded down to a smaller value
+
+checkOverflowed<int64_t>(maxInt); // overflow check tripped
+checkOverflowed<int64_t>(almostMaxInt); // overflow check tripped
+checkOverflowed<uint64_t>(lessThanMaxInt); // there was no overflow
+
+// uint64_t
+
+uint64_t maxUint = std::numeric_limits<uint64_t>::max();
+uint64_t almostMaxUint = maxUint - 500; // this is still too big for double (it only has 53 bits, so we have 11 zero bits on the right)
+int64_t lessThanMaxUint = maxUint - 2000; // this will be rounded down to a smaller value
+
+checkOverflowed<uint64_t>(maxUint); // overflow check tripped
+checkOverflowed<uint64_t>(almostMaxUint); // overflow check tripped
+checkOverflowed<uint64_t>(lessThanMaxUint); // there was no overflow
+
+%exitcode: 0
+
+%contains: stdout
+overflow check tripped
+overflow check tripped
+there was no overflow
+overflow check tripped
+overflow check tripped
+there was no overflow
