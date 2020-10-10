@@ -124,7 +124,7 @@ public:
     virtual QString getLineText(LogBuffer::Entry *entry, int lineIndex) = 0;
 
     // Optional.
-    virtual cMessage *getMessageForLine(LogBuffer::Entry *entry, int lineIndex) { ASSERT2(false, "Unimplemented."); };
+    virtual cMessage *getMessageForLine(LogBuffer::Entry *entry, int lineIndex) { ASSERT2(false, "Unimplemented."); return nullptr; };
 };
 
 
