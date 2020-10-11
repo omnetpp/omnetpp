@@ -47,7 +47,7 @@ cPacket::cPacket(const char *name, short k, int64_t l) : cMessage(name, k)
     encapsulatedPacket = nullptr;
     duration = SimTime::ZERO;
     shareCount = 0;
-    origPacketId = -1;
+    transmissionId = getId();
     remainingDuration = SimTime::ZERO;
 }
 
@@ -111,7 +111,7 @@ void cPacket::parsimPack(cCommBuffer *buffer) const
     buffer->pack(duration);
     if (buffer->packFlag(encapsulatedPacket != nullptr))
         buffer->packObject(encapsulatedPacket);
-    buffer->pack(origPacketId);
+    buffer->pack(transmissionId);
     buffer->pack(remainingDuration);
 #endif
 }
@@ -127,7 +127,7 @@ void cPacket::parsimUnpack(cCommBuffer *buffer)
     buffer->unpack(duration);
     if (buffer->checkFlag())
         take(encapsulatedPacket = (cPacket *)buffer->unpackObject());
-    buffer->unpack(origPacketId);
+    buffer->unpack(transmissionId);
     buffer->unpack(remainingDuration);
 #endif
 }
@@ -168,7 +168,7 @@ void cPacket::copy(const cPacket& msg)
     }
 #endif
 
-    origPacketId = msg.origPacketId;
+    transmissionId = msg.transmissionId;
     remainingDuration = msg.remainingDuration;
 }
 

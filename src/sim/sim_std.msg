@@ -397,7 +397,7 @@ class cPacket extends cMessage
     cPacket *encapsulatedPacket @packetData @hint("Used with protocol stacks: stores an encapsulated higher-layer packet");
     bool txChannelEncountered @group(sending) @hint("If true, the packet has encountered a transmission channel during its last send");
     bool isUpdate @group(sending) @hint("If true, this is not a separate packet but a modification to a previous packet transmission (see remainingDuration too)");
-    long origPacketId @group(sending) @editable @hint("When isUpdate=true: identifies the original packet transmission by its packet ID");
+    long transmissionId @group(sending) @editable @hint("When isUpdate=true: identifies the original packet transmission");
     simtime_t duration @group(sending) @hint("Transmission time over a channel with datarate");
     simtime_t remainingDuration @group(sending) @hint("Remaining transmission time over a channel with datarate (see isUpdate=true)");
     bool isReceptionStart @getter(isReceptionStart) @group(sending) @hint("True if duration==remainingDuration");

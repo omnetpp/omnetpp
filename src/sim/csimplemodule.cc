@@ -69,8 +69,10 @@ std::string SendOptions::str() const
         os << "propagationDelay=" << propagationDelay_.ustr() << " ";
     if (duration_ != DURATION_UNSPEC)
         os << "duration=" << duration_.ustr() << " ";
-    if (origPacketId != -1)
-        os << "origPacketId=" << origPacketId << " ";
+    if (isUpdate)
+        os << "isUpdate ";
+    if (transmissionId != -1)
+        os << "transmissionId=" << transmissionId << " ";
     if (remainingDuration != DURATION_UNSPEC)
         os << "remainingDuration=" << remainingDuration.ustr() << " ";
     std::string res = os.str();
@@ -348,15 +350,19 @@ void cSimpleModule::send(cMessage *msg, const SendOptions& options, cGate *outGa
     msg->setSentFrom(this, outGate->getId(), delayEndTime);
     if (msg->isPacket()) {
         cPacket *pkt = (cPacket *)msg;
-        pkt->setOrigPacketId(options.origPacketId);
+        pkt->setIsUpdate(options.isUpdate);
+        if (options.transmissionId != -1)
+            pkt->setTransmissionId(options.transmissionId);
+        else if (options.isUpdate)
+            throw cRuntimeError("send(): No transmissionId specified in SendOptions for a transmission update");
         pkt->setDuration(SIMTIME_ZERO);
         pkt->setRemainingDuration(SIMTIME_ZERO);
         pkt->clearTxChannelEncountered();
     }
     else {
-        if (&options != &SendOptions::DEFAULT && (options.duration_ != DURATION_UNSPEC || options.remainingDuration != DURATION_UNSPEC || options.origPacketId != -1))
-            throw cRuntimeError("send(): (%s)%s is a message, and the duration, remainingDuration "
-                                "and origPacketId send options are only allowed on packets",
+        if (&options != &SendOptions::DEFAULT && (options.duration_ != DURATION_UNSPEC || options.remainingDuration != DURATION_UNSPEC || options.isUpdate || options.transmissionId != -1))
+            throw cRuntimeError("send(): (%s)%s is a message, and the duration, remainingDuration, isUpdate "
+                                "and transmissionId send options are only allowed on packets",
                                 msg->getClassName(), msg->getName());
     }
 
@@ -412,13 +418,17 @@ void cSimpleModule::sendDirect(cMessage *msg, const SendOptions& options, cGate 
     // set message parameters and send it
     msg->setSentFrom(this, -1, simTime());
 
-    EVCB.beginSend(msg, options); // note: records sendDelay and origPacketId
+    EVCB.beginSend(msg, options); // note: records sendDelay and transmissionId
 
     cChannel::Result result;
     if (msg->isPacket()) {
         cPacket *pkt = (cPacket *)msg;
-        pkt->setOrigPacketId(options.origPacketId);
-        bool isUpdate = options.origPacketId != -1;
+        bool isUpdate = options.isUpdate;
+        pkt->setIsUpdate(isUpdate);
+        if (options.transmissionId != -1)
+            pkt->setTransmissionId(options.transmissionId);
+        else if (options.isUpdate)
+            throw cRuntimeError("sendDirect(): No transmissionId specified in SendOptions for a transmission update");
         bool haveDuration = (options.duration_ != DURATION_UNSPEC);
         bool haveRemainingDuration = (options.remainingDuration != DURATION_UNSPEC);
         simtime_t duration, remainingDuration;
@@ -453,9 +463,9 @@ void cSimpleModule::sendDirect(cMessage *msg, const SendOptions& options, cGate 
         result.remainingDuration = remainingDuration;
     }
     else {
-        if (&options != &SendOptions::DEFAULT && (options.duration_ != DURATION_UNSPEC || options.remainingDuration != DURATION_UNSPEC || options.origPacketId != -1))
-            throw cRuntimeError("sendDirect(): (%s)%s is a message, and the duration, remainingDuration "
-                                "and origPacketId send options are only allowed on packets",
+        if (&options != &SendOptions::DEFAULT && (options.duration_ != DURATION_UNSPEC || options.remainingDuration != DURATION_UNSPEC || options.isUpdate || options.transmissionId != -1))
+            throw cRuntimeError("sendDirect(): (%s)%s is a message, and the duration, remainingDuration, isUpdate "
+                                "and transmissionId send options are only allowed on packets",
                                 msg->getClassName(), msg->getName());
     }
     result.delay = options.propagationDelay_;
@@ -623,7 +633,7 @@ void cSimpleModule::arrived(cMessage *msg, cGate *ongate, const SendOptions& opt
             }
             else {
                 // Original transmission (or last, now-obsolete update) must still be in the FES, remove it.
-                deleteObsoletedTransmissionFromFES(pkt->getOrigPacketId(), pkt);
+                deleteObsoletedTransmissionFromFES(pkt->getTransmissionId(), pkt);
             }
         }
     }
@@ -633,7 +643,7 @@ void cSimpleModule::arrived(cMessage *msg, cGate *ongate, const SendOptions& opt
     getSimulation()->insertEvent(msg);
 }
 
-void cSimpleModule::deleteObsoletedTransmissionFromFES(long origPacketId, cPacket *updatePkt)
+void cSimpleModule::deleteObsoletedTransmissionFromFES(long transmissionId, cPacket *updatePkt)
 {
     // Linear search might seem like a poor choice, but alternatives (like maintaining
     // an index) would also affect (slow down) simulations which don't use the updateTx
@@ -646,22 +656,22 @@ void cSimpleModule::deleteObsoletedTransmissionFromFES(long origPacketId, cPacke
         cEvent *event = fes->get(i);
         if (event->isPacket()) {
             cPacket *pkt = (cPacket *)event;
-            if (pkt && (pkt->getId() == origPacketId || pkt->getOrigPacketId() == origPacketId)) {
+            if (pkt && pkt->getTransmissionId() == transmissionId) {
                 obsoletedPacket = pkt;
                 break;
             }
         }
     }
     if (!obsoletedPacket)
-        throw cRuntimeError("Cannot send transmission update packet (%s)%s with origPacketId=%ld "
+        throw cRuntimeError("Cannot send transmission update packet (%s)%s with transmissionId=%ld "
                             "to a gate with the default (=false) deliverImmediately setting: "
-                            "The original packet (or obsoleted update) identified by origPacketId "
+                            "The original packet (or obsoleted update) identified by transmissionId "
                             "was not found in the FES, so it is not possible to replace it with the "
                             "update packet. Perhaps it has already been delivered to the target module. "
                             "Possible solutions include sending the update earlier than the transmission end time, "
                             "adding a propagation delay to the channel, and playing with event priorities "
                             "to force a different event execution order",
-                            updatePkt->getClassName(), updatePkt->getName(), origPacketId);
+                            updatePkt->getClassName(), updatePkt->getName(), transmissionId);
     delete fes->remove(obsoletedPacket);
 }
 

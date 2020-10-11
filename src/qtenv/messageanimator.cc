@@ -244,13 +244,13 @@ void MessageAnimator::endSend(cMessage *msg)
     ASSERT2(!(currentSending->hops.empty()), "No messageSendDirect() nor messageSendHop() was called between beginSend() and endSend()");
 
     bool isUpdatePacket = false;
-    long origPacketId = -1;
+    long transmissionId = -1;
     if (msg->isPacket()) {
         cPacket *packet = static_cast<cPacket *>(msg);
         if (packet->isUpdate()) {
             cutUpdatedPacketAnimation(packet);
             isUpdatePacket = true;
-            origPacketId = packet->getOrigPacketId();
+            transmissionId = packet->getTransmissionId();
         }
     }
 
@@ -344,7 +344,7 @@ void MessageAnimator::endSend(cMessage *msg)
         // XXX maybe split it in two, so if the first few parts are instantaneous, play them, and continue later?
         MessageSendKey key = MessageSendKey::fromMessage(msg);
         if (isUpdatePacket)
-            key.messageId = origPacketId;
+            key.messageId = transmissionId;
         animations.putMulti(key, sendAnim);
     }
 
@@ -565,7 +565,7 @@ void MessageAnimator::cutUpdatedPacketAnimation(cPacket *updatePacket)
     // the original animation was supposed to take the same path
     MessageSendKey key = MessageSendKey::fromMessage(updatePacket);
     // but had a different ID
-    key.messageId = updatePacket->getOrigPacketId();
+    key.messageId = updatePacket->getTransmissionId();
 
     if (animations.containsKey(key)) {
         // This getLast() will make sure that always the last (of the previous ones) animation

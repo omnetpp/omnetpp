@@ -130,7 +130,8 @@ CE CancelEventEntry : MessageEntry // canceling an event caused by a self messag
 BS BeginSendEntry : MessageEntry // beginning to send a message
 {
    sd simtime_t sendDelay         0 // send after this delay 
-   op long origPacketId          -1 // if >=0, this sending updates an earlier transmission
+   up bool isUpdate           false // whether this is a transmission update 
+   tx long transmissionId        -1 // for pairing transmission updates with the original transmission
 }
 
 ES EndSendEntry // prediction of the arrival of a message

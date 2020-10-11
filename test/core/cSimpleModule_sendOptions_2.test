@@ -235,9 +235,9 @@ setting channel datarate=1e+06
 at t=100s send message with default --> ok, arrival=100.1s; channel idle
 at t=100s send message with sendDelay=200ms --> ok, arrival=100.3s; channel idle
 at t=100s send message with propagationDelay=100ms --> ERROR: send()/sendDelayed(): Specifying a propagation delay in the options is only allowed for sendDirect() -- in module (cSimpleModule_sendOptions_2::Sender) Test.sender (id=2), at t=100s, event #2
-at t=100s send message with duration=0s --> ERROR: send(): (omnetpp::cMessage) is a message, and the duration, remainingDuration and origPacketId send options are only allowed on packets -- in module (cSimpleModule_sendOptions_2::Sender) Test.sender (id=2), at t=100s, event #2
-at t=100s send message with duration=100ms --> ERROR: send(): (omnetpp::cMessage) is a message, and the duration, remainingDuration and origPacketId send options are only allowed on packets -- in module (cSimpleModule_sendOptions_2::Sender) Test.sender (id=2), at t=100s, event #2
-at t=100s send message with origPacketId=99 --> ERROR: send(): (omnetpp::cMessage) is a message, and the duration, remainingDuration and origPacketId send options are only allowed on packets -- in module (cSimpleModule_sendOptions_2::Sender) Test.sender (id=2), at t=100s, event #2
+at t=100s send message with duration=0s --> ERROR: send(): (omnetpp::cMessage) is a message, and the duration, remainingDuration, isUpdate and transmissionId send options are only allowed on packets -- in module (cSimpleModule_sendOptions_2::Sender) Test.sender (id=2), at t=100s, event #2
+at t=100s send message with duration=100ms --> ERROR: send(): (omnetpp::cMessage) is a message, and the duration, remainingDuration, isUpdate and transmissionId send options are only allowed on packets -- in module (cSimpleModule_sendOptions_2::Sender) Test.sender (id=2), at t=100s, event #2
+at t=100s send message with isUpdate transmissionId=99 --> ERROR: send(): (omnetpp::cMessage) is a message, and the duration, remainingDuration, isUpdate and transmissionId send options are only allowed on packets -- in module (cSimpleModule_sendOptions_2::Sender) Test.sender (id=2), at t=100s, event #2
 at t=100s send packet(len=1000) with duration=500ms --> ok, duration=500ms, arrival=100.6s; channel busy until t=100.5s
 at t=100.25s send message with default --> ok, arrival=100.35s; channel busy until t=100.5s
 
@@ -260,27 +260,27 @@ at t=301.5s send packet(len=1000) with default --> ok, duration=1ms, arrival=301
 
 TX UPDATE: invalid origPktId:
 setting channel datarate=1e+06
-at t=401s send packet(len=1000) with origPacketId=99 --> ERROR: Cannot send transmission update packet (omnetpp::cPacket): origPacketId=99 does not match that of the last transmission on the channel -- in module (cSimpleModule_sendOptions_2::Sender) Test.sender (id=2), at t=401s, event #27
+at t=401s send packet(len=1000) with isUpdate transmissionId=99 --> ERROR: Cannot send transmission update packet (omnetpp::cPacket): transmissionId=99 does not match that of the last transmission on the channel -- in module (cSimpleModule_sendOptions_2::Sender) Test.sender (id=2), at t=401s, event #27
 
 TX UPDATE: with no datarate
 setting channel datarate=0
 setting deliverImmediately=true
 setting txUpdateSupport=true
 at t=402s send packet(len=1000) with duration=100ms --> ok, duration=100ms, arrival=402.1s; channel busy until t=402.1s
-at t=402.05s send packet(len=1000) with duration=100ms origPacketId=20 --> ok, update with remainingDuration=50ms, duration=100ms, arrival=402.15s; channel busy until t=402.1s
-at t=402.06s send packet(len=1000) with origPacketId=20 remainingDuration=20ms --> ok, update with remainingDuration=20ms, duration=80ms, arrival=402.16s; channel busy until t=402.08s
-at t=402.07s send packet(len=1000) with origPacketId=20 remainingDuration=0s --> ok, update with remainingDuration=0s, duration=70ms, arrival=402.17s; channel idle
-at t=402.071s send packet(len=1000) with origPacketId=20 remainingDuration=0s --> ERROR: Cannot send transmission update packet (omnetpp::cPacket): It has missed the end of the transmission to be updated -- in module (cSimpleModule_sendOptions_2::Sender) Test.sender (id=2), at t=402.071s, event #32
+at t=402.05s send packet(len=1000) with duration=100ms isUpdate transmissionId=20 --> ok, update with remainingDuration=50ms, duration=100ms, arrival=402.15s; channel busy until t=402.1s
+at t=402.06s send packet(len=1000) with isUpdate transmissionId=20 remainingDuration=20ms --> ok, update with remainingDuration=20ms, duration=80ms, arrival=402.16s; channel busy until t=402.08s
+at t=402.07s send packet(len=1000) with isUpdate transmissionId=20 remainingDuration=0s --> ok, update with remainingDuration=0s, duration=70ms, arrival=402.17s; channel idle
+at t=402.071s send packet(len=1000) with isUpdate transmissionId=20 remainingDuration=0s --> ERROR: Cannot send transmission update packet (omnetpp::cPacket): It has missed the end of the transmission to be updated -- in module (cSimpleModule_sendOptions_2::Sender) Test.sender (id=2), at t=402.071s, event #32
 
 TX UPDATE: with datarate
 setting channel datarate=10000
 setting deliverImmediately=true
 setting txUpdateSupport=true
 at t=403s send packet(len=1000) with default --> ok, duration=100ms, arrival=403.1s; channel busy until t=403.1s
-at t=403.05s send packet(len=1000) with origPacketId=25 --> ok, update with remainingDuration=50ms, duration=100ms, arrival=403.15s; channel busy until t=403.1s
-at t=403.06s send packet(len=2000) with origPacketId=25 --> ok, update with remainingDuration=140ms, duration=200ms, arrival=403.16s; channel busy until t=403.2s
-at t=403.07s send packet(len=1000) with origPacketId=25 remainingDuration=100ms --> ok, update with remainingDuration=100ms, duration=170ms, arrival=403.17s; channel busy until t=403.17s
-at t=403.08s send packet(len=1000) with origPacketId=25 remainingDuration=0s --> ok, update with remainingDuration=0s, duration=80ms, arrival=403.18s; channel idle
+at t=403.05s send packet(len=1000) with isUpdate transmissionId=25 --> ok, update with remainingDuration=50ms, duration=100ms, arrival=403.15s; channel busy until t=403.1s
+at t=403.06s send packet(len=2000) with isUpdate transmissionId=25 --> ok, update with remainingDuration=140ms, duration=200ms, arrival=403.16s; channel busy until t=403.2s
+at t=403.07s send packet(len=1000) with isUpdate transmissionId=25 remainingDuration=100ms --> ok, update with remainingDuration=100ms, duration=170ms, arrival=403.17s; channel busy until t=403.17s
+at t=403.08s send packet(len=1000) with isUpdate transmissionId=25 remainingDuration=0s --> ok, update with remainingDuration=0s, duration=80ms, arrival=403.18s; channel idle
 
 TX UPDATE: disabling the channel mid-transmission
 setting channel datarate=0
@@ -288,6 +288,6 @@ setting deliverImmediately=true
 setting txUpdateSupport=true
 at t=404s send packet(len=1000) with duration=100ms --> ok, duration=100ms, arrival=404.1s; channel busy until t=404.1s
 setting channel disabled=true
-at t=404.05s send packet(len=500) with origPacketId=30 remainingDuration=0s --> ok, update with remainingDuration=0s, duration=50ms, arrival=404.15s; channel idle
+at t=404.05s send packet(len=500) with isUpdate transmissionId=30 remainingDuration=0s --> ok, update with remainingDuration=0s, duration=50ms, arrival=404.15s; channel idle
 .
 

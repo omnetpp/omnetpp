@@ -59,7 +59,7 @@ class Node : public cSimpleModule
   protected:
     enum Kind {Default=0, Send, SendUpdate, SendDirect, SendDirectUpdate, Schedule, Cancel, Bubble, MethodCalls, CreateModule, DeleteModule};
     cMessage *timer = nullptr;
-    long origPacketId;
+    long transmissionId;
     simtime_t txStartTime;
   protected:
     virtual void initialize() override;
@@ -109,14 +109,14 @@ void Node::handleMessage(cMessage *msg)
     case Send: {
         EV << "sending pk\n";
         cPacket *pk = new cPacket("pk", 99, 100'000);
-        origPacketId = pk->getId();
+        transmissionId = pk->getTransmissionId();
         send(pk, "out");
         break;
     }
     case SendUpdate: {
         EV << "sending pk update\n";
         cPacket *pk = new cPacket("pkUpdate", 99, 200'000);
-        send(pk, SendOptions().updateTx(origPacketId), "out");
+        send(pk, SendOptions().updateTx(transmissionId), "out");
         break;
     }
     case SendDirect: {
@@ -124,7 +124,7 @@ void Node::handleMessage(cMessage *msg)
         sendDirect(new cMessage("directMsg"), getPeer()->gate("directIn"));
         EV << "sending pk directly\n";
         cPacket *pk = new cPacket("directPk", 99, 100'000);
-        origPacketId = pk->getId();
+        transmissionId = pk->getTransmissionId();
         txStartTime = simTime();
         simtime_t duration = pk->getBitLength()/BITRATE;
         sendDirect(pk, SendOptions().propagationDelay(0.001).duration(duration), getPeer()->gate("directIn"));
@@ -135,7 +135,7 @@ void Node::handleMessage(cMessage *msg)
         cPacket *pk = new cPacket("directPkUpdate", 99, 200'000);
         simtime_t duration = pk->getBitLength()/BITRATE;
         simtime_t remainingDuration = txStartTime + duration - simTime();
-        sendDirect(pk, SendOptions().updateTx(origPacketId, remainingDuration).propagationDelay(0.001).duration(duration), getPeer()->gate("directIn"));
+        sendDirect(pk, SendOptions().updateTx(transmissionId, remainingDuration).propagationDelay(0.001).duration(duration), getPeer()->gate("directIn"));
         break;
     }
     case Schedule:
@@ -305,7 +305,7 @@ DM id 0 tid 0 eid 0 etid 0 c cMessage n send k 1 pe 1
 E # 2 t 1.05 m 3 ce 0 msg 1
 - sending pk update
 CM id 11 tid 11 eid 11 etid 11 c cMessage n pkUpdate k 99 pe -1
-BS id 11 tid 11 eid 11 etid 11 c cPacket n pkUpdate k 99 l 200000 pe 2 op 10
+BS id 11 tid 11 eid 11 etid 11 c cPacket n pkUpdate k 99 l 200000 pe 2 up 1 tx 10
 SH sm 3 sg 1 pd 0.001 td 0.2 rd 0.15
 SH sm 2 sg 1048576 pd 0.001
 DM id 10 tid 10 eid 10 etid 10 c cMessage n pk k 99 pe 1
@@ -336,7 +336,7 @@ DM id 12 tid 12 eid 12 etid 12 c cMessage n directMsg pe 5
 E # 6 t 2.05 m 3 ce 0 msg 3
 - sending pk update directly
 CM id 14 tid 14 eid 14 etid 14 c cMessage n directPkUpdate k 99 pe -1
-BS id 14 tid 14 eid 14 etid 14 c cPacket n directPkUpdate k 99 l 200000 pe 6 op 13
+BS id 14 tid 14 eid 14 etid 14 c cPacket n directPkUpdate k 99 l 200000 pe 6 up 1 tx 13
 SD sm 3 dm 5 dg 6 pd 0.001 td 0.2 rd 0.15
 DM id 13 tid 13 eid 13 etid 13 c cMessage n directPk k 99 pe 4
 ES t 2.201

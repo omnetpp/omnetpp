@@ -55,6 +55,7 @@ class SIM_API cPacket : public cMessage
     enum {
         FL_BITERROR = 8, // has bit errors
         FL_TXCHANNELSEEN = 16, // encountered a transmission channel during its last send
+        FL_ISUPDATE = 32, // if true, this packet is a transmission update
     };
 
     int64_t bitLength;    // length of the packet in bits -- used for bit error and transmission delay modeling
@@ -65,7 +66,7 @@ class SIM_API cPacket : public cMessage
                                // 1: shared once (shared among two messages);
                                // 2: shared twice (shared among three messages); etc.
                                // on reaching max sharecount a new packet gets created
-    long origPacketId;    // if >=0: this is a transmission update; this field identifies the transmission it modifies
+    long transmissionId;  // for pairing transmission updates with the original transmission
     simtime_t remainingDuration; // if transmission update: remaining duration (otherwise it must be equal to the duration)
 
   private:
@@ -75,7 +76,8 @@ class SIM_API cPacket : public cMessage
     // internal: setters used from within send()/sendDirect() and channel code
     void setDuration(simtime_t d) {duration = d;}
     void setRemainingDuration(simtime_t d) {remainingDuration = d;}
-    void setOrigPacketId(long id) {origPacketId = id;}
+    void setTransmissionId(long id) {transmissionId = id;}
+    void setIsUpdate(bool b) {setFlag(FL_ISUPDATE, b);}
     void setTxChannelEncountered(bool b) {setFlag(FL_TXCHANNELSEEN, b);}
     void clearTxChannelEncountered() {flags &= ~FL_TXCHANNELSEEN;}
     void setTxChannelEncountered() {flags |= FL_TXCHANNELSEEN;}
@@ -293,7 +295,7 @@ class SIM_API cPacket : public cMessage
      * @see getRemainingDuration(), cSimpleModule::send(), cSimpleModule::sendDirect(),
      * SendOptions
      */
-    bool isUpdate() const {return origPacketId >= 0;}
+    bool isUpdate() const {return flags&FL_ISUPDATE;}
 
     /**
      * If the packet is a transmission update (isUpdate() would return true),
@@ -301,7 +303,7 @@ class SIM_API cPacket : public cMessage
      *
      * @see cSimpleModule::send(), cSimpleModule::sendDirect(), SendOptions
      */
-    long getOrigPacketId() const {return origPacketId;}
+    long getTransmissionId() const {return transmissionId;}
 
     /**
      * Returns the transmission duration of the whole packet after the packet
