@@ -138,18 +138,18 @@ SIGNAL from module "Test.twoNodes", signal "POST_MODEL_CHANGE", class cPostCompo
 DELETING:
 SIGNAL from module "Test.twoNodes", signal "PRE_MODEL_CHANGE", class cPreModuleDeleteNotification, info:
 SIGNAL from module "Test.twoNodes.node1", signal "PRE_MODEL_CHANGE", class cPreModuleDeleteNotification, info:
-SIGNAL from module "Test.twoNodes.node2", signal "PRE_MODEL_CHANGE", class cPreGateDisconnectNotification, info:
-SIGNAL from module "Test.twoNodes.node2", signal "PRE_MODEL_CHANGE", class cPrePathCutNotification, info:
-SIGNAL from module "Test.twoNodes.node1", signal "PRE_MODEL_CHANGE", class cPrePathCutNotification, info:
-SIGNAL from module "Test.twoNodes.node2", signal "POST_MODEL_CHANGE", class cPostGateDisconnectNotification, info:
-SIGNAL from module "Test.twoNodes.node2", signal "POST_MODEL_CHANGE", class cPostPathCutNotification, info:
-SIGNAL from module "Test.twoNodes.node1", signal "POST_MODEL_CHANGE", class cPostPathCutNotification, info:
 SIGNAL from module "Test.twoNodes.node1", signal "PRE_MODEL_CHANGE", class cPreGateDisconnectNotification, info:
 SIGNAL from module "Test.twoNodes.node1", signal "PRE_MODEL_CHANGE", class cPrePathCutNotification, info:
 SIGNAL from module "Test.twoNodes.node2", signal "PRE_MODEL_CHANGE", class cPrePathCutNotification, info:
 SIGNAL from module "Test.twoNodes.node1", signal "POST_MODEL_CHANGE", class cPostGateDisconnectNotification, info:
 SIGNAL from module "Test.twoNodes.node1", signal "POST_MODEL_CHANGE", class cPostPathCutNotification, info:
 SIGNAL from module "Test.twoNodes.node2", signal "POST_MODEL_CHANGE", class cPostPathCutNotification, info:
+SIGNAL from module "Test.twoNodes.node2", signal "PRE_MODEL_CHANGE", class cPreGateDisconnectNotification, info:
+SIGNAL from module "Test.twoNodes.node2", signal "PRE_MODEL_CHANGE", class cPrePathCutNotification, info:
+SIGNAL from module "Test.twoNodes.node1", signal "PRE_MODEL_CHANGE", class cPrePathCutNotification, info:
+SIGNAL from module "Test.twoNodes.node2", signal "POST_MODEL_CHANGE", class cPostGateDisconnectNotification, info:
+SIGNAL from module "Test.twoNodes.node2", signal "POST_MODEL_CHANGE", class cPostPathCutNotification, info:
+SIGNAL from module "Test.twoNodes.node1", signal "POST_MODEL_CHANGE", class cPostPathCutNotification, info:
 SIGNAL from module "Test.twoNodes.node1", signal "PRE_MODEL_CHANGE", class cPreGateDeleteNotification, info:
 SIGNAL from module "Test.twoNodes.node1", signal "POST_MODEL_CHANGE", class cPostGateDeleteNotification, info:
 SIGNAL from module "Test.twoNodes", signal "POST_MODEL_CHANGE", class cPostModuleDeleteNotification, info:

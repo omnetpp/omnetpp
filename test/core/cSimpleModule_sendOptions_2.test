@@ -195,8 +195,8 @@ void Sender::testTxUpdates()
     waitCeil(); sendOrigPkt(makePacket(1000), SendOptions::DEFAULT); // original transmission
     wait(0.05); trySend(makePacket(1000), SendOptions().updateTx(origPktId)); // same length, so endTx should not change
     wait(0.01); trySend(makePacket(2000), SendOptions().updateTx(origPktId)); // extend packet a little
-    wait(0.01); trySend(makePacket(1000), SendOptions().updateTx(origPktId, 0.1)); // error: elapsed+remaining != computed duration
-    wait(0.01); trySend(makePacket(1000), SendOptions().finishTx(origPktId)); // error: elapsed+remaining(=0) != computed duration
+    wait(0.01); trySend(makePacket(1000), SendOptions().updateTx(origPktId, 0.1)); // extend more
+    wait(0.01); trySend(makePacket(1000), SendOptions().finishTx(origPktId)); // finish
 
     EV << "\nTX UPDATE: disabling the channel mid-transmission\n";
     setDatarate(0); // none
@@ -279,8 +279,8 @@ setting txUpdateSupport=true
 at t=403s send packet(len=1000) with default --> ok, duration=100ms, arrival=403.1s; channel busy until t=403.1s
 at t=403.05s send packet(len=1000) with origPacketId=25 --> ok, update with remainingDuration=50ms, duration=100ms, arrival=403.15s; channel busy until t=403.1s
 at t=403.06s send packet(len=2000) with origPacketId=25 --> ok, update with remainingDuration=140ms, duration=200ms, arrival=403.16s; channel busy until t=403.2s
-at t=403.07s send packet(len=1000) with origPacketId=25 remainingDuration=100ms --> ERROR: (omnetpp::cDatarateChannel)Test.sender.out.channel: Cannot send transmission update packet (omnetpp::cPacket): Both duration and remainingDuration are specified, and duration (100ms) != elapsedTxTime (70ms) + remainingDuration (100ms) -- in module (cSimpleModule_sendOptions_2::Sender) Test.sender (id=2), at t=403.07s, event #40
-at t=403.08s send packet(len=1000) with origPacketId=25 remainingDuration=0s --> ERROR: (omnetpp::cDatarateChannel)Test.sender.out.channel: Cannot send transmission update packet (omnetpp::cPacket): Both duration and remainingDuration are specified, and duration (100ms) != elapsedTxTime (80ms) + remainingDuration (0s) -- in module (cSimpleModule_sendOptions_2::Sender) Test.sender (id=2), at t=403.08s, event #41
+at t=403.07s send packet(len=1000) with origPacketId=25 remainingDuration=100ms --> ok, update with remainingDuration=100ms, duration=170ms, arrival=403.17s; channel busy until t=403.17s
+at t=403.08s send packet(len=1000) with origPacketId=25 remainingDuration=0s --> ok, update with remainingDuration=0s, duration=80ms, arrival=403.18s; channel idle
 
 TX UPDATE: disabling the channel mid-transmission
 setting channel datarate=0
