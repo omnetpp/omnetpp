@@ -45,7 +45,7 @@ SendOptions cParsimProtocolBase::unpackOptions(cCommBuffer *buffer)
     buffer->unpack(options.sendDelay);
     buffer->unpack(options.propagationDelay_);
     buffer->unpack(options.duration_);
-    buffer->unpack(options.transmissionId);
+    buffer->unpack(options.transmissionId_);
     buffer->unpack(options.remainingDuration);
     return options;
 }
@@ -55,7 +55,7 @@ void cParsimProtocolBase::packOptions(cCommBuffer *buffer, const SendOptions& op
     buffer->pack(options.sendDelay);
     buffer->pack(options.propagationDelay_);
     buffer->pack(options.duration_);
-    buffer->pack(options.transmissionId);
+    buffer->pack(options.transmissionId_);
     buffer->pack(options.remainingDuration);
 }
 

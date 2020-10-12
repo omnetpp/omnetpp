@@ -50,7 +50,7 @@ class Sender : public cSimpleModule
     void sendOrigPk(const char *name, int64_t length) {
         cPacket *pk = new cPacket(name, 0, length);
         transmissionId = pk->getId();
-        send(pk, "out");
+        send(pk, SendOptions().transmissionId(transmissionId), "out");
     }
     void sendTxUpdate(const char *name, int64_t length) {
         cPacket *pk = new cPacket(name, 0, length);

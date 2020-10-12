@@ -196,6 +196,7 @@ void cDatarateChannel::processPacket(cPacket *pkt, const SendOptions& options, s
                         "waiting to be transmitted", pkt->getClassName(), pkt->getFullName());
         }
         else {
+            ASSERT(pkt->getTransmissionId() != -1); // assured in send()
             if (pkt->getTransmissionId() != tx->transmissionId)
                 throw cRuntimeError("Cannot send transmission update packet (%s)%s: transmissionId=%ld does not match that of the last transmission on the channel", pkt->getClassName(), pkt->getFullName(), pkt->getTransmissionId());
             if (t > tx->finishTime) // note: if they are equal and it's a problem, we'll catch that in cSimpleModule::deleteObsoletedTransmissionFromFES()
@@ -210,6 +211,7 @@ void cDatarateChannel::processPacket(cPacket *pkt, const SendOptions& options, s
         }
         else {
             // find updated transmission, purge expired ones
+            ASSERT(pkt->getTransmissionId() != -1); // assured in send()
             int txIndex = -1;
             simtime_t now = getSimulation()->getSimTime();
             for (int i = 0; i < txList.size(); i++) {

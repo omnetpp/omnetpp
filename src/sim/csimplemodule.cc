@@ -71,8 +71,8 @@ std::string SendOptions::str() const
         os << "duration=" << duration_.ustr() << " ";
     if (isUpdate)
         os << "isUpdate ";
-    if (transmissionId != -1)
-        os << "transmissionId=" << transmissionId << " ";
+    if (transmissionId_ != -1)
+        os << "transmissionId=" << transmissionId_ << " ";
     if (remainingDuration != DURATION_UNSPEC)
         os << "remainingDuration=" << remainingDuration.ustr() << " ";
     std::string res = os.str();
@@ -351,16 +351,15 @@ void cSimpleModule::send(cMessage *msg, const SendOptions& options, cGate *outGa
     if (msg->isPacket()) {
         cPacket *pkt = (cPacket *)msg;
         pkt->setIsUpdate(options.isUpdate);
-        if (options.transmissionId != -1)
-            pkt->setTransmissionId(options.transmissionId);
-        else if (options.isUpdate)
+        pkt->setTransmissionId(options.transmissionId_);
+        if (options.isUpdate && options.transmissionId_ == -1)
             throw cRuntimeError("send(): No transmissionId specified in SendOptions for a transmission update");
         pkt->setDuration(SIMTIME_ZERO);
         pkt->setRemainingDuration(SIMTIME_ZERO);
         pkt->clearTxChannelEncountered();
     }
     else {
-        if (&options != &SendOptions::DEFAULT && (options.duration_ != DURATION_UNSPEC || options.remainingDuration != DURATION_UNSPEC || options.isUpdate || options.transmissionId != -1))
+        if (&options != &SendOptions::DEFAULT && (options.duration_ != DURATION_UNSPEC || options.remainingDuration != DURATION_UNSPEC || options.isUpdate || options.transmissionId_ != -1))
             throw cRuntimeError("send(): (%s)%s is a message, and the duration, remainingDuration, isUpdate "
                                 "and transmissionId send options are only allowed on packets",
                                 msg->getClassName(), msg->getName());
@@ -425,9 +424,8 @@ void cSimpleModule::sendDirect(cMessage *msg, const SendOptions& options, cGate 
         cPacket *pkt = (cPacket *)msg;
         bool isUpdate = options.isUpdate;
         pkt->setIsUpdate(isUpdate);
-        if (options.transmissionId != -1)
-            pkt->setTransmissionId(options.transmissionId);
-        else if (options.isUpdate)
+        pkt->setTransmissionId(options.transmissionId_);
+        if (options.isUpdate && options.transmissionId_ == -1)
             throw cRuntimeError("sendDirect(): No transmissionId specified in SendOptions for a transmission update");
         bool haveDuration = (options.duration_ != DURATION_UNSPEC);
         bool haveRemainingDuration = (options.remainingDuration != DURATION_UNSPEC);
@@ -463,7 +461,7 @@ void cSimpleModule::sendDirect(cMessage *msg, const SendOptions& options, cGate 
         result.remainingDuration = remainingDuration;
     }
     else {
-        if (&options != &SendOptions::DEFAULT && (options.duration_ != DURATION_UNSPEC || options.remainingDuration != DURATION_UNSPEC || options.isUpdate || options.transmissionId != -1))
+        if (&options != &SendOptions::DEFAULT && (options.duration_ != DURATION_UNSPEC || options.remainingDuration != DURATION_UNSPEC || options.isUpdate || options.transmissionId_ != -1))
             throw cRuntimeError("sendDirect(): (%s)%s is a message, and the duration, remainingDuration, isUpdate "
                                 "and transmissionId send options are only allowed on packets",
                                 msg->getClassName(), msg->getName());

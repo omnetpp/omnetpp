@@ -49,7 +49,7 @@ class Sender : public cSimpleModule
     void setReceiverTxUpdateSupport(bool b);
     void waitUntil(simtime_t t) {wait(t-simTime());}
     void waitCeil() {waitUntil(simTime().trunc(SIMTIME_S)+1.0);}
-    void sendOrigPkt(cPacket *pkt, const SendOptions& options) { transmissionId = pkt->getId(); trySend(pkt, options); }
+    void sendOrigPkt(cPacket *pkt, const SendOptions& options) { trySend(pkt, SendOptions(options).transmissionId(transmissionId=pkt->getId())); }
     void trySend(cMessage *msg, const SendOptions& options);
 
     // tests
@@ -195,7 +195,7 @@ at t=203s send packet(len=1000) with duration=300ms --> ok, duration=300ms, arri
 TX UPDATE:
 setting deliverImmediately=true
 setting txUpdateSupport=true
-at t=401s send packet(len=1000) with duration=100ms --> ok, duration=100ms, arrival=401s
+at t=401s send packet(len=1000) with duration=100ms transmissionId=19 --> ok, duration=100ms, arrival=401s
 at t=401.05s send packet(len=1000) with isUpdate transmissionId=19 --> ok, update with remainingDuration=0s, duration=0s, arrival=401.05s
 at t=401.06s send packet(len=1000) with isUpdate transmissionId=19 remainingDuration=140ms --> ERROR: sendDirect(): For transmission update packets, the duration and remainingDuration options may only occur together -- in module (cSimpleModule_sendOptions_3::Sender) Test.sender (id=2), at t=401.06s, event #27
 at t=401.07s send packet(len=1000) with duration=200ms isUpdate transmissionId=19 remainingDuration=140ms --> ok, update with remainingDuration=140ms, duration=200ms, arrival=401.07s

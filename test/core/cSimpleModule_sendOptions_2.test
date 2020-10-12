@@ -56,7 +56,7 @@ class Sender : public cSimpleModule
     void setReceiverTxUpdateSupport(bool b);
     void waitUntil(simtime_t t) {wait(t-simTime());}
     void waitCeil() {waitUntil(simTime().trunc(SIMTIME_S)+1.0);}
-    void sendOrigPkt(cPacket *pkt, const SendOptions& options) { transmissionId = pkt->getId(); trySend(pkt, options); }
+    void sendOrigPkt(cPacket *pkt, const SendOptions& options) { trySend(pkt, SendOptions(options).transmissionId(transmissionId=pkt->getId())); }
     void trySend(cMessage *msg, const SendOptions& options);
 
     // tests
@@ -266,7 +266,7 @@ TX UPDATE: with no datarate
 setting channel datarate=0
 setting deliverImmediately=true
 setting txUpdateSupport=true
-at t=402s send packet(len=1000) with duration=100ms --> ok, duration=100ms, arrival=402.1s; channel busy until t=402.1s
+at t=402s send packet(len=1000) with duration=100ms transmissionId=20 --> ok, duration=100ms, arrival=402.1s; channel busy until t=402.1s
 at t=402.05s send packet(len=1000) with duration=100ms isUpdate transmissionId=20 --> ok, update with remainingDuration=50ms, duration=100ms, arrival=402.15s; channel busy until t=402.1s
 at t=402.06s send packet(len=1000) with isUpdate transmissionId=20 remainingDuration=20ms --> ok, update with remainingDuration=20ms, duration=80ms, arrival=402.16s; channel busy until t=402.08s
 at t=402.07s send packet(len=1000) with isUpdate transmissionId=20 remainingDuration=0s --> ok, update with remainingDuration=0s, duration=70ms, arrival=402.17s; channel idle
@@ -276,7 +276,7 @@ TX UPDATE: with datarate
 setting channel datarate=10000
 setting deliverImmediately=true
 setting txUpdateSupport=true
-at t=403s send packet(len=1000) with default --> ok, duration=100ms, arrival=403.1s; channel busy until t=403.1s
+at t=403s send packet(len=1000) with transmissionId=25 --> ok, duration=100ms, arrival=403.1s; channel busy until t=403.1s
 at t=403.05s send packet(len=1000) with isUpdate transmissionId=25 --> ok, update with remainingDuration=50ms, duration=100ms, arrival=403.15s; channel busy until t=403.1s
 at t=403.06s send packet(len=2000) with isUpdate transmissionId=25 --> ok, update with remainingDuration=140ms, duration=200ms, arrival=403.16s; channel busy until t=403.2s
 at t=403.07s send packet(len=1000) with isUpdate transmissionId=25 remainingDuration=100ms --> ok, update with remainingDuration=100ms, duration=170ms, arrival=403.17s; channel busy until t=403.17s
@@ -286,7 +286,7 @@ TX UPDATE: disabling the channel mid-transmission
 setting channel datarate=0
 setting deliverImmediately=true
 setting txUpdateSupport=true
-at t=404s send packet(len=1000) with duration=100ms --> ok, duration=100ms, arrival=404.1s; channel busy until t=404.1s
+at t=404s send packet(len=1000) with duration=100ms transmissionId=30 --> ok, duration=100ms, arrival=404.1s; channel busy until t=404.1s
 setting channel disabled=true
 at t=404.05s send packet(len=500) with isUpdate transmissionId=30 remainingDuration=0s --> ok, update with remainingDuration=0s, duration=50ms, arrival=404.15s; channel idle
 .

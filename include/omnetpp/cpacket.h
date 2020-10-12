@@ -66,7 +66,7 @@ class SIM_API cPacket : public cMessage
                                // 1: shared once (shared among two messages);
                                // 2: shared twice (shared among three messages); etc.
                                // on reaching max sharecount a new packet gets created
-    long transmissionId;  // for pairing transmission updates with the original transmission
+    long transmissionId = -1;  // for pairing transmission updates with the original transmission
     simtime_t remainingDuration; // if transmission update: remaining duration (otherwise it must be equal to the duration)
 
   private:

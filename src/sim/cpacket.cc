@@ -47,7 +47,6 @@ cPacket::cPacket(const char *name, short k, int64_t l) : cMessage(name, k)
     encapsulatedPacket = nullptr;
     duration = SimTime::ZERO;
     shareCount = 0;
-    transmissionId = getId();
     remainingDuration = SimTime::ZERO;
 }
 

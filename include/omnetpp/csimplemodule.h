@@ -45,9 +45,11 @@ class cCoroutine;
  * while the transmission is in progress.
  *
  * Transmission updates are normal packets (cPacket) sent with with the
- * updateTx() or finishTx() options. These methods expect the transmission ID
- * of the original packet in the transmissionId argument. A transmission
- * can be updated several times, using always the same transmissionId.
+ * updateTx() or finishTx() options. These methods expect a transmission ID
+ * which should be determined when sending the original packet, and specified
+ * using the transmissionId() method. A transmission can be updated several
+ * times, using always the same transmissionId.
+ *
  * The packet in each transmission update conceptually replaces the
  * packet that the peer is going to receive. Updates may be sent
  * while transmission is still ongoing, and, in certain cases,
@@ -82,7 +84,7 @@ struct SIM_API SendOptions {
     simtime_t propagationDelay_ = SIMTIME_ZERO; // for sendDirect()
     simtime_t duration_ = DURATION_UNSPEC; // for packets not using channel datarate
     bool isUpdate = false;
-    long transmissionId = -1; // if not -1, specifies the transmission id
+    long transmissionId_ = -1; // if not -1, specifies the transmission id
     simtime_t remainingDuration = DURATION_UNSPEC; // when updating an earlier transmission
 
     static const simtime_t DURATION_UNSPEC;
@@ -122,13 +124,22 @@ struct SIM_API SendOptions {
     SendOptions& duration(simtime_t duration) {this->duration_ = duration; return *this;}
 
     /**
+     * Specifies the transmission ID for a (non-update) packet. A transmission ID
+     * is necessary for sending transmission updates (see finishTx() and updateTx()).
+     * It is customary to use the packet's message id as transmission ID.
+     *
+     * @see cMessage::getId(), cPacket::isUpdate()
+     */
+    SendOptions& transmissionId(long transmissionId) {this->transmissionId_ = transmissionId; return *this;}
+
+    /**
      * Specifies that this is a transmission update, where the remaining duration
      * is zero. See the comment of this class for an explanation of transmission
      * updates.
      *
      * @see cPacket::isUpdate(), cPacket::getRemainingDuration()
      */
-    SendOptions& finishTx(long transmissionId) {this->isUpdate = true; this->transmissionId = transmissionId; remainingDuration = SIMTIME_ZERO; return *this;}
+    SendOptions& finishTx(long transmissionId) {this->isUpdate = true; this->transmissionId_ = transmissionId; remainingDuration = SIMTIME_ZERO; return *this;}
 
     /**
      * Specifies that this is a transmission update, where the remaining duration should be
@@ -137,14 +148,14 @@ struct SIM_API SendOptions {
      *
      * @see cPacket::isUpdate(), cPacket::getRemainingDuration()
      */
-    SendOptions& updateTx(long transmissionId) {this->isUpdate = true; this->transmissionId = transmissionId; remainingDuration = DURATION_UNSPEC; return *this;}
+    SendOptions& updateTx(long transmissionId) {this->isUpdate = true; this->transmissionId_ = transmissionId; remainingDuration = DURATION_UNSPEC; return *this;}
 
     /**
      * Specifies that this is a transmission update, with the given remaining duration.
      * See the comment of this class for an explanation of transmission
      * updates.@see cPacket::isUpdate(), cPacket::getRemainingDuration()
      */
-    SendOptions& updateTx(long transmissionId, simtime_t remainingDuration) {this->isUpdate = true; this->transmissionId = transmissionId; this->remainingDuration = remainingDuration; return *this;}
+    SendOptions& updateTx(long transmissionId, simtime_t remainingDuration) {this->isUpdate = true; this->transmissionId_ = transmissionId; this->remainingDuration = remainingDuration; return *this;}
 
     /**
      * Returns the options in a string form.

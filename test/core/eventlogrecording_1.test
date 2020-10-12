@@ -109,8 +109,8 @@ void Node::handleMessage(cMessage *msg)
     case Send: {
         EV << "sending pk\n";
         cPacket *pk = new cPacket("pk", 99, 100'000);
-        transmissionId = pk->getTransmissionId();
-        send(pk, "out");
+        transmissionId = pk->getId();
+        send(pk, SendOptions().transmissionId(transmissionId), "out");
         break;
     }
     case SendUpdate: {
@@ -124,10 +124,10 @@ void Node::handleMessage(cMessage *msg)
         sendDirect(new cMessage("directMsg"), getPeer()->gate("directIn"));
         EV << "sending pk directly\n";
         cPacket *pk = new cPacket("directPk", 99, 100'000);
-        transmissionId = pk->getTransmissionId();
+        transmissionId = pk->getId();
         txStartTime = simTime();
         simtime_t duration = pk->getBitLength()/BITRATE;
-        sendDirect(pk, SendOptions().propagationDelay(0.001).duration(duration), getPeer()->gate("directIn"));
+        sendDirect(pk, SendOptions().transmissionId(transmissionId).propagationDelay(0.001).duration(duration), getPeer()->gate("directIn"));
         break;
     }
     case SendDirectUpdate: {
@@ -296,7 +296,7 @@ ME
 E # 1 t 1 m 3 ce 0 msg 0
 - sending pk
 CM id 10 tid 10 eid 10 etid 10 c cMessage n pk k 99 pe -1
-BS id 10 tid 10 eid 10 etid 10 c cPacket n pk k 99 l 100000 pe 1
+BS id 10 tid 10 eid 10 etid 10 c cPacket n pk k 99 l 100000 pe 1 tx 10
 SH sm 3 sg 1 pd 0.001 td 0.1
 SH sm 2 sg 1048576 pd 0.001
 ES t 1.102
@@ -324,7 +324,7 @@ SD sm 3 dm 5 dg 6
 ES t 2
 - sending pk directly
 CM id 13 tid 13 eid 13 etid 13 c cMessage n directPk k 99 pe -1
-BS id 13 tid 13 eid 13 etid 13 c cPacket n directPk k 99 l 100000 pe 4
+BS id 13 tid 13 eid 13 etid 13 c cPacket n directPk k 99 l 100000 pe 4 tx 13
 SD sm 3 dm 5 dg 6 pd 0.001 td 0.1
 ES t 2.101
 DM id 2 tid 2 eid 2 etid 2 c cMessage n sendDirect k 3 pe 4

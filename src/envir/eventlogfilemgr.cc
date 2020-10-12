@@ -279,7 +279,7 @@ void EventlogFileManager::recordMessages()
             cChannel::Result result;
             result.delay = msg->getArrivalTime() - msg->getSendingTime();
             if (isPacket) {
-                options.transmissionId = packet->getTransmissionId();
+                options.transmissionId_ = packet->getTransmissionId();
                 result.duration = packet->getDuration();
                 result.remainingDuration = packet->getRemainingDuration();
                 if (packet->isReceptionEnd())
@@ -418,7 +418,7 @@ void EventlogFileManager::beginSend(cMessage *msg, const SendOptions& options)
                     pkt->getKind(), pkt->getSchedulingPriority(), pkt->getBitLength(), pkt->hasBitError(),
                     objectPrinter ? objectPrinter->printObjectToString(pkt).c_str() : nullptr,
                     pkt->getPreviousEventNumber(),
-                    options.sendDelay, options.isUpdate, options.transmissionId);
+                    options.sendDelay, options.isUpdate, options.transmissionId_);
         }
         else {
             EventLogWriter::recordBeginSendEntry_id_tid_eid_etid_c_n_k_p_l_er_d_pe_sd_up_tx(feventlog,
@@ -427,7 +427,7 @@ void EventlogFileManager::beginSend(cMessage *msg, const SendOptions& options)
                     msg->getKind(), msg->getSchedulingPriority(), 0, false,
                     objectPrinter ? objectPrinter->printObjectToString(msg).c_str() : nullptr,
                     msg->getPreviousEventNumber(),
-                    options.sendDelay, options.isUpdate, options.transmissionId);
+                    options.sendDelay, options.isUpdate, options.transmissionId_);
         }
         entryIndex++;
         addPreviousEventNumber(msg->getPreviousEventNumber());

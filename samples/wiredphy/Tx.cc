@@ -100,13 +100,13 @@ void Tx::receiveFromCutthrough(cPacket *packet)
 void Tx::sendToMedium(cPacket *packet, simtime_t duration)
 {
     EV << "sendToMedium, pk=" << packet << endl;
-    send(packet, SendOptions().duration(duration), gate("mediumOut"));
+    send(packet, SendOptions().transmissionId(transmissionId).duration(duration), gate("mediumOut"));
 }
 
 void Tx::sendTxUpdateToMedium(cPacket *packet, simtime_t duration)
 {
     EV << "sendTxUpdateToMedium, pk=" << packet << endl;
-    send(packet, SendOptions().updateTx(txOrigPacketId).duration(duration), gate("mediumOut"));
+    send(packet, SendOptions().updateTx(transmissionId).duration(duration), gate("mediumOut"));
 }
 
 void Tx::startTx(cPacket *packet)
@@ -114,7 +114,7 @@ void Tx::startTx(cPacket *packet)
     EV << "startTx, pk=" << packet << endl;
     if (isTransmitting())
         throw cRuntimeError("Another packet is already being transmitted");
-    txOrigPacketId = packet->getId();
+    transmissionId = packet->getId();
     txPacket = packet->dup();
     simtime_t duration = calculateDuration(packet);
     scheduleTxEnd(duration);
@@ -145,7 +145,7 @@ void Tx::endTx()
     EV << "endTx, pk=" << txPacket << endl;
     delete txPacket;
     txPacket = nullptr;
-    txOrigPacketId = -1;
+    transmissionId = -1;
     cutthroughInProgress = false;
 
     if (queueingEnabled && !txQueue.isEmpty())
@@ -162,7 +162,7 @@ void Tx::abortTx()
     simtime_t duration = calculateDuration(txPacket);
     sendTxUpdateToMedium(txPacket, duration);
     txPacket = nullptr;
-    txOrigPacketId = -1;
+    transmissionId = -1;
 }
 
 simtime_t Tx::calculateDuration(cPacket *packet)
