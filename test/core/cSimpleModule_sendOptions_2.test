@@ -43,7 +43,7 @@ class Sender : public cSimpleModule
 {
   private:
     cDatarateChannel *datarateChannel;
-    long origPktId = 0;
+    long transmissionId = 0;
   public:
     Sender() : cSimpleModule(32768) { }
     virtual void initialize() override { datarateChannel = check_and_cast<cDatarateChannel*>(gate("out")->getChannel()); }
@@ -56,7 +56,7 @@ class Sender : public cSimpleModule
     void setReceiverTxUpdateSupport(bool b);
     void waitUntil(simtime_t t) {wait(t-simTime());}
     void waitCeil() {waitUntil(simTime().trunc(SIMTIME_S)+1.0);}
-    void sendOrigPkt(cPacket *pkt, const SendOptions& options) { origPktId = pkt->getId(); trySend(pkt, options); }
+    void sendOrigPkt(cPacket *pkt, const SendOptions& options) { transmissionId = pkt->getId(); trySend(pkt, options); }
     void trySend(cMessage *msg, const SendOptions& options);
 
     // tests
@@ -172,7 +172,7 @@ void Sender::testBusyChannel()
 
 void Sender::testTxUpdates()
 {
-    EV << "\nTX UPDATE: invalid origPktId:\n";
+    EV << "\nTX UPDATE: invalid transmissionId:\n";
     setDatarate(1e6);
     waitCeil(); trySend(makePacket(1000), SendOptions().updateTx(99));
     //TODO test error: receiver does not support updates
@@ -182,21 +182,21 @@ void Sender::testTxUpdates()
     setDeliverImmediately(true);
     setReceiverTxUpdateSupport(true);
     waitCeil(); sendOrigPkt(makePacket(1000), SendOptions().duration(0.1)); // original transmission
-    wait(0.05); trySend(makePacket(1000), SendOptions().duration(0.1).updateTx(origPktId)); // same duration, so endTx should not change
-    wait(0.01); trySend(makePacket(1000), SendOptions().updateTx(origPktId, 0.02)); // duration should be 50ms+10ms+20ms = 80ms
-    wait(0.01); trySend(makePacket(1000), SendOptions().finishTx(origPktId)); // should finish now (duration=70ms)
+    wait(0.05); trySend(makePacket(1000), SendOptions().duration(0.1).updateTx(transmissionId)); // same duration, so endTx should not change
+    wait(0.01); trySend(makePacket(1000), SendOptions().updateTx(transmissionId, 0.02)); // duration should be 50ms+10ms+20ms = 80ms
+    wait(0.01); trySend(makePacket(1000), SendOptions().finishTx(transmissionId)); // should finish now (duration=70ms)
     waitUntil(datarateChannel->getTransmissionFinishTime()+0.001);
-    trySend(makePacket(1000), SendOptions().finishTx(origPktId)); // too late
+    trySend(makePacket(1000), SendOptions().finishTx(transmissionId)); // too late
 
     EV << "\nTX UPDATE: with datarate\n";
     setDatarate(1e4); // make pkt 0.1s long
     setDeliverImmediately(true);
     setReceiverTxUpdateSupport(true);
     waitCeil(); sendOrigPkt(makePacket(1000), SendOptions::DEFAULT); // original transmission
-    wait(0.05); trySend(makePacket(1000), SendOptions().updateTx(origPktId)); // same length, so endTx should not change
-    wait(0.01); trySend(makePacket(2000), SendOptions().updateTx(origPktId)); // extend packet a little
-    wait(0.01); trySend(makePacket(1000), SendOptions().updateTx(origPktId, 0.1)); // extend more
-    wait(0.01); trySend(makePacket(1000), SendOptions().finishTx(origPktId)); // finish
+    wait(0.05); trySend(makePacket(1000), SendOptions().updateTx(transmissionId)); // same length, so endTx should not change
+    wait(0.01); trySend(makePacket(2000), SendOptions().updateTx(transmissionId)); // extend packet a little
+    wait(0.01); trySend(makePacket(1000), SendOptions().updateTx(transmissionId, 0.1)); // extend more
+    wait(0.01); trySend(makePacket(1000), SendOptions().finishTx(transmissionId)); // finish
 
     EV << "\nTX UPDATE: disabling the channel mid-transmission\n";
     setDatarate(0); // none
@@ -206,7 +206,7 @@ void Sender::testTxUpdates()
     sendOrigPkt(makePacket(1000), SendOptions().duration(0.1)); // original transmission
     wait(0.05);
     setChannelDisabled(true); // disable channel
-    trySend(makePacket(500), SendOptions().finishTx(origPktId)); // send packet truncation update
+    trySend(makePacket(500), SendOptions().finishTx(transmissionId)); // send packet truncation update
     EV << ".\n";
 }
 
@@ -258,7 +258,7 @@ at t=301s send packet(len=1000) with default --> ERROR: Cannot send packet (omne
 at t=301.1s send packet(len=1000) with default --> ERROR: Cannot send packet (omnetpp::cPacket): Channel is currently busy with an ongoing transmission -- please rewrite the sender module to only send when the previous transmission has already finished, using cGate::getTransmissionFinishTime(), scheduleAt(), and possibly a cPacketQueue for storing packets waiting to be transmitted -- in module (cSimpleModule_sendOptions_2::Sender) Test.sender (id=2), at t=301.1s, event #22
 at t=301.5s send packet(len=1000) with default --> ok, duration=1ms, arrival=301.601s; channel busy until t=301.501s
 
-TX UPDATE: invalid origPktId:
+TX UPDATE: invalid transmissionId:
 setting channel datarate=1e+06
 at t=401s send packet(len=1000) with isUpdate transmissionId=99 --> ERROR: Cannot send transmission update packet (omnetpp::cPacket): transmissionId=99 does not match that of the last transmission on the channel -- in module (cSimpleModule_sendOptions_2::Sender) Test.sender (id=2), at t=401s, event #27
 

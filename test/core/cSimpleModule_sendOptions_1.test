@@ -78,11 +78,11 @@ void Sender::testWithCurrentChannel(const char *channelDesc)
     trySend(new cPacket(), SendOptions().updateTx(99));
 
     cPacket *origPkt = new cPacket();
-    long origPktId = origPkt->getId();
+    long transmissionId = origPkt->getId();
     trySend(origPkt, SendOptions::DEFAULT);
-    trySend(new cPacket(), SendOptions().updateTx(origPktId));
-    trySend(new cPacket(), SendOptions().updateTx(origPktId, 1));
-    trySend(new cPacket(), SendOptions().finishTx(origPktId));
+    trySend(new cPacket(), SendOptions().updateTx(transmissionId));
+    trySend(new cPacket(), SendOptions().updateTx(transmissionId, 1));
+    trySend(new cPacket(), SendOptions().finishTx(transmissionId));
 }
 
 void Sender::activity()

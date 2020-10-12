@@ -38,7 +38,7 @@ class Sender : public cSimpleModule
 {
   private:
     cGate *receiverInputGate = nullptr;
-    long origPktId = 0;
+    long transmissionId = 0;
   public:
     Sender() : cSimpleModule(32768) { }
     virtual void initialize() override { receiverInputGate = getModuleByPath("^.receiver")->gate("in"); }
@@ -49,7 +49,7 @@ class Sender : public cSimpleModule
     void setReceiverTxUpdateSupport(bool b);
     void waitUntil(simtime_t t) {wait(t-simTime());}
     void waitCeil() {waitUntil(simTime().trunc(SIMTIME_S)+1.0);}
-    void sendOrigPkt(cPacket *pkt, const SendOptions& options) { origPktId = pkt->getId(); trySend(pkt, options); }
+    void sendOrigPkt(cPacket *pkt, const SendOptions& options) { transmissionId = pkt->getId(); trySend(pkt, options); }
     void trySend(cMessage *msg, const SendOptions& options);
 
     // tests
@@ -142,11 +142,11 @@ void Sender::testTxUpdates()
     // note: sendDirect() doesn't keep any state, so it's not possible to check
     // whether duration/remaningDuration are consistent with original transmission
     waitCeil(); sendOrigPkt(makePacket(1000), SendOptions().duration(0.1)); // original transmission
-    wait(0.05); trySend(makePacket(1000), SendOptions().updateTx(origPktId));
-    wait(0.01); trySend(makePacket(1000), SendOptions().updateTx(origPktId, 0.14)); // error (duration missing)
-    wait(0.01); trySend(makePacket(1000), SendOptions().updateTx(origPktId, 0.14).duration(0.2));
-    wait(0.01); trySend(makePacket(1000), SendOptions().finishTx(origPktId)); // error (duration missing)
-    wait(0.01); trySend(makePacket(1000), SendOptions().finishTx(origPktId).duration(0.9));
+    wait(0.05); trySend(makePacket(1000), SendOptions().updateTx(transmissionId));
+    wait(0.01); trySend(makePacket(1000), SendOptions().updateTx(transmissionId, 0.14)); // error (duration missing)
+    wait(0.01); trySend(makePacket(1000), SendOptions().updateTx(transmissionId, 0.14).duration(0.2));
+    wait(0.01); trySend(makePacket(1000), SendOptions().finishTx(transmissionId)); // error (duration missing)
+    wait(0.01); trySend(makePacket(1000), SendOptions().finishTx(transmissionId).duration(0.9));
 
     EV << ".\n";
 }

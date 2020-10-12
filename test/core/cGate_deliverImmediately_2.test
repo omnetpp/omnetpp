@@ -42,19 +42,19 @@ namespace @TESTNAME@ {
 class Sender : public cSimpleModule
 {
   private:
-    long origPacketId;
+    long transmissionId;
   public:
     Sender() : cSimpleModule(32768) { }
     virtual void activity() override;
 
     void sendOrigPk(const char *name, int64_t length) {
         cPacket *pk = new cPacket(name, 0, length);
-        origPacketId = pk->getId();
+        transmissionId = pk->getId();
         send(pk, "out");
     }
     void sendTxUpdate(const char *name, int64_t length) {
         cPacket *pk = new cPacket(name, 0, length);
-        send(pk, SendOptions().updateTx(origPacketId), "out"); // duration and remainingDuration autocomputed
+        send(pk, SendOptions().updateTx(transmissionId), "out"); // duration and remainingDuration autocomputed
     }
     simtime_t getTxEndTime() {
         return gate("out")->getTransmissionChannel()->getTransmissionFinishTime();
