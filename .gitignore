@@ -133,6 +133,8 @@ backups
 /samples/sockets/sockets_dbg
 /samples/tictoc/tictoc
 /samples/tictoc/tictoc_dbg
+/samples/wiredphy/wiredphy
+/samples/wiredphy/wiredphy_dbg
 /tmp/
 /ui/org.omnetpp.test.gui/test-workspace/.metadata
 /ui/_*/
