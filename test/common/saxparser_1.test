@@ -129,6 +129,9 @@ EV << ".\n";
 
 #endif  // WITH_LIBXML
 
+%subst: |EndTag: '</' not found at string-content:1|Premature end of data in tag foo line 1 at string-content:1|
+%subst: |Document is empty at string-content:1|Document is empty at string-content:0|
+
 %contains: stdout
 ----------------
 Yxml on ``<?xml version="1.0"?> <foo/>'':
