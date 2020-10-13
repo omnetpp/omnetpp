@@ -1092,8 +1092,6 @@ int TextViewerWidget::paintText(const QString& text, QPainter& painter, const QF
 void TextViewerWidget::drawLine(QPainter& painter, int lineIndex, int x, int y, bool asSelected)
 {
     // draw the line in the specified color
-    QString line = content->getLineText(lineIndex);
-
     QFont curFont = font;
 
     painter.setFont(curFont);
