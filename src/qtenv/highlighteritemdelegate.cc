@@ -28,7 +28,14 @@ namespace qtenv {
 void HighlighterItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
     // drawing the selection background and focus rectangle, but no text
-    QStyledItemDelegate::paint(painter, option, QModelIndex());
+    // adapted from void QStyledItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+    {
+        QStyleOptionViewItem opt = option;
+        initStyleOption(&opt, index);
+        QStyle *style = option.widget->style();
+        opt.text = ""; // we will do it manually later
+        style->drawControl(QStyle::CE_ItemViewItem, &opt, painter, option.widget);
+    }
 
     const int spacing = 3;
 
