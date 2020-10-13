@@ -622,10 +622,10 @@ QString EventEntryMessageLinesProvider::getLineText(LogBuffer::Entry *entry, int
     cMessage *msg = messageSend.msg;
 
     QString text = QString(SGR(FG_WHITE) "%1\t" SGR(FG_DEFAULT) "%2\t" SGR(FG_GREEN) "%3\t"                  SGR(FG_RED) "%4\t" SGR(FG_DEFAULT))
-                      .arg(               eventNumberText,       simTimeText,         getRelevantHopsString(messageSend), msg->getFullName());
+                      .arg(               eventNumberText,       simTimeText,         getRelevantHopsString(messageSend), msg ? msg->getFullName() : "<nullptr>");
 
 
-    cMessagePrinter *printer = chooseMessagePrinter(msg);
+    cMessagePrinter *printer = msg ? chooseMessagePrinter(msg) : nullptr;
     std::stringstream os;
 
     if (printer)
@@ -636,7 +636,7 @@ QString EventEntryMessageLinesProvider::getLineText(LogBuffer::Entry *entry, int
             os << SGR(FG_BRIGHT_RED)"ERROR: " << e.getFormattedMessage() << SGR(RESET);
         }
     else
-        os << "[no message printer for this object]";
+        os << SGR(FG_RED) "[no message printer for this object]" SGR(FG_DEFAULT);
 
     text += QString(os.str().c_str());
 
