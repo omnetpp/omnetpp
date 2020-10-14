@@ -4099,10 +4099,12 @@ test -n "$YACC" || YACC="yacc"
 if test "$YACC" = "yacc"; then
    as_fn_error $? "Bison not found, needed to build OMNeT++/OMNEST -- please install it!" "$LINENO" 5
 fi
-BISON_VER_LINE=`$YACC --version | grep "bison.* [234]\\."`
+BISON_VER_LINE=`$YACC --version | grep "bison.* [34]\\."`
 if test -z "$BISON_VER_LINE"; then
-   as_fn_error $? "At least bison version 2.0 required -- type '$YACC --version' to see the version number" "$LINENO" 5
+   as_fn_error $? "At least bison version 3.0 required -- type '$YACC --version' to see the version number" "$LINENO" 5
 fi
+# disable some bison warnings
+YACC="$YACC -Wno-yacc"
 
 for ac_prog in flex lex
 do

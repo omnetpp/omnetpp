@@ -694,10 +694,12 @@ AC_PROG_YACC
 if test "$YACC" = "yacc"; then
    AC_MSG_ERROR([Bison not found, needed to build OMNeT++/OMNEST -- please install it!])
 fi
-BISON_VER_LINE=`$YACC --version | grep "bison.* [[234]]\\."`
+BISON_VER_LINE=`$YACC --version | grep "bison.* [[34]]\\."`
 if test -z "$BISON_VER_LINE"; then
-   AC_MSG_ERROR([At least bison version 2.0 required -- type '$YACC --version' to see the version number])
+   AC_MSG_ERROR([At least bison version 3.0 required -- type '$YACC --version' to see the version number])
 fi
+# disable some bison warnings
+YACC="$YACC -Wno-yacc"
 
 AC_PROG_LEX
 if test "$LEX" != "flex"; then
