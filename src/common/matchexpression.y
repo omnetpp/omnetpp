@@ -22,7 +22,7 @@
 %token OR_ AND_ NOT_   /* note: cannot use %left/%right because of implicit "or" operator */
 
 // for bison 3.x
-%pure-parser
+%define api.pure
 %lex-param {void *statePtr}
 %parse-param {void *statePtr}
 
