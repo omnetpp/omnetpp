@@ -15,6 +15,7 @@
 *--------------------------------------------------------------*/
 
 #include "timelinegraphicsview.h"
+#include <QApplication>
 #include <QGraphicsSimpleTextItem>
 #include <QMouseEvent>
 #include "omnetpp/csimulation.h"
@@ -401,7 +402,17 @@ void TimeLineGraphicsView::drawMessageSymbol(cMessage *message, bool active, int
     brushColor.setAlpha(active ? 255 : 40);
     penColor.setAlpha(active ? 255 : 40);
 
-    QGraphicsItem *ellipse = scene()->addEllipse(x-2, y-4, 5, 9, QPen(penColor), QBrush(brushColor));
+    // make the outline color stand out a bit if the message color is too close to that of the background
+    QColor textColor = QApplication::palette().windowText().color();
+    QColor baseColor = QApplication::palette().window().color();
+
+    if (std::abs(baseColor.valueF() - brushColor.valueF()) < 0.1) {
+        penColor.setRed(  penColor.red()   + (textColor.red()   - penColor.red())   / 3);
+        penColor.setGreen(penColor.green() + (textColor.green() - penColor.green()) / 3);
+        penColor.setBlue( penColor.blue()  + (textColor.blue()  - penColor.blue())  / 3);
+    }
+
+    QGraphicsItem *ellipse = scene()->addEllipse(x-2, y-4, 5, 9, QPen(penColor, 2), QBrush(brushColor));
     ellipse->setData(ITEMDATA_COBJECT, QVariant::fromValue(message));
 
     QString toolTip = QString("(") + getObjectShortTypeName(message) + ") " + message->getFullName();
