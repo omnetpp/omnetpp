@@ -329,6 +329,8 @@ void TimeLineGraphicsView::paintMessages(QVector<cMessage *> messages, bool want
         labelRowLastX.push_back(INT_MIN);
     int bottomLabelRowY = axisY-3 - messageLabelHeight;
 
+    QFontMetrics fontMetrics(tickLabelFont);
+
     for (int i = 0; i < messages.size(); i++) {
         cMessage *msg = messages[i];
 
@@ -344,9 +346,7 @@ void TimeLineGraphicsView::paintMessages(QVector<cMessage *> messages, bool want
         // draw label
         if (enableMessageLabels && numRows > 0) {
             QString label = msg->getFullName();
-            QGraphicsSimpleTextItem simpleText(label);
-            simpleText.setFont(tickLabelFont);
-            int labelWidth = simpleText.boundingRect().width();
+            int labelWidth = fontMetrics.boundingRect(label).width();
             int labelX = x - labelWidth/2;
             int row;
             for (row = 0; row < numRows; row++)
