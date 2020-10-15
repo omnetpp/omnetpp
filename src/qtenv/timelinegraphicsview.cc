@@ -331,6 +331,11 @@ void TimeLineGraphicsView::paintMessages(QVector<cMessage *> messages, bool want
 
     QFontMetrics fontMetrics(tickLabelFont);
 
+    // storing this, so we can append a … to it if the label of the next message did not fit
+    QGraphicsSimpleTextItem *lastItem = nullptr;
+    // after appending, we'll also have to adjust the labelRowLastX entry
+    int lastItemRow = -1;
+
     for (int i = 0; i < messages.size(); i++) {
         cMessage *msg = messages[i];
 
@@ -367,6 +372,19 @@ void TimeLineGraphicsView::paintMessages(QVector<cMessage *> messages, bool want
 
                 scene()->addItem(simpleTextItem);
                 labelRowLastX[row] = labelX + labelWidth;
+                lastItem = simpleTextItem;
+                lastItemRow = row;
+            }
+            else {
+                // this item did not fit, so appending an ellipsis to the label of the previously drawn one
+                if (lastItem) {
+                    // we are not repositioning because of this change...
+                    // (that would make this problem way less trivial, we'd have to backtrack and whatnot...)
+                    labelRowLastX[lastItemRow] -= lastItem->boundingRect().width();
+                    lastItem->setText(lastItem->text() + QString("…"));
+                    labelRowLastX[lastItemRow] += lastItem->boundingRect().width();
+                    lastItem = nullptr; // just so we don't append more ellipses to it
+                }
             }
         }
     }
