@@ -139,6 +139,8 @@ TextViewerWidget::TextViewerWidget(QWidget *parent)
 
     layout->setSpacing(0);
     layout->setContentsMargins(0, 0, 0, 0);
+
+    viewport()->setCursor(Qt::IBeamCursor);
 }
 
 TextViewerWidget::~TextViewerWidget()
