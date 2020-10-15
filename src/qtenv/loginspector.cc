@@ -372,13 +372,20 @@ void LogInspector::onRightClicked(QPoint globalPos, int lineIndex, int column)
             }
 
             menu->addSeparator();
-            QAction *reverseHopsActions = menu->addAction("Allow backward arrows for hops", [=](bool checked) {
+
+            QAction *reverseHopsAction = menu->addAction("Allow backward arrows for hops", [=](bool checked) {
                 getQtenv()->opt->allowBackwardArrowsForHops = checked;
                 getQtenv()->refreshInspectors();
             });
+            reverseHopsAction->setCheckable(true);
+            reverseHopsAction->setChecked(getQtenv()->opt->allowBackwardArrowsForHops);
 
-            reverseHopsActions->setCheckable(true);
-            reverseHopsActions->setChecked(getQtenv()->opt->allowBackwardArrowsForHops);
+            QAction *groupDigitsAction = menu->addAction("Group SimTime digits", [=](bool checked) {
+                getQtenv()->opt->messageLogDigitGrouping = checked;
+                getQtenv()->refreshInspectors();
+            });
+            groupDigitsAction->setCheckable(true);
+            groupDigitsAction->setChecked(getQtenv()->opt->messageLogDigitGrouping);
         }
 
         menu->exec(globalPos);

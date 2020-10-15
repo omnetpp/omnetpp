@@ -203,6 +203,7 @@ void Qtenv::storeOptsInPrefs()
     setPref("init_banners", opt->printInitBanners);
     setPref("short_banners", opt->shortBanners);
     setPref("allow_backward_arrows", opt->allowBackwardArrowsForHops);
+    setPref("messagelog_digitgrouping", opt->messageLogDigitGrouping);
     setPref("no_logging_refreshdisplay", opt->noLoggingRefreshDisplay);
     setPref("animation_enabled", opt->animationEnabled);
     setPref("nexteventmarkers", opt->showNextEventMarkers);
@@ -268,6 +269,10 @@ void Qtenv::restoreOptsFromPrefs()
     pref = getPref("allow_backward_arrows");
     if (pref.isValid())
         opt->allowBackwardArrowsForHops = pref.toBool();
+
+    pref = getPref("messagelog_digitgrouping");
+    if (pref.isValid())
+        opt->messageLogDigitGrouping = pref.toBool();
 
     pref = getPref("no_logging_refreshdisplay");
     if (pref.isValid())

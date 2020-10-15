@@ -578,8 +578,12 @@ QString EventEntryMessageLinesProvider::getLineText(LogBuffer::Entry *entry, int
             timeToPrint -= refTime;
     }
 
+    const bool digitGrouping = getQtenv()->opt->messageLogDigitGrouping;
+
     // between groups of 3
-    const char *digitSeparator = SGR(FG_WHITE) "'" SGR(FG_DEFAULT); // FG_WHITE is actually gray
+    const char *digitSeparator = digitGrouping
+        ? SGR(FG_WHITE) "'" SGR(FG_DEFAULT) // FG_WHITE is actually gray
+        : "";
 
     QString simTimeText = timeToPrint.format(SimTime::getScaleExp(), ".", digitSeparator).c_str();
 
@@ -604,14 +608,26 @@ QString EventEntryMessageLinesProvider::getLineText(LogBuffer::Entry *entry, int
 
     int numWholeDigits = getNumWholeDigits(std::abs(timeToPrint.dbl()));
 
-    int maxNumDigitsWithSep = getLengthWithSeparators(maxNumWholeDigits);
-    int numDigitsWithSep = getLengthWithSeparators(numWholeDigits);
-    ASSERT(maxNumDigitsWithSep >= numDigitsWithSep);
-    simTimeText = QString(" ").repeated(maxNumDigitsWithSep - numDigitsWithSep) + simTimeText;
+    if (digitGrouping) {
+        int maxNumDigitsWithSep = getLengthWithSeparators(maxNumWholeDigits);
+        int numDigitsWithSep = getLengthWithSeparators(numWholeDigits);
+        ASSERT(maxNumDigitsWithSep >= numDigitsWithSep);
+        simTimeText = QString(" ").repeated(maxNumDigitsWithSep - numDigitsWithSep) + simTimeText;
 
-    // remove all trailing '000 groups (incl. escape sequences)
-    QString suffix = QString(digitSeparator) + "000";
-    simTimeText = stripSuffixes(simTimeText, suffix);
+        // remove all trailing '000 groups (incl. escape sequences)
+        QString suffix = QString(digitSeparator) + "000";
+        simTimeText = stripSuffixes(simTimeText, suffix);
+    }
+    else {
+        ASSERT(maxNumWholeDigits >= numWholeDigits);
+        simTimeText = QString(" ").repeated(maxNumWholeDigits - numWholeDigits) + simTimeText;
+
+        // remove all trailing zeroes
+        simTimeText = stripSuffixes(simTimeText, "0");
+        // we might strip all the fractional digits, so no need for a . either
+        // XXX: alternative: add back one zero if we stripped all of them...
+        simTimeText = stripSuffixes(simTimeText, ".");
+    }
 
     // highlight the reference time
     if (timeIsReference)
