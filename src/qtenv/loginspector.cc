@@ -203,14 +203,14 @@ void LogInspector::addOwnActions(QToolBar *toolBar)
     toMessagesModeAction = new QAction(toolBar);
     toMessagesModeAction->setCheckable(true);
     toMessagesModeAction->setIcon(QIcon(":/tools/pkheader"));
-    toMessagesModeAction->setText("Show message/packet traffic");
+    toMessagesModeAction->setText("Message/packet traffic");
     connect(toMessagesModeAction, SIGNAL(triggered()), this, SLOT(toMessagesMode()));
     toolBar->addAction(toMessagesModeAction);
 
     toLogModeAction = new QAction(toolBar);
     toLogModeAction->setCheckable(true);
     toLogModeAction->setIcon(QIcon(":/tools/log"));
-    toLogModeAction->setText("Show log");
+    toLogModeAction->setText("Log");
     connect(toLogModeAction, SIGNAL(triggered()), this, SLOT(toLogMode()));
     toolBar->addAction(toLogModeAction);
 }

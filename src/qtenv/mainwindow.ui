@@ -447,10 +447,10 @@ Total number of messages created since start of the simulation</string>
      <normaloff>:/tools/step</normaloff>:/tools/step</iconset>
    </property>
    <property name="text">
-    <string>One &amp;Step</string>
+    <string>&amp;Step</string>
    </property>
    <property name="toolTip">
-    <string>Execute one event (F4)</string>
+    <string>Step: Do one event with animation (F4)</string>
    </property>
    <property name="shortcut">
     <string>F4</string>
@@ -522,7 +522,7 @@ Total number of messages created since start of the simulation</string>
     <string>&amp;Fast Run (rare display updates)</string>
    </property>
    <property name="toolTip">
-    <string>Run faster: no animation and rare inspector updates (F6)</string>
+    <string>Fast Run: no animation, rare inspector updates (F6)</string>
    </property>
    <property name="shortcut">
     <string>F6</string>
@@ -543,7 +543,7 @@ Total number of messages created since start of the simulation</string>
     <string>E&amp;xpress Run (tracing off)</string>
    </property>
    <property name="toolTip">
-    <string>Run at full speed: no text output, animation or inspector updates (F7)</string>
+    <string>Express Run: no log, animation, or inspector updates (F7)</string>
    </property>
    <property name="shortcut">
     <string>F7</string>

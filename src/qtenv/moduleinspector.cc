@@ -209,7 +209,7 @@ QToolBar *ModuleInspector::createToolbar(bool isTopLevel)
     toolbar->addSeparator();
 
     // mode switching
-    action = toolbar->addAction(QIcon(":/tools/3dscene"), "3D Scene", this, SLOT(switchToOsgView()));
+    action = toolbar->addAction(QIcon(":/tools/3dscene"), "3D scene", this, SLOT(switchToOsgView()));
     action->setCheckable(true);
     switchToOsgViewAction = action;
 

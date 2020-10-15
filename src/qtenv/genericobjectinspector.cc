@@ -105,21 +105,21 @@ GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel,
 
     QActionGroup *modeActionGroup = new QActionGroup(this);
     // mode selection
-    toGroupedModeAction = toolbar->addAction(QIcon(":/tools/treemode_grouped"), "Switch to grouped mode", this, SLOT(toGroupedMode()));
+    toGroupedModeAction = toolbar->addAction(QIcon(":/tools/treemode_grouped"), "Grouped", this, SLOT(toGroupedMode()));
     toGroupedModeAction->setCheckable(true);
     toGroupedModeAction->setActionGroup(modeActionGroup);
-    toFlatModeAction = toolbar->addAction(QIcon(":/tools/treemode_flat"), "Switch to flat mode", this, SLOT(toFlatMode()));
+    toFlatModeAction = toolbar->addAction(QIcon(":/tools/treemode_flat"), "Flat", this, SLOT(toFlatMode()));
     toFlatModeAction->setCheckable(true);
     toFlatModeAction->setActionGroup(modeActionGroup);
-    toInheritanceModeAction = toolbar->addAction(QIcon(":/tools/treemode_inher"), "Switch to inheritance mode", this, SLOT(toInheritanceMode()));
+    toInheritanceModeAction = toolbar->addAction(QIcon(":/tools/treemode_inher"), "Inheritance", this, SLOT(toInheritanceMode()));
     toInheritanceModeAction->setCheckable(true);
     toInheritanceModeAction->setActionGroup(modeActionGroup);
     toolbar->addSeparator();
-    toChildrenModeAction = toolbar->addAction(QIcon(":/tools/treemode_children"), "Switch to children mode", this, SLOT(toChildrenMode()));
+    toChildrenModeAction = toolbar->addAction(QIcon(":/tools/treemode_children"), "Children", this, SLOT(toChildrenMode()));
     toChildrenModeAction->setCheckable(true);
     toChildrenModeAction->setActionGroup(modeActionGroup);
     toolbar->addSeparator();
-    toPacketModeAction = toolbar->addAction(QIcon(":/tools/treemode_packet"), "Switch to packet mode", this, SLOT(toPacketMode()));
+    toPacketModeAction = toolbar->addAction(QIcon(":/tools/treemode_packet"), "Packet", this, SLOT(toPacketMode()));
     toPacketModeAction->setCheckable(true);
     toPacketModeAction->setActionGroup(modeActionGroup);
 
@@ -137,7 +137,7 @@ GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel,
     else {
         goBackAction = toolbar->addAction(QIcon(":/tools/back"), "Back", this, SLOT(goBack()));
         goForwardAction = toolbar->addAction(QIcon(":/tools/forward"), "Forward", this, SLOT(goForward()));
-        goUpAction = toolbar->addAction(QIcon(":/tools/parent"), "Go to parent module", this, SLOT(inspectParent()));
+        goUpAction = toolbar->addAction(QIcon(":/tools/parent"), "Go to parent", this, SLOT(inspectParent()));
     }
 
     toolbar->setAutoFillBackground(true);
