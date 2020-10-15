@@ -278,12 +278,9 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
     virtual simtime_t calculateDuration(cMessage *msg) const override;
 
     /**
-     * Returns the simulation time the sender gate will finish transmitting.
-     * If the gate is not currently transmitting, the result is undefined but
-     * less or equal the current simulation time.
-     *
-     * The transmission duration of a message depends on the message length
-     * and the data rate assigned to the channel.
+     * Returns the simulation time all transmissions will finish on the
+     * (sender side) of the channel. If there is no ongoing transmission,
+     * the result is undefined but less or equal the current simulation time.
      *
      * This method is unsupported (throws exception) in the UNCHECKED mode.
      */
@@ -296,6 +293,19 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
      * This method is unsupported (throws exception) in the UNCHECKED mode.
      */
     virtual bool isBusy() const override;
+
+    /**
+     * DEPRECATED METHOD. It is only provided for backward compatibility with
+     * OMNeT++ 5.x.
+     *
+     * This method forcibly overwrites the finish time of the current
+     * transmission in the channel. It is a crude device that allows
+     * implementing aborting transmissions. Models using this method
+     * should be migrated to the transmission update API.
+     *
+     * @see cSimpleModule::SendOptions, getTransmissionFinishTime(), isBusy()
+     */
+    [[deprecated]] virtual void forceTransmissionFinishTime(simtime_t t) override;
     //@}
 
     /** @name Implementation methods */

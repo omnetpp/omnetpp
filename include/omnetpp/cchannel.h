@@ -305,6 +305,19 @@ class SIM_API cChannel : public cComponent //implies noncopyable
     virtual bool isBusy() const;
 
     /**
+     * DEPRECATED METHOD. It is only provided for backward compatibility with
+     * OMNeT++ 5.x.
+     *
+     * For transmission channels, this method forcibly overwrites the finish
+     * time of the current transmission in the channel. It is a crude device
+     * that allows implementing aborting transmissions. Models using this method
+     * should be migrated to the transmission update API.
+     *
+     * @see cSimpleModule::SendOptions, getTransmissionFinishTime(), isBusy()
+     */
+    [[deprecated]] virtual void forceTransmissionFinishTime(simtime_t t) {}
+
+    /**
      * Returns whether the channel is disabled.
      * A disabled channel discards all messages sent on it.
      */

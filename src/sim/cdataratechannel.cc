@@ -358,5 +358,14 @@ void cDatarateChannel::finish()
     }
 }
 
+void cDatarateChannel::forceTransmissionFinishTime(simtime_t t)
+{
+    if (mode != SINGLE)
+        throw cRuntimeError(this, "forceTransmissionFinishTime() may only be used in mode=SINGLE");
+    if (singleTx.finishTime > t)
+        singleTx.finishTime = t;
+    channelFinishTime = t;
+}
+
 }  // namespace omnetpp
 
