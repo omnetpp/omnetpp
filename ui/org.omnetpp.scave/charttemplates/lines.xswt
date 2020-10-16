@@ -56,7 +56,7 @@
       <x:children>
 
     <label text="Marker:"/>
-    <combo x:id="marker" x:id.default="auto" x:style="BORDER">
+    <combo x:id="marker" x:id.default="none" x:style="BORDER">
       <add x:p0="auto"/>
       <add x:p0="none"/>
       <add x:p0=". (dot)"/>
