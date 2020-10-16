@@ -16,7 +16,7 @@ if test "$HOSTNAME" = ""; then
 fi
 
 export NEDPATH=..
-../routing -p0,2 $* > routing-0.log &
-../routing -p1,2 $* > routing-1.log &
+../routing -p0 --parsim-num-partitions=2 $* > routing-0.log &
+../routing -p1 --parsim-num-partitions=2 $* > routing-1.log &
 
 
