@@ -1,6 +1,8 @@
 #! /bin/sh
+
+rm -rf comm
+mkdir comm comm/read
+
 export NEDPATH=.
-./parsim -p0,2 $* > parsim-0.log &
-./parsim -p1,2 $* > parsim-1.log &
-
-
+./parsim -p0 --parsim-num-partitions=2 $* > parsim-0.log &
+./parsim -p1 --parsim-num-partitions=2 $* > parsim-1.log &
