@@ -358,7 +358,7 @@ void LogInspector::onRightClicked(QPoint globalPos, int lineIndex, int column)
 
         if (mode == LogInspector::MESSAGES) {
             menu->addSeparator();
-            menu->addAction("Set sending time as reference", [=]() {
+            menu->addAction("Set Sending Time as Reference", [=]() {
                 EventEntryMessageLinesProvider::setReferenceTime(msg->getSendingTime());
             });
 
@@ -366,21 +366,21 @@ void LogInspector::onRightClicked(QPoint globalPos, int lineIndex, int column)
             if (refTime > 0) {
                 QString refTimeStr = refTime.format(SimTime::getScaleExp(), ".", "'").c_str();
                 refTimeStr = stripSuffixes(refTimeStr, "'000");
-                menu->addAction("Clear time reference (=" + refTimeStr + ")", [=]() {
+                menu->addAction("Clear Time Reference (=" + refTimeStr + ")", [=]() {
                     EventEntryMessageLinesProvider::setReferenceTime(0);
                 });
             }
 
             menu->addSeparator();
 
-            QAction *reverseHopsAction = menu->addAction("Allow backward arrows for hops", [=](bool checked) {
+            QAction *reverseHopsAction = menu->addAction("Allow Backward Arrows for Hops", [=](bool checked) {
                 getQtenv()->opt->allowBackwardArrowsForHops = checked;
                 getQtenv()->refreshInspectors();
             });
             reverseHopsAction->setCheckable(true);
             reverseHopsAction->setChecked(getQtenv()->opt->allowBackwardArrowsForHops);
 
-            QAction *groupDigitsAction = menu->addAction("Group SimTime digits", [=](bool checked) {
+            QAction *groupDigitsAction = menu->addAction("Digit Grouping for Simulation Time", [=](bool checked) {
                 getQtenv()->opt->messageLogDigitGrouping = checked;
                 getQtenv()->refreshInspectors();
             });
