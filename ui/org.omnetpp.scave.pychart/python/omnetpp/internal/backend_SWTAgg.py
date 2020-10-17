@@ -24,7 +24,7 @@ import mmap
 import functools
 
 from matplotlib.figure import Figure
-from matplotlib.backend_bases import FigureManagerBase, FigureCanvasBase, NavigationToolbar2
+from matplotlib.backend_bases import FigureManagerBase, FigureCanvasBase, NavigationToolbar2, MouseEvent
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 
 from omnetpp.internal import Gateway
@@ -150,6 +150,23 @@ class FigureCanvasSWT(FigureCanvasBase):
 
     def mouseDoubleClickEvent(self, x, y, button):
         FigureCanvasBase.button_press_event(self, x, y, button, dblclick=True)
+
+    def mouseWheelEvent(self, x, y, count, mod1, mod2):
+        # This is not delegated to FigureCanvasBase.scroll_event
+        # because it has no way of directly accepting (modifier) keys,
+        # and at the moment key events are not forwarded to MPL to
+        # make its internal key state tracking work.
+
+        button = "up" if count >= 0 else "down"
+
+        if mod1:
+            key = "ctrl+shift" if mod2 else "control"
+        else:
+            key = "shift" if mod2 else None
+
+        s = 'scroll_event'
+        mouseevent = MouseEvent(s, self, x, y, button, key, step=count)
+        self.callbacks.process(s, mouseevent)
 
     def mouseMoveEvent(self, x, y):
         FigureCanvasBase.motion_notify_event(self, x, y)

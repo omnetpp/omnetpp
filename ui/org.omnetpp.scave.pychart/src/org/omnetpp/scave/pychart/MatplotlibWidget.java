@@ -18,6 +18,7 @@ import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseTrackListener;
+import org.eclipse.swt.events.MouseWheelListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.GC;
@@ -303,6 +304,16 @@ public class MatplotlibWidget extends Canvas implements IMatplotlibWidget {
 
             @Override
             public void controlMoved(ControlEvent arg0) {
+            }
+        });
+
+        addMouseWheelListener(new MouseWheelListener() {
+            @Override
+            public void mouseScrolled(MouseEvent e) {
+                if (pythonProcess != null && pythonProcess.isAlive()) {
+                    int sy = getSize().y;
+                    pythonProcess.pythonCallerThread.asyncExec(() -> getCanvas().mouseWheelEvent(e.x, sy - e.y, e.count, (e.stateMask & SWT.MOD1) != 0, (e.stateMask & SWT.MOD2) != 0));
+                }
             }
         });
     }

@@ -66,6 +66,13 @@ public interface IMatplotlibFigureCanvas {
     /** Notifies matplotlib that the canvas was resized to the given size. */
     void resizeEvent(int width, int height);
 
+    /** Notifies matplotlib that the mouse wheel was scrolled at the given
+     * (canvas-local) coordinates (with the origin in the lower left corner)
+     * inside the canvas area. count is the number of "steps" the wheel was
+     * scrolled (its sign indicating the direction). Additionally, mod1 is true
+     * if Ctrl (or Command) was held, and mod2 is true if Shift was held. */
+    void mouseWheelEvent(int x, int y, int count, boolean mod1, boolean mod2);
+
     /** Notifies matplotlib that the canvas was resized to the given size. */
     void performAction(String action);
 
