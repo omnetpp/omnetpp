@@ -1,4 +1,5 @@
 from omnetpp.scave import chart, plot
+import math
 import numpy as np
 import scipy.stats as st
 import pandas as pd
@@ -221,6 +222,44 @@ def make_fancy_xticklabels(ax):
         plt.tight_layout()
 
     ax.callbacks.connect('xlim_changed', on_xlims_change)
+
+
+# inspired by: https://stackoverflow.com/a/11562898/635587
+# and https://stackoverflow.com/q/11551049#comment77920445_11562898
+def make_scroll_navigable(figure):
+    def zoom_fun(event):
+        ax = event.inaxes
+
+        if ax is None:
+            return
+
+        SCALING_FACTOR = 1.5
+        PANNING_FACTOR = 0.1
+
+        cur_xlim = ax.get_xlim()
+        cur_ylim = ax.get_ylim()
+        cur_xrange = cur_xlim[1] - cur_xlim[0]
+        cur_yrange = cur_ylim[1] - cur_ylim[0]
+        xdata = event.xdata
+        ydata = event.ydata
+        direction = np.sign(event.step)
+
+        if event.key is None: # vertical pan
+            delta = cur_yrange * direction * PANNING_FACTOR
+            ax.set_ylim([cur_ylim[0] + delta, cur_ylim[1] + delta])
+        elif event.key == "shift": # horizontal pan
+            delta = cur_xrange * -direction * PANNING_FACTOR
+            ax.set_xlim([cur_xlim[0] + delta, cur_xlim[1] + delta])
+        elif event.key == "control": # zoom
+            scale = math.pow(SCALING_FACTOR, direction)
+            ax.set_xlim([xdata - (xdata-cur_xlim[0]) / scale,
+                        xdata + (cur_xlim[1]-xdata) / scale])
+            ax.set_ylim([ydata - (ydata-cur_ylim[0]) / scale,
+                        ydata + (cur_ylim[1]-ydata) / scale])
+
+        plt.draw()
+
+    figure.canvas.mpl_connect('scroll_event', zoom_fun)
 
 
 # source: https://stackoverflow.com/a/39789718/635587
@@ -617,6 +656,7 @@ def preconfigure_plot(props):
             plt.style.use(get_prop("plt.style"))
         mpl.rcParams.update(_filter_by_key_prefix(props,"matplotlibrc."))
         mpl.rcParams.update(parse_rcparams(get_prop("matplotlibrc") or ""))
+        make_scroll_navigable(plt.gcf())
 
     _initialize_cycles(props)
 
