@@ -124,6 +124,7 @@
 #include "omnetpp/index.h"
 #include "omnetpp/mersennetwister.h"
 #include "omnetpp/onstartup.h"
+#include "omnetpp/opp_component_ptr.h"
 #include "omnetpp/opp_string.h"
 #include "omnetpp/regmacros.h"
 #include "omnetpp/resultfilters.h"

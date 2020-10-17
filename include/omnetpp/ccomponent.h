@@ -17,6 +17,7 @@
 #define __OMNETPP_CCOMPONENT_H
 
 #include <vector>
+#include <unordered_set>
 #include "simkerneldefs.h"
 #include "cownedobject.h"
 #include "cpar.h"
@@ -103,6 +104,8 @@ class SIM_API cComponent : public cDefaultOwner //implies noncopyable
 
     typedef std::vector<SignalListenerList> SignalTable;
     SignalTable *signalTable; // ordered by signalID so we can do binary search
+
+    std::unordered_set<void**> *selfPointers = nullptr;
 
     // string-to-simsignal_t mapping
     static struct SignalNameMapping {
@@ -201,6 +204,22 @@ class SIM_API cComponent : public cDefaultOwner //implies noncopyable
     // internal: for inspectors
     const std::vector<cResultRecorder*>& getResultRecorders() const;
     static void invalidateCachedResultRecorderLists();
+
+    // experimental
+    template<class T>
+    void registerSelfPointer(T *&ptr) {
+        ASSERT(dynamic_cast<cComponent*>(ptr) == this);
+        if (!selfPointers)
+            selfPointers = new std::unordered_set<void**>;
+        selfPointers->insert((void**)&ptr);
+    }
+
+    template<class T>
+    void deregisterSelfPointer(T *&ptr) {
+        ASSERT(dynamic_cast<cComponent*>(ptr) == this);
+        ASSERT(selfPointers != nullptr && selfPointers->find((void**)&ptr) != selfPointers->end());
+        selfPointers->erase((void**)&ptr);
+    }
 
   protected:
     /** @name Initialization, finalization, and various other hooks.

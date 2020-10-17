@@ -95,6 +95,12 @@ cComponent::~cComponent()
     delete[] rngMap;
     delete[] parArray;
     delete displayString;
+
+    if (selfPointers) {
+        for (void **pptr : *selfPointers)
+            *pptr = nullptr;
+        delete selfPointers;
+    }
 }
 
 void cComponent::forEachChild(cVisitor *v)
