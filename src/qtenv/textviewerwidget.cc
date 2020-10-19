@@ -1392,6 +1392,12 @@ void TextViewerWidget::updateScrollbars()
          - QSize(viewportMargins().left() + viewportMargins().right(),
                  viewportMargins().top() + viewportMargins().bottom());
 
+    // avoiding an invalid maxSize in case size() is still zero
+    if (maxSize.width() < 0)
+        maxSize.setWidth(0);
+    if (maxSize.height() < 0)
+        maxSize.setHeight(0);
+
     // first determine if we need each scrollbar separately, being conservative about it
     // (better show unnecessarily than not show when it would be needed)
 
