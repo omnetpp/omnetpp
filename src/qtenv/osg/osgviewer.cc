@@ -648,12 +648,15 @@ void OsgViewer::setCameraManipulator(cOsgCanvas::CameraManipulatorType type, boo
             manipulator = new osgGA::TrackballManipulator;
             toTrackballManipulatorAction->setChecked(true);
             break;
-#ifdef WITH_OSGEARTH
         case cOsgCanvas::CAM_EARTH:
+#ifdef WITH_OSGEARTH
             manipulator = new osgEarth::Util::EarthManipulator;
             toEarthManipulatorAction->setChecked(true);
-            break;
+#else
+            // "this should not happen"
+            throw cRuntimeError("Camera manipulator type was set to 'Earth', but osgEarth is not enabled.");
 #endif
+            break;
         case cOsgCanvas::CAM_AUTO: /* Impossible, look at the if above, just silencing a warning. */ break;
     }
 
