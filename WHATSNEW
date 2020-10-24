@@ -101,8 +101,11 @@ Transmission updates in the simulation kernel:
     with the channel's setMode() method. Possible modes are SINGLE, MULTI and
     UNCHECKED.
 
-  - Removed forceTransmissionFinishTime() from cChannel (and esp. cDatarateChannel).
-    It was a hack. Now you can use SendOptions::updateTx() instead.
+  - The forceTransmissionFinishTime() method of channels has been deprecated.
+    It was always meant as a temporary device to allow implementing aborting
+    frame transmissions, and now with the arrival of the new transmission
+    update API there is no reason to use it any more. Simulations using it
+    should be migrated to the new API.
 
   - Rename: setDeliverOnReceptionStart() -> setDeliverImmediately()
 
@@ -134,6 +137,22 @@ Simulation kernel, other changes:
     module was not found. This change makes this method consistent with other
     getter methods in the simulation library, and allows nullptr checks to be
     removed from model code that uses it.
+
+  - cComponent: added preDelete(). This a virtual method that the user can
+    override to add tasks to be done before the module (or channel) is deleted.
+    When deleteModule() is called on a compound module, it first invokes
+    preDelete() recursively on the submodule tree, and only starts deleting
+    modules after that. preDelete() can help simplify network or module deletion
+    in a complex simulation that involves model change listeners.
+
+  - Added opp_component_ptr<T>. It implements a smart pointer that points to
+    a cComponent (i.e. a module or channel), and automatically becomes nullptr
+    when the referenced object is deleted. It is a non-owning ("weak") pointer,
+    i.e. the pointer going out of scope has no effect on the referenced object.
+    opp_component_ptr<T> can be useful in implementing modules that hold
+    pointers to other modules and want to be prepared for those modules
+    getting deleted. It can also be useful for simplifying safe destruction
+    of compound modules containing such modules.
 
   - A new method, findModuleByPath() was added for cases when an optionally
     existing module needs to be found.
