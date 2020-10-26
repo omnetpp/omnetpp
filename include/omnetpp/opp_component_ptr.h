@@ -60,7 +60,7 @@ class SIM_API opp_component_ptr
 
     void registerPtr() {
         if (ptr) {
-            if (cComponent *component = dynamic_cast<cComponent*>(ptr)->registerSelfPointer(ptr))
+            if (cComponent *component = dynamic_cast<cComponent*>(ptr))
                 component->registerSelfPointer(ptr);
             else
                 throw cRuntimeError("opp_component_ptr<%s>: Pointer cannot be dynamic_cast to cComponent", opp_typename(typeid(T)));
