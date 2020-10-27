@@ -77,7 +77,7 @@ struct QtenvOptions : public EnvirOptions
     bool printInitBanners = true;          // print "initializing..." banners
     bool printEventBanners = true;         // print event banners
     bool shortBanners = false;             // controls detail of event banners
-    bool allowBackwardArrowsForHops = true; // whether to allow right-to-left printing (with "<--" arrows) of relevant hops
+    bool allowBackwardArrowsForHops = false; // whether to allow right-to-left printing (with "<--" arrows) of relevant hops
     bool messageLogDigitGrouping = true;   // whether to add digit separators (apostrophes) to the sending times printed in the message log
     bool noLoggingRefreshDisplay = false;  // suppresses logging in refreshDisplay() calls
     bool animationEnabled = true;          // msg animation
