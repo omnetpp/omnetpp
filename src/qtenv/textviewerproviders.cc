@@ -602,9 +602,9 @@ QString EventEntryMessageLinesProvider::getLineText(LogBuffer::Entry *entry, int
         //    refTime: for the "=" line
         //    simTime()-refTime: for the "+" lines
         //    (the length of "-" lines is covered by the "=" line...)
-        ? maxNumWholeDigits = std::max(getNumWholeDigits(refTime.dbl()), getNumWholeDigits((simTime() - refTime).dbl()))
+        ? std::max(getNumWholeDigits(refTime.dbl()), getNumWholeDigits((simTime() - refTime).dbl()))
         // we assume that the current simTime() is a maximum for the absolute times that can occur
-        : maxNumWholeDigits = getNumWholeDigits(simTime().dbl());
+        : getNumWholeDigits(simTime().dbl());
 
     int numWholeDigits = getNumWholeDigits(std::abs(timeToPrint.dbl()));
 
