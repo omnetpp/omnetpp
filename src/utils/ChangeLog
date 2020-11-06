@@ -1,3 +1,64 @@
+2020-09-24  Rudolf Hornig
+
+	build: do NOT use --rpath on Windows at all as it is meaningless and LLD
+	does not support it at all.
+
+	Note that --rpath is autodectected doring configuration, but the standard
+	mingw windows linker accepts it however, it is a NoOp. We rather not use
+	it at all on Windows because LLD on Windows explicitly errors on --rpath.
+
+	Previously, rpath was disabled only for the MS-ABI compatible linker, but
+	it's better not to use it at all.
+
+2020-09-24  Rudolf Hornig
+
+	build: on Windows create .dll.a import libraries for shared libs.
+
+	To work with LLD linker, proper import libs must exists as
+	'autoimporting' is not supported with LLD for example. Also,
+	autoimporting/exporting is probelematic because the number of exported
+	symbols must not exceed 65536 in a single DLL and exporting all symbols
+	can easily owervhelm the linker.
+
+2020-08-31  Rudolf Hornig
+
+	build: .wishname file is no longer needed so it is removed from the build
+	process
+
+2020-05-04  TÖRÖK Attila
+
+	utils/opp_charttool: Add a longer description.
+
+2020-02-04  TÖRÖK Attila
+
+	ide/scave: move property mapping of plot.py into impl_ide, implement
+	bar() for native charts
+
+2020-01-24  Andras Varga
+
+	ide/scave: chart.get_chart_type(),set_suggested_chart_name()
+
+2020-01-02  TÖRÖK Attila
+
+	ide/scave: small fixes to opp_charttool
+
+2020-01-15  Andras Varga
+
+	ChangeLogs: updated, by editing the raw versions. Guidelines:
+
+	- removed duplications (changes released earlier as version 5.5 and 5.6)
+	- removed uninteresting changes (e.g. "typo fixed"), and back-and-forth
+	changes
+	- describe impact of commit to that specific folder (e.g.
+	include/omnetpp/ChangeLog
+	 should describe the simkernel API changes, not the feature or bugfix
+	which caused
+	 the API change)
+	- tried to make the descriptions more self-contained, i.e. understandable
+	 without looking at the actual file changes
+
+----------- lines above this marker have been added from git log -----------
+
 2019-12-10  Zoltan Bojthe
 
 	* opp_test: performance: Use rstrip() instead of regexp which was

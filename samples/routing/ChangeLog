@@ -1,3 +1,35 @@
+2020-10-16  TÖRÖK Attila
+
+	samples/routing: Use new parsim partitioning arguments in campaign launch
+	scripts
+
+2020-10-16  TÖRÖK Attila
+
+	samples,test: Delete old .bat files used to launch parsim campaigns
+
+2020-07-27  Andras Varga
+
+	samples: existing simulations ported
+
+	- follow  setDeliverOnReceptionStart() --> setDeliverImmediately() rename
+
+2020-01-15  Andras Varga
+
+	ChangeLogs: updated, by editing the raw versions. Guidelines:
+
+	- removed duplications (changes released earlier as version 5.5 and 5.6)
+	- removed uninteresting changes (e.g. "typo fixed"), and back-and-forth
+	changes
+	- describe impact of commit to that specific folder (e.g.
+	include/omnetpp/ChangeLog
+	 should describe the simkernel API changes, not the feature or bugfix
+	which caused
+	 the API change)
+	- tried to make the descriptions more self-contained, i.e. understandable
+	 without looking at the actual file changes
+
+----------- lines above this marker have been added from git log -----------
+
 2019-10-30  Rudolf Hornig
 
 	* Use intval_t, uintval_t instead of long, unsigned long as long is

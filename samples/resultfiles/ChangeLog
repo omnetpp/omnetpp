@@ -1,3 +1,54 @@
+2020-03-04  TÖRÖK Attila
+
+	samples: Convert/cleanup/restore sample analysis files.
+
+2020-03-04  TÖRÖK Attila
+
+	samples/resultfiles: Regenerate the result files in the current format.
+
+2020-02-20  Andras Varga
+
+	ide/scave: export image -> save image (it is VERY different from how
+	export works)
+
+2020-01-31  TÖRÖK Attila
+
+	ide/scave: add heatmap and marker cycler charts
+
+2020-01-27  Andras Varga
+
+	ide/scave: simplify linechart code
+
+2020-01-21  TÖRÖK Attila
+
+	ide/scave: fix chart templates and charts regarding:
+	chart.set_plot_property -> plot.set_property; separate utils module
+
+2020-02-17  TÖRÖK Attila
+
+	ide/scave: misc WIP
+
+2020-01-20  TÖRÖK Attila
+
+	ide/scave: follow through with the module splitting and method renaming
+
+2020-01-15  Andras Varga
+
+	ChangeLogs: updated, by editing the raw versions. Guidelines:
+
+	- removed duplications (changes released earlier as version 5.5 and 5.6)
+	- removed uninteresting changes (e.g. "typo fixed"), and back-and-forth
+	changes
+	- describe impact of commit to that specific folder (e.g.
+	include/omnetpp/ChangeLog
+	 should describe the simkernel API changes, not the feature or bugfix
+	which caused
+	 the API change)
+	- tried to make the descriptions more self-contained, i.e. understandable
+	 without looking at the actual file changes
+
+----------- lines above this marker have been added from git log -----------
+
 2019-12-20  Attila Torok
 
 	* During the development of the Python-based Analysis Tool in the IDE,

@@ -1,3 +1,495 @@
+2020-10-26  Zoltan Bojthe
+
+	opp_component_ptr: fixup
+
+2020-10-26  Rudolf Hornig
+
+	sim: increased buildnum for preDelete and opp_component_ptr API changes
+
+2020-09-10  Andras Varga
+
+	sim: cComponent: added preDelete()
+
+	It can help simplify network or module deletion in a complex simulation
+	that involves model change listeners. Assume that a model change listener
+	in a module contains code that involves accessing other modules
+	(e.g. calling methods in them). Normally, when those other modules don't
+	exist, the code would throw an exception to indicate the error.
+
+	However, when the same listener is invoked due to module deletion, those
+	collaborator modules may no longer exist (just having been deleted). This
+	can result in a crash; but even when the nonexistence (disappearance) of
+	those modules is properly detected, the code is not supposed to throw an
+	exception -- which is different from its normal behavior. Writing code
+	that handles such situations can be tricky.
+
+	The preDelete() method can help here: if it is overridden to unsubscribe
+	from the model change listener, the above complications can be avoided
+	altogether.
+
+2020-10-17  Andras Varga
+
+	sim: added opp_component_ptr
+
+2020-10-15  Andras Varga
+
+	sim: add back forceTransmissionFinishTime() as deprecated, for backward
+	compatibility
+
+2020-10-12  Andras Varga
+
+	sim: send() should NOT use the transmissionId already on the packet, ever
+
+	It must now be explicitly specified in SendOptions for the original
+	packet and for updates, too.
+
+2020-10-11  Andras Varga
+
+	sim: transmission updates API: origPacketId renamed to transmissionId
+
+	related changes:
+	- isUpdate() now uses separate flag
+	- for the original packets, transmissionId is implicitly taken from the
+	message ID
+
+2020-09-27  Andras Varga
+
+	sim: cDatarateChannel: implemented mode=MULTI
+
+	Allows multiple concurrent transmissions, with consistency checking,
+	isBusy(), getTransmissionFinishTime(), and channelBusy signal support.
+
+2020-09-27  Andras Varga
+
+	sim: cDatarateChannel: packet-handling part of processMessage() factored
+	out as processPacket()
+
+2020-09-18  Andras Varga
+
+	sim: cDatarateChannel: allow multiple concurrent transmissions, without
+	any checks/bookkeeping
+
+	Set mode=UNCHECKED for that.
+
+	Note: cDatarateChannel::finish() was moved to the bottom of the file.
+
+2020-09-09  Andras Varga
+
+	sim: cDatarateChannel comment refined
+
+2020-09-09  Andras Varga
+
+	sim,envir: output scalar managers: record methods to return a bool
+
+	Indicating whether the value was actually recorded. For consistency with
+	the output vector managers' record method.
+
+2020-08-26  TÖRÖK Attila
+
+	envir: Expand the comment for cEnvir::beginSend() with a note about the
+	discard parameter
+
+2020-08-12  Andras Varga
+
+	sim: IdentityFilter: do not convert signal values to numeric
+
+2020-08-28  Levente Mészáros
+
+	sim: Moved default operator<< to cObject and added printOn().
+
+	Docu by Andras.
+
+2020-08-27  Andras Varga
+
+	sim: cIListener destructor to unsubscribe from all places
+
+	... instead of insisting on being already unsubscribed.
+
+	This fixes the issue introduced in the previous commit.
+
+2020-08-13  Andras Varga
+
+	sim: fix bug introduced a few commits earlier
+
+	"added demux filter" commit broke Register_ResultFilter() and
+	Register_ResultRecorder() when class had namespace.
+
+2020-08-13  Andras Varga
+
+	sim: cMessage: allow isMessage() etc to be called from subclasses
+
+2020-08-10  Andras Varga
+
+	sim: added DemuxFilter, see test for usage
+
+	Needed changes:
+	- cResultListener: clone() method added
+	- Register_ResultRecorder() impl changed to allow creating
+	filters/recorders
+	 with createOne(); this is needed by clone()
+	- cResultFilter: init() to store component and attrsProperty, because
+	 clone() needs them
+	- cResultListener: receiveSignal() methods need to be public so that
+	 DemuxFilter can call them.
+	- cResultRecorder: added setDemuxLabel(), needed as part of result names
+
+2020-08-05  Rudolf Hornig
+
+	releng: updated to 6.0 preview 9
+
+2020-07-29  Andras Varga
+
+	envir: EventlogFileManager::recordMessages(): try to reconstruct
+	SendOptions and cChannel::Result
+
+2020-07-21  Andras Varga
+
+	sim: cSimpleModule: added rescheduleAt(), rescheduleAfter()
+
+	Note1: cancelEvent() is quite tolerant (it doesn't complain if event is
+	NOT scheduled), and since rescheduleAt()/rescheduleAfter() are primarily
+	utility methods, they inherit this behavior.
+
+	Note2: it is possible to implement rescheduling methods more efficiently
+	than cancelEvent+scheduleAt. This is not yet done in this patch.
+
+2020-07-20  Andras Varga
+
+	sim: cSimpleModule: added scheduleAfter()
+
+2020-07-29  Andras Varga
+
+	sim: msgForActivity moved from cSimulation to cSimpleModule, because
+	that's what uses it
+
+2020-07-20  Andras Varga
+
+	sim: process ordinary events via cMessage::execute()
+
+	.. and cMessage::execute() delegates everything to a newly created
+	cSimpleModule::doMessageEvent() method.
+
+	Also: cMessage::execute() made protected, to make it accessible from
+	subclasses.
+
+2020-06-23  Andras Varga
+
+	sim: send()/sendDirect: introduced SendOptions and tx updates; cChannel
+	API and cDatarateChannel changes
+
+	Note: substantial changes in this patch are concentrated in cSimpleModule
+	and cDatarateChannel, with necessary extra fields added to cPacket. The
+	rest are to follow signature changes in cEnvir and cChannel API methods,
+	and to record the extra fields in eventlog files.
+
+	Updating a transmission (aka tx updates):
+
+	Initial send() is interpreted as: "packet transmission begins now, packet
+	content and duration are, as things are now, going to be this".
+
+	Following that, an "update" (or any number of updates) can be sent. It is
+	a packet with the updated ("actual") content, and with a
+	"remaining transmission duration" attached. Updates may only be sent
+	while transmission is still ongoing (t < txEndTime; note it is strictly
+	less, not less-or-equal!)
+
+	As an example, aborting a transmission is done by sending a packet with a
+	truncated content and a remaining duration of zero.
+
+	The transmission it modifies (in case there are parallel transmissions on
+	the channel) is identified by the packet ID of the original transmission.
+	Channels should understand updates and handle them accordingly. (Change
+	to cDatarateChannel is part of this patch.)
+
+	Receivers that receive the packet at the end of the reception (default)
+	will only receive the final update, the original packet and intermediate
+	updates are absorbed by the simulation kernel.
+
+	Receivers that receive the packet at the start of the reception (see
+	cGate::setDeliverImmediately(), ex setDeliverOnReceptionStart()) should
+	be prepared to receive all of the original packet and the updates, and
+	handle them appropriately. Tx updates can be recognized from
+	cPacket::isUpdate() returning true. cPacket::getRemainingDuration()
+	returns the remaining transmission duration, and cPacket::getDuration()
+	the total transmission duration.
+
+	As a safeguard against unprepared modules accidentally processing tx
+	updates as normal full-blown packets, the module is only given tx updates
+	if it explicitly declares that it is able to handle them properly. The
+	latter is done by the module calling setTxUpdateSupport(true) e.g. in
+	initialize().
+
+	Non-transmission channels don't handle updates any different from other
+	messages and packets.
+
+	SendOptions was introduced as a means to handle combinatorial explosion
+	of send() variants.
+
+	More changes:
+	- send() and sendDirect() now accept a SendOptions; sendDelayed() and
+	 the sendDirect() variant with delay and duration now convert their
+	 extra args to a SendOptions, and delegate to the "standard"
+	 send()/sendDirect() versions.
+
+	- cDatarateChannel: allow overriding the duration computed from the
+	 channel datarate from the send() call.
+
+	- cDatarateChannel: non-packet messages pass through without
+	 interfering with packets.
+
+	- cDatarateChannel: disabled channels to let transmission updates
+	through,
+	 so that it is possible for the transmitter module to abort the
+	 ongoing packet transmission.
+
+	- Note: tx updates (without duration/remainingDuration) are allowed
+	 on paths without transmission channels.
+
+	- signature change in methods that participate in the send()/sendDirect()
+	 protocol: SendOptions was added to the arg list. This affects:
+	 cGate::deliver(), cModule::arrived(), cChannel::processMessage()
+
+	- in cChannel::processMessage(), result_t was renamed cChannel::Result,
+	 and it is now a proper return value (not an output parameter);
+
+	- remainingDuration was added to cChannel::Result.
+
+	- cDatarateChannel's datarate is now optional: set it to 0 or nan
+	 to leave it unspecified.  This change was necessary to support
+	 transmitting frames with per-frame data rate selection.
+
+	- Removed forceTransmissionFinishTime() from cChannel (and esp.
+	cDatarateChannel)
+	 It was a hack. Now you can use SendOptions::updateTx() instead.
+
+	- Rename: setDeliverOnReceptionStart() -> setDeliverImmediately()
+
+	- Added cSimpleModule::supportsTxUpdates() flag
+
+	- cPacket now carries a remainingDuration field
+
+	- cPacket: eliminated FL_ISRECEPTIONSTART; isReceptionStart() now uses
+	 remainingDuration as input; added a similar isReceptionEnd() method.
+
+	- cPacket::str() overhaul to reflect new fields and uses
+
+	- in the APIs, sendDelay and propagationDelay (which were sort of
+	 combined into a single value) are now distinct, and handled
+	 separately.
+
+	- eventlog format changes: BeginSendEntry: added sendDelay and
+	 origPacketId; SendHopEntry, SendDirectEntry: added remainingDuration
+
+	- cSimpleModule: factored out a throwNotOwnerOfMessage() method to
+	 eliminate a large chunk of nearly identical code in send() and
+	 sendDirect().
+
+	- cEnvir callbacks also changed: beginSend() takes SendOptions;
+	 messageSendHop() and messageSendDirect() take cChannel::Result
+	 instead of separate args.
+
+	Note: cChannel::Result became a toplevel class (ChannelResult) due to the
+	need to break circular dependency: "cenvir.h" cannot include
+	"cchannel.h" (circularity) and C++ does not allow inner classes to be
+	forward-declared (why??).
+
+2020-07-17  Andras Varga
+
+	sim: getModuleByPath() adjustment: never return nullptr, even for empty
+	strings
+
+2020-07-14  Andras Varga
+
+	sim: cComponent: store per-component cSimulation pointers
+
+	... instead of relying on getActiveSimulation()
+
+	Also: fix related tests (getSimulation() is not supposed to be called on
+	a deleted module, and now it crashes too)
+
+2020-07-14  Andras Varga
+
+	sim: cNamedObject: made room for 32 per-object flags
+
+	This is a fix for a previous "make room for a new flag in cComponent"
+	commit
+
+2020-07-14  Andras Varga
+
+	sim: bump OMNETPP_BUILDNUM
+
+2020-06-22  Andras Varga
+
+	sim: getModuleByPath() made stricter (do not tolerate if module doesn't
+	exist); added findModuleByPath()
+
+2020-04-28  Andras Varga
+
+	sim: cModule: allow modules to be deleted (incl self-deletion) and
+	created at will during initialization
+
+	Note: new modules are always *appended* to the end of the submodule list,
+	which makes things easier.
+
+2020-07-14  Andras Varga
+
+	sim: make room for a new flag in cComponent
+
+2020-07-13  Andras Varga
+
+	sim: bump OMNETPP_BUILDNUM
+
+2020-06-23  Andras Varga
+
+	sim: isDisabled added to cChannel; isPacket() added to cEvent
+
+2020-06-23  Andras Varga
+
+	sim: SimpleModule: cosmetics (remove redundant "return" keywords)
+
+2020-07-09  Andras Varga
+
+	include: get rid of clumsy wording in dup() and op=() method comments
+
+2020-07-03  TÖRÖK Attila
+
+	misc: Fix build on Windows: Undef TRUE and FALSE macros from windows.h
+
+	They were colliding with string constant names in the Scave class.
+
+2020-06-08  Andras Varga
+
+	sim: added the "parsim-num-partitions" config option
+
+2020-06-10  Andras Varga
+
+	sim: cConfiguration: refined method docs, added
+	getConfigValue()/getPerObjectConfigValue() overload that take
+	cConfigOption*
+
+2020-06-10  Andras Varga
+
+	sim: simkerneldefs.h: remove obsolete PI define [reported by Christoph
+	Sommer]
+
+	Use M_PI instead.
+
+2020-05-26  Andras Varga
+
+	sim: simkerneldefs.h: added missing "namespace omnetpp"
+
+	Affects eventnumber_t, intval_t, uintval_t
+
+2020-05-21  Andras Varga
+
+	platdefs.h: STATIC_ASSERT
+
+2020-05-05  Rudolf Hornig
+
+	sim: bump the internal build number for 6.0pre8 version
+
+2020-04-20  Andras Varga
+
+	platdep: _OPPDEPRECATED added back, because e.g INET 4.2 uses it
+
+2020-04-20  Rudolf Hornig
+
+	build: make sure that the compiler supports C++14 mode
+
+2020-04-17  Rudolf Hornig
+
+	sim: fixed a typo causing compile error in c++17 mode
+
+	+ clarified comments about minimal c++ support level
+
+2020-03-31  TÖRÖK Attila
+
+	platdep: Remove some antiquated compiler compatibility checks/macros.
+
+	The compilers these are supposed to be for (or rather, "against"), likely
+	won't even pass ./configure because of the required C++14 standard.
+
+2020-03-31  TÖRÖK Attila
+
+	modernize: Replace _OPPDEPRECATED with [[deprecated]], remove the former.
+
+	Now that C++14 is the minimum required version.
+
+2020-03-31  TÖRÖK Attila
+
+	platdep,sim: Only use attributes on enumerators if the compiler supports
+	them.
+
+	This will allow compilation with GCC 5.x, as that series supports C++14
+	(so, attributes in general), but not C++17 (attributes on enumerators).
+
+2020-03-30  TÖRÖK Attila
+
+	nits: Replace "vica versa" with "vice versa" everywhere. Fixes
+	docs.omnetpp.org#11.
+
+2020-03-17  Andras Varga
+
+	envir: added "${datetimef}" which doesn't contain colons, as it is
+	illegal in file names on Windows
+
+2020-03-15  Andras Varga
+
+	envir: added "config-recording" option, it controls of amount of config
+	options to  save
+
+2020-03-05  Andras Varga
+
+	envir: added support for result directory subdivision: $iterationvarsd,
+	resultdir-subdivision config option
+
+	Many file managers and other tools (inc. Eclipse) break down if there are
+	too many files in single directory (10,000 or more). The common
+	workaround is to group the files into a subdirectory tree. (For example,
+	git also uses this technique to store the contents of .git/objects dir).
+
+	In OMNeT++, this problem occurs when a parameter study produces too many
+	result files. To solve it, it is natural to use the iteration variables
+	to define the directory hierarchy. This commit does it in the following
+	way:
+
+	1. Defines a "$iterationvarsd" variable (run attribute), which is similar
+	  to  "$iterationvarsf", only it contains '/' instead of ','.
+
+	2. Turning on the new "resultdir-subdivision" config option will cause
+	  "$iterationvarsd" to be appended to the name of the results directory.
+	  This way, files will be created inside a directory tree defined by
+	  the iteration variables.
+
+	When the user wants set up the directory hierarchy in a different way,
+	thay can do so by setting the "results-dir" config option and appending
+	stuff to th value. E.g.: results-dir = "results/${repetition}"
+
+2020-02-14  Rudolf Hornig
+
+	sim/common/samples: fixes to build with clang 9 compiler using MS ABI
+
+2020-01-18  Andras Varga
+
+	API-changes.txt updated
+
+2020-01-15  Andras Varga
+
+	ChangeLogs: updated, by editing the raw versions. Guidelines:
+
+	- removed duplications (changes released earlier as version 5.5 and 5.6)
+	- removed uninteresting changes (e.g. "typo fixed"), and back-and-forth
+	changes
+	- describe impact of commit to that specific folder (e.g.
+	include/omnetpp/ChangeLog
+	 should describe the simkernel API changes, not the feature or bugfix
+	which caused
+	 the API change)
+	- tried to make the descriptions more self-contained, i.e. understandable
+	 without looking at the actual file changes
+
+----------- lines above this marker have been added from git log -----------
+
 2019-11-19  Andras Varga
 
 	* Added cParImpl::setExpectedType() internal method.

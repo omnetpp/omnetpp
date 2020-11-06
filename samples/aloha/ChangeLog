@@ -1,3 +1,36 @@
+2020-07-27  Andras Varga
+
+	samples: existing simulations ported
+
+	- follow  setDeliverOnReceptionStart() --> setDeliverImmediately() rename
+
+2020-07-17  Andras Varga
+
+	samples, tests: updated for changed getModuleByPath() behavior
+
+	It can no longer return nullptr.
+
+2020-01-23  TÖRÖK Attila
+
+	ide/scave: anf file changes
+
+2020-01-15  Andras Varga
+
+	ChangeLogs: updated, by editing the raw versions. Guidelines:
+
+	- removed duplications (changes released earlier as version 5.5 and 5.6)
+	- removed uninteresting changes (e.g. "typo fixed"), and back-and-forth
+	changes
+	- describe impact of commit to that specific folder (e.g.
+	include/omnetpp/ChangeLog
+	 should describe the simkernel API changes, not the feature or bugfix
+	which caused
+	 the API change)
+	- tried to make the descriptions more self-contained, i.e. understandable
+	 without looking at the actual file changes
+
+----------- lines above this marker have been added from git log -----------
+
 2019-10-30  Rudolf Hornig
 
 	* Use intval_t, uintval_t instead of long, unsigned long as long is

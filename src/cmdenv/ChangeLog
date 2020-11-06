@@ -1,3 +1,30 @@
+2020-09-24  Rudolf Hornig
+
+	build: on Windows create .dll.a import libraries for shared libs.
+
+	To work with LLD linker, proper import libs must exists as
+	'autoimporting' is not supported with LLD for example. Also,
+	autoimporting/exporting is probelematic because the number of exported
+	symbols must not exceed 65536 in a single DLL and exporting all symbols
+	can easily owervhelm the linker.
+
+2020-01-15  Andras Varga
+
+	ChangeLogs: updated, by editing the raw versions. Guidelines:
+
+	- removed duplications (changes released earlier as version 5.5 and 5.6)
+	- removed uninteresting changes (e.g. "typo fixed"), and back-and-forth
+	changes
+	- describe impact of commit to that specific folder (e.g.
+	include/omnetpp/ChangeLog
+	 should describe the simkernel API changes, not the feature or bugfix
+	which caused
+	 the API change)
+	- tried to make the descriptions more self-contained, i.e. understandable
+	 without looking at the actual file changes
+
+----------- lines above this marker have been added from git log -----------
+
 2019-07-24  Andras Varga
 
 	* Print a warning that Fake GUI is an experimental feature.
