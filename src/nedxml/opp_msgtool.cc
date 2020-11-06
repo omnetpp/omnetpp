@@ -60,7 +60,7 @@ using std::ios;
 std::vector<std::string> MsgTool::expandMsgFolder(const char *filename)
 {
     if (isDirectory(filename))
-        return collectFilesInDirectory(filename, ".msg");
+        return collectFilesInDirectory(filename, true, ".msg");
     else
         return std::vector<std::string> { filename };
 }
