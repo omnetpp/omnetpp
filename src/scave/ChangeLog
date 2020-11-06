@@ -1,92 +1,74 @@
-2020-09-24  Rudolf Hornig
+2020-11-13  Attila Torok
 
-	build: on Windows create .dll.a import libraries for shared libs.
+	* Modernizing: Use in-class member initializers wherever possible;
+	use "=default" syntax for copy constructors where appropriate.
+	Tool: clang-tidy plus manual editing where needed.
 
-	To work with LLD linker, proper import libs must exists as
-	'autoimporting' is not supported with LLD for example. Also,
-	autoimporting/exporting is probelematic because the number of exported
-	symbols must not exceed 65536 in a single DLL and exporting all symbols
-	can easily owervhelm the linker.
+2020-05-28  Attila Torok
 
-2020-05-28  TÖRÖK Attila
-
-	scave: Add "isfield" result filter attribute
+	* Add "isfield" result filter attribute
 
 2020-05-28  Andras Varga
 
-	scave: opp_scavetool: updated the output of "opp_scavetool help filter";
-	added more examples
+	* opp_scavetool: updated the output of "opp_scavetool help filter";
+	added more examples.
 
 2020-05-04  Andras Varga
 
-	ide/scave: Filter classes mess reduced: more junk removed
-
-	experiment/measurement/replication fields now ONLY recognized with the
-	"runattr:" prefix: runattr:experiment, runattr:measurement, etc.
-
-	Motivation: bugfix. On the Browse Data page, when switching to expression
-	mode when the Experiment combo was filled in, the generated expressions
-	contained "experiment =~ some value", ie. without the runattr prefix,
-	which was not understood by filterIDList().
+	* fields.h/cc: Removed redundant filter classes.
 
 2020-05-21  Andras Varga
 
-	scave: added ResultFileManager::getItemProperty(),
-	ResultItem::getProperty(), use them in Matchables
+	* Added ResultFileManager::getItemProperty(), ResultItem::getProperty(),
+	use them in Matchables.
 
 2020-05-05  Andras Varga
 
-	scave: MatchableResultItem: speed up by delaying getItem() which is
-	costly for field scalars
+	* MatchableResultItem: speed up by delaying getItem() which is costly
+	for field scalars.
 
 2020-05-15  Andras Varga
 
-	ide/scave: add "Simplify" button under filter field in the "Input" page
-	of chart dialog
+	* ResultFileManager: added new getItems() overload.
 
 2020-05-12  Andras Varga
 
-	scave: added ResultItem::getItemTypeString() and related string constants
+	* Added ResultItem::getItemTypeString() and related string constants
 
 2020-05-14  Andras Varga
 
-	scave: ResultFileManager: fix crash on file reloading
+	* ResultFileManager: fix crash on file reloading
 
 2020-05-05  Andras Varga
 
-	ide/scave: added results.get_serial()
+	* ResultFileManager: added getSerial().
 
-2020-05-05  TÖRÖK Attila
+2020-05-05  Attila Torok
 
-	scave/vectorutils: Don't crash in readVectorsIntoArrays if no
-	InterruptedFlag was given
-
-	This was introduced when the parameter was changed from a reference to a
-	pointer, and is triggered when exporting data using opp_scavetool (where
-	there's no InterruptedFlag)
+	* vectorutils: Don't crash in readVectorsIntoArrays if no InterruptedFlag
+	was given.
 
 2020-05-04  Andras Varga
 
-	scave: compile fix and addendum to recent paramassignments-related commit
+	* Compile fix and addendum to recent paramassignments-related commit
 
 2020-05-03  Andras Varga
 
-	scave: ResultFileManager: IDList getter methods: no need for template
+	* ResultFileManager: IDList getter methods: no need for template
 
 2020-05-03  Andras Varga
 
-	scave: ResultFileManager: towards eliminating IDList::append()
-
+	* ResultFileManager: changes towards eliminating IDList::append().
 	We prefer IDList to be immutable (makes it easier to write correct UI
 	code)
 
 2020-05-02  Andras Varga
 
-	scave: ResultFileManager: remove redundancy in IDList getter methods
+	* ResultFileManager: remove redundancy in IDList getter methods
 
 2020-05-02  Andras Varga
 
-	scave: reduce paramvalues-paramassignments confusion; remove "param:"
+	* Reduce paramvalues-paramassignments confusion; remove "param:"
 	prefix (use "config:" instead)
 
 	Reason: "param:" is easy for users to confuse with accessing the saved
@@ -95,18 +77,16 @@
 
 2020-05-01  Andras Varga
 
-	scave: IDList sorting: update selection indices while sorting
-
+	* IDList sorting: update selection indices while sorting.
 	Important when IDList is used within a DataTable.
 
 2020-04-30  Andras Varga
 
-	scave: IDList sorting: new/renamed methods
+	* IDList sorting: new/renamed methods
 
 2020-04-28  Andras Varga
 
-	scave: IDList sorting refactored (~20x speedup for 1.5 million items,
-	~30s->1.5s)
+	* IDList sorting refactored (~20x speedup for 1.5 million items, ~30s->1.5s)
 
 	Idea: since accessing result items (whose fields act as sort key) is
 	relatively expensive, extract and store keys prior to sorting. This
@@ -117,20 +97,19 @@
 
 2020-04-28  Andras Varga
 
-	scave: IDList sort methods: added interruptedflag; changed from const
+	* IDList sort methods: added interruptedflag; changed from const
 	InterruptedFlag& to ptr everywhere
 
 2020-04-22  Andras Varga
 
-	scave: reduce field ScalarResult construction time
-
+	* Reduce field ScalarResult construction time.
 	- spare ctor call and copying
 	- spare stringpooling of module ptr
 	- cache the result of suffixed names (spare string concatenation)
 
 2020-04-22  Andras Varga
 
-	scave: use pooling for result attribute sets too
+	* Use pooling for result attribute sets too.
 
 	Two advantages: 1. saves memory (as attr sets of results are repeated all
 	over) 2. reduces field scalar construction time (no need to copy the
@@ -138,13 +117,13 @@
 
 2020-04-20  Andras Varga
 
-	scave: proper "field scalars"
+	* Proper "field scalars"
 
 	Before, we stored the fields of statistics/histograms/vector as proper
 	scalars as well, with an "isField" bit set, in addition to inside
 	StatisticsResult/VectorResult items.
 
-	This patch removes this reduncancy of storage. Instead, we extend IDs so
+	This patch removes this redundancy of storage. Instead, we extend IDs so
 	that they represent a scalar as "field x or statistics or vector y". In
 	getItem() and getScalar() of such an ID, we fabricate a temporary
 	ScalarResult object, and return that by value.
@@ -155,48 +134,48 @@
 
 2020-04-20  Andras Varga
 
-	scave: modernize more for() loops
+	* Modernize more for() loops
 
 2020-04-18  Andras Varga
 
-	scave: return result items as pointers (to reduce confusion w/ coming
+	* Return result items as pointers (to reduce confusion w/ coming
 	field scalars)
 
 2020-04-14  Andras Varga
 
-	scave: more unused stuff deleted from fields.cc/h, reduce number of
-	classes
+	* More unused stuff deleted from fields.cc/h, reduce number of
+	classes.
 
 2020-04-14  Andras Varga
 
-	scave: added Scave class with name constants; use everywhere
+	* Added Scave class with name constants; use everywhere
 
 2020-04-20  Andras Varga
 
-	scave: remove "Ptr" suffix from method names; introduce RunAndValueList
+	* Remove "Ptr" suffix from method names; introduce RunAndValueList
 	typedef for readability
 
 2020-04-20  Andras Varga
 
-	scave: fix: opp_scavetool: when listing run attrs, runs were not sorted
+	* Fix: opp_scavetool: when listing run attrs, runs were not sorted
 
 2020-04-13  Andras Varga
 
-	scave: split resultitems.cc/h from resultfilemanager.cc/h
+	* Split resultitems.cc/h from resultfilemanager.cc/h
 
 2020-04-11  Andras Varga
 
-	scave: IDList: remove some stuff we no longer need
+	* IDList: remove some stuff we no longer need
 
 2020-04-14  Andras Varga
 
-	scave: speed up runattr, itervar and config matching
+	* Speed up runattr, itervar and config matching.
 
 	Don't copy the string in each iteration when looping through an IDList.
 
 2020-04-10  Andras Varga
 
-	scave: IDList: make IDList immutable (remove mutator member functions)
+	* IDList: make IDList immutable (remove mutator member functions)
 
 	Motivation: it makes it easier to write correct code in Java.
 
@@ -209,42 +188,25 @@
 	For building IDLists one should use std::vector<ID>, which goes by the
 	name IDListBuffer in Java.
 
-2020-03-27  TÖRÖK Attila
+2020-03-27  Attila Torok
 
-	scave: Minor error message improvement in CSV "spreadsheets" exporter.
-
-	Aadd parameter as result type...
+	* Minor error message improvement in CSV "spreadsheets" exporter.
 
 2020-04-08  Andras Varga
 
-	ide/scave: Filter expression content assist works better than before
-
-	FilterExpressionProposalProvider revised, mostly works now
-
-	MatchExpressionSyntax: correctly parse '=~' token
-
-	FilterField:
-	- added missing Kind values (Config, ResultAttribute)
-	- prefix <-> Kind conversion
-	- convenience ctor
-
-	FilterHintsCache: provide name hints as well (e.g. list of itervars,
-	config keys)
-
-	getUniqueAttributeNames() -> getUniqueResultAttributeNames()
-	getUniqueAttributeValues() -> getUniqueResultAttributeValues()
+	* ResultFileManager: getUniqueAttributeNames()->getUniqueResultAttributeNames(), etc.
 
 2020-04-04  Andras Varga
 
-	scave: IDList: hashCode64() added, dup() removed
+	* IDList: hashCode64() added, dup() removed
 
-2020-04-02  TÖRÖK Attila
+2020-04-02  Attila Torok
 
-	modernize,scave: Replace deprecated std::ptr_fun with std::ref.
+	* Replace deprecated std::ptr_fun with std::ref.
 
 2020-03-31  Andras Varga
 
-	scave: IDList: copy ctor and move ctor to work as they are supposed to
+	* IDList: copy ctor and move ctor to work as they are supposed to.
 
 	Old code pre-dated C++11 move constructors.
 
@@ -253,11 +215,11 @@
 
 2020-03-31  Andras Varga
 
-	scave: IDList: do not dynamically allocate the vector
+	* IDList: do not dynamically allocate the vector
 
 2020-03-31  Andras Varga
 
-	scave: ResultFileManager: remove getAllItems() includeFields option, and
+	* ResultFileManager: remove getAllItems() includeFields option, and
 	related -y/--add-itervars-as-scalars option from opp_scavetool
 
 	It was not used/working, because we no longer add itervars as "fake"
@@ -265,34 +227,33 @@
 
 2020-03-31  Andras Varga
 
-	scave: ResultFileManager: rename: getUniqueNames() ->
-	getUniqueResultNames(), etc.
+	* ResultFileManager: rename: getUniqueNames() -> getUniqueResultNames(), etc.
 
 2020-03-31  Andras Varga
 
-	scave: ResultFileManager: optimize getUniqueNames()
+	* ResultFileManager: optimize getUniqueNames()
 
 2020-03-31  Andras Varga
 
-	scave: ResultFileManager: partition to use filerunids (faster due to
+	* ResultFileManager: partition to use filerunids (faster due to
 	fewer pointer dereferences)
 
 2020-03-31  Andras Varga
 
-	scave: ResultFileManager: more 'for' loops converted
+	* ResultFileManager: more 'for' loops converted
 
 2020-03-30  Andras Varga
 
-	scave: ResultFileManager: refactoring (use collectIDs where possible)
+	* ResultFileManager: refactoring (use collectIDs where possible)
 
 2020-03-30  Andras Varga
 
-	scave: ResultFileManager: added getPartitionByFile(); compile fix for
+	* ResultFileManager: added getPartitionByFile(); compile fix for
 	earlier commit
 
 2020-03-05  Andras Varga
 
-	scave: ResultFileManager: refactoring: store results with FileRun not
+	* ResultFileManager: refactoring: store results with FileRun not
 	with ResultFile
 
 	Result IDs now contain FileRun index instead of ResultFile index.
@@ -306,45 +267,29 @@
 
 2020-03-29  Andras Varga
 
-	scave: ResultFileManager: return StringSet and other STL containers by
-	value not by pointer
-
-	Return-by-pointer was old code, written before C++ had move constructors.
-
-2020-03-28  Andras Varga
-
-	scave: ResultFileManager: added getPartitionByRun()
+	* ResultFileManager: return StringSet and other STL containers by
+	value not by pointer. Return-by-pointer was old code, written before
+	C++ had move constructors.
 
 2020-03-28  Andras Varga
 
-	scave: ResultFileManager: performance boost of getUnique methods
+	* ResultFileManager: added getPartitionByRun()
+
+2020-03-28  Andras Varga
+
+	* ResultFileManager: performance boost of getUnique methods
 
 2020-03-27  Andras Varga
 
-	scave: IDList: added unchecked append() operation
+	* IDList: added unchecked append() operation
 
-2020-03-26  TÖRÖK Attila
+2020-03-26  Attila Torok
 
-	scave: Fix CSV-R exporting of PARAMETER type results.
+	* Fix CSV-R exporting of PARAMETER type results.
 
 2020-03-18  Andras Varga
 
-	ide/scave: limit number of items in DataTable/DataTree, due to poor GTK
-	performance
-
-	Reason: Table.setItemCount() has poor performance over GTK(3), because it
-	calls GTK.gtk_list_store_append() (or GTK.gtk_list_store_remove() when
-	the number rows need to be reduced) repeatedly in a loop. It may take
-	several seconds
-	(or several tens of seconds) when number of affected rows is more than a
-	few times 10,000. This is independent whether TableItems have been
-	created or not (i.e. SWT.VIRTUAL does not help).
-
-	Experience: limiting to 100,000 makes initial Table.setItemCount()
-	reasonably fast. However, when filter reduces number of rows
-	significantly, Table.setItemCount() may still take several times 10s.
-
-	Also: measure setItemCount() time separately from other processing
+	* ResultFileManager: added "limit" argument to filterIDList()
 
 2020-03-17  Andras Varga
 
@@ -352,7 +297,7 @@
 
 2020-03-14  Andras Varga
 
-	ide/scave: loadFile(): no exception on interruption
+	* loadFile(): no exception on interruption
 
 	On the Java side, InterruptedException arrives as normal
 	java.lang.RuntimeException, so it cannot be distinguished from actual
@@ -361,7 +306,7 @@
 
 2020-03-14  Andras Varga
 
-	ide/scave: remove inputName from loadFile() arg list
+	* Remove inputName from loadFile() arg list
 
 	Issue: when loadFile() detects that a file is already loaded and up to
 	date, but its inputName field is different, should it update? In the IDE,
@@ -372,104 +317,74 @@
 
 2020-03-12  Andras Varga
 
-	scave: ResultFileManager: added unloadFile(const char *displayName)
+	* ResultFileManager: added unloadFile(const char *displayName)
 
 2020-03-11  Andras Varga
 
-	ide/scave: Inputs page working again, and is quite scalable (should be
-	good for >>10,000 files)
-
-	ResultFiles store which input (in the IDE) they came from, so that we can
-	have an efficient getFilesForInput().
+	* ResultFile: added getFileSize(), getModificationDate(), etc.
 
 2020-03-11  Andras Varga
 
-	scave: added ResultFileManager::clear()
+	* Added ResultFileManager::clear()
 
 2020-03-11  Andras Varga
 
-	scave: rename fileName to displayName, to reduce chance of bug from
-	mixing it up with fileSystemFileName
-
+	* ResultFileManager, OmnetppResultFileLoader: rename fileName to displayName,
+	to reduce chance of bug from mixing it up with fileSystemFileName.
 	Plus fixes to some bugs where they *were* actually mixed up.
 
 2020-03-09  Andras Varga
 
-	scave: Result file loading: support for RELOAD_IF_CHANGED, using file
+	* Result file loading: support for RELOAD_IF_CHANGED, using file
 	fingerprints (filesize+date/time)
 
 2020-03-09  Andras Varga
 
-	scave: Logging during result file loading (if verbose)
+	* Logging during result file loading (if verbose)
 
 2020-03-09  Andras Varga
 
-	scave: Make result file loading interruptible
+	* Make result file loading interruptible
 
 2020-03-07  Andras Varga
 
-	scave: ResultFileManager::loadFile() interface redesigned (takes option
+	* ResultFileManager::loadFile() interface redesigned (takes option
 	flags and interruption flag)
 
 2020-03-06  Andras Varga
 
-	scave: opp_scavetool: initial attempt to directory and glob/globstar
-	loading
-
-	Will be replaced by later commits.
+	* opp_scavetool: Initial attempt to directory and glob/globstar
+	loading. Will be replaced by later commits.
 
 2020-03-03  Levente Mészáros
 
-	scave: Added support for recursively loading scalar and vector files from
+	* Added support for recursively loading scalar and vector files from
 	a directory (1st iteration).
 
 2020-03-07  Andras Varga
 
-	scave: OmnetppResultFileLoader: doLoadFile() factored out
+	* OmnetppResultFileLoader: doLoadFile() factored out.
 
 2020-03-04  Andras Varga
 
-	ide/scave: InputsTree: annotate tree items with file sizes, content
-	summaries for runs, etc.
+	* ResultFileManager: added several "getNum..." methods, for use in the Inputs page.
 
 2020-03-02  Levente Mészáros
 
-	scave: Added a number of maps to ResultFileManager for files, runs and
-	fileruns for performance reasons.
+	* Added a number of maps to ResultFileManager for files, runs and fileruns
+	for performance reasons.
 
 	Replaces linear search at a number of places with map lookup.
-
 	This significantly speeds up loading a large number of files (>10,000) in
 	both opp_scavetool and the Analysis Tool in the IDE.
 
 2020-03-02  Levente Mészáros
 
-	scave: Fixed memory issues during result file loading.
+	* OmnetppResultFileLoader: Fixed memory issues during result file loading.
 
-2020-02-17  TÖRÖK Attila
+2020-01-15  Attila Torok
 
-	ide/scave: misc WIP
-
-2020-01-15  TÖRÖK Attila
-
-	ide/scave: Add "parameter" as a result type to MatchableResultItem.
-
-2020-01-15  Andras Varga
-
-	ChangeLogs: updated, by editing the raw versions. Guidelines:
-
-	- removed duplications (changes released earlier as version 5.5 and 5.6)
-	- removed uninteresting changes (e.g. "typo fixed"), and back-and-forth
-	changes
-	- describe impact of commit to that specific folder (e.g.
-	include/omnetpp/ChangeLog
-	 should describe the simkernel API changes, not the feature or bugfix
-	which caused
-	 the API change)
-	- tried to make the descriptions more self-contained, i.e. understandable
-	 without looking at the actual file changes
-
------------ lines above this marker have been added from git log -----------
+	* Add "parameter" as a result item type to MatchableResultItem.
 
 2019-10-28  Attila Torok
 
@@ -821,8 +736,6 @@
 2018-11-05  Attila Torok
 
 	* Fix build with C++17. Contribution by tomasz.jankowski.mail@gmail.com
-
------------ lines above this marker have been added from git log -----------
 
 2020-01-06  ------ omnetpp-5.6 released ------
 

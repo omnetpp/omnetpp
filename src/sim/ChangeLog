@@ -1,99 +1,96 @@
+2020-11-25  Andras Varga
+
+	* Follow cFigure::RGBA and cFigure::Pixmap changes
+
+2020-11-13  Attila Torok
+
+	* Modernizing: Use in-class member initializers wherever possible;
+	use "=default" syntax for copy constructors where appropriate.
+	Tool: clang-tidy plus manual editing where needed.
+
+2020-11-11  Andras Varga
+
+	* cFigure: Hashing refinements:
+	  1. Cache figure hash for better performance.
+	  2. Merge hashGeometry() and hashGeometryRec(), and rename it hashTo().
+	  3. Exclude invisible figure subtrees from hash.
+	  4. Include ALL hashable properties (not just geometry) into the hash.
+
+2020-11-11  Andras Varga
+
+	* cHasher: fix #846 "cHasher::add - correction & optimisation".
+	Since chars were signed, converting p[i] to uint32_t does sign extension
+	which is bad because we "or" such values together.
+
+2020-10-10  Andras Varga
+
+	* Removed support for USE_OMNETPP4x_FINGERPRINTS.
+
 2020-09-10  Andras Varga
 
-	sim: cComponent: added preDelete()
-
-	It can help simplify network or module deletion in a complex simulation
-	that involves model change listeners. Assume that a model change listener
-	in a module contains code that involves accessing other modules
-	(e.g. calling methods in them). Normally, when those other modules don't
-	exist, the code would throw an exception to indicate the error.
-
-	However, when the same listener is invoked due to module deletion, those
-	collaborator modules may no longer exist (just having been deleted). This
-	can result in a crash; but even when the nonexistence (disappearance) of
-	those modules is properly detected, the code is not supposed to throw an
-	exception -- which is different from its normal behavior. Writing code
-	that handles such situations can be tricky.
-
-	The preDelete() method can help here: if it is overridden to unsubscribe
-	from the model change listener, the above complications can be avoided
-	altogether.
+	* cComponent: added preDelete()
 
 2020-10-17  Andras Varga
 
-	sim: added opp_component_ptr
-
-2020-10-15  Andras Varga
-
-	sim: add back forceTransmissionFinishTime() as deprecated, for backward
-	compatibility
+	* Change for opp_component_ptr: cComponent::~cComponent() to null out
+	all pointers that point to that component.
 
 2020-10-12  Andras Varga
 
-	sim: send() should NOT use the transmissionId already on the packet, ever
-
+	* send() should NOT use the transmissionId already on the packet, ever.
 	It must now be explicitly specified in SendOptions for the original
 	packet and for updates, too.
 
 2020-10-13  Rudolf Hornig
 
-	sim: moved debug trap macro to the same line as the call to handleMessage
-
+	* Moved debug trap macro to the same line as the call to handleMessage().
 	This is useful because you have to press Step Into only once
 	(instead of twice) when stopped in the debugger.
 
 2020-10-11  Andras Varga
 
-	sim: transmission updates API: origPacketId renamed to transmissionId
+	* Transmission updates API: origPacketId renamed to transmissionId.
 
-	related changes:
+	Related changes:
 	- isUpdate() now uses separate flag
 	- for the original packets, transmissionId is implicitly taken from the
-	message ID
+	  message ID
 
 2020-09-24  Rudolf Hornig
 
-	build: on Windows create .dll.a import libraries for shared libs.
+	* build: on Windows, create .dll.a import libraries for shared libs.
 
 	To work with LLD linker, proper import libs must exists as
 	'autoimporting' is not supported with LLD for example. Also,
-	autoimporting/exporting is probelematic because the number of exported
+	autoimporting/exporting is problematic because the number of exported
 	symbols must not exceed 65536 in a single DLL and exporting all symbols
-	can easily owervhelm the linker.
+	can easily overwhelm the linker.
 
 2020-09-27  Andras Varga
 
-	sim: cDatarateChannel: implemented mode=MULTI
-
-	Allows multiple concurrent transmissions, with consistency checking,
-	isBusy(), getTransmissionFinishTime(), and channelBusy signal support.
-
-2020-09-27  Andras Varga
-
-	sim: cDatarateChannel: packet-handling part of processMessage() factored
-	out as processPacket()
+	* cDatarateChannel: implemented mode=MULTI. It allows multiple concurrent
+	transmissions, with consistency checking, isBusy(), getTransmissionFinishTime(),
+	and channelBusy signal support.
 
 2020-09-27  Andras Varga
 
-	sim: cDatarateChannel: refactor: group together packet-related operations
+	* cDatarateChannel: packet-handling part of processMessage() factored
+	out as processPacket().
 
-	Hints:
-	- emitting messageDiscardedSignal was split: first take care of
-	 non-packet messages, then later of non-update packets
-	- Arms of "if (isUpdate)" conditional were flipped
+2020-09-27  Andras Varga
+
+	* cDatarateChannel: refactor: group together packet-related operations.
 
 2020-09-18  Andras Varga
 
-	sim: cDatarateChannel: allow multiple concurrent transmissions, without
-	any checks/bookkeeping
-
-	Set mode=UNCHECKED for that.
+	* cDatarateChannel: allow multiple concurrent transmissions, without
+	any checks/bookkeeping. Set mode=UNCHECKED for that.
 
 	Note: cDatarateChannel::finish() was moved to the bottom of the file.
 
 2020-09-11  Andras Varga
 
-	sim: cModule: deleteModule() refactoring
+	* cModule: deleteModule() refactoring.
 
 	It is not supposed to do stuff (like fire pre-model-change notifications)
 	from a halfway-deleted module. Now we do every risky thing (such as
@@ -106,32 +103,27 @@
 
 2020-09-08  Andras Varga
 
-	sim: cDatarateChannel::processMessage() rewritten for clarity
+	* cDatarateChannel::processMessage() rewritten for clarity.
 
 2020-08-12  Andras Varga
 
-	sim: IdentityFilter: do not convert signal values to numeric
+	* IdentityFilter: Do not convert signal values to numeric.
 
 2020-08-28  Levente Mészáros
 
-	sim: Moved default operator<< to cObject and added printOn().
-
-	Docu by Andras.
+	* Moved default operator<< to cObject and added printOn().
 
 2020-08-27  Andras Varga
 
-	sim: cIListener destructor to unsubscribe from all places
-
-	... instead of insisting on being already unsubscribed.
-
-	This fixes the issue introduced in the previous commit.
+	* cIListener destructor to unsubscribe from all places, instead of
+	insisting on being already unsubscribed. This fixes the issue
+	introduced in the previous commit.
 
 2020-08-14  Andras Varga
 
-	sim: cModule: change module destruction sequence
-
-	So that when deleting a compound module, the compound module's local
-	listeners are notified about the deletion of the submodules.
+	* cModule: Change module destruction sequence, so that when deleting
+	a compound module, the compound module's local listeners are notified
+	about the deletion of the submodules.
 
 	The downside is that more listeners now need to be explicitly
 	unsubscribed
@@ -142,65 +134,29 @@
 
 2020-08-26  Andras Varga
 
-	sim: cModule: deleteModule() moved right below the destructor
-
+	* cModule: deleteModule() moved right below the destructor.
 	For editing convenience, as the two work in tandem (modules may only be
 	deleted via deleteModule().
 
-2020-08-18  Rudolf Hornig
-
-	sim: match recent API changes in windows specific named pipe
-	communication implementation to avoid build errors on Windows
-
 2020-08-14  Levente Mészáros
 
-	sim: Fixed clone in result filter/recorder to use init().
-
-2020-08-07  TÖRÖK Attila
-
-	sim/parsim: Make the GUI a bit more responsive with
-	cNamedPipeCommunications
-
-	By reducing the blocking timeout.
+	* Fixed clone in result filter/recorder to use init().
 
 2020-08-10  Andras Varga
 
-	sim: added DemuxFilter, see test for usage
-
-	Needed changes:
+	* Added DemuxFilter. Needed changes:
 	- cResultListener: clone() method added
 	- Register_ResultRecorder() impl changed to allow creating
-	filters/recorders
-	 with createOne(); this is needed by clone()
+	  filters/recorders with createOne(); this is needed by clone()
 	- cResultFilter: init() to store component and attrsProperty, because
-	 clone() needs them
+	  clone() needs them
 	- cResultListener: receiveSignal() methods need to be public so that
-	 DemuxFilter can call them.
+	   DemuxFilter can call them.
 	- cResultRecorder: added setDemuxLabel(), needed as part of result names
 
-2020-08-03  Zoltan Bojthe
-
-	sim: cSimpleModule: fixed function name in error text
-
-2020-07-31  Zoltan Bojthe
-
-	sim: cSimpleModule: fixed rescheduleAfter() (copy-paste bug)
-
-2020-07-30  Andras Varga
-
-	sim: sendDirect(): fix error reporting
-
-2020-07-29  Andras Varga
-
-	sim: sim_std.msg fix
-
 2020-07-21  Andras Varga
 
-	sim: cosmetics in cModule: remove ancient todo items
-
-2020-07-21  Andras Varga
-
-	sim: cSimpleModule: added rescheduleAt(), rescheduleAfter()
+	* cSimpleModule: added rescheduleAt(), rescheduleAfter()
 
 	Note1: cancelEvent() is quite tolerant (it doesn't complain if event is
 	NOT scheduled), and since rescheduleAt()/rescheduleAfter() are primarily
@@ -211,42 +167,28 @@
 
 2020-07-20  Andras Varga
 
-	sim: cSimpleModule: added scheduleAfter()
+	* cSimpleModule: added scheduleAfter()
 
 2020-07-29  Andras Varga
 
-	sim: cosmetics in cSimpleModule: rename local vars
-
-	newMsg -> receivedMessage, starter -> starterMessage
+	* Cosmetics in cSimpleModule: rename local vars:
+	newMsg -> receivedMessage, starter -> starterMessage.
 
 2020-07-29  Andras Varga
 
-	sim: msgForActivity moved from cSimulation to cSimpleModule, because
-	that's what uses it
+	* msgForActivity moved from cSimulation to cSimpleModule, because
+	that's what uses it.
 
 2020-07-20  Andras Varga
 
-	sim: process ordinary events via cMessage::execute()
-
-	.. and cMessage::execute() delegates everything to a newly created
-	cSimpleModule::doMessageEvent() method.
-
+	* Process ordinary events via cMessage::execute(), and let cMessage::execute()
+	delegate everything to a newly created cSimpleModule::doMessageEvent() method.
 	Also: cMessage::execute() made protected, to make it accessible from
 	subclasses.
 
-2020-07-27  Andras Varga
-
-	sim: parsim ported, see details below
-
-	Most changes come from the need to follow the signature change of
-	cGate::deliver(), especially the addition of SendOptions as parameter.
-	Due to that, whenever a cMessage is sent from one partition to another,
-	it needs to be acompanied by the SendOptions. Thus, SendOptions needs to
-	be packed/unpacked, etc.
-
 2020-06-23  Andras Varga
 
-	sim: send()/sendDirect: introduced SendOptions and tx updates; cChannel
+	* send()/sendDirect: introduced SendOptions and tx updates; cChannel
 	API and cDatarateChannel changes
 
 	Note: substantial changes in this patch are concentrated in cSimpleModule
@@ -299,40 +241,39 @@
 
 	More changes:
 	- send() and sendDirect() now accept a SendOptions; sendDelayed() and
-	 the sendDirect() variant with delay and duration now convert their
-	 extra args to a SendOptions, and delegate to the "standard"
-	 send()/sendDirect() versions.
+	  the sendDirect() variant with delay and duration now convert their
+	  extra args to a SendOptions, and delegate to the "standard"
+	  send()/sendDirect() versions.
 
 	- cDatarateChannel: allow overriding the duration computed from the
-	 channel datarate from the send() call.
+	  channel datarate from the send() call.
 
 	- cDatarateChannel: non-packet messages pass through without
-	 interfering with packets.
+	  interfering with packets.
 
 	- cDatarateChannel: disabled channels to let transmission updates
-	through,
-	 so that it is possible for the transmitter module to abort the
+	 through, so that it is possible for the transmitter module to abort the
 	 ongoing packet transmission.
 
 	- Note: tx updates (without duration/remainingDuration) are allowed
-	 on paths without transmission channels.
+	  on paths without transmission channels.
 
 	- signature change in methods that participate in the send()/sendDirect()
 	 protocol: SendOptions was added to the arg list. This affects:
 	 cGate::deliver(), cModule::arrived(), cChannel::processMessage()
 
 	- in cChannel::processMessage(), result_t was renamed cChannel::Result,
-	 and it is now a proper return value (not an output parameter);
+	  and it is now a proper return value (not an output parameter);
 
 	- remainingDuration was added to cChannel::Result.
 
 	- cDatarateChannel's datarate is now optional: set it to 0 or nan
-	 to leave it unspecified.  This change was necessary to support
-	 transmitting frames with per-frame data rate selection.
+	  to leave it unspecified.  This change was necessary to support
+	  transmitting frames with per-frame data rate selection.
 
 	- Removed forceTransmissionFinishTime() from cChannel (and esp.
-	cDatarateChannel)
-	 It was a hack. Now you can use SendOptions::updateTx() instead.
+	  cDatarateChannel). It was a hack. Now you can use SendOptions::updateTx()
+	  instead.
 
 	- Rename: setDeliverOnReceptionStart() -> setDeliverImmediately()
 
@@ -341,24 +282,24 @@
 	- cPacket now carries a remainingDuration field
 
 	- cPacket: eliminated FL_ISRECEPTIONSTART; isReceptionStart() now uses
-	 remainingDuration as input; added a similar isReceptionEnd() method.
+	  remainingDuration as input; added a similar isReceptionEnd() method.
 
 	- cPacket::str() overhaul to reflect new fields and uses
 
 	- in the APIs, sendDelay and propagationDelay (which were sort of
-	 combined into a single value) are now distinct, and handled
-	 separately.
+	  combined into a single value) are now distinct, and handled
+	  separately.
 
 	- eventlog format changes: BeginSendEntry: added sendDelay and
-	 origPacketId; SendHopEntry, SendDirectEntry: added remainingDuration
+	  origPacketId; SendHopEntry, SendDirectEntry: added remainingDuration
 
 	- cSimpleModule: factored out a throwNotOwnerOfMessage() method to
-	 eliminate a large chunk of nearly identical code in send() and
-	 sendDirect().
+	  eliminate a large chunk of nearly identical code in send() and
+	  sendDirect().
 
 	- cEnvir callbacks also changed: beginSend() takes SendOptions;
-	 messageSendHop() and messageSendDirect() take cChannel::Result
-	 instead of separate args.
+	  messageSendHop() and messageSendDirect() take cChannel::Result
+	  instead of separate args.
 
 	Note: cChannel::Result became a toplevel class (ChannelResult) due to the
 	need to break circular dependency: "cenvir.h" cannot include
@@ -367,8 +308,8 @@
 
 2020-07-16  Andras Varga
 
-	sim: fix assertion failure in deleteNetwork() after error during channel
-	creation
+	* Fix assertion failure in deleteNetwork() after error during channel
+	creation.
 
 	Setting up a connection is a two-step process: 1. cChannelType::create()
 	is used to create a channel object 2. channel object is inserted into the
@@ -386,111 +327,66 @@
 
 2020-07-16  Andras Varga
 
-	sim: cStatisticBuilder: add possibility to disable auto-adding the warmup
-	filter
+	* cStatisticBuilder: add possibility to disable auto-adding the warmup
+	filter.
 
 	This opens the possiblity for the user to add them in the way
-	appropriate. E.g. cf.   min(warmup(foo)) [this is the default] and
-	warmup(min(foo))
-	[which might occasionally be what the user wants instead]
+	appropriate. E.g. cf.  min(warmup(foo)) [this is the default] and
+	warmup(min(foo)) [which might occasionally be what the user wants instead]
 
 2020-07-17  Andras Varga
 
-	sim: getModuleByPath() adjustment: never return nullptr, even for empty
-	strings
+	* getModuleByPath() adjustment: never return nullptr, even for empty
+	strings.
 
 2020-07-14  Andras Varga
 
-	sim: cComponent: store per-component cSimulation pointers
-
-	... instead of relying on getActiveSimulation()
-
-	Also: fix related tests (getSimulation() is not supposed to be called on
-	a deleted module, and now it crashes too)
-
-2020-07-14  Andras Varga
-
-	sim,qtenv: follow getModuleByPath() behavior change
-
-	Wherever code expects nullptr for "not found", use findModuleByPath()
-	instead
+	* cComponent: store per-component cSimulation pointers instead of relying
+	on getActiveSimulation().
 
 2020-07-13  Andras Varga
 
-	sim: cMessage, cEvent: make the output of str() less verbose
-
-	- arrival time, from/to module etc aren't very useful if message is not
-	currently in the FES
-	- module IDs are also not very useful, and take up valuable horiz space
-	- control info: in practice they tend to be unnamed, so skip priting the
-	name
+	* cMessage, cEvent: make the output of str() less verbose:
+	  - arrival time, from/to module etc aren't very useful if message is not
+	    currently in the FES
+	  - module IDs are also not very useful, and take up valuable horiz. space
+	  - control info: in practice they tend to be unnamed, so skip printing the name
 
 2020-06-22  Andras Varga
 
-	sim: getModuleByPath() made stricter (do not tolerate if module doesn't
-	exist); added findModuleByPath()
+	* getModuleByPath() made stricter (do not tolerate if module doesn't
+	exist); added findModuleByPath().
 
 2020-04-28  Andras Varga
 
-	sim: cModule: allow modules to be deleted (incl self-deletion) and
-	created at will during initialization
-
+	* cModule: allow modules to be deleted (incl self-deletion) and
+	created at will during initialization.
 	Note: new modules are always *appended* to the end of the submodule list,
 	which makes things easier.
 
 2020-06-23  Andras Varga
 
-	sim: cDatarateChannel: cosmetics
-
-	Makes it easier to review the next commit.
-
-2020-06-23  Andras Varga
-
-	sim: cDatarateChannel: in finish(), clamp "channel busy" signal end time
-	to simulation end time
-
-	Otherwise, statistics can look weird: a channel could be busy for longer
-	time than the total simulation time...
-
-2020-06-08  Andras Varga
-
-	sim: added the "parsim-num-partitions" config option
+	* cDatarateChannel: in finish(), clamp "channel busy" signal end time
+	to simulation end time. Otherwise, statistics can look weird: a channel
+	could be busy for longer time than the total simulation time.
 
 2020-06-10  Andras Varga
 
-	envir: refine error message if getting host name fails
+	* cConfiguration: refined method docs, added getConfigValue()/
+	getPerObjectConfigValue() overload that take cConfigOption*.
 
 2020-06-10  Andras Varga
 
-	sim: cConfiguration: refined method docs, added
-	getConfigValue()/getPerObjectConfigValue() overload that take
-	cConfigOption*
+	* simkerneldefs.h: remove obsolete PI define, use M_PI instead
+	[reported by Christoph Sommer].
 
-2020-06-09  Andras Varga
+2020-04-30  Attila Torok
 
-	parsim: cNamedPipeCommunications: implemented tag filtering
+	* Fix bitfield checking in cXXXParImpl::getExpression(). (Thanks, Clang 10.)
 
-2020-06-09  Andras Varga
+2020-03-28  Attila Torok
 
-	sim: cGate::isConnected() fix for placeholder modules
-
-	eeded to for INET parsim example.
-
-2020-06-10  Andras Varga
-
-	sim: simkerneldefs.h: remove obsolete PI define [reported by Christoph
-	Sommer]
-
-	Use M_PI instead.
-
-2020-04-30  TÖRÖK Attila
-
-	sim: Fix bitfield checking in cXXXParImpl::getExpression(). (Thanks,
-	Clang 10)
-
-2020-03-28  TÖRÖK Attila
-
-	sim: Fix ParameterRef::print - remove stray trailing ")".
+	* Fix ParameterRef::print - remove stray trailing ")".
 
 	network Net
 	{
@@ -499,37 +395,15 @@
 	       volatile int b = a; // this was erroneously printed as "a)"
 	}
 
-2020-02-14  Rudolf Hornig
-
-	sim/common/samples: fixes to build with clang 9 compiler using MS ABI
-
 2020-01-21  Andras Varga
 
-	sim: transmissionchannel-specific code moved from cGate::deliver() to
-	cDatarateChannel::process()
-
-	cGate::deliver() is now completely agnostic of channel kind.
+	* Transmissionchannel-specific code moved from cGate::deliver() to
+	cDatarateChannel::process(). cGate::deliver() is now completely agnostic
+	of channel kind.
 
 	Behavior change: messageSentSignal and channelBusySignal: the duration is
 	now set on the packet when these signals are emitted, which is probably a
 	good thing.
-
-2020-01-15  Andras Varga
-
-	ChangeLogs: updated, by editing the raw versions. Guidelines:
-
-	- removed duplications (changes released earlier as version 5.5 and 5.6)
-	- removed uninteresting changes (e.g. "typo fixed"), and back-and-forth
-	changes
-	- describe impact of commit to that specific folder (e.g.
-	include/omnetpp/ChangeLog
-	 should describe the simkernel API changes, not the feature or bugfix
-	which caused
-	 the API change)
-	- tried to make the descriptions more self-contained, i.e. understandable
-	 without looking at the actual file changes
-
------------ lines above this marker have been added from git log -----------
 
 2019-11-19  Andras Varga
 
@@ -846,7 +720,7 @@
 	- cDynamicExpression now relies for common::Expression for parsing and
 	  evaluation. Its old parser (expr.y, expr.lex) has been removed.
 
-	- nedsupport.h moved from include/omnetpp to src/sim: nodes must
+	- nedsupport.h moved from include/omnetpp to src/* nodes must
 	  now subclass from ExprNode, so they cannot be public.
 
 	- in NED functions: context ("In function x():") was removed from error
@@ -906,7 +780,7 @@
 
 2019-02-22  Andras Varga
 
-	sim: support for embedding NED files
+	* support for embedding NED files
 
 2019-02-05  Andras Varga
 

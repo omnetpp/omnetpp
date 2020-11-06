@@ -1,32 +1,18 @@
+2020-11-19  Attila Torok
+
+	* Move initializers inline, remove empty constructors and destructors
+
 2020-06-03  Andras Varga
 
-	samples/cqn: parsim: omnetpp.ini and run scripts revised
+	* parsim: omnetpp.ini and run scripts revised
 
-	Note:
 	- the runparsim-* scripts are now generic (not tied to cqn), only the
-	cqn-* ones are
+	  cqn-* ones are
 	- the scripts query the number of partitions from omnetpp.ini,
-	 using the new "parsim-num-partitions" and "-e" switch
+	  using the new "parsim-num-partitions" and "-e" switch
 	- HOSTNAME no longer needs to be set, because the runtime reads it by
-	 calling the gethostname() <unistd.h> function.
+	  calling the gethostname() <unistd.h> function.
 	- partitioning is now good up to 16 processes.
-
-2020-01-15  Andras Varga
-
-	ChangeLogs: updated, by editing the raw versions. Guidelines:
-
-	- removed duplications (changes released earlier as version 5.5 and 5.6)
-	- removed uninteresting changes (e.g. "typo fixed"), and back-and-forth
-	changes
-	- describe impact of commit to that specific folder (e.g.
-	include/omnetpp/ChangeLog
-	 should describe the simkernel API changes, not the feature or bugfix
-	which caused
-	 the API change)
-	- tried to make the descriptions more self-contained, i.e. understandable
-	 without looking at the actual file changes
-
------------ lines above this marker have been added from git log -----------
 
 2020-01-06  ------ omnetpp-5.6 released ------
 

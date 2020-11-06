@@ -1,88 +1,43 @@
+2020-11-12  Andras Varga
+
+	* Expression: added lambda-based ExprNode classes.
+
+2020-11-13  Attila Torok
+
+	* Modernizing: Use in-class member initializers wherever possible;
+	use "=default" syntax for copy constructors where appropriate.
+	Tool: clang-tidy plus manual editing where needed.
+
 2020-10-14  Rudolf Hornig
 
-	common: got rid of a few bison warnings and properly test for bison 3
+	* matchexpression.y: Fix for Bison 3
 
-2020-09-24  Rudolf Hornig
+2020-09-17  Attila Torok
 
-	build: on Windows create .dll.a import libraries for shared libs.
-
-	To work with LLD linker, proper import libs must exists as
-	'autoimporting' is not supported with LLD for example. Also,
-	autoimporting/exporting is probelematic because the number of exported
-	symbols must not exceed 65536 in a single DLL and exporting all symbols
-	can easily owervhelm the linker.
-
-2020-09-17  TÖRÖK Attila
-
-	common: Add a modified sgr_macro.h, originally by YOSHIOKA Takuma
-	(lo48576)
-
-	https://github.com/lo48576/sgr_macro
+	* Added a modified sgr_macro.h, originally by YOSHIOKA Takuma,
+	from https://github.com/lo48576/sgr_macro
 
 2020-04-30  Andras Varga
 
-	scave(common): eliminate "BigDecimal: Cannot convert Nil to double" error
-
-	when turning on "Display Statistics/Vector fields" in Scave, probably
-	caused by starttime/endtime fields of empty vectors
+	* BigDecimal: Eliminated "BigDecimal: Cannot convert Nil to double" error.
 
 2020-04-22  Andras Varga
 
-	scave: use pooling for result attribute sets too
-
-	Two advantages: 1. saves memory (as attr sets of results are repeated all
-	over) 2. reduces field scalar construction time (no need to copy the
-	StringMap)
+	* stlutil.h: Added hash_combine and pair_hash
 
 2020-04-16  Andras Varga
 
-	common: fix: match expressions containing empty strings did not work
-
-	caused "basic_string::_M_construct null not valid" exception
-
-	example: runattr:measurement =~ ""
-
-2020-03-10  Andras Varga
-
-	ide/scave: wrap fileutil.h's collectFilesInDirectory() and
-	collectMatchingFiles()
-
-2020-03-07  Andras Varga
-
-	common: fileutil: collectFiles() -> collectFilesInDirectory()
+	* MatchExpressionLexer: Fix: Match expressions containing empty strings
+	did not work. Eample: runattr:measurement =~ ""
 
 2020-03-05  Andras Varga
 
-	common: fileutils: added collectMatchingFiles(), a function that can glob
-	"**" wildcards.
+	* fileutil.h: Added collectMatchingFiles(), a function that can glob "**"
+	wildcards.
 
 2020-03-06  Andras Varga
 
-	common: fileutil: added isAbsolutePath(); fix in PushDir error message
-
-	PushDir: "no permission" is a more common case of error than "does not
-	exist"
-
-2020-02-14  Rudolf Hornig
-
-	sim/common/samples: fixes to build with clang 9 compiler using MS ABI
-
-2020-01-15  Andras Varga
-
-	ChangeLogs: updated, by editing the raw versions. Guidelines:
-
-	- removed duplications (changes released earlier as version 5.5 and 5.6)
-	- removed uninteresting changes (e.g. "typo fixed"), and back-and-forth
-	changes
-	- describe impact of commit to that specific folder (e.g.
-	include/omnetpp/ChangeLog
-	 should describe the simkernel API changes, not the feature or bugfix
-	which caused
-	 the API change)
-	- tried to make the descriptions more self-contained, i.e. understandable
-	 without looking at the actual file changes
-
------------ lines above this marker have been added from git log -----------
+	* fileutil.h: Added isAbsolutePath(); fix in PushDir error message.
 
 2019-11-26  Andras Varga
 

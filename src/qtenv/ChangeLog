@@ -1,244 +1,201 @@
-2020-10-20  TÖRÖK Attila
+2020-11-13  Attila Torok
 
-	qtenv: OsgViewer: Silence a -Wswitch if not WITH_OSGEARTH.
+	* Modernizing: Use in-class member initializers wherever possible;
+	use "=default" syntax for copy constructors where appropriate.
+	Tool: clang-tidy plus manual editing where needed.
 
-2020-10-19  TÖRÖK Attila
+2020-10-20  Attila Torok
 
-	qtenv: TextViewerWidget: Avoid computing a negative viewport size in case
+	* OsgViewer: Silence a -Wswitch if not WITH_OSGEARTH.
+
+2020-10-19  Attila Torok
+
+	* TextViewerWidget: Avoid computing a negative viewport size in case
 	the widget size is (0,0)
 
 2020-10-16  Andras Varga
 
-	qtenv: use title case for menu items
+	* Use title case for menu items
 
-2020-10-13  TÖRÖK Attila
+2020-10-13  Attila Torok
 
-	qtenv: Remove a random unused variable in TextViewerWidget
+	* Remove a random unused variable in TextViewerWidget
 
-2020-10-15  TÖRÖK Attila
+2020-10-15  Attila Torok
 
-	qtenv: Add an option to disable SimTime digit grouping in the message log
-
+	* Add an option to disable SimTime digit grouping in the message log.
 	It might be useful for copying them out into an external datasheet for
-	example
+	example.
 
-2020-10-15  TÖRÖK Attila
+2020-10-15  Attila Torok
 
-	qtenv: TimeLine: Append an ellipsis to message labels followed by omitted
-	labels (caused by lack of space)
+	* TimeLine: Append an ellipsis to message labels followed by omitted
+	labels (caused by lack of space).
 
-2020-10-15  TÖRÖK Attila
+2020-10-15  Attila Torok
 
-	qtenv: TimeLine: Measure label width using QFontMetrics instead of
-	constructing a graphics item for it
+	* TimeLine: Measure label width using QFontMetrics instead of
+	constructing a graphics item for it.
 
-2020-10-15  TÖRÖK Attila
+2020-10-15  Attila Torok
 
-	qtenv: Set I beam cursor on TextViewerWidget
+	* Set I-beam cursor on TextViewerWidget.
 
-2020-10-14  TÖRÖK Attila
+2020-10-14  Attila Torok
 
-	qtenv: TimeLine: Make the message outline color stand out a bit if would
-	blend in to the background too much
-
-	This should work reasonably well with both light and dark themes.
+	* TimeLine: Make the message outline color stand out a bit if would
+	blend in to the background too much.
 
 2020-10-15  Andras Varga
 
-	qtenv: tooltips edited
+	* Tooltips edited.
 
 2020-10-14  Rudolf Hornig
 
-	qtenv: disabled deprecation warnings until we cannot move to qt-5.9 or
-	later
+	* Disabled deprecation warnings until we cannot move to qt-5.9 or later.
 
-2020-10-09  TÖRÖK Attila
+2020-10-09  Attila Torok
 
-	qtenv: Move DisableDebugOnErrors into qtutil.[h|cc], use it in
-	textviewerproviders.cc too
+	* Move DisableDebugOnErrors into qtutil.[h|cc], use it in
+	textviewerproviders.cc too.
 
-2020-10-10  TÖRÖK Attila
+2020-10-13  Attila Torok
 
-	qtenv: Silence a warning in release mode
+	* TextViewerProviders: Do not crash when printing nullptr as sent
+	message. This might happen if a channel throws an exception during send.
 
-2020-10-13  TÖRÖK Attila
+2020-10-13  Attila Torok
 
-	qtenv: TextViewerProviders: Do not crash when printing nullptr as sent
-	message
+	* Generic object inspector: Remove hack from HighlighterItemDelegate::paint
+	that caused glitched drawing.
 
-	This might happen if a channel throws an exception during send
+2020-10-07  Attila Torok
 
-2020-10-13  TÖRÖK Attila
+	* Do not use the deprecated QTextLayout::setAdditionalFormats().
 
-	qtenv: GOI: Remove HACK from HighlighterItemDelegate::paint that caused
-	glitched drawing
+2020-10-09  Attila Torok
 
-2020-10-07  TÖRÖK Attila
+	* Raise the minimum required Qt version to 5.6
 
-	qtenv: Do not use the deprecated QTextLayout::setAdditionalFormats()
+2020-10-07  Attila Torok
 
-2020-10-09  TÖRÖK Attila
-
-	qtenv: Remove a couple workarounds and checks for Qt versions older than
-	5.6.
-
-2020-10-09  TÖRÖK Attila
-
-	qtenv: Raise the minimum required QT version to 5.6
-
-2020-10-07  TÖRÖK Attila
-
-	qtenv: Do not use the deprecated QModelIndex::child()
-
-	Replace idx.child(row, 0) with model->index(row, 0, idx)
+	* Do not use the deprecated QModelIndex::child(). Replace idx.child(row, 0)
+	with model->index(row, 0, idx).
 
 2020-10-11  Andras Varga
 
-	sim: transmission updates API: origPacketId renamed to transmissionId
+	* Follow update of transmission updates API: origPacketId renamed to transmissionId.
 
-	related changes:
-	- isUpdate() now uses separate flag
-	- for the original packets, transmissionId is implicitly taken from the
-	message ID
+2020-09-08  Attila Torok
 
-2020-09-24  Rudolf Hornig
+	* LogInspector: Add reference time option, format times better.
+	And add "Set ~" and "Clear ~" reference time actions to context menu.
 
-	build: on Windows create .dll.a import libraries for shared libs.
+2020-09-17  Attila Torok
 
-	To work with LLD linker, proper import libs must exists as
-	'autoimporting' is not supported with LLD for example. Also,
-	autoimporting/exporting is probelematic because the number of exported
-	symbols must not exceed 65536 in a single DLL and exporting all symbols
-	can easily owervhelm the linker.
+	* Use the SGR formatting macros in TextViewerProviders.
 
-2020-09-08  TÖRÖK Attila
+2020-09-15  Attila Torok
 
-	qtenv: LogInspector: Add reference time option, format times better
+	* LogInspector: Reverse the "Relevant Hops" (and arrows in it) if
+	needed, based on module ID.
 
-	And add "Set ~" and "Clear ~" reference time actions to context menu
+2020-09-28  Attila Torok
 
-2020-09-17  TÖRÖK Attila
+	* PreferencesDialog: Add a note about animation speed with a link.
 
-	qtenv: Use the SGR formatting macros in TextViewerProviders
+2020-09-28  Attila Torok
 
-2020-09-15  TÖRÖK Attila
+	* LogInspector,GenericObjectInspector: Add and deconflict copy actions.
 
-	qtenv: LogInspector: Reverse the "Relevant Hops" (and arrows in it) if
-	needed, based on module ID
+2020-09-15  Attila Torok
 
-	Add allowReverseRelevantHops checkable action to LogInspector context
-	menu, make it a persistent global option
+	* Don't change Log~, and GenericObjectInspector mode on target object
+	switch. But, keep this mechanism for ModuleInspector 3D/Canvas mode!
 
-2020-09-28  TÖRÖK Attila
+2020-09-23  Attila Torok
 
-	qtenv: PreferencesDialog: Add a note about animation speed with a link
-
-2020-09-28  TÖRÖK Attila
-
-	qtenv: LogInspector,GenericObjectInspector: Add and deconflict copy
-	actions
-
-2020-09-15  TÖRÖK Attila
-
-	qtenv: Don't change Log~, and GenericObjectInspector mode on target
-	object switch
-
-	But keep this mechanism for ModuleInspector 3D/Canvas mode!
-
-2020-09-23  TÖRÖK Attila
-
-	qtenv: Round the compound module area sides to whole pixels "outward"
-
+	* Round the compound module area sides to whole pixels "outward".
 	This makes many issues caused by anti-aliasing (with fractional
 	coordinates) while creating screenshots disappear.
 
-2020-09-08  TÖRÖK Attila
+2020-09-08  Attila Torok
 
-	qtenv: Main toolbar: Add the "Show animation parameters" action
+	* Main toolbar: Add the "Show animation parameters" action.
 
-2020-09-21  TÖRÖK Attila
+2020-09-21  Attila Torok
 
-	qtenv: Add error reporting to .qtenvrc (QSettings) accesses.
+	* Add error reporting to .qtenvrc (QSettings) accesses.
 
-2020-09-21  TÖRÖK Attila
+2020-09-21  Attila Torok
 
-	qtenv: Make animation filter affect deliveries as well
+	* Make animation filter affect deliveries as well.
 
-2020-09-21  TÖRÖK Attila
+2020-09-21  Attila Torok
 
-	qtenv: Fix "Exclude messages like this from animation" filter syntax
+	* Fix "Exclude messages like this from animation" filter syntax.
 
-2020-08-03  TÖRÖK Attila
+2020-08-03  Attila Torok
 
-	qtenv: Reflect "debug-on-errors" state as well on the toolbar
+	* Reflect "debug-on-errors" state as well on the toolbar.
 
-2020-09-11  TÖRÖK Attila
+2020-09-11  Attila Torok
 
-	qtenv: Put "Debug on errors" and "Debug next event" on the main toolbar
+	* Put "Debug on errors" and "Debug next event" on the main toolbar.
 
-2020-09-11  TÖRÖK Attila
+2020-09-11  Attila Torok
 
-	qtenv: Add a new icon for the "Debug next event" action
+	* Add a new icon for the "Debug next event" action.
 
-2020-09-11  TÖRÖK Attila
+2020-09-11  Attila Torok
 
-	qtenv: Set an icon for the "Debug on errors" action
+	* Set an icon for the "Debug on errors" action.
 
-2020-07-24  TÖRÖK Attila
+2020-07-24  Attila Torok
 
-	qtenv: Main toolbar: Remove the "Load NED file..." action
+	* Main toolbar: Remove the "Load NED file..." action.
 
-2020-09-15  TÖRÖK Attila
+2020-09-15  Attila Torok
 
-	qtenv: MessageAnimator: Don't throw on a single-hop send that is
-	discarded
+	* MessageAnimator: Don't throw on a single-hop send that is
+	discarded. Instead, add the discarding hop correctly before
+	ending the sequence.
 
-	Instead, add the discarding hop correctly before ending the sequence
+2020-09-08  Attila Torok
 
-2020-09-08  TÖRÖK Attila
+	* Don't try to cut an already zero-length message send animation
+	shorter.
 
-	qtenv: Don't try to cut an already zero-length message send animation
-	shorter
+2020-09-08  Attila Torok
 
-2020-09-08  TÖRÖK Attila
+	* Make sure to update the last animation of a packet update "chain".
 
-	qtenv: Make sure to update the last animation of a packet update "chain"
+2020-09-08  Attila Torok
 
-	By putting the update packets animation into our data structure under a
-	key with the origPacketId in it, instead of its own ID.
+	* MessageItem: Remove the "updating #..." line from update packets
 
-2020-09-08  TÖRÖK Attila
+2020-09-08  Attila Torok
 
-	qtenv: MessageItem: Remove the "updating #..." line from update packets
-
-2020-09-07  Zoltan Bojthe
-
-	qtenv: beginSend()/endSend during shutdown crashed qtenv (messageAnimator
-	== nullptr)
-
-2020-09-08  TÖRÖK Attila
-
-	qtenv: Replace the default palette of messages (based on kind).
-
-	These are supposed to be less programmery colors.
+	* Replace the default palette of messages (based on kind).
+	These are supposed to be less programmer-y colors.
 
 2020-08-15  Christoph Sommer
 
-	qtenv: recalculate aspect ratio on resize
+	* Recalculate aspect ratio on resize.
 
-2020-08-25  TÖRÖK Attila
+2020-08-25  Attila Torok
 
-	qtenv: TextViewerWidget: Implement SGR mode 2 as "faint" - 50%
+	* TextViewerWidget: Implement SGR mode 2 as "faint" - 50%
 	transparent foreground color
 
-2020-09-08  TÖRÖK Attila
+2020-09-08  Attila Torok
 
-	qtenv: Don't show static messages as just before arrival if it is not
-	their time yet
+	* Don't show static messages as just before arrival if it is not
+	their time yet.
 
-2020-09-08  TÖRÖK Attila
+2020-09-08  Attila Torok
 
-	qtenv: Support update packets in message animation
+	* Support update packets in message animation
 
 	- Instead of building the animation sequence by adding animations
 	 one-by-one for each hop, we're collecting the entire send sequence
@@ -260,35 +217,15 @@
 	 the same message concurrently (like cut-through forwarding) is
 	 possible and handled well.
 
-	progress commits:
+2020-08-26  Attila Torok
 
-	qtenv: Display update messages better, fix getting remainingDuration
-	(from ChannelResult).
+	* Make MessageItem abstract, split impl. into SymbolMessageItem and
+	LineMessageItem. Also, add a txUpdateMarker to LineMessageItem for
+	transmission update packets.
 
-	qtenv: MessageItem: Add origPacketId to label in a second line.
+2020-08-26  Attila Torok
 
-	message animation: item visibility fixes w.r.t. t1 and t2
-
-	MessageSendKey + cutUpdatedPacketAnimation
-
-	- Simplify MessageSendKey, this should work better with SendDirects.
-
-	- And call cutUpdatedPacketAnimation in endSend instead of beginSend,
-	 where the arrivalModule is correctly populated as well - it isn't
-	 too late for us there either.
-
-2020-08-26  TÖRÖK Attila
-
-	qtenv: Make MessageItem abstract, split impl. into SymbolMessageItem and
-	LineMessageItem
-
-	Also add a txUpdateMarker to LineMessageItem for transmission update
-	packets
-
-2020-08-26  TÖRÖK Attila
-
-	qtenv: Show transmissions on ideal channels as a full-length line
-
+	* Show transmissions on ideal channels as a full-length line.
 	This is useful when a transmission is sent on a connection path that has
 	both a transmission channel and some ideal channels. No holding
 	(zero-time) animation (of it growing/shrinking) yet, because we wouldn't
@@ -296,327 +233,121 @@
 	when the front of the transmission passes from a transmission channel
 	into an ideal channel).
 
-2020-08-26  TÖRÖK Attila
-
-	qtenv: Add getKeys() to OrderedMultiMap
-
-2020-08-26  TÖRÖK Attila
-
-	qtenv: MessageAnimation: Add getStartTime()
-
-2020-08-26  TÖRÖK Attila
-
-	qtenv: MessageAnimation: Add getTransmissionDuration() and
-	setTransmissionDuration()
-
-2020-07-02  TÖRÖK Attila
-
-	qtenv: Add AnimationGroup to complement AnimationSequence
-
-2020-08-26  TÖRÖK Attila
-
-	qtenv: SendDirectAnimation: Add comments for the constructors
-
 2020-07-08  Andras Varga
 
-	qtenv: use message fullName (instead of plain name) where it makes sense
+	* Display message fullName (instead of plain name) where it makes sense.
 
 2020-08-25  Rudolf Hornig
 
-	qtenv: updated outline stile zoomin/zoomout icons.
+	* Updated outline style of zoomin/zoomout icons.
 
-2020-07-17  TÖRÖK Attila
+2020-07-17  Attila Torok
 
-	qtenv: Fix selection drawing with no background color
+	* Fix selection drawing with no background color. Also, text rendering
+	fixes regarding tabs immediately following SGR control sequences without
+	spaces or text nearby. (There were holes in the selection sometimes).
 
-	And text rendering fixes regarding tabs immediately following SGR control
-	sequences without spaces or text nearby.
-	(There were holes in the selection sometimes).
+2020-08-14  Attila Torok
 
-2020-08-14  TÖRÖK Attila
+	* Remove the last, useless TCLKILL comment.
 
-	qtenv: Remove the last, useless TCLKILL comment.
+2020-08-14  Attila Torok
 
-2020-08-14  TÖRÖK Attila
+	* Delete long-disabled GateInspector.
 
-	qtenv: Delete long-disabled GateInspector
+2020-08-06  Attila Torok
 
-2020-08-06  TÖRÖK Attila
+	* Timeline: Don't try to calculate minor tick positions past the last
+	major tick. This caused an exception when running with parsim for some
+	reason, because it overflowed the intermediate SimTime value.
 
-	qtenv/timeline: Don't try to calculate minor tick positions past the last
-	major tick.
+2020-08-07  Attila Torok
 
-	And this caused an exception when running with parsim for some reason,
-	because it overflowed the intermediate SimTime value.
-
-2020-08-07  TÖRÖK Attila
-
-	qtenv/submoduleitem: Draw placeholder submodule items with some
-	transparency
-
-	These are modules in different parsim partitions.
+	* Module graphics: Draw placeholder submodule items with some
+	transparency. Placeholders are modules instantiated in a different
+	parsim partition.
 
 2020-08-06  Levente Mészáros
 
-	qtenv/loginspector: Pick the right message when clicking on a line on
-	Messages mode
+	* Log inspector: Pick the right message when clicking on a line on
+	Messages mode. Until now, sometimes either the first or last sent
+	message (within the same event) was picked, regardless of which ones
+	were actually visible.
 
-	Until now, sometimes either the first or last sent message (within the
-	same event) was picked, regardless of which ones were atually visible.
+2020-08-13  Attila Torok
 
-2020-08-13  TÖRÖK Attila
+	* Fix build on macOS - only use POSIX compliant sed options in
+	Makefile, don't try to add newlines.
 
-	qtenv: Fix build on macOS - only use POSIX compliant sed options in
-	Makefile, don't try to add newlines
+2020-08-11  Attila Torok
 
-2020-08-11  TÖRÖK Attila
+	* Fix video recording crop area with HIDPI scaling.
 
-	qtenv: Fix video recording crop area with HIDPI scaling
+2020-08-10  Attila Torok
 
-2020-08-10  TÖRÖK Attila
+	* Fix OsgViewer image size and mouse event coords with HIDPI scaling.
 
-	qtenv: Fix OsgViewer image size and mouse event coords with HIDPI scaling
+2020-07-24  Attila Torok
 
-2020-07-24  TÖRÖK Attila
+	* Tweak VideoRecordingDialog layout. There might be a small empty region
+	on the bottom, but the radio button texts shouldn't get squished/clipped
+	as before.
 
-	qtenv: Tweak VideoRecordingDialog layout
+2020-07-22  Attila Torok
 
-	There might be a small empty region on the bottom, but the radio button
-	texts shouldn't get squished/clipped as before.
-
-2020-08-03  TÖRÖK Attila
-
-	qtenv: Make the light theme tool icons less dark, override the "disabled"
-	pixmap generator.
-
-	They were too harsh compared to the menu bar text for example. The new
-	pixmap generator should make the disabled buttons look more clearly
-	disabled.
-
-2020-07-22  TÖRÖK Attila
-
-	qtenv: TimeLine: Use the theme colors from QPalette for the graphics
-	scene
+	* TimeLine: Use the theme colors from QPalette for the graphics
+	scene.
 
 	Always from the Active group, so we don't have to rebuild the scene when
 	the window is activated/deactivated, or entering/exiting Express mode.
 	And using the Window and WindowText roles, so it is consistent and has
 	enough contrast, but isn't too popping.
 
-2020-07-22  TÖRÖK Attila
+2020-07-22  Attila Torok
 
-	qtenv: Switch between resources containing regular and dark(mode) icons
+	* Switch between resources containing regular and dark(mode) icons
 
-2020-07-24  TÖRÖK Attila
+2020-07-24  Attila Torok
 
-	qtenv: Generate dark mode icons automatically
+	* Generate dark mode icons automatically
 
-2020-07-26  TÖRÖK Attila
+2020-07-26  Attila Torok
 
-	qtenv: Set width, height, and icon-size of toolbuttons to 24px in
-	stylesheet
+	* Set width, height, and icon-size of toolbuttons to 24px in
+	stylesheet.
 
-	Now that it's a square instead of 20x19 or 30x19.
+2020-07-26  Attila Torok
 
-2020-07-26  TÖRÖK Attila
+	* Don't set iconSize from mainwindow.ui, as the runtime stylesheet
+	will override it.
 
-	qtenv: Don't set iconSize from mainwindow.ui, as the runtime stylesheet
-	will override it
+2020-07-26  Attila Torok
 
-2020-07-26  TÖRÖK Attila
+	* Replace all PNG icons with flat, gray, 24x24 px, SVG icons.
 
-	qtenv: Replace all PNG icons with flat, gray, 24x24 px, SVG icons.
+2018-02-22  Attila Torok
 
-2018-02-22  TÖRÖK Attila
-
-	qtenv: Enable the use of high DPI icons and automatic scaling (when
-	possible)
+	* Enable the use of high DPI icons and automatic scaling (when
+	possible).
 
 2020-06-23  Andras Varga
 
-	sim: send()/sendDirect: introduced SendOptions and tx updates; cChannel
-	API and cDatarateChannel changes
+	* Follow cEnvir interface changes caused by the introduction of SendOptions
+	and transmission updates.
 
-	Note: substantial changes in this patch are concentrated in cSimpleModule
-	and cDatarateChannel, with necessary extra fields added to cPacket. The
-	rest are to follow signature changes in cEnvir and cChannel API methods,
-	and to record the extra fields in eventlog files.
+2020-07-02  Attila Torok
 
-	Updating a transmission (aka tx updates):
+	* Text widget: Fix selection background painting when text is longer
+	than the header section.
 
-	Initial send() is interpreted as: "packet transmission begins now, packet
-	content and duration are, as things are now, going to be this".
+2020-03-28  Attila Torok
 
-	Following that, an "update" (or any number of updates) can be sent. It is
-	a packet with the updated ("actual") content, and with a
-	"remaining transmission duration" attached. Updates may only be sent
-	while transmission is still ongoing (t < txEndTime; note it is strictly
-	less, not less-or-equal!)
+	* Replace deprecated qSort with std::sort to silence some warnings.
 
-	As an example, aborting a transmission is done by sending a packet with a
-	truncated content and a remaining duration of zero.
+2020-01-03  Attila Torok
 
-	The transmission it modifies (in case there are parallel transmissions on
-	the channel) is identified by the packet ID of the original transmission.
-	Channels should understand updates and handle them accordingly. (Change
-	to cDatarateChannel is part of this patch.)
-
-	Receivers that receive the packet at the end of the reception (default)
-	will only receive the final update, the original packet and intermediate
-	updates are absorbed by the simulation kernel.
-
-	Receivers that receive the packet at the start of the reception (see
-	cGate::setDeliverImmediately(), ex setDeliverOnReceptionStart()) should
-	be prepared to receive all of the original packet and the updates, and
-	handle them appropriately. Tx updates can be recognized from
-	cPacket::isUpdate() returning true. cPacket::getRemainingDuration()
-	returns the remaining transmission duration, and cPacket::getDuration()
-	the total transmission duration.
-
-	As a safeguard against unprepared modules accidentally processing tx
-	updates as normal full-blown packets, the module is only given tx updates
-	if it explicitly declares that it is able to handle them properly. The
-	latter is done by the module calling setTxUpdateSupport(true) e.g. in
-	initialize().
-
-	Non-transmission channels don't handle updates any different from other
-	messages and packets.
-
-	SendOptions was introduced as a means to handle combinatorial explosion
-	of send() variants.
-
-	More changes:
-	- send() and sendDirect() now accept a SendOptions; sendDelayed() and
-	 the sendDirect() variant with delay and duration now convert their
-	 extra args to a SendOptions, and delegate to the "standard"
-	 send()/sendDirect() versions.
-
-	- cDatarateChannel: allow overriding the duration computed from the
-	 channel datarate from the send() call.
-
-	- cDatarateChannel: non-packet messages pass through without
-	 interfering with packets.
-
-	- cDatarateChannel: disabled channels to let transmission updates
-	through,
-	 so that it is possible for the transmitter module to abort the
-	 ongoing packet transmission.
-
-	- Note: tx updates (without duration/remainingDuration) are allowed
-	 on paths without transmission channels.
-
-	- signature change in methods that participate in the send()/sendDirect()
-	 protocol: SendOptions was added to the arg list. This affects:
-	 cGate::deliver(), cModule::arrived(), cChannel::processMessage()
-
-	- in cChannel::processMessage(), result_t was renamed cChannel::Result,
-	 and it is now a proper return value (not an output parameter);
-
-	- remainingDuration was added to cChannel::Result.
-
-	- cDatarateChannel's datarate is now optional: set it to 0 or nan
-	 to leave it unspecified.  This change was necessary to support
-	 transmitting frames with per-frame data rate selection.
-
-	- Removed forceTransmissionFinishTime() from cChannel (and esp.
-	cDatarateChannel)
-	 It was a hack. Now you can use SendOptions::updateTx() instead.
-
-	- Rename: setDeliverOnReceptionStart() -> setDeliverImmediately()
-
-	- Added cSimpleModule::supportsTxUpdates() flag
-
-	- cPacket now carries a remainingDuration field
-
-	- cPacket: eliminated FL_ISRECEPTIONSTART; isReceptionStart() now uses
-	 remainingDuration as input; added a similar isReceptionEnd() method.
-
-	- cPacket::str() overhaul to reflect new fields and uses
-
-	- in the APIs, sendDelay and propagationDelay (which were sort of
-	 combined into a single value) are now distinct, and handled
-	 separately.
-
-	- eventlog format changes: BeginSendEntry: added sendDelay and
-	 origPacketId; SendHopEntry, SendDirectEntry: added remainingDuration
-
-	- cSimpleModule: factored out a throwNotOwnerOfMessage() method to
-	 eliminate a large chunk of nearly identical code in send() and
-	 sendDirect().
-
-	- cEnvir callbacks also changed: beginSend() takes SendOptions;
-	 messageSendHop() and messageSendDirect() take cChannel::Result
-	 instead of separate args.
-
-	Note: cChannel::Result became a toplevel class (ChannelResult) due to the
-	need to break circular dependency: "cenvir.h" cannot include
-	"cchannel.h" (circularity) and C++ does not allow inner classes to be
-	forward-declared (why??).
-
-2020-07-14  Andras Varga
-
-	sim,qtenv: follow getModuleByPath() behavior change
-
-	Wherever code expects nullptr for "not found", use findModuleByPath()
-	instead
-
-2020-07-02  TÖRÖK Attila
-
-	qtenv/textwidget: Fix selection background painting when text is longer
-	than the header section
-
-2020-06-10  Andras Varga
-
-	sim: simkerneldefs.h: remove obsolete PI define [reported by Christoph
-	Sommer]
-
-	Use M_PI instead.
-
-2020-06-04  Levente Mészáros
-
-	qtenv: Added back the space at the end of the log prefix.
-
-2020-05-05  Rudolf Hornig
-
-	qtenv/ide: updated copyright date in banners and about dialog
-
-2020-04-30  TÖRÖK Attila
-
-	qtenv/mainwindow: Do not use c_str() acquired from a temporary
-	std::string. (Thanks, Clang 10)
-
-2020-03-28  TÖRÖK Attila
-
-	qtenv: Replace deprecated qSort with std::sort to silence some warnings.
-
-	Also organize #includes in the affected files...
-
-2020-02-19  TÖRÖK Attila
-
-	qtenv/AreaSelectorDialog: Replace an unreachable ASSERT call with a
-	direct throw, to silence a compiler warning in release MODE.
-
-2020-01-03  TÖRÖK Attila
-
-	qtenv: use space as digit separator by default on simtime and eventnum
-	displays
-
-2020-01-15  Andras Varga
-
-	ChangeLogs: updated, by editing the raw versions. Guidelines:
-
-	- removed duplications (changes released earlier as version 5.5 and 5.6)
-	- removed uninteresting changes (e.g. "typo fixed"), and back-and-forth
-	changes
-	- describe impact of commit to that specific folder (e.g.
-	include/omnetpp/ChangeLog
-	 should describe the simkernel API changes, not the feature or bugfix
-	which caused
-	 the API change)
-	- tried to make the descriptions more self-contained, i.e. understandable
-	 without looking at the actual file changes
-
------------ lines above this marker have been added from git log -----------
+	* Use space as digit separator by default on simtime and eventnum
+	displays.
 
 2019-07-02  Attila Torok
 
@@ -1851,7 +1582,7 @@
 
 	* Submodule bounds calculation with zoom level and icon scale.
 
-	See the novel in the comments of Qtenv::getSubmoduleBounds()
+	See the novel in the comments of *:getSubmoduleBounds()
 
 2016-12-15  Attila Torok
 

@@ -1,55 +1,6 @@
-2020-09-11  Rudolf Hornig
+2020-01-20  Attila Torok
 
-	doc: inkscape 1.0.1 and later does not support the -e and -A options.
-
-	On inkscape 1.0 new command line options were introduced and -e and -A
-	was dropped. Some pre 1.0 options (like --export-pdf=) were re-introduced
-	in 1.0.1 as deprecated (instead of fully dropped) to keep command line
-	compatibility. To work on both <1.0 and >=1.0.1 use these deprecated
-	options like --export-pdf
-
-	Avoid using 1.0.0 version which does not have these (by mistake).
-
-	Also disable GUI code with --without-gui to avoid some warnings.
-
-2020-06-09  Andras Varga
-
-	doc: fix #821, typo in ch-simple-modules.tex (Ed Longman)
-
-2020-04-14  Rudolf Hornig
-
-	doc: updates dummy version numbers to 6.x
-
-2020-03-30  TÖRÖK Attila
-
-	nits: Replace "vica versa" with "vice versa" everywhere. Fixes
-	docs.omnetpp.org#11.
-
-2020-01-21  TÖRÖK Attila
-
-	ide/scave: fix chart templates and charts regarding:
-	chart.set_plot_property -> plot.set_property; separate utils module
-
-2020-01-20  TÖRÖK Attila
-
-	ide/scave: follow through with the module splitting and method renaming
-
-2020-01-15  Andras Varga
-
-	ChangeLogs: updated, by editing the raw versions. Guidelines:
-
-	- removed duplications (changes released earlier as version 5.5 and 5.6)
-	- removed uninteresting changes (e.g. "typo fixed"), and back-and-forth
-	changes
-	- describe impact of commit to that specific folder (e.g.
-	include/omnetpp/ChangeLog
-	 should describe the simkernel API changes, not the feature or bugfix
-	which caused
-	 the API change)
-	- tried to make the descriptions more self-contained, i.e. understandable
-	 without looking at the actual file changes
-
------------ lines above this marker have been added from git log -----------
+	* Follow Python API changes
 
 2019-12-20  Attila Torok
 
