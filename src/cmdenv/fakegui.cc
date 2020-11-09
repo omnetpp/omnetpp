@@ -151,16 +151,7 @@ double FakeGUI::getAnimationHoldEndTime() const
 double FakeGUI::getAnimationSpeed() const
 {
     cCanvas *mainCanvas = getSimulation()->getSystemModule()->getCanvasIfExists();
-    if (!mainCanvas)
-        return 0;
-    const auto& animationSpeeds = mainCanvas->getAnimationSpeedMap();
-    if (animationSpeeds.empty())
-        return 0;
-    double min = INFINITY;
-    for (auto pair : mainCanvas->getAnimationSpeedMap())
-        if (min > pair.second)
-            min = pair.second;
-    return min;
+    return mainCanvas ? mainCanvas->getMinAnimationSpeed() : 0;
 }
 
 double FakeGUI::getRemainingAnimationHoldTime() const
