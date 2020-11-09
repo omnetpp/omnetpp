@@ -414,7 +414,7 @@ IDE:
 
   - The Analysis Tool in the IDE has been rewritten, using a new approach.
     The number one goals were to allow ARBITRARY computations to be performed
-    on the data, VISUALIZE the result in the most appropriate form choosen from
+    on the data, VISUALIZE the result in the most appropriate form chosen from
     a multitude of chart/plot types, and produce PUBLICATION QUALITY output.
     Additional goals were an intuitive user interface that makes straightforward
     tasks easy and convenient, scalability that allows the processing of
@@ -438,7 +438,7 @@ IDE:
     and freely edited using an integrated language-aware editor. Matplotlib
     plots appear inside the Analysis Tool's UI, and they are live (i.e. not just
     images): zooming, panning, and interacting with possible embedded controls
-    in the plot all work seemlessly. IDE-native plots can also be chosen
+    in the plot all work seamlessly. IDE-native plots can also be chosen
     as an alternative to Matplotlib, as they provide increased scalability at
     the cost of being less flexible and featureful.
 
