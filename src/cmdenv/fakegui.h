@@ -24,6 +24,7 @@
 #include "omnetpp/cevent.h"
 #include "omnetpp/cconfiguration.h"
 #include "common/lcgrandom.h"
+#include "common/expression.h"
 
 namespace omnetpp {
 namespace cmdenv {
@@ -37,23 +38,38 @@ class CMDENV_API FakeGUI
     bool debug = false;
     double beforeEventProbability;
     double afterEventProbability;
-    int holdNumStepsMin;
-    int holdNumStepsMax;
-    int simtimeNumStepsMin;
-    int simtimeNumStepsMax;
+    double onHoldProbability;
+    common::Expression onHoldNumSteps;
+    double onSimtimeProbability;
+    common::Expression onSimtimeNumSteps;
 
     // state
     common::LCGRandom rng; // for randomizing calls to refreshDisplay()
     double animationTime = 0;
     simtime_t lastUpdateSimTime;
 
+    // value for the "dt" expression variable, see Translator
+    bool isWithinHold; //TODO fill
+    simtime_t simulationTimeDelta;
+    double animationTimeDelta;
+
+    class Translator : public common::Expression::BasicAstTranslator {
+        FakeGUI *fakeGui;
+      public:
+        Translator(FakeGUI *fakeGui) : fakeGui(fakeGui) {}
+        virtual common::Expression::ExprNode *createIdentNode(const char *varName, bool withIndex) override;
+        virtual common::Expression::ExprNode *createFunctionNode(const char *functionName, int argCount) override;
+    };
+
    protected:
+     virtual void parseExpression(cConfiguration *cfg, cConfigOption *configOption, common::Expression& expression);
      virtual double getAnimationHoldEndTime() const;
      virtual void animateHold();
      virtual void animateUntil(simtime_t targetSimTime);
-     virtual int getHoldNumFrames(double animationTimeInterval);
-     virtual int getSimulationNumFrames(simtime_t simtimeInterval);
+     virtual int getHoldNumFrames(double dt);
+     virtual int getSimulationNumFrames(simtime_t dt);
      virtual void callRefreshDisplay(const char *reason);
+     virtual double getCurrentTimeDelta() const {return isWithinHold ? animationTimeDelta : simulationTimeDelta.dbl();}
 
    public:
      virtual ~FakeGUI() {}

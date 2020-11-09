@@ -29,27 +29,57 @@
 #include "omnetpp/ccanvas.h"
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/cconfigoption.h"
+#include "sim/nedsupport.h"
 
 using namespace omnetpp::common;
+using namespace omnetpp::nedsupport;
 
 namespace omnetpp {
 namespace cmdenv {
 
-Register_PerRunConfigOption(CFGID_CMDENV_FAKEGUI_BEFORE_EVENT_PROBABILITY, "cmdenv-fake-gui-before-event-probability", CFG_DOUBLE, "1", "When `cmdenv-fake-gui=true`: TODO.");
-Register_PerRunConfigOption(CFGID_CMDENV_FAKEGUI_AFTER_EVENT_PROBABILITY, "cmdenv-fake-gui-after-event-probability", CFG_DOUBLE, "1", "When `cmdenv-fake-gui=true`: TODO.");
-Register_PerRunConfigOption(CFGID_CMDENV_FAKEGUI_HOLD_NUMSTEPS_MIN, "cmdenv-fake-gui-hold-numsteps-min", CFG_INT, "0", "When `cmdenv-fake-gui=true`: TODO.");
-Register_PerRunConfigOption(CFGID_CMDENV_FAKEGUI_HOLD_NUMSTEPS_MAX, "cmdenv-fake-gui-hold-numsteps-max", CFG_INT, "3", "When `cmdenv-fake-gui=true`: TODO.");
-Register_PerRunConfigOption(CFGID_CMDENV_FAKEGUI_SIMTIME_NUMSTEPS_MIN, "cmdenv-fake-gui-simtime-numsteps-min", CFG_INT, "0", "When `cmdenv-fake-gui=true`: TODO.");
-Register_PerRunConfigOption(CFGID_CMDENV_FAKEGUI_SIMTIME_NUMSTEPS_MAX, "cmdenv-fake-gui-simtime-numsteps-max", CFG_INT, "3", "When `cmdenv-fake-gui=true`: TODO.");
+Register_PerRunConfigOption(CFGID_CMDENV_FAKEGUI_BEFORE_EVENT_PROBABILITY, "cmdenv-fake-gui-before-event-probability", CFG_DOUBLE, "1", "When `cmdenv-fake-gui=true`: The probability with which `refreshDisplay()` is called before each event.");
+Register_PerRunConfigOption(CFGID_CMDENV_FAKEGUI_AFTER_EVENT_PROBABILITY, "cmdenv-fake-gui-after-event-probability", CFG_DOUBLE, "1", "When `cmdenv-fake-gui=true`: The probability with which `refreshDisplay()` is called after each event.");
+Register_PerRunConfigOption(CFGID_CMDENV_FAKEGUI_ON_HOLD_PROBABILITY, "cmdenv-fake-gui-on-hold-probability", CFG_DOUBLE, "0.5", "When `cmdenv-fake-gui=true`: The probability with which `refreshDisplay()` is called (possibly multiple times, see `cmdenv-fake-gui-on-hold-numsteps`) during a \"hold\" period (animation during which simulation time does not advance).");
+Register_PerRunConfigOption(CFGID_CMDENV_FAKEGUI_ON_HOLD_NUMSTEPS, "cmdenv-fake-gui-on-hold-numsteps", CFG_CUSTOM, "3", "When `cmdenv-fake-gui=true`: The number of times `refreshDisplay()` is called during a \"hold\" period (animation during which simulation time does not advance), provided a trial with `cmdenv-fake-gui-on-hold-probability` yielded success. This an expression which will be evaluated each time, so it can be random. Zero is also a valid value.");
+Register_PerRunConfigOption(CFGID_CMDENV_FAKEGUI_ON_SIMTIME_PROBABILITY, "cmdenv-fake-gui-on-simtime-probability", CFG_DOUBLE, "0.1", "When `cmdenv-fake-gui=true`: The probability with which `refreshDisplay()` is called (possibly multiple times, see `cmdenv-fake-gui-on-simtime-numsteps`) when simulation time advances from one simulation event to the next.");
+Register_PerRunConfigOption(CFGID_CMDENV_FAKEGUI_ON_SIMTIME_NUMSTEPS, "cmdenv-fake-gui-on-simtime-numsteps", CFG_CUSTOM, "3", "When `cmdenv-fake-gui=true`: The number of times `refreshDisplay()` is called when simulation time advances from one simulation event to the next, provided a trial with `cmdenv-fake-gui-on-simtime-probability` yielded success. This an expression which will be evaluated each time, so it can be random. Zero is also a valid value.");
 
 void FakeGUI::readConfigOptions(cConfiguration *cfg)
 {
     beforeEventProbability = cfg->getAsDouble(CFGID_CMDENV_FAKEGUI_BEFORE_EVENT_PROBABILITY);
     afterEventProbability = cfg->getAsDouble(CFGID_CMDENV_FAKEGUI_AFTER_EVENT_PROBABILITY);
-    holdNumStepsMin = cfg->getAsInt(CFGID_CMDENV_FAKEGUI_HOLD_NUMSTEPS_MIN);
-    holdNumStepsMax = cfg->getAsInt(CFGID_CMDENV_FAKEGUI_HOLD_NUMSTEPS_MAX);
-    simtimeNumStepsMin = cfg->getAsInt(CFGID_CMDENV_FAKEGUI_SIMTIME_NUMSTEPS_MIN);
-    simtimeNumStepsMax = cfg->getAsInt(CFGID_CMDENV_FAKEGUI_SIMTIME_NUMSTEPS_MAX);
+    onHoldProbability = cfg->getAsDouble(CFGID_CMDENV_FAKEGUI_ON_HOLD_PROBABILITY);
+
+    parseExpression(cfg, CFGID_CMDENV_FAKEGUI_ON_HOLD_NUMSTEPS, onHoldNumSteps);
+    onSimtimeProbability = cfg->getAsDouble(CFGID_CMDENV_FAKEGUI_ON_SIMTIME_PROBABILITY);
+    parseExpression(cfg, CFGID_CMDENV_FAKEGUI_ON_SIMTIME_NUMSTEPS, onSimtimeNumSteps);
+}
+
+Expression::ExprNode *FakeGUI::Translator::createIdentNode(const char *varName, bool withIndex)
+{
+    if (std::string(varName) == "dt") {
+        auto fakeGui = this->fakeGui; // note: [=] will only capture local variables and "this", but not members
+        return new LambdaVariableNode("dt", [fakeGui](Context*) {return fakeGui->getCurrentTimeDelta();});
+    }
+    return nullptr;
+}
+
+Expression::ExprNode *FakeGUI::Translator::createFunctionNode(const char *functionName, int argCount)
+{
+    return nullptr; //TODO int(), uniform(), normal(), exponential(), etc.
+}
+
+void FakeGUI::parseExpression(cConfiguration *cfg, cConfigOption *configOption, common::Expression& expression)
+{
+    try {
+        const char *text = cfg->getAsCustom(configOption, "");
+        Translator extraTranslator(this);
+        Expression::MultiAstTranslator translator({ &extraTranslator, Expression::getDefaultAstTranslator() });
+        expression.parse(text, &translator);
+    }
+    catch (std::exception& e) {
+        throw cRuntimeError("Error in config option '%s': %s", configOption->getName(), e.what());
+    }
 }
 
 void FakeGUI::beforeEvent(cEvent *event)
@@ -114,7 +144,6 @@ void FakeGUI::animateHold()
     double animationHoldEndTime = getAnimationHoldEndTime();
     if (animationHoldEndTime <= animationTime)
         return;
-
     double animationTimeDelta = animationHoldEndTime - getAnimationTime();
     int numSteps = getHoldNumFrames(animationTimeDelta);
     double animationTimeStep = animationTimeDelta / numSteps;
@@ -127,14 +156,22 @@ void FakeGUI::animateHold()
     lastUpdateSimTime = getSimulation()->getSimTime();
 }
 
-int FakeGUI::getHoldNumFrames(double animationTimeInterval)
+int FakeGUI::getHoldNumFrames(double dt)
 {
-    return holdNumStepsMin + rng.draw(holdNumStepsMax-holdNumStepsMin);
+    if (rng.next01() >= onHoldProbability)
+        return 0;
+    this->isWithinHold = true;
+    this->animationTimeDelta = dt;
+    return std::min((intval_t)1000, onHoldNumSteps.intValue());
 }
 
-int FakeGUI::getSimulationNumFrames(simtime_t simtimeInterval)
+int FakeGUI::getSimulationNumFrames(simtime_t dt)
 {
-    return simtimeNumStepsMin + rng.draw(simtimeNumStepsMax-simtimeNumStepsMin);
+    if (rng.next01() >= onSimtimeProbability)
+        return 0;
+    this->isWithinHold = false;
+    this->simulationTimeDelta = dt;
+    return std::min((intval_t)1000, onSimtimeNumSteps.intValue());
 }
 
 double FakeGUI::getAnimationTime() const

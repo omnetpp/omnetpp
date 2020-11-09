@@ -17,6 +17,7 @@
 #define __OMNETPP_NEDSUPPORT_H
 
 #include "omnetpp/simkerneldefs.h"
+#include "omnetpp/cnedmathfunction.h"
 #include "common/expression.h"
 #include "common/exprnodes.h"
 
