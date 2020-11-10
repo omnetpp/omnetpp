@@ -292,9 +292,6 @@ class SIM_API cModule : public cComponent //implies noncopyable
 
     int vectorIndex;      // index if module vector, 0 otherwise
     int vectorSize;       // vector size, -1 if not a vector
-#ifdef USE_OMNETPP4x_FINGERPRINTS
-    int version4ModuleId;   // OMNeT++ V4.x compatible module ID
-#endif
 
     mutable cCanvas *canvas;  // nullptr when unused
     mutable cOsgCanvas *osgCanvas;  // nullptr when unused
@@ -377,11 +374,6 @@ class SIM_API cModule : public cComponent //implies noncopyable
     virtual void doDeleteModule();
 
   public:
-#ifdef USE_OMNETPP4x_FINGERPRINTS
-    // internal: returns OMNeT++ V4.x compatible module ID
-    int getVersion4ModuleId() const { return version4ModuleId; }
-#endif
-
     // internal: may only be called between simulations, when no modules exist
     static void clearNamePools();
 

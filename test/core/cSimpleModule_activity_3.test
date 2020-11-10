@@ -35,10 +35,6 @@ Define_Module(Simple);
 
 void Simple::activity()
 {
-#ifdef USE_OMNETPP4x_FINGERPRINTS
-    EV << "#UNRESOLVED: in USE_OMNETPP4x_FINGERPRINTS mode, different simtime rounding makes this test fail\n";
-#endif
-
     char data[15000];  // slightly less than the requested stack, 16384
     char fill = (char)getId();
     for (int i = 0; i < (int)sizeof(data); i++)

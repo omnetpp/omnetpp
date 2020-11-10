@@ -95,9 +95,7 @@ class SIM_API SimTime
     bool haveSameSign(int64_t a, int64_t b) { return (a^b) >= 0; }
 
     int64_t toInt64(double i64) {
-#ifndef USE_OMNETPP4x_FINGERPRINTS
          i64 = floor(i64 + 0.5);
-#endif
          if (fabs(i64) > INT64_MAX_DBL)
              rangeErrorInt64(i64);
          return (int64_t)i64;

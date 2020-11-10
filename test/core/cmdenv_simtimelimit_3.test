@@ -16,9 +16,6 @@ Define_Module(Module);
 
 void Module::initialize()
 {
-#ifdef USE_OMNETPP4x_FINGERPRINTS
-    EV << "#UNRESOLVED: in USE_OMNETPP4x_FINGERPRINTS mode, simtime-limit works differently and this test fails\n";
-#endif
     scheduleAt(5.0, new cMessage("msg1"));
     scheduleAt(5.0, new cMessage("msg2"));
     scheduleAt(5.0, new cMessage("msg3"));

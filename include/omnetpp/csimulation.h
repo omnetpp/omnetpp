@@ -73,9 +73,6 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     int delta;                // if needed, grows by delta
     cComponent **componentv;  // vector of modules/channels, componentv[0] is not used
     int lastComponentId;      // index of last used pos. in componentv[]
-#ifdef USE_OMNETPP4x_FINGERPRINTS
-    int lastVersion4ModuleId; // last used OMNeT++ V4.x compatible module ID
-#endif
 
     // simulation vars
     cEnvir *envir;            // the environment that belongs to this simulation object

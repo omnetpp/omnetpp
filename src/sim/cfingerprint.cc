@@ -38,51 +38,6 @@
 
 namespace omnetpp {
 
-#ifdef USE_OMNETPP4x_FINGERPRINTS
-
-Register_Class(cOmnetpp4xFingerprintCalculator);
-
-cOmnetpp4xFingerprintCalculator::cOmnetpp4xFingerprintCalculator()
-{
-    hasher = nullptr;
-}
-
-cOmnetpp4xFingerprintCalculator::~cOmnetpp4xFingerprintCalculator()
-{
-    delete hasher;
-}
-
-void cOmnetpp4xFingerprintCalculator::initialize(const char *expectedFingerprints, cConfiguration *cfg, int index)
-{
-    this->expectedFingerprints = expectedFingerprints;
-    hasher = new cHasher();
-}
-
-void cOmnetpp4xFingerprintCalculator::addEvent(cEvent *event)
-{
-    if (event->isMessage()) {
-        cMessage *message = static_cast<cMessage *>(event);
-        cModule *module = message->getArrivalModule();
-        hasher->add(simTime().raw());
-        hasher->add(module->getVersion4ModuleId());
-    }
-}
-
-bool cOmnetpp4xFingerprintCalculator::checkFingerprint() const
-{
-    cStringTokenizer tokenizer(expectedFingerprints.c_str());
-    while (tokenizer.hasMoreTokens()) {
-        std::string fingerprint = tokenizer.nextToken();
-        if (fingerprint.find('/') != std::string::npos)
-            continue;   // skip omnetpp 5.0 fingerprints
-        if (hasher->equals(fingerprint.c_str()))
-            return true;
-    }
-    return false;
-}
-
-#else // if !USE_OMNETPP4x_FINGERPRINTS
-
 Register_Class(cSingleFingerprintCalculator);
 
 Register_PerRunConfigOption(CFGID_FINGERPRINT_INGREDIENTS, "fingerprint-ingredients", CFG_STRING, "tplx", "Specifies the list of ingredients to be taken into account for fingerprint computation. Each character corresponds to one ingredient: 'e' event number, 't' simulation time, 'n' message (event) full name, 'c' message (event) class name, 'k' message kind, 'l' message bit length, 'o' message control info class name, 'd' message data, 'i' module id, 'm' module full name, 'p' module full path, 'a' module class name, 'r' random numbers drawn, 's' scalar results, 'z' statistic results, 'v' vector results, 'x' extra data provided by modules. Note: ingredients specified in an expected fingerprint (characters after the '/' in the fingerprint value) take precedence over this setting. If you configured multiple fingerprints, separate ingredients with commas.");
@@ -487,8 +442,5 @@ std::string cMultiFingerprintCalculator::str() const
         stream << ", " << element->str();
     return stream.str().substr(2);
 }
-
-
-#endif // !USE_OMNETPP4x_FINGERPRINTS
 
 } // namespace omnetpp

@@ -101,9 +101,6 @@ cSimulation::cSimulation(const char *name, cEnvir *env) : cNamedObject(name, fal
     delta = 32;
     size = 0;
     lastComponentId = 0;  // componentv[0] is not used for historical reasons
-#ifdef USE_OMNETPP4x_FINGERPRINTS
-    lastVersion4ModuleId = 0;
-#endif
     componentv = nullptr;
 
     networkType = nullptr;
@@ -252,11 +249,7 @@ void cSimulation::setFES(cFutureEventSet *f)
 
 void cSimulation::setSimulationTimeLimit(simtime_t simTimeLimit)
 {
-#ifndef USE_OMNETPP4x_FINGERPRINTS
     getFES()->insert(new cEndSimulationEvent("endsimulation", simTimeLimit));
-#else
-    // In 4.x fingerprints mode, we check simTimeLimit manually in EnvirBase::checkTimeLimits()
-#endif
 }
 
 int cSimulation::loadNedSourceFolder(const char *folder, const char *exclusionPath)
@@ -324,10 +317,6 @@ int cSimulation::registerComponent(cComponent *component)
     componentv[id] = component;
     component->simulation = this;
     component->componentId = id;
-#ifdef USE_OMNETPP4x_FINGERPRINTS
-    if (component->isModule())
-        ((cModule *)component)->version4ModuleId = ++lastVersion4ModuleId;
-#endif
     return id;
 }
 
@@ -491,9 +480,6 @@ void cSimulation::deleteNetwork()
     componentv = nullptr;
     size = 0;
     lastComponentId = 0;
-#ifdef USE_OMNETPP4x_FINGERPRINTS
-    lastVersion4ModuleId = 0;
-#endif
 
     networkType = nullptr;
 

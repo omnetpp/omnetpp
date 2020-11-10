@@ -30,9 +30,6 @@ namespace omnetpp {
 // OMNeT++ build number
 #define OMNETPP_BUILDNUM   1506
 
-// uncomment to switch fingerprint computation algorithm to OMNeT++ 4.x compatible mode
-//#define USE_OMNETPP4x_FINGERPRINTS
-
 #if defined(SIM_EXPORT)
 #  define SIM_API OPP_DLLEXPORT
 #elif defined(SIM_IMPORT) || defined(OMNETPPLIBS_IMPORT)

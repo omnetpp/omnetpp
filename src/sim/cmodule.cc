@@ -68,9 +68,6 @@ cModule::cModule()
 
     gateDescArraySize = 0;
     gateDescArray = nullptr;
-#ifdef USE_OMNETPP4x_FINGERPRINTS
-    version4ModuleId = -1;
-#endif
 
     canvas = nullptr;
     osgCanvas = nullptr;

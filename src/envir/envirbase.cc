@@ -161,9 +161,7 @@ Register_PerRunConfigOptionU(CFGID_CPU_TIME_LIMIT, "cpu-time-limit", "s", nullpt
 Register_PerRunConfigOptionU(CFGID_REAL_TIME_LIMIT, "real-time-limit", "s", nullptr, "Stops the simulation after the specified amount of time has elapsed. The default is no limit. Note: To reduce per-event overhead, this time limit is only checked every N events (by default, N=1024).");
 Register_PerRunConfigOptionU(CFGID_WARMUP_PERIOD, "warmup-period", "s", nullptr, "Length of the initial warm-up period. When set, results belonging to the first x seconds of the simulation will not be recorded into output vectors, and will not be counted into output scalars (see option `**.result-recording-modes`). This option is useful for steady-state simulations. The default is 0s (no warmup period). Note that models that compute and record scalar results manually (via `recordScalar()`) will not automatically obey this setting.");
 Register_PerRunConfigOption(CFGID_FINGERPRINT, "fingerprint", CFG_STRING, nullptr, "The expected fingerprints of the simulation. If you need multiple fingerprints, separate them with commas. When provided, the fingerprints will be calculated from the specified properties of simulation events, messages, and statistics during execution, and checked against the provided values. Fingerprints are suitable for crude regression tests. As fingerprints occasionally differ across platforms, more than one value can be specified for a single fingerprint, separated by spaces, and a match with any of them will be accepted. To obtain a fingerprint, enter a dummy value (such as `0000`), and run the simulation.");
-#ifndef USE_OMNETPP4x_FINGERPRINTS
 Register_PerRunConfigOption(CFGID_FINGERPRINTER_CLASS, "fingerprintcalculator-class", CFG_STRING, "omnetpp::cSingleFingerprintCalculator", "Part of the Envir plugin mechanism: selects the fingerprint calculator class to be used to calculate the simulation fingerprint. The class has to implement the `cFingerprintCalculator` interface.");
-#endif
 Register_PerRunConfigOption(CFGID_NUM_RNGS, "num-rngs", CFG_INT, "1", "The number of random number generators.");
 Register_PerRunConfigOption(CFGID_RNG_CLASS, "rng-class", CFG_STRING, "omnetpp::cMersenneTwister", "The random number generator class to be used. It can be `cMersenneTwister`, `cLCG32`, `cAkaroaRNG`, or you can use your own RNG class (it must be subclassed from `cRNG`).");
 Register_PerRunConfigOption(CFGID_SEED_SET, "seed-set", CFG_INT, "${runnumber}", "Selects the kth set of automatic random number seeds for the simulation. Meaningful values include `${repetition}` which is the repeat loop counter (see `repeat` option), and `${runnumber}`.");
@@ -1435,15 +1433,10 @@ void EnvirBase::readPerRunOptions()
     std::string expectedFingerprints = cfg->getAsString(CFGID_FINGERPRINT);
     if (!expectedFingerprints.empty()) {
         // create calculator
-#ifdef USE_OMNETPP4x_FINGERPRINTS
-        std::string fingerprintClass = "omnetpp::cOmnetpp4xFingerprintCalculator";
-        fingerprint = createByClassName<cFingerprintCalculator>(fingerprintClass.c_str(), "fingerprint calculator");
-#else
         std::string fingerprintClass = cfg->getAsString(CFGID_FINGERPRINTER_CLASS);
         fingerprint = createByClassName<cFingerprintCalculator>(fingerprintClass.c_str(), "fingerprint calculator");
         if (expectedFingerprints.find(',') != expectedFingerprints.npos)
             fingerprint = new cMultiFingerprintCalculator(fingerprint);
-#endif
         fingerprint->initialize(expectedFingerprints.c_str(), cfg);
     }
     getSimulation()->setFingerprintCalculator(fingerprint);
@@ -1995,10 +1988,6 @@ double EnvirBase::getElapsedSecs()
 
 void EnvirBase::checkTimeLimits()
 {
-#ifdef USE_OMNETPP4x_FINGERPRINTS
-    if (opt->simtimeLimit >= SIMTIME_ZERO && getSimulation()->getSimTime() >= opt->simtimeLimit)
-        throw cTerminationException(E_SIMTIME);
-#endif
     if (!stopwatch.hasTimeLimits())
         return;
     if (isExpressMode() && (getSimulation()->getEventNumber() & 1023) != 0)  // optimize: in Express mode, don't read the clock on every event

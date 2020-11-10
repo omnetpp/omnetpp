@@ -140,10 +140,6 @@ void _sim_dummy_func()
     ov.str();
     cHistogram h;
     h.draw();
-#ifdef USE_OMNETPP4x_FINGERPRINTS
-    cOmnetpp4xFingerprintCalculator fp;
-    fp.initialize(nullptr, nullptr);
-#endif
 
     nedfunctions_dummy();
     //_dummy_for_env();
