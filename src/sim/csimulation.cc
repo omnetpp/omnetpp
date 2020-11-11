@@ -425,8 +425,8 @@ void cSimulation::callRefreshDisplay()
 {
     if (systemModule) {
         systemModule->callRefreshDisplay();
-        if (getFingerprintCalculator())
-            getFingerprintCalculator()->addVisuals();
+        if (fingerprint)
+            fingerprint->addVisuals();
     }
 }
 

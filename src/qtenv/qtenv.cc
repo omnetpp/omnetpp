@@ -1391,9 +1391,7 @@ void Qtenv::callRefreshDisplay()
         setLogLevel(LOGLEVEL_OFF);
 
     try {
-        cModule *systemModule = getSimulation()->getSystemModule();
-        if (systemModule)
-            systemModule->callRefreshDisplay();
+        getSimulation()->callRefreshDisplay();
         ++refreshDisplayCount;
     } catch (std::exception&) {
         inspectorsFresh = false;
