@@ -41,8 +41,7 @@ class SIM_API cHasher : noncopyable
 
     void merge(uint32_t x) {
         // rotate value left by one bit, and xor with new data
-        uint32_t carry = (value & 0x80000000U) >> 31;
-        value = ((value<<1)|carry) ^ x;
+        value = ((value << 1) | (value >> 31)) ^ x;
     }
 
     void merge2(uint64_t x) {

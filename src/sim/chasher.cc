@@ -23,17 +23,15 @@ void cHasher::add(const char *s, size_t length)
 {
     // add the bulk in 4-byte chunks
     const uint8_t *p = (const uint8_t *)s;
-    size_t lengthmod4 = length & ~3U;
-    size_t i;
-    for (i = 0; i < lengthmod4; i += 4)
-        merge((uint32_t)(p[i] | (p[i+1] << 8) | (p[i+2] << 16) | (p[i+3] << 24)));
+    for (; length >= 4; length -= 4, p += 4)
+        merge((uint32_t)(p[0] | (p[1] << 8) | (p[2] << 16) | (p[3] << 24)));
 
     // add the 1, 2 or 3 bytes left
-    switch (length - i) {
+    switch (length) {
         case 0: break;
-        case 1: merge((uint32_t)(p[i])); break;
-        case 2: merge((uint32_t)(p[i] | (p[i+1] << 8))); break;
-        case 3: merge((uint32_t)(p[i] | (p[i+1] << 8) | (p[i+2] << 16))); break;
+        case 1: merge((uint32_t)(p[0])); break;
+        case 2: merge((uint32_t)(p[0] | (p[1] << 8))); break;
+        case 3: merge((uint32_t)(p[0] | (p[1] << 8) | (p[2] << 16))); break;
         default: ASSERT(false);
     }
 }
@@ -69,30 +67,6 @@ std::string cHasher::str() const
     str.insert(str.length() - 4, "-");
     return str;
 }
-
-/* XXX to test case
-
-int main(int argc, char **argv)
-{
-#define PRINT printf("%x\n", h.getHash())
-    cHasher h;
-    h.add(1); PRINT;
-    h.add(4); PRINT;
-    h.add(1); PRINT;
-    h.add(0xffffffff); PRINT;
-    h.add(0); h.add(0); h.add(0); h.add(0); PRINT;
-
-    h.reset();
-    h.add("alma"); PRINT;
-
-    h.reset();
-    h.add("almaalma"); PRINT;
-
-    h.reset();
-    h.add("almaalmaalma"); PRINT;
-    return 0;
-}
-*/
 
 }  // namespace omnetpp
 
