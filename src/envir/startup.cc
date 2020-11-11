@@ -27,6 +27,7 @@
 #include "omnetpp/distrib.h"
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/cmodule.h"
+#include "omnetpp/platdep/platmisc.h" // for SetErrorMode(0)
 #include "common/ver.h"
 #include "envirbase.h" // ARGSPEC
 #include "args.h"
@@ -125,6 +126,32 @@ int setupUserInterface(int argc, char *argv[])
             std::cout << "See the license for distribution terms and warranty disclaimer" << endl;
             std::cout << endl;
         }
+
+        #ifdef _WIN32
+        // All of this is here because we want to get a usable error message if there is any trouble
+        // loading the DLL-s (usually model code built as a shared library), or their linked dependencies.
+        // Unfortunately the only way to get that is a graphical dialog, and we don't want to get that
+        // when running in a terminal (especially when launching large simulation campaign batches).
+        // See: https://docs.microsoft.com/en-us/windows/win32/api/errhandlingapi/nf-errhandlingapi-seterrormode
+        {
+            // This will be wrong if the app (envir) to start is selected in the configuration
+            // (which is by default SectionBasedConfiguration, reading omnetpp.ini) and is not
+            // overridden by a command-line argument. Additionally, sometimes an envir might
+            // be loaded from an extension library, and we don't have those yet.
+            const char *preliminaryAppName = args.optionValue('u'); // last -u argument
+            // Look up the specified user interface or pick one from those that we have.
+            // We won't complain if the selected one is not found. There is a second,
+            // "real" lookup further down, after library loading, which does it if needed.
+            // Also not falling back to choosing the "best" because the real lookup doesn't either.
+            cOmnetAppRegistration *appReg = preliminaryAppName != nullptr
+                ? static_cast<cOmnetAppRegistration *>(omnetapps.getInstance()->lookup(preliminaryAppName))
+                : cOmnetAppRegistration::chooseBest(); // might not find one either in an extreme case
+
+            // This is not a very sophisticated check, but we don't have a better one yet.
+            if (appReg != nullptr && strcmp(appReg->getName(), "Qtenv") == 0)
+                SetErrorMode(0);
+        }
+        #endif
 
         //
         // First, load the ini file(s). It might contain the name of the user interface
