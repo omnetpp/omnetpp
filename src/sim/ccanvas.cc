@@ -471,7 +471,7 @@ std::string cFigure::Pixmap::str() const
 
 cFigure::cFigure(const char *name) : cOwnedObject(name), id(++lastId), zIndex(0), visible(true),
         tooltip(nullptr), associatedObject(nullptr), tags(nullptr), tagBits(0),
-        localChanges(0), subtreeChanges(0)
+        localChanges(0), subtreeChanges(0), cachedHashValid(false), cachedHash(0)
 {
 }
 
@@ -1194,11 +1194,18 @@ void cFigure::refreshTagBitsRec(cCanvas *ownerCanvas)
 
 void cFigure::fire(uint8_t flags)
 {
+    // update change flags
     if ((localChanges & flags) == 0) {  // not yet set
         localChanges |= flags;
         for (cFigure *figure = getParentFigure(); figure != nullptr; figure = figure->getParentFigure())
             figure->subtreeChanges |= flags;
     }
+
+    // Ensure cachedHashValid==false up to the root. If it's already false in some ancestor figure,
+    // we can stop there as it will be all false from there up (this is ensured by getHash()).
+    cachedHashValid = false;
+    for (cFigure *figure = getParentFigure(); figure != nullptr && figure->cachedHashValid; figure = figure->getParentFigure())
+        figure->cachedHashValid = false;
 }
 
 void cFigure::clearChangeFlags()
@@ -1207,6 +1214,13 @@ void cFigure::clearChangeFlags()
         for (auto & child : children)
             child->clearChangeFlags();
     localChanges = subtreeChanges = 0;
+}
+
+void cFigure::clearCachedHash()
+{
+    cachedHashValid = false;
+    for (auto& child : children)
+        child->clearCachedHash();
 }
 
 bool cFigure::isAbove(const cFigure *figure) const
@@ -1306,12 +1320,23 @@ void cFigure::move(double dx, double dy)
         child->move(dx, dy);
 }
 
+uint32_t cFigure::getHash() const
+{
+    if (!isVisible())
+        return 0;
+    if (!cachedHashValid) {
+        cHasher hasher;
+        hashTo(&hasher);
+        for (auto& child : children)
+            hasher.add(child->getHash());
+        cachedHash = hasher.getHash();
+        cachedHashValid = true;
+    }
+    return cachedHash;
+}
+
 void cFigure::hashTo(cHasher *hasher) const
 {
-    for (auto& child : children)
-        if (child->isVisible())
-            child->hashTo(hasher);
-
     hasher->add(getClassName());
     hasher->add(getZIndex());
     hasher->add(getTooltip());
@@ -3834,11 +3859,16 @@ std::string cCanvas::str() const
     return os.str();
 }
 
-int32_t cCanvas::getHash() const
+uint32_t cCanvas::getHash() const
 {
-    cHasher hasher;
-    rootFigure->hashTo(&hasher);
-    return hasher.getHash();
+#ifdef DEBUG_CANVAS_HASH
+    uint32_t cached = rootFigure->getHash();
+    rootFigure->clearCachedHash();
+    uint32_t fresh = rootFigure->getHash();
+    ASSERT(cached == fresh);
+#endif
+
+    return rootFigure->getHash();
 }
 
 bool cCanvas::containsCanvasItems(cProperties *properties)

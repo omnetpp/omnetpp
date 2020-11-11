@@ -331,6 +331,8 @@ class SIM_API cFigure : public cOwnedObject
         uint64_t tagBits;  // bit-to-tagname mapping is stored in cCanvas. Note: change to std::bitset if 64 tags are not enough
         uint8_t localChanges;
         uint8_t subtreeChanges;
+        mutable bool cachedHashValid; // separate flag needed because zero hash is also a valid value
+        mutable uint32_t cachedHash;
 
     protected:
         // internal:
@@ -343,6 +345,7 @@ class SIM_API cFigure : public cOwnedObject
         void fireVisualChange() {fire(CHANGE_VISUAL);}
         void fireInputDataChange() {fire(CHANGE_INPUTDATA);}
         virtual void fire(uint8_t flags);
+        virtual void hashTo(cHasher *hasher) const;
 
     protected:
         // helpers for parse(cProperty*)
@@ -374,13 +377,14 @@ class SIM_API cFigure : public cOwnedObject
         // internal, mostly used by runtime GUIs:
         virtual void updateParentTransform(Transform& transform) {transform.rightMultiply(getTransform());}
         virtual void callRefreshDisplay(); // call refreshDisplay(), and recurse to its children
-        virtual void hashTo(cHasher *hasher) const;
         uint8_t getLocalChangeFlags() const {return localChanges;}
         uint8_t getSubtreeChangeFlags() const {return subtreeChanges;}
         void clearChangeFlags();
         void refreshTagBitsRec(cCanvas *ownerCanvas);
         int64_t getTagBits() const {return tagBits;}
         void setTagBits(uint64_t tagBits) {this->tagBits = tagBits;}
+        uint32_t getHash() const;
+        void clearCachedHash(); // for debugging
 
     private:
         void copy(const cFigure& other);
@@ -3044,7 +3048,7 @@ class SIM_API cCanvas : public cOwnedObject
          * Returns a hash computed from all figures in the canvas, for
          * fingerprint computation.
          */
-        virtual int32_t getHash() const;
+        virtual uint32_t getHash() const;
         //@}
 
         /** @name Managing child figures. */
