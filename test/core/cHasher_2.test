@@ -53,9 +53,15 @@ HASH(1, const char *, "Hello W");
 HASH(1, const char *, "Hello Wo");
 HASH(1, const char *, "Hello Worl");
 HASH(1, const char *, "Hello World");
-HASH(1, const char *, "\x80\xcc\xff");
-
-//TODO add(const char *s, size_t len)
+HASH(1, const char *, "\xff\xbb\x80");
+HASH(1, const char *, "\xf1");
+HASH(1, const char *, "\xf1\xe2");
+HASH(1, const char *, "\xf1\xe2\xd3");
+HASH(1, const char *, "\xf1\xe2\xd3\xc4");
+HASH(1, const char *, "\xf1\xe2\xd3\xc4\xb5");
+HASH(1, const char *, "\xf1\xe2\xd3\xc4\xb5\xa6");
+HASH(1, const char *, "\xf1\xe2\xd3\xc4\xb5\xa6\x97");
+HASH(1, const char *, "\xf1\xe2\xd3\xc4\xb5\xa6\x97\x88");
 
 EV << "cumulative: " << hasher.str() << "\n";
 
@@ -84,6 +90,14 @@ const char *: d88f-eaff
 const char *: 6f1f-d5ff
 const char *: 6f1f-b98d
 const char *: 6f7b-b98d
-const char *: ffff-ff80
-cumulative: f5b3-1835
+const char *: 0080-bbff
+const char *: 0000-00f1
+const char *: 0000-e2f1
+const char *: 00d3-e2f1
+const char *: 89a7-c5e3
+const char *: 89a7-c556
+const char *: 89a7-6356
+const char *: 8930-6356
+const char *: 0260-c6ac
+cumulative: 6552-e02b
 .
