@@ -1306,16 +1306,15 @@ void cFigure::move(double dx, double dy)
         child->move(dx, dy);
 }
 
-void cFigure::hashGeometryRec(cHasher *hasher) const
+void cFigure::hashTo(cHasher *hasher) const
 {
-    hashGeometry(hasher);
-    for (auto & child : children)
-        child->hashGeometryRec(hasher);
-}
+    for (auto& child : children)
+        if (child->isVisible())
+            child->hashTo(hasher);
 
-void cFigure::hashGeometry(cHasher *hasher) const
-{
     hasher->add(getClassName());
+    hasher->add(getZIndex());
+    hasher->add(getTooltip());
 
     const Transform& t = getTransform();
     hasher->add(t.a);
@@ -1324,6 +1323,38 @@ void cFigure::hashGeometry(cHasher *hasher) const
     hasher->add(t.d);
     hasher->add(t.t1);
     hasher->add(t.t2);
+}
+
+inline void addToHash(const cFigure::Point& p, cHasher *hasher)
+{
+    hasher->add(p.x);
+    hasher->add(p.y);
+}
+
+inline void addToHash(const cFigure::Rectangle& r, cHasher *hasher)
+{
+    hasher->add(r.x);
+    hasher->add(r.y);
+    hasher->add(r.width);
+    hasher->add(r.height);
+}
+
+inline void addToHash(const cFigure::Color& c, cHasher *hasher)
+{
+    uint32_t rgb = (c.red << 16) | (c.green << 8) | c.blue;
+    hasher->add(rgb);
+}
+
+inline void addToHash(const cFigure::Font& f, cHasher *hasher)
+{
+    hasher->add(f.pointSize);
+    hasher->add(f.style);
+    hasher->add(f.typeface.c_str());
+}
+
+inline void addToHash(const cFigure::Pixmap& pixmap, cHasher *hasher)
+{
+    hasher->add((const char *)pixmap.buffer(), pixmap.getWidth() * pixmap.getHeight() * 4);
 }
 
 //----
@@ -1395,23 +1426,9 @@ void cPanelFigure::updateParentTransform(Transform& transform)
     transform.rightMultiply(getTransform());
 }
 
-inline void addToHash(const cFigure::Point& p, cHasher *hasher)
+void cPanelFigure::hashTo(cHasher *hasher) const
 {
-    hasher->add(p.x);
-    hasher->add(p.y);
-}
-
-inline void addToHash(const cFigure::Rectangle& r, cHasher *hasher)
-{
-    hasher->add(r.x);
-    hasher->add(r.y);
-    hasher->add(r.width);
-    hasher->add(r.height);
-}
-
-void cPanelFigure::hashGeometry(cHasher *hasher) const
-{
-    cFigure::hashGeometry(hasher);
+    cFigure::hashTo(hasher);
     addToHash(getPosition(), hasher);
     addToHash(getAnchorPoint(), hasher);
 }
@@ -1542,6 +1559,19 @@ void cAbstractLineFigure::setZoomLineWidth(bool zoomLineWidth)
     fireVisualChange();
 }
 
+void cAbstractLineFigure::hashTo(cHasher *hasher) const
+{
+    cFigure::hashTo(hasher);
+    addToHash(getLineColor(), hasher);
+    hasher->add(getLineStyle());
+    hasher->add(getLineWidth());
+    hasher->add(getLineOpacity());
+    hasher->add((int)getCapStyle());
+    hasher->add(getStartArrowhead());
+    hasher->add(getEndArrowhead());
+    hasher->add(getZoomLineWidth());
+}
+
 //----
 
 void cLineFigure::copy(const cLineFigure& other)
@@ -1611,9 +1641,9 @@ void cLineFigure::setEnd(const Point& end)
     fireGeometryChange();
 }
 
-void cLineFigure::hashGeometry(cHasher *hasher) const
+void cLineFigure::hashTo(cHasher *hasher) const
 {
-    cAbstractLineFigure::hashGeometry(hasher);
+    cAbstractLineFigure::hashTo(hasher);
     addToHash(getStart(), hasher);
     addToHash(getEnd(), hasher);
 }
@@ -1704,9 +1734,9 @@ void cArcFigure::setEndAngle(double endAngle)
     fireGeometryChange();
 }
 
-void cArcFigure::hashGeometry(cHasher *hasher) const
+void cArcFigure::hashTo(cHasher *hasher) const
 {
-    cAbstractLineFigure::hashGeometry(hasher);
+    cAbstractLineFigure::hashTo(hasher);
     addToHash(getBounds(), hasher);
     hasher->add(getStartAngle());
     hasher->add(getEndAngle());
@@ -1841,11 +1871,13 @@ void cPolylineFigure::setJoinStyle(JoinStyle joinStyle)
     fireVisualChange();
 }
 
-void cPolylineFigure::hashGeometry(cHasher *hasher) const
+void cPolylineFigure::hashTo(cHasher *hasher) const
 {
-    cAbstractLineFigure::hashGeometry(hasher);
+    cAbstractLineFigure::hashTo(hasher);
     for (const Point& point : getPoints())
         addToHash(point, hasher);
+    hasher->add(getSmooth());
+    hasher->add(getJoinStyle());
 }
 
 //----
@@ -1987,6 +2019,20 @@ void cAbstractShapeFigure::setZoomLineWidth(bool zoomLineWidth)
     fireVisualChange();
 }
 
+void cAbstractShapeFigure::hashTo(cHasher *hasher) const
+{
+    cFigure::hashTo(hasher);
+    hasher->add(isOutlined());
+    hasher->add(isFilled());
+    addToHash(getLineColor(), hasher);
+    addToHash(getFillColor(), hasher);
+    hasher->add(getLineStyle());
+    hasher->add(getLineWidth());
+    hasher->add(getLineOpacity());
+    hasher->add(getFillOpacity());
+    hasher->add(getZoomLineWidth());
+}
+
 //----
 
 void cRectangleFigure::copy(const cRectangleFigure& other)
@@ -2076,10 +2122,12 @@ void cRectangleFigure::setCornerRy(double cornerRy)
     fireGeometryChange();
 }
 
-void cRectangleFigure::hashGeometry(cHasher *hasher) const
+void cRectangleFigure::hashTo(cHasher *hasher) const
 {
-    cAbstractShapeFigure::hashGeometry(hasher);
+    cAbstractShapeFigure::hashTo(hasher);
     addToHash(getBounds(), hasher);
+    hasher->add(getCornerRx());
+    hasher->add(getCornerRy());
 }
 
 //----
@@ -2144,9 +2192,9 @@ void cOvalFigure::setPosition(const Point& position, Anchor anchor)
     setBounds(computeBoundingBox(position, Point(bounds.width, bounds.height), bounds.height, anchor));
 }
 
-void cOvalFigure::hashGeometry(cHasher *hasher) const
+void cOvalFigure::hashTo(cHasher *hasher) const
 {
-    cAbstractShapeFigure::hashGeometry(hasher);
+    cAbstractShapeFigure::hashTo(hasher);
     addToHash(getBounds(), hasher);
 }
 
@@ -2239,9 +2287,9 @@ void cRingFigure::setInnerRy(double innerRy)
     fireGeometryChange();
 }
 
-void cRingFigure::hashGeometry(cHasher *hasher) const
+void cRingFigure::hashTo(cHasher *hasher) const
 {
-    cAbstractShapeFigure::hashGeometry(hasher);
+    cAbstractShapeFigure::hashTo(hasher);
     addToHash(getBounds(), hasher);
     hasher->add(getInnerRx());
     hasher->add(getInnerRy());
@@ -2333,9 +2381,9 @@ void cPieSliceFigure::setEndAngle(double endAngle)
     fireGeometryChange();
 }
 
-void cPieSliceFigure::hashGeometry(cHasher *hasher) const
+void cPieSliceFigure::hashTo(cHasher *hasher) const
 {
-    cAbstractShapeFigure::hashGeometry(hasher);
+    cAbstractShapeFigure::hashTo(hasher);
     addToHash(getBounds(), hasher);
     hasher->add(getStartAngle());
     hasher->add(getEndAngle());
@@ -2481,11 +2529,14 @@ void cPolygonFigure::setFillRule(FillRule fillRule)
     fireVisualChange();
 }
 
-void cPolygonFigure::hashGeometry(cHasher *hasher) const
+void cPolygonFigure::hashTo(cHasher *hasher) const
 {
-    cAbstractShapeFigure::hashGeometry(hasher);
+    cAbstractShapeFigure::hashTo(hasher);
     for (const Point& point : getPoints())
         addToHash(point, hasher);
+    hasher->add(getSmooth());
+    hasher->add(getJoinStyle());
+    hasher->add(getFillRule());
 }
 
 //----
@@ -3055,9 +3106,9 @@ void cPathFigure::setFillRule(FillRule fillRule)
     fireVisualChange();
 }
 
-void cPathFigure::hashGeometry(cHasher *hasher) const
+void cPathFigure::hashTo(cHasher *hasher) const
 {
-    cAbstractShapeFigure::hashGeometry(hasher);
+    cAbstractShapeFigure::hashTo(hasher);
     for (auto base : path) {
         hasher->add((char)base->code);
         switch (base->code) {
@@ -3162,6 +3213,11 @@ void cPathFigure::hashGeometry(cHasher *hasher) const
                 throw cRuntimeError(this, "Unknown path item '%c'", base->code);
         }
     }
+
+    hasher->add(getJoinStyle());
+    hasher->add(getCapStyle());
+    hasher->add(getFillRule());
+    addToHash(getOffset(), hasher);
 }
 
 //----
@@ -3295,10 +3351,16 @@ cFigure::Rectangle cAbstractTextFigure::getBounds() const
     return computeBoundingBox(position, Point(width, height), ascent, anchor);
 }
 
-void cAbstractTextFigure::hashGeometry(cHasher *hasher) const
+void cAbstractTextFigure::hashTo(cHasher *hasher) const
 {
-    cFigure::hashGeometry(hasher);
+    cFigure::hashTo(hasher);
     addToHash(getPosition(), hasher);
+    addToHash(getColor(), hasher);
+    hasher->add(getOpacity());
+    hasher->add(getHalo());
+    addToHash(getFont(), hasher);
+    hasher->add(getAnchor());
+    hasher->add(getText());
 }
 
 //----
@@ -3353,6 +3415,12 @@ void cLabelFigure::setAngle(double angle)
         return;
     this->angle = angle;
     fireGeometryChange();
+}
+
+void cLabelFigure::hashTo(cHasher *hasher) const
+{
+    cAbstractTextFigure::hashTo(hasher);
+    hasher->add(getAngle());
 }
 
 //----
@@ -3516,10 +3584,17 @@ cFigure::Rectangle cAbstractImageFigure::getBounds() const
     return computeBoundingBox(position, size, size.y, anchor);
 }
 
-void cAbstractImageFigure::hashGeometry(cHasher *hasher) const
+void cAbstractImageFigure::hashTo(cHasher *hasher) const
 {
-    cFigure::hashGeometry(hasher);
+    cFigure::hashTo(hasher);
     addToHash(getPosition(), hasher);
+    hasher->add(getAnchor());
+    hasher->add(getWidth());
+    hasher->add(getHeight());
+    hasher->add(getInterpolation());
+    hasher->add(getOpacity());
+    addToHash(getTintColor(), hasher);
+    hasher->add(getTintAmount());
 }
 
 //----
@@ -3577,6 +3652,12 @@ cFigure::Point cImageFigure::getDefaultSize() const
     double width, height;
     getEnvir()->getImageSize(getImageName(), width, height);
     return Point(width, height);
+}
+
+void cImageFigure::hashTo(cHasher *hasher) const
+{
+    cAbstractImageFigure::hashTo(hasher);
+    hasher->add(getImageName());
 }
 
 //----
@@ -3704,6 +3785,12 @@ void cPixmapFigure::setPixelOpacity(int x, int y, double opacity)
     fireInputDataChange();
 }
 
+void cPixmapFigure::hashTo(cHasher *hasher) const
+{
+    cAbstractImageFigure::hashTo(hasher);
+    addToHash(pixmap, hasher);
+}
+
 //------
 
 cCanvas::cCanvas(const char *name) : cOwnedObject(name), backgroundColor(cFigure::Color(160,224,160)), minAnimationSpeed(DBL_MAX), animationHoldEndTime(0)
@@ -3745,6 +3832,13 @@ std::string cCanvas::str() const
     std::stringstream os;
     os << rootFigure->getNumFigures() << " toplevel figure(s)";
     return os.str();
+}
+
+int32_t cCanvas::getHash() const
+{
+    cHasher hasher;
+    rootFigure->hashTo(&hasher);
+    return hasher.getHash();
 }
 
 bool cCanvas::containsCanvasItems(cProperties *properties)
@@ -3811,11 +3905,11 @@ cFigure *cCanvas::parseFigure(cProperty *property) const
 
 inline std::string capitalizeClassName(const std::string className)
 {
-	std::string result = className;
-	size_t pos = result.rfind("::");
-	size_t nameStart = pos==std::string::npos ? 0 : pos+2;
-	result[nameStart] = opp_toupper(result[nameStart]);
-	return result;
+    std::string result = className;
+    size_t pos = result.rfind("::");
+    size_t nameStart = pos==std::string::npos ? 0 : pos+2;
+    result[nameStart] = opp_toupper(result[nameStart]);
+    return result;
 }
 
 cFigure *cCanvas::createFigure(const char *type) const

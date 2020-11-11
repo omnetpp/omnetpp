@@ -348,7 +348,7 @@ void cSingleFingerprintCalculator::addModuleVisuals(cModule *module, bool displa
     if (displayStrings && module->hasDisplayString())
         hasher->add(module->getDisplayString().str());
     if (figures && module->getCanvasIfExists())
-        module->getCanvas()->getRootFigure()->hashGeometryRec(hasher);
+        hasher->add(module->getCanvas()->getHash());
 
     // and recurse
     for (cModule::SubmoduleIterator it(module); !it.end(); ++it)
