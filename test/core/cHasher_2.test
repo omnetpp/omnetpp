@@ -90,14 +90,14 @@ const char *: d88f-eaff
 const char *: 6f1f-d5ff
 const char *: 6f1f-b98d
 const char *: 6f7b-b98d
-const char *: ffff-ffff
-const char *: ffff-fff1
-const char *: ffff-fff1
-const char *: ffff-fff1
-const char *: ffff-ffe3
-const char *: 0000-0056
-const char *: 0000-0056
-const char *: 0000-0056
-const char *: 0000-00ac
-cumulative: c613-f6b0
+const char *: 0080-bbff
+const char *: 0000-00f1
+const char *: 0000-e2f1
+const char *: 00d3-e2f1
+const char *: 89a7-c5e3
+const char *: 89a7-c556
+const char *: 89a7-6356
+const char *: 8930-6356
+const char *: 0260-c6ac
+cumulative: 6552-e02b
 .

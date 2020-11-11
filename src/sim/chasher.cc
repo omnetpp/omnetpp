@@ -19,9 +19,10 @@
 
 namespace omnetpp {
 
-void cHasher::add(const char *p, size_t length)
+void cHasher::add(const char *s, size_t length)
 {
     // add the bulk in 4-byte chunks
+    const uint8_t *p = (const uint8_t *)s;
     size_t lengthmod4 = length & ~3U;
     size_t i;
     for (i = 0; i < lengthmod4; i += 4)
