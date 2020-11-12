@@ -59,19 +59,20 @@ class SIM_API cHasher : noncopyable
     //@{
     void reset() {value = 0;}
     void add(const char *p, size_t length);
-    void add(char d)           {merge((uint32_t)d);}
-    void add(short d)          {merge((uint32_t)d);}
-    void add(int d)            {merge((uint32_t)d);}
-    void add(long d)           {int64_t tmp=d; merge2((uint64_t)tmp);}
-    void add(long long d)      {merge2((uint64_t)d);}
-    void add(unsigned char d)  {merge((uint32_t)d);}
-    void add(unsigned short d) {merge((uint32_t)d);}
-    void add(unsigned int d)   {merge((uint32_t)d);}
-    void add(unsigned long d)  {uint64_t tmp=d; merge2(tmp);}
-    void add(unsigned long long d)  {merge2(d);}
+    cHasher& operator<<(char d)           {merge((uint32_t)d); return *this;}
+    cHasher& operator<<(short d)          {merge((uint32_t)d); return *this;}
+    cHasher& operator<<(int d)            {merge((uint32_t)d); return *this;}
+    cHasher& operator<<(long d)           {int64_t tmp=d; merge2((uint64_t)tmp); return *this;}
+    cHasher& operator<<(long long d)      {merge2((uint64_t)d); return *this;}
+    cHasher& operator<<(unsigned char d)  {merge((uint32_t)d); return *this;}
+    cHasher& operator<<(unsigned short d) {merge((uint32_t)d); return *this;}
+    cHasher& operator<<(unsigned int d)   {merge((uint32_t)d); return *this;}
+    cHasher& operator<<(unsigned long d)  {uint64_t tmp=d; merge2(tmp); return *this;}
+    cHasher& operator<<(unsigned long long d)  {merge2(d); return *this;}
     // note: safe(r) type punning, see http://cocoawithlove.decenturl.com/type-punning
-    void add(double d)         {union _ {double d; uint64_t i;}; merge2(((union _ *)&d)->i);}
-    void add(const char *s)    {if (s) add(s, strlen(s)+1); else add(0);}
+    cHasher& operator<<(double d)         {union _ {double d; uint64_t i;}; merge2(((union _ *)&d)->i); return *this;}
+    cHasher& operator<<(simtime_t t)      {merge2(t.raw()); return *this;}
+    cHasher& operator<<(const char *s)    {if (s) add(s, strlen(s)+1); else *this << 0; return *this;}
     //@}
 
     /** @name Obtaining the result */

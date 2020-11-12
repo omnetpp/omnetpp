@@ -68,7 +68,6 @@ cSingleFingerprintCalculator::cSingleFingerprintCalculator()
     eventMatcher = nullptr;
     moduleMatcher = nullptr;
     resultMatcher = nullptr;
-    hasher = nullptr;
     addEvents = false;
     addScalarResults = false;
     addStatisticResults = false;
@@ -81,7 +80,6 @@ cSingleFingerprintCalculator::~cSingleFingerprintCalculator()
     delete eventMatcher;
     delete moduleMatcher;
     delete resultMatcher;
-    delete hasher;
 }
 
 inline std::string getListItem(const std::string& list, int index)
@@ -93,7 +91,7 @@ inline std::string getListItem(const std::string& list, int index)
 void cSingleFingerprintCalculator::initialize(const char *expectedFingerprints, cConfiguration *cfg, int index)
 {
     this->expectedFingerprints = expectedFingerprints;
-    hasher = new cHasher();
+    hasher.reset();
 
     // fingerprints may have an ingredients string embedded in them after a "/" character;
     // if so, that overrides the fingerprint-ingredients configuration option.
@@ -122,7 +120,7 @@ void cSingleFingerprintCalculator::initialize(const char *expectedFingerprints, 
 
 std::string cSingleFingerprintCalculator::str() const
 {
-    return hasher->str() + "/" + ingredients;
+    return hasher.str() + "/" + ingredients;
 }
 
 cSingleFingerprintCalculator::FingerprintIngredient cSingleFingerprintCalculator::validateIngredient(char ch)
@@ -195,24 +193,24 @@ void cSingleFingerprintCalculator::addEvent(cEvent *event)
                     if (!addEventIngredient(event, ingredient)) {
                         switch (ingredient) {
                             case EVENT_NUMBER:
-                                hasher->add(getSimulation()->getEventNumber()); break;
+                                hasher << getSimulation()->getEventNumber(); break;
                             case SIMULATION_TIME:
-                                hasher->add(simTime().raw()); break;
+                                hasher << simTime(); break;
                             case MESSAGE_FULL_NAME:
-                                hasher->add(event->getFullName()); break;
+                                hasher << event->getFullName(); break;
                             case MESSAGE_CLASS_NAME:
-                                hasher->add(event->getClassName()); break;
+                                hasher << event->getClassName(); break;
                             case MESSAGE_KIND:
                                 if (message != nullptr)
-                                    hasher->add(message->getKind());
+                                    hasher << message->getKind();
                                 break;
                             case MESSAGE_BIT_LENGTH:
                                 if (packet != nullptr)
-                                    hasher->add(packet->getBitLength());
+                                    hasher << packet->getBitLength();
                                 break;
                             case MESSAGE_CONTROL_INFO_CLASS_NAME:
                                 if (controlInfo != nullptr)
-                                    hasher->add(controlInfo->getClassName());
+                                    hasher << controlInfo->getClassName();
                                 break;
                             case MESSAGE_DATA:
                                 if (message != nullptr) {
@@ -222,7 +220,7 @@ void cSingleFingerprintCalculator::addEvent(cEvent *event)
                                     cMemCommBuffer buffer;
                                     cMessage *copy = message->dup();
                                     copy->parsimPack(&buffer);
-                                    hasher->add(buffer.getBuffer(), buffer.getMessageSize());
+                                    hasher.add(buffer.getBuffer(), buffer.getMessageSize());
                                     delete copy;
 #else
                                     throw cRuntimeError("Fingerprint is configured to contain MESSAGE_DATA (d),"
@@ -233,26 +231,26 @@ void cSingleFingerprintCalculator::addEvent(cEvent *event)
                                 break;
                             case MODULE_ID:
                                 if (module != nullptr)
-                                    hasher->add(module->getId());
+                                    hasher << module->getId();
                                 break;
                             case MODULE_FULL_NAME:
                                 if (module != nullptr)
-                                    hasher->add(module->getFullName());
+                                    hasher << module->getFullName();
                                 break;
                             case MODULE_FULL_PATH:
                                 if (module != nullptr)
-                                    hasher->add(module->getFullPath().c_str());
+                                    hasher << module->getFullPath().c_str();
                                 break;
                             case MODULE_CLASS_NAME:
                                 if (module != nullptr)
-                                    hasher->add(module->getComponentType()->getClassName());
+                                    hasher << module->getComponentType()->getClassName();
                                 break;
                             case RANDOM_NUMBERS_DRAWN:
                                 for (int i = 0; i < getEnvir()->getNumRNGs(); i++)
-                                    hasher->add(getEnvir()->getRNG(i)->getNumbersDrawn());
+                                    hasher << getEnvir()->getRNG(i)->getNumbersDrawn();
                                 break;
                             case CLEAN_HASHER:
-                                hasher->reset();
+                                hasher.reset();
                                 break;
                             case RESULT_SCALAR:
                             case RESULT_STATISTIC:
@@ -285,7 +283,7 @@ void cSingleFingerprintCalculator::addScalarResult(const cComponent *component, 
             cNamedObject object(name);
             MatchableObject matchableResult(&object);
             if (resultMatcher == nullptr || resultMatcher->matches(&matchableResult))
-                hasher->add(value);
+                hasher << value;
         }
     }
 }
@@ -297,21 +295,19 @@ void cSingleFingerprintCalculator::addStatisticResult(const cComponent *componen
         if (moduleMatcher == nullptr || moduleMatcher->matches(&matchableComponent)) {
             MatchableObject matchableResult(statistic);
             if (resultMatcher == nullptr || resultMatcher->matches(&matchableResult)) {
-                hasher->add(statistic->getSumWeights());
-                hasher->add(statistic->getWeightedSum());
-                hasher->add(statistic->getMin());
-                hasher->add(statistic->getMax());
-                hasher->add(statistic->getMean());
-                hasher->add(statistic->getStddev());
+                hasher << statistic->getSumWeights();
+                hasher << statistic->getWeightedSum();
+                hasher << statistic->getMin();
+                hasher << statistic->getMax();
+                hasher << statistic->getMean();
+                hasher << statistic->getStddev();
                 if (const cAbstractHistogram *histogram = dynamic_cast<const cAbstractHistogram*>(statistic)) {
-                    hasher->add(histogram->getUnderflowSumWeights());
-                    hasher->add(histogram->getOverflowSumWeights());
+                    hasher << histogram->getUnderflowSumWeights();
+                    hasher << histogram->getOverflowSumWeights();
                     int numBins = histogram->getNumBins();
-                    for (int i = 0; i < numBins; i++) {
-                        hasher->add(histogram->getBinEdge(i));
-                        hasher->add(histogram->getBinValue(i));
-                    }
-                    hasher->add(histogram->getBinEdge(numBins));
+                    for (int i = 0; i < numBins; i++)
+                        hasher << histogram->getBinEdge(i) << histogram->getBinValue(i);
+                    hasher << histogram->getBinEdge(numBins);
                 }
             }
         }
@@ -326,10 +322,8 @@ void cSingleFingerprintCalculator::addVectorResult(const cComponent *component, 
         if (moduleMatcher == nullptr || component == nullptr || moduleMatcher->matches(&matchableComponent)) {
             cNamedObject object(name);
             MatchableObject matchableResult(&object);
-            if (resultMatcher == nullptr || resultMatcher->matches(&matchableResult)) {
-                hasher->add(t.raw());
-                hasher->add(value);
-            }
+            if (resultMatcher == nullptr || resultMatcher->matches(&matchableResult))
+                hasher << t << value;
         }
     }
 }
@@ -346,15 +340,15 @@ void cSingleFingerprintCalculator::addModuleVisuals(cModule *module, bool displa
 {
     // add this module
     if (displayStrings && module->hasDisplayString())
-        hasher->add(module->getDisplayString().str());
+        hasher << module->getDisplayString().str();
     if (figures && module->getCanvasIfExists())
-        hasher->add(module->getCanvas()->getHash());
+        hasher << module->getCanvas()->getHash();
 
     // and recurse
     for (cModule::SubmoduleIterator it(module); !it.end(); ++it)
         addModuleVisuals(*it, displayStrings, figures);
     for (cModule::ChannelIterator it(module); !it.end(); ++it)
-        hasher->add((*it)->getDisplayString().str());
+        hasher << (*it)->getDisplayString().str();
 }
 
 bool cSingleFingerprintCalculator::checkFingerprint() const
@@ -364,7 +358,7 @@ bool cSingleFingerprintCalculator::checkFingerprint() const
         std::string fingerprint = tokenizer.nextToken();
         if (fingerprint.find('/') != std::string::npos)
             fingerprint = omnetpp::common::opp_substringbefore(fingerprint, "/");
-        if (hasher->equals(fingerprint.c_str()))
+        if (hasher.equals(fingerprint.c_str()))
             return true;
     }
     return false;

@@ -1326,60 +1326,58 @@ uint32_t cFigure::getHash() const
         return 0;
     if (!cachedHashValid) {
         cHasher hasher;
-        hashTo(&hasher);
+        hashTo(hasher);
         for (auto& child : children)
-            hasher.add(child->getHash());
+            hasher << child->getHash();
         cachedHash = hasher.getHash();
         cachedHashValid = true;
     }
     return cachedHash;
 }
 
-void cFigure::hashTo(cHasher *hasher) const
+inline cHasher& operator<<(cHasher& hasher, const cFigure::Transform& t)
 {
-    hasher->add(getClassName());
-    hasher->add(getZIndex());
-    hasher->add(getTooltip());
-
-    const Transform& t = getTransform();
-    hasher->add(t.a);
-    hasher->add(t.b);
-    hasher->add(t.c);
-    hasher->add(t.d);
-    hasher->add(t.t1);
-    hasher->add(t.t2);
+    hasher << t.a << t.b << t.c << t.d << t.t1 << t.t2;
+    return hasher;
 }
 
-inline void addToHash(const cFigure::Point& p, cHasher *hasher)
+inline cHasher& operator<<(cHasher& hasher, const cFigure::Point& p)
 {
-    hasher->add(p.x);
-    hasher->add(p.y);
+    hasher << p.x << p.y;
+    return hasher;
 }
 
-inline void addToHash(const cFigure::Rectangle& r, cHasher *hasher)
+inline cHasher& operator<<(cHasher& hasher, const cFigure::Rectangle& r)
 {
-    hasher->add(r.x);
-    hasher->add(r.y);
-    hasher->add(r.width);
-    hasher->add(r.height);
+    hasher << r.x << r.y << r.width << r.height;
+    return hasher;
 }
 
-inline void addToHash(const cFigure::Color& c, cHasher *hasher)
+inline cHasher& operator<<(cHasher& hasher, const cFigure::Color& c)
 {
     uint32_t rgb = (c.red << 16) | (c.green << 8) | c.blue;
-    hasher->add(rgb);
+    hasher << rgb;
+    return hasher;
 }
 
-inline void addToHash(const cFigure::Font& f, cHasher *hasher)
+inline cHasher& operator<<(cHasher& hasher, const cFigure::Font& f)
 {
-    hasher->add(f.pointSize);
-    hasher->add(f.style);
-    hasher->add(f.typeface.c_str());
+    hasher << f.pointSize << f.style << f.typeface.c_str();
+    return hasher;
 }
 
-inline void addToHash(const cFigure::Pixmap& pixmap, cHasher *hasher)
+inline cHasher& operator<<(cHasher& hasher, const cFigure::Pixmap& pixmap)
 {
-    hasher->add((const char *)pixmap.buffer(), pixmap.getWidth() * pixmap.getHeight() * 4);
+    hasher.add((const char *)pixmap.buffer(), pixmap.getWidth() * pixmap.getHeight() * 4);
+    return hasher;
+}
+
+void cFigure::hashTo(cHasher& hasher) const
+{
+    hasher << getClassName();
+    hasher << getZIndex();
+    hasher << getTooltip();
+    hasher << getTransform();
 }
 
 //----
@@ -1451,11 +1449,11 @@ void cPanelFigure::updateParentTransform(Transform& transform)
     transform.rightMultiply(getTransform());
 }
 
-void cPanelFigure::hashTo(cHasher *hasher) const
+void cPanelFigure::hashTo(cHasher& hasher) const
 {
     cFigure::hashTo(hasher);
-    addToHash(getPosition(), hasher);
-    addToHash(getAnchorPoint(), hasher);
+    hasher << getPosition();
+    hasher << getAnchorPoint();
 }
 
 //----
@@ -1584,17 +1582,17 @@ void cAbstractLineFigure::setZoomLineWidth(bool zoomLineWidth)
     fireVisualChange();
 }
 
-void cAbstractLineFigure::hashTo(cHasher *hasher) const
+void cAbstractLineFigure::hashTo(cHasher& hasher) const
 {
     cFigure::hashTo(hasher);
-    addToHash(getLineColor(), hasher);
-    hasher->add(getLineStyle());
-    hasher->add(getLineWidth());
-    hasher->add(getLineOpacity());
-    hasher->add((int)getCapStyle());
-    hasher->add(getStartArrowhead());
-    hasher->add(getEndArrowhead());
-    hasher->add(getZoomLineWidth());
+    hasher << getLineColor();
+    hasher << getLineStyle();
+    hasher << getLineWidth();
+    hasher << getLineOpacity();
+    hasher << getCapStyle();
+    hasher << getStartArrowhead();
+    hasher << getEndArrowhead();
+    hasher << getZoomLineWidth();
 }
 
 //----
@@ -1666,11 +1664,11 @@ void cLineFigure::setEnd(const Point& end)
     fireGeometryChange();
 }
 
-void cLineFigure::hashTo(cHasher *hasher) const
+void cLineFigure::hashTo(cHasher& hasher) const
 {
     cAbstractLineFigure::hashTo(hasher);
-    addToHash(getStart(), hasher);
-    addToHash(getEnd(), hasher);
+    hasher << getStart();
+    hasher << getEnd();
 }
 
 //----
@@ -1759,12 +1757,12 @@ void cArcFigure::setEndAngle(double endAngle)
     fireGeometryChange();
 }
 
-void cArcFigure::hashTo(cHasher *hasher) const
+void cArcFigure::hashTo(cHasher& hasher) const
 {
     cAbstractLineFigure::hashTo(hasher);
-    addToHash(getBounds(), hasher);
-    hasher->add(getStartAngle());
-    hasher->add(getEndAngle());
+    hasher << getBounds();
+    hasher << getStartAngle();
+    hasher << getEndAngle();
 }
 
 //----
@@ -1896,13 +1894,13 @@ void cPolylineFigure::setJoinStyle(JoinStyle joinStyle)
     fireVisualChange();
 }
 
-void cPolylineFigure::hashTo(cHasher *hasher) const
+void cPolylineFigure::hashTo(cHasher& hasher) const
 {
     cAbstractLineFigure::hashTo(hasher);
     for (const Point& point : getPoints())
-        addToHash(point, hasher);
-    hasher->add(getSmooth());
-    hasher->add(getJoinStyle());
+        hasher << point;
+    hasher << getSmooth();
+    hasher << getJoinStyle();
 }
 
 //----
@@ -2044,18 +2042,18 @@ void cAbstractShapeFigure::setZoomLineWidth(bool zoomLineWidth)
     fireVisualChange();
 }
 
-void cAbstractShapeFigure::hashTo(cHasher *hasher) const
+void cAbstractShapeFigure::hashTo(cHasher& hasher) const
 {
     cFigure::hashTo(hasher);
-    hasher->add(isOutlined());
-    hasher->add(isFilled());
-    addToHash(getLineColor(), hasher);
-    addToHash(getFillColor(), hasher);
-    hasher->add(getLineStyle());
-    hasher->add(getLineWidth());
-    hasher->add(getLineOpacity());
-    hasher->add(getFillOpacity());
-    hasher->add(getZoomLineWidth());
+    hasher << isOutlined();
+    hasher << isFilled();
+    hasher << getLineColor();
+    hasher << getFillColor();
+    hasher << getLineStyle();
+    hasher << getLineWidth();
+    hasher << getLineOpacity();
+    hasher << getFillOpacity();
+    hasher << getZoomLineWidth();
 }
 
 //----
@@ -2147,12 +2145,12 @@ void cRectangleFigure::setCornerRy(double cornerRy)
     fireGeometryChange();
 }
 
-void cRectangleFigure::hashTo(cHasher *hasher) const
+void cRectangleFigure::hashTo(cHasher& hasher) const
 {
     cAbstractShapeFigure::hashTo(hasher);
-    addToHash(getBounds(), hasher);
-    hasher->add(getCornerRx());
-    hasher->add(getCornerRy());
+    hasher << getBounds();
+    hasher << getCornerRx();
+    hasher << getCornerRy();
 }
 
 //----
@@ -2217,10 +2215,10 @@ void cOvalFigure::setPosition(const Point& position, Anchor anchor)
     setBounds(computeBoundingBox(position, Point(bounds.width, bounds.height), bounds.height, anchor));
 }
 
-void cOvalFigure::hashTo(cHasher *hasher) const
+void cOvalFigure::hashTo(cHasher& hasher) const
 {
     cAbstractShapeFigure::hashTo(hasher);
-    addToHash(getBounds(), hasher);
+    hasher << getBounds();
 }
 
 //----
@@ -2312,12 +2310,12 @@ void cRingFigure::setInnerRy(double innerRy)
     fireGeometryChange();
 }
 
-void cRingFigure::hashTo(cHasher *hasher) const
+void cRingFigure::hashTo(cHasher& hasher) const
 {
     cAbstractShapeFigure::hashTo(hasher);
-    addToHash(getBounds(), hasher);
-    hasher->add(getInnerRx());
-    hasher->add(getInnerRy());
+    hasher << getBounds();
+    hasher << getInnerRx();
+    hasher << getInnerRy();
 }
 
 //----
@@ -2406,12 +2404,12 @@ void cPieSliceFigure::setEndAngle(double endAngle)
     fireGeometryChange();
 }
 
-void cPieSliceFigure::hashTo(cHasher *hasher) const
+void cPieSliceFigure::hashTo(cHasher& hasher) const
 {
     cAbstractShapeFigure::hashTo(hasher);
-    addToHash(getBounds(), hasher);
-    hasher->add(getStartAngle());
-    hasher->add(getEndAngle());
+    hasher << getBounds();
+    hasher << getStartAngle();
+    hasher << getEndAngle();
 }
 
 //----
@@ -2554,14 +2552,14 @@ void cPolygonFigure::setFillRule(FillRule fillRule)
     fireVisualChange();
 }
 
-void cPolygonFigure::hashTo(cHasher *hasher) const
+void cPolygonFigure::hashTo(cHasher& hasher) const
 {
     cAbstractShapeFigure::hashTo(hasher);
     for (const Point& point : getPoints())
-        addToHash(point, hasher);
-    hasher->add(getSmooth());
-    hasher->add(getJoinStyle());
-    hasher->add(getFillRule());
+        hasher << point;
+    hasher << getSmooth();
+    hasher << getJoinStyle();
+    hasher << getFillRule();
 }
 
 //----
@@ -3131,104 +3129,104 @@ void cPathFigure::setFillRule(FillRule fillRule)
     fireVisualChange();
 }
 
-void cPathFigure::hashTo(cHasher *hasher) const
+void cPathFigure::hashTo(cHasher& hasher) const
 {
     cAbstractShapeFigure::hashTo(hasher);
     for (auto base : path) {
-        hasher->add((char)base->code);
+        hasher << (char)base->code;
         switch (base->code) {
             case 'M': {
                 MoveTo *item = static_cast<MoveTo*>(base);
-                hasher->add(item->x); hasher->add(item->y);
+                hasher << item->x << item->y;
                 break;
             }
             case 'm': {
                 MoveRel *item = static_cast<MoveRel*>(base);
-                hasher->add(item->dx); hasher->add(item->dy);
+                hasher << item->dx << item->dy;
                 break;
             }
             case 'L': {
                 LineTo *item = static_cast<LineTo*>(base);
-                hasher->add(item->x); hasher->add(item->y);
+                hasher << item->x << item->y;
                 break;
             }
             case 'l': {
                 LineRel *item = static_cast<LineRel*>(base);
-                hasher->add(item->dx); hasher->add(item->dy);
+                hasher << item->dx << item->dy;
                 break;
             }
             case 'H': {
                 HorizontalLineTo *item = static_cast<HorizontalLineTo*>(base);
-                hasher->add(item->x);
+                hasher << item->x;
                 break;
             }
             case 'h': {
                 HorizontalLineRel *item = static_cast<HorizontalLineRel*>(base);
-                hasher->add(item->dx);
+                hasher << item->dx;
                 break;
             }
             case 'V': {
                 VerticalLineTo *item = static_cast<VerticalLineTo*>(base);
-                hasher->add(item->y);
+                hasher << item->y;
                 break;
             }
             case 'v': {
                 VerticalLineRel *item = static_cast<VerticalLineRel*>(base);
-                hasher->add(item->dy);
+                hasher << item->dy;
                 break;
             }
             case 'A': {
                 ArcTo *item = static_cast<ArcTo*>(base);
-                hasher->add(item->rx); hasher->add(item->ry);
-                hasher->add(item->phi); hasher->add(item->largeArc); hasher->add(item->sweep);
-                hasher->add(item->x); hasher->add(item->y);
+                hasher << item->rx << item->ry;
+                hasher << item->phi << item->largeArc << item->sweep;
+                hasher << item->x << item->y;
                 break;
             }
             case 'a': {
                 ArcRel *item = static_cast<ArcRel*>(base);
-                hasher->add(item->rx); hasher->add(item->ry);
-                hasher->add(item->phi); hasher->add(item->largeArc); hasher->add(item->sweep);
-                hasher->add(item->dx); hasher->add(item->dy);
+                hasher << item->rx << item->ry;
+                hasher << item->phi << item->largeArc << item->sweep;
+                hasher << item->dx << item->dy;
                 break;
             }
             case 'Q': {
                 CurveTo *item = static_cast<CurveTo*>(base);
-                hasher->add(item->x1); hasher->add(item->y1); hasher->add(item->x); hasher->add(item->y);
+                hasher << item->x1 << item->y1 << item->x << item->y;
                 break;
             }
             case 'q': {
                 CurveRel *item = static_cast<CurveRel*>(base);
-                hasher->add(item->dx1); hasher->add(item->dy1); hasher->add(item->dx); hasher->add(item->dy);
+                hasher << item->dx1 << item->dy1 << item->dx << item->dy;
                 break;
             }
             case 'T': {
                 SmoothCurveTo *item = static_cast<SmoothCurveTo*>(base);
-                hasher->add(item->x); hasher->add(item->y);
+                hasher << item->x << item->y;
                 break;
             }
             case 't': {
                 SmoothCurveRel *item = static_cast<SmoothCurveRel*>(base);
-                hasher->add(item->dx); hasher->add(item->dy);
+                hasher << item->dx << item->dy;
                 break;
             }
             case 'C': {
                 CubicBezierCurveTo *item = static_cast<CubicBezierCurveTo*>(base);
-                hasher->add(item->x1); hasher->add(item->y1); hasher->add(item->x2); hasher->add(item->y2); hasher->add(item->x); hasher->add(item->y);
+                hasher << item->x1 << item->y1 << item->x2 << item->y2 << item->x << item->y;
                 break;
             }
             case 'c': {
                 CubicBezierCurveRel *item = static_cast<CubicBezierCurveRel*>(base);
-                hasher->add(item->dx1); hasher->add(item->dy1); hasher->add(item->dx2); hasher->add(item->dy2); hasher->add(item->dx); hasher->add(item->dy);
+                hasher << item->dx1 << item->dy1 << item->dx2 << item->dy2 << item->dx << item->dy;
                 break;
             }
             case 'S': {
                 SmoothCubicBezierCurveTo *item = static_cast<SmoothCubicBezierCurveTo*>(base);
-                hasher->add(item->x2); hasher->add(item->y2); hasher->add(item->x); hasher->add(item->y);
+                hasher << item->x2 << item->y2 << item->x << item->y;
                 break;
             }
             case 's': {
                 SmoothCubicBezierCurveRel *item = static_cast<SmoothCubicBezierCurveRel*>(base);
-                hasher->add(item->dx2); hasher->add(item->dy2); hasher->add(item->dx); hasher->add(item->dy);
+                hasher << item->dx2 << item->dy2 << item->dx << item->dy;
                 break;
             }
             case 'Z': {
@@ -3239,10 +3237,10 @@ void cPathFigure::hashTo(cHasher *hasher) const
         }
     }
 
-    hasher->add(getJoinStyle());
-    hasher->add(getCapStyle());
-    hasher->add(getFillRule());
-    addToHash(getOffset(), hasher);
+    hasher << getJoinStyle();
+    hasher << getCapStyle();
+    hasher << getFillRule();
+    hasher << getOffset();
 }
 
 //----
@@ -3376,16 +3374,16 @@ cFigure::Rectangle cAbstractTextFigure::getBounds() const
     return computeBoundingBox(position, Point(width, height), ascent, anchor);
 }
 
-void cAbstractTextFigure::hashTo(cHasher *hasher) const
+void cAbstractTextFigure::hashTo(cHasher& hasher) const
 {
     cFigure::hashTo(hasher);
-    addToHash(getPosition(), hasher);
-    addToHash(getColor(), hasher);
-    hasher->add(getOpacity());
-    hasher->add(getHalo());
-    addToHash(getFont(), hasher);
-    hasher->add(getAnchor());
-    hasher->add(getText());
+    hasher << getPosition();
+    hasher << getColor();
+    hasher << getOpacity();
+    hasher << getHalo();
+    hasher << getFont();
+    hasher << getAnchor();
+    hasher << getText();
 }
 
 //----
@@ -3442,10 +3440,10 @@ void cLabelFigure::setAngle(double angle)
     fireGeometryChange();
 }
 
-void cLabelFigure::hashTo(cHasher *hasher) const
+void cLabelFigure::hashTo(cHasher& hasher) const
 {
     cAbstractTextFigure::hashTo(hasher);
-    hasher->add(getAngle());
+    hasher << getAngle();
 }
 
 //----
@@ -3609,17 +3607,17 @@ cFigure::Rectangle cAbstractImageFigure::getBounds() const
     return computeBoundingBox(position, size, size.y, anchor);
 }
 
-void cAbstractImageFigure::hashTo(cHasher *hasher) const
+void cAbstractImageFigure::hashTo(cHasher& hasher) const
 {
     cFigure::hashTo(hasher);
-    addToHash(getPosition(), hasher);
-    hasher->add(getAnchor());
-    hasher->add(getWidth());
-    hasher->add(getHeight());
-    hasher->add(getInterpolation());
-    hasher->add(getOpacity());
-    addToHash(getTintColor(), hasher);
-    hasher->add(getTintAmount());
+    hasher << getPosition();
+    hasher << getAnchor();
+    hasher << getWidth();
+    hasher << getHeight();
+    hasher << getInterpolation();
+    hasher << getOpacity();
+    hasher << getTintColor();
+    hasher << getTintAmount();
 }
 
 //----
@@ -3679,10 +3677,10 @@ cFigure::Point cImageFigure::getDefaultSize() const
     return Point(width, height);
 }
 
-void cImageFigure::hashTo(cHasher *hasher) const
+void cImageFigure::hashTo(cHasher& hasher) const
 {
     cAbstractImageFigure::hashTo(hasher);
-    hasher->add(getImageName());
+    hasher << getImageName();
 }
 
 //----
@@ -3810,10 +3808,10 @@ void cPixmapFigure::setPixelOpacity(int x, int y, double opacity)
     fireInputDataChange();
 }
 
-void cPixmapFigure::hashTo(cHasher *hasher) const
+void cPixmapFigure::hashTo(cHasher& hasher) const
 {
     cAbstractImageFigure::hashTo(hasher);
-    addToHash(pixmap, hasher);
+    hasher << pixmap;
 }
 
 //------
