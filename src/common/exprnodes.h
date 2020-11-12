@@ -19,6 +19,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <functional>
 #include "exprnode.h"
 #include "patternmatcher.h" // MatchConstPattern
 
@@ -85,8 +86,17 @@ public:
     virtual Precedence getPrecedence() const override {return ELEM;}
 };
 
-class COMMON_API IndexedVariableNode : public UnaryNode
-{
+class COMMON_API LambdaVariableNode : public VariableNode {
+protected:
+    std::function<ExprValue(Context*)> provider;
+protected:
+    virtual ExprValue getValue(Context *context) const override {return provider(context);}
+public:
+    LambdaVariableNode(const char *name, std::function<ExprValue(Context*)> provider) : VariableNode(name), provider(provider) {}
+    virtual ExprNode *dup() const override {return new LambdaVariableNode(name.c_str(),provider);}
+};
+
+class COMMON_API IndexedVariableNode : public UnaryNode {
 protected:
     std::string name;
 protected:
@@ -97,6 +107,16 @@ public:
     IndexedVariableNode(const char *name) : name(name) {}
     virtual std::string getName() const override {return name;}
     virtual Precedence getPrecedence() const override {return ELEM;}
+};
+
+class COMMON_API LambdaIndexedVariableNode : public IndexedVariableNode {
+protected:
+    std::function<ExprValue(Context*,intval_t)> provider;
+protected:
+    virtual ExprValue getValue(Context *context, intval_t index) const override {return provider(context,index);}
+public:
+    LambdaIndexedVariableNode(const char *name, std::function<ExprValue(Context*,intval_t)> provider) : IndexedVariableNode(name), provider(provider) {}
+    virtual ExprNode *dup() const override {return new LambdaIndexedVariableNode(name.c_str(),provider);}
 };
 
 class COMMON_API MemberNode : public UnaryNode {
@@ -112,6 +132,16 @@ public:
     virtual Precedence getPrecedence() const override {return ELEM;}
 };
 
+class COMMON_API LambdaMemberNode : public MemberNode {
+protected:
+    std::function<ExprValue(Context*,const ExprValue&)> provider;
+protected:
+    virtual ExprValue getValue(Context *context, const ExprValue& object) const override {return provider(context,object);}
+public:
+    LambdaMemberNode(const char *name, std::function<ExprValue(Context*,const ExprValue&)> provider) : MemberNode(name), provider(provider) {}
+    virtual ExprNode *dup() const override {return new LambdaMemberNode(name.c_str(),provider);}
+};
+
 class COMMON_API IndexedMemberNode : public BinaryNode
 {
 protected:
@@ -124,6 +154,16 @@ public:
     IndexedMemberNode(const char *name) : name(name) {}
     virtual std::string getName() const override {return name;}
     virtual Precedence getPrecedence() const override {return ELEM;}
+};
+
+class COMMON_API LambdaIndexedMemberNode : public IndexedMemberNode {
+protected:
+    std::function<ExprValue(Context*,const ExprValue&,intval_t)> provider;
+protected:
+    virtual ExprValue getValue(Context *context, const ExprValue& object, intval_t index) const override {return provider(context,object,index);}
+public:
+    LambdaIndexedMemberNode(const char *name, std::function<ExprValue(Context*,const ExprValue&,intval_t)> provider) : IndexedMemberNode(name), provider(provider) {}
+    virtual ExprNode *dup() const override {return new LambdaIndexedMemberNode(name.c_str(),provider);}
 };
 
 class COMMON_API NegateNode : public UnaryOperatorNode {
@@ -519,6 +559,16 @@ public:
     virtual Precedence getPrecedence() const override {return ELEM;}
 };
 
+class COMMON_API LambdaFunctionNode : public FunctionNode {
+protected:
+    std::function<ExprValue(Context*,ExprValue[],int)> function;
+protected:
+    virtual ExprValue compute(Context *context, ExprValue argv[], int argc) const override {return function(context,argv,argc);}
+public:
+    LambdaFunctionNode(const char *name, std::function<ExprValue(Context*,ExprValue[],int)> function) : FunctionNode(name), function(function) {}
+    virtual ExprNode *dup() const override {return new LambdaFunctionNode(name.c_str(),function);}
+};
+
 class COMMON_API MethodNode : public NaryNode {
 protected:
     std::string name;
@@ -532,6 +582,16 @@ public:
     ~MethodNode() {delete[] values;}
     virtual std::string getName() const override {return name;}
     virtual Precedence getPrecedence() const override {return ELEM;}
+};
+
+class COMMON_API LambdaMethodNode : public MethodNode {
+protected:
+    std::function<ExprValue(Context*,const ExprValue&,ExprValue[],int)> function;
+protected:
+    virtual ExprValue compute(Context *context, ExprValue& object, ExprValue argv[], int argc) const override {return function(context,object,argv,argc);}
+public:
+    LambdaMethodNode(const char *name, std::function<ExprValue(Context*,const ExprValue&,ExprValue[],int)> function) : MethodNode(name), function(function) {}
+    virtual ExprNode *dup() const override {return new LambdaMethodNode(name.c_str(),function);}
 };
 
 } // namespace common
