@@ -23,14 +23,19 @@ if df.empty:
 if not xaxis_itervar and not iso_itervar:
     print("The X Axis and Iso Line options were not set in the dialog, inferring them from the data..")
     xaxis_itervar, iso_itervar = utils.pick_two_columns(df)
-    if not iso_itervar or not iso_itervar:
-        plot.set_warning("Please set the X Axis and Iso Lines options in the dialog!")
+    if not xaxis_itervar:
+        plot.set_warning("Please set the X Axis (and Iso Lines) options in the dialog!")
         exit(1)
 
-utils.assert_columns_exist(df, [xaxis_itervar, iso_itervar])
-
+utils.assert_columns_exist(df, [xaxis_itervar])
 df[xaxis_itervar] = pd.to_numeric(df[xaxis_itervar], errors="ignore")
-df[iso_itervar] = pd.to_numeric(df[iso_itervar], errors="ignore")
+
+if iso_itervar:
+    utils.assert_columns_exist(df, [xaxis_itervar])
+    df[iso_itervar] = pd.to_numeric(df[iso_itervar], errors="ignore")
+
+if not iso_itervar: # might be an empty string
+    iso_itervar = None
 
 if df.empty:
     plot.set_warning("Select scalars for the Y axis in the Properties dialog")
@@ -73,7 +78,7 @@ except:
 for c in df.columns:
     style = utils._make_line_args(props, c, df)
     ys = df[c].values
-    p.plot(xs, ys, label=iso_itervar + "=" + str(df[c].name), **style)
+    p.plot(xs, ys, label=(iso_itervar + "=" + str(df[c].name) if iso_itervar else scalar_name), **style)
 
     if errors_df is not None and not chart.is_native_chart():
         style["linewidth"] = float(style["linewidth"])
