@@ -61,7 +61,8 @@ class NavigationToolbar2SWT(NavigationToolbar2):
         self.widget = canvas.widget
         NavigationToolbar2.__init__(self, canvas)
 
-    def _init_toolbar(self):
+        # The rest used to be: def _init_toolbar(self): (before matplotlib 3.3)
+
         # self.basedir = os.path.join(matplotlib.rcParams['datapath'], 'images')
 
         descs = []
@@ -73,6 +74,10 @@ class NavigationToolbar2SWT(NavigationToolbar2):
 
         Gateway.widget_provider.setPlotActions(self.canvas.num, descs)
 
+    def _init_toolbar(self):
+        # for compatibility with matplotlib < 3.3
+        pass
+
     def dynamic_update(self):
         self.canvas.dynamic_update()
 
@@ -81,7 +86,10 @@ class NavigationToolbar2SWT(NavigationToolbar2):
             getattr(self, action)()
         else:
             print("unimplemented action: " + action)
-        Gateway.widget_provider.updateActiveAction(self.canvas.num, self._active)
+        if hasattr(self, "_active"): # matplotlib < 3.3
+            Gateway.widget_provider.updateActiveAction(self.canvas.num, self._active)
+        else: # matplotlib >= 3.3
+            Gateway.widget_provider.updateActiveAction(self.canvas.num, (self.mode._navigate_mode or "").lower())
 
     def set_message(self, s):
         if self.widget is not None:
