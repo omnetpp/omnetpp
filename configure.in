@@ -767,6 +767,7 @@ try_import("difflib") # for opp_test and scave python tester
 
 # for the Analysis Tool:
 try_import("numpy")
+try_import("scipy")
 try_import("pandas")
 try_import("matplotlib")
 
@@ -796,10 +797,9 @@ else
 fi
 
 # The following ones are optional, and are used only by some sample ANF scripts:
-#   import pylab,
+#   import pylab
 #   import prettyplotlib
 #   import seaborn
-#   import scipy
 
 
 #----------------------

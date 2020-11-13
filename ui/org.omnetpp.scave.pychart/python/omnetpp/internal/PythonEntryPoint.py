@@ -29,6 +29,7 @@ try:
     import matplotlib as mpl
     import matplotlib.pyplot as plt
     import numpy as np
+    import scipy as sp
     import pandas as pd
 except ImportError as e:
     print("can't import " + e.name)
