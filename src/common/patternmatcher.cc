@@ -27,25 +27,9 @@
 namespace omnetpp {
 namespace common {
 
-PatternMatcher::PatternMatcher()
-{
-    caseSensitive = true;
-}
-
 PatternMatcher::PatternMatcher(const char *pattern, bool dottedpath, bool fullstring, bool casesensitive)
 {
     setPattern(pattern, dottedpath, fullstring, casesensitive);
-}
-
-PatternMatcher::PatternMatcher(const PatternMatcher& other)
-{
-    pattern = other.pattern;
-    caseSensitive = other.caseSensitive;
-    rest = other.rest;
-}
-
-PatternMatcher::~PatternMatcher()
-{
 }
 
 void PatternMatcher::setPattern(const char *patt, bool dottedpath, bool fullstring, bool casesensitive)

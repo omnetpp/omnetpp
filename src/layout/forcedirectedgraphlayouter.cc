@@ -33,25 +33,6 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace layout {
 
-ForceDirectedGraphLayouter::ForceDirectedGraphLayouter()
-{
-    hasFixedNode = false;
-    hasMovableNode = false;
-    hasAnchoredNode = false;
-    hasEdgeToBorder = false;
-
-    topBorder = nullptr;
-    bottomBorder = nullptr;
-    leftBorder = nullptr;
-    rightBorder = nullptr;
-
-    expectedEmbeddingWidth = -1;
-    expectedEmbeddingHeight = -1;
-    expectedEdgeLength = -1;
-    pointLikeDistance = true;
-    slippery = false;
-}
-
 ForceDirectedGraphLayouter::~ForceDirectedGraphLayouter()
 {
     const auto& bodies = embedding.getBodies();

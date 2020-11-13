@@ -53,7 +53,7 @@ class SIM_API cNullEnvir : public cEnvir
     char **argv;
     cConfiguration *cfg;
     cRNG *rng;
-    unsigned long nextUniqueNumber;
+    unsigned long nextUniqueNumber = 0;
     std::vector<cISimulationLifecycleListener*> listeners;
 
   protected:

@@ -147,15 +147,15 @@ class SIM_API cSingleFingerprintCalculator : public cFingerprintCalculator
   protected:
     std::string expectedFingerprints;
     std::string ingredients;
-    cMatchExpression *eventMatcher;
-    cMatchExpression *moduleMatcher;
-    cMatchExpression *resultMatcher;
+    cMatchExpression *eventMatcher = nullptr;
+    cMatchExpression *moduleMatcher = nullptr;
+    cMatchExpression *resultMatcher = nullptr;
     cHasher hasher;
-    bool addEvents;
-    bool addScalarResults;
-    bool addStatisticResults;
-    bool addVectorResults;
-    bool addExtraData_;
+    bool addEvents = false;
+    bool addScalarResults = false;
+    bool addStatisticResults = false;
+    bool addVectorResults = false;
+    bool addExtraData_ = false;
 
   protected:
     virtual FingerprintIngredient validateIngredient(char ch);
@@ -167,7 +167,7 @@ class SIM_API cSingleFingerprintCalculator : public cFingerprintCalculator
     virtual void addModuleVisuals(cModule *module, bool displayStrings, bool figures);
 
   public:
-    cSingleFingerprintCalculator();
+    cSingleFingerprintCalculator() {}
     virtual ~cSingleFingerprintCalculator();
 
     virtual cSingleFingerprintCalculator *dup() const override { return new cSingleFingerprintCalculator(); }

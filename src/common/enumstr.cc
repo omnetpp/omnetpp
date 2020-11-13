@@ -20,12 +20,9 @@
 namespace omnetpp {
 namespace common {
 
-EnumStringIterator::EnumStringIterator(const char *s)
+EnumStringIterator::EnumStringIterator(const char *s) : str(s)
 {
     // loop through string to check its syntax
-    str = s;
-    current = until = -1;
-    err = false;
     while ((*this)++ != -1)
         ;
 

@@ -62,10 +62,6 @@ CodeFragments::CodeFragments(void(*code)(), Type type) : type(type), code(code)
     head = this;
 }
 
-CodeFragments::~CodeFragments()
-{
-}
-
 void CodeFragments::executeAll(Type type)
 {
     CodeFragments *p = CodeFragments::head;

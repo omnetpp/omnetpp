@@ -86,7 +86,7 @@ public:
     virtual void refNode(osg::Node *node) = 0;
     virtual void unrefNode(osg::Node *node) = 0;
 
-    virtual ~IOsgViewerFactory() { }
+    virtual ~IOsgViewerFactory() {}
 };
 
 

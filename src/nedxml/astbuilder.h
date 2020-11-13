@@ -47,8 +47,8 @@ namespace nedxml {
  */
 class NEDXML_API ASTBuilder : public omnetpp::common::SaxHandler
 {
-    ASTNode *root;
-    ASTNode *current;
+    ASTNode *root = nullptr;
+    ASTNode *current = nullptr;
     const char *sourceFilename;
     ErrorStore *errors;
 

@@ -97,8 +97,8 @@ class COMMON_API BigDecimal
 
     /** @name Assignments */
     //@{
-    const BigDecimal& operator=(double d);
-    const BigDecimal& operator=(const BigDecimal& x) {intVal=x.intVal; scale=x.scale; return *this;}
+    BigDecimal& operator=(double d);
+    BigDecimal& operator=(const BigDecimal& x) = default;
     //@}
 
     /** @name Arithmetic operations */

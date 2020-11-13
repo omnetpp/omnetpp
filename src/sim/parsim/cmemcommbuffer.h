@@ -38,12 +38,12 @@ class SIM_API cMemCommBuffer : public cCommBufferBase
     /**
      * Constructor.
      */
-    cMemCommBuffer();
+    cMemCommBuffer() {}
 
     /**
      * Destructor.
      */
-    virtual ~cMemCommBuffer();
+    virtual ~cMemCommBuffer() {}
 
     /** @name Pack basic types */
     //@{

@@ -44,19 +44,19 @@ NEDXML_API void generateMsg(std::ostream& out, ASTNode *node);
 class NEDXML_API MsgGenerator
 {
   protected:
-    int indentSize;
-    std::ostream *outp;
+    int indentSize = 4;
+    std::ostream *outp = nullptr;
 
   public:
     /**
      * Constructor.
      */
-    MsgGenerator();
+    MsgGenerator() {}
 
     /**
      * Destructor.
      */
-    ~MsgGenerator();
+    ~MsgGenerator() {}
 
     /**
      * Sets the indent size in the generated MSG source code. Default is 4 spaces.

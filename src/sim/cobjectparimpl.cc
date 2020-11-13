@@ -23,13 +23,6 @@
 
 namespace omnetpp {
 
-cObjectParImpl::cObjectParImpl()
-{
-    obj = nullptr;
-    expr = nullptr;
-    expectedType = nullptr;
-}
-
 cObjectParImpl::~cObjectParImpl()
 {
     deleteExpression();

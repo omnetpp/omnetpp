@@ -31,15 +31,6 @@ namespace omnetpp {
 
 Register_Class(cISPEventLogger);
 
-cISPEventLogger::cISPEventLogger() : cNullMessageProtocol()
-{
-    fout = nullptr;
-}
-
-cISPEventLogger::~cISPEventLogger()
-{
-}
-
 void cISPEventLogger::startRun()
 {
     cNullMessageProtocol::startRun();

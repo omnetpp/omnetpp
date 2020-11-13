@@ -36,18 +36,11 @@ Register_Class(cPacket);
 
 cPacket::cPacket(const cPacket& pkt) : cMessage(pkt)
 {
-    encapsulatedPacket = nullptr;
-    shareCount = 0;
     copy(pkt);
 }
 
-cPacket::cPacket(const char *name, short k, int64_t l) : cMessage(name, k)
+cPacket::cPacket(const char *name, short k, int64_t l) : cMessage(name, k), bitLength(l)
 {
-    bitLength = l;
-    encapsulatedPacket = nullptr;
-    duration = SimTime::ZERO;
-    shareCount = 0;
-    remainingDuration = SimTime::ZERO;
 }
 
 cPacket::~cPacket()

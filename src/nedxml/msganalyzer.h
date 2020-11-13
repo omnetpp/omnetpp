@@ -79,7 +79,7 @@ class NEDXML_API MsgAnalyzer
 
   public:
     MsgAnalyzer(const MsgCompilerOptions& opts, MsgTypeTable *typeTable, ErrorStore *errors);
-    ~MsgAnalyzer();
+    ~MsgAnalyzer() {}
     ClassInfo extractClassInfo(ASTNode *node, const std::string& namespaceName, bool isImported); // accepts StructElement, ClassElement, MessageElement, PacketElement
     void ensureAnalyzed(ClassInfo& classInfo);
     void ensureFieldsAnalyzed(ClassInfo& classInfo);

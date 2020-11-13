@@ -49,9 +49,9 @@ class QTENV_API ModuleCanvasViewer : public QGraphicsView
     Q_OBJECT
 
 private:
-    cModule *object;
-    bool notDrawn;
-    bool needsRedraw;
+    cModule *object = nullptr;
+    bool notDrawn = false;
+    bool needsRedraw = false;
     CanvasRenderer *canvasRenderer;
     QRubberBand *rubberBand;
     QPoint rubberBandStartPos;

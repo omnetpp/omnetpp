@@ -68,26 +68,26 @@ class SIM_API cPrecollectionBasedDensityEst : public cAbstractHistogram
 
   protected:
     // we can precollect observations to automatically determine the range before histogram bins are set up
-    bool transformed;   // whether precollected values have been transformed into a histogram
-    double *precollectedValues;
-    double *precollectedWeights; // nullptr for unweighted
-    int numPrecollected;
+    bool transformed = false;   // whether precollected values have been transformed into a histogram
+    double *precollectedValues = nullptr;
+    double *precollectedWeights = nullptr; // nullptr for unweighted
+    int numPrecollected = 100;
 
     // range for distribution density collection
-    RangeMode rangeMode;
-    double rangeExtFactor;    // we extend the range of precollected values by rangeExtFactor
-    double rangeMin, rangeMax;
+    RangeMode rangeMode = RANGE_AUTO;
+    double rangeExtFactor = 2.0;    // we extend the range of precollected values by rangeExtFactor
+    double rangeMin = 0, rangeMax = 0;
     double finiteMinValue = NAN, finiteMaxValue = NAN;
 
     // variables for counting out-of-range observations
-    int64_t numFiniteUnderflows;
-    int64_t numFiniteOverflows;
-    int64_t numNegInfs;
-    int64_t numPosInfs;
-    double finiteUnderflowSumWeights;
-    double finiteOverflowSumWeights;
-    double negInfSumWeights;
-    double posInfSumWeights;
+    int64_t numFiniteUnderflows = 0;
+    int64_t numFiniteOverflows = 0;
+    int64_t numNegInfs = 0;
+    int64_t numPosInfs = 0;
+    double finiteUnderflowSumWeights = 0;
+    double finiteOverflowSumWeights = 0;
+    double negInfSumWeights = 0;
+    double posInfSumWeights = 0;
 
   private:
     void copy(const cPrecollectionBasedDensityEst& other);
@@ -103,7 +103,7 @@ class SIM_API cPrecollectionBasedDensityEst : public cAbstractHistogram
     /**
      * Copy constructor.
      */
-    cPrecollectionBasedDensityEst(const cPrecollectionBasedDensityEst& other) : cAbstractHistogram(other) {precollectedValues=nullptr; precollectedWeights=nullptr; copy(other);}
+    cPrecollectionBasedDensityEst(const cPrecollectionBasedDensityEst& other) : cAbstractHistogram(other) {copy(other);}
 
     /**
      * Constructor.

@@ -36,7 +36,7 @@ namespace scave {
 //=========================================================================
 
 IndexedVectorFileReader::IndexedVectorFileReader(const char *filename, bool includeEventNumbers, AdapterLambdaType adapterLambda)
-    : adapterLambda(adapterLambda), fname(filename), index(nullptr), includeEventNumbers(includeEventNumbers)
+    : adapterLambda(adapterLambda), fname(filename), includeEventNumbers(includeEventNumbers)
 {
     std::string ifname = IndexFileUtils::getIndexFileName(filename);
     IndexFileReader indexReader(ifname.c_str());

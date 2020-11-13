@@ -22,11 +22,6 @@
 namespace omnetpp {
 namespace envir {
 
-Speedometer::Speedometer()
-{
-    started = false;
-}
-
 void Speedometer::start(simtime_t t)
 {
     // begin 1st interval

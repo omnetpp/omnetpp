@@ -46,40 +46,40 @@ class COMMON_API FileReader
   private:
     // the file
     const std::string fileName;
-    FILE *file;
-    bool enableCheckFileForChanges;
-    bool enableIgnoreAppendChanges;
+    FILE *file = nullptr;
+    bool enableCheckFileForChanges = true;
+    bool enableIgnoreAppendChanges = true;
 
     // the buffer
-    const size_t bufferSize;
-    const char *bufferBegin;
-    const char *bufferEnd; // = buffer + bufferSize
-    const size_t maxLineSize;
+    const size_t bufferSize = 0;
+    const char *bufferBegin = nullptr;
+    const char *bufferEnd = nullptr; // = buffer + bufferSize
+    const size_t maxLineSize = 0;
 
     // file positions and size
-    file_offset_t bufferFileOffset;
-    int64_t fileSize;
+    file_offset_t bufferFileOffset = -1;
+    int64_t fileSize = -1;
 
     // the currently used (filled with data) region in buffer
-    char *dataBegin; // must point between bufferBegin and bufferEnd
-    char *dataEnd; // must point between bufferBegin and bufferEnd
+    char *dataBegin = nullptr; // must point between bufferBegin and bufferEnd
+    char *dataEnd = nullptr; // must point between bufferBegin and bufferEnd
 
     // the very end of the file as currently known
-    int lastSavedSize;
-    char* lastSavedBufferBegin;
+    int lastSavedSize = -1;
+    char* lastSavedBufferBegin = nullptr;
 
     // the position where readNextLine() or readPreviousLine() starts from
-    char *currentDataPointer; // must point between dataBegin and dataEnd when used
+    char *currentDataPointer = nullptr; // must point between dataBegin and dataEnd when used
 
     // the pointer returned by readNextLine() or readPreviousLine()
-    file_offset_t currentLineStartOffset;
-    file_offset_t currentLineEndOffset;
+    file_offset_t currentLineStartOffset = -1;
+    file_offset_t currentLineEndOffset = -1;
 
     // total number of lines read in so far
-    int64_t numReadLines;
+    int64_t numReadLines = 0;
 
     // total bytes read in so far
-    int64_t numReadBytes;
+    int64_t numReadBytes = 0;
 
   public:
     enum FileChangedState {

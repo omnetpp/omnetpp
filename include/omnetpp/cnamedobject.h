@@ -35,10 +35,10 @@ namespace omnetpp {
 class SIM_API cNamedObject : public cObject
 {
   private:
-    const char *name;  // object name (stringpooled if flags&FL_NAMEPOOLING!=0)
+    const char *name = nullptr;  // object name (stringpooled if flags&FL_NAMEPOOLING!=0)
 
   protected:
-    uint32_t flags;  // FL_NAMEPOOLING flag; other bits used by derived classes
+    uint32_t flags = FL_NAMEPOOLING;  // FL_NAMEPOOLING flag; other bits used by derived classes
     enum {FL_NAMEPOOLING = 1};
 
   private:
@@ -59,7 +59,7 @@ class SIM_API cNamedObject : public cObject
     /**
      * Create object without a name.
      */
-    cNamedObject();
+    cNamedObject() {}
 
     /**
      * Create object with given name. Name pooling is an optimization feature.

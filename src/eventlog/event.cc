@@ -26,9 +26,8 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace eventlog {
 
-Event::Event(EventLog *eventLog)
+Event::Event(EventLog *eventLog): eventLog(eventLog)
 {
-    this->eventLog = eventLog;
     clearInternalState();
 }
 

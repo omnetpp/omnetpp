@@ -48,7 +48,7 @@ class ENVIR_API XMLDocCache : public cObject
     /**
      * Constructor
      */
-    XMLDocCache();
+    XMLDocCache() {}
 
     /**
      * Destructor

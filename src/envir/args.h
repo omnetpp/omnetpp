@@ -35,8 +35,8 @@ namespace envir {
 class ENVIR_API ArgList
 {
   private:
-    int argc;
-    char **argv;
+    int argc = 0;
+    char **argv = nullptr;
     std::string spec;
 
     std::map<char,std::vector<std::string> > shortOpts;
@@ -61,9 +61,9 @@ class ENVIR_API ArgList
 
   public:
     /**
-     * Ctor
+     * Constructor
      */
-    ArgList();
+    ArgList() {}
 
     /**
      * Takes argc, argv, and a getopt()-like specification

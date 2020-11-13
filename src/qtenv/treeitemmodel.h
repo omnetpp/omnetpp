@@ -34,7 +34,7 @@ class QTENV_API TreeItemModel : public QAbstractItemModel
 {
     Q_OBJECT
 
-    cObject *rootNode;
+    cObject *rootNode = nullptr;
 
     int findObjectInParent(cObject *obj, cObject *parent) const;
 

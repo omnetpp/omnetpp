@@ -74,7 +74,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
         PatternMatcher *fullPathPattern; // when present, match against this instead of ownerPattern & suffixPattern
 
         MatchableEntry(const Entry& e) : Entry(e) {ownerPattern = suffixPattern = fullPathPattern = nullptr;}
-        MatchableEntry(const MatchableEntry& e);
+        MatchableEntry(const MatchableEntry& e);   // apparently only used for std::vector storage
         ~MatchableEntry();
     };
 
@@ -125,7 +125,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
 
   private:
     // input data
-    cConfigurationReader *ini;
+    cConfigurationReader *ini = nullptr;
     std::vector<Entry> commandLineOptions;
 
     // section inheritance chains, computed from the input data
@@ -134,7 +134,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     // THE ACTIVE CONFIGURATION:
 
     std::string activeConfig;
-    int activeRunNumber;
+    int activeRunNumber = 0;
     std::string runId;
 
     StringSet basedirs;  // stores ini file locations (absolute paths)
@@ -184,7 +184,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     virtual bool isEssentialOption(const char *key) const;
 
   public:
-    SectionBasedConfiguration();
+    SectionBasedConfiguration() {}
     virtual ~SectionBasedConfiguration();
 
     /**

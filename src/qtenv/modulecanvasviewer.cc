@@ -56,10 +56,7 @@ using namespace omnetpp::layout;
 namespace omnetpp {
 namespace qtenv {
 
-ModuleCanvasViewer::ModuleCanvasViewer() :
-    object(nullptr),
-    notDrawn(false),
-    needsRedraw(false)
+ModuleCanvasViewer::ModuleCanvasViewer()
 {
     setFont(getQtenv()->getCanvasFont());
 

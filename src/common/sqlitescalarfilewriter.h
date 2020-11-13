@@ -37,20 +37,21 @@ class COMMON_API SqliteScalarFileWriter
     typedef std::vector<std::pair<std::string, std::string>> OrderedKeyValueList;
 
   protected:
-    std::string fname;   // output file name
-    sqlite_int64 runId;  // runId in sqlite database
-    sqlite3 *db;         // sqlite database, nullptr before initialization and after error
-    sqlite3_stmt *stmt;
-    sqlite3_stmt *add_scalar_stmt;
-    sqlite3_stmt *add_scalar_attr_stmt;
-    sqlite3_stmt *add_statistic_stmt;
-    sqlite3_stmt *add_statistic_attr_stmt;
-    sqlite3_stmt *add_statistic_bin_stmt;
-    sqlite3_stmt *add_parameter_stmt;
-    sqlite3_stmt *add_parameter_attr_stmt;
+    std::string fname;        // output file name
+    sqlite_int64 runId = -1;  // runId in sqlite database
+    sqlite3 *db = nullptr;    // sqlite database, nullptr before initialization and after error
+    sqlite3_stmt *stmt = nullptr;
+    sqlite3_stmt *add_scalar_stmt = nullptr;
+    sqlite3_stmt *add_scalar_attr_stmt = nullptr;
+    sqlite3_stmt *add_statistic_stmt = nullptr;
+    sqlite3_stmt *add_statistic_attr_stmt = nullptr;
+    sqlite3_stmt *add_statistic_bin_stmt = nullptr;
+    sqlite3_stmt *add_parameter_stmt = nullptr;
+    sqlite3_stmt *add_parameter_attr_stmt = nullptr;
 
-    int commitFreq=100000; // we COMMIT after every commitFreq INSERT statements
-    int insertCount;
+    // we COMMIT after every commitFreq INSERT statements
+    int commitFreq = 0;
+    int insertCount = 0;
 
   protected:
     void prepareStatements();
@@ -70,7 +71,7 @@ class COMMON_API SqliteScalarFileWriter
     void error(const char *errmsg);
 
   public:
-    SqliteScalarFileWriter();
+    SqliteScalarFileWriter() {}
     virtual ~SqliteScalarFileWriter();
 
     void setCommitFreq(int f) {commitFreq = f;}

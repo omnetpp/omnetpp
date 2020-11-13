@@ -66,7 +66,7 @@ class NEDXML_API NedCrossValidator : public NedValidatorBase
     NedCrossValidator(NedResourceCache *resolver, ErrorStore *e);
 
     /** Destructor */
-    virtual ~NedCrossValidator();
+    virtual ~NedCrossValidator() {}
 
   protected:
     /** @name Validator methods */

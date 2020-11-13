@@ -31,21 +31,6 @@ namespace common {
  *  - with adding the index up front, total time is worse than with adding index after
  */
 
-SqliteVectorFileWriter::SqliteVectorFileWriter()
-{
-    runId = -1;
-    db = nullptr;
-    stmt = nullptr;
-
-    add_vector_stmt = nullptr;
-    add_vector_attr_stmt = nullptr;
-    add_vector_data_stmt = nullptr;
-    update_vector_stmt = nullptr;
-
-    bufferedSamplesLimit = 0;
-    bufferedSamples = 0;
-}
-
 SqliteVectorFileWriter::~SqliteVectorFileWriter()
 {
     cleanup(); // not close() because it throws; also, close() must have been called already if there was no error

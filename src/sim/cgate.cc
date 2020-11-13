@@ -71,10 +71,8 @@ static StringPool gateFullnamePool;
 
 int cGate::lastConnectionId = -1;
 
-cGate::Name::Name(const char *name, Type type)
+cGate::Name::Name(const char *name, Type type) : name(name), type(type)
 {
-    this->name = name;
-    this->type = type;
     if (type == cGate::INOUT) {
         namei = opp_concat(name, "$i");
         nameo = opp_concat(name, "$o");
@@ -90,15 +88,6 @@ bool cGate::Name::operator<(const Name& other) const
         return false;
     else
         return type < other.type;
-}
-
-cGate::cGate()
-{
-    desc = nullptr;
-    pos = 0;
-    prevGate = nextGate = nullptr;
-    channel = nullptr;
-    connectionId = -1;
 }
 
 cGate::~cGate()

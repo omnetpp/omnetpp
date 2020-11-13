@@ -182,7 +182,7 @@ void SimTime::split(SimTimeUnit unit, int64_t& outValue, SimTime& outRemainder) 
     outRemainder = *this - SimTime(outValue, unit);
 }
 
-const SimTime& SimTime::operator=(const cPar& p)
+SimTime& SimTime::operator=(const cPar& p)
 {
     switch (p.getType()) {
         case cPar::INT: return operator=(p.intValue());

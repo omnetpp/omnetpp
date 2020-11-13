@@ -27,8 +27,8 @@
 namespace omnetpp {
 namespace qtenv {
 
-CanvasViewer::CanvasViewer() :
-    object(nullptr)
+CanvasViewer::CanvasViewer() 
+    
 {
     figureLayer = new GraphicsLayer();
     zoomLabelLayer = new GraphicsLayer();

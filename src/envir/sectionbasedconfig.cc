@@ -85,12 +85,12 @@ static struct ConfigVarDescription { const char *name, *description; } configVar
 
 std::string SectionBasedConfiguration::Entry::nullBasedir;
 
-SectionBasedConfiguration::MatchableEntry::MatchableEntry(const MatchableEntry& e) : Entry(e)
+SectionBasedConfiguration::MatchableEntry::MatchableEntry(const MatchableEntry& e) :
+    Entry(e),
+    ownerPattern(e.ownerPattern ? new PatternMatcher(*e.ownerPattern) : nullptr),
+    suffixPattern(e.suffixPattern ? new PatternMatcher(*e.suffixPattern) : nullptr),
+    fullPathPattern(e.fullPathPattern ? new PatternMatcher(*e.fullPathPattern) : nullptr)
 {
-    // apparently only used for std::vector storage
-    ownerPattern = e.ownerPattern ? new PatternMatcher(*e.ownerPattern) : nullptr;
-    suffixPattern = e.suffixPattern ? new PatternMatcher(*e.suffixPattern) : nullptr;
-    fullPathPattern = e.fullPathPattern ? new PatternMatcher(*e.fullPathPattern) : nullptr;
 }
 
 SectionBasedConfiguration::MatchableEntry::~MatchableEntry()
@@ -101,12 +101,6 @@ SectionBasedConfiguration::MatchableEntry::~MatchableEntry()
 }
 
 //----
-
-SectionBasedConfiguration::SectionBasedConfiguration()
-{
-    ini = nullptr;
-    activeRunNumber = 0;
-}
 
 SectionBasedConfiguration::~SectionBasedConfiguration()
 {

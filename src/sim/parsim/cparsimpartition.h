@@ -62,9 +62,9 @@ struct SendOptions;
 class SIM_API cParsimPartition : public cObject, public cISimulationLifecycleListener
 {
   protected:
-    cSimulation *sim;
-    cParsimCommunications *comm;
-    cParsimSynchronizer *synch;
+    cSimulation *sim = nullptr;
+    cParsimCommunications *comm = nullptr;
+    cParsimSynchronizer *synch = nullptr;
     bool debug;
 
   protected:
@@ -86,7 +86,7 @@ class SIM_API cParsimPartition : public cObject, public cISimulationLifecycleLis
     /**
      * Virtual destructor.
      */
-    virtual ~cParsimPartition();
+    virtual ~cParsimPartition() {}
 
     /**
      * Pass cParsimPartition the objects it has to cooperate with.

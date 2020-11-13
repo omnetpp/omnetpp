@@ -212,20 +212,10 @@ std::string ValueIterator::Item::getValueAsString(int k) const
     return "";
 }
 
-ValueIterator::ValueIterator()
-{
-    pos = itemIndex = k = 0;
-}
-
 ValueIterator::ValueIterator(const char *s)
 {
     Assert(s);
-    pos = itemIndex = k = 0;
     parse(s);
-}
-
-ValueIterator::~ValueIterator()
-{
 }
 
 void ValueIterator::parse(const char *s)

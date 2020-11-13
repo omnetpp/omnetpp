@@ -41,11 +41,9 @@ namespace omnetpp {
 static char buffer[BUFLEN];
 static char buffer2[BUFLEN];
 
-cException::cException() : std::exception()
+cException::cException() : std::exception(), errorCode(E_CUSTOM), msg("n/a")
 {
-    errorCode = E_CUSTOM;
     storeContext();
-    msg = "n/a";
 }
 
 cException::cException(ErrorCodeInt errorcode...) : std::exception()
@@ -78,22 +76,6 @@ cException::cException(const cObject *where, const char *msgformat...) : std::ex
     va_start(va, msgformat);
     init(where, E_CUSTOM, msgformat, va);
     va_end(va);
-}
-
-cException::cException(const cException& e) : std::exception(e)
-{
-    errorCode = e.errorCode;
-    msg = e.msg;
-
-    simulationStage = e.simulationStage;
-    eventNumber = e.eventNumber;
-    simtime = e.simtime;
-
-    hasContext_ = e.hasContext_;
-    contextClassName = e.contextClassName;
-    contextFullPath = e.contextFullPath;
-    contextComponentId = e.contextComponentId;
-    contextComponentKind = e.contextComponentKind;
 }
 
 void cException::storeContext()

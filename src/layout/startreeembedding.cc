@@ -21,10 +21,9 @@ namespace layout {
 
 using omnetpp::common::POSITIVE_INFINITY;
 
-StarTreeEmbedding::StarTreeEmbedding(GraphComponent *graphComponent, double vertexSpacing)
+StarTreeEmbedding::StarTreeEmbedding(GraphComponent *graphComponent, double vertexSpacing) :
+    vertexSpacing(vertexSpacing), graphComponent(graphComponent)
 {
-    this->graphComponent = graphComponent;
-    this->vertexSpacing = vertexSpacing;
 }
 
 void StarTreeEmbedding::embed()

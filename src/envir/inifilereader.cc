@@ -30,14 +30,6 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace envir {
 
-InifileReader::InifileReader()
-{
-}
-
-InifileReader::~InifileReader()
-{
-}
-
 void InifileReader::initializeFrom(cConfiguration *bootConfig)
 {
     throw cRuntimeError("InifileReader: initializeFrom() method not supported");

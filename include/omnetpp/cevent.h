@@ -47,12 +47,13 @@ class SIM_API cEvent : public cOwnedObject
 {
     friend class cMessage;     // getArrivalTime()
     friend class cEventHeap;   // heapIndex
+
   private:
-    simtime_t arrivalTime;     // time of delivery -- set internally
-    short priority;            // priority -- used for scheduling events with equal arrival times
-    int heapIndex;             // used by cEventHeap (-1 if not on heap; all other values, including negative ones, means "on the heap")
-    eventnumber_t insertOrder; // used by the FES to keep order of events with equal time and priority
-    eventnumber_t previousEventNumber; // most recent event number when envir was notified about this event object (e.g. creating/cloning/sending/scheduling/deleting of this event object)
+    simtime_t arrivalTime;  // time of delivery -- set internally
+    short priority = 0;     // priority -- used for scheduling events with equal arrival times
+    int heapIndex = -1;     // used by cEventHeap (-1 if not on heap; all other values, including negative ones, means "on the heap")
+    eventnumber_t insertOrder = -1; // used by the FES to keep order of events with equal time and priority
+    eventnumber_t previousEventNumber = -1; // most recent event number when envir was notified about this event object (e.g. creating/cloning/sending/scheduling/deleting of this event object)
 
   public:
     // internal: returns the event number which scheduled this event object, or the event
@@ -83,17 +84,17 @@ class SIM_API cEvent : public cOwnedObject
     /**
      * Copy constructor.
      */
-    cEvent(const cEvent& event);
+    cEvent(const cEvent& event) : cOwnedObject(event) {operator=(event);}
 
     /**
      * Constructor.
      */
-    explicit cEvent(const char *name);
+    explicit cEvent(const char *name) : cOwnedObject(name, false) {}  // note: name pooling is off by default, as unique message names are quite common
 
     /**
      * Destructor.
      */
-    virtual ~cEvent();
+    virtual ~cEvent() {}
 
     /**
      * Assignment operator. The name member is not copied;

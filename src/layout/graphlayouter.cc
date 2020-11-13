@@ -22,10 +22,8 @@ namespace layout {
 
 using omnetpp::common::opp_runtime_error;
 
-BasicGraphLayouterEnvironment::BasicGraphLayouterEnvironment()
+BasicGraphLayouterEnvironment::BasicGraphLayouterEnvironment() : startTime(time(nullptr))
 {
-    timeout = 0;
-    startTime = time(nullptr);
 }
 
 bool BasicGraphLayouterEnvironment::okToProceed()
@@ -58,12 +56,6 @@ double BasicGraphLayouterEnvironment::getDoubleParameter(const char *name, int i
 }
 
 //-------------------------------
-
-GraphLayouter::GraphLayouter()
-{
-    width = height = border = 0;
-    environment = nullptr;
-}
 
 void GraphLayouter::setSize(double w, double h, double bd)
 {

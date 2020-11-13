@@ -31,14 +31,6 @@
 
 namespace omnetpp {
 
-cParsimProtocolBase::cParsimProtocolBase() : cParsimSynchronizer()
-{
-}
-
-cParsimProtocolBase::~cParsimProtocolBase()
-{
-}
-
 SendOptions cParsimProtocolBase::unpackOptions(cCommBuffer *buffer)
 {
     SendOptions options;

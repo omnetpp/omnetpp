@@ -39,8 +39,8 @@ class SIM_API cRegistrationList : public cNamedObject, noncopyable
   private:
     typedef std::map<std::string, cOwnedObject*> StringObjectMap;
     std::vector<cOwnedObject *> vec;  // for fast iteration
-    StringObjectMap nameMap;   // for lookup by getName()
-    StringObjectMap fullnameMap;  // for lookup by getFullName()
+    StringObjectMap nameMap;          // for lookup by getName()
+    StringObjectMap fullnameMap;      // for lookup by getFullName()
 
   public:
     typedef std::vector<cOwnedObject *>::iterator iterator;
@@ -115,10 +115,10 @@ class SIM_API cRegistrationList : public cNamedObject, noncopyable
 class SIM_API cGlobalRegistrationList
 {
   private:
-    cRegistrationList *inst;
-    const char *tmpname;
+    cRegistrationList *inst = nullptr;
+    const char *tmpname = nullptr;
   public:
-    cGlobalRegistrationList();
+    cGlobalRegistrationList() {}
     cGlobalRegistrationList(const char *name);
     ~cGlobalRegistrationList();
     cRegistrationList *getInstance();

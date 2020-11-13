@@ -35,14 +35,6 @@ namespace omnetpp {
 
 Register_Class(cNoSynchronization);
 
-cNoSynchronization::cNoSynchronization() : cParsimProtocolBase()
-{
-}
-
-cNoSynchronization::~cNoSynchronization()
-{
-}
-
 void cNoSynchronization::startRun()
 {
 }

@@ -27,9 +27,8 @@ using namespace omnetpp::common;
 
 namespace omnetpp {
 
-MiniXPath::MiniXPath(cXMLElement::ParamResolver *resolver)
+MiniXPath::MiniXPath(cXMLElement::ParamResolver *resolver) : resolver(resolver)
 {
-    this->resolver = resolver;
 }
 
 inline void trim(const char *& s, const char *& end)

@@ -39,8 +39,9 @@ FileChangedError::FileChangedError(FileReader::FileChangedState change, const ch
     errormsg = buf;
 }
 
-FileReader::FileReader(const char *fileName, size_t bufferSize)
-    : fileName(fileName), bufferSize(bufferSize),
+FileReader::FileReader(const char *fileName, size_t bufferSize) :
+    fileName(fileName),
+    bufferSize(bufferSize),
     bufferBegin(new char[bufferSize]),
     bufferEnd(bufferBegin + bufferSize),
     maxLineSize(bufferSize / 2),
@@ -49,19 +50,6 @@ FileReader::FileReader(const char *fileName, size_t bufferSize)
 #ifdef TRACE_FILEREADER
     TRACE_CALL("FileReader::FileReader(%s, %d)", fileName, bufferSize);
 #endif
-    lastSavedSize = -1;
-    file = nullptr;
-    fileSize = -1;
-    bufferFileOffset = -1;
-    enableCheckFileForChanges = true;
-    enableIgnoreAppendChanges = true;
-    numReadLines = 0;
-    numReadBytes = 0;
-    dataBegin = nullptr;
-    dataEnd = nullptr;
-    currentDataPointer = nullptr;
-    currentLineStartOffset = -1;
-    currentLineEndOffset = -1;
 }
 
 FileReader::~FileReader()

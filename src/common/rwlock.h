@@ -58,8 +58,8 @@ class COMMON_API ReentrantReadWriteLock : public IReadWriteLock
     private:
         struct ThreadLocalState
         {
-            int readLockCount;
-            ThreadLocalState() :readLockCount(0) {}
+            int readLockCount = 0;
+            ThreadLocalState() {}
         };
 
         pthread_rwlock_t rwlock;

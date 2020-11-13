@@ -124,20 +124,20 @@ class SIM_API cGate : public cObject, noncopyable
     };
 
   protected:
-    Desc *desc; // descriptor of the gate or gate vector, stored in cModule
-    int pos;    // b0: input(0) or output(1); b1: deliverOnReceptionStart bit;
-                // rest (pos>>2): array index, or -1 if scalar gate
+    Desc *desc = nullptr; // descriptor of the gate or gate vector, stored in cModule
+    int pos = 0;          // b0: input(0) or output(1); b1: deliverOnReceptionStart bit;
+                          // rest (pos>>2): array index, or -1 if scalar gate
 
-    int connectionId;   // uniquely identifies the connection between *this and *nextgatep; -1 if unconnected
-    cChannel *channel;  // channel object (if exists)
-    cGate *prevGate;    // previous and next gate in the path
-    cGate *nextGate;
+    int connectionId = -1;       // uniquely identifies the connection between *this and *nextgatep; -1 if unconnected
+    cChannel *channel = nullptr; // channel object (if exists)
+    cGate *prevGate = nullptr;   // previous and next gate in the path
+    cGate *nextGate = nullptr;
 
     static int lastConnectionId;
 
   protected:
     // internal: constructor is protected because only cModule is allowed to create instances
-    explicit cGate();
+    explicit cGate() {}
 
     // also protected: only cModule is allowed to delete gates
     virtual ~cGate();

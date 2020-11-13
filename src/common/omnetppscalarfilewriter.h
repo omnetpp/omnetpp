@@ -49,7 +49,7 @@ class COMMON_API OmnetppScalarFileWriter
     void writeBin(double lowerEdge, double value);
 
   public:
-    OmnetppScalarFileWriter();
+    OmnetppScalarFileWriter() {}
     virtual ~OmnetppScalarFileWriter();
 
     void open(const char *filename); // append if file exists

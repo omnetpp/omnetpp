@@ -42,19 +42,13 @@ Register_Class(cPSquare);
 
 cPSquare::cPSquare(const cPSquare& r) : cAbstractHistogram(r)
 {
-    n = nullptr;
-    q = nullptr;
     copy(r);
 }
 
-cPSquare::cPSquare(const char *name, int bins) : cAbstractHistogram(name)
+cPSquare::cPSquare(const char *name, int bins) : cAbstractHistogram(name), numBins(bins)
 {
-    numBins = bins;
-    numObs = 0;
     n = new int[numBins+2];
     q = new double[numBins+2];
-    numNegInfs = numPosInfs = 0;
-
     for (int i = 0; i <= numBins+1; i++) {
         n[i] = i;
         q[i] = -DBL_MAX;

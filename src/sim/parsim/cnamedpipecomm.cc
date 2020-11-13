@@ -72,9 +72,6 @@ struct PipeHeader
 cNamedPipeCommunications::cNamedPipeCommunications()
 {
     prefix = getEnvir()->getConfig()->getAsString(CFGID_PARSIM_NAMEDPIPECOMM_PREFIX);
-    rpipes = nullptr;
-    wpipes = nullptr;
-    rrBase = 0;
 }
 
 cNamedPipeCommunications::~cNamedPipeCommunications()

@@ -57,15 +57,15 @@ class EVENTLOG_API EventLogIndex
         class CacheEntry
         {
             public:
-                simtime_t simulationTime;
-                eventnumber_t beginEventNumber; // begin event with simulation time
-                eventnumber_t endEventNumber; // end event with simulation time
-                file_offset_t beginOffset; // begin offset of begin event
-                file_offset_t endEventBeginOffset; // begin offset of end event
-                file_offset_t endOffset; // end offset of end event
+                simtime_t simulationTime = simtime_t(-1.0);
+                eventnumber_t beginEventNumber = -1; // begin event with simulation time
+                eventnumber_t endEventNumber = -1; // end event with simulation time
+                file_offset_t beginOffset = -1; // begin offset of begin event
+                file_offset_t endEventBeginOffset = -1; // begin offset of end event
+                file_offset_t endOffset = -1; // end offset of end event
 
             public:
-                CacheEntry();
+                CacheEntry() {}
                 CacheEntry(eventnumber_t eventNumber, simtime_t simulationTime, file_offset_t beginOffset, file_offset_t endOffset);
                 void include(eventnumber_t eventNumber, simtime_t simulationTime, file_offset_t beginOffset, file_offset_t endOffset);
                 void getBeginKey(eventnumber_t &key);

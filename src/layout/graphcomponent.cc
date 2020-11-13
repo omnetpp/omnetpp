@@ -20,33 +20,12 @@
 namespace omnetpp {
 namespace layout {
 
-Vertex::Vertex(Pt pt, Rs rs, void *identity)
+Vertex::Vertex(Pt pt, Rs rs, void *identity) : rc(pt, rs), identity(identity)
 {
-    this->rc = Rc(pt, rs);
-    this->identity = identity;
-
-    color = 0;
-    connectedSubComponent = nullptr;
-    spanningTreeParent = nullptr;
-    starTreeCenter = Pt::getNil();
-    starTreeCircleCenter = Pt::getNil();
-    starTreeRadius = -1;
 }
 
-Edge::Edge(Vertex *source, Vertex *target, void *identity)
+Edge::Edge(Vertex *source, Vertex *target, void *identity) : source(source), target(target), identity(identity)
 {
-    this->source = source;
-    this->target = target;
-    this->identity = identity;
-
-    color = 0;
-    connectedSubComponent = nullptr;
-}
-
-GraphComponent::GraphComponent()
-{
-    owner = true;
-    spanningTreeRoot = nullptr;
 }
 
 GraphComponent::~GraphComponent()

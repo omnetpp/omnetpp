@@ -121,7 +121,7 @@ class SIM_API cException : public std::exception
      * Copy constructor. We unfortunately need to copy exception objects when
      * handing them back from an activity() method.
      */
-    cException(const cException&);
+    cException(const cException&) = default;
 
     /**
      * Creates and returns an exact copy of this object. We unfortunately need
@@ -255,7 +255,7 @@ class SIM_API cTerminationException : public cException
      * Copy constructor. We unfortunately need to copy exception objects
      * when handing them back from an activity() method.
      */
-    cTerminationException(const cTerminationException& e) : cException(e) {}
+    cTerminationException(const cTerminationException& e)  = default;
 
     /**
      * Creates and returns an exact copy of this object. We unfortunately need
@@ -353,7 +353,7 @@ class SIM_API cDeleteModuleException : public cException
      * Copy constructor. We unfortunately need to copy exception objects when
      * handing them back from an activity() method.
      */
-    cDeleteModuleException(const cDeleteModuleException& e) : cException(e), toDelete(e.toDelete) {}
+    cDeleteModuleException(const cDeleteModuleException& e)  = default;
 
     /**
      * Creates and returns an exact copy of this object. We unfortunately need to copy
@@ -393,7 +393,7 @@ class SIM_API cStackCleanupException : public cException
      * Copy constructor. We unfortunately need to copy exception objects when
      * handing them back from an activity() method.
      */
-    cStackCleanupException(const cStackCleanupException& e) : cException(e) {}
+    cStackCleanupException(const cStackCleanupException& e)  = default;
 
     /**
      * Creates and returns an exact copy of this object. We unfortunately need to

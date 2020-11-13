@@ -39,7 +39,7 @@ class ENVIR_API MatchableObjectAdapter : public omnetpp::common::MatchExpression
   protected:
     DefaultAttribute attr;
     cObject *obj;
-    mutable cClassDescriptor *desc;
+    mutable cClassDescriptor *desc = nullptr;
     mutable std::string tmp;
   protected:
     static void splitIndex(char *indexedName, int& index);

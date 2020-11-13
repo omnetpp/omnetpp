@@ -33,14 +33,6 @@
 
 namespace omnetpp {
 
-cPlaceholderModule::cPlaceholderModule()
-{
-}
-
-cPlaceholderModule::~cPlaceholderModule()
-{
-}
-
 std::string cPlaceholderModule::str() const
 {
     std::stringstream out;

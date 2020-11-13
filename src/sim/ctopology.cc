@@ -62,7 +62,6 @@ cTopology::LinkOut *cTopology::Node::getLinkOut(int i)
 
 cTopology::cTopology(const char *name) : cOwnedObject(name)
 {
-    target = nullptr;
 }
 
 cTopology::cTopology(const cTopology& topo) : cOwnedObject(topo)

@@ -46,12 +46,12 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         double approximateMatchingEventRatio;
 
         // event parameters
-        eventnumber_t firstConsideredEventNumber; // the first event to be considered by the filter or -1
-        eventnumber_t lastConsideredEventNumber; // the last event to be considered by the filter or -1
+        eventnumber_t firstConsideredEventNumber = -1; // the first event to be considered by the filter or -1
+        eventnumber_t lastConsideredEventNumber = -1; // the last event to be considered by the filter or -1
         std::set<eventnumber_t> excludedEventNumbers;
 
         // module filter
-        bool enableModuleFilter;
+        bool enableModuleFilter = false;
         MatchExpression moduleExpression;
         std::vector<PatternMatcher> moduleNames;
         std::vector<PatternMatcher> moduleClassNames;
@@ -59,7 +59,7 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         std::vector<int> moduleIds; // events outside these modules will be filtered out, nullptr means include all
 
         // message filter
-        bool enableMessageFilter;
+        bool enableMessageFilter = false;
         MatchExpression messageExpression;
         std::vector<PatternMatcher> messageNames;
         std::vector<PatternMatcher> messageClassNames;
@@ -69,20 +69,20 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         std::vector<long> messageEncapsulationTreeIds;
 
         // trace filter
-        eventnumber_t tracedEventNumber; // the event number from which causes and consequences are followed or -1
-        bool traceCauses; // only when tracedEventNumber is given, includes events which cause the traced event even if through a chain of filtered events
-        bool traceConsequences; // only when tracedEventNumber is given
-        bool traceMessageReuses;
-        bool traceSelfMessages;
+        eventnumber_t tracedEventNumber = -1; // the event number from which causes and consequences are followed or -1
+        bool traceCauses = true; // only when tracedEventNumber is given, includes events which cause the traced event even if through a chain of filtered events
+        bool traceConsequences = true; // only when tracedEventNumber is given
+        bool traceMessageReuses = true;
+        bool traceSelfMessages = true;
 
         // collection limits
-        bool collectMessageReuses; // if false message reuse dependencies will not be collected
-        int maximumCauseDepth; // maximum depth of message dependencies considered when collecting causes
-        int maximumNumberOfCauses; // maximum number of message dependencies collected for a single event
-        int maximumCauseCollectionTime; // in milliseconds
-        int maximumConsequenceDepth; // maximum depth of message dependencies considered when collecting consequences
-        int maximumNumberOfConsequences; // maximum number of message dependencies collected for a single event
-        int maximumConsequenceCollectionTime; // in milliseconds
+        bool collectMessageReuses = true; // if false message reuse dependencies will not be collected
+        int maximumCauseDepth = 15; // maximum depth of message dependencies considered when collecting causes
+        int maximumNumberOfCauses = 5; // maximum number of message dependencies collected for a single event
+        int maximumCauseCollectionTime = 100; // in milliseconds
+        int maximumConsequenceDepth = 15; // maximum depth of message dependencies considered when collecting consequences
+        int maximumNumberOfConsequences = 5; // maximum number of message dependencies collected for a single event
+        int maximumConsequenceCollectionTime = 100; // in milliseconds
 
         // internal state
         typedef std::map<eventnumber_t, FilteredEvent *> EventNumberToFilteredEventMap;

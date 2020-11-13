@@ -54,7 +54,7 @@ public:
 private:
     Ui::fileEditor *ui;
     QFile file;
-    QMenu *contextMenu;
+    QMenu *contextMenu = nullptr;
 
     QAction *wrapLinesAction;
     QAction *copySelectionAction;
@@ -63,7 +63,7 @@ private:
     QAction *saveAction;
 
     QString searchString;
-    int findOptions;
+    int findOptions = 0;
 
     void addToolBar();
 };

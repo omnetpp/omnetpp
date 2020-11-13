@@ -23,37 +23,13 @@
 namespace omnetpp {
 namespace common {
 
-DisplayString::DisplayString()
+DisplayString::DisplayString(const char *displaystr) : assembledString(opp_strdup(displaystr))
 {
-    assembledString = nullptr;
-    buffer = nullptr;
-    bufferEnd = nullptr;
-    tags = nullptr;
-    numTags = 0;
-    assembledStringValid = false;
-}
-
-DisplayString::DisplayString(const char *displaystr)
-{
-    assembledString = opp_strdup(displaystr);
-    buffer = nullptr;
-    bufferEnd = nullptr;
-    tags = nullptr;
-    numTags = 0;
-    assembledStringValid = false;
-
     parse();
 }
 
 DisplayString::DisplayString(const DisplayString& ds)
 {
-    assembledString = nullptr;
-    buffer = nullptr;
-    bufferEnd = nullptr;
-    tags = nullptr;
-    numTags = 0;
-    assembledStringValid = false;
-
     copy(ds);
 }
 

@@ -38,9 +38,9 @@ class SIM_API cObjectParImpl : public cParImpl
 {
   protected:
     // selector: flags & FL_ISEXPR
-    cExpression *expr;
-    mutable cObject *obj; // stores the result of the last evaluation
-    const char *expectedType; // value of the @class property or nullptr; stringpooled
+    cExpression *expr = nullptr;
+    mutable cObject *obj = nullptr; // stores the result of the last evaluation
+    const char *expectedType = nullptr; // value of the @class property or nullptr; stringpooled
 
   private:
     void copy(const cObjectParImpl& other);
@@ -58,7 +58,7 @@ class SIM_API cObjectParImpl : public cParImpl
     /**
      * Constructor.
      */
-    explicit cObjectParImpl();
+    explicit cObjectParImpl() {}
 
     /**
      * Copy constructor.

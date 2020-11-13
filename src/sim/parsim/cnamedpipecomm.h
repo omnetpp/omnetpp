@@ -62,10 +62,10 @@ class SIM_API cNamedPipeCommunications : public cParsimCommunications
 
     // pipes
     opp_string prefix;
-    PIPE *rpipes;
-    PIPE *wpipes;
+    PIPE *rpipes = nullptr;
+    PIPE *wpipes = nullptr;
     int maxFdPlus1;
-    int rrBase;
+    int rrBase = 0;
 
     // reordering buffer needed because of tag filtering support (filtTag)
     struct ReceivedBuffer {int receivedTag; int sourceProcId; cMemCommBuffer *buffer;};

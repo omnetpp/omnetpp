@@ -23,12 +23,6 @@
 
 namespace omnetpp {
 
-cXMLParImpl::cXMLParImpl()
-{
-    val = nullptr;
-    expr = nullptr;
-}
-
 cXMLParImpl::~cXMLParImpl()
 {
     deleteOld();

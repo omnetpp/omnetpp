@@ -46,10 +46,6 @@ OsgCanvasInspector::OsgCanvasInspector(QWidget *parent, bool isTopLevel, Inspect
     setLayout(grid);
 }
 
-OsgCanvasInspector::~OsgCanvasInspector()
-{
-}
-
 void OsgCanvasInspector::doSetObject(cObject *obj)
 {
     Inspector::doSetObject(obj);

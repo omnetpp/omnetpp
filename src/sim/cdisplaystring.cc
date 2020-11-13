@@ -29,44 +29,13 @@ using namespace omnetpp::common;
 
 namespace omnetpp {
 
-cDisplayString::cDisplayString()
+cDisplayString::cDisplayString(const char *displaystr) :  assembledString(omnetpp::opp_strdup(displaystr))
 {
-    assembledString = nullptr;
-    buffer = nullptr;
-    bufferEnd = nullptr;
-    tags = nullptr;
-    numTags = 0;
-    assembledStringValid = true;
-
-    ownerComponent = nullptr;
-}
-
-cDisplayString::cDisplayString(const char *displaystr)
-{
-    assembledString = omnetpp::opp_strdup(displaystr);
-    buffer = nullptr;
-    bufferEnd = nullptr;
-    tags = nullptr;
-    numTags = 0;
-    assembledStringValid = true;
-
-    ownerComponent = nullptr;
-
-    // doParse() should be the last one, as it may throw an error
     doParse();
 }
 
 cDisplayString::cDisplayString(const cDisplayString& ds)
 {
-    assembledString = nullptr;
-    buffer = nullptr;
-    bufferEnd = nullptr;
-    tags = nullptr;
-    numTags = 0;
-    assembledStringValid = true;
-
-    ownerComponent = nullptr;
-
     copy(ds);
 }
 

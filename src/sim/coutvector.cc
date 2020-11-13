@@ -42,11 +42,6 @@ Register_Enum(cOutVector::InterpolationMode, (cOutVector::NONE, cOutVector::SAMP
 cOutVector::cOutVector(const char *name) : cNoncopyableOwnedObject(name)
 {
     setFlag(FL_ENABLED, true);
-    handle = nullptr;
-    numReceived = 0;
-    numStored = 0;
-    recordInInspector = nullptr;
-    lastTimestamp = 0;
 
     // register early if possible (only required by Akaroa)
     if (name) {

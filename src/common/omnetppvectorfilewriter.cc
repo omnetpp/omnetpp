@@ -31,15 +31,6 @@ using std::ostream;
 using std::ofstream;
 using std::ios;
 
-OmnetppVectorFileWriter::OmnetppVectorFileWriter()
-{
-    nextVectorId = 0;
-    f = nullptr;
-    fi = nullptr;
-    bufferedSamplesLimit = 0;
-    bufferedSamples = 0;
-}
-
 OmnetppVectorFileWriter::~OmnetppVectorFileWriter()
 {
     cleanup(); // not close() because it throws; also, close() must have been called already if there was no error

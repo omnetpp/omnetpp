@@ -44,10 +44,6 @@ cDatarateChannel::cDatarateChannel(const char *name) : cChannel(name)
 {
 }
 
-cDatarateChannel::~cDatarateChannel()
-{
-}
-
 cDatarateChannel *cDatarateChannel::create(const char *name)
 {
     return dynamic_cast<cDatarateChannel *>(cChannelType::getDatarateChannelType()->create(name));

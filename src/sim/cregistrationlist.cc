@@ -115,16 +115,8 @@ void cRegistrationList::sort()
 
 //----
 
-cGlobalRegistrationList::cGlobalRegistrationList()
+cGlobalRegistrationList::cGlobalRegistrationList(const char *name) : tmpname(name)
 {
-    tmpname = nullptr;
-    inst = nullptr;
-}
-
-cGlobalRegistrationList::cGlobalRegistrationList(const char *name)
-{
-    tmpname = name;
-    inst = nullptr;
 }
 
 cGlobalRegistrationList::~cGlobalRegistrationList()

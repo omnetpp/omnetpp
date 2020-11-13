@@ -33,10 +33,6 @@ namespace eventlog {
 
 SequenceChartFacade::SequenceChartFacade(IEventLog *eventLog) : EventLogFacade(eventLog)
 {
-    nonLinearFocus = -1;
-    nonLinearMinimumTimelineCoordinateDelta = 0.1;
-    timelineMode = NONLINEAR;
-    timelineCoordinateSystemVersion = -1;
     undefineTimelineCoordinateSystem();
 }
 

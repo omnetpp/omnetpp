@@ -39,12 +39,12 @@ class SIM_API cFileCommBuffer : public cCommBufferBase
     /**
      * Constructor.
      */
-    cFileCommBuffer();
+    cFileCommBuffer() {}
 
     /**
      * Destructor.
      */
-    virtual ~cFileCommBuffer();
+    virtual ~cFileCommBuffer() {}
 
     /**
      * Redefined because we need to NUL-terminate the buffer.

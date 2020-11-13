@@ -39,7 +39,7 @@ class QTENV_API CanvasViewer : public QGraphicsView
     Q_OBJECT
 
 private:
-    cCanvas *object;
+    cCanvas *object = nullptr;
     CanvasRenderer *canvasRenderer;
     QRectF textRect;
 

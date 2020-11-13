@@ -44,19 +44,19 @@ NEDXML_API void generateNed(std::ostream& out, ASTNode *node);
 class NEDXML_API NedGenerator
 {
   protected:
-    int indentSize;
-    std::ostream *outp;
+    int indentSize = 4;
+    std::ostream *outp = nullptr;
 
   public:
     /**
      * Constructor.
      */
-    NedGenerator();
+    NedGenerator() {}
 
     /**
      * Destructor.
      */
-    ~NedGenerator();
+    ~NedGenerator() {}
 
     /**
      * Sets the indent size in the generated NED code. Default is 4 spaces.

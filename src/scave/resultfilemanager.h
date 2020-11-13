@@ -217,7 +217,7 @@ class SCAVE_API ResultFileManager
     static const char *getNameSuffixForFieldScalar(FieldNum fieldId);
 
   public:
-    ResultFileManager();
+    ResultFileManager() {}
     ~ResultFileManager();
     void clear();
 

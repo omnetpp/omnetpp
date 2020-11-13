@@ -32,10 +32,9 @@ static FilteredMessageDependency::Kind getMessageDependencyKind(IMessageDependen
         return FilteredMessageDependency::MIXED;
 }
 
-FilteredEvent::FilteredEvent(FilteredEventLog *filteredEventLog, eventnumber_t eventNumber)
+FilteredEvent::FilteredEvent(FilteredEventLog *filteredEventLog, eventnumber_t eventNumber):
+    filteredEventLog(filteredEventLog), eventNumber(eventNumber)
 {
-    this->eventNumber = eventNumber;
-    this->filteredEventLog = filteredEventLog;
     clearInternalState();
 }
 

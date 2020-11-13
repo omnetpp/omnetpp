@@ -39,7 +39,7 @@ namespace omnetpp {
 class SIM_API cISPEventLogger : public cNullMessageProtocol
 {
   protected:
-    FILE *fout;  // the event log file (stores ExternalEvent's)
+    FILE *fout = nullptr;  // the event log file (stores ExternalEvent's)
 
   protected:
     // Overridden to set message priority to sourceProcId. We do the same in
@@ -52,12 +52,12 @@ class SIM_API cISPEventLogger : public cNullMessageProtocol
     /**
      * Constructor.
      */
-    cISPEventLogger();
+    cISPEventLogger() {}
 
     /**
      * Destructor.
      */
-    virtual ~cISPEventLogger();
+    virtual ~cISPEventLogger() {}
 
     /**
      * Called at the beginning of a simulation run.

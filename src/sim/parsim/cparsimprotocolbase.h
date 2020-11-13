@@ -57,12 +57,12 @@ class SIM_API cParsimProtocolBase : public cParsimSynchronizer
     /**
      * Constructor.
      */
-    cParsimProtocolBase();
+    cParsimProtocolBase() {}
 
     /**
      * Destructor.
      */
-    virtual ~cParsimProtocolBase();
+    virtual ~cParsimProtocolBase() {}
 
     /**
      * Performs no optimization, just sends out the cMessage to the given partition.

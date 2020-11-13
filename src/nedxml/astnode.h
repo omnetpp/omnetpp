@@ -79,12 +79,12 @@ class NEDXML_API ASTNode
     std::string srcLoc;
     std::string directory;
     SourceRegion srcRegion;
-    ASTNode *parent;
-    ASTNode *firstChild;
-    ASTNode *lastChild;
-    ASTNode *prevSibling;
-    ASTNode *nextSibling;
-    UserData *userData;
+    ASTNode *parent = nullptr;
+    ASTNode *firstChild = nullptr;
+    ASTNode *lastChild = nullptr;
+    ASTNode *prevSibling = nullptr;
+    ASTNode *nextSibling = nullptr;
+    UserData *userData = nullptr;
 
     static long lastId;
     static long numCreated;

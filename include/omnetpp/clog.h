@@ -401,7 +401,7 @@ class SIM_API cLogProxy
     // lines one by one to the active environment.
     class LogBuffer : public std::basic_stringbuf<char> {
       public:
-        LogBuffer() { }
+        LogBuffer() {}
         bool isEmpty() { return pptr() == pbase(); }
       protected:
         virtual int sync() override;  // invokes getEnvir()->log() for each log line

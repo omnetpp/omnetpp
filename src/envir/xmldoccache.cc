@@ -64,10 +64,9 @@ class cXmlSaxHandler : public SaxHandler
 
 //---
 
-cXmlSaxHandler::cXmlSaxHandler(const char *fname)
+cXmlSaxHandler::cXmlSaxHandler(const char *fname): sourcefilename(fname)
 {
     root = current = new cXMLElement("/", nullptr);  // "Document node" (used as sort of a sentry)
-    sourcefilename = fname;
 }
 
 cXmlSaxHandler::~cXmlSaxHandler()
@@ -108,10 +107,6 @@ void cXmlSaxHandler::processingInstruction(const char *target, const char *data)
 }
 
 //=========================================================
-
-XMLDocCache::XMLDocCache()
-{
-}
 
 XMLDocCache::~XMLDocCache()
 {

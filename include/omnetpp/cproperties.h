@@ -34,8 +34,8 @@ class cProperty;
 class SIM_API cProperties : public cObject
 {
   protected:
-    bool isLocked;
-    int refCount;
+    bool isLocked = false;
+    int refCount = 0;
     std::vector<cProperty *> properties;
 
   private:
@@ -57,7 +57,7 @@ class SIM_API cProperties : public cObject
     /**
      * Constructor.
      */
-    explicit cProperties();
+    explicit cProperties() {}
 
     /**
      * Copy constructor.

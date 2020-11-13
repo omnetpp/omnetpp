@@ -47,8 +47,8 @@ NEDXML_API std::string generateXML(ASTNode *tree, bool srcloc, int indentsize = 
 class NEDXML_API XMLGenerator
 {
   protected:
-    bool printSrcLoc;
-    int indentSize;
+    bool printSrcLoc = true;
+    int indentSize = 2;
     virtual void printAttrValue(std::ostream& out, const char *s);
     virtual void doGenerate(std::ostream& out, ASTNode *node, int level);
 
@@ -56,12 +56,12 @@ class NEDXML_API XMLGenerator
     /**
      * Constructor
      */
-    XMLGenerator();
+    XMLGenerator() {}
 
     /**
      * Destructor
      */
-    virtual ~XMLGenerator();
+    virtual ~XMLGenerator() {}
 
     /**
      * Enable or disable generation of src-loc attributes in the output XML.

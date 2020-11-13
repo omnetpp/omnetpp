@@ -32,28 +32,6 @@ using namespace omnetpp;
 
 using std::ostream;
 
-cEvent::cEvent(const cEvent& event) : cOwnedObject(event)
-{
-    heapIndex = -1;
-    insertOrder = -1;
-    previousEventNumber = -1;
-    operator=(event);
-}
-
-cEvent::cEvent(const char *name) : cOwnedObject(name, false)
-{
-    // name pooling is off for messages by default, as unique names are quite common
-    priority = 0;
-    arrivalTime = 0;
-    heapIndex = -1;
-    insertOrder = -1;
-    previousEventNumber = -1;
-}
-
-cEvent::~cEvent()
-{
-}
-
 std::string cEvent::str() const
 {
     if (!isScheduled())
@@ -66,7 +44,6 @@ std::string cEvent::str() const
             out << ", target=" << getTargetObject()->getFullPath();
         return out.str();
     }
-
 }
 
 void cEvent::forEachChild(cVisitor *v)

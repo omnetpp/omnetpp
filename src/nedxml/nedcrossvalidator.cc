@@ -30,12 +30,7 @@ namespace omnetpp {
 namespace nedxml {
 
 NedCrossValidator::NedCrossValidator(NedResourceCache *res, ErrorStore *e)
-    : NedValidatorBase(e)
-{
-    resolver = res;
-}
-
-NedCrossValidator::~NedCrossValidator()
+    : NedValidatorBase(e), resolver(res)
 {
 }
 

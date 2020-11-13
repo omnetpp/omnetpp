@@ -35,18 +35,6 @@ namespace layout {
 
 static bool debug = false;
 
-BasicSpringEmbedderLayout::BasicSpringEmbedderLayout()
-{
-    haveFixedNode = false;
-    haveAnchoredNode = false;
-    allNodesAreFixed = true;  // unless later it proves otherwise
-
-    defaultEdgeLen = 40;
-    maxIterations = 500;
-    repulsiveForce = 50;
-    attractionForce = 0.3;
-}
-
 BasicSpringEmbedderLayout::~BasicSpringEmbedderLayout()
 {
     for (auto & anchor : anchors)

@@ -68,17 +68,17 @@ class SIM_API cCoroutine
 {
   protected:
 #ifdef USE_WIN32_FIBERS
-    LPVOID lpFiber;
+    LPVOID lpFiber = 0;
     static LPVOID lpMainFiber;
-    unsigned stackSize;
+    unsigned stackSize = 0;
 #endif
 #ifdef USE_POSIX_COROUTINES
     static ucontext_t mainContext;
     static ucontext_t *curContextPtr;
     static unsigned totalStackLimit;
     static unsigned totalStackUsage;
-    unsigned stackSize;
-    char *stackPtr;
+    unsigned stackSize = 0;
+    char *stackPtr = nullptr;
     ucontext_t context;
 #endif
 #ifdef USE_PORTABLE_COROUTINES
@@ -121,7 +121,7 @@ class SIM_API cCoroutine
     /**
      * Constructor.
      */
-    cCoroutine();
+    cCoroutine() {}
 
     /**
      * Destructor.

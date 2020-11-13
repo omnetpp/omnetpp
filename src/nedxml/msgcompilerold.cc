@@ -188,14 +188,10 @@ void MsgCompilerOld::initDescriptors()
     }
 }
 
-MsgCompilerOld::MsgCompilerOld(ErrorStore *e, const MsgCompilerOptionsOld& options)
+MsgCompilerOld::MsgCompilerOld(ErrorStore *e, const MsgCompilerOptionsOld& options) :
+    errors(e), opts(options)
 {
     initDescriptors();
-
-    opts = options;
-
-    hOutp = ccOutp = nullptr;
-    errors = e;
 
     // pre-register some OMNeT++ classes so that one doesn't need to announce them
     //
@@ -213,10 +209,6 @@ MsgCompilerOld::MsgCompilerOld(ErrorStore *e, const MsgCompilerOptionsOld& optio
     classType["omnetpp::cOwnedObject"] = COWNEDOBJECT;
     classType["omnetpp::cMessage"] = COWNEDOBJECT;
     classType["omnetpp::cPacket"] = COWNEDOBJECT;
-}
-
-MsgCompilerOld::~MsgCompilerOld()
-{
 }
 
 void MsgCompilerOld::generate(MsgFileElement *fileElement, const char *hFile, const char *ccFile)

@@ -68,9 +68,9 @@ class SIM_API cMsgPar : public cOwnedObject
   private:
     enum { SHORTSTR_MAXLEN = 27 };
 
-    char typeChar;     // S/B/L/D/F/T/P/O
-    bool changedFlag;
-    bool takeOwnership;
+    char typeChar = 'L';     // S/B/L/D/F/T/P/O
+    bool changedFlag = false;
+    bool takeOwnership = false;
 
     union {
        struct { bool sht; char *str;  } ls;   // S:long string

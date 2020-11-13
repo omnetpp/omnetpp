@@ -42,16 +42,6 @@ void generateNed(ostream& out, ASTNode *node)
 
 #define OUT    (*outp)
 
-NedGenerator::NedGenerator()
-{
-    outp = nullptr;
-    indentSize = 4;
-}
-
-NedGenerator::~NedGenerator()
-{
-}
-
 void NedGenerator::setIndentSize(int indentsiz)
 {
     indentSize = indentsiz;

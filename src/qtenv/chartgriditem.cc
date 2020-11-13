@@ -33,15 +33,7 @@ namespace qtenv {
 
 using namespace common;
 
-ChartGridItem::ChartGridItem(QGraphicsItem *parent) :
-    QGraphicsItem(parent),
-    minY(0),
-    maxY(10),
-    minX(0),
-    maxX(10),
-    yLabelWidth(0),
-    isYAxisChanged(true),
-    isXAxisChanged(true)
+ChartGridItem::ChartGridItem(QGraphicsItem *parent) : QGraphicsItem(parent)
 {
     frame = new QGraphicsRectItem(this);
     frame->setFlag(QGraphicsItem::ItemClipsChildrenToShape);

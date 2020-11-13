@@ -75,7 +75,7 @@ class SIM_API cEnum : public cOwnedObject
     /**
      * Destructor.
      */
-    virtual ~cEnum();
+    virtual ~cEnum() {}
 
     /**
      * Assignment operator. The name member is not copied;

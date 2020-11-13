@@ -64,19 +64,19 @@ class COMMON_API SqliteVectorFileWriter
 
     typedef std::vector<VectorData*> Vectors;
 
-    std::string fname;   // output file name
-    sqlite_int64 runId;  // runId in sqlite database
-    sqlite3 *db;         // sqlite database, nullptr before initialization and after error
-    sqlite3_stmt *stmt;
-    sqlite3_stmt *add_vector_stmt;
-    sqlite3_stmt *add_vector_attr_stmt;
-    sqlite3_stmt *add_vector_data_stmt;
-    sqlite3_stmt *update_vector_stmt;
+    std::string fname;        // output file name
+    sqlite_int64 runId = -1;  // runId in sqlite database
+    sqlite3 *db = nullptr;    // sqlite database, nullptr before initialization and after error
+    sqlite3_stmt *stmt = nullptr;
+    sqlite3_stmt *add_vector_stmt = nullptr;
+    sqlite3_stmt *add_vector_attr_stmt = nullptr;
+    sqlite3_stmt *add_vector_data_stmt = nullptr;
+    sqlite3_stmt *update_vector_stmt = nullptr;
 
-    int bufferedSamplesLimit;  // limit of total buffered samples; 0=no limit
+    int bufferedSamplesLimit = 0;  // limit of total buffered samples; 0=no limit
 
-    Vectors vectors;           // registered output vectors
-    int bufferedSamples;       // currently total buffered samples
+    Vectors vectors;               // registered output vectors
+    int bufferedSamples = 0;       // currently total buffered samples
 
   protected:
     void prepareStatements();
@@ -94,7 +94,7 @@ class COMMON_API SqliteVectorFileWriter
     void error(const char *errmsg);
 
   public:
-    SqliteVectorFileWriter();
+    SqliteVectorFileWriter() {}
     virtual ~SqliteVectorFileWriter();
 
     void open(const char *filename); // append if file exists

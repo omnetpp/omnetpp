@@ -23,10 +23,6 @@ using namespace omnetpp::common;
 
 namespace omnetpp {
 
-cStringParImpl::cStringParImpl()
-{
-}
-
 cStringParImpl::~cStringParImpl()
 {
     deleteOld();

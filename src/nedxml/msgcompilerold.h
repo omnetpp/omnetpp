@@ -38,15 +38,9 @@ namespace nedxml {
 struct MsgCompilerOptionsOld
 {
     std::string exportDef;
-    bool generateClasses;
-    bool generateDescriptors;
-    bool generateSettersInDescriptors;
-
-    MsgCompilerOptionsOld() :
-        generateClasses(true),
-        generateDescriptors(true),
-        generateSettersInDescriptors(true)
-        {}
+    bool generateClasses = true;
+    bool generateDescriptors = true;
+    bool generateSettersInDescriptors = true;
 };
 
 /**
@@ -91,8 +85,8 @@ class NEDXML_API MsgCompilerOld
 
     std::string hFilename;
     std::string ccFilename;
-    std::ostream *hOutp;
-    std::ostream *ccOutp;
+    std::ostream *hOutp = nullptr;
+    std::ostream *ccOutp = nullptr;
     ErrorStore *errors;
     std::map<std::string,ClassType> classType;
     std::map<std::string,std::string> enumType;
@@ -109,21 +103,21 @@ class NEDXML_API MsgCompilerOld
       public:
         class FieldInfo {
           public:
-            ASTNode *astNode;
+            ASTNode *astNode = nullptr;
 
             std::string fname;      // field name in MSG
             std::string ftype;      // field type in MSG
             std::string ftypeqname; // fully qualified C++ name of type
             std::string fval;       // value (or empty)
-            bool fisabstract;
-            bool fispointer;
-            bool fisarray;
+            bool fisabstract = false;
+            bool fispointer = false;
+            bool fisarray = false;
             std::string farraysize; // array size in MSG, maybe empty for dynamic arrays
             Properties fprops;      // field properties (name, first value of default key)
 
             // data needed for code generation
             bool fisprimitivetype;  // whether primitive or compound type
-            ClassType classtype;    // cobject/cnamedobject/cownedobject/...
+            ClassType classtype = UNKNOWN;  // cobject/cnamedobject/cownedobject/...
             std::string datatype;   // member C++ datatype
             std::string argtype;    // setter C++ argument type
             std::string rettype;    // getter C++ return type
@@ -145,28 +139,25 @@ class NEDXML_API MsgCompilerOld
                                     // const char * <datatype>::<function>(...);     // @tostring(.function(...))
             std::string fromstring; // function to convert string to data member, defined in property @fromstring, default values for primitive types found in MsgCppGenerator::TypeMap MsgCppGenerator::PRIMITIVE_TYPES
                                     // <datatype> <function>(const char *);          // @fromstring(function)
-            std::string maybe_c_str;       // uses ".c_str()"
+            std::string maybe_c_str;  // uses ".c_str()"
             std::string enumname;
             std::string enumqname;
-            bool fnopack;           // @nopack(true)
-            bool feditable;         // @editable(true)
+            bool fnopack = false;   // @nopack(true)
+            bool feditable = false; // @editable(true)
             bool editNotDisabled;   // true when field doesn't have property "@editable(false)"
-            bool fopaque;         // @opaque(true)
-
-          public:
-            FieldInfo() : astNode(nullptr), fisabstract(false), fispointer(false), fisarray(false), classtype(UNKNOWN), fnopack(false), feditable(false),fopaque(false) {}
+            bool fopaque = false;   // @opaque(true)
         };
         typedef std::vector<FieldInfo> Fieldlist;
 
-        ASTNode *nedElement;
+        ASTNode *nedElement = nullptr;
         std::string keyword;        // struct/class/packet from MSG
         std::string msgname;        // class name from MSG
         std::string msgbase;        // base class name from MSG
         Properties props;           // class properties
 
-        bool gap;                   // true if @customize
-        bool omitgetverb;
-        ClassType classtype;
+        bool gap = false;                   // true if @customize
+        bool omitgetverb = false;
+        ClassType classtype = UNKNOWN;
         std::string msgclass;
         std::string realmsgclass;
         std::string msgbaseclass;
@@ -175,18 +166,14 @@ class NEDXML_API MsgCompilerOld
         Fieldlist fieldlist;        // list of fields
         Fieldlist baseclassFieldlist;   //modified baseclass fields, e.g. baseclass.basefield = value
 
-        bool generate_class;
-        bool generate_descriptor;
-        bool generate_setters_in_descriptor;
+        bool generate_class = true;
+        bool generate_descriptor = true;
+        bool generate_setters_in_descriptor = true;
 
         std::string msgqname;
         std::string msgbaseqname;
 
         StringVector implements;    //value vector from @implements
-
-      public:
-        ClassInfo() : nedElement(nullptr), gap(false), omitgetverb(false), classtype(UNKNOWN),
-              generate_class(true), generate_descriptor(true), generate_setters_in_descriptor(true) {}
     };
 
     class EnumInfo
@@ -195,21 +182,17 @@ class NEDXML_API MsgCompilerOld
         class EnumItem
         {
           public:
-            ASTNode *nedElement;
+            ASTNode *nedElement = nullptr;
             std::string name;
             std::string value;
             std::string comment;
-          public:
-            EnumItem() : nedElement(nullptr) {}
         };
 
-        EnumElement *nedElement;
+        EnumElement *nedElement = nullptr;
         std::string enumName;
         std::string enumQName;
         typedef std::vector<EnumItem> FieldList;
         FieldList fieldlist;
-      public:
-        EnumInfo() : nedElement(nullptr) {}
     };
 
   protected:
@@ -248,7 +231,7 @@ class NEDXML_API MsgCompilerOld
     /**
      * Destructor.
      */
-    ~MsgCompilerOld();
+    ~MsgCompilerOld() {}
 
     /**
      * Generates C++ code from the specified message file. Assumes that the

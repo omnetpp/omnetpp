@@ -133,10 +133,6 @@ MsgCompiler::MsgCompiler(const MsgCompilerOptions& opts, ErrorStore *errors) :
 {
 }
 
-MsgCompiler::~MsgCompiler()
-{
-}
-
 void MsgCompiler::generate(MsgFileElement *fileElement, const char *hFile, const char *ccFile, StringSet& outImportedFiles)
 {
     if (used)

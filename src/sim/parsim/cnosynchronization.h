@@ -43,12 +43,12 @@ class SIM_API cNoSynchronization : public cParsimProtocolBase
     /**
      * Constructor.
      */
-    cNoSynchronization();
+    cNoSynchronization() {}
 
     /**
      * Destructor.
      */
-    virtual ~cNoSynchronization();
+    virtual ~cNoSynchronization() {}
 
     /**
      * Called at the beginning of a simulation run.

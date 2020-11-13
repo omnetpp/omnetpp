@@ -43,7 +43,7 @@ class SCAVE_API EnumType
     /**
      * Constructor.
      */
-    EnumType();
+    EnumType() {}
 
     /**
      * Copy constructor.
@@ -53,7 +53,7 @@ class SCAVE_API EnumType
     /**
      * Destructor.
      */
-    virtual ~EnumType();
+    virtual ~EnumType() {}
 
     /**
      * Assignment operator. The name member is not copied;

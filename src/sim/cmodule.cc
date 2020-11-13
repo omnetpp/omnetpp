@@ -58,19 +58,6 @@ bool cModule::cacheFullPath = true;  // fullpath is useful during debugging
 
 cModule::cModule()
 {
-    vectorIndex = 0;
-    vectorSize = -1;
-    fullPath = nullptr;
-    fullName = nullptr;
-
-    prevSibling = nextSibling = firstSubmodule = lastSubmodule = nullptr;
-    firstChannel = lastChannel = nullptr;
-
-    gateDescArraySize = 0;
-    gateDescArray = nullptr;
-
-    canvas = nullptr;
-    osgCanvas = nullptr;
     flags |= FL_BUILTIN_ANIMATIONS;
 
     // gates and parameters will be added by cModuleType
@@ -968,7 +955,7 @@ struct less_gateConnectedOutside
 struct less_gatePairConnectedInside
 {
     cGate **otherv;
-    less_gatePairConnectedInside(cGate **otherv) { this->otherv = otherv; }
+    less_gatePairConnectedInside(cGate **otherv) : otherv(otherv) { }
     bool operator()(cGate *a, cGate *b)
     {
         return (a && a->isConnectedInside()) > (b && b->isConnectedInside()) &&
@@ -979,7 +966,7 @@ struct less_gatePairConnectedInside
 struct less_gatePairConnectedOutside
 {
     cGate **otherv;
-    less_gatePairConnectedOutside(cGate **otherv) { this->otherv = otherv; }
+    less_gatePairConnectedOutside(cGate **otherv) : otherv(otherv) { }
     bool operator()(cGate *a, cGate *b)
     {
         return (a && a->isConnectedOutside()) > (b && b->isConnectedOutside()) &&

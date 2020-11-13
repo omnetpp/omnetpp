@@ -78,8 +78,8 @@ class ENVIR_API InifileReader : public cConfigurationReader
     static void rtrim(std::string& str);
 
   public:
-    InifileReader();
-    virtual ~InifileReader();
+    InifileReader() {}
+    virtual ~InifileReader() {}
     virtual void readFile(const char *filename);
 
     /** @name Methods implementing cConfigurationReader */

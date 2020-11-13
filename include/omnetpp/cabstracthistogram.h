@@ -53,7 +53,7 @@ class SIM_API cAbstractHistogram : public cStdDev
     /**
      * Copy constructor.
      */
-    cAbstractHistogram(const cAbstractHistogram& other) : cStdDev(other) {}
+    cAbstractHistogram(const cAbstractHistogram& other) = default;
 
     /**
      * Constructor.
@@ -63,7 +63,7 @@ class SIM_API cAbstractHistogram : public cStdDev
     /**
      * Destructor.
      */
-    virtual ~cAbstractHistogram() {};
+    virtual ~cAbstractHistogram() {}
 
     /**
      * Assignment operator. The name member is not copied; see cNamedObject::operator=() for details.

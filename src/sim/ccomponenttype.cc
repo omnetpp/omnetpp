@@ -73,13 +73,12 @@ static SimsignalType getSignalType(const char *name, SimsignalType fallback=SIMS
 
 //----
 
-cComponentType::cComponentType(const char *qname) : cNoncopyableOwnedObject(qname, false)
+cComponentType:: cComponentType(const char *qname) : cNoncopyableOwnedObject(qname, false),
+    qualifiedName(qname)
 {
     // store fully qualified name, and set name to simple (unqualified) name
-    qualifiedName = qname;
     const char *lastDot = strrchr(qname, '.');
     setName(!lastDot ? qname : lastDot + 1);
-    availabilityTested = available = false;
 }
 
 cComponentType::~cComponentType()

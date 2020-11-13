@@ -42,7 +42,7 @@ class SIM_API cFileCommunications : public cParsimCommunications
     int numPartitions;
     int myProcId;
 
-    int seqNum;
+    int seqNum = 0;
     opp_string commDirPrefix;
     opp_string readDirPrefix;
     bool preserveReadFiles;
@@ -56,7 +56,7 @@ class SIM_API cFileCommunications : public cParsimCommunications
     /**
      * Destructor.
      */
-    virtual ~cFileCommunications();
+    virtual ~cFileCommunications() {}
 
     /** @name Redefined methods from cParsimCommunications */
     //@{

@@ -24,10 +24,6 @@ namespace common {
 
 #define SCALAR_FILE_VERSION    3
 
-OmnetppScalarFileWriter::OmnetppScalarFileWriter()
-{
-}
-
 OmnetppScalarFileWriter::~OmnetppScalarFileWriter()
 {
     close();

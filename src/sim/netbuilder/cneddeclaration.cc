@@ -31,10 +31,9 @@ namespace omnetpp {
 
 using namespace omnetpp::common;
 
-cNedDeclaration::cNedDeclaration(NedResourceCache *resolver, const char *qname, bool isInnerType, NedElement *tree) : NedTypeInfo(resolver, qname, isInnerType, tree)
+cNedDeclaration::cNedDeclaration(NedResourceCache *resolver, const char *qname, bool isInnerType, NedElement *tree) :
+    NedTypeInfo(resolver, qname, isInnerType, tree)
 {
-    props = nullptr;
-    patternsValid = false;
 }
 
 cNedDeclaration::~cNedDeclaration()

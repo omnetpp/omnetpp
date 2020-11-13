@@ -31,33 +31,33 @@ namespace eventlog {
 class Options
 {
     public:
-        char *inputFileName;
-        char *outputFileName;
-        FILE *outputFile;
+        char *inputFileName = nullptr;
+        char *outputFileName = nullptr;
+        FILE *outputFile = nullptr;
 
-        eventnumber_t firstEventNumber;
-        eventnumber_t lastEventNumber;
+        eventnumber_t firstEventNumber = -2;
+        eventnumber_t lastEventNumber = -2;
 
-        eventnumber_t fromEventNumber;
-        eventnumber_t toEventNumber;
+        eventnumber_t fromEventNumber = -1;
+        eventnumber_t toEventNumber = -1;
 
-        simtime_t fromSimulationTime;
-        simtime_t toSimulationTime;
+        simtime_t fromSimulationTime = simtime_nil;
+        simtime_t toSimulationTime = simtime_nil;
 
-        bool outputLogLines;
-        bool traceCauses;
-        bool traceConsequences;
+        bool outputLogLines = true;
+        bool traceCauses = true;
+        bool traceConsequences = true;
 
         std::vector<file_offset_t> fileOffsets;
         std::vector<eventnumber_t> eventNumbers;
 
-        const char *moduleExpression;
+        const char *moduleExpression = nullptr;
         std::vector<std::string> moduleNames;
         std::vector<std::string> moduleClassNames;
         std::vector<std::string> moduleNedTypeNames;
         std::vector<int> moduleIds;
 
-        const char *messageExpression;
+        const char *messageExpression = nullptr;
         std::vector<std::string> messageNames;
         std::vector<std::string> messageClassNames;
         std::vector<long> messageIds;
@@ -65,41 +65,14 @@ class Options
         std::vector<long> messageEncapsulationIds;
         std::vector<long> messageEncapsulationTreeIds;
 
-        bool verbose;
+        bool verbose = false;
 
     public:
-        Options();
-
         IEventLog *createEventLog(FileReader *fileReader);
         void deleteEventLog(IEventLog *eventLog);
         eventnumber_t getFirstEventNumber();
         eventnumber_t getLastEventNumber();
 };
-
-Options::Options()
-{
-    inputFileName = nullptr;
-    outputFileName = nullptr;
-    outputFile = nullptr;
-
-    moduleExpression = nullptr;
-    messageExpression = nullptr;
-
-    firstEventNumber = -2;
-    lastEventNumber = -2;
-
-    fromEventNumber = -1;
-    toEventNumber = -1;
-
-    fromSimulationTime = simtime_nil;
-    toSimulationTime = simtime_nil;
-
-    outputLogLines = true;
-    traceCauses = true;
-    traceConsequences = true;
-
-    verbose = false;
-}
 
 IEventLog *Options::createEventLog(FileReader *fileReader)
 {

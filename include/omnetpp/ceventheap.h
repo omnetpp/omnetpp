@@ -36,16 +36,16 @@ class SIM_API cEventHeap : public cFutureEventSet
 {
   private:
     // heap data structure
-    cEvent **heap;            // heap array  (heap[0] always empty)
-    int heapLength;           // number of elements on the heap
-    int heapCapacity;         // allocated size of the heap[] array
-    eventnumber_t insertCount; // counts insertions; needed because heap's insert is not stable (does not keep order)
+    cEvent **heap = nullptr;       // heap array  (heap[0] always empty)
+    int heapLength = 0;            // number of elements on the heap
+    int heapCapacity = 0;          // allocated size of the heap[] array
+    eventnumber_t insertCount = 0; // counts insertions; needed because heap's insert is not stable (does not keep order)
 
     // circular buffer for events scheduled for the current simtime (quite frequent); acts as FIFO
-    cEvent **cb;              // size of the circular buffer
-    int cbsize;               // always power of 2
-    int cbhead, cbtail;       // cbhead is inclusive, cbtail is exclusive
-    bool useCb;               // for disabling cb
+    cEvent **cb = nullptr;        // size of the circular buffer
+    int cbsize = 4;               // always power of 2
+    int cbhead = 0, cbtail = 0;   // cbhead is inclusive, cbtail is exclusive
+    bool useCb = true;            // for disabling cb
 
   private:
     void copy(const cEventHeap& other);

@@ -51,7 +51,7 @@ class NEDXML_API MsgTypeTable
       public:
         Property() {}
         Property(const std::string& name, const std::string& index, ASTNode *astNode) : astNode(astNode), name(name), index(index) {}
-        Property(const Property& other) : astNode(other.astNode), name(other.name), index(other.index), propertyValue(other.propertyValue) {}
+        Property(const Property& other)  = default;
         const std::string& getName() const {return name;}
         const std::string& getIndex() const {return index;}
         std::string getIndexedName() const;

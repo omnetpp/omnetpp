@@ -35,12 +35,12 @@ class LAYOUT_API ForceDirectedEmbedding
          * Initialization is not done during construction time,
          * but it is done not later than the first call to embed.
          */
-        bool initialized;
+        bool initialized = false;
 
         /**
          * True indicates that the embedding is complete, this state may be reset by calling reinitialize.
          */
-        bool finished;
+        bool finished = false;
 
         /**
          * Total number of calculation cycles in the main loop since the last reinitialize call.
@@ -134,13 +134,13 @@ class LAYOUT_API ForceDirectedEmbedding
          * Higher debug level will print more debug messages to the standard output during embedding.
          * Debug level 0 means embedding will not print anything.
          */
-        int debugLevel;
+        int debugLevel = 0;
 
         /**
          * When true embedding stops at every cycle to be able to inspect the state of the embedding.
          * Call embed again to continue.
          */
-        bool inspected;
+        bool inspected = false;
 
         /**
          * A value between 0 and 1, where 0 means initialized state and 1 means finished state.

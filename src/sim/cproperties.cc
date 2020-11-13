@@ -23,12 +23,6 @@ using namespace omnetpp::common;
 
 namespace omnetpp {
 
-cProperties::cProperties()
-{
-    isLocked = false;
-    refCount = 0;
-}
-
 cProperties::~cProperties()
 {
     for (auto & property : properties)

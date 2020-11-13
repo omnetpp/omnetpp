@@ -55,10 +55,10 @@ class SIM_API cParImpl : public cNamedObject
 
   private:
     // unit (s, mW, GHz, baud, etc); optional
-    const char *unitp; // stringpooled
+    const char *unitp = nullptr; // stringpooled
 
     // base directory for interpreting relative path names in the expression (e.g. xmldoc())
-    const char *baseDirectory; // stringpooled
+    const char *baseDirectory = nullptr; // stringpooled
 
     // global variables for statistics
     static long totalParimplObjs;

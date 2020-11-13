@@ -52,8 +52,7 @@ inline void unref(osg::Node *scene)
 }
 
 cOsgCanvas::cOsgCanvas(const char *name, ViewerStyle viewerStyle, osg::Node *scene) : cOwnedObject(name),
-    scene(scene), viewerStyle(viewerStyle), clearColor(Color(128, 128, 220)),
-    cameraManipulatorType(CAM_AUTO), fieldOfViewAngle(30), zNear(NaN), zFar(NaN),
+    scene(scene), viewerStyle(viewerStyle), zNear(NaN), zFar(NaN),
     genericViewpoint(new Viewpoint()), earthViewpoint(new EarthViewpoint())
 {
     ref(scene);

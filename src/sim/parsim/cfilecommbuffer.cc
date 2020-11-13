@@ -73,14 +73,6 @@ static void sread(char *buffer, int& pos, const char *fmt, void *d)
     pos = buf-buffer;
 }
 
-cFileCommBuffer::cFileCommBuffer()
-{
-}
-
-cFileCommBuffer::~cFileCommBuffer()
-{
-}
-
 void cFileCommBuffer::setMessageSize(int size)
 {
     mMsgSize = size;

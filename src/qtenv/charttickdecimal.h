@@ -66,7 +66,7 @@ class ChartTickDecimal
 
   public:
 
-    ChartTickDecimal() = default;
+    ChartTickDecimal() {}
     ChartTickDecimal(const ChartTickDecimal& other) = default;
     ChartTickDecimal(int64_t man, int exp);
     explicit ChartTickDecimal(double val); // val must be finite

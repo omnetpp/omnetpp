@@ -36,15 +36,6 @@ namespace omnetpp {
 
 cPrecollectionBasedDensityEst::cPrecollectionBasedDensityEst(const char *name, bool weighted) : cAbstractHistogram(name, weighted)
 {
-    rangeMode = RANGE_AUTO;
-    numPrecollected = 100;
-    rangeExtFactor = 2.0;
-    rangeMin = rangeMax = 0; //TODO NaN?
-    numFiniteUnderflows = numFiniteOverflows = 0;
-    numNegInfs = numPosInfs = 0;
-    finiteUnderflowSumWeights = finiteOverflowSumWeights = 0;
-    negInfSumWeights = posInfSumWeights = 0;
-    transformed = false;
     precollectedValues = new double[numPrecollected];  // to match RANGE_AUTO
     precollectedWeights = weighted ? new double[numPrecollected] : nullptr;
 }

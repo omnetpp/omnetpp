@@ -38,14 +38,6 @@ Register_PerRunConfigOption(CFGID_SNAPSHOT_FILE, "snapshot-file", CFG_FILENAME, 
 
 Register_Class(FileSnapshotManager);
 
-FileSnapshotManager::FileSnapshotManager()
-{
-}
-
-FileSnapshotManager::~FileSnapshotManager()
-{
-}
-
 void FileSnapshotManager::startRun()
 {
     // clean up file from previous runs

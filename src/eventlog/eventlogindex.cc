@@ -55,24 +55,9 @@ static simtime_t getKey(simtime_t key, eventnumber_t eventNumber, simtime_t simu
     return simulationTime;
 }
 
-EventLogIndex::CacheEntry::CacheEntry()
+EventLogIndex::CacheEntry::CacheEntry(eventnumber_t eventNumber, simtime_t simulationTime, file_offset_t beginOffset, file_offset_t endOffset) :
+    simulationTime(simulationTime), beginEventNumber(eventNumber), endEventNumber(eventNumber), beginOffset(beginOffset), endEventBeginOffset(beginOffset), endOffset(endOffset)
 {
-    this->simulationTime = -1;
-    this->beginEventNumber = -1;
-    this->endEventNumber = -1;
-    this->beginOffset = -1;
-    this->endEventBeginOffset = -1;
-    this->endOffset = -1;
-}
-
-EventLogIndex::CacheEntry::CacheEntry(eventnumber_t eventNumber, simtime_t simulationTime, file_offset_t beginOffset, file_offset_t endOffset)
-{
-    this->simulationTime = simulationTime;
-    this->beginEventNumber = eventNumber;
-    this->endEventNumber = eventNumber;
-    this->beginOffset = beginOffset;
-    this->endEventBeginOffset = beginOffset;
-    this->endOffset = endOffset;
 }
 
 void EventLogIndex::CacheEntry::include(eventnumber_t eventNumber, simtime_t simulationTime, file_offset_t beginOffset, file_offset_t endOffset)
@@ -107,9 +92,8 @@ void EventLogIndex::CacheEntry::getEndKey(simtime_t& key)
 
 // *************************************************************************************************
 
-EventLogIndex::EventLogIndex(FileReader *reader)
+EventLogIndex::EventLogIndex(FileReader *reader): reader(reader)
 {
-    this->reader = reader;
     clearInternalState();
 }
 

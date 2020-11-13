@@ -69,30 +69,30 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     static cEnvir *staticEnvir; // the environment to activate when activeSimulation becomes nullptr
 
     // variables of the module vector
-    int size;                 // size of componentv[]
-    int delta;                // if needed, grows by delta
-    cComponent **componentv;  // vector of modules/channels, componentv[0] is not used
-    int lastComponentId;      // index of last used pos. in componentv[]
+    int size = 0;                       // size of componentv[]
+    int delta = 32;                     // if needed, grows by delta
+    cComponent **componentv = nullptr;  // vector of modules/channels, componentv[0] is not used for historical reasons
+    int lastComponentId = 0;            // index of last used pos. in componentv[]
 
     // simulation vars
-    cEnvir *envir;            // the environment that belongs to this simulation object
-    cModule *systemModule;    // pointer to system (root) module
-    cSimpleModule *currentActivityModule; // the module currently executing activity() (nullptr if handleMessage() or in main)
-    cComponent *contextComponent;  // component in context (or nullptr)
-    int contextType;          // the innermost context type (one of CTX_BUILD, CTX_EVENT, CTX_INITIALIZE, CTX_FINISH)
-    cModuleType *networkType; // network type
-    cFutureEventSet *fes;     // stores future events
-    cScheduler *scheduler;    // event scheduler
-    simtime_t warmupPeriod;   // warm-up period
+    cEnvir *envir = nullptr;            // the environment that belongs to this simulation object
+    cModule *systemModule = nullptr;    // pointer to system (root) module
+    cSimpleModule *currentActivityModule = nullptr; // the module currently executing activity() (nullptr if handleMessage() or in main)
+    cComponent *contextComponent = nullptr;  // component in context (or nullptr)
+    int contextType;                    // the innermost context type (one of CTX_BUILD, CTX_EVENT, CTX_INITIALIZE, CTX_FINISH)
+    cModuleType *networkType = nullptr; // network type
+    cFutureEventSet *fes = nullptr;     // stores future events
+    cScheduler *scheduler = nullptr;    // event scheduler
+    simtime_t warmupPeriod;             // warm-up period
 
-    int simulationStage;      // simulation stage (one of CTX_NONE, CTX_BUILD, CTX_EVENT, CTX_INITIALIZE, CTX_FINISH or CTX_CLEANUP)
-    simtime_t currentSimtime; // simulation time (time of current event)
-    eventnumber_t currentEventNumber; // sequence number of current event
+    int simulationStage;       // simulation stage (one of CTX_NONE, CTX_BUILD, CTX_EVENT, CTX_INITIALIZE, CTX_FINISH or CTX_CLEANUP)
+    simtime_t currentSimtime;  // simulation time (time of current event)
+    eventnumber_t currentEventNumber = 0; // sequence number of current event
 
     cException *exception;    // helper variable to get exceptions back from activity()
-    bool trapOnNextEvent;  // when set, next handleMessage or activity() will execute debugger interrupt
+    bool trapOnNextEvent = false;  // when set, next handleMessage or activity() will execute debugger interrupt
 
-    cFingerprintCalculator *fingerprint; // used for fingerprint calculation
+    cFingerprintCalculator *fingerprint = nullptr; // used for fingerprint calculation
 
   private:
     // internal

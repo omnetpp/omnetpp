@@ -35,13 +35,6 @@ namespace omnetpp {
 
 Register_Class(cLinkDelayLookahead);
 
-
-cLinkDelayLookahead::cLinkDelayLookahead()
-{
-    numSeg = 0;
-    segInfo = nullptr;
-}
-
 cLinkDelayLookahead::~cLinkDelayLookahead()
 {
     delete[] segInfo;

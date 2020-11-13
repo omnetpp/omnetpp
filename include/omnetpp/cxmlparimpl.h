@@ -29,8 +29,8 @@ class SIM_API cXMLParImpl : public cParImpl
 {
   protected:
     // selector: flags & FL_ISEXPR
-    cExpression *expr;
-    cXMLElement *val;
+    cExpression *expr = nullptr;
+    cXMLElement *val = nullptr;
 
   private:
     void copy(const cXMLParImpl& other);
@@ -45,7 +45,7 @@ class SIM_API cXMLParImpl : public cParImpl
     /**
      * Constructor.
      */
-    explicit cXMLParImpl();
+    explicit cXMLParImpl() {}
 
     /**
      * Copy constructor.

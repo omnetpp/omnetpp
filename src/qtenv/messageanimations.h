@@ -51,7 +51,7 @@ protected:
     explicit Animation(double holdDuration): holding(true), holdDuration(holdDuration) { }
 
     // For non-holding, SimTime animations.
-    explicit Animation(): holding(false) { }
+    explicit Animation(): holding(false), holdDuration(0) { }
 
     // If true, the animation will take place during a hold, and setProgress() will be called from update().
     // If false, during some amount of simtime without hold, and only update() should be used.
@@ -64,7 +64,7 @@ protected:
     // Real (internal) hold management is done with the requestHold()
     // and clearHold() methods of the AnimationManager.
     // This is nonzero only if holding is false.
-    double holdDuration = 0;
+    double holdDuration;
     // In animation time, set in begin(). Not used if holding is false.
     double holdStartTime = 0;
 

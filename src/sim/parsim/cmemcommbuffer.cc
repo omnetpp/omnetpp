@@ -36,14 +36,6 @@ Register_Class(cMemCommBuffer);
 #define STOREARRAY(type, d, size)      { memcpy(mBuffer+mMsgSize, d, size*sizeof(type)); mMsgSize += size*sizeof(type); }
 #define EXTRACTARRAY(type, d, size)    { memcpy(d, mBuffer+mPosition, size*sizeof(type)); mPosition += size*sizeof(type); }
 
-cMemCommBuffer::cMemCommBuffer()
-{
-}
-
-cMemCommBuffer::~cMemCommBuffer()
-{
-}
-
 void cMemCommBuffer::pack(char d)
 {
     extendBufferFor(sizeof(char));

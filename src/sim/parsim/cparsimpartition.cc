@@ -45,14 +45,7 @@ Register_GlobalConfigOption(CFGID_PARSIM_DEBUG, "parsim-debug", CFG_BOOL, "true"
 
 cParsimPartition::cParsimPartition()
 {
-    sim = nullptr;
-    comm = nullptr;
-    synch = nullptr;
     debug = getEnvir()->getConfig()->getAsBool(CFGID_PARSIM_DEBUG);
-}
-
-cParsimPartition::~cParsimPartition()
-{
 }
 
 void cParsimPartition::setContext(cSimulation *simul, cParsimCommunications *commlayer, cParsimSynchronizer *sync)

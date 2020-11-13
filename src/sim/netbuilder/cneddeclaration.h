@@ -62,7 +62,7 @@ class SIM_API cNedDeclaration : public NedTypeInfo
   protected:
     // properties
     typedef std::map<std::string, cProperties *> StringPropsMap;
-    mutable cProperties *props;
+    mutable cProperties *props = nullptr;
     mutable StringPropsMap paramPropsMap;
     mutable StringPropsMap gatePropsMap;
     mutable StringPropsMap submodulePropsMap;
@@ -75,7 +75,7 @@ class SIM_API cNedDeclaration : public NedTypeInfo
 
     // wildcard-based parameter assignments
     std::vector<PatternData> patterns;  // contains patterns defined in super types as well
-    bool patternsValid;  // whether patterns[] was already filled in
+    bool patternsValid = false;  // whether patterns[] was already filled in
     typedef std::map<std::string, std::vector<PatternData> > StringPatternDataMap;
     StringPatternDataMap submodulePatterns;  // contains patterns defined in the "submodules" section
 

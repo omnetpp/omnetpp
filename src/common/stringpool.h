@@ -50,7 +50,7 @@ class COMMON_API StringPool
     StringSet pool;
 
   public:
-    StringPool();
+    StringPool() {}
     ~StringPool();
     const char *get(const char *s);
     bool contains(const char *s) const;

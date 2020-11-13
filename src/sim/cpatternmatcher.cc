@@ -22,14 +22,12 @@ using namespace omnetpp::common;
 
 namespace omnetpp {
 
-cPatternMatcher::cPatternMatcher()
+cPatternMatcher::cPatternMatcher() : impl(new PatternMatcher())
 {
-    impl = new PatternMatcher();
 }
 
-cPatternMatcher::cPatternMatcher(const char *pattern, bool dottedpath, bool fullstring, bool casesensitive)
+cPatternMatcher::cPatternMatcher(const char *pattern, bool dottedpath, bool fullstring, bool casesensitive) : impl(new PatternMatcher())
 {
-    impl = new PatternMatcher();
     setPattern(pattern, dottedpath, fullstring, casesensitive);
 }
 

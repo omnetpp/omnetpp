@@ -31,14 +31,6 @@ EnumType::EnumType(const EnumType& list)
     copy(list);
 }
 
-EnumType::EnumType()
-{
-}
-
-EnumType::~EnumType()
-{
-}
-
 void EnumType::copy(const EnumType& other)
 {
     valueToNameMap = other.valueToNameMap;

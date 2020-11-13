@@ -50,10 +50,10 @@ class SIM_API cProperty : public cNamedObject
     // property names, keys and values are all stringpooled to reduce memory consumption
     static cStringPool stringPool;
 
-    cProperties *ownerp;
+    cProperties *ownerp = nullptr;
 
-    const char *propindex;
-    mutable const char *propfullname;
+    const char *propindex = nullptr;
+    mutable const char *propfullname = nullptr;
 
     typedef std::vector<const char *> CharPtrVector;
     CharPtrVector keyv;

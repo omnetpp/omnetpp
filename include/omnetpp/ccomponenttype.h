@@ -50,8 +50,8 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
 {
   protected:
     std::string qualifiedName;
-    bool availabilityTested;
-    bool available;
+    bool availabilityTested = false;
+    bool available = false;
 
     typedef std::map<std::string, cParImpl *> StringToParMap;
     StringToParMap sharedParMap;

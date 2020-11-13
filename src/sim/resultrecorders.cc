@@ -400,10 +400,6 @@ std::string TimeAverageRecorder::str() const
 
 //---
 
-StatisticsRecorder::StatisticsRecorder()
-{
-}
-
 StatisticsRecorder::~StatisticsRecorder()
 {
     dropAndDelete(statistic);

@@ -238,7 +238,7 @@ class SIM_API StatisticsRecorder : public cNumericResultRecorder
         virtual void finish(cResultFilter *prev) override;
         virtual void forEachChild(cVisitor *v) override;
     public:
-        StatisticsRecorder();
+        StatisticsRecorder() {}
         ~StatisticsRecorder();
         virtual void setStatistic(cStatistic* stat);
         virtual cStatistic *getStatistic() const {return statistic;}

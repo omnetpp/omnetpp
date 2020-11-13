@@ -40,16 +40,6 @@ void generateMsg(ostream& out, ASTNode *node)
 
 #define OUT    (*outp)
 
-MsgGenerator::MsgGenerator()
-{
-    outp = nullptr;
-    indentSize = 4;
-}
-
-MsgGenerator::~MsgGenerator()
-{
-}
-
 void MsgGenerator::setIndentSize(int indentsiz)
 {
     indentSize = indentsiz;

@@ -36,15 +36,9 @@ Register_Class(cNamedObject);
 // static class members
 cStringPool cNamedObject::nameStringPool("cNamedObject::stringPool");
 
-cNamedObject::cNamedObject()
+cNamedObject::cNamedObject(const char *s, bool namepooling) :
+    flags(namepooling ? FL_NAMEPOOLING : 0)
 {
-    name = nullptr;
-    flags = FL_NAMEPOOLING;
-}
-
-cNamedObject::cNamedObject(const char *s, bool namepooling)
-{
-    flags = namepooling ? FL_NAMEPOOLING : 0;
     if (!s)
         name = nullptr;
     else if (namepooling)
@@ -53,10 +47,9 @@ cNamedObject::cNamedObject(const char *s, bool namepooling)
         name = opp_strdup(s);
 }
 
-cNamedObject::cNamedObject(const cNamedObject& obj) : cObject(obj)
+cNamedObject::cNamedObject(const cNamedObject& obj) :
+    cObject(obj), flags(obj.flags & FL_NAMEPOOLING)
 {
-    name = nullptr;
-    flags = obj.flags & FL_NAMEPOOLING;
     setName(obj.getName());
     copy(obj);
 }

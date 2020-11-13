@@ -28,12 +28,6 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace envir {
 
-ArgList::ArgList()
-{
-    argc = 0;
-    argv = nullptr;
-}
-
 void ArgList::parse(int argc, char *argv[], const char *spec)
 {
     this->argc = argc;

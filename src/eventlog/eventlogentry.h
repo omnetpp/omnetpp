@@ -40,17 +40,17 @@ class EventLog;
 class EVENTLOG_API EventLogEntry : public omnetpp::common::MatchExpression::Matchable
 {
     public:
-        int contextModuleId;
-        int level; // indent level (method call depth)
+        int contextModuleId = -1;
+        int level = -1; // indent level (method call depth)
 
     protected:
-        Event* event; // back pointer
-        int entryIndex;
+        Event* event = nullptr; // back pointer
+        int entryIndex = -1;
         static char buffer[128];
         static omnetpp::common::LineTokenizer tokenizer; // not thread safe
 
     public:
-        EventLogEntry();
+        EventLogEntry() {}
         virtual ~EventLogEntry() {}
         virtual void parse(char *line, int length) = 0;
         virtual void print(FILE *fout) = 0;
@@ -96,7 +96,7 @@ class EVENTLOG_API EventLogTokenBasedEntry : public EventLogEntry
 class EVENTLOG_API EventLogMessageEntry : public EventLogEntry
 {
     public:
-        const char *text;
+        const char *text = nullptr;
 
     public:
         EventLogMessageEntry(Event *event, int entryIndex);

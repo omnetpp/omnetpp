@@ -59,7 +59,7 @@ class COMMON_API FileGlobber
 {
   private:
     std::string fnamepattern;
-    GlobPrivateData *data;
+    GlobPrivateData *data = nullptr;
   public:
     /**
      * Constructor. Accepts the wildcard pattern to glob.

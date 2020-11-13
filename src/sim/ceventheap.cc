@@ -55,25 +55,15 @@ static int qsort_cmp_msgs(const void *p1, const void *p2)
 
 //----
 
-cEventHeap::cEventHeap(const char *name, int intialCapacity) : cFutureEventSet(name)
+cEventHeap::cEventHeap(const char *name, int intialCapacity) : cFutureEventSet(name),
+    heapCapacity(intialCapacity)
 {
-    insertCount = 0;
-
-    heapLength = 0;
-    heapCapacity = intialCapacity;
     heap = new cEvent *[heapCapacity+1];  // +1 is necessary because h[0] is not used
-
-    cbsize = 4;  // must be power of 2!
     cb = new cEvent *[cbsize];
-    cbhead = cbtail = 0;
-    useCb = true;
 }
 
 cEventHeap::cEventHeap(const cEventHeap& other) : cFutureEventSet(other)
 {
-    cb = nullptr;
-    heap = nullptr;
-    heapLength = 0;
     copy(other);
 }
 

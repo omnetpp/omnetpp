@@ -66,13 +66,13 @@ class COMMON_API DisplayString
        int numArgs;
        char *args[MAXARGS];
     };
-    char *buffer;       // holds pieces of display string (sliced with zeroes)
-    char *bufferEnd;    // points to last byte of buffer allocated
-    Tag *tags;          // table of tags
-    int numTags;        // number of tags
+    char *buffer = nullptr;     // holds pieces of display string (sliced with zeroes)
+    char *bufferEnd = nullptr;  // points to last byte of buffer allocated
+    Tag *tags = nullptr;        // table of tags
+    int numTags = 0;            // number of tags
 
-    mutable char *assembledString; // cached copy of assembled display string
-    mutable bool assembledStringValid; // whether cached copy is up-to-date
+    mutable char *assembledString = nullptr;    // cached copy of assembled display string
+    mutable bool assembledStringValid = false;  // whether cached copy is up-to-date
 
   private:
     // helper functions
@@ -91,7 +91,7 @@ class COMMON_API DisplayString
     /**
      * Constructor.
      */
-    DisplayString();
+    DisplayString() {}
 
     /**
      * Constructor.

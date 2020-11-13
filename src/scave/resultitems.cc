@@ -27,12 +27,13 @@ namespace scave {
 
 const std::string NULLSTRING = "";
 
-ResultItem::ResultItem(FileRun *fileRun, const std::string& moduleName, const std::string& name, const StringMap& attrs) :
-        fileRunRef(fileRun), moduleNameRef(nullptr), nameRef(nullptr), attributes(nullptr)
+ResultItem::ResultItem(FileRun *fileRun, const std::string& moduleName, const std::string& name, const StringMap& attrs):
+    fileRunRef(fileRun)
 {
     ResultFileManager *resultFileManager = fileRun->fileRef->getResultFileManager();
     moduleNameRef = resultFileManager->moduleNames.insert(moduleName);
     nameRef = resultFileManager->names.insert(name);
+
     setAttributes(attrs);
 }
 

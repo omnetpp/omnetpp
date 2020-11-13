@@ -31,9 +31,9 @@ namespace common {
  */
 class COMMON_API EnumStringIterator
 {
-     const char *str;  // pointer to the original string (not a copy)
-     int current, until;
-     bool err;
+     const char *str = nullptr;  // pointer to the original string (not a copy)
+     int current = -1, until = -1;
+     bool err = false;
    public:
      EnumStringIterator(const char *s);
      int operator++(int);

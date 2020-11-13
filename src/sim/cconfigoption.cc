@@ -27,14 +27,10 @@ namespace omnetpp {
 
 
 cConfigOption::cConfigOption(const char *name, bool isGlobal, Type type, const char *unit,
-                       const char *defaultValue, const char *description) :
-    cNoncopyableOwnedObject(name, false)
+                             const char *defaultValue, const char *description):
+    cNoncopyableOwnedObject(name, false),
+    isPerObject_(false), isGlobal_(isGlobal), objectKind(KIND_NONE), type(type), unit(unit ? unit : "")
 {
-    this->isPerObject_ = false;
-    this->isGlobal_ = isGlobal;
-    this->objectKind = KIND_NONE;
-    this->type = type;
-    this->unit = unit ? unit : "";
     if (type==CFG_BOOL && defaultValue)
         defaultValue = (defaultValue[0]=='0' || defaultValue[0]=='f') ? "false" : "true";
     this->defaultValue = defaultValue ? defaultValue : "";
@@ -42,14 +38,10 @@ cConfigOption::cConfigOption(const char *name, bool isGlobal, Type type, const c
 }
 
 cConfigOption::cConfigOption(const char *name, ObjectKind kind, Type type, const char *unit,
-                       const char *defaultValue, const char *description) :
-    cNoncopyableOwnedObject(name, false)
+                       const char *defaultValue, const char *description):
+    cNoncopyableOwnedObject(name, false),
+    isPerObject_(true), isGlobal_(false), objectKind(kind), type(type), unit(unit ? unit : "")
 {
-    this->isPerObject_ = true;
-    this->isGlobal_ = false;
-    this->objectKind = kind;
-    this->type = type;
-    this->unit = unit ? unit : "";
     if (type==CFG_BOOL && defaultValue)
         defaultValue = (defaultValue[0]=='0' || defaultValue[0]=='f') ? "false" : "true";
     this->defaultValue = defaultValue ? defaultValue : "";

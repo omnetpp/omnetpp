@@ -59,7 +59,6 @@ void cCoroutine::switchToMain()
 
 cCoroutine::cCoroutine()
 {
-    lpFiber = 0;
 }
 
 cCoroutine::~cCoroutine()
@@ -127,12 +126,6 @@ void cCoroutine::switchToMain()
     ucontext_t *oldContextPtr = curContextPtr;
     curContextPtr = &mainContext;
     swapcontext(oldContextPtr, curContextPtr);
-}
-
-cCoroutine::cCoroutine()
-{
-    stackSize = 0;
-    stackPtr = nullptr;
 }
 
 cCoroutine::~cCoroutine()

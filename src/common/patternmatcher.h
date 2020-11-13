@@ -94,7 +94,7 @@ class COMMON_API PatternMatcher
     };
 
     std::vector<Elem> pattern;
-    bool caseSensitive;
+    bool caseSensitive = true;
 
     mutable std::string rest; // used to pass return value from doMatch() to patternPrefixMatches()
 
@@ -112,7 +112,7 @@ class COMMON_API PatternMatcher
     /**
      * Constructor
      */
-    PatternMatcher();
+    PatternMatcher() {}
 
     /**
      * Constructor
@@ -122,12 +122,12 @@ class COMMON_API PatternMatcher
     /**
      * Copy constructor
      */
-    PatternMatcher(const PatternMatcher& other);
+    PatternMatcher(const PatternMatcher& other) = default;
 
     /**
      * Destructor
      */
-    ~PatternMatcher();
+    ~PatternMatcher() {}
 
     /**
      * Sets the pattern to be used by subsequent calls to matches(). See the

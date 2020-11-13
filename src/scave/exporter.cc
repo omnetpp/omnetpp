@@ -32,14 +32,6 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace scave {
 
-
-ExporterType::~ExporterType()
-{
-
-}
-
-//----
-
 void Exporter::checkOptionKey(ExporterType *desc, const std::string& key)
 {
     const StringMap& options = desc->getSupportedOptions();

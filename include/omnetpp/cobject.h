@@ -129,7 +129,7 @@ class SIM_API cObject
      * Subclasses should call the copy constructor of their base classes from their own
      * copy constructors.
      */
-    cObject(const cObject& other) {}
+    cObject(const cObject& other) = default;
 
     /**
      * Destructor. It has an empty body (the class does not have data members.)

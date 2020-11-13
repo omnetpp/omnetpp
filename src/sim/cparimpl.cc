@@ -41,8 +41,6 @@ cStringPool cParImpl::stringPool("cParImpl::stringPool");
 
 cParImpl::cParImpl()
 {
-    unitp = nullptr;
-    baseDirectory = nullptr;
     totalParimplObjs++;
     liveParimplObjs++;
 }

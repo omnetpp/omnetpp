@@ -362,29 +362,26 @@ std::string cFigure::Transform::str() const
 
 //----
 
-cFigure::Pixmap::Pixmap() : width(0), height(0), data(nullptr)
-{
-}
-
-cFigure::Pixmap::Pixmap(int width, int height) : width(width), height(height), data(nullptr)
+// TODO: why not delegate these to each other?
+cFigure::Pixmap::Pixmap(int width, int height) : width(width), height(height)
 {
     allocate(width, height);
     fill(BLACK, 0);
 }
 
-cFigure::Pixmap::Pixmap(int width, int height, const RGBA& fill_) : width(width), height(height), data(nullptr)
+cFigure::Pixmap::Pixmap(int width, int height, const RGBA& fill_) : width(width), height(height)
 {
     allocate(width, height);
     fill(fill_);
 }
 
-cFigure::Pixmap::Pixmap(int width, int height, const Color& color, double opacity) : width(width), height(height), data(nullptr)
+cFigure::Pixmap::Pixmap(int width, int height, const Color& color, double opacity) : width(width), height(height)
 {
     allocate(width, height);
     fill(color, opacity);
 }
 
-cFigure::Pixmap::Pixmap(const Pixmap& other) : width(0), height(0), data(nullptr)
+cFigure::Pixmap::Pixmap(const Pixmap& other)
 {
     *this = other;
 }
@@ -469,9 +466,7 @@ std::string cFigure::Pixmap::str() const
 
 //----
 
-cFigure::cFigure(const char *name) : cOwnedObject(name), id(++lastId), zIndex(0), visible(true),
-        tooltip(nullptr), associatedObject(nullptr), tags(nullptr), tagBits(0),
-        localChanges(0), subtreeChanges(0), cachedHashValid(false), cachedHash(0)
+cFigure::cFigure(const char *name) : cOwnedObject(name), id(++lastId)
 {
 }
 
@@ -3816,7 +3811,7 @@ void cPixmapFigure::hashTo(cHasher& hasher) const
 
 //------
 
-cCanvas::cCanvas(const char *name) : cOwnedObject(name), backgroundColor(cFigure::Color(160,224,160)), minAnimationSpeed(DBL_MAX), animationHoldEndTime(0)
+cCanvas::cCanvas(const char *name): cOwnedObject(name), backgroundColor(160,224,160)
 {
     rootFigure = new cGroupFigure("rootFigure");
     take(rootFigure);

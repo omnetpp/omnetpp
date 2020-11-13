@@ -53,22 +53,22 @@ class LAYOUT_API ForceDirectedGraphLayouter : public GraphLayouter
     /**
      * True means there is at least one movable node.
      */
-    bool hasMovableNode;
+    bool hasMovableNode = false;
 
     /**
      * True means there is at least one fixed node.
      */
-    bool hasFixedNode;
+    bool hasFixedNode = false;
 
     /**
      * True means there is at least one anchored node.
      */
-    bool hasAnchoredNode;
+    bool hasAnchoredNode = false;
 
     /**
      * True means there is at least one edge to the border.
      */
-    bool hasEdgeToBorder;
+    bool hasEdgeToBorder = false;
 
     /**
      * Use pre embedding to create an initial layout before calling the force directed embedding.
@@ -91,19 +91,19 @@ class LAYOUT_API ForceDirectedGraphLayouter : public GraphLayouter
     /**
      * Various measures calculated before the actual layout.
      */
-    double expectedEmbeddingWidth;
-    double expectedEmbeddingHeight;
-    double expectedEdgeLength;
-    bool slippery;
-    bool pointLikeDistance;
+    double expectedEmbeddingWidth = -1;
+    double expectedEmbeddingHeight = -1;
+    double expectedEdgeLength = -1;
+    bool slippery = false;
+    bool pointLikeDistance = true;
 
     // border bodies will be added if there are either
     // fixed nodes or edges connected to the border
     // or the width or the height of the bounding box is specified
-    WallBody *topBorder;
-    WallBody *bottomBorder;
-    WallBody *leftBorder;
-    WallBody *rightBorder;
+    WallBody *topBorder = nullptr;
+    WallBody *bottomBorder = nullptr;
+    WallBody *leftBorder = nullptr;
+    WallBody *rightBorder = nullptr;
 
     GraphComponent graphComponent;
     ForceDirectedEmbedding embedding;
@@ -116,7 +116,7 @@ class LAYOUT_API ForceDirectedGraphLayouter : public GraphLayouter
      * Ctor, dtor
      */
     //@{
-    ForceDirectedGraphLayouter();
+    ForceDirectedGraphLayouter() {}
     virtual ~ForceDirectedGraphLayouter();
     //@}
 

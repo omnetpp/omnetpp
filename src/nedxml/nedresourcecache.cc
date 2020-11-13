@@ -43,10 +43,6 @@ inline std::string canonicalize(const char *pathname)
     return tidyFilename(toAbsolutePath(pathname).c_str(), true);
 }
 
-NedResourceCache::NedResourceCache()
-{
-}
-
 NedResourceCache::~NedResourceCache()
 {
     for (auto & file : nedFiles)

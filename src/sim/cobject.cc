@@ -165,13 +165,10 @@ class cChildObjectFinderVisitor : public cVisitor
 {
   protected:
     const char *name;
-    cObject *result;
+    cObject *result = nullptr;
 
   public:
-    cChildObjectFinderVisitor(const char *objname) {
-        name = objname;
-        result = nullptr;
-    }
+    cChildObjectFinderVisitor(const char *objname): name(objname) { }
 
     virtual void visit(cObject *obj) override {
         if (obj->isName(name)) {
@@ -190,13 +187,10 @@ class cRecursiveObjectFinderVisitor : public cVisitor
 {
   protected:
     const char *name;
-    cObject *result;
+    cObject *result = nullptr;
 
   public:
-    cRecursiveObjectFinderVisitor(const char *objname) {
-        name = objname;
-        result = nullptr;
-    }
+    cRecursiveObjectFinderVisitor(const char *objname): name(objname) { }
 
     virtual void visit(cObject *obj) override {
         if (obj->isName(name)) {

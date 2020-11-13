@@ -41,8 +41,8 @@ class SIM_API cLinkDelayLookahead : public cNMPLookahead
     };
 
     // partition information
-    int numSeg;              // number of partitions
-    PartitionInfo *segInfo;  // partition info array, size numSeg
+    int numSeg = 0;                    // number of partitions
+    PartitionInfo *segInfo = nullptr;  // partition info array, size numSeg
 
     // calculate the total delay along the path ending the given gate
     simtime_t collectPathDelay(cGate *pathEndGate);
@@ -51,7 +51,7 @@ class SIM_API cLinkDelayLookahead : public cNMPLookahead
     /**
      * Constructor.
      */
-    cLinkDelayLookahead();
+    cLinkDelayLookahead() {}
 
     /**
      * Destructor.

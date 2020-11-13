@@ -44,7 +44,7 @@ class SIM_API cDynamicExpression : public cExpression
      */
     class SIM_API IResolver {
       public:
-        virtual ~IResolver();
+        virtual ~IResolver() {}
         /**
          * Create and return an exact copy of this object.
          */

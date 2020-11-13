@@ -39,16 +39,16 @@ class NEDXML_API SourceDocument
   private:
     enum {COMMENT_LINE, BLANK_LINE, CODE_LINE};
 
-    char *wholeFile;
+    char *wholeFile = nullptr;
 
-    int numLines;
-    char **lineBeg;
+    int numLines = 0;
+    char **lineBeg = nullptr;
 
-    char *end;
-    char savedChar;
+    char *end = nullptr;
+    char savedChar = 0;
 
+    int commentBufLen = 1024; // has to be before commentBuf to get initialized before it
     char *commentBuf;
-    int commentBufLen;
 
   private:
     int getLineType(int lineNumber);

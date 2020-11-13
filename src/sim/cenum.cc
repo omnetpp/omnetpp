@@ -57,10 +57,6 @@ cEnum::cEnum(const char *name, const char *str, ...) : cOwnedObject(name, false)
     va_end(va);
 }
 
-cEnum::~cEnum()
-{
-}
-
 void cEnum::copy(const cEnum& other)
 {
     valueToNameMap = other.valueToNameMap;

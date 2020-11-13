@@ -67,11 +67,12 @@ namespace scave {
 #define LOG !verbose ? std::cout : std::cout
 
 OmnetppResultFileLoader::OmnetppResultFileLoader(ResultFileManager *resultFileManagerPar, int flags, InterruptedFlag *interrupted) :
-          IResultFileLoader(resultFileManagerPar), interrupted(interrupted)
+    IResultFileLoader(resultFileManagerPar),
+    indexingOption(flags & (ResultFileManager::ALLOW_INDEXING|ResultFileManager::SKIP_IF_NO_INDEX|ResultFileManager::ALLOW_LOADING_WITHOUT_INDEX)),
+    lockfileOption(flags & (ResultFileManager::SKIP_IF_LOCKED|ResultFileManager::IGNORE_LOCK_FILE)),
+    verbose(flags & ResultFileManager::VERBOSE),
+    interrupted(interrupted)
 {
-    indexingOption = flags & (ResultFileManager::ALLOW_INDEXING|ResultFileManager::SKIP_IF_NO_INDEX|ResultFileManager::ALLOW_LOADING_WITHOUT_INDEX);
-    lockfileOption = flags & (ResultFileManager::SKIP_IF_LOCKED|ResultFileManager::IGNORE_LOCK_FILE);
-    verbose = flags & ResultFileManager::VERBOSE;
 }
 
 

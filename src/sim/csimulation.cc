@@ -88,27 +88,9 @@ cSimulation::cSimulation(const char *name, cEnvir *env) : cNamedObject(name, fal
 
     envir = env;
 
-    currentActivityModule = nullptr;
-    contextComponent = nullptr;
-
+    // these are not set inline because the declaring header is included here
     simulationStage = CTX_NONE;
     contextType = CTX_NONE;
-
-    systemModule = nullptr;
-    scheduler = nullptr;
-    fes = nullptr;
-
-    delta = 32;
-    size = 0;
-    lastComponentId = 0;  // componentv[0] is not used for historical reasons
-    componentv = nullptr;
-
-    networkType = nullptr;
-    fingerprint = nullptr;
-
-    currentSimtime = SIMTIME_ZERO;
-    currentEventNumber = 0;
-    trapOnNextEvent = false;
 
     // install default FES
     setFES(new cEventHeap("fes"));
@@ -162,10 +144,10 @@ class cSnapshotWriterVisitor : public cVisitor
 {
   protected:
     ostream& os;
-    int indentLevel;
+    int indentLevel = 0;
 
   public:
-    cSnapshotWriterVisitor(ostream& ostr) : os(ostr), indentLevel(0) {}
+    cSnapshotWriterVisitor(ostream& ostr) : os(ostr) {}
 
     virtual void visit(cObject *obj) override {
         std::string indent(2 * indentLevel, ' ');

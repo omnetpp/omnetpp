@@ -116,7 +116,7 @@ void BigDecimal::normalize()
     }
 }
 
-const BigDecimal& BigDecimal::operator=(double d)
+BigDecimal& BigDecimal::operator=(double d)
 {
     // check NaN and infinity
     if (omnetpp::common::isNaN(d))

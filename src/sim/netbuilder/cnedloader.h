@@ -60,7 +60,7 @@ class SIM_API cNedLoader : public NedResourceCache
 
   protected:
     // constructor is protected, because we want only one instance
-    cNedLoader()  {}
+    cNedLoader()  = default;
 
     // reimplemented so that we can add cModuleType/cChannelType
     virtual void registerNedType(const char *qname, bool isInnerType, NedElement *node) override;

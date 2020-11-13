@@ -33,10 +33,10 @@ class ENVIR_API Stopwatch
 {
 private:
     // configuration
-    int64_t realtimeLimitUsecs;
-    int64_t cpuTimeLimitClocks;
+    int64_t realtimeLimitUsecs = -1;
+    int64_t cpuTimeLimitClocks = -1;
     bool clockRunning;
-    bool hasTimeLimit_;  // cached state
+    bool hasTimeLimit_ = false;  // cached state
 
     // state for tracking elapsed time
     int64_t elapsedTimeUsecs; // accumulates real time spent simulating

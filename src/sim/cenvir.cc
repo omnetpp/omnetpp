@@ -25,16 +25,6 @@ using namespace omnetpp::common;
 
 namespace omnetpp {
 
-cEnvir::cEnvir()
-{
-    loggingEnabled = true;
-    suppressNotifications = false;  //FIXME set to true when not needed!
-}
-
-cEnvir::~cEnvir()
-{
-}
-
 cConfigurationEx *cEnvir::getConfigEx()
 {
     cConfigurationEx *cfg = dynamic_cast<cConfigurationEx *>(getConfig());

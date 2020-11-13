@@ -48,7 +48,7 @@ class SCAVE_API IndexedVectorFileReader : public IVectorDataReader
         AdapterLambdaType adapterLambda;
 
         std::string fname;  // file name of the vector file
-        VectorFileIndex *index; // index of the vector file, loaded fully into the memory
+        VectorFileIndex *index = nullptr; // index of the vector file, loaded fully into the memory
         bool includeEventNumbers;
 
     protected:

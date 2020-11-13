@@ -67,30 +67,18 @@ static const char *getTypeName(char typechar)
 
 cMsgPar::cMsgPar(const char *name) : cOwnedObject(name)
 {
-    takeOwnership = false;
-    changedFlag = false;
-    typeChar = 'L';
     lng.val = 0L;
 }
 
 cMsgPar::cMsgPar(const cMsgPar& par) : cOwnedObject(par)
 {
-    takeOwnership = false;
-    changedFlag = false;
-    typeChar = 'L';
     lng.val = 0L;
     copy(par);
 }
 
-cMsgPar::cMsgPar(const char *name, cMsgPar& other) : cOwnedObject(name)
+cMsgPar::cMsgPar(const char *name, cMsgPar& other) : cMsgPar(other)
 {
-    takeOwnership = false;
-    changedFlag = false;
-    typeChar = 'L';
-    lng.val = 0L;
-
     setName(name);
-    operator=(other);
 }
 
 cMsgPar::~cMsgPar()

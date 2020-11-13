@@ -80,10 +80,7 @@ static void record_in_insp(void *data, simtime_t t, double val)
 
 OutputVectorInspector::OutputVectorInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f) :
     Inspector(parent, isTopLevel, f),
-    circbuf(100000),
-    isMinYAutoscaled(true),
-    isMaxYAutoscaled(true),
-    isTimeScaleAutoscaled(true)
+    circbuf(100000)
 {
     QGraphicsScene *scene = new QGraphicsScene();
     scene->setBackgroundBrush(QBrush(BACKGROUND_COLOR));

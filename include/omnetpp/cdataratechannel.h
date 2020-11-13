@@ -156,7 +156,7 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
     /**
      * Destructor.
      */
-    virtual ~cDatarateChannel();
+    virtual ~cDatarateChannel() {}
 
     /**
      * Utility function for dynamic channel creation. Equivalent to

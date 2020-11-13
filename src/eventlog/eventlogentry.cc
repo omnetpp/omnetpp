@@ -31,14 +31,6 @@ static int currentLineLength;
 
 /***********************************************/
 
-EventLogEntry::EventLogEntry()
-{
-    contextModuleId = -1;
-    level = -1;
-    event = nullptr;
-    entryIndex = -1;
-}
-
 EventLogEntry *EventLogEntry::parseEntry(EventLog *eventLog, Event *event, int entryIndex, file_offset_t offset, char *line, int length)
 {
     try {
@@ -212,9 +204,9 @@ void EventLogTokenBasedEntry::parse(char *line, int length)
 
 EventLogMessageEntry::EventLogMessageEntry(Event *event, int entryIndex)
 {
+    // these are inherited, cannot be put into the initializer list
     this->event = event;
     this->entryIndex = entryIndex;
-    text = nullptr;
 }
 
 void EventLogMessageEntry::parse(char *line, int length)

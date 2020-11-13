@@ -87,29 +87,15 @@ void ASTNode::validateEnum(int b, const char *vals[], int nums[], int n)
     throw NedException("Invalid integer value %d for enum attribute (not one of '%s'=%d etc)", b, vals[0], nums[0]);
 }
 
-ASTNode::ASTNode()
+ASTNode::ASTNode() 
 {
-    parent = nullptr;
-    firstChild = nullptr;
-    lastChild = nullptr;
-    prevSibling = nullptr;
-    nextSibling = nullptr;
-    userData = nullptr;
-
     id = ++lastId;
     numCreated++;
     numExisting++;
 }
 
-ASTNode::ASTNode(ASTNode *parent)
+ASTNode::ASTNode(ASTNode *parent) 
 {
-    this->parent = nullptr;
-    firstChild = nullptr;
-    lastChild = nullptr;
-    prevSibling = nullptr;
-    nextSibling = nullptr;
-    userData = nullptr;
-
     id = ++lastId;
     numCreated++;
     numExisting++;

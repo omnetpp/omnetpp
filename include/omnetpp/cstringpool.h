@@ -46,7 +46,7 @@ class cStringPool
     std::string name;
     typedef std::map<char *,int,strless> StringIntMap;
     StringIntMap pool; // map<string,refcount>
-    bool alive; // useful when stringpool is a global variable
+    bool alive = true; // useful when stringpool is a global variable
 
   public:
     /**

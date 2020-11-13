@@ -48,7 +48,7 @@ class SIM_API cStringParImpl : public cParImpl
     /**
      * Constructor.
      */
-    explicit cStringParImpl();
+    explicit cStringParImpl() {}
 
     /**
      * Copy constructor.

@@ -88,11 +88,10 @@ class ENVIR_API ValueIterator
      */
     struct Item {
         enum Type { TEXT, FROM_TO_STEP};
-        Type type;
+        Type type = TEXT;
         Expr text;
         Expr from, to, step;
 
-        Item() : type(TEXT) {}
         void parse(const char *s);
         void collectVariablesInto(std::set<std::string>& result) const;
         void restart(const VariableMap& map);
@@ -104,11 +103,11 @@ class ENVIR_API ValueIterator
     std::vector<Item> items;
 
     // iteration state
-    int itemIndex;  // index into items[]
-    int k;          // index within the item
+    int itemIndex = 0;  // index into items[]
+    int k = 0;          // index within the item
 
     // counts how many times op++() was invoked on the iterator
-    int pos;
+    int pos = 0;
 
     // names of variables referenced in this value iterator
     std::set<std::string> referredVariables;
@@ -117,7 +116,7 @@ class ENVIR_API ValueIterator
     /**
      * Default constructor.
      */
-    ValueIterator();
+    ValueIterator() {}
 
     /**
      * Constructor; the iteration is parsed from the string argument.
@@ -127,7 +126,7 @@ class ENVIR_API ValueIterator
     /**
      * Destructor.
      */
-    ~ValueIterator();
+    ~ValueIterator() {}
 
     /**
      * Parses the given string.

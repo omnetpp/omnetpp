@@ -35,15 +35,7 @@
 namespace omnetpp {
 namespace qtenv {
 
-TimeLineGraphicsView::TimeLineGraphicsView() :
-    drawMinorTicks(true),
-    adaptiveMinExponent(true),
-    adaptiveMaxExponent(true),
-    minExponent(-1),
-    maxExponent(0),
-    enableTickLabels(true),
-    enableMessageLabels(true),
-    defaultNumMessageLabelRows(2)
+TimeLineGraphicsView::TimeLineGraphicsView()
 {
     messageLabelFont = tickLabelFont = getQtenv()->getTimelineFont();
 

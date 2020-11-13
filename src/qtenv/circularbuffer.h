@@ -31,9 +31,10 @@ template <typename T>
 class QTENV_API circular_buffer
 {
     private:
-        T *cb;              // size of the circular buffer
-        int cbsize;         // always power of 2
-        int cbhead, cbtail; // cbhead is inclusive, cbtail is exclusive
+        T *cb;           // size of the circular buffer
+        int cbsize;      // always power of 2
+        int cbhead = 0;  // inclusive
+        int cbtail = 0;  // exclusive
 
     private:
         void grow() {
@@ -59,7 +60,7 @@ class QTENV_API circular_buffer
 
     public:
         circular_buffer(int capacity=32) :
-            cb(new T[capacity]), cbsize(capacity), cbhead(0), cbtail(0) { }
+            cb(new T[capacity]), cbsize(capacity) { }
         ~circular_buffer() {
             delete[] cb;
         }

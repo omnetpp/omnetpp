@@ -52,13 +52,13 @@ class Vertex {
         /**
          * Used to look up the vertex. Not used by any graph algorithm.
          */
-        void *identity;
+        void *identity = nullptr;
 
         /**
          * The parent of this vertex in the spanning tree. Filled by calculateSpanningTree in
          * the owner graphComponent.
          */
-        Vertex *spanningTreeParent;
+        Vertex *spanningTreeParent = nullptr;
 
         /**
          * Children vertices of this vertex in the spanning tree. Filled by calculateSpanningTree in
@@ -70,27 +70,27 @@ class Vertex {
          * The connected graph component this vertex is part of. Filled by calculateConnectedSubComponents
          * in the owner graphComponent.
          */
-        GraphComponent *connectedSubComponent;
+        GraphComponent *connectedSubComponent = nullptr;
 
         /**
          * Used to colorize the vertex in graph algorithms.
          */
-        int color;
+        int color = 0;
 
         /**
          * Center coordinate relative to parent.
          */
-        Pt starTreeCenter;
+        Pt starTreeCenter = Pt::getNil();
 
         /**
          * Subtree enclosing circle center.
          */
-        Pt starTreeCircleCenter;
+        Pt starTreeCircleCenter = Pt::getNil();
 
         /**
          * Subtree enclosing circle radius.
          */
-        double starTreeRadius;
+        double starTreeRadius = -1;
 
     public:
         Vertex(Pt pt, Rs rc, void *identity = nullptr);
@@ -104,28 +104,28 @@ class Edge {
         /**
          * One of the vertices where the edge ends.
          */
-        Vertex *source;
+        Vertex *source = nullptr;
 
         /**
          * One of the vertices where the edge ends.
          */
-        Vertex *target;
+        Vertex *target = nullptr;
 
         /**
          * Used to look up the edge. Not used by any graph algorithm.
          */
-        void *identity;
+        void *identity = nullptr;
 
         /**
          * The connected graph component this edge is part of. Filled by calculateConnectedSubComponents
          * in the owner graphComponent.
          */
-        GraphComponent *connectedSubComponent;
+        GraphComponent *connectedSubComponent = nullptr;
 
         /**
          * Used to colorize the edge in graph algorithms.
          */
-        int color;
+        int color = 0;
 
     public:
         Edge(Vertex *source, Vertex *target, void *identity = nullptr);
@@ -140,7 +140,7 @@ class GraphComponent {
          * True means this graphComponent owns the vertices and edges so it will
          * delete them in the descructor.
          */
-        bool owner;
+        bool owner = true;
 
         /**
          * A list of vertices present in this component.
@@ -156,7 +156,7 @@ class GraphComponent {
         /**
          * The root of the spanning tree. Filled by calculateSpanningTree.
          */
-        Vertex *spanningTreeRoot;
+        Vertex *spanningTreeRoot = nullptr;
 
         /**
          * Contains all vertices in the order of the spanning tree traversal.
@@ -170,7 +170,7 @@ class GraphComponent {
         std::vector<GraphComponent *> connectedSubComponents;
 
     public:
-        GraphComponent();
+        GraphComponent() {}
         ~GraphComponent();
 
         int addVertex(Vertex *vertex);

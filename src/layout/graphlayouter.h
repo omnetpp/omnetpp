@@ -57,7 +57,7 @@ class LAYOUT_API GraphLayouterEnvironment
 class LAYOUT_API BasicGraphLayouterEnvironment : public GraphLayouterEnvironment
 {
     private:
-        int timeout;
+        int timeout = 0;
         std::map<std::string,double> parameters;
         time_t startTime;
 
@@ -90,10 +90,10 @@ class LAYOUT_API GraphLayouter
   protected:
     omnetpp::common::LCGRandom lcgRandom;
 
-    GraphLayouterEnvironment *environment;
+    GraphLayouterEnvironment *environment = nullptr;
 
-    double width, height;  // ==0 means unspecified
-    double border;
+    double width = 0, height = 0;  // ==0 means unspecified
+    double border = 0;
 
     double privRand01() { return lcgRandom.next01(); }
     double privUniform(double a, double b) { return a + privRand01() * (b - a); }
@@ -103,7 +103,7 @@ class LAYOUT_API GraphLayouter
      * Ctor, dtor
      */
     //@{
-    GraphLayouter();
+    GraphLayouter() {}
     virtual ~GraphLayouter() {}
     //@}
 

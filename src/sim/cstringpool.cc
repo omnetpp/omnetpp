@@ -21,10 +21,8 @@ using namespace omnetpp::common;
 
 namespace omnetpp {
 
-cStringPool::cStringPool(const char *poolName)
+cStringPool::cStringPool(const char *poolName): name(opp_nulltoempty(poolName))
 {
-    name = opp_nulltoempty(poolName);
-    alive = true;
 }
 
 cStringPool::~cStringPool()

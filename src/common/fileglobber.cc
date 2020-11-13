@@ -36,10 +36,9 @@ struct GlobPrivateData
     char tmpfname[_MAX_PATH];
 };
 
-FileGlobber::FileGlobber(const char *filenamepattern)
+FileGlobber::FileGlobber(const char *filenamepattern) : fnamepattern(filenamepattern)
 {
-    fnamepattern = filenamepattern;
-    data = nullptr;
+
 }
 
 FileGlobber::~FileGlobber()
@@ -121,10 +120,9 @@ struct GlobPrivateData
     char tmpfname[PATH_MAX];
 };
 
-FileGlobber::FileGlobber(const char *filenamepattern)
+FileGlobber::FileGlobber(const char *filenamepattern) : fnamepattern(filenamepattern)
 {
-    fnamepattern = filenamepattern;
-    data = nullptr;
+
 }
 
 FileGlobber::~FileGlobber()
@@ -225,10 +223,9 @@ struct GlobPrivateData
     int globpos;
 };
 
-FileGlobber::FileGlobber(const char *filenamepattern)
+FileGlobber::FileGlobber(const char *filenamepattern) : fnamepattern(filenamepattern)
 {
-    fnamepattern = filenamepattern;
-    data = nullptr;
+
 }
 
 FileGlobber::~FileGlobber()

@@ -41,12 +41,12 @@ struct VectorFileIndex {
      */
     struct RunData {
         std::string runName;
-        int runNumber;
+        int runNumber = 0;
         StringMap attributes;
         StringMap itervars;
         OrderedKeyValueList configEntries;
 
-        RunData() : runNumber(0) {}
+        RunData() {}
 
         bool parseLine(char **tokens, int numTokens, const char *filename, int64_t lineNo);
         void writeToFile(FILE *file, const char *filename) const;
@@ -90,12 +90,12 @@ struct VectorFileIndex {
      * Entry for one vector in the index.
      */
     struct VectorInfo {
-        int vectorId;
+        int vectorId = -1;
         std::string moduleName;
         std::string name;
         std::string columns;
         StringMap attributes;
-        int64_t blockSize;
+        int64_t blockSize = 0;
         eventnumber_t startEventNum;
         eventnumber_t endEventNum;
         simultime_t startTime;
@@ -106,7 +106,7 @@ struct VectorFileIndex {
         /**
          * Creates an index entry for a vector.
          */
-        VectorInfo() : vectorId(-1), blockSize(0) {}
+        VectorInfo() {}
         VectorInfo(int vectorId, std::string moduleName, std::string name, std::string columns, int64_t blockSize)
             : vectorId(vectorId), moduleName(moduleName), name(name), columns(columns), blockSize(blockSize),
               startEventNum(-1), endEventNum(-1), startTime(0.0), endTime(0.0) {}

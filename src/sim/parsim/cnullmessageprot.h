@@ -48,8 +48,8 @@ class SIM_API cNullMessageProtocol : public cParsimProtocolBase
     };
 
     // partition information
-    int numSeg;              // number of partitions
-    PartitionInfo *segInfo;  // partition info array, size numSeg
+    int numSeg = 0;                    // number of partitions
+    PartitionInfo *segInfo = nullptr;  // partition info array, size numSeg
 
     // controls null message resend frequency, 0<=laziness<=1
     double laziness;

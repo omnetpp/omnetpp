@@ -46,13 +46,9 @@ extern cConfigOption *CFGID_PARSIM_DEBUG;  // registered in cparsimpartition.cc
 
 cIdealSimulationProtocol::cIdealSimulationProtocol() : cParsimProtocolBase()
 {
-    fin = nullptr;
     debug = getEnvir()->getConfig()->getAsBool(CFGID_PARSIM_DEBUG);
-
     tableSize = getEnvir()->getConfig()->getAsInt(CFGID_PARSIM_IDEALSIMULATIONPROTOCOL_TABLESIZE);
     table = new ExternalEvent[tableSize];
-    numItems = 0;
-    nextPos = 0;
 }
 
 cIdealSimulationProtocol::~cIdealSimulationProtocol()

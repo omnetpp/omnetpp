@@ -31,11 +31,6 @@ namespace omnetpp {
 
 cProxyGate::cProxyGate() : cGate()
 {
-    partition = nullptr;
-    remoteProcId = -1;
-    remoteModuleId = -1;
-    remoteGateId = -1;
-    data = nullptr;
 }
 
 std::string cProxyGate::str() const

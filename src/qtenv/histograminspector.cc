@@ -49,21 +49,7 @@ class HistogramInspectorFactory : public InspectorFactory
 Register_InspectorFactory(HistogramInspectorFactory);
 
 HistogramInspector::HistogramInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f) :
-    Inspector(parent, isTopLevel, f),
-    chartType(HistogramView::SHOW_PDF),
-    drawingStyle(HistogramView::DRAW_FILLED),
-    isCountsMinYAutoscaled(true),
-    isCountsMaxYAutoscaled(true),
-    isCountsMinXAutoscaled(true),
-    isCountsMaxXAutoscaled(true),
-    isPDFMinYAutoscaled(true),
-    isPDFMaxYAutoscaled(true),
-    isPDFMinXAutoscaled(true),
-    isPDFMaxXAutoscaled(true),
-    countsMinY(0),
-    countsMinX(0),
-    pdfMinY(0),
-    pdfMinX(0)
+    Inspector(parent, isTopLevel, f)
 {
     QGraphicsScene *scene = new QGraphicsScene();
     // Set background color to LightBlue

@@ -25,9 +25,6 @@ namespace envir {
 
 Stopwatch::Stopwatch()
 {
-    realtimeLimitUsecs = -1;
-    cpuTimeLimitClocks = -1;
-    hasTimeLimit_ = false;
     resetClock();
 }
 

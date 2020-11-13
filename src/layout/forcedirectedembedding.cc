@@ -26,11 +26,6 @@ namespace layout {
 
 ForceDirectedEmbedding::ForceDirectedEmbedding()
 {
-    debugLevel = 0;
-    inspected = false;
-    initialized = false;
-    finished = false;
-
     parameters = getParameters();
 }
 

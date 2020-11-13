@@ -32,13 +32,9 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace nedxml {
 
-NedTypeInfo::NedTypeInfo(NedResourceCache *resolver, const char *qname, bool isInnerType, ASTNode *tree)
+NedTypeInfo::NedTypeInfo(NedResourceCache *resolver, const char *qname, bool isInnerType, ASTNode *tree) :
+    resolver(resolver), qualifiedName(qname), isInner(isInnerType), tree(tree)
 {
-    this->resolver = resolver;
-    this->qualifiedName = qname;
-    this->isInner = isInnerType;
-    this->tree = tree;
-
     switch (tree->getTagCode()) {
         case NED_SIMPLE_MODULE: type = SIMPLE_MODULE; break;
         case NED_COMPOUND_MODULE: type = COMPOUND_MODULE; break;

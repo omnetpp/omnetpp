@@ -32,10 +32,10 @@ namespace omnetpp {
 class SIM_API cCommBufferBase : public cCommBuffer
 {
   protected:
-    char *mBuffer;    // the buffer
-    int mBufferSize;  // size of buffer allocated
-    int mMsgSize;     // current msg size (incremented by pack() functions)
-    int mPosition;    // current position in buffer for unpacking
+    char *mBuffer = nullptr; // the buffer
+    int mBufferSize = 0;     // size of buffer allocated
+    int mMsgSize = 0;        // current msg size (incremented by pack() functions)
+    int mPosition = 0;       // current position in buffer for unpacking
 
   protected:
     void extendBufferFor(int dataSize);
@@ -44,7 +44,7 @@ class SIM_API cCommBufferBase : public cCommBuffer
     /**
      * Constructor.
      */
-    cCommBufferBase();
+    cCommBufferBase() {}
 
     /**
      * Destructor.

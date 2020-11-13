@@ -52,9 +52,9 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
 
   private:
     std::string baseClassName;
-    cClassDescriptor *baseClassDesc;
-    int inheritanceChainLength;
-    int extendscObject;  // 0:false, 1:true, -1:unset
+    cClassDescriptor *baseClassDesc = nullptr;
+    int inheritanceChainLength = 1;
+    int extendscObject = -1;  // 0:false, 1:true, -1:unset
 
   protected:
     // utility functions for converting from/to strings
@@ -93,7 +93,7 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
     /**
      * Destructor.
      */
-    virtual ~cClassDescriptor();
+    virtual ~cClassDescriptor() {}
     //@}
 
     /** @name Getting descriptor for an object or a struct. */

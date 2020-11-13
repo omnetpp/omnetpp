@@ -70,7 +70,7 @@ class SIM_API cFigure : public cOwnedObject
             //@}
             /** @name Methods. */
             //@{
-            Point()  {}
+            Point() {}
             Point(double x, double y) : x(x), y(y) {}
             Point operator + (const Point& p) const;
             Point operator - (const Point& p) const;
@@ -97,7 +97,7 @@ class SIM_API cFigure : public cOwnedObject
             //@}
             /** @name Methods. */
             //@{
-            Rectangle()  {}
+            Rectangle() {}
             Rectangle(double x, double y, double width, double height) : x(x), y(y), width(width), height(height) {}
             Point getCenter() const;
             Point getSize() const;
@@ -127,7 +127,7 @@ class SIM_API cFigure : public cOwnedObject
             //@}
             /** @name Methods. */
             //@{
-            Color()  {}
+            Color() {}
             Color(uint8_t red, uint8_t green, uint8_t blue) : red(red), green(green), blue(blue) {}
             Color(const char *color) {*this = parseColor(color);}
             bool operator==(const Color& other) const {return red == other.red && green == other.green && blue == other.blue;}
@@ -166,7 +166,7 @@ class SIM_API cFigure : public cOwnedObject
             //@}
             /** @name Methods. */
             //@{
-            Font()  {}
+            Font() {}
             Font(std::string typeface, int pointSize=-1, uint8_t style=FONT_NONE) : typeface(typeface), pointSize(pointSize), style(style) {}
             bool operator==(const Font& other) const {return typeface == other.typeface && pointSize == other.pointSize && style == other.style;}
             std::string str() const;
@@ -219,10 +219,10 @@ class SIM_API cFigure : public cOwnedObject
 
             /** @name Methods. */
             //@{
-            Transform()  {}
+            Transform() {}
             Transform(double a, double b, double c, double d, double t1, double t2) : a(a), b(b), c(c), d(d), t1(t1), t2(t2) {}
-            Transform(const Transform& t) : a(t.a), b(t.b), c(t.c), d(t.d), t1(t.t1), t2(t.t2) {}
-            Transform& operator=(const Transform& t) {a=t.a; b=t.b; c=t.c; d=t.d; t1=t.t1; t2=t.t2; return *this;}
+            Transform(const Transform& t) = default;
+            Transform& operator=(const Transform& t) = default;
             Transform& translate(double dx, double dy);
             Transform& translate(const Point& p) {return translate(p.x, p.y);}
             Transform& scale(double s) {return scale(s,s);}
@@ -255,7 +255,7 @@ class SIM_API cFigure : public cOwnedObject
             //@}
             /** @name Methods. */
             //@{
-            RGBA()  {}
+            RGBA() {}
             RGBA(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha) : red(red), green(green), blue(blue), alpha(alpha) {}
             void set(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {red=r; green=g; blue=b; alpha=a;}
             void operator=(const Color& color) {red = color.red; green = color.green; blue = color.blue; alpha = 255;}
@@ -272,15 +272,15 @@ class SIM_API cFigure : public cOwnedObject
          */
         class SIM_API Pixmap {
             private:
-                int width, height; // zero is allowed
-                RGBA *data;
+                int width = 0, height = 0; // zero is allowed
+                RGBA *data = nullptr;
             private:
                 void allocate(int width, int height);
                 static uint8_t alpha(double opacity) {return opacity<=0 ? 0 : opacity>=1.0 ? 255 : (uint8_t)(opacity*255+0.5);}
             public:
                 /** @name Methods. */
                 //@{
-                Pixmap();
+                Pixmap() {}
                 Pixmap(int width, int height); // filled with transparent black
                 Pixmap(int width, int height, const RGBA& fill);
                 Pixmap(int width, int height, const Color& color, double opacity=1);
@@ -321,18 +321,18 @@ class SIM_API cFigure : public cOwnedObject
         static int lastId;
         static cStringPool stringPool;
         int id;
-        double zIndex;
-        bool visible; // treated as structural change, for simpler handling
-        const char *tooltip; // stringpool'd
-        cObject *associatedObject;
+        double zIndex = 0;
+        bool visible = true; // treated as structural change, for simpler handling
+        const char *tooltip = nullptr; // stringpool'd
+        cObject *associatedObject = nullptr;
         Transform transform;
         std::vector<cFigure*> children;
-        const char *tags; // stringpool'd
-        uint64_t tagBits;  // bit-to-tagname mapping is stored in cCanvas. Note: change to std::bitset if 64 tags are not enough
-        uint8_t localChanges;
-        uint8_t subtreeChanges;
-        mutable bool cachedHashValid; // separate flag needed because zero hash is also a valid value
-        mutable uint32_t cachedHash;
+        const char *tags = nullptr; // stringpool'd
+        uint64_t tagBits = 0;  // bit-to-tagname mapping is stored in cCanvas. Note: change to std::bitset if 64 tags are not enough
+        uint8_t localChanges = 0;
+        uint8_t subtreeChanges = 0;
+        mutable bool cachedHashValid = false; // separate flag needed because zero hash is also a valid value
+        mutable uint32_t cachedHash = 0;
 
     protected:
         // internal:
@@ -400,7 +400,7 @@ class SIM_API cFigure : public cOwnedObject
         /**
          * Copy constructor. Child figures and the figure ID are not copied.
          */
-        cFigure(const cFigure& other) : cOwnedObject(other), tooltip(nullptr), tags(nullptr) {copy(other);}
+        cFigure(const cFigure& other) : cOwnedObject(other) {copy(other);}
 
         /**
          * Destructor
@@ -3001,8 +3001,8 @@ class SIM_API cCanvas : public cOwnedObject
         std::map<std::string,int> tagBitIndex;  // tag-to-bitindex
         static std::map<std::string,cObjectFactory*> figureFactories;
         std::map<const cObject*,double> animationSpeedMap;  // maps source to animationSpeed
-        double minAnimationSpeed; // minimum of the values in animationSpeedMap cached, or DBL_MAX for none
-        double animationHoldEndTime; // the effective one will be the maximum endTime of all visible canvases
+        double minAnimationSpeed = DBL_MAX; // minimum of the values in animationSpeedMap cached, or DBL_MAX for none
+        double animationHoldEndTime = 0; // the effective one will be the maximum endTime of all visible canvases
     public:
         // internal:
         virtual cFigure *parseFigure(cProperty *property) const;

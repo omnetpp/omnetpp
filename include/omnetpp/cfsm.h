@@ -188,8 +188,8 @@ class SIM_API cFSM : public cOwnedObject
     //  negative state codes are transient states
     //  positive state codes are steady states
     //
-    int state;
-    const char *stateName;   // just a ptr to an external string
+    int state = 0;
+    const char *stateName = "INIT";   // just a ptr to an external string
 
   private:
     void copy(const cFSM& other);

@@ -29,9 +29,9 @@ class ChartGridItem : public QGraphicsItem
 {
   private:
     QGraphicsRectItem *frame;
-    double minY, maxY, minX, maxX;
-    int yLabelWidth;
-    bool isYAxisChanged, isXAxisChanged;
+    double minY = 0, maxY = 10, minX = 0, maxX = 10;
+    int yLabelWidth = 0;
+    bool isYAxisChanged = true, isXAxisChanged = true;
     QRectF boundingRectangle;
     std::vector<std::pair<ChartTickDecimal, bool> > xTicks, yTicks;
 

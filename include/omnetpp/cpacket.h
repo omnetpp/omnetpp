@@ -60,12 +60,12 @@ class SIM_API cPacket : public cMessage
 
     int64_t bitLength;    // length of the packet in bits -- used for bit error and transmission delay modeling
     simtime_t duration;   // transmission duration on last channel with datarate
-    cPacket *encapsulatedPacket; // ptr to the encapsulated message
-    unsigned short shareCount; // num of messages MINUS ONE that have this message encapsulated.
-                               // 0: not shared (not encapsulated or encapsulated in one message);
-                               // 1: shared once (shared among two messages);
-                               // 2: shared twice (shared among three messages); etc.
-                               // on reaching max sharecount a new packet gets created
+    cPacket *encapsulatedPacket = nullptr; // ptr to the encapsulated message
+    unsigned short shareCount = 0; // num of messages MINUS ONE that have this message encapsulated.
+                                   // 0: not shared (not encapsulated or encapsulated in one message);
+                                   // 1: shared once (shared among two messages);
+                                   // 2: shared twice (shared among three messages); etc.
+                                   // on reaching max sharecount a new packet gets created
     long transmissionId = -1;  // for pairing transmission updates with the original transmission
     simtime_t remainingDuration; // if transmission update: remaining duration (otherwise it must be equal to the duration)
 

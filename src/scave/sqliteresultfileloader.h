@@ -77,7 +77,7 @@ class SCAVE_API SqliteResultFileLoader : public IResultFileLoader
 
   public:
     SqliteResultFileLoader(ResultFileManager* resultFileManagerPar, int flags, InterruptedFlag *interrupted);
-    virtual ~SqliteResultFileLoader();
+    virtual ~SqliteResultFileLoader() {}
     virtual ResultFile *loadFile(const char *displayName, const char *fileSystemFileName) override;
 };
 

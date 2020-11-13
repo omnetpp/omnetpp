@@ -185,7 +185,7 @@ class SIM_API opp_string_vector : public std::vector<opp_string>
 {
   public:
     opp_string_vector() {}
-    opp_string_vector(const opp_string_vector& other) : std::vector<opp_string>(other) {}
+    opp_string_vector(const opp_string_vector& other)  = default;
 };
 
 
@@ -201,7 +201,7 @@ class SIM_API opp_string_map : public std::map<opp_string,opp_string>
 {
   public:
     opp_string_map() {}
-    opp_string_map(const opp_string_map& other) : std::map<opp_string,opp_string>(other) {}
+    opp_string_map(const opp_string_map& other)  = default;
 };
 
 }  // namespace omnetpp

@@ -33,16 +33,16 @@ class QTENV_API TimeLineGraphicsView : public QGraphicsView
 {
     Q_OBJECT
 private:
-    bool drawMinorTicks;
-    bool adaptiveMinExponent;
-    bool adaptiveMaxExponent;
-    int minExponent;
-    int maxExponent;
-    bool enableTickLabels;
-    bool enableMessageLabels;
+    bool drawMinorTicks = true;
+    bool adaptiveMinExponent = true;
+    bool adaptiveMaxExponent = true;
+    int minExponent = -1;
+    int maxExponent = 0;
+    bool enableTickLabels = true;
+    bool enableMessageLabels = true;
     QFont tickLabelFont;  // null for default font
     QFont messageLabelFont;  // null for default font
-    int defaultNumMessageLabelRows;
+    int defaultNumMessageLabelRows = 2;
     //TODO Selected modules in modulinspector
     QVector<cModule*> modules;
 

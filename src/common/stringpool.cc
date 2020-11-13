@@ -19,10 +19,6 @@
 namespace omnetpp {
 namespace common {
 
-StringPool::StringPool()
-{
-}
-
 StringPool::~StringPool()
 {
     for (const char *str : pool)

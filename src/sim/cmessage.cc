@@ -40,12 +40,13 @@ long cMessage::liveMsgCount = 0;
 
 cMessage::cMessage(const cMessage& msg) : cEvent(msg)
 {
-    parList = nullptr;
-    controlInfo = nullptr;
-    heapIndex = -1;
     copy(msg);
 
+    // inherited
+    heapIndex = -1;
+
     messageId = nextMessageId++;
+
     totalMsgCount++;
     liveMsgCount++;
 
@@ -56,21 +57,12 @@ cMessage::cMessage(const cMessage& msg) : cEvent(msg)
     nonConstMsg->previousEventNumber = previousEventNumber = getSimulation()->getEventNumber();
 }
 
-cMessage::cMessage(const char *name, short k) : cEvent(name)
+cMessage::cMessage(const char *name, short k) : cEvent(name),
+    messageKind(k), creationTime(getSimulation()->getSimTime())
 {
     // name pooling is off for messages by default, as unique names are quite common
-    messageKind = k;
-    parList = nullptr;
-    contextPointer = nullptr;
-    controlInfo = nullptr;
-    srcProcId = -1;
-
-    senderModuleId = senderGateId = -1;
-    targetModuleId = targetGateId = -1;
-    creationTime = getSimulation()->getSimTime();
-    sendTime = timestamp = 0;
-
     messageTreeId = messageId = nextMessageId++;
+
     totalMsgCount++;
     liveMsgCount++;
 

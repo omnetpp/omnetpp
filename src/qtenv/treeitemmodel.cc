@@ -40,9 +40,7 @@
 namespace omnetpp {
 namespace qtenv {
 
-TreeItemModel::TreeItemModel(QObject *parent) :
-    QAbstractItemModel(parent),
-    rootNode(nullptr)
+TreeItemModel::TreeItemModel(QObject *parent) : QAbstractItemModel(parent)
 {
 }
 

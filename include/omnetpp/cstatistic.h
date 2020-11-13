@@ -59,7 +59,7 @@ class SIM_API cStatistic : public cRandom
     /**
      * Destructor.
      */
-    virtual ~cStatistic();
+    virtual ~cStatistic() {}
 
     /**
      * Assignment operator. It is present since descendants may refer to it.

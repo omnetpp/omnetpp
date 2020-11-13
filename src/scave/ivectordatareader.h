@@ -35,12 +35,11 @@ namespace scave {
 
 struct VectorDatum {
     long serial;
-    eventnumber_t eventNumber;
+    eventnumber_t eventNumber = -1;
     simultime_t simtime;
     double value;
 
-    VectorDatum()
-        : eventNumber(-1) {}
+    VectorDatum() {}
     VectorDatum(long serial, eventnumber_t eventNumber, simultime_t simtime, double value)
         : serial(serial), eventNumber(eventNumber), simtime(simtime), value(value) {}
 };

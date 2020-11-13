@@ -34,7 +34,7 @@ class SIM_API cStdVectorWatcherDescriptor : public cClassDescriptor  // noncopya
 
   public:
     cStdVectorWatcherDescriptor(const char *vecTypeName, const char *elemTypeName);
-    virtual ~cStdVectorWatcherDescriptor();
+    virtual ~cStdVectorWatcherDescriptor() {}
 
     virtual const char **getPropertyNames() const override;
     virtual const char *getProperty(const char *propertyname) const override;
@@ -56,13 +56,7 @@ class SIM_API cStdVectorWatcherDescriptor : public cClassDescriptor  // noncopya
 };
 
 cStdVectorWatcherDescriptor::cStdVectorWatcherDescriptor(const char *vecType, const char *elemType) :
-    cClassDescriptor(vecType, nullptr)
-{
-    vectorTypeName = vecType;
-    elementTypeName = elemType;
-}
-
-cStdVectorWatcherDescriptor::~cStdVectorWatcherDescriptor()
+    cClassDescriptor(vecType, nullptr), vectorTypeName(vecType), elementTypeName(elemType)
 {
 }
 

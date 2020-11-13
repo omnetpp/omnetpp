@@ -82,7 +82,7 @@ class QTENV_API DisplayUpdateController : public QObject
         // only used for FPS/simSpeed measurement
         double effectiveAnimationSpeed = NAN;
 
-        TimeTriplet() { }
+        TimeTriplet() {}
         TimeTriplet(double rt, double at, SimTime st, double eas):
             realTime(rt), animationTime(at), simTime(st), effectiveAnimationSpeed(eas) { }
 

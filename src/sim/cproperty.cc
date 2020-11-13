@@ -25,8 +25,6 @@ cStringPool cProperty::stringPool("cProperty::stringPool");
 
 cProperty::cProperty(const char *name, const char *index) : cNamedObject(name, true)
 {
-    ownerp = nullptr;
-    propindex = propfullname = nullptr;
     setIndex(index);
 }
 

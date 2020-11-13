@@ -272,29 +272,29 @@ class SIM_API cModule : public cComponent //implies noncopyable
     };
 
   private:
-    mutable char *fullPath; // cached fullPath string (caching is optional, so it may be nullptr)
-    mutable char *fullName; // buffer to store full name of object
+    mutable char *fullPath = nullptr; // cached fullPath string (caching is optional, so it may be nullptr)
+    mutable char *fullName = nullptr; // buffer to store full name of object
     static bool cacheFullPath; // whether to cache the fullPath string or not
 
     // Note: parent module is stored in ownerp -- a module is always owned by its parent
     // module. If ownerp cannot be cast to a cModule, the module has no parent module
     // (e.g. the system module which is owned by the global object 'simulation').
-    cModule *prevSibling, *nextSibling; // pointers to sibling submodules
-    cModule *firstSubmodule;  // pointer to first submodule
-    cModule *lastSubmodule;   // pointer to last submodule (needed for efficient append operation)
-    cChannel *firstChannel;  // pointer to first channel in this compound module (list is needed for ChannelIterator)
-    cChannel *lastChannel;   // pointer to last channel (needed for efficient append operation)
+    cModule *prevSibling = nullptr, *nextSibling = nullptr; // pointers to sibling submodules
+    cModule *firstSubmodule = nullptr;  // pointer to first submodule
+    cModule *lastSubmodule = nullptr;   // pointer to last submodule (needed for efficient append operation)
+    cChannel *firstChannel = nullptr;   // pointer to first channel in this compound module (list is needed for ChannelIterator)
+    cChannel *lastChannel = nullptr;    // pointer to last channel (needed for efficient append operation)
 
     typedef std::set<cGate::Name> NamePool;
     static NamePool namePool;
-    int gateDescArraySize;    // size of the descv array
-    cGate::Desc *gateDescArray; // array with one element per gate or gate vector
+    int gateDescArraySize = 0;  // size of the descv array
+    cGate::Desc *gateDescArray = nullptr;  // array with one element per gate or gate vector
 
-    int vectorIndex;      // index if module vector, 0 otherwise
-    int vectorSize;       // vector size, -1 if not a vector
+    int vectorIndex = 0;        // index if module vector, 0 otherwise
+    int vectorSize = -1;        // vector size, -1 if not a vector
 
-    mutable cCanvas *canvas;  // nullptr when unused
-    mutable cOsgCanvas *osgCanvas;  // nullptr when unused
+    mutable cCanvas *canvas = nullptr;        // nullptr when unused
+    mutable cOsgCanvas *osgCanvas = nullptr;  // nullptr when unused
 
   public:
     // internal: currently used by init

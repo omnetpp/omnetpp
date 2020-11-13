@@ -48,7 +48,7 @@ class cSimulation;
 class SIM_API cScheduler : public cObject, public cISimulationLifecycleListener
 {
   protected:
-    cSimulation *sim;
+    cSimulation *sim = nullptr;
 
   protected:
     /**
@@ -61,12 +61,12 @@ class SIM_API cScheduler : public cObject, public cISimulationLifecycleListener
     /**
      * Constructor.
      */
-    cScheduler();
+    cScheduler() {}
 
     /**
      * Destructor.
      */
-    virtual ~cScheduler();
+    virtual ~cScheduler() {}
 
     /**
      * Return a short description. This string will be displayed in Qtenv
@@ -225,12 +225,12 @@ class SIM_API cRealTimeScheduler : public cScheduler
     /**
      * Constructor.
      */
-    cRealTimeScheduler();
+    cRealTimeScheduler() {}
 
     /**
      * Destructor.
      */
-    virtual ~cRealTimeScheduler();
+    virtual ~cRealTimeScheduler() {}
 
     /**
      * Returns a description that depends on the parametrization of this class.

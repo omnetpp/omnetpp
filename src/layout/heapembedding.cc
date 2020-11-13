@@ -21,10 +21,9 @@ namespace layout {
 
 using omnetpp::common::POSITIVE_INFINITY;
 
-HeapEmbedding::HeapEmbedding(GraphComponent *graphComponent, double vertexSpacing)
+HeapEmbedding::HeapEmbedding(GraphComponent *graphComponent, double vertexSpacing) :
+    vertexSpacing(vertexSpacing), graphComponent(graphComponent)
 {
-    this->graphComponent = graphComponent;
-    this->vertexSpacing = vertexSpacing;
 }
 
 void HeapEmbedding::embed()

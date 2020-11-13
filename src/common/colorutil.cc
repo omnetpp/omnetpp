@@ -25,8 +25,8 @@ namespace omnetpp {
 namespace common {
 
 struct rgb_t { // only used internally for easier map storage
-    uint8_t r, g, b;
-    rgb_t() : r(0), g(0), b(0) {}
+    uint8_t r = 0, g = 0, b = 0;
+    rgb_t() {}
     rgb_t(uint8_t r, uint8_t g, uint8_t b) : r(r), g(g), b(b) {}
 };
 

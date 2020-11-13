@@ -49,14 +49,14 @@ class SIM_API cIdealSimulationProtocol : public cParsimProtocolBase
 
   protected:
     bool debug;
-    FILE *fin;  // the event log file
+    FILE *fin = nullptr;  // the event log file
     ExternalEvent nextExternalEvent; // holds the next event
 
     // preloaded table of event times
     ExternalEvent *table; // array to hold values
     int tableSize;        // allocated size of table
-    int numItems;         // num in items in table (numItems<tableSize possible)
-    int nextPos;          // position of 1st unused item in table
+    int numItems = 0;     // num in items in table (numItems<tableSize possible)
+    int nextPos = 0;      // position of 1st unused item in table
 
   protected:
     // process cMessages received from other partitions; see same method in2

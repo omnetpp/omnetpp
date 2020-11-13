@@ -28,12 +28,9 @@ using namespace omnetpp::common;
 namespace omnetpp {
 
 cNedMathFunction::cNedMathFunction(const char *name, MathFuncNoArg f, int ac, const char *category, const char *description) :
-    cNoncopyableOwnedObject(name, false)
+    cNoncopyableOwnedObject(name, false),
+    f((MathFunc)f), argc(0), category(opp_nulltoempty(category)), description(opp_nulltoempty(description))
 {
-    this->category = opp_nulltoempty(category);
-    this->description = opp_nulltoempty(description);
-    this->f = (MathFunc)f;
-    argc = 0;
     if (ac != -1 && ac != 0)
         throw cRuntimeError("Register_NED_Math_Function() or cNedMathFunction: "
                             "attempt to register function \"%s\" with wrong "
@@ -41,12 +38,9 @@ cNedMathFunction::cNedMathFunction(const char *name, MathFuncNoArg f, int ac, co
 }
 
 cNedMathFunction::cNedMathFunction(const char *name, MathFunc1Arg f, int ac, const char *category, const char *description) :
-    cNoncopyableOwnedObject(name, false)
+    cNoncopyableOwnedObject(name, false),
+    f((MathFunc)f), argc(1), category(opp_nulltoempty(category)), description(opp_nulltoempty(description))
 {
-    this->category = opp_nulltoempty(category);
-    this->description = opp_nulltoempty(description);
-    this->f = (MathFunc)f;
-    argc = 1;
     if (ac != -1 && ac != 1)
         throw cRuntimeError("Register_NED_Math_Function() or cNedMathFunction: "
                             "attempt to register function \"%s\" with wrong "
@@ -54,12 +48,9 @@ cNedMathFunction::cNedMathFunction(const char *name, MathFunc1Arg f, int ac, con
 }
 
 cNedMathFunction::cNedMathFunction(const char *name, MathFunc2Args f, int ac, const char *category, const char *description) :
-    cNoncopyableOwnedObject(name, false)
+    cNoncopyableOwnedObject(name, false),
+    f((MathFunc)f), argc(2), category(opp_nulltoempty(category)), description(opp_nulltoempty(description))
 {
-    this->category = opp_nulltoempty(category);
-    this->description = opp_nulltoempty(description);
-    this->f = (MathFunc)f;
-    argc = 2;
     if (ac != -1 && ac != 2)
         throw cRuntimeError("Register_NED_Math_Function() or cNedMathFunction: "
                             "attempt to register function \"%s\" with wrong "
@@ -67,12 +58,9 @@ cNedMathFunction::cNedMathFunction(const char *name, MathFunc2Args f, int ac, co
 }
 
 cNedMathFunction::cNedMathFunction(const char *name, MathFunc3Args f, int ac, const char *category, const char *description) :
-    cNoncopyableOwnedObject(name, false)
+    cNoncopyableOwnedObject(name, false),
+    f((MathFunc)f), argc(3), category(opp_nulltoempty(category)), description(opp_nulltoempty(description))
 {
-    this->category = opp_nulltoempty(category);
-    this->description = opp_nulltoempty(description);
-    this->f = (MathFunc)f;
-    argc = 3;
     if (ac != -1 && ac != 3)
         throw cRuntimeError("Register_NED_Math_Function() or cNedMathFunction: "
                             "attempt to register function \"%s\" with wrong "
@@ -80,12 +68,9 @@ cNedMathFunction::cNedMathFunction(const char *name, MathFunc3Args f, int ac, co
 }
 
 cNedMathFunction::cNedMathFunction(const char *name, MathFunc4Args f, int ac, const char *category, const char *description) :
-    cNoncopyableOwnedObject(name, false)
+    cNoncopyableOwnedObject(name, false),
+    f((MathFunc)f), argc(4), category(opp_nulltoempty(category)), description(opp_nulltoempty(description))
 {
-    this->category = opp_nulltoempty(category);
-    this->description = opp_nulltoempty(description);
-    this->f = (MathFunc)f;
-    argc = 4;
     if (ac != -1 && ac != 4)
         throw cRuntimeError("Register_NED_Math_Function() or cNedMathFunction: "
                             "attempt to register function \"%s\" with wrong "

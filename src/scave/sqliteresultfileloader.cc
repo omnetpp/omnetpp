@@ -31,12 +31,7 @@ namespace scave {
 #define LOG !verbose ? std::cout : std::cout
 
 SqliteResultFileLoader::SqliteResultFileLoader(ResultFileManager *resultFileManagerPar, int flags, InterruptedFlag *interrupted) :
-    IResultFileLoader(resultFileManagerPar), interrupted(interrupted)
-{
-    verbose = (flags & ResultFileManager::VERBOSE) != 0;
-}
-
-SqliteResultFileLoader::~SqliteResultFileLoader()
+    IResultFileLoader(resultFileManagerPar), verbose((flags & ResultFileManager::VERBOSE) != 0), interrupted(interrupted)
 {
 }
 

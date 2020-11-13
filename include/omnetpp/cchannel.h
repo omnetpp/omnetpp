@@ -47,11 +47,11 @@ class SIM_API cChannel : public cComponent //implies noncopyable
 {
     friend class cModule; // for setting prevSibling/nextSibling
   protected:
-    cGate *srcGate; // gate the channel is attached to
-    int nedConnectionElementId;  // for cChannel::getProperties(); usually the NED connection element's id
+    cGate *srcGate = nullptr; // gate the channel is attached to
+    int nedConnectionElementId = -1;  // for cChannel::getProperties(); usually the NED connection element's id
 
     // Note: the containing compound module can be derived from the srcGate pointer.
-    cChannel *prevSibling, *nextSibling; // pointers to other channels in the same compound module
+    cChannel *prevSibling = nullptr, *nextSibling = nullptr; // pointers to other channels in the same compound module
 
   public:
     // internal: called from cGate

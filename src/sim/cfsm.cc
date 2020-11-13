@@ -34,8 +34,6 @@ Register_Class(cFSM);
 cFSM::cFSM(const char *name) :
     cOwnedObject(name)
 {
-    state = 0;
-    stateName = "INIT";
 }
 
 void cFSM::copy(const cFSM& vs)

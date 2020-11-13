@@ -38,7 +38,7 @@ class Exporter;
 struct SCAVE_API ExporterType
 {
     public:
-        virtual ~ExporterType();
+        virtual ~ExporterType() {}
         virtual std::string getFormatName() const = 0; // for ExporterFactory and scavetool -F
         virtual std::string getDisplayName() const = 0; // for the IDE
         virtual std::string getDescription() const = 0;

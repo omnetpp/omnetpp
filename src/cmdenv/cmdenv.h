@@ -31,22 +31,22 @@ using namespace omnetpp::envir;
 
 struct CMDENV_API CmdenvOptions : public EnvirOptions
 {
-    CmdenvOptions();
+    // note: these values will be overwritten in setup()/readOptions() before taking effect
     std::string configName;
     std::string runFilter;
-    bool stopBatchOnError;
-    size_t extraStack;
+    bool stopBatchOnError = true;
+    size_t extraStack = 0;
     std::string outputFile;
-    bool redirectOutput;
-    bool expressMode;
-    bool interactive;
-    bool autoflush; // all modes
-    bool printModuleMsgs;  // if normal mode
-    bool printEventBanners; // if normal mode
-    bool detailedEventBanners; // if normal mode
-    long statusFrequencyMs; // if express mode
-    bool printPerformanceData; // if express mode
-    bool fakeGUI; // all modes
+    bool redirectOutput = false;
+    bool expressMode = false;
+    bool interactive = false;
+    bool autoflush = true; // all modes
+    bool printModuleMsgs = false;  // if normal mode
+    bool printEventBanners = true; // if normal mode
+    bool detailedEventBanners = false; // if normal mode
+    long statusFrequencyMs = 2000; // if express mode
+    bool printPerformanceData = false; // if express mode
+    bool fakeGUI = false; // all modes
 };
 
 /**
@@ -79,7 +79,7 @@ class CMDENV_API Cmdenv : public EnvirBase
 
    public:
      Cmdenv();
-     virtual ~Cmdenv();
+     virtual ~Cmdenv() {}
 
      virtual void componentInitBegin(cComponent *component, int stage) override;
      virtual void simulationEvent(cEvent *event) override;

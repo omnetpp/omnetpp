@@ -99,19 +99,19 @@ class SIM_API cMessage : public cEvent
         FL_ISPRIVATECOPY = 4,
     };
     // note: fields are in an order that maximizes packing (minimizes sizeof(cMessage))
-    short messageKind;         // message kind -- 0>= user-defined meaning, <0 reserved
-    short srcProcId;           // reserved for use by parallel execution: id of source partition
-    cArray *parList;           // ptr to list of parameters
-    cObject *controlInfo;      // ptr to "control info"
-    void *contextPointer;      // a stored pointer -- user-defined meaning, used with self-messages
+    short messageKind;              // message kind -- 0>= user-defined meaning, <0 reserved
+    short srcProcId = -1;           // reserved for use by parallel execution: id of source partition
+    cArray *parList = nullptr;      // ptr to list of parameters
+    cObject *controlInfo = nullptr; // ptr to "control info"
+    void *contextPointer = nullptr; // a stored pointer -- user-defined meaning, used with self-messages
 
-    int senderModuleId;        // sender module ID -- set internally
-    int senderGateId;          // source gate ID -- set internally
-    int targetModuleId;        // destination module ID -- set internally
-    int targetGateId;          // destination gate ID -- set internally
+    int senderModuleId = -1;   // sender module ID -- set internally
+    int senderGateId = -1;     // source gate ID -- set internally
+    int targetModuleId = -1;   // destination module ID -- set internally
+    int targetGateId = -1;     // destination gate ID -- set internally
     simtime_t creationTime;    // creation time -- set be constructor
-    simtime_t sendTime;        // time of sending -- set internally
-    simtime_t timestamp;       // time stamp -- user-defined meaning
+    simtime_t sendTime = 0;    // time of sending -- set internally
+    simtime_t timestamp = 0;   // time stamp -- user-defined meaning
 
     long messageId;            // a unique message identifier assigned upon message creation
     long messageTreeId;        // a message identifier that is inherited by dup, if non dupped it is msgid

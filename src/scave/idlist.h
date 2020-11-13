@@ -75,7 +75,7 @@ class SCAVE_API IDList
         IDList(std::vector<ID>&& ids) {v = std::move(ids);}
 
         // these are the only mutator methods (deliberately not accessible from Java)
-        IDList& operator=(const IDList& ids) {v = ids.v; return *this;}
+        IDList& operator=(const IDList& ids) = default;
         IDList& operator=(IDList&& ids) {v = std::move(ids.v); return *this;}
 
         bool equals(IDList& other);

@@ -56,7 +56,7 @@ class SIM_API cExpression : public cObject
     /**
      * Copy constructor.
      */
-    cExpression(const cExpression& other) : cObject(other) {}
+    cExpression(const cExpression& other)  = default;
 
     /**
      * Destructor.

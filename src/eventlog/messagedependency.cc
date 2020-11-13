@@ -27,9 +27,8 @@ namespace eventlog {
 
 /**************************************************/
 
-IMessageDependency::IMessageDependency(IEventLog *eventLog)
+IMessageDependency::IMessageDependency(IEventLog *eventLog) : eventLog(eventLog)
 {
-    this->eventLog = eventLog;
 }
 
 bool IMessageDependency::corresponds(IMessageDependency *dependency1, IMessageDependency *dependency2)
@@ -268,11 +267,8 @@ void MessageReuseDependency::print(FILE *file)
 /**************************************************/
 
 FilteredMessageDependency::FilteredMessageDependency(IEventLog *eventLog, Kind kind, IMessageDependency *beginMessageDependency, IMessageDependency *endMessageDependency)
-    : IMessageDependency(eventLog)
+    : IMessageDependency(eventLog), kind(kind), beginMessageDependency(beginMessageDependency), endMessageDependency(endMessageDependency)
 {
-    this->beginMessageDependency = beginMessageDependency;
-    this->endMessageDependency = endMessageDependency;
-    this->kind = kind;
 }
 
 FilteredMessageDependency::~FilteredMessageDependency()

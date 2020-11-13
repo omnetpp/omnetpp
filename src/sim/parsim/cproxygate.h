@@ -52,11 +52,11 @@ class SIM_API cProxyGate : public cGate // noncopyable
 {
     friend class cPlaceholderModule;
   private:
-    cParsimPartition *partition;
-    short remoteProcId;
-    int remoteModuleId;
-    int remoteGateId;
-    void *data;
+    cParsimPartition *partition = nullptr;
+    short remoteProcId = -1;
+    int remoteModuleId = -1;
+    int remoteGateId = -1;
+    void *data = nullptr;
 
   protected:
     // internal: constructor is protected because only cPlaceholderModule

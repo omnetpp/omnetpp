@@ -65,10 +65,10 @@ class QTENV_API OutputVectorInspector : public Inspector
     OutputVectorInspectorConfigDialog *configDialog;
 
     // configuration
-    bool isMinYAutoscaled;
-    bool isMaxYAutoscaled;
-    bool isTimeScaleAutoscaled;
-    double minY, maxY, timeScale;
+    bool isMinYAutoscaled = true;
+    bool isMaxYAutoscaled = true;
+    bool isTimeScaleAutoscaled = true;
+    double minY, maxY, timeScale; // will be computed upon refresh
 
     void resizeEvent(QResizeEvent *event) override;
 

@@ -86,7 +86,7 @@ class SIM_API CodeFragments
     static CodeFragments *head;
   public:
     CodeFragments(void (*code)(), Type type);
-    ~CodeFragments();
+    ~CodeFragments() {}
     static void executeAll(Type type);
 };
 

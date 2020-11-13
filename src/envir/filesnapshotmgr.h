@@ -43,12 +43,12 @@ class ENVIR_API FileSnapshotManager : public cISnapshotManager
     /**
      * Constructor.
      */
-    explicit FileSnapshotManager();
+    explicit FileSnapshotManager() {}
 
     /**
      * Destructor.
      */
-    virtual ~FileSnapshotManager();
+    virtual ~FileSnapshotManager() {}
     //@}
 
     /** @name Controlling the beginning and end of collecting data. */

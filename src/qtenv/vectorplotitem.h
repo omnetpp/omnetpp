@@ -38,8 +38,8 @@ class VectorPlotItem : public QGraphicsItem
 
   private:
     QColor color;
-    const CircBuffer *circBuf;
-    PlottingMode plottingMode;
+    const CircBuffer *circBuf = nullptr;
+    PlottingMode plottingMode = DRAW_LINES;
     double minX, maxX, minY, maxY;
 
     int mapFromSimtime(const simtime_t& t);

@@ -412,14 +412,9 @@ class cDefaultOwnerSwitcher
     cDefaultOwner *oldOwner;
     cDefaultOwner tmpOwner;
   public:
-    cDefaultOwnerSwitcher() {
-        oldOwner = cOwnedObject::getDefaultOwner();
-        cOwnedObject::setDefaultOwner(&tmpOwner);
-    }
+    cDefaultOwnerSwitcher() : oldOwner(cOwnedObject::getDefaultOwner()) {cOwnedObject::setDefaultOwner(&tmpOwner);}
+    ~cDefaultOwnerSwitcher() {cOwnedObject::setDefaultOwner(oldOwner);}
     cDefaultOwner *getOwner() {return &tmpOwner;}
-    ~cDefaultOwnerSwitcher() {
-        cOwnedObject::setDefaultOwner(oldOwner);
-    }
 };
 
 //---

@@ -22,13 +22,9 @@
 
 using namespace omnetpp;
 
-cNullEnvir::cNullEnvir(int ac, char **av, cConfiguration *c)
+cNullEnvir::cNullEnvir(int ac, char **av, cConfiguration *c) :
+    argc(ac), argv(av), cfg(c), rng(new cMersenneTwister())
 {
-    argc = ac;
-    argv = av;
-    cfg = c;
-    rng = new cMersenneTwister();
-    nextUniqueNumber = 0;
 }
 
 cNullEnvir::~cNullEnvir()

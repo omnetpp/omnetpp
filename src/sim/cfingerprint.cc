@@ -63,18 +63,6 @@ const char *cSingleFingerprintCalculator::MatchableObject::getAsString(const cha
     }
 }
 
-cSingleFingerprintCalculator::cSingleFingerprintCalculator()
-{
-    eventMatcher = nullptr;
-    moduleMatcher = nullptr;
-    resultMatcher = nullptr;
-    addEvents = false;
-    addScalarResults = false;
-    addStatisticResults = false;
-    addVectorResults = false;
-    addExtraData_ = false;
-}
-
 cSingleFingerprintCalculator::~cSingleFingerprintCalculator()
 {
     delete eventMatcher;

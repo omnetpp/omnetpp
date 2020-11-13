@@ -51,7 +51,7 @@ class QTENV_API CanvasInspector : public Inspector
 
    public:
       CanvasInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);
-      ~CanvasInspector();
+      ~CanvasInspector() {}
       virtual void doSetObject(cObject *obj) override;
       virtual void refresh() override;
       virtual void postRefresh() override;

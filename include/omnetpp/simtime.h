@@ -140,7 +140,7 @@ class SIM_API SimTime
     /**
      * Constructor initializes to zero.
      */
-    SimTime() {t=0;}
+    SimTime(): t(0) {}
 
     /**
      * Initialize simulation time from a double-precision number. This constructor
@@ -185,17 +185,17 @@ class SIM_API SimTime
 
     /** @name Arithmetic operations */
     //@{
-    const SimTime& operator=(const SimTime& x) {t=x.t; return *this;}
-    const SimTime& operator=(const cPar& d);
-    const SimTime& operator=(double d) {assertInited(d); t=toInt64(fscale*d); return *this;}
-    const SimTime& operator=(short d) {assertInited(d); setSeconds(d); return *this;}  //TODO check overflow
-    const SimTime& operator=(int d) {assertInited(d); setSeconds(d); return *this;}
-    const SimTime& operator=(long d) {assertInited(d); setSeconds(d); return *this;}
-    const SimTime& operator=(long long d) {assertInited(d); setSeconds(d); return *this;}
-    const SimTime& operator=(unsigned short d) {assertInited(d); setSeconds(d); return *this;}
-    const SimTime& operator=(unsigned int d) {assertInited(d); setSeconds(d); return *this;}
-    const SimTime& operator=(unsigned long d) {assertInited(d); setSeconds(d); return *this;}
-    const SimTime& operator=(unsigned long long d) {assertInited(d); setSeconds(d); return *this;}
+    SimTime& operator=(const SimTime& x) = default;
+    SimTime& operator=(const cPar& d);
+    SimTime& operator=(double d) {assertInited(d); t=toInt64(fscale*d); return *this;}
+    SimTime& operator=(short d) {assertInited(d); setSeconds(d); return *this;}  //TODO check overflow
+    SimTime& operator=(int d) {assertInited(d); setSeconds(d); return *this;}
+    SimTime& operator=(long d) {assertInited(d); setSeconds(d); return *this;}
+    SimTime& operator=(long long d) {assertInited(d); setSeconds(d); return *this;}
+    SimTime& operator=(unsigned short d) {assertInited(d); setSeconds(d); return *this;}
+    SimTime& operator=(unsigned int d) {assertInited(d); setSeconds(d); return *this;}
+    SimTime& operator=(unsigned long d) {assertInited(d); setSeconds(d); return *this;}
+    SimTime& operator=(unsigned long long d) {assertInited(d); setSeconds(d); return *this;}
 
     bool operator==(const SimTime& x) const  {return t==x.t;}
     bool operator!=(const SimTime& x) const  {return t!=x.t;}

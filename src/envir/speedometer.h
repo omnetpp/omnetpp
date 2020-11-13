@@ -33,7 +33,7 @@ namespace envir {
 class ENVIR_API Speedometer
 {
   private:
-    bool started;
+    bool started = false;
     long numEvents;
     simtime_t currentSimtime;
     simtime_t intervalStartSimtime;
@@ -43,7 +43,7 @@ class ENVIR_API Speedometer
     double lastIntervalSimsecPerSec;
 
   public:
-    Speedometer();
+    Speedometer() {}
 
     void start(simtime_t t);
     void addEvent(simtime_t t);

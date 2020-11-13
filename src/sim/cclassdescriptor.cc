@@ -200,16 +200,9 @@ const char **cClassDescriptor::mergeLists(const char **list1, const char **list2
 
 //-----------------------------------------------------------
 
-cClassDescriptor::cClassDescriptor(const char *className, const char *_baseClassName) :
-    cNoncopyableOwnedObject(className, false)
-{
-    baseClassName = _baseClassName ? _baseClassName : "";
-    baseClassDesc = nullptr;
-    inheritanceChainLength = 1;
-    extendscObject = -1;
-}
-
-cClassDescriptor::~cClassDescriptor()
+cClassDescriptor::cClassDescriptor(const char *className, const char *_baseClassName)
+    : cNoncopyableOwnedObject(className, false),
+      baseClassName(_baseClassName ? _baseClassName : "")
 {
 }
 

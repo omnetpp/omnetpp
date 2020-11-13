@@ -21,11 +21,9 @@
 namespace omnetpp {
 namespace envir {
 
-MatchableObjectAdapter::MatchableObjectAdapter(DefaultAttribute attr, cObject *obj)
+MatchableObjectAdapter::MatchableObjectAdapter(DefaultAttribute attr, cObject *obj) :
+    attr(attr), obj(obj)
 {
-    this->attr = attr;
-    this->obj = obj;
-    desc = nullptr;
 }
 
 void MatchableObjectAdapter::setObject(cObject *obj)

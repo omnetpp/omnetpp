@@ -75,10 +75,6 @@ bool StringMapPtrEq::operator () (const StringMap *lhs, const StringMap *rhs) co
     return *lhs == *rhs;
 }
 
-ResultFileManager::ResultFileManager()
-{
-}
-
 ResultFileManager::~ResultFileManager()
 {
     clear();

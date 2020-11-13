@@ -101,7 +101,7 @@ class NEDXML_API MsgCompiler
     /**
      * Destructor.
      */
-    ~MsgCompiler();
+    ~MsgCompiler() {}
 
     /**
      * Generates C++ code from the specified message file. Assumes that the

@@ -68,16 +68,16 @@ class SIM_API cDisplayString
        Tag() {name=nullptr; numArgs=0;}
     };
 
-    char *buffer;       // holds pieces of display string (sliced with zeroes)
-    char *bufferEnd;    // points to last byte of buffer allocated
-    Tag *tags;          // table of tags
-    int numTags;        // number of tags
+    char *buffer = nullptr;     // holds pieces of display string (sliced with zeroes)
+    char *bufferEnd = nullptr;  // points to last byte of buffer allocated
+    Tag *tags = nullptr;        // table of tags
+    int numTags = 0;            // number of tags
 
-    mutable char *assembledString; // cached copy of assembled display string
-    mutable bool assembledStringValid; // if cached copy is up-to-date
+    mutable char *assembledString = nullptr; // cached copy of assembled display string
+    mutable bool assembledStringValid = true; // if cached copy is up-to-date
 
     // needed for notifications
-    cComponent *ownerComponent;
+    cComponent *ownerComponent = nullptr;
 
   private:
     void copy(const cDisplayString& other) {parse(other.str());}
@@ -113,7 +113,7 @@ class SIM_API cDisplayString
     /**
      * Constructor.
      */
-    cDisplayString();
+    cDisplayString() {}
 
     /**
      * Constructor that initializes the object with the given string.

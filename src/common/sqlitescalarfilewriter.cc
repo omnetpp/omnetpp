@@ -22,23 +22,6 @@
 namespace omnetpp {
 namespace common {
 
-SqliteScalarFileWriter::SqliteScalarFileWriter()
-{
-    runId = -1;
-    db = nullptr;
-    stmt = nullptr;
-    add_scalar_stmt = nullptr;
-    add_scalar_attr_stmt = nullptr;
-    add_statistic_stmt = nullptr;
-    add_statistic_attr_stmt = nullptr;
-    add_statistic_bin_stmt = nullptr;
-    add_parameter_stmt = nullptr;
-    add_parameter_attr_stmt = nullptr;
-
-    commitFreq = 0;
-    insertCount = 0;
-}
-
 SqliteScalarFileWriter::~SqliteScalarFileWriter()
 {
     cleanup(); // not close() because it throws; also, close() must have been called already if there was no error

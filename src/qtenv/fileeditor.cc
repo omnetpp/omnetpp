@@ -30,12 +30,7 @@
 namespace omnetpp {
 namespace qtenv {
 
-FileEditor::FileEditor(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::fileEditor),
-    contextMenu(nullptr),
-    searchString(""),
-    findOptions(0)
+FileEditor::FileEditor(QWidget *parent) : QDialog(parent), ui(new Ui::fileEditor)
 {
     ui->setupUi(this);
 

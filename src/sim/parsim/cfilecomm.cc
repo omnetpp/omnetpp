@@ -53,12 +53,6 @@ cFileCommunications::cFileCommunications()
     commDirPrefix = getEnvir()->getConfig()->getAsString(CFGID_FILECOMM_PREFIX);
     readDirPrefix = getEnvir()->getConfig()->getAsString(CFGID_FILECOMM_READ_PREFIX);
     preserveReadFiles = getEnvir()->getConfig()->getAsBool(CFGID_FILECOMM_PRESERVE_READ);
-
-    seqNum = 0;
-}
-
-cFileCommunications::~cFileCommunications()
-{
 }
 
 void cFileCommunications::init(int np)

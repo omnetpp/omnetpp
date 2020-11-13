@@ -75,9 +75,9 @@ class ScaveStringPool
 {
     private:
         std::set<std::string> pool;
-        const std::string *lastInsertedPtr;
+        const std::string *lastInsertedPtr = nullptr;
     public:
-        ScaveStringPool() : lastInsertedPtr(nullptr) {}
+        ScaveStringPool() {}
         const std::string *insert(const std::string& str);
         const std::string *find(const std::string& str) const;
         void clear() { lastInsertedPtr = nullptr; pool.clear(); }

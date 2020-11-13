@@ -23,14 +23,6 @@
 
 namespace omnetpp {
 
-cCommBufferBase::cCommBufferBase()
-{
-    mBuffer = nullptr;
-    mBufferSize = 0;
-    mPosition = 0;
-    mMsgSize = 0;
-}
-
 cCommBufferBase::~cCommBufferBase()
 {
     delete[] mBuffer;

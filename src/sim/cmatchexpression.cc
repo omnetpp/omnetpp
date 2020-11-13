@@ -31,9 +31,8 @@ const char *removePrefix(const char *s)
     return strncmp(s, prefix, strlen(prefix))==0 ? s+strlen(prefix) : s;
 }
 
-cMatchExpression::cMatchExpression()
+cMatchExpression::cMatchExpression() : impl(new MatchExpression())
 {
-    impl = new MatchExpression();
 }
 
 cMatchExpression::cMatchExpression(const char *pattern, bool dottedpath, bool fullstring, bool casesensitive)
@@ -57,7 +56,7 @@ class Wrapper : public MatchExpression::Matchable
     const cMatchExpression::Matchable *impl;
 
   public:
-    Wrapper(const cMatchExpression::Matchable *p) { impl = p; }
+    Wrapper(const cMatchExpression::Matchable *p): impl(p) { }
     virtual const char *getAsString() const override { return impl->getAsString(); }
     virtual const char *getAsString(const char *attribute) const override { return impl->getAsString(attribute); }
 };

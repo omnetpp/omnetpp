@@ -41,12 +41,12 @@ public:
     struct COMMON_API AstNode
     {
         enum Type {UNDEF, CONSTANT, OP, IDENT, IDENT_W_INDEX, FUNCTION, MEMBER, MEMBER_W_INDEX, METHOD, OBJECT, KEYVALUE, ARRAY};
-        Type type;
+        Type type = UNDEF;
         ExprValue constant;
         std::string name; // of operator, identifier or function
         std::vector<AstNode*> children;
 
-        AstNode() : type(UNDEF) {}
+        AstNode() {}
         AstNode(const ExprValue& c) : type(CONSTANT), constant(c) {}
         AstNode(Type type, const char *name) : type(type), name(name) {}
         ~AstNode() {for (AstNode *child : children) delete child;}

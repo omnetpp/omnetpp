@@ -53,10 +53,6 @@ cStatistic::cStatistic(const char *name) : cRandom(name)
 {
 }
 
-cStatistic::~cStatistic()
-{
-}
-
 void cStatistic::parsimPack(cCommBuffer *buffer) const
 {
 #ifndef WITH_PARSIM

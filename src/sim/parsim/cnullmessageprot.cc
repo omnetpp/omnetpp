@@ -48,9 +48,6 @@ extern cConfigOption *CFGID_PARSIM_DEBUG;  // registered in cparsimpartition.cc
 
 cNullMessageProtocol::cNullMessageProtocol() : cParsimProtocolBase()
 {
-    numSeg = 0;
-    segInfo = nullptr;
-
     debug = getEnvir()->getConfig()->getAsBool(CFGID_PARSIM_DEBUG);
     std::string lookhClass = getEnvir()->getConfig()->getAsString(CFGID_PARSIM_NULLMESSAGEPROTOCOL_LOOKAHEAD_CLASS);
     lookaheadcalc = dynamic_cast<cNMPLookahead *>(createOne(lookhClass.c_str()));

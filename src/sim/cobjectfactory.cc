@@ -24,11 +24,9 @@ using namespace omnetpp::common;
 namespace omnetpp {
 
 cObjectFactory::cObjectFactory(const char *name, cObject *(*creatorf)(), void *(*castf)(cObject *), const char *description)
-    : cNoncopyableOwnedObject(name, false)
+    : cNoncopyableOwnedObject(name, false),
+    creatorFunc(creatorf), castFunc(castf), description(description ? description : "")
 {
-    this->creatorFunc = creatorf;
-    this->castFunc = castf;
-    this->description = description ? description : "";
 }
 
 std::string cObjectFactory::str() const

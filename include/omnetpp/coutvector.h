@@ -49,13 +49,13 @@ class SIM_API cOutVector : public cNoncopyableOwnedObject
       FL_RECORDWARMUP = 8, // flag: when set, object records data during warmup period as well
     };
 
-    void *handle;        // identifies output vector for the output vector manager
-    simtime_t lastTimestamp; // last timestamp written, needed to ensure increasing timestamp order
-    long numReceived;   // total number of values passed to the output vector object
-    long numStored;     // number of values actually stored
+    void *handle = nullptr;   // identifies output vector for the output vector manager
+    simtime_t lastTimestamp;  // last timestamp written, needed to ensure increasing timestamp order
+    long numReceived = 0;     // total number of values passed to the output vector object
+    long numStored = 0;       // number of values actually stored
 
     // the following members will be used directly by inspectors
-    RecordFunc recordInInspector; // to notify inspector about file writes
+    RecordFunc recordInInspector = nullptr; // to notify inspector about file writes
     void *dataForInspector;
 
   public:

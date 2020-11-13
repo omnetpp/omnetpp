@@ -82,17 +82,17 @@ class LAYOUT_API BasicSpringEmbedderLayout : public GraphLayouter
     typedef std::map<int,Node*> NodeMap;  // nodeId-to-Node mapping
     NodeMap nodeMap;
 
-    double defaultEdgeLen;
+    double defaultEdgeLen = 40;
 
-    bool haveFixedNode;
-    bool haveAnchoredNode;
-    bool allNodesAreFixed;
+    bool haveFixedNode = false;
+    bool haveAnchoredNode = false;
+    bool allNodesAreFixed = true; // unless later it proves otherwise
 
     double minx, miny, maxx, maxy;
 
-    int maxIterations;
-    double repulsiveForce;
-    double attractionForce;
+    int maxIterations = 500;
+    double repulsiveForce = 50;
+    double attractionForce = 0.3;
 
   protected:
     // utility
@@ -129,7 +129,7 @@ class LAYOUT_API BasicSpringEmbedderLayout : public GraphLayouter
      * Ctor, dtor
      */
     //@{
-    BasicSpringEmbedderLayout();
+    BasicSpringEmbedderLayout() {}
     virtual ~BasicSpringEmbedderLayout();
     //@}
 

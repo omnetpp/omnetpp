@@ -35,10 +35,6 @@ using namespace omnetpp::common::expression;
 
 namespace omnetpp {
 
-cDynamicExpression::IResolver::~IResolver()
-{
-}
-
 cValue cDynamicExpression::ResolverBase::readVariable(Context *context, const char *name)
 {
     throw cRuntimeError("Cannot resolve variable '%s'", name);

@@ -44,16 +44,6 @@ std::string generateXML(ASTNode *tree, bool srcloc, int indentsize)
 
 //-----------------------------------------
 
-XMLGenerator::XMLGenerator()
-{
-    printSrcLoc = true;
-    indentSize = 2;
-}
-
-XMLGenerator::~XMLGenerator()
-{
-}
-
 void XMLGenerator::setSourceLocationAttributes(bool srcloc)
 {
     printSrcLoc = srcloc;

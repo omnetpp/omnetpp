@@ -44,12 +44,12 @@ class QTENV_API HistogramInspector : public Inspector
     QStatusBar *statusBar;
     QAction *setUpBinsAction;
     HistogramInspectorConfigDialog *configDialog;
-    HistogramView::ChartType chartType;
-    HistogramView::DrawingStyle drawingStyle;
-    bool isCountsMinYAutoscaled, isCountsMaxYAutoscaled, isCountsMinXAutoscaled, isCountsMaxXAutoscaled;
-    bool isPDFMinYAutoscaled, isPDFMaxYAutoscaled, isPDFMinXAutoscaled, isPDFMaxXAutoscaled;
-    double countsMinY, countsMaxY, countsMinX, countsMaxX;
-    double pdfMinY, pdfMaxY, pdfMinX, pdfMaxX;
+    HistogramView::ChartType chartType = HistogramView::SHOW_PDF;
+    HistogramView::DrawingStyle drawingStyle = HistogramView::DRAW_FILLED;
+    bool isCountsMinYAutoscaled = true, isCountsMaxYAutoscaled = true, isCountsMinXAutoscaled = true, isCountsMaxXAutoscaled = true;
+    bool isPDFMinYAutoscaled = true, isPDFMaxYAutoscaled = true, isPDFMinXAutoscaled = true, isPDFMaxXAutoscaled = true;
+    double countsMinY = 0, countsMaxY = 0, countsMinX = 0, countsMaxX = 0;
+    double pdfMinY = 0, pdfMaxY = 0, pdfMinX = 0, pdfMaxX = 0;
 
     double lastMaxY = -1;
 

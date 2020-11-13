@@ -70,10 +70,6 @@ CanvasInspector::CanvasInspector(QWidget *parent, bool isTopLevel, InspectorFact
     connect(canvasViewer, SIGNAL(contextMenuRequested(QContextMenuEvent *)), this, SLOT(onContextMenuRequested(QContextMenuEvent *)));
 }
 
-CanvasInspector::~CanvasInspector()
-{
-}
-
 QToolBar *CanvasInspector::createToolbar()
 {
     QToolBar *toolbar = new QToolBar(this);

@@ -125,7 +125,7 @@ class NEDXML_API NedResourceCache
 
   public:
     /** Constructor */
-    NedResourceCache();
+    NedResourceCache() {}
 
     /** Destructor */
     virtual ~NedResourceCache();

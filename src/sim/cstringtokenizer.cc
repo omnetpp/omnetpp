@@ -39,9 +39,8 @@ cStringTokenizer::cStringTokenizer(const char *s, const char *delim)
     rest = str;
 }
 
-cStringTokenizer::cStringTokenizer(const cStringTokenizer& other)
+cStringTokenizer::cStringTokenizer(const cStringTokenizer& other): str(nullptr)
 {
-    str = nullptr;
     copy(other);
 }
 

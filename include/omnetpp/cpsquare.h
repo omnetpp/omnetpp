@@ -35,12 +35,12 @@ namespace omnetpp {
 class SIM_API cPSquare : public cAbstractHistogram
 {
   protected:
-    int numBins;       // number of bins
-    long numObs;       // number of observations
-    int *n;            // array of positions
-    double *q;         // array of heights
+    int numBins;         // number of bins
+    long numObs = 0;     // number of observations
+    int *n = nullptr;    // array of positions
+    double *q = nullptr; // array of heights
 
-    long numNegInfs, numPosInfs;
+    long numNegInfs = 0, numPosInfs = 0;
 
   protected:
     void copy(const cPSquare& other);

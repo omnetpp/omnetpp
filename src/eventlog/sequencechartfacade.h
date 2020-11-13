@@ -38,14 +38,14 @@ class EVENTLOG_API SequenceChartFacade : public EventLogFacade
 {
     protected:
         bool separateEventLogEntries; // separate entries within events
-        long timelineCoordinateSystemVersion; // a counter incremented each time the timeline coordinate system is relocated
+        long timelineCoordinateSystemVersion = -1; // a counter incremented each time the timeline coordinate system is relocated
         eventnumber_t timelineCoordinateSystemOriginEventNumber; // -1 means undefined, otherwise the event number of the timeline coordinate system origin
         simtime_t timelineCoordinateSystemOriginSimulationTime; // simtime_nil means undefined
         eventnumber_t timelineCoordinateRangeStartEventNumber; // -1 means undefined, the beginning of the continuous event range which has timeline coordinates assigned
         eventnumber_t timelineCoordinateRangeEndEventNumber; // -1 means undefined, the end of the continuous event range which has timeline coordinates assigned
-        TimelineMode timelineMode;
-        double nonLinearFocus; // a useful constant for the nonlinear transformation between simulation time and timeline coordinate
-        double nonLinearMinimumTimelineCoordinateDelta; // minimum timeline coordinate difference between two events
+        TimelineMode timelineMode = NONLINEAR;
+        double nonLinearFocus = -1; // a useful constant for the nonlinear transformation between simulation time and timeline coordinate
+        double nonLinearMinimumTimelineCoordinateDelta = 0.1; // minimum timeline coordinate difference between two events
 
     public:
         SequenceChartFacade(IEventLog *eventLog);

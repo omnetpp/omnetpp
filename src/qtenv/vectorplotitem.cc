@@ -23,10 +23,7 @@ static const int DOTS_SIZE = 4;
 namespace omnetpp {
 namespace qtenv {
 
-VectorPlotItem::VectorPlotItem(QGraphicsItem *parent) :
-    QGraphicsItem(parent),
-    circBuf(nullptr),
-    plottingMode(DRAW_LINES)
+VectorPlotItem::VectorPlotItem(QGraphicsItem *parent) : QGraphicsItem(parent)
 {
 }
 

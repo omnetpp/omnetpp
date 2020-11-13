@@ -72,8 +72,6 @@ void cArray::Iterator::retreat()
 
 cArray::cArray(const cArray& other) : cOwnedObject(other)
 {
-    vect = nullptr;
-    last = -1;
     copy(other);
 }
 
@@ -82,8 +80,6 @@ cArray::cArray(const char *name, int cap, int dt) : cOwnedObject(name)
     setFlag(FL_TKOWNERSHIP, true);
     delta = std::max(1, dt);
     capacity = std::max(cap, 0);
-    firstfree = 0;
-    last = -1;
     vect = new cObject *[capacity];
     for (int i = 0; i < capacity; i++)
         vect[i] = nullptr;

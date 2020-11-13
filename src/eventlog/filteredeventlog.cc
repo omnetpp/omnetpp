@@ -21,25 +21,9 @@
 namespace omnetpp {
 namespace eventlog {
 
-FilteredEventLog::FilteredEventLog(IEventLog *eventLog)
+FilteredEventLog::FilteredEventLog(IEventLog *eventLog):
+    eventLog(eventLog)
 {
-    this->eventLog = eventLog;
-    // collection limit parameters
-    collectMessageReuses = true;
-    maximumNumberOfCauses = maximumNumberOfConsequences = 5;
-    maximumCauseDepth = maximumConsequenceDepth = 15;
-    maximumCauseCollectionTime = maximumConsequenceCollectionTime = 100;
-    // trace filter parameters
-    tracedEventNumber = -1;
-    firstConsideredEventNumber = -1;
-    lastConsideredEventNumber = -1;
-    traceCauses = true;
-    traceConsequences = true;
-    traceMessageReuses = true;
-    traceSelfMessages = true;
-    // other filter parameters
-    enableModuleFilter = false;
-    enableMessageFilter = false;
     setModuleExpression("");
     setMessageExpression("");
     clearInternalState();

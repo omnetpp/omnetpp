@@ -115,11 +115,11 @@ class SIM_API cArray : public cOwnedObject
 
   private:
     enum {FL_TKOWNERSHIP = 4};
-    cObject **vect;   // vector of objects
-    int capacity;     // allocated size of vect[]
-    int delta;        // if needed, grows by delta
-    int firstfree;    // first free position in vect[]
-    int last;         // last used position
+    cObject **vect = nullptr; // vector of objects
+    int capacity = 0;         // allocated size of vect[]
+    int delta;                // if needed, grows by delta
+    int firstfree = 0;        // first free position in vect[]
+    int last = -1;            // last used position
 
   private:
     void copy(const cArray& other);

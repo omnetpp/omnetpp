@@ -75,23 +75,21 @@ class SCAVE_API ResultItem
     enum class FieldNum { NONE=0, COUNT, SUM, SUMWEIGHTS, MEAN, STDDEV, MIN, MAX, NUMBINS, RANGEMIN, RANGEMAX, UNDERFLOWS, OVERFLOWS, STARTTIME, ENDTIME };
 
   protected:
-    FileRun *fileRunRef; // backref to containing FileRun
-    const std::string *moduleNameRef; // points into ResultFileManager's StringSet
-    const std::string *nameRef; // scalarname or vectorname; points into ResultFileManager's StringSet
-    const StringMap *attributes; // metadata in key/value form; pooled (points into ResultFileManager)
+    FileRun *fileRunRef = nullptr;               // backref to containing FileRun
+    const std::string *moduleNameRef = nullptr;  // points into ResultFileManager's StringSet
+    const std::string *nameRef = nullptr;        // scalarname or vectorname; points into ResultFileManager's StringSet
+    const StringMap *attributes = nullptr;       // metadata in key/value form; pooled (points into ResultFileManager)
 
   protected:
-    ResultItem() : fileRunRef(nullptr), moduleNameRef(nullptr), nameRef(nullptr), attributes(nullptr) {} // for ScalarResult default ctor
+    ResultItem() {} // for ScalarResult default ctor
     ResultItem(FileRun *fileRun, const std::string& moduleName, const std::string& name, const StringMap& attrs);
     void setAttributes(const StringMap& attrs);
     void setAttribute(const std::string& attrName, const std::string& value);
 
   public:
-    ResultItem(const ResultItem& o)
-        : fileRunRef(o.fileRunRef), moduleNameRef(o.moduleNameRef), nameRef(o.nameRef),
-          attributes(o.attributes) {}
+    ResultItem(const ResultItem& o) = default;
     ResultItem& operator=(const ResultItem& rhs);
-    virtual ~ResultItem() { }
+    virtual ~ResultItem() {}
 
     ResultFileManager *getResultFileManager() const;
     virtual int getItemType() const = 0;

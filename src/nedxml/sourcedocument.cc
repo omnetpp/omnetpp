@@ -31,19 +31,8 @@ namespace nedxml {
 
 //-----------------------------------------------------------
 
-SourceDocument::SourceDocument()
+SourceDocument::SourceDocument() : commentBuf(new char[commentBufLen])
 {
-    wholeFile = nullptr;
-
-    numLines = 0;
-    lineBeg = nullptr;
-
-    end = nullptr;
-
-    commentBufLen = 1024;
-    commentBuf = new char[commentBufLen];
-
-    savedChar = 0;
 }
 
 SourceDocument::~SourceDocument()

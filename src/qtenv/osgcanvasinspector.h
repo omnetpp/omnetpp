@@ -33,7 +33,7 @@ class QTENV_API OsgCanvasInspector : public Inspector
 
    public:
       OsgCanvasInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);
-      ~OsgCanvasInspector();
+      ~OsgCanvasInspector() {}
       virtual void doSetObject(cObject *obj) override;
       virtual void refresh() override;
 };

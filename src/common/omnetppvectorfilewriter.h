@@ -82,17 +82,17 @@ class COMMON_API OmnetppVectorFileWriter
 
     typedef std::vector<VectorData*> Vectors;
 
-    std::string fname;   // output file name
-    FILE *f;             // file ptr of output file
-    int prec = 14;       // number of significant digits when writing doubles
-    int nextVectorId;    // holds next free ID for output vectors
+    std::string fname;     // output file name
+    FILE *f = nullptr;     // file ptr of output file
+    int prec = 14;         // number of significant digits when writing doubles
+    int nextVectorId = 0;  // holds next free ID for output vectors
 
     std::string ifname;  // index file name
-    FILE *fi;            // file ptr of index file
+    FILE *fi = nullptr;  // file ptr of index file
 
-    Vectors vectors;           // registered output vectors
-    int bufferedSamples;       // currently total buffered samples
-    int bufferedSamplesLimit;  // limit of total buffered samples (0=no limit)
+    Vectors vectors;               // registered output vectors
+    int bufferedSamples = 0;       // currently total buffered samples
+    int bufferedSamplesLimit = 0;  // limit of total buffered samples (0=no limit)
 
   protected:
     void cleanup();  // MUST NOT THROW
@@ -103,7 +103,7 @@ class COMMON_API OmnetppVectorFileWriter
     virtual void finalizeVector(VectorData *vp);
 
   public:
-    OmnetppVectorFileWriter();
+    OmnetppVectorFileWriter() {}
     virtual ~OmnetppVectorFileWriter();
 
     void open(const char *filename); // overwrite if file exists (append not supported)

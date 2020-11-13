@@ -335,7 +335,7 @@ class SIM_API cTopology : public cOwnedObject
 
   protected:
     std::vector<Node*> nodes;
-    Node *target;
+    Node *target = nullptr;
 
     // note: the purpose of the (unsigned int) cast is that nodes with moduleId==-1 are inserted at the end of the vector
     static bool lessByModuleId(Node *a, Node *b) { return (unsigned int)a->moduleId < (unsigned int)b->moduleId; }

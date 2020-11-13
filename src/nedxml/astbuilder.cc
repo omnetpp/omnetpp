@@ -24,11 +24,8 @@
 namespace omnetpp {
 namespace nedxml {
 
-ASTBuilder::ASTBuilder(const char *fname, ErrorStore *e)
+ASTBuilder::ASTBuilder(const char *fname, ErrorStore *e): sourceFilename(fname), errors(e)
 {
-    root = current = nullptr;
-    sourceFilename = fname;
-    errors = e;
 }
 
 ASTBuilder::~ASTBuilder()

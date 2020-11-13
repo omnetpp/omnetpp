@@ -109,23 +109,6 @@ static char *timeToStr(double t, char *buf = nullptr)
     return b;
 }
 
-CmdenvOptions::CmdenvOptions()
-{
-    // note: these values will be overwritten in setup()/readOptions() before taking effect
-    stopBatchOnError = true;
-    extraStack = 0;
-    redirectOutput = false;
-    autoflush = true;
-    expressMode = false;
-    interactive = false;
-    printModuleMsgs = false;
-    printEventBanners = true;
-    detailedEventBanners = false;
-    statusFrequencyMs = 2000;
-    printPerformanceData = false;
-    fakeGUI = false;
-}
-
 Cmdenv::Cmdenv() : opt((CmdenvOptions *&)EnvirBase::opt)
 {
     // Note: ctor should only contain trivial initializations, because
@@ -135,10 +118,6 @@ Cmdenv::Cmdenv() : opt((CmdenvOptions *&)EnvirBase::opt)
     logStream = fopen(".cmdenv-log", "w");
     if (!logStream)
         logStream = stdout;
-}
-
-Cmdenv::~Cmdenv()
-{
 }
 
 void Cmdenv::readOptions()

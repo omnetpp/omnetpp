@@ -19,10 +19,9 @@
 namespace omnetpp {
 namespace layout {
 
-ConcentricTreeEmbedding::ConcentricTreeEmbedding(GraphComponent *graphComponent, double vertexSpacing)
+ConcentricTreeEmbedding::ConcentricTreeEmbedding(GraphComponent *graphComponent, double vertexSpacing) :
+    vertexSpacing(vertexSpacing), graphComponent(graphComponent)
 {
-    this->graphComponent = graphComponent;
-    this->vertexSpacing = vertexSpacing;
 }
 
 void ConcentricTreeEmbedding::embed()

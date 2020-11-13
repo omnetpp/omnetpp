@@ -77,7 +77,7 @@ class SIM_API cEnvir
     friend class evbuf;
   public:
     // Internal flag for express mode.
-    bool loggingEnabled;
+    bool loggingEnabled = true;
 
     // Internal flag. When set to true, the simulation kernel MAY omit calling
     // the following cEnvir methods: messageScheduled(), messageCancelled(),
@@ -85,7 +85,7 @@ class SIM_API cEnvir
     // messageSendHop(), messageDeleted(), moduleReparented(), simulationEvent(),
     // componentMethodBegin(), moduleCreated(), moduleDeleted(), connectionCreated(),
     // connectionDeleted(), displayStringChanged().
-    bool suppressNotifications;
+    bool suppressNotifications = false; //FIXME set to true when not needed!
 
     // Debugging. When set, cRuntimeError constructor executes a debug trap/launches debugger
     bool debugOnErrors = false;
@@ -97,12 +97,12 @@ class SIM_API cEnvir
     /**
      * Constructor.
      */
-    cEnvir();
+    cEnvir() {}
 
     /**
      * Destructor.
      */
-    virtual ~cEnvir();
+    virtual ~cEnvir() {}
     //@}
 
     /** @name Methods to be called by the simulation kernel to notify the environment about events. */

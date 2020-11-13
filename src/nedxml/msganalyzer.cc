@@ -105,10 +105,6 @@ MsgAnalyzer::MsgAnalyzer(const MsgCompilerOptions& opts, MsgTypeTable *typeTable
 {
 }
 
-MsgAnalyzer::~MsgAnalyzer()
-{
-}
-
 MsgAnalyzer::ClassInfo MsgAnalyzer::extractClassInfo(ASTNode *node, const std::string& namespaceName, bool isImported)
 {
     ClassInfo classInfo;

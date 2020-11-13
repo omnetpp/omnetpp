@@ -67,8 +67,8 @@ class SIM_API cOsgCanvas : public cOwnedObject
 
         // this is only needed to simplify the Viewpoint hint
         struct SIM_API Vec3d {
-            double x, y, z;
-            Vec3d() : x(0), y(0), z(0) {}
+            double x = 0, y = 0, z = 0;
+            Vec3d() {}
             Vec3d(double x, double y, double z): x(x), y(y), z(z) {}
             std::string str();
         };
@@ -135,9 +135,9 @@ class SIM_API cOsgCanvas : public cOwnedObject
         ViewerStyle viewerStyle;
 
         // OSG viewer hints
-        Color clearColor;
-        CameraManipulatorType cameraManipulatorType;
-        double fieldOfViewAngle;  // a.k.a. fovy, see OpenGL gluPerspective
+        Color clearColor = Color(128, 128, 220);
+        CameraManipulatorType cameraManipulatorType = CAM_AUTO;
+        double fieldOfViewAngle = 30;  // a.k.a. fovy, see OpenGL gluPerspective
         double zNear; // see OpenGL gluPerspective
         double zFar;  // see OpenGL gluPerspective
 
