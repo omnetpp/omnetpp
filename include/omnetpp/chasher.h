@@ -73,6 +73,7 @@ class SIM_API cHasher : noncopyable
     cHasher& operator<<(double d)         {union _ {double d; uint64_t i;}; merge2(((union _ *)&d)->i); return *this;}
     cHasher& operator<<(simtime_t t)      {merge2(t.raw()); return *this;}
     cHasher& operator<<(const char *s)    {if (s) add(s, strlen(s)+1); else *this << 0; return *this;}
+    cHasher& operator<<(const std::string& s) {add(s.c_str(), s.size()); return *this;}
     //@}
 
     /** @name Obtaining the result */
