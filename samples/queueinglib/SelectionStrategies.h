@@ -28,7 +28,6 @@ class QUEUEING_API SelectionStrategy : public cObject
         // on which module's gates should be used for selection
         // if selectOnInGate is true, then we will use "in" gate otherwise "out" is used
         SelectionStrategy(cSimpleModule *module, bool selectOnInGate);
-        virtual ~SelectionStrategy();
 
         static SelectionStrategy * create(const char *algName, cSimpleModule *module, bool selectOnInGate);
 

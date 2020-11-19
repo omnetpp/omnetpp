@@ -43,7 +43,6 @@ class QUEUEING_API PassiveQueue : public cSimpleModule, public IPassiveQueue
         virtual void refreshDisplay() const override;
 
     public:
-        PassiveQueue();
         virtual ~PassiveQueue();
         // The following methods are called from IServer:
         virtual int length() override;

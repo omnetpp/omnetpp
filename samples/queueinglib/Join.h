@@ -24,7 +24,6 @@ class QUEUEING_API Join : public cSimpleModule
     protected:
         std::list<Job*> jobsHeld;
     public:
-        Join();
         ~Join();
     protected:
         virtual void initialize() override;

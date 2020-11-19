@@ -11,10 +11,6 @@
 
 namespace fifo {
 
-AbstractFifo::AbstractFifo()
-{
-}
-
 AbstractFifo::~AbstractFifo()
 {
     delete msgServiced;

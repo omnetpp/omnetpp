@@ -14,14 +14,6 @@ namespace queueing {
 
 Define_Module(Allocate);
 
-Allocate::Allocate()
-{
-}
-
-Allocate::~Allocate()
-{
-}
-
 void Allocate::initialize()
 {
     droppedSignal = registerSignal("dropped");

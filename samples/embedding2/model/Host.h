@@ -37,7 +37,6 @@ class Host : public cSimpleModule
     int pkCounter;
 
   public:
-    Host();
     virtual ~Host();
 
   protected:

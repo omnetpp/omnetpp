@@ -29,7 +29,6 @@ class AbstractFifo : public cSimpleModule
     cQueue queue;
 
   public:
-    AbstractFifo();
     virtual ~AbstractFifo();
 
   protected:

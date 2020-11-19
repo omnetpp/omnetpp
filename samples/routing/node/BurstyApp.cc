@@ -48,7 +48,6 @@ class BurstyApp : public cSimpleModule
     simsignal_t sourceAddressSignal;
 
   public:
-    BurstyApp();
     virtual ~BurstyApp();
 
   protected:
@@ -64,10 +63,6 @@ class BurstyApp : public cSimpleModule
 };
 
 Define_Module(BurstyApp);
-
-BurstyApp::BurstyApp()
-{
-}
 
 BurstyApp::~BurstyApp()
 {

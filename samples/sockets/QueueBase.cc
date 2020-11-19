@@ -12,10 +12,6 @@
 
 using namespace omnetpp;
 
-QueueBase::QueueBase()
-{
-}
-
 QueueBase::~QueueBase()
 {
     delete msgServiced;

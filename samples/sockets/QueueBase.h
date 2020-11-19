@@ -25,7 +25,6 @@ class QueueBase : public cSimpleModule
     cQueue queue;
 
   public:
-    QueueBase();
     virtual ~QueueBase();
 
   protected:

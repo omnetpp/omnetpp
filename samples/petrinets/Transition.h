@@ -44,7 +44,6 @@ class Transition : public cSimpleModule, public ITransition
     mutable std::vector<TokenAnimation> tokenAnimations;
 
   public:
-    Transition();
     virtual ~Transition();
 
   protected:

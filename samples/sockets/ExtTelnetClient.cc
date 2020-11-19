@@ -30,7 +30,6 @@ class ExtTelnetClient : public cSimpleModule
     int srvAddr;
 
   public:
-    ExtTelnetClient();
     virtual ~ExtTelnetClient();
 
   protected:
@@ -41,10 +40,6 @@ class ExtTelnetClient : public cSimpleModule
 };
 
 Define_Module(ExtTelnetClient);
-
-ExtTelnetClient::ExtTelnetClient()
-{
-}
 
 ExtTelnetClient::~ExtTelnetClient()
 {

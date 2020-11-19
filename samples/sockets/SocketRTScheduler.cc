@@ -28,14 +28,6 @@ inline std::ostream& operator<<(std::ostream& out, const timeval& tv)
 
 //---
 
-cSocketRTScheduler::cSocketRTScheduler() : cScheduler()
-{
-}
-
-cSocketRTScheduler::~cSocketRTScheduler()
-{
-}
-
 std::string cSocketRTScheduler::str() const
 {
     return "socket RT scheduler";

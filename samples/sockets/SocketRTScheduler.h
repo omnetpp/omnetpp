@@ -74,16 +74,6 @@ class cSocketRTScheduler : public cScheduler
 
   public:
     /**
-     * Constructor.
-     */
-    cSocketRTScheduler();
-
-    /**
-     * Destructor.
-     */
-    virtual ~cSocketRTScheduler();
-
-    /**
      * Return a description for the GUI.
      */
     virtual std::string str() const override;

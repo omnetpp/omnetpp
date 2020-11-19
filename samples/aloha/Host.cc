@@ -15,10 +15,6 @@ namespace aloha {
 
 Define_Module(Host);
 
-Host::Host()
-{
-}
-
 Host::~Host()
 {
     delete lastPacket;

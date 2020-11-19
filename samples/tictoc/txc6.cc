@@ -35,7 +35,6 @@ class Txc6 : public cSimpleModule
     cMessage *tictocMsg = nullptr;  // variable to remember the message until we send it back
 
   public:
-    Txc6();
     virtual ~Txc6();
 
   protected:
@@ -44,10 +43,6 @@ class Txc6 : public cSimpleModule
 };
 
 Define_Module(Txc6);
-
-Txc6::Txc6()
-{
-}
 
 Txc6::~Txc6()
 {

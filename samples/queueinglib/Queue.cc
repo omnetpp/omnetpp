@@ -14,10 +14,6 @@ namespace queueing {
 
 Define_Module(Queue);
 
-Queue::Queue()
-{
-}
-
 Queue::~Queue()
 {
     delete jobServiced;

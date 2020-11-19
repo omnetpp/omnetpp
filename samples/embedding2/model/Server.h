@@ -43,7 +43,6 @@ class Server : public cSimpleModule
     cHistogram collisionLengthHistogram;
 
   public:
-    Server();
     virtual ~Server();
 
   protected:

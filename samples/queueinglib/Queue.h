@@ -36,7 +36,6 @@ class QUEUEING_API Queue : public cSimpleModule
         Job *getFromQueue();
 
     public:
-        Queue();
         virtual ~Queue();
         int length();
 

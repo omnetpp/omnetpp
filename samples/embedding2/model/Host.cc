@@ -12,10 +12,6 @@
 namespace aloha {
 Define_Module(Host);
 
-Host::Host()
-{
-}
-
 Host::~Host()
 {
     cancelAndDelete(endTxEvent);

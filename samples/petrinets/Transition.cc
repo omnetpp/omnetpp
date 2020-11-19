@@ -15,10 +15,6 @@ Define_Module(Transition);
 
 simsignal_t Transition::firingSignal = cComponent::registerSignal("firing");
 
-Transition::Transition()
-{
-}
-
 Transition::~Transition()
 {
     transitionScheduler = dynamic_cast<TransitionScheduler*>(findModuleByPath(par("transitionSchedulerModule").stringValue()));

@@ -19,10 +19,6 @@ SelectionStrategy::SelectionStrategy(cSimpleModule *module, bool selectOnInGate)
     gateSize = isInputGate ? hostModule->gateSize("in") : hostModule->gateSize("out");
 }
 
-SelectionStrategy::~SelectionStrategy()
-{
-}
-
 SelectionStrategy *SelectionStrategy::create(const char *algName, cSimpleModule *module, bool selectOnInGate)
 {
     SelectionStrategy *strategy = nullptr;

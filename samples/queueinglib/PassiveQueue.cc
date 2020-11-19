@@ -15,10 +15,6 @@ namespace queueing {
 
 Define_Module(PassiveQueue);
 
-PassiveQueue::PassiveQueue()
-{
-}
-
 PassiveQueue::~PassiveQueue()
 {
     delete selectionStrategy;

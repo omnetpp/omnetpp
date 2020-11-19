@@ -32,7 +32,6 @@ class AbstractFifo : public cSimpleModule
     simsignal_t queueingTimeSignal;
 
   public:
-    AbstractFifo();
     virtual ~AbstractFifo();
 
   protected:

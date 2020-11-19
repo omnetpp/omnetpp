@@ -16,10 +16,6 @@ namespace queueing {
 
 Define_Module(Server);
 
-Server::Server()
-{
-}
-
 Server::~Server()
 {
     delete selectionStrategy;

@@ -27,7 +27,6 @@ class Histograms : public cSimpleModule
     void addHistogram(const char *name, cIHistogramStrategy *strategy);
     void createStatisticObjects();
   public:
-    Histograms() {}
     virtual ~Histograms();
     virtual void initialize() override;
     virtual void handleMessage(cMessage *msg) override;

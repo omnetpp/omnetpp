@@ -22,7 +22,6 @@ class Source : public cSimpleModule
     cMessage *sendMessageEvent = nullptr;
 
   public:
-    Source();
     virtual ~Source();
 
   protected:
@@ -31,10 +30,6 @@ class Source : public cSimpleModule
 };
 
 Define_Module(Source);
-
-Source::Source()
-{
-}
 
 Source::~Source()
 {

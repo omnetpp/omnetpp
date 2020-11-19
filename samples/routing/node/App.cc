@@ -39,7 +39,6 @@ class App : public cSimpleModule
     simsignal_t sourceAddressSignal;
 
   public:
-    App();
     virtual ~App();
 
   protected:
@@ -48,10 +47,6 @@ class App : public cSimpleModule
 };
 
 Define_Module(App);
-
-App::App()
-{
-}
 
 App::~App()
 {

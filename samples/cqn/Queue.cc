@@ -26,7 +26,6 @@ class AbstractQueue : public cSimpleModule
     cOutVector queueLength;
 
   public:
-    AbstractQueue();
     virtual ~AbstractQueue();
 
   protected:
@@ -39,10 +38,6 @@ class AbstractQueue : public cSimpleModule
     virtual void endService(cMessage *msg) = 0;
     virtual void refreshDisplay() const override;
 };
-
-AbstractQueue::AbstractQueue()
-{
-}
 
 AbstractQueue::~AbstractQueue()
 {

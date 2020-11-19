@@ -22,7 +22,7 @@ namespace queueing {
 class QUEUEING_API IPassiveQueue
 {
     public:
-        virtual ~IPassiveQueue() { };
+        virtual ~IPassiveQueue() {}
         // the current length of the queue
         virtual int length() = 0;
         // requests the queue to send out the next job on its "gateIndex" gate.

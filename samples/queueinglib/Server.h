@@ -35,7 +35,6 @@ class QUEUEING_API Server : public cSimpleModule, public IServer
         cMessage *endServiceMsg = nullptr;
 
     public:
-        Server();
         virtual ~Server();
 
     protected:

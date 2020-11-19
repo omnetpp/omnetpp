@@ -14,10 +14,6 @@ namespace queueing {
 
 Define_Module(ResourceBasedQueue);
 
-ResourceBasedQueue::ResourceBasedQueue()
-{
-}
-
 ResourceBasedQueue::~ResourceBasedQueue()
 {
     delete jobServiced;

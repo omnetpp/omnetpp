@@ -13,10 +13,6 @@ namespace queueing {
 
 Define_Module(Join);
 
-Join::Join()
-{
-}
-
 Join::~Join()
 {
     while (!jobsHeld.empty()) {

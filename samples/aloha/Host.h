@@ -56,7 +56,6 @@ class Host : public cSimpleModule
     mutable std::vector<cOvalFigure *> transmissionCircles; // ripples inside the packet ring
 
   public:
-    Host();
     virtual ~Host();
 
   protected:

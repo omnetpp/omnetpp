@@ -53,9 +53,6 @@ class Person : public cSimpleModule
     double x, y;  // in meters, relative to playground origin
 
   public:
-    Person() {};
-    virtual ~Person() {};
-
     double getX() { return x; }
     double getY() { return y; }
 

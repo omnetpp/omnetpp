@@ -30,7 +30,6 @@ class ExtHTTPClient : public cSimpleModule
     int srvAddr;
 
   public:
-    ExtHTTPClient();
     virtual ~ExtHTTPClient();
 
   protected:
@@ -41,10 +40,6 @@ class ExtHTTPClient : public cSimpleModule
 };
 
 Define_Module(ExtHTTPClient);
-
-ExtHTTPClient::ExtHTTPClient()
-{
-}
 
 ExtHTTPClient::~ExtHTTPClient()
 {

@@ -13,10 +13,6 @@ namespace aloha {
 
 Define_Module(Server);
 
-Server::Server()
-{
-}
-
 Server::~Server()
 {
     cancelAndDelete(endRxEvent);

@@ -34,7 +34,6 @@ class L2Queue : public cSimpleModule
     simsignal_t rxBytesSignal;
 
   public:
-    L2Queue();
     virtual ~L2Queue();
 
   protected:
@@ -45,10 +44,6 @@ class L2Queue : public cSimpleModule
 };
 
 Define_Module(L2Queue);
-
-L2Queue::L2Queue()
-{
-}
 
 L2Queue::~L2Queue()
 {

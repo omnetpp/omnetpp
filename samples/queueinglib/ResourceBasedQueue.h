@@ -57,7 +57,6 @@ class QUEUEING_API ResourceBasedQueue : public cSimpleModule, public IResourceAl
         void releaseResource();
         bool isResourceAllocated();
     public:
-        ResourceBasedQueue();
         virtual ~ResourceBasedQueue();
         int length();
 

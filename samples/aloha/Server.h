@@ -39,7 +39,6 @@ class Server : public cSimpleModule
     simsignal_t collisionSignal;
 
   public:
-    Server();
     virtual ~Server();
 
   protected:

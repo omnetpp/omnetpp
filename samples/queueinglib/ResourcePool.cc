@@ -19,14 +19,6 @@ std::ostream& operator<<(std::ostream& out, const ResourcePool::AllocationReques
     return out;
 }
 
-ResourcePool::ResourcePool()
-{
-}
-
-ResourcePool::~ResourcePool()
-{
-}
-
 void ResourcePool::initialize()
 {
     WATCH_LIST(allocatorList);

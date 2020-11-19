@@ -25,7 +25,6 @@ class Txc7 : public cSimpleModule
     cMessage *tictocMsg = nullptr;
 
   public:
-    Txc7();
     virtual ~Txc7();
 
   protected:
@@ -34,10 +33,6 @@ class Txc7 : public cSimpleModule
 };
 
 Define_Module(Txc7);
-
-Txc7::Txc7()
-{
-}
 
 Txc7::~Txc7()
 {

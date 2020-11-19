@@ -40,8 +40,6 @@ class QUEUEING_API Allocate : public cSimpleModule, public IResourceAllocator
 		simsignal_t queueingTimeSignal;
 
     public:
-        Allocate();
-        virtual ~Allocate();
         int length();
 
         // call-back method called from any associated resource

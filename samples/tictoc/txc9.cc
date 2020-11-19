@@ -28,7 +28,6 @@ class Tic9 : public cSimpleModule
     cMessage *message = nullptr;  // message that has to be re-sent on timeout
 
   public:
-    Tic9();
     virtual ~Tic9();
 
   protected:
@@ -39,10 +38,6 @@ class Tic9 : public cSimpleModule
 };
 
 Define_Module(Tic9);
-
-Tic9::Tic9()
-{
-}
 
 Tic9::~Tic9()
 {
