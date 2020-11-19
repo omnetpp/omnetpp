@@ -20,7 +20,7 @@ using namespace omnetpp;
 class ExtTelnetClient : public cSimpleModule
 {
   private:
-    cMessage *rtEvent;
+    cMessage *rtEvent = nullptr;
     cSocketRTScheduler *rtScheduler;
 
     char recvBuffer[4000];
@@ -44,7 +44,6 @@ Define_Module(ExtTelnetClient);
 
 ExtTelnetClient::ExtTelnetClient()
 {
-    rtEvent = nullptr;
 }
 
 ExtTelnetClient::~ExtTelnetClient()

@@ -13,7 +13,6 @@ namespace fifo {
 
 AbstractFifo::AbstractFifo()
 {
-    msgServiced = endServiceMsg = nullptr;
 }
 
 AbstractFifo::~AbstractFifo()

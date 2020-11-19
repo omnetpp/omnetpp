@@ -37,8 +37,8 @@ class BurstyApp : public cSimpleModule
     };
 
     int pkCounter;
-    cMessage *startStopBurst;
-    cMessage *sendMessage;
+    cMessage *startStopBurst = nullptr;
+    cMessage *sendMessage = nullptr;
     int numSent;
     int numReceived;
 
@@ -67,7 +67,6 @@ Define_Module(BurstyApp);
 
 BurstyApp::BurstyApp()
 {
-    startStopBurst = sendMessage = nullptr;
 }
 
 BurstyApp::~BurstyApp()

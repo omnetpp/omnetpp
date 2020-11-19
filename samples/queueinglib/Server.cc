@@ -18,10 +18,6 @@ Define_Module(Server);
 
 Server::Server()
 {
-    selectionStrategy = nullptr;
-    jobServiced = nullptr;
-    endServiceMsg = nullptr;
-    allocated = false;
 }
 
 Server::~Server()

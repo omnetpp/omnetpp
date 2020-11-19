@@ -22,13 +22,13 @@ class Job;
 class QUEUEING_API Queue : public cSimpleModule
 {
     private:
-		simsignal_t droppedSignal;
-		simsignal_t queueLengthSignal;
-		simsignal_t queueingTimeSignal;
-		simsignal_t busySignal;
+        simsignal_t droppedSignal;
+        simsignal_t queueLengthSignal;
+        simsignal_t queueingTimeSignal;
+        simsignal_t busySignal;
 
-        Job *jobServiced;
-        cMessage *endServiceMsg;
+        Job *jobServiced = nullptr;
+        cMessage *endServiceMsg = nullptr;
         cQueue queue;
         int capacity;
         bool fifo;

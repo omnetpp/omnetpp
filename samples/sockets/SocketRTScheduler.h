@@ -65,8 +65,8 @@ class cSocketRTScheduler : public cScheduler
 
     // state
     int64_t baseTime; // in microseconds, as returned by opp_get_monotonic_clock_usecs()
-    SOCKET listenerSocket;
-    SOCKET connSocket;
+    SOCKET listenerSocket = INVALID_SOCKET;
+    SOCKET connSocket = INVALID_SOCKET;
 
     virtual void setupListener();
     virtual bool receiveWithTimeout(long usec);

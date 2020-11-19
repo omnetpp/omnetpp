@@ -25,7 +25,7 @@ class Tic8 : public cSimpleModule
 {
   private:
     simtime_t timeout;  // timeout
-    cMessage *timeoutEvent;  // holds pointer to the timeout self-message
+    cMessage *timeoutEvent = nullptr;  // holds pointer to the timeout self-message
 
   public:
     Tic8();
@@ -40,7 +40,6 @@ Define_Module(Tic8);
 
 Tic8::Tic8()
 {
-    timeoutEvent = nullptr;
 }
 
 Tic8::~Tic8()

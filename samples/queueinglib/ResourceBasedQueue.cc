@@ -16,9 +16,6 @@ Define_Module(ResourceBasedQueue);
 
 ResourceBasedQueue::ResourceBasedQueue()
 {
-    jobServiced = nullptr;
-    endServiceMsg = nullptr;
-    resourceAllocated = false;
 }
 
 ResourceBasedQueue::~ResourceBasedQueue()

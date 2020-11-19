@@ -24,8 +24,8 @@ namespace fifo {
 class AbstractFifo : public cSimpleModule
 {
   protected:
-    cMessage *msgServiced;
-    cMessage *endServiceMsg;
+    cMessage *msgServiced = nullptr;
+    cMessage *endServiceMsg = nullptr;
     cQueue queue;
 
   public:

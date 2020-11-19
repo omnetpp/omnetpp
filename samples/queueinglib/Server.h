@@ -27,12 +27,12 @@ class QUEUEING_API Server : public cSimpleModule, public IServer
 {
     private:
         simsignal_t busySignal;
-        bool allocated;
+        bool allocated = false;
 
-        SelectionStrategy *selectionStrategy;
+        SelectionStrategy *selectionStrategy = nullptr;
 
-        Job *jobServiced;
-        cMessage *endServiceMsg;
+        Job *jobServiced = nullptr;
+        cMessage *endServiceMsg = nullptr;
 
     public:
         Server();

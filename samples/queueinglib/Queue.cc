@@ -16,8 +16,6 @@ Define_Module(Queue);
 
 Queue::Queue()
 {
-    jobServiced = nullptr;
-    endServiceMsg = nullptr;
 }
 
 Queue::~Queue()

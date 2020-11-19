@@ -14,7 +14,6 @@ Define_Module(Host);
 
 Host::Host()
 {
-    endTxEvent = nullptr;
 }
 
 Host::~Host()

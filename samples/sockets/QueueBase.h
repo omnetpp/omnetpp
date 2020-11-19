@@ -20,8 +20,8 @@ using namespace omnetpp;
 class QueueBase : public cSimpleModule
 {
   private:
-    cMessage *msgServiced;
-    cMessage *endServiceMsg;
+    cMessage *msgServiced = nullptr;
+    cMessage *endServiceMsg = nullptr;
     cQueue queue;
 
   public:

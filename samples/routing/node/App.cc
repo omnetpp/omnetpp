@@ -30,7 +30,7 @@ class App : public cSimpleModule
     cPar *packetLengthBytes;
 
     // state
-    cMessage *generatePacket;
+    cMessage *generatePacket = nullptr;
     long pkCounter;
 
     // signals
@@ -51,7 +51,6 @@ Define_Module(App);
 
 App::App()
 {
-    generatePacket = nullptr;
 }
 
 App::~App()

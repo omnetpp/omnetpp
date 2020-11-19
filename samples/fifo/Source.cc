@@ -19,7 +19,7 @@ namespace fifo {
 class Source : public cSimpleModule
 {
   private:
-    cMessage *sendMessageEvent;
+    cMessage *sendMessageEvent = nullptr;
 
   public:
     Source();
@@ -34,7 +34,6 @@ Define_Module(Source);
 
 Source::Source()
 {
-    sendMessageEvent = nullptr;
 }
 
 Source::~Source()

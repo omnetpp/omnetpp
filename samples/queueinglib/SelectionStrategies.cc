@@ -13,10 +13,9 @@
 
 namespace queueing {
 
-SelectionStrategy::SelectionStrategy(cSimpleModule *module, bool selectOnInGate)
+SelectionStrategy::SelectionStrategy(cSimpleModule *module, bool selectOnInGate) :
+    isInputGate(selectOnInGate), hostModule(module)
 {
-    hostModule = module;
-    isInputGate = selectOnInGate;
     gateSize = isInputGate ? hostModule->gateSize("in") : hostModule->gateSize("out");
 }
 
@@ -118,7 +117,6 @@ int RandomSelectionStrategy::select()
 RoundRobinSelectionStrategy::RoundRobinSelectionStrategy(cSimpleModule *module, bool selectOnInGate) :
     SelectionStrategy(module, selectOnInGate)
 {
-    lastIndex = -1;
 }
 
 int RoundRobinSelectionStrategy::select()

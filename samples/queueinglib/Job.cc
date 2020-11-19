@@ -15,7 +15,6 @@ namespace queueing {
 
 Job::Job(const char *name, int kind, JobList *jobList) : Job_Base(name, kind)
 {
-    parent = nullptr;
     if (jobList == nullptr && JobList::getDefaultInstance() != nullptr)
         jobList = JobList::getDefaultInstance();
     this->jobList = jobList;
@@ -23,12 +22,11 @@ Job::Job(const char *name, int kind, JobList *jobList) : Job_Base(name, kind)
         jobList->registerJob(this);
 }
 
-Job::Job(const Job& job)
+Job::Job(const Job& job) : jobList(job.jobList)
 {
     setName(job.getName());
     operator=(job);
-    parent = nullptr;
-    jobList = job.jobList;
+
     if (jobList != nullptr)
         jobList->registerJob(this);
 }

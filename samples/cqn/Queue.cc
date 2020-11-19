@@ -20,8 +20,8 @@ class AbstractQueue : public cSimpleModule
 {
   protected:
     short int priority;
-    cMessage *msgServiced;
-    cMessage *endServiceMsg;
+    cMessage *msgServiced = nullptr;
+    cMessage *endServiceMsg = nullptr;
     cQueue queue;
     cOutVector queueLength;
 
@@ -42,7 +42,6 @@ class AbstractQueue : public cSimpleModule
 
 AbstractQueue::AbstractQueue()
 {
-    msgServiced = endServiceMsg = nullptr;
 }
 
 AbstractQueue::~AbstractQueue()

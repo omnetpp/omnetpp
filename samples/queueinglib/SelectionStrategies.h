@@ -67,7 +67,7 @@ class QUEUEING_API RandomSelectionStrategy : public SelectionStrategy
 class QUEUEING_API RoundRobinSelectionStrategy : public SelectionStrategy
 {
     protected:
-        int lastIndex; // the index of the module last time used
+        int lastIndex = -1; // the index of the module last time used
     public:
         RoundRobinSelectionStrategy(cSimpleModule *module, bool selectOnInGate);
         virtual int select() override;

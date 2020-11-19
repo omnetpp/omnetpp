@@ -39,7 +39,7 @@ class QUEUEING_API Job: public Job_Base
 {
     friend class JobList;
     protected:
-        Job *parent;
+        Job *parent = nullptr;
         std::vector<Job*> children;
         JobList *jobList;
         virtual void setParent(Job *parent); // only for addChild()

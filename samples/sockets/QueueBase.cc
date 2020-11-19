@@ -14,7 +14,6 @@ using namespace omnetpp;
 
 QueueBase::QueueBase()
 {
-    msgServiced = endServiceMsg = nullptr;
 }
 
 QueueBase::~QueueBase()

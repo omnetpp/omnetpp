@@ -28,8 +28,11 @@ using namespace omnetpp;
 class Txc6 : public cSimpleModule
 {
   private:
-    cMessage *event;  // pointer to the event object which we'll use for timing
-    cMessage *tictocMsg;  // variable to remember the message until we send it back
+    // Set the pointers to nullptr, so that the destructor won't crash
+    // even if initialize() doesn't get called because of a runtime
+    // error or user cancellation during the startup process.
+    cMessage *event = nullptr;  // pointer to the event object which we'll use for timing
+    cMessage *tictocMsg = nullptr;  // variable to remember the message until we send it back
 
   public:
     Txc6();
@@ -44,10 +47,6 @@ Define_Module(Txc6);
 
 Txc6::Txc6()
 {
-    // Set the pointer to nullptr, so that the destructor won't crash
-    // even if initialize() doesn't get called because of a runtime
-    // error or user cancellation during the startup process.
-    event = tictocMsg = nullptr;
 }
 
 Txc6::~Txc6()

@@ -32,7 +32,7 @@ class QUEUEING_API PassiveQueue : public cSimpleModule, public IPassiveQueue
         bool fifo;
         int capacity;
         cQueue queue;
-        SelectionStrategy *selectionStrategy;
+        SelectionStrategy *selectionStrategy = nullptr;
 
         void queueLengthChanged();
         void sendJob(Job *job, int gateIndex);

@@ -23,7 +23,7 @@ class L2Queue : public cSimpleModule
     intval_t frameCapacity;
 
     cQueue queue;
-    cMessage *endTransmissionEvent;
+    cMessage *endTransmissionEvent = nullptr;
     bool isBusy;
 
     simsignal_t qlenSignal;
@@ -48,7 +48,6 @@ Define_Module(L2Queue);
 
 L2Queue::L2Queue()
 {
-    endTransmissionEvent = nullptr;
 }
 
 L2Queue::~L2Queue()

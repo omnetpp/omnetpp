@@ -32,7 +32,7 @@ class Host : public cSimpleModule
 
     // state variables, event pointers etc
     cModule *server;
-    cMessage *endTxEvent;
+    cMessage *endTxEvent = nullptr;
     enum { IDLE = 0, TRANSMIT = 1 } state;
     simsignal_t stateSignal;
     int pkCounter;

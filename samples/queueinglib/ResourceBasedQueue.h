@@ -32,10 +32,10 @@ class QUEUEING_API ResourceBasedQueue : public cSimpleModule, public IResourceAl
 		simsignal_t busySignal;
 
         // state
-        Job *jobServiced;
-        cMessage *endServiceMsg;
+        Job *jobServiced = nullptr;
+        cMessage *endServiceMsg = nullptr;
         cQueue queue;
-        bool resourceAllocated;
+        bool resourceAllocated = false;
 
         // parameters
         int capacity;
