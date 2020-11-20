@@ -693,7 +693,15 @@ void OsgViewer::setCameraManipulator(cOsgCanvas::CameraManipulatorType type, boo
             double heading = - atan2(localEye.y(), localEye.x()) * 180.0 / M_PI - 90;
             double pitch = atan2(localUp.z(), osg::Vec2d(localUp.x(), localUp.y()).length()) * 180.0 / M_PI - 90;
 
-            osgEarth::Viewpoint vp("viewpoint", geoCenter.x(), geoCenter.y(), geoCenter.z(), heading, pitch, distance);
+            // we can't use the convenience constructor for viewpoints as it assumes a WGS84 SRS which is
+            // absolutely bogus for simulations on other celestial bodies like the moon or mars
+            osgEarth::Viewpoint vp;
+            vp.name() = "viewpoint";
+            vp.focalPoint()->set(srs, geoCenter.x(), geoCenter.y(), geoCenter.z(), osgEarth::ALTMODE_ABSOLUTE);
+            vp.heading()->set(heading, osgEarth::Units::DEGREES);
+            vp.pitch()->set(pitch, osgEarth::Units::DEGREES);
+            vp.range()->set(distance, osgEarth::Units::METERS);
+
             earthManip->setViewpoint(vp);
         }
 #endif
@@ -708,8 +716,16 @@ void OsgViewer::setCameraManipulator(cOsgCanvas::CameraManipulatorType type, boo
     if (type == cOsgCanvas::CAM_EARTH) {
         auto vp = osgCanvas->getEarthViewpoint();
         if (vp.valid) {
-            // the other constructor, which takes only 5 doubles, seems like it's missing from the osgEarth libraries...
-            osgEarth::Viewpoint homeViewpoint("home", vp.longitude, vp.latitude, vp.altitude, vp.heading, vp.pitch, vp.range);
+            // we can't use the convenience constructor for viewpoints as it assumes a WGS84 SRS which is
+            // absolutely bogus for simulations on other celestial bodies like the moon or mars
+            auto srs = osgEarth::MapNode::findMapNode(osgCanvas->getScene())->getMap()->getSRS();
+            osgEarth::Viewpoint homeViewpoint;
+            homeViewpoint.name() = "home";
+            homeViewpoint.focalPoint()->set(srs, vp.longitude, vp.latitude, vp.altitude, osgEarth::ALTMODE_ABSOLUTE);
+            homeViewpoint.heading()->set(vp.heading, osgEarth::Units::DEGREES);
+            homeViewpoint.pitch()->set(vp.pitch, osgEarth::Units::DEGREES);
+            homeViewpoint.range()->set(vp.range, osgEarth::Units::METERS);
+
             ((osgEarth::Util::EarthManipulator*)manipulator)->setHomeViewpoint(homeViewpoint);
         }
     } else
