@@ -31,8 +31,8 @@ cProperty::cProperty(const char *name, const char *index) : cNamedObject(name, t
 cProperty::~cProperty()
 {
     // release pooled strings
-    stringPool.release(propindex);
-    stringPool.release(propfullname);
+    stringPool.release(indexString);
+    stringPool.release(fullName);
     int n = keyv.size();
     for (int i = 0; i < n; i++) {
         stringPool.release(keyv[i]);
@@ -50,8 +50,8 @@ void cProperty::releaseValues(CharPtrVector& vals)
 
 void cProperty::copy(const cProperty& other)
 {
-    stringPool.release(propfullname);
-    propfullname = nullptr;
+    stringPool.release(fullName);
+    fullName = nullptr;
 
     setIndex(other.getIndex());
 
@@ -100,23 +100,23 @@ void cProperty::setName(const char *name)
 
     cNamedObject::setName(name);
 
-    stringPool.release(propfullname);
-    propfullname = nullptr;
+    stringPool.release(fullName);
+    fullName = nullptr;
 }
 
 const char *cProperty::getFullName() const
 {
-    if (!propfullname) {
-        if (!propindex) {
-            propfullname = stringPool.get(getName());
+    if (!fullName) {
+        if (!indexString) {
+            fullName = stringPool.get(getName());
         }
         else {
             std::stringstream os;
-            os << getName() << "[" << propindex << "]";
-            propfullname = stringPool.get(os.str().c_str());
+            os << getName() << "[" << indexString << "]";
+            fullName = stringPool.get(os.str().c_str());
         }
     }
-    return propfullname;
+    return fullName;
 }
 
 std::string cProperty::str() const
@@ -156,21 +156,21 @@ void cProperty::parsimUnpack(cCommBuffer *buffer)
     throw cRuntimeError(this, E_CANTPACK);
 }
 
-void cProperty::setIndex(const char *index)
+void cProperty::setIndex(const char *newIndex)
 {
     if (isLocked())
         throw cRuntimeError(this, E_LOCKED);
 
-    stringPool.release(propindex);
-    propindex = stringPool.get(index);
+    stringPool.release(indexString);
+    indexString = stringPool.get(newIndex);
 
-    stringPool.release(propfullname);
-    propfullname = nullptr;
+    stringPool.release(fullName);
+    fullName = nullptr;
 }
 
 const char *cProperty::getIndex() const
 {
-    return propindex;
+    return indexString;
 }
 
 void cProperty::setIsImplicit(bool b)

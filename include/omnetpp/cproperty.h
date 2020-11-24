@@ -52,8 +52,8 @@ class SIM_API cProperty : public cNamedObject
 
     cProperties *ownerp = nullptr;
 
-    const char *propindex = nullptr;
-    mutable const char *propfullname = nullptr;
+    const char *indexString = nullptr;
+    mutable const char *fullName = nullptr;
 
     typedef std::vector<const char *> CharPtrVector;
     CharPtrVector keyv;
@@ -97,7 +97,7 @@ class SIM_API cProperty : public cNamedObject
     /**
      * Copy constructor.
      */
-    cProperty(const cProperty& other) : cNamedObject(other) {setFlag(FL_ISLOCKED,false); propindex=propfullname=nullptr; copy(other);}
+    cProperty(const cProperty& other) : cNamedObject(other) {setFlag(FL_ISLOCKED,false); indexString=fullName=nullptr; copy(other);}
 
     /**
      * Destructor.
