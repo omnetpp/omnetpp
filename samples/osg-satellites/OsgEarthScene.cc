@@ -19,11 +19,7 @@
 #include <osgEarth/Capabilities>
 #include <osgEarthAnnotation/RectangleNode>
 #include <osgEarth/Version>
-#if OSGEARTH_VERSION_GREATER_OR_EQUAL(2, 6, 0)
-    #include <osgEarthUtil/Sky>
-#else
-    #include <osgEarthUtil/SkyNode>
-#endif
+#include <osgEarthUtil/Sky>
 
 using namespace osgEarth;
 using namespace osgEarth::Annotation;
@@ -66,11 +62,7 @@ void OsgEarthScene::initialize()
 
     scene = new osg::Group();
     scene->asGroup()->addChild(earthRotator);
-    #if OSGEARTH_VERSION_GREATER_OR_EQUAL(2, 6, 0)
-        scene->asGroup()->addChild(osgEarth::Util::SkyNode::create(mapNode));
-    #else
-        scene->asGroup()->addChild(new osgEarth::Util::SkyNode(mapNode->getMap()));
-    #endif
+    scene->asGroup()->addChild(osgEarth::Util::SkyNode::create(mapNode));
     auto stateSet = scene->getOrCreateStateSet();
     stateSet->setMode(GL_BLEND, osg::StateAttribute::ON);
     stateSet->setMode(GL_CULL_FACE, osg::StateAttribute::ON);

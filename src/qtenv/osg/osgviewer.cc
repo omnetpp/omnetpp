@@ -28,11 +28,7 @@
 
 #ifdef WITH_OSGEARTH
 #include <osgEarth/Version>
-#if OSGEARTH_VERSION_GREATER_OR_EQUAL(2, 6, 0)
-    #include <osgEarthUtil/Sky>
-#else
-    #include <osgEarthUtil/SkyNode>
-#endif
+#include <osgEarthUtil/Sky>
 #include <osgEarth/MapNode>
 #include <osgEarth/NodeUtils>
 #include <osgEarthUtil/EarthManipulator>
