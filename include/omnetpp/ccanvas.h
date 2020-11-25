@@ -130,6 +130,7 @@ class SIM_API cFigure : public cOwnedObject
             Color() {}
             Color(uint8_t red, uint8_t green, uint8_t blue) : red(red), green(green), blue(blue) {}
             Color(const char *color) {*this = parseColor(color);}
+            Color(const Color& other) = default;
             bool operator==(const Color& other) const {return red == other.red && green == other.green && blue == other.blue;}
             std::string str() const;
             //@}
@@ -168,6 +169,7 @@ class SIM_API cFigure : public cOwnedObject
             //@{
             Font() {}
             Font(std::string typeface, int pointSize=-1, uint8_t style=FONT_NONE) : typeface(typeface), pointSize(pointSize), style(style) {}
+            Font(const Font& other) = default;
             bool operator==(const Font& other) const {return typeface == other.typeface && pointSize == other.pointSize && style == other.style;}
             std::string str() const;
             //@}
@@ -257,6 +259,7 @@ class SIM_API cFigure : public cOwnedObject
             //@{
             RGBA() {}
             RGBA(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha) : red(red), green(green), blue(blue), alpha(alpha) {}
+            RGBA(const RGBA& other) = default;
             void set(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {red=r; green=g; blue=b; alpha=a;}
             void operator=(const Color& color) {red = color.red; green = color.green; blue = color.blue; alpha = 255;}
             operator Color() const {return Color(red, green, blue);}
