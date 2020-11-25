@@ -150,7 +150,8 @@ class SIM_API cSingleFingerprintCalculator : public cFingerprintCalculator
     cMatchExpression *eventMatcher = nullptr;
     cMatchExpression *moduleMatcher = nullptr;
     cMatchExpression *resultMatcher = nullptr;
-    cHasher hasher;
+    cHasher hasher_;
+    [[deprecated]] cHasher *hasher = &hasher_;
     bool addEvents = false;
     bool addScalarResults = false;
     bool addStatisticResults = false;
@@ -180,19 +181,19 @@ class SIM_API cSingleFingerprintCalculator : public cFingerprintCalculator
     virtual void addVectorResult(const cComponent *component, const char *name, const simtime_t& t, double value) override;
     virtual void addVisuals() override;
 
-    virtual void addExtraData(const char *buffer, size_t length) override { if (addExtraData_) hasher.add(buffer, length); }
-    virtual void addExtraData(char data) override { if (addExtraData_) hasher << data; }
-    virtual void addExtraData(short data) override { if (addExtraData_) hasher << data; }
-    virtual void addExtraData(int data) override { if (addExtraData_) hasher << data; }
-    virtual void addExtraData(long data) override { if (addExtraData_) hasher << data; }
-    virtual void addExtraData(long long data) override { if (addExtraData_) hasher << data; }
-    virtual void addExtraData(unsigned char data) override { if (addExtraData_) hasher << data; }
-    virtual void addExtraData(unsigned short data) override { if (addExtraData_) hasher << data; }
-    virtual void addExtraData(unsigned int data) override { if (addExtraData_) hasher << data; }
-    virtual void addExtraData(unsigned long data) override { if (addExtraData_) hasher << data; }
-    virtual void addExtraData(unsigned long long data) override { if (addExtraData_) hasher << data; }
-    virtual void addExtraData(double data) override { if (addExtraData_) hasher << data; }
-    virtual void addExtraData(const char *data) override { if (addExtraData_) hasher << data; }
+    virtual void addExtraData(const char *buffer, size_t length) override { if (addExtraData_) hasher_.add(buffer, length); }
+    virtual void addExtraData(char data) override { if (addExtraData_) hasher_.add(data); }
+    virtual void addExtraData(short data) override { if (addExtraData_) hasher_.add(data); }
+    virtual void addExtraData(int data) override { if (addExtraData_) hasher_.add(data); }
+    virtual void addExtraData(long data) override { if (addExtraData_) hasher_.add(data); }
+    virtual void addExtraData(long long data) override { if (addExtraData_) hasher_.add(data); }
+    virtual void addExtraData(unsigned char data) override { if (addExtraData_) hasher_.add(data); }
+    virtual void addExtraData(unsigned short data) override { if (addExtraData_) hasher_.add(data); }
+    virtual void addExtraData(unsigned int data) override { if (addExtraData_) hasher_.add(data); }
+    virtual void addExtraData(unsigned long data) override { if (addExtraData_) hasher_.add(data); }
+    virtual void addExtraData(unsigned long long data) override { if (addExtraData_) hasher_.add(data); }
+    virtual void addExtraData(double data) override { if (addExtraData_) hasher_.add(data); }
+    virtual void addExtraData(const char *data) override { if (addExtraData_) hasher_.add(data); }
 
     virtual bool checkFingerprint() const override;
 
