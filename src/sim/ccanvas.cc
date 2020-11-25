@@ -362,23 +362,10 @@ std::string cFigure::Transform::str() const
 
 //----
 
-// TODO: why not delegate these to each other?
-cFigure::Pixmap::Pixmap(int width, int height) : width(width), height(height)
-{
-    allocate(width, height);
-    fill(BLACK, 0);
-}
-
 cFigure::Pixmap::Pixmap(int width, int height, const RGBA& fill_) : width(width), height(height)
 {
     allocate(width, height);
     fill(fill_);
-}
-
-cFigure::Pixmap::Pixmap(int width, int height, const Color& color, double opacity) : width(width), height(height)
-{
-    allocate(width, height);
-    fill(color, opacity);
 }
 
 cFigure::Pixmap::Pixmap(const Pixmap& other)
@@ -425,8 +412,7 @@ void cFigure::Pixmap::setSize(int newWidth, int newHeight, const RGBA& fill_)
 
 void cFigure::Pixmap::setSize(int width, int height, const Color& color, double opacity)
 {
-    RGBA rgba(color.red, color.green, color.blue, alpha(opacity));
-    setSize(width, height, rgba);
+    setSize(width, height, RGBA(color, opacity));
 }
 
 void cFigure::Pixmap::fill(const RGBA& rgba)
@@ -438,8 +424,7 @@ void cFigure::Pixmap::fill(const RGBA& rgba)
 
 void cFigure::Pixmap::fill(const Color& color, double opacity)
 {
-    RGBA rgba(color.red, color.green, color.blue, alpha(opacity));
-    fill(rgba);
+    fill(RGBA(color, opacity));
 }
 
 cFigure::Pixmap& cFigure::Pixmap::operator=(const Pixmap& other)

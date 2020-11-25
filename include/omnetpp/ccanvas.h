@@ -259,11 +259,13 @@ class SIM_API cFigure : public cOwnedObject
             //@{
             RGBA() {}
             RGBA(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha) : red(red), green(green), blue(blue), alpha(alpha) {}
+            explicit RGBA(const Color& color, double opacity=1) : red(color.red), green(color.green), blue(color.blue), alpha(toAlpha(opacity)) {}
             RGBA(const RGBA& other) = default;
             void set(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {red=r; green=g; blue=b; alpha=a;}
             void operator=(const Color& color) {red = color.red; green = color.green; blue = color.blue; alpha = 255;}
             operator Color() const {return Color(red, green, blue);}
             bool operator==(const RGBA& o) const {return red == o.red && green == o.green && blue == o.blue && alpha == o.alpha;}
+            static uint8_t toAlpha(double opacity) {return opacity<=0 ? 0 : opacity>=1.0 ? 255 : (uint8_t)(opacity*255+0.5);}
             std::string str() const;
             //@}
         };
@@ -279,14 +281,12 @@ class SIM_API cFigure : public cOwnedObject
                 RGBA *data = nullptr;
             private:
                 void allocate(int width, int height);
-                static uint8_t alpha(double opacity) {return opacity<=0 ? 0 : opacity>=1.0 ? 255 : (uint8_t)(opacity*255+0.5);}
             public:
                 /** @name Methods. */
                 //@{
                 Pixmap() {}
-                Pixmap(int width, int height); // filled with transparent black
-                Pixmap(int width, int height, const RGBA& fill);
-                Pixmap(int width, int height, const Color& color, double opacity=1);
+                Pixmap(int width, int height, const RGBA& fill=RGBA(BLACK,0));
+                Pixmap(int width, int height, const Color& color, double opacity=1) : Pixmap(width, height, RGBA(color, opacity)) {}
                 Pixmap(const Pixmap& other);
                 ~Pixmap();
                 Pixmap& operator=(const Pixmap& other);
@@ -298,11 +298,11 @@ class SIM_API cFigure : public cOwnedObject
                 int getHeight() const {return height;}
                 RGBA& pixel(int x, int y);
                 const RGBA pixel(int x, int y) const {return const_cast<Pixmap*>(this)->pixel(x,y);}
-                void setPixel(int x, int y, const Color& color, double opacity=1.0) {RGBA& p = pixel(x,y); p.set(color.red, color.green, color.blue, alpha(opacity));}
+                void setPixel(int x, int y, const Color& color, double opacity=1.0) {RGBA& p = pixel(x,y); p.set(color.red, color.green, color.blue, RGBA::toAlpha(opacity));}
                 const Color getColor(int x, int y) const {return (Color)pixel(x,y);}
                 void setColor(int x, int y, const Color& color) {RGBA& p = pixel(x,y); p.red = color.red; p.green = color.green; p.blue = color.blue;}
                 double getOpacity(int x, int y) const {return pixel(x,y).alpha / 255.0;}
-                void setOpacity(int x, int y, double opacity) {pixel(x,y).alpha = alpha(opacity);}
+                void setOpacity(int x, int y, double opacity) {pixel(x,y).alpha = RGBA::toAlpha(opacity);}
                 const uint8_t *buffer() const {return (uint8_t*)data;} // direct access for low-level manipulation
                 std::string str() const;
                 //@}
