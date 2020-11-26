@@ -128,6 +128,7 @@ static const char *PKEY_STARTARROWHEAD = "startArrowhead";
 static const char *PKEY_ENDARROWHEAD = "endArrowhead";
 static const char *PKEY_TEXT = "text";
 static const char *PKEY_FONT = "font";
+static const char *PKEY_ALIGN = "align";
 static const char *PKEY_ANGLE = "angle";
 static const char *PKEY_COLOR = "color";
 static const char *PKEY_OPACITY = "opacity";
@@ -802,6 +803,14 @@ cFigure::Anchor cFigure::parseAnchor(const char *s)
     if (!strcmp(s,"middle")) return ANCHOR_BASELINE_MIDDLE;
     if (!strcmp(s,"end")) return ANCHOR_BASELINE_END;
     throw cRuntimeError("Invalid anchor '%s'", s);
+}
+
+cFigure::Alignment cFigure::parseAlignment(const char *s)
+{
+    if (!strcmp(s,"left")) return ALIGN_LEFT;
+    if (!strcmp(s,"right")) return ALIGN_RIGHT;
+    if (!strcmp(s,"center")) return ALIGN_CENTER;
+    throw cRuntimeError("Invalid alignment '%s'", s);
 }
 
 cFigure::~cFigure()
@@ -3271,13 +3280,15 @@ void cAbstractTextFigure::parse(cProperty *property)
         setOpacity(opp_atof(s));
     if ((s = property->getValue(PKEY_HALO)) != nullptr)
         setHalo(parseBool(s));
+    if ((s = property->getValue(PKEY_ALIGN)) != nullptr)
+        setAlignment(parseAlignment(s));
 }
 
 const char **cAbstractTextFigure::getAllowedPropertyKeys() const
 {
     static const char *keys[32];
     if (!keys[0]) {
-        const char *localKeys[] = { PKEY_POS, PKEY_ANCHOR, PKEY_TEXT, PKEY_FONT, PKEY_COLOR, PKEY_OPACITY, PKEY_HALO, nullptr};
+        const char *localKeys[] = { PKEY_POS, PKEY_ANCHOR, PKEY_TEXT, PKEY_FONT, PKEY_COLOR, PKEY_OPACITY, PKEY_HALO, PKEY_ALIGN, nullptr};
         concatArrays(keys, cFigure::getAllowedPropertyKeys(), localKeys);
     }
     return keys;
@@ -3303,6 +3314,14 @@ void cAbstractTextFigure::setAnchor(Anchor anchor)
     if (anchor == this->anchor)
         return;
     this->anchor = anchor;
+    fireGeometryChange();
+}
+
+void cAbstractTextFigure::setAlignment(Alignment alignment)
+{
+    if (alignment == this->alignment)
+        return;
+    this->alignment = alignment;
     fireGeometryChange();
 }
 

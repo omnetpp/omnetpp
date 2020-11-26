@@ -46,6 +46,7 @@ Register_Enum(cFigure::JoinStyle, (cF::JOIN_BEVEL, cF::JOIN_MITER, cF::JOIN_ROUN
 Register_Enum(cFigure::FillRule,  (cF::FILL_EVENODD, cF::FILL_NONZERO));
 Register_Enum(cFigure::Arrowhead, (cF::ARROW_NONE, cF::ARROW_SIMPLE, cF::ARROW_TRIANGLE, cF::ARROW_BARBED));
 Register_Enum(cFigure::Anchor,    (cF::ANCHOR_CENTER, cF::ANCHOR_N, cF::ANCHOR_E, cF::ANCHOR_S, cF::ANCHOR_W, cF::ANCHOR_NW, cF::ANCHOR_NE, cF::ANCHOR_SE, cF::ANCHOR_SW, cF::ANCHOR_BASELINE_START, cF::ANCHOR_BASELINE_MIDDLE, cF::ANCHOR_BASELINE_END));
+Register_Enum(cFigure::Alignment, (cF::ALIGN_LEFT, cF::ALIGN_RIGHT, cF::ALIGN_CENTER));
 Register_Enum(cFigure::Interpolation, (cF::INTERPOLATION_NONE, cF::INTERPOLATION_FAST, cF::INTERPOLATION_BEST));
 Register_Enum(cValue::Type,       (cValue::UNDEF, cValue::BOOL, cValue::INT, cValue::DOUBLE, cValue::STRING, cValue::OBJECT));
 #undef cF
@@ -93,6 +94,7 @@ enum cFigure::JoinStyle;
 enum cFigure::FillRule;
 enum cFigure::Arrowhead;
 enum cFigure::Anchor;
+enum cFigure::Alignment;
 enum cFigure::Interpolation;
 enum cValue::Type;
 
@@ -737,7 +739,7 @@ class cValueArray extends cOwnedObject
     cValue elements[] @getter(get) @setter(set) @sizeGetter(size);
 }
 
-struct cValueMap::Entry 
+struct cValueMap::Entry
 {
     @existingClass;
     @overwritePreviousDefinition;
@@ -1198,6 +1200,7 @@ class cAbstractTextFigure extends cFigure
     @descriptor(readonly);
     Point position @group(geometry) @editable;
     int anchor @group(geometry) @editable @enum(cFigure::Anchor);
+    int alignment @group(geometry) @editable @enum(cFigure::Alignment);
     string text @group(text) @editable;
     Font font @group(text) @editable;
     Color color @group(text) @editable;

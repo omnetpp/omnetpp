@@ -199,7 +199,8 @@ class SIM_API cFigure : public cOwnedObject
         /** @brief Anchoring mode constants: ANCHOR_CENTER, ANCHOR_N, etc. @ingroup Canvas */
         enum Anchor {ANCHOR_CENTER, ANCHOR_N, ANCHOR_E, ANCHOR_S, ANCHOR_W, ANCHOR_NW, ANCHOR_NE, ANCHOR_SE, ANCHOR_SW, ANCHOR_BASELINE_START, ANCHOR_BASELINE_MIDDLE, ANCHOR_BASELINE_END };
 
-        //TODO enum Alignment { ALIGN_LEFT, ALIGN_RIGHT, ALIGN_CENTER }; // note: multi-line text is always left-aligned in tkpath
+        /** @brief Text alignment mode constants: ALIGN_LEFT, ALIGN_RIGHT, ALIGN_CENTER @ingroup Canvas */
+        enum Alignment { ALIGN_LEFT, ALIGN_RIGHT, ALIGN_CENTER };
 
         /**
          * @brief Homogeneous 2D transformation matrix.
@@ -375,6 +376,7 @@ class SIM_API cFigure : public cOwnedObject
         static Arrowhead parseArrowhead(const char *s);
         static Interpolation parseInterpolation(const char *s);
         static Anchor parseAnchor(const char *s);
+        static Alignment parseAlignment(const char *s);
 
     public:
         // internal, mostly used by runtime GUIs:
@@ -2372,7 +2374,9 @@ class SIM_API cPathFigure : public cAbstractShapeFigure
  * is at the positioning point. The values ANCHOR_BASELINE_START,
  * ANCHOR_BASELINE_MIDDLE, ANCHOR_BASELINE_END refer to the beginning,
  * middle and end of the baseline of the (first line of the) text as
- * anchor point. Anchor defaults to ANCHOR_CENTER.
+ * anchor point. The chosen alignment mode does not affect this,
+ * the baseline anchor points always behave as if the first line spanned
+ * the entire width of the bounding box. Anchor defaults to ANCHOR_CENTER.
  *
  * Other properties in this class define the font, color and opacity of the text.
  *
@@ -2388,6 +2392,7 @@ class SIM_API cAbstractTextFigure : public cFigure
         Font font;
         std::string text;
         Anchor anchor = ANCHOR_NW;
+        Alignment alignment = ALIGN_LEFT;
     private:
         void copy(const cAbstractTextFigure& other);
     protected:
@@ -2441,6 +2446,24 @@ class SIM_API cAbstractTextFigure : public cFigure
          * class description for details.
          */
         virtual void setAnchor(Anchor anchor);
+
+        /**
+         * Returns the alignment mode of the text. This only has an effect
+         * on figures with multi-line text. Each line will be aligned
+         * within the figure bounding box according to this option.
+         * This does not affect the anchor points on the baseline; see the
+         * class description for details.
+         */
+        virtual Alignment getAlignment() const  {return alignment;}
+
+        /**
+         * Sets the alignment mode of the text. This only has an effect
+         * on figures with multi-line text. Each line will be aligned
+         * within the figure bounding box according to this option.
+         * This does not affect the anchor points on the baseline; see the
+         * class description for details.
+         */
+        virtual void setAlignment(Alignment alignment);
 
         /**
          * Returns the bounding box of the text figure.
