@@ -53,6 +53,9 @@ network CanvasTest
         textUtf8: TextUtf8 {
             @display("p=600,150");
         }
+        textAlignment: TextAlignment {
+            @display("p=700,150");
+        }
 
         imageAnchor: ImageAnchor {
             @display("p=100,250");
