@@ -50,11 +50,7 @@ inline int osgNode_getNumDescriptions(osg::Node *node)
 
 inline std::string osgNode_getDescription(osg::Node *node, unsigned int i)
 {
-#if defined(__clang__)
-    return "";  // FIXME clang 3.7 (3.6 is ok) has issues because of a binary ABI incompatibility the compiler cannot link with node->getDescription() - remove this hack once clang is fixed
-#else
     return node->getDescription(i);
-#endif
 }
 
 }}
@@ -69,7 +65,7 @@ struct cOsgCanvas::Vec3d
     @existingClass;
     @descriptor(false);
     @opaque;
-    @toString(.str()); 
+    @toString(.str());
     // TODO fromstr for Vec3d
 }
 
@@ -109,7 +105,7 @@ class cOsgCanvas extends cOwnedObject
     cOsgCanvas::EarthViewpoint earthViewpoint;
 }
 
-class cObjectOsgNode extends osg::Group 
+class cObjectOsgNode extends osg::Group
 {
     @existingClass;
     // the getter with the const_cast should not be necessary (hopefully) with a future version of msgc which will static_cast to a const pointer
