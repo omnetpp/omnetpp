@@ -122,7 +122,7 @@ protected:
     // to left/middle/right align the text for the different positioning modes.
     // QGraphicsSimpleTextItem can't align its lines, while QGraphicsTextItem
     // makes it hard to draw the outline. So we do it manually, no big deal.
-    // This must always contain at least one element, which is used to hold
+    // This MUST always contain at least one element, which is used to hold
     // the desired style info (font, colors, halo, etc.).
     std::vector<OutlinedTextItem *> textItems;
 
@@ -133,6 +133,9 @@ public:
 
     QRectF boundingRect() const override { return childrenBoundingRect(); } // just to make positioning calculations easier
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override { /* nothing */ }
+
+    QFont font() const { return textItems.front()->font(); }
+    QRectF textRect() const;
 
     void setText(const QString &text);
     void setAlignment(Qt::Alignment align);

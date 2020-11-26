@@ -1106,7 +1106,7 @@ void PathFigureRenderer::refreshVisual(const FigureRenderingArgs& args)
 void TextFigureRenderer::refreshGeometry(const FigureRenderingArgs& args)
 {
     cAbstractTextFigure *textFigure = static_cast<cAbstractTextFigure *>(args.figure);
-    OutlinedTextItem *textItem = static_cast<OutlinedTextItem *>(args.item);
+    MultiLineOutlinedTextItem *textItem = static_cast<MultiLineOutlinedTextItem *>(args.item);
 
     QFontMetricsF fontMetric(textItem->font());
     QRectF textRect = textItem->textRect();
@@ -1121,18 +1121,23 @@ void TextFigureRenderer::refreshGeometry(const FigureRenderingArgs& args)
     // because those are drawn using a path that is at the right place,
     // and pos is always kept at origin.
     // An other way of doing this (similar to other figures) would be to
-    // add an offset to OutlinedTextItem, but that might not work
+    // add an offset to MultiLineOutlinedTextItem, but that might not work
     // well (I mean fast) with DeviceCoordinateCache.
     auto op = args.transform.applyTo(cFigure::Point(0, 0));
     auto pp = args.transform.applyTo(textFigure->getPosition() + cFigure::Point(offset.x(), offset.y()));
 
     textItem->setPos(pp.x - op.x, pp.y - op.y);
+
+    cFigure::Alignment alignment = textFigure->getAlignment();
+    textItem->setAlignment(alignment == cFigure::ALIGN_RIGHT ? Qt::AlignRight
+                         : alignment == cFigure::ALIGN_CENTER ? Qt::AlignCenter
+                         : Qt::AlignLeft);
 }
 
 void TextFigureRenderer::refreshInputData(const FigureRenderingArgs& args)
 {
     cAbstractTextFigure *textFigure = static_cast<cAbstractTextFigure *>(args.figure);
-    OutlinedTextItem *textItem = static_cast<OutlinedTextItem *>(args.item);
+    MultiLineOutlinedTextItem *textItem = static_cast<MultiLineOutlinedTextItem *>(args.item);
 
     textItem->setText(QString::fromUtf8(textFigure->getText()));
 
@@ -1143,7 +1148,7 @@ void TextFigureRenderer::refreshInputData(const FigureRenderingArgs& args)
 void TextFigureRenderer::refreshVisual(const FigureRenderingArgs& args)
 {
     cAbstractTextFigure *textFigure = static_cast<cAbstractTextFigure *>(args.figure);
-    OutlinedTextItem *textItem = static_cast<OutlinedTextItem *>(args.item);
+    MultiLineOutlinedTextItem *textItem = static_cast<MultiLineOutlinedTextItem *>(args.item);
 
     cFigure::Font font = textFigure->getFont();
 
@@ -1183,7 +1188,7 @@ void TextFigureRenderer::refreshZoom(const FigureRenderingArgs& args)
 {
     FigureRenderer::refreshZoom(args);
 
-    OutlinedTextItem *textItem = static_cast<OutlinedTextItem *>(args.item);
+    MultiLineOutlinedTextItem *textItem = static_cast<MultiLineOutlinedTextItem *>(args.item);
     QColor col = parseColor("grey82");
     col.setAlphaF(0.6);  // 4 pixels wide, so 2 pixels will go outwards
     textItem->setPen(QPen(col, 4.0 / args.zoom, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
@@ -1191,7 +1196,7 @@ void TextFigureRenderer::refreshZoom(const FigureRenderingArgs& args)
 
 QGraphicsItem *TextFigureRenderer::newItem()
 {
-    return new OutlinedTextItem();
+    return new MultiLineOutlinedTextItem();
 }
 
 void LabelFigureRenderer::refreshTransform(const FigureRenderingArgs& args)
@@ -1204,7 +1209,7 @@ void LabelFigureRenderer::refreshTransform(const FigureRenderingArgs& args)
 
 void LabelFigureRenderer::refreshGeometry(const FigureRenderingArgs& args)
 {
-    OutlinedTextItem *textItem = static_cast<OutlinedTextItem *>(args.item);
+    MultiLineOutlinedTextItem *textItem = static_cast<MultiLineOutlinedTextItem *>(args.item);
     cLabelFigure *labelFigure = static_cast<cLabelFigure *>(args.figure);
 
     // see the comment in TextFigureRenderer::refreshGeometry
@@ -1217,6 +1222,11 @@ void LabelFigureRenderer::refreshGeometry(const FigureRenderingArgs& args)
     textItem->setPos(QPointF(pos.x, pos.y) + offset);
     textItem->setRotation(-labelFigure->getAngle()/M_PI*180);
     textItem->setTransformOriginPoint(-offset);
+
+    cFigure::Alignment alignment = labelFigure->getAlignment();
+    textItem->setAlignment(alignment == cFigure::ALIGN_RIGHT ? Qt::AlignRight
+                         : alignment == cFigure::ALIGN_CENTER ? Qt::AlignCenter
+                         : Qt::AlignLeft);
 }
 
 void LabelFigureRenderer::refreshZoom(const FigureRenderingArgs& args)

@@ -315,12 +315,10 @@ void OutlinedTextItem::setHaloEnabled(bool enabled)
 void MultiLineOutlinedTextItem::realignLines()
 {
     // this is not entirely precise because we don't have access to the paint device, but it's not that critical
-    // (yes, we use the canvas font. we did all this time, and nobody seemed to mind, so...)
-
-    double lineSpacing = QFontMetricsF(getQtenv()->getCanvasFont()).lineSpacing();
+    double lineSpacing = QFontMetricsF(font()).lineSpacing();
 
     double maxWidth = 0;
-    for  (OutlinedTextItem *item : textItems)
+    for (OutlinedTextItem *item : textItems)
         maxWidth = std::max(maxWidth, item->boundingRect().width());
 
     QPointF cursor = QPointF(0.0, 0.0);
@@ -345,6 +343,14 @@ void MultiLineOutlinedTextItem::realignLines()
 
         item->setPos(pos);
     }
+}
+
+QRectF MultiLineOutlinedTextItem::textRect() const
+{
+    QRectF result = textItems.front()->textRect();
+    for (auto i : textItems)
+        result = result.united(i->textRect());
+    return result;
 }
 
 void MultiLineOutlinedTextItem::setText(const QString &text)
@@ -394,8 +400,10 @@ void MultiLineOutlinedTextItem::setAlignment(Qt::Alignment align) {
 }
 
 void MultiLineOutlinedTextItem::setFont(const QFont &font) {
-    for (auto i : textItems)
+    for (auto i : textItems) {
         i->setFont(font);
+        realignLines();
+    }
 };
 
 void MultiLineOutlinedTextItem::setPen(const QPen &pen) {
