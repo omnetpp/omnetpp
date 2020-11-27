@@ -36,7 +36,7 @@ def formatChangeLog(txt):
     txt = re.sub('(?m)^    (    )?', "\t", txt) # spaces-to-tab
     txt = re.sub('(?m)[ \t]+$', '', txt)     # remove end-line spaces
     txt = re.sub("(?s)\n\n+", "\n\n", txt)   # remove multiple blank lines
-    txt = string.strip(txt)+"\n"             # remove leading/trailing blank
+    txt = txt.strip()+"\n"             # remove leading/trailing blank
     return txt
 
 def updateChangeLogIn(dir):
@@ -60,19 +60,19 @@ def updateChangeLogIn(dir):
     if since!="": gitLogCommand +=  ['--since='+since]
     if fromtag!="": gitLogCommand += [fromtag+"..HEAD"]
     gitLogCommand += [dir]
-    newLog = subprocess.check_output(gitLogCommand, shell=(isWindows and not isMSYS))
+    newLog = str(subprocess.check_output(gitLogCommand, shell=(isWindows and not isMSYS)))
     newLog = formatChangeLog(newLog)
 
     newLog = re.sub('(?m)^    (    )?', "\t", newLog) # spaces-to-tab
     for e in entriesToIgnore:
-        newLog = string.replace(newLog, formatChangeLog(e), "")     # remove ignorable entries
+        newLog = newLog.replace(formatChangeLog(e), "")     # remove ignorable entries
 
     # if there's nothing new, skip the rest
-    if string.strip(newLog) == "":
-        print "    nothing new since", since
+    if newLog.strip() == "":
+        print("    nothing new since" + since)
         return
 
-    print "   ", len(re.findall('(?m)^20', newLog)), "entrie(s) since", since
+    print("   " + str(len(re.findall('(?m)^20', newLog))) + "entrie(s) since" + since)
 
     # concatenate the two logs
     marker = "----------- lines above this marker have been added from git log -----------\n\n" if addMarker else ""
@@ -88,8 +88,8 @@ def updateChangeLogIn(dir):
 # find those directories that contain ChangeLogs, and update them
 for root, dirs, files in os.walk('.'):
     if 'ChangeLog' in files:
-        print root, "contains ChangeLog, updating..."
+        print(root + "contains ChangeLog, updating...")
         updateChangeLogIn(root)
-print "\nUpdated ChangeLog files:\n", " ".join(changedFiles)
+print("\nUpdated ChangeLog files:\n", " ".join(changedFiles))
 
 
