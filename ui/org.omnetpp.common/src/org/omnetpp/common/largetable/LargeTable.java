@@ -341,7 +341,7 @@ public class LargeTable extends Composite
                     moveFocusTo(0, withShift, withCtrl, 0);
                 else if (e.keyCode == SWT.END)
                     moveFocusTo(itemCount-1, withShift, withCtrl, 0);
-                else if (e.keyCode == SWT.CR)
+                else if (e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR)
                     fireDefaultSelection();
                 else if (e.keyCode == SWT.SPACE && withCtrl)
                     toggleSelectionOfFocusItem();
