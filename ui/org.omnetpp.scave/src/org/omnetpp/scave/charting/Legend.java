@@ -151,7 +151,7 @@ public class Legend implements ILegend {
 
 
         Listener canceler = (e) -> {
-            if (bounds.contains(lastXY[0], lastXY[1]))
+            if (bounds != null && bounds.contains(lastXY[0], lastXY[1]))
                 e.doit = false;
         };
 
