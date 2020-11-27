@@ -198,6 +198,7 @@ DEPENDFLAGS=${DEPENDFLAGS:- -MMD -MP -MF \$@.d}
 CXXFLAGS=${CXXFLAGS:-}
 DEFINES=${DEFINES:-}
 PREFER_CLANG=${PREFER_CLANG:-yes}
+PREFER_LLD=${PREFER_LLD:-yes}
 USE_MS_ABI=${USE_MS_ABI:-no}
 WITH_QTENV=${WITH_QTENV:-yes}
 MSGC=${MSGC:-opp_msgc}
@@ -397,13 +398,9 @@ else
 fi
 
 #----------------------
-# Check whether LLD linker is available as it is a much faster linker than the system one.
-#
-# NOTE: On Windows, LLD 10.0 cannot properly generate export libs so the queueinglibext example fails.
-# The Windows toolschain already contains LLD, so we have to explicitly disable it, otherwise it would be
-# detected and used. Once this bug is fixed, we can re-enable LLD detection on Windows.
+# Check whether LLD linker is available and preferred as it is a much faster than the system one.
 #----------------------
-if test "$PLATFORM" != "win32.x86_64"; then
+if test "$PREFER_LLD" = "yes"; then
   AC_MSG_CHECKING(whether LLD linker is available)
   LDFLAGS_SAVE="$LDFLAGS"
   LDFLAGS="$LDFLAGS -fuse-ld=lld"

@@ -21,6 +21,12 @@
 PREFER_CLANG=yes
 
 #
+# Set to "no" if you want to use the GNU linker instead of LLVM-LLD when both
+# linker is installed.
+#
+PREFER_LLD=yes
+
+#
 # On Windows, use the separately installed Visual C linker and Windows SDK. This will generate
 # binaries, that are compatible with the Visual C++ compiler.
 # USE_MS_ABI=yes
