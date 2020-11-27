@@ -159,17 +159,6 @@ public class ScaveEditorActions {
             exportActions.put(format, action);
         }
 
-        IActionBars bars = editor.getEditorSite().getActionBars();
-
-        bars.setGlobalActionHandler(ActionFactory.DELETE.getId(), removeAction);
-        bars.setGlobalActionHandler(ActionFactory.SELECT_ALL.getId(), selectAllAction);
-        bars.setGlobalActionHandler(ActionFactory.CUT.getId(), cutAction);
-        bars.setGlobalActionHandler(ActionFactory.COPY.getId(), copyAction);
-        bars.setGlobalActionHandler(ActionFactory.PASTE.getId(), pasteAction);
-        bars.setGlobalActionHandler(ActionFactory.UNDO.getId(), undoAction);
-        bars.setGlobalActionHandler(ActionFactory.REDO.getId(), redoAction);
-
-        bars.updateActionBars();
     }
 
     private <T extends IScaveAction> T registerAction(T action) {
@@ -225,16 +214,6 @@ public class ScaveEditorActions {
         menuManager.insertAfter("additions-end", new Separator());
         menuManager.insertAfter("additions-end", createExportDataMenu("Export Chart Input As"));
         menuManager.insertAfter("additions-end", exportChartsAction);
-    }
-
-    public void shareGlobalActions(IPage page, IActionBars actionBars) {
-        actionBars.setGlobalActionHandler(ActionFactory.DELETE.getId(), removeAction);
-        actionBars.setGlobalActionHandler(ActionFactory.SELECT_ALL.getId(), selectAllAction);
-        actionBars.setGlobalActionHandler(ActionFactory.CUT.getId(), cutAction);
-        actionBars.setGlobalActionHandler(ActionFactory.COPY.getId(), copyAction);
-        actionBars.setGlobalActionHandler(ActionFactory.PASTE.getId(), pasteAction);
-        actionBars.setGlobalActionHandler(ActionFactory.UNDO.getId(), undoAction);
-        actionBars.setGlobalActionHandler(ActionFactory.REDO.getId(), redoAction);
     }
 
     protected void addGlobalActions(IMenuManager menuManager) {

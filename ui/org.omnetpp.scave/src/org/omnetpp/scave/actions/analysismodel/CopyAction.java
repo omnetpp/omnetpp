@@ -20,10 +20,13 @@ import org.omnetpp.scave.actions.AbstractScaveAction;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
+import org.omnetpp.scave.editors.ui.BrowseDataPage;
 import org.omnetpp.scave.editors.ui.ChartPage;
+import org.omnetpp.scave.editors.ui.ChartsPage;
 import org.omnetpp.scave.editors.ui.FormEditorPage;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ModelObject;
+
 
 /**
  * Copy model objects to the clipboard.
@@ -36,15 +39,17 @@ public class CopyAction extends AbstractScaveAction {
 
     @Override
     protected void doRun(ScaveEditor editor, ISelection selection) throws CoreException {
-
-        if (selection instanceof IDListSelection) {
-            FilteredDataPanel activePanel = editor.getBrowseDataPage().getActivePanel();
-            if (activePanel != null) {
-                TimeTriggeredProgressMonitorDialog2.runWithDialogInUIThread("Copying to clipboard",
-                        (monitor) -> activePanel.getDataControl().copyRowsToClipboard(monitor));
+        FormEditorPage activePage = editor.getActiveEditorPage();
+        if (activePage instanceof BrowseDataPage) {
+            if (selection instanceof IDListSelection) {
+                FilteredDataPanel activePanel = editor.getBrowseDataPage().getActivePanel();
+                if (activePanel != null) {
+                    TimeTriggeredProgressMonitorDialog2.runWithDialogInUIThread("Copying to clipboard",
+                            (monitor) -> activePanel.getDataControl().copyRowsToClipboard(monitor));
+                }
             }
         }
-        else {
+        else if (activePage instanceof ChartsPage) {
             Object[] objects = asStructuredOrEmpty(selection).toArray();
             for (int i = 0; i < objects.length; ++i) {
                 if (objects[i] instanceof ModelObject) {

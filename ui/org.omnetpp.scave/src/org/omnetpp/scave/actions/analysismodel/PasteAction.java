@@ -20,6 +20,8 @@ import org.omnetpp.common.ui.LocalTransfer;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.AbstractScaveAction;
 import org.omnetpp.scave.editors.ScaveEditor;
+import org.omnetpp.scave.editors.ui.ChartsPage;
+import org.omnetpp.scave.editors.ui.FormEditorPage;
 import org.omnetpp.scave.model.AnalysisItem;
 import org.omnetpp.scave.model.commands.AddChartCommand;
 import org.omnetpp.scave.model.commands.CompoundCommand;
@@ -35,40 +37,44 @@ public class PasteAction extends AbstractScaveAction {
 
     @Override
     protected void doRun(ScaveEditor editor, ISelection selection) throws CoreException {
+        FormEditorPage activePage = editor.getActiveEditorPage();
+        if (activePage instanceof ChartsPage) {
 
-        Clipboard clipboard = new Clipboard(Display.getCurrent());
-        Object content = clipboard.getContents(LocalTransfer.getInstance());
-        clipboard.dispose();
+            Clipboard clipboard = new Clipboard(Display.getCurrent());
+            Object content = clipboard.getContents(LocalTransfer.getInstance());
+            clipboard.dispose();
 
-        if (content instanceof Object[]) {
-            Object[] objects = (Object[])content;
+            if (content instanceof Object[]) {
+                Object[] objects = (Object[])content;
 
-            CompoundCommand command = new CompoundCommand("Paste objects");
+                CompoundCommand command = new CompoundCommand("Paste objects");
 
-            List<AnalysisItem> charts = editor.getAnalysis().getCharts().getCharts();
-            int pasteIndex = -1;
+                List<AnalysisItem> charts = editor.getAnalysis().getCharts().getCharts();
+                int pasteIndex = -1;
 
-            for (Object o : asStructuredOrEmpty(selection).toArray())
-                if (o instanceof AnalysisItem)
-                    pasteIndex = charts.indexOf(o) + 1;
+                for (Object o : asStructuredOrEmpty(selection).toArray())
+                    if (o instanceof AnalysisItem)
+                        pasteIndex = charts.indexOf(o) + 1;
 
-            if (pasteIndex < 0)
-                pasteIndex = charts.size();
+                if (pasteIndex < 0)
+                    pasteIndex = charts.size();
 
-            List<Object> toSelect = new ArrayList<Object>();
-            for (Object o : objects) {
-                if (o instanceof AnalysisItem) {
-                    AnalysisItem itemToPaste = (AnalysisItem)((AnalysisItem)o).dup();
-                    itemToPaste.assignNewId();
-                    command.append(new AddChartCommand(editor.getAnalysis(), itemToPaste, pasteIndex));
-                    toSelect.add(itemToPaste);
-                    pasteIndex += 1;
+                List<Object> toSelect = new ArrayList<Object>();
+                for (Object o : objects) {
+                    if (o instanceof AnalysisItem) {
+                        AnalysisItem itemToPaste = (AnalysisItem)((AnalysisItem)o).dup();
+                        itemToPaste.assignNewId();
+                        command.append(new AddChartCommand(editor.getAnalysis(), itemToPaste, pasteIndex));
+                        toSelect.add(itemToPaste);
+                        pasteIndex += 1;
+                    }
                 }
-            }
 
-            editor.getChartsPage().getCommandStack().execute(command);
-            editor.getChartsPage().getViewer().setSelection(new StructuredSelection(toSelect));
+                editor.getChartsPage().getCommandStack().execute(command);
+                editor.getChartsPage().getViewer().setSelection(new StructuredSelection(toSelect));
+            }
         }
+
     }
 
     @Override

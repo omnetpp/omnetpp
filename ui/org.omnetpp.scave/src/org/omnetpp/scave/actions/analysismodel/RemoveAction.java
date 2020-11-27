@@ -16,6 +16,9 @@ import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.AbstractScaveAction;
 import org.omnetpp.scave.editors.ScaveEditor;
+import org.omnetpp.scave.editors.ui.ChartsPage;
+import org.omnetpp.scave.editors.ui.FormEditorPage;
+import org.omnetpp.scave.editors.ui.InputsPage;
 import org.omnetpp.scave.model.AnalysisItem;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.ModelObject;
@@ -35,8 +38,11 @@ public class RemoveAction extends AbstractScaveAction {
 
     @Override
     protected void doRun(ScaveEditor scaveEditor, ISelection selection) throws CoreException {
-        ICommand command = createCommand((IStructuredSelection)selection);
-        scaveEditor.getActiveCommandStack().execute(command);
+        FormEditorPage activePage = scaveEditor.getActiveEditorPage();
+        if (activePage instanceof ChartsPage || activePage instanceof InputsPage) {
+            ICommand command = createCommand((IStructuredSelection)selection);
+            scaveEditor.getActiveCommandStack().execute(command);
+        }
     }
 
     @Override

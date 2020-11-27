@@ -288,10 +288,6 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
             Assert.isTrue(sashForm.getChildren().length == 1 && sashForm.getChildren()[0] instanceof Composite);
             sourceEditorContainer = (Composite) (sashForm.getChildren()[0]);
 
-            final IActionBars actionBars = getEditorSite().getActionBars();
-            final IAction undoActionHandler = actionBars.getGlobalActionHandler(ActionFactory.UNDO.getId());
-            final IAction redoActionHandler = actionBars.getGlobalActionHandler(ActionFactory.REDO.getId());
-
             IOutputListener outputListener = (output, err) -> {
                 Display.getDefault().asyncExec(() -> {
                     try {
@@ -366,34 +362,28 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
                 scaveEditor.getActions().registerPlot(chartViewer);
             }
 
+            // delegating the global action redirection to the ActionBarContributor when focus changes
             sourceViewer.getTextWidget().addFocusListener(new FocusListener() {
                 @Override
                 public void focusLost(FocusEvent e) {
-                    final IActionBars actionBars = getEditorSite().getActionBars();
-                    actionBars.setGlobalActionHandler(ActionFactory.UNDO.getId(), scaveEditor.getActions().undoAction);
-                    actionBars.setGlobalActionHandler(ActionFactory.REDO.getId(), scaveEditor.getActions().redoAction);
-                    actionBars.updateActionBars();
+                    scaveEditor.getEditorSite().getActionBarContributor().setActiveEditor(null);
                 }
 
                 @Override
                 public void focusGained(FocusEvent e) {
-                    actionBars.setGlobalActionHandler(ActionFactory.UNDO.getId(), undoActionHandler);
-                    actionBars.setGlobalActionHandler(ActionFactory.REDO.getId(), redoActionHandler);
-                    actionBars.updateActionBars();
+                    scaveEditor.getEditorSite().getActionBarContributor().setActiveEditor(null);
                 }
             });
 
             getChartViewer().getWidget().addFocusListener(new FocusListener() {
                 @Override
                 public void focusLost(FocusEvent e) {
+                    scaveEditor.getEditorSite().getActionBarContributor().setActiveEditor(null);
                 }
 
                 @Override
                 public void focusGained(FocusEvent e) {
-                    final IActionBars actionBars = getEditorSite().getActionBars();
-                    actionBars.setGlobalActionHandler(ActionFactory.UNDO.getId(), scaveEditor.getActions().undoAction);
-                    actionBars.setGlobalActionHandler(ActionFactory.REDO.getId(), scaveEditor.getActions().redoAction);
-                    actionBars.updateActionBars();
+                    scaveEditor.getEditorSite().getActionBarContributor().setActiveEditor(null);
                 }
             });
 
@@ -1068,6 +1058,10 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         }
 
         getChartViewer().getWidget().setFocus();
+    }
+
+    public boolean isScriptEditorFocused() {
+        return !getChartViewer().getWidget().isFocusControl();
     }
 
     public void gotoMarker(IMarker marker) {

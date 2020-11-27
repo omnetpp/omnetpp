@@ -5,11 +5,12 @@
    <extension
          point="org.eclipse.ui.editors">
       <editor
-            name="OMNeT++ Analysis"
+            class="org.omnetpp.scave.editors.ScaveEditor"
+            contributorClass="org.omnetpp.scave.editors.ScaveEditorActionBarContributor"
             extensions="anf"
             icon="icons/scavefile.png"
-            class="org.omnetpp.scave.editors.ScaveEditor"
-            id="org.omnetpp.scave.editors.ScaveEditor">
+            id="org.omnetpp.scave.editors.ScaveEditor"
+            name="OMNeT++ Analysis">
       </editor>
       <editor
             default="true"

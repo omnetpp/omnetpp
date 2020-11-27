@@ -639,12 +639,6 @@ public class ScaveEditor extends MultiPageEditorPartExt
             }
 
             @Override
-            public void setActionBars(IActionBars actionBars) {
-                super.setActionBars(actionBars);
-                //getActionBarContributor().shareGlobalActions(this, actionBars);
-            }
-
-            @Override
             public void selectionChanged(IWorkbenchPart part, ISelection selection) {
                 if (selection instanceof IDListSelection) {
                     // re-package element into ResultItemRef, otherwise property sheet
@@ -1080,11 +1074,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
                 IStatusLineManager statusLineManager) {
             super.makeContributions(menuManager, toolBarManager, statusLineManager);
             contentOutlineStatusLineManager = statusLineManager;
-        }
 
-        public void setActionBars(IActionBars actionBars) {
-            super.setActionBars(actionBars);
-            actions.shareGlobalActions(this, actionBars);
         }
 
         public void refresh() {
