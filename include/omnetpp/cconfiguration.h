@@ -473,10 +473,13 @@ class SIM_API cConfigurationEx : public cConfiguration
 
     /**
      * This method returns an array of the following form: (key1, value1,
-     * key2, value2,...), where keys and values correspond to entries in the
-     * active configuration.
+     * key2, value2,...), where keys and values correspond to (a subset of)
+     * the entries in the active configuration.
+     *
+     * The 'flags' parameter should take its value from the FilterFlags enum,
+     * or the binary OR of several such flags: FILT_PARAM, FILT_CONFIG, etc.
      */
-    virtual std::vector<const char *> getKeyValuePairs(int flags) const = 0;
+    virtual std::vector<const char *> getKeyValuePairs(int flags=FILT_ALL) const = 0;
 
     /**
      * Returns the list of config keys that match the wildcard pattern
