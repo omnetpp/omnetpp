@@ -55,7 +55,8 @@
 
 2020-10-17  Andras Varga
 
-	* Added opp_component_ptr
+	* Added opp_component_ptr<T>, which is a smart pointer to a cComponent.
+	When the respective component is deleted, the pointer becomes nullptr.
 
 2020-10-15  Andras Varga
 
@@ -95,7 +96,13 @@
 
 2020-08-28  Levente Mészáros
 
-	* cObject: Moved default operator<< to cObject; added printOn().
+	* cObject: Added printOn() method, and changed stream output (<<)
+	operators to delegate to that. The new operator<< is template-based
+	which makes it applicable to all subclasses of cObject, and both
+	references and pointers. The old operator<< for cOwnedObject was
+	removed. Output can be customized per-class by overriding printOn();
+	the default version prints "(className)fullName" followed by the
+	string returned by str().
 
 2020-08-27  Andras Varga
 

@@ -24,6 +24,158 @@ Legend:
 OMNeT++ 6.0
 ~~~~~~~~~~~
 
+(+)     cFigure::RGBA: the Added RGBA(const Color& color, double opacity=1)
+        constructor, and the toAlpha() method.
+
+(+)     cFigure::Color, cFigure::Font, cFigure::RGBA: Added missing copy
+        constructors.
+
+(+)     cHasher: Added add(const std::string&).
+
+(+)     cHasher: Added operator<< for feeding values into the hasher.
+
+(!)     cHasher: Due to a bugfix, adding strings (const char *, std::string)
+        have changed. TODO
+
+(!)     cFigure: The protected internal methods hashGeometry() and hashGeometryRec(),
+        have been removed, and replaced with the new hashTo() method.
+
+(+)     cCanvas: Added getHash().
+
+(-)     Removed USE_OMNETPP4x_FINGERPRINTS.
+
+(+)     cComponent: Added preDelete(), a method that can be overridden by user
+        code to simplify network or module deletion in a complex simulation.
+
+(+)     Added opp_component_ptr<T>, which is a smart pointer to a cComponent.
+        When the respective component is deleted, the pointer becomes nullptr.
+
+(!)     cIOutputScalarManager: Recording methods changed to return a bool,
+        indicating whether the value was actually recorded. This was done
+        for consistency with cIOutputVectorManager's record method.
+
+(!)     IdentityFilter: do not convert signal values to numeric.
+
+(!)     cObject: Added printOn() method, and changed stream output (<<)
+        operators to delegate to that. The new operator<< is template-based
+        which makes it applicable to all subclasses of cObject, and both
+        references and pointers. The old operator<< for cOwnedObject was
+        removed.
+
+(!!!)   cIListener destructor changed to unsubscribe from all places it is
+        currently subscribed to, instead of insisting on being already
+        unsubscribed.
+
+(!)     cMessage: Changed isMessage() from private to protected.
+
+(+)     Added DemuxFilter, a result filter that demultiplexes its input to
+	several outputs.
+
+(+)     cResultRecorder: added setDemuxLabel().
+
+(+)     cResultListener: Added clone().
+
+(!)     cResultListener: receiveSignal() methods changed from protected to public.
+
+(+)     cSimpleModule: Added scheduleAfter(), rescheduleAt() and rescheduleAfter().
+
+(!)     cSimulation: Process ordinary events via cMessage::execute(). cMessage::
+        execute() delegates to the (newly created) cSimpleModule::doMessageEvent()
+        method.
+
+(!)     cMessage: execute() changed from private to protected.
+
+(+)     Introduced SendOptions as a way to pass options to send() and its variants
+        in cSimpleModule. send() and sendDirect() now accept a SendOptions;
+        sendDelayed() and the sendDirect() variant with delay and duration now
+        convert their extra args to a SendOptions, and delegate to the "standard"
+        send()/sendDirect() versions. This change is part of the "transmission
+        updates" API.
+
+(+)     cDatarateChannel now allows overriding the packet duration computed by
+        the channel. To do so, supply a duration to send() via SendOptions.
+        This change is part of the "transmission updates" API.
+
+(!)     cDatarateChannel: non-packet messages now pass through without interfering
+        with packets. This change is part of the "transmission updates" API.
+
+(+)     cDatarateChannel: added setMode(), which controls whether the channel
+        allows multiple concurrent transmissions, and if so, how. Available
+        modes are SINGLE, MULTI and UNCHECKED. The operation and result of
+        the isBusy() and getTransmissionFinishTime() methods report now depend
+        on the channel mode.
+
+(!)     cGate::deliver() and cModule::arrived() signature change: SendOptions
+        was added to the argument list. This change is part of the "transmission
+        updates" API.
+
+(!)     cChannel::processMessage() signature change: SendOptions was added to the
+        argument list; result_t was renamed cChannel::Result, and it is no longer
+        an output parameter but a proper return value. Also, result now contains
+        remainingDuration. This change is part of the "transmission updates" API.
+
+(+)     cDatarateChannel: datarate is now optional. Set it to 0 or NaN (nan
+        in NED) to leave it unspecified. This change is part of the "transmission
+        updates" API.
+
+(-)     cChannel, cDatarateChannel: forceTransmissionFinishTime() deprecated.
+        Model code should use the new SendOptions::updateTx() instead.
+        This change is part of the "transmission updates" API.
+
+(!)     cGate: setDeliverOnReceptionStart() renamed to setDeliverImmediately().
+        This change is part of the "transmission updates" API.
+
+(+)     cSimpleModule: Added setTxUpdateSupport() and supportsTxUpdates().
+        This change is part of the "transmission updates" API.
+
+(+)     cPacket: Added getRemainingDuration() and isReceptionEnd(). This change
+        is part of the "transmission updates" API.
+
+(!)     cEnvir method signature changes: beginSend() takes SendOptions as
+        additional argument; messageSendHop() and messageSendDirect() take
+        cChannel::Result instead of separate args. This change is part of the
+        "transmission updates" API.
+
+(!)     cPacket: str() overhauled to reflect new fields and uses.
+
+(!)     cModule, cSimulation: getModuleByPath() now always returns a valid
+        (non-null) module pointer. Therefore, it no longer accepts an empty
+        string, a path with syntax error, or path to an nonexistent module;
+        such inputs result in an exception being thrown.
+
+(+)     cModule, cSimulation: Added findModuleByPath(), which can be used
+        instead of getModuleByPath() in cases where the module may not exist.
+
+(+)     cModule: Modules may now be created and deleted (including self-deletion)
+        during initialization.
+
+(+)     cEvent: Added isPacket() utility method.
+
+(+)     cChannel: Added isDisabled(). Before that, only cDelayChannel and
+        cDatarateChannel had this method; now those override cChannel's.
+
+(!)     cParsimCommunications: init() method signature change (added numPartitions
+        argument).
+
+(+)     cConfiguration: Added getConfigValue()/getPerObjectConfigValue()
+        overloads that take cConfigOption pointer instead of the option name.
+
+(x)     Removed the PI define. Use M_PI instead.
+
+(!)     eventnumber_t, intval_t, uintval_t are now in the omnetpp namespace.
+        (They were outside by mistake.)
+
+(!)     Require at least C++14 for OMNeT++.
+
+(+)     cConfigurationEx: getKeyValuePairs() made smarter with an extra flags parameter
+        be able to handle the various use cases.
+
+(-)     cConfigurationEx: Removed getParameterKeyValuePairs(), use getKeyValuePairs()
+        with flags=cConfigurationEx::FILT_PARAM instead.
+
+(+)     cConfiguration: Added new config variable names as constants:
+        CFGVAR_DATETIMEF, CFGVAR_ITERATIONVARSD.
+
 (+)     cObject: getDescriptor() made public API.
 
 (+)     Added cValueArray and cValueObject classes, to be used with JSON-style
