@@ -109,7 +109,7 @@ const char *ResultItem::getProperty(const char *propertyName) const
             break;
         }
         case Scave::RUN[0]: { // and RUNATTR_PREFIX
-            STATIC_ASSERT(Scave::RUN[0] == Scave::RUNATTR_PREFIX[0]);
+            static_assert(Scave::RUN[0] == Scave::RUNATTR_PREFIX[0], "initial letter mismatch");
             if (strcmp(propertyName, Scave::RUN) == 0)
                 return getFileRun()->getRun()->getRunName().c_str();
             if (strncmp(propertyName, Scave::RUNATTR_PREFIX, strlen(Scave::RUNATTR_PREFIX)) == 0)
@@ -117,7 +117,7 @@ const char *ResultItem::getProperty(const char *propertyName) const
             break;
         }
         case Scave::ISFIELD[0]: { // and ITERVAR_PREFIX
-            STATIC_ASSERT(Scave::ISFIELD[0] == Scave::ITERVAR_PREFIX[0]);
+            static_assert(Scave::ISFIELD[0] == Scave::ITERVAR_PREFIX[0], "initial letter mismatch");
             if (strcmp(propertyName, Scave::ISFIELD) == 0)
                 return (getItemType() == ResultFileManager::SCALAR && static_cast<const ScalarResult *>(this)->isField()) ? Scave::TRUE : Scave::FALSE;
             if (strncmp(propertyName, Scave::ITERVAR_PREFIX, strlen(Scave::ITERVAR_PREFIX)) == 0)
@@ -367,7 +367,7 @@ const char *Run::getProperty(const char *propertyName) const
 {
     switch (propertyName[0]) {
         case Scave::RUN[0]: { // and RUNATTR_PREFIX
-            STATIC_ASSERT(Scave::RUN[0] == Scave::RUNATTR_PREFIX[0]);
+            static_assert(Scave::RUN[0] == Scave::RUNATTR_PREFIX[0], "initial letter mismatch");
             if (strcmp(propertyName, Scave::RUN) == 0)
                 return getRunName().c_str();
             if (strcmp(propertyName, Scave::RUNATTR_PREFIX) == 0)
