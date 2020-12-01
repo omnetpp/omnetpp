@@ -512,12 +512,12 @@ each host count three simulation runs will be done, with the generation
 interval being exponential(0.2), exponential(0.4), and
 exponential(0.6).
 
-How does it work? First of all, Cmdenv with the \fopt{-x} option will print
-how many simulation runs a given section expands to. (One should of course
-use Cmdenv for batch runs, not a GUI one like Qtenv.)
+How can it be used? First of all, running the simulation program with the
+\fopt{-q numruns} option will print how many simulation runs a given
+configuration expands to.
 
 \begin{commandline}
-$ aloha -u Cmdenv -x AlohaStudy
+$ ./aloha -c AlohaStudy -q numruns
 
 `\opp` Discrete Event Simulation
 ...
@@ -525,8 +525,9 @@ Config: AlohaStudy
 Number of runs: 24
 \end{commandline}
 
-When the \fopt{-g} option is also added, the program also prints the values
-of the iteration variables for each run. (Use \fopt{-G} for even more info.)
+When \fopt{-q runs} is used instead, the program will print the list
+of runs, with the values of the iteration variables for each run.
+(Use \fopt{-q rundetails} to get even more info.)
 Note that the parameter study actually maps to nested loops, with the last
 \ttt{\$\{...\}} becoming the innermost loop. The iteration variables are
 just named \ttt{\$0} and \ttt{\$1} -- we'll see that it is possible to give
@@ -534,7 +535,7 @@ meaningful names to them. Please ignore the \ttt{\$repetition=0} part in
 the printout for now.
 
 \begin{commandline}
-$ aloha -u Cmdenv -x AlohaStudy -g
+$ ./aloha -c AlohaStudy -q runs
 `\opp` Discrete Event Simulation
 ...
 Config: AlohaStudy
@@ -560,11 +561,11 @@ option to Cmdenv. So, the task is now to run the simulation program 24
 times, with \fopt{-r} running from 0 through 23:
 
 \begin{commandline}
-$ aloha -u Cmdenv -c AlohaStudy -r 0
-$ aloha -u Cmdenv -c AlohaStudy -r 1
-$ aloha -u Cmdenv -c AlohaStudy -r 2
+$ ./aloha -u Cmdenv -c AlohaStudy -r 0
+$ ./aloha -u Cmdenv -c AlohaStudy -r 1
+$ ./aloha -u Cmdenv -c AlohaStudy -r 2
 ...
-$ aloha -u Cmdenv -c AlohaStudy -r 23
+$ ./aloha -u Cmdenv -c AlohaStudy -r 23
 \end{commandline}
 
 This batch can be executed either from the {\opp} IDE (where you are
@@ -572,11 +573,11 @@ prompted to pick an executable and an ini file, choose the configuration
 from a list, and just click Run), or using a little command-line
 batch execution tool (\fprog{opp\_runall}) supplied with {\opp}.
 
-Actually, it is also possible to get Cmdenv execute all runs in one go,
+Actually, it is also possible to make Cmdenv execute all runs in one go,
 by simply omitting the \fopt{-r} option.
 
 \begin{commandline}
-$ aloha -u Cmdenv -c AlohaStudy
+$ ./aloha -u Cmdenv -c AlohaStudy
 
 `\opp` Discrete Event Simulation
 Preparing for running configuration AlohaStudy, run #0...
@@ -586,7 +587,6 @@ Preparing for running configuration AlohaStudy, run #1...
 ...
 Preparing for running configuration AlohaStudy, run #23...
 \end{commandline}
-
 
 However, this approach is not recommended, because it is more
 susceptible to C++ programming errors in the model. (For example, if
