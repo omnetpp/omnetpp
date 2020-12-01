@@ -202,7 +202,7 @@ OPPMAIN_LIB = $(LDFLAG_LIB)oppmain$D
 # flags and libraries required for Qtenv
 #
 ifeq ($(WITH_QTENV),yes)
-  DEFINES += -DPREFER_QTENV -DWITH_QTENV
+  DEFINES += -DWITH_QTENV
   ifeq ($(WITH_OSG),yes)
     DEFINES += -DWITH_OSG
   endif

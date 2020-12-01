@@ -208,7 +208,7 @@ OPPMAIN_LIB = $(LDFLAG_LIB)oppmain$D
 # flags and libraries required for Qtenv
 #
 ifeq ($(WITH_QTENV),yes)
-  DEFINES += -DPREFER_QTENV -DWITH_QTENV
+  DEFINES += -DWITH_QTENV
   # libraries required for static linking
   ifneq ($(SHARED_LIBS),yes)
     QTENV_LIBS += $(QT_LIBS)
