@@ -3693,9 +3693,79 @@ deleting all its submodules. An \ffunc{activity()}-based simple module
 can also delete itself; in that case, the \ffunc{deleteModule()} call
 does not return to the caller.
 
-Currently, you cannot safely delete a compound module from a simple module
-in it; you must delegate the job to a module outside the compound
-module.
+
+\subsection{The preDelete() method}
+\label{sec:simple-modules:predelete}
+
+When \ffunc{deleteModule()} is called on a compound module, individual modules
+under the compound module are notified by calling their \ffunc{preDelete()}
+member functions before any change is actually made.
+
+This notification can be quite useful when the compound module contains modules
+that hold pointers to each other, necessitated by their complex interactions via
+C++ method calls. With such modules, destruction can be tricky: given a
+sufficently complex control flow involving cascading cross-module method calls
+and signal listeners, it is actually quite easy to accidentally invoke a method
+on a module that has already been deleted at that point, resulting in a crash.
+(Note that destructors of collaborating modules cannot rely on being invoked in
+any particular order, because that order is determined factors, e.g. submodule
+order in NED, which are out the of control of the C++ code.)
+
+\ffunc{preDelete()} is a \cclass{cComponent} virtual method that, similar to
+\ffunc{handleMessage()} and \ffunc{initialize()}, is intended for being overridden
+by the user. When a compound module is deleted, \ffunc{deleteModule()} first
+invokes \ffunc{preDelete()} recursively on the submodule tree, and only starts
+deleting modules after that. This gives a chance to modules that override
+\ffunc{preDelete()} to set pointers to collaborating modules to \ttt{nullptr},
+or otherwise ensure that nothing bad will happen once modules start being
+deleted.
+
+\ffunc{preDelete()} receives in an argument the pointer of the module on which
+\ffunc{deleteModule()} was invoked. This allows the module to tell apart cases
+when e.g. it is deleted in itself, or as part of a larger unit.
+
+An example:
+
+\begin{cpp}
+void Foo::preDelete(cComponent *root)
+{
+    barModule = nullptr;
+}
+\end{cpp}
+
+
+\subsection{Component Weak Pointers}
+\label{sec:simple-modules:weak-compontent-ptr}
+
+\cclass{opp\_component\_ptr<T>} offers an answer to a related problem: how to detect
+when a module we have a pointer to is deleted, so that we no longer try to
+access it.
+
+\cclass{opp\_component\_ptr<T>} is a smart pointer that points to a
+\cclass{cComponent} object (i.e. a module or a channel), and automatically
+becomes \ttt{nullptr} when the referenced object is deleted. It is a non-owning
+(``weak'') pointer, i.e. the pointer going out of scope has no effect on the
+referenced object.
+
+In practice, one would replace bare pointers in the code (for example,
+\ttt{Foo*}) with \cclass{opp\_component\_ptr<Foo>} smart pointers, and test
+before accessing the other module that the pointer is still valid.
+
+An example:
+
+\begin{cpp}
+opp_component_ptr<Foo> fooModule;  // as class member
+
+if (fooModule)
+    fooModule->doSomething();
+
+// or: obtain a bare pointer for multiple use
+if (Foo *fooPtr = fooModule.get()) {
+    fooPtr->doSomething();
+    fooPtr->doSomethingElse();
+}
+
+\end{cpp}
 
 
 \subsection{Module Deletion and finish()}
