@@ -1562,7 +1562,7 @@ of these classes have been consolidated into \cclass{cStdDev} and
   \item \cclass{cStdDev} keeps summary statistics (mean, standard deviation,
     range) of weighted or unweighted observations.
   \item \cclass{cHistogram} is for collecting observations into a histogram.
-    \cclass{cHistogram} is highly configurable, suports adding/removing/merging bins
+    \cclass{cHistogram} is highly configurable, supports adding/removing/merging bins
     dynamically, and can produce a good histogram from most distributions
     without requiring manual configuration.
   \item \cclass{cPSquare} is a class that uses the $P^{2}$ algorithm
@@ -1876,12 +1876,12 @@ merged to reduce the number of bins if their number grows too high.
 \subsubsection{Random Number Generation from Distributions}
 \label{sec:sim-lib:random-number-generation-from-distributions}
 
-The \ffunc{random()} member function generates random
+The \ffunc{draw()} member function generates random
 numbers\index{random!numbers} from the distribution stored by the
 object:
 
 \begin{cpp}
-double rnd = histogram.random();
+double rnd = histogram.draw();
 \end{cpp}
 
 
@@ -2711,7 +2711,7 @@ value you return from the function corresponds to the signature.
 \cclass{cValue} can store all the needed data types (\ttt{bool},
 \ttt{double}, \ttt{string}, etc.), and is equipped with the functions
 necessary to conveniently read and manipulate the stored value. The value can
-be read via functions like \ffunc{boolValue()}, \ffunc{longValue()},
+be read via functions like \ffunc{boolValue()}, \ffunc{intValue()},
 \ffunc{doubleValue()}, \ffunc{stringValue()} (returns \ttt{const char *}),
 \ffunc{stdstringValue()} (returns \ttt{const std::string\&}) and
 \ffunc{xmlValue()} (returns \ttt{cXMLElement*}), or by simply casting the
@@ -2765,7 +2765,7 @@ Define_NED_Function(ned_choose, "any choose(int index, ...)");
 \end{cpp}
 
 Here, the value of \ttt{argv[0]} is read using the typecast operator that
-maps to \ttt{longValue()}. (Note that if the value of the \ttt{index}
+maps to \ttt{intValue()}. (Note that if the value of the \ttt{index}
 argument does not fit into an \ttt{int}, the conversion will result
 in data loss!) The code also shows how to report errors (by throwing a
 \cclass{cRuntimeError}.)
@@ -3142,7 +3142,7 @@ class NewClass : public cObject
     NewClass& operator=(const NewClass& other);
 
     virtual void forEachChild(cVisitor *v);
-    virtual std::string info();
+    virtual std::string str();
 };
 \end{cpp}
 
@@ -3286,7 +3286,7 @@ for each \ttt{obj} member of the class. See the API Reference for more
 information about \ffunc{forEachChild()}.
 
 \begin{cpp}
-std::string NewClass::info()
+std::string NewClass::str()
 {
     std::stringstream out;
     out << "data=" << data << ", array[0]=" << array[0];
@@ -3295,7 +3295,7 @@ std::string NewClass::info()
 }
 \end{cpp}
 
-The \ffunc{info()} method should produce a concise, one-line string
+The \ffunc{str()} method should produce a concise, one-line string
 about the object. You should try not to exceed 40-80 characters, since the
 string will be shown in tooltips and listboxes.
 

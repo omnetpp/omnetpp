@@ -1369,7 +1369,7 @@ cPar& delayPar = par("delay");
 \end{cpp}
 
 \cclass{cPar}'s value can be read with methods that correspond to
-the parameter's NED type: \ffunc{boolValue()}, \ffunc{longValue()},
+the parameter's NED type: \ffunc{boolValue()}, \ffunc{intValue()},
 \ffunc{doubleValue()}, \ffunc{stringValue()}, \ffunc{stdstringValue()},
 \ffunc{xmlValue()}.
 There are also overloaded type cast operators for the corresponding types
@@ -1377,7 +1377,7 @@ There are also overloaded type cast operators for the corresponding types
 \ttt{double}; \ttt{const char *}; \ttt{cXMLElement *}).
 
 \begin{cpp}
-long numJobs = par("numJobs").longValue();
+long numJobs = par("numJobs").intValue();
 double processingDelay = par("processingDelay"); // using operator double()
 \end{cpp}
 
@@ -1391,7 +1391,7 @@ If you use the \ttt{par("foo")} parameter in expressions (such as
 \ttt{4*par("foo")+2}), the C++ compiler may be unable to decide
 between overloaded operators and report ambiguity. This issue can be
 resolved by adding an explicit cast such as \ttt{(double)par("foo")},
-or using the \ffunc{doubleValue()} or \ffunc{longValue()} methods.
+or using the \ffunc{doubleValue()} or \ffunc{intValue()} methods.
 
 
 \subsection{Volatile and Non-Volatile Parameters}
@@ -3952,13 +3952,8 @@ one of these types, or wrapped into an object subclassed from \cclass{cObject}.
 
 \ffunc{emit()} also has an extra, optional object pointer argument named
 \ttt{details}, with the type \ttt{cObject*}. This argument may be used
-to convey to listeners extra information.
-
-\begin{note}
-  The \textit{details} parameter was added in {\opp} 5.0. You should update
-  your models to use the new listener interface or as a temporary solution, compile
-  {\opp} with the \ttt{WITH\_OMNETPP4x\_LISTENER\_SUPPORT} macro.
-\end{note}
+to convey to listeners extra information.\footnote{The \textit{details}
+parameter was added in {\opp} 5.0.}
 
 When there are no listeners, the runtime cost of \ttt{emit()} is usually minimal.
 However, if producing a value has a significant runtime cost, then the
