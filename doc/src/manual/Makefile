@@ -53,7 +53,7 @@ eclipse : $(ALLTEX) $(SVGPICS) eclipse.thtml prephtml ltoh ltoh.specs
 	CHAPTERS=$$(grep '\include{' usman.tex | sed 's/\\include{//;s/}/.tex/' | sed '/^title\.tex/d') && cat $$CHAPTERS > tmp.tex
 	$(PERL) ltoh tmp.tex
 	$(PERL) prephtml --split --template eclipse.thtml --productversion $(VERSION) --outfilenamebase usman tmp.html
-	rm tmp.html
+	rm tmp.html tmp.tex
 	rm -rf eclipse
 	mkdir eclipse
 	mv *.html toc.xml eclipse
@@ -66,7 +66,7 @@ html : $(ALLTEX) $(SVGPICS) $(TEMPLATE).thtml prephtml ltoh ltoh.specs
 	CHAPTERS=$$(grep '\include{' usman.tex | sed 's/\\include{//;s/}/.tex/' | sed '/^title\.tex/d') && cat $$CHAPTERS > tmp.tex
 	$(PERL) ltoh tmp.tex
 	$(PERL) prephtml --template $(TEMPLATE).thtml --productversion $(VERSION) --outfilenamebase usman tmp.html
-	rm tmp.html
+	rm tmp.html tmp.tex
 	rm -rf ../../manual
 	mkdir ../../manual
 	cp usman.html ../../manual/index.html
