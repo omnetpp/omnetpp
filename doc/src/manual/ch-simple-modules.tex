@@ -3346,8 +3346,14 @@ cModule *submod = module->getSubmodule("foo", 3);
 
 \cclass{cModule}'s \ffunc{getModuleByPath()} member function can be used to
 find modules by relative or absolute path. It accepts a path string, and
-returns the pointer of the matching module, or \ttt{nullptr} if the module
-identified by the path does not exist.
+returns the pointer of the matching module, or throws an exception if it
+was not found. If it is not known in advance whether the module exists,
+its companion function \ffunc{findModuleByPath()} can be used.
+\ffunc{findModuleByPath()} returns \ttt{nullptr} if the module
+identified by the path does not exist, but otherwise behaves identically
+to \ffunc{getModuleByPath()}.\footnote{\ffunc{findModuleByPath()} was
+introduced in {\omnetpp} 6.0. In previous versions, \ffunc{getModuleByPath()}
+returned \ttt{nullptr} if there was no matching module.}
 
 The path is dot-separated list of module names. The special module name
 \ttt{\textasciicircum} (caret) stands for the parent module. If the path
