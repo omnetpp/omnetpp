@@ -1294,7 +1294,7 @@ Coroutines are used by a number of other simulation packages:
     threads.
 \end{itemize}
 
-\subsection{How to Avoid Global Variables}
+\subsection{Use Modules Instead of Global Variables}
 \label{sec:simple-modules:global-vars}
 \index{global variables}
 
@@ -1313,8 +1313,8 @@ as private or protected data members, and expose them via public methods.
 Other modules can then call these public methods to get or set the values.
 Calling methods of other modules will be discussed in section
 \ref{sec:simple-modules:direct-method-calls}.
-Examples of such modules are the \ttt{Blackboard} in the \textit{Mobility Framework},
-and \ttt{InterfaceTable} and \ttt{RoutingTable} in the \textit{INET Framework}.
+Examples of such modules are \ttt{InterfaceTable} and \ttt{RoutingTable}
+in \textit{INET Framework}.
 
 
 \subsection{Reusing Module Code via Subclassing}
