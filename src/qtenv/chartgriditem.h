@@ -20,12 +20,13 @@
 #include <QGraphicsItem>
 #include <QFont>
 #include "omnetpp/simtime_t.h"
+#include "qtenvdefs.h"
 #include "qtutil.h"
 
 namespace omnetpp {
 namespace qtenv {
 
-class ChartGridItem : public QGraphicsItem
+class QTENV_API ChartGridItem : public QGraphicsItem
 {
   private:
     QGraphicsRectItem *frame;

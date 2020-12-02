@@ -119,7 +119,7 @@ public:
     virtual void refresh(const FigureRenderingArgs& args, uint8_t what);
 };
 
-class AbstractShapeFigureRenderer : public FigureRenderer
+class QTENV_API AbstractShapeFigureRenderer : public FigureRenderer
 {
 protected:
     QGraphicsItem *newItem() override;
@@ -127,23 +127,23 @@ protected:
     virtual void refreshZoom(const FigureRenderingArgs& args) override;
 };
 
-class NullRenderer : public FigureRenderer
+class QTENV_API NullRenderer : public FigureRenderer
 {
 protected:
     virtual QGraphicsItem *newItem() override { return nullptr; }
 };
 
-class GroupFigureRenderer : public NullRenderer
+class QTENV_API GroupFigureRenderer : public NullRenderer
 {
     // nothing
 };
 
-class PanelFigureRenderer : public NullRenderer
+class QTENV_API PanelFigureRenderer : public NullRenderer
 {
     // nothing
 };
 
-class AbstractLineFigureRenderer : public FigureRenderer
+class QTENV_API AbstractLineFigureRenderer : public FigureRenderer
 {
     // every item returned by newItem() of subclasses must have
     // the start and end arrowheads in it as child items 0 and 1
@@ -155,7 +155,7 @@ protected:
     virtual void refreshZoom(const FigureRenderingArgs& args) override;
 };
 
-class LineFigureRenderer : public AbstractLineFigureRenderer
+class QTENV_API LineFigureRenderer : public AbstractLineFigureRenderer
 {
 protected:
     virtual void setArrows(const FigureRenderingArgs& args) override;
@@ -163,7 +163,7 @@ protected:
     virtual void refreshGeometry(const FigureRenderingArgs& args) override;
 };
 
-class ArcFigureRenderer : public AbstractLineFigureRenderer
+class QTENV_API ArcFigureRenderer : public AbstractLineFigureRenderer
 {
 protected:
     virtual void setArrows(const FigureRenderingArgs& args) override;
@@ -171,7 +171,7 @@ protected:
     virtual void refreshGeometry(const FigureRenderingArgs& args) override;
 };
 
-class PolylineFigureRenderer : public AbstractLineFigureRenderer
+class QTENV_API PolylineFigureRenderer : public AbstractLineFigureRenderer
 {
 protected:
     virtual void setArrows(const FigureRenderingArgs& args) override;
@@ -180,45 +180,45 @@ protected:
     virtual void refreshVisual(const FigureRenderingArgs& args) override;
 };
 
-class RectangleFigureRenderer : public AbstractShapeFigureRenderer
+class QTENV_API RectangleFigureRenderer : public AbstractShapeFigureRenderer
 {
 protected:
     virtual void refreshGeometry(const FigureRenderingArgs& args) override;
 };
 
-class OvalFigureRenderer : public AbstractShapeFigureRenderer
+class QTENV_API OvalFigureRenderer : public AbstractShapeFigureRenderer
 {
 protected:
     virtual void refreshGeometry(const FigureRenderingArgs& args) override;
 };
 
-class RingFigureRenderer : public AbstractShapeFigureRenderer
+class QTENV_API RingFigureRenderer : public AbstractShapeFigureRenderer
 {
 protected:
     virtual void refreshGeometry(const FigureRenderingArgs& args) override;
 };
 
-class PieSliceFigureRenderer : public AbstractShapeFigureRenderer
+class QTENV_API PieSliceFigureRenderer : public AbstractShapeFigureRenderer
 {
 protected:
     virtual void refreshGeometry(const FigureRenderingArgs& args) override;
 };
 
-class PolygonFigureRenderer : public AbstractShapeFigureRenderer
-{
-protected:
-    virtual void refreshGeometry(const FigureRenderingArgs& args) override;
-    virtual void refreshVisual(const FigureRenderingArgs& args) override;
-};
-
-class PathFigureRenderer : public AbstractShapeFigureRenderer
+class QTENV_API PolygonFigureRenderer : public AbstractShapeFigureRenderer
 {
 protected:
     virtual void refreshGeometry(const FigureRenderingArgs& args) override;
     virtual void refreshVisual(const FigureRenderingArgs& args) override;
 };
 
-class TextFigureRenderer : public FigureRenderer
+class QTENV_API PathFigureRenderer : public AbstractShapeFigureRenderer
+{
+protected:
+    virtual void refreshGeometry(const FigureRenderingArgs& args) override;
+    virtual void refreshVisual(const FigureRenderingArgs& args) override;
+};
+
+class QTENV_API TextFigureRenderer : public FigureRenderer
 {
 protected:
     virtual void refreshGeometry(const FigureRenderingArgs& args) override;
@@ -229,7 +229,7 @@ protected:
     virtual QGraphicsItem *newItem();
 };
 
-class LabelFigureRenderer : public TextFigureRenderer
+class QTENV_API LabelFigureRenderer : public TextFigureRenderer
 {
 protected:
     virtual void refreshTransform(const FigureRenderingArgs& args) override;
@@ -237,7 +237,7 @@ protected:
     virtual void refreshZoom(const FigureRenderingArgs& args) override;
 };
 
-class ImageFigureRenderer : public FigureRenderer
+class QTENV_API ImageFigureRenderer : public FigureRenderer
 {
 protected:
     static void setImageTransform(const FigureRenderingArgs& args, double naturalWidth, double naturalHeight, bool translateOnly);
@@ -248,14 +248,14 @@ protected:
     virtual QGraphicsItem *newItem() override;
 };
 
-class PixmapFigureRenderer : public ImageFigureRenderer
+class QTENV_API PixmapFigureRenderer : public ImageFigureRenderer
 {
 protected:
     virtual void refreshInputData(const FigureRenderingArgs& args) override;
     virtual void refreshTransform(const FigureRenderingArgs& args) override;
 };
 
-class IconFigureRenderer : public ImageFigureRenderer
+class QTENV_API IconFigureRenderer : public ImageFigureRenderer
 {
 protected:
     virtual void refreshTransform(const FigureRenderingArgs& args) override;

@@ -18,13 +18,14 @@
 #define __OMNETPP_QTENV_HIGHLIGHTERITEMDELEGATE_H
 
 #include <QStyledItemDelegate>
+#include "qtenvdefs.h"
 
 namespace omnetpp {
 namespace qtenv {
 
 // uses a QTextLayout to highlight a part of the displayed text
 // which is given by a HighlightRange, returned by the tree model
-class HighlighterItemDelegate : public QStyledItemDelegate
+class QTENV_API HighlighterItemDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
 

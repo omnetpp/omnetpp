@@ -27,7 +27,7 @@ class VideoRecordingDialog;
 namespace omnetpp {
 namespace qtenv {
 
-class VideoRecordingDialog : public QDialog
+class QTENV_API VideoRecordingDialog : public QDialog
 {
     Q_OBJECT
 

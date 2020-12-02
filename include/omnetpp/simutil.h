@@ -37,8 +37,8 @@ class cComponent;
 //@{
 
 // helpers for checked_int_cast
-void intCastError(const std::string& num, const char *errmsg=nullptr);
-void intCastError(const std::string& num, const cObject *context, const char *errmsg=nullptr);
+SIM_API void intCastError(const std::string& num, const char *errmsg=nullptr);
+SIM_API void intCastError(const std::string& num, const cObject *context, const char *errmsg=nullptr);
 
 /**
  * @brief Safe integer cast: it throws an exception if in case of an overflow,

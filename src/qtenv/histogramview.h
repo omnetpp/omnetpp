@@ -18,6 +18,7 @@
 #define __OMNETPP_QTENV_HISTOGRAMVIEW_H
 
 #include <QGraphicsView>
+#include "qtenvdefs.h"
 
 namespace omnetpp {
 
@@ -27,7 +28,7 @@ namespace qtenv {
 
 class ChartGridItem;
 
-class HistogramView : public QGraphicsView
+class QTENV_API HistogramView : public QGraphicsView
 {
     Q_OBJECT
 

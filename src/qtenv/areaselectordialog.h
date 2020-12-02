@@ -18,6 +18,7 @@
 #define __OMNETPP_QTENV_AREASELECTORDIALOG_H
 
 #include <QDialog>
+#include "qtenvdefs.h"
 
 namespace Ui {
 class AreaSelectorDialog;
@@ -28,7 +29,7 @@ namespace qtenv {
 
 class ModuleCanvasViewer;
 
-class AreaSelectorDialog : public QDialog
+class QTENV_API AreaSelectorDialog : public QDialog
 {
     Q_OBJECT
 

@@ -30,7 +30,7 @@ namespace layout {
 /**
  * A three dimensional point. Base plane means z = 0.
  */
-class Pt
+class LAYOUT_API Pt
 {
     public:
         double x;
@@ -249,7 +249,7 @@ class Pt
 /**
  * A three dimensional line or section defined by two points.
  */
-class Ln {
+class LAYOUT_API Ln {
     public:
         Pt begin;
 
@@ -324,7 +324,7 @@ class Ln {
 /**
  * A two dimensional rectangular size parallel to the base plane.
  */
-class Rs {
+class LAYOUT_API Rs {
     public:
         double width;
 
@@ -370,7 +370,7 @@ class Rs {
 /**
  * A two dimensional rectangle positioned in three dimensions and parallel to the base plane.
  */
-class Rc {
+class LAYOUT_API Rc {
     public:
         Pt pt;
 
@@ -542,7 +542,7 @@ class Rc {
 /**
  * A two dimensional circle positioned in three dimensions and parallel to the base plane.
  */
-class Cc {
+class LAYOUT_API Cc {
     public:
         Pt origin;
 

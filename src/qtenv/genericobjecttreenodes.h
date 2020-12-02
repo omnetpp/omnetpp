@@ -28,7 +28,7 @@ namespace qtenv {
 // This is the base class of all nodes in the tree model.
 // Each instance of this will be seen as an item in the TreeView.
 // Stores all data, and uses lazy loading of children.
-class TreeNode
+class QTENV_API TreeNode
 {
   protected:
     using Mode = GenericObjectTreeModel::Mode;
@@ -133,7 +133,7 @@ class TreeNode
     virtual ~TreeNode();
 };
 
-class SuperClassNode : public TreeNode
+class QTENV_API SuperClassNode : public TreeNode
 {
     cClassDescriptor *superDesc;
 
@@ -151,7 +151,7 @@ class SuperClassNode : public TreeNode
     bool matchesPropertyFilter(const QString &property) override;
 };
 
-class ChildObjectNode : public TreeNode
+class QTENV_API ChildObjectNode : public TreeNode
 {
     cObject *object;
 
@@ -167,7 +167,7 @@ class ChildObjectNode : public TreeNode
     cObject *getCObjectPointer() override;
 };
 
-class TextNode : public TreeNode
+class QTENV_API TextNode : public TreeNode
 {
     QString message;
 
@@ -182,7 +182,7 @@ class TextNode : public TreeNode
     QString computeNodeIdentifier() override;
 };
 
-class FieldNode : public TreeNode
+class QTENV_API FieldNode : public TreeNode
 {
   protected:
     int fieldIndex = 0;
@@ -206,7 +206,7 @@ class FieldNode : public TreeNode
     bool matchesPropertyFilter(const QString &property) override;
 };
 
-class RootNode : public TreeNode
+class QTENV_API RootNode : public TreeNode
 {
     cObject *object;
 
@@ -222,7 +222,7 @@ class RootNode : public TreeNode
     cObject *getCObjectPointer() override;
 };
 
-class FieldGroupNode : public TreeNode
+class QTENV_API FieldGroupNode : public TreeNode
 {
     std::string groupName;
 
@@ -239,7 +239,7 @@ class FieldGroupNode : public TreeNode
     bool matchesPropertyFilter(const QString &property) override;
 };
 
-class ArrayElementNode : public TreeNode
+class QTENV_API ArrayElementNode : public TreeNode
 {
     int fieldIndex;
     int arrayIndex;

@@ -27,7 +27,7 @@ namespace qtenv {
 
 class ChartGridItem;
 
-class OutputVectorView : public QGraphicsView
+class QTENV_API OutputVectorView : public QGraphicsView
 {
   private:
     ChartGridItem *gridItem;

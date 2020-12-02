@@ -27,7 +27,7 @@ namespace layout {
 /**
  *
  */
-class ConcentricTreeEmbedding
+class LAYOUT_API ConcentricTreeEmbedding
 {
     public:
         /**
