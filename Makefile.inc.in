@@ -133,6 +133,7 @@ LDFLAG_LIBPATH = @LDFLAG_LIBPATH@
 LDFLAG_INCLUDE = @LDFLAG_INCLUDE@
 LDFLAG_LIB = @LDFLAG_LIB@
 LDFLAG_IMPLIB = @LDFLAG_IMPLIB@
+LDFLAG_IMPDEF = @LDFLAG_IMPDEF@
 LDFLAGS += $(LDFLAGS_EXTRA) @LDFLAGS@
 WHOLE_ARCHIVE_ON = @WHOLE_ARCHIVE_ON@
 WHOLE_ARCHIVE_OFF = @WHOLE_ARCHIVE_OFF@
@@ -190,6 +191,7 @@ A_LIB_SUFFIX = @A_LIB_SUFFIX@
 SO_LIB_SUFFIX = @SO_LIB_SUFFIX@
 DLL_LIB_SUFFIX = @DLL_LIB_SUFFIX@
 IMPLIB_SUFFIX = @IMPLIB_SUFFIX@
+IMPDEF_SUFFIX = @IMPDEF_SUFFIX@
 JNI_LIB_SUFFIX = @JNI_LIB_SUFFIX@
 EXE_SUFFIX = @EXE_SUFFIX@
 LIB_PREFIX = @LIB_PREFIX@
@@ -256,15 +258,10 @@ ifeq ($(WITH_OSGEARTH),yes)
 endif
 
 
-#
-# toolchain specific flags and options
-#
-ifeq ($(TOOLCHAIN_NAME),clang-msabi)
-  # this macro can be used to pass EXPORT macros to the compiler if omnet is built as shared library
-  ifeq ($(SHARED_LIBS),yes)
-    IMPORT_DEFINES = -DOMNETPPLIBS_IMPORT
-    EXPORT_DEFINES = $(EXPORT_MACRO)
-  endif
+# this macro can be used to pass EXPORT macros to the compiler if omnet is built as shared library
+ifeq ($(SHARED_LIBS),yes)
+  IMPORT_DEFINES = -DOMNETPPLIBS_IMPORT
+  EXPORT_DEFINES = $(EXPORT_MACRO)
 endif
 
 #
