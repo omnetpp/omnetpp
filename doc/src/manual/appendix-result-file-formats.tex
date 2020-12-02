@@ -47,7 +47,9 @@ Entry types are:
     \item \textbf{version}: result file version
     \item \textbf{run}: simulation run identifier
     \item \textbf{attr}: run, vector, scalar or statistics object attribute
-    \item \textbf{param}: module parameter
+    \item \textbf{itervar}: iteration variable
+    \item \textbf{config}: configuration entry
+    \item \textbf{par}: module parameter
     \item \textbf{scalar}: scalar data
     \item \textbf{vector}: vector declaration
     \item \textit{vector-id}: vector data
@@ -67,8 +69,23 @@ Syntax:
 
 \hspace{20mm} \textbf{version} \textit{versionNumber}
 
-The version described in this document is 2. Version 1 files are produced
-by OMNeT++ 3.3 or earlier.
+The version described in this document is 3, used since {\omnetpp} 6.0.
+Version 1 files were produced by {\omnetpp} 3.x and earlier, and version 2
+files by {\omnetpp} 4.x and 5.x.\footnote{
+    Differences between version 2 and version 3 files are minimal, and mostly only
+    affect the run header. Version 3 introduced \textit{itervar} lines to allow
+    distinguishing iteration variables from other run attributes (in version 2 they
+    were all recorded in \textit{attr} lines). \textit{param} lines in version 2
+    (which recorded parameter assignment entries in the configuration) have been
+    replaced in version 3 with the more general \textit{config} lines (which record
+    all configuration entries, not just parameter assignments). In version 2,
+    parameter values (if requested) were recorded as scalars, whereas in version 3
+    they are recorded in \textit{par} lines, which allow recording of volatile
+    parameters (as expressions) and non-numeric values as well. Additionally,
+    version 3 doesn't record the fields \textit{sum} and \textit{sqrsum}
+    for weighted statistics.
+}
+
 
 
 \subsection{Run Declaration}
@@ -124,20 +141,32 @@ Attributes associated with parameter studies (iterated runs):
 An example run header:
 
 \begin{filelisting}
-run TokenRing1-0-20080514-18:19:44-3248
-attr configname TokenRing1
-attr datetime 20080514-18:19:44
-attr experiment TokenRing1
+run PureAlohaExperiment-0-20200304-18:05:49-194559
+attr configname PureAlohaExperiment
+attr datetime 20200304-18:05:49
+attr experiment PureAlohaExperiment
 attr inifile omnetpp.ini
-attr iterationvars ""
-attr measurement ""
-attr network TokenRing
-attr processid 3248
+attr iterationvars "$numHosts=10, $iaMean=1"
+attr measurement "$numHosts=10, $iaMean=1"
+attr network Aloha
+attr processid 194559
 attr repetition 0
 attr replication #0
 attr resultdir results
 attr runnumber 0
 attr seedset 0
+itervar iaMean 1
+itervar numHosts 10
+config repeat 2
+config sim-time-limit 90min
+config network Aloha
+config Aloha.numHosts 10
+config Aloha.host[*].iaTime exponential(1s)
+config Aloha.numHosts 20
+config Aloha.txRate 9.6kbps
+config **.x "uniform(0m, 1000m)"
+config **.y "uniform(0m, 1000m)"
+config **.idleAnimationSpeed 1
 \end{filelisting}
 
 
@@ -160,33 +189,53 @@ attr network "largeNet"
 \end{filelisting}
 
 
-\subsection{Module Parameters}
-\label{sec:result-file-formats:opp:module-parameters}
+\subsection{Iteration Variables}
+\label{sec:result-file-formats:opp:itervar}
 
-Contains a module parameter value for the given run. This is needed so
-that module parameters may be included in the analysis (e.g. to
-identify the load for a ``throughput vs load'' plot).
-
-It may not be practical to simply store all parameters of all modules in the
-result file, because there may be too many. We assume that NED files are
-invariant and do not store parameters defined in them. However, we store
-parameter assignments that come from \ffilename{omnetpp.ini}, in their original
-wildcard form (i.e. not expanded) to conserve space. Parameter values
-entered interactively by the user are also stored.
-
-When the original NED files are present, it should thus be possible to
-reconstruct all parameters for the given simulation.
+Contains an iteration variable for the given run.
 
 Syntax:
 
-\hspace{20mm} \textbf{param} \textit{parameterNamePattern} \textit{value}
+\hspace{20mm} \textbf{itervar} \textit{name} \textit{value}
 
-Example:
+Examples:
 
 \begin{filelisting}
-param **.gen.sendIaTime  exponential(0.01)
-param **.gen.msgLength   10
-param **.fifo.bitsPerSec 1000
+itervar numHosts 10
+itervar tcpType Reno
+\end{filelisting}
+
+
+\subsection{Configuration Entries}
+\label{sec:result-file-formats:opp:config}
+
+The configuration of the simulation is captured in the result file as an ordered
+list of \textit{config} lines. The list contains both the contents of ini files
+and the options given one the command line.
+
+The order of lines represents a flattened view of the ini file(s). The contents
+of sections are recorded in an order that reflects the section inheritance
+graph: derived sections precede the sections they extend (so \ttt{General} comes
+last), and the contents of unrelated sections are omitted. Command like options
+are at the top. The relative order of lines within ini file sections are
+preserved. This order corresponds to the search order of entries that contain
+wildcards (i.e. first match wins).
+
+Values are saved verbatim, except that iteration variables are substituted in
+them.
+
+Syntax:
+
+\hspace{20mm} \textbf{config} \textit{key} \textit{value}
+
+Example config lines:
+
+\begin{filelisting}
+config sim-time-limit 90min
+config network Aloha
+config Aloha.numHosts 10
+config Aloha.host[*].iaTime exponential(1s)
+config **.x "uniform(0m, 1000m)"
 \end{filelisting}
 
 
@@ -385,13 +434,14 @@ Fields:
     \item \tbf{count}: observation count
     \item \tbf{mean}: mean of the observations
     \item \tbf{stddev}: standard deviation
-    \item \tbf{sum}: sum of the observations
-    \item \tbf{sqrsum}: sum of the squared observations
     \item \tbf{min}: minimum of the observations
     \item \tbf{max}: maximum of the observations
+    \item \tbf{sum}: sum of the observations
+    \item \tbf{sqrsum}: sum of the squared observations
 \end{itemize}
 
-For weighted statistics, additionally the following fields may be recorded:
+For weighted statistics, \textit{sum} and \textit{sqrsum} are replaced
+by the following fields:
 
 \begin{itemize}
     \item \tbf{weights}: sum of the weights
@@ -444,119 +494,145 @@ The database structure in SQLite result files is created with the
 following SQL statements. Scalar and vector files are identical in
 structure, they only differ in data.
 
-%TODO make an 'sqlite' environment 
+%TODO make an 'sqlite' environment
 \begin{filelisting}
-CREATE TABLE run 
-( 
-    runId       INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
-    runName     TEXT NOT NULL, 
-    simtimeExp  INTEGER NOT NULL 
-); 
+CREATE TABLE run
+(
+    runId       INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    runName     TEXT NOT NULL,
+    simtimeExp  INTEGER NOT NULL
+);
 
-CREATE TABLE runattr 
-( 
-    runId       INTEGER NOT NULL REFERENCES run(runId) ON DELETE CASCADE, 
-    attrName    TEXT NOT NULL, 
-    attrValue   TEXT NOT NULL 
-); 
+CREATE TABLE runAttr
+(
+    runId       INTEGER  NOT NULL REFERENCES run(runId) ON DELETE CASCADE,
+    attrName    TEXT NOT NULL,
+    attrValue   TEXT NOT NULL
+);
 
-CREATE TABLE runparam 
-( 
-    runId       INTEGER NOT NULL REFERENCES run(runId) ON DELETE CASCADE, 
-    parName     TEXT NOT NULL, 
-    parValue    TEXT NOT NULL 
-); 
+CREATE TABLE runItervar
+(
+    runId       INTEGER  NOT NULL REFERENCES run(runId) ON DELETE CASCADE,
+    itervarName TEXT NOT NULL,
+    itervarValue TEXT NOT NULL
+);
 
-CREATE TABLE scalar 
-( 
-    scalarId      INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
-    runId         INTEGER NOT NULL REFERENCES run(runId) ON DELETE CASCADE, 
-    moduleName    TEXT NOT NULL, 
-    scalarName    TEXT NOT NULL, 
-    scalarValue   REAL
-); 
+CREATE TABLE runConfig
+(
+    runId       INTEGER NOT NULL REFERENCES run(runId) ON DELETE CASCADE,
+    configKey   TEXT NOT NULL,
+    configValue TEXT NOT NULL,
+    configOrder INTEGER NOT NULL
+);
 
-CREATE TABLE scalarattr 
-( 
-    scalarId      INTEGER NOT NULL REFERENCES scalar(scalarId) ON DELETE CASCADE, 
-    attrName      TEXT NOT NULL, 
-    attrValue     TEXT NOT NULL 
-); 
+CREATE TABLE scalar
+(
+    scalarId      INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    runId         INTEGER  NOT NULL REFERENCES run(runId) ON DELETE CASCADE,
+    moduleName    TEXT NOT NULL,
+    scalarName    TEXT NOT NULL,
+    scalarValue   REAL        -- cannot be NOT NULL, because sqlite converts NaN double value to NULL
+);
 
-CREATE TABLE statistic 
-( 
-    statId        INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
-    runId         INTEGER NOT NULL REFERENCES run(runId) ON DELETE CASCADE, 
-    moduleName    TEXT NOT NULL, 
-    statName      TEXT NOT NULL, 
-    statCount     INTEGER NOT NULL, 
-    statMean      REAL, 
-    statStddev    REAL, 
-    statSum       REAL, 
-    statSqrsum    REAL, 
-    statMin       REAL, 
-    statMax       REAL, 
-    statWeights          REAL, 
-    statWeightedSum      REAL, 
-    statSqrSumWeights    REAL, 
-    statWeightedSqrSum   REAL 
-); 
+CREATE TABLE scalarAttr
+(
+    scalarId      INTEGER  NOT NULL REFERENCES scalar(scalarId) ON DELETE CASCADE,
+    attrName      TEXT NOT NULL,
+    attrValue     TEXT NOT NULL
+);
 
-CREATE TABLE histattr 
-( 
-    statId        INTEGER NOT NULL REFERENCES statistic(statId) ON DELETE CASCADE, 
-    attrName      TEXT NOT NULL, 
-    attrValue     TEXT NOT NULL 
-); 
+CREATE TABLE parameter
+(
+    paramId       INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    runId         INTEGER  NOT NULL REFERENCES run(runId) ON DELETE CASCADE,
+    moduleName    TEXT NOT NULL,
+    paramName     TEXT NOT NULL,
+    paramValue    TEXT NOT NULL
+);
 
-CREATE TABLE histbin 
-( 
-    statId        INTEGER NOT NULL REFERENCES statistic(statId) ON DELETE CASCADE, 
-    baseValue     NUMERIC NOT NULL, 
-    cellValue     INTEGER NOT NULL 
-); 
+CREATE TABLE paramAttr
+(
+    paramId       INTEGER  NOT NULL REFERENCES parameter(paramId) ON DELETE CASCADE,
+    attrName      TEXT NOT NULL,
+    attrValue     TEXT NOT NULL
+);
 
-CREATE TABLE vector 
-( 
-    vectorId        INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
-    runId           INTEGER  NOT NULL REFERENCES run(runId) ON DELETE CASCADE, 
-    moduleName      TEXT NOT NULL, 
-    vectorName      TEXT NOT NULL, 
-    vectorCount     INTEGER,
-    vectorMin       REAL, 
-    vectorMax       REAL, 
-    vectorSum       REAL, 
-    vectorSumSqr    REAL, 
-    startEventNum   INTEGER, 
-    endEventNum     INTEGER, 
-    startSimtimeRaw INTEGER, 
-    endSimtimeRaw   INTEGER 
+CREATE TABLE statistic
+(
+    statId        INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    runId         INTEGER NOT NULL REFERENCES run(runId) ON DELETE CASCADE,
+    moduleName    TEXT NOT NULL,
+    statName      TEXT NOT NULL,
+    isHistogram   INTEGER NOT NULL,   -- actually, BOOL
+    isWeighted    INTEGER NOT NULL,   -- actually, BOOL
+    statCount     INTEGER NOT NULL,
+    statMean      REAL,   -- note: computed; stored for convenience
+    statStddev    REAL,   -- note: computed; stored for convenience
+    statSum       REAL,
+    statSqrsum    REAL,
+    statMin       REAL,
+    statMax       REAL,
+    statWeights          REAL,  -- note: names of this and subsequent fields are consistent with textual sca file field names
+    statWeightedSum      REAL,
+    statSqrSumWeights    REAL,
+    statWeightedSqrSum   REAL
+);
 
-); 
+CREATE TABLE statisticAttr
+(
+    statId        INTEGER NOT NULL REFERENCES statistic(statId) ON DELETE CASCADE,
+    attrName      TEXT NOT NULL,
+    attrValue     TEXT NOT NULL
+);
 
-CREATE TABLE vectorattr 
-( 
-    vectorId      INTEGER NOT NULL REFERENCES vector(vectorId) ON DELETE CASCADE, 
-    attrName      TEXT NOT NULL, 
-    attrValue     TEXT NOT NULL 
-); 
+CREATE TABLE histogramBin
+(
+    statId        INTEGER NOT NULL REFERENCES statistic(statId) ON DELETE CASCADE,
+    lowerEdge     REAL NOT NULL,
+    binValue      REAL NOT NULL
+);
 
-CREATE TABLE vectordata 
-( 
-    vectorId      INTEGER NOT NULL REFERENCES vector(vectorId) ON DELETE CASCADE, 
-    eventNumber   INTEGER NOT NULL, 
-    simtimeRaw    INTEGER NOT NULL, 
-    value         NUMERIC NOT NULL 
-); 
+CREATE TABLE vector
+(
+    vectorId        INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    runId           INTEGER NOT NULL REFERENCES run(runId) ON DELETE CASCADE,
+    moduleName      TEXT NOT NULL,
+    vectorName      TEXT NOT NULL,
+    vectorCount     INTEGER,    -- cannot be NOT NULL because we fill it in later
+    vectorMin       REAL,
+    vectorMax       REAL,
+    vectorSum       REAL,
+    vectorSumSqr    REAL,
+    startEventNum   INTEGER,
+    endEventNum     INTEGER,
+    startSimtimeRaw INTEGER,
+    endSimtimeRaw   INTEGER
+
+);
+
+CREATE TABLE vectorAttr
+(
+    vectorId      INTEGER  NOT NULL REFERENCES vector(vectorId) ON DELETE CASCADE,
+    attrName      TEXT NOT NULL,
+    attrValue     TEXT NOT NULL
+);
+
+CREATE TABLE vectorData
+(
+    vectorId      INTEGER NOT NULL REFERENCES vector(vectorId) ON DELETE CASCADE,
+    eventNumber   INTEGER NOT NULL,
+    simtimeRaw    INTEGER NOT NULL,
+    value         REAL  -- cannot be NOT NULL because of NaN values
+);
 \end{filelisting}
 
 Notes:
 
 \begin{enumerate}
-  \item To preserve precision, simulation time is stored in raw form, i.e. 
+  \item To preserve precision, simulation time is stored in raw form, i.e.
         the underlying \ttt{int64} is stored as an integer. To get the real
         value, they have to be multiplied by 10 to the power of the simtime
-        exponent, which is global for the simulation run. The simtime        
+        exponent, which is global for the simulation run. The simtime
         exponent is stored  in the \ttt{simtimeExp} column of the \ttt{run}
         table.
   \item Some columns like vector statistics are not marked as \ttt{NOT NULL},
