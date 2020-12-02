@@ -153,12 +153,12 @@ class cNoncopyableOwnedObject extends cOwnedObject
     @descriptor(readonly);
 }
 
-class cDefaultOwner extends cNoncopyableOwnedObject
+class cSoftOwner extends cNoncopyableOwnedObject
 {
     @existingClass;
     @overwritePreviousDefinition;
     @descriptor(readonly);
-    cOwnedObject *defaultList[] @getter(defaultListGet) @sizeGetter(defaultListSize) @group(owned objects) @hint("List of objects directly held by this component");
+    cOwnedObject *ownedObjects[] @getter(getOwnedObject) @sizeGetter(getNumOwnedObjects) @group(owned objects) @hint("List of objects directly held by this component");
 }
 
 class cDisplayString
@@ -195,7 +195,7 @@ class cComponent::SignalListenerList
     cIListener *listeners[] @getter(getListener) @sizeGetter(countListeners); //TODO @toString(->str()) for cResultListeners
 }
 
-class cComponent extends cDefaultOwner
+class cComponent extends cSoftOwner
 {
     @existingClass;
     @overwritePreviousDefinition;

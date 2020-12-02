@@ -1,11 +1,11 @@
 //=========================================================================
-//  CDEFAULTOWNER.CC - part of
+//  CSOFTOWNER.CC - part of
 //
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
 //   Member functions of
-//    cDefaultOwner : stores a set of cOwnedObjects
+//    cSoftOwner : stores a set of cOwnedObjects
 //
 //  Author: Andras Varga
 //
@@ -22,7 +22,7 @@
 #include <cstring>  // memcpy
 #include "omnetpp/globals.h"
 #include "omnetpp/cexception.h"
-#include "omnetpp/cdefaultowner.h"
+#include "omnetpp/csoftowner.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cenvir.h"
 #include "omnetpp/cwatch.h"
@@ -34,10 +34,10 @@
 namespace omnetpp {
 
 
-Register_Class(cDefaultOwner);
+Register_Class(cSoftOwner);
 
 
-cDefaultOwner::cDefaultOwner(const char *name) : cNoncopyableOwnedObject(name)
+cSoftOwner::cSoftOwner(const char *name) : cNoncopyableOwnedObject(name)
 {
     // careful: if we are a global variable (ctor called before main()),
     // then insert() may get called before constructor and it invoked
@@ -46,14 +46,14 @@ cDefaultOwner::cDefaultOwner(const char *name) : cNoncopyableOwnedObject(name)
         construct();
 
     // if we're invoked before main, then we are a global variable (dynamic
-    // instances of cDefaultOwner are not supposed to be created
+    // instances of cSoftOwner are not supposed to be created
     // before main()) --> remove ourselves from ownership tree because
     // we shouldn't be destroyed via operator delete
     if (!cStaticFlag::insideMain())
         removeFromOwnershipTree();
 }
 
-void cDefaultOwner::construct()
+void cSoftOwner::construct()
 {
     capacity = 2;
     numObjs = 0;
@@ -65,7 +65,7 @@ void cDefaultOwner::construct()
 #endif
 }
 
-cDefaultOwner::~cDefaultOwner()
+cSoftOwner::~cSoftOwner()
 {
     if (getPerformFinalGC()) {
         // delete all owned objects. One place we make use of this is behavior is
@@ -93,9 +93,9 @@ cDefaultOwner::~cDefaultOwner()
     }
 }
 
-void cDefaultOwner::doInsert(cOwnedObject *obj)
+void cSoftOwner::doInsert(cOwnedObject *obj)
 {
-    ASSERT(obj != this || this == &defaultList);
+    ASSERT(obj != this || this == &globalOwningContext);
 
     if (numObjs >= capacity) {
         if (capacity == 0) {
@@ -119,7 +119,7 @@ void cDefaultOwner::doInsert(cOwnedObject *obj)
 #endif
 }
 
-void cDefaultOwner::ownedObjectDeleted(cOwnedObject *obj)
+void cSoftOwner::ownedObjectDeleted(cOwnedObject *obj)
 {
     ASSERT(obj && obj->owner == this);
 
@@ -131,7 +131,7 @@ void cDefaultOwner::ownedObjectDeleted(cOwnedObject *obj)
 #endif
 }
 
-void cDefaultOwner::yieldOwnership(cOwnedObject *obj, cObject *newowner)
+void cSoftOwner::yieldOwnership(cOwnedObject *obj, cObject *newowner)
 {
     ASSERT(obj && obj->owner == this && numObjs > 0);
 
@@ -146,20 +146,20 @@ void cDefaultOwner::yieldOwnership(cOwnedObject *obj, cObject *newowner)
 #endif
 }
 
-std::string cDefaultOwner::str() const
+std::string cSoftOwner::str() const
 {
     std::stringstream out;
     out << "n=" << numObjs;
     return out.str();
 }
 
-void cDefaultOwner::forEachChild(cVisitor *v)
+void cSoftOwner::forEachChild(cVisitor *v)
 {
     for (int i = 0; i < numObjs; i++)
         v->visit(objs[i]);
 }
 
-void cDefaultOwner::parsimPack(cCommBuffer *buffer) const
+void cSoftOwner::parsimPack(cCommBuffer *buffer) const
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this, E_NOPARSIM);
@@ -171,7 +171,7 @@ void cDefaultOwner::parsimPack(cCommBuffer *buffer) const
 #endif
 }
 
-void cDefaultOwner::parsimUnpack(cCommBuffer *buffer)
+void cSoftOwner::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this, E_NOPARSIM);
@@ -182,37 +182,32 @@ void cDefaultOwner::parsimUnpack(cCommBuffer *buffer)
 #endif
 }
 
-void cDefaultOwner::take(cOwnedObject *obj)
+void cSoftOwner::take(cOwnedObject *obj)
 {
-    // ask current owner to release it -- if it's a cDefaultOwner, it will.
+    // ask current owner to release it -- if it's a cSoftOwner, it will.
     obj->owner->yieldOwnership(obj, this);
     doInsert(obj);
 }
 
-void cDefaultOwner::drop(cOwnedObject *obj)
+void cSoftOwner::drop(cOwnedObject *obj)
 {
     if (obj->owner != this)
         throw cRuntimeError(this, "drop(): Not owner of object (%s)%s",
                 obj->getClassName(), obj->getFullPath().c_str());
-    // the following 2 lines are actually the same as defaultOwner->take(obj);
-    yieldOwnership(obj, defaultOwner);
-    defaultOwner->doInsert(obj);
+    // the following 2 lines are actually the same as owningContext->take(obj);
+    yieldOwnership(obj, owningContext);
+    owningContext->doInsert(obj);
 }
 
-cOwnedObject *cDefaultOwner::defaultListGet(int k)
+cOwnedObject *cSoftOwner::getOwnedObject(int k)
 {
     if (k < 0 || k >= numObjs)
         return nullptr;
     return objs[k];
 }
 
-bool cDefaultOwner::defaultListContains(cOwnedObject *obj) const
-{
-    return obj && obj->getOwner() == const_cast<cDefaultOwner *>(this);
-}
-
 #ifdef SIMFRONTEND_SUPPORT
-bool cDefaultOwner::hasChangedSince(int64_t lastRefreshSerial)
+bool cSoftOwner::hasChangedSince(int64_t lastRefreshSerial)
 {
     return lastChangeSerial > lastRefreshSerial;
 }

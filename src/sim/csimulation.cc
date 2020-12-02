@@ -650,7 +650,7 @@ void cSimulation::transferToMain()
 void cSimulation::setContext(cComponent *p)
 {
     contextComponent = p;
-    cOwnedObject::setDefaultOwner(p);
+    cOwnedObject::setOwningContext(p);
 }
 
 cModule *cSimulation::getContextModule() const

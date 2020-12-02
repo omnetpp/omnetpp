@@ -18,7 +18,7 @@
 
 #include "omnetpp/cobject.h"
 #include "omnetpp/cownedobject.h"
-#include "omnetpp/cdefaultowner.h"
+#include "omnetpp/csoftowner.h"
 #include "omnetpp/cexception.h"
 #include "omnetpp/cclassdescriptor.h"
 #include "omnetpp/csimulation.h"
@@ -107,7 +107,7 @@ void cObject::yieldOwnership(cOwnedObject *obj, cObject *newowner)
 
 void cObject::take(cOwnedObject *obj)
 {
-    // ask current owner to release it -- if it's a cDefaultOwner, it will.
+    // ask current owner to release it -- if it's a cSoftOwner, it will.
     obj->owner->yieldOwnership(obj, this);
 }
 
@@ -116,7 +116,7 @@ void cObject::drop(cOwnedObject *obj)
     if (obj->owner != this)
         throw cRuntimeError(this, "drop(): Not owner of object (%s)%s",
                 obj->getClassName(), obj->getFullPath().c_str());
-    cOwnedObject::defaultOwner->doInsert(obj);
+    cOwnedObject::owningContext->doInsert(obj);
 }
 
 void cObject::dropAndDelete(cOwnedObject *obj)
@@ -131,10 +131,10 @@ void cObject::dropAndDelete(cOwnedObject *obj)
     delete obj;
 }
 
-void cObject::takeAllObjectsFrom(cDefaultOwner *list)
+void cObject::takeAllObjectsFrom(cSoftOwner *list)
 {
-    while (list->defaultListSize() > 0)
-        take(list->defaultListGet(0));
+    while (list->getNumOwnedObjects() > 0)
+        take(list->getOwnedObject(0));
 }
 
 void cObject::parsimPack(cCommBuffer *buffer) const

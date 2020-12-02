@@ -68,7 +68,7 @@ std::vector<cComponent::ResultRecorderList*> cComponent::cachedResultRecorderLis
 EXECUTE_ON_SHUTDOWN(cComponent::invalidateCachedResultRecorderLists())
 
 
-cComponent::cComponent(const char *name) : cDefaultOwner(name)
+cComponent::cComponent(const char *name) : cSoftOwner(name)
 {
     componentType = nullptr;
     simulation = nullptr;
@@ -124,7 +124,7 @@ void cComponent::forEachChild(cVisitor *v)
         }
     }
 
-    cDefaultOwner::forEachChild(v);
+    cSoftOwner::forEachChild(v);
 }
 
 void cComponent::setComponentType(cComponentType *componenttype)

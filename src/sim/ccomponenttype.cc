@@ -293,9 +293,9 @@ cModule *cModuleType::create(const char *moduleName, cModule *parentModule, int 
     cContextTypeSwitcher tmp(CTX_BUILD);
 
     // Object members of the new module class are collected to tmplist.
-    cDefaultOwner tmpList;
-    cDefaultOwner *oldList = cOwnedObject::getDefaultOwner();
-    cOwnedObject::setDefaultOwner(&tmpList);
+    cSoftOwner tmpList;
+    cSoftOwner *oldList = cOwnedObject::getOwningContext();
+    cOwnedObject::setOwningContext(&tmpList);
     cModule *module;
     try {
         // create the new module object
@@ -307,8 +307,8 @@ cModule *cModuleType::create(const char *moduleName, cModule *parentModule, int 
 #endif
     }
     catch (std::exception& e) {
-        // restore defaultowner, otherwise it'll remain pointing to a dead object
-        cOwnedObject::setDefaultOwner(oldList);
+        // restore owningcontext, otherwise it'll remain pointing to a dead object
+        cOwnedObject::setOwningContext(oldList);
         throw;
     }
 
@@ -330,7 +330,7 @@ cModule *cModuleType::create(const char *moduleName, cModule *parentModule, int 
     module->takeAllObjectsFrom(&tmpList);
 
     // restore default owner (must precede parameters)
-    cOwnedObject::setDefaultOwner(oldList);
+    cOwnedObject::setOwningContext(oldList);
 
     // register with cSimulation
     getSimulation()->registerComponent(module);
@@ -432,9 +432,9 @@ cChannel *cChannelType::create(const char *name)
     cContextTypeSwitcher tmp(CTX_BUILD);
 
     // Object members of the new channel class are collected to tmplist.
-    cDefaultOwner tmplist;
-    cDefaultOwner *oldlist = cOwnedObject::getDefaultOwner();
-    cOwnedObject::setDefaultOwner(&tmplist);
+    cSoftOwner tmplist;
+    cSoftOwner *oldlist = cOwnedObject::getOwningContext();
+    cOwnedObject::setOwningContext(&tmplist);
 
     // create channel object
     cChannel *channel;
@@ -443,7 +443,7 @@ cChannel *cChannelType::create(const char *name)
     }
     catch (std::exception& e) {
         // restore default owner, otherwise it'll remain pointing to a dead object
-        cOwnedObject::setDefaultOwner(oldlist);
+        cOwnedObject::setOwningContext(oldlist);
         throw;
     }
 
@@ -460,14 +460,14 @@ cChannel *cChannelType::create(const char *name)
     channel->setName(name);
     channel->setComponentType(this);
 
-    //TODO use cDefaultOwnerSwitcher
+    //TODO use cSoftOwnerSwitcher
 
     // put the object members of the new module to their place
     oldlist->take(channel);
     channel->takeAllObjectsFrom(&tmplist);
 
     // restore default owner
-    cOwnedObject::setDefaultOwner(oldlist);
+    cOwnedObject::setOwningContext(oldlist);
 
     // register with cSimulation
     getSimulation()->registerComponent(channel);

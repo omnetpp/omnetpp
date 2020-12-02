@@ -37,8 +37,8 @@ SIM_API extern cGlobalRegistrationList messagePrinters; ///< List of message pri
 SIM_API extern std::map<std::string,std::string> figureTypes; ///< Maps figure type names to implementation C++ class names (index into "classes")
 
 // Internal: list in which objects are accumulated if there is no simple module in context.
-// @see cOwnedObject::setDefaultOwner() and cSimulation::setContextModule())
-SIM_API extern cDefaultOwner defaultList;
+// @see cOwnedObject::setOwningContext() and cSimulation::setContextModule())
+SIM_API extern cSoftOwner globalOwningContext;
 
 // Internal: Support for embedding NED files as string constants
 struct EmbeddedNedFile

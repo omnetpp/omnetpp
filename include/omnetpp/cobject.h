@@ -30,7 +30,7 @@ namespace omnetpp {
 class cCommBuffer;
 class cClassDescriptor;
 class cOwnedObject;
-class cDefaultOwner;
+class cSoftOwner;
 
 
 /**
@@ -92,7 +92,7 @@ class cDefaultOwner;
 class SIM_API cObject
 {
     friend class cOwnedObject;
-    friend class cDefaultOwner;
+    friend class cSoftOwner;
 
 #ifdef SIMFRONTEND_SUPPORT
     // internal: used by the UI to optimize refreshes
@@ -114,7 +114,7 @@ class SIM_API cObject
 
   public:
     // internal
-    void takeAllObjectsFrom(cDefaultOwner *list);
+    void takeAllObjectsFrom(cSoftOwner *list);
 
   public:
     /**
@@ -294,7 +294,7 @@ class SIM_API cObject
 
     /**
      * Returns true if this object is a "soft owner" and false otherwise.
-     * Currently the only soft owner class is cDefaultOwner (and its subclasses,
+     * Currently the only soft owner class is cSoftOwner (and its subclasses,
      * most notably cModule and cSimpleModule), all others are "hard owners".
      * An object is soft owner if it allows another object to take ownership
      * (via take()) of an object it currently owns. Hard owners will raise
@@ -365,7 +365,7 @@ operator<<(std::ostream& os, const T& o) {
  *
  * NOTE: <tt>dup()</tt> must be redefined as <tt>{copyNotSupported(); return nullptr;}</tt>
  * in classes directly subclassing from noncopyable, but this is not needed
- * in classes derived from them. For example, cDefaultOwner is noncopyable,
+ * in classes derived from them. For example, cSoftOwner is noncopyable,
  * so cModule and cSimpleModule no longer need to redefine <tt>dup()</tt>.
  *
  * This class is from boost, which bears the following copyright:

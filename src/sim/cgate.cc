@@ -31,8 +31,7 @@
 #include "omnetpp/csimulation.h"
 #include "omnetpp/globals.h"
 #include "omnetpp/cgate.h"
-
-#include "../include/omnetpp/cstatisticbuilder.h"
+#include "omnetpp/ccontextswitcher.h"
 #include "omnetpp/cchannel.h"
 #include "omnetpp/cdataratechannel.h"
 #include "omnetpp/cdisplaystring.h"

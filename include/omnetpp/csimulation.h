@@ -39,9 +39,9 @@ class cNedFileLoader;
 class cFingerprintCalculator;
 class cModuleType;
 class cEnvir;
-class cDefaultOwner;
+class cSoftOwner;
 
-SIM_API extern cDefaultOwner defaultList; // also in globals.h
+SIM_API extern cSoftOwner globalOwningContext; // also in globals.h
 
 
 /**
@@ -496,7 +496,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     /**
      * Sets global context. Used internally.
      */
-    void setGlobalContext()  {contextComponent=nullptr; cOwnedObject::setDefaultOwner(&defaultList);}
+    void setGlobalContext()  {contextComponent=nullptr; cOwnedObject::setOwningContext(&globalOwningContext);}
 
     /**
      * Returns the module whose activity() method is currently active.

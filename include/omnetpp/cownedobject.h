@@ -29,7 +29,7 @@ namespace omnetpp {
 class cOwnedObject;
 class cStaticFlag;
 class cSimulation;
-class cDefaultOwner;
+class cSoftOwner;
 class cMessage;
 class cPacket;
 
@@ -104,19 +104,19 @@ class cPacket;
 class SIM_API cOwnedObject : public cNamedObject
 {
     friend class cObject;
-    friend class cDefaultOwner;
+    friend class cSoftOwner;
     friend class cSimulation;
     friend class cMessage;  // because of refcounting business
     friend class cPacket;   // because of refcounting business
 
   private:
     cObject *owner;    // owner pointer
-    unsigned int pos;  // used only when owner is a cDefaultOwner
+    unsigned int pos;  // used only when owner is a cSoftOwner
 
   private:
     // list in which objects are accumulated if there is no simple module in context
-    // (see also setDefaultOwner() and cSimulation::setContextModule())
-    static cDefaultOwner *defaultOwner;
+    // (see also setOwningContext() and cSimulation::setContextModule())
+    static cSoftOwner *owningContext;
 
     // global variables for statistics
     static long totalObjectCount;
@@ -130,7 +130,7 @@ class SIM_API cOwnedObject : public cNamedObject
     virtual void removeFromOwnershipTree();
 
     // internal
-    static void setDefaultOwner(cDefaultOwner *list);
+    static void setOwningContext(cSoftOwner *list);
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -200,7 +200,7 @@ class SIM_API cOwnedObject : public cNamedObject
      * The default owner is set internally; it is usually the component in context
      * (see cSimulation::getContext()).
      */
-    static cDefaultOwner *getDefaultOwner();
+    static cSoftOwner *getOwningContext();
     //@}
 
     /** @name Statistics. */

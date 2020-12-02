@@ -24,7 +24,7 @@
 #include "omnetpp/globals.h"
 #include "omnetpp/cexception.h"
 #include "omnetpp/simutil.h"
-#include "omnetpp/cdefaultowner.h"
+#include "omnetpp/csoftowner.h"
 #include "omnetpp/cclassdescriptor.h"
 
 #ifdef WITH_PARSIM
@@ -54,16 +54,16 @@ void printAllObjects()
 #endif
 
 // static class members
-cDefaultOwner *cOwnedObject::defaultOwner = &defaultList;
+cSoftOwner *cOwnedObject::owningContext = &globalOwningContext;
 long cOwnedObject::totalObjectCount = 0;
 long cOwnedObject::liveObjectCount = 0;
 
-cDefaultOwner defaultList;
+cSoftOwner globalOwningContext;
 
 cOwnedObject::cOwnedObject()
 {
     //TODO: in DEBUG mode, assert that this is not a static member / global variable! (using cStaticFlag)
-    defaultOwner->doInsert(this);
+    owningContext->doInsert(this);
 
     // statistics
     totalObjectCount++;
@@ -75,7 +75,7 @@ cOwnedObject::cOwnedObject()
 
 cOwnedObject::cOwnedObject(const char *name, bool namepooling) : cNamedObject(name, namepooling)
 {
-    defaultOwner->doInsert(this);
+    owningContext->doInsert(this);
 
     // statistics
     totalObjectCount++;
@@ -87,7 +87,7 @@ cOwnedObject::cOwnedObject(const char *name, bool namepooling) : cNamedObject(na
 
 cOwnedObject::cOwnedObject(const cOwnedObject& obj) : cNamedObject(obj)
 {
-    defaultOwner->doInsert(this);
+    owningContext->doInsert(this);
     copy(obj);
 
     // statistics
@@ -118,15 +118,15 @@ void cOwnedObject::removeFromOwnershipTree()
         owner->yieldOwnership(this, nullptr);
 }
 
-void cOwnedObject::setDefaultOwner(cDefaultOwner *list)
+void cOwnedObject::setOwningContext(cSoftOwner *list)
 {
     ASSERT(list != nullptr);
-    defaultOwner = list;
+    owningContext = list;
 }
 
-cDefaultOwner *cOwnedObject::getDefaultOwner()
+cSoftOwner *cOwnedObject::getOwningContext()
 {
-    return defaultOwner;
+    return owningContext;
 }
 
 void cOwnedObject::copy(const cOwnedObject& obj)

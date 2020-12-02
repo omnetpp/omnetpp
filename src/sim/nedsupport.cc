@@ -406,15 +406,15 @@ void SizeofIndexedSubmoduleGate::print(std::ostream& out, int spaciousness) cons
 
 //---
 
-class cDefaultOwnerSwitcher
+class cOwningContextSwitcher
 {
   private:
-    cDefaultOwner *oldOwner;
-    cDefaultOwner tmpOwner;
+    cSoftOwner *oldOwner;
+    cSoftOwner tmpOwner;
   public:
-    cDefaultOwnerSwitcher() : oldOwner(cOwnedObject::getDefaultOwner()) {cOwnedObject::setDefaultOwner(&tmpOwner);}
-    ~cDefaultOwnerSwitcher() {cOwnedObject::setDefaultOwner(oldOwner);}
-    cDefaultOwner *getOwner() {return &tmpOwner;}
+    cOwningContextSwitcher() : oldOwner(cOwnedObject::getOwningContext()) {cOwnedObject::setOwningContext(&tmpOwner);}
+    ~cOwningContextSwitcher() {cOwnedObject::setOwningContext(oldOwner);}
+    cSoftOwner *getOwner() {return &tmpOwner;}
 };
 
 //---
@@ -426,7 +426,7 @@ ExprValue ObjectNode::evaluate(Context *context_) const
     ASSERT(children.size() == fieldNames.size());
     if (typeName.empty()) {
         cValueMap *object = new cValueMap();
-        cDefaultOwnerSwitcher owner;
+        cOwningContextSwitcher owner;
         object->setName("object");
         for (int i = 0; i < fieldNames.size(); i++)
             object->set(fieldNames[i].c_str(), makeNedValue(children[i]->tryEvaluate(context_)));
@@ -435,7 +435,7 @@ ExprValue ObjectNode::evaluate(Context *context_) const
     }
     else {
         cObject *object = createOne(typeName.c_str());
-        cDefaultOwnerSwitcher owner;
+        cOwningContextSwitcher owner;
         cClassDescriptor *desc = object->getDescriptor();
         for (int i = 0; i < fieldNames.size(); i++)
             setField(desc, object, fieldNames[i].c_str(), makeNedValue(children[i]->tryEvaluate(context_)));
@@ -537,7 +537,7 @@ ExprValue ArrayNode::evaluate(Context *context_) const
     ASSERT(context != nullptr);
     cValueArray *array = new cValueArray();
     array->setName("array");
-    cDefaultOwnerSwitcher owner;
+    cOwningContextSwitcher owner;
     for (ExprNode *child : children)
         array->add(makeNedValue(child->tryEvaluate(context_)));
     array->takeAllObjectsFrom(owner.getOwner());

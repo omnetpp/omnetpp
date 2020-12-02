@@ -1,5 +1,5 @@
 //==========================================================================
-//  CDEFAULTOWNER.H - part of
+//  CSOFTOWNER.H - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_CDEFAULTOWNER_H
-#define __OMNETPP_CDEFAULTOWNER_H
+#ifndef __OMNETPP_CSOFTOWNER_H
+#define __OMNETPP_CSOFTOWNER_H
 
 #include "cownedobject.h"
 
@@ -25,12 +25,12 @@ namespace omnetpp {
  * @brief Internal class, used as a base class for modules and channels. It is not
  * intended for subclassing outside the simulation kernel.
  *
- * cDefaultOwner acts as a "soft owner" (see object ownership discussion
+ * cSoftOwner acts as a "soft owner" (see object ownership discussion
  * in cOwnedObject documentation).
  *
  * @ingroup SimSupport
  */
-class SIM_API cDefaultOwner : public cNoncopyableOwnedObject
+class SIM_API cSoftOwner : public cNoncopyableOwnedObject
 {
     friend class cObject;
     friend class cOwnedObject;
@@ -82,12 +82,12 @@ class SIM_API cDefaultOwner : public cNoncopyableOwnedObject
     /**
      * Constructor.
      */
-    explicit cDefaultOwner(const char *name=nullptr);
+    explicit cSoftOwner(const char *name=nullptr);
 
     /**
      * Destructor. The contained objects will be deleted.
      */
-    virtual ~cDefaultOwner();
+    virtual ~cSoftOwner();
     //@}
 
     /** @name Redefined cObject methods. */
@@ -157,22 +157,15 @@ class SIM_API cDefaultOwner : public cNoncopyableOwnedObject
     virtual void setPerformFinalGC(bool b)  {setFlag(FL_PERFORMFINALGC,b);}
 
     /**
-     * Returns the number of elements stored.
+     * Returns the number of owned objects.
      */
-    int defaultListSize() const {return numObjs;}
+    int getNumOwnedObjects() const {return numObjs;}
 
     /**
-     * Get the element at the given position. k must be between 0 and
-     * defaultListSize()-1 (inclusive). If the index is out of bounds,
-     * nullptr is returned.
+     * Returns the kth owned object. k must be between 0 and getNumOwnedObjects()-1
+     * (inclusive). If the index is out of bounds, nullptr is returned.
      */
-    cOwnedObject *defaultListGet(int k);
-
-    /**
-     * Returns true if the set contains the given object, false otherwise.
-     */
-    // Note: we need a long name here because cModule subclasses from this
-    bool defaultListContains(cOwnedObject *obj) const;
+    cOwnedObject *getOwnedObject(int k);
     //@}
 };
 

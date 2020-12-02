@@ -41,7 +41,7 @@
 #include "omnetpp/ccontextswitcher.h"
 #include "omnetpp/ccoroutine.h"
 #include "omnetpp/cdataratechannel.h"
-#include "omnetpp/cdefaultowner.h"
+#include "omnetpp/csoftowner.h"
 #include "omnetpp/cdelaychannel.h"
 #include "omnetpp/cdisplaystring.h"
 #include "omnetpp/cdoubleparimpl.h"
