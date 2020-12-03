@@ -2157,41 +2157,98 @@ Using these dedicated functions may be more efficient than the
 \subsection{Sending Messages}
 \label{sec:simple-modules:sending-messages}
 
-Once created, a message object can be sent through an
-output gate\index{output!gate} using one of the following functions:
+Once created, a message object can be sent through an output
+gate\index{output!gate} using one of the overloaded \ffunc{send()} methods
+of \cclass{cSimpleModule}. Since the gate can be specified in multiple ways
+and the methods also accept an optional \cclass{SendOptions} structure,
+we end up with six variations:
 
 \begin{cpp}
-send(cMessage *msg, const char *gateName, int index=0);
-send(cMessage *msg, int gateId);
+send(cMessage *msg, const char *gateName, int gateIndex=-1);
 send(cMessage *msg, cGate *gate);
+send(cMessage *msg, int gateId);
+send(cMessage *msg, const SendOptions& options, const char *gateName, int gateIndex=-1);
+send(cMessage *msg, const SendOptions& options, cGate *gate);
+send(cMessage *msg, const SendOptions& options, int gateId);
 \end{cpp}
 
-In the first function, the argument \ttt{gateName} is the name of
-the gate the message has to be sent through. If this gate is
-a vector gate, \ttt{index} determines though which particular output
-gate this has to be done; otherwise, the \ttt{index} argument is not
-needed.
-
-The second and third functions use the gate ID and the pointer to the gate
-object. They are faster than the first one because they don't have to
-search for the gate by name.
-
-Examples:
+The most common way of specifying the gate is with its name (\ttt{gateName}
+argument). If the name identifies a gate vector, an additional \ttt{gateIndex}
+argument is required for selecting the desired element of the vector.
 
 \begin{cpp}
 send(msg, "out");
-send(msg, "outv", i); // send via a gate in a gate vector
+send(msg, "outv", 10); // send via outv[10]
 \end{cpp}
 
-To send via an inout gate, remember that an inout gate is an input and an
-output gate glued together, and the two halves can be identified with the
-\ttt{\$i} and \ttt{\$o} name suffixes. Thus, the gate name needs to be
+To send a message on an \textit{inout} gate, remember that an inout gate is an
+input and an output gate glued together, and the two halves are be identified
+with the \ttt{\$i} and \ttt{\$o} name suffixes. Thus, the gate name needs to be
 specified in the \ffunc{send()} call with the \ttt{\$o} suffix:
 
 \begin{cpp}
 send(msg, "g$o");
-send(msg, "g$o", i); // if "g[]" is a gate vector
+send(msg, "g$o", 10); // assuming g[] is an inout gate vector
 \end{cpp}
+
+Using a gate pointer (\ttt{cGate*}) will result in more efficient code, since it
+spares the lookup inside the \ffunc{send()} call. The module code would typically
+obtain the gate pointer once (e.g. as part of the initialization), then reuse
+it throughout the simulation.
+
+\begin{cpp}
+cGate *outGate = gate("out");
+...
+send(msg, outGate);
+\end{cpp}
+
+Using a gate ID (\ttt{gateId} argument) is only a little less efficient than the
+gate pointer, but it has the advantage that gate vectors can be indexed with it
+efficiently, making use of the fact that elements of a gate vector occupy a
+contiguous ID range.
+
+\begin{cpp}
+int outGateBaseId = gateBaseId("outv"); // or: gate("outv", 0)->getId()
+...
+int index = 10;
+send(msg, outGateBaseId + index); // sends on outv[10]
+\end{cpp}
+
+The optional \cclass{SendOptions}, as well as other \textit{send} variants like
+\ttt{sendDelayed()} and \ttt{sendDirect()}, will be covered in later sections.
+
+\subsection{What send() Does}
+\label{sec:simple-modules:what-send-does}
+
+The \ffunc{send()} call will cause the message to travel along the full length
+of the \textit{connection path} that starts at the module, and will be
+"delivered" to the module of the last gate in the path. The connection path is
+the series of connections defined by the \ffunc{getNextGate()} method of
+\cclass{cGate}; the path ends where \ffunc{getNextGate()} returns \ttt{nullptr}.
+
+At each hop of the path, the associated channel object, if there is one, has a
+say in what should happen to the message. More precisely, the
+\ffunc{processMessage()} method of \cclass{cChannel} is invoked with the message
+as argument (and with some extra argument such as \cclass{SendOptions}).
+Individual channel types override the \ffunc{processMessage()} method to apply
+various types of processing. For example, they may modify the packet, add
+(propagation) delay, and may even signal that the packet be discarded.
+
+After the message has reached the last gate end of the connection path (the gate
+where \ffunc{getNextGate()} returns \ttt{nullptr}), the message will be given to
+the \ffunc{arrived()} method of the module to which the last gate belongs. The
+\ffunc{arrived()} method normally, i.e. in its default \cclass{cSimpleModule}
+implementation, will insert the message into the FES, scheduled for the
+message's arrival time, and then it returns. The message will only be actually
+given to the module's \ffunc{handleMessage()} (or \ffunc{activity()}) method
+when the simulation has progressed to the point where the message becomes the
+first event in the FES.
+
+The \ffunc{arrived()} method is not normally overridden in simulation models.
+However, it is noteworthy that the \ffunc{arrived()} implementation of
+\cclass{cModule} (which commonly represents compound modules) stops the
+simulation with a message along the lines of \textit{``Message arrived at a compound
+module''}.
 
 
 \subsection{Broadcasts and Retransmissions}
@@ -2230,15 +2287,14 @@ will be generated: \textit{not owner of message}.
 In your model, you may need to broadcast a message to several destinations.
 Broadcast can be implemented in a simple module by sending out copies
 of the same message, for example on every gate of a gate vector.
-As described above, you cannot use the same message pointer for
-in all \ffunc{send()} calls -- what you have to do instead is
+As described above, you cannot use the same message object in all
+\ffunc{send()} calls -- what you have to do instead is
 create copies (duplicates) of the message object and send them.
 
 Example:
 
 \begin{cpp}
-for (int i = 0; i < n; i++)
-{
+for (int i = 0; i < n; i++) {
     cMessage *copy = msg->dup();
     send(copy, "out", i);
 }
@@ -2250,7 +2306,7 @@ redundant: we can just send out the original message there.
 Also, we can utilize gate IDs to avoid looking up the gate by name
 for each send operation. We can exploit the fact that the ID of gate
 $k$ in a gate vector can be produced as ${baseID} + k$.
-The optimized version of the code looks like this:
+An improved version of the code looks like this:
 
 \begin{cpp}
 int outGateBaseId = gateBaseId("out");
@@ -2343,7 +2399,7 @@ calculated in advance, before the changes take place).
 \subsection{Direct Message Sending}
 \label{sec:simple-modules:direct-sending}
 
-At times it is covenient to be able to send a message directly to an input
+At times it is convenient to be able to send a message directly to an input
 gate of another module. The \ffunc{sendDirect()} function is provided for
 this purpose.
 
@@ -2438,7 +2494,7 @@ kernel. This channel is called the \textit{transmission channel}.
   \footnote{Moreover, if \ffunc{sendDirect()} with a nonzero duration
   was used to send the packet to the start gate of the path,
   then the path cannot have a transmission channel at all.
-  The point is that the a transission duration must be unambiguous.}
+  The point is that the a transmission duration must be unambiguous.}
 
 \begin{note}
   In practice, this means that there can be only one \ttt{ned.DatarateChannel}
@@ -2732,7 +2788,7 @@ need to be overridden:
 \begin{itemize}
   \item \ffunc[isTransmissionChannel()]{bool isTransmissionChannel() const}
   \item \ffunc[getTransmissionFinishTime()]{simtime\_t getTransmissionFinishTime() const}
-  \item \ffunc[processMessage()]{void processMessage(cMessage *msg, simtime\_t t, result\_t\& result)}
+  \item \ffunc[processMessage()]{Result processMessage(cMessage *msg, const SendOptions\& options, simtime\_t t)}
 \end{itemize}
 
 The first two functions are usually one-liners; the channel behavior is
@@ -2798,10 +2854,12 @@ The \cclass{result\_t} struct is an inner type of \cclass{cChannel},
 and looks like this:
 
 \begin{cpp}
-struct result_t {
-    simtime_t delay;     // propagation delay
-    simtime_t duration;  // transmission duration
-    bool discard;        // whether the channel has lost the message
+struct Result
+{
+    bool discard = false;        // whether the channel has lost the msg
+    simtime_t delay;             // propagation delay
+    simtime_t duration;          // transmission duration
+    simtime_t remainingDuration; // remaining tx duration (for tx update)
 };
 \end{cpp}
 
@@ -2858,8 +2916,10 @@ any delay or change. Its \ffunc{isTransmissionChannel()} method returns
 body of its \ffunc{processMessage()} method is empty:
 
 \begin{cpp}
-void cIdealChannel::processMessage(cMessage *msg, simtime_t t, result_t& result)
+cChannel::Result cIdealChannel::processMessage(cMessage *msg,
+                    const SendOptions& options, simtime_t t)
 {
+    return Result();
 }
 \end{cpp}
 
@@ -2870,14 +2930,22 @@ This class still models zero transmission duration, so its
 methods still return \ttt{false} and $0s$. The \ffunc{processMessage()} method
 sets the appropriate fields in the \cclass{result\_t} struct:
 
+
 \begin{cpp}
-void cDelayChannel::processMessage(cMessage *msg, simtime_t t, result_t& result)
+cChannel::Result cDelayChannel::processMessage(cMessage *msg,
+                    const SendOptions& options, simtime_t t)
 {
+    Result result;
+
     // if channel is disabled, signal that message should be deleted
-    result.discard = isDisabled;
+    if (isDisabled) {
+        result.discard = true;
+        return result;
+    }
 
     // propagation delay modeling
     result.delay = delay;
+    return result;
 }
 \end{cpp}
 
@@ -2906,8 +2974,11 @@ members, which are also kept up to date with the help of
 \ffunc{handleParameterChange()}.
 
 \begin{cpp}
-void cDatarateChannel::processMessage(cMessage *msg, simtime_t t, result_t& result)
+cChannel::Result cDatarateChannel::processMessage(cMessage *msg,
+                    const SendOptions& options, simtime_t t)
 {
+    Result result;
+
     // if channel is disabled, signal that message should be deleted
     if (isDisabled) {
         result.discard = true;
