@@ -2086,12 +2086,20 @@ gates and connections.
 \label{sec:simple-modules:scheduling}
 
 The module can send a message to itself using the \ffunc{scheduleAt()} function.
-\ffunc{scheduleAt()} accepts an \textit{absolute} simulation time,
-usually calculated as \ffunc{simTime()}+\textit{delta}:
+\ffunc{scheduleAt()} accepts an \textit{absolute} simulation time:
 
 \begin{cpp}
-scheduleAt(absoluteTime, msg);
+scheduleAt(t, msg);
+\end{cpp}
+
+Since the target time is often relative to the current simulation time,
+the function has another variant, \ffunc{scheduleAfter()}, which takes
+a \textit{delta} instead of an absolute simulation time. The following
+calls are equivalent:
+
+\begin{cpp}
 scheduleAt(simTime()+delta, msg);
+scheduleAfter(delta, msg);
 \end{cpp}
 
 Self-messages are delivered to the module in the same way as other
@@ -2161,6 +2169,19 @@ if (msg->isScheduled())
     cancelEvent(msg);
 scheduleAt(simTime() + delay, msg);
 \end{cpp}
+
+For convenience, the above functionality is available as a single
+call, as the functions \ffunc{rescheduleAt()} and \ffunc{rescheduleAfter()}.
+The first one takes an absolute simulation time, the second one a
+\textit{delta} relative to the current simulation time.
+
+\begin{cpp}
+rescheduleAt(t, msg);
+rescheduleAfter(delta, msg);
+\end{cpp}
+
+Using these dedicated functions may be more efficient than the
+\ffunc{cancelEvent()}+\ffunc{scheduleAt()} combo.
 
 
 \subsection{Sending Messages}
