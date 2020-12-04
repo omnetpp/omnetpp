@@ -3382,6 +3382,7 @@ void cAbstractTextFigure::hashTo(cHasher& hasher) const
     hasher << getHalo();
     hasher << getFont();
     hasher << getAnchor();
+    hasher << getAlignment();
     hasher << getText();
 }
 
