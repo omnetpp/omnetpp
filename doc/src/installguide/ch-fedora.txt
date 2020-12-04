@@ -1,4 +1,4 @@
-== Fedora 25
+== Fedora 33
 
 === Supported Releases
 
@@ -8,7 +8,7 @@ in the 'Linux' chapter.
 
 The following Fedora release is covered:
 
-* Fedora 25
+* Fedora 33
 
 It was tested on the following architectures:
 
@@ -27,9 +27,11 @@ from the terminal, whichever you prefer.
 
 To install the required packages, type in the terminal:
 
-  $ sudo dnf install make gcc gcc-c++ bison flex perl \
-      python2 qt5-devel libxml2-devel \
-      zlib-devel java doxygen graphviz webkitgtk
+  $ sudo dnf install make gcc gcc-c++ clang lld bison flex perl \
+      python3 python3-pip qt5-devel libxml2-devel \
+      zlib-devel doxygen graphviz webkitgtk
+  $ python3 -m pip install --user --upgrade numpy pandas \
+      matplotlib scipy seaborn posix_ipc
 
 To use 3D visualization support in Qtenv, you should install
 OpenSceneGraph 3.2 or later and osgEarth 2.7 or later (recommended):
@@ -38,7 +40,12 @@ OpenSceneGraph 3.2 or later and osgEarth 2.7 or later (recommended):
 
 [NOTE]
 =====================================================
-You may opt to use clang and clang++ instead of the gcc and g++ compilers.
+You may opt to use gcc instead of the clang compiler and/or use the
+system default linker instead of 'lld' by setting the `PREFER_CLANG` and `PREFER_LLD`
+variables in the 'configure.user' file. In this case, you don't have to install the
+`clang` and `lld` packages.
+If you do not need the 3D visualization capabilities, you can disable them in the
+'configure.user' file, too.
 =====================================================
 
 To enable the optional parallel simulation support you will need to install the
@@ -55,13 +62,6 @@ command. When in doubt, use `module avail` to display the list of available
 modules. If you need MPI in every session, you may add the `module load`
 command to your startup script (`.bashrc`).
 
-==== PCAP
-
-The optional Pcap library allows simulation models to capture and
-transmit network packets bypassing the operating system's protocol stack.
-It is not used directly by @OMNETPP@, but models may need it to support
-network emulation.
-
 ==== Graphical Installation
 
 The graphical package manager can be launched by opening the Search bar
@@ -72,8 +72,14 @@ in front of the names, and pick the latest version of each package.
 
 The packages:
 
-* make, bison, gcc, gcc-c++, flex, perl, qt5-devel, libxml2-devel,
-zlib-devel, webkitgtk, java, doxygen, graphviz, openmpi-devel, libpcap-devel,
-OpenSceneGraph-devel, osgearth-devel
+* make, bison, gcc, gcc-c++, clang, lld, flex, perl, python3, python3-pip, 
+qt5-devel, libxml2-devel, zlib-devel, webkitgtk, doxygen, graphviz, 
+openmpi-devel, OpenSceneGraph-devel, osgearth-devel
 
 Click 'Apply', then follow the instructions.
+
+Open a terminal and enter the following command to install the required
+Python packages:
+
+  $ python3 -m pip install --user --upgrade numpy pandas \
+      matplotlib scipy seaborn posix_ipc

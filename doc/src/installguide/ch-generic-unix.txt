@@ -21,12 +21,19 @@ The following packages are required for @OMNETPP@ to work:
 
 build-essential, GNU make, gcc, g\++, bison (3.0+), flex, perl, python3::
   These packages are needed for compiling @OMNETPP@ and simulation models,
-  and also for certain @OMNETPP@ tools to work. C++ compilers other than
-  g++, will also be accepted.
+  and also for certain @OMNETPP@ tools to work. The 'clang' compiler
+  and the '
+
+It is also recommended to install the 'clang' and 'lld' package as they provide
+faster compilation and linking.
 
 [NOTE]
 =====================================================
-You may opt to use clang and clang++ instead of the gcc and g++ compilers.
+You may opt to use gcc instead of the clang compiler and/or use the
+system default linker instead of 'lld' by setting the `PREFER_CLANG` and `PREFER_LLD`
+variables in the 'configure.user' file.
+If you do not need the 3D visualization capabilities, you can disable them in the
+'configure.user' file, too.
 =====================================================
 
 The following packages are strongly recommended, because their absence

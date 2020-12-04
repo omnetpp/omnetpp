@@ -37,10 +37,10 @@ Type in the terminal:
 
 To install the required packages, type in the terminal:
 
-  $ sudo apt-get install build-essential gcc g++ bison flex perl \
-       python3 qt5-default libqt5opengl5-dev \
-       libxml2-dev zlib1g-dev default-jre doxygen graphviz libwebkit2gtk-4.0-37
-  $ pip3 install --user --upgrade numpy pandas matplotlib posix_ipc
+  $ sudo apt-get install build-essential clang lld gdb bison flex perl \
+       python3 python3-pip qt5-default libqt5opengl5-dev \
+       libxml2-dev zlib1g-dev doxygen graphviz libwebkit2gtk-4.0-37
+  $ python3 -m pip install --user --upgrade numpy pandas matplotlib scipy seaborn posix_ipc
 
 To use Qtenv with 3D visualization support, install the development packages
 for OpenSceneGraph (3.4 or later) and the osgEarth (2.9 or later) packages. (You
@@ -50,9 +50,12 @@ may need to enable the 'Universe' software repository in Software Sources.
 
 [NOTE]
 =====================================================
-You may opt to use clang and clang++ instead of the gcc and g++ compilers. If you
-do not need the 3D visualization capabilities, you can disable them in the
-'configure.user' file.
+You may opt to use gcc instead of the clang compiler and/or use the
+system default linker instead of 'lld' by setting the `PREFER_CLANG` and `PREFER_LLD`
+variables in the 'configure.user' file. In this case, you don't have to install the
+`clang` and `lld` packages.
+If you do not need the 3D visualization capabilities, you can disable them in the
+'configure.user' file, too.
 =====================================================
 
 To enable the optional parallel simulation support you will need to install the MPI packages:
@@ -78,7 +81,7 @@ If the 'Mark additional required changes?' dialog comes up, choose the 'Mark' bu
 The packages:
 
 * required: build-essential, gcc, g++, bison, flex, perl, qt5-default, python3,
-  libxml2-dev, zlib1g-dev, default-jre, doxygen, graphviz, libwebkit2gtk-4.0-37
+  libxml2-dev, zlib1g-dev, doxygen, graphviz, libwebkit2gtk-4.0-37
 * recommended: libopenscenegraph-dev, openscenegraph-plugin-osgearth, libosgearth-dev,
   openmpi-bin, libopenmpi-dev
 
@@ -87,10 +90,9 @@ image::pictures/ubuntu-synaptic.png[title="Synaptic Package Manager",align="cent
 Click 'Apply', then in the 'Apply the following changes?' window, click 'Apply' again.
 In the 'Changes applied' window, click 'Close'.
 
-After this, you still have to install some required python packages from command line:
+After this, you still have to install some required Python packages from command line:
 
-  $ pip3 install --user --upgrade numpy pandas matplotlib posix_ipc
-
+  $ python3 -m pip install --user --upgrade numpy pandas matplotlib scipy seaborn posix_ipc
 
 ==== Post-Installation Steps
 
