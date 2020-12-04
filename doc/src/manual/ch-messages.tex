@@ -413,8 +413,7 @@ An example:
 
 \begin{cpp}
 cMessage *msg = receive();
-if (dynamic_cast<IPv6Datagram *>(msg) != nullptr)
-{
+if (dynamic_cast<IPv6Datagram *>(msg) != nullptr) {
     IPv6Datagram *datagram = (IPv6Datagram *)msg;
     ...
 }

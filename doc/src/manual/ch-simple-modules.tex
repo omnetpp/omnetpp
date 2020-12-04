@@ -2479,13 +2479,11 @@ A code example to illustrate the above process:
 cPacket *pkt = ...; // packet to be transmitted
 cChannel *txChannel = gate("out")->getTransmissionChannel();
 simtime_t txFinishTime = txChannel->getTransmissionFinishTime();
-if (txFinishTime <= simTime())
-{
+if (txFinishTime <= simTime()) {
     // channel free; send out packet immediately
     send(pkt, "out");
 }
-else
-{
+else {
     // store packet and schedule timer; when the timer expires,
     // the packet should be removed from the queue and sent out
     txQueue.insert(pkt);
@@ -2554,14 +2552,12 @@ The following example code prints the start and end times of a packet reception:
 
 \begin{cpp}
 simtime_t startTime, endTime;
-if (pkt->isReceptionStart())
-{
+if (pkt->isReceptionStart()) {
     // gate was reprogrammed with setDeliverOnReceptionStart(true)
     startTime = pkt->getArrivalTime(); // or: simTime();
     endTime = startTime + pkt->getDuration();
 }
-else
-{
+else {
     // default case
     endTime = pkt->getArrivalTime(); // or: simTime();
     startTime = endTime - pkt->getDuration();
@@ -2639,12 +2635,10 @@ period, the function returns \ttt{nullptr}.
 simtime_t timeout = 3.0;
 cMessage *msg = receive(timeout);
 
-if (msg==nullptr)
-{
+if (msg==nullptr) {
     ...   // handle timeout
 }
-else
-{
+else {
     ...  // process message
 }
 \end{cpp}
@@ -2668,8 +2662,7 @@ to be prepared for arriving messages, for example message generators.
 An example:
 
 \begin{cpp}
-for (;;)
-{
+for (;;) {
     // wait for some, potentially random, amount of time, specified
     // in the interarrivalTime volatile module parameter
     wait(par("interarrivalTime").doubleValue());
@@ -3209,21 +3202,18 @@ void BurstyGenerator::initialize()
 
 void BurstyGenerator::handleMessage(cMessage *msg)
 {
-   FSM_Switch(fsm)
-   {
+   FSM_Switch(fsm) {
      case FSM_Exit(INIT):
        // transition to SLEEP state
        FSM_Goto(fsm,SLEEP);
        break;
      case FSM_Enter(SLEEP):
        // schedule end of sleep period (start of next burst)
-       scheduleAt(simTime()+exponential(sleepTimeMean),
-                  startStopBurst);
+       scheduleAt(simTime()+exponential(sleepTimeMean), startStopBurst);
      break;
      case FSM_Exit(SLEEP):
        // schedule end of this burst
-       scheduleAt(simTime()+exponential(burstTimeMean),
-                  startStopBurst);
+       scheduleAt(simTime()+exponential(burstTimeMean), startStopBurst);
        // transition to ACTIVE state:
        if (msg!=startStopBurst) {
          error("invalid event in state ACTIVE");
@@ -3397,10 +3387,9 @@ To access all modules within a compound module,
 one can use \cclass{cModule::SubmoduleIterator}.
 
 \begin{cpp}
-for (cModule::SubmoduleIterator it(module); !it.end(); it++)
-{
-  cModule *submodule = *it;
-  EV << submodule->getFullName() << endl;
+for (cModule::SubmoduleIterator it(module); !it.end(); it++) {
+    cModule *submodule = *it;
+    EV << submodule->getFullName() << endl;
 }
 \end{cpp}
 
@@ -4168,8 +4157,7 @@ using the \ffunc{isSubscribed()} method which also takes the same
 parameter list.
 
 \begin{cpp}
-if (isSubscribed(lengthSignalId, listener))
-{
+if (isSubscribed(lengthSignalId, listener)) {
     ...
 }
 \end{cpp}
