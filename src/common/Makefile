@@ -54,8 +54,10 @@ endif
 
 # macro is used in $(EXPORT_DEFINES) with clang-msabi when building a shared lib
 EXPORT_MACRO = -DCOMMON_EXPORT
-ifeq ($(TOOLCHAIN_NAME),clang-msabi)
+ifeq ($(PLATFORM),win32.x86_64)
     EXPORT_MACRO+= "-DSQLITE_API=__declspec(dllexport)"
+else
+    EXPORT_MACRO+= "-DSQLITE_API=__attribute__ ((visibility (\"default\")))"
 endif
 
 # we want to recompile everything if COPTS changes,

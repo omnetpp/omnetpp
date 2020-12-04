@@ -37,8 +37,8 @@
 #  define OPP_DLLEXPORT  __declspec(dllexport)
 #  define OPP_DLLIMPORT  __declspec(dllimport)
 #else
-#  define OPP_DLLIMPORT
-#  define OPP_DLLEXPORT
+#  define OPP_DLLIMPORT __attribute__ ((visibility ("default")))
+#  define OPP_DLLEXPORT __attribute__ ((visibility ("default")))
 #endif
 
 #ifdef _MSC_VER

@@ -330,7 +330,7 @@ if test "$TOOLCHAIN" = "mingw"; then
     PLATFORM=win32.x86
     EXE_SUFFIX=".exe"
     SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
-    LDFLAGS_ARCH="$LDFLAGS_ARCH -Wl,--enable-auto-import -shared-libgcc"
+    LDFLAGS_ARCH="$LDFLAGS_ARCH -shared-libgcc"
 else
     jni_platform=$host_os
     case $host in
@@ -362,7 +362,7 @@ else
         else # mingw compiler (clang or gcc) with GCC compatible ABI
             # on MinGW dll auto importing MUST be used with shared gcc and stdc++
             # otherwise exceptions can't be thrown across dll boundaries
-            LDFLAGS_ARCH="$LDFLAGS_ARCH -Wl,--enable-auto-import -L/usr/bin"
+            LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/bin"
 
             # If we are building on windows (native compile) we have to add the /usr/lib and
             # /usr/include directories as they are not added by default, but they are needed
