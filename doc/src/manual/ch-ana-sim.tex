@@ -760,147 +760,422 @@ Exported 15 vectors
 \end{commandline}
 
 
+
 \section{Result Analysis}
-\label{sec:ana-sim:result-analysis}
+\label{sec:ana-sim:python}
 
-We recommend the following routes for the analysis of simulation results:
+The recommended way of analyzing simulation results is using the
+\textit{Analysis Tool} in the \textit{Simulation IDE}. The Analysis Tool
+provides a comfortable user interface for selecting result files to work with,
+browsing their contents, selecting results of interest from them, and creating
+plots. The resulting plots and their underlying data can be exported
+in several formats, both for individual charts and in batches. You can choose
+from several chart types, and new ones can also be created.
 
-\begin{enumerate}
-  \item Use the \textit{Simulation IDE} for casual analysis, i.e. browsing data
-        and quick plotting.
-  \item Use \textit{Python} (or R) programs for sophisticated analysis and for
-        producing tailored reports.
-\end{enumerate}
+Charts in the Analysis Tool are powered by Python. The Python scripts underlying
+the various charts are open for the user to view and edit, so arbitrary logic
+and computations can be implemented. Visualization may use the IDE's native
+plotting widgets, but it can also be done with Matplotlib. The use of Matplotlib
+allows virtually limitless possibilities for visualization.\footnote{Note that
+Matplotlib also has extensions like Seaborn, Canopy, HoloViews, etc., which can
+also be used in chart scripts, further expanding the set of possibilities.} The IDE's
+own plotting widgets are more limited in functionality, but they are much more
+scalable than Matplotlib.
 
-Of courses, many other approaches are also possible, some of which are also
-described in later sections. In all cases, \fprog{scavetool} can be used to
-filter and export simulation results in a format understood by other tools, for
-example CSV.
+\begin{note}
+Note the terminology. Although the nouns \textit{chart} and \textit{plot} are
+almost interchangeable in everyday speech, we assign related but clearly
+distinct meanings to them when discussing {\opp} result analysis. By
+\textit{chart} we essentially mean a Python script with its associated metadata
+and parameterization that serves as a "recipe" for producing a plot; and the
+word \textit{plot} is used to refer to the graphics which appears as the result
+of running said script.
+\end{note}
 
+Chart scripts can also be used outside the IDE. Those saved as part of the IDE's
+analysis files (\ttt{.anf}) can be viewed or run using the \fprog{opp\_chartool}
+command-line program. You can also take advantage of result processing
+capabilities in standalone Python scripts. When chart scripts run outside the IDE,
+native plotting widgets are "emulated" using Matplotlib.
 
-\subsection{The Analysis Tool in the Simulation IDE}
-\label{sec:ana-sim:analysis-tool}
-
-The Simulation IDE provides an Analysis Tool for the analysis and visualization
-of simulation results. The Analysis Tool lets you load several result files
-at once, and presents their contents somewhat like a database. You can
-browse the results, select the particular data you are interested in
-(scalars, vectors, histograms), apply processing steps, and display them
-in charts or plots. Data selection, processing and charting steps
-can be freely combined, resulting in a high degree of freedom.
-These steps are grouped into and stored as "recipes", which get automatically
-re-applied when new result files are added or existing files are
-replaced. This automation spares the user lots of repetitive manual work,
-without resorting to scripting.
-
-The Analysis Tool is covered in detail in the User Guide.
-
-
-\subsection{Spreadsheets}
-\label{sec:ana-sim:spreadsheet-programs}
-\index{Spreadsheets}
-
-Spreadsheets such as Excel or LibreOffice's Calc, with their charting and
-statistical features, offer an obvious alternative to the IDE's Analysis Tool.
-Spreadsheets are primarily good for analyzing scalar results, and less so for
-vectors and histograms. A commonly available feature called \textit{pivot table}
-can be especially useful.
-
-Spreadsheets cannot open result files directly. An obvious solution is to use
-\fprog{scavetool} (see \ref{sec:ana-sim:scavetool}) to export data in CSV
-(comma-separated vector) format, and open that in the spreadsheet program.
-\fprog{scavetool} can also help you merge data from several result
-files into a single CSV, and to filter the results to reduce the amount
-of data to be loaded into the spreadsheet.
-
-One drawback of using spreadsheet programs is the manual work associated
-with preparing and reloading data every time simulations are re-run.
+The Analysis Tool is covered in detail in the User Guide. The following sections
+deal with the programming API.
 
 
-\subsection{Using Python for Result Analysis}
-\label{sec:ana-sim:using-python}
+\subsection{Python Packages}
 
-Python is a popular general-purpose programming language with a large ecosytem.
-It is widely used in the open source community and also commercially in a great
-number of application areas. Python is also among the most popular languages
-for teaching introductory computer science courses at universities.
-
-In the recent years, Python has emerged as great platform for numerical
-computing and statistics due to the appearance of powerful extension packages
-like NumPy and Pandas. Some of the Python packages useful for our purposes:
+Chart scripts heavily build on the following, fairly standard Python packages:
 
 \begin{itemize}
-  \item \textit{NumPy} and \textit{SciPy} are numerical and scientific computing
-    packages.
-
-  \item \textit{PANDAS} is a data analysis package for Python. The design of
-    Pandas has been heavily influenced by R's data frames.
-
-  \item \textit{MatPlotlib} is a plotting library. MatPlotlib provides a
-    ``pylab'' API designed to closely resemble that of MATLAB, thereby making
-    it easy to learn for experienced MATLAB users.
-
-  \item The \textit{sqlite3} package makes it possible to access SQLite3
-    databases from Python. Its significance is that it allows for working
-    with {\opp} SQLite result files (see \ref{sec:ana-sim:sqlite-result-files}).
-
+  \item \textit{NumPy}: We use NumPy for its efficient representation of numeric
+    arrays and the operations on them.
+  \item \textit{Pandas}: Pandas \ttt{DataFrame}s are used for representing and
+    manipulating simulation results.
+  \item \textit{Matplotlib}: For creating the actual plots.
 \end{itemize}
 
+{\opp} adds the following packages:
 
-\subsection{Using Other Software}
-\label{sec:ana-sim:alternative-tools}
+\begin{itemize}
+  \item \textit{omnetpp.scave.results}: Provides access to the simulation
+    results for the chart script. The results are returned as Pandas
+    \ttt{DataFrame}s of various formats.
+  \item \textit{omnetpp.scave.chart}: Provides access to the properties of the
+    current chart for the chart script.
+  \item \textit{omnetpp.scave.plot}: This module is the interface for displaying
+    plots with the IDE's native plotting widgets. The API is intentionally very
+    close to \ttt{matplotlib.pyplot}, which facilitates porting scripts across
+    the two APIs. When a chart script runs outside the context of a native
+    plotting widget, such as when run from \fprog{opp\_charttool}, the functions
+    are emulated with Matplotlib.
+  \item \textit{omnetpp.scave.utils}: A collection of utility function for data
+    manipulation and plotting, built on top of \ttt{DataFrame}s and the \ttt{chart}
+    and \ttt{plot} packages from \ttt{omnetpp.scave}.
+  \item \textit{omnetpp.scave.vectorops}: Contains operations that can be
+    applied to output vectors.
+\end{itemize}
 
-\subsubsection{GNU R}
-\label{sec:ana-sim:gnu-r}
+An additional module:
 
-R is a free software environment for statistical computing and graphics.
-R is widely used for statistical software development and data analysis.
-The program uses a command line interface, though several graphical user
-interfaces are available. It has powerful plotting capabilities,
-and it is supported on all major operating systems and platforms.
+\begin{itemize}
+  \item \textit{omnetpp.scave.analysis}: Provides support for reading and writing
+   analysis (anf) files from Python, and running chart scripts in them for display,
+   image export or data export.
+\end{itemize}
 
-\begin{hint}
-An R package for {\opp} result processing is available from
-\url{https://github.com/omnetpp/omnetpp-resultfiles/wiki}.
-The package supports loading the contents of {\opp} result files into R,
-organizing the data and creating various plots and charts.
-The package is well documented, and the web site offers a Tutorial, a Tips
-page, a tutorial for the Scalar Lattice GUI package, and other information.
-\end{hint}
+These packages are documented in detail in Appendix \ref{cha:chart-api}.
 
-Some other {\opp}-related packages such as SimProcTC and Syntony also build
-on R.
 
-\subsubsection{MATLAB, GNU Octave}
-\label{sec:ana-sim:matlab-or-octave}
+\subsection{An Example Chart Script}
 
-MATLAB is a commercial numerical computing environment and programming language.
-MATLAB allows easy matrix manipulation, plotting of functions and data,
-implementation of algorithms, creation of user interfaces, and interfacing
-with programs in other languages.
+Since information on NumPy, Pandas and Matplotlib can be found in abundance
+online, and a reference of the \ttt{omnetpp.scave.*} Python packages is in the
+Appendix, it makes little sense here to go through the functionality they
+provide. Instead, in this section we walk through an actual chart script in
+order to see how it looks in practice.
 
-GNU Octave is an MATLAB-like software environment, available on nearly all
-platforms. Octave is free software.
+The chosen chart script is that of the bar chart. It is quite representative, so
+it will prepare you to understand other chart scripts, modify them for custom
+needs, or write your own. We are going to list the source, and pause for
+explanations after every few lines.
 
-\subsubsection{Gnuplot}
-\label{sec:ana-sim:gnuplot}
+\begin{python}
+import math
+import numpy as np
+import pandas as pd
+from omnetpp.scave import results, chart, plot, utils
+\end{python}
 
-Gnuplot is a simple but popular program for creating two- and three-dimensional
-plots of functions and data. The program runs on all major platforms.
+The first few lines are for importing the packages we are going to use. This is
+necessary because nothing is imported by default when the chart script starts.
 
-Gnuplot has an interactive command interface. For example, given two
-data files \texttt{foo.csv} and \texttt{bar.csv} that contain
-two values per line ($x$ $y$; such files can be exported with
-\fprog{scavetool} from vector files), you can plot them in the same
-graph by typing:
+\begin{python}
+# get chart properties
+props = chart.get_properties()
+\end{python}
+
+First, we obtain the properties of the bar chart from the \ttt{chart} module.
+The \ttt{props} object we get is a Python \ttt{dict} whose entries serve as
+parameters for the chart script and for the resulting plot.
+
+Try adding \ttt{print(props)} to the code, or \ttt{for k,v in props.items():
+print(repr(k), "=", repr(v))} for fancier output. When the chart script runs,
+you should see an output similar to the following:
 
 \begin{commandline}
-plot "foo.csv" with lines, "bar.csv" with lines
+'confidence_level' = 'none'
+'filter' = 'type =~ scalar AND name =~ channelUtilization:last'
+'grid_show' = 'true'
+'legend_labels' = 'result titles'
+'title' = ''
+'legend_show' = 'true'
+'matplotlibrc' = ''
+...
 \end{commandline}
 
-Several commands are available to adjust the x/y ranges, plotting style, labels,
-scaling. The plot can be exported in various image formats.
+Many entries should look familiar. Indeed, most of the entries have direct
+correspondence to widgets in the \textit{Chart Properties} dialog in the IDE.
+Note that all values are strings.
 
+\begin{python}
+utils.preconfigure_plot(props)
+\end{python}
+
+The \ttt{preconfigure\_plot()} call is a mandatory part of a chart script, and
+its job is to ensure that visual properties take effect in the plot. Note that
+we'll also have a \texttt{postconfigure\_plot()} call, because some properties
+must be set before, and others after the plotting.
+
+\begin{python}
+# obtain the result query
+filter_expression = props["filter"]
+\end{python}
+
+Here we obtain the result query string from the properties. The query string
+selects the subset of the results that serve as input to the chart from the set of
+all results loaded from the result files. The \ttt{"filter"} property is
+common to almost all chart types.
+
+\begin{python}
+# query scalar data into dataframe
+try:
+    df = results.get_scalars(filter_expression, include_attrs=True,
+                         include_itervars=True, include_runattrs=True)
+except ValueError as e:
+    plot.set_warning("Error while querying results: " + str(e))
+    exit(1)
+\end{python}
+
+Here, \ttt{results.get\_scalars()} is the most important part. It uses the
+\ttt{results} module to get the data for the plot. The resulting Pandas
+\ttt{DataFrame} will have one row for each scalar result. Columns include
+\ttt{runID} which uniquely identifies the simulation run, \ttt{module},
+\ttt{name} and \ttt{value} which refer to the scalar, and many other columns
+that represent metadata such as result attributes, iteration variables and run
+attributes: \ttt{iaMean}, \ttt{numHosts}, \ttt{configname}, \ttt{datetime}, etc.
+
+Try \ttt{print(df)} to print the dataframe contents. You'll get something like
+this (for brevity, we dropped the less important columns from the output, and
+abbreviated the name of the last colum from \ttt{repetition}):
+
+\begin{commandline}
+          module                     name     value iaMean numHosts rep.
+0   Aloha.server  channelUtilization:last  0.156057      1       10    0
+1   Aloha.server  channelUtilization:last  0.156176      1       10    1
+2   Aloha.server  channelUtilization:last  0.196381      2       10    0
+3   Aloha.server  channelUtilization:last  0.193253      2       10    1
+4   Aloha.server  channelUtilization:last  0.176507      3       10    0
+5   Aloha.server  channelUtilization:last  0.176136      3       10    1
+6   Aloha.server  channelUtilization:last  0.152471      4       10    0
+7   Aloha.server  channelUtilization:last  0.154667      4       10    1
+11  Aloha.server  channelUtilization:last  0.108992      7       10    0
+...
+\end{commandline}
+
+Also note in the snippet above that \ttt{try...except} was used to catch
+exceptions (usually syntax errors in the query), and gracefully report them back
+to the user instead of letting a stack trace appear in the console.
+(\ttt{plot.set\_warning()} displays the message in the plot area).
+
+\begin{python}
+if df.empty:
+    plot.set_warning("The result filter returned no data.")
+    exit(1)
+\end{python}
+
+If the query matched nothing, let the user know instead of letting them figure
+out from the empty plot they get.
+
+\begin{python}
+groups = utils.split(props["groups"])
+series = utils.split(props["series"])
+\end{python}
+
+The user may fill in the \textit{Groups} and \textit{Series} fields of the
+\textit{Chart Properties} dialog to control how to organize the bar chart. As
+each field may contain multiple variables (separated by comma), we split the
+values to convert them to lists.
+
+\begin{python}
+if not groups and not series:
+    print("The Groups and Series options were not set, inferring from data.")
+    g, s = ("module", "name") if len(df) == 1 else utils.pick_two_columns(df)
+    groups, series = [g], [s]
+\end{python}
+
+\raggedright
+If the user left those fields empty, the script tries to find suitable values
+for them. This is done with \ttt{utils.pick\_two\_columns(df)}.
+
+\begin{python}
+if not groups or not groups[0] or not series or not series[0]:
+    plot.set_warning("Please set both the Groups and Series properties in \
+                      the dialog - or neither, for automatic setup.")
+    exit(1)
+
+common = list(set(groups) & set(series))
+if common:
+    plot.set_warning("Overlap between Groups and Series: " + ", ".join(common))
+    exit(1)
+
+utils.assert_columns_exist(df, groups + series, "No such itervar or runattr")
+\end{python}
+
+These lines detect various misconfiguration cases, and report them back to the
+user. Leaving out these checks would, in most cases, cause those errors to
+manifest themselves in later steps as spurious Pandas exceptions, whose wording
+often provides little guidance to the user about what actually went wrong.
+
+\begin{python}
+for c in groups + series:
+    df[c] = pd.to_numeric(df[c], errors="ignore")
+df.sort_values(by=groups+series, axis='index', inplace=True)
+\end{python}
+
+For the bar chart, we want values to appear on the horizontal axis and in the
+legend in ascending order, so we sort the rows on the dataframe before pivoting
+(\ttt{df.sort\_values()}).
+
+The previous two lines have relatively minor importance. Since iteration
+variables and other metadata appear in the dataframe as strings, the
+lexicographical sorting done by \ttt{df.sort\_values()} is not the best
+([1,2,10,20] becomes [1,10,2,20]). To get proper ordering, we convert what we
+can to numbers.
+
+\begin{python}
+names = ", ".join(utils.get_names_for_title(df, props))
+confidence_level_str = props["confidence_level"] \
+                       if "confidence_level" in props else "none"
+\end{python}
+
+Extract the confidence level requested by the user from the properties.
+(\ttt{"none"} is the string that the user can select from the combo box in the
+dialog to turn off confidence level computation.)
+
+\begin{python}
+if confidence_level_str == "none":
+    df = pd.pivot_table(df, index=groups, columns=series, values='value')
+    utils.plot_bars(df, props, names)
+else:
+    confidence_level = float(confidence_level_str[:-1])/100
+    def conf_intv(values):
+        return utils.confidence_interval(confidence_level, values)
+    df = pd.pivot_table(df, index=groups, columns=series, values='value',
+                        aggfunc=[np.mean, conf_intv], dropna=False)
+    utils.plot_bars(df["mean"], props, names, df["conf_intv"])
+\end{python}
+
+At last, we arrive at the important part of the script, which is pivoting and
+plotting the data. The Pandas \ttt{pd.pivot\_table()} function is used for
+pivoting, and \ttt{utils.plot\_bars()} for plotting.
+
+The code branches on the condition of whether the user requested confidence
+intervals or not. Let's see the first, simpler case first.
+
+If you add a \ttt{print(df)} statement, you can see the result of pivoting:
+
+\begin{commandline}
+numHosts        10        15        20
+iaMean
+1         0.156116  0.089539  0.046586
+2         0.194817  0.178159  0.147564
+3         0.176321  0.191571  0.183976
+4         0.153569  0.182324  0.190452
+5         0.136997  0.168780  0.183742
+7         0.109281  0.141556  0.164038
+9         0.089658  0.120800  0.142568
+\end{commandline}
+
+The resulting plot is shown in Figure \ref{fig:ana-barplot}:
+
+\begin{figure}[htbp]
+  \begin{center}
+    \includesvg[scale=0.7]{figures/ana-barplot}
+    \caption{The resulting bar plot}
+    \label{fig:ana-barplot}
+  \end{center}
+\end{figure}
+
+The second case is more complicated because the user requested confidence
+intervals too. It creates a dataframe with 2x3 columns and a hierarchical column
+index:
+
+\begin{commandline}
+              mean                      conf_intv
+numHosts        10        15        20        10        15        20
+iaMean
+1         0.156116  0.089539  0.046586  0.000117  0.001616  0.001968
+2         0.194817  0.178159  0.147564  0.003065  0.000619  0.002162
+3         0.176321  0.191571  0.183976  0.000364  0.001426  0.001704
+4         0.153569  0.182324  0.190452  0.002152  0.000918  0.002120
+5         0.136997  0.168780  0.183742  0.002391  0.000411  0.000625
+7         0.109281  0.141556  0.164038  0.000568  0.001729  0.002221
+9         0.089658  0.120800  0.142568  0.001621  0.002385  0.000259
+\end{commandline}
+
+The first three data columns are the bar heights, and the second three are the
+confidence intervals. Due to the column index being hierarchical, the two column
+groups can be accessed as \ttt{df["mean"]} and \ttt{df["conf\_intv"]} as separate
+dataframes. This is how they are passed into \ttt{utils.plot\_bars()}, which
+expects the bar heights and the errors as two separate dataframes.
+
+The result is shown in Figure \ref{fig:ana-barplot-errorbars}:
+
+\begin{figure}[htbp]
+  \begin{center}
+    \includesvg[scale=0.7]{figures/ana-barplot-errorbars}
+    \caption{The resulting bar plot, showing confidence interval as error bars}
+    \label{fig:ana-barplot-errorbars}
+  \end{center}
+\end{figure}
+
+\begin{python}
+utils.postconfigure_plot(props)
+\end{python}
+
+This line applies the rest of the visual properties to the plot.
+
+\begin{python}
+utils.export_image_if_needed(props)
+utils.export_data_if_needed(df, props)
+\end{python}
+
+Handle image and data export. Exporting is done by running chart scripts where
+certain properties set in order to indicate to the chart script that exporting is requested.
+
+The \ttt{utils.export\_image\_if\_needed()} and \ttt{utils.export\_data\_if\_needed()} functions
+take those flag properties and a lot of other properties related to exporting.
+The latter saves the dataframe given to it as argument.
+
+% Summary:
+
+% \begin{python}
+% import math
+% import numpy as np
+% import pandas as pd
+% from omnetpp.scave import results, chart, plot, utils
+% props = chart.get_properties()
+% utils.preconfigure_plot(props)
+% filter_expression = props["filter"]
+% df = results.get_...(filter_expression, ...)
+% ...
+% utils.plot_...(...)
+% utils.postconfigure_plot(props)
+% utils.export_image_if_needed(props)
+% utils.export_data_if_needed(df, props)
+% \end{python}
+
+
+\section{Alternatives}
+\label{sec:ana-sim:result-analysis-alternatives}
+
+Based on your personal preferences, you may opt to use to a different
+environment, language or tool than the IDE's Analysis tool for analysing
+simulation results. Here are some of the possibilities:
+
+\begin{itemize}
+  \item Use your favourite Python editor to write the analysis scripts, using
+    the packages mentioned in the previous section.
+  \item A \textit{Jupyter Notebook} can also be used to write up the analysis
+    steps, still using Python and the above packages.
+  \item If your simulations produce a huge amount of data, you might prefer using
+    the SQLite result file format which allows you to run queries without
+    loading all data into memory. Python also has packages to access SQLite files,
+    e.g. \ttt{sqlite3}.
+  \item If you prefer \textit{GNU R} to Python/Pandas, you might use that.
+  \item Or you may go for \textit{MATLAB} or \textit{GNU Octave} if you feel at home with them.
+  \item \textit{Spreadsheet} programs such as Microsoft Excel might be suitable
+    if the amount of data allows it. One drawback of using spreadsheets is the
+    manual work associated with preparing and reloading data every time
+    simulations are re-run.
+  \item A dedicated visual analytics environment such as \textit{Tableau} might
+    be a better choice than spreadsheets.
+\end{itemize}
+
+For environments where reading OMNeT++ result files or SQLite result files is
+not a real possibility, probably the easiest way to go is to export simulation
+results into CSV with \fprog{opp\_scavetool}. CSV is a universal format that
+nearly all tools understand.
 
 %%% Local Variables:
 %%% mode: latex
