@@ -95,7 +95,7 @@ cSoftOwner::~cSoftOwner()
 
 void cSoftOwner::doInsert(cOwnedObject *obj)
 {
-    ASSERT(obj != this || this == &globalOwningContext);
+    ASSERT2(obj != this || this == &globalOwningContext, "Cannot insert object in itself");
 
     if (numObjs >= capacity) {
         if (capacity == 0) {

@@ -35,6 +35,7 @@
 #include "omnetpp/cenum.h"
 #include "omnetpp/ccanvas.h"
 #include "omnetpp/cobjectfactory.h"
+#include "cowningcontextswitcher.h"
 
 #ifdef WITH_PARSIM
 #include "omnetpp/ccommbuffer.h"
@@ -290,27 +291,19 @@ cModule *cModuleType::create(const char *moduleName, cModule *parentModule, int 
     }
 
     // set context type to "BUILD"
-    cContextTypeSwitcher tmp(CTX_BUILD);
+    cContextTypeSwitcher _(CTX_BUILD);
 
-    // Object members of the new module class are collected to tmplist.
-    cSoftOwner tmpList;
-    cSoftOwner *oldList = cOwnedObject::getOwningContext();
-    cOwnedObject::setOwningContext(&tmpList);
-    cModule *module;
-    try {
-        // create the new module object
+    // create the new module object
+    cTemporaryOwner tmp; // for collecting members of the new object
 #ifdef WITH_PARSIM
-        bool isLocal = getEnvir()->isModuleLocal(parentModule, moduleName, vectorSize < 0 ? -1 : index);
-        module = isLocal ? createModuleObject() : new cPlaceholderModule();
+    bool isLocal = getEnvir()->isModuleLocal(parentModule, moduleName, vectorSize < 0 ? -1 : index);
+    cModule *module = isLocal ? createModuleObject() : new cPlaceholderModule();
 #else
-        module = createModuleObject();
+    cModule *module = createModuleObject();
 #endif
-    }
-    catch (std::exception& e) {
-        // restore owningcontext, otherwise it'll remain pointing to a dead object
-        cOwnedObject::setOwningContext(oldList);
-        throw;
-    }
+    tmp.yield();
+    tmp.drop(module);
+    module->takeAllObjectsFrom(&tmp);
 
     // set up module: set parent, module type, name, vector size
     if (parentModule)
@@ -325,12 +318,6 @@ cModule *cModuleType::create(const char *moduleName, cModule *parentModule, int 
     // if parentmod==nullptr, mod itself is on tmplist)
     if (!parentModule)
         getSimulation()->setSystemModule(module);
-
-    // put the object members of the new module to their place
-    module->takeAllObjectsFrom(&tmpList);
-
-    // restore default owner (must precede parameters)
-    cOwnedObject::setOwningContext(oldList);
 
     // register with cSimulation
     getSimulation()->registerComponent(module);
@@ -429,23 +416,14 @@ cChannel *cChannelType::instantiateChannelClass(const char *className)
 
 cChannel *cChannelType::create(const char *name)
 {
-    cContextTypeSwitcher tmp(CTX_BUILD);
-
-    // Object members of the new channel class are collected to tmplist.
-    cSoftOwner tmplist;
-    cSoftOwner *oldlist = cOwnedObject::getOwningContext();
-    cOwnedObject::setOwningContext(&tmplist);
+    cContextTypeSwitcher _(CTX_BUILD);
 
     // create channel object
-    cChannel *channel;
-    try {
-        channel = createChannelObject();
-    }
-    catch (std::exception& e) {
-        // restore default owner, otherwise it'll remain pointing to a dead object
-        cOwnedObject::setOwningContext(oldlist);
-        throw;
-    }
+    cTemporaryOwner tmp; // for collecting members of the new object
+    cChannel *channel = createChannelObject();
+    tmp.yield();
+    tmp.drop(channel);
+    channel->takeAllObjectsFrom(&tmp);
 
     // determine channel name
     if (!name) {
@@ -459,15 +437,6 @@ cChannel *cChannelType::create(const char *name)
     // set up channel: set name, channel type, etc
     channel->setName(name);
     channel->setComponentType(this);
-
-    //TODO use cSoftOwnerSwitcher
-
-    // put the object members of the new module to their place
-    oldlist->take(channel);
-    channel->takeAllObjectsFrom(&tmplist);
-
-    // restore default owner
-    cOwnedObject::setOwningContext(oldlist);
 
     // register with cSimulation
     getSimulation()->registerComponent(channel);

@@ -28,6 +28,7 @@
 #include "omnetpp/cclassdescriptor.h"
 #include "omnetpp/cvaluearray.h"
 #include "omnetpp/cvaluemap.h"
+#include "cowningcontextswitcher.h"
 #include "nedsupport.h"
 
 using namespace omnetpp::common;
@@ -406,19 +407,6 @@ void SizeofIndexedSubmoduleGate::print(std::ostream& out, int spaciousness) cons
 
 //---
 
-class cOwningContextSwitcher
-{
-  private:
-    cSoftOwner *oldOwner;
-    cSoftOwner tmpOwner;
-  public:
-    cOwningContextSwitcher() : oldOwner(cOwnedObject::getOwningContext()) {cOwnedObject::setOwningContext(&tmpOwner);}
-    ~cOwningContextSwitcher() {cOwnedObject::setOwningContext(oldOwner);}
-    cSoftOwner *getOwner() {return &tmpOwner;}
-};
-
-//---
-
 ExprValue ObjectNode::evaluate(Context *context_) const
 {
     cExpression::Context *context = dynamic_cast<cExpression::Context*>(context_->simContext);
@@ -426,20 +414,20 @@ ExprValue ObjectNode::evaluate(Context *context_) const
     ASSERT(children.size() == fieldNames.size());
     if (typeName.empty()) {
         cValueMap *object = new cValueMap();
-        cOwningContextSwitcher owner;
+        cTemporaryOwner tmp;
         object->setName("object");
         for (int i = 0; i < fieldNames.size(); i++)
             object->set(fieldNames[i].c_str(), makeNedValue(children[i]->tryEvaluate(context_)));
-        object->takeAllObjectsFrom(owner.getOwner());
+        object->takeAllObjectsFrom(&tmp);
         return object;
     }
     else {
         cObject *object = createOne(typeName.c_str());
-        cOwningContextSwitcher owner;
+        cTemporaryOwner tmp;
         cClassDescriptor *desc = object->getDescriptor();
         for (int i = 0; i < fieldNames.size(); i++)
             setField(desc, object, fieldNames[i].c_str(), makeNedValue(children[i]->tryEvaluate(context_)));
-        object->takeAllObjectsFrom(owner.getOwner());
+        object->takeAllObjectsFrom(&tmp);
         return object;
     }
 }
@@ -537,10 +525,10 @@ ExprValue ArrayNode::evaluate(Context *context_) const
     ASSERT(context != nullptr);
     cValueArray *array = new cValueArray();
     array->setName("array");
-    cOwningContextSwitcher owner;
+    cTemporaryOwner tmp;
     for (ExprNode *child : children)
         array->add(makeNedValue(child->tryEvaluate(context_)));
-    array->takeAllObjectsFrom(owner.getOwner());
+    array->takeAllObjectsFrom(&tmp);
     return ExprValue(array);
 }
 
