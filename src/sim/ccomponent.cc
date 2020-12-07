@@ -101,6 +101,8 @@ cComponent::~cComponent()
             *pptr = nullptr;
         delete selfPointers;
     }
+
+    removeFromOwnershipTree();
 }
 
 void cComponent::forEachChild(cVisitor *v)

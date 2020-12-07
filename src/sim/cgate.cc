@@ -409,7 +409,9 @@ void cGate::disconnect()
     // delete channel object
     if (oldChannel) {
         oldChannel->setFlag(cComponent::FL_DELETING, true);
-        dropAndDelete(oldChannel);
+        drop(oldChannel);
+        cContextSwitcher tmp(oldChannel); // channel must be in context so that it is allowed to delete potential model objects it owns
+        delete oldChannel;
     }
 }
 

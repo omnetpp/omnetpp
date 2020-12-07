@@ -44,6 +44,7 @@
 #include "omnetpp/ccoroutine.h"
 #include "omnetpp/clifecyclelistener.h"
 #include "omnetpp/platdep/platmisc.h"  // for DEBUG_TRAP
+#include "cowningcontextswitcher.h"
 
 #ifdef WITH_PARSIM
 #include "omnetpp/ccommbuffer.h"
@@ -310,6 +311,7 @@ void cSimulation::deregisterComponent(cComponent *component)
     componentv[id] = nullptr;
 
     if (component == systemModule) {
+        cOwningContextSwitcher tmp(&globalOwningContext);
         drop(systemModule);
         systemModule = nullptr;
     }

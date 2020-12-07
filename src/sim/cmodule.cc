@@ -165,6 +165,7 @@ void cModule::doDeleteModule()
     if (!parent || !parent->hasListeners(POST_MODEL_CHANGE)) {
         // no listeners, just do it
         setFlag(cComponent::FL_DELETING, true);
+        cContextSwitcher tmp(this); // module must be in context so that it is allowed to delete model objects it owns
         delete this;
     }
     else {
@@ -180,6 +181,7 @@ void cModule::doDeleteModule()
         tmp.index = getIndex();
 
         setFlag(cComponent::FL_DELETING, true);
+        cContextSwitcher tmp2(this); // module must be in context so that it is allowed to delete model objects it owns
         delete this;
 
         parent->emit(POST_MODEL_CHANGE, &tmp);

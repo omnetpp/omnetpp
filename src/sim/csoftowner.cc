@@ -122,6 +122,13 @@ void cSoftOwner::doInsert(cOwnedObject *obj)
 void cSoftOwner::ownedObjectDeleted(cOwnedObject *obj)
 {
     ASSERT(obj && obj->owner == this);
+    if (this != owningContext) {
+        // note: we cannot throw an exception, as C++ forbids throwing in a destructor, and noexcept(false) is not workable
+        cRuntimeError e("Warning: Context component is deleting an object named \"%s\" it doesn't own; owner is (%s)%s",
+                obj->getFullName(), getClassName(), getFullPath().c_str()); // note: cannot print obj->getClassName(), as type is already lost at this point (will always be cOwnedObject)
+        getEnvir()->alert(e.getFormattedMessage().c_str());
+        // abort()? -- perhaps that's too harsh
+    }
 
     // move last object to obj's old position
     int pos = obj->pos;
