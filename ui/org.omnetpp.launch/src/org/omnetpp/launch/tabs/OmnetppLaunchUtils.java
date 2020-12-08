@@ -46,11 +46,17 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.debug.core.model.IProcess;
+import org.eclipse.debug.internal.ui.DebugUIPlugin;
+import org.eclipse.debug.internal.ui.preferences.IDebugPreferenceConstants;
+import org.eclipse.debug.internal.ui.views.console.ProcessConsole;
+import org.eclipse.debug.ui.DebugUITools;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.console.IOConsoleOutputStream;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.Debug;
@@ -919,6 +925,33 @@ public class OmnetppLaunchUtils {
         while ((lastRead = is.read(bytes)) > 0)
             stringBuffer.append(new String(bytes, 0, lastRead));
         return stringBuffer.toString();
+    }
+
+    /**
+     * Print something to the process's console output. Error message will be written in red
+     * and the console will be brought to focus.
+     */
+    public static void printToConsole(IProcess iprocess, String text, boolean isErrorMessage) {
+        try {
+            ProcessConsole console = (ProcessConsole)DebugUIPlugin.getDefault().getProcessConsoleManager().getConsole(iprocess);
+            if (console != null) {
+                try (final IOConsoleOutputStream stream = console.newOutputStream()) {
+                    if (isErrorMessage) {
+                        stream.setActivateOnWrite(true);
+                        // we have to set the color in the UI thread otherwise SWT will throw an error
+                        Display.getDefault().syncExec(new Runnable() {
+                            @Override
+                            public void run() {
+                                stream.setColor(DebugUITools.getPreferenceColor(IDebugPreferenceConstants.CONSOLE_SYS_ERR_COLOR));
+                            }
+                        });
+                    }
+                    stream.write(text);
+                }
+            }
+        } catch (IOException e) {
+            LaunchPlugin.logError("Unable to write to console", e);
+        }
     }
 
     /**
