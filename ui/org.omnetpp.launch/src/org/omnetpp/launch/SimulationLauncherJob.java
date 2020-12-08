@@ -7,7 +7,6 @@
 
 package org.omnetpp.launch;
 
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.util.Date;
@@ -28,12 +27,6 @@ import org.eclipse.debug.core.IStreamListener;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.core.model.IStreamMonitor;
 import org.eclipse.debug.core.model.IStreamsProxy;
-import org.eclipse.debug.internal.ui.DebugUIPlugin;
-import org.eclipse.debug.internal.ui.preferences.IDebugPreferenceConstants;
-import org.eclipse.debug.internal.ui.views.console.ProcessConsole;
-import org.eclipse.debug.ui.DebugUITools;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.console.IOConsoleOutputStream;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.launch.tabs.OmnetppLaunchUtils;
 
@@ -111,7 +104,7 @@ public class SimulationLauncherJob extends Job {
             // launch the process
             Process process = OmnetppLaunchUtils.startSimulationProcess(configuration, cmdLineArgs);
             IProcess iprocess = DebugPlugin.newProcess(launch, process, renderProcessLabel(runFilter));
-            printToConsole(iprocess, "Starting...\n\n$ cd "+workingDir+"\n$ "+commandLine+"\n\n", false);
+            OmnetppLaunchUtils.printToConsole(iprocess, "Starting...\n\n$ cd "+workingDir+"\n$ "+commandLine+"\n\n", false);
 
             // command line will be visible in the debug view's property dialog
             iprocess.setAttribute(IProcess.ATTR_CMDLINE, commandLine);
@@ -145,7 +138,7 @@ public class SimulationLauncherJob extends Job {
                 // from being removed (they still show up in the view's menu.)
 
                 if (subMonitor.isCanceled() || iprocess.getExitValue() == SIMULATION_CANCELLED_EXITCODE || iprocess.getExitValue() == 128 + SIGTERM) {
-                    printToConsole(iprocess, "Cancelled by user request.", true);
+                    OmnetppLaunchUtils.printToConsole(iprocess, "Cancelled by user request.", true);
                     subMonitor.subTask("Cancelled");
                     return Status.CANCEL_STATUS;
                 } else {
@@ -194,33 +187,6 @@ public class SimulationLauncherJob extends Job {
         });
     }
 
-    /**
-     * Print something to the process's console output. Error message will be written in red
-     * and the console will be brought to focus.
-     */
-    protected void printToConsole(IProcess iprocess, String text, boolean isErrorMessage) {
-        try {
-            ProcessConsole console = (ProcessConsole)DebugUIPlugin.getDefault().getProcessConsoleManager().getConsole(iprocess);
-            if (console != null) {
-                try (final IOConsoleOutputStream stream = console.newOutputStream()) {
-                    if (isErrorMessage) {
-                        stream.setActivateOnWrite(true);
-                        // we have to set the color in the UI thread otherwise SWT will throw an error
-                        Display.getDefault().syncExec(new Runnable() {
-                            @Override
-                            public void run() {
-                                stream.setColor(DebugUITools.getPreferenceColor(IDebugPreferenceConstants.CONSOLE_SYS_ERR_COLOR));
-                            }
-                        });
-                    }
-                    stream.write(text);
-                }
-            }
-        } catch (IOException e) {
-            LaunchPlugin.logError("Unable to write to console", e);
-        }
-    }
-
     protected void dumpPostMortemInfo(IProcess iprocess, String commandLine, IPath workingDir) throws CoreException {
         String errorMsg = "\nSimulation terminated with exit code: " + iprocess.getExitValue() + "\n";
         errorMsg += "Working directory: " + workingDir + "\n";
@@ -237,7 +203,7 @@ public class SimulationLauncherJob extends Job {
                 errorMsg += env  + "\n";
         }
 
-        printToConsole(iprocess, errorMsg, true);
+        OmnetppLaunchUtils.printToConsole(iprocess, errorMsg, true);
     }
 
 
