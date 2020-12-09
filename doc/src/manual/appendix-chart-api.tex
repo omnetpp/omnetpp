@@ -1,11 +1,13 @@
-\appendixchapter{Python API for chart scripts}
+\appendixchapter{Python API for Chart Scripts}
 \label{cha:chart-api}
 
 This chapter describes the API of the Python modules available
-for chart scripts, provided by the Analysis Tool in the IDE.
+for chart scripts. These modules are available in the Analysis Tool
+in the IDE, in \fprog{opp\_charttool}, and may also be used
+in standalone Python scripts.
 
 Some conventional import aliases appear in code fragments throughout this
-chapter, such as `np` for NumPy and `pd` for Pandas.
+chapter, such as \ttt{np} for NumPy and \ttt{pd} for Pandas.
 
 % --------
 % The rest of this file is the output of the tools/extract_chart_api.py
@@ -16,21 +18,33 @@ chapter, such as `np` for NumPy and `pd` for Pandas.
 % generated with extract_chart_api.py
 %
 
-\section{results module}
-\label{cha:chart-api:results}
+\section{Module omnetpp.scave.results}
+\label{cha:chart-api:omnetpp.scave.results}
 
 \par This module lets the scripts that power the charts in the IDE query
 any simulation results and metadata referenced by the .anf file they
 are in, returned as as Pandas DataFrames in various formats.\par The \ttt{filter\_expressions} parameter in all functions has the same syntax.
 It is always evaluated independently on every loaded result item or metadata entry, and its value
 determines whether the given item or piece of metadata is included in the returned \ttt{DataFrame}.
+
+\subsection{get\_serial()}
+\label{cha:chart-api:omnetpp.scave.results:get-serial}
+
+\begin{flushleft}
+\ttt{get\_serial()}
+\end{flushleft}
+
+\par Returns an integer that is incremented every time the set of loaded results
+change, typically as a result of the IDE loading, reloading or unloading
+a scalar or vector result file. The serial can be used for invalidating
+cached intermediate results when their input changes.
+
 \subsection{get\_results()}
-\label{cha:chart-api:results:get-results}
+\label{cha:chart-api:omnetpp.scave.results:get-results}
 
 \begin{flushleft}
 \ttt{get\_results(filter\_expression="", row\_types=["runattr", "itervar", "config", "scalar", "vector", "statistic", "histogram", "param", "attr"], omit\_unused\_columns=True, start\_time=-inf, end\_time=inf)}
 \end{flushleft}
-
 
 \par Returns a filtered set of results and metadata in CSV-like format.
 The items can be any type, even mixed together in a single \ttt{DataFrame}.
@@ -68,12 +82,11 @@ The unit is seconds, both the \ttt{vectime} and \ttt{vecvalue} arrays will be af
 \end{itemize}
 
 \subsection{get\_runs()}
-\label{cha:chart-api:results:get-runs}
+\label{cha:chart-api:omnetpp.scave.results:get-runs}
 
 \begin{flushleft}
 \ttt{get\_runs(filter\_expression="", include\_runattrs=False, include\_itervars=False, include\_param\_assignments=False, include\_config\_entries=False)}
 \end{flushleft}
-
 
 \par Returns a filtered list of runs, identified by their run ID.
 \subsubsection{Parameters}
@@ -97,12 +110,11 @@ Optional. When set to \ttt{True}, additional pieces of metadata about the run is
 \end{itemize}
 
 \subsection{get\_runattrs()}
-\label{cha:chart-api:results:get-runattrs}
+\label{cha:chart-api:omnetpp.scave.results:get-runattrs}
 
 \begin{flushleft}
 \ttt{get\_runattrs(filter\_expression="", include\_runattrs=False, include\_itervars=False, include\_param\_assignments=False, include\_config\_entries=False)}
 \end{flushleft}
-
 
 \par Returns a filtered list of run attributes.\par The set of run attributes is fixed: \ttt{configname}, \ttt{datetime}, \ttt{experiment},
 \ttt{inifile}, \ttt{iterationvars}, \ttt{iterationvarsf}, \ttt{measurement}, \ttt{network},
@@ -130,12 +142,11 @@ Optional. When set to \ttt{True}, additional pieces of metadata about the run is
 \end{itemize}
 
 \subsection{get\_itervars()}
-\label{cha:chart-api:results:get-itervars}
+\label{cha:chart-api:omnetpp.scave.results:get-itervars}
 
 \begin{flushleft}
 \ttt{get\_itervars(filter\_expression="", include\_runattrs=False, include\_itervars=False, include\_param\_assignments=False, include\_config\_entries=False, as\_numeric=False)}
 \end{flushleft}
-
 
 \par Returns a filtered list of iteration variables.
 \subsubsection{Parameters}
@@ -163,12 +174,11 @@ Non-numeric values will become \ttt{NaN}.
 \end{itemize}
 
 \subsection{get\_scalars()}
-\label{cha:chart-api:results:get-scalars}
+\label{cha:chart-api:omnetpp.scave.results:get-scalars}
 
 \begin{flushleft}
 \ttt{get\_scalars(filter\_expression="", include\_attrs=False, include\_runattrs=False, include\_itervars=False, include\_param\_assignments=False, include\_config\_entries=False, merge\_module\_and\_name=False)}
 \end{flushleft}
-
 
 \par Returns a filtered list of scalar results.
 \subsubsection{Parameters}
@@ -199,12 +209,11 @@ is prepended to the value in the \ttt{name} column, joined by a period, in every
 \end{itemize}
 
 \subsection{get\_parameters()}
-\label{cha:chart-api:results:get-parameters}
+\label{cha:chart-api:omnetpp.scave.results:get-parameters}
 
 \begin{flushleft}
 \ttt{get\_parameters(filter\_expression="", include\_attrs=False, include\_runattrs=False, include\_itervars=False, include\_param\_assignments=False, include\_config\_entries=False, merge\_module\_and\_name=False, as\_numeric=False)}
 \end{flushleft}
-
 
 \par Returns a filtered list of parameters - actually computed values of individual \ttt{cPar} instances in the fully built network.\par Parameters are considered "pseudo-results", similar to scalars - except their values are strings. Even though they act
 mostly as input to the actual simulation run, the actually assigned value of individual \ttt{cPar} instances is valuable information,
@@ -240,12 +249,11 @@ Non-numeric values will become \ttt{NaN}.
 \end{itemize}
 
 \subsection{get\_vectors()}
-\label{cha:chart-api:results:get-vectors}
+\label{cha:chart-api:omnetpp.scave.results:get-vectors}
 
 \begin{flushleft}
 \ttt{get\_vectors(filter\_expression="", include\_attrs=False, include\_runattrs=False, include\_itervars=False, include\_param\_assignments=False, include\_config\_entries=False, merge\_module\_and\_name=False, start\_time=-inf, end\_time=inf)}
 \end{flushleft}
-
 
 \par Returns a filtered list of vector results.
 \subsubsection{Parameters}
@@ -278,12 +286,11 @@ The unit is seconds, both the \ttt{vectime} and \ttt{vecvalue} arrays will be af
 \end{itemize}
 
 \subsection{get\_statistics()}
-\label{cha:chart-api:results:get-statistics}
+\label{cha:chart-api:omnetpp.scave.results:get-statistics}
 
 \begin{flushleft}
 \ttt{get\_statistics(filter\_expression="", include\_attrs=False, include\_runattrs=False, include\_itervars=False, include\_param\_assignments=False, include\_config\_entries=False, merge\_module\_and\_name=False)}
 \end{flushleft}
-
 
 \par Returns a filtered list of statistics results.
 \subsubsection{Parameters}
@@ -314,12 +321,11 @@ is prepended to the value in the \ttt{name} column, joined by a period, in every
 \end{itemize}
 
 \subsection{get\_histograms()}
-\label{cha:chart-api:results:get-histograms}
+\label{cha:chart-api:omnetpp.scave.results:get-histograms}
 
 \begin{flushleft}
 \ttt{get\_histograms(filter\_expression="", include\_attrs=False, include\_runattrs=False, include\_itervars=False, include\_param\_assignments=False, include\_config\_entries=False, merge\_module\_and\_name=False, include\_statistics\_fields=False)}
 \end{flushleft}
-
 
 \par Returns a filtered list of histogram results.
 \subsubsection{Parameters}
@@ -352,12 +358,11 @@ is prepended to the value in the \ttt{name} column, joined by a period, in every
 \end{itemize}
 
 \subsection{get\_config\_entries()}
-\label{cha:chart-api:results:get-config-entries}
+\label{cha:chart-api:omnetpp.scave.results:get-config-entries}
 
 \begin{flushleft}
 \ttt{get\_config\_entries(filter\_expression, include\_runattrs=False, include\_itervars=False, include\_param\_assignments=False, include\_config\_entries=False)}
 \end{flushleft}
-
 
 \par Returns a filtered list of config entries. That is: parameter assignment patterns; and global and per-object config options.
 \subsubsection{Parameters}
@@ -382,18 +387,104 @@ Optional. When set to \ttt{True}, additional pieces of metadata about the run is
 
 \end{itemize}
 
-\section{chart module}
-\label{cha:chart-api:chart}
+\section{Module omnetpp.scave.chart}
+\label{cha:chart-api:omnetpp.scave.chart}
 
-\par This module is the interface for displaying data using the built-in plot widgets (i.e. without matplotlib).
-It also provides functions to access the properties of the chart object, regardless of the used plotting method.
-\subsection{extract\_label\_columns()}
-\label{cha:chart-api:chart:extract-label-columns}
+\par This module provides functions to access the properties of the chart object.
+
+\subsection{get\_properties()}
+\label{cha:chart-api:omnetpp.scave.chart:get-properties}
 
 \begin{flushleft}
-\ttt{extract\_label\_columns(df)}
+\ttt{get\_properties()}
 \end{flushleft}
 
+\par Returns the currently set properties of the chart as a \ttt{dict}
+whose keys and values are both all strings.
+
+\subsection{get\_property()}
+\label{cha:chart-api:omnetpp.scave.chart:get-property}
+
+\begin{flushleft}
+\ttt{get\_property(key)}
+\end{flushleft}
+
+\par Returns the value of a single property of the chart, or \ttt{None} if there is
+no property with the given name (key) set on the chart.
+
+\subsection{get\_name()}
+\label{cha:chart-api:omnetpp.scave.chart:get-name}
+
+\begin{flushleft}
+\ttt{get\_name()}
+\end{flushleft}
+
+\par Returns the name of the chart as a string.
+
+\subsection{get\_chart\_type()}
+\label{cha:chart-api:omnetpp.scave.chart:get-chart-type}
+
+\begin{flushleft}
+\ttt{get\_chart\_type()}
+\end{flushleft}
+
+\par Returns the chart type, one of the strings "bar"/"histogram"/"line"/"matplotlib"
+
+\subsection{is\_native\_chart()}
+\label{cha:chart-api:omnetpp.scave.chart:is-native-chart}
+
+\begin{flushleft}
+\ttt{is\_native\_chart()}
+\end{flushleft}
+
+\par Returns True if this chart uses the IDE's built-in plotting widgets.
+
+\subsection{set\_suggested\_chart\_name()}
+\label{cha:chart-api:omnetpp.scave.chart:set-suggested-chart-name}
+
+\begin{flushleft}
+\ttt{set\_suggested\_chart\_name(name)}
+\end{flushleft}
+
+\par Sets a proposed name for the chart. The IDE may offer this name to the user
+when saving the chart.
+
+\section{Module omnetpp.scave.utils}
+\label{cha:chart-api:omnetpp.scave.utils}
+
+\par A collection of utility function for data manipulation and plotting, built
+on top of Pandas data frames and the \ttt{chart} and \ttt{plot} packages from \ttt{omnetpp.scave}.
+Functions in this module have been written largely to the needs of the
+chart templates that ship with the IDE.
+
+\subsection{confidence\_interval()}
+\label{cha:chart-api:omnetpp.scave.utils:confidence-interval}
+
+\begin{flushleft}
+\ttt{confidence\_interval(alpha, data)}
+\end{flushleft}
+
+\par Returns the half-length of the confidence interval of the mean of \ttt{data}, assuming
+normal distribution, for the given confidence level \ttt{alpha}.
+\ttt{alpha} must be in the [0..1] range.
+
+\subsection{split()}
+\label{cha:chart-api:omnetpp.scave.utils:split}
+
+\begin{flushleft}
+\ttt{split(s, sep=",")}
+\end{flushleft}
+
+\par Split a string with the given separator (by default with comma), trim
+the surrounding whitespace from the items, and return the result as a
+list. Return an empty list for an empty or all-whitespace input string.
+
+\subsection{extract\_label\_columns()}
+\label{cha:chart-api:omnetpp.scave.utils:extract-label-columns}
+
+\begin{flushleft}
+\ttt{extract\_label\_columns(df, preferred\_legend\_column="title")}
+\end{flushleft}
 
 \par Utility function to make a reasonable guess as to which column of
 the given DataFrame is most suitable to act as a chart title and
@@ -408,246 +499,519 @@ primarily be iteration variables and run attributes.
 \par A pair of a string and a list; the first value is the name of the
 "title" column, and the second one is a list of pairs, each
 containing the index and the name of a "label" column.\par Example: \ttt{('title', [(8, 'numHosts'), (7, 'iaMean')])}
+
 \subsection{make\_legend\_label()}
-\label{cha:chart-api:chart:make-legend-label}
+\label{cha:chart-api:omnetpp.scave.utils:make-legend-label}
 
 \begin{flushleft}
 \ttt{make\_legend\_label(legend\_cols, row)}
 \end{flushleft}
 
-
 \par Produces a reasonably good label text (to be used in a chart legend) for a result row from
 a DataFrame, given a list of selected columns as returned by \ttt{extract\_label\_columns()}.
+
 \subsection{make\_chart\_title()}
-\label{cha:chart-api:chart:make-chart-title}
+\label{cha:chart-api:omnetpp.scave.utils:make-chart-title}
 
 \begin{flushleft}
 \ttt{make\_chart\_title(df, title\_col, legend\_cols)}
 \end{flushleft}
 
-
 \par Produces a reasonably good chart title text from a result DataFrame, given a selected "title"
 column, and a list of selected "legend" columns as returned by \ttt{extract\_label\_columns()}.
+
+\subsection{pick\_two\_columns()}
+\label{cha:chart-api:omnetpp.scave.utils:pick-two-columns}
+
+\begin{flushleft}
+\ttt{pick\_two\_columns(df)}
+\end{flushleft}
+
+
+
+\subsection{assert\_columns\_exist()}
+\label{cha:chart-api:omnetpp.scave.utils:assert-columns-exist}
+
+\begin{flushleft}
+\ttt{assert\_columns\_exist(df, cols, message="Expected column missing from DataFrame")}
+\end{flushleft}
+
+
+
+\subsection{parse\_rcparams()}
+\label{cha:chart-api:omnetpp.scave.utils:parse-rcparams}
+
+\begin{flushleft}
+\ttt{parse\_rcparams(rc\_content)}
+\end{flushleft}
+
+
+
+\subsection{make\_fancy\_xticklabels()}
+\label{cha:chart-api:omnetpp.scave.utils:make-fancy-xticklabels}
+
+\begin{flushleft}
+\ttt{make\_fancy\_xticklabels(ax)}
+\end{flushleft}
+
+
+
+\subsection{make\_scroll\_navigable()}
+\label{cha:chart-api:omnetpp.scave.utils:make-scroll-navigable}
+
+\begin{flushleft}
+\ttt{make\_scroll\_navigable(figure)}
+\end{flushleft}
+
+
+
+\subsection{customized\_box\_plot()}
+\label{cha:chart-api:omnetpp.scave.utils:customized-box-plot}
+
+\begin{flushleft}
+\ttt{customized\_box\_plot(percentiles, axes, redraw=True, *args, **kwargs)}
+\end{flushleft}
+
+\par Generates a customized boxplot based on the given percentile values
+
+\subsection{interpolationmode\_to\_drawstyle()}
+\label{cha:chart-api:omnetpp.scave.utils:interpolationmode-to-drawstyle}
+
+\begin{flushleft}
+\ttt{interpolationmode\_to\_drawstyle(interpolationmode, hasenum)}
+\end{flushleft}
+
+
+
+\subsection{get\_names\_for\_title()}
+\label{cha:chart-api:omnetpp.scave.utils:get-names-for-title}
+
+\begin{flushleft}
+\ttt{get\_names\_for\_title(df, props)}
+\end{flushleft}
+
+
+
+\subsection{set\_plot\_title()}
+\label{cha:chart-api:omnetpp.scave.utils:set-plot-title}
+
+\begin{flushleft}
+\ttt{set\_plot\_title(title, suggested\_chart\_name=None)}
+\end{flushleft}
+
+
+
 \subsection{plot\_bars()}
-\label{cha:chart-api:chart:plot-bars}
+\label{cha:chart-api:omnetpp.scave.utils:plot-bars}
+
+\begin{flushleft}
+\ttt{plot\_bars(df, props, names=None, errors\_df=None)}
+\end{flushleft}
+
+
+
+\subsection{plot\_vectors()}
+\label{cha:chart-api:omnetpp.scave.utils:plot-vectors}
+
+\begin{flushleft}
+\ttt{plot\_vectors(df, props)}
+\end{flushleft}
+
+
+
+\subsection{plot\_histograms()}
+\label{cha:chart-api:omnetpp.scave.utils:plot-histograms}
+
+\begin{flushleft}
+\ttt{plot\_histograms(df, props)}
+\end{flushleft}
+
+
+
+\subsection{preconfigure\_plot()}
+\label{cha:chart-api:omnetpp.scave.utils:preconfigure-plot}
+
+\begin{flushleft}
+\ttt{preconfigure\_plot(props)}
+\end{flushleft}
+
+
+
+\subsection{postconfigure\_plot()}
+\label{cha:chart-api:omnetpp.scave.utils:postconfigure-plot}
+
+\begin{flushleft}
+\ttt{postconfigure\_plot(props)}
+\end{flushleft}
+
+
+
+\subsection{legend()}
+\label{cha:chart-api:omnetpp.scave.utils:legend}
+
+\begin{flushleft}
+\ttt{legend(*args, **kwargs)}
+\end{flushleft}
+
+
+
+\subsection{export\_image\_if\_needed()}
+\label{cha:chart-api:omnetpp.scave.utils:export-image-if-needed}
+
+\begin{flushleft}
+\ttt{export\_image\_if\_needed(props)}
+\end{flushleft}
+
+
+
+\subsection{export\_data\_if\_needed()}
+\label{cha:chart-api:omnetpp.scave.utils:export-data-if-needed}
+
+\begin{flushleft}
+\ttt{export\_data\_if\_needed(df, props)}
+\end{flushleft}
+
+
+
+\section{Module omnetpp.scave.plot}
+\label{cha:chart-api:omnetpp.scave.plot}
+
+\par This module is the interface for displaying data using the IDE's native
+(non-Matplotlib) plotting widgets. The API is intentionally very close to
+\ttt{matplotlib.pyplot}: most functions and the parameters they accept are a
+subset of \ttt{pyplot}'s. The promise is that a chart script written with this
+API is very easy to switch over to Matplotlib: usually, just importing
+\ttt{matplotlib.pyplot} as \ttt{plot} (instead of importing this package) is
+sufficient. Also the other way round: if a chart script uses only this
+subset of \ttt{pyplot}'s API, it can be easily switched over to plot with the
+IDE's native widgets.\par When the API is used outside the context of a native plotting widget
+(such as during the run of \ttt{opp\_charttool}, or in IDE during image export),
+the functions are emulated with Matplotlib.
+
+\subsection{is\_native\_plot()}
+\label{cha:chart-api:omnetpp.scave.plot:is-native-plot}
+
+\begin{flushleft}
+\ttt{is\_native\_plot()}
+\end{flushleft}
+
+\par Returns True if the script is running in the context of a native plotting
+widget, and False otherwise.
+
+\subsection{plot\_bars()}
+\label{cha:chart-api:omnetpp.scave.plot:plot-bars}
 
 \begin{flushleft}
 \ttt{plot\_bars(df)}
 \end{flushleft}
 
-
+\par TODO
 
 \subsection{plot\_lines()}
-\label{cha:chart-api:chart:plot-lines}
+\label{cha:chart-api:omnetpp.scave.plot:plot-lines}
 
 \begin{flushleft}
 \ttt{plot\_lines(df)}
 \end{flushleft}
 
+\par TODO
 
-
-\subsection{plot\_histogram\_data()}
-\label{cha:chart-api:chart:plot-histogram-data}
-
-\begin{flushleft}
-\ttt{plot\_histogram\_data(df)}
-\end{flushleft}
-
-
-
-\subsection{plot\_scalars()}
-\label{cha:chart-api:chart:plot-scalars}
-
-\begin{flushleft}
-\ttt{plot\_scalars(df\_or\_values, labels=None, row\_label=None)}
-\end{flushleft}
-
-
-\par Takes a set of scalar type results and plots them as a "native" bar chart - using the
-IDE's built-in drawing widget.\par \ttt{df\_or\_values} can be in one of three different formats:\begin{itemize}
-  \item A \ttt{pd.DataFrame} with (at least) \ttt{value}, \ttt{module} and \ttt{name} columns,
-  for example as returned by \ttt{results.get\_scalars()}
-  \item A \ttt{pd.DataFrame} containing only the numeric values. This is what you
-  might get for example from \ttt{pd.pivot\_table()}.
-  Each line in the dataframe will be in it's own bar group, similar to
-  what \ttt{df.plot.bar()} would draw by default.
-  The names in both the horizontal and vertical indices are used as
-  labels in the legend.
-  \item A simple \ttt{list} or \ttt{np.array} of numbers. They will all be in a single group.
-
-\end{itemize}
-\par The optional \ttt{labels} and \ttt{row\_label} parameters are only used in the third
-case, as markers for the legend; and ignored in the first two cases.\par Returns \ttt{None}.
-\subsection{plot\_vector()}
-\label{cha:chart-api:chart:plot-vector}
-
-\begin{flushleft}
-\ttt{plot\_vector(label, xs, ys)}
-\end{flushleft}
-
-
-\par Plots a single vector as a "native" line chart - using the
-IDE's built-in drawing widget.
-\subsubsection{Parameters}
-\label{sssec:num22}
-
-\begin{itemize}
-  \item \textbf{label}: A string that identifies this line on the plot. It will appear on the legend, so should be unique across invocations.
-  \item \textbf{xs}, \textbf{ys}: Lists or \ttt{np.array}s of numbers. Containing the X and Y coordinates (like time and value) of each point on the line,
-respectively. There is no requirement on either of these to hold positive, unique or monotonous values, so this method can be used to
-draw arbitrary scatter plots as well. They must be equal in length.
-
-\end{itemize}
-\par Can be called repeatedly, each invocation adds a new line to the existing ones on the plot.\par Returns \ttt{None}.
-\subsection{plot\_vectors()}
-\label{cha:chart-api:chart:plot-vectors}
-
-\begin{flushleft}
-\ttt{plot\_vectors(df\_or\_list)}
-\end{flushleft}
-
-
-\par Takes a set of vector type results and plots them as a "native" line chart - using the
-IDE's built-in drawing widget.\par \ttt{df\_or\_values} can be in one of three different formats:\begin{itemize}
-  \item A \ttt{pd.DataFrame} with (at least) \ttt{vectime} and \ttt{vecvalue} columns,
-  for example as returned by \ttt{results.get\_vectors()}
-  \item A \ttt{pd.DataFrame} containing only the numeric values. If there is a \ttt{"time"}
-column, that will provide the X coordinates, otherwise an artificial sequencial
-X coordinate series will be generated. Every column (other than "time") will be
-a different line.
-  \item A \ttt{list} of 3-tuples: \ttt{(label, x, y)}, each element of the list describes
-a line. The first element of each tuple is a string, which will be the label
-of the line, while the second and third are lists or \ttt{ndarray} of numbers.
-In every given tuple, the second and third element must be the equal length,
-but this length van differ between individual tuples.
-
-\end{itemize}
-\par There is no requirement on the inputs to hold positive, unique or monotonous values,
-so this method can be used to draw arbitrary scatter plots as well.\par Returns \ttt{None}.
-\subsection{plot\_scatter()}
-\label{cha:chart-api:chart:plot-scatter}
-
-\begin{flushleft}
-\ttt{plot\_scatter(df, xdata, iso\_column=None)}
-\end{flushleft}
-
-
-\par Pivots a DataFrame of numeric results (like scalars, itervars or statistics fields)
-and plots them on a line type chart as a scatter plot. The data points can be optionally
-separated into multiple isolines.
-\subsubsection{Parameters}
-\label{sssec:num23}
-
-\begin{itemize}
-  \item \textbf{df}: A DataFrame that holds the data to be pivoted.
-  \item \textbf{xdata} \textit{(string)}: The name of a column in \ttt{df} which will provide the X coordinate for the data points
-  \item \textbf{iso\_column} \textit{(string)}: Optional. The name of a column in \ttt{df} whose the values will be used to separate
-the data points into multiple isolines.
-
-\end{itemize}
-\par Returns \ttt{None}.
-\subsection{plot\_histogram()}
-\label{cha:chart-api:chart:plot-histogram}
-
-\begin{flushleft}
-\ttt{plot\_histogram(label, binedges, binvalues, underflows=0.0, overflows=0.0, minvalue=nan, maxvalue=nan)}
-\end{flushleft}
-
-
-\par Plots a single histogram as a "native" chart - using the
-IDE's built-in drawing widget.
-\subsubsection{Parameters}
-\label{sssec:num24}
-
-\begin{itemize}
-  \item \textbf{label}: A string that identifies this line on the plot. It will appear on the legend, so should be unique across invocations.
-  \item \textbf{binedges}, \textbf{binvalues}: Lists or \ttt{np.array}s of numbers. Containing the bin edges and the values of the histogram,
-respectively. \ttt{edges} should be one element longer than `values.
-  \item \textbf{underflows}, \textbf{overflows}: Optional. The sum of weights of the collected values that fell under or over the histogram bin range, respectively.
-  \item \textbf{minvalue}, \textbf{maxvalue}: Optional. The smallest and the highest collected value, respectively.
-
-\end{itemize}
-\par Can be called repeatedly, each invocation adds a new histogram to the existing ones on the plot.\par Returns \ttt{None}.
 \subsection{plot\_histograms()}
-\label{cha:chart-api:chart:plot-histograms}
+\label{cha:chart-api:omnetpp.scave.plot:plot-histograms}
 
 \begin{flushleft}
 \ttt{plot\_histograms(df)}
 \end{flushleft}
 
+\par TODO
 
-\par Takes a set of histogram type results and plots them as a "native" chart - using the
-IDE's built-in drawing widget.\par \ttt{df} is a DataFrame, containing (at least) \ttt{binedges} and \ttt{binvalues} columns,
-for example as returned by \ttt{results.get\_histograms()}\par Returns \ttt{None}.
-\subsection{set\_plot\_property()}
-\label{cha:chart-api:chart:set-plot-property}
+\subsection{plot()}
+\label{cha:chart-api:omnetpp.scave.plot:plot}
 
 \begin{flushleft}
-\ttt{set\_plot\_property(key, value)}
+\ttt{plot(xs, ys, key=None, label=None, drawstyle=None, linestyle=None, linewidth=None, color=None, marker=None, markersize=None)}
 \end{flushleft}
 
+\par TODO
 
-\par Sets one property of the chart to the given value. If there was no property with the given
-name (key) yet, it is added.\par Please note that this function does not change or affect the actual chart
-object at all (as that is treated strictly as a read-only input); instead, it only
-changes some visual property on its view. It is not persistent and is not reflected
-in later calls to \ttt{get\_property()} or \ttt{get\_properties()}.
-\subsection{set\_plot\_properties()}
-\label{cha:chart-api:chart:set-plot-properties}
+\subsection{hist()}
+\label{cha:chart-api:omnetpp.scave.plot:hist}
 
 \begin{flushleft}
-\ttt{set\_plot\_properties(props)}
+\ttt{hist(x, bins, density=None, weights=None, cumulative=False, bottom=None, histtype="stepfilled", color=None, label=None, linewidth=None, underflows=0.0, overflows=0.0, minvalue=nan, maxvalue=nan)}
 \end{flushleft}
 
+\par TODO
 
-\par Updates or adds any number of properties of the chart with the values given in `props.
-Any existing property values will be overwritten, and any new keys will be inserted.\par Please note that this function does not change or affect the actual chart
-object at all (as that is treated strictly as a read-only input); instead, it only
-changes some visual property on its view. This change is not persistent and is not
-reflected in later calls to \ttt{get\_property()} or \ttt{get\_properties()}.
-\subsection{get\_configured\_properties()}
-\label{cha:chart-api:chart:get-configured-properties}
+\subsection{bar()}
+\label{cha:chart-api:omnetpp.scave.plot:bar}
 
 \begin{flushleft}
-\ttt{get\_configured\_properties()}
+\ttt{bar(x, height, width=0.8, label=None, color=None, edgecolor=None)}
 \end{flushleft}
 
+\par Make a bar plot. This function adds one series to the bar plot; make
+multiple calls to add multiple series.\par The bars are positioned at x with the given alignment. Their dimensions
+are given by width and height. The vertical baseline is bottom (default 0).\par Each of x, height, width, and bottom may either be a scalar applying to
+all bars, or it may be a sequence of length N providing a separate value
+for each bar.
+\subsubsection{Parameters}
+\label{sssec:num22}
 
-\par Returns the currently set properties of the chart as a \ttt{dict}
-whose keys and values are both all strings.
-\subsection{get\_configured\_property()}
-\label{cha:chart-api:chart:get-configured-property}
+\begin{itemize}
+  \item \textbf{x} \textit{(sequence of scalars)}: The x coordinates of the bars.
+  \item \textbf{height} \textit{(scalar or sequence of scalars)}: The height(s) of the bars.
+  \item \textbf{width} \textit{(scalar or array-like)}: The width(s) of the bars.
+  \item \textbf{label} \textit{(string)}: The label of the series the bars represent .
+  \item \textbf{color} \textit{(string)}: The fill color of the bars.
+  \item \textbf{edgecolor} \textit{(string)}: The edge color of the bars.
+
+\end{itemize}
+\par The native plot implementation has the following restrictions:\begin{itemize}
+  \item widths are automatic (parameter is ignored)
+  \item x coordinates are automatic (values are ignored)
+  \item height must be a sequence (cannot be a constant)
+  \item in multiple calls to bar(), the lengths of the height sequence must be
+equal (i.e. all series must have the same number of values)
+  \item default color is grey (Matplotlib assigns a different color to each series)
+
+\end{itemize}
+
+\subsection{set\_property()}
+\label{cha:chart-api:omnetpp.scave.plot:set-property}
 
 \begin{flushleft}
-\ttt{get\_configured\_property(key)}
+\ttt{set\_property(key, value)}
 \end{flushleft}
 
+\par Sets one property of the native plot widget to the given value. When invoked
+outside the contex of a native plot widget, the function does nothing.
+\subsubsection{Parameters}
+\label{sssec:num23}
 
-\par Returns the value of a single property of the chart, or \ttt{None} if there is
-no property with the given name (key) set on the chart.
-\subsection{get\_default\_properties()}
-\label{cha:chart-api:chart:get-default-properties}
+\begin{itemize}
+  \item \textbf{key} \textit{(string)}: Name of the property.
+  \item \textbf{value} \textit{(string)}: The value to set. If any other type than string is passed in, it will be converted to string.
+
+\end{itemize}
+
+\subsection{set\_properties()}
+\label{cha:chart-api:omnetpp.scave.plot:set-properties}
 
 \begin{flushleft}
-\ttt{get\_default\_properties()}
+\ttt{set\_properties(props)}
 \end{flushleft}
 
+\par Sets several properties of the native plot widget. It is functionally equivalent to
+repeatedly calling \ttt{set\_property} with the entries of the \ttt{props} dictionary.
+When invoked outside the contex of a native plot widget (TODO?), the function does nothing.
+\subsubsection{Parameters}
+\label{sssec:num24}
 
-\par Returns a string-to-string \ttt{dict} that holds the default property keys and values
-for the chart, corresponding to its type.\par This is useful for discovering the basic set of accepted visual property keys
-of charts using built-in plot widgets (i.e. not matplotlib).
-\subsection{get\_name()}
-\label{cha:chart-api:chart:get-name}
+\begin{itemize}
+  \item \textbf{props} \textit{(dict)}: The properties to set.
+
+\end{itemize}
+
+\subsection{get\_supported\_property\_keys()}
+\label{cha:chart-api:omnetpp.scave.plot:get-supported-property-keys}
 
 \begin{flushleft}
-\ttt{get\_name()}
+\ttt{get\_supported\_property\_keys()}
 \end{flushleft}
 
+\par Returns the list of property names that the native plot widget supports, such as
+'Plot.Title', 'X.Axis.Max' and 'Legend.Display', among many others.\par Note: This method has no equivalent in \ttt{pyplot}. When the script runs outside the IDE  (TODO?),
+the method returns an empty list.
 
-\par Returns the name of the chart as a string.
-\subsection{copy\_properties()}
-\label{cha:chart-api:chart:copy-properties}
+\subsection{set\_warning()}
+\label{cha:chart-api:omnetpp.scave.plot:set-warning}
 
 \begin{flushleft}
-\ttt{copy\_properties()}
+\ttt{set\_warning(warning)}
 \end{flushleft}
+
+\par Displays the given warning text in the plot.
+\subsubsection{Parameters}
+\label{sssec:num25}
+
+\begin{itemize}
+  \item \textbf{warning} \textit{(string)}: The warning string.
+
+\end{itemize}
+
+\subsection{title()}
+\label{cha:chart-api:omnetpp.scave.plot:title}
+
+\begin{flushleft}
+\ttt{title(label)}
+\end{flushleft}
+
+\par Sets the plot title.
+\subsubsection{Parameters}
+\label{sssec:num26}
+
+\begin{itemize}
+  \item \textbf{label} \textit{(string)}: The plot title.
+
+\end{itemize}
+
+\subsection{xlabel()}
+\label{cha:chart-api:omnetpp.scave.plot:xlabel}
+
+\begin{flushleft}
+\ttt{xlabel(xlabel)}
+\end{flushleft}
+
+\par Sets the label of the X axis.
+\subsubsection{Parameters}
+\label{sssec:num27}
+
+\begin{itemize}
+  \item \textbf{xlabel} \textit{(string)}: The label string.
+
+\end{itemize}
+
+\subsection{ylabel()}
+\label{cha:chart-api:omnetpp.scave.plot:ylabel}
+
+\begin{flushleft}
+\ttt{ylabel(ylabel)}
+\end{flushleft}
+
+\par Sets the label of the Y axis.
+\subsubsection{Parameters}
+\label{sssec:num28}
+
+\begin{itemize}
+  \item \textbf{ylabel} \textit{(string)}: The label string.
+
+\end{itemize}
+
+\subsection{xlim()}
+\label{cha:chart-api:omnetpp.scave.plot:xlim}
+
+\begin{flushleft}
+\ttt{xlim(left=None, right=None)}
+\end{flushleft}
+
+\par Sets the limits of the X axis.
+\subsubsection{Parameters}
+\label{sssec:num29}
+
+\begin{itemize}
+  \item \textbf{left} \textit{(float)}: The left xlim in data coordinates. Passing None leaves the limit unchanged.
+  \item \textbf{right} \textit{(float)}: The right xlim in data coordinates. Passing None leaves the limit unchanged.
+
+\end{itemize}
+
+\subsection{ylim()}
+\label{cha:chart-api:omnetpp.scave.plot:ylim}
+
+\begin{flushleft}
+\ttt{ylim(bottom=None, top=None)}
+\end{flushleft}
+
+\par Sets the limits of the Y axis.
+\subsubsection{Parameters}
+\label{sssec:num30}
+
+\begin{itemize}
+  \item \textbf{bottom} \textit{(float)}: The bottom ylim in data coordinates. Passing None leaves the limit unchanged.
+  \item \textbf{top} \textit{(float)}: The top ylim in data coordinates. Passing None leaves the limit unchanged.
+
+\end{itemize}
+
+\subsection{xscale()}
+\label{cha:chart-api:omnetpp.scave.plot:xscale}
+
+\begin{flushleft}
+\ttt{xscale(value)}
+\end{flushleft}
+
+\par Sets the scale of the X axis. Possible values are 'linear' and 'log'.
+\subsubsection{Parameters}
+\label{sssec:num31}
+
+\begin{itemize}
+  \item \textbf{value} \textit{(string)}: The scale. Possible values are 'linear' and 'log'.
+
+\end{itemize}
+
+\subsection{yscale()}
+\label{cha:chart-api:omnetpp.scave.plot:yscale}
+
+\begin{flushleft}
+\ttt{yscale(value)}
+\end{flushleft}
+
+\par Sets the scale of the Y axis.
+\subsubsection{Parameters}
+\label{sssec:num32}
+
+\begin{itemize}
+  \item \textbf{value} \textit{(string)}: The scale. Possible values are 'linear' and 'log'.
+
+\end{itemize}
+
+\subsection{xticks()}
+\label{cha:chart-api:omnetpp.scave.plot:xticks}
+
+\begin{flushleft}
+\ttt{xticks(ticks=None, labels=None, rotation=0)}
+\end{flushleft}
+
+\par Sets the current tick locations and labels of the x-axis.
+\subsubsection{Parameters}
+\label{sssec:num33}
+
+\begin{itemize}
+  \item \textbf{ticks} \textit{(array\_like)}: A list of positions at which ticks should be placed. You can pass an empty list to disable xticks.
+  \item \textbf{labels} \textit{(array\_like)}: A list of explicit labels to place at the given locs.
+  \item \textbf{rotation} \textit{(float)}: Label rotation in degrees.
+
+\end{itemize}
+
+\subsection{grid()}
+\label{cha:chart-api:omnetpp.scave.plot:grid}
+
+\begin{flushleft}
+\ttt{grid(b=True, which="major")}
+\end{flushleft}
+
+\par Configure the grid lines.
+\subsubsection{Parameters}
+\label{sssec:num34}
+
+\begin{itemize}
+  \item \textbf{b} \textit{(bool or \ttt{None})}: Whether to show the grid lines.
+  \item \textbf{which} \textit{('major', 'minor' or 'both')}: The grid lines to apply the changes on.
+
+\end{itemize}
+
+\subsection{legend()}
+\label{cha:chart-api:omnetpp.scave.plot:legend}
+
+\begin{flushleft}
+\ttt{legend(show=None, frameon=None, loc=None)}
+\end{flushleft}
+
+\par Place a legend on the axes.
+\subsubsection{Parameters}
+\label{sssec:num35}
+
+\begin{itemize}
+  \item \textbf{show} \textit{(bool or \ttt{None})}: Whether to show the legend. TODO does pyplot have this?
+  \item \textbf{frameon} \textit{(bool or \ttt{None})}: Control whether the legend should be drawn on a patch (frame).
+  Default is \ttt{None}, which will take the value from the resource file.
+  \item \textbf{loc} \textit{(string or \ttt{None})}: The location of the legend. Possible values are
+  'best', 'upper right', 'upper left', 'lower left', 'lower right', 'right',
+  'center left', 'center right', 'lower center', 'upper center', 'center'
+  (these are the values supported by Matplotlib), plus additionally
+  'outside top left', 'outside top center', 'outside top right',
+  'outside bottom left', 'outside bottom center', 'outside bottom right',
+  'outside left top', 'outside left center', 'outside left bottom',
+  'outside right top', 'outside right center', 'outside right bottom'.
+
+\end{itemize}
+

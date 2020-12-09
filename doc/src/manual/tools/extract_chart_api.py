@@ -125,22 +125,20 @@ def signature_to_latex(o):
 
 def annotate_module(mod):
     modname = mod.__name__
-    prefix = "omnetpp.scave."
-    if modname.startswith(prefix):
-        modname = modname[len(prefix):]
-    print("\\section{" + modname + " module}")
+    #modsimplename = modname.replace("omnetpp.scave.", "")
+    print("\\section{Module " + modname + "}")
     print("\\label{cha:chart-api:" + modname + "}\n")
 
-    print(docstring_to_latex(mod))
+    print(docstring_to_latex(mod).strip() + "\n")
 
     for k in mod.__dict__:
         o = mod.__dict__[k]
-        if k and k[0] != '_' and k != "print" and inspect.isfunction(o):
+        if k and k[0] != '_' and k != "print" and k != "wraps" and inspect.isfunction(o):
             print("\\subsection{" + k.replace("_", "\\_") + "()}")
             print("\\label{cha:chart-api:" + modname + ":" + k.replace("_", "-") + "}\n")
-            print("\\begin{flushleft}\n\\ttt{" + signature_to_latex(o) + "}\n\\end{flushleft}\n\n")
+            print("\\begin{flushleft}\n\\ttt{" + signature_to_latex(o) + "}\n\\end{flushleft}\n")
 
-            print(docstring_to_latex(o))
+            print(docstring_to_latex(o).strip() + "\n")
 
 
 print("""
@@ -151,5 +149,7 @@ print("""
 
 annotate_module(results)
 annotate_module(chart)
+annotate_module(plot)
+annotate_module(utils)
 
 # vectorops?
