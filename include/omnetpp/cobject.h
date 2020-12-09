@@ -178,6 +178,22 @@ class SIM_API cObject
     virtual std::string getFullPath() const;
 
     /**
+     * Returns a string that contains the class name and the full name
+     * of the object in a human-friendly format. Example: "(cMessage)msg"
+     *
+     * @see getClassName(), getFullName()
+     */
+    virtual std::string getClassAndFullName() const;
+
+    /**
+     * Returns a string that contains the class name and the full path of the
+     * object in a human-friendly format. Example: "(cMessage)foo.bar.msg"
+     *
+     * @see getClassName(), getFullPath()
+     */
+    virtual std::string getClassAndFullPath() const;
+
+    /**
      * Returns the this pointer. Utility function for the logging macros.
      */
     const cObject *getThisPtr() const  {return this;}  //Note: nonvirtual

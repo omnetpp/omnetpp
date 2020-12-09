@@ -67,6 +67,20 @@ std::string cObject::getFullPath() const
         return getOwner()->getFullPath() + "." + getFullName();
 }
 
+std::string cObject::getClassAndFullName() const
+{
+    std::stringstream os;
+    os << "(" << getClassName() << ")" << getFullName();
+    return os.str();
+}
+
+std::string cObject::getClassAndFullPath() const
+{
+    std::stringstream os;
+    os << "(" << getClassName() << ")" << getFullPath();
+    return os.str();
+}
+
 std::string cObject::str() const
 {
     return std::string();
