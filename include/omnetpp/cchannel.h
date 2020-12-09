@@ -71,6 +71,9 @@ class SIM_API cChannel : public cComponent //implies noncopyable
     // internal: calls refreshDisplay() recursively
     virtual void callRefreshDisplay() override;
 
+    // internal: calls preDelete() recursively
+    virtual void callPreDelete(cComponent *root) override;
+
     // internal: for cModule::ChannelIterator
     cChannel *getPreviousSibling() const {return prevSibling;}
     cChannel *getNextSibling() const {return nextSibling;}

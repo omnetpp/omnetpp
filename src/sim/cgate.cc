@@ -346,7 +346,7 @@ void cGate::disconnect()
         return;
 
     if (channel)
-        channel->preDelete(channel);
+        channel->callPreDelete(channel);
 
     // notify pre-change listeners
     cModule *mod = getOwnerModule();

@@ -113,7 +113,7 @@ void cModule::deleteModule()
     if (activeModule != nullptr && this->containsModule(activeModule))
         throw cDeleteModuleException(this);
 
-    preDelete(this);
+    callPreDelete(this);
 
     doDeleteModule();
 }
@@ -195,14 +195,6 @@ void cModule::releaseListeners()
         (*it)->releaseLocalListeners();
     for (SubmoduleIterator it(this); !it.end(); ++it)
         (*it)->releaseListeners();
-}
-
-void cModule::preDelete(cComponent *root)
-{
-    for (ChannelIterator it(this); !it.end(); ++it)
-        (*it)->preDelete(root);
-    for (SubmoduleIterator it(this); !it.end(); ++it)
-        (*it)->preDelete(root);
 }
 
 void cModule::forEachChild(cVisitor *v)
@@ -1534,6 +1526,30 @@ void cModule::callFinish()
         //Enter_Method_Silent("finish()");
         finish();
         fireFinish();
+    }
+    catch (cException&) {
+        throw;
+    }
+    catch (std::exception& e) {
+        throw cRuntimeError("%s: %s", opp_typename(typeid(e)), e.what());
+    }
+}
+
+void cModule::callPreDelete(cComponent *root)
+{
+    // This is the interface for calling preDelete().
+
+    // first call it for submodules and channels...
+    for (ChannelIterator it(this); !it.end(); ++it)
+        (*it)->callPreDelete(root);
+    for (SubmoduleIterator it(this); !it.end(); ++it)
+        (*it)->callPreDelete(root);
+
+    // ...then for this module, in our context
+    cContextSwitcher tmp(this);
+    cContextTypeSwitcher tmp2(CTX_CLEANUP);
+    try {
+        preDelete(root);
     }
     catch (cException&) {
         throw;

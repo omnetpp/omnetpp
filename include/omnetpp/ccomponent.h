@@ -182,6 +182,9 @@ class SIM_API cComponent : public cSoftOwner //implies noncopyable
     // internal: calls refreshDisplay() recursively
     virtual void callRefreshDisplay() = 0;
 
+    // internal: calls preDelete() recursively
+    virtual void callPreDelete(cComponent *root) = 0;
+
     // internal: used from Qtenv: find out if this module has a display string.
     // getDisplayString() would create the object immediately which we want to avoid.
     bool hasDisplayString();

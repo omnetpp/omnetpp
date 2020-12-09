@@ -172,6 +172,21 @@ void cChannel::callFinish()
     }
 }
 
+void cChannel::callPreDelete(cComponent *root)
+{
+    cContextSwitcher tmp(this);
+    cContextTypeSwitcher tmp2(CTX_CLEANUP);
+    try {
+        preDelete(root);
+    }
+    catch (cException&) {
+        throw;
+    }
+    catch (std::exception& e) {
+        throw cRuntimeError("%s: %s", opp_typename(typeid(e)), e.what());
+    }
+}
+
 void cChannel::callRefreshDisplay()
 {
     cContextSwitcher tmp(this);

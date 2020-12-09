@@ -386,6 +386,9 @@ class SIM_API cModule : public cComponent //implies noncopyable
     // internal: calls refreshDisplay() recursively
     virtual void callRefreshDisplay() override;
 
+    // internal: calls preDelete() recursively
+    virtual void callPreDelete(cComponent *root) override;
+
     // internal: return the canvas if exists, or nullptr if not (i.e. no create-on-demand)
     cCanvas *getCanvasIfExists() {return canvas;}
 
@@ -413,12 +416,6 @@ class SIM_API cModule : public cComponent //implies noncopyable
 
     /** @name Redefined cObject member functions. */
     //@{
-    /**
-     * Overridden to recursively call preDelete() on this module's submodules
-     * and contained channels. See cComponent::preDelete() for more information.
-     */
-    virtual void preDelete(cComponent *root) override;
-
     /**
      * Calls v->visit(this) for each contained object.
      * See cObject for more details.
