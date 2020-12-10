@@ -30,7 +30,7 @@ COPTS=-Wno-unused-function $(CFLAGS) $(LIBXML_CFLAGS) $(INCL_FLAGS)
 
 IMPLIBS= $(LIBXML_LIBS)
 
-OBJS= $O/lcgrandom.o $O/filereader.o $O/linetokenizer.o \
+OBJS= $O/lcgrandom.o $O/filelock.o $O/filereader.o $O/linetokenizer.o \
       $O/stringpool.o $O/stringtokenizer.o $O/fnamelisttokenizer.o \
       $O/expression.o $O/lex.expressionyy.o $O/expression.tab.o \
       $O/matchexpression.o $O/matchexpressionlexer.o $O/matchexpression.tab.o \
