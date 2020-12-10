@@ -545,8 +545,8 @@ void cSimpleModule::scheduleAt(simtime_t t, cMessage *msg)
     // set message parameters and schedule it
     msg->setSentFrom(this, -1, simTime());
     msg->setArrival(getId(), -1, t);
-    EVCB.messageScheduled(msg);
     getSimulation()->insertEvent(msg);
+    EVCB.messageScheduled(msg);
 }
 
 void cSimpleModule::scheduleAfter(simtime_t delay, cMessage *msg)
