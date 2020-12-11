@@ -390,6 +390,13 @@ def _make_line_args(props, t, df):
     if get_prop("markersize"):
         style["markersize"] = get_prop("markersize")
 
+    # Special case: not letting both the lines and the markers to become
+    # invisible automatically. Only if the user specifically asks for it.
+    if style["marker"] == ' ' and style["linestyle"] == ' ':
+        orig_ds = get_prop("drawstyle")
+        if not orig_ds or orig_ds == "auto":
+            style["marker"] = '.'
+
     return style
 
 def _make_histline_args(props, t, df): # ??? is t and df needed at all?
@@ -663,7 +670,7 @@ def preconfigure_plot(props):
 
 def postconfigure_plot(props):
     p = plot if chart.is_native_chart() else plt
-    
+
     def get_prop(k):
         return props[k] if k in props else None
 
