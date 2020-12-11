@@ -77,13 +77,13 @@ def _get_array_from_shm(name_and_size : str):
             with mmap.mmap(mem.fd, length=mem.size) as mf:
                 mf.write_byte(1)
                 mf.seek(0)
-                arr = np.frombuffer(mf.read(), dtype=np.double, offset=8)
+                arr = np.frombuffer(mf.read(), dtype=np.double, offset=8, count=int(size/8))
         else:
             # on Linux, we can just continue to use the existing shm memory without copying
             with open(mem.fd, 'wb') as mf:
                 mf.write(b"\1")
                 mf.seek(0)
-                arr = np.memmap(mf, dtype=np.double, offset=8)
+                arr = np.memmap(mf, dtype=np.double, offset=8, shape=(int(size/8),))
 
         # on Mac we are done with shm (data is copied), on Linux we can delete the name even though the mapping is still in use
     elif system == 'Windows':
@@ -91,7 +91,7 @@ def _get_array_from_shm(name_and_size : str):
         with mmap.mmap(-1, size, tagname=name) as mf:
             mf.write_byte(1)
             mf.seek(0)
-            arr = np.frombuffer(mf.read(), dtype=np.double, offset=8)
+            arr = np.frombuffer(mf.read(), dtype=np.double, offset=8, count=int(size/8))
     else:
         raise RuntimeError("unsupported platform")
 
