@@ -65,7 +65,7 @@ void testFileReader(const char *file, long numberOfLines, int numberOfSeeks, int
                 line = fileReader.getPreviousLineBufferPointer();
 
                 if (line) {
-                    printf("Read previous line: %.*s", fileReader.getCurrentLineLength(), line);
+                    printf("Read previous line: %.*s", (int)fileReader.getCurrentLineLength(), line);
 
                     // calculate expected line number based on previous expected if any
                     if (expectedLineNumber != -1) {
@@ -87,7 +87,7 @@ void testFileReader(const char *file, long numberOfLines, int numberOfSeeks, int
                 line = fileReader.getNextLineBufferPointer();
 
                 if (line) {
-                    printf("Read next line: %.*s", fileReader.getCurrentLineLength(), line);
+                    printf("Read next line: %.*s", (int)fileReader.getCurrentLineLength(), line);
 
                     // calculate expected line number based on previous expected if any
                     if (expectedLineNumber != -1) {
@@ -114,7 +114,7 @@ void testFileReader(const char *file, long numberOfLines, int numberOfSeeks, int
     }
 }
 
-void usage(char *message)
+void usage(const char *message)
 {
     if (message)
         fprintf(stderr, "Error: %s\n\n", message);

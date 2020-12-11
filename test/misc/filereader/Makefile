@@ -1,18 +1,18 @@
 #
 # Global definitions
 #
-include ../../Makefile.inc
+include ../../../Makefile.inc
 
 #
 # Local definitions
 #
-COPTS = $(CXXFLAGS) -I../../include -I../../src
+COPTS = $(CXXFLAGS) -I../../../include -I../../../src
 
 OBJS= filereaderconsumer.o filereaderproducer.o
 LIBS= $(OMNETPP_LIB_DIR)/liboppcommon$D$(SO_LIB_SUFFIX)
 IMPLIBS= -L $(OMNETPP_LIB_DIR) -loppcommon$D
 
-EXECUTABLES = fileechotest$(EXE_SUFFIX) filereadertest$(EXE_SUFFIX) filereaderconsumer$(EXE_SUFFIX) filereaderproducer$(EXE_SUFFIX)
+EXECUTABLES = filechangetest$(EXE_SUFFIX) fileechotest$(EXE_SUFFIX) filereadertest$(EXE_SUFFIX) filereaderconsumer$(EXE_SUFFIX) filereaderproducer$(EXE_SUFFIX)
 
 #
 # Automatic rules
@@ -26,6 +26,9 @@ EXECUTABLES = fileechotest$(EXE_SUFFIX) filereadertest$(EXE_SUFFIX) filereaderco
 # Targets
 #
 all: $(EXECUTABLES)
+
+filechangetest$(EXE_SUFFIX): filechangetest.o $(LIBS)
+	$(CXX) $(LDFLAGS) -o filechangetest$(EXE_SUFFIX) filechangetest.o $(IMPLIBS)
 
 fileechotest$(EXE_SUFFIX): fileechotest.o $(LIBS)
 	$(CXX) $(LDFLAGS) -o fileechotest$(EXE_SUFFIX) fileechotest.o $(IMPLIBS)
