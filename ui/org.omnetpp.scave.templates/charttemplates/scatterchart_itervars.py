@@ -11,7 +11,7 @@ utils.preconfigure_plot(props)
 # collect parameters for query
 filter_expression = props["filter"]
 xaxis_itervar = props["xaxis_itervar"]
-iso_itervar = props["iso_itervar"]
+iso_itervars = utils.split(props["iso_itervar"])
 
 # query data into a data frame
 df = results.get_scalars(filter_expression, include_runattrs=True, include_attrs=True, include_itervars=True)
@@ -20,44 +20,48 @@ if df.empty:
     plot.set_warning("The result filter returned no data.")
     exit(1)
 
-if not xaxis_itervar and not iso_itervar:
-    print("The X Axis and Iso Line options were not set in the dialog, inferring them from the data..")
+if not xaxis_itervar and not iso_itervars:
+    print("The 'Itervar for X Axis' and 'Itervar for iso line' options were not set in the dialog, inferring them from the data..")
     xaxis_itervar, iso_itervar = utils.pick_two_columns(df)
-    if not xaxis_itervar:
-        plot.set_warning("Please set the X Axis (and Iso Lines) options in the dialog!")
-        exit(1)
+    iso_itervars = [iso_itervar] if iso_itervar else []
+    print("X axis: " + xaxis_itervar + " iso lines: " + ",".join(iso_itervars))
 
-utils.assert_columns_exist(df, [xaxis_itervar])
-df[xaxis_itervar] = pd.to_numeric(df[xaxis_itervar], errors="ignore")
-
-if iso_itervar:
+if xaxis_itervar:
     utils.assert_columns_exist(df, [xaxis_itervar])
-    df[iso_itervar] = pd.to_numeric(df[iso_itervar], errors="ignore")
+    df[xaxis_itervar] = pd.to_numeric(df[xaxis_itervar], errors="ignore")
 
-if not iso_itervar: # might be an empty string
-    iso_itervar = None
+if iso_itervars:
+    utils.assert_columns_exist(df, [xaxis_itervar])
+    for iv in iso_itervars:
+        if iv:
+            df[iv] = pd.to_numeric(df[iv], errors="ignore")
 
 if df.empty:
     plot.set_warning("Select scalars for the Y axis in the Properties dialog")
     exit(1)
 
-unique_names = df["name"].unique()
+uninteresting = ["runID", "value", "datetime", "iterationvars",
+                "iterationvarsf", "measurement", "processid",
+                "replication", "runnumber", "seedset", "title",
+                "source", "interpolationmode"]
 
-if len(unique_names) != 1:
-    plot.set_warning("Selected scalars must share the same name.")
-    exit(1)
+for c in df:
+    ul = len(df[c].unique())
+    if ul > 1 and c != xaxis_itervar and c not in iso_itervars and c not in uninteresting:
+        print("Points are averaged from an overall", ul, "unique", c, "values.")
 
-scalar_name = unique_names[0]
+scalar_names = ', '.join(df["name"].unique())
 
 confidence_level_str = props["confidence_level"] if "confidence_level" in props else "none"
 
 if confidence_level_str == "none":
-    df = pd.pivot_table(df, values="value", columns=iso_itervar, index=xaxis_itervar)
+    df = pd.pivot_table(df, values="value", columns=iso_itervars, index=xaxis_itervar)
     errors_df = None
 else:
     confidence_level = float(confidence_level_str[:-1])/100
     conf_int = lambda values: utils.confidence_interval(confidence_level, values) if len(values) > 1 else math.nan
-    pivoted = pd.pivot_table(df, values="value", columns=iso_itervar, index=xaxis_itervar, aggfunc=[np.mean, conf_int], dropna=False)
+
+    pivoted = pd.pivot_table(df, values="value", columns=iso_itervars, index=xaxis_itervar if xaxis_itervar else "name", aggfunc=[np.mean, conf_int], dropna=False)
     df = pivoted["mean"]
     errors_df = pivoted["<lambda>"]
 
@@ -65,31 +69,41 @@ legend_cols, _ = utils.extract_label_columns(df)
 
 p = plot if chart.is_native_chart() else plt
 
-
-p.xlabel(xaxis_itervar)
-p.ylabel(scalar_name)
-
 try:
     xs = pd.to_numeric(df.index.values)
+    p.xlabel(xaxis_itervar)
 except:
-    plot.set_warning("The X axis itervar is not purely numeric, this is not supported yet.")
-    exit(1)
+    xs = np.zeros_like(df.index.values)
+
+p.ylabel(scalar_names)
 
 for c in df.columns:
     style = utils._make_line_args(props, c, df)
-    ys = df[c].values
-    p.plot(xs, ys, label=(iso_itervar + "=" + str(df[c].name) if iso_itervar else scalar_name), **style)
+    if len(xs) < 2 and style["marker"] == ' ':
+        style["marker"] = '.'
 
+    ys = df[c].values
+    if iso_itervars:
+        names = df[c].name
+        if type(names) != tuple:
+            names = [names]
+        label = ', '.join([str(a) + "=" + str(b) for a, b in zip(iso_itervars, names)])
+    else:
+        label = scalar_names
+    p.plot(xs, ys, label=label, **style)
+    
     if errors_df is not None and not chart.is_native_chart():
         style["linewidth"] = float(style["linewidth"])
         style["linestyle"] = "none"
         yerr = errors_df[c].values
+
         if props["error_style"] == "Error bars":
-            p.errorbar(xs, ys, yerr=yerr, capsize=float(props["cap_size"]), **style)
+            plt.errorbar(xs, ys, yerr=yerr, capsize=float(props["cap_size"]), **style)
         elif props["error_style"] == "Error band":
             plt.fill_between(xs, ys-yerr, ys+yerr, alpha=float(props["band_alpha"]))
 
-utils.set_plot_title(scalar_name + " vs. " + xaxis_itervar)
+
+utils.set_plot_title((scalar_names + " vs. " + xaxis_itervar) if xaxis_itervar else scalar_names)
 
 utils.postconfigure_plot(props)
 

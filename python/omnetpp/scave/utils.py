@@ -20,6 +20,12 @@ def confidence_interval(alpha, data):
     """
     return st.norm.interval(alpha, loc=0, scale=st.sem(data))[1]
 
+def split(s, sep=','):
+    parts = s.split(sep)
+    parts = [p.strip() for p in parts]
+    if parts == ['']:
+        parts = []
+    return parts
 
 def extract_label_columns(df, preferred_legend_column="title"):
 
