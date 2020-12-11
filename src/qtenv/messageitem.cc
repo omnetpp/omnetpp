@@ -300,7 +300,9 @@ void LineMessageItem::setLine(const QLineF& line)
 
 QPointF LineMessageItem::getSideOffsetForWidth(float width) const
 {
-    return (width / 2 + 2) * line.normalVector().unitVector().translated(-line.p1()).p2();
+    return (line.isNull() || std::isnan(line.x1() + line.y1() + line.x2() + line.y2()))
+        ? QPointF(0, 0)
+        : ((width / 2 + 2) * line.normalVector().unitVector().translated(-line.p1()).p2());
 }
 
 void LineMessageItem::updateLineItem()
@@ -325,6 +327,9 @@ void LineMessageItem::updateLineItem()
         localLine.setLength(2);
         localLine.translate(-localLine.pointAt(0.5));
     }
+
+    if (std::isnan(localLine.x1() + localLine.y1() + localLine.x2() + localLine.y2()))
+        localLine = QLineF(0, 0, 0, 0);
 
     arrowheadLength = std::min(arrowheadLength, localLine.length()/2);
 
