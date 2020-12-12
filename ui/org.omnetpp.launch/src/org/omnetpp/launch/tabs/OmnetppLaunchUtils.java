@@ -48,14 +48,18 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.internal.ui.DebugUIPlugin;
-import org.eclipse.debug.internal.ui.preferences.IDebugPreferenceConstants;
 import org.eclipse.debug.internal.ui.views.console.ProcessConsole;
-import org.eclipse.debug.ui.DebugUITools;
+import org.eclipse.debug.internal.ui.views.console.ProcessConsoleManager;
+import org.eclipse.debug.ui.IDebugUIConstants;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.console.ConsolePlugin;
+import org.eclipse.ui.console.IConsole;
+import org.eclipse.ui.console.IConsoleListener;
+import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.IOConsoleOutputStream;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.omnetpp.common.CommonPlugin;
@@ -927,30 +931,47 @@ public class OmnetppLaunchUtils {
         return stringBuffer.toString();
     }
 
+    private static void doPrintToConsole(ProcessConsole procConsole, String text, boolean isErrorMessage) {
+        try {
+            IOConsoleOutputStream stream = procConsole.getStream(
+                    isErrorMessage ? IDebugUIConstants.ID_STANDARD_ERROR_STREAM : IDebugUIConstants.ID_STANDARD_OUTPUT_STREAM);
+            stream.write(text);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Print something to the process's console output. Error message will be written in red
      * and the console will be brought to focus.
      */
     public static void printToConsole(IProcess iprocess, String text, boolean isErrorMessage) {
-        try {
-            ProcessConsole console = (ProcessConsole)DebugUIPlugin.getDefault().getProcessConsoleManager().getConsole(iprocess);
-            if (console != null) {
-                try (final IOConsoleOutputStream stream = console.newOutputStream()) {
-                    if (isErrorMessage) {
-                        stream.setActivateOnWrite(true);
-                        // we have to set the color in the UI thread otherwise SWT will throw an error
-                        Display.getDefault().syncExec(new Runnable() {
-                            @Override
-                            public void run() {
-                                stream.setColor(DebugUITools.getPreferenceColor(IDebugPreferenceConstants.CONSOLE_SYS_ERR_COLOR));
-                            }
-                        });
-                    }
-                    stream.write(text);
+        IConsoleManager consoleManager = ConsolePlugin.getDefault().getConsoleManager();
+        ProcessConsoleManager procConsoleManager = DebugUIPlugin.getDefault().getProcessConsoleManager();
+        ProcessConsole processConsole1 = (ProcessConsole)procConsoleManager.getConsole(iprocess);
+
+        if (processConsole1 != null)
+            doPrintToConsole(processConsole1, text, isErrorMessage);
+        else {
+            // I believe there is a race condition here, because the consolesAdded
+            // notification might have fired after the getConsole call above,
+            // and before the addConsoleListener below. However, it is not
+            // considered critical enough to try to mitigate it in any way.
+            consoleManager.addConsoleListener(new IConsoleListener() {
+                @Override
+                public void consolesRemoved(IConsole[] consoles) {
                 }
-            }
-        } catch (IOException e) {
-            LaunchPlugin.logError("Unable to write to console", e);
+
+                @Override
+                public void consolesAdded(IConsole[] consoles) {
+                    ProcessConsole processConsole2 = (ProcessConsole)procConsoleManager.getConsole(iprocess);
+                    for (IConsole c : consoles)
+                        if (c == processConsole2) {
+                            doPrintToConsole(processConsole2, text, isErrorMessage);
+                            consoleManager.removeConsoleListener(this);
+                        }
+                }
+            });
         }
     }
 
