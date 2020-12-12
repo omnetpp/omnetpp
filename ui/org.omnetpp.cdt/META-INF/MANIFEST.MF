@@ -36,7 +36,9 @@ Require-Bundle: org.eclipse.core.runtime,
  org.visigoths.freemarker.ide,
  org.swtworkbench.xswt,
  org.eclipse.linuxtools.valgrind.launch;resolution:=optional,
- org.eclipse.linuxtools.profiling.launch;resolution:=optional
+ org.eclipse.linuxtools.profiling.launch;resolution:=optional,
+ org.eclipse.ui.console,
+ org.eclipse.debug.core
 Export-Package: org.omnetpp.cdt,
  org.omnetpp.cdt.build,
  org.omnetpp.cdt.cache,
