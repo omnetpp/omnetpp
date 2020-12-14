@@ -1229,7 +1229,7 @@ void TextViewerWidget::keyPressEvent(QKeyEvent *event)
     }
 
     if (shiftPressed)
-        QApplication::clipboard()->setText(getSelectedText(), QClipboard::Selection);
+        QApplication::clipboard()->setText(getSelectedTextUnformatted(), QClipboard::Selection);
 
     caretShown = true;
     caretBlinkTimer.start();
@@ -1255,7 +1255,7 @@ void TextViewerWidget::mouseReleaseEvent(QMouseEvent *event)
     stopAutoScroll();
 
     if (getSelectionStart() != getSelectionEnd())
-        QApplication::clipboard()->setText(getSelectedText(), QClipboard::Selection);
+        QApplication::clipboard()->setText(getSelectedTextUnformatted(), QClipboard::Selection);
 }
 
 void TextViewerWidget::mousePressEvent(QMouseEvent *event)
