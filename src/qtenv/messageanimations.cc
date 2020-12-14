@@ -565,6 +565,8 @@ void MethodcallAnimation::addToInspector(Inspector *insp)
             continue;
 
         if (auto mi = isModuleInspectorFor(showIn, insp)) {
+            if (!mi->getShowMethodCalls())
+                continue;
 
             QPointF src, dest;
 

@@ -66,6 +66,7 @@ private slots:
     void createContextMenu(const std::vector<cObject*> &objects, const QPoint &globalPos);
 
     void showCanvasLayersDialog();
+    void showMethodCalls(bool show);
     void showLabels(bool show);
     void showArrowheads(bool show);
     void zoomIconsBy(double mult);
@@ -82,6 +83,7 @@ protected:
     static const QString PREF_ZOOMFACTOR;
     static const QString PREF_ZOOMBYFACTOR;
     static const QString PREF_ICONSCALE;
+    static const QString PREF_SHOWMETHODCALLS;
     static const QString PREF_SHOWLABELS;
     static const QString PREF_SHOWARROWHEADS;
 
@@ -94,6 +96,7 @@ protected:
     QAction *canvasZoomInAction;
     QAction *canvasZoomOutAction;
     QAction *resetOsgViewAction;
+    QAction *showMethodCallsAction;
     QAction *showModuleNamesAction;
     QAction *showArrowheadsAction;
     QAction *increaseIconSizeAction;
@@ -159,6 +162,8 @@ public:
     QPointF getSubmodCoords(cModule *mod);
     QRectF getSubmodRect(cModule *mod);
     QLineF getConnectionLine(cGate *gate);
+
+    bool getShowMethodCalls() const { return getPref(PREF_SHOWMETHODCALLS, true, true).toBool(); }
 
     QRect getModuleRect(bool includeBorder, int margin);
 };

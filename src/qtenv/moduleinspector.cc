@@ -82,6 +82,7 @@ const QString ModuleInspector::PREF_CENTER = "center";
 const QString ModuleInspector::PREF_ZOOMFACTOR = "zoomfactor";
 const QString ModuleInspector::PREF_ZOOMBYFACTOR = "zoombyfactor";
 const QString ModuleInspector::PREF_ICONSCALE = "iconscale";
+const QString ModuleInspector::PREF_SHOWMETHODCALLS = "showmethodcalls";
 const QString ModuleInspector::PREF_SHOWLABELS = "showlabels";
 const QString ModuleInspector::PREF_SHOWARROWHEADS = "showarrowheads";
 
@@ -93,6 +94,12 @@ ModuleInspector::ModuleInspector(QWidget *parent, bool isTopLevel, InspectorFact
     createViews(isTopLevel);
     parent->setMinimumSize(20, 20);
     switchToCanvasView();
+
+    showMethodCallsAction = new QAction("Show Method Calls", this);
+    connect(showMethodCallsAction, SIGNAL(triggered(bool)), this, SLOT(showMethodCalls(bool)));
+    showMethodCallsAction->setShortcut(Qt::CTRL | Qt::Key_E);
+    showMethodCallsAction->setCheckable(true);
+    addAction(showMethodCallsAction);
 
     showModuleNamesAction = new QAction("Show Module Names", this);
     connect(showModuleNamesAction, SIGNAL(triggered(bool)), this, SLOT(showLabels(bool)));
@@ -248,6 +255,7 @@ void ModuleInspector::doSetObject(cObject *obj)
             canvasViewer->redraw();
             canvasViewer->setZoomFactor(getPref(PREF_ZOOMFACTOR, 1).toDouble());
             canvasViewer->setImageSizeFactor(getPref(PREF_ICONSCALE, 1).toDouble());
+            showMethodCalls(getPref(PREF_SHOWMETHODCALLS, true).toBool());
             showLabels(getPref(PREF_SHOWLABELS, true).toBool());
             showArrowheads(getPref(PREF_SHOWARROWHEADS, true).toBool());
         }
@@ -677,6 +685,7 @@ void ModuleInspector::createContextMenu(const std::vector<cObject *>& objects, c
     menu->addAction("Show/Hide Canvas Layers...", this, SLOT(showCanvasLayersDialog()));
 
     menu->addSeparator();
+    menu->addAction(showMethodCallsAction);
     menu->addAction(showModuleNamesAction);
     menu->addAction(showArrowheadsAction);
 
@@ -723,6 +732,15 @@ void ModuleInspector::showCanvasLayersDialog()
     }
 
     LayersDialog(canvasViewer, this).exec();
+}
+
+void ModuleInspector::showMethodCalls(bool show)
+{
+    if (!object)
+        return;
+
+    setPref(PREF_SHOWMETHODCALLS, show);
+    showMethodCallsAction->setChecked(show);
 }
 
 void ModuleInspector::showLabels(bool show)

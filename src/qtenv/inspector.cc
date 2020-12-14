@@ -226,14 +226,14 @@ void Inspector::refresh()
 
 const QString Inspector::PREF_GEOM = "geom";
 
-QString Inspector::getFullPrefKey(const QString& pref, bool topLevel)
+QString Inspector::getFullPrefKey(const QString& pref, bool topLevel) const
 {
     return "InspectorPreferences/type" + QString::number(type) + "-"
             + (topLevel ? "-toplevel" : "-embedded") + "-"
             + pref;
 }
 
-QString Inspector::getFullPrefKeyPerType(const QString& pref, bool topLevel)
+QString Inspector::getFullPrefKeyPerType(const QString& pref, bool topLevel) const
 {
     return "InspectorPreferences/type" + QString::number(type)
             + (topLevel ? "-toplevel" : "-embedded") + "-"
@@ -241,7 +241,7 @@ QString Inspector::getFullPrefKeyPerType(const QString& pref, bool topLevel)
             + pref;
 }
 
-QVariant Inspector::getPref(const QString& pref, const QVariant& defaultValue, bool perType)
+QVariant Inspector::getPref(const QString& pref, const QVariant& defaultValue, bool perType) const
 {
     QString fullPrefKey = perType
                 ? getFullPrefKeyPerType(pref, isTopLevel())
