@@ -202,7 +202,7 @@ void Qtenv::storeOptsInPrefs()
     setPref("animation_enabled", opt->animationEnabled);
     setPref("nexteventmarkers", opt->showNextEventMarkers);
     setPref("senddirect_arrows", opt->showSendDirectArrows);
-    setPref("anim_methodcalls", opt->animateMethodCalls);
+    setPref("animation_methodcalls", opt->animateMethodCalls);
     setPref("methodcalls_duration", opt->methodCallAnimDuration);
     setPref("animation_msgnames", opt->animationMsgNames);
     setPref("animation_msgclassnames", opt->animationMsgClassNames);
@@ -284,7 +284,7 @@ void Qtenv::restoreOptsFromPrefs()
     if (pref.isValid())
         opt->showSendDirectArrows = pref.toBool();
 
-    pref = getPref("anim_methodcalls");
+    pref = getPref("animation_methodcalls");
     if (pref.isValid())
         opt->animateMethodCalls = pref.toBool();
 

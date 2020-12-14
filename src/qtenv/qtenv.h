@@ -83,7 +83,7 @@ struct QtenvOptions : public EnvirOptions
     bool animationEnabled = true;          // msg animation
     bool showNextEventMarkers = true;      // display next event marker (red frame around modules)
     bool showSendDirectArrows = true;      // flash arrows when doing sendDirect() animation
-    bool animateMethodCalls = true;        // animate method calls
+    bool animateMethodCalls = false;       // animate method calls
     int  methodCallAnimDuration = 1500;    // hold animation of method calls (millisec)
     bool animationMsgNames = true;         // msg animation: display message name or not
     bool animationMsgClassNames = true;    // msg animation: display message class name or not
