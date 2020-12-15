@@ -121,7 +121,7 @@ class SIM_API cCoroutine
     /**
      * Constructor.
      */
-    cCoroutine() {}
+    cCoroutine();
 
     /**
      * Destructor.
