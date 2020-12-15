@@ -10,34 +10,21 @@ package org.omnetpp.ide.variables;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.variables.IDynamicVariable;
 import org.eclipse.core.variables.IDynamicVariableResolver;
+import org.omnetpp.common.IConstants;
 import org.omnetpp.common.OmnetppDirs;
 
 /**
- * resolves OMNETPP_XXX variables (root,bin,include,lib)
- *
+ * Resolves OMNeT++-related Eclipse variables (root, bin, include, lib)
  */
 public class OmnetppDirResolver implements IDynamicVariableResolver {
-    public static final String OMNETPP_ROOT = "opp_root";
-    public static final String OMNETPP_BIN_DIR = "opp_bin_dir";
-    public static final String OMNETPP_INCL_DIR = "opp_incl_dir";
-    public static final String OMNETPP_LIB_DIR = "opp_lib_dir";
-
-    public String resolveValue(IDynamicVariable variable, String argument)
-            throws CoreException {
-        if (OMNETPP_ROOT.equalsIgnoreCase(variable.getName())) {
-            return OmnetppDirs.getOmnetppRootDir();
+    public String resolveValue(IDynamicVariable variable, String argument) throws CoreException {
+        switch (variable.getName().toLowerCase()) {
+        case IConstants.VAR_OMNETPP_ROOT: return OmnetppDirs.getOmnetppRootDir();
+        case IConstants.VAR_OMNETPP_BIN_DIR: return OmnetppDirs.getOmnetppBinDir();
+        case IConstants.VAR_OMNETPP_INCL_DIR: return OmnetppDirs.getOmnetppInclDir();
+        case IConstants.VAR_OMNETPP_LIB_DIR: return OmnetppDirs.getOmnetppLibDir();
+        default: return null;
         }
-        if (OMNETPP_BIN_DIR.equalsIgnoreCase(variable.getName())) {
-            return OmnetppDirs.getOmnetppBinDir();
-        }
-        if (OMNETPP_INCL_DIR.equalsIgnoreCase(variable.getName())) {
-            return OmnetppDirs.getOmnetppInclDir();
-        }
-        if (OMNETPP_LIB_DIR.equalsIgnoreCase(variable.getName())) {
-            return OmnetppDirs.getOmnetppLibDir();
-        }
-
-        return null;
     }
 
 }

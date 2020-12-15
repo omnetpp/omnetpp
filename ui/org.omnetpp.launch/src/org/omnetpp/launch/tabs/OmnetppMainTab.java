@@ -56,6 +56,7 @@ import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.views.navigator.ResourceComparator;
+import org.omnetpp.common.IConstants;
 import org.omnetpp.common.contentassist.ContentProposalEx;
 import org.omnetpp.common.contentassist.ContentProposalProvider;
 import org.omnetpp.common.engine.UnitConversion;
@@ -377,12 +378,16 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
         fRecordEventlogCheckbox.setToolTipText("Record eventlog for Sequence Chart tool. Overrides similar ini file setting");
     }
 
+    private String varHelp(String variableName) {
+        return "Use ${" + variableName + ":/<workingdir>} for automatic setting.";
+    }
+
     protected Composite createAdvancedGroup(Composite parent, int colSpan) {
         Composite composite = SWTFactory.createGroup(parent, "Advanced", 3, colSpan, GridData.FILL_HORIZONTAL);
 
         SWTFactory.createLabel(composite, "Dynamic libraries:", 1);
         fLibraryText = SWTFactory.createSingleText(composite, 1);
-        fLibraryText.setToolTipText("DLLs or shared libraries to load (without extension, relative to the working directory. Use ${opp_shared_libs:/workingdir} for automatic setting.)");
+        fLibraryText.setToolTipText("DLLs or shared libraries to load (without extension, relative to the working directory).\n" + varHelp(IConstants.VAR_SHARED_LIBS));
 
         Button browseLibrariesButton = SWTFactory.createPushButton(composite, "Browse...", null);
         browseLibrariesButton.addSelectionListener(new SelectionAdapter() {
@@ -392,14 +397,13 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
             }
         });
 
-        SWTFactory.createLabel(composite, "NED Source Path:", 1);
+        SWTFactory.createLabel(composite, "NED path:", 1);
         fNedPathText = SWTFactory.createSingleText(composite, 2);
-        fNedPathText.setToolTipText("Directories where NED files are read from (relative to the first selected ini file). " +
-        "Use ${opp_ned_path:/workingdir} for automatic setting.");
+        fNedPathText.setToolTipText("Directories where NED files are read from (relative to the first selected ini file).\n" + varHelp(IConstants.VAR_NED_PATH));
 
         SWTFactory.createLabel(composite, "Image Path:", 1);
         fImagePathText = SWTFactory.createSingleText(composite, 2);
-        fImagePathText.setToolTipText("Directories where image files are read from (relative to the first selected ini file). Use ${opp_image_path:/workingdir} for automatic setting.");
+        fImagePathText.setToolTipText("Directories where image files are read from (relative to the first selected ini file).\n" + varHelp(IConstants.VAR_IMAGE_PATH));
 
         SWTFactory.createLabel(composite, "Additional arguments:", 1);
         fAdditionalText = SWTFactory.createSingleText(composite, 2);
@@ -981,9 +985,9 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
         }
         workingDir = workingDir.replace("}", "?");  // close braces cause weird interference with the fields below (NED path, Shared libs)
 
-        updateWorkingDirInMacro(fLibraryText, OmnetppLaunchUtils.VAR_SHARED_LIBS, workingDir);
-        updateWorkingDirInMacro(fNedPathText, OmnetppLaunchUtils.VAR_NED_PATH, workingDir);
-        updateWorkingDirInMacro(fImagePathText, OmnetppLaunchUtils.VAR_IMAGE_PATH, workingDir);
+        updateWorkingDirInMacro(fLibraryText, IConstants.VAR_SHARED_LIBS, workingDir);
+        updateWorkingDirInMacro(fNedPathText, IConstants.VAR_NED_PATH, workingDir);
+        updateWorkingDirInMacro(fImagePathText, IConstants.VAR_IMAGE_PATH, workingDir);
     }
 
     protected void updateWorkingDirInMacro(Text text, String variable, String workingDir) {

@@ -15,7 +15,7 @@ package org.omnetpp.common;
 public interface IConstants extends ICoreConstants {
     // whether this version is a COMMERCIAL build or not
     public static final boolean IS_COMMERCIAL = false;
-    
+
     // The user facing product name
     public static final String PRODUCT_NAME = "OMNeT++";
 
@@ -72,4 +72,14 @@ public interface IConstants extends ICoreConstants {
     public static final String PREF_OMNETPP_IMAGE_PATH = "omnetppImagePath";
     public static final String PREF_DOXYGEN_EXECUTABLE = "doxygenExecutable";
     public static final String PREF_GRAPHVIZ_DOT_EXECUTABLE = "graphvizDotExecutable";
+
+    // variable names
+    public static final String VAR_NED_PATH = "opp_ned_path";
+    public static final String VAR_SHARED_LIBS = "opp_shared_libs";
+    public static final String VAR_IMAGE_PATH = "opp_image_path";
+    public static final String VAR_OMNETPP_ROOT = "opp_root";
+    public static final String VAR_OMNETPP_BIN_DIR = "opp_bin_dir";
+    public static final String VAR_OMNETPP_INCL_DIR = "opp_incl_dir";
+    public static final String VAR_OMNETPP_LIB_DIR = "opp_lib_dir";
+
 }

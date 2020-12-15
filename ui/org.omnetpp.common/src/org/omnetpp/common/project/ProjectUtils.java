@@ -118,8 +118,6 @@ public class ProjectUtils {
     /**
      * Returns the transitive closure of OMNeT++ projects referenced from the given project,
      * excluding the project itself. Nonexistent and closed projects are ignored.
-     *
-     * Potential CoreExceptions are re-thrown as RuntimeException.
      */
     public static IProject[] getAllReferencedOmnetppProjects(IProject project) throws CoreException {
         return getAllReferencedProjects(project, true, false);

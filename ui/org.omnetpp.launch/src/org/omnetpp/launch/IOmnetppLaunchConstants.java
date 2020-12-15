@@ -8,11 +8,7 @@
 package org.omnetpp.launch;
 
 /**
- * @author rhornig
- */
-/**
- * @author rhornig
- *
+ * Constants for OMNeT++ launch configurations.
  */
 public interface IOmnetppLaunchConstants {
     public static final String SIMULATION_LAUNCH_CONFIGURATION_TYPE = "org.omnetpp.launch.simulationLaunchConfigurationType";
@@ -118,7 +114,7 @@ public interface IOmnetppLaunchConstants {
     public static final String OPP_SHARED_LIBS = OMNETPP_LAUNCH_ID + ".SHARED_LIBS";
 
     /**
-     * The ned path used to start the executable (-n option)
+     * The NED path used to start the executable (-n option)
      */
     public static final String OPP_NED_PATH = OMNETPP_LAUNCH_ID + ".NED_PATH";
 

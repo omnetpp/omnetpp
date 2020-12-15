@@ -17,40 +17,42 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.variables.IDynamicVariable;
 import org.eclipse.core.variables.IDynamicVariableResolver;
+import org.omnetpp.common.IConstants;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.ide.OmnetppMainPlugin;
 
 /**
- * Assembles the value of the NEDPATH environment variable. Argument
+ * Assembles the value of the image path Eclipse variable. Argument
  * is the omnetpp.ini file, or any resource in its project.
+ *
  * @author Andras
  */
 public class ImagePathResolver implements IDynamicVariableResolver {
+    private static final String USAGE = "${" + IConstants.VAR_IMAGE_PATH + ":arg}";
 
     public String resolveValue(IDynamicVariable variable, String argument) throws CoreException {
         if (argument == null)
-            abort("${opp_image_path:arg} requires an argument", null);
+            abort(USAGE + " requires an argument", null);
 
         boolean wantLocation = variable.getName().endsWith("_loc");
 
         IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(new Path(argument));
         if (resource == null || !resource.exists() || resource.getProject() == null)
-            abort("argument to ${opp_image_path:arg} needs to be an existing file, folder, or project", null);
-
+            abort("argument to " + USAGE + " needs to be an existing file, folder, or project", null);
         IProject project = resource.getProject();
-        String result = "";
-        // resolve the image path files
-        try {
-            String pathSep = System.getProperty("path.separator");
 
+        try {
             // collect image directories from project and its dependencies
+            String pathSep = System.getProperty("path.separator");
+            String result = "";
             for (IContainer folder : ImageFactory.getImagePathFor(project))
                 result += pathSep + (wantLocation ? folder.getLocation().toOSString() : folder.getFullPath().toString());
+            return result;
         }
         catch (Exception e) {
             OmnetppMainPlugin.logError(e);
+            return "";
         }
-        return result;
     }
 
     protected void abort(String message, Throwable exception) throws CoreException {

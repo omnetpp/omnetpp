@@ -308,9 +308,9 @@ public class OmnetppLaunchUtils {
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_WORKING_DIRECTORY, workingDir);
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_EXECUTABLE, executable);
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_INI_FILES, iniFile);
-        configuration.setAttribute(IOmnetppLaunchConstants.OPP_NED_PATH, "${"+VAR_NED_PATH+":"+workingDir+"}");
-        configuration.setAttribute(IOmnetppLaunchConstants.OPP_IMAGE_PATH, "${"+VAR_IMAGE_PATH+":"+workingDir+"}");
-        configuration.setAttribute(IOmnetppLaunchConstants.OPP_SHARED_LIBS, "${"+VAR_SHARED_LIBS+":"+workingDir+"}");
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_NED_PATH, "${"+IConstants.VAR_NED_PATH+":"+workingDir+"}");
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_IMAGE_PATH, "${"+IConstants.VAR_IMAGE_PATH+":"+workingDir+"}");
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_SHARED_LIBS, "${"+IConstants.VAR_SHARED_LIBS+":"+workingDir+"}");
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_NUM_CONCURRENT_PROCESSES, 1);
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_BATCH_SIZE, 1);
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_ADDITIONAL_ARGS, "");
@@ -993,10 +993,6 @@ public class OmnetppLaunchUtils {
         // we should have a consistent marker char/tag during user input
         return text.contains("Enter parameter");
     }
-
-    public final static String VAR_NED_PATH = "opp_ned_path";
-    public final static String VAR_SHARED_LIBS = "opp_shared_libs";
-    public final static String VAR_IMAGE_PATH = "opp_image_path";
 
     /**
      * Walk through all projects and set the active configuration to match the launch mode, in case the
