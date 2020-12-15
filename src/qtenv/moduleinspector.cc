@@ -686,6 +686,7 @@ void ModuleInspector::createContextMenu(const std::vector<cObject *>& objects, c
 
     menu->addSeparator();
     menu->addAction(showMethodCallsAction);
+    showMethodCallsAction->setEnabled(getQtenv()->opt->animateMethodCalls);
     menu->addAction(showModuleNamesAction);
     menu->addAction(showArrowheadsAction);
 
