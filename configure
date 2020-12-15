@@ -629,7 +629,6 @@ SHARED_LIBS
 SHLIB_POSTPROCESS
 MKPATH
 LN
-MAKEDEPEND
 STRIP
 DLLTOOL
 SHLIB_LD
@@ -2217,7 +2216,6 @@ WITH_QTENV=${WITH_QTENV:-yes}
 MSGC=${MSGC:-opp_msgc}
 NEDTOOL=${NEDTOOL:-opp_nedtool}
 SMC=${SMC:-opp_smc}
-MAKEDEPEND=${MAKEDEPEND:-opp_makedep -Y --objdirtree}
 LN=${LN:-ln -f}
 MKPATH=${MKPATH:-mkdir -p}
 SHLIB_POSTPROCESS=${SHLIB_POSTPROCESS:-opp_shlib_postprocess}
@@ -6120,7 +6118,6 @@ ac_config_files="$ac_config_files Makefile.inc src/qtenv/qtenv.pri"
 #----------------------
 # Substitutions.
 #----------------------
-
 
 
 
