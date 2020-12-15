@@ -84,11 +84,11 @@ protected:
     virtual void printChild(std::ostream& out, ExprNode *child, int spaciousness) const;
     virtual bool needSpaces(int spaciousness) const {return spaciousness >= (LASTPREC-getPrecedence());}
     static void bringToCommonTypeAndUnit(ExprValue& a, ExprValue& b);
-    static void ensureArgType(int index, ExprValue::Type type, const ExprValue& actual);
-    static void ensureNumericArg(const ExprValue& actual);
-    static void ensureNoLogarithmicUnit(const ExprValue& value);
-    static void ensureNumericNoLogarithmicUnit(const ExprValue& value);
-    static void ensureDimlessDoubleArg(ExprValue& value);
+    inline static void ensureArgType(int index, ExprValue::Type type, const ExprValue& actual);
+    inline static void ensureNumericArg(const ExprValue& actual);
+    inline static void ensureNoLogarithmicUnit(const ExprValue& value);
+    inline static void ensureNumericNoLogarithmicUnit(const ExprValue& value);
+    inline static void ensureDimlessDoubleArg(ExprValue& value);
     [[noreturn]] static void errorWrongArgType(int index, ExprValue::Type expected, const ExprValue& actual);
     [[noreturn]] static void errorBooleanArgExpected(const ExprValue& actual);
     [[noreturn]] static void errorBooleanArgsExpected(const ExprValue& actual1, const ExprValue& actual2);
@@ -100,7 +100,7 @@ protected:
     [[noreturn]] static void errorDimlessArgsExpected(const ExprValue& actual1, const ExprValue& actual2);
 public:
     virtual ~ExprNode() {}
-    ExprValue tryEvaluate(Context *context) const;
+    inline ExprValue tryEvaluate(Context *context) const;
     virtual std::string getName() const = 0;
     virtual ExprNode *dupTree() const;
     virtual ExprNode *dup() const = 0;

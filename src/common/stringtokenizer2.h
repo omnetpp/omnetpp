@@ -95,7 +95,7 @@ class COMMON_API StringTokenizer2
     std::string parenChars;
     std::string quoteChars;
 
-    void skipDelimiters();
+    inline void skipDelimiters();
     char *readToken();
     bool isQuote(char ch) { return quoteChars.find(ch) != std::string::npos; }
     bool isParen(char ch) { return parenChars.find(ch) != std::string::npos; }

@@ -101,8 +101,8 @@ class SCAVE_API ResultItem
     const std::string& getModuleName() const {return *moduleNameRef;}
 
     FileRun *getFileRun() const {return fileRunRef;}
-    ResultFile *getFile() const;
-    Run *getRun() const;
+    inline ResultFile *getFile() const;
+    inline Run *getRun() const;
 
     const StringMap& getAttributes() const {return *attributes;}
 

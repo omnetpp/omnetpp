@@ -183,8 +183,8 @@ class SCAVE_API ResultFileManager
     }
     static void _setreservedbit(ID& id) {id |= (((int64_t)1)<<63);}
     static void _clearreservedbit(ID& id) {id &= ~(((int64_t)1)<<63);}
-    static ID _containingItemID(ID fieldItemId);
-    static ID _fieldItemID(ID containingItemId, int fieldId);
+    inline static ID _containingItemID(ID fieldItemId);
+    inline static ID _fieldItemID(ID containingItemId, int fieldId);
 
     // utility functions called while loading a result file
     ResultFile *addFile(const char *displayName, const char *fileSystemFileName, ResultFile::FileType fileType);
@@ -199,18 +199,18 @@ class SCAVE_API ResultFileManager
     int addStatistics(FileRun *fileRunRef, const char *moduleName, const char *statisticsName, const Statistics& stat, const StringMap& attrs);
     int addHistogram(FileRun *fileRunRef, const char *moduleName, const char *histogramName, const Statistics& stat, const Histogram& bins, const StringMap& attrs);
 
-    FileRun *getFileRunForID(ID id) const; // checks for nullptr
+    inline FileRun *getFileRunForID(ID id) const; // checks for nullptr
 
     void makeIDs(std::vector<ID>& out, FileRun *fileRun, int numItems, int type) const;
     void makeFieldScalarIDs(std::vector<ID>& out, FileRun *fileRun, int numItems, HostType hosttype, FieldNum *fieldIds) const;
 
     // unchecked getters are only for internal use by CmpBase in idlist.cc
-    const ResultItem *uncheckedGetItem(ID id, ScalarResult& buffer) const;
-    const ScalarResult *uncheckedGetScalar(ID id, ScalarResult& buffer) const;
-    const ParameterResult *uncheckedGetParameter(ID id) const;
-    const VectorResult *uncheckedGetVector(ID id) const;
-    const StatisticsResult *uncheckedGetStatistics(ID id) const;
-    const HistogramResult *uncheckedGetHistogram(ID id) const;
+    inline const ResultItem *uncheckedGetItem(ID id, ScalarResult& buffer) const;
+    inline const ScalarResult *uncheckedGetScalar(ID id, ScalarResult& buffer) const;
+    inline const ParameterResult *uncheckedGetParameter(ID id) const;
+    inline const VectorResult *uncheckedGetVector(ID id) const;
+    inline const StatisticsResult *uncheckedGetStatistics(ID id) const;
+    inline const HistogramResult *uncheckedGetHistogram(ID id) const;
 
     void fillFieldScalar(ScalarResult& scalar, ID id) const;
     const std::string *getPooledNameWithSuffix(const std::string *name, FieldNum fieldId) const;
@@ -258,7 +258,7 @@ class SCAVE_API ResultFileManager
     const ResultItem *getContainingItem(ID fieldScalarId) const {return getNonfieldItem(_containingItemID(fieldScalarId));}
     const char *getItemProperty(ID id, const char *propertyName) const; //"module", "itervar:numHosts", etc.
 
-    bool isStaleID(ID id) const;
+    inline bool isStaleID(ID id) const;
     bool hasStaleID(const IDList& ids) const;
     FileRun *getFileRun(ID id) const {return fileRunList[_filerunid(id)];}
 

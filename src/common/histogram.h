@@ -37,14 +37,14 @@ class COMMON_API Histogram {
     public:
         Histogram() {}
         Histogram(const Histogram& other) = default;
-        void clear();
-        void setBins(const std::vector<double>& edges, const std::vector<double>& values);
-        void setBinEdges(const std::vector<double>& edges); // clears the histogram
-        void setBinValues(const std::vector<double>& values);
+        inline void clear();
+        inline void setBins(const std::vector<double>& edges, const std::vector<double>& values);
+        inline void setBinEdges(const std::vector<double>& edges); // clears the histogram
+        inline void setBinValues(const std::vector<double>& values);
         void setUnderflows(double d) {underflows = d;}
         void setOverflows(double d) {overflows = d;}
 
-        void collect(double value, double weight=1);
+        inline void collect(double value, double weight=1);
         void collectIntoBin(int k, double weight=1) {binValues.at(k) += weight;}
 
         const std::vector<double>& getBinEdges() const {return binEdges;} // one more than values
