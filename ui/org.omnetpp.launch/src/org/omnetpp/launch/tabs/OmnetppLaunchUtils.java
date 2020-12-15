@@ -309,6 +309,7 @@ public class OmnetppLaunchUtils {
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_EXECUTABLE, executable);
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_INI_FILES, iniFile);
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_NED_PATH, "${"+IConstants.VAR_NED_PATH+":"+workingDir+"}");
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_NED_PACKAGE_EXCLUSIONS, "${"+IConstants.VAR_NED_PACKAGE_EXCLUSIONS+":"+workingDir+"}");
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_IMAGE_PATH, "${"+IConstants.VAR_IMAGE_PATH+":"+workingDir+"}");
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_SHARED_LIBS, "${"+IConstants.VAR_SHARED_LIBS+":"+workingDir+"}");
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_NUM_CONCURRENT_PROCESSES, 1);
@@ -456,6 +457,12 @@ public class OmnetppLaunchUtils {
             if (nedPaths.length>1 || !".".equals(nedPaths[0]))
                 args += " -n " + StringUtils.join(nedPaths, pathSep)+" ";
         }
+
+        // NED package exclusions
+        String nedExclusionsStr = config.getAttribute(IOmnetppLaunchConstants.OPP_NED_PACKAGE_EXCLUSIONS, "").trim();
+        nedExclusionsStr = StringUtils.substituteVariables(nedExclusionsStr);
+        if (StringUtils.isNotBlank(nedExclusionsStr))
+            args += " -x " + nedExclusionsStr + " ";
 
         // image path
         String imagePathStr = config.getAttribute(IOmnetppLaunchConstants.OPP_IMAGE_PATH, "").trim();

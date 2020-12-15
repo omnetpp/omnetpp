@@ -75,6 +75,7 @@ public interface IConstants extends ICoreConstants {
 
     // variable names
     public static final String VAR_NED_PATH = "opp_ned_path";
+    public static final String VAR_NED_PACKAGE_EXCLUSIONS = "opp_ned_package_exclusions";
     public static final String VAR_SHARED_LIBS = "opp_shared_libs";
     public static final String VAR_IMAGE_PATH = "opp_image_path";
     public static final String VAR_OMNETPP_ROOT = "opp_root";

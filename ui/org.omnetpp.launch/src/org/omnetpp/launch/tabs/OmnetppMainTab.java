@@ -96,6 +96,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
     protected Combo fConfigCombo;
     protected Text fRunText;
     protected Text fNedPathText;
+    protected Text fNedPackageExclusionsText;
     protected Text fImagePathText;
     protected Button fBatchingCheckbox;
     protected Spinner fParallelismSpinner;
@@ -401,7 +402,11 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
         fNedPathText = SWTFactory.createSingleText(composite, 2);
         fNedPathText.setToolTipText("Directories where NED files are read from (relative to the first selected ini file).\n" + varHelp(IConstants.VAR_NED_PATH));
 
-        SWTFactory.createLabel(composite, "Image Path:", 1);
+        SWTFactory.createLabel(composite, "Exclude NED packages:", 1);
+        fNedPackageExclusionsText = SWTFactory.createSingleText(composite, 2);
+        fNedPackageExclusionsText.setToolTipText("Semicolon-separated list of NED packages to exclude when NED folders are read.\n" + varHelp(IConstants.VAR_NED_PACKAGE_EXCLUSIONS));
+
+        SWTFactory.createLabel(composite, "Image path:", 1);
         fImagePathText = SWTFactory.createSingleText(composite, 2);
         fImagePathText.setToolTipText("Directories where image files are read from (relative to the first selected ini file).\n" + varHelp(IConstants.VAR_IMAGE_PATH));
 
@@ -500,6 +505,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
 
             fLibraryText.setText(config.getAttribute(IOmnetppLaunchConstants.OPP_SHARED_LIBS, "").trim());
             fNedPathText.setText(config.getAttribute(IOmnetppLaunchConstants.OPP_NED_PATH, "").trim());
+            fNedPackageExclusionsText.setText(config.getAttribute(IOmnetppLaunchConstants.OPP_NED_PACKAGE_EXCLUSIONS, "").trim());
             fImagePathText.setText(config.getAttribute(IOmnetppLaunchConstants.OPP_IMAGE_PATH, "").trim());
             fAdditionalText.setText(config.getAttribute(IOmnetppLaunchConstants.OPP_ADDITIONAL_ARGS, "").trim());
             int buildBeforeValue = config.getAttribute(IOmnetppLaunchConstants.OPP_BUILD_BEFORE_LAUNCH, IOmnetppLaunchConstants.OPP_BUILD_BEFORE_LAUNCH_DEPENDENCIES);
@@ -562,6 +568,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
 
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_SHARED_LIBS, fLibraryText.getText().trim());
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_NED_PATH, fNedPathText.getText().trim());
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_NED_PACKAGE_EXCLUSIONS, fNedPackageExclusionsText.getText().trim());
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_IMAGE_PATH, fImagePathText.getText().trim());
 
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_ADDITIONAL_ARGS, fAdditionalText.getText().trim());
@@ -987,6 +994,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
 
         updateWorkingDirInMacro(fLibraryText, IConstants.VAR_SHARED_LIBS, workingDir);
         updateWorkingDirInMacro(fNedPathText, IConstants.VAR_NED_PATH, workingDir);
+        updateWorkingDirInMacro(fNedPackageExclusionsText, IConstants.VAR_NED_PACKAGE_EXCLUSIONS, workingDir);
         updateWorkingDirInMacro(fImagePathText, IConstants.VAR_IMAGE_PATH, workingDir);
     }
 

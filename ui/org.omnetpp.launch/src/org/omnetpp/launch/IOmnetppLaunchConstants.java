@@ -119,6 +119,11 @@ public interface IOmnetppLaunchConstants {
     public static final String OPP_NED_PATH = OMNETPP_LAUNCH_ID + ".NED_PATH";
 
     /**
+     * NED package exclusions (-x option)
+     */
+    public static final String OPP_NED_PACKAGE_EXCLUSIONS = OMNETPP_LAUNCH_ID + ".NED_PACKAGE_EXCLUSIONS";
+
+    /**
      * The image path used to start the executable (--image-path option)
      */
     public static final String OPP_IMAGE_PATH = OMNETPP_LAUNCH_ID + ".IMAGE_PATH";
