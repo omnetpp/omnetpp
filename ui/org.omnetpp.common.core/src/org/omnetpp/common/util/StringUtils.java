@@ -717,7 +717,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     }
 
     /**
-     * Performs variable substitution on the string. Unresolved macros and other errors cause CoreException.
+     * Performs Eclipse variable substitution on the string. Unresolved macros and other errors cause CoreException.
      */
     public static String substituteVariables(String string) throws CoreException {
         return VariablesPlugin.getDefault().getStringVariableManager().performStringSubstitution(string, true);

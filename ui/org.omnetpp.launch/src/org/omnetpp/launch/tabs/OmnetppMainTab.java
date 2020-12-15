@@ -243,7 +243,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
         workingDirText.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent e) {
-                updateMacros();
+                updateWorkingDirInMacros();
             }
         });
         fWorkspaceButton = createPushButton(composite, "Browse...", null);
@@ -972,7 +972,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
     // ********************************************************************
     // event listeners
 
-    protected void updateMacros() {
+    protected void updateWorkingDirInMacros() {
         String workingDir = getWorkingDirectoryText();
         try {
             workingDir = StringUtils.substituteVariables(workingDir);
@@ -981,17 +981,15 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
         }
         workingDir = workingDir.replace("}", "?");  // close braces cause weird interference with the fields below (NED path, Shared libs)
 
-        String libText = fLibraryText.getText();
-        libText = libText.replaceAll("\\$\\{"+OmnetppLaunchUtils.VAR_SHARED_LIBS+":.*?\\}", Matcher.quoteReplacement("${"+OmnetppLaunchUtils.VAR_SHARED_LIBS+":"+workingDir+"}"));
-        fLibraryText.setText(libText);
+        updateWorkingDirInMacro(fLibraryText, OmnetppLaunchUtils.VAR_SHARED_LIBS, workingDir);
+        updateWorkingDirInMacro(fNedPathText, OmnetppLaunchUtils.VAR_NED_PATH, workingDir);
+        updateWorkingDirInMacro(fImagePathText, OmnetppLaunchUtils.VAR_IMAGE_PATH, workingDir);
+    }
 
-        String nedText = fNedPathText.getText();
-        nedText = nedText.replaceAll("\\$\\{"+OmnetppLaunchUtils.VAR_NED_PATH+":.*?\\}", Matcher.quoteReplacement("${"+OmnetppLaunchUtils.VAR_NED_PATH+":"+workingDir+"}"));
-        fNedPathText.setText(nedText);
-
-        String imageText = fImagePathText.getText();
-        imageText = imageText.replaceAll("\\$\\{"+OmnetppLaunchUtils.VAR_IMAGE_PATH+":.*?\\}", Matcher.quoteReplacement("${"+OmnetppLaunchUtils.VAR_IMAGE_PATH+":"+workingDir+"}"));
-        fImagePathText.setText(imageText);
+    protected void updateWorkingDirInMacro(Text text, String variable, String workingDir) {
+        String str = text.getText();
+        str = str.replaceAll("\\$\\{"+variable+":.*?\\}", Matcher.quoteReplacement("${"+variable+":"+workingDir+"}"));
+        text.setText(str);
     }
 
 }
