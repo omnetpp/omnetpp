@@ -48,9 +48,10 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.internal.ui.DebugUIPlugin;
+import org.eclipse.debug.internal.ui.preferences.IDebugPreferenceConstants;
 import org.eclipse.debug.internal.ui.views.console.ProcessConsole;
 import org.eclipse.debug.internal.ui.views.console.ProcessConsoleManager;
-import org.eclipse.debug.ui.IDebugUIConstants;
+import org.eclipse.debug.ui.DebugUITools;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
@@ -935,9 +936,20 @@ public class OmnetppLaunchUtils {
     }
 
     private static void doPrintToConsole(ProcessConsole procConsole, String text, boolean isErrorMessage) {
-        try {
-            IOConsoleOutputStream stream = procConsole.getStream(
-                    isErrorMessage ? IDebugUIConstants.ID_STANDARD_ERROR_STREAM : IDebugUIConstants.ID_STANDARD_OUTPUT_STREAM);
+        // This has to work even if the process has already exited, so the existing streams
+        // for stdout/stderr should not be written to - they might be closed already.
+        try (final IOConsoleOutputStream stream = procConsole.newOutputStream()) {
+            if (isErrorMessage) {
+                stream.setActivateOnWrite(true);
+                // we have to set the color in the UI thread otherwise SWT will throw an error
+                Display.getDefault().syncExec(new Runnable() {
+                    @Override
+                    public void run() {
+                        stream.setColor(
+                                DebugUITools.getPreferenceColor(IDebugPreferenceConstants.CONSOLE_SYS_ERR_COLOR));
+                    }
+                });
+            }
             stream.write(text);
         } catch (IOException e) {
             e.printStackTrace();
