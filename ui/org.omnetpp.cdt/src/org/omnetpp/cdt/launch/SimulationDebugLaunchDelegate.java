@@ -122,12 +122,13 @@ public class SimulationDebugLaunchDelegate extends GdbLaunchDelegate {
             @Override
             public void launchChanged(ILaunch launchParam) {
                 if (launchParam == launch) {
+                    // the first process is the debugger, the second is the debuggee (the simulation)
                     if (launch.getProcesses().length >= 2)
                     {
                         try {
                             String workingDir = fc.getAttribute(IOmnetppLaunchConstants.ATTR_WORKING_DIRECTORY, "");
                             String commandLine = fc.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, "")
-                                        + fc.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, "");
+                                        + " " + fc.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, "");
 
                             OmnetppLaunchUtils.printToConsole(launch.getProcesses()[1], "Debugging...\n\n$ cd "+workingDir+"\n$ "+commandLine+"\n\n", false);
                         } catch (CoreException e) {
