@@ -257,16 +257,15 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * Load all NED files from a NED source folder. This involves visiting
      * each subdirectory, and loading all "*.ned" files from there.
      * The given folder is assumed to be the root of the NED package hierarchy.
-     * A list of folders to skip may be specified in the exclusionPath parameter
-     * (items must be separated with a semicolon; colon may also be used on
-     * non-Windows systems).
+     * A list of packages to skip may be specified in the excludedPackages parameter
+     * (items must be separated with a semicolon).
      *
      * The function returns the number of NED files loaded.
      *
      * Note: doneLoadingNedFiles() must be called after the last
      * loadNedSourceFolder()/loadNedFile()/loadNedText() call.
      */
-    static int loadNedSourceFolder(const char *folderName, const char *exclusionPath="");
+    static int loadNedSourceFolder(const char *folderName, const char *excludedPackages="");
 
     /**
      * Load a single NED file. If the expected package is given (non-nullptr),

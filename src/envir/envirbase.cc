@@ -148,7 +148,7 @@ Register_PerRunConfigOption(CFGID_PRINT_UNDISPOSED, "print-undisposed", CFG_BOOL
 Register_GlobalConfigOption(CFGID_SIMTIME_SCALE, "simtime-scale", CFG_INT, "-12", "DEPRECATED in favor of simtime-resolution. Sets the scale exponent, and thus the resolution of time for the 64-bit fixed-point simulation time representation. Accepted values are -18..0; for example, -6 selects microsecond resolution. -12 means picosecond resolution, with a maximum simtime of ~110 days.");
 Register_GlobalConfigOption(CFGID_SIMTIME_RESOLUTION, "simtime-resolution", CFG_CUSTOM, "ps", "Sets the resolution for the 64-bit fixed-point simulation time representation. Accepted values are: second-or-smaller time units (`s`, `ms`, `us`, `ns`, `ps`, `fs` or as), power-of-ten multiples of such units (e.g. 100ms), and base-10 scale exponents in the -18..0 range. The maximum representable simulation time depends on the resolution. The default is picosecond resolution, which offers a range of ~110 days.");
 Register_GlobalConfigOption(CFGID_NED_PATH, "ned-path", CFG_PATH, "", "A semicolon-separated list of directories. The directories will be regarded as roots of the NED package hierarchy, and all NED files will be loaded from their subdirectory trees. This option is normally left empty, as the OMNeT++ IDE sets the NED path automatically, and for simulations started outside the IDE it is more convenient to specify it via command-line option (-n) or via environment variable (OMNETPP_NED_PATH, NEDPATH).");
-Register_GlobalConfigOption(CFGID_NED_EXCLUSION_PATH, "ned-exclusion-path", CFG_PATH, "", "A semicolon-separated list of directories to be skipped when loading NED files. Relative paths are interpreted as relative to root of the NED folder being loaded, i.e. specifying 'tests' will skip the 'tests' subdirectory in each folder in the NED path. The NED exclusion path may also be specified via command-line option (-x) and environment variable (OMNETPP_NED_EXCLUSION_PATH).");
+Register_GlobalConfigOption(CFGID_NED_PACKAGE_EXCLUSIONS, "ned-package-exclusions", CFG_CUSTOM, "", "A semicolon-separated list of NED packages to be excluded when loading NED files. Sub-packages of excluded ones are also excluded. Additional items may be specified via the `-x` command-line option and the `OMNETPP_NED_PACKAGE_EXCLUSIONS` environment variable.");
 Register_GlobalConfigOption(CFGID_DEBUGGER_ATTACH_ON_STARTUP, "debugger-attach-on-startup", CFG_BOOL, "false", "When set to true, the simulation program will launch an external debugger attached to it (if not already present), allowing you to set breakpoints before proceeding. The debugger command is configurable. Note that debugging (i.e. attaching to) a non-child process needs to be explicitly enabled on some systems, e.g. Ubuntu.");
 Register_GlobalConfigOption(CFGID_DEBUGGER_ATTACH_ON_ERROR, "debugger-attach-on-error", CFG_BOOL, "false", "When set to true, runtime errors and crashes will trigger an external debugger to be launched (if not already present), allowing you to perform just-in-time debugging on the simulation process. The debugger command is configurable. Note that debugging (i.e. attaching to) a non-child process needs to be explicitly enabled on some systems, e.g. Ubuntu.");
 Register_GlobalConfigOption(CFGID_DEBUGGER_ATTACH_COMMAND, "debugger-attach-command", CFG_STRING, nullptr, "Command line to launch the debugger. It must contain exactly one percent sign, as `%u`, which will be replaced by the PID of this process. The command must not block (i.e. it should end in `&` on Unix-like systems). Default on this platform: `" DEFAULT_DEBUGGER_COMMAND "`. This default can be overridden with the `OMNETPP_DEBUGGER_COMMAND` environment variable.");
@@ -600,7 +600,7 @@ bool EnvirBase::setup()
             if (foldersLoaded.find(folder) == foldersLoaded.end()) {
                 if (opt->verbose)
                     out << "Loading NED files from " << folder << ": ";
-                int count = getSimulation()->loadNedSourceFolder(folder, opt->nedExclusionPath.c_str());
+                int count = getSimulation()->loadNedSourceFolder(folder, opt->nedExcludedPackages.c_str());
                 if (opt->verbose)
                     out << " " << count << endl;
                 foldersLoaded.insert(folder);
@@ -662,13 +662,12 @@ void EnvirBase::printHelp()
     out << "                variable. If the result is empty, the NED path defaults to '.',\n";
     out << "                that is, NED files will be loaded from the current directory and\n";
     out << "                its subfolders.\n";
-    out << "  -x <nedexclusionpath>\n";
-    out << "                List of folders to ignore when loading NED files. Folders are separated\n";
-    out << "                with a semicolon (on non-Windows systems, colon may also be used).\n";
-    out << "                Multiple -x options may be present, and additional folders may be\n";
-    out << "                specified in the OMNETPP_NED_EXCLUSION_PATH environment variable.\n";
-    out << "                Relative paths are interpreted as relative to the NED source folder\n";
-    out << "                the files are being loaded from.\n";
+    out << "  -x <ned-packages-to-exclude>\n";
+    out << "                Semicolon-separated list of NED packages to exclude when loading\n";
+    out << "                NED files. Sub-packages of excluded ones are also excluded.\n";
+    out << "                Multiple -x options may be present, and additional packages may be\n";
+    out << "                specified in the ned-package-exclusions configuration option and the\n";
+    out << "                OMNETPP_NED_PACKAGE_EXCLUSIONS environment variable.\n";
     out << "  -i <imgpath>  List of folders to load images from. Folders are separated\n";
     out << "                with a semicolon (on non-Windows systems, colon may also be used).\n";
     out << "                Multiple -i options may be present. The effective image path is\n";
@@ -1349,11 +1348,11 @@ void EnvirBase::readOptions()
         nedPath = ".";
     opt->nedPath = nedPath;
 
-    // NED exclusion path
-    std::string nedExclusionPath = opp_join(args->optionValues('x'), ";");
-    nedExclusionPath = opp_join(";", nedExclusionPath, getConfig()->getAsPath(CFGID_NED_EXCLUSION_PATH));
-    nedExclusionPath = opp_join(";", nedExclusionPath, opp_nulltoempty(getenv("OMNETPP_NED_EXCLUSION_PATH")));
-    opt->nedExclusionPath = nedExclusionPath;
+    // NED packages to exclude
+    std::string nedExcludedPackages = opp_join(args->optionValues('x'), ";");
+    nedExcludedPackages = opp_join(";", nedExcludedPackages, opp_nulltoempty(getConfig()->getAsCustom(CFGID_NED_PACKAGE_EXCLUSIONS)));
+    nedExcludedPackages = opp_join(";", nedExcludedPackages, opp_nulltoempty(getenv("OMNETPP_NED_PACKAGE_EXCLUSIONS")));
+    opt->nedExcludedPackages = nedExcludedPackages;
 
     // Image path similarly to NED path, except that we have compile-time default as well,
     // in the OMNETPP_IMAGE_PATH macro.

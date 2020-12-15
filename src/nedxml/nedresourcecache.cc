@@ -84,23 +84,26 @@ static std::vector<std::string> resolvePath(const char *folder, const char *path
     return result;
 }
 
-int NedResourceCache::loadNedSourceFolder(const char *folderName, const char *exclusionPath)
+int NedResourceCache::loadNedSourceFolder(const char *folderName, const char *excludedPackagesStr)
 {
     try {
-        std::vector<std::string> excludedFolders = resolvePath(folderName, exclusionPath); // list of canonicalized folder paths
+        std::vector<std::string> excludedPackages;
+        for (std::string pkg : opp_split(opp_nulltoempty(excludedPackagesStr), ";"))
+            if (!opp_trim(pkg).empty())
+                excludedPackages.push_back(opp_trim(pkg));
         std::string canonicalFolderName = canonicalize(folderName);
         std::string rootPackageName = determineRootPackageName(folderName);
         folderPackages[canonicalFolderName] = rootPackageName;
-        return doLoadNedSourceFolder(folderName, rootPackageName.c_str(), excludedFolders);
+        return doLoadNedSourceFolder(folderName, rootPackageName.c_str(), excludedPackages);
     }
     catch (std::exception& e) {
         throw NedException("Could not load NED sources from '%s': %s", folderName, e.what());
     }
 }
 
-int NedResourceCache::doLoadNedSourceFolder(const char *folderName, const char *expectedPackage, const std::vector<std::string>& excludedFolders)
+int NedResourceCache::doLoadNedSourceFolder(const char *folderName, const char *expectedPackage, const std::vector<std::string>& excludedPackages)
 {
-    if (contains(excludedFolders, canonicalize(folderName)))
+    if (!opp_isempty(expectedPackage) && contains(excludedPackages, std::string(expectedPackage)))  // note: the root package "" cannot be excluded
         return 0;
 
     PushDir pushDir(folderName);
@@ -113,7 +116,7 @@ int NedResourceCache::doLoadNedSourceFolder(const char *folderName, const char *
             continue;  // ignore ".", "..", and dotfiles
         }
         if (isDirectory(filename)) {
-            count += doLoadNedSourceFolder(filename, expectedPackage == nullptr ? nullptr : opp_join(".", expectedPackage, filename).c_str(), excludedFolders);
+            count += doLoadNedSourceFolder(filename, expectedPackage == nullptr ? nullptr : opp_join(".", expectedPackage, filename).c_str(), excludedPackages);
         }
         else if (opp_stringendswith(filename, ".ned")) {
             doLoadNedFileOrText(filename, nullptr, expectedPackage, false);

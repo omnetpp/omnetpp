@@ -235,10 +235,10 @@ void cSimulation::setSimulationTimeLimit(simtime_t simTimeLimit)
     getFES()->insert(new cEndSimulationEvent("endsimulation", simTimeLimit));
 }
 
-int cSimulation::loadNedSourceFolder(const char *folder, const char *exclusionPath)
+int cSimulation::loadNedSourceFolder(const char *folder, const char *excludedPackages)
 {
 #ifdef WITH_NETBUILDER
-    return cNedLoader::getInstance()->loadNedSourceFolder(folder, exclusionPath);
+    return cNedLoader::getInstance()->loadNedSourceFolder(folder, excludedPackages);
 #else
     throw cRuntimeError("Cannot load NED files from '%s': Simulation kernel was compiled without "
                         "support for dynamic loading of NED files (WITH_NETBUILDER=no)", folder);

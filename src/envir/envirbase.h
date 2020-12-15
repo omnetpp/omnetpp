@@ -87,7 +87,7 @@ struct ENVIR_API EnvirOptions
     std::string inifileNetworkDir;
     std::string imagePath;
     std::string nedPath;
-    std::string nedExclusionPath;
+    std::string nedExcludedPackages;
 
     int numRNGs;
     std::string rngClass;
