@@ -1,0 +1,52 @@
+%description:
+Test that excluding packages via config option (ned-package-exclusions),
+command-line option (-x) and environment variable (OMNETPP_NED_PACKAGE_EXCLUSIONS)
+work. If they all do, NED files with syntax errors are not loaded and the program
+exits with error code 0.
+
+%file: package.ned
+package org.omnetpp.test;
+
+%file: test.ned
+package org.omnetpp.test;
+
+%file: foo/test.ned
+package org.omnetpp.test.foo;
+network Test {}
+
+%file: bogus1/test.ned
+package org.omnetpp.test.bogus1;
+module $^!@< syntax error!
+
+%file: bogus2/foo/test.ned
+package org.omnetpp.test.bogus2.foo;
+module $^!@< syntax error!
+
+%file: bogus3/test.ned
+module $^!@< syntax error!
+
+%file: bogus4/test.ned
+module $^!@< syntax error!
+
+%file: bogus5/test.ned
+module $^!@< syntax error!
+
+%file: bogus6/test.ned
+module $^!@< syntax error!
+
+%file: bogus7/test.ned
+module $^!@< syntax error!
+
+%file: test.cc
+// so that linker gets at least one file
+
+%inifile: omnetpp.ini
+network = org.omnetpp.test.foo.Test
+ned-package-exclusions = org.omnetpp.test.bogus1;org.omnetpp.test.bogus2
+
+%extraargs: -x org.omnetpp.test.bogus3 -x 'org.omnetpp.test.bogus4;org.omnetpp.test.bogus5'
+
+%env: OMNETPP_NED_PACKAGE_EXCLUSIONS=org.omnetpp.test.bogus6;org.omnetpp.test.bogus7
+
+
+
