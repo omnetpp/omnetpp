@@ -66,6 +66,7 @@ import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.IHoverInfoProvider;
 import org.omnetpp.common.ui.SWTFactory;
 import org.omnetpp.common.ui.ToggleLink;
+import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.ConfigRegistry;
@@ -128,6 +129,15 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
     private Button fBrowseForBinaryButton;
 
     private static final String CMDENV = "Cmdenv", QTENV = "Qtenv";
+
+    private DelayedJob dialogUpdaterJob = new DelayedJob(0) {
+        @Override
+        public void run() {
+            boolean dialogStillExists = !fWorkspaceButton.isDisposed(); // check arbitrary widget
+            if (dialogStillExists)
+                updateLaunchConfigurationDialog();
+        }
+    };
 
     private SelectionAdapter defaultSelectionAdapter = new SelectionAdapter() {
         @Override
@@ -636,7 +646,11 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
         }
 
         // update the state of apply and other system buttons
-        updateLaunchConfigurationDialog();
+        // Note: Use of the delayed job below is a workaround, because directly calling
+        // updateLaunchConfigurationDialog() from here would make typing e.g. in the
+        // Working Directory field extremely sluggish. Even delay=0 solves the problem.
+        dialogUpdaterJob.restartTimer();
+
         updateDialogStateInProgress = false;
     }
 
