@@ -1,3 +1,8 @@
+2020-12-15  Andras Varga
+
+	* NedResourceCache::loadNedSourceFolder(): accept exclusions in the
+	form of package names instead of folders.
+
 2020-11-13  Attila Torok
 
 	* Modernizing: Use in-class member initializers wherever possible;

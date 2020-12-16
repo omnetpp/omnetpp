@@ -1,3 +1,35 @@
+2020-12-02  Rudolf Hornig
+
+	* Generate import lib and def files on Windows, speed up linking
+
+	- speedup on INET linking 90s -> 5s
+
+	- def and import lib files are generated alomng with the DLL by
+	  specifying extra command line options for the linker (instead of
+	  a two step process)
+
+	- the LLD linker generates incorrect import libs so we have to
+	  manually fix them with the 'llvm-ar d' command by removing the first
+	  file in the generated import lib archive. When using the system linker
+	  this command does not do anything (NOP).
+
+	- speed up linking: instead of first generating a static lib and then
+	  using that during the linking, we can pass all object files at once
+	  using the @filelist syntax. This prevents 'command too long' errors
+	  and is now supported with both clang and gcc.
+
+	- as we no longer use --enable-auto-import, we must use proper XXX_API
+	  macros with both MinGW and MS ABI based builds. Until now, only
+	  MS ABI based builds were using those macros.
+
+2020-10-05  Attila Torok
+
+	* opp_charttool: support folders as "inputs" in ANF files.
+
+2020-10-31  Attila Torok
+
+	* opp_featuretool: Fix in help text: ".oppfeaturestatus" -> ".oppfeaturestate"
+
 2020-11-05  Rudolf Hornig
 
 	* opp_makemake: use Group Target in generated makefiles when creating

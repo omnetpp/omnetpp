@@ -1,3 +1,25 @@
+2020-12-15  Andras Varga
+
+	* NED package exclusions changed to expect package names instead of folders.
+	As part of this change, the -x command-line option changed meaning (take it
+	now takes package list instead of folder list); the config option
+	"ned-exclusion-path" was renamed to "ned-package-exclusions", and env.var.
+	OMNETPP_NED_EXCLUSION_PATH was renamed to OMNETPP_NED_PACKAGE_EXCLUSIONS,
+	and their meanings changed too. Note that the NED exclusion feature is new
+	in 6.0, so there is no backward compatibility issue.
+
+2020-11-11  Attila Torok
+
+	* On Windows, try to ensure that if the simulation cannot be started due to
+	a missing DLL or DLL entry point, a Windows system dialog appears with a
+	message indicating what exactly is missing. Note that this information cannot
+	be accessed programmatically at the LoadLibrary call site (!!!).
+
+	The solution is to call the SetErrorMode(0) Windows API before loading any
+	libraries. This only needs to be done if we are running a GUI (Qtenv),
+	because we don't want bogus command-line simulation batches to be interrupted
+	with modal dialogs popping up.
+
 2020-11-11  Zoltan Bojthe
 
 	* EnvirBase: Removed safety check that prevented the experimental "fakegui"

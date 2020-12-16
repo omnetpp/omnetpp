@@ -1,3 +1,51 @@
+2020-12-16  Andras Varga
+
+	* Launcher: Fix extremely sluggish typing in the "Working dir" field
+	of the launcher dialog.
+
+2020-12-15  Andras Varga
+
+	* Launcher: Pass NED exclusions to the simulation program as -x options.
+	NED exclusions are now explicitly editable in the Launch Configuration
+	dialog. Default setting is provided by the new ${opp_ned_package_exclusions}
+	platform variable.
+
+2020-12-15  Attila Torok
+
+	* Launcher: Print working directory and command line to the Console view
+	when simulation is launched in Run or Debug mode.
+
+2020-12-12  Attila Torok
+
+	* Analysis Tool: Center zero-width XY datasets on the chart instead of pushing
+	them to the left.
+
+2020-12-11  Attila Torok
+
+	* Analysis Tool: Fix (vectordata) array size on macOS after being passed
+	through SHM.
+
+2020-11-27  Attila Torok
+
+	* Analysis Tool: Fix global actions (Cut, Copy, Paste, Delete) in the script
+	editor being redirected to the wrong place.
+
+2020-11-27  Attila Torok
+
+	* Analysis Tool: NPE fix in Legend
+
+2020-11-27  Attila Torok
+
+	* Analysis Tool: LargeTable: Accept the Enter key on the NumPad as well.
+
+2020-11-13  Attila Torok
+
+	* Analysis Tool: Do not require iso itervar in the scatter chart template script.
+
+2020-11-13  Attila Torok
+
+	* Analysis Tool: Make our backend compatible with Matplotlib >= 3.3.
+
 2020-10-09  Andras Varga
 
 	* Analysis Tool redesign, 3rd phase. This is a summary of several hundred

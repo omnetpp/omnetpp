@@ -1,3 +1,59 @@
+2020-12-02  Rudolf Hornig
+
+	* Added added missing QTENV_API macros for proper exporting/visibility of symbols.
+
+2020-12-15  Attila Torok
+
+	* ModuleInspector: Disable the "Show method calls" action in the
+	context menu if the global switch is off.
+
+2020-12-14  Attila Torok
+
+	* Add per-module-type switch to turn method call animations off.
+
+2020-12-14  Attila Torok
+
+	* Change the factory default of animating method calls to "off",
+	rename the config key.
+
+	The latter is needed for this change to take effect even for existing
+	installations. Reason for changing the default: In INET all
+	Enter_Method_Silent calls were replaced with Enter_Method, and this
+	resulted in lots of unnecessary animations. Method call animations are
+	now seen as debugging tool, or aid for understanding C++ code; showing a
+	lot of low-level technical details, so it should be off by default. There
+	are better visualizations built into INET anyways.
+
+2020-12-14  Attila Torok
+
+	* Text widget: Strip ANSI escape sequences from text put onto the
+	primary selection buffer.
+
+2020-12-01  Attila Torok
+
+	* Remove the now unnecessary PREFER_QTENV macro.
+
+2020-11-26  Attila Torok
+
+	* Implement text alignment support to figure renderers. See include/ChangeLog
+	for related change in cFigure.
+
+2020-11-24  Attila Torok
+
+	* Remove compatibility with osgEarth < 2.6.0, we require >=2.7.0 anyway.
+
+2020-11-20  Fin Christensen
+
+	* OSG: Fix osgEarth viewpoints ignoring SRS (PR #851)
+
+2020-11-26  Attila Torok
+
+	* OSG: Remove an ancient workaround that disabled osg::Node descriptions with clang.
+
+2020-10-27  Attila Torok
+
+	* Change the factory default of "Allow backward arrows for hops" to false.
+
 2020-11-13  Attila Torok
 
 	* Modernizing: Use in-class member initializers wherever possible;

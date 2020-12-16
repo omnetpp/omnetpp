@@ -1,3 +1,47 @@
+2020-12-02  Rudolf Hornig
+
+	* Added some missing SIM_API macros for proper exporting/visibility of symbols.
+
+2020-12-15  Andras Varga
+
+	* cSimulation::loadNedSourceFolder(): accept exclusions in the form of
+	packages instead of folders.
+
+2020-12-09  Andras Varga
+
+	* cObject: added getClassAndFullPath() and getClassAndFullName() methods
+
+2020-12-09  Andras Varga
+
+	* cComponent: Introduced callPreDelete() for invoking preDelete(). Reason:
+	  - consistent with initialize(), finish(), refreshDisplay()
+	  - allows for introducing multi-stage preDelete() if the need ever arises
+	  - also added switching the context to the module for the duration of
+	    the preDelete() call
+
+2020-12-02  Andras Varga
+
+	* Renames related to the automatic ownership mechanism:
+	  - cDefaultOwner -> cSoftOwner
+	  - defaultOwner -> owningContext
+	  - cOwnedObject methods: setDefaultOwner() -> setOwningContext(),
+	    getDefaultOwner() -> getOwningContext()
+	  - defaultList (global variable) -> globalOwningContext
+	  - cSoftOwner methods: defaultListSize() -> getNumOwnedObjects(),
+	    defaultListGet() -> getOwnedObject()
+	  - cSoftOwner::defaultListContains() removed (no known usages)
+
+2020-11-26  Attila Torok
+
+	* Canvas: Added text alignment support. Added cFigure::Alignment enum,
+	and getAlignment()/setAlignment() to cAbstractTextFigure.
+
+2020-11-29  Andras Varga
+
+	* platdefs.h: Remove unnecessary STATIC_ASSERT() macro. Reason:
+	static_assert(expr,msg) is C++11, only static_assert(expr) is C++17.
+	We should just use the 1st variant.
+
 2020-11-25  Andras Varga
 
 	* cFigure::RGBA: added toAlpha() and a constructor taking Color.

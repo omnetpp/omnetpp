@@ -1,3 +1,42 @@
+2020-12-15  Andras Varga
+
+	* cSimulation::loadNedSourceFolder(): accept exclusions in the form of
+	packages instead of folders.
+
+2020-12-09  Andras Varga
+
+	* cObject: implemented getClassAndFullPath(), getClassAndFullName().
+
+2020-12-09  Andras Varga
+
+	* cComponent: Introduced callPreDelete() for invoking preDelete(); move recursion
+	out of preDelete(). See include/ChangeLog for rationale.
+
+2020-12-07  Andras Varga
+
+	* Prevent one module from being able to silently delete another
+	module's message. Solution: only the context module is allowed to
+	delete objects.
+
+2020-12-06  Andras Varga
+
+	* Ownership refactoring: Introduce and use cTemporaryOwningContext
+	where appropriate.
+
+2020-12-02  Levente Meszaros
+
+	* Follow renames related to the automatic ownership mechanism:
+	cDefaultOwner -> cSoftOwner, defaultOwner -> owningContext, etc.
+	See include/ChangeLog for details.
+
+2020-12-04  Attila Torok
+
+	* Fingerprint: Include the alignment of text figures in their hash.
+
+2020-11-26  Attila Torok
+
+	* cFigure, cAbstractTextFigure: Implemented text alignment support.
+
 2020-11-25  Andras Varga
 
 	* Follow cFigure::RGBA and cFigure::Pixmap changes
