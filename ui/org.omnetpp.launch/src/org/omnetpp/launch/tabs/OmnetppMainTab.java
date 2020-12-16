@@ -398,7 +398,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
 
         SWTFactory.createLabel(composite, "Dynamic libraries:", 1);
         fLibraryText = SWTFactory.createSingleText(composite, 1);
-        fLibraryText.setToolTipText("DLLs or shared libraries to load (without extension, relative to the working directory).\n" + varHelp(IConstants.VAR_SHARED_LIBS));
+        fLibraryText.setToolTipText("Space-separated list of shared libraries/DLLs to load (without extension, relative to the working directory).\n" + varHelp(IConstants.VAR_SHARED_LIBS));
 
         Button browseLibrariesButton = SWTFactory.createPushButton(composite, "Browse...", null);
         browseLibrariesButton.addSelectionListener(new SelectionAdapter() {
@@ -410,7 +410,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
 
         SWTFactory.createLabel(composite, "NED path:", 1);
         fNedPathText = SWTFactory.createSingleText(composite, 2);
-        fNedPathText.setToolTipText("Directories where NED files are read from (relative to the first selected ini file).\n" + varHelp(IConstants.VAR_NED_PATH));
+        fNedPathText.setToolTipText("Directories where NED files are read from (relative to the first selected ini file). Separator: colon or semicolon.\n" + varHelp(IConstants.VAR_NED_PATH));
 
         SWTFactory.createLabel(composite, "Exclude NED packages:", 1);
         fNedPackageExclusionsText = SWTFactory.createSingleText(composite, 2);
@@ -418,11 +418,11 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
 
         SWTFactory.createLabel(composite, "Image path:", 1);
         fImagePathText = SWTFactory.createSingleText(composite, 2);
-        fImagePathText.setToolTipText("Directories where image files are read from (relative to the first selected ini file).\n" + varHelp(IConstants.VAR_IMAGE_PATH));
+        fImagePathText.setToolTipText("Directories where image files are read from (relative to the first selected ini file). Separator: colon or semicolon.\n" + varHelp(IConstants.VAR_IMAGE_PATH));
 
         SWTFactory.createLabel(composite, "Additional arguments:", 1);
         fAdditionalText = SWTFactory.createSingleText(composite, 2);
-        fAdditionalText.setToolTipText("Specify additional command line arguments");
+        fAdditionalText.setToolTipText("Additional command line arguments");
         new ContentAssistCommandAdapter(fAdditionalText, new TextContentAdapter(),
                 new ConfigOptionsContentProposalProvider(),
                 IWorkbenchCommandConstants.EDIT_CONTENT_ASSIST, "-".toCharArray(), true);
