@@ -128,6 +128,10 @@ void cCoroutine::switchToMain()
     swapcontext(oldContextPtr, curContextPtr);
 }
 
+cCoroutine::cCoroutine()
+{
+}
+
 cCoroutine::~cCoroutine()
 {
     totalStackUsage -= stackSize;
