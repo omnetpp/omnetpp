@@ -72,6 +72,7 @@ import org.omnetpp.common.util.CollectionUtils;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.ConfigRegistry;
 import org.omnetpp.inifile.editor.model.InifileParser;
 import org.omnetpp.launch.IOmnetppLaunchConstants;
@@ -167,16 +168,12 @@ public class OmnetppLaunchUtils {
     }
 
     /**
-     * A workbench content provider that returns only files with a given extension
+     * A workbench content provider that returns only files that match a given regular expression
      */
     public static class FilteredWorkbenchContentProvider extends WorkbenchContentProvider {
         private final String regexp;
 
-        /**
-         * @param regexp The regular expression where matches should be displayed
-         */
         public FilteredWorkbenchContentProvider(String regexp) {
-            super();
             this.regexp = regexp;
         }
 
@@ -417,27 +414,35 @@ public class OmnetppLaunchUtils {
             exeName += ".exe";
         newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, exeName);
 
-        String args = "";
+        List<String> args = new ArrayList<>();
 
         if (mergeStderr)
-            args += " -m ";  // report errors on stdout, because Console does not guarantee correct ordering of stdout and stderr output
+            args.add("-m");  // report errors on stdout, because Console does not guarantee correct ordering of stdout and stderr output
 
         String envirStr = config.getAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, "").trim();
-        if (StringUtils.isNotEmpty(envirStr) && !envirStr.equals(IOmnetppLaunchConstants.UI_DEFAULTEXTERNAL))
-            args += " -u " + envirStr;
+        if (StringUtils.isNotEmpty(envirStr) && !envirStr.equals(IOmnetppLaunchConstants.UI_DEFAULTEXTERNAL)) {
+            args.add("-u");
+            args.add(envirStr);
+        }
 
         int portNumber = config.getAttribute(IOmnetppLaunchConstants.OPP_HTTP_PORT, -1);
-        if (portNumber != -1)
-            args += " -p " + portNumber;
+        if (portNumber != -1) {
+            args.add("-p");
+            args.add(""+portNumber);
+        }
 
         String configStr = config.getAttribute(IOmnetppLaunchConstants.OPP_CONFIG_NAME, "").trim();
-        if (StringUtils.isNotEmpty(configStr))
-            args += " -c "+configStr;
+        if (!configStr.isEmpty()) {
+            args.add("-c");
+            args.add(configStr);
+        }
 
         if (isDebugLaunch) {
             String runFilter = config.getAttribute(IOmnetppLaunchConstants.OPP_RUNFILTER, "").trim();
-            if (!runFilter.isEmpty())
-                args += " -r " + runFilter;
+            if (!runFilter.isEmpty()) {
+                args.add("-r");
+                args.add(runFilter);
+            }
             // expand the GDB init file path so we can use also variables there (if needed)
             String expandedGdbInitFile = StringUtils.substituteVariables(config.getAttribute(IOmnetppLaunchConstants.ATTR_GDB_INIT, ""));
             newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_GDB_INIT, expandedGdbInitFile);
@@ -450,77 +455,81 @@ public class OmnetppLaunchUtils {
         // NED path
         String nedpathStr = config.getAttribute(IOmnetppLaunchConstants.OPP_NED_PATH, "").trim();
         nedpathStr = StringUtils.substituteVariables(nedpathStr);
-        if (StringUtils.isNotBlank(nedpathStr)) {
+        if (!nedpathStr.isBlank()) {
             String[] nedPaths = StringUtils.split(nedpathStr, pathSep);
-            for (int i = 0 ; i< nedPaths.length; i++)
+            for (int i = 0 ; i < nedPaths.length; i++)
                 nedPaths[i] = makeRelativePathTo(getLocationForWorkspacePath(nedPaths[i], workingdirStr, false), workingdirLocation).toString();
-            // always create ned path option if more than one path element is present. Do not create if it contains a single . only (that's the default)
-            if (nedPaths.length>1 || !".".equals(nedPaths[0]))
-                args += " -n " + StringUtils.join(nedPaths, pathSep)+" ";
+            // always create NED path option if more than one path element is present. Do not create if it contains a single . only (that's the default)
+            if (nedPaths.length > 1 || !nedPaths[0].isEmpty()) {
+                args.add("-n");
+                args.add(StringUtils.join(nedPaths, pathSep));
+            }
         }
 
         // NED package exclusions
         String nedExclusionsStr = config.getAttribute(IOmnetppLaunchConstants.OPP_NED_PACKAGE_EXCLUSIONS, "").trim();
         nedExclusionsStr = StringUtils.substituteVariables(nedExclusionsStr);
-        if (StringUtils.isNotBlank(nedExclusionsStr))
-            args += " -x " + nedExclusionsStr + " ";
+        if (!nedExclusionsStr.isBlank()) {
+            args.add("-x");
+            args.add(nedExclusionsStr);
+        }
 
         // image path
         String imagePathStr = config.getAttribute(IOmnetppLaunchConstants.OPP_IMAGE_PATH, "").trim();
         imagePathStr = StringUtils.substituteVariables(imagePathStr);
-        if (StringUtils.isNotBlank(imagePathStr)) {
+        if (!imagePathStr.isBlank()) {
             String[] imagePaths = StringUtils.split(imagePathStr, pathSep);
-            for (int i = 0 ; i< imagePaths.length; i++)
+            for (int i = 0; i < imagePaths.length; i++)
                 imagePaths[i] = makeRelativePathTo(getLocationForWorkspacePath(imagePaths[i], workingdirStr, false), workingdirLocation).toString();
-            // always create image path option if more than one path element is present. Do not create if it contains a single . only (that's the default)
-            if (imagePaths.length>1 || !".".equals(imagePaths[0]))
-                args += " --" + ConfigRegistry.CFGID_IMAGE_PATH.getName() + "=" + StringUtils.join(imagePaths, pathSep) + " ";
+            addOptionalConfigOptionArg(args, ConfigRegistry.CFGID_IMAGE_PATH, StringUtils.join(imagePaths, pathSep));
         }
 
         // shared libraries
         String shLibStr = config.getAttribute(IOmnetppLaunchConstants.OPP_SHARED_LIBS, "").trim();
         shLibStr = StringUtils.substituteVariables(shLibStr);
-        if (StringUtils.isNotBlank(shLibStr)) {
-            String[] libs = StringUtils.split(shLibStr);
-            // convert to file system location
-            for (int i = 0 ; i< libs.length; i++) {
-                libs[i] = makeRelativePathTo(getLocationForWorkspacePath(libs[i], workingdirStr, true), workingdirLocation).toString();
-            }
-            args += " -l " + StringUtils.join(libs," -l ")+" ";
+        for (String lib : StringUtils.split(shLibStr)) {
+            lib = makeRelativePathTo(getLocationForWorkspacePath(lib, workingdirStr, true), workingdirLocation).toString(); // convert to file system location
+            args.add("-l");
+            args.add(lib);
         }
 
         // debug-on-errors: use setting in DEBUG mode, let omnetpp.ini setting through in RUN mode (maybe user wants to use external debugger with a RUN-mode launch)
-        args += getOptionalConfigOptionArg(ConfigRegistry.CFGID_DEBUG_ON_ERRORS.getName(), isDebugLaunch ? config.getAttribute(IOmnetppLaunchConstants.OPP_DEBUGMODE_DEBUG_ON_ERRORS, "true") : "");
+        addOptionalConfigOptionArg(args, ConfigRegistry.CFGID_DEBUG_ON_ERRORS, isDebugLaunch ? config.getAttribute(IOmnetppLaunchConstants.OPP_DEBUGMODE_DEBUG_ON_ERRORS, "true") : "");
 
         if (config.getAttribute(IOmnetppLaunchConstants.OPP_SILENT, false))
-            args += " -s ";
+            args.add("-s");
 
         // time limits
-        args += getOptionalConfigOptionArg(ConfigRegistry.CFGID_SIM_TIME_LIMIT.getName(), config.getAttribute(IOmnetppLaunchConstants.OPP_SIM_TIME_LIMIT, ""));
-        args += getOptionalConfigOptionArg(ConfigRegistry.CFGID_CPU_TIME_LIMIT.getName(), config.getAttribute(IOmnetppLaunchConstants.OPP_CPU_TIME_LIMIT, ""));
+        addOptionalConfigOptionArg(args, ConfigRegistry.CFGID_SIM_TIME_LIMIT, config.getAttribute(IOmnetppLaunchConstants.OPP_SIM_TIME_LIMIT, ""));
+        addOptionalConfigOptionArg(args, ConfigRegistry.CFGID_CPU_TIME_LIMIT, config.getAttribute(IOmnetppLaunchConstants.OPP_CPU_TIME_LIMIT, ""));
 
         // other options
-        args += getOptionalConfigOptionArg(ConfigRegistry.CFGID_CMDENV_REDIRECT_OUTPUT.getName(), config.getAttribute(IOmnetppLaunchConstants.OPP_CMDENV_REDIRECT_STDOUT, ""));
-        args += getOptionalConfigOptionArg(ConfigRegistry.CFGID_RECORD_EVENTLOG.getName(), config.getAttribute(IOmnetppLaunchConstants.OPP_RECORD_EVENTLOG, ""));
-        args += getOptionalConfigOptionArg(ConfigRegistry.CFGID_SCALAR_RECORDING.getName(), config.getAttribute(IOmnetppLaunchConstants.OPP_RECORD_SCALARS, ""));
-        args += getOptionalConfigOptionArg(ConfigRegistry.CFGID_VECTOR_RECORDING.getName(), config.getAttribute(IOmnetppLaunchConstants.OPP_RECORD_VECTORS, ""));
-        args += getOptionalConfigOptionArg(ConfigRegistry.CFGID_CMDENV_EXPRESS_MODE.getName(), config.getAttribute(IOmnetppLaunchConstants.OPP_CMDENV_EXPRESS_MODE, ""));
-        args += getOptionalConfigOptionArg(ConfigRegistry.CFGID_CMDENV_STOP_BATCH_ON_ERROR.getName(), config.getAttribute(IOmnetppLaunchConstants.OPP_STOP_BATCH_ON_ERROR, ""));
+        addOptionalConfigOptionArg(args, ConfigRegistry.CFGID_CMDENV_REDIRECT_OUTPUT, config.getAttribute(IOmnetppLaunchConstants.OPP_CMDENV_REDIRECT_STDOUT, ""));
+        addOptionalConfigOptionArg(args, ConfigRegistry.CFGID_RECORD_EVENTLOG, config.getAttribute(IOmnetppLaunchConstants.OPP_RECORD_EVENTLOG, ""));
+        addOptionalConfigOptionArg(args, ConfigRegistry.CFGID_SCALAR_RECORDING, config.getAttribute(IOmnetppLaunchConstants.OPP_RECORD_SCALARS, ""));
+        addOptionalConfigOptionArg(args, ConfigRegistry.CFGID_VECTOR_RECORDING, config.getAttribute(IOmnetppLaunchConstants.OPP_RECORD_VECTORS, ""));
+        addOptionalConfigOptionArg(args, ConfigRegistry.CFGID_CMDENV_EXPRESS_MODE, config.getAttribute(IOmnetppLaunchConstants.OPP_CMDENV_EXPRESS_MODE, ""));
+        addOptionalConfigOptionArg(args, ConfigRegistry.CFGID_CMDENV_STOP_BATCH_ON_ERROR, config.getAttribute(IOmnetppLaunchConstants.OPP_STOP_BATCH_ON_ERROR, ""));
 
         // ini files
         String iniStr = config.getAttribute(IOmnetppLaunchConstants.OPP_INI_FILES, "").trim();
         iniStr = StringUtils.substituteVariables(iniStr);
-        if (StringUtils.isNotBlank(iniStr)) {
-            String[] inifiles = StringUtils.split(iniStr);
-            // convert to file system location
-            for (int i = 0 ; i< inifiles.length; i++)
-                inifiles[i] = makeRelativePathTo(getLocationForWorkspacePath(inifiles[i], workingdirStr, true), workingdirLocation).toString();
-            args += " " + StringUtils.join(inifiles," ")+" ";
+        for (String inifile : StringUtils.split(iniStr)) {
+            inifile = makeRelativePathTo(getLocationForWorkspacePath(inifile, workingdirStr, true), workingdirLocation).toString(); // convert to file system location
+            args.add(inifile);
         }
 
-        // set the program arguments
+        // additional args
+        // note: "additionalArgs" comes last, to allow the user override settings in "args"
         String additionalArgs = config.getAttribute(IOmnetppLaunchConstants.OPP_ADDITIONAL_ARGS, "");
-        newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, args + additionalArgs); // note: "additionalArgs" comes last, to allow the user override settings in "args"
+        for (String arg : StringUtils.split(additionalArgs))
+            args.add(arg);
+
+        // set the program arguments
+        StringBuilder argsBuilder = new StringBuilder();
+        for (String arg : args)
+            argsBuilder.append(" " + quoteArg(arg));
+        newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, argsBuilder.toString());
 
         // handle environment: add OMNETPP_BIN and (DY)LD_LIBRARY_PATH
         Map<String, String> envir = newCfg.getAttribute("org.eclipse.debug.core.environmentVariables", new HashMap<String, String>());
@@ -566,10 +575,21 @@ public class OmnetppLaunchUtils {
         return newCfg;
     }
 
-    private static String getOptionalConfigOptionArg(String configOptionName, String value) {
-        if (value.isEmpty())
-            return "";
-        return " --" + configOptionName + "=" + value + " ";
+    private static String quoteArg(String arg) {
+        if (!arg.matches(".*\\s.*") /*no whitespace*/ && !arg.contains("'") && !arg.contains("\"") && !arg.contains("\\"))
+            return arg;
+        else if (!arg.contains("'"))
+            return "'" + arg + "'";
+        else {
+            arg = arg.replace("\\", "\\\\");
+            arg = arg.replace("\"", "\\\"");
+            return "\"" + arg + "\"";
+        }
+    }
+
+    private static void addOptionalConfigOptionArg(List<String> args, ConfigOption option, String value) {
+        if (!value.isEmpty())
+            args.add("--" + option.getName() + "=" + value);
     }
 
     /**
