@@ -65,7 +65,6 @@ import org.eclipse.ui.console.IOConsoleOutputStream;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.Debug;
-import org.omnetpp.common.IConstants;
 import org.omnetpp.common.OmnetppDirs;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.CollectionUtils;
@@ -78,10 +77,23 @@ import org.omnetpp.inifile.editor.model.InifileParser;
 import org.omnetpp.launch.IOmnetppLaunchConstants;
 import org.omnetpp.launch.LaunchPlugin;
 
+import static org.omnetpp.common.IConstants.*;
+
 /**
  * Various utility methods for the launcher.
  */
 public class OmnetppLaunchUtils {
+    // environment variables
+    private static final String ENV_PATH = "PATH";
+    private static final String ENV_LD_LIBRARY_PATH = "LD_LIBRARY_PATH";
+    private static final String ENV_DYLD_LIBRARY_PATH = "DYLD_LIBRARY_PATH";
+    private static final String ENV_OMNETPP_IMAGE_PATH = "OMNETPP_IMAGE_PATH";
+    private static final String ENV_CLASSPATH = "CLASSPATH";
+
+    // platform variables
+    private static final String VAR_ENVVAR = "env_var"; // e.g. ${env_var:PATH}
+    private static final String _LOC = "_loc";  // suffix for variables
+
     // copied from JavaCore.NATURE_ID (we don't want dependency on the JDT plugins)
     private static final String JAVA_NATURE_ID = "org.eclipse.jdt.core.javanature";
     private static final String CDT_CC_NATURE_ID = "org.eclipse.cdt.core.ccnature";
@@ -306,10 +318,10 @@ public class OmnetppLaunchUtils {
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_WORKING_DIRECTORY, workingDir);
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_EXECUTABLE, executable);
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_INI_FILES, iniFile);
-        configuration.setAttribute(IOmnetppLaunchConstants.OPP_NED_PATH, "${"+IConstants.VAR_NED_PATH+":"+workingDir+"}");
-        configuration.setAttribute(IOmnetppLaunchConstants.OPP_NED_PACKAGE_EXCLUSIONS, "${"+IConstants.VAR_NED_PACKAGE_EXCLUSIONS+":"+workingDir+"}");
-        configuration.setAttribute(IOmnetppLaunchConstants.OPP_IMAGE_PATH, "${"+IConstants.VAR_IMAGE_PATH+":"+workingDir+"}");
-        configuration.setAttribute(IOmnetppLaunchConstants.OPP_SHARED_LIBS, "${"+IConstants.VAR_SHARED_LIBS+":"+workingDir+"}");
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_NED_PATH, $(VAR_NED_PATH,workingDir));
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_NED_PACKAGE_EXCLUSIONS, $(VAR_NED_PACKAGE_EXCLUSIONS,workingDir));
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_IMAGE_PATH, $(VAR_IMAGE_PATH,workingDir));
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_SHARED_LIBS, $(VAR_SHARED_LIBS,workingDir));
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_NUM_CONCURRENT_PROCESSES, 1);
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_BATCH_SIZE, 1);
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_ADDITIONAL_ARGS, "");
@@ -533,40 +545,41 @@ public class OmnetppLaunchUtils {
 
         // handle environment: add OMNETPP_BIN and (DY)LD_LIBRARY_PATH
         Map<String, String> envir = newCfg.getAttribute("org.eclipse.debug.core.environmentVariables", new HashMap<String, String>());
-        String path = envir.get("PATH");
+        String path = envir.get(ENV_PATH);
         // if the path was not set by hand, generate automatically
         if (StringUtils.isBlank(path)) {
-        String win32_ld_library_path = Platform.getOS().equals(Platform.OS_WIN32) ? StringUtils.substituteVariables("${opp_ld_library_path_loc:"+workingdirStr+"}" + pathSep) : "";
-            envir.put("PATH",win32_ld_library_path +
-                             StringUtils.substituteVariables("${opp_bin_dir}" + pathSep) +
-                             StringUtils.substituteVariables("${opp_additional_path}" + pathSep) +  // msys/bin, mingw/bin, etc
-                             StringUtils.substituteVariables("${env_var:PATH}"));
+            String win32LdLibPath = Platform.getOS().equals(Platform.OS_WIN32) ? $(VAR_LD_LIBRARY_PATH+_LOC,workingdirStr) + pathSep : "";
+            path = win32LdLibPath + $(VAR_OMNETPP_BIN_DIR) + pathSep + $(VAR_ADDITIONAL_PATH) + pathSep + $(VAR_ENVVAR,ENV_PATH);
+            envir.put(ENV_PATH, StringUtils.substituteVariables(path));
+
         }
 
         if (!Platform.getOS().equals(Platform.OS_WIN32)) {
-            String ldLibPathVar = Platform.getOS().equals(Platform.OS_MACOSX) ? "DYLD_LIBRARY_PATH" : "LD_LIBRARY_PATH";
+            String ldLibPathVar = Platform.getOS().equals(Platform.OS_MACOSX) ? ENV_DYLD_LIBRARY_PATH : ENV_LD_LIBRARY_PATH;
             String ldLibPath = envir.get(ldLibPathVar);
             // if the path was not set by hand, generate automatically
-            if (StringUtils.isBlank(ldLibPath))
-                envir.put(ldLibPathVar, StringUtils.substituteVariables("${opp_lib_dir}"+pathSep) +
-                          StringUtils.substituteVariables("${opp_ld_library_path_loc:"+workingdirStr+"}"+pathSep) +
-                          StringUtils.substituteVariables("${env_var:"+ldLibPathVar+"}"));
+            if (StringUtils.isBlank(ldLibPath)) {
+                ldLibPath = $(VAR_OMNETPP_LIB_DIR) + pathSep + $(VAR_LD_LIBRARY_PATH+_LOC,workingdirStr) + pathSep + $(VAR_ENVVAR,ldLibPathVar);
+                envir.put(ldLibPathVar, StringUtils.substituteVariables(ldLibPath));
+            }
         }
 
-        String imagePath = envir.get("OMNETPP_IMAGE_PATH");
+        String imagePath = envir.get(ENV_OMNETPP_IMAGE_PATH);
         if (StringUtils.isBlank(imagePath)) {
-            imagePath = CommonPlugin.getConfigurationPreferenceStore().getString(IConstants.PREF_OMNETPP_IMAGE_PATH);
+            imagePath = CommonPlugin.getConfigurationPreferenceStore().getString(PREF_OMNETPP_IMAGE_PATH);
             if (StringUtils.isNotBlank(imagePath))
-                envir.put("OMNETPP_IMAGE_PATH", imagePath);
+                envir.put(ENV_OMNETPP_IMAGE_PATH, imagePath);
         }
 
         // Java CLASSPATH
-        //FIXME do not overwrite CLASSPATH if it's already set by the user!
-        IResource[] resources = newCfg.getMappedResources();
-        if (resources != null && resources.length != 0) {
-            String javaClasspath = getJavaClasspath(OmnetppLaunchUtils.getMappedProject(newCfg));
-            if (javaClasspath != null)
-                envir.put("CLASSPATH", javaClasspath);
+        String javaClasspath = envir.get(ENV_CLASSPATH);
+        if (StringUtils.isBlank(javaClasspath)) {
+            IResource[] resources = newCfg.getMappedResources();
+            if (resources != null && resources.length != 0) {
+                javaClasspath = getJavaClasspath(OmnetppLaunchUtils.getMappedProject(newCfg));
+                if (javaClasspath != null)
+                    envir.put(ENV_CLASSPATH, javaClasspath);
+            }
         }
 
         newCfg.setAttribute("org.eclipse.debug.core.environmentVariables", envir);
@@ -590,6 +603,14 @@ public class OmnetppLaunchUtils {
     private static void addOptionalConfigOptionArg(List<String> args, ConfigOption option, String value) {
         if (!value.isEmpty())
             args.add("--" + option.getName() + "=" + value);
+    }
+
+    private static String $(String varname) {
+        return "${" + varname + "}";
+    }
+
+    private static String $(String varname, String value) {
+        return "${" + varname + ":" + value + "}";
     }
 
     /**

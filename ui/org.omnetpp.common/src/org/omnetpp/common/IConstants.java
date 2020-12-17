@@ -77,6 +77,8 @@ public interface IConstants extends ICoreConstants {
     public static final String VAR_NED_PATH = "opp_ned_path";
     public static final String VAR_NED_PACKAGE_EXCLUSIONS = "opp_ned_package_exclusions";
     public static final String VAR_SHARED_LIBS = "opp_shared_libs";
+    public static final String VAR_LD_LIBRARY_PATH = "opp_ld_library_path";
+    public static final String VAR_ADDITIONAL_PATH = "opp_additional_path"; // msys/bin, mingw/bin, etc
     public static final String VAR_IMAGE_PATH = "opp_image_path";
     public static final String VAR_OMNETPP_ROOT = "opp_root";
     public static final String VAR_OMNETPP_BIN_DIR = "opp_bin_dir";
