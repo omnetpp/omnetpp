@@ -45,6 +45,7 @@ public class GenericConfigPage extends ScrolledFormPage {
     public static final String CAT_RANDOMNUMBERS = "Random Numbers";
     public static final String CAT_RESULTRECORDING = "Result Recording";
     public static final String CAT_DEBUGGING = "Debugging";
+    public static final String CAT_FINGERPRINT = "Fingerprint";
     public static final String CAT_EVENTLOG = "Event Log";
     public static final String CAT_CMDENV = "Cmdenv";
     public static final String CAT_QTENV = "Qtenv";
@@ -61,6 +62,7 @@ public class GenericConfigPage extends ScrolledFormPage {
                 CAT_RANDOMNUMBERS,
                 CAT_RESULTRECORDING,
                 CAT_DEBUGGING,
+                CAT_FINGERPRINT,
                 CAT_EVENTLOG,
                 CAT_CMDENV,
                 CAT_QTENV,
@@ -112,10 +114,6 @@ public class GenericConfigPage extends ScrolledFormPage {
             addSpacer(form);
         }
         else if (category.equals(CAT_ADVANCED)) {
-            group = createGroup(form, "Regression");
-            addTextFieldEditor(group, CFGID_FINGERPRINT, "Fingerprint to verify", c(null, "Fingerprint (Hex)"));
-            addLabel(group, "Further options allow controlling the ingredients of the fingerprint, filtering by modules/events, etc.");
-            addSpacer(form);
             group = createGroup(form, "Output Vector Recording");
             addTextFieldEditor(group, CFGID_OUTPUT_VECTOR_PRECISION, "Precision", c(null, "Precision"));
             addCheckboxFieldEditor(group, CFGID_VECTOR_RECORD_EVENTNUMBERS, "Record event numbers", c("Vector (module-path.vectorname pattern)", "Value"));
@@ -204,6 +202,27 @@ public class GenericConfigPage extends ScrolledFormPage {
             addCheckboxFieldEditor(group, CFGID_PRINT_UNDISPOSED, "Dump names of undisposed objects");
             addCheckboxFieldEditor(group, CFGID_WARNINGS, "Warnings"); //XXX
             addSpacer(form);
+        }
+        else if (category.equals(CAT_FINGERPRINT)) {
+            group = createGroup(form, "Fingerprint");
+            addTextFieldEditor(group, CFGID_FINGERPRINT, "Expected fingerprint(s)", c(null, "Fingerprint (Hex)"));
+            addTextFieldEditor(group, CFGID_FINGERPRINT_INGREDIENTS, "Default ingredients");
+            addSpacer(form);
+            group = createGroup(form, "Filter");
+            addTextFieldEditor(group, CFGID_FINGERPRINT_EVENTS, "Events");
+            addTextFieldEditor(group, CFGID_FINGERPRINT_MODULES, "Modules");
+            addTextFieldEditor(group, CFGID_FINGERPRINT_RESULTS, "Results");
+            addSpacer(form);
+            group = createGroup(form, "Fake GUI");
+            addCheckboxFieldEditor(group, CFGID_CMDENV_FAKE_GUI, "Enable FakeGUI mode in Cmdenv (for graphical fingerprints)");
+            addSpacer(group);
+            addLabel(group, "Frequency of refreshDisplay() calls:");
+            addTextFieldEditor(group, CFGID_CMDENV_FAKE_GUI_AFTER_EVENT_PROBABILITY, "After-event probability");
+            addTextFieldEditor(group, CFGID_CMDENV_FAKE_GUI_BEFORE_EVENT_PROBABILITY, "Before-event probability");
+            addTextFieldEditor(group, CFGID_CMDENV_FAKE_GUI_ON_HOLD_NUMSTEPS, "On-hold numsteps");
+            addTextFieldEditor(group, CFGID_CMDENV_FAKE_GUI_ON_HOLD_PROBABILITY, "On-hold probability");
+            addTextFieldEditor(group, CFGID_CMDENV_FAKE_GUI_ON_SIMTIME_NUMSTEPS, "On-simtime numsteps");
+            addTextFieldEditor(group, CFGID_CMDENV_FAKE_GUI_ON_SIMTIME_PROBABILITY, "On-simtime probability");
         }
         else if (category.equals(CAT_EVENTLOG)) {
             group = createGroup(form, "Eventlog");
