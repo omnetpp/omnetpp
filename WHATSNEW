@@ -8,15 +8,23 @@ about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 OMNeT++ 6.0pre10 (December 2020)
 --------------------------------
 
-This prerelease contains many small changes and improvements. The summary of
-changes since 6.0pre9:
+This prerelease contains many small changes and improvements. Additionally,
+due to improvements in the toolchain and the build process, Windows users
+may see the linking time of large models like INET Framework to drop
+dramatically (1-2 orders magnitude, e.g. from several minutes to several
+seconds).
+
+The summary of changes since 6.0pre9:
 
 Core:
 
   - Ownership mechanism change: It is now illegal for one module to silently
     delete an object (typically message) owned by another module. Doing so
     currently results in a warning, because C++ doesn't allow throwing exceptions
-    from a destructor.
+    from a destructor. The new check may cause issues in existing models
+    to surface. When that happens, the code needs to be reviewed. If the
+    delete operation is found to be legitimate, the fix is to add a take()
+    call before the delete.
 
   - Refactoring: Some classes, methods and variables related to ownership
     management were renamed: cDefaultOwner -> cSoftOwner; defaultOwner ->
@@ -85,7 +93,8 @@ Build:
   - Allow using the LLD linker by default (if present on the system). LLD is
     potentially much faster than the standard GNU linker. For example, the
     use of LLD, together with other changes that were part done in INET,
-    reduced INET linking time on Windows from 90s to 5s on one of our dev boxes.
+    reduced INET linking time on Windows from 380s (!) to 2s (!!!) in DEBUG
+    mode, and from 90s to 5s in RELEASE mode on one of our dev boxes.
 
   - When building DLL files (shared libraries) on Windows, the build process now
     generates <name>.def and <name>.dll.a files in addition to the resulting
