@@ -782,7 +782,7 @@ def export_data_if_needed(df, props):
         np.set_printoptions(threshold=np.inf, linewidth=np.inf)
         np.set_string_function(printer, False)
         pd.set_option('display.max_columns', None)
-        pd.set_option('display.max_colwidth', -1)
+        pd.set_option('display.max_colwidth', None)
         df.to_csv(filepath)
         np.set_string_function(None, False)
         np.set_printoptions(**old_opts)
