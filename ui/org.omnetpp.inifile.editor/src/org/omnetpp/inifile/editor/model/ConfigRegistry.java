@@ -197,6 +197,44 @@ public class ConfigRegistry {
         "cmdenv-extra-stack", "B", "8KiB",
         "Specifies the extra amount of stack that is reserved for each `activity()` " +
         "simple module when the simulation is run under Cmdenv.");
+    public static final ConfigOption CFGID_CMDENV_FAKE_GUI = addPerRunOption(
+        "cmdenv-fake-gui", CFG_BOOL, "false",
+        "Causes Cmdenv to lie to simulations that is a GUI (isGui()=true), and to " +
+        "periodically invoke refreshDisplay() during simulation execution.");
+    public static final ConfigOption CFGID_CMDENV_FAKE_GUI_AFTER_EVENT_PROBABILITY = addPerRunOption(
+        "cmdenv-fake-gui-after-event-probability", CFG_DOUBLE, "1",
+        "When `cmdenv-fake-gui=true`: The probability with which `refreshDisplay()` " +
+        "is called after each event.");
+    public static final ConfigOption CFGID_CMDENV_FAKE_GUI_BEFORE_EVENT_PROBABILITY = addPerRunOption(
+        "cmdenv-fake-gui-before-event-probability", CFG_DOUBLE, "1",
+        "When `cmdenv-fake-gui=true`: The probability with which `refreshDisplay()` " +
+        "is called before each event.");
+    public static final ConfigOption CFGID_CMDENV_FAKE_GUI_ON_HOLD_NUMSTEPS = addPerRunOption(
+        "cmdenv-fake-gui-on-hold-numsteps", CFG_CUSTOM, "3",
+        "When `cmdenv-fake-gui=true`: The number of times `refreshDisplay()` is " +
+        "called during a \"hold\" period (animation during which simulation time does " +
+        "not advance), provided a trial with `cmdenv-fake-gui-on-hold-probability` " +
+        "yielded success. This an expression which will be evaluated each time, so " +
+        "it can be random. Zero is also a valid value.");
+    public static final ConfigOption CFGID_CMDENV_FAKE_GUI_ON_HOLD_PROBABILITY = addPerRunOption(
+        "cmdenv-fake-gui-on-hold-probability", CFG_DOUBLE, "0.5",
+        "When `cmdenv-fake-gui=true`: The probability with which `refreshDisplay()` " +
+        "is called (possibly multiple times, see `cmdenv-fake-gui-on-hold-numsteps`) " +
+        "during a \"hold\" period (animation during which simulation time does not " +
+        "advance).");
+    public static final ConfigOption CFGID_CMDENV_FAKE_GUI_ON_SIMTIME_NUMSTEPS = addPerRunOption(
+        "cmdenv-fake-gui-on-simtime-numsteps", CFG_CUSTOM, "3",
+        "When `cmdenv-fake-gui=true`: The number of times `refreshDisplay()` is " +
+        "called when simulation time advances from one simulation event to the next, " +
+        "provided a trial with `cmdenv-fake-gui-on-simtime-probability` yielded " +
+        "success. This an expression which will be evaluated each time, so it can be " +
+        "random. Zero is also a valid value.");
+    public static final ConfigOption CFGID_CMDENV_FAKE_GUI_ON_SIMTIME_PROBABILITY = addPerRunOption(
+        "cmdenv-fake-gui-on-simtime-probability", CFG_DOUBLE, "0.1",
+        "When `cmdenv-fake-gui=true`: The probability with which `refreshDisplay()` " +
+        "is called (possibly multiple times, see " +
+        "`cmdenv-fake-gui-on-simtime-numsteps`) when simulation time advances from " +
+        "one simulation event to the next.");
     public static final ConfigOption CFGID_CMDENV_INTERACTIVE = addPerRunOption(
         "cmdenv-interactive", CFG_BOOL, "false",
         "Defines what Cmdenv should do when the model contains unassigned " +
