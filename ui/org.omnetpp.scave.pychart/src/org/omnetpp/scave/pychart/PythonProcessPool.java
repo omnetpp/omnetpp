@@ -86,8 +86,9 @@ public class PythonProcessPool {
         Map<String, String> env = pb.environment();
         env.put("WITHIN_OMNETPP_IDE", "yes");
         env.put("PYTHONPATH", extendPythonPath(env.get("PYTHONPATH")));
-        if (shouldSetOmnetppMplBackend)
-            env.put("MPLBACKEND", "module://omnetpp.internal.backend_SWTAgg");
+        // Selecting agg to avoid initializing any GUI framework (Tk, Qt, GTK, ...) in chart export
+        // jobs, which would likely fail, because we are doing it from a thread other than the main
+        env.put("MPLBACKEND", shouldSetOmnetppMplBackend ? "module://omnetpp.internal.backend_SWTAgg" : "agg");
 
         if (PythonProcess.debug)
             Debug.println("starting python process... with path " + env.get("PYTHONPATH"));
