@@ -24,6 +24,30 @@ Legend:
 OMNeT++ 6.0
 ~~~~~~~~~~~
 
+(!!!)   Ownership mechanism change: It is now illegal for one module to silently
+        delete an object (typically message) owned by another module. Doing so
+        currently results in a warning, because C++ doesn't allow throwing
+        exceptions from a destructor. If the operation is legitimate, the
+        module should take ownership of the object using take() before deleting
+        it.
+
+(!)     Renames related to the ownership management mechanism:
+        - cDefaultOwner -> cSoftOwner
+        - defaultOwner -> owningContext
+        - cOwnedObject::setDefaultOwner() -> setOwningContext()
+        - cOwnedObject::getDefaultOwner() -> getOwningContext()
+        - defaultList (global variable) -> globalOwningContext
+        - cSoftOwner::defaultListSize() -> getNumOwnedObjects()
+        - cSoftOwner::defaultListGet() -> getOwnedObject()
+
+(!)     cSoftOwner: defaultListContains() removed. (There were no known usages.)
+
+(+)     cObject: Added getClassAndFullPath() and getClassAndFullName(). They
+        are mostly useful in logging and error messages.
+
+(+)     cAbstractTextFigure: Added getAlignment() ad setAlignment() method;
+        cFigure: added Alignment enum.
+
 (+)     cFigure::RGBA: the Added RGBA(const Color& color, double opacity=1)
         constructor, and the toAlpha() method.
 
@@ -34,8 +58,8 @@ OMNeT++ 6.0
 
 (+)     cHasher: Added operator<< for feeding values into the hasher.
 
-(!)     cHasher: Due to a bugfix, adding strings (const char *, std::string)
-        have changed. TODO
+(!)     cHasher: Due to a bugfix in add(const char *), fingerprints that
+        involve hashing strings have changed.
 
 (!)     cFigure: The protected internal methods hashGeometry() and hashGeometryRec(),
         have been removed, and replaced with the new hashTo() method.
