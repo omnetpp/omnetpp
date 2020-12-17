@@ -931,6 +931,10 @@ public class ConfigRegistry {
         "OFF", "FATAL", "ERROR", "WARN", "INFO", "DETAILS", "DEBUG", "TRACE"
     };
 
+    public static final String[] CONFIG_RECORDING_CHOICES = new String[] {
+            "all", "none", "config", "params", "essentials", "globalconfig"
+    };
+
     public static final Map<String,String> OBSOLETE_OPTIONS;  // (key, error message) pairs
 
     static {

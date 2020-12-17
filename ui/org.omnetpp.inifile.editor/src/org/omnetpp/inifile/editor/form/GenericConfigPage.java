@@ -108,6 +108,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             addSpacer(form);
             group = createGroup(form, "Other");
             addComboboxFieldEditor(group, CFGID_SIMTIME_RESOLUTION, "Simulation time resolution", true);
+            setCombo(CFGID_SIMTIME_RESOLUTION, SIMTIME_RESOLUTION_CHOICES);
             //TODO display extra info: "nanosecond resolution; range: +-100 days"
             addSpacer(form);
         }
@@ -117,6 +118,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             addCheckboxFieldEditor(group, CFGID_VECTOR_RECORD_EVENTNUMBERS, "Record event numbers", c("Vector (module-path.vectorname pattern)", "Value"));
             addTextFieldEditor(group, CFGID_VECTOR_BUFFER, "Per-vector buffer size", c("Vector (module-path.vectorname pattern)", "Buffer size"));
             addTextFieldEditor(group, CFGID_OUTPUT_VECTORS_MEMORY_LIMIT, "Total memory limit", c(null, "Memory Limit"));
+            addCheckboxFieldEditor(group, CFGID_WITH_AKAROA, "Use vector with Akaroa (needs Akaroa to be installed)", c("Parameter (module-path.paramname pattern)", "Value"));
             addSpacer(form);
             group = createGroup(form, "Output Scalar Recording");
             addTextFieldEditor(group, CFGID_OUTPUT_SCALAR_PRECISION, "Precision", c(null, "Precision"));
@@ -132,6 +134,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             group = createGroup(form, "Other");
             addTextFieldEditor(group, CFGID_RUNNUMBER_WIDTH, "Run number width", c(null, "Width"));
             addTextFieldEditor(group, CFGID_NED_PATH, "Additional NED path folders");
+            addTextFieldEditor(group, CFGID_NED_PACKAGE_EXCLUSIONS, "Additional NED packages to exclude");
             addTextFieldEditor(group, CFGID_IMAGE_PATH, "Additional image path folders");
             addTextFieldEditor(group, CFGID_USER_INTERFACE, "User interface");
         }
@@ -164,7 +167,10 @@ public class GenericConfigPage extends ScrolledFormPage {
         }
         else if (category.equals(CAT_RESULTRECORDING)) {
             addTextFieldEditor(form, CFGID_RESULT_DIR, "Result folder", c(null, "Results Folder"));
+            addCheckboxFieldEditor(form, CFGID_RESULTDIR_SUBDIVISION, "Create sub-folders under the results folder");
             addCheckboxFieldEditor(form, CFGID_FNAME_APPEND_HOST, "Append host name to filenames");
+            addComboboxFieldEditor(form, CFGID_CONFIG_RECORDING, "Config options to record", false);
+            setCombo(CFGID_CONFIG_RECORDING, CONFIG_RECORDING_CHOICES);
             addSpacer(form);
             group = createGroup(form, "Statistic Recording");
             addCheckboxFieldEditor(group, CFGID_STATISTIC_RECORDING, "Enable recording of @statistics", c("Statistic (module-path.statisticname pattern)", "Value"));
@@ -180,7 +186,8 @@ public class GenericConfigPage extends ScrolledFormPage {
             addTextFieldEditor(group, CFGID_OUTPUT_SCALAR_FILE, "Output scalar file", c(null, "Filename"));
             addCheckboxFieldEditor(group, CFGID_SCALAR_RECORDING, "Enable recording of scalars", c("Scalar (module-path.scalarname pattern)", "Value"));
             addCheckboxFieldEditor(group, CFGID_BIN_RECORDING, "Record histogram bins", c("Scalar (module-path.scalarname pattern)", "Value"));
-            addCheckboxFieldEditor(group, CFGID_PARAM_RECORD_AS_SCALAR, "Record parameters as scalars", c("Parameter (module-path.paramname pattern)", "Value"));
+            addCheckboxFieldEditor(group, CFGID_PARAM_RECORDING, "Record parameters", c("Parameter (module-path.paramname pattern)", "Value"));
+            addCheckboxFieldEditor(group, CFGID_PARAM_RECORD_AS_SCALAR, "Record parameters as scalars (obsolete)", c("Parameter (module-path.paramname pattern)", "Value"));
             addSpacer(form);
         }
         else if (category.equals(CAT_DEBUGGING)) {
@@ -266,6 +273,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             addCheckboxFieldEditor(group, CFGID_CMDENV_EVENT_BANNERS, "Print event banners");
             addCheckboxFieldEditor(group, CFGID_CMDENV_EVENT_BANNER_DETAILS, "Detailed event banners");
             addComboboxFieldEditor(group, CFGID_CMDENV_LOG_LEVEL, "Log level (per module)", c("Component (component-path pattern)", "Log level"), false); //TODO 3-column editor
+            setCombo(CFGID_CMDENV_LOG_LEVEL, LOGLEVEL_CHOICES);
             addTextFieldEditor(group, CFGID_CMDENV_LOG_PREFIX, "Log prefix");
             addSpacer(form);
             group = createGroup(form, "Other");
@@ -288,6 +296,7 @@ public class GenericConfigPage extends ScrolledFormPage {
         else if (category.equals(CAT_PARSIM)) {
             addCheckboxFieldEditor(form, CFGID_PARALLEL_SIMULATION, "Enable parallel simulation");
             group = createGroup(form, "Partitioning");
+            addTextFieldEditor(group, CFGID_PARSIM_NUM_PARTITIONS, "Number of partitions");
             addTextTableFieldEditor(group, CFGID_PARTITION_ID, "Module partitioning", c("Module", "Partition ID(s)"));
             addSpacer(form);
             group = createGroup(form, "General");
@@ -311,14 +320,12 @@ public class GenericConfigPage extends ScrolledFormPage {
         else {
             throw new IllegalArgumentException("no such category: "+category);
         }
+    }
 
-        // initialize combo boxes with static content
-        FieldEditor simtimeResolutionEditor = getFieldEditorFor(CFGID_SIMTIME_RESOLUTION);
-        if (simtimeResolutionEditor != null)
-            simtimeResolutionEditor.setComboContents(Arrays.asList(SIMTIME_RESOLUTION_CHOICES));
-        FieldEditor cmdenvLoglevelEditor = getFieldEditorFor(CFGID_CMDENV_LOG_LEVEL);
-        if (cmdenvLoglevelEditor != null)
-            cmdenvLoglevelEditor.setComboContents(Arrays.asList(LOGLEVEL_CHOICES));
+    protected void setCombo(ConfigOption option, String[] choices) {
+        FieldEditor fieldEditor = getFieldEditorFor(option);
+        if (fieldEditor != null)
+            fieldEditor.setComboContents(Arrays.asList(choices));
     }
 
     protected Label addSpacer(Composite parent) {
