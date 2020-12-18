@@ -18,14 +18,6 @@ The summary of changes since 6.0pre9:
 
 Core:
 
-  - Ownership mechanism change: It is now illegal for one module to silently
-    delete an object (typically message) owned by another module. Doing so
-    currently results in a warning, because C++ doesn't allow throwing exceptions
-    from a destructor. The new check may cause issues in existing models
-    to surface. When that happens, the code needs to be reviewed. If the
-    delete operation is found to be legitimate, the fix is to add a take()
-    call before the delete.
-
   - Refactoring: Some classes, methods and variables related to ownership
     management were renamed: cDefaultOwner -> cSoftOwner; defaultOwner ->
     owningContext, etc.

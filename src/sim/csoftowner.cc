@@ -122,6 +122,7 @@ void cSoftOwner::doInsert(cOwnedObject *obj)
 void cSoftOwner::ownedObjectDeleted(cOwnedObject *obj)
 {
     ASSERT(obj && obj->owner == this);
+#ifdef CHECK_OWNERSHIP_ON_DELETE
     if (this != owningContext) {
         // note: we cannot throw an exception, as C++ forbids throwing in a destructor, and noexcept(false) is not workable
         cRuntimeError e("Warning: Context component is deleting an object named \"%s\" it doesn't own; owner is (%s)%s",
@@ -129,6 +130,7 @@ void cSoftOwner::ownedObjectDeleted(cOwnedObject *obj)
         getEnvir()->alert(e.getFormattedMessage().c_str());
         // abort()? -- perhaps that's too harsh
     }
+#endif
 
     // move last object to obj's old position
     int pos = obj->pos;

@@ -24,13 +24,6 @@ Legend:
 OMNeT++ 6.0
 ~~~~~~~~~~~
 
-(!!!)   Ownership mechanism change: It is now illegal for one module to silently
-        delete an object (typically message) owned by another module. Doing so
-        currently results in a warning, because C++ doesn't allow throwing
-        exceptions from a destructor. If the operation is legitimate, the
-        module should take ownership of the object using take() before deleting
-        it.
-
 (!)     Renames related to the ownership management mechanism:
         - cDefaultOwner -> cSoftOwner
         - defaultOwner -> owningContext

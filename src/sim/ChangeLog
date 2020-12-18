@@ -1,3 +1,10 @@
+2020-12-18  Andras Varga
+
+	* Temporarily disable "Prevent one module from being able to silently 
+	delete another module's message" check. We plan to put it back after
+	more careful preparation in models like INET. Until then, it can be
+	enabled by defining CHECK_OWNERSHIP_ON_DELETE when compiling OMNeT++.
+
 2020-12-15  Andras Varga
 
 	* cSimulation::loadNedSourceFolder(): accept exclusions in the form of
