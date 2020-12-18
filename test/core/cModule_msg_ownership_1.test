@@ -1,0 +1,61 @@
+%description:
+Test that one module cannot delete a message owned by another message.
+
+%file: test.ned
+
+simple First
+{
+}
+
+simple Second
+{
+}
+
+network Test
+{
+  submodules:
+    first: First;
+    second: Second;
+}
+
+%file: modules.cc
+
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class First : public cSimpleModule
+{
+  public:
+    cMessage *msg = new cMessage("msg");
+};
+
+class Second : public cSimpleModule
+{
+  public:
+     Second() : cSimpleModule(16384) {}
+     virtual void activity() override;
+};
+
+Define_Module(First);
+Define_Module(Second);
+
+void Second::activity()
+{
+   First *first = check_and_cast<First *>(getParentModule()->getSubmodule("first"));
+   cMessage *msg = first->msg;
+   EV << "msg: " << msg->getFullPath() << endl;
+   delete msg;
+}
+
+}; //namespace
+
+%contains: stdout
+msg: Test.first.msg
+
+<!> Warning: Context component (@TESTNAME@::Second)second is deleting an object named "msg" it doesn't own, owner is (@TESTNAME@::First)first; set allow-object-stealing-on-deletion=true to disable this error message -- in module (@TESTNAME@::Second) Test.second (id=3), at t=0s, event #1
+
+
+<!> No more events, simulation completed -- at t=0s, event #1

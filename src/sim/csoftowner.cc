@@ -24,6 +24,8 @@
 #include "omnetpp/cexception.h"
 #include "omnetpp/csoftowner.h"
 #include "omnetpp/csimulation.h"
+#include "omnetpp/cconfiguration.h"
+#include "omnetpp/cconfigoption.h"
 #include "omnetpp/cenvir.h"
 #include "omnetpp/cwatch.h"
 
@@ -35,6 +37,21 @@ namespace omnetpp {
 
 
 Register_Class(cSoftOwner);
+
+Register_PerRunConfigOption(CFGID_ALLOW_OBJECT_STEALING_ON_DELETION, "allow-object-stealing-on-deletion", CFG_BOOL, "false", "Setting it to true disables the \"Context component is deleting an object it doesn't own\" error message. This option exists primarily for backward compatibility with pre-6.0 versions that were more permissive during object deletion.");
+
+static bool allowObjectStealing = false;
+
+namespace {
+class LocalLifecycleListener : public cISimulationLifecycleListener {
+    virtual void lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details) {
+        if (eventType == LF_PRE_NETWORK_SETUP)
+            allowObjectStealing = cSimulation::getActiveEnvir()->getConfig()->getAsBool(CFGID_ALLOW_OBJECT_STEALING_ON_DELETION);
+    }
+} listener;
+}
+
+EXECUTE_ON_STARTUP(cSimulation::getActiveEnvir()->addLifecycleListener(&listener));
 
 
 cSoftOwner::cSoftOwner(const char *name) : cNoncopyableOwnedObject(name)
@@ -108,15 +125,16 @@ void cSoftOwner::doInsert(cOwnedObject *obj)
 void cSoftOwner::ownedObjectDeleted(cOwnedObject *obj)
 {
     ASSERT(obj && obj->owner == this);
-#ifdef CHECK_OWNERSHIP_ON_DELETE
-    if (this != owningContext) {
-        // note: we cannot throw an exception, as C++ forbids throwing in a destructor, and noexcept(false) is not workable
-        cRuntimeError e("Warning: Context component is deleting an object named \"%s\" it doesn't own; owner is (%s)%s",
-                obj->getFullName(), getClassName(), getFullPath().c_str()); // note: cannot print obj->getClassName(), as type is already lost at this point (will always be cOwnedObject)
-        getEnvir()->alert(e.getFormattedMessage().c_str());
-        // abort()? -- perhaps that's too harsh
+    if (!allowObjectStealing && this != owningContext) {
+        // note 1: we cannot throw an exception, as C++ forbids throwing in a destructor, and noexcept(false) is not workable
+        // note 2: cannot print obj->getClassName(), as type is already lost at this point (will always be cOwnedObject)
+        cRuntimeError ex("Warning: Context component %s is deleting an object named \"%s\" it doesn't own, owner is %s; set %s=true to disable this error message",
+                owningContext->getClassAndFullName().c_str(),
+                obj->getFullName(),
+                getClassAndFullName().c_str(),
+                CFGID_ALLOW_OBJECT_STEALING_ON_DELETION->getName());
+        getEnvir()->alert(ex.getFormattedMessage().c_str());
     }
-#endif
 
     // move last object to obj's old position
     int pos = obj->pos;
