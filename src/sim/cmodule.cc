@@ -180,10 +180,13 @@ void cModule::doDeleteModule()
         tmp.vectorSize = getVectorSize();
         tmp.index = getIndex();
 
-        setFlag(cComponent::FL_DELETING, true);
-        cContextSwitcher tmp2(this); // module must be in context so that it is allowed to delete model objects it owns
-        delete this;
+        {
+            setFlag(cComponent::FL_DELETING, true);
+            cContextSwitcher tmp2(this); // module must be in context so that it is allowed to delete model objects it owns
+            delete this;
+        }
 
+        // note: this must be executed in the original context
         parent->emit(POST_MODEL_CHANGE, &tmp);
     }
 }
