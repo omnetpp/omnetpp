@@ -68,6 +68,8 @@ import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
+import org.omnetpp.ned.model.notification.INedChangeListener;
+import org.omnetpp.ned.model.notification.NedModelEvent;
 import org.omnetpp.ned.model.pojo.ParamElement;
 
 /**
@@ -124,6 +126,8 @@ public final class InifileAnalyzer {
     private Object paramResolutionLock; // for threads that are waiting for the param resolution job
 
     // infrastructure
+    private INedChangeListener nedChangeListener; // we listen on NED changes
+    private IInifileChangeListener inifileChangeListener;
     private InifileProblemMarkerSynchronizer markers; // only used during analyze()
     private ListenerList<IPropertyChangeListener> propertyChangeListeners = new ListenerList<>();
     private ListenerList<IAnalysisListener> analysisListeners = new ListenerList<>();
@@ -176,19 +180,32 @@ public final class InifileAnalyzer {
         this.paramResolutionLock = new Object();
         this.paramResolutionJob = new ParamResolutionJob(doc);
 
-        // hook on inifile changes (unhooking is not necessary, because everything
-        // will be gc'd when the editor closes)
-        doc.addInifileChangeListener(new IInifileChangeListener() {
+        // hook on inifile changes
+        inifileChangeListener = new IInifileChangeListener() {
             public void modelChanged() {
                 InifileAnalyzer.this.modelChanged();
             }
-        });
+        };
+        doc.addInifileChangeListener(inifileChangeListener);
+
+        // listen on NED changes as well
+        nedChangeListener = new INedChangeListener() {
+            public void modelChanged(NedModelEvent event) {
+                InifileAnalyzer.this.modelChanged();
+            }
+        };
+        NedResourcesPlugin.getNedResources().addNedModelChangeListener(nedChangeListener);
 
         paramResolutionJob.addJobChangeListener(new JobChangeAdapter() {
             public void done(IJobChangeEvent event) {
                 paramResolutionJobDone(event.getResult());
             }
         });
+    }
+
+    public void dispose() {
+        doc.removeInifileChangeListener(inifileChangeListener);
+        NedResourcesPlugin.getNedResources().removeNedModelChangeListener(nedChangeListener);
     }
 
     private void modelChanged() {

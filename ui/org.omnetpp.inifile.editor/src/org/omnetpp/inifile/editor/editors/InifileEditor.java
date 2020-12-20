@@ -284,6 +284,7 @@ public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, I
         ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceTracker);
         if (outlinePage != null)
             outlinePage.setInput(null); //XXX ?
+        editorData.getInifileAnalyzer().dispose();
         editorData.getInifileDocument().dispose();
         super.dispose();
     }

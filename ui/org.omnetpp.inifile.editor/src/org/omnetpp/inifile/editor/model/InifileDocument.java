@@ -130,7 +130,6 @@ public class InifileDocument implements IInifileDocument {
     // listeners
     private IDocumentListener documentListener; // we listen on IDocument
     private IResourceChangeListener resourceChangeListener; // we listen on the workspace
-    private INedChangeListener nedChangeListener; // we listen on NED changes
     private InifileChangeListenerList listeners = new InifileChangeListenerList(); // clients that listen on us
 
     public InifileDocument(IDocument document, IFile documentFile) {
@@ -200,14 +199,6 @@ public class InifileDocument implements IInifileDocument {
             }
         };
         ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceChangeListener);
-
-        // listen on NED changes as well
-        nedChangeListener = new INedChangeListener() {
-            public void modelChanged(NedModelEvent event) {
-                markAsChanged();
-            }
-        };
-        NedResourcesPlugin.getNedResources().addNedModelChangeListener(nedChangeListener);
     }
 
     public void markAsChanged() {
@@ -229,7 +220,6 @@ public class InifileDocument implements IInifileDocument {
     protected void unhookListeners() {
         document.removeDocumentListener(documentListener);
         ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
-        NedResourcesPlugin.getNedResources().removeNedModelChangeListener(nedChangeListener);
     }
 
     public void parseIfChanged() {
