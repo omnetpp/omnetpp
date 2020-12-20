@@ -630,8 +630,6 @@ public class ParametersPage extends FormPage {
 
     @Override
     public void reread() {
-        super.reread();
-
         // refresh combo with the current section names, trying to preserve existing selection
         IReadonlyInifileDocument doc = getInifileDocument();
         String selectedSection = sectionsCombo.getText();  // Note: "" if inifile is empty
@@ -664,7 +662,7 @@ public class ParametersPage extends FormPage {
             // treeViewer.getColumnViewerEditor().addEditorActivationListener() doesn't seem to work
             // (listener doesn't get called), so we just schedule another reread into the future.
             Debug.println("cell editor active -- postponing tree refresh");
-            delayedRereadJob.restartTimer();
+//            delayedRereadJob.restartTimer();
         }
         else {
             // refresh the tree
@@ -691,6 +689,11 @@ public class ParametersPage extends FormPage {
 
         updateButtonStates();
         addMissingButton.setEnabled(selectedSection!=null);
+    }
+
+    @Override
+    public void analysisCompleted() {
+        reread();
     }
 
     @Override

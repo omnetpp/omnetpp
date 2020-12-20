@@ -18,12 +18,12 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
-import org.omnetpp.common.Debug;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverInfoProvider;
-import org.omnetpp.common.util.DelayedJob;
+import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.editors.InifileEditorData;
@@ -31,6 +31,7 @@ import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.IInifileChangeListener;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
+import org.omnetpp.inifile.editor.model.InifileAnalyzer.IAnalysisListener;
 
 /**
  * Base class for inifile form editor pages.
@@ -55,39 +56,34 @@ public abstract class FormPage extends Composite {
     // there is an InifileListener which rereads the form after 1000ms
     // if that wasn't done until that time automatically.
     //
-    // See fields "delayedRereadListener" and "delayedRereadJob" which participate
-    // in this mechanism.
-    //
-    protected IInifileChangeListener delayedRereadListener = new IInifileChangeListener() {
+    protected IInifileChangeListener inifileListener = new IInifileChangeListener() {
         public void modelChanged() {
-            // we only need to schedule an update if the form editor is displayed;
-            // if text editor is displayed, switching to form mode will re-read
-            // form contents anyway.
-            if (inifileEditor.isFormPageDisplayed())
-                delayedRereadJob.restartTimer();
+            if (!FormPage.this.isDisposed() && inifileEditor.isFormPageDisplayed() && inifileEditor.getFormEditor().getActiveCategoryPage()==FormPage.this)
+                reread();
         }
     };
 
-    protected DelayedJob delayedRereadJob = new DelayedJob(1000) {
-        public void run() {
-            // reread if page is still displayed (and exists)
-            if (inifileEditor.isFormPageDisplayed() && !FormPage.this.isDisposed() &&
-                    inifileEditor.getFormEditor().getActiveCategoryPage()==FormPage.this) {
-                Debug.println("delayedJob: rereading form page");
-                reread();
-            }
+    protected IAnalysisListener analysisListener = new IAnalysisListener() {
+        @Override
+        public void analysisCompleted(InifileAnalyzer analyzer) {
+            DisplayUtils.runNowOrAsyncInUIThread(() -> {
+                if (!FormPage.this.isDisposed() && inifileEditor.isFormPageDisplayed() && inifileEditor.getFormEditor().getActiveCategoryPage()==FormPage.this)
+                    FormPage.this.analysisCompleted();
+            });
         }
     };
 
     public FormPage(Composite parent, InifileEditor inifileEditor) {
         super(parent, SWT.NONE);
         this.inifileEditor = inifileEditor;
-        getInifileDocument().addInifileChangeListener(delayedRereadListener);
+        getInifileDocument().addInifileChangeListener(inifileListener);
+        getInifileAnalyzer().addAnalysisListener(analysisListener);
     }
 
     @Override
     public void dispose() {
-        getInifileDocument().removeInifileChangeListener(delayedRereadListener);
+        getInifileDocument().removeInifileChangeListener(inifileListener);
+        getInifileAnalyzer().removeAnalysisListener(analysisListener);
         super.dispose();
     }
 
@@ -116,12 +112,14 @@ public abstract class FormPage extends Composite {
 
     /**
      * Reads data from the document into the current page.
-     * FormPage's implementation does nothing except canceling the delayed-reread timer --
-     * subclasses must override and actually implement the rereading!
+     * FormPage's implementation does nothing -- subclasses must override and actually implement the rereading!
      */
-    public void reread() {
-        delayedRereadJob.cancel();
-    }
+    public abstract void reread();
+
+    /**
+     * Reflect analysis results on the form.
+     */
+    public abstract void analysisCompleted();
 
     /**
      * Set the focus to an appropriate control in the form page.

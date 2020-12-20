@@ -443,7 +443,6 @@ public class SectionsPage extends FormPage {
 
     @Override
     public void reread() {
-        super.reread();
         IReadonlyInifileDocument doc = getInifileDocument();
         InifileAnalyzer analyzer = getInifileAnalyzer();
 
@@ -492,6 +491,10 @@ public class SectionsPage extends FormPage {
 
         treeViewer.refresh();  // refresh labels anyway
         updateActions();
+    }
+
+    @Override
+    public void analysisCompleted() {
     }
 
     private GenericTreeNode getOrCreateNode(HashMap<String, List<GenericTreeNode>> nodes, String sectionName) {

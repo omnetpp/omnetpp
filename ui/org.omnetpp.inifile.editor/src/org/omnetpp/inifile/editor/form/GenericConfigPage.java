@@ -456,9 +456,14 @@ public class GenericConfigPage extends ScrolledFormPage {
 
     @Override
     public void reread() {
-        super.reread();
         for (FieldEditor e : fieldEditors)
             e.reread();
+    }
+
+    @Override
+    public void analysisCompleted() {
+        for (FieldEditor e : fieldEditors)
+            e.refreshDecorations();
     }
 
     @Override
