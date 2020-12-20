@@ -145,7 +145,12 @@ public class TextFieldEditor extends FieldEditor {
         }
         isEdited = false;
 
-        // update problem decoration
+        refreshDecorations();
+    }
+
+    public void refreshDecorations() {
+        //TODO only if changed!
+        String key = entry.isPerObject() ? "**."+entry.getName() : entry.getName();
         IMarker[] markers = InifileUtils.getProblemMarkersFor(GENERAL, key, inifile);
         problemDecoration.setImage(getProblemImage(markers, true, true));
         problemDecoration.setDescriptionText(getProblemsText(markers));

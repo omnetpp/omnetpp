@@ -121,6 +121,11 @@ public abstract class ExpandableFieldEditor extends FieldEditor  {
     }
 
     @Override
+    public void refreshDecorations() {
+        fieldEditor.refreshDecorations();
+    }
+
+    @Override
     public void reread() {
         fieldEditor.reread();
     }

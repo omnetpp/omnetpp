@@ -255,4 +255,9 @@ public abstract class TableFieldEditor extends FieldEditor {
         tableViewer.setInput(list.toArray(new SectionKey[list.size()]));
     }
 
+    @Override
+    public void refreshDecorations() {
+        tableViewer.refresh();
+    }
+
 }

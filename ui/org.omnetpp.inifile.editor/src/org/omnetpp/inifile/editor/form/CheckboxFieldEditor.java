@@ -93,7 +93,10 @@ public class CheckboxFieldEditor extends FieldEditor {
             resetButton.setEnabled(true);
         }
 
-        // update problem decoration
+        refreshDecorations();
+    }
+
+    public void refreshDecorations() {
         IMarker[] markers = InifileUtils.getProblemMarkersFor(GENERAL, entry.getName(), inifile);
         problemDecoration.setImage(getProblemImage(markers, true, true));
         problemDecoration.setDescriptionText(getProblemsText(markers));

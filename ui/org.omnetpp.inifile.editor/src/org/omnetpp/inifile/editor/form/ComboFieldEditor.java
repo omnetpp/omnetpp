@@ -128,11 +128,7 @@ public class ComboFieldEditor extends FieldEditor {
         }
         isEdited = false;
 
-        // update problem decoration
-        IMarker[] markers = InifileUtils.getProblemMarkersFor(GENERAL, key, inifile);
-        problemDecoration.setImage(getProblemImage(markers, true, true));
-        problemDecoration.setDescriptionText(getProblemsText(markers));
-        redraw(); // otherwise an obsolete error decoration doesn't disappear
+        refreshDecorations();
     }
 
     public void setComboContents(List<String> list) {
@@ -143,6 +139,15 @@ public class ComboFieldEditor extends FieldEditor {
                 combo.add(i);
         combo.setText(oldValue);
         reread();
+    }
+
+    @Override
+    public void refreshDecorations() {
+        String key = entry.isPerObject() ? "**."+entry.getName() : entry.getName();
+        IMarker[] markers = InifileUtils.getProblemMarkersFor(GENERAL, key, inifile);
+        problemDecoration.setImage(getProblemImage(markers, true, true));
+        problemDecoration.setDescriptionText(getProblemsText(markers));
+        redraw(); // otherwise an obsolete error decoration doesn't disappear
     }
 
     @Override

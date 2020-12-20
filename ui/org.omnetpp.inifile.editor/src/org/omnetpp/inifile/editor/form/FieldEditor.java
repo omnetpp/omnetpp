@@ -197,6 +197,8 @@ public abstract class FieldEditor extends Composite {
 
     public abstract void reread();
 
+    public abstract void refreshDecorations();
+
     public abstract void commit();
 
     public void resetToDefault() {
