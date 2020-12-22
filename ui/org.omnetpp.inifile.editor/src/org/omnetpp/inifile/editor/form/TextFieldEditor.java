@@ -129,17 +129,20 @@ public class TextFieldEditor extends FieldEditor {
     @Override
     public void reread() {
         // update text and reset button
+        String contents = textField.getText();
         String key = entry.isPerObject() ? "**."+entry.getName() : entry.getName();
         String value = getValueFromFile(GENERAL, key);
         if (value==null) {
             String defaultValue = entry.getDefaultValue()==null ? "" : entry.getDefaultValue().toString();
-            textField.setText(defaultValue);
+            if (!contents.equals(defaultValue))
+                textField.setText(defaultValue);
             //textField.setForeground(ColorFactory.asColor("darkGreen"));
             textField.setForeground(ColorFactory.GREY50);
             resetButton.setEnabled(false);
         }
         else {
-            textField.setText(value);
+            if (!contents.equals(value))
+                textField.setText(value);
             textField.setForeground(null);
             resetButton.setEnabled(true);
         }

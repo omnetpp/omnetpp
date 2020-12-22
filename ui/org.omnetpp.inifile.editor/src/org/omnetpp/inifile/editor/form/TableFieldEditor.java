@@ -193,8 +193,8 @@ public abstract class TableFieldEditor extends FieldEditor {
             case CFG_FILENAMES: return "";
             case CFG_PATH: return "";
             case CFG_STRING: return "";
+            default: return "";
         }
-        return "";
     }
 
     /**

@@ -529,8 +529,7 @@ public class InifileDocument implements IInifileDocument {
         if (!nullSafeEquals(line.value, value)) {
             line.value = value;
             String text = line.key + " = " + line.value + line.rawComment;
-            if (!replaceLine(line, text))
-                changed = false; // suppress re-parsing
+            replaceLine(line, text);
         }
     }
 
