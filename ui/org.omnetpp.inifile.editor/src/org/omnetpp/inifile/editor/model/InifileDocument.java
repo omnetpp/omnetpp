@@ -168,6 +168,8 @@ public class InifileDocument implements IInifileDocument {
         // listen of workspace changes (we need to invalidate the doc when an included inifile has changed)
         resourceChangeListener = new IResourceChangeListener() {
             public void resourceChanged(IResourceChangeEvent event) {
+                if (includedFiles.isEmpty())
+                    return; // we are only interested in changes in included files
                 if (event.getType() == IResourceChangeEvent.POST_CHANGE) {
                     try {
                         // we need to traverse the delta to find out if there's an ini file in it [sigh...]
@@ -175,9 +177,10 @@ public class InifileDocument implements IInifileDocument {
                         event.getDelta().accept(new IResourceDeltaVisitor() {
                             public boolean visit(IResourceDelta delta) throws CoreException {
                                 IResource resource = delta.getResource();
-                                if (delta.getKind()==IResourceDelta.CHANGED && (delta.getFlags() & IResourceDelta.CONTENT)!=0 &&
-                                        resource instanceof IFile && "ini".equals(resource.getFileExtension()) && resource!=documentFile)
-                                    result[0] = true;
+                                if (includedFiles.contains(resource)) {
+                                    if (delta.getKind()!=IResourceDelta.CHANGED || (delta.getFlags() & IResourceDelta.CONTENT)!=0) // ADDED, REMOVED, or *content* (not marker etc) CHANGED
+                                        result[0] = true;
+                                }
                                 return result[0]==false;
                             }
                         });
