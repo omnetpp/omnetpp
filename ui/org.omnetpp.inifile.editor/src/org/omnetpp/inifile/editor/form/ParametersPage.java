@@ -55,6 +55,7 @@ import org.omnetpp.common.ui.LocalTransfer;
 import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.common.ui.TableTextCellEditor;
 import org.omnetpp.common.ui.ViewerDragAdapter;
+import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.actions.AddInifileKeysDialog;
@@ -77,7 +78,6 @@ import org.omnetpp.inifile.editor.model.Timeout;
  *
  * @author Andras
  */
-//XXX when adding params here, editor annotations become out of sync with markers
 public class ParametersPage extends FormPage {
     private TreeViewer treeViewer;
     private Combo sectionsCombo;
@@ -87,6 +87,14 @@ public class ParametersPage extends FormPage {
     private Button newButton;
     private Button removeButton;
     private Button addMissingButton;
+
+    private DelayedJob rereadJob = new DelayedJob(500) {
+        @Override
+        public void run() {
+            if (!treeViewer.getTree().isDisposed() && !treeViewer.isCellEditorActive())
+                reread();
+        }
+    };
 
     public ParametersPage(Composite parent, InifileEditor inifileEditor) {
         super(parent, inifileEditor);
@@ -641,31 +649,29 @@ public class ParametersPage extends FormPage {
         selectedSection = sectionsCombo.getText();
 
         // compute fallback chain for selected section, and fill table with their contents
-        GenericTreeNode rootNode = new GenericTreeNode("root");
         String[] sectionChain = "".equals(selectedSection) ? new String[0] : doc.getSectionChain(selectedSection);
-        for (String section : sectionChain) {
-            GenericTreeNode sectionNode = new GenericTreeNode(section);
-            rootNode.addChild(sectionNode);
-            for (String key : doc.getKeys(section)) {
-                if (key.contains(".")) {
-                    String suffix = StringUtils.substringAfterLast(key, ".");
-                    if (!suffix.contains("-"))
-                        sectionNode.addChild(new GenericTreeNode(new SectionKey(section, key)));
-                }
-            }
-        }
 
         if (treeViewer.isCellEditorActive()) {
-            // refreshing the tree would close the cell editor, so don't do it.
-            // however, we'll need to do a refresh once the cell editor loses focus (commits or cancels).
-            // commit is OK, since it will directly invoke refresh(); we only have to deal with cancel.
+            // Refreshing the tree would close the cell editor, we so don't do it here.
+            // However, we'd need to do a refresh once the cell editor loses focus (commits or cancels).
             // treeViewer.getColumnViewerEditor().addEditorActivationListener() doesn't seem to work
-            // (listener doesn't get called), so we just schedule another reread into the future.
-            Debug.println("cell editor active -- postponing tree refresh");
-//            delayedRereadJob.restartTimer();
+            // (listener doesn't get called), so just schedule a timer.
+            rereadJob.restartTimer();
         }
         else {
-            // refresh the tree
+            GenericTreeNode rootNode = new GenericTreeNode("root");
+            for (String section : sectionChain) {
+                GenericTreeNode sectionNode = new GenericTreeNode(section);
+                rootNode.addChild(sectionNode);
+                for (String key : doc.getKeys(section)) {
+                    if (key.contains(".")) {
+                        String suffix = StringUtils.substringAfterLast(key, ".");
+                        if (!suffix.contains("-"))
+                            sectionNode.addChild(new GenericTreeNode(new SectionKey(section, key)));
+                    }
+                }
+            }
+
             Debug.println("refreshing the tree");
             treeViewer.setInput(rootNode);
             treeViewer.expandAll();
