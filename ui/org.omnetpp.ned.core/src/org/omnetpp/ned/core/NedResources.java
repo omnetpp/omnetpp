@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.core.internal.events.ResourceDelta;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -637,21 +636,6 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
         } finally {
             rehashIfNeeded();
         }
-
-    }
-
-    // Utility functions for debugging
-    public static void printResourceChangeEvent(IResourceChangeEvent event) {
-        Debug.println("event type: "+event.getType());
-        printDelta(event.getDelta(), "  ");
-    }
-
-    public static void printDelta(IResourceDelta delta, String indent) {
-        // LEGEND: [+] added, [-] removed, [*] changed, [>] and [<] phantom added/removed;
-        // then: {CONTENT, MOVED_FROM, MOVED_TO, OPEN, TYPE, SYNC, MARKERS, REPLACED, DESCRIPTION, ENCODING}
-        Debug.println(indent + ((ResourceDelta)delta).toDebugString());
-        for (IResourceDelta child : delta.getAffectedChildren())
-            printDelta(child, indent + "  ");
     }
 
 }
