@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: OMNeT++ Analysis Chart Templates
+Bundle-SymbolicName: org.omnetpp.scave.templates
+Bundle-Version: 6.0.0.qualifier
+Automatic-Module-Name: org.omnetpp.scave.templates
+Eclipse-BuddyPolicy: global
+Eclipse-BundleShape: dir

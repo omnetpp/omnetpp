@@ -9,11 +9,11 @@ package org.omnetpp.scave.editors.ui;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IDialogSettings;
@@ -44,6 +44,7 @@ import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.ChartTemplate;
 import org.omnetpp.scave.model2.ScaveModelUtil;
+import org.osgi.framework.Bundle;
 
 
 public class NewChartFromTemplateDialog extends TitleAreaDialog {
@@ -215,9 +216,10 @@ public class NewChartFromTemplateDialog extends TitleAreaDialog {
     }
 
     protected InputStream getStream(String imagePath) throws IOException, CoreException {
-        if (imagePath.startsWith("plugin:"))
-            return ScavePlugin.getDefault().openStream(new Path(imagePath.substring(7)));
-        else
+        if (imagePath.startsWith("plugin:")) {
+            Bundle bundle = Platform.getBundle("org.omnetpp.scave.templates");
+            return bundle.getResource(imagePath.substring(7)).openStream();
+        } else
             return ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(imagePath)).getContents(true);
     }
 

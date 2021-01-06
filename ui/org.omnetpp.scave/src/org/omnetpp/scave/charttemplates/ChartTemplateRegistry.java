@@ -30,6 +30,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.FileUtils;
@@ -43,6 +44,7 @@ import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Chart.ChartType;
 import org.omnetpp.scave.model.Chart.DialogPage;
 import org.omnetpp.scave.model.ChartTemplate;
+import org.osgi.framework.Bundle;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -208,7 +210,7 @@ public class ChartTemplateRegistry {
     }
 
     protected String getTemplatesFolder(IProject project) {
-        return project == null ? "plugin:/" + CHARTTEMPLATES_FOLDER : project.getName() + "/" + CHARTTEMPLATES_FOLDER;
+        return project == null ? "plugin:" + CHARTTEMPLATES_FOLDER : project.getName() + "/" + CHARTTEMPLATES_FOLDER;
     }
 
     protected IContainer getWorkspaceFolder(String folder) {
@@ -248,9 +250,10 @@ public class ChartTemplateRegistry {
 
     public String readFile(String folder, String name) throws IOException, CoreException {
         String path = folder + "/" + name;
-        InputStream stream;
+        InputStream stream = null;
         if (path.startsWith("plugin:")) {
-            stream = ScavePlugin.getDefault().openStream(new Path(path.substring(7)));
+            Bundle bundle = Platform.getBundle("org.omnetpp.scave.templates");
+            stream = bundle.getResource(path.substring(7)).openStream();
             if (stream == null)
                 throw new IOException("Could not read resource file: " + path);
         }
