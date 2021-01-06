@@ -9,6 +9,7 @@ package org.omnetpp.scave.editors.ui;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -36,6 +37,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.swt.custom.StyledText;
 import org.omnetpp.common.util.HTMLUtils;
 import org.omnetpp.common.util.StringUtils;
@@ -142,7 +144,7 @@ public class NewChartFromTemplateDialog extends TitleAreaDialog {
         tableViewer.setLabelProvider(new ChartTemplateLabelProvider());
         tableViewer.setInput(editor.getChartTemplateRegistry().getAllTemplates());
 
-        styledText = new StyledText(sashForm, SWT.BORDER|SWT.READ_ONLY|SWT.DOUBLE_BUFFERED);
+        styledText = new StyledText(sashForm, SWT.BORDER|SWT.READ_ONLY|SWT.DOUBLE_BUFFERED|SWT.WRAP|SWT.V_SCROLL);
         GridData data2 = new GridData(GridData.FILL_BOTH);
         styledText.setLayoutData(data2);
 
@@ -173,18 +175,18 @@ public class NewChartFromTemplateDialog extends TitleAreaDialog {
     protected String getDescriptionAsHtml(ChartTemplate template) {
         String html = "";
 
-        html += "<p><small>";
-        html += "Template ID: " + template.getId() + " / ";
-        html += "type: " + template.getChartType() + " / ";
+        html += "<p><font size='-1'>";
+        html += "Template ID: " + template.getId() + " | ";
+        html += "type: " + template.getChartType() + " | ";
         String supportedResultTypes = ScaveModelUtil.getResultTypesAsString(template.getSupportedResultTypes());
         html += "supports: " + StringUtils.defaultIfEmpty(supportedResultTypes, "-");
-        html += "</small></p>\n";
+        html += "</font></p>\n";
 
         html += "<h2>" + template.getName() + "</h2>\n";
 
         String description = StringUtils.nullToEmpty(template.getDescription());
         boolean looksLikeHtml = description.trim().startsWith("<");
-        html += looksLikeHtml ? description : "<pre>"+description+"</pre>";
+        html += looksLikeHtml ? "<font size='+1'>" + description + "</font>" : "<pre>"+description+"</pre>";
         return html;
     }
 
@@ -194,7 +196,10 @@ public class NewChartFromTemplateDialog extends TitleAreaDialog {
         Image image = imageRegistry.get(imagePath);
         if (image == null) {
             image = loadImage(imagePath);
+            if (image == null)
+                return ImageFactory.global().getImage(ImageFactory.UNKNOWN);
             imageRegistry.put(imagePath, image);
+
         }
         return image;
     }
@@ -211,14 +216,18 @@ public class NewChartFromTemplateDialog extends TitleAreaDialog {
             ScavePlugin.logError("Cannot load image from '"+imagePath+"' for chart template description", e);
             return null;
         } finally {
-            try {stream.close();} catch (IOException ex) {}
+            try {if (stream != null) stream.close();} catch (IOException ex) {}
         }
     }
 
     protected InputStream getStream(String imagePath) throws IOException, CoreException {
         if (imagePath.startsWith("plugin:")) {
             Bundle bundle = Platform.getBundle("org.omnetpp.scave.templates");
-            return bundle.getResource(imagePath.substring(7)).openStream();
+            URL resource = bundle.getResource(imagePath.substring(7));
+            InputStream stream = (resource == null) ? null : resource.openStream();
+            if (stream == null)
+                throw new IOException("Could not read resource file: " + imagePath);
+            return stream;
         } else
             return ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(imagePath)).getContents(true);
     }

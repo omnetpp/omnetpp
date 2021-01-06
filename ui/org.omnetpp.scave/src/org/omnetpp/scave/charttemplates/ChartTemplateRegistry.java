@@ -11,6 +11,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -250,10 +251,11 @@ public class ChartTemplateRegistry {
 
     public String readFile(String folder, String name) throws IOException, CoreException {
         String path = folder + "/" + name;
-        InputStream stream = null;
+        InputStream stream;
         if (path.startsWith("plugin:")) {
             Bundle bundle = Platform.getBundle("org.omnetpp.scave.templates");
-            stream = bundle.getResource(path.substring(7)).openStream();
+            URL resource = bundle.getResource(path.substring(7));
+            stream = (resource == null) ? null : resource.openStream();
             if (stream == null)
                 throw new IOException("Could not read resource file: " + path);
         }
