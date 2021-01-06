@@ -1,11 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from omnetpp.scave import chart
+from omnetpp.scave import chart, utils
 
 # Take the input string entered in the Properties dialog.
 # It is up to the script how to interpret it. In this example, we just print it.
 input = chart.get_property("input")
 print("Script input: ", input)
+props = chart.get_properties()
 
 # Example script -- change at your will
 r = np.arange(0, 2, 0.01)
