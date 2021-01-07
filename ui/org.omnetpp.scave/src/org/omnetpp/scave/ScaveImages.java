@@ -41,6 +41,12 @@ public class ScaveImages {
     public static final String IMG_ETOOL16_GOTOITEMDEFINITION = "icons/full/etool16/gotoitemdefinition.png";
     public static final String IMG_ETOOL16_HZOOMIN = "icons/full/etool16/hzoomin.png";
     public static final String IMG_ETOOL16_HZOOMOUT = "icons/full/etool16/hzoomout.png";
+    public static final String IMG_ETOOL16_MOVE_DOWN = "icons/full/etool16/move_down.png";
+    public static final String IMG_ETOOL16_MOVE_UP = "icons/full/etool16/move_up.png";
+    public static final String IMG_ETOOL16_NAV_BACKWARD = "icons/full/etool16/nav_backward.png";
+    public static final String IMG_ETOOL16_NAV_FORWARD = "icons/full/etool16/nav_forward.png";
+    public static final String IMG_ETOOL16_NAV_UP = "icons/full/etool16/nav_up.png";
+    public static final String IMG_ETOOL16_NAV_DOWN = "icons/full/etool16/nav_down.png";
     public static final String IMG_ETOOL16_NEWBARCHART = "icons/full/etool16/newbarchart.png";
     public static final String IMG_ETOOL16_NEWCHARTSHEET = "icons/full/etool16/newchartsheet.png";
     public static final String IMG_ETOOL16_NEWDATASET = "icons/full/etool16/newdataset.png";
@@ -48,6 +54,7 @@ public class ScaveImages {
     public static final String IMG_ETOOL16_NEWINPUTFILE = "icons/full/etool16/newinputfile.png";
     public static final String IMG_ETOOL16_NEWLINECHART = "icons/full/etool16/newlinechart.png";
     public static final String IMG_ETOOL16_NEWMATPLOTLIBCHART = "icons/full/etool16/newmatplotlibchart.png";
+    public static final String IMG_ETOOL16_NEWPAGE = "icons/full/etool16/newpage.png";
     public static final String IMG_ETOOL16_NEWSCATTERCHART = "icons/full/etool16/newscatterchart.png";
     public static final String IMG_ETOOL16_PLOTMATPLOTLIB = "icons/full/etool16/plotmatplotlib.png";
     public static final String IMG_ETOOL16_PLOT = "icons/full/etool16/plot.png";
@@ -56,6 +63,7 @@ public class ScaveImages {
     public static final String IMG_ETOOL16_REFRESH = "icons/full/etool16/refresh.png";
     public static final String IMG_ETOOL16_REFRESHMORE = "icons/full/etool16/refreshmore.png";
     public static final String IMG_ETOOL16_REFRESH2 = "icons/full/etool16/refresh2.png";
+    public static final String IMG_ETOOL16_RENAME = "icons/full/etool16/rename.png";
     public static final String IMG_ETOOL16_SETWIDTH = "icons/full/etool16/setwidth.png";
     public static final String IMG_ETOOL16_SETFILTER = "icons/full/etool16/setfilter.png";
     public static final String IMG_ETOOL16_SHOWFIELDS = "icons/full/etool16/showfields.png";
