@@ -14,6 +14,7 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.fieldassist.ControlDecoration;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -48,6 +49,28 @@ public class UIUtils {
         if (dialogSettings == null)
             dialogSettings = pluginDialogSettings.addNewSection(name);
         return dialogSettings;
+    }
+
+    public static void saveSashWeights(SashForm sash, IDialogSettings settings, String sashName) {
+        String value = "";
+        for (int weight : sash.getWeights())
+            value += Integer.toString(weight) + " ";
+        settings.put(sashName + ".weights", value.trim());
+    }
+
+    public static void restoreSashWeights(SashForm sash, IDialogSettings settings, String sashName) {
+        String[] tokens = StringUtils.nullToEmpty(settings.get(sashName + ".weights")).split(" ");
+        if (tokens.length > 0 && tokens.length == sash.getChildren().length) {
+            try {
+                int[] weights = new int[tokens.length];
+                for (int i = 0; i < tokens.length; i++)
+                    weights[i] = Math.max(1, Integer.parseInt(tokens[i]));
+                sash.setWeights(weights);
+            }
+            catch (NumberFormatException e) {
+                // ignore
+            }
+        }
     }
 
     public static void updateProblemDecoration(ControlDecoration decoration, int severity, String text) {
