@@ -61,7 +61,6 @@ import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Chart.DialogPage;
-import org.omnetpp.scave.model.ChartTemplate;
 import org.omnetpp.scave.model2.FilterHintsCache;
 import org.omnetpp.scave.model2.ResultSelectionFilterGenerator;
 import org.xml.sax.SAXException;
@@ -77,6 +76,7 @@ public class ChartEditForm {
     protected ResultFileManager manager;
     protected Map<String,Control> xswtWidgetMap = new HashMap<>();
     protected FilterHintsCache filterHintsCache = new FilterHintsCache();
+    protected Composite panel;
 
     protected static final String USER_DATA_KEY = "ChartEditForm";
 
@@ -90,6 +90,7 @@ public class ChartEditForm {
      * Creates the controls of the dialog.
      */
     public void populatePanel(Composite panel) {
+        this.panel = panel;
         panel.setLayout(new GridLayout(1, false));
         final TabFolder tabfolder = createTabFolder(panel);
 
@@ -203,8 +204,12 @@ public class ChartEditForm {
     }
 
     protected void populateControls() {
+        populateControls(chart.getPropertyValues());
+    }
+
+    protected void populateControls(Map<String,String> properties) {
         for (String propId : xswtWidgetMap.keySet()) {
-            String value = chart.getPropertyValue(propId);
+            String value = properties.get(propId);
             if (value != null) {
                 Control control = xswtWidgetMap.get(propId);
                 try {
@@ -357,7 +362,7 @@ public class ChartEditForm {
         }
         catch (Exception e) {
             // log
-            IStatus status = new Status(IStatus.ERROR, ScavePlugin.PLUGIN_ID, "Cannot create dialog page '" + label + "' for chart template '" + chart.getTemplateID() + "'", e);
+            IStatus status = new Status(IStatus.ERROR, ScavePlugin.PLUGIN_ID, "Cannot create (possibly user-edited) dialog page '" + label + "' for chart template '" + chart.getTemplateID() + "'", e);
             ScavePlugin.log(status);
 
             // show error page
@@ -430,5 +435,22 @@ public class ChartEditForm {
             if (child instanceof Composite)
                 setEnabledDescendants((Composite)child, enabled, except);
         }
+    }
+
+    public void rebuild() {
+        // remember user edits
+        Map<String,String> properties = collectProperties();
+
+        // tear down and forget existing controls
+        for (Control c : panel.getChildren())
+            c.dispose();
+        xswtWidgetMap.clear();
+
+        // recreate with the updated pages
+        populatePanel(panel);
+        panel.requestLayout();
+
+        // restore contents
+        populateControls(properties);
     }
 }

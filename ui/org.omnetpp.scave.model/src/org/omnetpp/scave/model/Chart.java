@@ -9,7 +9,9 @@ package org.omnetpp.scave.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
 
@@ -27,6 +29,16 @@ public class Chart extends AnalysisItem {
             this.id = id;
             this.label = label;
             this.xswtForm = xswtForm;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null || getClass() != obj.getClass())
+                return false;
+            DialogPage other = (DialogPage) obj;
+            return id.equals(other.id) && label.equals(other.label) && xswtForm.equals(other.xswtForm);
         }
 
         public String id;
@@ -138,6 +150,20 @@ public class Chart extends AnalysisItem {
             property.setValue(value);
         else
             addProperty(new Property(name, value));
+    }
+
+    public List<String> getPropertyNames() {
+        List<String> result = new ArrayList<>();
+        for (Property p : properties)
+            result.add(p.getName());
+        return result;
+    }
+
+    public Map<String,String> getPropertyValues() {
+        Map<String,String> result = new HashMap<>();
+        for (Property p : properties)
+            result.put(p.getName(), p.getValue());
+        return result;
     }
 
     public boolean isTemporary() {

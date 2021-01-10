@@ -7,22 +7,39 @@
 
 package org.omnetpp.scave.editors.ui;
 
+import java.io.ByteArrayInputStream;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogSettings;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.common.util.UIUtils;
+import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ChartScriptEditor;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.Property;
+import org.omnetpp.scave.model.Chart.DialogPage;
+import org.omnetpp.scave.model.commands.AddChartPropertyCommand;
 import org.omnetpp.scave.model.commands.CompoundCommand;
+import org.omnetpp.scave.model.commands.RemoveChartPropertyCommand;
+import org.omnetpp.scave.model.commands.SetChartDialogPagesCommand;
 import org.omnetpp.scave.model.commands.SetChartPropertyCommand;
+
+import com.swtworkbench.community.xswt.XSWT;
 
 /**
  * This is the edit dialog for charts.
@@ -62,9 +79,20 @@ public class EditChartDialog extends TitleAreaDialog {
 
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
+        createEditPagesButton(parent);
+
         createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
         createButton(parent, IDialogConstants.APPLY_ID, IDialogConstants.APPLY_LABEL, false);
         createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
+    }
+
+    protected void createEditPagesButton(Composite parent) {
+        ((GridLayout) parent.getLayout()).numColumns++;
+        Button button = new Button(parent, SWT.PUSH|SWT.FLAT);
+        button.setImage(ScavePlugin.getCachedImage(ScaveImages.IMG_ETOOL16_COGWHEEL));
+        button.setToolTipText("Configure");
+        button.setLayoutData(new GridData(SWT.END, SWT.CENTER, false, false));
+        button.addSelectionListener(SelectionListener.widgetSelectedAdapter((e) -> editChartDialogPages()));
     }
 
     @Override
@@ -102,6 +130,57 @@ public class EditChartDialog extends TitleAreaDialog {
 
     protected void applyPressed() {
         applyChanges();
+    }
+
+    protected void editChartDialogPages() {
+        EditChartPagesDialog dialog = new EditChartPagesDialog(this.getShell(), chart);
+        if (dialog.open() == Dialog.OK) {
+            List<DialogPage> editedPages = dialog.getResult();
+            if (!chart.getDialogPages().equals(editedPages)) {
+                CompoundCommand command = makeSetDialogPagesCommand(chart, editedPages);
+                editor.getActiveCommandStack().execute(command);
+                form.rebuild();
+            }
+        }
+    }
+
+    protected CompoundCommand makeSetDialogPagesCommand(Chart chart, List<DialogPage> editedPages) {
+        CompoundCommand command = new CompoundCommand("Edit chart dialog pages");
+
+        // replace pages
+        command.append(new SetChartDialogPagesCommand(chart, editedPages));
+
+        // update set of properties to those actually editable via the pages
+        Set<String> propertyNames = collectPropertyNames(editedPages);
+        for (Property p : chart.getProperties())
+            if (!propertyNames.contains(p.getName()))
+                command.append(new RemoveChartPropertyCommand(chart, p));
+        for (String pn : propertyNames)
+            if (chart.getProperty(pn) == null)
+                command.append(new AddChartPropertyCommand(chart, new Property(pn, ""))); // note: there's nowhere to get the default value from
+        return command;
+    }
+
+    protected Set<String> collectPropertyNames(List<DialogPage> pages) {
+        Set<String> ids = new HashSet<>();
+        for (DialogPage page : pages)
+            ids.addAll(collectPropertyNames(page.xswtForm));
+        return ids;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected Set<String> collectPropertyNames(String xswtForm) {
+        Composite tmp = new Composite(this.getShell(), SWT.NONE);
+        try {
+            Map<String,Control> widgetMap = XSWT.create(tmp, new ByteArrayInputStream(xswtForm.getBytes()));
+            return widgetMap.keySet();
+        }
+        catch (Exception e) {
+            return new HashSet<String>();
+        }
+        finally {
+            tmp.dispose();
+        }
     }
 
 //    protected void updateButtonsAndErrorMessage() {
