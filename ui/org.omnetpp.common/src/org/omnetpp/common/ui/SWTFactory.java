@@ -25,7 +25,9 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
+import org.omnetpp.common.wizard.support.InfoLink;
 
 /**
  * Factory class to create some SWT resources.
@@ -353,6 +355,19 @@ public class SWTFactory {
         return l;
     }
 
+    public static InfoLink createInfoLink(Composite parent, String text, String hoverText, int hspan) {
+        InfoLink l = new InfoLink(parent, SWT.NONE);
+        l.setFont(parent.getFont());
+        l.setText(text);
+        l.setHoverText(hoverText);
+        GridData gd = new GridData(GridData.FILL_HORIZONTAL);
+        gd.horizontalSpan = hspan;
+        gd.grabExcessHorizontalSpace = false;
+        l.setLayoutData(gd);
+        return l;
+    }
+
+
     /**
      * Creates a new text widget
      * @param parent the parent composite to add this text widget to
@@ -426,6 +441,25 @@ public class SWTFactory {
         gd.horizontalSpan = hspan;
         gd.widthHint = width;
         gd.heightHint = height;
+        t.setLayoutData(gd);
+        return t;
+    }
+
+    /**
+     * Creates a new styled text widget
+     * @param parent the parent composite to add this styled text widget to
+     * @param style the style bits for the styled text widget
+     * @param hspan the horizontal span to take up on the parent composite
+     * @param fill the fill style for the widget
+     *        (you may use SWTFactory.FILL_BOTH or SWTFactory.GRAB_AND_FILL_BOTH for convenience)
+     * @return the new styled text widget
+     * @since 3.9
+     */
+    public static StyledText createStyledText(Composite parent, int style, int hspan, int fill) {
+        StyledText t = new StyledText(parent, style);
+        t.setFont(parent.getFont());
+        GridData gd = new GridData(fill);
+        gd.horizontalSpan = hspan;
         t.setLayoutData(gd);
         return t;
     }
@@ -765,6 +799,15 @@ public class SWTFactory {
         spinner.setIncrement(increment);
         spinner.setDigits(decimals);
         return spinner;
+    }
+
+    public static ToolBar createToolbar(Composite parent, int style, int hspan) {
+        ToolBar toolbar = new ToolBar(parent, style);
+        GridData gd = new GridData(GridData.FILL_HORIZONTAL);
+        gd.horizontalSpan = hspan;
+        gd.grabExcessHorizontalSpace = false;
+        toolbar.setLayoutData(gd);
+        return toolbar;
     }
 
     public static Composite setEqualColumnWidth(Composite c, boolean value) {
