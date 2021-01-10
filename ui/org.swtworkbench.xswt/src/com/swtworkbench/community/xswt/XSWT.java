@@ -413,7 +413,7 @@ public class XSWT {
         result = layoutBuilder.construct(className, parent, style, widgetName);
         if (widgetName != null) {
             if (this.widgetDataParser.get(widgetName) != null)
-                throw new XSWTException("Duplicated widget ID found", parser.getLineNumber(), parser.getColumnNumber());
+                throw new XSWTException("Duplicated widget ID found");
             this.widgetDataParser.put(widgetName, result);
 
             resolveIdRefs(widgetName, result);
