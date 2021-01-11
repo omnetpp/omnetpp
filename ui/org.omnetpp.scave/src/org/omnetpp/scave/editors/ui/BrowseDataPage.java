@@ -220,16 +220,17 @@ public class BrowseDataPage extends FormEditorPage {
 
         IDList selectedIDs = panel.getDataControl().getSelectedIDs();
         if (selectedIDs != null) {
-            int selectedItemTypes = selectedIDs.getItemTypes();
-            List<ChartTemplate> supportingChartTemplates = scaveEditor.getChartTemplateRegistry().getChartTemplatesForResultTypes(selectedItemTypes);
+            int selectionItemTypes = selectedIDs.getItemTypes();
+            List<ChartTemplate> supportingChartTemplates = scaveEditor.getChartTemplateRegistry().getChartTemplatesForResultTypes(selectionItemTypes);
 
             for (ChartTemplate templ : supportingChartTemplates)
                 contextMenuManager.add(new CreateTempChartFromTemplateAction(templ));
+            contextMenuManager.add(new Separator());
 
+            contextMenuManager.add(new CreateTempChartFromGalleryAction(selectionItemTypes));
             contextMenuManager.add(new Separator());
         }
 
-        //TODO contextMenuManager.add(new CreateTempChartFromGalleryAction());
 
         if (panel == getScalarsPanel())
             contextMenuManager.add(actions.showFieldsAsScalarsAction);

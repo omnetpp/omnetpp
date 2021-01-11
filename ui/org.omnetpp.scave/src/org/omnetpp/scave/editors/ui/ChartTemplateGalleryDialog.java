@@ -43,6 +43,7 @@ import org.omnetpp.common.util.HTMLUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.ChartTemplate;
 import org.omnetpp.scave.model2.ScaveModelUtil;
@@ -57,6 +58,8 @@ public class ChartTemplateGalleryDialog extends TitleAreaDialog {
     private SashForm sashForm;
 
     private ImageRegistry imageRegistry = new ImageRegistry();
+
+    private int selectionItemTypes = 0;
 
     // the result
     private ChartTemplate selectedTemplate;
@@ -82,14 +85,16 @@ public class ChartTemplateGalleryDialog extends TitleAreaDialog {
 
     };
 
-    /**
-     * Creates the dialog.
-     */
     public ChartTemplateGalleryDialog(Shell parentShell, ScaveEditor editor) {
         super(parentShell);
         setShellStyle(getShellStyle() | SWT.MAX | SWT.RESIZE);
         this.title = "Select Chart Template";
         this.editor = editor;
+    }
+
+    public ChartTemplateGalleryDialog(Shell parentShell, ScaveEditor editor, int selectionItemTypes) {
+        this(parentShell, editor);
+        this.selectionItemTypes = selectionItemTypes;
     }
 
     @Override
@@ -128,7 +133,7 @@ public class ChartTemplateGalleryDialog extends TitleAreaDialog {
         composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         composite.setLayout(new GridLayout());
 
-        createLabel(composite, "Available templates:");
+        createLabel(composite, selectionItemTypes == 0 ? "Available templates:" : "Matching templates:");
 
         sashForm = new SashForm(composite, SWT.NONE);
         sashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -142,7 +147,10 @@ public class ChartTemplateGalleryDialog extends TitleAreaDialog {
 
         tableViewer.setContentProvider(new ArrayContentProvider());
         tableViewer.setLabelProvider(new ChartTemplateLabelProvider());
-        tableViewer.setInput(editor.getChartTemplateRegistry().getAllTemplates());
+
+        ChartTemplateRegistry registry = editor.getChartTemplateRegistry();
+        List<ChartTemplate> templates = selectionItemTypes == 0 ? registry.getAllTemplates() : registry.getChartTemplatesForResultTypes(selectionItemTypes);
+        tableViewer.setInput(templates);
 
         styledText = new StyledText(sashForm, SWT.BORDER|SWT.READ_ONLY|SWT.DOUBLE_BUFFERED|SWT.WRAP|SWT.V_SCROLL);
         GridData data2 = new GridData(GridData.FILL_BOTH);
