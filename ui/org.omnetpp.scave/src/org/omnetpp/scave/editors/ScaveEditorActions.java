@@ -48,7 +48,7 @@ import org.omnetpp.scave.actions.ShowOutputVectorViewAction;
 import org.omnetpp.scave.actions.analysismodel.CopyAction;
 import org.omnetpp.scave.actions.analysismodel.CutAction;
 import org.omnetpp.scave.actions.analysismodel.EditInputFileAction;
-import org.omnetpp.scave.actions.analysismodel.NewChartFromSelectedTemplateAction;
+import org.omnetpp.scave.actions.analysismodel.NewChartFromTemplateGalleryAction;
 import org.omnetpp.scave.actions.analysismodel.NewChartFromTemplateAction;
 import org.omnetpp.scave.actions.analysismodel.PasteAction;
 import org.omnetpp.scave.actions.analysismodel.RedoAction;
@@ -78,7 +78,7 @@ public class ScaveEditorActions {
     public final SelectAllAction selectAllAction = registerAction(new SelectAllAction());
     public final RenameChartAction renameChartAction = registerAction(new RenameChartAction());
     public final ExportChartsAction exportChartsAction = registerAction(new ExportChartsAction());
-    public final NewChartFromSelectedTemplateAction newChartFromTemplateAction = registerAction(new NewChartFromSelectedTemplateAction());
+    public final NewChartFromTemplateGalleryAction newChartFromTemplateGalleryAction = registerAction(new NewChartFromTemplateGalleryAction());
     public final ResetChartToTemplateAction resetToTemplateAction = registerAction(new ResetChartToTemplateAction());
     public final SaveChartAsTemplateAction saveChartAsTemplateAction = registerAction(new SaveChartAsTemplateAction());
     public final RemoveAction removeAction = registerAction(new RemoveAction());

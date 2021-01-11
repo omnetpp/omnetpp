@@ -86,7 +86,7 @@ public class ChartsPage extends FormEditorPage {
 
         ScaveEditorActions actions = scaveEditor.getActions();
 
-        addToToolbar(actions.newChartFromTemplateAction);
+        addToToolbar(actions.newChartFromTemplateGalleryAction);
         addToToolbar(actions.editAction);
         addToToolbar(actions.removeAction);
 

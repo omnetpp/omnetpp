@@ -10,7 +10,6 @@ package org.omnetpp.scave.editors.ui;
 
 import java.util.List;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -31,6 +30,7 @@ import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog2;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.CopySelectionAsFilterAction;
+import org.omnetpp.scave.actions.CreateTempChartFromGalleryAction;
 import org.omnetpp.scave.actions.CreateTempChartFromTemplateAction;
 import org.omnetpp.scave.actions.analysismodel.SetChartFilterAction;
 import org.omnetpp.scave.actions.ui.CopySelectedCellAction;
@@ -228,6 +228,8 @@ public class BrowseDataPage extends FormEditorPage {
 
             contextMenuManager.add(new Separator());
         }
+
+        //TODO contextMenuManager.add(new CreateTempChartFromGalleryAction());
 
         if (panel == getScalarsPanel())
             contextMenuManager.add(actions.showFieldsAsScalarsAction);

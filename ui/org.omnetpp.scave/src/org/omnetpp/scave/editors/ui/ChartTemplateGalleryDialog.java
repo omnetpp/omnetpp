@@ -49,7 +49,7 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
 import org.osgi.framework.Bundle;
 
 
-public class NewChartFromTemplateDialog extends TitleAreaDialog {
+public class ChartTemplateGalleryDialog extends TitleAreaDialog {
     private String title;
     private ScaveEditor editor;
     private TableViewer tableViewer;
@@ -85,7 +85,7 @@ public class NewChartFromTemplateDialog extends TitleAreaDialog {
     /**
      * Creates the dialog.
      */
-    public NewChartFromTemplateDialog(Shell parentShell, ScaveEditor editor) {
+    public ChartTemplateGalleryDialog(Shell parentShell, ScaveEditor editor) {
         super(parentShell);
         setShellStyle(getShellStyle() | SWT.MAX | SWT.RESIZE);
         this.title = "Select Chart Template";

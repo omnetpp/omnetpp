@@ -15,7 +15,7 @@ import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.AbstractScaveAction;
 import org.omnetpp.scave.editors.ScaveEditor;
-import org.omnetpp.scave.editors.ui.NewChartFromTemplateDialog;
+import org.omnetpp.scave.editors.ui.ChartTemplateGalleryDialog;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartTemplate;
 import org.omnetpp.scave.model.commands.AddChartCommand;
@@ -23,16 +23,16 @@ import org.omnetpp.scave.model.commands.ICommand;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 
-public class NewChartFromSelectedTemplateAction extends AbstractScaveAction {
+public class NewChartFromTemplateGalleryAction extends AbstractScaveAction {
 
-    public NewChartFromSelectedTemplateAction() {
+    public NewChartFromTemplateGalleryAction() {
         setText("New Chart");
         setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_NEWBARCHART));
     }
 
     @Override
     protected void doRun(ScaveEditor editor, ISelection selection) throws CoreException {
-        NewChartFromTemplateDialog dialog = new NewChartFromTemplateDialog(Display.getCurrent().getActiveShell(), editor);
+        ChartTemplateGalleryDialog dialog = new ChartTemplateGalleryDialog(Display.getCurrent().getActiveShell(), editor);
         if (dialog.open() != Dialog.OK)
             return;
 
