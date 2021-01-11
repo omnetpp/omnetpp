@@ -1,5 +1,6 @@
 import os
 import io
+import glob
 import subprocess
 from math import inf
 import numpy as np
@@ -13,6 +14,34 @@ using the opp_scavetool program to load the .sca and .vec files.
 # TODO: document
 inputfiles = list()
 
+
+def add_inputs(input_patterns, workspace_dir, project_paths):
+    global inputfiles
+    ins = list()
+    for i in input_patterns:
+        mapped = False
+        for p in project_paths.keys():
+            pv = project_paths[p]
+
+            if not p.startswith("/"):
+                p = "/" + p
+
+            if i.startswith(p):
+                pattern = pv + "/" + i[len(p):]
+
+                if os.path.isdir(pattern):
+                    pattern += "/**"
+
+                ins.extend(glob.glob(pattern, recursive=True))
+                mapped = True
+                break
+
+        # this is a sort-of default case
+        if not mapped:
+            ins.extend(glob.glob(workspace_dir + "/" + i))
+
+    # turning them into absolute paths (script will cwd) and making it unique
+    inputfiles = list(set(inputfiles + [os.path.abspath(item) for item in ins]))
 
 def _parse_int(s):
     return int(s) if s else None
@@ -31,16 +60,16 @@ def _parse_ndarray(s):
 
 
 def get_serial():
-    # return an (arbitrary) constant, as the set of loaded results doesn't change during a run of opp_charttool. 
+    # return an (arbitrary) constant, as the set of loaded results doesn't change during a run of opp_charttool.
     return 1
 
 def _get_results(filter_expression, file_extensions, result_type, *additional_args):
 
     filelist = [i for i in inputfiles if any([i.endswith(e) for e in file_extensions])]
     type_filter = ['-T', result_type] if result_type else []
-
-    command = ["opp_scavetool", "x", *filelist, *type_filter, '-f',
-                filter_expression, "-F", "CSV-R", "-o", "-", *additional_args]
+    filter_expr_args = ['-f', filter_expression] if filter_expression else []
+    command = ["opp_scavetool", "x", *filelist, *type_filter, *filter_expr_args,
+                "-F", "CSV-R", "-o", "-", *additional_args]
 
     output = subprocess.check_output(command)
 
