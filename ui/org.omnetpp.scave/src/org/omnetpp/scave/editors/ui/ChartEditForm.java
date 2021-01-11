@@ -67,6 +67,9 @@ import org.xml.sax.SAXException;
 
 import com.swtworkbench.community.xswt.XSWT;
 
+/**
+ * This is the guts of EditChartDialog.
+ */
 public class ChartEditForm {
 
     public static final String PROP_ACTIVE_TAB = "active-tab";
@@ -123,35 +126,25 @@ public class ChartEditForm {
     }
 
     private void validatePropertyNames() {
-        ChartTemplate template = chartTemplateRegistry.findTemplateByID(chart.getTemplateID());
+        Set<String> propertyNames = new HashSet<>(chart.getPropertyNames());
+        Set<String> formPropertyNames = new HashSet<>(xswtWidgetMap.keySet());
 
-        if (template == null)
-            return;
-
-        Set<String> templatePropertyNames = new HashSet<String>(template.getPropertyNames());
-
-        Set<String> formPropertyNames = xswtWidgetMap.keySet();
-        if (!formPropertyNames.equals(templatePropertyNames)) {
-            Set<String> declaredNotOnForm = new HashSet<String>(templatePropertyNames);
+        if (!formPropertyNames.equals(propertyNames)) {
+            Set<String> declaredNotOnForm = new HashSet<String>(propertyNames);
             declaredNotOnForm.removeAll(formPropertyNames);
 
             Set<String> onFormNotDeclared = new HashSet<String>(formPropertyNames);
-            onFormNotDeclared.removeAll(templatePropertyNames);
+            onFormNotDeclared.removeAll(propertyNames);
 
             if (!declaredNotOnForm.isEmpty())
-                Debug.println("Uneditable chart properties of template '" + template.getName() + "' : " + declaredNotOnForm);
+                Debug.println("Uneditable properties of chart '" + chart.getName() + "' (template '" + chart.getTemplateID() + "') : " + declaredNotOnForm);
             if (!onFormNotDeclared.isEmpty())
                 throw new RuntimeException("Edited properties not declared: " + onFormNotDeclared);
         }
     }
 
     protected IDialogSettings getDialogSettings() {
-        final String KEY = "ChartEditForm";
-        IDialogSettings dialogSettings = ScavePlugin.getDefault().getDialogSettings();
-        IDialogSettings section = dialogSettings.getSection(KEY);
-        if (section == null)
-            section = dialogSettings.addNewSection(KEY);
-        return section;
+        return UIUtils.getDialogSettings(ScavePlugin.getDefault(), "ChartEditForm");
     }
 
     protected String[] getComboContents(String contentString) {
@@ -249,7 +242,7 @@ public class ChartEditForm {
                 if (role.equals("simplify") && control instanceof Button)
                     configureSimplifyButton((Button)control);
                 else
-                    ScavePlugin.getDefault().getLog().warn("'role' attribute in XSWT file is ignored for widget of type '" + control.getClass().getSimpleName() + "', only role='Simplify' is supported for Button widgets");
+                    ScavePlugin.getDefault().getLog().warn("'role' attribute in XSWT file is ignored for widget of type '" + control.getClass().getSimpleName() + "', only role='simplify' is supported for Button widgets");
             }
 
             String isEnabler = (String)control.getData("isEnabler");
@@ -356,6 +349,7 @@ public class ChartEditForm {
             Composite xswtHolder = SWTFactory.createComposite(tabfolder, 1, 1, SWTFactory.GRAB_AND_FILL_HORIZONTAL);
             tabitem.setControl(xswtHolder);
             validateXml(xswtForm); // because XSWT is not very good at it
+            @SuppressWarnings("unchecked")
             Map<String,Control> tempWidgetMap = XSWT.create(xswtHolder, new ByteArrayInputStream(xswtForm.getBytes()));
             xswtWidgetMap.putAll(tempWidgetMap);
             return xswtHolder;
