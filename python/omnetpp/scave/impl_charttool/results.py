@@ -145,6 +145,12 @@ def get_histograms(filter_expression, include_attrs=False, include_runattrs=Fals
     df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
     return df
 
+def get_parameters(filter_expression="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False, as_numeric=False):
+    df = _get_results(filter_expression, ['.sca'], 'p')
+    df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
+    if as_numeric:
+        df["value"] = pd.to_numeric(df["value"], errors="ignore")
+    return df
 
 def _get_metadata(filter_expression="", include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
     # TODO: factor out common parts of the ones below here
