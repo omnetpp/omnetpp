@@ -360,11 +360,15 @@ public class EditChartPagesDialog extends TitleAreaDialog {
         db.parse(new ByteArrayInputStream(xswtForm.getBytes()));
     }
 
+    private int clamp(int x, int a, int b) {
+        return Math.max(b, Math.min(a, x));
+    }
+
     protected void setErrorMessage(String what, String message, int line, int col) {
         setErrorMessage(what + " at " + line + ":" + col + ": " + message);
 
         // highlight the line containing the error
-        line--; // convert to 0-based
+        line = clamp(line-1, 0, styledText.getLineCount()-1); // convert to 0-based, and ensure it's valid (sometimes we can get line=-1)
         int start = styledText.getOffsetAtLine(line);
         boolean isLastLine = line >= styledText.getLineCount()-1;
         int end = isLastLine ? styledText.getCharCount() : styledText.getOffsetAtLine(line+1);
