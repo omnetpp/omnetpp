@@ -284,7 +284,9 @@ public class ResultFilesTracker implements IModelChangeListener {
             }
         }
 
-        String folderLocation = folder.getLocation().toString();
+        String folderLocation = folder.getLocation() != null ? folder.getLocation().toString() : null;
+        if (folderLocation == null) // folder location is unknown
+            return filesToLoad;
 
         // collect files
         if (pattern.isEmpty()) {
