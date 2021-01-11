@@ -28,6 +28,15 @@ def _fake_show(*args, **kwargs):
 
 plt.show = _fake_show
 
+def run_chart_safe(wd, c, export, show):
+    try:
+        run_chart(wd, c, export, show)
+    except Exception as e:
+        print("Error in chart " + c.name, file = sys.stderr)
+        print(traceback.format_exc(), file = sys.stderr)
+        return False
+    return True
+
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description=
@@ -99,16 +108,16 @@ if __name__ == "__main__":
 
     if args.e:
         if selected_chart:
-            chart_ok = run_chart(anf_dir, selected_chart, export=True, show=False)
+            chart_ok = run_chart_safe(anf_dir, selected_chart, export=True, show=False)
             ok = ok and chart_ok
         else:
             for c in analysis.charts:
-                chart_ok = run_chart(anf_dir, c, True)
+                chart_ok = run_chart_safe(anf_dir, c, export=True, show=False)
                 ok = ok and chart_ok
                 plt.clf()
     else:
         if selected_chart:
-            chart_ok = run_chart(anf_dir, selected_chart, export=False, show=True)
+            chart_ok = run_chart_safe(anf_dir, selected_chart, export=False, show=True)
             ok = ok and chart_ok
 
     if not ok:

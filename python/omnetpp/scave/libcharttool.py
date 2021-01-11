@@ -82,16 +82,17 @@ def run_chart(wd, c, export, show):
     chart.properties.clear()
     chart.properties.update(c.properties)
 
+    plt.clf()
+
     global _show_called
     _show_called = False
 
-    got_error = False
+    # this might raise exceptions
     try:
         exec(c.script, {})
-    except:
-        print("Error in chart " + c.name, file = sys.stderr)
-        print(traceback.format_exc(), file = sys.stderr)
-        got_error = True
+    except SystemExit as se:
+        if se.code != 0:
+            raise RuntimeError("Chart script exited with code " + str(se.code))
 
     if export:
         # maybe warn if _show_called is set
@@ -101,4 +102,3 @@ def run_chart(wd, c, export, show):
         if show and not _show_called:
             plt.show()
 
-    return not got_error
