@@ -10,6 +10,7 @@ package org.omnetpp.scave.editors.ui;
 
 import java.util.List;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -214,47 +215,47 @@ public class BrowseDataPage extends FormEditorPage {
         // populate the popup menu of the panel
         IMenuManager contextMenuManager = panel.getDataControl().getContextMenuManager();
         contextMenuManager.removeAll();
+
         ScaveEditorActions actions = scaveEditor.getActions();
-        if (actions != null) {
-            IDList selectedIDs = panel.getDataControl().getSelectedIDs();
-            if (selectedIDs != null) {
-                int selectedItemTypes = selectedIDs.getItemTypes();
-                List<ChartTemplate> supportingChartTemplates = scaveEditor.getChartTemplateRegistry().getChartTemplatesForResultTypes(selectedItemTypes);
 
-                for (ChartTemplate templ : supportingChartTemplates)
-                    contextMenuManager.add(new CreateTempChartFromTemplateAction(templ));
+        IDList selectedIDs = panel.getDataControl().getSelectedIDs();
+        if (selectedIDs != null) {
+            int selectedItemTypes = selectedIDs.getItemTypes();
+            List<ChartTemplate> supportingChartTemplates = scaveEditor.getChartTemplateRegistry().getChartTemplatesForResultTypes(selectedItemTypes);
 
-                contextMenuManager.add(new Separator());
-            }
+            for (ChartTemplate templ : supportingChartTemplates)
+                contextMenuManager.add(new CreateTempChartFromTemplateAction(templ));
 
-            if (panel == getScalarsPanel())
-                contextMenuManager.add(actions.showFieldsAsScalarsAction);
-            contextMenuManager.add(actions.copyRowsToClipboardAction);
-            if (panel != getAllPanel())
-                contextMenuManager.add(new CopySelectedCellAction());
-            contextMenuManager.add(new CopySelectionAsFilterAction());
             contextMenuManager.add(new Separator());
+        }
 
-            if (panel != getAllPanel())
-                contextMenuManager.add(new SetFilterBySelectedCellAction());
-            MenuManager setFilterSubmenu = new MenuManager("Set Filter of Chart", ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_SETFILTER), null);
-            for (AnalysisItem i : scaveEditor.getAnalysis().getCharts().getCharts())
-                if (i instanceof Chart && ((Chart)i).getProperty("filter") != null)
-                    setFilterSubmenu.add(new SetChartFilterAction((Chart)i));
-            contextMenuManager.add(setFilterSubmenu);
+        if (panel == getScalarsPanel())
+            contextMenuManager.add(actions.showFieldsAsScalarsAction);
+        contextMenuManager.add(actions.copyRowsToClipboardAction);
+        if (panel != getAllPanel())
+            contextMenuManager.add(new CopySelectedCellAction());
+        contextMenuManager.add(new CopySelectionAsFilterAction());
+        contextMenuManager.add(new Separator());
+
+        if (panel != getAllPanel())
+            contextMenuManager.add(new SetFilterBySelectedCellAction());
+        MenuManager setFilterSubmenu = new MenuManager("Set Filter of Chart", ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_SETFILTER), null);
+        for (AnalysisItem i : scaveEditor.getAnalysis().getCharts().getCharts())
+            if (i instanceof Chart && ((Chart)i).getProperty("filter") != null)
+                setFilterSubmenu.add(new SetChartFilterAction((Chart)i));
+        contextMenuManager.add(setFilterSubmenu);
+        contextMenuManager.add(new Separator());
+
+        contextMenuManager.add(actions.createExportDataMenu("Export Data"));
+        contextMenuManager.add(new Separator());
+
+        if (panel.getDataControl() instanceof DataTable)
+            contextMenuManager.add(new ChooseTableColumnsAction((DataTable)panel.getDataControl()));
+        if (panel.getDataControl() instanceof DataTree)
+            ((DataTree)panel.getDataControl()).contributeToContextMenu(contextMenuManager);
+        if (PanelType.VECTORS.equals(panel.getType())) {
             contextMenuManager.add(new Separator());
-
-            contextMenuManager.add(actions.createExportDataMenu("Export Data"));
-            contextMenuManager.add(new Separator());
-
-            if (panel.getDataControl() instanceof DataTable)
-                contextMenuManager.add(new ChooseTableColumnsAction((DataTable)panel.getDataControl()));
-            if (panel.getDataControl() instanceof DataTree)
-                ((DataTree)panel.getDataControl()).contributeToContextMenu(contextMenuManager);
-            if (PanelType.VECTORS.equals(panel.getType())) {
-                contextMenuManager.add(new Separator());
-                contextMenuManager.add(actions.showOutputVectorViewAction);
-            }
+            contextMenuManager.add(actions.showOutputVectorViewAction);
         }
         // XXX call getSite().registerContexMenu() ?
     }

@@ -210,9 +210,10 @@ public class ScaveEditor extends MultiPageEditorPartExt
      */
     protected ISelection editorSelection = StructuredSelection.EMPTY;
 
-    Analysis analysis;
 
-    ScaveEditorActions actions;
+    protected Analysis analysis;
+
+    protected ScaveEditorActions actions = new ScaveEditorActions(this);
 
     /**
      * This listens for when the outline becomes active
@@ -368,7 +369,6 @@ public class ScaveEditor extends MultiPageEditorPartExt
         site.setSelectionProvider(this);
         site.getPage().addPartListener(partListener);
 
-        actions = new ScaveEditorActions(this);
         chartTemplateRegistry.setProject(fileInput.getProject());
     }
 
