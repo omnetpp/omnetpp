@@ -21,6 +21,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Widget;
 import org.kxml2.io.KXmlParser;
 import org.xmlpull.v1.XmlPullParser;
@@ -67,6 +68,9 @@ import com.swtworkbench.community.xswt.metalogger.Logger;
 public class XSWT {
     public static final String XSWT_NS = "http://sweet_swt.sf.net/xswt";
     private static Map customNSRegistry = new HashMap();
+
+    public static final String KEY_SOURCECOLUMN = "sourceColumn";
+    public static final String KEY_SOURCELINE = "sourceLine";
 
     private HashMap fixupTable = new HashMap();
 
@@ -418,10 +422,17 @@ public class XSWT {
 
             resolveIdRefs(widgetName, result);
         }
+        if (result instanceof Control)
+            storeLineColum((Control)result, parser);
         processChildAttributes(result, parser);
         processSubNodes(result, parser);
 
         return result;
+    }
+
+    private void storeLineColum(Control control, XmlPullParser parser) {
+        control.setData(KEY_SOURCELINE, parser.getLineNumber());
+        control.setData(KEY_SOURCECOLUMN, parser.getColumnNumber());
     }
 
     private String getWidgetName(XmlPullParser parser) {
