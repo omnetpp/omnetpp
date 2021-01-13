@@ -159,7 +159,7 @@ public class Chart extends AnalysisItem {
         return result;
     }
 
-    public Map<String,String> getPropertyValues() {
+    public Map<String,String> getPropertiesAsMap() {
         Map<String,String> result = new HashMap<>();
         for (Property p : properties)
             result.put(p.getName(), p.getValue());

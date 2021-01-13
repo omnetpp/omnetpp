@@ -197,7 +197,7 @@ public class ChartEditForm {
     }
 
     protected void populateControls() {
-        populateControls(chart.getPropertyValues());
+        populateControls(chart.getPropertiesAsMap());
     }
 
     protected void populateControls(Map<String,String> properties) {

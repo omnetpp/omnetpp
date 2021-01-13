@@ -198,7 +198,7 @@ public class ChartTemplateRegistry {
                 if (valueNode != null)
                     value = valueNode.getValue();
                 else {
-                    PlotProperty prop = PlotProperty.loookup(name);
+                    PlotProperty prop = PlotProperty.lookup(name);
                     if (prop != null)
                         value = prop.getDefaultValueAsString();
                 }

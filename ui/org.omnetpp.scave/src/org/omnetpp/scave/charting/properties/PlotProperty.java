@@ -114,7 +114,7 @@ public enum PlotProperty {
         return Converter.objectToString(getDefaultValue());
     }
 
-    public static PlotProperty loookup(String propertyName) {
+    public static PlotProperty lookup(String propertyName) {
         if (map == null) {
             map = new HashMap<>();
             for (PlotProperty p : PlotProperty.values())
