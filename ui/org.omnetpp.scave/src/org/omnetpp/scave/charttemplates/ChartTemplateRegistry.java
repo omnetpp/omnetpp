@@ -7,7 +7,6 @@
 
 package org.omnetpp.scave.charttemplates;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -18,9 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.lang3.EnumUtils;
 import org.eclipse.core.resources.IContainer;
@@ -36,19 +32,15 @@ import org.omnetpp.common.Debug;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.common.util.XmlUtils;
 import org.omnetpp.scave.Markers;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.charting.properties.PlotProperty;
+import org.omnetpp.scave.editors.ui.ScaveUtil;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Chart.ChartType;
 import org.omnetpp.scave.model.Chart.DialogPage;
 import org.omnetpp.scave.model.ChartTemplate;
 import org.osgi.framework.Bundle;
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 /**
  * Loads and maintains the list of available chart templates.
@@ -132,8 +124,6 @@ public class ChartTemplateRegistry {
         int toolbarOrder = Integer.parseInt(props.getProperty("toolbarOrder", "-1"));
         String originFolder = new Path(templatesFolder + "/" + propertiesFile).removeLastSegments(1).toString();
 
-        HashMap<String,String> properties = new HashMap<>();
-
         // dialog pages
         List<Chart.DialogPage> pages = new ArrayList<Chart.DialogPage>();
         for (int i = 0; true; ++i) {
@@ -148,8 +138,6 @@ public class ChartTemplateRegistry {
             String xswtContent = readFile(templatesFolder, xswtFile);
             Chart.DialogPage page = new DialogPage(pageId, pageLabel, xswtContent);
             pages.add(page);
-
-            collectPropertiesFromXswt(xswtFile, xswtContent, properties);
         }
 
         // chart type
@@ -159,6 +147,9 @@ public class ChartTemplateRegistry {
 
         // chart script
         String script = scriptFile != null ? readFile(templatesFolder, scriptFile) : "";
+
+        // properties and their defaults are taken from the pages (x:id and x:id.default)
+        Map<String,String> properties = collectEditableProperties(pages);
 
         String propertyNamesProp = props.getProperty("propertyNames", "");
         if (!StringUtils.isBlank(propertyNamesProp))
@@ -184,30 +175,21 @@ public class ChartTemplateRegistry {
         return template;
     }
 
-    protected void collectPropertiesFromXswt(String xswtFile, String xswtContent, Map<String, String> properties) {
-        try {
-            DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            Document d = db.parse(new ByteArrayInputStream(xswtContent.getBytes()));
-            ArrayList<Element> controls = XmlUtils.collectElements(d.getDocumentElement(), (e) -> (e.getAttributeNode("x:id") != null));
-            for (Element e : controls) {
-                String name = e.getAttribute("x:id");
-                if (properties.containsKey(name))
-                    Debug.print("WARNING: Duplicate property in XSWT pages: " + name);
-                Attr valueNode = e.getAttributeNode("x:id.default");
-                String value = "";
-                if (valueNode != null)
-                    value = valueNode.getValue();
-                else {
-                    PlotProperty prop = PlotProperty.lookup(name);
-                    if (prop != null)
-                        value = prop.getDefaultValueAsString();
-                }
-                properties.put(name, value);
+    protected Map<String,String> collectEditableProperties(List<DialogPage> pages) {
+        Map<String,String> properties = new HashMap<>();
+        for (DialogPage page : pages) {
+            try {
+                Map<String, String> pageProperties = ScaveUtil.collectEditablePropertiesFromXswt(page.xswtForm);
+                for (String name : pageProperties.keySet())
+                    if (properties.containsKey(name))
+                        throw new RuntimeException("Property '" + name + "'already occurs on another page");
+                properties.putAll(pageProperties);
+            }
+            catch (Exception e) {
+                throw new RuntimeException("Page '" + page.label + "': " + e.getMessage(), e);
             }
         }
-        catch (Exception e) {
-            ScavePlugin.logError("Error collecting properties from XSWT page " + xswtFile, e);
-        }
+        return properties;
     }
 
     protected String getTemplatesFolder(IProject project) {

@@ -166,6 +166,34 @@ public class Chart extends AnalysisItem {
         return result;
     }
 
+    public void setProperties(Map<String,String> properties) {
+        // set existing/missing properties with the specified value
+        Map<String,String> origProperties = getPropertiesAsMap();
+        for (String name : properties.keySet()) {
+            String value = properties.get(name);
+            if (!value.equals(origProperties.get(name)))
+                setPropertyValue(name, value);
+        }
+
+        // remove excess properties
+        for (String name : origProperties.keySet())
+            if (!properties.containsKey(name))
+                removeProperty(getProperty(name));
+    }
+
+    public void adjustProperties(Map<String,String> defaults) {
+        // add missing properties with the default value
+        Map<String,String> origProperties = getPropertiesAsMap();
+        for (String name : defaults.keySet())
+            if (!origProperties.containsKey(name))
+                addProperty(new Property(name, defaults.get(name)));
+
+        // remove excess properties
+        for (String name : origProperties.keySet())
+            if (!defaults.containsKey(name))
+                removeProperty(getProperty(name));
+    }
+
     public boolean isTemporary() {
         return temporary;
     }

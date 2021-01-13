@@ -7,40 +7,38 @@
 
 package org.omnetpp.scave.model.commands;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
+import java.util.Map;
 
 import org.omnetpp.scave.model.Chart;
-import org.omnetpp.scave.model.Chart.DialogPage;
 import org.omnetpp.scave.model.ModelObject;
 
 /**
- * Set dialog pages.
+ * Adjust the set of chart properties, usually so that it contains exactly those edited by the dialog pages.
  *
  * @author andras
  */
-public class SetChartDialogPagesCommand implements ICommand {
+public class AdjustChartPropertiesCommand implements ICommand {
 
     private Chart chart;
-    private List<DialogPage> oldDialogPages;
-    private List<DialogPage> newDialogPages;
+    private Map<String,String> oldProperties;
+    private Map<String,String> newPropertyDefaults; // property names edited by the new pages, with default values
 
-    public SetChartDialogPagesCommand(Chart chart, List<DialogPage> dialogPages) {
+    public AdjustChartPropertiesCommand(Chart chart, Map<String,String> propertyDefaults) {
         this.chart = chart;
-        this.newDialogPages = dialogPages;
+        this.newPropertyDefaults = propertyDefaults;
     }
 
     @Override
     public void execute() {
-        oldDialogPages = new ArrayList<DialogPage>(chart.getDialogPages());
-        chart.setDialogPages(new ArrayList<DialogPage>(newDialogPages));
+        oldProperties = chart.getPropertiesAsMap();
+        chart.adjustProperties(newPropertyDefaults);
     }
 
     @Override
     public void undo() {
-        chart.setDialogPages(new ArrayList<DialogPage>(oldDialogPages));
+        chart.setProperties(oldProperties);
     }
 
     @Override
@@ -50,7 +48,7 @@ public class SetChartDialogPagesCommand implements ICommand {
 
     @Override
     public String getLabel() {
-        return "Set chart dialog pages";
+        return "Adjust chart properties";
     }
 
     @Override

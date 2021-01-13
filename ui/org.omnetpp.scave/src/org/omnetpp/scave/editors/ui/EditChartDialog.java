@@ -7,15 +7,12 @@
 
 package org.omnetpp.scave.editors.ui;
 
-import java.io.ByteArrayInputStream;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogSettings;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
@@ -31,15 +28,11 @@ import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ChartScriptEditor;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.Chart;
-import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.Chart.DialogPage;
-import org.omnetpp.scave.model.commands.AddChartPropertyCommand;
+import org.omnetpp.scave.model.commands.AdjustChartPropertiesCommand;
 import org.omnetpp.scave.model.commands.CompoundCommand;
-import org.omnetpp.scave.model.commands.RemoveChartPropertyCommand;
 import org.omnetpp.scave.model.commands.SetChartDialogPagesCommand;
 import org.omnetpp.scave.model.commands.SetChartPropertyCommand;
-
-import com.swtworkbench.community.xswt.XSWT;
 
 /**
  * This is the edit dialog for charts.
@@ -137,50 +130,26 @@ public class EditChartDialog extends TitleAreaDialog {
         if (dialog.open() == Dialog.OK) {
             List<DialogPage> editedPages = dialog.getResult();
             if (!chart.getDialogPages().equals(editedPages)) {
-                CompoundCommand command = makeSetDialogPagesCommand(chart, editedPages);
+                CompoundCommand command = new CompoundCommand("Edit chart pages");
+                command.append(new SetChartDialogPagesCommand(chart, editedPages));
+                command.append(new AdjustChartPropertiesCommand(chart, collectEditableProperties(editedPages)));
                 editor.getActiveCommandStack().execute(command);
                 form.rebuild();
             }
         }
     }
 
-    protected CompoundCommand makeSetDialogPagesCommand(Chart chart, List<DialogPage> editedPages) {
-        CompoundCommand command = new CompoundCommand("Edit chart dialog pages");
-
-        // replace pages
-        command.append(new SetChartDialogPagesCommand(chart, editedPages));
-
-        // update set of properties to those actually editable via the pages
-        Set<String> propertyNames = collectPropertyNames(editedPages);
-        for (Property p : chart.getProperties())
-            if (!propertyNames.contains(p.getName()))
-                command.append(new RemoveChartPropertyCommand(chart, p));
-        for (String pn : propertyNames)
-            if (chart.getProperty(pn) == null)
-                command.append(new AddChartPropertyCommand(chart, new Property(pn, ""))); // note: there's nowhere to get the default value from
-        return command;
-    }
-
-    protected Set<String> collectPropertyNames(List<DialogPage> pages) {
-        Set<String> ids = new HashSet<>();
-        for (DialogPage page : pages)
-            ids.addAll(collectPropertyNames(page.xswtForm));
-        return ids;
-    }
-
-    @SuppressWarnings("unchecked")
-    protected Set<String> collectPropertyNames(String xswtForm) {
-        Composite tmp = new Composite(this.getShell(), SWT.NONE);
-        try {
-            Map<String,Control> widgetMap = XSWT.create(tmp, new ByteArrayInputStream(xswtForm.getBytes()));
-            return widgetMap.keySet();
+    protected static Map<String,String> collectEditableProperties(List<DialogPage> pages) {
+        Map<String,String> properties = new HashMap<>();
+        for (DialogPage page : pages) {
+            try {
+                properties.putAll(ScaveUtil.collectEditablePropertiesFromXswt(page.xswtForm));
+            }
+            catch (Exception e) {
+                // ignore errors
+            }
         }
-        catch (Exception e) {
-            return new HashSet<String>();
-        }
-        finally {
-            tmp.dispose();
-        }
+        return properties;
     }
 
 //    protected void updateButtonsAndErrorMessage() {
