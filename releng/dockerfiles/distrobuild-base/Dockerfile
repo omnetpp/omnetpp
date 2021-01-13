@@ -1,5 +1,5 @@
 FROM omnetpp/cross-compilers:ubuntu18.04-macos11-200805
-MAINTAINER Rudolf Hornig <rudi@omnetpp.org>
+LABEL maintainer="Rudolf Hornig <rudi@omnetpp.org>"
 
 # install additional packages for building a complete OMNeT++ distro (with IDE and docs)
 RUN apt-get update && \
