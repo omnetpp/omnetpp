@@ -10,6 +10,7 @@ package org.omnetpp.scave.editors.ui;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,10 +32,9 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
@@ -70,7 +70,10 @@ public class EditChartPagesDialog extends TitleAreaDialog {
     private SashForm mainSash;
     private TableViewer tableViewer;
     private SashForm contentSash;
+    private Composite styledTextHolder;
+    private Label voidLabel;
     private StyledText styledText;
+    private Map<DialogPage,StyledText> styledTexts = new HashMap<>();
     private Composite previewHolder;
 
     private List<DialogPage> pages;
@@ -180,9 +183,11 @@ public class EditChartPagesDialog extends TitleAreaDialog {
 
         Composite contentPane = createCompactComposite(contentSash, 1, false, 0);
         SWTFactory.createInfoLink(contentPane, "XSWT source (<a>help</a>):", XSWT_HELP, 1);
-        styledText = new StyledText(contentPane, SWT.BORDER|SWT.V_SCROLL|SWT.H_SCROLL);
-        styledText.setLayoutData(new GridData(GridData.FILL_BOTH));
-        new StyledTextUndoRedoManager(styledText);
+
+        styledTextHolder = new Composite(contentPane, SWT.NONE);
+        styledTextHolder.setLayoutData(new GridData(GridData.FILL_BOTH));
+        styledTextHolder.setLayout(new StackLayout());
+        voidLabel = new Label(styledTextHolder, SWT.NONE);
 
         Composite previewPane = createCompactComposite(contentSash, 1, false, 0);
         createLabel(previewPane, "Preview:");
@@ -195,22 +200,7 @@ public class EditChartPagesDialog extends TitleAreaDialog {
             @Override
             public void selectionChanged(SelectionChangedEvent event) {
                 DialogPage page = getTableSelection();
-                if (page != editedPage) {
-                    if (editedPage != null)
-                        editedPage.xswtForm = styledText.getText();
-                    if (page != null)
-                        styledText.setText(page.xswtForm);
-                    editedPage = page;
-                    updatePreviewJob.cancel();
-                    updatePreview();
-                }
-            }
-        });
-
-        styledText.addModifyListener(new ModifyListener() {
-            @Override
-            public void modifyText(ModifyEvent e) {
-                updatePreviewJob.restartTimer();
+                switchToPage(page);
             }
         });
 
@@ -253,6 +243,35 @@ public class EditChartPagesDialog extends TitleAreaDialog {
         return null;
     }
 
+    protected void switchToPage(DialogPage page) {
+        if (page != editedPage) {
+            if (editedPage != null) {
+                editedPage.xswtForm = styledText.getText();
+            }
+            if (page != null) {
+                styledText = styledTexts.get(page);
+                if (styledText == null) {
+                    styledText = new StyledText(styledTextHolder, SWT.BORDER|SWT.V_SCROLL|SWT.H_SCROLL);
+                    styledText.setText(page.xswtForm);
+                    new StyledTextUndoRedoManager(styledText);
+                    styledText.addModifyListener((e) -> updatePreviewJob.restartTimer());
+                    styledTexts.put(page, styledText);
+                }
+                ((StackLayout)styledTextHolder.getLayout()).topControl = styledText;
+                styledTextHolder.layout();
+                styledText.setFocus();
+            }
+            else {
+                styledText = null;
+                ((StackLayout)styledTextHolder.getLayout()).topControl = voidLabel;
+                styledTextHolder.layout();
+            }
+            editedPage = page;
+            updatePreviewJob.cancel();
+            updatePreview();
+        }
+    }
+
     protected void addPage() {
         NewChartPageDialog dialog = new NewChartPageDialog(getShell());
         if (dialog.open() == Dialog.OK) {
@@ -276,7 +295,7 @@ public class EditChartPagesDialog extends TitleAreaDialog {
             tableViewer.refresh();
 
             if (pages.isEmpty())
-                styledText.setText("");
+                tableViewer.setSelection(new StructuredSelection());
             else {
                 DialogPage newPage = pages.get(pos==pages.size() ? pos-1 : pos);
                 tableViewer.setSelection(new StructuredSelection(newPage));
@@ -322,15 +341,17 @@ public class EditChartPagesDialog extends TitleAreaDialog {
     @SuppressWarnings("unchecked")
     protected void updatePreview() {
         try {
-            String xswtForm = styledText.getText();
             for (Control c : previewHolder.getChildren())
                 c.dispose();
-            Composite xswtHolder = SWTFactory.createComposite(previewHolder, 1, 1, GridData.FILL_BOTH);
-            validateXml(xswtForm); // because XSWT is not very good at it
-            Map<String,Control> xswtWidgetMap = XSWT.create(xswtHolder, new ByteArrayInputStream(xswtForm.getBytes()));
-            setTooltips(xswtWidgetMap);
-            setErrorMessage(null);
-            previewHolder.requestLayout();
+            if (styledText != null) {
+                String xswtForm = styledText.getText();
+                Composite xswtHolder = SWTFactory.createComposite(previewHolder, 1, 1, GridData.FILL_BOTH);
+                validateXml(xswtForm); // because XSWT is not very good at it
+                Map<String,Control> xswtWidgetMap = XSWT.create(xswtHolder, new ByteArrayInputStream(xswtForm.getBytes()));
+                setTooltips(xswtWidgetMap);
+                setErrorMessage(null);
+            }
+            previewHolder.layout();
         }
         catch (SAXParseException e) {
             setErrorMessage("XML parse error",  e.getMessage(), e.getLineNumber(), e.getColumnNumber());
@@ -379,7 +400,8 @@ public class EditChartPagesDialog extends TitleAreaDialog {
 
     public void setErrorMessage(String message) {
         super.setErrorMessage(message);
-        styledText.setStyleRange(null); // clear existing style
+        if (styledText != null)
+            styledText.setStyleRange(null); // clear existing style
     }
 
     @Override
@@ -398,4 +420,5 @@ public class EditChartPagesDialog extends TitleAreaDialog {
     public List<DialogPage> getResult() {
         return pages;
     }
+
 }
