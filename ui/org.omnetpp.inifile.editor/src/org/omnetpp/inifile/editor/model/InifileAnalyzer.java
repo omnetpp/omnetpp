@@ -69,7 +69,6 @@ import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.notification.INedChangeListener;
-import org.omnetpp.ned.model.notification.NedModelEvent;
 import org.omnetpp.ned.model.pojo.ParamElement;
 
 /**
@@ -128,6 +127,7 @@ public final class InifileAnalyzer {
     // infrastructure
     private INedChangeListener nedChangeListener; // we listen on NED changes
     private IInifileChangeListener inifileChangeListener;
+    private IPropertyChangeListener preferenceChangeListener;
     private InifileProblemMarkerSynchronizer markers; // only used during analyze()
     private ListenerList<IPropertyChangeListener> propertyChangeListeners = new ListenerList<>();
     private ListenerList<IAnalysisListener> analysisListeners = new ListenerList<>();
@@ -181,20 +181,16 @@ public final class InifileAnalyzer {
         this.paramResolutionJob = new ParamResolutionJob(doc);
 
         // hook on inifile changes
-        inifileChangeListener = new IInifileChangeListener() {
-            public void modelChanged() {
-                InifileAnalyzer.this.modelChanged();
-            }
-        };
+        inifileChangeListener = () -> modelChanged();
         doc.addInifileChangeListener(inifileChangeListener);
 
         // listen on NED changes as well
-        nedChangeListener = new INedChangeListener() {
-            public void modelChanged(NedModelEvent event) {
-                InifileAnalyzer.this.modelChanged();
-            }
-        };
+        nedChangeListener = (e) -> modelChanged();
         NedResourcesPlugin.getNedResources().addNedModelChangeListener(nedChangeListener);
+
+        // listen on preferences
+        preferenceChangeListener = (e) -> {modelChanged(); startAnalysisIfChanged();};
+        InifileEditorPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(preferenceChangeListener);
 
         paramResolutionJob.addJobChangeListener(new JobChangeAdapter() {
             public void done(IJobChangeEvent event) {
@@ -206,6 +202,7 @@ public final class InifileAnalyzer {
     public void dispose() {
         doc.removeInifileChangeListener(inifileChangeListener);
         NedResourcesPlugin.getNedResources().removeNedModelChangeListener(nedChangeListener);
+        InifileEditorPlugin.getDefault().getPreferenceStore().removePropertyChangeListener(preferenceChangeListener);
     }
 
     private void modelChanged() {
@@ -586,6 +583,8 @@ public final class InifileAnalyzer {
                 markers.addError(section, key, OBSOLETE_OPTIONS.get(key));
             else if (!key.matches("[a-zA-Z0-9-_]+"))
                 markers.addError(section, key, "Syntax error in configuration option: "+key);
+            else if (ConfigRegistry.getIgnoredOptions().contains(key))
+                markers.addInfo(section, key, "User-defined option (ignored by the editor): "+key);
             else
                 markers.addError(section, key, "Unknown configuration option: "+key);
             return;
@@ -1126,6 +1125,8 @@ public final class InifileAnalyzer {
                 markers.addError(section, key, OBSOLETE_OPTIONS.get(configName));
             else if (!configName.matches("[a-zA-Z0-9-_]+"))
                 markers.addError(section, key, "Syntax error in per-object configuration option: "+configName);
+            else if (ConfigRegistry.getIgnoredOptions().contains(configName))
+                markers.addInfo(section, key, "User-defined option (ignored by the editor): "+configName);
             else
                 markers.addError(section, key, "Unknown per-object configuration option: "+configName);
             return;

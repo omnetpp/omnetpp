@@ -24,10 +24,17 @@ import static org.omnetpp.inifile.editor.model.ConfigOption.ObjectKind.KIND_STAT
 import static org.omnetpp.inifile.editor.model.ConfigOption.ObjectKind.KIND_UNSPECIFIED_TYPE;
 import static org.omnetpp.inifile.editor.model.ConfigOption.ObjectKind.KIND_VECTOR;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
+import org.omnetpp.common.Debug;
+import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.ConfigOption.DataType;
 import org.omnetpp.inifile.editor.model.ConfigOption.ObjectKind;
 
@@ -934,6 +941,35 @@ public class ConfigRegistry {
     public static final String[] CONFIG_RECORDING_CHOICES = new String[] {
             "all", "none", "config", "params", "essentials", "globalconfig"
     };
+
+    private static Set<String> ignoredOptions = null; // custom config options that the user wants us to just ignore during inifile analysis
+
+    public static final String PREF_IGNORED_OPTIONS = "IgnoredOptions";
+
+    static {
+        InifileEditorPlugin.getDefault().getPreferenceStore().addPropertyChangeListener((e) -> ignoredOptions = null); // invalidate on change
+    }
+
+    public static Set<String> getIgnoredOptions() {
+        if (ignoredOptions == null) {
+            String pref = InifileEditorPlugin.getDefault().getPreferenceStore().getString(PREF_IGNORED_OPTIONS);
+            ignoredOptions = pref.isBlank() ? new HashSet<String>() : new HashSet<String>(Arrays.asList(pref.split("\\s+")));
+            Debug.println("ConfigRegistry: ignoredOptions = " + ignoredOptions.toString());
+        }
+        return Collections.unmodifiableSet(ignoredOptions);
+    }
+
+    public static void addIgnoredOption(String option) {
+        getIgnoredOptions(); // force loading it
+        ignoredOptions.add(option);
+        InifileEditorPlugin.getDefault().getPreferenceStore().setValue(PREF_IGNORED_OPTIONS, StringUtils.join(ignoredOptions, " "));
+    }
+
+    public static void removeIgnoredOption(String option) {
+        getIgnoredOptions(); // force loading it
+        ignoredOptions.remove(option);
+        InifileEditorPlugin.getDefault().getPreferenceStore().setValue(PREF_IGNORED_OPTIONS, StringUtils.join(ignoredOptions, " "));
+    }
 
     public static final Map<String,String> OBSOLETE_OPTIONS;  // (key, error message) pairs
 

@@ -142,5 +142,14 @@
             pluginId="org.omnetpp.inifile.editor">
       </plugin>
    </extension>
+  <extension
+        point="org.eclipse.ui.preferencePages">
+     <page
+           category="org.omnetpp.main.OmnetppPreferencePage"
+           class="org.omnetpp.inifile.editor.InifileEditorPreferencePage"
+           id="org.omnetpp.inifile.editor.InifileEditorPreferencePage"
+           name="Ini File Editor">
+     </page>
+  </extension>
 
 </plugin>
