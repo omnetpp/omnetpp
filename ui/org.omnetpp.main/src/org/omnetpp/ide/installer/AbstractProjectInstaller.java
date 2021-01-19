@@ -104,11 +104,12 @@ public abstract class AbstractProjectInstaller {
             subProgressMonitor.beginTask("Extracting file", count);
             TarArchiveInputStream tarArchiveInputStream = new TarArchiveInputStream(new FileInputStream(tarFile));
             TarArchiveEntry tarArchiveEntry = null;
+            String projName = projectInstallationOptions.name != null ? projectInstallationOptions.name : projectDescription.getName();
             String outputDirectory;
-            if (projectInstallationOptions.getUseDefaultLocation())
-                outputDirectory = ResourcesPlugin.getWorkspace().getRoot().getLocation().toString() + "/" + projectInstallationOptions.getName();
+            if (projectInstallationOptions.location == null)
+                outputDirectory = ResourcesPlugin.getWorkspace().getRoot().getLocation().toString() + "/" + projName;
             else
-                outputDirectory = projectInstallationOptions.getLocation();
+                outputDirectory = projectInstallationOptions.location;
             while ((tarArchiveEntry = tarArchiveInputStream.getNextTarEntry()) != null) {
                 String tarArchiveEntryName = tarArchiveEntry.getName();
                 File tarArchiveEntryFile =  new File(outputDirectory + "/" + tarArchiveEntryName.substring(tarArchiveEntryName.indexOf('/')));
@@ -153,10 +154,10 @@ public abstract class AbstractProjectInstaller {
             progressMonitor.subTask("Importing project");
             IWorkspace workspace = ResourcesPlugin.getWorkspace();
             Path projectFileLocation = new Path(projectDirectory.getPath() + "/.project");
-            IProjectDescription projectDescription = workspace.loadProjectDescription(projectFileLocation);
-            IProject project = workspace.getRoot().getProject(projectInstallationOptions.getName());
+            IProjectDescription eclipseProjectDescription = workspace.loadProjectDescription(projectFileLocation);
+            IProject project = workspace.getRoot().getProject(projectInstallationOptions.name != null ? projectInstallationOptions.name : projectDescription.getName());
             SubProgressMonitor subProgressMonitor = new SubProgressMonitor(progressMonitor, 1);
-            project.create(projectDescription, subProgressMonitor);
+            project.create(eclipseProjectDescription, subProgressMonitor);
 
             return project;
         }
