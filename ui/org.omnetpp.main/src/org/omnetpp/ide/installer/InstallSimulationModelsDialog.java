@@ -1,13 +1,11 @@
 package org.omnetpp.ide.installer;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -67,50 +65,21 @@ public class InstallSimulationModelsDialog extends TitleAreaDialog {
         setShellStyle(getShellStyle() | SWT.RESIZE);
     }
 
-    protected void downloadProjectDescriptions(URL url) {
-        try {
-            projectDescriptions = new ArrayList<ProjectDescription>();
-            projectDescriptionURLs = new ArrayList<URL>();
-            InputStream inputStream = url.openConnection().getInputStream();
-            String descriptors = FileUtils.readTextFile(inputStream, "utf-8");
-            String[] descriptorFileNames = StringUtils.strip(descriptors).split("\n");
-            for (String descriptorFileName : descriptorFileNames) {
-                String descriptorStrippedFileName = StringUtils.strip(descriptorFileName);
-                if (!descriptorStrippedFileName.isEmpty()) {
-                    String projectDescriptionPath = url.getPath().replaceFirst("/[^/]*$", "/") + descriptorStrippedFileName;
-                    URL projectDescriptionURL = new URL(url.getProtocol(), url.getHost(), url.getPort(), projectDescriptionPath);
-                    File projectDescriptionFile = downloadProjectDescription(projectDescriptionURL);
-                    ProjectDescription projectDescription = parseProjectDescription(projectDescriptionFile);
-                    projectDescriptions.add(projectDescription);
-                    projectDescriptionURLs.add(projectDescriptionURL);
-                }
+    protected void downloadProjectDescriptions(URL url) throws IOException {
+        projectDescriptions = new ArrayList<ProjectDescription>();
+        projectDescriptionURLs = new ArrayList<URL>();
+        InputStream inputStream = url.openConnection().getInputStream();
+        String descriptors = FileUtils.readTextFile(inputStream, "utf-8");
+        String[] descriptorFileNames = StringUtils.strip(descriptors).split("\n");
+        for (String descriptorFileName : descriptorFileNames) {
+            String descriptorStrippedFileName = StringUtils.strip(descriptorFileName);
+            if (!descriptorStrippedFileName.isEmpty()) {
+                String projectDescriptionPath = url.getPath().replaceFirst("/[^/]*$", "/") + descriptorStrippedFileName;
+                URL projectDescriptionURL = new URL(url.getProtocol(), url.getHost(), url.getPort(), projectDescriptionPath);
+                ProjectDescription projectDescription = ProjectDescription.download(projectDescriptionURL);
+                projectDescriptions.add(projectDescription);
+                projectDescriptionURLs.add(projectDescriptionURL);
             }
-        }
-        catch (Exception e) {
-            // TODO: error handling
-            throw new RuntimeException(e);
-        }
-    }
-
-    protected File downloadProjectDescription(URL projectDescriptionURL) {
-        try {
-            File projectDescriptionFile = File.createTempFile("projectDescription", ".xml");
-            org.apache.commons.io.FileUtils.copyURLToFile(projectDescriptionURL, projectDescriptionFile);
-            return projectDescriptionFile;
-        }
-        catch (Exception e) {
-            throw new RuntimeException("Cannot download project description from " + projectDescriptionURL, e);
-        }
-    }
-
-    protected ProjectDescription parseProjectDescription(File descriptionFile) {
-        try {
-            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-            return new ProjectDescription(documentBuilder.parse(descriptionFile));
-        }
-        catch (Exception e) {
-            throw new RuntimeException("Cannot parse project description from " + descriptionFile.getAbsolutePath(), e);
         }
     }
 
@@ -303,7 +272,9 @@ public class InstallSimulationModelsDialog extends TitleAreaDialog {
 
     protected void installProject(URL projectDescriptionURL, ProjectDescription projectDescription) {
         try {
-            ProjectInstallationOptions projectInstallationOptions = new ProjectInstallationOptions(projectName.getText(), useDefaultLocation.getSelection(), location.getText());
+            ProjectInstallationOptions projectInstallationOptions = new ProjectInstallationOptions();
+            projectInstallationOptions.name = projectName.getText();
+            projectInstallationOptions.location = useDefaultLocation.getSelection() ? null : location.getText();
             InstallProjectJob installProjectJob = new InstallProjectJob(projectDescriptionURL, projectInstallationOptions);
             installProjectJob.setUser(true);
             installProjectJob.schedule();

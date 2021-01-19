@@ -43,36 +43,13 @@ public class InstallProjectTask {
     }
 
     public void run(IProgressMonitor progressMonitor) throws CoreException {
-        File projectDescriptionFile = downloadProjectDescription();
-        ProjectDescription projectDescription = parseProjectDescription(projectDescriptionFile);
-        projectDescriptionFile.delete();
+        ProjectDescription projectDescription = ProjectDescription.download(projectDescriptionURL);
+        
         IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectDescription.getName());
         if (project != null && project.exists())
             throw new RuntimeException("Cannot install " + projectDescription.getName() + " because a project with that name already exists (rename or delete existing project to proceed)");
         AbstractProjectInstaller projectInstaller = createProjectInstaller(projectDescription, projectInstallationOptions);
         projectInstaller.run(progressMonitor);
-    }
-
-    protected File downloadProjectDescription() {
-        try {
-            File projectDescriptionFile = File.createTempFile("projectDescription", ".xml");
-            FileUtils.copyURLToFile(projectDescriptionURL, projectDescriptionFile);
-            return projectDescriptionFile;
-        }
-        catch (Exception e) {
-            throw new RuntimeException("Cannot download project description from " + projectDescriptionURL, e);
-        }
-    }
-
-    protected ProjectDescription parseProjectDescription(File descriptionFile) {
-        try {
-            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-            return new ProjectDescription(documentBuilder.parse(descriptionFile));
-        }
-        catch (Exception e) {
-            throw new RuntimeException("Cannot parse project description from " + descriptionFile.getAbsolutePath(), e);
-        }
     }
 
     protected AbstractProjectInstaller createProjectInstaller(ProjectDescription projectDescription, ProjectInstallationOptions projectInstallationOptions) {

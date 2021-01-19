@@ -25,8 +25,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
-import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.OmnetppDirs;
+import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.ide.OmnetppMainPlugin;
 
 
@@ -150,7 +150,7 @@ public class FirstStepsDialog extends TitleAreaDialog {
             isInstallINETRequested = installINETButton.getSelection();
             String omnetppVersion = "omnetpp-" + OmnetppDirs.getMajorVersion() + "." + OmnetppDirs.getMinorVersion();
             URL projectDescriptionURL = new URL(InstallSimulationModelsDialog.DESCRIPTORS_URL + "/" + omnetppVersion + "/inet.xml");
-            InstallProjectJob installProjectJob = new InstallProjectJob(projectDescriptionURL, new ProjectInstallationOptions("inet"));
+            InstallProjectJob installProjectJob = new InstallProjectJob(projectDescriptionURL, new ProjectInstallationOptions());
             installProjectJob.setUser(true);
             installProjectJob.schedule();
         }
@@ -166,7 +166,7 @@ public class FirstStepsDialog extends TitleAreaDialog {
             public void run() {
                 try {
                     IWorkbench workbench = PlatformUI.getWorkbench();
-                    workbench.getBrowserSupport().createBrowser("open-community-catalog").openURL(new URL("http://www.omnetpp.org/models/catalog"));
+                    workbench.getBrowserSupport().createBrowser("open-community-catalog").openURL(new URL("http://omnetpp.org/download/models-and-tools"));
                     //XXX workbench.getBrowserSupport().getExternalBrowser().openURL(new URL(event.location));
                 }
                 catch (Exception e) {
