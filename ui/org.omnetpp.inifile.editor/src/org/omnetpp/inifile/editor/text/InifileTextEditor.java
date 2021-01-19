@@ -93,6 +93,10 @@ public class InifileTextEditor extends TextEditor {
         addAction(menu, ITextEditorActionConstants.GROUP_EDIT, ToggleCommentAction.ID);
         addAction(menu, ITextEditorActionConstants.GROUP_EDIT, AddInifileKeysAction.ID);
         addAction(menu, ITextEditorActionConstants.GROUP_EDIT, ToggleAnalysisAction.ID);
+
+        // Remove options irrelevant for ini files
+        menu.remove("ShiftLeft");
+        menu.remove("ShiftRight");
     }
 
     /**

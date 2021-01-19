@@ -134,8 +134,6 @@ public class InifileHoverUtils {
 
     /**
      * Generate tooltip for an inifile entry.
-     * @param section  null is accepted
-     * @param key      null is accepted
      */
     public static String getEntryHoverText(String section, String key, IRegion hoverRegion, IReadonlyInifileDocument doc, InifileAnalyzer analyzer, IDocument textDoc) {
         Assert.isNotNull(section);
@@ -169,7 +167,7 @@ public class InifileHoverUtils {
         ConfigOption entry = ConfigRegistry.getOption(key);
         if (entry != null)
             text += getConfigOptionHoverText(entry);
-        return HoverSupport.addHTMLStyleSheet(text);
+        return !text.isBlank() ? HoverSupport.addHTMLStyleSheet(text) : null;
     }
 
     /**
@@ -186,7 +184,7 @@ public class InifileHoverUtils {
         //TODO also display which modules it applies to
         //text += "<br><b>Applies to:</b><br>\n";
         //...
-        return HoverSupport.addHTMLStyleSheet(text);
+        return !text.isBlank() ? HoverSupport.addHTMLStyleSheet(text) : null;
     }
 
     protected static String getConfigOptionHoverText(ConfigOption entry) {

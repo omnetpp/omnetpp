@@ -4,6 +4,7 @@ import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.omnetpp.common.ui.SWTFactory;
 import org.omnetpp.scave.ScavePlugin;
 
 /**
@@ -14,13 +15,15 @@ public class ScavePreferencePage extends FieldEditorPreferencePage implements IW
     public ScavePreferencePage() {
         super(GRID);
         setPreferenceStore(ScavePlugin.getDefault().getPreferenceStore());
-        setDescription("Configure the OMNeT++ Result Analysis editor.");
+        setDescription("Configuration for the OMNeT++ Result Analysis editor.");
     }
 
     /**
      * Creates the field editors.
      */
     public void createFieldEditors() {
+        SWTFactory.createComposite(getFieldEditorParent(), 1, 3, 0); // spacer
+
         IntegerFieldEditor totalLimitEditor = new IntegerFieldEditor(ScavePreferenceConstants.TOTAL_DRAW_TIME_LIMIT_MILLIS, "Line chart drawing time limit (ms):", getFieldEditorParent());
         totalLimitEditor.setValidRange(1, 99999);
         addField(totalLimitEditor);
