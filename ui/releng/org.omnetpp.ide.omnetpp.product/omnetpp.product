@@ -54,6 +54,13 @@ jre/lib/jli/libjli.dylib
    <features>
       <feature id="org.eclipse.egit"/>
       <feature id="org.eclipse.linuxtools.valgrind"/>
+      <feature id="org.eclipse.wst.xml_ui.feature"/>
+      <feature id="org.eclipse.lsp4e.debug"/>
+      <feature id="org.eclipse.lsp4e"/>
+      <feature id="org.eclipse.tm.terminal.feature"/>
+      <feature id="org.eclipse.tips.feature"/>
+      <feature id="org.eclipse.epp.mpc"/>
+
       <feature id="org.omnetpp.ide.omnetpp"/>
       <feature id="org.omnetpp.ide.source"/>
    </features>
