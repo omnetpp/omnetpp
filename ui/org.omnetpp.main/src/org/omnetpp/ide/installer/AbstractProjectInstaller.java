@@ -155,6 +155,7 @@ public abstract class AbstractProjectInstaller {
             IWorkspace workspace = ResourcesPlugin.getWorkspace();
             Path projectFileLocation = new Path(projectDirectory.getPath() + "/.project");
             IProjectDescription eclipseProjectDescription = workspace.loadProjectDescription(projectFileLocation);
+            eclipseProjectDescription.setLocation(new Path(projectDirectory.getPath()));
             IProject project = workspace.getRoot().getProject(projectInstallationOptions.name != null ? projectInstallationOptions.name : projectDescription.getName());
             SubProgressMonitor subProgressMonitor = new SubProgressMonitor(progressMonitor, 1);
             project.create(eclipseProjectDescription, subProgressMonitor);

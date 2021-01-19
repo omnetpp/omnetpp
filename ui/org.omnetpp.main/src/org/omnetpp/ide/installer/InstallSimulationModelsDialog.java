@@ -141,8 +141,6 @@ public class InstallSimulationModelsDialog extends TitleAreaDialog {
         label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 1, 1));
         label.setText("Project name: ");
         projectName = new Text(group, SWT.BORDER);
-        // TODO: revive this when importing a project with a different name than the one in the .project file becomes possible
-        projectName.setEnabled(false);
         projectName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
         useDefaultLocation = new Button(group, SWT.CHECK);
         useDefaultLocation.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 3, 1));
@@ -174,8 +172,6 @@ public class InstallSimulationModelsDialog extends TitleAreaDialog {
             public void widgetSelected(SelectionEvent event) {
                 ProjectDescription projectDescription = (ProjectDescription)event.item.getData();
                 longDescription.setText(projectDescription.getLongDescription());
-                // TODO: revive this when importing a project with a different name than the one in the .project file becomes possible
-                // projectName.setText(projectDescription.getName() + "-" + projectDescription.getVersion());
                 projectName.setText(projectDescription.getName());
                 updateDefaultLocation();
                 getButton(IDialogConstants.OK_ID).setEnabled(true);
