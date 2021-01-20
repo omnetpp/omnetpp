@@ -538,7 +538,7 @@ def plot_bars(df, props, names=None, errors_df=None):
         p.bar(xs, ys, width, label=label, **extra_args, **style)
 
         if not chart.is_native_chart() and errors_df is not None:
-            plt.errorbar(xs, ys, yerr=errors_df[column], capsize=float(get_prop("cap_size") or 4), **style, linestyle="none", ecolor=mpl.rcParams["axes.edgecolor"])
+            plt.errorbar(xs, ys + bottoms, yerr=errors_df[column], capsize=float(get_prop("cap_size") or 4), **style, linestyle="none", ecolor=mpl.rcParams["axes.edgecolor"])
 
         xs += group_increment
         if placement == "Stacked":
