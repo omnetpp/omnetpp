@@ -86,7 +86,7 @@ public class InstallSimulationModelsDialog extends TitleAreaDialog {
     @Override
     protected void configureShell(Shell shell) {
         super.configureShell(shell);
-        Point size = new Point(1000, 700);
+        Point size = new Point(1000, 870);
         Display display = shell.getDisplay();
         Rectangle screen = display.getMonitors()[0].getBounds();
         shell.setBounds((screen.width - size.x)/2, (screen.height-size.y)/2, size.x, size.y);
@@ -107,7 +107,9 @@ public class InstallSimulationModelsDialog extends TitleAreaDialog {
         gridLayout = new GridLayout(2, false);
         gridLayout.marginWidth = gridLayout.marginHeight = 10;
         group.setLayout(gridLayout);
-        group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+        var projectTableDG = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
+        projectTableDG.minimumHeight = 260;
+        group.setLayoutData(projectTableDG);
         group.setText("Model");
         projectsTable = new Table(group, SWT.BORDER);
         projectsTable.setHeaderVisible(true);
@@ -128,7 +130,9 @@ public class InstallSimulationModelsDialog extends TitleAreaDialog {
         gridLayout = new GridLayout();
         gridLayout.marginWidth = gridLayout.marginHeight = 10;
         group.setLayout(gridLayout);
-        group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+        var gd = new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1);
+        gd.heightHint = 110;
+        group.setLayoutData(gd);
         longDescription = new Label(group, SWT.WRAP | SWT.V_SCROLL);
         longDescription.setLayoutData(new GridData(GridData.FILL_BOTH));
         group = new Group(container, SWT.NONE);
