@@ -112,6 +112,8 @@ public abstract class AbstractProjectInstaller {
                 outputDirectory = projectInstallationOptions.location;
             while ((tarArchiveEntry = tarArchiveInputStream.getNextTarEntry()) != null) {
                 String tarArchiveEntryName = tarArchiveEntry.getName();
+                if (tarArchiveEntryName.equals("pax_global_header"))  // git-archive generates an extended header which is ignored by normal tar 
+                    continue; // skip the extended header entry
                 File tarArchiveEntryFile =  new File(outputDirectory + "/" + tarArchiveEntryName.substring(tarArchiveEntryName.indexOf('/')));
                 if (!tarArchiveEntryFile.getParentFile().exists())
                     tarArchiveEntryFile.getParentFile().mkdirs();
