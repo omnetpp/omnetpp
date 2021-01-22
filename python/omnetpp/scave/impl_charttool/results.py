@@ -67,20 +67,18 @@ def _get_results(filter_expression, file_extensions, result_type, *additional_ar
 
     filelist = [i for i in inputfiles if any([i.endswith(e) for e in file_extensions])]
     type_filter = ['-T', result_type] if result_type else []
-    filter_expr_args = ['-f', filter_expression] if filter_expression else []
+    filter_expr_args = ['-f', filter_expression]
     command = ["opp_scavetool", "x", *filelist, *type_filter, *filter_expr_args,
                 "-F", "CSV-R", "-o", "-", *additional_args]
 
-    output = subprocess.check_output(command)
+    proc = subprocess.run(command, stderr=subprocess.PIPE, stdout=subprocess.PIPE, text=False)
+    output_bytes = proc.stdout
 
-    if len(output.decode("utf-8").splitlines()) == 1:
-        print("<!> HINT: opp_scavetool returned an empty result. Consider adding a project name to directory mapping, for example: -p /aloha=../aloha")
-
-    # with open("output.csv", "tw") as outp:
-    #     outp.write(str(output))
+    if proc.returncode != 0:
+        raise RuntimeError(proc.stderr.decode("utf-8").strip() + " (exit code " + str(proc.returncode) + ")")
 
     # TODO: stream the output through subprocess.PIPE ?
-    df = pd.read_csv(io.BytesIO(output), converters = {
+    df = pd.read_csv(io.BytesIO(output_bytes), converters = {
         'value': _parse_if_number,
         #'attrvalue': _parse_if_number, # should be optional, and done later
         'count': _parse_int,
@@ -146,8 +144,6 @@ def _pivot_results(df, include_attrs, include_runattrs, include_itervars, includ
         df["name"] = df["module"] + "." + df["name"]
 
     return df
-
-
 
 def get_results(filter_expression="", row_types=['runattr', 'itervar', 'config', 'scalar', 'vector', 'statistic', 'histogram', 'param', 'attr'], omit_unused_columns=True, start_time=-inf, end_time=inf):
     df = _get_results(filter_expression, ['.sca', '.vec'], None)

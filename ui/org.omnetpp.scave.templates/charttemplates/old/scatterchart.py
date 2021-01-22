@@ -16,9 +16,13 @@ def aggfunc(x):
 
 
 def get_data(filter):
-    sc = results.get_scalars(filter, include_attrs=True)
-    iv = results.get_itervars(filter)
-    ra = results.get_runattrs(filter)
+    try:
+        sc = results.get_scalars(filter, include_attrs=True)
+        iv = results.get_itervars(filter)
+        ra = results.get_runattrs(filter)
+    except ValueError as e:
+        plot.set_warning("Error while querying results: " + str(e))
+        exit(1)
 
     df = pd.concat([sc, iv, ra])
 

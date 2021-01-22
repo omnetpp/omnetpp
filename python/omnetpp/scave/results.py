@@ -38,10 +38,26 @@ else:
 
 from math import inf
 
+def _guarded_result_query_func(func):
+    def inner(filter_expression, **rest):
+        if not filter_expression:
+            raise ValueError("Empty filter expression")
+        try:
+            return func(filter_expression, **rest)
+        except Exception as e:
+            if "Parse error in match expression: syntax error" in str(e):
+                raise ValueError("Syntax error in result filter expression")
+            else:
+                raise e
+    return inner
+
+
 def get_serial():
     # TODO documentation
     return impl.get_serial()
 
+
+@_guarded_result_query_func
 def get_results(filter_expression="", row_types=['runattr', 'itervar', 'config', 'scalar', 'vector', 'statistic', 'histogram', 'param', 'attr'], omit_unused_columns=True, start_time=-inf, end_time=inf):
     """
     Returns a filtered set of results and metadata in CSV-like format.
@@ -75,6 +91,7 @@ def get_results(filter_expression="", row_types=['runattr', 'itervar', 'config',
     return impl.get_results(**locals())
 
 
+@_guarded_result_query_func
 def get_runs(filter_expression="", include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
     """
     Returns a filtered list of runs, identified by their run ID.
@@ -94,6 +111,7 @@ def get_runs(filter_expression="", include_runattrs=False, include_itervars=Fals
     return impl.get_runs(**locals())
 
 
+@_guarded_result_query_func
 def get_runattrs(filter_expression="", include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
     """
     Returns a filtered list of run attributes.
@@ -119,6 +137,7 @@ def get_runattrs(filter_expression="", include_runattrs=False, include_itervars=
     return impl.get_runattrs(**locals())
 
 
+@_guarded_result_query_func
 def get_itervars(filter_expression="", include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, as_numeric=False):
     """
     Returns a filtered list of iteration variables.
@@ -142,6 +161,7 @@ def get_itervars(filter_expression="", include_runattrs=False, include_itervars=
     return impl.get_itervars(**locals())
 
 
+@_guarded_result_query_func
 def get_scalars(filter_expression="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False):
     """
     Returns a filtered list of scalar results.
@@ -168,6 +188,7 @@ def get_scalars(filter_expression="", include_attrs=False, include_runattrs=Fals
     return impl.get_scalars(**locals())
 
 
+@_guarded_result_query_func
 def get_parameters(filter_expression="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False, as_numeric=False):
     """
     Returns a filtered list of parameters - actually computed values of individual `cPar` instances in the fully built network.
@@ -201,6 +222,7 @@ def get_parameters(filter_expression="", include_attrs=False, include_runattrs=F
     return impl.get_parameters(**locals())
 
 
+@_guarded_result_query_func
 def get_vectors(filter_expression="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False, start_time=-inf, end_time=inf):
     """
     Returns a filtered list of vector results.
@@ -229,6 +251,7 @@ def get_vectors(filter_expression="", include_attrs=False, include_runattrs=Fals
     return impl.get_vectors(**locals())
 
 
+@_guarded_result_query_func
 def get_statistics(filter_expression="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False):
     """
     Returns a filtered list of statistics results.
@@ -255,6 +278,7 @@ def get_statistics(filter_expression="", include_attrs=False, include_runattrs=F
     return impl.get_statistics(**locals())
 
 
+@_guarded_result_query_func
 def get_histograms(filter_expression="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False, include_statistics_fields=False):
     """
     Returns a filtered list of histogram results.
@@ -283,6 +307,7 @@ def get_histograms(filter_expression="", include_attrs=False, include_runattrs=F
     return impl.get_histograms(**locals())
 
 
+@_guarded_result_query_func
 def get_config_entries(filter_expression, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
     """
     Returns a filtered list of config entries. That is: parameter assignment patterns; and global and per-object config options.

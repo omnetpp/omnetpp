@@ -50,8 +50,12 @@ iso_pattern = props["iso_patterns"].split(";")[0]
 iso_module, iso_name, iso_runattr = module_name_runattr_from_pattern(iso_pattern)
 
 avg_repls = bool(strtobool(props['average_replications']))
-sc = results.get_scalars(filter_expression, include_itervars=True, include_runattrs=True)
-iv = results.get_itervars("(" + filter_expression + ") AND NOT name =~ " + x_runattr, include_itervars=True, include_runattrs=True)
+try:
+    sc = results.get_scalars(filter_expression, include_itervars=True, include_runattrs=True)
+    iv = results.get_itervars("(" + filter_expression + ") AND NOT name =~ " + x_runattr, include_itervars=True, include_runattrs=True)
+except ValueError as e:
+    plot.set_warning("Error while querying results: " + str(e))
+    exit(1)
 iv['module'] = ""
 
 df = pd.concat([sc]) # , iv ?

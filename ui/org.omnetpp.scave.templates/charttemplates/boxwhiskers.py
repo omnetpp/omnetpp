@@ -5,8 +5,12 @@ import pandas as pd
 props = chart.get_properties()
 utils.preconfigure_plot(props)
 
-stats = results.get_statistics(props["filter"], include_attrs=True, include_runattrs=True, include_itervars=True)
-hists = results.get_histograms(props["filter"], include_attrs=True, include_runattrs=True, include_itervars=True)
+try:
+    stats = results.get_statistics(props["filter"], include_attrs=True, include_runattrs=True, include_itervars=True)
+    hists = results.get_histograms(props["filter"], include_attrs=True, include_runattrs=True, include_itervars=True)
+except ValueError as e:
+    plot.set_warning("Error while querying results: " + str(e))
+    exit(1)
 
 df = pd.concat([stats, hists], sort=False)
 

@@ -11,7 +11,11 @@ start_time = float(props["vector_start_time"] or -math.inf)
 end_time = float(props["vector_end_time"] or math.inf)
 
 # query vector data into a data frame
-df = results.get_vectors(filter_expression, include_attrs=True, include_itervars=True, start_time=start_time, end_time=end_time)
+try:
+    df = results.get_vectors(filter_expression, include_attrs=True, include_itervars=True, start_time=start_time, end_time=end_time)
+except ValueError as e:
+    plot.set_warning("Error while querying results: " + str(e))
+    exit(1)
 
 if df.empty:
     plot.set_warning("The result filter returned no data.")
