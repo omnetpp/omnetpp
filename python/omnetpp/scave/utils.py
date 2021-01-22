@@ -153,10 +153,10 @@ def pick_two_columns(df):
         return label_cols[0], label_cols[1]
 
 
-def assert_columns_exist(df, cols):
+def assert_columns_exist(df, cols, message="Expected column missing from DataFrame"):
     for c in cols:
         if c not in df:
-            plot.set_warning("Expected column missing from DataFrame: " + c)
+            plot.set_warning(message + ": " + c)
             exit(1)
 
 

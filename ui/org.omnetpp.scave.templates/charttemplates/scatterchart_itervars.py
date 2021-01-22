@@ -27,11 +27,14 @@ if not xaxis_itervar and not iso_itervars:
     print("X axis: " + xaxis_itervar + " iso lines: " + ",".join(iso_itervars))
 
 if xaxis_itervar:
-    utils.assert_columns_exist(df, [xaxis_itervar])
+    utils.assert_columns_exist(df, [xaxis_itervar], "The iteration variable for the X axis could not be found")
     df[xaxis_itervar] = pd.to_numeric(df[xaxis_itervar], errors="ignore")
+else:
+    plot.set_warning("Please select the iteration variable for the X axis!")
+    exit(1)
 
 if iso_itervars:
-    utils.assert_columns_exist(df, [xaxis_itervar])
+    utils.assert_columns_exist(df, iso_itervars, "An iteration variable for the iso lines could not be found")
     for iv in iso_itervars:
         if iv:
             df[iv] = pd.to_numeric(df[iv], errors="ignore")
@@ -91,7 +94,7 @@ for c in df.columns:
     else:
         label = scalar_names
     p.plot(xs, ys, label=label, **style)
-    
+
     if errors_df is not None and not chart.is_native_chart():
         style["linewidth"] = float(style["linewidth"])
         style["linestyle"] = "none"

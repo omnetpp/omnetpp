@@ -24,11 +24,12 @@ if df.empty:
 if not xaxis_itervar and not yaxis_itervar:
     print("The X Axis and Y Axis options were not set in the dialog, inferring them from the data..")
     xaxis_itervar, yaxis_itervar = utils.pick_two_columns(df)
-    if not xaxis_itervar or not yaxis_itervar:
-        plot.set_warning("Please set the X Axis and Y Axis options in the dialog!")
-        exit(1)
+if not xaxis_itervar or not yaxis_itervar:
+    plot.set_warning("Please set both the X Axis and Y Axis options in the dialog - or neither, for automatic selection!")
+    exit(1)
 
-utils.assert_columns_exist(df, [xaxis_itervar, yaxis_itervar])
+utils.assert_columns_exist(df, [xaxis_itervar], "The iteration variable for the X axis could not be found")
+utils.assert_columns_exist(df, [yaxis_itervar], "The iteration variable for the Y axis could not be found")
 
 df[xaxis_itervar] = pd.to_numeric(df[xaxis_itervar], errors="ignore")
 df[yaxis_itervar] = pd.to_numeric(df[yaxis_itervar], errors="ignore")

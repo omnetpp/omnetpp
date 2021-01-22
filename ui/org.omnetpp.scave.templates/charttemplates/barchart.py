@@ -23,12 +23,13 @@ series = props["series"].split(",")
 if not groups[0] and not series[0]:
     print("The Groups and Series options were not set in the dialog, inferring them from the data.")
     g, s = ("module", "name") if len(df) == 1 else utils.pick_two_columns(df)
-    if not g or not s:
-        plot.set_warning("Please set the Groups and Series options in the dialog!")
-        exit(1)
     groups, series = [g], [s]
 
-utils.assert_columns_exist(df, groups + series)
+if not groups[0] or not series[0]:
+    plot.set_warning("Please set both the Groups and Series properties in the dialog - or neither, for automatic setup.")
+    exit(1)
+
+utils.assert_columns_exist(df, groups + series, "No such iteration variable or run attribute")
 
 for c in groups + series:
     df[c] = pd.to_numeric(df[c], errors="ignore")
