@@ -11,5 +11,5 @@
 rm -rf omnetpp-repo
 # copy the current state of the repo to the context dir
 git clone -n ../../../.git omnetpp-repo
-docker build -t omnetpp/distrobuild:eclipse4.18-tools201218-201218 .
+docker build -t omnetpp/distrobuild:eclipse4.18-tools201218-210125 .
 rm -rf omnetpp-repo
