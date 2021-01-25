@@ -18,7 +18,7 @@ public class ToggleAutoUpdateAction extends AbstractScaveAction {
     public ToggleAutoUpdateAction() {
         super(AS_CHECK_BOX);
         setText("Auto Update");
-        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_AUTOREFRESH2));
+        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_AUTOREFRESH));
     }
 
     @Override

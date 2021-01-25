@@ -23,7 +23,7 @@ public class RefreshResultFilesAction extends AbstractScaveAction {
 
     public RefreshResultFilesAction() {
         setText("Refresh Files");
-        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_REFRESH));
+        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_REFRESH_NAV));
     }
 
     @Override

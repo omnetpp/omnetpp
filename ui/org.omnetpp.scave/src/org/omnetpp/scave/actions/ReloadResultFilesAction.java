@@ -22,7 +22,7 @@ public class ReloadResultFilesAction extends AbstractScaveAction {
 
     public ReloadResultFilesAction() {
         setText("Reload All Files");
-        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_REFRESHMORE));
+        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_REFRESH_NAV_MORE));
     }
 
     @Override

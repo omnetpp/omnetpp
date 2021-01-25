@@ -27,7 +27,7 @@ public class EditChartPropertiesAction extends AbstractScaveAction {
     public EditChartPropertiesAction() {
         setText("Edit Chart...");
         setToolTipText("Edit Chart Properties");
-        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_EDIT));
+        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_COGWHEEL));  // or: IMG_ETOOL16_EDIT
     }
 
     @Override

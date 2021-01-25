@@ -20,12 +20,12 @@ package org.omnetpp.scave;
  */
 public class ScaveImages {
     public static final String IMG_ETOOL16_APPLY = "icons/full/etool16/apply.png";
-    public static final String IMG_ETOOL16_AUTOREFRESH2 = "icons/full/etool16/autorefresh2.png";
-    public static final String IMG_ETOOL16_AUTOREFRESH = "icons/full/etool16/autorefresh.gif";
+    public static final String IMG_ETOOL16_AUTOREFRESH = "icons/full/etool16/autorefresh.png";
     public static final String IMG_ETOOL16_CHOOSETABLECOLUMN = "icons/full/etool16/choosetablecolumn.png";
     public static final String IMG_ETOOL16_CLOSE = "icons/full/etool16/close.png";
     public static final String IMG_ETOOL16_CODE = "icons/full/etool16/code.png";
     public static final String IMG_ETOOL16_COGWHEEL = "icons/full/etool16/cogwheel.png";
+    public static final String IMG_ETOOL16_COGWHEEL_GRAY = "icons/full/etool16/cogwheel_gray.png";
     public static final String IMG_ETOOL16_COLLAPSE = "icons/full/etool16/collapse.png";
     public static final String IMG_ETOOL16_COMPUTE = "icons/full/etool16/compute.png";
     public static final String IMG_ETOOL16_COPY = "icons/full/etool16/copy.png";
@@ -62,7 +62,8 @@ public class ScaveImages {
     public static final String IMG_ETOOL16_EDITPYTHON = "icons/full/etool16/editpython.png";
     public static final String IMG_ETOOL16_REFRESH = "icons/full/etool16/refresh.png";
     public static final String IMG_ETOOL16_REFRESHMORE = "icons/full/etool16/refreshmore.png";
-    public static final String IMG_ETOOL16_REFRESH2 = "icons/full/etool16/refresh2.png";
+    public static final String IMG_ETOOL16_REFRESH_NAV = "icons/full/etool16/refresh_nav.png";
+    public static final String IMG_ETOOL16_REFRESH_NAV_MORE = "icons/full/etool16/refresh_nav_more.png";
     public static final String IMG_ETOOL16_RENAME = "icons/full/etool16/rename.png";
     public static final String IMG_ETOOL16_SETWIDTH = "icons/full/etool16/setwidth.png";
     public static final String IMG_ETOOL16_SETFILTER = "icons/full/etool16/setfilter.png";
