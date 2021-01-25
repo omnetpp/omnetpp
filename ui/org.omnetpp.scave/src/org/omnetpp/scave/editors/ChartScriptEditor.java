@@ -75,6 +75,7 @@ import org.omnetpp.scave.actions.EditChartPropertiesAction;
 import org.omnetpp.scave.actions.ExportChartAction;
 import org.omnetpp.scave.actions.KillPythonProcessAction;
 import org.omnetpp.scave.actions.RefreshChartAction;
+import org.omnetpp.scave.actions.RefreshResultFilesAction;
 import org.omnetpp.scave.actions.SaveImageAction;
 import org.omnetpp.scave.actions.ToggleAutoUpdateAction;
 import org.omnetpp.scave.actions.analysismodel.AddVectorOperationAction;
@@ -652,13 +653,15 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         }
 
         chartPage.addSeparatorToToolbar();
-        chartPage.addToToolbar(toggleAutoUpdateAction);
         chartPage.addToToolbar(new RefreshChartAction());
+        chartPage.addToToolbar(toggleAutoUpdateAction);
         chartPage.addToToolbar(killAction = new KillPythonProcessAction());
         chartPage.addSeparatorToToolbar();
         chartPage.addToToolbar(new CopyImageToClipboardAction());
         chartPage.addToToolbar(saveImageAction);
         chartPage.addToToolbar(exportChartAction);
+        chartPage.addSeparatorToToolbar();
+        chartPage.addToToolbar(new RefreshResultFilesAction());
         chartPage.addSeparatorToToolbar();
         chartPage.addToToolbar(new ClosePageAction());
     }
