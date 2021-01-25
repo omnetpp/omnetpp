@@ -18,7 +18,6 @@ import org.eclipse.jface.fieldassist.IContentProposal;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.contentassist.ContentProposalEx;
 import org.omnetpp.common.contentassist.ContentProposalProviderBase;
-import org.omnetpp.common.util.MatchExpressionSyntax;
 import org.omnetpp.common.util.MatchExpressionSyntax.Token;
 import org.omnetpp.common.util.MatchExpressionSyntax.TokenType;
 

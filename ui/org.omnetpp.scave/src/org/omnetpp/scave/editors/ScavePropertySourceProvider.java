@@ -10,7 +10,6 @@ package org.omnetpp.scave.editors;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.IPropertySourceProvider;
 import org.omnetpp.common.properties.PropertySource;
-import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model2.ChartLine;
 import org.omnetpp.scave.model2.ResultItemRef;

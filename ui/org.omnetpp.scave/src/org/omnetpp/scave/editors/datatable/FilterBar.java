@@ -34,8 +34,8 @@ import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.assist.FilterExpressionProposalProvider;
 import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.model2.FilterField;
 import org.omnetpp.scave.model2.AndFilter;
+import org.omnetpp.scave.model2.FilterField;
 
 /**
  * A composite with UI elements to filter a data table.

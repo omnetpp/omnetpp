@@ -16,13 +16,11 @@ import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
-import org.omnetpp.scave.editors.datatable.PanelType;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;

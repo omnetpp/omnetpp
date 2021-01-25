@@ -15,9 +15,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.apache.commons.io.FileUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -44,7 +41,7 @@ public class InstallProjectTask {
 
     public void run(IProgressMonitor progressMonitor) throws CoreException {
         ProjectDescription projectDescription = ProjectDescription.download(projectDescriptionURL);
-        
+
         IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectDescription.getName());
         if (project != null && project.exists())
             throw new RuntimeException("Cannot install " + projectDescription.getName() + " because a project with that name already exists (rename or delete existing project to proceed)");

@@ -11,7 +11,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -23,7 +22,6 @@ import org.omnetpp.common.Debug;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.util.XmlUtils;
 import org.omnetpp.scave.charting.properties.PlotProperty;
-import org.omnetpp.scave.model.Chart.DialogPage;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

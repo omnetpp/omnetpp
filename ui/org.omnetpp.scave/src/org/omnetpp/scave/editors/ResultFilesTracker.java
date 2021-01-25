@@ -33,7 +33,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.internal.IWorkbenchConstants;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.engine.Common;
 import org.omnetpp.common.engine.StringVector;

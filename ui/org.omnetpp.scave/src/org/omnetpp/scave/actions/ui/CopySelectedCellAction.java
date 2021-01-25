@@ -14,16 +14,12 @@ import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.ISharedImages;
-import org.omnetpp.common.Debug;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.AbstractScaveAction;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.datatable.DataTable;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
 import org.omnetpp.scave.editors.ui.BrowseDataPage;
-import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.engine.ResultItem;
-import org.omnetpp.scave.model2.AndFilter;
 
 /**
  * Copy the value in the selected cell in the active filtered data panel

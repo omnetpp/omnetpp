@@ -37,8 +37,6 @@ import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.ned.core.NedResourcesPlugin;
-import org.omnetpp.ned.model.notification.INedChangeListener;
-import org.omnetpp.ned.model.notification.NedModelEvent;
 
 /**
  * Standard implementation of IInifileDocument. Setters change the

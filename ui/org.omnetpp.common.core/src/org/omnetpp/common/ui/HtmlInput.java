@@ -1,8 +1,5 @@
 package org.omnetpp.common.ui;
 
-import java.util.Map;
-
-import org.eclipse.swt.graphics.Image;
 import org.omnetpp.common.util.HTMLUtils.IImageProvider;
 
 /**
