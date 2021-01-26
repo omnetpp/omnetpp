@@ -92,7 +92,7 @@ void MessageAnimator::MessageSendPath::removeMessagePointer(cMessage *msg)
 MessageAnimator::MessageSendKey MessageAnimator::MessageSendKey::fromMessage(cMessage *msg)
 {
     return MessageAnimator::MessageSendKey {
-                msg->getId(),
+                msg->isPacket() ? static_cast<cPacket*>(msg)->getTransmissionId() : msg->getId(),
                 msg->getSenderModuleId(), msg->getSenderGateId(),
                 msg->getArrivalModuleId(), msg->getArrivalGateId()
             };
