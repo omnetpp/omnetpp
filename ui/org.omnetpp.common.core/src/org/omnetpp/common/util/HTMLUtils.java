@@ -81,8 +81,20 @@ public class HTMLUtils {
      * For resolving "img" tags. Its get() method receives the value of the "src" attribute,
      * and should return the image for it (or null if could not be resolved).
      */
+    @FunctionalInterface
     public interface IImageProvider {
         Image get(String name);
+    }
+
+    /**
+     * For painting images in "img" tags in a size different from their original size. Its getSize()
+     * method receives the value of the "src" attribute, and should return the size the image
+     * should be painted in, or null if the image is unknown or should be displayed
+     * at its natural size.
+     */
+    @FunctionalInterface
+    public interface IImageSizeProvider {
+        Rectangle getSize(String name);
     }
 
     /**
@@ -93,35 +105,35 @@ public class HTMLUtils {
     }
 
     public static void htmlToStyledText(String htmlText, StyledText styledText) {
-        htmlToStyledText(new StringReader(htmlText), styledText, (IImageProvider)null);
+        htmlToStyledText(new StringReader(htmlText), styledText, (IImageProvider)null, null);
     }
 
-    public static void htmlToStyledText(String htmlText, StyledText styledText, Map<String, Image> imageMap) {
-        htmlToStyledText(new StringReader(htmlText), styledText, imageMap);
+    public static void htmlToStyledText(String htmlText, StyledText styledText, Map<String, Image> imageMap, IImageSizeProvider imageSizeProvider) {
+        htmlToStyledText(new StringReader(htmlText), styledText, imageMap, imageSizeProvider);
     }
 
-    public static void htmlToStyledText(String htmlText, StyledText styledText, IImageProvider imageProvider) {
-        htmlToStyledText(new StringReader(htmlText), styledText, imageProvider);
+    public static void htmlToStyledText(String htmlText, StyledText styledText, IImageProvider imageProvider, IImageSizeProvider imageSizeProvider) {
+        htmlToStyledText(new StringReader(htmlText), styledText, imageProvider, imageSizeProvider);
     }
 
     public static void htmlToStyledText(InputStream inputStream, StyledText styledText) {
-        htmlToStyledText(new InputStreamReader(inputStream), styledText, (IImageProvider)null);
+        htmlToStyledText(new InputStreamReader(inputStream), styledText, (IImageProvider)null, null);
     }
 
-    public static void htmlToStyledText(InputStream inputStream, StyledText styledText, Map<String, Image> imageMap) {
-        htmlToStyledText(new InputStreamReader(inputStream), styledText, imageMap);
+    public static void htmlToStyledText(InputStream inputStream, StyledText styledText, Map<String, Image> imageMap, IImageSizeProvider imageSizeProvider) {
+        htmlToStyledText(new InputStreamReader(inputStream), styledText, imageMap, imageSizeProvider);
     }
 
-    public static void htmlToStyledText(InputStream inputStream, StyledText styledText, IImageProvider imageProvider) {
-        htmlToStyledText(new InputStreamReader(inputStream), styledText, imageProvider);
+    public static void htmlToStyledText(InputStream inputStream, StyledText styledText, IImageProvider imageProvider, IImageSizeProvider imageSizeProvider) {
+        htmlToStyledText(new InputStreamReader(inputStream), styledText, imageProvider, imageSizeProvider);
     }
 
     public static void htmlToStyledText(Reader reader, StyledText styledText) {
-        htmlToStyledText(reader, styledText, (IImageProvider)null);
+        htmlToStyledText(reader, styledText, (IImageProvider)null, null);
     }
 
-    public static void htmlToStyledText(Reader reader, StyledText styledText, Map<String, Image> imageMap) {
-        htmlToStyledText(reader, styledText, (String name) -> imageMap.get(name));
+    public static void htmlToStyledText(Reader reader, StyledText styledText, Map<String, Image> imageMap, IImageSizeProvider imageSizeProvider) {
+        htmlToStyledText(reader, styledText, (String name) -> imageMap.get(name), imageSizeProvider);
     }
 
     /**
@@ -131,7 +143,7 @@ public class HTMLUtils {
      * @param styledText the widget where the content will be appended
      * @param imageProvider maps from names (to be used as img tag sources) to images
      */
-    public static void htmlToStyledText(Reader reader, StyledText styledText, IImageProvider imageProvider) {
+    public static void htmlToStyledText(Reader reader, StyledText styledText, IImageProvider imageProvider, IImageSizeProvider imageSizeProvider) {
         try {
             HTMLEditorKit editorKit = new HTMLEditorKit();
             HTMLDocument document = (HTMLDocument)editorKit.createDefaultDocument();
@@ -141,7 +153,7 @@ public class HTMLUtils {
             styles.addRule("body, p, h1, h2, h3, h4, h5, h6, pre, code, ol, ul, dl, li, td, th, blockquote { color: " + fallbackColor + "; background-color: " + fallbackColor + "; }");
             editorKit.read(reader, document, 0);
             for (Element rootElement : document.getRootElements())
-                htmlToStyledTextRecursive(new Context(), rootElement, styledText, imageProvider);
+                htmlToStyledTextRecursive(new Context(), rootElement, styledText, imageProvider, imageSizeProvider);
             // KLUDGE: for correct tooltip background/foreground colors
             styledText.setColorLock(true);
         }
@@ -150,7 +162,7 @@ public class HTMLUtils {
         }
     }
 
-    private static void htmlToStyledTextRecursive(Context context, Element element, StyledText styledText, IImageProvider imageProvider) throws BadLocationException {
+    private static void htmlToStyledTextRecursive(Context context, Element element, StyledText styledText, IImageProvider imageProvider, IImageSizeProvider imageSizeProvider) throws BadLocationException {
         String stringName = element.getName();
         HTMLDocument document = (HTMLDocument)element.getDocument();
         if (element instanceof RunElement) {
@@ -158,32 +170,8 @@ public class HTMLUtils {
                 styledText.append("\n");
             else if (stringName.equals("img")) {
                 if (imageProvider != null) {
-                    int startOffset = styledText.getCharCount();
-                    Image image = imageProvider.get(getAttributeValue(element, "src"));
-                    if (image == null)
-                        image = CommonCorePlugin.getCachedImage("icons/unknown.png");
-                    final Image finalImage = image;
-                    Rectangle imageBounds = image.getBounds();
-                    // images are recognized in the text flow by this special unicode character
-                    styledText.append("\uFFFC");
-                    StyleRange styleRange = new StyleRange();
-                    styleRange.start = startOffset;
-                    styleRange.length = 1;
-                    styleRange.metrics = new GlyphMetrics(imageBounds.height, 0, imageBounds.width);
-                    styledText.setStyleRange(styleRange);
-                    // add a separate listener for each image to paint it
-                    styledText.addPaintObjectListener(new PaintObjectListener() {
-                        @Override
-                        public void paintObject(PaintObjectEvent event) {
-                            GC gc = event.gc;
-                            StyleRange style = event.style;
-                            if (startOffset == style.start) {
-                                int x = event.x;
-                                int y = event.y + event.ascent - style.metrics.ascent;
-                                gc.drawImage(finalImage, x, y);
-                            }
-                        }
-                    });
+                    String imageName = getAttributeValue(element, "src");
+                    addImage(styledText, imageProvider, imageName, imageSizeProvider);
                 }
             }
             else {
@@ -257,7 +245,7 @@ public class HTMLUtils {
                 insertVerticalSpacing(((Number)spaceAbove).intValue(), styledText);
             // recurse into tag
             for (int i = 0; i < abstractElement.getElementCount(); i++)
-                htmlToStyledTextRecursive(context, abstractElement.getElement(i), styledText, imageProvider);
+                htmlToStyledTextRecursive(context, abstractElement.getElement(i), styledText, imageProvider, imageSizeProvider);
             // handle space below
             Object spaceBelow = attributeSet.getAttribute(StyleConstants.SpaceBelow);
             if (realTag && spaceBelow instanceof Number)
@@ -268,6 +256,37 @@ public class HTMLUtils {
             else if (stringName.matches("pre"))
                 context.isPreformatted = false;
         }
+    }
+
+    protected static void addImage(StyledText styledText, IImageProvider imageProvider, String imageName, IImageSizeProvider imageSizeProvider) {
+        int startOffset = styledText.getCharCount();
+        Image image = imageProvider.get(imageName); //TODO this could be lazy: if imageSizeProvider gives us a size, effective loading could be deferred to the paint listener
+        if (image == null)
+            image = CommonCorePlugin.getCachedImage("icons/unknown.png");
+        final Image finalImage = image;
+        Rectangle imageBounds = imageSizeProvider != null ? imageSizeProvider.getSize(imageName) : null;
+        if (imageBounds == null)
+            imageBounds = image.getBounds();
+        // images are recognized in the text flow by this special unicode character
+        styledText.append("\uFFFC");
+        StyleRange styleRange = new StyleRange();
+        styleRange.start = startOffset;
+        styleRange.length = 1;
+        styleRange.metrics = new GlyphMetrics(imageBounds.height, 0, imageBounds.width);
+        styledText.setStyleRange(styleRange);
+        // add a separate listener for each image to paint it
+        styledText.addPaintObjectListener(new PaintObjectListener() {
+            @Override
+            public void paintObject(PaintObjectEvent event) {
+                GC gc = event.gc;
+                StyleRange style = event.style;
+                if (startOffset == style.start) {
+                    int x = event.x;
+                    int y = event.y + event.ascent - style.metrics.ascent;
+                    gc.drawImage(finalImage, 0, 0, finalImage.getBounds().width, finalImage.getBounds().height, x, y, style.metrics.width, style.metrics.ascent);
+                }
+            }
+        });
     }
 
     private static void insertVerticalSpacing(int height, StyledText styledText) {
@@ -506,7 +525,7 @@ public class HTMLUtils {
                     "<li>ordered list item 3 - Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum adipiscing tortor diam, eu semper massa. Morbi non dui lectus, ac commodo nulla. Duis mauris leo, ultricies vitae ultrices ac, egestas interdum nisl.</li></ol>" +
                 "an inline circle <img src='0'/> image" +
                 "</body></html>";
-        htmlToStyledText(htmlText, styledText, imageMap);
+        htmlToStyledText(htmlText, styledText, imageMap, null);
         shell.open();
         shell.setSize(styledText.computeSize(800, -1));
         while (!shell.isDisposed())
