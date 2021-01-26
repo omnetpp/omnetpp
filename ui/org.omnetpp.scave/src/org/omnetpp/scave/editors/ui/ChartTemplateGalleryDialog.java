@@ -187,6 +187,8 @@ public class ChartTemplateGalleryDialog extends TitleAreaDialog {
                 styledText = styledTexts.get(template);
                 if (styledText == null) {
                     styledText = new StyledText(styledTextHolder, SWT.BORDER|SWT.WRAP|SWT.V_SCROLL|SWT.H_SCROLL|SWT.READ_ONLY);
+                    styledText.setMargins(16, 0, 16, 0);
+                    styledText.setCaret(new Caret(styledText, 0)); // hides the caret
                     String html = getDescriptionAsHtml(template);
                     HTMLUtils.htmlToStyledText(html, styledText, (String name) -> getCachedImage(template, name));
                     styledTexts.put(template, styledText);
