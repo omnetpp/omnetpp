@@ -186,37 +186,36 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
     private IMarker errorMarker;
     private MarkerAnnotation errorMarkerAnnotation;
 
-    SaveTempChartAction saveTempChartAction;
-    GotoChartDefinitionAction gotoChartDefinitionAction;
+    private SaveTempChartAction saveTempChartAction;
+    private GotoChartDefinitionAction gotoChartDefinitionAction;
 
-    SaveImageAction saveImageAction = new SaveImageAction();
-    ExportChartAction exportChartAction = new ExportChartAction();
+    private SaveImageAction saveImageAction = new SaveImageAction();
+    private ExportChartAction exportChartAction = new ExportChartAction();
 
-    InteractAction interactAction = new InteractAction();
-    PanAction panAction = new PanAction();
-    ZoomAction zoomAction = new ZoomAction();
+    private InteractAction interactAction = new InteractAction();
+    private PanAction panAction = new PanAction();
+    private ZoomAction zoomAction = new ZoomAction();
 
-    HomeAction homeAction = new HomeAction();
-    BackAction backAction = new BackAction();
-    ForwardAction forwardAction = new ForwardAction();
+    private HomeAction homeAction = new HomeAction();
+    private BackAction backAction = new BackAction();
+    private ForwardAction forwardAction = new ForwardAction();
 
-    ZoomChartAction zoomToFitAction = new ZoomChartAction(true, true, 0.0);
-    ZoomChartAction zoomInHorizAction = new ZoomChartAction(true, false, 2.0);
-    ZoomChartAction zoomOutHorizAction = new ZoomChartAction(true, false, 1 / 2.0);
+    private ZoomChartAction zoomToFitAction = new ZoomChartAction(true, true, 0.0);
+    private ZoomChartAction zoomInHorizAction = new ZoomChartAction(true, false, 2.0);
+    private ZoomChartAction zoomOutHorizAction = new ZoomChartAction(true, false, 1 / 2.0);
+    private ZoomChartAction zoomInVertAction = new ZoomChartAction(false, true, 2.0);
+    private ZoomChartAction zoomOutVertAction = new ZoomChartAction(false, true, 1 / 2.0);
 
-    ZoomChartAction zoomInVertAction = new ZoomChartAction(false, true, 2.0);
-    ZoomChartAction zoomOutVertAction = new ZoomChartAction(false, true, 1 / 2.0);
-
-    KillPythonProcessAction killAction;
+    private KillPythonProcessAction killAction;
 
     private boolean scriptNotYetExecuted = true;
 
-    ToggleShowSourceAction toggleShowSourceAction = new ToggleShowSourceAction();
+    private ToggleShowSourceAction toggleShowSourceAction = new ToggleShowSourceAction();
     private boolean showSource = false;
 
     private static final int CHART_SCRIPT_EXECUTION_DELAY_MS = 2000;
     private boolean autoRefreshChart = true;
-    ToggleAutoRefreshAction toggleAutoRefreshAction;
+    private ToggleAutoRefreshAction toggleAutoRefreshAction;
 
     // if the document has changed since last saving (independent of the Chart object in the model)
     private boolean scriptChangedFlag = false;
