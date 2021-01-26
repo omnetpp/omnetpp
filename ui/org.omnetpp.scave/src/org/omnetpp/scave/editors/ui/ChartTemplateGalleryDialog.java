@@ -208,18 +208,22 @@ public class ChartTemplateGalleryDialog extends TitleAreaDialog {
     protected String getDescriptionAsHtml(ChartTemplate template) {
         String html = "";
 
-        html += "<p><font size='-1'>";
-        html += "Template ID: " + template.getId() + " | ";
-        html += "type: " + template.getChartType() + " | ";
-        String supportedResultTypes = ScaveModelUtil.getResultTypesAsString(template.getSupportedResultTypes());
-        html += "supports: " + StringUtils.defaultIfEmpty(supportedResultTypes, "-");
-        html += "</font></p>\n";
-
         html += "<h2>" + template.getName() + "</h2>\n";
+
+        html += "<font size='-1'><p>";
+        html += "Type: " + template.getChartType() + "<br/>";
+        String supportedResultTypes = ScaveModelUtil.getResultTypesAsString(template.getSupportedResultTypes());
+        html += "Supported result types: " + StringUtils.defaultIfEmpty(supportedResultTypes, "-");
+        html += "</p></font>\n";
 
         String description = StringUtils.nullToEmpty(template.getDescription());
         boolean looksLikeHtml = description.trim().startsWith("<");
         html += looksLikeHtml ? "<font size='+1'>" + description + "</font>" : "<pre>"+description+"</pre>";
+
+        //html += "<font size='-1'><p>";
+        //html += "Template ID: " + template.getId();
+        //html += "</p></font>\n";
+
         return html;
     }
 
