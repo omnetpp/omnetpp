@@ -14,10 +14,10 @@ import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ChartScriptEditor;
 import org.omnetpp.scave.editors.ScaveEditor;
 
-public class ToggleAutoUpdateAction extends AbstractScaveAction {
-    public ToggleAutoUpdateAction() {
+public class ToggleAutoRefreshAction extends AbstractScaveAction {
+    public ToggleAutoRefreshAction() {
         super(AS_CHECK_BOX);
-        setText("Auto Update");
+        setText("Automatic Refresh");
         setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_AUTOREFRESH));
     }
 
@@ -25,7 +25,7 @@ public class ToggleAutoUpdateAction extends AbstractScaveAction {
     protected void doRun(ScaveEditor scaveEditor, ISelection selection) throws CoreException {
         ChartScriptEditor editor = scaveEditor.getActiveChartScriptEditor();
         if (editor != null)
-            editor.setAutoUpdateChart(isChecked());
+            editor.setAutoRefreshChart(isChecked());
     }
 
     @Override

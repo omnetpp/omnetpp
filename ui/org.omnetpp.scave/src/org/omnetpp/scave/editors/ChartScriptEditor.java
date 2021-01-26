@@ -77,7 +77,7 @@ import org.omnetpp.scave.actions.KillPythonProcessAction;
 import org.omnetpp.scave.actions.RefreshChartAction;
 import org.omnetpp.scave.actions.RefreshResultFilesAction;
 import org.omnetpp.scave.actions.SaveImageAction;
-import org.omnetpp.scave.actions.ToggleAutoUpdateAction;
+import org.omnetpp.scave.actions.ToggleAutoRefreshAction;
 import org.omnetpp.scave.actions.analysismodel.AddVectorOperationAction;
 import org.omnetpp.scave.actions.analysismodel.SaveTempChartAction;
 import org.omnetpp.scave.actions.matplotlib.BackAction;
@@ -213,8 +213,8 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
     private boolean showSource = false;
 
     private static final int CHART_SCRIPT_EXECUTION_DELAY_MS = 2000;
-    private boolean autoUpdateChart = true;
-    ToggleAutoUpdateAction toggleAutoUpdateAction;
+    private boolean autoRefreshChart = true;
+    ToggleAutoRefreshAction toggleAutoRefreshAction;
 
     // if the document has changed since last saving (independent of the Chart object in the model)
     private boolean scriptChangedFlag = false;
@@ -481,13 +481,13 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         public void documentChanged(DocumentEvent event) {
             scriptChangedFlag = true;
             firePropertyChange(ScaveEditor.PROP_DIRTY);
-            if (autoUpdateChart)
+            if (autoRefreshChart)
                 rerunChartScriptJob.restartTimer();
         }
 
         @Override
         public void modelChanged(ModelChangeEvent event) {
-            if (autoUpdateChart)
+            if (autoRefreshChart)
                 rerunChartScriptJob.restartTimer();
         }
     }
@@ -592,7 +592,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         }
 
         manager.add(toggleShowSourceAction);
-        manager.add(toggleAutoUpdateAction);
+        manager.add(toggleAutoRefreshAction);
         manager.add(new RefreshChartAction());
         manager.add(killAction);
         manager.add(new Separator());
@@ -613,8 +613,8 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
     private void addToolbarActions() {
         saveTempChartAction = new SaveTempChartAction();
         gotoChartDefinitionAction = new GotoChartDefinitionAction();
-        toggleAutoUpdateAction = new ToggleAutoUpdateAction();
-        toggleAutoUpdateAction.setChecked(true);
+        toggleAutoRefreshAction = new ToggleAutoRefreshAction();
+        toggleAutoRefreshAction.setChecked(true);
 
         chartPage.addToToolbar(saveTempChartAction);
         chartPage.addToToolbar(gotoChartDefinitionAction);
@@ -655,7 +655,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
 
         chartPage.addSeparatorToToolbar();
         chartPage.addToToolbar(new RefreshChartAction());
-        chartPage.addToToolbar(toggleAutoUpdateAction);
+        chartPage.addToToolbar(toggleAutoRefreshAction);
         chartPage.addToToolbar(killAction = new KillPythonProcessAction());
         chartPage.addSeparatorToToolbar();
         chartPage.addToToolbar(new CopyImageToClipboardAction());
@@ -972,14 +972,14 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         runChartScript();
     }
 
-    public boolean isAutoUpdateChart() {
-        return autoUpdateChart;
+    public boolean getAutoRefreshChart() {
+        return autoRefreshChart;
     }
 
-    public void setAutoUpdateChart(boolean autoUpdateChart) {
-        toggleAutoUpdateAction.setChecked(autoUpdateChart);
-        if (this.autoUpdateChart != autoUpdateChart) {
-            this.autoUpdateChart = autoUpdateChart;
+    public void setAutoRefreshChart(boolean autoUpdateChart) {
+        toggleAutoRefreshAction.setChecked(autoUpdateChart);
+        if (this.autoRefreshChart != autoUpdateChart) {
+            this.autoRefreshChart = autoUpdateChart;
             if (autoUpdateChart)
                 rerunChartScriptJob.runNow();
             else
@@ -1026,7 +1026,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
     @Override
     public void saveState(IMemento memento) {
         super.saveState(memento);
-        memento.putBoolean("autoupdate", isAutoUpdateChart());
+        memento.putBoolean("autoupdate", getAutoRefreshChart());
         memento.putBoolean("sourcevisible", isSourceShown());
         int[] weights = sashForm.getWeights();
         memento.putInteger("sashweight_left", weights[0]);
@@ -1037,7 +1037,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
     public void restoreState(IMemento memento) {
         super.restoreState(memento);
 
-        setAutoUpdateChart(memento.getBoolean("autoupdate"));
+        setAutoRefreshChart(memento.getBoolean("autoupdate"));
         setShowSource(memento.getBoolean("sourcevisible"));
 
         int[] weights = new int[2];
