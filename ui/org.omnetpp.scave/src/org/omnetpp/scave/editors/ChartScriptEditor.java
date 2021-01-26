@@ -71,7 +71,7 @@ import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.ClosePageAction;
 import org.omnetpp.scave.actions.CopyImageToClipboardAction;
-import org.omnetpp.scave.actions.EditChartPropertiesAction;
+import org.omnetpp.scave.actions.ConfigureChartAction;
 import org.omnetpp.scave.actions.ExportChartAction;
 import org.omnetpp.scave.actions.KillPythonProcessAction;
 import org.omnetpp.scave.actions.RefreshChartAction;
@@ -546,7 +546,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         // Assemble the menu
         MenuManager manager = new MenuManager();
 
-        manager.add(new EditChartPropertiesAction());
+        manager.add(new ConfigureChartAction());
         manager.add(new Separator());
 
         manager.add(actions.undoAction);
@@ -624,7 +624,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
 
         chartPage.addSeparatorToToolbar();
 
-        chartPage.addToToolbar(new EditChartPropertiesAction());
+        chartPage.addToToolbar(new ConfigureChartAction());
         chartPage.addToToolbar(toggleShowSourceAction);
 
         if (chart.getType() == ChartType.MATPLOTLIB) {

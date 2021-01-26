@@ -29,7 +29,7 @@ import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.CopyImageToClipboardAction;
 import org.omnetpp.scave.actions.CopyRowsToClipboardAction;
-import org.omnetpp.scave.actions.EditChartPropertiesAction;
+import org.omnetpp.scave.actions.ConfigureChartAction;
 import org.omnetpp.scave.actions.ExportChartsAction;
 import org.omnetpp.scave.actions.ExportDataAction;
 import org.omnetpp.scave.actions.IScaveAction;
@@ -70,7 +70,7 @@ public class ScaveEditorActions {
     protected List<IScaveAction> actions = new ArrayList<>();
 
 
-    public final EditChartPropertiesAction editAction = registerAction(new EditChartPropertiesAction());
+    public final ConfigureChartAction editAction = registerAction(new ConfigureChartAction());
     public final EditInputFileAction editInputFileAction = registerAction(new EditInputFileAction());
     public final SelectAllAction selectAllAction = registerAction(new SelectAllAction());
     public final RenameChartAction renameChartAction = registerAction(new RenameChartAction());

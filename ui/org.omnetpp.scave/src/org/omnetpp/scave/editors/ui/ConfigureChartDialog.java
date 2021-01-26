@@ -37,13 +37,13 @@ import org.omnetpp.scave.model.commands.SetChartPropertyCommand;
 /**
  * This is the edit dialog for charts.
  */
-public class EditChartDialog extends TitleAreaDialog {
+public class ConfigureChartDialog extends TitleAreaDialog {
 
     private ScaveEditor editor;
     private Chart chart;
     private ChartEditForm form;
 
-    public EditChartDialog(Shell parentShell, Chart chart, ScaveEditor editor) {
+    public ConfigureChartDialog(Shell parentShell, Chart chart, ScaveEditor editor) {
         super(parentShell);
         setShellStyle(getShellStyle() | SWT.RESIZE);
         this.editor = editor;
@@ -59,7 +59,7 @@ public class EditChartDialog extends TitleAreaDialog {
     @Override
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
-        newShell.setText("Edit " + chart.getName());
+        newShell.setText("Configure Chart");
     }
 
     @Override
@@ -95,9 +95,8 @@ public class EditChartDialog extends TitleAreaDialog {
         Composite panel = new Composite(composite, SWT.NONE);
         panel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-        setTitle("Edit Chart");
+        setTitle("Chart '" + chart.getName() + "'");
 
-        //ChartTemplate template = editor.getChartTemplateRegistry().getTemplateByID(chart.getTemplateID());
         setMessage(makeMessage(chart));
 
         form.populatePanel(panel);
@@ -183,7 +182,7 @@ public class EditChartDialog extends TitleAreaDialog {
 
     private void applyChanges() {
 
-        CompoundCommand command = new CompoundCommand("Edit Chart Properties");
+        CompoundCommand command = new CompoundCommand("Configure Chart");
 
         Map<String, String> props = form.collectProperties();
 
