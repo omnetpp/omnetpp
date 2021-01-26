@@ -175,10 +175,8 @@ public class ChartTemplateGalleryDialog extends TitleAreaDialog {
 
         tableViewer.refresh();
 
-        String w0 = getDialogBoundsSettings().get("sash.weight0");
-        String w1 = getDialogBoundsSettings().get("sash.weight1");
-        if (StringUtils.isNumeric(w0) && StringUtils.isNumeric(w1))
-            sashForm.setWeights(new int[] {Integer.parseInt(w0), Integer.parseInt(w1)});
+        sashForm.setWeights(new int[] {1,4}); // default
+        UIUtils.restoreSashWeights(sashForm, getDialogBoundsSettings(), "mainSash");
 
         return composite;
     }
@@ -275,12 +273,7 @@ public class ChartTemplateGalleryDialog extends TitleAreaDialog {
     @Override
     public boolean close() {
         imageRegistry.dispose();
-
-        int w0 = sashForm.getChildren()[0].getBounds().width;
-        int w1 = sashForm.getChildren()[1].getBounds().width;
-        getDialogBoundsSettings().put("sash.weight0", Integer.toString(w0));
-        getDialogBoundsSettings().put("sash.weight1", Integer.toString(w1));
-
+        UIUtils.saveSashWeights(sashForm, getDialogBoundsSettings(), "mainSash");
         return super.close();
     }
 
