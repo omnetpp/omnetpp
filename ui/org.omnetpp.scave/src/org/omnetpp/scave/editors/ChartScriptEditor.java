@@ -646,6 +646,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
             chartPage.addToToolbar(new ChartMouseModeAction(ZoomableCanvasMouseSupport.ZOOM_MODE));
             chartPage.addSeparatorToToolbar();
             chartPage.addToToolbar(zoomToFitAction);
+            chartPage.addSeparatorToToolbar();
             chartPage.addToToolbar(zoomInHorizAction);
             chartPage.addToToolbar(zoomOutHorizAction);
             chartPage.addToToolbar(zoomInVertAction);

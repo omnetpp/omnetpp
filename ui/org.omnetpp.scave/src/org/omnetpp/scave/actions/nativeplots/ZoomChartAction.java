@@ -34,10 +34,8 @@ public class ZoomChartAction extends AbstractScaveAction {
         boolean both = horizontally && vertically;
         String inout = (zoomFactor == 0.0 ? "To Fit" :
                         zoomFactor > 1.0 ? "In" : "Out");
-        //String dir = both ? "" : (horizontally ? " X" : " Y");
         String dir2 = both ? "" : (horizontally ? " Horizontally" : " Vertically");
         setText("Zoom " +  inout + dir2);
-        setDescription("Zoom " + inout.toLowerCase() + " Chart " + dir2.toLowerCase());
 
         String imageId =
             zoomFactor == 0.0 ? ScaveImages.IMG_ETOOL16_ZOOMTOFIT :
