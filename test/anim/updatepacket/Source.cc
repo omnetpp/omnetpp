@@ -112,8 +112,8 @@ void SourceBase::handleMessage(cMessage *msg)
         EV << curTxInfo->description << std::endl;
 
         cPacket *packet = new cPacket(("packet-" + std::to_string(nextTxIndex)).c_str());
-        lastSentOrigPacketId = packet->getId();
-        outputPacket(packet, SendOptions().duration(curTxInfo->initialDuration));
+        transmissionId = packet->getId();
+        outputPacket(packet, SendOptions().transmissionId(transmissionId).duration(curTxInfo->initialDuration));
         lastTxStartTime = simTime();
 
         ++nextTxIndex;
@@ -131,7 +131,7 @@ void SourceBase::handleMessage(cMessage *msg)
         cPacket *packet = new cPacket(("update-" + std::to_string(nextTxIndex-1) + "-" + std::to_string(nextUpdateIndex)).c_str());
         SimTime remainingDuration = curTxInfo->updates[nextUpdateIndex].second;
         outputPacket(packet, SendOptions()
-            .updateTx(lastSentOrigPacketId, remainingDuration)
+            .updateTx(transmissionId, remainingDuration)
             .duration(simTime() - lastTxStartTime + remainingDuration) // This only needs to be here for the sendDirect() case
         );
 

@@ -42,7 +42,7 @@ class SourceBase : public cSimpleModule
     int nextTxIndex = 0;
     int nextUpdateIndex = 0;
 
-    long lastSentOrigPacketId = -1;
+    long transmissionId = -1;
     SimTime lastTxStartTime;
 
   protected:
