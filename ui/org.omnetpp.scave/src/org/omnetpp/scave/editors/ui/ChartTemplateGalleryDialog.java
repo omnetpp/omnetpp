@@ -10,7 +10,9 @@ package org.omnetpp.scave.editors.ui;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -29,10 +31,12 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Caret;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -54,16 +58,17 @@ import org.osgi.framework.Bundle;
 public class ChartTemplateGalleryDialog extends TitleAreaDialog {
     private String title;
     private ScaveEditor editor;
-    private TableViewer tableViewer;
-    private StyledText styledText;
     private SashForm sashForm;
+    private TableViewer tableViewer;
+    private Composite styledTextHolder;
+    private StyledText styledText;
+    private Label voidLabel;
+    private Map<ChartTemplate,StyledText> styledTexts = new HashMap<>();
+    private ChartTemplate selectedTemplate;
 
     private ImageRegistry imageRegistry = new ImageRegistry();
 
     private int selectionItemTypes = 0;
-
-    // the result
-    private ChartTemplate selectedTemplate;
 
     /**
      * LabelProvider for chart templates.
@@ -153,19 +158,16 @@ public class ChartTemplateGalleryDialog extends TitleAreaDialog {
         List<ChartTemplate> templates = selectionItemTypes == 0 ? registry.getAllTemplates() : registry.getChartTemplatesForResultTypes(selectionItemTypes);
         tableViewer.setInput(templates);
 
-        styledText = new StyledText(sashForm, SWT.BORDER|SWT.READ_ONLY|SWT.DOUBLE_BUFFERED|SWT.WRAP|SWT.V_SCROLL);
-        GridData data2 = new GridData(GridData.FILL_BOTH);
-        styledText.setLayoutData(data2);
+        styledTextHolder = new Composite(sashForm, SWT.NONE);
+        styledTextHolder.setLayoutData(new GridData(GridData.FILL_BOTH));
+        styledTextHolder.setLayout(new StackLayout());
+        voidLabel = new Label(styledTextHolder, SWT.NONE);
 
-        tableViewer.addPostSelectionChangedListener(new ISelectionChangedListener() {
+        tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
             @Override
             public void selectionChanged(SelectionChangedEvent event) {
                 ChartTemplate template = getTableSelection();
-                if (template != null) {
-                    String html = getDescriptionAsHtml(template);
-                    styledText.setText("");
-                    HTMLUtils.htmlToStyledText(html, styledText, (String name)->getCachedImage(template, name));
-                }
+                switchToTemplate(template);
             }
         });
 
@@ -179,6 +181,28 @@ public class ChartTemplateGalleryDialog extends TitleAreaDialog {
             sashForm.setWeights(new int[] {Integer.parseInt(w0), Integer.parseInt(w1)});
 
         return composite;
+    }
+
+    protected void switchToTemplate(ChartTemplate template) {
+        if (template != selectedTemplate) {
+            if (template != null) {
+                styledText = styledTexts.get(template);
+                if (styledText == null) {
+                    styledText = new StyledText(styledTextHolder, SWT.BORDER|SWT.WRAP|SWT.V_SCROLL|SWT.H_SCROLL|SWT.READ_ONLY);
+                    String html = getDescriptionAsHtml(template);
+                    HTMLUtils.htmlToStyledText(html, styledText, (String name) -> getCachedImage(template, name));
+                    styledTexts.put(template, styledText);
+                }
+                ((StackLayout)styledTextHolder.getLayout()).topControl = styledText;
+                styledTextHolder.layout();
+            }
+            else {
+                styledText = null;
+                ((StackLayout)styledTextHolder.getLayout()).topControl = voidLabel;
+                styledTextHolder.layout();
+            }
+            selectedTemplate = template;
+        }
     }
 
     protected String getDescriptionAsHtml(ChartTemplate template) {
@@ -258,11 +282,6 @@ public class ChartTemplateGalleryDialog extends TitleAreaDialog {
         getDialogBoundsSettings().put("sash.weight1", Integer.toString(w1));
 
         return super.close();
-    }
-
-    protected void okPressed() {
-        selectedTemplate = getTableSelection();
-        super.okPressed();
     }
 
     /**
