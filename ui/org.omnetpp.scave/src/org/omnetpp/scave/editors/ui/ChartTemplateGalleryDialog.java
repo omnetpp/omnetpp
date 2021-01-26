@@ -34,6 +34,7 @@ import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Caret;
@@ -42,7 +43,9 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.common.image.ImageUtils;
 import org.omnetpp.common.swt.custom.StyledText;
 import org.omnetpp.common.util.HTMLUtils;
 import org.omnetpp.common.util.StringUtils;
@@ -235,10 +238,36 @@ public class ChartTemplateGalleryDialog extends TitleAreaDialog {
             image = loadImage(imagePath);
             if (image == null)
                 return ImageFactory.global().getImage(ImageFactory.UNKNOWN);
+            image = resizeImageIfNeeded(template.getId() + ":" + imageName, image);
             imageRegistry.put(imagePath, image);
 
         }
         return image;
+    }
+
+    protected Image resizeImageIfNeeded(String name, Image image) {
+        Point holderSize = styledTextHolder.getSize();
+        if (holderSize.x == 0 || holderSize.y == 0)
+            return image; // widget size not yet available
+
+        int maxImageWidth = Math.max(100, holderSize.x - 80);
+        int maxImageHeight = Math.max(100, holderSize.y - 40);
+
+        var bounds = image.getBounds();
+        int w = bounds.width;
+        int h = bounds.height;
+        if (w <= maxImageWidth && h <= maxImageHeight)
+            return image; // no need to resize
+
+        double fw = Math.min(1.0, maxImageWidth / (double)w);
+        double fh = Math.min(1.0, maxImageHeight / (double)h);
+        double f = Math.min(fw, fh);
+
+        Debug.println(getClass().getSimpleName() + ": resizing image '" + name + "' to fit into window, f=" + f);
+
+        Image resized = ImageUtils.getResampledImage(image, (int)(f*w), (int)(f*h));
+        image.dispose();
+        return resized;
     }
 
     protected Image loadImage(String imagePath) {
