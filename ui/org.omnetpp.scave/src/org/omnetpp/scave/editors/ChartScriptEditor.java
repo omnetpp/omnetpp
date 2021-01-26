@@ -92,6 +92,8 @@ import org.omnetpp.scave.actions.ui.GotoChartDefinitionAction;
 import org.omnetpp.scave.actions.ui.ToggleShowSourceAction;
 import org.omnetpp.scave.charting.PlotBase;
 import org.omnetpp.scave.editors.ui.ChartPage;
+import org.omnetpp.scave.engineext.IResultFilesChangeListener;
+import org.omnetpp.scave.engineext.ResultFileManagerChangeEvent;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Chart.ChartType;
 import org.omnetpp.scave.model.IModelChangeListener;
@@ -470,7 +472,13 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         }
     };
 
-    private class ChangeListener implements IModelChangeListener, IDocumentListener {
+    private class ChangeListener implements IModelChangeListener, IDocumentListener, IResultFilesChangeListener {
+
+        @Override
+        public void resultFileManagerChanged(ResultFileManagerChangeEvent event) {
+            if (autoRefreshChart)
+                rerunChartScriptJob.restartTimer();
+        }
 
         @Override
         public void documentAboutToBeChanged(DocumentEvent event) {
@@ -490,6 +498,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
             if (autoRefreshChart)
                 rerunChartScriptJob.restartTimer();
         }
+
     }
 
     ChartScriptEditor(ScaveEditor scaveEditor, Chart chart) {
@@ -514,6 +523,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         editorInput = new ChartScriptEditorInput(chart);
 
         changeListener = new ChangeListener();
+        scaveEditor.getResultFilesTracker().addChangeListener(changeListener);
         getDocumentProvider().getDocument(editorInput).addDocumentListener(changeListener);
         chart.addListener(changeListener);
 
@@ -992,6 +1002,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         if (isDisposed())
             return;
 
+        scaveEditor.getResultFilesTracker().removeChangeListener(changeListener);
         getDocumentProvider().getDocument(editorInput).removeDocumentListener(changeListener);
         chart.removeListener(changeListener);
 
