@@ -116,7 +116,8 @@ public class ChartTemplateRegistry {
         // base properties
         String id = props.getProperty("id");
         String name = props.getProperty("name");
-        String description = props.getProperty("description");
+        String description = props.getProperty("description", "");
+        String descriptionFile = props.getProperty("descriptionFile", "");
         String type = props.getProperty("type");
         String icon = props.getProperty("icon");
         String scriptFile = props.getProperty("scriptFile");
@@ -144,6 +145,12 @@ public class ChartTemplateRegistry {
         ChartType chartType = EnumUtils.getEnum(Chart.ChartType.class, type);
         if (chartType == null)
             throw new RuntimeException("Unrecognized chart type '" + type + "', use one of: " + StringUtils.join(Chart.ChartType.values(), ","));
+
+        // description
+        if (!StringUtils.isEmpty(description) && !StringUtils.isEmpty(descriptionFile))
+            throw new RuntimeException("Both description and descriptionFile given, please decide which one you want");
+        if (!StringUtils.isEmpty(descriptionFile))
+            description = readFile(templatesFolder, descriptionFile);
 
         // chart script
         String script = scriptFile != null ? readFile(templatesFolder, scriptFile) : "";
