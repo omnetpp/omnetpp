@@ -7,7 +7,7 @@ macOS.
 
 The following releases are covered:
 
-* macOS 10.15
+* macOS 10.15 and 11.1
 
 === Installing the Prerequisite Packages
 
@@ -54,6 +54,19 @@ folder.
 // do NOT make this a single line, or asciidoc goes berzerk!
 ===============================================================
 
+[NOTE]
+===============================================================
+On machines using the Apple M1 chip you may receive error messages
+during the configuration phase. To avoid this, the Rosetta emulator must be
+installed and enabled for the Terminal app.
+
+Open Finder and navigate to the Applications / Utilities folder.
+Right click on the Terminal application and click Get Info.
+Select 'Open using Rosetta' on the dialog and allow the system
+to download and install Rosetta. Close all Terminal windows and
+restart them. This will allow you to run Intel x64 based programs
+in the terminal window.
+===============================================================
 
 === Environment Variables
 
@@ -129,6 +142,21 @@ Type in the terminal:
 ===============================================================
 To take advantage of multiple processor cores, add the `-j4` option to the
 `make` command line.
+===============================================================
+
+[NOTE]
+===============================================================
+Depending on your computer's security configuration, Gatekeeper
+may complain about unsigned executables and kill the command-line
+utilities that are used to build the simulator. 
+In this case, you should manually enable every command Gatekeepr complains
+about by opening 'System Preferences / Security and Privacy'
+and clicking on the 'Allow' button near the bottom of the dialog.
+You may have to repeat the above procedure several times before
+all command-line utilities are enabled. Alternatively you can 
+disable this security check globally (not recommended) by entering 
+`sudo spctl --master-disable` on the terminal and then restarting 
+the terminal application.
 ===============================================================
 
 [NOTE]
@@ -256,7 +284,7 @@ ifdef::OMNEST[]
 
 ==== SystemC
 
-SystemC integration is not available on macOS, because the bundled
+SystemC integration is not available on macOS because the bundled
 SystemC reference implementation does not currently support macOS.
 
 endif::OMNEST[]
