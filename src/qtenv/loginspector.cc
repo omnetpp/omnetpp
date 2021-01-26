@@ -275,7 +275,7 @@ void LogInspector::setMode(Mode mode)
 {
     bool atEnd = true;
     eventnumber_t caretAtEvent = -1;
-    if (textWidget && textWidget->getContentProvider()) {
+    if (object && textWidget && textWidget->getContentProvider()) {
         auto *content = textWidget->getContentProvider();
         Pos caretPos = textWidget->getCaretPosition();
 
