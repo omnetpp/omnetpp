@@ -37,8 +37,10 @@ else:
     from .impl_charttool import results as impl
 
 from math import inf
+from functools import wraps
 
 def _guarded_result_query_func(func):
+    @wraps(func)
     def inner(filter_expression, **rest):
         if not filter_expression:
             raise ValueError("Empty filter expression")
