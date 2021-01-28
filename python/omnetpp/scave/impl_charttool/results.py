@@ -71,7 +71,7 @@ def _get_results(filter_expression, file_extensions, result_type, *additional_ar
     command = ["opp_scavetool", "x", *filelist, *type_filter, *filter_expr_args,
                 "-F", "CSV-R", "-o", "-", *additional_args]
 
-    proc = subprocess.run(command, stderr=subprocess.PIPE, stdout=subprocess.PIPE, text=False)
+    proc = subprocess.run(command, stderr=subprocess.PIPE, stdout=subprocess.PIPE, universal_newlines=False)
     output_bytes = proc.stdout
 
     if proc.returncode != 0:
