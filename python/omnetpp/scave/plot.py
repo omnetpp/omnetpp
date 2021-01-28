@@ -2,21 +2,31 @@
 This module is the interface for displaying data using the built-in plot widgets (i.e. without matplotlib).
 """
 
+
+import math
+import numpy as np
+
+def is_native_plot():
+    try:
+        from omnetpp.internal import Gateway
+        if Gateway.chart_plotter:
+            return True
+    except:
+        pass
+    return False
+
 # Technically, this module only delegates all of its functions to one of two different
 # implementations of the API described here, based on whether it is running from within the IDE
 # or not (for example, from opp_charttool), detected using the WITHIN_OMNETPP_IDE environment variable.
-
-import matplotlib as mpl
-
-# Note: For chart export we use the Matplotlib impl even inside the IDE, 
+#
+# Note: For chart export we use the Matplotlib impl even inside the IDE,
 # that's why we check the Matplotlib backend instead of "WITHIN_OMNETPP_IDE".
-if "omnetpp" in mpl.get_backend():
+
+if is_native_plot():
     from omnetpp.scave.impl_ide import plot as impl
 else:
     from .impl_charttool import plot as impl
 
-import math
-import numpy as np
 
 
 def plot_bars(df):
