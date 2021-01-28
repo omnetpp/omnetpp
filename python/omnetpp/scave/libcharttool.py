@@ -73,10 +73,6 @@ def run_chart(wd, c, export, show):
     assert(os.path.isabs(wd))
 
     os.chdir(wd)
-    sys.path = [wd,
-        get_opp_root() + "/ui/org.omnetpp.scave.pychart/python/"
-    ] + sys.path
-
     chart.name = c.name
     chart.chart_type = c.type
     chart.properties.clear()
