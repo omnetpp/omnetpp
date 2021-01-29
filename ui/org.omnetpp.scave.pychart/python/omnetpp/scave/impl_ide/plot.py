@@ -76,7 +76,10 @@ def hist(x, bins, density, weights, cumulative, bottom, histtype, color, key, la
 
     # check if we really got a precomputed histogram, using the trick documented for pyplot.hist
     if not np.array_equal(x, bins[:-1]):
-        raise ValueError("Histogram computation is not performed.")
+        raise ValueError("Only precomputed histograms are accepted: the values in `x` must equal the values in `bins`, without the last one.")
+
+    if weights is None or len(weights) != len(x):
+        raise ValueError("The `weights` parameter must not be omitted, and it must have the same number of elements as `x`")
 
     props = {}
 
