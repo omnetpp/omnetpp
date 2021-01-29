@@ -346,10 +346,14 @@ public abstract class PlotBase extends ZoomableCachingCanvas implements IPlotVie
         if (prop == null)
             throw new RuntimeException("unrecognized plot property in " + getClass().getSimpleName() + ": "  + name + " = " + value);
 
-        if (key == null)
-            setProperty(prop, value);
-        else
-            setProperty(prop, key, value);
+        try {
+            if (key == null)
+                setProperty(prop, value);
+            else
+                setProperty(prop, key, value);
+        } catch (Exception e) {
+            throw new RuntimeException("Error while setting plot property '" + propertyName + "': " + e.getMessage());
+        }
     }
 
     public void setProperty(PlotProperty prop, String value) {

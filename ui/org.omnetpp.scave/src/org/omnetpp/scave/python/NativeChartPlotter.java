@@ -143,6 +143,10 @@ class NativeChartPlotter implements INativeChartPlotter {
          scalarDataset.setGroupTitles(titles);
     }
 
+    public String getWarning() {
+        return plot.getWarningText();
+    }
+
     @Override
     public void setWarning(String warning) {
         Display.getDefault().syncExec(() -> {

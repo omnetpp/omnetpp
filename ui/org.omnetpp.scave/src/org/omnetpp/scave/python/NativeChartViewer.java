@@ -15,6 +15,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
 import org.omnetpp.common.Debug;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.charting.BarPlot;
 import org.omnetpp.scave.charting.HistogramPlot;
 import org.omnetpp.scave.charting.LinePlot;
@@ -102,7 +103,13 @@ public class NativeChartViewer extends ChartViewerBase {
                     Debug.println("data received, starting drawing");
 
                 plot.setStatusText("Rendering chart...");
-                chartPlotter.applyPendingPropertyChanges();
+                try {
+                    chartPlotter.applyPendingPropertyChanges();
+                } catch (Exception e) {
+                    // do not overwrite existing message, that might be more important
+                    if (StringUtils.isEmpty(chartPlotter.getWarning()))
+                        chartPlotter.setWarning(e.getMessage());
+                }
                 plot.update();
                 if(debug)
                     Debug.println("status text updated");
