@@ -71,7 +71,7 @@ class SIM_API cHasher : noncopyable
     void add(double d)         {union _ {double d; uint64_t i;}; merge2(((union _ *)&d)->i);} // hint: "safe type punning in C++"
     void add(simtime_t t)      {merge2(t.raw());}
     void add(const char *s)    {if (s) add(s, strlen(s)+1); else add(0);}
-    void add(const std::string& s) {add(s.c_str(), s.size());}
+    void add(const std::string& s) {add(s.c_str(), s.size()+1);}
     void add(const void *p, size_t length);
     template<typename T>
     cHasher& operator<<(const T& x) {add(x); return *this;} // allows chaining
