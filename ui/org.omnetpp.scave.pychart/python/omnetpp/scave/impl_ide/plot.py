@@ -28,7 +28,7 @@ def _assert_is_native_chart():
         raise RuntimeError("This method can only be used on native charts")
 
 
-def plot(xs, ys, key=None, label=None, drawstyle=None, linestyle=None, linewidth=None, color=None, marker=None, markersize=None):
+def plot(xs, ys, key, label, drawstyle, linestyle, linewidth, color, marker, markersize):
     _assert_is_native_chart()
     props = {}
     if drawstyle:
@@ -53,7 +53,7 @@ def plot(xs, ys, key=None, label=None, drawstyle=None, linestyle=None, linewidth
     ), props)
 
 
-def bar(x, height, width=0.8, key=None, label=None, color=None, edgecolor=None):
+def bar(x, height, width, key, label, color, edgecolor):
     _assert_is_native_chart()
     props = {}
 
@@ -70,8 +70,8 @@ def bar(x, height, width=0.8, key=None, label=None, color=None, edgecolor=None):
 
 
 # minvalue, maxvalue, underflows and overflows are NOT accepted by mpl.pyplot.hist
-def hist(x, bins, density=False, weights=None, cumulative=False, bottom=None, histtype='stepfilled', color=None, key=None, label=None, linewidth=None,
-         underflows=0.0, overflows=0.0, minvalue=math.nan, maxvalue=math.nan):
+def hist(x, bins, density, weights, cumulative, bottom, histtype, color, key, label, linewidth,
+         underflows, overflows, minvalue, maxvalue):
     _assert_is_native_chart()
 
     # check if we really got a precomputed histogram, using the trick documented for pyplot.hist
@@ -100,7 +100,7 @@ def hist(x, bins, density=False, weights=None, cumulative=False, bottom=None, hi
     }), props)
 
 
-def plot_lines(df, props = dict()):  # key, label, xs, ys
+def plot_lines(df, props):  # key, label, xs, ys
     _assert_is_native_chart()
     if sorted(list(df.columns)) != sorted(["key", "label", "xs", "ys"]):
         raise RuntimeError("Invalid DataFrame format in plot_lines")
@@ -125,7 +125,7 @@ def plot_lines(df, props = dict()):  # key, label, xs, ys
         o.unlink()
 
 
-def plot_bars(df, props=dict()):
+def plot_bars(df, props):
     # TODO: add check for one-layer indices? numbers-only data?
     _assert_is_native_chart()
 
@@ -139,7 +139,7 @@ def plot_bars(df, props=dict()):
     ]), props)
 
 
-def plot_histograms(df, props=dict()):  # key, label, binedges, binvalues, underflows, overflows, min, max
+def plot_histograms(df, props):  # key, label, binedges, binvalues, underflows, overflows, min, max
     _assert_is_native_chart()
 
     if sorted(list(df.columns)) != sorted(["key", "label", "binedges", "binvalues", "underflows", "overflows", "min", "max"]):
@@ -360,7 +360,7 @@ def ylabel(ylabel):
     """
     set_property("Y.Axis.Title", ylabel)
 
-def xlim(left=None, right=None):
+def xlim(left, right):
     """
     Sets the limits of the X axis.
     """
@@ -369,7 +369,7 @@ def xlim(left=None, right=None):
     if (right is not None):
         set_property("X.Axis.Max", str(right))
 
-def ylim(bottom=None, top=None):
+def ylim(bottom, top):
     """
     Sets the limits of the Y axis.
     """
@@ -394,11 +394,11 @@ def yscale(value):
         raise ValueError("scale='{}' is not supported, only 'linear' and 'log'".format(value))
     set_property("Y.Axis.Log", "true" if value == "log" else "false")
 
-def xticks(ticks=None, labels=None, rotation=0):
+def xticks(ticks, labels, rotation):
     Gateway.chart_plotter.setGroupTitles(labels)
     set_property("X.Label.RotateBy", str(-int(rotation))) # matplotlib and our native widgets have different ideas about label rotation
 
-def grid(b=True, which="major"):
+def grid(b, which):
     if which not in ["major", "both"]:
         raise ValueError("which='{}' is not supported, only 'major', and 'both'".format(which))
     if not b:
@@ -408,7 +408,7 @@ def grid(b=True, which="major"):
     else:
         set_property("Axes.Grid", "All")
 
-def legend(show=None, frameon=None, loc=None):
+def legend(show, frameon, loc):
     if show is not None:
         set_property("Legend.Display", "true" if show else "false")
 

@@ -44,7 +44,7 @@ def plot(xs, ys, key=None, label=None, drawstyle=None, linestyle=None, linewidth
 
 # note: the default of histtype is not bar, because we don't support that
 # also, minvalue, maxvalue, underflows and overflows are NOT accepted by mpl.pyplot.hist
-def hist(x, bins, density=None, weights=None, cumulative=False, bottom=None, histtype='stepfilled', color=None, label=None, linewidth=None,
+def hist(x, bins, density=False, weights=None, cumulative=False, bottom=None, histtype='stepfilled', color=None, label=None, linewidth=None,
          underflows=0.0, overflows=0.0, minvalue=math.nan, maxvalue=math.nan):
     return impl.hist(**locals())
 

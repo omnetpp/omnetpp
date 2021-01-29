@@ -19,13 +19,13 @@ def set_warning(warning):
     plt.annotate(warning, xy=(20, 40), xycoords="figure pixels", color="red")
 
 
-def plot(xs, ys, key=None, label=None, drawstyle=None, linestyle=None, linewidth=None, color=None, marker=None, markersize=None):
+def plot(xs, ys, key, label, drawstyle, linestyle, linewidth, color, marker, markersize):
     params = {k:v for k, v in locals().items() if k is not None and k not in ["key", "xs", "ys"]}
     return plt.plot(xs, ys, **params)
 
 
-def hist(x, bins, density=False, weights=None, cumulative=False, bottom=None, histtype='stepfilled', color=None, label=None, linewidth=None,
-         underflows=0.0, overflows=0.0, minvalue=math.nan, maxvalue=math.nan):
+def hist(x, bins, density, weights, cumulative, bottom, histtype, color, label, linewidth,
+         underflows, overflows, minvalue, maxvalue):
 
     params = locals()
     params = {k:v for k, v in locals().items() if k is not None and k not in ["underflows", "overflows", "minvalue", "maxvalue", "params"]}

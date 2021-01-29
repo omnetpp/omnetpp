@@ -145,43 +145,43 @@ def _pivot_results(df, include_attrs, include_runattrs, include_itervars, includ
 
     return df
 
-def get_results(filter_expression="", row_types=['runattr', 'itervar', 'config', 'scalar', 'vector', 'statistic', 'histogram', 'param', 'attr'], omit_unused_columns=True, start_time=-inf, end_time=inf):
+def get_results(filter_expression, row_types, omit_unused_columns, start_time, end_time):
     df = _get_results(filter_expression, ['.sca', '.vec'], None)
     return df
 
-def get_scalars(filter_expression="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False):
+def get_scalars(filter_expression, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name):
     # TODO filter row types based on include_ args, as optimization
     df = _get_results(filter_expression, ['.sca'], 's')
     df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
     return df
 
-def get_vectors(filter_expression="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False, start_time=-inf, end_time=inf):
+def get_vectors(filter_expression, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name, start_time, end_time):
     df = _get_results(filter_expression, ['.vec'], 'v', '--start-time', str(start_time), '--end-time', str(end_time))
     df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
     return df
 
-def get_statistics(filter_expression, include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False):
+def get_statistics(filter_expression, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name):
     df = _get_results(filter_expression, ['.sca'], 't')
     df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
     return df
 
-def get_histograms(filter_expression, include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False, include_statistics_fields=False):
+def get_histograms(filter_expression, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name, include_statistics_fields):
     df = _get_results(filter_expression, ['.sca'], 'h')
     df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
     return df
 
-def get_parameters(filter_expression="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False, as_numeric=False):
+def get_parameters(filter_expression, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name, as_numeric):
     df = _get_results(filter_expression, ['.sca'], 'p')
     df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
     if as_numeric:
         df["value"] = pd.to_numeric(df["value"], errors="ignore")
     return df
 
-def _get_metadata(filter_expression="", include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
+def _get_metadata(filter_expression, include_runattrs, include_itervars, include_param_assignments, include_config_entries):
     # TODO: factor out common parts of the ones below here
     pass
 
-def get_runs(filter_expression="", include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
+def get_runs(filter_expression, include_runattrs, include_itervars, include_param_assignments, include_config_entries):
     command = ["opp_scavetool", "q", *inputfiles, "-r", '-f',
                 filter_expression, "-g"]
 
@@ -218,7 +218,7 @@ def get_runs(filter_expression="", include_runattrs=False, include_itervars=Fals
 
     return df
 
-def get_runattrs(filter_expression="", include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
+def get_runattrs(filter_expression, include_runattrs, include_itervars, include_param_assignments, include_config_entries):
     command = ["opp_scavetool", "q", *inputfiles, "-a", "-g", "--tabs"]
 
     output = subprocess.check_output(command)
@@ -247,7 +247,7 @@ def get_runattrs(filter_expression="", include_runattrs=False, include_itervars=
     return df
 
 
-def get_itervars(filter_expression="", include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, as_numeric=False):
+def get_itervars(filter_expression, include_runattrs, include_itervars, include_param_assignments, include_config_entries, as_numeric):
     command = ["opp_scavetool", "q", *inputfiles, "-i", "-g", "--tabs"]
 
     output = subprocess.check_output(command)
@@ -275,7 +275,7 @@ def get_itervars(filter_expression="", include_runattrs=False, include_itervars=
 
     return df
 
-def get_config_entries(filter_expression, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
+def get_config_entries(filter_expression, include_runattrs, include_itervars, include_param_assignments, include_config_entries):
     command = ["opp_scavetool", "q", *inputfiles, "-j", "-g", "--tabs"]
 
     output = subprocess.check_output(command)
