@@ -5,53 +5,64 @@ import numpy as np
 import pandas as pd
 
 
+def parse_line(line):
+    line = line.strip()
+    m = re.match(r"((\w+)\s*:)?\s*(([\w.]+)\.)?(\w+)?(.*)", line)  # always matches due to last group
+    _, type, _, module, name, rest = m.groups()
+    if not name:
+        if line and not line.startswith('#'):
+            raise SyntaxError("Syntax error")
+        return (None, None, None, None, None)
+    if not type:
+        type = "apply"
+    if not type in ['apply', 'compute']:
+        raise SyntaxError("Syntax error near '"+type+"': must be 'apply' or 'compute' (or omitted)")
+    if not rest.strip():
+        rest = "()"
+    try:
+        def return_args(*args, **kwargs):
+            return (args,kwargs)
+        args, kwargs = eval(name + " " + rest, None, {name: return_args}) # let Python do the parsing, incl. comment discarding
+    except SyntaxError:
+        raise SyntaxError("Syntax error in argument list")
+    except Exception as e:
+        raise ValueError("Error in argument list: " + str(e))
+    return type, module, name, args, kwargs
+
+def perform_vector_op(df, line):
+    # parse line
+    type, module, name, args, kwargs = parse_line(line)
+    if name is None: # empty line
+        return df
+
+    # look up function
+    function = None
+    if not module and name in globals():
+        function = globals()[name]
+    else:
+        mod = importlib.import_module(module if module else "omnetpp.scave.vectorops")
+        if not name in mod.__dict__:
+            raise ValueError("Vector filter '" + name + "' not found in module '" + module + "'")
+        function = mod.__dict__[name]
+
+    # perform operation
+    if type == "apply":
+        df = apply(df, function, *args, **kwargs)
+    elif type == "compute":
+        df = compute(df, function, *args, **kwargs)
+    return df
+
+
 def perform_vector_ops(df, operations : str):
     if not operations:
         return df
-
-    def convert(name):
-        s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
-        lower = str(re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower())
-
-        try: return int(lower)
-        except:
-            try: return float(lower)
-            except: return lower
-
+    line_num = 0
     for line in operations.splitlines():
-        if not line.strip():
-            continue
-
-        if "#" in line:
-            op, comment = line.split("#")
-        else:
-            op = line
-
-        op = op.strip()
-
-        type, oper = op.split(':')
-        fun = oper.split(",")
-
-        params = dict()
-        for p in fun[1:]:
-            key, value = p.split("=")
-            key = key.strip()
-            value = value.strip()
-            params[convert(key)] = convert(value)
-
-        op_fun = None
-        if '.' in fun[0]:
-            modname, funname = fun[0].rsplit('.', 1)
-            mod = importlib.import_module(modname)
-            op_fun = mod.__dict__[funname]
-        else:
-            op_fun = sys.modules[__name__].__dict__["vector_" + fun[0]]
-
-        if type == "apply":
-            df = apply(df, op_fun, **params)
-        elif type == "compute":
-            df = compute(df, op_fun, **params)
-
+        line_num += 1
+        try:
+            df = perform_vector_op(df, line)
+        except Exception as e:
+            raise ValueError(str(e) + " in Vector Operation line " + str(line_num) + " '" + line + "'")
     return df
 
 
