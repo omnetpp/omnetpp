@@ -109,8 +109,10 @@ for c in df.columns:
         elif props["error_style"] == "Error band":
             plt.fill_between(xs, ys-yerr, ys+yerr, alpha=float(props["band_alpha"]))
 
-
-utils.set_plot_title((scalar_names + " vs. " + xaxis_itervar) if xaxis_itervar else scalar_names)
+title = (scalar_names + " vs. " + xaxis_itervar) if xaxis_itervar else scalar_names
+if "title" in props and props["title"]:
+    title = props["title"]
+utils.set_plot_title(title)
 
 utils.postconfigure_plot(props)
 
