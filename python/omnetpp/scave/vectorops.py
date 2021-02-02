@@ -85,7 +85,7 @@ def compute(dataframe, operation, *args, **kwargs):
         return dataframe.append(clone)
 
 
-def vector_aggregator(df, function='average'):
+def aggregator(df, function='average'):
     """
     Aggregates several vectors into a single one, aggregating the
     y values at the same time coordinate with the specified function.
@@ -165,7 +165,7 @@ def vector_aggregator(df, function='average'):
     return result
 
 
-def vector_merger(df):
+def merger(df):
     """
     Merges several series into a single one, maintaining increasing
     time order in the output.
@@ -226,7 +226,7 @@ def vector_merger(df):
     return result
 
 
-def vector_mean(r):
+def mean(r):
     """
     Computes mean on (0,t): yout[k] = sum(y[i], i=0..k) / (k+1).
     """
@@ -237,7 +237,7 @@ def vector_mean(r):
     return r
 
 
-def vector_sum(r):
+def sum(r):
     """
     Sums up values: yout[k] = sum(y[i], i=0..k)
     """
@@ -247,7 +247,7 @@ def vector_sum(r):
     return r
 
 
-def vector_add(r, c):
+def add(r, c):
     """
     Adds a constant to the input: yout[k] = y[k] + c
     """
@@ -258,7 +258,7 @@ def vector_add(r, c):
     return r
 
 
-def vector_compare(r, threshold, less=None, equal=None, greater=None):
+def compare(r, threshold, less=None, equal=None, greater=None):
     """
     Compares value against a threshold, and optionally replaces it with a constant.
     yout[k] = if y[k] < threshold and less != None then less;
@@ -288,7 +288,7 @@ def vector_compare(r, threshold, less=None, equal=None, greater=None):
     return r
 
 
-def vector_crop(r, t1, t2):
+def crop(r, t1, t2):
     """
     Discards values outside the [t1, t2] interval
     """
@@ -306,7 +306,7 @@ def vector_crop(r, t1, t2):
     return r
 
 
-def vector_difference(r):
+def difference(r):
     """
     Subtracts the previous value from every value: yout[k] = y[k] - y[k-1]
     """
@@ -319,7 +319,7 @@ def vector_difference(r):
     return r
 
 
-def vector_diffquot(r):
+def diffquot(r):
     """
     Calculates the difference quotient of every value and the subsequent one:
     yout[k] = (y[k+1]-y[k]) / (t[k+1]-t[k])
@@ -338,7 +338,7 @@ def vector_diffquot(r):
     return r
 
 
-def vector_divide_by(r, a):
+def divide_by(r, a):
     """
     Divides input by a constant: yout[k] = y[k] / a
     """
@@ -349,7 +349,7 @@ def vector_divide_by(r, a):
     return r
 
 
-def vector_divtime(r):
+def divtime(r):
     """
     Divides input by the current time: yout[k] = y[k] / t[k]
     """
@@ -361,7 +361,7 @@ def vector_divtime(r):
     return r
 
 
-def vector_expression(r, expression):
+def expression(r, expression):
     t = r['vectime']
     y = r['vecvalue']
 
@@ -393,7 +393,7 @@ def _integrate_helper(t, v, interpolation):
     return np.cumsum(increments)
 
 
-def vector_integrate(r, interpolation='sample-hold'):
+def integrate(r, interpolation='sample-hold'):
     """
     Integrates the input as a step function (sample-hold or backward-sample-hold) or with linear interpolation
     """
@@ -409,7 +409,7 @@ def vector_integrate(r, interpolation='sample-hold'):
     return r
 
 
-def vector_lineartrend(r, a):
+def lineartrend(r, a):
     """
     Adds a linear component to input series: yout[k] = y[k] + a * t[k]
     """
@@ -423,7 +423,7 @@ def vector_lineartrend(r, a):
     return r
 
 
-def vector_modulo(r, m):
+def modulo(r, m):
     """
     Computes input modulo a constant: yout[k] = y[k] % m
     """
@@ -434,7 +434,7 @@ def vector_modulo(r, m):
     return r
 
 
-def vector_movingavg(r, alpha):
+def movingavg(r, alpha):
     """
     Applies the exponentially weighted moving average filter:
     yout[k] = yout[k-1] + alpha * (y[k]-yout[k-1])
@@ -447,7 +447,7 @@ def vector_movingavg(r, alpha):
     return r
 
 
-def vector_multiply_by(r, a):
+def multiply_by(r, a):
     """
     Multiplies input by a constant: yout[k] = a * y[k]
     """
@@ -458,7 +458,7 @@ def vector_multiply_by(r, a):
     return r
 
 
-def vector_removerepeats(r):
+def removerepeats(r):
     """
     Removes repeated y values
     """
@@ -476,7 +476,7 @@ def vector_removerepeats(r):
     return r
 
 
-def vector_slidingwinavg(r, window_size):
+def slidingwinavg(r, window_size):
     """
     Replaces every value with the mean of values in the window:
     yout[k] = sum(y[i], i=(k-winsize+1)..k) / winsize
@@ -489,7 +489,7 @@ def vector_slidingwinavg(r, window_size):
     return r
 
 
-def vector_subtractfirstval(r):
+def subtractfirstval(r):
     """
     Subtract the first value from every subsequent values: yout[k] = y[k] - y[0]
     """
@@ -500,7 +500,7 @@ def vector_subtractfirstval(r):
     return r
 
 
-def vector_timeavg(r, interpolation):
+def timeavg(r, interpolation):
     """
     Calculates the time average of the input (integral divided by time)
     """
@@ -521,7 +521,7 @@ def vector_timeavg(r, interpolation):
     return r
 
 
-def vector_timediff(r):
+def timediff(r):
     """
     Subtracts the previous value's timestamp from every timestamp:
     tout[k] = t[k] - t[k-1]
@@ -535,7 +535,7 @@ def vector_timediff(r):
     return r
 
 
-def vector_timeshift(r, dt):
+def timeshift(r, dt):
     """
     Shifts the input series in time by a constant: tout[k] = t[k] + dt
     """
@@ -548,7 +548,7 @@ def vector_timeshift(r, dt):
     return r
 
 
-def vector_timetoserial(r):
+def timetoserial(r):
     """
     Replaces time values with their index: tout[k] = k
     """
@@ -561,7 +561,7 @@ def vector_timetoserial(r):
     return r
 
 
-def vector_timewinavg(r, window_size=1):
+def timewinavg(r, window_size=1):
     """
     Calculates time average: replaces input values in every 'windowSize' interval with their mean:
     tout[k] = k * winSize,
@@ -583,7 +583,7 @@ def vector_timewinavg(r, window_size=1):
     return r
 
 
-def vector_winavg(r, window_size=10):
+def winavg(r, window_size=10):
     """
     Calculates batched average: replaces every 'winsize' input values
     with their mean. Time is the time of the first value in the batch.
