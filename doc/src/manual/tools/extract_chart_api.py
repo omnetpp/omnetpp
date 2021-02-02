@@ -3,7 +3,7 @@
 import sys
 import os
 
-from omnetpp.scave import results, chart, utils, plot
+from omnetpp.scave import results, chart, utils, plot, vectorops
 
 import mistune
 import inspect
@@ -151,5 +151,6 @@ annotate_module(results)
 annotate_module(chart)
 annotate_module(plot)
 annotate_module(utils)
+annotate_module(vectorops)
 
 # vectorops?
