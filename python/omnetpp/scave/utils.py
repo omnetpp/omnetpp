@@ -731,10 +731,10 @@ def perform_vector_ops(df, operations : str):
 
 
 def apply_vector_op(dataframe, operation, *args, **kwargs):
-    if operation == vectorops.aggregator:
-        return vectorops.aggregator(dataframe, *args)
-    elif operation == vectorops.merger:
-        return vectorops.merger(dataframe)
+    if operation == vectorops.aggregate:
+        return vectorops.aggregate(dataframe, *args)
+    elif operation == vectorops.merge:
+        return vectorops.merge(dataframe)
     else:
         condition = kwargs.pop('condition', None)
         clone = dataframe.copy()
@@ -743,10 +743,10 @@ def apply_vector_op(dataframe, operation, *args, **kwargs):
 
 
 def compute_vector_op(dataframe, operation, *args, **kwargs):
-    if operation == vectorops.aggregator:
-        return dataframe.append(vectorops.aggregator(dataframe, *args))
-    elif operation == vectorops.merger:
-        return dataframe.append(vectorops.merger(dataframe))
+    if operation == vectorops.aggregate:
+        return dataframe.append(vectorops.aggregate(dataframe, *args))
+    elif operation == vectorops.merge:
+        return dataframe.append(vectorops.merge(dataframe))
     else:
         condition = kwargs.pop('condition', None)
         clone = dataframe.copy()

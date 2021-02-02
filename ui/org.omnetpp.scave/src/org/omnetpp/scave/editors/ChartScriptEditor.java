@@ -223,8 +223,8 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
     @SuppressWarnings("unchecked")
     static final Triplet<String, String, String>[] vectorOpData = new Triplet[] {
         triplet("Mean", "mean", ""),
-        triplet("Aggregator", "aggregator(function=average)", "Possible parameter values: 'sum', 'average', 'count', 'maximum', 'minimum'"),
-        triplet("Merger", "merger", ""),
+        triplet("Aggregate", "aggregate(function='average')", "Possible values: 'sum', 'average', 'count', 'maximum', 'minimum'"),
+        triplet("Merge", "merge", ""),
         triplet("Sum", "sum", ""),
         triplet("Add constant", "add(100)", "Adds a constant value to all values in the vectors"),
         triplet("Compare with threshold", "compare(threshold=9000, less=-1, equal=0, greater=1)", "The last three parameters are all optional"),

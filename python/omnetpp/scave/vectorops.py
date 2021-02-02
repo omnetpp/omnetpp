@@ -5,7 +5,7 @@ def perform_vector_ops(df, operations : str):
     import omnetpp.scave.utils as utils
     return utils.perform_vector_ops(df, operations)
 
-def aggregator(df, function='average'):
+def aggregate(df, function='average'):
     """
     Aggregates several vectors into a single one, aggregating the
     y values at the same time coordinate with the specified function.
@@ -85,7 +85,7 @@ def aggregator(df, function='average'):
     return result
 
 
-def merger(df):
+def merge(df):
     """
     Merges several series into a single one, maintaining increasing
     time order in the output.
