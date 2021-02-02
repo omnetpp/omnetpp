@@ -15,7 +15,7 @@ if df.empty:
     plot.set_warning("The result filter returned no data.")
     exit(1)
 
-df = ops.perform_vector_ops(df, params["vector_operations"])
+df = utils.perform_vector_ops(df, params["vector_operations"])
 
 plot.plot_vectors(df)
 

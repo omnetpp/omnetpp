@@ -22,7 +22,7 @@ if df.empty:
     exit(1)
 
 # apply vector operations
-df = ops.perform_vector_ops(df, props["vector_operations"])
+df = utils.perform_vector_ops(df, props["vector_operations"])
 
 # plot
 utils.plot_vectors(df, props)

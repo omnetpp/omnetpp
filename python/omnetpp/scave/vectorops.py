@@ -1,94 +1,9 @@
-import re
-import sys
-import importlib
 import numpy as np
 import pandas as pd
 
-
-def parse_line(line):
-    line = line.strip()
-    m = re.match(r"((\w+)\s*:)?\s*(([\w.]+)\.)?(\w+)?(.*)", line)  # always matches due to last group
-    _, type, _, module, name, rest = m.groups()
-    if not name:
-        if line and not line.startswith('#'):
-            raise SyntaxError("Syntax error")
-        return (None, None, None, None, None)
-    if not type:
-        type = "apply"
-    if not type in ['apply', 'compute']:
-        raise SyntaxError("Syntax error near '"+type+"': must be 'apply' or 'compute' (or omitted)")
-    if not rest.strip():
-        rest = "()"
-    try:
-        def return_args(*args, **kwargs):
-            return (args,kwargs)
-        args, kwargs = eval(name + " " + rest, None, {name: return_args}) # let Python do the parsing, incl. comment discarding
-    except SyntaxError:
-        raise SyntaxError("Syntax error in argument list")
-    except Exception as e:
-        raise ValueError("Error in argument list: " + str(e))
-    return type, module, name, args, kwargs
-
-def perform_vector_op(df, line):
-    # parse line
-    type, module, name, args, kwargs = parse_line(line)
-    if name is None: # empty line
-        return df
-
-    # look up function
-    function = None
-    if not module and name in globals():
-        function = globals()[name]
-    else:
-        mod = importlib.import_module(module if module else "omnetpp.scave.vectorops")
-        if not name in mod.__dict__:
-            raise ValueError("Vector filter '" + name + "' not found in module '" + module + "'")
-        function = mod.__dict__[name]
-
-    # perform operation
-    if type == "apply":
-        df = apply(df, function, *args, **kwargs)
-    elif type == "compute":
-        df = compute(df, function, *args, **kwargs)
-    return df
-
-
 def perform_vector_ops(df, operations : str):
-    if not operations:
-        return df
-    line_num = 0
-    for line in operations.splitlines():
-        line_num += 1
-        try:
-            df = perform_vector_op(df, line)
-        except Exception as e:
-            raise ValueError(str(e) + " in Vector Operation line " + str(line_num) + " '" + line + "'")
-    return df
-
-
-def apply(dataframe, operation, *args, **kwargs):
-    if operation == vector_aggregator:
-        return vector_aggregator(dataframe, *args)
-    elif operation == vector_merger:
-        return vector_merger(dataframe)
-    else:
-        condition = kwargs.pop('condition', None)
-        clone = dataframe.copy()
-        clone = clone.transform(lambda row: operation(row.copy(), *args, **kwargs) if not condition or condition(row) else row, axis='columns')
-        return clone
-
-
-def compute(dataframe, operation, *args, **kwargs):
-    if operation == vector_aggregator:
-        return dataframe.append(vector_aggregator(dataframe, *args))
-    elif operation == vector_merger:
-        return dataframe.append(vector_merger(dataframe))
-    else:
-        condition = kwargs.pop('condition', None)
-        clone = dataframe.copy()
-        clone = clone.transform(lambda row: operation(row.copy(), *args, **kwargs) if not condition or condition(row) else row, axis='columns')
-        return dataframe.append(clone)
-
+    import omnetpp.scave.utils as utils
+    return utils.perform_vector_ops(df, operations)
 
 def aggregator(df, function='average'):
     """
