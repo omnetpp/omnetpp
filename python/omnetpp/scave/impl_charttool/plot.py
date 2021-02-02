@@ -3,8 +3,21 @@ import math
 from omnetpp.scave import utils # for small misc. methods
 
 
+def plot_bars(df):
+    raise NotImplementedError("plot_bars(df): not implemented for the Matplotlib case")
+
+
+def plot_lines(df):
+    raise NotImplementedError("plot_lines(df): not implemented for the Matplotlib case")
+
+
+def plot_histograms(df):
+    raise NotImplementedError("plot_histograms(df): not implemented for the Matplotlib case")
+
+
 def set_properties(*vargs, **kwargs):
     pass
+
 
 def set_property(key, value):
     pass
