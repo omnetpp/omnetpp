@@ -83,7 +83,7 @@ public class ConfigureChartDialog extends TitleAreaDialog {
         ((GridLayout) parent.getLayout()).numColumns++;
         Button button = new Button(parent, SWT.PUSH|SWT.FLAT);
         button.setImage(ScavePlugin.getCachedImage(ScaveImages.IMG_ETOOL16_COGWHEEL_GRAY));
-        button.setToolTipText("Configure");
+        button.setToolTipText("Edit Dialog Pages");
         button.setLayoutData(new GridData(SWT.END, SWT.CENTER, false, false));
         button.addSelectionListener(SelectionListener.widgetSelectedAdapter((e) -> editChartDialogPages()));
     }

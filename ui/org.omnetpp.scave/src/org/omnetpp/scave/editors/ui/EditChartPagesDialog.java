@@ -22,6 +22,7 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -78,6 +79,7 @@ public class EditChartPagesDialog extends TitleAreaDialog {
 
     private List<DialogPage> pages;
     private DialogPage editedPage;
+    private boolean dirty = false;
 
     private DelayedJob updatePreviewJob = new DelayedJob(200) {
         @Override
@@ -254,7 +256,7 @@ public class EditChartPagesDialog extends TitleAreaDialog {
                     styledText = new StyledText(styledTextHolder, SWT.BORDER|SWT.V_SCROLL|SWT.H_SCROLL);
                     styledText.setText(page.xswtForm);
                     new StyledTextUndoRedoManager(styledText);
-                    styledText.addModifyListener((e) -> updatePreviewJob.restartTimer());
+                    styledText.addModifyListener((e) -> {dirty = true; updatePreviewJob.restartTimer();});
                     styledTexts.put(page, styledText);
                 }
                 ((StackLayout)styledTextHolder.getLayout()).topControl = styledText;
@@ -415,6 +417,13 @@ public class EditChartPagesDialog extends TitleAreaDialog {
         if (editedPage != null)
             editedPage.xswtForm = styledText.getText();
         super.okPressed();
+    }
+
+    @Override
+    protected void cancelPressed() {
+        if (dirty && MessageDialog.openConfirm(getShell(), "Confirm Close", "Close dialog and discard your edits?") == false)
+            return;
+        super.cancelPressed();
     }
 
     public List<DialogPage> getResult() {
