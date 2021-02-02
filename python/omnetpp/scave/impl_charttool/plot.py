@@ -44,6 +44,37 @@ def hist(x, bins, density, weights, cumulative, bottom, histtype, color, label, 
     params = {k:v for k, v in locals().items() if k is not None and k not in ["underflows", "overflows", "minvalue", "maxvalue", "params"]}
     return plt.hist(**params)
 
+def legend(show, frameon, loc):
+    if show is not None and not show:
+        legend = plt.gca().get_legend()
+        if legend is not None:
+            legend.remove()
+        return
+    args = {"frameon": frameon, "loc": loc}
+    if loc and loc.startswith("outside"):
+        args.update(_legend_loc_outside_args(loc))
+    plt.legend(**args)
+
+def _legend_loc_outside_args(loc):
+    mapping = {
+        "outside top left": ("lower left", (0,1.05)),
+        "outside top center": ("lower center", (0.5,1.05)),
+        "outside top right": ("lower right", (1,1.05)),
+        "outside bottom left": ("upper left", (0,-0.05)),
+        "outside bottom center": ("upper center", (0.5,-0.05)),
+        "outside bottom right": ("upper right", (1,-0.05)),
+        "outside left top": ("upper right", (-0.03, 1)),
+        "outside left center": ("center right", (-0.03,0.5)),
+        "outside left bottom": ("lower right", (-0.03,0)),
+        "outside right top": ("upper left", (1.03,1)),
+        "outside right center": ("center left", (1.03,0.5)),
+        "outside right bottom": ("lower left", (1.03,0)),
+    }
+    if loc not in mapping:
+        raise ValueError("loc='{}' is not recognized/supported".format(loc))
+    (anchorloc, relpos) = mapping[loc]
+    return {"loc" : anchorloc, "bbox_to_anchor" : relpos}
+
 bar = plt.bar
 title = plt.title
 xlabel = plt.xlabel
@@ -53,18 +84,5 @@ ylim = plt.ylim
 xscale = plt.xscale
 yscale = plt.yscale
 xticks = plt.xticks
-legend = plt.xticks
+yticks = plt.yticks
 grid = plt.grid
-
-def legend(*args, **kwargs):
-    if "show" in kwargs:
-        if kwargs["show"] is not None and not kwargs["show"]:
-            if plt.gca().get_legend() is not None:
-                plt.gca().get_legend().remove()
-            return
-        del kwargs["show"]
-    if "loc" in kwargs and kwargs["loc"] and kwargs["loc"].startswith("outside"):
-        kwargs2 = utils._legend_mpl_loc_outside_args(kwargs["loc"])
-        del kwargs["loc"]
-        kwargs.update(kwargs2)
-    plt.legend(*args, **kwargs)

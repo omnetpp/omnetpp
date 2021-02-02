@@ -801,7 +801,7 @@ def postconfigure_plot(props):
     if get_prop("yaxis_log"):
         p.yscale("log" if _parse_optional_bool(get_prop("yaxis_log")) else "linear")
 
-    legend(show=_parse_optional_bool(get_prop("legend_show")),
+    plot.legend(show=_parse_optional_bool(get_prop("legend_show")),
            frameon=_parse_optional_bool(get_prop("legend_border")),
            loc=get_prop("legend_placement"))
 
@@ -810,47 +810,6 @@ def postconfigure_plot(props):
 
     if not chart.is_native_chart():
         plt.tight_layout()
-
-# XXX: why is this here, and not in plot.py?
-def legend(*args, **kwargs):
-    if chart.is_native_chart():
-        plot.legend(*args, **kwargs)
-    else:
-        _legend_mpl(*args, **kwargs)
-
-def _legend_mpl(*args, **kwargs):
-    if "show" in kwargs:
-        if kwargs["show"] is not None and not kwargs["show"]:
-            if plt.gca().get_legend() is not None:
-                plt.gca().get_legend().remove()
-            return
-        del kwargs["show"]
-    if "loc" in kwargs and kwargs["loc"] and kwargs["loc"].startswith("outside"):
-        kwargs2 = _legend_mpl_loc_outside_args(kwargs["loc"])
-        del kwargs["loc"]
-        kwargs.update(kwargs2)
-    plt.legend(*args, **kwargs)
-
-def _legend_mpl_loc_outside_args(loc):
-    mapping = {
-        "outside top left": ("lower left", (0,1.05)),
-        "outside top center": ("lower center", (0.5,1.05)),
-        "outside top right": ("lower right", (1,1.05)),
-        "outside bottom left": ("upper left", (0,-0.05)),
-        "outside bottom center": ("upper center", (0.5,-0.05)),
-        "outside bottom right": ("upper right", (1,-0.05)),
-        "outside left top": ("upper right", (-0.03, 1)),
-        "outside left center": ("center right", (-0.03,0.5)),
-        "outside left bottom": ("lower right", (-0.03,0)),
-        "outside right top": ("upper left", (1.03,1)),
-        "outside right center": ("center left", (1.03,0.5)),
-        "outside right bottom": ("lower left", (1.03,0)),
-    }
-    if loc not in mapping:
-        raise ValueError("loc='{}' is not recognized/supported".format(loc))
-    (anchorloc, relpos) = mapping[loc]
-    return {"loc" : anchorloc, "bbox_to_anchor" : relpos}
-
 
 def export_image_if_needed(props):
     def get_prop(k):
