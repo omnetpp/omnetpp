@@ -66,12 +66,6 @@ def perform_vector_ops(df, operations : str):
     return df
 
 
-def _unquote(param):
-    if param and (param[0] == "'" and param[-1] == "'") or (param[0] == '"' and param[-1] == '"'):
-        return param[1:-1]
-    return param
-
-
 def apply(dataframe, operation, *args, **kwargs):
     if operation == vector_aggregator:
         return vector_aggregator(dataframe, *args)
@@ -376,8 +370,6 @@ def expression(r, expression):
     t = r['vectime']
     y = r['vecvalue']
 
-    expression = _unquote(expression)
-
     tprev = np.concatenate([np.array([0]), t[:-1]])
     yprev = np.concatenate([np.array([0]), y[:-1]])
 
@@ -410,8 +402,6 @@ def integrate(r, interpolation='sample-hold'):
     """
     t = r['vectime']
     v = r['vecvalue']
-
-    interpolation = _unquote(interpolation)
 
     r['vecvalue'] = _integrate_helper(t, v, interpolation)
 
@@ -518,8 +508,6 @@ def timeavg(r, interpolation):
     # TODO: add "auto" - where we choose interpolation based on interpolationmode and enum
     t = r['vectime']
     v = r['vecvalue']
-
-    interpolation = _unquote(interpolation)
 
     integrated = _integrate_helper(t, v, interpolation)
 
