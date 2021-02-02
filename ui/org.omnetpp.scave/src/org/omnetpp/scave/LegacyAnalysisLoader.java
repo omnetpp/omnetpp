@@ -97,13 +97,19 @@ public class LegacyAnalysisLoader {
             sb.append(type);
             sb.append(":");
             sb.append(mapOperationName(operation));
+            sb.append("(");
 
+            boolean first = true;
             for (String k: params.keySet()) {
-                sb.append(",");
+                if (first)
+                    first = false;
+                else
+                    sb.append(",");
                 sb.append(k);
                 sb.append("=");
                 sb.append(params.get(k));
             }
+            sb.append(")");
             return sb.toString();
         }
     }
