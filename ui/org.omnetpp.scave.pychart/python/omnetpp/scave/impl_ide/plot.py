@@ -134,8 +134,8 @@ def plot_bars(df, props):
 
     Gateway.chart_plotter.plotScalars(pl.dumps([
         {
-            "key": row.key,
-            "title": row.label,
+            "key": str(row.key),
+            "title": str(row.label),
             "values": _list_to_bytes(row.values),
         }
         for row in df.itertuples(index=False)
