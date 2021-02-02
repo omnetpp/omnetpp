@@ -74,7 +74,6 @@ public class GroupsSeriesDataset implements IGroupsSeriesDataset {
                 barSeries.title = (String) d.get("title");
 
                 barSeries.values = ResultPicklingUtils.bytesToDoubles((byte[]) d.get("values"));
-                // TODO assert length
 
                 serieses.add(barSeries);
             }
@@ -103,7 +102,10 @@ public class GroupsSeriesDataset implements IGroupsSeriesDataset {
 
     @Override
     public int getGroupCount() {
-        return !serieses.isEmpty() ? serieses.get(0).values.length : groupTitles.size();
+        int maxLength = 0;
+        for (Series s : serieses)
+            maxLength = Integer.max(maxLength, s.values.length);
+        return !serieses.isEmpty() ? maxLength : groupTitles.size();
     }
 
     @Override
@@ -120,7 +122,8 @@ public class GroupsSeriesDataset implements IGroupsSeriesDataset {
 
     @Override
     public double getValue(int series, int group) {
-        return serieses.get(series).values[group];
+        Series s = serieses.get(series);
+        return group < s.values.length ? s.values[group] : Double.NaN;
     }
 
     @Override
