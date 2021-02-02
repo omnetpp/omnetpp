@@ -152,6 +152,13 @@ def make_chart_title(df, title_col, legend_cols):
 
 
 def pick_two_columns(df):
+    """
+    TODO
+    Choose two columns from the dataframe which best partitions the rows
+    of the dataframe.
+
+    Relies on extract_label_columns().
+    """
     title_col, label_cols = extract_label_columns(df)
     label_cols = [l[1] for l in label_cols]
     if len(label_cols) == 0:
@@ -166,6 +173,12 @@ def pick_two_columns(df):
 
 
 def assert_columns_exist(df, cols, message="Expected column missing from DataFrame"):
+    """
+    Ensures that the dataframe contains the given columns. If any of them are missing,
+    the function raises an error with the given message.
+
+    **cols** *(list of strings)*: column names to check.
+    """
     for c in cols:
         if c not in df:
             plot.set_warning(message + ": " + c)
@@ -173,6 +186,11 @@ def assert_columns_exist(df, cols, message="Expected column missing from DataFra
 
 
 def parse_rcparams(rc_content):
+    """
+    Accepts a multiline string that contains rc file content in Matplotlib's
+    RcParams syntax, and returns its contents as a dictionary. Parse errors
+    and duplicate keys are reported via exceptions.
+    """
     rc_temp = {}
     for line_no, line in enumerate(rc_content.split("\n"), 1):
         strippedline = line.split('#', 1)[0].strip()
@@ -202,7 +220,15 @@ def _parse_optional_bool(value):
     return value.lower() == "true"
 
 def make_fancy_xticklabels(ax):
+    """
+    Only useful for Matplotlib plots.
 
+    Causes the x tick labels to be rotated by the minimum amount necessary so that
+    they don't overlap. Note that the necessary amount of rotation typically depends
+    on the horizontal zoom level.
+
+    TODO Where x axis is a category axis.
+    """
     import math
     import numpy as np
     from matplotlib.text import Text
@@ -245,6 +271,14 @@ def make_fancy_xticklabels(ax):
 # inspired by: https://stackoverflow.com/a/11562898/635587
 # and https://stackoverflow.com/q/11551049#comment77920445_11562898
 def make_scroll_navigable(figure):
+    """
+    Only useful for Matplotlib plots.
+
+    Causes the chart to respond to mouse wheel events. It works similarly in all 3 operation modes (Interact, Pan, Zoom)
+    without modifiers: vertical pan
+    Shift: horizontal pan
+    Ctrl: zoom
+    """
     def zoom_fun(event):
         ax = event.inaxes
 
@@ -281,10 +315,42 @@ def make_scroll_navigable(figure):
 
 
 # source: https://stackoverflow.com/a/39789718/635587
-def customized_box_plot(percentiles, axes, redraw = True, *args, **kwargs):
+def customized_box_plot(percentiles, axes=None, redraw=True, *args, **kwargs):
     """
-    Generates a customized boxplot based on the given percentile values
+    Generates a customized boxplot based on explicitly specified percentile values.
+
+    Creates a Box and Whiskers plot, augmented with custom elements. Number of boxes = len(percentiles)
+
+    This method is necessary because pyplot.boxplot() insists on computing
+    the stats from the raw data itself, and we don't have the raw data.
+
+Make a box and whisker plot.
+
+NOTE: boxplot docu: Make a box and whisker plot for each column of x or each vector in sequence x. The box extends from the lower to upper quartile values of the data, with a line at the median. The whiskers extend from the box to show the range of the data. Flier points are those past the end of the whiskers.
+
+    # Parameters:
+    percentiles: list of tuples. each tuple contains 5 or 6 elements:
+            (q1_start, q2_start, q3_start, q4_start, q4_end, fliers_xy)
+            (q1_start, q2_start, q3_start, q4_start, q4_end) --> fliers_xy: (xs, ys), both are list of numbers
+
+            q1...q5: numbers
+            q1: y coord of bottom whisker cap
+            q2: y coord of bottom of the box
+            q3: y coord of median mark
+            q4: y coord of top of the box
+            q5: y coord of top whisker cap
+
+            fliers_xy: coords of separate points (outliers)
+
+            x coords of the box-and-whiskers plots are automatic.
+
+    axes: the axes object of the plot
+    redraw: if False, redraw is deferred.
+    args: passed to axes.boxplot()
+    kwargs: passed to axes.boxplot()
     """
+    if axes is None:
+        axes = plt.gca()
     n_box = len(percentiles)
     box_plot = axes.boxplot([[-9, -4, 2, 4, 9],]*n_box, showmeans=True, meanprops=dict(marker='+'), *args, **kwargs)
     # Creates len(percentiles) no of box plots
@@ -350,6 +416,10 @@ def customized_box_plot(percentiles, axes, redraw = True, *args, **kwargs):
 
 
 def interpolationmode_to_drawstyle(interpolationmode, hasenum):
+    """
+    Converts an OMNeT++-style interpolation constant ('none', 'linear',
+    'sample-hold', etc.) to Matplotlib draw styles.
+    """
     interp = interpolationmode if interpolationmode else 'sample-hold' if hasenum else None
     if not interp:
         ds = "default"
@@ -458,6 +528,12 @@ def _make_bar_args(props, df): # ??? is df needed at all? should we also get the
 
 
 def get_names_for_title(df, props):
+    """
+    Produces input for the plot title. unique values from the "title" or "name" column
+    TODO
+    "legend_labels" => "result titles" or "result names"
+
+    """
     def get_prop(k):
         return props[k] if k in props else None
 
@@ -470,6 +546,10 @@ def get_names_for_title(df, props):
 
 
 def set_plot_title(title, suggested_chart_name=None):
+    """
+    Sets the plot title.
+    TODO also sets the suggested chart name (for saving the temp chart)
+    """
     if chart.is_native_chart():
         plot.title(title)
     else:
@@ -494,6 +574,18 @@ def _to_label(x):
 
 
 def plot_bars(df, props, names=None, errors_df=None):
+    """
+    Creates a bar plot. Each column is series.
+
+    Takes several chart properties into account which control the style and appearance of the plot.
+
+    df: Each column is a series (column names become the labels for the legend)
+    names: labels for the rows
+    errors_df: dataframe with the errors (in y axis units); protrudes this much up and down (range is 2 x error)
+
+    get_prop("groups") --> TODO
+    get_prop("series") --> TODO
+    """
     p = plot if chart.is_native_chart() else plt
 
     def get_prop(k):
@@ -582,6 +674,11 @@ def plot_bars(df, props, names=None, errors_df=None):
 
 
 def plot_vectors(df, props):
+    """
+    TODO
+    df columns: "vectime", "vecvalue"
+    labels: from the "title" or "name" column
+    """
     p = plot if chart.is_native_chart() else plt
 
     def get_prop(k):
@@ -590,7 +687,7 @@ def plot_vectors(df, props):
     column = "name" if get_prop("legend_labels") == "result names" else "title"
     title_col, legend_cols = extract_label_columns(df, column)
 
-    for i, t in enumerate(df.itertuples(index=False)):
+    for t in df.itertuples(index=False):
         style = _make_line_args(props, t, df)
         p.plot(t.vectime, t.vecvalue, label=make_legend_label(legend_cols, t), **style)
 
@@ -598,6 +695,10 @@ def plot_vectors(df, props):
     set_plot_title(title)
 
 def plot_histograms(df, props):
+    """
+    df columns: "binedges", "binvalues", plus "min", "max", "underflows", "overflows" (mandatory)
+    labels: from the "title" or "name" column
+    """
     p = plot if chart.is_native_chart() else plt
 
     def get_prop(k):
@@ -605,7 +706,7 @@ def plot_histograms(df, props):
 
     title_col, legend_cols = extract_label_columns(df)
 
-    for i, t in enumerate(df.itertuples(index=False)):
+    for t in df.itertuples(index=False):
         style = _make_histline_args(props, t, df)
 
         # We are branching here, and call the two .hist implementations
@@ -668,6 +769,10 @@ def _initialize_cycles(props):
 
 
 def _parse_vectorop_line(line):
+    """
+    Parses the given vector operation line, and returns its contents as a tuple.
+    Helper for `perform_vector_ops()`.
+    """
     line = line.strip()
     m = re.match(r"((\w+)\s*:)?\s*(([\w.]+)\.)?(\w+)?(.*)", line)  # always matches due to last group
     _, type, _, module, name, rest = m.groups()
@@ -695,7 +800,11 @@ def _parse_vectorop_line(line):
     return type, module, name, args, kwargs
 
 
-def perform_vector_op(df, line):
+def _perform_vector_op(df, line):
+    """
+    Performs one vector operation on the dataframe.
+    Helper for `perform_vector_ops()`.
+    """
     # parse line
     type, module, name, args, kwargs = _parse_vectorop_line(line)
     if name is None: # empty line
@@ -715,51 +824,82 @@ def perform_vector_op(df, line):
 
     # perform operation
     if type == "apply":
-        df = apply_vector_op(df, function, *args, **kwargs)
+        df = _apply_vector_op(df, function, *args, **kwargs)
     elif type == "compute":
-        df = compute_vector_op(df, function, *args, **kwargs)
+        df = _compute_vector_op(df, function, *args, **kwargs)
     return df
 
 
 def perform_vector_ops(df, operations : str):
+    """
+    Performs the given vector operations on the dataframe, and returns the
+    resulting dataframe. Vector operations primarily affect the `vectime`
+    and `vecvalue` columns of the dataframe, which are expected to contain
+    `ndarray`'s of matching lengths.
+
+    `operations` is a multiline string where each line denotes an operation;
+    they are applied in sequence. The syntax of one operation is:
+
+    [(`compute`|`apply`) `:` ] *opname* [ `(` *arglist* `)` ] [ `#` *comment* ]
+
+    *opname* is the name of the function, optionally qualified with its package name.
+    If the package name is omitted, `omnetpp.scave.vectorops` is assumed.
+
+    `compute` and `apply` specify whether the newly computed vectors will replace
+    the input row in the DataFrame (*apply*) or added as extra lines (*compute*).
+    The default is *apply*.
+
+    See the contents of the `omnetpp.scave.vectorops` package for more information.
+    """
     if not operations:
         return df
     line_num = 0
     for line in operations.splitlines():
         line_num += 1
         try:
-            df = perform_vector_op(df, line)
+            df = _perform_vector_op(df, line)
         except Exception as e:
             context = " in Vector Operations line " + str(line_num) + " \"" + line.strip() + "\""
             raise type(e)(str(e) + context).with_traceback(sys.exc_info()[2]) # re-throw with context
     return df
 
 
-def apply_vector_op(dataframe, operation, *args, **kwargs):
+def _apply_vector_op(df, operation, *args, **kwargs):
+    """
+    TODO args=?
+    Helper for `perform_vector_ops()`.
+    """
     if operation == vectorops.aggregate:
-        return vectorops.aggregate(dataframe, *args, **kwargs)
+        return vectorops.aggregate(df, *args, **kwargs)
     elif operation == vectorops.merge:
-        return vectorops.merge(dataframe)
+        return vectorops.merge(df)
     else:
         condition = kwargs.pop('condition', None)
-        clone = dataframe.copy()
+        clone = df.copy()
         clone = clone.transform(lambda row: operation(row.copy(), *args, **kwargs) if not condition or condition(row) else row, axis='columns')
         return clone
 
 
-def compute_vector_op(dataframe, operation, *args, **kwargs):
+def _compute_vector_op(df, operation, *args, **kwargs):
+    """
+    TODO args=?
+    Helper for `perform_vector_ops()`.
+    """
     if operation == vectorops.aggregate:
-        return dataframe.append(vectorops.aggregate(dataframe, *args, **kwargs), sort=False)
+        return df.append(vectorops.aggregate(df, *args, **kwargs), sort=False)
     elif operation == vectorops.merge:
-        return dataframe.append(vectorops.merge(dataframe), sort=False)
+        return df.append(vectorops.merge(df), sort=False)
     else:
         condition = kwargs.pop('condition', None)
-        clone = dataframe.copy()
+        clone = df.copy()
         clone = clone.transform(lambda row: operation(row.copy(), *args, **kwargs) if not condition or condition(row) else row, axis='columns')
-        return dataframe.append(clone, sort=False)
+        return df.append(clone, sort=False)
 
 
 def preconfigure_plot(props):
+    """
+    TODO
+    """
     def get_prop(k):
         return props[k] if k in props else None
 
@@ -779,6 +919,9 @@ def preconfigure_plot(props):
 
 
 def postconfigure_plot(props):
+    """
+    TODO
+    """
     p = plot if chart.is_native_chart() else plt
 
     def get_prop(k):

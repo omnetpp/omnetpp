@@ -1,3 +1,58 @@
+"""
+Contains operations that can be applied to vectors.
+
+In the IDE, operations can be applied to vectors on a vector chart by means
+of the plot's context menu and by editing the *Vector Operations* field in
+the chart configuration dialog.
+
+Every vector operation is implemented as a function. The notation used
+in the documentation of the individual functions is:
+
+- *y[k]*: The kth value in the input
+- *t[k]*: The kth timestamp in the input
+- *yout[k]*: The kth value in the output
+- *tout[k]*: The kth timestamp in the output
+
+A vector operation function accepts a DataFrame row as the first positional
+argument, and optionally additional arguments specific to its operation.
+When the function is invoked, the row will contain a `vectime` and a `vecvalue`
+column (both containing NumPy `ndarray`'s) that are the input of the operation.
+The function should return a similar row, with updated `vectime` and a `vecvalue`
+columns.
+
+Additionally, the operation may update the `name` and `title` columns (provided
+they exist) to reflect the processing in the name. For example, an operation
+that computes *mean* may return `mean(%s)` as name and `Mean of %s` as title
+(where `%s` indicates the original name/title).
+
+The `aggregate()` and `compute()` functions are special. They receive a DataFrame
+instead of a row in the first argument, and return new DataFrame with the result.
+
+Vector operations can be applied to a DataFrame using `utils.perform_vector_ops(df,ops)`.
+`ops` is a multiline string where each line denotes an operation; they are
+applied in sequence. The syntax of one operation is:
+
+[(`compute`|`apply`) `:` ] *opname* [ `(` *arglist* `)` ] [ `#` *comment* ]
+
+*opname* is the name of the function, optionally qualified with its package name.
+If the package name is omitted, `omnetpp.scave.vectorops` is assumed.
+
+`compute` and `apply` specify whether the newly computed vectors will replace
+the input row in the DataFrame (*apply*) or added as extra lines (*compute*).
+The default is *apply*.
+
+To define a new vector operation, define a function that fulfills the above
+interface (e.g. in the chart script), and add it to the `omnetpp.scave.vectorops`
+package.
+
+```
+def foo(r, args):
+    ...
+from omnetpp.scave import vectorops
+vectorops.foo = foo
+```
+"""
+
 import numpy as np
 import pandas as pd
 
