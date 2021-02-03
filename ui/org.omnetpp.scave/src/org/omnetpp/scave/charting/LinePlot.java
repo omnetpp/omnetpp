@@ -362,7 +362,8 @@ public class LinePlot extends PlotBase {
                     String label = props.getLabel();
                     Color color = props.getEffectiveLineColor();
                     IPlotSymbol symbol = props.getSymbolPlotter();
-                    legend.addItem(color, label, symbol, true);
+                    boolean drawLine = props.getEffectiveDisplayLine() && props.getEffectiveDrawStyle() != DrawStyle.None && props.getEffectiveLineStyle() != LineStyle.None;
+                    legend.addItem(color, label, symbol, drawLine);
                 }
             }
         }
