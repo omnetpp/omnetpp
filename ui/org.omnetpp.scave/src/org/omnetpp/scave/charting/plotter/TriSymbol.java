@@ -14,7 +14,30 @@ package org.omnetpp.scave.charting.plotter;
  */
 public class TriSymbol extends MultilineSymbol {
 
-    public TriSymbol(int size, int rotationCount) {
+    public static class UpTriSymbol extends TriSymbol {
+        public UpTriSymbol(int size) {
+            super(size, 0);
+        }
+    }
+    public static class LeftTriSymbol extends TriSymbol {
+        public LeftTriSymbol(int size) {
+            super(size, 1);
+        }
+    }
+    public static class DownTriSymbol extends TriSymbol {
+        public DownTriSymbol(int size) {
+            super(size, 2);
+        }
+    }
+    public static class RightTriSymbol extends TriSymbol {
+        public RightTriSymbol(int size) {
+            super(size, 3);
+        }
+    }
+
+    private int rotationCount;
+
+    private TriSymbol(int size, int rotationCount) {
         super(size);
         this.rotationCount = rotationCount;
         points = getLines(sizeHint);

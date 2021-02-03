@@ -14,7 +14,21 @@ package org.omnetpp.scave.charting.plotter;
  */
 public class LineSymbol extends MultilineSymbol {
 
-    public LineSymbol(int size, boolean vertical) {
+    public static class HorizontalLineSymbol extends LineSymbol {
+        public HorizontalLineSymbol(int size) {
+            super(size, false);
+        }
+    }
+
+    public static class VerticalLineSymbol extends LineSymbol {
+        public VerticalLineSymbol(int size) {
+            super(size, true);
+        }
+    }
+
+    private boolean vertical;
+
+    private LineSymbol(int size, boolean vertical) {
         super(size);
         this.vertical = vertical;
         points = getLines(sizeHint);

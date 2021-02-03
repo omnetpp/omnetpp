@@ -23,20 +23,20 @@ public class ChartSymbolFactory {
         case Circle: return new OvalSymbol(size);
         case Dot: return new OvalSymbol(size / 2);
         case Plus: return new PlusSymbol(size);
-        case VLine: return new LineSymbol(size, false);
-        case HLine: return new LineSymbol(size, true);
+        case VLine: return new LineSymbol.VerticalLineSymbol(size);
+        case HLine: return new LineSymbol.HorizontalLineSymbol(size);
         case Octagon: return new OctagonSymbol(size);
         case Square: return new SquareSymbol(size);
         case Pentagon: return new PentagonSymbol(size);
         case Star: return new StarSymbol(size);
-        case Triangle_Up: return new TriangleSymbol(size, 0);
-        case Triangle_Down: return new TriangleSymbol(size, 2);
-        case Triangle_Left: return new TriangleSymbol(size, 1);
-        case Triangle_Right: return new TriangleSymbol(size, 3);
-        case Tri_Up: return new TriSymbol(size, 0);
-        case Tri_Down: return new TriSymbol(size, 2);
-        case Tri_Left: return new TriSymbol(size, 1);
-        case Tri_Right: return new TriSymbol(size, 3);
+        case Triangle_Up: return new TriangleSymbol.UpTriangleSymbol(size);
+        case Triangle_Down: return new TriangleSymbol.DownTriangleSymbol(size);
+        case Triangle_Left: return new TriangleSymbol.LeftTriangleSymbol(size);
+        case Triangle_Right: return new TriangleSymbol.RightTriangleSymbol(size);
+        case Tri_Up: return new TriSymbol.UpTriSymbol(size);
+        case Tri_Down: return new TriSymbol.DownTriSymbol(size);
+        case Tri_Left: return new TriSymbol.LeftTriSymbol(size);
+        case Tri_Right: return new TriSymbol.RightTriSymbol(size);
         default: throw new IllegalArgumentException("unknown symbol type: " + type);
         }
     }

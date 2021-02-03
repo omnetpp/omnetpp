@@ -14,7 +14,30 @@ package org.omnetpp.scave.charting.plotter;
  */
 public class TriangleSymbol extends PolygonSymbol {
 
-    public TriangleSymbol(int size, int rotationCount) {
+    public static class UpTriangleSymbol extends TriangleSymbol {
+        public UpTriangleSymbol(int size) {
+            super(size, 0);
+        }
+    }
+    public static class LeftTriangleSymbol extends TriangleSymbol {
+        public LeftTriangleSymbol(int size) {
+            super(size, 1);
+        }
+    }
+    public static class DownTriangleSymbol extends TriangleSymbol {
+        public DownTriangleSymbol(int size) {
+            super(size, 2);
+        }
+    }
+    public static class RightTriangleSymbol extends TriangleSymbol {
+        public RightTriangleSymbol(int size) {
+            super(size, 3);
+        }
+    }
+
+    private int rotationCount;
+
+    private TriangleSymbol(int size, int rotationCount) {
         super(size);
         this.rotationCount = rotationCount;
         points = getPoints(size);
