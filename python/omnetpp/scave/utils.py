@@ -735,7 +735,7 @@ def perform_vector_ops(df, operations : str):
 
 def apply_vector_op(dataframe, operation, *args, **kwargs):
     if operation == vectorops.aggregate:
-        return vectorops.aggregate(dataframe, *args)
+        return vectorops.aggregate(dataframe, *args, **kwargs)
     elif operation == vectorops.merge:
         return vectorops.merge(dataframe)
     else:
@@ -747,7 +747,7 @@ def apply_vector_op(dataframe, operation, *args, **kwargs):
 
 def compute_vector_op(dataframe, operation, *args, **kwargs):
     if operation == vectorops.aggregate:
-        return dataframe.append(vectorops.aggregate(dataframe, *args))
+        return dataframe.append(vectorops.aggregate(dataframe, *args, **kwargs))
     elif operation == vectorops.merge:
         return dataframe.append(vectorops.merge(dataframe))
     else:
