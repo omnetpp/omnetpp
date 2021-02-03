@@ -21,12 +21,22 @@ static void collectAndDump(cRNG* rng, cHistogram& hist, double a, double b)
     dumpBins(hist);
 }
 
+static void collectNumericLimits(cHistogram& hist, double size)
+{
+    hist.collect(0.0);
+    for (int i=0; i<51; i++) //trigger rangeUnchangedThreshold
+      hist.collect(size);
+    dumpBins(hist);
+}
+
 %activity:
 
 cHistogram hist1("fixed", new cDefaultHistogramStrategy(10, cHistogram::MODE_REALS));
 cHistogram hist2("auto1", new cDefaultHistogramStrategy(10, cHistogram::MODE_REALS));
 cHistogram hist3("auto2", new cDefaultHistogramStrategy(10, cHistogram::MODE_REALS));
 cHistogram hist4("auto3", new cDefaultHistogramStrategy(50, cHistogram::MODE_REALS));
+cHistogram hist5("numeric_limits", new cDefaultHistogramStrategy());
+cHistogram hist6("numeric_limits2", new cDefaultHistogramStrategy());
 
 cHistogram hist1i("fixed_i", new cDefaultHistogramStrategy(10, cHistogram::MODE_INTEGERS));
 cHistogram hist2i("auto1_i", new cDefaultHistogramStrategy(10, cHistogram::MODE_INTEGERS));
@@ -45,6 +55,8 @@ collectAndDump(getRNG(0), hist3i, 990, 1000);
 collectAndDump(getRNG(0), hist4,  700, 1000);
 collectAndDump(getRNG(0), hist4i, 700, 1000);
 
+collectNumericLimits(hist5, 48.0*std::numeric_limits<double>::denorm_min());
+collectNumericLimits(hist6, std::numeric_limits<double>::denorm_min());
 %contains: stdout
 0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1 1.1 1.2 1.3
 0 1 2
@@ -54,4 +66,5 @@ collectAndDump(getRNG(0), hist4i, 700, 1000);
 987 988 989 990 991 992 993 994 995 996 997 998 999 1000 1001 1002 1003
 620 630 640 650 660 670 680 690 700 710 720 730 740 750 760 770 780 790 800 810 820 830 840 850 860 870 880 890 900 910 920 930 940 950 960 970 980 990 1000 1010 1020 1030 1040 1050 1060 1070 1080
 620 630 640 650 660 670 680 690 700 710 720 730 740 750 760 770 780 790 800 810 820 830 840 850 860 870 880 890 900 910 920 930 940 950 960 970 980 990 1000 1010 1020 1030 1040 1050 1060 1070
-
+0 9.88131e-324 1.97626e-323 2.96439e-323 3.95253e-323 4.94066e-323 5.92879e-323 6.91692e-323 7.90505e-323 8.89318e-323 9.88131e-323 1.08694e-322 1.18576e-322 1.28457e-322 1.38338e-322 1.4822e-322 1.58101e-322 1.67982e-322 1.77864e-322 1.87745e-322 1.97626e-322 2.07508e-322 2.17389e-322 2.2727e-322 2.37152e-322 2.47033e-322 2.56914e-322 2.66795e-322 2.76677e-322 2.86558e-322 2.96439e-322
+0 1
