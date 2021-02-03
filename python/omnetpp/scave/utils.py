@@ -677,8 +677,11 @@ def _parse_vectorop_line(line):
         type = "apply"
     if not type in ['apply', 'compute']:
         raise SyntaxError("Syntax error near '"+type+"': must be 'apply' or 'compute' (or omitted)")
-    if not rest.strip():
+    rest = rest.strip()
+    if not rest or rest.startswith('#'):
         rest = "()"
+    if not rest.startswith('('):
+        raise ValueError("Parenthesized argument list expected after operation name")
     try:
         def return_args(*args, **kwargs):
             return (args,kwargs)
@@ -698,7 +701,7 @@ def perform_vector_op(df, line):
 
     # look up function
     function = None
-    if not module and name in globals():
+    if not module and name in globals():  # unfortunately this doesn't work, because the chart script sees a different "globals" dict than we in this module, due it being called via exec()
         function = globals()[name]
     else:
         if not module:
