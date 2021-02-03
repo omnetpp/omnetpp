@@ -324,7 +324,7 @@ void cDefaultHistogramStrategy::createBins()
         rangeMin = 0; // do not go into negative unless warranted by the collected data
 
     // just to avoid dividing by zero...
-    if (rangeMin == rangeMax)
+    if (rangeMax-rangeMin < std::numeric_limits<decltype(rangeMax)>::denorm_min() * targetNumBins)
         binSize = 1;
     else {
         binSize = (rangeMax - rangeMin) / targetNumBins;
