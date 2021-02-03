@@ -16,8 +16,8 @@ public class TriangleSymbol extends PolygonSymbol {
 
     public TriangleSymbol(int size, int rotationCount) {
         super(size);
-        for (int i = 0; i < rotationCount; ++i)
-            rotate90(points);
+        this.rotationCount = rotationCount;
+        points = getPoints(size);
     }
 
     @Override
@@ -26,10 +26,13 @@ public class TriangleSymbol extends PolygonSymbol {
         int height = (132*sizeHint+50)/100; // 1.32 = sqrt4(3)
         int halfside = (76*sizeHint+50)/100; // 0.76 = 1 / sqrt4(3)
         int off = (84*sizeHint+50)/100;
-        return new int[] {
+        int[] points = new int[] {
                 -halfside, (height-off),
                 0, -off,
                 halfside, (height-off)};
-    }
 
+        for (int i = 0; i < rotationCount; ++i)
+            rotate90(points);
+        return points;
+    }
 }

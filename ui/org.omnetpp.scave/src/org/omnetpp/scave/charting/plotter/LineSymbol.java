@@ -16,15 +16,18 @@ public class LineSymbol extends MultilineSymbol {
 
     public LineSymbol(int size, boolean vertical) {
         super(size);
-        if (vertical)
-            rotate90(points);
+        this.vertical = vertical;
+        points = getLines(sizeHint);
     }
 
     @Override
     protected int[] getLines(int sizeHint) {
         int d = sizeHint/2;
-        return new int[] {
-            0,  -d, 0,  d,
+        int[] lines = new int[] {
+            -d, 0, d, 0
         };
+        if (vertical)
+            rotate90(lines);
+        return lines;
     }
 }

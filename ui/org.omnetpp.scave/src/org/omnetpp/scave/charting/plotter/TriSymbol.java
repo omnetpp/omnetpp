@@ -16,8 +16,8 @@ public class TriSymbol extends MultilineSymbol {
 
     public TriSymbol(int size, int rotationCount) {
         super(size);
-        for (int i = 0; i < rotationCount; ++i)
-            rotate90(points);
+        this.rotationCount = rotationCount;
+        points = getLines(sizeHint);
     }
 
     @Override
@@ -26,11 +26,13 @@ public class TriSymbol extends MultilineSymbol {
         int height = (132*sizeHint+50)/100; // 1.32 = sqrt4(3)
         int halfside = (76*sizeHint+50)/100; // 0.76 = 1 / sqrt4(3)
         int off = (84*sizeHint+50)/100;
-        return new int[] {
+        int[] lines = new int[] {
             0, 0, -halfside, (height-off),
             0, 0, 0, -off,
             0, 0, halfside, (height-off)
         };
+        for (int i = 0; i < rotationCount; ++i)
+            rotate90(lines);
+        return lines;
     }
-
 }
