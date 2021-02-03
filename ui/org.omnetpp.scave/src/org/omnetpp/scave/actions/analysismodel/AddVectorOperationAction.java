@@ -9,7 +9,11 @@ package org.omnetpp.scave.actions.analysismodel;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.dialogs.MessageDialogWithToggle;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.swt.widgets.Display;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.AbstractScaveAction;
@@ -48,11 +52,7 @@ public class AddVectorOperationAction extends AbstractScaveAction {
 
         Chart chart = scriptEditor.getChart();
 
-        Property chartProperty = chart.getProperty("vector_operations");
-
-        String operations = "";
-        if (chartProperty != null)
-            operations = chartProperty.getValue();
+        String operations = StringUtils.nullToEmpty(chart.getPropertyValue("vector_operations"));
 
         String append = operation;
         if (!comment.isEmpty())
@@ -66,6 +66,23 @@ public class AddVectorOperationAction extends AbstractScaveAction {
         scriptEditor.getCommandStack().execute(new SetChartPropertyCommand(chart, "vector_operations", operations));
 
         scriptEditor.refreshChart();
+
+        openHintDialog();
+    }
+
+    protected void openHintDialog() {
+        IPreferenceStore preferences = ScavePlugin.getDefault().getPreferenceStore();
+        String preferenceKey = getClass().getSimpleName()+".info";
+        String preferenceSetting = preferences.getString(preferenceKey);
+        if (!MessageDialogWithToggle.ALWAYS.equals(preferenceSetting)) {
+            MessageDialogWithToggle.openInformation(
+                    Display.getCurrent().getActiveShell(),
+                    "Vector Operation Added",
+                    "Operation \"" + operation + "\" added.\n\n" +
+                    "Note: Vector operations can be reviewed and edited on Input tab of the Configure Chart dialog.",
+                    "Do not show this message again", false,
+                    preferences, preferenceKey);
+        }
     }
 
     @Override
