@@ -485,9 +485,11 @@ public class Legend implements ILegend {
             graphics.setBackgroundColor(ColorFactory.WHITE);
             Rectangle clip = graphics.getClip(new Rectangle());
             graphics.setClip(new Rectangle(bounds.x, bounds.y, bounds.width + 1, bounds.height + 1).intersect(clip));
+            graphics.setAlpha(192);
             graphics.fillRectangle(bounds);
             if (drawBorder) {
                 graphics.setForegroundColor(ColorFactory.BLACK);
+                graphics.setAlpha(192);
                 graphics.drawRectangle(bounds);
             }
             // draw items
