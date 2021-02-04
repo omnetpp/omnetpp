@@ -102,7 +102,7 @@ def plot_bars(df, props):
             "values": _list_to_bytes(row.values),
         }
         for row in df.itertuples(index=False)
-    ]), props)
+    ]), MapConverter().convert(props, Gateway.gateway._gateway_client))
 
 
 def plot_histograms(df, props):  # key, label, binedges, binvalues, underflows, overflows, min, max
