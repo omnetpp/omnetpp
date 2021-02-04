@@ -8,7 +8,7 @@ def perform_vector_ops(df, operations : str):
 def aggregate(df, function='average'):
     """
     Aggregates several vectors into a single one, aggregating the
-    y values at the same time coordinate with the specified function.
+    y values *at the same time coordinate* with the specified function.
     """
     vectimes = df['vectime']
     vecvalues = df['vecvalue']
@@ -75,14 +75,9 @@ def aggregate(df, function='average'):
     out_times = np.resize(out_times, out_index)
     out_values = np.resize(out_values, out_index)
 
-    #index = pd.MultiIndex.from_tuples([('Computed', '', '#0', 'various', 'various')], names=['experiment', 'measurement', 'replication', 'module', 'name'])
-    cols = pd.Index(['vectime', 'vecvalue', 'title', 'unit'])
-
-    title = "Aggregate of " + ", ".join(df["title"].unique()) if "title" in df else ""
-    unit = ", ".join(df["unit"].unique()) if "unit" in df else ""
-
-    result = pd.DataFrame([(out_times, out_values, title, unit)], columns=cols)
-    return result
+    comment = " (aggregate({}) of {} vectors)".format(function, n)
+    out_df = _combine_rows(df, out_times, out_values, comment)
+    return out_df
 
 
 def merge(df):
@@ -139,12 +134,37 @@ def merge(df):
     out_times = np.resize(out_times, out_index)
     out_values = np.resize(out_values, out_index)
 
-    index = pd.MultiIndex.from_tuples([('Computed', '', '#0', 'various', 'various')], names=['experiment', 'measurement', 'replication', 'module', 'name'])
-    cols = pd.Index(['vectime', 'vecvalue', 'title', 'unit'])
+    comment = " (merged from {} vectors)".format(n)
+    out_df = _combine_rows(df, out_times, out_values, comment)
+    return out_df
 
-    result = pd.DataFrame([(out_times, out_values, 'merged', 'various')], index=index, columns=cols)
+def _combine_rows(df, out_times, out_values, comment):
+    def column_brief(df, col):
+        if not col in df:
+            return None
+        names = df[col].unique()
+        n = len(names)
+        if n == 0:
+            return "n/a"
+        elif n == 1:
+            return names[0]
+        else:
+            for i in ["", np.nan, None]: # move empty values to the back so that aren't chosen as example if at all possible
+                if i in names:
+                    names.remove(i); names.append(i)  # move to back
+            return str(names[0]) + " and " + str(n-1) + " more"
+
+    data = {}
+    for column in df:
+        if column == 'vectime':
+            data[column] = [ out_times ]
+        elif column == 'vecvalue':
+            data[column] = [ out_values ]
+        else:
+            data[column] = [ column_brief(df, column) + comment ]
+
+    result = pd.DataFrame(data)
     return result
-
 
 def mean(r):
     """
