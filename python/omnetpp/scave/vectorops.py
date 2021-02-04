@@ -75,7 +75,7 @@ def aggregate(df, function='average'):
     out_times = np.resize(out_times, out_index)
     out_values = np.resize(out_values, out_index)
 
-    comment = " (aggregate({}) of {} vectors)".format(function, n)
+    comment = "aggregate({}) of {} vectors".format(function, n)
     out_df = _combine_rows(df, out_times, out_values, comment)
     return out_df
 
@@ -134,7 +134,7 @@ def merge(df):
     out_times = np.resize(out_times, out_index)
     out_values = np.resize(out_values, out_index)
 
-    comment = " (merged from {} vectors)".format(n)
+    comment = "merged from {} vectors".format(n)
     out_df = _combine_rows(df, out_times, out_values, comment)
     return out_df
 
@@ -154,14 +154,10 @@ def _combine_rows(df, out_times, out_values, comment):
                     names.remove(i); names.append(i)  # move to back
             return str(names[0]) + " and " + str(n-1) + " more"
 
-    data = {}
+    data = { 'vectime': [ out_times ], 'vecvalue': [ out_values ], 'comment': [ comment ] }
     for column in df:
-        if column == 'vectime':
-            data[column] = [ out_times ]
-        elif column == 'vecvalue':
-            data[column] = [ out_values ]
-        else:
-            data[column] = [ column_brief(df, column) + comment ]
+        if column not in data:
+            data[column] = [ column_brief(df, column) ]
 
     result = pd.DataFrame(data)
     return result
