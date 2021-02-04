@@ -315,7 +315,7 @@ def make_scroll_navigable(figure):
 
 
 # source: https://stackoverflow.com/a/39789718/635587
-def customized_box_plot(percentiles, axes=None, redraw=True, *args, **kwargs):
+def customized_box_plot(percentiles, axes=None, labels=None, redraw=True, *args, **kwargs):
     """
     Generates a customized boxplot based on explicitly specified percentile values.
 
@@ -345,19 +345,39 @@ NOTE: boxplot docu: Make a box and whisker plot for each column of x or each vec
             x coords of the box-and-whiskers plots are automatic.
 
     axes: the axes object of the plot
+    labels: if provided, the legend labels for the boxplots
     redraw: if False, redraw is deferred.
     args: passed to axes.boxplot()
     kwargs: passed to axes.boxplot()
     """
+
     if axes is None:
         axes = plt.gca()
-    n_box = len(percentiles)
-    box_plot = axes.boxplot([[-9, -4, 2, 4, 9],]*n_box, showmeans=True, meanprops=dict(marker='+'), *args, **kwargs)
-    # Creates len(percentiles) no of box plots
 
     min_y, max_y = float('inf'), -float('inf')
 
+    if labels is not None:
+        if len(labels) != len(percentiles):
+            raise ValueError("There must be as many labels as elements in the percentiles list")
+
     for box_no, pdata in enumerate(percentiles):
+        color = next(_color_cycle)
+        box_plot = axes.boxplot([-9, -4, 2, 4, 9], positions=[box_no], widths=[0.5],
+            showmeans=True, meanprops=dict(marker='+', markeredgecolor=mpl.rcParams["axes.facecolor"]),
+            boxprops=dict(facecolor=color), whiskerprops=dict(color=color, linewidth=2), capprops=dict(linewidth=1.5),
+            manage_ticks=False, patch_artist=True, *args, **kwargs)
+
+        if labels is not None:
+            # boxplot does not register its patches as legend handles, as it only wants to
+            # put the labels on axis ticks.
+            # And we also don't want to explicitly specify the legend contents, because the
+            # legend() call is sometime later, on postconfigure_plot. Only one thing remains:
+            # To make a "fake" bar for each box, and remove it - but not entirely (as that)
+            # would also remove it from the Legend... (same with hiding) - so its single
+            # patch is removed instead...
+            bar = axes.bar([0], [0], color=color, label=labels[box_no])
+            bar.patches[0].remove()
+
         if len(pdata) == 6:
             (q1_start, q2_start, q3_start, q4_start, q4_end, fliers_xy) = pdata
         elif len(pdata) == 5:
@@ -367,33 +387,33 @@ NOTE: boxplot docu: Make a box and whisker plot for each column of x or each vec
             raise ValueError("Percentile arrays for customized_box_plot must have either 5 or 6 values")
 
         # Lower cap
-        box_plot['caps'][2*box_no].set_ydata([q1_start, q1_start])
+        box_plot['caps'][0].set_ydata([q1_start, q1_start])
         # xdata is determined by the width of the box plot
 
         # Lower whiskers
-        box_plot['whiskers'][2*box_no].set_ydata([q1_start, q2_start])
+        box_plot['whiskers'][0].set_ydata([q1_start, q2_start])
 
         # Higher cap
-        box_plot['caps'][2*box_no + 1].set_ydata([q4_end, q4_end])
+        box_plot['caps'][1].set_ydata([q4_end, q4_end])
 
         # Higher whiskers
-        box_plot['whiskers'][2*box_no + 1].set_ydata([q4_start, q4_end])
+        box_plot['whiskers'][1].set_ydata([q4_start, q4_end])
 
         # Box
-        path = box_plot['boxes'][box_no].get_path()
+        path = box_plot['boxes'][0].get_path()
         path.vertices[0][1] = q2_start
         path.vertices[1][1] = q2_start
         path.vertices[2][1] = q4_start
         path.vertices[3][1] = q4_start
         path.vertices[4][1] = q2_start
 
-        box_plot['means'][box_no].set_ydata([q3_start, q3_start])
-        box_plot['medians'][box_no].set_visible(False)
+        box_plot['means'][0].set_ydata([q3_start, q3_start])
+        box_plot['medians'][0].set_visible(False)
 
         # Outliers
         if fliers_xy is not None and len(fliers_xy[0]) != 0:
             # If outliers exist
-            box_plot['fliers'][box_no].set(xdata = fliers_xy[0],
+            box_plot['fliers'][0].set(xdata = fliers_xy[0],
                                            ydata = fliers_xy[1])
 
             min_y = min(q1_start, min_y, fliers_xy[1].min())
@@ -403,16 +423,14 @@ NOTE: boxplot docu: Make a box and whisker plot for each column of x or each vec
             min_y = min(q1_start, min_y)
             max_y = max(q4_end, max_y)
 
-        mid_y = (min_y + max_y) / 2
-        # The y axis is rescaled to fit the new box plot completely with 10%
-        # of the maximum value at both ends
-        axes.set_ylim([mid_y - (mid_y - min_y) * 1.25, mid_y + (max_y - mid_y) * 1.25])
+    mid_y = (min_y + max_y) / 2
+    # The y axis is rescaled to fit the new box plot completely with 10%
+    # of the maximum value at both ends
+    axes.set_ylim([mid_y - (mid_y - min_y) * 1.25, mid_y + (max_y - mid_y) * 1.25])
 
     # If redraw is set to true, the canvas is updated.
     if redraw:
         axes.figure.canvas.draw()
-
-    return box_plot
 
 
 def interpolationmode_to_drawstyle(interpolationmode, hasenum):

@@ -31,13 +31,11 @@ coeff = 0.6744897501960817
 
 boxes = [(r.min, r.mean - r.stddev * coeff, r.mean, r.mean + r.stddev * coeff, r.max)
          for r in df.itertuples(index=False) if r.count > 0]
-utils.customized_box_plot(boxes, ax)
+labels = [", ".join([getattr(r, l[1]) for l in legend])
+         for r in df.itertuples(index=False) if r.count > 0]
+utils.customized_box_plot(boxes, ax, labels)
 
 utils.set_plot_title(utils.make_chart_title(df, title, legend))
-
-ax.set_xticklabels([utils.make_legend_label(legend, r) for r in df.itertuples(index=False) if r.count > 0])
-
-utils.make_fancy_xticklabels(ax)
 
 plt.tight_layout()
 
@@ -45,4 +43,3 @@ utils.postconfigure_plot(props)
 
 utils.export_image_if_needed(props)
 utils.export_data_if_needed(df, props)
-
