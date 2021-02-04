@@ -568,7 +568,11 @@ void cAutoRangeHistogramStrategy::createBins()
         binSize = requestedBinSize;
     }
     else {
-        double approxBinSize = (rangeMax - rangeMin) / targetNumBins;
+        double approxBinSize;
+        if (rangeMax-rangeMin < std::numeric_limits<decltype(rangeMax)>::denorm_min() * targetNumBins)
+            approxBinSize = 1;
+        else
+            approxBinSize = (rangeMax - rangeMin) / targetNumBins;
         binSize = (mode == cHistogram::MODE_INTEGERS) ? ceil(approxBinSize) : approxBinSize;
 
         if (binSizeRounding) {
