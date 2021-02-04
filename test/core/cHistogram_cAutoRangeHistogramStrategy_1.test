@@ -26,6 +26,14 @@ static cAutoRangeHistogramStrategy *makeStrategy(double lo, double hi, int numBi
     return strategy;
 }
 
+static void collectNumericLimits(cHistogram& hist, double size)
+{
+    hist.collect(0.0);
+    for (int i=0; i<51; i++) //trigger rangeUnchangedThreshold
+      hist.collect(size);
+    dumpBins(hist);
+}
+
 %activity:
 
 cHistogram hist1("fixed", makeStrategy(-1.5, 1.5, 10, cHistogram::MODE_REALS));
@@ -35,6 +43,8 @@ cHistogram hist3("auto2", makeStrategy(-1.5, NAN, 10, cHistogram::MODE_REALS));
 cHistogram hist4("fixed_i", makeStrategy(-2, 2, 2, cHistogram::MODE_INTEGERS));
 cHistogram hist5("auto1_i", makeStrategy(NAN, 200, 10, cHistogram::MODE_INTEGERS));
 cHistogram hist6("auto2_i", makeStrategy(-2, NAN, 10, cHistogram::MODE_INTEGERS));
+cHistogram hist7("numeric_limits", makeStrategy(0, NAN, 60, cHistogram::MODE_AUTO));
+cHistogram hist8("numeric_limits2", makeStrategy(0, NAN, 60, cHistogram::MODE_AUTO));
 
 collectAndDump(getRNG(0), hist1);
 collectAndDump(getRNG(0), hist2);
@@ -44,6 +54,8 @@ collectAndDump(getRNG(0), hist4);
 collectAndDump(getRNG(0), hist5);
 collectAndDump(getRNG(0), hist6);
 
+collectNumericLimits(hist7, 24.0*std::numeric_limits<double>::denorm_min());
+collectNumericLimits(hist8, std::numeric_limits<double>::denorm_min());
 
 %contains: stdout
 fixed: 16 bins: -1.6 -1.4 -1.2 -1 -0.8 -0.6 -0.4 -0.2 0 0.2 0.4 0.6 0.8 1 1.2 1.4 1.6
@@ -52,3 +64,5 @@ auto2: 13 bins: -1.6 -1.4 -1.2 -1 -0.8 -0.6 -0.4 -0.2 0 0.2 0.4 0.6 0.8 1
 fixed_i: 2 bins: -2 0 2
 auto1_i: 10 bins: 0 20 40 60 80 100 120 140 160 180 200
 auto2_i: 10 bins: -2 -1 0 1 2 3 4 5 6 7 8
+numeric_limits: 60 bins: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60
+numeric_limits2: 60 bins: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60
