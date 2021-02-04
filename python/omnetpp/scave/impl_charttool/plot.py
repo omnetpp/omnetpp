@@ -3,16 +3,16 @@ import math
 from omnetpp.scave import utils # for small misc. methods
 
 
-def plot_bars(df):
-    raise NotImplementedError("plot_bars(df): not implemented for the Matplotlib case")
+def plot_bars(df, props):
+    raise NotImplementedError("plot_bars(df, props): not implemented for the Matplotlib case")
 
 
-def plot_lines(df):
-    raise NotImplementedError("plot_lines(df): not implemented for the Matplotlib case")
+def plot_lines(df, props):
+    raise NotImplementedError("plot_lines(df, props): not implemented for the Matplotlib case")
 
 
-def plot_histograms(df):
-    raise NotImplementedError("plot_histograms(df): not implemented for the Matplotlib case")
+def plot_histograms(df, props):
+    raise NotImplementedError("plot_histograms(df, props): not implemented for the Matplotlib case")
 
 
 def set_properties(*vargs, **kwargs):
