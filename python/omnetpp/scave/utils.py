@@ -747,14 +747,14 @@ def apply_vector_op(dataframe, operation, *args, **kwargs):
 
 def compute_vector_op(dataframe, operation, *args, **kwargs):
     if operation == vectorops.aggregate:
-        return dataframe.append(vectorops.aggregate(dataframe, *args, **kwargs))
+        return dataframe.append(vectorops.aggregate(dataframe, *args, **kwargs), sort=False)
     elif operation == vectorops.merge:
-        return dataframe.append(vectorops.merge(dataframe))
+        return dataframe.append(vectorops.merge(dataframe), sort=False)
     else:
         condition = kwargs.pop('condition', None)
         clone = dataframe.copy()
         clone = clone.transform(lambda row: operation(row.copy(), *args, **kwargs) if not condition or condition(row) else row, axis='columns')
-        return dataframe.append(clone)
+        return dataframe.append(clone, sort=False)
 
 
 def preconfigure_plot(props):
