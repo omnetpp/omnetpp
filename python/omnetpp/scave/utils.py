@@ -693,7 +693,7 @@ def plot_bars(df, props, variable_name=None, errors_df=None):
     set_plot_title(get_prop("title") or title)
 
 
-def plot_vectors(df, props):
+def plot_vectors(df, props, legend_func=make_legend_label):
     """
     TODO
     df columns: "vectime", "vecvalue"
@@ -709,12 +709,12 @@ def plot_vectors(df, props):
 
     for t in df.itertuples(index=False):
         style = _make_line_args(props, t, df)
-        p.plot(t.vectime, t.vecvalue, label=make_legend_label(legend_cols, t), **style)
+        p.plot(t.vectime, t.vecvalue, label=legend_func(legend_cols, t), **style)
 
     title = get_prop("title") or make_chart_title(df, title_col, legend_cols)
     set_plot_title(title)
 
-def plot_histograms(df, props):
+def plot_histograms(df, props, legend_func=make_legend_label):
     """
     df columns: "binedges", "binvalues", plus "min", "max", "underflows", "overflows" (mandatory)
     labels: from the "title" or "name" column
@@ -736,7 +736,7 @@ def plot_histograms(df, props):
         # work, because that would change the histogram when the
         # "normalized" or "cumulative" transforms are done (by MPL).
         if chart.is_native_chart():
-            p.hist(t.binedges[:-1], t.binedges, weights=t.binvalues, label=make_legend_label(legend_cols, t),
+            p.hist(t.binedges[:-1], t.binedges, weights=t.binvalues, label=legend_func(legend_cols, t),
                    minvalue=t.min, maxvalue=t.max, underflows=t.underflows, overflows=t.overflows, **style)
         else:
             edges = list(t.binedges)
@@ -750,7 +750,7 @@ def plot_histograms(df, props):
                 edges = edges + [t.max]
                 values = values + [t.overflows]
 
-            p.hist(edges[:-1], edges, weights=values, label=make_legend_label(legend_cols, t), **style)
+            p.hist(edges[:-1], edges, weights=values, label=legend_func(legend_cols, t), **style)
 
     show_overflows = get_prop("show_overflows")
     if show_overflows and chart.is_native_chart():
