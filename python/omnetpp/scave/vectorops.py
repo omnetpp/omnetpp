@@ -463,14 +463,16 @@ def removerepeats(r):
     return r
 
 
-def slidingwinavg(r, window_size):
+def slidingwinavg(r, window_size, min_samples=None):
     """
     Replaces every value with the mean of values in the window:
     yout[k] = sum(y[i], i=(k-winsize+1)..k) / winsize
+    If min_samples is also given, allows each window to have only that many
+    valid (not missing [at the ends], and not NaN) samples in each window.
     """
     v = r['vecvalue']
     s = pd.Series(v, dtype=np.dtype('f8'))
-    r['vecvalue'] = s.rolling(window_size).mean().values
+    r['vecvalue'] = s.rolling(window_size, min_periods=min_samples).mean().values
     if "title" in r:
         r['title'] = r['title'] + " windowmean " + str(window_size)
     return r
