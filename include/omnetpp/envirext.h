@@ -368,12 +368,12 @@ class SIM_API cIEventlogManager : public cObject, noncopyable
      * The eventlog manager is expected to produce output starting from the
      * next event.
      */
-    virtual void startRecording() = 0;
+    virtual void resume() = 0;
 
     /**
-     * Temporarily stops eventlog recording. See startRecording() for more details.
+     * Temporarily stops eventlog recording. See resume() for more details.
      */
-    virtual void stopRecording() = 0;
+    virtual void suspend() = 0;
 
     /**
      * Forces writing out all buffered output.
@@ -385,6 +385,9 @@ class SIM_API cIEventlogManager : public cObject, noncopyable
      * producing file output.
      */
     virtual const char *getFileName() const = 0;
+
+    //TODO this one could be removed from the interface by invoking it via the LF_ON_RUN_END lifecycle event, but it needs to send more details
+    virtual void endRun(bool isError, int resultCode, const char *message) = 0;
     //@}
 
     /** @name Functions called from cEnvir's similar functions */

@@ -1466,7 +1466,6 @@ void EnvirBase::readPerRunOptions()
         nextUniqueNumber = (unsigned)parsimComm->getProcId() * ((~0UL) / (unsigned)parsimComm->getNumPartitions());
 #endif
 
-    // open eventlog file.
     recordEventlog = cfg->getAsBool(CFGID_RECORD_EVENTLOG);
 }
 
@@ -1509,13 +1508,12 @@ int EnvirBase::parseSimtimeResolution(const char *resolution)
 
 void EnvirBase::setEventlogRecording(bool enabled)
 {
-    if (enabled != recordEventlog) {
-        if (!eventlogManager)
-            alert("No eventlog manager");
-	else if (enabled)
-            eventlogManager->startRecording();
+    // NOTE: eventlogManager must be non-NULL when recordEventlog is true
+    if (recordEventlog != enabled) {
+        if (enabled)
+            eventlogManager->resume();
         else
-            eventlogManager->stopRecording();
+            eventlogManager->suspend();
         recordEventlog = enabled;
     }
 }
@@ -2002,8 +2000,10 @@ void EnvirBase::stoppedWithTerminationException(cTerminationException& e)
     if (opt->parsim && !dynamic_cast<cReceivedTerminationException *>(&e))
         parsimPartition->broadcastTerminationException(e);
 #endif
-    if (recordEventlog)
-        eventlogManager->stoppedWithException(e.isError(), e.getErrorCode(), e.getFormattedMessage().c_str());
+    if (recordEventlog) {
+        //FIXME should not be in this function (Andras)
+        eventlogManager->endRun(e.isError(), e.getErrorCode(), e.getFormattedMessage().c_str());
+    }
 }
 
 void EnvirBase::stoppedWithException(std::exception& e)
@@ -2014,9 +2014,10 @@ void EnvirBase::stoppedWithException(std::exception& e)
     if (opt->parsim && !dynamic_cast<cReceivedException *>(&e))
         parsimPartition->broadcastException(e);
 #endif
-    if (recordEventlog)
+    if (recordEventlog) {
         // TODO: get error code from the exception?
-        eventlogManager->stoppedWithException(true, E_CUSTOM, e.what());
+        eventlogManager->endRun(true, E_CUSTOM, e.what());  //FIXME this should be rather in endRun(), or? (Andras)
+    }
 }
 
 void EnvirBase::checkFingerprint()
