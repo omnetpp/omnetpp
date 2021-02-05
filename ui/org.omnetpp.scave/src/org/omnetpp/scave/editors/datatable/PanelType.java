@@ -30,4 +30,12 @@ public enum PanelType {
     public int getItemTypes() {
         return itemTypes;
     }
+
+    public boolean isSingleType() {
+        return itemTypes == ResultFileManager.PARAMETER
+            || itemTypes == ResultFileManager.SCALAR
+            || itemTypes == ResultFileManager.VECTOR
+            || itemTypes == ResultFileManager.STATISTICS
+            || itemTypes == ResultFileManager.HISTOGRAM;
+    }
 }
