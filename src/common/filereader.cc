@@ -34,24 +34,43 @@ namespace common {
 
 std::string FileReader::staticBuffer;
 
-FileChangedError::FileChangedError(FileReader::FileChangedState change, const char *messagefmt, ...) : opp_runtime_error(""), change(change)
+FileChangedError::FileChangedError(FileReader::FileChange change, const char *messagefmt, ...) : opp_runtime_error(""), change(change)
 {
     char buf[1024];
     VSNPRINTF(buf, 1024, messagefmt);
     errormsg = buf;
 }
 
-FileReader::FileReader(const char *fileName, size_t bufferSize) :
-    fileName(fileName),
-    bufferSize(bufferSize),
-    bufferBegin(new char[bufferSize]),
-    bufferEnd(bufferBegin + bufferSize),
-    maxLineSize(bufferSize / 2),
-    lastSavedBufferBegin(new char[bufferSize])
+FileReader::FileReader(const char *fileName, size_t bufferSize)
+   : fileName(fileName), bufferSize(bufferSize),
+     bufferBegin(new char[bufferSize]),
+     bufferEnd(bufferBegin + bufferSize),
+     maxLineSize(bufferSize / 2),
+     savedBufferSize(bufferSize / 1024),
+     lastSavedBufferBegin(new char[savedBufferSize]),
+//     lastSavedBufferEnd(lastSavedBufferBegin + savedBufferSize),
+     newSavedBufferBegin(new char[savedBufferSize])
+//     newSavedBufferEnd(newSavedBufferBegin + savedBufferSize)
 {
 #ifdef TRACE_FILEREADER
     TRACE_CALL("FileReader::FileReader(%s, %d)", fileName, bufferSize);
 #endif
+    file = NULL;
+    fileLock = NULL;
+    lastFileSize = -1;
+    lastSavedSize = -1;
+    bufferFileOffset = -1;
+    enableCheckFileForChanges = true;
+    enableFileLocking = false;
+    fileAppendedAction = IGNORE;
+    fileOverwrittenAction = SIGNAL;
+    numReadLines = 0;
+    numReadBytes = 0;
+    dataBegin = NULL;
+    dataEnd = NULL;
+    currentDataPointer = NULL;
+    currentLineStartOffset = -1;
+    currentLineEndOffset = -1;
 }
 
 FileReader::~FileReader()
@@ -61,6 +80,7 @@ FileReader::~FileReader()
 #endif
     delete[] bufferBegin;
     delete[] lastSavedBufferBegin;
+    delete[] newSavedBufferBegin;
     ensureFileClosed();
 }
 
@@ -69,25 +89,25 @@ void FileReader::ensureFileOpenInternal()
     if (!file) {
         // Note: 'b' mode turns off CR/LF translation and might be faster
         file = fopen(fileName.c_str(), "rb");
-
         if (!file)
             throw opp_runtime_error("Cannot open file '%s'", fileName.c_str());
-
+        fileLock = new FileLock(file, fileName.c_str());
         if (bufferFileOffset == -1)
             seekTo(0);
     }
 }
 
-int FileReader::readFileEnd(void *dataPointer)
+size_t FileReader::readFileEnd(file_offset_t fileSize, size_t size, const char *dataPointer)
 {
+    FileLockAcquirer fileLockAcquirer(fileLock, FILE_LOCK_SHARED, enableFileLocking);
     if (!file)
         throw opp_runtime_error("File is not open '%s'", fileName.c_str());
-    opp_fseek(file, std::max((file_offset_t)0, (file_offset_t)(fileSize - bufferSize)), SEEK_SET);
+    opp_fseek(file, std::max((file_offset_t)0, (file_offset_t)(fileSize - size)), SEEK_SET);
     if (ferror(file))
-        throw opp_runtime_error("Cannot seek in file '%s'", fileName.c_str());
-    int bytesRead = fread(dataPointer, 1, std::min((int64_t)bufferSize, fileSize), file);
+        throw opp_runtime_error("Cannot seek in file '%s', error code %d", fileName.c_str(), ferror(file));
+    int bytesRead = fread((char *)dataPointer, 1, std::min((int64_t)size, fileSize), file);
     if (ferror(file))
-        throw opp_runtime_error("Read error in file '%s'", fileName.c_str());
+        throw opp_runtime_error("Read error in file '%s', error code %d", fileName.c_str(), ferror(file));
     return bytesRead;
 }
 
@@ -95,8 +115,7 @@ void FileReader::ensureFileOpen()
 {
     if (!file) {
         ensureFileOpenInternal();
-        fileSize = getFileSizeInternal();
-        lastSavedSize = readFileEnd(lastSavedBufferBegin);
+        synchronize(OVERWRITTEN);
     }
 }
 
@@ -106,71 +125,107 @@ void FileReader::ensureFileClosed()
         fclose(file);
         file = nullptr;
     }
+    if (fileLock) {
+        delete fileLock;
+        fileLock = NULL;
+    }
 }
 
-file_offset_t FileReader::pointerToFileOffset(char *pointer) const
+file_offset_t FileReader::pointerToFileOffset(char *dataPointer) const
 {
-    Assert(bufferBegin <= pointer && pointer <= bufferEnd);
-    file_offset_t fileOffset = pointer - bufferBegin + bufferFileOffset;
-    Assert(fileOffset >= 0 && fileOffset <= fileSize);
+    Assert(bufferFileOffset >= 0);
+    Assert(bufferBegin <= dataPointer && dataPointer <= bufferEnd);
+    file_offset_t fileOffset = dataPointer - bufferBegin + bufferFileOffset;
+    Assert(fileOffset >= 0 && fileOffset <= lastFileSize);
     return fileOffset;
+}
+
+char *FileReader::fileOffsetToPointer(file_offset_t fileOffset) const
+{
+    Assert(bufferFileOffset >= 0);
+    Assert(fileOffset >= 0 && fileOffset <= lastFileSize);
+    return fileOffset - bufferFileOffset + (char *)bufferBegin;
 }
 
 void FileReader::checkConsistency(bool checkDataPointer) const
 {
     bool ok = (size_t)(bufferEnd - bufferBegin) == bufferSize &&
-        ((!dataBegin && !dataEnd) ||
-         (dataBegin <= dataEnd && bufferBegin <= dataBegin && dataEnd <= bufferEnd &&
-          (!checkDataPointer || (dataBegin <= currentDataPointer && currentDataPointer <= dataEnd))));
-
-    if (!ok)
-        throw opp_runtime_error("FileReader: Internal error");
-}
-
-FileReader::FileChangedState FileReader::checkFileForChanges()
-{
-    int64_t newFileSize = getFileSizeInternal();
-    if (newFileSize == fileSize)
-        return UNCHANGED;  // NOTE: assuming that the content is not overwritten... :(
-    else {
-#ifdef TRACE_FILEREADER
-        int readBytes =
-#endif
-            readFileEnd((void *)bufferBegin);
-        dataBegin = dataEnd = nullptr;
-        FileChangedState change;
-        if (newFileSize > fileSize && !memcmp(bufferBegin, lastSavedBufferBegin, lastSavedSize))
-            change = APPENDED;
-        else
-            change = OVERWRITTEN;
-#ifdef TRACE_FILEREADER
-        TRACE("OLDFILESIZE: %" PRId64 ", NEWFILESIZE: %" PRId64 ", OLDBUFFERSIZE: %d, NEWBUFFERSIZE: %d, CHANGE: %d\n", fileSize, newFileSize, lastSavedSize, readBytes, change);
-#endif
-        fileSize = newFileSize;
-        lastSavedSize = readFileEnd(lastSavedBufferBegin);
-        return change;
+      ((!dataBegin && !dataEnd) ||
+       (dataBegin <= dataEnd && bufferBegin <= dataBegin && dataEnd <= bufferEnd &&
+        (!checkDataPointer || (dataBegin <= currentDataPointer && currentDataPointer <= dataEnd))));
+    if (!ok) {
+//        TRACE("%d, %d, %ld, %ld, %ld ", bufferBegin, bufferEnd, dataBegin, dataEnd, currentDataPointer);
+        throw opp_runtime_error("FileReader: internal error");
     }
 }
 
-void FileReader::signalFileChanges(FileChangedState change)
+FileReader::FileChange FileReader::getFileChange()
+{
+    int64_t newFileSize;
+    time_t newLastModificationTime;
+    getFileInformation(newFileSize, newLastModificationTime);
+    if (newLastModificationTime == lastModificationTime && newFileSize == lastFileSize)
+        return UNCHANGED;
+    else if (newFileSize < lastFileSize)
+        return OVERWRITTEN;
+    else {
+        FileLockAcquirer fileLockAcquirer(fileLock, FILE_LOCK_SHARED, enableFileLocking);
+        readFileEnd(lastFileSize, savedBufferSize, newSavedBufferBegin);
+        if (!memcmp(newSavedBufferBegin, lastSavedBufferBegin, lastSavedSize))
+            return newFileSize == lastFileSize ? UNCHANGED : APPENDED;
+        else
+            return OVERWRITTEN;
+    }
+}
+
+void FileReader::processFileChange(FileChange change)
 {
     switch (change) {
         case UNCHANGED:
             break;
         case OVERWRITTEN:
-            throw FileChangedError(change, "File changed: '%s' has been overwritten", fileName.c_str());
+            switch (fileOverwrittenAction) {
+                case IGNORE:
+                    break;
+                case SIGNAL:
+                    throw FileChangedError(change, "File changed: '%s' has been overwritten", fileName.c_str());
+                case SYNCHRONIZE:
+                    synchronize(change);
+                    break;
+                default:
+                    throw opp_runtime_error("Unknown file change action: %d", change);
+            }
+            break;
         case APPENDED:
-            if (!enableIgnoreAppendChanges)
-                throw FileChangedError(change, "File changed: '%s' has been appended", fileName.c_str());
-            else
-                break;
+            switch (fileAppendedAction) {
+                case IGNORE:
+                    break;
+                case SIGNAL:
+                    throw FileChangedError(change, "File changed: '%s' has been appended", fileName.c_str());
+                case SYNCHRONIZE:
+                    synchronize(change);
+                    break;
+                default:
+                    throw opp_runtime_error("Unknown file change action: %d", change);
+            }
+            break;
+        default:
+            throw opp_runtime_error("Unknown file change: %d", change);
     }
 }
 
-void FileReader::setCurrentDataPointer(char *pointer)
+void FileReader::synchronize(FileChange change)
 {
-    currentDataPointer = pointer;
+    FileLockAcquirer fileLockAcquirer(fileLock, FILE_LOCK_SHARED, enableFileLocking);
+    getFileInformation(lastFileSize, lastModificationTime);
+    lastSavedSize = readFileEnd(lastFileSize, savedBufferSize, lastSavedBufferBegin);
+    dataBegin = NULL;
+    dataEnd = NULL;
+}
 
+void FileReader::setCurrentDataPointer(char *dataPointer)
+{
+    currentDataPointer = dataPointer;
 #ifndef NDEBUG
     checkConsistency();
 #endif
@@ -218,11 +273,13 @@ void FileReader::fillBuffer(bool forward)
     }
 
     if (dataLength > 0) {
+        FileLockAcquirer fileLockAcquirer(fileLock, FILE_LOCK_SHARED, enableFileLocking);
+
         // check for changes before reading the file
         if (enableCheckFileForChanges) {
-            FileChangedState change = checkFileForChanges();
+            FileChange change = getFileChange();
+            processFileChange(change);
             if (change != UNCHANGED) {
-                signalFileChanges(change);
                 dataPointer = (char *)bufferBegin;
                 dataLength = bufferSize;
             }
@@ -233,11 +290,13 @@ void FileReader::fillBuffer(bool forward)
             throw opp_runtime_error("File is not open '%s'", fileName.c_str());
         opp_fseek(file, fileOffset, SEEK_SET);
         if (ferror(file))
-            throw opp_runtime_error("Cannot seek in file '%s'", fileName.c_str());
-        dataLength = std::min((int64_t)dataLength, fileSize - fileOffset);
+            throw opp_runtime_error("Cannot seek in file '%s', error code %d", fileName.c_str(), ferror(file));
+        dataLength = std::min((int64_t)dataLength, lastFileSize - fileOffset);
         int bytesRead = fread(dataPointer, 1, dataLength, file);
         if (ferror(file))
-            throw opp_runtime_error("Read error in file '%s'", fileName.c_str());
+            throw opp_runtime_error("Read error in file '%s', error code %d", fileName.c_str(), ferror(file));
+        if (bytesRead != dataLength)
+            throw opp_runtime_error("Cannot read %d bytes (got %d) from file '%s'", dataLength, bytesRead, fileName.c_str());
 
 #ifdef TRACE_FILEREADER
         TPRINTF("FileReader::fillBuffer data at file offset: %" PRId64 ", length: %d", fileOffset, bytesRead);
@@ -275,16 +334,20 @@ bool FileReader::isLineStart(char *s)
         // first line of file
         if (bufferFileOffset == 0)
             return true;
-        else {  // slow path
+        else { // slow path
+            FileLockAcquirer fileLockAcquirer(fileLock, FILE_LOCK_SHARED, enableFileLocking);
             file_offset_t fileOffset = pointerToFileOffset(s) - 1;
             if (!file)
                 throw opp_runtime_error("File is not open '%s'", fileName.c_str());
             opp_fseek(file, fileOffset, SEEK_SET);
             if (ferror(file))
-                throw opp_runtime_error("Cannot seek in file '%s'", fileName.c_str());
-            char previousChar = fgetc(file);  // khmm: EOF
+                throw opp_runtime_error("Cannot seek in file '%s', error code %d", fileName.c_str(), ferror(file));
+            char previousChar;
+            int bytesRead = fread(&previousChar, 1, 1, file);
             if (ferror(file))
-                throw opp_runtime_error("Read error in file '%s'", fileName.c_str());
+                throw opp_runtime_error("Read error in file '%s', error code %d", fileName.c_str(), ferror(file));
+            if (bytesRead != 1)
+                throw opp_runtime_error("Cannot read 1 bytes (got %d) from file '%s'", fileName.c_str(), bytesRead);
             return previousChar == '\n';
         }
     }
@@ -336,9 +399,9 @@ char *FileReader::findNextLineStart(char *start, bool bufferFilled)
             fillBuffer(true);
             s = findNextLineStart(fileOffsetToPointer(fileOffset), true);
         }
-        else if (getDataEndFileOffset() == getFileSize())  // searching reached to the end of the file without CR/LF
-            return nullptr;
-        else  // line too long
+        else if (getDataEndFileOffset() == getFileSize()) // searching reached to the end of the file without CR/LF
+            return NULL;
+        else // line too long
             throw opp_runtime_error("Line too long, should be below %d in file '%s'", maxLineSize, fileName.c_str());
     }
 
@@ -393,7 +456,7 @@ char *FileReader::findPreviousLineStart(char *start, bool bufferFilled)
         }
         else if (getDataBeginFileOffset() == 0)  // searching reached to the beginning of the file without CR/LF
             return dataBegin;
-        else  // line too long
+        else // line too long
             throw opp_runtime_error("Line too long, should be below %d in file '%s'", maxLineSize, fileName.c_str());
     }
 
@@ -534,7 +597,7 @@ char *FileReader::findPreviousLineBufferPointer(const char *search, bool caseSen
     return nullptr;
 }
 
-int FileReader::getCurrentLineLength() const
+size_t FileReader::getCurrentLineLength() const
 {
     int result = currentLineEndOffset - currentLineStartOffset;
     Assert(result >= 0);
@@ -543,23 +606,25 @@ int FileReader::getCurrentLineLength() const
 
 int64_t FileReader::getFileSize()
 {
-    if (fileSize == -1) {
+    if (lastFileSize == -1) {
         ensureFileOpen();
-        fileSize = getFileSizeInternal();
+        getFileInformation(lastFileSize, lastModificationTime);
     }
-    return fileSize;
+    return lastFileSize;
 }
 
-int64_t FileReader::getFileSizeInternal()
+void FileReader::getFileInformation(int64_t& size, time_t& lastModificationTime)
 {
     struct opp_stat_t s;
     if (!file)
         throw opp_runtime_error("File is not open '%s'", fileName.c_str());
-    opp_fstat(fileno(file), &s);
-    return s.st_size;
+    if (opp_fstat(fileno(file), &s) != 0)
+        throw opp_runtime_error("Cannot stat file '%s'", fileName.c_str());
+    lastModificationTime = s.st_mtime;
+    size = s.st_size;
 }
 
-void FileReader::seekTo(file_offset_t fileOffset, unsigned int ensureBufferSizeAround)
+void FileReader::seekTo(file_offset_t fileOffset, size_t ensureBufferSizeAround)
 {
 #ifdef TRACE_FILEREADER
     TRACE_CALL("FileReader::seekTo seeking to file offset: %" PRId64, fileOffset);
@@ -575,7 +640,7 @@ void FileReader::seekTo(file_offset_t fileOffset, unsigned int ensureBufferSizeA
 
     // check if requested offset is already in memory
     if (bufferFileOffset != -1 &&
-        bufferFileOffset + ensureBufferSizeAround <= fileOffset &&
+        (file_offset_t)(bufferFileOffset + ensureBufferSizeAround) <= fileOffset &&
         fileOffset <= (file_offset_t)(bufferFileOffset + bufferSize - ensureBufferSizeAround))
     {
         setCurrentDataPointer(fileOffsetToPointer(fileOffset));
@@ -612,9 +677,6 @@ void FileReader::seekTo(file_offset_t fileOffset, unsigned int ensureBufferSizeA
 #ifdef TRACE_FILEREADER
             TPRINTF("FileReader::Keeping data from file offset: %" PRId64 " with length: %d", pointerToFileOffset(moveSrc), moveSize);
 #endif
-
-            fflush(stdout);
-
             memmove(moveDest, moveSrc, moveSize);
         }
 

@@ -23,6 +23,7 @@
 #include "omnetpp/platdep/platmisc.h"
 #include "exception.h"
 #include "commondefs.h"
+#include "filelock.h"
 
 namespace omnetpp {
 namespace common {
@@ -37,18 +38,37 @@ namespace common {
  *
  * It maintains a position which is used to return subsequent lines from
  * the file in both directions from both ends. Automatically follows file
- * content when appended, but overwriting the file causes an exception to be thrown.
+ * content when appended, but overwriting the file causes an exception to be
+ * thrown. When this happens the buffer is cleared, so the reader can be used
+ * again.
  *
  * All functions throw class opp_runtime_error on error.
  */
 class COMMON_API FileReader
 {
+  public:
+    enum FileChange {
+        UNCHANGED,
+        APPENDED,
+        OVERWRITTEN
+    };
+
+    enum FileChangeAction {
+        IGNORE,
+        SIGNAL,
+        SYNCHRONIZE
+    };
+
   private:
     // the file
     const std::string fileName;
     FILE *file = nullptr;
+    FileLock *fileLock = nullptr;
+    bool enableFileLocking = false;
     bool enableCheckFileForChanges = true;
-    bool enableIgnoreAppendChanges = true;
+//    bool enableIgnoreAppendChanges = true;
+    FileChangeAction fileAppendedAction;
+    FileChangeAction fileOverwrittenAction;
 
     // the buffer
     const size_t bufferSize = 0;
@@ -58,15 +78,20 @@ class COMMON_API FileReader
 
     // file positions and size
     file_offset_t bufferFileOffset = -1;
-    int64_t fileSize = -1;
+    int64_t lastFileSize = -1; // last known file size
+    time_t lastModificationTime = -1; // last known file modification time
 
     // the currently used (filled with data) region in buffer
     char *dataBegin = nullptr; // must point between bufferBegin and bufferEnd
     char *dataEnd = nullptr; // must point between bufferBegin and bufferEnd
 
     // the very end of the file as currently known
-    int lastSavedSize = -1;
-    char* lastSavedBufferBegin = nullptr;
+    const size_t savedBufferSize = 0;
+    size_t lastSavedSize = 0;
+    const char *lastSavedBufferBegin = nullptr;
+//    const char *lastSavedBufferEnd = nullptr;
+    const char *newSavedBufferBegin = nullptr;
+//    const char *newSavedBufferEnd = nullptr;
 
     // the position where readNextLine() or readPreviousLine() starts from
     char *currentDataPointer = nullptr; // must point between dataBegin and dataEnd when used
@@ -81,13 +106,6 @@ class COMMON_API FileReader
     // total bytes read in so far
     int64_t numReadBytes = 0;
 
-  public:
-    enum FileChangedState {
-        UNCHANGED,
-        APPENDED,
-        OVERWRITTEN,
-    };
-
   private:
     /**
      * Reads data into the buffer till the end of the buffer in the given direction
@@ -95,19 +113,20 @@ class COMMON_API FileReader
      * May read from 0 up to bufferSize number of bytes.
      */
     void fillBuffer(bool forward);
-    int readFileEnd(void *dataPointer);
+    size_t readFileEnd(file_offset_t fileSize, size_t size, const char *dataPointer);
     void ensureFileOpenInternal();
-    int64_t getFileSizeInternal();
+    void getFileInformation(int64_t& size, time_t& lastModificationTime);
+    void processFileChange(FileChange change);
     void checkConsistency(bool checkDataPointer = false) const;
 
-    file_offset_t pointerToFileOffset(char *pointer) const;
-    char* fileOffsetToPointer(file_offset_t offset) const { return offset - bufferFileOffset + (char *)bufferBegin; }
+    file_offset_t pointerToFileOffset(char *dataPointer) const;
+    char *fileOffsetToPointer(file_offset_t fileOffset) const;
 
     file_offset_t getDataBeginFileOffset() const { return pointerToFileOffset(dataBegin); }
     file_offset_t getDataEndFileOffset() const { return pointerToFileOffset(dataEnd); }
     bool hasData() const { return dataBegin != dataEnd; }
 
-    void setCurrentDataPointer(char *pointer);
+    void setCurrentDataPointer(char *dataPointer);
 
     bool isLineStart(char *s);
     char *findNextLineStart(char *s, bool bufferFilled = false);
@@ -122,7 +141,7 @@ class COMMON_API FileReader
      * Creates a tokenizer object for the given file, with the given buffer size.
      * The file doesn't get opened yet.
      */
-    FileReader(const char *fileName, size_t bufferSize = 64 * 1024);
+    FileReader(const char *fileName, size_t bufferSize = 256 * 1024);
 
     /**
      * Destructor.
@@ -132,16 +151,32 @@ class COMMON_API FileReader
     const char *getFileName() { return fileName.c_str(); }
 
     /**
-     * Controls whether the file is checked for changes each time before physically accessing it.
-     * See checkFileForChanges() for more details.
+     * Returns the maximum line length.
+     */
+    size_t getMaxLineSize() { return bufferSize / 2; }
+
+    /**
+     * Controls whether the file is checked for changes each time before accessing it.
+     * See getFileChange() and synchronize() for more details.
      */
     void setCheckFileForChanges(bool value) { enableCheckFileForChanges = value; }
 
     /**
-     * Controls what happens when it is determined that new content has been appended to the file.
-     * If append changes are not ignored an exception will be thrown.
+     * Controls what should be done if the file has been appended since it has been last read.
+     * See getFileChange() and synchronize() for more details.
      */
-    void setIgnoreAppendChanges(bool value) { enableIgnoreAppendChanges = value; }
+    void setFileAppendedAction(FileChangeAction action) { fileAppendedAction = action; }
+
+    /**
+     * Controls what should be done if the file has been overwritten since it has been last read.
+     * See getFileChange() and synchronize() for more details.
+     */
+    void setFileOverwrittenAction(FileChangeAction action) { fileOverwrittenAction = action; }
+
+    /**
+     * Controls whether the file is locked with a shared lock before accessing it.
+     */
+    void setFileLocking(bool value) { enableFileLocking = value; }
 
     /**
      * Returns true if the file is open, otherwise returns false.
@@ -211,17 +246,17 @@ class COMMON_API FileReader
     /**
      * Returns the length of the last line including CR/LF.
      */
-    int getCurrentLineLength() const;
+    size_t getCurrentLineLength() const;
 
     /**
-     * Returns the size of the file when last time checkFileForChanges() was called.
+     * Returns the currently known size of the file.
      */
     int64_t getFileSize();
 
     /**
      * Moves the current position to the given offset.
      */
-    void seekTo(file_offset_t offset, unsigned int ensureBufferSizeAround = 0);
+    void seekTo(file_offset_t offset, size_t ensureBufferSizeAround = 0);
 
     /**
      * Returns the total number of lines requested so far.
@@ -234,17 +269,18 @@ class COMMON_API FileReader
     int64_t getNumReadBytes() const { return numReadBytes; }
 
     /**
-     * Checks if the file has been changed. A file change is considered to be an append if it did not change the
-     * content of the last line (starting at the very same file offset) and the file size has been increased.
-     * Otherwise the change is considered to be an overwrite. If the file content is changed and the file size
-     * remains the same, then it is not considered to be a change at all.
+     * Checks if the file has been modified since it has been last read.
+     * A file modification is considered to be an append if it did not change
+     * the content of the last line (starting at the remembered file offset)
+     * and the file size has been increased. Any other change is considered
+     * to be an overwrite.
      */
-    FileChangedState checkFileForChanges();
+    FileChange getFileChange();
 
     /**
-     * May or may not throw a FileChangedError depending on the current configuration.
+     * Updates internal state to reflect the changes in the file.
      */
-    void signalFileChanges(FileChangedState change);
+    void synchronize(FileChange change);
 
     // Wrapper methods for use from Java, via SWIG. The static buffer is a convenience,
     // pass a local string object if multi-threaded operation is needed:
@@ -274,12 +310,12 @@ class COMMON_API FileReader
 class COMMON_API FileChangedError : public opp_runtime_error
 {
   public:
-    FileReader::FileChangedState change;
+    FileReader::FileChange change;
 
     /**
      * The error message can be generated in a printf-like manner.
      */
-    FileChangedError(FileReader::FileChangedState change, const char *msg, ...);
+    FileChangedError(FileReader::FileChange change, const char *msg, ...);
 
     /**
      * Destructor with throw clause required by gcc.
