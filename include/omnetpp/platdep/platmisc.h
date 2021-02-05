@@ -161,24 +161,28 @@ typedef int64_t file_offset_t;  // off_t on Linux
   #define opp_stat_t __stat64 // name of the struct
   #define opp_stat _stat64    // name of the function
   #define opp_fstat _fstati64
+  #define opp_ftruncate _chsize
 #elif defined __MINGW32__
   #define opp_ftell ftello64
   #define opp_fseek fseeko64
   #define opp_stat_t _stati64 // name of the struct
   #define opp_stat _stati64    // name of the function
   #define opp_fstat _fstati64
+  #define opp_ftruncate ftruncate
 #elif defined __APPLE__ || defined __FreeBSD__ || defined __ANDROID__
   #define opp_ftell ftello
   #define opp_fseek fseeko
   #define opp_stat_t stat
   #define opp_stat stat
   #define opp_fstat fstat
+  #define opp_ftruncate ftruncate
 #else
   #define opp_ftell ftello64
   #define opp_fseek fseeko64
   #define opp_stat_t stat64
   #define opp_stat stat64
   #define opp_fstat fstat64
+  #define opp_ftruncate ftruncate
 #endif
 
 #ifndef M_PI
