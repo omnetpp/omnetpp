@@ -127,9 +127,12 @@ def make_legend_label(legend_cols, row):
     """
     Produces a reasonably good label text (to be used in a chart legend) for a result row from
     a DataFrame, given a list of selected columns as returned by `extract_label_columns()`.
+    TODO legend column, comment column
     """
     comment = row.comment if hasattr(row, 'comment') else None
     comment_str = " (" + comment + ")" if type(comment) is str and comment else ""
+    if hasattr(row, 'legend'):
+        return row.legend + comment_str
 
     if len(legend_cols) == 1:
         return str(row[legend_cols[0][0]]) + comment_str
