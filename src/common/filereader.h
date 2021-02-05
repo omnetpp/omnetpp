@@ -160,10 +160,15 @@ class COMMON_API FileReader
      */
     char *getFirstLineBufferPointer();
 
+    static std::string result;
+#define GETLINE(x) const char *line = (x); result = std::string(line, getCurrentLineLength()); return line ? result.c_str() : nullptr;
+    const char *getFirstLine() { GETLINE(getFirstLineBufferPointer()); }
+
     /**
      * Returns the last line from the file, see getPreviousLineBufferPointer.
      */
     char *getLastLineBufferPointer();
+    const char *getLastLine() { GETLINE(getLastLineBufferPointer()); }
 
     /**
      * Reads the next line from the file starting from the current position, and returns a pointer to its first character.
@@ -173,6 +178,7 @@ class COMMON_API FileReader
      * Moves the current position to the end of the line just returned.
      */
     char *getNextLineBufferPointer();
+    const char *getNextLine() { GETLINE(getNextLineBufferPointer()); }
 
     /**
      * Reads the previous line from the file ending at the current position, and returns a pointer to its first character.
@@ -180,16 +186,19 @@ class COMMON_API FileReader
      * Moves the current position to the beginning of the line just returned.
      */
     char *getPreviousLineBufferPointer();
+    const char *getPreviousLine() { GETLINE(getPreviousLineBufferPointer()); }
 
     /**
      * Searches through the file from the current position for the given text and returns the first matching line.
      */
     char *findNextLineBufferPointer(const char *search, bool caseSensitive = true);
+    const char *findNextLine(const char *search, bool caseSensitive = true) { GETLINE(findNextLineBufferPointer(search, caseSensitive)); }
 
     /**
      * Searches through the file from the current position for the given text and returns the first matching line.
      */
     char *findPreviousLineBufferPointer(const char *search, bool caseSensitive = true);
+    const char *findPreviousLine(const char *search, bool caseSensitive = true) { GETLINE(findPreviousLineBufferPointer(search, caseSensitive)); }
 
     /**
      * Returns the start offset of the line last parsed with readNextLine() or readPreviousLine().
