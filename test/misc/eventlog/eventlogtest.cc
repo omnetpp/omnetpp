@@ -18,7 +18,8 @@
 #include <common/filereader.h>
 #include <eventlog/eventlog.h>
 
-using namespace omnetpp;
+using namespace omnetpp::common;
+using namespace omnetpp::eventlog;
 
 void checkEvent(IEvent *event)
 {
@@ -160,7 +161,7 @@ void testSerialEventLogAccess(const char *fileName, bool forward)
     delete eventLog;
 }
 
-void usage(char *message)
+void usage(const char *message)
 {
     if (message)
         fprintf(stderr, "Error: %s\n\n", message);

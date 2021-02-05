@@ -18,7 +18,8 @@
 #include <common/filereader.h>
 #include <eventlog/eventlogindex.h>
 
-using namespace omnetpp;
+using namespace omnetpp::common;
+using namespace omnetpp::eventlog;
 
 bool getReadForward(MatchKind matchKind)
 {
@@ -93,7 +94,7 @@ void checkSimulationTimeOffset(EventLogIndex& eventLogIndex, file_offset_t offse
 
             if ((!forward || simulationTime > checkSimulationTime) &&
                 (forward || simulationTime < checkSimulationTime))
-                throw opp_runtime_error("*** Found wrong offset for simulation time: %g\n", simulationTime);
+                throw opp_runtime_error("*** Found wrong offset for simulation time: %g\n", simulationTime.dbl());
         }
     }
 }
@@ -142,7 +143,7 @@ void testEventLogIndex(const char *fileName, int numberOfOffsetLookups)
 
             // seek to random simulation time
             simtime_t simulationTime = random.next01() * lastSimulationTime;
-            printf("Seeking for simulation time: %g\n", simulationTime);
+            printf("Seeking for simulation time: %g\n", simulationTime.dbl());
             offset = eventLogIndex.getOffsetForSimulationTime(simulationTime, EXACT);
             firstOrPreviousOffset = eventLogIndex.getOffsetForSimulationTime(simulationTime, FIRST_OR_PREVIOUS);
             firstOrNextOffset = eventLogIndex.getOffsetForSimulationTime(simulationTime, FIRST_OR_NEXT);
@@ -150,13 +151,13 @@ void testEventLogIndex(const char *fileName, int numberOfOffsetLookups)
             lastOrNextOffset = eventLogIndex.getOffsetForSimulationTime(simulationTime, LAST_OR_NEXT);
 
             if (firstOrPreviousOffset > lastOrNextOffset)
-                throw opp_runtime_error("*** Inconsistent first or previous and last or next offsets for simulation time: %g\n", simulationTime);
+                throw opp_runtime_error("*** Inconsistent first or previous and last or next offsets for simulation time: %g\n", simulationTime.dbl());
 
             if (firstOrNextOffset < firstOrPreviousOffset)
-                throw opp_runtime_error("*** Inconsistent first or next and first or previous offsets for simulation time: %g\n", simulationTime);
+                throw opp_runtime_error("*** Inconsistent first or next and first or previous offsets for simulation time: %g\n", simulationTime.dbl());
 
             if (lastOrNextOffset < lastOrPreviousOffset)
-                throw opp_runtime_error("*** Inconsistent last or next and last or previous offsets for simulation time: %g\n", simulationTime);
+                throw opp_runtime_error("*** Inconsistent last or next and last or previous offsets for simulation time: %g\n", simulationTime.dbl());
 
             checkSimulationTimeOffset(eventLogIndex, offset, EXACT, simulationTime);
             checkSimulationTimeOffset(eventLogIndex, firstOrPreviousOffset, FIRST_OR_PREVIOUS, simulationTime);
@@ -167,7 +168,7 @@ void testEventLogIndex(const char *fileName, int numberOfOffsetLookups)
     }
 }
 
-void usage(char *message)
+void usage(const char *message)
 {
     if (message)
         fprintf(stderr, "Error: %s\n\n", message);
