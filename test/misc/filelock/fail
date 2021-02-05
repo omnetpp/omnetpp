@@ -1,0 +1,4 @@
+#!/bin/sh
+
+./testreader nolock
+./testfilereader nolock
