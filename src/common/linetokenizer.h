@@ -73,6 +73,13 @@ class COMMON_API LineTokenizer
      * contents will be overwritten with the next call.
      */
     char **tokens() {return vec;}
+
+    std::vector<const char *> tokensVector() {
+        std::vector<const char *> result;
+        for (int i = 0; i < vecsize; i++)
+            result.push_back(*(vec + i));
+        return result;
+    }
 };
 
 } // namespace common
