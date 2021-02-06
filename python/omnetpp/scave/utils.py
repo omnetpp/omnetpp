@@ -1184,9 +1184,9 @@ def export_data_if_needed(df, props):
 
     if _parse_optional_bool(get_prop("export_data")):
         format = "csv"
-        folder = get_prop("image_export_folder") or os.getcwd()
-        filename = get_prop("image_export_filename") or _sanitize_filename(chart.get_name())
-        filepath = os.path.join(folder, filename) + "." + format #TODO make it better
+        folder = get_prop("data_export_folder") or os.getcwd()
+        filename = get_prop("data_export_filename") or _sanitize_filename(chart.get_name())
+        filepath = os.path.join(folder, filename) + "." + format
 
         print("exporting data to: '" + filepath + "' as " + format)
 
