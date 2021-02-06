@@ -27,6 +27,15 @@ def assert_is_native_chart():
         raise RuntimeError("This method can only be used on native charts")
 
 def set_property(key, value):
+    """
+    Sets one property of the native plot widget to the given value. When invoked
+    outside the contex of a native plot widget, the function does nothing.
+
+    # Parameters
+
+    - **key** *(string)*: Name of the property.
+    - **value** *(string)*: The value to set. If any other type than string is passed in, it will be converted to string.
+    """
     assert_is_native_chart()
     msg = None
     try:
@@ -39,6 +48,14 @@ def set_property(key, value):
 
 
 def set_properties(props):
+    """
+    Sets several properties of the native plot widget. It is functionally equivalent to
+    repeatedly calling `set_property` with the entries of the `props` dictionary.
+
+    # Parameters
+
+    - **props** *(dict)*: The properties to set.
+    """
     assert_is_native_chart()
     msg = None
     try:
@@ -52,11 +69,22 @@ def set_properties(props):
 
 
 def get_supported_property_keys():
+    """
+    Returns the list of property names that the native plot widget supports, such as
+    'Plot.Title', 'X.Axis.Max' and 'Legend.Display', among many others.
+    """
     assert_is_native_chart()
     return set(Gateway.chart_plotter.getSupportedPropertyKeys())
 
 
 def set_warning(warning):
+    """
+    Displays the given warning text in the plot.
+
+    # Parameters
+
+    - **warning** *(string)*: The warning string.
+    """
     # TODO maybe we need a common interface?
     if Gateway.widget_provider:
         Gateway.widget_provider.setWarning(warning)
@@ -64,7 +92,19 @@ def set_warning(warning):
     if Gateway.chart_plotter:
         Gateway.chart_plotter.setWarning(warning)
 
-def plot_lines(df, props):  # key, label, xs, ys
+def plot_lines(df, props):
+    """
+    Plots lines given in the DataFrame `df` (one line from each row), and sets
+    the visual properties from `props` onto the plot.
+    The DataFrame must have these columns (in any order):
+        - key: an internal (unique) identifier for each line, string
+        - label: the name of the line, this will appear on the legend, string
+        - xs: a NumPy array storing the X coordinates of the points used to draw the line
+        - ys: a NumPy array storing the Y coordinates of the points used to draw the line
+            Must have the same number of elements as `xs`
+
+    In native charts, this can only be called if the chart is of type "LINE".
+    """
     assert_is_native_chart()
     if sorted(list(df.columns)) != sorted(["key", "label", "xs", "ys"]):
         raise RuntimeError("Invalid DataFrame format in plot_lines")
@@ -90,6 +130,16 @@ def plot_lines(df, props):  # key, label, xs, ys
 
 
 def plot_bars(df, props):
+    """
+    Plots bars given in the DataFrame `df` (one series from each row), and sets
+    the visual properties from `props` onto the plot.
+    The DataFrame must have these columns (in any order):
+        - key: an internal (unique) identifier for each series, any type
+        - label: the name of the series, this will appear on the legend, any type
+        - values: A list storing the heights of the bars
+
+    In native charts, this can only be called if the chart is of type "BAR".
+    """
     # TODO: add check for one-layer indices? numbers-only data?
     assert_is_native_chart()
     if sorted(list(df.columns)) != sorted(["key", "label", "values"]):
@@ -105,7 +155,23 @@ def plot_bars(df, props):
     ]), MapConverter().convert(props, Gateway.gateway._gateway_client))
 
 
-def plot_histograms(df, props):  # key, label, binedges, binvalues, underflows, overflows, min, max
+def plot_histograms(df, props):
+    """
+    Plots histograms given in the DataFrame `df` (one from each row), and sets
+    the visual properties from `props` onto the plot.
+    The DataFrame must have these columns (in any order):
+        - key: an internal (unique) identifier for each histogram, string
+        - label: the name of the histogram, this will appear on the legend, string
+        - binedges: A NumPy array storing the histograms' bins' edges.
+            Must contain one more element than the number of bins.
+        - binvalues: A NumPy array storing the height of each bin in the histogram
+        - underflows: the (weighted) sum of the underflowed samples (pseudo-bin before the first real one), float
+        - overflows: the (weighted) sum of the overflowed samples (pseudo-bin after the last one), float
+        - min: the minimum of the collected samples, this is the left edge of the underflow "bin", float
+        - max: the maximum of the collected samples, this is the right edge of the overflow "bin", float
+
+    In native charts, this can only be called if the chart is of type "HISTOGRAM".
+    """
     assert_is_native_chart()
 
     if sorted(list(df.columns)) != sorted(["key", "label", "binedges", "binvalues", "underflows", "overflows", "min", "max"]):
