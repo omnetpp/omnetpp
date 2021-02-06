@@ -3,6 +3,17 @@ A collection of utility function for data manipulation and plotting, built
 on top of Pandas data frames and the `chart` and `plot` packages from `omnetpp.scave`.
 Functions in this module have been written largely to the needs of the
 chart templates that ship with the IDE.
+
+There are some functions which are mandatory elements in a chart script. These are:
+
+If you want style settings in the chart dialog to take effect:
+ `preconfigure_plot()`
+ `postconfigure_plot()`
+
+If you want image/data export to work:
+- `export_image_if_needed()`
+- `export_data_if_needed()`
+
 """
 
 import random, sys, os, string, re, math, importlib
@@ -22,7 +33,11 @@ def confidence_interval(alpha, data):
     """
     Returns the half-length of the confidence interval of the mean of `data`, assuming
     normal distribution, for the given confidence level `alpha`.
-    `alpha` must be in the [0..1] range.
+
+    Parameters:
+
+    - `alpha` (float): Confidence level, must be in the [0..1] range.
+    - `data` (array-like): An array containing the values.
     """
     return st.norm.interval(alpha, loc=0, scale=st.sem(data))[1]
 
@@ -30,7 +45,9 @@ def split(s, sep=','):
     """
     Split a string with the given separator (by default with comma), trim
     the surrounding whitespace from the items, and return the result as a
-    list. Return an empty list for an empty or all-whitespace input string.
+    list. Returns an empty list for an empty or all-whitespace input string.
+    (Note that in contrast, `s.split(',')` will return an empty array,
+    even for `s=''`.)
     """
     parts = s.split(sep)
     parts = [p.strip() for p in parts]
@@ -52,7 +69,7 @@ def extract_label_columns(df, preferred_legend_column="title"):
     value tuples uniquely identify every line in the DataFrame. These will
     primarily be iteration variables and run attributes.
 
-    Returns::
+    Returns:
 
     A pair of a string and a list; the first value is the name of the
     "title" column, and the second one is a list of pairs, each
@@ -156,11 +173,9 @@ def make_chart_title(df, title_col, legend_cols):
 
 def pick_two_columns(df):
     """
-    TODO
     Choose two columns from the dataframe which best partitions the rows
-    of the dataframe.
-
-    Relies on extract_label_columns().
+    of the dataframe, and returns their names as a pair. Returns (`None`, `None`)
+    if no such pair was found. This method is useful for creating e.g. a bar plot.
     """
     title_col, label_cols = extract_label_columns(df)
     label_cols = [l[1] for l in label_cols]
@@ -179,6 +194,8 @@ def assert_columns_exist(df, cols, message="Expected column missing from DataFra
     """
     Ensures that the dataframe contains the given columns. If any of them are missing,
     the function raises an error with the given message.
+
+    Parameters:
 
     `cols` *(list of strings)*: column names to check.
     """
@@ -224,16 +241,10 @@ def _parse_optional_bool(value):
 
 def make_fancy_xticklabels(ax):
     """
-    Only useful for Matplotlib plots.
-
-    Causes the x tick labels to be rotated by the minimum amount necessary so that
-    they don't overlap. Note that the necessary amount of rotation typically depends
-    on the horizontal zoom level.
-
-    TODO Where x axis is a category axis.
+    Only useful for Matplotlib plots. It causes the x tick labels to be rotated
+    by the minimum amount necessary so that they don't overlap. Note that the
+    necessary amount of rotation typically depends on the horizontal zoom level.
     """
-    import math
-    import numpy as np
     from matplotlib.text import Text
 
     # Declare and register callbacks
@@ -275,12 +286,11 @@ def make_fancy_xticklabels(ax):
 # and https://stackoverflow.com/q/11551049#comment77920445_11562898
 def make_scroll_navigable(figure):
     """
-    Only useful for Matplotlib plots.
-
-    Causes the chart to respond to mouse wheel events. It works similarly in all 3 operation modes (Interact, Pan, Zoom)
-    without modifiers: vertical pan
-    Shift: horizontal pan
-    Ctrl: zoom
+    Only useful for Matplotlib plots. It causes the plot to respond to mouse
+    wheel events in the following way, regardless of navigation mode:
+    - Without modifiers: vertical pan
+    - With Shift: horizontal pan
+    - With Ctrl: zoom
     """
     def zoom_fun(event):
         ax = event.inaxes
@@ -320,38 +330,34 @@ def make_scroll_navigable(figure):
 # source: https://stackoverflow.com/a/39789718/635587
 def customized_box_plot(percentiles, axes=None, labels=None, redraw=True, *args, **kwargs):
     """
-    Generates a customized boxplot based on explicitly specified percentile values.
+    Generates a customized box-and-whiskers plot based on explicitly specified
+    percentile values. This method is necessary because pyplot.boxplot() insists
+    on computing the stats from the raw data (which we often don't have) itself.
 
-    Creates a Box and Whiskers plot, augmented with custom elements. Number of boxes = len(percentiles)
+    The data are in the `percentiles` argument, which should be list of tuples.
+    One box will be drawn for each tuple. Each tuple contains 6 elements (or 5,
+    because the last one is optional):
 
-    This method is necessary because pyplot.boxplot() insists on computing
-    the stats from the raw data itself, and we don't have the raw data.
+    (*q1_start*, *q2_start*, *q3_start*, *q4_start*, *q4_end*, *fliers_xy*)
 
-Make a box and whisker plot.
+    The first five elements have following meaning:
+    - *q1_start*: y coord of bottom whisker cap
+    - *q2_start*: y coord of bottom of the box
+    - *q3_start*: y coord of median mark
+    - *q4_start*: y coord of top of the box
+    - *q4_end*: y coord of top whisker cap
 
-NOTE: boxplot docu: Make a box and whisker plot for each column of x or each vector in sequence x. The box extends from the lower to upper quartile values of the data, with a line at the median. The whiskers extend from the box to show the range of the data. Flier points are those past the end of the whiskers.
+    The last element, *fliers_xy* is an *(xs, ys)* pair of arrays, containing
+    the coordinates of the outlier points. (The x coordinates are ignored.)
 
-    Parameters::
-    percentiles: list of tuples. each tuple contains 5 or 6 elements:
-            (q1_start, q2_start, q3_start, q4_start, q4_end, fliers_xy)
-            (q1_start, q2_start, q3_start, q4_start, q4_end) --> fliers_xy: (xs, ys), both are list of numbers
+    x coords of the box-and-whiskers plots are automatic.
 
-            q1...q5: numbers
-            q1: y coord of bottom whisker cap
-            q2: y coord of bottom of the box
-            q3: y coord of median mark
-            q4: y coord of top of the box
-            q5: y coord of top whisker cap
-
-            fliers_xy: coords of separate points (outliers)
-
-            x coords of the box-and-whiskers plots are automatic.
-
-    axes: the axes object of the plot
-    labels: if provided, the legend labels for the boxplots
-    redraw: if False, redraw is deferred.
-    args: passed to axes.boxplot()
-    kwargs: passed to axes.boxplot()
+    Parameters:
+    - `percentiles`: The list of tuples.
+    - `axes`: The axes object of the plot.
+    - `labels`: If provided, the legend labels for the boxes.
+    - `redraw`: If False, redraw is deferred.
+    - `args`, `kwargs`: Passed to `axes.boxplot()`.
     """
 
     if axes is None:
@@ -436,7 +442,7 @@ NOTE: boxplot docu: Make a box and whisker plot for each column of x or each vec
         axes.figure.canvas.draw()
 
 
-def interpolationmode_to_drawstyle(interpolationmode, hasenum):
+def interpolationmode_to_drawstyle(interpolationmode, hasenum): #TODO prefix with underscore?
     """
     Converts an OMNeT++-style interpolation constant ('none', 'linear',
     'sample-hold', etc.) to Matplotlib draw styles.
@@ -596,16 +602,37 @@ def _to_label(x):
 
 def plot_bars(df, props, variable_name=None, errors_df=None):
     """
-    Creates a bar plot. Each column is series.
+    Creates a bar plot from the dataframe, with styling and additional input
+    coming from the properties. Each column in the dataframe defines a series.
 
-    Takes several chart properties into account which control the style and appearance of the plot.
+    Column names serve as labels for the legend. Group names (displayed on the
+    x axis) are taken from the row index. The names of the two indices also appear
+    in the legend and as x axis label. (This is useful if column and group names
+    are values of a variable, and the index name contains the name of the variable.)
+    The name of the variable represented by the values can be passed in as
+    the `variable_name` argument (as it is not present in the dataframe); if so,
+    it will become the y axis label.
 
-    df: Each column is a series (column names become the labels for the legend)
-    names: labels for the rows
-    errors_df: dataframe with the errors (in y axis units); protrudes this much up and down (range is 2 x error)
+    Error bars can be drawn by providing an extra dataframe of identical
+    dimensions as the main one. Error bars will protrude by the values in the
+    errors dataframe both up and down (i.e. range is 2x error).
 
-    get_prop("groups") --> TODO
-    get_prop("series") --> TODO
+    Colors are assigned automatically. The `cycle_seed` property allows you
+    to select other combinations if the default one is not suitable.
+
+    Parameters:
+
+    - `df`: the dataframe
+    - `props` (dict): the properties
+    - `variable_name` (string): The name of the variable represented by the values.
+    - `errors_df`: dataframe with the errors (in y axis units)
+
+    Notable properties that affect the plot:
+    - `baseline`: The y value at which the x axis is drawn.
+    - `bar_placement`: Selects the arrangement of bars: aligned, overlap, stacked, etc.
+    - `xlabel_rotation`: Amount of counter-clockwise rotation of x axis labels a.k.a. group names, in degrees.
+    - `title`: Plot title (autocomputed if missing).
+    - `cycle_seed`: Alters the sequence in which colors are assigned to series.
     """
     p = plot if chart.is_native_chart() else plt
 
@@ -695,9 +722,38 @@ def plot_bars(df, props, variable_name=None, errors_df=None):
 
 def plot_vectors(df, props, legend_func=make_legend_label):
     """
-    TODO
-    df columns: "vectime", "vecvalue"
-    labels: from the "title" or "name" column
+    Creates a line plot from the dataframe, with styling and additional input
+    coming from the properties. Each row in the dataframe defines a series.
+
+    Colors and markers are assigned automatically. The `cycle_seed` property
+    allows you to select other combinations if the default one is not suitable.
+
+    The legend is normally computed automatically from columns which best
+    differentiate among the series. There are also multiple ways to influence
+    the labels: the `legend_labels` property, the `comment` and `legend` dataframe
+    columns, and also the `legend_func` argument.
+
+    Parameters:
+
+    - `df`: the dataframe
+    - `props` (dict): the properties
+    - `legend_func`: the function to produce custom legend labels
+
+    Columns of the dataframe:
+
+    - `vectime`, `vecvalue` (Numpy `ndarray`'s of matching sizes): the x and y coordinates for the plot
+    - `interpolationmode` (str, optional): this column normally comes from a result attribute, and determines how the points will be connected
+    - `legend` (optional): legend label for the series; if missing, legend labels are derived from other columns
+    - `name`, `title`, `module`, etc. (optional): provide input for the legend
+    - `comment` (optional): will be appended to the legend labels
+
+    Notable properties that affect the plot:
+
+    - `title`: plot title (autocomputed if missing)
+    - `legend_labels`: selects whether to prefer the `name` or the `title` column for the legend
+    - `drawstyle`: Matplotlib draw style; if present, it overrides the draw style derived from `interpolationmode`.
+    - `linestyle`, `linecolor`, `linewidth`, `marker`, `markersize`: styling
+    - `cycle_seed`: Alters the sequence in which colors and markers are assigned to series.
     """
     p = plot if chart.is_native_chart() else plt
 
@@ -716,8 +772,48 @@ def plot_vectors(df, props, legend_func=make_legend_label):
 
 def plot_histograms(df, props, legend_func=make_legend_label):
     """
-    df columns: "binedges", "binvalues", plus "min", "max", "underflows", "overflows" (mandatory)
-    labels: from the "title" or "name" column
+    Creates a histogram plot from the dataframe, with styling and additional input
+    coming from the properties. Each row in the dataframe defines a histogram.
+
+    Colors are assigned automatically.  The `cycle_seed` property allows you to
+    select other combinations if the default one is not suitable.
+
+    The legend is normally computed automatically from columns which best
+    differentiate among the histograms. There also are multiple ways to influence
+    the labels: the `legend_labels` property, the `comment` and `legend` dataframe
+    columns, and also the `legend_func` argument.
+
+    Parameters:
+
+    - `df`: the dataframe
+    - `props` (dict): the properties
+    - `legend_func`: the function to produce custom legend labels
+
+    Columns of the dataframe:
+
+    - `binedges`, `binvalues` (array-like, `len(binedges)==len(binvalues)+1`):
+       The bin edges and the bin values (count or sum of weights) for the histogram.
+    - `min`, `max`, `underflows`, `overflows`: The minimum/maximum values,
+       and the bin values for the underflow/overflow bins.
+    - `legend` (optional): Legend label for the series. If missing, legend labels
+       are derived from other columns.
+    - `name`, `title`, `module`, etc. (optional): Provide input for the legend.
+    - `comment` (optional): will be appended to the legend labels.
+
+    Notable properties that affect the plot:
+
+    - `normalize` (bool): If true, normalize the sum of the bin values to 1. If
+      `normalize` is true (and `cumulative` is false), the probability density
+       function (PDF) will be displayed.
+    - `cumulative` (bool): If true, show each bin as the sum of the previous bin
+       values plus itself. If both `normalize` and `cumulative` are true, that
+       results in the cumulative density function (CDF) being displayed.
+    - `show_overflows` (bool): If true, show the underflow/overflow bins.
+    - `title`: Plot title (autocomputed if missing).
+    - `legend_labels`: Selects whether to prefer the `name` or the `title` column for the legend.
+    - `drawstyle`: Selects whether to fill the area below the histogram line.
+    - `linestyle`, `linecolor`, `linewidth`: Styling.
+    - `cycle_seed`: Alters the sequence in which colors and markers are assigned to series.
     """
     p = plot if chart.is_native_chart() else plt
 
@@ -761,6 +857,10 @@ def plot_histograms(df, props, legend_func=make_legend_label):
 
 
 def _initialize_cycles(props):
+    """
+    Initialize the `_marker_cycle` and `_color_cycle` global variables, taking
+    the `cycle_seed` property into account.
+    """
     def get_prop(k):
         return props[k] if k in props else None
 
@@ -822,8 +922,7 @@ def _parse_vectorop_line(line):
 
 def _perform_vector_op(df, line):
     """
-    Performs one vector operation on the dataframe.
-    Helper for `perform_vector_ops()`.
+    Performs one vector operation on the dataframe. Helper for `perform_vector_ops()`.
     """
     # parse line
     type, module, name, args, kwargs = _parse_vectorop_line(line)
@@ -862,6 +961,8 @@ def perform_vector_ops(df, operations : str):
 
     [(`compute`|`apply`) `:` ] *opname* [ `(` *arglist* `)` ] [ `#` *comment* ]
 
+    Blank lines and lines only containing a comment are also accepted.
+
     *opname* is the name of the function, optionally qualified with its package name.
     If the package name is omitted, `omnetpp.scave.vectorops` is assumed.
 
@@ -886,8 +987,7 @@ def perform_vector_ops(df, operations : str):
 
 def _apply_vector_op(df, operation, *args, **kwargs):
     """
-    TODO args=?
-    Helper for `perform_vector_ops()`.
+    Process a vector operation with the `apply` prefix. Helper for `perform_vector_ops()`.
     """
     if operation == vectorops.aggregate:
         return vectorops.aggregate(df, *args, **kwargs)
@@ -902,8 +1002,7 @@ def _apply_vector_op(df, operation, *args, **kwargs):
 
 def _compute_vector_op(df, operation, *args, **kwargs):
     """
-    TODO args=?
-    Helper for `perform_vector_ops()`.
+    Process a vector operation with the `compute` prefix. Helper for `perform_vector_ops()`.
     """
     if operation == vectorops.aggregate:
         return df.append(vectorops.aggregate(df, *args, **kwargs), sort=False)
@@ -918,13 +1017,27 @@ def _compute_vector_op(df, operation, *args, **kwargs):
 
 def preconfigure_plot(props):
     """
-    TODO
+    Configures the plot according to the given properties, which normally
+    get their values from setting in the "Configure Chart" dialog.
+    Calling this function before plotting was performed should be a standard
+    part of chart scripts.
+
+    A partial list of properties taken into account for native plots:
+    - property keys understood by the plot widget, see `plot.get_supported_property_keys()`
+    - properties listed in the `plot.properties` property
+
+    And for Matplotlib plots:
+    - `plt.style`
+    - properties listed in the `matplotlibrc` property
+    - properties prefixed with `matplotlibrc.`
+
+    Parameters:
+    - `props` (dict): the properties
     """
     def get_prop(k):
         return props[k] if k in props else None
 
     if chart.is_native_chart():
-        #plot.set_properties(_filter_by_key_prefix(props,"plot."))  #TODO this was after plotting, was that intentional?
         supported_keys = plot.get_supported_property_keys()
         plot.set_properties({ k: v for k, v in props.items() if k in supported_keys})
         plot.set_properties(parse_rcparams(get_prop("plot.properties") or ""))
@@ -940,7 +1053,18 @@ def preconfigure_plot(props):
 
 def postconfigure_plot(props):
     """
-    TODO
+    Configures the plot according to the given properties, which normally
+    get their values from setting in the "Configure Chart" dialog.
+    Calling this function after plotting was performed should be a standard part
+    of chart scripts.
+
+    A partial list of properties taken into account:
+    - `yaxis_title`, `yaxis_title`, `xaxis_min`,  `xaxis_max`, `yaxis_min`,
+      `yaxis_max`, `xaxis_log`, `yaxis_log`, `legend_show`, `legend_border`,
+      `legend_placement`, `grid_show`, `grid_density`
+
+    Parameters:
+    - `props` (dict): the properties
     """
     p = plot if chart.is_native_chart() else plt
 
@@ -977,6 +1101,39 @@ def postconfigure_plot(props):
         plt.tight_layout()
 
 def export_image_if_needed(props):
+    """
+    If a certain property is set, save the plot in the selected image format.
+    Calling this function should be a standard part of chart scripts, as it is what
+    makes the "Export image" functionality of the IDE and `opp_charttool` work.
+
+    Note that for export, even IDE-native charts are rendered using Matplotlib.
+
+    The properties that are taken into account:
+
+    - `export_image` (boolean): Controls whether to perform the exporting. This is
+       normally `false`, and only set to `true` by the IDE or opp_charttool when
+       image export is requested.
+    - `image_export_format`: The default is SVG. Accepted formats (and their names) are the ones supported by Matplotlib.
+    - `image_export_folder`: The folder in which the image file is to be created.
+    - `image_export_filename`: The output file name. If missing or empty, a
+       sanitized version of the chart name is used.
+    - `image_export_width`: Image width in inches (default: 6")
+    - `image_export_height`: Image height in inches (default: 4")
+    - `image_export_dpi`: DPI setting, default 96. For raster image formats, the
+       image dimensions are produced as width (or height) times dpi.
+
+    Note that these properties come from two sources to allow meaningful batch
+    export. `export_image`, `image_export_format`, `image_export_folder` and
+    `image_export_dpi` come from the export dialog because they are common
+    to all charts, while `image_export_filename`, `image_export_width` and
+    `image_export_height` come from the chart properties because they are
+    specific to each chart. Note that `image_export_dpi` is used for controlling
+    the resolution (for raster image formats) while letting charts maintain
+    their own aspect ratio and relative sizes.
+
+    Parameters:
+    - `props` (dict): the properties
+    """
     def get_prop(k):
         return props[k] if k in props else None
 
@@ -996,6 +1153,29 @@ def export_image_if_needed(props):
 
 
 def export_data_if_needed(df, props):
+    """
+    If a certain property is set, save the dataframe in CSV format.
+    Calling this function should be a standard part of chart scripts, as it is what
+    makes the "Export data" functionality of the IDE and `opp_charttool` work.
+
+    The properties that are taken into account:
+
+    - `export_data` (boolean): Controls whether to perform the exporting. This is
+       normally `false`, and only set to `true` by the IDE or opp_charttool when
+       data export is requested.
+    - `data_export_folder`: The folder in which the CSV file is to be created.
+    - `data_export_filename`: The output file name. If missing or empty, a
+       sanitized version of the chart name is used.
+
+    Note that these properties come from two sources to allow meaningful batch
+    export. `export_data` and `image_export_folder` come from the export dialog
+    because they are common to all charts, and `image_export_filename` comes
+    from the chart properties because it is specific to each chart.
+
+    Parameters:
+    - `df`: the dataframe to save
+    - `props` (dict): the properties
+    """
     def get_prop(k):
         return props[k] if k in props else None
 

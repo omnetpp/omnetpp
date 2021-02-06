@@ -96,14 +96,15 @@ def plot_lines(df, props):
     """
     Plots lines given in the DataFrame `df` (one line from each row), and sets
     the visual properties from `props` onto the plot.
-    The DataFrame must have these columns (in any order):
-        - key: an internal (unique) identifier for each line, string
-        - label: the name of the line, this will appear on the legend, string
-        - xs: a NumPy array storing the X coordinates of the points used to draw the line
-        - ys: a NumPy array storing the Y coordinates of the points used to draw the line
-            Must have the same number of elements as `xs`
 
-    In native charts, this can only be called if the chart is of type "LINE".
+    The DataFrame must have these columns (in any order):
+    - `key` (string or `None`): an internal (unique) identifier for each line
+    - `label`: the name of the line, this will appear on the legend, string
+    - `xs`: a NumPy array storing the X coordinates of the points used to draw the line
+    - `ys`: a NumPy array storing the Y coordinates of the points used to draw the line
+        Must have the same number of elements as `xs`
+
+    This can only be called if the chart is of type `LINE`.
     """
     assert_is_native_chart()
     if sorted(list(df.columns)) != sorted(["key", "label", "xs", "ys"]):
@@ -133,12 +134,13 @@ def plot_bars(df, props):
     """
     Plots bars given in the DataFrame `df` (one series from each row), and sets
     the visual properties from `props` onto the plot.
-    The DataFrame must have these columns (in any order):
-        - key: an internal (unique) identifier for each series, any type
-        - label: the name of the series, this will appear on the legend, any type
-        - values: A list storing the heights of the bars
 
-    In native charts, this can only be called if the chart is of type "BAR".
+    The DataFrame must have these columns (in any order):
+    - `key` (string or `None`): an internal (unique) identifier for each series, any type
+    - `label`: the name of the series, this will appear on the legend, any type
+    - `values`: A list storing the heights of the bars
+
+    This can only be called if the chart is of type "BAR".
     """
     # TODO: add check for one-layer indices? numbers-only data?
     assert_is_native_chart()
@@ -159,18 +161,19 @@ def plot_histograms(df, props):
     """
     Plots histograms given in the DataFrame `df` (one from each row), and sets
     the visual properties from `props` onto the plot.
-    The DataFrame must have these columns (in any order):
-        - key: an internal (unique) identifier for each histogram, string
-        - label: the name of the histogram, this will appear on the legend, string
-        - binedges: A NumPy array storing the histograms' bins' edges.
-            Must contain one more element than the number of bins.
-        - binvalues: A NumPy array storing the height of each bin in the histogram
-        - underflows: the (weighted) sum of the underflowed samples (pseudo-bin before the first real one), float
-        - overflows: the (weighted) sum of the overflowed samples (pseudo-bin after the last one), float
-        - min: the minimum of the collected samples, this is the left edge of the underflow "bin", float
-        - max: the maximum of the collected samples, this is the right edge of the overflow "bin", float
 
-    In native charts, this can only be called if the chart is of type "HISTOGRAM".
+    The DataFrame must have these columns (in any order):
+    - `key` (string or `None`): an internal (unique) identifier for each histogram
+    - `label`: the name of the histogram, this will appear on the legend, string
+    - `binedges`: A NumPy array storing the histograms' bins' edges.
+        Must contain one more element than the number of bins.
+    - `binvalues`: A NumPy array storing the height of each bin in the histogram
+    - `underflows`: the (weighted) sum of the underflowed samples (pseudo-bin before the first real one), float
+    - `overflows`: the (weighted) sum of the overflowed samples (pseudo-bin after the last one), float
+    - `min`: the minimum of the collected samples, this is the left edge of the underflow "bin", float
+    - `max`: the maximum of the collected samples, this is the right edge of the overflow "bin", float
+
+    This can only be called if the chart is of type `HISTOGRAM`.
     """
     assert_is_native_chart()
 
