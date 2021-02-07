@@ -180,7 +180,7 @@ def assert_columns_exist(df, cols, message="Expected column missing from DataFra
     Ensures that the dataframe contains the given columns. If any of them are missing,
     the function raises an error with the given message.
 
-    **cols** *(list of strings)*: column names to check.
+    `cols` *(list of strings)*: column names to check.
     """
     for c in cols:
         if c not in df:
