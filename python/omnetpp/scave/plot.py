@@ -91,7 +91,7 @@ def plot(xs, ys, key=None, label=None, drawstyle=None, linestyle=None, linewidth
     Plot y versus x as lines and/or markers. Call `plot` multiple times
     to plot multiple sets of data.
 
-    # Parameters
+    Parameters:
 
     - **x**, **y** *(array-like or scalar)*: The horizontal / vertical coordinates of the data points.
     - **key** *(string)*: Identifies the series
@@ -126,7 +126,7 @@ def bar(x, height, width=0.8, key=None, label=None, color=None, edgecolor=None):
     all bars, or it may be a sequence of length N providing a separate value
     for each bar.
 
-    # Parameters
+    Parameters:
 
     - **x** *(sequence of scalars)*: The x coordinates of the bars.
     - **height** *(scalar or sequence of scalars)*: The height(s) of the bars.
@@ -151,7 +151,7 @@ def set_property(key, value):
     Sets one property of the native plot widget to the given value. When invoked
     outside the contex of a native plot widget, the function does nothing.
 
-    # Parameters
+    Parameters:
 
     - **key** *(string)*: Name of the property.
     - **value** *(string)*: The value to set. If any other type than string is passed in, it will be converted to string.
@@ -164,7 +164,7 @@ def set_properties(props):
     repeatedly calling `set_property` with the entries of the `props` dictionary.
     When invoked outside the contex of a native plot widget (TODO?), the function does nothing.
 
-    # Parameters
+    Parameters:
 
     - **props** *(dict)*: The properties to set.
     """
@@ -184,7 +184,7 @@ def set_warning(warning):
     """
     Displays the given warning text in the plot.
 
-    # Parameters
+    Parameters:
 
     - **warning** *(string)*: The warning string.
     """
@@ -194,7 +194,7 @@ def title(label):
     """
     Sets the plot title.
 
-    # Parameters
+    Parameters:
 
     - **label** *(string)*: The plot title.
     """
@@ -204,7 +204,7 @@ def xlabel(xlabel):
     """
     Sets the label of the X axis.
 
-    # Parameters
+    Parameters:
 
     - **xlabel** *(string)*: The label string.
     """
@@ -214,7 +214,7 @@ def ylabel(ylabel):
     """
     Sets the label of the Y axis.
 
-    # Parameters
+    Parameters:
 
     - **ylabel** *(string)*: The label string.
     """
@@ -224,7 +224,7 @@ def xlim(left=None, right=None):
     """
     Sets the limits of the X axis.
 
-    # Parameters
+    Parameters:
 
     - **left** *(float)*: The left xlim in data coordinates. Passing None leaves the limit unchanged.
     - **right** *(float)*: The right xlim in data coordinates. Passing None leaves the limit unchanged.
@@ -235,7 +235,7 @@ def ylim(bottom=None, top=None):
     """
     Sets the limits of the Y axis.
 
-    # Parameters
+    Parameters:
 
     - **bottom** *(float)*: The bottom ylim in data coordinates. Passing None leaves the limit unchanged.
     - **top** *(float)*: The top ylim in data coordinates. Passing None leaves the limit unchanged.
@@ -246,7 +246,7 @@ def xscale(value):
     """
     Sets the scale of the X axis. Possible values are 'linear' and 'log'.
 
-    # Parameters
+    Parameters:
 
     - **value** *(string)*: The scale. Possible values are 'linear' and 'log'.
     """
@@ -256,7 +256,7 @@ def yscale(value):
     """
     Sets the scale of the Y axis.
 
-    # Parameters
+    Parameters:
 
     - **value** *(string)*: The scale. Possible values are 'linear' and 'log'.
     """
@@ -266,7 +266,7 @@ def xticks(ticks=None, labels=None, rotation=0):
     """
     Sets the current tick locations and labels of the x-axis.
 
-    # Parameters
+    Parameters:
 
     - **ticks** *(array_like)*: A list of positions at which ticks should be placed. You can pass an empty list to disable xticks.
     - **labels** *(array_like)*: A list of explicit labels to place at the given locs.
@@ -278,7 +278,7 @@ def grid(b=True, which="major"):
     """
     Configure the grid lines.
 
-    # Parameters
+    Parameters:
 
     - **b** *(bool or `None`)*: Whether to show the grid lines.
     - **which** *('major', 'minor' or 'both')*: The grid lines to apply the changes on.
@@ -289,7 +289,7 @@ def legend(show=None, frameon=None, loc=None):
     """
     Place a legend on the axes.
 
-    # Parameters
+    Parameters:
 
     - **show** *(bool or `None`)*: Whether to show the legend. TODO does pyplot have this?
     - **frameon** *(bool or `None`)*: Control whether the legend should be drawn on a patch (frame).

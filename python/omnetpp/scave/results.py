@@ -72,7 +72,7 @@ def get_results(filter_expression="", row_types=['runattr', 'itervar', 'config',
     They are selected from the complete set of data referenced by the analysis file (`.anf`),
     including only those for which the given `filter_expression` evaluates to `True`.
 
-    # Parameters
+    Parameters:
 
     - **filter_expression** *(string)*: The filter expression to select the desired items. Example: `module =~ "*host*" AND name =~ "numPacket*"`
     - **row_types**: Optional. When given, filters the returned rows by type. Should be a unique list, containing any number of these strings:
@@ -81,7 +81,7 @@ def get_results(filter_expression="", row_types=['runattr', 'itervar', 'config',
     - **start_time**, **end_time** *(double)*: Optional time limits to trim the data of vector type results.
       The unit is seconds, both the `vectime` and `vecvalue` arrays will be affected, the interval is left-closed, right-open.
 
-    # Columns of the returned DataFrame
+    Columns of the returned DataFrame:
 
     - **runID** *(string)*:  Identifies the simulation run
     - **type** *(string)*: Row type, one of the following: scalar, vector, statistics, histogram, runattr, itervar, param, attr
@@ -103,14 +103,14 @@ def get_runs(filter_expression="", include_runattrs=False, include_itervars=Fals
     """
     Returns a filtered list of runs, identified by their run ID.
 
-    # Parameters
+    Parameters:
 
     - **filter_expression**: The filter expression to select the desired runs.
       Example: `runattr:network =~ "Aloha" AND config:Aloha.slotTime =~ 0`
     - **include_runattrs**, **include_itervars**, **include_param_assignments**, **include_config_entries** *(bool)*:
       Optional. When set to `True`, additional pieces of metadata about the run is appended to the result, pivoted into columns.
 
-    # Columns of the returned DataFrame
+    Columns of the returned DataFrame:
 
     - **runID** (string): Identifies the simulation run
     - Additional metadata items (run attributes, iteration variables, etc.), as requested
@@ -127,14 +127,14 @@ def get_runattrs(filter_expression="", include_runattrs=False, include_itervars=
     `inifile`, `iterationvars`, `iterationvarsf`, `measurement`, `network`,
     `processid`, `repetition`, `replication`, `resultdir`, `runnumber`, `seedset`.
 
-    # Parameters
+    Parameters:
 
     - **filter_expression**: The filter expression to select the desired run attributes.
       Example: `name =~ *date* AND config:Aloha.slotTime =~ 0`
     - **include_runattrs**, **include_itervars**, **include_param_assignments**, **include_config_entries** *(bool)*:
       Optional. When set to `True`, additional pieces of metadata about the run is appended to the result, pivoted into columns.
 
-    # Columns of the returned DataFrame
+    Columns of the returned DataFrame:
 
     - **runID** *(string)*: Identifies the simulation run
     - **name** *(string)*: The name of the run attribute
@@ -149,7 +149,7 @@ def get_itervars(filter_expression="", include_runattrs=False, include_itervars=
     """
     Returns a filtered list of iteration variables.
 
-    # Parameters
+    Parameters:
 
     - **filter_expression** *(string)*: The filter expression to select the desired iteration variables.
       Example: `name =~ iaMean AND config:Aloha.slotTime =~ 0`
@@ -158,7 +158,7 @@ def get_itervars(filter_expression="", include_runattrs=False, include_itervars=
     - **as_numeric** *(bool)*: Optional. When set to `True`, the returned values will be converted to `double`.
       Non-numeric values will become `NaN`.
 
-    # Columns of the returned DataFrame
+    Columns of the returned DataFrame:
 
     - **runID** *(string)*: Identifies the simulation run
     - **name** *(string)*: The name of the iteration variable
@@ -173,7 +173,7 @@ def get_scalars(filter_expression="", include_attrs=False, include_runattrs=Fals
     """
     Returns a filtered list of scalar results.
 
-    # Parameters
+    Parameters:
 
     - **filter_expression** *(string)*: The filter expression to select the desired scalars.
       Example: `name =~ "channelUtilization*" AND runattr:replication =~ "#0"`
@@ -184,7 +184,7 @@ def get_scalars(filter_expression="", include_attrs=False, include_runattrs=Fals
     - **merge_module_and_name** *(bool)*: Optional. When set to `True`, the value in the `module` column
       is prepended to the value in the `name` column, joined by a period, in every row.
 
-    # Columns of the returned DataFrame
+    Columns of the returned DataFrame:
 
     - **runID** *(string)*: Identifies the simulation run
     - **module** *(string)*: Hierarchical name (a.k.a. full path) of the module that recorded the result item
@@ -205,7 +205,7 @@ def get_parameters(filter_expression="", include_attrs=False, include_runattrs=F
     as it is the result of the network setup process. For example, even if a parameter is set up as an expression like `normal(3, 0.4)`
     from `omnetpp.ini`, the returned DataFrame will contain the single concrete value picked for every instance of the parameter.
 
-    # Parameters
+    Parameters:
 
     - **filter_expression** *(string)*: The filter expression to select the desired parameters.
       Example: `name =~ "x" AND module =~ Aloha.server`
@@ -218,7 +218,7 @@ def get_parameters(filter_expression="", include_attrs=False, include_runattrs=F
     - **as_numeric** *(bool)*: Optional. When set to `True`, the returned values will be converted to `double`.
       Non-numeric values will become `NaN`.
 
-    # Columns of the returned DataFrame
+    Columns of the returned DataFrame:
 
     - **runID** *(string)*: Identifies the simulation run
     - **module** *(string)*: Hierarchical name (a.k.a. full path) of the module that recorded the result item
@@ -234,7 +234,7 @@ def get_vectors(filter_expression="", include_attrs=False, include_runattrs=Fals
     """
     Returns a filtered list of vector results.
 
-    # Parameters
+    Parameters:
 
     - **filter_expression** *(string)*: The filter expression to select the desired vectors.
       Example: `name =~ "radioState*" AND runattr:replication =~ "#0"`
@@ -247,7 +247,7 @@ def get_vectors(filter_expression="", include_attrs=False, include_runattrs=Fals
     - **start_time**, **end_time** *(double)*: Optional time limits to trim the data of vector type results.
       The unit is seconds, both the `vectime` and `vecvalue` arrays will be affected, the interval is left-closed, right-open.
 
-    # Columns of the returned DataFrame
+    Columns of the returned DataFrame:
 
     - **runID** *(string)*: Identifies the simulation run
     - **module** *(string)*: Hierarchical name (a.k.a. full path) of the module that recorded the result item
@@ -263,7 +263,7 @@ def get_statistics(filter_expression="", include_attrs=False, include_runattrs=F
     """
     Returns a filtered list of statistics results.
 
-    # Parameters
+    Parameters:
 
     - **filter_expression** *(string)*: The filter expression to select the desired statistics.
       Example: `name =~ "collisionLength:stat" AND itervar:iaMean =~ "5"`
@@ -274,7 +274,7 @@ def get_statistics(filter_expression="", include_attrs=False, include_runattrs=F
     - **merge_module_and_name** *(bool)*: Optional. When set to `True`, the value in the `module` column
       is prepended to the value in the `name` column, joined by a period, in every row.
 
-    # Columns of the returned DataFrame
+    Columns of the returned DataFrame:
 
     - **runID** *(string)*: Identifies the simulation run
     - **module** *(string)*: Hierarchical name (a.k.a. full path) of the module that recorded the result item
@@ -290,7 +290,7 @@ def get_histograms(filter_expression="", include_attrs=False, include_runattrs=F
     """
     Returns a filtered list of histogram results.
 
-    # Parameters
+    Parameters:
 
     - **filter_expression** *(string)*: The filter expression to select the desired histogram.
       Example: `name =~ "collisionMultiplicity:histogram" AND itervar:iaMean =~ "2"`
@@ -301,7 +301,7 @@ def get_histograms(filter_expression="", include_attrs=False, include_runattrs=F
     - **merge_module_and_name** *(bool)*: Optional. When set to `True`, the value in the `module` column
       is prepended to the value in the `name` column, joined by a period, in every row.
 
-    # Columns of the returned DataFrame
+    Columns of the returned DataFrame:
 
     - **runID** *(string)*: Identifies the simulation run
     - **module** *(string)*: Hierarchical name (a.k.a. full path) of the module that recorded the result item
@@ -319,14 +319,14 @@ def get_config_entries(filter_expression, include_runattrs=False, include_iterva
     """
     Returns a filtered list of config entries. That is: parameter assignment patterns; and global and per-object config options.
 
-    # Parameters
+    Parameters:
 
     - **filter_expression** *(string)*: The filter expression to select the desired config entries.
       Example: `name =~ sim-time-limit AND itervar:numHosts =~ 10`
     - **include_runattrs**, **include_itervars**, **include_param_assignments**, **include_config_entries** *(bool)*:
       Optional. When set to `True`, additional pieces of metadata about the run is appended to the result, pivoted into columns.
 
-    # Columns of the returned DataFrame
+    Columns of the returned DataFrame:
 
     - **runID** *(string)*: Identifies the simulation run
     - **name** *(string)*: The name of the config entry

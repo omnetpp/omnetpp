@@ -52,7 +52,7 @@ def extract_label_columns(df, preferred_legend_column="title"):
     value tuples uniquely identify every line in the DataFrame. These will
     primarily be iteration variables and run attributes.
 
-    # Returns:
+    Returns::
 
     A pair of a string and a list; the first value is the name of the
     "title" column, and the second one is a list of pairs, each
@@ -331,7 +331,7 @@ Make a box and whisker plot.
 
 NOTE: boxplot docu: Make a box and whisker plot for each column of x or each vector in sequence x. The box extends from the lower to upper quartile values of the data, with a line at the median. The whiskers extend from the box to show the range of the data. Flier points are those past the end of the whiskers.
 
-    # Parameters:
+    Parameters::
     percentiles: list of tuples. each tuple contains 5 or 6 elements:
             (q1_start, q2_start, q3_start, q4_start, q4_end, fliers_xy)
             (q1_start, q2_start, q3_start, q4_start, q4_end) --> fliers_xy: (xs, ys), both are list of numbers
