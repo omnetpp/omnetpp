@@ -51,22 +51,22 @@ class LaTeXRenderer(mistune.Renderer):
     def header(self, text, level, raw=None):
         global sssnum
         sssnum = sssnum + 1
-        return "\n∇subsubsection☾" + text + "☽\n∇label☾sssec:num" + str(sssnum) + "☽\n\n"
+        return "\n\n∇subsubsection☾" + text + "☽\n∇label☾sssec:num" + str(sssnum) + "☽\n\n"
 
     def hrule(self):
         return "\n∇noindent∇hrulefill\n\n"
 
     def list(self, body, ordered=True):
         if ordered:
-            return "∇begin☾enumerate☽\n" + body + "\n∇end☾enumerate☽\n"
+            return "\n\n∇begin☾enumerate☽\n" + body + "\n∇end☾enumerate☽\n"
         else:
-            return "∇begin☾itemize☽\n" + body + "\n∇end☾itemize☽\n"
+            return "\n\n∇begin☾itemize☽\n" + body + "\n∇end☾itemize☽\n"
 
     def list_item(self, text):
         return "  ∇item " + text + "\n"
 
     def paragraph(self, text):
-        return "∇par " + text
+        return "\n\n∇par " + text
 
     def table(self, header, body):
         return header + body
@@ -76,8 +76,6 @@ class LaTeXRenderer(mistune.Renderer):
 
     def table_cell(self, content, **flags):
         return content
-
-
 
     def autolink(self, link, is_email=False):
         return link # add \url
