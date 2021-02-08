@@ -674,10 +674,10 @@ def plot_bars(df, props, names=None, errors_df=None):
     p.xticks(list(range(len(df.index))), list([_to_label(i) for i in df.index.values]), rotation=rotation)
 
     # Add some text for labels, title and custom x-axis tick labels, etc.
-    groups = (get_prop("groups") or "").split(",")
-    series = (get_prop("series") or "").split(",")
+    groups = df.index.names
+    series = df.columns.names
 
-    p.xlabel(_to_label(df.index.names[0]))
+    p.xlabel(_to_label(groups))
 
     title = ""
     if len(names):
