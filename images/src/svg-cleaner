@@ -1,0 +1,8 @@
+#!/bin/sh
+
+# install svgcleaner from https://github.com/RazrFalcon/svgcleaner
+
+for i in *.svg; do
+  echo Converting: $i
+  svgcleaner $i x/$i
+done

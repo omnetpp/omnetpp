@@ -1,0 +1,12 @@
+#!/bin/sh
+
+BATIK_VERSION=1.14
+BATIK_HOME=$HOME/local/batik-$BATIK_VERSION
+
+BATIK_PP="java -jar ${BATIK_HOME}/batik-svgpp-${BATIK_VERSION}.jar"
+
+for i in *.svg; do
+  echo Pretty printing: $i
+  ${BATIK_PP} $i $i.pp
+  mv -f $i.pp $i
+done
