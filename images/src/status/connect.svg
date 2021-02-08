@@ -1,53 +1,48 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
-<!-- Generator: Adobe Illustrator 9.0, SVG Export Plug-In  -->
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20000303 Stylable//EN"   "http://www.w3.org/TR/2000/03/WD-SVG-20000303/DTD/svg-20000303-stylable.dtd" [
-	<!ENTITY st0 "fill:url(#aigrd1);">
-	<!ENTITY st1 "fill:url(#aigrd2);">
-	<!ENTITY st2 "opacity:0.92;fill:url(#aigrd3);">
-	<!ENTITY st3 "opacity:0.92;">
-	<!ENTITY st4 "fill-rule:nonzero;clip-rule:nonzero;fill:#FFFFFF;stroke:#000000;stroke-miterlimit:4;">
-	<!ENTITY st5 "fill:#000000;stroke:#000000;stroke-width:0.8046;">
-	<!ENTITY st6 "fill-rule:evenodd;clip-rule:evenodd;stroke:none;">
-	<!ENTITY st7 "opacity:0.5;fill:url(#aigrd4);">
-	<!ENTITY st8 "fill-rule:nonzero;clip-rule:nonzero;stroke:#000000;stroke-miterlimit:4;">
-	<!ENTITY st9 "fill-rule:evenodd;clip-rule:evenodd;fill:none;stroke:none;">
-]>
-<svg  width="24pt" height="24pt" viewBox="0 0 24 24" xml:space="preserve">
-	<g id="Layer_x0020_2" style="&st4;">
-		<g style="&st6;">
-			<path style="&st5;" d="M12.6,7.2c-0.1,0-0.9,0-1,0c-0.1,0-0.1,0-0.2,0h-0.8c-0.3,0-0.6,0.1-0.8,0.4c-0.6,0-1.7,0-1.7,0c-0.9,0-1.7,0.7-2.6,2.2c-0.4,0.6-0.7,1.2-0.8,1.5c-0.5,0-3.7,0-3.7,0V15c0,0,3.1,0,3.7,0c0.2,0.3,0.5,0.9,0.9,1.4c0.9,1.3,1.8,1.9,2.6,1.9
-				c0,0,1.1,0,1.8,0c0.2,0.2,0.5,0.4,0.8,0.4h0.8c0.1,0,0.1,0,0.2,0c0.1,0,0.9,0,1,0h0.8c0.3,0,0.6-0.1,0.8-0.4c0.6,0,1.8,0,1.8,0c0.8,0,1.7-0.6,2.6-1.9c0.4-0.5,0.7-1.1,0.9-1.4c0.5,0,3.7,0,3.7,0v-3.7c0,0-3.1,0-3.7,0c-0.2-0.4-0.5-1-0.8-1.5
-				c-0.9-1.5-1.8-2.2-2.6-2.2c0,0-1.1,0-1.7,0c-0.2-0.2-0.5-0.4-0.8-0.4h-0.8z"/>
-			<radialGradient id="aigrd1" cx="6.8418" cy="9.6157" r="8.2857" fx="6.8418" fy="9.6157" gradientUnits="userSpaceOnUse">
-				<stop  offset="0" style="stop-color:#ECECEC"/>
-				<stop  offset="1" style="stop-color:#8B8B8B"/>
-			</radialGradient>
-			<path style="&st0;" d="M1.7,12.1h3.2c0.1,0,0.2,0,0.2-0.1c0,0,1.6-3.6,2.9-3.6h2.3V8.2c0-0.1,0.1-0.2,0.2-0.2h0.8c0.1,0,0.2,0.1,0.2,0.2v9.4c0,0.2,0,0.3-0.2,0.3h-0.8c-0.2,0-0.3-0.1-0.3-0.3v-0.1H8c-1.3,0-2.9-3.2-2.9-3.2S5,14.2,4.9,14.2H1.7v-2.1z"/>
-			<radialGradient id="aigrd2" cx="-352.9282" cy="8.3965" r="8.444" fx="-352.9282" fy="8.3965" gradientTransform="matrix(-1 0 0 1 -339.6719 0)" gradientUnits="userSpaceOnUse">
-				<stop  offset="0" style="stop-color:#C7C7C7"/>
-				<stop  offset="1" style="stop-color:#8B8B8B"/>
-			</radialGradient>
-			<path style="&st1;" d="M22.3,12.1H19c-0.1,0-0.2,0-0.2-0.1c0,0-1.6-3.6-2.9-3.6h-2.3V8.2c0-0.1-0.1-0.2-0.2-0.2h-0.8c-0.1,0-0.2,0.1-0.2,0.2v9.4c0,0.2,0,0.3,0.2,0.3h0.8c0.2,0,0.3-0.1,0.3-0.3v-0.1h2.3c1.3,0,2.9-3.2,2.9-3.2s0.1-0.1,0.2-0.1h3.2v-2.1z"/>
-			<path style="&st3;" d="M12.6,8l-0.2,9.6V8.2c0-0.1,0.1-0.2,0.2-0.2z"/>
-			<path style="&st3;" d="M1.7,12.1H5c0.1,0,0.2-0.1,0.2-0.1C5.3,11.7,6.8,8.4,8,8.4l2.4,0L8,8.5c-1.6,0.3-2.2,4.2-3.1,4.2l-3.2,0v-0.6z"/>
-			<linearGradient id="aigrd3" gradientUnits="userSpaceOnUse" x1="9.8066" y1="12.9663" x2="10.3496" y2="12.9663">
-				<stop  offset="0" style="stop-color:#959595"/>
-				<stop  offset="1" style="stop-color:#FFFFFF"/>
-			</linearGradient>
-			<path style="&st2;" d="M10.3,8.4l-0.5,9l0.5,0.1l0-9.2z"/>
-			<linearGradient id="aigrd4" gradientUnits="userSpaceOnUse" x1="234.2236" y1="12.9492" x2="234.7529" y2="12.9492" gradientTransform="matrix(-1 0 0 1 248.3281 0)">
-				<stop  offset="0" style="stop-color:#B3B3B3"/>
-				<stop  offset="0.2379" style="stop-color:#AFAFAF"/>
-				<stop  offset="0.4577" style="stop-color:#A4A4A4"/>
-				<stop  offset="0.6703" style="stop-color:#919191"/>
-				<stop  offset="0.8773" style="stop-color:#777777"/>
-				<stop  offset="1" style="stop-color:#646464"/>
-			</linearGradient>
-			<path style="&st7;" d="M13.6,17.5l0.5-9.1l-0.5,0l0,9.1z"/>
-			<path style="&st3;" d="M13.6,8.4h2.3c1.2,0,2.6,3.2,2.9,3.7c-1-1.6-2-3.6-3-3.6l-2.3-0.1z"/>
-		</g>
-	</g>
-	<g id="Layer_x0020_3" style="&st8;">
-		<path style="&st9;" d="M24,24H0V0h24v24z"/>
-	</g>
-</svg>
+
+<svg xmlns="http://www.w3.org/2000/svg" height="24pt" viewBox="0 0 24 24"
+     width="24pt" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <radialGradient id="a" cx="6.8418" cy="9.6157"
+                    gradientUnits="userSpaceOnUse" r="8.2857">
+        <stop offset="0" stop-color="#ececec"/>
+        <stop offset="1" stop-color="#8b8b8b"/>
+    </radialGradient>
+    <radialGradient id="b" cx="-352.9282" cy="8.3965"
+                    gradientTransform="matrix(-1 0 0 1 -339.6719 0)"
+                    gradientUnits="userSpaceOnUse" r="8.444">
+        <stop offset="0" stop-color="#c7c7c7"/>
+        <stop offset="1" stop-color="#8b8b8b"/>
+    </radialGradient>
+    <linearGradient id="c" gradientUnits="userSpaceOnUse" x1="9.8066"
+                    x2="10.3496" y1="12.9663" y2="12.9663">
+        <stop offset="0" stop-color="#959595"/>
+        <stop offset="1" stop-color="#fff"/>
+    </linearGradient>
+    <linearGradient id="d" gradientTransform="matrix(-1 0 0 1 248.3281 0)"
+                    gradientUnits="userSpaceOnUse" x1="234.2236" x2="234.7529"
+                    y1="12.9492" y2="12.9492">
+        <stop offset="0" stop-color="#b3b3b3"/>
+        <stop offset=".2379" stop-color="#afafaf"/>
+        <stop offset=".4577" stop-color="#a4a4a4"/>
+        <stop offset=".6703" stop-color="#919191"/>
+        <stop offset=".8773" stop-color="#777"/>
+        <stop offset="1" stop-color="#646464"/>
+    </linearGradient>
+    <g clip-rule="evenodd">
+        <g fill="#fff" fill-rule="evenodd">
+            <path d="m12.6 7.2c-.1 0-.9 0-1 0s-.1 0-.2 0h-.8c-.3 0-.6.1-.8.4-.6 0-1.7 0-1.7 0-.9 0-1.7.7-2.6 2.2-.4.6-.7 1.2-.8 1.5-.5 0-3.7 0-3.7 0v3.7h3.7c.2.3.5.9.9 1.4.9 1.3 1.8 1.9 2.6 1.9h1.8c.2.2.5.4.8.4h.8.2 1 .8c.3 0 .6-.1.8-.4h1.8c.8 0 1.7-.6 2.6-1.9.4-.5.7-1.1.9-1.4h3.7v-3.7s-3.1 0-3.7 0c-.2-.4-.5-1-.8-1.5-.9-1.5-1.8-2.2-2.6-2.2 0 0-1.1 0-1.7 0-.2-.2-.5-.4-.8-.4h-.8z"
+                  fill="#000" stroke="#000" stroke-width=".8046"/>
+            <path d="m1.7 12.1h3.2c.1 0 .2 0 .2-.1 0 0 1.6-3.6 2.9-3.6h2.3v-.2c0-.1.1-.2.2-.2h.8c.1 0 .2.1.2.2v9.4c0 .2 0 .3-.2.3h-.8c-.2 0-.3-.1-.3-.3v-.1h-2.2c-1.3 0-2.9-3.2-2.9-3.2s-.1-.1-.2-.1h-3.2z"
+                  fill="url(#a)"/>
+            <path d="m22.3 12.1h-3.3c-.1 0-.2 0-.2-.1 0 0-1.6-3.6-2.9-3.6h-2.3v-.2c0-.1-.1-.2-.2-.2h-.8c-.1 0-.2.1-.2.2v9.4c0 .2 0 .3.2.3h.8c.2 0 .3-.1.3-.3v-.1h2.3c1.3 0 2.9-3.2 2.9-3.2s.1-.1.2-.1h3.2z"
+                  fill="url(#b)"/>
+            <path d="m12.6 8-.2 9.6v-9.4c0-.1.1-.2.2-.2z" opacity=".92"/>
+            <path d="m1.7 12.1h3.3c.1 0 .2-.1.2-.1.1-.3 1.6-3.6 2.8-3.6h2.4l-2.4.1c-1.6.3-2.2 4.2-3.1 4.2h-3.2z"
+                  opacity=".92"/>
+            <path d="m10.3 8.4-.5 9 .5.1v-9.2z" fill="url(#c)" opacity=".92"/>
+            <path d="m13.6 17.5.5-9.1h-.5z" fill="url(#d)" opacity=".5"/>
+            <path d="m13.6 8.4h2.3c1.2 0 2.6 3.2 2.9 3.7-1-1.6-2-3.6-3-3.6l-2.3-.1z"
+                  opacity=".92"/>
+        </g>
+        <path d="m24 24h-24v-24h24z" fill="none"/>
+    </g>
+</svg>

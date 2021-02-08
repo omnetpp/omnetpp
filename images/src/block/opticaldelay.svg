@@ -1,39 +1,33 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet type="text/css" href="user.css" ?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="72px" height="72px" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
-viewBox="0 0 72 72">
- <defs>
-  <style type="text/css">
-   <![CDATA[
-    .str2 {stroke:#AAAAAA;stroke-width:1.99961}
-    .str3 {stroke:#CCCCCC;stroke-width:1.99961}
-    .str1 {stroke:black;stroke-width:4.00039}
-    .fil1 {fill:none}
-    .fil0 {fill:url(#id0)}
-   ]]>
-  </style>
-  <linearGradient id="id0" gradientUnits="userSpaceOnUse" x1="65.3315" y1="66.1937" x2="6.66969" y2="5.80748">
-   <stop offset="0" class="background-br"/>
-   <stop offset="0.619608" class="background-c"/>
-   <stop offset="1" class="background-tl"/>
-  </linearGradient>
- </defs>
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <rect class="fil0 str0" x="2.92559" y="2.92559" width="66.15" height="66.15" rx="9.39803" ry="9.39803"/>
- </g>
- <g id="Layer_x0020_2">
-  <metadata id="CorelCorpID_1Corel-Layer"/>
-  <line class="fil1 str1" x1="8.39528" y1="46.9819" x2="63.6083" y2= "46.9819" />
-  <path class="fil1 str1" d="M16.5508 46.9819c-6.78543,-5.80276 -5.31378,-30.7594 5.3563,-30.7594 12.9047,0 11.7862,30.7594 7.24134,30.7594 -6.86693,-5.80276 -3.65787,-30.7594 7.32402,-30.7594 11.9717,0 11.7307,24.5055 7.39252,30.7594 -7.5437,-10.0902 -2.55472,-30.7594 7.1185,-30.7594 11.061,0 12.2976,24.9567 5.38701,30.7594"/>
-  <line class="fil1 str2" x1="8.38228" y1="49.839" x2="63.5953" y2= "49.839" />
-  <path class="fil1 str3" d="M21.9071 19.0299c-4.01575,0.624803 -6.06496,7.72559 -6.06496,11.4343"/>
-  <path class="fil1 str3" d="M36.4724 19.3039c-2.4437,-0.0897638 -6.83268,3.52795 -7.45748,10.5354"/>
-  <path class="fil1 str3" d="M50.9835 19.3028c-2.48858,-0.0602362 -7.22126,4.20236 -7.37717,10.4469"/>
-  <path class="fil1 str2" d="M15.6626 30.4642c-0.26811,4.53425 -0.388583,7.44331 0.992126,10.715"/>
-  <path class="fil1 str2" d="M28.9524 29.7496c-0.447638,4.17756 -0.437008,3.59055 -0.25748,7.05472"/>
-  <path class="fil1 str2" d="M43.5803 29.7496c-0.312992,4.17756 -0.243307,2.42953 -0.256299,6.5185"/>
- </g>
+
+<svg clip-rule="evenodd" fill-rule="evenodd" height="72"
+     image-rendering="optimizeQuality" shape-rendering="geometricPrecision"
+     text-rendering="geometricPrecision" viewBox="0 0 72 72" width="72"
+     xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink">
+    <linearGradient id="a" gradientUnits="userSpaceOnUse" x1="65.3315"
+                    x2="6.66969" y1="66.1937" y2="5.80748">
+        <stop offset="0" stop-color="#a0a0a0"/>
+        <stop offset=".619608" stop-color="#e0e0e0"/>
+        <stop offset="1" stop-color="#fff"/>
+    </linearGradient>
+    <rect fill="url(#a)" height="66.15" rx="9.39803" stroke="#000"
+          stroke-width="3" width="66.15" x="2.92559" y="2.92559"/>
+    <g fill="none">
+        <path d="m8.39528 46.9819h55.21302" stroke="#000" stroke-width="4.00039"/>
+        <path d="m16.5508 46.9819c-6.78543-5.80276-5.31378-30.7594 5.3563-30.7594 12.9047 0 11.7862 30.7594 7.24134 30.7594-6.86693-5.80276-3.65787-30.7594 7.32402-30.7594 11.9717 0 11.7307 24.5055 7.39252 30.7594-7.5437-10.0902-2.55472-30.7594 7.1185-30.7594 11.061 0 12.2976 24.9567 5.38701 30.7594"
+              stroke="#000" stroke-width="4.00039"/>
+        <path d="m8.38228 49.839h55.21302" stroke="#aaa" stroke-width="1.99961"/>
+        <path d="m21.9071 19.0299c-4.01575.624803-6.06496 7.72559-6.06496 11.4343"
+              stroke="#ccc" stroke-width="1.99961"/>
+        <path d="m36.4724 19.3039c-2.4437-.0897638-6.83268 3.52795-7.45748 10.5354"
+              stroke="#ccc" stroke-width="1.99961"/>
+        <path d="m50.9835 19.3028c-2.48858-.0602362-7.22126 4.20236-7.37717 10.4469"
+              stroke="#ccc" stroke-width="1.99961"/>
+        <path d="m15.6626 30.4642c-.26811 4.53425-.388583 7.44331.992126 10.715"
+              stroke="#aaa" stroke-width="1.99961"/>
+        <path d="m28.9524 29.7496c-.447638 4.17756-.437008 3.59055-.25748 7.05472"
+              stroke="#aaa" stroke-width="1.99961"/>
+        <path d="m43.5803 29.7496c-.312992 4.17756-.243307 2.42953-.256299 6.5185"
+              stroke="#aaa" stroke-width="1.99961"/>
+    </g>
 </svg>

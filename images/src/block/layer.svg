@@ -1,59 +1,52 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet type="text/css" href="user.css" ?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="72px" height="72px" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
-viewBox="0 0 72 72">
- <defs>
-  <style type="text/css">
-   <![CDATA[
-    .str6 {stroke:black;stroke-width:0.9}
-    .str3 {stroke:#5C5C5C;stroke-width:0.9}
-    .str2 {stroke:#999999;stroke-width:0.9}
-    .str7 {stroke:#AAAAAA;stroke-width:0.9}
-    .str4 {stroke:#B0B0B0;stroke-width:0.9}
-    .str5 {stroke:#CCCCCC;stroke-width:0.9}
-    .str1 {stroke:black;stroke-width:1.99961}
-    .fil2 {fill:none}
-    .fil3 {fill:black}
-    .fil1 {fill:#CCCCFF}
-    .fil0 {fill:url(#id0)}
-   ]]>
-  </style>
-  <linearGradient id="id0" gradientUnits="userSpaceOnUse" x1="65.3315" y1="66.1937" x2="6.66969" y2="5.80748">
-   <stop offset="0" class="background-br"/>
-   <stop offset="0.619608" class="background-c"/>
-   <stop offset="1" class="background-tl"/>
-  </linearGradient>
- </defs>
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <rect class="fil0 str0" x="2.92559" y="2.92559" width="66.15" height="66.15" rx="9.39803" ry="9.39803"/>
- </g>
- <g id="Layer_x0020_2">
-  <metadata id="CorelCorpID_1Corel-Layer"/>
-  <g id="_127066024">
-   <rect id="_127068608" class="fil1 str1" transform="matrix(7.94536E-014 1 1 -7.94536E-014 9.04488 30.1323)" width="11.8004" height="53.8996" rx="1.04528" ry="1.04528"/>
-   <path id="_127068224" class="fil2 str2" d="M64.5201 32.2642l0.0744094 9.78307c-0.15,0.969685 -0.69685,1.44213 -1.64528,1.41969l-46.1244 -0.0011811"/>
-   <path id="_127067624" class="fil2 str3" d="M7.66063 40.0028l-0.0744094 -9.78307c0.385039,-0.850394 0.930709,-1.32165 1.64528,-1.41969l46.1244 0.0011811"/>
-   <path id="_127067024" class="fil2 str4" d="M64.5201 34.8035l0.0744094 7.2437c-0.15,0.969685 -0.69685,1.44213 -1.64528,1.41969l-6.57874 -0.0011811"/>
-   <path id="_127066424" class="fil2 str5" d="M64.5945 39.2091c-0.125197,3.73346 -0.650787,4.14567 -4.1126,4.25669"/>
-  </g>
-  <polygon class="fil3 str6" points="24.4654,26.5134 24.4654,18.4583 28.7421,18.4583 23.2512,8.68701 17.7602,18.4583 22.037,18.4583 22.037,26.5134 "/>
-  <polyline class="fil2 str7" points="25.5508,26.8453 25.5083,19.5815 30.5528,19.461 24.0709,8.05276 "/>
-  <line class="fil2 str5" x1="30.6177" y1="19.3972" x2="27.3768" y2= "13.6937" />
-  <line class="fil2 str5" x1="30.5528" y1="19.461" x2="25.5083" y2= "19.5815" />
-  <polygon class="fil3 str6" points="24.613,63.6201 24.613,55.6996 28.8898,55.6996 23.3988,46.0937 17.9079,55.6996 22.1846,55.6996 22.1846,63.6201 "/>
-  <polyline class="fil2 str7" points="25.6984,63.9461 25.6559,56.8051 30.7004,56.6858 24.2185,45.4701 "/>
-  <line class="fil2 str5" x1="30.5398" y1="56.4165" x2="27.2988" y2= "50.8098" />
-  <line class="fil2 str5" x1="30.7004" y1="56.6858" x2="25.6559" y2= "56.8051" />
-  <polygon class="fil3 str6" points="48.5563,8.38583 48.5563,16.4409 52.8331,16.4409 47.3421,26.2122 41.8512,16.4409 46.128,16.4409 46.128,8.38583 "/>
-  <polyline class="fil2 str7" points="49.6417,8.05394 49.5992,15.3177 54.6437,15.4382 48.1618,26.8465 "/>
-  <line class="fil2 str5" x1="51.4028" y1="21.1417" x2="48.1618" y2= "26.8453" />
-  <line class="fil2 str5" x1="54.6437" y1="15.4382" x2="49.5992" y2= "15.3177" />
-  <polygon class="fil3 str6" points="48.5563,45.7961 48.5563,53.8512 52.8331,53.8512 47.3421,63.6224 41.8512,53.8512 46.128,53.8512 46.128,45.7961 "/>
-  <polyline class="fil2 str7" points="49.6417,45.4642 49.5992,52.728 54.6437,52.8484 48.1618,64.2567 "/>
-  <line class="fil2 str5" x1="51.4028" y1="58.552" x2="48.1618" y2= "64.2555" />
-  <line class="fil2 str5" x1="54.6437" y1="52.8484" x2="49.5992" y2= "52.728" />
- </g>
+
+<svg clip-rule="evenodd" fill-rule="evenodd" height="72"
+     image-rendering="optimizeQuality" shape-rendering="geometricPrecision"
+     text-rendering="geometricPrecision" viewBox="0 0 72 72" width="72"
+     xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink">
+    <linearGradient id="a" gradientUnits="userSpaceOnUse" x1="65.3315"
+                    x2="6.66969" y1="66.1937" y2="5.80748">
+        <stop offset="0" stop-color="#a0a0a0"/>
+        <stop offset=".619608" stop-color="#e0e0e0"/>
+        <stop offset="1" stop-color="#fff"/>
+    </linearGradient>
+    <rect fill="url(#a)" height="66.15" rx="9.39803" stroke="#000"
+          stroke-width="3" width="66.15" x="2.92559" y="2.92559"/>
+    <rect fill="#ccf" height="53.8996" rx="1.04528" stroke="#000"
+          stroke-width="1.99961" transform="matrix(0 1 1 0 9.04488 30.1323)"
+          width="11.8004"/>
+    <g stroke-width=".9">
+        <path d="m64.5201 32.2642.0744094 9.78307c-.15.969685-.69685 1.44213-1.64528 1.41969l-46.1244-.0011811"
+              fill="none" stroke="#999"/>
+        <path d="m7.66063 40.0028-.0744094-9.78307c.385039-.850394.930709-1.32165 1.64528-1.41969l46.1244.0011811"
+              fill="none" stroke="#5c5c5c"/>
+        <path d="m64.5201 34.8035.0744094 7.2437c-.15.969685-.69685 1.44213-1.64528 1.41969l-6.57874-.0011811"
+              fill="none" stroke="#b0b0b0"/>
+        <path d="m64.5945 39.2091c-.125197 3.73346-.650787 4.14567-4.1126 4.25669"
+              fill="none" stroke="#ccc"/>
+        <path d="m24.4654 26.5134v-8.0551h4.2767l-5.4909-9.77129-5.491 9.77129h4.2768v8.0551z"
+              stroke="#000"/>
+        <path d="m25.5508 26.8453-.0425-7.2638 5.0445-.1205-6.4819-11.40824"
+              fill="none" stroke="#aaa"/>
+        <path d="m30.6177 19.3972-3.2409-5.7035" fill="none" stroke="#ccc"/>
+        <path d="m30.5528 19.461-5.0445.1205" fill="none" stroke="#ccc"/>
+        <path d="m24.613 63.6201v-7.9205h4.2768l-5.491-9.6059-5.4909 9.6059h4.2767v7.9205z"
+              stroke="#000"/>
+        <path d="m25.6984 63.9461-.0425-7.141 5.0445-.1193-6.4819-11.2157"
+              fill="none" stroke="#aaa"/>
+        <path d="m30.5398 56.4165-3.241-5.6067" fill="none" stroke="#ccc"/>
+        <path d="m30.7004 56.6858-5.0445.1193" fill="none" stroke="#ccc"/>
+        <path d="m48.5563 8.38583v8.05507h4.2768l-5.491 9.7713-5.4909-9.7713h4.2768v-8.05507z"
+              stroke="#000"/>
+        <path d="m49.6417 8.05394-.0425 7.26376 5.0445.1205-6.4819 11.4083"
+              fill="none" stroke="#aaa"/>
+        <path d="m51.4028 21.1417-3.241 5.7036" fill="none" stroke="#ccc"/>
+        <path d="m54.6437 15.4382-5.0445-.1205" fill="none" stroke="#ccc"/>
+        <path d="m48.5563 45.7961v8.0551h4.2768l-5.491 9.7712-5.4909-9.7712h4.2768v-8.0551z"
+              stroke="#000"/>
+        <path d="m49.6417 45.4642-.0425 7.2638 5.0445.1204-6.4819 11.4083"
+              fill="none" stroke="#aaa"/>
+        <path d="m51.4028 58.552-3.241 5.7035" fill="none" stroke="#ccc"/>
+        <path d="m54.6437 52.8484-5.0445-.1204" fill="none" stroke="#ccc"/>
+    </g>
 </svg>

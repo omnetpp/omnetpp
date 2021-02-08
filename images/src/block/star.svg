@@ -1,41 +1,34 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet type="text/css" href="user.css" ?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="72px" height="72px" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
-viewBox="0 0 72 72">
- <defs>
-  <style type="text/css">
-   <![CDATA[
-    .str3 {stroke:#949494;stroke-width:1.99961;stroke-linecap:round;stroke-linejoin:round}
-    .str2 {stroke:#AAAAAA;stroke-width:1.99961;stroke-linecap:round;stroke-linejoin:round}
-    .str4 {stroke:#CCCCCC;stroke-width:1.99961;stroke-linecap:round;stroke-linejoin:round}
-    .str5 {stroke:#E5E5E5;stroke-width:1.99961;stroke-linecap:round;stroke-linejoin:round}
-    .str1 {stroke:black;stroke-width:4.00039;stroke-linecap:round;stroke-linejoin:round}
-    .fil2 {fill:none}
-    .fil1 {fill:#AAAAE0;fill-rule:nonzero}
-    .fil0 {fill:url(#id0)}
-   ]]>
-  </style>
-  <linearGradient id="id0" gradientUnits="userSpaceOnUse" x1="65.3315" y1="66.1937" x2="6.66969" y2="5.80748">
-   <stop offset="0" class="background-br"/>
-   <stop offset="0.619608" class="background-c"/>
-   <stop offset="1" class="background-tl"/>
-  </linearGradient>
- </defs>
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <rect class="fil0 str0" x="2.92559" y="2.92559" width="66.15" height="66.15" rx="9.39803" ry="9.39803"/>
- </g>
- <g id="Layer_x0020_2">
-  <metadata id="CorelCorpID_1Corel-Layer"/>
-  <path class="fil1 str1" d="M36 14.3421l5.3752 16.5449 17.3976 0.0011811 -14.074 10.2248 5.3752 16.5449 -14.074 -10.2248 -14.074 10.2248 5.3752 -16.5449 -14.074 -10.2248 17.3976 -0.0011811 5.3752 -16.5449zm2.68701 8.27244m11.387 8.27244m1.66063 5.11299m-4.34882 13.3854m-4.34882 3.15945m-14.074 0m-4.35 -3.15945m-4.34882 -13.3854m1.66181 -5.11299m11.3858 -8.27244"/>
-  <line class="fil2 str2" x1="53.2441" y1="58.1421" x2="48.0957" y2= "41.9409" />
-  <line class="fil2 str2" x1="36" y1="50.9622" x2="49.3618" y2= "60.6945" />
-  <line class="fil2 str3" x1="36" y1="51.0626" x2="24.0425" y2= "59.772" />
-  <path class="fil2 str4" d="M49.3618 60.6945c2.23346,0.452362 3.64724,-0.603543 3.88228,-2.55236"/>
-  <line class="fil2 str4" x1="61.2449" y1="32.9161" x2="48.0969" y2= "41.9421" />
-  <line class="fil2 str5" x1="35.7307" y1="24.1807" x2="33.2941" y2= "32.211" />
-  <line class="fil2 str5" x1="22.552" y1="33.9697" x2="31.9429" y2= "33.9697" />
- </g>
+
+<svg clip-rule="evenodd" fill-rule="evenodd" height="72"
+     image-rendering="optimizeQuality" shape-rendering="geometricPrecision"
+     text-rendering="geometricPrecision" viewBox="0 0 72 72" width="72"
+     xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink">
+    <linearGradient id="a" gradientUnits="userSpaceOnUse" x1="65.3315"
+                    x2="6.66969" y1="66.1937" y2="5.80748">
+        <stop offset="0" stop-color="#a0a0a0"/>
+        <stop offset=".619608" stop-color="#e0e0e0"/>
+        <stop offset="1" stop-color="#fff"/>
+    </linearGradient>
+    <rect fill="url(#a)" height="66.15" rx="9.39803" stroke="#000"
+          stroke-width="3" width="66.15" x="2.92559" y="2.92559"/>
+    <g stroke-linecap="round" stroke-linejoin="round">
+        <path d="m36 14.3421 5.3752 16.5449 17.3976.0011811-14.074 10.2248 5.3752 16.5449-14.074-10.2248-14.074 10.2248 5.3752-16.5449-14.074-10.2248 17.3976-.0011811zm-2.68821 8.27244"
+              fill="#aaaae0" fill-rule="nonzero" stroke="#000"
+              stroke-width="4.00039"/>
+        <path d="m53.2441 58.1421-5.1484-16.2012" fill="none" stroke="#aaa"
+              stroke-width="1.99961"/>
+        <path d="m36 50.9622 13.3618 9.7323" fill="none" stroke="#aaa"
+              stroke-width="1.99961"/>
+        <path d="m36 51.0626-11.9575 8.7094" fill="none" stroke="#949494"
+              stroke-width="1.99961"/>
+        <path d="m49.3618 60.6945c2.23346.452362 3.64724-.603543 3.88228-2.55236"
+              fill="none" stroke="#ccc" stroke-width="1.99961"/>
+        <path d="m61.2449 32.9161-13.148 9.026" fill="none" stroke="#ccc"
+              stroke-width="1.99961"/>
+        <path d="m35.7307 24.1807-2.4366 8.0303" fill="none" stroke="#e5e5e5"
+              stroke-width="1.99961"/>
+        <path d="m22.552 33.9697h9.3909" fill="none" stroke="#e5e5e5"
+              stroke-width="1.99961"/>
+    </g>
 </svg>

@@ -1,78 +1,80 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet type="text/css" href="user.css" ?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="72px" height="72px" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
-viewBox="0 0 72 72">
- <defs>
-  <style type="text/css">
-   <![CDATA[
-.background-tl {stop-color:#FFFFFF}
-.background-c {stop-color:#E0E0E0}
-.background-br {stop-color:#A0A0A0}
 
-.str0 {stroke:black;stroke-width:3}
-
-    .str11 {stroke:black;stroke-width:0.9}
-    .str4 {stroke:#FF6666;stroke-width:0.9}
-    .str2 {stroke:#FF9999;stroke-width:0.9}
-    .str3 {stroke:#FFCCCC;stroke-width:0.9}
-    .str7 {stroke:black;stroke-width:1.99961;stroke-linecap:round;stroke-linejoin:round}
-    .str8 {stroke:#5D5D5D;stroke-width:1.99961}
-    .str9 {stroke:#949494;stroke-width:1.99961}
-    .str5 {stroke:#AAAAAA;stroke-width:1.99961;stroke-linecap:round;stroke-linejoin:round}
-    .str10 {stroke:#CCCCCC;stroke-width:1.99961}
-    .str6 {stroke:#CCCCCC;stroke-width:1.99961;stroke-linecap:round;stroke-linejoin:round}
-    .str1 {stroke:black;stroke-width:4.00039}
-    .fil2 {fill:none}
-    .fil3 {fill:black}
-    .fil0 {fill:url(#id0)}
-    .fil1 {fill:url(#id1)}
-   ]]>
-  </style>
-  <linearGradient id="id0" gradientUnits="userSpaceOnUse" x1="65.3315" y1="66.1937" x2="6.66969" y2="5.80748">
-   <stop offset="0" class="background-br"/>
-   <stop offset="0.619608" class="background-c"/>
-   <stop offset="1" class="background-tl"/>
-  </linearGradient>
-  <radialGradient id="id1" gradientUnits="userSpaceOnUse" cx="20.6067" cy="24.776" r="25.7539" fx="20.6067" fy="24.776">
-   <stop offset="0" style="stop-color:#FFD1C2"/>
-   <stop offset="0.211765" style="stop-color:#AB4968"/>
-   <stop offset="1" style="stop-color:#DA251D"/>
-  </radialGradient>
- </defs>
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <rect class="fil0 str0" x="2.92559" y="2.92559" width="66.15" height="66.15" rx="9.39803" ry="9.39803"/>
- </g>
- <g id="Layer_x0020_2">
-  <metadata id="CorelCorpID_1Corel-Layer"/>
-  <g id="_277118280">
-   <ellipse id="_277121656" class="fil1 str1" cx="20.7797" cy="37.076" rx="8.62146" ry="15"/>
-   <path id="_277120944" class="fil2 str2" d="M14.5146 37.1197c0.0472441,-6.25276 3.93661,-13.6831 7.19646,-12.411"/>
-   <path id="_277120232" class="fil2 str3" d="M15.613 31.1244c1.00866,-3.97795 2.95276,-6.64016 6.09921,-6.41693"/>
-   <path id="_277119384" class="fil2 str4" d="M26.8996 34.5319c0.703937,6.28465 -2.58898,15.6402 -6.9189,14.8311"/>
-   <path id="_277118672" class="fil2 str2" d="M25.7906 43.3972c0.0732283,1.06772 -1.11142,3.7937 -4.43976,5.88543"/>
-  </g>
-  <line class="fil2 str5" x1="33.6142" y1="37.8791" x2="38.6929" y2= "37.8791" />
-  <line class="fil2 str6" x1="36.065" y1="45.3886" x2="45.0756" y2= "36.052" />
-  <line class="fil2 str5" x1="36.1512" y1="26.2866" x2="44.3386" y2= "34.8732" />
-  <line class="fil2 str7" x1="33.6449" y1="36" x2="38.7224" y2= "36" />
-  <g id="_277113608">
-   <path id="_277115800" class="fil2 str8" d="M9.02362 37.076c0,-10.1327 5.26535,-18.3496 11.7555,-18.3496"/>
-   <path id="_277115224" class="fil2 str9" d="M20.7791 55.4256c-6.49016,0 -11.7555,-8.21693 -11.7555,-18.3496"/>
-   <path id="_277114640" class="fil2 str10" d="M32.5358 37.076c0,10.1327 -5.26535,18.3496 -11.7567,18.3496"/>
-   <path id="_277114064" class="fil2 str9" d="M20.7791 18.7264c6.49134,0 11.7567,8.21693 11.7567,18.3496"/>
-  </g>
-  <polygon class="fil3 str11" points="35.2465,43.9559 43.1043,35.8429 35.2453,27.7299 "/>
-  <path class="fil2 str5" d="M56.126 53.1768c3.37441,-3.92598 5.50866,-9.72402 5.50866,-16.1882 0,-6.39331 -2.08937,-12.1358 -5.4,-16.0606"/>
-  <path class="fil2 str5" d="M50.8665 48.3957c3.37441,-2.75669 5.50866,-6.82677 5.50866,-11.3646 0,-4.48819 -2.08937,-8.51929 -5.4,-11.2748"/>
-  <path class="fil2 str5" d="M46.35 43.8083c3.37441,-1.65 5.50866,-4.08661 5.50866,-6.80315 0,-2.68583 -2.08937,-5.1 -5.4,-6.74882"/>
-  <path class="fil2 str7" d="M54.7276 51.5469c2.23819,-2.44488 4.80354,-7.7185 4.80354,-14.1827 0,-6.39331 -1.29213,-11.1236 -4.60276,-15.0484"/>
-  <path class="fil2 str7" d="M49.6772 46.7646c2.84882,-3.34843 4.88622,-5.11181 4.88622,-9.64961 0,-4.48819 -1.51181,-6.89646 -4.82244,-9.65079"/>
-  <path class="fil2 str7" d="M45.6094 41.739c1.98189,-0.379134 4.30984,-2.01732 4.22126,-4.73386 -0.0885827,-2.70236 -1.42559,-3.88819 -3.9,-4.89567"/>
-  <path class="fil2 str6" d="M46.35 43.8083c3.37441,-1.65 5.50866,-4.08661 5.50866,-6.80315"/>
-  <path class="fil2 str6" d="M50.8665 48.3957c3.37441,-2.75669 5.50866,-6.82677 5.50866,-11.3646"/>
-  <path class="fil2 str6" d="M56.126 53.1768c3.37441,-3.92598 5.50866,-9.72402 5.50866,-16.1882"/>
- </g>
+<svg clip-rule="evenodd" fill-rule="evenodd" height="72"
+     image-rendering="optimizeQuality" shape-rendering="geometricPrecision"
+     text-rendering="geometricPrecision" viewBox="0 0 72 72" width="72"
+     xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink">
+    <linearGradient id="a" gradientUnits="userSpaceOnUse" x1="65.3315"
+                    x2="6.66969" y1="66.1937" y2="5.80748">
+        <stop offset="0" stop-color="#a0a0a0"/>
+        <stop offset=".619608" stop-color="#e0e0e0"/>
+        <stop offset="1" stop-color="#fff"/>
+    </linearGradient>
+    <radialGradient id="b" cx="20.6067" cy="24.776"
+                    gradientUnits="userSpaceOnUse" r="25.7539">
+        <stop offset="0" stop-color="#ffd1c2"/>
+        <stop offset=".211765" stop-color="#ab4968"/>
+        <stop offset="1" stop-color="#da251d"/>
+    </radialGradient>
+    <rect fill="url(#a)" height="66.15" rx="9.39803" stroke="#000"
+          stroke-width="3" width="66.15" x="2.92559" y="2.92559"/>
+    <ellipse cx="20.7797" cy="37.076" fill="url(#b)" rx="8.62146" ry="15"
+             stroke="#000" stroke-width="4.00039"/>
+    <g fill="none">
+        <path d="m14.5146 37.1197c.0472441-6.25276 3.93661-13.6831 7.19646-12.411"
+              stroke="#f99" stroke-width=".9"/>
+        <path d="m15.613 31.1244c1.00866-3.97795 2.95276-6.64016 6.09921-6.41693"
+              stroke="#fcc" stroke-width=".9"/>
+        <path d="m26.8996 34.5319c.703937 6.28465-2.58898 15.6402-6.9189 14.8311"
+              stroke="#f66" stroke-width=".9"/>
+        <path d="m25.7906 43.3972c.0732283 1.06772-1.11142 3.7937-4.43976 5.88543"
+              stroke="#f99" stroke-width=".9"/>
+        <path d="m33.6142 37.8791h5.0787" stroke="#aaa" stroke-linecap="round"
+              stroke-linejoin="round" stroke-width="1.99961"/>
+        <path d="m36.065 45.3886 9.0106-9.3366" stroke="#ccc"
+              stroke-linecap="round" stroke-linejoin="round"
+              stroke-width="1.99961"/>
+        <path d="m36.1512 26.2866 8.1874 8.5866" stroke="#aaa"
+              stroke-linecap="round" stroke-linejoin="round"
+              stroke-width="1.99961"/>
+        <path d="m33.6449 36h5.0775" stroke="#000" stroke-linecap="round"
+              stroke-linejoin="round" stroke-width="1.99961"/>
+        <path d="m9.02362 37.076c0-10.1327 5.26535-18.3496 11.7555-18.3496"
+              stroke="#5d5d5d" stroke-width="1.99961"/>
+        <path d="m20.7791 55.4256c-6.49016 0-11.7555-8.21693-11.7555-18.3496"
+              stroke="#949494" stroke-width="1.99961"/>
+        <path d="m32.5358 37.076c0 10.1327-5.26535 18.3496-11.7567 18.3496"
+              stroke="#ccc" stroke-width="1.99961"/>
+        <path d="m20.7791 18.7264c6.49134 0 11.7567 8.21693 11.7567 18.3496"
+              stroke="#949494" stroke-width="1.99961"/>
+    </g>
+    <path d="m35.2465 43.9559 7.8578-8.113-7.859-8.113z" stroke="#000"
+          stroke-width=".9"/>
+    <path d="m56.126 53.1768c3.37441-3.92598 5.50866-9.72402 5.50866-16.1882 0-6.39331-2.08937-12.1358-5.4-16.0606"
+          fill="none" stroke="#aaa" stroke-linecap="round"
+          stroke-linejoin="round" stroke-width="1.99961"/>
+    <path d="m50.8665 48.3957c3.37441-2.75669 5.50866-6.82677 5.50866-11.3646 0-4.48819-2.08937-8.51929-5.4-11.2748"
+          fill="none" stroke="#aaa" stroke-linecap="round"
+          stroke-linejoin="round" stroke-width="1.99961"/>
+    <path d="m46.35 43.8083c3.37441-1.65 5.50866-4.08661 5.50866-6.80315 0-2.68583-2.08937-5.1-5.4-6.74882"
+          fill="none" stroke="#aaa" stroke-linecap="round"
+          stroke-linejoin="round" stroke-width="1.99961"/>
+    <path d="m54.7276 51.5469c2.23819-2.44488 4.80354-7.7185 4.80354-14.1827 0-6.39331-1.29213-11.1236-4.60276-15.0484"
+          fill="none" stroke="#000" stroke-linecap="round"
+          stroke-linejoin="round" stroke-width="1.99961"/>
+    <path d="m49.6772 46.7646c2.84882-3.34843 4.88622-5.11181 4.88622-9.64961 0-4.48819-1.51181-6.89646-4.82244-9.65079"
+          fill="none" stroke="#000" stroke-linecap="round"
+          stroke-linejoin="round" stroke-width="1.99961"/>
+    <path d="m45.6094 41.739c1.98189-.379134 4.30984-2.01732 4.22126-4.73386-.0885827-2.70236-1.42559-3.88819-3.9-4.89567"
+          fill="none" stroke="#000" stroke-linecap="round"
+          stroke-linejoin="round" stroke-width="1.99961"/>
+    <path d="m46.35 43.8083c3.37441-1.65 5.50866-4.08661 5.50866-6.80315"
+          fill="none" stroke="#ccc" stroke-linecap="round"
+          stroke-linejoin="round" stroke-width="1.99961"/>
+    <path d="m50.8665 48.3957c3.37441-2.75669 5.50866-6.82677 5.50866-11.3646"
+          fill="none" stroke="#ccc" stroke-linecap="round"
+          stroke-linejoin="round" stroke-width="1.99961"/>
+    <path d="m56.126 53.1768c3.37441-3.92598 5.50866-9.72402 5.50866-16.1882"
+          fill="none" stroke="#ccc" stroke-linecap="round"
+          stroke-linejoin="round" stroke-width="1.99961"/>
 </svg>

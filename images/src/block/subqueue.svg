@@ -1,62 +1,53 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet type="text/css" href="user.css" ?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="72px" height="72px" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
-viewBox="0 0 72 72">
- <defs>
-  <style type="text/css">
-   <![CDATA[
-    .str4 {stroke:#ABABAB;stroke-width:0.9}
-    .str5 {stroke:#CCCCCC;stroke-width:0.9}
-    .str1 {stroke:#5C5C5C;stroke-width:1.99961}
-    .str3 {stroke:#5C5C5C;stroke-width:1.99961;stroke-linecap:round}
-    .str10 {stroke:#999999;stroke-width:1.99961}
-    .str6 {stroke:#ABABAB;stroke-width:1.99961;stroke-linecap:round}
-    .str2 {stroke:#CCCCCC;stroke-width:1.99961}
-    .str7 {stroke:#CCCCCC;stroke-width:1.99961;stroke-linecap:round}
-    .str8 {stroke:#E8E8E8;stroke-width:1.99961;stroke-linecap:round}
-    .str12 {stroke:black;stroke-width:4.00039;stroke-linecap:round;stroke-linejoin:round}
-    .str11 {stroke:black;stroke-width:4.16693}
-    .str9 {stroke:black;stroke-width:4.16693;stroke-linecap:round}
-    .fil1 {fill:none}
-    .fil0 {fill:url(#id0)}
-   ]]>
-  </style>
-  <linearGradient id="id0" gradientUnits="userSpaceOnUse" x1="65.3315" y1="66.1937" x2="6.66969" y2="5.80748">
-   <stop offset="0" class="background-br"/>
-   <stop offset="0.619608" class="background-c"/>
-   <stop offset="1" class="background-tl"/>
-  </linearGradient>
- </defs>
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <rect class="fil0 str0" x="2.92559" y="2.92559" width="66.15" height="66.15" rx="9.39803" ry="9.39803"/>
- </g>
- <g id="Layer_x0020_2">
-  <metadata id="CorelCorpID_1Corel-Layer"/>
-  <line class="fil1 str1" x1="41.2087" y1="12.0933" x2="11.5512" y2= "12.0933" />
-  <line class="fil1 str2" x1="9.38622" y1="16.3063" x2="41.9114" y2= "16.3063" />
-  <path class="fil1 str3" d="M52.1433 8.2311c-6.66142,5.11063 -7.38425,16.2142 -7.08307,33.1748"/>
-  <path class="fil1 str4" d="M54.3035 14.0185c-2.16614,3.29055 -5.1248,21.4098 -2.86063,32.9752"/>
-  <path class="fil1 str5" d="M54.3035 14.0185c-2.16614,3.29055 -3.09803,9.74528 -3.62126,17.7602"/>
-  <path class="fil1 str6" d="M49.8295 60.9508c8.09173,7.48583 14.6575,-7.44567 13.422,-32.2394"/>
-  <path class="fil1 str7" d="M53.1236 62.726c5.93858,0.38622 8.82992,-5.54409 10.0004,-22.2224"/>
-  <path class="fil1 str8" d="M55.9606 62.3516c3.40157,-1.70787 3.20315,-3.25394 4.67835,-7.2248"/>
-  <line class="fil1 str9" x1="10.5685" y1="13.1563" x2="43.0937" y2= "13.1563" />
-  <line class="fil1 str10" x1="10.2839" y1="33.0319" x2="42.8091" y2= "33.0319" />
-  <ellipse class="fil1 str11" cx="54.0366" cy="35.4308" rx="6.08622" ry="24.2657"/>
-  <line class="fil1 str12" x1="10.7409" y1="30.0307" x2="40.4114" y2= "30.0307" />
-  <line class="fil1 str11" x1="17.6008" y1="25.6417" x2="17.6008" y2= "16.9843" />
-  <line class="fil1 str11" x1="35.2937" y1="25.9098" x2="35.2937" y2= "16.9843" />
-  <line class="fil1 str11" x1="26.1272" y1="25.6417" x2="26.1272" y2= "16.9843" />
-  <line class="fil1 str1" x1="41.2087" y1="39.8362" x2="11.5512" y2= "39.8362" />
-  <line class="fil1 str2" x1="9.38622" y1="44.0492" x2="41.9114" y2= "44.0492" />
-  <line class="fil1 str9" x1="10.5685" y1="40.8992" x2="40.239" y2= "40.8992" />
-  <line class="fil1 str10" x1="10.2839" y1="60.7748" x2="42.8091" y2= "60.7748" />
-  <line class="fil1 str12" x1="10.7409" y1="57.7736" x2="43.2661" y2= "57.7736" />
-  <line class="fil1 str11" x1="17.6008" y1="53.3846" x2="17.6008" y2= "44.7272" />
-  <line class="fil1 str11" x1="35.2937" y1="53.6528" x2="35.2937" y2= "44.7272" />
-  <line class="fil1 str11" x1="26.1272" y1="53.3846" x2="26.1272" y2= "44.7272" />
- </g>
+
+<svg clip-rule="evenodd" fill-rule="evenodd" height="72"
+     image-rendering="optimizeQuality" shape-rendering="geometricPrecision"
+     text-rendering="geometricPrecision" viewBox="0 0 72 72" width="72"
+     xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink">
+    <linearGradient id="a" gradientUnits="userSpaceOnUse" x1="65.3315"
+                    x2="6.66969" y1="66.1937" y2="5.80748">
+        <stop offset="0" stop-color="#a0a0a0"/>
+        <stop offset=".619608" stop-color="#e0e0e0"/>
+        <stop offset="1" stop-color="#fff"/>
+    </linearGradient>
+    <rect fill="url(#a)" height="66.15" rx="9.39803" stroke="#000"
+          stroke-width="3" width="66.15" x="2.92559" y="2.92559"/>
+    <g fill="none">
+        <path d="m41.2087 12.0933h-29.6575" stroke="#5c5c5c"
+              stroke-width="1.99961"/>
+        <path d="m9.38622 16.3063h32.52518" stroke="#ccc" stroke-width="1.99961"/>
+        <path d="m52.1433 8.2311c-6.66142 5.11063-7.38425 16.2142-7.08307 33.1748"
+              stroke="#5c5c5c" stroke-linecap="round" stroke-width="1.99961"/>
+        <path d="m54.3035 14.0185c-2.16614 3.29055-5.1248 21.4098-2.86063 32.9752"
+              stroke="#ababab" stroke-width=".9"/>
+        <path d="m54.3035 14.0185c-2.16614 3.29055-3.09803 9.74528-3.62126 17.7602"
+              stroke="#ccc" stroke-width=".9"/>
+        <path d="m49.8295 60.9508c8.09173 7.48583 14.6575-7.44567 13.422-32.2394"
+              stroke="#ababab" stroke-linecap="round" stroke-width="1.99961"/>
+        <path d="m53.1236 62.726c5.93858.38622 8.82992-5.54409 10.0004-22.2224"
+              stroke="#ccc" stroke-linecap="round" stroke-width="1.99961"/>
+        <path d="m55.9606 62.3516c3.40157-1.70787 3.20315-3.25394 4.67835-7.2248"
+              stroke="#e8e8e8" stroke-linecap="round" stroke-width="1.99961"/>
+        <path d="m10.5685 13.1563h32.5252" stroke="#000" stroke-linecap="round"
+              stroke-width="4.16693"/>
+        <path d="m10.2839 33.0319h32.5252" stroke="#999" stroke-width="1.99961"/>
+        <ellipse cx="54.0366" cy="35.4308" rx="6.08622" ry="24.2657"
+                 stroke="#000" stroke-width="4.16693"/>
+        <path d="m10.7409 30.0307h29.6705" stroke="#000" stroke-linecap="round"
+              stroke-linejoin="round" stroke-width="4.00039"/>
+        <path d="m17.6008 25.6417v-8.6574" stroke="#000" stroke-width="4.16693"/>
+        <path d="m35.2937 25.9098v-8.9255" stroke="#000" stroke-width="4.16693"/>
+        <path d="m26.1272 25.6417v-8.6574" stroke="#000" stroke-width="4.16693"/>
+        <path d="m41.2087 39.8362h-29.6575" stroke="#5c5c5c"
+              stroke-width="1.99961"/>
+        <path d="m9.38622 44.0492h32.52518" stroke="#ccc" stroke-width="1.99961"/>
+        <path d="m10.5685 40.8992h29.6705" stroke="#000" stroke-linecap="round"
+              stroke-width="4.16693"/>
+        <path d="m10.2839 60.7748h32.5252" stroke="#999" stroke-width="1.99961"/>
+        <path d="m10.7409 57.7736h32.5252" stroke="#000" stroke-linecap="round"
+              stroke-linejoin="round" stroke-width="4.00039"/>
+        <path d="m17.6008 53.3846v-8.6574" stroke="#000" stroke-width="4.16693"/>
+        <path d="m35.2937 53.6528v-8.9256" stroke="#000" stroke-width="4.16693"/>
+        <path d="m26.1272 53.3846v-8.6574" stroke="#000" stroke-width="4.16693"/>
+    </g>
 </svg>

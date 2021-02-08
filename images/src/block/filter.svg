@@ -1,51 +1,43 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet type="text/css" href="user.css" ?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="72px" height="72px" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
-viewBox="0 0 72 72">
- <defs>
-  <style type="text/css">
-   <![CDATA[
-    .str3 {stroke:#9F9F9F;stroke-width:0.9}
-    .str1 {stroke:#A3A3A3;stroke-width:0.9;stroke-linecap:round}
-    .str2 {stroke:#CCCCCC;stroke-width:0.9;stroke-linecap:round}
-    .str5 {stroke:black;stroke-width:4.00039}
-    .str4 {stroke:black;stroke-width:4.00039;stroke-linecap:round;stroke-linejoin:round}
-    .fil1 {fill:none}
-    .fil2 {fill:url(#id0)}
-    .fil4 {fill:url(#id1)}
-    .fil0 {fill:url(#id2)}
-    .fil3 {fill:url(#id3)}
-   ]]>
-  </style>
-  <linearGradient id="id0" gradientUnits="userSpaceOnUse" x1="44.0776" y1="59.2642" x2="28.0854" y2="45.5563">
-   <stop offset="0" style="stop-color:#80742F"/>
-   <stop offset="1" style="stop-color:#D9D275"/>
-  </linearGradient>
-  <linearGradient id="id1" gradientUnits="userSpaceOnUse" x1="11.6941" y1="17.2654" x2="60.3059" y2="13.6205">
-   <stop offset="0" style="stop-color:#80742F"/>
-   <stop offset="1" style="stop-color:#FDFFCF"/>
-  </linearGradient>
-  <linearGradient id="id2" gradientUnits="userSpaceOnUse" x1="65.3315" y1="66.1937" x2="6.66969" y2="5.80748">
-   <stop offset="0" class="background-br"/>
-   <stop offset="0.619608" class="background-c"/>
-   <stop offset="1" class="background-tl"/>
-  </linearGradient>
-  <linearGradient id="id3" gradientUnits="userSpaceOnUse" xlink:href="#id1" x1="55.526" y1="46.265" x2="16.5803" y2="12.8823">
-  </linearGradient>
- </defs>
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <rect class="fil0 str0" x="2.92559" y="2.92559" width="66.15" height="66.15" rx="9.39803" ry="9.39803"/>
- </g>
- <g id="Layer_x0020_2">
-  <metadata id="CorelCorpID_1Corel-Layer"/>
-  <path class="fil1 str1" d="M61.6831 18.7878l-18.3685 25.0783 -1.52717 16.8567c-0.177165,1.95709 -3.05197,2.98346 -8.25591,1.9063"/>
-  <path class="fil1 str2" d="M51.1335 33.1913l-7.40197 10.2685 -1.52717 16.8567c-0.227953,2.52756 -5.47441,4.20118 -7.95827,3.3874"/>
-  <line class="fil1 str3" x1="43.2921" y1="48.4866" x2="42.3626" y2= "58.3913" />
-  <path class="fil2 str4" d="M30.8138 42.3732l10.5354 0 -1.50591 16.8756c-2.10472,2.86063 -5.6563,3.19961 -7.65354,0l-1.37598 -16.8756z"/>
-  <path class="fil3 str4" d="M10.9004 15.1311l50.3055 0.311811 -19.8567 26.9303c-3.05315,1.45512 -7.29213,1.64409 -10.5354,0l-19.9134 -27.2421z"/>
-  <ellipse class="fil4 str5" cx="36" cy="15.4429" rx="25.2047" ry="3.40039"/>
- </g>
+
+<svg clip-rule="evenodd" fill-rule="evenodd" height="72"
+     image-rendering="optimizeQuality" shape-rendering="geometricPrecision"
+     text-rendering="geometricPrecision" viewBox="0 0 72 72" width="72"
+     xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink">
+    <linearGradient id="a" gradientUnits="userSpaceOnUse" x1="44.0776"
+                    x2="28.0854" y1="59.2642" y2="45.5563">
+        <stop offset="0" stop-color="#80742f"/>
+        <stop offset="1" stop-color="#d9d275"/>
+    </linearGradient>
+    <linearGradient id="b" gradientUnits="userSpaceOnUse" x1="11.6941"
+                    x2="60.3059" y1="17.2654" y2="13.6205">
+        <stop offset="0" stop-color="#80742f"/>
+        <stop offset="1" stop-color="#fdffcf"/>
+    </linearGradient>
+    <linearGradient id="c" gradientUnits="userSpaceOnUse" x1="65.3315"
+                    x2="6.66969" y1="66.1937" y2="5.80748">
+        <stop offset="0" stop-color="#a0a0a0"/>
+        <stop offset=".619608" stop-color="#e0e0e0"/>
+        <stop offset="1" stop-color="#fff"/>
+    </linearGradient>
+    <linearGradient id="d" gradientUnits="userSpaceOnUse" x1="55.526"
+                    x2="16.5803" xlink:href="#b" y1="46.265" y2="12.8823"/>
+    <rect fill="url(#c)" height="66.15" rx="9.39803" stroke="#000"
+          stroke-width="3" width="66.15" x="2.92559" y="2.92559"/>
+    <path d="m61.6831 18.7878-18.3685 25.0783-1.52717 16.8567c-.177165 1.95709-3.05197 2.98346-8.25591 1.9063"
+          fill="none" stroke="#a3a3a3" stroke-linecap="round" stroke-width=".9"/>
+    <path d="m51.1335 33.1913-7.40197 10.2685-1.52717 16.8567c-.227953 2.52756-5.47441 4.20118-7.95827 3.3874"
+          fill="none" stroke="#ccc" stroke-linecap="round" stroke-width=".9"/>
+    <path d="m43.2921 48.4866-.9295 9.9047" fill="none" stroke="#9f9f9f"
+          stroke-width=".9"/>
+    <g stroke="#000">
+        <path d="m30.8138 42.3732h10.5354l-1.50591 16.8756c-2.10472 2.86063-5.6563 3.19961-7.65354 0l-1.37598-16.8756z"
+              fill="url(#a)" stroke-linecap="round" stroke-linejoin="round"
+              stroke-width="4.00039"/>
+        <path d="m10.9004 15.1311 50.3055.311811-19.8567 26.9303c-3.05315 1.45512-7.29213 1.64409-10.5354 0l-19.9134-27.2421z"
+              fill="url(#d)" stroke-linecap="round" stroke-linejoin="round"
+              stroke-width="4.00039"/>
+        <ellipse cx="36" cy="15.4429" fill="url(#b)" rx="25.2047" ry="3.40039"
+                 stroke-width="4.00039"/>
+    </g>
 </svg>

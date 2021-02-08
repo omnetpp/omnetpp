@@ -1,52 +1,42 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet type="text/css" href="user.css" ?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="72px" height="72px" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
-viewBox="0 0 72 72">
- <defs>
-  <style type="text/css">
-   <![CDATA[
-    .str1 {stroke:#E0E0E0;stroke-width:0.9}
-    .str8 {stroke:#5A5A5A;stroke-width:1.99961}
-    .str4 {stroke:#A1A1A1;stroke-width:1.99961}
-    .str7 {stroke:#B6B6B6;stroke-width:1.99961}
-    .str9 {stroke:#CCCCCC;stroke-width:1.99961}
-    .str5 {stroke:#CCCCCC;stroke-width:1.99961}
-    .str3 {stroke:#CCCCCC;stroke-width:1.99961;stroke-linecap:round}
-    .str6 {stroke:#F2F2F2;stroke-width:1.99961}
-    .str2 {stroke:black;stroke-width:4.00039}
-    .fil1 {fill:none}
-    .fil3 {fill:#A9A910}
-    .fil0 {fill:url(#id0)}
-    .fil2 {fill:url(#id1)}
-   ]]>
-  </style>
-  <linearGradient id="id0" gradientUnits="userSpaceOnUse" x1="65.3315" y1="66.1937" x2="6.66969" y2="5.80748">
-   <stop offset="0" class="background-br"/>
-   <stop offset="0.619608" class="background-c"/>
-   <stop offset="1" class="background-tl"/>
-  </linearGradient>
-  <radialGradient id="id1" gradientUnits="userSpaceOnUse" cx="43.4303" cy="49.7008" r="9.17126" fx="43.4303" fy="49.7008">
-   <stop offset="0" style="stop-color:white"/>
-   <stop offset="1" style="stop-color:#0093DD"/>
-  </radialGradient>
- </defs>
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <rect class="fil0 str0" x="2.92559" y="2.92559" width="66.15" height="66.15" rx="9.39803" ry="9.39803"/>
- </g>
- <g id="Layer_x0020_2">
-  <metadata id="CorelCorpID_1Corel-Layer"/>
-  <line class="fil1 str1" x1="54.3709" y1="46.0819" x2="48.9957" y2= "46.0063" />
-  <path class="fil2 str2" d="M46.7551 45.665c1.53898,6.11457 6.15709,9.17126 6.15709,12.228 0,3.05787 -1.53898,6.11457 -6.15709,6.11457 -4.61929,0 -6.15827,-3.05669 -6.15827,-6.11457 0,-3.05669 4.61929,-6.11339 6.15827,-12.228z"/>
-  <path class="fil1 str3" d="M56.1709 57.2976c0.129921,2.3185 -0.595276,6.54803 -3.60591,7.94055"/>
-  <path class="fil3 str2" d="M31.4126 23.439c0.98622,0.227953 1.90039,0.594094 2.70354,1.06772l4.05 0c3.99213,0 15.013,0.909449 14.8618,13.8283l-0.0744094 6.32717 -11.7248 -0.0791339 0 -6.09803c0,-1.3252 0.282283,-3.97441 -3.0626,-3.9626l-3.00472 0.011811c-1.55315,1.27559 -3.73583,2.07165 -6.15709,2.07165 -2.39173,0 -4.55315,-0.777165 -6.10157,-2.02677l-9.2374 0.0200787 0.0744094 -10.0925 10.1539 0c0.770079,-0.454724 1.64055,-0.811417 2.58071,-1.04055l-0.0614173 -6.04488 -9.75827 -0.119291c-1.29094,-1.25079 -1.43268,-5.50157 0,-6.74173l9.75827 0c1.34646,-2.65039 3.53504,-2.73661 4.93819,-0.0673228l10.6677 0.0673228c1.52362,1.24016 1.52126,5.49094 0,6.74173l-10.6063 0 0 6.13701z"/>
-  <path class="fil1 str4" d="M51.3295 25.0146c2.25,3.19606 4.27323,4.53425 5.02087,9.90945l-0.0767717 11.1685"/>
-  <path class="fil1 str5" d="M45.9602 16.063c0.069685,1.32992 -0.454724,2.85472 -1.72205,3.86339m0.751181 -0.0661417l-10.9287 0m0 0l0 2.68346"/>
-  <line class="fil1 str6" x1="24.2551" y1="20.2583" x2="14.9315" y2= "20.1354" />
-  <path class="fil1 str7" d="M38.5252 37.5969l-3.09567 0.0129921c-1.60039,1.31339 -3.84921,2.13425 -6.34488,2.13425 -2.46378,0 -4.69134,-0.800787 -6.28701,-2.08819l-9.51732 0.0200787"/>
-  <path class="fil1 str8" d="M37.8886 58.2213c-0.902362,-4.03465 2.97047,-5.59134 5.6315,-11.4059"/>
-  <path class="fil1 str9" d="M16.6169 27.4276l7.73858 0c0.675591,-0.676772 2.9563,-1.91457 4.65709,-1.8815 1.70079,0.0330709 3.74291,1.53071 4.13268,1.8815l8.63976 0c3.65433,0.902362 6.18307,3.08268 6.83622,5.78976"/>
- </g>
+
+<svg clip-rule="evenodd" fill-rule="evenodd" height="72"
+     image-rendering="optimizeQuality" shape-rendering="geometricPrecision"
+     text-rendering="geometricPrecision" viewBox="0 0 72 72" width="72"
+     xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink">
+    <linearGradient id="a" gradientUnits="userSpaceOnUse" x1="65.3315"
+                    x2="6.66969" y1="66.1937" y2="5.80748">
+        <stop offset="0" stop-color="#a0a0a0"/>
+        <stop offset=".619608" stop-color="#e0e0e0"/>
+        <stop offset="1" stop-color="#fff"/>
+    </linearGradient>
+    <radialGradient id="b" cx="43.4303" cy="49.7008"
+                    gradientUnits="userSpaceOnUse" r="9.17126">
+        <stop offset="0" stop-color="#fff"/>
+        <stop offset="1" stop-color="#0093dd"/>
+    </radialGradient>
+    <rect fill="url(#a)" height="66.15" rx="9.39803" stroke="#000"
+          stroke-width="3" width="66.15" x="2.92559" y="2.92559"/>
+    <path d="m54.3709 46.0819-5.3752-.0756" fill="none" stroke="#e0e0e0"
+          stroke-width=".9"/>
+    <path d="m46.7551 45.665c1.53898 6.11457 6.15709 9.17126 6.15709 12.228 0 3.05787-1.53898 6.11457-6.15709 6.11457-4.61929 0-6.15827-3.05669-6.15827-6.11457 0-3.05669 4.61929-6.11339 6.15827-12.228z"
+          fill="url(#b)" stroke="#000" stroke-width="4.00039"/>
+    <path d="m56.1709 57.2976c.129921 2.3185-.595276 6.54803-3.60591 7.94055"
+          fill="none" stroke="#ccc" stroke-linecap="round"
+          stroke-width="1.99961"/>
+    <path d="m31.4126 23.439c.98622.227953 1.90039.594094 2.70354 1.06772h4.05c3.99213 0 15.013.909449 14.8618 13.8283l-.0744094 6.32717-11.7248-.0791339v-6.09803c0-1.3252.282283-3.97441-3.0626-3.9626l-3.00472.011811c-1.55315 1.27559-3.73583 2.07165-6.15709 2.07165-2.39173 0-4.55315-.777165-6.10157-2.02677l-9.2374.0200787.0744094-10.0925h10.1539c.770079-.454724 1.64055-.811417 2.58071-1.04055l-.0614173-6.04488-9.75827-.119291c-1.29094-1.25079-1.43268-5.50157 0-6.74173h9.75827c1.34646-2.65039 3.53504-2.73661 4.93819-.0673228l10.6677.0673228c1.52362 1.24016 1.52126 5.49094 0 6.74173h-10.6063v6.13701z"
+          fill="#a9a910" stroke="#000" stroke-width="4.00039"/>
+    <g fill="none" stroke-width="1.99961">
+        <path d="m51.3295 25.0146c2.25 3.19606 4.27323 4.53425 5.02087 9.90945l-.0767717 11.1685"
+              stroke="#a1a1a1"/>
+        <path d="m45.9602 16.063c.069685 1.32992-.454724 2.85472-1.72205 3.86339m.751181-.0661417h-10.9287m0 0v2.68346"
+              stroke="#ccc"/>
+        <path d="m24.2551 20.2583-9.3236-.1229" stroke="#f2f2f2"/>
+        <path d="m38.5252 37.5969-3.09567.0129921c-1.60039 1.31339-3.84921 2.13425-6.34488 2.13425-2.46378 0-4.69134-.800787-6.28701-2.08819l-9.51732.0200787"
+              stroke="#b6b6b6"/>
+        <path d="m37.8886 58.2213c-.902362-4.03465 2.97047-5.59134 5.6315-11.4059"
+              stroke="#5a5a5a"/>
+        <path d="m16.6169 27.4276h7.73858c.675591-.676772 2.9563-1.91457 4.65709-1.8815 1.70079.0330709 3.74291 1.53071 4.13268 1.8815h8.63976c3.65433.902362 6.18307 3.08268 6.83622 5.78976"
+              stroke="#ccc"/>
+    </g>
 </svg>

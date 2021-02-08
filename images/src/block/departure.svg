@@ -1,45 +1,35 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet type="text/css" href="user.css" ?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="72px" height="72px" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
-viewBox="0 0 72 72">
- <defs>
-  <style type="text/css">
-   <![CDATA[
-    .str1 {stroke:black;stroke-width:0.9}
-    .str3 {stroke:#5C5C5C;stroke-width:0.9}
-    .str2 {stroke:#999999;stroke-width:0.9}
-    .str4 {stroke:#B0B0B0;stroke-width:0.9}
-    .str5 {stroke:#CCCCCC;stroke-width:0.9}
-    .str6 {stroke:#999999;stroke-width:1.99961}
-    .str7 {stroke:#B3B3B3;stroke-width:1.99961}
-    .str8 {stroke:#CCCCCC;stroke-width:1.99961}
-    .fil2 {fill:none}
-    .fil1 {fill:black}
-    .fil0 {fill:url(#id0)}
-   ]]>
-  </style>
-  <linearGradient id="id0" gradientUnits="userSpaceOnUse" x1="65.3315" y1="66.1937" x2="6.66969" y2="5.80748">
-   <stop offset="0" class="background-br"/>
-   <stop offset="0.619608" class="background-c"/>
-   <stop offset="1" class="background-tl"/>
-  </linearGradient>
- </defs>
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <rect class="fil0 str0" x="2.92559" y="2.92559" width="66.15" height="66.15" rx="9.39803" ry="9.39803"/>
- </g>
- <g id="Layer_x0020_2">
-  <metadata id="CorelCorpID_1Corel-Layer"/>
-  <rect class="fil1 str1" x="8.55236" y="9.04961" width="11.8004" height="53.8996" rx="1.04528" ry="1.04528"/>
-  <path class="fil2 str2" d="M9.97087 63.8102l9.78307 0.0744094c0.969685,-0.15 1.44213,-0.69685 1.41969,-1.64528l-0.0011811 -46.1244"/>
-  <path class="fil2 str3" d="M18.8693 8.20039l-9.78307 -0.0744094c-0.969685,0.15 -1.44213,0.69685 -1.41969,1.64528l0.0011811 46.1244"/>
-  <path class="fil2 str4" d="M12.5102 63.8102l7.2437 0.0744094c0.969685,-0.15 1.44213,-0.69685 1.41969,-1.64528l-0.0011811 -6.57874"/>
-  <path class="fil2 str5" d="M16.9157 63.8846l2.83819 0c0.969685,-0.15 1.44213,-0.69685 1.41969,-1.64528l-0.0011811 -2.46732"/>
-  <polygon class="fil1 str1" points="26.935,41.8783 40.5744,41.8783 40.5744,50.2724 61.6736,36.0012 40.5744,21.4252 40.5744,30.2705 26.935,30.2705 "/>
-  <line class="fil2 str6" x1="40.4067" y1="52.3358" x2="60.0354" y2= "38.9988" />
-  <line class="fil2 str7" x1="26.7768" y1="43.6205" x2="39.7783" y2= "43.4929" />
-  <line class="fil2 str8" x1="55.5189" y1="42.0295" x2="62.3197" y2= "37.6807" />
- </g>
+
+<svg clip-rule="evenodd" fill-rule="evenodd" height="72"
+     image-rendering="optimizeQuality" shape-rendering="geometricPrecision"
+     text-rendering="geometricPrecision" viewBox="0 0 72 72" width="72"
+     xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink">
+    <linearGradient id="a" gradientUnits="userSpaceOnUse" x1="65.3315"
+                    x2="6.66969" y1="66.1937" y2="5.80748">
+        <stop offset="0" stop-color="#a0a0a0"/>
+        <stop offset=".619608" stop-color="#e0e0e0"/>
+        <stop offset="1" stop-color="#fff"/>
+    </linearGradient>
+    <rect fill="url(#a)" height="66.15" rx="9.39803" stroke="#000"
+          stroke-width="3" width="66.15" x="2.92559" y="2.92559"/>
+    <g stroke-width=".9">
+        <rect height="53.8996" rx="1.04528" stroke="#000" width="11.8004"
+              x="8.55236" y="9.04961"/>
+        <path d="m9.97087 63.8102 9.78307.0744094c.969685-.15 1.44213-.69685 1.41969-1.64528l-.0011811-46.1244"
+              fill="none" stroke="#999"/>
+        <path d="m18.8693 8.20039-9.78307-.0744094c-.969685.15-1.44213.69685-1.41969 1.64528l.0011811 46.1244"
+              fill="none" stroke="#5c5c5c"/>
+        <path d="m12.5102 63.8102 7.2437.0744094c.969685-.15 1.44213-.69685 1.41969-1.64528l-.0011811-6.57874"
+              fill="none" stroke="#b0b0b0"/>
+        <path d="m16.9157 63.8846h2.83819c.969685-.15 1.44213-.69685 1.41969-1.64528l-.0011811-2.46732"
+              fill="none" stroke="#ccc"/>
+        <path d="m26.935 41.8783h13.6394v8.3941l21.0992-14.2712-21.0992-14.576v8.8453h-13.6394z"
+              stroke="#000"/>
+    </g>
+    <path d="m40.4067 52.3358 19.6287-13.337" fill="none" stroke="#999"
+          stroke-width="1.99961"/>
+    <path d="m26.7768 43.6205 13.0015-.1276" fill="none" stroke="#b3b3b3"
+          stroke-width="1.99961"/>
+    <path d="m55.5189 42.0295 6.8008-4.3488" fill="none" stroke="#ccc"
+          stroke-width="1.99961"/>
 </svg>

@@ -1,50 +1,44 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet type="text/css" href="user.css" ?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="72px" height="72px" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
-viewBox="0 0 72 72">
- <defs>
-  <style type="text/css">
-   <![CDATA[
-    .str2 {stroke:#616161;stroke-width:0.9;stroke-linecap:round}
-    .str7 {stroke:#999999;stroke-width:0.9}
-    .str3 {stroke:#999999;stroke-width:0.9;stroke-linecap:round}
-    .str5 {stroke:#A8A8A8;stroke-width:0.9}
-    .str6 {stroke:#CCCCCC;stroke-width:0.9}
-    .str4 {stroke:#CCCCCC;stroke-width:0.9;stroke-linecap:round}
-    .str1 {stroke:black;stroke-width:4.00039}
-    .fil2 {fill:none}
-    .fil0 {fill:url(#id0)}
-    .fil1 {fill:url(#id1);fill-rule:nonzero}
-   ]]>
-  </style>
-  <linearGradient id="id0" gradientUnits="userSpaceOnUse" x1="65.3315" y1="66.1937" x2="6.66969" y2="5.80748">
-   <stop offset="0" class="background-br"/>
-   <stop offset="0.619608" class="background-c"/>
-   <stop offset="1" class="background-tl"/>
-  </linearGradient>
-  <radialGradient id="id1" gradientUnits="userSpaceOnUse" cx="31.4244" cy="20.9598" r="17.2689" fx="31.4244" fy="20.9598">
-   <stop offset="0" style="stop-color:white"/>
-   <stop offset="0.788235" style="stop-color:#2B6785"/>
-   <stop offset="1" style="stop-color:#0093DD"/>
-  </radialGradient>
- </defs>
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <rect class="fil0 str0" x="2.92559" y="2.92559" width="66.15" height="66.15" rx="9.39803" ry="9.39803"/>
- </g>
- <g id="Layer_x0020_2">
-  <metadata id="CorelCorpID_1Corel-Layer"/>
-  <path class="fil1 str1" d="M36 14.7425c2.48622,11.5134 9.94724,17.2689 9.94724,23.0244 0,5.75787 -2.4874,11.5134 -9.94724,11.5134 -7.46102,0 -9.94724,-5.75551 -9.94724,-11.5134 0,-5.75551 7.46102,-11.511 9.94724,-23.0244zm5.90669 13.6713m1.86496 17.2689m-15.5433 0m1.86496 -17.2689"/>
-  <path class="fil2 str2" d="M23.9244 36.6461c0,-6.55394 7.82244,-11.6882 10.6535,-26.2913"/>
-  <path class="fil2 str3" d="M48.0791 39.502c0,6.55512 -3.42992,12.3626 -11.9244,12.3626"/>
-  <path class="fil2 str4" d="M47.2571 44.6598c-0.896457,2.66811 -2.53228,4.8874 -6.09803,6.3815"/>
-  <path class="fil2 str1" d="M7.62165 50.9516l14.1142 0c6.57165,0 8.43898,9.04488 11.3516,13.4563"/>
-  <path class="fil2 str1" d="M64.5307 50.9516l-14.1142 0c-6.57165,0 -8.43898,9.04488 -11.3516,13.4563"/>
-  <path class="fil2 str5" d="M65.1319 53.0492l-12.6945 0c-7.37362,0 -8.47913,8.19094 -11.1272,12.7087"/>
-  <path class="fil2 str6" d="M52.4374 53.0492c-7.37362,0 -8.47913,8.19094 -11.1272,12.7087"/>
-  <path class="fil2 str7" d="M25.5531 49.8295c6.62717,2.61614 7.35945,9.38622 10.0075,13.9039"/>
-  <path class="fil2 str6" d="M30.4087 53.7177c3.04252,4.48583 2.50394,5.49803 5.15197,10.0157"/>
- </g>
+
+<svg clip-rule="evenodd" fill-rule="evenodd" height="72"
+     image-rendering="optimizeQuality" shape-rendering="geometricPrecision"
+     text-rendering="geometricPrecision" viewBox="0 0 72 72" width="72"
+     xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink">
+    <linearGradient id="a" gradientUnits="userSpaceOnUse" x1="65.3315"
+                    x2="6.66969" y1="66.1937" y2="5.80748">
+        <stop offset="0" stop-color="#a0a0a0"/>
+        <stop offset=".619608" stop-color="#e0e0e0"/>
+        <stop offset="1" stop-color="#fff"/>
+    </linearGradient>
+    <radialGradient id="b" cx="31.4244" cy="20.9598"
+                    gradientUnits="userSpaceOnUse" r="17.2689">
+        <stop offset="0" stop-color="#fff"/>
+        <stop offset=".788235" stop-color="#2b6785"/>
+        <stop offset="1" stop-color="#0093dd"/>
+    </radialGradient>
+    <rect fill="url(#a)" height="66.15" rx="9.39803" stroke="#000"
+          stroke-width="3" width="66.15" x="2.92559" y="2.92559"/>
+    <path d="m36 14.7425c2.48622 11.5134 9.94724 17.2689 9.94724 23.0244 0 5.75787-2.4874 11.5134-9.94724 11.5134-7.46102 0-9.94724-5.75551-9.94724-11.5134 0-5.75551 7.46102-11.511 9.94724-23.0244zm-5.90669 13.6713"
+          fill="url(#b)" fill-rule="nonzero" stroke="#000"
+          stroke-width="4.00039"/>
+    <g fill="none">
+        <path d="m23.9244 36.6461c0-6.55394 7.82244-11.6882 10.6535-26.2913"
+              stroke="#616161" stroke-linecap="round" stroke-width=".9"/>
+        <path d="m48.0791 39.502c0 6.55512-3.42992 12.3626-11.9244 12.3626"
+              stroke="#999" stroke-linecap="round" stroke-width=".9"/>
+        <path d="m47.2571 44.6598c-.896457 2.66811-2.53228 4.8874-6.09803 6.3815"
+              stroke="#ccc" stroke-linecap="round" stroke-width=".9"/>
+        <path d="m7.62165 50.9516h14.1142c6.57165 0 8.43898 9.04488 11.3516 13.4563"
+              stroke="#000" stroke-width="4.00039"/>
+        <path d="m64.5307 50.9516h-14.1142c-6.57165 0-8.43898 9.04488-11.3516 13.4563"
+              stroke="#000" stroke-width="4.00039"/>
+        <path d="m65.1319 53.0492h-12.6945c-7.37362 0-8.47913 8.19094-11.1272 12.7087"
+              stroke="#a8a8a8" stroke-width=".9"/>
+        <path d="m52.4374 53.0492c-7.37362 0-8.47913 8.19094-11.1272 12.7087"
+              stroke="#ccc" stroke-width=".9"/>
+        <path d="m25.5531 49.8295c6.62717 2.61614 7.35945 9.38622 10.0075 13.9039"
+              stroke="#999" stroke-width=".9"/>
+        <path d="m30.4087 53.7177c3.04252 4.48583 2.50394 5.49803 5.15197 10.0157"
+              stroke="#ccc" stroke-width=".9"/>
+    </g>
 </svg>

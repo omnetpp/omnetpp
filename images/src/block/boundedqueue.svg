@@ -1,58 +1,48 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW -->
-<?xml-stylesheet type="text/css" href="user.css" ?>  
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="72px" height="72px" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
-viewBox="0 0 72 72">
- <defs>
-  <style type="text/css">
-   <![CDATA[
-    .str2 {stroke:#ABABAB;stroke-width:0.9}
-    .str3 {stroke:#CCCCCC;stroke-width:0.9}
-    .str8 {stroke:#B0B0B0;stroke-width:1.99961}
-    .str1 {stroke:#B0B0B0;stroke-width:1.99961;stroke-linecap:round}
-    .str11 {stroke:#E8E8E8;stroke-width:1.99961}
-    .str4 {stroke:#ABABAB;stroke-width:1.99961;stroke-linecap:round}
-    .str9 {stroke:#CCCCCC;stroke-width:1.99961}
-    .str5 {stroke:#CCCCCC;stroke-width:1.99961;stroke-linecap:round}
-    .str6 {stroke:#E8E8E8;stroke-width:1.99961;stroke-linecap:round}
-    .str12 {stroke:black;stroke-width:4.00039;stroke-linecap:round;stroke-linejoin:round}
-    .str7 {stroke:black;stroke-width:4.16693}
-    .str10 {stroke:black;stroke-width:4.16693;stroke-linecap:round}
-    .fil1 {fill:none}
-    .fil0 {fill:url(#id0)}
-   ]]>
-  </style>
-  <linearGradient id="id0" gradientUnits="userSpaceOnUse" x1="65.3315" y1="66.1937" x2="6.66969" y2="5.80748">
-   <stop offset="0" class="background-br"/>
-   <stop offset="0.619608" class="background-c"/>
-   <stop offset="1" class="background-tl"/>
-  </linearGradient>
- </defs>
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <rect class="fil0 str0" x="2.92559" y="2.92559" width="66.15" height="66.15" rx="9.39803" ry="9.39803"/>
- </g>
- <g id="Layer_x0020_2">
-  <metadata id="CorelCorpID_1Corel-Layer"/>
-  <g id="_124713320">
-   <path id="_124717768" class="fil1 str1" d="M53.9976 16.761c-4.54488,3.4878 -5.0374,11.0634 -4.83189,22.6346"/>
-   <path id="_124717056" class="fil1 str2" d="M56.5701 22.9004c-1.37598,2.30906 -2.83937,14.7496 -0.94252,22.5638"/>
-   <path id="_124716352" class="fil1 str3" d="M56.635 22.748c-1.37362,2.31024 -1.80591,6.73937 -1.91102,12.2185"/>
-   <path id="_124715656" class="fil1 str4" d="M54.2232 53.635c5.52047,5.10709 10.0004,-5.07992 9.15709,-21.9969"/>
-   <path id="_124714960" class="fil1 str5" d="M56.4709 54.8457c4.05118,0.263386 6.0248,-3.78189 6.82323,-15.1618"/>
-   <path id="_124714264" class="fil1 str6" d="M58.4067 54.5906c2.32087,-1.16575 2.18504,-2.22047 3.19134,-4.92992"/>
-   <ellipse id="_124713592" class="fil1 str7" cx="56.3423" cy="35.4705" rx="4.15254" ry="16.5561"/>
-  </g>
-  <line class="fil1 str8" x1="47.3114" y1="25.0972" x2="20.9787" y2= "25.0972" />
-  <line class="fil1 str9" x1="20.3752" y1="31.35" x2="47.5713" y2= "31.35" />
-  <line class="fil1 str10" x1="21.5799" y1="28.3429" x2="47.2063" y2= "28.3429" />
-  <line class="fil1 str11" x1="20.8252" y1="46.1539" x2="48.0213" y2= "46.1539" />
-  <line class="fil1 str12" x1="21.5799" y1="43.3819" x2="47.2063" y2= "43.3819" />
-  <line class="fil1 str7" x1="27.9673" y1="39.9898" x2="27.9673" y2= "31.9146" />
-  <line class="fil1 str7" x1="42.5528" y1="39.9909" x2="42.5539" y2= "31.9157" />
-  <line class="fil1 str7" x1="35.2594" y1="39.9472" x2="35.2594" y2= "31.9146" />
-  <line class="fil1 str7" x1="21.5551" y1="39.6094" x2="17.5535" y2= "32.5949" />
-  <line class="fil1 str7" x1="16.572" y1="42.1807" x2="9.3437" y2= "38.5807" />
- </g>
+
+<svg clip-rule="evenodd" fill-rule="evenodd" height="72"
+     image-rendering="optimizeQuality" shape-rendering="geometricPrecision"
+     text-rendering="geometricPrecision" viewBox="0 0 72 72" width="72"
+     xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink">
+    <linearGradient id="a" gradientUnits="userSpaceOnUse" x1="65.3315"
+                    x2="6.66969" y1="66.1937" y2="5.80748">
+        <stop offset="0" stop-color="#a0a0a0"/>
+        <stop offset=".619608" stop-color="#e0e0e0"/>
+        <stop offset="1" stop-color="#fff"/>
+    </linearGradient>
+    <rect fill="url(#a)" height="66.15" rx="9.39803" stroke="#000"
+          stroke-width="3" width="66.15" x="2.92559" y="2.92559"/>
+    <g fill="none">
+        <path d="m53.9976 16.761c-4.54488 3.4878-5.0374 11.0634-4.83189 22.6346"
+              stroke="#b0b0b0" stroke-linecap="round" stroke-width="1.99961"/>
+        <path d="m56.5701 22.9004c-1.37598 2.30906-2.83937 14.7496-.94252 22.5638"
+              stroke="#ababab" stroke-width=".9"/>
+        <path d="m56.635 22.748c-1.37362 2.31024-1.80591 6.73937-1.91102 12.2185"
+              stroke="#ccc" stroke-width=".9"/>
+        <path d="m54.2232 53.635c5.52047 5.10709 10.0004-5.07992 9.15709-21.9969"
+              stroke="#ababab" stroke-linecap="round" stroke-width="1.99961"/>
+        <path d="m56.4709 54.8457c4.05118.263386 6.0248-3.78189 6.82323-15.1618"
+              stroke="#ccc" stroke-linecap="round" stroke-width="1.99961"/>
+        <path d="m58.4067 54.5906c2.32087-1.16575 2.18504-2.22047 3.19134-4.92992"
+              stroke="#e8e8e8" stroke-linecap="round" stroke-width="1.99961"/>
+        <ellipse cx="56.3423" cy="35.4705" rx="4.15254" ry="16.5561"
+                 stroke="#000" stroke-width="4.16693"/>
+        <path d="m47.3114 25.0972h-26.3327" stroke="#b0b0b0"
+              stroke-width="1.99961"/>
+        <path d="m20.3752 31.35h27.1961" stroke="#ccc" stroke-width="1.99961"/>
+        <path d="m21.5799 28.3429h25.6264" stroke="#000" stroke-linecap="round"
+              stroke-width="4.16693"/>
+        <path d="m20.8252 46.1539h27.1961" stroke="#e8e8e8"
+              stroke-width="1.99961"/>
+        <path d="m21.5799 43.3819h25.6264" stroke="#000" stroke-linecap="round"
+              stroke-linejoin="round" stroke-width="4.00039"/>
+        <path d="m27.9673 39.9898v-8.0752" stroke="#000" stroke-width="4.16693"/>
+        <path d="m42.5528 39.9909.0011-8.0752" stroke="#000"
+              stroke-width="4.16693"/>
+        <path d="m35.2594 39.9472v-8.0326" stroke="#000" stroke-width="4.16693"/>
+        <path d="m21.5551 39.6094-4.0016-7.0145" stroke="#000"
+              stroke-width="4.16693"/>
+        <path d="m16.572 42.1807-7.2283-3.6" stroke="#000"
+              stroke-width="4.16693"/>
+    </g>
 </svg>

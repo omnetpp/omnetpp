@@ -1,41 +1,30 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet type="text/css" href="user.css" ?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="72px" height="72px" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
-viewBox="0 0 72 72">
- <defs>
-  <style type="text/css">
-   <![CDATA[
-    .str1 {stroke:#5C5C5C;stroke-width:1.99961}
-    .str4 {stroke:#999999;stroke-width:1.99961}
-    .str2 {stroke:#CCCCCC;stroke-width:1.99961}
-    .str5 {stroke:black;stroke-width:4.00039;stroke-linecap:round;stroke-linejoin:round}
-    .str6 {stroke:black;stroke-width:4.16693}
-    .str3 {stroke:black;stroke-width:4.16693;stroke-linecap:round}
-    .fil1 {fill:none}
-    .fil0 {fill:url(#id0)}
-   ]]>
-  </style>
-  <linearGradient id="id0" gradientUnits="userSpaceOnUse" x1="65.3315" y1="66.1937" x2="6.66969" y2="5.80748">
-   <stop offset="0" class="background-br"/>
-   <stop offset="0.619608" class="background-c"/>
-   <stop offset="1" class="background-tl"/>
-  </linearGradient>
- </defs>
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <rect class="fil0 str0" x="2.92559" y="2.92559" width="66.15" height="66.15" rx="9.39803" ry="9.39803"/>
- </g>
- <g id="Layer_x0020_2">
-  <metadata id="CorelCorpID_1Corel-Layer"/>
-  <line class="fil1 str1" x1="41.7756" y1="17.7024" x2="9.49134" y2= "17.7024" />
-  <line class="fil1 str2" x1="9.11811" y1="23.8748" x2="42.4606" y2= "23.8748" />
-  <line class="fil1 str3" x1="10.3205" y1="20.8736" x2="41.7378" y2= "20.8736" />
-  <line class="fil1 str4" x1="9.11811" y1="54" x2="42.4606" y2= "54" />
-  <line class="fil1 str5" x1="10.3205" y1="50.8724" x2="41.7378" y2= "50.8724" />
-  <line class="fil1 str6" x1="17.4685" y1="46.5413" x2="17.4685" y2= "25.5685" />
-  <line class="fil1 str6" x1="36.072" y1="46.5413" x2="36.0744" y2= "25.5709" />
-  <line class="fil1 str6" x1="26.7094" y1="46.4291" x2="26.7106" y2= "25.5697" />
- </g>
+
+<svg clip-rule="evenodd" fill-rule="evenodd" height="72"
+     image-rendering="optimizeQuality" shape-rendering="geometricPrecision"
+     text-rendering="geometricPrecision" viewBox="0 0 72 72" width="72"
+     xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink">
+    <linearGradient id="a" gradientUnits="userSpaceOnUse" x1="65.3315"
+                    x2="6.66969" y1="66.1937" y2="5.80748">
+        <stop offset="0" stop-color="#a0a0a0"/>
+        <stop offset=".619608" stop-color="#e0e0e0"/>
+        <stop offset="1" stop-color="#fff"/>
+    </linearGradient>
+    <rect fill="url(#a)" height="66.15" rx="9.39803" stroke="#000"
+          stroke-width="3" width="66.15" x="2.92559" y="2.92559"/>
+    <g fill="none">
+        <path d="m41.7756 17.7024h-32.28426" stroke="#5c5c5c"
+              stroke-width="1.99961"/>
+        <path d="m9.11811 23.8748h33.34249" stroke="#ccc" stroke-width="1.99961"/>
+        <path d="m10.3205 20.8736h31.4173" stroke="#000" stroke-linecap="round"
+              stroke-width="4.16693"/>
+        <path d="m9.11811 54h33.34249" stroke="#999" stroke-width="1.99961"/>
+        <path d="m10.3205 50.8724h31.4173" stroke="#000" stroke-linecap="round"
+              stroke-linejoin="round" stroke-width="4.00039"/>
+        <path d="m17.4685 46.5413v-20.9728" stroke="#000" stroke-width="4.16693"/>
+        <path d="m36.072 46.5413.0024-20.9704" stroke="#000"
+              stroke-width="4.16693"/>
+        <path d="m26.7094 46.4291.0012-20.8594" stroke="#000"
+              stroke-width="4.16693"/>
+    </g>
 </svg>

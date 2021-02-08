@@ -1,45 +1,24 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet type="text/css" href="user.css" ?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="72px" height="72px" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
-viewBox="0 0 72 72">
- <defs>
-  <font id="FontID0" font-variant="normal" style="fill-rule:nonzero" font-style="normal" font-weight="700">
-	<font-face
-		font-family="Arial">
-	</font-face>
-   <missing-glyph><path d="M0 0z"/></missing-glyph>
-   <glyph unicode="D" horiz-adv-x="722"><path d="M72.3268 715.835l264.174 0c59.4973,0 104.825,-4.49709 136.168,-13.661 42.0011,-12.3373 77.9948,-34.3476 107.828,-66.0139 30.0032,-31.4966 52.8281,-70.1546 68.5085,-115.821 15.4937,-45.8364 23.334,-102.177 23.334,-169.345 0,-58.8185 -7.34807,-109.661 -22.0103,-152.324 -17.8356,-51.9965 -43.3248,-94.1674 -76.6711,-126.343 -24.997,-24.4879 -58.8185,-43.4945 -101.498,-57.1555 -31.819,-10.1651 -74.499,-15.1713 -127.989,-15.1713l-271.845 0 0 715.835zm144.501 -121.167l0 -473.993 107.845 0c40.3211,0 69.4928,2.15521 87.4981,6.822 23.334,5.83773 42.8327,15.6634 58.3264,29.6638 15.5107,14.0004 28.0007,37.1646 37.8434,69.1703 9.65602,32.0057 14.6622,75.8396 14.6622,131.162 0,55.3397 -5.00619,97.6802 -14.6622,127.344 -9.84269,29.6638 -23.5037,52.8281 -40.9999,69.3231 -17.6659,16.6647 -40.0156,27.848 -67.0151,33.6688 -20.1605,4.66679 -59.667,6.83897 -118.655,6.83897l-64.8429 0z"/></glyph>
-  </font>
-  <style type="text/css">
-   <![CDATA[
-    @font-face { font-family:"Arial";src:url("#FontID0") format(svg)}
-    .str2 {stroke:#AAAAAA;stroke-width:1.99961}
-    .str1 {stroke:#CCCCCC;stroke-width:1.99961}
-    .fil2 {fill:none}
-    .fil1 {fill:black}
-    .fil0 {fill:url(#id0)}
-    .fnt0 {font-weight:bold;font-size:69.5988;font-family:'Arial'}
-   ]]>
-  </style>
-  <linearGradient id="id0" gradientUnits="userSpaceOnUse" x1="65.7673" y1="65.7673" x2="6.23386" y2="6.23386">
-   <stop offset="0" class="background-br"/>
-   <stop offset="0.619608" class="background-c"/>
-   <stop offset="1" class="background-tl"/>
-  </linearGradient>
- </defs>
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <rect class="fil0 str0" x="2.92559" y="2.92559" width="66.15" height="66.15" rx="9.39803" ry="9.39803"/>
- </g>
- <g id="Layer_x0020_2">
-  <metadata id="CorelCorpID_1Corel-Layer"/>
-  <text x="12.6035" y="60.9106"  class="fil1 fnt0">D</text>
-  <path class="fil2 str1" d="M41.7094 61.8484c8.74016,-1.16102 17.2146,-9.10748 17.8382,-17.589"/>
-  <line class="fil2 str2" x1="18.2504" y1="61.8484" x2="41.7094" y2= "61.8484" />
-  <path class="fil2 str2" d="M41.7969 20.8205c5.02441,2.28425 6.1689,9.44409 5.97638,12.3224"/>
-  <path class="fil2 str1" d="M28.6854 20.6421c2.05157,-0.26811 11.5063,-0.550394 13.1114,0.178346"/>
-  <line class="fil2 str2" x1="28.6854" y1="52.0713" x2="28.6854" y2= "20.6421" />
- </g>
+
+<svg enable-background="new 0 0 69.15 69.15" height="69.15"
+     viewBox="0 0 69.15 69.15" width="69.15" xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink">
+    <linearGradient id="a" gradientTransform="matrix(1 0 0 -1 270.5 428.65)"
+                    gradientUnits="userSpaceOnUse" x1="-206.59" x2="-265.26"
+                    y1="363.88" y2="424.27">
+        <stop offset="0" stop-color="#a0a0a0"/>
+        <stop offset=".6196" stop-color="#e0e0e0"/>
+        <stop offset="1" stop-color="#fff"/>
+    </linearGradient>
+    <switch>
+        <foreignObject height="1"
+                       requiredExtensions="http://ns.adobe.com/AdobeIllustrator/10.0/"
+                       width="1"/>
+        <path d="m10.898 1.5h47.354c5.19 0 9.398 4.208 9.398 9.398v47.354c0 5.19-4.208 9.398-9.398 9.398h-47.354c-5.19 0-9.398-4.208-9.398-9.398v-47.354c0-5.19 4.208-9.398 9.398-9.398z"
+              fill="url(#a)" stroke="#000" stroke-width="3"/>
+    </switch>
+    <path clip-rule="evenodd"
+          d="m57.066606 34.749445q0 7.408488-2.922614 12.947861-2.88863 5.50539-8.2241 8.428004-5.301487 2.922614-12.166232 2.922614h-19.370815v-47.883296h17.331782q12.098264 0 18.725121 6.1171 6.626858 6.083115 6.626858 17.467717zm-10.093214 0q0-7.714342-4.010099-11.758424-4.010098-4.078067-11.452569-4.078067h-7.102632v32.386644h8.495971q6.456938 0 10.263134-4.451889 3.806195-4.451889 3.806195-12.098264z"
+          fill-rule="evenodd" image-rendering="optimizeQuality"
+          shape-rendering="geometricPrecision"
+          text-rendering="geometricPrecision"/>
 </svg>

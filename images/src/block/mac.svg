@@ -1,43 +1,34 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet type="text/css" href="user.css" ?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="72px" height="72px" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
-viewBox="0 0 72 72">
- <defs>
-  <style type="text/css">
-   <![CDATA[
-    .str3 {stroke:#5D5D5D;stroke-width:1.99961}
-    .str4 {stroke:#949494;stroke-width:1.99961}
-    .str2 {stroke:#AAAAAA;stroke-width:1.99961}
-    .str1 {stroke:black;stroke-width:4.00039}
-    .fil1 {fill:none}
-    .fil0 {fill:url(#id0)}
-   ]]>
-  </style>
-  <linearGradient id="id0" gradientUnits="userSpaceOnUse" x1="65.3315" y1="66.1937" x2="6.66969" y2="5.80748">
-   <stop offset="0" class="background-br"/>
-   <stop offset="0.619608" class="background-c"/>
-   <stop offset="1" class="background-tl"/>
-  </linearGradient>
- </defs>
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <rect class="fil0 str0" x="2.92559" y="2.92559" width="66.15" height="66.15" rx="9.39803" ry="9.39803"/>
- </g>
- <g id="Layer_x0020_2">
-  <metadata id="CorelCorpID_1Corel-Layer"/>
-  <polyline class="fil1 str1" points="7.33937,37.9394 17.2642,37.9394 17.2642,26.5795 30.5563,26.5795 30.5563,37.9394 42.424,37.9382 42.424,26.5795 55.422,26.5795 55.422,37.9394 64.6606,37.9394 "/>
-  <line class="fil1 str1" x1="7.33937" y1="45.4193" x2="64.6606" y2= "45.4193" />
-  <line class="fil1 str2" x1="52.4173" y1="41.3398" x2="64.6606" y2= "41.3398" />
-  <line class="fil1 str3" x1="52.4173" y1="29.9799" x2="52.4173" y2= "41.3398" />
-  <line class="fil1 str2" x1="45.5764" y1="29.9799" x2="52.4173" y2= "29.9799" />
-  <line class="fil1 str4" x1="45.5752" y1="41.3398" x2="45.5764" y2= "29.9799" />
-  <line class="fil1 str2" x1="27.626" y1="41.3398" x2="45.5752" y2= "41.3398" />
-  <line class="fil1 str3" x1="27.6272" y1="29.9799" x2="27.626" y2= "41.3398" />
-  <line class="fil1 str2" x1="20.2689" y1="29.9799" x2="27.6272" y2= "29.9799" />
-  <line class="fil1 str4" x1="20.2689" y1="41.3398" x2="20.2689" y2= "29.9799" />
-  <line class="fil1 str2" x1="8.09055" y1="41.3398" x2="20.2689" y2= "41.3398" />
-  <line class="fil1 str2" x1="7.33937" y1="48.7087" x2="64.6606" y2= "48.7087" />
- </g>
+
+<svg clip-rule="evenodd" fill-rule="evenodd" height="72"
+     image-rendering="optimizeQuality" shape-rendering="geometricPrecision"
+     text-rendering="geometricPrecision" viewBox="0 0 72 72" width="72"
+     xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink">
+    <linearGradient id="a" gradientUnits="userSpaceOnUse" x1="65.3315"
+                    x2="6.66969" y1="66.1937" y2="5.80748">
+        <stop offset="0" stop-color="#a0a0a0"/>
+        <stop offset=".619608" stop-color="#e0e0e0"/>
+        <stop offset="1" stop-color="#fff"/>
+    </linearGradient>
+    <rect fill="url(#a)" height="66.15" rx="9.39803" stroke="#000"
+          stroke-width="3" width="66.15" x="2.92559" y="2.92559"/>
+    <g fill="none">
+        <path d="m7.33937 37.9394h9.92483v-11.3599h13.2921v11.3599l11.8677-.0012v-11.3587h12.998v11.3599h9.2386"
+              stroke="#000" stroke-width="4.00039"/>
+        <path d="m7.33937 45.4193h57.32123" stroke="#000" stroke-width="4.00039"/>
+        <path d="m52.4173 41.3398h12.2433" stroke="#aaa" stroke-width="1.99961"/>
+        <path d="m52.4173 29.9799v11.3599" stroke="#5d5d5d"
+              stroke-width="1.99961"/>
+        <path d="m45.5764 29.9799h6.8409" stroke="#aaa" stroke-width="1.99961"/>
+        <path d="m45.5752 41.3398.0012-11.3599" stroke="#949494"
+              stroke-width="1.99961"/>
+        <path d="m27.626 41.3398h17.9492" stroke="#aaa" stroke-width="1.99961"/>
+        <path d="m27.6272 29.9799-.0012 11.3599" stroke="#5d5d5d"
+              stroke-width="1.99961"/>
+        <path d="m20.2689 29.9799h7.3583" stroke="#aaa" stroke-width="1.99961"/>
+        <path d="m20.2689 41.3398v-11.3599" stroke="#949494"
+              stroke-width="1.99961"/>
+        <path d="m8.09055 41.3398h12.17835" stroke="#aaa" stroke-width="1.99961"/>
+        <path d="m7.33937 48.7087h57.32123" stroke="#aaa" stroke-width="1.99961"/>
+    </g>
 </svg>

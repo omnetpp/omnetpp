@@ -1,79 +1,91 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet type="text/css" href="user.css" ?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="72px" height="72px" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
-viewBox="0 0 72 72">
- <defs>
-  <style type="text/css">
-   <![CDATA[
-    .str1 {stroke:#AAAAAA;stroke-width:0.9;stroke-linecap:round;stroke-linejoin:round}
-    .str3 {stroke:#CCCCCC;stroke-width:0.9;stroke-linecap:round;stroke-linejoin:round}
-    .str4 {stroke:#E5E5E5;stroke-width:0.9;stroke-linecap:round;stroke-linejoin:round}
-    .str2 {stroke:black;stroke-width:1.99961;stroke-linecap:round;stroke-linejoin:round}
-    .fil1 {fill:none}
-    .fil2 {fill:#AAAAE0}
-    .fil0 {fill:url(#id0)}
-   ]]>
-  </style>
-  <linearGradient id="id0" gradientUnits="userSpaceOnUse" x1="65.3315" y1="66.1937" x2="6.66969" y2="5.80748">
-   <stop offset="0" class="background-br"/>
-   <stop offset="0.619608" class="background-c"/>
-   <stop offset="1" class="background-tl"/>
-  </linearGradient>
- </defs>
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <rect class="fil0 str0" x="2.92559" y="2.92559" width="66.15" height="66.15" rx="9.39803" ry="9.39803"/>
- </g>
- <g id="Layer_x0020_2">
-  <metadata id="CorelCorpID_1Corel-Layer"/>
-  <line class="fil1 str1" x1="37.5024" y1="8.19921" x2="37.5024" y2= "63.2622" />
-  <g id="_273890600">
-   <rect id="_273893160" class="fil2 str2" x="46.2165" y="10.5059" width="11.1945" height="11.1945" rx="0.902362" ry="0.902362"/>
-   <polyline id="_273892496" class="fil1 str3" points="47.7957,19.0795 47.7957,11.8606 54.7075,11.8606 "/>
-   <line id="_273892016" class="fil1 str1" x1="57.7866" y1="23.1402" x2="52.1528" y2= "23.1402" />
-   <line id="_273891536" class="fil1 str3" x1="59.0646" y1="15.9213" x2="59.0646" y2= "21.9378" />
-   <line id="_273891056" class="fil1 str4" x1="59.0646" y1="21.9378" x2="57.7866" y2= "23.1402" />
-  </g>
-  <g id="_273887584">
-   <rect id="_273890216" class="fil2 str2" x="13.9843" y="40.0476" width="11.1945" height="11.1945" rx="0.902362" ry="0.902362"/>
-   <polyline id="_273889416" class="fil1 str3" points="15.5634,48.6213 15.5634,41.4024 22.4752,41.4024 "/>
-   <line id="_273888936" class="fil1 str1" x1="25.5543" y1="52.6819" x2="19.9205" y2= "52.6819" />
-   <line id="_273888456" class="fil1 str3" x1="26.8323" y1="45.463" x2="26.8323" y2= "51.4795" />
-   <line id="_273887976" class="fil1 str4" x1="26.8323" y1="51.4795" x2="25.5543" y2= "52.6819" />
-  </g>
-  <g id="_273884784">
-   <rect id="_273887200" class="fil2 str2" x="13.9843" y="19.272" width="11.1945" height="11.1945" rx="0.902362" ry="0.902362"/>
-   <polyline id="_273886536" class="fil1 str3" points="15.5634,27.8457 15.5634,20.6268 22.4752,20.6268 "/>
-   <line id="_273886056" class="fil1 str1" x1="25.5543" y1="31.9063" x2="19.9205" y2= "31.9063" />
-   <line id="_273885576" class="fil1 str3" x1="26.8323" y1="24.6874" x2="26.8323" y2= "30.7039" />
-   <line id="_273885096" class="fil1 str4" x1="26.8323" y1="30.7039" x2="25.5543" y2= "31.9063" />
-  </g>
-  <g id="_127335072">
-   <rect id="_273884400" class="fil2 str2" x="46.2165" y="30.1335" width="11.1945" height="11.1945" rx="0.902362" ry="0.902362"/>
-   <polyline id="_273883600" class="fil1 str3" points="47.7957,38.7071 47.7957,31.4882 54.7075,31.4882 "/>
-   <line id="_127336424" class="fil1 str1" x1="57.7866" y1="42.7677" x2="52.1528" y2= "42.7677" />
-   <line id="_127335944" class="fil1 str3" x1="59.0646" y1="35.5488" x2="59.0646" y2= "41.5654" />
-   <line id="_127335464" class="fil1 str4" x1="59.0646" y1="41.5654" x2="57.7866" y2= "42.7677" />
-  </g>
-  <g id="_127332376">
-   <rect id="_127334688" class="fil2 str2" x="46.2165" y="50.2122" width="11.1945" height="11.1945" rx="0.902362" ry="0.902362"/>
-   <polyline id="_127334208" class="fil1 str3" points="47.7957,58.7858 47.7957,51.5669 54.7075,51.5669 "/>
-   <line id="_127333728" class="fil1 str1" x1="57.7866" y1="62.8465" x2="52.1528" y2= "62.8465" />
-   <line id="_127333248" class="fil1 str3" x1="59.0646" y1="55.6276" x2="59.0646" y2= "61.6441" />
-   <line id="_127332768" class="fil1 str4" x1="59.0646" y1="61.6441" x2="57.7866" y2= "62.8465" />
-  </g>
-  <line class="fil1 str2" x1="36" y1="8.4685" x2="36" y2= "63.5315" />
-  <line class="fil1 str2" x1="25.1787" y1="24.8693" x2="36" y2= "24.8693" />
-  <line class="fil1 str2" x1="25.2567" y1="46.0335" x2="36" y2= "46.0335" />
-  <line class="fil1 str2" x1="46.2165" y1="15.6201" x2="36" y2= "15.6201" />
-  <line class="fil1 str2" x1="46.2165" y1="35.7307" x2="35.9917" y2= "35.7307" />
-  <line class="fil1 str2" x1="46.2165" y1="55.8094" x2="36" y2= "55.8094" />
-  <line class="fil1 str3" x1="34.572" y1="26.2984" x2="26.8323" y2= "26.2984" />
-  <line class="fil1 str3" x1="34.5354" y1="47.5807" x2="26.7957" y2= "47.5807" />
-  <line class="fil1 str3" x1="44.9823" y1="57.2067" x2="37.7138" y2= "57.2067" />
-  <line class="fil1 str3" x1="44.9126" y1="37.278" x2="37.6441" y2= "37.278" />
-  <line class="fil1 str3" x1="44.7709" y1="17.1248" x2="37.5024" y2= "17.1248" />
- </g>
+
+<svg clip-rule="evenodd" fill-rule="evenodd" height="72"
+     image-rendering="optimizeQuality" shape-rendering="geometricPrecision"
+     text-rendering="geometricPrecision" viewBox="0 0 72 72" width="72"
+     xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink">
+    <linearGradient id="a" gradientUnits="userSpaceOnUse" x1="65.3315"
+                    x2="6.66969" y1="66.1937" y2="5.80748">
+        <stop offset="0" stop-color="#a0a0a0"/>
+        <stop offset=".619608" stop-color="#e0e0e0"/>
+        <stop offset="1" stop-color="#fff"/>
+    </linearGradient>
+    <rect fill="url(#a)" height="66.15" rx="9.39803" stroke="#000"
+          stroke-width="3" width="66.15" x="2.92559" y="2.92559"/>
+    <g stroke-linecap="round" stroke-linejoin="round">
+        <path d="m37.5024 8.19921v55.06299" fill="none" stroke="#aaa"
+              stroke-width=".9"/>
+        <rect fill="#aaaae0" height="11.1945" rx=".902362" stroke="#000"
+              stroke-width="1.99961" width="11.1945" x="46.2165" y="10.5059"/>
+        <path d="m47.7957 19.0795v-7.2189h6.9118" fill="none" stroke="#ccc"
+              stroke-width=".9"/>
+        <path d="m57.7866 23.1402h-5.6338" fill="none" stroke="#aaa"
+              stroke-width=".9"/>
+        <path d="m59.0646 15.9213v6.0165" fill="none" stroke="#ccc"
+              stroke-width=".9"/>
+        <path d="m59.0646 21.9378-1.278 1.2024" fill="none" stroke="#e5e5e5"
+              stroke-width=".9"/>
+        <rect fill="#aaaae0" height="11.1945" rx=".902362" stroke="#000"
+              stroke-width="1.99961" width="11.1945" x="13.9843" y="40.0476"/>
+        <path d="m15.5634 48.6213v-7.2189h6.9118" fill="none" stroke="#ccc"
+              stroke-width=".9"/>
+        <path d="m25.5543 52.6819h-5.6338" fill="none" stroke="#aaa"
+              stroke-width=".9"/>
+        <path d="m26.8323 45.463v6.0165" fill="none" stroke="#ccc"
+              stroke-width=".9"/>
+        <path d="m26.8323 51.4795-1.278 1.2024" fill="none" stroke="#e5e5e5"
+              stroke-width=".9"/>
+        <rect fill="#aaaae0" height="11.1945" rx=".902362" stroke="#000"
+              stroke-width="1.99961" width="11.1945" x="13.9843" y="19.272"/>
+        <path d="m15.5634 27.8457v-7.2189h6.9118" fill="none" stroke="#ccc"
+              stroke-width=".9"/>
+        <path d="m25.5543 31.9063h-5.6338" fill="none" stroke="#aaa"
+              stroke-width=".9"/>
+        <path d="m26.8323 24.6874v6.0165" fill="none" stroke="#ccc"
+              stroke-width=".9"/>
+        <path d="m26.8323 30.7039-1.278 1.2024" fill="none" stroke="#e5e5e5"
+              stroke-width=".9"/>
+        <rect fill="#aaaae0" height="11.1945" rx=".902362" stroke="#000"
+              stroke-width="1.99961" width="11.1945" x="46.2165" y="30.1335"/>
+        <path d="m47.7957 38.7071v-7.2189h6.9118" fill="none" stroke="#ccc"
+              stroke-width=".9"/>
+        <path d="m57.7866 42.7677h-5.6338" fill="none" stroke="#aaa"
+              stroke-width=".9"/>
+        <path d="m59.0646 35.5488v6.0166" fill="none" stroke="#ccc"
+              stroke-width=".9"/>
+        <path d="m59.0646 41.5654-1.278 1.2023" fill="none" stroke="#e5e5e5"
+              stroke-width=".9"/>
+        <rect fill="#aaaae0" height="11.1945" rx=".902362" stroke="#000"
+              stroke-width="1.99961" width="11.1945" x="46.2165" y="50.2122"/>
+        <path d="m47.7957 58.7858v-7.2189h6.9118" fill="none" stroke="#ccc"
+              stroke-width=".9"/>
+        <path d="m57.7866 62.8465h-5.6338" fill="none" stroke="#aaa"
+              stroke-width=".9"/>
+        <path d="m59.0646 55.6276v6.0165" fill="none" stroke="#ccc"
+              stroke-width=".9"/>
+        <path d="m59.0646 61.6441-1.278 1.2024" fill="none" stroke="#e5e5e5"
+              stroke-width=".9"/>
+        <path d="m36 8.4685v55.063" fill="none" stroke="#000"
+              stroke-width="1.99961"/>
+        <path d="m25.1787 24.8693h10.8213" fill="none" stroke="#000"
+              stroke-width="1.99961"/>
+        <path d="m25.2567 46.0335h10.7433" fill="none" stroke="#000"
+              stroke-width="1.99961"/>
+        <path d="m46.2165 15.6201h-10.2165" fill="none" stroke="#000"
+              stroke-width="1.99961"/>
+        <path d="m46.2165 35.7307h-10.2248" fill="none" stroke="#000"
+              stroke-width="1.99961"/>
+        <path d="m46.2165 55.8094h-10.2165" fill="none" stroke="#000"
+              stroke-width="1.99961"/>
+        <path d="m34.572 26.2984h-7.7397" fill="none" stroke="#ccc"
+              stroke-width=".9"/>
+        <path d="m34.5354 47.5807h-7.7397" fill="none" stroke="#ccc"
+              stroke-width=".9"/>
+        <path d="m44.9823 57.2067h-7.2685" fill="none" stroke="#ccc"
+              stroke-width=".9"/>
+        <path d="m44.9126 37.278h-7.2685" fill="none" stroke="#ccc"
+              stroke-width=".9"/>
+        <path d="m44.7709 17.1248h-7.2685" fill="none" stroke="#ccc"
+              stroke-width=".9"/>
+    </g>
 </svg>

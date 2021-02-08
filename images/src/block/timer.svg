@@ -1,52 +1,39 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet type="text/css" href="user.css" ?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="72px" height="72px" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
-viewBox="0 0 72 72">
- <defs>
-  <style type="text/css">
-   <![CDATA[
-    .str5 {stroke:black;stroke-width:0.9}
-    .str4 {stroke:#9C9C9C;stroke-width:1.99961;stroke-linecap:round}
-    .str2 {stroke:#CCCCCC;stroke-width:1.99961;stroke-linecap:round}
-    .str3 {stroke:#EFEFEF;stroke-width:1.99961;stroke-linecap:round}
-    .str1 {stroke:black;stroke-width:4.16693}
-    .fil1 {fill:none}
-    .fil2 {fill:black}
-    .fil3 {fill:black;fill-rule:nonzero}
-    .fil0 {fill:url(#id0)}
-   ]]>
-  </style>
-  <linearGradient id="id0" gradientUnits="userSpaceOnUse" x1="65.3315" y1="66.1937" x2="6.66969" y2="5.80748">
-   <stop offset="0" class="background-br"/>
-   <stop offset="0.619608" class="background-c"/>
-   <stop offset="1" class="background-tl"/>
-  </linearGradient>
- </defs>
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <rect class="fil0 str0" x="2.92559" y="2.92559" width="66.15" height="66.15" rx="9.39803" ry="9.39803"/>
- </g>
- <g id="Layer_x0020_2">
-  <metadata id="CorelCorpID_1Corel-Layer"/>
-  <circle class="fil1 str1" cx="36" cy="36" r="25.0736"/>
-  <path class="fil1 str2" d="M14.2547 36c0,-12.0071 9.73819,-21.7453 21.7453,-21.7453"/>
-  <path class="fil1 str3" d="M16.1185 27.1831c2.69882,-6.11102 7.15984,-10.0724 13.0098,-11.8193"/>
-  <path class="fil1 str4" d="M57.7453 36c0,12.0071 -9.73819,21.7453 -21.7453,21.7453"/>
-  <line class="fil1 str5" x1="36" y1="13.5" x2="36" y2= "17.8949" />
-  <line class="fil1 str5" x1="54.978" y1="24.9591" x2="52.0476" y2= "26.6504" />
-  <line class="fil1 str5" x1="47.152" y1="16.7598" x2="45.4606" y2= "19.6902" />
-  <line class="fil1 str5" x1="36" y1="54.1051" x2="36" y2= "58.5" />
-  <line class="fil1 str5" x1="19.6146" y1="45.515" x2="16.6843" y2= "47.2063" />
-  <line class="fil1 str5" x1="26.6091" y1="52.2472" x2="24.9177" y2= "55.1776" />
-  <line class="fil1 str5" x1="54.1051" y1="36" x2="58.5" y2= "36" />
-  <line class="fil1 str5" x1="45.4594" y1="52.2756" x2="47.1508" y2= "55.2059" />
-  <line class="fil1 str5" x1="52.3205" y1="45.4866" x2="55.2508" y2= "47.178" />
-  <line class="fil1 str5" x1="13.5" y1="36" x2="17.8949" y2= "36" />
-  <line class="fil1 str5" x1="24.8516" y1="16.7409" x2="26.5429" y2= "19.6713" />
-  <line class="fil1 str5" x1="16.7138" y1="24.7701" x2="19.6441" y2= "26.4614" />
-  <circle class="fil2 str5" cx="35.9988" cy="36" r="1.86142"/>
-  <path class="fil3 str5" d="M36.5433 36.3638l0 0 0 0 4.77992 -21.561 -6.15 21.2126 0 0 0 0 1.37008 0.348425zm0 0m0 0m2.39173 -10.7787m-0.689764 -0.177165m-3.07205 10.6075m0 0m0.687402 0.174803"/>
- </g>
+
+<svg clip-rule="evenodd" fill-rule="evenodd" height="72"
+     image-rendering="optimizeQuality" shape-rendering="geometricPrecision"
+     text-rendering="geometricPrecision" viewBox="0 0 72 72" width="72"
+     xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink">
+    <linearGradient id="a" gradientUnits="userSpaceOnUse" x1="65.3315"
+                    x2="6.66969" y1="66.1937" y2="5.80748">
+        <stop offset="0" stop-color="#a0a0a0"/>
+        <stop offset=".619608" stop-color="#e0e0e0"/>
+        <stop offset="1" stop-color="#fff"/>
+    </linearGradient>
+    <rect fill="url(#a)" height="66.15" rx="9.39803" stroke="#000"
+          stroke-width="3" width="66.15" x="2.92559" y="2.92559"/>
+    <g fill="none">
+        <circle cx="36" cy="36" r="25.0736" stroke="#000" stroke-width="4.16693"/>
+        <path d="m14.2547 36c0-12.0071 9.73819-21.7453 21.7453-21.7453"
+              stroke="#ccc" stroke-linecap="round" stroke-width="1.99961"/>
+        <path d="m16.1185 27.1831c2.69882-6.11102 7.15984-10.0724 13.0098-11.8193"
+              stroke="#efefef" stroke-linecap="round" stroke-width="1.99961"/>
+        <path d="m57.7453 36c0 12.0071-9.73819 21.7453-21.7453 21.7453"
+              stroke="#9c9c9c" stroke-linecap="round" stroke-width="1.99961"/>
+        <path d="m36 13.5v4.3949" stroke="#000" stroke-width=".9"/>
+        <path d="m54.978 24.9591-2.9304 1.6913" stroke="#000" stroke-width=".9"/>
+        <path d="m47.152 16.7598-1.6914 2.9304" stroke="#000" stroke-width=".9"/>
+        <path d="m36 54.1051v4.3949" stroke="#000" stroke-width=".9"/>
+        <path d="m19.6146 45.515-2.9303 1.6913" stroke="#000" stroke-width=".9"/>
+        <path d="m26.6091 52.2472-1.6914 2.9304" stroke="#000" stroke-width=".9"/>
+        <path d="m54.1051 36h4.3949" stroke="#000" stroke-width=".9"/>
+        <path d="m45.4594 52.2756 1.6914 2.9303" stroke="#000" stroke-width=".9"/>
+        <path d="m52.3205 45.4866 2.9303 1.6914" stroke="#000" stroke-width=".9"/>
+        <path d="m13.5 36h4.3949" stroke="#000" stroke-width=".9"/>
+        <path d="m24.8516 16.7409 1.6913 2.9304" stroke="#000" stroke-width=".9"/>
+        <path d="m16.7138 24.7701 2.9303 1.6913" stroke="#000" stroke-width=".9"/>
+    </g>
+    <circle cx="35.9988" cy="36" r="1.86142" stroke="#000" stroke-width=".9"/>
+    <path d="m36.5433 36.3638 4.77992-21.561-6.15 21.2126 1.37008.348425zm-.682682-.173562"
+          fill-rule="nonzero" stroke="#000" stroke-width=".9"/>
 </svg>

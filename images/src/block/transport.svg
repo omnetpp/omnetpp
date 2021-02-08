@@ -1,60 +1,57 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet type="text/css" href="user.css" ?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="72px" height="72px" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
-viewBox="0 0 72 72">
- <defs>
-  <style type="text/css">
-   <![CDATA[
-    .str4 {stroke:black;stroke-width:0.9;stroke-linecap:round;stroke-linejoin:round}
-    .str5 {stroke:#AAAAAA;stroke-width:0.9;stroke-linecap:round;stroke-linejoin:round}
-    .str2 {stroke:#CCCCCC;stroke-width:0.9;stroke-linecap:round;stroke-linejoin:round}
-    .str3 {stroke:#E5E5E5;stroke-width:0.9;stroke-linecap:round;stroke-linejoin:round}
-    .str1 {stroke:black;stroke-width:1.99961;stroke-linecap:round;stroke-linejoin:round}
-    .fil1 {fill:none}
-    .fil3 {fill:black}
-    .fil2 {fill:#AAAAE0}
-    .fil0 {fill:url(#id0)}
-   ]]>
-  </style>
-  <linearGradient id="id0" gradientUnits="userSpaceOnUse" x1="65.3315" y1="66.1937" x2="6.66969" y2="5.80748">
-   <stop offset="0" class="background-br"/>
-   <stop offset="0.619608" class="background-c"/>
-   <stop offset="1" class="background-tl"/>
-  </linearGradient>
- </defs>
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <rect class="fil0 str0" x="2.92559" y="2.92559" width="66.15" height="66.15" rx="9.39803" ry="9.39803"/>
- </g>
- <g id="Layer_x0020_2">
-  <metadata id="CorelCorpID_1Corel-Layer"/>
-  <rect class="fil1 str1" x="10.083" y="39.5539" width="51.8351" height="8.57244" rx="5.52638" ry="5.52638"/>
-  <g id="_276465056">
-   <rect id="_276467088" class="fil2 str1" x="15.1334" y="26.36" width="10.8981" height="10.8981" rx="0.902362" ry="0.902362"/>
-   <polyline id="_276466424" class="fil1 str2" points="16.4043,34.6831 16.4043,27.6555 23.1331,27.6555 "/>
-   <line id="_276465944" class="fil1 str2" x1="27.3756" y1="31.6087" x2="27.3756" y2= "37.4657" />
-   <line id="_276465464" class="fil1 str3" x1="27.3756" y1="37.4657" x2="26.1307" y2= "38.6362" />
-  </g>
-  <g id="_276462640">
-   <rect id="_276464672" class="fil2 str1" x="45.0426" y="26.3582" width="10.8981" height="10.8981" rx="0.902362" ry="0.902362"/>
-   <polyline id="_276464008" class="fil1 str2" points="46.3134,34.6807 46.3134,27.6531 53.0421,27.6531 "/>
-   <line id="_276463528" class="fil1 str2" x1="57.2846" y1="31.6063" x2="57.2846" y2= "37.4634" />
-   <line id="_276463048" class="fil1 str3" x1="57.2846" y1="37.4634" x2="56.0398" y2= "38.6339" />
-  </g>
-  <g id="_276460184">
-   <rect id="_276462120" class="fil2 str1" x="30.0432" y="26.3582" width="10.8981" height="10.8981" rx="0.902362" ry="0.902362"/>
-   <polyline id="_276461456" class="fil1 str2" points="31.3146,34.6807 31.3146,27.6531 38.0433,27.6531 "/>
-   <line id="_276460976" class="fil1 str2" x1="42.2846" y1="31.6063" x2="42.2846" y2= "37.4634" />
-   <line id="_276460496" class="fil1 str3" x1="42.2846" y1="37.4634" x2="41.0409" y2= "38.6339" />
-  </g>
-  <circle class="fil3 str4" cx="35.9988" cy="43.8403" r="1.53288"/>
-  <circle class="fil3 str4" cx="46.164" cy="43.8403" r="1.53288"/>
-  <circle class="fil3 str4" cx="56.4028" cy="43.8403" r="1.53288"/>
-  <circle class="fil3 str4" cx="25.7601" cy="43.8403" r="1.53288"/>
-  <circle class="fil3 str4" cx="15.6" cy="43.8403" r="1.53288"/>
-  <path class="fil1 str2" d="M58.0878 49.7244c2.47913,-0.525591 4.25551,-1.85315 5.33386,-3.98504"/>
-  <line class="fil1 str5" x1="13.6878" y1="49.7244" x2="58.0878" y2= "49.7244" />
- </g>
+
+<svg clip-rule="evenodd" fill-rule="evenodd" height="72"
+     image-rendering="optimizeQuality" shape-rendering="geometricPrecision"
+     text-rendering="geometricPrecision" viewBox="0 0 72 72" width="72"
+     xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink">
+    <linearGradient id="a" gradientUnits="userSpaceOnUse" x1="65.3315"
+                    x2="6.66969" y1="66.1937" y2="5.80748">
+        <stop offset="0" stop-color="#a0a0a0"/>
+        <stop offset=".619608" stop-color="#e0e0e0"/>
+        <stop offset="1" stop-color="#fff"/>
+    </linearGradient>
+    <rect fill="url(#a)" height="66.15" rx="9.39803" stroke="#000"
+          stroke-width="3" width="66.15" x="2.92559" y="2.92559"/>
+    <g stroke-linecap="round" stroke-linejoin="round">
+        <rect fill="none" height="8.57244" rx="5.52638" stroke="#000"
+              stroke-width="1.99961" width="51.8351" x="10.083" y="39.5539"/>
+        <rect fill="#aaaae0" height="10.8981" rx=".902362" stroke="#000"
+              stroke-width="1.99961" width="10.8981" x="15.1334" y="26.36"/>
+        <path d="m16.4043 34.6831v-7.0276h6.7288" fill="none" stroke="#ccc"
+              stroke-width=".9"/>
+        <path d="m27.3756 31.6087v5.857" fill="none" stroke="#ccc"
+              stroke-width=".9"/>
+        <path d="m27.3756 37.4657-1.2449 1.1705" fill="none" stroke="#e5e5e5"
+              stroke-width=".9"/>
+        <rect fill="#aaaae0" height="10.8981" rx=".902362" stroke="#000"
+              stroke-width="1.99961" width="10.8981" x="45.0426" y="26.3582"/>
+        <path d="m46.3134 34.6807v-7.0276h6.7287" fill="none" stroke="#ccc"
+              stroke-width=".9"/>
+        <path d="m57.2846 31.6063v5.8571" fill="none" stroke="#ccc"
+              stroke-width=".9"/>
+        <path d="m57.2846 37.4634-1.2448 1.1705" fill="none" stroke="#e5e5e5"
+              stroke-width=".9"/>
+        <rect fill="#aaaae0" height="10.8981" rx=".902362" stroke="#000"
+              stroke-width="1.99961" width="10.8981" x="30.0432" y="26.3582"/>
+        <path d="m31.3146 34.6807v-7.0276h6.7287" fill="none" stroke="#ccc"
+              stroke-width=".9"/>
+        <path d="m42.2846 31.6063v5.8571" fill="none" stroke="#ccc"
+              stroke-width=".9"/>
+        <path d="m42.2846 37.4634-1.2437 1.1705" fill="none" stroke="#e5e5e5"
+              stroke-width=".9"/>
+        <circle cx="35.9988" cy="43.8403" r="1.53288" stroke="#000"
+                stroke-width=".9"/>
+        <circle cx="46.164" cy="43.8403" r="1.53288" stroke="#000"
+                stroke-width=".9"/>
+        <circle cx="56.4028" cy="43.8403" r="1.53288" stroke="#000"
+                stroke-width=".9"/>
+        <circle cx="25.7601" cy="43.8403" r="1.53288" stroke="#000"
+                stroke-width=".9"/>
+        <circle cx="15.6" cy="43.8403" r="1.53288" stroke="#000"
+                stroke-width=".9"/>
+        <path d="m58.0878 49.7244c2.47913-.525591 4.25551-1.85315 5.33386-3.98504"
+              fill="none" stroke="#ccc" stroke-width=".9"/>
+        <path d="m13.6878 49.7244h44.4" fill="none" stroke="#aaa"
+              stroke-width=".9"/>
+    </g>
 </svg>
