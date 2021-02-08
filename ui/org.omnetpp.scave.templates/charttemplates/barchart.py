@@ -21,10 +21,10 @@ if df.empty:
     plot.set_warning("The result filter returned no data.")
     exit(1)
 
-groups = props["groups"].split(",")
-series = props["series"].split(",")
+groups = utils.split(props["groups"])
+series = utils.split(props["series"])
 
-if not groups[0] and not series[0]:
+if not groups and not series:
     print("The Groups and Series options were not set in the dialog, inferring them from the data.")
     g, s = ("module", "name") if len(df) == 1 else utils.pick_two_columns(df)
     groups, series = [g], [s]
