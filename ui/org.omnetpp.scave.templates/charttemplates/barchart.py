@@ -40,7 +40,7 @@ for c in groups + series:
 
 df.sort_values(by=groups+series, axis='index', inplace=True)
 
-names = utils.get_names_for_title(df, props)
+names = ", ".join(utils.get_names_for_title(df, props))
 
 confidence_level_str = props["confidence_level"] if "confidence_level" in props else "none"
 

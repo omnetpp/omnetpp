@@ -591,7 +591,7 @@ def _to_label(x):
         return str(x)
 
 
-def plot_bars(df, props, names=None, errors_df=None):
+def plot_bars(df, props, variable_name=None, errors_df=None):
     """
     Creates a bar plot. Each column is series.
 
@@ -680,11 +680,10 @@ def plot_bars(df, props, names=None, errors_df=None):
     p.xlabel(_to_label(groups))
 
     title = ""
-    if len(names):
-        names_str = [str(n) for n in names]
+    if variable_name:
+        p.ylabel(variable_name)
+        title = variable_name
         groups_series_str = [str(gs) for gs in groups+series]
-        p.ylabel(", ".join(names_str))
-        title = ", ".join(names_str)
         if groups_series_str and groups_series_str[0]:
             title += " by " + ", ".join(groups_series_str)
 

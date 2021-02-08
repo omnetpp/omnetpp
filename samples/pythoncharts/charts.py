@@ -17,9 +17,9 @@ def chart_function_bars():
     df = results.get_scalars("name =~ rxBytes:sum OR name =~ txBytes:sum", include_runattrs=True)
 
     names = utils.get_names_for_title(df, dict())
-    
+
     df = pd.pivot_table(df, index="name", columns="module", values='value')
-    
+
     utils.preconfigure_plot(dict())
-    utils.plot_bars(df, dict(), names)
+    utils.plot_bars(df, dict(), ", ".join(names))
     utils.postconfigure_plot(dict())
