@@ -127,7 +127,7 @@ if __name__ == "__main__":
             ("vector_operations", "apply:mean", None),
             ("vector_operations", "compute:sum", None),
 
-            ("vector_operations", "apply:sum\ncompute:divtime\napply:timewinavg, window_size=200 # comment", None)
+            ("vector_operations", "apply:sum\ncompute:divtime\napply:timewinavg(window_size=200) # comment", None)
         ]
     )
 
