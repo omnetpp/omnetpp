@@ -657,7 +657,7 @@ def plot_bars(df, props, variable_name=None, errors_df=None):
 
         label = df.columns.name + "=" + _to_label(column) if df.columns.name else _to_label(column)
         ys = df[column].values
-        p.bar(xs, ys, i, width, label=label, **extra_args, **style)
+        p.bar(xs, ys, width, key=i, label=label, **extra_args, **style)
 
         if not chart.is_native_chart() and errors_df is not None:
             plt.errorbar(xs, ys + bottoms, yerr=errors_df[column], capsize=float(get_prop("cap_size") or 4), **style, linestyle="none", ecolor=mpl.rcParams["axes.edgecolor"])
