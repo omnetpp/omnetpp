@@ -29,7 +29,7 @@ if not groups and not series:
     g, s = ("module", "name") if len(df) == 1 else utils.pick_two_columns(df)
     groups, series = [g], [s]
 
-if not groups[0] or not series[0]:
+if not groups or not groups[0] or not series or not series[0]:
     plot.set_warning("Please set both the Groups and Series properties in the dialog - or neither, for automatic setup.")
     exit(1)
 
