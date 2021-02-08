@@ -114,7 +114,7 @@ def hist(x, bins, key=None, density=False, weights=None, cumulative=False, botto
     """
     return impl.hist(**locals())
 
-def bar(x, height, key=None, width=0.8, label=None, color=None, edgecolor=None):
+def bar(x, height, width=0.8, key=None, label=None, color=None, edgecolor=None):
     """
     Make a bar plot. This function adds one series to the bar plot; make
     multiple calls to add multiple series.

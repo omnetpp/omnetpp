@@ -42,7 +42,7 @@ def plot(xs, ys, key, label, drawstyle, linestyle, linewidth, color, marker, mar
     ), props)
 
 
-def bar(x, height, key, width, label, color, edgecolor):
+def bar(x, height, width, key, label, color, edgecolor):
     swtplot.assert_is_native_chart()
     props = {}
 
