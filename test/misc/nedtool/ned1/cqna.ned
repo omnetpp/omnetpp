@@ -30,7 +30,7 @@ module ClosedQueueingNetA
                 in[numTandems];
             gatesizes if (index % numQueuesPerTandem)!=0:
                 in[1];
-            display: "p=150,90,m,$numQueuesPerTandem;i=block/queue";
+            display: "p=150,90,m,$numQueuesPerTandem;i=block/activeq";
     connections:
         // connect switches to 1st queues
         for s=0..numTandems-1, q=0..numTandems-1 do

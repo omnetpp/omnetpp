@@ -32,7 +32,7 @@ module QNet
         qserver: QServer;
             gatesizes:
                 in[3];
-            display: "p=443,130;i=block/queue";
+            display: "p=443,130;i=block/activeq";
         leave2: QSink;
             display: "p=546,130;i=block/sink";
         leave1: QSink;

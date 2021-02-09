@@ -13,12 +13,26 @@
     <rect fill="url(#a)" height="66.15" rx="9.39803" stroke="#000"
           stroke-width="3" width="66.15" x="2.92559" y="2.92559"/>
     <g fill="none">
-        <path d="m41.7756 17.7024h-32.28426" stroke="#5c5c5c"
+        <path d="m41.7756 17.7024h-32.28426" stroke="#808080"
               stroke-width="1.99961"/>
         <path d="m9.11811 23.8748h33.34249" stroke="#ccc" stroke-width="1.99961"/>
+        <path d="m52.1433 8.2311c-6.66142 5.11063-7.38425 16.2142-7.08307 33.1748"
+              stroke="#808080" stroke-linecap="round" stroke-width="1.99961"/>
+        <path d="m54.3035 14.0185c-2.16614 3.29055-5.1248 21.4098-2.86063 32.9752"
+              stroke="#ababab" stroke-width=".9"/>
+        <path d="m54.3035 14.0185c-2.16614 3.29055-3.09803 9.74528-3.62126 17.7602"
+              stroke="#ccc" stroke-width=".9"/>
+        <path d="m49.8295 60.9508c8.09173 7.48583 14.6575-7.44567 13.422-32.2394"
+              stroke="#ababab" stroke-linecap="round" stroke-width="1.99961"/>
+        <path d="m53.1236 62.726c5.93858.38622 8.82992-5.54409 10.0004-22.2224"
+              stroke="#ccc" stroke-linecap="round" stroke-width="1.99961"/>
+        <path d="m55.9606 62.3516c3.40157-1.70787 3.20315-3.25394 4.67835-7.2248"
+              stroke="#e0e0e0" stroke-linecap="round" stroke-width="1.99961"/>
         <path d="m10.3205 20.8736h31.4173" stroke="#000" stroke-linecap="round"
               stroke-width="4.16693"/>
         <path d="m9.11811 54h33.34249" stroke="#999" stroke-width="1.99961"/>
+        <ellipse cx="54.0366" cy="35.4308" rx="6.08622" ry="24.2657"
+                 stroke="#000" stroke-width="4.16693"/>
         <path d="m10.3205 50.8724h31.4173" stroke="#000" stroke-linecap="round"
               stroke-linejoin="round" stroke-width="4.00039"/>
         <path d="m17.4685 46.5413v-20.9728" stroke="#000" stroke-width="4.16693"/>

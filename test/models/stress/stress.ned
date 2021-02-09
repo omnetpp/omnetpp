@@ -67,7 +67,7 @@ simple StressDuplicate
 simple StressQueue
 {
     parameters:
-        @display("i=block/queue");
+        @display("i=block/activeq");
     gates:
         input directIn;
         input in[];

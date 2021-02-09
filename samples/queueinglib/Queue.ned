@@ -16,7 +16,7 @@ simple Queue
 {
     parameters:
         @group(Queueing);
-        @display("i=block/queue;q=queue");
+        @display("i=block/activeq;q=queue");
         @signal[dropped](type="long");
         @signal[queueLength](type="long");
         @signal[queueingTime](type="simtime_t");

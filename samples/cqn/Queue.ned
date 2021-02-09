@@ -19,7 +19,7 @@ simple Queue
         int numInitialJobs;
         volatile double serviceTime @unit(s);
         int priority = default(0);
-        @display("i=block/queue;q=queue");
+        @display("i=block/activeq;q=queue");
     gates:
         input in[];
         output out;

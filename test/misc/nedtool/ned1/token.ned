@@ -82,7 +82,7 @@ module Computer
                 address = address,
                 dataRate = dataRate,
                 THT = THT;
-            display: "p=137,166;i=block/queue;q=sendQueue";
+            display: "p=137,166;i=block/activeq;q=sendQueue";
         gen: Generator;
             parameters:
                 numStations = numStations,

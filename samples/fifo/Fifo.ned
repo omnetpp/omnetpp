@@ -15,7 +15,7 @@ simple Fifo
 {
     parameters:
         volatile double serviceTime @unit(s);
-        @display("i=block/queue;q=queue");
+        @display("i=block/activeq;q=queue");
         @signal[qlen](type="long");
         @signal[busy](type="bool");
         @signal[queueingTime](type="simtime_t");

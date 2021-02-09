@@ -33,7 +33,7 @@ module TandemQueue
                 in[sizeof(in)];
             gatesizes if index!=0:
                 in[1];
-            display: "p=60,160,row,80;i=block/queue;q=queue";
+            display: "p=60,160,row,80;i=block/activeq;q=queue";
 
     connections nocheck:
         // connect switch outputs outside

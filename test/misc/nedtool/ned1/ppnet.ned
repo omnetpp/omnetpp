@@ -24,9 +24,9 @@ module PointToPointNet
         burstySrc: PPSource;
             display: "p=82,92;i=block/source";
         ppIF1: PointToPointIF;
-            display: "p=170,92;i=block/queue;q=queue";
+            display: "p=170,92;i=block/activeq;q=queue";
         ppIF2: PointToPointIF;
-            display: "p=336,92;i=block/queue;q=queue";
+            display: "p=336,92;i=block/activeq;q=queue";
         sink: PPSink;
             display: "p=430,92;i=block/sink";
     connections nocheck:
