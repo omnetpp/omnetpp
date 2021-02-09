@@ -25,8 +25,9 @@ import matplotlib.pyplot as plt
 from itertools import cycle
 from omnetpp.scave import chart, plot, vectorops
 
-_marker_cycle = None
-_color_cycle = None
+# color and marker cycles, with defaults in case _initialize_cycles() is not called
+_marker_cycle = cycle(list("osv^<>pDd"))
+_color_cycle = cycle(["C" + str(i) for i in range(10)])
 
 
 def confidence_interval(alpha, data):
