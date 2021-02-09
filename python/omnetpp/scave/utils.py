@@ -577,10 +577,7 @@ def set_plot_title(title, suggested_chart_name=None):
     Sets the plot title.
     TODO also sets the suggested chart name (for saving the temp chart)
     """
-    if chart.is_native_chart():
-        plot.title(title)
-    else:
-        plt.title(title)
+    plot.title(title)
     chart.set_suggested_chart_name(suggested_chart_name if suggested_chart_name is not None else title)
 
 
