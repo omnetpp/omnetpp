@@ -787,20 +787,22 @@ def plot_histograms(df, props, legend_func=make_legend_label):
 
     Parameters:
 
-    - `df`: the dataframe
-    - `props` (dict): the properties
-    - `legend_func`: the function to produce custom legend labels
+    - `df`: The dataframe.
+    - `props` (dict): The properties.
+    - `legend_func` (function): The function to produce custom legend labels.
+       See `utils.make_legend_label()` for prototype and semantics.
 
     Columns of the dataframe:
 
     - `binedges`, `binvalues` (array-like, `len(binedges)==len(binvalues)+1`):
        The bin edges and the bin values (count or sum of weights) for the histogram.
-    - `min`, `max`, `underflows`, `overflows`: The minimum/maximum values,
-       and the bin values for the underflow/overflow bins.
-    - `legend` (optional): Legend label for the series. If missing, legend labels
-       are derived from other columns.
+    - `min`, `max`, `underflows`, `overflows` (float, optional): The minimum/maximum
+       values, and the bin values for the underflow/overflow bins. These four columns
+       must either be all present or all absent from the dataframe.
+    - `legend` (string, optional): Legend label for the series. If missing,
+       legend labels are derived from other columns.
     - `name`, `title`, `module`, etc. (optional): Provide input for the legend.
-    - `comment` (optional): will be appended to the legend labels.
+    - `comment` (string, optional): will be appended to the legend labels.
 
     Notable properties that affect the plot:
 
@@ -819,6 +821,12 @@ def plot_histograms(df, props, legend_func=make_legend_label):
     """
     p = plot if chart.is_native_chart() else plt
 
+    has_overflow_columns = "min" in df and "max" in df and "underflows" in df and "overflows" in df
+
+    if not has_overflow_columns:
+        if "min" in df or "max" in df or "underflows" in df or "overflows" in df:
+           raise ValueError("Either all, or none, of the following columns must be present: min, max, underflows, overflows")
+
     def get_prop(k):
         return props[k] if k in props else None
 
@@ -834,19 +842,21 @@ def plot_histograms(df, props, legend_func=make_legend_label):
         # work, because that would change the histogram when the
         # "normalized" or "cumulative" transforms are done (by MPL).
         if chart.is_native_chart():
-            p.hist(t.binedges[:-1], t.binedges, weights=t.binvalues, label=legend_func(legend_cols, t),
-                   minvalue=t.min, maxvalue=t.max, underflows=t.underflows, overflows=t.overflows, **style)
+            overflow = dict(minvalue=t.min, maxvalue=t.max, underflows=t.underflows, overflows=t.overflows) if has_overflow_columns else dict()
+            p.hist(t.binedges[:-1], t.binedges, weights=t.binvalues, label=legend_func(legend_cols, t), **overflow, **style)
         else:
             edges = list(t.binedges)
             values = list(t.binvalues)
-            has_underflow_bin = not np.isnan(t.min) and not np.isnan(t.underflows) and t.min < edges[0]
-            has_overflow_bin = not np.isnan(t.max) and not np.isnan(t.overflows) and t.max >= edges[-1]
-            if has_underflow_bin:
-                edges = [t.min] + edges
-                values = [t.underflows] + values
-            if has_overflow_bin:
-                edges = edges + [t.max]
-                values = values + [t.overflows]
+
+            if has_overflow_columns:
+                has_underflow_bin = not np.isnan(t.min) and not np.isnan(t.underflows) and t.min < edges[0]
+                has_overflow_bin = not np.isnan(t.max) and not np.isnan(t.overflows) and t.max >= edges[-1]
+                if has_underflow_bin:
+                    edges = [t.min] + edges
+                    values = [t.underflows] + values
+                if has_overflow_bin:
+                    edges = edges + [t.max]
+                    values = values + [t.overflows]
 
             p.hist(edges[:-1], edges, weights=values, label=legend_func(legend_cols, t), **style)
 
