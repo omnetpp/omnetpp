@@ -375,7 +375,7 @@ def customized_box_plot(percentiles, axes=None, labels=None, redraw=True, *args,
         box_plot = axes.boxplot([-9, -4, 2, 4, 9], positions=[box_no], widths=[0.5],
             showmeans=True, meanprops=dict(marker='+', markeredgecolor=mpl.rcParams["axes.facecolor"]),
             boxprops=dict(facecolor=color), whiskerprops=dict(color=color, linewidth=2), capprops=dict(linewidth=1.5),
-            manage_ticks=False, patch_artist=True, *args, **kwargs)
+            patch_artist=True, *args, **kwargs)
 
         if labels is not None:
             # boxplot does not register its patches as legend handles, as it only wants to
@@ -437,6 +437,10 @@ def customized_box_plot(percentiles, axes=None, labels=None, redraw=True, *args,
     # The y axis is rescaled to fit the new box plot completely with 10%
     # of the maximum value at both ends
     axes.set_ylim([mid_y - (mid_y - min_y) * 1.25, mid_y + (max_y - mid_y) * 1.25])
+
+    axes.set_xlim(-0.5, len(percentiles)-0.5)
+    axes.set_xticks([])
+    axes.set_xticklabels([])
 
     # If redraw is set to true, the canvas is updated.
     if redraw:
