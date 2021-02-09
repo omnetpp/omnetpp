@@ -329,7 +329,7 @@ def _make_scroll_navigable(figure):
 
 
 # source: https://stackoverflow.com/a/39789718/635587
-def customized_box_plot(percentiles, axes=None, labels=None, redraw=True, *args, **kwargs):
+def customized_box_plot(percentiles, labels=None, axes=None, redraw=True, *args, **kwargs):
     """
     Generates a customized box-and-whiskers plot based on explicitly specified
     percentile values. This method is necessary because pyplot.boxplot() insists
@@ -355,8 +355,8 @@ def customized_box_plot(percentiles, axes=None, labels=None, redraw=True, *args,
 
     Parameters:
     - `percentiles`: The list of tuples.
-    - `axes`: The axes object of the plot.
     - `labels`: If provided, the legend labels for the boxes.
+    - `axes`: The axes object of the plot.
     - `redraw`: If False, redraw is deferred.
     - `args`, `kwargs`: Passed to `axes.boxplot()`.
     """
