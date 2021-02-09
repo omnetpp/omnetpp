@@ -77,7 +77,7 @@ def plot_lines(df, props):  # key, label, xs, ys
     Gateway.chart_plotter.plotVectors(pl.dumps([
         {
             "key": row.key,
-            "title": row.label,
+            "title": str(row.label),
             "xs": _put_array_in_shm(row.xs, shm_objs, mmap_objs),
             "ys": _put_array_in_shm(row.ys, shm_objs, mmap_objs)
         }
@@ -97,7 +97,7 @@ def plot_bars(df, props):
 
     Gateway.chart_plotter.plotScalars(pl.dumps([
         {
-            "key": str(row.key),
+            "key": row.key,
             "title": str(row.label),
             "values": _list_to_bytes(row.values),
         }
@@ -114,7 +114,7 @@ def plot_histograms(df, props):  # key, label, binedges, binvalues, underflows, 
     Gateway.chart_plotter.plotHistograms(pl.dumps([
         {
             "key": row.key,
-            "title": row.label,
+            "title": str(row.label),
 
             # this could be computed in Java as well, but just to make things simpler, we do it here
             "sumweights": float(np.sum(row.binvalues) + row.underflows + row.overflows),
