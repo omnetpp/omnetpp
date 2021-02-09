@@ -90,7 +90,8 @@ def extract_label_columns(df, preferred_legend_column="title"):
                  "count", "sumweights", "mean", "stddev", "min", "max",
                  "processid", "datetime", "datetimef", "runnumber", "seedset",
                  "iterationvars", "iterationvarsf", "iterationvarsd",
-                 "source", "interpolationmode", "enum", "title", "unit"]
+                 "source", "interpolationmode", "enum", "title", "unit",
+                 "legend", "comment"]
 
     title_col = None
 
