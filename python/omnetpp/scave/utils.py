@@ -284,7 +284,7 @@ def make_fancy_xticklabels(ax):
 
 # inspired by: https://stackoverflow.com/a/11562898/635587
 # and https://stackoverflow.com/q/11551049#comment77920445_11562898
-def make_scroll_navigable(figure):
+def _make_scroll_navigable(figure):
     """
     Only useful for Matplotlib plots. It causes the plot to respond to mouse
     wheel events in the following way, regardless of navigation mode:
@@ -442,7 +442,7 @@ def customized_box_plot(percentiles, axes=None, labels=None, redraw=True, *args,
         axes.figure.canvas.draw()
 
 
-def interpolationmode_to_drawstyle(interpolationmode, hasenum): #TODO prefix with underscore?
+def _interpolationmode_to_drawstyle(interpolationmode, hasenum):
     """
     Converts an OMNeT++-style interpolation constant ('none', 'linear',
     'sample-hold', etc.) to Matplotlib draw styles.
@@ -479,7 +479,7 @@ def _make_line_args(props, t, df):
     if not ds or ds == "auto":
         interpolationmode = t.interpolationmode if "interpolationmode" in df else None
         hasenum = "enum" in df
-        ds = interpolationmode_to_drawstyle(interpolationmode, hasenum)
+        ds = _interpolationmode_to_drawstyle(interpolationmode, hasenum)
 
     if ds == "none":
         style["linestyle"] = " "
@@ -1046,7 +1046,7 @@ def preconfigure_plot(props):
             plt.style.use(get_prop("plt.style"))
         mpl.rcParams.update(_filter_by_key_prefix(props,"matplotlibrc."))
         mpl.rcParams.update(parse_rcparams(get_prop("matplotlibrc") or ""))
-        make_scroll_navigable(plt.gcf())
+        _make_scroll_navigable(plt.gcf())
 
     _initialize_cycles(props)
 
@@ -1141,7 +1141,7 @@ def export_image_if_needed(props):
         format = get_prop("image_export_format") or "svg"
         folder = get_prop("image_export_folder") or os.getcwd()
         filename = get_prop("image_export_filename") or _sanitize_filename(chart.get_name())
-        filepath = os.path.join(folder, filename) + "." + format #TODO make it better
+        filepath = os.path.join(folder, filename) + "." + format
         width = float(get_prop("image_export_width") or 6)
         height = float(get_prop("image_export_height") or 4)
         dpi = get_prop("image_export_dpi") or "96"
