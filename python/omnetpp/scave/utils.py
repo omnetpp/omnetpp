@@ -340,7 +340,7 @@ def customized_box_plot(percentiles, labels=None, axes=None, redraw=True, *args,
     One box will be drawn for each tuple. Each tuple contains 6 elements (or 5,
     because the last one is optional):
 
-    (*q1_start*, *q2_start*, *q3_start*, *q4_start*, *q4_end*, *fliers_xy*)
+    (*q1_start*, *q2_start*, *q3_start*, *q4_start*, *q4_end*, *fliers*)
 
     The first five elements have following meaning:
     - *q1_start*: y coord of bottom whisker cap
@@ -349,8 +349,8 @@ def customized_box_plot(percentiles, labels=None, axes=None, redraw=True, *args,
     - *q4_start*: y coord of top of the box
     - *q4_end*: y coord of top whisker cap
 
-    The last element, *fliers_xy* is an *(xs, ys)* pair of arrays, containing
-    the coordinates of the outlier points. (The x coordinates are ignored.)
+    The last element, *fliers*, is a list, containing the values of the
+    outlier points.
 
     x coords of the box-and-whiskers plots are automatic.
 
@@ -390,12 +390,14 @@ def customized_box_plot(percentiles, labels=None, axes=None, redraw=True, *args,
             bar.patches[0].remove()
 
         if len(pdata) == 6:
-            (q1_start, q2_start, q3_start, q4_start, q4_end, fliers_xy) = pdata
+            (q1_start, q2_start, q3_start, q4_start, q4_end, fliers) = pdata
         elif len(pdata) == 5:
             (q1_start, q2_start, q3_start, q4_start, q4_end) = pdata
-            fliers_xy = None
+            fliers = []
         else:
             raise ValueError("Percentile arrays for customized_box_plot must have either 5 or 6 values")
+
+        fliers = np.array(fliers)
 
         # Lower cap
         box_plot['caps'][0].set_ydata([q1_start, q1_start])
@@ -422,14 +424,13 @@ def customized_box_plot(percentiles, labels=None, axes=None, redraw=True, *args,
         box_plot['medians'][0].set_visible(False)
 
         # Outliers
-        if fliers_xy is not None and len(fliers_xy[0]) != 0:
+        if len(fliers) > 0:
             # If outliers exist
-            box_plot['fliers'][0].set(xdata = fliers_xy[0],
-                                           ydata = fliers_xy[1])
+            box_plot['fliers'][0].set(xdata = [box_no] * len(fliers),
+                                        ydata = fliers)
 
-            min_y = min(q1_start, min_y, fliers_xy[1].min())
-            max_y = max(q4_end, max_y, fliers_xy[1].max())
-
+            min_y = min(q1_start, min_y, fliers.min())
+            max_y = max(q4_end, max_y, fliers.max())
         else:
             min_y = min(q1_start, min_y)
             max_y = max(q4_end, max_y)
