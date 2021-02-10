@@ -2,6 +2,7 @@
 
 import sys
 import os
+import re
 
 from omnetpp.scave import results, chart, utils, plot, vectorops
 
@@ -119,7 +120,9 @@ def docstring_to_latex(o):
     return finalize_latex(markdown.render(inspect.cleandoc(d))) if d else ""
 
 def signature_to_latex(o):
-    return finalize_latex(o.__name__ + str(inspect.signature(o)).replace("'", '"'))
+    signature = str(inspect.signature(o))
+    signature = print(re.sub("=<function ([^ ]+) at [^>]+>", "=\\1", signature))
+    return finalize_latex(o.__name__ + str(signature).replace("'", '"'))
 
 def annotate_module(mod):
     modname = mod.__name__
