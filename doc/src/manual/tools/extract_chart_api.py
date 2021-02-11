@@ -117,11 +117,27 @@ markdown = mistune.Markdown(renderer=renderer)
 
 def docstring_to_latex(o):
     d = o.__doc__
+    d = preformat(d)
     return finalize_latex(markdown.render(inspect.cleandoc(d))) if d else ""
+
+def preformat(docstring):
+    if not docstring:
+        return docstring
+
+    # make type string italic in places like this:
+    # " - `x`, `y` (float): The coordinates"
+    pattern = re.compile(r"""
+        ^(\s*-\s`[^:(]*)  # prefix: starts with backquoted word, and extends until a colon or left paren
+        (\(.*\))          # the type part in parens
+        (\s*:)""",        # the colon
+        re.MULTILINE|re.VERBOSE)
+    docstring = pattern.sub(r'\1*\2*\3', docstring)  # put type part between *asterisks* (italic)
+    return docstring
+
 
 def signature_to_latex(o):
     signature = str(inspect.signature(o))
-    signature = print(re.sub("=<function ([^ ]+) at [^>]+>", "=\\1", signature))
+    signature = re.sub("=<function ([^ ]+) at [^>]+>", "=\\1", signature)
     return finalize_latex(o.__name__ + str(signature).replace("'", '"'))
 
 def annotate_module(mod):
