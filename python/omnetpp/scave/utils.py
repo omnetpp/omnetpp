@@ -4,16 +4,16 @@ on top of Pandas data frames and the `chart` and `plot` packages from `omnetpp.s
 Functions in this module have been written largely to the needs of the
 chart templates that ship with the IDE.
 
-There are some functions which are mandatory elements in a chart script. These are:
+There are some functions which are (almost) mandatory elements in a chart script.
+These are the following.
 
 If you want style settings in the chart dialog to take effect:
- `preconfigure_plot()`
- `postconfigure_plot()`
+- `preconfigure_plot()`
+- `postconfigure_plot()`
 
 If you want image/data export to work:
 - `export_image_if_needed()`
 - `export_data_if_needed()`
-
 """
 
 import random, sys, os, string, re, math, importlib
@@ -29,119 +29,7 @@ from omnetpp.scave import chart, plot, vectorops
 _marker_cycle = cycle(list("osv^<>pDd"))
 _color_cycle = cycle(["C" + str(i) for i in range(10)])
 
-
-def confidence_interval(alpha, data):
-    """
-    Returns the half-length of the confidence interval of the mean of `data`, assuming
-    normal distribution, for the given confidence level `alpha`.
-
-    Parameters:
-
-    - `alpha` (float): Confidence level, must be in the [0..1] range.
-    - `data` (array-like): An array containing the values.
-    """
-    return st.norm.interval(alpha, loc=0, scale=st.sem(data))[1]
-
-def split(s, sep=','):
-    """
-    Split a string with the given separator (by default with comma), trim
-    the surrounding whitespace from the items, and return the result as a
-    list. Returns an empty list for an empty or all-whitespace input string.
-    (Note that in contrast, `s.split(',')` will return an empty array,
-    even for `s=''`.)
-    """
-    parts = s.split(sep)
-    parts = [p.strip() for p in parts]
-    if parts == ['']:
-        parts = []
-    return parts
-
-def extract_label_columns(df, preferred_legend_column="title"):
-    """
-    Utility function to make a reasonable guess as to which column of
-    the given DataFrame is most suitable to act as a chart title and
-    which ones can be used as legend labels.
-
-    Ideally a "title column" should be one in which all lines have the same
-    value, and can be reasonably used as a title. Some often used candidates
-    are: `title`, `name`, and `module`.
-
-    Label columns should be a minimal set of columns whose corresponding
-    value tuples uniquely identify every line in the DataFrame. These will
-    primarily be iteration variables and run attributes.
-
-    Returns:
-
-    A pair of a string and a list; the first value is the name of the
-    "title" column, and the second one is a list of pairs, each
-    containing the index and the name of a "label" column.
-
-    Example: `('title', [(8, 'numHosts'), (7, 'iaMean')])`
-    """
-
-    titles = ["title", "name", "module", "experiment", "measurement", "replication"]
-    titles.remove(preferred_legend_column)
-    titles = [preferred_legend_column] + titles
-
-    legends = titles
-
-    blacklist = ["runID", "value", "attrvalue", "vectime", "vecvalue",
-                 "binedges", "binvalues", "underflows", "overflows",
-                 "count", "sumweights", "mean", "stddev", "min", "max",
-                 "processid", "datetime", "datetimef", "runnumber", "seedset",
-                 "iterationvars", "iterationvarsf", "iterationvarsd",
-                 "source", "interpolationmode", "enum", "title", "unit",
-                 "legend", "comment"]
-
-    title_col = None
-
-    for title in titles:
-        if title in df and len(df[title].unique()) == 1:
-            title_col = title
-            break
-    if title_col == None:
-        if "name" in titles:
-            title_col = "name"
-
-    legend_cols = []
-
-    for legend in legends:
-        if legend in df and len(df[legend].unique()) == len(df):
-            legend_cols = [(list(df.columns.values).index(legend), legend)]
-            break
-
-    if legend_cols:
-        return title_col, legend_cols
-
-    last_len = None
-    for i, col in list(enumerate(df)):
-        if col not in blacklist and col != title_col:
-            new_len = len(df.groupby([i2 for i1, i2 in legend_cols] + [col]))
-            if new_len == len(df) or not last_len or new_len > last_len:
-                legend_cols.append((i, col))
-                last_len = new_len
-            if new_len == len(df):
-                break
-
-    # filter out columns which only have a single value in them (this can happen in the loop above, with the first considered column)
-    legend_cols = list(filter(lambda icol: len(df[icol[1]].unique()) > 1, legend_cols))
-
-    """
-    if not legend_cols:
-        last_len = None
-        for i, col in reversed(list(enumerate(df))):
-            if col not in blacklist and col != title_col:
-                new_len = len(df.groupby([i2 for i1, i2 in legend_cols] + [col]))
-                if new_len > 1:
-                    legend_cols.append((i, col))
-    """
-
-    # TODO: use runID (or iterationvars?) as last resort (if present)
-
-    # at this point, ideally this should hold: len(df.groupby([i2 for i1, i2 in legend_cols])) == len(df)
-    return title_col, legend_cols
-
-
+# Note: must be at the top, because it appears in other functions' arg list as default
 def make_legend_label(legend_cols, row):
     """
     Produces a reasonably good label text (to be used in a chart legend) for a result row from
@@ -164,451 +52,6 @@ def make_legend_label(legend_cols, row):
     if len(legend_cols) == 1:
         return str(row[legend_cols[0][0]]) + comment_str
     return ", ".join([col + "=" + str(row[i]) for i, col in legend_cols]) + comment_str
-
-
-def make_chart_title(df, title_col, legend_cols):
-    """
-    Produces a reasonably good chart title text from a result DataFrame, given a selected "title"
-    column, and a list of selected "legend" columns as returned by `extract_label_columns()`.
-    """
-    if df is None or df.empty or title_col not in df:
-        return "None"
-
-    what = str(list(df[title_col])[0]) if title_col else "Data"
-    if title_col and len(df[title_col].unique()) > 1:
-        what += " and other variables"
-    by_what = (" (by " + ", ".join([id[1] for id in legend_cols]) + ")") if legend_cols else ""
-    return what + by_what
-
-
-def pick_two_columns(df):
-    """
-    Choose two columns from the dataframe which best partitions the rows
-    of the dataframe, and returns their names as a pair. Returns (`None`, `None`)
-    if no such pair was found. This method is useful for creating e.g. a bar plot.
-    """
-    title_col, label_cols = extract_label_columns(df)
-    label_cols = [l[1] for l in label_cols]
-    if len(label_cols) == 0:
-        return None, None
-    if len(label_cols) == 1:
-        if label_cols[0] == title_col:
-            return None, None
-        else:
-            return title_col, label_cols[0]
-    if len(label_cols) >= 2:
-        return label_cols[0], label_cols[1]
-
-
-def assert_columns_exist(df, cols, message="Expected column missing from DataFrame"):
-    """
-    Ensures that the dataframe contains the given columns. If any of them are missing,
-    the function raises an error with the given message.
-
-    Parameters:
-
-    - `cols` (list of strings): Column names to check.
-    """
-    for c in cols:
-        if c not in df:
-            plot.set_warning(message + ": " + c)
-            exit(1)
-
-
-def parse_rcparams(rc_content):
-    """
-    Accepts a multiline string that contains rc file content in Matplotlib's
-    RcParams syntax, and returns its contents as a dictionary. Parse errors
-    and duplicate keys are reported via exceptions.
-    """
-    rc_temp = {}
-    for line_no, line in enumerate(rc_content.split("\n"), 1):
-        strippedline = line.split('#', 1)[0].strip()
-        if not strippedline:
-            continue
-        tup = strippedline.split(':', 1)
-        if len(tup) != 2:
-            raise RuntimeError("Illegal rc line #" + str(line_no)) + ": " + line
-        key, val = tup
-        key = key.strip()
-        val = val.strip()
-        if key in rc_temp:
-            raise RuntimeError("Duplicate key " + key + " on line " + str(line_no))
-        rc_temp[key] = val
-
-    return rc_temp
-
-
-def _filter_by_key_prefix(props, prefix):
-    return {k[len(prefix):] : v for (k, v) in props.items() if k.startswith(prefix) and v}
-
-def _parse_optional_bool(value):
-    if value is None:
-        return None
-    if value.lower() not in ["true", "false"]:
-        raise ValueError("Invalid boolean property value: " + value)
-    return value.lower() == "true"
-
-def make_fancy_xticklabels(ax):
-    """
-    Only useful for Matplotlib plots. It causes the x tick labels to be rotated
-    by the minimum amount necessary so that they don't overlap. Note that the
-    necessary amount of rotation typically depends on the horizontal zoom level.
-    """
-    from matplotlib.text import Text
-
-    # Declare and register callbacks
-    def on_xlims_change(ax):
-        display_xs = list()
-        fontheight = 24
-        for p in ax.get_xticks():
-            xdisplay, ydisplay = ax.transData.transform_point((p, 0))
-            display_xs.append(xdisplay)
-        dxa = np.array(display_xs)
-        dxd = dxa[1:] - dxa[:-1]
-        min_dx = dxd.min() + 12
-
-        tes = list()
-        for l in ax.get_xticklabels():
-            text = Text(text=l, figure=ax.figure)
-            extent = text.get_window_extent()
-            tes.append(extent.width)
-            fontheight = extent.height
-
-        max_tx = np.array(tes).max()
-
-        if min_dx > max_tx:
-            angle = 0
-        elif min_dx < fontheight * 2:
-            angle = 90
-        else:
-            angle = math.atan(fontheight / (min_dx - fontheight * 2)) / math.pi * 180
-
-        angle = max(0, min(90, angle))
-
-        plt.xticks(rotation=angle, horizontalalignment="right")
-        plt.tight_layout()
-
-    ax.callbacks.connect('xlim_changed', on_xlims_change)
-
-
-# inspired by: https://stackoverflow.com/a/11562898/635587
-# and https://stackoverflow.com/q/11551049#comment77920445_11562898
-def _make_scroll_navigable(figure):
-    """
-    Only useful for Matplotlib plots. It causes the plot to respond to mouse
-    wheel events in the following way, regardless of navigation mode:
-    - Without modifiers: vertical pan
-    - With Shift: horizontal pan
-    - With Ctrl: zoom
-    """
-    def zoom_fun(event):
-        ax = event.inaxes
-
-        if ax is None:
-            return
-
-        SCALING_FACTOR = 1.5
-        PANNING_FACTOR = 0.1
-
-        cur_xlim = ax.get_xlim()
-        cur_ylim = ax.get_ylim()
-        cur_xrange = cur_xlim[1] - cur_xlim[0]
-        cur_yrange = cur_ylim[1] - cur_ylim[0]
-        xdata = event.xdata
-        ydata = event.ydata
-        direction = np.sign(event.step)
-
-        if event.key is None: # vertical pan
-            delta = cur_yrange * direction * PANNING_FACTOR
-            ax.set_ylim([cur_ylim[0] + delta, cur_ylim[1] + delta])
-        elif event.key == "shift": # horizontal pan
-            delta = cur_xrange * -direction * PANNING_FACTOR
-            ax.set_xlim([cur_xlim[0] + delta, cur_xlim[1] + delta])
-        elif event.key == "control": # zoom
-            scale = math.pow(SCALING_FACTOR, direction)
-            ax.set_xlim([xdata - (xdata-cur_xlim[0]) / scale,
-                        xdata + (cur_xlim[1]-xdata) / scale])
-            ax.set_ylim([ydata - (ydata-cur_ylim[0]) / scale,
-                        ydata + (cur_ylim[1]-ydata) / scale])
-
-        plt.draw()
-
-    figure.canvas.mpl_connect('scroll_event', zoom_fun)
-
-
-# source: https://stackoverflow.com/a/39789718/635587
-def customized_box_plot(percentiles, labels=None, axes=None, redraw=True, *args, **kwargs):
-    """
-    Generates a customized box-and-whiskers plot based on explicitly specified
-    percentile values. This method is necessary because pyplot.boxplot() insists
-    on computing the stats from the raw data (which we often don't have) itself.
-
-    The data are in the `percentiles` argument, which should be list of tuples.
-    One box will be drawn for each tuple. Each tuple contains 6 elements (or 5,
-    because the last one is optional):
-
-    (*q1_start*, *q2_start*, *q3_start*, *q4_start*, *q4_end*, *fliers*)
-
-    The first five elements have following meaning:
-    - *q1_start*: y coord of bottom whisker cap
-    - *q2_start*: y coord of bottom of the box
-    - *q3_start*: y coord of median mark
-    - *q4_start*: y coord of top of the box
-    - *q4_end*: y coord of top whisker cap
-
-    The last element, *fliers*, is a list, containing the values of the
-    outlier points.
-
-    x coords of the box-and-whiskers plots are automatic.
-
-    Parameters:
-    - `percentiles`: The list of tuples.
-    - `labels`: If provided, the legend labels for the boxes.
-    - `axes`: The axes object of the plot.
-    - `redraw`: If False, redraw is deferred.
-    - `args`, `kwargs`: Passed to `axes.boxplot()`.
-    """
-
-    if axes is None:
-        axes = plt.gca()
-
-    min_y, max_y = float('inf'), -float('inf')
-
-    if labels is not None:
-        if len(labels) != len(percentiles):
-            raise ValueError("There must be as many labels as elements in the percentiles list")
-
-    for box_no, pdata in enumerate(percentiles):
-        color = next(_color_cycle)
-        box_plot = axes.boxplot([-9, -4, 2, 4, 9], positions=[box_no], widths=[0.5],
-            showmeans=True, meanprops=dict(marker='+', markeredgecolor=mpl.rcParams["axes.facecolor"]),
-            boxprops=dict(facecolor=color), whiskerprops=dict(color=color, linewidth=2), capprops=dict(linewidth=1.5),
-            patch_artist=True, *args, **kwargs)
-
-        if labels is not None:
-            # boxplot does not register its patches as legend handles, as it only wants to
-            # put the labels on axis ticks.
-            # And we also don't want to explicitly specify the legend contents, because the
-            # legend() call is sometime later, on postconfigure_plot. Only one thing remains:
-            # To make a "fake" bar for each box, and remove it - but not entirely (as that)
-            # would also remove it from the Legend... (same with hiding) - so its single
-            # patch is removed instead...
-            bar = axes.bar([0], [0], color=color, label=labels[box_no])
-            bar.patches[0].remove()
-
-        if len(pdata) == 6:
-            (q1_start, q2_start, q3_start, q4_start, q4_end, fliers) = pdata
-        elif len(pdata) == 5:
-            (q1_start, q2_start, q3_start, q4_start, q4_end) = pdata
-            fliers = []
-        else:
-            raise ValueError("Percentile arrays for customized_box_plot must have either 5 or 6 values")
-
-        fliers = np.array(fliers)
-
-        # Lower cap
-        box_plot['caps'][0].set_ydata([q1_start, q1_start])
-        # xdata is determined by the width of the box plot
-
-        # Lower whiskers
-        box_plot['whiskers'][0].set_ydata([q1_start, q2_start])
-
-        # Higher cap
-        box_plot['caps'][1].set_ydata([q4_end, q4_end])
-
-        # Higher whiskers
-        box_plot['whiskers'][1].set_ydata([q4_start, q4_end])
-
-        # Box
-        path = box_plot['boxes'][0].get_path()
-        path.vertices[0][1] = q2_start
-        path.vertices[1][1] = q2_start
-        path.vertices[2][1] = q4_start
-        path.vertices[3][1] = q4_start
-        path.vertices[4][1] = q2_start
-
-        box_plot['means'][0].set_ydata([q3_start, q3_start])
-        box_plot['medians'][0].set_visible(False)
-
-        # Outliers
-        if len(fliers) > 0:
-            # If outliers exist
-            box_plot['fliers'][0].set(xdata = [box_no] * len(fliers),
-                                        ydata = fliers)
-
-            min_y = min(q1_start, min_y, fliers.min())
-            max_y = max(q4_end, max_y, fliers.max())
-        else:
-            min_y = min(q1_start, min_y)
-            max_y = max(q4_end, max_y)
-
-    mid_y = (min_y + max_y) / 2
-    # The y axis is rescaled to fit the new box plot completely with 10%
-    # of the maximum value at both ends
-    axes.set_ylim([mid_y - (mid_y - min_y) * 1.25, mid_y + (max_y - mid_y) * 1.25])
-
-    axes.set_xlim(-0.5, len(percentiles)-0.5)
-    axes.set_xticks([])
-    axes.set_xticklabels([])
-
-    # If redraw is set to true, the canvas is updated.
-    if redraw:
-        axes.figure.canvas.draw()
-
-
-def _interpolationmode_to_drawstyle(interpolationmode, hasenum):
-    """
-    Converts an OMNeT++-style interpolation constant ('none', 'linear',
-    'sample-hold', etc.) to Matplotlib draw styles.
-    """
-    interp = interpolationmode if interpolationmode else 'sample-hold' if hasenum else None
-    if not interp:
-        ds = "default"
-    elif interp == "none":
-        ds = "none"
-    elif interp == "linear":
-        ds = "default"
-    elif interp == "sample-hold":
-        ds = "steps-post"
-    elif interp == "backward-sample-hold":
-        ds = 'steps-pre'
-    else:
-        print("Unknown interpolationmode:", interp, file=sys.stderr)
-        ds = None
-
-    return ds
-
-
-def _make_line_args(props, t, df):
-    global _marker_cycle
-    style = dict()
-
-    def get_prop(k):
-        return props[k] if k in props else None
-
-    if get_prop("linestyle"):
-        style["linestyle"] = get_prop("linestyle")  # note: must precede 'drawstyle' setting
-
-    ds = get_prop("drawstyle")
-    if not ds or ds == "auto":
-        interpolationmode = t.interpolationmode if "interpolationmode" in df else None
-        hasenum = "enum" in df
-        ds = _interpolationmode_to_drawstyle(interpolationmode, hasenum)
-
-    if ds == "none":
-        style["linestyle"] = " "
-        style["drawstyle"] = "default"  # or any valid value, doesn't matter
-    else:
-        style["drawstyle"] = ds if ds != "linear" else "default"
-
-    if get_prop("linecolor"):
-        style["color"] = get_prop("linecolor")
-    else:
-        style["color"] = next(_color_cycle)
-
-    if get_prop("linewidth"):
-        style["linewidth"] = get_prop("linewidth")
-
-    if not get_prop("marker") or get_prop("marker") == "auto":
-        style["marker"] = next(_marker_cycle)
-    elif get_prop("marker") == 'none':
-        style["marker"] = ' '
-    else:
-        style["marker"] = get_prop("marker")[0] # take first character only, as Matplotlib uses 1-char codes; this allows us to include a description
-
-    if get_prop("markersize"):
-        style["markersize"] = get_prop("markersize")
-
-    # Special case: not letting both the lines and the markers to become
-    # invisible automatically. Only if the user specifically asks for it.
-    if style["marker"] == ' ' and style["linestyle"] == ' ':
-        orig_ds = get_prop("drawstyle")
-        if not orig_ds or orig_ds == "auto":
-            style["marker"] = '.'
-
-    return style
-
-def _make_histline_args(props, t, df): # ??? is t and df needed at all?
-    style = dict()
-
-    def get_prop(k):
-        return props[k] if k in props else None
-
-    if get_prop("color"):
-        style["color"] = get_prop("color")
-    else:
-        style["color"] = next(_color_cycle)
-
-    if get_prop("linewidth"):
-        style["linewidth"] = get_prop("linewidth")
-
-    ds = get_prop("drawstyle")
-    if ds == "Solid":
-        style["histtype"] = "stepfilled"
-    elif ds == "Outline":
-        style["histtype"] = "step"
-
-    style["density"] = _parse_optional_bool(get_prop("normalize"))
-    style["cumulative"] = _parse_optional_bool(get_prop("cumulative"))
-
-    return style
-
-
-def _make_bar_args(props, df): # ??? is df needed at all? should we also get the column name?
-    style = dict()
-
-    def get_prop(k):
-        return props[k] if k in props else None
-
-    if get_prop("color"):
-        style["color"] = get_prop("color")
-    else:
-        style["color"] = next(_color_cycle)
-
-    return style
-
-
-def get_names_for_title(df, props):
-    """
-    Returns unique values from the `title` or `name` column, depending on the
-    value of the `legend_labels` property in `props`. This function is useful
-    for producing input for the plot title.
-    """
-    def get_prop(k):
-        return props[k] if k in props else None
-
-    if get_prop("legend_labels") == "result titles" and "title" in df:
-        series = df["title"].fillna(df["name"])
-    else:
-        series = df["name"]
-
-    return series.unique()
-
-
-def set_plot_title(title, suggested_chart_name=None):
-    """
-    Sets the plot title. It also sets the suggested chart name (the name that
-    the IDE offers when adding a temporary chart to the Analysis file.)
-    """
-    plot.title(title)
-    chart.set_suggested_chart_name(suggested_chart_name if suggested_chart_name is not None else title)
-
-
-def _to_label(x):
-    """
-    Internal. Turns various types of objects into a string, so they can be used as labels.
-    """
-    if x is None:
-        return ""
-    elif isinstance(x, str):
-        return x
-    elif isinstance(x, tuple):
-        return ", ".join(map(str, list(x)))
-    elif isinstance(x, list):
-        return ", ".join(map(str, x))
-    else:
-        return str(x)
 
 
 def plot_bars(df, props, variable_name=None, errors_df=None):
@@ -877,163 +320,124 @@ def plot_histograms(df, props, legend_func=make_legend_label):
     set_plot_title(title)
 
 
-def _initialize_cycles(props):
+# source: https://stackoverflow.com/a/39789718/635587
+def customized_box_plot(percentiles, labels=None, axes=None, redraw=True, *args, **kwargs):
     """
-    Initialize the `_marker_cycle` and `_color_cycle` global variables, taking
-    the `cycle_seed` property into account.
+    Generates a customized box-and-whiskers plot based on explicitly specified
+    percentile values. This method is necessary because `pyplot.boxplot()` insists
+    on computing the stats from the raw data (which we often don't have) itself.
+
+    The data are in the `percentiles` argument, which should be list of tuples.
+    One box will be drawn for each tuple. Each tuple contains 6 elements (or 5,
+    because the last one is optional):
+
+    (*q1_start*, *q2_start*, *q3_start*, *q4_start*, *q4_end*, *fliers*)
+
+    The first five elements have following meaning:
+    - *q1_start*: y coord of bottom whisker cap
+    - *q2_start*: y coord of bottom of the box
+    - *q3_start*: y coord of median mark
+    - *q4_start*: y coord of top of the box
+    - *q4_end*: y coord of top whisker cap
+
+    The last element, *fliers*, is a list, containing the values of the
+    outlier points.
+
+    x coords of the box-and-whiskers plots are automatic.
+
+    Parameters:
+    - `percentiles`: The list of tuples.
+    - `labels`: If provided, the legend labels for the boxes.
+    - `axes`: The axes object of the plot.
+    - `redraw`: If False, redraw is deferred.
+    - `args`, `kwargs`: Passed to `axes.boxplot()`.
     """
-    def get_prop(k):
-        return props[k] if k in props else None
 
-    global _marker_cycle
-    global _color_cycle
+    if axes is None:
+        axes = plt.gca()
 
-    seed = int(get_prop('cycle_seed') or 0)
-    r = random.Random(seed)
+    min_y, max_y = float('inf'), -float('inf')
 
-    ml = list("osv^<>pDd")
-    if seed != 0:
-        random.shuffle(ml, r.random)
-    _marker_cycle = cycle(ml)
+    if labels is not None:
+        if len(labels) != len(percentiles):
+            raise ValueError("There must be as many labels as elements in the percentiles list")
 
-    prop_cycler = plt.rcParams['axes.prop_cycle']
+    for box_no, pdata in enumerate(percentiles):
+        color = next(_color_cycle)
+        box_plot = axes.boxplot([-9, -4, 2, 4, 9], positions=[box_no], widths=[0.5],
+            showmeans=True, meanprops=dict(marker='+', markeredgecolor=mpl.rcParams["axes.facecolor"]),
+            boxprops=dict(facecolor=color), whiskerprops=dict(color=color, linewidth=2), capprops=dict(linewidth=1.5),
+            patch_artist=True, *args, **kwargs)
 
-    if chart.is_native_chart():
-        num_colors = 10
-    else:
-        num_colors = len(prop_cycler.by_key()['color']) if "color" in prop_cycler.keys else 1
+        if labels is not None:
+            # boxplot does not register its patches as legend handles, as it only wants to
+            # put the labels on axis ticks.
+            # And we also don't want to explicitly specify the legend contents, because the
+            # legend() call is sometime later, on postconfigure_plot. Only one thing remains:
+            # To make a "fake" bar for each box, and remove it - but not entirely (as that)
+            # would also remove it from the Legend... (same with hiding) - so its single
+            # patch is removed instead...
+            bar = axes.bar([0], [0], color=color, label=labels[box_no])
+            bar.patches[0].remove()
 
-    cl = ["C" + str(i) for i in range(num_colors)]
-    if seed != 0:
-        random.shuffle(cl, r.random)
-    _color_cycle = cycle(cl)
+        if len(pdata) == 6:
+            (q1_start, q2_start, q3_start, q4_start, q4_end, fliers) = pdata
+        elif len(pdata) == 5:
+            (q1_start, q2_start, q3_start, q4_start, q4_end) = pdata
+            fliers = []
+        else:
+            raise ValueError("Percentile arrays for customized_box_plot must have either 5 or 6 values")
 
+        fliers = np.array(fliers)
 
-def _parse_vectorop_line(line: str):
-    """
-    Parses the given vector operation line, and returns its contents as a tuple.
-    Helper for `perform_vector_ops()`.
-    """
-    line = line.strip()
-    m = re.match(r"((\w+)\s*:)?\s*(([\w.]+)\.)?(\w+)?(.*)", line)  # always matches due to last group
-    _, type, _, module, name, rest = m.groups()
-    if not name:
-        if line and not line.startswith('#'):
-            raise SyntaxError("Syntax error")
-        return (None, None, None, None, None)
-    if not type:
-        type = "apply"
-    if not type in ['apply', 'compute']:
-        raise SyntaxError("Syntax error near '"+type+"': must be 'apply' or 'compute' (or omitted)")
-    rest = rest.strip()
-    if not rest or rest.startswith('#'):
-        rest = "()"
-    if not rest.startswith('('):
-        raise ValueError("Parenthesized argument list expected after operation name")
-    try:
-        def return_args(*args, **kwargs):
-            return (args,kwargs)
-        args, kwargs = eval(name + " " + rest, None, {name: return_args}) # let Python do the parsing, incl. comment discarding
-    except SyntaxError:
-        raise SyntaxError("Syntax error in argument list")
-    except Exception as e:
-        raise ValueError("Error in argument list: " + str(e))
-    return type, module, name, args, kwargs
+        # Lower cap
+        box_plot['caps'][0].set_ydata([q1_start, q1_start])
+        # xdata is determined by the width of the box plot
 
+        # Lower whiskers
+        box_plot['whiskers'][0].set_ydata([q1_start, q2_start])
 
-def _perform_vector_op(df, line: str):
-    """
-    Performs one vector operation on the dataframe. Helper for `perform_vector_ops()`.
-    """
-    # parse line
-    type, module, name, args, kwargs = _parse_vectorop_line(line)
-    if name is None: # empty line
-        return df
+        # Higher cap
+        box_plot['caps'][1].set_ydata([q4_end, q4_end])
 
-    # look up function
-    function = None
-    if not module and name in globals():  # unfortunately this doesn't work, because the chart script sees a different "globals" dict than we in this module, due it being called via exec()
-        function = globals()[name]
-    else:
-        if not module:
-            module = "omnetpp.scave.vectorops"
-        mod = importlib.import_module(module)
-        if not name in mod.__dict__:
-            raise ValueError("Vector filter function '" + name + "' not found in module '" + module + "'")
-        function = mod.__dict__[name]
+        # Higher whiskers
+        box_plot['whiskers'][1].set_ydata([q4_start, q4_end])
 
-    # perform operation
-    if type == "apply":
-        df = _apply_vector_op(df, function, *args, **kwargs)
-    elif type == "compute":
-        df = _compute_vector_op(df, function, *args, **kwargs)
-    return df
+        # Box
+        path = box_plot['boxes'][0].get_path()
+        path.vertices[0][1] = q2_start
+        path.vertices[1][1] = q2_start
+        path.vertices[2][1] = q4_start
+        path.vertices[3][1] = q4_start
+        path.vertices[4][1] = q2_start
 
+        box_plot['means'][0].set_ydata([q3_start, q3_start])
+        box_plot['medians'][0].set_visible(False)
 
-def perform_vector_ops(df, operations: str):
-    """
-    Performs the given vector operations on the dataframe, and returns the
-    resulting dataframe. Vector operations primarily affect the `vectime`
-    and `vecvalue` columns of the dataframe, which are expected to contain
-    `ndarray`'s of matching lengths.
+        # Outliers
+        if len(fliers) > 0:
+            # If outliers exist
+            box_plot['fliers'][0].set(xdata = [box_no] * len(fliers),
+                                        ydata = fliers)
 
-    `operations` is a multiline string where each line denotes an operation;
-    they are applied in sequence. The syntax of one operation is:
+            min_y = min(q1_start, min_y, fliers.min())
+            max_y = max(q4_end, max_y, fliers.max())
+        else:
+            min_y = min(q1_start, min_y)
+            max_y = max(q4_end, max_y)
 
-    [(`compute`|`apply`) `:` ] *opname* [ `(` *arglist* `)` ] [ `#` *comment* ]
+    mid_y = (min_y + max_y) / 2
+    # The y axis is rescaled to fit the new box plot completely with 10%
+    # of the maximum value at both ends
+    axes.set_ylim([mid_y - (mid_y - min_y) * 1.25, mid_y + (max_y - mid_y) * 1.25])
 
-    Blank lines and lines only containing a comment are also accepted.
+    axes.set_xlim(-0.5, len(percentiles)-0.5)
+    axes.set_xticks([])
+    axes.set_xticklabels([])
 
-    *opname* is the name of the function, optionally qualified with its package name.
-    If the package name is omitted, `omnetpp.scave.vectorops` is assumed.
-
-    `compute` and `apply` specify whether the newly computed vectors will replace
-    the input row in the DataFrame (*apply*) or added as extra lines (*compute*).
-    The default is *apply*.
-
-    See the contents of the `omnetpp.scave.vectorops` package for more information.
-    """
-    if not operations:
-        return df
-    line_num = 0
-    for line in operations.splitlines():
-        line_num += 1
-        try:
-            df = _perform_vector_op(df, line)
-        except Exception as e:
-            context = " in Vector Operations line " + str(line_num) + " \"" + line.strip() + "\""
-            raise type(e)(str(e) + context).with_traceback(sys.exc_info()[2]) # re-throw with context
-    return df
-
-
-def _apply_vector_op(df, operation, *args, **kwargs):
-    """
-    Process a vector operation with the `apply` prefix. Helper for `perform_vector_ops()`.
-    """
-    if operation == vectorops.aggregate:
-        return vectorops.aggregate(df, *args, **kwargs)
-    elif operation == vectorops.merge:
-        return vectorops.merge(df)
-    else:
-        condition = kwargs.pop('condition', None)
-        clone = df.copy()
-        clone = clone.transform(lambda row: operation(row.copy(), *args, **kwargs) if not condition or condition(row) else row, axis='columns')
-        return clone
-
-
-def _compute_vector_op(df, operation, *args, **kwargs):
-    """
-    Process a vector operation with the `compute` prefix. Helper for `perform_vector_ops()`.
-    """
-    if operation == vectorops.aggregate:
-        return df.append(vectorops.aggregate(df, *args, **kwargs), sort=False)
-    elif operation == vectorops.merge:
-        return df.append(vectorops.merge(df), sort=False)
-    else:
-        condition = kwargs.pop('condition', None)
-        clone = df.copy()
-        clone = clone.transform(lambda row: operation(row.copy(), *args, **kwargs) if not condition or condition(row) else row, axis='columns')
-        return df.append(clone, sort=False)
+    # If redraw is set to true, the canvas is updated.
+    if redraw:
+        axes.figure.canvas.draw()
 
 
 def preconfigure_plot(props):
@@ -1120,6 +524,7 @@ def postconfigure_plot(props):
 
     if not chart.is_native_chart():
         plt.tight_layout()
+
 
 def export_image_if_needed(props):
     """
@@ -1224,3 +629,601 @@ def export_data_if_needed(df, props):
 def _sanitize_filename(filename):
     valid_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
     return ''.join(c for c in filename if c in valid_chars)
+
+
+def _initialize_cycles(props):
+    """
+    Initialize the `_marker_cycle` and `_color_cycle` global variables, taking
+    the `cycle_seed` property into account.
+    """
+    def get_prop(k):
+        return props[k] if k in props else None
+
+    global _marker_cycle
+    global _color_cycle
+
+    seed = int(get_prop('cycle_seed') or 0)
+    r = random.Random(seed)
+
+    ml = list("osv^<>pDd")
+    if seed != 0:
+        random.shuffle(ml, r.random)
+    _marker_cycle = cycle(ml)
+
+    prop_cycler = plt.rcParams['axes.prop_cycle']
+
+    if chart.is_native_chart():
+        num_colors = 10
+    else:
+        num_colors = len(prop_cycler.by_key()['color']) if "color" in prop_cycler.keys else 1
+
+    cl = ["C" + str(i) for i in range(num_colors)]
+    if seed != 0:
+        random.shuffle(cl, r.random)
+    _color_cycle = cycle(cl)
+
+
+def confidence_interval(alpha, data):
+    """
+    Returns the half-length of the confidence interval of the mean of `data`, assuming
+    normal distribution, for the given confidence level `alpha`.
+
+    Parameters:
+
+    - `alpha` (float): Confidence level, must be in the [0..1] range.
+    - `data` (array-like): An array containing the values.
+    """
+    return st.norm.interval(alpha, loc=0, scale=st.sem(data))[1]
+
+
+def perform_vector_ops(df, operations: str):
+    """
+    Performs the given vector operations on the dataframe, and returns the
+    resulting dataframe. Vector operations primarily affect the `vectime`
+    and `vecvalue` columns of the dataframe, which are expected to contain
+    `ndarray`'s of matching lengths.
+
+    `operations` is a multiline string where each line denotes an operation;
+    they are applied in sequence. The syntax of one operation is:
+
+    [(`compute`|`apply`) `:` ] *opname* [ `(` *arglist* `)` ] [ `#` *comment* ]
+
+    Blank lines and lines only containing a comment are also accepted.
+
+    *opname* is the name of the function, optionally qualified with its package name.
+    If the package name is omitted, `omnetpp.scave.vectorops` is assumed.
+
+    `compute` and `apply` specify whether the newly computed vectors will replace
+    the input row in the DataFrame (*apply*) or added as extra lines (*compute*).
+    The default is *apply*.
+
+    See the contents of the `omnetpp.scave.vectorops` package for more information.
+    """
+    if not operations:
+        return df
+    line_num = 0
+    for line in operations.splitlines():
+        line_num += 1
+        try:
+            df = _perform_vector_op(df, line)
+        except Exception as e:
+            context = " in Vector Operations line " + str(line_num) + " \"" + line.strip() + "\""
+            raise type(e)(str(e) + context).with_traceback(sys.exc_info()[2]) # re-throw with context
+    return df
+
+
+def _perform_vector_op(df, line: str):
+    """
+    Performs one vector operation on the dataframe. Helper for `perform_vector_ops()`.
+    """
+    # parse line
+    type, module, name, args, kwargs = _parse_vectorop_line(line)
+    if name is None: # empty line
+        return df
+
+    # look up function
+    function = None
+    if not module and name in globals():  # unfortunately this doesn't work, because the chart script sees a different "globals" dict than we in this module, due it being called via exec()
+        function = globals()[name]
+    else:
+        if not module:
+            module = "omnetpp.scave.vectorops"
+        mod = importlib.import_module(module)
+        if not name in mod.__dict__:
+            raise ValueError("Vector filter function '" + name + "' not found in module '" + module + "'")
+        function = mod.__dict__[name]
+
+    # perform operation
+    if type == "apply":
+        df = _apply_vector_op(df, function, *args, **kwargs)
+    elif type == "compute":
+        df = _compute_vector_op(df, function, *args, **kwargs)
+    return df
+
+
+def _parse_vectorop_line(line: str):
+    """
+    Parses the given vector operation line, and returns its contents as a tuple.
+    Helper for `perform_vector_ops()`.
+    """
+    line = line.strip()
+    m = re.match(r"((\w+)\s*:)?\s*(([\w.]+)\.)?(\w+)?(.*)", line)  # always matches due to last group
+    _, type, _, module, name, rest = m.groups()
+    if not name:
+        if line and not line.startswith('#'):
+            raise SyntaxError("Syntax error")
+        return (None, None, None, None, None)
+    if not type:
+        type = "apply"
+    if not type in ['apply', 'compute']:
+        raise SyntaxError("Syntax error near '"+type+"': must be 'apply' or 'compute' (or omitted)")
+    rest = rest.strip()
+    if not rest or rest.startswith('#'):
+        rest = "()"
+    if not rest.startswith('('):
+        raise ValueError("Parenthesized argument list expected after operation name")
+    try:
+        def return_args(*args, **kwargs):
+            return (args,kwargs)
+        args, kwargs = eval(name + " " + rest, None, {name: return_args}) # let Python do the parsing, incl. comment discarding
+    except SyntaxError:
+        raise SyntaxError("Syntax error in argument list")
+    except Exception as e:
+        raise ValueError("Error in argument list: " + str(e))
+    return type, module, name, args, kwargs
+
+
+def _apply_vector_op(df, operation, *args, **kwargs):
+    """
+    Process a vector operation with the `apply` prefix. Helper for `perform_vector_ops()`.
+    """
+    if operation == vectorops.aggregate:
+        return vectorops.aggregate(df, *args, **kwargs)
+    elif operation == vectorops.merge:
+        return vectorops.merge(df)
+    else:
+        condition = kwargs.pop('condition', None)
+        clone = df.copy()
+        clone = clone.transform(lambda row: operation(row.copy(), *args, **kwargs) if not condition or condition(row) else row, axis='columns')
+        return clone
+
+
+def _compute_vector_op(df, operation, *args, **kwargs):
+    """
+    Process a vector operation with the `compute` prefix. Helper for `perform_vector_ops()`.
+    """
+    if operation == vectorops.aggregate:
+        return df.append(vectorops.aggregate(df, *args, **kwargs), sort=False)
+    elif operation == vectorops.merge:
+        return df.append(vectorops.merge(df), sort=False)
+    else:
+        condition = kwargs.pop('condition', None)
+        clone = df.copy()
+        clone = clone.transform(lambda row: operation(row.copy(), *args, **kwargs) if not condition or condition(row) else row, axis='columns')
+        return df.append(clone, sort=False)
+
+
+def set_plot_title(title, suggested_chart_name=None):
+    """
+    Sets the plot title. It also sets the suggested chart name (the name that
+    the IDE offers when adding a temporary chart to the Analysis file.)
+    """
+    plot.title(title)
+    chart.set_suggested_chart_name(suggested_chart_name if suggested_chart_name is not None else title)
+
+
+def extract_label_columns(df, preferred_legend_column="title"):
+    """
+    Utility function to make a reasonable guess as to which column of
+    the given DataFrame is most suitable to act as a chart title and
+    which ones can be used as legend labels.
+
+    Ideally a "title column" should be one in which all lines have the same
+    value, and can be reasonably used as a title. Some often used candidates
+    are: `title`, `name`, and `module`.
+
+    Label columns should be a minimal set of columns whose corresponding
+    value tuples uniquely identify every line in the DataFrame. These will
+    primarily be iteration variables and run attributes.
+
+    Returns:
+
+    A pair of a string and a list; the first value is the name of the
+    "title" column, and the second one is a list of pairs, each
+    containing the index and the name of a "label" column.
+
+    Example: `('title', [(8, 'numHosts'), (7, 'iaMean')])`
+    """
+
+    titles = ["title", "name", "module", "experiment", "measurement", "replication"]
+    titles.remove(preferred_legend_column)
+    titles = [preferred_legend_column] + titles
+
+    legends = titles
+
+    blacklist = ["runID", "value", "attrvalue", "vectime", "vecvalue",
+                 "binedges", "binvalues", "underflows", "overflows",
+                 "count", "sumweights", "mean", "stddev", "min", "max",
+                 "processid", "datetime", "datetimef", "runnumber", "seedset",
+                 "iterationvars", "iterationvarsf", "iterationvarsd",
+                 "source", "interpolationmode", "enum", "title", "unit",
+                 "legend", "comment"]
+
+    title_col = None
+
+    for title in titles:
+        if title in df and len(df[title].unique()) == 1:
+            title_col = title
+            break
+    if title_col == None:
+        if "name" in titles:
+            title_col = "name"
+
+    legend_cols = []
+
+    for legend in legends:
+        if legend in df and len(df[legend].unique()) == len(df):
+            legend_cols = [(list(df.columns.values).index(legend), legend)]
+            break
+
+    if legend_cols:
+        return title_col, legend_cols
+
+    last_len = None
+    for i, col in list(enumerate(df)):
+        if col not in blacklist and col != title_col:
+            new_len = len(df.groupby([i2 for i1, i2 in legend_cols] + [col]))
+            if new_len == len(df) or not last_len or new_len > last_len:
+                legend_cols.append((i, col))
+                last_len = new_len
+            if new_len == len(df):
+                break
+
+    # filter out columns which only have a single value in them (this can happen in the loop above, with the first considered column)
+    legend_cols = list(filter(lambda icol: len(df[icol[1]].unique()) > 1, legend_cols))
+
+    """
+    if not legend_cols:
+        last_len = None
+        for i, col in reversed(list(enumerate(df))):
+            if col not in blacklist and col != title_col:
+                new_len = len(df.groupby([i2 for i1, i2 in legend_cols] + [col]))
+                if new_len > 1:
+                    legend_cols.append((i, col))
+    """
+
+    # TODO: use runID (or iterationvars?) as last resort (if present)
+
+    # at this point, ideally this should hold: len(df.groupby([i2 for i1, i2 in legend_cols])) == len(df)
+    return title_col, legend_cols
+
+
+def make_chart_title(df, title_col, legend_cols):
+    """
+    Produces a reasonably good chart title text from a result DataFrame, given a selected "title"
+    column, and a list of selected "legend" columns as returned by `extract_label_columns()`.
+    """
+    if df is None or df.empty or title_col not in df:
+        return "None"
+
+    what = str(list(df[title_col])[0]) if title_col else "Data"
+    if title_col and len(df[title_col].unique()) > 1:
+        what += " and other variables"
+    by_what = (" (by " + ", ".join([id[1] for id in legend_cols]) + ")") if legend_cols else ""
+    return what + by_what
+
+
+def pick_two_columns(df):
+    """
+    Choose two columns from the dataframe which best partitions the rows
+    of the dataframe, and returns their names as a pair. Returns (`None`, `None`)
+    if no such pair was found. This method is useful for creating e.g. a bar plot.
+    """
+    title_col, label_cols = extract_label_columns(df)
+    label_cols = [l[1] for l in label_cols]
+    if len(label_cols) == 0:
+        return None, None
+    if len(label_cols) == 1:
+        if label_cols[0] == title_col:
+            return None, None
+        else:
+            return title_col, label_cols[0]
+    if len(label_cols) >= 2:
+        return label_cols[0], label_cols[1]
+
+
+def assert_columns_exist(df, cols, message="Expected column missing from DataFrame"):
+    """
+    Ensures that the dataframe contains the given columns. If any of them are missing,
+    the function raises an error with the given message.
+
+    Parameters:
+
+    - `cols` (list of strings): Column names to check.
+    """
+    for c in cols:
+        if c not in df:
+            plot.set_warning(message + ": " + c)
+            exit(1)
+
+
+def parse_rcparams(rc_content):
+    """
+    Accepts a multiline string that contains rc file content in Matplotlib's
+    RcParams syntax, and returns its contents as a dictionary. Parse errors
+    and duplicate keys are reported via exceptions.
+    """
+    rc_temp = {}
+    for line_no, line in enumerate(rc_content.split("\n"), 1):
+        strippedline = line.split('#', 1)[0].strip()
+        if not strippedline:
+            continue
+        tup = strippedline.split(':', 1)
+        if len(tup) != 2:
+            raise RuntimeError("Illegal rc line #" + str(line_no)) + ": " + line
+        key, val = tup
+        key = key.strip()
+        val = val.strip()
+        if key in rc_temp:
+            raise RuntimeError("Duplicate key " + key + " on line " + str(line_no))
+        rc_temp[key] = val
+
+    return rc_temp
+
+
+def _filter_by_key_prefix(props, prefix):
+    return {k[len(prefix):] : v for (k, v) in props.items() if k.startswith(prefix) and v}
+
+def _parse_optional_bool(value):
+    if value is None:
+        return None
+    if value.lower() not in ["true", "false"]:
+        raise ValueError("Invalid boolean property value: " + value)
+    return value.lower() == "true"
+
+def make_fancy_xticklabels(ax):
+    """
+    Only useful for Matplotlib plots. It causes the x tick labels to be rotated
+    by the minimum amount necessary so that they don't overlap. Note that the
+    necessary amount of rotation typically depends on the horizontal zoom level.
+    """
+    from matplotlib.text import Text
+
+    # Declare and register callbacks
+    def on_xlims_change(ax):
+        display_xs = list()
+        fontheight = 24
+        for p in ax.get_xticks():
+            xdisplay, ydisplay = ax.transData.transform_point((p, 0))
+            display_xs.append(xdisplay)
+        dxa = np.array(display_xs)
+        dxd = dxa[1:] - dxa[:-1]
+        min_dx = dxd.min() + 12
+
+        tes = list()
+        for l in ax.get_xticklabels():
+            text = Text(text=l, figure=ax.figure)
+            extent = text.get_window_extent()
+            tes.append(extent.width)
+            fontheight = extent.height
+
+        max_tx = np.array(tes).max()
+
+        if min_dx > max_tx:
+            angle = 0
+        elif min_dx < fontheight * 2:
+            angle = 90
+        else:
+            angle = math.atan(fontheight / (min_dx - fontheight * 2)) / math.pi * 180
+
+        angle = max(0, min(90, angle))
+
+        plt.xticks(rotation=angle, horizontalalignment="right")
+        plt.tight_layout()
+
+    ax.callbacks.connect('xlim_changed', on_xlims_change)
+
+
+# inspired by: https://stackoverflow.com/a/11562898/635587
+# and https://stackoverflow.com/q/11551049#comment77920445_11562898
+def _make_scroll_navigable(figure):
+    """
+    Only useful for Matplotlib plots. It causes the plot to respond to mouse
+    wheel events in the following way, regardless of navigation mode:
+    - Without modifiers: vertical pan
+    - With Shift: horizontal pan
+    - With Ctrl: zoom
+    """
+    def zoom_fun(event):
+        ax = event.inaxes
+
+        if ax is None:
+            return
+
+        SCALING_FACTOR = 1.5
+        PANNING_FACTOR = 0.1
+
+        cur_xlim = ax.get_xlim()
+        cur_ylim = ax.get_ylim()
+        cur_xrange = cur_xlim[1] - cur_xlim[0]
+        cur_yrange = cur_ylim[1] - cur_ylim[0]
+        xdata = event.xdata
+        ydata = event.ydata
+        direction = np.sign(event.step)
+
+        if event.key is None: # vertical pan
+            delta = cur_yrange * direction * PANNING_FACTOR
+            ax.set_ylim([cur_ylim[0] + delta, cur_ylim[1] + delta])
+        elif event.key == "shift": # horizontal pan
+            delta = cur_xrange * -direction * PANNING_FACTOR
+            ax.set_xlim([cur_xlim[0] + delta, cur_xlim[1] + delta])
+        elif event.key == "control": # zoom
+            scale = math.pow(SCALING_FACTOR, direction)
+            ax.set_xlim([xdata - (xdata-cur_xlim[0]) / scale,
+                        xdata + (cur_xlim[1]-xdata) / scale])
+            ax.set_ylim([ydata - (ydata-cur_ylim[0]) / scale,
+                        ydata + (cur_ylim[1]-ydata) / scale])
+
+        plt.draw()
+
+    figure.canvas.mpl_connect('scroll_event', zoom_fun)
+
+
+def _interpolationmode_to_drawstyle(interpolationmode, hasenum):
+    """
+    Converts an OMNeT++-style interpolation constant ('none', 'linear',
+    'sample-hold', etc.) to Matplotlib draw styles.
+    """
+    interp = interpolationmode if interpolationmode else 'sample-hold' if hasenum else None
+    if not interp:
+        ds = "default"
+    elif interp == "none":
+        ds = "none"
+    elif interp == "linear":
+        ds = "default"
+    elif interp == "sample-hold":
+        ds = "steps-post"
+    elif interp == "backward-sample-hold":
+        ds = 'steps-pre'
+    else:
+        print("Unknown interpolationmode:", interp, file=sys.stderr)
+        ds = None
+
+    return ds
+
+
+def _make_line_args(props, t, df):
+    global _marker_cycle
+    style = dict()
+
+    def get_prop(k):
+        return props[k] if k in props else None
+
+    if get_prop("linestyle"):
+        style["linestyle"] = get_prop("linestyle")  # note: must precede 'drawstyle' setting
+
+    ds = get_prop("drawstyle")
+    if not ds or ds == "auto":
+        interpolationmode = t.interpolationmode if "interpolationmode" in df else None
+        hasenum = "enum" in df
+        ds = _interpolationmode_to_drawstyle(interpolationmode, hasenum)
+
+    if ds == "none":
+        style["linestyle"] = " "
+        style["drawstyle"] = "default"  # or any valid value, doesn't matter
+    else:
+        style["drawstyle"] = ds if ds != "linear" else "default"
+
+    if get_prop("linecolor"):
+        style["color"] = get_prop("linecolor")
+    else:
+        style["color"] = next(_color_cycle)
+
+    if get_prop("linewidth"):
+        style["linewidth"] = get_prop("linewidth")
+
+    if not get_prop("marker") or get_prop("marker") == "auto":
+        style["marker"] = next(_marker_cycle)
+    elif get_prop("marker") == 'none':
+        style["marker"] = ' '
+    else:
+        style["marker"] = get_prop("marker")[0] # take first character only, as Matplotlib uses 1-char codes; this allows us to include a description
+
+    if get_prop("markersize"):
+        style["markersize"] = get_prop("markersize")
+
+    # Special case: not letting both the lines and the markers to become
+    # invisible automatically. Only if the user specifically asks for it.
+    if style["marker"] == ' ' and style["linestyle"] == ' ':
+        orig_ds = get_prop("drawstyle")
+        if not orig_ds or orig_ds == "auto":
+            style["marker"] = '.'
+
+    return style
+
+def _make_histline_args(props, t, df): # ??? is t and df needed at all?
+    style = dict()
+
+    def get_prop(k):
+        return props[k] if k in props else None
+
+    if get_prop("color"):
+        style["color"] = get_prop("color")
+    else:
+        style["color"] = next(_color_cycle)
+
+    if get_prop("linewidth"):
+        style["linewidth"] = get_prop("linewidth")
+
+    ds = get_prop("drawstyle")
+    if ds == "Solid":
+        style["histtype"] = "stepfilled"
+    elif ds == "Outline":
+        style["histtype"] = "step"
+
+    style["density"] = _parse_optional_bool(get_prop("normalize"))
+    style["cumulative"] = _parse_optional_bool(get_prop("cumulative"))
+
+    return style
+
+
+def _make_bar_args(props, df): # ??? is df needed at all? should we also get the column name?
+    style = dict()
+
+    def get_prop(k):
+        return props[k] if k in props else None
+
+    if get_prop("color"):
+        style["color"] = get_prop("color")
+    else:
+        style["color"] = next(_color_cycle)
+
+    return style
+
+
+def get_names_for_title(df, props):
+    """
+    Returns unique values from the `title` or `name` column, depending on the
+    value of the `legend_labels` property in `props`. This function is useful
+    for producing input for the plot title.
+    """
+    def get_prop(k):
+        return props[k] if k in props else None
+
+    if get_prop("legend_labels") == "result titles" and "title" in df:
+        series = df["title"].fillna(df["name"])
+    else:
+        series = df["name"]
+
+    return series.unique()
+
+
+def _to_label(x):
+    """
+    Internal. Turns various types of objects into a string, so they can be used as labels.
+    """
+    if x is None:
+        return ""
+    elif isinstance(x, str):
+        return x
+    elif isinstance(x, tuple):
+        return ", ".join(map(str, list(x)))
+    elif isinstance(x, list):
+        return ", ".join(map(str, x))
+    else:
+        return str(x)
+
+
+def split(s, sep=','):
+    """
+    Split a string with the given separator (by default with comma), trim
+    the surrounding whitespace from the items, and return the result as a
+    list. Returns an empty list for an empty or all-whitespace input string.
+    (Note that in contrast, `s.split(',')` will return an empty array,
+    even for `s=''`.)
+    """
+    parts = s.split(sep)
+    parts = [p.strip() for p in parts]
+    if parts == ['']:
+        parts = []
+    return parts
