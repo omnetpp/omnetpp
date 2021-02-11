@@ -12,9 +12,6 @@ set_property = swtplot.set_property
 set_properties = swtplot.set_properties
 get_supported_property_keys = swtplot.get_supported_property_keys
 set_warning = swtplot.set_warning
-plot_lines = swtplot.plot_lines
-plot_bars = swtplot.plot_bars
-plot_histograms = swtplot.plot_histograms
 
 
 def plot(xs, ys, key, label, drawstyle, linestyle, linewidth, color, marker, markersize):
@@ -33,7 +30,7 @@ def plot(xs, ys, key, label, drawstyle, linestyle, linewidth, color, marker, mar
     if markersize:
         props["Symbols.Size"] = str(markersize)
 
-    plot_lines(pd.DataFrame({
+    swtplot.plot_lines(pd.DataFrame({
         "key": [key],
         "label": [label],
         "xs": [np.array(xs)],
@@ -49,7 +46,7 @@ def bar(x, height, width, key, label, color, edgecolor):
     if color:
         props["Bar.Color"] = _translate_color(color)
 
-    plot_bars(pd.DataFrame(
+    swtplot.plot_bars(pd.DataFrame(
         {
             "key": [key],
             "label": [str(label)],
@@ -80,7 +77,7 @@ def hist(x, bins, density, weights, cumulative, bottom, histtype, color, key, la
 
     props["Bars.Baseline"] = str(bottom)
 
-    plot_histograms(pd.DataFrame({
+    swtplot.plot_histograms(pd.DataFrame({
         "key": [key],
         "label": [label],
         "binedges": [np.array(bins)],
