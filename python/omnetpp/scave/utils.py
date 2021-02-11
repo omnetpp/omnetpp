@@ -199,7 +199,7 @@ def assert_columns_exist(df, cols, message="Expected column missing from DataFra
 
     Parameters:
 
-    `cols` *(list of strings)*: column names to check.
+    - `cols` (list of strings): Column names to check.
     """
     for c in cols:
         if c not in df:

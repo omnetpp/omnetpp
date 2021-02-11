@@ -99,15 +99,15 @@ def plot(xs, ys, key=None, label=None, drawstyle=None, linestyle=None, linewidth
 
     Parameters:
 
-    - `x`, `y` *(array-like or scalar)*: The horizontal / vertical coordinates of the data points.
-    - `key` *(string)*: Identifies the series in the native plot widget.
-    - `label` *(string)*: Series label for the legend
-    - `drawstyle` *(string)*: Matplotlib draw style ('default', 'steps', 'steps-pre', 'steps-mid', 'steps-post')
-    - `linestyle` *(string)*: Matplotlib line style ('-', '--', '-.', ':', etc}
-    - `linewidth` *(float)*: Line width in pixels
-    - `color` *(string)*: Matplotlib color name or abbreviation ('b' for blue, 'g' for green, etc.)
-    - `marker` *(string)*: Matplotlib marker name ('.', ',', 'o', 'x', '+', etc.)
-    - `markersize` *(float)*: Size of markers in pixels.
+    - `x`, `y` (array-like or scalar): The horizontal / vertical coordinates of the data points.
+    - `key` (string): Identifies the series in the native plot widget.
+    - `label` (string): Series label for the legend
+    - `drawstyle` (string): Matplotlib draw style ('default', 'steps', 'steps-pre', 'steps-mid', 'steps-post')
+    - `linestyle` (string): Matplotlib line style ('-', '--', '-.', ':', etc}
+    - `linewidth` (float): Line width in pixels
+    - `color` (string): Matplotlib color name or abbreviation ('b' for blue, 'g' for green, etc.)
+    - `marker` (string): Matplotlib marker name ('.', ',', 'o', 'x', '+', etc.)
+    - `markersize` (float): Size of markers in pixels.
     """
     return impl.plot(**locals())
 
@@ -121,17 +121,17 @@ def hist(x, bins, key=None, density=False, weights=None, cumulative=False, botto
 
     Parameters:
 
-    - `x` *(array-like)*: Input values.
-    - `bins` *(array-like)*: Bin edges, including left edge of first bin and right edge of last bin.
+    - `x` (array-like): Input values.
+    - `bins` (array-like): Bin edges, including left edge of first bin and right edge of last bin.
     - `key` (string): Identifies the series in the native plot widget.
-    - `density` *(bool)*: See `mpl.hist()`.
-    - `weights` *(array-like)*: Weights.
-    - `cumulative` *(bool)*: See `mpl.hist()`.
-    - `bottom` *(float)*: Location of the bottom baseline for bins.
-    - `histtype` *(string)*: Whether to fill the area under the plot. Accepted values are 'step' and 'stepfilled'.
-    - `color` *(string)*: Matplotlib color name or abbreviation ('b' for blue, 'g' for green, etc.)
-    - `label` *(string)*: Series label for the legend
-    - `linewidth` *(float)*: Line width in pixels
+    - `density` (bool): See `mpl.hist()`.
+    - `weights` (array-like): Weights.
+    - `cumulative` (bool): See `mpl.hist()`.
+    - `bottom` (float): Location of the bottom baseline for bins.
+    - `histtype` (string): Whether to fill the area under the plot. Accepted values are 'step' and 'stepfilled'.
+    - `color` (string): Matplotlib color name or abbreviation ('b' for blue, 'g' for green, etc.)
+    - `label` (string): Series label for the legend
+    - `linewidth` (float): Line width in pixels
     - `underflows`, `overflows`: Number of values / sum of weights outside the histogram bins in both directions.
     - `minvalue`, `maxvalue`: The minimum and maximum value, or `nan` if unknown.
 
@@ -156,13 +156,13 @@ def bar(x, height, width=0.8, key=None, label=None, color=None, edgecolor=None):
 
     Parameters:
 
-    - `x` *(sequence of scalars)*: The x coordinates of the bars.
-    - `height` *(scalar or sequence of scalars)*: The height(s) of the bars.
-    - `width` *(scalar or array-like)*: The width(s) of the bars.
+    - `x` (sequence of scalars): The x coordinates of the bars.
+    - `height` (scalar or sequence of scalars): The height(s) of the bars.
+    - `width` (scalar or array-like): The width(s) of the bars.
     - `key` (string): Identifies the series in the native plot widget.
-    - `label` *(string)*: The label of the series the bars represent .
-    - `color` *(string)*: The fill color of the bars.
-    - `edgecolor` *(string)*: The edge color of the bars.
+    - `label` (string): The label of the series the bars represent .
+    - `color` (string): The fill color of the bars.
+    - `edgecolor` (string): The edge color of the bars.
 
     The native plot implementation has the following restrictions:
 
@@ -182,8 +182,8 @@ def set_property(key, value):
 
     Parameters:
 
-    - `key` *(string)*: Name of the property.
-    - `value` *(string)*: The value to set. If any other type than string is passed in, it will be converted to string.
+    - `key` (string): Name of the property.
+    - `value` (string): The value to set. If any other type than string is passed in, it will be converted to string.
     """
     return impl.set_property(**locals())
 
@@ -195,7 +195,7 @@ def set_properties(props):
 
     Parameters:
 
-    - `props` *(dict)*: The properties to set.
+    - `props` (dict): The properties to set.
     """
     return impl.set_properties(**locals())
 
@@ -239,8 +239,8 @@ def xlim(left=None, right=None):
 
     Parameters:
 
-    - `left` *(float)*: The left xlim in data coordinates. Passing None leaves the limit unchanged.
-    - `right` *(float)*: The right xlim in data coordinates. Passing None leaves the limit unchanged.
+    - `left` (float): The left xlim in data coordinates. Passing None leaves the limit unchanged.
+    - `right` (float): The right xlim in data coordinates. Passing None leaves the limit unchanged.
     """
     impl.xlim(**locals())
 
@@ -250,8 +250,8 @@ def ylim(bottom=None, top=None):
 
     Parameters:
 
-    - `bottom` *(float)*: The bottom ylim in data coordinates. Passing None leaves the limit unchanged.
-    - `top` *(float)*: The top ylim in data coordinates. Passing None leaves the limit unchanged.
+    - `bottom` (float): The bottom ylim in data coordinates. Passing None leaves the limit unchanged.
+    - `top` (float): The top ylim in data coordinates. Passing None leaves the limit unchanged.
     """
     impl.ylim(**locals())
 
@@ -273,9 +273,9 @@ def xticks(ticks=None, labels=None, rotation=0):
 
     Parameters:
 
-    - `ticks` *(array_like)*: A list of positions at which ticks should be placed. You can pass an empty list to disable xticks.
-    - `labels` *(array_like)*: A list of explicit labels to place at the given locs.
-    - `rotation` *(float)*: Label rotation in degrees.
+    - `ticks` (array_like): A list of positions at which ticks should be placed. You can pass an empty list to disable xticks.
+    - `labels` (array_like): A list of explicit labels to place at the given locs.
+    - `rotation` (float): Label rotation in degrees.
     """
     impl.xticks(**locals())
 
@@ -285,8 +285,8 @@ def grid(b=True, which="major"):
 
     Parameters:
 
-    - `b` *(bool or `None`)*: Whether to show the grid lines.
-    - `which` *('major', 'minor' or 'both')*: The grid lines to apply the changes on.
+    - `b` (bool or `None`): Whether to show the grid lines.
+    - `which` ('major', 'minor' or 'both'): The grid lines to apply the changes on.
     """
     impl.grid(**locals())
 
@@ -296,10 +296,10 @@ def legend(show=None, frameon=None, loc=None):
 
     Parameters:
 
-    - `show` *(bool or `None`)*: Whether to show the legend. TODO does pyplot have this?
-    - `frameon` *(bool or `None`)*: Control whether the legend should be drawn on a patch (frame).
+    - `show` (bool or `None`): Whether to show the legend. TODO does pyplot have this?
+    - `frameon` (bool or `None`): Control whether the legend should be drawn on a patch (frame).
         Default is `None`, which will take the value from the resource file.
-    - `loc` *(string or `None`)*: The location of the legend. Possible values are
+    - `loc` (string or `None`): The location of the legend. Possible values are
         'best', 'upper right', 'upper left', 'lower left', 'lower right', 'right',
         'center left', 'center right', 'lower center', 'upper center', 'center'
         (these are the values supported by Matplotlib), plus additionally

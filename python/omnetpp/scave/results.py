@@ -74,26 +74,26 @@ def get_results(filter_expression="", row_types=['runattr', 'itervar', 'config',
 
     Parameters:
 
-    - `filter_expression` *(string)*: The filter expression to select the desired items. Example: `module =~ "*host*" AND name =~ "numPacket*"`
+    - `filter_expression` (string): The filter expression to select the desired items. Example: `module =~ "*host*" AND name =~ "numPacket*"`
     - `row_types`: Optional. When given, filters the returned rows by type. Should be a unique list, containing any number of these strings:
       `"runattr"`, `"itervar"`, `"config"`, `"scalar"`, `"vector"`, `"statistic"`, `"histogram"`, `"param"`, `"attr"`
-    - `omit_unused_columns` *(bool)*: Optional. If `True`, all columns that would only contain `None` are removed from the returned DataFrame
-    - `start_time`, `end_time` *(double)*: Optional time limits to trim the data of vector type results.
+    - `omit_unused_columns` (bool): Optional. If `True`, all columns that would only contain `None` are removed from the returned DataFrame
+    - `start_time`, `end_time` (double): Optional time limits to trim the data of vector type results.
       The unit is seconds, both the `vectime` and `vecvalue` arrays will be affected, the interval is left-closed, right-open.
 
     Columns of the returned DataFrame:
 
-    - `runID` *(string)*:  Identifies the simulation run
-    - `type` *(string)*: Row type, one of the following: scalar, vector, statistics, histogram, runattr, itervar, param, attr
-    - `module` *(string)*: Hierarchical name (a.k.a. full path) of the module that recorded the result item
-    - `name` *(string)*: Name of the result item (scalar, statistic, histogram or vector)
-    - `attrname` *(string)*: Name of the run attribute or result item attribute (in the latter case, the module and name columns identify the result item the attribute belongs to)
-    - `attrvalue` *(string)*: Value of run and result item attributes, iteration variables, saved ini param settings (runattr, attr, itervar, param)
-    - `value` *(double or string)*:  Output scalar or attribute value
-    - `count`, `sumweights`, `mean`, `min`, `max`, `stddev` *(double)*: Fields of the statistics or histogram
-    - `binedges`, `binvalues` *(np.array)*: Histogram bin edges and bin values, as space-separated lists. `len(binedges)==len(binvalues)+1`
-    - `underflows`, `overflows` *(double)*: Sum of weights (or counts) of underflown and overflown samples of histograms
-    - `vectime`, `vecvalue` *(np.array)*: Output vector time and value arrays, as space-separated lists
+    - `runID` (string):  Identifies the simulation run
+    - `type` (string): Row type, one of the following: scalar, vector, statistics, histogram, runattr, itervar, param, attr
+    - `module` (string): Hierarchical name (a.k.a. full path) of the module that recorded the result item
+    - `name` (string): Name of the result item (scalar, statistic, histogram or vector)
+    - `attrname` (string): Name of the run attribute or result item attribute (in the latter case, the module and name columns identify the result item the attribute belongs to)
+    - `attrvalue` (string): Value of run and result item attributes, iteration variables, saved ini param settings (runattr, attr, itervar, param)
+    - `value` (double or string):  Output scalar or attribute value
+    - `count`, `sumweights`, `mean`, `min`, `max`, `stddev` (double): Fields of the statistics or histogram
+    - `binedges`, `binvalues` (np.array): Histogram bin edges and bin values, as space-separated lists. `len(binedges)==len(binvalues)+1`
+    - `underflows`, `overflows` (double): Sum of weights (or counts) of underflown and overflown samples of histograms
+    - `vectime`, `vecvalue` (np.array): Output vector time and value arrays, as space-separated lists
     """
     return impl.get_results(**locals())
 
@@ -107,7 +107,7 @@ def get_runs(filter_expression="", include_runattrs=False, include_itervars=Fals
 
     - `filter_expression`: The filter expression to select the desired runs.
       Example: `runattr:network =~ "Aloha" AND config:Aloha.slotTime =~ 0`
-    - `include_runattrs`, `include_itervars`, `include_param_assignments`, `include_config_entries` *(bool)*:
+    - `include_runattrs`, `include_itervars`, `include_param_assignments`, `include_config_entries` (bool):
       Optional. When set to `True`, additional pieces of metadata about the run is appended to the result, pivoted into columns.
 
     Columns of the returned DataFrame:
@@ -131,14 +131,14 @@ def get_runattrs(filter_expression="", include_runattrs=False, include_itervars=
 
     - `filter_expression`: The filter expression to select the desired run attributes.
       Example: `name =~ *date* AND config:Aloha.slotTime =~ 0`
-    - `include_runattrs`, `include_itervars`, `include_param_assignments`, `include_config_entries` *(bool)*:
+    - `include_runattrs`, `include_itervars`, `include_param_assignments`, `include_config_entries` (bool):
       Optional. When set to `True`, additional pieces of metadata about the run is appended to the result, pivoted into columns.
 
     Columns of the returned DataFrame:
 
-    - `runID` *(string)*: Identifies the simulation run
-    - `name` *(string)*: The name of the run attribute
-    - `value` *(string)*: The value of the run attribue
+    - `runID` (string): Identifies the simulation run
+    - `name` (string): The name of the run attribute
+    - `value` (string): The value of the run attribue
     - Additional metadata items (run attributes, iteration variables, etc.), as requested
     """
     return impl.get_runattrs(**locals())
@@ -151,18 +151,18 @@ def get_itervars(filter_expression="", include_runattrs=False, include_itervars=
 
     Parameters:
 
-    - `filter_expression` *(string)*: The filter expression to select the desired iteration variables.
+    - `filter_expression` (string): The filter expression to select the desired iteration variables.
       Example: `name =~ iaMean AND config:Aloha.slotTime =~ 0`
-    - `include_runattrs`, `include_itervars`, `include_param_assignments`, `include_config_entries` *(bool)*:
+    - `include_runattrs`, `include_itervars`, `include_param_assignments`, `include_config_entries` (bool):
       Optional. When set to `True`, additional pieces of metadata about the run is appended to the result, pivoted into columns.
-    - `as_numeric` *(bool)*: Optional. When set to `True`, the returned values will be converted to `double`.
+    - `as_numeric` (bool): Optional. When set to `True`, the returned values will be converted to `double`.
       Non-numeric values will become `NaN`.
 
     Columns of the returned DataFrame:
 
-    - `runID` *(string)*: Identifies the simulation run
-    - `name` *(string)*: The name of the iteration variable
-    - `value` *(string or double)*: The value of the iteration variable. Its type depends on the `as_numeric` parameter.
+    - `runID` (string): Identifies the simulation run
+    - `name` (string): The name of the iteration variable
+    - `value` (string or double): The value of the iteration variable. Its type depends on the `as_numeric` parameter.
     - Additional metadata items (run attributes, iteration variables, etc.), as requested
     """
     return impl.get_itervars(**locals())
@@ -175,21 +175,21 @@ def get_scalars(filter_expression="", include_attrs=False, include_runattrs=Fals
 
     Parameters:
 
-    - `filter_expression` *(string)*: The filter expression to select the desired scalars.
+    - `filter_expression` (string): The filter expression to select the desired scalars.
       Example: `name =~ "channelUtilization*" AND runattr:replication =~ "#0"`
-    - `include_attrs` *(bool)*: Optional. When set to `True`, result attributes (like `unit`
+    - `include_attrs` (bool): Optional. When set to `True`, result attributes (like `unit`
       or `source` for example) are appended to the DataFrame, pivoted into columns.
-    - `include_runattrs`, `include_itervars`, `include_param_assignments`, `include_config_entries` *(bool)*:
+    - `include_runattrs`, `include_itervars`, `include_param_assignments`, `include_config_entries` (bool):
       Optional. When set to `True`, additional pieces of metadata about the run is appended to the DataFrame, pivoted into columns.
-    - `merge_module_and_name` *(bool)*: Optional. When set to `True`, the value in the `module` column
+    - `merge_module_and_name` (bool): Optional. When set to `True`, the value in the `module` column
       is prepended to the value in the `name` column, joined by a period, in every row.
 
     Columns of the returned DataFrame:
 
-    - `runID` *(string)*: Identifies the simulation run
-    - `module` *(string)*: Hierarchical name (a.k.a. full path) of the module that recorded the result item
-    - `name` *(string)*: The name of the scalar
-    - `value` *(double)*: The value of the scalar
+    - `runID` (string): Identifies the simulation run
+    - `module` (string): Hierarchical name (a.k.a. full path) of the module that recorded the result item
+    - `name` (string): The name of the scalar
+    - `value` (double): The value of the scalar
     - Additional metadata items (result attributes, run attributes, iteration variables, etc.), as requested
     """
     return impl.get_scalars(**locals())
@@ -207,23 +207,23 @@ def get_parameters(filter_expression="", include_attrs=False, include_runattrs=F
 
     Parameters:
 
-    - `filter_expression` *(string)*: The filter expression to select the desired parameters.
+    - `filter_expression` (string): The filter expression to select the desired parameters.
       Example: `name =~ "x" AND module =~ Aloha.server`
-    - `include_attrs` *(bool)*: Optional. When set to `True`, result attributes (like `unit` for
+    - `include_attrs` (bool): Optional. When set to `True`, result attributes (like `unit` for
       example) are appended to the DataFrame, pivoted into columns.
-    - `include_runattrs`, `include_itervars`, `include_param_assignments`, `include_config_entries` *(bool)*:
+    - `include_runattrs`, `include_itervars`, `include_param_assignments`, `include_config_entries` (bool):
       Optional. When set to `True`, additional pieces of metadata about the run is appended to the DataFrame, pivoted into columns.
-    - `merge_module_and_name` *(bool)*: Optional. When set to `True`, the value in the `module` column
+    - `merge_module_and_name` (bool): Optional. When set to `True`, the value in the `module` column
       is prepended to the value in the `name` column, joined by a period, in every row.
-    - `as_numeric` *(bool)*: Optional. When set to `True`, the returned values will be converted to `double`.
+    - `as_numeric` (bool): Optional. When set to `True`, the returned values will be converted to `double`.
       Non-numeric values will become `NaN`.
 
     Columns of the returned DataFrame:
 
-    - `runID` *(string)*: Identifies the simulation run
-    - `module` *(string)*: Hierarchical name (a.k.a. full path) of the module that recorded the result item
-    - `name` *(string)*: The name of the parameter
-    - `value` *(string or double)*: The value of the parameter. Its type depends on the `as_numeric` parameter.
+    - `runID` (string): Identifies the simulation run
+    - `module` (string): Hierarchical name (a.k.a. full path) of the module that recorded the result item
+    - `name` (string): The name of the parameter
+    - `value` (string or double): The value of the parameter. Its type depends on the `as_numeric` parameter.
     - Additional metadata items (result attributes, run attributes, iteration variables, etc.), as requested
     """
     return impl.get_parameters(**locals())
@@ -236,23 +236,23 @@ def get_vectors(filter_expression="", include_attrs=False, include_runattrs=Fals
 
     Parameters:
 
-    - `filter_expression` *(string)*: The filter expression to select the desired vectors.
+    - `filter_expression` (string): The filter expression to select the desired vectors.
       Example: `name =~ "radioState*" AND runattr:replication =~ "#0"`
-    - `include_attrs` *(bool)*: Optional. When set to `True`, result attributes (like `unit`
+    - `include_attrs` (bool): Optional. When set to `True`, result attributes (like `unit`
       or `source` for example) are appended to the DataFrame, pivoted into columns.
-    - `include_runattrs`, `include_itervars`, `include_param_assignments`, `include_config_entries` *(bool)*:
+    - `include_runattrs`, `include_itervars`, `include_param_assignments`, `include_config_entries` (bool):
       Optional. When set to `True`, additional pieces of metadata about the run is appended to the DataFrame, pivoted into columns.
-    - `merge_module_and_name` *(bool)*: Optional. When set to `True`, the value in the `module` column
+    - `merge_module_and_name` (bool): Optional. When set to `True`, the value in the `module` column
       is prepended to the value in the `name` column, joined by a period, in every row.
-    - `start_time`, `end_time` *(double)*: Optional time limits to trim the data of vector type results.
+    - `start_time`, `end_time` (double): Optional time limits to trim the data of vector type results.
       The unit is seconds, both the `vectime` and `vecvalue` arrays will be affected, the interval is left-closed, right-open.
 
     Columns of the returned DataFrame:
 
-    - `runID` *(string)*: Identifies the simulation run
-    - `module` *(string)*: Hierarchical name (a.k.a. full path) of the module that recorded the result item
-    - `name` *(string)*: The name of the vector
-    - `vectime`, `vecvalue` *(np.array)*: The simulation times and the corresponding values in the vector
+    - `runID` (string): Identifies the simulation run
+    - `module` (string): Hierarchical name (a.k.a. full path) of the module that recorded the result item
+    - `name` (string): The name of the vector
+    - `vectime`, `vecvalue` (np.array): The simulation times and the corresponding values in the vector
     - Additional metadata items (result attributes, run attributes, iteration variables, etc.), as requested
     """
     return impl.get_vectors(**locals())
@@ -265,21 +265,21 @@ def get_statistics(filter_expression="", include_attrs=False, include_runattrs=F
 
     Parameters:
 
-    - `filter_expression` *(string)*: The filter expression to select the desired statistics.
+    - `filter_expression` (string): The filter expression to select the desired statistics.
       Example: `name =~ "collisionLength:stat" AND itervar:iaMean =~ "5"`
-    - `include_attrs` *(bool)*: Optional. When set to `True`, result attributes (like `unit`
+    - `include_attrs` (bool): Optional. When set to `True`, result attributes (like `unit`
       or `source` for example) are appended to the DataFrame, pivoted into columns.
-    - `include_runattrs`, `include_itervars`, `include_param_assignments`, `include_config_entries` *(bool)*:
+    - `include_runattrs`, `include_itervars`, `include_param_assignments`, `include_config_entries` (bool):
       Optional. When set to `True`, additional pieces of metadata about the run is appended to the DataFrame, pivoted into columns.
-    - `merge_module_and_name` *(bool)*: Optional. When set to `True`, the value in the `module` column
+    - `merge_module_and_name` (bool): Optional. When set to `True`, the value in the `module` column
       is prepended to the value in the `name` column, joined by a period, in every row.
 
     Columns of the returned DataFrame:
 
-    - `runID` *(string)*: Identifies the simulation run
-    - `module` *(string)*: Hierarchical name (a.k.a. full path) of the module that recorded the result item
-    - `name` *(string)*: The name of the vector
-    - `count`, `sumweights`, `mean`, `stddev`, `min`, `max` *(double)*: The characteristic mathematical properties of the statistics result
+    - `runID` (string): Identifies the simulation run
+    - `module` (string): Hierarchical name (a.k.a. full path) of the module that recorded the result item
+    - `name` (string): The name of the vector
+    - `count`, `sumweights`, `mean`, `stddev`, `min`, `max` (double): The characteristic mathematical properties of the statistics result
     - Additional metadata items (result attributes, run attributes, iteration variables, etc.), as requested
     """
     return impl.get_statistics(**locals())
@@ -292,23 +292,23 @@ def get_histograms(filter_expression="", include_attrs=False, include_runattrs=F
 
     Parameters:
 
-    - `filter_expression` *(string)*: The filter expression to select the desired histogram.
+    - `filter_expression` (string): The filter expression to select the desired histogram.
       Example: `name =~ "collisionMultiplicity:histogram" AND itervar:iaMean =~ "2"`
-    - `include_attrs` *(bool)*: Optional. When set to `True`, result attributes (like `unit`
+    - `include_attrs` (bool): Optional. When set to `True`, result attributes (like `unit`
       or `source` for example) are appended to the DataFrame, pivoted into columns.
-    - `include_runattrs`, `include_itervars`, `include_param_assignments`, `include_config_entries` *(bool)*:
+    - `include_runattrs`, `include_itervars`, `include_param_assignments`, `include_config_entries` (bool):
       Optional. When set to `True`, additional pieces of metadata about the run is appended to the DataFrame, pivoted into columns.
-    - `merge_module_and_name` *(bool)*: Optional. When set to `True`, the value in the `module` column
+    - `merge_module_and_name` (bool): Optional. When set to `True`, the value in the `module` column
       is prepended to the value in the `name` column, joined by a period, in every row.
 
     Columns of the returned DataFrame:
 
-    - `runID` *(string)*: Identifies the simulation run
-    - `module` *(string)*: Hierarchical name (a.k.a. full path) of the module that recorded the result item
-    - `name` *(string)*: The name of the vector
-    - `count`, `sumweights`, `mean`, `stddev`, `min`, `max` *(double)*: The characteristic mathematical properties of the histogram
-    - `binedges`, `binvalues` *(np.array)*: The histogram edge locations and the weighted sum of the collected samples in each bin. `len(binedges) == len(binvalues) + 1`
-    - `underflows`, `overflows` *(double)*: The weighted sum of the samples that fell outside of the histogram bin range in the two directions
+    - `runID` (string): Identifies the simulation run
+    - `module` (string): Hierarchical name (a.k.a. full path) of the module that recorded the result item
+    - `name` (string): The name of the vector
+    - `count`, `sumweights`, `mean`, `stddev`, `min`, `max` (double): The characteristic mathematical properties of the histogram
+    - `binedges`, `binvalues` (np.array): The histogram edge locations and the weighted sum of the collected samples in each bin. `len(binedges) == len(binvalues) + 1`
+    - `underflows`, `overflows` (double): The weighted sum of the samples that fell outside of the histogram bin range in the two directions
     - Additional metadata items (result attributes, run attributes, iteration variables, etc.), as requested
     """
     return impl.get_histograms(**locals())
@@ -321,16 +321,16 @@ def get_config_entries(filter_expression, include_runattrs=False, include_iterva
 
     Parameters:
 
-    - `filter_expression` *(string)*: The filter expression to select the desired config entries.
+    - `filter_expression` (string): The filter expression to select the desired config entries.
       Example: `name =~ sim-time-limit AND itervar:numHosts =~ 10`
-    - `include_runattrs`, `include_itervars`, `include_param_assignments`, `include_config_entries` *(bool)*:
+    - `include_runattrs`, `include_itervars`, `include_param_assignments`, `include_config_entries` (bool):
       Optional. When set to `True`, additional pieces of metadata about the run is appended to the result, pivoted into columns.
 
     Columns of the returned DataFrame:
 
-    - `runID` *(string)*: Identifies the simulation run
-    - `name` *(string)*: The name of the config entry
-    - `value` *(string or double)*: The value of the config entry
+    - `runID` (string): Identifies the simulation run
+    - `name` (string): The name of the config entry
+    - `value` (string or double): The value of the config entry
     - Additional metadata items (run attributes, iteration variables, etc.), as requested
     """
     return impl.get_config_entries(**locals())
