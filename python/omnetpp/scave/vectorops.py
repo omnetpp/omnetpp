@@ -353,6 +353,18 @@ def divtime(r):
 
 
 def expression(r, expression):
+    """
+    Replaces the value with the result of evaluating the Python expression
+    given as string: yout[k] = eval(expression). The expression may use
+    the following variables: `t`, `y`, `tprev`, `yprev`. The latter two
+    stand for t[k-1] and y[k-1], respectively.
+
+    (Note that for efficiency, the expression will be evaluated only once,
+    with the variables being `np.ndarray` instances instead of simple `float`s.
+    Thus, the result is computed with vector operations instead of looping
+    through all indices in Python. This doesn't affect the syntax as long as
+    only simple arithmetics is used.)
+    """
     t = r['vectime']
     y = r['vecvalue']
 

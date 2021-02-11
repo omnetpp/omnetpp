@@ -146,7 +146,15 @@ def make_legend_label(legend_cols, row):
     """
     Produces a reasonably good label text (to be used in a chart legend) for a result row from
     a DataFrame, given a list of selected columns as returned by `extract_label_columns()`.
-    TODO legend column, comment column
+
+    The normal behavior is to concatenate a string from selected (by `legend_cols`) elements
+    of `row`. If there is a `legend` column in `row`, that one is used and `legend_cols` is
+    ignored. If there is a `comment` column in `row`, its contents will be appended in parens.
+
+    Parameters:
+
+    - `legend_cols` (list of strings): The names of columns chosen for the legend.
+    - `row` (named tuple): The row from the dataframe.
     """
     comment = row.comment if hasattr(row, 'comment') else None
     comment_str = " (" + comment + ")" if type(comment) is str and comment else ""
@@ -563,10 +571,9 @@ def _make_bar_args(props, df): # ??? is df needed at all? should we also get the
 
 def get_names_for_title(df, props):
     """
-    Produces input for the plot title. unique values from the "title" or "name" column
-    TODO
-    "legend_labels" => "result titles" or "result names"
-
+    Returns unique values from the `title` or `name` column, depending on the
+    value of the `legend_labels` property in `props`. This function is useful
+    for producing input for the plot title.
     """
     def get_prop(k):
         return props[k] if k in props else None
