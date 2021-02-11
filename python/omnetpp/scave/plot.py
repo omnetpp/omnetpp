@@ -43,10 +43,12 @@ def plot_bars(df, props):
     """
     Plots bars given in the DataFrame `df` (one series from each row), and sets
     the visual properties from `props` onto the plot.
+
     The DataFrame must have these columns (in any order):
-        - key: an internal (unique) identifier for each series, any type
-        - label: the name of the series, this will appear on the legend, any type
-        - values: A list storing the heights of the bars
+
+    - `key`: an internal (unique) identifier for each series, any type
+    - `label`: the name of the series, this will appear on the legend, any type
+    - `values`: A list storing the heights of the bars
 
     In native charts, this can only be called if the chart is of type "BAR".
     """
@@ -56,12 +58,14 @@ def plot_lines(df, props):
     """
     Plots lines given in the DataFrame `df` (one line from each row), and sets
     the visual properties from `props` onto the plot.
+
     The DataFrame must have these columns (in any order):
-        - key: an internal (unique) identifier for each line, string
-        - label: the name of the line, this will appear on the legend, string
-        - xs: a NumPy array storing the X coordinates of the points used to draw the line
-        - ys: a NumPy array storing the Y coordinates of the points used to draw the line
-            Must have the same number of elements as `xs`
+
+    - `key`: an internal (unique) identifier for each line, string
+    - `label`: the name of the line, this will appear on the legend, string
+    - `xs`: a NumPy array storing the X coordinates of the points used to draw the line
+    - `ys`: a NumPy array storing the Y coordinates of the points used to draw the line
+        Must have the same number of elements as `xs`.
 
     In native charts, this can only be called if the chart is of type "LINE".
     """
@@ -71,16 +75,18 @@ def plot_histograms(df, props):
     """
     Plots histograms given in the DataFrame `df` (one from each row), and sets
     the visual properties from `props` onto the plot.
+
     The DataFrame must have these columns (in any order):
-        - key: an internal (unique) identifier for each histogram, string
-        - label: the name of the histogram, this will appear on the legend, string
-        - binedges: A NumPy array storing the histograms' bins' edges.
-            Must contain one more element than the number of bins.
-        - binvalues: A NumPy array storing the height of each bin in the histogram
-        - underflows: the (weighted) sum of the underflowed samples (pseudo-bin before the first real one), float
-        - overflows: the (weighted) sum of the overflowed samples (pseudo-bin after the last one), float
-        - min: the minimum of the collected samples, this is the left edge of the underflow "bin", float
-        - max: the maximum of the collected samples, this is the right edge of the overflow "bin", float
+
+    - `key`: an internal (unique) identifier for each histogram, string
+    - `label`: the name of the histogram, this will appear on the legend, string
+    - `binedges`: A NumPy array storing the histograms' bins' edges.
+        Must contain one more element than the number of bins.
+    - `binvalues`: A NumPy array storing the height of each bin in the histogram
+    - `underflows`: the (weighted) sum of the underflowed samples (pseudo-bin before the first real one), float
+    - `overflows`: the (weighted) sum of the overflowed samples (pseudo-bin after the last one), float
+    - `min`: the minimum of the collected samples, this is the left edge of the underflow "bin", float
+    - `max`: the maximum of the collected samples, this is the right edge of the overflow "bin", float
 
     In native charts, this can only be called if the chart is of type "HISTOGRAM".
     """
@@ -94,10 +100,10 @@ def plot(xs, ys, key=None, label=None, drawstyle=None, linestyle=None, linewidth
     Parameters:
 
     - `x`, `y` *(array-like or scalar)*: The horizontal / vertical coordinates of the data points.
-    - `key` *(string)*: Identifies the series
+    - `key` *(string)*: Identifies the series in the native plot widget.
     - `label` *(string)*: Series label for the legend
     - `drawstyle` *(string)*: Matplotlib draw style ('default', 'steps', 'steps-pre', 'steps-mid', 'steps-post')
-    - `linestyle` *(string)*: Matplotlib line stlye ('-', '--', '-.', ':', etc}
+    - `linestyle` *(string)*: Matplotlib line style ('-', '--', '-.', ':', etc}
     - `linewidth` *(float)*: Line width in pixels
     - `color` *(string)*: Matplotlib color name or abbreviation ('b' for blue, 'g' for green, etc.)
     - `marker` *(string)*: Matplotlib marker name ('.', ',', 'o', 'x', '+', etc.)
@@ -110,7 +116,29 @@ def plot(xs, ys, key=None, label=None, drawstyle=None, linestyle=None, linewidth
 def hist(x, bins, key=None, density=False, weights=None, cumulative=False, bottom=None, histtype='stepfilled', color=None, label=None, linewidth=None,
          underflows=0.0, overflows=0.0, minvalue=math.nan, maxvalue=math.nan):
     """
-    TODO
+    Make a histogram plot. This function adds one histogram the bar plot; make
+    multiple calls to add multiple histograms.
+
+    Parameters:
+
+    - `x` *(array-like)*: Input values.
+    - `bins` *(array-like)*: Bin edges, including left edge of first bin and right edge of last bin.
+    - `key` (string): Identifies the series in the native plot widget.
+    - `density` *(bool)*: See `mpl.hist()`.
+    - `weights` *(array-like)*: Weights.
+    - `cumulative` *(bool)*: See `mpl.hist()`.
+    - `bottom` *(float)*: Location of the bottom baseline for bins.
+    - `histtype` *(string)*: Whether to fill the area under the plot. Accepted values are 'step' and 'stepfilled'.
+    - `color` *(string)*: Matplotlib color name or abbreviation ('b' for blue, 'g' for green, etc.)
+    - `label` *(string)*: Series label for the legend
+    - `linewidth` *(float)*: Line width in pixels
+    - `underflows`, `overflows`: Number of values / sum of weights outside the histogram bins in both directions.
+    - `minvalue`, `maxvalue`: The minimum and maximum value, or `nan` if unknown.
+
+    Restrictions:
+
+    1. Overflow bin data (minvalue, maxvalue, underflows and overflows) is not accepted by `pyplot.hist()`.
+    2. The native plot widget only accepts a precomputed histogram (using the trick documented for `pyplot.hist()`)
     """
     return impl.hist(**locals())
 
@@ -131,6 +159,7 @@ def bar(x, height, width=0.8, key=None, label=None, color=None, edgecolor=None):
     - `x` *(sequence of scalars)*: The x coordinates of the bars.
     - `height` *(scalar or sequence of scalars)*: The height(s) of the bars.
     - `width` *(scalar or array-like)*: The width(s) of the bars.
+    - `key` (string): Identifies the series in the native plot widget.
     - `label` *(string)*: The label of the series the bars represent .
     - `color` *(string)*: The fill color of the bars.
     - `edgecolor` *(string)*: The edge color of the bars.
@@ -180,43 +209,27 @@ def get_supported_property_keys():
     """
     return impl.get_supported_property_keys(**locals())
 
-def set_warning(warning):
+def set_warning(warning: str):
     """
     Displays the given warning text in the plot.
-
-    Parameters:
-
-    - `warning` *(string)*: The warning string.
     """
     impl.set_warning(**locals())
 
-def title(label):
+def title(label: str):
     """
-    Sets the plot title.
-
-    Parameters:
-
-    - `label` *(string)*: The plot title.
+    Sets the plot title to the given string.
     """
     impl.title(**locals())
 
-def xlabel(xlabel):
+def xlabel(xlabel: str):
     """
-    Sets the label of the X axis.
-
-    Parameters:
-
-    - `xlabel` *(string)*: The label string.
+    Sets the label of the X axis to the given string.
     """
     impl.xlabel(**locals())
 
-def ylabel(ylabel):
+def ylabel(ylabel: str):
     """
-    Sets the label of the Y axis.
-
-    Parameters:
-
-    - `ylabel` *(string)*: The label string.
+    Sets the label of the Y axis to the given string..
     """
     impl.ylabel(**locals())
 
@@ -242,23 +255,15 @@ def ylim(bottom=None, top=None):
     """
     impl.ylim(**locals())
 
-def xscale(value):
+def xscale(value: str):
     """
     Sets the scale of the X axis. Possible values are 'linear' and 'log'.
-
-    Parameters:
-
-    - `value` *(string)*: The scale. Possible values are 'linear' and 'log'.
     """
     impl.xscale(**locals())
 
-def yscale(value):
+def yscale(value: str):
     """
     Sets the scale of the Y axis.
-
-    Parameters:
-
-    - `value` *(string)*: The scale. Possible values are 'linear' and 'log'.
     """
     impl.yscale(**locals())
 

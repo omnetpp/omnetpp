@@ -581,8 +581,8 @@ def get_names_for_title(df, props):
 
 def set_plot_title(title, suggested_chart_name=None):
     """
-    Sets the plot title.
-    TODO also sets the suggested chart name (for saving the temp chart)
+    Sets the plot title. It also sets the suggested chart name (the name that
+    the IDE offers when adding a temporary chart to the Analysis file.)
     """
     plot.title(title)
     chart.set_suggested_chart_name(suggested_chart_name if suggested_chart_name is not None else title)
@@ -902,7 +902,7 @@ def _initialize_cycles(props):
     _color_cycle = cycle(cl)
 
 
-def _parse_vectorop_line(line):
+def _parse_vectorop_line(line: str):
     """
     Parses the given vector operation line, and returns its contents as a tuple.
     Helper for `perform_vector_ops()`.
@@ -934,7 +934,7 @@ def _parse_vectorop_line(line):
     return type, module, name, args, kwargs
 
 
-def _perform_vector_op(df, line):
+def _perform_vector_op(df, line: str):
     """
     Performs one vector operation on the dataframe. Helper for `perform_vector_ops()`.
     """
@@ -963,7 +963,7 @@ def _perform_vector_op(df, line):
     return df
 
 
-def perform_vector_ops(df, operations : str):
+def perform_vector_ops(df, operations: str):
     """
     Performs the given vector operations on the dataframe, and returns the
     resulting dataframe. Vector operations primarily affect the `vectime`
