@@ -324,9 +324,11 @@ void cPar::afterChange()
     ownerComponent->updateLastChangeSerial();
 #endif
 
-    // call owner's component's handleParameterChange() method,
-    // i.e. parameter change notification is allowed only on fully initialized components
-    if (ownerComponent->initialized()) {
+    // call owner's component's handleParameterChange() method, but suppress
+    // notifications in the phase when component parameters are still being set up.
+    // Reason: component is not yet really prepared to handle the notification at that
+    // point, because it hasn't been initialized.
+    if (ownerComponent->parametersFinalized()) {
         cContextSwitcher tmp(ownerComponent);
         ownerComponent->handleParameterChange(getFullName());
     }

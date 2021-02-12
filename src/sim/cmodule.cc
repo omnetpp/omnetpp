@@ -1497,9 +1497,6 @@ bool cModule::initializeModules(int stage)
         // mark as initialized
         setFlag(FL_INITIALIZED, true);
 
-        // notify the component about parameter changes that occurred during initialization phase
-        handleParameterChange(nullptr);
-
         // notify listeners when this was the last stage
         if (hasListeners(POST_MODEL_CHANGE)) {
             cPostComponentInitializeNotification tmp;

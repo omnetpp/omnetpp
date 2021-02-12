@@ -1,0 +1,88 @@
+%description:
+Test that handleParameterChange() operation.
+
+%file: test.ned
+
+simple Node1
+{
+}
+
+simple Node2
+{
+    parameters:
+        int i = default(1);
+}
+
+network Test
+{
+    submodules:
+        node1: Node1;
+        node2: Node2;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class Node1 : public cSimpleModule
+{
+    void makeParamChange();
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override;
+};
+
+Define_Module(Node1);
+
+void Node1::makeParamChange()
+{
+    cModule *node2 = getParentModule()->getSubmodule("node2");
+    node2->par("i") = 42;
+    node2->par("i").parse("2*3");
+}
+
+void Node1::initialize()
+{
+    makeParamChange();
+    scheduleAt(1, new cMessage("timer"));
+}
+
+void Node1::handleMessage(cMessage *msg)
+{
+    delete msg;
+    makeParamChange();
+}
+
+class Node2 : public cSimpleModule
+{
+    virtual void handleParameterChange(const char *name) override;
+};
+
+Define_Module(Node2);
+
+void Node2::handleParameterChange(const char *name)
+{
+    EV << "parametersFinalized=" << parametersFinalized() << ", initialized=" << initialized() << ", t=" << simTime().str() << ": ";
+    EV << "handleParameterChange('" << name << "'), value=" << par(name).str() << endl;
+}
+
+}; //namespace
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+cmdenv-event-banners = false
+
+%contains: stdout
+Initializing...
+parametersFinalized=1, initialized=0, t=0: handleParameterChange('i'), value=42
+parametersFinalized=1, initialized=0, t=0: handleParameterChange('i'), value=6
+
+Running simulation...
+parametersFinalized=1, initialized=1, t=1: handleParameterChange('i'), value=42
+parametersFinalized=1, initialized=1, t=1: handleParameterChange('i'), value=6
+

@@ -277,16 +277,21 @@ class SIM_API cComponent : public cSoftOwner //implies noncopyable
      * changes, for example by re-reading the value. This default implementation
      * does nothing.
      *
-     * The parameter name is nullptr if more than one parameter has changed.
+     * Notification is initially disabled until all parameters have been set up,
+     * that is, until finalizeParameters() is invoked on this component. However,
+     * notifications are enabled while the component goes through (single or
+     * multi-stage) initialization. When implementing handleParameterChange(),
+     * one must keep in mind that the component may not have been fully
+     * initialized at the time of the call (e.g. may not have gone through all
+     * init stages yet).
      *
-     * To make it easier to write predictable components, the function is NOT
-     * called on uninitialized components (i.e. when initialized() returns
-     * false). For each component, the function is called (with nullptr as a
-     * parname) after the last stage of the initialization, so that the module
-     * gets a chance to update its cached parameters.
+     * One must be extremely careful when changing parameters from inside
+     * handleParameterChange(), to avoid creating infinite notification loops.
      *
-     * Also, one must be extremely careful when changing parameters from inside
-     * handleParameterChange(), to avoid creating an infinite notification loop.
+     * Note: before \opp version 6.0, handleParameterChange() was disabled during
+     * the whole initialization process, and handleParameterChange(nullptr) was
+     * called after the last stage of the initialization. This is no longer so
+     * in version 6.0 or later.
      */
     virtual void handleParameterChange(const char *parname);
 
