@@ -233,7 +233,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         triplet("Difference quotient", "diffquot", "The difference quotient at each value"),
         triplet("Divide by constant", "divide_by(1000)", "Divides every value in each vector by a constant"),
         triplet("Divide by time", "divtime", ""),
-        triplet("Expression", "expression('y + (t - tprev) * 100')", "The following identifiers are available: t, y, tprev, yprev"),
+        triplet("Expression", "expression('y + (t - tprev) * 100')", "Available variables: t, y, tprev, yprev, tnext, ynext, k, n"),
         triplet("Integrate", "integrate(interpolation='linear')", "Possible parameter values: 'sample-hold', 'backward-sample-hold', 'linear'"),
         triplet("Linear trend", "lineartrend(0.5)", "Add a linear trend to the values, with the given steepness"),
         triplet("Modulo", "modulo(256.0)", "Floating point remainder with the given divisor"),

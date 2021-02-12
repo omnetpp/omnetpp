@@ -352,26 +352,55 @@ def divtime(r):
     return r
 
 
-def expression(r, expression):
+def expression(r, expression, as_time=False):
     """
-    Replaces the value with the result of evaluating the Python expression
-    given as string: yout[k] = eval(expression). The expression may use
-    the following variables: `t`, `y`, `tprev`, `yprev`. The latter two
-    stand for t[k-1] and y[k-1], respectively.
+    Replaces the value with the result of evaluating the Python arithmetic expression
+    given as a string: yout[k] = eval(expression). The expression may use
+    the following variables: `t`, `y`, `tprev`, `yprev`, `tnext`, `ynext`, `k`, `n`
+    which stand for t[k], y[k], t[k-1], y[k-1], t[k+1] and y[k+1], k, and the
+    size of vector, respectively.
 
-    (Note that for efficiency, the expression will be evaluated only once,
-    with the variables being `np.ndarray` instances instead of simple `float`s.
-    Thus, the result is computed with vector operations instead of looping
-    through all indices in Python. This doesn't affect the syntax as long as
-    only simple arithmetics is used.)
+    If `as_time` is `True`, the result will be assigned to the time variable
+    instead of the value variable.
+
+    Note that for efficiency, the expression will be evaluated only once,
+    with the variables being `np.ndarray` instances instead of scalar `float` values.
+    Thus, the result is computed using vector operations instead of looping
+    through all vector indices in Python. Expression syntax remains the usual.
+    Most Numpy mathematical functions can be used without module prefix; other
+    Numpy functions can be used by prefixing them with `np.`.
+
+    Examples: `2*y+0.5`, `abs(floor(y))`, `(y-yprev)/(t-tprev)`, `fmin(yprev,ynext)`,
+    `cumsum(y)`, `nan_to_num(y)`
     """
     t = r['vectime']
     y = r['vecvalue']
+    n = len(y)
+    k = np.arange(0,n) if "k" in expression else None
+    tprev = np.concatenate([np.array([0]), t[:-1]]) if "tprev" in expression else None
+    yprev = np.concatenate([np.array([np.nan]), y[:-1]]) if "yprev" in expression else None
+    tnext = np.concatenate([t[1:], np.array([np.nan])]) if "tnext" in expression else None
+    ynext = np.concatenate([y[1:], np.array([np.nan])]) if "ynext" in expression else None
 
-    tprev = np.concatenate([np.array([0]), t[:-1]])
-    yprev = np.concatenate([np.array([0]), y[:-1]])
+    # make mathematical functions available in the expression (note: "import *" is not allowed in function scope)
+    from numpy import sin,cos,tan,arcsin,arccos,arctan,hypot,arctan2,degrees,radians,unwrap,deg2rad,\
+        rad2deg,sinh,cosh,tanh,arcsinh,arccosh,arctanh,around,round_,rint,fix,floor,ceil,\
+        trunc,prod,sum,nanprod,nansum,cumprod,cumsum,nancumprod,nancumsum,diff,ediff1d,\
+        gradient,cross,trapz,exp,expm1,exp2,log,log10,log2,log1p,logaddexp,logaddexp2,i0,\
+        sinc,signbit,copysign,frexp,ldexp,nextafter,spacing,lcm,gcd,add,reciprocal,\
+        positive,negative,multiply,divide,power,subtract,true_divide,floor_divide,\
+        float_power,fmod,mod,modf,remainder,divmod,angle,real,imag,conj,conjugate,\
+        convolve,clip,sqrt,cbrt,square,absolute,fabs,sign,heaviside,maximum,minimum,\
+        fmax,fmin,nan_to_num,real_if_close,interp
 
-    r['vecvalue'] = eval(expression)  # TODO - sanitize expression
+    result = eval(expression)
+    result = result if type(result) == np.ndarray else np.full(n, result) # make expression="5" work, too
+    if as_time:
+        r['vectime'] = result
+    else:
+        r['vecvalue'] = result
+    if len(result) != n:
+        raise RuntimeError("Expression returned an ndarray of different size ({} instead of {})".format(len(result),n))
 
     if "title" in r:
         r['title'] = r['title'] + ": " + expression
