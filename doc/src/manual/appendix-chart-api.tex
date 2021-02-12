@@ -797,11 +797,17 @@ on top of Pandas data frames and the \ttt{chart} and \ttt{plot} packages from \t
 Functions in this module have been written largely to the needs of the
 chart templates that ship with the IDE.
 
-\par There are some functions which are mandatory elements in a chart script. These are:
+\par There are some functions which are (almost) mandatory elements in a chart script.
+These are the following.
 
 \par If you want style settings in the chart dialog to take effect:
- \ttt{preconfigure\_plot()}
- \ttt{postconfigure\_plot()}
+
+\begin{itemize}
+  \item \ttt{preconfigure\_plot()}
+  \item \ttt{postconfigure\_plot()}
+
+\end{itemize}
+
 
 \par If you want image/data export to work:
 
@@ -810,64 +816,6 @@ chart templates that ship with the IDE.
   \item \ttt{export\_data\_if\_needed()}
 
 \end{itemize}
-
-\subsubsection{confidence\_interval()}
-\label{cha:chart-api:omnetpp.scave.utils:confidence-interval}
-
-\begin{flushleft}
-\ttt{confidence\_interval(alpha, data)}
-\end{flushleft}
-
-\par Returns the half-length of the confidence interval of the mean of \ttt{data}, assuming
-normal distribution, for the given confidence level \ttt{alpha}.
-
-\par Parameters:
-
-\begin{itemize}
-  \item \ttt{alpha} \textit{(float)}: Confidence level, must be in the [0..1] range.
-  \item \ttt{data} \textit{(array-like)}: An array containing the values.
-
-\end{itemize}
-
-\subsubsection{split()}
-\label{cha:chart-api:omnetpp.scave.utils:split}
-
-\begin{flushleft}
-\ttt{split(s, sep=",")}
-\end{flushleft}
-
-\par Split a string with the given separator (by default with comma), trim
-the surrounding whitespace from the items, and return the result as a
-list. Returns an empty list for an empty or all-whitespace input string.
-(Note that in contrast, \ttt{s.split(',')} will return an empty array,
-even for \ttt{s=''}.)
-
-\subsubsection{extract\_label\_columns()}
-\label{cha:chart-api:omnetpp.scave.utils:extract-label-columns}
-
-\begin{flushleft}
-\ttt{extract\_label\_columns(df, preferred\_legend\_column="title")}
-\end{flushleft}
-
-\par Utility function to make a reasonable guess as to which column of
-the given DataFrame is most suitable to act as a chart title and
-which ones can be used as legend labels.
-
-\par Ideally a "title column" should be one in which all lines have the same
-value, and can be reasonably used as a title. Some often used candidates
-are: \ttt{title}, \ttt{name}, and \ttt{module}.
-
-\par Label columns should be a minimal set of columns whose corresponding
-value tuples uniquely identify every line in the DataFrame. These will
-primarily be iteration variables and run attributes.
-
-\par Returns:
-
-\par A pair of a string and a list; the first value is the name of the
-"title" column, and the second one is a list of pairs, each
-containing the index and the name of a "label" column.
-
-\par Example: \ttt{('title', [(8, 'numHosts'), (7, 'iaMean')])}
 
 \subsubsection{make\_legend\_label()}
 \label{cha:chart-api:omnetpp.scave.utils:make-legend-label}
@@ -878,133 +826,18 @@ containing the index and the name of a "label" column.
 
 \par Produces a reasonably good label text (to be used in a chart legend) for a result row from
 a DataFrame, given a list of selected columns as returned by \ttt{extract\_label\_columns()}.
-TODO legend column, comment column
 
-\subsubsection{make\_chart\_title()}
-\label{cha:chart-api:omnetpp.scave.utils:make-chart-title}
-
-\begin{flushleft}
-\ttt{make\_chart\_title(df, title\_col, legend\_cols)}
-\end{flushleft}
-
-\par Produces a reasonably good chart title text from a result DataFrame, given a selected "title"
-column, and a list of selected "legend" columns as returned by \ttt{extract\_label\_columns()}.
-
-\subsubsection{pick\_two\_columns()}
-\label{cha:chart-api:omnetpp.scave.utils:pick-two-columns}
-
-\begin{flushleft}
-\ttt{pick\_two\_columns(df)}
-\end{flushleft}
-
-\par Choose two columns from the dataframe which best partitions the rows
-of the dataframe, and returns their names as a pair. Returns (\ttt{None}, \ttt{None})
-if no such pair was found. This method is useful for creating e.g. a bar plot.
-
-\subsubsection{assert\_columns\_exist()}
-\label{cha:chart-api:omnetpp.scave.utils:assert-columns-exist}
-
-\begin{flushleft}
-\ttt{assert\_columns\_exist(df, cols, message="Expected column missing from DataFrame")}
-\end{flushleft}
-
-\par Ensures that the dataframe contains the given columns. If any of them are missing,
-the function raises an error with the given message.
+\par The normal behavior is to concatenate a string from selected (by \ttt{legend\_cols}) elements
+of \ttt{row}. If there is a \ttt{legend} column in \ttt{row}, that one is used and \ttt{legend\_cols} is
+ignored. If there is a \ttt{comment} column in \ttt{row}, its contents will be appended in parens.
 
 \par Parameters:
 
 \begin{itemize}
-  \item \ttt{cols} \textit{(list of strings)}: Column names to check.
+  \item \ttt{legend\_cols} \textit{(list of strings)}: The names of columns chosen for the legend.
+  \item \ttt{row} \textit{(named tuple)}: The row from the dataframe.
 
 \end{itemize}
-
-\subsubsection{parse\_rcparams()}
-\label{cha:chart-api:omnetpp.scave.utils:parse-rcparams}
-
-\begin{flushleft}
-\ttt{parse\_rcparams(rc\_content)}
-\end{flushleft}
-
-\par Accepts a multiline string that contains rc file content in Matplotlib's
-RcParams syntax, and returns its contents as a dictionary. Parse errors
-and duplicate keys are reported via exceptions.
-
-\subsubsection{make\_fancy\_xticklabels()}
-\label{cha:chart-api:omnetpp.scave.utils:make-fancy-xticklabels}
-
-\begin{flushleft}
-\ttt{make\_fancy\_xticklabels(ax)}
-\end{flushleft}
-
-\par Only useful for Matplotlib plots. It causes the x tick labels to be rotated
-by the minimum amount necessary so that they don't overlap. Note that the
-necessary amount of rotation typically depends on the horizontal zoom level.
-
-\subsubsection{customized\_box\_plot()}
-\label{cha:chart-api:omnetpp.scave.utils:customized-box-plot}
-
-\begin{flushleft}
-\ttt{customized\_box\_plot(percentiles, labels=None, axes=None, redraw=True, *args, **kwargs)}
-\end{flushleft}
-
-\par Generates a customized box-and-whiskers plot based on explicitly specified
-percentile values. This method is necessary because pyplot.boxplot() insists
-on computing the stats from the raw data (which we often don't have) itself.
-
-\par The data are in the \ttt{percentiles} argument, which should be list of tuples.
-One box will be drawn for each tuple. Each tuple contains 6 elements (or 5,
-because the last one is optional):
-
-\par (\textit{q1\_start}, \textit{q2\_start}, \textit{q3\_start}, \textit{q4\_start}, \textit{q4\_end}, \textit{fliers})
-
-\par The first five elements have following meaning:
-
-\begin{itemize}
-  \item \textit{q1\_start}: y coord of bottom whisker cap
-  \item \textit{q2\_start}: y coord of bottom of the box
-  \item \textit{q3\_start}: y coord of median mark
-  \item \textit{q4\_start}: y coord of top of the box
-  \item \textit{q4\_end}: y coord of top whisker cap
-
-\end{itemize}
-
-
-\par The last element, \textit{fliers}, is a list, containing the values of the
-outlier points.
-
-\par x coords of the box-and-whiskers plots are automatic.
-
-\par Parameters:
-
-\begin{itemize}
-  \item \ttt{percentiles}: The list of tuples.
-  \item \ttt{labels}: If provided, the legend labels for the boxes.
-  \item \ttt{axes}: The axes object of the plot.
-  \item \ttt{redraw}: If False, redraw is deferred.
-  \item \ttt{args}, \ttt{kwargs}: Passed to \ttt{axes.boxplot()}.
-
-\end{itemize}
-
-\subsubsection{get\_names\_for\_title()}
-\label{cha:chart-api:omnetpp.scave.utils:get-names-for-title}
-
-\begin{flushleft}
-\ttt{get\_names\_for\_title(df, props)}
-\end{flushleft}
-
-\par Produces input for the plot title. unique values from the "title" or "name" column
-TODO
-"legend\_labels" => "result titles" or "result names"
-
-\subsubsection{set\_plot\_title()}
-\label{cha:chart-api:omnetpp.scave.utils:set-plot-title}
-
-\begin{flushleft}
-\ttt{set\_plot\_title(title, suggested\_chart\_name=None)}
-\end{flushleft}
-
-\par Sets the plot title. It also sets the suggested chart name (the name that
-the IDE offers when adding a temporary chart to the Analysis file.)
 
 \subsubsection{plot\_bars()}
 \label{cha:chart-api:omnetpp.scave.utils:plot-bars}
@@ -1167,33 +1000,50 @@ columns, and also the \ttt{legend\_func} argument.
 
 \end{itemize}
 
-\subsubsection{perform\_vector\_ops()}
-\label{cha:chart-api:omnetpp.scave.utils:perform-vector-ops}
+\subsubsection{customized\_box\_plot()}
+\label{cha:chart-api:omnetpp.scave.utils:customized-box-plot}
 
 \begin{flushleft}
-\ttt{perform\_vector\_ops(df, operations:str)}
+\ttt{customized\_box\_plot(percentiles, labels=None, axes=None, redraw=True, *args, **kwargs)}
 \end{flushleft}
 
-\par Performs the given vector operations on the dataframe, and returns the
-resulting dataframe. Vector operations primarily affect the \ttt{vectime}
-and \ttt{vecvalue} columns of the dataframe, which are expected to contain
-\ttt{ndarray}'s of matching lengths.
+\par Generates a customized box-and-whiskers plot based on explicitly specified
+percentile values. This method is necessary because \ttt{pyplot.boxplot()} insists
+on computing the stats from the raw data (which we often don't have) itself.
 
-\par \ttt{operations} is a multiline string where each line denotes an operation;
-they are applied in sequence. The syntax of one operation is:
+\par The data are in the \ttt{percentiles} argument, which should be list of tuples.
+One box will be drawn for each tuple. Each tuple contains 6 elements (or 5,
+because the last one is optional):
 
-\par [(\ttt{compute}|\ttt{apply}) \ttt{:} ] \textit{opname} [ \ttt{(} \textit{arglist} \ttt{)} ] [ \ttt{\#} \textit{comment} ]
+\par (\textit{q1\_start}, \textit{q2\_start}, \textit{q3\_start}, \textit{q4\_start}, \textit{q4\_end}, \textit{fliers})
 
-\par Blank lines and lines only containing a comment are also accepted.
+\par The first five elements have following meaning:
 
-\par \textit{opname} is the name of the function, optionally qualified with its package name.
-If the package name is omitted, \ttt{omnetpp.scave.vectorops} is assumed.
+\begin{itemize}
+  \item \textit{q1\_start}: y coord of bottom whisker cap
+  \item \textit{q2\_start}: y coord of bottom of the box
+  \item \textit{q3\_start}: y coord of median mark
+  \item \textit{q4\_start}: y coord of top of the box
+  \item \textit{q4\_end}: y coord of top whisker cap
 
-\par \ttt{compute} and \ttt{apply} specify whether the newly computed vectors will replace
-the input row in the DataFrame (\textit{apply}) or added as extra lines (\textit{compute}).
-The default is \textit{apply}.
+\end{itemize}
 
-\par See the contents of the \ttt{omnetpp.scave.vectorops} package for more information.
+
+\par The last element, \textit{fliers}, is a list, containing the values of the
+outlier points.
+
+\par x coords of the box-and-whiskers plots are automatic.
+
+\par Parameters:
+
+\begin{itemize}
+  \item \ttt{percentiles}: The list of tuples.
+  \item \ttt{labels}: If provided, the legend labels for the boxes.
+  \item \ttt{axes}: The axes object of the plot.
+  \item \ttt{redraw}: If False, redraw is deferred.
+  \item \ttt{args}, \ttt{kwargs}: Passed to \ttt{axes.boxplot()}.
+
+\end{itemize}
 
 \subsubsection{preconfigure\_plot()}
 \label{cha:chart-api:omnetpp.scave.utils:preconfigure-plot}
@@ -1345,6 +1195,173 @@ from the chart properties because it is specific to each chart.
   \item \ttt{props} \textit{(dict)}: the properties
 
 \end{itemize}
+
+\subsubsection{confidence\_interval()}
+\label{cha:chart-api:omnetpp.scave.utils:confidence-interval}
+
+\begin{flushleft}
+\ttt{confidence\_interval(alpha, data)}
+\end{flushleft}
+
+\par Returns the half-length of the confidence interval of the mean of \ttt{data}, assuming
+normal distribution, for the given confidence level \ttt{alpha}.
+
+\par Parameters:
+
+\begin{itemize}
+  \item \ttt{alpha} \textit{(float)}: Confidence level, must be in the [0..1] range.
+  \item \ttt{data} \textit{(array-like)}: An array containing the values.
+
+\end{itemize}
+
+\subsubsection{perform\_vector\_ops()}
+\label{cha:chart-api:omnetpp.scave.utils:perform-vector-ops}
+
+\begin{flushleft}
+\ttt{perform\_vector\_ops(df, operations:str)}
+\end{flushleft}
+
+\par Performs the given vector operations on the dataframe, and returns the
+resulting dataframe. Vector operations primarily affect the \ttt{vectime}
+and \ttt{vecvalue} columns of the dataframe, which are expected to contain
+\ttt{ndarray}'s of matching lengths.
+
+\par \ttt{operations} is a multiline string where each line denotes an operation;
+they are applied in sequence. The syntax of one operation is:
+
+\par [(\ttt{compute}|\ttt{apply}) \ttt{:} ] \textit{opname} [ \ttt{(} \textit{arglist} \ttt{)} ] [ \ttt{\#} \textit{comment} ]
+
+\par Blank lines and lines only containing a comment are also accepted.
+
+\par \textit{opname} is the name of the function, optionally qualified with its package name.
+If the package name is omitted, \ttt{omnetpp.scave.vectorops} is assumed.
+
+\par \ttt{compute} and \ttt{apply} specify whether the newly computed vectors will replace
+the input row in the DataFrame (\textit{apply}) or added as extra lines (\textit{compute}).
+The default is \textit{apply}.
+
+\par See the contents of the \ttt{omnetpp.scave.vectorops} package for more information.
+
+\subsubsection{set\_plot\_title()}
+\label{cha:chart-api:omnetpp.scave.utils:set-plot-title}
+
+\begin{flushleft}
+\ttt{set\_plot\_title(title, suggested\_chart\_name=None)}
+\end{flushleft}
+
+\par Sets the plot title. It also sets the suggested chart name (the name that
+the IDE offers when adding a temporary chart to the Analysis file.)
+
+\subsubsection{extract\_label\_columns()}
+\label{cha:chart-api:omnetpp.scave.utils:extract-label-columns}
+
+\begin{flushleft}
+\ttt{extract\_label\_columns(df, preferred\_legend\_column="title")}
+\end{flushleft}
+
+\par Utility function to make a reasonable guess as to which column of
+the given DataFrame is most suitable to act as a chart title and
+which ones can be used as legend labels.
+
+\par Ideally a "title column" should be one in which all lines have the same
+value, and can be reasonably used as a title. Some often used candidates
+are: \ttt{title}, \ttt{name}, and \ttt{module}.
+
+\par Label columns should be a minimal set of columns whose corresponding
+value tuples uniquely identify every line in the DataFrame. These will
+primarily be iteration variables and run attributes.
+
+\par Returns:
+
+\par A pair of a string and a list; the first value is the name of the
+"title" column, and the second one is a list of pairs, each
+containing the index and the name of a "label" column.
+
+\par Example: \ttt{('title', [(8, 'numHosts'), (7, 'iaMean')])}
+
+\subsubsection{make\_chart\_title()}
+\label{cha:chart-api:omnetpp.scave.utils:make-chart-title}
+
+\begin{flushleft}
+\ttt{make\_chart\_title(df, title\_col, legend\_cols)}
+\end{flushleft}
+
+\par Produces a reasonably good chart title text from a result DataFrame, given a selected "title"
+column, and a list of selected "legend" columns as returned by \ttt{extract\_label\_columns()}.
+
+\subsubsection{pick\_two\_columns()}
+\label{cha:chart-api:omnetpp.scave.utils:pick-two-columns}
+
+\begin{flushleft}
+\ttt{pick\_two\_columns(df)}
+\end{flushleft}
+
+\par Choose two columns from the dataframe which best partitions the rows
+of the dataframe, and returns their names as a pair. Returns (\ttt{None}, \ttt{None})
+if no such pair was found. This method is useful for creating e.g. a bar plot.
+
+\subsubsection{assert\_columns\_exist()}
+\label{cha:chart-api:omnetpp.scave.utils:assert-columns-exist}
+
+\begin{flushleft}
+\ttt{assert\_columns\_exist(df, cols, message="Expected column missing from DataFrame")}
+\end{flushleft}
+
+\par Ensures that the dataframe contains the given columns. If any of them are missing,
+the function raises an error with the given message.
+
+\par Parameters:
+
+\begin{itemize}
+  \item \ttt{cols} \textit{(list of strings)}: Column names to check.
+
+\end{itemize}
+
+\subsubsection{parse\_rcparams()}
+\label{cha:chart-api:omnetpp.scave.utils:parse-rcparams}
+
+\begin{flushleft}
+\ttt{parse\_rcparams(rc\_content)}
+\end{flushleft}
+
+\par Accepts a multiline string that contains rc file content in Matplotlib's
+RcParams syntax, and returns its contents as a dictionary. Parse errors
+and duplicate keys are reported via exceptions.
+
+\subsubsection{make\_fancy\_xticklabels()}
+\label{cha:chart-api:omnetpp.scave.utils:make-fancy-xticklabels}
+
+\begin{flushleft}
+\ttt{make\_fancy\_xticklabels(ax)}
+\end{flushleft}
+
+\par Only useful for Matplotlib plots. It causes the x tick labels to be rotated
+by the minimum amount necessary so that they don't overlap. Note that the
+necessary amount of rotation typically depends on the horizontal zoom level.
+
+\subsubsection{get\_names\_for\_title()}
+\label{cha:chart-api:omnetpp.scave.utils:get-names-for-title}
+
+\begin{flushleft}
+\ttt{get\_names\_for\_title(df, props)}
+\end{flushleft}
+
+\par Returns unique values from the \ttt{title} or \ttt{name} column, depending on the
+value of the \ttt{legend\_labels} property in \ttt{props}. This function is useful
+for producing input for the plot title.
+
+\subsubsection{split()}
+\label{cha:chart-api:omnetpp.scave.utils:split}
+
+\begin{flushleft}
+\ttt{split(s, sep=",")}
+\end{flushleft}
+
+\par Split a string with the given separator (by default with comma), trim
+the surrounding whitespace from the items, and return the result as a
+list. Returns an empty list for an empty or all-whitespace input string.
+(Note that in contrast, \ttt{s.split(',')} will return an empty array,
+even for \ttt{s=''}.)
 
 \subsection{Module omnetpp.scave.vectorops}
 \label{cha:chart-api:omnetpp.scave.vectorops}
@@ -1524,10 +1541,27 @@ yout[k] = (y[k+1]-y[k]) / (t[k+1]-t[k])
 \label{cha:chart-api:omnetpp.scave.vectorops:expression}
 
 \begin{flushleft}
-\ttt{expression(r, expression)}
+\ttt{expression(r, expression, as\_time=False)}
 \end{flushleft}
 
+\par Replaces the value with the result of evaluating the Python arithmetic expression
+given as a string: yout[k] = eval(expression). The expression may use
+the following variables: \ttt{t}, \ttt{y}, \ttt{tprev}, \ttt{yprev}, \ttt{tnext}, \ttt{ynext}, \ttt{k}, \ttt{n}
+which stand for t[k], y[k], t[k-1], y[k-1], t[k+1] and y[k+1], k, and the
+size of vector, respectively.
 
+\par If \ttt{as\_time} is \ttt{True}, the result will be assigned to the time variable
+instead of the value variable.
+
+\par Note that for efficiency, the expression will be evaluated only once,
+with the variables being \ttt{np.ndarray} instances instead of scalar \ttt{float} values.
+Thus, the result is computed using vector operations instead of looping
+through all vector indices in Python. Expression syntax remains the usual.
+Most Numpy mathematical functions can be used without module prefix; other
+Numpy functions can be used by prefixing them with \ttt{np.}.
+
+\par Examples: \ttt{2*y+0.5}, \ttt{abs(floor(y))}, \ttt{(y-yprev)/(t-tprev)}, \ttt{fmin(yprev,ynext)},
+\ttt{cumsum(y)}, \ttt{nan\_to\_num(y)}
 
 \subsubsection{integrate()}
 \label{cha:chart-api:omnetpp.scave.vectorops:integrate}
