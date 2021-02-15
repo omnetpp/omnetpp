@@ -147,6 +147,7 @@ def _pivot_results(df, include_attrs, include_runattrs, include_itervars, includ
 
 def get_results(filter_expression, row_types, omit_unused_columns, start_time, end_time):
     df = _get_results(filter_expression, ['.sca', '.vec'], None)
+    df = df[df["type"].isin(row_types)]
     return df
 
 def get_scalars(filter_expression, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name):
