@@ -7,8 +7,6 @@
 
 package org.omnetpp.scave.editors;
 
-import static org.omnetpp.common.util.Triplet.triplet;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.regex.Matcher;
@@ -66,12 +64,11 @@ import org.omnetpp.common.canvas.ZoomableCachingCanvas;
 import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
 import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.common.util.Triplet;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.ClosePageAction;
-import org.omnetpp.scave.actions.CopyImageToClipboardAction;
 import org.omnetpp.scave.actions.ConfigureChartAction;
+import org.omnetpp.scave.actions.CopyImageToClipboardAction;
 import org.omnetpp.scave.actions.ExportChartAction;
 import org.omnetpp.scave.actions.KillPythonProcessAction;
 import org.omnetpp.scave.actions.RefreshChartAction;
@@ -220,34 +217,45 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
     // if the document has changed since last saving (independent of the Chart object in the model)
     private boolean scriptChangedFlag = false;
 
-    @SuppressWarnings("unchecked")
-    static final Triplet<String, String, String>[] vectorOpData = new Triplet[] {
-        triplet("Mean", "mean", ""),
-        triplet("Aggregate", "aggregate(function='average')", "Possible values: 'sum', 'average', 'count', 'maximum', 'minimum'"),
-        triplet("Merge", "merge", ""),
-        triplet("Sum", "sum", ""),
-        triplet("Add constant", "add(100)", "Adds a constant value to all values in the vectors"),
-        triplet("Compare with threshold", "compare(threshold=9000, less=-1, equal=0, greater=1)", "The last three parameters are all optional"),
-        triplet("Crop in time", "crop(t1=10, t2=100)", "The time values are in seconds"),
-        triplet("Difference", "difference", "The difference of each value compared to the previous"),
-        triplet("Difference quotient", "diffquot", "The difference quotient at each value"),
-        triplet("Divide by constant", "divide_by(1000)", "Divides every value in each vector by a constant"),
-        triplet("Divide by time", "divtime", ""),
-        triplet("Expression", "expression('y + (t - tprev) * 100')", "Available variables: t, y, tprev, yprev, tnext, ynext, k, n"),
-        triplet("Integrate", "integrate(interpolation='linear')", "Possible parameter values: 'sample-hold', 'backward-sample-hold', 'linear'"),
-        triplet("Linear trend", "lineartrend(0.5)", "Add a linear trend to the values, with the given steepness"),
-        triplet("Modulo", "modulo(256.0)", "Floating point remainder with the given divisor"),
-        triplet("Moving average", "movingavg(alpha=0.1)", "Moving average using the given smoothing constant in range (0.0, 1.0]"),
-        triplet("Multiply by constant", "multiply_by(2)", "You can change the multiplier constant"),
-        triplet("Remove repeating values", "removerepeats", "Removes consequtive equal values"),
-        triplet("Sliding window average", "slidingwinavg(window_size=10)", "The average of the last window_size values"),
-        triplet("Subtract first value", "subtractfirstval", "Subtracts the first value from all values"),
-        triplet("Time average", "timeavg(interpolation='linear')", "Average over time (integral divided by time), possible parameter values: 'sample-hold', 'backward-sample-hold', 'linear'"),
-        triplet("Time difference", "timediff", "The elapsed time (delta) since the previous value"),
-        triplet("Time shift", "timeshift(dt=100)", "Shifts all values with the given time delta (in seconds)"),
-        triplet("Time to serial", "timetoserial", "Replaces all times with a serial number: 0, 1, 2, ..."),
-        triplet("Time window average", "timewinavg(window_size=0.1)", "Average of all values in every window_size long interval (in seconds)"),
-        triplet("Window average", "winavg(window_size=10)", "Average of every window_size long batch of values"),
+    public static class VectorOp {
+        public final String label;
+        public final String code;
+        public final String comment;
+
+        public VectorOp(String label, String code, String comment) {
+            this.label = label;
+            this.code = code;
+            this.comment = comment;
+        }
+    }
+
+    static final VectorOp[] vectorOpData = new VectorOp[] {
+        new VectorOp("Mean", "mean", ""),
+        new VectorOp("Aggregate", "aggregate(function='average')", "Possible values: 'sum', 'average', 'count', 'maximum', 'minimum'"),
+        new VectorOp("Merge", "merge", ""),
+        new VectorOp("Sum", "sum", ""),
+        new VectorOp("Add constant", "add(100)", "Adds a constant value to all values in the vectors"),
+        new VectorOp("Compare with threshold", "compare(threshold=9000, less=-1, equal=0, greater=1)", "The last three parameters are all optional"),
+        new VectorOp("Crop in time", "crop(t1=10, t2=100)", "The time values are in seconds"),
+        new VectorOp("Difference", "difference", "The difference of each value compared to the previous"),
+        new VectorOp("Difference quotient", "diffquot", "The difference quotient at each value"),
+        new VectorOp("Divide by constant", "divide_by(1000)", "Divides every value in each vector by a constant"),
+        new VectorOp("Divide by time", "divtime", ""),
+        new VectorOp("Expression", "expression('y + (t - tprev) * 100')", "Available variables: t, y, tprev, yprev, tnext, ynext, k, n"),
+        new VectorOp("Integrate", "integrate(interpolation='linear')", "Possible parameter values: 'sample-hold', 'backward-sample-hold', 'linear'"),
+        new VectorOp("Linear trend", "lineartrend(0.5)", "Add a linear trend to the values, with the given steepness"),
+        new VectorOp("Modulo", "modulo(256.0)", "Floating point remainder with the given divisor"),
+        new VectorOp("Moving average", "movingavg(alpha=0.1)", "Moving average using the given smoothing constant in range (0.0, 1.0]"),
+        new VectorOp("Multiply by constant", "multiply_by(2)", "You can change the multiplier constant"),
+        new VectorOp("Remove repeating values", "removerepeats", "Removes consequtive equal values"),
+        new VectorOp("Sliding window average", "slidingwinavg(window_size=10)", "The average of the last window_size values"),
+        new VectorOp("Subtract first value", "subtractfirstval", "Subtracts the first value from all values"),
+        new VectorOp("Time average", "timeavg(interpolation='linear')", "Average over time (integral divided by time), possible parameter values: 'sample-hold', 'backward-sample-hold', 'linear'"),
+        new VectorOp("Time difference", "timediff", "The elapsed time (delta) since the previous value"),
+        new VectorOp("Time shift", "timeshift(dt=100)", "Shifts all values with the given time delta (in seconds)"),
+        new VectorOp("Time to serial", "timetoserial", "Replaces all times with a serial number: 0, 1, 2, ..."),
+        new VectorOp("Time window average", "timewinavg(window_size=0.1)", "Average of all values in every window_size long interval (in seconds)"),
+        new VectorOp("Window average", "winavg(window_size=10)", "Average of every window_size long batch of values"),
     };
 
     // This runs in an extension point of the PyDev editor creation process.
@@ -537,18 +545,22 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         return commandStack;
     }
 
+    public static VectorOp[] getVectorOpData() {
+        return vectorOpData;
+    }
+
     protected MenuManager createMenuManager() {
         boolean isMatplotlib = chart.getType() == ChartType.MATPLOTLIB;
         boolean isNative = !isMatplotlib;
 
         // Make the Apply/Compute submenus
         IMenuManager applySubmenuManager = new MenuManager("Apply...", ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_APPLY), null);
-        for (Triplet<String, String, String> t : vectorOpData)
-            applySubmenuManager.add(new AddVectorOperationAction(t.first, "apply:" + t.second, t.third));
+        for (VectorOp op : vectorOpData)
+            applySubmenuManager.add(new AddVectorOperationAction(op.label, "apply: " + op.code, op.comment));
 
         IMenuManager computeSubmenuManager = new MenuManager("Compute...", ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_COMPUTE), null);
-        for (Triplet<String, String, String> t : vectorOpData)
-            computeSubmenuManager.add(new AddVectorOperationAction(t.first, "compute:" + t.second, t.third));
+        for (VectorOp op : vectorOpData)
+            computeSubmenuManager.add(new AddVectorOperationAction(op.label, "compute: " + op.code, op.comment));
 
         ScaveEditorActions actions = scaveEditor.getActions();
 

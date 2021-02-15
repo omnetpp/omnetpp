@@ -53,6 +53,7 @@ import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.assist.FilterExpressionProposalProvider;
 import org.omnetpp.scave.assist.MatplotlibrcContentProposalProvider;
 import org.omnetpp.scave.assist.NativePlotPropertiesContentProposalProvider;
+import org.omnetpp.scave.assist.VectorOperationsContentProposalProvider;
 import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.InterruptedFlag;
@@ -273,6 +274,8 @@ public class ChartEditForm {
             expressionProposalProvider.setFilterHintsCache(filterHintsCache);
             expressionProposalProvider.setIDList(manager, manager.getAllItems());
             return expressionProposalProvider;
+        case "vectorops":
+            return new VectorOperationsContentProposalProvider();
         case "plotproperties":
             return new NativePlotPropertiesContentProposalProvider();
         case "matplotlibrc":
