@@ -76,8 +76,8 @@ def test_script(tester, scriptname, default_props, tests):
 
 if __name__ == "__main__":
 
-    results.add_inputs(["/aloha/*.sca"], OPP_ROOT + "test/scave/charttemplates/", {})
-    results.add_inputs(["/aloha/*.vec"], OPP_ROOT + "test/scave/charttemplates/", {})
+    results.add_inputs(["/aloha/*.sca"], OPP_ROOT + "samples/resultfiles/", {})
+    results.add_inputs(["/aloha/*.vec"], OPP_ROOT + "samples/resultfiles/", {})
 
     tester = Tester()
 
