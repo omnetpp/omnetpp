@@ -9,6 +9,8 @@ package org.omnetpp.scave.actions.analysismodel;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ISelection;
@@ -25,16 +27,14 @@ import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.commands.SetChartPropertyCommand;
 
 public class AddVectorOperationAction extends AbstractScaveAction {
-    String operation;
-    String comment;
+    private String operation;
+    private String comment;
+    private boolean offerEditing;
 
-    public AddVectorOperationAction(String name, String operation) {
-        this(name, operation, "");
-    }
-
-    public AddVectorOperationAction(String name, String operation, String comment) {
+    public AddVectorOperationAction(String name, String operation, String comment, boolean offerEditing) {
         this.operation = operation;
         this.comment = comment;
+        this.offerEditing = offerEditing;
 
         setText(name);
 
@@ -51,6 +51,14 @@ public class AddVectorOperationAction extends AbstractScaveAction {
         ChartScriptEditor scriptEditor = scaveEditor.getActiveChartScriptEditor();
 
         Chart chart = scriptEditor.getChart();
+
+        String operation = this.operation;
+        if (offerEditing) {
+            var dialog = new InputDialog(Display.getCurrent().getActiveShell(), "Add Vector Operation", "Edit parameters:", operation, null);
+            if (dialog.open() != Dialog.OK)
+                return; // cancelled
+            operation = dialog.getValue();
+        }
 
         String operations = StringUtils.nullToEmpty(chart.getPropertyValue("vector_operations"));
 

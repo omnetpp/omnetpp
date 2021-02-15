@@ -221,11 +221,13 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         public final String label;
         public final String code;
         public final String comment;
+        public final boolean hasArgs;
 
         public VectorOp(String label, String code, String comment) {
             this.label = label;
             this.code = code;
             this.comment = comment;
+            this.hasArgs = code.contains("(") && !code.endsWith("()");
         }
     }
 
@@ -556,11 +558,11 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         // Make the Apply/Compute submenus
         IMenuManager applySubmenuManager = new MenuManager("Apply...", ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_APPLY), null);
         for (VectorOp op : vectorOpData)
-            applySubmenuManager.add(new AddVectorOperationAction(op.label, "apply: " + op.code, op.comment));
+            applySubmenuManager.add(new AddVectorOperationAction(op.label, "apply: " + op.code, op.comment, op.hasArgs));
 
         IMenuManager computeSubmenuManager = new MenuManager("Compute...", ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_COMPUTE), null);
         for (VectorOp op : vectorOpData)
-            computeSubmenuManager.add(new AddVectorOperationAction(op.label, "compute: " + op.code, op.comment));
+            computeSubmenuManager.add(new AddVectorOperationAction(op.label, "compute: " + op.code, op.comment, op.hasArgs));
 
         ScaveEditorActions actions = scaveEditor.getActions();
 
