@@ -199,17 +199,17 @@ def get_runs(filter_expression, include_runattrs, include_itervars, include_para
     # TODO: convert column dtype as well?
 
     if include_itervars:
-        iv = get_itervars("*")
+        iv = get_itervars("*", False, False, False, False, True)
         iv.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
         df = _append_metadata_columns(df, iv, "_itervar")
 
     if include_runattrs:
-        ra = get_runattrs("*")
+        ra = get_runattrs("*", False, False, False, False)
         ra.rename(columns={"name": "attrname", "value": "attrvalue"}, inplace=True) # oh, inconsistencies...
         df = _append_metadata_columns(df,ra, "_runattr")
 
     if include_config_entries:
-        ce = get_config_entries("*")
+        ce = get_config_entries("*", False, False, False, False)
         ce.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
         df = _append_metadata_columns(df, ce, "_config")
 
@@ -230,17 +230,17 @@ def get_runattrs(filter_expression, include_runattrs, include_itervars, include_
     df = pd.read_csv(io.BytesIO(output), sep='\t', header=None, names=["runID", "name", "value"])
 
     if include_itervars:
-        iv = get_itervars("*")
+        iv = get_itervars("*", False, False, False, False, True)
         iv.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
         df = _append_metadata_columns(df, iv, "_itervar")
 
     if include_runattrs:
-        ra = get_runattrs("*")
+        ra = get_runattrs("*", False, False, False, False)
         ra.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
         df = _append_metadata_columns(df, ra, "_runattr")
 
     if include_config_entries:
-        ce = get_config_entries("*")
+        ce = get_config_entries("*", False, False, False, False)
         ce.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
         df = _append_metadata_columns(df, ce, "_config")
 
@@ -259,17 +259,17 @@ def get_itervars(filter_expression, include_runattrs, include_itervars, include_
     df = pd.read_csv(io.BytesIO(output), sep='\t', header=None, names=["runID", "name", "value"])
 
     if include_itervars:
-        iv = get_itervars("*")
+        iv = get_itervars("*", False, False, False, False, as_numeric)
         iv.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
         df = _append_metadata_columns(df, iv, "_itervar")
 
     if include_runattrs:
-        ra = get_runattrs("*")
+        ra = get_runattrs("*", False, False, False, False)
         ra.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
         df = _append_metadata_columns(df, ra, "_runattr")
 
     if include_config_entries:
-        ce = get_config_entries("*")
+        ce = get_config_entries("*", False, False, False, False)
         ce.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
         df = _append_metadata_columns(df, ce, "_config")
 
@@ -287,17 +287,17 @@ def get_config_entries(filter_expression, include_runattrs, include_itervars, in
     df = pd.read_csv(io.BytesIO(output), sep='\t', header=None, names=["runID", "name", "value"])
 
     if include_itervars:
-        iv = get_itervars("*")
+        iv = get_itervars("*", False, False, False, False, True)
         iv.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
         df = _append_metadata_columns(df, iv, "_itervar")
 
     if include_runattrs:
-        ra = get_runattrs("*")
+        ra = get_runattrs("*", False, False, False)
         ra.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
         df = _append_metadata_columns(df, ra, "_runattr")
 
     if include_config_entries:
-        ce = get_config_entries("*")
+        ce = get_config_entries("*", False, False, False, False)
         ce.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
         df = _append_metadata_columns(df, ce, "_config")
 
