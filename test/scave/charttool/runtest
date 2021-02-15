@@ -5,7 +5,7 @@ set -e
 
 rm -rf results
 
-opp_makemake -f
+opp_makemake -f -o scave
 make -j6 MODE=debug
 
 ./scave_dbg -u Cmdenv

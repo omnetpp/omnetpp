@@ -2,12 +2,16 @@
 # OMNeT++/OMNEST Makefile for scave
 #
 # This file was generated with the command:
-#  opp_makemake -f
+#  opp_makemake -f -o scave
 #
 
 # Name of target to be created (-o option)
-TARGET = scave$(D)$(EXE_SUFFIX)
 TARGET_DIR = .
+TARGET_NAME = scave$(D)
+TARGET = $(TARGET_NAME)$(EXE_SUFFIX)
+TARGET_IMPLIB = $(TARGET_NAME)$(IMPLIB_SUFFIX)
+TARGET_IMPDEF = $(TARGET_NAME)$(IMPDEF_SUFFIX)
+TARGET_FILES = $(TARGET_DIR)/$(TARGET)
 
 # User interface (uncomment one) (-u option)
 USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(QTENV_LIBS) $(CMDENV_LIBS)
@@ -78,7 +82,7 @@ endif
 #------------------------------------------------------------------------------
 
 # Main target
-all: $(TARGET_DIR)/$(TARGET)
+all: $(TARGET_FILES)
 
 $(TARGET_DIR)/% :: $O/%
 	@mkdir -p $(TARGET_DIR)
@@ -116,8 +120,7 @@ smheaders: $(SMFILES:.sm=_sm.h)
 clean:
 	$(qecho) Cleaning $(TARGET)
 	$(Q)-rm -rf $O
-	$(Q)-rm -f $(TARGET_DIR)/$(TARGET)
-	$(Q)-rm -f $(TARGET_DIR)/$(TARGET:%.dll=%.lib)
+	$(Q)-rm -f $(TARGET_FILES)
 	$(Q)-rm -f $(call opp_rwildcard, . , *_m.cc *_m.h *_sm.cc *_sm.h)
 
 cleanall:

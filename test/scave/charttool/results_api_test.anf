@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <analysis version="2">
     <inputs>
-        <input pattern="/scave_test/results/General-*.vec"/>
-        <input pattern="/scave_test/results/General-*.sca"/>
+        <input pattern="results/General-*.vec"/>
+        <input pattern="results/General-*.sca"/>
     </inputs>
     <charts>
         <chart icon="icons/full/obj/barchart.png" id="180" name="get_runs" template="barchart_legacy" type="BAR">
@@ -550,8 +550,7 @@ def test_runattrs_with_all():
     _assert(sanitize_and_compare_csv(df, "runattrs_with_all.csv"), "content mismatch")
     _assert(df.apply(lambda r: r[r["name"]] == r["value"], axis=1).all(), "wrong join")
 
-run_tests(locals())
-]]>
+run_tests(locals())]]>
             </script>
             <dialogPage id="Main" label="Main">
                 <![CDATA[<?xml version="1.0" encoding="UTF-8"?>
