@@ -4493,6 +4493,9 @@ if failed:
   print("Failed to import: " + ", ".join(failed))
   exit(1)
 
+# The utils module checks the versions of some Python packages when imported
+from omnetpp.scave import utils
+
 EOT
 )
 

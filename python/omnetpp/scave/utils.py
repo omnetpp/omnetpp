@@ -25,6 +25,36 @@ import matplotlib.pyplot as plt
 from itertools import cycle
 from omnetpp.scave import chart, plot, vectorops
 
+
+def check_version(module, required):
+    def parse_version(v: str):
+        import re
+        m = re.search(R"(\d+)\.(\d+)\.(\d+).*", v)
+        return int(m.group(1)), int(m.group(2)), int(m.group(3))
+
+    def too_old(actual, required):
+        major, minor, patch = parse_version(actual)
+        rmajor, rminor, rpatch = parse_version(required)
+
+        if major != rmajor:
+            return major < rmajor
+
+        if minor != rminor:
+            return minor < rminor
+
+        return patch < rpatch
+
+    if too_old(module.__version__, required):
+        print("WARNING: '" + module.__name__ + "' is too old, some analysis tool functionality may be broken. "
+              "Required: " + required + ", present: " + module.__version__ + ". "
+              "Try running `python3 -m pip install --user --upgrade " + module.__name__ + "` to upgrade."
+              , file=sys.stderr)
+
+check_version(np, "1.18.0")  # Dec 22, 2019
+check_version(pd, "1.0.0")  # January 29, 2020
+check_version(mpl, "3.0.0")  # Sep 19, 2018
+
+
 # color and marker cycles, with defaults in case _initialize_cycles() is not called
 _marker_cycle = cycle(list("osv^<>pDd"))
 _color_cycle = cycle(["C" + str(i) for i in range(10)])
