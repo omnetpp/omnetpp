@@ -735,9 +735,9 @@ def _perform_vector_op(df, line: str):
 
     # perform operation
     if type == "apply":
-        df = _apply_vector_op(df, function, *args, **kwargs)
+        df = _apply_vector_op(df, name + arglist_str, function, *args, **kwargs)
     elif type == "compute":
-        df = _compute_vector_op(df, function, *args, **kwargs)
+        df = _compute_vector_op(df, name + arglist_str, function, *args, **kwargs)
     return df
 
 
@@ -780,7 +780,7 @@ def _parse_vectorop_line(line: str):
     return type, module, name, args, kwargs, arglist_str
 
 
-def _apply_vector_op(df, operation, *args, **kwargs):
+def _apply_vector_op(df, op_str, operation, *args, **kwargs):
     """
     Process a vector operation with the `apply` prefix. Helper for `perform_vector_ops()`.
     """
@@ -795,7 +795,7 @@ def _apply_vector_op(df, operation, *args, **kwargs):
         return clone
 
 
-def _compute_vector_op(df, operation, *args, **kwargs):
+def _compute_vector_op(df, op_str, operation, *args, **kwargs):
     """
     Process a vector operation with the `compute` prefix. Helper for `perform_vector_ops()`.
     """
