@@ -791,7 +791,11 @@ def _apply_vector_op(df, op_str, operation, *args, **kwargs):
     else:
         condition = kwargs.pop('condition', None)
         clone = df.copy()
-        clone = clone.transform(lambda row: operation(row.copy(), *args, **kwargs) if not condition or condition(row) else row, axis='columns')
+        def process(row):
+            row = operation(row, *args, **kwargs)
+            row["name"] = row["name"] + ":" + op_str
+            return row
+        clone = clone.transform(lambda row: process(row.copy()) if not condition or condition(row) else row, axis='columns')
         return clone
 
 
@@ -806,7 +810,11 @@ def _compute_vector_op(df, op_str, operation, *args, **kwargs):
     else:
         condition = kwargs.pop('condition', None)
         clone = df.copy()
-        clone = clone.transform(lambda row: operation(row.copy(), *args, **kwargs) if not condition or condition(row) else row, axis='columns')
+        def process(row):
+            row = operation(row, *args, **kwargs)
+            row["name"] = row["name"] + ":" + op_str
+            return row
+        clone = clone.transform(lambda row: process(row.copy()) if not condition or condition(row) else row, axis='columns')
         return df.append(clone, sort=False)
 
 
