@@ -747,7 +747,13 @@ def _parse_vectorop_line(line: str):
     Helper for `perform_vector_ops()`.
     """
     line = line.strip()
-    m = re.match(r"((\w+)\s*:)?\s*(([\w.]+)\.)?(\w+)?(.*)", line)  # always matches due to last group
+    m = re.match(r"""(?x) # allow whitespace and comments in regex
+        ((\w+)\s*:)?      # optional "apply:" or "compute:"
+        \s*               # optional whitespace
+        (([\w.]+)\.)?     # optional qualifier (module prefix) for function name
+        (\w+)?            # function name (optional so we can allow blank and comment-only lines)
+        (.*)              # the rest: arglist in parens, comment (both optional)
+        """, line)        # note: this regex always matches, and always matches the whole string due to last group
     _, type, _, module, name, rest = m.groups()
     if not name:
         if line and not line.startswith('#'):
