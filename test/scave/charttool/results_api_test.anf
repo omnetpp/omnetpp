@@ -2058,7 +2058,7 @@ def test_unused_columns():
     return df.shape == (6, 19)
 
 def test_result_filter():
-    df = results.get_results("type(scalar)")
+    df = results.get_results("type =~ scalar")
     # in all 6 runs: 18 lines of metadata, and 3 lines (1 scalar and 2 attrs) for all 8 scalars
     return df.shape == (252, 7)
 
@@ -2068,30 +2068,30 @@ def test_row_type_filter_1():
     return df.shape == (48, 5)
 
 def test_row_type_filter_2():
-    df = results.get_results("run(*General-0*) AND module(Test.node1) AND name(foo1*)", row_types=["scalar", "attr"])
+    df = results.get_results("run =~ *General-0* AND module =~ Test.node1 AND name =~ foo1*", row_types=["scalar", "attr"])
     # 2 times 3 rows for scalars (incl. value), and 3 times 2 rows for the vector, stats, and histogram (only attr)
     # since we only filtered for row types, not result types, we get the attrs for the other kinds of results too, just not the results themselves
     return df.shape == (12, 7)
 
 def test_row_type_filter_3():
-    df = results.get_results("type(param)", row_types=["attr"])
+    df = results.get_results("type =~ param", row_types=["attr"])
     # params don't have attrs
     return df.empty
 
 def test_vector_data():
-    df = results.get_results("type(vector) AND run(General-0*)", row_types=["vector"])
+    df = results.get_results("type =~ vector AND run =~ General-0*", row_types=["vector"])
     return df["vectime"].map(lambda a: a.shape == (100,)).all()
 
 def test_vector_time_limit_1():
-    df = results.get_results("type(vector) AND run(General-0*)", row_types=["vector"], start_time=20.0)
+    df = results.get_results("type =~ vector AND run =~ General-0*", row_types=["vector"], start_time=20.0)
     return df["vectime"].map(lambda a: (a >= 20.0).all()).all()
 
 def test_vector_time_limit_2():
-    df = results.get_results("type(vector) AND run(General-0*)", row_types=["vector"], end_time=50.0)
+    df = results.get_results("type =~ vector AND run =~ General-0*", row_types=["vector"], end_time=50.0)
     return df["vectime"].map(lambda a: (a < 50.0).all()).all()
 
 def test_vector_time_limit_3():
-    df = results.get_results("type(vector) AND run(General-0*)", row_types=["vector"], start_time=20, end_time=50.0)
+    df = results.get_results("type =~ vector AND run =~ General-0*", row_types=["vector"], start_time=20, end_time=50.0)
     return df["vectime"].map(lambda a: (a >= 20.0).all() and (a < 50.0).all()).all()
 
 
