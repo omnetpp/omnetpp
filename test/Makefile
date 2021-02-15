@@ -3,7 +3,7 @@
 # are REQUIRED to pass before each release.
 #
 
-# Test everything. Note, that test_core, test_common, test_envir and test_makemake is not included, because those 
+# Test everything. Note, that test_core, test_common, test_envir and test_makemake is not included, because those
 # test are implicitly executed by the 'test_build' target
 all: test_anim test_models test_featuretool test_fingerprint test_sqliteresultfiles test_build test_toolchain
 
@@ -42,6 +42,12 @@ test_sqliteresultfiles:
 
 test_toolchain:
 	cd toolchain && ./runtest
+
+test_scave_charttool:
+	cd scave/charttool && ./runtest
+
+test_scave_charttemplates:
+	cd scave/charttemplates && ./runtest.py
 
 cleanall: clean   # TODO
 
