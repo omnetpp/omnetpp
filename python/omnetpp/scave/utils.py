@@ -717,7 +717,7 @@ def _perform_vector_op(df, line: str):
     Performs one vector operation on the dataframe. Helper for `perform_vector_ops()`.
     """
     # parse line
-    type, module, name, args, kwargs = _parse_vectorop_line(line)
+    type, module, name, args, kwargs, arglist_str = _parse_vectorop_line(line)
     if name is None: # empty line
         return df
 
@@ -758,7 +758,7 @@ def _parse_vectorop_line(line: str):
     if not name:
         if line and not line.startswith('#'):
             raise SyntaxError("Syntax error")
-        return (None, None, None, None, None)
+        return (None, None, None, None, None, None)
     if not type:
         type = "apply"
     if not type in ['apply', 'compute']:
@@ -776,7 +776,8 @@ def _parse_vectorop_line(line: str):
         raise SyntaxError("Syntax error in argument list")
     except Exception as e:
         raise ValueError("Error in argument list: " + str(e))
-    return type, module, name, args, kwargs
+    arglist_str = re.sub(r"\)\s*#.*", ")", rest) if args or kwargs else ""
+    return type, module, name, args, kwargs, arglist_str
 
 
 def _apply_vector_op(df, operation, *args, **kwargs):
