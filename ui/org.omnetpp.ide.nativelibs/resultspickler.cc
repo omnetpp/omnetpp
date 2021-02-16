@@ -669,7 +669,7 @@ ShmSendBuffer *ResultsPickler::getConfigEntriesPickle(const char *filterExpressi
 
 ShmSendBuffer *ResultsPickler::getParamAssignmentsPickle(const char *filterExpression)
 {
-    RunAndValueList paramAssignments = opp_isempty(filterExpression) ? RunAndValueList() : rfm->getMatchingConfigEntries(rfm->getRuns(), filterExpression);
+    RunAndValueList paramAssignments = opp_isempty(filterExpression) ? RunAndValueList() : rfm->getMatchingParamAssignmentConfigEntries(rfm->getRuns(), filterExpression);
     return getParamAssignmentsPickle(paramAssignments);
 }
 
