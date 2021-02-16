@@ -119,10 +119,19 @@ def _append_metadata_columns(df, meta, suffix):
 
     return df
 
-def _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name):
-    # TODO add params
-    itervars, runattrs, configs, attrs, df = _split_by_types(df, ["itervar", "runattr", "config", "attr"])
+def _select_param_assignments(config_entries_df):
+    names = config_entries_df["attrname"]
 
+    is_typename = names.str.endswith(".typename")
+    is_param = ~is_typename & names.str.match(r"^.*\.[^.-]+$")
+
+    result = config_entries_df.loc[is_param]
+
+    return result
+
+def _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name):
+    itervars, runattrs, configs, attrs, df = _split_by_types(df, ["itervar", "runattr", "config", "attr"])
+    params = _select_param_assignments(configs)
 
     if include_attrs and attrs is not None and not attrs.empty:
         attrs = pd.pivot_table(attrs, columns="attrname", aggfunc='first', index=["runID", "module", "name"], values="attrvalue")
@@ -134,9 +143,8 @@ def _pivot_results(df, include_attrs, include_runattrs, include_itervars, includ
         df = _append_metadata_columns(df, runattrs, "_runattr")
     if include_config_entries:
         df = _append_metadata_columns(df, configs, "_config")
-    # TODO maybe only params, based on include_ args
-
-    #TODO df.join(params, on="run", rsuffix="_param")
+    if include_param_assignments and not include_config_entries:
+        df = _append_metadata_columns(df, params, "_param")
 
     df.drop(['type', 'attrname', 'attrvalue'], axis=1, inplace=True)
 
@@ -191,128 +199,56 @@ def get_parameters(filter_expression, include_attrs, include_runattrs, include_i
         df["value"] = pd.to_numeric(df["value"], errors="ignore")
     return df
 
-def _get_metadata(filter_expression, include_runattrs, include_itervars, include_param_assignments, include_config_entries):
-    # TODO: factor out common parts of the ones below here
-    pass
 
-def get_runs(filter_expression, include_runattrs, include_itervars, include_param_assignments, include_config_entries):
-    command = ["opp_scavetool", "q", *inputfiles, "-r", '-f',
-                filter_expression, "-g"]
+def _get_metadata(filter_expression, query_flag, include_runattrs, include_itervars, include_param_assignments, include_config_entries, as_numeric, columns=["runID", "name", "value"]):
+    """
+    Internal. See `opp_scavetool q -h`.
+    - `query_flag`: Sets the type of metadata to query. One of: "-l", "-a", "-i", "-j", "-t"
+    """
+    command = ["opp_scavetool", "q", *inputfiles, "-f", filter_expression, query_flag, "-g", "--tabs"]
 
-    output = subprocess.check_output(command)
+    output = subprocess.check_output(command).strip()
 
     if len(output.decode("utf-8").splitlines()) == 0:
         print("<!> HINT: opp_scavetool returned an empty result. Consider adding a project name to directory mapping, for example: -p /aloha=../aloha")
 
-    # with open("output.csv", "tw") as outp:
-    #     outp.write(str(output))
-
     # TODO: stream the output through subprocess.PIPE ?
-    df = pd.read_csv(io.BytesIO(output),  header=None, names=["runID"])
-
-    # TODO: convert column dtype as well?
+    df = pd.read_csv(io.BytesIO(output), sep='\t', header=None, names=columns)
 
     if include_itervars:
-        iv = get_itervars("*", False, False, False, False, True)
-        iv.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
+        iv = get_itervars("*", False, False, False, False, as_numeric)
+        iv.rename(columns={"name": "attrname", "value": "attrvalue"}, inplace=True) # oh, inconsistencies...
         df = _append_metadata_columns(df, iv, "_itervar")
 
     if include_runattrs:
         ra = get_runattrs("*", False, False, False, False)
         ra.rename(columns={"name": "attrname", "value": "attrvalue"}, inplace=True) # oh, inconsistencies...
-        df = _append_metadata_columns(df,ra, "_runattr")
+        df = _append_metadata_columns(df, ra, "_runattr")
 
     if include_config_entries:
         ce = get_config_entries("*", False, False, False, False)
-        ce.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
+        ce.rename(columns={"name": "attrname", "value": "attrvalue"}, inplace=True) # oh, inconsistencies...
         df = _append_metadata_columns(df, ce, "_config")
 
-    # TODO maybe only params, based on include_ args
-    #TODO df.join(params, on="run", rsuffix="_param")
+    if include_param_assignments and not include_config_entries:
+        pa = get_param_assignments("*", False, False, False, False)
+        pa.rename(columns={"name": "attrname", "value": "attrvalue"}, inplace=True) # oh, inconsistencies...
+        df = _append_metadata_columns(df, pa, "_param")
 
     return df
+
+
+def get_runs(filter_expression, include_runattrs, include_itervars, include_param_assignments, include_config_entries):
+    return _get_metadata(filter_expression, "-r", include_runattrs, include_itervars, include_param_assignments, include_config_entries, False, columns=["runID"])
 
 def get_runattrs(filter_expression, include_runattrs, include_itervars, include_param_assignments, include_config_entries):
-    command = ["opp_scavetool", "q", *inputfiles, "-a", "-g", "--tabs"]
-
-    output = subprocess.check_output(command)
-
-    if len(output.decode('utf-8').splitlines()) == 1:
-        print("<!> HINT: opp_scavetool returned an empty result. Consider adding a project name to directory mapping, for example: -p /aloha=../aloha")
-
-    # TODO: stream the output through subprocess.PIPE ?
-    df = pd.read_csv(io.BytesIO(output), sep='\t', header=None, names=["runID", "name", "value"])
-
-    if include_itervars:
-        iv = get_itervars("*", False, False, False, False, True)
-        iv.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
-        df = _append_metadata_columns(df, iv, "_itervar")
-
-    if include_runattrs:
-        ra = get_runattrs("*", False, False, False, False)
-        ra.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
-        df = _append_metadata_columns(df, ra, "_runattr")
-
-    if include_config_entries:
-        ce = get_config_entries("*", False, False, False, False)
-        ce.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
-        df = _append_metadata_columns(df, ce, "_config")
-
-    return df
-
+    return _get_metadata(filter_expression, "-a", include_runattrs, include_itervars, include_param_assignments, include_config_entries, False)
 
 def get_itervars(filter_expression, include_runattrs, include_itervars, include_param_assignments, include_config_entries, as_numeric):
-    command = ["opp_scavetool", "q", *inputfiles, "-i", "-g", "--tabs"]
-
-    output = subprocess.check_output(command)
-
-    if len(output.decode('utf-8').splitlines()) == 1:
-        print("<!> HINT: opp_scavetool returned an empty result. Consider adding a project name to directory mapping, for example: -p /aloha=../aloha")
-
-    # TODO: stream the output through subprocess.PIPE ?
-    df = pd.read_csv(io.BytesIO(output), sep='\t', header=None, names=["runID", "name", "value"])
-
-    if include_itervars:
-        iv = get_itervars("*", False, False, False, False, as_numeric)
-        iv.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
-        df = _append_metadata_columns(df, iv, "_itervar")
-
-    if include_runattrs:
-        ra = get_runattrs("*", False, False, False, False)
-        ra.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
-        df = _append_metadata_columns(df, ra, "_runattr")
-
-    if include_config_entries:
-        ce = get_config_entries("*", False, False, False, False)
-        ce.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
-        df = _append_metadata_columns(df, ce, "_config")
-
-    return df
+    return _get_metadata(filter_expression, "-i", include_runattrs, include_itervars, include_param_assignments, include_config_entries, as_numeric)
 
 def get_config_entries(filter_expression, include_runattrs, include_itervars, include_param_assignments, include_config_entries):
-    command = ["opp_scavetool", "q", *inputfiles, "-j", "-g", "--tabs"]
+    return _get_metadata(filter_expression, "-j", include_runattrs, include_itervars, include_param_assignments, include_config_entries, False)
 
-    output = subprocess.check_output(command)
-
-    if len(output.decode('utf-8').splitlines()) == 1:
-        print("<!> HINT: opp_scavetool returned an empty result. Consider adding a project name to directory mapping, for example: -p /aloha=../aloha")
-
-    # TODO: stream the output through subprocess.PIPE ?
-    df = pd.read_csv(io.BytesIO(output), sep='\t', header=None, names=["runID", "name", "value"])
-
-    if include_itervars:
-        iv = get_itervars("*", False, False, False, False, True)
-        iv.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
-        df = _append_metadata_columns(df, iv, "_itervar")
-
-    if include_runattrs:
-        ra = get_runattrs("*", False, False, False)
-        ra.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
-        df = _append_metadata_columns(df, ra, "_runattr")
-
-    if include_config_entries:
-        ce = get_config_entries("*", False, False, False, False)
-        ce.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
-        df = _append_metadata_columns(df, ce, "_config")
-
-    return df
+def get_param_assignments(filter_expression, include_runattrs, include_itervars, include_param_assignments, include_config_entries):
+    return _get_metadata(filter_expression, "-t", include_runattrs, include_itervars, include_param_assignments, include_config_entries, False)
