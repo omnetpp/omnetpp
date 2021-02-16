@@ -359,7 +359,6 @@ void ScaveTool::queryCommand(int argc, char **argv)
     QueryMode opt_mode = PRINT_SUMMARY;
     vector<string> opt_fileNames;
     string opt_filterExpression = "*";
-    string opt_resultTypeFilterStr;
     string opt_runDisplayModeStr;
     int opt_resultTypeFilter = ResultFileManager::SCALAR | ResultFileManager::VECTOR | ResultFileManager::STATISTICS | ResultFileManager::HISTOGRAM | ResultFileManager::PARAMETER;
     RunDisplayMode opt_runDisplayMode = RUNDISPLAY_RUNID;
@@ -402,9 +401,9 @@ void ScaveTool::queryCommand(int argc, char **argv)
         else if (opt == "-c" || opt == "--list-configs")
             opt_mode = LIST_CONFIGS;
         else if ((opt == "-T" || opt == "--type") && i != argc-1)
-            opt_resultTypeFilterStr = unquoteString(argv[++i]);
+            opt_resultTypeFilter = resolveResultTypeFilter(unquoteString(argv[++i]));
         else if (opt.substr(0,2) == "-T")
-            opt_resultTypeFilterStr = opt.substr(2);
+            opt_resultTypeFilter = resolveResultTypeFilter(opt.substr(2));
         else if ((opt == "-f" || opt == "--filter") && i != argc-1)
             opt_filterExpression = unquoteString(argv[++i]);
         else if ((opt == "-D" || opt == "--rundisplay") && i != argc-1)
@@ -430,10 +429,6 @@ void ScaveTool::queryCommand(int argc, char **argv)
         else
             throw opp_runtime_error("Unknown option '%s'", opt.c_str());
     }
-
-    // resolve -T, filter by result type
-    if (opt_resultTypeFilterStr != "")
-        opt_resultTypeFilter = resolveResultTypeFilter(opt_resultTypeFilterStr);
 
     // resolve -D, run display mode
     if (opt_runDisplayModeStr != "") {
@@ -677,7 +672,6 @@ void ScaveTool::exportCommand(int argc, char **argv)
 {
     vector<string> opt_fileNames;
     string opt_filterExpression = "*";
-    string opt_resultTypeFilterStr;
     int opt_resultTypeFilter = ResultFileManager::SCALAR | ResultFileManager::VECTOR | ResultFileManager::STATISTICS | ResultFileManager::HISTOGRAM | ResultFileManager::PARAMETER;
     bool opt_verbose = false;
     bool opt_indexingAllowed = true;
@@ -697,9 +691,9 @@ void ScaveTool::exportCommand(int argc, char **argv)
         else if (opt == "--")
             endOpts = true;
         else if ((opt == "-T" || opt == "--type") && i != argc-1)
-            opt_resultTypeFilterStr = unquoteString(argv[++i]);
+            opt_resultTypeFilter = resolveResultTypeFilter(unquoteString(argv[++i]));
         else if (opt.substr(0,2) == "-T")
-            opt_resultTypeFilterStr = opt.substr(2);
+            opt_resultTypeFilter = resolveResultTypeFilter(opt.substr(2));
         else if ((opt == "-f" || opt == "--filter") && i != argc-1)
             opt_filterExpression = unquoteString(argv[++i]);
         else if (opt == "-w" || opt == "--add-fields-as-scalars")
@@ -752,10 +746,6 @@ void ScaveTool::exportCommand(int argc, char **argv)
 
     exporter->setVectorStartTime(opt_vectorStartTime);
     exporter->setVectorEndTime(opt_vectorEndTime);
-
-    // resolve -T, filter by result type
-    if (opt_resultTypeFilterStr != "")
-        opt_resultTypeFilter = resolveResultTypeFilter(opt_resultTypeFilterStr);
 
     // load files
     ResultFileManager resultFileManager;
