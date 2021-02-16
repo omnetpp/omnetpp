@@ -2,15 +2,17 @@ from omnetpp.scave import chart, plot
 import difflib
 
 def sanitize_row(row):
-    if "attrname" in row and row["attrname"] in ["datetime", "processid"]:
+    if "attrname" in row and row["attrname"] in ["datetime", "datetimef", "processid"]:
         row["attrvalue"] = "REDACTED"
-    if "name" in row and row["name"] in ["datetime", "processid"]:
+    if "name" in row and row["name"] in ["datetime", "datetimef", "processid"]:
         row["value"] = "REDACTED"
     row["runID"] = "-".join(row["runID"].split("-")[:2]) + "-REDACTED"
     if "processid" in row:
         row["processid"] = "REDACTED"
     if "datetime" in row:
         row["datetime"] = "REDACTED"
+    if "datetimef" in row:
+        row["datetimef"] = "REDACTED"
     return row
 
 def sanitize(df):
