@@ -209,8 +209,8 @@ def get_config_entries(filter_expression, include_runattrs, include_itervars, in
     return _append_additional_data(df, None, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
 
 
-def get_scalars(filter_expression, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name):
-    shmname = Gateway.results_provider.getScalarsPickle(filter_expression, include_attrs)
+def get_scalars(filter_expression, include_attrs, include_fields, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name):
+    shmname = Gateway.results_provider.getScalarsPickle(filter_expression, include_attrs, include_fields)
     scalars, attrs = _load_pickle_from_shm(shmname)
     df = pd.DataFrame(scalars, columns=["runID", "module", "name", "value"])
 

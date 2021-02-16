@@ -179,13 +179,12 @@ public class ResultsProvider implements IScaveResultsPickleProvider {
     }
 
     @Override
-    public String getScalarsPickle(String filterExpression, boolean includeAttrs) throws PickleException, IOException {
-        Key key = new Key("getScalarsPickle", filterExpression, includeAttrs);
+    public String getScalarsPickle(String filterExpression, boolean includeAttrs, boolean includeFields) throws PickleException, IOException {
+        Key key = new Key("getScalarsPickle", filterExpression, includeAttrs, includeFields);
         return memoize(key, () -> {
             IDList idList = filterCache.getFilterResult(ResultFileManager.SCALAR, filterExpression);
             if (idList == null)
-                // TODO: should the GUI switch for including fields matter here? is that handled elsewhere?
-                idList = manager.filterIDList(manager.getAllScalars(true), filterExpression, -1, interrupted); // no need to cache, as result will be (likely) memoized
+                idList = manager.filterIDList(manager.getAllScalars(includeFields), filterExpression, -1, interrupted); // no need to cache, as result will be (likely) memoized
             return pickler.getScalarsPickle(idList, includeAttrs);
         });
     }

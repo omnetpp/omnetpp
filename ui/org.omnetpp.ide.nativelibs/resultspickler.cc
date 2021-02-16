@@ -353,12 +353,12 @@ std::vector<ShmSendBuffer *> ResultsPickler::getCsvResultsPickle(const IDList& r
     return buffers;
 }
 
-ShmSendBuffer *ResultsPickler::getScalarsPickle(const char *filterExpression, bool includeAttrs)
+ShmSendBuffer *ResultsPickler::getScalarsPickle(const char *filterExpression, bool includeAttrs, bool includeFields)
 {
     if (opp_isempty(filterExpression))
         return getScalarsPickle(IDList(), includeAttrs);
     else {
-        IDList allScalars = rfm->getAllScalars(true); // filter may match field scalars as well
+        IDList allScalars = rfm->getAllScalars(includeFields); // filter may match field scalars as well
         IDList scalars = rfm->filterIDList(allScalars, filterExpression, -1, interrupted);
         return getScalarsPickle(scalars, includeAttrs);
     }

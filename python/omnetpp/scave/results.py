@@ -78,6 +78,8 @@ def get_results(filter_expression="", row_types=['runattr', 'itervar', 'config',
     - `row_types`: Optional. When given, filters the returned rows by type. Should be a unique list, containing any number of these strings:
       `"runattr"`, `"itervar"`, `"config"`, `"scalar"`, `"vector"`, `"statistic"`, `"histogram"`, `"param"`, `"attr"`
     - `omit_unused_columns` (bool): Optional. If `True`, all columns that would only contain `None` are removed from the returned DataFrame
+    - `include_fields_as_scalars` (bool): Optional. If `True`, the fields of statistics and histograms (`:min`, `:mean`, etc.) are also
+      returned as synthetic scalars.
     - `start_time`, `end_time` (double): Optional time limits to trim the data of vector type results.
       The unit is seconds, both the `vectime` and `vecvalue` arrays will be affected, the interval is left-closed, right-open.
 
@@ -169,7 +171,7 @@ def get_itervars(filter_expression="", include_runattrs=False, include_itervars=
 
 
 @_guarded_result_query_func
-def get_scalars(filter_expression="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False):
+def get_scalars(filter_expression="", include_attrs=False, include_fields=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False):
     """
     Returns a filtered list of scalar results.
 
@@ -179,6 +181,8 @@ def get_scalars(filter_expression="", include_attrs=False, include_runattrs=Fals
       Example: `name =~ "channelUtilization*" AND runattr:replication =~ "#0"`
     - `include_attrs` (bool): Optional. When set to `True`, result attributes (like `unit`
       or `source` for example) are appended to the DataFrame, pivoted into columns.
+    - `include_fields` (bool): Optional. If `True`, the fields of statistics and histograms
+      (`:min`, `:mean`, etc.) are also returned as synthetic scalars.
     - `include_runattrs`, `include_itervars`, `include_param_assignments`, `include_config_entries` (bool):
       Optional. When set to `True`, additional pieces of metadata about the run is appended to the DataFrame, pivoted into columns.
     - `merge_module_and_name` (bool): Optional. When set to `True`, the value in the `module` column

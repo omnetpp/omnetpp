@@ -150,9 +150,12 @@ def get_results(filter_expression, row_types, omit_unused_columns, start_time, e
     df = df[df["type"].isin(row_types)]
     return df
 
-def get_scalars(filter_expression, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name):
+def get_scalars(filter_expression, include_attrs, include_fields, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name):
+    args = []
+    if include_fields:
+        args.append("--add-fields-as-scalars")
     # TODO filter row types based on include_ args, as optimization
-    df = _get_results(filter_expression, ['.sca'], 's')
+    df = _get_results(filter_expression, ['.sca'], 's', *args)
     df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
     return df
 

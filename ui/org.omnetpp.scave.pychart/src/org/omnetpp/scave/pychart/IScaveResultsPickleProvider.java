@@ -40,7 +40,7 @@ public interface IScaveResultsPickleProvider {
     List<String> getResultsPickle(String filterExpression, List<String> rowTypes, boolean omitUnusedColumns, double simTimeStart, double simTimeEnd) throws PickleException, IOException;
 
     // simple format
-    String getScalarsPickle(String filterExpression, boolean includeAttrs) throws PickleException, IOException;
+    String getScalarsPickle(String filterExpression, boolean includeAttrs, boolean includeFields) throws PickleException, IOException;
     List<String> getVectorsPickle(String filterExpression, boolean includeAttrs, double simTimeStart, double simTimeEnd) throws PickleException, IOException;
     String getStatisticsPickle(String filterExpression, boolean includeAttrs) throws PickleException, IOException;
     String getHistogramsPickle(String filterExpression, boolean includeAttrs) throws PickleException, IOException;

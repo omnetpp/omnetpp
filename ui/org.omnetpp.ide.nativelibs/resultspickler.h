@@ -54,7 +54,7 @@ public:
     std::vector<ShmSendBuffer *> getCsvResultsPickle(const char *filterExpression, std::vector<std::string> rowTypes, bool omitUnusedColumns, double simTimeStart, double simTimeEnd);
     std::vector<ShmSendBuffer *> getCsvResultsPickle(const IDList& results, std::vector<std::string> rowTypes, bool omitUnusedColumns, double simTimeStart, double simTimeEnd);
 
-    ShmSendBuffer *getScalarsPickle(const char *filterExpression, bool includeAttrs);
+    ShmSendBuffer *getScalarsPickle(const char *filterExpression, bool includeAttrs, bool includeFields);
     std::vector<ShmSendBuffer *> getVectorsPickle(const char *filterExpression, bool includeAttrs, double simTimeStart, double simTimeEnd);
     ShmSendBuffer *getStatisticsPickle(const char *filterExpression, bool includeAttrs);
     ShmSendBuffer *getHistogramsPickle(const char *filterExpression, bool includeAttrs);
