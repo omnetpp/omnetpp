@@ -84,6 +84,8 @@ void ScaveTool::printHelpPage(const std::string& page)
         help.option("-l, --list-results", "List result items");
         help.option("-a, --list-runattrs", "List run attributes");
         help.option("-i, --list-itervars", "List iteration variables");
+        help.option("-j, --list-configentries", "List config entries");
+        help.option("-t, --list-paramassignments", "List NED parameter assignments (a subset of config entries)");
         help.option("-n, --list-names", "List unique result (vector, scalar, etc) names");
         help.option("-m, --list-modules", "List unique module names");
         help.option("-e  --list-qnames", "List unique result names qualified with the module names they occur with");
@@ -350,7 +352,7 @@ static void listRunMetadata(std::ostream &out, const RunAndValueList& metadata, 
 void ScaveTool::queryCommand(int argc, char **argv)
 {
     enum QueryMode {
-        PRINT_SUMMARY, LIST_RESULTS, LIST_RUNATTRS, LIST_ITERVARS, LIST_CONFIGENTRIES,
+        PRINT_SUMMARY, LIST_RESULTS, LIST_RUNATTRS, LIST_ITERVARS, LIST_CONFIGENTRIES, LIST_PARAMASSIGNMENTS,
         LIST_MODULES, LIST_NAMES, LIST_MODULE_AND_NAME_PAIRS, LIST_RUNS, LIST_CONFIGS
     };
 
@@ -387,6 +389,8 @@ void ScaveTool::queryCommand(int argc, char **argv)
             opt_mode = LIST_ITERVARS;
         else if (opt == "-j" || opt == "--list-configentries")
             opt_mode = LIST_CONFIGENTRIES;
+        else if (opt == "-t" || opt == "--list-paramassignments")
+            opt_mode = LIST_PARAMASSIGNMENTS;
         else if (opt == "-n" || opt == "--list-names")
             opt_mode = LIST_NAMES;
         else if (opt == "-m" || opt == "--list-modules")
@@ -451,7 +455,7 @@ void ScaveTool::queryCommand(int argc, char **argv)
 
     // filter statistics
     IDList results = resultFileManager.getAllItems(opt_includeFields);
-    if (opt_mode != LIST_RUNS && opt_mode != LIST_RUNATTRS && opt_mode != LIST_ITERVARS && opt_mode != LIST_CONFIGENTRIES) {
+    if (opt_mode != LIST_RUNS && opt_mode != LIST_RUNATTRS && opt_mode != LIST_ITERVARS && opt_mode != LIST_CONFIGENTRIES && opt_mode != LIST_PARAMASSIGNMENTS) {
         results = results.filterByTypes(opt_resultTypeFilter);
         results = resultFileManager.filterIDList(results, opt_filterExpression.c_str());
     }
@@ -576,6 +580,11 @@ void ScaveTool::queryCommand(int argc, char **argv)
     case LIST_CONFIGENTRIES: {
         RunAndValueList filteredConfigEntries = resultFileManager.getMatchingConfigEntries(runs, opt_filterExpression.c_str());
         listRunMetadata(out, filteredConfigEntries, [](Run *run, const std::string& name) { return run->getConfigValue(name); }, opt_runDisplayMode, opt_grepFriendly);
+        break;
+    }
+    case LIST_PARAMASSIGNMENTS: {
+        RunAndValueList filteredParamAssignments = resultFileManager.getMatchingParamAssignmentConfigEntries(runs, opt_filterExpression.c_str());
+        listRunMetadata(out, filteredParamAssignments, [](Run *run, const std::string& name) { return run->getConfigValue(name); }, opt_runDisplayMode, opt_grepFriendly);
         break;
     }
     case LIST_NAMES: {
