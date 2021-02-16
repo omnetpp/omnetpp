@@ -1,0 +1,8 @@
+['runID: object', 'configname: object', 'datetime: object', 'datetimef: object', 'experiment: object', 'inifile: object', 'iterationvars: object', 'iterationvarsd: object', 'iterationvarsf: object', 'measurement: object', 'network: object', 'processid: object', 'repetition: object', 'replication: object', 'resultdir: object', 'runnumber: object', 'seedset: object', '**.bar: object', 'network_config: object', 'repeat: object']
+"runID","configname","datetime","datetimef","experiment","inifile","iterationvars","iterationvarsd","iterationvarsf","measurement","network","processid","repetition","replication","resultdir","runnumber","seedset","**.bar","network_config","repeat"
+"General-0-REDACTED","General","REDACTED","REDACTED","General","omnetpp.ini","$N=1","N=1","N=1-","$N=1","Test","REDACTED","0","#0","results","0","0","1","Test","2"
+"General-1-REDACTED","General","REDACTED","REDACTED","General","omnetpp.ini","$N=1","N=1","N=1-","$N=1","Test","REDACTED","1","#1","results","1","1","1","Test","2"
+"General-2-REDACTED","General","REDACTED","REDACTED","General","omnetpp.ini","$N=3","N=3","N=3-","$N=3","Test","REDACTED","0","#0","results","2","2","3","Test","2"
+"General-3-REDACTED","General","REDACTED","REDACTED","General","omnetpp.ini","$N=3","N=3","N=3-","$N=3","Test","REDACTED","1","#1","results","3","3","3","Test","2"
+"General-4-REDACTED","General","REDACTED","REDACTED","General","omnetpp.ini","$N=6","N=6","N=6-","$N=6","Test","REDACTED","0","#0","results","4","4","6","Test","2"
+"General-5-REDACTED","General","REDACTED","REDACTED","General","omnetpp.ini","$N=6","N=6","N=6-","$N=6","Test","REDACTED","1","#1","results","5","5","6","Test","2"
