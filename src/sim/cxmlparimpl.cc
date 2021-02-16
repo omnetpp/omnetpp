@@ -48,10 +48,9 @@ void cXMLParImpl::operator=(const cXMLParImpl& other)
 
 void cXMLParImpl::forEachChild(cVisitor *v, cComponent *context)
 {
-    if (isSet()) { // because xmlValue() throws otherwise
-        cXMLElement *element = xmlValue(context);
-        if (element)
-            v->visit(element);
+    if (isSet() && !isExpression()) {
+        if (val)
+            v->visit(val);
     }
 }
 

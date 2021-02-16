@@ -57,10 +57,9 @@ void cObjectParImpl::operator=(const cObjectParImpl& other)
 
 void cObjectParImpl::forEachChild(cVisitor *v, cComponent *context)
 {
-    if (isSet()) { // because xmlValue() throws otherwise
-        cObject *element = objectValue(context);
-        if (element)
-            v->visit(element);
+    if (isSet() && !isExpression()) {
+        if (obj)
+            v->visit(obj);
     }
 }
 
