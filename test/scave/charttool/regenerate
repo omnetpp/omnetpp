@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+opp_makemake -f -o scave
+make MODE=debug
+./scave_dbg -u Cmdenv
