@@ -151,12 +151,16 @@ std::vector<ShmSendBuffer *> ResultsPickler::getCsvResultsPickle(const IDList& r
 
     p.protocol();
 
-    // the columns are always:
-    // runID, type, module, name, attrname, attrvalue, value, count, sumweights, mean, stddev, min, max, underflows, overflows, binedges, binvalues, vectime, vecvalue
-
     // not all tuples in the list will have all the elements though. we still have to pad them "in the middle",
     // so all data falls into the right column, but the rest will be filled in by numpy after unpickling
     p.startList();
+
+    p.startTuple();
+    for (auto header : {"runID", "type", "module", "name", "attrname", "attrvalue", "value",
+                        "count", "sumweights", "mean", "stddev", "min", "max", "underflows", "overflows",
+                        "binedges", "binvalues", "vectime", "vecvalue"})
+        p.pushString(header);
+    p.endTuple();
 
     // pickle runs of results
 

@@ -50,6 +50,25 @@ def _load_pickle_from_shm(name_and_size : str):
 
     return p
 
+# TODO: use in more places instead of _load_pickle_from_shm
+def _load_df_from_shm(name_and_size : str):
+    """
+    Internal. Wraps `_load_pickle_from_shm`, constructing a DataFrame from the returned
+    list of tuples (records), using the first one as column header.
+    """
+    results = _load_pickle_from_shm(name_and_size)
+
+    header = results[0]
+    data = results[1:]
+
+    if data:
+        # padding the first row to have as many elements as the header,
+        # so Pandas is willing to fill the rest of the rows with None...
+        padding = [None] * (len(header) - len(data[0]))
+        data[0] = (*data[0], *padding)
+
+    return pd.DataFrame(data, columns=header)
+
 
 def _get_array_from_shm(name_and_size : str):
     """
@@ -100,12 +119,8 @@ def _get_array_from_shm(name_and_size : str):
 
 def get_results(filter_expression, row_types, omit_unused_columns, include_fields_as_scalars, start_time, end_time):
     shmnames = Gateway.results_provider.getResultsPickle(filter_expression, list(row_types), False, bool(include_fields_as_scalars), float(start_time), float(end_time))
-    results = _load_pickle_from_shm(shmnames[0])
 
-    df = pd.DataFrame.from_records(results, columns=[
-        "runID", "type", "module", "name", "attrname", "attrvalue",
-        "value", "count", "sumweights", "mean", "stddev", "min", "max",
-        "underflows", "overflows", "binedges", "binvalues", "vectime", "vecvalue"])
+    df = _load_df_from_shm(shmnames[0])
 
     df["binedges"] = df["binedges"].map(lambda v: np.frombuffer(v, dtype=np.double), na_action='ignore')
     df["binvalues"] = df["binvalues"].map(lambda v: np.frombuffer(v, dtype=np.double), na_action='ignore')
