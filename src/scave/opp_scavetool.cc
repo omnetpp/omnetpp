@@ -249,7 +249,7 @@ void ScaveTool::loadFiles(ResultFileManager& manager, const vector<string>& file
 int ScaveTool::resolveResultTypeFilter(const std::string& filter)
 {
     int result = 0;
-    if (filter.length() <= 3) {
+    if (filter.length() <= 5) {
         // short form
         for (char c : filter) {
             switch(c) {
