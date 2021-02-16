@@ -250,7 +250,7 @@ def get_parameters(filter_expression, include_attrs, include_runattrs, include_i
 
 
 def get_vectors(filter_expression, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name, start_time, end_time):
-    shmnames = Gateway.results_provider.getVectorsPickle(filter_expression, include_attrs, start_time, end_time)
+    shmnames = Gateway.results_provider.getVectorsPickle(filter_expression, include_attrs, float(start_time), float(end_time))
     vectors, attrs = _load_pickle_from_shm(shmnames[0])
     df = pd.DataFrame(vectors, columns=["runID", "module", "name", "vectime", "vecvalue"])
 
