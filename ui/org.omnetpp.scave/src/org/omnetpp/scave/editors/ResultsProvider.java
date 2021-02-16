@@ -153,15 +153,13 @@ public class ResultsProvider implements IScaveResultsPickleProvider {
         return memoize(key, () -> pickler.getConfigEntriesForRunsPickle(toStringVector(runIDs)));
     }
 
-    public List<String> getResultsPickle(String filterExpression, List<String> rowTypes, boolean omitUnusedColumns, double simTimeStart, double simTimeEnd) throws PickleException, IOException {
-        Key key = new Key("getResultsPickle", filterExpression, rowTypes, omitUnusedColumns, simTimeStart, simTimeEnd);
+    public List<String> getResultsPickle(String filterExpression, List<String> rowTypes, boolean omitUnusedColumns, boolean includeFieldsAsScalars, double simTimeStart, double simTimeEnd) throws PickleException, IOException {
+        Key key = new Key("getResultsPickle", filterExpression, rowTypes, omitUnusedColumns, includeFieldsAsScalars, simTimeStart, simTimeEnd);
         List<String> names = memoize(key, (PicklerFunctionVec) () -> {
             int allTypes = ResultFileManager.PARAMETER | ResultFileManager.SCALAR | ResultFileManager.VECTOR | ResultFileManager.STATISTICS | ResultFileManager.HISTOGRAM;
             IDList idList = filterCache.getFilterResult(allTypes, filterExpression);
-            if (idList == null) {
-                // TODO: should the GUI switch for including fields matter here? is that handled elsewhere?
-                idList = manager.filterIDList(manager.getAllItems(true), filterExpression); // no need to cache, as result will be (likely) memoized
-            }
+            if (idList == null)
+                idList = manager.filterIDList(manager.getAllItems(includeFieldsAsScalars), filterExpression); // no need to cache, as result will be (likely) memoized
             return pickler.getCsvResultsPickle(idList, toStringVector(rowTypes), omitUnusedColumns, simTimeStart, simTimeEnd);
         });
         return names;

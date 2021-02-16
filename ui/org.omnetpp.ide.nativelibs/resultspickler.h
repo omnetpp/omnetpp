@@ -51,7 +51,7 @@ protected:
 public:
     ResultsPickler(ResultFileManager *rfm, ShmSendBufferManager *shmManager, InterruptedFlag *interrupted=nullptr) : rfm(rfm), shmManager(shmManager), interrupted(interrupted?interrupted:&dummy) {}
 
-    std::vector<ShmSendBuffer *> getCsvResultsPickle(const char *filterExpression, std::vector<std::string> rowTypes, bool omitUnusedColumns, double simTimeStart, double simTimeEnd);
+    std::vector<ShmSendBuffer *> getCsvResultsPickle(const char *filterExpression, std::vector<std::string> rowTypes, bool omitUnusedColumns, bool includeFieldsAsScalars, double simTimeStart, double simTimeEnd);
     std::vector<ShmSendBuffer *> getCsvResultsPickle(const IDList& results, std::vector<std::string> rowTypes, bool omitUnusedColumns, double simTimeStart, double simTimeEnd);
 
     ShmSendBuffer *getScalarsPickle(const char *filterExpression, bool includeAttrs, bool includeFields);

@@ -108,12 +108,12 @@ void ResultsPickler::pickleResultAttrs(Pickler& p, const IDList& resultIDs)
     p.endList();
 }
 
-std::vector<ShmSendBuffer *> ResultsPickler::getCsvResultsPickle(const char *filterExpression, std::vector<std::string> rowTypes, bool omitUnusedColumns, double simTimeStart, double simTimeEnd)
+std::vector<ShmSendBuffer *> ResultsPickler::getCsvResultsPickle(const char *filterExpression, std::vector<std::string> rowTypes, bool omitUnusedColumns, bool includeFieldsAsScalars, double simTimeStart, double simTimeEnd)
 {
     if (opp_isempty(filterExpression))
         return getCsvResultsPickle(IDList(), rowTypes, omitUnusedColumns, simTimeStart, simTimeEnd);
     else {
-        IDList allResults = rfm->getAllItems(true); // filter may match field scalars as well
+        IDList allResults = rfm->getAllItems(includeFieldsAsScalars); // filter may match field scalars as well
         IDList results = rfm->filterIDList(allResults, filterExpression);
         return getCsvResultsPickle(IDList(), rowTypes, omitUnusedColumns, simTimeStart, simTimeEnd);
     }

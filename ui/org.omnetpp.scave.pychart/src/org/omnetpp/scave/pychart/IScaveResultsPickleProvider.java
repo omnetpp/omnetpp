@@ -37,7 +37,7 @@ public interface IScaveResultsPickleProvider {
     String getConfigEntriesForRunsPickle(List<String> runIDs) throws PickleException, IOException;
 
     // CSV format
-    List<String> getResultsPickle(String filterExpression, List<String> rowTypes, boolean omitUnusedColumns, double simTimeStart, double simTimeEnd) throws PickleException, IOException;
+    List<String> getResultsPickle(String filterExpression, List<String> rowTypes, boolean omitUnusedColumns, boolean includeFieldsAsScalars, double simTimeStart, double simTimeEnd) throws PickleException, IOException;
 
     // simple format
     String getScalarsPickle(String filterExpression, boolean includeAttrs, boolean includeFields) throws PickleException, IOException;

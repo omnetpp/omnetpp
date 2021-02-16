@@ -98,8 +98,8 @@ def _get_array_from_shm(name_and_size : str):
     return arr
 
 
-def get_results(filter_expression, row_types, omit_unused_columns, start_time, end_time):
-    shmnames = Gateway.results_provider.getResultsPickle(filter_expression, list(row_types), bool(omit_unused_columns), float(start_time), float(end_time))
+def get_results(filter_expression, row_types, omit_unused_columns, include_fields_as_scalars, start_time, end_time):
+    shmnames = Gateway.results_provider.getResultsPickle(filter_expression, list(row_types), False, bool(include_fields_as_scalars), float(start_time), float(end_time))
     results = _load_pickle_from_shm(shmnames[0])
 
     df = pd.DataFrame.from_records(results, columns=[

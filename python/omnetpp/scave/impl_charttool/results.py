@@ -145,8 +145,18 @@ def _pivot_results(df, include_attrs, include_runattrs, include_itervars, includ
 
     return df
 
-def get_results(filter_expression, row_types, omit_unused_columns, start_time, end_time):
-    df = _get_results(filter_expression, ['.sca', '.vec'], None)
+def get_results(filter_expression, row_types, omit_unused_columns, include_fields_as_scalars, start_time, end_time):
+    # TODO: implement omit_unused_columns
+    args = []
+    if include_fields_as_scalars:
+        args.append("--add-fields-as-scalars")
+    if start_time is not None and not np.isnan(start_time):
+        args.append("--start-time")
+        args.append(str(start_time))
+    if end_time is not None and not np.isnan(end_time):
+        args.append("--end-time")
+        args.append(str(end_time))
+    df = _get_results(filter_expression, ['.sca', '.vec'], None, *args)
     df = df[df["type"].isin(row_types)]
     return df
 

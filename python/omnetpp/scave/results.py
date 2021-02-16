@@ -65,7 +65,7 @@ def get_serial():
 
 
 @_guarded_result_query_func
-def get_results(filter_expression="", row_types=['runattr', 'itervar', 'config', 'scalar', 'vector', 'statistic', 'histogram', 'param', 'attr'], omit_unused_columns=True, start_time=-inf, end_time=inf):
+def get_results(filter_expression="", row_types=['runattr', 'itervar', 'config', 'scalar', 'vector', 'statistic', 'histogram', 'param', 'attr'], omit_unused_columns=True, include_fields_as_scalars=False, start_time=-inf, end_time=inf):
     """
     Returns a filtered set of results and metadata in CSV-like format.
     The items can be any type, even mixed together in a single `DataFrame`.
