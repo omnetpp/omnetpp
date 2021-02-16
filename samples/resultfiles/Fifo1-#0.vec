@@ -1,14 +1,16 @@
 version 3
-run Fifo1-0-20200304-18:05:59-194640
+run Fifo1-0-20210216-15:06:15-478432
 attr configname Fifo1
-attr datetime 20200304-18:05:59
+attr datetime 20210216-15:06:15
+attr datetimef 20210216-150615
 attr experiment Fifo1
 attr inifile omnetpp.ini
 attr iterationvars ""
+attr iterationvarsd ""
 attr iterationvarsf ""
 attr measurement ""
 attr network FifoNet
-attr processid 194640
+attr processid 478432
 attr repetition 0
 attr replication #0
 attr resultdir results

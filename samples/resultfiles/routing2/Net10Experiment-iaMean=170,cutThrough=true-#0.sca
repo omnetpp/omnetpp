@@ -1,14 +1,16 @@
 version 3
-run Net10Experiment-1-20200304-18:05:55-194594
+run Net10Experiment-1-20210216-15:06:08-478339
 attr configname Net10Experiment
-attr datetime 20200304-18:05:55
+attr datetime 20210216-15:06:08
+attr datetimef 20210216-150608
 attr experiment Net10Experiment
 attr inifile omnetpp.ini
 attr iterationvars "$iaMean=170, $cutThrough=true"
+attr iterationvarsd iaMean=170/cutThrough=true
 attr iterationvarsf iaMean=170,cutThrough=true-
 attr measurement "$iaMean=170, $cutThrough=true"
 attr network networks.Net10
-attr processid 194594
+attr processid 478339
 attr repetition 0
 attr replication #0
 attr resultdir results
