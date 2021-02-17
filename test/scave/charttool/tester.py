@@ -1,5 +1,7 @@
 from omnetpp.scave import chart, plot
 import os
+import sys
+from csv import QUOTE_NONNUMERIC
 import difflib
 
 def sanitize_row(row):
@@ -20,6 +22,7 @@ def sanitize(df):
     df = df.apply(sanitize_row, axis=1)
     df = df.sort_values(axis=0, by=list(filter(lambda c: c in df, ["runID", "module", "type", "name", "attrname"])))
     df = df.reset_index(drop=True)
+    df = df.round(6)
     return df
 
 
@@ -70,9 +73,14 @@ def addMissingNewLine(str):
 
 def sanitize_and_compare_csv(df, ref_filename):
     df = sanitize(df)
-    csv = df.to_csv(None)
+    actual = df.to_csv(None, index=False, quoting=QUOTE_NONNUMERIC)
+
+    os.makedirs("actual_output", exist_ok=True)
+    with open("actual_output/" + ref_filename, "wt") as f2:
+        f2.write(actual)
+
     with open("expected_output/" + ref_filename) as f:
-        actual = csv
+
         expected = str(f.read())
         if actual == expected:
             return True
@@ -86,10 +94,9 @@ def sanitize_and_compare_csv(df, ref_filename):
 
             print(difftxt)
 
-            os.makedirs("actual_output", exist_ok=True)
-            with open("actual_output/" + ref_filename, "wt") as f2:
-                f2.write(csv)
             return False
+
+    return False
 
 def _assert(condition, message):
     if not condition:
@@ -120,7 +127,7 @@ def run_tests(locals):
 
     failed_names = [n for n, s in outcomes.items() if not s]
     faileds = ", ".join(failed_names)
-    import sys
+
     print("FAILED TESTS: " + (faileds or "NONE"), file=sys.stderr)
 
     if faileds:
