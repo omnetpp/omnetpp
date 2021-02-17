@@ -94,7 +94,7 @@ void ScaveTool::printHelpPage(const std::string& page)
         help.line();
         help.line("Options:");
         help.option("-T, --type <types>", "Limit item types; <types> is concatenation of type characters (v=vector, s=scalar, t=statistic, h=histogram, p=parameter).");
-        help.option("-f, --filter <filter>", "Filter for result items (vectors, scalars, statistics, histograms, parameters) matched by filter expression (try 'help filter')");
+        help.option("-f, --filter <filter>", "Filter the queried items using a filter expression (try 'help filter')");
         help.option("-p, --per-run", "Per-run reporting (where applicable)");
         help.option("-b, --bare", "Suppress labels (more suitable for machine processing)");
         help.option("-g, --grep-friendly", "Grep-friendly: with -p, put run names at the start of each line, not above groups as headings.");
