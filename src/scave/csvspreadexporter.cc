@@ -402,10 +402,7 @@ void CsvForSpreadsheetExporter::saveStatistics(ResultFileManager *manager, const
         csv.writeString(statistics->getName());
         const Statistics& stat = statistics->getStatistics();
         csv.writeInt(stat.getCount());
-        if (stat.isWeighted())
-            csv.writeDouble(stat.getSumWeights());
-        else
-            csv.writeBlank();
+        csv.writeDouble(stat.getSumWeights());
         csv.writeDouble(stat.getMean());
         csv.writeDouble(stat.getStddev());
         csv.writeDouble(stat.getMin());
@@ -459,10 +456,7 @@ void CsvForSpreadsheetExporter::saveHistograms(ResultFileManager *manager, const
         if (includeHistogramStatistics) {
             const Statistics& stat = histogram->getStatistics();
             csv.writeInt(stat.getCount());
-            if (stat.isWeighted())
-                csv.writeDouble(stat.getSumWeights());
-            else
-                csv.writeBlank();
+            csv.writeDouble(stat.getSumWeights());
             csv.writeDouble(stat.getMean());
             csv.writeDouble(stat.getStddev());
             csv.writeDouble(stat.getMin());

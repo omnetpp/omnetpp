@@ -253,10 +253,7 @@ void CsvRecordsExporter::saveResultsAsRecords(ResultFileManager *manager, const 
                 csv.writeBlank(); // skip intermediate columns ("value")
             const Statistics& stat = statistic->getStatistics();
             csv.writeInt(stat.getCount());
-            if (stat.isWeighted())
-                csv.writeDouble(stat.getSumWeights());
-            else
-                csv.writeBlank();
+            csv.writeDouble(stat.getSumWeights());
             csv.writeDouble(stat.getMean());
             csv.writeDouble(stat.getStddev());
             csv.writeDouble(stat.getMin());
