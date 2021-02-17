@@ -291,6 +291,8 @@ double UnitConversion::parseQuantity(const char *str, std::string& unit)
         if (factor == 0)
             throw opp_runtime_error("Error in quantity '%s': Unit %s does not match %s",
                     str, getUnitDescription(tmpUnit.c_str()).c_str(), getUnitDescription(unit.c_str()).c_str());
+        if (factor <= 1)
+            throw opp_runtime_error("Error in quantity '%s': Units must be in strictly decreasing order of magnitude", str); // to reduce chance of confusing a compound quantity with a list
 
         // do the conversion
         result = result * factor + d;

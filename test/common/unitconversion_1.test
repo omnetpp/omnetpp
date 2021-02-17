@@ -39,7 +39,7 @@ P("2 33 "); //E
 P("2 33s "); //E
 P("1.5s 33"); //E
 P("1s 99 kbps"); //E
-P("1s 1min 99 kbps"); //E
+P("1s 1ms 99 kbps"); //E
 P("1s-2ms"); //E
 P("1s -2ms"); //E
 P("1s 99 bogomips"); //E
@@ -76,6 +76,10 @@ P(" 1s 550ms 700us ");
 P(" 200mW");
 P(" 1W 100mW");
 
+// units must be ordered
+P("1s 2s"); //E
+P("100ms 2s"); //E
+P("100mW 3W"); //E
 
 #define Pu(x) parseAndPrint(x, expectedUnits[i])
 
@@ -106,7 +110,7 @@ EV << ".\n";
 '2 33s ' ==> ERROR: Syntax error parsing quantity '2 33s ': Garbage after first number
 '1.5s 33' ==> ERROR: Syntax error parsing quantity '1.5s 33': Missing unit
 '1s 99 kbps' ==> ERROR: Error in quantity '1s 99 kbps': Unit 'kbps' (kilobit/sec) does not match 's' (second)
-'1s 1min 99 kbps' ==> ERROR: Error in quantity '1s 1min 99 kbps': Unit 'kbps' (kilobit/sec) does not match 'min' (minute)
+'1s 1ms 99 kbps' ==> ERROR: Error in quantity '1s 1ms 99 kbps': Unit 'kbps' (kilobit/sec) does not match 'ms' (millisecond)
 '1s-2ms' ==> ERROR: Syntax error parsing quantity '1s-2ms': Minus sign only accepted at the front
 '1s -2ms' ==> ERROR: Syntax error parsing quantity '1s -2ms': Minus sign only accepted at the front
 '1s 99 bogomips' ==> ERROR: Error in quantity '1s 99 bogomips': Unit 'bogomips' does not match 's' (second)
@@ -136,6 +140,9 @@ EV << ".\n";
 ' 1s 550ms 700us ' ==> 1.5507e+06 us
 ' 200mW' ==> 200 mW
 ' 1W 100mW' ==> 1100 mW
+'1s 2s' ==> ERROR: Error in quantity '1s 2s': Units must be in strictly decreasing order of magnitude
+'100ms 2s' ==> ERROR: Error in quantity '100ms 2s': Units must be in strictly decreasing order of magnitude
+'100mW 3W' ==> ERROR: Error in quantity '100mW 3W': Units must be in strictly decreasing order of magnitude
 
 '3.14' (as '') ==> 3.14
 '1500ms' (as '') ==> ERROR: Cannot convert unit 'ms' (millisecond) to none
