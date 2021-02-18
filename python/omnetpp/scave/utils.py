@@ -992,6 +992,20 @@ def assert_columns_exist(df, cols, message="Expected column missing from DataFra
             exit(1)
 
 
+def to_numeric(df, columns=None, errors="ignore", downcast=None):
+    df = df.copy()
+
+    if columns:
+        assert_columns_exist(df, columns)
+    else:
+        columns = df.columns.values
+
+    for c in columns:
+        df[c] = pd.to_numeric(df[c], errors=errors, downcast=downcast)
+
+    return df
+
+
 def parse_rcparams(rc_content):
     """
     Accepts a multiline string that contains rc file content in Matplotlib's
