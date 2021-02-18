@@ -91,7 +91,7 @@ def get_results(filter_expression="", row_types=['runattr', 'itervar', 'config',
     - `name` (string): Name of the result item (scalar, statistic, histogram or vector)
     - `attrname` (string): Name of the run attribute or result item attribute (in the latter case, the module and name columns identify the result item the attribute belongs to)
     - `attrvalue` (string): Value of run and result item attributes, iteration variables, saved ini param settings (runattr, attr, itervar, param)
-    - `value` (double or string):  Output scalar or attribute value
+    - `value` (double or string): Output scalar or parameter value
     - `count`, `sumweights`, `mean`, `min`, `max`, `stddev` (double): Fields of the statistics or histogram
     - `binedges`, `binvalues` (np.array): Histogram bin edges and bin values, as space-separated lists. `len(binedges)==len(binvalues)+1`
     - `underflows`, `overflows` (double): Sum of weights (or counts) of underflown and overflown samples of histograms
@@ -330,7 +330,31 @@ def get_config_entries(filter_expression, include_runattrs=False, include_iterva
 
     - `runID` (string): Identifies the simulation run
     - `name` (string): The name of the config entry
-    - `value` (string or double): The value of the config entry
+    - `value` (string): The value of the config entry
     - Additional metadata items (run attributes, iteration variables, etc.), as requested
     """
     return impl.get_config_entries(**locals())
+
+
+@_guarded_result_query_func
+def get_param_assignments(filter_expression, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
+    """
+    Returns a filtered list of parameter assignment patterns. The result is a subset of what `get_config_entries`
+    would return with the same arguments.
+
+    Parameters:
+
+    - `filter_expression` (string): The filter expression to select the desired parameter assignments.
+      Example: `name =~ **.flowID AND itervar:numHosts =~ 10`
+    - `include_runattrs`, `include_itervars`, `include_param_assignments`, `include_config_entries` (bool):
+      Optional. When set to `True`, additional pieces of metadata about the run is appended to the result, pivoted into columns.
+
+    Columns of the returned DataFrame:
+
+    - `runID` (string): Identifies the simulation run
+    - `name` (string): The parameter assignment pattern
+    - `value` (string): The assigned value
+    - Additional metadata items (run attributes, iteration variables, etc.), as requested
+    """
+    return impl.get_param_assignments(**locals())
+

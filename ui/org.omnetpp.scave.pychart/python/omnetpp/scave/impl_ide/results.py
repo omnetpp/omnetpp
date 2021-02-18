@@ -192,7 +192,6 @@ def get_serial():
 def get_runs(filter_expression, include_runattrs, include_itervars, include_param_assignments, include_config_entries):
     shmname = Gateway.results_provider.getRunsPickle(filter_expression)
     runs = _load_pickle_from_shm(shmname)
-
     df = pd.DataFrame({"runID": runs})
     return _append_additional_data(df, None, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
 
@@ -200,7 +199,6 @@ def get_runs(filter_expression, include_runattrs, include_itervars, include_para
 def get_runattrs(filter_expression, include_runattrs, include_itervars, include_param_assignments, include_config_entries):
     shmname = Gateway.results_provider.getRunAttrsPickle(filter_expression)
     runattrs = _load_pickle_from_shm(shmname)
-
     df = pd.DataFrame(runattrs, columns=["runID", "name", "value"])
     return _append_additional_data(df, None, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
 
@@ -208,9 +206,7 @@ def get_runattrs(filter_expression, include_runattrs, include_itervars, include_
 def get_itervars(filter_expression, include_runattrs, include_itervars, include_param_assignments, include_config_entries):
     shmname = Gateway.results_provider.getItervarsPickle(filter_expression)
     itervars = _load_pickle_from_shm(shmname)
-
     df = pd.DataFrame(itervars, columns=["runID", "name", "value"])
-
     return _append_additional_data(df, None, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
 
 
@@ -218,7 +214,13 @@ def get_config_entries(filter_expression, include_runattrs, include_itervars, in
     shmname = Gateway.results_provider.getConfigEntriesPickle(filter_expression)
     configentries = _load_pickle_from_shm(shmname)
     df = pd.DataFrame(configentries, columns=["runID", "name", "value"])
+    return _append_additional_data(df, None, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
 
+
+def get_param_assignments(filter_expression, include_runattrs, include_itervars, include_param_assignments, include_config_entries):
+    shmname = Gateway.results_provider.getParamAssignmentsPickle(filter_expression)
+    paramassignments = _load_pickle_from_shm(shmname)
+    df = pd.DataFrame(paramassignments, columns=["runID", "name", "value"])
     return _append_additional_data(df, None, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
 
 
