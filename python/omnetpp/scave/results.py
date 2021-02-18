@@ -147,7 +147,7 @@ def get_runattrs(filter_expression="", include_runattrs=False, include_itervars=
 
 
 @_guarded_result_query_func
-def get_itervars(filter_expression="", include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, as_numeric=False):
+def get_itervars(filter_expression="", include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
     """
     Returns a filtered list of iteration variables.
 
@@ -157,14 +157,12 @@ def get_itervars(filter_expression="", include_runattrs=False, include_itervars=
       Example: `name =~ iaMean AND config:Aloha.slotTime =~ 0`
     - `include_runattrs`, `include_itervars`, `include_param_assignments`, `include_config_entries` (bool):
       Optional. When set to `True`, additional pieces of metadata about the run is appended to the result, pivoted into columns.
-    - `as_numeric` (bool): Optional. When set to `True`, the returned values will be converted to `double`.
-      Non-numeric values will become `NaN`.
 
     Columns of the returned DataFrame:
 
     - `runID` (string): Identifies the simulation run
     - `name` (string): The name of the iteration variable
-    - `value` (string or double): The value of the iteration variable. Its type depends on the `as_numeric` parameter.
+    - `value` (string): The value of the iteration variable.
     - Additional metadata items (run attributes, iteration variables, etc.), as requested
     """
     return impl.get_itervars(**locals())
@@ -200,7 +198,7 @@ def get_scalars(filter_expression="", include_attrs=False, include_fields=False,
 
 
 @_guarded_result_query_func
-def get_parameters(filter_expression="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False, as_numeric=False):
+def get_parameters(filter_expression="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False):
     """
     Returns a filtered list of parameters - actually computed values of individual `cPar` instances in the fully built network.
 
@@ -219,15 +217,13 @@ def get_parameters(filter_expression="", include_attrs=False, include_runattrs=F
       Optional. When set to `True`, additional pieces of metadata about the run is appended to the DataFrame, pivoted into columns.
     - `merge_module_and_name` (bool): Optional. When set to `True`, the value in the `module` column
       is prepended to the value in the `name` column, joined by a period, in every row.
-    - `as_numeric` (bool): Optional. When set to `True`, the returned values will be converted to `double`.
-      Non-numeric values will become `NaN`.
 
     Columns of the returned DataFrame:
 
     - `runID` (string): Identifies the simulation run
     - `module` (string): Hierarchical name (a.k.a. full path) of the module that recorded the result item
     - `name` (string): The name of the parameter
-    - `value` (string or double): The value of the parameter. Its type depends on the `as_numeric` parameter.
+    - `value` (string): The value of the parameter.
     - Additional metadata items (result attributes, run attributes, iteration variables, etc.), as requested
     """
     return impl.get_parameters(**locals())
@@ -290,7 +286,7 @@ def get_statistics(filter_expression="", include_attrs=False, include_runattrs=F
 
 
 @_guarded_result_query_func
-def get_histograms(filter_expression="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False, include_statistics_fields=False):
+def get_histograms(filter_expression="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False):
     """
     Returns a filtered list of histogram results.
 

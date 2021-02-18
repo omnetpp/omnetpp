@@ -193,20 +193,18 @@ def get_statistics(filter_expression, include_attrs, include_runattrs, include_i
     df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
     return df
 
-def get_histograms(filter_expression, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name, include_statistics_fields):
+def get_histograms(filter_expression, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name):
     df = _get_results(filter_expression, ['.sca'], 'h')
     df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
     return df
 
-def get_parameters(filter_expression, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name, as_numeric):
+def get_parameters(filter_expression, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name):
     df = _get_results(filter_expression, ['.sca'], 'p')
     df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
-    if as_numeric:
-        df["value"] = pd.to_numeric(df["value"], errors="ignore")
     return df
 
 
-def _get_metadata(filter_expression, query_flag, include_runattrs, include_itervars, include_param_assignments, include_config_entries, as_numeric, columns=["runID", "name", "value"]):
+def _get_metadata(filter_expression, query_flag, include_runattrs, include_itervars, include_param_assignments, include_config_entries, columns=["runID", "name", "value"]):
     """
     Internal. See `opp_scavetool q -h`.
     - `query_flag`: Sets the type of metadata to query. One of: "-l", "-a", "-i", "-j", "-t"
@@ -219,10 +217,10 @@ def _get_metadata(filter_expression, query_flag, include_runattrs, include_iterv
         print("<!> HINT: opp_scavetool returned an empty result. Consider adding a project name to directory mapping, for example: -p /aloha=../aloha")
 
     # TODO: stream the output through subprocess.PIPE ?
-    df = pd.read_csv(io.BytesIO(output), sep='\t', header=None, names=columns)
+    df = pd.read_csv(io.BytesIO(output), sep='\t', header=None, names=columns, dtype="str")
 
     if include_itervars:
-        iv = get_itervars("*", False, False, False, False, as_numeric)
+        iv = get_itervars("*", False, False, False, False)
         iv.rename(columns={"name": "attrname", "value": "attrvalue"}, inplace=True) # oh, inconsistencies...
         df = _append_metadata_columns(df, iv, "_itervar")
 
@@ -245,16 +243,16 @@ def _get_metadata(filter_expression, query_flag, include_runattrs, include_iterv
 
 
 def get_runs(filter_expression, include_runattrs, include_itervars, include_param_assignments, include_config_entries):
-    return _get_metadata(filter_expression, "-r", include_runattrs, include_itervars, include_param_assignments, include_config_entries, False, columns=["runID"])
+    return _get_metadata(filter_expression, "-r", include_runattrs, include_itervars, include_param_assignments, include_config_entries, columns=["runID"])
 
 def get_runattrs(filter_expression, include_runattrs, include_itervars, include_param_assignments, include_config_entries):
-    return _get_metadata(filter_expression, "-a", include_runattrs, include_itervars, include_param_assignments, include_config_entries, False)
+    return _get_metadata(filter_expression, "-a", include_runattrs, include_itervars, include_param_assignments, include_config_entries)
 
-def get_itervars(filter_expression, include_runattrs, include_itervars, include_param_assignments, include_config_entries, as_numeric):
-    return _get_metadata(filter_expression, "-i", include_runattrs, include_itervars, include_param_assignments, include_config_entries, as_numeric)
+def get_itervars(filter_expression, include_runattrs, include_itervars, include_param_assignments, include_config_entries):
+    return _get_metadata(filter_expression, "-i", include_runattrs, include_itervars, include_param_assignments, include_config_entries)
 
 def get_config_entries(filter_expression, include_runattrs, include_itervars, include_param_assignments, include_config_entries):
-    return _get_metadata(filter_expression, "-j", include_runattrs, include_itervars, include_param_assignments, include_config_entries, False)
+    return _get_metadata(filter_expression, "-j", include_runattrs, include_itervars, include_param_assignments, include_config_entries)
 
 def get_param_assignments(filter_expression, include_runattrs, include_itervars, include_param_assignments, include_config_entries):
-    return _get_metadata(filter_expression, "-t", include_runattrs, include_itervars, include_param_assignments, include_config_entries, False)
+    return _get_metadata(filter_expression, "-t", include_runattrs, include_itervars, include_param_assignments, include_config_entries)

@@ -46,7 +46,6 @@ Formats:
         - param value: runattrs, itervars
 
     - Additional options:
-        - For itervars and runattrs: as_numeric (filtering + conversion)
         - Merge module and name as name (joined by a period)
 
     - Filtering:

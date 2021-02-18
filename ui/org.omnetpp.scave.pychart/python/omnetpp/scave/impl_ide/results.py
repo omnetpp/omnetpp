@@ -205,14 +205,12 @@ def get_runattrs(filter_expression, include_runattrs, include_itervars, include_
     return _append_additional_data(df, None, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
 
 
-def get_itervars(filter_expression, include_runattrs, include_itervars, include_param_assignments, include_config_entries, as_numeric):
+def get_itervars(filter_expression, include_runattrs, include_itervars, include_param_assignments, include_config_entries):
     shmname = Gateway.results_provider.getItervarsPickle(filter_expression)
     itervars = _load_pickle_from_shm(shmname)
 
     df = pd.DataFrame(itervars, columns=["runID", "name", "value"])
 
-    if as_numeric:
-        df["value"] = pd.to_numeric(df["value"], errors="coerce")
     return _append_additional_data(df, None, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
 
 
@@ -235,13 +233,10 @@ def get_scalars(filter_expression, include_attrs, include_fields, include_runatt
     return df
 
 
-def get_parameters(filter_expression, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name, as_numeric):
+def get_parameters(filter_expression, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name):
     shmname = Gateway.results_provider.getParamValuesPickle(filter_expression, include_attrs)
     parameters, attrs = _load_pickle_from_shm(shmname)
     df = pd.DataFrame(parameters, columns=["runID", "module", "name", "value"])
-
-    if as_numeric:
-        df["value"] = pd.to_numeric(df["value"], errors="coerce")
 
     df = _append_additional_data(df, attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
     if merge_module_and_name:
@@ -277,7 +272,7 @@ def get_statistics(filter_expression, include_attrs, include_runattrs, include_i
     return df
 
 
-def get_histograms(filter_expression, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name, include_statistics_fields):
+def get_histograms(filter_expression, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name):
     shmname = Gateway.results_provider.getHistogramsPickle(filter_expression, include_attrs)
     histograms, attrs = _load_pickle_from_shm(shmname)
     df = pd.DataFrame(histograms, columns=["runID", "module", "name", "count", "sumweights", "mean", "stddev", "min", "max", "underflows", "overflows", "binedges", "binvalues"])
