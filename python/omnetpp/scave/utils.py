@@ -26,7 +26,7 @@ from itertools import cycle
 from omnetpp.scave import chart, plot, vectorops
 
 
-def check_version(module, required):
+def _check_version(module, required):
     def parse_version(v: str):
         import re
         m = re.search(R"(\d+)\.(\d+)\.(\d+).*", v)
@@ -50,9 +50,9 @@ def check_version(module, required):
               "Try running `python3 -m pip install --user --upgrade " + module.__name__ + "` to upgrade."
               , file=sys.stderr)
 
-check_version(np, "1.18.0")  # Dec 22, 2019
-check_version(pd, "1.0.0")  # January 29, 2020
-check_version(mpl, "3.0.0")  # Sep 19, 2018
+_check_version(np, "1.18.0")  # Dec 22, 2019
+_check_version(pd, "1.0.0")  # January 29, 2020
+_check_version(mpl, "3.0.0")  # Sep 19, 2018
 
 
 # color and marker cycles, with defaults in case _initialize_cycles() is not called
