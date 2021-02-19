@@ -49,12 +49,6 @@ def _parse_int(s):
 def _parse_float(s):
     return float(s) if s else None
 
-def _parse_if_number(s):
-    try: return int(s)
-    except:
-        try: return float(s)
-        except: return True if s=="true" else False if s=="false" else s if s else None
-
 def _parse_ndarray(s):
     return np.fromstring(s, sep=' ') if s else None
 
@@ -79,8 +73,6 @@ def _get_results(filter_expression, file_extensions, result_type, *additional_ar
 
     # TODO: stream the output through subprocess.PIPE ?
     df = pd.read_csv(io.BytesIO(output_bytes), converters = {
-        'value': _parse_if_number,
-        #'attrvalue': _parse_if_number, # should be optional, and done later
         'count': _parse_int,
         'min': _parse_float,
         'max': _parse_float,
