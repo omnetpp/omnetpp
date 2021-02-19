@@ -1,4 +1,5 @@
 from omnetpp.scave import chart, plot
+import os
 import difflib
 
 def sanitize_row(row):
@@ -70,14 +71,13 @@ def addMissingNewLine(str):
 def sanitize_and_compare_csv(df, ref_filename):
     df = sanitize(df)
     csv = df.to_csv(None)
-    with open(ref_filename) as f:
+    with open("expected_output/" + ref_filename) as f:
         actual = csv
         expected = str(f.read())
         if actual == expected:
             return True
         else:
             #print("expected: " + expected + " actual: " + actual)
-
 
             diff = difflib.ndiff(addMissingNewLine(expected).splitlines(True), addMissingNewLine(actual).splitlines(True))
             diff = compressDiff(diff)
@@ -86,8 +86,8 @@ def sanitize_and_compare_csv(df, ref_filename):
 
             print(difftxt)
 
-
-            with open(ref_filename + ".out", "wt") as f2:
+            os.makedirs("actual_output", exist_ok=True)
+            with open("actual_output/" + ref_filename, "wt") as f2:
                 f2.write(csv)
             return False
 
