@@ -152,7 +152,6 @@ def _pivot_results(df, include_attrs, include_runattrs, include_itervars, includ
     return df
 
 def get_results(filter_expression, row_types, omit_unused_columns, include_fields_as_scalars, start_time, end_time):
-    # TODO: implement omit_unused_columns
     args = []
     if include_fields_as_scalars:
         args.append("--add-fields-as-scalars")
@@ -164,6 +163,10 @@ def get_results(filter_expression, row_types, omit_unused_columns, include_field
         args.append(str(end_time))
     df = _get_results(filter_expression, ['.sca', '.vec'], None, *args)
     df = df[df["type"].isin(row_types)]
+
+    if omit_unused_columns:
+        df.dropna(axis='columns', how='all', inplace=True)
+
     return df
 
 def get_scalars(filter_expression, include_attrs, include_fields, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name):
