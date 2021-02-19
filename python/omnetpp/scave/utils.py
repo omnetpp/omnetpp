@@ -993,6 +993,18 @@ def assert_columns_exist(df, cols, message="Expected column missing from DataFra
 
 
 def to_numeric(df, columns=None, errors="ignore", downcast=None):
+    """
+    Convenience function. Runs `pandas.to_numeric` on the given
+    (or all) columns of `df`. If any of the given columns doesn't
+    exist, throws an error.
+
+    Parameters:
+
+    - `df` (DataFrame): The DataFrame to operate on
+    - `columns` (list of strings): The list of column names to convert.
+      If not given, all columns will be converted.
+    - `errors`, `downcast` (string): Will be passed to `pandas.to_numeric()`
+    """
     df = df.copy()
 
     if columns:
