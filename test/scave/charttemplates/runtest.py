@@ -233,3 +233,6 @@ if __name__ == "__main__":
     )
 
     tester.print_summary()
+
+    if len(tester.faileds) > 0:
+        exit(1)
