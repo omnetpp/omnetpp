@@ -17,6 +17,7 @@ chapter, such as \ttt{np} for NumPy and \ttt{pd} for Pandas.
 % script (tools/chartapi.txt), pasted here manually, do not edit here!
 % --------
 
+
 %
 % generated with extract_chart_api.py
 %
@@ -48,7 +49,7 @@ cached intermediate results when their input changes.
 \label{cha:chart-api:omnetpp.scave.results:get-results}
 
 \begin{flushleft}
-\ttt{get\_results(filter\_expression="", row\_types=["runattr", "itervar", "config", "scalar", "vector", "statistic", "histogram", "param", "attr"], omit\_unused\_columns=True, start\_time=-inf, end\_time=inf)}
+\ttt{get\_results(filter\_expression="", row\_types=["runattr", "itervar", "config", "scalar", "vector", "statistic", "histogram", "param", "attr"], omit\_unused\_columns=True, include\_fields\_as\_scalars=False, start\_time=-inf, end\_time=inf)}
 \end{flushleft}
 
 \par Returns a filtered set of results and metadata in CSV-like format.
@@ -63,6 +64,8 @@ including only those for which the given \ttt{filter\_expression} evaluates to \
   \item \ttt{row\_types}: Optional. When given, filters the returned rows by type. Should be a unique list, containing any number of these strings:
 \ttt{"runattr"}, \ttt{"itervar"}, \ttt{"config"}, \ttt{"scalar"}, \ttt{"vector"}, \ttt{"statistic"}, \ttt{"histogram"}, \ttt{"param"}, \ttt{"attr"}
   \item \ttt{omit\_unused\_columns} \textit{(bool)}: Optional. If \ttt{True}, all columns that would only contain \ttt{None} are removed from the returned DataFrame
+  \item \ttt{include\_fields\_as\_scalars} \textit{(bool)}: Optional. If \ttt{True}, the fields of statistics and histograms (\ttt{:min}, \ttt{:mean}, etc.) are also
+returned as synthetic scalars.
   \item \ttt{start\_time}, \ttt{end\_time} \textit{(double)}: Optional time limits to trim the data of vector type results.
 The unit is seconds, both the \ttt{vectime} and \ttt{vecvalue} arrays will be affected, the interval is left-closed, right-open.
 
@@ -78,7 +81,7 @@ The unit is seconds, both the \ttt{vectime} and \ttt{vecvalue} arrays will be af
   \item \ttt{name} \textit{(string)}: Name of the result item (scalar, statistic, histogram or vector)
   \item \ttt{attrname} \textit{(string)}: Name of the run attribute or result item attribute (in the latter case, the module and name columns identify the result item the attribute belongs to)
   \item \ttt{attrvalue} \textit{(string)}: Value of run and result item attributes, iteration variables, saved ini param settings (runattr, attr, itervar, param)
-  \item \ttt{value} \textit{(double or string)}:  Output scalar or attribute value
+  \item \ttt{value} \textit{(double or string)}: Output scalar or parameter value
   \item \ttt{count}, \ttt{sumweights}, \ttt{mean}, \ttt{min}, \ttt{max}, \ttt{stddev} \textit{(double)}: Fields of the statistics or histogram
   \item \ttt{binedges}, \ttt{binvalues} \textit{(np.array)}: Histogram bin edges and bin values, as space-separated lists. \ttt{len(binedges)==len(binvalues)+1}
   \item \ttt{underflows}, \ttt{overflows} \textit{(double)}: Sum of weights (or counts) of underflown and overflown samples of histograms
@@ -152,7 +155,7 @@ Optional. When set to \ttt{True}, additional pieces of metadata about the run is
 \label{cha:chart-api:omnetpp.scave.results:get-itervars}
 
 \begin{flushleft}
-\ttt{get\_itervars(filter\_expression="", include\_runattrs=False, include\_itervars=False, include\_param\_assignments=False, include\_config\_entries=False, as\_numeric=False)}
+\ttt{get\_itervars(filter\_expression="", include\_runattrs=False, include\_itervars=False, include\_param\_assignments=False, include\_config\_entries=False)}
 \end{flushleft}
 
 \par Returns a filtered list of iteration variables.
@@ -164,8 +167,6 @@ Optional. When set to \ttt{True}, additional pieces of metadata about the run is
 Example: \ttt{name ={\textasciitilde} iaMean AND config:Aloha.slotTime ={\textasciitilde} 0}
   \item \ttt{include\_runattrs}, \ttt{include\_itervars}, \ttt{include\_param\_assignments}, \ttt{include\_config\_entries} \textit{(bool)}:
 Optional. When set to \ttt{True}, additional pieces of metadata about the run is appended to the result, pivoted into columns.
-  \item \ttt{as\_numeric} \textit{(bool)}: Optional. When set to \ttt{True}, the returned values will be converted to \ttt{double}.
-Non-numeric values will become \ttt{NaN}.
 
 \end{itemize}
 
@@ -175,7 +176,7 @@ Non-numeric values will become \ttt{NaN}.
 \begin{itemize}
   \item \ttt{runID} \textit{(string)}: Identifies the simulation run
   \item \ttt{name} \textit{(string)}: The name of the iteration variable
-  \item \ttt{value} \textit{(string or double)}: The value of the iteration variable. Its type depends on the \ttt{as\_numeric} parameter.
+  \item \ttt{value} \textit{(string)}: The value of the iteration variable.
   \item Additional metadata items (run attributes, iteration variables, etc.), as requested
 
 \end{itemize}
@@ -184,7 +185,7 @@ Non-numeric values will become \ttt{NaN}.
 \label{cha:chart-api:omnetpp.scave.results:get-scalars}
 
 \begin{flushleft}
-\ttt{get\_scalars(filter\_expression="", include\_attrs=False, include\_runattrs=False, include\_itervars=False, include\_param\_assignments=False, include\_config\_entries=False, merge\_module\_and\_name=False)}
+\ttt{get\_scalars(filter\_expression="", include\_attrs=False, include\_fields=False, include\_runattrs=False, include\_itervars=False, include\_param\_assignments=False, include\_config\_entries=False, merge\_module\_and\_name=False)}
 \end{flushleft}
 
 \par Returns a filtered list of scalar results.
@@ -196,6 +197,8 @@ Non-numeric values will become \ttt{NaN}.
 Example: \ttt{name ={\textasciitilde} "channelUtilization*" AND runattr:replication ={\textasciitilde} "\#0"}
   \item \ttt{include\_attrs} \textit{(bool)}: Optional. When set to \ttt{True}, result attributes (like \ttt{unit}
 or \ttt{source} for example) are appended to the DataFrame, pivoted into columns.
+  \item \ttt{include\_fields} \textit{(bool)}: Optional. If \ttt{True}, the fields of statistics and histograms
+(\ttt{:min}, \ttt{:mean}, etc.) are also returned as synthetic scalars.
   \item \ttt{include\_runattrs}, \ttt{include\_itervars}, \ttt{include\_param\_assignments}, \ttt{include\_config\_entries} \textit{(bool)}:
 Optional. When set to \ttt{True}, additional pieces of metadata about the run is appended to the DataFrame, pivoted into columns.
   \item \ttt{merge\_module\_and\_name} \textit{(bool)}: Optional. When set to \ttt{True}, the value in the \ttt{module} column
@@ -219,7 +222,7 @@ is prepended to the value in the \ttt{name} column, joined by a period, in every
 \label{cha:chart-api:omnetpp.scave.results:get-parameters}
 
 \begin{flushleft}
-\ttt{get\_parameters(filter\_expression="", include\_attrs=False, include\_runattrs=False, include\_itervars=False, include\_param\_assignments=False, include\_config\_entries=False, merge\_module\_and\_name=False, as\_numeric=False)}
+\ttt{get\_parameters(filter\_expression="", include\_attrs=False, include\_runattrs=False, include\_itervars=False, include\_param\_assignments=False, include\_config\_entries=False, merge\_module\_and\_name=False)}
 \end{flushleft}
 
 \par Returns a filtered list of parameters - actually computed values of individual \ttt{cPar} instances in the fully built network.
@@ -240,8 +243,6 @@ example) are appended to the DataFrame, pivoted into columns.
 Optional. When set to \ttt{True}, additional pieces of metadata about the run is appended to the DataFrame, pivoted into columns.
   \item \ttt{merge\_module\_and\_name} \textit{(bool)}: Optional. When set to \ttt{True}, the value in the \ttt{module} column
 is prepended to the value in the \ttt{name} column, joined by a period, in every row.
-  \item \ttt{as\_numeric} \textit{(bool)}: Optional. When set to \ttt{True}, the returned values will be converted to \ttt{double}.
-Non-numeric values will become \ttt{NaN}.
 
 \end{itemize}
 
@@ -252,7 +253,7 @@ Non-numeric values will become \ttt{NaN}.
   \item \ttt{runID} \textit{(string)}: Identifies the simulation run
   \item \ttt{module} \textit{(string)}: Hierarchical name (a.k.a. full path) of the module that recorded the result item
   \item \ttt{name} \textit{(string)}: The name of the parameter
-  \item \ttt{value} \textit{(string or double)}: The value of the parameter. Its type depends on the \ttt{as\_numeric} parameter.
+  \item \ttt{value} \textit{(string)}: The value of the parameter.
   \item Additional metadata items (result attributes, run attributes, iteration variables, etc.), as requested
 
 \end{itemize}
@@ -333,7 +334,7 @@ is prepended to the value in the \ttt{name} column, joined by a period, in every
 \label{cha:chart-api:omnetpp.scave.results:get-histograms}
 
 \begin{flushleft}
-\ttt{get\_histograms(filter\_expression="", include\_attrs=False, include\_runattrs=False, include\_itervars=False, include\_param\_assignments=False, include\_config\_entries=False, merge\_module\_and\_name=False, include\_statistics\_fields=False)}
+\ttt{get\_histograms(filter\_expression="", include\_attrs=False, include\_runattrs=False, include\_itervars=False, include\_param\_assignments=False, include\_config\_entries=False, merge\_module\_and\_name=False)}
 \end{flushleft}
 
 \par Returns a filtered list of histogram results.
@@ -391,7 +392,38 @@ Optional. When set to \ttt{True}, additional pieces of metadata about the run is
 \begin{itemize}
   \item \ttt{runID} \textit{(string)}: Identifies the simulation run
   \item \ttt{name} \textit{(string)}: The name of the config entry
-  \item \ttt{value} \textit{(string or double)}: The value of the config entry
+  \item \ttt{value} \textit{(string)}: The value of the config entry
+  \item Additional metadata items (run attributes, iteration variables, etc.), as requested
+
+\end{itemize}
+
+\subsubsection{get\_param\_assignments()}
+\label{cha:chart-api:omnetpp.scave.results:get-param-assignments}
+
+\begin{flushleft}
+\ttt{get\_param\_assignments(filter\_expression, include\_runattrs=False, include\_itervars=False, include\_param\_assignments=False, include\_config\_entries=False)}
+\end{flushleft}
+
+\par Returns a filtered list of parameter assignment patterns. The result is a subset of what \ttt{get\_config\_entries}
+would return with the same arguments.
+
+\par Parameters:
+
+\begin{itemize}
+  \item \ttt{filter\_expression} \textit{(string)}: The filter expression to select the desired parameter assignments.
+Example: \ttt{name ={\textasciitilde} **.flowID AND itervar:numHosts ={\textasciitilde} 10}
+  \item \ttt{include\_runattrs}, \ttt{include\_itervars}, \ttt{include\_param\_assignments}, \ttt{include\_config\_entries} \textit{(bool)}:
+Optional. When set to \ttt{True}, additional pieces of metadata about the run is appended to the result, pivoted into columns.
+
+\end{itemize}
+
+
+\par Columns of the returned DataFrame:
+
+\begin{itemize}
+  \item \ttt{runID} \textit{(string)}: Identifies the simulation run
+  \item \ttt{name} \textit{(string)}: The parameter assignment pattern
+  \item \ttt{value} \textit{(string)}: The assigned value
   \item Additional metadata items (run attributes, iteration variables, etc.), as requested
 
 \end{itemize}
@@ -1314,6 +1346,27 @@ the function raises an error with the given message.
 
 \begin{itemize}
   \item \ttt{cols} \textit{(list of strings)}: Column names to check.
+
+\end{itemize}
+
+\subsubsection{to\_numeric()}
+\label{cha:chart-api:omnetpp.scave.utils:to-numeric}
+
+\begin{flushleft}
+\ttt{to\_numeric(df, columns=None, errors="ignore", downcast=None)}
+\end{flushleft}
+
+\par Convenience function. Runs \ttt{pandas.to\_numeric} on the given
+(or all) columns of \ttt{df}. If any of the given columns doesn't
+exist, throws an error.
+
+\par Parameters:
+
+\begin{itemize}
+  \item \ttt{df} \textit{(DataFrame)}: The DataFrame to operate on
+  \item \ttt{columns} \textit{(list of strings)}: The list of column names to convert.
+If not given, all columns will be converted.
+  \item \ttt{errors}, \ttt{downcast} \textit{(string)}: Will be passed to \ttt{pandas.to\_numeric()}
 
 \end{itemize}
 
