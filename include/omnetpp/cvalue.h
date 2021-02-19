@@ -281,14 +281,22 @@ class SIM_API cValue
     //@{
 
     /**
-     * Returns value as a boolean. The type must be BOOL.
+     * Returns the value as a boolean. The type must be BOOL.
      */
     bool boolValue() const {assertType(BOOL); return bl;}
 
     /**
-     * Returns value as integer. The type must be INT.
+     * Returns a dimensionless value as an integer. The type must be INT.
+     * This method cannot be used for values that have a unit (it will throw
+     * an exception); for those, use either intValueInUnit() or intValueRaw()+getUnit().
      */
     intval_t intValue() const;
+
+    /**
+     * Returns value as an integer. The type must be INT. This method should be
+     * used together with getUnit() to be able to make sense of the returned value.
+     */
+    intval_t intValueRaw() const;
 
     /**
      * Returns the numeric value as an integer converted to the given unit.
@@ -298,9 +306,19 @@ class SIM_API cValue
     intval_t intValueInUnit(const char *targetUnit) const;
 
     /**
-     * Returns value as double. The type must be DOUBLE or INT.
+     * Returns a dimensionless value as a double. The type must be DOUBLE or INT.
+     * This method cannot be used for values that have a unit (it will throw
+     * an exception); for those, use either doubleValueInUnit() or
+     * doubleValueRaw()+getUnit().
      */
     double doubleValue() const;
+
+    /**
+     * Returns the value as a double. The type must be DOUBLE or INT. This method
+     * should be used together with getUnit() to be able to make sense of the
+     * returned value.
+     */
+    double doubleValueRaw() const;
 
     /**
      * Returns the numeric value as a double converted to the given unit.

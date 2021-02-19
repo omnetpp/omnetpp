@@ -81,10 +81,18 @@ void cValue::set(const cPar& par)
 
 intval_t cValue::intValue() const
 {
-    if (type == INT)
-        return intv;
-    else
+    if (type != INT)
         cannotCastError(INT);
+    if (unit != nullptr)
+        throw cRuntimeError("Attempt to use the value '%s' as a dimensionless number", str().c_str());
+    return intv;
+}
+
+intval_t cValue::intValueRaw() const
+{
+    if (type != INT)
+        cannotCastError(INT);
+    return intv;
 }
 
 inline double safeCastToDouble(intval_t x)
@@ -127,13 +135,21 @@ intval_t cValue::intValueInUnit(const char *targetUnit) const
 
 double cValue::doubleValue() const
 {
+    if (type != DOUBLE && type != INT)
+        cannotCastError(DOUBLE);
+    if (unit != nullptr)
+        throw cRuntimeError("Attempt to use the value '%s' as a dimensionless number", str().c_str());
+    return type == DOUBLE ? dbl : intv;
+}
+
+double cValue::doubleValueRaw() const
+{
     if (type == DOUBLE)
         return dbl;
     else if (type == INT)
         return intv;
     else
         cannotCastError(DOUBLE);
-    return 0;
 }
 
 double cValue::doubleValueInUnit(const char *targetUnit) const
@@ -144,7 +160,6 @@ double cValue::doubleValueInUnit(const char *targetUnit) const
         return UnitConversion::convertUnit(safeCastToDouble(intv), unit, targetUnit);
     else
         cannotCastError(DOUBLE);
-    return 0;
 }
 
 void cValue::convertTo(const char *targetUnit)
