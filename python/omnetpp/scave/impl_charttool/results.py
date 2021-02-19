@@ -95,11 +95,17 @@ def _get_results(filter_expression, file_extensions, result_type, *additional_ar
         'vecvalue': _parse_ndarray
     })
 
+    def _transform(row):
+        if "type" in row and "value" in row and row["type"] == "scalar":
+            row["value"] = _parse_float(row["value"])
+        return row
+
+    if not df.empty:
+        df = df.transform(_transform, axis=1)
 
     df.rename(columns={"run": "runID"}, inplace=True) # oh, inconsistencies...
 
     # TODO: convert column dtype as well?
-
     return df
 
 def _split_by_types(df, types):
