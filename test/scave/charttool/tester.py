@@ -73,7 +73,8 @@ def addMissingNewLine(str):
 
 def sanitize_and_compare_csv(df, ref_filename):
     df = sanitize(df)
-    actual = df.to_csv(None, index=False, quoting=QUOTE_NONNUMERIC)
+    actual = str([str(n) + ": " + str(t) for n, t in zip(df.columns.values, df.dtypes.values)]) + "\n"
+    actual += df.to_csv(None, index=False, quoting=QUOTE_NONNUMERIC)
 
     os.makedirs("actual_output", exist_ok=True)
     with open("actual_output/" + ref_filename, "wt") as f2:
