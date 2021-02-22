@@ -42,7 +42,7 @@ class Chart:
     and properties (which are what the Chart Properties dialog in the IDE edits).
     """
     def __init__(self, type:str, name:str="", id:str=None, template:str=None, icon:str=None, script:str="", dialog_pages=list(), properties=dict()):
-        assert type in ["MATPLOTLIB", "BAR", "LINE"]
+        assert type in ["MATPLOTLIB", "BAR", "LINE", "HISTOGRAM"]
         self.type = type
         self.name = name
         self.id = id

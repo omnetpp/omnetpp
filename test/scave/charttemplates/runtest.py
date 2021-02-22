@@ -4,7 +4,7 @@ import os
 import sys
 import traceback
 
-from omnetpp.scave.libcharttool import *
+from omnetpp.scave.analysis import *
 from omnetpp.scave.impl_charttool import results, chart, plot
 
 messages = list()
@@ -30,7 +30,7 @@ test_serial = 0
 
 def test_chart(name, script, props, inputs, workspace):
     global test_serial
-    chart = Chart("matplotlib", name, script, props)
+    chart = Chart(type="MATPLOTLIB", name=name, script=script, properties=props)
     analysis = Analysis(inputs, charts=[chart])
     test_serial += 1
 
@@ -43,9 +43,9 @@ def test_chart(name, script, props, inputs, workspace):
     except BaseException as be:
         msgs_str = ""
         if messages:
-            msgs_str = "Status message: " + "; ".join(messages)
+            msgs_str = "; Status message: " + "; ".join(messages)
         exc_type = type(be)
-        raise exc_type(str(be) + "; " + msgs_str) # we actually want to append to the exception message but that seems impossible, so re-throw instead, with the same type
+        raise exc_type(str(be) + msgs_str) # we actually want to append to the exception message but that seems impossible, so re-throw instead, with the same type
 
 class Tester:
     def __init__(self):
