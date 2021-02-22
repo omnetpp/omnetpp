@@ -571,8 +571,9 @@ def export_image_if_needed(props):
        image export is requested.
     - `image_export_format`: The default is SVG. Accepted formats (and their names) are the ones supported by Matplotlib.
     - `image_export_folder`: The folder in which the image file is to be created.
-    - `image_export_filename`: The output file name. If missing or empty, a
-       sanitized version of the chart name is used.
+    - `image_export_filename`: The output file name. If it has no extension,
+       one will be added based on the format. If missing or empty, a sanitized
+       version of the chart name is used.
     - `image_export_width`: Image width in inches (default: 6")
     - `image_export_height`: Image height in inches (default: 4")
     - `image_export_dpi`: DPI setting, default 96. For raster image formats, the
@@ -594,10 +595,8 @@ def export_image_if_needed(props):
         return props[k] if k in props else None
 
     if _parse_optional_bool(get_prop("export_image")):
+        filepath = get_image_export_filepath(props)
         format = get_prop("image_export_format") or "svg"
-        folder = get_prop("image_export_folder") or os.getcwd()
-        filename = get_prop("image_export_filename") or _sanitize_filename(chart.get_name())
-        filepath = os.path.join(folder, filename) + "." + format
         width = float(get_prop("image_export_width") or 6)
         height = float(get_prop("image_export_height") or 4)
         dpi = get_prop("image_export_dpi") or "96"
@@ -607,6 +606,15 @@ def export_image_if_needed(props):
         plt.gcf().set_size_inches(width, height)
         plt.savefig(filepath, format=format, dpi=int(dpi))
 
+def get_image_export_filepath(props):
+    def get_prop(k):
+        return props[k] if k in props else None
+    format = get_prop("image_export_format") or "svg"
+    folder = get_prop("image_export_folder") or os.getcwd()
+    filename = get_prop("image_export_filename") or _sanitize_filename(chart.get_name())
+    if not "." in filename:
+        filename = filename + "." + format
+    return os.path.join(folder, filename)
 
 def export_data_if_needed(df, props):
     """
@@ -640,9 +648,7 @@ def export_data_if_needed(df, props):
 
     if _parse_optional_bool(get_prop("export_data")):
         format = "csv"
-        folder = get_prop("data_export_folder") or os.getcwd()
-        filename = get_prop("data_export_filename") or _sanitize_filename(chart.get_name())
-        filepath = os.path.join(folder, filename) + "." + format
+        filepath = get_data_export_filepath(props)
 
         print("exporting data to: '" + filepath + "' as " + format)
 
@@ -655,9 +661,19 @@ def export_data_if_needed(df, props):
         np.set_string_function(None, False)
         np.set_printoptions(**old_opts)
 
+def get_data_export_filepath(props):
+    def get_prop(k):
+        return props[k] if k in props else None
+    format = get_prop("data_export_format") or "csv"
+    folder = get_prop("data_export_folder") or os.getcwd()
+    filename = get_prop("data_export_filename") or _sanitize_filename(chart.get_name())
+    if not "." in filename:
+        filename = filename + "." + format
+    return os.path.join(folder, filename)
+
 
 def _sanitize_filename(filename):
-    valid_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
+    valid_chars = "-_.() %s%s" % (string.ascii_letters, string.digits) # TODO may be too strict, e.g. '#' or accented letters should be allowed
     return ''.join(c for c in filename if c in valid_chars)
 
 
