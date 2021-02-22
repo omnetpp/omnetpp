@@ -58,12 +58,45 @@ class Workspace:
     workspace paths to filesystem paths. This is necessary because the inputs
     in the Analysis are workspace paths.
     """
-    def __init__(self, workspace_dir, project_paths):
-        self.workspace_dir = workspace_dir
+    def __init__(self, workspace_dir, project_paths=None):
+        """
+        Accepts the workspace location, plus a dict that contains the (absolute,
+        or workspace-relative) location of projects by name, for projects that
+        are NOT under the <workspace_dir>/<projectname> location.
+        """
+        if not os.path.isdir(workspace_dir):
+            raise RuntimeError("Specified workspace directory doesn't exist, or is not a directory: " + workspace_dir)
+        self.workspace_dir = os.path.abspath(workspace_dir)
         self.project_paths = project_paths
 
-    def to_filesystem_path(self, workspace_path):
-        pass #TODO
+    @staticmethod
+    def find_workspace(dir=None):
+        if not dir:
+            dir = os.getcwd()
+        while True:
+            if os.path.isdir(os.path.join(dir,".metadata")):  # Eclipse metadata dir
+                return dir
+            parent_dir = os.path.dirname(dir)
+            if parent_dir == dir:
+                return None
+            dir = parent_dir
+
+    def get_project_location(self, project_name):
+        if project_name not in self.project_paths:
+            return os.path.join(self.workspace_dir, project_name)
+        else:
+            project_dir = self.project_paths[project_name]
+            return project_dir if project_dir.startswith('/') else os.path.join(self.workspace_dir, project_dir)
+
+    def to_filesystem_path(self, wspath):
+        if wspath.startswith('/'):
+            project_name,*rest = wspath[1:].split('/', 1)
+            project_loc = self.get_project_location(project_name)
+            if not os.path.isdir(project_loc):
+                raise RuntimeError("Directory for project {} doesn't exist (workspace dir not specified?): {}".format(project_name, project_loc))
+            return os.path.join(project_loc, *rest)
+        else:
+            return wspath # part is relative to current working directory
 
 class Analysis:
     """
@@ -133,8 +166,8 @@ class Analysis:
         assert(os.path.isabs(wd))
 
         # set up state in 'results' module
-        results_module.set_inputs(self.inputs, workspace.workspace_dir, workspace.project_paths)
-        results_module.wd = workspace.workspace_dir
+        fs_inputs = [ workspace.to_filesystem_path(i) for i in self.inputs ]
+        results_module.set_inputs(fs_inputs)
 
         # set up state in 'chart' module
         chart_module.name = chart.name

@@ -13,38 +13,21 @@ using the opp_scavetool program to load the .sca and .vec files.
 
 inputfiles = list()
 
-def set_inputs(input_patterns, workspace_dir, project_paths):
+def set_inputs(input_patterns):
     global inputfiles
     inputfiles = list()
-    add_inputs(input_patterns, workspace_dir, project_paths)
+    add_inputs(input_patterns)
 
-def add_inputs(input_patterns, workspace_dir, project_paths):
-    global inputfiles
+def add_inputs(input_patterns):
     ins = list()
-    for i in input_patterns:
-        mapped = False
-        for p in project_paths.keys():
-            pv = project_paths[p]
-
-            if not p.startswith("/"):
-                p = "/" + p
-
-            if i.startswith(p):
-                pattern = pv + "/" + i[len(p):]
-
-                if os.path.isdir(pattern):
-                    pattern += "/**"
-
-                ins.extend(glob.glob(pattern, recursive=True))
-                mapped = True
-                break
-
-        # this is a sort-of default case
-        if not mapped:
-            ins.extend(glob.glob(workspace_dir + "/" + i))
-
-    # turning them into absolute paths (script will cwd) and making it unique
-    inputfiles = list(set(inputfiles + [os.path.abspath(item) for item in ins]))
+    for pattern in input_patterns:
+        if os.path.isdir(pattern):
+            ins.extend(glob.glob(pattern + "/**.sca", recursive=True))
+            ins.extend(glob.glob(pattern + "/**.vec", recursive=True))
+        else:
+            ins.extend(glob.glob(pattern, recursive=True))
+    global inputfiles
+    inputfiles = list(set(inputfiles + ins))  # make unique
 
 def _parse_int(s):
     return int(s) if s else None
