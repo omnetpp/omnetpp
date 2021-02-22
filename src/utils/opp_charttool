@@ -15,24 +15,19 @@ import numpy as np
 import pandas as pd
 import xml.etree.ElementTree as ET
 import matplotlib.pyplot as plt
-from omnetpp.scave.libcharttool import *
+from omnetpp.scave.analysis import *
 from omnetpp.scave.impl_charttool import results, chart
 
 
-_real_show = plt.show
+def error(message):
+    print("ERROR: " + message)
+    sys.exit(1)
 
-def _fake_show(*args, **kwargs):
-    global _show_called
-    _real_show(*args, **kwargs)
-    _show_called = True
-
-plt.show = _fake_show
-
-def run_chart_safe(wd, c, export, show):
+def run_chart_safe(analysis, chart, wd, workspace, extra_props=dict(), show=False):
     try:
-        run_chart(wd, c, export, show)
+        analysis.run_chart(chart, wd, workspace, extra_props, show)
     except Exception as e:
-        print("Error in chart " + c.name, file = sys.stderr)
+        print("Error in chart " + chart.name, file = sys.stderr)
         print(traceback.format_exc(), file = sys.stderr)
         return False
     return True
@@ -51,7 +46,8 @@ if __name__ == "__main__":
     parser.add_argument('anf_file', type=str, nargs=1, help='The Analysis (.anf) file')
     parser.add_argument('-i', metavar='chart_index', type=int, nargs=1, help='The index of the chart to run (conflicts with -n)')
     parser.add_argument('-n', metavar='chart_name', type=str, nargs=1, help='The name of the chart to run (conflicts with -i, the first chart is selected when ambiguous)')
-    parser.add_argument('-e', action='store_true', default=False, help='Export selected or all charts as image[s] (experimental)')
+    parser.add_argument('-e', action='store_true', default=False, help='Export selected or all charts as image[s]')
+    parser.add_argument('-d', action='store_true', default=False, help='Export data of selected or all charts as CSV')
     parser.add_argument('-p', metavar='project_path', type=str, nargs='*', help='Adds a workspace path to filesystem directory mapping (format: "/project=.")')
     parser.add_argument('-w', metavar='workspace_directory', type=str, nargs=1, default='.', help='The workspace directory. Acts as a fallback after -p. The input patterns are relative to this')
 
@@ -86,39 +82,39 @@ if __name__ == "__main__":
             for p in projs:
                 project_paths[p] = "."
 
-    results.add_inputs(analysis.inputs, args.w[0], project_paths)
-    results.wd = args.w[0]
+    workspace = Workspace(args.w[0], project_paths)
 
-    selected_chart = None
+    selected_charts = None
 
     if args.i:
-        selected_chart = analysis.charts[args.i[0]]
+        selected_charts = [ analysis.charts[args.i[0]] ]
     elif args.n:
         for c in analysis.charts:
             if c.name == args.n[0]:
-                selected_chart = c
+                selected_charts = [ c ]
                 break
-        if not selected_chart:
+        if not selected_charts:
             error('No chart named "{}".'.format(args.n[0]))
     else: # neither -i nor -n given
-        if not args.e:
-            print_analysis_info(anf_file, analysis)
+        if not args.e and not args.d:
+            print(anf_file + ":\n\n" + analysis.info())  #TODO revise how it's supposed to work
+        else:
+            selected_charts = analysis.charts
 
     ok = True
 
-    if args.e:
-        if selected_chart:
-            chart_ok = run_chart_safe(anf_dir, selected_chart, export=True, show=False)
-            ok = ok and chart_ok
-        else:
-            for c in analysis.charts:
-                chart_ok = run_chart_safe(anf_dir, c, export=True, show=False)
+    if selected_charts:
+        for chart in selected_charts:
+            if args.e:
+                chart_ok = analysis.export_image(chart, anf_dir, workspace, enforce=False) is not None
                 ok = ok and chart_ok
-                plt.clf()
-    else:
-        if selected_chart:
-            chart_ok = run_chart_safe(anf_dir, selected_chart, export=False, show=True)
-            ok = ok and chart_ok
+            if args.d:
+                chart_ok = analysis.export_data(chart, anf_dir, workspace, enforce=False) is not None
+                ok = ok and chart_ok
+            if not args.e and not args.d:
+                chart_ok = run_chart_safe(analysis, chart, anf_dir, workspace, show=True)
+                ok = ok and chart_ok
+            plt.clf()
 
     if not ok:
         sys.exit(1)
