@@ -11,9 +11,12 @@ This module implements the same result querying API that is provided by the IDE 
 using the opp_scavetool program to load the .sca and .vec files.
 """
 
-# TODO: document
 inputfiles = list()
 
+def set_inputs(input_patterns, workspace_dir, project_paths):
+    global inputfiles
+    inputfiles = list()
+    add_inputs(input_patterns, workspace_dir, project_paths)
 
 def add_inputs(input_patterns, workspace_dir, project_paths):
     global inputfiles
