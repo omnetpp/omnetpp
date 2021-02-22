@@ -220,7 +220,7 @@ class Analysis:
         fname = utils.get_image_export_filepath(props)
         return self._check_file_created(fname, "image", enforce)
 
-    def export_data(self, chart, wd, workspace, format="svg", target_folder=None, filename=None, width=6, height=4, dpi=96, enforce=True, extra_props=dict()):
+    def export_data(self, chart, wd, workspace, format="csv", target_folder=None, filename=None, enforce=True, extra_props=dict()):
         """
         Runs a chart script for data export. This method just calls `run_chart()`
         with extra properties that instruct the chart script to perform data export.
@@ -231,6 +231,8 @@ class Analysis:
         props.update(extra_props)
 
         props['export_data'] = "true"
+        if format:
+            props['data_export_format'] = str(format)
         if target_folder:
             props['data_export_folder'] = str(target_folder)
         if filename:
@@ -238,7 +240,7 @@ class Analysis:
 
         self.run_chart(chart, wd, workspace, extra_props=props, show=False)
 
-        fname = utils.get_image_export_filepath(props)
+        fname = utils.get_data_export_filepath(props)
         return self._check_file_created(fname, "data", enforce)
 
     def _check_file_created(self, fname, what, enforce):
