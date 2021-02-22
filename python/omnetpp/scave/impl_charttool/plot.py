@@ -27,12 +27,16 @@ def plot(xs, ys, key, label, drawstyle, linestyle, linewidth, color, marker, mar
     return plt.plot(xs, ys, **params)
 
 
-def hist(x, bins, density, weights, cumulative, bottom, histtype, color, label, linewidth,
-         underflows, overflows, minvalue, maxvalue):
+def bar(x, height, width, key, label, color, edgecolor):
+    params = {k:v for k, v in locals().items() if k is not None and k not in ["key"]}
+    return plt.bar(**params)
 
-    params = locals()
-    params = {k:v for k, v in locals().items() if k is not None and k not in ["underflows", "overflows", "minvalue", "maxvalue", "params"]}
+
+def hist(x, bins, key, density, weights, cumulative, bottom, histtype, color, label, linewidth,
+         underflows, overflows, minvalue, maxvalue):
+    params = {k:v for k, v in locals().items() if k is not None and k not in ["underflows", "overflows", "minvalue", "maxvalue", "key"]}
     return plt.hist(**params)
+
 
 def legend(show, frameon, loc):
     if show is not None and not show:
@@ -65,7 +69,6 @@ def _legend_loc_outside_args(loc):
     (anchorloc, relpos) = mapping[loc]
     return {"loc" : anchorloc, "bbox_to_anchor" : relpos}
 
-bar = plt.bar
 title = plt.title
 xlabel = plt.xlabel
 ylabel = plt.ylabel
