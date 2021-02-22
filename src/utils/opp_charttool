@@ -42,19 +42,45 @@ if __name__ == "__main__":
         "The native charts are 'emulated' using matplotlib.\n"
         "Use the -e flag to export all charts, or if specified, the selected chart, as image.\n"
         "NOTE: Exporting the charts this way does not (yet) take into account the exporting "
-        "preferences configured in the IDE.", formatter_class=RawTextHelpFormatter)
-    parser.add_argument('anf_file', type=str, nargs=1, help='The Analysis (.anf) file')
-    parser.add_argument('-i', metavar='chart_index', type=int, nargs=1, help='The index of the chart to run (conflicts with -n)')
-    parser.add_argument('-n', metavar='chart_name', type=str, nargs=1, help='The name of the chart to run (conflicts with -i, the first chart is selected when ambiguous)')
-    parser.add_argument('-e', action='store_true', default=False, help='Export selected or all charts as image[s]')
-    parser.add_argument('-d', action='store_true', default=False, help='Export data of selected or all charts as CSV')
-    parser.add_argument('-p', metavar='project_path', type=str, nargs='*', help='Adds a workspace path to filesystem directory mapping (format: "/project=.")')
-    parser.add_argument('-w', metavar='workspace_directory', type=str, nargs=1, default=[None], help='The workspace directory. Acts as a fallback after -p. The input patterns are relative to this')
+        "preferences configured in the IDE.",
+        epilog="Some commands have additional arguments specific to them. For more info, see:\n"
+        "opp_charttool COMMAND -h",
+        formatter_class=RawTextHelpFormatter)
+
+    subparsers = parser.add_subparsers(help='', dest='command', metavar='COMMAND')
+
+    common_parser = argparse.ArgumentParser()
+    common_parser.add_argument('-i', metavar='chart_index', type=int, nargs=1, help='The index of the chart to select (conflicts with -n)')
+    common_parser.add_argument('-n', metavar='chart_name', type=str, nargs=1, help='The name of the chart to select (conflicts with -i, the first chart is selected when ambiguous)')
+    common_parser.add_argument('-p', metavar='project_path', type=str, nargs='*', help='Adds a workspace path to filesystem directory mapping (format: "/project=.")')
+    common_parser.add_argument('-w', metavar='workspace_directory', type=str, nargs=1, default=[None], help='The workspace directory. Acts as a fallback after -p. The input patterns are relative to this')
+    common_parser.add_argument('-D', metavar='properties', dest='properties', type=str, nargs='*', default=[], help='Extra properties to pass to the chart script, format: key=value')
+    common_parser.add_argument('anf_file', type=str, nargs=1, help='The Analysis (.anf) file')
+
+
+    info_parser = subparsers.add_parser('info', help='Info about the analysis file', parents=[common_parser], add_help=False)
+
+
+    run_parser = subparsers.add_parser('run', help='Run a selected chart', parents=[common_parser], add_help=False)
+
+
+    imageexport_parser = subparsers.add_parser('imageexport', help='Export selected or all charts as image(s)', parents=[common_parser], add_help=False)
+    imageexport_parser.add_argument('-f', metavar='format', dest='format', type=str, default='svg', help='The image format to export in')
+    imageexport_parser.add_argument('-d', metavar='folder', dest='target_folder', type=str, default=None, help='The folder to export into')
+    imageexport_parser.add_argument('-o', metavar='filename', dest='out_file', type=str, default=None, help='The filename to export as')
+
+    imageexport_parser.add_argument('--width', metavar='width', type=float, default=None, help='The width of the image in inches')
+    imageexport_parser.add_argument('--height', metavar='height', type=float, default=None, help='The height of the image in inches')
+    imageexport_parser.add_argument('--dpi', metavar='dpi', type=int, default=None, help='The resolution of the image in dots per inch')
+
+
+    dataexport_parser = subparsers.add_parser('dataexport', help='Export data of selected or all charts', parents=[common_parser], add_help=False)
+    dataexport_parser.add_argument('-f', metavar='format', dest='format', type=str, default='csv', help='The data format to export in')
+    dataexport_parser.add_argument('-d', metavar='folder', dest='target_folder', type=str, default=None, help='The folder to export into')
+    dataexport_parser.add_argument('-o', metavar='filename', dest='out_file', type=str, default=None, help='The filename to export as')
+
 
     args = parser.parse_args()
-
-    if args.i and args.n:
-        error("Do not use -i and -n together.")
 
     anf_file = args.anf_file[0]
     anf_dir = os.path.dirname(os.path.abspath(anf_file))
@@ -74,7 +100,11 @@ if __name__ == "__main__":
             workspace_dir = os.path.dirname(os.path.abspath(anf_file))
     workspace = Workspace(workspace_dir, project_paths)
 
+
     selected_charts = None
+
+    if args.i and args.n:
+        error("Do not use -i and -n together.")
 
     if args.i:
         selected_charts = [ analysis.charts[args.i[0]] ]
@@ -86,25 +116,34 @@ if __name__ == "__main__":
         if not selected_charts:
             error('No chart named "{}".'.format(args.n[0]))
     else: # neither -i nor -n given
-        if not args.e and not args.d:
-            print(anf_file + ":\n\n" + analysis.info())  #TODO revise how it's supposed to work
-        else:
-            selected_charts = analysis.charts
+        selected_charts = analysis.charts
 
     ok = True
 
-    if selected_charts:
+    props = dict([i.split("=", 1) for i in args.properties])
+
+    if args.command == 'info':
+        print(anf_file + ":\n\n" + analysis.info())
+    elif args.command == 'run':
         for chart in selected_charts:
-            if args.e:
-                chart_ok = analysis.export_image(chart, anf_dir, workspace, enforce=False) is not None
-                ok = ok and chart_ok
-            if args.d:
-                chart_ok = analysis.export_data(chart, anf_dir, workspace, enforce=False) is not None
-                ok = ok and chart_ok
-            if not args.e and not args.d:
-                chart_ok = run_chart_safe(analysis, chart, anf_dir, workspace, show=True)
-                ok = ok and chart_ok
-            plt.clf()
+            chart_ok = run_chart_safe(analysis, chart, anf_dir, workspace, show=True, extra_props=props)
+            ok = ok and chart_ok
+    elif args.command == 'imageexport':
+        for chart in selected_charts:
+            chart_ok = analysis.export_image(chart, anf_dir, workspace, enforce=False,
+                                            format=args.format, target_folder=args.target_folder, filename=args.out_file,
+                                            width=args.width, height=args.height, dpi=args.dpi,
+                                            extra_props=props) is not None
+            ok = ok and chart_ok
+    elif args.command == 'dataexport':
+        for chart in selected_charts:
+            chart_ok = analysis.export_data(chart, anf_dir, workspace, enforce=False,
+                                            format=args.format, target_folder=args.target_folder, filename=args.out_file,
+                                            extra_props=props) is not None
+            ok = ok and chart_ok
+    else:
+        parser.print_help()
+        error("Unknown command '%s'" % args.command)
 
     if not ok:
         sys.exit(1)
