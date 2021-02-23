@@ -71,6 +71,12 @@ class Workspace:
 
     @staticmethod
     def find_workspace(dir=None):
+        """
+        Utility function: Find the IDE workspace directory searching from the
+        given directory (or the current dir if not given) upwards. The workspace
+        directory of the Eclipse-based IDE can be recognized by having a `.metadata`
+        subdir.
+        """
         if not dir:
             dir = os.getcwd()
         while True:
@@ -82,13 +88,19 @@ class Workspace:
             dir = parent_dir
 
     def get_project_location(self, project_name):
+        """
+        Returns the location of the given workspace project in the filesystem path.
+        """
         if project_name not in self.project_paths:
             return os.path.join(self.workspace_dir, project_name)
         else:
             project_dir = self.project_paths[project_name]
-            return project_dir if project_dir.startswith('/') else os.path.join(self.workspace_dir, project_dir)
+            return project_dir if os.path.isabs(project_dir) else os.path.join(self.workspace_dir, project_dir)
 
     def to_filesystem_path(self, wspath):
+        """
+        Translate workspace paths to filesystem path.
+        """
         if wspath.startswith('/'):
             project_name,*rest = wspath[1:].split('/', 1)
             project_loc = self.get_project_location(project_name)
@@ -275,7 +287,6 @@ class Analysis:
         for input in self.inputs:
             inputEl = appendChild(inputsEl, "input")
             setAttr(inputEl, "pattern", input)
-            inputsEl.appendChild(inputEl)
         chartsEl = appendChild(analysisEl, "charts")
         for chart in self.charts:
             chartEl = appendChild(chartsEl, "chart")

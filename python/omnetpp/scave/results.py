@@ -1,29 +1,75 @@
 """
-This module lets the scripts that power the charts in the IDE query
-any simulation results and metadata referenced by the .anf file they
-are in, returned as as Pandas DataFrames in various formats.
+Provides access to the simulation results for the chart script. It lets the
+chart script query simulation results and metadata referenced by the .anf file
+they are in. The results are returned as Pandas `DataFrame`'s of various
+formats.
 
-The `filter_expressions` parameter in all functions has the same syntax.
-It is always evaluated independently on every loaded result item or metadata entry, and its value
-determines whether the given item or piece of metadata is included in the returned `DataFrame`.
+Note that this module is stateful. It is set up appropriately by the OMNeT++ IDE
+or `opp_charttool` before the chart script is run.
+
+**Filter expressions**
+
+The `filter_expression` parameters in all functions have the same syntax. It is
+always evaluated independently on every loaded result item or metadata entry,
+and its value determines whether the given item or piece of metadata is included
+in the returned `DataFrame`.
+
+A filter expression is composed of terms that can be combined with the `AND`,
+`OR`, `NOT` operators, and parentheses. A term filters for the value of some property of
+the item, and has the form `<property> =~ <pattern>`, or simply `<pattern>`. The latter
+is equivalent to `name =~ <pattern>`.
+
+The following properties are available:
+- `name`: Name of the result or item.
+- `module`: Full path of the result's module.
+- `type`: Type of the item. Value is one of: `scalar`, `vector`, `parameter`, `histogram`, `statistics`.
+- `isfield`: `true` is the item is a synthetic scalar that represents a field of statistic or a vector, `false` if not.
+- `file`: File name of the result or item.
+- `run`: Unique run ID of the run that contains the result or item.
+- `runattr:<name>`: Run attribute of the run that contains the result or item. Example: `runattr:measurement`.
+- `attr:<name>`: Attribute of the result. Example: `attr:unit`.
+- `itervar:<name>`: Iteration variable of the run that contains the result or item. Example: `itervar:numHosts`.
+- `config:<key>`: Configuration key of the run that contains the result or item. Example: `config:sim-time-limit`, `config:**.sendIaTime`.
+
+Patterns may contain the following wildcards:
+- `?` matches any character except '.'
+- `*` matches zero or more characters except '.'
+- `**` matches zero or more characters (any character)
+- `{a-z}` matches a character in range a-z
+- `{^a-z}` matches a character not in range a-z
+- `{32..255}` any number (i.e. sequence of digits) in range 32..255 (e.g. `99`)
+- `[32..255]` any number in square brackets in range 32..255 (e.g. `[99]`)
+- `\` takes away the special meaning of the subsequent character
+
+Patterns only need to be surrounded with quotes if they contain whitespace or
+other characters that would cause ambiguity in parsing the expression.
+
+Example: `module =~ "**.host*" AND (name =~ "pkSent*" OR name =~ "pkRecvd*"`
+
+
+**Metadata columns**
+
+Several query functions have the `include_attrs`, `include_runattrs`,
+`include_itervars`, `include_param_assignments`, and `include_config_entries`
+boolean options. When such an option is turned on, it will generate extra
+columns into dataframe, one for each result attribute, run attribute, iteration
+variable, etc. When there is a name clash among items of different types, the
+column name for the second one will be modified by adding its type after
+an underscore (`_runattr`, `_itervar`, `_config`, `_param`).
+
+- `include_attrs`: Adds the attributes of the result in question
+- `include_runattrs`: Adds the run attributes of the (result's) run
+- `include_itervars`: Adds the iteration variables of the (result's) run
+- `include_config_entries`: Adds all configuration entries of the (result's) run,
+   including parameter parameter assignments and per-object configuration options.
+   If this option is turned on, `include_param_assignments` has no effect.
+- `include_param_assignments`: Adds the configuration entries that set module or
+   channel parameters. This is a subset of the entries added by `include_config_entries`.
+
+Note that values in metadata columns are generally strings (with missing values
+represented as `None` or `nan`). The Pandas `to_numeric()` function or
+`utils.to_numeric()` can be used to convert values to `float` or `int` where needed.
 """
-
-
-# Alternatively: The results module gives access to the simulation results loaded into the IDE.
-# TODO: document
-
-# DOCS TODO:
-# more about filter expression syntax, operators, accepted fields
-# about include_runattrs, include_itervars, include_param_assignments, include_config_entries
-# about chart templates, how custom ones can be added to a project (own .properties file)
-# about opp_charttool ?
-#
-# Additional columns can be appended that contain metadata about the run in which the result belongs:
-#   - include_runattrs:
-#   - include_itervars:
-#   - include_param_assignments: Adds a subset of include_config_entries, only includes cPar assignment entries, not global or per-object config options
-#   - include_config_entries: Adds all configuration entries: param assignments, global and per-object configuration options. If True, include_param_assignments has no effect.
-
 
 # Technically, this module only delegates all of its functions to one of two different
 # implementations of the API described here, based on whether it is running from within the IDE
@@ -111,6 +157,7 @@ def get_runs(filter_expression="", include_runattrs=False, include_itervars=Fals
       Example: `runattr:network =~ "Aloha" AND config:Aloha.slotTime =~ 0`
     - `include_runattrs`, `include_itervars`, `include_param_assignments`, `include_config_entries` (bool):
       Optional. When set to `True`, additional pieces of metadata about the run is appended to the result, pivoted into columns.
+      See the "Metadata columns" section of the module documentation for details.
 
     Columns of the returned DataFrame:
 
@@ -135,13 +182,14 @@ def get_runattrs(filter_expression="", include_runattrs=False, include_itervars=
       Example: `name =~ *date* AND config:Aloha.slotTime =~ 0`
     - `include_runattrs`, `include_itervars`, `include_param_assignments`, `include_config_entries` (bool):
       Optional. When set to `True`, additional pieces of metadata about the run is appended to the result, pivoted into columns.
+      See the "Metadata columns" section of the module documentation for details.
 
     Columns of the returned DataFrame:
 
     - `runID` (string): Identifies the simulation run
     - `name` (string): The name of the run attribute
-    - `value` (string): The value of the run attribue
-    - Additional metadata items (run attributes, iteration variables, etc.), as requested
+    - `value` (string): The value of the run attribute
+    - Additional metadata items (run attributes, iteration variables, etc.)
     """
     return impl.get_runattrs(**locals())
 
@@ -157,6 +205,7 @@ def get_itervars(filter_expression="", include_runattrs=False, include_itervars=
       Example: `name =~ iaMean AND config:Aloha.slotTime =~ 0`
     - `include_runattrs`, `include_itervars`, `include_param_assignments`, `include_config_entries` (bool):
       Optional. When set to `True`, additional pieces of metadata about the run is appended to the result, pivoted into columns.
+      See the "Metadata columns" section of the module documentation for details.
 
     Columns of the returned DataFrame:
 
@@ -183,6 +232,7 @@ def get_scalars(filter_expression="", include_attrs=False, include_fields=False,
       (`:min`, `:mean`, etc.) are also returned as synthetic scalars.
     - `include_runattrs`, `include_itervars`, `include_param_assignments`, `include_config_entries` (bool):
       Optional. When set to `True`, additional pieces of metadata about the run is appended to the DataFrame, pivoted into columns.
+      See the "Metadata columns" section of the module documentation for details.
     - `merge_module_and_name` (bool): Optional. When set to `True`, the value in the `module` column
       is prepended to the value in the `name` column, joined by a period, in every row.
 
@@ -215,6 +265,7 @@ def get_parameters(filter_expression="", include_attrs=False, include_runattrs=F
       example) are appended to the DataFrame, pivoted into columns.
     - `include_runattrs`, `include_itervars`, `include_param_assignments`, `include_config_entries` (bool):
       Optional. When set to `True`, additional pieces of metadata about the run is appended to the DataFrame, pivoted into columns.
+      See the "Metadata columns" section of the module documentation for details.
     - `merge_module_and_name` (bool): Optional. When set to `True`, the value in the `module` column
       is prepended to the value in the `name` column, joined by a period, in every row.
 
@@ -242,6 +293,7 @@ def get_vectors(filter_expression="", include_attrs=False, include_runattrs=Fals
       or `source` for example) are appended to the DataFrame, pivoted into columns.
     - `include_runattrs`, `include_itervars`, `include_param_assignments`, `include_config_entries` (bool):
       Optional. When set to `True`, additional pieces of metadata about the run is appended to the DataFrame, pivoted into columns.
+      See the "Metadata columns" section of the module documentation for details.
     - `merge_module_and_name` (bool): Optional. When set to `True`, the value in the `module` column
       is prepended to the value in the `name` column, joined by a period, in every row.
     - `start_time`, `end_time` (double): Optional time limits to trim the data of vector type results.
@@ -271,6 +323,7 @@ def get_statistics(filter_expression="", include_attrs=False, include_runattrs=F
       or `source` for example) are appended to the DataFrame, pivoted into columns.
     - `include_runattrs`, `include_itervars`, `include_param_assignments`, `include_config_entries` (bool):
       Optional. When set to `True`, additional pieces of metadata about the run is appended to the DataFrame, pivoted into columns.
+      See the "Metadata columns" section of the module documentation for details.
     - `merge_module_and_name` (bool): Optional. When set to `True`, the value in the `module` column
       is prepended to the value in the `name` column, joined by a period, in every row.
 
@@ -298,6 +351,7 @@ def get_histograms(filter_expression="", include_attrs=False, include_runattrs=F
       or `source` for example) are appended to the DataFrame, pivoted into columns.
     - `include_runattrs`, `include_itervars`, `include_param_assignments`, `include_config_entries` (bool):
       Optional. When set to `True`, additional pieces of metadata about the run is appended to the DataFrame, pivoted into columns.
+      See the "Metadata columns" section of the module documentation for details.
     - `merge_module_and_name` (bool): Optional. When set to `True`, the value in the `module` column
       is prepended to the value in the `name` column, joined by a period, in every row.
 
@@ -325,6 +379,7 @@ def get_config_entries(filter_expression, include_runattrs=False, include_iterva
       Example: `name =~ sim-time-limit AND itervar:numHosts =~ 10`
     - `include_runattrs`, `include_itervars`, `include_param_assignments`, `include_config_entries` (bool):
       Optional. When set to `True`, additional pieces of metadata about the run is appended to the result, pivoted into columns.
+      See the "Metadata columns" section of the module documentation for details.
 
     Columns of the returned DataFrame:
 
@@ -348,6 +403,7 @@ def get_param_assignments(filter_expression, include_runattrs=False, include_ite
       Example: `name =~ **.flowID AND itervar:numHosts =~ 10`
     - `include_runattrs`, `include_itervars`, `include_param_assignments`, `include_config_entries` (bool):
       Optional. When set to `True`, additional pieces of metadata about the run is appended to the result, pivoted into columns.
+      See the "Metadata columns" section of the module documentation for details.
 
     Columns of the returned DataFrame:
 

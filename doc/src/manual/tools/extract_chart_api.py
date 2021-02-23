@@ -19,6 +19,7 @@ def finalize_latex(s):
         ("%", "\\%"),
         ("&", "\\&"),
         ("#", "\\#"),
+        ("^", "{\\textasciicircum}"),
         ("\b", "{\\textbackslash}"),
         ("~", "{\\textasciitilde}"),
 

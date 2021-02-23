@@ -1,8 +1,8 @@
 """
-This module is the interface for displaying data using the IDE's native
-(non-Matplotlib) plotting widgets. The API is intentionally very close to
-`matplotlib.pyplot`: most functions and the parameters they accept are a
-subset of `pyplot`'s. The promise is that a chart script written with this
+This module is the interface for displaying plots using the IDE's native
+(non-Matplotlib) plotting widgets from chart scripts. The API is intentionally
+very close to `matplotlib.pyplot`: most functions and the parameters they accept
+are a subset of `pyplot`'s. The promise is that a chart script written with this
 API is very easy to switch over to Matplotlib: usually, just importing
 `matplotlib.pyplot` as `plot` (instead of importing this package) is
 sufficient. Also the other way round: if a chart script uses only this
@@ -12,6 +12,9 @@ IDE's native widgets.
 When the API is used outside the context of a native plotting widget
 (such as during the run of `opp_charttool`, or in IDE during image export),
 the functions are emulated with Matplotlib.
+
+Note that this module is stateful. It is set up appropriately by the OMNeT++
+IDE or `opp_charttool` before the chart script is run.
 """
 
 

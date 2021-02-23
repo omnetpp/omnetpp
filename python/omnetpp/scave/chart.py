@@ -1,5 +1,8 @@
 """
-This module provides functions to access the properties of the chart object.
+Provides access to the properties of the current chart for the chart script.
+
+Note that this module is stateful. It is set up appropriately by the OMNeT++
+IDE or `opp_charttool` before the chart script is run.
 """
 
 # Technically, this module only delegates all of its functions to one of two different
