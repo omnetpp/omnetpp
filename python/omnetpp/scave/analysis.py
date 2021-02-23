@@ -49,8 +49,8 @@ class Chart:
         self.template = template
         self.icon = icon
         self.script = script
-        self.dialog_pages = dialog_pages
-        self.properties = properties
+        self.dialog_pages = dialog_pages.copy()
+        self.properties = properties.copy()
 
 class Workspace:
     """
