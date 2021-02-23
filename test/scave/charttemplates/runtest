@@ -2,12 +2,8 @@
 
 import os
 import sys
-import traceback
 
 from omnetpp.scave.analysis import *
-from omnetpp.scave.impl_charttool import results, chart, plot
-
-messages = list()
 
 def get_opp_root():
     try:
@@ -20,87 +16,39 @@ def get_opp_root():
 OPP_ROOT = get_opp_root() + "/"
 TEMPLATE_DIR = OPP_ROOT + "ui/org.omnetpp.scave.templates/charttemplates/"
 
-def warn(warning):
-    global messages
-    messages.append(warning)
 
-plot.set_warning = warn
-
-test_serial = 0
-
-def test_chart(name, script, props, inputs, workspace):
-    global test_serial
-    chart = Chart(type="MATPLOTLIB", name=name, script=script, properties=props)
-    analysis = Analysis(inputs, charts=[chart])
-    test_serial += 1
-
-    messages.clear()
-    try:
-        print("--------")
-        print(props)
-        wd = OPP_ROOT + "test/scave/charttemplates"
-        analysis.run_chart(chart, wd, workspace, {'export_image':'true', 'image_export_format':'png'})
-    except BaseException as be:
-        msgs_str = ""
-        if messages:
-            msgs_str = "; Status message: " + "; ".join(messages)
-        exc_type = type(be)
-        raise exc_type(str(be) + msgs_str) # we actually want to append to the exception message but that seems impossible, so re-throw instead, with the same type
-
-class Tester:
-    def __init__(self):
-        self.total = 0
-        self.failed = 0
-        self.faileds = []
-
-    def run(self, scriptname, testparams, test, expect_exception=None, testlabel=None):
-        self.total += 1
-        failed = False
-        try:
-            test()
-            if expect_exception:
-                print("expected exception not raised")
-                failed = True
-        except BaseException as e:
-            #traceback.print_exc()
-            print("exception:", repr(e))
-            if not expect_exception or expect_exception not in str(e):
-                failed = True
-
-        if failed:
-            self.failed += 1
-            self.faileds.append((scriptname, testlabel, testparams))
-            print("FAIL")
-        else:
-            print("PASS")
-
-    def print_summary(self):
-        print("tests run:", self.total, "failed:", self.failed)
-        for sn, tl, tp in self.faileds:
-            print("FAIL: in", sn, ", label", tl, ", params: ", tp)
-
-def test_script(tester, inputs, workspace, scriptname, default_props, tests):
+def test_script(scriptname, base_props, tests):
     with open(TEMPLATE_DIR + "/" + scriptname, "rt") as f:
         script = str(f.read())
+
+    charts = []
 
     i = 0
     for propname, propvalue, exc in tests:
         name = scriptname.replace(".py", "_" + str(i))
         i = i + 1
-        params = {propname: propvalue}
-        tester.run(scriptname, params, lambda:
-                test_chart(name, script, {**default_props, **params}, inputs, workspace),
-            exc)
+        props = base_props
+        props.update({propname: propvalue})
+
+        origlines = script.splitlines()
+
+        sl = ["try:"]
+        sl += ["   " + l for l in origlines]
+        sl += ["except BaseException as e:"]
+        sl += ["    print(e)"]
+
+        chart = Chart(type="MATPLOTLIB", name=name, script="\n".join(sl), properties=props)
+        charts.append(chart)
+
+    return charts
 
 
 if __name__ == "__main__":
 
-    inputs = [ "/aloha/*.sca", "/aloha/*.vec" ]
-    workspace = Workspace(OPP_ROOT + "samples/resultfiles/", {})
 
-    tester = Tester()
+    charts = []
 
-    test_script(tester, inputs, workspace, "barchart.py",
+    charts += test_script("barchart.py",
         {
             "filter": "name =~ channelUtilization:last",
             "groups": "iaMean",
@@ -127,7 +75,7 @@ if __name__ == "__main__":
         ]
     )
 
-    test_script(tester, inputs, workspace, "linechart.py",
+    charts += test_script("linechart.py",
         {
             "filter": "name =~ radioState:vector",
             "vector_start_time": "",
@@ -150,7 +98,7 @@ if __name__ == "__main__":
         ]
     )
 
-    test_script(tester, inputs, workspace, "scatterchart_itervars.py",
+    charts += test_script("scatterchart_itervars.py",
         {
             "filter": "name =~ channelUtilization:last",
             "xaxis_itervar": "iaMean",
@@ -179,7 +127,7 @@ if __name__ == "__main__":
         ]
     )
 
-    test_script(tester, inputs, workspace, "histogramchart.py",
+    charts += test_script("histogramchart.py",
         {
             "filter": "name =~ channelUtilization:last",
         },
@@ -191,7 +139,7 @@ if __name__ == "__main__":
         ]
     )
 
-    test_script(tester, inputs, workspace, "generic_mpl.py",
+    charts += test_script("generic_mpl.py",
         {
             "input": "Hello",
         },
@@ -201,7 +149,7 @@ if __name__ == "__main__":
         ]
     )
 
-    test_script(tester, inputs, workspace, "generic_xyplot.py",
+    charts += test_script("generic_xyplot.py",
         {
         },
         [
@@ -209,7 +157,7 @@ if __name__ == "__main__":
         ]
     )
 
-    test_script(tester, inputs, workspace, "3dchart_itervars.py",
+    charts += test_script("3dchart_itervars.py",
         {
             "filter": "name =~ channelUtilization:last",
             "xaxis_itervar": "iaMean",
@@ -240,7 +188,7 @@ if __name__ == "__main__":
         ]
     )
 
-    test_script(tester, inputs, workspace, "boxwhiskers.py",
+    charts += test_script("boxwhiskers.py",
         {
             "filter": "*:histogram"
         },
@@ -251,7 +199,7 @@ if __name__ == "__main__":
         ]
     )
 
-    tester.print_summary()
+    inputs = [ "/aloha/*.sca", "/aloha/*.vec" ]
+    analysis = Analysis(inputs, charts=charts)
 
-    if len(tester.faileds) > 0:
-        exit(1)
+    analysis.to_anf_file("all_the_tests.anf")
