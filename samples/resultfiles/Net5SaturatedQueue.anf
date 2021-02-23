@@ -548,7 +548,7 @@ utils.export_data_if_needed(df, props)
             <property name="Legend.Border" value="false"/>
             <property name="title" value="Reception data rate (smoothed)"/>
             <property name="Plot.Title.Font" value="Arial-regular-10"/>
-            <property name="vector_operations" value="apply:sum&#10;apply:diffquot # The difference quotient at each value&#10;apply:movingavg,alpha=0.1"/>
+            <property name="vector_operations" value="apply:sum&#10;apply:diffquot # The difference quotient at each value&#10;apply:movingavg(alpha=0.1)"/>
             <property name="cycle_seed" value="0"/>
             <property name="Axis.Title.Font" value="Arial-regular-8"/>
             <property name="yaxis_log" value="false"/>
