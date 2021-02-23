@@ -269,7 +269,7 @@ class Analysis:
         """
         Saves the analysis to the given .anf file.
         """
-        domTree = minidom.parseString("<analysis/>")
+        domTree = minidom.parseString("<analysis version='2'/>")
         analysisEl = domTree.documentElement
 
         # utility functions
