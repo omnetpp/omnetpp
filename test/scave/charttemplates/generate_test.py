@@ -7,6 +7,18 @@ from omnetpp.scave.analysis import *
 
 TEMPLATE_DIR = "../../../ui/org.omnetpp.scave.templates/charttemplates/"
 
+skeleton = """
+import test_exceptions
+test_exceptions.messages.clear()
+try:
+{}
+except BaseException as e:
+    test_exceptions.handle_exception({}, e)
+"""
+
+def indent(s):
+    return "\n".join(["   " + l for l in s.splitlines()])
+
 def generate_testcases(scriptname, base_props, tests):
     with open(TEMPLATE_DIR + "/" + scriptname, "rt") as f:
         origscript = str(f.read())
@@ -19,19 +31,7 @@ def generate_testcases(scriptname, base_props, tests):
         i = i + 1
         props = base_props.copy()
         props.update({propname: propvalue})
-
-        if errmsg:
-            origlines = origscript.splitlines()
-            sl = []
-            sl.append("import test_exceptions")
-            sl.append("test_exceptions.messages.clear()")
-            sl.append("try:")
-            sl += ["   " + l for l in origlines]
-            sl.append("except BaseException as e:")
-            sl.append("    test_exceptions.handle_exception(" + repr(errmsg) + ", e)")
-            script = "\n".join(sl)
-        else:
-            script = origscript
+        script = skeleton.format(indent(origscript), repr(errmsg)) if errmsg else origscript
 
         chart = Chart(type="MATPLOTLIB", name=name, script=script, properties=props)
         charts.append(chart)
