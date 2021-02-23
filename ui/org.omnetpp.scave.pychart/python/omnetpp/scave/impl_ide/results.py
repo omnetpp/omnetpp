@@ -177,7 +177,7 @@ def _append_additional_data(df, attrs, include_runattrs, include_itervars, inclu
         shmname = Gateway.results_provider.getConfigEntriesForRunsPickle(runs)  # TODO
         entries = _load_pickle_from_shm(shmname)
         df = _append_metadata_columns(df, entries, "_config")
-    elif include_param_assignments:  # param_assignments are a subset of config_entries
+    elif include_param_assignments and not include_config_entries:  # param_assignments are a subset of config_entries
         shmname = Gateway.results_provider.getParamAssignmentsForRunsPickle(runs)  # TODO
         params = _load_pickle_from_shm(shmname)
         df = _append_metadata_columns(df, params, "_param")
