@@ -19,7 +19,7 @@ TEMPLATE_DIR = OPP_ROOT + "ui/org.omnetpp.scave.templates/charttemplates/"
 
 def test_script(scriptname, base_props, tests):
     with open(TEMPLATE_DIR + "/" + scriptname, "rt") as f:
-        script = str(f.read())
+        origscript = str(f.read())
 
     charts = []
 
@@ -27,17 +27,24 @@ def test_script(scriptname, base_props, tests):
     for propname, propvalue, exc in tests:
         name = scriptname.replace(".py", "_" + str(i))
         i = i + 1
-        props = base_props
+        props = base_props.copy()
         props.update({propname: propvalue})
 
-        origlines = script.splitlines()
+        if exc:
+            origlines = origscript.splitlines()
+            qexc = repr(exc)
+            sl = []
+            sl.append("import test_exceptions")
+            sl.append("test_exceptions.messages.clear()")
+            sl.append("try:")
+            sl += ["   " + l for l in origlines]
+            sl.append("except BaseException as e:")
+            sl.append("    test_exceptions.handle_exception(" + qexc + ", e)")
+            script = "\n".join(sl)
+        else:
+            script = origscript
 
-        sl = ["try:"]
-        sl += ["   " + l for l in origlines]
-        sl += ["except BaseException as e:"]
-        sl += ["    print(e)"]
-
-        chart = Chart(type="MATPLOTLIB", name=name, script="\n".join(sl), properties=props)
+        chart = Chart(type="MATPLOTLIB", name=name, script=script, properties=props)
         charts.append(chart)
 
     return charts
