@@ -84,7 +84,8 @@ if __name__ == "__main__":
 
     argv = sys.argv[1:]
 
-    if argv and argv[0] not in ["info", "run", "imageexport", "dataexport"] \
+    COMMANDS = ["info", "run", "imageexport", "dataexport"]
+    if argv and argv[0] not in COMMANDS \
             and not argv[0].startswith("-") and argv[0].endswith(".anf"):
         argv = ["info"] + argv
 
@@ -93,6 +94,10 @@ if __name__ == "__main__":
     if not args.command:
         parser.print_help()
         exit(1)
+
+    if args.command not in COMMANDS:
+        parser.print_help()
+        error("Unknown command '%s'" % args.command)
 
     anf_file = args.anf_file[0]
     anf_dir = os.path.dirname(os.path.abspath(anf_file))
@@ -136,25 +141,23 @@ if __name__ == "__main__":
 
     if args.command == 'info':
         print(anf_file + ":\n\n" + analysis.info())
-    elif args.command == 'run':
-        for chart in selected_charts:
-            chart_ok = run_chart_safe(analysis, chart, anf_dir, workspace, show=True, extra_props=props)
-            ok = ok and chart_ok
-    elif args.command == 'imageexport':
-        for chart in selected_charts:
-            chart_ok = analysis.export_image(chart, anf_dir, workspace, enforce=False,
-                                            format=args.format, target_folder=args.target_folder, filename=args.out_file,
-                                            width=args.width, height=args.height, dpi=args.dpi,
-                                            extra_props=props) is not None
-            ok = ok and chart_ok
-    elif args.command == 'dataexport':
-        for chart in selected_charts:
-            chart_ok = analysis.export_data(chart, anf_dir, workspace, enforce=False,
-                                            format=args.format, target_folder=args.target_folder, filename=args.out_file,
-                                            extra_props=props) is not None
-            ok = ok and chart_ok
     else:
-        error("Unknown command '%s'" % args.command)
+        for chart in selected_charts:
+            if args.command == 'run':
+                print("Running:", chart.name)
+                chart_ok = run_chart_safe(analysis, chart, anf_dir, workspace, show=True, extra_props=props)
+            elif args.command == 'imageexport':
+                print("Exporting:", chart.name)
+                chart_ok = analysis.export_image(chart, anf_dir, workspace, enforce=False,
+                                                format=args.format, target_folder=args.target_folder, filename=args.out_file,
+                                                width=args.width, height=args.height, dpi=args.dpi,
+                                                extra_props=props) is not None
+            elif args.command == 'dataexport':
+                print("Exporting:", chart.name)
+                chart_ok = analysis.export_data(chart, anf_dir, workspace, enforce=False,
+                                                format=args.format, target_folder=args.target_folder, filename=args.out_file,
+                                                extra_props=props) is not None
+            ok = ok and chart_ok
 
     if not ok:
         sys.exit(1)
