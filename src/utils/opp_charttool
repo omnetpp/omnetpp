@@ -103,7 +103,7 @@ if __name__ == "__main__":
         import json
         print(json.dumps(analysis, default=lambda obj: vars(obj), indent=4, separators=(',', ': ')))
 
-    project_paths = dict([tuple(p.split('=', 2)) for p in args.p]) if args.p else dict()
+    project_paths = dict([tuple(p.split('=', 1)) for p in args.p]) if args.p else dict()
 
     workspace_dir = args.w[0]
     if not workspace_dir:
