@@ -10,4 +10,4 @@ make -j6 MODE=debug
 
 ./scave_dbg -u Cmdenv
 
-opp_charttool -e results_api_test.anf
+opp_charttool run results_api_test.anf --no-show

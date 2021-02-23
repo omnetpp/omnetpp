@@ -3,6 +3,7 @@ import os
 import sys
 from csv import QUOTE_NONNUMERIC
 import difflib
+import colorful as cf
 
 def sanitize_row(row):
     if "attrname" in row and row["attrname"] in ["datetime", "datetimef", "processid"]:
@@ -113,7 +114,7 @@ def run_tests(locals):
     loc = list(locals.keys())
     for l in loc:
         if l.startswith("test_"):
-            print("---- running: " + l + " ----")
+            print(l, end=": ")
             f = locals[l]
             try:
                 o = f()
@@ -121,7 +122,7 @@ def run_tests(locals):
                 print("EXCEPTION: " + str(e))
                 o = False
             passed = (o is None) or o # "void" methods are successful if they don't raise an Exception
-            print("PASS" if passed else "FAIL")
+            print(cf.green("PASS") if passed else cf.red("FAIL"))
             add_outcome(l, passed)
 
     plot.set_property("Plot.Title", "See console for test results.")
@@ -129,7 +130,8 @@ def run_tests(locals):
     failed_names = [n for n, s in outcomes.items() if not s]
     faileds = ", ".join(failed_names)
 
-    print("FAILED TESTS: " + (faileds or "NONE"), file=sys.stderr)
+    if faileds:
+        print("FAILED TESTS: " + faileds, file=sys.stderr)
 
     if faileds:
         raise Exception(str(len(failed_names)) + " tests failed")
