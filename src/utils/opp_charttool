@@ -64,6 +64,7 @@ if __name__ == "__main__":
 
 
     run_parser = subparsers.add_parser('run', help='Run a selected chart', parents=[common_parser], add_help=False)
+    run_parser.add_argument('--no-show', dest="show", default=True, action='store_false', help='Do not call plt.show() after running')
 
 
     imageexport_parser = subparsers.add_parser('imageexport', help='Export selected or all charts as image(s)', parents=[common_parser], add_help=False)
@@ -145,7 +146,7 @@ if __name__ == "__main__":
         for chart in selected_charts:
             if args.command == 'run':
                 print("Running:", chart.name)
-                chart_ok = run_chart_safe(analysis, chart, anf_dir, workspace, show=True, extra_props=props)
+                chart_ok = run_chart_safe(analysis, chart, anf_dir, workspace, show=args.show, extra_props=props)
             elif args.command == 'imageexport':
                 print("Exporting:", chart.name)
                 chart_ok = analysis.export_image(chart, anf_dir, workspace, enforce=False,
