@@ -277,7 +277,8 @@ class Analysis:
             return parent.appendChild(domTree.createElement(tag))
         def setAttr(element, name, value):
             if value is not None:
-                element.setAttribute(name, str(value))
+                # working around https://bugs.python.org/issue5752 with the replace
+                element.setAttribute(name, str(value).replace("\n", "💩"))
         def setContent(element, text):
             element.appendChild(domTree.createCDATASection(text))
             element.appendChild(domTree.createTextNode("\n"))
@@ -308,8 +309,9 @@ class Analysis:
                 setAttr(propertyEl, "value", value)
 
         # write to file
-        with open(filename, 'w') as f:
-            domTree.writexml(f, addindent="    ", newl="\n")
+        with open(filename, 'wt') as f:
+            xml = domTree.toprettyxml(indent="    ", newl="\n")
+            f.write(xml.replace("💩", "&#10;"))
 
 def load_anf_file(anf_file_name):
     return Analysis.from_anf_file(anf_file_name)
