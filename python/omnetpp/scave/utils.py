@@ -603,6 +603,8 @@ def export_image_if_needed(props):
 
         print("exporting image to: '" + filepath + "' as " + format)
 
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
+
         plt.gcf().set_size_inches(width, height)
         plt.savefig(filepath, format=format, dpi=int(dpi))
 
@@ -651,6 +653,8 @@ def export_data_if_needed(df, props):
         filepath = get_data_export_filepath(props)
 
         print("exporting data to: '" + filepath + "' as " + format)
+
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
 
         old_opts = np.get_printoptions()
         np.set_printoptions(threshold=np.inf, linewidth=np.inf)
