@@ -18,6 +18,7 @@ def get_supported_property_keys():
 
 
 def set_warning(warning):
+    print("WARNING:", warning)
     # TODO this might not always work, depending on whether it's called before or after plotting?
     plt.annotate(warning, xy=(20, 40), xycoords="figure pixels", color="red")
 
