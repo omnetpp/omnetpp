@@ -17,7 +17,6 @@ chapter, such as \ttt{np} for NumPy and \ttt{pd} for Pandas.
 % script (tools/chartapi.txt), pasted here manually, do not edit here!
 % --------
 
-
 %
 % generated with extract_chart_api.py
 %
@@ -25,13 +24,89 @@ chapter, such as \ttt{np} for NumPy and \ttt{pd} for Pandas.
 \subsection{Module omnetpp.scave.results}
 \label{cha:chart-api:omnetpp.scave.results}
 
-\par This module lets the scripts that power the charts in the IDE query
-any simulation results and metadata referenced by the .anf file they
-are in, returned as as Pandas DataFrames in various formats.
+\par Provides access to the simulation results for the chart script. It lets the
+chart script query simulation results and metadata referenced by the .anf file
+they are in. The results are returned as Pandas \ttt{DataFrame}'s of various
+formats.
 
-\par The \ttt{filter\_expressions} parameter in all functions has the same syntax.
-It is always evaluated independently on every loaded result item or metadata entry, and its value
-determines whether the given item or piece of metadata is included in the returned \ttt{DataFrame}.
+\par Note that this module is stateful. It is set up appropriately by the OMNeT++ IDE
+or \ttt{opp\_charttool} before the chart script is run.
+
+\par \textbf{Filter expressions}
+
+\par The \ttt{filter\_expression} parameters in all functions have the same syntax. It is
+always evaluated independently on every loaded result item or metadata entry,
+and its value determines whether the given item or piece of metadata is included
+in the returned \ttt{DataFrame}.
+
+\par A filter expression is composed of terms that can be combined with the \ttt{AND},
+\ttt{OR}, \ttt{NOT} operators, and parentheses. A term filters for the value of some property of
+the item, and has the form \ttt{<property> ={\textasciitilde} <pattern>}, or simply \ttt{<pattern>}. The latter
+is equivalent to \ttt{name ={\textasciitilde} <pattern>}.
+
+\par The following properties are available:
+
+\begin{itemize}
+  \item \ttt{name}: Name of the result or item.
+  \item \ttt{module}: Full path of the result's module.
+  \item \ttt{type}: Type of the item. Value is one of: \ttt{scalar}, \ttt{vector}, \ttt{parameter}, \ttt{histogram}, \ttt{statistics}.
+  \item \ttt{isfield}: \ttt{true} is the item is a synthetic scalar that represents a field of statistic or a vector, \ttt{false} if not.
+  \item \ttt{file}: File name of the result or item.
+  \item \ttt{run}: Unique run ID of the run that contains the result or item.
+  \item \ttt{runattr:<name>}: Run attribute of the run that contains the result or item. Example: \ttt{runattr:measurement}.
+  \item \ttt{attr:<name>}: Attribute of the result. Example: \ttt{attr:unit}.
+  \item \ttt{itervar:<name>}: Iteration variable of the run that contains the result or item. Example: \ttt{itervar:numHosts}.
+  \item \ttt{config:<key>}: Configuration key of the run that contains the result or item. Example: \ttt{config:sim-time-limit}, \ttt{config:**.sendIaTime}.
+
+\end{itemize}
+
+
+\par Patterns may contain the following wildcards:
+
+\begin{itemize}
+  \item \ttt{?} matches any character except '.'
+  \item \ttt{*} matches zero or more characters except '.'
+  \item \ttt{**} matches zero or more characters (any character)
+  \item \ttt{\{a-z\}} matches a character in range a-z
+  \item \ttt{\{{\textasciicircum}a-z\}} matches a character not in range a-z
+  \item \ttt{\{32..255\}} any number (i.e. sequence of digits) in range 32..255 (e.g. \ttt{99})
+  \item \ttt{[32..255]} any number in square brackets in range 32..255 (e.g. \ttt{[99]})
+  \item \ttt{{\textbackslash}} takes away the special meaning of the subsequent character
+
+\end{itemize}
+
+
+\par Patterns only need to be surrounded with quotes if they contain whitespace or
+other characters that would cause ambiguity in parsing the expression.
+
+\par Example: \ttt{module ={\textasciitilde} "**.host*" AND (name ={\textasciitilde} "pkSent*" OR name ={\textasciitilde} "pkRecvd*"}
+
+\par \textbf{Metadata columns}
+
+\par Several query functions have the \ttt{include\_attrs}, \ttt{include\_runattrs},
+\ttt{include\_itervars}, \ttt{include\_param\_assignments}, and \ttt{include\_config\_entries}
+boolean options. When such an option is turned on, it will generate extra
+columns into dataframe, one for each result attribute, run attribute, iteration
+variable, etc. When there is a name clash among items of different types, the
+column name for the second one will be modified by adding its type after
+an underscore (\ttt{\_runattr}, \ttt{\_itervar}, \ttt{\_config}, \ttt{\_param}).
+
+\begin{itemize}
+  \item \ttt{include\_attrs}: Adds the attributes of the result in question
+  \item \ttt{include\_runattrs}: Adds the run attributes of the (result's) run
+  \item \ttt{include\_itervars}: Adds the iteration variables of the (result's) run
+  \item \ttt{include\_config\_entries}: Adds all configuration entries of the (result's) run,
+ including parameter parameter assignments and per-object configuration options.
+ If this option is turned on, \ttt{include\_param\_assignments} has no effect.
+  \item \ttt{include\_param\_assignments}: Adds the configuration entries that set module or
+ channel parameters. This is a subset of the entries added by \ttt{include\_config\_entries}.
+
+\end{itemize}
+
+
+\par Note that values in metadata columns are generally strings (with missing values
+represented as \ttt{None} or \ttt{nan}). The Pandas \ttt{to\_numeric()} function or
+\ttt{utils.to\_numeric()} can be used to convert values to \ttt{float} or \ttt{int} where needed.
 
 \subsubsection{get\_serial()}
 \label{cha:chart-api:omnetpp.scave.results:get-serial}
@@ -105,6 +180,7 @@ The unit is seconds, both the \ttt{vectime} and \ttt{vecvalue} arrays will be af
 Example: \ttt{runattr:network ={\textasciitilde} "Aloha" AND config:Aloha.slotTime ={\textasciitilde} 0}
   \item \ttt{include\_runattrs}, \ttt{include\_itervars}, \ttt{include\_param\_assignments}, \ttt{include\_config\_entries} \textit{(bool)}:
 Optional. When set to \ttt{True}, additional pieces of metadata about the run is appended to the result, pivoted into columns.
+See the "Metadata columns" section of the module documentation for details.
 
 \end{itemize}
 
@@ -137,6 +213,7 @@ Optional. When set to \ttt{True}, additional pieces of metadata about the run is
 Example: \ttt{name ={\textasciitilde} *date* AND config:Aloha.slotTime ={\textasciitilde} 0}
   \item \ttt{include\_runattrs}, \ttt{include\_itervars}, \ttt{include\_param\_assignments}, \ttt{include\_config\_entries} \textit{(bool)}:
 Optional. When set to \ttt{True}, additional pieces of metadata about the run is appended to the result, pivoted into columns.
+See the "Metadata columns" section of the module documentation for details.
 
 \end{itemize}
 
@@ -146,8 +223,8 @@ Optional. When set to \ttt{True}, additional pieces of metadata about the run is
 \begin{itemize}
   \item \ttt{runID} \textit{(string)}: Identifies the simulation run
   \item \ttt{name} \textit{(string)}: The name of the run attribute
-  \item \ttt{value} \textit{(string)}: The value of the run attribue
-  \item Additional metadata items (run attributes, iteration variables, etc.), as requested
+  \item \ttt{value} \textit{(string)}: The value of the run attribute
+  \item Additional metadata items (run attributes, iteration variables, etc.)
 
 \end{itemize}
 
@@ -167,6 +244,7 @@ Optional. When set to \ttt{True}, additional pieces of metadata about the run is
 Example: \ttt{name ={\textasciitilde} iaMean AND config:Aloha.slotTime ={\textasciitilde} 0}
   \item \ttt{include\_runattrs}, \ttt{include\_itervars}, \ttt{include\_param\_assignments}, \ttt{include\_config\_entries} \textit{(bool)}:
 Optional. When set to \ttt{True}, additional pieces of metadata about the run is appended to the result, pivoted into columns.
+See the "Metadata columns" section of the module documentation for details.
 
 \end{itemize}
 
@@ -201,6 +279,7 @@ or \ttt{source} for example) are appended to the DataFrame, pivoted into columns
 (\ttt{:min}, \ttt{:mean}, etc.) are also returned as synthetic scalars.
   \item \ttt{include\_runattrs}, \ttt{include\_itervars}, \ttt{include\_param\_assignments}, \ttt{include\_config\_entries} \textit{(bool)}:
 Optional. When set to \ttt{True}, additional pieces of metadata about the run is appended to the DataFrame, pivoted into columns.
+See the "Metadata columns" section of the module documentation for details.
   \item \ttt{merge\_module\_and\_name} \textit{(bool)}: Optional. When set to \ttt{True}, the value in the \ttt{module} column
 is prepended to the value in the \ttt{name} column, joined by a period, in every row.
 
@@ -241,6 +320,7 @@ Example: \ttt{name ={\textasciitilde} "x" AND module ={\textasciitilde} Aloha.se
 example) are appended to the DataFrame, pivoted into columns.
   \item \ttt{include\_runattrs}, \ttt{include\_itervars}, \ttt{include\_param\_assignments}, \ttt{include\_config\_entries} \textit{(bool)}:
 Optional. When set to \ttt{True}, additional pieces of metadata about the run is appended to the DataFrame, pivoted into columns.
+See the "Metadata columns" section of the module documentation for details.
   \item \ttt{merge\_module\_and\_name} \textit{(bool)}: Optional. When set to \ttt{True}, the value in the \ttt{module} column
 is prepended to the value in the \ttt{name} column, joined by a period, in every row.
 
@@ -276,6 +356,7 @@ Example: \ttt{name ={\textasciitilde} "radioState*" AND runattr:replication ={\t
 or \ttt{source} for example) are appended to the DataFrame, pivoted into columns.
   \item \ttt{include\_runattrs}, \ttt{include\_itervars}, \ttt{include\_param\_assignments}, \ttt{include\_config\_entries} \textit{(bool)}:
 Optional. When set to \ttt{True}, additional pieces of metadata about the run is appended to the DataFrame, pivoted into columns.
+See the "Metadata columns" section of the module documentation for details.
   \item \ttt{merge\_module\_and\_name} \textit{(bool)}: Optional. When set to \ttt{True}, the value in the \ttt{module} column
 is prepended to the value in the \ttt{name} column, joined by a period, in every row.
   \item \ttt{start\_time}, \ttt{end\_time} \textit{(double)}: Optional time limits to trim the data of vector type results.
@@ -313,6 +394,7 @@ Example: \ttt{name ={\textasciitilde} "collisionLength:stat" AND itervar:iaMean 
 or \ttt{source} for example) are appended to the DataFrame, pivoted into columns.
   \item \ttt{include\_runattrs}, \ttt{include\_itervars}, \ttt{include\_param\_assignments}, \ttt{include\_config\_entries} \textit{(bool)}:
 Optional. When set to \ttt{True}, additional pieces of metadata about the run is appended to the DataFrame, pivoted into columns.
+See the "Metadata columns" section of the module documentation for details.
   \item \ttt{merge\_module\_and\_name} \textit{(bool)}: Optional. When set to \ttt{True}, the value in the \ttt{module} column
 is prepended to the value in the \ttt{name} column, joined by a period, in every row.
 
@@ -348,6 +430,7 @@ Example: \ttt{name ={\textasciitilde} "collisionMultiplicity:histogram" AND iter
 or \ttt{source} for example) are appended to the DataFrame, pivoted into columns.
   \item \ttt{include\_runattrs}, \ttt{include\_itervars}, \ttt{include\_param\_assignments}, \ttt{include\_config\_entries} \textit{(bool)}:
 Optional. When set to \ttt{True}, additional pieces of metadata about the run is appended to the DataFrame, pivoted into columns.
+See the "Metadata columns" section of the module documentation for details.
   \item \ttt{merge\_module\_and\_name} \textit{(bool)}: Optional. When set to \ttt{True}, the value in the \ttt{module} column
 is prepended to the value in the \ttt{name} column, joined by a period, in every row.
 
@@ -383,6 +466,7 @@ is prepended to the value in the \ttt{name} column, joined by a period, in every
 Example: \ttt{name ={\textasciitilde} sim-time-limit AND itervar:numHosts ={\textasciitilde} 10}
   \item \ttt{include\_runattrs}, \ttt{include\_itervars}, \ttt{include\_param\_assignments}, \ttt{include\_config\_entries} \textit{(bool)}:
 Optional. When set to \ttt{True}, additional pieces of metadata about the run is appended to the result, pivoted into columns.
+See the "Metadata columns" section of the module documentation for details.
 
 \end{itemize}
 
@@ -414,6 +498,7 @@ would return with the same arguments.
 Example: \ttt{name ={\textasciitilde} **.flowID AND itervar:numHosts ={\textasciitilde} 10}
   \item \ttt{include\_runattrs}, \ttt{include\_itervars}, \ttt{include\_param\_assignments}, \ttt{include\_config\_entries} \textit{(bool)}:
 Optional. When set to \ttt{True}, additional pieces of metadata about the run is appended to the result, pivoted into columns.
+See the "Metadata columns" section of the module documentation for details.
 
 \end{itemize}
 
@@ -431,7 +516,10 @@ Optional. When set to \ttt{True}, additional pieces of metadata about the run is
 \subsection{Module omnetpp.scave.chart}
 \label{cha:chart-api:omnetpp.scave.chart}
 
-\par This module provides functions to access the properties of the chart object.
+\par Provides access to the properties of the current chart for the chart script.
+
+\par Note that this module is stateful. It is set up appropriately by the OMNeT++
+IDE or \ttt{opp\_charttool} before the chart script is run.
 
 \subsubsection{get\_properties()}
 \label{cha:chart-api:omnetpp.scave.chart:get-properties}
@@ -493,10 +581,10 @@ when saving the chart.
 \subsection{Module omnetpp.scave.plot}
 \label{cha:chart-api:omnetpp.scave.plot}
 
-\par This module is the interface for displaying data using the IDE's native
-(non-Matplotlib) plotting widgets. The API is intentionally very close to
-\ttt{matplotlib.pyplot}: most functions and the parameters they accept are a
-subset of \ttt{pyplot}'s. The promise is that a chart script written with this
+\par This module is the interface for displaying plots using the IDE's native
+(non-Matplotlib) plotting widgets from chart scripts. The API is intentionally
+very close to \ttt{matplotlib.pyplot}: most functions and the parameters they accept
+are a subset of \ttt{pyplot}'s. The promise is that a chart script written with this
 API is very easy to switch over to Matplotlib: usually, just importing
 \ttt{matplotlib.pyplot} as \ttt{plot} (instead of importing this package) is
 sufficient. Also the other way round: if a chart script uses only this
@@ -506,6 +594,9 @@ IDE's native widgets.
 \par When the API is used outside the context of a native plotting widget
 (such as during the run of \ttt{opp\_charttool}, or in IDE during image export),
 the functions are emulated with Matplotlib.
+
+\par Note that this module is stateful. It is set up appropriately by the OMNeT++
+IDE or \ttt{opp\_charttool} before the chart script is run.
 
 \subsubsection{is\_native\_plot()}
 \label{cha:chart-api:omnetpp.scave.plot:is-native-plot}
@@ -1165,8 +1256,9 @@ makes the "Export image" functionality of the IDE and \ttt{opp\_charttool} work.
  image export is requested.
   \item \ttt{image\_export\_format}: The default is SVG. Accepted formats (and their names) are the ones supported by Matplotlib.
   \item \ttt{image\_export\_folder}: The folder in which the image file is to be created.
-  \item \ttt{image\_export\_filename}: The output file name. If missing or empty, a
- sanitized version of the chart name is used.
+  \item \ttt{image\_export\_filename}: The output file name. If it has no extension,
+ one will be added based on the format. If missing or empty, a sanitized
+ version of the chart name is used.
   \item \ttt{image\_export\_width}: Image width in inches (default: 6")
   \item \ttt{image\_export\_height}: Image height in inches (default: 4")
   \item \ttt{image\_export\_dpi}: DPI setting, default 96. For raster image formats, the
@@ -1190,6 +1282,15 @@ their own aspect ratio and relative sizes.
   \item \ttt{props} \textit{(dict)}: the properties
 
 \end{itemize}
+
+\subsubsection{get\_image\_export\_filepath()}
+\label{cha:chart-api:omnetpp.scave.utils:get-image-export-filepath}
+
+\begin{flushleft}
+\ttt{get\_image\_export\_filepath(props)}
+\end{flushleft}
+
+
 
 \subsubsection{export\_data\_if\_needed()}
 \label{cha:chart-api:omnetpp.scave.utils:export-data-if-needed}
@@ -1227,6 +1328,15 @@ from the chart properties because it is specific to each chart.
   \item \ttt{props} \textit{(dict)}: the properties
 
 \end{itemize}
+
+\subsubsection{get\_data\_export\_filepath()}
+\label{cha:chart-api:omnetpp.scave.utils:get-data-export-filepath}
+
+\begin{flushleft}
+\ttt{get\_data\_export\_filepath(props)}
+\end{flushleft}
+
+
 
 \subsubsection{confidence\_interval()}
 \label{cha:chart-api:omnetpp.scave.utils:confidence-interval}
