@@ -614,11 +614,63 @@ def get_image_export_filepath(props):
     format = get_prop("image_export_format") or "svg"
     folder = get_prop("image_export_folder") or os.getcwd()
     filename = get_prop("image_export_filename") or _sanitize_filename(chart.get_name())
-    if not "." in filename:
+    if not re.match(string=filename, pattern=r".+\.\w{3,4}$"):
         filename = filename + "." + format
     return os.path.join(folder, filename)
 
-def export_data_if_needed(df, props):
+def _format_to_extension(format):
+    format = format.lower()
+
+    format_to_extension = {
+        "markdown": "md",
+        "latex": "tex",
+        "excel": "xlsx",
+        "xls": "xlsx",
+        "bigquery": "gbq",
+        "stata": "dta",
+        "hdf": "h5",
+        "feather": "ftr",
+        "pickle": "pkl"
+    }
+
+    if format in format_to_extension.keys():
+        format = format_to_extension[format]
+
+    return format
+
+def _export_df_as(df, format, filepath, **kwargs):
+    extension = _format_to_extension(format)
+
+    if extension == "pkl":
+        df.to_pickle(filepath, **kwargs)
+    elif extension == "csv":
+        df.to_csv(filepath, **kwargs)
+    elif extension == "h5":
+        if "key" not in kwargs.keys():
+            kwargs["key"] = "results"
+        df.to_hdf(filepath, **kwargs)
+    #elif extension == "sql":
+    #    df.to_sql(filepath, **kwargs) # needs a connection
+    elif extension == "xlsx":
+        df.to_excel(filepath, **kwargs)
+    elif extension == "json":
+        df.to_json(filepath, **kwargs)
+    elif extension == "html":
+        df.to_html(filepath, **kwargs)
+    #elif extension == "ftr":
+    #    df.reset_index().to_feather(filepath, **kwargs) # column names must be strings
+    elif extension == "tex":
+        df.to_latex(filepath, **kwargs)
+    elif extension == "dta":
+        df.to_stata(filepath, **kwargs)
+    #elif extension == "gbq":
+    #    df.to_gbq(filepath, **kwargs) # needs authentication
+    elif extension == "md":
+        df.to_markdown(filepath, **kwargs),
+    else:
+        raise ValueError("Unknown export data format: " + format)
+
+def export_data_if_needed(df, props, **kwargs):
     """
     If a certain property is set, save the dataframe in CSV format.
     Calling this function should be a standard part of chart scripts, as it is what
@@ -649,7 +701,7 @@ def export_data_if_needed(df, props):
         return np.array_str(arr)
 
     if _parse_optional_bool(get_prop("export_data")):
-        format = "csv"
+        format = get_prop("data_export_format") or "csv"
         filepath = get_data_export_filepath(props)
 
         print("exporting data to: '" + filepath + "' as " + format)
@@ -661,7 +713,7 @@ def export_data_if_needed(df, props):
         np.set_string_function(printer, False)
         pd.set_option('display.max_columns', None)
         pd.set_option('display.max_colwidth', None)
-        df.to_csv(filepath)
+        _export_df_as(df, format, filepath, **kwargs)
         np.set_string_function(None, False)
         np.set_printoptions(**old_opts)
 
@@ -669,10 +721,11 @@ def get_data_export_filepath(props):
     def get_prop(k):
         return props[k] if k in props else None
     format = get_prop("data_export_format") or "csv"
+    extension = _format_to_extension(format)
     folder = get_prop("data_export_folder") or os.getcwd()
     filename = get_prop("data_export_filename") or _sanitize_filename(chart.get_name())
-    if not "." in filename:
-        filename = filename + "." + format
+    if not re.match(string=filename, pattern=r".+\.\w{3,4}$"):
+        filename = filename + "." + extension
     return os.path.join(folder, filename)
 
 
