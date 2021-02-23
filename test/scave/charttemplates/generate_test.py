@@ -192,7 +192,7 @@ charts += generate_testcases("boxwhiskers.py",
     ]
 )
 
-inputs = [ "/aloha/*.sca", "/aloha/*.vec" ]
+inputs = [ "/resultfiles/aloha/*.sca", "/resultfiles/aloha/*.vec" ]
 analysis = Analysis(inputs, charts=charts)
 
 analysis.to_anf_file("all_the_tests.anf")
