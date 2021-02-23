@@ -43,8 +43,8 @@ test_sqliteresultfiles:
 test_toolchain:
 	cd toolchain && ./runtest
 
-test_scave_charttool:
-	cd scave/charttool && ./runtest
+test_scave_results_api:
+	cd scave/results_api && ./runtest
 
 test_scave_charttemplates:
 	cd scave/charttemplates && ./runtest.py
