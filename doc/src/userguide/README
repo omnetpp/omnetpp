@@ -1,3 +1,0 @@
-INSTALLING BUILD DEPENDENCIES:
-sudo apt install docbook-xml docbook-xsl xsltproc fop libxml2-utils
-

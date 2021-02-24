@@ -1,6 +1,4 @@
-To build the documentation on Ubuntu, extra packages packages need to be 
-installed:
+To build the documentation on Ubuntu, extra packages packages need to be installed:
 
-    sudo apt install texlive texlive-latex-extra inkscape graphviz asciidoc \
-         docbook-xml docbook-xsl fop xsltproc txt2html qpdf doxygen
-
+$ sudo apt install texlive texlive-latex-extra latexmk inkscape graphviz doxygen
+$ python3 -m pip install --user --upgrade sphinx sphinx-material

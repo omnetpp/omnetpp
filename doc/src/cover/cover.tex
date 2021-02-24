@@ -1,0 +1,24 @@
+
+%% Cover page (requires 'eso-pic' and 'anyfontsize' packages)
+\makeatletter
+\begin{titlepage}
+  %% background image on title page
+  \AddToShipoutPictureBG*{%
+    \AtPageLowerLeft{\includegraphics[width=\paperwidth,height=\paperheight]{cover-background.pdf}}
+  }
+  %% the following {center} is a trick -- vspace does nothing if there's
+  %% nothing above it in the page
+  \begin{center}\end{center}
+  \vspace{5cm}
+  \textbf{\fontsize{60}{80}\selectfont ${project}}\par
+  \vspace{0.25cm}
+  {\fontsize{36}{50}\selectfont \@title}\par
+  \LARGE Version ${version}\par
+  \vfill
+\end{titlepage}
+\makeatother
+\newpage
+Copyright \copyright~${copyright}\par
+Build: ${buildid}\par
+\newpage
+

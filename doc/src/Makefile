@@ -1,12 +1,19 @@
-#
-# Definitions
-#
 DOXYGEN=doxygen
+SPHINXBUILD   ?= sphinx-build
+SOURCEDIR     = .
+BUILDDIR      = ../../out/doc
+SPHINXOPTS    ?= -q
+
+# by default disable latex output to reduce noise.
+# remove these options to get the latex error messages if latex stops with an error
+LATEXOPTS     ?= --halt-on-error -interaction=batchmode
+
+.PHONY: all clean apis api nedxml-api parsim-api do-manual do-manual-html do-manual-pdf do-guides do-guides-html do-guides-pdf
 
 #
 # Targets
 #
-all: apis do-manual do-userguide do-ide-overview do-ide-customization-guide do-installguide do-ide-developers-guide
+all: apis do-manual do-guides
 
 apis: api nedxml-api parsim-api
 
@@ -19,32 +26,28 @@ nedxml-api:
 parsim-api:
 	$(DOXYGEN) parsim.doxyfile
 
-do-manual:
-	cd manual && $(MAKE)
+do-manual: do-manual-pdf do-manual-html
 
-do-userguide:
-	cd userguide && $(MAKE)
+do-manual-pdf:
+	cd manual && $(MAKE) pdf
 
-do-installguide:
-	cd installguide && $(MAKE)
+do-manual-html:
+	cd manual && $(MAKE) html
 
-do-ide-customization-guide:
-	cd ide-customization-guide && $(MAKE)
+do-guides: do-guides-html do-guides-pdf
 
-do-ide-developers-guide:
-	cd ide-developersguide && $(MAKE)
+do-guides-html:
+	$(SPHINXBUILD) -M html "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+	cp -R $(BUILDDIR)/html ../guides
 
-do-ide-overview:
-	cd ide-overview && $(MAKE)
-
-do-queues-tutorial:
-	cd queues-tutorial && $(MAKE)
+do-guides-pdf:
+	LATEXOPTS="$(LATEXOPTS)" $(SPHINXBUILD) -M latexpdf "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+	cp $(BUILDDIR)/latex/UserGuide.pdf ..
+	cp $(BUILDDIR)/latex/IDE-CustomizationGuide.pdf ..
+	cp $(BUILDDIR)/latex/IDE-DevelopersGuide.pdf ..
+	cp $(BUILDDIR)/latex/InstallGuide.pdf ..
+	cp $(BUILDDIR)/latex/IDE-Overview.pdf ..
 
 clean:
-	rm -rf ../api ../nedxml-api ../parsim-api ../manual ../userguide ../installguide ../ide-customization-guide ../ide-overview ../*.pdf
+	rm -rf $(BUILDDIR) ../api ../nedxml-api ../parsim-api ../manual ../guides ../*.pdf
 	cd manual && $(MAKE) clean
-	cd userguide && $(MAKE) clean
-	cd installguide && $(MAKE) clean
-	cd ide-customization-guide && $(MAKE) clean
-	cd ide-developersguide && $(MAKE) clean
-	cd ide-overview && $(MAKE) clean

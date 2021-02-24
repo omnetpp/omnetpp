@@ -1,4 +1,4 @@
-\documentclass{book}
+\documentclass[a4paper,10pt,english]{book}
 \usepackage{a4wide}
 
 %% possible fonts -- in order of preference
@@ -29,6 +29,8 @@
 \usepackage{upquote}
 \usepackage{listings}   %% source code listings with syntax highlight (lstxxx commands)
 \usepackage[tight]{shorttoc}   %% for generating a second table of contents, only containing chapter titles
+\usepackage{anyfontsize}
+\usepackage{eso-pic}
 
 \usepackage{tocbibind}  %% makes Bibliography and Index show up in TOC
 \settocbibname{References}
@@ -67,7 +69,7 @@
 \makeatother
 
 \newcommand{\omnest}{OMNEST}
-\newcommand{\oppversion}{5.x}
+\newcommand{\oppversion}{6.x}
 
 %%
 %% *** CHECK SETTING BELOW BEFORE RELEASES ***

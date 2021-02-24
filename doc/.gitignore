@@ -1,8 +1,7 @@
 *.pdf
 *.htm
 *.html
-/tmp*.xml
-/ide-overview/
+/guides/
 /manual/
 /installguide/
 /ide-customization-guide/

@@ -14,15 +14,13 @@ PDFPICS = $(SVGPICS:.svg=.pdf) $(DOTPICS:.dot=.pdf)
 
 default: pdf html eclipse
 
-include ../cover/cover.makefrag
-
-pdf: $(ALLTEX) $(PDFPICS) figures/*.png cover
+pdf: $(ALLTEX) $(PDFPICS) figures/*.png
 	$(LATEX) usman.tex
 	bibtex usman
 	makeindex usman
 	$(LATEX) usman.tex
 	$(LATEX) usman.tex
-	qpdf usman.pdf --pages cover.pdf ../cover/copyright.pdf usman.pdf 3-z -- ../../SimulationManual.pdf
+	cp usman.pdf ../../SimulationManual.pdf
 	rm -f *.aux *.idx *.ilg *.ind *.log *.out *.toc *.blg
 
 %.pdf: %.svg
@@ -45,10 +43,10 @@ pdf: $(ALLTEX) $(PDFPICS) figures/*.png cover
 	$(DOT) -Tpng $< >$@
 
 .bbl.htm:
-	cp $< `echo $< | sed 's|\.bbl|.tex|'`
-	$(PERL) ltoh `echo $< | sed 's|\.bbl|.tex|'`
+	cp $< $(echo $< | sed 's|\.bbl|.tex|')
+	$(PERL) ltoh $(echo $< | sed 's|\.bbl|.tex|')
 	mv $@l $@
-	rm  `echo $< | sed 's|\.bbl|.tex|'`
+	rm  $(echo $< | sed 's|\.bbl|.tex|')
 
 eclipse : $(ALLTEX) $(SVGPICS) eclipse.thtml prephtml ltoh ltoh.specs
 	CHAPTERS=$$(grep '\include{' usman.tex | sed 's/\\include{//;s/}/.tex/' | sed '/^title\.tex/d') && cat $$CHAPTERS > tmp.tex
@@ -77,11 +75,11 @@ html : $(ALLTEX) $(SVGPICS) $(TEMPLATE).thtml prephtml ltoh ltoh.specs
 	@if grep 'Unknown LaTeX command' usman.html; then echo 'Error: LaTeX commands missing from ltoh.specs! (see lines above)'; exit 1; fi
 
 clean:
-	rm -f usman.dvi usman.pdf *.aux *.idx *.ilg *.ind *.log *.out *.toc *.bbl *.blg *.htm usman.tmp usman.html cover.svg cover.pdf
+	rm -f usman.dvi usman.pdf *.aux *.idx *.ilg *.ind *.log *.out *.toc *.bbl *.blg *.htm toc.xml tmp.tex usman.tmp usman.html usman.fdb_latexmk usman.fls
 	rm -rf ../../manual
 	rm -rf ../../SimulationManual.pdf
 	rm -rf eclipse
 	rm -f figures/*.pdf
-	rm -f `ls figures/*.svg | sed 's/svg$$/png/'`
-	rm -f `ls figures/*.dot | sed 's/dot$$/svg/'`
+	rm -f $(ls figures/*.svg | sed 's/svg$$/png/')
+	rm -f $(ls figures/*.dot | sed 's/dot$$/svg/')
 
