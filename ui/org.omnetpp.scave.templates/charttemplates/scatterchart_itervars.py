@@ -74,15 +74,13 @@ else:
 
 legend_cols, _ = utils.extract_label_columns(df)
 
-p = plot if chart.is_native_chart() else plt
-
 try:
     xs = pd.to_numeric(df.index.values)
-    p.xlabel(xaxis_itervar)
+    plot.xlabel(xaxis_itervar)
 except:
     xs = np.zeros_like(df.index.values)
 
-p.ylabel(scalar_names)
+plot.ylabel(scalar_names)
 
 for c in df.columns:
     style = utils._make_line_args(props, c, df)
@@ -97,9 +95,9 @@ for c in df.columns:
         label = ', '.join([str(a) + "=" + str(b) for a, b in zip(iso_itervars, names)])
     else:
         label = scalar_names
-    p.plot(xs, ys, label=label, **style)
+    plot.plot(xs, ys, label=label, **style)
 
-    if errors_df is not None and not chart.is_native_chart():
+    if errors_df is not None and not plot.is_native_plot():
         style["linewidth"] = float(style["linewidth"])
         style["linestyle"] = "none"
         yerr = errors_df[c].values
