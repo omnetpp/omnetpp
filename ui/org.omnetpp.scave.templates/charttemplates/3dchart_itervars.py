@@ -35,6 +35,10 @@ if not xaxis_itervar or not yaxis_itervar:
 utils.assert_columns_exist(df, [xaxis_itervar], "The iteration variable for the X axis could not be found")
 utils.assert_columns_exist(df, [yaxis_itervar], "The iteration variable for the Y axis could not be found")
 
+if xaxis_itervar == yaxis_itervar:
+    plot.set_warning("The itervar for the X and Y axes are the same: " + xaxis_itervar)
+    exit(1)
+
 df[xaxis_itervar] = pd.to_numeric(df[xaxis_itervar], errors="ignore")
 df[yaxis_itervar] = pd.to_numeric(df[yaxis_itervar], errors="ignore")
 

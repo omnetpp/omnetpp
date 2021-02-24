@@ -37,15 +37,15 @@ else:
     plot.set_warning("Please select the iteration variable for the X axis!")
     exit(1)
 
+if xaxis_itervar in iso_itervars:
+    plot.set_warning("X axis column also in iso line columns: " + xaxis_itervar)
+    exit(1)
+
 if iso_itervars:
     utils.assert_columns_exist(df, iso_itervars, "An iteration variable for the iso lines could not be found")
     for iv in iso_itervars:
         if iv:
             df[iv] = pd.to_numeric(df[iv], errors="ignore")
-
-if df.empty:
-    plot.set_warning("Select scalars for the Y axis in the Properties dialog")
-    exit(1)
 
 uninteresting = ["runID", "value", "datetime", "iterationvars",
                 "iterationvarsf", "measurement", "processid",

@@ -33,6 +33,11 @@ if not groups or not groups[0] or not series or not series[0]:
     plot.set_warning("Please set both the Groups and Series properties in the dialog - or neither, for automatic setup.")
     exit(1)
 
+common = list(set(groups) & set(series))
+if common:
+    plot.set_warning("Overlap between Group and Series columns: " + ", ".join(common))
+    exit(1)
+
 utils.assert_columns_exist(df, groups + series, "No such iteration variable or run attribute")
 
 for c in groups + series:
