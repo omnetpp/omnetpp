@@ -12,12 +12,13 @@ import test_exceptions
 test_exceptions.messages.clear()
 try:
 {}
-except BaseException as e:
-    test_exceptions.handle_exception({}, e)
+    raise RuntimeError("Expected error did not occur")
+except SystemExit as e: # only scripts that exit via exit(1) are accepted, let all other exceptions through
+    test_exceptions.expect_message({})
 """
 
 def indent(s):
-    return "\n".join(["   " + l for l in s.splitlines()])
+    return "\n".join(["    " + l for l in s.splitlines()])
 
 def generate_testcases(scriptname, base_props, tests):
     with open(TEMPLATE_DIR + "/" + scriptname, "rt") as f:
