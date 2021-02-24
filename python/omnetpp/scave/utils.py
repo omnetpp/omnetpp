@@ -396,7 +396,7 @@ def customized_box_plot(percentiles, labels=None, axes=None, redraw=True, *args,
         color = next(_color_cycle)
         box_plot = axes.boxplot([-9, -4, 2, 4, 9], positions=[box_no], widths=[0.5],
             showmeans=True, meanprops=dict(marker='+', markeredgecolor=mpl.rcParams["axes.facecolor"]),
-            boxprops=dict(facecolor=color), whiskerprops=dict(color=color, linewidth=2), capprops=dict(linewidth=1.5),
+            boxprops=dict(facecolor=color), whiskerprops=dict(zorder=5, linewidth=1, solid_capstyle="butt"), capprops=dict(zorder=6, linewidth=2, color=color, solid_capstyle="butt"),
             patch_artist=True, *args, **kwargs)
 
         if labels is not None:
