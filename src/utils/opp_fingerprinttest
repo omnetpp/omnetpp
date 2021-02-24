@@ -40,6 +40,20 @@ extraOppRunArgs = ""
 debug=False
 exitCode = 0
 
+use_colors = sys.stdout.isatty()
+
+def red(txt):
+    global use_colors
+    return '\033[0;31m' + txt + "\033[0;0m" if use_colors else txt
+
+def yellow(txt):
+    global use_colors
+    return '\033[0;33m' + txt + "\033[0;0m" if use_colors else txt
+
+def green(txt):
+    global use_colors
+    return '\033[0;32m' + txt + "\033[0;0m" if use_colors else txt
+
 class FingerprintTestCaseGenerator():
     fileToSimulationsMap = {}
     def generateFromCSV(self, csvFileList, filterRegexList, excludeFilterRegexList, repeat):
