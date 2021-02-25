@@ -532,7 +532,10 @@ consider the \textit{real} accuracy of your results:
 %% TODO also hint that results can be directed to database etc! by changing the implementation that cEnvir methods delegate to. (list cEnvir methods!)
 
 
-\section{The {\opp} Result File Format}
+\section{Result Files}
+\label{sec:ana-sim:result-files}
+
+\subsection{The {\opp} Result File Format}
 \label{sec:ana-sim:omnetpp-result-file-format}
 
 By default, {\opp} saves simulation results into textual, line-oriented files.
@@ -563,7 +566,8 @@ increase the reproducibility of the results.
 Vectors are recorded into a separate file for practical reasons: vector
 data usually consume several magnitudes more disk space than scalars.
 
-\subsection{Output Vector Files}
+
+\subsubsection{Output Vector Files}
 \label{sec:ana-sim:output-vector-files}
 
 All output vectors from a simulation run are recorded into the same file.
@@ -601,7 +605,7 @@ vectors by reading only those parts of the file where the desired data are
 located, and do not need to scan through the whole file linearly.
 
 
-\subsection{Scalar Result Files}
+\subsubsection{Scalar Result Files}
 \label{sec:ana-sim:scalar-result-files}
 
 Fragment of an output scalar file (without header):
@@ -623,7 +627,7 @@ generate several lines: mean, standard deviation, etc.
 %% FIXME TODO attributes, statistics example, etc
 
 
-\section{SQLite Result Files}
+\subsection{SQLite Result Files}
 \label{sec:ana-sim:sqlite-result-files}
 
 Starting from version 5.1, {\opp} contains experimental support for
@@ -663,15 +667,15 @@ The database schema can be found in Appendix \ref{cha:result-file-formats}.
 %TODO file size, performance
 
 
-\section{Scavetool}
+\subsection{Scavetool}
 \label{sec:ana-sim:scavetool}
 \index{scavetool}
 
-{\opp}'s \fprog{scavetool} is a command-line program for exploring, filtering
-and processing of result files, and exporting the result in formats
+{\opp}'s \fprog{opp\_scavetool} program is a command-line tool for exploring,
+filtering and processing of result files, and exporting the result in formats
 digestible by other tools.
 
-\subsection{Commands}
+\subsubsection{Commands}
 \label{sec:ana-sim:scavetool:commands}
 
 \fprog{scavetool}'s functionality is grouped under five commands:
@@ -719,7 +723,7 @@ The default command is \ttt{query}, so its name may be omitted on the
 command line.
 
 
-\subsection{Examples}
+\subsubsection{Examples}
 \label{sec:ana-sim:scavetool:examples}
 
 The following example prints a one-line summary about the contents of
