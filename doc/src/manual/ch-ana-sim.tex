@@ -674,8 +674,8 @@ digestible by other tools.
 \subsection{Commands}
 \label{sec:ana-sim:scavetool:commands}
 
-\fprog{scavetool}'s functionality is grouped under five commands:
-\ttt{query}, \ttt{vector}, \ttt{scalar}, \ttt{index}, and \ttt{help}.
+\fprog{opp\_scavetool}'s functionality is grouped under four commands:
+\ttt{query}, \ttt{export}, \ttt{index}, and \ttt{help}.
 
 \begin{itemize}
 
@@ -687,20 +687,15 @@ digestible by other tools.
     of the output (group-by-runs; grep-friendly; suppress labels; several
     modes for identifying the run in the output, etc.)
 
-\item \tbf{vector}: Filter and export vector data.  One can filter by run,
-    module name and vector name, using match expressions. It is also possible
-    to apply processing steps, i.e. a sliding window average or batch average
-    filter. The list of available processing filters can be found in the
-    help of the tool. Several output formats are available: vector file
-    (default), CSV file, GNU Octave text file, MATLAB script.
-
-\item \tbf{scalar}: Filter and export scalar data. One can filter by run,
-    module name, scalar name and value, using match expressions. In the output,
-    scalars are organized in a table. The table can be organized to contain
-    \textit{Module}, \textit{Name} and \textit{Value} columns, or to have each
-    scalar in its own column (and data from one run in each row). Other
-    groupings are also possible. Several output formats are available: CSV file,
-    GNU Octave text file, MATLAB script.
+\item \tbf{export}: Export results in various formats. Results can be filtered
+    by run, module name, result name and more, using match expressions. Output
+    vectors can be cropped to a time interval. Several output formats are
+    available: CSV in two flavours (one for machine consumption, and a more
+    informal one for human consumption via loading into spreadsheet programs),
+    {\opp} output scalar/vector file (default), {\opp} SQLite result file, and
+    JSON (again two flavours: one strictly adhering to the JSON rules, and
+    another one with slightly more relaxed rules but being also more
+    expressive). All exporters have multiple options for fine-tuning the output.
 
 \item \tbf{index}: Generate index files (.vci) for vector files. Note that this
     command is usually not needed, as other scavetool commands automatically create
@@ -708,7 +703,7 @@ digestible by other tools.
     explicitly disabled.) This command can also be used to rebuild a vector file
     so that data are clustered by vectors for more efficient access.
 
-\item \tbf{help}: Prints help. The synopsys is \ttt{scavetool help <topic>},
+\item \tbf{help}: Prints help. The synopsys is \ttt{opp\_scavetool help <topic>},
     where any command name can be used as topic, plus there are
     additional ones like \ttt{patterns} or \ttt{filters}. \ttt{scavetool
     <command> -h} also works.
@@ -723,17 +718,17 @@ command line.
 \label{sec:ana-sim:scavetool:examples}
 
 The following example prints a one-line summary about the contents of
-result files in the currect directory:
+result files in the current directory:
 
 \begin{commandline}
-$ scavetool *.sca *.vec
-runs: 459   scalars: 4120   vectors: 7235   histograms: 916
+$ opp_scavetool *.sca *.vec
+runs: 42   scalars: 294  parameters: 7266  vectors: 22  statistics: 0  ...
 \end{commandline}
 
 Listing all results is possible with \fopt{-l}:
 
 \begin{commandline}
-$ scavetool -l *.sca *.vec
+$ opp_scavetool -l *.sca *.vec
 PureAlohaExperiment-439-20161216-18:56:20-27607:
 
 scalar Aloha.server  duration              26.3156
@@ -747,23 +742,17 @@ vector Aloha.host[2] radioState:vector vectorId=4 count=5 mean=0.44 ..
 To export all scalars in CSV, use the following command:
 
 \begin{commandline}
-$ scavetool scalar -g module,name -F csv -O x.csv *.sca
+$  opp_scavetool export -F CSV-R -o x.csv *.sca
+Exported 294 scalars, 7266 parameters, 84 histograms
 \end{commandline}
 
-The following example writes the window-averaged queuing times stored
-in \ttt{in.vec} into \ttt{out.vec}:
+The next example writes the queueing and transmission time vectors of
+\ttt{sink} modules into a CSV file.
 
 \begin{commandline}
-$ scavetool vector -p "queuing time" -a winavg(10) -O out.vec in.vec
-\end{commandline}
-
-The next example writes the queueing and transmission times of \ttt{sink}
-modules into CSV files. It generates a separate file for each vector,
-named \ttt{out-1.csv}, \ttt{out-2.csv}, etc.
-
-\begin{commandline}
-$ scavetool vector -p 'module(**.sink) AND ("queueing time" OR "tx time")'
-    -O out.csv -F csv in.vec
+$ opp_scavetool export -f 'module=~**.sink AND ("queueing time" OR "tx time")'
+  -o out.csv -F CSV-R *.vec
+Exported 15 vectors
 \end{commandline}
 
 
