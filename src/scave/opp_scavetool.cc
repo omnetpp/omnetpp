@@ -70,7 +70,7 @@ void ScaveTool::printHelpPage(const std::string& page)
                 "Glob patterns may contain '**' which can match any number of directory levels. "
                 "Be sure to quote the pattern on the command line to prevent the shell from expanding them before invoking scavetool.");
         help.para("The default command is 'query'.");
-        help.para("To get help, use opp_scavetool help <topic>. Available help topics: command names, 'filter', 'operations'.");
+        help.para("To get help, use opp_scavetool help <topic>. Available help topics: 'filter', 'exporters', and all short and long command names.");
     }
     else if (page == "h" || page == "help") {
         help.para("Usage: opp_scavetool help <topic>");
@@ -197,13 +197,6 @@ void ScaveTool::printHelpPage(const std::string& page)
         help.line("  config:network =~ Mesh AND type =~ scalar AND module=~ \"*[5..8]\"");
         help.line("  type =~ scalar AND attr:unit =~ \"s\"");
         help.line();
-    }
-    else if (page == "operations") {
-        help.para("Scalar operations:");
-        help.para("scatter(module, scalar, ...)"); // currently this is the only scalar operation
-        help.indentPara("Create scatter plot dataset. The first two arguments identify the "
-                        "scalar selected for the X axis. Additional arguments identify the "
-                        "iso attributes; they are (module, scalar) pairs, or names of run attributes.");
     }
     else {
         throw opp_runtime_error("No help topic '%s'", page.c_str());
