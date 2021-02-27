@@ -21,6 +21,7 @@ if df.empty:
     plot.set_warning("The result filter returned no data.")
     exit(1)
 
+# determine "groups" and "series" for pivoting, and check them
 groups = utils.split(props["groups"])
 series = utils.split(props["series"])
 
@@ -43,20 +44,21 @@ utils.assert_columns_exist(df, groups + series, "No such iteration variable or r
 for c in groups + series:
     df[c] = pd.to_numeric(df[c], errors="ignore")
 
-df.sort_values(by=groups+series, axis='index', inplace=True)
-
+# names for title, confidence level
 names = ", ".join(utils.get_names_for_title(df, props))
-
 confidence_level_str = props["confidence_level"] if "confidence_level" in props else "none"
 
+# pivoting and plotting
+df.sort_values(by=groups+series, axis='index', inplace=True)
 if confidence_level_str == "none":
     df = pd.pivot_table(df, index=groups, columns=series, values='value')
     utils.plot_bars(df, props, names)
 else:
     confidence_level = float(confidence_level_str[:-1])/100
-    conf_int = lambda values: utils.confidence_interval(confidence_level, values) if len(values) > 1 else math.nan
-    df = pd.pivot_table(df, index=groups, columns=series, values='value', aggfunc=[np.mean, conf_int], dropna=False)
-    utils.plot_bars(df["mean"], props, names, df["<lambda>"])
+    def conf_intv(values):
+        return utils.confidence_interval(confidence_level, values)
+    df = pd.pivot_table(df, index=groups, columns=series, values='value', aggfunc=[np.mean, conf_intv], dropna=False)
+    utils.plot_bars(df["mean"], props, names, df["conf_intv"])
 
 utils.postconfigure_plot(props)
 

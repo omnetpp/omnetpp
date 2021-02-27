@@ -66,11 +66,11 @@ if confidence_level_str == "none":
     errors_df = None
 else:
     confidence_level = float(confidence_level_str[:-1])/100
-    conf_int = lambda values: utils.confidence_interval(confidence_level, values) if len(values) > 1 else math.nan
-
-    pivoted = pd.pivot_table(df, values="value", columns=iso_itervars, index=xaxis_itervar if xaxis_itervar else "name", aggfunc=[np.mean, conf_int], dropna=False)
+    def conf_intv(values):
+        return utils.confidence_interval(confidence_level, values)
+    pivoted = pd.pivot_table(df, values="value", columns=iso_itervars, index=xaxis_itervar if xaxis_itervar else "name", aggfunc=[np.mean, conf_intv], dropna=False)
     df = pivoted["mean"]
-    errors_df = pivoted["<lambda>"]
+    errors_df = pivoted["conf_intv"]
 
 legend_cols, _ = utils.extract_label_columns(df)
 
