@@ -479,7 +479,6 @@ def preconfigure_plot(props):
 
     A partial list of properties taken into account for native plots:
     - property keys understood by the plot widget, see `plot.get_supported_property_keys()`
-    - properties listed in the `plot.properties` property
 
     And for Matplotlib plots:
     - `plt.style`
@@ -495,7 +494,6 @@ def preconfigure_plot(props):
     if chart.is_native_chart():
         supported_keys = plot.get_supported_property_keys()
         plot.set_properties({ k: v for k, v in props.items() if k in supported_keys})
-        plot.set_properties(parse_rcparams(get_prop("plot.properties") or ""))
     else:
         if get_prop("plt.style"):
             plt.style.use(get_prop("plt.style"))
@@ -517,6 +515,7 @@ def postconfigure_plot(props):
     - `yaxis_title`, `yaxis_title`, `xaxis_min`,  `xaxis_max`, `yaxis_min`,
       `yaxis_max`, `xaxis_log`, `yaxis_log`, `legend_show`, `legend_border`,
       `legend_placement`, `grid_show`, `grid_density`
+    - properties listed in the `plot.properties` property
 
     Parameters:
     - `props` (dict): the properties
@@ -551,6 +550,9 @@ def postconfigure_plot(props):
 
     p.grid(_parse_optional_bool(get_prop("grid_show")),
              "major" if (get_prop("grid_density") or "").lower() == "major" else "both") # grid_density is "Major" or "All"
+
+    if chart.is_native_chart():
+        plot.set_properties(parse_rcparams(get_prop("plot.properties") or ""))
 
     if not chart.is_native_chart():
         plt.tight_layout()
