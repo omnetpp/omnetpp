@@ -2450,7 +2450,7 @@ the packet.
 The receiver module can choose whether it wants the simulation kernel
 to deliver the packet object to it at the start or at the end of the
 reception. The default is the latter; the module can change it by calling
-\ffunc{setDeliverOnReceptionStart()} on the final input gate, that is, on
+\ffunc{setDeliverImmediately()} on the final input gate, that is, on
 \ttt{targetGate->getPathEndGate()}.
 
 
@@ -2541,10 +2541,10 @@ Normally the packet object gets delivered to the destination module
 at the simulation time that corresponds to finishing the reception
 of the message (ie. the arrival of its last bit). However, the receiver
 module may change this by ``reprogramming'' the receiver gate with
-the \ffunc{setDeliverOnReceptionStart()} method:
+the \ffunc{setDeliverImmediately()} method:
 
 \begin{cpp}
-gate("in")->setDeliverOnReceptionStart(true);
+gate("in")->setDeliverImmediately(true);
 \end{cpp}
 
 This method may only be called on simple module input gates, and it
@@ -2574,7 +2574,7 @@ The following example code prints the start and end times of a packet reception:
 \begin{cpp}
 simtime_t startTime, endTime;
 if (pkt->isReceptionStart()) {
-    // gate was reprogrammed with setDeliverOnReceptionStart(true)
+    // gate was reprogrammed with setDeliverImmediately(true)
     startTime = pkt->getArrivalTime(); // or: simTime();
     endTime = startTime + pkt->getDuration();
 }
