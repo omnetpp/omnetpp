@@ -25,8 +25,13 @@ public class NativePlotPropertiesContentProposalProvider extends ContentProposal
         List<IContentProposal> proposals = new ArrayList<>();
         if (!completionPrefix.contains(":")) {
             // propose keys
-            for (PlotProperty p : PlotProperty.values())
-                proposals.add(new ContentProposalEx(p.getName() + " : ", p.getName() + " : ", p.getName() + "\nDefault: " + p.getDefaultValueAsString()));
+            for (PlotProperty p : PlotProperty.values()) {
+                boolean po = p.isPerObject();
+                proposals.add(new ContentProposalEx(
+                        p.getName() + (po ? "/1": "") + " : ",
+                        p.getName() + (po ? "/<key>": "") + " : ",
+                        p.getDefaultValue() == null ? "" : "Default: " +  p.getDefaultValueAsString()));
+            }
         }
         else {
             // propose value

@@ -63,35 +63,37 @@ public enum PlotProperty {
     // Bar Plot
     PROP_WRAP_LABELS("X.Label.Wrap", Boolean.class, true),
     PROP_BAR_PLACEMENT("Bar.Placement", BarPlacement.class, PlotProperty.BarPlacement.Aligned),
-    PROP_BAR_COLOR("Bar.Color", Color.class, ColorFactory.GREY80),
-    PROP_BAR_OUTLINE_COLOR("Bar.OutlineColor", Color.class, ColorFactory.BLACK),
+    PROP_BAR_COLOR("Bar.Color/*", Color.class, ColorFactory.GREY80),
+    PROP_BAR_OUTLINE_COLOR("Bar.OutlineColor/*", Color.class, ColorFactory.BLACK),
     PROP_BAR_BASELINE("Bars.Baseline", Double.class, 0.0),
     PROP_BAR_BASELINE_COLOR("Bars.Baseline.Color", Color.class, ColorFactory.GREY80),
     // Histograms
-    PROP_HIST_BAR("Hist.Bar", HistogramBar.class, PlotProperty.HistogramBar.Solid),
+    PROP_HIST_BAR("Hist.Bar/*", HistogramBar.class, PlotProperty.HistogramBar.Solid),
     PROP_SHOW_OVERFLOW_CELL("Hist.ShowOverflowCell", Boolean.class, false),
-    PROP_HIST_COLOR("Hist.Color", Color.class, ColorFactory.BLUE),
-    PROP_HIST_CUMULATIVE("Hist.Cumulative", Boolean.class, false),
-    PROP_HIST_DENSITY("Hist.Density", Boolean.class, false),
+    PROP_HIST_COLOR("Hist.Color/*", Color.class, ColorFactory.BLUE),
+    PROP_HIST_CUMULATIVE("Hist.Cumulative/*", Boolean.class, false),
+    PROP_HIST_DENSITY("Hist.Density/*", Boolean.class, false),
     // Lines
-    PROP_DISPLAY_LINE("Line.Display", Boolean.class, true),
-    PROP_LINE_DRAW_STYLE("Line.DrawStyle", DrawStyle.class, DrawStyle.Linear),
-    PROP_LINE_COLOR("Line.Color", Color.class, ColorFactory.BLUE), // note: no auto-cycling
-    PROP_LINE_STYLE("Line.Style", LineStyle.class, PlotProperty.LineStyle.Solid),
-    PROP_LINE_WIDTH("Line.Width", Float.class, 1.5f),
-    PROP_SYMBOL_TYPE("Symbols.Type", SymbolType.class, SymbolType.Square), // note: no auto-cycling
-    PROP_SYMBOL_SIZE("Symbols.Size", Integer.class, 4);
+    PROP_DISPLAY_LINE("Line.Display/*", Boolean.class, true),
+    PROP_LINE_DRAW_STYLE("Line.DrawStyle/*", DrawStyle.class, DrawStyle.Linear),
+    PROP_LINE_COLOR("Line.Color/*", Color.class, ColorFactory.BLUE), // note: no auto-cycling
+    PROP_LINE_STYLE("Line.Style/*", LineStyle.class, PlotProperty.LineStyle.Solid),
+    PROP_LINE_WIDTH("Line.Width/*", Float.class, 1.5f),
+    PROP_SYMBOL_TYPE("Symbols.Type/*", SymbolType.class, SymbolType.Square), // note: no auto-cycling
+    PROP_SYMBOL_SIZE("Symbols.Size/*", Integer.class, 4);
 
     private static Font getArial10() {return new Font(null, new FontData("Arial", 10, SWT.NORMAL));}
     private static Font getArial8() {return new Font(null, new FontData("Arial", 8, SWT.NORMAL));}
 
     private String name;
+    private boolean perObject;
     private Class<?> type;
     private Object defaultValue;
     private static Map<String,PlotProperty> map = null;
 
     PlotProperty(String name, Class<?> type, Object defaultValue) {
-        this.name = name;
+        this.name = name.replace("/*", "");
+        this.perObject = name.endsWith("/*");
         this.type = type;
         this.defaultValue = defaultValue;
         if (defaultValue != null)
@@ -100,6 +102,10 @@ public enum PlotProperty {
 
     public String getName() {
         return name;
+    }
+
+    public boolean isPerObject() {
+        return perObject;
     }
 
     public Class<?> getType() {
