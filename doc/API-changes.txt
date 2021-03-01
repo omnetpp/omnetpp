@@ -273,8 +273,8 @@ OMNeT++ 6.0
 
 (+)     cModule::ChannelIterator: added postfix ++ and -- operators.
 
-(+)     cMatchExpression: Accept 'field=~pattern' syntax as alternative
-        to 'field(pattern)'.
+(+)     cMatchExpression: Change in the expression syntax: 'field(pattern)'
+        should now be written as 'field =~ pattern'.
 
 (+)     Added cSimulation::callRefreshDisplay().
 

@@ -1436,12 +1436,15 @@ and lets one determine whether an \textit{object} matches a given pattern
 expression.
 
 A pattern expression consists of elements in the
-\textit{fieldname(pattern)} syntax; they check whether the string
-representation of the given field of the object matches the pattern. For
-example, \ttt{srcAddr(192.168.0.*)} will match if the \textit{srcAddr}
-field of the object starts with \ttt{192.168.0.} A naked pattern (without
-field name and parens) is also accepted, and it will be matched against the
-\textit{default field} of the object, which will usually be its name.
+\textit{fieldname ={\textasciitilde} pattern} syntax; they check whether the string
+representation of the given field of the object matches the pattern.
+\footnote{Note that the syntax has changed in {\opp} version 6.0. In prior
+versions, field matchers had to be written as \textit{fieldname(pattern)}.}
+For example, \ttt{srcAddr(192.168.0.*)} will match if the \textit{srcAddr}
+field of the object starts with \ttt{192.168.0.} A naked \textit{pattern}
+(without the field name and the \ttt{={\textasciitilde}} operator) is also accepted,
+and it will be matched against the \textit{default field} of the object,
+which will usually be its name.
 
 These elements can be combined with the AND, OR, NOT operators, accepted in
 both lowercase and uppercase. AND has higher precedence than OR, but
@@ -1452,9 +1455,9 @@ Pattern examples:
 \begin{itemize}
  \item \ttt{"node*"}
  \item \ttt{"node* or host*"}
- \item \ttt{"packet-* and className(PPPFrame)"}
- \item \ttt{"className(TCPSegment) and byteLength(\{4096..\})"}
- \item \ttt{"className(TCPSegment) and (SYN or DATA-*) and not kind(\{0..2\})"}
+ \item \ttt{"packet-* and className ={\textasciitilde} PPPFrame"}
+ \item \ttt{"className ={\textasciitilde} TCPSegment and byteLength ={\textasciitilde} \{4096..\}"}
+ \item \ttt{"className={\textasciitilde}TCPSegment and (SYN or DATA-*) and not kind={\textasciitilde}\{0..2\}"}
 \end{itemize}
 
 The \cclass{cMatchExpression} class has a constructor and \ffunc{setPattern()}
