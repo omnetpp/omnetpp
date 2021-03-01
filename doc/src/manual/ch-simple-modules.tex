@@ -4209,7 +4209,9 @@ class cIListener
     virtual void receiveSignal(cComponent *src, simsignal_t id,
                                bool value, cObject *details) = 0;
     virtual void receiveSignal(cComponent *src, simsignal_t id,
-                               long value, cObject *details) = 0;
+                               intval_t value, cObject *details) = 0;
+    virtual void receiveSignal(cComponent *src, simsignal_t id,
+                               uintval_t value, cObject *details) = 0;
     virtual void receiveSignal(cComponent *src, simsignal_t id,
                                double value, cObject *details) = 0;
     virtual void receiveSignal(cComponent *src, simsignal_t id,
