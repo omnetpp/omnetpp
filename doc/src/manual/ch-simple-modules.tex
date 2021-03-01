@@ -3689,9 +3689,9 @@ module->deleteModule();
 \end{cpp}
 
 If the module was a compound module, this involves recursively
-deleting all its submodules. A simple module can also delete itself;
-in this case, the \ffunc{deleteModule()} call does not return to the
-caller.
+deleting all its submodules. An \ffunc{activity()}-based simple module
+can also delete itself; in that case, the \ffunc{deleteModule()} call
+does not return to the caller.
 
 Currently, you cannot safely delete a compound module from a simple module
 in it; you must delegate the job to a module outside the compound
