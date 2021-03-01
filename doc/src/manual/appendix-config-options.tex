@@ -67,6 +67,51 @@ with the \fopt{-h configdetails} option.
     \textit{Global setting (applies to all simulation runs).}\\
     Specifies the extra amount of stack that is reserved for each
     \ttt{activity()} simple module when the simulation is run under Cmdenv.
+\item[cmdenv-fake-gui] = \textit{<bool>}, default: \ttt{false}\\
+    \textit{Per-simulation-run setting.}\\
+    Causes Cmdenv to lie to simulations that is a GUI (isGui()=true), and to
+    periodically invoke refreshDisplay() during simulation execution.
+\item[cmdenv-fake-gui-after-event-probability] = \textit{<double>}, default: \ttt{1}\\
+    \textit{Per-simulation-run setting.}\\
+    When \ttt{cmdenv-{\allowbreak}fake-{\allowbreak}gui={\allowbreak}true}: The
+    probability with which \ttt{refresh\-Display()} is called after each event.
+\item[cmdenv-fake-gui-before-event-probability] = \textit{<double>}, default: \ttt{1}\\
+    \textit{Per-simulation-run setting.}\\
+    When \ttt{cmdenv-{\allowbreak}fake-{\allowbreak}gui={\allowbreak}true}: The
+    probability with which \ttt{refresh\-Display()} is called before each
+    event.
+\item[cmdenv-fake-gui-on-hold-numsteps] = \textit{<custom>}, default: \ttt{3}\\
+    \textit{Per-simulation-run setting.}\\
+    When \ttt{cmdenv-{\allowbreak}fake-{\allowbreak}gui={\allowbreak}true}: The
+    number of times \ttt{refresh\-Display()} is called during a "hold" period
+    (animation during which simulation time does not advance), provided a trial
+    with
+    \ttt{cmdenv-{\allowbreak}fake-{\allowbreak}gui-{\allowbreak}on-{\allowbreak}hold-{\allowbreak}probability}
+    yielded success. This an expression which will be evaluated each time, so
+    it can be random. Zero is also a valid value.
+\item[cmdenv-fake-gui-on-hold-probability] = \textit{<double>}, default: \ttt{0.{\allowbreak}5}\\
+    \textit{Per-simulation-run setting.}\\
+    When \ttt{cmdenv-{\allowbreak}fake-{\allowbreak}gui={\allowbreak}true}: The
+    probability with which \ttt{refresh\-Display()} is called (possibly
+    multiple times, see
+    \ttt{cmdenv-{\allowbreak}fake-{\allowbreak}gui-{\allowbreak}on-{\allowbreak}hold-{\allowbreak}numsteps})
+    during a "hold" period (animation during which simulation time does not
+    advance).
+\item[cmdenv-fake-gui-on-simtime-numsteps] = \textit{<custom>}, default: \ttt{3}\\
+    \textit{Per-simulation-run setting.}\\
+    When \ttt{cmdenv-{\allowbreak}fake-{\allowbreak}gui={\allowbreak}true}: The
+    number of times \ttt{refresh\-Display()} is called when simulation time
+    advances from one simulation event to the next, provided a trial with
+    \ttt{cmdenv-{\allowbreak}fake-{\allowbreak}gui-{\allowbreak}on-{\allowbreak}simtime-{\allowbreak}probability}
+    yielded success. This an expression which will be evaluated each time, so
+    it can be random. Zero is also a valid value.
+\item[cmdenv-fake-gui-on-simtime-probability] = \textit{<double>}, default: \ttt{0.{\allowbreak}1}\\
+    \textit{Per-simulation-run setting.}\\
+    When \ttt{cmdenv-{\allowbreak}fake-{\allowbreak}gui={\allowbreak}true}: The
+    probability with which \ttt{refresh\-Display()} is called (possibly
+    multiple times, see
+    \ttt{cmdenv-{\allowbreak}fake-{\allowbreak}gui-{\allowbreak}on-{\allowbreak}simtime-{\allowbreak}numsteps})
+    when simulation time advances from one simulation event to the next.
 \item[cmdenv-interactive] = \textit{<bool>}, default: \ttt{false}\\
     \textit{Per-simulation-run setting.}\\
     Defines what Cmdenv should do when the model contains unassigned
@@ -126,6 +171,12 @@ with the \fopt{-h configdetails} option.
     \textit{Per-simulation-run setting.}\\
     Decides whether Cmdenv should skip the rest of the runs when an error
     occurs during the execution of one run.
+\item[config-recording] = \textit{<custom>}, default: \ttt{all}\\
+    \textit{Per-simulation-run setting.}\\
+    Selects the set of config options to save into result files. This option
+    can help reduce the size of result files, which is especially useful in the
+    case of large simulation campaigns. Possible values: all, none, config,
+    params, essentials, globalconfig
 \item[configuration-class] = \textit{<string>}\\
     \textit{Global setting (applies to all simulation runs).}\\
     Part of the Envir plugin mechanism: selects the class from which all
@@ -359,14 +410,12 @@ with the \fopt{-h configdetails} option.
     {\allowbreak}={\allowbreak} {\allowbreak}true};
     \ttt{**.{\allowbreak}module-{\allowbreak}eventlog-{\allowbreak}recording
     {\allowbreak}={\allowbreak} {\allowbreak}false}
-\item[ned-exclusion-path] = \textit{<path>}\\
+\item[ned-package-exclusions] = \textit{<custom>}\\
     \textit{Global setting (applies to all simulation runs).}\\
-    A semicolon-separated list of directories to be skipped when loading NED
-    files. Relative paths are interpreted as relative to root of the NED folder
-    being loaded, i.e. specifying 'tests' will skip the 'tests' subdirectory in
-    each folder in the NED path. The NED exclusion path may also be specified
-    via command-line option (-x) and environment variable
-    (OMNETPP\_NED\_EXCLUSION\_PATH).
+    A semicolon-separated list of NED packages to be excluded when loading NED
+    files. Sub-packages of excluded ones are also excluded. Additional items
+    may be specified via the \ttt{-{\allowbreak}x} command-line option and the
+    \ttt{OMNETPP\_NED\_PACKAGE\_EXCLUSIONS} environment variable.
 \item[ned-path] = \textit{<path>}\\
     \textit{Global setting (applies to all simulation runs).}\\
     A semicolon-separated list of directories. The directories will be regarded
@@ -502,6 +551,13 @@ with the \fopt{-h configdetails} option.
     When \ttt{cNull\-Message\-Protocol} is selected as parsim synchronization
     class: specifies the C++ class that calculates lookahead. The class should
     subclass from \ttt{cNMPLookahead}.
+\item[parsim-num-partitions] = \textit{<int>}\\
+    \textit{Global setting (applies to all simulation runs).}\\
+    If \ttt{parallel-{\allowbreak}simulation={\allowbreak}true}, it tells the
+    number of parallel processes to use. This value must be in agreement with
+    the number of simulator instances launched, e.g. with the
+    \ttt{-{\allowbreak}n} or \ttt{-{\allowbreak}np} command-line option
+    specified to the \ttt{mpirun} program.
 \item[parsim-synchronization-class] = \textit{<string>}, default: \ttt{omnetpp::{\allowbreak}cNull\-Message\-Protocol}\\
     \textit{Global setting (applies to all simulation runs).}\\
     If \ttt{parallel-{\allowbreak}simulation={\allowbreak}true}, it selects the
@@ -560,9 +616,10 @@ with the \fopt{-h configdetails} option.
     recorded into result files, and may be referred to during result analysis.
 \item[result-dir] = \textit{<string>}, default: \ttt{results}\\
     \textit{Per-simulation-run setting.}\\
-    Value for the \ttt{\$\{{\allowbreak}resultdir\}{\allowbreak}} variable,
-    which is used as the default directory for result files (output vector
-    file, output scalar file, eventlog file, etc.)
+    Base value for the \ttt{\$\{{\allowbreak}resultdir\}{\allowbreak}}
+    variable, which is used as the default directory for result files (output
+    vector file, output scalar file, eventlog file, etc.). See also the
+    \ttt{resultdir-{\allowbreak}subdivision} config option.
 \item[**.result-recording-modes] = \textit{<string>}, default: \ttt{default}\\
     \textit{Per-object setting for statistics (@statistic).}\\
     Defines how to calculate results from the matching
@@ -578,6 +635,16 @@ with the \fopt{-h configdetails} option.
     by commas. Expressions are allowed. Items prefixed with
     \ttt{-{\allowbreak}} get removed from the list. Example:
     \ttt{**.{\allowbreak}queue\-Length.{\allowbreak}result-{\allowbreak}recording-{\allowbreak}modes={\allowbreak}default,{\allowbreak}-{\allowbreak}vector,{\allowbreak}+timeavg}
+\item[resultdir-subdivision] = \textit{<bool>}, default: \ttt{false}\\
+    \textit{Per-simulation-run setting.}\\
+    Makes the results directory hierarchical by appending
+    \ttt{\$\{{\allowbreak}iterationvarsd\}{\allowbreak}} to the value of the
+    \ttt{result-{\allowbreak}dir} config option. This is useful if a parameter
+    study produces a large number of runs (>10000), as many file managers and
+    other tools (including the OMNeT++ IDE) struggle with directories
+    containing that many files. An alternative to using this option is to
+    include iteration variables directly in the value of the
+    \ttt{result-{\allowbreak}dir} option.
 \item[**.rng-\%] = \textit{<int>}\\
     \textit{Per-object setting for modules and channels.}\\
     Maps a module-local RNG to one of the global RNGs. Example:
@@ -790,6 +857,8 @@ Predefined variables that can be used in config values:
     PID of the simulation process
 \item[\$\{datetime\}] : \\
     Date and time the simulation run was started
+\item[\$\{datetimef\}] : \\
+    Like \$\{datetime\}, but sanitized for use as part of a file name
 \item[\$\{resultdir\}] : \\
     Value of the \ttt{result-{\allowbreak}dir} configuration option
 \item[\$\{repetition\}] : \\
@@ -801,7 +870,10 @@ Predefined variables that can be used in config values:
     Concatenation of all user-defined iteration variables in
     \ttt{name={\allowbreak}value} form
 \item[\$\{iterationvarsf\}] : \\
-    Like \$\{iterationvars\}, but sanitized for use as part of file names
+    Like \$\{iterationvars\}, but sanitized for use as part of a file name
+\item[\$\{iterationvarsd\}] : \\
+    Like \$\{iterationvars\}, but for use as hierarchical folder name (it
+    contains slashes where \$\{iterationvarsf\} has commas)
 \end{description}
 
 %%% Local Variables:
