@@ -4885,7 +4885,7 @@ numbers, the following rules are used by the built-in result recording
 listeners:
 
 \begin{itemize}
-  \item Strings are recorded as 1.0, except for \ttt{nullptr} which is recorded as 0.0;
+  \item Strings are recorded as 1.0;
   \item Objects that can be cast to \cclass{cITimestampedValue} are recorded
      using the \ffunc{getSignalTime()} and \ffunc{getSignalValue()}
      methods of the class;
