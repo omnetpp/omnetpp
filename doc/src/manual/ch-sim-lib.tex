@@ -2687,11 +2687,12 @@ of any type, and returns the \textit{index}th one among them.
 \subsubsection{Implementing the NED Function}
 \label{sec:sim-lib:implementing-ned-function}
 
-The C++ function that implements the NED function must have the following
-signature, as defined by the \fdef{NEDFunction} typedef:
+The C++ function that implements the NED function must have one of the following
+signatures, as defined by the \fdef{NedFunction} and \fdef{NedFunctionExt} typedefs:
 
 \begin{cpp}
 cValue function(cComponent *context, cValue argv[], int argc);
+cValue function(cExpression::Context *context, cValue argv[], int argc);
 \end{cpp}
 
 As you can see, the function accepts an array of \cclass{cValue}
