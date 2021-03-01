@@ -4167,12 +4167,6 @@ unsubscribe("length", listener);
 It is an error to subscribe the same listener to the same
 signal twice.
 
-\begin{note}
-  When a listener is deleted, it must already be unsubscribed from
-  all components it has subscribed to. This is explained in
-  \ref{sec:simple-modules:signals:life-cycle}.
-\end{note}
-
 It is possible to test whether a listener is subscribed to a signal,
 using the \ffunc{isSubscribed()} method which also takes the same
 parameter list.
@@ -4272,13 +4266,10 @@ module is deleted, it first unsubscribes all listeners from all
 modules and channels in its submodule tree before starting
 to recursively delete the modules and channels themselves.
 
-When a listener is deleted, it must already be unsubscribed from all
-components at that point. If it is not unsubscribed, pointers to the dead
-listener object will be left in the components' listener lists, and the
-components will crash inside an \ffunc{emit()} call, or when they
-try to invoke \ffunc{unsubscribedFrom()} on the dead listener from their
-destructors. The \cclass{cIListener} class contains a subscription count,
-and prints a warning message when it is not zero in the destructor.
+When a listener is deleted, it automatically unsubscribes from all components
+it is subscribed to.\footnote{This behavior is new in {\opp 6.0}. Prior versions
+mandated that the listener be already unsubscribed from all places when its
+destructor runs, but did not automatically unsubscribe.}
 
 \begin{note}
   If your module has added listeners to other modules (e.g. the toplevel
