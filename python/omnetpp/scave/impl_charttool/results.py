@@ -160,6 +160,7 @@ def get_results(filter_expression, row_types, omit_unused_columns, include_field
     if omit_unused_columns:
         df.dropna(axis='columns', how='all', inplace=True)
 
+    df.reset_index(inplace=True, drop=True)
     return df
 
 def get_scalars(filter_expression, include_attrs, include_fields, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name):
@@ -169,26 +170,31 @@ def get_scalars(filter_expression, include_attrs, include_fields, include_runatt
     # TODO filter row types based on include_ args, as optimization
     df = _get_results(filter_expression, ['.sca'], 's', *args)
     df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
+    df.reset_index(inplace=True, drop=True)
     return df
 
 def get_vectors(filter_expression, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name, start_time, end_time):
     df = _get_results(filter_expression, ['.vec'], 'v', '--start-time', str(start_time), '--end-time', str(end_time))
     df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
+    df.reset_index(inplace=True, drop=True)
     return df
 
 def get_statistics(filter_expression, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name):
     df = _get_results(filter_expression, ['.sca'], 't')
     df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
+    df.reset_index(inplace=True, drop=True)
     return df
 
 def get_histograms(filter_expression, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name):
     df = _get_results(filter_expression, ['.sca'], 'h')
     df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
+    df.reset_index(inplace=True, drop=True)
     return df
 
 def get_parameters(filter_expression, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name):
     df = _get_results(filter_expression, ['.sca'], 'p')
     df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
+    df.reset_index(inplace=True, drop=True)
     return df
 
 
@@ -227,6 +233,7 @@ def _get_metadata(filter_expression, query_flag, include_runattrs, include_iterv
         pa.rename(columns={"name": "attrname", "value": "attrvalue"}, inplace=True) # oh, inconsistencies...
         df = _append_metadata_columns(df, pa, "_param")
 
+    df.reset_index(inplace=True, drop=True)
     return df
 
 
