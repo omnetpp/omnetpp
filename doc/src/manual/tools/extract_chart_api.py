@@ -4,7 +4,7 @@ import sys
 import os
 import re
 
-from omnetpp.scave import results, chart, utils, plot, vectorops
+from omnetpp.scave import results, chart, utils, plot, vectorops, analysis
 
 import mistune
 import inspect
@@ -20,8 +20,8 @@ def finalize_latex(s):
         ("&", "\\&"),
         ("#", "\\#"),
         ("^", "{\\textasciicircum}"),
-        ("\b", "{\\textbackslash}"),
         ("~", "{\\textasciitilde}"),
+        ("\b", "{\\textbackslash}"),
 
         # this is not necessary at the moment, but might be in the future
         #(" ", " {\\allowbreak}"),
@@ -141,9 +141,14 @@ def signature_to_latex(o):
     signature = re.sub("=<function ([^ ]+) at [^>]+>", "=\\1", signature)
     return finalize_latex(o.__name__ + str(signature).replace("'", '"'))
 
+def quote(str):
+    return str.replace("_", "\\_")
+
+def tolabel(str):
+    return str.replace("_", "-")
+
 def annotate_module(mod):
     modname = mod.__name__
-    #modsimplename = modname.replace("omnetpp.scave.", "")
     print("\\subsection{Module " + modname + "}")
     print("\\label{cha:chart-api:" + modname + "}\n")
 
@@ -151,12 +156,26 @@ def annotate_module(mod):
 
     for k in mod.__dict__:
         o = mod.__dict__[k]
-        if k and k[0] != '_' and k != "print" and k != "wraps" and inspect.isfunction(o):
-            print("\\subsubsection{" + k.replace("_", "\\_") + "()}")
-            print("\\label{cha:chart-api:" + modname + ":" + k.replace("_", "-") + "}\n")
+        if not k or k[0] == '_':
+            pass
+        elif inspect.isfunction(o) and k != "print" and k != "wraps":
+            print("\\subsubsection{" + quote(k) + "()}")
+            print("\\label{cha:chart-api:" + modname + ":" + tolabel(k) + "}\n")
             print("\\begin{flushleft}\n\\ttt{" + signature_to_latex(o) + "}\n\\end{flushleft}\n")
-
             print(docstring_to_latex(o).strip() + "\n")
+        elif inspect.isclass(o):
+            classname,clazz = k,o
+            print("\\subsubsection{Class " + quote(classname) + "}")
+            print("\\label{cha:chart-api:" + modname + ":" + tolabel(classname) + "}\n")
+            print(docstring_to_latex(clazz).strip() + "\n")
+            for membername,member in inspect.getmembers(clazz):
+                if not membername or membername[0] == '_':
+                    pass
+                elif inspect.isfunction(member):
+                    #print("\\subsubsection{" + quote(classname) + "." + quote(membername) + "()}")
+                    print("\\label{cha:chart-api:" + modname + ":" + tolabel(classname) + ":" + tolabel(membername) + "}\n")
+                    print("\\begin{flushleft}\n\\ttt{\small{" + quote(classname) + ".}" + signature_to_latex(member) + "}\n\\end{flushleft}\n")
+                    print(docstring_to_latex(member).strip() + "\n")
 
 
 print("""
@@ -170,5 +189,4 @@ annotate_module(chart)
 annotate_module(plot)
 annotate_module(utils)
 annotate_module(vectorops)
-
-# vectorops?
+annotate_module(analysis)
