@@ -33,13 +33,12 @@ Line ending may be either CR or CRLF, regardless of the platform.
 \subsection{Reserved Words}
 \label{sec:ned-ref:reserved-words}
 
-NED file authors have to take care that no reserved words are used as identifiers.
-The reserved words of the NED language are:
+The following words are reserved, and cannot be used for identifiers:
 
 \ttt{allowunconnected bool channel channelinterface connections const
 default double extends false for gates if import index inf inout input int like
-module moduleinterface nan network output package parameters property simple
-sizeof string submodules this true typename types volatile xml xmldoc}
+module moduleinterface nan network null nullptr object output package parameters property simple
+sizeof string submodules this true typename types undefined volatile xml xmldoc}
 
 
 \subsection{Identifiers}
@@ -96,6 +95,12 @@ Section \ref{sec:ned-ref:units} lists the units recognized by {\opp}.
 Other units can be used as well; the only downside being that {\opp} will
 not be able to perform conversions on them.
 
+\subsubsection{Null Object References}
+\label{sec:ned-ref:nullptr}
+
+The keywords \fkeyword{null} and \fkeyword{nullptr} are synonymous, and
+denote an object reference that doesn't refer to any valid object.
+
 
 \subsection{Comments}
 \label{sec:ned-ref:comments}
@@ -127,7 +132,7 @@ One can print the full definitions by running \ttt{opp\_run -h neddecls}.
 
 \begin{ned}
 package ned;
-@namespace("");
+@namespace("omnetpp");
 
 channel IdealChannel
 {
@@ -178,7 +183,6 @@ moduleinterface IUnidirectionalChannel
         output o;
 }
 \end{ned}
-
 
 
 \section{Packages}
@@ -559,8 +563,8 @@ may have value or default value, and may also have properties
 (see \ref{sec:ned-ref:properties}).
 
 Accepted parameter data types are \fkeyword{double}, \fkeyword{int},
-\fkeyword{string}, \fkeyword{bool}, and \fkeyword{xml}. Any
-of the above types can be declared \fkeyword{volatile} as well
+\fkeyword{string}, \fkeyword{bool}, \fkeyword{xml}, and \fkeyword{object}.
+Any of the above types can be declared \fkeyword{volatile} as well
 (\ttt{volatile int}, \ttt{volatile string}, etc.)
 
 The presence of a data type keyword determines whether the given line defines
@@ -1639,6 +1643,7 @@ some variations on operator names (see \ttt{\textasciicircum}, \ttt{\#}, \ttt{\#
 Expressions may refer to module parameters, loop variables (inside connection
 \fkeyword{for} loops), gate vector and module vector sizes, and other attributes
 of the model. Expressions can use built-in and user-defined functions as well.
+There is a JSON-like notation for defining arrays and (dictionary-like) objects.
 
 \begin{note}
 New NED functions can be defined in C++; see section \ref{sec:sim-lib:defining-ned-functions}.
@@ -1648,6 +1653,31 @@ New NED functions can be defined in C++; see section \ref{sec:sim-lib:defining-n
 \label{sec:ned-ref:constants}
 
 See section \ref{sec:ned-ref:literals}.
+
+\subsection{Array and Object Values}
+\label{sec:ned-ref:arrays-and-objects}
+
+A bracketed list of zero or more comma-separated expressions denotes an \textit{array} value.
+Example: \ttt{[9.81,false,"Hello"]}.
+
+A list of zero or more comma-separated key-value pairs enclosed in a pair of curly braces
+denotes an \textit{object} value. A key and a value are separated by a colon. A key may be
+a name or a string literal. A value may be an arbitrary expression, including a
+list or an object. The open brace may be preceded by an (optionally namespace-qualified)
+\textit{class name}.
+Example 1: \ttt{\{name:"John", age: 31\}}.
+Example 2: \ttt{Filter \{dest:"10.0.0.1", port:1200\}}.
+
+\textit{Array} and \textit{object} values may be assigned to parameters of type \fkeyword{object}.
+Note that \fkeyword{null} / \fkeyword{nullptr} are also of type \textit{object}.
+
+\textit{Array} values are represented with the C++ class \cclass{cValueArray},
+and by default, \textit{object} values with the C++ class \cclass{cValueMap}.
+If the \textit{object} notation includes a \textit{class name}, then the named C++ class
+will be used instead of \cclass{cValueMap}, and filled in using the key-value list
+with the help of the class descriptor (\cclass{cClassDescriptor}) of the class,
+interpreting keys as field names.
+
 
 \subsection{Operators}
 \label{sec:ned-ref:operators}
@@ -1699,12 +1729,12 @@ The spaceship operator is defined as follows. The result of \ttt{a <=> b} is neg
 if \ttt{a<b}, zero if \ttt{a==b}, and positive if \ttt{a>b}. If either \ttt{a} or \ttt{b} is
 \ttt{nan} (not-a-number), the result is \ttt{nan} as well.
 
-The string match operator works the following way. \ttt{a =\ensuremath{\sim} pattern} returns \ttt{true}
-if the string \ttt{s} matches \ttt{pattern}, and \ttt{false} otherwise. Pattern syntax
+The string match operator works the following way. \ttt{x =\ensuremath{\sim} pattern} returns \ttt{true}
+if the string \ttt{x} matches \ttt{pattern}, and \ttt{false} otherwise. Pattern syntax
 and rules are similar to those used in \ffilename{omnetpp.ini} files: case sensitive,
 full-string match, where an asterisk \ttt{*} matches zero or more of any character
-except dot, a double asterisk matches  \ttt{**} matches zero or more of any character
-(including dot), and notations also exist to express embedded numbers and square-bracketed
+except dot, a double asterisk \ttt{**} matches zero or more characters (including dot),
+and notations also exist to express embedded numbers and square-bracketed
 numeric indices within a numeric range.
 
 The interpretation of other operators is similar to that in C/C++.
@@ -1713,13 +1743,13 @@ The interpretation of other operators is similar to that in C/C++.
 \subsubsection{Conversions}
 \label{sec:ned-ref:conversions}
 
-Values may have the same types as NED parameters: boolean, integer, double, string, or XML element.
+Values may have the same types as NED parameters: boolean, integer, double, string, XML element, and object.
 An integer or double value may have an associated measurement unit (\ttt{s}, \ttt{mW}, etc.)
 
 Double-to-integer conversions require explicit cast using the \ttt{int()} function,
 there is no implicit conversion.
 
-Integer-to-double converson is implicit. However, a runtime error will be raised
+Integer-to-double conversion is implicit. However, a runtime error will be raised
 if there is precision loss during the conversion, i.e. the integer is so large
 that it cannot be precisely represented in a double. That error can be suppressed
 by using an explicit cast (\ttt{double()}).
