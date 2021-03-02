@@ -1,3 +1,4 @@
+LATEX=pdflatex -halt-on-error
 PERL=perl
 INKSCAPE=inkscape
 DOT=dot
@@ -16,11 +17,11 @@ default: pdf html eclipse
 include ../cover/cover.makefrag
 
 pdf: $(ALLTEX) $(PDFPICS) figures/*.png cover
-	pdflatex usman.tex
+	$(LATEX) usman.tex
 	bibtex usman
 	makeindex usman
-	pdflatex usman.tex
-	pdflatex usman.tex
+	$(LATEX) usman.tex
+	$(LATEX) usman.tex
 	qpdf usman.pdf --pages cover.pdf ../cover/copyright.pdf usman.pdf 3-z -- ../../SimulationManual.pdf
 	rm -f *.aux *.idx *.ilg *.ind *.log *.out *.toc *.blg
 
