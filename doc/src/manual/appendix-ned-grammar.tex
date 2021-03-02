@@ -40,7 +40,7 @@ Notation:
 \begin{Verbatim}[commandchars=\\\{\}]
 nedfile
         : definitions
-        |
+        | %empty
         ;
 
 definitions
@@ -101,7 +101,7 @@ propertydecl\_header
 
 opt\_propertydecl\_keys
         : propertydecl\_keys
-        |
+        | %empty
         ;
 
 propertydecl\_keys
@@ -129,7 +129,7 @@ channelheader
         ;
 
 opt\_inheritance
-        :
+        : %empty
         | EXTENDS extendsname
         | LIKE likenames
         | EXTENDS extendsname LIKE likenames
@@ -161,7 +161,7 @@ channelinterfaceheader
 
 opt\_interfaceinheritance
         : EXTENDS extendsnames
-        |
+        | %empty
         ;
 
 extendsnames
@@ -231,7 +231,7 @@ opt\_paramblock
 
 opt\_params
         : params
-        |
+        | %empty
         ;
 
 params
@@ -268,12 +268,13 @@ paramtype
         | INT
         | STRING
         | BOOL
+        | OBJECT
         | XML
         ;
 
 opt\_volatile
         : VOLATILE
-        |
+        | %empty
         ;
 
 paramvalue
@@ -285,7 +286,7 @@ paramvalue
 
 opt\_inline\_properties
         : inline\_properties
-        |
+        | %empty
         ;
 
 inline\_properties
@@ -363,7 +364,7 @@ property\_values
 
 property\_value
         : property\_literal
-        |
+        | %empty
         ;
 
 property\_literal
@@ -375,7 +376,7 @@ property\_literal
 
 opt\_gateblock
         : gateblock
-        |
+        | %empty
         ;
 
 gateblock
@@ -385,7 +386,7 @@ gateblock
 
 opt\_gates
         : gates
-        |
+        | %empty
         ;
 
 gates
@@ -415,7 +416,7 @@ gatetype
 
 opt\_typeblock
         : typeblock
-        |
+        | %empty
         ;
 
 typeblock
@@ -425,7 +426,7 @@ typeblock
 
 opt\_localtypes
         : localtypes
-        |
+        | %empty
         ;
 
 localtypes
@@ -446,7 +447,7 @@ localtype
 
 opt\_submodblock
         : submodblock
-        |
+        | %empty
         ;
 
 submodblock
@@ -456,7 +457,7 @@ submodblock
 
 opt\_submodules
         : submodules
-        |
+        | %empty
         ;
 
 submodules
@@ -490,12 +491,12 @@ likeexpr
 
 opt\_condition
         : condition
-        |
+        | %empty
         ;
 
 opt\_connblock
         : connblock
-        |
+        | %empty
         ;
 
 connblock
@@ -507,7 +508,7 @@ connblock
 
 opt\_connections
         : connections
-        |
+        | %empty
         ;
 
 connections
@@ -527,7 +528,7 @@ connectiongroup
 
 opt\_loops\_and\_conditions
         : loops\_and\_conditions
-        |
+        | %empty
         ;
 
 loops\_and\_conditions
@@ -599,7 +600,7 @@ parentrightgate
 
 opt\_subgate
         : '$' NAME
-        |
+        | %empty
         ;
 
 channelspec
@@ -616,7 +617,7 @@ channelspec\_header
         ;
 
 opt\_channelname
-        :
+        : %empty
         | NAME ':'
         ;
 
@@ -629,14 +630,15 @@ vector
         ;
 
 expression
-        :
-          expr
+        : expr
         ;
 
 expr
         : simple\_expr
+        | functioncall
+        | object
+        | array
         | '(' expr ')'
-        | CONST '(' expr ')'
         | expr '+' expr
         | expr '-' expr
         | expr '*' expr
@@ -644,37 +646,69 @@ expr
         | expr '%' expr
         | expr '^' expr
         | '-' expr
+                \_
         | expr '==' expr
         | expr '!=' expr
         | expr '>' expr
         | expr '>=' expr
         | expr '<' expr
         | expr '<=' expr
+        | expr '<=>' expr
+        | expr '=~' expr
         | expr '&&' expr
         | expr '||' expr
         | expr '##' expr
         | '!' expr
+                \_
         | expr '&' expr
         | expr '|' expr
         | expr '#' expr
         | '~' expr
+                \_
         | expr '<<' expr
         | expr '>>' expr
         | expr '?' expr ':' expr
-        | INT '(' expr ')'
-        | DOUBLE '(' expr ')'
-        | STRING '(' expr ')'
-        | funcname '(' ')'
-        | funcname '(' expr ')'
-        | funcname '(' expr ',' expr ')'
-        | funcname '(' expr ',' expr ',' expr ')'
-        | funcname '(' expr ',' expr ',' expr ',' expr ')'
-        | funcname '(' expr ',' expr ',' expr ',' expr ',' expr ')'
-        | funcname '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-        | funcname '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-        | funcname '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-        | funcname '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-        | funcname '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
+        ;
+
+functioncall
+        : funcname '(' opt\_exprlist ')'
+        ;
+
+array
+        : '[' opt\_exprlist ']'
+        ;
+
+object
+        : '\{' opt\_keyvaluelist '\}'
+        | NAME '\{' opt\_keyvaluelist '\}'
+        | NAME DOUBLECOLON NAME '\{' opt\_keyvaluelist '\}'
+        | NAME DOUBLECOLON NAME DOUBLECOLON NAME '\{' opt\_keyvaluelist '\}'
+        | NAME DOUBLECOLON NAME DOUBLECOLON NAME DOUBLECOLON NAME '\{' opt\_keyvaluelist '\}'
+        ;
+
+opt\_exprlist
+        : exprlist
+        | %empty
+        ;
+
+exprlist
+        : exprlist ',' expr
+        | expr
+        ;
+
+opt\_keyvaluelist
+        : keyvaluelist
+        | %empty
+        ;
+
+keyvaluelist
+        : keyvaluelist ',' keyvalue
+        | keyvalue
+        ;
+
+keyvalue
+        : NAME ':' expr
+        | STRINGCONSTANT ':' expr
         ;
 
 simple\_expr
@@ -685,8 +719,13 @@ simple\_expr
 
 funcname
         : NAME
-        | XMLDOC
+        | BOOL
+        | INT
+        | DOUBLE
+        | STRING
+        | OBJECT
         | XML
+        | XMLDOC
         ;
 
 identifier
@@ -708,6 +747,7 @@ literal
         : stringliteral
         | boolliteral
         | numliteral
+        | otherliteral
         ;
 
 stringliteral
@@ -725,6 +765,12 @@ numliteral
         | quantity
         ;
 
+otherliteral
+        : UNDEFINED
+        | NULLPTR
+        | NULL
+        ;
+
 quantity
         : quantity INTCONSTANT NAME
         | quantity realconstant\_ext NAME
@@ -740,8 +786,9 @@ realconstant\_ext
 
 opt\_semicolon
         : ';'
-        |
+        | %empty
         ;
+
 \end{Verbatim}
 
 

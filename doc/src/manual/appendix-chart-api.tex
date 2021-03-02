@@ -17,6 +17,7 @@ chapter, such as \ttt{np} for NumPy and \ttt{pd} for Pandas.
 % script (tools/chartapi.txt), pasted here manually, do not edit here!
 % --------
 
+
 %
 % generated with extract_chart_api.py
 %
@@ -940,6 +941,14 @@ These are the following.
 
 \end{itemize}
 
+\subsubsection{Class cycle}
+\label{cha:chart-api:omnetpp.scave.utils:cycle}
+
+\par cycle(iterable) --> cycle object
+
+\par Return elements from the iterable until it is exhausted.
+Then repeat the sequence indefinitely.
+
 \subsubsection{make\_legend\_label()}
 \label{cha:chart-api:omnetpp.scave.utils:make-legend-label}
 
@@ -1184,7 +1193,6 @@ part of chart scripts.
 
 \begin{itemize}
   \item property keys understood by the plot widget, see \ttt{plot.get\_supported\_property\_keys()}
-  \item properties listed in the \ttt{plot.properties} property
 
 \end{itemize}
 
@@ -1224,6 +1232,7 @@ of chart scripts.
   \item \ttt{yaxis\_title}, \ttt{yaxis\_title}, \ttt{xaxis\_min},  \ttt{xaxis\_max}, \ttt{yaxis\_min},
 \ttt{yaxis\_max}, \ttt{xaxis\_log}, \ttt{yaxis\_log}, \ttt{legend\_show}, \ttt{legend\_border},
 \ttt{legend\_placement}, \ttt{grid\_show}, \ttt{grid\_density}
+  \item properties listed in the \ttt{plot.properties} property
 
 \end{itemize}
 
@@ -1296,7 +1305,7 @@ their own aspect ratio and relative sizes.
 \label{cha:chart-api:omnetpp.scave.utils:export-data-if-needed}
 
 \begin{flushleft}
-\ttt{export\_data\_if\_needed(df, props)}
+\ttt{export\_data\_if\_needed(df, props, **kwargs)}
 \end{flushleft}
 
 \par If a certain property is set, save the dataframe in CSV format.
@@ -1859,4 +1868,130 @@ yout[k] = average of y values in the [(k-1)}winSize, k*winSize) interval
 
 \par Calculates batched average: replaces every 'winsize' input values
 with their mean. Time is the time of the first value in the batch.
+
+\subsection{Module omnetpp.scave.analysis}
+\label{cha:chart-api:omnetpp.scave.analysis}
+
+
+
+\subsubsection{Class DialogPage}
+\label{cha:chart-api:omnetpp.scave.analysis:DialogPage}
+
+\par Represents a dialog page in a Chart. Dialog pages have an ID, a label
+(which the IDE displays on the page's tab in the Chart Properties dialog),
+and XSWT content (which describes the UI controls on the page).
+
+\subsubsection{Class Chart}
+\label{cha:chart-api:omnetpp.scave.analysis:Chart}
+
+\par Represents a chart in an Analysis. Charts have an ID, a name, a chart script
+(a Python script that mainly uses Pandas and the \ttt{omnetpp.scave.*} modules),
+dialog pages (which make up the contents of the Chart Properties dialog in the IDE),
+and properties (which are what the Chart Properties dialog in the IDE edits).
+
+\subsubsection{Class Workspace}
+\label{cha:chart-api:omnetpp.scave.analysis:Workspace}
+
+\par This is an abstraction of an IDE workspace, and makes it possible to map
+workspace paths to filesystem paths. This is necessary because the inputs
+in the Analysis are workspace paths.
+
+\label{cha:chart-api:omnetpp.scave.analysis:Workspace:find-workspace}
+
+\begin{flushleft}
+\ttt{\small{Workspace.}find\_workspace(dir=None)}
+\end{flushleft}
+
+\par Utility function: Find the IDE workspace directory searching from the
+given directory (or the current dir if not given) upwards. The workspace
+directory of the Eclipse-based IDE can be recognized by having a \ttt{.metadata}
+subdir.
+
+\label{cha:chart-api:omnetpp.scave.analysis:Workspace:get-project-location}
+
+\begin{flushleft}
+\ttt{\small{Workspace.}get\_project\_location(self, project\_name)}
+\end{flushleft}
+
+\par Returns the location of the given workspace project in the filesystem path.
+
+\label{cha:chart-api:omnetpp.scave.analysis:Workspace:to-filesystem-path}
+
+\begin{flushleft}
+\ttt{\small{Workspace.}to\_filesystem\_path(self, wspath)}
+\end{flushleft}
+
+\par Translate workspace paths to filesystem path.
+
+\subsubsection{Class Analysis}
+\label{cha:chart-api:omnetpp.scave.analysis:Analysis}
+
+\par Represents an OMNeT++ Analysis, i.e. the contents of an  \ttt{anf} file. Methods
+allow reading/writing \ttt{anf} files, and running the charts in them for interactive
+display, image/data export or other side effects.
+
+\label{cha:chart-api:omnetpp.scave.analysis:Analysis:export-data}
+
+\begin{flushleft}
+\ttt{\small{Analysis.}export\_data(self, chart, wd, workspace, format="csv", target\_folder=None, filename=None, enforce=True, extra\_props=\{\})}
+\end{flushleft}
+
+\par Runs a chart script for data export. This method just calls \ttt{run\_chart()}
+with extra properties that instruct the chart script to perform data export.
+(It is assumed that the chart script invokes \ttt{utils.export\_data\_if\_needed()}
+or implements equivalent functionality).
+
+\label{cha:chart-api:omnetpp.scave.analysis:Analysis:export-image}
+
+\begin{flushleft}
+\ttt{\small{Analysis.}export\_image(self, chart, wd, workspace, format="svg", target\_folder=None, filename=None, width=6, height=4, dpi=96, enforce=True, extra\_props=\{\})}
+\end{flushleft}
+
+\par Runs a chart script for image export. This method just calls \ttt{run\_chart()}
+with extra properties that instruct the chart script to perform image export.
+(It is assumed that the chart script invokes \ttt{utils.export\_image\_if\_needed()}
+or implements equivalent functionality).
+
+\label{cha:chart-api:omnetpp.scave.analysis:Analysis:from-anf-file}
+
+\begin{flushleft}
+\ttt{\small{Analysis.}from\_anf\_file(anf\_file\_name)}
+\end{flushleft}
+
+\par Reads the given anf file and returns its content as an \ttt{Analysis} object.
+
+\label{cha:chart-api:omnetpp.scave.analysis:Analysis:info}
+
+\begin{flushleft}
+\ttt{\small{Analysis.}info(self)}
+\end{flushleft}
+
+\par Produces a multi-line string description about the content of this Analysis.
+
+\label{cha:chart-api:omnetpp.scave.analysis:Analysis:run-chart}
+
+\begin{flushleft}
+\ttt{\small{Analysis.}run\_chart(self, chart, wd, workspace, extra\_props=\{\}, show=False)}
+\end{flushleft}
+
+\par Runs a chart script with the given working directory, workspace, and extra
+properties in addition to the chart's properties. If \ttt{show=True}, it calls
+\ttt{plt.show()} if it was not already called by the script.
+
+\label{cha:chart-api:omnetpp.scave.analysis:Analysis:to-anf-file}
+
+\begin{flushleft}
+\ttt{\small{Analysis.}to\_anf\_file(self, filename)}
+\end{flushleft}
+
+\par Saves the analysis to the given .anf file.
+
+\subsubsection{load\_anf\_file()}
+\label{cha:chart-api:omnetpp.scave.analysis:load-anf-file}
+
+\begin{flushleft}
+\ttt{load\_anf\_file(anf\_file\_name)}
+\end{flushleft}
+
+
 

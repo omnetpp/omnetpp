@@ -39,13 +39,14 @@ msgfile
 
 definitions
         : definitions definition
-        |
+        | %empty
         ;
 
 definition
         : namespace\_decl
         | fileproperty
         | cplusplus
+        | import
         | struct\_decl
         | class\_decl
         | message\_decl
@@ -77,6 +78,31 @@ fileproperty
 
 cplusplus
         : CPLUSPLUS '\{\{' ... '\}\}' opt\_semicolon
+        | CPLUSPLUS '(' targetspec ')' '\{\{' ... '\}\}' opt\_semicolon
+        ;
+        ;
+
+targetspec
+        : targetspec targetitem
+        | targetitem
+        ;
+
+targetitem
+        : NAME | DOUBLECOLON | INTCONSTANT | ':' | '.' | ',' | '~' | '=' | '&'
+        ;
+
+import
+        : IMPORT importspec ';'
+        ;
+
+importspec
+        : importspec '.' importname
+        | importname
+        ;
+
+importname
+        : NAME
+        | MESSAGE | PACKET | CLASS | STRUCT | ENUM | ABSTRACT
         ;
 
 struct\_decl
@@ -108,7 +134,7 @@ enum
 
 opt\_enumfields
         : enumfields
-        |
+        | %empty
         ;
 
 enumfields
@@ -164,7 +190,7 @@ body
 
 opt\_fields\_and\_properties
         : fields\_and\_properties
-        |
+        | %empty
         ;
 
 fields\_and\_properties
@@ -186,15 +212,14 @@ fieldtypename
 
 fieldmodifiers
         : ABSTRACT
-        | READONLY
-        | ABSTRACT READONLY
-        | READONLY ABSTRACT
-        |
+        | %empty
         ;
 
 fielddatatype
         : fieldsimpledatatype
         | fieldsimpledatatype '*'
+        | CONST fieldsimpledatatype
+        | CONST fieldsimpledatatype '*'
         ;
 
 fieldsimpledatatype
@@ -216,7 +241,7 @@ opt\_fieldvector
         : '[' INTCONSTANT ']'
         | '[' qname ']'
         | '[' ']'
-        |
+        | %empty
         ;
 
 fieldvalue
@@ -235,7 +260,7 @@ fieldvalueitem
         | DOUBLECOLON
         | '?' | ':' | '&&' | '||' | '##' | '==' | '!=' | '>' | '>=' | '<' | '<='
         | '&' | '|' | '#' | '<<' | '>>'
-        | '+' | '-' | '*' | '/' | '%' | '^' | '&' | UMIN | '!' | '~'
+        | '+' | '-' | '*' | '/' | '%' | '^' | UMIN | '!' | '~'
         | '.' | ',' | '(' | ')' | '[' | ']'
         ;
 
@@ -247,7 +272,7 @@ enumvalue
 
 opt\_inline\_properties
         : inline\_properties
-        |
+        | %empty
         ;
 
 inline\_properties
@@ -291,17 +316,20 @@ property\_values
 
 property\_value
         : property\_literal
-        |
+        | %empty
         ;
 
 property\_literal
-        : property\_literal CHAR
+        : property\_literal COMMONCHAR
         | property\_literal STRINGCONSTANT
-        | CHAR
+        | COMMONCHAR
         | STRINGCONSTANT
         ;
 
-opt\_semicolon : ';' | ;
+opt\_semicolon
+        : ';'
+        | %empty
+        ;
 \end{Verbatim}
 
 
