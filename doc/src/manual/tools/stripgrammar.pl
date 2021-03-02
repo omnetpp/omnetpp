@@ -48,6 +48,7 @@ $txt =~ s/([A-Z]+)_\b/$1/gs;
    "TO"  =>             "'..'",
    "DOUBLEASTERISK"  => "'**'",
    "PLUSPLUS"  =>       "'++'",
+   "DOUBLECOLON" =>     "'::'",
    "OR"  =>             "'||'",
    "AND"  =>            "'&&'",
    "XOR"  =>            "'##'",

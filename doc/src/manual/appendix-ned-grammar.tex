@@ -681,9 +681,9 @@ array
 object
         : '\{' opt\_keyvaluelist '\}'
         | NAME '\{' opt\_keyvaluelist '\}'
-        | NAME DOUBLECOLON NAME '\{' opt\_keyvaluelist '\}'
-        | NAME DOUBLECOLON NAME DOUBLECOLON NAME '\{' opt\_keyvaluelist '\}'
-        | NAME DOUBLECOLON NAME DOUBLECOLON NAME DOUBLECOLON NAME '\{' opt\_keyvaluelist '\}'
+        | NAME '::' NAME '\{' opt\_keyvaluelist '\}'
+        | NAME '::' NAME '::' NAME '\{' opt\_keyvaluelist '\}'
+        | NAME '::' NAME '::' NAME '::' NAME '\{' opt\_keyvaluelist '\}'
         ;
 
 opt\_exprlist
