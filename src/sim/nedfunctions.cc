@@ -434,6 +434,8 @@ cValue nedf_bool(cComponent *contextComponent, cValue argv[], int argc)
             return argv[0].stdstringValue() == "true";
         case cValue::OBJECT:
             throw cRuntimeError("Cannot convert object to bool");
+        case cValue::UNDEF:
+            throw cRuntimeError("Cannot convert 'undefined' to bool");
         default:
             throw cRuntimeError("Internal error: Invalid cValue type");
     }
@@ -460,6 +462,8 @@ cValue nedf_int(cComponent *contextComponent, cValue argv[], int argc)
         }
         case cValue::OBJECT:
             throw cRuntimeError("Cannot convert object to int");
+        case cValue::UNDEF:
+            throw cRuntimeError("Cannot convert 'undefined' to int");
         default:
             throw cRuntimeError("Internal error: Invalid cValue type");
     }
@@ -486,8 +490,10 @@ cValue nedf_double(cComponent *contextComponent, cValue argv[], int argc)
         }
         case cValue::OBJECT:
             throw cRuntimeError("Cannot convert object to double");
+        case cValue::UNDEF:
+            throw cRuntimeError("Cannot convert 'undefined' to double");
         default:
-            throw cRuntimeError("Internal error: Bad cValue type");
+            throw cRuntimeError("Internal error: Invalid cValue type");
     }
 }
 

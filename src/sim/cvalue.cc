@@ -193,6 +193,7 @@ std::string cValue::str() const
 {
     char buf[32];
     switch (type) {
+        case UNDEF: return "undefined";
         case BOOL: return bl ? "true" : "false";
         case INT: sprintf(buf, "%" PRId64 "%s", (int64_t)intv, opp_nulltoempty(unit)); return buf;
         case DOUBLE:
