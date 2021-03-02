@@ -1,3 +1,10 @@
+"""
+This module allows reading, writing, creating and editing
+OMNeT++ Analysis (.anf) files, querying their contents, and
+running the charts scripts they contain. The main user of this
+module is `opp_charttool`.
+"""
+
 import os
 import sys
 import traceback
@@ -10,10 +17,6 @@ import omnetpp.scave.impl_charttool.chart as chart_module
 import omnetpp.scave.utils as utils
 
 
-"""
-For reading/writing OMNeT++ Analysis (.anf) files, and executing charts scripts in them.
-"""
-
 _real_show = plt.show
 
 def _fake_show(*args, **kwargs):
@@ -25,8 +28,8 @@ plt.show = _fake_show
 
 class DialogPage:
     """
-    Represents a dialog page in a Chart. Dialog pages have an ID, a label
-    (which the IDE displays on the page's tab in the Chart Properties dialog),
+    Represents a dialog page in a `Chart`. Dialog pages have an ID, a label
+    (which the IDE displays on the page's tab in the *Chart Properties* dialog),
     and XSWT content (which describes the UI controls on the page).
     """
     def __init__(self, id:str=None, label:str="", content:str=""):
@@ -36,16 +39,17 @@ class DialogPage:
 
 class Chart:
     """
-    Represents a chart in an Analysis. Charts have an ID, a name, a chart script
+    Represents a chart in an `Analysis`. Charts have an ID, a name, a chart script
     (a Python script that mainly uses Pandas and the `omnetpp.scave.*` modules),
     dialog pages (which make up the contents of the Chart Properties dialog in the IDE),
-    and properties (which are what the Chart Properties dialog in the IDE edits).
+    and properties (which are what the *Chart Properties* dialog in the IDE edits).
     """
     def __init__(self, type:str, name:str="", id:str=None, template:str=None, icon:str=None, script:str="", dialog_pages=list(), properties=dict()):
         assert type in ["MATPLOTLIB", "BAR", "LINE", "HISTOGRAM"]
         self.type = type
         self.name = name
         self.id = id
+
         self.template = template
         self.icon = icon
         self.script = script
@@ -56,7 +60,7 @@ class Workspace:
     """
     This is an abstraction of an IDE workspace, and makes it possible to map
     workspace paths to filesystem paths. This is necessary because the inputs
-    in the Analysis are workspace paths.
+    in the `Analysis` are workspace paths.
     """
     def __init__(self, workspace_dir, project_paths=None):
         """

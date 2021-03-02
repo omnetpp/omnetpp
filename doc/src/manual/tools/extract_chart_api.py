@@ -169,7 +169,7 @@ def annotate_module(mod):
             print("\\label{cha:chart-api:" + modname + ":" + tolabel(classname) + "}\n")
             print(docstring_to_latex(clazz).strip() + "\n")
             for membername,member in inspect.getmembers(clazz):
-                if not membername or membername[0] == '_':
+                if not membername or (membername[0] == '_'  and membername!="__init__"):
                     pass
                 elif inspect.isfunction(member):
                     #print("\\subsubsection{" + quote(classname) + "." + quote(membername) + "()}")

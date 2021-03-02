@@ -17,7 +17,6 @@ chapter, such as \ttt{np} for NumPy and \ttt{pd} for Pandas.
 % script (tools/chartapi.txt), pasted here manually, do not edit here!
 % --------
 
-
 %
 % generated with extract_chart_api.py
 %
@@ -1872,29 +1871,58 @@ with their mean. Time is the time of the first value in the batch.
 \subsection{Module omnetpp.scave.analysis}
 \label{cha:chart-api:omnetpp.scave.analysis}
 
-
+\par This module allows reading, writing, creating and editing
+OMNeT++ Analysis (.anf) files, querying their contents, and
+running the charts scripts they contain. The main user of this
+module is \ttt{opp\_charttool}.
 
 \subsubsection{Class DialogPage}
 \label{cha:chart-api:omnetpp.scave.analysis:DialogPage}
 
-\par Represents a dialog page in a Chart. Dialog pages have an ID, a label
-(which the IDE displays on the page's tab in the Chart Properties dialog),
+\par Represents a dialog page in a \ttt{Chart}. Dialog pages have an ID, a label
+(which the IDE displays on the page's tab in the \textit{Chart Properties} dialog),
 and XSWT content (which describes the UI controls on the page).
+
+\label{cha:chart-api:omnetpp.scave.analysis:DialogPage:--init--}
+
+\begin{flushleft}
+\ttt{\small{DialogPage.}\_\_init\_\_(self, id:str=None, label:str="", content:str="")}
+\end{flushleft}
+
+
 
 \subsubsection{Class Chart}
 \label{cha:chart-api:omnetpp.scave.analysis:Chart}
 
-\par Represents a chart in an Analysis. Charts have an ID, a name, a chart script
+\par Represents a chart in an \ttt{Analysis}. Charts have an ID, a name, a chart script
 (a Python script that mainly uses Pandas and the \ttt{omnetpp.scave.*} modules),
 dialog pages (which make up the contents of the Chart Properties dialog in the IDE),
-and properties (which are what the Chart Properties dialog in the IDE edits).
+and properties (which are what the \textit{Chart Properties} dialog in the IDE edits).
+
+\label{cha:chart-api:omnetpp.scave.analysis:Chart:--init--}
+
+\begin{flushleft}
+\ttt{\small{Chart.}\_\_init\_\_(self, type:str, name:str="", id:str=None, template:str=None, icon:str=None, script:str="", dialog\_pages=[], properties=\{\})}
+\end{flushleft}
+
+
 
 \subsubsection{Class Workspace}
 \label{cha:chart-api:omnetpp.scave.analysis:Workspace}
 
 \par This is an abstraction of an IDE workspace, and makes it possible to map
 workspace paths to filesystem paths. This is necessary because the inputs
-in the Analysis are workspace paths.
+in the \ttt{Analysis} are workspace paths.
+
+\label{cha:chart-api:omnetpp.scave.analysis:Workspace:--init--}
+
+\begin{flushleft}
+\ttt{\small{Workspace.}\_\_init\_\_(self, workspace\_dir, project\_paths=None)}
+\end{flushleft}
+
+\par Accepts the workspace location, plus a dict that contains the (absolute,
+or workspace-relative) location of projects by name, for projects that
+are NOT under the <workspace\_dir>/<projectname> location.
 
 \label{cha:chart-api:omnetpp.scave.analysis:Workspace:find-workspace}
 
@@ -1929,6 +1957,14 @@ subdir.
 \par Represents an OMNeT++ Analysis, i.e. the contents of an  \ttt{anf} file. Methods
 allow reading/writing \ttt{anf} files, and running the charts in them for interactive
 display, image/data export or other side effects.
+
+\label{cha:chart-api:omnetpp.scave.analysis:Analysis:--init--}
+
+\begin{flushleft}
+\ttt{\small{Analysis.}\_\_init\_\_(self, inputs=[], charts=[])}
+\end{flushleft}
+
+
 
 \label{cha:chart-api:omnetpp.scave.analysis:Analysis:export-data}
 
