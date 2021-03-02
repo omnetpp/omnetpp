@@ -124,7 +124,9 @@ def _pivot_results(df, include_attrs, include_runattrs, include_itervars, includ
 
     if include_attrs and attrs is not None and not attrs.empty:
         attrs = pd.pivot_table(attrs, columns="attrname", aggfunc='first', index=["runID", "module", "name"], values="attrvalue")
-        df = df.merge(attrs, left_on=["runID", "module", "name"], right_index=True, how='left')
+        # this column is no longer needed, and it collided with the commonly used "type" result attribute in `merge`
+        df.drop(["type"], axis=1, inplace=True, errors="ignore")
+        df = df.merge(attrs, left_on=["runID", "module", "name"], right_index=True, how='left', suffixes=(None, "_attr"))
 
     if include_itervars:
         df = _append_metadata_columns(df, itervars, "_itervar")
@@ -135,7 +137,7 @@ def _pivot_results(df, include_attrs, include_runattrs, include_itervars, includ
     if include_param_assignments and not include_config_entries:
         df = _append_metadata_columns(df, params, "_param")
 
-    df.drop(['type', 'attrname', 'attrvalue'], axis=1, inplace=True)
+    df.drop(['type', 'attrname', 'attrvalue'], axis=1, inplace=True, errors="ignore")
 
     if merge_module_and_name:
         df["name"] = df["module"] + "." + df["name"]
