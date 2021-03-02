@@ -733,10 +733,9 @@ used in building the topology (number of nodes, etc), and to supply
 input to C++ code that implements simple modules and channels.
 
 Parameters can be of type \fkeyword{double}, \fkeyword{int},
-\fkeyword{bool}, \fkeyword{string} and \fkeyword{xml}; they can also
-be declared \fkeyword{volatile}. For the numeric types, a unit of
-measurement can also be specified (\fprop{@unit} property), to increase
-type safety.
+\fkeyword{bool}, \fkeyword{string}, \fkeyword{xml} and \fkeyword{object};
+they can also be declared \fkeyword{volatile}. For the numeric types, a unit of
+measurement can also be specified (\fprop{@unit} property).
 
 Parameters can get their value from NED files or from the configuration
 (\ffilename{omnetpp.ini}). A default value can also be given (\ttt{default(}...\ttt{)}),
@@ -1098,28 +1097,27 @@ in subclasses or in submodule declarations.
 \subsection{XML Parameters}
 \label{sec:ned-lang:xml-parameters}
 
-Sometimes modules need complex data structures as input, which is something
-that cannot be done well with module parameters. One solution is to place
-the input data into a custom configuration file, pass the file name to the
-module in a string parameter, and let the module read and parse the file.
+{\opp} supports two explicit ways of passing structured data to a module using
+parameters: XML parameters, and object parameters with JSON-style structured data.
+This section describes the former, and the next one the latter.
 
-It is somewhat easier if the configuration uses XML syntax, because {\opp}
-contains built-in support for XML files. Using an XML parser (LibXML2 or
-Expat), {\opp} reads and DTD-validates the file (if the XML document
-contains a DOCTYPE), caches the file (so that references to it from several
-modules will result in the file being loaded only once), allows selection
-of parts of the document using an XPath-subset notation, and presents the
-contents in a DOM-like object tree.
+XML parameters are declared with the keyword \fkeyword{xml}. When using
+XML parameters, {\opp} will read the XML document for you, DTD-validates it
+(if it contains a DOCTYPE), and presents the contents in a DOM-like object tree.
+It is also possible to assign a part (i.e. subtree) of the document to the parameter; the
+subset can be selected using an XPath-subset notation. {\opp} caches the
+content of the document, so it is loaded only once even if it is referenced
+by multiple parameters.
 
-This capability can be accessed via the NED parameter type \fkeyword{xml},
-and the \fkeyword{xmldoc()} function. One can point \fkeyword{xml}-type
-module parameters to a specific XML file (or to an element inside an XML
-file) via the \fkeyword{xmldoc()} function. One can assign \fkeyword{xml}
-parameters both from NED and from \ffilename{omnetpp.ini}.
+Values for an XML parameter can be produced using the \fkeyword{xmldoc()} and
+the \fkeyword{xml()} functions. \fkeyword{xmldoc()} accepts a filename as argument,
+while \fkeyword{xml()} parses its string argument as XML content.
+Of course, one can assign \fkeyword{xml} parameters both from NED and
+from \ffilename{omnetpp.ini}.
 
-The following example declares an \fkeyword{xml} parameter, and assigns an
-XML file to it. The file name is understood as being relative to the working
-directory.
+The following example declares an \fkeyword{xml} parameter, and assigns the
+contents of an XML file to it. The file name is understood as being relative
+to the working directory.
 
 \begin{ned}
 simple TrafGen {
@@ -1139,9 +1137,9 @@ module Node {
 \end{ned}
 
 \fkeyword{xmldoc()} also lets one select an element \textit{within} an XML
-file. In case one has a model that contains numerous modules that need XML
-input, this feature allows the user get rid of the countless small XML
-files by aggregating them into a single XML file. For example, the
+document. In case a simulation model contains numerous modules that need XML
+input, this feature allows the user get rid of the many small XML files
+by aggregating them into a single XML file. For example, the
 following XML file contains two profiles identified with the IDs
 \textit{gen1} and \textit{gen2}:
 
@@ -1173,9 +1171,9 @@ module Node {
 }
 \end{ned}
 
-It is also possible to create an XML document from a string constant, using
-the \fkeyword{xml()} function. This is especially useful for creating a
-default value for \fkeyword{xml} parameters. An example:
+The following example shows how specify XML content using a string literal,
+with the \fkeyword{xml()} function. This is especially useful
+for specifying a default value.
 
 \begin{ned}
 simple TrafGen {
@@ -1191,6 +1189,10 @@ optional second XPath parameter for selecting a subtree.
 %% XXX other xmldoc syntax (=PARENTMODULEINDEX etc)
 
 
+\subsection{Object/JSON Parameters}
+\label{sec:ned-lang:object-parameters}
+
+TODO
 
 \section{Gates}
 \label{sec:ned-lang:gates}
@@ -1397,8 +1399,8 @@ module Host
 }
 \end{ned}
 
-Note that with submodule vectors, setting zero vector size can be used as an 
-alternative to the \fkeyword{if} condition. 
+Note that with submodule vectors, setting zero vector size can be used as an
+alternative to the \fkeyword{if} condition.
 
 \section{Connections}
 \label{sec:ned-lang:connections}
@@ -1935,7 +1937,7 @@ module Node
 }
 \end{ned}
 
-However, this pattern, when used extensively, can lead to a large number of 
+However, this pattern, when used extensively, can lead to a large number of
 string parameters. Luckily, it is also possible to achieve the same effect
 with \fkeyword{typename}, without using extra parameters:
 
@@ -1967,7 +1969,7 @@ network Network
 
 Note that this trick does not work with submodule vectors. The reason is that
 the condition applies to the vector as a whole, while type is per-element.
- 
+
 It is often also useful to be able to check, e.g. in the connections section,
 whether a conditional submodule has been created or not. This can be done with
 the \fkeyword{exists()} operator. An example:
@@ -1983,7 +1985,7 @@ module Node
 
 Limitation: \fkeyword{exists()} may only be used \textit{after} the submodule's
 occurrence in the compound module.
- 
+
 
 
 
