@@ -193,6 +193,7 @@ void Test::activity()
             case cPar::INT: EV << p.intValue(); break;
             case cPar::STRING: EV << p.stringValue(); break;
             case cPar::XML: EV << p.xmlValue()->str(); break;
+            case cPar::OBJECT: EV << p.objectValue()->getClassName(); break;
         }
         EV << endl;
     }

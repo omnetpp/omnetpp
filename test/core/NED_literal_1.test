@@ -51,6 +51,7 @@ void Test::activity()
           case cPar::DOUBLE: EV << par(i).doubleValue(); break;
           case cPar::BOOL:   EV << (par(i).boolValue() ? "true" : "false"); break;
           case cPar::XML:    EV << "some xml"; break; // unused in this test
+          case cPar::OBJECT: EV << par(i).objectValue()->getClassName(); break;
         }
         EV << "/" << par(i).str() << endl;
     }
