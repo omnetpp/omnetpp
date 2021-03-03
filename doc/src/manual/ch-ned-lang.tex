@@ -1189,10 +1189,177 @@ optional second XPath parameter for selecting a subtree.
 %% XXX other xmldoc syntax (=PARENTMODULEINDEX etc)
 
 
-\subsection{Object/JSON Parameters}
+\subsection{Object Parameters and Structured Data}
 \label{sec:ned-lang:object-parameters}
 
-TODO
+Object parameters are declared with the keyword \fkeyword{object}. The values of
+object parameters are C++ objects, which can hold arbitrary data and can be
+constructed in various ways in NED. Although object parameters were introduced
+in {\opp} only in version 6.0, they are now the preferred way of passing
+structured data to modules.
+
+There are two basic constructs in NED for creating objects: the \textit{array}
+and the \textit{object} syntax. The array syntax is a pair of square brackets
+that encloses the list of comma-separated array elements: \textit{[ value1,
+value2, ... ]}. The object (a.k.a. dictionary) syntax uses curly braces around
+key-value pairs, the separators being colon and comma: \textit{\{ key1 : value1,
+key2:value2, ... \}}. These constructs can be composed, so an array may contain
+objects and further arrays as elements, and similarly, an object may contain
+arrays and further objects as values, and so on. This allows describing complex
+data structures, with a JSON-like notation.
+
+The notation is only JSON-\textit{like}, as the syntax rules are more relaxed
+than in JSON. All valid JSON is accepted, but also some more. The main difference
+is that in JSON, values in arrays and objects may only be constants or \ttt{null},
+while {\opp} allows any NED expression as value: quantities (e.g. \ttt{100Gbps}),
+\fkeyword{nan}, \fkeyword{inf}, \fkeyword{nullptr} (synonym of \fkeyword{null}),
+parameter references, functions, arithmetic operations, etc., are all accepted.
+
+An extra relaxation and convenience compared to strict JSON is that quotation
+marks around object keys may be left out, as long as the key complies with
+the identifier syntax.
+
+Another extension is that for objects, the desired C++ class may be specified in
+front of the open curly brace: \textit{classname \{ key1 : value1, ... \}}. The
+object will be created and filled in using {\opp}'s reflection features. This
+allows internal data structures of modules to be filled out directly, so it
+eliminates most of the "parsing" code which is otherwise necessary. More about
+this feature will be written in the chapter about C++ programming (section
+\ref{sec:simple-modules:object-parameters}).
+
+Object parameters with JSON-style values obsolete several workarounds that
+were used in pre-6.0 {\opp} versions for passing structured data to modules,
+for example using strings to specify numeric arrays, or using text files of
+ad-hoc syntax as configuration or data files. JSON-style values are also more
+convenient that XML input.
+
+After this introduction, let us see some examples! We begin with
+a list of completely made-up object parameter assignments, to show
+the syntax and the possibilities:
+
+\begin{ned}
+simple Example {
+    parameters:
+        object array1 = []; // empty array
+        object array2 = [2, 5, 3, -1]; // array of integers
+        object array3 = [ 3, 24.5mW, "Hello", false, true ]; // misc array
+        object array4 = [ nan, inf, inf s, null, nullptr ]; // special values
+        object object1 = {};  // empty object
+        object object2 = { foo: 100, bar: "Hello" }; // object with 2 fields
+        object object3 = { "foo": 100, "bar": "Hello" }; // keys with quotes
+
+        // composition of objects and arrays
+        object array5 = [ [1,2,3], [4,5,6], [7,8,9] ];
+        object array6 = [ { foo: 100, bar: "Hello" }, { baz: false } ];
+        object object4 = { foo : [1,2,3], bar : [4,5,6] };
+        object object5 = { obj : { foo: 1, bar: 2 }, array: [1, 2, 3 ] };
+
+        // expression, parameter references
+        double x = default(1);
+        object misc = [ x, 2*x, floor(3.14), uniform(0,10) ]; // [1,2,3,?]
+
+        // default values
+        object default1 = default([]); // empty array by default
+        object default2 = default({}); // empty object by default
+        object default3 = default([1,2,3]); // some array by default
+        object default4 = default(nullptr); // null pointer by default
+}
+\end{ned}
+
+The following, more practical example demonstrates how one could describe an
+IPv4 routing table. Each route is represented as an object, and the table itself
+is represented as an array of routes.
+
+\begin{ned}
+object routes = [
+    { dest: "10.0.0.0", netmask: "255.255.0.0", interf: "eth0", metric:10 },
+    { dest: "10.1.0.0", netmask: "255.255.0.0", interf: "eth1", metric:20 },
+    { dest: "*", interf: "eth2" },
+];
+\end{ned}
+
+The next example shows the use of the extended object syntax for specifying a
+"template" for the packets that a traffic source module should generate. Note
+the stochastic expression for the \ttt{byteLength} field, and that the parameter
+is declared as \fkeyword{volatile}. Every time the module needs to send a
+packet, its C++ code should read the \ttt{packetToSend} parameter, which will
+cause the expression to be evaluated and a new packet of random length to be
+created that the module can send.
+
+\begin{ned}
+simple TrafficSource {
+    parameters:
+    volatile object packetToSend = default(cPacket {
+        name: "data",
+        kind: 10,
+        byteLength: intuniform(64,4096)
+    });
+    volatile double sendInterval @unit(s) = default(exponential(100ms));
+}
+\end{ned}
+
+Another traffic source module that supports a predetermined schedule of what to
+send at which points in time could have the following parameter to describe the
+schedule:
+
+\begin{ned}
+object sendSchedule = [
+    { time: 1s, pk: cPacket { name: "pk1", byteLength: 64 } },
+    { time: 2s, pk: cPacket { name: "pk2", byteLength: 76 } },
+    { time: 3s, pk: cPacket { name: "pk3", byteLength: 32 } },
+];
+\end{ned}
+
+In the next example, we want to pass a trail given with its waypoints to a
+module. The module will get the data in an instance of a \ttt{Trail} C++ class
+expressly created for this purpose. This means that the module will get the
+trail data in a ready-to-use form just by reading parameter, without having to
+do any parsing or additional processing.
+
+We use a message file (chapter \ref{cha:messages}) to define the classes;
+the C++ classes will be automatically generated by {\opp} from it.
+
+\begin{msg}
+// file: Trail.msg
+struct Point {
+    double x;
+    double y;
+}
+
+class Trail extends cObject {
+    Point waypoints[];
+}
+\end{msg}
+
+An actual trail can be specified in NED like this:
+
+\begin{ned}
+object trail = Trail {
+    waypoints: [
+        { x: 1, y : 5 },
+        { x: 4, y : 6 },
+        { x: 3, y : 8 },
+        { x: 5, y : 3 }
+    ]
+  };
+\end{ned}
+
+Values for object parameters may also be place in ini files, just like values
+for other parameter types. When doing so, pay attention that the ini file
+syntax, unlike NED, requires trailing backslashes when breaking up long lines.
+Hence, the above trail example is to be written in the following way:
+
+\begin{inifile}
+**.trail = Trail { \
+        waypoints: [ \
+            { x: 1, y : 5 }, \
+            { x: 4, y : 6 }, \
+            { x: 3, y : 8 }, \
+            { x: 5, y : 3 } \
+        ] \
+      }
+\end{inifile}
+
 
 \section{Gates}
 \label{sec:ned-lang:gates}
