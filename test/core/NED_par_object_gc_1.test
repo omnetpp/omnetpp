@@ -1,0 +1,87 @@
+%description:
+Test that we don't leak objects from expression evaluation
+
+%file: test.ned
+
+simple Test
+{
+    parameters:
+        @isNetwork(true);
+        bool b = false;
+        int i = 0;
+        double d = 0;
+        string s = "";
+        xml x = xml("<root/>");
+        object o = nullptr;
+}
+
+%activity:
+
+for (auto p : { "b", "i", "d", "s", "x", "o" }) {
+    for (auto expr : { "string([])", "string({})", "[]", "[{},{},{}]", "3+cos([])", "1+[]", "{}+[]" }) {
+        try {
+            EV << p << " = " << expr << " --> ";
+            par(p).parse(expr);
+            par(p).convertToConst();
+            EV << par(p).str() << "\n";
+        }
+        catch(std::exception& e) {
+            EV << "ERROR: " << e.what() << "\n";
+        }
+    }
+    EV << "\n";
+}
+
+
+
+%contains: stdout
+b = string([]) --> ERROR: Cannot evaluate parameter 'b': Cannot cast from type string to bool
+b = string({}) --> ERROR: Cannot evaluate parameter 'b': Cannot cast from type string to bool
+b = [] --> ERROR: Cannot evaluate parameter 'b': Cannot cast from type object to bool
+b = [{},{},{}] --> ERROR: Cannot evaluate parameter 'b': Cannot cast from type object to bool
+b = 3+cos([]) --> ERROR: Cannot evaluate parameter 'b': cos(): Cannot cast '(omnetpp::cValueArray)array' from type 'object' to 'double'
+b = 1+[] --> ERROR: Cannot evaluate parameter 'b': operator "+": Numeric arguments expected, got integer and object
+b = {}+[] --> ERROR: Cannot evaluate parameter 'b': operator "+": Numeric arguments expected, got object and object
+
+i = string([]) --> ERROR: Cannot evaluate parameter 'i': Cannot cast "[]" from type string to integer
+i = string({}) --> ERROR: Cannot evaluate parameter 'i': Cannot cast "{}" from type string to integer
+i = [] --> ERROR: Cannot evaluate parameter 'i': Cannot cast [] from type object to integer
+i = [{},{},{}] --> ERROR: Cannot evaluate parameter 'i': Cannot cast [{}, {}, {}] from type object to integer
+i = 3+cos([]) --> ERROR: Cannot evaluate parameter 'i': cos(): Cannot cast '(omnetpp::cValueArray)array' from type 'object' to 'double'
+i = 1+[] --> ERROR: Cannot evaluate parameter 'i': operator "+": Numeric arguments expected, got integer and object
+i = {}+[] --> ERROR: Cannot evaluate parameter 'i': operator "+": Numeric arguments expected, got object and object
+
+d = string([]) --> ERROR: Cannot evaluate parameter 'd': Cannot cast "[]" from type string to double
+d = string({}) --> ERROR: Cannot evaluate parameter 'd': Cannot cast "{}" from type string to double
+d = [] --> ERROR: Cannot evaluate parameter 'd': Cannot cast [] from type object to double
+d = [{},{},{}] --> ERROR: Cannot evaluate parameter 'd': Cannot cast [{}, {}, {}] from type object to double
+d = 3+cos([]) --> ERROR: Cannot evaluate parameter 'd': cos(): Cannot cast '(omnetpp::cValueArray)array' from type 'object' to 'double'
+d = 1+[] --> ERROR: Cannot evaluate parameter 'd': operator "+": Numeric arguments expected, got integer and object
+d = {}+[] --> ERROR: Cannot evaluate parameter 'd': operator "+": Numeric arguments expected, got object and object
+
+s = string([]) --> "[]"
+s = string({}) --> "{}"
+s = [] --> ERROR: Cannot evaluate parameter 's': Cannot cast from type object to string
+s = [{},{},{}] --> ERROR: Cannot evaluate parameter 's': Cannot cast from type object to string
+s = 3+cos([]) --> ERROR: Cannot evaluate parameter 's': cos(): Cannot cast '(omnetpp::cValueArray)array' from type 'object' to 'double'
+s = 1+[] --> ERROR: Cannot evaluate parameter 's': operator "+": Numeric arguments expected, got integer and object
+s = {}+[] --> ERROR: Cannot evaluate parameter 's': operator "+": Numeric arguments expected, got object and object
+
+x = string([]) --> ERROR: Cannot evaluate parameter 'x': Cannot cast from type string to XML
+x = string({}) --> ERROR: Cannot evaluate parameter 'x': Cannot cast from type string to XML
+x = [] --> ERROR: Cannot evaluate parameter 'x': check_and_cast(): Cannot cast (omnetpp::cValueArray*)Test..array to type 'omnetpp::cXMLElement *'
+x = [{},{},{}] --> ERROR: Cannot evaluate parameter 'x': check_and_cast(): Cannot cast (omnetpp::cValueArray*)Test..array to type 'omnetpp::cXMLElement *'
+x = 3+cos([]) --> ERROR: Cannot evaluate parameter 'x': cos(): Cannot cast '(omnetpp::cValueArray)array' from type 'object' to 'double'
+x = 1+[] --> ERROR: Cannot evaluate parameter 'x': operator "+": Numeric arguments expected, got integer and object
+x = {}+[] --> ERROR: Cannot evaluate parameter 'x': operator "+": Numeric arguments expected, got object and object
+
+o = string([]) --> ERROR: Cannot evaluate parameter 'o': Cannot cast from type string to object
+o = string({}) --> ERROR: Cannot evaluate parameter 'o': Cannot cast from type string to object
+o = [] --> (omnetpp::cValueArray)array: []
+o = [{},{},{}] --> (omnetpp::cValueArray)array: [{}, {}, {}]
+o = 3+cos([]) --> ERROR: Cannot evaluate parameter 'o': cos(): Cannot cast '(omnetpp::cValueArray)array' from type 'object' to 'double'
+o = 1+[] --> ERROR: Cannot evaluate parameter 'o': operator "+": Numeric arguments expected, got integer and object
+o = {}+[] --> ERROR: Cannot evaluate parameter 'o': operator "+": Numeric arguments expected, got object and object
+
+%not-contains: stdout
+undisposed object

@@ -1,0 +1,85 @@
+%description:
+Test parameter assignment from various types
+
+%file: test.ned
+
+simple Test
+{
+    parameters:
+        @isNetwork(true);
+        bool b = false;
+        int i = 0;
+        double d = 0;
+        string s = "";
+        xml x = xml("<root/>");
+        object o = nullptr;
+}
+
+%activity:
+
+for (auto p : { "b", "i", "d", "s", "x", "o" }) {
+    for (auto expr : { "true", "12", "3.14", "\"hello\"", "[]", "nullptr", "undefined" }) {
+        try {
+            EV << p << " = " << expr << " --> ";
+            par(p).parse(expr);
+            par(p).convertToConst();
+            EV << par(p).str() << "\n";
+        }
+        catch(std::exception& e) {
+            EV << "ERROR: " << e.what() << "\n";
+        }
+    }
+    EV << "\n";
+}
+
+%contains: stdout
+b = true --> true
+b = 12 --> ERROR: Wrong value '12' for parameter 'Test.b': Cannot cast from type integer to bool
+b = 3.14 --> ERROR: Wrong value '3.14' for parameter 'Test.b': Cannot cast from type double to bool
+b = "hello" --> ERROR: Wrong value '"hello"' for parameter 'Test.b': Cannot cast from type string to bool
+b = [] --> ERROR: Cannot evaluate parameter 'b': Cannot cast from type object to bool
+b = nullptr --> ERROR: Wrong value 'nullptr' for parameter 'Test.b': Cannot cast from type object to bool
+b = undefined --> ERROR: Wrong value 'undefined' for parameter 'Test.b': Cannot cast from type undefined to bool
+
+i = true --> ERROR: Wrong value 'true' for parameter 'Test.i': Cannot cast true from type bool to integer
+i = 12 --> 12
+i = 3.14 --> ERROR: Wrong value '3.14' for parameter 'Test.i': Cannot cast 3.14 from type double to integer (note: no implicit conversion from double to int)
+i = "hello" --> ERROR: Wrong value '"hello"' for parameter 'Test.i': Cannot cast "hello" from type string to integer
+i = [] --> ERROR: Cannot evaluate parameter 'i': Cannot cast [] from type object to integer
+i = nullptr --> ERROR: Wrong value 'nullptr' for parameter 'Test.i': Cannot cast nullptr from type object to integer
+i = undefined --> ERROR: Wrong value 'undefined' for parameter 'Test.i': Cannot cast undefined from type undefined to integer
+
+d = true --> ERROR: Wrong value 'true' for parameter 'Test.d': Cannot cast true from type bool to double
+d = 12 --> 12
+d = 3.14 --> 3.14
+d = "hello" --> ERROR: Wrong value '"hello"' for parameter 'Test.d': Cannot cast "hello" from type string to double
+d = [] --> ERROR: Cannot evaluate parameter 'd': Cannot cast [] from type object to double
+d = nullptr --> ERROR: Wrong value 'nullptr' for parameter 'Test.d': Cannot cast nullptr from type object to double
+d = undefined --> ERROR: Wrong value 'undefined' for parameter 'Test.d': Cannot cast undefined from type undefined to double
+
+s = true --> ERROR: Wrong value 'true' for parameter 'Test.s': Cannot cast from type bool to string
+s = 12 --> ERROR: Wrong value '12' for parameter 'Test.s': Cannot cast from type integer to string
+s = 3.14 --> ERROR: Wrong value '3.14' for parameter 'Test.s': Cannot cast from type double to string
+s = "hello" --> "hello"
+s = [] --> ERROR: Cannot evaluate parameter 's': Cannot cast from type object to string
+s = nullptr --> ERROR: Wrong value 'nullptr' for parameter 'Test.s': Cannot cast from type object to string
+s = undefined --> ERROR: Wrong value 'undefined' for parameter 'Test.s': Cannot cast from type undefined to string
+
+x = true --> ERROR: Wrong value 'true' for parameter 'Test.x': Cannot cast from type bool to XML
+x = 12 --> ERROR: Wrong value '12' for parameter 'Test.x': Cannot cast from type integer to XML
+x = 3.14 --> ERROR: Wrong value '3.14' for parameter 'Test.x': Cannot cast from type double to XML
+x = "hello" --> ERROR: Wrong value '"hello"' for parameter 'Test.x': Cannot cast from type string to XML
+x = [] --> ERROR: Cannot evaluate parameter 'x': check_and_cast(): Cannot cast (omnetpp::cValueArray*)Test..array to type 'omnetpp::cXMLElement *'
+x = nullptr --> nullptr
+x = undefined --> ERROR: Wrong value 'undefined' for parameter 'Test.x': Cannot cast from type undefined to XML
+
+o = true --> ERROR: Wrong value 'true' for parameter 'Test.o': Cannot cast from type bool to object
+o = 12 --> ERROR: Wrong value '12' for parameter 'Test.o': Cannot cast from type integer to object
+o = 3.14 --> ERROR: Wrong value '3.14' for parameter 'Test.o': Cannot cast from type double to object
+o = "hello" --> ERROR: Wrong value '"hello"' for parameter 'Test.o': Cannot cast from type string to object
+o = [] --> (omnetpp::cValueArray)array: []
+o = nullptr --> nullptr
+o = undefined --> ERROR: Wrong value 'undefined' for parameter 'Test.o': Cannot cast from type undefined to object
+
+%not-contains: stdout
+undisposed object
