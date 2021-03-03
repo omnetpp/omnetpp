@@ -1,0 +1,90 @@
+%description:
+Tests nan, inf and undefined in the expression evaluation class
+
+%includes:
+#include <common/expression.h>
+#include <common/exprnodes.h>
+
+%global:
+using namespace omnetpp::common;
+using namespace omnetpp::common::expression;
+
+class Variable : public ValueNode
+{
+  private:
+    std::string varName;
+  public:
+    Variable(const char *name) {varName = name;}
+    virtual ExprNode *dup() const override {return new Variable(varName.c_str());}
+    virtual std::string getName() const override {return varName;}
+    virtual void print(std::ostream& out, int spaciousness) const override { out << varName; }
+    virtual ExprValue evaluate(Context *context) const override {return (double)(varName[1]-'0');}
+};
+
+class VariableTranslator : public Expression::BasicAstTranslator
+{
+  public:
+    virtual ExprNode *createIdentNode(const char *varName, bool withIndex) override { return new Variable(varName); }
+};
+
+static void eval(const char *txt)
+{
+    try {
+        EV << txt << " -> ";
+        Expression expr;
+        VariableTranslator variableTranslator;
+        Expression::MultiAstTranslator multiTranslator({ &variableTranslator, Expression::getDefaultAstTranslator() });
+
+        expr.parse(txt, &multiTranslator);
+        //EV << expr.str() << " --> ";  // echo parsed form
+        EV << expr.evaluate().str() << "\n";
+    }
+    catch (std::exception& e) {
+        EV << "exception: " << e.what() << "\n";
+    }
+}
+
+%activity:
+eval("-inf");
+eval("3*inf");
+eval("3*-inf");
+eval("inf/inf");
+
+eval("nan");
+eval("-nan");
+eval("3*nan");
+
+eval("nullptr");
+eval("3*nullptr");
+
+eval("undefined");
+eval("1 + undefined");
+eval("1.3 * undefined");
+eval("true + undefined");
+eval("\"hello\" + undefined");
+eval("undefined + undefined");
+eval("nullptr + undefined");
+
+EV << ".\n";
+
+%exitcode: 0
+
+%contains: stdout
+-inf -> -inf
+3*inf -> inf
+3*-inf -> -inf
+inf/inf -> nan
+nan -> nan
+-nan -> nan
+3*nan -> nan
+nullptr -> nullptr
+3*nullptr -> exception: operator "*": Numeric arguments expected, got integer and object
+undefined -> undefined
+1 + undefined -> undefined
+1.3 * undefined -> undefined
+true + undefined -> undefined
+"hello" + undefined -> undefined
+undefined + undefined -> undefined
+nullptr + undefined -> undefined
+.
+
