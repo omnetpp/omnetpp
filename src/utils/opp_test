@@ -590,6 +590,8 @@ Supported .test file entry types:
     def testcase_run(self, testfilename):
         self.parse_testfile(testfilename)
 
+        global use_colors
+
         outfname = "test.out"
         errfname = "test.err"
 
@@ -834,7 +836,7 @@ Supported .test file entry types:
                         diff = difflib.ndiff(addMissingNewLine(pattern).splitlines(True), addMissingNewLine(txt).splitlines(True))
                         if shouldCompressDiff:
                             diff = compressDiff(diff)
-                        if useColors:
+                        if use_colors:
                             diff = colorDiff(diff)
                         difftxt = ''.join(diff)
 
