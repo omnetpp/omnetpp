@@ -171,7 +171,7 @@ std::string cXMLParImpl::str() const
     if (flags & FL_ISEXPR)
         return expr->str();
     else
-        return val ? val->str() : "";
+        return val ? val->str() : "nullptr";
 }
 
 void cXMLParImpl::parse(const char *text)
