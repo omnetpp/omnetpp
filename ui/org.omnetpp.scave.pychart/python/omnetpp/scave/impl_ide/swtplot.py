@@ -104,6 +104,9 @@ def plot_lines(df, props):
     - `ys` (array): Stores the Y coordinates of the points used to draw the line.
         Must have the same number of elements as `xs`
 
+    The properties in `props` will be made specific to the items added by this call,
+    by appending `/<key>` row-by-row to each property key.
+
     This can only be called if the chart is of type `LINE`.
     """
     assert_is_native_chart()
@@ -115,6 +118,7 @@ def plot_lines(df, props):
     # only used on windows, to prevent gc
     mmap_objs = list()
 
+    # the key of each row is appended to the property names in Java
     Gateway.chart_plotter.plotVectors(pl.dumps([
         {
             "key": row.key,
@@ -140,6 +144,9 @@ def plot_bars(df, props):
     - `label`: The name of the series, this will appear on the legend, any type.
     - `values`: A list storing the heights of the bars.
 
+    The properties in `props` will be made specific to the items added by this call,
+    by appending `/<key>` row-by-row to each property key.
+
     This can only be called if the chart is of type "BAR".
     """
     # TODO: add check for one-layer indices? numbers-only data?
@@ -147,6 +154,7 @@ def plot_bars(df, props):
     if sorted(list(df.columns)) != sorted(["key", "label", "values"]):
         raise RuntimeError("Invalid DataFrame format in plot_bars")
 
+    # the key of each row is appended to the property names in Java
     Gateway.chart_plotter.plotScalars(pl.dumps([
         {
             "key": row.key,
@@ -173,6 +181,9 @@ def plot_histograms(df, props):
     - `min`: The minimum of the collected samples, this is the left edge of the underflow "bin", float
     - `max`: The maximum of the collected samples, this is the right edge of the overflow "bin", float
 
+    The properties in `props` will be made specific to the items added by this call,
+    by appending `/<key>` row-by-row to each property key.
+
     This can only be called if the chart is of type `HISTOGRAM`.
     """
     assert_is_native_chart()
@@ -180,6 +191,7 @@ def plot_histograms(df, props):
     if sorted(list(df.columns)) != sorted(["key", "label", "binedges", "binvalues", "underflows", "overflows", "min", "max"]):
         raise RuntimeError("Invalid DataFrame format in plot_histogram")
 
+    # the key of each row is appended to the property names in Java
     Gateway.chart_plotter.plotHistograms(pl.dumps([
         {
             "key": row.key,
