@@ -3,6 +3,7 @@ import os
 import sys
 from csv import QUOTE_NONNUMERIC
 import difflib
+import numpy as np
 import colorful as cf
 
 def sanitize_row(row):
@@ -103,6 +104,9 @@ def sanitize_and_compare_csv(df, ref_filename):
 def _assert(condition, message):
     if not condition:
         raise Exception("Assertion failed on: " + message)
+
+def _assert_sequential_index(df):
+    _assert((df.index.values == np.arange(len(df))).all(), "DataFrame index should be sequential integers, starting from 0")
 
 def run_tests(locals):
     outcomes = dict()
