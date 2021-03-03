@@ -68,7 +68,7 @@ void cBoolParImpl::setBoolValue(bool b)
 
 void cBoolParImpl::setIntValue(intpar_t l)
 {
-    throw cRuntimeError(this, E_BADCAST, "integer", "double");
+    throw cRuntimeError(this, E_BADCAST, "integer", "bool");
 }
 
 void cBoolParImpl::setDoubleValue(double d)
