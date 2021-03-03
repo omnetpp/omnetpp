@@ -118,6 +118,11 @@ class SIM_API cValue
     Type getType() const  {return type;}
 
     /**
+     * Returns the value type as string.
+     */
+    const char *getTypeName() const  {return getTypeName(type);}
+
+    /**
      * Returns the given type as a string.
      */
     static const char *getTypeName(Type t);

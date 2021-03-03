@@ -37,7 +37,6 @@ enum ErrorCode
     E_CUSTOM,
     E_DIMLESS,
     E_EBADARGS,
-    E_ECANTCAST,
     E_ENDEDOK,
     E_ENDSIM,
     E_ENOPARENT,

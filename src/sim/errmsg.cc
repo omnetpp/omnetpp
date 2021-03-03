@@ -37,7 +37,6 @@ const char *cErrorMessages::get(ErrorCode e)
         case E_CUSTOM:    return "%s";
         case E_DIMLESS:   return "'%s' expects dimensionless arguments";
         case E_EBADARGS:  return "Wrong argument type for '%s'";
-        case E_ECANTCAST: return "Cannot cast result of expression to %s";
         case E_ENDEDOK:   return "No more events, simulation completed";
         case E_ENDSIM:    return "Simulation stopped with endSimulation()";
         case E_ENOPARENT: return "Expression cannot be interpreted on network level";

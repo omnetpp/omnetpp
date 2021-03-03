@@ -138,7 +138,7 @@ cObject *cObjectParImpl::objectValue(cComponent *context) const
     else {
         cValue v = evaluate(expr, context);
         if (v.type != cValue::OBJECT)
-            throw cRuntimeError(E_ECANTCAST, "object");
+            throw cRuntimeError(E_BADCAST, v.getTypeName(), "object");
 
         cObjectParImpl *mutableThis = const_cast<cObjectParImpl*>(this);
         mutableThis->doSetObject(v.objectValue());

@@ -98,7 +98,7 @@ bool cBoolParImpl::boolValue(cComponent *context) const
     else {
         cValue v = evaluate(expr, context);
         if (v.type != cValue::BOOL)
-            throw cRuntimeError(E_ECANTCAST, "bool");
+            throw cRuntimeError(E_BADCAST, v.getTypeName(), "bool");
         return v.boolValue();
     }
 }

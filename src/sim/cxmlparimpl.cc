@@ -133,7 +133,7 @@ cXMLElement *cXMLParImpl::xmlValue(cComponent *context) const
     else {
         cValue v = evaluate(expr, context);
         if (v.type != cValue::OBJECT)
-            throw cRuntimeError(E_ECANTCAST, "XML");
+            throw cRuntimeError(E_BADCAST, v.getTypeName(), "XML");
         return v.xmlValue();
     }
 }

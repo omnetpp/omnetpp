@@ -121,7 +121,7 @@ std::string cStringParImpl::stdstringValue(cComponent *context) const
     else {
         cValue v = evaluate(expr, context);
         if (v.type != cValue::STRING)
-            throw cRuntimeError(E_ECANTCAST, "string");
+            throw cRuntimeError(E_BADCAST, v.getTypeName(), "string");
         return v.stringValue();
     }
 }
