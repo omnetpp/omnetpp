@@ -55,12 +55,12 @@ void cDoubleParImpl::operator=(const cDoubleParImpl& other)
 
 void cDoubleParImpl::setBoolValue(bool b)
 {
-    throw cRuntimeError(this, E_BADCAST, "bool", "double");
+    throw cRuntimeError(this, E_BADASSIGN, "bool", "double");
 }
 
 void cDoubleParImpl::setIntValue(intval_t l)
 {
-    throw cRuntimeError(this, E_BADCAST, "integer", "double");
+    throw cRuntimeError(this, E_BADASSIGN, "integer", "double");
 }
 
 void cDoubleParImpl::setDoubleValue(double d)
@@ -72,17 +72,17 @@ void cDoubleParImpl::setDoubleValue(double d)
 
 void cDoubleParImpl::setStringValue(const char *s)
 {
-    throw cRuntimeError(this, E_BADCAST, "string", "double");
+    throw cRuntimeError(this, E_BADASSIGN, "string", "double");
 }
 
 void cDoubleParImpl::setObjectValue(cObject *object)
 {
-    throw cRuntimeError(this, E_BADCAST, "object", "double");
+    throw cRuntimeError(this, E_BADASSIGN, "object", "double");
 }
 
 void cDoubleParImpl::setXMLValue(cXMLElement *node)
 {
-    throw cRuntimeError(this, E_BADCAST, "XML", "double");
+    throw cRuntimeError(this, E_BADASSIGN, "XML", "double");
 }
 
 void cDoubleParImpl::setExpression(cExpression *e)

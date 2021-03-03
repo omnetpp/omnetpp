@@ -48,7 +48,7 @@ void cValue::operator=(const cValue& other)
 const char *cValue::getTypeName(Type t)
 {
     switch (t) {
-        case UNDEF:  return "undef";
+        case UNDEF:  return "undefined";
         case BOOL:   return "bool";
         case INT:    return "integer";
         case DOUBLE: return "double";

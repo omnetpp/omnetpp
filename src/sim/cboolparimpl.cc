@@ -58,27 +58,27 @@ void cBoolParImpl::setBoolValue(bool b)
 
 void cBoolParImpl::setIntValue(intval_t l)
 {
-    throw cRuntimeError(this, E_BADCAST, "integer", "double");
+    throw cRuntimeError(this, E_BADASSIGN, "integer", "double");
 }
 
 void cBoolParImpl::setDoubleValue(double d)
 {
-    throw cRuntimeError(this, E_BADCAST, "double", "bool");
+    throw cRuntimeError(this, E_BADASSIGN, "double", "bool");
 }
 
 void cBoolParImpl::setStringValue(const char *s)
 {
-    throw cRuntimeError(this, E_BADCAST, "string", "bool");
+    throw cRuntimeError(this, E_BADASSIGN, "string", "bool");
 }
 
 void cBoolParImpl::setObjectValue(cObject *object)
 {
-    throw cRuntimeError(this, E_BADCAST, "object", "bool");
+    throw cRuntimeError(this, E_BADASSIGN, "object", "bool");
 }
 
 void cBoolParImpl::setXMLValue(cXMLElement *node)
 {
-    throw cRuntimeError(this, E_BADCAST, "XML", "bool");
+    throw cRuntimeError(this, E_BADASSIGN, "XML", "bool");
 }
 
 void cBoolParImpl::setExpression(cExpression *e)

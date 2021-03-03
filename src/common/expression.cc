@@ -59,7 +59,7 @@ const char *Expression::AstNode::typeName(Type type)
         case AstNode::OBJECT: return "object";
         case AstNode::ARRAY: return "array";
         case AstNode::KEYVALUE: return "key-value";
-        case AstNode::UNDEF: return "undef";
+        case AstNode::UNDEF: return "undefined";
 	default: throw opp_runtime_error("Unrecognized enum value %d", type);
     }
 }

@@ -28,6 +28,7 @@ const char *cErrorMessages::get(ErrorCode e)
         case E_OK:        return "No error";
         case E_BACKSCHED: return "Cannot schedule message (%s)%s to the past, t=%g";
         case E_BADCAST:   return "Cannot cast from type %s to %s";
+        case E_BADASSIGN: return "Cannot assign value of type %s to parameter of type %s";
         case E_BADEXP:    return "Badly formed Reverse Polish expression";
         case E_BADINIT:   return "setValue(): Type %s does not match arg types";
         case E_CANCEL:    return "Simulation cancelled";

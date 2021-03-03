@@ -66,22 +66,22 @@ void cObjectParImpl::forEachChild(cVisitor *v, cComponent *context)
 
 void cObjectParImpl::setBoolValue(bool b)
 {
-    throw cRuntimeError(this, E_BADCAST, "bool", "object");
+    throw cRuntimeError(this, E_BADASSIGN, "bool", "object");
 }
 
 void cObjectParImpl::setIntValue(intval_t l)
 {
-    throw cRuntimeError(this, E_BADCAST, "integer", "object");
+    throw cRuntimeError(this, E_BADASSIGN, "integer", "object");
 }
 
 void cObjectParImpl::setDoubleValue(double d)
 {
-    throw cRuntimeError(this, E_BADCAST, "double", "object");
+    throw cRuntimeError(this, E_BADASSIGN, "double", "object");
 }
 
 void cObjectParImpl::setStringValue(const char *s)
 {
-    throw cRuntimeError(this, E_BADCAST, "string", "object");
+    throw cRuntimeError(this, E_BADASSIGN, "string", "object");
 }
 
 void cObjectParImpl::setObjectValue(cObject *object)
@@ -93,7 +93,7 @@ void cObjectParImpl::setObjectValue(cObject *object)
 
 void cObjectParImpl::setXMLValue(cXMLElement *node)
 {
-    throw cRuntimeError(this, E_BADCAST, "XML", "object");
+    throw cRuntimeError(this, E_BADASSIGN, "XML", "object");
 }
 
 void cObjectParImpl::setExpression(cExpression *e)

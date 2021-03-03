@@ -47,17 +47,17 @@ void cStringParImpl::operator=(const cStringParImpl& other)
 
 void cStringParImpl::setBoolValue(bool b)
 {
-    throw cRuntimeError(this, E_BADCAST, "bool", "string");
+    throw cRuntimeError(this, E_BADASSIGN, "bool", "string");
 }
 
 void cStringParImpl::setIntValue(intval_t l)
 {
-    throw cRuntimeError(this, E_BADCAST, "integer", "string");
+    throw cRuntimeError(this, E_BADASSIGN, "integer", "string");
 }
 
 void cStringParImpl::setDoubleValue(double d)
 {
-    throw cRuntimeError(this, E_BADCAST, "double", "string");
+    throw cRuntimeError(this, E_BADASSIGN, "double", "string");
 }
 
 void cStringParImpl::setStringValue(const char *s)
@@ -69,12 +69,12 @@ void cStringParImpl::setStringValue(const char *s)
 
 void cStringParImpl::setObjectValue(cObject *object)
 {
-    throw cRuntimeError(this, E_BADCAST, "object", "string");
+    throw cRuntimeError(this, E_BADASSIGN, "object", "string");
 }
 
 void cStringParImpl::setXMLValue(cXMLElement *node)
 {
-    throw cRuntimeError(this, E_BADCAST, "XML", "string");
+    throw cRuntimeError(this, E_BADASSIGN, "XML", "string");
 }
 
 void cStringParImpl::setExpression(cExpression *e)

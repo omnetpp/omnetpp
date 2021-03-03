@@ -28,6 +28,7 @@ enum ErrorCode
     E_OK = 0,  // E_OK must have zero numeric value
     E_BACKSCHED,
     E_BADCAST,
+    E_BADASSIGN,
     E_BADEXP,
     E_BADINIT,
     E_CANCEL,

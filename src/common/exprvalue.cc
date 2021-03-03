@@ -59,7 +59,7 @@ void ExprValue::operator=(ExprValue&& other)
 const char *ExprValue::getTypeName(Type t)
 {
     switch (t) {
-        case UNDEF:  return "undef";
+        case UNDEF:  return "undefined";
         case BOOL:   return "bool";
         case INT:    return "integer";
         case DOUBLE: return "double";

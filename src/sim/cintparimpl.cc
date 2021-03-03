@@ -53,7 +53,7 @@ void cIntParImpl::operator=(const cIntParImpl& other)
 
 void cIntParImpl::setBoolValue(bool b)
 {
-    throw cRuntimeError(this, E_BADCAST, "bool", "integer");
+    throw cRuntimeError(this, E_BADASSIGN, "bool", "integer");
 }
 
 void cIntParImpl::setIntValue(intval_t l)
@@ -65,22 +65,22 @@ void cIntParImpl::setIntValue(intval_t l)
 
 void cIntParImpl::setDoubleValue(double d)
 {
-    throw cRuntimeError(this, E_BADCAST, "double", "integer");
+    throw cRuntimeError(this, E_BADASSIGN, "double", "integer");
 }
 
 void cIntParImpl::setStringValue(const char *s)
 {
-    throw cRuntimeError(this, E_BADCAST, "string", "integer");
+    throw cRuntimeError(this, E_BADASSIGN, "string", "integer");
 }
 
 void cIntParImpl::setObjectValue(cObject *node)
 {
-    throw cRuntimeError(this, E_BADCAST, "object", "integer");
+    throw cRuntimeError(this, E_BADASSIGN, "object", "integer");
 }
 
 void cIntParImpl::setXMLValue(cXMLElement *node)
 {
-    throw cRuntimeError(this, E_BADCAST, "XML", "integer");
+    throw cRuntimeError(this, E_BADASSIGN, "XML", "integer");
 }
 
 void cIntParImpl::setExpression(cExpression *e)

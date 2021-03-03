@@ -56,27 +56,27 @@ void cXMLParImpl::forEachChild(cVisitor *v, cComponent *context)
 
 void cXMLParImpl::setBoolValue(bool b)
 {
-    throw cRuntimeError(this, E_BADCAST, "bool", "XML");
+    throw cRuntimeError(this, E_BADASSIGN, "bool", "XML");
 }
 
 void cXMLParImpl::setIntValue(intval_t l)
 {
-    throw cRuntimeError(this, E_BADCAST, "integer", "XML");
+    throw cRuntimeError(this, E_BADASSIGN, "integer", "XML");
 }
 
 void cXMLParImpl::setDoubleValue(double d)
 {
-    throw cRuntimeError(this, E_BADCAST, "double", "XML");
+    throw cRuntimeError(this, E_BADASSIGN, "double", "XML");
 }
 
 void cXMLParImpl::setStringValue(const char *s)
 {
-    throw cRuntimeError(this, E_BADCAST, "string", "XML");
+    throw cRuntimeError(this, E_BADASSIGN, "string", "XML");
 }
 
 void cXMLParImpl::setObjectValue(cObject *object)
 {
-    throw cRuntimeError(this, E_BADCAST, "object", "XML");
+    throw cRuntimeError(this, E_BADASSIGN, "object", "XML");
 }
 
 void cXMLParImpl::setXMLValue(cXMLElement *node)
