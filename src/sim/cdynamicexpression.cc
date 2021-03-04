@@ -19,6 +19,8 @@
 #include "common/exception.h"
 #include "common/unitconversion.h"
 #include "omnetpp/cdynamicexpression.h"
+
+#include "ctemporaryowner.h"
 #include "omnetpp/cxmlelement.h"
 #include "omnetpp/cnedmathfunction.h"
 #include "omnetpp/cnedfunction.h"

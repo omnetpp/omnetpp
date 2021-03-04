@@ -1,5 +1,5 @@
 //==========================================================================
-//   COWNINGCONTEXTSWITCHER.H  - part of
+//   CTEMPORARYOWNER.H  - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_COWNINGCONTEXTSWITCHER_H
-#define __OMNETPP_COWNINGCONTEXTSWITCHER_H
+#ifndef __OMNETPP_CTEMPORARYOWNER_H
+#define __OMNETPP_CTEMPORARYOWNER_H
 
 #include "omnetpp/csoftowner.h"
 
@@ -31,13 +31,18 @@ class cOwningContextSwitcher
 
 class cTemporaryOwner : public cSoftOwner
 {
+  public:
+    enum class DtorMode {REPORT_AS_UNDISPOSED, DISPOSE, DROP, ASSERTNONE};
   private:
+    DtorMode mode;
     cSoftOwner *oldOwner;
   public:
-    cTemporaryOwner() : oldOwner(getOwningContext()) {setOwningContext(this);}
-    ~cTemporaryOwner() {if (oldOwner) setOwningContext(oldOwner);}
+    cTemporaryOwner(DtorMode mode) : mode(mode), oldOwner(getOwningContext()) {setOwningContext(this);}
+    ~cTemporaryOwner();
     void restoreOriginalOwner() {setOwningContext(oldOwner); oldOwner = nullptr;}
     void drop(cOwnedObject *obj) {cSoftOwner::drop(obj);}
+    DtorMode getDtorMode() const {return mode;}
+    void setDtorMode(DtorMode mode) {this->mode = mode;}
 };
 
 }  // namespace omnetpp

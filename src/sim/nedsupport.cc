@@ -28,8 +28,8 @@
 #include "omnetpp/cclassdescriptor.h"
 #include "omnetpp/cvaluearray.h"
 #include "omnetpp/cvaluemap.h"
-#include "cowningcontextswitcher.h"
 #include "nedsupport.h"
+#include "ctemporaryowner.h"
 
 using namespace omnetpp::common;
 
@@ -414,7 +414,7 @@ ExprValue ObjectNode::evaluate(Context *context_) const
     ASSERT(children.size() == fieldNames.size());
     if (typeName.empty()) {
         cValueMap *object = new cValueMap();
-        cTemporaryOwner tmp;
+        cTemporaryOwner tmp(cTemporaryOwner::DtorMode::ASSERTNONE);
         object->setName("object");
         for (int i = 0; i < fieldNames.size(); i++)
             object->set(fieldNames[i].c_str(), makeNedValue(children[i]->tryEvaluate(context_)));
@@ -423,7 +423,7 @@ ExprValue ObjectNode::evaluate(Context *context_) const
     }
     else {
         cObject *object = createOne(typeName.c_str());
-        cTemporaryOwner tmp;
+        cTemporaryOwner tmp(cTemporaryOwner::DtorMode::ASSERTNONE);
         cClassDescriptor *desc = object->getDescriptor();
         for (int i = 0; i < fieldNames.size(); i++)
             setField(desc, object, fieldNames[i].c_str(), makeNedValue(children[i]->tryEvaluate(context_)));
@@ -525,7 +525,7 @@ ExprValue ArrayNode::evaluate(Context *context_) const
     ASSERT(context != nullptr);
     cValueArray *array = new cValueArray();
     array->setName("array");
-    cTemporaryOwner tmp;
+    cTemporaryOwner tmp(cTemporaryOwner::DtorMode::ASSERTNONE);
     for (ExprNode *child : children)
         array->add(makeNedValue(child->tryEvaluate(context_)));
     array->takeAllObjectsFrom(&tmp);

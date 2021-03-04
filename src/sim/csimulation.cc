@@ -31,6 +31,8 @@
 #include "omnetpp/cpacket.h"
 #include "omnetpp/cchannel.h"
 #include "omnetpp/csimulation.h"
+
+#include "ctemporaryowner.h"
 #include "omnetpp/cscheduler.h"
 #include "omnetpp/ceventheap.h"
 #include "omnetpp/cenvir.h"
@@ -44,7 +46,6 @@
 #include "omnetpp/ccoroutine.h"
 #include "omnetpp/clifecyclelistener.h"
 #include "omnetpp/platdep/platmisc.h"  // for DEBUG_TRAP
-#include "cowningcontextswitcher.h"
 
 #ifdef WITH_PARSIM
 #include "omnetpp/ccommbuffer.h"
