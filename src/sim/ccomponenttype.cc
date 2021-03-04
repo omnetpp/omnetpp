@@ -301,7 +301,7 @@ cModule *cModuleType::create(const char *moduleName, cModule *parentModule, int 
 #else
     cModule *module = createModuleObject();
 #endif
-    tmp.yield();
+    tmp.restoreOriginalOwner();
     tmp.drop(module);
     module->takeAllObjectsFrom(&tmp);
 
@@ -421,7 +421,7 @@ cChannel *cChannelType::create(const char *name)
     // create channel object
     cTemporaryOwner tmp; // for collecting members of the new object
     cChannel *channel = createChannelObject();
-    tmp.yield();
+    tmp.restoreOriginalOwner();
     tmp.drop(channel);
     channel->takeAllObjectsFrom(&tmp);
 

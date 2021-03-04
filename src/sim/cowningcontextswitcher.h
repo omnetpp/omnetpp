@@ -36,7 +36,7 @@ class cTemporaryOwner : public cSoftOwner
   public:
     cTemporaryOwner() : oldOwner(getOwningContext()) {setOwningContext(this);}
     ~cTemporaryOwner() {if (oldOwner) setOwningContext(oldOwner);}
-    void yield() {setOwningContext(oldOwner); oldOwner = nullptr;}
+    void restoreOriginalOwner() {setOwningContext(oldOwner); oldOwner = nullptr;}
     void drop(cOwnedObject *obj) {cSoftOwner::drop(obj);}
 };
 
