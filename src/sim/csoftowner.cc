@@ -67,30 +67,16 @@ void cSoftOwner::construct()
 
 cSoftOwner::~cSoftOwner()
 {
-    if (getPerformFinalGC()) {
-        // delete all owned objects. One place we make use of this is behavior is
-        // when a simple module gets deleted -- there we have to delete all dynamically
-        // allocated objects held by the module. But: deletion has dangers,
-        // i.e. if we try to delete objects embedded in other objects/structs or
-        // arrays, it will crash mysteriously to the user -- so consider not deleting.
-        while (numObjs > 0)
-            delete objs[0];
-        delete[] objs;
-    }
-    else {
-        // experimental: do not delete objects (except cWatches), just print their names
-        for (int i = 0; i < numObjs; i++) {
-            if (dynamic_cast<cWatchBase *>(objs[i]))
-                delete objs[i--];  // "i--" used because delete will move last item to position i
-            else {
-                getEnvir()->undisposedObject(objs[i]);
-                objs[i]->owner = nullptr; // as its current owner (this) is being deleted
-            }
+    // report objects as undisposed, except watches
+    for (int i = 0; i < numObjs; i++) {
+        if (dynamic_cast<cWatchBase *>(objs[i]))
+            delete objs[i--];  // "i--" used because delete will move last item to position i
+        else {
+            getEnvir()->undisposedObject(objs[i]);
+            objs[i]->owner = nullptr; // as its current owner (this) is being deleted
         }
-
-        // we can free up the pointer array itself though
-        delete[] objs;
     }
+    delete[] objs;
 }
 
 void cSoftOwner::doInsert(cOwnedObject *obj)

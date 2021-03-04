@@ -14,11 +14,6 @@ namespace queueing {
 
 Define_Module(Fork);
 
-void Fork::initialize()
-{
-    setPerformFinalGC(true);
-}
-
 void Fork::handleMessage(cMessage *msg)
 {
     Job *job = check_and_cast<Job *>(msg);
@@ -42,6 +37,13 @@ void Fork::handleMessage(cMessage *msg)
     // Note: we cannot delete the parent job, as it will be needed
     // in the Join module. It'll stay pending in this module until
     // Join takes it from us.
+}
+
+Fork::~Fork()
+{
+    // delete remaining parent jobs
+    while (getNumOwnedObjects() > 0)
+        delete getOwnedObject(0);
 }
 
 }; // namespace
