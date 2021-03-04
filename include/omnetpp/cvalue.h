@@ -32,6 +32,12 @@ class cDynamicExpression;
  *
  * See notes below.
  *
+ * <b>Object values</b>
+ *
+ * With type==OBJECT, cValue only remembers the object's pointer, and does
+ * nothing extra on top of that. The object's ownership is unaffected,
+ * and cValue will never delete or clone the object.
+ *
  * <b>Measurement unit strings:</b>
  *
  * For performance reasons, the functions that store a measurement unit
@@ -259,8 +265,10 @@ class SIM_API cValue
     void set(const std::string& s) {type=STRING; this->s=s;}
 
     /**
-     * Sets the value to the given cXMLElement.
-     */
+     * Sets the value to the given object. Note that cValue solely stores
+     * the object's pointer, and does nothing extra. The object's ownership is
+     * unaffected, and cValue will never delete or clone the object.
+ *     */
     void set(cObject *obj) {type=OBJECT; this->obj=obj;}
 
     /**
