@@ -224,12 +224,31 @@ std::string cDynamicExpression::str() const
     return expression->str();
 }
 
+inline cOwnedObject *ownedObjectIn(cValue& value)
+{
+    if (value.getType() == cValue::OBJECT) {
+        cObject *obj = value.objectValue();
+        if (obj && obj->isOwnedObject())
+            return (cOwnedObject*)obj;
+    }
+    return nullptr;
+}
+
 cValue cDynamicExpression::evaluate(Context *context) const
 {
-    omnetpp::common::expression::Context tmp;
-    tmp.simContext = context;
-    ExprValue value = expression->evaluate(&tmp);
-    return makeNedValue(value);
+    // collect objects created during expression evaluation
+    // and delete all of them on leaving this function (except the result, see later)
+    cTemporaryOwner tmpOwner(cTemporaryOwner::DtorMode::DISPOSE);
+
+    omnetpp::common::expression::Context exprContext;
+    exprContext.simContext = context;
+    cValue value = makeNedValue(expression->evaluate(&exprContext)); // evaluate expr in the given context
+
+    tmpOwner.restoreOriginalOwner();
+    if (cOwnedObject *obj = ownedObjectIn(value))
+        tmpOwner.drop(obj); // don't let tmpOwner delete the object we are returning
+
+    return value;
 }
 
 int cDynamicExpression::compare(const cExpression *other) const
