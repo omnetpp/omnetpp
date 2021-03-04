@@ -21,6 +21,7 @@
 #include "omnetpp/cstringtokenizer.h"
 #include "omnetpp/cdynamicexpression.h"
 #include "omnetpp/ccomponent.h"
+#include "ctemporaryowner.h"
 
 namespace omnetpp {
 
@@ -103,6 +104,7 @@ intval_t cIntParImpl::intValue(cComponent *context) const
     if ((flags & FL_ISEXPR) == 0)
         return val;
     else {
+        cTemporaryOwner tmp(cTemporaryOwner::DtorMode::DISPOSE); // eventually dispose of potential object result
         cValue v = evaluate(expr, context);
         return v.intValueInUnit(getUnit());
     }

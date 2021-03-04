@@ -21,6 +21,7 @@
 #include "omnetpp/cdynamicexpression.h"
 #include "omnetpp/ccomponent.h"
 #include "common/stringutil.h"
+#include "ctemporaryowner.h"
 
 using namespace omnetpp::common;
 
@@ -110,6 +111,7 @@ double cDoubleParImpl::doubleValue(cComponent *context) const
     if ((flags & FL_ISEXPR) == 0)
         return val;
     else {
+        cTemporaryOwner tmp(cTemporaryOwner::DtorMode::DISPOSE); // eventually dispose of potential object result
         cValue v = evaluate(expr, context);
         return v.doubleValueInUnit(getUnit()); // allows conversion from INT
     }

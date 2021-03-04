@@ -18,6 +18,7 @@
 #include "omnetpp/cstringparimpl.h"
 #include "omnetpp/cdynamicexpression.h"
 #include "omnetpp/ccomponent.h"
+#include "ctemporaryowner.h"
 
 using namespace omnetpp::common;
 
@@ -119,6 +120,7 @@ std::string cStringParImpl::stdstringValue(cComponent *context) const
     if ((flags & FL_ISEXPR) == 0)
         return val;
     else {
+        cTemporaryOwner tmp(cTemporaryOwner::DtorMode::DISPOSE); // eventually dispose of potential object result
         cValue v = evaluate(expr, context);
         if (v.type != cValue::STRING)
             throw cRuntimeError(E_BADCAST, v.getTypeName(), "string");

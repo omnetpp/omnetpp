@@ -19,6 +19,7 @@
 #include "omnetpp/cstringtokenizer.h"
 #include "omnetpp/cdynamicexpression.h"
 #include "omnetpp/ccomponent.h"
+#include "ctemporaryowner.h"
 
 namespace omnetpp {
 
@@ -96,6 +97,7 @@ bool cBoolParImpl::boolValue(cComponent *context) const
     if ((flags & FL_ISEXPR) == 0)
         return val;
     else {
+        cTemporaryOwner tmp(cTemporaryOwner::DtorMode::DISPOSE); // eventually dispose of potential object result
         cValue v = evaluate(expr, context);
         if (v.type != cValue::BOOL)
             throw cRuntimeError(E_BADCAST, v.getTypeName(), "bool");
