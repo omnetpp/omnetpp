@@ -183,7 +183,7 @@ std::string ExprValue::str() const
             else if (objectToString)
                 return objectToString(obj);
             else {
-                sprintf(buf, "0x%p", obj);
+                sprintf(buf, "(cObject*)%p", obj);
                 return buf;
             }
         default:
