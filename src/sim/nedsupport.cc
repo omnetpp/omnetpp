@@ -412,20 +412,18 @@ ExprValue NedObjectNode::evaluate(Context *context_) const
     ASSERT(children.size() == fieldNames.size());
     if (typeName.empty()) {
         cValueMap *object = new cValueMap();
-        cTemporaryOwner tmp(cTemporaryOwner::DtorMode::ASSERTNONE);
+        cTemporaryOwner tmp(cTemporaryOwner::DtorMode::DISPOSE); // dispose temp objects created during evaluation
         object->setName("object");
         for (int i = 0; i < fieldNames.size(); i++)
-            object->set(fieldNames[i].c_str(), makeNedValue(children[i]->tryEvaluate(context_)));
-        object->takeAllObjectsFrom(&tmp);
+            object->set(fieldNames[i].c_str(), makeNedValue(children[i]->tryEvaluate(context_))); // note: set() includes taking added cOwnedObject
         return object;
     }
     else {
         cObject *object = createOne(typeName.c_str());
-        cTemporaryOwner tmp(cTemporaryOwner::DtorMode::ASSERTNONE);
+        cTemporaryOwner tmp(cTemporaryOwner::DtorMode::DISPOSE); // dispose temp objects created during evaluation
         cClassDescriptor *desc = object->getDescriptor();
         for (int i = 0; i < fieldNames.size(); i++)
-            setField(desc, object, fieldNames[i].c_str(), makeNedValue(children[i]->tryEvaluate(context_)));
-        object->takeAllObjectsFrom(&tmp);
+            setField(desc, object, fieldNames[i].c_str(), makeNedValue(children[i]->tryEvaluate(context_))); // SHOULD include taking added cOwnedObjects
         return object;
     }
 }
@@ -505,10 +503,9 @@ ExprValue NedArrayNode::evaluate(Context *context_) const
 {
     cValueArray *array = new cValueArray();
     array->setName("array");
-    cTemporaryOwner tmp(cTemporaryOwner::DtorMode::ASSERTNONE);
+    cTemporaryOwner tmp(cTemporaryOwner::DtorMode::DISPOSE); // dispose temp objects created during evaluation
     for (ExprNode *child : children)
-        array->add(makeNedValue(child->tryEvaluate(context_)));
-    array->takeAllObjectsFrom(&tmp);
+        array->add(makeNedValue(child->tryEvaluate(context_))); // note: add() includes taking added cOwnedObject
     return ExprValue(array);
 }
 
