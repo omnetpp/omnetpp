@@ -86,6 +86,31 @@ public:
     virtual Precedence getPrecedence() const override {return ELEM;}
 };
 
+class COMMON_API ObjectNode : public NaryNode
+{
+  protected:
+    std::string typeName;
+    std::vector<std::string> fieldNames; // to be assigned from the child expressions
+  protected:
+    virtual void print(std::ostream& out, int spaciousness) const override;
+  public:
+    ObjectNode(const char *typeName, const std::vector<std::string>& fieldNames) : typeName(typeName), fieldNames(fieldNames) {}
+    virtual std::string getName() const override {return typeName;}
+    virtual Precedence getPrecedence() const override {return ELEM;}
+};
+
+class COMMON_API ArrayNode : public NaryNode
+{
+  protected:
+    virtual void print(std::ostream& out, int spaciousness) const override;
+  public:
+    ArrayNode() {}
+    virtual std::string getName() const override {return "array";}
+    virtual Precedence getPrecedence() const override {return ELEM;}
+};
+
+//---
+
 class COMMON_API LambdaVariableNode : public VariableNode {
 protected:
     std::function<ExprValue(Context*)> provider;

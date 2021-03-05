@@ -407,10 +407,8 @@ void SizeofIndexedSubmoduleGate::print(std::ostream& out, int spaciousness) cons
 
 //---
 
-ExprValue ObjectNode::evaluate(Context *context_) const
+ExprValue NedObjectNode::evaluate(Context *context_) const
 {
-    cExpression::Context *context = dynamic_cast<cExpression::Context*>(context_->simContext);
-    ASSERT(context != nullptr);
     ASSERT(children.size() == fieldNames.size());
     if (typeName.empty()) {
         cValueMap *object = new cValueMap();
@@ -432,7 +430,7 @@ ExprValue ObjectNode::evaluate(Context *context_) const
     }
 }
 
-void ObjectNode::setField(cClassDescriptor *desc, void *object, const char *fieldName, const cValue& value) const
+void NedObjectNode::setField(cClassDescriptor *desc, void *object, const char *fieldName, const cValue& value) const
 {
     int fieldIndex = desc->findField(fieldName);
     if (fieldIndex == -1)
@@ -454,7 +452,7 @@ void ObjectNode::setField(cClassDescriptor *desc, void *object, const char *fiel
     }
 }
 
-void ObjectNode::setFieldElement(cClassDescriptor *desc, void *object, const char *fieldName, int fieldIndex, int arrayIndex, const cValue& value) const
+void NedObjectNode::setFieldElement(cClassDescriptor *desc, void *object, const char *fieldName, int fieldIndex, int arrayIndex, const cValue& value) const
 {
     bool isCompoundField = desc->getFieldIsCompound(fieldIndex);
     bool isPointerField = desc->getFieldIsPointer(fieldIndex);
@@ -492,7 +490,7 @@ void ObjectNode::setFieldElement(cClassDescriptor *desc, void *object, const cha
     }
 }
 
-void ObjectNode::fillObject(cClassDescriptor *desc, void *object, const cValueMap *valueMap) const
+void NedObjectNode::fillObject(cClassDescriptor *desc, void *object, const cValueMap *valueMap) const
 {
     for (auto it : valueMap->getFields()) {
         const char *fieldName = it.first.c_str();
@@ -501,28 +499,10 @@ void ObjectNode::fillObject(cClassDescriptor *desc, void *object, const cValueMa
     }
 }
 
-void ObjectNode::print(std::ostream& out, int spaciousness) const
-{
-    if (!typeName.empty())
-        out << getName() << " ";
-    out << "{ ";
-    std::vector<ExprNode*> children = getChildren();
-    ASSERT(children.size() == fieldNames.size());
-    for (size_t i = 0; i < children.size(); i++) {
-        if (i != 0)
-            out << (spaciousness >= LASTPREC-ARITHM_LAST ? ", " : ",");
-        out << fieldNames[i] << ": ";
-        printChild(out, children[i], spaciousness);
-    }
-    out << " }";
-}
-
 //---
 
-ExprValue ArrayNode::evaluate(Context *context_) const
+ExprValue NedArrayNode::evaluate(Context *context_) const
 {
-    cExpression::Context *context = dynamic_cast<cExpression::Context*>(context_->simContext);
-    ASSERT(context != nullptr);
     cValueArray *array = new cValueArray();
     array->setName("array");
     cTemporaryOwner tmp(cTemporaryOwner::DtorMode::ASSERTNONE);
@@ -530,18 +510,6 @@ ExprValue ArrayNode::evaluate(Context *context_) const
         array->add(makeNedValue(child->tryEvaluate(context_)));
     array->takeAllObjectsFrom(&tmp);
     return ExprValue(array);
-}
-
-void ArrayNode::print(std::ostream& out, int spaciousness) const
-{
-    out << "[ ";
-    std::vector<ExprNode*> children = getChildren();
-    for (size_t i = 0; i < children.size(); i++) {
-        if (i != 0)
-            out << (spaciousness >= LASTPREC-ARITHM_LAST ? ", " : ",");
-        printChild(out, children[i], spaciousness);
-    }
-    out << " ]";
 }
 
 //---
@@ -710,12 +678,12 @@ ExprNode *NedFunctionTranslator::createFunctionNode(const char *functionName, in
 
 ExprNode *NedFunctionTranslator::createObjectNode(const char *typeName, const std::vector<std::string>& fieldNames)
 {
-    return new ObjectNode(typeName, fieldNames);
+    return new NedObjectNode(typeName, fieldNames);
 }
 
 ExprNode *NedFunctionTranslator::createArrayNode(int argCount)
 {
-    return new ArrayNode();
+    return new NedArrayNode();
 }
 
 ExprNode *NedFunctionTranslator::createNedFunctionNode(cNedFunction *nedFunction, int argCount)

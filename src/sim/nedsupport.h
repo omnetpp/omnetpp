@@ -243,34 +243,26 @@ class SizeofIndexedSubmoduleGate : public UnaryNode
     virtual Precedence getPrecedence() const override {return ELEM;}
 };
 
-class ObjectNode : public NaryNode
+class NedObjectNode : public ObjectNode
 {
-  private:
-    std::string typeName;
-    std::vector<std::string> fieldNames; // to be assigned from the child expressions
   protected:
     virtual ExprValue evaluate(Context *context) const override;
+    // helpers for evaluate():
     virtual void setField(cClassDescriptor *desc, void *object, const char *fieldName, const cValue& value) const;
     virtual void setFieldElement(cClassDescriptor *desc, void *object, const char *fieldName, int fieldIndex, int arrayIndex, const cValue& value) const;
     virtual void fillObject(cClassDescriptor *desc, void *object, const cValueMap *map) const;
-    virtual void print(std::ostream& out, int spaciousness) const override;
   public:
-    ObjectNode(const char *typeName, const std::vector<std::string>& fieldNames) : typeName(typeName), fieldNames(fieldNames) {}
-    ObjectNode *dup() const override {return new ObjectNode(typeName.c_str(), fieldNames);}
-    virtual std::string getName() const override {return typeName;}
-    virtual Precedence getPrecedence() const override {return ELEM;}
+    NedObjectNode(const char *typeName, const std::vector<std::string>& fieldNames) : ObjectNode(typeName, fieldNames) {}
+    NedObjectNode *dup() const override {return new NedObjectNode(typeName.c_str(), fieldNames);}
 };
 
-class ArrayNode : public NaryNode
+class NedArrayNode : public ArrayNode
 {
   protected:
     virtual ExprValue evaluate(Context *context) const override;
-    virtual void print(std::ostream& out, int spaciousness) const override;
   public:
-    ArrayNode() {}
-    ArrayNode *dup() const override {return new ArrayNode();}
-    virtual std::string getName() const override {return "array";}
-    virtual Precedence getPrecedence() const override {return ELEM;}
+    NedArrayNode() {}
+    NedArrayNode *dup() const override {return new NedArrayNode();}
 };
 
 class NedOperatorTranslator : public Expression::AstTranslator

@@ -140,6 +140,40 @@ ExprValue VariableNode::evaluate(Context *context) const
     return getValue(context);
 }
 
+//---
+
+void ObjectNode::print(std::ostream& out, int spaciousness) const
+{
+    if (!typeName.empty())
+        out << getName() << " ";
+    out << "{ ";
+    std::vector<ExprNode*> children = getChildren();
+    Assert(children.size() == fieldNames.size());
+    for (size_t i = 0; i < children.size(); i++) {
+        if (i != 0)
+            out << (spaciousness >= LASTPREC-ARITHM_LAST ? ", " : ",");
+        out << fieldNames[i] << ": ";
+        printChild(out, children[i], spaciousness);
+    }
+    out << " }";
+}
+
+//---
+
+void ArrayNode::print(std::ostream& out, int spaciousness) const
+{
+    out << "[ ";
+    std::vector<ExprNode*> children = getChildren();
+    for (size_t i = 0; i < children.size(); i++) {
+        if (i != 0)
+            out << (spaciousness >= LASTPREC-ARITHM_LAST ? ", " : ",");
+        printChild(out, children[i], spaciousness);
+    }
+    out << " ]";
+}
+
+//---
+
 ExprValue IndexedVariableNode::evaluate(Context *context) const
 {
     ExprValue indexValue = child->tryEvaluate(context);
