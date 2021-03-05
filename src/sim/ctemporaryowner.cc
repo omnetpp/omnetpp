@@ -36,7 +36,7 @@ cTemporaryOwner::~cTemporaryOwner()
         }
         case DtorMode::DROP: {
             if (getOwningContext() == this)
-                getEnvir()->alert("%s: Destructor: Cannot drop objects because getOwningContext()==this", getClassAndFullName().c_str()); // and let base class fall back to printing UNDISPOSED
+                getEnvir()->alert((getClassAndFullName() + ": Destructor: Cannot drop objects because getOwningContext()==this").c_str()); // and let base class fall back to printing UNDISPOSED
             else {
                 while (getNumOwnedObjects() > 0)
                     drop(getOwnedObject(0));
@@ -45,7 +45,7 @@ cTemporaryOwner::~cTemporaryOwner()
         }
         case DtorMode::ASSERTNONE: {
             if (getNumOwnedObjects() > 0)
-                getEnvir()->printfmsg("%s: Destructor: getNumOwnedObjects() > 0, should be ==0", getClassAndFullName().c_str()); // and let base class fall back to printing UNDISPOSED
+                getEnvir()->alert((getClassAndFullName() + ": Destructor: getNumOwnedObjects() > 0, should be ==0").c_str()); // and let base class fall back to printing UNDISPOSED
             break;
         }
     }
