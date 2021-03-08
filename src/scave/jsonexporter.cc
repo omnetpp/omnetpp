@@ -71,7 +71,7 @@ string PythonExporterType::getXswtForm() const
             "         <button x:id='pythonFlavoured' text='Python-flavoured JSON' x:style='CHECK' selection='false'>\n"
             "           <layoutData x:class='GridData' horizontalSpan='2'/>\n"
             "         </button>\n"
-            "         <button x:id='useNumpy' text='Use NumPy arrays the output' x:style='CHECK' selection='true'>\n"
+            "         <button x:id='useNumpy' text='Use NumPy arrays in the output' x:style='CHECK' selection='true'>\n"
             "           <layoutData x:class='GridData' horizontalSpan='2' horizontalIndent='16'/>\n"
             "         </button>\n"
             "         <button x:id='skipResultAttributes' text='Skip result attributes' x:style='CHECK' selection='false'>\n"
