@@ -77,7 +77,7 @@ public class InputsPage extends FormEditorPage {
         getContent().setLayout(new GridLayout());
 
         Label label = new Label(getContent(), SWT.WRAP);
-        label.setText("Add or drag'n'drop result files (sca,vec) or folders that serve as input to the analysis. Wildcards (*,?) are accepted.");
+        label.setText("Add or drag'n'drop result files (sca,vec) or folders that serve as input to the analysis. Wildcards (**,*,?) are accepted.");
         label.setBackground(this.getBackground());
         label.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false));
 
