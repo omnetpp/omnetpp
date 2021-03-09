@@ -37,7 +37,7 @@ namespace omnetpp {
 // Register enums from the sim. kernel
 //
 #define cF cFigure
-Register_Enum(cPar::Type,         (cPar::BOOL, cPar::DOUBLE, cPar::LONG, cPar::STRING, cPar::XML));
+Register_Enum(cPar::Type,         (cPar::BOOL, cPar::DOUBLE, cPar::INT, cPar::STRING, cPar::OBJECT, cPar::XML));
 Register_Enum(cGate::Type,        (cGate::INPUT, cGate::OUTPUT, cGate::INOUT));
 Register_Enum(cHistogram::Mode,   (cHistogram::MODE_INTEGERS, cHistogram::MODE_REALS, cHistogram::MODE_AUTO));
 Register_Enum(cFigure::LineStyle, (cF::LINE_SOLID, cF::LINE_DOTTED, cF::LINE_DASHED));
