@@ -179,6 +179,7 @@ htmlfile_spec := $BASE.html
 :b/e	:\begin{ned}(\[.*?\])?:<pre class="ned">:</pre>:
 :b/e	:\begin{msg}(\[.*?\])?:<pre class="msg">:</pre>:
 :b/e	:\begin{cpp}(\[.*?\])?:<pre class="cpp">:</pre>:
+:b/e	:\begin{python}(\[.*?\])?:<pre class="cpp">:</pre>:
 :b/e	:\begin{inifile}(\[.*?\])?:<pre class="inifile">:</pre>:
 :b/e	:\begin{filelisting}(\[.*?\])?:<pre class="filelisting">:</pre>:
 :b/e	:\begin{commandline}(\[.*?\])?:<pre class="commandline">:</pre>:
