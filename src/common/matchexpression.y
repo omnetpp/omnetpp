@@ -33,6 +33,7 @@
 
 #define YYDEBUG 1           /* allow debugging */
 #define YYDEBUGGING_ON 0    /* turn on/off debugging */
+#define YYFPRINTF fprintf   /* prevent bison including stdio in our namespace */
 
 #if YYDEBUG != 0
 #define YYERROR_VERBOSE     /* more detailed error messages */
