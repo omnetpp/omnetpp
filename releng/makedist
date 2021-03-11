@@ -184,9 +184,7 @@ if [ "$BUILD_DOC" = "true" ]; then
   cp -r doc/parsim-api $DISTDIR/$what-$VERSION/doc/parsim-api
   cp -r doc/nedxml-api $DISTDIR/$what-$VERSION/doc/nedxml-api
   cp -r doc/manual $DISTDIR/$what-$VERSION/doc/manual
-  # cp -r doc/ide-customization-guide $DISTDIR/$what-$VERSION/doc/ide-customization-guide
-  # cp -r doc/ide-developersguide $DISTDIR/$what-$VERSION/doc/ide-developersguide
-  # cp -r doc/userguide $DISTDIR/$what-$VERSION/doc/userguide
+  cp -r doc/guides $DISTDIR/$what-$VERSION/doc/guides
   cp doc/SimulationManual.pdf $DISTDIR/$what-$VERSION/doc
   cp doc/InstallGuide.pdf $DISTDIR/$what-$VERSION/doc
   cp doc/UserGuide.pdf $DISTDIR/$what-$VERSION/doc
