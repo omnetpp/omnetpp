@@ -5,11 +5,11 @@ all: pdf html
 
 pdf:
 	(cd ..; make do-guides-pdf)
-	ln -s  ../../InstallGuide.pdf .
+	ln -sf  ../../InstallGuide.pdf .
 
 html:
 	(cd ..; make do-guides-html)
-	ln -s ../../guides/installguide/index.html InstallGuilde.html
+	ln -sf ../../guides/installguide/index.html InstallGuide.html
 
 clean:
 	(cd ..; make clean)
