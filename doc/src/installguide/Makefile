@@ -9,7 +9,7 @@ pdf:
 
 html:
 	(cd ..; make do-guides-html)
-	ln -s ../../html/installguide/index.html InstallGuilde.html
+	ln -s ../../guides/installguide/index.html InstallGuilde.html
 
 clean:
 	(cd ..; make clean)

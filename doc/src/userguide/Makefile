@@ -9,7 +9,7 @@ pdf:
 
 html:
 	(cd ..; make do-guides-html)
-	ln -s ../../html/userguide/index.html UserGuide.html
+	ln -s ../../guides/userguide/index.html UserGuide.html
 
 clean:
 	(cd ..; make clean)

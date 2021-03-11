@@ -20,9 +20,14 @@
 import os
 import sys
 import string
-import codecs
 sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath('_extensions'))
+sys.path.insert(0, os.path.abspath('_templates'))
 
+# Add any Sphinx extension module names here, as strings. They can be
+# extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
+# ones.
+extensions = ['sphinx.ext.ifconfig', 'omnetpp.sphinx']
 
 # -- Project information -----------------------------------------------------
 
@@ -37,7 +42,7 @@ copyright = '1992-2021, András Varga and OpenSim Ltd.'
 author = 'OpenSim Ltd'
 release = version
 
-rst_replacements = {
+opp_replacements = {
     "|omnet++|" : project,
     "|omnetpp|" : what,
     "|version|" : version,
@@ -46,11 +51,6 @@ rst_replacements = {
 }
 
 # -- General configuration ---------------------------------------------------
-
-# Add any Sphinx extension module names here, as strings. They can be
-# extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
-# ones.
-extensions = ['sphinx.ext.ifconfig']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -113,6 +113,9 @@ html_theme_options = {
     'globaltoc_includehidden': False,
 }
 
+# -- Options for Eclipse help output --------------------------------------------
+eclipsehelp_basedir = 'content'
+
 # -- Options for LaTeX/PDF output -----------------------------------------------
 latex_engine = 'pdflatex'
 
@@ -160,16 +163,7 @@ smart_quotes = False
 
 #######################################################xxx
 # code customizations
+from sphinx.application import Sphinx
 
-# Global replacement support (required because |xxx| replacement does not work inside inline blocks)
-# Note that this replacement does not work on files read by ..include directives
-def globalReplace(app, docname, source):
-    result = source[0]
-    for key in app.config.rst_replacements:
-        result = result.replace(key, app.config.rst_replacements[key])
-    source[0] = result
-
-def setup(app):
-   app.add_config_value('rst_replacements', {}, True)
-   app.add_config_value('what', 'omnetpp', 'env')
-   app.connect('source-read', globalReplace)
+def setup(app: Sphinx):
+    app.add_config_value('what', 'omnetpp', 'env')

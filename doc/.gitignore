@@ -1,6 +1,7 @@
 *.pdf
 *.htm
 *.html
+*.pyc
 /guides/
 /manual/
 /installguide/
