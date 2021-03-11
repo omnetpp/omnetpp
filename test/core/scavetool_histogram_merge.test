@@ -1,0 +1,21 @@
+%description:
+Test merging hist bins with limited precision
+
+%file: input.sca
+version 2
+run hist_bin_merge_test
+statistic test_module test_hist
+bin	-inf	0
+bin	0.001	2
+bin	0.001	1
+bin	0.002	0
+
+%prerun-command: rm -f output.sca
+%testprog: opp_scavetool x input.sca -o output.sca
+
+%contains-regex: output.sca
+.*
+bin	-inf	0
+bin	0.001	3
+bin	0.002	0
+.*

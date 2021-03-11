@@ -55,8 +55,13 @@ class COMMON_API Histogram {
 
 inline void Histogram::addBin(double lowerBound, double count)
 {
-    Assert(bins.empty() || lowerBound > bins.back().lowerBound); // preserve ordering
-    bins.push_back(Bin { lowerBound, count} );
+    if (!bins.empty())
+        Assert(lowerBound >= bins.back().lowerBound); // preserve ordering
+    if (!bins.empty() && lowerBound == bins.back().lowerBound)
+        bins.back().count += count;
+    else
+        bins.push_back(Bin { lowerBound, count} );
+
 }
 
 inline void Histogram::collect(double value, double weight)
