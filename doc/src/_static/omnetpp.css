@@ -1,1 +1,44 @@
 /* customizations */
+
+.figure.align-default { text-align: center; display: block; margin-left: auto; margin-right: auto; }
+
+/* inline literal styling */
+code.literal {
+    font-size: 0.9rem;
+    margin-left: 0px;
+    margin-right: 0px;
+    padding-left: 2px;
+    padding-right: 2px;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 2px;
+    text-decoration: none;
+    font-family: monospace;
+}
+
+code.literal-cpp { color: darkblue; }
+code.literal-ini { color: darkorange; }
+code.literal-ned { color: darkgreen; }
+code.literal-msg { color: purple; }
+
+/* code block higlighter backgrounds */
+.highlight-cpp div.highlight { background-color: #e6f3ff; border-left: .2rem solid lightblue;  }
+.highlight-ini div.highlight { background-color: #fef5d6; border-left: .2rem solid peru;  }
+.highlight-ned div.highlight { background-color: #eeffe4; border-left: .2rem solid darkseagreen; }
+.highlight-msg div.highlight { background-color: #fcf5ff; border-left: .2rem solid mediumpurple;  }
+
+div.highlight { 
+    border-radius: 0.1rem; 
+    box-shadow: 0 2px 2px 0 rgb(0 0 0 / 14%), 0 1px 5px 0 rgb(0 0 0 / 12%), 0 3px 1px -2px rgb(0 0 0 / 20%);
+}
+
+/* disable the extra bordering of compound keys */
+.kbd.compound {
+    border: none;
+    background-color: none;
+    box-shadow: none;
+    font-size: 100%;
+}
+
+p.caption {
+    margin-top: 0;
+}

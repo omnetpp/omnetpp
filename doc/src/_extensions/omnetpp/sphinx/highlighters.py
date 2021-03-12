@@ -16,9 +16,6 @@ from pygments.lexers.c_cpp import CLexer, CppLexer
 from pygments.lexer import RegexLexer, include, bygroups, using, this, inherit, default, words
 from pygments.token import Name, Keyword, Comment, Text, Operator, String, Number, Punctuation, Error
 
-# The name of the Pygments (syntax highlighting) style to use.
-pygments_style = "default"
-
 #####
 class NedLexer(RegexLexer):
     name = 'ned'

@@ -63,6 +63,8 @@ exclude_patterns = ['prolog.rst']
 # Global definitions.
 rst_prolog = open("prolog.rst").read()
 
+# The name of the Pygments (syntax highlighting) style to use.
+pygments_style = "lovelace"
 
 # -- Options for HTML output -------------------------------------------------
 
