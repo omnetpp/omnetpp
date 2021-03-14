@@ -1193,6 +1193,15 @@ public class ScaveEditor extends MultiPageEditorPartExt
 
         if (contentOutlinePage != null)
             contentOutlinePage.refresh();
+
+        for (Iterator<PropertySheetPage> i = propertySheetPages.iterator(); i.hasNext();) {
+            PropertySheetPage propertySheetPage = i.next();
+            if (propertySheetPage.getControl() == null || propertySheetPage.getControl().isDisposed())
+                i.remove();
+            else
+                propertySheetPage.refresh();
+        }
+
     }
 
     @Override

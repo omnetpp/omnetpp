@@ -11,17 +11,18 @@ import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.IPropertySourceProvider;
 import org.omnetpp.common.properties.PropertySource;
 import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model2.ChartLine;
 import org.omnetpp.scave.model2.ResultItemRef;
 
 /**
- * Provides properties of scave model objects and charts.
+ * Provides properties of Scave model objects and charts.
  *
  * @author tomi
  */
 public class ScavePropertySourceProvider implements IPropertySourceProvider {
 
-    ResultFileManager manager;
+    private ResultFileManager manager;
 
     public ScavePropertySourceProvider(ResultFileManager manager) {
         this.manager = manager;
@@ -31,8 +32,8 @@ public class ScavePropertySourceProvider implements IPropertySourceProvider {
     public IPropertySource getPropertySource(final Object object) {
         if (object instanceof PropertySource)
             return (PropertySource)object;
-//        else if (object instanceof Chart)
-//            return nuPlotProperties.createPropertySource((Chart)object, ScaveEditor.getActiveScaveCommandStack());
+        else if (object instanceof Chart)
+            return new ChartPropertySource((Chart)object);
         else if (object instanceof ChartLine) {
             ChartLine lineID = (ChartLine)object;
             // TODO
