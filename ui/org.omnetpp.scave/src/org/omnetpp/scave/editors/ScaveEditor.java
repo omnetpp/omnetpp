@@ -11,12 +11,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -88,13 +86,11 @@ import org.eclipse.ui.dialogs.ListDialog;
 import org.eclipse.ui.dialogs.SaveAsDialog;
 import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.FileEditorInput;
-import org.eclipse.ui.views.contentoutline.ContentOutline;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySheetEntry;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
-import org.eclipse.ui.views.properties.PropertySheet;
 import org.eclipse.ui.views.properties.PropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheetSorter;
 import org.omnetpp.common.Debug;
@@ -128,11 +124,8 @@ import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model.ModelChangeEvent;
 import org.omnetpp.scave.model.ModelObject;
-import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.commands.AddInputFileCommand;
 import org.omnetpp.scave.model.commands.CommandStack;
-import org.omnetpp.scave.model.commands.CommandStackListener;
-import org.omnetpp.scave.model.commands.ICommand;
 import org.omnetpp.scave.model.commands.SetChartContentsCommand;
 import org.omnetpp.scave.model2.ResultItemRef;
 import org.omnetpp.scave.model2.ScaveModelUtil;
@@ -224,15 +217,6 @@ public class ScaveEditor extends MultiPageEditorPartExt
                 if (activeChartScriptEditor != null)
                     activeChartScriptEditor.pageActivated();
             }
-            if (p instanceof ContentOutline) {
-                if (((ContentOutline) p).getCurrentPage() == contentOutlinePage) {
-                    //getActionBarContributor().setActiveEditor(ScaveEditor.this);
-                }
-            } else if (p instanceof PropertySheet) {
-                if (propertySheetPages.contains(((PropertySheet) p).getCurrentPage())) {
-                    //getActionBarContributor().setActiveEditor(ScaveEditor.this);
-                }
-            }
         }
 
         public void partBroughtToTop(IWorkbenchPart p) {
@@ -249,49 +233,6 @@ public class ScaveEditor extends MultiPageEditorPartExt
         }
 
         public void partOpened(IWorkbenchPart p) {
-        }
-    };
-
-    // TODO: do this locally in each page
-    CommandStackListener commandStackListener = new CommandStackListener() {
-        @Override
-        public void commandStackChanged(CommandStack commandStack) {
-            getContainer().getDisplay().asyncExec(new Runnable() {
-                @Override
-                public void run() {
-                    firePropertyChange(IEditorPart.PROP_DIRTY);
-
-                    actions.updateActions();
-
-                    // Try to select the affected objects.
-                    //
-                    ICommand mostRecentCommand = commandStack.getMostRecentCommand();
-                    if (mostRecentCommand != null) {
-                        Collection<ModelObject> affectedObjects = mostRecentCommand.getAffectedObjects();
-
-                        Set<ModelObject> selection = new HashSet<ModelObject>();
-
-                        for (ModelObject obj : affectedObjects) {
-                            if (obj instanceof Property)
-                                selection.add(obj.getParent());
-                            else if (obj instanceof Charts || obj instanceof Inputs)
-                                ; // skip
-                            else
-                                selection.add(obj);
-                        }
-
-                        setSelectionToViewer(selection);
-                    }
-                    for (Iterator<PropertySheetPage> i = propertySheetPages.iterator(); i.hasNext();) {
-                        PropertySheetPage propertySheetPage = i.next();
-                        if (propertySheetPage.getControl().isDisposed()) {
-                            i.remove();
-                        } else {
-                            propertySheetPage.refresh();
-                        }
-                    }
-                }
-            });
         }
     };
 
@@ -616,12 +557,6 @@ public class ScaveEditor extends MultiPageEditorPartExt
     public IPropertySheetPage getPropertySheetPage() {
 
         PropertySheetPage propertySheetPage = new PropertySheetPage() {
-//            @Override
-//            public void setSelectionToViewer(List<?> selection) {
-//                ScaveEditor.this.setSelectionToViewer(selection);
-//                ScaveEditor.this.setFocus();
-//            }
-
             // this is a constructor fragment --Andras
             {
                 // turn off sorting for our INonsortablePropertyDescriptors
@@ -650,10 +585,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
                         selection = new StructuredSelection(resultItemRef);
                     }
                 }
-                else if (selection instanceof StructuredSelection) {
-                    StructuredSelection structured = (StructuredSelection)selection;
-                    structured.toList();
-                }
+
                 super.selectionChanged(part, selection);
             }
         };
@@ -1223,7 +1155,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
         actions.updateActions();
     }
 
-    String getPageId(FormEditorPage page) {
+    public String getPageId(FormEditorPage page) {
         if (page == null)
             return null;
         else if (page.equals(inputsPage))
@@ -1249,7 +1181,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
     }
 
     // TODO merge the one below into this one?
-    FormEditorPage restoreFixedPage(String pageId) {
+    public FormEditorPage restoreFixedPage(String pageId) {
         if (pageId == null)
             return null;
         if (pageId.equals("Inputs")) {
@@ -1267,7 +1199,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
     }
 
     // TODO merge with the one above, as a last else clause?
-    ChartScriptEditor restoreEditor(String pageId) {
+    private ChartScriptEditor restoreEditor(String pageId) {
 
         if (pageId == null || pageId.equals("Inputs") || pageId.equals("BrowseData") || pageId.equals("Charts"))
             return null;
@@ -1305,7 +1237,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
             return null;
     }
 
-    IMemento getMementoFor(ChartScriptEditor editor) {
+    private IMemento getMementoFor(ChartScriptEditor editor) {
         IFile file = getInputFile();
         if (file != null) {
             try {
@@ -1497,27 +1429,6 @@ public class ScaveEditor extends MultiPageEditorPartExt
                 listener.selectionChanged(new SelectionChangedEvent(this, selection));
         });
     }
-
-    // /**
-    // * This creates a context menu for the viewer and adds a listener as well
-    // registering the menu for extension.
-    // */
-    // protected void createContextMenuFor(StructuredViewer viewer) {
-    // createContextMenuFor(viewer.getControl());
-    // }
-    //
-    // protected void createContextMenuFor(Control control) {
-    // MenuManager contextMenu = new MenuManager("#PopUp");
-    // contextMenu.add(new Separator("additions"));
-    // contextMenu.setRemoveAllWhenShown(true);
-    // contextMenu.addMenuListener(this);
-    // Menu menu = contextMenu.createContextMenu(control);
-    // control.setMenu(menu);
-    //
-    // // Note: don't register the context menu, otherwise "Run As", "Debug As",
-    // "Team", and other irrelevant menu items appear...
-    // //getSite().registerContextMenu(contextMenu, viewer);
-    // }
 
     /**
      * This is the method used by the framework to install your own controls.
