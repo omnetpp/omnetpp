@@ -119,6 +119,7 @@ public class ChartExport {
                 }
             };
             for (Chart chart : charts) {
+                chart = (Chart)chart.dup(); // since job runs in another thread, and we don't want locking
                 Job job1 = new ChartExportJob(chart, context);
                 job1.setJobGroup(jobGroup);
                 job1.setPriority(Job.BUILD);
