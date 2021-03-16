@@ -24,6 +24,7 @@ import org.eclipse.draw2d.LineBorder;
 import org.eclipse.draw2d.MarginBorder;
 import org.eclipse.draw2d.RectangleFigure;
 import org.eclipse.draw2d.XYLayout;
+import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.util.LocalSelectionTransfer;
@@ -89,6 +90,7 @@ public class IconGridViewer extends ContentViewer {
     private ViewMode viewMode = ViewMode.ICONS;
     private int itemWidth = 140; // in ICONS mode
     private int columnWidth = 400; // in MULTICOLUMN_LIST mode
+    private int iconHeight = 64;
 
     //  widgets
     private ScrolledComposite scrolledComposite;
@@ -426,6 +428,7 @@ public class IconGridViewer extends ContentViewer {
             LabeledIcon labeledIcon = (LabeledIcon)entry.getValue();
             labeledIcon.setHorizontalLayout(horizontal);
             labeledIcon.setPreferredSize(itemWidth, -1);
+            labeledIcon.setIconSizeByHeight(iconHeight);
         }
         refreshLayout();
     }
@@ -486,6 +489,21 @@ public class IconGridViewer extends ContentViewer {
      */
     public int getItemWidth() {
         return itemWidth;
+    }
+
+    /**
+     * Set icon height in pixels; icon widths will be computed by keeping
+     * the image's original aspect ratio.
+     */
+    public void setIconHeight(int height) {
+        if (this.iconHeight != height) {
+            this.iconHeight = height;
+            updateItems(viewMode!=ViewMode.ICONS, getEffectiveItemWidth());
+        }
+    }
+
+    public int getIconHeight() {
+        return iconHeight;
     }
 
     /**
@@ -821,6 +839,7 @@ public class IconGridViewer extends ContentViewer {
             String text = labelProvider.getText(element);
             Image image = labelProvider.getImage(element);
             labelFigure.setIcon(image);
+            labelFigure.setIconSizeByHeight(iconHeight);
             labelFigure.setText(text);
         }
 

@@ -18,7 +18,7 @@ import org.eclipse.swt.widgets.Display;
 public class LabeledIcon extends Figure implements PositionConstants {
     private Image icon;
     private String text = "";
-    private Dimension iconSize; // cached
+    private Dimension iconSize = new Dimension();
     private int iconTextGap = 3;
     private boolean horizontal = false;
     private org.eclipse.swt.graphics.Rectangle textBounds = null;
@@ -35,6 +35,7 @@ public class LabeledIcon extends Figure implements PositionConstants {
     public LabeledIcon(String s, Image i) {
         setText(s);
         setIcon(i);
+        setIconSize(new Dimension(i.getBounds().width, i.getBounds().height));
     }
 
     /**
@@ -57,7 +58,6 @@ public class LabeledIcon extends Figure implements PositionConstants {
         if (icon == image)
             return;
         icon = image;
-        iconSize = new Dimension(icon.getBounds().width, icon.getBounds().height);
         repaint();
     }
 
@@ -66,6 +66,36 @@ public class LabeledIcon extends Figure implements PositionConstants {
      */
     public Image getIcon() {
         return icon;
+    }
+
+    /**
+     * Sets the icon height to the given value, adjusting width to keep the
+     * icon's original aspect ratio.
+     */
+    public void setIconSizeByHeight(int height) {
+        if (iconSize.height == height)
+            return;
+        org.eclipse.swt.graphics.Rectangle naturalSize = icon.getBounds();
+        int width = Math.max(1, naturalSize.width * height / naturalSize.height);
+        setIconSize(new Dimension(width, height));
+    }
+
+    /**
+     * Sets the size of the label's icon to the passed size.
+     */
+    public void setIconSize(Dimension size) {
+        if (iconSize == size)
+            return;
+        iconSize = size;
+        revalidate();
+        repaint();
+    }
+
+    /**
+     * Returns the Label's icon size.
+     */
+    public Dimension getIconSize() {
+        return iconSize;
     }
 
     /**
@@ -149,7 +179,9 @@ public class LabeledIcon extends Figure implements PositionConstants {
         graphics.translate(figureBounds.x, figureBounds.y);
 
         if (horizontal) {
-            graphics.drawImage(icon, 0, figureBounds.height/2 - iconSize.height/2);
+            Rectangle srcRect = new Rectangle(0, 0, icon.getBounds().width, icon.getBounds().height);
+            Rectangle destRect = new Rectangle(0, figureBounds.height/2 - iconSize.height/2, iconSize.width, iconSize.height);
+            graphics.drawImage(icon, srcRect, destRect);
 
             TextLayout textLayout = makeTextLayout(figureBounds.width - (iconSize.width + iconTextGap));
             textBounds = textLayout.getBounds();
@@ -158,7 +190,9 @@ public class LabeledIcon extends Figure implements PositionConstants {
             textLayout.dispose();
         }
         else {
-            graphics.drawImage(icon, figureBounds.width/2 - iconSize.width/2, 0);
+            Rectangle srcRect = new Rectangle(0, 0, icon.getBounds().width, icon.getBounds().height);
+            Rectangle destRect = new Rectangle(figureBounds.width/2 - iconSize.width/2, 0, iconSize.width, iconSize.height);
+            graphics.drawImage(icon, srcRect, destRect);
 
             TextLayout textLayout = makeTextLayout(figureBounds.width);
             textBounds = textLayout.getBounds();

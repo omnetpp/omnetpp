@@ -30,7 +30,7 @@ public class ViewModeAction extends AbstractScaveAction {
 
     @Override
     protected void doRun(ScaveEditor scaveEditor, ISelection selection) throws CoreException {
-        scaveEditor.getChartsPage().getViewer().setViewMode(mode);
+        scaveEditor.getChartsPage().setViewMode(mode);
     }
 
     @Override

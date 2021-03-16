@@ -82,7 +82,7 @@ public class ChartsPage extends FormEditorPage {
         viewer = new IconGridViewer(getContent());
         viewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         viewer.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
-        viewer.setViewMode(ViewMode.ICONS);
+        setViewMode(ViewMode.ICONS);
 
         ScaveEditorActions actions = scaveEditor.getActions();
 
@@ -133,6 +133,27 @@ public class ChartsPage extends FormEditorPage {
 
     public IconGridViewer getViewer() {
         return viewer;
+    }
+
+    public void setViewMode(ViewMode viewMode) {
+        viewer.setViewMode(viewMode);
+        switch (viewMode) {
+        case ICONS:
+            viewer.setIconHeight(64);
+            viewer.setMargin(20);
+            viewer.setSpacing(20, 20);
+            break;
+        case MULTICOLUMN_LIST:
+            viewer.setIconHeight(64);
+            viewer.setMargin(20);
+            viewer.setSpacing(20, 20);
+            break;
+        case LIST:
+            viewer.setIconHeight(16);
+            viewer.setMargin(6);
+            viewer.setSpacing(6, 6);
+            break;
+        }
     }
 
     public CommandStack getCommandStack() {
