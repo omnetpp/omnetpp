@@ -499,7 +499,7 @@ compiled, and with ``__declspec(dllimport)`` when you reference them from extern
 macro which expands differently in the two cases. The |omnet++| convention is to name the macro ``FOO_API``, where
 ``FOO`` is your project's short name. The macro should be defined as follows:
 
-.. code-block::
+.. code-block:: cpp
 
    #if defined(FOO_EXPORT)
    #  define FOO_API OPP_DLLEXPORT
@@ -516,7 +516,7 @@ that control the macro expansion will be provided by the generated makefile via 
 
 The ``FOO_API`` macro is used as illustrated in the following code:
 
-.. code-block::
+.. code-block:: cpp
 
    class FOO_API ExportedClass {
       // public methods will be automatically exported

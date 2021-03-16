@@ -1,13 +1,13 @@
 .. |expand_image| image:: icons/expand.png
-   :width: 16px
+   :class: toolbutton
 .. |collapse_image| image:: icons/collapse.png
-   :width: 16px
+   :class: toolbutton
 .. |filter_image| image:: icons/filter.png
-   :width: 16px
+   :class: toolbutton
 .. |unpin_image| image:: icons/unpin.png
-   :width: 16px
+   :class: toolbutton
 .. |error_image| image:: icons/Error.png
-   :width: 16px
+   :class: toolbutton
 
 Editing INI Files
 =================

@@ -1,38 +1,38 @@
 
 .. |timelinemode_image| image:: icons/timelinemode.png
-   :width: 16px
+   :class: toolbutton
 .. |axisordering_image| image:: icons/axisordering.png
-   :width: 16px
+   :class: toolbutton
 .. |filter_image| image:: icons/filter.png
-   :width: 16px
+   :class: toolbutton
 .. |Event_image| image:: icons/Event.png
    :width: 16px
 .. |LineFilterMode_image| image:: icons/LineFilterMode.png
-   :width: 16px
+   :class: toolbutton
 .. |displaymode_image| image:: icons/displaymode.png
-   :width: 16px
+   :class: toolbutton
 .. |zoomplus_image| image:: icons/zoomplus.png
-   :width: 16px
+   :class: toolbutton
 .. |zoomminus_image| image:: icons/zoomminus.png
-   :width: 16px
+   :class: toolbutton
 .. |incr_spacing_image| image:: icons/incr_spacing.png
-   :width: 16px
+   :class: toolbutton
 .. |decr_spacing_image| image:: icons/decr_spacing.png
-   :width: 16px
+   :class: toolbutton
 .. |export_wiz_image| image:: icons/export_wiz.png
-   :width: 16px
+   :class: toolbutton
 .. |NameMode_image| image:: icons/NameMode.png
-   :width: 16px
+   :class: toolbutton
 .. |Search_image| image:: icons/Search.png
-   :width: 16px
+   :class: toolbutton
 .. |SearchNext_image| image:: icons/SearchNext.png
-   :width: 16px
+   :class: toolbutton
 .. |bkmrk_nav_image| image:: icons/bkmrk_nav.png
-   :width: 16px
+   :class: toolbutton
 .. |refresh_image| image:: icons/refresh.png
-   :width: 16px
+   :class: toolbutton
 .. |reusearrows_image| image:: icons/reusearrows.png
-   :width: 16px
+   :class: toolbutton
 
 
 
@@ -70,7 +70,7 @@ Creating an Eventlog File
 The INI File Editor in the |omnet++| IDE provides a group of widgets in the :guilabel:`Output Files` section to configure
 automatic eventlog recording. To enable it, simply put a checkmark next to its checkbox, or insert the line
 
-.. code-block::
+.. code-block:: ini
 
    record-eventlog = true
 
@@ -503,7 +503,7 @@ You can also provide a custom filter pattern, referring to fields present in :gu
 expression. The following example is a custom filter, which will show message sends where the message's class is
 AirFrame.
 
-.. code-block:: 
+.. code-block::
 
    BS and c(AirFrame)
 
@@ -616,7 +616,7 @@ In-memory, on-the-fly filtering means that the filter's result is not saved into
 and stored within memory. This allows rapid switching between different views of the same eventlog within both the
 :guilabel:`Sequence Chart` and the :guilabel:`Eventlog Table`.
 
-The filter configuration dialog shown in `Filter Dialog <#pictures/SequenceChart-FilterDialog.png>`__ has many options.
+The filter configuration dialog shown in :numref:`fig-filter-dialog` has many options.
 They are organized into a tree with each part restricting the eventlog's content. The individual filter components may
 be turned on and off independent of each other. This allows remembering the filter settings even if some of them are
 temporarily unused.
@@ -625,6 +625,7 @@ The combination of various filter options might be complicated and hard to under
 :guilabel:`Filter Dialog` automatically displays the current filter in a human readable form at the bottom of the
 dialog.
 
+.. _fig-filter-dialog:
 .. figure:: pictures/SequenceChart-FilterDialog.png
    :width: 60%
    :alt: Filter Dialog
@@ -775,7 +776,7 @@ This section will guide you through the use of the Sequence Chart and Eventlog T
 from |omnet++| and the INET Framework. Before running any of the simulations, make sure that eventlog recording is enabled
 by adding the line
 
-.. code-block::
+.. code-block:: ini
 
    record-eventlog = true
 
@@ -797,11 +798,12 @@ most basic example in this chapter and it provides a quick overview on how to us
 Start the simulation and choose the simplest configuration, 'Tictoc1', which specifies only two nodes called 'tic' and
 'toc.' During initialization, one of the nodes will send a message to the other. From then on, every time a node
 receives the message, it will simply send it back. This process continues until you stop the simulation. In
-`figure_title <#pictures/SequenceChart-Examples-TicTocTwoNodes.png>`__ you can see how this is represented on a Sequence
+:numref:`fig-tictoc-two` you can see how this is represented on a Sequence
 Chart. The two horizontal black lines correspond to the two nodes and are labeled 'tic' and 'toc.' The red circles
 represent events and the blue arrows represent message sends. It is easy to see that all message sends take 100
 milliseconds and that the first sender is the node 'tic.'
 
+.. _fig-tictoc-two:
 .. figure:: pictures/SequenceChart-Examples-TicTocTwoNodes.png
    :width: 80%
    :alt: Tictoc with two nodes
@@ -810,11 +812,12 @@ milliseconds and that the first sender is the node 'tic.'
 
 In the next Tictoc example, there are six nodes tossing a message around until it reaches its destination. To generate
 the eventlog file, restart the simulation and choose the configuration 'Tictoc9'. In
-`figure_title <#pictures/SequenceChart-Examples-TicTocSeveralNodes.png>`__ you can see how the message goes from one
+:numref:`fig-tictoc-several` you can see how the message goes from one
 node to another, starting from node '0' and passing through it twice more, until it finally reaches its destination,
 node '3.' The chart also shows that this example, unlike the previous one, starts with a self-message instead of
 immediately sending a message from initialize to another node.
 
+.. _fig-tictoc-several:
 .. figure:: pictures/SequenceChart-Examples-TicTocSeveralNodes.png
    :width: 80%
    :alt: Tictoc with six nodes
@@ -843,7 +846,7 @@ important example because it uses a queue, which is an essential part of discret
 notion of message reuses.
 
 When you start the simulation, choose the configuration 'low job arrival rate' and let it run for a while. In
-`figure_title <#pictures/SequenceChart-Examples-FIFO.png>`__ you can see three modules: a ``source``, a ``queue``, and a
+:numref:`fig-fifo` you can see three modules: a ``source``, a ``queue``, and a
 ``sink``. The simulation starts with a self-message and then the generator sends the first message to the queue at event
 #1. It is immediately obvious that the message stays in the queue for a certain period of time, between event #2 and
 event #3.
@@ -855,6 +858,7 @@ event #3.
 
 Finally, the message is sent to the ``sink`` where it is deleted at event #4.
 
+.. _fig-fifo:
 .. figure:: pictures/SequenceChart-Examples-FIFO.png
    :width: 80%
    :alt: The FIFO example
@@ -865,12 +869,13 @@ Something interesting happens at event #12 where the incoming message suddenly d
 not send the message out. Actually, what happens is that the queue enqueues the job because it is busy serving the
 message received at event #10. Since this queue is a FIFO, it will send out the first message at event #13. To see how
 this happens, turn on :guilabel:`Show Reuse Messages` from the context menu; the result is shown in
-`figure_title <#pictures/SequenceChart-Examples-FIFOReuse.png>`__. It displays a couple of green dotted arrows, one of
+:numref:`fig-fifo-reuse`. It displays a couple of green dotted arrows, one of
 which starts at event #12 and arrives at event #17. This is a reuse arrow; it means that the message sent out from the
 queue at event #17 is the same as the one received and enqueued at event #12. Note that the service of this message
 actually begins at event #13, which is the moment that the queue becomes free after it completes the job received at
 event #10.
 
+.. _fig-fifo-reuse:
 .. figure:: pictures/SequenceChart-Examples-FIFOReuse.png
    :width: 80%
    :alt: Showing reuse messages
@@ -886,13 +891,14 @@ reuses the same timer message instead of creating a new one each time.
    events. It might be stored in a pointer variable, a queue, or some other data structure.
 
 The last part of this example is about filtering out the queue from the chart. Open the :guilabel:`Filter Dialog`,
-select 'sink' and 'source' on the :guilabel:`Module filter|by NED type` panel, and apply the change in settings. If you
-look at the result in `figure_title <#pictures/SequenceChart-Examples-FIFOFiltered.png>`__, you will see zigzag arrows
+select :guilabel:`sink` and :guilabel:`source` on the :menuselection:`Module filter --> by NED type` panel, and apply the change in settings. If you
+look at the result in :numref:`fig-fifo-filtered`, you will see zigzag arrows
 going from the 'source' to the 'sink.' These arrows show that a message is being sent through the queue from 'source' to
 'sink.' The first two arrows do not overlap in simulation time, which means the queue did not have more than one message
 during that time. The third and fourth arrows do overlap because the fourth job reached the queue while it was busy with
 the third one. Scrolling forward you can find other places where the queue becomes empty and the arrows do not overlap.
 
+.. _fig-fifo-filtered:
 .. figure:: pictures/SequenceChart-Examples-FIFOFiltered.png
    :width: 80%
    :alt: Filtering the queue
@@ -921,6 +927,7 @@ other. These are the compound modules that represent the nodes in the network. S
 the simple module's axis where they occurred, but now they will be drawn on the compound module's axis of their
 ancestor.
 
+.. _fig-routing:
 .. figure:: pictures/SequenceChart-Examples-Routing.png
    :width: 80%
    :alt: Filtering for nodes
@@ -931,7 +938,7 @@ To reduce clutter, the chart will automatically omit events which are internal t
 internal to a compound module if it only processes a message from, and sends out messages to, other modules inside the
 compound module.
 
-If you look at `figure_title <#pictures/SequenceChart-Examples-Routing.png>`__ you will see a message going from node
+If you look at :numref:`fig-routing` you will see a message going from node
 '7' at event #10 to node '1' at event #23. This message stays in node '2' between event #15 and event #17. The gray
 background area between them means that zero simulation time has elapsed (i.e. the model does not account for processing
 time inside the network nodes).
@@ -943,13 +950,14 @@ time inside the network nodes).
 
 This example also demonstrates message detail recording configured by
 
-.. code-block::
+.. code-block:: ini
 
    eventlog-message-detail-pattern = Packet:declaredOn(Packet)
 
-in the INI file. The example in `figure_title <#pictures/SequenceChart-Examples-RoutingTooltip.png>`__ shows the tooltip
+in the INI file. The example in :numref:`fig-routing-tooltip` shows the tooltip
 presented for the second message send between event #17 and event #23.
 
+.. _fig-routing-tooltip:
 .. figure:: pictures/SequenceChart-Examples-RoutingTooltip.png
    :width: 50%
    :alt: Message detail tooltip
@@ -974,7 +982,7 @@ and being continuously re-sent.
 We also would like to record some message details during the simulation. To perform that function, comment out the
 following line from ``omnetpp.ini``:
 
-.. code-block::
+.. code-block:: ini
 
    eventlog-message-detail-pattern = *:(not declaredOn(cMessage) and not
      declaredOn(cNamedObject) and not declaredOn(cObject))
@@ -990,6 +998,7 @@ are self-messages that control the movement of the hosts on the playground. Ther
 starts with a 'sendPing' message that is processed in an event far away on the chart. This is indicated by a split
 arrow.
 
+.. _fig-wireless-beg:
 .. figure:: pictures/SequenceChart-Examples-WirelessBeginning.png
    :width: 80%
    :alt: The beginning
@@ -997,7 +1006,7 @@ arrow.
    The beginning
 
 You might notice that there are only three axes in
-`figure_title <#pictures/SequenceChart-Examples-WirelessBeginning.png>`__ even though the simulation model clearly
+:numref:`fig-wireless-beg` even though the simulation model clearly
 contains more simple modules. This is because the Sequence Chart displays the first few events by default and in this
 scenario, they all happen to be within those modules. If you scroll forward or zoom out, new axes will be added
 automatically as needed.
@@ -1036,7 +1045,7 @@ back to 'host1,' which then sends a WLAN acknowledge in return. In this process,
 The send procedure for the first ping message starts at event #105 in 'host1' and finishes by receiving the acknowledge
 at event #127. The ping reply send procedure starts at event #125 in 'host0' and finishes by receiving the WLAN
 acknowledge at event #144. If you scroll forward, you can see as in
-`figure_title <#pictures/SequenceChart-Examples-WirelessSuccessfulPing.png>`__ the second complete successful ping
+:numref:`fig-wireless-succping` the second complete successful ping
 procedure between event #170 and event #206. To focus on the second successful ping message exchange, open the
 :guilabel:`Filter Dialog` and enter these numbers in the range filter.
 
@@ -1050,6 +1059,7 @@ amount of time is calculated from the physical distance of the two modules and t
 looking at event #172 and event #174, you will notice that the transmission time is not zero. This time interval is
 calculated from the message's length and the radio module's bitrate.
 
+.. _fig-wireless-succping:
 .. figure:: pictures/SequenceChart-Examples-WirelessSuccessfulPing.png
    :width: 80%
    :alt: The second ping procedure
@@ -1072,13 +1082,14 @@ Unsuccessful Ping
 
 To see how the chart looks when the ping messages get lost in the air, first turn off range filtering. Then, go to event
 #1269 by selecting the :guilabel:`Goto Event` option from the :guilabel:`Eventlog Table` View's context menu. In
-`figure_title <#pictures/SequenceChart-Examples-WirelessUnsuccessfulPing.png>`__ you can see how the receiver radio does
+:numref:`fig-wireless-unsuccping` you can see how the receiver radio does
 not send up the incoming message to its MAC layer due to the signal level being too low. This actually happens at event
 #1274 in 'host0.' Shortly thereafter, the transmitter MAC layer in 'host1' receives the timeout message at event #1275,
 and starts the backoff procedure before resending the very same ping message. This process goes on with statistically
 increasing backoff time intervals until event #1317. Finally, the maximum number of retries is reached and the message
 is dropped.
 
+.. _fig-wireless-unsuccping:
 .. figure:: pictures/SequenceChart-Examples-WirelessUnsuccessfulPing.png
    :width: 80%
    :alt: Ping messages get lost
