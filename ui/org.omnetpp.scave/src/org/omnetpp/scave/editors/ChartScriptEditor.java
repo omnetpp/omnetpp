@@ -786,7 +786,8 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
                             ScavePlugin.logError(e);
                         }
                         annotatePythonException(e);
-                        revealErrorAnnotation();
+                        if (!isScriptEditorFocused())
+                            revealErrorAnnotation();
                     }
                     proc.kill();
                 });
