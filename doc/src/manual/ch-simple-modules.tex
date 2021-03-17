@@ -1397,10 +1397,18 @@ or using the \ffunc{doubleValue()} or \ffunc{intValue()} methods.
 \subsection{Volatile and Non-Volatile Parameters}
 \label{sec:simple-modules:volatile-parameters}
 
-A parameter can be declared \ttt{volatile} in the NED file. The \ttt{volatile}
-modifier indicates that a parameter is re-read every time a value is needed
-during simulation. Volatile parameters typically are used for things like
-random packet generation interval, and are assigned values like \ttt{exponential(1.0)}
+Parameters declared in the NED file can be marked as \texttt{volatile}. When a
+parameter is tagged as \texttt{volatile}, it indicates that reading the
+parameter's value during simulation may yield a different value each time.
+(Reading the value will cause a re-evaluation of the NED expression, which may
+contain e.g. calls to the random number generator.) Consequently, within the
+model code, it is essential to re-fetch the parameter's value each time it is
+required during simulation. In other words, simply reading the parameter once in
+the \texttt{initialize()} function and storing that value for subsequent use
+is incorrect.
+
+Volatile parameters are often used for allowing stochastic input, things like
+random packet generation interval specified e.g. as \ttt{exponential(1.0)}
 (numbers drawn from the exponential distribution with mean 1.0).
 
 In contrast, non-volatile NED parameters are constants, and reading their
@@ -1501,7 +1509,7 @@ its \ffunc{handleParameterChange()} method, see
 The parameter's name and type are returned by the \ffunc{getName()} and
 \ffunc{getType()} methods. The latter returns a value from an enum,
 which can be converted to a readable string with the \ffunc{getTypeName()}
-static method. The enum values are \ttt{BOOL}, \ttt{DOUBLE}, \ttt{LONG},
+static method. The enum values are \ttt{BOOL}, \ttt{DOUBLE}, \ttt{INT},
 \ttt{STRING} and \ttt{XML}; and since the enum is an inner type,
 they usually have to be qualified with \ttt{cPar::}.
 
