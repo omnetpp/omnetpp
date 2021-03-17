@@ -97,7 +97,7 @@ On the :guilabel:`Parameters` page of the form editor, you can set module parame
 section where the parameters are stored. After selecting the section from the list, the form shows the name of the
 edited network and the fallback section. The table below the list box shows current settings of the section and all
 other sections from which it has inherited settings. You can move parameters by dragging them. If you click a table
-cell, you can edit the parameter name (or pattern), its value and the comment attached to it. :kbd:`Ctrl+Space` 
+cell, you can edit the parameter name (or pattern), its value and the comment attached to it. :kbd:`Ctrl+SPACE` 
 brings up a content assist. If you hover over a table row, the parameter is described in the tooltip that appears.
 
 .. figure:: pictures/INI-FormEditor3.png
@@ -148,7 +148,7 @@ sections from Run sections and renames old parameters.
 Content Assist
 ^^^^^^^^^^^^^^
 
-If you press :kbd:`Ctrl+Space`, you will get a list of proposals valid at the insertion point. The list may contain section
+If you press :kbd:`Ctrl+SPACE`, you will get a list of proposals valid at the insertion point. The list may contain section
 names, general options, and parameter names and values of the modules of the configured network.
 
 .. figure:: pictures/INI-TextEditor2.png

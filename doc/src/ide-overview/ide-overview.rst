@@ -48,7 +48,7 @@ objects.
 
    The NED Editor in source editing mode
 
-Text mode lets the user work with the NED source directly. When hitting Ctrl+Space, the editor offers context-aware
+Text mode lets the user work with the NED source directly. When hitting :kbd:`Ctrl+SPACE`, the editor offers context-aware
 completion of keywords and module type, parameter, gate, and submodule names. Template proposals to insert full compound
 module skeletons, submodules, various connection structures, etc. are also available. Documentation of referenced module
 types can be viewed by hovering over the NED type name. The NED source is continually parsed and validated as the user
@@ -81,7 +81,7 @@ editing.
 The Ini File editor considers all supported configuration options and offers them in several forms, organized by topics.
 Descriptions and default values are displayed in tooltips, which can be made persistent for easier reading. The
 structure of the ini file (sections and their inheritance tree) is also visualized and editable via drag&drop and
-dialogs. Validation and content assist (Ctrl+Space) are also provided where needed. The editor supports unlimited
+dialogs. Validation and content assist ( :kbd:`Ctrl+SPACE`) are also provided where needed. The editor supports unlimited
 undo/redo and automatic conversion from |omnet++| 3.x ini files.
 
 .. figure:: pictures/img7.png
@@ -90,7 +90,7 @@ undo/redo and automatic conversion from |omnet++| 3.x ini files.
 
 The text editor lets the user work with the ini file directly, which is more efficient for advanced users than forms.
 Unlimited undo/redo, syntax coloring, and completion of configuration keys, values, and module parameter patterns (on
-Ctrl+Space) are provided. As the user types, the file is continually analyzed and errors/warnings are displayed in real
+:kbd:`Ctrl+SPACE`) are provided. As the user types, the file is continually analyzed and errors/warnings are displayed in real
 time.
 
 The editor considers all NED declarations (simple modules, compound modules, channels, etc.) and can fully exploit this

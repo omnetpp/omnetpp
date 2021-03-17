@@ -239,7 +239,7 @@ Filtering
 
 Filtering of the table contents is possible with the combo boxes above the
 tables. The strings in the combo boxes may contain wildcards, and the combo
-boxes also support content assist (:kbd:`Ctrl+Space`), both of which are useful if
+boxes also support content assist (:kbd:`Ctrl+SPACE`), both of which are useful if
 there are a huge number of items with different names.
 
 If a more sophisticated selection criteria is needed, it is possible to switch
@@ -500,7 +500,7 @@ differ for each chart type. Pages that are common to nearly all chart types
    The Chart Properties Dialog
 
 For many input fields, autocompletion and smart suggestions are available
-by pressing :kbd:`Ctrl+Space`.
+by pressing :kbd:`Ctrl+SPACE`.
 
 .. _ana-filter-expression:
 
@@ -548,7 +548,7 @@ Example: `module =~ "**.host*" AND (name =~ "pkSent*" OR name =~ "pkRecvd*")`
 
    Content Assist is available in text fields where you can enter filter
    expressions, vector operations, run metadata selectors, advanced styling
-   options, and similar. Press :kbd:`Ctrl+Space` to get a list of appropriate
+   options, and similar. Press :kbd:`Ctrl+SPACE` to get a list of appropriate
    suggestions at the cursor position.
 
 Vector Operations
