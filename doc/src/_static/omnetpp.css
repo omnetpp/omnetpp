@@ -10,7 +10,7 @@ code.literal {
     padding-left: 2px;
     padding-right: 2px;
     background: rgba(0, 0, 0, 0.05);
-    border-radius: 2px;
+    border-radius: 4px;
     text-decoration: none;
     font-family: monospace;
 }
