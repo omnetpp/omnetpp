@@ -119,8 +119,8 @@ a NED file (simple module, compound module, interface, channel, etc.) and a "gen
 and then click into the editor area to create an instance. The bottom part of the palette contains all module types that
 can be instantiated as a submodule. They are shortcuts for creating a generic submodule and then modifying its type.
 They will display the default icon (if any) and a short description if you hover the mouse over them. You may configure
-the palette by right-clicking on a button and selecting :guilabel:`Settings...` or filter its content by selecting
-:guilabel:`Select Packages...`
+the palette by right-clicking on a button and selecting :guilabel:`Settings` or filter its content by selecting
+:guilabel:`Select Packages`
 
 Right-clicking any element in the edited NED file will bring up a context menu that allows several actions like changing
 the icon, pinning/unpinning a submodule, re-layouting a compound module, or deleting/renaming the element. There are
@@ -210,7 +210,7 @@ appear at different locations next time the same NED file is opened.
 Changing a Module Property
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To change a module property, right-click on it and select the :guilabel:`Properties...` menu item from the context menu
+To change a module property, right-click on it and select the :guilabel:`Properties` menu item from the context menu
 or select the module and modify that property in the :guilabel:`Properties View`. Alternatively, you can press
 :kbd:`Ctrl+Enter` when the module is selected. NED properties like name, type and vector size are available on
 :guilabel:`General` tab. Visual properties like icon, size, color, border etc. can be set on the :guilabel:`Appearance`
@@ -229,7 +229,7 @@ tab. You may check how your module will look like in the preview panel at the bo
 Changing a Module Parameter
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To change a module parameter, right-click on it and select the :guilabel:`Parameters...` menu item from the context
+To change a module parameter, right-click on it and select the :guilabel:`Parameters` menu item from the context
 menu. The dialog allows you to add or remove module parameters or assign value to them.
 
 .. figure:: pictures/NED-Parameters.png
@@ -248,7 +248,7 @@ be edited by pressing :kbd:`F6` when the module is selected.
 Exporting a Module as an Image
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-A module can be exported using several image formats by selecting :guilabel:`Export Image...` from the module's context
+A module can be exported using several image formats by selecting :guilabel:`Export Image` from the module's context
 menu.
 
 Navigation
@@ -449,7 +449,7 @@ Palette View
 
 The Palette is normally displayed on the left or right side of the editor area and contains tools to create various NED
 elements. It is possible to hide the Palette by clicking on the little arrow in the corner. You can also detach it from
-the editor and display it as a normal Eclipse View (:menuselection:`Window --> Show View --> Other... --> General --> Palette`).
+the editor and display it as a normal Eclipse View (:menuselection:`Window --> Show View --> Other --> General --> Palette`).
 
 Problems View
 ~~~~~~~~~~~~~

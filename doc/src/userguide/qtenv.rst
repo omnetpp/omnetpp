@@ -167,7 +167,7 @@ Run Until
 ^^^^^^^^^
 
 You can run the simulation until a specified simulation time, event number or until a specific message has been
-delivered or canceled. This is a valuable tool during debugging sessions (select :menuselection:`Simulate --> Run until...`).
+delivered or canceled. This is a valuable tool during debugging sessions (select :menuselection:`Simulate --> Run until`).
 It is also possible to right-click on an event in the simulation timeline and choose the :guilabel:`Run until this
 event` menu item.
 
@@ -275,7 +275,7 @@ Opening Inspectors
 ^^^^^^^^^^^^^^^^^^
 
 Inspectors can be opened in various ways: by double-clicking an item in the :guilabel:`Object Navigator` or in other
-inspectors; by choosing one of the :guilabel:`Open...` menu items from the context menu of an object displayed on the
+inspectors; by choosing one of the :guilabel:`Open` menu items from the context menu of an object displayed on the
 UI; via the :guilabel:`Find/Inspect Objects` dialog (see later); or even by directly entering the C++ pointer of an
 object as a hex value. Inspector-related menu items are in the :guilabel:`Inspect` menu.
 
@@ -647,7 +647,7 @@ string, meaning that objects of derived types will not be included.
 
 You can also provide a generic filter expression, which matches the object's full path by default. Wildcards (``"?"``,
 ``"*"``) are allowed. ``"{a-exz}"`` matches any character in the range ``"a".."e"`` plus ``"x"`` and ``"z"``. You can
-match numbers: ``"*.job{128..191}"`` will match objects named ``"job128"``, ``"job129"``, ..., ``"job191"``.
+match numbers: ``"*.job{128..191}"`` will match objects named ``"job128"``, ``"job129"``, , ``"job191"``.
 ``"job{128..}"`` and ``"job{..191}"`` are also understood. You can combine patterns with ``AND``, ``OR`` and ``NOT`` and
 parentheses (lowercase ``and``, ``or``, ``not`` are also accepted). You can match other object fields such as queue
 length, message kind, etc., with the syntax ``"fieldname(pattern)"``. If the pattern contains parentheses or space, you
@@ -690,7 +690,7 @@ Examples:
 The Preferences Dialog
 ----------------------
 
-Select :menuselection:`File --> Preferences...` from the menu to display the runtime environment's configuration dialog. The
+Select :menuselection:`File --> Preferences` from the menu to display the runtime environment's configuration dialog. The
 dialog lets you adjust various display, network layouting and animation options.
 
 General
@@ -774,7 +774,7 @@ given message object.
 
 For object names, wildcards (``"?"``, ``"*"``) are allowed. ``"{a-exz}"`` matches any character in the range
 ``"a".."e"`` plus ``"x"`` and ``"z"``. You can match numbers: ``"job{128..191}"`` will match ``"job128"``, ``"job129"``,
-..., ``"job191"``. ``"job{128..}"`` and ``"job{..191}"`` are also understood. You can combine patterns with ``AND``,
+, ``"job191"``. ``"job{128..}"`` and ``"job{..191}"`` are also understood. You can combine patterns with ``AND``,
 ``OR`` and ``NOT`` and parentheses (lowercase and, or, not are also acceptable). You can match against other object
 fields such as message length, message kind, etc. with the syntax ``"fieldname(pattern)"``. Put quotation marks around a
 pattern if it contains parentheses.

@@ -106,7 +106,7 @@ brings up a content assist. If you hover over a table row, the parameter is desc
    Editing module parameters
 
 New parameters can be added one by one by pressing the :guilabel:`New` button and filling the new table row. The
-selected parameters can be removed with the :guilabel:`Remove` button. If you press the :guilabel:`Add...` button, you
+selected parameters can be removed with the :guilabel:`Remove` button. If you press the :guilabel:`Add` button, you
 can add any missing parameters.
 
 .. figure:: pictures/INI-AddParams.png
@@ -166,7 +166,7 @@ unassigned parameters. For parameters, the definition, description and the modul
 Add Unassigned Parameters
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-You can add the names of unassigned module parameters to a Config section by choosing :guilabel:`Add Missing keys...`
+You can add the names of unassigned module parameters to a Config section by choosing :guilabel:`Add Missing keys`
 from the context menu or pressing :kbd:`Ctrl+Shift+O`.
 
 Commenting

@@ -44,7 +44,7 @@ Quick Run
 The easiest way to launch a simulation is by selecting a project, folder, ini or NED file in :guilabel:`Project
 Explorer`, and clicking the :guilabel:`Run` button on the toolbar. This will create a suitable launch configuration
 (possibly after asking a few questions to clarify what you want to run) if one does not exist already. Instead of the
-:guilabel:`Run` button, you can also choose the :menuselection:`Run As... --> |omnet++| Simulation` from the item's context
+:guilabel:`Run` button, you can also choose the :menuselection:`Run As --> |omnet++| Simulation` from the item's context
 menu.
 
 The details:
@@ -62,8 +62,8 @@ Launch configurations can be managed in the :guilabel:`Run Configurations` dialo
 debugging/profiling aspects of launch configurations).
 
 The :guilabel:`Run Configurations` can be opened in various ways: via the main menu (:menuselection:`Run --> Run
-Configurations...`); via the context menu item of a project, folder or file (:menuselection:`Run As --> Run
-Configurations...`); via the green :guilabel:`Run` toolbar button (:guilabel:`Run Configurations...` item of its
+Configurations`); via the context menu item of a project, folder or file (:menuselection:`Run As --> Run
+Configurations`); via the green :guilabel:`Run` toolbar button (:guilabel:`Run Configurations` item of its
 attached menu, or by Ctrl-clicking any other menu item or the toolbar button itself).
 
 .. figure:: pictures/Launch-RunProject.png
@@ -75,7 +75,7 @@ Creating a Launch Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 |omnet++| IDE adds a new Eclipse launch configuration type, :guilabel:`|omnet++| Simulation`, that supports launching
-simulation executables. To create a new run configuration, open the :guilabel:`Run Configurations...` dialog. In the
+simulation executables. To create a new run configuration, open the :guilabel:`Run Configurations` dialog. In the
 dialog, select :guilabel:`|omnet++| Simulation` from the tree, and click the :guilabel:`New launch configuration` icon in
 the top-left corner. A blank launch configuration is created; you can give it a name at the top of the form that
 appears.
@@ -102,7 +102,7 @@ specified working directory.
    will try to guess the executable name based on the settings of your current open projects.
 
 -  :guilabel:`Executable`: You must set the name of the simulation executable here. This is a workspace path. You may
-   use the :guilabel:`Browse...` button to select the executable directly. If your project output is a shared library,
+   use the :guilabel:`Browse` button to select the executable directly. If your project output is a shared library,
    select :guilabel:`opp_run`; it will cause the IDE to use the :command:`opp_run` or the :command:`opp_run_dbg` helper executable
    with the :literal:`-l` option to run the simulation. Make sure that the :guilabel:`Dynamic Libraries` field in the advanced
    section contains the libraries you want to load.
@@ -284,7 +284,7 @@ Starting a Debug Session
 
 Launching a simulation in debug mode is very similar to running it (see previous sections), only you have to select the
 :guilabel:`Debug` toolbar icon or menu item instead on :guilabel:`Run`. The same launch configurations are used for
-debugging that for running, that is, if you open the :guilabel:`Debug Configurations...` dialog, you will see the same
+debugging that for running, that is, if you open the :guilabel:`Debug Configurations` dialog, you will see the same
 launch configurations as in the :guilabel:`Run` dialog. The launcher is automatically using the debug build of the model
 (i.e. the executable that has a ``_dbg`` suffix.) The dialog will have extra tab pages where you can configure the
 debugger and other details.
@@ -322,7 +322,7 @@ CDT's conversation with gdb can also be viewed, in the appropriate pages of the 
 
    One little tip that we found useful: if you have a pointer in the program that actually points to an array (of
    objects, etc), you can have it displayed as an array, too. In :guilabel:`Variables`, right-click the variable and
-   choose :guilabel:`Display As Array...` from the menu. You will be prompted for a start index and the number of
+   choose :guilabel:`Display As Array` from the menu. You will be prompted for a start index and the number of
    elements to display.
 
 More information on the debugger is available in the CDT documentation, which is part of the IDE's Help system. See
@@ -414,7 +414,7 @@ Controlling the Execution and Progress Reporting
 
 After starting a simulation process or simulation batch you can keep track of the started processes in the
 :guilabel:`Debug View`. To open the :guilabel:`Debug View` automatically during launch, check the Show Debug View on
-Launch in the run configuration dialog, or select :menuselection:`Window --> Show View... --> Other... --> Debug --> Debug`.
+Launch in the run configuration dialog, or select :menuselection:`Window --> Show View --> Other --> Debug --> Debug`.
 Select a process and click the terminate button to stop a specific simulation run or use the context menu for more
 options to control the process execution.
 

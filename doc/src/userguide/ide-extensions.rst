@@ -11,7 +11,7 @@ Installing New Features
 
 Because the IDE is based on the Eclipse platform, it is possible to add additional features that are available for
 Eclipse. The installation procedure is exactly the same as with a standard Eclipse distribution. Choose the
-:menuselection:`Help --> Install New Software...` menu item and select an existing Update Site to work with or add a new Site
+:menuselection:`Help --> Install New Software` menu item and select an existing Update Site to work with or add a new Site
 (using the site URL) to the Available Software Sites. After the selection, you can browse and install the packages the
 site offers.
 

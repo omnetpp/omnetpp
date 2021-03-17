@@ -1068,7 +1068,7 @@ the space horizontally:
 
 ::
 
-   <label text="Some long text...." x:style="WRAP">
+   <label text="Some long text..." x:style="WRAP">
        <layoutData x:class="GridData" horizontalAlignment="FILL"
           grabExcessHorizontalSpace="true"/>
    </label>

@@ -129,7 +129,7 @@ in a tree structure.
 
 New input files can be added to the analysis by dragging vector and scalar files
 from the :guilabel:`Project Explorer` view, or by opening a dialog with the
-:guilabel:`New Input...` button on the local toolbar.
+:guilabel:`New Input` button on the local toolbar.
 
 Resolution Rules
 ^^^^^^^^^^^^^^^^
@@ -221,7 +221,7 @@ context menu.
 
 The other tabs show tables containing the values and attributes of
 all results of the given type. To hide or show table columns, open
-:guilabel:`Choose table columns...` from the context menu and select
+:guilabel:`Choose table columns` from the context menu and select
 the columns to be displayed. The settings are persistent and applied
 in each subsequently opened editor. The table rows can be sorted by
 clicking on the column name.
@@ -252,7 +252,7 @@ Plotting
 ^^^^^^^^
 
 You can display the selected data items on a chart. To open the chart, choose
-one of the :guilabel:`Plot ...` items from the context menu, or press Enter
+one of the :guilabel:`Plot` items from the context menu, or press Enter
 (double-click also works for single data lines). See section
 :ref:`ana-creating-charts` for more information.
 
@@ -479,7 +479,7 @@ The Chart Properties Dialog
 
 Charts have a set of properties that define their behavior and looks.
 These properties can be edited in a configuration dialog, accessible
-from the :guilabel:`Configure Chart...` toolbar button and context menu item.
+from the :guilabel:`Configure Chart` toolbar button and context menu item.
 
 The dialog has a tabbed layout, where the list of tabs and the form on each page
 differ for each chart type. Pages that are common to nearly all chart types
@@ -557,8 +557,8 @@ Vector Operations
 The charts that show vector results offer a selection of operations
 to transform the data before plotting.
 
-These can be added to the chart under the :guilabel:`Apply...` or
-:guilabel:`Compute...` context menu items.
+These can be added to the chart under the :guilabel:`Apply` or
+:guilabel:`Compute` context menu items.
 Both ways of adding operations compute new vectors from existing
 ones. The difference between them is that Apply replaces the original
 data with the computation result, while Compute keeps both.
@@ -605,7 +605,7 @@ of the given chart to select which results to export. This is available under th
 :guilabel:`Export Chart Input As` context menu item of charts.
 
 The second one includes any transformations the chart might perform on the data
-before plotting it, and is available under the common :guilabel:`Export Chart...`
+before plotting it, and is available under the common :guilabel:`Export Chart`
 option, as discussed in section :ref:`ana-batch-export`.
 
 ..
@@ -625,7 +625,7 @@ There are multiple, significantly different ways of exporting a chart to an imag
   to an image file. Popular raster and vector formats are accepted, including
   PNG, JPG, SVG, GIF, TIFF, etc.
 
-- Finally, the :guilabel:`Export Chart...` option opens the common
+- Finally, the :guilabel:`Export Chart` option opens the common
   image/data exporting dialog (see section :ref:`ana-batch-export`) for this
   chart only. This option relies on the chart script for doing the actual
   exporting. (It runs the chart script  in the background, asking it for perform
@@ -637,7 +637,7 @@ There are multiple, significantly different ways of exporting a chart to an imag
 Batch Export
 ^^^^^^^^^^^^
 
-When exporting multiple charts, or when selecting the :guilabel:`Export Chart...`
+When exporting multiple charts, or when selecting the :guilabel:`Export Chart`
 option for a single chart, a common export dialog is opened.
 
 .. figure:: pictures/ANF-ExportCharts.png
