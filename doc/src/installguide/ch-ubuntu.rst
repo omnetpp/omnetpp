@@ -69,7 +69,6 @@ To enable the optional parallel simulation support you will need to install the 
 At the confirmation questions (*Do you want to continue? [Y/N]*), answer *Y*.
 
 .. figure:: pictures/terminal-package-install.png
-   :alt: Command-Line Package Installation
    :width: 75.0%
 
    Command-Line Package Installation
@@ -94,7 +93,6 @@ The packages:
 -  recommended: libopenscenegraph-dev, openscenegraph-plugin-osgearth, libosgearth-dev, openmpi-bin, libopenmpi-dev
 
 .. figure:: pictures/ubuntu-synaptic.png
-   :alt: Synaptic Package Manager
    :width: 75.0%
 
    Synaptic Package Manager
@@ -118,7 +116,6 @@ The default tooltip background color in Ubuntu is black, which causes certain to
 unreadable (black-on-black). This annoyance can be resolved by changing the tooltip colors in Ubuntu.
 
 .. figure:: pictures/ubuntu-black-tooltips.png
-   :alt: Black-on-black text in tooltips
    :width: 75.0%
 
    Black-on-black text in tooltips
@@ -139,7 +136,6 @@ Find the *Tooltips* group on the *Specific* tab, and change the settings to blac
 background. Click Apply.
 
 .. figure:: pictures/ubuntu-gnome-color-chooser.png
-   :alt: Fixing the tooltip color issue
    :width: 50.0%
 
    Fixing the tooltip color issue

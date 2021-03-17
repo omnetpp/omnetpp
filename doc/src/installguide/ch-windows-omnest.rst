@@ -29,7 +29,6 @@ Find the downloaded installation file using Windows Explorer, and double-click t
 installation process.
 
 .. figure:: pictures/win-downloaded.png
-   :alt: Starting the installer
    :width: 75.0%
 
    Starting the installer
@@ -37,7 +36,6 @@ installation process.
 To start the installation, accept the Licensing agreements:
 
 .. figure:: pictures/win-license.png
-   :alt: License agreement
    :width: 75.0%
 
    License agreement
@@ -45,7 +43,6 @@ To start the installation, accept the Licensing agreements:
 Select an installation target directory. Please make sure that the installation path does not contain spaces.
 
 .. figure:: pictures/win-installdir.png
-   :alt: Selecting the installation directory
    :width: 75.0%
 
    Selecting the installation directory
@@ -55,7 +52,6 @@ compiler (recommended), or the Clang compiler from Microsoft Visual Studio/MS Bu
 any pre-built binary packages (none), you have to compile |omnet++| manually after the installation has finished.
 
 .. figure:: pictures/win-compiler.png
-   :alt: Compiler selection
    :width: 75.0%
 
    Compiler selection
@@ -63,7 +59,6 @@ any pre-built binary packages (none), you have to compile |omnet++| manually aft
 On the last page, you can optionally create program launcher icons for your desktop, too.
 
 .. figure:: pictures/win-optional.png
-   :alt: Installation options
    :width: 75.0%
 
    Installation options
@@ -72,7 +67,6 @@ After this step the installation process starts, and all files required by |omne
 folder.
 
 .. figure:: pictures/win-progress.png
-   :alt: Installation options
    :width: 75.0%
 
    Installation options

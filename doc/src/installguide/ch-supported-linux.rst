@@ -126,7 +126,6 @@ The ``configure`` script detects installed software and configuration of your sy
 ``Makefile.inc`` file, which will be read by the makefiles during the build process.
 
 .. figure:: pictures/terminal-configuration.png
-   :alt: Configuring |omnet++|
    :width: 75.0%
 
    Configuring |omnet++|
@@ -146,7 +145,6 @@ When ``./configure`` has finished, you can compile |omnet++|. Type in the termin
    $ make
 
 .. figure:: pictures/terminal-make.png
-   :alt: Building |omnet++|
    :width: 75.0%
 
    Building |omnet++|
@@ -191,7 +189,6 @@ You can launch the |omnet++| Simulation IDE by typing the following command in t
    $ |omnetpp|
 
 .. figure:: pictures/ide-initial.png
-   :alt: The Simulation IDE
    :width: 75.0%
 
    The Simulation IDE

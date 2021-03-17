@@ -68,7 +68,6 @@ attached menu, or by Ctrl-clicking any other menu item or the toolbar button its
 
 .. figure:: pictures/Launch-RunProject.png
    :width: 30%
-   :alt: One way of opening the :guilabel:`Run Configurations` dialog
 
    One way of opening the :guilabel:`Run Configurations` dialog
 
@@ -83,7 +82,6 @@ appears.
 
 .. figure:: pictures/Launch-RunDialog.png
    :width: 60%
-   :alt: The Simulation Launcher
 
    The Simulation Launcher
 
@@ -239,7 +237,6 @@ constraint conditions for specific parameters.
 
 .. figure:: pictures/Launch-BatchRun.png
    :width: 80%
-   :alt: Iteration variable in the INI file
 
    Iteration variable in the INI file
 
@@ -263,7 +260,6 @@ expressions using contstants and iteration variables (e.g. ``$numHosts>5 and $nu
 
 .. figure:: pictures/Launch-BatchRun2.png
    :width: 60%
-   :alt: Iteration loop expansion in a tooltip
 
    Iteration loop expansion in a tooltip
 
@@ -424,7 +420,6 @@ options to control the process execution.
 
 .. figure:: pictures/Launch-DebugView.png
    :width: 40%
-   :alt: Debug View
 
    Debug View
 
@@ -445,7 +440,6 @@ requested parameters.
 
 .. figure:: pictures/Launch-ConsoleView.png
    :width: 80%
-   :alt: Displaying the output of a simulation process in Console View
 
    Displaying the output of a simulation process in Console View
 
@@ -466,7 +460,6 @@ detailed progress view. It is possible to terminate the whole batch by clicking 
 
 .. figure:: pictures/Launch-ProgressView.png
    :width: 80%
-   :alt: Progress report on four parallel processes
 
    Progress report on four parallel processes
 

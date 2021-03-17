@@ -47,7 +47,6 @@ To create an |omnet++| project that supports C++ development, select :menuselect
 
 .. figure:: pictures/Intro-NewProject.png
    :width: 75%
-   :alt: Creating an |omnet++| project
 
    Creating an |omnet++| project
 
@@ -59,7 +58,6 @@ checkbox is selected.
 
 .. figure:: pictures/CPP-NewProjectWizard.png
    :width: 60%
-   :alt: Setting project name and enabling C++ support
 
    Setting project name and enabling C++ support
 
@@ -67,7 +65,6 @@ Select a project template. A template defines the initial content and layout of 
 
 .. figure:: pictures/CPP-NewProjectWizard1.png
    :width: 60%
-   :alt: Selecting a project template
 
    Selecting a project template
 
@@ -76,7 +73,6 @@ is no need to change anything on the page.
 
 .. figure:: pictures/CPP-NewProjectWizard2.png
    :width: 60%
-   :alt: Selecting a toolchain
 
    Selecting a toolchain
 
@@ -85,7 +81,6 @@ associated with the build process. It is used mainly to build debug and release 
 
 .. figure:: pictures/CPP-NewProjectWizard3.png
    :width: 60%
-   :alt: Selecting configurations
 
    Selecting configurations
 
@@ -100,7 +95,6 @@ and errors and warnings are displayed as markers on the editor rulers.
 
 .. figure:: pictures/CPP-Editor.png
    :width: 80%
-   :alt: C++ source editor
 
    C++ source editor
 
@@ -195,7 +189,6 @@ directly or indirectly).
 
 .. figure:: pictures/CPP-IncludeBrowserView.png
    :width: 40%
-   :alt: Include Browser
 
    Include Browser
 
@@ -207,7 +200,6 @@ be used to quickly navigate inside the file.
 
 .. figure:: pictures/CPP-OutlineView.png
    :width: 40%
-   :alt: Navigating with Outline View
 
    Navigating with Outline View
 
@@ -219,7 +211,6 @@ among |omnet++| classes).
 
 .. figure:: pictures/CPP-TypeHierarchy.png
    :width: 60%
-   :alt: C++ Type hierarchy
 
    C++ Type hierarchy
 
@@ -235,7 +226,6 @@ Once you have created your source files and configured your project settings, yo
 
 .. figure:: pictures/CPP-BuildProject.png
    :width: 40%
-   :alt: Building a project
 
    Building a project
 
@@ -286,7 +276,6 @@ configuration, choose :menuselection:`Build Configurations --> Set Active` from 
 
 .. figure:: pictures/CPP-BuildConfiguration.png
    :width: 60%
-   :alt: Activating a build configuration
 
    Activating a build configuration
 
@@ -297,7 +286,6 @@ The :guilabel:`Console View` displays the output of the build process.
 
 .. figure:: pictures/CPP-ConsoleView.png
    :width: 80%
-   :alt: Build output in a console
 
    Build output in a console
 
@@ -311,7 +299,6 @@ Hover over an error marker in the editor window to get the corresponding message
 
 .. figure:: pictures/CPP-ProblemsView.png
    :width: 80%
-   :alt: C++ problems
 
    C++ problems
 
@@ -358,7 +345,6 @@ The build system for an |omnet++| project can be configured on the :menuselectio
 
 .. figure:: pictures/CPP-SourceFolder.png
    :width: 60%
-   :alt: Configuring Makefiles
 
    Configuring Makefiles
 
@@ -442,7 +428,6 @@ On the first, :guilabel:`Target` tab of the dialog, you can specify how the fina
 
 .. figure:: pictures/CPP-ConfigureProject2.png
    :width: 60%
-   :alt: Target definition
 
    Target definition
 
@@ -451,7 +436,6 @@ The :guilabel:`Scope` Tab
 
 .. figure:: pictures/CPP-ConfigureProject.png
    :width: 60%
-   :alt: Scope of makefile
 
    Scope of makefile
 
@@ -471,7 +455,6 @@ The :guilabel:`Compile` Tab
 
 .. figure:: pictures/CPP-ConfigureProject3.png
    :width: 60%
-   :alt: Compiler options
 
    Compiler options
 
@@ -541,7 +524,6 @@ Link options allow the user to fine-tune the linking steps at the end of the bui
 
 .. figure:: pictures/CPP-ConfigureProject4.png
    :width: 60%
-   :alt: Linker options
 
    Linker options
 
@@ -672,7 +654,6 @@ Properties` dialog. The :menuselection:`Project --> Project Features` menu item 
 
 .. figure:: pictures/CPP-Features.png
    :width: 60%
-   :alt: The Project Features page
 
    The Project Features page
 

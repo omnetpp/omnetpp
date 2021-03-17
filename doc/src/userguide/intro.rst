@@ -24,7 +24,6 @@ the simulation perspective, select :menuselection:`Window --> Open Perspective -
 
 .. figure:: pictures/Intro-SelectPerspective.png
    :width: 50%
-   :alt: Selecting the "Simulation Perspective" in Eclipse
 
    Selecting the "Simulation Perspective" in Eclipse
 
@@ -33,7 +32,6 @@ your needs.
 
 .. figure:: pictures/Intro-DefaultLayout.png
    :width: 100%
-   :alt: Default layout of the |omnet++| IDE
 
    Default layout of the |omnet++| IDE
 
@@ -82,7 +80,6 @@ license will also be shown in the generated NED documentation.
 
 .. figure:: pictures/Intro-Preferences.png
    :width: 75%
-   :alt: Configuring |omnet++| preferences
 
    Configuring |omnet++| preferences
 
@@ -100,7 +97,6 @@ Support` checkbox which will disable all C++ related features for the project.
 
 .. figure:: pictures/Intro-NewProjectWizard.png
    :width: 50%
-   :alt: Creating a new |omnet++| project
 
    Creating a new |omnet++| project
 
@@ -118,7 +114,6 @@ circular references are not allowed (i.e. the dependency graph must be a tree).
 
 .. figure:: pictures/Intro-ProjectReferences.png
    :width: 60%
-   :alt: Setting project dependencies
 
    Setting project dependencies
 

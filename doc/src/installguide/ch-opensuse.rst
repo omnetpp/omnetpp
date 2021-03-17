@@ -67,7 +67,6 @@ Graphical Installation
 The graphical installer can be launched by opening the Search bar and typing *Software Management*.
 
 .. figure:: pictures/opensuse-yast.png
-   :alt: Yast Software Management
    :width: 75.0%
 
    Yast Software Management

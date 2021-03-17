@@ -20,7 +20,6 @@ general, all project-specific settings have good defaults that work well with th
 
 .. figure:: pictures/NEDDOC-ProjectProperties.png
    :width: 60%
-   :alt: Configuring project-specific settings
 
    Configuring project-specific settings
 
@@ -30,7 +29,6 @@ dialog where you can set various settings for the current generation before star
 
 .. figure:: pictures/NEDDOC-ProjectMenu.png
    :width: 25%
-   :alt: Opening the NED documentation generator
 
    Opening the NED documentation generator
 
@@ -42,7 +40,6 @@ useful for exporting standalone documentation for several complex projects at on
 
 .. figure:: pictures/NEDDOC-Configuration.png
    :width: 80%
-   :alt: Configuring the NED documentation generator
 
    Configuring the NED documentation generator
 
@@ -52,7 +49,6 @@ in the IDE's progress monitor.
 
 .. figure:: pictures/NEDDOC-Progress.png
    :width: 60%
-   :alt: Generating NED documentation in progress
 
    Generating NED documentation in progress
 
@@ -63,7 +59,6 @@ content.
 
 .. figure:: pictures/NEDDOC-Documentation.png
    :width: 80%
-   :alt: The resulting NED documentation
 
    The resulting NED documentation
 
@@ -74,7 +69,6 @@ cross-referencing navigation for submodules.
 
 .. figure:: pictures/NEDDOC-UsageDiagram.png
    :width: 60%
-   :alt: NED usage diagram
 
    NED usage diagram
 
@@ -84,7 +78,6 @@ not have fixed values. These can be set either through inheritance, encapsulatio
 
 .. figure:: pictures/NEDDOC-AssignableParameters.png
    :width: 80%
-   :alt: NED assignable parameters
 
    NED assignable parameters
 

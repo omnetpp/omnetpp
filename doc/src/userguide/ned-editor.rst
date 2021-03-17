@@ -48,7 +48,6 @@ button, a new NED file will be created with the requested content.
 
 .. figure:: pictures/NED-NewWizard.png
    :width: 60%
-   :alt: Creating a new NED file
 
    Creating a new NED file
 
@@ -69,7 +68,6 @@ value is the project root.
 
 .. figure:: pictures/NED-SourceFolders.png
    :width: 60%
-   :alt: Specifying which folder will hold your NED files
 
    Specifying which folder will hold your NED files
 
@@ -110,7 +108,6 @@ connected by using the Connection Tool in the palette.
 
 .. figure:: pictures/NED-GraphEditor.png
    :width: 60%
-   :alt: Graphical NED Editor
 
    Graphical NED Editor
 
@@ -221,7 +218,6 @@ tab. You may check how your module will look like in the preview panel at the bo
 
 .. figure:: pictures/NED-Properties.png
    :width: 60%
-   :alt: Editing Visual Properties
 
    Editing Visual Properties
 
@@ -238,7 +234,6 @@ menu. The dialog allows you to add or remove module parameters or assign value t
 
 .. figure:: pictures/NED-Parameters.png
    :width: 50%
-   :alt: Editing Module Parameters
 
    Editing Module Parameters
 
@@ -304,7 +299,6 @@ At times when the NED text is syntactically correct, the editor has full knowled
 
 .. figure:: pictures/NED-TextEditor.png
    :width: 60%
-   :alt: NED Source Editor
 
    NED Source Editor
 
@@ -350,7 +344,6 @@ so it will offer only valid suggestions. Content assist is also a good way of ex
 
 .. figure:: pictures/NED-TextEditorCA.png
    :width: 60%
-   :alt: NED Source Editor with content assist activated
 
    NED Source Editor with content assist activated
 
@@ -435,7 +428,6 @@ delete an object.
 
 .. figure:: pictures/NED-OutlineView.png
    :width: 30%
-   :alt: Outline View
 
    Outline View
 
@@ -449,7 +441,6 @@ Pressing :kbd:`Ctrl+SPACE` will display the possible values the field can hold.
 
 .. figure:: pictures/NED-PropertiesView.png
    :width: 30%
-   :alt: Properties View
 
    Properties View
 
@@ -468,7 +459,6 @@ open the problematic file and move to the appropriate marker.
 
 .. figure:: pictures/NED-ProblemsView.png
    :width: 80%
-   :alt: Problems View
 
    Problems View
 
@@ -482,7 +472,6 @@ view toolbar. This will fix the displayed type to the currently selected one.
 
 .. figure:: pictures/NED-InheritanceView.png
    :width: 50%
-   :alt: NED Inheritance View
 
    NED Inheritance View
 
@@ -494,7 +483,6 @@ displays the parameters and other contained features.
 
 .. figure:: pictures/NED-ModuleHierarchyView.png
    :width: 80%
-   :alt: Module Hierarchy View
 
    Module Hierarchy View
 
@@ -505,7 +493,6 @@ The :guilabel:`Parameters View` shows the parameters of the selected module incl
 
 .. figure:: pictures/NED-ParametersView.png
    :width: 80%
-   :alt: Outline View
 
    Outline View
 

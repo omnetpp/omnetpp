@@ -40,7 +40,6 @@ you can enter the name of the new file and select the name of the network to be 
 
 .. figure:: pictures/INI-NewWizard.png
    :width: 60%
-   :alt: New Initialization File dialog
 
    New Initialization File dialog
 
@@ -66,7 +65,6 @@ You can use drag and drop to reorganize the sections. You can delete, edit, or a
 
 .. figure:: pictures/INI-FormEditor.png
    :width: 60%
-   :alt: Editing INI file sections
 
    Editing INI file sections
 
@@ -92,7 +90,6 @@ the network name is not inherited, it can be specified, as well.
 
 .. figure:: pictures/INI-NewSection.png
    :width: 60%
-   :alt: Creating a new INI file section
 
    Creating a new INI file section
 
@@ -105,7 +102,6 @@ brings up a content assist. If you hover over a table row, the parameter is desc
 
 .. figure:: pictures/INI-FormEditor3.png
    :width: 60%
-   :alt: Editing module parameters
 
    Editing module parameters
 
@@ -115,7 +111,6 @@ can add any missing parameters.
 
 .. figure:: pictures/INI-AddParams.png
    :width: 40%
-   :alt: Add missing module parameters dialog
 
    Add missing module parameters dialog
 
@@ -130,7 +125,6 @@ the opening table. If the table contains the Generic section only, then it can b
 
 .. figure:: pictures/INI-FormEditor2.png
    :width: 60%
-   :alt: Editing general configuration
 
    Editing general configuration
 
@@ -142,7 +136,6 @@ addition to the usual text editor functions like copy/paste, undo/redo and text 
 
 .. figure:: pictures/INI-TextEditor.png
    :width: 60%
-   :alt: Editing the INI file in text mode
 
    Editing the INI file in text mode
 
@@ -160,7 +153,6 @@ names, general options, and parameter names and values of the modules of the con
 
 .. figure:: pictures/INI-TextEditor2.png
    :width: 60%
-   :alt: Content assist in source mode
 
    Content assist in source mode
 
@@ -213,7 +205,6 @@ highlight the corresponding element in the text or form view.
 
 .. figure:: pictures/INI-OutlineView.png
    :width: 40%
-   :alt: Outline View showing the content of an INI file
 
    Outline View showing the content of an INI file
 
@@ -235,7 +226,6 @@ this view will not follow the selection made by the user in other editors or vie
 
 .. figure:: pictures/INI-ParametersView.png
    :width: 80%
-   :alt: Parameters View
 
    Parameters View
 
@@ -278,7 +268,6 @@ parameters, and where its value comes from (INI file, NED file or unassigned).
 
 .. figure:: pictures/INI-ModuleHierarchyView.png
    :width: 80%
-   :alt: Module Hierarchy View
 
    Module Hierarchy View
 

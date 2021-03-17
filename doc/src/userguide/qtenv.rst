@@ -33,7 +33,6 @@ Overview of the User Interface
 
 .. figure:: pictures/Qtenv-main.png
    :width: 80%
-   :alt: The main window of Qtenv
 
    The main window of Qtenv
 
@@ -96,7 +95,6 @@ ask you which one you want to set up.
 
 .. figure:: pictures/Qtenv-setup-dialog.png
    :width: 60%
-   :alt: Setting Up a New Simulation
 
    Setting Up a New Simulation
 
@@ -109,7 +107,6 @@ Functions related to setting up a simulation are in the :guilabel:`File` menu. S
 
 .. figure:: pictures/Qtenv-file-menu.png
    :width: 50%
-   :alt: The File menu
 
    The File menu
 
@@ -128,7 +125,6 @@ shortcuts as well.
 
 .. figure:: pictures/Qtenv-simulate-menu.png
    :width: 50%
-   :alt: The Simulate menu
 
    The Simulate menu
 
@@ -177,7 +173,6 @@ event` menu item.
 
 .. figure:: pictures/Qtenv-rununtil.png
    :width: 60%
-   :alt: The Run Until dialog
 
    The Run Until dialog
 
@@ -261,7 +256,6 @@ The new inspectors will open in floating windows above the main window, and you 
 
 .. figure:: pictures/Qtenv-floating-inspector.png
    :width: 40%
-   :alt: A floating inspector window
 
    A floating inspector window
 
@@ -287,7 +281,6 @@ object as a hex value. Inspector-related menu items are in the :guilabel:`Inspec
 
 .. figure:: pictures/Qtenv-inspect-menu.png
    :width: 50%
-   :alt: The Inspect menu
 
    The Inspect menu
 
@@ -349,7 +342,6 @@ The top one can be hidden using the :menuselection:`View --> Status Details` men
 
 .. figure:: pictures/Qtenv-statusbar.png
    :width: 90%
-   :alt: The top status bar
 
 
    The top status bar
@@ -369,7 +361,6 @@ useless, so the contents of the top row are replaced by the following performanc
 
 .. figure:: pictures/Qtenv-statusbar-running.png
    :width: 90%
-   :alt: The top status bar during Fast or Express run
 
    The top status bar during Fast or Express run
 
@@ -381,7 +372,6 @@ The bottom row contains the following items:
 
 .. figure:: pictures/Qtenv-statusbar-bottom.png
    :width: 90%
-   :alt: The bottom status bar
 
    The bottom status bar
 
@@ -396,7 +386,6 @@ The Timeline
 
 .. figure:: pictures/Qtenv-timeline.png
    :width: 90%
-   :alt: The timeline
 
    The timeline
 
@@ -422,7 +411,6 @@ The Object Navigator
 
 .. figure:: pictures/Qtenv-objtree.png
    :width: 40%
-   :alt: The object tree
 
    The object tree
 
@@ -443,13 +431,11 @@ Parent` buttons, and also by double-clicking objects shown inside the inspector'
 .. list-table:: 
 
    * - .. figure:: pictures/Qtenv-inspector-grouped.png
-          :alt: The object inspector in Grouped mode
           :width: 80%
 
           The object inspector in Grouped mode
 
      - .. figure:: pictures/Qtenv-inspector-flat.png
-          :alt: The object inspector in Flat mode
           :width: 80%
 
           The object inspector in Flat mode
@@ -468,13 +454,11 @@ mode they are organized based on which superclass they are inherited from.
 .. list-table::
 
    * - .. figure:: pictures/Qtenv-inspector-children.png
-          :alt: The object inspector in Children mode
           :width: 80%
 
           The object inspector in Children mode
 
      - .. figure:: pictures/Qtenv-inspector-inheritance.png
-          :alt: The object inspector in Inheritance mode
           :width: 80%
 
           The object inspector in Inheritance mode
@@ -495,7 +479,6 @@ in the :guilabel:`Animation` page of the :guilabel:`Preferences` dialog.
 
 .. figure:: pictures/Qtenv-network.png
    :width: 80%
-   :alt: The network display
 
    The network display
 
@@ -508,7 +491,6 @@ figures can be filtered based on the tags set on them.
 
 .. figure:: pictures/Qtenv-figure-filter.png
    :width: 60%
-   :alt: Figure filtering dialog
 
    Figure filtering dialog
 
@@ -522,7 +504,6 @@ display is replaced by the scene encapsulated by the ``cOsgCanvas``.
 
 .. figure:: pictures/Qtenv-osg.png
    :width: 80%
-   :alt: The network display in 3D mode
 
    The network display in 3D mode
 
@@ -530,13 +511,11 @@ The context menu of submodules makes further actions available (see below).
 
 .. figure:: pictures/Qtenv-submod-contextmenu.png
    :width: 60%
-   :alt: Submodule context menu
 
    Submodule context menu
 
 .. figure:: pictures/Qtenv-submod-utilities.png
    :width: 80%
-   :alt: The Utilities submenu
 
    The Utilities submenu
 
@@ -583,7 +562,6 @@ menu.
 
 .. figure:: pictures/Qtenv-log-msgs.png
    :width: 80%
-   :alt: The log viewer showing message traffic
 
    The log viewer showing message traffic
 
@@ -592,7 +570,6 @@ In :guilabel:`Log` mode, the window displays log lines that belong to submodules
 
 .. figure:: pictures/Qtenv-log-textual.png
    :width: 80%
-   :alt: The log viewer showing module log
 
    The log viewer showing module log
 
@@ -601,7 +578,6 @@ menu and select :guilabel:`Filter Window Contents`.
 
 .. figure:: pictures/Qtenv-log-filter.png
    :width: 50%
-   :alt: The log filter dialog
 
    The log filter dialog
 
@@ -623,7 +599,6 @@ objects. The screenshow below shows Qtenv with several inspectors open.
 
 .. figure:: pictures/Qtenv-with-inspectors.png
    :width: 80%
-   :alt: Qtenv with several floating inspectors open
 
    Qtenv with several floating inspectors open
 
@@ -632,7 +607,6 @@ Browsing the Registered Components
 
 .. figure:: pictures/Qtenv-inspect-menu-full.png
    :width: 60%
-   :alt: The Inspect menu
 
    The Inspect menu
 
@@ -660,7 +634,6 @@ Some possible use cases:
 
 .. figure:: pictures/Qtenv-find.png
    :width: 60%
-   :alt: Using the Find/Inspect Objects dialog for finding long queues
 
    Using the Find/Inspect Objects dialog for finding long queues
 
@@ -725,7 +698,6 @@ General
 
 .. figure:: pictures/Qtenv-pref-general.png
    :width: 60%
-   :alt: General settings
 
    General settings
 
@@ -738,7 +710,6 @@ Logs
 
 .. figure:: pictures/Qtenv-pref-logs.png
    :width: 60%
-   :alt: Logging settings
 
    Logging settings
 
@@ -750,7 +721,6 @@ Configuring the Layouting Algorithm
 
 .. figure:: pictures/Qtenv-pref-layouting.png
    :width: 60%
-   :alt: Layouting settings
 
    Layouting settings
 
@@ -762,7 +732,6 @@ Configuring Animation
 
 .. figure:: pictures/Qtenv-pref-animation.png
    :width: 60%
-   :alt: Animation settings
 
    Animation settings
 
@@ -784,7 +753,6 @@ Timeline and Animation Filtering
 
 .. figure:: pictures/Qtenv-pref-filtering.png
    :width: 60%
-   :alt: Filtering
 
    Filtering
 
@@ -834,7 +802,6 @@ Configuring Fonts
 
 .. figure:: pictures/Qtenv-pref-fonts.png
    :width: 60%
-   :alt: Font selection
 
    Font selection
 

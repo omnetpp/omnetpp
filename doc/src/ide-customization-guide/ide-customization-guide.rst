@@ -18,7 +18,6 @@ of showing off model features to users, wizards encourage users to experiment wi
 capabilities. The right set of capable wizards can give users a jump start by emphasizing learning by doing.
 
 .. figure:: pictures/new-wizard.png
-   :alt: The New Wizard wizard
    :width: 60%
 
    The New Wizard wizard
@@ -44,7 +43,6 @@ The IDE offers several |omnet++| related wizard dialogs: *New |omnet++| Project*
 so on. Every content template can contribute to one or more of those wizard dialogs.
 
 .. figure:: pictures/new-menu.png
-   :alt: The File --> New menu
    :width: 60%
 
    The File --> New menu
@@ -140,7 +138,6 @@ Some (custom) widgets may not appear in the Preview; this is because the Preview
 projects.
 
 .. figure:: pictures/xswt-editor.png
-   :alt: Editing an XSWT file
    :width: 80%
 
    Editing an XSWT file

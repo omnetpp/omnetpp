@@ -13,7 +13,6 @@ requested content.
 
 .. figure:: pictures/MSG-NewWizard.png
    :width: 60%
-   :alt: Creating a new MSG file
 
    Creating a new MSG file
 
@@ -24,7 +23,6 @@ The message file editor is a basic text editor with syntax highlight support.
 
 .. figure:: pictures/MSG-TextEditor.png
    :width: 60%
-   :alt: Message File Editor
 
    Message File Editor
 

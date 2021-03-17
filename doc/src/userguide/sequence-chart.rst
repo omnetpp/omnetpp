@@ -79,7 +79,6 @@ record button on the Qtenv toolbar before starting the simulation.
 
 .. figure:: pictures/INI-Eventlog.png
    :width: 60%
-   :alt: INI file eventlog configuration
 
    INI file eventlog configuration
 
@@ -225,7 +224,6 @@ within the area, thus all events inside it have the same simulation time associa
 
 .. figure:: pictures/SequenceChart-ZeroSimulationTimeRegions.png
    :width: 40%
-   :alt: Nonlinear simulation time
 
    Nonlinear simulation time
 
@@ -268,7 +266,6 @@ visible within the window.
 
 .. figure:: pictures/SequenceChart-Gutter.png
    :width: 90%
-   :alt: Gutter and range
 
    Gutter and range
 
@@ -285,7 +282,6 @@ changes according to their events' colors.
 
 .. figure:: pictures/SequenceChart-Events.png
    :width: 20%
-   :alt: Various event kinds
 
    Various event kinds
 
@@ -313,7 +309,6 @@ horizontally.
 
 .. figure:: pictures/SequenceChart-SplitArrows.png
    :width: 50%
-   :alt: Split arrows
 
    Split arrows
 
@@ -326,7 +321,6 @@ normally recorded by the simulation together with the eventlog file.
 
 .. figure:: pictures/SequenceChart-AxisWithState.png
    :width: 60%
-   :alt: Axis with state information displayed
 
    Axis with state information displayed
 
@@ -389,7 +383,6 @@ tooltip immediately because there are multiple items under the mouse.
 
 .. figure:: pictures/SequenceChart-Tooltip.png
    :width: 80%
-   :alt: Event tooltip
 
    Event tooltip
 
@@ -427,7 +420,6 @@ message in the chain that was filtered out.
 
 .. figure:: pictures/SequenceChart-ZigZagArrows.png
    :width: 40%
-   :alt: Zigzag arrows
 
    Zigzag arrows
 
@@ -464,7 +456,6 @@ what is present in the file.
 
 .. figure:: pictures/EventlogTable-RawMode.png
    :width: 80%
-   :alt: Raw notation
 
    Raw notation
 
@@ -474,7 +465,6 @@ two, use the :guilabel:`Display Mode` |displaymode_image| button on the toolbar 
 
 .. figure:: pictures/EventlogTable-DescriptiveMode.png
    :width: 80%
-   :alt: Descriptive notation
 
    Descriptive notation
 
@@ -535,7 +525,6 @@ event where it was received. These options are enabled only if they actually mak
 
 .. figure:: pictures/EventlogTable-NavigationMenu.png
    :width: 50%
-   :alt: Navigation context menu
 
    Navigation context menu
 
@@ -565,7 +554,6 @@ Bookmarked event is highlighted with a different background color.
 
 .. figure:: pictures/EventlogTable-Bookmark.png
    :width: 80%
-   :alt: A bookmark
 
    A bookmark
 
@@ -579,7 +567,6 @@ then a tooltip will show the recorded content of a message send over the corresp
 
 .. figure:: pictures/EventlogTable-Tooltip.png
    :width: 60%
-   :alt: A message send tooltip
 
    A message send tooltip
 
@@ -628,7 +615,6 @@ dialog.
 .. _fig-filter-dialog:
 .. figure:: pictures/SequenceChart-FilterDialog.png
    :width: 60%
-   :alt: Filter Dialog
 
    Filter Dialog
 
@@ -806,7 +792,6 @@ milliseconds and that the first sender is the node 'tic.'
 .. _fig-tictoc-two:
 .. figure:: pictures/SequenceChart-Examples-TicTocTwoNodes.png
    :width: 80%
-   :alt: Tictoc with two nodes
 
    Tictoc with two nodes
 
@@ -820,7 +805,6 @@ immediately sending a message from initialize to another node.
 .. _fig-tictoc-several:
 .. figure:: pictures/SequenceChart-Examples-TicTocSeveralNodes.png
    :width: 80%
-   :alt: Tictoc with six nodes
 
    Tictoc with six nodes
 
@@ -834,7 +818,6 @@ event #16. The events where the message was in between are filtered out.
 
 .. figure:: pictures/SequenceChart-Examples-TicTocSeveralNodesFiltered.png
    :width: 40%
-   :alt: Filtering for node '0' and '3'
 
    Filtering for node '0' and '3'
 
@@ -861,7 +844,6 @@ Finally, the message is sent to the ``sink`` where it is deleted at event #4.
 .. _fig-fifo:
 .. figure:: pictures/SequenceChart-Examples-FIFO.png
    :width: 80%
-   :alt: The FIFO example
 
    The FIFO example
 
@@ -878,7 +860,6 @@ event #10.
 .. _fig-fifo-reuse:
 .. figure:: pictures/SequenceChart-Examples-FIFOReuse.png
    :width: 80%
-   :alt: Showing reuse messages
 
    Showing reuse messages
 
@@ -901,7 +882,6 @@ the third one. Scrolling forward you can find other places where the queue becom
 .. _fig-fifo-filtered:
 .. figure:: pictures/SequenceChart-Examples-FIFOFiltered.png
    :width: 80%
-   :alt: Filtering the queue
 
    Filtering the queue
 
@@ -917,7 +897,6 @@ sources to their destinations.
 
 .. figure:: pictures/SequenceChart-Examples-RoutingNetwork.png
    :width: 60%
-   :alt: Network with 10 nodes
 
    Network with 10 nodes
 
@@ -930,7 +909,6 @@ ancestor.
 .. _fig-routing:
 .. figure:: pictures/SequenceChart-Examples-Routing.png
    :width: 80%
-   :alt: Filtering for nodes
 
    Filtering for nodes
 
@@ -960,7 +938,6 @@ presented for the second message send between event #17 and event #23.
 .. _fig-routing-tooltip:
 .. figure:: pictures/SequenceChart-Examples-RoutingTooltip.png
    :width: 50%
-   :alt: Message detail tooltip
 
    Message detail tooltip
 
@@ -1001,7 +978,6 @@ arrow.
 .. _fig-wireless-beg:
 .. figure:: pictures/SequenceChart-Examples-WirelessBeginning.png
    :width: 80%
-   :alt: The beginning
 
    The beginning
 
@@ -1038,7 +1014,6 @@ back to 'host1,' which then sends a WLAN acknowledge in return. In this process,
 
 .. figure:: pictures/SequenceChart-Examples-WirelessARP.png
    :width: 80%
-   :alt: Discovering the MAC address
 
    Discovering the MAC address
 
@@ -1062,7 +1037,6 @@ calculated from the message's length and the radio module's bitrate.
 .. _fig-wireless-succping:
 .. figure:: pictures/SequenceChart-Examples-WirelessSuccessfulPing.png
    :width: 80%
-   :alt: The second ping procedure
 
    The second ping procedure
 
@@ -1092,7 +1066,6 @@ is dropped.
 .. _fig-wireless-unsuccping:
 .. figure:: pictures/SequenceChart-Examples-WirelessUnsuccessfulPing.png
    :width: 80%
-   :alt: Ping messages get lost
 
    Ping messages get lost
 
