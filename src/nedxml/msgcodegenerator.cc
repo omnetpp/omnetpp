@@ -1651,7 +1651,7 @@ void MsgCodeGenerator::generateTemplates()
     CC << "// Template rule which fires if a struct or class doesn't have operator<<\n";
     CC << "template<typename T>\n";
     CC << "inline typename std::enable_if<!std::is_base_of<omnetpp::cObject, T>::value, std::ostream&>::type\n";
-    CC << "operator<<(std::ostream& out,const T&) {return out.operator<<(omnetpp::opp_typename(typeid(T)));}\n\n";
+    CC << "operator<<(std::ostream& out,const T&) {const char *s = omnetpp::opp_typename(typeid(T)); out.put('<'); out.write(s, strlen(s)); out.put('>'); return out;}\n\n"; // Note: DON'T USE out.operator<<(...)! It would print the pointer, because std::ostream has no operator<< overload for const char *, only for void *!
 
     CC << "// operator<< for std::vector<T>\n";
     CC << "template<typename T, typename A>\n";
