@@ -54,8 +54,8 @@ ExprValue makeExprValue(const cValue& value)
     switch (value.getType()) {
     case cValue::UNDEF: return ExprValue();
     case cValue::BOOL: return ExprValue(value.boolValue());
-    case cValue::INT: return ExprValue(value.intValue(), value.getUnit());
-    case cValue::DOUBLE: return ExprValue(value.doubleValue(), value.getUnit());
+    case cValue::INT: return ExprValue(value.intValueRaw(), value.getUnit());
+    case cValue::DOUBLE: return ExprValue(value.doubleValueRaw(), value.getUnit());
     case cValue::STRING: return ExprValue(value.stringValue());
     case cValue::OBJECT: return ExprValue(value.objectValue());
     }

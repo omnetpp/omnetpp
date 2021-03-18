@@ -79,7 +79,7 @@ DEF(nedf_fabs,
 
 cValue nedf_fabs(cComponent *contextComponent, cValue argv[], int argc)
 {
-    return cValue(fabs((double)argv[0]), argv[0].getUnit());
+    return cValue(fabs(argv[0].doubleValueRaw()), argv[0].getUnit());
 }
 
 DEF(nedf_fmod,
@@ -90,7 +90,7 @@ DEF(nedf_fmod,
 cValue nedf_fmod(cComponent *contextComponent, cValue argv[], int argc)
 {
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
-    return cValue(fmod((double)argv[0], argv1converted), argv[0].getUnit());
+    return cValue(fmod(argv[0].doubleValueRaw(), argv1converted), argv[0].getUnit());
 }
 
 DEF(nedf_min,
@@ -100,7 +100,7 @@ DEF(nedf_min,
 cValue nedf_min(cComponent *contextComponent, cValue argv[], int argc)
 {
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
-    return (double)argv[0] < argv1converted ? argv[0] : argv[1];
+    return argv[0].doubleValueRaw() < argv1converted ? argv[0] : argv[1];
 }
 
 DEF(nedf_max,
@@ -111,7 +111,7 @@ DEF(nedf_max,
 cValue nedf_max(cComponent *contextComponent, cValue argv[], int argc)
 {
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
-    return (double)argv[0] < argv1converted ? argv[1] : argv[0];
+    return argv[0].doubleValueRaw() < argv1converted ? argv[1] : argv[0];
 }
 
 
@@ -454,7 +454,7 @@ cValue nedf_int(cComponent *contextComponent, cValue argv[], int argc)
         case cValue::INT:
             return argv[0];
         case cValue::DOUBLE:
-            return cValue(checked_int_cast<intval_t>(floor(argv[0].doubleValue())), argv[0].getUnit());
+            return cValue(checked_int_cast<intval_t>(floor(argv[0].doubleValueRaw())), argv[0].getUnit());
         case cValue::STRING: {
             std::string unit;
             double d = UnitConversion::parseQuantity(argv[0].stringValue(), unit);
@@ -480,7 +480,7 @@ cValue nedf_double(cComponent *contextComponent, cValue argv[], int argc)
         case cValue::BOOL:
             return (bool)argv[0] ? 1.0 : 0.0;
         case cValue::INT:
-            return cValue((double)argv[0].intValue(), argv[0].getUnit());
+            return cValue(argv[0].doubleValueRaw(), argv[0].getUnit());
         case cValue::DOUBLE:
             return argv[0];
         case cValue::STRING: {
@@ -584,7 +584,7 @@ cValue nedf_uniform(cComponent *contextComponent, cValue argv[], int argc)
 {
     int rng = argc == 3 ? (int)argv[2] : 0;
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
-    return cValue(contextComponent->uniform((double)argv[0], argv1converted, rng), argv[0].getUnit());
+    return cValue(contextComponent->uniform(argv[0].doubleValueRaw(), argv1converted, rng), argv[0].getUnit());
 }
 
 DEF(nedf_exponential,
@@ -595,7 +595,7 @@ DEF(nedf_exponential,
 cValue nedf_exponential(cComponent *contextComponent, cValue argv[], int argc)
 {
     int rng = argc == 2 ? (int)argv[1] : 0;
-    return cValue(contextComponent->exponential((double)argv[0], rng), argv[0].getUnit());
+    return cValue(contextComponent->exponential(argv[0].doubleValueRaw(), rng), argv[0].getUnit());
 }
 
 DEF(nedf_normal,
@@ -607,7 +607,7 @@ cValue nedf_normal(cComponent *contextComponent, cValue argv[], int argc)
 {
     int rng = argc == 3 ? (int)argv[2] : 0;
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
-    return cValue(contextComponent->normal((double)argv[0], argv1converted, rng), argv[0].getUnit());
+    return cValue(contextComponent->normal(argv[0].doubleValueRaw(), argv1converted, rng), argv[0].getUnit());
 }
 
 DEF(nedf_truncnormal,
@@ -619,7 +619,7 @@ cValue nedf_truncnormal(cComponent *contextComponent, cValue argv[], int argc)
 {
     int rng = argc == 3 ? (int)argv[2] : 0;
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
-    return cValue(contextComponent->truncnormal((double)argv[0], argv1converted, rng), argv[0].getUnit());
+    return cValue(contextComponent->truncnormal(argv[0].doubleValueRaw(), argv1converted, rng), argv[0].getUnit());
 }
 
 DEF(nedf_gamma_d,
@@ -630,7 +630,7 @@ DEF(nedf_gamma_d,
 cValue nedf_gamma_d(cComponent *contextComponent, cValue argv[], int argc)
 {
     int rng = argc == 3 ? (int)argv[2] : 0;
-    return cValue(contextComponent->gamma_d((double)argv[0], (double)argv[1], rng), argv[1].getUnit());
+    return cValue(contextComponent->gamma_d((double)argv[0], argv[1].doubleValueRaw(), rng), argv[1].getUnit());
 }
 
 DEF(nedf_beta,
@@ -656,7 +656,7 @@ cValue nedf_erlang_k(cComponent *contextComponent, cValue argv[], int argc)
     if (k < 0)
         throw cRuntimeError("k parameter (number of phases) must be positive (k=%d)", k);
     int rng = argc == 3 ? (int)argv[2] : 0;
-    return cValue(contextComponent->erlang_k(k, (double)argv[1], rng), argv[1].getUnit());
+    return cValue(contextComponent->erlang_k(k, argv[1].doubleValueRaw(), rng), argv[1].getUnit());
 }
 
 DEF(nedf_chi_square,
@@ -696,7 +696,7 @@ cValue nedf_cauchy(cComponent *contextComponent, cValue argv[], int argc)
 {
     int rng = argc == 3 ? (int)argv[2] : 0;
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
-    return cValue(contextComponent->cauchy((double)argv[0], argv1converted, rng), argv[0].getUnit());
+    return cValue(contextComponent->cauchy(argv[0].doubleValueRaw(), argv1converted, rng), argv[0].getUnit());
 }
 
 DEF(nedf_triang,
@@ -709,7 +709,7 @@ cValue nedf_triang(cComponent *contextComponent, cValue argv[], int argc)
     int rng = argc == 4 ? (int)argv[3] : 0;
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
     double argv2converted = argv[2].doubleValueInUnit(argv[0].getUnit());
-    return cValue(contextComponent->triang((double)argv[0], argv1converted, argv2converted, rng), argv[0].getUnit());
+    return cValue(contextComponent->triang(argv[0].doubleValueRaw(), argv1converted, argv2converted, rng), argv[0].getUnit());
 }
 
 DEF(nedf_lognormal,
@@ -732,7 +732,7 @@ cValue nedf_weibull(cComponent *contextComponent, cValue argv[], int argc)
 {
     int rng = argc == 3 ? (int)argv[2] : 0;
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
-    return cValue(contextComponent->weibull((double)argv[0], argv1converted, rng), argv[0].getUnit());
+    return cValue(contextComponent->weibull(argv[0].doubleValueRaw(), argv1converted, rng), argv[0].getUnit());
 }
 
 DEF(nedf_pareto_shifted,
@@ -744,7 +744,7 @@ cValue nedf_pareto_shifted(cComponent *contextComponent, cValue argv[], int argc
 {
     int rng = argc == 4 ? (int)argv[3] : 0;
     double argv2converted = argv[2].doubleValueInUnit(argv[1].getUnit());
-    return cValue(contextComponent->pareto_shifted((double)argv[0], (double)argv[1], argv2converted, rng), argv[1].getUnit());
+    return cValue(contextComponent->pareto_shifted((double)argv[0], argv[1].doubleValueRaw(), argv2converted, rng), argv[1].getUnit());
 }
 
 // discrete
@@ -759,7 +759,7 @@ cValue nedf_intuniform(cComponent *contextComponent, cValue argv[], int argc)
     int rng = argc == 3 ? (int)argv[2] : 0;
     if (opp_strcmp(argv[0].getUnit(), argv[1].getUnit()) != 0)
         throw cRuntimeError("Arguments must have the same unit, got (%s,%s)", argv[0].stdstringValue().c_str(), argv[1].stdstringValue().c_str());
-    return cValue((intval_t)contextComponent->intuniform((int)argv[0], (int)argv[1], rng), argv[1].getUnit());
+    return cValue((intval_t)contextComponent->intuniform(argv[0].intValueRaw(), argv[1].intValueRaw(), rng), argv[1].getUnit());
 }
 
 DEF(nedf_intuniformexcl,
@@ -772,7 +772,7 @@ cValue nedf_intuniformexcl(cComponent *contextComponent, cValue argv[], int argc
     int rng = argc == 3 ? (int)argv[2] : 0;
     if (opp_strcmp(argv[0].getUnit(), argv[1].getUnit()) != 0)
         throw cRuntimeError("Arguments must have the same unit, got (%s,%s)", argv[0].stdstringValue().c_str(), argv[1].stdstringValue().c_str());
-    return cValue((intval_t)contextComponent->intuniformexcl((int)argv[0], (int)argv[1], rng), argv[1].getUnit());
+    return cValue((intval_t)contextComponent->intuniformexcl(argv[0].intValueRaw(), argv[1].intValueRaw(), rng), argv[1].getUnit());
 }
 
 DEF(nedf_bernoulli,
