@@ -170,7 +170,7 @@ since being loaded. Open charts are also refreshed.
 Reload Files
 ^^^^^^^^^^^^
 
-It is also possible to let the Analysis Tool complete forget all loaded result files,
+It is also possible to let the Analysis Tool completely forget all loaded result files,
 and have them reloaded from scratch. The functionality is available from the
 context menu as :guilabel:`Reload All Files`.
 
@@ -628,7 +628,7 @@ There are multiple, significantly different ways of exporting a chart to an imag
 - Finally, the :guilabel:`Export Chart` option opens the common
   image/data exporting dialog (see section :ref:`ana-batch-export`) for this
   chart only. This option relies on the chart script for doing the actual
-  exporting. (It runs the chart script  in the background, asking it for perform
+  exporting. (It runs the chart script  in the background, asking it to perform
   the export.)
 
 
@@ -718,7 +718,7 @@ write to the console using Python's ``print()`` statement. Notably,
    these unfortunately don't work on chart scripts. Limited debugging can be
    performed using print statements, throwing exceptions, and dumping stack traces,
    which is usually enough. If you really need debugging to get a piece of code
-   working, one way is to factor out the code be able to run independently,
+   working, one way is to factor out the code to be able to run independently,
    and use an external debugger (or the IDE's debugger) on the resulting ``.py`` file.
 
 Errors
@@ -915,7 +915,7 @@ Defining New Vector Operations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 You can define your own vector operations by injecting them into the
-``vectorops`` module. Even if this injection is done in an external module
+``vectorops`` module, even if this injection is done in an external module
 (``.py`` file imported from the directory of the ``.anf`` file)
 
 .. code-block:: python3
