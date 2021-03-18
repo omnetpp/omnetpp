@@ -40,7 +40,7 @@ public abstract class MultiPageEditorPartExt extends MultiPageEditorPart {
             switch (event.button) {
                 case 2: { // middle click
                     CTabItem item = folder.getItem(new Point(event.x, event.y));
-                    if (item != null)
+                    if (item != null && isClosablePage(item.getControl()))
                         item.dispose();
                 }
                 case 3: { // right click
