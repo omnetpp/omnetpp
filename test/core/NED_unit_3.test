@@ -8,7 +8,7 @@ simple Test
     parameters:
         @isNetwork(true);
         double p1 @unit(s) = 1.234567890123456789s;
-        double p2 @unit(s) = 1s 0.234567890123456789s;
+        double p2 @unit(s) = 1s 234.567890123456789ms;
 }
 
 %file: test.cc
