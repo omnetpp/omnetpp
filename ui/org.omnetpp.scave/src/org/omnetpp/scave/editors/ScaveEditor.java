@@ -8,6 +8,7 @@
 package org.omnetpp.scave.editors;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -20,6 +21,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -488,18 +490,40 @@ public class ScaveEditor extends MultiPageEditorPartExt
         FillLayout layout = new FillLayout();
         getContainer().setLayout(layout);
 
-        getTabFolder().setMRUVisible(true);
 
         createInputsPage();
         createBrowseDataPage();
         createChartsPage();
 
         final CTabFolder tabfolder = getTabFolder();
+        tabfolder.setMRUVisible(true);
         tabfolder.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 int newPageIndex = tabfolder.indexOf((CTabItem) e.item);
                 pageChangedByUser(newPageIndex);
+                ensureFixedPagesAlwaysVisible();
+            }
+
+            protected void ensureFixedPagesAlwaysVisible() {
+                try {
+                    Field field = CTabFolder.class.getDeclaredField("priority");
+                    field.setAccessible(true);
+
+                    // prio[] contains tab indices, in decreasing order of importance (wrt. which ones to hide)
+                    int[] prio = (int[])field.get(tabfolder);
+
+                    // move the first 3 pages (Inputs,Browse,Charts) to the front of the array;
+                    // also move the selected page to the very front, ensuring it is never hidden
+                    int currentlySelected = prio[0];
+                    prio = ArrayUtils.removeElements(prio, currentlySelected, 0, 1, 2);
+                    prio = ArrayUtils.addAll(new int[] {currentlySelected, 1, 2, 0}, prio);
+
+                    field.set(tabfolder, prio);
+                }
+                catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e1) {
+                    ScavePlugin.logError("Tweaking CTabFolder tab priorities failed", e1);
+                }
             }
         });
 
