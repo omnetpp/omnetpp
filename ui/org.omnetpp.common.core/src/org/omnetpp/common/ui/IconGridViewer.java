@@ -743,11 +743,11 @@ public class IconGridViewer extends ContentViewer {
                 text.addKeyListener(new KeyAdapter() {
                     @Override
                     public void keyPressed(KeyEvent e) {
-                        if (e.character == '\r') {
+                        if (e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR) {
                             handleDefaultSelection(null); // khmm... (event arg is not used in the actual code)
                             e.doit = false; // prevents '\r' from being added to the text
                         }
-                        else if (e.character == SWT.ESC) {
+                        else if (e.keyCode == SWT.ESC) {
                             setValueValid(false);
                             fireCancelEditor();
                             deactivate();
