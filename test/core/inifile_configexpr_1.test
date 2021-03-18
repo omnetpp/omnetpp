@@ -36,6 +36,7 @@ attr datetimef xxx
 attr experiment "Experiment One"
 attr inifile _defaults.ini
 attr iterationvars "$a=st, $i=5"
+attr iterationvarsd a=st/i=5
 attr iterationvarsf a=st,i=5-
 attr measurement "Measurement $a=st, $i=5"
 attr network Test
@@ -47,7 +48,6 @@ attr runnumber 000
 attr seedset 6
 itervar a st
 itervar i 5
-itervar iterationvarsd a=st/i=5
 config **.dummy1 st
 config **.dummy2 5
 config network "\"Te\" + \"st\""

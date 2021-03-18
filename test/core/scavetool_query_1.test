@@ -226,6 +226,7 @@ datetimef       xxxx
 experiment      General
 inifile         _defaults.ini
 iterationvars   
+iterationvarsd
 iterationvarsf  
 measurement     
 network         Test
@@ -244,6 +245,7 @@ datetimef       xxxx
 experiment      General
 inifile         _defaults.ini
 iterationvars   
+iterationvarsd
 iterationvarsf  
 measurement     
 network         Test
@@ -317,6 +319,7 @@ datetimef       xxxx
 experiment      General
 inifile         _defaults.ini
 iterationvars   
+iterationvarsd
 iterationvarsf  
 measurement     
 network         Test
@@ -335,6 +338,7 @@ datetimef       xxxx
 experiment      General
 inifile         _defaults.ini
 iterationvars   
+iterationvarsd
 iterationvarsf  
 measurement     
 network         Test
@@ -487,6 +491,7 @@ datetimef       xxxx
 experiment      General
 inifile         _defaults.ini
 iterationvars   
+iterationvarsd
 iterationvarsf  
 measurement     
 network         Test
@@ -505,6 +510,7 @@ datetimef       xxxx
 experiment      General
 inifile         _defaults.ini
 iterationvars   
+iterationvarsd
 iterationvarsf  
 measurement     
 network         Test

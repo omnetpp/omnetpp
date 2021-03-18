@@ -41,6 +41,7 @@ attr datetimef xxx
 attr experiment General
 attr inifile _defaults.ini
 attr iterationvars "$foovar=1, $barvar=one"
+attr iterationvarsd foovar=1/barvar=one
 attr iterationvarsf foovar=1,barvar=one-
 attr measurement "$foovar=1, $barvar=one"
 attr network Test
@@ -52,7 +53,6 @@ attr runnumber 0
 attr seedset 0
 itervar barvar one
 itervar foovar 1
-itervar iterationvarsd foovar=1/barvar=one
 config network Test
 config Test.**.foo 1
 config Test.**.bar one
@@ -78,6 +78,7 @@ attr datetimef xxx
 attr experiment General
 attr inifile _defaults.ini
 attr iterationvars "$foovar=1, $barvar=one"
+attr iterationvarsd foovar=1/barvar=one
 attr iterationvarsf foovar=1,barvar=one-
 attr measurement "$foovar=1, $barvar=one"
 attr network Test
@@ -89,7 +90,6 @@ attr runnumber 1
 attr seedset 1
 itervar barvar one
 itervar foovar 1
-itervar iterationvarsd foovar=1/barvar=one
 config network Test
 config Test.**.foo 1
 config Test.**.bar one
@@ -115,6 +115,7 @@ attr datetimef xxx
 attr experiment General
 attr inifile _defaults.ini
 attr iterationvars "$foovar=1, $barvar=two"
+attr iterationvarsd foovar=1/barvar=two
 attr iterationvarsf foovar=1,barvar=two-
 attr measurement "$foovar=1, $barvar=two"
 attr network Test
@@ -126,7 +127,6 @@ attr runnumber 2
 attr seedset 2
 itervar barvar two
 itervar foovar 1
-itervar iterationvarsd foovar=1/barvar=two
 config network Test
 config Test.**.foo 1
 config Test.**.bar two
@@ -152,6 +152,7 @@ attr datetimef xxx
 attr experiment General
 attr inifile _defaults.ini
 attr iterationvars "$foovar=1, $barvar=two"
+attr iterationvarsd foovar=1/barvar=two
 attr iterationvarsf foovar=1,barvar=two-
 attr measurement "$foovar=1, $barvar=two"
 attr network Test
@@ -163,7 +164,6 @@ attr runnumber 3
 attr seedset 3
 itervar barvar two
 itervar foovar 1
-itervar iterationvarsd foovar=1/barvar=two
 config network Test
 config Test.**.foo 1
 config Test.**.bar two
@@ -189,6 +189,7 @@ attr datetimef xxx
 attr experiment General
 attr inifile _defaults.ini
 attr iterationvars "$foovar=2, $barvar=one"
+attr iterationvarsd foovar=2/barvar=one
 attr iterationvarsf foovar=2,barvar=one-
 attr measurement "$foovar=2, $barvar=one"
 attr network Test
@@ -200,7 +201,6 @@ attr runnumber 4
 attr seedset 4
 itervar barvar one
 itervar foovar 2
-itervar iterationvarsd foovar=2/barvar=one
 config network Test
 config Test.**.foo 2
 config Test.**.bar one
@@ -226,6 +226,7 @@ attr datetimef xxx
 attr experiment General
 attr inifile _defaults.ini
 attr iterationvars "$foovar=2, $barvar=one"
+attr iterationvarsd foovar=2/barvar=one
 attr iterationvarsf foovar=2,barvar=one-
 attr measurement "$foovar=2, $barvar=one"
 attr network Test
@@ -237,7 +238,6 @@ attr runnumber 5
 attr seedset 5
 itervar barvar one
 itervar foovar 2
-itervar iterationvarsd foovar=2/barvar=one
 config network Test
 config Test.**.foo 2
 config Test.**.bar one
@@ -263,6 +263,7 @@ attr datetimef xxx
 attr experiment General
 attr inifile _defaults.ini
 attr iterationvars "$foovar=2, $barvar=two"
+attr iterationvarsd foovar=2/barvar=two
 attr iterationvarsf foovar=2,barvar=two-
 attr measurement "$foovar=2, $barvar=two"
 attr network Test
@@ -274,7 +275,6 @@ attr runnumber 6
 attr seedset 6
 itervar barvar two
 itervar foovar 2
-itervar iterationvarsd foovar=2/barvar=two
 config network Test
 config Test.**.foo 2
 config Test.**.bar two
@@ -300,6 +300,7 @@ attr datetimef xxx
 attr experiment General
 attr inifile _defaults.ini
 attr iterationvars "$foovar=2, $barvar=two"
+attr iterationvarsd foovar=2/barvar=two
 attr iterationvarsf foovar=2,barvar=two-
 attr measurement "$foovar=2, $barvar=two"
 attr network Test
@@ -311,7 +312,6 @@ attr runnumber 7
 attr seedset 7
 itervar barvar two
 itervar foovar 2
-itervar iterationvarsd foovar=2/barvar=two
 config network Test
 config Test.**.foo 2
 config Test.**.bar two
