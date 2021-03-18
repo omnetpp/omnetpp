@@ -38,14 +38,8 @@ public class OpenChartAction extends AbstractScaveAction {
                 charts.add((Chart)element);
         }
 
-        if (charts.size() == 1)
-            scaveEditor.openPage(charts.get(0));
-        else if (charts.size() > 1) {
-            // TODO open each chart separately
-            // make temporary chart sheet for them
-            // note: code is similar to that it CreateTempChartAction
-            String title = "Sheet" + (++counter);
-        }
+        for (Chart c : charts)
+            scaveEditor.openPage(c);
     }
 
     @Override
