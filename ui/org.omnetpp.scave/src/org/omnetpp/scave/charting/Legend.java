@@ -115,7 +115,7 @@ public class Legend implements ILegend {
     public Legend(PlotBase parent) {
 
         // KeyUp and KeyDown events don't have x and y...
-        Integer[] lastXY = new Integer[2];
+        int[] lastXY = new int[2];
 
         parent.addListener(SWT.MouseMove, (e) -> {
             int highlighted = -1;
