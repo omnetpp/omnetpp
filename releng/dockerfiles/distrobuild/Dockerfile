@@ -1,4 +1,4 @@
-FROM omnetpp/distrobuild-base:ubuntu18.04-macos11-200805
+FROM omnetpp/distrobuild-base:ubuntu18.04-macos11-210319
 LABEL maintainer="Rudolf Hornig <rudi@omnetpp.org>"
 
 # during docker image builds, the 'tools' directory in the context dir should contain the Windows and macOS toolchains (i.e. ./tools/170717/...)
