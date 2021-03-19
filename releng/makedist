@@ -128,27 +128,27 @@ export PATH=$OMNETPP_ROOT/bin:$PATH
 # create Makefile.inc
 ./configure || { echo --- error during running configure ---; exit 1;}
 
-# Generating PDF documentation
+# Generating documentation
 if [ "$BUILD_DOC" = "true" ]; then
   echo Generating documentation
   (cd doc/src && make clean)
   make doc || { echo --- error generating documentation ---; exit 1;}
-fi
-
-if [ "$BUILD_IDE_NATIVE" = "true" ]; then
-  echo --- Building native parts of the IDE ---
-  $OMNETPP_ROOT/releng/ide/native/build-ide-native || { echo --- error during compiling native IDE parts ---; exit 1;}
-fi
-
-# re-create Makefile.inc becuase the native build proc has overwritten it
-./configure || { echo --- error during running configure ---; exit 1;}
-
-# create the ide package
-if [ "$BUILD_IDE" = "true" ]; then
-  if [ "$BUILD_DOC" = "true" ]; then
+  if [ "$BUILD_IDE" = "true" ]; then
     echo --- Copying documatation to the IDE doc plugin
     make copy-ui-doc || { echo --- error copyig documentation ---; exit 1;}
   fi
+fi
+
+# create the ide package
+if [ "$BUILD_IDE" = "true" ]; then
+  if [ "$BUILD_IDE_NATIVE" = "true" ]; then
+    echo --- Building native parts of the IDE ---
+    $OMNETPP_ROOT/releng/ide/native/build-ide-native || { echo --- error during compiling native IDE parts ---; exit 1;}
+  fi
+
+  # re-create Makefile.inc becuase the native build proc has overwritten it
+  ./configure || { echo --- error during running configure ---; exit 1;}
+
   echo --- Building java parts of the IDE
   $OMNETPP_ROOT/releng/ide/java/build-ide-java || { echo --- error during building the IDE component ---; exit 1;}
 fi

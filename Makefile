@@ -148,11 +148,11 @@ $(SAMPLES):
 #
 apis:
 	@echo ===== Building $@ ====
-	$(Q)cd $(OMNETPP_DOC_DIR)/src && $(MAKE) apis
+	$(Q)cd $(OMNETPP_DOC_DIR)/src && $(MAKE) apis -j1
 
 doc:
 	@echo ===== Building $@ ====
-	$(Q)cd $(OMNETPP_DOC_DIR)/src && $(MAKE)
+	$(Q)cd $(OMNETPP_DOC_DIR)/src && $(MAKE) -j1
 
 #
 # Test
@@ -239,33 +239,16 @@ makefiles:
 copy-ui-doc:
 	$(Q)rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/api
 	$(Q)rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/manual
-	$(Q)rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/userguide
-	$(Q)rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/ide-overview
-	$(Q)rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/ide-customization-guide
-	$(Q)rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/ide-developersguide
+	$(Q)rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/guides
 	$(Q)cp -r $(OMNETPP_DOC_DIR)/visual-changelog $(OMNETPP_UI_DIR)/org.omnetpp.doc/content
 	$(Q)cp -r $(OMNETPP_DOC_DIR)/api $(OMNETPP_UI_DIR)/org.omnetpp.doc/content
 	$(Q)cp -r $(OMNETPP_DOC_DIR)/src/manual/eclipse $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/manual
-	$(Q)cp -r $(OMNETPP_DOC_DIR)/src/userguide/eclipse $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/userguide
-	$(Q)cp -r $(OMNETPP_DOC_DIR)/ide-overview $(OMNETPP_UI_DIR)/org.omnetpp.doc/content
-	$(Q)cp -r $(OMNETPP_DOC_DIR)/src/ide-customization-guide/eclipse $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/ide-customization-guide
-	$(Q)cp -r $(OMNETPP_DOC_DIR)/src/ide-developersguide/eclipse $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/ide-developersguide
+	$(Q)cp -r $(OMNETPP_ROOT)/out/doc/eclipsehelp $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/guides
 	$(Q)echo "<html><body><pre>" >$(OMNETPP_UI_DIR)/org.omnetpp.doc/content/License.html
 	$(Q)cat $(OMNETPP_DOC_DIR)/License >>$(OMNETPP_UI_DIR)/org.omnetpp.doc/content/License.html
 	$(Q)echo "</pre></body></html>" >>$(OMNETPP_UI_DIR)/org.omnetpp.doc/content/License.html
-	$(Q)rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/userguide/plugin.xml
-	$(Q)rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/ide-customization-guide/plugin.xml
-	$(Q)rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/ide-developersguide/plugin.xml
 	$(Q)perl -i -pe 's!<head>!<head><link rel="STYLESHEET" href="book.css"  type="text/css"/>!gi' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/WhatsNew.html
-	$(Q)perl -i -pe 's!<head>!<head><link rel="STYLESHEET" href="../book.css"  type="text/css"/>!gi' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/ide-overview/*.html
-	$(Q)perl -i -pe 's!<head>!<head><link rel="STYLESHEET" href="../book.css"  type="text/css"/>!gi' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/ide-changelog/*.html
 	$(Q)perl -i -pe 's!href="!href="content/manual/!gi' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/manual/toc.xml
-	$(Q)perl -i -pe 's!href="!href="content/userguide/!gi' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/userguide/toc.xml
-	$(Q)perl -i -pe 's!<head>!<head><link rel="STYLESHEET" href="../book.css"  type="text/css"/>!gi' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/userguide/*.html
-	$(Q)perl -i -pe 's!href="!href="content/ide-customization-guide/!gi' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/ide-customization-guide/toc.xml
-	$(Q)perl -i -pe 's!<head>!<head><link rel="STYLESHEET" href="../book.css"  type="text/css"/>!gi' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/ide-customization-guide/*.html
-	$(Q)perl -i -pe 's!href="!href="content/ide-developersguide/!gi' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/ide-developersguide/toc.xml
-	$(Q)perl -i -pe 's!<head>!<head><link rel="STYLESHEET" href="../book.css"  type="text/css"/>!gi' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/ide-developersguide/*.html
 
 ifeq ($(findstring linux,$(PLATFORM)),linux)
 

@@ -8,14 +8,14 @@ SPHINXOPTS    ?= -q
 # remove these options to get the latex error messages if latex stops with an error
 LATEXOPTS     ?= --halt-on-error -interaction=batchmode
 
-.PHONY: all clean apis api nedxml-api parsim-api do-manual do-manual-html do-manual-pdf do-guides do-guides-html do-guides-eclipsehelp do-guides-pdf
+.PHONY: all clean apis api nedxml-api parsim-api do-manual do-manual-html do-manual-pdf do-manual-eclipse do-guides do-guides-html do-guides-eclipsehelp do-guides-pdf
 
 #
 # Targets
 #
-all: apis do-manual do-guides
+all: | apis do-manual do-guides
 
-apis: api nedxml-api parsim-api
+apis: | api nedxml-api parsim-api
 
 api:
 	$(DOXYGEN) api.doxyfile
@@ -26,7 +26,7 @@ nedxml-api:
 parsim-api:
 	$(DOXYGEN) parsim.doxyfile
 
-do-manual: do-manual-pdf do-manual-html
+do-manual: | do-manual-pdf do-manual-html do-manual-eclipse
 
 do-manual-pdf:
 	cd manual && $(MAKE) pdf
@@ -34,7 +34,10 @@ do-manual-pdf:
 do-manual-html:
 	cd manual && $(MAKE) html
 
-do-guides: do-guides-html do-guides-pdf do-guides-eclipse
+do-manual-eclipse:
+	cd manual && $(MAKE) eclipse
+
+do-guides: | do-guides-html do-guides-pdf do-guides-eclipse
 
 do-guides-html:
 	$(SPHINXBUILD) -M html "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
