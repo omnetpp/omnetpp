@@ -437,7 +437,7 @@ sub makemake()
         push(@allExcludedDirs, @exceptSubdirs);
         push(@allExcludedDirs, @submakeDirs);
         @sourceDirs = collectDirs(".", \@allExcludedDirs);
-        error("too many subdirs for --deep") if (@sourceDirs > 1000);
+        error("too many subdirs for --deep") if (@sourceDirs > 10000);
     } else {
         @sourceDirs = ();
         if (isGoodDir(".", \@exceptSubdirs)) {
