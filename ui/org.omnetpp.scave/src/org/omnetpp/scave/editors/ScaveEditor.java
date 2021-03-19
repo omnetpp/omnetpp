@@ -10,6 +10,7 @@ package org.omnetpp.scave.editors;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -513,11 +514,13 @@ public class ScaveEditor extends MultiPageEditorPartExt
                     // prio[] contains tab indices, in decreasing order of importance (wrt. which ones to hide)
                     int[] prio = (int[])field.get(tabfolder);
 
-                    // move the first 3 pages (Inputs,Browse,Charts) to the front of the array;
+                    // move the first 3 pages (Inputs,Browse,Charts) to the front of the array
                     // also move the selected page to the very front, ensuring it is never hidden
                     int currentlySelected = prio[0];
-                    prio = ArrayUtils.removeElements(prio, currentlySelected, 0, 1, 2);
-                    prio = ArrayUtils.addAll(new int[] {currentlySelected, 1, 2, 0}, prio);
+                    prio = ArrayUtils.removeElements(prio, 0, 1, 2);
+                    prio = ArrayUtils.addAll(new int[] {1, 2, 0}, prio);
+                    prio = ArrayUtils.removeElement(prio, currentlySelected); // currentlySelected may be one of {0,1,2}
+                    prio = ArrayUtils.add(prio, 0, currentlySelected);
 
                     field.set(tabfolder, prio);
                 }
