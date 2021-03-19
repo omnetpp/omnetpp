@@ -116,7 +116,9 @@ html_theme_options = {
 }
 
 # -- Options for Eclipse help output --------------------------------------------
-eclipsehelp_basedir = 'content'
+eclipsehelp_basedir = 'content/guides'
+eclipsehelp_theme = 'alabaster'
+eclipsehelp_theme_options = {}
 
 # -- Options for LaTeX/PDF output -----------------------------------------------
 latex_engine = 'pdflatex'

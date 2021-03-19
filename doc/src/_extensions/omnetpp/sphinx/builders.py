@@ -10,7 +10,7 @@
 
 import re
 from os import path
-from typing import Any, Dict
+from typing import Any, Dict, Tuple
 
 from docutils import nodes
 from pygments.token import String
@@ -45,7 +45,7 @@ class EclipseHelpBuilder(StandaloneHTMLBuilder):
     Builder that also outputs toc.xml file for the Eclipse help system.
     """
     name = 'eclipsehelp'
-    epilog = __('To view the help file copy all the files into your eclipse documentation plugin.')
+    epilog = __('The Eclipse Help pages are in %(outdir)s.')
 
     # don't copy the reST source
     copysource = False
@@ -60,6 +60,9 @@ class EclipseHelpBuilder(StandaloneHTMLBuilder):
         super().init()
         self.out_suffix = '.html'
         self.link_suffix = '.html'
+
+    def get_theme_config(self) -> Tuple[str, Dict]:
+        return self.config.eclipsehelp_theme, self.config.eclipsehelp_theme_options
 
     def handle_finish(self):
         self.build_eclipsehelp(self.outdir)
