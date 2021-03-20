@@ -36,7 +36,7 @@ void EventLogTableFacade::clearInternalState()
     lastNumMatchingEventLogEntries = -1;
 }
 
-void EventLogTableFacade::synchronize(FileReader::FileChangedState change)
+void EventLogTableFacade::synchronize(FileReader::FileChange change)
 {
     if (change != FileReader::UNCHANGED) {
         EventLogFacade::synchronize(change);

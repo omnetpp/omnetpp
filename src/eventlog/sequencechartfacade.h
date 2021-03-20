@@ -52,7 +52,7 @@ class EVENTLOG_API SequenceChartFacade : public EventLogFacade
         virtual ~SequenceChartFacade() {}
 
         double calculateNonLinearFocus();
-        virtual void synchronize(FileReader::FileChangedState change) override;
+        virtual void synchronize(FileReader::FileChange change) override;
 
         TimelineMode getTimelineMode() { return timelineMode; }
         void setTimelineMode(TimelineMode timelineMode);

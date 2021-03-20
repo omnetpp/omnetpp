@@ -159,7 +159,7 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         virtual ProgressMonitor setProgressMonitor(ProgressMonitor progressMonitor) override { return eventLog->setProgressMonitor(progressMonitor); }
         virtual void setProgressCallInterval(double seconds) override { eventLog->setProgressCallInterval(seconds); }
         virtual void progress() override { eventLog->progress(); }
-        virtual void synchronize(FileReader::FileChangedState change) override;
+        virtual void synchronize(FileReader::FileChange change) override;
         virtual int getKeyframeBlockSize() override { return eventLog->getKeyframeBlockSize(); }
         virtual FileReader *getFileReader() override { return eventLog->getFileReader(); }
         virtual eventnumber_t getNumParsedEvents() override { return eventLog->getNumParsedEvents(); }

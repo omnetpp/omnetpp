@@ -128,7 +128,7 @@ class EVENTLOG_API EventLogIndex
         EventLogIndex(FileReader *reader);
         virtual ~EventLogIndex();
 
-        virtual void synchronize(FileReader::FileChangedState change);
+        virtual void synchronize(FileReader::FileChange change);
         eventnumber_t getFirstEventNumber();
         eventnumber_t getLastEventNumber();
         simtime_t getFirstSimulationTime();

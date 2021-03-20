@@ -71,7 +71,7 @@ class EVENTLOG_API IEventLog
          * Synchronizes state when the underlying log file has been changed.
          * Either new events were appended or the whole file has been overwritten.
          */
-        virtual void synchronize(FileReader::FileChangedState change);
+        virtual void synchronize(FileReader::FileChange change);
 
         /**
          * Returns the file reader used to read in events.

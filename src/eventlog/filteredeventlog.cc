@@ -56,7 +56,7 @@ void FilteredEventLog::deleteAllocatedObjects()
     eventNumberToTraceableEventFlagMap.clear();
 }
 
-void FilteredEventLog::synchronize(FileReader::FileChangedState change)
+void FilteredEventLog::synchronize(FileReader::FileChange change)
 {
     if (change != FileReader::UNCHANGED) {
         eventLog->synchronize(change);

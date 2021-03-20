@@ -55,7 +55,7 @@ class EVENTLOG_API EventLogTableFacade : public EventLogFacade
         EventLogTableFacade(IEventLog *eventLog);
         virtual ~EventLogTableFacade() {}
 
-        virtual void synchronize(FileReader::FileChangedState change) override;
+        virtual void synchronize(FileReader::FileChange change) override;
 
         EventLogTableFilterMode getFilterMode() { return filterMode; }
         void setFilterMode(EventLogTableFilterMode filterMode);

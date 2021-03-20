@@ -98,7 +98,7 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         Event *getEventForEndOffset(file_offset_t offset);
 
         // IEventLog interface
-        virtual void synchronize(FileReader::FileChangedState change) override;
+        virtual void synchronize(FileReader::FileChange change) override;
         virtual FileReader *getFileReader() override { return reader; }
         virtual eventnumber_t getNumParsedEvents() override { return numParsedEvents; }
         virtual std::set<const char *>& getMessageNames() override { return messageNames; }

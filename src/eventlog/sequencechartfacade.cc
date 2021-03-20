@@ -36,7 +36,7 @@ SequenceChartFacade::SequenceChartFacade(IEventLog *eventLog) : EventLogFacade(e
     undefineTimelineCoordinateSystem();
 }
 
-void SequenceChartFacade::synchronize(FileReader::FileChangedState change)
+void SequenceChartFacade::synchronize(FileReader::FileChange change)
 {
     if (change != FileReader::UNCHANGED) {
         EventLogFacade::synchronize(change);

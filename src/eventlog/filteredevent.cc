@@ -76,7 +76,7 @@ void FilteredEvent::deleteAllocatedObjects()
     deleteConsequences();
 }
 
-void FilteredEvent::synchronize(FileReader::FileChangedState change)
+void FilteredEvent::synchronize(FileReader::FileChange change)
 {
     if (change != FileReader::UNCHANGED) {
         switch (change) {

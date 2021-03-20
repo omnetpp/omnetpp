@@ -32,7 +32,7 @@ EventLogFacade::EventLogFacade(IEventLog *eventLog)
     this->eventLog = eventLog;
 }
 
-void EventLogFacade::synchronize(FileReader::FileChangedState change)
+void EventLogFacade::synchronize(FileReader::FileChange change)
 {
     if (change != FileReader::UNCHANGED)
         eventLog->synchronize(change);

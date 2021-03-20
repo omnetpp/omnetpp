@@ -114,7 +114,7 @@ void EventLogIndex::clearInternalState()
     simulationTimeToCacheEntryMap.clear();
 }
 
-void EventLogIndex::synchronize(FileReader::FileChangedState change)
+void EventLogIndex::synchronize(FileReader::FileChange change)
 {
     switch (change) {
         case FileReader::UNCHANGED:  // just to avoid unused enumeration value warnings

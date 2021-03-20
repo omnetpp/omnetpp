@@ -2281,7 +2281,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
         return new SequenceChartAction("Release Memory", Action.AS_PUSH_BUTTON, SequenceChartPlugin.getImageDescriptor(IMAGE_RELEASE_MEMORY)) {
             @Override
             protected void doRun() {
-                sequenceChart.getInput().synchronize(FileReader.FileChangedState.OVERWRITTEN);
+                sequenceChart.getInput().synchronize(FileReader.FileChange.OVERWRITTEN);
             }
         };
     }

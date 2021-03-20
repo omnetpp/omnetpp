@@ -34,7 +34,7 @@ void IEvent::clearInternalState()
     cachedTimelineCoordinateSystemVersion = -1;
 }
 
-void IEvent::synchronize(FileReader::FileChangedState change)
+void IEvent::synchronize(FileReader::FileChange change)
 {
     if (change == FileReader::OVERWRITTEN)
         clearInternalState();

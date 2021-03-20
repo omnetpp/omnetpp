@@ -68,7 +68,7 @@ class EVENTLOG_API Event : public IEvent
         file_offset_t parse(FileReader *reader, file_offset_t offset);
 
         // IEvent interface
-        virtual void synchronize(FileReader::FileChangedState change) override;
+        virtual void synchronize(FileReader::FileChange change) override;
         virtual IEventLog *getEventLog() override;
 
         virtual ModuleCreatedEntry *getModuleCreatedEntry() override;

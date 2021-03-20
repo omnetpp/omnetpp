@@ -71,7 +71,7 @@ void EventLog::deleteAllocatedObjects()
         delete it.second;
 }
 
-void EventLog::synchronize(FileReader::FileChangedState change)
+void EventLog::synchronize(FileReader::FileChange change)
 {
     if (change != FileReader::UNCHANGED) {
         IEventLog::synchronize(change);

@@ -32,7 +32,7 @@ void IEventLog::clearInternalState()
     lastNeighbourEvent = nullptr;
 }
 
-void IEventLog::synchronize(FileReader::FileChangedState change)
+void IEventLog::synchronize(FileReader::FileChange change)
 {
     if (change != FileReader::UNCHANGED)
         clearInternalState();

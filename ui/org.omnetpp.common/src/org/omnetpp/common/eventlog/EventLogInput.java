@@ -133,14 +133,14 @@ public class EventLogInput extends FileEditorInput
     public void synchronize(Exception e) {
         // TODO: XXX: FIXME: get change and call synchronize with that
         if (e.getMessage().contains("appended"))
-            synchronize(FileReader.FileChangedState.APPENDED);
+            synchronize(FileReader.FileChange.APPENDED);
         else
-            synchronize(FileReader.FileChangedState.OVERWRITTEN);
+            synchronize(FileReader.FileChange.OVERWRITTEN);
     }
 
     public void synchronize(int change) {
         Assert.isTrue(Display.getCurrent() != null);
-        if (change != FileReader.FileChangedState.UNCHANGED) {
+        if (change != FileReader.FileChange.UNCHANGED) {
             if (debug)
                 Debug.println("Synchronizing event log file content: " + getFile().getName());
             getEventLogTableFacade().synchronize(change);
@@ -419,10 +419,10 @@ public class EventLogInput extends FileEditorInput
 
     private void eventLogChanged(int change) {
         switch (change) {
-            case FileReader.FileChangedState.APPENDED:
+            case FileReader.FileChange.APPENDED:
                 eventLogAppended();
                 break;
-            case FileReader.FileChangedState.OVERWRITTEN:
+            case FileReader.FileChange.OVERWRITTEN:
                 eventLogOverwritten();
                 break;
         }

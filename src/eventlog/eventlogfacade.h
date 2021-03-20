@@ -53,7 +53,7 @@ class EVENTLOG_API EventLogFacade
         virtual ~EventLogFacade() {}
 
         void setEventLog(IEventLog *eventLog) { Assert(eventLog); this->eventLog = eventLog; }
-        virtual void synchronize(FileReader::FileChangedState change);
+        virtual void synchronize(FileReader::FileChange change);
 
         IEvent* IEvent_getEvent(ptr_t ptr);
         ptr_t IEvent_getNonFilteredEvent(ptr_t ptr);
