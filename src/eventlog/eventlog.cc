@@ -28,7 +28,7 @@ StringPool eventLogStringPool;
 
 EventLog::EventLog(FileReader *reader) : EventLogIndex(reader)
 {
-    reader->setIgnoreAppendChanges(false);
+    //TMP: reader->setIgnoreAppendChanges(false);
     clearInternalState();
     parseKeyframes();
     if (reader->getFileSize() < 10E+6) {
