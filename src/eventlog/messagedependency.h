@@ -48,7 +48,8 @@ class EVENTLOG_API IMessageDependency
         virtual IEvent *getConsequenceEvent() = 0;
         virtual simtime_t getConsequenceSimulationTime() = 0;
 
-        virtual MessageEntry *getMessageEntry() = 0;
+        virtual MessageDescriptionEntry *getBeginMessageDescriptionEntry() = 0;
+        virtual MessageDescriptionEntry *getEndMessageDescriptionEntry() = 0;
 
         virtual IMessageDependency *duplicate(IEventLog *eventLog) = 0;
         virtual bool equals(IMessageDependency *other);
@@ -82,7 +83,8 @@ class EVENTLOG_API MessageSendDependency : public IMessageDependency
         virtual IEvent *getConsequenceEvent() override;
         virtual simtime_t getConsequenceSimulationTime() override;
 
-        virtual MessageEntry *getMessageEntry() override;
+        virtual MessageDescriptionEntry *getBeginMessageDescriptionEntry() override;
+        virtual MessageDescriptionEntry *getEndMessageDescriptionEntry() override;
 
         virtual MessageSendDependency *duplicate(IEventLog *eventLog) override;
         virtual bool equals(IMessageDependency *other) override;
@@ -98,7 +100,7 @@ class EVENTLOG_API MessageSendDependency : public IMessageDependency
 class EVENTLOG_API MessageReuseDependency : public IMessageDependency
 {
     protected:
-        eventnumber_t causeEventNumber; // -2 means not yet calculated from the consequenceEventNumber, -1 means not found in file
+        eventnumber_t causeEventNumber; // -1 means not yet calculated from the consequenceEventNumber, -2 means not found in file
         eventnumber_t consequenceEventNumber; // always present
         int eventLogEntryIndex; // refers to an entry of consequenceEvent
 
@@ -114,7 +116,8 @@ class EVENTLOG_API MessageReuseDependency : public IMessageDependency
         virtual IEvent *getConsequenceEvent() override;
         virtual simtime_t getConsequenceSimulationTime() override;
 
-        virtual MessageEntry *getMessageEntry() override;
+        virtual MessageDescriptionEntry *getBeginMessageDescriptionEntry() override;
+        virtual MessageDescriptionEntry *getEndMessageDescriptionEntry() override;
 
         virtual MessageReuseDependency *duplicate(IEventLog *eventLog) override;
         virtual bool equals(IMessageDependency *other) override;
@@ -158,7 +161,8 @@ class EVENTLOG_API FilteredMessageDependency : public IMessageDependency
         virtual IEvent *getConsequenceEvent() override;
         virtual simtime_t getConsequenceSimulationTime() override { return endMessageDependency->getConsequenceSimulationTime(); };
 
-        virtual MessageEntry *getMessageEntry() override { return beginMessageDependency->getMessageEntry(); }
+        virtual MessageDescriptionEntry *getBeginMessageDescriptionEntry() override { return beginMessageDependency->getBeginMessageDescriptionEntry(); }
+        virtual MessageDescriptionEntry *getEndMessageDescriptionEntry() override { return beginMessageDependency->getEndMessageDescriptionEntry(); }
         Kind getKind() { return kind; }
 
         virtual FilteredMessageDependency *duplicate(IEventLog *eventLog) override;
@@ -170,7 +174,7 @@ class EVENTLOG_API FilteredMessageDependency : public IMessageDependency
 };
 
 } // namespace eventlog
-}  // namespace omnetpp
+} // namespace omnetpp
 
 
 #endif

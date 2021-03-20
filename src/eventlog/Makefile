@@ -30,9 +30,10 @@ COPTS=$(CFLAGS) $(INCL_FLAGS)
 
 IMPLIBS= -loppcommon$D
 
-OBJS= $O/ievent.o $O/ieventlog.o $O/eventlogfacade.o $O/eventlogtablefacade.o $O/sequencechartfacade.o \
+OBJS= $O/ievent.o $O/ieventlog.o \
       $O/eventlog.o $O/eventlogindex.o $O/messagedependency.o $O/event.o $O/eventlogentry.o \
-      $O/eventlogentries.o $O/filteredevent.o $O/filteredeventlog.o $O/eventlogentryfactory.o
+      $O/eventlogentries.o $O/filteredevent.o $O/filteredeventlog.o $O/eventlogentryfactory.o \
+      $O/eventlogentrycache.o $O/index.o $O/snapshot.o 
 
 GENERATED_SOURCES= eventlogentries.csv eventlogentries.h eventlogentries.cc eventlogentryfactory.cc
 

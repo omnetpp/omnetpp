@@ -127,21 +127,19 @@ void Options::deleteEventLog(IEventLog *eventLog)
 eventnumber_t Options::getFirstEventNumber()
 {
     if (firstEventNumber == -2) {
-        FileReader *fileReader = new FileReader(inputFileName);
-        EventLog eventLog(fileReader);
-
-        firstEventNumber = -1;
-
         if (fromEventNumber != -1)
             firstEventNumber = fromEventNumber;
         else if (fromSimulationTime != simtime_nil) {
+            FileReader *fileReader = new FileReader(inputFileName);
+            EventLog eventLog(fileReader);
             IEvent *event = eventLog.getEventForSimulationTime(fromSimulationTime, FIRST_OR_NEXT);
-
             if (event)
                 firstEventNumber = event->getEventNumber();
             else
                 firstEventNumber = -1;
         }
+        else
+            firstEventNumber = -1;
     }
 
     return firstEventNumber;
@@ -150,21 +148,19 @@ eventnumber_t Options::getFirstEventNumber()
 eventnumber_t Options::getLastEventNumber()
 {
     if (lastEventNumber == -2) {
-        FileReader *fileReader = new FileReader(inputFileName);
-        EventLog eventLog(fileReader);
-
-        lastEventNumber = -1;
-
         if (toEventNumber != -1)
             lastEventNumber = toEventNumber;
         else if (toSimulationTime != simtime_nil) {
+            FileReader *fileReader = new FileReader(inputFileName);
+            EventLog eventLog(fileReader);
             IEvent *event = eventLog.getEventForSimulationTime(toSimulationTime, LAST_OR_PREVIOUS);
-
             if (event)
                 lastEventNumber = event->getEventNumber();
             else
                 lastEventNumber = -1;
         }
+        else
+            lastEventNumber = -1;
     }
 
     return lastEventNumber;
@@ -189,7 +185,7 @@ void offsets(Options options)
 
             if (offset != -1 && options.verbose) {
                 fileReader->seekTo(offset);
-                fprintf(stdout, "#  - line at that offset: %.*s", fileReader->getCurrentLineLength(), fileReader->getNextLineBufferPointer());
+                fprintf(stdout, "#  - line at that offset: %.*s", (int)fileReader->getCurrentLineLength(), fileReader->getNextLineBufferPointer());
             }
 
             fprintf(options.outputFile, "%" PRId64 "\n", offset);
@@ -287,7 +283,7 @@ void cat(Options options)
     long begin = clock();
     char *line;
     while ((line = fileReader->getNextLineBufferPointer()))
-        fprintf(stdout, "%.*s", fileReader->getCurrentLineLength(), line);
+        fprintf(stdout, "%.*s", (int)fileReader->getCurrentLineLength(), line);
     long end = clock();
 
     if (options.verbose)
@@ -423,7 +419,7 @@ void parseStringTokens(std::vector<std::string>& parameter, char *str)
 }
 
 } // namespace eventlog
-}  // namespace omnetpp
+} // namespace omnetpp
 
 using namespace omnetpp::eventlog;
 

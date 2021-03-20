@@ -20,6 +20,7 @@
 #include "event.h"
 #include "eventlog.h"
 #include "eventlogentry.h"
+#include "index.h"
 
 using namespace omnetpp::common;
 
@@ -42,25 +43,16 @@ void Event::clearInternalState()
     endOffset = -1;
     numEventLogMessages = -1;
     numBeginSendEntries = -1;
-    eventEntry = nullptr;
-    moduleCreatedEntry = nullptr;
-    cause = nullptr;
-    causes = nullptr;
-    consequences = nullptr;
+    numCustomEntries = -1;
+    eventEntry = NULL;
+    moduleDescriptionEntry = NULL;
+    cause = NULL;
+    causes = NULL;
+    consequences = NULL;
     eventLogEntries.clear();
 }
 
-void Event::deleteConsequences()
-{
-    if (consequences) {
-        for (auto & consequence : *consequences)
-            delete consequence;
-        delete consequences;
-        consequences = nullptr;
-    }
-}
-
-void Event::deleteAllocatedObjects()
+void Event::deleteCauses()
 {
     if (cause && !causes) {
         delete cause;
@@ -70,12 +62,33 @@ void Event::deleteAllocatedObjects()
         for (auto & cause : *causes)
             delete cause;
         delete causes;
-        causes = nullptr;
+        causes = NULL;
+        cause = NULL;
     }
-    deleteConsequences();
-    for (auto & eventLogEntry : eventLogEntries)
-        delete eventLogEntry;
+}
+
+void Event::deleteConsequences()
+{
+    if (consequences) {
+        for (IMessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++)
+            delete *it;
+        delete consequences;
+        consequences = NULL;
+    }
+}
+
+void Event::deleteEventLogEntries()
+{
+    for (EventLogEntryList::iterator it = eventLogEntries.begin(); it != eventLogEntries.end(); it++)
+        delete *it;
     eventLogEntries.clear();
+}
+
+void Event::deleteAllocatedObjects()
+{
+    deleteCauses();
+    deleteConsequences();
+    deleteEventLogEntries();
 }
 
 void Event::synchronize(FileReader::FileChange change)
@@ -88,10 +101,11 @@ void Event::synchronize(FileReader::FileChange change)
                 clearInternalState();
                 break;
             case FileReader::APPENDED:
+                deleteCauses();
                 deleteConsequences();
                 break;
-            case FileReader::UNCHANGED:   // just to avoid unused enumeration value warnings
-                break;
+            default:
+                throw opp_runtime_error("Unknown file change");
         }
     }
 }
@@ -101,12 +115,11 @@ IEventLog *Event::getEventLog()
     return eventLog;
 }
 
-ModuleCreatedEntry *Event::getModuleCreatedEntry()
+ModuleDescriptionEntry *Event::getModuleDescriptionEntry()
 {
-    if (!moduleCreatedEntry)
-        moduleCreatedEntry = eventLog->getModuleCreatedEntry(getModuleId());
-
-    return moduleCreatedEntry;
+    if (!moduleDescriptionEntry)
+        moduleDescriptionEntry = eventLog->getEventLogEntryCache()->getModuleDescriptionEntry(getModuleId());
+    return moduleDescriptionEntry;
 }
 
 file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
@@ -117,75 +130,81 @@ file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
     clearInternalState();
     numEventLogMessages = 0;
     numBeginSendEntries = 0;
+    numCustomEntries = 0;
 
     Assert(offset >= 0);
     beginOffset = offset;
+    if (PRINT_DEBUG_MESSAGES) printf("Parsing event at offset: %" PRId64 "\n", offset);
+    return parseLines(reader, offset);
+}
+
+file_offset_t Event::parseLines(FileReader *reader, file_offset_t offset)
+{
+    if (PRINT_DEBUG_MESSAGES) printf("Parsing lines at offset: %" PRId64 "\n", offset);
     reader->seekTo(offset);
-
-    if (PRINT_DEBUG_MESSAGES)
-        printf("Parsing event at offset: %" PRId64 "\n", offset);
-
-    int index = 0;
+    // prepare index based on the already loaded eventlog entries
+    int index = eventLogEntries.size();
+    // prepare context module ids based on the already loaded eventlog entries
     std::deque<int> contextModuleIds;
-
-    while (true) {
-        char *line = reader->getNextLineBufferPointer();
-
-        if (!line) {
-            Assert(eventEntry);
-            endOffset = reader->getFileSize();
-            return endOffset;
-        }
-
-        EventLogEntry *eventLogEntry = EventLogEntry::parseEntry(eventLog, this, index, reader->getCurrentLineStartOffset(), line, reader->getCurrentLineLength());
-
-        // skip empty lines
-        if (!eventLogEntry)
-            continue;
-        else
-            index++;
-
-        // first line must be an event entry
-        EventEntry *readEventEntry = dynamic_cast<EventEntry *>(eventLogEntry);
-        if (!eventEntry) {
-            Assert(readEventEntry);
-            eventEntry = readEventEntry;
-            contextModuleIds.push_front(eventEntry->moduleId);
-        }
-        else if (readEventEntry) {
-            // stop at the start of the next event
-            delete eventLogEntry;
-            break;
-        }
-
-        Assert(eventEntry);
-
+    if (eventEntry)
+        contextModuleIds.push_front(eventEntry->moduleId);
+    for (EventLogEntryList::iterator it = eventLogEntries.begin(); it != eventLogEntries.end(); it++) {
+        EventLogEntry *eventLogEntry = *it;
         // handle module method end
         ComponentMethodEndEntry *componentMethodEndEntry = dynamic_cast<ComponentMethodEndEntry *>(eventLogEntry);
         if (componentMethodEndEntry)
             contextModuleIds.pop_front();
-
-        // store log entry
-        eventLogEntry->level = contextModuleIds.size() - 1;
-        eventLogEntry->contextModuleId = contextModuleIds.front();
-        eventLogEntries.push_back(eventLogEntry);
-
         // handle module method begin
         ComponentMethodBeginEntry *componentMethodBeginEntry = dynamic_cast<ComponentMethodBeginEntry *>(eventLogEntry);
         if (componentMethodBeginEntry)
             contextModuleIds.push_front(componentMethodBeginEntry->targetComponentId);
-
+    }
+    // parse lines one by one
+    while (true) {
+        char *line = reader->getNextLineBufferPointer();
+        if (!line) {
+            endOffset = reader->getFileSize();
+            break;
+        }
+        EventLogEntry *eventLogEntry = EventLogEntry::parseEntry(eventLog, this, index, reader->getCurrentLineStartOffset(), line, reader->getCurrentLineLength());
+        // stop at first empty line
+        if (!eventLogEntry) {
+            endOffset = reader->getCurrentLineEndOffset();
+            break;
+        }
+        else
+            index++;
+        // first line must be an event entry
+        EventEntry *readEventEntry = dynamic_cast<EventEntry *>(eventLogEntry);
+        Assert((!eventEntry && readEventEntry) || (eventEntry && !readEventEntry));
+        if (!eventEntry) {
+            eventEntry = readEventEntry;
+            contextModuleIds.push_front(eventEntry->moduleId);
+        }
+        // handle module method end
+        ComponentMethodEndEntry *componentMethodEndEntry = dynamic_cast<ComponentMethodEndEntry *>(eventLogEntry);
+        if (componentMethodEndEntry)
+            contextModuleIds.pop_front();
+        // store log entry
+        eventLogEntry->level = contextModuleIds.size() - 1;
+        eventLogEntry->contextModuleId = contextModuleIds.front();
+        eventLogEntries.push_back(eventLogEntry);
+        // handle module method begin
+        ComponentMethodBeginEntry *componentMethodBeginEntry = dynamic_cast<ComponentMethodBeginEntry *>(eventLogEntry);
+        if (componentMethodBeginEntry)
+            contextModuleIds.push_front(componentMethodBeginEntry->targetComponentId);
         // count message entry
         if (dynamic_cast<EventLogMessageEntry *>(eventLogEntry))
             numEventLogMessages++;
-
         // count begin send entry
-        if (dynamic_cast<BeginSendEntry *>(eventLogEntry))
+        else if (dynamic_cast<BeginSendEntry *>(eventLogEntry))
             numBeginSendEntries++;
+        // count begin send entry
+        else if (dynamic_cast<CustomEntry *>(eventLogEntry))
+            numCustomEntries++;
     }
-
     Assert(eventEntry);
-    return endOffset = reader->getCurrentLineStartOffset();
+    return endOffset;
 }
 
 void Event::print(FILE *file, bool outputEventLogMessages)
@@ -194,6 +213,7 @@ void Event::print(FILE *file, bool outputEventLogMessages)
         if (outputEventLogMessages || !dynamic_cast<EventLogMessageEntry *>(eventLogEntry))
             eventLogEntry->print(file);
     }
+    fprintf(file, "\n");
 }
 
 EventLogMessageEntry *Event::getEventLogMessage(int index)
@@ -264,10 +284,9 @@ ComponentMethodEndEntry *Event::getComponentMethodEndEntry(ComponentMethodBeginE
                 level--;
         }
     }
-
-    throw opp_runtime_error("neither EndSendEntry nor DeleteMessageEntry found");
+    // premature end of file
+    return NULL;
 }
-
 
 simtime_t Event::getTransmissionDelay(BeginSendEntry *beginSendEntry)
 {
@@ -283,7 +302,7 @@ simtime_t Event::getTransmissionDelay(BeginSendEntry *beginSendEntry)
             transmissionDelay = sendDirectEntry->transmissionDelay;
         else if (SendHopEntry *sendHopEntry = dynamic_cast<SendHopEntry *>(eventLogEntry))
             transmissionDelay = sendHopEntry->transmissionDelay;
-        else if (eventLogEntry == endSendEntry || (!dynamic_cast<EventLogMessageEntry *>(eventLogEntry) && !dynamic_cast<MessageEntry *>(eventLogEntry)))
+        else if (eventLogEntry == endSendEntry || (!dynamic_cast<EventLogMessageEntry *>(eventLogEntry) && !dynamic_cast<MessageDescriptionEntry *>(eventLogEntry)))
             break;
         if (transmissionDelay != 0)
             break;
@@ -293,10 +312,38 @@ simtime_t Event::getTransmissionDelay(BeginSendEntry *beginSendEntry)
     return transmissionDelay;
 }
 
+simtime_t Event::getRemainingDuration(BeginSendEntry *beginSendEntry)
+{
+    Assert(beginSendEntry && this == beginSendEntry->getEvent());
+    EndSendEntry *endSendEntry = getEndSendEntry(beginSendEntry);
+    int index = beginSendEntry->getEntryIndex() + 1;
+    simtime_t remainingDuration = BigDecimal::Zero;
+
+    // there is at most one entry which specifies a transmission delay
+    while (index < (int)eventLogEntries.size()) {
+        EventLogEntry *eventLogEntry = eventLogEntries[index];
+        if (SendDirectEntry *sendDirectEntry = dynamic_cast<SendDirectEntry *>(eventLogEntry))
+            remainingDuration = sendDirectEntry->remainingDuration;
+        else if (SendHopEntry *sendHopEntry = dynamic_cast<SendHopEntry *>(eventLogEntry))
+            remainingDuration = sendHopEntry->remainingDuration;
+        else if (eventLogEntry == endSendEntry || (!dynamic_cast<EventLogMessageEntry *>(eventLogEntry) && !dynamic_cast<MessageDescriptionEntry *>(eventLogEntry)))
+            break;
+        if (remainingDuration != 0)
+            break;
+        index++;
+    }
+
+    return remainingDuration;
+}
+
 Event *Event::getPreviousEvent()
 {
     if (!previousEvent && eventLog->getFirstEvent() != this) {
-        previousEvent = eventLog->getEventForEndOffset(beginOffset);
+        eventnumber_t eventNumber;
+        file_offset_t lineBeginOffset = -1, lineEndOffset;
+        simtime_t simulationTime;
+        eventLog->readToEventLine(false, beginOffset, eventNumber, simulationTime, lineBeginOffset, lineEndOffset);
+        previousEvent = eventLog->getEventForBeginOffset(lineBeginOffset);
 
         if (previousEvent)
             IEvent::linkEvents(previousEvent, this);
@@ -308,7 +355,11 @@ Event *Event::getPreviousEvent()
 Event *Event::getNextEvent()
 {
     if (!nextEvent && eventLog->getLastEvent() != this) {
-        nextEvent = eventLog->getEventForBeginOffset(endOffset);
+        eventnumber_t eventNumber;
+        file_offset_t lineBeginOffset = -1, lineEndOffset;
+        simtime_t simulationTime;
+        eventLog->readToEventLine(true, endOffset, eventNumber, simulationTime, lineBeginOffset, lineEndOffset);
+        nextEvent = eventLog->getEventForBeginOffset(lineBeginOffset);
 
         if (nextEvent)
             Event::linkEvents(this, nextEvent);
@@ -330,7 +381,7 @@ BeginSendEntry *Event::getCauseBeginSendEntry()
 {
     MessageSendDependency *cause = getCause();
     if (cause)
-        return (BeginSendEntry *)cause->getMessageEntry();
+        return (BeginSendEntry *)cause->getBeginMessageDescriptionEntry();
     else
         return nullptr;
 }
@@ -340,9 +391,9 @@ MessageSendDependency *Event::getCause()
     if (!cause) {
         Event *event = getCauseEvent();
         if (event) {
-            int beginSendEntryNumber = event->findBeginSendEntryIndex(getMessageId());
-            if (beginSendEntryNumber != -1)
-                cause = new MessageSendDependency(eventLog, getCauseEventNumber(), beginSendEntryNumber);
+            int index = event->findBeginSendEntryIndex(getMessageId());
+            if (index != -1)
+                cause = new MessageSendDependency(eventLog, getCauseEventNumber(), index);
         }
     }
     return cause;
@@ -352,17 +403,15 @@ IMessageDependencyList *Event::getCauses()
 {
     if (!causes) {
         causes = new IMessageDependencyList();
-
-        if (getCause())
-            // using "ce" from "E" line
-            causes->push_back(getCause());
-
+        // using "ce" from "E" line
+        MessageSendDependency *cause = getCause();
+        if (cause)
+            causes->push_back(cause);
         // add message reuses
         eventnumber_t eventNumber = getEventNumber();
         for (int i = 0; i < (int)eventLogEntries.size(); i++) {
-            EventLogEntry *eventLogEntry = eventLogEntries[i];
-            MessageEntry *messageEntry = dynamic_cast<MessageEntry *>(eventLogEntry);
-            if (messageEntry && messageEntry->previousEventNumber != -1 && messageEntry->previousEventNumber != eventNumber)
+            MessageDescriptionEntry *messageDescriptionEntry = dynamic_cast<MessageDescriptionEntry *>(eventLogEntries[i]);
+            if (messageDescriptionEntry && messageDescriptionEntry->previousEventNumber != -1 && messageDescriptionEntry->previousEventNumber != eventNumber)
                 causes->push_back(new MessageReuseDependency(eventLog, eventNumber, i));
         }
     }
@@ -374,21 +423,147 @@ IMessageDependencyList *Event::getConsequences()
 {
     if (!consequences) {
         consequences = new IMessageDependencyList();
-        for (int beginSendEntryNumber = 0; beginSendEntryNumber < (int)eventLogEntries.size(); beginSendEntryNumber++) {
-            EventLogEntry *eventLogEntry = eventLogEntries[beginSendEntryNumber];
-            if (dynamic_cast<BeginSendEntry *>(eventLogEntry))
-                // using "t" from "ES" lines
-                consequences->push_back(new MessageSendDependency(eventLog, getEventNumber(), beginSendEntryNumber));
+        // collect all message ids that are used in this event (eliminating duplicates)
+        std::set<int> messageIds;
+        if (getMessageId() != -1)
+            messageIds.insert(getMessageId());
+        for (int i = 0; i < (int)eventLogEntries.size(); i++) {
+            MessageDescriptionEntry *messageDescriptionEntry = dynamic_cast<MessageDescriptionEntry *>(eventLogEntries[i]);
+            if (messageDescriptionEntry) {
+                DeleteMessageEntry *deleteMessageEntry = dynamic_cast<DeleteMessageEntry *>(eventLogEntries[i]);
+                if (deleteMessageEntry) {
+                    std::set<int>::iterator it = messageIds.find(deleteMessageEntry->messageId);
+                    if (it != messageIds.end())
+                        messageIds.erase(it);
+                }
+                else {
+                    messageIds.insert(messageDescriptionEntry->messageId);
+                    CloneMessageEntry *cloneMessageEntry = dynamic_cast<CloneMessageEntry *>(eventLogEntries[i]);
+                    if (cloneMessageEntry)
+                        messageIds.insert(cloneMessageEntry->cloneId);
+                }
+            }
         }
-        std::vector<MessageEntry *> messageEntries = eventLog->getMessageEntriesWithPreviousEventNumber(getEventNumber());
-        for (auto messageEntry : messageEntries) {
-            Assert(messageEntry->previousEventNumber == getEventNumber());
-            consequences->push_back(new MessageReuseDependency(eventLog, messageEntry->getEvent()->getEventNumber(), messageEntry->getEntryIndex()));
+        // collect reuses
+        for (std::set<int>::iterator it = messageIds.begin(); it != messageIds.end(); it++) {
+            MessageDescriptionEntry *reuseMessageDescriptionEntry = findReuseMessageDescriptionEntry(*it);
+            if (reuseMessageDescriptionEntry) {
+                Assert(reuseMessageDescriptionEntry->previousEventNumber == getEventNumber());
+                consequences->push_back(new MessageReuseDependency(eventLog, reuseMessageDescriptionEntry->getEvent()->getEventNumber(), reuseMessageDescriptionEntry->getEntryIndex()));
+            }
+        }
+        // handle begin sends separately
+        for (int i = 0; i < (int)eventLogEntries.size(); i++) {
+            eventLog->progress();
+            // using "t" from "ES" lines
+            BeginSendEntry *beginSendEntry = dynamic_cast<BeginSendEntry *>(eventLogEntries[i]);
+            if (beginSendEntry && messageIds.find(beginSendEntry->messageId) != messageIds.end())
+                consequences->push_back(new MessageSendDependency(eventLog, getEventNumber(), i));
         }
     }
     return consequences;
 }
 
+MessageDescriptionEntry *Event::findReuseMessageDescriptionEntry(int messageId)
+{
+    // TODO: optimization: cache first message description entries between this event and the first index
+    // 1. linear search among the events starting from the immediately following event until the first index
+    Index *index = NULL;
+    Event *event = getNextEvent();
+    eventnumber_t previousEventNumber = getEventNumber();
+    while (event) {
+        if (event->getMessageId() == messageId)
+            // we found an EventEntry but that is not a message reuse
+            return NULL;
+        else {
+            MessageDescriptionEntry *messageDescriptionEntry = event->findLocalReuseMessageDescriptionEntry(previousEventNumber, messageId);
+            if (messageDescriptionEntry)
+                return messageDescriptionEntry;
+        }
+        index = eventLog->getIndex(event->getEventNumber());
+        if (index)
+            break;
+        event = event->getNextEvent();
+    }
+    // 2. linear search among the indices starting from the first index after this event until the last index
+    event = NULL;
+    while (index) {
+        // check if there's any reference to this event
+        if (index->containsReferenceRemovedEntry(previousEventNumber, -1)) {
+            std::vector<EventLogEntry *> *removedEntries = index->getRemovedEventLogEntries();
+            for (int i = 0; i < (int)removedEntries->size(); i++) {
+                EventLogEntry *eventLogEntry = removedEntries->at(i);
+                EventEntry *eventEntry = dynamic_cast<EventEntry *>(eventLogEntry);
+                MessageDescriptionEntry *removedMessageDescriptionEntry = dynamic_cast<MessageDescriptionEntry *>(eventLogEntry);
+                // looking for a removed eventlog entry (from this event) with the given message id
+                if ((removedMessageDescriptionEntry && removedMessageDescriptionEntry->messageId == messageId && removedMessageDescriptionEntry->getEvent() == this) ||
+                    (eventEntry && eventEntry->messageId == messageId && eventEntry->getEvent() == this))
+                {
+                    // there can be another entry that removed the one we are looking for
+                    std::vector<EventLogEntry *> *addedEntries = index->getAddedEventLogEntries();
+                    for (int j = 0; j < (int)addedEntries->size(); j++) {
+                        MessageDescriptionEntry *messageDescriptionEntry = dynamic_cast<MessageDescriptionEntry *>(addedEntries->at(j));
+                        // we must make sure that the previousEventNumber matches
+                        if (messageDescriptionEntry && messageDescriptionEntry->messageId == messageId && messageDescriptionEntry->previousEventNumber == previousEventNumber)
+                            return messageDescriptionEntry;
+                    }
+                    // since there was no such entry the message is deleted between the two indices
+                    // do a linear search between the previous and this index to find out what happened between them
+                    Index *previousIndex = index->getPreviousIndex();
+                    if (previousIndex) {
+                        event = eventLog->getEventForEventNumber(previousIndex->getIndexEntry()->eventNumber);
+                        if (event)
+                            event = event->getNextEvent();
+                        while (event) {
+                            if (event->getMessageId() == messageId)
+                                // we found an EventEntry but that is not a message reuse
+                                return NULL;
+                            else {
+                                MessageDescriptionEntry *messageDescriptionEntry = event->findLocalReuseMessageDescriptionEntry(previousEventNumber, messageId);
+                                if (messageDescriptionEntry)
+                                    return messageDescriptionEntry;
+                            }
+                            if (event->getEventNumber() == index->getIndexEntry()->eventNumber)
+                                break;
+                            event = event->getNextEvent();
+                        }
+                    }
+                    // we can stop here, because there is no sign of the message
+                    return NULL;
+                }
+            }
+        }
+        Index *nextIndex = index->getNextIndex();
+        if (!nextIndex)
+            event = index->getEvent();
+        index = nextIndex;
+    }
+    // 3. linear search among the remaining events (after the last index)
+    while (event) {
+        if (event->getMessageId() == messageId)
+            // we found an EventEntry but that is not a message reuse
+            return NULL;
+        else {
+            MessageDescriptionEntry *messageDescriptionEntry = event->findLocalReuseMessageDescriptionEntry(previousEventNumber, messageId);
+            if (messageDescriptionEntry)
+                return messageDescriptionEntry;
+        }
+        event = event->getNextEvent();
+    }
+    // reached end of eventlog
+    return NULL;
+}
+
+MessageDescriptionEntry *Event::findLocalReuseMessageDescriptionEntry(eventnumber_t previousEventNumber, int messageId)
+{
+    for (EventLogEntryList::iterator it = eventLogEntries.begin(); it != eventLogEntries.end(); it++) {
+        MessageDescriptionEntry *messageDescriptionEntry = dynamic_cast<MessageDescriptionEntry *>(*it);
+        if (messageDescriptionEntry && messageDescriptionEntry->messageId == messageId && messageDescriptionEntry->previousEventNumber == previousEventNumber)
+            return messageDescriptionEntry;
+    }
+    return NULL;
+}
+
 } // namespace eventlog
-}  // namespace omnetpp
+} // namespace omnetpp
 

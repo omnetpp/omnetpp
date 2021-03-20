@@ -94,12 +94,14 @@ void EventLogIndex::CacheEntry::getEndKey(simtime_t& key)
 
 EventLogIndex::EventLogIndex(FileReader *reader): reader(reader)
 {
+    this->tokenizer = new LineTokenizer(reader->getMaxLineSize() + 1);
     clearInternalState();
 }
 
 EventLogIndex::~EventLogIndex()
 {
     delete reader;
+    delete tokenizer;
 }
 
 void EventLogIndex::clearInternalState()
@@ -116,21 +118,22 @@ void EventLogIndex::clearInternalState()
 
 void EventLogIndex::synchronize(FileReader::FileChange change)
 {
-    switch (change) {
-        case FileReader::UNCHANGED:  // just to avoid unused enumeration value warnings
-            break;
-
-        case FileReader::OVERWRITTEN:
-            clearInternalState();
-            break;
-
-        case FileReader::APPENDED:
-            eventNumberToCacheEntryMap.erase(lastEventNumber);
-            simulationTimeToCacheEntryMap.erase(lastSimulationTime);
-            lastEventNumber = EVENT_NOT_YET_CALCULATED;
-            lastSimulationTime = simtime_nil;
-            lastEventOffset = -1;
-            break;
+    if (change != FileReader::UNCHANGED) {
+        reader->synchronize(change);
+        switch (change) {
+            case FileReader::OVERWRITTEN:
+                clearInternalState();
+                break;
+            case FileReader::APPENDED:
+                eventNumberToCacheEntryMap.erase(lastEventNumber);
+                simulationTimeToCacheEntryMap.erase(lastSimulationTime);
+                lastEventNumber = EVENT_NOT_YET_CALCULATED;
+                lastSimulationTime = simtime_nil;
+                lastEventOffset = -1;
+                break;
+            default:
+                throw opp_runtime_error("Unknown file change");
+        }
     }
 }
 
@@ -286,7 +289,13 @@ template<typename T> file_offset_t EventLogIndex::searchForOffset(std::map<T, Ca
             }
             else {
                 forward = matchKind == FIRST_OR_NEXT || matchKind == LAST_OR_NEXT;
-                searchOffset = forward ? lowerOffset : (upperOffset + lowerOffset) / 2;
+                if (forward)
+                    searchOffset = lowerOffset;
+                else {
+                    reader->seekTo(upperOffset);
+                    reader->getNextLineBufferPointer();
+                    searchOffset = reader->getCurrentLineStartOffset();
+                }
             }
 
             foundOffset = linearSearchForOffset(key, searchOffset, forward, exactMatchFound);
@@ -323,8 +332,10 @@ template<typename T> bool EventLogIndex::cacheSearchForOffset(std::map<T, CacheE
             else
                 itLower = map.end();
 
-            bool completeBegin = itLower == map.end() || itLower->second.endOffset == cacheEntry.beginOffset;
-            bool completeEnd = itUpper != map.end() && itUpper->second.beginOffset == cacheEntry.endOffset;
+            // subsequent events may or may not have subsequent event numbers in the eventlog file
+            // the end offset for the nth event is less than or equal to the begin offset of the nth + 1 event
+            bool completeBegin = itLower == map.end() || (itLower->second.endOffset == cacheEntry.beginOffset || itLower->second.endEventNumber + 1 == cacheEntry.beginEventNumber);
+            bool completeEnd = itUpper != map.end() && (itUpper->second.beginOffset == cacheEntry.endOffset || itUpper->second.beginEventNumber == cacheEntry.endEventNumber + 1);
 
             // dispatching on match kind is required
             switch (matchKind) {
@@ -558,12 +569,12 @@ bool EventLogIndex::readToEventLine(bool forward, file_offset_t readStartOffset,
     }
 
     // find event number and simulation time in line ("# 12345 t 1.2345")
-    tokenizer.tokenize(line, reader->getCurrentLineLength());
+    tokenizer->tokenize(line, reader->getCurrentLineLength());
     lineStartOffset = reader->getCurrentLineStartOffset();
     lineEndOffset = reader->getCurrentLineEndOffset();
 
-    int numTokens = tokenizer.numTokens();
-    char **tokens = tokenizer.tokens();
+    int numTokens = tokenizer->numTokens();
+    char **tokens = tokenizer->tokens();
 
     for (int i = 1; i < numTokens - 1; i += 2) {
         const char *token = tokens[i];
@@ -621,5 +632,4 @@ void EventLogIndex::dump()
 }
 
 } // namespace eventlog
-}  // namespace omnetpp
-
+} // namespace omnetpp

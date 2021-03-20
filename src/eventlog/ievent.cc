@@ -36,20 +36,28 @@ void IEvent::clearInternalState()
 
 void IEvent::synchronize(FileReader::FileChange change)
 {
-    if (change == FileReader::OVERWRITTEN)
-        clearInternalState();
+    if (change != FileReader::UNCHANGED) {
+        switch (change) {
+            case FileReader::OVERWRITTEN:
+                clearInternalState();
+                break;
+            case FileReader::APPENDED:
+                break;
+            default:
+                throw opp_runtime_error("Unknown file change");
+        }
+    }
 }
 
 int IEvent::findBeginSendEntryIndex(int messageId)
 {
-    // find the "BS" or "SA" line in the cause event
-    for (int beginSendEntryNumber = 0; beginSendEntryNumber < getNumEventLogEntries(); beginSendEntryNumber++) {
+    // find the "BS" or "SA" line
+    for (int beginSendEntryNumber = 0; beginSendEntryNumber < getNumEventLogEntries(); beginSendEntryNumber++)
+    {
         BeginSendEntry *beginSendEntry = dynamic_cast<BeginSendEntry *>(getEventLogEntry(beginSendEntryNumber));
-
         if (beginSendEntry && beginSendEntry->messageId == messageId)
             return beginSendEntryNumber;
     }
-
     return -1;
 }
 
@@ -74,5 +82,5 @@ void IEvent::unlinkNeighbourEvents(IEvent *event)
 }
 
 } // namespace eventlog
-}  // namespace omnetpp
+} // namespace omnetpp
 

@@ -65,6 +65,6 @@ enum TimelineMode {
 };
 
 } // namespace eventlog
-}  // namespace omnetpp
+} // namespace omnetpp
 
 #endif

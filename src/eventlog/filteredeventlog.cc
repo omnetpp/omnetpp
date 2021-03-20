@@ -59,15 +59,14 @@ void FilteredEventLog::deleteAllocatedObjects()
 void FilteredEventLog::synchronize(FileReader::FileChange change)
 {
     if (change != FileReader::UNCHANGED) {
-        eventLog->synchronize(change);
         switch (change) {
-            case FileReader::UNCHANGED:  // just to avoid unused enumeration value warnings
-                break;
             case FileReader::OVERWRITTEN:
+                eventLog->synchronize(change);
                 deleteAllocatedObjects();
                 clearInternalState();
                 break;
             case FileReader::APPENDED:
+                eventLog->synchronize(change);
                 for (auto & it : eventNumberToFilteredEventMap)
                     it.second->synchronize(change);
                 if (lastMatchingEvent) {
@@ -81,63 +80,15 @@ void FilteredEventLog::synchronize(FileReader::FileChange change)
                     lastMatchingEvent = nullptr;
                 }
                 break;
+            default:
+                throw opp_runtime_error("Unknown file change");
         }
     }
 }
 
 void FilteredEventLog::print(FILE *file, eventnumber_t fromEventNumber, eventnumber_t toEventNumber, bool outputEventLogMessages)
 {
-    int keyframeBlockSize = getKeyframeBlockSize();
-    file_offset_t previousKeyframeFileOffset = -1;
-    IEvent *event = fromEventNumber == -1 ? getFirstEvent() : getFirstEventNotBeforeEventNumber(fromEventNumber);
-
-    if (event && event->getEventNumber() != 0) {
-        IEvent *firstEvent = eventLog->getFirstEvent();
-        for (int i = 0; i < firstEvent->getNumEventLogEntries(); i++) {
-            EventLogEntry *eventLogEntry = firstEvent->getEventLogEntry(i);
-            if (dynamic_cast<KeyframeEntry *>(eventLogEntry))
-                previousKeyframeFileOffset = opp_ftell(file);
-            if (outputEventLogMessages || !dynamic_cast<EventLogMessageEntry *>(eventLogEntry))
-                eventLogEntry->print(file);
-        }
-        fprintf(file, "\n");
-    }
-
-    while (event != nullptr && (toEventNumber == -1 || event->getEventNumber() <= toEventNumber)) {
-        eventnumber_t eventNumber = event->getEventNumber();
-        KeyframeEntry *keyframeEntry = event->getNumEventLogEntries() > 1 ? dynamic_cast<KeyframeEntry *>(event->getEventLogEntry(1)) : nullptr;
-        if (keyframeEntry)
-            keyframeEntry->previousKeyframeFileOffset = previousKeyframeFileOffset;
-        for (int i = 0; i < event->getNumEventLogEntries(); i++) {
-            EventLogEntry *eventLogEntry = event->getEventLogEntry(i);
-            if (dynamic_cast<KeyframeEntry *>(eventLogEntry))
-                previousKeyframeFileOffset = opp_ftell(file);
-            if (outputEventLogMessages || !dynamic_cast<EventLogMessageEntry *>(eventLogEntry))
-                eventLogEntry->print(file);
-        }
-        event = event->getNextEvent();
-        if (event) {
-            eventnumber_t nextEventNumber = event->getEventNumber();
-            for (eventnumber_t i = eventNumber / keyframeBlockSize + 1; i <= nextEventNumber / keyframeBlockSize; i++) {
-                eventnumber_t candidateEventNumber = i * keyframeBlockSize;
-                if (eventNumber < candidateEventNumber && candidateEventNumber < nextEventNumber) {
-                    IEvent *keyframeEvent = eventLog->getEventForEventNumber(i * keyframeBlockSize);
-                    if (keyframeEvent) {
-                        fprintf(file, "\n");
-                        EventLogEntry *eventLogEntry = keyframeEvent->getEventLogEntry(0);
-                        eventLogEntry->print(file);
-                        KeyframeEntry *keyframeEntry = dynamic_cast<KeyframeEntry *>(keyframeEvent->getEventLogEntry(1));
-                        if (keyframeEntry) {
-                            keyframeEntry->previousKeyframeFileOffset = previousKeyframeFileOffset;
-                            previousKeyframeFileOffset = opp_ftell(file);
-                            keyframeEntry->print(file);
-                        }
-                    }
-                }
-            }
-            fprintf(file, "\n");
-        }
-    }
+    throw opp_runtime_error("Not implemented");
 }
 
 void FilteredEventLog::setPatternMatchers(std::vector<PatternMatcher>& patternMatchers, std::vector<std::string>& patterns, bool dottedPath)
@@ -279,12 +230,12 @@ bool FilteredEventLog::matchesEvent(IEvent *event)
 
     // event's module
     if (enableModuleFilter) {
-        ModuleCreatedEntry *eventModuleCreatedEntry = event->getModuleCreatedEntry();
-        ModuleCreatedEntry *moduleCreatedEntry = eventModuleCreatedEntry;
+        ModuleDescriptionEntry *eventModuleDescriptionEntry = event->getModuleDescriptionEntry();
+        ModuleDescriptionEntry *moduleDescriptionEntry = eventModuleDescriptionEntry;
         // match parent chain of event's module (to handle compound modules too)
-        while (moduleCreatedEntry) {
-            if (matchesModuleCreatedEntry(moduleCreatedEntry)) {
-                if (moduleCreatedEntry == eventModuleCreatedEntry)
+        while (moduleDescriptionEntry) {
+            if (matchesModuleDescriptionEntry(moduleDescriptionEntry)) {
+                if (moduleDescriptionEntry == eventModuleDescriptionEntry)
                     goto MATCHES;
                 else {
                     // check if the event has a cause or consequence referring
@@ -292,20 +243,20 @@ bool FilteredEventLog::matchesEvent(IEvent *event)
                     IMessageDependencyList *causes = event->getCauses();
                     for (auto & cause : *causes) {
                         IEvent *causeEvent = cause->getCauseEvent();
-                        if (causeEvent && !isAncestorModuleCreatedEntry(moduleCreatedEntry, causeEvent->getModuleCreatedEntry()))
+                        if (causeEvent && !isAncestorModuleDescriptionEntry(moduleDescriptionEntry, causeEvent->getModuleDescriptionEntry()))
                             goto MATCHES;
                     }
 
                     IMessageDependencyList *consequences = event->getConsequences();
                     for (auto & consequence : *consequences) {
                         IEvent *consequenceEvent = consequence->getConsequenceEvent();
-                        if (consequenceEvent && !isAncestorModuleCreatedEntry(moduleCreatedEntry, consequenceEvent->getModuleCreatedEntry()))
+                        if (consequenceEvent && !isAncestorModuleDescriptionEntry(moduleDescriptionEntry, consequenceEvent->getModuleDescriptionEntry()))
                             goto MATCHES;
                     }
                 }
             }
 
-            moduleCreatedEntry = getModuleCreatedEntry(moduleCreatedEntry->parentModuleId);
+            moduleDescriptionEntry = getEventLogEntryCache()->getModuleDescriptionEntry(moduleDescriptionEntry->parentModuleId);
         }
 
         // no match
@@ -356,13 +307,13 @@ bool FilteredEventLog::matchesDependency(IEvent *event)
     return false;
 }
 
-bool FilteredEventLog::matchesModuleCreatedEntry(ModuleCreatedEntry *moduleCreatedEntry)
+bool FilteredEventLog::matchesModuleDescriptionEntry(ModuleDescriptionEntry *moduleDescriptionEntry)
 {
-    return matchesExpression(moduleExpression, moduleCreatedEntry) ||
-           matchesPatterns(moduleNames, moduleCreatedEntry->fullName) ||
-           matchesPatterns(moduleClassNames, moduleCreatedEntry->moduleClassName) ||
-           matchesPatterns(moduleNedTypeNames, moduleCreatedEntry->nedTypeName) ||
-           matchesList(moduleIds, moduleCreatedEntry->moduleId);
+    return matchesExpression(moduleExpression, moduleDescriptionEntry) ||
+           matchesPatterns(moduleNames, moduleDescriptionEntry->fullName) ||
+           matchesPatterns(moduleClassNames, moduleDescriptionEntry->moduleClassName) ||
+           matchesPatterns(moduleNedTypeNames, moduleDescriptionEntry->nedTypeName) ||
+           matchesList(moduleIds, moduleDescriptionEntry->moduleId);
 }
 
 bool FilteredEventLog::matchesBeginSendEntry(BeginSendEntry *beginSendEntry)
@@ -498,17 +449,14 @@ FilteredEvent *FilteredEventLog::getEventForSimulationTime(simtime_t simulationT
                     return getMatchingEventInDirection(event, false);
                 }
                 break;
-
             case FIRST_OR_NEXT:
                 if (!useCacheOnly)
                     return getMatchingEventInDirection(event, true);
                 break;
-
             case LAST_OR_PREVIOUS:
                 if (!useCacheOnly)
                     return getMatchingEventInDirection(event, false);
                 break;
-
             case LAST_OR_NEXT:
                 if (!useCacheOnly) {
                     if (event->getSimulationTime() == simulationTime) {
@@ -575,7 +523,7 @@ FilteredEvent *FilteredEventLog::getMatchingEventInDirection(IEvent *event, bool
 
     Assert(event);
 
-    // TODO: LONG RUNNING OPERATION
+    // LONG RUNNING OPERATION
     // if none of firstEventNumber, lastEventNumber, stopEventNumber is set this might take a while
     while (event) {
         eventLog->progress();
@@ -617,7 +565,7 @@ void FilteredEventLog::setTracedEventNumber(eventnumber_t tracedEventNumber)
     unseenTracedEventConsequenceEventNumbers.push_back(tracedEventNumber);
 }
 
-// TODO: LONG RUNNING OPERATION
+// LONG RUNNING OPERATION
 // this does a recursive depth search
 bool FilteredEventLog::isCauseOfTracedEvent(IEvent *causeEvent)
 {
@@ -656,7 +604,7 @@ bool FilteredEventLog::isCauseOfTracedEvent(IEvent *causeEvent)
     return eventNumberToTraceableEventFlagMap[causeEventNumber] = false;
 }
 
-// TODO: LONG RUNNING OPERATION
+// LONG RUNNING OPERATION
 // this does a recursive depth search
 bool FilteredEventLog::isConsequenceOfTracedEvent(IEvent *consequenceEvent)
 {
@@ -709,18 +657,18 @@ FilteredEvent *FilteredEventLog::cacheFilteredEvent(eventnumber_t eventNumber)
     }
 }
 
-bool FilteredEventLog::isAncestorModuleCreatedEntry(ModuleCreatedEntry *ancestor, ModuleCreatedEntry *descendant)
+bool FilteredEventLog::isAncestorModuleDescriptionEntry(ModuleDescriptionEntry *ancestor, ModuleDescriptionEntry *descendant)
 {
     while (descendant) {
         if (descendant == ancestor)
             return true;
         else
-            descendant = getModuleCreatedEntry(descendant->parentModuleId);
+            descendant = getEventLogEntryCache()->getModuleDescriptionEntry(descendant->parentModuleId);
     }
 
     return false;
 }
 
 } // namespace eventlog
-}  // namespace omnetpp
+} // namespace omnetpp
 

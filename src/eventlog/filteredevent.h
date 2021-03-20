@@ -34,6 +34,7 @@ class FilteredEventLog;
  *
  * Filtered events are in a lazy double-linked list based on event numbers.
  */
+// TODO: cache event
 class EVENTLOG_API FilteredEvent : public IEvent
 {
     protected:
@@ -70,17 +71,16 @@ class EVENTLOG_API FilteredEvent : public IEvent
         virtual void synchronize(FileReader::FileChange change) override;
         virtual IEventLog *getEventLog() override;
 
-        virtual ModuleCreatedEntry *getModuleCreatedEntry() override { return getEvent()->getModuleCreatedEntry(); }
-
         virtual file_offset_t getBeginOffset() override { return getEvent()->getBeginOffset(); }
         virtual file_offset_t getEndOffset() override { return getEvent()->getEndOffset(); }
-
         virtual EventEntry *getEventEntry() override { return getEvent()->getEventEntry(); }
+        virtual ModuleDescriptionEntry *getModuleDescriptionEntry() override { return getEvent()->getModuleDescriptionEntry(); }
         virtual int getNumEventLogEntries() override { return getEvent()->getNumEventLogEntries(); }
         virtual EventLogEntry *getEventLogEntry(int index) override { return getEvent()->getEventLogEntry(index); }
 
         virtual int getNumEventLogMessages() override { return getEvent()->getNumEventLogMessages(); }
         virtual int getNumBeginSendEntries() override { return getEvent()->getNumBeginSendEntries(); }
+        virtual int getNumCustomEntries() override { return getEvent()->getNumCustomEntries(); }
         virtual EventLogMessageEntry *getEventLogMessage(int index) override { return getEvent()->getEventLogMessage(index); }
 
         virtual eventnumber_t getEventNumber() override { return eventNumber; }
@@ -115,7 +115,7 @@ class EVENTLOG_API FilteredEvent : public IEvent
 };
 
 } // namespace eventlog
-}  // namespace omnetpp
+} // namespace omnetpp
 
 
 #endif

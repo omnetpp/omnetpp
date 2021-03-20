@@ -31,7 +31,7 @@ namespace omnetpp {
 namespace eventlog {
 
 /**
- * Allows random access of an event log file, i.e. positioning on arbitrary event numbers and simulation times.
+ * Allows random access of an eventlog file, i.e. positioning on arbitrary event numbers and simulation times.
  * TODO: throw out entries from cache to free memory. This is not that urgent because the cache will be quite
  * small unless the file is linearly read through which is not supposed to happen.
  */
@@ -39,7 +39,7 @@ class EVENTLOG_API EventLogIndex
 {
     protected:
         FileReader *reader;
-        omnetpp::common::LineTokenizer tokenizer;
+        omnetpp::common::LineTokenizer *tokenizer;
 
         file_offset_t firstEventOffset;
         file_offset_t lastEventOffset;
@@ -50,7 +50,7 @@ class EVENTLOG_API EventLogIndex
 
         /**
          * An entry stores information for a simulation time and the corresponding event number and file offset ranges.
-         * It actually describes a range of lines in the event log file.
+         * It actually describes a range of lines in the eventlog file.
          * The range might be temporarily smaller than what is actually present in the file for the given
          * simulation time or event number. The range gets closer and finally reaches the exact values by subsequent search operations.
          */
@@ -75,14 +75,14 @@ class EVENTLOG_API EventLogIndex
         };
 
         /**
-         * Subsequent events in an event log file may not have subsequent event numbers,
+         * Subsequent events in an eventlog file may not have subsequent event numbers,
          * therefore it is insufficient to store the file offset only in the cache.
          */
         typedef std::map<eventnumber_t, CacheEntry> EventNumberToCacheEntryMap;
         EventNumberToCacheEntryMap eventNumberToCacheEntryMap;
 
         /**
-         * Subsequent events in an event log file may have the same simulation time,
+         * Subsequent events in an eventlog file may have the same simulation time,
          * therefore it is insufficient to store the file offset only in the cache.
          */
         typedef std::map<simtime_t, CacheEntry> SimulationTimeToCacheEntryMap;
@@ -99,18 +99,18 @@ class EVENTLOG_API EventLogIndex
         /**
          * Search the internal cache finding the file offset(s and keys) for the given key with the given match kind.
          * Sets lower and upper keys and offsets to the closest appropriate values found in the cache.
-         * Lower is less than or equal to key, while upper is greater than or equal that could theoretically be found in the event log file.
+         * Lower is less than or equal to key, while upper is greater than or equal that could theoretically be found in the eventlog file.
          * Sets found offset or returns false if the offset cannot be exactly determined.
          */
         template <typename T> bool cacheSearchForOffset(std::map<T, CacheEntry> &map, T key, MatchKind matchKind, T& lowerKey, T& upperKey, file_offset_t& foundOffset, file_offset_t& lowerOffset, file_offset_t& upperOffset);
         /**
-         * Binary search through the event log file finding the file offset for the given key with the given match kind.
-         * Sets the closest lower and upper keys and offsets around the key found in the event log file.
+         * Binary search through the eventlog file finding the file offset for the given key with the given match kind.
+         * Sets the closest lower and upper keys and offsets around the key found in the eventlog file.
          * Returns -1 if the offset cannot be determined.
          */
         template <typename T> file_offset_t  binarySearchForOffset(T key, MatchKind matchKind, T& lowerKey, T& upperKey, file_offset_t& lowerOffset, file_offset_t& upperOffset);
         /**
-         * Linear search through the event log file finding the file offset for the given key.
+         * Linear search through the eventlog file finding the file offset for the given key.
          * The search starts from begin offset and continues in the direction specified by the forward flag.
          * Returns -1 if no such event found otherwise the last exact match or the first non exact match depending
          * on the exact match required flag.
@@ -161,6 +161,6 @@ class EVENTLOG_API EventLogIndex
 };
 
 } // namespace eventlog
-}  // namespace omnetpp
+} // namespace omnetpp
 
 #endif

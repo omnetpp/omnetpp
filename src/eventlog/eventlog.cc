@@ -17,7 +17,10 @@
 #include <cstdio>
 #include "common/filereader.h"
 #include "common/stringpool.h"
+#include "common/stringutil.h"
 #include "eventlog.h"
+#include "index.h"
+#include "snapshot.h"
 
 using namespace omnetpp::common;
 
@@ -28,13 +31,14 @@ StringPool eventLogStringPool;
 
 EventLog::EventLog(FileReader *reader) : EventLogIndex(reader)
 {
-    //TMP: reader->setIgnoreAppendChanges(false);
+    reader->setFileLocking(true);
     clearInternalState();
-    parseKeyframes();
-    if (reader->getFileSize() < 10E+6) {
-        IEvent *event = getFirstEvent();
-        while (event)
-            event = event->getNextEvent();
+    parseIndex();
+    if (reader->getFileSize() < 10E+6)
+        parseAll();
+    else {
+        parseBegin(1E+6);
+        parseEnd(1E+6);
     }
 }
 
@@ -53,22 +57,26 @@ void EventLog::clearInternalState()
     lastEvent = nullptr;
     messageNames.clear();
     messageClassNames.clear();
-    moduleIdToModuleCreatedEntryMap.clear();
-    moduleIdAndGateIdToGateCreatedEntryMap.clear();
-    previousEventNumberToMessageEntriesMap.clear();
+    eventLogEntryCache.clearCache();
     simulationBeginEntry = nullptr;
     simulationEndEntry = nullptr;
     eventNumberToEventMap.clear();
+    eventNumberToIndexMap.clear();
+    eventNumberToSnapshotMap.clear();
     beginOffsetToEventMap.clear();
     endOffsetToEventMap.clear();
-    consequenceLookaheadLimits.clear();
-    previousEventNumberToMessageEntriesMap.clear();
 }
 
 void EventLog::deleteAllocatedObjects()
 {
-    for (auto & it : eventNumberToEventMap)
-        delete it.second;
+    delete simulationBeginEntry;
+    delete simulationEndEntry;
+    for (EventNumberToEventMap::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); it++)
+        delete it->second;
+    for (EventNumberToIndexMap::iterator it = eventNumberToIndexMap.begin(); it != eventNumberToIndexMap.end(); it++)
+        delete it->second;
+    for (EventNumberToSnapshotMap::iterator it = eventNumberToSnapshotMap.begin(); it != eventNumberToSnapshotMap.end(); it++)
+        delete it->second;
 }
 
 void EventLog::synchronize(FileReader::FileChange change)
@@ -77,32 +85,28 @@ void EventLog::synchronize(FileReader::FileChange change)
         IEventLog::synchronize(change);
         EventLogIndex::synchronize(change);
         switch (change) {
-            case FileReader::UNCHANGED:  // just to avoid unused enumeration value warnings
-                break;
             case FileReader::OVERWRITTEN:
                 deleteAllocatedObjects();
                 clearInternalState();
-                parseKeyframes();
+                parseIndex();
                 break;
             case FileReader::APPENDED:
-                for (auto & it : eventNumberToEventMap)
-                    it.second->synchronize(change);
+                approximateNumberOfEvents = -1;
                 if (lastEvent) {
-                    IEvent::unlinkNeighbourEvents(lastEvent);
-                    eventNumberToEventMap.erase(lastEvent->getEventNumber());
+                    lastEvent->parseLines(reader, lastEvent->getEndOffset());
                     eventNumberToCacheEntryMap.erase(lastEvent->getEventNumber());
-                    beginOffsetToEventMap.erase(lastEvent->getBeginOffset());
                     endOffsetToEventMap.erase(lastEvent->getEndOffset());
-                    if (firstEvent == lastEvent) {
-                        firstEvent = nullptr;
-                        simulationBeginEntry = nullptr;
-                    }
-                    delete lastEvent;
+                    lastEventNumber = EVENT_NOT_YET_CALCULATED;
+                    lastSimulationTime = simtime_nil;
+                    lastEventOffset = -1;
                     lastEvent = nullptr;
                 }
-                // TODO: we could do this incrementally
-                parseKeyframes();
+                for (EventNumberToEventMap::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); it++)
+                    it->second->synchronize(change);
+                parseIndex();
                 break;
+            default:
+                throw opp_runtime_error("Unknown file change");
         }
     }
 }
@@ -184,16 +188,16 @@ Event *EventLog::getApproximateEventAt(double percentage)
         file_offset_t offset = beginOffset + (file_offset_t)((endOffset - beginOffset) * percentage);
 
         eventnumber_t eventNumber;
-        file_offset_t lineStartOffset = -1, lineEndOffset;
+        file_offset_t lineBeginOffset = -1, lineEndOffset;
         simtime_t simulationTime;
-        readToEventLine(false, offset, eventNumber, simulationTime, lineStartOffset, lineEndOffset);
+        readToEventLine(false, offset, eventNumber, simulationTime, lineBeginOffset, lineEndOffset);
 
         Event *event = nullptr;
 
-        if (lineStartOffset == -1)
+        if (lineBeginOffset == -1)
             event = getFirstEvent();
         else
-            event = getEventForBeginOffset(lineStartOffset);
+            event = getEventForBeginOffset(lineBeginOffset);
 
         Assert(event);
 
@@ -201,77 +205,130 @@ Event *EventLog::getApproximateEventAt(double percentage)
     }
 }
 
-void EventLog::parseKeyframes()
+SimulationBeginEntry *EventLog::getSimulationBeginEntry()
 {
-    // NOTE: optimized for performance
-    char *line;
-    SimulationBeginEntry *simulationBeginEntry = getSimulationBeginEntry();
-    if (simulationBeginEntry) {
-        keyframeBlockSize = simulationBeginEntry->keyframeBlockSize;
-        consequenceLookaheadLimits.resize(getLastEventNumber() / keyframeBlockSize + 1, 0);
-        reader->seekTo(reader->getFileSize());
-        while ((line = reader->getPreviousLineBufferPointer())) {
-            EventLogEntry *eventLogEntry = (EventLogEntry *)EventLogEntry::parseEntry(this, nullptr, 0, reader->getCurrentLineStartOffset(), line, reader->getCurrentLineLength());
-            if (KeyframeEntry *keyframeEntry = dynamic_cast<KeyframeEntry *>(eventLogEntry)) {
-                // store consequenceLookaheadLimits from the keyframe
-                char *s = const_cast<char *>(keyframeEntry->consequenceLookaheadLimits);
-                while (*s != '\0') {
-                    eventnumber_t eventNumber = strtol(s, &s, 10);
-                    eventnumber_t keyframeIndex = eventNumber / keyframeBlockSize;
-                    s++;
-                    eventnumber_t consequenceLookaheadLimit = strtol(s, &s, 10);
-                    s++;
-                    consequenceLookaheadLimits[keyframeIndex] = std::max(consequenceLookaheadLimits[keyframeIndex], consequenceLookaheadLimit);
-                }
-                // TODO: store simulation state data from the keyframe
-                // jump to previous keyframe
-                reader->seekTo(keyframeEntry->previousKeyframeFileOffset + 1);
-                reader->getNextLineBufferPointer();
-            }
-            else if (MessageEntry *messageEntry = dynamic_cast<MessageEntry *>(eventLogEntry)) {
-                if (messageEntry->previousEventNumber != -1) {
-                    int blockIndex = messageEntry->previousEventNumber / keyframeBlockSize;
-                    // NOTE: the last event number is a reasonable approximation here
-                    consequenceLookaheadLimits[blockIndex] = std::max(consequenceLookaheadLimits[blockIndex], getLastEventNumber() - messageEntry->previousEventNumber);
-                }
-            }
-            delete eventLogEntry;
-            progress();
+    if (!simulationBeginEntry) {
+        reader->seekTo(0);
+        char *line = reader->getNextLineBufferPointer();
+        if (line) {
+            EventLogEntry *eventLogEntry = (EventLogEntry *)EventLogEntry::parseEntry(this, NULL, 0, reader->getCurrentLineStartOffset(), line, reader->getCurrentLineLength());
+            SimulationBeginEntry *simulationBeginEntry = dynamic_cast<SimulationBeginEntry *>(eventLogEntry);
+            if (simulationBeginEntry)
+                this->simulationBeginEntry = simulationBeginEntry;
         }
     }
+    return simulationBeginEntry;
 }
 
-std::vector<ModuleCreatedEntry *> EventLog::getModuleCreatedEntries()
+SimulationEndEntry *EventLog::getSimulationEndEntry()
 {
-    std::vector<ModuleCreatedEntry *> moduleCreatedEntries;
-
-    for (ModuleIdToModuleCreatedEntryMap::iterator it = moduleIdToModuleCreatedEntryMap.begin(); it != moduleIdToModuleCreatedEntryMap.end(); ++it) {
-        Assert(it->second);
-        moduleCreatedEntries.push_back(it->second);
+    if (!simulationEndEntry) {
+        reader->seekTo(reader->getFileSize());
+        char *line = reader->getPreviousLineBufferPointer();
+        if (line) {
+            EventLogEntry *eventLogEntry = (EventLogEntry *)EventLogEntry::parseEntry(this, NULL, 0, reader->getCurrentLineStartOffset(), line, reader->getCurrentLineLength());
+            SimulationEndEntry *simulationEndEntry = dynamic_cast<SimulationEndEntry *>(eventLogEntry);
+            if (simulationEndEntry)
+                this->simulationEndEntry = simulationEndEntry;
+        }
     }
-
-    return moduleCreatedEntries;
+    return simulationEndEntry;
 }
 
-ModuleCreatedEntry *EventLog::getModuleCreatedEntry(int moduleId)
+void EventLog::parseIndex()
 {
-    ModuleIdToModuleCreatedEntryMap::iterator it = moduleIdToModuleCreatedEntryMap.find(moduleId);
-
-    if (it == moduleIdToModuleCreatedEntryMap.end())
-        return nullptr;
-    else
-        return it->second;
+    // this function is optimized for performance
+    // the idea is to read indices backwards starting from the end of file
+    // file offsets must be shifted to be able to read truncated files
+    std::map<file_offset_t, Snapshot *> snapshotFileOffsetsToSnapshotMap;
+    reader->seekTo(reader->getFileSize());
+    char *line = reader->getPreviousLineBufferPointer();
+    std::vector<Index *> indices;
+    while (line) {
+        EventLogEntry *eventLogEntry = (EventLogEntry *)EventLogEntry::parseEntry(this, NULL, 0, reader->getCurrentLineStartOffset(), line, reader->getCurrentLineLength());
+        IndexEntry *indexEntry = dynamic_cast<IndexEntry *>(eventLogEntry);
+        if (indexEntry) {
+            // check if we already have this index
+            EventNumberToIndexMap::iterator it = eventNumberToIndexMap.find(indexEntry->eventNumber);
+            if (it != eventNumberToIndexMap.end()) {
+                indices.push_back(it->second);
+                delete eventLogEntry;
+                break;
+            }
+            // jump to previous snapshot entry
+            Snapshot *snapshot = NULL;
+            std::map<file_offset_t, Snapshot *>::iterator jt = snapshotFileOffsetsToSnapshotMap.find(indexEntry->previousSnapshotFileOffset);
+            if (indexEntry->previousSnapshotFileOffset != -1 && jt == snapshotFileOffsetsToSnapshotMap.end()) {
+                file_offset_t realFileOffset = indexEntry->getOffset() - indexEntry->fileOffset + indexEntry->previousSnapshotFileOffset;
+                if (realFileOffset >= 0) {
+                    reader->seekTo(indexEntry->getOffset() - indexEntry->fileOffset + indexEntry->previousSnapshotFileOffset);
+                    line = reader->getNextLineBufferPointer();
+                    EventLogEntry *eventLogEntry = (EventLogEntry *)EventLogEntry::parseEntry(this, NULL, 0, reader->getCurrentLineStartOffset(), line, reader->getCurrentLineLength());
+                    SnapshotEntry *snapshotEntry = dynamic_cast<SnapshotEntry *>(eventLogEntry);
+                    Assert(snapshotEntry);
+                    EventNumberToSnapshotMap::iterator kt = eventNumberToSnapshotMap.find(snapshotEntry->eventNumber);
+                    if (kt == eventNumberToSnapshotMap.end()) {
+                        snapshot = new Snapshot(this, reader->getCurrentLineStartOffset());
+                        eventNumberToSnapshotMap[snapshotEntry->eventNumber] = snapshot;
+                    }
+                    else
+                        snapshot = kt->second;
+                    snapshotFileOffsetsToSnapshotMap[indexEntry->previousSnapshotFileOffset] = snapshot;
+                    delete snapshotEntry;
+                }
+            }
+            else if (jt != snapshotFileOffsetsToSnapshotMap.end())
+                snapshot = jt->second;
+            // create index
+            Index *index = new Index(this, indexEntry->getOffset(), snapshot);
+            indices.push_back(index);
+            eventNumberToIndexMap[indexEntry->eventNumber] = index;
+            // jump to previous index entry
+            file_offset_t realFileOffset = index->getBeginOffset() - indexEntry->fileOffset + indexEntry->previousIndexFileOffset;
+            if (realFileOffset >= 0) {
+                reader->seekTo(realFileOffset);
+                line = reader->getNextLineBufferPointer();
+            }
+            else
+                line = NULL;
+        }
+        else
+            line = reader->getPreviousLineBufferPointer();
+        delete eventLogEntry;
+        progress();
+    }
+    for (int i = 1; i < (int)indices.size(); i++)
+        // indices is in reverse order
+        Index::linkIndices(indices[i], indices[i - 1]);
 }
 
-GateCreatedEntry *EventLog::getGateCreatedEntry(int moduleId, int gateId)
+void EventLog::parseBegin(uint64_t limit)
 {
-    std::pair<int, int> key(moduleId, gateId);
-    ModuleIdAndGateIdToGateCreatedEntryMap::iterator it = moduleIdAndGateIdToGateCreatedEntryMap.find(key);
+    uint64_t initialReadBytes = reader->getNumReadBytes();
+    IEvent *event = getFirstEvent();
+    while (event) {
+        event = event->getNextEvent();
+        if (reader->getNumReadBytes() - initialReadBytes > limit)
+            break;
+    }
+}
 
-    if (it == moduleIdAndGateIdToGateCreatedEntryMap.end())
-        return nullptr;
-    else
-        return it->second;
+void EventLog::parseEnd(uint64_t limit)
+{
+    uint64_t initialReadBytes = reader->getNumReadBytes();
+    IEvent *event = getLastEvent();
+    while (event) {
+        event = event->getPreviousEvent();
+        if (reader->getNumReadBytes() - initialReadBytes > limit)
+            break;
+    }
+}
+
+void EventLog::parseAll()
+{
+    IEvent *event = getFirstEvent();
+    while (event)
+        event = event->getNextEvent();
 }
 
 Event *EventLog::getFirstEvent()
@@ -359,33 +416,56 @@ Event *EventLog::getEventForSimulationTime(simtime_t simulationTime, MatchKind m
 
 EventLogEntry *EventLog::findEventLogEntry(EventLogEntry *start, const char *search, bool forward, bool caseSensitive)
 {
-    char *line;
-    reader->seekTo(start->getEvent()->getBeginOffset());
-    int index = start->getEntryIndex();
-
-    for (int i = 0; i < index + forward ? 1 : 0; i++)
-        reader->getNextLineBufferPointer();
-
-    if (forward)
-        line = reader->findNextLineBufferPointer(search, caseSensitive);
-    else
-        line = reader->findPreviousLineBufferPointer(search, caseSensitive);
-
-    if (line) {
-        if (forward)
-            line = reader->getPreviousLineBufferPointer();
-
-        index = 0;
-
-        do {
-            if (line[0] == 'E' && line[1] == ' ')
-                return getEventForBeginOffset(reader->getCurrentLineStartOffset())->getEventLogEntry(index);
-            else if (line[0] != '\r' && line[0] != '\n')
-                index++;
-        } while ((line = reader->getPreviousLineBufferPointer()));
+    if (opp_isempty(search))
+        return forward ? start->getNextEventLogEntry() : start->getPreviousEventLogEntry();
+    else {
+        char *line;
+        file_offset_t eventBeginOffset = -1;
+        file_offset_t matchOffset = -1;
+        Event *matchEvent = NULL;
+        reader->seekTo(start->getOffset());
+        if (forward) {
+            reader->getNextLineBufferPointer();
+            while ((line = reader->getNextLineBufferPointer()) != NULL) {
+                if (line[0] == 'E' && line[1] == ' ')
+                    eventBeginOffset = reader->getCurrentLineStartOffset();
+                if (opp_strnistr(line, search, reader->getCurrentLineLength(), caseSensitive)) {
+                    file_offset_t currentLineStartOffset = reader->getCurrentLineStartOffset();
+                    Event *event = eventBeginOffset == -1 ? start->getEvent() : getEventForBeginOffset(eventBeginOffset);
+                    if (event && event->getBeginOffset() <= currentLineStartOffset && currentLineStartOffset <= event->getEndOffset()) {
+                        matchEvent = event;
+                        matchOffset = currentLineStartOffset;
+                        break;
+                    }
+                }
+                progress();
+            }
+        }
+        else {
+            while ((line = reader->getPreviousLineBufferPointer()) != NULL) {
+                if (opp_strnistr(line, search, reader->getCurrentLineLength(), caseSensitive)) {
+                    file_offset_t currentLineStartOffset = reader->getCurrentLineStartOffset();
+                    Event *event = eventBeginOffset == -1 ? (start->getEntryIndex() == 0 ? start->getEvent()->getPreviousEvent() : start->getEvent()) : getEventForBeginOffset(eventBeginOffset)->getPreviousEvent();
+                    if (event && event->getBeginOffset() <= currentLineStartOffset && currentLineStartOffset <= event->getEndOffset()) {
+                        matchEvent = event;
+                        matchOffset = currentLineStartOffset;
+                        break;
+                    }
+                }
+                if (line[0] == 'E' && line[1] == ' ')
+                    eventBeginOffset = reader->getCurrentLineStartOffset();
+                progress();
+            }
+        }
+        if (matchEvent && matchOffset != -1) {
+            for (int i = 0; i < matchEvent->getNumEventLogEntries(); i++) {
+                EventLogEntry *eventLogEntry = matchEvent->getEventLogEntry(i);
+                if (eventLogEntry->getOffset() == matchOffset)
+                    return eventLogEntry;
+            }
+        }
+        return NULL;
     }
-
-    return nullptr;
 }
 
 Event *EventLog::getEventForBeginOffset(file_offset_t beginOffset)
@@ -426,6 +506,66 @@ Event *EventLog::getEventForEndOffset(file_offset_t endOffset)
     }
 }
 
+Index *EventLog::getIndex(eventnumber_t eventNumber, MatchKind matchKind)
+{
+    EventNumberToIndexMap::iterator it;
+    switch (matchKind) {
+        case EXACT:
+            it = eventNumberToIndexMap.find(eventNumber);
+            break;
+        case FIRST_OR_PREVIOUS:
+        case LAST_OR_PREVIOUS:
+            it = eventNumberToIndexMap.upper_bound(eventNumber);
+            if (it == eventNumberToIndexMap.begin())
+                it = eventNumberToIndexMap.end();
+            else if (!eventNumberToIndexMap.empty())
+                it--;
+            break;
+        case FIRST_OR_NEXT:
+        case LAST_OR_NEXT:
+            it = eventNumberToIndexMap.lower_bound(eventNumber);
+            if (it != eventNumberToIndexMap.end() && it->first == eventNumber)
+                it++;
+            break;
+        default:
+            throw opp_runtime_error("Unknown match kind");
+    }
+    if (it == eventNumberToIndexMap.end())
+        return NULL;
+    else
+        return it->second;
+}
+
+Snapshot *EventLog::getSnapshot(eventnumber_t eventNumber, MatchKind matchKind)
+{
+    EventNumberToSnapshotMap::iterator it;
+    switch (matchKind) {
+        case EXACT:
+            it = eventNumberToSnapshotMap.find(eventNumber);
+            break;
+        case FIRST_OR_PREVIOUS:
+        case LAST_OR_PREVIOUS:
+            it = eventNumberToSnapshotMap.upper_bound(eventNumber);
+            if (it == eventNumberToSnapshotMap.begin())
+                it = eventNumberToSnapshotMap.end();
+            else if (!eventNumberToSnapshotMap.empty())
+                it--;
+            break;
+        case FIRST_OR_NEXT:
+        case LAST_OR_NEXT:
+            it = eventNumberToSnapshotMap.lower_bound(eventNumber);
+            if (it != eventNumberToSnapshotMap.end() && it->first == eventNumber)
+                it++;
+            break;
+        default:
+            throw opp_runtime_error("Unknown match kind");
+    }
+    if (it == eventNumberToSnapshotMap.end())
+        return NULL;
+    else
+        return it->second;
+}
+
 void EventLog::parseEvent(Event *event, file_offset_t beginOffset)
 {
     event->parse(reader, beginOffset);
@@ -441,61 +581,14 @@ void EventLog::cacheEventLogEntries(Event *event)
         cacheEventLogEntry(event->getEventLogEntry(i));
 }
 
-void EventLog::uncacheEventLogEntries(Event *event)
-{
-    for (int i = 0; i < event->getNumEventLogEntries(); i++)
-        uncacheEventLogEntry(event->getEventLogEntry(i));
-}
-
 void EventLog::cacheEventLogEntry(EventLogEntry *eventLogEntry)
 {
-    // simulation begin entry
-    SimulationBeginEntry *simulationBeginEntry = dynamic_cast<SimulationBeginEntry *>(eventLogEntry);
-
-    if (simulationBeginEntry)
-        this->simulationBeginEntry = simulationBeginEntry;
-
-    // simulation begin entry
-    SimulationEndEntry *simulationEndEntry = dynamic_cast<SimulationEndEntry *>(eventLogEntry);
-
-    if (simulationEndEntry)
-        this->simulationEndEntry = simulationEndEntry;
-
-    // collect module created entries
-    ModuleCreatedEntry *moduleCreatedEntry = dynamic_cast<ModuleCreatedEntry *>(eventLogEntry);
-
-    if (moduleCreatedEntry)
-        moduleIdToModuleCreatedEntryMap[moduleCreatedEntry->moduleId] = moduleCreatedEntry;
-
-    // collect gate created entries
-    GateCreatedEntry *gateCreatedEntry = dynamic_cast<GateCreatedEntry *>(eventLogEntry);
-
-    if (gateCreatedEntry) {
-        std::pair<int, int> key(gateCreatedEntry->moduleId, gateCreatedEntry->gateId);
-        moduleIdAndGateIdToGateCreatedEntryMap[key] = gateCreatedEntry;
-    }
-
-    // colllect begin send entry
-    BeginSendEntry *beginSendEntry = dynamic_cast<BeginSendEntry *>(eventLogEntry);
-    if (beginSendEntry) {
-        messageNames.insert(beginSendEntry->messageName);
-        messageClassNames.insert(beginSendEntry->messageClassName);
-    }
-}
-
-void EventLog::uncacheEventLogEntry(EventLogEntry *eventLogEntry)
-{
-    // collect module created entries
-//    ModuleCreatedEntry *moduleCreatedEntry = dynamic_cast<ModuleCreatedEntry *>(eventLogEntry);
-//    if (moduleCreatedEntry)
-//        moduleIdToModuleCreatedEntryMap.erase(moduleCreatedEntry->moduleId);
-
-    // collect gate created entries
-    GateCreatedEntry *gateCreatedEntry = dynamic_cast<GateCreatedEntry *>(eventLogEntry);
-
-    if (gateCreatedEntry) {
-        std::pair<int, int> key(gateCreatedEntry->moduleId, gateCreatedEntry->gateId);
-        moduleIdAndGateIdToGateCreatedEntryMap.erase(key);
+    eventLogEntryCache.cacheEventLogEntry(eventLogEntry);
+    // collect message description entries
+    MessageDescriptionEntry *messageDescriptionEntry = dynamic_cast<MessageDescriptionEntry *>(eventLogEntry);
+    if (messageDescriptionEntry) {
+        messageNames.insert(messageDescriptionEntry->messageName);
+        messageClassNames.insert(messageDescriptionEntry->messageClassName);
     }
 }
 
@@ -504,50 +597,11 @@ void EventLog::cacheEvent(Event *event)
     int eventNumber = event->getEventNumber();
     Assert(!lastEvent || eventNumber <= lastEvent->getEventNumber());
     Assert(eventNumberToEventMap.find(eventNumber) == eventNumberToEventMap.end());
-
     eventNumberToEventMap[eventNumber] = event;
     beginOffsetToEventMap[event->getBeginOffset()] = event;
     endOffsetToEventMap[event->getEndOffset()] = event;
 }
 
-std::vector<MessageEntry *> EventLog::getMessageEntriesWithPreviousEventNumber(eventnumber_t previousEventNumber)
-{
-    std::map<eventnumber_t, std::vector<MessageEntry *> >::iterator it = previousEventNumberToMessageEntriesMap.find(previousEventNumber);
-    if (it != previousEventNumberToMessageEntriesMap.end())
-        return it->second;
-    else {
-        eventnumber_t keyframeBlockIndex = previousEventNumber / keyframeBlockSize;
-        eventnumber_t beginEventNumber = (eventnumber_t)keyframeBlockIndex * keyframeBlockSize;
-        eventnumber_t endEventNumber = beginEventNumber + keyframeBlockSize;
-        eventnumber_t consequenceLookahead = getConsequenceLookahead(previousEventNumber);
-        for (eventnumber_t i = beginEventNumber; i < endEventNumber; i++)
-            previousEventNumberToMessageEntriesMap[i] = std::vector<MessageEntry *>();
-        eventnumber_t eventNumber = beginEventNumber;
-        Event *event = getEventForEventNumber(beginEventNumber);
-        while (eventNumber < endEventNumber + consequenceLookahead) {
-            if (event) {
-                for (int i = 0; i < (int)event->getNumEventLogEntries(); i++) {
-                    MessageEntry *messageEntry = dynamic_cast<MessageEntry *>(event->getEventLogEntry(i));
-                    if (messageEntry) {
-                        eventnumber_t messageEntryPreviousEventNumber = messageEntry->previousEventNumber;
-                        if (beginEventNumber <= messageEntryPreviousEventNumber && messageEntryPreviousEventNumber < endEventNumber && messageEntryPreviousEventNumber != event->getEventNumber()) {
-                            it = previousEventNumberToMessageEntriesMap.find(messageEntryPreviousEventNumber);
-                            it->second.push_back(messageEntry);
-                        }
-                    }
-                }
-                eventNumber++;
-                event = event->getNextEvent();
-            }
-            else {
-                eventNumber++;
-                event = getEventForEventNumber(eventNumber);
-            }
-        }
-        return previousEventNumberToMessageEntriesMap.find(previousEventNumber)->second;
-    }
-}
-
 } // namespace eventlog
-}  // namespace omnetpp
+} // namespace omnetpp
 

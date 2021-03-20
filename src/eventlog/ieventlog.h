@@ -21,13 +21,15 @@
 #include <set>
 #include <vector>
 #include "common/filereader.h"
-#include "eventlogdefs.h"
+#include "eventlogentrycache.h"
 #include "ievent.h"
 
 namespace omnetpp {
 namespace eventlog {
 
 class IEventLog;
+class Index;
+class Snapshot;
 
 class EVENTLOG_API ProgressMonitor
 {
@@ -41,6 +43,7 @@ class EVENTLOG_API ProgressMonitor
         void progress(IEventLog *eventLog) { if (monitorFunction) monitorFunction(eventLog, data); }
 };
 
+// TODO: remove those methods which are not really different among implementations, simplify class design
 class EVENTLOG_API IEventLog
 {
     protected:
@@ -58,7 +61,7 @@ class EVENTLOG_API IEventLog
         virtual ProgressMonitor setProgressMonitor(ProgressMonitor progressMonitor) = 0;
 
         /**
-         * Set the minimum interval between progress callbacks for long running event log operations.
+         * Set the minimum interval between progress callbacks for long running eventlog operations.
          */
         virtual void setProgressCallInterval(double seconds) = 0;
 
@@ -79,9 +82,9 @@ class EVENTLOG_API IEventLog
         virtual FileReader *getFileReader() = 0;
 
         /**
-         * Returns the distance between subsequent keyframes in terms of event numbers.
+         * Returns the eventlog entry cache for the whole eventlog.
          */
-        virtual int getKeyframeBlockSize() = 0;
+        virtual EventLogEntryCache *getEventLogEntryCache() = 0;
 
         /**
          * Returns the number of events parsed so far.
@@ -99,32 +102,17 @@ class EVENTLOG_API IEventLog
         virtual std::set<const char *>& getMessageClassNames() = 0;
 
         /**
-         * Returns the number of module created entries which is actually the next unused module id.
-         */
-        virtual int getNumModuleCreatedEntries() = 0;
-
-        /**
-         * Returns the entry with the given index.
-         */
-        virtual std::vector<ModuleCreatedEntry *> getModuleCreatedEntries() = 0;
-
-        /**
-         * Returns the entry which describes the module with the given id.
-         */
-        virtual ModuleCreatedEntry *getModuleCreatedEntry(int moduleId) = 0;
-
-        /**
-         * Returns the entry which describes the gate with the given ids.
-         */
-        virtual GateCreatedEntry *getGateCreatedEntry(int moduleId, int gateId) = 0;
-
-        /**
-         * Returns the event log entry describing the whole simulation.
+         * Returns the eventlog entry describing the beginning of the simulation.
          */
         virtual SimulationBeginEntry *getSimulationBeginEntry() = 0;
 
         /**
-         * Returns true if the event log does not contain any events.
+         * Returns the eventlog entry describing the end of the simulation.
+         */
+        virtual SimulationEndEntry *getSimulationEndEntry() = 0;
+
+        /**
+         * Returns true if the eventlog does not contain any events.
          */
         virtual bool isEmpty() { return !getFirstEvent(); }
 
@@ -171,9 +159,41 @@ class EVENTLOG_API IEventLog
         virtual IEvent *getEventForSimulationTime(simtime_t simulationTime, MatchKind matchKind = EXACT, bool useCacheOnly = false) = 0;
 
         /**
-         * Finds the closest event log entry containing the given text.
+         * Finds the closest eventlog entry containing the given text.
          */
         virtual EventLogEntry *findEventLogEntry(EventLogEntry *start, const char *search, bool forward, bool caseSensitive) = 0;
+
+        /**
+         * Returns the first index or NULL.
+         */
+        virtual Index *getFirstIndex() = 0;
+
+        /**
+         * Returns the last index or NULL.
+         */
+        virtual Index *getLastIndex() = 0;
+
+        /**
+         * Returns the index with the provided event or NULL if none found.
+         * Returns the index that doesn't have the provided event number when searching for the next or the previous.
+         */
+        virtual Index *getIndex(eventnumber_t eventNumber, MatchKind matchKind = EXACT) = 0;
+
+        /**
+         * Returns the first snapshot or NULL.
+         */
+        virtual Snapshot *getFirstSnapshot() = 0;
+
+        /**
+         * Returns the last snapshot or NULL.
+         */
+        virtual Snapshot *getLastSnapshot() = 0;
+
+        /**
+         * Returns the snapshot with the provided event number or NULL if none found.
+         * Returns the snapshot that doesn't have the provided event number when searching for the next or the previous.
+         */
+        virtual Snapshot *getSnapshot(eventnumber_t eventNumber, MatchKind matchKind = EXACT) = 0;
 
         /**
          * Returns the approximate number of events present in the log.
@@ -192,7 +212,6 @@ class EVENTLOG_API IEventLog
          */
         virtual void print(FILE *file = stdout, eventnumber_t fromEventNumber = -1, eventnumber_t toEventNumber = -1, bool outputEventLogMessages = true) = 0;
 
-    public:
         /**
          * Returns the event at the given distance. 0 means the parameter event will be returned.
          */
@@ -214,7 +233,7 @@ class EVENTLOG_API IEventLog
 };
 
 } // namespace eventlog
-}  // namespace omnetpp
+} // namespace omnetpp
 
 
 #endif

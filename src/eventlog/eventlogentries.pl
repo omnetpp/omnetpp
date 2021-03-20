@@ -7,6 +7,7 @@
 # FIXME parsing: choose different strategy,
 # current code cannot detect unrecognized field names in the trace file!
 
+$target = @ARGV[0];
 $verbose = 0;
 
 open(FILE, "eventlogentries.txt");
@@ -42,7 +43,7 @@ while (<FILE>)
       print "$classCode $className\n" if ($verbose);
       foreach $class (@classes)
       {
-         if ($classCode eq $class->{CODE})
+         if ($classCode ne "abstract" && $classCode eq $class->{CODE})
          {
             die "Class code $classCode used twice";
          }
@@ -62,47 +63,60 @@ while (<FILE>)
       if ($fieldType eq "string")
       {
          $fieldPrintfType = "%s";
-         $fieldDefault = "nullptr";
+         $fieldCDefault = "nullptr";
+         $fieldJavaDefault = "null";
       }
       elsif ($fieldType eq "bool")
       {
          $fieldPrintfType = "%d";
-         $fieldDefault = "false";
+         $fieldCDefault = "false";
+         $fieldJavaDefault = "false";
       }
       elsif ($fieldType eq "int")
       {
          $fieldPrintfType = "%d";
-         $fieldDefault = "-1";
+         $fieldCDefault = "-1";
+         $fieldJavaDefault = "-1";
       }
       elsif ($fieldType eq "short")
       {
          $fieldPrintfType = "%d";
-         $fieldDefault = "-1";
+         $fieldCDefault = "-1";
+         $fieldJavaDefault = "-1";
       }
       elsif ($fieldType eq "long")
       {
          $fieldPrintfType = "%ld";
-         $fieldDefault = "-1";
+         $fieldCDefault = "-1";
+         $fieldJavaDefault = "-1";
       }
       elsif ($fieldType eq "int64_t")
       {
          $fieldPrintfType = "%\" PRId64 \"";
-         $fieldDefault = "-1";
+         $fieldCDefault = "-1";
+         $fieldJavaDefault = "-1";
       }
       elsif ($fieldType eq "eventnumber_t")
       {
          $fieldPrintfType = "%\" EVENTNUMBER_PRINTF_FORMAT \"";
-         $fieldDefault = "-1";
+         $fieldCDefault = "-1";
+         $fieldJavaDefault = "-1";
       }
       elsif ($fieldType eq "simtime_t")
       {
          $fieldPrintfType = "%s";
-         $fieldDefault = "simtime_nil";
+         $fieldCDefault = "simtime_nil";
+         $fieldJavaDefault = "BigDecimal.getNaN()";
       }
 
       if ($5 ne "") {
          $classHasOptField = 1;
-         $fieldDefault  = $5;
+         $fieldCDefault = $5;
+         $fieldJavaDefault = $5;
+         $fieldJavaDefault =~ s/NULL/null/;
+         if ($fieldType eq "simtime_t") {
+             $fieldJavaDefault = "new BigDecimal($fieldJavaDefault)"
+         }
          $mandatory = 0;
       }
       else {
@@ -113,19 +127,29 @@ while (<FILE>)
 
       $fieldCType = $fieldType;
       $fieldCType =~ s/string/const char */;
+
+      $fieldJavaType = $fieldType;
+      $fieldJavaType =~ s/string/String/;
+      $fieldJavaType =~ s/bool/boolean/;
+      $fieldJavaType =~ s/int64_t/long/;
+      $fieldJavaType =~ s/eventnumber_t/long/;
+      $fieldJavaType =~ s/simtime_t/BigDecimal/;
+
       $field = {
          CODE => $fieldCode,
          TYPE => $fieldType,
          CTYPE => $fieldCType,
+         JAVATYPE => $fieldJavaType,
          PRINTFTYPE => $fieldPrintfType,
          NAME => $fieldName,
          MANDATORY => $mandatory,
-         DEFAULTVALUE => $fieldDefault,
+         CDEFAULTVALUE => $fieldCDefault,
+         JAVADEFAULTVALUE => $fieldJavaDefault,
          COMMENT => $comment,
       };
 
       push(@fields, $field);
-      print " $fieldCode $fieldType $fieldName $fieldDefault\n" if ($verbose);
+      print " $fieldCode $fieldType $fieldName $fieldCDefault\n" if ($verbose);
    }
    elsif ($_ =~ /^ *} *$/)
    {
@@ -148,7 +172,6 @@ while (<FILE>)
 }
 
 close(FILE);
-
 
 
 #
@@ -190,7 +213,7 @@ class EVENTLOG_API $class->{NAME} : public $class->{SUPER}
 {
    public:
       $class->{NAME}();
-      $class->{NAME}(Event *event, int entryIndex);
+      $class->{NAME}(IChunk *chunk, int entryIndex);
 
    public:";
    foreach $field (@{ $class->{FIELDS} })
@@ -266,28 +289,28 @@ foreach $class (@classes)
    print ENTRIES_CC_FILE "{\n";
    if ($class->{SUPER} eq "EventLogTokenBasedEntry")
    {
-      print ENTRIES_CC_FILE "    this->event = nullptr;\n";
+      print ENTRIES_CC_FILE "    this->chunk = nullptr;\n";
    }
    foreach $field (@{ $class->{FIELDS} })
    {
-      print ENTRIES_CC_FILE "    $field->{NAME} = $field->{DEFAULTVALUE};\n";
+      print ENTRIES_CC_FILE "    $field->{NAME} = $field->{CDEFAULTVALUE};\n";
    }
    print ENTRIES_CC_FILE "}\n\n";
 
-   print ENTRIES_CC_FILE "$className\::$className(Event *event, int entryIndex)\n";
+   print ENTRIES_CC_FILE "$className\::$className(IChunk *chunk, int entryIndex)\n";
    if ($class->{SUPER} ne "EventLogTokenBasedEntry")
    {
-      print ENTRIES_CC_FILE "    : $class->{SUPER}(event, entryIndex)\n";
+      print ENTRIES_CC_FILE "    : $class->{SUPER}(chunk, entryIndex)\n";
    }
    print ENTRIES_CC_FILE "{\n";
    if ($class->{SUPER} eq "EventLogTokenBasedEntry")
    {
-      print ENTRIES_CC_FILE "    this->event = event;\n";
+      print ENTRIES_CC_FILE "    this->chunk = chunk;\n";
       print ENTRIES_CC_FILE "    this->entryIndex = entryIndex;\n";
    }
    foreach $field (@{ $class->{FIELDS} })
    {
-      print ENTRIES_CC_FILE "    $field->{NAME} = $field->{DEFAULTVALUE};\n";
+      print ENTRIES_CC_FILE "    $field->{NAME} = $field->{CDEFAULTVALUE};\n";
    }
    print ENTRIES_CC_FILE "}\n\n";
 
@@ -373,7 +396,7 @@ foreach $class (@classes)
       {
          if ($field->{MANDATORY} eq 0)
          {
-            print ENTRIES_CC_FILE "    if ($field->{NAME} != $field->{DEFAULTVALUE})\n    ";
+            print ENTRIES_CC_FILE "    if ($field->{NAME} != $field->{CDEFAULTVALUE})\n    ";
          }
          print ENTRIES_CC_FILE "    fprintf(fout, \" $field->{CODE} $field->{PRINTFTYPE}\", $field->{NAME}.str(buffer));\n";
       }
@@ -381,7 +404,7 @@ foreach $class (@classes)
       {
          if ($field->{MANDATORY} eq 0)
          {
-            print ENTRIES_CC_FILE "    if ($field->{NAME} != $field->{DEFAULTVALUE})\n    ";
+            print ENTRIES_CC_FILE "    if ($field->{NAME} != $field->{CDEFAULTVALUE})\n    ";
          }
          print ENTRIES_CC_FILE "    fprintf(fout, \" $field->{CODE} $field->{PRINTFTYPE}\", $field->{NAME});\n";
       }
@@ -477,7 +500,7 @@ print FACTORY_CC_FILE
 namespace omnetpp {
 namespace eventlog {
 
-EventLogTokenBasedEntry *EventLogEntryFactory::parseEntry(Event *event, int entryIndex, char **tokens, int numTokens)
+EventLogTokenBasedEntry *EventLogEntryFactory::parseEntry(IChunk *chunk, int entryIndex, char **tokens, int numTokens)
 {
     if (numTokens < 1)
         return nullptr;
@@ -502,7 +525,7 @@ foreach $class (@classes)
       }
       print FACTORY_CC_FILE "code[$i]==0)  // $class->{CODE}\n";
 
-      print FACTORY_CC_FILE "        entry = new $class->{NAME}(event, entryIndex);\n";
+      print FACTORY_CC_FILE "        entry = new $class->{NAME}(chunk, entryIndex);\n";
    }
 }
 print FACTORY_CC_FILE "    else\n";
@@ -552,5 +575,341 @@ foreach $class (@classes)
    }
 }
 
-
 close(ENTRIES_CSV_FILE);
+
+if ($target eq "")
+{
+   exit(0);
+}
+
+#
+# Write EventLogEntries java file
+#
+
+foreach $class (@classes)
+{
+   $className = $class->{NAME};
+
+   open(ENTRY_JAVA_FILE, ">$class->{NAME}.java");
+
+   print ENTRY_JAVA_FILE
+"package org.omnetpp.eventlog.entry;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+
+import org.omnetpp.eventlog.IChunk;
+";
+   if ($class->{SUPER} eq "EventLogTokenBasedEntry")
+   {
+      print ENTRY_JAVA_FILE
+"import org.omnetpp.eventlog.$class->{SUPER};
+"
+   }
+
+   $hasBigDecimal = "false";
+   foreach $field (@{ $class->{FIELDS} })
+   {
+      if ($field->{JAVATYPE} eq "BigDecimal")
+      {
+         $hasBigDecimal = "true";
+      }
+   }
+   if ($hasBigDecimal eq "true")
+   {
+      print ENTRY_JAVA_FILE
+"import org.omnetpp.common.engine.BigDecimal;
+
+";
+   }
+
+   print ENTRY_JAVA_FILE "public class $class->{NAME} extends $class->{SUPER}
+{";
+   foreach $field (@{ $class->{FIELDS} })
+   {
+      print ENTRY_JAVA_FILE "
+    public $field->{JAVATYPE} $field->{NAME};";
+   }
+   print ENTRY_JAVA_FILE "
+
+    public $class->{NAME}() {
+";
+
+   if ($class->{SUPER} eq "EventLogTokenBasedEntry")
+   {
+      print ENTRY_JAVA_FILE "        this.chunk = null;\n";
+   }
+   foreach $field (@{ $class->{FIELDS} })
+   {
+      print ENTRY_JAVA_FILE "        $field->{NAME} = $field->{JAVADEFAULTVALUE};\n";
+   }
+
+   print ENTRY_JAVA_FILE "    }
+
+    public $class->{NAME}(IChunk chunk, int entryIndex) {
+";
+
+   if ($class->{SUPER} ne "EventLogTokenBasedEntry")
+   {
+      print ENTRY_JAVA_FILE "        super(chunk, entryIndex);\n";
+   }
+   if ($class->{SUPER} eq "EventLogTokenBasedEntry")
+   {
+      print ENTRY_JAVA_FILE "        this.chunk = chunk;\n";
+      print ENTRY_JAVA_FILE "        this.entryIndex = entryIndex;\n";
+   }
+   foreach $field (@{ $class->{FIELDS} })
+   {
+      print ENTRY_JAVA_FILE "        $field->{NAME} = $field->{JAVADEFAULTVALUE};\n";
+   }
+
+   print ENTRY_JAVA_FILE "    }\n";
+
+   foreach $field (@{ $class->{FIELDS} })
+   {
+      $fname = ucfirst($field->{NAME});
+      print ENTRY_JAVA_FILE "
+    public $field->{JAVATYPE} get$fname() { return $field->{NAME}; }";
+   }
+
+   print ENTRY_JAVA_FILE "
+
+    public void parse(String[] tokens, int numTokens) {
+";
+
+   # parse
+   if ($class->{SUPER} ne "EventLogTokenBasedEntry")
+   {
+      print ENTRY_JAVA_FILE "        super.parse(tokens, numTokens);\n";
+   }
+   foreach $field (@{ $class->{FIELDS} })
+   {
+      if ($field->{TYPE} eq "int")
+      {
+        $parserFunction = "getIntToken";
+      }
+      elsif ($field->{TYPE} eq "short")
+      {
+        $parserFunction = "getShortToken";
+      }
+      elsif ($field->{TYPE} eq "long")
+      {
+        $parserFunction = "getLongToken";
+      }
+      elsif ($field->{TYPE} eq "int64_t")
+      {
+        $parserFunction = "getInt64Token";
+      }
+      elsif ($field->{TYPE} eq "string")
+      {
+        $parserFunction = "getStringToken";
+      }
+      elsif ($field->{TYPE} eq "eventnumber_t")
+      {
+        $parserFunction = "getEventNumberToken";
+      }
+      elsif ($field->{TYPE} eq "simtime_t")
+      {
+        $parserFunction = "getSimtimeToken";
+      }
+      elsif ($field->{TYPE} eq "bool")
+      {
+        $parserFunction = "getBoolToken";
+      }
+      else
+      {
+         die "Unknown type: $field->{TYPE}";
+      }
+      if ($field->{MANDATORY})
+      {
+         $mandatory = "true";
+      }
+      else
+      {
+         $mandatory = "false";
+      }
+      print ENTRY_JAVA_FILE "        $field->{NAME} = $parserFunction(tokens, numTokens, \"$field->{CODE}\", $mandatory, $field->{NAME});\n";
+   }
+
+   print ENTRY_JAVA_FILE "    }
+
+    public void print(OutputStream stream) {
+        try {
+";
+
+   # print
+   if ($class->{CODE} ne "abstract")
+   {
+      print ENTRY_JAVA_FILE "            stream.write((\"$class->{CODE}\").getBytes());\n";
+   }
+   if ($class->{SUPER} ne "EventLogTokenBasedEntry")
+   {
+      print ENTRY_JAVA_FILE "            super.print(stream);\n";
+   }
+   foreach $field (@{ $class->{FIELDS} })
+   {
+      if ($field->{TYPE} eq "string")
+      {
+         if ($field->{MANDATORY} eq 0)
+         {
+            print ENTRY_JAVA_FILE "            if ($field->{NAME} != null)\n    ";
+         }
+         print ENTRY_JAVA_FILE "            stream.write((\" $field->{CODE} \" + qoute($field->{NAME})).getBytes());\n";
+      }
+      elsif ($field->{TYPE} eq "bool")
+      {
+         if ($field->{MANDATORY} eq 0)
+         {
+            print ENTRY_JAVA_FILE "            if ($field->{NAME} != $field->{JAVADEFAULTVALUE})\n    ";
+         }
+         print ENTRY_JAVA_FILE "            stream.write((\" $field->{CODE} \" + ($field->{NAME} ? \"1\" : \"0\")).getBytes());\n";
+      }
+      elsif ($field->{TYPE} eq "simtime_t")
+      {
+         if ($field->{MANDATORY} eq 0)
+         {
+            print ENTRY_JAVA_FILE "            if (!$field->{NAME}.equals($field->{JAVADEFAULTVALUE}))\n    ";
+         }
+         print ENTRY_JAVA_FILE "            stream.write((\" $field->{CODE} \" + $field->{NAME}.toString()).getBytes());\n";
+      }
+      else
+      {
+         if ($field->{MANDATORY} eq 0)
+         {
+            print ENTRY_JAVA_FILE "            if ($field->{NAME} != $field->{JAVADEFAULTVALUE})\n    ";
+         }
+         print ENTRY_JAVA_FILE "            stream.write((\" $field->{CODE} \" + String.valueOf($field->{NAME})).getBytes());\n";
+      }
+   }
+   if ($class->{CODE} ne "abstract")
+   {
+      print ENTRY_JAVA_FILE "            stream.write((\"\\n\").getBytes());\n";
+   }
+   print ENTRY_JAVA_FILE "            stream.flush();";
+
+    print ENTRY_JAVA_FILE "
+        }
+        catch (IOException e) {
+            throw new RuntimeException (e);
+        }
+    }
+
+    public int getClassIndex() { return $index; }
+
+    public String getAsString() { return \"$class->{CODE}\"; }
+
+    public ArrayList<String> getAttributeNames() {
+";
+
+   # getAttributeNames
+   print ENTRY_JAVA_FILE "        ArrayList<String> names = new ArrayList<String>();\n";
+   if ($class->{SUPER} ne "EventLogTokenBasedEntry")
+   {
+      print ENTRY_JAVA_FILE "        names.addAll(super.getAttributeNames());\n";
+   }
+   foreach $field (@{ $class->{FIELDS} })
+   {
+      print ENTRY_JAVA_FILE "        names.add(\"$field->{CODE}\");\n";
+   }
+   print ENTRY_JAVA_FILE "        return names;";
+
+    print ENTRY_JAVA_FILE "
+    }
+
+    \@SuppressWarnings(\"unused\")
+    public String getAsString(String attribute) {
+";
+
+   # getAsString()
+   print ENTRY_JAVA_FILE "        if (false)\n";
+   print ENTRY_JAVA_FILE "            return null;\n";
+
+   foreach $field (@{ $class->{FIELDS} })
+   {
+      print ENTRY_JAVA_FILE "        else if (attribute.equals(\"$field->{CODE}\"))\n";
+      if ($field->{TYPE} eq "string")
+      {
+         print ENTRY_JAVA_FILE "            return $field->{NAME};\n";
+      }
+      elsif ($field->{TYPE} eq "simtime_t")
+      {
+         print ENTRY_JAVA_FILE "            return $field->{NAME}.toString();\n";
+      }
+      else
+      {
+         print ENTRY_JAVA_FILE "            return String.valueOf($field->{NAME});\n";
+      }
+   }
+
+   print ENTRY_JAVA_FILE "        else\n";
+   if ($class->{SUPER} eq "EventLogTokenBasedEntry")
+   {
+      print ENTRY_JAVA_FILE "            return null;\n";
+   }
+   else
+   {
+      print ENTRY_JAVA_FILE "            return super.getAsString(attribute);\n";
+   }
+
+   print ENTRY_JAVA_FILE "
+    }
+
+    public String getClassName() { return \"$class->{NAME}\"; }
+}
+
+";
+
+   close(ENTRY_JAVA_FILE);
+}
+
+
+#
+# Write EventLogEntryFactory java file
+#
+
+open(FACTORY_JAVA_FILE, ">EventLogEntryFactory.java");
+
+print FACTORY_JAVA_FILE
+"package org.omnetpp.eventlog;
+
+public class EventLogEntryFactory
+{
+    \@SuppressWarnings(\"unused\")
+    public static EventLogTokenBasedEntry parseEntry(IChunk chunk, int entryIndex, String[] tokens, int numTokens) {
+        if (numTokens < 1)
+            return null;
+
+        String code = tokens[0];
+        EventLogTokenBasedEntry entry = null;
+
+        if (false)
+            ;
+";
+
+foreach $class (@classes)
+{
+   if ($class->{CODE} ne "abstract")
+   {
+      print FACTORY_JAVA_FILE "        else if (";
+      $i=0;
+      $l=length($class->{CODE});
+      print FACTORY_JAVA_FILE "code.length\(\) == $l";
+      foreach $c (split(//, $class->{CODE})) {
+          print FACTORY_JAVA_FILE " && code.charAt\($i\) == '$c'";
+          $i++;
+      }
+      print FACTORY_JAVA_FILE ") // $class->{CODE}\n";
+
+      print FACTORY_JAVA_FILE "            entry = new $class->{NAME}(chunk, entryIndex);\n";
+   }
+}
+
+print FACTORY_JAVA_FILE "        else\n";
+print FACTORY_JAVA_FILE "            return null;\n\n";
+print FACTORY_JAVA_FILE "        entry.parse(tokens, numTokens);\n";
+print FACTORY_JAVA_FILE "        return entry;\n";
+print FACTORY_JAVA_FILE "    }\n}\n\n";
+
+close(FACTORY_JAVA_FILE);
+

@@ -87,8 +87,8 @@ void FilteredEvent::synchronize(FileReader::FileChange change)
             case FileReader::APPENDED:
                 deleteConsequences();
                 break;
-            case FileReader::UNCHANGED:  // just to avoid unused enumeration value warnings
-                break;
+            default:
+                throw opp_runtime_error("Unknown file change");
         }
     }
 }
@@ -132,7 +132,7 @@ FilteredEvent *FilteredEvent::getCauseEvent()
     if (causeEventNumber == -1) {
         IEvent *causeEvent = getEvent()->getCauseEvent();
 
-        // TODO: LONG RUNNING OPERATION
+        // LONG RUNNING OPERATION
         // walk backwards on the cause chain until we find an event matched by the filter
         // this might read all events backward if none of the causes matches the filter
         while (causeEvent) {
@@ -155,8 +155,8 @@ BeginSendEntry *FilteredEvent::getCauseBeginSendEntry()
 {
     IMessageDependency *cause = getCause();
     if (cause) {
-        MessageEntry *messageEntry = cause->getMessageEntry();
-        return dynamic_cast<BeginSendEntry *>(messageEntry);
+        MessageDescriptionEntry *messageDescriptionEntry = cause->getBeginMessageDescriptionEntry();
+        return dynamic_cast<BeginSendEntry *>(messageDescriptionEntry);
     }
     else
         return nullptr;
@@ -171,7 +171,7 @@ IMessageDependency *FilteredEvent::getCause()
         if (causeMessageDependency) {
             IMessageDependency *messageDependency;
 
-            // TODO: LONG RUNNING OPERATION
+            // LONG RUNNING OPERATION
             // this might read all events backward if none of the causes matches the filter
             while (causeEvent && (messageDependency = causeEvent->getCause())) {
                 filteredEventLog->progress();
@@ -208,7 +208,7 @@ IMessageDependencyList *FilteredEvent::getCauses()
         std::list<BreadthSearchItem> todoList;
         todoList.push_back(BreadthSearchItem(getEvent(), nullptr, FilteredMessageDependency::UNDEFINED, 0));
 
-        // TODO: LONG RUNNING OPERATION
+        // LONG RUNNING OPERATION
         // this is recursive and might take some time
         while (!todoList.empty()) {
             filteredEventLog->progress();
@@ -261,7 +261,7 @@ IMessageDependencyList *FilteredEvent::getConsequences()
         std::list<BreadthSearchItem> todoList;
         todoList.push_back(BreadthSearchItem(getEvent(), nullptr, FilteredMessageDependency::UNDEFINED, 0));
 
-        // TODO: LONG RUNNING OPERATION
+        // LONG RUNNING OPERATION
         // this is recursive and might take some time
         while (!todoList.empty()) {
             filteredEventLog->progress();
@@ -332,5 +332,5 @@ void FilteredEvent::pushNewFilteredMessageDependency(IMessageDependencyList *mes
 }
 
 } // namespace eventlog
-}  // namespace omnetpp
+} // namespace omnetpp
 

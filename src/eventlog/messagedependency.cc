@@ -36,8 +36,8 @@ bool IMessageDependency::corresponds(IMessageDependency *dependency1, IMessageDe
     if (!dependency1 || !dependency2)
         return false;
     else {
-        MessageEntry *entry1 = dependency1->getMessageEntry();
-        MessageEntry *entry2 = dependency2->getMessageEntry();
+        MessageDescriptionEntry *entry1 = dependency1->getBeginMessageDescriptionEntry();
+        MessageDescriptionEntry *entry2 = dependency2->getBeginMessageDescriptionEntry();
         if (!entry1 || !entry2)
             return false;
         else
@@ -81,7 +81,7 @@ eventnumber_t MessageSendDependency::getConsequenceEventNumber()
         // only cause is present, calculate consequence from it.
         //
         // when a message is scheduled/sent, we don't know the arrival event number
-        // yet, only the simulation time is recorded in the event log file.
+        // yet, only the simulation time is recorded in the eventlog file.
         // So here we have to look through all events at the arrival time,
         // and find the one "caused by" our message.
         simtime_t consequenceTime = getConsequenceSimulationTime();
@@ -92,14 +92,15 @@ eventnumber_t MessageSendDependency::getConsequenceEventNumber()
             consequenceEventNumber = EVENT_NOT_YET_REACHED;
         else {
             IEvent *event = eventLog->getEventForSimulationTime(consequenceTime, FIRST_OR_PREVIOUS);
-            MessageEntry *messageEntry = getMessageEntry();
+            MessageDescriptionEntry *messageDescriptionEntry = getBeginMessageDescriptionEntry();
 
-            // TODO: LONG RUNNING OPERATION
-            while (event) {
+            // LONG RUNNING OPERATION
+            while (event)
+            {
                 eventLog->progress();
 
                 if (event->getCauseEventNumber() == getCauseEventNumber() &&
-                    event->getMessageId() == messageEntry->messageId)
+                    event->getMessageId() == messageDescriptionEntry->messageId)
                 {
                     consequenceEventNumber = event->getEventNumber();
                     break;
@@ -152,12 +153,20 @@ simtime_t MessageSendDependency::getConsequenceSimulationTime()
     }
 }
 
-MessageEntry *MessageSendDependency::getMessageEntry()
+MessageDescriptionEntry *MessageSendDependency::getBeginMessageDescriptionEntry()
 {
     Assert(eventLogEntryIndex != -1);
     IEvent *event = getCauseEvent();
     Assert(event);
-    return (MessageEntry *)event->getEventLogEntry(eventLogEntryIndex);
+    return (MessageDescriptionEntry *)event->getEventLogEntry(eventLogEntryIndex);
+}
+
+MessageDescriptionEntry *MessageSendDependency::getEndMessageDescriptionEntry()
+{
+    IEvent *event = getCauseEvent();
+    BeginSendEntry *beginSendEntry = (BeginSendEntry *)(event->getEventLogEntry(eventLogEntryIndex));
+    EndSendEntry *endSendEntry = event->getEndSendEntry(beginSendEntry);
+    return endSendEntry;
 }
 
 MessageSendDependency *MessageSendDependency::duplicate(IEventLog *eventLog)
@@ -179,7 +188,7 @@ bool MessageSendDependency::equals(IMessageDependency *other)
 void MessageSendDependency::print(FILE *file)
 {
     getCauseEvent()->getEventEntry()->print(file);
-    getMessageEntry()->print(file);
+    getBeginMessageDescriptionEntry()->print(file);
 }
 
 /**************************************************/
@@ -199,8 +208,8 @@ eventnumber_t MessageReuseDependency::getCauseEventNumber()
         // only consequence is present, calculate cause from it
         IEvent *consequenceEvent = getConsequenceEvent();
         Assert(consequenceEvent);
-        MessageEntry *messageEntry = (MessageEntry *)consequenceEvent->getEventLogEntry(eventLogEntryIndex);
-        causeEventNumber = messageEntry->previousEventNumber;
+        MessageDescriptionEntry *messageDescriptionEntry = (MessageDescriptionEntry *)consequenceEvent->getEventLogEntry(eventLogEntryIndex);
+        causeEventNumber = messageDescriptionEntry->previousEventNumber;
     }
 
     return causeEventNumber;
@@ -234,12 +243,17 @@ simtime_t MessageReuseDependency::getConsequenceSimulationTime()
     return getConsequenceEvent()->getSimulationTime();
 }
 
-MessageEntry *MessageReuseDependency::getMessageEntry()
+MessageDescriptionEntry *MessageReuseDependency::getBeginMessageDescriptionEntry()
 {
     Assert(eventLogEntryIndex != -1);
     IEvent *event = getConsequenceEvent();
     Assert(event);
-    return (MessageEntry *)event->getEventLogEntry(eventLogEntryIndex);
+    return (MessageDescriptionEntry *)event->getEventLogEntry(eventLogEntryIndex);
+}
+
+MessageDescriptionEntry *MessageReuseDependency::getEndMessageDescriptionEntry()
+{
+    return getBeginMessageDescriptionEntry();
 }
 
 MessageReuseDependency *MessageReuseDependency::duplicate(IEventLog *eventLog)
@@ -261,7 +275,7 @@ bool MessageReuseDependency::equals(IMessageDependency *other)
 void MessageReuseDependency::print(FILE *file)
 {
     getConsequenceEvent()->getEventEntry()->print(file);
-    getMessageEntry()->print(file);
+    getBeginMessageDescriptionEntry()->print(file);
 }
 
 /**************************************************/
@@ -317,5 +331,5 @@ void FilteredMessageDependency::print(FILE *file)
 }
 
 } // namespace eventlog
-}  // namespace omnetpp
+} // namespace omnetpp
 

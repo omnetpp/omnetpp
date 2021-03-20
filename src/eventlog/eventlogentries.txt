@@ -1,39 +1,114 @@
-// TODO: what about writing encapsulate/decapsulate as separate lines?
+////////////////////////////////////////////////
+// Simulation begin and end top level entries //
+////////////////////////////////////////////////
 
-SB SimulationBeginEntry // mandatory first line of an eventlog file
+SB SimulationBeginEntry // mandatory first line of the eventlog file, followed by an empty line
 {
-   v int version           // OMNeT++ version, e.g. 0x401 (=1025) is release 4.1
-   rid string runId        // identifies the simulation run
-   b int keyframeBlockSize // the distance between keyframes in event numbers
+   ov int omnetppVersion  // OMNeT++ version, e.g. 0x0401 (=1025) is release 4.1
+   ev int eventlogVersion // eventlog version number
+   rid string runId       // identifies the simulation run
 }
 
-SE SimulationEndEntry // optional last line of an eventlog file
+SE SimulationEndEntry // optional last non-empty line of the eventlog file, followed by an empty line
 {
-   e bool isError // specifies if the simulation terminated due to an error
+   e bool isError   // specifies if the simulation terminated due to an error
    c int resultCode // the error code in case of an error, otherwise the normal result code
    m string message // human readable description
 }
 
-BU BubbleEntry // display a bubble message
+///////////////////////////
+// Event top level entry //
+///////////////////////////
+
+E EventEntry // an event that is processing a message, terminated by an empty line
 {
-   id int moduleId // id of the module which printed the bubble message
-   txt string text // displayed message text
+   # eventnumber_t eventNumber       // unique event number
+   t simtime_t simulationTime        // simulation time when the event occurred
+   m int moduleId                    // id of the processing module
+   ce eventnumber_t causeEventNumber // event number from which the message being processed was sent, or -1 if the message was sent from initialize
+   msg long messageId                // id of the message being processed
+   f string fingerprints NULL        // current simulation fingerprints
 }
 
-MB ComponentMethodBeginEntry // beginning of a call to another component (module/channel)
+//////////////////////////////
+// Snapshot top level entry //
+//////////////////////////////
+
+S SnapshotEntry // a snapshot of the current simulation state, followed by state entries, and terminated by an emtpy line
 {
-   sm int sourceComponentId // id of the caller component
-   tm int targetComponentId   // id of the component being called
-   m string method     // C++ method name
+   f int64_t fileOffset          // file offset of this entry
+   # eventnumber_t eventNumber // event number of the last processed event
+   t simtime_t simulationTime  // simulation time of the last processed event
 }
 
-ME ComponentMethodEndEntry // end of a call to another component
+///////////////////////////
+// Index top level entry //
+///////////////////////////
+
+I IndexEntry // incremental snapshot specifying additional and removed entries with an event number and a line index, followed by an empty line
+{
+   f int64_t fileOffset                 // file offset of this entry
+   i int64_t previousIndexFileOffset    // file offset of the previous index entry
+   s int64_t previousSnapshotFileOffset // file offset of the previous snapshot entry
+   # eventnumber_t eventNumber        // event number of the last processed event
+   t simtime_t simulationTime         // simulation time of the last processed event
+}
+
+/////////////////////////////////////
+// Reference added removed entries //
+/////////////////////////////////////
+
+abstract ReferenceEntry // base class for index entry references
+{
+   # eventnumber_t eventNumber // event number of the last referred event
+   b int beginEntryIndex       // begin index of the referred entry within the event
+   e int endEntryIndex         // end index of the referred entry within the event
+}
+
+RF ReferenceFoundEntry : ReferenceEntry // specifies an eventlog entry found in the snapshot
 {
 }
 
-MC ModuleCreatedEntry // creating a module
+RA ReferenceAddedEntry : ReferenceEntry // specifies an eventlog entry added to the index
 {
-   id int moduleId              // id of the new module
+}
+
+RR ReferenceRemovedEntry : ReferenceEntry // specifies an eventlog entry removed from the index
+{
+}
+
+/////////////////////////////////////////////////////////////////
+// Module, gate, connection and message reference base entries //
+/////////////////////////////////////////////////////////////////
+
+abstract ModuleReferenceEntry // base class for entries referring to a module
+{
+   id int moduleId // id of the module
+}
+
+abstract GateReferenceEntry // base class for entries referring to a gate
+{
+   m int moduleId // id of module where the gate is
+   g int gateId   // id of the gate
+}
+
+abstract ConnectionReferenceEntry // base class for entries referring to a connection
+{
+   sm int sourceModuleId // id of the source module identifying the connection
+   sg int sourceGateId   // id of the gate at the source module identifying the connection
+}
+
+abstract MessageReferenceEntry // base class for entries referring to a message
+{
+   id long messageId // id of the message
+}
+
+///////////////////////////////////////////////////////////////////
+// Module, gate, connection and message description base entries //
+///////////////////////////////////////////////////////////////////
+
+abstract ModuleDescriptionEntry : ModuleReferenceEntry // base class for entries describing a module
+{
    c string moduleClassName     // C++ class name of the module
    t string nedTypeName         // fully qualified NED type name
    pid int parentModuleId -1    // id of the parent module
@@ -41,74 +116,22 @@ MC ModuleCreatedEntry // creating a module
    cm bool compoundModule false // whether module is a simple or compound module
 }
 
-MD ModuleDeletedEntry // deleting a module
+abstract GateDescriptionEntry : GateReferenceEntry // base class for entries describing a gate
 {
-   id int moduleId // id of the module being deleted
-}
-
-GC GateCreatedEntry // gate created
-{
-   m int moduleId  // module in which the gate was created
-   g int gateId    // id of the new gate
    n string name   // gate name
    i int index  -1 // gate index if vector, -1 otherwise
    o bool isOutput // whether the gate is input or output
 }
 
-GD GateDeletedEntry // gate deleted
+abstract ConnectionDescriptionEntry : ConnectionReferenceEntry // base class for entries describing a connection
 {
-   m int moduleId // module in which the gate was created
-   g int gateId   // id of the deleted gate
-}
-
-CC ConnectionCreatedEntry // creating a connection
-{
-   sm int sourceModuleId // id of the source module identifying the connection
-   sg int sourceGateId   // id of the gate at the source module identifying the connection
    dm int destModuleId   // id of the destination module
    dg int destGateId     // id of the gate at the destination module
    // TODO: channel, channel attributes, etc
 }
 
-CD ConnectionDeletedEntry // deleting a connection
+abstract MessageDescriptionEntry : MessageReferenceEntry // base class for entries describing a message
 {
-   sm int sourceModuleId // id of the source module identifying the connection
-   sg int sourceGateId   // id of the gate at the source module identifying the connection
-}
-
-CS ConnectionDisplayStringChangedEntry // a connection display string change
-{
-   sm int sourceModuleId  // id of the source module identifying the connection
-   sg int sourceGateId    // id of the gate at the source module identifying the connection
-   d string displayString // the new display string
-}
-
-MS ModuleDisplayStringChangedEntry // a module display string change
-{
-   id int moduleId        // id of the module
-   d string displayString // the new display string
-}
-
-E EventEntry // an event that is processing a message
-{
-   # eventnumber_t eventNumber       // unique event number
-   t simtime_t simulationTime        // simulation time when the event occurred
-   m int moduleId                    // id of the processing module
-   ce eventnumber_t causeEventNumber // event number from which the message being processed was sent, or -1 if the message was sent from initialize
-   msg long messageId                // lifetime-unique id of the message being processed
-   f string fingerprints NULL        // current simulation fingerprints
-}
-
-KF KeyframeEntry
-{
-   p int64_t previousKeyframeFileOffset // file offset of the previous keyframe entry
-   c string consequenceLookaheadLimits // consequence lookahead data
-   s string simulationStateEntries     // simulation state data
-}
-
-abstract MessageEntry // base class for entries referring to a message
-{
-   id long messageId                          // lifetime-unique id of the message
    tid long messageTreeId                     // id of the message inherited by dup
    eid long messageEncapsulationId            // id of the message inherited by encapsulation
    etid long messageEncapsulationTreeId       // id of the message inherited by both dup and encapsulation
@@ -118,26 +141,150 @@ abstract MessageEntry // base class for entries referring to a message
    p short messagePriority              0     // message priority
    l int64_t messageLength              0     // message length in bits
    er bool hasBitError                  false // true indicates that the message has bit errors
+   m  int ownerModuleId                 -1    // id of the owner module where the message was found or -1 (FES)
+   sm int senderModuleId                -1    // id of the source module where the message was sent from
+   sg int senderGateId                  -1    // id of the gate at the source module from which the message is being sent
+   st simtime_t sendingTime             -1    // simulation time when the message was sent
+   am int arrivalModuleId               -1    // id of the destination module where the message was sent to
+   ag int arrivalGateId                 -1    // id of the gate at the source module from which the message is being sent
+   at simtime_t arrivalTime             -1    // simulation time when the message will arrive
    d string detail                      NULL  // detailed information of message content when recording message data is turned on
    pe eventnumber_t previousEventNumber       // event number from which the message being cloned was sent, or -1 if the message was sent from initialize
    // TODO: and many other fields, including message contents
 }
 
-CE CancelEventEntry : MessageEntry // canceling an event caused by a self message
+/////////////////////////////////
+// Display string base entries //
+/////////////////////////////////
+
+abstract ModuleDisplayStringEntry : ModuleReferenceEntry // base class for entries describing a module display string
+{
+   d string displayString // the new display string
+}
+
+abstract GateDisplayStringEntry : GateReferenceEntry // base class for entries describing a gate display string
+{
+   d string displayString // the new display string
+}
+
+abstract ConnectionDisplayStringEntry : ConnectionReferenceEntry // base class for entries describing a connection display string
+{
+   d string displayString // the new display string
+}
+
+abstract MessageDisplayStringEntry : MessageReferenceEntry // base class for entries describing a message display string
+{
+   d string displayString // the new display string
+}
+
+////////////////////////////////
+// Module method entries //
+////////////////////////////////
+
+CMB ComponentMethodBeginEntry // beginning of a call to another module
+{
+   sm int sourceComponentId // id of the caller component
+   tm int targetComponentId // id of the component being called
+   m string methodName      // C++ method name
+}
+
+CME ComponentMethodEndEntry // end of a call to another component
 {
 }
 
-BS BeginSendEntry : MessageEntry // beginning to send a message
+///////////////////////////////////////////////////////////////
+// Module, gate and connection creation and deletion entries //
+///////////////////////////////////////////////////////////////
+
+MC ModuleCreatedEntry : ModuleDescriptionEntry // creating a module
 {
-   sd simtime_t sendDelay         0 // send after this delay 
-   up bool isUpdate           false // whether this is a transmission update 
+}
+
+MD ModuleDeletedEntry : ModuleReferenceEntry // deleting a module
+{
+}
+
+GC GateCreatedEntry : GateDescriptionEntry // creating a gate
+{
+}
+
+GD GateDeletedEntry : GateReferenceEntry // deleting a gate
+{
+}
+
+CC ConnectionCreatedEntry : ConnectionDescriptionEntry // creating a connection
+{
+}
+
+CD ConnectionDeletedEntry : ConnectionReferenceEntry // deleting a connection
+{
+}
+
+/////////////////////////////////////////////////////////////////////////
+// Module, gate, connection and message display string changed entries //
+/////////////////////////////////////////////////////////////////////////
+
+MDC ModuleDisplayStringChangedEntry : ModuleDisplayStringEntry // a module display string change
+{
+}
+
+GDC GateDisplayStringChangedEntry : GateDisplayStringEntry // a gate display string change
+{
+}
+
+CDC ConnectionDisplayStringChangedEntry : ConnectionDisplayStringEntry // a connection display string change
+{
+}
+
+EDC MessageDisplayStringChangedEntry : MessageDisplayStringEntry // a message display string change
+{
+}
+
+///////////////////////////////////////////
+// Message creation and deletion entries //
+///////////////////////////////////////////
+
+CM CreateMessageEntry : MessageDescriptionEntry // creating a message
+{
+}
+
+CL CloneMessageEntry : MessageDescriptionEntry // cloning a message either via the copy constructor or by dup
+{
+   cid long cloneId // id of the original message that is cloned
+}
+
+DM DeleteMessageEntry : MessageDescriptionEntry // deleting a message
+{
+}
+
+///////////////////////////
+// Packet encapsulations //
+///////////////////////////
+
+EN EncapsulatePacketEntry : MessageReferenceEntry // encapsulating a packet
+{
+   cid long encapsulatedPacketId // id of the encapsulated packet
+}
+
+DE DecapsulatePacketEntry : MessageReferenceEntry // decapsulating a packet
+{
+   cid long encapsulatedPacketId // id of the encapsulated packet
+}
+
+//////////////////////////
+// Send message entries //
+//////////////////////////
+
+BS BeginSendEntry : MessageDescriptionEntry // beginning to send a message
+{
+   sd simtime_t sendDelay         0 // send after this delay
+   up bool isUpdate           false // whether this is a transmission update
    tx long transmissionId        -1 // for pairing transmission updates with the original transmission
 }
 
-ES EndSendEntry // prediction of the arrival of a message
+ES EndSendEntry : MessageDescriptionEntry // prediction of the arrival of a message, only a message reference because can't be alone
 {
-   t simtime_t arrivalTime        // when the message will arrive to its destination module
-   is bool isReceptionStart false // true indicates the message arrives with the first bit
+   i bool isDeliveredImmediately false // true indicates the message is delivered
 }
 
 SD SendDirectEntry // sending a message directly to a destination gate
@@ -157,18 +304,112 @@ SH SendHopEntry // sending a message through a connection identified by its sour
    pd simtime_t propagationDelay  0 // propagation delay as the message is propagated through the connection
    td simtime_t transmissionDelay 0 // transmission duration as the whole message is sent from the source gate
    rd simtime_t remainingDuration 0 // remaining transmission time (if packet is a tx update)
-   del bool discard false           // whether the channel has discarded the message
+   d bool discard false             // whether the channel has discarded the message
 }
 
-CM CreateMessageEntry : MessageEntry // creating a message
+CE CancelEventEntry : MessageDescriptionEntry // canceling an event caused by sending a self message
 {
 }
 
-CL CloneMessageEntry : MessageEntry // cloning a message either via the copy constructor or dup
+////////////////////////////////////////////////////////
+// Module, gate, connection and message found entries //
+////////////////////////////////////////////////////////
+
+MF ModuleFoundEntry : ModuleDescriptionEntry // a module found in the simulation while traversing the modules (used in snapshots)
 {
-   cid long cloneId // lifetime-unique id of the clone
+   # eventnumber_t lastSeenEventNumber // event number of the module created entry
+   ei int lastSeenEntryIndex           // index of the module created entry
 }
 
-DM DeleteMessageEntry : MessageEntry // deleting a message
+GF GateFoundEntry : GateDescriptionEntry // a gate found in the simulation while traversing the modules (used in snapshots)
+{
+   # eventnumber_t lastSeenEventNumber // event number of the gate created entry
+   ei int lastSeenEntryIndex           // index of the gate created entry
+}
+
+CF ConnectionFoundEntry : ConnectionDescriptionEntry // a connection found in the simulation while traversing the modules (used in snapshots)
+{
+   # eventnumber_t lastSeenEventNumber // event number of the connection created entry
+   ei int lastSeenEntryIndex           // index of the connection created entry
+}
+
+// TODO: shall we have separate entries for messages found in the FES?
+EF MessageFoundEntry : MessageDescriptionEntry // a message found in the future event queue (FES) or while traversing the modules (used in snapshots)
+{
+   // TODO: entry reference
+}
+
+///////////////////////////////////////////////////////////////////////
+// Module, gate, connection and message display string found entries //
+///////////////////////////////////////////////////////////////////////
+
+MDF ModuleDisplayStringFoundEntry : ModuleDisplayStringEntry // a module display string found (used in snapshots)
+{
+   # eventnumber_t lastSeenEventNumber // event number of the module display string changed entry
+   ei int lastSeenEntryIndex           // index of the module display string changed entry
+}
+
+GDF GateDisplayStringFoundEntry : GateDisplayStringEntry // a gate display string found (used in snapshots)
+{
+   # eventnumber_t lastSeenEventNumber // event number of the gate display string changed entry
+   ei int lastSeenEntryIndex           // index of the gate display string changed entry
+}
+
+CDF ConnectionDisplayStringFoundEntry : ConnectionDisplayStringEntry // a connection display string found (used in snapshots)
+{
+   # eventnumber_t lastSeenEventNumber // event number of the connection display string changed entry
+   ei int lastSeenEntryIndex           // index of the connection display string changed entry
+}
+
+EDF MessageDisplayStringFoundEntry : MessageDisplayStringEntry // a message display string found (used in snapshots)
+{
+   # eventnumber_t lastSeenEventNumber // event number of the message display string changed entry
+   ei int lastSeenEntryIndex           // index of the message display string changed entry
+}
+
+///////////////////////////
+// Miscellaneous entries //
+///////////////////////////
+
+BU BubbleEntry // display a bubble message
+{
+   id int moduleId // id of the module which printed the bubble message
+   txt string text // displayed message text
+}
+
+////////////////////
+// Custom entries //
+////////////////////
+
+abstract CustomReferenceEntry // custom data reference provided by OMNeT users
+{
+   t string type    // user specified unique type
+   k long key       // unique key that links custom entries together
+}
+
+abstract CustomDescriptionEntry : CustomReferenceEntry // custom data provided by OMNeT users
+{
+   c string content // user specified content (text, CSV, XML, JSON, etc.)
+}
+
+CUC CustomCreatedEntry : CustomDescriptionEntry // created a custom data object
+{
+}
+
+CUD CustomDeletedEntry : CustomReferenceEntry // deleted a custom data object
+{
+}
+
+CUM CustomChangedEntry : CustomDescriptionEntry // changed a custom data object
+{
+}
+
+CUF CustomFoundEntry : CustomDescriptionEntry // found a custom data object (used in snapshots)
+{
+   # eventnumber_t lastSeenEventNumber // event number of the corresponding created entry
+   ei int lastSeenEntryIndex           // index of the corresponding created begin entry
+}
+
+CU CustomEntry : CustomDescriptionEntry // custom data provided by OMNeT users
 {
 }

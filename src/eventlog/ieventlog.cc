@@ -17,6 +17,8 @@
 #include <cstdio>
 #include <cstdlib>
 #include "ieventlog.h"
+#include "index.h"
+#include "snapshot.h"
 
 namespace omnetpp {
 namespace eventlog {
@@ -34,8 +36,42 @@ void IEventLog::clearInternalState()
 
 void IEventLog::synchronize(FileReader::FileChange change)
 {
-    if (change != FileReader::UNCHANGED)
-        clearInternalState();
+    if (change != FileReader::UNCHANGED) {
+        switch (change) {
+            case FileReader::OVERWRITTEN:
+            case FileReader::APPENDED:
+                clearInternalState();
+                break;
+            default:
+                throw opp_runtime_error("Unknown file change");
+        }
+    }
+}
+
+void IEventLog::print(FILE *file, eventnumber_t fromEventNumber, eventnumber_t toEventNumber, bool outputEventLogMessages)
+{
+    SimulationBeginEntry *simulationBeginEntry = getSimulationBeginEntry();
+    if (simulationBeginEntry) {
+        simulationBeginEntry->print(file);
+        fprintf(file, "\n");
+    }
+    IEvent *event = fromEventNumber == -1 ? getFirstEvent() : getFirstEventNotBeforeEventNumber(fromEventNumber);
+    while (event != NULL && (toEventNumber == -1 || event->getEventNumber() <= toEventNumber))
+    {
+        event->print(file, outputEventLogMessages);
+        if (event) {
+            Index *index = getIndex(event->getEventNumber());
+            if (index)
+                index->print(file);
+            Snapshot *snapshot = getSnapshot(event->getEventNumber());
+            if (snapshot)
+                snapshot->print(file);
+        }
+        event = event->getNextEvent();
+    }
+    SimulationEndEntry *simulationEndEntry = getSimulationEndEntry();
+    if (simulationEndEntry)
+        simulationEndEntry->print(file);
 }
 
 IEvent *IEventLog::getNeighbourEvent(IEvent *event, eventnumber_t distance)
@@ -84,5 +120,5 @@ double IEventLog::getApproximatePercentageForEventNumber(eventnumber_t eventNumb
 }
 
 } // namespace eventlog
-}  // namespace omnetpp
+} // namespace omnetpp
 

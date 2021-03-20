@@ -25,34 +25,37 @@ namespace omnetpp {
 namespace eventlog {
 
 char EventLogEntry::buffer[128];
-omnetpp::common::LineTokenizer EventLogEntry::tokenizer(32768);
-static const char *currentLine;
-static int currentLineLength;
+const char *EventLogEntry::currentLine;
+int EventLogEntry::currentLineLength;
 
 /***********************************************/
 
-EventLogEntry *EventLogEntry::parseEntry(EventLog *eventLog, Event *event, int entryIndex, file_offset_t offset, char *line, int length)
+EventLogEntry *EventLogEntry::parseEntry(EventLog *eventLog, IChunk *chunk, int entryIndex, file_offset_t offset, char *line, int length)
 {
     try {
         currentLine = line;
         currentLineLength = length;
 
         if (*line == '-') {
-            EventLogMessageEntry *eventLogMessage = new EventLogMessageEntry(event, entryIndex);
+            EventLogMessageEntry *eventLogMessage = new EventLogMessageEntry(chunk, entryIndex);
             eventLogMessage->parse(line, length);
+            eventLogMessage->offset = offset;
             return eventLogMessage;
         }
         else {
-            EventLogEntryFactory factory;
-            tokenizer.tokenize(line, length);
             Assert(entryIndex >= 0);
-            return factory.parseEntry(event, entryIndex, tokenizer.tokens(), tokenizer.numTokens());
+            omnetpp::common::LineTokenizer *tokenizer = eventLog->tokenizer;
+            tokenizer->tokenize(line, length);
+            EventLogEntry *eventLogEntry = EventLogEntryFactory::parseEntry(chunk, entryIndex, tokenizer->tokens(), tokenizer->numTokens());
+            if (eventLogEntry)
+                eventLogEntry->offset = offset;
+            return eventLogEntry;
         }
     }
     catch (opp_runtime_error& e) {
         const char *fileName = eventLog->getFileReader()->getFileName();
-        if (event && event->getEventEntry())
-            throw opp_runtime_error("Error parsing elog file %s at line %d of event #%" EVENTNUMBER_PRINTF_FORMAT " near file offset %" PRId64 ":\n%s", fileName, entryIndex, event->getEventNumber(), offset, e.what());
+        if (chunk)
+            throw opp_runtime_error("Error parsing elog file %s at line %d of event #%" EVENTNUMBER_PRINTF_FORMAT " near file offset %" PRId64 ":\n%s", fileName, entryIndex, chunk->getEventNumber(), offset, e.what());
         else
             throw opp_runtime_error("Error parsing elog file %s near file offset %" PRId64 ":\n%s", fileName, offset, e.what());
     }
@@ -68,6 +71,33 @@ simtime_t EventLogEntry::parseSimulationTime(const char *str)
 {
     const char *end;
     return BigDecimal::parse(str, end);
+}
+
+Event *EventLogEntry::getEvent()
+{
+    return dynamic_cast<Event *>(chunk);
+}
+
+EventLogEntry *EventLogEntry::getPreviousEventLogEntry()
+{
+    Event *event = getEvent();
+    if (entryIndex == 0) {
+        IEvent *previousEvent = event->getPreviousEvent();
+        return previousEvent ? previousEvent->getEventLogEntry(previousEvent->getNumEventLogEntries() - 1) : NULL;
+    }
+    else
+        return event->getEventLogEntry(entryIndex - 1);
+}
+
+EventLogEntry *EventLogEntry::getNextEventLogEntry()
+{
+    Event *event = getEvent();
+    if (entryIndex == event->getNumEventLogEntries() - 1) {
+        IEvent *nextEvent = event->getNextEvent();
+        return nextEvent ? nextEvent->getEventLogEntry(0) : NULL;
+    }
+    else
+        return event->getEventLogEntry(entryIndex + 1);
 }
 
 /***********************************************/
@@ -194,18 +224,11 @@ const char *EventLogTokenBasedEntry::getStringToken(char **tokens, int numTokens
     return token ? eventLogStringPool.get(token) : defaultValue;
 }
 
-void EventLogTokenBasedEntry::parse(char *line, int length)
-{
-    tokenizer.tokenize(line, length);
-    parse(tokenizer.tokens(), tokenizer.numTokens());
-}
-
 /***********************************************/
 
-EventLogMessageEntry::EventLogMessageEntry(Event *event, int entryIndex)
+EventLogMessageEntry::EventLogMessageEntry(IChunk *chunk, int entryIndex)
 {
-    // these are inherited, cannot be put into the initializer list
-    this->event = event;
+    this->chunk = chunk;
     this->entryIndex = entryIndex;
 }
 
@@ -232,7 +255,7 @@ void EventLogMessageEntry::parse(char *line, int length)
 
 void EventLogMessageEntry::print(FILE *fout)
 {
-    ::fprintf(fout, "- %s\n", text);
+    fprintf(fout, "- %s\n", text);
 }
 
 const std::vector<const char *> EventLogMessageEntry::getAttributeNames() const
@@ -254,4 +277,5 @@ const char *EventLogMessageEntry::getAsString(const char *attribute) const
 }
 
 } // namespace eventlog
-}  // namespace omnetpp
+} // namespace omnetpp
+

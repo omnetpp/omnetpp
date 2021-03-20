@@ -20,10 +20,12 @@
 #include <sstream>
 #include <algorithm>
 #include <vector>
+#include <map>
 #include "common/filereader.h"
 #include "ievent.h"
 #include "eventlogentry.h"
 #include "eventlogentries.h"
+#include "eventlogentrycache.h"
 #include "messagedependency.h"
 
 namespace omnetpp {
@@ -32,7 +34,7 @@ namespace eventlog {
 class EventLog;
 
 /**
- * Manages all event log entries for a single event. (All lines belonging to an "E" line.)
+ * Manages all eventlog entries for a single event. (all lines belonging to an "E" line)
  * Returned Event*, EventLogEntry*, EventEntry*, MessageSend*, IMessageDependencyList* pointers should not be
  * remembered by callers, because they may get deleted when the event is
  * thrown out of the eventlog cache.
@@ -40,15 +42,14 @@ class EventLog;
 class EVENTLOG_API Event : public IEvent
 {
     protected:
-        EventLog *eventLog; // the corresponding event log
+        EventLog *eventLog; // the corresponding eventlog
         file_offset_t beginOffset; // file offset where the event starts
-        file_offset_t endOffset; // file offset where the event ends (ie. begin of next event)
-        EventEntry *eventEntry; // the event log entry that corresponds to the actual event ("E" line)
-        ModuleCreatedEntry *moduleCreatedEntry;
+        file_offset_t endOffset; // file offset where the event ends (including the following empty line, equals to the begin of the next thunk)
+        EventEntry *eventEntry; // the eventlog entry that corresponds to the actual event ("E" line)
+        ModuleDescriptionEntry *moduleDescriptionEntry;
         int numEventLogMessages;
         int numBeginSendEntries;
-
-        typedef std::vector<EventLogEntry *> EventLogEntryList;
+        int numCustomEntries;
         EventLogEntryList eventLogEntries; // all entries parsed from the file (lines below "E" line)
 
         /**
@@ -63,25 +64,35 @@ class EVENTLOG_API Event : public IEvent
         virtual ~Event();
 
         /**
-         * Parse an event starting at the given offset.
+         * Parse an event starting at the given offset. Calling this function
+         * clears the internal state of this event before parsing.
          */
         file_offset_t parse(FileReader *reader, file_offset_t offset);
+
+        /**
+         * Parse eventlog entries starting at the given offset. This function
+         *
+         * This may be called multiple times if the previous parse stopped
+         * because it reached the end of the file before the event was completely
+         * parsed.
+         */
+        file_offset_t parseLines(FileReader *reader, file_offset_t offset);
 
         // IEvent interface
         virtual void synchronize(FileReader::FileChange change) override;
         virtual IEventLog *getEventLog() override;
 
-        virtual ModuleCreatedEntry *getModuleCreatedEntry() override;
-
         virtual file_offset_t getBeginOffset() override { return beginOffset; }
         virtual file_offset_t getEndOffset() override { return endOffset; }
 
         virtual EventEntry *getEventEntry() override { return eventEntry; }
+        virtual ModuleDescriptionEntry *getModuleDescriptionEntry() override;
         virtual int getNumEventLogEntries() override { return eventLogEntries.size(); }
         virtual EventLogEntry *getEventLogEntry(int index) override { return eventLogEntries[index]; }
 
         virtual int getNumEventLogMessages() override { return numEventLogMessages; }
         virtual int getNumBeginSendEntries() override { return numBeginSendEntries; }
+        virtual int getNumCustomEntries() override { return numCustomEntries; }
         virtual EventLogMessageEntry *getEventLogMessage(int index) override;
 
         virtual eventnumber_t getEventNumber() override { return eventEntry->eventNumber; }
@@ -95,6 +106,7 @@ class EVENTLOG_API Event : public IEvent
         virtual EndSendEntry *getEndSendEntry(BeginSendEntry *beginSendEntry) override;
         virtual ComponentMethodEndEntry *getComponentMethodEndEntry(ComponentMethodBeginEntry *componentMethodBeginEntry);
         simtime_t getTransmissionDelay(BeginSendEntry *beginSendEntry);
+        simtime_t getRemainingDuration(BeginSendEntry *beginSendEntry);
         virtual Event *getPreviousEvent() override;
         virtual Event *getNextEvent() override;
 
@@ -108,12 +120,22 @@ class EVENTLOG_API Event : public IEvent
 
     protected:
         void clearInternalState();
+        void deleteCauses();
         void deleteConsequences();
+        void deleteEventLogEntries();
         void deleteAllocatedObjects();
+
+        /**
+         * Searches for the first eventlog entry that is reusing the provided message id.
+         * The search starts from the immediately following event and ends at the end of
+         * the eventlog. Returns NULL if no such eventlog entry is found.
+         */
+        MessageDescriptionEntry *findReuseMessageDescriptionEntry(int messageId);
+        MessageDescriptionEntry *findLocalReuseMessageDescriptionEntry(eventnumber_t previousEventNumber, int messageId);
 };
 
 } // namespace eventlog
-}  // namespace omnetpp
+} // namespace omnetpp
 
 
 #endif

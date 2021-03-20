@@ -32,7 +32,7 @@ namespace eventlog {
 /**
  * This is a "view" of the EventLog, including only a subset of events and their dependencies. This class
  * uses EventLog by delegation so that multiple instances might share the same EventLog object.
- * TODO: filtered event log must save extra info in the exported log file to be able to reproduce the
+ * TODO: filtered eventlog must save extra info in the exported log file to be able to reproduce the
  * same in memory model for filtered message dependencies. These can be done by adding new tags to E lines.
  */
 class EVENTLOG_API FilteredEventLog : public IEventLog
@@ -41,7 +41,7 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
     typedef omnetpp::common::PatternMatcher PatternMatcher;
 
     protected:
-        IEventLog *eventLog; // this will not be destructed because might be shared among multiple filtered event logs
+        IEventLog *eventLog; // this will not be destructed because might be shared among multiple filtered eventlogs
         eventnumber_t approximateNumberOfEvents;
         double approximateMatchingEventRatio;
 
@@ -151,7 +151,7 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         void setMaximumConsequenceCollectionTime(int maximumConsequenceCollectionTime) { this->maximumConsequenceCollectionTime = maximumConsequenceCollectionTime; }
 
         bool matchesFilter(IEvent *event);
-        bool matchesModuleCreatedEntry(ModuleCreatedEntry *moduleCreatedEntry);
+        bool matchesModuleDescriptionEntry(ModuleDescriptionEntry *moduleDescriptionEntry);
         FilteredEvent *getMatchingEventInDirection(eventnumber_t startEventNumber, bool forward, eventnumber_t stopEventNumber = -1);
         FilteredEvent *getMatchingEventInDirection(IEvent *event, bool forward, eventnumber_t stopEventNumber = -1);
 
@@ -160,32 +160,37 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         virtual void setProgressCallInterval(double seconds) override { eventLog->setProgressCallInterval(seconds); }
         virtual void progress() override { eventLog->progress(); }
         virtual void synchronize(FileReader::FileChange change) override;
-        virtual int getKeyframeBlockSize() override { return eventLog->getKeyframeBlockSize(); }
         virtual FileReader *getFileReader() override { return eventLog->getFileReader(); }
+        virtual EventLogEntryCache *getEventLogEntryCache() override { return eventLog->getEventLogEntryCache(); }
         virtual eventnumber_t getNumParsedEvents() override { return eventLog->getNumParsedEvents(); }
         virtual std::set<const char *>& getMessageNames() override { return eventLog->getMessageNames(); }
         virtual std::set<const char *>& getMessageClassNames() override { return eventLog->getMessageClassNames(); }
-        virtual int getNumModuleCreatedEntries() override { return eventLog->getNumModuleCreatedEntries(); }
-        virtual std::vector<ModuleCreatedEntry *> getModuleCreatedEntries() override { return eventLog->getModuleCreatedEntries(); }
-        virtual ModuleCreatedEntry *getModuleCreatedEntry(int moduleId) override { return eventLog->getModuleCreatedEntry(moduleId); }
-        virtual GateCreatedEntry *getGateCreatedEntry(int moduleId, int gateId) override { return eventLog->getGateCreatedEntry(moduleId, gateId); }
         virtual SimulationBeginEntry *getSimulationBeginEntry() override { return eventLog->getSimulationBeginEntry(); }
+        virtual SimulationEndEntry *getSimulationEndEntry() override { return eventLog->getSimulationEndEntry(); }
 
         virtual bool isEmpty() override;
 
+        virtual FilteredEvent *getFirstEvent() override;
         virtual eventnumber_t getFirstEventNumber() override { return getFirstEvent() != nullptr ? getFirstEvent()->getEventNumber() : -1; }
         virtual simtime_t getFirstSimulationTime() override { return getFirstEvent() != nullptr ? getFirstEvent()->getSimulationTime() : 0; }
-        virtual FilteredEvent *getFirstEvent() override;
 
+        virtual FilteredEvent *getLastEvent() override;
         virtual eventnumber_t getLastEventNumber() override { return getLastEvent() != nullptr ? getLastEvent()->getEventNumber() : -1; }
         virtual simtime_t getLastSimulationTime() override { return getLastEvent() != nullptr ? getLastEvent()->getSimulationTime() : 0; }
-        virtual FilteredEvent *getLastEvent() override;
 
         virtual FilteredEvent *getNeighbourEvent(IEvent *event, eventnumber_t distance = 1) override;
         virtual FilteredEvent *getEventForEventNumber(eventnumber_t eventNumber, MatchKind matchKind = EXACT, bool useCacheOnly = false) override;
         virtual FilteredEvent *getEventForSimulationTime(simtime_t simulationTime, MatchKind matchKind = EXACT, bool useCacheOnly = false) override;
 
         virtual EventLogEntry *findEventLogEntry(EventLogEntry *start, const char *search, bool forward, bool caseSensitive) override;
+
+        virtual Index *getFirstIndex() override { return eventLog->getFirstIndex(); }
+        virtual Index *getLastIndex() override { return eventLog->getLastIndex(); }
+        virtual Index *getIndex(eventnumber_t eventNumber, MatchKind matchKind = EXACT) override { return eventLog->getIndex(eventNumber, matchKind); }
+
+        virtual Snapshot *getFirstSnapshot() override { return eventLog->getFirstSnapshot(); }
+        virtual Snapshot *getLastSnapshot() override { return eventLog->getLastSnapshot(); }
+        virtual Snapshot *getSnapshot(eventnumber_t eventNumber, MatchKind matchKind = EXACT) override { return eventLog->getSnapshot(eventNumber, matchKind); }
 
         virtual eventnumber_t getApproximateNumberOfEvents() override;
         virtual double getApproximatePercentageForEventNumber(eventnumber_t eventNumber) override;
@@ -218,11 +223,11 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         void clearInternalState();
         void deleteConsequences();
         void deleteAllocatedObjects();
-        bool isAncestorModuleCreatedEntry(ModuleCreatedEntry *ancestor, ModuleCreatedEntry *descendant);
+        bool isAncestorModuleDescriptionEntry(ModuleDescriptionEntry *ancestor, ModuleDescriptionEntry *descendant);
 };
 
 } // namespace eventlog
-}  // namespace omnetpp
+} // namespace omnetpp
 
 
 #endif

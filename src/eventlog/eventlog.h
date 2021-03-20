@@ -32,16 +32,21 @@ namespace eventlog {
 
 extern EVENTLOG_API omnetpp::common::StringPool eventLogStringPool;
 
+class Index;
 class Event;
 class EventLogEntry;
 
 /**
- * Manages an event log file in memory. Caches some events. Clients should not
+ * Manages an eventlog file in memory. Caches some events. Clients should not
  * store pointers to Events or EventLogEntries, because this class may
- * thow them out of the cache any time.
+ * throw them out of the cache any time.
  */
 class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
 {
+    friend class Index;
+    friend class Snapshot;
+    friend class EventLogEntry;
+
     protected:
         eventnumber_t numParsedEvents;
         eventnumber_t approximateNumberOfEvents;
@@ -56,12 +61,9 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         SimulationBeginEntry *simulationBeginEntry;
         SimulationEndEntry *simulationEndEntry;
 
-        typedef std::map<int, ModuleCreatedEntry *> ModuleIdToModuleCreatedEntryMap;
-        ModuleIdToModuleCreatedEntryMap moduleIdToModuleCreatedEntryMap;
+        EventLogEntryCache eventLogEntryCache; // access all eventlog entries efficiently
 
-        typedef std::map<std::pair<int, int>, GateCreatedEntry *> ModuleIdAndGateIdToGateCreatedEntryMap;
-        ModuleIdAndGateIdToGateCreatedEntryMap moduleIdAndGateIdToGateCreatedEntryMap;
-
+        // TODO: move to eventlog entry cache
         std::set<const char *> messageClassNames; // message class names seen so far (see Event::parse)
         std::set<const char *> messageNames; // message names seen so far (see Event::parse)
 
@@ -72,9 +74,11 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         OffsetToEventMap beginOffsetToEventMap; // all parsed events so far
         OffsetToEventMap endOffsetToEventMap; // all parsed events so far
 
-        int keyframeBlockSize;
-        std::vector<eventnumber_t> consequenceLookaheadLimits;
-        std::map<eventnumber_t, std::vector<MessageEntry *> > previousEventNumberToMessageEntriesMap;
+        typedef std::map<eventnumber_t, Index *> EventNumberToIndexMap;
+        EventNumberToIndexMap eventNumberToIndexMap; // all indices are parsed at once
+
+        typedef std::map<eventnumber_t, Snapshot *> EventNumberToSnapshotMap;
+        EventNumberToSnapshotMap eventNumberToSnapshotMap; // snapshots are parsed lazily
 
     public:
         EventLog(FileReader *index);
@@ -83,10 +87,6 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         virtual ProgressMonitor setProgressMonitor(ProgressMonitor newProgressMonitor) override;
         virtual void setProgressCallInterval(double seconds) override { progressCallInterval = (long)(seconds * CLOCKS_PER_SEC); lastProgressCall = clock(); }
         virtual void progress() override;
-
-        int getKeyframeBlockSize() override { return keyframeBlockSize; }
-        eventnumber_t getConsequenceLookahead(eventnumber_t eventNumber) { return consequenceLookaheadLimits[eventNumber / keyframeBlockSize]; }
-        std::vector<MessageEntry *> getMessageEntriesWithPreviousEventNumber(eventnumber_t eventNumber);
 
         /**
          * Returns the event exactly starting at the given offset or nullptr if there is no such event.
@@ -100,15 +100,12 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         // IEventLog interface
         virtual void synchronize(FileReader::FileChange change) override;
         virtual FileReader *getFileReader() override { return reader; }
+        virtual EventLogEntryCache *getEventLogEntryCache() override { return &eventLogEntryCache; }
         virtual eventnumber_t getNumParsedEvents() override { return numParsedEvents; }
         virtual std::set<const char *>& getMessageNames() override { return messageNames; }
         virtual std::set<const char *>& getMessageClassNames() override { return messageClassNames; }
-        virtual int getNumModuleCreatedEntries() override { return moduleIdToModuleCreatedEntryMap.size(); }
-        virtual std::vector<ModuleCreatedEntry *> getModuleCreatedEntries() override;
-        virtual ModuleCreatedEntry *getModuleCreatedEntry(int moduleId) override;
-        virtual GateCreatedEntry *getGateCreatedEntry(int moduleId, int gateId) override;
-        virtual SimulationBeginEntry *getSimulationBeginEntry() override { getFirstEvent(); return simulationBeginEntry; }
-        virtual SimulationEndEntry *getSimulationEndEntry() { getLastEvent(); return simulationEndEntry; }
+        virtual SimulationBeginEntry *getSimulationBeginEntry() override;
+        virtual SimulationEndEntry *getSimulationEndEntry() override;
 
         virtual eventnumber_t getFirstEventNumber() override { return EventLogIndex::getFirstEventNumber(); }
         virtual simtime_t getFirstSimulationTime() override { return EventLogIndex::getFirstSimulationTime(); }
@@ -124,6 +121,14 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
 
         virtual EventLogEntry *findEventLogEntry(EventLogEntry *start, const char *search, bool forward, bool caseSensitive) override;
 
+        virtual Index *getFirstIndex() override { return eventNumberToIndexMap.empty() ? NULL : eventNumberToIndexMap.begin()->second; }
+        virtual Index *getLastIndex() override { return eventNumberToIndexMap.empty() ? NULL : eventNumberToIndexMap.rbegin()->second; }
+        virtual Index *getIndex(eventnumber_t eventNumber, MatchKind matchKind = EXACT) override;
+
+        virtual Snapshot *getFirstSnapshot() override { return eventNumberToSnapshotMap.empty() ? NULL : eventNumberToSnapshotMap.begin()->second; }
+        virtual Snapshot *getLastSnapshot() override { return eventNumberToSnapshotMap.empty() ? NULL : eventNumberToSnapshotMap.rbegin()->second; }
+        virtual Snapshot *getSnapshot(eventnumber_t eventNumber, MatchKind matchKind = EXACT) override;
+
         virtual eventnumber_t getApproximateNumberOfEvents() override;
         virtual Event *getApproximateEventAt(double percentage) override;
 
@@ -133,16 +138,17 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         void parseEvent(Event *event, file_offset_t beginOffset);
         void cacheEvent(Event *event);
         void cacheEventLogEntries(Event *event);
-        void uncacheEventLogEntries(Event *event);
         void cacheEventLogEntry(EventLogEntry *eventLogEntry);
-        void uncacheEventLogEntry(EventLogEntry *eventLogEntry);
         void clearInternalState();
         void deleteAllocatedObjects();
-        void parseKeyframes();
+        void parseIndex();
+        void parseBegin(uint64_t limit);
+        void parseEnd(uint64_t limit);
+        void parseAll();
 };
 
 } // namespace eventlog
-}  // namespace omnetpp
+} // namespace omnetpp
 
 
 #endif
