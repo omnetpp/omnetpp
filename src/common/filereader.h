@@ -113,6 +113,10 @@ class COMMON_API FileReader
     char *findNextLineStart(char *s, bool bufferFilled = false);
     char *findPreviousLineStart(char *s, bool bufferFilled = false);
 
+    static std::string staticBuffer;
+
+    const char *getLine(const char *line, std::string& buffer) { buffer = std::string(line, getCurrentLineLength()); return line ? buffer.c_str() : nullptr; }
+
   public:
     /**
      * Creates a tokenizer object for the given file, with the given buffer size.
@@ -156,19 +160,14 @@ class COMMON_API FileReader
     void ensureFileClosed();
 
     /**
-     * Returns the first line from the file, see getNextLineBufferPointer.
+     * Returns pointer to the first line of the file or nullptr, see getNextLineBufferPointer().
      */
     char *getFirstLineBufferPointer();
 
-    static std::string result;
-#define GETLINE(x) const char *line = (x); result = std::string(line, getCurrentLineLength()); return line ? result.c_str() : nullptr;
-    const char *getFirstLine() { GETLINE(getFirstLineBufferPointer()); }
-
     /**
-     * Returns the last line from the file, see getPreviousLineBufferPointer.
+     * Returns pointer to the last line of the file or nullptr, see getPreviousLineBufferPointer().
      */
     char *getLastLineBufferPointer();
-    const char *getLastLine() { GETLINE(getLastLineBufferPointer()); }
 
     /**
      * Reads the next line from the file starting from the current position, and returns a pointer to its first character.
@@ -178,7 +177,6 @@ class COMMON_API FileReader
      * Moves the current position to the end of the line just returned.
      */
     char *getNextLineBufferPointer();
-    const char *getNextLine() { GETLINE(getNextLineBufferPointer()); }
 
     /**
      * Reads the previous line from the file ending at the current position, and returns a pointer to its first character.
@@ -186,19 +184,18 @@ class COMMON_API FileReader
      * Moves the current position to the beginning of the line just returned.
      */
     char *getPreviousLineBufferPointer();
-    const char *getPreviousLine() { GETLINE(getPreviousLineBufferPointer()); }
 
     /**
-     * Searches through the file from the current position for the given text and returns the first matching line.
+     * Searches through the file from the current position for the given text and returns the first matching line, or nullptr if not found.
      */
     char *findNextLineBufferPointer(const char *search, bool caseSensitive = true);
-    const char *findNextLine(const char *search, bool caseSensitive = true) { GETLINE(findNextLineBufferPointer(search, caseSensitive)); }
+
 
     /**
-     * Searches through the file from the current position for the given text and returns the first matching line.
+     * Searches through the file from the current position for the given text and returns the first matching line, or nullptr if not found.
      */
     char *findPreviousLineBufferPointer(const char *search, bool caseSensitive = true);
-    const char *findPreviousLine(const char *search, bool caseSensitive = true) { GETLINE(findPreviousLineBufferPointer(search, caseSensitive)); }
+
 
     /**
      * Returns the start offset of the line last parsed with readNextLine() or readPreviousLine().
@@ -248,6 +245,27 @@ class COMMON_API FileReader
      * May or may not throw a FileChangedError depending on the current configuration.
      */
     void signalFileChanges(FileChangedState change);
+
+    // Wrapper methods for use from Java, via SWIG. The static buffer is a convenience,
+    // pass a local string object if multi-threaded operation is needed:
+
+    /** Like getFirstLineBufferPointer(), but copies the line (as zero-terminated string) to the given buffer and returns the buffer's pointer (or nullptr). For use from Java. */
+    const char *getFirstLine(std::string& buffer=staticBuffer) {return getLine(getFirstLineBufferPointer(), buffer); }
+
+    /** Like getLastLineBufferPointer(), but copies the line (as zero-terminated string) to the given buffer and returns the buffer's pointer (or nullptr). For use from Java. */
+    const char *getLastLine(std::string& buffer=staticBuffer) {return getLine(getLastLineBufferPointer(), buffer); }
+
+    /** Like getNextLineBufferPointer(), but copies the line (as zero-terminated string) to the given buffer and returns the buffer's pointer (or nullptr). For use from Java. */
+    const char *getNextLine(std::string& buffer=staticBuffer) {return getLine(getNextLineBufferPointer(), buffer); }
+
+    /** Like getPreviousLineBufferPointer(), but copies the line (as zero-terminated string) to the given buffer and returns the buffer's pointer (or nullptr). For use from Java. */
+    const char *getPreviousLine(std::string& buffer=staticBuffer) {return getLine(getPreviousLineBufferPointer(), buffer); }
+
+    /** Like findNextLineBufferPointer(), but copies the line (as zero-terminated string) to the given buffer and returns the buffer's pointer (or nullptr). For use from Java. */
+    const char *findNextLine(const char *search, bool caseSensitive=true, std::string& buffer=staticBuffer) { return getLine(findNextLineBufferPointer(search, caseSensitive), buffer); }
+
+    /** Like findPreviousLineBufferPointer(), but copies the line (as zero-terminated string) to the given buffer and returns the buffer's pointer (or nullptr). For use from Java. */
+    const char *findPreviousLine(const char *search, bool caseSensitive=true, std::string& buffer=staticBuffer) { return getLine(findPreviousLineBufferPointer(search, caseSensitive), buffer); }
 };
 
 /**

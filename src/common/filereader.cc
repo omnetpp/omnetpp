@@ -32,6 +32,8 @@ namespace common {
 
 // #define TRACE_FILEREADER
 
+std::string FileReader::staticBuffer;
+
 FileChangedError::FileChangedError(FileReader::FileChangedState change, const char *messagefmt, ...) : opp_runtime_error(""), change(change)
 {
     char buf[1024];
