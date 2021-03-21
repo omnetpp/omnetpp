@@ -51,6 +51,8 @@ class SIM_API cSoftOwner : public cNoncopyableOwnedObject
     void doInsert(cOwnedObject *obj);
     virtual void ownedObjectDeleted(cOwnedObject *obj) override;
     virtual void yieldOwnership(cOwnedObject *obj, cObject *newOwner) override;
+  protected:
+    virtual void objectStealingOnDeletion(cOwnedObject *obj);
 
   public:
 #ifdef SIMFRONTEND_SUPPORT

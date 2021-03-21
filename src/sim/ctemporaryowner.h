@@ -36,6 +36,8 @@ class cTemporaryOwner : public cSoftOwner
   private:
     DtorMode mode;
     cSoftOwner *oldOwner;
+  protected:
+    virtual void objectStealingOnDeletion(cOwnedObject *obj) override { /*allow*/ }
   public:
     cTemporaryOwner(DtorMode mode) : mode(mode), oldOwner(getOwningContext()) {setOwningContext(this);}
     ~cTemporaryOwner();
