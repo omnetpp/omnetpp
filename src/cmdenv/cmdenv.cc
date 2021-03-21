@@ -350,6 +350,14 @@ void Cmdenv::simulate()
 
     cSimulation *simulation = getSimulation();
 
+    auto finally = [&] {
+        if (opt->expressMode)
+            doStatusUpdate(speedometer);
+        loggingEnabled = true;
+        stopClock();
+        deinstallSignalHandler();
+    };
+
     try {
         if (!opt->expressMode) {
             while (true) {
@@ -413,32 +421,18 @@ void Cmdenv::simulate()
                     throw cTerminationException("SIGINT or SIGTERM received, exiting");
             }
         }
+        finally();
     }
     catch (cTerminationException& e) {
-        if (opt->expressMode)
-            doStatusUpdate(speedometer);
-        loggingEnabled = true;
-        stopClock();
-        deinstallSignalHandler();
-
+        finally();
         stoppedWithTerminationException(e);
         displayException(e);
         return;
     }
     catch (std::exception& e) {
-        if (opt->expressMode)
-            doStatusUpdate(speedometer);
-        loggingEnabled = true;
-        stopClock();
-        deinstallSignalHandler();
+        finally();
         throw;
     }
-    // note: C++ lacks "finally": lines below need to be manually kept in sync with catch{...} blocks above!
-    if (opt->expressMode)
-        doStatusUpdate(speedometer);
-    loggingEnabled = true;
-    stopClock();
-    deinstallSignalHandler();
 }
 
 void Cmdenv::printEventBanner(cEvent *event)
