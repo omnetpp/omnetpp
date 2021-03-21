@@ -60,6 +60,8 @@ void cDatarateChannel::initialize()
     messageSentSignal = registerSignal("messageSent");
     messageDiscardedSignal = registerSignal("messageDiscarded");
 
+    rereadPars();
+
     emit(channelBusySignal, 0);
 }
 

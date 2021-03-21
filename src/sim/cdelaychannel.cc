@@ -47,6 +47,8 @@ void cDelayChannel::initialize()
 {
     messageSentSignal = registerSignal("messageSent");
     messageDiscardedSignal = registerSignal("messageDiscarded");
+
+    rereadPars();
 }
 
 void cDelayChannel::rereadPars()
