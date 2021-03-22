@@ -21,6 +21,8 @@
 
 namespace omnetpp {
 
+Register_Class(cValueArray);
+
 cValueArray::~cValueArray()
 {
     clear();
