@@ -7,7 +7,7 @@ utils.preconfigure_plot(props)
 # collect parameters for query
 filter_expression = props["filter"]
 
-# query vector data into a data frame
+# query histogram data into a data frame
 try:
     df = results.get_histograms(filter_expression, include_attrs=True, include_runattrs=True, include_itervars=True)
 except ValueError as e:
