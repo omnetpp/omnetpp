@@ -768,6 +768,41 @@ def _initialize_cycles(props):
     _color_cycle = cycle(cl)
 
 
+def histogram_bin_edges(values, bins=None, range=None, weights=None):
+    """
+    An improved version of numpy.histogram_bin_edges.
+    This will only return integer edges for input arrays consisting entirely of integers
+    (unless the `bins` are explicitly given otherwise).
+    In addition, the rightmost edge will always be strictly greater than the maximum of `values`
+    (unless explicitly given otherwise in `range`).
+    """
+    if bins is not None and type(bins) != int:
+        if range is None:
+            min_value = values.min()
+            max_value = values.max()
+            value_range = max_value - min_value
+            range = (min_value, max_value + value_range * 0.01)
+        return np.histogram_bin_edges(values, bins, range, weights)
+
+    all_integers = not np.mod(values, 1).any()
+    min_value, max_value = range if range is not None else (values.min(), values.max())
+    value_range = max_value - min_value
+
+    if value_range == 0:
+        edges = [min_value, min_value + 1]
+    else:
+        if all_integers:
+            bin_size = max(1, round(value_range / (bins or 10)))
+            # the +1 is to make sure that max_value will be in the returned edge list,
+            # and the +bin_size is to add another whole bin because
+            # numpy.histogram defines the last bin as closed from the right
+            edges = np.arange(min_value, max_value + 1 + bin_size, bin_size)
+        else:
+            edges = np.histogram_bin_edges(values, bins or 'auto', range or (min_value, max_value + value_range * 0.01), weights)
+
+    return edges
+
+
 def confidence_interval(alpha, data):
     """
     Returns the half-length of the confidence interval of the mean of `data`, assuming

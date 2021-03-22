@@ -7,6 +7,8 @@ generic_xyplot_mpl.properties
 generic_xyplot_native.properties
 histogramchart_mpl.properties
 histogramchart_native.properties
+histogramchart_vectors_mpl.properties
+histogramchart_vectors_native.properties
 linechart_legacy.properties
 linechart_mpl.properties
 linechart_native.properties
