@@ -45,7 +45,6 @@ cNedDeclaration::~cNedDeclaration()
     clearPropsMap(submodulePropsMap);
     clearPropsMap(connectionPropsMap);
 
-    // XXX printf("%s: %d cached expressions\n", getName(), parimplMap.size());
     clearSharedParImplMap(parimplMap);
 
     for (auto & pattern : patterns)
@@ -336,18 +335,15 @@ void cNedDeclaration::updateDisplayProperty(PropertyElement *propNode, cProperty
 
 cParImpl *cNedDeclaration::getSharedParImplFor(NedElement *node)
 {
-    SharedParImplMap::const_iterator it = parimplMap.find(node->getId());
-    // XXX printf("      getExpr: %ld -> %p\n", node->getId(), it==parimplMap.end() ? nullptr : it->second);
+    auto it = parimplMap.find(node->getId());
     return it == parimplMap.end() ? nullptr : it->second;
 }
 
 void cNedDeclaration::putSharedParImplFor(NedElement *node, cParImpl *value)
 {
-    // XXX printf("      putExpr: %ld -> %p\n", node->getId(), value);
-    SharedParImplMap::const_iterator it = parimplMap.find(node->getId());
-    ASSERT(it == parimplMap.end());  // XXX or?
-    if (it == parimplMap.end())
-        parimplMap[node->getId()] = value;
+    auto it = parimplMap.find(node->getId());
+    ASSERT(it == parimplMap.end());
+    parimplMap[node->getId()] = value;
 }
 
 const std::vector<cNedDeclaration::PatternData>& cNedDeclaration::getParamPatterns()
