@@ -238,7 +238,7 @@ cValue cDynamicExpression::evaluate(Context *context) const
 {
     // collect objects created during expression evaluation
     // and delete all of them on leaving this function (except the result, see later)
-    cTemporaryOwner tmpOwner(cTemporaryOwner::DtorMode::DISPOSE);
+    cTemporaryOwner tmpOwner(cTemporaryOwner::DestructorMode::DISPOSE);
 
     omnetpp::common::expression::Context exprContext;
     exprContext.simContext = context;

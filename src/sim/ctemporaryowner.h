@@ -32,19 +32,19 @@ class cOwningContextSwitcher
 class cTemporaryOwner : public cSoftOwner
 {
   public:
-    enum class DtorMode {REPORT_AS_UNDISPOSED, DISPOSE, DROP, ASSERTNONE};
+    enum class DestructorMode {REPORT_AS_UNDISPOSED, DISPOSE, DROP, ASSERTNONE};
   private:
-    DtorMode mode;
+    DestructorMode mode;
     cSoftOwner *oldOwner;
   protected:
     virtual void objectStealingOnDeletion(cOwnedObject *obj) override { /*allow*/ }
   public:
-    cTemporaryOwner(DtorMode mode) : mode(mode), oldOwner(getOwningContext()) {setOwningContext(this);}
+    cTemporaryOwner(DestructorMode mode) : mode(mode), oldOwner(getOwningContext()) {setOwningContext(this);}
     ~cTemporaryOwner();
     void restoreOriginalOwner() {setOwningContext(oldOwner); oldOwner = nullptr;}
-    void drop(cOwnedObject *obj) {cSoftOwner::drop(obj);}
-    DtorMode getDtorMode() const {return mode;}
-    void setDtorMode(DtorMode mode) {this->mode = mode;}
+    void drop(cOwnedObject *obj) override {cSoftOwner::drop(obj);}
+    DestructorMode getDestructorMode() const {return mode;}
+    void setDestructorMode(DestructorMode mode) {this->mode = mode;}
 };
 
 }  // namespace omnetpp

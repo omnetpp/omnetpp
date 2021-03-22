@@ -295,7 +295,7 @@ cModule *cModuleType::create(const char *moduleName, cModule *parentModule, int 
     cContextTypeSwitcher _(CTX_BUILD);
 
     // create the new module object
-    cTemporaryOwner tmp(cTemporaryOwner::DtorMode::ASSERTNONE); // for collecting members of the new object
+    cTemporaryOwner tmp(cTemporaryOwner::DestructorMode::ASSERTNONE); // for collecting members of the new object
 #ifdef WITH_PARSIM
     bool isLocal = getEnvir()->isModuleLocal(parentModule, moduleName, vectorSize < 0 ? -1 : index);
     cModule *module = isLocal ? createModuleObject() : new cPlaceholderModule();
@@ -420,7 +420,7 @@ cChannel *cChannelType::create(const char *name)
     cContextTypeSwitcher _(CTX_BUILD);
 
     // create channel object
-    cTemporaryOwner tmp(cTemporaryOwner::DtorMode::ASSERTNONE); // for collecting members of the new object
+    cTemporaryOwner tmp(cTemporaryOwner::DestructorMode::ASSERTNONE); // for collecting members of the new object
     cChannel *channel = createChannelObject();
     tmp.restoreOriginalOwner();
     tmp.drop(channel);
