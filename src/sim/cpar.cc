@@ -303,6 +303,8 @@ cPar& cPar::setExpression(cExpression *e, cComponent *ctx)
     copyIfShared();
     p->setExpression(e);
     evalContext = ctx ? ctx : ownerComponent;
+    if (ownerComponent->parametersFinalized() && !p->isVolatile()) // note: conversion to const for non-volatile parameters in the setup phase is delayed to parameter finalization, see comment in parse()
+        convertToConst();
     afterChange();
     return *this;
 }
@@ -453,6 +455,14 @@ void cPar::parse(const char *text, const char *baseDirectory)
         componentType->putSharedParImpl(key.c_str(), tmp);
         setImpl(tmp);
     }
+
+    // Ensure that expressions for non-volatile parameters are evaluated immediately,
+    // unless we are in the setup phase when re-using the parsing of similar expressions
+    // makes sense. In the latter case, evaluation takes place in finalize() (after which
+    // the parametersFinalized flag will be set).
+    if (ownerComponent->parametersFinalized() && p->isExpression() && !p->isVolatile())
+        convertToConst();
+
     afterChange();
 }
 
