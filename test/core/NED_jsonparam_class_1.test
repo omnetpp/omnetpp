@@ -1,0 +1,18 @@
+%description:
+Test @class property of object parameters.
+
+%file: test.ned
+
+network Test {
+  parameters:
+    object msg2 @class(cMessage) = cMessage { };
+    object msg3 @class(cMessage) = cPacket { };  // derived class accepted
+    object msg4 @class(cMessage) = cQueue {}; // unrelated class, should be error
+}
+
+%exitcode: 1
+%contains: stderr
+<!> Error: Cannot evaluate parameter 'msg4': Cannot cast object (omnetpp::cQueue) to 'omnetpp::cMessage', the C++ type declared for the parameter
+
+%not-contains: stdout
+undisposed object

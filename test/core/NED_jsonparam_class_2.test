@@ -1,0 +1,17 @@
+%description:
+Test @class property of object parameters with nullptr values
+
+%file: test.ned
+
+network Test {
+  parameters:
+    object msg1 @class(cMessage?) = nullptr;  // nulltpr allowed
+    object msg2 @class(cMessage)  = nullptr;  // nulltpr not allowed
+}
+
+%exitcode: 1
+%contains: stderr
+<!> Error setting up parameter 'msg2': nullptr is not an allowed value (append '?' to the name in @class() to allow it)
+
+%not-contains: stdout
+undisposed object
