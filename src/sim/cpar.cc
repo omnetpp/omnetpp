@@ -280,7 +280,7 @@ cPar& cPar::setStringValue(const char *s)
 cPar& cPar::setObjectValue(cObject *object)
 {
     beforeChange();
-    ASSERT(!p->isShared());
+    copyIfShared();
     p->setObjectValue(object);
     evalContext = nullptr;
     afterChange();
