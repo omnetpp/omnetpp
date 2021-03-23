@@ -49,7 +49,7 @@ class SIM_API cObjectParImpl : public cParImpl
     void deleteExpression();
     void deleteObject();
     virtual void doSetObject(cObject *object);
-    virtual void checkType(cObject *object);
+    virtual void checkType(cObject *object) const;
 
   public:
     /** @name Constructors, destructor, assignment. */

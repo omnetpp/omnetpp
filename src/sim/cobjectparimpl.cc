@@ -88,6 +88,7 @@ void cObjectParImpl::setObjectValue(cObject *object)
     deleteExpression();
     doSetObject(object);
     flags |= FL_CONTAINSVALUE | FL_ISSET;
+    checkType(object);
 }
 
 void cObjectParImpl::setXMLValue(cXMLElement *node)
@@ -141,6 +142,7 @@ cObject *cObjectParImpl::objectValue(cComponent *context) const
 
         cObjectParImpl *mutableThis = const_cast<cObjectParImpl*>(this);
         mutableThis->doSetObject(v.objectValue());
+        checkType(obj);
         return obj;
     }
 }
@@ -176,7 +178,6 @@ void cObjectParImpl::deleteObject()
 
 void cObjectParImpl::doSetObject(cObject *object)
 {
-    checkType(object);
     deleteObject();
     obj = object;
     if (cOwnedObject *ownedObj = dynamic_cast<cOwnedObject*>(obj))
@@ -184,7 +185,7 @@ void cObjectParImpl::doSetObject(cObject *object)
             take(ownedObj);
 }
 
-void cObjectParImpl::checkType(cObject *object)
+void cObjectParImpl::checkType(cObject *object) const
 {
     if (!expectedType)
         return;
