@@ -53,7 +53,7 @@ class SIM_API cValueArray : public cOwnedObject
      * will be duplicated so that the new cValueArray will have its own
      * copy of them.
      */
-    cValueArray(const cValueArray& other) {copy(other);}
+    cValueArray(const cValueArray& other) : cOwnedObject(other) {copy(other);}
 
     /**
      * Constructor. The initial capacity of the container and the delta

@@ -58,7 +58,7 @@ class SIM_API cValueMap : public cOwnedObject
      * will be duplicated so that the new cValueArray will have its own
      * copy of them.
      */
-    cValueMap(const cValueMap& other) {copy(other);}
+    cValueMap(const cValueMap& other) : cOwnedObject(other) {copy(other);}
 
     /**
      * Constructor.
