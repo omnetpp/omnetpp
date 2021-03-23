@@ -331,10 +331,28 @@ class SIM_API cPar : public cObject
      * to take ownership of the object, but creating a copy via dup() is an
      * option.
      *
-     * If the parameter is declared volatile (see isVolatile()), the lifetime
-     * of the object extends until the next objectValue() call (then the current
-     * object is discarded and replaced with the result of the expression
-     * evaluation).
+     * Lifetime of the returned objects:
+     *
+     * The returned object pointer is stored within the parameter. A setObjectValue()
+     * call will delete the previous object (given that the parameter owns the object).
+     *
+     * Note: If the object parameter refers to an object which it doesn't own,
+     * it never deletes the object. If an object doesn't know its owner (it is
+     * a cObject but not a cOwnedObject), it is considered owned.
+     *
+     * If the parameter is declared volatile (see isVolatile()), the returned
+     * object pointer (the pointer of the object which was produced by evaluating
+     * the expression) is stored. Upon the next objectValue() call, the
+     * previously returned object is deleted (given that the parameter owns the
+     * object), and replaced with the new object.
+     *
+     * Note that parameters may be shared under the hood. This means that a
+     * previously returned object may also be deleted if another module's
+     * similar volatile parameter is evaluated using objectValue().
+     *
+     * Therefore, the lifetime of returned objects should be considered very
+     * limited. In simple terms, the object should either be used only locally
+     * and then its pointer forgotten, or be cloned using dup() for long-term use.
      */
     cObject *objectValue() const;
 
