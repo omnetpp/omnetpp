@@ -1,3 +1,7 @@
+2021-02-09  Rudolf Hornig
+
+	* Follow icon change: block/queue -> block/activeq, block/passiveq -> block/queue
+
 2020-11-19  Attila Torok
 
 	* Move initializers inline, remove empty constructors and destructors

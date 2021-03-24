@@ -1,3 +1,525 @@
+2021-03-19  Rudolf Hornig
+
+	* Updated to use Eclipse 4.19 and CDT 10.2
+
+2021-03-19  Rudolf Hornig
+
+	* Fixed build process when copying Eclipse help.
+
+2021-03-19  Andras Varga
+
+	* Analysis Tool: Legend: fix null ptr exception in listener lambda
+
+2021-03-18  Attila Torok
+
+	* Analysis Tool: ScaveEditor: Make sure the 3 built-in tabs are hidden last
+	(except for the currently selected one)
+
+	So the Inputs, Browse Data, and Charts pages remain visible for as long
+	as possible when resizing the editor to a smaller width.
+
+2021-03-16  Attila Torok
+
+	* Analysis Tool: Charts page: Different icon sizes and margin/spacing in
+	different view modes
+
+2021-03-18  Attila Torok
+
+	* Analysis Tool: ScaveEditor: Don't allow closing the 3 built-in tabs with
+	middle click
+
+2021-03-18  Attila Torok
+
+	* Analysis Tool: Allow opening multiple charts at once (with Enter)
+
+2021-03-18  Attila Torok
+
+	* Analysis Tool: IconGridViewer: Accept enter key press from the numpad
+	(keypad) too.
+
+2021-03-16  Attila Torok
+
+	* Analysis Tool: Don't move the cursor upon error when the source editor is
+	focused.
+
+2021-03-16  Attila Torok
+
+	* Analysis Tool: Matplotlibwidget: Check for disposed widget when setting
+	cursor type.
+
+2021-03-16  Attila Torok
+
+	* Analysis Tool: ChartExport: Also dup() Charts when doing a batch export.
+
+2021-03-14  Andras Varga
+
+	* Analysis Tool: Properties view to show chart properties when chart is
+	selected.
+
+2021-03-08  Attila Torok
+
+	* Analysis Tool: Complete the list of wildcards on the Inputs page
+
+2021-03-01  Andras Varga
+
+	* Analysis Tool: PlotProperty: annotate which property is per-item, and use it
+	in content assist
+
+2021-03-03  Attila Torok
+
+	scave/python: Add comments to swtplot.py about per-item property keys
+
+2021-02-27  Andras Varga
+
+	* Analysis Tool: barchart, scatter chart: commenting, minor refactor
+
+	- replace lambda with named function to get proper column name in the
+	  dataframe
+	- apparently utils.confidence_interval() works for empty and 1-element
+	 arrays too (and returns nan), no need check for that case here
+
+2021-02-24  Attila Torok
+
+	Analysis Tool: charttemplates: Do not check for chart.is_native_chart() in
+	scatterchart_itervars.
+
+	Instead, either don't check at all, or check for plot.is_native_plot()
+
+2021-02-24  Attila Torok
+
+	* Analysis Tool: charttemplates: Proper error message when columns selected
+	for pivoting overlap.
+
+2021-02-23  Attila Torok
+
+	* Analysis Tool: Don't try to include param_assignments if config_entries are
+	also included
+
+2021-02-18  Attila Torok
+
+	* Analysis Tool: Add results.get_param_assignments() to the Python API
+
+2021-02-18  Attila Torok
+
+	* Analysis Tool: Remove as_numeric and include_statistics_fields parameters
+
+2021-02-16  Attila Torok
+
+	* Analysis Tool: Cast start_time and end_time to float in results.get_vectors()
+
+2021-02-16  Attila Torok
+
+	* Analysis Tool: Include the column header in the pickle of CSV-style results
+
+2021-02-16  Attila Torok
+
+	* Analysis Tool: Add include_fields_as_scalars parameter to	results.get_results()
+
+2021-02-16  Attila Torok
+
+	* Analysis Tool: Add include_fields parameter to results.get_scalars()
+
+2020-04-30  Attila Torok
+
+	* InifileEditor: properly register "${iterationvarsd}" where needed
+
+2021-02-15  Andras Varga
+
+	* Analysis Tool: Vector Operations: on selecting op from menu, ask parameters
+	before adding it
+
+2021-02-15  Andras Varga
+
+	* Analysis Tool: content assist for the Vector Ops fields.
+
+2021-02-12  Andras Varga
+
+	* Analysis Tool: vectorops.py: Revised and improved the expression() filter.
+
+2021-02-06  Andras Varga
+
+	* Analysis Tool: added PythonNature to org.omnetpp.scave.templates
+
+2021-02-11  Andras Varga
+
+	* Analysis Tool: plot.py: remove non Pyplot-like APIs
+
+	Reasons:
+	- they are not implemented in impl_charttool/plot.py, so charts using
+	  them cannot be exported
+	- they are currently unused from both utils and the chart scripts
+	- MAIN REASON: We want to take plot.py towards being a subset of the
+	  PyPlot API. Easier for users, less docu writing, less lamenting about
+	  API semantics, etc.
+
+2021-02-11  Andras Varga
+
+	* Analysis Tool: remove *italic* from type annotations in docstrings, as they
+	are now inserted by the script
+
+2021-02-09  Attila Torok
+
+	* Analysis Tool: Also query run attributes for histograms in the template
+
+2021-02-09  Andras Varga
+
+	* Analysis Tool: utils.py: customized_box_plot(): swapped two args.
+	'labels' arg is practically more important than 'axes', bring it forward.
+
+2021-02-06  Andras Varga
+
+	* Analysis Tool: utils.py: added documentation
+
+2021-02-06  Andras Varga
+
+	* Analysis Tool: swtplot.py: added docs (copypasta from plot.py)
+
+2021-02-09  Attila Torok
+
+	* Analysis Tool: Be consistent with native plot key and label stringification
+
+	This fixes the issue where all bars were the same color on native
+	barcharts, while not feeding the unknown "key" parameter to matplotlib.
+
+2021-02-08  Attila Torok
+
+	* Analysis Tool: Fix bar chart template tests
+
+2021-02-08  Attila Torok
+
+	* Analysis Tool: Fix indexing in barchart test
+
+2021-02-08  Attila Torok
+
+	* Analysis Tool: Use utils.split in barchart template
+
+2021-02-08  Attila Torok
+
+	* Analysis Tool: utils.plot_bars now takes a string variable_name instead of a
+	names list
+
+2021-02-05  Attila Torok
+
+	* Analysis Tool: Avoid generating invalid filter expression ("type =~ ?") from
+	the All panel
+
+2021-02-04  Attila Torok
+
+	* Analysis Tool: Make our custom boxplots pretty
+
+2021-02-04  Attila Torok
+
+	* Analysis Tool: Make native plot legend background and border semi-transparent
+
+2021-02-04  Attila Torok
+
+	* Analysis Tool: Fix bar plotting w.r.t key parameter, plus add DataFrame
+	columns check
+
+2021-02-05  Andras Varga
+
+	* Analysis Tool: impl_ide/plot.py: factored out the API of the native plotting
+	widgets into swtplot.py
+
+2021-02-02  Attila Torok
+
+	* Analysis Tool: Don't ignore the title set by the user on scattercharts
+
+2021-02-02  Attila Torok
+
+	* Analysis Tool: fix: Convert key and title to str in plot.plot_bars
+
+2021-02-03  Attila Torok
+
+	* Analysis Tool: fix: Legend always displayed a line even if series in
+	the plot didn't have one.
+
+	Solution: Don't always draw a line under the marker symbols in the
+	legend.
+
+2021-02-03  Attila Torok
+
+	* Analysis Tool: fix: Triangle/Tri symbols on the legend didn't reflect
+	symbols' orientation on the plot
+
+	Solution: Marker symbols with different orientations are made subclasses.
+	This ensures that the class name alone, which is used as a key to the
+	image cache, describes the shape.
+
+	This makes sure they will have a different image cache key when they are
+	drawn into the legend tooltip, so the first orientation doesn't get
+	"stuck" in there.
+
+2021-02-03  Attila Torok
+
+	* Analysis Tool: fix: after calling setSizeHint() on a symbol, its original
+	orientation was lost
+
+	Make sure that line marker symbols are oriented correctly, even after
+	resizing Which happens when they are about to be drawn on the legend for
+	example.
+
+2021-02-03  Andras Varga
+
+	* Analysis Tool: Offer hint to the novice user when vector operation is added.
+
+2021-02-02  Andras Varga
+
+	* Analysis Tool: vectorops renamed: aggregator->aggregate, merger->merge
+
+2021-02-02  Attila Torok
+
+	* Analysis Tool: Allow non-rectangular data in GroupsSeriesDataset, pad with
+	NAN.
+
+2021-02-02  Andras Varga
+
+	* Analysis Tool: Edit Chart Pages dialog refinements.
+
+2021-02-02  Andras Varga
+
+	* Analysis Tool: input_vectors.xswt layout: make "Vector operations" pane
+	expand more, for easier editing
+
+2021-02-02  Andras Varga
+
+	* Analysis Tool: Updated to changed vectorops syntax.
+
+2021-02-02  Andras Varga
+
+	* Analysis Tool: vectorops processing code moved to utils.
+
+2021-01-29  Attila Torok
+
+	* Analysis Tool: Better error message in plt.hist() about `bins`, also check
+	`weights`
+
+2021-01-29  Attila Torok
+
+	* Analysis Tool: Catch exceptions when setting plot properties in a deferred
+	way, set them as warnings
+
+2021-01-29  Attila Torok
+
+	* Analysis Tool: Remove the default parameters in all Python API _impl methods
+
+2021-01-26  Andras Varga
+
+	* Analysis Tool: support descriptionFile key in chart template definition
+	files.
+
+2021-01-26  Andras Varga
+
+	* Analysis Tool: Refresh chart when set of loaded result files change.
+
+2021-01-26  Andras Varga
+
+	* Analysis Tool: "Auto Update" -> "Automatic Refresh"
+
+	To be consistent with the "Refresh Chart" action.
+
+2021-01-26  Andras Varga
+
+	* Analysis Tool: Zoom in/out horiz/vert icons redesigned; added related
+	separator to toolbar.
+
+2021-01-26  Andras Varga
+
+	* Analysis Tool: "Hand Tool" -> "Pan Tool" (plot toolbar)
+
+2021-01-26  Andras Varga
+
+	* Analysis Tool: "Edit Chart" -> "Configure Chart"
+
+2021-01-26  Andras Varga
+
+	* Analysis Tool: ChartTemplateGalleryDialog: resize images to fit into browser
+	view
+
+2021-01-26  Andras Varga
+
+	* Analysis Tool: ChartTemplateGalleryDialog: Visual improvements: Add
+	left/right margin; hide caret, improve template info presentation.
+
+2021-01-26  Andras Varga
+
+	* Analysis Tool: ChartTemplateGalleryDialog: modernize sash state saving.
+
+2021-01-26  Andras Varga
+
+	* Analysis Tool: ChartTemplateGalleryDialog: remove flicker in StyledText when
+	switching page. Solution: use separate StyledText for each page.
+
+2021-01-25  Andras Varga
+
+	* Analysis Tool: Added Refresh Result Files to the chart toolbar.
+
+2021-01-25  Andras Varga
+
+	* Analysis Tool: Icon changes.
+
+2021-01-17  Andras Varga
+
+	* Inifile Editor: Added support for ignorable options. User can mark
+	custom config options as ones to be ignored by the editor.
+
+2021-01-19  Andras Varga
+
+	* Common: added MetafileGraphics in case it's needed somewhere.
+
+2021-01-20  Rudolf Hornig
+
+	* IDE: Fix for simulation model installer when extracting GitHub-generated
+	archives
+
+2021-01-20  Rudolf Hornig
+
+	* IDE: Better layout for the simulation installer dialog.
+
+2021-01-19  Rudolf Hornig
+
+	* IDE: Support added for changing the project name and location in the
+	simulation model download dialog.
+
+2021-01-19  Rudolf Hornig
+
+	* IDE: Install Simulation Models: Project name is now coming from the
+	descriptor file even if INET is installed on the Welcome screen.
+
+2021-01-19  Rudolf Hornig
+
+	* IDE: Turn on showing the line number ruler in editors by default.
+
+2021-01-19  Rudolf Hornig
+
+	* Productizing: added XML editor, language server, terminal, marketplace
+	client and Tips of the Day plugins into the default build.
+
+2021-01-19  Rudolf Hornig
+
+	* Productizing: use implicit eclipse version for repo URLs for more
+	reproducible builds.
+
+2021-01-22  Attila Torok
+
+	* Analysis Tool: Throw a nicer exception from results.get_* upon syntax error,
+	handle in all chart templates.
+
+2021-01-22  Attila Torok
+
+	* Analysis Tool: More helpful error messages in exceptions raised from chart
+	scripts.
+
+2020-12-11  Attila Torok
+
+	* Analysis Tool: Improve scatterchart template script.
+
+2021-01-14  Andras Varga
+
+	* Analysis Tool: Edit Chart Pages dialog: use one StyledText widget per page.
+	Reason: eliminate editing anomalies and confusion due to having a shared undo
+	stack for all pages.
+
+2021-01-13  Andras Varga
+
+	* Analysis Tool: Reset Chart To Template: added dialog to choose which
+	elements to reset.
+
+2021-01-12  Andras Varga
+
+	* XSWT: store source line/column on the widget. This may be useful later.
+
+2021-01-11  Andras Varga
+
+	* Analysis Tool: Create temp chart from gallery.
+
+2021-01-06  Attila Torok
+
+	* Analysis Tool: Add chart template descriptions and images.
+
+2021-01-06  Attila Torok
+
+	* Analysis Tool: Chart template gallery improvements.
+
+2021-01-06  Attila Torok
+
+	* Analysis Tool: Split the charttemplates folder into its own plugin project.
+
+2021-01-11  Andras Varga
+
+	* Analysis Tool: ChartEditForm: validatePropertyNames: use actual
+	properties not the template's property list. Because if chart pages
+	are edited, the property list in the template may quickly become irrelevant.
+
+2021-01-10  Andras Varga
+
+	* Analysis Tool: added "Edit Chart Dialog Pages" dialog
+
+2021-01-07  Andras Varga
+
+	* Analysis Tool: new icons for the Edit Chart Dialog Pages dialog
+
+2021-01-04  Andras Varga
+
+	* Inifile Editor: ParametersPage: restore delayed refresh of table when
+	cell editor is open.
+
+2020-12-22  Andras Varga
+
+	* Inifile Editor: Fix watching for changes in included inifiles.
+
+2020-12-20  Andras Varga
+
+	* Inifile Editor: get rid of asynchronous/delayed form page reread in
+	FormPage.
+
+	Problem: if user continued typing after committing a field editor,
+	delayed re-read tended to overwrite the new changes.
+
+	Solution: As INI re-parsing is fast/cheap (it's the analysis that's
+	costly), do it synchronously. Get rid of the async job.
+
+	Inifile analysis still completes asynchronously, we now handle that
+	separately, in the analysisCompleted() method.
+
+2020-12-18  Andras Varga
+
+	* Inifile Editor: Revert "ide: ini editor fix: edits lost when typing too
+	quickly after hitting Enter"
+
+	Reason: it made the "Reset" buttons in field editors broken. (Mostly
+	nothing happened when pressing them.)
+
+2020-12-17  Andras Varga
+
+	* Inifile Editor: Update form editor with new fields.
+
+2020-12-17  Andras Varga
+
+	* Inifile Editor: collect fingerprint and fakegui-related fields on a new
+	form page.
+
+2020-12-17  Andras Varga
+
+	* Inifile Editor: ConfigRegistry updated (using opp_run -h jconfig)
+
+2020-12-17  Attila Torok
+
+	* Analysis Tool: Use non-interactive Matplotlib backend when exporting charts.
+	Fixes #858.
+
+2020-12-17  Rudolf Hornig
+
+	* Updated to Eclipse 4.18 and CDT 10.1
+
+2020-12-16  Andras Varga
+
+	* Launcher: fix: properly handle option values containing spaces.
+
+2020-12-16  Andras Varga
+
+	* Launcher: Refine tooltips.
+
 2020-12-16  Andras Varga
 
 	* Launcher: Fix extremely sluggish typing in the "Working dir" field
@@ -123,11 +645,11 @@
 
 2020-04-07  Rudolf Hornig
 
-	ide: neddoc generator dialog two column layout to reduce height.
+	* IDE: neddoc generator dialog two column layout to reduce height.
 
 2020-03-31  Rudolf Hornig
 
-	ide: add possibility to insert documentation fragments into the generated
+	* IDE: add possibility to insert documentation fragments into the generated
 	ned documentation
 
 2020-04-15  Andras Varga
@@ -1592,7 +2114,7 @@
 
 2013-10-01  Andras Varga
 
-	Scave: name of 'substract' filter changed to 'subtract' (typo)
+	* Analysis Tool: name of 'substract' filter changed to 'subtract' (typo)
 
 2013-09-30  Levente Meszaros
 
@@ -1643,7 +2165,7 @@
 
 2013-08-28  Andras Varga
 
-	IDE: import sample projects even if workspace is different from omnetpp/samples
+	* IDE: import sample projects even if workspace is different from omnetpp/samples
 
 2013-06-06  Levente Meszaros
 
@@ -1651,7 +2173,7 @@
 
 2013-09-03  Andras Varga
 
-	IDE: trying to launch a closed project will now offer opening it
+	* IDE: trying to launch a closed project will now offer opening it
 
 2013-08-26  Levente Meszaros
 
@@ -1709,7 +2231,7 @@
 
 2012-11-30  Rudolf Hornig, Andras Varga
 
-	IDE: Added support for opening files from the command line, i.e. the command
+	* IDE: Added support for opening files from the command line, i.e. the command
 
 	  $ omnetpp Aloha.ned Aloha.cc
 
@@ -1744,7 +2266,7 @@
 
 2012-10-15  Tamas Borbely
 
-	Scave: BaseLineChartEditForm: no loss of settings when clicking on lines
+	* Analysis Tool: BaseLineChartEditForm: no loss of settings when clicking on lines
 	without pressing Apply first
 
 	The content of the controls are saved temporarily as properties of the
@@ -1752,20 +2274,20 @@
 
 2012-10-15  Tamas Borbely
 
-	Scave: fix #604: display names were reset after setting another line
+	* Analysis Tool: fix #604: display names were reset after setting another line
 	property in the Properties dialog
 
 2012-10-10  Tamas Borbely
 
-	Scave: use set display names on legend of scatter charts
+	* Analysis Tool: use set display names on legend of scatter charts
 
 2012-10-07  Andras Varga
 
-	IDE: registered "Small font" (appears in the Preferences dialog)
+	* IDE: registered "Small font" (appears in the Preferences dialog)
 
 2012-10-11  Andras Varga
 
-	Scave: remember last open tab of Chart Properties dialog
+	* Analysis Tool: remember last open tab of Chart Properties dialog
 
 2012-10-13  Andras Varga
 
@@ -1778,27 +2300,27 @@
 
 2012-10-09  Levente Meszaros, Andras Varga
 
-	IDE: use StyledText instead of Browser for HTML hover information
+	* IDE: use StyledText instead of Browser for HTML hover information
 
 	Motivation: The Browser widget is not always available on all platforms
 	(constant xulrunner problems on Linux, etc).
 
 2012-10-09  Levente Meszaros
 
-	IDE: added Full Screen menu item, bound to Ctrl+Shift+F11
+	* IDE: added Full Screen menu item, bound to Ctrl+Shift+F11
 
 2012-07-17  Tamas Borbely
 
-	Scave: major feature: implementation of computed scalars
+	* Analysis Tool: major feature: implementation of computed scalars
 
 2012-07-09  Tamas Borbely
 
-	Scave: fix #754: user defined chart area (minX/maxX/minY/maxY) can now
+	* Analysis Tool: fix #754: user defined chart area (minX/maxX/minY/maxY) can now
 	be larger than the plot area computed from the data
 
 2012-07-09  Tamas Borbely
 
-	Scave: fix #573/2: added hot keys for switching between the Vectors,
+	* Analysis Tool: fix #573/2: added hot keys for switching between the Vectors,
 	Scalars, Histograms, All pages in the Browse Data page
 
 	For switching between Inputs/Browse Data/Dataset pages, Alt+PgUp/PgDown
@@ -1806,12 +2328,12 @@
 
 2012-07-09  Tamas Borbely
 
-	Scave: fix #573: do not switch to VectorBrowser/Dataset view on page
+	* Analysis Tool: fix #573: do not switch to VectorBrowser/Dataset view on page
 	changes in the Browse Data page
 
 2012-06-27  Tamas Borbely
 
-	Scave: add 'logarithmic X axis' option to scatter chart (bug #573)
+	* Analysis Tool: add 'logarithmic X axis' option to scatter chart (bug #573)
 
 2012-10-03  Rudolf Hornig
 
@@ -1819,12 +2341,12 @@
 
 2012-03-28  Andras Varga
 
-	IDE: launcher: fix ".cc file cannot be launched" bug. Now we interpret
+	* Launcher: fix ".cc file cannot be launched" bug. Now we interpret
 	it that as if the file's parent folder was selected.
 
 2012-01-15  Andras Varga
 
-	IDE: added named connections support to:
+	* IDE: added named connections support to:
 	- Property View
 	- Properties Dialog in graphical mode
 	- content assist in NED editor
@@ -1833,11 +2355,11 @@
 
 2012-03-26  Andras Varga
 
-	IDE: fix: change remaining KB/MB to KiB/MiB
+	* IDE: fix: change remaining KB/MB to KiB/MiB
 
 2012-03-13  Rudolf Hornig
 
-	Scave: removed export support for Matlab script output.
+	* Analysis Tool: removed export support for Matlab script output.
 	The generated script was syntactically incorrect, plus Matlab uses only
 	the first 63 chars as identifiers, and this causes collisions between names.
 

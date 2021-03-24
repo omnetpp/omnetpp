@@ -1,3 +1,9 @@
+2021-03-18  Andras Varga
+
+	* Msg compiler: fix: generated fallback operator<<() for non-cObject
+	classes that don't have operator<<() printed the pointer instead of
+	class name etc.
+
 2020-12-15  Andras Varga
 
 	* NedResourceCache::loadNedSourceFolder(): accept exclusions in the

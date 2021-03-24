@@ -1,3 +1,46 @@
+2021-02-05  Levente Meszaros
+
+	* Added optional file locking to FileReader and implemented
+	explicit file change synhronization mechanism.
+
+2021-03-20  Andras Varga
+
+	* FileReader change: make it nicer (without macro, w/o hardcoding
+	static buffer)
+
+2021-02-05  Levente Meszaros
+
+	* Added FileReader methods to support Java usage.
+	These methods must be able to return a Java null and a properly
+	terminated string.
+
+2021-02-05  Levente Meszaros
+
+	* Added a tokensVector() method to LineTokenizer for easier use
+	from Java (SWIG).
+
+2020-12-10  Levente Meszaros
+
+	* Added a generic platform independent FileLock class.
+
+2021-02-17  Andras Varga
+
+	* UnitConversion: Enforce decreasing order of magnitude in compound
+	quantities to make the syntax less error-prone. E.g. "1s 2s 3s"
+	used to parse as 6s, now it is a syntax error.
+
+2021-03-05  Andras Varga
+
+	* Expressions: Factor out ArrayNode/ObjectNode abstract ExprNode classes
+
+2021-03-04  Andras Varga
+
+	* Expression: nits
+
+2020-12-02  Andras Varga
+
+	* sqliteresultfileschema.h: modernize: Use raw string constant.
+
 2020-11-12  Andras Varga
 
 	* Expression: added lambda-based ExprNode classes.
@@ -751,7 +794,7 @@
 
 	* expression.y: accept '=' as alternative to '=='
 
-2016-09-30  Levente Mészáros
+2016-09-30  Levente Meszaros
 
 	* unitconversion.cc: Added coulomb [C] and related units As, mAs, Ah, mAh.
 

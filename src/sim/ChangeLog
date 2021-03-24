@@ -1,9 +1,156 @@
+2021-03-23  Andras Varga
+
+	* cObjectParImpl: Resolve "undisposed object" when checkType() throws.
+	First install the new object (assign 'obj'), then check.
+
+2021-03-23  Andras Varga
+
+	* cPar::setExpression(), cPar::parse(): Ensure that expressions for
+	non-volatile parameters are evaluated immediately.
+
+	Motivation: When an expression was entered for a non-volatile parameter
+	in Qtenv's Object Inspector, it was stored as an expression (instead of
+	being evaluated).
+
+2021-03-23  Andras Varga
+
+	* cPar::setObjectValue(): Fix failing assertion.
+
+2021-02-16  Andras Varga
+
+	* cObjectParImpl: Fix: forEachChild() should not be a state-changing
+	operation
+
+	An objectValue() call, if the parameter contains an expression, would
+	re-evaluate the expression and delete the previously returned object
+	while storing the new object into 'obj'. This crashed Qtenv's Object
+	Inspector, because it tried to use the old pointer (namely, tried to get
+	a cClassDescriptor for it), not suspecting that collecting the object's
+	children via forEachChild() would delete the object.
+
+	The solution is basically that forEach() doesn't recurse into the value
+	produced by volatile parameters, which kinda makes sense
+	(they are volatile).
+
+	Same for cXMLParImpl.
+
+2020-12-10  Levente Mészáros
+
+	* cSimpleModule::scheduleAt(): Swapped the insertion into the FES and the
+	EVCB.messageScheduled(msg) calls.
+
+	This way the self message is already in the FES when the EVCB call
+	happens, which actually makes sense because it's called messageScheduled().
+	The reason was that the eventlog file manager thought that the message was
+	not scheduled.
+
 2020-12-18  Andras Varga
 
-	* Temporarily disable "Prevent one module from being able to silently 
-	delete another module's message" check. We plan to put it back after
-	more careful preparation in models like INET. Until then, it can be
-	enabled by defining CHECK_OWNERSHIP_ON_DELETE when compiling OMNeT++.
+	* cSoftOwner::ownedObjectDeleted(): re-enabled "Context component
+	is deleting an object it doesn't own" warning. When it is in the way,
+	it can now be disabled with the new "allow-object-stealing-on-deletion"
+	config option.
+
+2021-02-12  Andras Varga
+
+	* cPar: Notify (call handleParameterChange()) during initialize() as
+	well. The handleParameter(nullptr) call at the end of the initialization
+	was removed. NOTE: if a model relied on the handleParameter(nullptr)
+	call being made, it needs to be updated!
+
+2021-02-19  Andras Varga
+
+	* cValue: prevent doubleValue() to be called on a value with unit --
+	too error-prone.
+
+	cValue(10s)->doubleValue() --> 10 cValue(10us)->doubleValue() --> 10
+	cValue(10h)->doubleValue() --> 10
+
+	Solution: doubleValue() to throw exception when called on a value with
+	unit. In the value has a unit, call either doubleValueInUnit(), or
+	doubleValueRaw()+getUnit(). Same for intValue()
+
+2021-03-09  Andras Varga
+
+	* sim_std.msg: Fix add missing cPar::Type::OBJECT.
+
+2021-03-05  Andras Varga
+
+	* cValueArray and cValueMap not to take random temp objects.
+
+2021-03-05  Andras Varga
+
+	* nedsupport: make use of new ArrayNode/ObjectNode classes in common/.
+
+2021-03-04  Andras Varga
+
+	* cParImpl classes: make sure value cObjects are not leaked in the
+	"Cannot cast..." error case.
+
+2021-03-04  Andras Varga
+
+	* cDynamicExpression: gc temp objects created during evaluation.
+
+2021-03-04  Andras Varga
+
+	* cTemporaryOwner: refactored, its file renamed. Added destructor modes.
+
+2021-03-04  Andras Varga
+
+	* cTemporaryObject: yield() renamed to restoreOrginalOwner().
+
+2021-03-04  Andras Varga
+
+	* cSoftOwner: remove get/setPerformFinalGC(). It was meant for internal
+	use, and pretty much unused.
+
+2021-03-03  Andras Varga
+
+	* cXMLParImpl: str() to return "nullptr" for nullptr instead of "".
+
+2021-03-03  Andras Varga
+
+	* cBoolParImpl: Fix error message.
+
+2021-03-04  Andras Varga
+
+	* cDynamicExpression: The sim library needs to call
+	ExprValue::setObjectStrFunction() on startup.
+
+2021-03-03  Andras Varga
+
+	* Improved cast-related error messages when assigning parameters:
+
+	  - added E_BADASSIGN
+	  - change E_BADCAST message to include the "from" type
+	  - merged E_ECANTCAST into E_BADCAST (they were essentially the same)
+
+2021-03-02  Andras Varga
+
+	* cValue: Better handing for the "undefined" value.
+
+2021-02-11  Andras Varga
+
+	* cPathFigure: path parsing refined: if op character is missing, assume
+	previous one.
+
+2021-02-04  Edward Longman
+
+	* cAutoRangeHistogramStrategy: Work around double limits of precision.
+
+2021-02-03  Edward Longman
+
+	* cDefaultHistogramStrategy: Fix for very small values of rangeMax.
+
+2020-12-18  Andras Varga
+
+	* Fix: during deleteModule(), call emit() in the right context.
+
+2020-12-18  Andras Varga
+
+	* cSoftOwner::ownedObjectDeleted(): Temporarily disable "Context component
+	is deleting an object it doesn't own" warning. We plan to put it back after
+	more careful preparation in models like INET.
 
 2020-12-15  Andras Varga
 
@@ -21,9 +168,9 @@
 
 2020-12-07  Andras Varga
 
-	* Prevent one module from being able to silently delete another
-	module's message. Solution: only the context module is allowed to
-	delete objects.
+	* Prevent one module from being able to silently delete another module's
+	message. ("Context component is deleting an object it doesn't own" error.)
+	Solution: only the context module is allowed to delete objects.
 
 2020-12-06  Andras Varga
 

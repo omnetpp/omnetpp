@@ -1,3 +1,11 @@
+2021-01-26  Attila Torok
+
+	* Fix transmission update animations.
+
+2020-12-11  Attila Torok
+
+	* Don't crash if the appearance of a message line is set up before its geometry
+
 2020-12-02  Rudolf Hornig
 
 	* Added added missing QTENV_API macros for proper exporting/visibility of symbols.

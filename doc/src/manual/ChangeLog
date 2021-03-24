@@ -1,3 +1,129 @@
+2021-03-03  Andras Varga
+
+	* Document object parameters and JSON data
+
+2021-03-02  Andras Varga
+
+	* Mention JSON parameters, reworked the XML section to be
+	consistent with it
+
+2021-03-02  Andras Varga
+
+	* NED reference: document the constant 'undefined'.
+
+2021-03-02  Andras Varga
+
+	* NED reference: document object parameters and JSON notation
+
+2021-03-02  Andras Varga
+
+	* Improve NED grammar representation
+
+2021-03-02  Andras Varga
+
+	* Chart API documentation improved
+
+2021-03-02  Andras Varga
+
+	* Update generated appendices
+
+2021-03-02  Andras Varga
+
+	* extract_chart_api.py: support for class documentation; added
+	Analysis class.
+
+2021-03-02  Andras Varga
+
+	* Makefile: make pdflatex exit on first error
+
+2021-03-01  Andras Varga
+
+	* setDeliverOnReceptionStart() was renamed to
+	setDeliverImmediately()
+
+2021-03-01  Andras Varga
+
+	* Refinement in module deletion section
+
+2021-03-01  Andras Varga
+
+	* Update appendix-config-options
+
+2021-03-01  Andras Varga
+
+	* Update NEDFunction capitalization; mention NedFunctionExt
+
+2021-03-01  Andras Varga
+
+	* cIListener: update for intval_t/uintval_t overloads
+
+2021-03-01  Andras Varga
+
+	* Emitting nullptr as string is no longer allowed
+
+2021-03-01  Andras Varga
+
+	* Update: cModule::size() was removed
+
+2021-03-01  Andras Varga
+
+	* Document cIListener destructor behavior change. It now unsubscribes
+	from all places it was subscribed to, instead of insisting on being
+	already unsubscribed.
+
+2021-03-01  Andras Varga
+
+	* cMatchExpression: updated for new field matcher syntax 'fieldname=~pattern'
+
+2020-12-04  Andras Varga
+
+	* Document scheduleAfter(), rescheduleAt(), rescheduleAfter()
+
+2020-12-04  Andras Varga
+
+	* Fix c++ code style in example snippets: move "{" to end of previous line
+
+2020-12-02  Andras Varga
+
+	* Update Result File Formats section
+
+2020-12-01  Andras Varga
+
+	* Document change in getModuleByPath()/findModuleByPath()
+
+2020-12-01  Andras Varga
+
+	* Fix mention of obsolete options -x, -g and -G
+
+2020-12-01  Andras Varga
+
+	* Document longValue()->intValue() and related changes
+
+2020-12-04  Andras Varga
+
+	* Added Python-based result analysis with annotated chart script
+	example/
+
+2021-02-25  Andras Varga
+
+	* opp_scavetool section was out of date
+
+2021-02-25  Andras Varga
+
+	* Result files section: adjust section levels
+
+2021-02-23  Andras Varga
+
+	* Updated Chart API appendix
+
+2021-02-07  Andras Varga
+
+	* Cleaner look for Python method docs in the manual.
+
+2021-02-02  Andras Varga
+
+	* Added chart API vectorops to manual.
+
 2020-01-20  Attila Torok
 
 	* Follow Python API changes

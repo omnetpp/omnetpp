@@ -1,15 +1,79 @@
+2021-03-23  Andras Varga
+
+	* cObjectParImpl: Resolve "undisposed object" when checkType() throws.
+
+2021-03-23  Andras Varga
+
+	* cPar objectValue() documentation refined.
+
+2021-03-23  Andras Varga
+
+	* cValueArray()/cValueMap: Fix copy ctor. The name field was not copied.
+
+2021-03-22  Andras Varga
+
+	* OMNETPP_BUILDNUM bumped to 1512.
+
+2021-02-05  Levente Mészáros
+
+	* Added ftruncate() defines for all platforms in platmisc.
+
+2021-02-12  Andras Varga
+
+	* cPar: notify (call handleParameterChange()) during initialize() as
+	well. handleParameter(nullptr) at the end of the initialization
+	was removed.
+
+	CAUTION: In model code, handleParameterChange() needs to be implemented
+	carefully, being aware that the module may not have completed initialization
+	yet. Also: if an existing model relied on handleParameter(nullptr) being
+	ported, it needs to be changed.
+
+2021-02-19  Andras Varga
+
+	* cValue: prevent doubleValue() to be called on a value with unit --
+	too error-prone. Illustration:
+
+	cValue(10s)->doubleValue() --> 10
+	cValue(10us)->doubleValue() --> 10
+	cValue(10h)->doubleValue() --> 10
+
+	Solution: doubleValue() to throw exception when called on a value with
+	unit. In the value has a unit, call either doubleValueInUnit(), or
+	doubleValueRaw()+getUnit().
+
+	Same for intValue().
+
+2021-03-04  Andras Varga
+
+	* cSoftOwner: remove get/setPerformFinalGC(). It was meant for internal
+	use, and pretty much unused by model code.
+
+2021-03-04  Andras Varga
+
+	* cValue: Added clarification about object ownership.
+
+2021-03-03  Andras Varga
+
+	* Cast-related error messages: E_BADASSIGN, merged E_ECANTCAST into E_BADCAST.
+
+2021-01-29  Andras Varga
+
+	* cHasher: fix add(const std::string&) to be consistent with add(const
+	char *)
+
 2020-12-02  Rudolf Hornig
 
 	* Added some missing SIM_API macros for proper exporting/visibility of symbols.
 
 2020-12-15  Andras Varga
 
-	* cSimulation::loadNedSourceFolder(): accept exclusions in the form of
+	* cSimulation::loadNedSourceFolder(): Accept exclusions in the form of
 	packages instead of folders.
 
 2020-12-09  Andras Varga
 
-	* cObject: added getClassAndFullPath() and getClassAndFullName() methods
+	* cObject: Added getClassAndFullPath() and getClassAndFullName() methods
 
 2020-12-09  Andras Varga
 

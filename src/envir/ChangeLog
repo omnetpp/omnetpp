@@ -1,3 +1,7 @@
+2020-04-30  Attila Torok
+
+	* Properly register "${iterationvarsd}" where needed
+
 2020-12-15  Andras Varga
 
 	* NED package exclusions changed to expect package names instead of folders.

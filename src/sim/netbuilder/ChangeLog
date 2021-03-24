@@ -1,3 +1,7 @@
+2021-03-22  Andras Varga
+
+	* netbuilder: cNedDeclaration: cosmetics
+
 2020-11-13  Attila Torok
 
 	* Modernizing: Use in-class member initializers wherever possible;

@@ -1,3 +1,66 @@
+2021-03-19  Andras Varga
+
+	* opp_makemake: Raise limit on maximum number of directories to traverse
+	for --deep.
+
+2021-03-03  Andras Varga
+
+	* opp_test: Suggest 'meld' command to compare output with test file too.
+
+2021-03-03  Andras Varga
+
+	* opp_test: Fix recently introduced bug.
+
+2021-02-28  Andras Varga
+
+	* opp_charttool: Fix "'error_list' is not defined" error.
+
+2021-02-24  Andras Varga
+
+	* opp_test, opp_fingerprinttest: refactor colorizing support.
+	Not yet used in opp_fingerprinttest, but it would probably be useful.
+
+2021-02-23  Andras Varga
+
+	* opp_charttool fixes:
+	- try-catch for the export cases as well
+	- print failure summary at the end
+	- description edited
+	- nits
+
+2021-02-23  Attila Torok
+
+	* opp_charttool: Add --no-show switch to the run command,
+	improved argument list processing.
+
+2021-02-22  Attila Torok
+
+	* opp_charttool: Revamp argument parsing, add options to new separate
+	subparsers for commands.
+
+2021-02-22  Andras Varga
+
+	* opp_charttool: Better resolution of workspace paths.
+
+2021-02-22  Andras Varga
+
+	* opp_charttool: Ported to the new analysis.py (which became
+	of libcharttool).
+
+2021-01-11  Attila Torok
+
+	* opp_charttool: Catch exceptions from chart scripts in opp_charttool
+
+2021-01-11  Attila Torok
+
+	* opp_charttool: Split the insides of opp_charttool into libcharttool,
+	a reusable module
+
+2020-12-17  Rudolf Hornig
+
+	* opp_makemake: delete temp file on shared library build even if the
+	linker command fails
+
 2020-12-02  Rudolf Hornig
 
 	* Generate import lib and def files on Windows, speed up linking

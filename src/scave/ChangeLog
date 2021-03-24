@@ -1,3 +1,28 @@
+2021-03-08  Attila Torok
+
+	* Fix grammar in the XSWT config form of the JSON exporter
+
+2021-02-25  Andras Varga
+
+	* opp_scavetool: remove obsolete info from help text
+
+2021-02-16  Andras Varga
+
+	* opp_scavetool: allow -T '' (currently exports empty data set)
+
+2021-02-16  Andras Varga
+
+	* opp_scavetool: small fix in processing '-T'
+
+2021-02-17  Attila Torok
+
+	* CSV export: Fill the "sumweights" column for unweighted statistics too
+	in the output.
+
+2021-02-16  Andras Varga
+
+	* opp_scavetool: added -t / --list-paramassignments option
+
 2020-11-13  Attila Torok
 
 	* Modernizing: Use in-class member initializers wherever possible;
