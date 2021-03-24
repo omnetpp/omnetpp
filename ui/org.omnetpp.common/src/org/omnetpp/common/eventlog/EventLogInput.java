@@ -120,7 +120,7 @@ public class EventLogInput extends FileEditorInput
                     // synchronize may destructively modify the underlying structure of the event log
                     // and thus it must be called from the UI thread to prevent concurrent paints
                     public void run() {
-                        synchronize(getEventLog().getFileReader().checkFileForChanges());
+                        //TODO temporarily commented out: synchronize(getEventLog().getFileReader().checkFileForChanges());
                     }
                 });
             }
