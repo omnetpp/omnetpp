@@ -100,6 +100,8 @@ typedef int pid_t;
 #include <windows.h>
 #undef min
 #undef max
+#undef SYNCHRONIZE
+#undef IGNORE
 #undef ERROR
 #undef SEVERITY_ERROR
 #undef TRUE
