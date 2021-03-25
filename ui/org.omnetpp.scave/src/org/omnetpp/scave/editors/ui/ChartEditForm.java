@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -55,6 +56,7 @@ import org.omnetpp.scave.assist.MatplotlibrcContentProposalProvider;
 import org.omnetpp.scave.assist.NativePlotPropertiesContentProposalProvider;
 import org.omnetpp.scave.assist.VectorOperationsContentProposalProvider;
 import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
+import org.omnetpp.scave.editors.VectorOperations.VectorOp;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.InterruptedFlag;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -80,14 +82,16 @@ public class ChartEditForm {
     protected ResultFileManager manager;
     protected Map<String,Control> xswtWidgetMap = new HashMap<>();
     protected FilterHintsCache filterHintsCache = new FilterHintsCache();
+    protected List<VectorOp> vectorOperations; // needed for content assist
     protected Composite panel;
 
     protected static final String USER_DATA_KEY = "ChartEditForm";
 
-    public ChartEditForm(Chart chart, ChartTemplateRegistry chartTemplateRegistry, ResultFileManager manager) {
+    public ChartEditForm(Chart chart, ChartTemplateRegistry chartTemplateRegistry, ResultFileManager manager, List<VectorOp> vectorOperations) {
         this.chart = chart;
         this.chartTemplateRegistry = chartTemplateRegistry;
         this.manager = manager;
+        this.vectorOperations = vectorOperations;
     }
 
     /**
@@ -275,7 +279,7 @@ public class ChartEditForm {
             expressionProposalProvider.setIDList(manager, manager.getAllItems());
             return expressionProposalProvider;
         case "vectorops":
-            return new VectorOperationsContentProposalProvider();
+            return new VectorOperationsContentProposalProvider(vectorOperations);
         case "plotproperties":
             return new NativePlotPropertiesContentProposalProvider();
         case "matplotlibrc":

@@ -27,6 +27,8 @@ import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ChartScriptEditor;
 import org.omnetpp.scave.editors.ScaveEditor;
+import org.omnetpp.scave.editors.VectorOperations;
+import org.omnetpp.scave.editors.VectorOperations.VectorOp;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Chart.DialogPage;
 import org.omnetpp.scave.model.commands.AdjustChartPropertiesCommand;
@@ -48,7 +50,15 @@ public class ConfigureChartDialog extends TitleAreaDialog {
         setShellStyle(getShellStyle() | SWT.RESIZE);
         this.editor = editor;
         this.chart = chart;
-        this.form = new ChartEditForm(chart, editor.getChartTemplateRegistry(), editor.getResultFileManager());
+
+        // If the chart is open in an editor page, try to get the vector operations specific to it,
+        // otherwise, fall back to the built-in ones.
+        FormEditorPage editorPage = editor.getEditorPage(chart);
+        List<VectorOp> ops = (editorPage != null)
+                ? ((ChartPage)editorPage).getChartScriptEditor().getVectorOpData()
+                : VectorOperations.getBuiltinVectorOpData();
+
+        this.form = new ChartEditForm(chart, editor.getChartTemplateRegistry(), editor.getResultFileManager(), ops);
     }
 
     @Override
