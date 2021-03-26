@@ -38,13 +38,19 @@ class QTENV_API ModuleLayouter : public QObject {
     // stores the layouted positions of submodules in their parents
     std::unordered_map<const cModule *, QPointF> modulePositions;
 
+    // layout groups
+    struct Group { int size = 0; std::unordered_map<const cModule *,int> indices; };
+    typedef std::unordered_map<std::string,Group> ModuleGroups; // groupName -> Group
+    std::unordered_map<const cModule *, ModuleGroups> groups; // parentModule -> groups
+
     struct Constraint {
         bool explicitCoords; // =true: "p" tag was given, i.e. is fixed node
         bool obeysLayout; // =true: is anchored node, i.e. (x,y) means anchor-relative position
+        std::string group;
         double x, y;    // absolute position or anchor-relative offset (of the shape's center)
         double sx, sy;  // size of bounding box
-        Constraint(bool explicitCoords, bool obeysLayout, double x, double y, double sx, double sy) :
-            explicitCoords(explicitCoords), obeysLayout(obeysLayout), x(x), y(y), sx(sx), sy(sy) {}
+        Constraint(bool explicitCoords, bool obeysLayout, const char *group, double x, double y, double sx, double sy) :
+            explicitCoords(explicitCoords), obeysLayout(obeysLayout), group(group), x(x), y(y), sx(sx), sy(sy) {}
     };
 
     // Extracts initial (fixed) coordinates from the displaystring of the module,

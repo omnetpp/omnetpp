@@ -142,7 +142,8 @@ ModuleLayouter::Constraint ModuleLayouter::getSubmoduleCoords(cModule *submod, d
         y = 0;
 
     const char *layout = ds.getTagArg("p", 2);  // matrix, row, column, ring, exact etc.
-    bool obeysLayout = (layout && *layout);
+    bool obeysLayout = !opp_isempty(layout);
+    const char *groupName = "";
 
     // modify x,y using predefined layouts
     if (!obeysLayout) {
@@ -154,53 +155,109 @@ ModuleLayouter::Constraint ModuleLayouter::getSubmoduleCoords(cModule *submod, d
         x += dx;
         y += dy;
     }
-    else if (!strcmp(layout, "r") || !strcmp(layout, "row")) {
-        // perhaps we should use the size of the 1st element in the vector?
-        double dx = resolveDoubleDispStrArg(ds.getTagArg("p", 3), submod, 2*sx);
-        x += submod->getIndex()*dx;
-    }
-    else if (!strcmp(layout, "c") || !strcmp(layout, "col") || !strcmp(layout, "column")) {
-        double dy = resolveDoubleDispStrArg(ds.getTagArg("p", 3), submod, 2*sy);
-        y += submod->getIndex()*dy;
-    }
-    else if (!strcmp(layout, "m") || !strcmp(layout, "matrix")) {
-        // perhaps we should use the size of the 1st element in the vector?
-        int columns = resolveLongDispStrArg(ds.getTagArg("p", 3), submod, 5);
-        double dx = resolveDoubleDispStrArg(ds.getTagArg("p", 4), submod, 2*sx);
-        double dy = resolveDoubleDispStrArg(ds.getTagArg("p", 5), submod, 2*sy);
-        if (columns < 1)
-            columns = 1;
-        x += (submod->getIndex() % columns)*dx;
-        y += (submod->getIndex() / columns)*dy;
-    }
-    else if (!strcmp(layout, "i") || !strcmp(layout, "ri") || !strcmp(layout, "ring")) {
-        // perhaps we should use the size of the 1st element in the vector?
-        int vectorSize = submod->getVectorSize();
-        double rx = resolveDoubleDispStrArg(ds.getTagArg("p", 3), submod, (sx+sy)*vectorSize/4);
-        double ry = resolveDoubleDispStrArg(ds.getTagArg("p", 4), submod, rx);
-
-        x += rx - rx*sin(submod->getIndex()*2*M_PI/vectorSize);
-        y += ry - ry*cos(submod->getIndex()*2*M_PI/vectorSize);
-    }
     else {
-        throw cRuntimeError("Invalid layout '%s' in 'p' tag of display string \"%s\"", layout, ds.str());
+        groupName = ds.getTagArg("g", 0);
+        int index, groupSize;
+        if (opp_isempty(groupName)) {
+            groupName = submod->getName();
+            index = submod->getIndex();
+            groupSize = submod->getVectorSize();
+        }
+        else {
+            auto& group = groups[submod->getParentModule()][groupName];
+            if (group.indices.find(submod) != group.indices.end())
+                index = group.indices[submod];
+            else if (group.size == group.indices.size())
+                index = group.indices[submod] = group.size++;
+            else {
+                // find first unused index
+                std::vector<bool> indexUsed(group.size, false);
+                for (auto& pair : group.indices)
+                    indexUsed[pair.second] = true;
+                auto it = std::find(indexUsed.begin(), indexUsed.end(), true);
+                ASSERT(it != indexUsed.end());
+                index = group.indices[submod] = it - indexUsed.begin();
+            }
+            groupSize = group.size;
+        }
+
+        if (!strcmp(layout, "r") || !strcmp(layout, "row")) {
+            // perhaps we should use the size of the 1st element in the vector?
+            double dx = resolveDoubleDispStrArg(ds.getTagArg("p", 3), submod, 2*sx);
+            x += index * dx;
+        }
+        else if (!strcmp(layout, "c") || !strcmp(layout, "col") || !strcmp(layout, "column")) {
+            double dy = resolveDoubleDispStrArg(ds.getTagArg("p", 3), submod, 2*sy);
+            y += index * dy;
+        }
+        else if (!strcmp(layout, "m") || !strcmp(layout, "matrix")) {
+            // perhaps we should use the size of the 1st element in the vector?
+            int columns = resolveLongDispStrArg(ds.getTagArg("p", 3), submod, 5);
+            double dx = resolveDoubleDispStrArg(ds.getTagArg("p", 4), submod, 2*sx);
+            double dy = resolveDoubleDispStrArg(ds.getTagArg("p", 5), submod, 2*sy);
+            if (columns < 1)
+                columns = 1;
+            x += (index % columns) * dx;
+            y += (index / columns) * dy;
+        }
+        else if (!strcmp(layout, "i") || !strcmp(layout, "ri") || !strcmp(layout, "ring")) {
+            // perhaps we should use the size of the 1st element in the vector?
+            double rx = resolveDoubleDispStrArg(ds.getTagArg("p", 3), submod, (sx+sy)*groupSize/4);
+            double ry = resolveDoubleDispStrArg(ds.getTagArg("p", 4), submod, rx);
+
+            x += rx - rx * sin(index * 2 * M_PI / groupSize);
+            y += ry - ry * cos(index * 2 * M_PI / groupSize);
+        }
+        else {
+            throw cRuntimeError("Invalid layout '%s' in 'p' tag of display string \"%s\"", layout, ds.str());
+        }
     }
 
     x *= zoomFactor;
     y *= zoomFactor;
 
-    return Constraint(explicitCoords, obeysLayout, x, y, sx, sy);
+    return Constraint(explicitCoords, obeysLayout, groupName, x, y, sx, sy);
 }
 
 void ModuleLayouter::clearLayout(cModule *module)
 {
     for (cModule::SubmoduleIterator it(module); !it.end(); ++it)
         modulePositions.erase(*it);
+
+    auto it = groups.find(module);
+    if (it != groups.end())
+        groups.erase(it);
 }
 
 void ModuleLayouter::forgetPosition(cModule *submodule)
 {
     modulePositions.erase(submodule);
+
+    // remove submodule from layout group if it's part of one
+    cModule *parent = submodule->getParentModule();
+    auto it = groups.find(parent);
+    if (it != groups.end()) {
+        ModuleGroups& moduleGroups = it->second;
+        for (auto pair : moduleGroups) { // try all groups
+            Group& group = pair.second;
+            auto it = group.indices.find(submodule);
+            if (it != group.indices.end()) {
+                int index = it->second;
+                group.indices.erase(it);
+                // adjust group size if needed
+                if (index == group.size-1) {
+                    group.size = index-1;
+                    if (group.size > 0) {
+                        // find largest index among remaining ones, and use that+1 as size
+                        using pair_type = decltype(group.indices)::value_type;
+                        auto maxIt = std::max_element(group.indices.begin(), group.indices.end(),
+                                [] (const pair_type& a, const pair_type& b) -> bool { return a.second < b.second; } );
+                        group.size = maxIt->second+1;
+                    }
+                }
+            }
+        }
+    }
 }
 
 void ModuleLayouter::refreshPositionFromDS(cModule *submodule)
@@ -279,6 +336,20 @@ void ModuleLayouter::ensureLayouted(cModule *module)
     graphLayouter->setSize(sx, sy, border);
     // TODO support "bgp" tag ("background position")
 
+    // collect modules in various layout groups
+    auto& moduleGroups = groups[module];
+    moduleGroups.clear();
+    for (cModule::SubmoduleIterator it(module); !it.end(); ++it) {
+        cModule *submod = *it;
+        if (submod->hasDisplayString() && submod->parametersFinalized()) {
+            const char *groupName = submod->getDisplayString().getTagArg("g", 0);
+            if (!opp_isempty(groupName)) {
+                auto& group = moduleGroups[groupName];
+                group.indices[submod] = group.size++;
+            }
+        }
+    }
+
     // loop through all submodules, get their sizes and positions and feed them into layouting engine
     for (cModule::SubmoduleIterator it(module); !it.end(); ++it) {
         cModule *submod = *it;
@@ -298,7 +369,7 @@ void ModuleLayouter::ensureLayouted(cModule *module)
         else if (r.obeysLayout) {
             // all modules are anchored to the anchor point with the vector's name
             // e.g. "p=,,ring"
-            graphLayouter->addAnchoredNode(submod->getId(), submod->getName(), r.x, r.y, r.sx, r.sy);
+            graphLayouter->addAnchoredNode(submod->getId(), r.group.c_str(), r.x, r.y, r.sx, r.sy);
         }
         else {
             graphLayouter->addMovableNode(submod->getId(), r.sx, r.sy);
