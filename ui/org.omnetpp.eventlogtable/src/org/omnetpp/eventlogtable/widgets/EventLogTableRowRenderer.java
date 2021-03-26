@@ -7,6 +7,8 @@
 
 package org.omnetpp.eventlogtable.widgets;
 
+import java.util.ArrayList;
+
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
@@ -32,36 +34,41 @@ import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.TimeUtils;
 import org.omnetpp.common.virtualtable.IVirtualTableRowRenderer;
-import org.omnetpp.eventlog.engine.BeginSendEntry;
-import org.omnetpp.eventlog.engine.BubbleEntry;
-import org.omnetpp.eventlog.engine.CancelEventEntry;
-import org.omnetpp.eventlog.engine.CloneMessageEntry;
-import org.omnetpp.eventlog.engine.ComponentMethodBeginEntry;
-import org.omnetpp.eventlog.engine.ComponentMethodEndEntry;
-import org.omnetpp.eventlog.engine.ConnectionCreatedEntry;
-import org.omnetpp.eventlog.engine.ConnectionDeletedEntry;
-import org.omnetpp.eventlog.engine.ConnectionDisplayStringChangedEntry;
-import org.omnetpp.eventlog.engine.CreateMessageEntry;
-import org.omnetpp.eventlog.engine.DeleteMessageEntry;
-import org.omnetpp.eventlog.engine.EndSendEntry;
-import org.omnetpp.eventlog.engine.Event;
-import org.omnetpp.eventlog.engine.EventEntry;
-import org.omnetpp.eventlog.engine.EventLogEntry;
-import org.omnetpp.eventlog.engine.EventLogMessageEntry;
-import org.omnetpp.eventlog.engine.GateCreatedEntry;
-import org.omnetpp.eventlog.engine.GateDeletedEntry;
-import org.omnetpp.eventlog.engine.IEvent;
-import org.omnetpp.eventlog.engine.IMessageDependency;
-import org.omnetpp.eventlog.engine.KeyframeEntry;
-import org.omnetpp.eventlog.engine.MessageEntry;
-import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
-import org.omnetpp.eventlog.engine.ModuleDeletedEntry;
-import org.omnetpp.eventlog.engine.ModuleDisplayStringChangedEntry;
-import org.omnetpp.eventlog.engine.PStringVector;
-import org.omnetpp.eventlog.engine.SendDirectEntry;
-import org.omnetpp.eventlog.engine.SendHopEntry;
-import org.omnetpp.eventlog.engine.SimulationBeginEntry;
-import org.omnetpp.eventlog.engine.SimulationEndEntry;
+import org.omnetpp.eventlog.Event;
+import org.omnetpp.eventlog.EventLogEntry;
+import org.omnetpp.eventlog.EventLogMessageEntry;
+import org.omnetpp.eventlog.IEvent;
+import org.omnetpp.eventlog.IMessageDependency;
+import org.omnetpp.eventlog.entry.BeginSendEntry;
+import org.omnetpp.eventlog.entry.BubbleEntry;
+import org.omnetpp.eventlog.entry.CancelEventEntry;
+import org.omnetpp.eventlog.entry.CloneMessageEntry;
+import org.omnetpp.eventlog.entry.ComponentMethodBeginEntry;
+import org.omnetpp.eventlog.entry.ComponentMethodEndEntry;
+import org.omnetpp.eventlog.entry.ConnectionCreatedEntry;
+import org.omnetpp.eventlog.entry.ConnectionDeletedEntry;
+import org.omnetpp.eventlog.entry.ConnectionDisplayStringChangedEntry;
+import org.omnetpp.eventlog.entry.CreateMessageEntry;
+import org.omnetpp.eventlog.entry.CustomChangedEntry;
+import org.omnetpp.eventlog.entry.CustomCreatedEntry;
+import org.omnetpp.eventlog.entry.CustomDeletedEntry;
+import org.omnetpp.eventlog.entry.CustomEntry;
+import org.omnetpp.eventlog.entry.CustomFoundEntry;
+import org.omnetpp.eventlog.entry.DeleteMessageEntry;
+import org.omnetpp.eventlog.entry.EndSendEntry;
+import org.omnetpp.eventlog.entry.EventEntry;
+import org.omnetpp.eventlog.entry.GateCreatedEntry;
+import org.omnetpp.eventlog.entry.GateDeletedEntry;
+import org.omnetpp.eventlog.entry.GateDescriptionEntry;
+import org.omnetpp.eventlog.entry.MessageDescriptionEntry;
+import org.omnetpp.eventlog.entry.ModuleCreatedEntry;
+import org.omnetpp.eventlog.entry.ModuleDeletedEntry;
+import org.omnetpp.eventlog.entry.ModuleDescriptionEntry;
+import org.omnetpp.eventlog.entry.ModuleDisplayStringChangedEntry;
+import org.omnetpp.eventlog.entry.SendDirectEntry;
+import org.omnetpp.eventlog.entry.SendHopEntry;
+import org.omnetpp.eventlog.entry.SimulationBeginEntry;
+import org.omnetpp.eventlog.entry.SimulationEndEntry;
 import org.omnetpp.eventlogtable.widgets.EventLogTable.NameMode;
 
 public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventLogEntryReference> {
@@ -105,10 +112,12 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
         this.eventLogTable = eventLogTable;
     }
 
+    @Override
     public void setInput(Object eventLogInput) {
         this.eventLogInput = (EventLogInput)eventLogInput;
     }
 
+    @Override
     public int getRowHeight(GC gc) {
         if (fontHeight == 0) {
             Font oldFont = gc.getFont();
@@ -196,7 +205,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
         return null;
     }
 
-    private BeginSendEntry findBeginSendEntry(long previousEventNumber, int messageId) {
+    private BeginSendEntry findBeginSendEntry(long previousEventNumber, long messageId) {
         if (previousEventNumber != -1) {
             IEvent event = eventLogInput.getEventLog().getEventForEventNumber(previousEventNumber);
 
@@ -258,33 +267,37 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 
     @Override
     public StyledString getStyledText(EventLogEntryReference eventLogEntryReference, int index, boolean isSelected) {
-        EventLogEntry eventLogEntry = eventLogEntryReference.getEventLogEntry(eventLogInput);
-        contextEvent = eventLogEntry.getEvent();
-        long eventNumber = contextEvent.getEventNumber();
-        BigDecimal simulationTime = contextEvent.getSimulationTime();
-        boolean isEventLogEntry = eventLogEntry instanceof EventEntry;
-
-        switch (index) {
-        case 0:
-            return new Builder(isSelected)
-                     .append("#" + eventNumber, isEventLogEntry ? EVENT_ENTRY_EVENT_NUMBER_STYLE : EVENT_LOG_ENTRY_EVENT_NUMBER_STYLE)
-                     .getStyledString();
-        case 1:
-            return new Builder(isSelected)
-                     .append(getSimulationTimeText(simulationTime), isEventLogEntry ? EVENT_ENTRY_SIMULATION_TIME_STYLE : EVENT_LOG_ENTRY_SIMULATION_TIME_STYLE)
-                     .getStyledString();
-        case 2:
-            switch (eventLogTable.getDisplayMode()) {
-                case DESCRIPTIVE:
-                    return getDescriptiveStyledText(eventLogEntry, isSelected);
-                case RAW:
-                    return getRawStyledText(eventLogEntry, isSelected);
+        try {
+            EventLogEntry eventLogEntry = eventLogEntryReference.getEventLogEntry(eventLogInput);
+            contextEvent = eventLogEntry.getEvent();
+            long eventNumber = contextEvent.getEventNumber();
+            BigDecimal simulationTime = contextEvent.getSimulationTime();
+            boolean isEventLogEntry = eventLogEntry instanceof EventEntry;
+            switch (index) {
+                case 0:
+                    return new Builder(isSelected)
+                             .append("#" + eventNumber, isEventLogEntry ? EVENT_ENTRY_EVENT_NUMBER_STYLE : EVENT_LOG_ENTRY_EVENT_NUMBER_STYLE)
+                             .getStyledString();
+                case 1:
+                    return new Builder(isSelected)
+                             .append(getSimulationTimeText(simulationTime), isEventLogEntry ? EVENT_ENTRY_SIMULATION_TIME_STYLE : EVENT_LOG_ENTRY_SIMULATION_TIME_STYLE)
+                             .getStyledString();
+                case 2:
+                    switch (eventLogTable.getDisplayMode()) {
+                        case DESCRIPTIVE:
+                            return getDescriptiveStyledText(eventLogEntry, isSelected);
+                        case RAW:
+                            return getRawStyledText(eventLogEntry, isSelected);
+                        default:
+                            throw new RuntimeException("Unknown display mode");
+                    }
                 default:
-                    throw new RuntimeException("Unknown display mode");
+                    Assert.isTrue(false);
+                    return null;
             }
-        default:
-            Assert.isTrue(false);
-            return null;
+        }
+        finally {
+            contextEvent = null;
         }
     }
 
@@ -294,7 +307,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
             builder.append(eventLogEntry.getAsString() + " ", BOLD_CONSTANT_TEXT_STYLE);
         }
 
-        PStringVector stringVector = eventLogEntry.getAttributeNames();
+        ArrayList<String> stringVector = eventLogEntry.getAttributeNames();
         for (int i = 0; i < stringVector.size(); i++)
         {
             String name = stringVector.get(i);
@@ -314,9 +327,8 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
         long eventNumber = contextEvent.getEventNumber();
 
         if (eventLogEntry instanceof EventEntry) {
-            if (eventNumber == 0) {
-                builder.constant("Setting up ").module(1);
-            }
+            if (eventNumber == 0)
+                builder.constant("Initializing ").module(1);
             else {
                 String fingerprints = contextEvent.getEventEntry().getFingerprints();
                 if (fingerprints != null)
@@ -326,7 +338,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
                 builder.constant("Event in ")
                        .module(contextEvent.getModuleId(), EventLogTable.NameMode.FULL_PATH);
 
-                MessageEntry beginSendEntry = cause != null ? cause.getMessageEntry() : null;
+                MessageDescriptionEntry beginSendEntry = cause != null ? cause.getBeginMessageDescriptionEntry() : null;
                 if (beginSendEntry != null) {
                     builder.constant(" on arrival of ");
 
@@ -361,7 +373,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
             else if (eventLogEntry instanceof ComponentMethodBeginEntry) {
                 ComponentMethodBeginEntry componentMethodBeginEntry = (ComponentMethodBeginEntry)eventLogEntry;
                 builder.constant("Begin calling ");
-                String method = componentMethodBeginEntry.getMethod();
+                String method = componentMethodBeginEntry.getMethodName();
 
                 if (StringUtils.isEmpty(method))
                     builder.constant("method");
@@ -382,6 +394,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
                 int parentModuleId = moduleCreatedEntry.getParentModuleId();
                 if (parentModuleId != -1)
                     builder.constant(" under ").module(parentModuleId);
+                builder.constant(" started");
             }
             else if (eventLogEntry instanceof ModuleDeletedEntry) {
                 ModuleDeletedEntry moduleDeletedEntry = (ModuleDeletedEntry)eventLogEntry;
@@ -512,15 +525,53 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
                        .data(String.valueOf(simulationEndEntry.getResultCode()))
                        .constant(" : ").data(simulationEndEntry.getMessage());
             }
-            else if (eventLogEntry instanceof KeyframeEntry) {
-                KeyframeEntry keyframeEntry = (KeyframeEntry)eventLogEntry;
-                builder.constant("Keyframe with ");
-                String simulationStateEntries = keyframeEntry.getSimulationStateEntries();
-                if (!StringUtils.isEmpty(simulationStateEntries))
-                    builder.data(String.valueOf(simulationStateEntries.split(",").length));
-                else
-                    builder.data("0");
-                builder.constant(" simulation state events");
+            else if (eventLogEntry instanceof CustomCreatedEntry) {
+                CustomCreatedEntry customCreatedEntry = (CustomCreatedEntry)eventLogEntry;
+                builder.constant("Custom created entry: ")
+                       .constant("type = ")
+                       .data(customCreatedEntry.getType())
+                       .constant(", key = ")
+                       .data(String.valueOf(customCreatedEntry.getKey()))
+                       .constant(", content = ")
+                       .data(customCreatedEntry.getContent());
+            }
+            else if (eventLogEntry instanceof CustomDeletedEntry) {
+                CustomDeletedEntry customDeletedEntry = (CustomDeletedEntry)eventLogEntry;
+                builder.constant("Custom deleted entry: ")
+                       .constant("type = ")
+                       .data(customDeletedEntry.getType())
+                       .constant(", key = ")
+                       .data(String.valueOf(customDeletedEntry.getKey()));
+            }
+            else if (eventLogEntry instanceof CustomChangedEntry) {
+                CustomChangedEntry customChangedEntry = (CustomChangedEntry)eventLogEntry;
+                builder.constant("Custom changed entry, ")
+                       .constant("type = ")
+                       .data(customChangedEntry.getType())
+                       .constant(", key = ")
+                       .data(String.valueOf(customChangedEntry.getKey()))
+                       .constant(", content = ")
+                       .data(customChangedEntry.getContent());
+            }
+            else if (eventLogEntry instanceof CustomFoundEntry) {
+                CustomFoundEntry customFoundEntry = (CustomFoundEntry)eventLogEntry;
+                builder.constant("Custom found entry: ")
+                       .constant("type = ")
+                       .data(customFoundEntry.getType())
+                       .constant(", key = ")
+                       .data(String.valueOf(customFoundEntry.getKey()))
+                       .constant(", content = ")
+                       .data(customFoundEntry.getContent());
+            }
+            else if (eventLogEntry instanceof CustomEntry) {
+                CustomEntry customEntry = (CustomEntry)eventLogEntry;
+                builder.constant("Custom entry: ")
+                       .constant("type = ")
+                       .data(customEntry.getType())
+                       .constant(", key = ")
+                       .data(String.valueOf(customEntry.getKey()))
+                       .constant(", content = ")
+                       .data(customEntry.getContent());
             }
             else
                 throw new RuntimeException("Unknown eventlog entry: " + eventLogEntry.getClassName());
@@ -589,29 +640,29 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
         }
 
         Builder module(int moduleId) {
-            return module(eventLogInput.getEventLog().getModuleCreatedEntry(moduleId));
+            return module(eventLogInput.getEventLog().getEventLogEntryCache().getModuleDescriptionEntry(moduleId));
         }
 
         Builder module(int moduleId, NameMode nameMode) {
-            return module(eventLogInput.getEventLog().getModuleCreatedEntry(moduleId), nameMode);
+            return module(eventLogInput.getEventLog().getEventLogEntryCache().getModuleDescriptionEntry(moduleId), nameMode);
         }
 
-        Builder module(ModuleCreatedEntry moduleCreatedEntry) {
-            return module(moduleCreatedEntry, eventLogTable.getNameMode());
+        Builder module(ModuleDescriptionEntry moduleDescriptionEntry) {
+            return module(moduleDescriptionEntry, eventLogTable.getNameMode());
         }
 
-        Builder module(ModuleCreatedEntry moduleCreatedEntry, NameMode nameMode) {
+        Builder module(ModuleDescriptionEntry moduleDescriptionEntry, NameMode nameMode) {
             append("module ", CONSTANT_TEXT_STYLE);
 
-            if (moduleCreatedEntry != null) {
+            if (moduleDescriptionEntry != null) {
                 String typeName = null;
 
                 switch (eventLogTable.getTypeMode()) {
                 case NED:
-                    typeName = moduleCreatedEntry.getNedTypeName();
+                    typeName = moduleDescriptionEntry.getNedTypeName();
                     break;
                 case CPP:
-                    typeName = moduleCreatedEntry.getModuleClassName();
+                    typeName = moduleDescriptionEntry.getModuleClassName();
                     break;
                 }
 
@@ -619,16 +670,16 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 
                 switch (nameMode) {
                 case SMART_NAME:
-                    if (contextEvent.getModuleId() == moduleCreatedEntry.getModuleId())
-                        moduleFullName(moduleCreatedEntry);
+                    if (contextEvent.getModuleId() == moduleDescriptionEntry.getModuleId())
+                        moduleFullName(moduleDescriptionEntry);
                     else
-                        moduleFullPath(moduleCreatedEntry);
+                        moduleFullPath(moduleDescriptionEntry);
                     break;
                 case FULL_NAME:
-                    moduleFullName(moduleCreatedEntry);
+                    moduleFullName(moduleDescriptionEntry);
                     break;
                 case FULL_PATH:
-                    moduleFullPath(moduleCreatedEntry);
+                    moduleFullPath(moduleDescriptionEntry);
                     break;
                 }
             }
@@ -638,24 +689,24 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
             return this;
         }
 
-        Builder moduleFullPath(ModuleCreatedEntry moduleCreatedEntry) {
-            return append(eventLogInput.getEventLogTableFacade().ModuleCreatedEntry_getModuleFullPath(moduleCreatedEntry.getCPtr()), NAME_STYLE);
+        Builder moduleFullPath(ModuleDescriptionEntry moduleDescriptionEntry) {
+            return append(eventLogInput.getEventLogTableFacade().ModuleDescriptionEntry_getModuleFullPath(moduleDescriptionEntry), NAME_STYLE);
         }
 
-        Builder moduleFullName(ModuleCreatedEntry moduleCreatedEntry) {
-            return append(moduleCreatedEntry.getFullName(), NAME_STYLE);
+        Builder moduleFullName(ModuleDescriptionEntry moduleDescriptionEntry) {
+            return append(moduleDescriptionEntry.getFullName(), NAME_STYLE);
         }
 
         Builder gate(int moduleId, int gateId) {
-            return gate(eventLogInput.getEventLog().getGateCreatedEntry(moduleId, gateId));
+            return gate(eventLogInput.getEventLog().getEventLogEntryCache().getGateDescriptionEntry(moduleId, gateId));
         }
 
-        Builder gate(GateCreatedEntry gateCreatedEntry) {
+        Builder gate(GateDescriptionEntry gateDescriptionEntry) {
             append("gate ", CONSTANT_TEXT_STYLE);
 
-            if (gateCreatedEntry != null) {
-                int index = gateCreatedEntry.getIndex();
-                append(gateCreatedEntry.getName() + (index != -1 ? "[" + index + "]" : ""), NAME_STYLE);
+            if (gateDescriptionEntry != null) {
+                int index = gateDescriptionEntry.getIndex();
+                append(gateDescriptionEntry.getName() + (index != -1 ? "[" + index + "]" : ""), NAME_STYLE);
             }
             else
                 append("<unknown>", NAME_STYLE);
@@ -669,31 +720,31 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
         Builder connection(int sourceModuleId, int sourceGateId, int destModuleId, int destGateId) {
             append("connection from ", CONSTANT_TEXT_STYLE);
 
-            ModuleCreatedEntry sourceModuleCreatedEntry = eventLogInput.getEventLog().getModuleCreatedEntry(sourceModuleId);
+            ModuleDescriptionEntry sourceModuleDescriptionEntry = eventLogInput.getEventLog().getEventLogEntryCache().getModuleDescriptionEntry(sourceModuleId);
 
-            if (sourceModuleCreatedEntry != null) {
-                module(sourceModuleCreatedEntry);
+            if (sourceModuleDescriptionEntry != null) {
+                module(sourceModuleDescriptionEntry);
                 append(" ", CONSTANT_TEXT_STYLE);
                 gate(sourceModuleId, sourceGateId);
             }
 
-            ModuleCreatedEntry destModuleCreatedEntry = eventLogInput.getEventLog().getModuleCreatedEntry(destModuleId);
+            ModuleDescriptionEntry destModuleDescriptionEntry = eventLogInput.getEventLog().getEventLogEntryCache().getModuleDescriptionEntry(destModuleId);
 
-            if (destModuleCreatedEntry != null) {
+            if (destModuleDescriptionEntry != null) {
                 append(" to ", CONSTANT_TEXT_STYLE);
-                module(destModuleCreatedEntry);
+                module(destModuleDescriptionEntry);
                 append(" ", CONSTANT_TEXT_STYLE);
                 gate(destModuleId, destGateId);
             }
             return this;
         }
 
-        Builder message(MessageEntry messageEntry) {
+        Builder message(MessageDescriptionEntry messageDescriptionEntry) {
             append("message ", CONSTANT_TEXT_STYLE);
 
-            if (messageEntry != null) {
-                append("(" + messageEntry.getMessageClassName() + ") ", TYPE_STYLE);
-                append(messageEntry.getMessageName(), NAME_STYLE);
+            if (messageDescriptionEntry != null) {
+                append("(" + messageDescriptionEntry.getMessageClassName() + ") ", TYPE_STYLE);
+                append(messageDescriptionEntry.getMessageName(), NAME_STYLE);
             }
             else
                 append("<unknown>", NAME_STYLE);

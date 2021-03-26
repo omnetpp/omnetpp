@@ -26,11 +26,10 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
-import org.eclipse.ui.IFileEditorInput;
-import org.eclipse.ui.IMemento;
 import org.eclipse.ui.INavigationLocation;
 import org.eclipse.ui.INavigationLocationProvider;
 import org.eclipse.ui.ISelectionListener;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.contexts.IContextService;
@@ -44,8 +43,7 @@ import org.omnetpp.common.eventlog.EventLogEditor;
 import org.omnetpp.common.eventlog.EventLogEntryReference;
 import org.omnetpp.common.eventlog.IEventLogSelection;
 import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog2;
-import org.omnetpp.eventlog.engine.EventLogEntry;
-import org.omnetpp.eventlog.engine.IEvent;
+import org.omnetpp.eventlog.IEvent;
 import org.omnetpp.eventlogtable.EventLogTablePlugin;
 import org.omnetpp.eventlogtable.widgets.EventLogTable;
 
@@ -61,7 +59,7 @@ public class EventLogTableEditor
 {
     private ResourceChangeListener resourceChangeListener = new ResourceChangeListener();
 
-    private EventLogTable eventLogTable;
+    EventLogTable eventLogTable;
 
     private ISelectionListener selectionListener;
 
@@ -85,7 +83,7 @@ public class EventLogTableEditor
                 try {
                     // Eclipse feature: during startup, showView() throws "Abnormal Workbench Condition" because perspective is null
                     if (getSite().getPage().getPerspective() != null)
-                        getSite().getPage().showView("org.omnetpp.sequencechart.editors.SequenceChartView");
+                        getSite().getPage().showView("org.omnetpp.sequencechart.editors.SequenceChartView", null, IWorkbenchPage.VIEW_VISIBLE);
                 }
                 catch (PartInitException e) {
                     EventLogTablePlugin.getDefault().logException(e);
@@ -98,10 +96,9 @@ public class EventLogTableEditor
     public void dispose() {
         if (resourceChangeListener != null)
             ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
-
         if (selectionListener != null)
             getSite().getPage().removeSelectionListener(selectionListener);
-
+        getSite().setSelectionProvider(null);
         super.dispose();
     }
 
@@ -144,101 +141,31 @@ public class EventLogTableEditor
         eventLogTable.setFocus();
     }
 
-    public class EventLogTableLocation implements INavigationLocation {
-        private long eventNumber;
-
-        public EventLogTableLocation(long eventNumber) {
-            this.eventNumber = eventNumber;
-        }
-
-        public void dispose() {
-            // void
-        }
-
-        public Object getInput() {
-            return EventLogTableEditor.this.getEditorInput();
-        }
-
-        public String getText() {
-            return EventLogTableEditor.this.getPartName() + ": #" + eventNumber;
-        }
-
-        public boolean mergeInto(INavigationLocation currentLocation) {
-            return equals(currentLocation);
-        }
-
-        public void releaseState() {
-            // void
-        }
-
-        public void restoreLocation() {
-            IEvent event = eventLogInput.getEventLog().getEventForEventNumber(eventNumber);
-            EventLogEntry eventLogEntry = event != null ? event.getEventEntry() : null;
-
-            if (eventLogEntry != null)
-                eventLogTable.reveal(new EventLogEntryReference(eventLogEntry));
-        }
-
-        public void restoreState(IMemento memento) {
-            Integer integer = memento.getInteger("EventNumber");
-
-            if (integer != null)
-                eventNumber = integer;
-        }
-
-        public void saveState(IMemento memento) {
-            memento.putString("EventNumber", Long.toString(eventNumber));
-        }
-
-        public void setInput(Object input) {
-            EventLogTableEditor.this.setInput((IFileEditorInput)input);
-        }
-
-        public void update() {
-            // void
-        }
-
-        @Override
-        public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + getOuterType().hashCode();
-            result = prime * result + (int) (eventNumber ^ (eventNumber >>> 32));
-            return result;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj)
-                return true;
-            if (obj == null)
-                return false;
-            if (getClass() != obj.getClass())
-                return false;
-            EventLogTableLocation other = (EventLogTableLocation) obj;
-            if (!getOuterType().equals(other.getOuterType()))
-                return false;
-            if (eventNumber != other.eventNumber)
-                return false;
-            return true;
-        }
-
-        private EventLogTableEditor getOuterType() {
-            return EventLogTableEditor.this;
-        }
+    public INavigationLocation createEmptyNavigationLocation() {
+        return new EventLogTableLocation(this, 0);
     }
 
-    public INavigationLocation createEmptyNavigationLocation() {
-        return new EventLogTableLocation(0);
+    @Override
+    protected boolean canCreateNavigationLocation() {
+        return !eventLogTable.isDisposed() && super.canCreateNavigationLocation();
     }
 
     public INavigationLocation createNavigationLocation() {
-        EventLogEntryReference eventLogEntryReference = eventLogTable.getTopVisibleElement();
-
-        if (eventLogEntryReference == null)
+        try {
+            if (!canCreateNavigationLocation())
+                return null;
+            else {
+                EventLogEntryReference eventLogEntryReference = eventLogTable.getTopVisibleElement();
+                if (eventLogEntryReference == null)
+                    return null;
+                else
+                    return new EventLogTableLocation(this, eventLogEntryReference.getEventNumber());
+            }
+        }
+        catch (RuntimeException e) {
+            eventLogInput.handleRuntimeException(e);
             return null;
-        else
-            return new EventLogTableLocation(eventLogEntryReference.getEventLogEntry(eventLogInput).getEvent().getEventNumber());
+        }
     }
 
     public void gotoMarker(IMarker marker) {
@@ -276,11 +203,17 @@ public class EventLogTableEditor
         }
 
         public boolean visit(IResourceDelta delta) {
+            // TODO: why do we redraw here, the eventlog is not reread automatically!
             if (delta != null && delta.getResource() != null && delta.getResource().equals(eventLogInput.getFile())) {
                 Display.getDefault().asyncExec(new Runnable() {
                     public void run() {
-                        if (!eventLogTable.isDisposed())
-                            eventLogTable.redraw();
+                        try {
+                            if (!eventLogTable.isDisposed())
+                                eventLogTable.redraw();
+                        }
+                        catch (RuntimeException e) {
+                            eventLogTable.handleRuntimeException(e);
+                        }
                     }
                 });
             }

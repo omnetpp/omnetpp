@@ -24,7 +24,7 @@ import org.eclipse.ui.contexts.IContextService;
 import org.omnetpp.common.eventlog.EventLogView;
 import org.omnetpp.common.eventlog.IEventLogSelection;
 import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog2;
-import org.omnetpp.eventlog.engine.IEventLog;
+import org.omnetpp.eventlog.IEventLog;
 import org.omnetpp.eventlogtable.widgets.EventLogTable;
 
 /**
@@ -94,13 +94,11 @@ public class EventLogTableView extends EventLogView implements IEventLogTablePro
     @Override
     public void dispose() {
         IViewSite viewSite = (IViewSite)getSite();
-
         if (selectionListener != null)
             viewSite.getPage().removeSelectionListener(selectionListener);
-
         if (partListener != null)
             viewSite.getPage().removePartListener(partListener);
-
+        viewSite.setSelectionProvider(null);
         super.dispose();
     }
 

@@ -8,6 +8,7 @@
 package org.omnetpp.eventlogtable.widgets;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.eclipse.core.resources.IResource;
@@ -42,11 +43,12 @@ import org.omnetpp.common.eventlog.IEventLogSelection;
 import org.omnetpp.common.util.PersistentResourcePropertyManager;
 import org.omnetpp.common.virtualtable.VirtualTable;
 import org.omnetpp.common.virtualtable.VirtualTableSelection;
-import org.omnetpp.eventlog.engine.EventLogEntry;
-import org.omnetpp.eventlog.engine.EventLogTableFacade;
-import org.omnetpp.eventlog.engine.FilteredEventLog;
-import org.omnetpp.eventlog.engine.IEvent;
-import org.omnetpp.eventlog.engine.IEventLog;
+import org.omnetpp.eventlog.EventLogEntry;
+import org.omnetpp.eventlog.EventLogTableFacade;
+import org.omnetpp.eventlog.EventLogTableFilterMode;
+import org.omnetpp.eventlog.FilteredEventLog;
+import org.omnetpp.eventlog.IEvent;
+import org.omnetpp.eventlog.IEventLog;
 import org.omnetpp.eventlogtable.EventLogTablePlugin;
 import org.omnetpp.eventlogtable.editors.EventLogTableContributor;
 
@@ -58,19 +60,14 @@ public class EventLogTable
 
     public static final String STATE_PROPERTY = "EventLogTableState";
 
-    private boolean paintHasBeenFinished = false;
-
-    private RuntimeException internalError;
-    private boolean internalErrorHappenedDuringPaint = false;
-
+    private boolean isOutOfSync = false; // the underlying eventlog has been changed during the last operation
+    private boolean isPaintComplete = false; // the last paint was successfully completed or not
     private boolean followEnd = false; // when the eventlog changes should we follow it or not?
+    private RuntimeException internalError;
 
-    private EventLogInput eventLogInput;
-
-    private IEventLog eventLog;
-
+    private EventLogInput eventLogInput; // the Java input object
+    private IEventLog eventLog; // the C++ wrapper for the data to be displayed
     private EventLogTableFacade eventLogTableFacade;
-
     private EventLogTableContributor eventLogTableContributor;
 
     private static class EventLogEntryReferenceEnumerator implements IEnumerator<EventLogEntryReference> {
@@ -133,9 +130,7 @@ public class EventLogTable
     }
 
     private TypeMode typeMode = TypeMode.CPP;
-
     private NameMode nameMode = NameMode.SMART_NAME;
-
     private DisplayMode displayMode = DisplayMode.DESCRIPTIVE;
 
     private IWorkbenchPart workbenchPart;
@@ -154,11 +149,11 @@ public class EventLogTable
         rowEnumerator = new EventLogEntryReferenceEnumerator(contentProvider);
 
         TableColumn tableColumn = createColumn();
-        tableColumn.setWidth(60);
+        tableColumn.setWidth(120);
         tableColumn.setText("Event #");
 
         tableColumn = createColumn();
-        tableColumn.setWidth(140);
+        tableColumn.setWidth(200);
         tableColumn.setText("Time");
 
         tableColumn = createColumn();
@@ -199,42 +194,59 @@ public class EventLogTable
      */
 
     @Override
-    protected void paint(final GC gc) {
-        paintHasBeenFinished = false;
+    public void handleRuntimeException(RuntimeException e) {
+        if (eventLogInput != null)
+            eventLogInput.handleRuntimeException(e);
+        else
+            throw e;
+    }
 
-        if (internalErrorHappenedDuringPaint)
-            drawNotificationMessage(gc, "Internal error happened during painting. Try to reset zoom, position, filter, etc. and press refresh. Sorry for your inconvenience.");
+    @Override
+    protected void paint(final GC gc) {
+        isPaintComplete = false;
+        if (internalError != null)
+            drawNotificationMessage(gc, "Internal error - please tweak the settings and refresh",
+                "Try changing the zoom factor, scroll position, display modes, eventlog filter parameters, etc.\nto prevent the error from happening again, then press Refresh.\nWe are sorry for the inconvenience.");
         else if (eventLogInput == null) {
             super.paint(gc);
-            paintHasBeenFinished = true;
+            isPaintComplete = true;
         }
+        else if (isOutOfSync)
+            drawNotificationMessage(gc, "The eventlog is continually changing - please wait",
+                "This is most often caused by a simulation running in the background.\nThe component will automatically refresh in a few seconds.");
         else if (eventLogInput.isCanceled())
-            drawNotificationMessage(gc,
-                "Processing of a long running eventlog operation was cancelled, therefore the chart is incomplete and cannot be drawn.\n" +
-                "Either try changing some filter parameters or select refresh from the menu. Sorry for your inconvenience.");
+            drawNotificationMessage(gc, "Operation cancelled - please tweak the settings and refresh",
+                "A long-running eventlog operation has been cancelled.\nTo continue, try changing the zoom factor, scroll position, display modes, eventlog filter parameters, etc.\nto speed up the operation, then press Refresh.");
         else if (eventLogInput.isLongRunningOperationInProgress())
-            drawNotificationMessage(gc, "Processing a long running eventlog operation. Please wait.");
+            drawNotificationMessage(gc, "Processing a long-running eventlog operation - please wait",
+                "The operation is taking long because of using the eventlog filter, showing too much content, or some other reasons.\nThe component will automatically refresh when the operation completes.");
         else {
             try {
-                eventLogInput.runWithProgressMonitor(new Runnable() {
-                    public void run() {
-                        try {
-                            EventLogTable.super.paint(gc);
-                            paintHasBeenFinished = true;
+                isPaintComplete = false;
+                if (eventLogInput == null) {
+                    super.paint(gc);
+                    isPaintComplete = true;
+                }
+                else {
+                    eventLogInput.runWithProgressMonitor(new Runnable() {
+                        public void run() {
+                            try {
+                                EventLogTable.super.paint(gc);
+                                isPaintComplete = true;
+                            }
+                            catch (RuntimeException e) {
+                                if (eventLogInput.isFileChangedException(e))
+                                    eventLogInput.handleRuntimeException(e);
+                                else
+                                    throw e;
+                            }
                         }
-                        catch (RuntimeException e) {
-                            if (eventLogInput.isFileChangedException(e))
-                                eventLogInput.synchronize(e);
-                            else
-                                throw e;
-                        }
-                    }
-                });
+                    });
+                }
             }
             catch (RuntimeException e) {
                 EventLogTablePlugin.logError("Internal error happened during painting", e);
                 internalError = e;
-                internalErrorHappenedDuringPaint = true;
             }
         }
     }
@@ -242,26 +254,28 @@ public class EventLogTable
     @Override
     public void refresh() {
         internalError = null;
-        internalErrorHappenedDuringPaint = false;
         if (eventLogInput != null)
             eventLogInput.resetCanceled();
         super.refresh();
     }
 
-    protected void drawNotificationMessage(GC gc, String text) {
-        String[] lines = text.split("\n");
-        gc.setForeground(ColorFactory.RED4);
-        gc.setBackground(ColorFactory.WHITE);
-        gc.setFont(JFaceResources.getDefaultFont());
-
+    /**
+     * Draws a notification message to the center of the viewport.
+     */
+    protected void drawNotificationMessage(GC gc, String title, String text) {
         Point p = getSize();
         int x = p.x / 2;
         int y = p.y / 2;
-
+        String[] lines = text.split("\n");
+        gc.setForeground(ColorFactory.BLACK);
+        gc.setFont(JFaceResources.getHeaderFont());
+        p = gc.textExtent(title);
+        gc.drawText(title, x - p.x / 2, y - (lines.length / 2 + 2) * p.y);
+        gc.setFont(JFaceResources.getDefaultFont());
         for (int i = 0; i < lines.length; i++) {
             String line = lines[i];
             p = gc.textExtent(line);
-            gc.drawString(line, x - p.x / 2, y - (lines.length / 2 - i) * p.y);
+            gc.drawText(line, x - p.x / 2, y - (lines.length / 2 - i) * p.y);
         }
     }
 
@@ -297,8 +311,11 @@ public class EventLogTable
             Iterator<Range<Long>> iterator = selectedEventNumbers.rangeIterator();
             while (iterator.hasNext()) {
                 Range<Long> eventNumberRange = iterator.next();
-                int lastEventEntryIndex = eventLogSelection.getEventLog().getEventForEventNumber(eventNumberRange.getLast()).getNumEventLogEntries() - 1;
-                selectionElements.addRange(new EventLogEntryReference(eventNumberRange.getFirst(), 0), new EventLogEntryReference(eventNumberRange.getLast(), lastEventEntryIndex));
+                IEvent event = eventLogSelection.getEventLog().getEventForEventNumber(eventNumberRange.getLast());
+                if (event != null) {
+                    int lastEventEntryIndex = event.getNumEventLogEntries() - 1;
+                    selectionElements.addRange(new EventLogEntryReference(eventNumberRange.getFirst(), 0), new EventLogEntryReference(eventNumberRange.getLast(), lastEventEntryIndex));
+                }
             }
             super.setSelection(new VirtualTableSelection<EventLogEntryReference>(eventLogSelection.getEventLogInput(), selectionElements));
         }
@@ -376,11 +393,11 @@ public class EventLogTable
         return (EventLogTableContentProvider)getContentProvider();
     }
 
-    public int getLineFilterMode() {
+    public EventLogTableFilterMode getLineFilterMode() {
         return eventLogTableFacade.getFilterMode();
     }
 
-    public void setLineFilterMode(int i) {
+    public void setLineFilterMode(EventLogTableFilterMode i) {
         eventLogTableFacade.setFilterMode(i);
         stayNear();
     }
@@ -430,39 +447,38 @@ public class EventLogTable
      * EVENTLOG NOTIFICATIONS
      */
 
+    @Override
     public void eventLogAppended() {
-        Display.getCurrent().asyncExec(new Runnable() {
-            public void run() {
-                try {
-                    eventLogChanged();
-                }
-                catch (RuntimeException x) {
-                    if (eventLogInput.isFileChangedException(x))
-                        eventLogInput.synchronize(x);
-                    else
-                        throw x;
-                }
-            }
-        });
+        eventLogChanged();
     }
 
+    @Override
     public void eventLogOverwritten() {
-        Display.getCurrent().asyncExec(new Runnable() {
-            public void run() {
-                try {
-                    eventLogChanged();
-                }
-                catch (RuntimeException x) {
-                    if (eventLogInput.isFileChangedException(x))
-                        eventLogInput.synchronize(x);
-                    else
-                        throw x;
-                }
-            }
-        });
+        eventLogChanged();
     }
 
     private void eventLogChanged() {
+        if (fixPointElement != null && fixPointElement.getEvent(eventLog) == null)
+            fixPointElement = null;
+        if (selectionElements != null)
+            for (EventLogEntryReference selectionElement : new ArrayList<EventLogEntryReference>(selectionElements))
+                if (eventLog.getEventForEventNumber(selectionElement.getEventNumber()) == null)
+                    selectionElements.remove(selectionElement);
+        Display.getCurrent().asyncExec(new Runnable() {
+            public void run() {
+                try {
+                    handleEventLogChanged();
+                }
+                catch (RuntimeException e) {
+                    handleRuntimeException(e);
+                }
+            }
+        });
+    }
+
+    private void handleEventLogChanged() {
+        if (debug)
+            Debug.println("EventLogTable got notification about eventlog change");
         if (eventLog.isEmpty())
             fixPointElement = null;
         else if (followEnd) {
@@ -472,13 +488,13 @@ public class EventLogTable
         }
         else if (fixPointElement == null || fixPointElement.getEvent(eventLog) == null)
             scrollToBegin();
-        if (debug)
-            Debug.println("EventLogTable got notification about eventlog change");
         configureVerticalScrollBar();
         updateVerticalBarPosition();
         redraw();
+        isOutOfSync = false;
     }
 
+    @Override
     public void eventLogFiltered() {
         eventLog = eventLogInput.getEventLog();
 
@@ -501,37 +517,38 @@ public class EventLogTable
         }
         else
             scrollToBegin();
-
-        selectionElements.clear();
-        // TODO: avoid iteration over the elements of the selection
-        // FIXME: this causes NPE when filtering an eventlog and the original selection is not present in the result
-//        Iterator<EventLogEntryReference> iterator = selectionElements.iterator();
-//        while (iterator.hasNext())
-//            if (eventLog.getEventForEventNumber(iterator.next().getEventNumber()) == null)
-//                iterator.remove();
-
         eventLogTableContributor.update();
         redraw();
     }
 
+    @Override
     public void eventLogFilterRemoved() {
         eventLog = eventLogInput.getEventLog();
         eventLogTableContributor.update();
         redraw();
     }
 
+    @Override
     public void eventLogLongOperationStarted() {
         // void
     }
 
+    @Override
     public void eventLogLongOperationEnded() {
-        if (!paintHasBeenFinished)
+        if (!isPaintComplete)
             canvas.redraw();
     }
 
+    @Override
     public void eventLogProgress() {
         if (eventLogInput.getEventLogProgressManager().isCanceled())
             canvas.redraw();
+    }
+
+    @Override
+    public void eventLogSynchronizationFailed() {
+        isOutOfSync = true;
+        canvas.redraw();
     }
 
     /*************************************************************************************
@@ -595,20 +612,26 @@ public class EventLogTable
     }
 
     public void findText(boolean continueSearch) {
-        EventLogFindTextDialog findTextDialog = eventLogInput.getFindTextDialog();
-
+        final EventLogFindTextDialog findTextDialog = eventLogInput.getFindTextDialog();
         if (continueSearch || findTextDialog.open() == Window.OK) {
-            String findText = findTextDialog.getValue();
-
+            final String findText = findTextDialog.getValue();
             if (findText != null) {
                 EventLogEntryReference eventLogEntryReference = getFocusElement();
-                EventLogEntry startEventLogEntry = (eventLogEntryReference == null ? getTopVisibleElement() : eventLogEntryReference).getEventLogEntry(eventLogInput);
-                EventLogEntry foundEventLogEntry = eventLog.findEventLogEntry(startEventLogEntry, findText, !findTextDialog.isBackward(), !findTextDialog.isCaseInsensitive());
-
-                if (foundEventLogEntry != null)
-                    gotoClosestElement(new EventLogEntryReference(foundEventLogEntry));
-                else
-                    MessageDialog.openInformation(null, "Find raw text", "No more matches found for " + findText);
+                final EventLogEntry startEventLogEntry = (eventLogEntryReference == null ? getTopVisibleElement() : eventLogEntryReference).getEventLogEntry(eventLogInput);
+                final EventLogEntry[] foundEventLogEntries = new EventLogEntry[1];
+                final boolean[] completed = new boolean[1];
+                eventLogInput.runWithProgressMonitor(new Runnable() {
+                    public void run() {
+                        foundEventLogEntries[0] = eventLog.findEventLogEntry(startEventLogEntry, findText, !findTextDialog.isBackward(), !findTextDialog.isCaseInsensitive());
+                        completed[0] = true;
+                    }
+                });
+                if (completed[0]) {
+                    if (foundEventLogEntries[0] != null)
+                        gotoClosestElement(new EventLogEntryReference(foundEventLogEntries[0]));
+                    else
+                        MessageDialog.openInformation(null, "Find raw text", "No more matches found for " + findText);
+                }
             }
         }
     }
@@ -620,7 +643,7 @@ public class EventLogTable
 class EventLogTableState implements Serializable {
     private static final long serialVersionUID = 1L;
     public long topVisibleEventNumber;
-    public int lineFilterMode;
+    public EventLogTableFilterMode lineFilterMode;
     public String customFilter;
     public EventLogTable.TypeMode typeMode;
     public EventLogTable.NameMode nameMode;

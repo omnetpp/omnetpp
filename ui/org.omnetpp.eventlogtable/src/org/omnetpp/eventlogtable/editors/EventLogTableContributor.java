@@ -26,6 +26,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.fieldassist.ContentProposal;
 import org.eclipse.jface.fieldassist.ContentProposalAdapter;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalListener;
@@ -60,7 +61,6 @@ import org.eclipse.ui.menus.CommandContributionItemParameter;
 import org.eclipse.ui.part.EditorActionBarContributor;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.eclipse.ui.texteditor.StatusLineContributionItem;
-import org.omnetpp.common.contentassist.ContentProposalEx;
 import org.omnetpp.common.eventlog.EventLogEntryProposalProvider;
 import org.omnetpp.common.eventlog.EventLogEntryReference;
 import org.omnetpp.common.eventlog.EventLogInput;
@@ -69,14 +69,16 @@ import org.omnetpp.common.eventlog.GotoSimulationTimeDialog;
 import org.omnetpp.common.eventlog.IEventLogChangeListener;
 import org.omnetpp.common.eventlog.IFollowSelectionSupport;
 import org.omnetpp.common.image.ImageFactory;
-import org.omnetpp.eventlog.engine.EventLogEntry;
-import org.omnetpp.eventlog.engine.FilteredEventLog;
-import org.omnetpp.eventlog.engine.IEvent;
-import org.omnetpp.eventlog.engine.IEventLog;
-import org.omnetpp.eventlog.engine.IMessageDependency;
-import org.omnetpp.eventlog.engine.IMessageDependencyList;
-import org.omnetpp.eventlog.engine.MatchKind;
-import org.omnetpp.eventlog.engine.MessageEntry;
+import org.omnetpp.eventlog.EventLogEntry;
+import org.omnetpp.eventlog.EventLogTableFilterMode;
+import org.omnetpp.eventlog.FilteredEventLog;
+import org.omnetpp.eventlog.IEvent;
+import org.omnetpp.eventlog.IEventLog;
+import org.omnetpp.eventlog.IMessageDependency;
+import org.omnetpp.eventlog.MatchKind;
+import org.omnetpp.eventlog.MessageReuseDependency;
+import org.omnetpp.eventlog.engine.FileReader;
+import org.omnetpp.eventlog.entry.MessageDescriptionEntry;
 import org.omnetpp.eventlogtable.EventLogTablePlugin;
 import org.omnetpp.eventlogtable.widgets.EventLogTable;
 
@@ -290,48 +292,65 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
         update();
     }
 
+    @Override
     public void eventLogAppended() {
         // void
     }
 
+    @Override
     public void eventLogOverwritten() {
         // void
     }
 
+    @Override
     public void eventLogFilterRemoved() {
         update();
     }
 
+    @Override
     public void eventLogFiltered() {
         update();
     }
 
+    @Override
     public void eventLogLongOperationEnded() {
         update();
     }
 
+    @Override
     public void eventLogLongOperationStarted() {
         update();
     }
 
+    @Override
     public void eventLogProgress() {
         // void
     }
 
+    @Override
+    public void eventLogSynchronizationFailed() {
+        // void
+    }
+
+    @Override
     public void partActivated(IWorkbenchPart part) {
         update();
     }
 
+    @Override
     public void partBroughtToTop(IWorkbenchPart part) {
     }
 
+    @Override
     public void partClosed(IWorkbenchPart part) {
     }
 
+    @Override
     public void partDeactivated(IWorkbenchPart part) {
         update();
     }
 
+    @Override
     public void partOpened(IWorkbenchPart part) {
     }
 
@@ -393,7 +412,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
                         IMessageDependency cause = event.getCause();
 
                         if (cause != null)
-                            gotoEventLogEntry(eventLogTable, cause.getMessageEntry(), null, true);
+                            gotoEventLogEntry(eventLogTable, cause.getBeginMessageDescriptionEntry(), null, true);
                     }
                 }
             }
@@ -418,12 +437,12 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
                 if (eventLogEntryReference != null) {
                     EventLogEntry eventLogEntry = eventLogEntryReference.getEventLogEntry(eventLogTable.getEventLogInput());
                     IEvent event = eventLogTable.getEventLog().getEventForEventNumber(eventLogEntryReference.getEventNumber());
-                    IMessageDependencyList consequences = event.getConsequences();
+                    ArrayList<IMessageDependency> consequences = event.getConsequences();
 
                     if (consequences.size() == 1) {
                         IMessageDependency consequence = consequences.get(0);
 
-                        if (!eventLogTable.getEventLogTableFacade().IMessageDependency_isReuse(consequence.getCPtr())) {
+                        if (!(consequence instanceof MessageReuseDependency)) {
                             IEvent consequenceEvent = consequence.getConsequenceEvent();
 
                             if (consequenceEvent != null)
@@ -434,8 +453,8 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
                         for (int i = 0; i < consequences.size(); i++) {
                             IMessageDependency consequence = consequences.get(i);
 
-                            if (!eventLogTable.getEventLogTableFacade().IMessageDependency_isReuse(consequence.getCPtr()) &&
-                                consequence.getMessageEntry().equals(eventLogEntry))
+                            if (!(consequence instanceof MessageReuseDependency) &&
+                                consequence.getBeginMessageDescriptionEntry().equals(eventLogEntry))
                             {
                                 IEvent consequenceEvent = consequence.getConsequenceEvent();
 
@@ -469,13 +488,13 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
                 if (eventLogEntryReference != null) {
                     EventLogEntry eventLogEntry = eventLogEntryReference.getEventLogEntry(eventLogTable.getEventLogInput());
                     IEvent event = getEventLog().getEventForEventNumber(eventLogEntryReference.getEventNumber());
-                    IMessageDependencyList causes = event.getCauses();
+                    ArrayList<IMessageDependency> causes = event.getCauses();
 
                     for (int i = 0; i < causes.size(); i++) {
                         IMessageDependency cause = causes.get(i);
 
-                        if (eventLogTable.getEventLogTableFacade().IMessageDependency_isReuse(cause.getCPtr()) &&
-                            cause.getMessageEntry().equals(eventLogEntry)) {
+                        if (cause instanceof MessageReuseDependency &&
+                            cause.getBeginMessageDescriptionEntry().equals(eventLogEntry)) {
                             IEvent causeEvent = cause.getCauseEvent();
 
                             if (causeEvent != null)
@@ -498,6 +517,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
             @Override
             public void update() {
+                // TODO: this might take a long time to compute
                 setEnabled(getMessageReuseEventLogEntry() != null);
             }
 
@@ -506,16 +526,16 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
                 if (eventLogEntryReference != null) {
                     IEvent event = getEventLog().getEventForEventNumber(eventLogEntryReference.getEventNumber());
-                    IMessageDependencyList consequences = event.getConsequences();
+                    ArrayList<IMessageDependency> consequences = event.getConsequences();
 
                     for (int i = 0; i < consequences.size(); i++) {
                         IMessageDependency consequence = consequences.get(i);
 
-                        if (eventLogTable.getEventLogTableFacade().IMessageDependency_isReuse(consequence.getCPtr())) {
-                            MessageEntry messageEntry = consequence.getMessageEntry();
+                        if (consequence instanceof MessageReuseDependency) {
+                            MessageDescriptionEntry messageDescriptionEntry = consequence.getBeginMessageDescriptionEntry();
 
-                            if (messageEntry != null)
-                                return messageEntry;
+                            if (messageDescriptionEntry != null)
+                                return messageDescriptionEntry;
                         }
                     }
                 }
@@ -767,12 +787,16 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
                         private void addSubMenuItem(final Menu menu, String text, final EventLogTable.TypeMode typeMode) {
                             addSubMenuItem(menu, text, new SelectionAdapter() {
                                 @Override
-                                public void widgetSelected(SelectionEvent e) {
-                                    MenuItem menuItem = (MenuItem)e.widget;
-
-                                    if (menuItem.getSelection()) {
-                                        eventLogTable.setTypeMode(typeMode);
-                                        update();
+                                public void widgetSelected(SelectionEvent selectionEvent) {
+                                    try {
+                                        MenuItem menuItem = (MenuItem)selectionEvent.widget;
+                                        if (menuItem.getSelection()) {
+                                            eventLogTable.setTypeMode(typeMode);
+                                            update();
+                                        }
+                                    }
+                                    catch (RuntimeException e) {
+                                        eventLogTable.handleRuntimeException(e);
                                     }
                                 }
                             });
@@ -822,12 +846,16 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
                         private void addSubMenuItem(final Menu menu, String text, final EventLogTable.NameMode nameMode) {
                             addSubMenuItem(menu, text, new SelectionAdapter() {
                                 @Override
-                                public void widgetSelected(SelectionEvent e) {
-                                    MenuItem menuItem = (MenuItem)e.widget;
-
-                                    if (menuItem.getSelection()) {
-                                        eventLogTable.setNameMode(nameMode);
-                                        update();
+                                public void widgetSelected(SelectionEvent selectionEvent) {
+                                    try {
+                                        MenuItem menuItem = (MenuItem)selectionEvent.widget;
+                                        if (menuItem.getSelection()) {
+                                            eventLogTable.setNameMode(nameMode);
+                                            update();
+                                        }
+                                    }
+                                    catch (RuntimeException e) {
+                                        eventLogTable.handleRuntimeException(e);
                                     }
                                 }
                             });
@@ -878,13 +906,17 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
                             subMenuItem.setText(text);
                             subMenuItem.addSelectionListener( new SelectionAdapter() {
                                 @Override
-                                public void widgetSelected(SelectionEvent e) {
-                                    MenuItem menuItem = (MenuItem)e.widget;
-
-                                    if (menuItem.getSelection()) {
-                                        eventLogTable.setDisplayMode(displayMode);
-                                        eventLogTable.redraw();
-                                        update();
+                                public void widgetSelected(SelectionEvent selectionEvent) {
+                                    try {
+                                        MenuItem menuItem = (MenuItem)selectionEvent.widget;
+                                        if (menuItem.getSelection()) {
+                                            eventLogTable.setDisplayMode(displayMode);
+                                            eventLogTable.redraw();
+                                            update();
+                                        }
+                                    }
+                                    catch (RuntimeException e) {
+                                        eventLogTable.handleRuntimeException(e);
                                     }
                                 }
                             });
@@ -905,7 +937,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
             protected void doRun() {
                 if (!eventLogTable.hasInput())
                     return;
-                eventLogTable.setLineFilterMode((eventLogTable.getLineFilterMode() + 1) % 5);
+                eventLogTable.setLineFilterMode(EventLogTableFilterMode.values()[(eventLogTable.getLineFilterMode().ordinal() + 1) % 5]);
                 update();
             }
 
@@ -913,7 +945,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
             protected int getMenuIndex() {
                 if (!eventLogTable.hasInput())
                     return 0;
-                return eventLogTable.getLineFilterMode();
+                return eventLogTable.getLineFilterMode().ordinal();
             }
 
             @Override
@@ -928,45 +960,43 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
                             addSubMenuItem(menu, "Events", 3);
                             addSubMenuItem(menu, "Custom filter...", new SelectionAdapter() {
                                 @Override
-                                public void widgetSelected(SelectionEvent e) {
-                                    MenuItem menuItem = (MenuItem)e.widget;
-                                    if (!eventLogTable.hasInput())
-                                        return;
+                                public void widgetSelected(SelectionEvent selectionEvent) {
+                                    try {
+                                        MenuItem menuItem = (MenuItem)selectionEvent.widget;
+                                        if (eventLogTable.hasInput() && menuItem.getSelection()) {
+                                            InputDialog dialog = new InputDialog(null, "Search pattern", "Please enter the search pattern such as: (BS and c(MyMessage))\nSee Event Log Table Raw Mode for other fields and entry types.", null, null) {
+                                                @Override
+                                                protected Control createDialogArea(Composite parent) {
+                                                    Control control = super.createDialogArea(parent);
+                                                    final Text text = getText();
+                                                    ContentAssistCommandAdapter commandAdapter = new ContentAssistCommandAdapter(text, new TextContentAdapter(), new EventLogEntryProposalProvider(),
+                                                        ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, "( ".toCharArray(), true);
+                                                    commandAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_IGNORE);
+                                                    commandAdapter.addContentProposalListener(new IContentProposalListener() {
+                                                        public void proposalAccepted(IContentProposal proposal) {
+                                                            ContentProposal contentProposal = (ContentProposal)proposal;
+                                                            // int cursorPosition = contentProposal.getCursorPosition();
+                                                            String content = contentProposal.getContent();
+                                                            text.insert(content);
+                                                        }
+                                                    });
+                                                    return control;
+                                                }
+                                            };
 
-                                    if (menuItem.getSelection()) {
-                                        InputDialog dialog = new InputDialog(null, "Search pattern", "Please enter the search pattern such as: (BS and c =~ MyMessage)\nSee Event Log Table Raw Mode for other fields and entry types.", null, null) {
-                                            @Override
-                                            protected Control createDialogArea(Composite parent) {
-                                                Control control = super.createDialogArea(parent);
-                                                final Text text = getText();
-                                                ContentAssistCommandAdapter commandAdapter = new ContentAssistCommandAdapter(text, new TextContentAdapter(), new EventLogEntryProposalProvider(),
-                                                    ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, "( ".toCharArray(), true);
-                                                commandAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_IGNORE);
-                                                commandAdapter.addContentProposalListener(new IContentProposalListener() {
-                                                    public void proposalAccepted(IContentProposal proposal) {
-                                                        ContentProposalEx contentProposal = (ContentProposalEx)proposal;
-                                                        int start = contentProposal.getStartIndex();
-                                                        int end =contentProposal.getEndIndex();
-                                                        int cursorPosition = contentProposal.getCursorPosition();
-                                                        String content = contentProposal.getContent();
-                                                        text.setSelection(start, end);
-                                                        text.insert(content);
-                                                        text.setSelection(start + cursorPosition, start + cursorPosition);
-                                                    }
-                                                });
-                                                return control;
+                                            if (dialog.open() == Window.OK) {
+                                                String pattern = dialog.getValue();
+                                                if (pattern == null || pattern.equals(""))
+                                                    pattern = "*";
+
+                                                eventLogTable.setCustomFilter(pattern);
+                                                eventLogTable.setLineFilterMode(EventLogTableFilterMode.CUSTOM_ENTRIES);
+                                                update();
                                             }
-                                        };
-
-                                        if (dialog.open() == Window.OK) {
-                                            String pattern = dialog.getValue();
-                                            if (pattern == null || pattern.equals(""))
-                                                pattern = "*";
-
-                                            eventLogTable.setCustomFilter(pattern);
-                                            eventLogTable.setLineFilterMode(4);
-                                            update();
                                         }
+                                    }
+                                    catch (RuntimeException e) {
+                                        eventLogTable.handleRuntimeException(e);
                                     }
                                 }
                             });
@@ -975,14 +1005,16 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
                         private void addSubMenuItem(final Menu menu, String text, final int lineFilterMode) {
                             addSubMenuItem(menu, text, new SelectionAdapter() {
                                 @Override
-                                public void widgetSelected(SelectionEvent e) {
-                                    MenuItem menuItem = (MenuItem)e.widget;
-
-                                    if (menuItem.getSelection()) {
-                                        if (!eventLogTable.hasInput())
-                                            return;
-                                        eventLogTable.setLineFilterMode(lineFilterMode);
-                                        update();
+                                public void widgetSelected(SelectionEvent selectionEvent) {
+                                    try {
+                                        MenuItem menuItem = (MenuItem)selectionEvent.widget;
+                                        if (eventLogTable.hasInput() && menuItem.getSelection()) {
+                                            eventLogTable.setLineFilterMode(EventLogTableFilterMode.values()[lineFilterMode]);
+                                            update();
+                                        }
+                                    }
+                                    catch (RuntimeException e) {
+                                        eventLogTable.handleRuntimeException(e);
                                     }
                                 }
                             });
@@ -1045,12 +1077,16 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
                         subMenuItem.setText(text);
                         subMenuItem.addSelectionListener( new SelectionAdapter() {
                             @Override
-                            public void widgetSelected(SelectionEvent e) {
-                                MenuItem menuItem = (MenuItem)e.widget;
-
-                                if (menuItem.getSelection()) {
-                                    runnable.run();
-                                    update();
+                            public void widgetSelected(SelectionEvent selectionEvent) {
+                                try {
+                                    MenuItem menuItem = (MenuItem)selectionEvent.widget;
+                                    if (menuItem.getSelection()) {
+                                        runnable.run();
+                                        update();
+                                    }
+                                }
+                                catch (RuntimeException e) {
+                                    eventLogTable.handleRuntimeException(e);
                                 }
                             }
                         });
@@ -1098,6 +1134,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
         return new EventLogTableAction("Refresh", Action.AS_PUSH_BUTTON, ImageFactory.global().getDescriptor(ImageFactory.TOOLBAR_IMAGE_REFRESH)) {
             @Override
             protected void doRun() {
+                eventLogTable.getEventLogInput().synchronize(FileReader.FileChange.OVERWRITTEN);
                 eventLogTable.refresh();
             }
         };
@@ -1175,9 +1212,14 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
             try {
                 doRun();
             }
-            catch (Exception e) {
-                MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Internal error: " + e.toString());
-                EventLogTablePlugin.logError(e);
+            catch (RuntimeException e) {
+                try {
+                    eventLogTable.handleRuntimeException(e);
+                }
+                catch (RuntimeException x) {
+                    MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Internal error: " + x.toString());
+                    EventLogTablePlugin.logError(x);
+                }
             }
         }
 

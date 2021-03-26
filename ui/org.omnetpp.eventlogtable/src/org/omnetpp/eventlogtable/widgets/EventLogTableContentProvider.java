@@ -13,8 +13,8 @@ import org.omnetpp.common.Debug;
 import org.omnetpp.common.eventlog.EventLogEntryReference;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.virtualtable.IVirtualTableContentProvider;
-import org.omnetpp.eventlog.engine.EventLogEntry;
-import org.omnetpp.eventlog.engine.EventLogTableFacade;
+import org.omnetpp.eventlog.EventLogEntry;
+import org.omnetpp.eventlog.EventLogTableFacade;
 
 /**
  * This class provides the content for the EventLogTable. The individual entries are wrapped with a reference
@@ -152,7 +152,7 @@ public class EventLogTableContentProvider implements IVirtualTableContentProvide
         long eventNum2 = element2.getEventNumber();
         if (eventNum1 != eventNum2)
             return (int)(eventNum1 - eventNum2);
-        return element1.getEventEntryIndex() - element2.getEventEntryIndex();
+        return element1.getEntryIndex() - element2.getEntryIndex();
     }
 
     public void dispose() {
