@@ -68,7 +68,7 @@ class InteractiveTimeoutBasicGraphLayouterEnvironment : public BasicGraphLayoute
 
 };
 
-void ModuleLayouter::getSubmoduleCoords(cModule *submod, bool &explicitcoords, bool &obeysLayout, double &x, double &y, double &sx, double &sy, double zoomFactor, double imageSizeFactor)
+ModuleLayouter::Constraint ModuleLayouter::getSubmoduleCoords(cModule *submod, double zoomFactor, double imageSizeFactor)
 {
     const cDisplayString blank;
     const cDisplayString& ds = submod->hasDisplayString() && submod->parametersFinalized() ? submod->getDisplayString() : blank;
@@ -127,13 +127,13 @@ void ModuleLayouter::getSubmoduleCoords(cModule *submod, bool &explicitcoords, b
         shapesy = iconsy;
     }
 
-    sx = std::max(iconsx, shapesx);
-    sy = std::max(iconsy, shapesy);
+    double sx = std::max(iconsx, shapesx);
+    double sy = std::max(iconsy, shapesy);
 
     // first, see if there's an explicit position ("p=" tag) given
-    x = resolveDoubleDispStrArg(ds.getTagArg("p", 0), submod, -1);
-    y = resolveDoubleDispStrArg(ds.getTagArg("p", 1), submod, -1);
-    explicitcoords = x != -1 && y != -1;
+    double x = resolveDoubleDispStrArg(ds.getTagArg("p", 0), submod, -1);
+    double y = resolveDoubleDispStrArg(ds.getTagArg("p", 1), submod, -1);
+    bool explicitCoords = x != -1 && y != -1;
 
     // set missing coordinates to zero
     if (x == -1)
@@ -142,10 +142,10 @@ void ModuleLayouter::getSubmoduleCoords(cModule *submod, bool &explicitcoords, b
         y = 0;
 
     const char *layout = ds.getTagArg("p", 2);  // matrix, row, column, ring, exact etc.
-    obeysLayout = (layout && *layout);
+    bool obeysLayout = (layout && *layout);
 
     // modify x,y using predefined layouts
-    if (!layout || !*layout) {
+    if (!obeysLayout) {
         // we're happy
     }
     else if (!strcmp(layout, "e") || !strcmp(layout, "x") || !strcmp(layout, "exact")) {
@@ -188,6 +188,8 @@ void ModuleLayouter::getSubmoduleCoords(cModule *submod, bool &explicitcoords, b
 
     x *= zoomFactor;
     y *= zoomFactor;
+
+    return Constraint(explicitCoords, obeysLayout, x, y, sx, sy);
 }
 
 void ModuleLayouter::clearLayout(cModule *module)
@@ -203,13 +205,10 @@ void ModuleLayouter::forgetPosition(cModule *submodule)
 
 void ModuleLayouter::refreshPositionFromDS(cModule *submodule)
 {
-    bool explicitCoords, obeysLayout;
-    double x, y, sx, sy;
+    Constraint r = getSubmoduleCoords(submodule);
 
-    getSubmoduleCoords(submodule, explicitCoords, obeysLayout, x, y, sx, sy);
-
-    if (explicitCoords)
-        modulePositions[submodule] = QPointF(x, y);
+    if (r.explicitCoords)
+        modulePositions[submodule] = QPointF(r.x, r.y);
 }
 
 void ModuleLayouter::incrementLayoutSeed(cModule *module)
@@ -284,27 +283,25 @@ void ModuleLayouter::ensureLayouted(cModule *module)
     for (cModule::SubmoduleIterator it(module); !it.end(); ++it) {
         cModule *submod = *it;
 
-        bool explicitCoords, obeysLayout;
-        double x, y, sx, sy;
-        getSubmoduleCoords(submod, explicitCoords, obeysLayout, x, y, sx, sy);
+        Constraint r = getSubmoduleCoords(submod);
 
         // add node into layouter:
-        if (explicitCoords) {
+        if (r.explicitCoords) {
             // e.g. "p=120,70" or "p=140,30,ring"
-            graphLayouter->addFixedNode(submod->getId(), x, y, sx, sy);
+            graphLayouter->addFixedNode(submod->getId(), r.x, r.y, r.sx, r.sy);
         }
         else if (modulePositions.find(submod) != modulePositions.end()) {
             // reuse coordinates from previous layout
             QPointF pos = modulePositions[submod];
-            graphLayouter->addFixedNode(submod->getId(), pos.x(), pos.y(), sx, sy);
+            graphLayouter->addFixedNode(submod->getId(), pos.x(), pos.y(), r.sx, r.sy);
         }
-        else if (obeysLayout) {
+        else if (r.obeysLayout) {
             // all modules are anchored to the anchor point with the vector's name
             // e.g. "p=,,ring"
-            graphLayouter->addAnchoredNode(submod->getId(), submod->getName(), x, y, sx, sy);
+            graphLayouter->addAnchoredNode(submod->getId(), submod->getName(), r.x, r.y, r.sx, r.sy);
         }
         else {
-            graphLayouter->addMovableNode(submod->getId(), sx, sy);
+            graphLayouter->addMovableNode(submod->getId(), r.sx, r.sy);
         }
     }
 
@@ -407,14 +404,12 @@ QPointF ModuleLayouter::getModulePosition(cModule *module, double zoomFactor)
 
 QRectF ModuleLayouter::getModuleRectangle(cModule *module, double zoomFactor, double imageSizeFactor)
 {
-    bool xplicit, obeys;
-    double x, y, sx, sy;
-    getSubmoduleCoords(module, xplicit, obeys, x, y, sx, sy, zoomFactor, imageSizeFactor);
+    Constraint r = getSubmoduleCoords(module, zoomFactor, imageSizeFactor);
     // using only the size from the above, position from our layouted map
 
     QPointF center = getModulePosition(module, zoomFactor);
 
-    return QRectF(center.x() - sx/2, center.y() - sy/2, sx, sy);
+    return QRectF(center.x() - r.sx/2, center.y() - r.sy/2, r.sx, r.sy);
 }
 
 void ModuleLayouter::fullRelayout(cModule *module)

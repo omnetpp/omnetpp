@@ -38,11 +38,19 @@ class QTENV_API ModuleLayouter : public QObject {
     // stores the layouted positions of submodules in their parents
     std::unordered_map<const cModule *, QPointF> modulePositions;
 
+    struct Constraint {
+        bool explicitCoords; // =true: "p" tag was given, i.e. is fixed node
+        bool obeysLayout; // =true: is anchored node, i.e. (x,y) means anchor-relative position
+        double x, y;    // absolute position or anchor-relative offset (of the shape's center)
+        double sx, sy;  // size of bounding box
+        Constraint(bool explicitCoords, bool obeysLayout, double x, double y, double sx, double sy) :
+            explicitCoords(explicitCoords), obeysLayout(obeysLayout), x(x), y(y), sx(sx), sy(sy) {}
+    };
+
     // Extracts initial (fixed) coordinates from the displaystring of the module,
     // along with some other information about it. Used to feed the layouter, and
     // to provide positions/rectangles for the animator/environment/model.
-    void getSubmoduleCoords(cModule *submod, bool& explicitcoords, bool& obeysLayout,
-        double& x, double& y, double& sx, double& sy, double zoomFactor = 1.0, double imageSizeFactor = 1.0);
+    Constraint getSubmoduleCoords(cModule *submod, double zoomFactor = 1.0, double imageSizeFactor = 1.0);
 
 signals:
     void layoutVisualisationStarts(cModule *module, QGraphicsScene *layoutingScene);
