@@ -1,4 +1,5 @@
 %module Common
+%module java_pragmas
 
 // covariant return type warning disabled
 #pragma SWIG nowarn=822
@@ -132,7 +133,10 @@ FIXME new swig errors:
 
 SWIG_JAVABODY_METHODS(public, public, BigDecimal)
 
+%typemap(javainterfaces) BigDecimal "Comparable<BigDecimal>"
+
 %typemap(javacode) BigDecimal %{
+
     public boolean equals(Object other) {
        return other instanceof BigDecimal && equals((BigDecimal)other);
     }
@@ -146,6 +150,16 @@ SWIG_JAVABODY_METHODS(public, public, BigDecimal)
        int scale = getScale();
        java.math.BigDecimal d = new java.math.BigDecimal(intVal);
        return (scale == 0 ? d : d.movePointRight(scale));
+    }
+
+    @Override
+    public int compareTo(BigDecimal arg0) {
+        if (greater(arg0))
+            return 1;
+        else if (less(arg0))
+            return -1;
+        else
+            return 0;
     }
 %}
 
