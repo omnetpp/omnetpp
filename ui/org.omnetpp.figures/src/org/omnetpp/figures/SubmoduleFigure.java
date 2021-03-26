@@ -25,6 +25,7 @@ import org.omnetpp.common.displaymodel.DimensionF;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.displaymodel.PointF;
 import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.common.ui.ISelectable;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.figures.anchors.IAnchorBounds;
 import org.omnetpp.figures.layout.ISubmoduleConstraint;
@@ -32,7 +33,6 @@ import org.omnetpp.figures.layout.ISubmoduleConstraint.VectorArrangement;
 import org.omnetpp.figures.layout.SubmoduleConstraint;
 import org.omnetpp.figures.layout.VectorArrangementParameters;
 import org.omnetpp.figures.misc.FigureUtils;
-import org.omnetpp.figures.misc.ISelectableFigure;
 import org.omnetpp.figures.misc.ISelectionHandleBounds;
 
 /**
@@ -42,7 +42,7 @@ import org.omnetpp.figures.misc.ISelectionHandleBounds;
  */
 //FIXME support multiple texts: t/t1/t2/t3/t4
 //FIXME alignment of multi-line text
-public class SubmoduleFigure extends Figure implements IAnchorBounds, ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelectableFigure {
+public class SubmoduleFigure extends Figure implements IAnchorBounds, ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelectable {
     // supported shape types
     protected static final int SHAPE_NONE = 0;
     protected static final int SHAPE_OVAL = 1;

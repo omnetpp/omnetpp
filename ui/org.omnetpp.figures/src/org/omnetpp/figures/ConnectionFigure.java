@@ -21,10 +21,10 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
+import org.omnetpp.common.ui.ISelectable;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.figures.misc.ConnectionLabelLocator;
 import org.omnetpp.figures.misc.FigureUtils;
-import org.omnetpp.figures.misc.ISelectableFigure;
 
 /**
  * A figure representing a connection between two modules
@@ -32,7 +32,7 @@ import org.omnetpp.figures.misc.ISelectableFigure;
  * @author rhornig
  */
 public class ConnectionFigure extends PolylineConnection
-                              implements ITooltipTextProvider, IProblemDecorationSupport, ISelectableFigure {
+                              implements ITooltipTextProvider, IProblemDecorationSupport, ISelectable {
     protected int localLineStyle = Graphics.LINE_SOLID;
     protected int localLineWidth = 1;
     protected Color localLineColor = null;

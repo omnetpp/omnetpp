@@ -25,10 +25,10 @@ import org.eclipse.swt.graphics.Image;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.common.ui.ISelectable;
 import org.omnetpp.figures.anchors.IAnchorBounds;
 import org.omnetpp.figures.layout.CompoundModuleLayout;
 import org.omnetpp.figures.misc.ILayerSupport;
-import org.omnetpp.figures.misc.ISelectableFigure;
 import org.omnetpp.figures.misc.ISelectionHandleBounds;
 import org.omnetpp.figures.routers.CompoundModuleConnectionRouter;
 
@@ -44,7 +44,7 @@ import org.omnetpp.figures.routers.CompoundModuleConnectionRouter;
 // property has changed that requires the recalculation (e.g. submodule added/removed submodule size changed)
 // TODO implement ruler
 // TODO zoom info: maybe display unit too, e.g. like "1m=3.14px" -- but then in Qtenv too!
-public class CompoundModuleFigure extends LayeredPane implements IAnchorBounds, ISelectionHandleBounds, ILayerSupport, ISelectableFigure {
+public class CompoundModuleFigure extends LayeredPane implements IAnchorBounds, ISelectionHandleBounds, ILayerSupport, ISelectable {
     public static final Color ERROR_BACKGROUND_COLOR = ColorFactory.RED;
     public static final Color ERROR_BORDER_COLOR = ColorFactory.RED4;
     protected static final int ERROR_BORDER_WIDTH = 2;
