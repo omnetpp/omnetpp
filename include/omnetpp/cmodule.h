@@ -275,6 +275,8 @@ class SIM_API cModule : public cComponent //implies noncopyable
     mutable char *fullPath = nullptr; // cached fullPath string (caching is optional, so it may be nullptr)
     mutable char *fullName = nullptr; // buffer to store full name of object
     static bool cacheFullPath; // whether to cache the fullPath string or not
+    const char *displayName = nullptr;  // stringpooled
+    static cStringPool nameStringPool;  // pool for shared storage of display names
 
     // Note: parent module is stored in ownerp -- a module is always owned by its parent
     // module. If ownerp cannot be cast to a cModule, the module has no parent module
@@ -565,6 +567,20 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * at runtime. Redefined from cComponent.
      */
     virtual cProperties *getProperties() const override;
+
+    /**
+     * Sets the display name of the module, an alternative name that may be
+     * displayed on graphical user interfaces like Qtenv or the Sequence Chart.
+     * Pass nullptr to clear the display name.
+     */
+    virtual void setDisplayName(const char *name);
+
+    /**
+     * Returns the display name of the module, an alternative name that may be
+     * displayed on graphical user interfaces like Qtenv or the Sequence Chart.
+     * Returns nullptr if a display name is not set.
+     */
+    virtual const char *getDisplayName() const {return displayName;}
 
     /**
      * Returns true if this module is in a module vector.

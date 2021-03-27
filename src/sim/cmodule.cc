@@ -20,6 +20,8 @@
 #include <cstring>  // strcpy
 #include <algorithm>
 #include "common/stringutil.h"
+#include "omnetpp/cconfiguration.h"
+#include "omnetpp/cconfigoption.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/csimplemodule.h"
 #include "omnetpp/ccontextswitcher.h"
@@ -45,10 +47,14 @@ namespace omnetpp {
 
 Register_Class(cModule);
 
+Register_PerObjectConfigOption(CFGID_DISPLAY_NAME, "display-name", KIND_MODULE, CFG_STRING, nullptr, "Specifies a display name for the module, which is shown e.g. in Qtenv's graphical module view.");
 
 // static members:
 std::string cModule::lastModuleFullPath;
 const cModule *cModule::lastModuleFullPathModule = nullptr;
+
+cStringPool cModule::nameStringPool;
+
 
 #ifdef NDEBUG
 bool cModule::cacheFullPath = false; // in release mode keep memory usage low
@@ -95,6 +101,8 @@ cModule::~cModule()
 
     delete canvas;
     delete osgCanvas;
+
+    nameStringPool.release(displayName);
 
     delete[] fullName;
     delete[] fullPath;
@@ -386,6 +394,12 @@ std::string cModule::getFullPath() const
 bool cModule::isSimple() const
 {
     return dynamic_cast<const cSimpleModule *>(this) != nullptr;
+}
+
+void cModule::setDisplayName(const char *name)
+{
+    nameStringPool.release(displayName);
+    displayName = nameStringPool.get(name);
 }
 
 cProperties *cModule::getProperties() const
@@ -1246,6 +1260,10 @@ void cModule::finalizeParameters()
     // temporarily switch context
     cContextSwitcher tmp(this);
     cContextTypeSwitcher tmp2(CTX_BUILD);
+
+    cConfiguration *config = getSimulation()->getEnvir()->getConfig();
+    std::string displayName = config->getAsString(getFullPath().c_str(), CFGID_DISPLAY_NAME);
+    setDisplayName(displayName.c_str());
 
     cComponent::finalizeParameters();  // this will read input parameters
 

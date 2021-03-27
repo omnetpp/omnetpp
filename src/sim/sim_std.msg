@@ -249,6 +249,7 @@ class cModule extends cComponent
     @overwritePreviousDefinition;
     @descriptor(readonly);
     @icon(compound);
+    string displayName @group(base) @editable @hint("Display name");
     int id @group(fields) @hint("Unique module ID -- IDs of deleted modules are not issued again");
     bool isSimple @getter(isSimple) @group(fields) @hint("Whether this is a simple module");
     bool isVector @getter(isVector) @group(fields) @hint("Whether this module is part of a module vector");
