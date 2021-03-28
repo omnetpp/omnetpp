@@ -35,11 +35,10 @@ using namespace omnetpp::common;
 
 const char *const SubmoduleItem::DEFAULT_ICON = "block/process";
 
+//TODO graphics not refreshed when user edits displayName in the inspector
+
 void SubmoduleItemUtil::setupFromDisplayString(SubmoduleItem *si, cModule *mod)
 {
-    si->setName(mod->getName());
-    si->setVectorIndex(mod->isVector() ? mod->getIndex() : -1);
-
     // making a copy, so we can modify freely
     cDisplayString ds = mod->getDisplayString();
 
@@ -173,10 +172,16 @@ void SubmoduleItemUtil::updateQueueSizeLabel(SubmoduleItem *si, cModule *mod)
 
 void SubmoduleItem::updateNameItem()
 {
-    QString label = name;
-    if (vectorIndex >= 0)
-        label += "[" + QString::number(vectorIndex) + "]";
-    nameItem->setText(label);
+    QString nameLabel;
+    const char *fullName = module->getFullName();
+    const char *displayName = module->getDisplayName();
+    switch (nameFormat) {
+        case FMT_FULLNAME: nameLabel = fullName; break;
+        case FMT_QDISPLAYNAME: nameLabel = opp_isempty(displayName) ? QString(fullName) : QString("\"%1\"").arg(displayName); break;
+        case FMT_FULLNAME_AND_QDISPLAYNAME: nameLabel = opp_isempty(displayName) ? QString(fullName) : QString("%1 \"%2\"").arg(fullName).arg(displayName); break;
+    };
+
+    nameItem->setText(nameLabel);
     nameItem->setPos(-nameItem->textRect().width() / 2, shapeImageBoundingRect().height() / 2 + 2);
 }
 
@@ -418,10 +423,10 @@ void SubmoduleItem::setDecoratorIcon(QPixmap icon)
     realignAnchoredItems();
 }
 
-void SubmoduleItem::setName(const QString& text)
+void SubmoduleItem::setNameFormat(NameFormat format)
 {
-    if (name != text) {
-        name = text;
+    if (nameFormat != format) {
+        nameFormat = format;
         updateNameItem();
     }
 }
@@ -429,14 +434,6 @@ void SubmoduleItem::setName(const QString& text)
 void SubmoduleItem::setNameVisible(bool visible)
 {
     nameItem->setVisible(visible);
-}
-
-void SubmoduleItem::setVectorIndex(int index)
-{
-    if (vectorIndex != index) {
-        vectorIndex = index;
-        updateNameItem();
-    }
 }
 
 void SubmoduleItem::setQueueText(const QString& queueText)

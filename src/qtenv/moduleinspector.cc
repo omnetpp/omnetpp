@@ -85,6 +85,7 @@ const QString ModuleInspector::PREF_ICONSCALE = "iconscale";
 const QString ModuleInspector::PREF_SHOWMETHODCALLS = "showmethodcalls";
 const QString ModuleInspector::PREF_SHOWLABELS = "showlabels";
 const QString ModuleInspector::PREF_SHOWARROWHEADS = "showarrowheads";
+const QString ModuleInspector::PREF_SUBMODULENAMEFORMAT = "submodulenameformat";
 
 ModuleInspector::ModuleInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f) : Inspector(parent, isTopLevel, f)
 {
@@ -260,6 +261,7 @@ void ModuleInspector::doSetObject(cObject *obj)
             showMethodCalls(getPref(PREF_SHOWMETHODCALLS, true).toBool());
             showLabels(getPref(PREF_SHOWLABELS, true).toBool());
             showArrowheads(getPref(PREF_SHOWARROWHEADS, true).toBool());
+            setSubmoduleNameFormat((SubmoduleNameFormat)getPref(PREF_SUBMODULENAMEFORMAT, (int)SubmoduleNameFormat::FMT_FULLNAME_AND_QDISPLAYNAME).toInt());
         }
         catch (std::exception& e) {
             QMessageBox::warning(this, QString("Error"), QString("Error displaying network graphics: ") + e.what());
@@ -693,6 +695,12 @@ void ModuleInspector::createContextMenu(const std::vector<cObject *>& objects, c
     menu->addAction(showModuleNamesAction);
     menu->addAction(showArrowheadsAction);
 
+    QMenu *subMenu = menu->addMenu(QString("Submodule Name Format"));
+    QActionGroup *actionGroup = new QActionGroup(menu);
+    addNameFormatItem(SubmoduleNameFormat::FMT_FULLNAME, "Name", actionGroup, subMenu);
+    addNameFormatItem(SubmoduleNameFormat::FMT_QDISPLAYNAME, "\"DisplayName\"", actionGroup, subMenu);
+    addNameFormatItem(SubmoduleNameFormat::FMT_FULLNAME_AND_QDISPLAYNAME, "Name \"DisplayName\"", actionGroup, subMenu);
+
     menu->addSeparator();
     menu->addAction(increaseIconSizeAction);
     menu->addAction(decreaseIconSizeAction);
@@ -717,6 +725,14 @@ void ModuleInspector::createContextMenu(const std::vector<cObject *>& objects, c
 
     menu->exec(globalPos);
     delete menu;
+}
+
+void ModuleInspector::addNameFormatItem(SubmoduleNameFormat format, QString label, QActionGroup *actionGroup, QMenu *subMenu)
+{
+    QAction *action = subMenu->addAction(label, [=] {setSubmoduleNameFormat(format);});
+    action->setCheckable(true);
+    action->setChecked(canvasViewer->getSubmoduleNameFormat() == format);
+    action->setActionGroup(actionGroup);
 }
 
 void ModuleInspector::runPreferencesDialog()
@@ -755,6 +771,16 @@ void ModuleInspector::showLabels(bool show)
     setPref(PREF_SHOWLABELS, show);
     showModuleNamesAction->setChecked(show);
     canvasViewer->setShowModuleNames(show);
+    update();
+}
+
+void ModuleInspector::setSubmoduleNameFormat(SubmoduleNameFormat format)
+{
+    if (!object)
+        return;
+
+    setPref(PREF_SUBMODULENAMEFORMAT, format);
+    canvasViewer->setSubmoduleNameFormat(format);
     update();
 }
 

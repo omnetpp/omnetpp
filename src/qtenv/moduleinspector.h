@@ -20,6 +20,7 @@
 #include <vector>
 #include <QtWidgets/QGraphicsScene>
 #include "inspector.h"
+#include "modulecanvasviewer.h"
 
 class QAction;
 class QStackedLayout;
@@ -39,13 +40,14 @@ class cOsgCanvas;
 namespace qtenv {
 
 class IOsgViewer;
-class ModuleCanvasViewer;
 class GraphicsLayer;
 
 class QTENV_API ModuleInspector : public Inspector
 {
     Q_OBJECT
 
+public:
+    using SubmoduleNameFormat = ModuleCanvasViewer::SubmoduleNameFormat;
 private slots:
     void runUntil();
     void fastRunUntil();
@@ -54,6 +56,7 @@ private slots:
     void zoomOut(int x = 0, int y = 0, int n = 1);
     void increaseIconSize() { zoomIconsBy(1.25); }
     void decreaseIconSize() { zoomIconsBy(0.8); }
+    void addNameFormatItem(SubmoduleNameFormat format, QString label, QActionGroup *actionGroup, QMenu *subMenu);
     void runPreferencesDialog();
 
     void click(QMouseEvent *event);
@@ -69,6 +72,7 @@ private slots:
     void showMethodCalls(bool show);
     void showLabels(bool show);
     void showArrowheads(bool show);
+    void setSubmoduleNameFormat(SubmoduleNameFormat format);
     void zoomIconsBy(double mult);
 
     void switchToOsgView();
@@ -86,6 +90,7 @@ protected:
     static const QString PREF_SHOWMETHODCALLS;
     static const QString PREF_SHOWLABELS;
     static const QString PREF_SHOWARROWHEADS;
+    static const QString PREF_SUBMODULENAMEFORMAT;
 
     const int toolbarSpacing = 4; // from the edges, in pixels, the scrollbar size will be added to this
 
@@ -99,6 +104,7 @@ protected:
     QAction *showMethodCallsAction;
     QAction *showModuleNamesAction;
     QAction *showArrowheadsAction;
+    QAction *submoduleNameFormatAction;
     QAction *increaseIconSizeAction;
     QAction *decreaseIconSizeAction;
 

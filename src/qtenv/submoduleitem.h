@@ -36,6 +36,7 @@ class GraphicsLayer;
 class SubmoduleItem;
 class QTENV_API SubmoduleItemUtil {
 public:
+    static void setNameLabel(SubmoduleItem *si, cModule *mod);
     static void setupFromDisplayString(SubmoduleItem *si, cModule *mod);
     static void updateQueueSizeLabel(SubmoduleItem *si, cModule *mod);
 };
@@ -50,7 +51,7 @@ class QTENV_API SubmoduleItem : public QGraphicsObject
     static constexpr double minimumRectSize = 10;
 
 protected:
-    cModule *module;
+    cModule *module; // the submodule
 
     // Sets the text of the name item, appending the
     // vector index to it if any, and center-aligns it.
@@ -78,6 +79,12 @@ public:
         SHAPE_RECT
     };
 
+    enum NameFormat {
+        FMT_FULLNAME,
+        FMT_QDISPLAYNAME, // quoted displayname
+        FMT_FULLNAME_AND_QDISPLAYNAME,
+    };
+
     enum TextPos {
         TEXTPOS_LEFT,
         TEXTPOS_RIGHT,
@@ -94,14 +101,13 @@ public:
 protected:
     double zoomFactor = 1;
     double imageSizeFactor = 1;
-    QString name;
-    int vectorIndex = -1; // if < 0, not displayed
     Shape shape = SHAPE_NONE;
     double shapeWidth = 0; // zero if unspec
     double shapeHeight = 0; // zero if unspec
     QColor shapeFillColor;
     QColor shapeOutlineColor;
     double shapeOutlineWidth = 2;
+    NameFormat nameFormat = FMT_FULLNAME_AND_QDISPLAYNAME;
     QString text;
     TextPos textPos = TEXTPOS_TOP;
     QColor textColor;
@@ -137,9 +143,8 @@ public:
     void setIcon(QPixmap icon);
     void setDecoratorIcon(QPixmap icon);
 
-    void setName(const QString &text);
+    void setNameFormat(NameFormat format);
     void setNameVisible(bool visible);
-    void setVectorIndex(int index);
     void setQueueText(const QString &queueText);
     void setInfoText(const QString &text, TextPos pos, const QColor &color);
 

@@ -536,6 +536,7 @@ void ModuleCanvasViewer::drawSubmodule(cModule *submod)
     item->setZoomFactor(zoomFactor);
     item->setImageSizeFactor(imageSizeFactor);
     item->setPos(getSubmodCoords(submod));
+    item->setNameFormat(submoduleNameFormat);
     item->setNameVisible(showModuleNames);
     submoduleGraphicsItems[submod] = item;
     item->setParentItem(submoduleLayer);
@@ -985,6 +986,15 @@ void ModuleCanvasViewer::setShowModuleNames(bool show)
         for (auto i : submoduleGraphicsItems) {
             i.second->setNameVisible(show);
         }
+    }
+}
+
+void ModuleCanvasViewer::setSubmoduleNameFormat(SubmoduleNameFormat format)
+{
+    if (submoduleNameFormat != format) {
+        submoduleNameFormat = format;
+        for (auto i : submoduleGraphicsItems)
+            i.second->setNameFormat(format);
     }
 }
 

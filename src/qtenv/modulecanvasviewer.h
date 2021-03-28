@@ -23,6 +23,7 @@
 #include <unordered_set>
 #include <QtPrintSupport/QPrinter>
 #include "qtenvdefs.h"
+#include "submoduleitem.h"
 
 class QGraphicsPixmapItem;
 class QRubberBand;
@@ -48,6 +49,8 @@ class QTENV_API ModuleCanvasViewer : public QGraphicsView
 {
     Q_OBJECT
 
+public:
+    using SubmoduleNameFormat = SubmoduleItem::NameFormat;
 private:
     cModule *object = nullptr;
     bool notDrawn = false;
@@ -90,6 +93,7 @@ private:
     double imageSizeFactor = 1;
     bool showModuleNames = true;
     bool showArrowHeads = true;
+    SubmoduleNameFormat submoduleNameFormat = SubmoduleNameFormat::FMT_FULLNAME_AND_QDISPLAYNAME;
 
     ZoomLabel *zoomLabel;
 
@@ -170,6 +174,8 @@ public:
     void setImageSizeFactor(double imageSizeFactor);
     void setShowModuleNames(bool show);
     void setShowArrowheads(bool show);
+    void setSubmoduleNameFormat(SubmoduleNameFormat format);
+    SubmoduleNameFormat getSubmoduleNameFormat() const {return submoduleNameFormat;}
 
     void bubble(cComponent *subcomponent, const char *text);
 
