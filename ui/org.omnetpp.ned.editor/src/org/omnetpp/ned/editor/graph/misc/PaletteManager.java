@@ -32,8 +32,10 @@ import org.eclipse.gef.palette.PaletteSeparator;
 import org.eclipse.gef.palette.PaletteStack;
 import org.eclipse.gef.palette.PanningSelectionToolEntry;
 import org.eclipse.gef.palette.ToolEntry;
+import org.eclipse.gef.requests.CreationFactory;
 import org.eclipse.gef.tools.CreationTool;
 import org.eclipse.gef.tools.MarqueeSelectionTool;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
 import org.omnetpp.common.Debug;
@@ -143,6 +145,28 @@ public class PaletteManager {
     protected Map<String, PaletteDrawer> currentContainers = new HashMap<String, PaletteDrawer>();
 
     protected CombinedTemplateCreationEntry lastUsedCreationToolEntry;
+
+    /**
+     * The whole reason this class exists is to work around a bug in GEF: #467983
+     * If that was fixed (which it will never be), all uses of this class could
+     * be replaced with the superclass (CombinedTemplateCreationEntry) directly.
+     */
+    private static class CreationEntry extends CombinedTemplateCreationEntry {
+        public CreationEntry(String label, String shortDesc,
+                CreationFactory factory, ImageDescriptor iconSmall,
+                ImageDescriptor iconLarge) {
+            super(label, shortDesc, factory, iconSmall, iconLarge);
+        }
+        @Override
+        public Tool createTool() {
+            CreationTool tool = (CreationTool)super.createTool();
+            // this is required only to override the cursors for the tool because the default cursors
+            // in GEF have the image data and mask data swapped (a bug in the GEF code)
+            // see: https://bugs.eclipse.org/bugs/show_bug.cgi?id=467983
+            tool.setDefaultCursor(NedSharedCursors.CURSOR_TREE_ADD);
+            return tool;
+        }
+    }
 
     // NED packages whose contents should be excluded from the palette
     // (exclude list is preferred to include list, because then newly created packages
@@ -587,7 +611,7 @@ public class PaletteManager {
 
         ModelFactory modelFactory = new ModelFactory(NedElementTags.NED_SIMPLE_MODULE, IHasName.DEFAULT_TYPE_NAME);
         modelFactory.setBannerComment(bannerComment);
-        CombinedTemplateCreationEntry entry = new CombinedTemplateCreationEntry(
+        CombinedTemplateCreationEntry entry = new CreationEntry(
                 "Simple"+NBSP+"Module",
                 "Create a simple module type",
                 modelFactory,
@@ -598,7 +622,7 @@ public class PaletteManager {
 
         modelFactory = new ModelFactory(NedElementTags.NED_COMPOUND_MODULE, IHasName.DEFAULT_TYPE_NAME);
         modelFactory.setBannerComment(bannerComment);
-        entry = new CombinedTemplateCreationEntry(
+        entry = new CreationEntry(
                 "Compound"+NBSP+"Module",
                 "Create a compound module type that may contain submodules",
                 modelFactory,
@@ -619,7 +643,7 @@ public class PaletteManager {
             }
         };
         modelFactory.setBannerComment(bannerComment);
-        entry = new CombinedTemplateCreationEntry(
+        entry = new CreationEntry(
                 "Network",
                 "Create a network type",
                 modelFactory,
@@ -630,7 +654,7 @@ public class PaletteManager {
 
         modelFactory = new ModelFactory(NedElementTags.NED_CHANNEL, IHasName.DEFAULT_TYPE_NAME);
         modelFactory.setBannerComment(bannerComment);
-        entry = new CombinedTemplateCreationEntry(
+        entry = new CreationEntry(
                 "Channel",
                 "Create a channel type",
                 modelFactory,
@@ -641,7 +665,7 @@ public class PaletteManager {
 
         modelFactory = new ModelFactory(NedElementTags.NED_MODULE_INTERFACE, IHasName.DEFAULT_TYPE_NAME);
         modelFactory.setBannerComment(bannerComment);
-        entry = new CombinedTemplateCreationEntry(
+        entry = new CreationEntry(
                 "Module"+NBSP+"Interface",
                 "Create a module interface type",
                 modelFactory,
@@ -652,7 +676,7 @@ public class PaletteManager {
 
         modelFactory = new ModelFactory(NedElementTags.NED_CHANNEL_INTERFACE, IHasName.DEFAULT_TYPE_NAME);
         modelFactory.setBannerComment(bannerComment);
-        entry = new CombinedTemplateCreationEntry(
+        entry = new CreationEntry(
                 "Channel"+NBSP+"Interface",
                 "Create a channel interface type",
                 modelFactory,
