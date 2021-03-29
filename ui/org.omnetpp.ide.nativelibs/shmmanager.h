@@ -36,9 +36,9 @@ class ShmSendBufferManager;
  *
  * Shmems are disposed of in one of the following ways:
  *
- *  - when the Python process has read one and no longer needs its contents,
+ *  - When the Python process has read one and no longer needs its contents,
  *    it indicates this by writing a 1-byte at the start of the shmem.
- *    ShmSendBuffer reserves an 8-byte header for this purpose.
+ *    ** ShmSendBuffer reserves an 8-byte header for this purpose. **
  *
  *  - ShmSendBufferManager::garbageCollect() needs to be called periodically;
  *    it deallocates ShmSendBuffers that have been consumed by the Python
@@ -55,7 +55,7 @@ class ShmSendBuffer
 private:
     ShmSendBufferManager *owner;
     std::string name;
-    void *mappedStart;
+    void *mappedStart; // points to the header
     size_t reservedSize; // excluding header
     size_t committedSize; // excluding header
     shmhandle_t handle;
@@ -65,10 +65,10 @@ protected:
     void operator=(ShmSendBuffer&&) = delete;
 public:
     ~ShmSendBuffer();
-    void *getAddress() const;
+    void *getAddress() const; // points after the header
     const char *getName() const {return name.c_str();}
-    size_t getSize() const { return committedSize; }
-    std::string getNameAndSize() const;
+    size_t getDataSize() const { return committedSize; } // excluding header
+    std::string getNameAndTotalSize() const; // including header
     void extendTo(size_t newSize); // excluding header
     bool isConsumed() const;
     std::vector<int8_t> getContentCopy() const;

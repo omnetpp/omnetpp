@@ -65,13 +65,13 @@ public class ResultsProvider implements IScaveResultsPickleProvider {
         if (cachedReply != null) {
             Assert.isTrue(cachedReply.size() == 1);
             Debug.println("ResultsProvider." + key.getMethodName() + ": returning memoized reply");
-            return sendBufferManager.create("memoized", cachedReply.get(0)).getNameAndSize();
+            return sendBufferManager.create("memoized", cachedReply.get(0)).getNameAndTotalSize();
         }
         else {
             Debug.println("ResultsProvider." + key.getMethodName() + ": computing and memoizing reply");
             ShmSendBuffer pickle = Debug.timed("ResultsProvider." + key.getMethodName(), 100, () -> pickler.call());
             memoizationCache.put(key, pickle.getContentCopy());
-            return pickle.getNameAndSize();
+            return pickle.getNameAndTotalSize();
         }
     }
 
@@ -81,7 +81,7 @@ public class ResultsProvider implements IScaveResultsPickleProvider {
         if (cachedReply != null) {
             Debug.println("ResultsProvider." + key.getMethodName() + ": returning memoized reply");
             for (int i = 0; i < cachedReply.size(); ++i)
-                result.add(sendBufferManager.create("memoized", cachedReply.get(i)).getNameAndSize());
+                result.add(sendBufferManager.create("memoized", cachedReply.get(i)).getNameAndTotalSize());
         }
         else {
             Debug.println("ResultsProvider." + key.getMethodName() + ": computing and memoizing reply");
@@ -89,7 +89,7 @@ public class ResultsProvider implements IScaveResultsPickleProvider {
             List<ByteVector> intoCache = new ArrayList<>();
             for (int i = 0; i < pickles.size(); ++i) {
                 ShmSendBuffer buf = pickles.get(i);
-                result.add(buf.getNameAndSize());
+                result.add(buf.getNameAndTotalSize());
                 intoCache.add(buf.getContentCopy());
             }
             memoizationCache.put(key, intoCache);

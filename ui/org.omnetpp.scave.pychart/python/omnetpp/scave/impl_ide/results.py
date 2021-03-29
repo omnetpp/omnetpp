@@ -76,6 +76,11 @@ def _get_array_from_shm(name_and_size : str):
     way, and returns the whole contents of it as a np.array of doubles.
     `name_and_size` should be a space-separated pair of an object name and an integer,
     which is the size of the named SHM object in bytes.
+    This function writes a 1 into the first byte of the SHM object, to notify the
+    sender about the consumption of the buffer, and does not read the first 8 bytes,
+    which is an added header reserved for this purpose.
+    These 8 bytes are included in the "size" part of name_and_size, except for
+    the special case of "<EMPTY> 0".
     """
     if not name_and_size:
         return None
@@ -96,21 +101,21 @@ def _get_array_from_shm(name_and_size : str):
             with mmap.mmap(mem.fd, length=mem.size) as mf:
                 mf.write_byte(1)
                 mf.seek(0)
-                arr = np.frombuffer(mf.read(), dtype=np.double, offset=8, count=int(size/8))
+                arr = np.frombuffer(mf.read(), dtype=np.double, offset=8, count=int((size-8)/8))
         else:
             # on Linux, we can just continue to use the existing shm memory without copying
             with open(mem.fd, 'wb') as mf:
                 mf.write(b"\1")
                 mf.seek(0)
-                arr = np.memmap(mf, dtype=np.double, offset=8, shape=(int(size/8),))
+                arr = np.memmap(mf, dtype=np.double, offset=8, shape=(int((size-8)/8),))
 
         # on Mac we are done with shm (data is copied), on Linux we can delete the name even though the mapping is still in use
     elif system == 'Windows':
         # on Windows, the mmap module in itself provides shared memory functionality. and we copy the data here as well.
-        with mmap.mmap(-1, size, tagname=name) as mf:
+        with mmap.mmap(-1, size, tagname=name) as mf: # should NOT subtract the 8 bytes of the header from the size here!
             mf.write_byte(1)
             mf.seek(0)
-            arr = np.frombuffer(mf.read(), dtype=np.double, offset=8, count=int(size/8))
+            arr = np.frombuffer(mf.read(), dtype=np.double, offset=8, count=int((size-8)/8))
     else:
         raise RuntimeError("unsupported platform")
 

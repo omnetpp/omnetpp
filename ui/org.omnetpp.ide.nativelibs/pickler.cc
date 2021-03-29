@@ -218,7 +218,7 @@ void Pickler::makeRoom(size_t bytesNeeded)
 // ---------------- ShmPickler ----------------
 
 ShmPickler::ShmPickler(ShmSendBuffer *sendBuffer, size_t sizeLimit) :
-        Pickler(sendBuffer->getAddress(), sendBuffer->getSize()),
+        Pickler(sendBuffer->getAddress(), sendBuffer->getDataSize()),
         sendBuffer(sendBuffer), sizeLimit(sizeLimit)
 {
 }

@@ -58,9 +58,9 @@ void ShmSendBuffer::extendTo(size_t newSize)
     committedSize = newSize;
 }
 
-std::string ShmSendBuffer::getNameAndSize() const
+std::string ShmSendBuffer::getNameAndTotalSize() const
 {
-    return name + " " + std::to_string(committedSize);
+    return name + " " + std::to_string(HEADERSIZE + committedSize);
 }
 
 bool ShmSendBuffer::isConsumed() const
