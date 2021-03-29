@@ -19,6 +19,8 @@
 #include "omnetpp/ccomponent.h"
 #include "omnetpp/ccomponenttype.h"
 #include "omnetpp/ccontextswitcher.h"
+#include "omnetpp/cconfiguration.h"
+#include "omnetpp/cconfigoption.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cchannel.h"
 #include "omnetpp/cmodelchange.h"
@@ -40,7 +42,7 @@ using namespace omnetpp::common;
 
 namespace omnetpp {
 
-
+Register_PerObjectConfigOption(CFGID_DISPLAY_STRING, "display-string", KIND_COMPONENT, CFG_STRING, nullptr, "Additional display string for the module/channel; it will be merged into the display string given via `@display` properties, and override its content.");
 Register_PerObjectConfigOption(CFGID_PARAM_RECORD_AS_SCALAR, "param-record-as-scalar", KIND_PARAMETER, CFG_BOOL, "false", "Applicable to module parameters: specifies whether the module parameter should be recorded into the output scalar file. Set it for parameters whose value you will need for result analysis.");
 
 cComponent::SignalNameMapping *cComponent::signalNameMapping = nullptr;
@@ -264,6 +266,11 @@ void cComponent::finalizeParameters()
         par(i).finalize();
 
     setFlag(FL_PARAMSFINALIZED, true);
+
+    // take display-string config option into account
+    std::string dispstr = getSimulation()->getEnvir()->getConfig()->getAsString(getFullPath().c_str(), CFGID_DISPLAY_STRING);
+    if (!dispstr.empty())
+        getDisplayString().updateWith(dispstr.c_str());
 
     // always store the display string
     EVCB.displayStringChanged(this);
