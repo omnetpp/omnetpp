@@ -47,6 +47,8 @@ class COMMON_API opp_runtime_error : public std::runtime_error
      */
     opp_runtime_error(const std::string& msg) : std::runtime_error(""), errormsg(msg) {}
 
+    virtual ~opp_runtime_error() {}
+
     /**
      * Returns the text of the error. Redefined from std::exception.
      */
