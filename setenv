@@ -10,26 +10,33 @@ esac
 
 if [ ! -f configure.user -o ! -f include/omnetpp.h ]; then
     echo "Error: current working directory does not look like an OMNeT++ root directory"
-    # no exit -- it would close the shell
-else
-    omnetpp_root=`pwd`
-    echo $omnetpp_root
-    if [ `uname` = "Linux" ]; then
-      export LD_LIBRARY_PATH=$omnetpp_root/lib:$LD_LIBRARY_PATH
-    fi
-
-    if [ `uname` = "Darwin" ]; then
-      export DYLD_LIBRARY_PATH=$omnetpp_root/lib:$DYLD_LIBRARY_PATH
-      if [ ! -d $omnetpp_root/tools/macosx ]; then
-          echo "WARNING! We are on macOS, but you seem to have downloaded the Linux version of the installation package!"
-      else
-          cd $omnetpp_root/tools/macosx && source setenv ; cd - >/dev/null
-      fi
-    fi
-    export PATH=$omnetpp_root/bin:$PATH
-    export PYTHONPATH=$omnetpp_root/python:$PYTHONPATH
-    export HOSTNAME
-    export HOST
-    export QT_SELECT=5 # on systems with qtchooser, switch to Qt5
+    return
 fi
 
+omnetpp_root=$(pwd)
+if [ $(uname) = "Linux" ]; then
+  export LD_LIBRARY_PATH=$omnetpp_root/lib:$LD_LIBRARY_PATH
+fi
+
+if [ $(uname) = "Darwin" ]; then
+  export DYLD_LIBRARY_PATH=$omnetpp_root/lib:$DYLD_LIBRARY_PATH
+  if [ ! -d $omnetpp_root/tools/macosx ]; then
+      echo "Error: We are running on macOS, but you seem to have downloaded the Linux version of the installation package!"
+      return
+  else
+      if [ $(arch) = "arm64" ]; then
+        echo "Error: We are running on an Apple Mx processor which is not supported natively."
+        echo "Start a new shell with 'arch -x86_64 /bin/zsh --login' to turn on x86 emulation"
+        echo "and then execute 'source setenv' again from that shell."
+        return
+      else
+        cd $omnetpp_root/tools/macosx && source setenv ; cd - >/dev/null
+      fi
+  fi
+fi
+export PATH=$omnetpp_root/bin:$PATH
+export PYTHONPATH=$omnetpp_root/python:$PYTHONPATH
+export HOSTNAME
+export HOST
+export QT_SELECT=5 # on systems with qtchooser, switch to Qt5
+echo "$(cat Version) environment is ready."
