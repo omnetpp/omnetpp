@@ -15,7 +15,7 @@
 *--------------------------------------------------------------*/
 
 #include "outputvectorview.h"
-#include <QResizeEvent>
+#include <QtGui/QResizeEvent>
 #include "outputvectorinspector.h"
 #include "vectorplotitem.h"
 #include "chartgriditem.h"

@@ -20,10 +20,10 @@
 #include "qtutil.h"
 #include "graphicsitems.h"
 
-#include <QDebug>
-#include <QPainter>
-#include <QEvent>
-#include <QGraphicsColorizeEffect>
+#include <QtCore/QDebug>
+#include <QtGui/QPainter>
+#include <QtCore/QEvent>
+#include <QtWidgets/QGraphicsColorizeEffect>
 #include <omnetpp/cdisplaystring.h>
 #include <omnetpp/cqueue.h>
 #include "common/stringutil.h"

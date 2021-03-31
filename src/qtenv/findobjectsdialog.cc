@@ -26,10 +26,10 @@
 #include "objectlistmodel.h"
 #include "objectlistview.h"
 #include "mainwindow.h"
-#include <QMessageBox>
-#include <QKeyEvent>
+#include <QtWidgets/QMessageBox>
+#include <QtGui/QKeyEvent>
 
-#include <QDebug>
+#include <QtCore/QDebug>
 
 namespace omnetpp {
 

@@ -15,8 +15,8 @@
 *--------------------------------------------------------------*/
 
 #include "messageitem.h"
-#include <QDebug>
-#include <QPen>
+#include <QtCore/QDebug>
+#include <QtGui/QPen>
 #include "qtenv.h"
 #include "graphicsitems.h"
 #include "omnetpp/cdisplaystring.h"

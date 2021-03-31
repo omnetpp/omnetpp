@@ -17,17 +17,17 @@
 #include "textviewerwidget.h"
 #include "textviewerproviders.h"
 #include "qtutil.h"
-#include <QPainter>
-#include <QStringList>
-#include <QDebug>
-#include <QGridLayout>
-#include <QHeaderView>
-#include <QStandardItemModel>
-#include <QApplication>
-#include <QToolBar>
-#include <QClipboard>
-#include <QAction>
-#include <QMessageBox>
+#include <QtGui/QPainter>
+#include <QtCore/QStringList>
+#include <QtCore/QDebug>
+#include <QtWidgets/QGridLayout>
+#include <QtWidgets/QHeaderView>
+#include <QtGui/QStandardItemModel>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QToolBar>
+#include <QtGui/QClipboard>
+#include <QtWidgets/QAction>
+#include <QtWidgets/QMessageBox>
 
 namespace omnetpp {
 namespace qtenv {

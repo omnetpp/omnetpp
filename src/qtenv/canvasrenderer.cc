@@ -14,7 +14,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <QDebug>
+#include <QtCore/QDebug>
 
 #include "canvasrenderer.h"
 #include "figurerenderers.h"

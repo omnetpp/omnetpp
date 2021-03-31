@@ -16,8 +16,8 @@
 
 #include "outputvectorinspectorconfigdialog.h"
 #include "ui_outputvectorinspectorconfigdialog.h"
-#include <QPushButton>
-#include <QMessageBox>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QMessageBox>
 #include "common/stringutil.h"
 #include "qtenv.h"
 #include "inspectorutil.h"

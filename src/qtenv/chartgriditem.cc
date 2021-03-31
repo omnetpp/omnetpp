@@ -17,10 +17,10 @@
 #include "chartgriditem.h"
 #include "qtutil.h"
 #include "inspectorutil.h"
-#include <QPen>
-#include <QPainter>
-#include <QDebug>
-#include <QGraphicsScene>
+#include <QtGui/QPen>
+#include <QtGui/QPainter>
+#include <QtCore/QDebug>
+#include <QtWidgets/QGraphicsScene>
 
 static const int MINOR_TICK_LENGTH = 4;
 static const int MAJOR_TICK_LENGTH = 6;

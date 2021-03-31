@@ -17,9 +17,9 @@
 #ifndef __OMNETPP_QTENV_TREEITEMMODEL_H
 #define __OMNETPP_QTENV_TREEITEMMODEL_H
 
-#include <QAbstractItemModel>
-#include <QMenu>
-#include <QTreeView>
+#include <QtCore/QAbstractItemModel>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QTreeView>
 #include "qtenvdefs.h"
 
 class QMainWindow;

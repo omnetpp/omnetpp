@@ -19,7 +19,7 @@
 
 #include <string>
 #include <map>
-#include <QGraphicsPathItem>
+#include <QtWidgets/QGraphicsPathItem>
 #include "omnetpp/ccanvas.h"
 #include "qtenvdefs.h"
 

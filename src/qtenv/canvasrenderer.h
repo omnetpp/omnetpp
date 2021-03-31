@@ -17,7 +17,7 @@
 #ifndef __OMNETPP_QTENV_CANVASRENDERER_H
 #define __OMNETPP_QTENV_CANVASRENDERER_H
 
-#include <QGraphicsItem>
+#include <QtWidgets/QGraphicsItem>
 #include "omnetpp/ccanvas.h"
 #include "qtenvdefs.h"
 

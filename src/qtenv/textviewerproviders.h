@@ -17,9 +17,9 @@
 #ifndef __OMNETPP_QTENV_TEXTVIEWERPROVIDERS_H
 #define __OMNETPP_QTENV_TEXTVIEWERPROVIDERS_H
 
-#include <QObject>
-#include <QColor>
-#include <QDebug>
+#include <QtCore/QObject>
+#include <QtGui/QColor>
+#include <QtCore/QDebug>
 
 // cRuntimeException is needed somewhere deep in an ASSERT in
 // that logbuffer.h include (for the circularbuffer)

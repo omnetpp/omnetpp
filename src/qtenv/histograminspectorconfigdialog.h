@@ -17,7 +17,7 @@
 #ifndef __OMNETPP_QTENV_HISTOGRAMINSPECTORCONFIGDIALOG_H
 #define __OMNETPP_QTENV_HISTOGRAMINSPECTORCONFIGDIALOG_H
 
-#include <QDialog>
+#include <QtWidgets/QDialog>
 #include "histogramview.h"
 
 namespace Ui {

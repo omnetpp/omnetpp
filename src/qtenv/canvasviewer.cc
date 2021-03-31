@@ -19,8 +19,8 @@
 #include "graphicsitems.h"
 #include "qtenv.h"
 #include "figurerenderers.h"
-#include <QMouseEvent>
-#include <QDebug>
+#include <QtGui/QMouseEvent>
+#include <QtCore/QDebug>
 
 #define emit
 

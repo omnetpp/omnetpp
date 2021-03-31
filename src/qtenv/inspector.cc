@@ -22,11 +22,11 @@
 #include <cmath>
 #include <cassert>
 #include <algorithm>
-#include <QMenu>
-#include <QToolButton>
-#include <QContextMenuEvent>
-#include <QBoxLayout>
-#include <QToolBar>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QToolButton>
+#include <QtGui/QContextMenuEvent>
+#include <QtWidgets/QBoxLayout>
+#include <QtWidgets/QToolBar>
 #include "common/stringutil.h"
 #include "common/stlutil.h"
 #include "omnetpp/cobject.h"

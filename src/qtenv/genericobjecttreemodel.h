@@ -17,10 +17,10 @@
 #ifndef __OMNETPP_QTENV_GENERICOBJECTTREEMODEL_H
 #define __OMNETPP_QTENV_GENERICOBJECTTREEMODEL_H
 
-#include <QAbstractItemModel>
-#include <QMenu>
-#include <QSortFilterProxyModel>
-#include <QTreeView>
+#include <QtCore/QAbstractItemModel>
+#include <QtWidgets/QMenu>
+#include <QtCore/QSortFilterProxyModel>
+#include <QtWidgets/QTreeView>
 #include "omnetpp/cobject.h"
 #include "omnetpp/cclassdescriptor.h"
 #include "qtenvdefs.h"

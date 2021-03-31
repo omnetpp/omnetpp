@@ -20,11 +20,11 @@
 #include "qtenv.h"
 #include <sstream>
 #include <cfloat>
-#include <QGraphicsScene>
-#include <QDebug>
-#include <QGraphicsItem>
-#include <QFontMetrics>
-#include <QPainter>
+#include <QtWidgets/QGraphicsScene>
+#include <QtCore/QDebug>
+#include <QtWidgets/QGraphicsItem>
+#include <QtGui/QFontMetrics>
+#include <QtGui/QPainter>
 #include "common/stringutil.h"
 #include "common/stlutil.h"
 #include "omnetpp/platdep/platmisc.h"

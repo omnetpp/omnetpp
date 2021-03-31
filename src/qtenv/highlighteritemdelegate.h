@@ -17,7 +17,7 @@
 #ifndef __OMNETPP_QTENV_HIGHLIGHTERITEMDELEGATE_H
 #define __OMNETPP_QTENV_HIGHLIGHTERITEMDELEGATE_H
 
-#include <QStyledItemDelegate>
+#include <QtWidgets/QStyledItemDelegate>
 #include "qtenvdefs.h"
 
 namespace omnetpp {

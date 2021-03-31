@@ -23,10 +23,10 @@
 #include <cassert>
 #include <sstream>
 #include <cinttypes> // PRId64
-#include <QPainter>
-#include <QGraphicsView>
-#include <QGraphicsEffect>
-#include <QDebug>
+#include <QtGui/QPainter>
+#include <QtWidgets/QGraphicsView>
+#include <QtWidgets/QGraphicsEffect>
+#include <QtCore/QDebug>
 
 #include "common/stringutil.h"
 #include "common/colorutil.h"

@@ -20,9 +20,9 @@
 #include "qtenv.h"
 #include "common/ver.h"
 
-#include <QOpenGLWidget>
-#include <QPaintEvent>
-#include <QPainter>
+#include <QtWidgets/QOpenGLWidget>
+#include <QtGui/QPaintEvent>
+#include <QtGui/QPainter>
 
 class QMenu;
 

@@ -20,7 +20,7 @@
 #include "qtutil.h"
 #include "qtenvdefs.h"
 
-#include <QDebug>
+#include <QtCore/QDebug>
 
 namespace omnetpp {
 namespace qtenv {

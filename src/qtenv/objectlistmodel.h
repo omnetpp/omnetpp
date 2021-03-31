@@ -17,8 +17,8 @@
 #ifndef __OMNETPP_QTENV_OBJECTLISTMODEL_H
 #define __OMNETPP_QTENV_OBJECTLISTMODEL_H
 
-#include <QAbstractTableModel>
-#include <QVector>
+#include <QtCore/QAbstractTableModel>
+#include <QtCore/QVector>
 #include "qtenvdefs.h"
 
 namespace omnetpp {

@@ -20,7 +20,7 @@
 #include "common/stringutil.h"
 #include "qtutil.h"
 #include "qtenv.h"  // for getQtenv
-#include <QElapsedTimer>
+#include <QtCore/QElapsedTimer>
 #include <set>
 #include "envir/visitor.h"
 

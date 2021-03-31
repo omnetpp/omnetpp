@@ -17,8 +17,8 @@
 #ifndef __OMNETPP_QTENV_MESSAGEPRINTERTAGSDIALOG_H
 #define __OMNETPP_QTENV_MESSAGEPRINTERTAGSDIALOG_H
 
-#include <QDialog>
-#include <QListWidgetItem>
+#include <QtWidgets/QDialog>
+#include <QtWidgets/QListWidgetItem>
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cmessageprinter.h"
 #include "qtenvdefs.h"

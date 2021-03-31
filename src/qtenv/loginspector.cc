@@ -19,14 +19,14 @@
 #include <algorithm>
 #include <cmath>
 #include <cassert>
-#include <QToolBar>
-#include <QAction>
-#include <QToolButton>
-#include <QMessageBox>
-#include <QVBoxLayout>
-#include <QFileDialog>
-#include <QDebug>
-#include <QMenu>
+#include <QtWidgets/QToolBar>
+#include <QtWidgets/QAction>
+#include <QtWidgets/QToolButton>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QFileDialog>
+#include <QtCore/QDebug>
+#include <QtWidgets/QMenu>
 
 #include "common/stringtokenizer.h"
 #include "common/stlutil.h"

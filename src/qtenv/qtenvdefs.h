@@ -35,7 +35,7 @@
 #error "Qtenv must be compiled with -DQT_NO_EMIT, because the simkernel uses 'emit' as function name"
 #endif
 
-#include <QMetaType>
+#include <QtCore/QMetaType>
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 6, 0)
 #error Qtenv requires Qt 5.6 or later.

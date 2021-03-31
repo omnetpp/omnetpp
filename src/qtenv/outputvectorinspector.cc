@@ -16,9 +16,9 @@
 
 #include <cstring>
 #include <cmath>
-#include <QToolBar>
-#include <QStatusBar>
-#include <QMenu>
+#include <QtWidgets/QToolBar>
+#include <QtWidgets/QStatusBar>
+#include <QtWidgets/QMenu>
 #include "omnetpp/coutvector.h"
 #include "qtenv.h"
 #include "qtutil.h"

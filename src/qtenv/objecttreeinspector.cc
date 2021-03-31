@@ -18,11 +18,11 @@
 #include "inspectorfactory.h"
 #include "treeitemmodel.h"
 #include "inspectorutil.h"
-#include <QLayout>
-#include <QTreeView>
-#include <QHeaderView>
+#include <QtWidgets/QLayout>
+#include <QtWidgets/QTreeView>
+#include <QtWidgets/QHeaderView>
 
-#include <QDebug>
+#include <QtCore/QDebug>
 
 #define emit
 

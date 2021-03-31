@@ -18,9 +18,9 @@
 #define __OMNETPP_QTENV_LAYOUTERENV_H
 
 #include "layout/graphlayouter.h"
-#include <QGraphicsScene>
-#include <QGraphicsView>
-#include <QObject>
+#include <QtWidgets/QGraphicsScene>
+#include <QtWidgets/QGraphicsView>
+#include <QtCore/QObject>
 #include <climits>
 #include "qtenvdefs.h"
 

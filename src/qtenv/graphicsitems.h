@@ -17,11 +17,11 @@
 #ifndef __OMNETPP_QTENV_GRAPHICSITEMS_H
 #define __OMNETPP_QTENV_GRAPHICSITEMS_H
 
-#include <QGraphicsObject>
-#include <QGraphicsEffect>
-#include <QFont>
-#include <QPen>
-#include <QTimer>
+#include <QtWidgets/QGraphicsObject>
+#include <QtWidgets/QGraphicsEffect>
+#include <QtGui/QFont>
+#include <QtGui/QPen>
+#include <QtCore/QTimer>
 #include "qtenvdefs.h"
 
 namespace omnetpp {

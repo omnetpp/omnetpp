@@ -17,8 +17,8 @@
 #ifndef __OMNETPP_QTENV_MESSAGEITEM_H
 #define __OMNETPP_QTENV_MESSAGEITEM_H
 
-#include <QGraphicsColorizeEffect>
-#include <QGraphicsObject>
+#include <QtWidgets/QGraphicsColorizeEffect>
+#include <QtWidgets/QGraphicsObject>
 #include "qtenvdefs.h"
 
 namespace omnetpp {

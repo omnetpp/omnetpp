@@ -17,7 +17,7 @@
 #ifndef __OMNETPP_QTENV_HISTOGRAMVIEW_H
 #define __OMNETPP_QTENV_HISTOGRAMVIEW_H
 
-#include <QGraphicsView>
+#include <QtWidgets/QGraphicsView>
 #include "qtenvdefs.h"
 
 namespace omnetpp {

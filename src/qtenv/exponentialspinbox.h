@@ -17,7 +17,7 @@
 #ifndef __OMNETPP_QTENV_EXPONENTIALSPINBOX_H
 #define __OMNETPP_QTENV_EXPONENTIALSPINBOX_H
 
-#include <QDoubleSpinBox>
+#include <QtWidgets/QDoubleSpinBox>
 
 #include "qtenvdefs.h"
 

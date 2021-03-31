@@ -27,9 +27,9 @@
 #include "layouterenv.h"
 #include "qtutil.h"
 #include "qtenv.h"
-#include <QDebug>
-#include <QApplication>
-#include <QGraphicsLineItem>
+#include <QtCore/QDebug>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QGraphicsLineItem>
 
 namespace omnetpp {
 namespace qtenv {

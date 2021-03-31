@@ -17,7 +17,7 @@
 #ifndef __OMNETPP_QTENV_TIMELINEGRAPHICSVIEW_H
 #define __OMNETPP_QTENV_TIMELINEGRAPHICSVIEW_H
 
-#include <QGraphicsView>
+#include <QtWidgets/QGraphicsView>
 #include "omnetpp/simtime_t.h"
 #include "qtenvdefs.h"
 

@@ -32,12 +32,12 @@
 #include "inspectorutil.h"
 #include "envir/objectprinter.h"
 #include "envir/visitor.h"
-#include <QTreeView>
-#include <QDebug>
-#include <QGridLayout>
-#include <QMessageBox>
-#include <QApplication>
-#include <QClipboard>
+#include <QtWidgets/QTreeView>
+#include <QtCore/QDebug>
+#include <QtWidgets/QGridLayout>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QApplication>
+#include <QtGui/QClipboard>
 
 #define emit
 

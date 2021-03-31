@@ -17,7 +17,7 @@
 #ifndef __OMNETPP_QTENV_GENERICOBJECTTREENODES_H
 #define __OMNETPP_QTENV_GENERICOBJECTTREENODES_H
 
-#include <QVariant>
+#include <QtCore/QVariant>
 #include "omnetpp/cobject.h"
 #include "omnetpp/cclassdescriptor.h"
 #include "genericobjecttreemodel.h"

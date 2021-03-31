@@ -17,15 +17,15 @@
 #ifndef __OMNETPP_QTENV_TEXTVIEWERWIDGET_H
 #define __OMNETPP_QTENV_TEXTVIEWERWIDGET_H
 
-#include <QAbstractScrollArea>
-#include <QElapsedTimer>
-#include <QFrame>
-#include <QHeaderView>
-#include <QPaintEvent>
-#include <QScrollBar>
-#include <QStandardItemModel>
-#include <QTimer>
-#include <QToolBar>
+#include <QtWidgets/QAbstractScrollArea>
+#include <QtCore/QElapsedTimer>
+#include <QtWidgets/QFrame>
+#include <QtWidgets/QHeaderView>
+#include <QtGui/QPaintEvent>
+#include <QtWidgets/QScrollBar>
+#include <QtGui/QStandardItemModel>
+#include <QtCore/QTimer>
+#include <QtWidgets/QToolBar>
 #include "qtenvdefs.h"
 
 namespace omnetpp {

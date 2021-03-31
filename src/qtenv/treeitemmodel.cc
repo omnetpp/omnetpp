@@ -32,10 +32,10 @@
 #include "qtutil.h"
 #include "inspectorutil.h"
 #include "mainwindow.h"
-#include <QIcon>
-#include <QMainWindow>
+#include <QtGui/QIcon>
+#include <QtWidgets/QMainWindow>
 
-#include <QDebug>
+#include <QtCore/QDebug>
 
 namespace omnetpp {
 namespace qtenv {

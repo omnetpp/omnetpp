@@ -23,7 +23,7 @@
 #include <unordered_map>
 #include <utility>
 #include <functional>
-#include <QGraphicsRectItem>
+#include <QtWidgets/QGraphicsRectItem>
 #include "omnetpp/cchannel.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/simtime_t.h"

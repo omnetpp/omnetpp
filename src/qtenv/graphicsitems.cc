@@ -17,10 +17,10 @@
 #include "graphicsitems.h"
 
 #include <cmath>
-#include <QPen>
-#include <QPainter>
-#include <QFontMetricsF>
-#include <QDebug>
+#include <QtGui/QPen>
+#include <QtGui/QPainter>
+#include <QtGui/QFontMetricsF>
+#include <QtCore/QDebug>
 #include "qtenv.h"
 
 namespace omnetpp {

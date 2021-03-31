@@ -23,7 +23,7 @@
 #include "omnetpp/cchannel.h"
 #include "circularbuffer.h"
 #include "qtenvdefs.h"
-#include <QObject>
+#include <QtCore/QObject>
 
 namespace omnetpp {
 

@@ -19,8 +19,8 @@
 #include "submoduleitem.h"
 #include "graphicsitems.h"
 
-#include <QPen>
-#include <QDebug>
+#include <QtGui/QPen>
+#include <QtCore/QDebug>
 #include <omnetpp/cdisplaystring.h>
 #include "qtenv.h"
 #include "qtutil.h"

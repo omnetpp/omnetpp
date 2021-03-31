@@ -18,7 +18,7 @@
 #include <algorithm>
 #include <vector>
 #include <set>
-#include <QDebug>
+#include <QtCore/QDebug>
 #include "common/stlutil.h"
 #include "runselectiondialog.h"
 #include "ui_runselectiondialog.h"

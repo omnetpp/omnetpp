@@ -16,9 +16,9 @@
 
 #include "highlighteritemdelegate.h"
 #include "genericobjecttreemodel.h" // for HighlightRange
-#include <QPainter>
-#include <QTextLayout>
-#include <QMessageBox>
+#include <QtGui/QPainter>
+#include <QtGui/QTextLayout>
+#include <QtWidgets/QMessageBox>
 
 #define emit // technicalities...
 

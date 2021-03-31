@@ -19,7 +19,7 @@
 
 #include "inspector.h"
 
-#include <QModelIndex>
+#include <QtCore/QModelIndex>
 
 #include "genericobjecttreemodel.h"
 

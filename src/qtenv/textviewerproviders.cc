@@ -19,7 +19,7 @@
 #include "common/sgr_macro.h"
 #include "qtutil.h"
 #include "qtenv.h"
-#include <QDebug>
+#include <QtCore/QDebug>
 
 namespace omnetpp {
 namespace qtenv {

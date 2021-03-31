@@ -17,7 +17,7 @@
 #ifndef __OMNETPP_QTENV_CONNECTIONITEM_H
 #define __OMNETPP_QTENV_CONNECTIONITEM_H
 
-#include <QGraphicsObject>
+#include <QtWidgets/QGraphicsObject>
 #include "omnetpp/cdisplaystring.h"
 #include "qtenvdefs.h"
 

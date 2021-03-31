@@ -18,7 +18,7 @@
 #define __OMNETPP_QTENV_MODULEINSPECTOR_H
 
 #include <vector>
-#include <QGraphicsScene>
+#include <QtWidgets/QGraphicsScene>
 #include "inspector.h"
 
 class QAction;

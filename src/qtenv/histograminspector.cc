@@ -16,10 +16,10 @@
 
 #include <cstring>
 #include <cmath>
-#include <QGraphicsView>
-#include <QStatusBar>
-#include <QToolBar>
-#include <QMenu>
+#include <QtWidgets/QGraphicsView>
+#include <QtWidgets/QStatusBar>
+#include <QtWidgets/QToolBar>
+#include <QtWidgets/QMenu>
 #include "omnetpp/cabstracthistogram.h"
 #include "qtenv.h"
 #include "inspectorfactory.h"

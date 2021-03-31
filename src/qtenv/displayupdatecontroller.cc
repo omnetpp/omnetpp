@@ -18,9 +18,9 @@
 
 #include <iomanip>
 
-#include <QApplication>
-#include <QPainter>
-#include <QThread>
+#include <QtWidgets/QApplication>
+#include <QtGui/QPainter>
+#include <QtCore/QThread>
 
 #include "mainwindow.h"
 #include "moduleinspector.h"

@@ -19,18 +19,18 @@
 
 #include <algorithm>
 
-#include <QMessageBox>
-#include <QCloseEvent>
-#include <QToolTip>
-#include <QStyledItemDelegate>
-#include <QTextLayout>
-#include <QTimer>
-#include <QLineEdit>
-#include <QDialogButtonBox>
-#include <QFileDialog>
-#include <QCheckBox>
-#include <QDebug>
-#include <QToolButton>
+#include <QtWidgets/QMessageBox>
+#include <QtGui/QCloseEvent>
+#include <QtWidgets/QToolTip>
+#include <QtWidgets/QStyledItemDelegate>
+#include <QtGui/QTextLayout>
+#include <QtCore/QTimer>
+#include <QtWidgets/QLineEdit>
+#include <QtWidgets/QDialogButtonBox>
+#include <QtWidgets/QFileDialog>
+#include <QtWidgets/QCheckBox>
+#include <QtCore/QDebug>
+#include <QtWidgets/QToolButton>
 
 #include "omnetpp/csimplemodule.h"
 #include "omnetpp/csimulation.h"

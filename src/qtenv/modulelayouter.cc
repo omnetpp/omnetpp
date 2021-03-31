@@ -17,8 +17,8 @@
 #include "modulelayouter.h"
 
 #include <omnetpp/cdisplaystring.h>
-#include <QMessageBox>
-#include <QPushButton>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QPushButton>
 #include "qtenv.h"
 #include "layout/graphlayouter.h"
 #include "layout/basicspringembedderlayout.h"

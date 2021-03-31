@@ -17,7 +17,7 @@
 #ifndef __OMNETPP_QTENV_CANVASVIEWER_H
 #define __OMNETPP_QTENV_CANVASVIEWER_H
 
-#include <QGraphicsView>
+#include <QtWidgets/QGraphicsView>
 #include "qtenvdefs.h"
 
 class QGraphicsPixmapItem;

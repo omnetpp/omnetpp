@@ -17,8 +17,8 @@
 #ifndef __OMNETPP_QTENV_CHARTGRIDITEM_H
 #define __OMNETPP_QTENV_CHARTGRIDITEM_H
 
-#include <QGraphicsItem>
-#include <QFont>
+#include <QtWidgets/QGraphicsItem>
+#include <QtGui/QFont>
 #include "omnetpp/simtime_t.h"
 #include "qtenvdefs.h"
 #include "qtutil.h"

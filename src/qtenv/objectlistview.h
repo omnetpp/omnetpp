@@ -17,7 +17,7 @@
 #ifndef __OMNETPP_QTENV_OBJECTLISTVIEW_H
 #define __OMNETPP_QTENV_OBJECTLISTVIEW_H
 
-#include <QTableView>
+#include <QtWidgets/QTableView>
 #include "qtenvdefs.h"
 
 namespace omnetpp {

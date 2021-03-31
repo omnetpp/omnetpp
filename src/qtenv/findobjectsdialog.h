@@ -17,9 +17,9 @@
 #ifndef __OMNETPP_QTENV_FINDOBJECTSDIALOG_H
 #define __OMNETPP_QTENV_FINDOBJECTSDIALOG_H
 
-#include <QDialog>
-#include <QItemSelection>
-#include <QModelIndex>
+#include <QtWidgets/QDialog>
+#include <QtCore/QItemSelection>
+#include <QtCore/QModelIndex>
 #include "objectlistmodel.h"
 #include "qtenvdefs.h"
 

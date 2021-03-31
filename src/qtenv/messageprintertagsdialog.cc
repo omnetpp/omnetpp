@@ -19,7 +19,7 @@
 #include "qtenv.h"
 #include "qtutil.h"
 #include "common/stlutil.h"
-#include <QList>
+#include <QtCore/QList>
 
 namespace omnetpp {
 using namespace common;

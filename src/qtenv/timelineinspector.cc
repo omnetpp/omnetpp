@@ -15,8 +15,8 @@
 *--------------------------------------------------------------*/
 
 #include "timelineinspector.h"
-#include <QHBoxLayout>
-#include <QMenu>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QMenu>
 #include "timelinegraphicsview.h"
 #include "inspectorutil.h"
 #include "inspectorfactory.h"

@@ -17,10 +17,10 @@
 #ifndef __OMNETPP_QTENV_COMPOUNDMODULEITEM_H
 #define __OMNETPP_QTENV_COMPOUNDMODULEITEM_H
 
-#include <QString>
-#include <QPointF>
-#include <QColor>
-#include <QGraphicsObject>
+#include <QtCore/QString>
+#include <QtCore/QPointF>
+#include <QtGui/QColor>
+#include <QtWidgets/QGraphicsObject>
 #include "qtenvdefs.h"
 
 namespace omnetpp {

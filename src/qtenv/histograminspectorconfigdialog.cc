@@ -16,9 +16,9 @@
 
 #include "histograminspectorconfigdialog.h"
 #include "ui_histograminspectorconfigdialog.h"
-#include <QPushButton>
-#include <QDebug>
-#include <QMessageBox>
+#include <QtWidgets/QPushButton>
+#include <QtCore/QDebug>
+#include <QtWidgets/QMessageBox>
 #include "common/stringutil.h"
 #include "inspectorutil.h"
 

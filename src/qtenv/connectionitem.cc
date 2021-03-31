@@ -16,8 +16,8 @@
 
 #include "connectionitem.h"
 
-#include <QDebug>
-#include <QPainter>
+#include <QtCore/QDebug>
+#include <QtGui/QPainter>
 #include <omnetpp/cgate.h>
 #include <omnetpp/cchannel.h>
 #include "graphicsitems.h"

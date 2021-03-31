@@ -16,15 +16,15 @@
 
 #include <cstring>
 #include <iostream>
-#include <QStringList>
-#include <QDir>
-#include <QImage>
-#include <QIcon>
-#include <QString>
-#include <QPixmap>
-#include <QPixmapCache>
-#include <QRegularExpression>
-#include <QDebug>
+#include <QtCore/QStringList>
+#include <QtCore/QDir>
+#include <QtGui/QImage>
+#include <QtGui/QIcon>
+#include <QtCore/QString>
+#include <QtGui/QPixmap>
+#include <QtGui/QPixmapCache>
+#include <QtCore/QRegularExpression>
+#include <QtCore/QDebug>
 
 #include "omnetpp/cexception.h"
 #include "common/fileutil.h"

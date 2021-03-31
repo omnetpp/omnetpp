@@ -17,8 +17,8 @@
 #ifndef __OMNETPP_QTENV_LOGFILTERDIALOG_H
 #define __OMNETPP_QTENV_LOGFILTERDIALOG_H
 
-#include <QDialog>
-#include <QTreeWidgetItem>
+#include <QtWidgets/QDialog>
+#include <QtWidgets/QTreeWidgetItem>
 #include <set>
 #include "omnetpp/cmodule.h"
 #include "qtenvdefs.h"

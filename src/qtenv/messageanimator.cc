@@ -22,7 +22,7 @@
 #include "messageanimations.h"
 #include "graphicsitems.h"
 
-#include <QDebug>
+#include <QtCore/QDebug>
 #include <omnetpp/cfutureeventset.h>
 #include <omnetpp/cpacket.h>
 #include <omnetpp/csimplemodule.h>

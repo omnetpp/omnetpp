@@ -17,7 +17,7 @@
 #ifndef __OMNETPP_QTENV_INSPECTORUTIL_H
 #define __OMNETPP_QTENV_INSPECTORUTIL_H
 
-#include <QVector>
+#include <QtCore/QVector>
 #include "logbuffer.h"
 #include "qtenvdefs.h"
 #include "inspectorutiltypes.h"

@@ -23,10 +23,10 @@
 #include "omnetpp/cosgcanvas.h"
 #include "omnetpp/osgutil.h"
 
-#include <QAction>
-#include <QOpenGLWidget>
-#include <QOpenGLContext>
-#include <QInputEvent>
+#include <QtWidgets/QAction>
+#include <QtWidgets/QOpenGLWidget>
+#include <QtGui/QOpenGLContext>
+#include <QtGui/QInputEvent>
 #include <osgViewer/CompositeViewer>
 #include <osgViewer/View>
 #include <osg/Camera>

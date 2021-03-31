@@ -16,8 +16,8 @@
 
 #include "genericobjecttreemodel.h"
 
-#include <QDebug>
-#include <QElapsedTimer>
+#include <QtCore/QDebug>
+#include <QtCore/QElapsedTimer>
 #include <set>
 #include "qtutil.h"
 #include "envir/visitor.h"

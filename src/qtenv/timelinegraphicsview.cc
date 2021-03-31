@@ -15,9 +15,9 @@
 *--------------------------------------------------------------*/
 
 #include "timelinegraphicsview.h"
-#include <QApplication>
-#include <QGraphicsSimpleTextItem>
-#include <QMouseEvent>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QGraphicsSimpleTextItem>
+#include <QtGui/QMouseEvent>
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cfutureeventset.h"
 #include "omnetpp/cdisplaystring.h"
@@ -28,7 +28,7 @@
 #include "graphicsitems.h"
 #include "messageitem.h"
 
-#include <QDebug>
+#include <QtCore/QDebug>
 
 #define emit
 

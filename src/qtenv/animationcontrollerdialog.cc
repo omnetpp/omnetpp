@@ -20,7 +20,7 @@
 #include "qtenv.h"
 #include "mainwindow.h"
 #include "displayupdatecontroller.h"
-#include <QPoint>
+#include <QtCore/QPoint>
 
 namespace omnetpp {
 namespace qtenv {

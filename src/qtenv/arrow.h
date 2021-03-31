@@ -19,9 +19,9 @@
 #ifndef __OMNETPP_QTENV_ARROW_H
 #define __OMNETPP_QTENV_ARROW_H
 
-#include <QPointF>
-#include <QRectF>
-#include <QLineF>
+#include <QtCore/QPointF>
+#include <QtCore/QRectF>
+#include <QtCore/QLineF>
 #include "qtenvdefs.h"
 
 namespace omnetpp {

@@ -16,7 +16,7 @@
 
 #include "vectorplotitem.h"
 #include "omnetpp/simkerneldefs.h"
-#include <QPainter>
+#include <QtGui/QPainter>
 
 static const int DOTS_SIZE = 4;
 

@@ -17,7 +17,7 @@
 #ifndef __OMNETPP_QTENV_PREFERENCESDIALOG_H
 #define __OMNETPP_QTENV_PREFERENCESDIALOG_H
 
-#include <QDialog>
+#include <QtWidgets/QDialog>
 #include "qtenvdefs.h"
 #include "inspectorutiltypes.h"
 

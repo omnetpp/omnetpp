@@ -19,8 +19,8 @@
 
 #include "inspector.h"
 
-#include <QLabel>
-#include <QLineEdit>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QLineEdit>
 
 namespace omnetpp {
 namespace qtenv {

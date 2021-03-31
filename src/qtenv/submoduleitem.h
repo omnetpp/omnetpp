@@ -17,9 +17,9 @@
 #ifndef __OMNETPP_QTENV_SUBMODULEITEM_H
 #define __OMNETPP_QTENV_SUBMODULEITEM_H
 
-#include <QGraphicsColorizeEffect>
-#include <QGraphicsObject>
-#include <QAbstractGraphicsShapeItem>
+#include <QtWidgets/QGraphicsColorizeEffect>
+#include <QtWidgets/QGraphicsObject>
+#include <QtWidgets/QAbstractGraphicsShapeItem>
 #include "qtenvdefs.h"
 
 namespace omnetpp {

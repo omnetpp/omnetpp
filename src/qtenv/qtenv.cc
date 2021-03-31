@@ -24,18 +24,18 @@
 #include <cstdio>
 #include <string>
 
-#include <QApplication>
-#include <QProxyStyle>
-#include <QTreeView>
-#include <QDir>
-#include <QDebug>
-#include <QMessageBox>
-#include <QVBoxLayout>
-#include <QDialogButtonBox>
-#include <QCheckBox>
-#include <QFontDatabase>
-#include <QThread>
-#include <QPainter>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QProxyStyle>
+#include <QtWidgets/QTreeView>
+#include <QtCore/QDir>
+#include <QtCore/QDebug>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QDialogButtonBox>
+#include <QtWidgets/QCheckBox>
+#include <QtGui/QFontDatabase>
+#include <QtCore/QThread>
+#include <QtGui/QPainter>
 
 #include "common/stringutil.h"
 #include "common/stringtokenizer.h"

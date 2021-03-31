@@ -17,7 +17,7 @@
 #include "exponentialspinbox.h"
 
 #include <cmath>
-#include <QDebug>
+#include <QtCore/QDebug>
 #include "common/stringutil.h"
 
 namespace omnetpp {

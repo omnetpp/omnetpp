@@ -19,11 +19,11 @@
 #include "qtenv.h"
 #include "inspectorutil.h"
 #include "mainwindow.h"
-#include <QHeaderView>
-#include <QKeyEvent>
-#include <QMenu>
+#include <QtWidgets/QHeaderView>
+#include <QtGui/QKeyEvent>
+#include <QtWidgets/QMenu>
 
-#include <QDebug>
+#include <QtCore/QDebug>
 
 #define emit
 

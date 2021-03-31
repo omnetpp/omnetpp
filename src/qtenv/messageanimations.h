@@ -19,8 +19,8 @@
 
 #include <vector>
 #include <map>
-#include <QString>
-#include <QLineF>
+#include <QtCore/QString>
+#include <QtCore/QLineF>
 #include "omnetpp/simtime_t.h"
 #include "omnetpp/cgate.h"
 #include "omnetpp/cmodule.h"

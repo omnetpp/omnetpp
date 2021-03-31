@@ -19,8 +19,8 @@
 
 #include <deque>
 
-#include <QElapsedTimer>
-#include <QToolButton>
+#include <QtCore/QElapsedTimer>
+#include <QtWidgets/QToolButton>
 
 #include "qtenv.h"
 

@@ -17,7 +17,7 @@
 #ifndef __OMNETPP_QTENV_STOPDIALOG_H
 #define __OMNETPP_QTENV_STOPDIALOG_H
 
-#include <QDialog>
+#include <QtWidgets/QDialog>
 #include "qtenvdefs.h"
 
 namespace Ui {

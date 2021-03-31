@@ -17,8 +17,8 @@
 #ifndef __OMNETPP_QTENV_FILEEDITOR_H
 #define __OMNETPP_QTENV_FILEEDITOR_H
 
-#include <QDialog>
-#include <QFile>
+#include <QtWidgets/QDialog>
+#include <QtCore/QFile>
 #include "qtenvdefs.h"
 
 namespace Ui {

@@ -32,13 +32,13 @@
 #include "modulelayouter.h"
 #include "inspector.h"
 #include "charttickdecimal.h"
-#include <QSettings>
-#include <QSet>
-#include <QString>
+#include <QtCore/QSettings>
+#include <QtCore/QSet>
+#include <QtCore/QString>
 
-#include <QDebug>
-#include <QElapsedTimer>
-#include <QEventLoop>
+#include <QtCore/QDebug>
+#include <QtCore/QElapsedTimer>
+#include <QtCore/QEventLoop>
 
 class QWidget;
 

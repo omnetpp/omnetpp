@@ -18,9 +18,9 @@
 #define __OMNETPP_QTENV_MODULELAYOUTER_H
 
 #include <unordered_map>
-#include <QObject>
-#include <QPointF>
-#include <QGraphicsScene>
+#include <QtCore/QObject>
+#include <QtCore/QPointF>
+#include <QtWidgets/QGraphicsScene>
 #include "qtenvdefs.h"
 
 namespace omnetpp {

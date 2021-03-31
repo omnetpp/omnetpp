@@ -15,10 +15,10 @@
 *--------------------------------------------------------------*/
 
 #include "histogramview.h"
-#include <QMouseEvent>
+#include <QtGui/QMouseEvent>
 #include "omnetpp/cabstracthistogram.h"
 #include "chartgriditem.h"
-#include <QDebug>
+#include <QtCore/QDebug>
 
 #define emit
 

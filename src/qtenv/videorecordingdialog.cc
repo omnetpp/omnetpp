@@ -17,7 +17,7 @@
 #include "videorecordingdialog.h"
 #include "ui_videorecordingdialog.h"
 
-#include <QClipboard>
+#include <QtGui/QClipboard>
 
 #include "moduleinspector.h"
 

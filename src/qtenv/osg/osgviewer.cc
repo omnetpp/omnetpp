@@ -19,12 +19,12 @@
 #include "cameramanipulators.h"
 #include "common/stlutil.h"
 
-#include <QDebug>
-#include <QToolTip>
-#include <QMenu>
-#include <QResizeEvent>
-#include <QOffscreenSurface>
-#include <QOpenGLFunctions>
+#include <QtCore/QDebug>
+#include <QtWidgets/QToolTip>
+#include <QtWidgets/QMenu>
+#include <QtGui/QResizeEvent>
+#include <QtGui/QOffscreenSurface>
+#include <QtGui/QOpenGLFunctions>
 
 #ifdef WITH_OSGEARTH
 #include <osgEarth/Version>

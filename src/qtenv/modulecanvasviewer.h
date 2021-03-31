@@ -18,10 +18,10 @@
 #define __OMNETPP_QTENV_MODULECANVASVIEWER_H
 
 #include <map>
-#include <QPointF>
-#include <QGraphicsView>
+#include <QtCore/QPointF>
+#include <QtWidgets/QGraphicsView>
 #include <unordered_set>
-#include <QPrinter>
+#include <QtPrintSupport/QPrinter>
 #include "qtenvdefs.h"
 
 class QGraphicsPixmapItem;

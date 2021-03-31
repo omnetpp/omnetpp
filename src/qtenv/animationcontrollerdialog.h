@@ -17,7 +17,7 @@
 #ifndef __OMNETPP_QTENV_ANIMATIONCONTROLLERDIALOG_H
 #define __OMNETPP_QTENV_ANIMATIONCONTROLLERDIALOG_H
 
-#include <QDialog>
+#include <QtWidgets/QDialog>
 #include "qtenvdefs.h"
 
 namespace Ui {

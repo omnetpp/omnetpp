@@ -17,7 +17,7 @@
 #ifndef __OMNETPP_QTENV_LOGFINDDIALOG_H
 #define __OMNETPP_QTENV_LOGFINDDIALOG_H
 
-#include <QDialog>
+#include <QtWidgets/QDialog>
 #include "textviewerwidget.h"
 #include "qtenvdefs.h"
 

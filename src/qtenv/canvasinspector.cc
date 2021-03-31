@@ -28,13 +28,13 @@
 #include "canvasviewer.h"
 #include "qtenv.h"
 #include "inspectorutil.h"
-#include <QGridLayout>
-#include <QToolBar>
-#include <QAction>
-#include <QMouseEvent>
-#include <QMenu>
-#include <QDebug>
-#include <QScrollBar>
+#include <QtWidgets/QGridLayout>
+#include <QtWidgets/QToolBar>
+#include <QtWidgets/QAction>
+#include <QtGui/QMouseEvent>
+#include <QtWidgets/QMenu>
+#include <QtCore/QDebug>
+#include <QtWidgets/QScrollBar>
 
 #define emit
 

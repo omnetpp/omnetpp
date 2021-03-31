@@ -20,7 +20,7 @@
 #include "mainwindow.h"
 #include "inspectorutil.h"
 
-#include <QDebug>
+#include <QtCore/QDebug>
 
 namespace omnetpp {
 namespace qtenv {

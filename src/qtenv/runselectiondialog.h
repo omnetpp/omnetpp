@@ -17,7 +17,7 @@
 #ifndef __OMNETPP_QTENV_RUNSELECTIONDIALOG_H
 #define __OMNETPP_QTENV_RUNSELECTIONDIALOG_H
 
-#include <QDialog>
+#include <QtWidgets/QDialog>
 #include <map>
 #include <omnetpp/cconfiguration.h>
 #include "qtenvdefs.h"

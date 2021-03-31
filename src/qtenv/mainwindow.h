@@ -19,8 +19,8 @@
 
 #include <set>
 #include "ui_mainwindow.h"
-#include <QMainWindow>
-#include <QModelIndex>
+#include <QtWidgets/QMainWindow>
+#include <QtCore/QModelIndex>
 #include "qtenv.h"
 
 class QGraphicsScene;

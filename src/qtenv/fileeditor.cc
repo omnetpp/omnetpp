@@ -16,16 +16,16 @@
 
 #include "fileeditor.h"
 #include "ui_fileeditor.h"
-#include <QToolBar>
-#include <QBoxLayout>
-#include <QMessageBox>
-#include <QMenu>
+#include <QtWidgets/QToolBar>
+#include <QtWidgets/QBoxLayout>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QMenu>
 #include "textviewerwidget.h"
 #include "textviewerproviders.h"
 #include "logfinddialog.h"
 #include "qtenv.h"
 
-#include <QDebug>
+#include <QtCore/QDebug>
 
 namespace omnetpp {
 namespace qtenv {

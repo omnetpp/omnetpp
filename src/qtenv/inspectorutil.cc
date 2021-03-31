@@ -14,10 +14,10 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <QDebug>
-#include <QMenu>
-#include <QApplication>
-#include <QClipboard>
+#include <QtCore/QDebug>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QApplication>
+#include <QtGui/QClipboard>
 #include <common/stringutil.h>
 #include <omnetpp/cobject.h>
 #include <omnetpp/csimplemodule.h>

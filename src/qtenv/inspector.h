@@ -20,12 +20,12 @@
 #include "envir/envirbase.h"
 #include "inspectorutiltypes.h"
 #include "qtutil.h"
-#include <QObject>
-#include <QLayout>
-#include <QMenu>
+#include <QtCore/QObject>
+#include <QtWidgets/QLayout>
+#include <QtWidgets/QMenu>
 
-#include <QWidget>
-#include <QDebug>
+#include <QtWidgets/QWidget>
+#include <QtCore/QDebug>
 
 class QContextMenuEvent;
 class QToolBar;

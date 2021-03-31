@@ -19,8 +19,8 @@
 
 #include <cstring>
 #include <cmath>
-#include <QMessageBox>
-#include <QBoxLayout>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QBoxLayout>
 #include "omnetpp/cwatch.h"
 #include "omnetpp/cstlwatch.h"
 #include "qtenv.h"

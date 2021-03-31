@@ -33,21 +33,21 @@
 #include "graphicsitems.h"
 #include "areaselectordialog.h"
 #include "arrow.h"
-#include <QGraphicsScene>
-#include <QScrollBar>
-#include <QGraphicsPixmapItem>
-#include <QMessageBox>
-#include <QGraphicsWidget>
-#include <QMouseEvent>
-#include <QDebug>
-#include <QApplication>
-#include <QAction>
-#include <QRubberBand>
-#include <QToolTip>
-#include <QPrinter>
-#include <QImageWriter>
-#include <QPrintDialog>
-#include <QFileDialog>
+#include <QtWidgets/QGraphicsScene>
+#include <QtWidgets/QScrollBar>
+#include <QtWidgets/QGraphicsPixmapItem>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QGraphicsWidget>
+#include <QtGui/QMouseEvent>
+#include <QtCore/QDebug>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QAction>
+#include <QtWidgets/QRubberBand>
+#include <QtWidgets/QToolTip>
+#include <QtPrintSupport/QPrinter>
+#include <QtGui/QImageWriter>
+#include <QtPrintSupport/QPrintDialog>
+#include <QtWidgets/QFileDialog>
 
 #define emit
 

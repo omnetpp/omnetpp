@@ -18,7 +18,7 @@
 
 #include <algorithm>
 
-#include <QDebug>
+#include <QtCore/QDebug>
 
 #include "qtenv.h"
 

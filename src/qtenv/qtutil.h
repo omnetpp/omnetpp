@@ -21,10 +21,10 @@
 #include "omnetpp/cobject.h"
 #include "qtenvdefs.h"
 #include "charttickdecimal.h"
-#include <QIcon>
-#include <QTimer>
-#include <QFont>
-#include <QDebug>
+#include <QtGui/QIcon>
+#include <QtCore/QTimer>
+#include <QtGui/QFont>
+#include <QtCore/QDebug>
 
 namespace omnetpp {
 
