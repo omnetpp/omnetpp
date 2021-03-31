@@ -1043,7 +1043,9 @@ cGate *cNedNetworkBuilder::resolveGate(cModule *compoundModule,
         if (module == compoundModule) {
             gate = module->getOrCreateFirstUnconnectedGate(gateName2, 0, true, false);  // inside, don't expand
             if (!gate)
-                throw cRuntimeError(module, "%s[] gates are all connected, no gate left for '++' operator", gateName);
+                throw cRuntimeError(module, "%s[] gates are all connected, no gate left for '++' operator "
+                                            "when connecting the gates on the inside (note that the network is built top-down)",
+                                            gateName);
         }
         else {
             gate = module->getOrCreateFirstUnconnectedGate(gateName2, 0, false, true);  // outside, expand
@@ -1078,7 +1080,9 @@ void cNedNetworkBuilder::resolveInoutGate(cModule *compoundModule,
         if (module == compoundModule) {
             module->getOrCreateFirstUnconnectedGatePair(gateName, true, false, outGate1, outGate2);  // inside, don't expand
             if (!outGate1 || !outGate2)
-                throw cRuntimeError(compoundModule, "%s[] gates are all connected, no gate left for '++' operator", gateName);
+                throw cRuntimeError(compoundModule, "%s[] gates are all connected, no gate left for '++' operator "
+                                                    "when connecting the gates on the inside (note that the network is built top-down)",
+                                                    gateName);
         }
         else {
             module->getOrCreateFirstUnconnectedGatePair(gateName, false, true, outGate1, outGate2);  // outside, expand
