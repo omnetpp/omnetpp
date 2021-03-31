@@ -862,7 +862,7 @@ if test "$WITH_QTENV" = "yes"; then
         AC_PATH_PROGS(RCC, rcc rcc-qt5 rcc5, nope, path = $QT_PATH$PATH_SEPARATOR$PATH )
         QT_INSTALL_HEADERS=`$QMAKE -query QT_INSTALL_HEADERS`
         QT_INSTALL_LIBS=`$QMAKE -query QT_INSTALL_LIBS`
-        QT_CFLAGS=${QT_CFLAGS:-"-isystem $QT_INSTALL_HEADERS -isystem $QT_INSTALL_HEADERS/QtCore -isystem $QT_INSTALL_HEADERS/QtGui -isystem $QT_INSTALL_HEADERS/QtWidgets -isystem $QT_INSTALL_HEADERS/QtOpenGL -isystem $QT_INSTALL_HEADERS/QtPrintSupport"}
+        QT_CFLAGS=${QT_CFLAGS:-"-isystem $QT_INSTALL_HEADERS"}
         QT_LIBS=${QT_LIBS:-"-lQt5Gui -lQt5Core -lQt5Widgets -lQt5PrintSupport -lQt5OpenGL $LDFLAG_LIBPATH$QT_INSTALL_LIBS"}
         if test -z "$RPATH_UNSUPPORTED"; then
             QTENV_LDFLAGS="-Wl,-rpath-link=$QT_INSTALL_LIBS"
@@ -875,20 +875,20 @@ QT_VERSIONCHECK_CODE=$(cat <<-EOT
     #endif
 EOT
 )
-        OPP_CHECK_LIB(Qt5, QtGlobal, $QT_VERSIONCHECK_CODE, $CXXFLAGS $CFLAGS $QT_CFLAGS, $QT_LIBS, qt_ok)
+        OPP_CHECK_LIB(Qt5, QtCore/QtGlobal, $QT_VERSIONCHECK_CODE, $CXXFLAGS $CFLAGS $QT_CFLAGS, $QT_LIBS, qt_ok)
 
         # Test on Windows/MinGW toolchain
         if test $qt_ok = no; then
             QT_LIBS="-lQtGui5 -lQtCore5 -lQtWidgets5 -lQtPrintSupport5 -lQtOpenGL5"
             QTENV_LDFLAGS=""
-            OPP_CHECK_LIB(Qt5, QtGlobal, $QT_VERSIONCHECK_CODE, $CXXFLAGS $CFLAGS $QT_CFLAGS, $QT_LIBS, qt_ok)
+            OPP_CHECK_LIB(Qt5, QtCore/QtGlobal, $QT_VERSIONCHECK_CODE, $CXXFLAGS $CFLAGS $QT_CFLAGS, $QT_LIBS, qt_ok)
         fi
 
         # Test on Mac OS X using the local Qt framework
         if test $qt_ok = no; then
             QT_LIBS="-framework QtGui -framework QtCore -framework QtWidgets -framework QtPrintSupport -framework QtOpenGL"
             QTENV_LDFLAGS=""
-            OPP_CHECK_LIB(Qt5, QtGlobal, $QT_VERSIONCHECK_CODE, $CXXFLAGS $CFLAGS $QT_CFLAGS, $LDFLAGS_TOOLS_MACOSX $QT_LIBS, qt_ok)
+            OPP_CHECK_LIB(Qt5, QtCore/QtGlobal, $QT_VERSIONCHECK_CODE, $CXXFLAGS $CFLAGS $QT_CFLAGS, $LDFLAGS_TOOLS_MACOSX $QT_LIBS, qt_ok)
         fi
 
         if test $qt_ok = no; then

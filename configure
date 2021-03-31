@@ -4990,7 +4990,7 @@ test -n "$RCC" || RCC="nope"
 
         QT_INSTALL_HEADERS=`$QMAKE -query QT_INSTALL_HEADERS`
         QT_INSTALL_LIBS=`$QMAKE -query QT_INSTALL_LIBS`
-        QT_CFLAGS=${QT_CFLAGS:-"-isystem $QT_INSTALL_HEADERS -isystem $QT_INSTALL_HEADERS/QtCore -isystem $QT_INSTALL_HEADERS/QtGui -isystem $QT_INSTALL_HEADERS/QtWidgets -isystem $QT_INSTALL_HEADERS/QtOpenGL -isystem $QT_INSTALL_HEADERS/QtPrintSupport"}
+        QT_CFLAGS=${QT_CFLAGS:-"-isystem $QT_INSTALL_HEADERS"}
         QT_LIBS=${QT_LIBS:-"-lQt5Gui -lQt5Core -lQt5Widgets -lQt5PrintSupport -lQt5OpenGL $LDFLAG_LIBPATH$QT_INSTALL_LIBS"}
         if test -z "$RPATH_UNSUPPORTED"; then
             QTENV_LDFLAGS="-Wl,-rpath-link=$QT_INSTALL_LIBS"
@@ -5015,7 +5015,7 @@ $as_echo_n "checking for Qt5 with CFLAGS=\"$CXXFLAGS $CFLAGS $QT_CFLAGS\" LIBS=\
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-#include <QtGlobal>
+#include <QtCore/QtGlobal>
 int
 main ()
 {
@@ -5054,7 +5054,7 @@ $as_echo_n "checking for Qt5 with CFLAGS=\"$CXXFLAGS $CFLAGS $QT_CFLAGS\" LIBS=\
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-#include <QtGlobal>
+#include <QtCore/QtGlobal>
 int
 main ()
 {
@@ -5094,7 +5094,7 @@ $as_echo_n "checking for Qt5 with CFLAGS=\"$CXXFLAGS $CFLAGS $QT_CFLAGS\" LIBS=\
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-#include <QtGlobal>
+#include <QtCore/QtGlobal>
 int
 main ()
 {
