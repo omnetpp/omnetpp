@@ -17,6 +17,10 @@ network DisplayStringTest
         scaling: scaling;
         scaling2: scaling2;
         active: Active;
+        displayName : DisplayName;
+        displayStringOption : DisplayStringOption;
+        arrangements: Arrangements;
+        layoutGroup: LayoutGroup;
 }
 
 
