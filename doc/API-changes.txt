@@ -24,6 +24,24 @@ Legend:
 OMNeT++ 6.0
 ~~~~~~~~~~~
 
+(!!!)	cPar: Setting the parameter will now result in a call to the component's
+        handleParameterChange() method during initialize() as well. At the
+        same time, the handleParameter(nullptr) call at the end of the
+        initialization was removed.
+
+        In model code, handleParameterChange() needs to be implemented carefully,
+        being aware that the module may not have completed initialization yet.
+        Also: if an existing model relied on handleParameter(nullptr) being
+        ported, it needs to be changed.
+
+(!!!)   cValue: doubleValue()/intValue() will now throw an exception when called
+        on a value which has a measurement unit. Call either doubleValueInUnit()/
+        intValueInUnit(), or doubleValueRaw()/intValueRaw() plus getUnit() to read
+        the value from a cValue object with a measurement unit.
+
+(!)     cSoftOwner: removed setPerformFinalGC()/getPerformFinalGC(). It was
+        meant for internal use, and pretty much unused by model code.
+
 (!)     Renames related to the ownership management mechanism:
         - cDefaultOwner -> cSoftOwner
         - defaultOwner -> owningContext
