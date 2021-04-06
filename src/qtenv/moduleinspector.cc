@@ -397,8 +397,9 @@ void ModuleInspector::refresh()
 
     canvasViewer->refresh();
 
-    for (auto p : bubblesToShow)
-        canvasViewer->bubble(p.first, p.second.c_str());
+    if (object != nullptr)
+        for (auto p : bubblesToShow)
+            canvasViewer->bubble(p.first, p.second.c_str());
     bubblesToShow.clear();
 
     refreshOsgViewer();
