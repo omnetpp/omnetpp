@@ -238,12 +238,14 @@ void ModuleInspector::doSetObject(cObject *obj)
 {
     if (obj == object)
         return;
+
     Inspector::doSetObject(obj);
 
     cModule *module = dynamic_cast<cModule *>(obj);
 
     canvasViewer->setObject(module);
     canvasViewer->clear();
+    bubblesToShow.clear();
 
     setOsgCanvas(nullptr);
 
