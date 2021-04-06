@@ -1437,7 +1437,6 @@ void Qtenv::callRefreshInspectors()
         refreshInspectors();
     }
     catch (std::exception& e) {
-        ASSERT(simulationState != SIM_ERROR); // the exception must have come from refreshDisplay calls in the model
         simulationState = SIM_ERROR;
         stoppedWithException(e);
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
