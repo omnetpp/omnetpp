@@ -1441,8 +1441,6 @@ void Qtenv::callRefreshInspectors()
         stoppedWithException(e);
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
         displayException(e);
-        // have to call it again, this time it should not throw, because the state is now SIM_ERROR
-        refreshInspectors();
     }
 }
 
