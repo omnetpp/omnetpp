@@ -6,6 +6,8 @@
 %{
 #include "common/stringutil.h"
 #include "common/patternmatcher.h"
+#include "common/matchexpression.h"
+#include "common/javamatchableobject.h"
 #include "common/unitconversion.h"
 #include "common/bigdecimal.h"
 #include "common/rwlock.h"
@@ -61,7 +63,14 @@ typedef int64_t intpar_t;
 
 } } // namespaces
 
+%typemap(out)     omnetpp::common::JavaMatchableObject * () {
+  *(omnetpp::common::JavaMatchableObject **)&jresult = result;
+  result->setJavaEnv(jenv);
+}
+
 %include "common/patternmatcher.h"
+%include "common/matchexpression.h"
+%include "common/javamatchableobject.h"
 %include "common/unitconversion.h"
 
 
