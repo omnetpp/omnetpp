@@ -20,6 +20,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.RGBA;
 
 /**
  * A factory that creates and manages colors using symbolic names or
@@ -854,6 +855,23 @@ public class ColorFactory {
      */
     public static Color getGoodLightColor(int i) {
         return goodLightColors[i % goodLightColors.length];
+    }
+
+    public static Color[] getGoodDarkColors() {
+        return goodDarkColors;
+    }
+
+    public static Color[] getGoodLightColors() {
+        return goodLightColors;
+    }
+
+    public static Color getChangedHsb(Color color, float h, float s, float b) {
+        float[] hsb = java.awt.Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
+        int rgb = java.awt.Color.HSBtoRGB(Math.max(0.0f, Math.min(1.0f, hsb[0] * h)),
+                                          Math.max(0.0f, Math.min(1.0f, hsb[1] * s)),
+                                          Math.max(0.0f, Math.min(1.0f, hsb[2] * b)));
+        java.awt.Color awtColor = new java.awt.Color(rgb);
+        return new Color(awtColor.getRed(), awtColor.getGreen(), awtColor.getBlue(), color.getAlpha());
     }
 
     /**
