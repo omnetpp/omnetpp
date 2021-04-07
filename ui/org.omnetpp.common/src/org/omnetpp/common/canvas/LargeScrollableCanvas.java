@@ -287,12 +287,14 @@ public abstract class LargeScrollableCanvas extends Canvas {
     protected int configureScrollBar(ScrollBar scrollBar, long virtualSize, long virtualPos, int widgetSize) {
         if (widgetSize >= virtualSize) {
             // hide scrollbar when not needed
-            scrollBar.setVisible(false);
+            if (scrollBar.isVisible())
+                scrollBar.setVisible(false);
             return 0;
         }
         else {
             // show scrollbar
-            scrollBar.setVisible(true);
+            if (!scrollBar.isVisible())
+                scrollBar.setVisible(true);
 
             // count how many bits we need to shift to fit into 32 bits
             int shift = 0;
