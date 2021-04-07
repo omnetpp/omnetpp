@@ -15,7 +15,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.jface.operation.IRunnableContext;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.jface.util.SafeRunnable;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
@@ -236,27 +235,32 @@ public class VirtualTable<T>
 
         getVerticalBar().addSelectionListener(new SelectionAdapter() {
             @Override
-            public void widgetSelected(SelectionEvent e) {
-                ScrollBar scrollBar = (ScrollBar)e.widget;
-                double percentage = (double)scrollBar.getSelection() / (scrollBar.getMaximum() - scrollBar.getThumb());
+            public void widgetSelected(SelectionEvent event) {
+                try {
+                    ScrollBar scrollBar = (ScrollBar)event.widget;
+                    double percentage = (double)scrollBar.getSelection() / (scrollBar.getMaximum() - scrollBar.getThumb());
 
-                if (e.detail == SWT.ARROW_UP)
-                    scroll(1);
-                else if (e.detail == SWT.ARROW_DOWN)
-                    scroll(-1);
-                else if (e.detail == SWT.PAGE_UP)
-                    scroll(getPageJumpCount());
-                else if (e.detail == SWT.PAGE_DOWN)
-                    scroll(-getPageJumpCount());
-                else if (percentage == 0)
-                    scrollToBegin();
-                else if (percentage == 1)
-                    scrollToEnd();
-                else {
-                    // avoid hysteresis (no change for a while in the position when turning to the opposite direction during scrolling)
-                    percentage = (double)scrollBar.getSelection() / scrollBar.getMaximum();
-                    relocateFixPoint(contentProvider.getApproximateElementAt(percentage), 0);
-                    redraw();
+                    if (event.detail == SWT.ARROW_UP)
+                        scroll(1);
+                    else if (event.detail == SWT.ARROW_DOWN)
+                        scroll(-1);
+                    else if (event.detail == SWT.PAGE_UP)
+                        scroll(getPageJumpCount());
+                    else if (event.detail == SWT.PAGE_DOWN)
+                        scroll(-getPageJumpCount());
+                    else if (percentage == 0)
+                        scrollToBegin();
+                    else if (percentage == 1)
+                        scrollToEnd();
+                    else {
+                        // avoid hysteresis (no change for a while in the position when turning to the opposite direction during scrolling)
+                        percentage = (double)scrollBar.getSelection() / scrollBar.getMaximum();
+                        relocateFixPoint(contentProvider.getApproximateElementAt(percentage), 0);
+                        redraw();
+                    }
+                }
+                catch (RuntimeException e) {
+                    handleRuntimeException(e);
                 }
             }
         });
@@ -265,12 +269,18 @@ public class VirtualTable<T>
         hoverSupport.setHoverSizeConstaints(700, 200);
         hoverSupport.adapt(canvas, new IHoverInfoProvider() {
             public HtmlHoverInfo getHoverFor(Control control, int x, int y) {
+                try {
                 T element = getElementAtDistanceFromFixPoint(y / getRowHeight() + getTopVisibleElementDistanceFromFixPoint());
 
                 if (element == null)
                     return null;
                 else
                     return new HtmlHoverInfo(HoverSupport.addHTMLStyleSheet(getRowRenderer().getTooltipText(element)));
+                }
+                catch (RuntimeException e) {
+                    handleRuntimeException(e);
+                    return null;
+                }
             }
         });
 
@@ -289,16 +299,25 @@ public class VirtualTable<T>
         runnableContext = context;
     }
 
+    public void handleRuntimeException(RuntimeException e) {
+        throw e;
+    }
+
     private void createComposite(Composite parent) {
         scrolledComposite = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
         scrolledComposite.getHorizontalBar().setIncrement(10);
         scrolledComposite.addControlListener(new ControlAdapter() {
             @Override
-            public void controlResized(ControlEvent e) {
-                composite.layout();
-                composite.setSize(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-                scrolledComposite.getVerticalBar().setVisible(false);
-                scrolledComposite.getHorizontalBar().setPageIncrement(scrolledComposite.getSize().x);
+            public void controlResized(ControlEvent event) {
+                try {
+                    composite.layout();
+                    composite.setSize(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+                    scrolledComposite.getVerticalBar().setVisible(false);
+                    scrolledComposite.getHorizontalBar().setPageIncrement(scrolledComposite.getSize().x);
+                }
+                catch (RuntimeException e) {
+                    handleRuntimeException(e);
+                }
             }
         });
 
@@ -309,59 +328,83 @@ public class VirtualTable<T>
     private void createCanvas(Composite parent) {
         canvas = new Canvas(parent, SWT.DOUBLE_BUFFERED);
         canvas.addFocusListener(new FocusListener() {
-            public void focusGained(FocusEvent e) {
-                redraw();
+            public void focusGained(FocusEvent event) {
+                try {
+                    redraw();
+                }
+                catch (RuntimeException e) {
+                    handleRuntimeException(e);
+                }
             }
 
-            public void focusLost(FocusEvent e) {
-                redraw();
+            public void focusLost(FocusEvent event) {
+                try {
+                    redraw();
+                }
+                catch (RuntimeException e) {
+                    handleRuntimeException(e);
+                }
             }
         });
         canvas.addPaintListener(new PaintListener() {
-            public void paintControl(PaintEvent e) {
-                if (fixPointElement == null && input != null && contentProvider != null && contentProvider.getFirstElement() != null)
-                    scrollToBegin();
-
-                paint(e.gc);
+            public void paintControl(PaintEvent event) {
+                try {
+                    if (fixPointElement == null && input != null && contentProvider != null && contentProvider.getFirstElement() != null)
+                        scrollToBegin();
+                    paint(event.gc);
+                }
+                catch (RuntimeException e) {
+                    handleRuntimeException(e);
+                }
             }
         });
 
         canvas.addControlListener(new ControlAdapter() {
             @Override
-            public void controlResized(ControlEvent e) {
-                configureVerticalScrollBar();
-                redraw();
+            public void controlResized(ControlEvent event) {
+                try {
+                    configureVerticalScrollBar();
+                    redraw();
+                }
+                catch (RuntimeException e) {
+                    handleRuntimeException(e);
+                }
             }
         });
 
         canvas.addKeyListener(new KeyListener() {
-            public void keyPressed(KeyEvent e) {
-                boolean withCtrl = (e.stateMask & SWT.MOD1) != 0;
-                boolean withShift = (e.stateMask & SWT.MOD2) != 0;
-                if (e.keyCode == SWT.F5)
-                    refresh();
-                else if (e.keyCode == SWT.ARROW_LEFT)
-                    scrollHorizontal(-10);
-                else if (e.keyCode == SWT.ARROW_RIGHT)
-                    scrollHorizontal(10);
-                else if (e.keyCode == SWT.ARROW_UP)
-                    moveFocusBy(-1, withShift, withCtrl, false);
-                else if (e.keyCode == SWT.ARROW_DOWN)
-                    moveFocusBy(1, withShift, withCtrl, false);
-                else if (e.keyCode == SWT.PAGE_UP)
-                    moveFocusBy(-getPageJumpCount(), withShift, withCtrl, false);
-                else if (e.keyCode == SWT.PAGE_DOWN)
-                    moveFocusBy(getPageJumpCount(), withShift, withCtrl, false);
-                else if (e.keyCode == SWT.HOME)
-                    moveFocusTo(contentProvider.getFirstElement(), withShift, withCtrl, false);
-                else if (e.keyCode == SWT.END)
-                    moveFocusTo(contentProvider.getLastElement(), withShift, withCtrl, false);
-                else if (e.keyCode == SWT.SPACE && withCtrl)
-                    moveFocusBy(0, false, true, true);
-                else if (e.keyCode == 'a' && withCtrl)
-                    selectAll();
-                else if (e.keyCode == 'c' && withCtrl)
-                    copySelectionToClipboard();
+            public void keyPressed(KeyEvent event) {
+                try {
+                    boolean withCtrl = (event.stateMask & SWT.MOD1) != 0;
+                    boolean withShift = (event.stateMask & SWT.MOD2) != 0;
+                    if (event.keyCode == SWT.F5)
+                        refresh();
+                    else if (event.keyCode == SWT.ARROW_LEFT)
+                        scrollHorizontal(-10);
+                    else if (event.keyCode == SWT.ARROW_RIGHT)
+                        scrollHorizontal(10);
+                    else if (event.keyCode == SWT.ARROW_UP)
+                        moveFocusBy(-1, withShift, withCtrl, false);
+                    else if (event.keyCode == SWT.ARROW_DOWN)
+                        moveFocusBy(1, withShift, withCtrl, false);
+                    else if (event.keyCode == SWT.PAGE_UP)
+                        moveFocusBy(-getPageJumpCount(), withShift, withCtrl, false);
+                    else if (event.keyCode == SWT.PAGE_DOWN)
+                        moveFocusBy(getPageJumpCount(), withShift, withCtrl, false);
+                    else if (event.keyCode == SWT.HOME)
+                        moveFocusTo(contentProvider.getFirstElement(), withShift, withCtrl, false);
+                    else if (event.keyCode == SWT.END)
+                        moveFocusTo(contentProvider.getLastElement(), withShift, withCtrl, false);
+                    else if (event.keyCode == SWT.SPACE && withCtrl)
+                        moveFocusBy(0, false, true, true);
+                    else if (event.keyCode == 'a' && withCtrl)
+                        selectAll();
+                    else if (event.keyCode == 'c' && withCtrl)
+                        copySelectionToClipboard();
+                }
+                catch (RuntimeException e) {
+                    handleRuntimeException(e);
+                }
             }
 
             public void keyReleased(KeyEvent e) {
@@ -370,22 +413,32 @@ public class VirtualTable<T>
 
         canvas.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseDown(MouseEvent e) {
-                if (input != null && contentProvider != null) {
-                    T element = getVisibleElementAt(e.y / getRowHeight());
+            public void mouseDown(MouseEvent event) {
+                try {
+                    if (input != null && contentProvider != null) {
+                        T element = getVisibleElementAt(event.y / getRowHeight());
 
-                    if (e.button == 1 && element != null) {
-                        boolean withCtrl = (e.stateMask & SWT.MOD1) != 0;
-                        boolean withShift = (e.stateMask & SWT.MOD2) != 0;
-                        moveFocusTo(element, withShift, withCtrl, true);
+                        if (event.button == 1 && element != null) {
+                            boolean withCtrl = (event.stateMask & SWT.MOD1) != 0;
+                            boolean withShift = (event.stateMask & SWT.MOD2) != 0;
+                            moveFocusTo(element, withShift, withCtrl, true);
+                        }
                     }
+                }
+                catch (RuntimeException e) {
+                    handleRuntimeException(e);
                 }
             }
         });
 
         canvas.addListener(SWT.MouseWheel, new Listener() {
             public void handleEvent(Event event) {
-                scroll(event.count);
+                try {
+                    scroll(event.count);
+                }
+                catch (RuntimeException e) {
+                    handleRuntimeException(e);
+                }
             }
         });
     }
@@ -512,11 +565,7 @@ public class VirtualTable<T>
      */
     protected void fireSelectionChanged(final SelectionChangedEvent event) {
         for (ISelectionChangedListener listener : selectionChangedListeners) {
-            SafeRunnable.run(new SafeRunnable() {
-                public void run() {
-                    listener.selectionChanged(event);
-                }
-            });
+            listener.selectionChanged(event);
         }
     }
 
