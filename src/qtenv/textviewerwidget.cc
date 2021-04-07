@@ -79,6 +79,7 @@ TextViewerWidget::TextViewerWidget(QWidget *parent)
 
     headerModel = new QStandardItemModel(this);
     header = new QHeaderView(Qt::Horizontal);
+    header->setMinimumSectionSize(3);
     header->setStretchLastSection(true);
     header->setDefaultAlignment(Qt::Alignment(Qt::AlignLeft | Qt::AlignVCenter));
     header->setModel(headerModel);
