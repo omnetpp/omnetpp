@@ -7,20 +7,25 @@
 
 package org.omnetpp.common.util;
 
+/**
+ * Represents a one-time or recurring task that is to be executed in the future.
+ */
 public abstract class Timer implements Comparable<Timer>, Runnable {
     /**
      * Specifies if the timer should be executed periodically or only once.
      */
-    protected boolean recurring;
+    protected boolean isRecurring;
 
     /**
-     * True means it is allowed to skip timer executions if time passed due to system load.
+     * Specifies if it is allowed to skip timer executions. This happens when
+     * the execution time has already passed due to system load.
      */
-    protected boolean allowSkipping;
+    protected boolean isAllowSkipping;
 
     /**
-     * For a recurring timer it is the time between subsequent executions starting from the time when the timer was created.
-     * For other timers it is the time between the timer is created and the only one execution.
+     * For a recurring timer it is the time between subsequent executions
+     * starting from the time when the timer was created. For other timers it is
+     * the time between the timer is created and the only one execution.
      */
     protected long sleepTime;
 
@@ -52,23 +57,24 @@ public abstract class Timer implements Comparable<Timer>, Runnable {
     /**
      * The number of times this timer was actually executed.
      */
-    protected long numberOfActualExecutions;
+    protected int numberOfActualExecutions;
 
     public Timer(long sleepTime) {
-        this.sleepTime = sleepTime;
-        reset();
+        this(sleepTime, false, false);
     }
 
-    public Timer(long sleepTime, boolean recurring, boolean allowSkipping) {
-        this(sleepTime);
-        this.recurring = recurring;
-        this.allowSkipping = allowSkipping;
+    public Timer(long sleepTime, boolean isRecurring, boolean isAllowSkipping) {
+        this.sleepTime = sleepTime;
+        this.isRecurring = isRecurring;
+        this.isAllowSkipping = isAllowSkipping;
+        reset();
     }
 
     public void reset() {
         this.creationTime = System.currentTimeMillis();
         this.firstExecutionTime = creationTime + sleepTime;
         this.nextExecutionTime = firstExecutionTime;
+        this.numberOfActualExecutions = 0;
     }
 
     public double getSleepTime() {
@@ -76,11 +82,11 @@ public abstract class Timer implements Comparable<Timer>, Runnable {
     }
 
     public boolean isRecurring() {
-        return recurring;
+        return isRecurring;
     }
 
     public boolean isAllowSkipping() {
-        return allowSkipping;
+        return isAllowSkipping;
     }
 
     public long getNextExecutionTime() {
@@ -102,32 +108,31 @@ public abstract class Timer implements Comparable<Timer>, Runnable {
     public long getNumberOfExecutions() {
         long currentTime = System.currentTimeMillis();
         long numberOfExecutions = (currentTime - creationTime) / sleepTime;
-
-        return recurring ? numberOfExecutions : Math.min(1, numberOfExecutions);
+        return isRecurring ? numberOfExecutions : Math.min(1, numberOfExecutions);
     }
 
     public int compareTo(Timer other) {
-        return ((Long)nextExecutionTime).compareTo(other.nextExecutionTime);
+        if (nextExecutionTime < other.nextExecutionTime)
+            return -1;
+        else if (nextExecutionTime > other.nextExecutionTime)
+            return +1;
+        else
+            return 0;
     }
 
     public void execute() {
         lastActualExecutionTime = System.currentTimeMillis();
-
         if (firstActualExecutionTime == -1)
             firstActualExecutionTime = lastActualExecutionTime;
-
         run();
-
         numberOfActualExecutions++;
-        calculateNextExecution();
     }
 
     public void calculateNextExecution() {
         long currentTime = System.currentTimeMillis();
-
-        if (recurring)
+        if (isRecurring)
             nextExecutionTime = currentTime + sleepTime - (currentTime - firstExecutionTime) % sleepTime;
-        else if (currentTime > firstExecutionTime && allowSkipping)
+        else if (currentTime > firstExecutionTime && isAllowSkipping)
             nextExecutionTime = -1;
     }
 
