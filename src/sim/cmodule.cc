@@ -54,6 +54,7 @@ std::string cModule::lastModuleFullPath;
 const cModule *cModule::lastModuleFullPathModule = nullptr;
 
 cStringPool cModule::nameStringPool;
+cModule::GateNamePool cModule::gateNamePool;
 
 
 #ifdef NDEBUG
@@ -420,8 +421,6 @@ cGate *cModule::createGateObject(cGate::Type)
     return new cGate();
 }
 
-cModule::NamePool cModule::namePool;
-
 void cModule::disposeGateObject(cGate *gate, bool checkConnected)
 {
     if (gate) {
@@ -490,7 +489,7 @@ void cModule::clearGates()
 
 void cModule::clearNamePools()
 {
-    namePool.clear();
+    gateNamePool.clear();
     cGate::clearFullnamePool();
 }
 
@@ -545,9 +544,9 @@ cGate::Desc *cModule::addGateDesc(const char *gatename, cGate::Type type, bool i
 
     // configure this gatedesc with name and type
     cGate::Name key(gatename, type);
-    NamePool::iterator it = namePool.find(key);
-    if (it == namePool.end())
-        it = namePool.insert(key).first;
+    auto it = gateNamePool.find(key);
+    if (it == gateNamePool.end())
+        it = gateNamePool.insert(key).first;
     newDesc->name = const_cast<cGate::Name *>(&(*it));
     newDesc->vectorSize = isVector ? 0 : -1;
     return newDesc;

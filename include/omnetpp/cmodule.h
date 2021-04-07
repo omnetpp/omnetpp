@@ -287,8 +287,8 @@ class SIM_API cModule : public cComponent //implies noncopyable
     cChannel *firstChannel = nullptr;   // pointer to first channel in this compound module (list is needed for ChannelIterator)
     cChannel *lastChannel = nullptr;    // pointer to last channel (needed for efficient append operation)
 
-    typedef std::set<cGate::Name> NamePool;
-    static NamePool namePool;
+    typedef std::set<cGate::Name> GateNamePool;
+    static GateNamePool gateNamePool;
     int gateDescArraySize = 0;  // size of the descv array
     cGate::Desc *gateDescArray = nullptr;  // array with one element per gate or gate vector
 
