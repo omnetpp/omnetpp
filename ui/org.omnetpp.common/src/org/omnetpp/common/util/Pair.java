@@ -7,6 +7,8 @@
 
 package org.omnetpp.common.util;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang3.ObjectUtils;
 
 /**
@@ -15,7 +17,8 @@ import org.apache.commons.lang3.ObjectUtils;
  *
  * @author tomi
  */
-public class Pair<T1,T2> {
+public class Pair<T1,T2> implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     public T1 first;
     public T2 second;
