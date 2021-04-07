@@ -128,13 +128,18 @@ public class DraggableFigureMouseListener implements MouseListener, MouseMotionL
     // copied over from guienv
     private int getBorderMoveResizeDragOperation(int x, int y, Rectangle bounds) {
         // 6-pixel wide resize border; 10-pixel resize handles; top edge will move, other edges will resize
-        if (Rectangle.SINGLETON.setBounds(bounds).shrink(6, 6).contains(x, y))
-            return 0;
         int result = 0;
-        if (Math.abs(bounds.y - y) < 10)  result = SWT.LEFT|SWT.TOP|SWT.RIGHT|SWT.BOTTOM;
-        if (Math.abs(bounds.x - x) < 10) result |= SWT.LEFT;
-        if (Math.abs(bounds.right() - x) < 10) result |= SWT.RIGHT;
-        if (Math.abs(bounds.bottom() - y) < 10) result |= SWT.BOTTOM;
-        return result;
+        int moveHandleSize = 10;
+        int resizeHandleSize = 20;
+        if (figure.getBorder() != null)
+            moveHandleSize = figure.getBorder().getInsets(figure).top;
+        if (Math.abs(bounds.y - y) < moveHandleSize)  result = SWT.LEFT|SWT.TOP|SWT.RIGHT|SWT.BOTTOM;
+        if (Math.abs(bounds.x - x) < resizeHandleSize) result |= SWT.LEFT;
+        if (Math.abs(bounds.right() - x) < resizeHandleSize) result |= SWT.RIGHT;
+        if (Math.abs(bounds.bottom() - y) < resizeHandleSize) result |= SWT.BOTTOM;
+        if (Rectangle.SINGLETON.setBounds(bounds).shrink(6, 6).contains(x, y) && (result == SWT.RIGHT || result == SWT.LEFT || result == SWT.TOP || result == SWT.BOTTOM))
+            return 0;
+        else
+            return result;
     }
 }
