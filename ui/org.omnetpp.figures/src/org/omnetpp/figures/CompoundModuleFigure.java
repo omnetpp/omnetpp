@@ -21,7 +21,9 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
@@ -51,6 +53,7 @@ public class CompoundModuleFigure extends LayeredPane implements IAnchorBounds, 
     public static final int BORDER_SNAP_WIDTH = 3;
 
     protected Image backgroundImage;
+    protected Image preScaledBackgroundImage;
     protected String backgroundImageArrangement = "fix";
     protected Dimension backgroundSize;
     protected int gridTickDistance; // maximum distance between two grid lines (in pixels)
@@ -104,8 +107,9 @@ public class CompoundModuleFigure extends LayeredPane implements IAnchorBounds, 
                     for (int y = viewportRect.y; y<viewportRect.bottom(); y += imageRect.height)
                         for (int x = viewportRect.x; x<viewportRect.right(); x += imageRect.width)
                             graphics.drawImage(backgroundImage, x, y);
-                else if (backgroundImageArrangement.toLowerCase().startsWith("s"))
-                    graphics.drawImage(backgroundImage, imageRect, viewportRect);
+                else if (backgroundImageArrangement.toLowerCase().startsWith("s")) {
+                    graphics.drawImage(getPreScaledBackgroundImage(viewportRect), viewportRect.getLocation());
+                }
                 else if (backgroundImageArrangement.toLowerCase().startsWith("c")) {
                     Point centerPoint = viewportRect.getCenter().translate(-imageRect.width/2, -imageRect.height/2);
                     graphics.drawImage(backgroundImage, centerPoint);
@@ -202,6 +206,29 @@ public class CompoundModuleFigure extends LayeredPane implements IAnchorBounds, 
 
         // simple straight connection router
         connectionLayer.setConnectionRouter(new CompoundModuleConnectionRouter());
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+        // TODO: figures don't have dispose, so what else could we do?
+        if (preScaledBackgroundImage != null)
+            preScaledBackgroundImage.dispose();
+    }
+
+    public Image getPreScaledBackgroundImage(Rectangle viewportRect) {
+        if (preScaledBackgroundImage != null) {
+            if (preScaledBackgroundImage.getBounds().width == viewportRect.width && preScaledBackgroundImage.getBounds().height == viewportRect.height)
+                return preScaledBackgroundImage;
+            else {
+                preScaledBackgroundImage.dispose();
+            }
+        }
+        preScaledBackgroundImage = new Image(Display.getCurrent(), viewportRect.width, viewportRect.height);
+        GC gc = new GC(preScaledBackgroundImage);
+        gc.drawImage(backgroundImage, 0, 0, backgroundImage.getBounds().width, backgroundImage.getBounds().height, 0, 0, viewportRect.width, viewportRect.height);
+        gc.dispose();
+        return preScaledBackgroundImage;
     }
 
     @Override
