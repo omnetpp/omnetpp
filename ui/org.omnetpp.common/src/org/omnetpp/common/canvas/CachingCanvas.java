@@ -12,6 +12,7 @@ import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,7 +29,12 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -41,10 +47,10 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
-import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.widgets.Composite;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.canvas.ITileCache.Tile;
+import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.image.ImageUtils;
 import org.omnetpp.common.util.GraphicsUtils;
 
@@ -56,9 +62,66 @@ import org.omnetpp.common.util.GraphicsUtils;
  */
 @SuppressWarnings("restriction")
 public abstract class CachingCanvas extends LargeScrollableCanvas {
+    protected abstract class PaintInBackgroundJob extends Job {
+        private final ArrayList<LargeRect> missingAreas;
+        private final ArrayList<ImageData> imageDatas;
+        protected long viewX;
+        protected long viewY;
+
+        protected PaintInBackgroundJob(String name, ArrayList<LargeRect> missingAreas, ArrayList<ImageData> imageDatas) {
+            super(name);
+            this.missingAreas = missingAreas;
+            this.imageDatas = imageDatas;
+            this.viewX = getViewportLeft();
+            this.viewY = getViewportTop();
+        }
+
+        @Override
+        protected IStatus run(IProgressMonitor monitor) {
+            try {
+                for (LargeRect largeRect : missingAreas) {
+                    SWTAWTGraphics swtAwtGraphics = null;
+                    try {
+                        // TODO: this call accesses widget state (e.g. viewX, etc.)
+                        Rectangle rect = virtualToCanvasRect(largeRect);
+                        Assert.isTrue(!rect.isEmpty());
+                        BufferedImage bufferedImage = new BufferedImage(rect.width, rect.height, BufferedImage.TYPE_INT_BGR);
+                        swtAwtGraphics = new SWTAWTGraphics(bufferedImage.createGraphics());
+                        swtAwtGraphics.translate(-rect.x, -rect.y);
+                        swtAwtGraphics.setClip(new Rectangle(rect.x, rect.y, rect.width, rect.height));
+                        paintCachableLayer(swtAwtGraphics, monitor);
+                        imageDatas.add(ImageUtils.convertToSWT(bufferedImage));
+                        if (monitor.isCanceled())
+                            break;
+                    }
+                    finally {
+                        swtAwtGraphics.dispose();
+                    }
+                }
+                getDisplay().asyncExec(() -> {
+                    for (int i = 0; i < imageDatas.size(); i++)
+                        tileCache.add(missingAreas.get(i), new Image(getDisplay(), imageDatas.get(i)));
+                    imageDatas.clear();
+                    redraw();
+                });
+                if (monitor.isCanceled())
+                    paintInBackgroundCanceled = true;
+                return Status.OK_STATUS;
+            }
+            finally {
+                paintInBackgroundJob = null;
+            }
+        }
+
+        protected abstract void paintCachableLayer(Graphics graphics, IProgressMonitor monitor);
+    }
 
     private boolean doCaching = true;
     private ITileCache tileCache = new XYTileCache();
+    private boolean paintInBackground = false;
+    private Job paintInBackgroundJob;
+    private long paintInBackgroundWaitTime = 100;
+    private boolean paintInBackgroundCanceled = false;
     private boolean debug = Debug.isChannelEnabled("cachingcanvas");
 
     /**
@@ -90,8 +153,6 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
         super.setVirtualSize(width, height);
     }
 
-
-
     /**
      * Returns whether caching is on.
      */
@@ -105,6 +166,36 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
     public void setCaching(boolean doCaching) {
         this.doCaching = doCaching;
         clearCanvasCache();
+    }
+
+    /**
+     * Returns whether background painting is on.
+     */
+    public boolean getPaintInBackground() {
+        return paintInBackground;
+    }
+
+    /**
+     * Turns on/off background painting.
+     */
+    public void setPaintInBackground(boolean paintInBackground) {
+        this.paintInBackground = paintInBackground;
+        clearCanvasCache();
+    }
+
+    /**
+     * Returns whether background painting is canceled.
+     */
+    public boolean isPaintInBackgroundCanceled() {
+        return paintInBackgroundCanceled;
+    }
+
+    /**
+     * Resets background painting canceled.
+     */
+    public void resetPaintInBackgroundCanceled() {
+        this.paintInBackgroundCanceled = false;
+        redraw();
     }
 
     /**
@@ -246,44 +337,92 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
             // display cached tiles
             for (Tile tile : cachedTiles) {
                 graphics.drawImage(tile.image, virtualToCanvasX(tile.rect.x), virtualToCanvasY(tile.rect.y));
-                debugDrawTile(graphics, tile.rect, new Color(null,0,255,0));
+                debugDrawTile(graphics, tile.rect, ColorFactory.GREEN);
             }
 
             // draw missing tiles
-            for (LargeRect lrect : missingAreas) {
-                Rectangle rect = virtualToCanvasRect(lrect);
-                Assert.isTrue(!rect.isEmpty()); // tile cache should not return empty rectangles
-
-                Graphics imageGraphics = null;
-                GC imageGC = null;
-                Transform transform = null;
-                Image image = new Image(getDisplay(), rect.width, rect.height);
-                try {
-                    imageGC = new GC(image);
-                    imageGraphics = createGraphics(imageGC);
-                    imageGraphics.translate(-rect.x, -rect.y);
-                    imageGraphics.setClip(new Rectangle(rect.x, rect.y, rect.width, rect.height));
-                    paintCachableLayer(imageGraphics);
+            if (!missingAreas.isEmpty()) {
+                if (paintInBackground) {
+                    ArrayList<ImageData> imageDatas = new ArrayList<ImageData>();
+                    if (paintInBackgroundJob == null && !paintInBackgroundCanceled) {
+                        paintInBackgroundJob = createPaintInBackgroundJob(missingAreas, imageDatas);
+                        paintInBackgroundJob.schedule();
+                    }
+                    try {
+                        // wait for 100ms or if the job is finished
+                        if (paintInBackgroundJob != null && paintInBackgroundJob.join(paintInBackgroundWaitTime, null)) {
+                            for (int i = 0; i < imageDatas.size(); i++)
+                                tileCache.add(missingAreas.get(i), new Image(getDisplay(), imageDatas.get(i)));
+                            imageDatas.clear();
+                        }
+                    }
+                    catch (OperationCanceledException e) {
+                        // void
+                    }
+                    catch (InterruptedException e) {
+                        // void
+                    }
+                    ArrayList<Tile> cachedTiles2 = new ArrayList<Tile>();
+                    ArrayList<LargeRect> missingAreas2 = new ArrayList<LargeRect>();
+                    tileCache.getTiles(lclip, getVirtualWidth(), getVirtualHeight(), cachedTiles2, missingAreas2);
+                    for (Tile tile : cachedTiles2) {
+                        graphics.drawImage(tile.image, virtualToCanvasX(tile.rect.x), virtualToCanvasY(tile.rect.y));
+                        debugDrawTile(graphics, tile.rect, ColorFactory.GREEN);
+                    }
+                    for (LargeRect largeRect : missingAreas2) {
+                        Rectangle rect = virtualToCanvasRect(largeRect);
+                        // draw something like the transparent area in Gimp
+                        int size = 8;
+                        int startX = rect.x / size;
+                        int endX = (rect.x + rect.width + size - 1) / size;
+                        int startY = rect.y / size;
+                        int endY = (rect.y + rect.height + size - 1) / size;
+                        Color gray1 = new Color(getDisplay(), 153, 153, 153);
+                        Color gray2 = new Color(getDisplay(), 102, 102, 102);
+                        for (int x = startX; x < endX; x++) {
+                            for (int y = startY; y < endY; y++) {
+                                graphics.setBackgroundColor((x + y) % 2 == 0 ? gray1 : gray2);
+                                graphics.fillRectangle(x * size, y * size, size, size);
+                            }
+                        }
+                        debugDrawTile(graphics, largeRect, ColorFactory.RED);
+                    }
                 }
-                finally {
-                    if (imageGraphics != null)
-                        imageGraphics.dispose();
-                    if (transform != null)
-                        transform.dispose();
-                    if (imageGC != null)
-                        imageGC.dispose();
+                else {
+                    for (LargeRect largeRect : missingAreas) {
+                        Rectangle rect = virtualToCanvasRect(largeRect);
+                        Assert.isTrue(!rect.isEmpty());
+                        Image image = new Image(getDisplay(), rect.width, rect.height);
+                        GC imageGC = null;
+                        Graphics imageGraphics = null;
+                        try {
+                            imageGC = new GC(image);
+                            imageGraphics = createGraphics(imageGC);
+                            imageGraphics.translate(-rect.x, -rect.y);
+                            imageGraphics.setClip(new Rectangle(rect.x, rect.y, rect.width, rect.height));
+                            paintCachableLayer(imageGraphics);
+                        }
+                        finally {
+                            if (imageGraphics != null)
+                                imageGraphics.dispose();
+                            if (imageGC != null)
+                                imageGC.dispose();
+                        }
+                        graphics.drawImage(image, rect.x, rect.y);
+                        tileCache.add(largeRect, image);
+                        debugDrawTile(graphics, largeRect, ColorFactory.RED);
+                    }
                 }
-
-                // draw the image on the screen, and also add it to the cache
-                graphics.drawImage(image, rect.x, rect.y);
-                tileCache.add(lrect, image);
-                debugDrawTile(graphics, lrect, new Color(null,255,0,0));
             }
 
             // paint items that we don't want to cache
             graphics.setClip(oldClip);
             paintNoncachableLayer(graphics);
         }
+    }
+
+    protected PaintInBackgroundJob createPaintInBackgroundJob(ArrayList<LargeRect> missingAreas, ArrayList<ImageData> imageDatas) {
+        return null;
     }
 
     /**
