@@ -7,41 +7,33 @@
 %include "enumtypeunsafe.swg"
 %include "defs.i"
 %include "stacktrace.i"
+%include "std_string.i"
 %javaconst(1);
 
 %include "bigdecimal.i"
 
 %{
-#include "eventlog/ievent.h"
-#include "eventlog/ieventlog.h"
-#include "eventlog/event.h"
-#include "eventlog/filteredevent.h"
-#include "eventlog/messagedependency.h"
-#include "eventlog/eventlogentry.h"
-#include "eventlog/eventlogentries.h"
-#include "eventlog/eventlogindex.h"
-#include "eventlog/eventlog.h"
-#include "eventlog/eventlogfacade.h"
-#include "eventlog/eventlogtablefacade.h"
-#include "eventlog/sequencechartfacade.h"
-#include "eventlog/filteredeventlog.h"
+#include "omnetpp/platdep/platmisc.h"
 #include "common/filereader.h"
 #include "common/exprvalue.h"
 
-using namespace omnetpp::eventlog;
 using namespace omnetpp::common;
 using namespace omnetpp::common::expression;
 %}
 
 // hide export/import macros from swig
 #define COMMON_API
-#define EVENTLOG_API
 #define OPP_DLLEXPORT
 #define OPP_DLLIMPORT
 
 %typemap(javacode) omnetpp::common::FileReader %{
     public FileReader(String fileName, boolean cMemoryOwn) {
         this(fileName);
+        this.swigCMemOwn = cMemoryOwn;
+    }
+
+    public FileReader(String fileName, long bufferSize, boolean cMemoryOwn) {
+        this(fileName, bufferSize);
         this.swigCMemOwn = cMemoryOwn;
     }
 %}
@@ -55,38 +47,16 @@ typedef omnetpp::common::FileReader FileReader;
 typedef omnetpp::common::opp_runtime_error opp_runtime_error;
 typedef omnetpp::common::BigDecimal BigDecimal;
 
-typedef uintptr_t omnetpp::eventlog::ptr_t;
 typedef int64_t eventnumber_t;
 typedef BigDecimal simtime_t;
 #define simtime_nil BigDecimal::MinusOne
 
-class BeginSendEntry;
-class EndSendEntry;
-class EventEntry;
-class EventLogEntry;
-class EventLogMessageEntry;
-class GateCreatedEntry;
-class MessageEntry;
-class MessageSendDependency;
-class ModuleCreatedEntry;
-class SimulationBeginEntry;
-class IEventLog;
-class IMessageDependency;
-typedef std::vector<IMessageDependency *> IMessageDependencyList;
 
 } } // namespaces
 
 /*--------------------------------------------------------------------------
  * ptr_t <--> long mapping
  *--------------------------------------------------------------------------*/
-
-%typemap(jni)    omnetpp::eventlog::ptr_t "jlong"
-%typemap(jtype)  omnetpp::eventlog::ptr_t "long"
-%typemap(jstype) omnetpp::eventlog::ptr_t "long"
-%typemap(javain) omnetpp::eventlog::ptr_t "$javainput"
-%typemap(javaout) omnetpp::eventlog::ptr_t { return $jnicall; }
-%typemap(out) omnetpp::eventlog::ptr_t { $result = (jlong)$1; }
-%typemap(in) omnetpp::eventlog::ptr_t { $1 = (omnetpp::eventlog::ptr_t)$input; }
 
 %typemap(jni)    uintptr_t "jlong"
 %typemap(jtype)  uintptr_t "long"
@@ -95,6 +65,14 @@ typedef std::vector<IMessageDependency *> IMessageDependencyList;
 %typemap(javaout) uintptr_t { return $jnicall; }
 %typemap(out) uintptr_t { $result = (jlong)$1; }
 %typemap(in) uintptr_t { $1 = (uintptr_t)$input; }
+
+%typemap(jni)    file_offset_t "jlong"
+%typemap(jtype)  file_offset_t "long"
+%typemap(jstype) file_offset_t "long"
+%typemap(javain) file_offset_t "$javainput"
+%typemap(javaout) file_offset_t { return $jnicall; }
+%typemap(out) file_offset_t { $result = (jlong)$1; }
+%typemap(in) file_offset_t { $1 = (file_offset_t)$input; }
 
 %include "std_common.i"
 %include "std_string.i"
@@ -167,15 +145,7 @@ namespace std {
    //specialize_std_map_on_both(string,,,,string,,,);
    //%template(StringMap) map<string,string>;
 
-   %template(ModuleCreatedEntryList) vector<omnetpp::eventlog::ModuleCreatedEntry*>;
-   %template(IMessageDependencyList) vector<omnetpp::eventlog::IMessageDependency*>;
-   %template(MessageSendDependencyList) vector<omnetpp::eventlog::MessageSendDependency*>;
-   %template(MessageReuseDependencyList) vector<omnetpp::eventlog::MessageReuseDependency*>;
-   %template(FilteredMessageDependencyList) vector<omnetpp::eventlog::FilteredMessageDependency*>;
-   %template(MessageEntryList) vector<omnetpp::eventlog::MessageEntry*>;
-
    %template(IntSet) set<int>;
-   %template(PtrSet) set<omnetpp::eventlog::ptr_t>;
 
    specialize_std_map_on_both(int,,,,int,,,);
    %template(IntIntMap) map<int,int>;
@@ -183,12 +153,9 @@ namespace std {
    %template(IntVector) vector<int>;
    %template(LongVector) vector<long>;
    %template(Int64Vector) vector<int64_t>;
-   %template(PtrVector) vector<omnetpp::eventlog::ptr_t>;
 };
 
 namespace omnetpp { namespace eventlog {
-
-%ignore EventLog::writeTrace;
 
 %define FIX_STRING_MEMBER(STRUCT,MEMBER,CAPITALIZEDMEMBER)
 %ignore STRUCT::MEMBER;
@@ -219,177 +186,15 @@ namespace omnetpp { namespace eventlog {
       return str;
    }
 
-   void delegateProgressToJava(IEventLog *eventLog, void *data)
-   {
-      JNIEnv *jenv = progressDelegateJenv;
-      jobject object = (jobject)data;
-      jclass clazz = jenv->GetObjectClass(object);
-      jmethodID progressMethod = jenv->GetMethodID(clazz, "progress", "()V");
-      jenv->ExceptionClear();
-      jenv->CallVoidMethod(object, progressMethod);
-
-       jthrowable exceptionObject = jenv->ExceptionOccurred();
-       if (exceptionObject)
-       {
-          jenv->ExceptionDescribe();
-          jenv->ExceptionClear();
-
-          jclass throwableClass = jenv->GetObjectClass(exceptionObject);
-          jmethodID method = jenv->GetMethodID(throwableClass, "toString", "()Ljava/lang/String;");
-          jstring msg = (jstring)jenv->CallObjectMethod(exceptionObject, method);
-          throw opp_runtime_error(fromJavaString(jenv, msg).c_str());
-      }
-   }
 %}
-
-%extend IEventLog {
-   void setJavaProgressMonitor(JNIEnv *jenv, jobject object) {
-      progressDelegateJenv = jenv;
-      ProgressMonitor newProgressMonitor(object ? &delegateProgressToJava : NULL, object ? jenv->NewGlobalRef(object) : NULL);
-      ProgressMonitor oldProgressMonitor = self->setProgressMonitor(newProgressMonitor);
-      jobject oldObject = (jobject)oldProgressMonitor.data;
-      if (oldObject)
-         jenv->DeleteGlobalRef(oldObject);
-   }
-}
 
 %typemap(in) JNIEnv * {
   $1 = jenv;
 }
 
-%typemap(javaout) EventLogEntry * {
-   return EventLogEntry.newEventLogEntry($jnicall, $owner);
-}
-
-%typemap(javaimports) EventLogEntry %{
-import java.lang.reflect.Constructor;
-%}
-
-%typemap(javacode) EventLogEntry %{
-
-   @SuppressWarnings("rawtypes")
-   private static Constructor[] eventLogEntryConstructors = new Constructor[100];
-
-   public long getCPtr() {
-      return swigCPtr;
-   }
-
-   public boolean equals(Object obj) {
-      return (obj instanceof EventLogEntry) && getCPtr(this)==getCPtr((EventLogEntry)obj);
-   }
-
-   public int hashCode() {
-      return (int)getCPtr(this);
-   }
-
-   @SuppressWarnings("rawtypes")
-   public static EventLogEntry newEventLogEntry(long cPtr, boolean isOwner) {
-      try {
-         if (cPtr == 0)
-            return null;
-
-         int index = EventLogEngineJNI.EventLogEntry_getClassIndex(cPtr, null);
-         Constructor constructor = eventLogEntryConstructors[index];
-
-         if (constructor == null)
-         {
-            String name = "org.omnetpp.eventlog.engine." + EventLogEngineJNI.EventLogEntry_getClassName(cPtr, null);
-            Class clazz = Class.forName(name);
-            constructor = clazz.getDeclaredConstructor(long.class, boolean.class);
-            eventLogEntryConstructors[index] = constructor;
-         }
-
-         return (EventLogEntry)constructor.newInstance(cPtr, isOwner);
-      }
-      catch (Exception e) {
-         throw new RuntimeException(e);
-      }
-   }
-%}
-
-%typemap(javaout) IMessageDependency * {
-   return IMessageDependency.newIMessageDependency($jnicall, $owner);
-}
-
-%typemap(javaimports) IMessageDependency %{
-import java.lang.reflect.Constructor;
-%}
-
-%typemap(javacode) IMessageDependency %{
-
-   @SuppressWarnings("rawtypes")
-   private static Constructor[] messageDependencyConstructors = new Constructor[100];
-
-   public long getCPtr() {
-       return swigCPtr;
-   }
-
-   public boolean equals(Object obj) {
-      return (obj instanceof IMessageDependency) && getCPtr(this)==getCPtr((IMessageDependency)obj);
-   }
-
-   public int hashCode() {
-      return (int)getCPtr(this);
-   }
-
-   @SuppressWarnings("rawtypes")
-   public static IMessageDependency newIMessageDependency(long cPtr, boolean isOwner) {
-      try {
-         if (cPtr == 0)
-            return null;
-
-         int index = EventLogEngineJNI.IMessageDependency_getClassIndex(cPtr, null);
-         Constructor constructor = messageDependencyConstructors[index];
-
-         if (constructor == null)
-         {
-            String name = "org.omnetpp.eventlog.engine." + EventLogEngineJNI.IMessageDependency_getClassName(cPtr, null);
-            Class clazz = Class.forName(name);
-            constructor = clazz.getDeclaredConstructor(long.class, boolean.class);
-            messageDependencyConstructors[index] = constructor;
-         }
-
-         return (IMessageDependency)constructor.newInstance(cPtr, isOwner);
-      }
-      catch (Exception e) {
-         throw new RuntimeException(e);
-      }
-   }
-%}
-
-%typemap(javacode) IEventLog %{
-    public IEventLog own() {
-        swigCMemOwn = true;
-        return this;
-    }
-
-    public IEventLog disown() {
-        swigCMemOwn = false;
-        return this;
-    }
-
-    public boolean equals(Object obj) {
-        return (obj instanceof IEventLog) && getCPtr(this)==getCPtr((IEventLog)obj);
-    }
-%}
-
-%typemap(javacode) IEvent %{
-    public long getCPtr() {
-        return swigCPtr;
-    }
-
-    public boolean equals(Object obj) {
-        return (obj instanceof IEvent) && getCPtr(this)==getCPtr((IEvent)obj);
-    }
-%}
-
-%newobject SequenceChartFacade::getComponentMethodBeginEntries;
-%newobject SequenceChartFacade::getIntersectingMessageDependencies;
-
 } } // namespaces
 
 
-%ignore eventLogStringPool;
 %ignore FILE;
 %ignore *::parse;
 %ignore *::print(FILE *);
@@ -406,39 +211,10 @@ import java.lang.reflect.Constructor;
 %ignore *::printCause(FILE *);
 %ignore *::printConsequence(FILE *);
 %ignore *::printMiddle(FILE *);
-%ignore omnetpp::eventlog::ProgressMonitor::ProgressMonitor(MonitorFunction);
-%ignore omnetpp::eventlog::ProgressMonitor::ProgressMonitor(MonitorFunction, void *);
-%ignore omnetpp::eventlog::ProgressMonitor::monitorFunction;
-%ignore omnetpp::eventlog::ProgressMonitor::data;
 
 namespace omnetpp { namespace eventlog {
 
-FIX_CHARPTR_MEMBER(EventLogMessageEntry, text, Text);
-FIX_CHARPTR_MEMBER(SimulationBeginEntry, runId, RunId);
-FIX_CHARPTR_MEMBER(BubbleEntry, text, Text);
-FIX_CHARPTR_MEMBER(ComponentMethodBeginEntry, method, Method);
-FIX_CHARPTR_MEMBER(ModuleCreatedEntry, moduleClassName, ModuleClassName);
-FIX_CHARPTR_MEMBER(ModuleCreatedEntry, fullName, FullName);
-FIX_CHARPTR_MEMBER(GateCreatedEntry, name, Name);
-FIX_CHARPTR_MEMBER(ConnectionDisplayStringChangedEntry, displayString, DisplayString);
-FIX_CHARPTR_MEMBER(ModuleDisplayStringChangedEntry, displayString, DisplayString);
-FIX_CHARPTR_MEMBER(BeginSendEntry, messageClassName, MessageClassName);
-FIX_CHARPTR_MEMBER(BeginSendEntry, messageName, MessageName);
-FIX_CHARPTR_MEMBER(BeginSendEntry, detail, Detail);
-
 } } // namespaces
 
-%include "eventlog/enums.h"
-%include "eventlog/ievent.h"
-%include "eventlog/ieventlog.h"
-%include "eventlog/event.h"
-%include "eventlog/filteredevent.h"
-%include "eventlog/messagedependency.h"
-%include "eventlog/eventlogentry.h"
-%include "eventlog/eventlogentries.h"
-%include "eventlog/eventlogindex.h"
-%include "eventlog/eventlog.h"
-%include "eventlog/eventlogfacade.h"
-%include "eventlog/eventlogtablefacade.h"
-%include "eventlog/sequencechartfacade.h"
-%include "eventlog/filteredeventlog.h"
+%include "omnetpp/platdep/platmisc.h"
+%include "common/filereader.h"
