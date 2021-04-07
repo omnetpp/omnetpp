@@ -54,6 +54,8 @@ import org.omnetpp.scave.engine.InterruptedFlag;
 public class TimeTriggeredProgressMonitorDialog2 extends ProgressMonitorDialog {
     public static final int DEFAULT_DELAY_MILLIS = 3000;
 
+    private boolean showBusyCursor = false;
+
     /**
      * The time considered to be the long operation time.
      */
@@ -69,6 +71,10 @@ public class TimeTriggeredProgressMonitorDialog2 extends ProgressMonitorDialog {
      */
     private static TimeTriggeredProgressMonitorDialog2 activeInstance;
 
+    public TimeTriggeredProgressMonitorDialog2(Shell parent, int delayMillis) {
+        this(parent, delayMillis, true);
+    }
+
     /**
      * Create a new instance of the receiver.
      *
@@ -78,10 +84,11 @@ public class TimeTriggeredProgressMonitorDialog2 extends ProgressMonitorDialog {
      *            the time (in milliseconds) considered to be a long enough
      *            execution time to warrant opening a dialog.
      */
-    public TimeTriggeredProgressMonitorDialog2(Shell parent, int delayMillis) {
+    public TimeTriggeredProgressMonitorDialog2(Shell parent, int delayMillis, boolean showBusyCursor) {
         super(parent);
         setOpenOnRun(false);
         this.delayMillis = delayMillis;
+        this.showBusyCursor = showBusyCursor;
     }
 
     @Override
@@ -140,7 +147,18 @@ public class TimeTriggeredProgressMonitorDialog2 extends ProgressMonitorDialog {
 
             InvocationTargetException[] invokes = new InvocationTargetException[1];
             InterruptedException[] interrupt = new InterruptedException[1];
-            BusyIndicator.showWhile(display, () -> {
+            if (showBusyCursor) {
+                BusyIndicator.showWhile(display, () -> {
+                    try {
+                        TimeTriggeredProgressMonitorDialog2.super.run(fork, cancelable, runnable);
+                    } catch (InvocationTargetException e) {
+                        invokes[0] = e;
+                    } catch (InterruptedException e) {
+                        interrupt[0]= e;
+                    }
+                });
+            }
+            else {
                 try {
                     TimeTriggeredProgressMonitorDialog2.super.run(fork, cancelable, runnable);
                 } catch (InvocationTargetException e) {
@@ -148,7 +166,7 @@ public class TimeTriggeredProgressMonitorDialog2 extends ProgressMonitorDialog {
                 } catch (InterruptedException e) {
                     interrupt[0]= e;
                 }
-            });
+            }
 
             if (!display.isDisposed())
                 display.timerExec(-1, openDialogRunnable);
