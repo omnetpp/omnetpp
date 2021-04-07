@@ -9,8 +9,8 @@ package org.omnetpp.common.eventlog;
 
 import org.eclipse.jface.viewers.ISelection;
 import org.omnetpp.common.ui.ViewWithMessagePart;
-import org.omnetpp.eventlog.engine.IEventLog;
-import org.omnetpp.eventlog.engine.SimulationBeginEntry;
+import org.omnetpp.eventlog.IEventLog;
+import org.omnetpp.eventlog.entry.SimulationBeginEntry;
 
 /**
  * Serves as a base class for views which show an event log file.

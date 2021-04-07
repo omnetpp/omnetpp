@@ -17,33 +17,20 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.INavigationHistory;
 import org.eclipse.ui.INavigationLocation;
 import org.eclipse.ui.INavigationLocationProvider;
 import org.eclipse.ui.IPathEditorInput;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
-import org.eclipse.ui.views.properties.IPropertySource;
-import org.eclipse.ui.views.properties.IPropertySourceProvider;
 import org.eclipse.ui.views.properties.PropertySheetPage;
-import org.omnetpp.common.simulation.ConnectionModel;
-import org.omnetpp.common.simulation.ConnectionModelPropertySource;
-import org.omnetpp.common.simulation.GateModel;
-import org.omnetpp.common.simulation.GateModelPropertySource;
-import org.omnetpp.common.simulation.MessageModel;
-import org.omnetpp.common.simulation.MessageModelPropertySource;
-import org.omnetpp.common.simulation.ModuleModel;
-import org.omnetpp.common.simulation.ModuleModelPropertySource;
-import org.omnetpp.common.simulation.QueueModel;
-import org.omnetpp.common.simulation.QueueModelPropertySource;
 import org.omnetpp.common.util.DetailedPartInitException;
-import org.omnetpp.eventlog.engine.EventLog;
-import org.omnetpp.eventlog.engine.EventLogEntry;
-import org.omnetpp.eventlog.engine.EventLogFacade;
+import org.omnetpp.eventlog.EventLog;
+import org.omnetpp.eventlog.IEventLog;
 import org.omnetpp.eventlog.engine.FileReader;
-import org.omnetpp.eventlog.engine.IEvent;
-import org.omnetpp.eventlog.engine.IEventLog;
-import org.omnetpp.eventlog.engine.SimulationBeginEntry;
+import org.omnetpp.eventlog.entry.SimulationBeginEntry;
 
 /**
  * Serves as a base class for editors which show an event log file.
@@ -51,14 +38,15 @@ import org.omnetpp.eventlog.engine.SimulationBeginEntry;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class EventLogEditor extends EditorPart implements IEventLogProvider, INavigationLocationProvider, IFollowSelectionSupport {
     protected boolean followSelection;
-
     protected Runnable locationTimer;
-
+    protected IFile file;
     protected EventLogInput eventLogInput;
-
     protected INavigationLocation lastLocation;
-
     protected PropertySheetPage propertySheetPage;
+
+    public PropertySheetPage getPropertySheetPage() {
+        return propertySheetPage;
+    }
 
     public boolean getFollowSelection() {
         return followSelection;
@@ -72,12 +60,8 @@ public abstract class EventLogEditor extends EditorPart implements IEventLogProv
         return eventLogInput.getEventLog();
     }
 
-    public EventLogFacade getSequenceChartFacade() {
-        return eventLogInput.getSequenceChartFacade();
-    }
-
     public IFile getFile() {
-        return eventLogInput.getFile();
+        return file;
     }
 
     @Override
@@ -89,11 +73,9 @@ public abstract class EventLogEditor extends EditorPart implements IEventLogProv
                         Assert.isTrue(Display.getCurrent() != null);
                         markLocation();
                     }
-                    catch (RuntimeException x) {
-                        if (eventLogInput.isFileChangedException(x))
-                            eventLogInput.synchronize(x);
-                        else
-                            throw x;
+                    catch (RuntimeException e) {
+                        if (!eventLogInput.isFileChangedException(e))
+                            throw e;
                     }
                 }
             };
@@ -114,8 +96,11 @@ public abstract class EventLogEditor extends EditorPart implements IEventLogProv
             else
                 throw new DetailedPartInitException("Invalid input, it must be a file in the workspace: " + input.getName(),
                     "Please make sure the project is open before trying to open a file in it.");
-            IEventLog eventLog = new EventLog(new FileReader(logFileName, /* EventLog will delete it */false));
-            eventLogInput = new EventLogInput(file, eventLog);
+
+            if (logFileName.endsWith("elog")) {
+                IEventLog eventLog = new EventLog(new FileReader(logFileName, 64 * 1024, /* EventLog will delete it */false));
+                eventLogInput = new EventLogInput(file, eventLog);
+            }
         }
         catch (RuntimeException e) {
             throw new PartInitException(e.getMessage(), e);
@@ -127,37 +112,7 @@ public abstract class EventLogEditor extends EditorPart implements IEventLogProv
         if (key.equals(IPropertySheetPage.class)) {
             if (propertySheetPage == null) {
                 propertySheetPage = new PropertySheetPage();
-                propertySheetPage.setPropertySourceProvider(new IPropertySourceProvider() {
-                    public IPropertySource getPropertySource(Object object) {
-                        // TODO: kill this case and let the others live as soon as
-                        // IEventLogSelection does not return the event numbers only and we can get more than that here
-                        if (object instanceof IPropertySource)
-                            return (IPropertySource)object;
-                        else if (object instanceof Long) {
-                            IEvent event = eventLogInput.getEventLog().getEventForEventNumber((Long)object);
-                            if (event == null)
-                                return null;
-                            else
-                                return new EventLogEntryPropertySource(event.getEventEntry());
-                        }
-                        else if (object instanceof EventLogEntry)
-                            return new EventLogEntryPropertySource((EventLogEntry)object);
-                        else if (object instanceof IEvent)
-                            return new EventLogEntryPropertySource(((IEvent)object).getEventEntry());
-                        else if (object instanceof ModuleModel)
-                            return new ModuleModelPropertySource(this, (ModuleModel)object);
-                        else if (object instanceof ConnectionModel)
-                            return new ConnectionModelPropertySource(this, (ConnectionModel)object);
-                        else if (object instanceof GateModel)
-                            return new GateModelPropertySource(this, (GateModel)object);
-                        else if (object instanceof MessageModel)
-                            return new MessageModelPropertySource(this, (MessageModel)object);
-                        else if (object instanceof QueueModel)
-                            return new QueueModelPropertySource(this, (QueueModel)object);
-                        else
-                            return null;
-                    }
-                });
+                propertySheetPage.setPropertySourceProvider(new EventLogPropertySourceProvider(this));
             }
 
             return propertySheetPage;
@@ -169,31 +124,32 @@ public abstract class EventLogEditor extends EditorPart implements IEventLogProv
 
     @Override
     public String getTitleToolTip() {
-        IEventLog eventLog = eventLogInput.getEventLog();
-
-        if (eventLog == null)
+        if (eventLogInput == null)
             return super.getTitleToolTip();
         else {
-            SimulationBeginEntry entry = eventLog.getSimulationBeginEntry();
-
-            if (entry == null)
+            IEventLog eventLog = eventLogInput.getEventLog();
+            if (eventLog == null)
                 return super.getTitleToolTip();
-            else
-                return super.getTitleToolTip() + " : " + entry.getRunId();
+            else {
+                SimulationBeginEntry entry = eventLog.getSimulationBeginEntry();
+                if (entry == null)
+                    return super.getTitleToolTip();
+                else
+                    return super.getTitleToolTip() + " : " + entry.getRunId();
+            }
         }
     }
 
     @Override
     public void dispose() {
         super.dispose();
-
         if (eventLogInput != null)
             eventLogInput.dispose();
     }
 
     protected void addLocationProviderPaintListener(Control control) {
         control.addPaintListener(new PaintListener() {
-            public void paintControl(PaintEvent e) {
+            public void paintControl(PaintEvent event) {
                 try {
                     if (eventLogInput != null && canCreateNavigationLocation()) {
                         INavigationLocation currentLocation = createNavigationLocation();
@@ -204,23 +160,26 @@ public abstract class EventLogEditor extends EditorPart implements IEventLogProv
                         }
                     }
                 }
-                catch (RuntimeException x) {
-                    if (eventLogInput.isFileChangedException(x))
-                        eventLogInput.synchronize(x);
-                    else
-                        throw x;
+                catch (RuntimeException e) {
+                    if (!eventLogInput.isFileChangedException(e))
+                        throw e;
                 }
             }
         });
     }
 
     protected boolean canCreateNavigationLocation() {
-        return !eventLogInput.getEventLog().isEmpty();
+        return eventLogInput != null && !eventLogInput.isCanceled() && !eventLogInput.getEventLog().isEmpty();
     }
 
     public void markLocation() {
         Assert.isTrue(Display.getCurrent() != null);
-        getSite().getPage().getNavigationHistory().markLocation(this);
+        IWorkbenchPage page = getSite().getPage();
+        if (page != null) {
+            INavigationHistory navigationHistory = page.getNavigationHistory();
+            if (navigationHistory != null)
+                navigationHistory.markLocation(this);
+        }
     }
 
     @Override

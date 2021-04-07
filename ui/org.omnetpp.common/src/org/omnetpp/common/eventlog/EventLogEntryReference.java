@@ -8,33 +8,31 @@
 package org.omnetpp.common.eventlog;
 
 import org.eclipse.core.runtime.Assert;
-import org.omnetpp.eventlog.engine.EventLogEntry;
-import org.omnetpp.eventlog.engine.IEvent;
-import org.omnetpp.eventlog.engine.IEventLog;
+import org.omnetpp.eventlog.EventLogEntry;
+import org.omnetpp.eventlog.IEvent;
+import org.omnetpp.eventlog.IEventLog;
 
 public class EventLogEntryReference {
     private long eventNumber;
 
-    private int eventEntryIndex;
+    private int entryIndex;
 
-    public EventLogEntryReference(long eventNumber, int eventEntryIndex) {
+    public EventLogEntryReference(long eventNumber, int entryIndex) {
         this.eventNumber = eventNumber;
-        this.eventEntryIndex = eventEntryIndex;
+        this.entryIndex = entryIndex;
+        Assert.isTrue(eventNumber != -1 && entryIndex != -1);
     }
 
     public EventLogEntryReference(EventLogEntry eventLogEntry) {
-        IEvent event = eventLogEntry.getEvent();
-        eventNumber = event.getEventNumber();
-        eventEntryIndex = eventLogEntry.getEntryIndex();
-        Assert.isTrue(eventNumber != -1 && eventEntryIndex != -1);
+        this(eventLogEntry.getEventNumber(), eventLogEntry.getEntryIndex());
     }
 
     public long getEventNumber() {
         return eventNumber;
     }
 
-    public int getEventEntryIndex() {
-        return eventEntryIndex;
+    public int getEntryIndex() {
+        return entryIndex;
     }
 
     public IEvent getEvent(EventLogInput eventLogInput) {
@@ -50,7 +48,7 @@ public class EventLogEntryReference {
     }
 
     public EventLogEntry getEventLogEntry(IEventLog eventLog) {
-        return eventLog.getEventForEventNumber(eventNumber).getEventLogEntry(eventEntryIndex);
+        return eventLog.getEventForEventNumber(eventNumber).getEventLogEntry(entryIndex);
     }
 
     public boolean isPresent(IEventLog eventLog) {
@@ -59,14 +57,14 @@ public class EventLogEntryReference {
 
     @Override
     public String toString() {
-        return "#" + eventNumber + ":" + eventEntryIndex;
+        return "#" + eventNumber + ":" + entryIndex;
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + eventEntryIndex;
+        result = prime * result + entryIndex;
         result = prime * result + (int) (eventNumber ^ (eventNumber >>> 32));
         return result;
     }
@@ -80,7 +78,7 @@ public class EventLogEntryReference {
         if (getClass() != obj.getClass())
             return false;
         EventLogEntryReference other = (EventLogEntryReference) obj;
-        if (eventEntryIndex != other.eventEntryIndex)
+        if (entryIndex != other.entryIndex)
             return false;
         if (eventNumber != other.eventNumber)
             return false;

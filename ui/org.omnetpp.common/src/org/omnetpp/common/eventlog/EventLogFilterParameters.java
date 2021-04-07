@@ -15,8 +15,8 @@ import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.eventlog.engine.IEvent;
-import org.omnetpp.eventlog.engine.IEventLog;
+import org.omnetpp.eventlog.IEvent;
+import org.omnetpp.eventlog.IEventLog;
 import org.omnetpp.eventlog.engine.Int64Vector;
 import org.omnetpp.eventlog.engine.IntVector;
 import org.omnetpp.eventlog.engine.LongVector;

@@ -42,4 +42,9 @@ public interface IEventLogChangeListener {
      * Called when a long running event log operation has done some progress.
      */
     public void eventLogProgress();
+
+    /**
+     * Called when synchronization fails due to file changes caused by the simulation runtime environment.
+     */
+    public void eventLogSynchronizationFailed();
 }

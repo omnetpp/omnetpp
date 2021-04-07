@@ -11,7 +11,7 @@ import java.util.List;
 
 import org.eclipse.jface.viewers.ISelection;
 import org.omnetpp.common.engine.BigDecimal;
-import org.omnetpp.eventlog.engine.IEventLog;
+import org.omnetpp.eventlog.IEventLog;
 
 /**
  * Selection that is published by event log editors/viewers.

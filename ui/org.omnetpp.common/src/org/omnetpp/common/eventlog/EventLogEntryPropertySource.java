@@ -7,10 +7,12 @@
 
 package org.omnetpp.common.eventlog;
 
+import java.util.ArrayList;
+
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
-import org.omnetpp.eventlog.engine.EventLogEntry;
+import org.omnetpp.eventlog.EventLogEntry;
 import org.omnetpp.eventlog.engine.PStringVector;
 
 public class EventLogEntryPropertySource implements IPropertySource {
@@ -25,7 +27,7 @@ public class EventLogEntryPropertySource implements IPropertySource {
     }
 
     public IPropertyDescriptor[] getPropertyDescriptors() {
-        PStringVector names = eventLogEntry.getAttributeNames();
+        ArrayList<String> names = eventLogEntry.getAttributeNames();
         IPropertyDescriptor[] descriptors = new IPropertyDescriptor[(int) names.size()];
 
         for (int i = 0; i < names.size(); i++) {

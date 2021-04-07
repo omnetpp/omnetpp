@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog2;
 
 /**
- * Manages potentially long running event log operations.
+ * Manages potentially long-running event log operations.
  */
 public class EventLogProgressManager {
     private ProgressMonitorDialog progressDialog;
@@ -35,9 +35,9 @@ public class EventLogProgressManager {
         return progressDialog != null;
     }
 
-    public void runWithProgressMonitor(final Runnable runnable) throws InvocationTargetException, InterruptedException {
+    public void runWithProgressMonitor(final IRunnableWithProgress runnable) throws InvocationTargetException, InterruptedException {
         try {
-            progressDialog = new TimeTriggeredProgressMonitorDialog2(Display.getCurrent().getActiveShell(), 1000);
+            progressDialog = new TimeTriggeredProgressMonitorDialog2(Display.getCurrent().getActiveShell(), 3000, false);
             progressDialog.setOpenOnRun(false);
             progressDialog.run(false, true, new IRunnableWithProgress() {
                 public void run(IProgressMonitor progressMonitor)
@@ -45,9 +45,11 @@ public class EventLogProgressManager {
                 {
                     try {
                         EventLogProgressManager.this.progressMonitor = progressMonitor;
-                        progressMonitor.beginTask("A long running event log operation is in progress. Please wait or press Cancel to abort.", IProgressMonitor.UNKNOWN);
-                        runnable.run();
-                        progressMonitor.done();
+                        if (progressMonitor != null)
+                            progressMonitor.beginTask("A long-running eventlog operation is in progress. Please wait or press Cancel to abort.", IProgressMonitor.UNKNOWN);
+                        runnable.run(progressMonitor);
+                        if (progressMonitor != null)
+                            progressMonitor.done();
                     }
                     finally {
                         EventLogProgressManager.this.progressMonitor = null;
@@ -58,10 +60,5 @@ public class EventLogProgressManager {
         finally {
             progressDialog = null;
         }
-    }
-
-    public void showProgressDialog() {
-        if (!progressDialog.getShell().isVisible())
-            progressDialog.open();
     }
 }

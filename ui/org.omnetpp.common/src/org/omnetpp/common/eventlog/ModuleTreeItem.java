@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
+import org.omnetpp.common.engineext.IMatchableObject;
 
 
 /**
@@ -19,7 +20,7 @@ import org.eclipse.core.runtime.Assert;
  *
  * @author andras
  */
-public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
+public class ModuleTreeItem implements Comparable<ModuleTreeItem>, IMatchableObject {
     private int moduleId = -1;
 
     private boolean isCompoundModule;
@@ -72,6 +73,7 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
     private void addSubmodule(ModuleTreeItem submodule) {
         getRootModule().getModuleIdToModuleMap().put(submodule.getModuleId(), submodule);
         submodules.add(submodule);
+        isCompoundModule = true;
     }
 
     public void remove() {
@@ -244,6 +246,18 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
             }
         });
         return count[0];
+    }
+
+    @Override
+    public String getAsString() {
+        return getModuleName();
+    }
+
+    @Override
+    public String getAsString(String name) {
+        if ("name".equals(name))
+            return getModuleName();
+        return null;
     }
 
     @Override

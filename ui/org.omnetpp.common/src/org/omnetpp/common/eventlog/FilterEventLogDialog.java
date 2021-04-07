@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.IInputValidator;
@@ -66,12 +67,11 @@ import org.omnetpp.common.ui.GenericTreeLabelProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.UIUtils;
-import org.omnetpp.eventlog.engine.BeginSendEntry;
-import org.omnetpp.eventlog.engine.EventLogEntry;
-import org.omnetpp.eventlog.engine.IEventLog;
-import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
-import org.omnetpp.eventlog.engine.ModuleCreatedEntryList;
-import org.omnetpp.eventlog.engine.PStringVector;
+import org.omnetpp.eventlog.EventLogEntry;
+import org.omnetpp.eventlog.IEventLog;
+import org.omnetpp.eventlog.entry.BeginSendEntry;
+import org.omnetpp.eventlog.entry.ModuleCreatedEntry;
+import org.omnetpp.eventlog.entry.ModuleDescriptionEntry;
 
 @SuppressWarnings("unused")
 public class FilterEventLogDialog
@@ -585,7 +585,8 @@ public class FilterEventLogDialog
     protected Control createDialogArea(Composite parent) {
         final Composite container = new Composite((Composite)super.createDialogArea(parent), SWT.NONE);
         GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
-        gridData.heightHint = 400;
+        gridData.widthHint = 800;
+        gridData.heightHint = 600;
         container.setLayoutData(gridData);
         container.setLayout(new GridLayout(2, false));
 
@@ -862,12 +863,12 @@ public class FilterEventLogDialog
             }
         });
 
-        ModuleCreatedEntryList moduleCreatedEntryList = eventLog.getModuleCreatedEntries();
+        ArrayList<ModuleDescriptionEntry> moduleDescriptionEntryList = eventLog.getEventLogEntryCache().getModuleDescriptionEntries();
         Set<String> moduleNEDTypeNameSet = new HashSet<String>();
-        for (int i = 0; i < moduleCreatedEntryList.size(); i++) {
-            ModuleCreatedEntry moduleCreatedEntry = moduleCreatedEntryList.get(i);
-            if (moduleCreatedEntry != null)
-                moduleNEDTypeNameSet.add(moduleCreatedEntry.getNedTypeName());
+        for (int i = 0; i < moduleDescriptionEntryList.size(); i++) {
+            ModuleDescriptionEntry moduleDescriptionEntry = moduleDescriptionEntryList.get(i);
+            if (moduleDescriptionEntry != null)
+                moduleNEDTypeNameSet.add(moduleDescriptionEntry.getNedTypeName());
         }
 
         String[] moduleNEDTypeNamesAsStrings = moduleNEDTypeNameSet.toArray(new String[0]);
@@ -921,12 +922,12 @@ public class FilterEventLogDialog
                 updateFilterDescription();
             }
         });
-        ModuleCreatedEntryList moduleCreatedEntries = eventLog.getModuleCreatedEntries();
+        ArrayList<ModuleDescriptionEntry> moduleCreatedEntries = eventLog.getEventLogEntryCache().getModuleDescriptionEntries();
         for (int i = 0; i < moduleCreatedEntries.size(); i++) {
-            ModuleCreatedEntry moduleCreatedEntry = moduleCreatedEntries.get(i);
+            ModuleDescriptionEntry moduleDescriptionEntry = moduleCreatedEntries.get(i);
 
-            if (moduleCreatedEntry != null)
-                moduleIds.add(moduleCreatedEntry.getModuleId());
+            if (moduleDescriptionEntry != null)
+                moduleIds.add(moduleDescriptionEntry.getModuleId());
         }
 
         return enableModuleFilter;
@@ -961,10 +962,8 @@ public class FilterEventLogDialog
 
         label = createLabel(panel, "Message classes encountered so far:", null, 2);
 
-        PStringVector names = eventLog.getMessageClassNames().keys();
-        String[] messageClassNamesAsStrings = new String[(int)names.size()];
-        for (int i = 0; i < names.size(); i++)
-            messageClassNamesAsStrings[i] = names.get(i);
+        TreeSet<String> names = eventLog.getMessageClassNames();
+        String[] messageClassNamesAsStrings = names.toArray(new String[0]);
         Collections.sort(Arrays.asList(messageClassNamesAsStrings), StringUtils.dictionaryComparator);
 
         messageClassNames = CheckboxTableViewer.newCheckList(panel, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
@@ -987,10 +986,8 @@ public class FilterEventLogDialog
 
         label = createLabel(panel, "Message names encountered so far:", null, 2);
 
-        names = eventLog.getMessageNames().keys();
-        String[] messageNamesAsStrings = new String[(int)names.size()];
-        for (int i = 0; i < names.size(); i++)
-            messageNamesAsStrings[i] = names.get(i);
+        names = eventLog.getMessageNames();
+        String[] messageNamesAsStrings = names.toArray(new String[0]);
         Collections.sort(Arrays.asList(messageNamesAsStrings), StringUtils.dictionaryComparator);
 
         messageNames = CheckboxTableViewer.newCheckList(panel, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);

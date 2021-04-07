@@ -7,7 +7,7 @@
 
 package org.omnetpp.common.eventlog;
 
-import org.omnetpp.eventlog.engine.IEventLog;
+import org.omnetpp.eventlog.IEventLog;
 
 public interface IEventLogProvider {
     public IEventLog getEventLog();

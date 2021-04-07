@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.engine.BigDecimal;
-import org.omnetpp.eventlog.engine.IEventLog;
+import org.omnetpp.eventlog.IEventLog;
 
 /**
  * Selection that is published by event log editors and viewers.

@@ -4,21 +4,23 @@ import org.eclipse.jface.dialogs.IInputValidator;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.engine.Expression;
 import org.omnetpp.common.ui.InputDialog;
-import org.omnetpp.eventlog.engine.IEventLog;
+import org.omnetpp.eventlog.IEvent;
+import org.omnetpp.eventlog.IEventLog;
 
 public class GotoSimulationTimeDialog extends InputDialog {
     private BigDecimal baseSimulationTime;
 
     public GotoSimulationTimeDialog(final IEventLog eventLog, final BigDecimal baseSimulationTime) {
         super(null, "Go to Simulation Time", "Enter an absolute simulation time, or start with a '+' or '-' sign to indicate relative positioning. Time units and expressions are also accepted.", null, new IInputValidator() {
+            @Override
             public String isValid(String newText) {
                 try {
+                    IEvent lastEvent = eventLog == null ? null : eventLog.getLastEvent();
                     BigDecimal simulationTime = getSimulationTime(baseSimulationTime, newText);
-                    BigDecimal endTime = eventLog.getLastEvent().getSimulationTime();
                     if (simulationTime.less(BigDecimal.getZero()))
-                        return "Result ("+ simulationTime + "s) is negative";
-                    else if (simulationTime.greater(endTime))
-                        return "Result ("+ simulationTime + "s) is beyond the end (" + endTime +"s)";
+                        return "The resulting simulation time is negative: " + simulationTime;
+                    else if (lastEvent != null && simulationTime.greater(lastEvent.getSimulationTime()))
+                        return "The resulting simulation time is beyond the end: " + simulationTime;
                     else
                         return null;
                 }

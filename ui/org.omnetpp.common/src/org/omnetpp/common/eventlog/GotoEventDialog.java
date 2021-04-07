@@ -2,8 +2,8 @@ package org.omnetpp.common.eventlog;
 
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.omnetpp.common.ui.InputDialog;
-import org.omnetpp.eventlog.engine.IEvent;
-import org.omnetpp.eventlog.engine.IEventLog;
+import org.omnetpp.eventlog.IEvent;
+import org.omnetpp.eventlog.IEventLog;
 
 public class GotoEventDialog extends InputDialog {
     private IEventLog eventLog;
@@ -12,18 +12,23 @@ public class GotoEventDialog extends InputDialog {
         super(null, "Go to Event", "Enter the event number to go to:", null, new IInputValidator() {
             public String isValid(String newText) {
                 try {
-                    int eventNumber = Integer.parseInt(newText);
+                    long eventNumber = Long.parseLong(newText);
                     if (eventNumber >= 0) {
-                        IEvent event = getEvent(eventLog, newText);
-                        if (event == null)
-                            return "No such event";
-                        else
+                        if (eventLog == null)
                             return null;
+                        else {
+                            IEvent event = eventLog.getEventForEventNumber(eventNumber);
+                            if (event == null)
+                                return "No such event";
+                            else
+                                return null;
+                        }
                     }
                     else
                         return "Negative event number";
                 }
                 catch (Exception e) {
+                    e.printStackTrace();;
                     return "Not a number";
                 }
             }
@@ -31,12 +36,16 @@ public class GotoEventDialog extends InputDialog {
         this.eventLog = eventLog;
     }
 
-    public IEvent getEvent() {
-        return getEvent(eventLog, getValue());
+    public long getEventNumber() {
+        try {
+            return Long.parseLong(getValue());
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    private static IEvent getEvent(IEventLog eventLog, String text) {
-        int eventNumber = Integer.parseInt(text);
-        return eventLog.getEventForEventNumber(eventNumber);
+    public IEvent getEvent() {
+        return eventLog.getEventForEventNumber(getEventNumber());
     }
 }
