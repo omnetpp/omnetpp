@@ -14,6 +14,7 @@
 #include "common/expression.h"
 #include "common/stringtokenizer2.h"
 #include "common/fileutil.h"
+#include "common/linetokenizer.h"
 
 using namespace omnetpp::common;
 %}
@@ -244,3 +245,6 @@ std::vector<std::string> collectMatchingFiles(const char *globstarPattern);
 
 } } // namespaces
 
+/* -------------------- linetokenizer.h -------------------------- */
+
+%include "common/linetokenizer.h"
