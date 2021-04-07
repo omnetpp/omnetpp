@@ -185,7 +185,9 @@ Export-Package: au.com.bytecode.opencsv,
  org.omnetpp.common.wizard.support,
  org.omnetpp.common.wizards,
  org.omnetpp.common.wizardwizard,
- org.omnetpp.common.xml;uses:="org.xml.sax.helpers,org.xml.sax"
+ org.omnetpp.common.xml;uses:="org.xml.sax.helpers,org.xml.sax",
+ org.omnetpp.eventlog,
+ org.omnetpp.eventlog.entry
 Bundle-ClassPath: .,
  lib/commons-codec-1.6.jar,
  lib/commons-collections-3.2.1.jar,
