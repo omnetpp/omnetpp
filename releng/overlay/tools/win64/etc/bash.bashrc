@@ -68,6 +68,7 @@ export OMNETPP_ROOT=$HOME
 export TERM=xterm-256color
 
 export PATH=".:${OMNETPP_ROOT}/bin:/opt/mingw64/bin:${PATH}"
+export PYTHONPATH=${OMNETPP_ROOT}/python:${PYTHONPATH}
 
 # source the git completion script if exsist
 if [ -f "/usr/share/bash-completion/completions/git" ] ; then
