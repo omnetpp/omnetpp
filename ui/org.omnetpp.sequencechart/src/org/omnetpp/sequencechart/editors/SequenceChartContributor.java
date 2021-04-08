@@ -41,9 +41,12 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gmf.runtime.draw2d.ui.render.awt.internal.svg.export.GraphicsSVG;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ActionContributionItem;
+import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuCreator;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -51,6 +54,8 @@ import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.SubToolBarManager;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.InputDialog;
@@ -88,6 +93,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IWorkbenchPart;
@@ -118,19 +124,20 @@ import org.omnetpp.common.eventlog.IEventLogChangeListener;
 import org.omnetpp.common.eventlog.IEventLogSelection;
 import org.omnetpp.common.eventlog.IFollowSelectionSupport;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
+import org.omnetpp.common.eventlog.ModuleTreeItem.IModuleTreeItemVisitor;
 import org.omnetpp.common.eventlog.ModuleTreeViewer;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.TimeUtils;
 import org.omnetpp.common.util.UIUtils;
-import org.omnetpp.eventlog.engine.ComponentMethodBeginEntry;
+import org.omnetpp.eventlog.FilteredEventLog;
+import org.omnetpp.eventlog.IEvent;
+import org.omnetpp.eventlog.IEventLog;
+import org.omnetpp.eventlog.IMessageDependency;
+import org.omnetpp.eventlog.SequenceChartFacade;
+import org.omnetpp.eventlog.TimelineMode;
 import org.omnetpp.eventlog.engine.FileReader;
-import org.omnetpp.eventlog.engine.FilteredEventLog;
-import org.omnetpp.eventlog.engine.IEvent;
-import org.omnetpp.eventlog.engine.IEventLog;
-import org.omnetpp.eventlog.engine.IMessageDependency;
-import org.omnetpp.eventlog.engine.IMessageDependencyList;
-import org.omnetpp.eventlog.engine.MessageEntry;
-import org.omnetpp.eventlog.engine.SequenceChartFacade;
+import org.omnetpp.eventlog.entry.ComponentMethodBeginEntry;
+import org.omnetpp.eventlog.entry.MessageDescriptionEntry;
 import org.omnetpp.ned.core.NedResources;
 import org.omnetpp.ned.core.ui.misc.ModuleTreeItemLabelProvider;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
@@ -143,9 +150,11 @@ import org.omnetpp.scave.engine.ScaveEngine;
 import org.omnetpp.scave.engine.XYArrayVector;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.sequencechart.SequenceChartPlugin;
+import org.omnetpp.sequencechart.widgets.ConfigureStyleDialog;
 import org.omnetpp.sequencechart.widgets.SequenceChart;
 import org.omnetpp.sequencechart.widgets.SequenceChart.AxisSpacingMode;
 import org.omnetpp.sequencechart.widgets.axisrenderer.AxisLineRenderer;
+import org.omnetpp.sequencechart.widgets.axisrenderer.AxisMultiRenderer;
 import org.omnetpp.sequencechart.widgets.axisrenderer.AxisVectorBarRenderer;
 import org.omnetpp.sequencechart.widgets.axisrenderer.IAxisRenderer;
 
@@ -156,6 +165,8 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
     private static final String IMAGE_PRESET_CONFIGURATION = TOOL_IMAGE_DIR + "presetconfiguration.png";
     private static final String IMAGE_TIMELINE_MODE = TOOL_IMAGE_DIR + "timelinemode.png";
     private static final String IMAGE_AXIS_ORDERING_MODE = TOOL_IMAGE_DIR + "axisordering.gif";
+    private static final String IMAGE_CONFIGURE_STYLE = TOOL_IMAGE_DIR + "configurestyle.png";
+    private static final String IMAGE_SHOW_HIDE = TOOL_IMAGE_DIR + "showhide.png";
     private static final String IMAGE_SHOW_ARROW_HEADS = TOOL_IMAGE_DIR + "arrowhead.png";
     private static final String IMAGE_SHOW_AXES = TOOL_IMAGE_DIR + "axes.png";
     private static final String IMAGE_SHOW_AXIS_HEADERS = TOOL_IMAGE_DIR + "axisheaders.png";
@@ -195,7 +206,9 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
     private SequenceChartMenuAction presetConfigurationAction;
     private SequenceChartMenuAction timelineModeAction;
     private SequenceChartMenuAction axisOrderingModeAction;
+    private SequenceChartMenuAction showHideAction;
     private SequenceChartAction filterAction;
+    private SequenceChartAction configureStyleAction;
     private SequenceChartAction showArrowHeadsAction;
     private SequenceChartAction showAxesAction;
     private SequenceChartAction showAxisHeadersAction;
@@ -232,6 +245,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
     private SequenceChartAction balancedAxesAction;
     private SequenceChartAction toggleBookmarkAction;
     private SequenceChartAction releaseMemoryAction;
+    private SequenceChartAction selfTestAction;
     private SequenceChartAction copyToClipboardAction;
     private SequenceChartAction exportToSVGAction;
     private SequenceChartAction refreshAction;
@@ -248,7 +262,9 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
         this.presetConfigurationAction = createPresetConfigurationAction();
         this.timelineModeAction = createTimelineModeAction();
         this.axisOrderingModeAction = createAxisOrderingModeAction();
+        this.showHideAction = createShowHideAction();
         this.filterAction = createFilterAction();
+        this.configureStyleAction = createConfigureStyleAction();
         this.showEventLogInfoAction = createShowEventLogInfoAction();
         this.showPositionAndRangeAction = createShowPositionAndRangeAction();
         this.showInitializationEventAction = createShowInitializationEventAction();
@@ -286,6 +302,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
         this.toggleBookmarkAction = createToggleBookmarkAction();
         this.copyToClipboardAction = createCopyToClipboardAction();
         this.releaseMemoryAction = createReleaseMemoryAction();
+        this.selfTestAction = createSelfTestAction();
         this.refreshAction = createRefreshAction();
         this.pinAction = createPinAction();
         this.exportToSVGAction = createExportToSVGAction();
@@ -331,66 +348,66 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
             @Override
             public IMenuCreator getMenuCreator() {
                 return new AbstractMenuCreator() {
+                    protected ArrayList<ModuleTreeItem> collectAxiesModules(String property) {
+                        ArrayList<ModuleTreeItem> axisModules = new ArrayList<ModuleTreeItem>();
+                        collectAxiesModules(property, axisModules);
+                        return axisModules;
+                    }
+
+                    protected void collectAxiesModules(String property, ArrayList<ModuleTreeItem> axisModules) {
+                        ModuleTreeItem root = sequenceChart.getInput().getModuleTreeRoot();
+                        if (root != null) {
+                            root.visitItems(new IModuleTreeItemVisitor() {
+                                @Override
+                                public void visit(ModuleTreeItem treeItem) {
+                                    IProject project = sequenceChart.getInput().getFile().getProject();
+                                    String typeName = treeItem.getNedTypeName();
+                                    INedTypeInfo typeInfo = NedResources.getInstance().getToplevelNedType(typeName, project);
+                                    if (typeInfo != null && typeInfo.getProperty(property, null) != null)
+                                        axisModules.add(treeItem);
+                                }
+                            });
+                        }
+                    }
+
                     @Override
                     protected void createMenu(Menu menu) {
-                        addSubMenuItem(menu, "Network Communication", new Runnable() {
+                        addSubMenuItem(menu, "Network Node", new Runnable() {
                             @Override
                             public void run() {
-                                ArrayList<ModuleTreeItem> axisModules = new ArrayList<ModuleTreeItem>();
-                                for (ModuleTreeItem submoduleTreeItem : sequenceChart.getInput().getModuleTreeRoot().getSubmodules()) {
-                                    IProject project = sequenceChart.getInput().getFile().getProject();
-                                    String typeName = submoduleTreeItem.getNedTypeName();
-                                    INedTypeInfo typeInfo = NedResources.getInstance().getToplevelNedType(typeName, project);
-                                    if (typeInfo != null && typeInfo.getProperty("networkNode", null) != null)
-                                        axisModules.add(submoduleTreeItem);
-                                }
+                                ArrayList<ModuleTreeItem> axisModules = collectAxiesModules("networkNode");
                                 sequenceChart.setOpenAxisModules(axisModules);
-                                sequenceChart.setShowAll(false);
-                                sequenceChart.setShowPositionAndRange(true);
-                                sequenceChart.setShowArrowHeads(true);
-                                sequenceChart.setShowAxes(true);
-                                sequenceChart.setShowAxisHeaders(true);
-                                sequenceChart.setShowAxisLabels(true);
-                                sequenceChart.setShowHairlines(true);
-                                sequenceChart.setShowMessageNames(true);
-                                sequenceChart.setShowMessageSends(true);
-                                sequenceChart.setShowTimeDifferences(true);
-                                sequenceChart.setShowTransmissionDurations(true);
+                                sequenceChart.setShowNetworkCommunication();
                             }
                         });
+                        addSubMenuItem(menu, "Network Interface", new Runnable() {
+                            @Override
+                            public void run() {
+                                // TODO: factor out with the above
+                                ArrayList<ModuleTreeItem> axisModules = collectAxiesModules("networkInterface");
+                                sequenceChart.setOpenAxisModules(axisModules);
+                                sequenceChart.setShowNetworkCommunication();
+                            }
+                        });
+                        new MenuItem(menu, SWT.SEPARATOR);
                         addSubMenuItem(menu, "Full Detail", new Runnable() {
                             @Override
                             public void run() {
-                                sequenceChart.openModuleRecursively(sequenceChart.getInput().getModuleTreeRoot());
+                                ModuleTreeItem root = sequenceChart.getInput().getModuleTreeRoot();
+                                if (root != null)
+                                    sequenceChart.openModuleRecursively(root);
                                 sequenceChart.setShowAll(true);
                             }
                         });
-
                         addSubMenuItem(menu, "Default", new Runnable() {
                             @Override
                             public void run() {
-                                sequenceChart.openModule(sequenceChart.getInput().getModuleTreeRoot());
-                                sequenceChart.setShowAll(false);
-                                sequenceChart.setShowArrowHeads(true);
-                                sequenceChart.setShowAxes(true);
-                                sequenceChart.setShowAxisHeaders(true);
-                                sequenceChart.setShowAxisLabels(true);
-                                sequenceChart.setShowAxisVectorData(true);
-                                sequenceChart.setShowComponentMethodCalls(true);
-                                sequenceChart.setShowEventMarks(true);
-                                sequenceChart.setShowEventNumbers(true);
-                                sequenceChart.setShowHairlines(true);
-                                sequenceChart.setShowMessageNames(true);
-                                sequenceChart.setShowMessageSends(true);
-                                sequenceChart.setShowMethodNames(true);
-                                sequenceChart.setShowPositionAndRange(true);
-                                sequenceChart.setShowSelfMessageSends(true);
-                                sequenceChart.setShowTimeDifferences(true);
-                                sequenceChart.setShowTransmissionDurations(true);
-                                sequenceChart.setShowZeroSimulationTimeRegions(true);
+                                ModuleTreeItem root = sequenceChart.getInput().getModuleTreeRoot();
+                                if (root != null)
+                                    sequenceChart.openModule(root);
+                                sequenceChart.setShowDefault();
                             }
                         });
-
                         addSubMenuItem(menu, "Empty", new Runnable() {
                             @Override
                             public void run() {
@@ -572,7 +589,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                     IMenuManager messagesSubmenu = new MenuManager(sequenceChart.getLabelProvider().getMessageDependencyText(messageDependency, false));
                     menuManager.add(messagesSubmenu);
 
-                    messagesSubmenu.add(createFilterMessageAction(messageDependency.getMessageEntry()));
+                    messagesSubmenu.add(createFilterMessageAction(messageDependency.getBeginMessageDescriptionEntry()));
                     messagesSubmenu.add(createGotoCauseAction(messageDependency));
                     messagesSubmenu.add(createGotoConsequenceAction(messageDependency));
                     messagesSubmenu.add(createZoomToMessageAction(messageDependency));
@@ -672,6 +689,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                 menuManager.add(timelineModeAction);
                 menuManager.add(axisOrderingModeAction);
                 menuManager.add(filterAction);
+                menuManager.add(configureStyleAction);
                 menuManager.add(new Separator());
 
                 menuManager.add(zoomSubmenu);
@@ -691,6 +709,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                 menuManager.add(pinAction);
                 menuManager.add(createRefreshCommandContributionItem());
                 menuManager.add(releaseMemoryAction);
+                menuManager.add(selfTestAction);
                 menuManager.add(new Separator());
 
                 menuManager.add(copyToClipboardAction);
@@ -714,6 +733,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
         toolBarManager.add(timelineModeAction);
         toolBarManager.add(axisOrderingModeAction);
         toolBarManager.add(filterAction);
+        toolBarManager.add(configureStyleAction);
         toolBarManager.add(new Separator());
         toolBarManager.add(increaseSpacingAction);
         toolBarManager.add(decreaseSpacingAction);
@@ -721,38 +741,11 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
         toolBarManager.add(zoomInAction);
         toolBarManager.add(zoomOutAction);
         toolBarManager.add(new Separator());
-        toolBarManager.add(showMessageSendsAction);
-        toolBarManager.add(showSelfMessageSendsAction);
-        toolBarManager.add(showComponentMethodCallsAction);
-        toolBarManager.add(showMessageReusesAction);
-        toolBarManager.add(showSelfMessageReusesAction);
-        toolBarManager.add(showMixedMessageDependenciesAction);
-        toolBarManager.add(showMixedSelfMessageDependenciesAction);
-        toolBarManager.add(new Separator());
-        toolBarManager.add(showAxisLabelsAction);
-        toolBarManager.add(showAxisVectorDataAction);
-        toolBarManager.add(showEventNumbersAction);
-        toolBarManager.add(showEventMarksAction);
-        toolBarManager.add(showMessageNamesAction);
-        toolBarManager.add(showMethodNamesAction);
-        toolBarManager.add(showArrowHeadsAction);
-        toolBarManager.add(new Separator());
-        toolBarManager.add(showEmptyAxesAction);
-        toolBarManager.add(showInitializationEventAction);
-        toolBarManager.add(showTimeDifferencesAction);
-        toolBarManager.add(showTransmissionDurationsAction);
-        toolBarManager.add(showZeroSimulationTimeRegionsAction);
-        toolBarManager.add(showAxisHeadersAction);
-        toolBarManager.add(showAxesAction);
-        toolBarManager.add(showHairlinesAction);
-        toolBarManager.add(new Separator());
-        toolBarManager.add(showPositionAndRangeAction);
-        toolBarManager.add(showAxisInfoAction);
-        toolBarManager.add(showEventLogInfoAction);
-        toolBarManager.add(new Separator());
-        toolBarManager.add(refreshAction);
         if (view)
             toolBarManager.add(pinAction);
+        toolBarManager.add(refreshAction);
+        toolBarManager.add(new Separator());
+        toolBarManager.add(showHideAction);
     }
 
     @Override
@@ -832,48 +825,65 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
         update();
     }
 
+    @Override
     public void eventLogAppended() {
         // void
     }
 
+    @Override
     public void eventLogOverwritten() {
         // void
     }
 
+    @Override
     public void eventLogFilterRemoved() {
         update();
     }
 
+    @Override
     public void eventLogFiltered() {
         update();
     }
 
+    @Override
     public void eventLogLongOperationEnded() {
         update();
     }
 
+    @Override
     public void eventLogLongOperationStarted() {
         update();
     }
 
+    @Override
     public void eventLogProgress() {
         // void
     }
 
+    @Override
+    public void eventLogSynchronizationFailed() {
+        // void
+    }
+
+    @Override
     public void partActivated(IWorkbenchPart part) {
         update();
     }
 
+    @Override
     public void partBroughtToTop(IWorkbenchPart part) {
     }
 
+    @Override
     public void partClosed(IWorkbenchPart part) {
     }
 
+    @Override
     public void partDeactivated(IWorkbenchPart part) {
         update();
     }
 
+    @Override
     public void partOpened(IWorkbenchPart part) {
     }
 
@@ -897,7 +907,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
         return new SequenceChartMenuAction("Timeline Mode", Action.AS_DROP_DOWN_MENU, SequenceChartPlugin.getImageDescriptor(IMAGE_TIMELINE_MODE)) {
             @Override
             protected void doRun() {
-                sequenceChart.setTimelineMode(EventLogInput.TimelineMode.values()[(sequenceChart.getTimelineMode().ordinal() + 1) % EventLogInput.TimelineMode.values().length]);
+                sequenceChart.setTimelineMode(TimelineMode.values()[(sequenceChart.getTimelineMode().ordinal() + 1) % TimelineMode.values().length]);
                 timelineModeStatus.update();
                 update();
             }
@@ -912,34 +922,43 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                 return new AbstractMenuCreator() {
                     @Override
                     protected void createMenu(Menu menu) {
-                        addSubMenuItem(menu, "Linear", EventLogInput.TimelineMode.SIMULATION_TIME);
-                        addSubMenuItem(menu, "Event number", EventLogInput.TimelineMode.EVENT_NUMBER);
-                        addSubMenuItem(menu, "Step", EventLogInput.TimelineMode.STEP);
-                        addSubMenuItem(menu, "Nonlinear", EventLogInput.TimelineMode.NONLINEAR);
+                        addSubMenuItem(menu, "Linear", TimelineMode.SIMULATION_TIME);
+                        addSubMenuItem(menu, "Event number", TimelineMode.EVENT_NUMBER);
+                        addSubMenuItem(menu, "Step", TimelineMode.STEP);
+                        addSubMenuItem(menu, "Nonlinear", TimelineMode.NONLINEAR);
 
                         MenuItem subMenuItem = new MenuItem(menu, SWT.RADIO);
                         subMenuItem.setText("Custom nonlinear...");
                         subMenuItem.addSelectionListener( new SelectionAdapter() {
                             @Override
-                            public void widgetSelected(SelectionEvent e) {
-                                TitleAreaDialog dialog = new CustomNonlinearOptionsDialog(Display.getCurrent().getActiveShell(), sequenceChart);
-                                dialog.open();
+                            public void widgetSelected(SelectionEvent selectionEvent) {
+                                try {
+                                    TitleAreaDialog dialog = new CustomNonlinearOptionsDialog(Display.getCurrent().getActiveShell(), sequenceChart);
+                                    dialog.open();
+                                }
+                                catch (RuntimeException e) {
+                                    sequenceChart.handleRuntimeException(e);
+                                }
                             }
                         });
                     }
 
-                    private void addSubMenuItem(Menu menu, String text, final EventLogInput.TimelineMode timelineMode) {
+                    private void addSubMenuItem(Menu menu, String text, final TimelineMode timelineMode) {
                         MenuItem subMenuItem = new MenuItem(menu, SWT.RADIO);
                         subMenuItem.setText(text);
                         subMenuItem.addSelectionListener( new SelectionAdapter() {
                             @Override
-                            public void widgetSelected(SelectionEvent e) {
-                                MenuItem menuItem = (MenuItem)e.widget;
-
-                                if (menuItem.getSelection()) {
-                                    sequenceChart.setTimelineMode(timelineMode);
-                                    timelineModeStatus.update();
-                                    update();
+                            public void widgetSelected(SelectionEvent selectionEvent) {
+                                try {
+                                    MenuItem menuItem = (MenuItem)selectionEvent.widget;
+                                    if (menuItem.getSelection()) {
+                                        sequenceChart.setTimelineMode(timelineMode);
+                                        timelineModeStatus.update();
+                                        update();
+                                    }
+                                }
+                                catch (RuntimeException e) {
+                                    sequenceChart.handleRuntimeException(e);
                                 }
                             }
                         });
@@ -978,21 +997,35 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                         subMenuItem.setText(text);
                         subMenuItem.addSelectionListener( new SelectionAdapter() {
                             @Override
-                            public void widgetSelected(SelectionEvent e) {
-                                MenuItem menuItem = (MenuItem)e.widget;
-
-                                if (menuItem.getSelection()) {
-                                    if (axisOrderingMode == SequenceChart.AxisOrderingMode.MANUAL &&
-                                        sequenceChart.showManualOrderingDialog() == Window.CANCEL)
-                                        return;
-
-                                    sequenceChart.setAxisOrderingMode(axisOrderingMode);
-                                    update();
+                            public void widgetSelected(SelectionEvent selectionEvent) {
+                                try {
+                                    MenuItem menuItem = (MenuItem)selectionEvent.widget;
+                                    if (menuItem.getSelection()) {
+                                        if (axisOrderingMode == SequenceChart.AxisOrderingMode.MANUAL &&
+                                            sequenceChart.showManualOrderingDialog() == Window.CANCEL)
+                                            return;
+                                        sequenceChart.setAxisOrderingMode(axisOrderingMode);
+                                        update();
+                                    }
+                                }
+                                catch (RuntimeException e) {
+                                    sequenceChart.handleRuntimeException(e);
                                 }
                             }
                         });
                     }
                 };
+            }
+        };
+    }
+
+    private SequenceChartAction createConfigureStyleAction() {
+        return new SequenceChartAction("Configure Style", Action.AS_PUSH_BUTTON, SequenceChartPlugin.getImageDescriptor(IMAGE_CONFIGURE_STYLE)) {
+            @Override
+            protected void doRun() {
+                ConfigureStyleDialog dialog = new ConfigureStyleDialog(Display.getCurrent().getActiveShell(), sequenceChart.getSequenceChartSettings());
+                if (dialog.open() == Window.OK)
+                    sequenceChart.setSequenceChartSettings(dialog.getSequenceChartSettings());
             }
         };
     }
@@ -1041,12 +1074,16 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                         subMenuItem.setText(text);
                         subMenuItem.addSelectionListener( new SelectionAdapter() {
                             @Override
-                            public void widgetSelected(SelectionEvent e) {
-                                MenuItem menuItem = (MenuItem)e.widget;
-
-                                if (menuItem.getSelection()) {
-                                    runnable.run();
-                                    update();
+                            public void widgetSelected(SelectionEvent selectionEvent) {
+                                try {
+                                    MenuItem menuItem = (MenuItem)selectionEvent.widget;
+                                    if (menuItem.getSelection()) {
+                                        runnable.run();
+                                        update();
+                                    }
+                                }
+                                catch (RuntimeException e) {
+                                    sequenceChart.handleRuntimeException(e);
                                 }
                             }
                         });
@@ -1122,6 +1159,93 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
             private boolean isFilteredEventLog() {
                 return getEventLog() instanceof FilteredEventLog;
+            }
+        };
+    }
+
+    private SequenceChartMenuAction createShowHideAction() {
+        return new SequenceChartMenuAction("Show/Hide", Action.AS_DROP_DOWN_MENU, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_HIDE)) {
+            private boolean visible = false;
+
+            private SubToolBarManager subToolBarManager;
+
+            private ArrayList<IContributionItem> createContributionItems() {
+                ArrayList<IContributionItem> actions = new ArrayList<IContributionItem>();
+                actions.add(new ActionContributionItem(showMessageSendsAction));
+                actions.add(new ActionContributionItem(showSelfMessageSendsAction));
+                actions.add(new ActionContributionItem(showComponentMethodCallsAction));
+                actions.add(new ActionContributionItem(showMessageReusesAction));
+                actions.add(new ActionContributionItem(showSelfMessageReusesAction));
+                actions.add(new ActionContributionItem(showMixedMessageDependenciesAction));
+                actions.add(new ActionContributionItem(showMixedSelfMessageDependenciesAction));
+                actions.add(new Separator());
+                actions.add(new ActionContributionItem(showAxisLabelsAction));
+                actions.add(new ActionContributionItem(showAxisVectorDataAction));
+                actions.add(new ActionContributionItem(showEventNumbersAction));
+                actions.add(new ActionContributionItem(showEventMarksAction));
+                actions.add(new ActionContributionItem(showMessageNamesAction));
+                actions.add(new ActionContributionItem(showMethodNamesAction));
+                actions.add(new ActionContributionItem(showArrowHeadsAction));
+                actions.add(new Separator());
+                actions.add(new ActionContributionItem(showEmptyAxesAction));
+                actions.add(new ActionContributionItem(showInitializationEventAction));
+                actions.add(new ActionContributionItem(showTimeDifferencesAction));
+                actions.add(new ActionContributionItem(showTransmissionDurationsAction));
+                actions.add(new ActionContributionItem(showZeroSimulationTimeRegionsAction));
+                actions.add(new ActionContributionItem(showAxisHeadersAction));
+                actions.add(new ActionContributionItem(showAxesAction));
+                actions.add(new ActionContributionItem(showHairlinesAction));
+                actions.add(new Separator());
+                actions.add(new ActionContributionItem(showPositionAndRangeAction));
+                actions.add(new ActionContributionItem(showAxisInfoAction));
+                actions.add(new ActionContributionItem(showEventLogInfoAction));
+                return actions;
+            }
+
+            private SubToolBarManager createSubToolBarManager(IToolBarManager toolBarManager) {
+                SubToolBarManager subToolBarManager = new SubToolBarManager(toolBarManager);
+                for (IContributionItem item : createContributionItems())
+                    subToolBarManager.add(item);
+                return subToolBarManager;
+            }
+
+            @Override
+            protected void doRun() {
+                visible = !visible;
+                update();
+            }
+
+            @Override
+            protected int getMenuIndex() {
+                return -1;
+            }
+
+            @Override
+            protected void updateMenu(Menu menu) {
+            }
+
+            @Override
+            public void update() {
+                super.update();
+                IActionBars actionBars = getActionBars();
+                if (actionBars != null) {
+                    IToolBarManager toolBarManager = actionBars.getToolBarManager();
+                    if (subToolBarManager == null)
+                        subToolBarManager = createSubToolBarManager(toolBarManager);
+                    subToolBarManager.setVisible(visible);
+                    toolBarManager.update(true);
+                }
+            }
+
+            @Override
+            public IMenuCreator getMenuCreator() {
+                return new AbstractMenuCreator() {
+                    @Override
+                    protected void createMenu(Menu menu) {
+                        for (IContributionItem item : createContributionItems())
+                            item.fill(menu, -1);
+                    }
+                };
             }
         };
     }
@@ -1631,7 +1755,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
         };
     }
 
-    private SequenceChartAction createFilterMessageAction(final MessageEntry messageEntry) {
+    private SequenceChartAction createFilterMessageAction(final MessageDescriptionEntry messageDescriptionEntry) {
         return new SequenceChartAction("Filter Message...", Action.AS_PUSH_BUTTON) {
             @Override
             protected void doRun() {
@@ -1646,7 +1770,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
                 if (filterParameters.messageEncapsulationTreeIds != null) {
                     for (EventLogFilterParameters.EnabledInt messageEncapsulationTreeId : filterParameters.messageEncapsulationTreeIds) {
-                        if (messageEncapsulationTreeId.value == messageEntry.getMessageEncapsulationId()) {
+                        if (messageEncapsulationTreeId.value == messageDescriptionEntry.getMessageEncapsulationId()) {
                             enabledInt = messageEncapsulationTreeId;
                             messageEncapsulationTreeId.enabled = true;
                         }
@@ -1656,15 +1780,15 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                 }
 
                 if (enabledInt == null) {
-                    enabledInt = new EventLogFilterParameters.EnabledInt(true, messageEntry.getMessageEncapsulationTreeId());
+                    enabledInt = new EventLogFilterParameters.EnabledInt(true, (int)messageDescriptionEntry.getMessageEncapsulationTreeId());
                     filterParameters.messageEncapsulationTreeIds = (EventLogFilterParameters.EnabledInt[])ArrayUtils.add(filterParameters.messageEncapsulationTreeIds, enabledInt);
                 }
 
                 // range filter
                 filterParameters.enableRangeFilter = true;
                 filterParameters.enableEventNumberRangeFilter = true;
-                filterParameters.lowerEventNumberLimit = Math.max(0, messageEntry.getEvent().getEventNumber() - 1000);
-                filterParameters.upperEventNumberLimit = Math.min(getEventLog().getLastEvent().getEventNumber(), messageEntry.getEvent().getEventNumber() + 1000);
+                filterParameters.lowerEventNumberLimit = Math.max(0, messageDescriptionEntry.getEvent().getEventNumber() - 1000);
+                filterParameters.upperEventNumberLimit = Math.min(getEventLog().getLastEvent().getEventNumber(), messageDescriptionEntry.getEvent().getEventNumber() + 1000);
 
                 if (!(getEventLog() instanceof FilteredEventLog) &&
                     (filterParameters.isAnyEventFilterEnabled() || filterParameters.isAnyMessageFilterEnabled() || filterParameters.isAnyModuleFilterEnabled()))
@@ -1749,6 +1873,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                         return !(element instanceof IFile) || "vec".equals(((IFile)element).getFileExtension());
                     }
                 });
+                vectorFileDialog.setDialogBoundsSettings(UIUtils.getDialogSettings(SequenceChartPlugin.getDefault(), "SequanceChartVectorFileSelection"), Dialog.DIALOG_PERSISTSIZE + Dialog.DIALOG_PERSISTLOCATION);
 
                 if (vectorFileDialog.open() == IDialogConstants.CANCEL_ID)
                     return;
@@ -1756,99 +1881,103 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                 String vectorFileName = ((IResource)vectorFileDialog.getFirstResult()).getLocation().toOSString();
 
                 // load vector file
-                ResultFile resultFile = null;
                 final ResultFileManagerEx resultFileManager = new ResultFileManagerEx();
-                try {
-                    int loadFlags = ResultFileManagerEx.RELOAD_IF_CHANGED | ResultFileManagerEx.IGNORE_LOCK_FILE | ResultFileManagerEx.ALLOW_LOADING_WITHOUT_INDEX;
-                    resultFile = resultFileManager.loadFile(vectorFileName, vectorFileName, loadFlags, null); //TODO would be better to do this from a job that's interruptible
-                    Assert.isNotNull(resultFile); // could only happen if loadFlags contain some "SKIP" flag, but it doesn't
-                }
-                catch (Throwable te) {
-                    MessageDialog.openError(null, "Error", "Could not load vector file " + vectorFileName);
-                    return;
-                }
-
-                // select a run
-                Run run = null;
-                RunList runList = resultFileManager.getRunsInFile(resultFile);
-                String eventlogRunName = getEventLog().getSimulationBeginEntry().getRunId();
-                if (runList.size() == 0) {
-                    MessageBox messageBox = new MessageBox(Display.getCurrent().getActiveShell(), SWT.OK | SWT.APPLICATION_MODAL | SWT.ICON_ERROR);
-                    messageBox.setText("No runs in result file");
-                    messageBox.setMessage("The result file " + vectorFileName + " does not contain any runs");
-                    messageBox.open();
-                    return;
-                }
-                else if (runList.size() == 1)
-                    run = runList.get(0);
-                else if (runList.size() > 1) {
-                    ElementListSelectionDialog dialog = new ElementListSelectionDialog(null, new LabelProvider() {
-                        @Override
-                        public String getText(Object element) {
-                            Run run = (Run)element;
-
-                            return run.getRunName();
-                        }
-                    });
-                    dialog.setFilter(eventlogRunName);
-                    dialog.setElements(runList.toArray());
-                    dialog.setTitle("Run selection");
-                    dialog.setMessage("Select a run to browse for vectors:");
-                    if (dialog.open() == ListDialog.CANCEL)
+                ResultFileManagerEx.runWithWriteLock(resultFileManager, () -> {
+                    ResultFile resultFile = null;
+                    try {
+                        int loadFlags = ResultFileManagerEx.RELOAD_IF_CHANGED | ResultFileManagerEx.IGNORE_LOCK_FILE | ResultFileManagerEx.ALLOW_LOADING_WITHOUT_INDEX;
+                        resultFile = resultFileManager.loadFile(vectorFileName, vectorFileName, loadFlags, null); //TODO would be better to do this from a job that's interruptible
+                        Assert.isNotNull(resultFile); // could only happen if loadFlags contain some "SKIP" flag, but it doesn't
+                    }
+                    catch (Throwable te) {
+                        MessageDialog.openError(null, "Error", "Could not load vector file " + vectorFileName);
                         return;
-                    run = (Run)dialog.getFirstResult();
-                }
+                    }
 
-                // compare eventlog run id against vector file's run id
-                String vectorRunName = run.getRunName();
-                if (!eventlogRunName.equals(vectorRunName)) {
-                    MessageBox messageBox = new MessageBox(Display.getCurrent().getActiveShell(), SWT.OK | SWT.CANCEL | SWT.APPLICATION_MODAL | SWT.ICON_WARNING);
-                    messageBox.setText("Run ID mismatch");
-                    messageBox.setMessage("The eventlog run ID: " + eventlogRunName + " and the vector file run ID: " + vectorRunName + " does not match. Do you want to continue?");
-
-                    if (messageBox.open() == SWT.CANCEL)
+                    // select a run
+                    Run run = null;
+                    RunList runList = resultFileManager.getRunsInFile(resultFile);
+                    String eventlogRunName = getEventLog().getSimulationBeginEntry().getRunId();
+                    if (runList.size() == 0) {
+                        MessageBox messageBox = new MessageBox(Display.getCurrent().getActiveShell(), SWT.OK | SWT.APPLICATION_MODAL | SWT.ICON_ERROR);
+                        messageBox.setText("No runs in result file");
+                        messageBox.setMessage("The result file " + vectorFileName + " does not contain any runs");
+                        messageBox.open();
                         return;
-                }
+                    }
+                    else if (runList.size() == 1)
+                        run = runList.get(0);
+                    else if (runList.size() > 1) {
+                        ElementListSelectionDialog dialog = new ElementListSelectionDialog(null, new LabelProvider() {
+                            @Override
+                            public String getText(Object element) {
+                                Run run = (Run)element;
+                                return run.getRunName();
+                            }
+                        });
+                        dialog.setFilter(eventlogRunName);
+                        dialog.setElements(runList.toArray());
+                        dialog.setTitle("Run selection");
+                        dialog.setMessage("Select a run to browse for vectors:");
+                        dialog.setDialogBoundsSettings(UIUtils.getDialogSettings(SequenceChartPlugin.getDefault(), "SequanceChartRunSelection"), Dialog.DIALOG_PERSISTSIZE + Dialog.DIALOG_PERSISTLOCATION);
+                        if (dialog.open() == ListDialog.CANCEL)
+                            return;
+                        run = (Run)dialog.getFirstResult();
+                    }
 
-                // select a vector from the loaded file and run
-                long id;
-                IDList idList = resultFileManager.getVectorsInFileRun(resultFileManager.getFileRun(resultFile, run));
+                    // compare eventlog run id against vector file's run id
+                    String vectorRunName = run.getRunName();
+                    if (!eventlogRunName.equals(vectorRunName)) {
+                        MessageBox messageBox = new MessageBox(Display.getCurrent().getActiveShell(), SWT.OK | SWT.CANCEL | SWT.APPLICATION_MODAL | SWT.ICON_WARNING);
+                        messageBox.setText("Run ID mismatch");
+                        messageBox.setMessage("The eventlog run ID: " + eventlogRunName + " and the vector file run ID: " + vectorRunName + " does not match. Do you want to continue?");
 
-                if (idList.size() == 0) {
-                    MessageBox messageBox = new MessageBox(Display.getCurrent().getActiveShell(), SWT.OK | SWT.APPLICATION_MODAL | SWT.ICON_ERROR);
-                    messageBox.setText("No vectors in run");
-                    messageBox.setMessage("The run " + run.getRunName() + " in the vector file " + vectorFileName + " does not contain any vectors");
-                    messageBox.open();
-                    return;
-                }
-                else {
-                    ElementListSelectionDialog dialog = new ElementListSelectionDialog(null, new LabelProvider() {
-                        @Override
-                        public String getText(Object element) {
-                            long id = (Long)element;
-                            ResultItem resultItem = resultFileManager.getItem(id);
+                        if (messageBox.open() == SWT.CANCEL)
+                            return;
+                    }
 
-                            return resultItem.getModuleName() + ":" + resultItem.getName();
-                        }
-                    });
-                    Long[] ids = new Long[idList.size()];
-                    for (int i = 0; i < idList.size(); i++)
-                        ids[i] = idList.get(i);
-                    dialog.setFilter(axisModule.getModuleFullPath());
-                    dialog.setElements(ids);
-                    dialog.setTitle("Vector selection");
-                    dialog.setMessage("Select a vector to attach:");
-                    if (dialog.open() == ListDialog.CANCEL)
+                    // select a vector from the loaded file and run
+                    long id;
+                    IDList idList = resultFileManager.getVectorsInFileRun(resultFileManager.getFileRun(resultFile, run));
+
+                    if (idList.size() == 0) {
+                        MessageBox messageBox = new MessageBox(Display.getCurrent().getActiveShell(), SWT.OK | SWT.APPLICATION_MODAL | SWT.ICON_ERROR);
+                        messageBox.setText("No vectors in run");
+                        messageBox.setMessage("The run " + run.getRunName() + " in the vector file " + vectorFileName + " does not contain any vectors");
+                        messageBox.open();
                         return;
-                    id = (Long)dialog.getFirstResult();
-                }
+                    }
+                    else {
+                        ElementListSelectionDialog dialog = new ElementListSelectionDialog(null, new LabelProvider() {
+                            @Override
+                            public String getText(Object element) {
+                                long id = (Long)element;
+                                ResultItem resultItem = resultFileManager.getItem(id);
 
-                // attach vector data
-                ResultItem resultItem = resultFileManager.getItem(id);
-                IDList selectedIdList = new IDList(id);
-                XYArrayVector dataVector = ScaveEngine.readVectorsIntoArrays2(resultFileManager, selectedIdList, true, true);
-                IAxisRenderer axisRenderer = new AxisVectorBarRenderer(sequenceChart, vectorFileName, vectorRunName, resultItem.getModuleName(), resultItem.getName(), resultItem, dataVector, 0);
-                sequenceChart.setAxisRenderer(axisModule, axisRenderer);
+                                return resultItem.getModuleName() + ":" + resultItem.getName();
+                            }
+                        });
+                        Long[] ids = new Long[idList.size()];
+                        for (int i = 0; i < idList.size(); i++)
+                            ids[i] = idList.get(i);
+                        dialog.setFilter(axisModule.getModuleFullPath());
+                        dialog.setElements(ids);
+                        dialog.setTitle("Vector selection");
+                        dialog.setMessage("Select a vector to attach:");
+                        dialog.setDialogBoundsSettings(UIUtils.getDialogSettings(SequenceChartPlugin.getDefault(), "SequanceChartVectorSelection"), Dialog.DIALOG_PERSISTSIZE + Dialog.DIALOG_PERSISTLOCATION);
+                        if (dialog.open() == ListDialog.CANCEL)
+                            return;
+                        id = (Long)dialog.getFirstResult();
+                    }
+
+                    // attach vector data
+                    ResultItem resultItem = resultFileManager.getItem(id);
+                    IDList selectedIdList = new IDList(id);
+                    XYArrayVector dataVector = ScaveEngine.readVectorsIntoArrays2(resultFileManager, selectedIdList, true, true);
+                    IAxisRenderer axisRenderer = new AxisVectorBarRenderer(sequenceChart, vectorFileName, vectorRunName, resultItem.getModuleName(), resultItem.getName(), resultItem, dataVector, 0);
+                    axisRenderer = new AxisMultiRenderer(new IAxisRenderer[] {new AxisLineRenderer(sequenceChart, axisModule), axisRenderer}, 1);
+                    sequenceChart.setAxisRenderer(axisModule, axisRenderer);
+                });
             }
         };
     }
@@ -1909,7 +2038,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                                     for (Object object : selectedObjects) {
                                         if (object instanceof IMessageDependency) {
                                             IMessageDependency selectedMessageDependency = (IMessageDependency)object;
-                                            if (selectedMessageDependency.getCPtr() == markedMessageDependency.getCPtr()) {
+                                            if (selectedMessageDependency == markedMessageDependency) {
                                                 selectedObjects.remove(selectedMessageDependency);
                                                 marker.delete();
                                                 break;
@@ -1927,7 +2056,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                                     for (Object object : selectedObjects) {
                                         if (object instanceof ComponentMethodBeginEntry) {
                                             ComponentMethodBeginEntry selectedComponentMethodBeginEntry = (ComponentMethodBeginEntry)object;
-                                            if (selectedComponentMethodBeginEntry.getCPtr() == markedComponentMethodBeginEntry.getCPtr()) {
+                                            if (selectedComponentMethodBeginEntry == markedComponentMethodBeginEntry) {
                                                 selectedObjects.remove(selectedComponentMethodBeginEntry);
                                                 marker.delete();
                                                 break;
@@ -1970,27 +2099,27 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                                     else if (object instanceof IMessageDependency) {
                                         IMessageDependency messageDependency = (IMessageDependency)object;
                                         IMarker marker = file.createMarker(IMarker.BOOKMARK);
-                                        marker.setAttribute(IMarker.LOCATION, "#" + messageDependency.getCauseEvent().getEventNumber() + " : " + messageDependency.getMessageEntry().getMessageId());
+                                        marker.setAttribute(IMarker.LOCATION, "#" + messageDependency.getCauseEvent().getEventNumber() + " : " + messageDependency.getBeginMessageDescriptionEntry().getMessageId());
                                         marker.setAttribute(IMarker.MESSAGE, dialog.getValue());
                                         marker.setAttribute("Kind", "MessageDependency");
                                         marker.setAttribute("EventNumber", String.valueOf(messageDependency.getCauseEvent().getEventNumber()));
-                                        marker.setAttribute("MessageId", String.valueOf(messageDependency.getMessageEntry().getMessageId()));
-                                        IMessageDependencyList messageDependencyList = messageDependency.getCauseEvent().getConsequences();
+                                        marker.setAttribute("MessageId", String.valueOf(messageDependency.getBeginMessageDescriptionEntry().getMessageId()));
+                                        ArrayList<IMessageDependency> messageDependencyList = messageDependency.getCauseEvent().getConsequences();
                                         int index;
                                         for (index = 0; index < messageDependencyList.size(); index++)
-                                            if (messageDependencyList.get(index).getCPtr() == messageDependency.getCPtr())
+                                            if (messageDependencyList.get(index) == messageDependency)
                                                 break;
                                         marker.setAttribute("MessageDependencyIndex", String.valueOf(index));
                                     }
                                     else if (object instanceof ComponentMethodBeginEntry) {
                                         ComponentMethodBeginEntry componentMethodBeginEntry = (ComponentMethodBeginEntry)object;
                                         IMarker marker = file.createMarker(IMarker.BOOKMARK);
-                                        marker.setAttribute(IMarker.LOCATION, "#" + componentMethodBeginEntry.getEvent().getEventNumber() + " : " + componentMethodBeginEntry.getMethod());
+                                        marker.setAttribute(IMarker.LOCATION, "#" + componentMethodBeginEntry.getEvent().getEventNumber() + " : " + componentMethodBeginEntry.getMethodName());
                                         marker.setAttribute(IMarker.MESSAGE, dialog.getValue());
                                         marker.setAttribute("Kind", "ComponentMethodCall");
                                         marker.setAttribute("EventNumber", String.valueOf(componentMethodBeginEntry.getEvent().getEventNumber()));
                                         marker.setAttribute("EventLogEntryIndex", String.valueOf(componentMethodBeginEntry.getEntryIndex()));
-                                        marker.setAttribute("MethodName", componentMethodBeginEntry.getMethod());
+                                        marker.setAttribute("MethodName", componentMethodBeginEntry.getMethodName());
                                     }
                                     else if (object instanceof BigDecimal) {
                                         BigDecimal simulationTime = (BigDecimal)object;
@@ -2095,12 +2224,12 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                             IEvent e1 = selectionEvents.get(1);
 
                             if (e0.getEventNumber() < e1.getEventNumber()) {
-                                exportBeginX = sequenceChart.getEventXViewportCoordinateBegin(e0.getCPtr());
-                                exportEndX = sequenceChart.getEventXViewportCoordinateBegin(e1.getCPtr());
+                                exportBeginX = sequenceChart.getEventXViewportCoordinateBegin(e0);
+                                exportEndX = sequenceChart.getEventXViewportCoordinateBegin(e1);
                             }
                             else {
-                                exportBeginX = sequenceChart.getEventXViewportCoordinateBegin(e1.getCPtr());
-                                exportEndX = sequenceChart.getEventXViewportCoordinateBegin(e0.getCPtr());
+                                exportBeginX = sequenceChart.getEventXViewportCoordinateBegin(e1);
+                                exportEndX = sequenceChart.getEventXViewportCoordinateBegin(e0);
                             }
                             break;
                         case 1:
@@ -2108,8 +2237,8 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                             exportEndX = sequenceChart.getViewportWidth();
                             break;
                         case 2:
-                            exportBeginX = sequenceChart.getEventXViewportCoordinateBegin(eventLog.getFirstEvent().getCPtr());
-                            exportEndX = sequenceChart.getEventXViewportCoordinateBegin(eventLog.getLastEvent().getCPtr());
+                            exportBeginX = sequenceChart.getEventXViewportCoordinateBegin(eventLog.getFirstEvent());
+                            exportEndX = sequenceChart.getEventXViewportCoordinateBegin(eventLog.getLastEvent());
                             break;
                         default:
                             return null;
@@ -2286,6 +2415,16 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
         };
     }
 
+    private SequenceChartAction createSelfTestAction() {
+        return new SequenceChartAction("Self Test", Action.AS_PUSH_BUTTON, SequenceChartPlugin.getImageDescriptor(IMAGE_RELEASE_MEMORY)) {
+            @Override
+            protected void doRun() {
+                Job job = new SequenceChartSelfTestJob(sequenceChart);
+                job.schedule();
+            }
+        };
+    }
+
     private StatusLineContributionItem createTimelineModeStatus() {
         return new StatusLineContributionItem("Timeline Mode", true, "SIMULATION_TIME".length()) {
             @Override
@@ -2446,9 +2585,14 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
             try {
                 doRun();
             }
-            catch (Exception e) {
-                MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Internal error: " + e.toString());
-                SequenceChartPlugin.logError(e);
+            catch (RuntimeException e) {
+                try {
+                    sequenceChart.handleRuntimeException(e);
+                }
+                catch (RuntimeException x) {
+                    MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Internal error: " + x.toString());
+                    SequenceChartPlugin.logError(x);
+                }
             }
         }
 

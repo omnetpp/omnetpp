@@ -8,6 +8,7 @@
 package org.omnetpp.sequencechart.widgets.axisrenderer;
 
 import org.eclipse.draw2d.Graphics;
+import org.omnetpp.eventlog.IEvent;
 
 public class AxisMultiRenderer implements IAxisRenderer {
     private IAxisRenderer[] axisRenderers;
@@ -22,6 +23,10 @@ public class AxisMultiRenderer implements IAxisRenderer {
         return axisRenderers.length;
     }
 
+    public IAxisRenderer getRenderer(int index) {
+        return axisRenderers[index];
+    }
+
     public int getSelectedRendererIndex() {
         return selectedRendererIndex;
     }
@@ -34,7 +39,7 @@ public class AxisMultiRenderer implements IAxisRenderer {
         return axisRenderers[selectedRendererIndex].getHeight();
     }
 
-    public void drawAxis(Graphics graphics, long startEventPtr, long endEventPtr) {
-        axisRenderers[selectedRendererIndex].drawAxis(graphics, startEventPtr, endEventPtr);
+    public void drawAxis(Graphics graphics, IEvent startEvent, IEvent endEvent) {
+        axisRenderers[selectedRendererIndex].drawAxis(graphics, startEvent, endEvent);
     }
 }

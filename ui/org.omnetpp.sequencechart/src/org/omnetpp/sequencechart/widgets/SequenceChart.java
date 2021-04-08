@@ -38,6 +38,7 @@ import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.util.SafeRunnable;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -80,7 +81,6 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.eventlog.EventLogFilterParameters;
 import org.omnetpp.common.eventlog.EventLogFindTextDialog;
 import org.omnetpp.common.eventlog.EventLogInput;
-import org.omnetpp.common.eventlog.EventLogInput.TimelineMode;
 import org.omnetpp.common.eventlog.EventLogSelection;
 import org.omnetpp.common.eventlog.EventNumberRangeSet;
 import org.omnetpp.common.eventlog.IEventLogChangeListener;
@@ -96,25 +96,32 @@ import org.omnetpp.common.util.Pair;
 import org.omnetpp.common.util.PersistentResourcePropertyManager;
 import org.omnetpp.common.util.TimeUtils;
 import org.omnetpp.common.virtualtable.IVirtualContentWidget;
-import org.omnetpp.eventlog.engine.ComponentMethodBeginEntry;
-import org.omnetpp.eventlog.engine.EventLogEntry;
+import org.omnetpp.eventlog.EventLogEntry;
+import org.omnetpp.eventlog.FilteredEventLog;
+import org.omnetpp.eventlog.FilteredMessageDependency;
+import org.omnetpp.eventlog.IEvent;
+import org.omnetpp.eventlog.IEventLog;
+import org.omnetpp.eventlog.IMessageDependency;
+import org.omnetpp.eventlog.MessageReuseDependency;
+import org.omnetpp.eventlog.SequenceChartFacade;
+import org.omnetpp.eventlog.TimelineMode;
 import org.omnetpp.eventlog.engine.FileReader;
-import org.omnetpp.eventlog.engine.FilteredEventLog;
-import org.omnetpp.eventlog.engine.FilteredMessageDependency;
-import org.omnetpp.eventlog.engine.IEvent;
-import org.omnetpp.eventlog.engine.IEventLog;
-import org.omnetpp.eventlog.engine.IMessageDependency;
-import org.omnetpp.eventlog.engine.IMessageDependencyList;
-import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
-import org.omnetpp.eventlog.engine.PtrVector;
-import org.omnetpp.eventlog.engine.SequenceChartFacade;
+import org.omnetpp.eventlog.entry.BeginSendEntry;
+import org.omnetpp.eventlog.entry.ComponentMethodBeginEntry;
+import org.omnetpp.eventlog.entry.ComponentMethodEndEntry;
+import org.omnetpp.eventlog.entry.EndSendEntry;
+import org.omnetpp.eventlog.entry.MessageDescriptionEntry;
+import org.omnetpp.eventlog.entry.ModuleDescriptionEntry;
 import org.omnetpp.ned.core.NedResources;
 import org.omnetpp.ned.model.ex.PropertyElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.scave.engine.FileRun;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFile;
+import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
+import org.omnetpp.scave.engine.Run;
+import org.omnetpp.scave.engine.RunList;
 import org.omnetpp.scave.engine.ScaveEngine;
 import org.omnetpp.scave.engine.XYArrayVector;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
@@ -211,7 +218,7 @@ public class SequenceChart
     private BigDecimal tickPrefix; // the common part of all ticks on the gutter
 
     private QuadTree labelQuadTree = new QuadTree();
-    private Map<Long, Point> labelPositions = new HashMap<Long, Point>();
+    private Map<IMessageDependency, Point> labelPositions = new HashMap<IMessageDependency, Point>();
 
     private ArrayList<ModuleTreeItem> openAxisModules = new ArrayList<ModuleTreeItem>(); // the modules (in no particular order) which may have an axis (they must be part of the module tree!) on the chart
 
@@ -243,14 +250,16 @@ public class SequenceChart
     private boolean invalidModuleIdToAxisRendererMap = true; // requests recalculation
     private Map<Integer, IAxisRenderer> moduleIdToAxisRendererMap = new HashMap<Integer, IAxisRenderer>(); // this map is not cleared when the eventlog is filtered or the filter is removed
 
-    private boolean invalidVirtualSize = false; // requests recalculation
-    private boolean invalidViewportSize = false; // requests recalculation
+    private boolean invalidVirtualSize = true; // requests recalculation
+    private boolean invalidViewportSize = true; // requests recalculation
+    private boolean invalidScrollBars = true; // requests recalculation
 
     private boolean drawWithAntialias = true; // antialias gets turned on/off automatically
-    private boolean paintHasBeenFinished = false; // true means the user did not cancel the last paint
+    private boolean isPaintComplete = false; // true means the user did not cancel the last paint
+
+    private boolean isOutOfSync = false; // the underlying eventlog has been changed during the last operation
 
     private RuntimeException internalError;
-    private boolean internalErrorHappenedDuringPaint = false; // if this is true, then paint only draws an error message
 
     private boolean followEnd = false; // when the eventlog changes should we follow it or not?
 
@@ -347,6 +356,7 @@ public class SequenceChart
         fontHeight = -1;
         invalidateVisibleAxisModules();
         invalidateViewportSize();
+        invalidateScrollBars();
         clearCanvasCacheAndRedraw();
     }
 
@@ -360,7 +370,7 @@ public class SequenceChart
         hoverSupport.adapt(this, new IHoverInfoProvider() {
             @Override
             public HtmlHoverInfo getHoverFor(Control control, int x, int y) {
-                if (!internalErrorHappenedDuringPaint) {
+                if (internalError == null) {
                     ArrayList<Object> objects = collectVisibleObjectsAtPosition(x, y);
                     String tooltip = labelProvider.getDescriptiveText(objects, true);
                     return new HtmlHoverInfo(HoverSupport.addHTMLStyleSheet(tooltip));
@@ -393,11 +403,12 @@ public class SequenceChart
         addControlListener(new ControlAdapter() {
             @Override
             public void controlResized(ControlEvent e) {
-                if (eventLogInput != null) {
+                if (eventLogInput != null && !invalidScrollBars) {
                     invalidateVisibleAxisModules();
                     invalidateAxisSpacing();
                     invalidateViewportSize();
                     invalidateVirtualSize();
+                    invalidateScrollBars();
                 }
             }
         });
@@ -407,6 +418,9 @@ public class SequenceChart
      * SHOW/HIDE
      */
 
+    /**
+     * Enables/disables all optional contents.
+     */
     public void setShowAll(boolean showAll) {
         setShowArrowHeads(showAll);
         setShowAxes(showAll);
@@ -433,6 +447,47 @@ public class SequenceChart
         setShowTimeDifferences(showAll);
         setShowTransmissionDurations(showAll);
         setShowZeroSimulationTimeRegions(showAll);
+    }
+
+    /**
+     * Enables the default contents.
+     */
+    public void setShowDefault() {
+        setShowAll(false);
+        setShowArrowHeads(true);
+        setShowAxes(true);
+        setShowAxisHeaders(true);
+        setShowAxisLabels(true);
+        setShowAxisVectorData(true);
+        setShowComponentMethodCalls(true);
+        setShowEventMarks(true);
+        setShowEventNumbers(true);
+        setShowHairlines(true);
+        setShowMessageNames(true);
+        setShowMessageSends(true);
+        setShowMethodNames(true);
+        setShowPositionAndRange(true);
+        setShowSelfMessageSends(true);
+        setShowTimeDifferences(true);
+        setShowTransmissionDurations(true);
+        setShowZeroSimulationTimeRegions(true);
+    }
+
+    /**
+     * Enables contents for network level communication charts.
+     */
+    public void setShowNetworkCommunication() {
+        setShowAll(false);
+        setShowPositionAndRange(true);
+        setShowArrowHeads(true);
+        setShowAxes(true);
+        setShowAxisHeaders(true);
+        setShowAxisLabels(true);
+        setShowHairlines(true);
+        setShowMessageNames(true);
+        setShowMessageSends(true);
+        setShowTimeDifferences(true);
+        setShowTransmissionDurations(true);
     }
 
     /**
@@ -478,7 +533,6 @@ public class SequenceChart
     public void setShowInitializationEvent(boolean showInitializationEvent) {
         this.showInitializationEvent = showInitializationEvent;
         invalidateVisibleAxisModules();
-        clearCanvasCacheAndRedraw();
     }
 
     /**
@@ -614,8 +668,6 @@ public class SequenceChart
     public void setShowComponentMethodCalls(boolean showComponentMethodCalls) {
         this.showComponentMethodCalls = showComponentMethodCalls;
         sequenceChartFacade.setSeparateEventLogEntries(showComponentMethodCalls);
-        if (sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber() != -1)
-            relocateFixPoint(sequenceChartFacade.getTimelineCoordinateSystemOriginEvent(), fixPointViewportCoordinate);
         invalidateVisibleAxisModules();
     }
 
@@ -692,7 +744,6 @@ public class SequenceChart
     public void setShowAxisHeaders(boolean showAxisHeaders) {
         this.showAxisHeaders = showAxisHeaders;
         invalidateAxes();
-        clearCanvasCacheAndRedraw();
     }
 
     /**
@@ -737,14 +788,7 @@ public class SequenceChart
      */
     public void setShowAxisVectorData(boolean showAxisVectorData) {
         this.showAxisVectorData = showAxisVectorData;
-        for (Axis axis : getAxes()) {
-            if (axis.axisRenderer instanceof AxisMultiRenderer) {
-                AxisMultiRenderer axisRenderer = (AxisMultiRenderer)axis.axisRenderer;
-                axisRenderer.setSelectedRendererIndex(showAxisVectorData ? axisRenderer.getRendererCount() - 1 : 0);
-            }
-        }
         invalidateAxisSpacing();
-        clearCanvasCacheAndRedraw();
     }
 
     /**
@@ -808,6 +852,13 @@ public class SequenceChart
     }
 
     /**
+     * Returns whether time differences are shown on the chart.
+     */
+    public boolean getShowTimeDifferences() {
+        return showTimeDifferences;
+    }
+
+    /**
      * Hide/show time differences.
      */
     public void setShowTimeDifferences(boolean showTimeDifferences) {
@@ -816,17 +867,10 @@ public class SequenceChart
     }
 
     /**
-     * Returns whether time differences are shown on the chart.
-     */
-    public boolean getShowTimeDifferences() {
-        return showTimeDifferences;
-    }
-
-    /**
      * Returns the current timeline mode.
      */
     public TimelineMode getTimelineMode() {
-        return TimelineMode.values()[sequenceChartFacade.getTimelineMode()];
+        return sequenceChartFacade.getTimelineMode();
     }
 
     /**
@@ -840,7 +884,7 @@ public class SequenceChart
         if (!eventLog.isEmpty())
             leftRightSimulationTimes = getViewportSimulationTimeRange();
 
-        sequenceChartFacade.setTimelineMode(timelineMode.ordinal());
+        sequenceChartFacade.setTimelineMode(timelineMode);
 
         if (!eventLog.isEmpty())
             setViewportSimulationTimeRange(leftRightSimulationTimes);
@@ -922,6 +966,7 @@ public class SequenceChart
     private void relocateFixPoint(IEvent event, long fixPointViewportCoordinate) {
         this.fixPointViewportCoordinate = fixPointViewportCoordinate;
         invalidateVisibleAxisModules();
+        highlightedObjects.clear();
 
         // the new event will be the origin of the timeline coordinate system
         if (event != null)
@@ -933,13 +978,13 @@ public class SequenceChart
             // don't go after the very end
             if (eventLog.getLastEvent().getSimulationTime().less(getViewportRightSimulationTime())) {
                 this.fixPointViewportCoordinate = getViewportWidth();
-                sequenceChartFacade.relocateTimelineCoordinateSystem(eventLog.getLastEvent());
+                sequenceChartFacade.relocateTimelineCoordinateSystem(getLastVisibleEvent());
             }
 
             // don't go before the very beginning
             if (getSimulationTimeForViewportCoordinate(0).less(org.omnetpp.common.engine.BigDecimal.getZero())) {
                 this.fixPointViewportCoordinate = 0;
-                sequenceChartFacade.relocateTimelineCoordinateSystem(eventLog.getFirstEvent());
+                sequenceChartFacade.relocateTimelineCoordinateSystem(getFirstVisibleEvent());
             }
         }
     }
@@ -951,18 +996,39 @@ public class SequenceChart
         return x;
     }
 
+    private void validateScrollBars() {
+        if (invalidScrollBars) {
+            configureScrollBars();
+            invalidScrollBars = false;
+        }
+    }
+
+    private void invalidateScrollBars() {
+        if (debug)
+            Debug.println("invalidateScrollBars(): enter");
+        invalidScrollBars = true;
+    }
+
+    @Override
+    protected int configureVerticalScrollBar(ScrollBar scrollBar, long virtualSize, long virtualPosition, int widgetSize) {
+        if (!invalidViewportSize && !invalidVirtualSize)
+            return super.configureVerticalScrollBar(scrollBar, virtualSize, virtualPosition, widgetSize);
+        else
+            return 0;
+    }
+
     @Override
     protected int configureHorizontalScrollBar(ScrollBar scrollBar, long virtualSize, long virtualPos, int widgetSize) {
         ScrollBar horizontalBar = getHorizontalBar();
         horizontalBar.setMinimum(0);
 
-        long[] eventPtrRange = null;
+        IEvent[] eventRange = null;
 
         if (eventLog != null && !eventLogInput.isCanceled())
-            eventPtrRange = getFirstLastEventPtrForViewportRange(0, getViewportWidth());
+            eventRange = getFirstLastEventForViewportRange(0, getViewportWidth());
 
-        if (eventPtrRange != null && eventPtrRange[0] != 0 && eventPtrRange[1] != 0 &&
-            (sequenceChartFacade.IEvent_getPreviousEvent(eventPtrRange[0]) != 0 || sequenceChartFacade.IEvent_getNextEvent(eventPtrRange[1]) != 0))
+        if (eventRange != null && eventRange[0] != null && eventRange[1] != null &&
+            (eventRange[0].getPreviousEvent() != null || eventRange[1].getNextEvent() != null))
         {
             long numberOfElements = eventLog.getApproximateNumberOfEvents();
             horizontalBar.setMaximum((int)Math.max(numberOfElements, 1E+6));
@@ -988,11 +1054,11 @@ public class SequenceChart
     @Override
     protected void adjustHorizontalScrollBar() {
         if (eventLog != null && !eventLogInput.isCanceled()) {
-            long[] eventPtrRange = getFirstLastEventPtrForViewportRange(0, getViewportWidth());
-            long startEventPtr = eventPtrRange[0];
-            long endEventPtr = eventPtrRange[1];
-            double topPercentage = startEventPtr == 0 ? 0 : eventLog.getApproximatePercentageForEventNumber(sequenceChartFacade.IEvent_getEventNumber(startEventPtr));
-            double bottomPercentage = endEventPtr == 0 ? 1 : eventLog.getApproximatePercentageForEventNumber(sequenceChartFacade.IEvent_getEventNumber(endEventPtr));
+            IEvent[] eventRange = getFirstLastEventForViewportRange(0, getViewportWidth());
+            IEvent startEvent = eventRange[0];
+            IEvent endEvent = eventRange[1];
+            double topPercentage = startEvent == null ? 0 : eventLog.getApproximatePercentageForEventNumber(startEvent.getEventNumber());
+            double bottomPercentage = endEvent == null ? 1 : eventLog.getApproximatePercentageForEventNumber(endEvent.getEventNumber());
             double topWeight = 1 / topPercentage;
             double bottomWeight = 1 / (1 - bottomPercentage);
             double percentage;
@@ -1057,7 +1123,7 @@ public class SequenceChart
         if (!eventLogInput.isCanceled() && !eventLog.isEmpty()) {
             IEvent event = eventLog.getLastEvent();
             if (event != null && isVisibleObject(event))
-                scrollToEvent(event, getViewportWidth() - (int)getEventViewportWidth(event.getCPtr()) - styleProvider.getEventSelectionRadius() * 2);
+                scrollToEvent(event, getViewportWidth() - (int)getEventViewportWidth(event) - styleProvider.getEventSelectionRadius() * 2);
             else
                 scrollToSimulationTime(eventLog.getLastSimulationTime(), getViewportWidth() - styleProvider.getEventSelectionRadius() * 2);
             followEnd = true;
@@ -1065,21 +1131,21 @@ public class SequenceChart
     }
 
     public void scroll(int numberOfEvents) {
-        long[] eventPtrRange = getFirstLastEventPtrForViewportRange(0, getViewportWidth());
-        long startEventPtr = eventPtrRange[0];
-        long endEventPtr = eventPtrRange[1];
-        long eventPtr;
+        IEvent[] eventRange = getFirstLastEventForViewportRange(0, getViewportWidth());
+        IEvent startEvent = eventRange[0];
+        IEvent endEvent = eventRange[1];
+        IEvent event;
 
         if (numberOfEvents < 0) {
-            eventPtr = startEventPtr;
+            event = startEvent;
             numberOfEvents++;
         }
         else {
-            eventPtr = endEventPtr;
+            event = endEvent;
             numberOfEvents--;
         }
 
-        IEvent neighbourEvent = eventLog.getNeighbourEvent(sequenceChartFacade.IEvent_getEvent(eventPtr), numberOfEvents);
+        IEvent neighbourEvent = eventLog.getNeighbourEvent(event, numberOfEvents);
 
         if (neighbourEvent != null)
             reveal(neighbourEvent);
@@ -1101,28 +1167,28 @@ public class SequenceChart
 
         boolean found = false;
         if (sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber() != -1) {
-            long[] eventPtrRange = getFirstLastEventPtrForViewportRange(0, getViewportWidth());
-            long startEventPtr = eventPtrRange[0];
-            long endEventPtr = eventPtrRange[1];
+            IEvent[] eventRange = getFirstLastEventForViewportRange(0, getViewportWidth());
+            IEvent startEvent = eventRange[0];
+            IEvent endEvent = eventRange[1];
 
-            if (startEventPtr != 0 && endEventPtr != 0) {
+            if (startEvent != null && endEvent != null) {
                 // look one event backward
-                long previousEventPtr = sequenceChartFacade.IEvent_getPreviousEvent(startEventPtr);
-                if (previousEventPtr != 0)
-                    startEventPtr = previousEventPtr;
+                IEvent previousEvent = startEvent.getPreviousEvent();
+                if (previousEvent != null)
+                    startEvent = previousEvent;
 
                 // and forward so that one additional event scrolling can be done with less distraction
-                long nextEventPtr = sequenceChartFacade.IEvent_getNextEvent(endEventPtr);
-                if (nextEventPtr != 0)
-                    endEventPtr = nextEventPtr;
+                IEvent nextEvent = endEvent.getNextEvent();
+                if (nextEvent != null)
+                    endEvent = nextEvent;
 
-                for (long eventPtr = startEventPtr;; eventPtr = sequenceChartFacade.IEvent_getNextEvent(eventPtr)) {
-                    if (eventPtr == event.getCPtr()) {
+                for (IEvent e = startEvent;; e = e.getNextEvent()) {
+                    if (e == event) {
                         found = true;
                         break;
                     }
 
-                    if (eventPtr == endEventPtr)
+                    if (e == endEvent)
                         break;
                 }
             }
@@ -1132,14 +1198,14 @@ public class SequenceChart
         if (!found)
             relocateFixPoint(event, viewportX);
         else {
-            long x = getViewportLeft() + getEventXViewportCoordinateBegin(event.getCPtr());
+            long x = getViewportLeft() + getEventXViewportCoordinateBegin(event);
             scrollHorizontalToRange(x - d, x + d);
 
             if (!getModuleIdToAxisModuleIndexMap().containsKey(event.getModuleId()))
                 invalidateVisibleAxisModules();
         }
 
-        long y = getViewportTop() + (isInitializationEvent(event) ? getViewportHeight() / 2 : getEventYViewportCoordinate(event.getCPtr()));
+        long y = getViewportTop() + (isInitializationEvent(event) ? getViewportHeight() / 2 : getEventYViewportCoordinate(event));
         scrollVerticalToRange(y - d, y + d);
         adjustHorizontalScrollBar();
 
@@ -1163,11 +1229,13 @@ public class SequenceChart
      * Scroll the canvas making the simulation time visible at the left edge of the viewport.
      */
     public void scrollToSimulationTime(org.omnetpp.common.engine.BigDecimal simulationTime, int x) {
+        // TODO: relocate if possible
         scrollHorizontal(getViewportCoordinateForSimulationTime(simulationTime) - x);
         redraw();
     }
 
     public void scrollToTimelineCoordinate(double timelineCoordinate) {
+        // TODO: relocate if possible
         scrollHorizontal(getViewportCoordinateForTimelineCoordinate(timelineCoordinate));
         redraw();
     }
@@ -1456,17 +1524,18 @@ public class SequenceChart
     private void setup() {
         if (!restoreState(eventLogInput.getFile())) {
             sequenceChartFacade.setSeparateEventLogEntries(showComponentMethodCalls);
-            if (!eventLog.isEmpty()) {
+            if (hasVisibleEvents()) {
                 // don't use relocateFixPoint, because viewportWidth is not yet set during initializing
-                sequenceChartFacade.relocateTimelineCoordinateSystem(eventLog.getFirstEvent());
+                sequenceChartFacade.relocateTimelineCoordinateSystem(getFirstVisibleEvent());
                 fixPointViewportCoordinate = 0;
-                openModule(eventLogInput.getModuleTreeRoot());
+                openModuleRecursively(eventLogInput.getModuleTreeRoot());
             }
             else {
                 sequenceChartFacade.undefineTimelineCoordinateSystem();
                 fixPointViewportCoordinate = 0;
                 clearOpenAxisModules();
             }
+            setShowDefault();
         }
         selectedObjects.clear();
         highlightedObjects.clear();
@@ -1487,82 +1556,8 @@ public class SequenceChart
             if (sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber() == -1)
                 manager.removeProperty(resource, STATE_PROPERTY);
             else {
-                SequenceChartState sequenceChartState = new SequenceChartState();
-                sequenceChartState.viewportTop = (int)getViewportTop();
-                sequenceChartState.fixPointEventNumber = sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber();
-                sequenceChartState.fixPointViewportCoordinate = fixPointViewportCoordinate;
-                sequenceChartState.pixelPerTimelineCoordinate = getPixelPerTimelineUnit();
-
-                // store attached vectors
-                SequenceChartState.AxisState[] axisStates = new SequenceChartState.AxisState[getOpenAxisModules().size()];
-
-                for (int i = 0; i < getOpenAxisModules().size(); i++) {
-                    ModuleTreeItem moduleTreeItem = getOpenAxisModules().get(i);
-                    SequenceChartState.AxisState axisState = axisStates[i] = new SequenceChartState.AxisState();
-                    axisState.moduleFullPath = moduleTreeItem.getModuleFullPath();
-                    int index = getVisibleAxisModules().indexOf(moduleTreeItem);
-                    if (index != -1) {
-                        IAxisRenderer axisRenderer = getAxis(index).axisRenderer;
-                        if (axisRenderer instanceof AxisVectorBarRenderer) {
-                            AxisVectorBarRenderer renderer = (AxisVectorBarRenderer)axisRenderer;
-                            axisState.vectorFileName = renderer.getVectorFileName();
-                            axisState.vectorRunName = renderer.getVectorRunName();
-                            axisState.vectorModuleFullPath = renderer.getVectorModuleFullPath();
-                            axisState.vectorName = renderer.getVectorName();
-                        }
-                    }
-                }
-
-                sequenceChartState.axisStates = axisStates;
-
-                // store manual axis order
-                sequenceChartState.axisOrderingMode = axisOrderingMode;
-                ArrayList<ModuleTreeItem> axisOrder = manualAxisOrder.getAxisOrder();
-                String[] moduleFullPathesManualAxisOrder = new String[axisOrder.size()];
-                for (int i = 0; i < moduleFullPathesManualAxisOrder.length; i++) {
-                    ModuleTreeItem axisModule = axisOrder.get(i);
-                    if (axisModule != null)
-                        moduleFullPathesManualAxisOrder[i] = axisModule.getModuleFullPath();
-                }
-                sequenceChartState.moduleFullPathesManualAxisOrder = moduleFullPathesManualAxisOrder;
-
-                // store timeline mode
-                sequenceChartState.timelineMode = getTimelineMode();
-
-                // store options
-                sequenceChartState.axisSpacingMode = getAxisSpacingMode();
-                sequenceChartState.axisSpacing = getAxisSpacing();
-                sequenceChartState.showPositionAndRange = getShowPositionAndRange();
-                sequenceChartState.showEventLogInfo = getShowEventLogInfo();
-                sequenceChartState.showInitializationEvent = getShowInitializationEvent();
-                sequenceChartState.showMessageNames = getShowMessageNames();
-                sequenceChartState.showMethodNames = getShowMethodNames();
-                sequenceChartState.showEventMarks = getShowEventMarks();
-                sequenceChartState.showEventNumbers = getShowEventNumbers();
-                sequenceChartState.showMessageSends = getShowMessageSends();
-                sequenceChartState.showSelfMessageSends = getShowSelfMessageSends();
-                sequenceChartState.showMessageReuses = getShowMessageReuses();
-                sequenceChartState.showSelfMessageReuses = getShowSelfMessageReuses();
-                sequenceChartState.showMixedMessageDependencies = getShowMixedMessageDependencies();
-                sequenceChartState.showMixedSelfMessageDependencies = getShowMixedSelfMessageDependencies();
-                sequenceChartState.showComponentMethodCalls = getShowComponentMethodCalls();
-                sequenceChartState.showArrowHeads = getShowArrowHeads();
-                sequenceChartState.showZeroSimulationTimeRegions = getShowZeroSimulationTimeRegions();
-                sequenceChartState.showAxisHeaders = getShowAxisHeaders();
-                sequenceChartState.showAxisInfo = getShowAxisInfo();
-                sequenceChartState.showAxisLabels = getShowAxisLabels();
-                sequenceChartState.showAxisVectorData = getShowAxisVectorData();
-                sequenceChartState.showAxes = getShowAxes();
-                sequenceChartState.showEmptyAxes = getShowEmptyAxes();
-                sequenceChartState.showTimeDifferences = getShowTimeDifferences();
-                sequenceChartState.showTransmissionDurations = getShowTransmissionDurations();
-                sequenceChartState.showHairlines = getShowHairlines();
-
-                Font font = getFont();
-                sequenceChartState.fontName = font.getFontData()[0].getName();
-                sequenceChartState.fontHeight = font.getFontData()[0].getHeight();
-
-                manager.setProperty(resource, STATE_PROPERTY, sequenceChartState);
+                SequenceChartSettings sequenceChartSettings = getSequenceChartSettings();
+                manager.setProperty(resource, STATE_PROPERTY, sequenceChartSettings);
             }
         }
         catch (Exception e) {
@@ -1582,114 +1577,127 @@ public class SequenceChart
 
         try {
             if (manager.hasProperty(resource, STATE_PROPERTY)) {
-                SequenceChartState sequenceChartState = (SequenceChartState)manager.getProperty(resource, STATE_PROPERTY);
-                IEvent fixPointEvent = eventLog.getEventForEventNumber(sequenceChartState.fixPointEventNumber);
+                SequenceChartSettings sequenceChartSettings = (SequenceChartSettings)manager.getProperty(resource, STATE_PROPERTY);
+                IEvent fixPointEvent = eventLog.getEventForEventNumber(sequenceChartSettings.fixPointEventNumber);
 
                 if (fixPointEvent != null) {
                     clearOpenAxisModules();
 
-                    setPixelPerTimelineUnit(sequenceChartState.pixelPerTimelineCoordinate);
-                    relocateFixPoint(fixPointEvent, sequenceChartState.fixPointViewportCoordinate);
-                    scrollVerticalTo(sequenceChartState.viewportTop);
+                    setPixelPerTimelineUnit(sequenceChartSettings.pixelPerTimelineCoordinate);
+                    relocateFixPoint(fixPointEvent, sequenceChartSettings.fixPointViewportCoordinate);
+                    scrollVerticalTo(sequenceChartSettings.viewportTop);
 
                     // restore attached vectors
-                    if (sequenceChartState.axisStates != null) {
+                    if (sequenceChartSettings.axisStates != null) {
                         ResultFileManagerEx resultFileManager = new ResultFileManagerEx();
+                        ResultFileManagerEx.runWithWriteLock(resultFileManager, () -> {
+                            for (int i = 0; i < sequenceChartSettings.axisStates.length; i++) {
+                                SequenceChartSettings.AxisState axisState = sequenceChartSettings.axisStates[i];
+                                ModuleTreeItem moduleTreeItem = eventLogInput.getModuleTreeRoot().findDescendantModule(axisState.moduleFullPath);
+                                addOpenAxisModule(moduleTreeItem);
 
-                        for (int i = 0; i < sequenceChartState.axisStates.length; i++) {
-                            SequenceChartState.AxisState axisState = sequenceChartState.axisStates[i];
-                            ModuleTreeItem moduleTreeItem = eventLogInput.getModuleTreeRoot().findDescendantModule(axisState.moduleFullPath);
-                            addOpenAxisModule(moduleTreeItem);
-
-                            if (axisState.vectorFileName != null) {
-                                int loadFlags = ResultFileManagerEx.RELOAD_IF_CHANGED | ResultFileManagerEx.IGNORE_LOCK_FILE | ResultFileManagerEx.ALLOW_LOADING_WITHOUT_INDEX;
-                                ResultFile resultFile = resultFileManager.loadFile(axisState.vectorFileName, axisState.vectorFileName, loadFlags, null); //TODO would be better to do it from a job that's interruptible
-                                Assert.isNotNull(resultFile); // could only happen if loadFlags contain some "SKIP" flag, but it doesn't
-                                FileRun fileRun = resultFileManager.getFileRun(resultFile, resultFileManager.getRunByName(axisState.vectorRunName));
-                                long id = resultFileManager.getItemByName(fileRun, axisState.vectorModuleFullPath, axisState.vectorName);
-                                // TODO: compare vector's run against log file's run
-                                ResultItem resultItem = resultFileManager.getItem(id);
-                                IDList selectedIdList = new IDList(id);
-                                XYArrayVector dataVector = ScaveEngine.readVectorsIntoArrays2(resultFileManager, selectedIdList, true, true);
-                                IAxisRenderer axisRenderer = new AxisVectorBarRenderer(this, axisState.vectorFileName, axisState.vectorRunName, axisState.vectorModuleFullPath, axisState.vectorName, resultItem, dataVector, 0);
-                                axisRenderer = new AxisMultiRenderer(new IAxisRenderer[] {new AxisLineRenderer(this, moduleTreeItem), axisRenderer}, 1);
-                                setAxisRenderer(eventLogInput.getModuleTreeRoot().findDescendantModule(axisState.moduleFullPath), axisRenderer);
+                                if (axisState.vectorFileName != null) {
+                                    int loadFlags = ResultFileManagerEx.RELOAD_IF_CHANGED | ResultFileManagerEx.IGNORE_LOCK_FILE | ResultFileManagerEx.ALLOW_LOADING_WITHOUT_INDEX;
+                                    ResultFile resultFile = resultFileManager.loadFile(axisState.vectorFileName, axisState.vectorFileName, loadFlags, null); //TODO would be better to do it from a job that's interruptible
+                                    Assert.isNotNull(resultFile); // could only happen if loadFlags contain some "SKIP" flag, but it doesn't
+                                    Run run = resultFileManager.getRunByName(axisState.vectorRunName);
+                                    if (run == null) {
+                                        RunList runList = resultFileManager.getRuns();
+                                        if (runList.size() == 1)
+                                            run = runList.get(0);
+                                        else
+                                            throw new RuntimeException();
+                                    }
+                                    FileRun fileRun = resultFileManager.getFileRun(resultFile, run);
+                                    long id = resultFileManager.getItemByName(fileRun, axisState.vectorModuleFullPath, axisState.vectorName);
+                                    // TODO: compare vector's run against log file's run
+                                    ResultItem resultItem = resultFileManager.getItem(id);
+                                    IDList selectedIdList = new IDList(id);
+                                    XYArrayVector dataVector = ScaveEngine.readVectorsIntoArrays2(resultFileManager, selectedIdList, true, true);
+                                    IAxisRenderer axisRenderer = new AxisVectorBarRenderer(this, axisState.vectorFileName, axisState.vectorRunName, axisState.vectorModuleFullPath, axisState.vectorName, resultItem, dataVector, 0);
+                                    axisRenderer = new AxisMultiRenderer(new IAxisRenderer[] {new AxisLineRenderer(this, moduleTreeItem), axisRenderer}, 1);
+                                    setAxisRenderer(eventLogInput.getModuleTreeRoot().findDescendantModule(axisState.moduleFullPath), axisRenderer);
+                                }
                             }
-                        }
+                        });
                     }
 
                     // restore axis order
-                    if (sequenceChartState.axisOrderingMode != null)
-                        axisOrderingMode = sequenceChartState.axisOrderingMode;
-                    if (sequenceChartState.moduleFullPathesManualAxisOrder != null) {
+                    if (sequenceChartSettings.axisOrderingMode != null)
+                        axisOrderingMode = sequenceChartSettings.axisOrderingMode;
+                    if (sequenceChartSettings.moduleFullPathesManualAxisOrder != null) {
                         ArrayList<ModuleTreeItem> axisOrder = new ArrayList<ModuleTreeItem>();
-                        for (int i = 0; i < sequenceChartState.moduleFullPathesManualAxisOrder.length; i++)
-                            axisOrder.add(eventLogInput.getModuleTreeRoot().findDescendantModule(sequenceChartState.moduleFullPathesManualAxisOrder[i]));
+                        for (int i = 0; i < sequenceChartSettings.moduleFullPathesManualAxisOrder.length; i++)
+                            axisOrder.add(eventLogInput.getModuleTreeRoot().findDescendantModule(sequenceChartSettings.moduleFullPathesManualAxisOrder[i]));
                         manualAxisOrder.setAxisOrder(axisOrder);
                     }
 
                     // restore options
-                    if (sequenceChartState.axisSpacingMode != null)
-                        axisSpacingMode = sequenceChartState.axisSpacingMode;
-                    if (sequenceChartState.axisSpacing != -1)
-                        axisSpacing = sequenceChartState.axisSpacing;
-                    if (sequenceChartState.showPositionAndRange != null)
-                        setShowPositionAndRange(sequenceChartState.showPositionAndRange);
-                    if (sequenceChartState.showEventLogInfo != null)
-                        setShowEventLogInfo(sequenceChartState.showEventLogInfo);
-                    if (sequenceChartState.showInitializationEvent != null)
-                        setShowInitializationEvent(sequenceChartState.showInitializationEvent);
-                    if (sequenceChartState.showMessageNames != null)
-                        setShowMessageNames(sequenceChartState.showMessageNames);
-                    if (sequenceChartState.showMethodNames != null)
-                        setShowMethodNames(sequenceChartState.showMethodNames);
-                    if (sequenceChartState.showEventMarks != null)
-                        setShowEventMarks(sequenceChartState.showEventMarks);
-                    if (sequenceChartState.showEventNumbers != null)
-                        setShowEventNumbers(sequenceChartState.showEventNumbers);
-                    if (sequenceChartState.showMessageSends != null)
-                        setShowMessageSends(sequenceChartState.showMessageSends);
-                    if (sequenceChartState.showSelfMessageSends != null)
-                        setShowSelfMessageSends(sequenceChartState.showSelfMessageSends);
-                    if (sequenceChartState.showMessageReuses != null)
-                        setShowMessageReuses(sequenceChartState.showMessageReuses);
-                    if (sequenceChartState.showSelfMessageReuses != null)
-                        setShowSelfMessageReuses(sequenceChartState.showSelfMessageReuses);
-                    if (sequenceChartState.showMixedMessageDependencies != null)
-                        setShowMixedMessageDependencies(sequenceChartState.showMixedMessageDependencies);
-                    if (sequenceChartState.showMixedSelfMessageDependencies != null)
-                        setShowMixedSelfMessageDependencies(sequenceChartState.showMixedSelfMessageDependencies);
-                    if (sequenceChartState.showComponentMethodCalls != null)
-                        setShowComponentMethodCalls(sequenceChartState.showComponentMethodCalls);
-                    if (sequenceChartState.showArrowHeads != null)
-                        setShowArrowHeads(sequenceChartState.showArrowHeads);
-                    if (sequenceChartState.showZeroSimulationTimeRegions != null)
-                        setShowZeroSimulationTimeRegions(sequenceChartState.showZeroSimulationTimeRegions);
-                    if (sequenceChartState.showAxisHeaders != null)
-                        setShowAxisHeaders(sequenceChartState.showAxisHeaders);
-                    if (sequenceChartState.showAxisInfo != null)
-                        setShowAxisInfo(sequenceChartState.showAxisInfo);
-                    if (sequenceChartState.showAxisLabels != null)
-                        setShowAxisLabels(sequenceChartState.showAxisLabels);
-                    if (sequenceChartState.showAxisVectorData != null)
-                        setShowAxisVectorData(sequenceChartState.showAxisVectorData);
-                    if (sequenceChartState.showAxes != null)
-                        setShowAxes(sequenceChartState.showAxes);
-                    if (sequenceChartState.showEmptyAxes != null)
-                        setShowEmptyAxes(sequenceChartState.showEmptyAxes);
-                    if (sequenceChartState.showTimeDifferences != null)
-                        setShowTimeDifferences(sequenceChartState.showTimeDifferences);
-                    if (sequenceChartState.showTransmissionDurations != null)
-                        setShowTransmissionDurations(sequenceChartState.showTransmissionDurations);
-                    if (sequenceChartState.showHairlines != null)
-                        setShowHairlines(sequenceChartState.showHairlines);
+                    if (sequenceChartSettings.axisSpacingMode != null)
+                        axisSpacingMode = sequenceChartSettings.axisSpacingMode;
+                    if (sequenceChartSettings.axisSpacing != -1)
+                        axisSpacing = sequenceChartSettings.axisSpacing;
+                    if (sequenceChartSettings.showPositionAndRange != null)
+                        setShowPositionAndRange(sequenceChartSettings.showPositionAndRange);
+                    if (sequenceChartSettings.showEventLogInfo != null)
+                        setShowEventLogInfo(sequenceChartSettings.showEventLogInfo);
+                    if (sequenceChartSettings.showInitializationEvent != null)
+                        setShowInitializationEvent(sequenceChartSettings.showInitializationEvent);
+                    if (sequenceChartSettings.showMessageNames != null)
+                        setShowMessageNames(sequenceChartSettings.showMessageNames);
+                    if (sequenceChartSettings.showMethodNames != null)
+                        setShowMethodNames(sequenceChartSettings.showMethodNames);
+                    if (sequenceChartSettings.showEventMarks != null)
+                        setShowEventMarks(sequenceChartSettings.showEventMarks);
+                    if (sequenceChartSettings.showEventNumbers != null)
+                        setShowEventNumbers(sequenceChartSettings.showEventNumbers);
+                    if (sequenceChartSettings.showMessageSends != null)
+                        setShowMessageSends(sequenceChartSettings.showMessageSends);
+                    if (sequenceChartSettings.showSelfMessageSends != null)
+                        setShowSelfMessageSends(sequenceChartSettings.showSelfMessageSends);
+                    if (sequenceChartSettings.showMessageReuses != null)
+                        setShowMessageReuses(sequenceChartSettings.showMessageReuses);
+                    if (sequenceChartSettings.showSelfMessageReuses != null)
+                        setShowSelfMessageReuses(sequenceChartSettings.showSelfMessageReuses);
+                    if (sequenceChartSettings.showMixedMessageDependencies != null)
+                        setShowMixedMessageDependencies(sequenceChartSettings.showMixedMessageDependencies);
+                    if (sequenceChartSettings.showMixedSelfMessageDependencies != null)
+                        setShowMixedSelfMessageDependencies(sequenceChartSettings.showMixedSelfMessageDependencies);
+                    if (sequenceChartSettings.showComponentMethodCalls != null)
+                        setShowComponentMethodCalls(sequenceChartSettings.showComponentMethodCalls);
+                    if (sequenceChartSettings.showArrowHeads != null)
+                        setShowArrowHeads(sequenceChartSettings.showArrowHeads);
+                    if (sequenceChartSettings.showZeroSimulationTimeRegions != null)
+                        setShowZeroSimulationTimeRegions(sequenceChartSettings.showZeroSimulationTimeRegions);
+                    if (sequenceChartSettings.showAxisHeaders != null)
+                        setShowAxisHeaders(sequenceChartSettings.showAxisHeaders);
+                    if (sequenceChartSettings.showAxisInfo != null)
+                        setShowAxisInfo(sequenceChartSettings.showAxisInfo);
+                    if (sequenceChartSettings.showAxisLabels != null)
+                        setShowAxisLabels(sequenceChartSettings.showAxisLabels);
+                    if (sequenceChartSettings.showAxisVectorData != null)
+                        setShowAxisVectorData(sequenceChartSettings.showAxisVectorData);
+                    if (sequenceChartSettings.showAxes != null)
+                        setShowAxes(sequenceChartSettings.showAxes);
+                    if (sequenceChartSettings.showEmptyAxes != null)
+                        setShowEmptyAxes(sequenceChartSettings.showEmptyAxes);
+                    if (sequenceChartSettings.showTimeDifferences != null)
+                        setShowTimeDifferences(sequenceChartSettings.showTimeDifferences);
+                    if (sequenceChartSettings.showTransmissionDurations != null)
+                        setShowTransmissionDurations(sequenceChartSettings.showTransmissionDurations);
+                    if (sequenceChartSettings.showHairlines != null)
+                        setShowHairlines(sequenceChartSettings.showHairlines);
+                    if (styleProvider instanceof SequenceChartStyleProvider) {
+                        SequenceChartStyleProvider sequenceChartStyleProvider = (SequenceChartStyleProvider)styleProvider;
+                        sequenceChartStyleProvider.setSequenceChartSettings(sequenceChartSettings);
+                    }
 
                     // restore timeline mode
-                    if (sequenceChartState.timelineMode != null)
-                        setTimelineMode(sequenceChartState.timelineMode);
+                    if (sequenceChartSettings.timelineMode != null)
+                        setTimelineMode(sequenceChartSettings.timelineMode);
 
-                    if (sequenceChartState.fontName != null) {
-                        FontData fontData = new FontData(sequenceChartState.fontName, sequenceChartState.fontHeight, SWT.NONE);
+                    if (sequenceChartSettings.fontName != null) {
+                        FontData fontData = new FontData(sequenceChartSettings.fontName, sequenceChartSettings.fontHeight, SWT.NONE);
                         Font font = new Font(getFont().getDevice(), fontData);
                         setFont(font);
                     }
@@ -1697,22 +1705,124 @@ public class SequenceChart
                     return true;
                 }
             }
-
             return false;
         }
         catch (Exception e) {
             manager.removeProperty(resource, STATE_PROPERTY);
-
             SequenceChartPlugin.logError(e);
-            MessageDialog.openError(getShell(), "Error", "Could not restore saved sequence chart state, ignoring.");
+            // TODO: revive somehow to notify the user but this causes "deadlock" with the long running operation progress dialog due to the two dialogs brought up at the same time
+            // Display.getCurrent().asyncExec(() -> MessageDialog.openError(getShell(), "Error", "Could not restore saved sequence chart state."));
             return false;
         }
+    }
+
+    public SequenceChartSettings getSequenceChartSettings() {
+        SequenceChartSettings sequenceChartSettings = new SequenceChartSettings();
+        sequenceChartSettings.viewportTop = (int)getViewportTop();
+        sequenceChartSettings.fixPointEventNumber = sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber();
+        sequenceChartSettings.fixPointViewportCoordinate = fixPointViewportCoordinate;
+        sequenceChartSettings.pixelPerTimelineCoordinate = getPixelPerTimelineUnit();
+
+        // store attached vectors
+        SequenceChartSettings.AxisState[] axisStates = new SequenceChartSettings.AxisState[getOpenAxisModules().size()];
+
+        for (int i = 0; i < getOpenAxisModules().size(); i++) {
+            ModuleTreeItem moduleTreeItem = getOpenAxisModules().get(i);
+            SequenceChartSettings.AxisState axisState = axisStates[i] = new SequenceChartSettings.AxisState();
+            axisState.moduleFullPath = moduleTreeItem.getModuleFullPath();
+            int index = getVisibleAxisModules().indexOf(moduleTreeItem);
+            if (index != -1) {
+                IAxisRenderer axisRenderer = getAxis(index).axisRenderer;
+                AxisVectorBarRenderer renderer = null;
+                if (axisRenderer instanceof AxisVectorBarRenderer)
+                    renderer = (AxisVectorBarRenderer)axisRenderer;
+                else if (axisRenderer instanceof AxisMultiRenderer)
+                    renderer = (AxisVectorBarRenderer)((AxisMultiRenderer)axisRenderer).getRenderer(1);
+                if (renderer != null) {
+                    axisState.vectorFileName = renderer.getVectorFileName();
+                    axisState.vectorRunName = renderer.getVectorRunName();
+                    axisState.vectorModuleFullPath = renderer.getVectorModuleFullPath();
+                    axisState.vectorName = renderer.getVectorName();
+                }
+            }
+        }
+
+        sequenceChartSettings.axisStates = axisStates;
+
+        // store manual axis order
+        sequenceChartSettings.axisOrderingMode = axisOrderingMode;
+        ArrayList<ModuleTreeItem> axisOrder = manualAxisOrder.getAxisOrder();
+        String[] moduleFullPathesManualAxisOrder = new String[axisOrder.size()];
+        for (int i = 0; i < moduleFullPathesManualAxisOrder.length; i++) {
+            ModuleTreeItem axisModule = axisOrder.get(i);
+            if (axisModule != null)
+                moduleFullPathesManualAxisOrder[i] = axisModule.getModuleFullPath();
+        }
+        sequenceChartSettings.moduleFullPathesManualAxisOrder = moduleFullPathesManualAxisOrder;
+
+        // store timeline mode
+        sequenceChartSettings.timelineMode = getTimelineMode();
+
+        // store options
+        sequenceChartSettings.axisSpacingMode = getAxisSpacingMode();
+        sequenceChartSettings.axisSpacing = getAxisSpacing();
+        sequenceChartSettings.showPositionAndRange = getShowPositionAndRange();
+        sequenceChartSettings.showEventLogInfo = getShowEventLogInfo();
+        sequenceChartSettings.showInitializationEvent = getShowInitializationEvent();
+        sequenceChartSettings.showMessageNames = getShowMessageNames();
+        sequenceChartSettings.showMethodNames = getShowMethodNames();
+        sequenceChartSettings.showEventMarks = getShowEventMarks();
+        sequenceChartSettings.showEventNumbers = getShowEventNumbers();
+        sequenceChartSettings.showMessageSends = getShowMessageSends();
+        sequenceChartSettings.showSelfMessageSends = getShowSelfMessageSends();
+        sequenceChartSettings.showMessageReuses = getShowMessageReuses();
+        sequenceChartSettings.showSelfMessageReuses = getShowSelfMessageReuses();
+        sequenceChartSettings.showMixedMessageDependencies = getShowMixedMessageDependencies();
+        sequenceChartSettings.showMixedSelfMessageDependencies = getShowMixedSelfMessageDependencies();
+        sequenceChartSettings.showComponentMethodCalls = getShowComponentMethodCalls();
+        sequenceChartSettings.showArrowHeads = getShowArrowHeads();
+        sequenceChartSettings.showZeroSimulationTimeRegions = getShowZeroSimulationTimeRegions();
+        sequenceChartSettings.showAxisHeaders = getShowAxisHeaders();
+        sequenceChartSettings.showAxisInfo = getShowAxisInfo();
+        sequenceChartSettings.showAxisLabels = getShowAxisLabels();
+        sequenceChartSettings.showAxisVectorData = getShowAxisVectorData();
+        sequenceChartSettings.showAxes = getShowAxes();
+        sequenceChartSettings.showEmptyAxes = getShowEmptyAxes();
+        sequenceChartSettings.showTimeDifferences = getShowTimeDifferences();
+        sequenceChartSettings.showTransmissionDurations = getShowTransmissionDurations();
+        sequenceChartSettings.showHairlines = getShowHairlines();
+        if (styleProvider instanceof SequenceChartStyleProvider) {
+            SequenceChartStyleProvider sequenceChartStyleProvider = (SequenceChartStyleProvider)styleProvider;
+            if (sequenceChartStyleProvider.getSequenceChartSettings() != null) {
+                sequenceChartSettings.axesColorFallback = sequenceChartStyleProvider.getSequenceChartSettings().axesColorFallback;
+                sequenceChartSettings.axesHeaderColorFallback = sequenceChartStyleProvider.getSequenceChartSettings().axesHeaderColorFallback;
+                sequenceChartSettings.eventColorFallback = sequenceChartStyleProvider.getSequenceChartSettings().eventColorFallback;
+                sequenceChartSettings.selfMessageEventColorFallback = sequenceChartStyleProvider.getSequenceChartSettings().selfMessageEventColorFallback;
+                sequenceChartSettings.messageSendColorFallback = sequenceChartStyleProvider.getSequenceChartSettings().messageSendColorFallback;
+                sequenceChartSettings.componentMethodCallColorFallback = sequenceChartStyleProvider.getSequenceChartSettings().componentMethodCallColorFallback;
+            }
+        }
+
+        Font font = getFont();
+        sequenceChartSettings.fontName = font.getFontData()[0].getName();
+        sequenceChartSettings.fontHeight = font.getFontData()[0].getHeight();
+
+        return sequenceChartSettings;
+    }
+
+    public void setSequenceChartSettings(SequenceChartSettings sequenceChartSettings) {
+        if (styleProvider instanceof SequenceChartStyleProvider) {
+            SequenceChartStyleProvider sequenceChartStyleProvider = (SequenceChartStyleProvider)styleProvider;
+            sequenceChartStyleProvider.setSequenceChartSettings(sequenceChartSettings);
+        }
+        clearCanvasCacheAndRedraw();
     }
 
     /*************************************************************************************
      * EVENTLOG NOTIFICATIONS
      */
 
+    @Override
     public void eventLogAppended() {
         Display.getCurrent().asyncExec(new Runnable() {
             public void run() {
@@ -1720,15 +1830,13 @@ public class SequenceChart
                     eventLogChanged();
                 }
                 catch (RuntimeException e) {
-                    if (eventLogInput.isFileChangedException(e))
-                        eventLogInput.synchronize(e);
-                    else
-                        throw e;
+                    handleRuntimeException(e);
                 }
             }
         });
     }
 
+    @Override
     public void eventLogOverwritten() {
         // NOTE: it must be synchronous because the coordinate system origin is already cleared
         // NOTE: and making this asynchronous allows paint events to kick in too early
@@ -1739,10 +1847,7 @@ public class SequenceChart
                     eventLogChanged();
                 }
                 catch (RuntimeException e) {
-                    if (eventLogInput.isFileChangedException(e))
-                        eventLogInput.synchronize(e);
-                    else
-                        throw e;
+                    handleRuntimeException(e);
                 }
             }
         });
@@ -1770,6 +1875,7 @@ public class SequenceChart
         clearCanvasCacheAndRedraw();
     }
 
+    @Override
     public void eventLogFiltered() {
         eventLog = eventLogInput.getEventLog();
 
@@ -1799,6 +1905,7 @@ public class SequenceChart
         invalidateVisibleAxisModules();
     }
 
+    @Override
     public void eventLogFilterRemoved() {
         eventLog = eventLogInput.getEventLog();
 
@@ -1811,17 +1918,25 @@ public class SequenceChart
         invalidateVisibleAxisModules();
     }
 
+    @Override
     public void eventLogLongOperationStarted() {
     }
 
+    @Override
     public void eventLogLongOperationEnded() {
-        if (!paintHasBeenFinished)
+        if (!isPaintComplete)
             redraw();
     }
 
+    @Override
     public void eventLogProgress() {
         if (eventLogInput.getEventLogProgressManager().isCanceled())
             redraw();
+    }
+
+    @Override
+    public void eventLogSynchronizationFailed() {
+        // void
     }
 
     /*************************************************************************************
@@ -1832,44 +1947,41 @@ public class SequenceChart
      * Starts or continues a find operation and immediately jumps to the result.
      */
     public void findText(boolean continueSearch) {
-        String findText = null;
-        EventLogEntry foundEventLogEntry = null;
-
-        EventLogFindTextDialog findTextDialog = eventLogInput.getFindTextDialog();
-
+        final EventLogFindTextDialog findTextDialog = eventLogInput.getFindTextDialog();
         if (continueSearch || findTextDialog.open() == Window.OK) {
-            findText = findTextDialog.getValue();
-
+            final String findText = findTextDialog.getValue();
             if (findText != null) {
-                try {
-                    IEvent event = getSelectedEvent();
-
-                    if (event == null) {
-                        long[] eventPtrRange = getFirstLastEventPtrForViewportRange(0, 0);
-                        event = sequenceChartFacade.IEvent_getEvent(eventPtrRange[0]);
-                        if (event == null)
-                            return;
-                    }
-
-                    EventLogEntry startEventLogEntry = null;
-                    if (findTextDialog.isBackward()) {
-                        event = event.getPreviousEvent();
-                        if (event == null)
-                            return;
-                        startEventLogEntry = event.getEventLogEntry(event.getNumEventLogEntries() - 1);
-                    }
-                    else {
-                        event = event.getNextEvent();
-                        if (event == null)
-                            return;
-                        startEventLogEntry = event.getEventEntry();
-                    }
-
-                    foundEventLogEntry = eventLog.findEventLogEntry(startEventLogEntry, findText, !findTextDialog.isBackward(), !findTextDialog.isCaseInsensitive());
+                IEvent event = getSelectedEvent();
+                if (event == null) {
+                    IEvent[] eventRange = getFirstLastEventForViewportRange(0, 0);
+                    event = eventRange[0];
+                    if (event == null)
+                        return;
                 }
-                finally {
-                    if (foundEventLogEntry != null)
-                        gotoClosestElement(foundEventLogEntry.getEvent());
+                final EventLogEntry startEventLogEntry;
+                if (findTextDialog.isBackward()) {
+                    event = event.getPreviousEvent();
+                    if (event == null)
+                        return;
+                    startEventLogEntry = event.getEventLogEntry(event.getNumEventLogEntries() - 1);
+                }
+                else {
+                    event = event.getNextEvent();
+                    if (event == null)
+                        return;
+                    startEventLogEntry = event.getEventEntry();
+                }
+                final boolean[] completed = new boolean[1];
+                final EventLogEntry[] foundEventLogEntries = new EventLogEntry[1];
+                eventLogInput.runWithProgressMonitor(new Runnable() {
+                    public void run() {
+                        foundEventLogEntries[0] = eventLog.findEventLogEntry(startEventLogEntry, findText, !findTextDialog.isBackward(), !findTextDialog.isCaseInsensitive());
+                        completed[0] = true;
+                    }
+                });
+                if (completed[0]) {
+                    if (foundEventLogEntries[0] != null)
+                        gotoClosestElement(foundEventLogEntries[0].getEvent());
                     else
                         MessageDialog.openInformation(null, "Find raw text", "No more matches found for " + findText);
                 }
@@ -1987,9 +2099,9 @@ public class SequenceChart
      */
     private boolean isSelectedAxisModule(ModuleTreeItem moduleTreeItem) {
         if (eventLog instanceof FilteredEventLog && eventLogInput.getFilterParameters().enableModuleFilter) {
-            ModuleCreatedEntry moduleCreatedEntry = eventLog.getModuleCreatedEntry(moduleTreeItem.getModuleId());
-            Assert.isTrue(moduleCreatedEntry != null);
-            return ((FilteredEventLog)eventLog).matchesModuleCreatedEntry(moduleCreatedEntry);
+            ModuleDescriptionEntry moduleDescriptionEntry = eventLog.getEventLogEntryCache().getModuleDescriptionEntry(moduleTreeItem.getModuleId());
+            Assert.isTrue(moduleDescriptionEntry != null);
+            return ((FilteredEventLog)eventLog).matchesModuleDescriptionEntry(moduleDescriptionEntry);
         }
         else
             // If the module has any kind of custom behavior attached to it (via @class)
@@ -2021,6 +2133,7 @@ public class SequenceChart
                 invalidateVirtualSize();
                 invalidateModuleIdToAxisModuleIndexMap();
                 invalidateModuleIdToAxisRendererMap();
+                invalidateScrollBars();
             }
             invalidVisibleAxisModules = false;
             removeInvisibleObjects(selectedObjects);
@@ -2045,62 +2158,62 @@ public class SequenceChart
         Set<Integer> axisModuleIds = new HashSet<Integer>();
         // check potentially visible events
         int extraClipping = getExtraClippingForEvents() + 30; // add an extra for the caching canvas tile cache width (clipping may be negative in paint)
-        long[] eventPtrRange = getFirstLastEventPtrForViewportRange(-extraClipping, getViewportWidth() + extraClipping);
-        long startEventPtr = eventPtrRange[0];
-        long endEventPtr = eventPtrRange[1];
-        if (startEventPtr != 0 && endEventPtr != 0) {
+        IEvent[] eventRange = getFirstLastEventForViewportRange(-extraClipping, getViewportWidth() + extraClipping);
+        IEvent startEvent = eventRange[0];
+        IEvent endEvent = eventRange[1];
+        if (startEvent != null && endEvent != null) {
             if (debug)
-                Debug.println("Collecting axis modules for events using event range: " + sequenceChartFacade.IEvent_getEventNumber(startEventPtr) + " -> " + sequenceChartFacade.IEvent_getEventNumber(endEventPtr));
-            for (long eventPtr = startEventPtr;; eventPtr = sequenceChartFacade.IEvent_getNextEvent(eventPtr)) {
-                if (!isInitializationEvent(eventPtr))
-                    axisModuleIds.add(sequenceChartFacade.IEvent_getModuleId(eventPtr));
-                if (eventPtr == endEventPtr)
+                Debug.println("Collecting axis modules for events using event range: " + startEvent.getEventNumber() + " -> " + endEvent.getEventNumber());
+            for (IEvent event = startEvent;; event = event.getNextEvent()) {
+                if (!isInitializationEvent(event))
+                    axisModuleIds.add(event.getModuleId());
+                if (event == endEvent)
                     break;
             }
         }
         // check potentially visible message dependencies
-        eventPtrRange = getFirstLastEventPtrForMessageDependencies();
-        startEventPtr = eventPtrRange[0];
-        endEventPtr = eventPtrRange[1];
-        if (startEventPtr != 0 && endEventPtr != 0) {
+        eventRange = getFirstLastEventForMessageDependencies();
+        startEvent = eventRange[0];
+        endEvent = eventRange[1];
+        if (startEvent != null && endEvent != null) {
             if (debug)
-                Debug.println("Collecting axis modules for message dependencies using event range: " + sequenceChartFacade.IEvent_getEventNumber(startEventPtr) + " -> " + sequenceChartFacade.IEvent_getEventNumber(endEventPtr));
-            PtrVector messageDependencies = sequenceChartFacade.getIntersectingMessageDependencies(startEventPtr, endEventPtr);
+                Debug.println("Collecting axis modules for message dependencies using event range: " + startEvent.getEventNumber() + " -> " + endEvent.getEventNumber());
+            ArrayList<IMessageDependency> messageDependencies = sequenceChartFacade.getIntersectingMessageDependencies(startEvent, endEvent);
             for (int i = 0; i < messageDependencies.size(); i++) {
-                long messageDependencyPtr = messageDependencies.get(i);
-                long causeEventPtr = sequenceChartFacade.IMessageDependency_getCauseEvent(messageDependencyPtr);
-                long consequenceEventPtr = sequenceChartFacade.IMessageDependency_getConsequenceEvent(messageDependencyPtr);
-                long messageEntryPtr = sequenceChartFacade.IMessageDependency_getMessageEntry(messageDependencyPtr);
-                boolean isReuse = sequenceChartFacade.IMessageDependency_isReuse(messageDependencyPtr);
-                if (causeEventPtr != 0) {
-                    if (isInitializationEvent(causeEventPtr)) {
+                IMessageDependency messageDependency = messageDependencies.get(i);
+                IEvent causeEvent = messageDependency.getCauseEvent();
+                IEvent consequenceEvent = messageDependency.getConsequenceEvent();
+                MessageDescriptionEntry messageEntry = messageDependency.getBeginMessageDescriptionEntry();
+                boolean isReuse = messageDependency instanceof MessageReuseDependency;
+                if (causeEvent != null) {
+                    if (isInitializationEvent(causeEvent)) {
                         if (showInitializationEvent)
-                            axisModuleIds.add(sequenceChartFacade.EventLogEntry_getContextModuleId(messageEntryPtr));
+                            axisModuleIds.add(messageEntry.getContextModuleId());
                     }
                     else
-                        axisModuleIds.add(!isReuse && messageEntryPtr != 0 ? sequenceChartFacade.EventLogEntry_getContextModuleId(messageEntryPtr) : sequenceChartFacade.IEvent_getModuleId(causeEventPtr));
+                        axisModuleIds.add(!isReuse && messageEntry != null ? messageEntry.getContextModuleId() : causeEvent.getModuleId());
                 }
-                if (consequenceEventPtr != 0)
-                    axisModuleIds.add(isReuse && messageEntryPtr != 0 ? sequenceChartFacade.EventLogEntry_getContextModuleId(messageEntryPtr) : sequenceChartFacade.IEvent_getModuleId(consequenceEventPtr));
+                if (consequenceEvent != null)
+                    axisModuleIds.add(isReuse && messageEntry != null ? messageEntry.getContextModuleId() : consequenceEvent.getModuleId());
             }
         }
         // check potentially visible module method calls
         if (showComponentMethodCalls) {
             extraClipping = getExtraClippingForEvents();
-            eventPtrRange = getFirstLastEventPtrForViewportRange(-extraClipping, getViewportWidth() + extraClipping);
-            startEventPtr = eventPtrRange[0];
-            endEventPtr = eventPtrRange[1];
-            if (startEventPtr != 0 && endEventPtr != 0) {
+            eventRange = getFirstLastEventForViewportRange(-extraClipping, getViewportWidth() + extraClipping);
+            startEvent = eventRange[0];
+            endEvent = eventRange[1];
+            if (startEvent != null && endEvent != null) {
                 if (debug)
-                    Debug.println("Collecting axis modules for module method calls using event range: " + sequenceChartFacade.IEvent_getEventNumber(startEventPtr) + " -> " + sequenceChartFacade.IEvent_getEventNumber(endEventPtr));
-                PtrVector componentMethodBeginEntries = sequenceChartFacade.getComponentMethodBeginEntries(startEventPtr, endEventPtr);
+                    Debug.println("Collecting axis modules for module method calls using event range: " + startEvent.getEventNumber() + " -> " + endEvent.getEventNumber());
+                ArrayList<ComponentMethodBeginEntry> componentMethodBeginEntries = sequenceChartFacade.getComponentMethodBeginEntries(startEvent, endEvent);
                 for (int i = 0; i < componentMethodBeginEntries.size(); i++) {
-                    long componentMethodCallPtr = componentMethodBeginEntries.get(i);
-                    if (isInitializationEvent(sequenceChartFacade.EventLogEntry_getEvent(componentMethodCallPtr)) && !showInitializationEvent)
+                    ComponentMethodBeginEntry componentMethodCall = componentMethodBeginEntries.get(i);
+                    if (isInitializationEvent(componentMethodCall.getEvent()) && !showInitializationEvent)
                         continue;
                     // TODO: source/target component is not necessarily a module, it may be a channel as well
-                    axisModuleIds.add(sequenceChartFacade.ComponentMethodBeginEntry_getSourceComponentId(componentMethodCallPtr));
-                    axisModuleIds.add(sequenceChartFacade.ComponentMethodBeginEntry_getTargetComponentId(componentMethodCallPtr));
+                    axisModuleIds.add(componentMethodCall.getSourceComponentId());
+                    axisModuleIds.add(componentMethodCall.getTargetComponentId());
                 }
             }
         }
@@ -2125,7 +2238,7 @@ public class SequenceChart
 
                 // create module tree item on demand
                 if (moduleTreeItem == null) {
-                    ModuleCreatedEntry entry = eventLog.getModuleCreatedEntry(moduleId);
+                    ModuleDescriptionEntry entry = eventLog.getEventLogEntryCache().getModuleDescriptionEntry(moduleId);
 
                     if (entry != null)
                         moduleTreeItem = moduleTreeRoot.addDescendantModule(entry.getParentModuleId(), entry.getModuleId(), entry.getNedTypeName(), entry.getModuleClassName(), entry.getFullName(), entry.getCompoundModule());
@@ -2308,7 +2421,7 @@ public class SequenceChart
                 childPrefix = childAxisHeader.modulePathFragment;
             else
                 childPrefix = childAxisHeader.modulePathFragment.substring(0, j);
-            if (commonPrefix == null) 
+            if (commonPrefix == null)
                 commonPrefix = childPrefix;
             if (commonPrefix.equals(childPrefix))
                 commonAxisHeaders.add(childAxisHeader);
@@ -2475,41 +2588,43 @@ public class SequenceChart
 
     private void calculateModuleIdToAxisRendererMap() {
         ResultFileManagerEx resultFileManager = new ResultFileManagerEx();
-        for (ModuleTreeItem axisModule : getVisibleAxisModules()) {
-            IAxisRenderer axisRenderer = moduleIdToAxisRendererMap.get(axisModule.getModuleId());
-            if (axisRenderer == null) {
-                IProject project = eventLogInput.getFile().getProject();
-                String typeName = axisModule.getNedTypeName();
-                INedTypeInfo typeInfo = NedResources.getInstance().getToplevelNedType(typeName, project);
-                if (typeInfo != null) {
-                    PropertyElementEx property = typeInfo.getProperty("defaultStatistic", null);
-                    if (property != null) {
-                        String vectorName = property.getSimpleValue();
-                        IFile inputFile = eventLogInput.getFile();
-                        String inputFileName = inputFile.getName();
-                        IFile vectorFile = inputFile.getParent().getFile(new Path(inputFileName.substring(0, inputFileName.indexOf(".")) + ".vec"));
-                        if (vectorFile.exists()) {
-                            ResultFile resultFile = resultFileManager.loadFile(vectorFile.getName(), vectorFile.getLocation().toOSString(), 0, null);
-                            String eventlogRunName = getEventLog().getSimulationBeginEntry().getRunId();
-                            FileRun fileRun = resultFileManager.getFileRun(resultFile, resultFileManager.getRunByName(eventlogRunName));
-                            long id = resultFileManager.getItemByName(fileRun, axisModule.getModuleFullPath(), vectorName);
-                            // TODO: compare vector's run against log file's run
-                            if (id != 0) {
-                                ResultItem resultItem = resultFileManager.getItem(id);
-                                IDList selectedIdList = new IDList(id);
-                                XYArrayVector dataVector = ScaveEngine.readVectorsIntoArrays2(resultFileManager, selectedIdList, true, true);
-                                axisRenderer = new AxisVectorBarRenderer(this, vectorFile.getLocation().toOSString(), eventlogRunName, axisModule.getModuleFullPath(), vectorName, resultItem, dataVector, 0);
+        ResultFileManagerEx.runWithWriteLock(resultFileManager, () -> {
+            for (ModuleTreeItem axisModule : getVisibleAxisModules()) {
+                IAxisRenderer axisRenderer = moduleIdToAxisRendererMap.get(axisModule.getModuleId());
+                if (axisRenderer == null) {
+                    IProject project = eventLogInput.getFile().getProject();
+                    String typeName = axisModule.getNedTypeName();
+                    INedTypeInfo typeInfo = NedResources.getInstance().getToplevelNedType(typeName, project);
+                    if (typeInfo != null) {
+                        PropertyElementEx property = typeInfo.getProperty("defaultStatistic", null);
+                        if (property != null) {
+                            String vectorName = property.getSimpleValue();
+                            IFile inputFile = eventLogInput.getFile();
+                            String inputFileName = inputFile.getName();
+                            IFile vectorFile = inputFile.getParent().getFile(new Path(inputFileName.substring(0, inputFileName.indexOf(".")) + ".vec"));
+                            if (vectorFile.exists()) {
+                                ResultFile resultFile = resultFileManager.loadFile(vectorFile.getName(), vectorFile.getLocation().toOSString(), ResultFileManager.LoadFlags.NEVER_RELOAD.swigValue() + ResultFileManager.LoadFlags.ALLOW_INDEXING.swigValue() + ResultFileManager.LoadFlags.SKIP_IF_LOCKED.swigValue(), null);
+                                String eventlogRunName = getEventLog().getSimulationBeginEntry().getRunId();
+                                FileRun fileRun = resultFileManager.getFileRun(resultFile, resultFileManager.getRunByName(eventlogRunName));
+                                long id = resultFileManager.getItemByName(fileRun, axisModule.getModuleFullPath(), vectorName);
+                                // TODO: compare vector's run against log file's run
+                                if (id != 0) {
+                                    ResultItem resultItem = resultFileManager.getItem(id);
+                                    IDList selectedIdList = new IDList(id);
+                                    XYArrayVector dataVector = ScaveEngine.readVectorsIntoArrays2(resultFileManager, selectedIdList, true, true);
+                                    axisRenderer = new AxisVectorBarRenderer(this, vectorFile.getLocation().toOSString(), eventlogRunName, axisModule.getModuleFullPath(), vectorName, resultItem, dataVector, 0);
+                                }
                             }
                         }
                     }
+                    if (axisRenderer == null)
+                        axisRenderer = new AxisLineRenderer(this, axisModule);
+                    else
+                        axisRenderer = new AxisMultiRenderer(new IAxisRenderer[] {new AxisLineRenderer(this, axisModule), axisRenderer}, 1);
+                    moduleIdToAxisRendererMap.put(axisModule.getModuleId(), axisRenderer);
                 }
-                if (axisRenderer == null)
-                    axisRenderer = new AxisLineRenderer(this, axisModule);
-                else
-                    axisRenderer = new AxisMultiRenderer(new IAxisRenderer[] {new AxisLineRenderer(this, axisModule), axisRenderer}, 1);
-                moduleIdToAxisRendererMap.put(axisModule.getModuleId(), axisRenderer);
             }
-        }
+        });
     }
 
     /*************************************************************************************
@@ -2533,7 +2648,7 @@ public class SequenceChart
             if (!newAxisModulePositions.equals(axisModulePositions)) {
                 axisModulePositions = newAxisModulePositions;
                 invalidateAxes();
-                invalidReverseAxisModulePositions = true;
+                invalidateReverseAxisModulePositions();
             }
             invalidAxisModulePositions = false;
         }
@@ -2566,11 +2681,11 @@ public class SequenceChart
                         break;
                     case MINIMIZE_CROSSINGS:
                         int extraClipping = getExtraClippingForEvents();
-                        long[] eventPtrRange = getFirstLastEventPtrForViewportRange(Rectangle.SINGLETON.x - extraClipping, Rectangle.SINGLETON.right() + extraClipping);
-                        long startEventPtr = eventPtrRange[0];
-                        long endEventPtr = eventPtrRange[1];
+                        IEvent[] eventRange = getFirstLastEventForViewportRange(Rectangle.SINGLETON.x - extraClipping, Rectangle.SINGLETON.right() + extraClipping);
+                        IEvent startEvent = eventRange[0];
+                        IEvent endEvent = eventRange[1];
                         axisModulesArray = manualAxisOrder.getCurrentAxisModuleOrder(axisModulesArray).toArray(new ModuleTreeItem[0]);
-                        result[0] = new FlatAxisOrderByMinimizingCost(eventLogInput, startEventPtr, endEventPtr).calculateOrdering(axisModulesArray, getModuleIdToAxisModuleIndexMap());
+                        result[0] = new FlatAxisOrderByMinimizingCost(eventLogInput, startEvent, endEvent).calculateOrdering(axisModulesArray, getModuleIdToAxisModuleIndexMap());
                         break;
                     default:
                         throw new RuntimeException("Unknown axis ordering mode");
@@ -2593,7 +2708,8 @@ public class SequenceChart
     }
 
     private void validateReverseAxisModulePositions() {
-        validateVisibleAxisModules();
+        validateAxisModulePositions();
+        validateAxisSpacing();
         if (invalidReverseAxisModulePositions) {
             reverseAxisModulePositions = calculateReverseAxisModulePositions();
             invalidReverseAxisModulePositions = false;
@@ -2647,22 +2763,22 @@ public class SequenceChart
         // this algorithm allows to have two module axes on the chart
         // which are in ancestor-descendant relationship,
         // and allows events still be drawn on the most specific axis
-        eventLogInput.getModuleTreeRoot().visitItems(new ModuleTreeItem.IModuleTreeItemVisitor() {
-            public void visit(ModuleTreeItem descendantAxisModule) {
-                ModuleTreeItem axisModule = descendantAxisModule;
-
-                while (axisModule != null) {
-                    int index = getVisibleAxisModules().indexOf(axisModule);
-
-                    if (index != -1) {
-                        moduleIdToAxisModuleIndexMap.put(descendantAxisModule.getModuleId(), index);
-                        return;
+        ModuleTreeItem moduleTreeRoot = eventLogInput.getModuleTreeRoot();
+        if (moduleTreeRoot != null) {
+            moduleTreeRoot.visitItems(new ModuleTreeItem.IModuleTreeItemVisitor() {
+                public void visit(ModuleTreeItem descendantAxisModule) {
+                    ModuleTreeItem axisModule = descendantAxisModule;
+                    while (axisModule != null) {
+                        int index = getVisibleAxisModules().indexOf(axisModule);
+                        if (index != -1) {
+                            moduleIdToAxisModuleIndexMap.put(descendantAxisModule.getModuleId(), index);
+                            return;
+                        }
+                        axisModule = axisModule.getParentModule();
                     }
-
-                    axisModule = axisModule.getParentModule();
                 }
-            }
-        });
+            });
+        }
     }
 
     /*************************************************************************************
@@ -2758,7 +2874,9 @@ public class SequenceChart
             invalidateAxes();
             invalidateAxisHeaders();
             invalidateAxisModulePositions();
+            invalidateReverseAxisModulePositions();
             invalidateVirtualSize();
+            invalidateScrollBars();
             invalidAxisSpacing = false;
         }
     }
@@ -2860,31 +2978,29 @@ public class SequenceChart
      */
     private void setDefaultPixelPerTimelineUnit(int viewportWidth) {
         if (sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber() != -1) {
-            IEvent referenceEvent = sequenceChartFacade.getTimelineCoordinateSystemOriginEvent();
-            IEvent neighbourEvent = referenceEvent;
+            IEvent startEvent = sequenceChartFacade.getTimelineCoordinateSystemOriginEvent();
+            IEvent endEvent = startEvent;
 
-            // the idea is to find two events with different timeline coordinates at most 20 events from each other
+            // the idea is to find two events with different timeline coordinates at most 10 events from each other
             // and focus to the range of those events
-            int distance = 20;
-            while (--distance > 0 || sequenceChartFacade.getTimelineCoordinateBegin(referenceEvent) == sequenceChartFacade.getTimelineCoordinateBegin(neighbourEvent)) {
-                IEvent newNeighbourEvent = neighbourEvent.getNextEvent();
+            int distance = 10;
+            while (--distance > 0 || sequenceChartFacade.getTimelineCoordinateBegin(startEvent) == sequenceChartFacade.getTimelineCoordinateBegin(endEvent)) {
+                IEvent newEndEvent = endEvent.getNextEvent();
 
-                if (newNeighbourEvent != null)
-                    neighbourEvent = newNeighbourEvent;
+                if (newEndEvent != null)
+                    endEvent = newEndEvent;
                 else {
-                    IEvent newReferenceEvent = referenceEvent.getPreviousEvent();
+                    IEvent newStartEvent = startEvent.getPreviousEvent();
 
-                    if (newReferenceEvent != null)
-                        referenceEvent = newReferenceEvent;
-                    else
-                        break;
+                    if (newStartEvent != null)
+                        startEvent = newStartEvent;
                 }
             }
 
-            if (referenceEvent.getEventNumber() != neighbourEvent.getEventNumber()) {
-                double referenceEventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinateBegin(referenceEvent);
-                double neighbourEventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinateBegin(neighbourEvent);
-                double timelineCoordinateDelta = Math.abs(neighbourEventTimelineCoordinate - referenceEventTimelineCoordinate);
+            if (startEvent.getEventNumber() != endEvent.getEventNumber()) {
+                double startEventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinateBegin(startEvent);
+                double endEventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinateEnd(endEvent);
+                double timelineCoordinateDelta = Math.abs(endEventTimelineCoordinate - startEventTimelineCoordinate);
 
                 if (timelineCoordinateDelta == 0)
                     setPixelPerTimelineUnit(1);
@@ -2902,34 +3018,40 @@ public class SequenceChart
 
     @Override
     protected void paint(final GC gc) {
-        paintHasBeenFinished = false;
-        if (internalErrorHappenedDuringPaint)
-            drawNotificationMessage(gc, "Internal error happened during painting. Try to reset zoom, position, filter, etc. and press refresh. Sorry for your inconvenience.\n\n" + internalError.getMessage());
+        isPaintComplete = false;
+        if (internalError != null)
+            drawNotificationMessage(gc, "Internal error - please tweak the settings and refresh",
+                "Try changing the zoom factor, scroll position, display modes, eventlog filter parameters, etc.\nto prevent the error from happening again, then press Refresh.\nWe are sorry for the inconvenience.");
         else if (eventLogInput == null) {
             super.paint(gc);
-            paintHasBeenFinished = true;
+            isPaintComplete = true;
         }
+        else if (isOutOfSync)
+            drawNotificationMessage(gc, "The eventlog is continually changing - please wait",
+                "This is most often caused by a simulation running in the background.\nThe component will automatically refresh in a few seconds.");
         else if (eventLogInput.isCanceled())
-            drawNotificationMessage(gc,
-                "Processing of a long running eventlog operation was cancelled, therefore the chart is incomplete and cannot be drawn.\n" +
-                "Either try changing some parameters or select refresh. Sorry for your inconvenience.");
+            drawNotificationMessage(gc, "Operation cancelled - please tweak the settings and refresh",
+                "A long-running eventlog operation has been cancelled.\nTo continue, try changing the zoom factor, scroll position, display modes, eventlog filter parameters, etc.\nto speed up the operation, then press Refresh.");
         else if (eventLogInput.isLongRunningOperationInProgress())
-            drawNotificationMessage(gc, "Processing a long running eventlog operation. Please wait.");
+            drawNotificationMessage(gc, "Processing a long-running eventlog operation - please wait",
+                "The operation is taking long because of using the eventlog filter, showing too much content, or some other reasons.\nThe component will automatically refresh when the operation completes.");
         else {
             try {
                 eventLogInput.runWithProgressMonitor(new Runnable() {
                     public void run() {
                         try {
                             SequenceChart.super.paint(gc);
-                            paintHasBeenFinished = true;
+                            isPaintComplete = true;
                             if (debug && eventLogInput != null)
                                 Debug.println("Read " + eventLog.getFileReader().getNumReadBytes() + " bytes, " + eventLog.getFileReader().getNumReadLines() + " lines, " + eventLog.getNumParsedEvents() + " events from " + eventLogInput.getFile().getName());
                         }
                         catch (RuntimeException e) {
                             if (eventLogInput.isFileChangedException(e))
-                                eventLogInput.synchronize(e);
-                            else
+                                eventLogInput.handleRuntimeException(e);
+                            else {
+                                internalError = e;
                                 throw e;
+                            }
                         }
                     }
                 });
@@ -2937,9 +3059,16 @@ public class SequenceChart
             catch (RuntimeException e) {
                 SequenceChartPlugin.logError("Internal error happened during painting", e);
                 internalError = e;
-                internalErrorHappenedDuringPaint = true;
             }
         }
+    }
+
+    public boolean isPaintComplete() {
+        return isPaintComplete;
+    }
+
+    public RuntimeException getInternalError() {
+        return internalError;
     }
 
     // KLUDGE: this job is here to workaround a GTK3 bug that redraws the area under the overlay scrollbar incorrectly
@@ -2991,10 +3120,8 @@ public class SequenceChart
 
     @Override
     protected void paintCachableLayer(Graphics graphics) {
-        if (eventLogInput != null) {
+        if (eventLogInput != null)
             drawSequenceChart(graphics);
-//            System.out.println(labelQuadTree);
-        }
     }
 
     @Override
@@ -3023,6 +3150,7 @@ public class SequenceChart
             drawGutters(graphics, getViewportHeight());
             drawTickUnderMouse(graphics, getViewportHeight());
             drawHightlightedObjects(graphics);
+            // TODO: breaks laziness!!!
             if (showTimeDifferences)
                 drawTimeDifferences(graphics);
             if (showAxisHeaders)
@@ -3059,14 +3187,13 @@ public class SequenceChart
      */
     public void refresh() {
         internalError = null;
-        internalErrorHappenedDuringPaint = false;
         eventLogInput.resetCanceled();
         if (sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber() != -1)
             relocateFixPoint(sequenceChartFacade.getTimelineCoordinateSystemOriginEvent(), fixPointViewportCoordinate);
         else {
-            if (!eventLog.isEmpty()) {
+            if (hasVisibleEvents()) {
                 // don't use relocateFixPoint, because viewportWidth is not yet set during initializing
-                sequenceChartFacade.relocateTimelineCoordinateSystem(eventLog.getFirstEvent());
+                sequenceChartFacade.relocateTimelineCoordinateSystem(getFirstVisibleEvent());
                 fixPointViewportCoordinate = 0;
             }
             else {
@@ -3088,10 +3215,22 @@ public class SequenceChart
         invalidateViewportSize();
         invalidateVirtualSize();
         invalidateVisibleAxisModules();
+        invalidateScrollBars();
     }
 
     private void validate(Graphics graphics) {
+        // NOTE: the order of these validation calls matter
+        validateViewportSize(graphics);
         validateVisibleAxisModules();
+        validateAxisSpacing();
+        validateVirtualSize();
+        validateAxisModulePositions();
+        validateReverseAxisModulePositions();
+        validateAxisHeaders();
+        validateAxes();
+        validateModuleIdToAxisRendererMap();
+        validateModuleIdToAxisModuleIndexMap();
+        validateScrollBars();
         // NOTE: there's a circular dependency between viewport size, axis spacing and virtual size
         //  - scrollbar visibility depends on viewport size and virtual size
         //  - client area depends on scrollbar visibility
@@ -3099,20 +3238,7 @@ public class SequenceChart
         //  - axis spacing depends on viewport size
         //  - virtual size depends on axis spacing
         //  - scrollbar visibility depends on virtual size
-        for (int i = 0; i < 10 && (invalidViewportSize || invalidAxisSpacing || invalidVirtualSize); i++) {
-            validateViewportSize(graphics);
-            validateAxisSpacing();
-            validateVirtualSize();
-            if (debug)
-                Debug.println("viewportSize = (" + getViewportWidth() + ", " + getViewportHeight() + "), axisSpacing = " + axisSpacing + ", virtualSize = (" + getVirtualWidth() + ", " + getVirtualHeight() + ")");
-        }
-        validateAxisModulePositions();
-        validateReverseAxisModulePositions();
-        validateAxisHeaders();
-        validateAxes();
-        validateModuleIdToAxisRendererMap();
-        validateModuleIdToAxisModuleIndexMap();
-        Assert.isTrue(!invalidViewportSize);
+        invalidVirtualSize = false;
         Assert.isTrue(!invalidAxes);
         Assert.isTrue(!invalidAxisHeaders);
         Assert.isTrue(!invalidAxisModulePositions);
@@ -3121,8 +3247,8 @@ public class SequenceChart
         Assert.isTrue(!invalidModuleIdToAxisRendererMap);
         Assert.isTrue(!invalidReverseAxisModulePositions);
         Assert.isTrue(!invalidViewportSize);
-        Assert.isTrue(!invalidVirtualSize);
         Assert.isTrue(!invalidVisibleAxisModules);
+        Assert.isTrue(!invalidVirtualSize);
     }
 
     /**
@@ -3143,6 +3269,13 @@ public class SequenceChart
         return graphics;
     }
 
+    public void handleRuntimeException(RuntimeException e) {
+        if (eventLogInput != null)
+            eventLogInput.handleRuntimeException(e);
+        else
+            throw e;
+    }
+
     /*************************************************************************************
      * DRAWING
      */
@@ -3150,35 +3283,41 @@ public class SequenceChart
     /**
      * Draws a notification message to the center of the viewport.
      */
-    private void drawNotificationMessage(GC gc, String text) {
-        Graphics graphics = createGraphics(gc);
-        graphics.setForegroundColor(ColorFactory.RED4);
-        graphics.setBackgroundColor(ColorFactory.WHITE);
-        graphics.setFont(getFont());
-        int x = getViewportWidth() / 2;
-        int y = getViewportHeight() / 2;
+    protected void drawNotificationMessage(GC gc, String title, String text) {
+        Point p = getSize();
+        int x = p.x / 2;
+        int y = p.y / 2;
         String[] lines = text.split("\n");
+        gc.setForeground(ColorFactory.BLACK);
+        gc.setFont(JFaceResources.getHeaderFont());
+        p = gc.textExtent(title);
+        gc.drawText(title, x - p.x / 2, y - (lines.length / 2 + 2) * p.y);
+        gc.setFont(JFaceResources.getDefaultFont());
+        gc.setForeground(ColorFactory.BLACK);
+        gc.setFont(JFaceResources.getHeaderFont());
+        p = gc.textExtent(title);
+        gc.drawText(title, x - p.x / 2, y - (lines.length / 2 + 2) * p.y);
+        gc.setFont(JFaceResources.getDefaultFont());
         for (int i = 0; i < lines.length; i++) {
             String line = lines[i];
-            Point p = GraphicsUtils.getTextExtent(graphics, line);
-            graphics.fillString(line, x - p.x / 2, y - (lines.length / 2 - i) * p.y);
+            p = gc.textExtent(line);
+            gc.drawText(line, x - p.x / 2, y - (lines.length / 2 - i) * p.y);
         }
-        graphics.dispose();
     }
 
     /**
      * Draw simulation time range on the top right of the viewport.
      */
     private void drawPositionAndRange(Graphics graphics, int viewportWidth) {
-        BigDecimal leftTick = calculateTick(0, 1);
-        BigDecimal rightTick = calculateTick(viewportWidth, 1);
-        BigDecimal simulationTimeRange = rightTick.subtract(leftTick);
-        long[] eventPtrRange = getFirstLastEventPtrForViewportRange(0, viewportWidth);
-        long startEventPtr = eventPtrRange[0];
-        long endEventPtr = eventPtrRange[1];
-        if (startEventPtr != 0 && endEventPtr != 0) {
-            long startEventNumber = sequenceChartFacade.IEvent_getEventNumber(startEventPtr);
-            long endEventNumber = sequenceChartFacade.IEvent_getEventNumber(endEventPtr);
+        IEvent[] eventRange = getFirstLastEventForViewportRange(0, viewportWidth);
+        IEvent startEvent = eventRange[0];
+        IEvent endEvent = eventRange[1];
+        if (startEvent != null && endEvent != null) {
+            BigDecimal leftTick = calculateTick(0, 1);
+            BigDecimal rightTick = calculateTick(viewportWidth, 1);
+            BigDecimal simulationTimeRange = rightTick.subtract(leftTick);
+            long startEventNumber = startEvent.getEventNumber();
+            long endEventNumber = endEvent.getEventNumber();
             String positionString = "Position: #" + startEventNumber + ", " + TimeUtils.secondsToTimeString(leftTick);
             String rangeString = "Range: #" + (endEventNumber - startEventNumber + 1) + ", " + TimeUtils.secondsToTimeString(simulationTimeRange);
             int width = Math.max(GraphicsUtils.getTextExtent(graphics, positionString).x, GraphicsUtils.getTextExtent(graphics, rangeString).x);
@@ -3206,10 +3345,11 @@ public class SequenceChart
         IEvent lastEvent = eventLog.getLastEvent();
         FileReader fileReader = eventLog.getFileReader();
         String firstLine = "File: " + fileReader.getFileSize() + " bytes, " +
-                           "~" + eventLog.getApproximateNumberOfEvents() + " events (#" + firstEvent.getEventNumber() + " .. #" + lastEvent.getEventNumber() + "), " +
-                           lastEvent.getSimulationTime().toString() + " seconds";
+                           "~" + eventLog.getApproximateNumberOfEvents();
+        if (firstEvent != null && lastEvent != null)
+            firstLine += " events (#" + firstEvent.getEventNumber() + " .. #" + lastEvent.getEventNumber() + "), " + lastEvent.getSimulationTime().toString() + " seconds";
         String secondLine = "Read: " +
-                            eventLog.getNumModuleCreatedEntries() + " modules, " +
+                            eventLog.getEventLogEntryCache().getNumModuleDescriptionEntries() + " modules, " +
                             eventLog.getNumParsedEvents() + " events, " +
                             fileReader.getNumReadLines() + " lines, " +
                             fileReader.getNumReadBytes() + " bytes";
@@ -3274,17 +3414,17 @@ public class SequenceChart
             Debug.println("Clipping rectangle: " + Rectangle.SINGLETON);
 
         int extraClipping = getExtraClippingForEvents();
-        long[] eventPtrRange = getFirstLastEventPtrForViewportRange(Rectangle.SINGLETON.x - extraClipping, Rectangle.SINGLETON.right() + extraClipping);
-        long startEventPtr = eventPtrRange[0];
-        long endEventPtr = eventPtrRange[1];
+        IEvent[] eventRange = getFirstLastEventForViewportRange(Rectangle.SINGLETON.x - extraClipping, Rectangle.SINGLETON.right() + extraClipping);
+        IEvent startEvent = eventRange[0];
+        IEvent endEvent = eventRange[1];
 
         if (showZeroSimulationTimeRegions)
-            drawZeroSimulationTimeRegions(graphics, startEventPtr, endEventPtr);
+            drawZeroSimulationTimeRegions(graphics, startEvent, endEvent);
 
         if (showAxes)
-            drawAxes(graphics, startEventPtr, endEventPtr);
+            drawAxes(graphics, startEvent, endEvent);
 
-        drawEvents(graphics, startEventPtr, endEventPtr);
+        drawEvents(graphics, startEvent, endEvent);
         drawMessageDependencies(graphics);
 
         if (showComponentMethodCalls)
@@ -3307,50 +3447,50 @@ public class SequenceChart
         return (showMessageNames || showMethodNames || showEventNumbers) ? 300 : 100;
     }
 
-    private void drawZeroSimulationTimeRegions(Graphics graphics, long startEventPtr, long endEventPtr) {
-        long previousEventPtr = -1;
+    private void drawZeroSimulationTimeRegions(Graphics graphics, IEvent startEvent, IEvent endEvent) {
+        IEvent previousEvent = null;
         graphics.getClip(Rectangle.SINGLETON);
         LargeRect clip = new LargeRect(Rectangle.SINGLETON);
         LargeRect r = new LargeRect();
         graphics.setBackgroundColor(styleProvider.getZeroSimulationTimeRegionColor());
 
-        if (startEventPtr != 0 && endEventPtr != 0) {
+        if (startEvent != null && endEvent != null) {
             // draw rectangle before the very beginning of the simulation
             long x = clip.x;
             if (getSimulationTimeForViewportCoordinate(x).equals(org.omnetpp.common.engine.BigDecimal.getZero())) {
 //                long startX = getViewportCoordinateForSimulationTime(org.omnetpp.common.engine.BigDecimal.getZero(), true);
-                long startX = getEventXViewportCoordinateEnd(startEventPtr);
+                long startX = getEventXViewportCoordinateEnd(startEvent);
 
                 if (x != startX)
                     drawZeroSimulationTimeRegion(graphics, r, clip, x, startX - x);
             }
 
             // draw rectangles where simulation time has not elapsed between events
-            for (long eventPtr = startEventPtr;; eventPtr = sequenceChartFacade.IEvent_getNextEvent(eventPtr)) {
-                int xBegin = (int)getEventXViewportCoordinateBegin(eventPtr);
-                int xEnd = (int)getEventXViewportCoordinateEnd(eventPtr);
+            for (IEvent event = startEvent;; event = event.getNextEvent()) {
+                int xBegin = (int)getEventXViewportCoordinateBegin(event);
+                int xEnd = (int)getEventXViewportCoordinateEnd(event);
                 if (xBegin != xEnd)
                     drawZeroSimulationTimeRegion(graphics, r, clip, xBegin, xEnd - xBegin);
-                if (previousEventPtr != -1) {
-                    x = getEventXViewportCoordinateEnd(eventPtr);
-                    long previousX = getEventXViewportCoordinateBegin(previousEventPtr);
-                    org.omnetpp.common.engine.BigDecimal simulationTime = sequenceChartFacade.IEvent_getSimulationTime(eventPtr);
-                    org.omnetpp.common.engine.BigDecimal previousSimulationTime = sequenceChartFacade.IEvent_getSimulationTime(previousEventPtr);
+                if (previousEvent != null) {
+                    x = getEventXViewportCoordinateEnd(event);
+                    long previousX = getEventXViewportCoordinateBegin(previousEvent);
+                    org.omnetpp.common.engine.BigDecimal simulationTime = event.getSimulationTime();
+                    org.omnetpp.common.engine.BigDecimal previousSimulationTime = previousEvent.getSimulationTime();
 
                     if (simulationTime.equals(previousSimulationTime) && x != previousX)
                         drawZeroSimulationTimeRegion(graphics, r, clip, previousX, x - previousX);
                 }
 
-                previousEventPtr = eventPtr;
+                previousEvent = event;
 
-                if (eventPtr == endEventPtr)
+                if (event == endEvent)
                     break;
             }
 
             // draw rectangle after the very end of the simulation
-            if (sequenceChartFacade.IEvent_getNextEvent(endEventPtr) == 0) {
+            if (endEvent.getNextEvent() == null) {
                 x = clip.right();
-                long endX = getEventXViewportCoordinateEnd(endEventPtr);
+                long endX = getEventXViewportCoordinateEnd(endEvent);
 
                 if (x != endX)
                     drawZeroSimulationTimeRegion(graphics, r, clip, endX, x - endX);
@@ -3371,17 +3511,23 @@ public class SequenceChart
     /**
      * Draws all axes in the given event range.
      */
-    private void drawAxes(Graphics graphics, long startEventPtr, long endEventPtr) {
+    private void drawAxes(Graphics graphics, IEvent startEvent, IEvent endEvent) {
         for (Axis axis : getAxes())
-            drawAxis(graphics, startEventPtr, endEventPtr, axis);
+            drawAxis(graphics, startEvent, endEvent, axis);
     }
 
     /**
      * Draws a single axis in the given event range.
      */
-    private void drawAxis(Graphics graphics, long startEventPtr, long endEventPtr, Axis axis) {
+    private void drawAxis(Graphics graphics, IEvent startEvent, IEvent endEvent, Axis axis) {
+        if (axis.axisRenderer instanceof AxisMultiRenderer) {
+            AxisMultiRenderer axisRenderer = (AxisMultiRenderer)axis.axisRenderer;
+            axisRenderer.setSelectedRendererIndex(showAxisVectorData ? axisRenderer.getRendererCount() - 1 : 0);
+        }
         graphics.translate(0, axis.y - (int)getViewportTop());
-        axis.axisRenderer.drawAxis(graphics, startEventPtr, endEventPtr);
+        // TODO: graphics.setForegroundColor(module.isCompoundModule() ? ColorFactory.DIM_GREY : ColorFactory.BLACK);
+        graphics.setForegroundColor(styleProvider.getAxisColor(axis.axisHeader.module));
+        axis.axisRenderer.drawAxis(graphics, startEvent, endEvent);
         graphics.translate(0, -axis.y + (int)getViewportTop());
     }
 
@@ -3401,7 +3547,7 @@ public class SequenceChart
                 if (event != null) {
                     String messageDependencyIndexString = marker.getAttribute("MessageDependencyIndex", null);
                     IMessageDependency messageDependency = event.getConsequences().get(Integer.parseInt(messageDependencyIndexString));
-                    drawMessageDependencyMark(graphics, messageDependency.getCPtr(), styleProvider.getBookmarkColor());
+                    drawMessageDependencyMark(graphics, messageDependency, styleProvider.getBookmarkColor());
                 }
             }
         }
@@ -3410,20 +3556,20 @@ public class SequenceChart
     private void drawMessageDependencySelectionMarks(Graphics graphics) {
         for (Object object : selectedObjects)
             if (object instanceof IMessageDependency)
-                drawMessageDependencyMark(graphics, ((IMessageDependency)object).getCPtr(), styleProvider.getSelectionColor());
+                drawMessageDependencyMark(graphics, (IMessageDependency)object, styleProvider.getSelectionColor());
     }
 
-    private void drawMessageDependencyMark(Graphics graphics, long mesageDependencyPtr, Color color) {
+    private void drawMessageDependencyMark(Graphics graphics, IMessageDependency mesageDependency, Color color) {
         graphics.pushState();
         graphics.setLineWidthFloat(1.5f);
         graphics.setForegroundColor(color);
         graphics.setBackgroundColor(color);
         graphics.translate(0, getGutterHeight(graphics));
-        long[] eventPtrRange = getFirstLastEventPtrForMessageDependencies();
-        long startEventPtr = eventPtrRange[0];
-        long endEventPtr = eventPtrRange[1];
+        IEvent[] eventRange = getFirstLastEventForMessageDependencies();
+        IEvent startEvent = eventRange[0];
+        IEvent endEvent = eventRange[1];
         VLineBuffer vlineBuffer = new VLineBuffer();
-        drawOrFitMessageDependency(graphics, mesageDependencyPtr, -1, -1, vlineBuffer, startEventPtr, endEventPtr);
+        drawOrFitMessageDependency(graphics, mesageDependency, -1, -1, vlineBuffer, startEvent, endEvent);
         graphics.popState();
     }
 
@@ -3443,7 +3589,7 @@ public class SequenceChart
                 IEvent event = eventLogInput.getEventLog().getEventForEventNumber(Long.parseLong(eventNumberString));
                 EventLogEntry eventLogEntry = entryIndexString != null ? event.getEventLogEntry(Integer.parseInt(entryIndexString)) : null;
                 if (eventLogEntry instanceof ComponentMethodBeginEntry)
-                    drawComponentMethodCallMark(graphics, ((ComponentMethodBeginEntry)eventLogEntry).getCPtr(), styleProvider.getBookmarkColor());
+                    drawComponentMethodCallMark(graphics, (ComponentMethodBeginEntry)eventLogEntry, styleProvider.getBookmarkColor());
             }
         }
     }
@@ -3451,16 +3597,16 @@ public class SequenceChart
     private void drawComponentMethodCallSelectionMarks(Graphics graphics) {
         for (Object object : selectedObjects)
             if (object instanceof ComponentMethodBeginEntry)
-                drawComponentMethodCallMark(graphics, ((ComponentMethodBeginEntry)object).getCPtr(), styleProvider.getSelectionColor());
+                drawComponentMethodCallMark(graphics, (ComponentMethodBeginEntry)object, styleProvider.getSelectionColor());
     }
 
-    private void drawComponentMethodCallMark(Graphics graphics, long componentMethodCallPtr, Color color) {
+    private void drawComponentMethodCallMark(Graphics graphics, ComponentMethodBeginEntry componentMethodCall, Color color) {
         graphics.pushState();
         graphics.setLineWidthFloat(1.5f);
         graphics.setForegroundColor(color);
         graphics.setBackgroundColor(color);
         graphics.translate(0, getGutterHeight(graphics));
-        drawOrFitComponentMethodCall(graphics, componentMethodCallPtr, -1, -1);
+        drawOrFitComponentMethodCall(graphics, componentMethodCall, -1, -1);
         graphics.popState();
     }
 
@@ -3508,42 +3654,41 @@ public class SequenceChart
 
     private void drawComponentMethodCalls(Graphics graphics) {
         int extraClipping = getExtraClippingForEvents();
-        long[] eventPtrRange = getFirstLastEventPtrForViewportRange(-extraClipping, getViewportWidth() + extraClipping);
-        long startEventPtr = eventPtrRange[0];
-        long endEventPtr = eventPtrRange[1];
+        IEvent[] eventRange = getFirstLastEventForViewportRange(-extraClipping, getViewportWidth() + extraClipping);
+        IEvent startEvent = eventRange[0];
+        IEvent endEvent = eventRange[1];
 
-        if (startEventPtr != 0 && endEventPtr != 0) {
+        if (startEvent != null && endEvent != null) {
             if (debug)
-                Debug.println("Drawing module method calls in event range: " + sequenceChartFacade.IEvent_getEventNumber(startEventPtr) + " ->: " + sequenceChartFacade.IEvent_getEventNumber(endEventPtr));
+                Debug.println("Drawing module method calls in event range: " + startEvent.getEventNumber() + " ->: " + endEvent.getEventNumber());
 
-            PtrVector componentMethodBeginEntries = sequenceChartFacade.getComponentMethodBeginEntries(startEventPtr, endEventPtr);
+            ArrayList<ComponentMethodBeginEntry> componentMethodBeginEntries = sequenceChartFacade.getComponentMethodBeginEntries(startEvent, endEvent);
 
             if (debug)
                 Debug.println("Drawing " + componentMethodBeginEntries.size() + " module method calls");
 
             for (int i = 0; i < componentMethodBeginEntries.size(); i++) {
-                long componentMethodCallPtr = componentMethodBeginEntries.get(i);
-                if (isInitializationEvent(sequenceChartFacade.EventLogEntry_getEvent(componentMethodCallPtr)) && !showInitializationEvent)
+                ComponentMethodBeginEntry componentMethodCall = componentMethodBeginEntries.get(i);
+                if (isInitializationEvent(componentMethodCall.getEvent()) && !showInitializationEvent)
                     continue;
-                Color color = styleProvider.getComponentMethodCallColor(componentMethodCallPtr);
+                Color color = styleProvider.getComponentMethodCallColor(componentMethodCall);
                 graphics.setForegroundColor(color);
                 graphics.setBackgroundColor(color);
-                drawOrFitComponentMethodCall(graphics, componentMethodCallPtr, -1, -1);
+                drawOrFitComponentMethodCall(graphics, componentMethodCall, -1, -1);
             }
         }
     }
 
-    private boolean drawOrFitComponentMethodCall(Graphics graphics, long componentMethodCallPtr, int fitX, int fitY) {
-        int sourceComponentId = sequenceChartFacade.ComponentMethodBeginEntry_getSourceComponentId(componentMethodCallPtr);
-        int targetComponentId = sequenceChartFacade.ComponentMethodBeginEntry_getTargetComponentId(componentMethodCallPtr);
-
+    private boolean drawOrFitComponentMethodCall(Graphics graphics, ComponentMethodBeginEntry componentMethodBeginEntry, int fitX, int fitY) {
+        int sourceComponentId = componentMethodBeginEntry.getSourceComponentId();
+        int targetComponentId = componentMethodBeginEntry.getTargetComponentId();
         if ((sourceComponentId == 1 || getModuleIdToAxisModuleIndexMap().containsKey(sourceComponentId)) && getModuleIdToAxisModuleIndexMap().containsKey(targetComponentId)) {
-            long eventPtr = sequenceChartFacade.EventLogEntry_getEvent(componentMethodCallPtr);
-            long eventNumber = sequenceChartFacade.IEvent_getEventNumber(eventPtr);
-            // handle the filtered eventlog case
-            eventPtr = sequenceChartFacade.IEvent_getEventForEventNumber(eventNumber);
-            if (showInitializationEvent || !isInitializationEvent(eventPtr)) {
-                int eventAxisIndex = getEventAxisModuleIndex(eventPtr);
+            IEvent event = componentMethodBeginEntry.getEvent();
+            long eventNumber = event.getEventNumber();
+            // NOTE: handle the filtered eventlog case
+            event = eventLog.getEventForEventNumber(eventNumber);
+            if (showInitializationEvent || !isInitializationEvent(event)) {
+                int eventAxisIndex = getEventAxisModuleIndex(event);
                 int fromAxisIndex = getAxisModuleIndexByModuleId(sourceComponentId);
                 int toAxisIndex = getAxisModuleIndexByModuleId(targetComponentId);
                 if ((sourceComponentId == 1 || fromAxisIndex != -1) && toAxisIndex != -1) {
@@ -3563,30 +3708,36 @@ public class SequenceChart
                                 fromY -= styleProvider.getEventRadius();
                         }
                     }
-                    int xBegin = (int)getEventLogEntryXViewportCoordinateBegin(componentMethodCallPtr);
-                    long componentMethodEndEntryPtr = sequenceChartFacade.ComponentMethodBeginEntry_getComponentMethodEndEntry(componentMethodCallPtr);
-                    int xEnd = (int)getEventLogEntryXViewportCoordinateBegin(componentMethodEndEntryPtr);
+                    int xBegin = (int)getEventLogEntryXViewportCoordinateBegin(componentMethodBeginEntry);
+                    ComponentMethodEndEntry componentMethodEndEntry = componentMethodBeginEntry.getEvent().getComponentMethodEndEntry(componentMethodBeginEntry);
+                    int xEnd = (int)getEventLogEntryXViewportCoordinateBegin(componentMethodEndEntry);
                     if (graphics != null && toY != fromY) {
-                        graphics.setLineStyle(styleProvider.getComponentMethodCallLineStyle(componentMethodCallPtr));
-                        if (styleProvider.getComponentMethodCallLineDash(componentMethodCallPtr) != null)
-                            graphics.setLineDash(styleProvider.getComponentMethodCallLineDash(componentMethodCallPtr));
                         graphics.setAlpha(24);
                         graphics.fillRectangle(xBegin, fromY, xEnd - xBegin, toY - fromY);
                         graphics.setAlpha(255);
-                        int width = (int)(getPixelPerTimelineUnit() * 0.1) + 1;
-                        graphics.setBackgroundColor(styleProvider.getComponentMethodCallColor(componentMethodCallPtr));
-                        if (fromAxisIndex != eventAxisIndex)
-                            graphics.fillRectangle(xEnd, fromY - 2, width, 5);
-                        if (toAxisIndex != eventAxisIndex)
-                            graphics.fillRectangle(xBegin, toY - 2, width, 5);
+                        graphics.setBackgroundColor(styleProvider.getComponentMethodCallColor(componentMethodBeginEntry));
+                        if (fromAxisIndex != eventAxisIndex) {
+                            EventLogEntry nextComponentMethodEntry = sequenceChartFacade.EventLogEntry_getNextComponentMethodEntry(componentMethodEndEntry);
+                            graphics.fillRectangle(xEnd, fromY - 2, (int)getEventLogEntryXViewportCoordinateBegin(nextComponentMethodEntry) - xEnd, 5);
+                        }
+                        if (toAxisIndex != eventAxisIndex) {
+                            EventLogEntry nextComponentMethodEntry = sequenceChartFacade.EventLogEntry_getNextComponentMethodEntry(componentMethodBeginEntry);
+                            graphics.fillRectangle(xBegin, toY - 2, (int)getEventLogEntryXViewportCoordinateBegin(nextComponentMethodEntry) - xBegin, 5);
+                        }
+                        graphics.setLineStyle(styleProvider.getComponentMethodCallLineStyle(componentMethodBeginEntry));
+                        if (styleProvider.getComponentMethodCallLineDash(componentMethodBeginEntry) != null)
+                            graphics.setLineDash(styleProvider.getComponentMethodCallLineDash(componentMethodBeginEntry));
                         graphics.drawLine(xBegin, fromY, xBegin, toY);
+                        graphics.setLineStyle(styleProvider.getComponentMethodCallReturnLineStyle(componentMethodBeginEntry));
+                        if (styleProvider.getComponentMethodCallReturnLineDash(componentMethodBeginEntry) != null)
+                            graphics.setLineDash(styleProvider.getComponentMethodCallReturnLineDash(componentMethodBeginEntry));
                         graphics.drawLine(xEnd, fromY, xEnd, toY);
                         if (showArrowHeads && toY != fromY) {
                             drawArrowHead(graphics, null, xBegin, toY, 0, toY - fromY);
                             drawArrowHead(graphics, null, xEnd, fromY, 0, fromY - toY);
                         }
                         if (showMethodNames) {
-                            String text = sequenceChartFacade.ComponentMethodBeginEntry_getMethod(componentMethodCallPtr);
+                            String text = componentMethodBeginEntry.getMethodName();
                             int index = text.indexOf('(');
                             if (index != -1)
                                 text = text.substring(0, index);
@@ -3612,24 +3763,26 @@ public class SequenceChart
      * Draws all message arrows which have visual representation in the given event range.
      */
     private void drawMessageDependencies(Graphics graphics) {
-        long[] eventPtrRange = getFirstLastEventPtrForMessageDependencies();
-        long startEventPtr = eventPtrRange[0];
-        long endEventPtr = eventPtrRange[1];
-        if (startEventPtr != 0 && endEventPtr != 0) {
+        IEvent[] eventRange = getFirstLastEventForMessageDependencies();
+        IEvent startEvent = eventRange[0];
+        IEvent endEvent = eventRange[1];
+        if (startEvent != null && endEvent != null) {
             if (debug)
-                Debug.println("Drawing message dependencies in event range: " + sequenceChartFacade.IEvent_getEventNumber(startEventPtr) + " ->: " + sequenceChartFacade.IEvent_getEventNumber(endEventPtr));
-            PtrVector messageDependencies = sequenceChartFacade.getIntersectingMessageDependencies(startEventPtr, endEventPtr);
+                Debug.println("Drawing message dependencies in event range: " + startEvent.getEventNumber() + " ->: " + endEvent.getEventNumber());
+            ArrayList<IMessageDependency> messageDependencies = sequenceChartFacade.getIntersectingMessageDependencies(startEvent, endEvent);
             if (debug)
                 Debug.println("Drawing " + messageDependencies.size() + " message dependencies");
             VLineBuffer vlineBuffer = new VLineBuffer();
             for (int i = 0; i < messageDependencies.size(); i++) {
-                long messageDependencyPtr = messageDependencies.get(i);
-                long causeEventPtr = sequenceChartFacade.IMessageDependency_getCauseEvent(messageDependencyPtr);
-                Color color = styleProvider.getMessageDependencyColor(messageDependencyPtr);
+                IMessageDependency messageDependency = messageDependencies.get(i);
+                IEvent causeEvent = messageDependency.getCauseEvent();
+                if (causeEvent == null)
+                    causeEvent = messageDependency.getCauseEvent();
+                Color color = styleProvider.getMessageDependencyColor(messageDependency);
                 graphics.setForegroundColor(color);
                 graphics.setBackgroundColor(color);
-                if (!isInitializationEvent(causeEventPtr) || showInitializationEvent)
-                    drawOrFitMessageDependency(graphics, messageDependencyPtr, -1, -1, vlineBuffer, startEventPtr, endEventPtr);
+                if (!isInitializationEvent(causeEvent) || showInitializationEvent)
+                    drawOrFitMessageDependency(graphics, messageDependency, -1, -1, vlineBuffer, startEvent, endEvent);
             }
         }
     }
@@ -3637,24 +3790,24 @@ public class SequenceChart
     /**
      * Draws all events within the given event range.
      */
-    private void drawEvents(Graphics graphics, long startEventPtr, long endEventPtr) {
-        if (startEventPtr != 0 && endEventPtr != 0) {
+    private void drawEvents(Graphics graphics, IEvent startEvent, IEvent endEvent) {
+        if (startEvent != null && endEvent != null) {
             if (debug)
-                Debug.println("Drawing events with event range: " + sequenceChartFacade.IEvent_getEventNumber(startEventPtr) + " ->: " + sequenceChartFacade.IEvent_getEventNumber(endEventPtr));
+                Debug.println("Drawing events with event range: " + startEvent.getEventNumber() + " ->: " + endEvent.getEventNumber());
 
             HashMap<Integer, Integer> axisYtoLastXBegin = new HashMap<Integer, Integer>();
             HashMap<Integer, Integer> axisYtoLastXEnd = new HashMap<Integer, Integer>();
 
             // NOTE: navigating through next event takes care about leaving events out which are not in the filter's result
-            for (long eventPtr = startEventPtr;; eventPtr = sequenceChartFacade.IEvent_getNextEvent(eventPtr)) {
-                if (isInitializationEvent(eventPtr)) {
+            for (IEvent event = startEvent;; event = event.getNextEvent()) {
+                if (isInitializationEvent(event)) {
                     if (showInitializationEvent)
-                        drawEvent(graphics, eventPtr);
+                        drawEvent(graphics, event);
                 }
-                else if (getEventAxisModuleIndex(eventPtr) != -1) {
-                    int xBegin = (int)getEventXViewportCoordinateBegin(eventPtr);
-                    int xEnd = (int)getEventXViewportCoordinateEnd(eventPtr);
-                    int y = getEventYViewportCoordinate(eventPtr);
+                else if (getEventAxisModuleIndex(event) != -1) {
+                    int xBegin = (int)getEventXViewportCoordinateBegin(event);
+                    int xEnd = (int)getEventXViewportCoordinateEnd(event);
+                    int y = getEventYViewportCoordinate(event);
                     Integer lastXBegin = axisYtoLastXBegin.get(y);
                     Integer lastXEnd = axisYtoLastXEnd.get(y);
 
@@ -3662,11 +3815,11 @@ public class SequenceChart
                     if (lastXBegin == null || lastXEnd == null || lastXBegin.intValue() != xBegin || lastXEnd.intValue() != xEnd) {
                         axisYtoLastXBegin.put(y, xBegin);
                         axisYtoLastXEnd.put(y, xEnd);
-                        drawEvent(graphics, eventPtr, getEventAxisModuleIndex(eventPtr), xBegin, xEnd, y);
+                        drawEvent(graphics, event, getEventAxisModuleIndex(event), xBegin, xEnd, y);
                     }
                 }
 
-                if (eventPtr == endEventPtr)
+                if (event == endEvent)
                     break;
             }
         }
@@ -3675,32 +3828,30 @@ public class SequenceChart
     /**
      * Draws a single event.
      */
-    private void drawEvent(Graphics graphics, long eventPtr) {
-        int xBegin = (int)getEventXViewportCoordinateBegin(eventPtr);
-        int xEnd = (int)getEventXViewportCoordinateEnd(eventPtr);
+    private void drawEvent(Graphics graphics, IEvent event) {
+        int xBegin = (int)getEventXViewportCoordinateBegin(event);
+        int xEnd = (int)getEventXViewportCoordinateEnd(event);
 
-        if (isInitializationEvent(eventPtr)) {
+        if (isInitializationEvent(event)) {
             if (showInitializationEvent)
-                drawInitializationEvent(graphics, eventPtr, xBegin, xEnd);
+                drawInitializationEvent(graphics, event, xBegin, xEnd);
         }
         else
-            drawEvent(graphics, eventPtr, getEventAxisModuleIndex(eventPtr), xBegin, xEnd, getEventYViewportCoordinate(eventPtr));
+            drawEvent(graphics, event, getEventAxisModuleIndex(event), xBegin, xEnd, getEventYViewportCoordinate(event));
     }
 
     /**
      * Draws the initialization event on all axes.
      */
-    private void drawInitializationEvent(Graphics graphics, long eventPtr, int xBegin, int xEnd) {
-        for (int i = 0; i < sequenceChartFacade.IEvent_getNumConsequences(eventPtr); i++) {
-            long consequencePtr = sequenceChartFacade.IEvent_getConsequence(eventPtr, i);
-            long messageEntryPtr = sequenceChartFacade.IMessageDependency_getMessageEntry(consequencePtr);
-
-            if (messageEntryPtr != 0) {
-                int contextModuleId = sequenceChartFacade.EventLogEntry_getContextModuleId(messageEntryPtr);
+    private void drawInitializationEvent(Graphics graphics, IEvent event, int xBegin, int xEnd) {
+        for (IMessageDependency consequence : event.getConsequences()) {
+            MessageDescriptionEntry messageEntry = consequence.getBeginMessageDescriptionEntry();
+            if (messageEntry != null) {
+                int contextModuleId = messageEntry.getContextModuleId();
                 int moduleIndex = getAxisModuleIndexByModuleId(contextModuleId);
                 if (moduleIndex != -1) {
                     int y = getModuleYViewportCoordinateByModuleIndex(moduleIndex);
-                    drawEvent(graphics, eventPtr, moduleIndex, xBegin, xEnd, y);
+                    drawEvent(graphics, event, moduleIndex, xBegin, xEnd, y);
                 }
             }
         }
@@ -3709,16 +3860,16 @@ public class SequenceChart
     /**
      * Draws a single event at the given coordinates and axis module.
      */
-    private void drawEvent(Graphics graphics, long eventPtr, int axisModuleIndex, int xBegin, int xEnd, int y) {
+    private void drawEvent(Graphics graphics, IEvent event, int axisModuleIndex, int xBegin, int xEnd, int y) {
         if (showEventMarks || showEventNumbers) {
             int radius = styleProvider.getEventRadius();
             int diameter = 2 * radius;
             Axis axis = getAxis(axisModuleIndex);
             if (showEventMarks) {
-                if (!isInitializationEvent(eventPtr) && sequenceChartFacade.IEvent_getModuleId(eventPtr) != axis.axisHeader.module.getModuleId())
+                if (!isInitializationEvent(event) && event.getModuleId() != axis.axisHeader.module.getModuleId())
                     graphics.setAlpha(64);
-                graphics.setForegroundColor(styleProvider.getEventStrokeColor(eventPtr));
-                graphics.setBackgroundColor(styleProvider.getEventFillColor(eventPtr));
+                graphics.setForegroundColor(styleProvider.getEventStrokeColor(event));
+                graphics.setBackgroundColor(styleProvider.getEventFillColor(event));
                 graphics.setLineStyle(SWT.LINE_SOLID);
                 graphics.fillArc(xBegin - radius, y - radius, diameter, diameter, 90, 180);
                 graphics.fillArc(xEnd - radius, y - radius, diameter, diameter, 270, 180);
@@ -3732,12 +3883,12 @@ public class SequenceChart
                 graphics.setAlpha(255);
             }
             if (showEventNumbers) {
-                graphics.setForegroundColor(styleProvider.getEventLabelColor(eventPtr));
-                if (styleProvider.getEventLabelFont(eventPtr) != null)
-                    graphics.setFont(styleProvider.getEventLabelFont(eventPtr));
+                graphics.setForegroundColor(styleProvider.getEventLabelColor(event));
+                if (styleProvider.getEventLabelFont(event) != null)
+                    graphics.setFont(styleProvider.getEventLabelFont(event));
                 else
                     graphics.setFont(getFont());
-                drawText(graphics, labelProvider.getEventLabel(eventPtr), xBegin + diameter, y + radius + axis.axisRenderer.getHeight() / 2);
+                drawText(graphics, labelProvider.getEventLabel(event), xBegin + diameter, y + radius + axis.axisRenderer.getHeight() / 2);
             }
         }
     }
@@ -3772,10 +3923,8 @@ public class SequenceChart
      */
     private void drawTicks(Graphics graphics, int viewportHeigth) {
         calculateTicks(getViewportWidth());
-
         IEvent lastEvent = eventLog.getLastEvent();
         org.omnetpp.common.engine.BigDecimal endSimulationTime = lastEvent == null ? org.omnetpp.common.engine.BigDecimal.getZero() : lastEvent.getSimulationTime();
-
         for (BigDecimal tick : ticks) {
             // BigDecimal to double conversions loose precision both in Java and C++ but we must stick to the one in C++
             // so that strange problems do not occur (think of comparing the tick's time to the last known simulation time)
@@ -3790,21 +3939,22 @@ public class SequenceChart
      * Draws a tick under the mouse.
      */
     private void drawTickUnderMouse(Graphics graphics, int viewportHeigth) {
-        graphics.pushState();
-        int gutterHeight = getGutterHeight(graphics);
-        Point p = toControl(Display.getDefault().getCursorLocation());
-
-        if (0 <= p.x && p.x < getViewportWidth() && 0 <= p.y && p.y < getViewportHeight() + gutterHeight * 2) {
-            BigDecimal tick = calculateTick(p.x, 1);
-            drawTick(graphics, viewportHeigth, styleProvider.getMouseTickLineColor(), styleProvider.getInfoBackgroundColor(), tick, p.x, true);
+        if (getPixelPerTimelineUnit() != 0) {
+            graphics.pushState();
+            int gutterHeight = getGutterHeight(graphics);
+            Point p = toControl(Display.getDefault().getCursorLocation());
+            if (0 <= p.x && p.x < getViewportWidth() && 0 <= p.y && p.y < getViewportHeight() + gutterHeight * 2) {
+                BigDecimal tick = calculateTick(p.x, 1);
+                drawTick(graphics, viewportHeigth, styleProvider.getMouseTickLineColor(), styleProvider.getInfoBackgroundColor(), tick, p.x, true);
+            }
+            graphics.popState();
         }
-        graphics.popState();
     }
 
     private void drawHightlightedObjects(Graphics graphics) {
-        long[] eventPtrRange = getFirstLastEventPtrForMessageDependencies();
-        long startEventPtr = eventPtrRange[0];
-        long endEventPtr = eventPtrRange[1];
+        IEvent[] eventRange = getFirstLastEventForMessageDependencies();
+        IEvent startEvent = eventRange[0];
+        IEvent endEvent = eventRange[1];
         graphics.pushState();
         graphics.translate(0, getGutterHeight(graphics));
         graphics.setLineWidth(3);
@@ -3813,29 +3963,29 @@ public class SequenceChart
         for (Object object : highlightedObjects) {
             if (object instanceof IEvent) {
                 IEvent event = (IEvent)object;
-                drawEvent(graphics, event.getCPtr());
+                drawEvent(graphics, event);
             }
             else if (object instanceof IMessageDependency) {
                 IMessageDependency messageDependency = (IMessageDependency)object;
-                long causeEventPtr = sequenceChartFacade.IMessageDependency_getCauseEvent(messageDependency.getCPtr());
-                Color color = selectedObjects.contains(object) ? styleProvider.getSelectionColor() : styleProvider.getMessageDependencyColor(messageDependency.getCPtr());
+                IEvent causeEvent = messageDependency.getCauseEvent();
+                Color color = selectedObjects.contains(object) ? styleProvider.getSelectionColor() : styleProvider.getMessageDependencyColor(messageDependency);
                 graphics.setForegroundColor(color);
                 graphics.setBackgroundColor(color);
-                if (!isInitializationEvent(causeEventPtr) || showInitializationEvent)
-                    drawOrFitMessageDependency(graphics, messageDependency.getCPtr(), -1, -1, vlineBuffer, startEventPtr, endEventPtr);
+                if (!isInitializationEvent(causeEvent) || showInitializationEvent)
+                    drawOrFitMessageDependency(graphics, messageDependency, -1, -1, vlineBuffer, startEvent, endEvent);
             }
             else if (object instanceof ComponentMethodBeginEntry) {
                 ComponentMethodBeginEntry componentMethodBeginEntry = (ComponentMethodBeginEntry)object;
-                Color color = selectedObjects.contains(object) ? styleProvider.getSelectionColor() : styleProvider.getComponentMethodCallColor(componentMethodBeginEntry.getCPtr());
+                Color color = selectedObjects.contains(object) ? styleProvider.getSelectionColor() : styleProvider.getComponentMethodCallColor(componentMethodBeginEntry);
                 graphics.setForegroundColor(color);
                 graphics.setBackgroundColor(color);
-                drawOrFitComponentMethodCall(graphics, componentMethodBeginEntry.getCPtr(), -1, -1);
+                drawOrFitComponentMethodCall(graphics, componentMethodBeginEntry, -1, -1);
             }
             else if (object instanceof ModuleTreeItem) {
                 ModuleTreeItem axisModule = (ModuleTreeItem)object;
                 int index = getAxisModuleIndexByModuleId(axisModule.getModuleId());
                 if (index != -1)
-                    drawAxis(graphics, startEventPtr, endEventPtr, getAxis(index));
+                    drawAxis(graphics, startEvent, endEvent, getAxis(index));
             }
         }
         graphics.popState();
@@ -3894,13 +4044,13 @@ public class SequenceChart
     private void drawEventSelectionMarks(Graphics graphics) {
         graphics.pushState();
         graphics.translate(0, getGutterHeight(graphics));
-        long[] eventPtrRange = getFirstLastEventPtrForViewportRange(0 - styleProvider.getEventSelectionRadius(), getViewportWidth() + styleProvider.getEventSelectionRadius());
-        long startEventPtr = eventPtrRange[0];
-        long endEventPtr = eventPtrRange[1];
+        IEvent[] eventRange = getFirstLastEventForViewportRange(0 - styleProvider.getEventSelectionRadius(), getViewportWidth() + styleProvider.getEventSelectionRadius());
+        IEvent startEvent = eventRange[0];
+        IEvent endEvent = eventRange[1];
 
-        if (startEventPtr != 0 && endEventPtr != 0) {
-            long startEventNumber = sequenceChartFacade.IEvent_getEventNumber(startEventPtr);
-            long endEventNumber = sequenceChartFacade.IEvent_getEventNumber(endEventPtr);
+        if (startEvent != null && endEvent != null) {
+            long startEventNumber = startEvent.getEventNumber();
+            long endEventNumber = endEvent.getEventNumber();
 
             for (Object object : selectedObjects) {
                 if (object instanceof EventNumberRangeSet) {
@@ -3961,55 +4111,70 @@ public class SequenceChart
 
     private void drawTimeDifferences(Graphics graphics) {
         MultiValueMap map = MultiValueMap.decorate(new TreeMap<Double, Pair<org.omnetpp.common.engine.BigDecimal, Point>>());
-        for (Object object : selectedObjects) {
-            if (object instanceof EventNumberRangeSet) {
-                EventNumberRangeSet eventNumberRangeSet = (EventNumberRangeSet)object;
-                for (long eventNumber : eventNumberRangeSet) {
-                    IEvent event = eventLog.getEventForEventNumber(eventNumber);
-                    org.omnetpp.common.engine.BigDecimal simulationTime = sequenceChartFacade.IEvent_getSimulationTime(event.getCPtr());
-                    double timelineCoordinateBegin = sequenceChartFacade.IEvent_getTimelineCoordinateBegin(event.getCPtr());
-                    double timelineCoordinateEnd = sequenceChartFacade.IEvent_getTimelineCoordinateEnd(event.getCPtr());
-                    double timelineCoordinate = (timelineCoordinateEnd + timelineCoordinateBegin) / 2;
-                    int xBegin = (int)getEventXViewportCoordinateBegin(event.getCPtr());
-                    int xEnd = (int)getEventXViewportCoordinateEnd(event.getCPtr());
-                    int y = isInitializationEvent(event) ? getViewportHeight() / 2 : getEventYViewportCoordinate(event.getCPtr());
-                    map.put(timelineCoordinate, new Pair<org.omnetpp.common.engine.BigDecimal, Point>(simulationTime, new Point((xBegin + xEnd) / 2, y)));
+        IEvent[] eventRange = getFirstLastEventForViewportRange(0 - styleProvider.getEventSelectionRadius(), getViewportWidth() + styleProvider.getEventSelectionRadius());
+        IEvent startEvent = eventRange[0];
+        IEvent endEvent = eventRange[1];
+
+        if (startEvent != null && endEvent != null) {
+            long startEventNumber = startEvent.getEventNumber();
+            long endEventNumber = endEvent.getEventNumber();
+
+            for (Object object : selectedObjects) {
+                if (object instanceof EventNumberRangeSet) {
+                    EventNumberRangeSet eventNumberRangeSet = (EventNumberRangeSet)object;
+                    if (!eventNumberRangeSet.isEmpty()) {
+                        for (long eventNumber = startEventNumber; eventNumber <= endEventNumber; eventNumber++) {
+                            if (eventNumberRangeSet.contains(eventNumber)) {
+                                IEvent event = eventLog.getEventForEventNumber(eventNumber);
+                                org.omnetpp.common.engine.BigDecimal simulationTime = event.getSimulationTime();
+                                double timelineCoordinateBegin = sequenceChartFacade.getTimelineCoordinateBegin(event);
+                                double timelineCoordinateEnd = sequenceChartFacade.getTimelineCoordinateEnd(event);
+                                double timelineCoordinate = (timelineCoordinateEnd + timelineCoordinateBegin) / 2;
+                                int xBegin = (int)getEventXViewportCoordinateBegin(event);
+                                int xEnd = (int)getEventXViewportCoordinateEnd(event);
+                                int y = isInitializationEvent(event) ? getViewportHeight() / 2 : getEventYViewportCoordinate(event);
+                                map.put(timelineCoordinate, new Pair<org.omnetpp.common.engine.BigDecimal, Point>(simulationTime, new Point((xBegin + xEnd) / 2, y)));
+                            }
+                        }
+                    }
+                }
+                else if (object instanceof Double) {
+                    Double timelineCoordinate = (Double)object;
+                    org.omnetpp.common.engine.BigDecimal simulationTime = sequenceChartFacade.getSimulationTimeForTimelineCoordinate(timelineCoordinate);
+                    long x = getViewportCoordinateForTimelineCoordinate(timelineCoordinate);
+                    map.put(timelineCoordinate, new Pair<org.omnetpp.common.engine.BigDecimal, Point>(simulationTime, new Point((int)x, getViewportHeight() / 2)));
                 }
             }
-            else if (object instanceof Double) {
-                Double timelineCoordinate = (Double)object;
-                org.omnetpp.common.engine.BigDecimal simulationTime = sequenceChartFacade.getSimulationTimeForTimelineCoordinate(timelineCoordinate);
-                long x = getViewportCoordinateForTimelineCoordinate(timelineCoordinate);
-                map.put(timelineCoordinate, new Pair<org.omnetpp.common.engine.BigDecimal, Point>(simulationTime, new Point((int)x, getViewportHeight() / 2)));
-            }
         }
-        graphics.pushState();
-        graphics.translate(0, getGutterHeight(graphics));
-        graphics.setLineWidthFloat(1.5f);
-        graphics.setLineStyle(SWT.LINE_DASH);
-        graphics.setForegroundColor(styleProvider.getSelectionColor());
-        org.omnetpp.common.engine.BigDecimal previousSimulationTime = null;
-        Point previousViewportCoordinate = null;
-        for (Object object : map.entrySet()) {
-            @SuppressWarnings("unchecked")
-            Map.Entry<Double, ArrayList<Pair<org.omnetpp.common.engine.BigDecimal, Point>>> entry = (Map.Entry<Double, ArrayList<Pair<org.omnetpp.common.engine.BigDecimal, Point>>>)object;
-            for (Pair<org.omnetpp.common.engine.BigDecimal, Point> pair : entry.getValue()) {
-                org.omnetpp.common.engine.BigDecimal simulationTime = pair.first;
-                Point viewportCoordinate = pair.second;
-                if (previousSimulationTime != null) {
-                    org.omnetpp.common.engine.BigDecimal simulationTimeDifference = simulationTime.subtract(previousSimulationTime);
-                    graphics.drawLine(previousViewportCoordinate.x, previousViewportCoordinate.y, viewportCoordinate.x, viewportCoordinate.y);
-                    String text = TimeUtils.secondsToTimeString(new BigDecimal(simulationTimeDifference.toString()));
-                    Point size = GraphicsUtils.getTextExtent(graphics, text);
-                    int x = (previousViewportCoordinate.x + viewportCoordinate.x) / 2;
-                    int y = (previousViewportCoordinate.y + viewportCoordinate.y) / 2;
-                    graphics.drawText(text, x - size.x / 2, y - size.y - 2);
+        if (!map.isEmpty()) {
+            graphics.pushState();
+            graphics.translate(0, getGutterHeight(graphics));
+            graphics.setLineWidthFloat(1.5f);
+            graphics.setLineStyle(SWT.LINE_DASH);
+            graphics.setForegroundColor(styleProvider.getSelectionColor());
+            org.omnetpp.common.engine.BigDecimal previousSimulationTime = null;
+            Point previousViewportCoordinate = null;
+            for (Object object : map.entrySet()) {
+                @SuppressWarnings("unchecked")
+                Map.Entry<Double, ArrayList<Pair<org.omnetpp.common.engine.BigDecimal, Point>>> entry = (Map.Entry<Double, ArrayList<Pair<org.omnetpp.common.engine.BigDecimal, Point>>>)object;
+                for (Pair<org.omnetpp.common.engine.BigDecimal, Point> pair : entry.getValue()) {
+                    org.omnetpp.common.engine.BigDecimal simulationTime = pair.first;
+                    Point viewportCoordinate = pair.second;
+                    if (previousSimulationTime != null) {
+                        org.omnetpp.common.engine.BigDecimal simulationTimeDifference = simulationTime.subtract(previousSimulationTime);
+                        graphics.drawLine(previousViewportCoordinate.x, previousViewportCoordinate.y, viewportCoordinate.x, viewportCoordinate.y);
+                        String text = TimeUtils.secondsToTimeString(new BigDecimal(simulationTimeDifference.toString()));
+                        Point size = GraphicsUtils.getTextExtent(graphics, text);
+                        int x = (previousViewportCoordinate.x + viewportCoordinate.x) / 2;
+                        int y = (previousViewportCoordinate.y + viewportCoordinate.y) / 2;
+                        graphics.drawText(text, x - size.x / 2, y - size.y - 2);
+                    }
+                    previousSimulationTime = simulationTime;
+                    previousViewportCoordinate = viewportCoordinate;
                 }
-                previousSimulationTime = simulationTime;
-                previousViewportCoordinate = viewportCoordinate;
             }
+            graphics.popState();
         }
-        graphics.popState();
     }
 
     /**
@@ -4023,14 +4188,14 @@ public class SequenceChart
         catch (CoreException e) {
             throw new RuntimeException(e);
         }
-        long[] eventPtrRange = getFirstLastEventPtrForViewportRange(0 - styleProvider.getEventSelectionRadius(), getViewportWidth() + styleProvider.getEventSelectionRadius());
-        long startEventPtr = eventPtrRange[0];
-        long endEventPtr = eventPtrRange[1];
-        if (startEventPtr != 0 && endEventPtr != 0) {
+        IEvent[] eventRange = getFirstLastEventForViewportRange(0 - styleProvider.getEventSelectionRadius(), getViewportWidth() + styleProvider.getEventSelectionRadius());
+        IEvent startEvent = eventRange[0];
+        IEvent endEvent = eventRange[1];
+        if (startEvent != null && endEvent != null) {
             graphics.pushState();
             graphics.translate(0, getGutterHeight(graphics));
-            long startEventNumber = sequenceChartFacade.IEvent_getEventNumber(startEventPtr);
-            long endEventNumber = sequenceChartFacade.IEvent_getEventNumber(endEventPtr);
+            long startEventNumber = startEvent.getEventNumber();
+            long endEventNumber = endEvent.getEventNumber();
 
             for (int i = 0; i < markers.length; i++) {
                 IMarker marker = markers[i];
@@ -4054,21 +4219,19 @@ public class SequenceChart
      * Draws a mark around the given event, handles initialize event.
      */
     private void drawEventMark(Graphics graphics, Color color, IEvent event) {
-        int xBegin = (int)getEventXViewportCoordinateBegin(event.getCPtr());
-        int xEnd = (int)getEventXViewportCoordinateEnd(event.getCPtr());
+        int xBegin = (int)getEventXViewportCoordinateBegin(event);
+        int xEnd = (int)getEventXViewportCoordinateEnd(event);
 
         if (isInitializationEvent(event)) {
             if (showInitializationEvent) {
-                long eventPtr = event.getCPtr();
-                for (int i = 0; i < sequenceChartFacade.IEvent_getNumConsequences(eventPtr); i++) {
-                    long consequencePtr = sequenceChartFacade.IEvent_getConsequence(eventPtr, i);
-                    int y = getInitializationEventYViewportCoordinate(consequencePtr);
+                for (IMessageDependency consequence : event.getConsequences()) {
+                    int y = getInitializationEventYViewportCoordinate(consequence);
                     drawEventMark(graphics, color, xBegin, xEnd, y);
                 }
             }
         }
         else {
-            int y = getEventYViewportCoordinate(event.getCPtr());
+            int y = getEventYViewportCoordinate(event);
             drawEventMark(graphics, color, xBegin, xEnd, y);
         }
     }
@@ -4105,7 +4268,6 @@ public class SequenceChart
         if (rootAxisHeader != null) {
             graphics.pushState();
             graphics.setFont(getFont());
-            graphics.setBackgroundColor(ColorFactory.LIGHT_CYAN);
             int gutterHeight = getGutterHeight(graphics);
             Rectangle clipping = new Rectangle();
             graphics.getClip(clipping);
@@ -4119,8 +4281,10 @@ public class SequenceChart
     }
 
     private void drawAxisHeaders(Graphics graphics, AxisHeader axisHeader) {
-        if (axisHeader.children.size() != 0)
+        if (axisHeader.children.size() != 0) {
+            graphics.setBackgroundColor(styleProvider.getAxisHeaderColor(axisHeader.module));
             drawAxisHeader(graphics, axisHeader);
+        }
         for (AxisHeader childAxisHeader : axisHeader.children)
             drawAxisHeaders(graphics, childAxisHeader);
     }
@@ -4166,7 +4330,9 @@ public class SequenceChart
     }
 
     private void drawAxisInfo(Graphics graphics) {
-        int closedAxisCount = eventLogInput.getModuleTreeRoot().getModuleCount() - openAxisModules.size();
+        ModuleTreeItem moduleTreeRoot = eventLogInput.getModuleTreeRoot();
+        int moduleCount = moduleTreeRoot != null ? moduleTreeRoot.getModuleCount() : 0;
+        int closedAxisCount = moduleCount - openAxisModules.size();
         int invisibleAxisCount = openAxisModules.size() - visibleAxisModules.size();
         if (closedAxisCount != 0 || invisibleAxisCount != 0) {
             graphics.pushState();
@@ -4182,7 +4348,7 @@ public class SequenceChart
             String invisibleAxisCountText = "Invisible: " + invisibleAxisCount + (invisibleAxisCount == 1 ? " axis" : " axes");
             Point size1 = GraphicsUtils.getTextExtent(graphics, closedAxisCountText);
             Point size2 = GraphicsUtils.getTextExtent(graphics, invisibleAxisCountText);
-            Point size = new Point(Math.max(size1.x, size2.x) + 4, size1.y + size2.y + 6); 
+            Point size = new Point(Math.max(size1.x, size2.x) + 4, size1.y + size2.y + 6);
             graphics.setBackgroundColor(styleProvider.getInfoBackgroundColor());
             graphics.fillRectangle(0, 0, size.x, size.y);
             graphics.setLineStyle(SWT.LINE_SOLID);
@@ -4223,7 +4389,7 @@ public class SequenceChart
             if (highlightedObjects.contains(axisHeader.labelElementModules[i]))
                 graphics.setForegroundColor(styleProvider.getHighlightColor());
             else
-                graphics.setForegroundColor(ColorFactory.BLACK);
+                graphics.setForegroundColor(styleProvider.getAxisLabelColor(axis.axisHeader.module));
             graphics.drawText(modulePaths[i], moduleLabelBounds.x, moduleLabelBounds.y);
         }
         Image image = labelProvider.getCloseImage();
@@ -4241,57 +4407,60 @@ public class SequenceChart
      *
      * The line buffer is used to skip drawing message arrows where there is one already drawn. (very dense arrows)
      */
-    private boolean drawOrFitMessageDependency(Graphics graphics, long messageDependencyPtr, int fitX, int fitY, VLineBuffer vlineBuffer, long startEventPtr, long endEventPtr) {
-        long causeEventPtr = sequenceChartFacade.IMessageDependency_getCauseEvent(messageDependencyPtr);
-        long consequenceEventPtr = sequenceChartFacade.IMessageDependency_getConsequenceEvent(messageDependencyPtr);
+    private boolean drawOrFitMessageDependency(Graphics graphics, IMessageDependency messageDependency, int fitX, int fitY, VLineBuffer vlineBuffer, IEvent startEvent, IEvent endEvent) {
+        IEvent causeEvent = messageDependency.getCauseEvent();
+        IEvent consequenceEvent = messageDependency.getConsequenceEvent();
 
         // events may be omitted from the log
-        if (causeEventPtr == 0 || consequenceEventPtr == 0)
+        if (causeEvent == null || consequenceEvent == null)
             return false;
 
         // cache message dependency state
-        boolean isReuse = sequenceChartFacade.IMessageDependency_isReuse(messageDependencyPtr);
+        boolean isReuse = messageDependency instanceof MessageReuseDependency;
         // TODO: not always BeginSendEntry?!
-        long messageEntryPtr = sequenceChartFacade.IMessageDependency_getMessageEntry(messageDependencyPtr);
-        long endSendEntryPtr = messageEntryPtr == 0 || !sequenceChartFacade.MessageEntry_isBeginSendEntry(messageEntryPtr) ? 0 : sequenceChartFacade.BeginSendEntry_getEndSendEntry(messageEntryPtr);
-        int messageId = messageEntryPtr == 0 ? 0 : sequenceChartFacade.MessageEntry_getMessageId(messageEntryPtr);
-        long startEventNumber = sequenceChartFacade.IEvent_getEventNumber(startEventPtr);
-        long endEventNumber = sequenceChartFacade.IEvent_getEventNumber(endEventPtr);
-        long causeEventNumber = sequenceChartFacade.IEvent_getEventNumber(causeEventPtr);
-        long consequenceEventNumber = sequenceChartFacade.IEvent_getEventNumber(consequenceEventPtr);
-        boolean isFilteredMessageDependency = sequenceChartFacade.IMessageDependency_isFilteredMessageDependency(messageDependencyPtr);
-        int filteredMessageDependencyKind = isFilteredMessageDependency ? sequenceChartFacade.FilteredMessageDependency_getKind(messageDependencyPtr) : FilteredMessageDependency.Kind.UNDEFINED;
-        boolean isTransmissionStart = true; // TODO: KLUDGE: revive this when topic/packetprogress is merged into master: endSendEntryPtr == 0 ? false : sequenceChartFacade.EndSendEntry_isTransmissionStart(endSendEntryPtr);
-        boolean isReceptionStart = endSendEntryPtr == 0 ? false : sequenceChartFacade.EndSendEntry_isReceptionStart(endSendEntryPtr);
-
-        org.omnetpp.common.engine.BigDecimal transmissionDelay = null;
-        if (showTransmissionDurations && !isFilteredMessageDependency && endSendEntryPtr != 0) {
-            transmissionDelay = sequenceChartFacade.BeginSendEntry_getTransmissionDelay(messageEntryPtr);
-            if (transmissionDelay.equals(org.omnetpp.common.engine.BigDecimal.getZero()))
-                transmissionDelay = null;
+        MessageDescriptionEntry messageEntry = messageDependency.getBeginMessageDescriptionEntry();
+        BeginSendEntry beginSendEntry = messageEntry instanceof BeginSendEntry ? (BeginSendEntry)messageEntry : null;
+        EndSendEntry endSendEntry = beginSendEntry != null ? beginSendEntry.getEvent().getEndSendEntry(beginSendEntry) : null;
+        long messageId = messageEntry == null ? 0 : messageEntry.getMessageId();
+        long startEventNumber = startEvent.getEventNumber();
+        long endEventNumber = endEvent.getEventNumber();
+        long causeEventNumber = causeEvent.getEventNumber();
+        long consequenceEventNumber = consequenceEvent.getEventNumber();
+        boolean isFilteredMessageDependency = messageDependency instanceof FilteredMessageDependency;
+        FilteredMessageDependency filteredMessageDependency = isFilteredMessageDependency ? (FilteredMessageDependency)messageDependency : null;
+        FilteredMessageDependency.Kind filteredMessageDependencyKind = isFilteredMessageDependency ? filteredMessageDependency.getKind() : FilteredMessageDependency.Kind.UNDEFINED;
+        org.omnetpp.common.engine.BigDecimal transmissionDuration = null;
+        org.omnetpp.common.engine.BigDecimal remainingDuration = null;
+        if (showTransmissionDurations && !isFilteredMessageDependency && endSendEntry != null) {
+            transmissionDuration = messageEntry.getEvent().getTransmissionDelay(beginSendEntry);
+            remainingDuration = beginSendEntry.getEvent().getRemainingDuration(beginSendEntry);
+            if (remainingDuration.equals(org.omnetpp.common.engine.BigDecimal.getZero()))
+                remainingDuration = null;
         }
+        boolean isTransmissionStart = true;
+        boolean isReceptionStart = endSendEntry != null ? endSendEntry.getIsDeliveredImmediately() : false;
 
         // calculate pixel coordinates for message arrow endings
         // TODO: what about integer overflow in (int) casts? now that we have converted to long
         int invalid = Integer.MAX_VALUE;
         int x1 = invalid, x2 = invalid, y1 = invalid, y2 = invalid;
         int fontHeight = getFontHeight(graphics);
-        if (isInitializationEvent(causeEventPtr))
-            y1 = getInitializationEventYViewportCoordinate(messageDependencyPtr, invalid);
-        else if (!isReuse && messageEntryPtr != 0) {
-            int moduleIndex = getAxisModuleIndexByModuleId(sequenceChartFacade.EventLogEntry_getContextModuleId(messageEntryPtr));
+        if (isInitializationEvent(causeEvent))
+            y1 = getInitializationEventYViewportCoordinate(messageDependency, invalid);
+        else if (!isReuse && messageEntry != null) {
+            int moduleIndex = getAxisModuleIndexByModuleId(messageEntry.getContextModuleId());
             if (moduleIndex != -1)
                 y1 = getModuleYViewportCoordinateByModuleIndex(moduleIndex);
         }
         else
-            y1 = getEventYViewportCoordinate(causeEventPtr, invalid);
-        if (isReuse && messageEntryPtr != 0) {
-            int moduleIndex = getAxisModuleIndexByModuleId(sequenceChartFacade.EventLogEntry_getContextModuleId(messageEntryPtr));
+            y1 = getEventYViewportCoordinate(causeEvent, invalid);
+        if (isReuse && messageEntry != null) {
+            int moduleIndex = getAxisModuleIndexByModuleId(messageEntry.getContextModuleId());
             if (moduleIndex != -1)
                 y2 = getModuleYViewportCoordinateByModuleIndex(moduleIndex);
         }
         else
-            y2 = getEventYViewportCoordinate(consequenceEventPtr, invalid);
+            y2 = getEventYViewportCoordinate(consequenceEvent, invalid);
         // skip if one of the axes is filtered out
         if (y1 == invalid || y2 == invalid)
             return false;
@@ -4315,37 +4484,41 @@ public class SequenceChart
         double timelineCoordinateLimit = getMaximumMessageDependencyDisplayWidth() / getPixelPerTimelineUnit();
         if (consequenceEventNumber < startEventNumber || endEventNumber < consequenceEventNumber) {
             // consequence event is out of drawn message dependency range
-            x1 = (int)getEventXViewportCoordinateEnd(causeEventPtr);
-            double causeTimelineCoordinate = sequenceChartFacade.getTimelineCoordinateBegin(causeEventPtr);
-            double consequenceTimelineCoordinate = sequenceChartFacade.getTimelineCoordinateBegin(consequenceEventPtr, -Double.MAX_VALUE, causeTimelineCoordinate + timelineCoordinateLimit);
+            x1 = (int)getEventXViewportCoordinateEnd(causeEvent);
+            if (messageEntry != null && !isReuse)
+                x1 = (int)getEventLogEntryXViewportCoordinateBegin(messageEntry);
+            double causeTimelineCoordinate = sequenceChartFacade.getTimelineCoordinateBegin(causeEvent);
+            double consequenceTimelineCoordinate = sequenceChartFacade.getTimelineCoordinateBegin(consequenceEvent, -Double.MAX_VALUE, causeTimelineCoordinate + timelineCoordinateLimit);
 
             if (Double.isNaN(consequenceTimelineCoordinate) || consequenceTimelineCoordinate > causeTimelineCoordinate + timelineCoordinateLimit)
                 x2 = invalid;
             else
-                x2 = (int)getEventXViewportCoordinateBegin(consequenceEventPtr);
+                x2 = (int)getEventXViewportCoordinateBegin(consequenceEvent);
         }
         else if (causeEventNumber < startEventNumber || endEventNumber < causeEventNumber) {
             // cause event is out of drawn message dependency range
-            x2 = (int)getEventXViewportCoordinateBegin(consequenceEventPtr);
-            double consequenceTimelineCoordinate = sequenceChartFacade.getTimelineCoordinateBegin(consequenceEventPtr);
-            double causeTimelineCoordinate = sequenceChartFacade.getTimelineCoordinateBegin(causeEventPtr, consequenceTimelineCoordinate - timelineCoordinateLimit, Double.MAX_VALUE);
+            x2 = (int)getEventXViewportCoordinateBegin(consequenceEvent);
+            if (messageEntry != null && isReuse)
+                x2 = (int)getEventLogEntryXViewportCoordinateBegin(messageEntry);
+            double consequenceTimelineCoordinate = sequenceChartFacade.getTimelineCoordinateBegin(consequenceEvent);
+            double causeTimelineCoordinate = sequenceChartFacade.getTimelineCoordinateBegin(causeEvent, consequenceTimelineCoordinate - timelineCoordinateLimit, Double.MAX_VALUE);
 
             if (Double.isNaN(causeTimelineCoordinate) || causeTimelineCoordinate < consequenceTimelineCoordinate - timelineCoordinateLimit)
                 x1 = invalid;
             else
-                x1 = (int)getEventXViewportCoordinateEnd(causeEventPtr);
+                x1 = (int)getEventXViewportCoordinateEnd(causeEvent);
         }
         else {
             // both events are inside
-            x1 = (int)getEventXViewportCoordinateEnd(causeEventPtr);
-            x2 = (int)getEventXViewportCoordinateBegin(consequenceEventPtr);
-            if (messageEntryPtr != 0 && !isReuse)
-                x1 = (int)getEventLogEntryXViewportCoordinateBegin(messageEntryPtr);
-            if (messageEntryPtr != 0 && isReuse)
-                x2 = (int)getEventLogEntryXViewportCoordinateBegin(messageEntryPtr);
+            x1 = (int)getEventXViewportCoordinateEnd(causeEvent);
+            x2 = (int)getEventXViewportCoordinateBegin(consequenceEvent);
+            if (messageEntry != null && !isReuse)
+                x1 = (int)getEventLogEntryXViewportCoordinateBegin(messageEntry);
+            if (messageEntry != null && isReuse)
+                x2 = (int)getEventLogEntryXViewportCoordinateBegin(messageEntry);
 
-            double causeTimelineCoordinate = sequenceChartFacade.getTimelineCoordinateBegin(causeEventPtr);
-            double consequenceTimelineCoordinate = sequenceChartFacade.getTimelineCoordinateBegin(consequenceEventPtr);
+            double causeTimelineCoordinate = sequenceChartFacade.getTimelineCoordinateBegin(causeEvent);
+            double consequenceTimelineCoordinate = sequenceChartFacade.getTimelineCoordinateBegin(consequenceEvent);
 
             if (consequenceTimelineCoordinate - causeTimelineCoordinate > timelineCoordinateLimit) {
                 int viewportCenter = getViewportWidth() / 2;
@@ -4362,15 +4535,15 @@ public class SequenceChart
         // line color and style depends on message kind
         if (isFilteredMessageDependency) {
             switch (filteredMessageDependencyKind) {
-                case FilteredMessageDependency.Kind.SENDS:
+                case SENDS:
                     if ((isSelfArrow && !showSelfMessageSends) || (!isSelfArrow && !showMessageSends))
                         return false;
                     break;
-                case FilteredMessageDependency.Kind.REUSES:
+                case REUSES:
                     if ((isSelfArrow && !showSelfMessageReuses) || (!isSelfArrow && !showMessageReuses))
                         return false;
                     break;
-                case FilteredMessageDependency.Kind.MIXED:
+                case MIXED:
                     if ((isSelfArrow && !showMixedSelfMessageDependencies) || (!isSelfArrow && !showMixedMessageDependencies))
                         return false;
                     break;
@@ -4389,8 +4562,8 @@ public class SequenceChart
             }
         }
         if (graphics != null) {
-            graphics.setLineStyle(styleProvider.getMessageDependencyLineStyle(messageDependencyPtr));
-            int[] lineDash = styleProvider.getMessageDependencyLineDash(messageDependencyPtr);
+            graphics.setLineStyle(styleProvider.getMessageDependencyLineStyle(messageDependency));
+            int[] lineDash = styleProvider.getMessageDependencyLineDash(messageDependency);
             if (lineDash != null)
                 graphics.setLineDash(lineDash);
         }
@@ -4413,7 +4586,7 @@ public class SequenceChart
                         drawArrowHead(graphics, null, x1, y1, 0, 1);
 
                     if (showMessageNames)
-                        drawMessageDependencyLabel(graphics, messageDependencyPtr, x1 + 2, y1 - fontHeight);
+                        drawMessageDependencyLabel(graphics, messageDependency, x1 + 2, y1 - fontHeight);
                 }
                 else
                     return lineContainsPoint(x1, y1, x2, y2, fitX, fitY, MOUSE_TOLERANCE);
@@ -4510,7 +4683,7 @@ public class SequenceChart
                 }
 
                 if (showMessageNames)
-                    drawMessageDependencyLabel(graphics, messageDependencyPtr, (x1 + x2) / 2, y1 - halfEllipseHeight - fontHeight);
+                    drawMessageDependencyLabel(graphics, messageDependency, (x1 + x2) / 2, y1 - halfEllipseHeight - fontHeight);
             }
         }
         else {
@@ -4521,7 +4694,7 @@ public class SequenceChart
             if (x1 == invalid) {
                 x1 = x2 - longMessageArrowWidth * 2;
 
-                if (transmissionDelay != null) {
+                if (remainingDuration != null) {
                     if (!isReceptionStart)
                         x1 -= longMessageArrowWidth;
                     else
@@ -4531,13 +4704,13 @@ public class SequenceChart
                 if (graphics != null) {
                     int xm = x2 - longMessageArrowWidth;
 
-                    if (transmissionDelay != null) {
+                    if (remainingDuration != null) {
                         if (!isReceptionStart)
                             xm -= longMessageArrowWidth / 2;
                         else
                             xm += longMessageArrowWidth / 2;
 
-                        drawTransmissionDuration(graphics, causeEventPtr, consequenceEventPtr, transmissionDelay, isTransmissionStart, isReceptionStart, x1, y1, x2, y2, true, true);
+                        drawTransmissionDuration(graphics, causeEvent, consequenceEvent, transmissionDuration, remainingDuration, isTransmissionStart, isReceptionStart, x1, y1, x2, y2, true, true);
                     }
 
                     graphics.drawLine(xm, y, x2, y2);
@@ -4549,7 +4722,7 @@ public class SequenceChart
             else if (x2 == invalid) {
                 x2 = x1 + longMessageArrowWidth * 2;
 
-                if (transmissionDelay != null) {
+                if (remainingDuration != null) {
                     if (!isReceptionStart)
                         x2 += longMessageArrowWidth;
                     else
@@ -4559,13 +4732,13 @@ public class SequenceChart
                 if (graphics != null) {
                     int xm = x1 + longMessageArrowWidth;
 
-                    if (transmissionDelay != null) {
+                    if (remainingDuration != null) {
                         if (!isReceptionStart)
                             xm += longMessageArrowWidth / 2;
                         else
                             xm -= longMessageArrowWidth / 2;
 
-                        drawTransmissionDuration(graphics, causeEventPtr, consequenceEventPtr, transmissionDelay, isTransmissionStart, isReceptionStart, x1, y1, x2, y2, true, false);
+                        drawTransmissionDuration(graphics, causeEvent, consequenceEvent, transmissionDuration, remainingDuration, isTransmissionStart, isReceptionStart, x1, y1, x2, y2, true, false);
                     }
 
                     graphics.drawLine(x1, y1, xm, y);
@@ -4579,8 +4752,8 @@ public class SequenceChart
                 if (graphics != null) {
                     if (x1 != x2 || vlineBuffer.vlineContainsNewPixel(x1, y1, y2))
                     {
-                        if (transmissionDelay != null)
-                            drawTransmissionDuration(graphics, causeEventPtr, consequenceEventPtr, transmissionDelay, isTransmissionStart, isReceptionStart, x1, y1, x2, y2, false, false);
+                        if (remainingDuration != null)
+                            drawTransmissionDuration(graphics, causeEvent, consequenceEvent, transmissionDuration, remainingDuration, isTransmissionStart, isReceptionStart, x1, y1, x2, y2, false, false);
 
                         graphics.drawLine(x1, y1, x2, y2);
                     }
@@ -4597,19 +4770,19 @@ public class SequenceChart
                 drawArrowHead(graphics, arrowHeadFillColor, x2, y2, x2 - x1, y2 - y1);
 
             if (showMessageNames) {
-                Point position = labelPositions.get(messageDependencyPtr);
+                Point position = labelPositions.get(messageDependency);
                 if (position != null)
-                    drawMessageDependencyLabel(graphics, messageDependencyPtr, position.x, position.y);
+                    drawMessageDependencyLabel(graphics, messageDependency, position.x, position.y);
                 else {
                     int rowCount = Math.min(15, Math.max(1, Math.abs(y2 - y1) / fontHeight));
                     int mx = (x1 + x2) / 2;
                     int my = (y1 + y2) / 2;
                     if (labelQuadTree.getSize() < 1000) {
-                        if (styleProvider.getMessageDependencyLabelFont(messageDependencyPtr) != null)
-                            graphics.setFont(styleProvider.getMessageDependencyLabelFont(messageDependencyPtr));
+                        if (styleProvider.getMessageDependencyLabelFont(messageDependency) != null)
+                            graphics.setFont(styleProvider.getMessageDependencyLabelFont(messageDependency));
                         else
                             graphics.setFont(getFont());
-                        String labelText = labelProvider.getMessageDependencyLabel(messageDependencyPtr);
+                        String labelText = labelProvider.getMessageDependencyLabel(messageDependency);
                         Point labelSize = GraphicsUtils.getTextExtent(graphics, labelText);
                         Point bestPosition = null;
                         int bestTotalIntersectionArea = Integer.MAX_VALUE;
@@ -4631,15 +4804,15 @@ public class SequenceChart
                                     break;
                             }
                         }
-                        labelPositions.put(messageDependencyPtr, bestPosition);
+                        labelPositions.put(messageDependency, bestPosition);
                         labelQuadTree.insert(new Rectangle(bestPosition.x, bestPosition.y, labelSize.x, labelSize.y), labelText);
-                        drawMessageDependencyLabel(graphics, messageDependencyPtr, bestPosition.x, bestPosition.y);
+                        drawMessageDependencyLabel(graphics, messageDependency, bestPosition.x, bestPosition.y);
                     }
                     else {
                         int rowIndex = ((int)(messageId + causeEventNumber + consequenceEventNumber) % rowCount) - rowCount / 2;
                         int dy = rowIndex * fontHeight / 2;
                         int dx = y2 == y1 ? 0 : (int)((double)(x2 - x1) / (y2 - y1) * dy);
-                        drawMessageDependencyLabel(graphics, messageDependencyPtr, mx + dx + 3, my + dy - (y1 < y2 ? fontHeight : 0));
+                        drawMessageDependencyLabel(graphics, messageDependency, mx + dx + 3, my + dy - (y1 < y2 ? fontHeight : 0));
                     }
                 }
             }
@@ -4655,57 +4828,59 @@ public class SequenceChart
      * Draws a semi-transparent region to represent a transmission duration.
      * The coordinates specify the arrow that will be draw on top of the transmission duration area.
      */
-    private void drawTransmissionDuration(Graphics graphics, long causeEventPtr, long consequenceEventPtr, org.omnetpp.common.engine.BigDecimal transmissionDelay, boolean isTransmissionStart, boolean isReceptionStart, int xCause, int y1, int xConsequence, int y2, boolean splitArrow, boolean endingSplit) {
-        int causeModuleId = sequenceChartFacade.IEvent_getModuleId(causeEventPtr);
-        int consequenceModuleId = sequenceChartFacade.IEvent_getModuleId(consequenceEventPtr);
-
-        org.omnetpp.common.engine.BigDecimal t3 = isTransmissionStart ?
-            sequenceChartFacade.IEvent_getSimulationTime(causeEventPtr).add(transmissionDelay) :
-            sequenceChartFacade.IEvent_getSimulationTime(causeEventPtr);
-        org.omnetpp.common.engine.BigDecimal t4 = isReceptionStart ?
-            sequenceChartFacade.IEvent_getSimulationTime(consequenceEventPtr).add(transmissionDelay) :
-            sequenceChartFacade.IEvent_getSimulationTime(consequenceEventPtr).subtract(transmissionDelay);
-
+    private void drawTransmissionDuration(Graphics graphics, IEvent causeEvent, IEvent consequenceEvent, org.omnetpp.common.engine.BigDecimal transmissionDuration, org.omnetpp.common.engine.BigDecimal remainingDuration, boolean isTransmissionStart, boolean isReceptionStart, int xCause, int y1, int xConsequence, int y2, boolean splitArrow, boolean endingSplit) {
         // check simulation times for being out of range
+        org.omnetpp.common.engine.BigDecimal t3 = isTransmissionStart ?
+            causeEvent.getSimulationTime().add(remainingDuration) :
+            causeEvent.getSimulationTime();
+        org.omnetpp.common.engine.BigDecimal t4 = isReceptionStart ?
+            consequenceEvent.getSimulationTime().add(remainingDuration) :
+            consequenceEvent.getSimulationTime();
         org.omnetpp.common.engine.BigDecimal lastEventSimulationTime = eventLog.getLastEvent().getSimulationTime();
         if (t3.greater(lastEventSimulationTime) || t4.greater(lastEventSimulationTime) || t4.less(org.omnetpp.common.engine.BigDecimal.getZero()))
             return;
 
-        int x1 = isTransmissionStart ? xCause : (int)getViewportCoordinateForTimelineCoordinate(sequenceChartFacade.getTimelineCoordinateForSimulationTimeAndEventInModule(sequenceChartFacade.IEvent_getSimulationTime(causeEventPtr).subtract(transmissionDelay), causeModuleId));
-        int x2 = isReceptionStart ? xConsequence : (int)getViewportCoordinateForTimelineCoordinate(sequenceChartFacade.getTimelineCoordinateForSimulationTimeAndEventInModule(sequenceChartFacade.IEvent_getSimulationTime(consequenceEventPtr).subtract(transmissionDelay), consequenceModuleId));;
-        int x3 = !isTransmissionStart ? xCause : (int)getViewportCoordinateForTimelineCoordinate(sequenceChartFacade.getTimelineCoordinateForSimulationTimeAndEventInModule(t3, causeModuleId));
-        int x4 = !isReceptionStart ? xConsequence : (int)getViewportCoordinateForTimelineCoordinate(sequenceChartFacade.getTimelineCoordinateForSimulationTimeAndEventInModule(t4, consequenceModuleId));
-        int xLimit = getViewportWidth();
+        int x1, x2, x3, x4;
         boolean drawStrips = false;
-
+        int xLimit = getViewportWidth();
         int longMessageArrowWidth = styleProvider.getLongMessageArrowWidth();
-        if (isReceptionStart && (x3 - x1 > xLimit || x4 - x2 > xLimit)) {
-            x3 = x1 + longMessageArrowWidth;
-            x4 = x2 + longMessageArrowWidth;
-            drawStrips = true;
-        }
-
         if (splitArrow) {
             if (isReceptionStart) {
+                x1 = xCause;
+                x2 = xConsequence;
                 x3 = x1 + longMessageArrowWidth;
                 x4 = x2 + longMessageArrowWidth;
             }
             else {
                 if (endingSplit) {
-                    x3 = x1 + longMessageArrowWidth * 2;
-                    x4 = x2 - longMessageArrowWidth;
-                    x1 += longMessageArrowWidth;
+                    x3 = xCause;
+                    x4 = xConsequence;
+                    x1 = x3 - longMessageArrowWidth;
+                    x2 = x4 - longMessageArrowWidth;
                 }
                 else {
+                    x1 = xCause;
+                    x2 = xConsequence;
+                    x4 = x2 + longMessageArrowWidth;
                     x3 = x1 + longMessageArrowWidth;
-                    x4 = x2 - longMessageArrowWidth * 2;
-                    x2 -= longMessageArrowWidth;
                 }
             }
             drawStrips = true;
         }
-
-        // create the polygon
+        else {
+            int causeModuleId = causeEvent.getModuleId();
+            int consequenceModuleId = consequenceEvent.getModuleId();
+            x1 = isTransmissionStart ? xCause : (int)getViewportCoordinateForTimelineCoordinate(sequenceChartFacade.getTimelineCoordinateForSimulationTimeAndEventInModule(causeEvent.getSimulationTime().subtract(transmissionDuration), causeModuleId));
+            x2 = isReceptionStart ? xConsequence : Math.max(x1, (int)getViewportCoordinateForTimelineCoordinate(sequenceChartFacade.getTimelineCoordinateForSimulationTimeAndEventInModule(consequenceEvent.getSimulationTime().subtract(transmissionDuration), consequenceModuleId)));
+            x3 = !isTransmissionStart ? xCause : (int)getViewportCoordinateForTimelineCoordinate(sequenceChartFacade.getTimelineCoordinateForSimulationTimeAndEventInModule(t3, causeModuleId));
+            x4 = !isReceptionStart ? xConsequence : Math.max(x3, (int)getViewportCoordinateForTimelineCoordinate(sequenceChartFacade.getTimelineCoordinateForSimulationTimeAndEventInModule(t4, consequenceModuleId)));
+        }
+        if (isReceptionStart && (x3 - x1 > xLimit || x4 - x2 > xLimit)) {
+            x3 = x1 + longMessageArrowWidth;
+            x4 = x2 + longMessageArrowWidth;
+            drawStrips = true;
+        }
+        // create the polygon: x1/x2 left side, x3/x4 right side, x1/x3 at y1, x2/x4 at y2
         int[] points = new int[8];
         points[0] = x1;
         points[1] = y1;
@@ -4725,7 +4900,8 @@ public class SequenceChart
         if (drawStrips) {
             graphics.fillPolygon(points);
 
-            int shift = isReceptionStart ? longMessageArrowWidth : endingSplit ? -longMessageArrowWidth * 2 : 0;
+            //int shift = isReceptionStart ? longMessageArrowWidth : endingSplit ? -longMessageArrowWidth * 2 : 0;
+            int shift = endingSplit ? -longMessageArrowWidth : longMessageArrowWidth;
             points[0] += shift;
             points[2] += shift;
 
@@ -4753,15 +4929,15 @@ public class SequenceChart
     /**
      * Draws a message arrow label with the corresponding message line color.
      */
-    private void drawMessageDependencyLabel(Graphics graphics, long messageDependencyPtr, int x, int y) {
-        if (sequenceChartFacade.IMessageDependency_isFilteredMessageDependency(messageDependencyPtr))
+    private void drawMessageDependencyLabel(Graphics graphics, IMessageDependency messageDependency, int x, int y) {
+        if (messageDependency instanceof FilteredMessageDependency)
             // not to overlap with filtered sign
             x += 7;
-        if (styleProvider.getMessageDependencyLabelFont(messageDependencyPtr) != null)
-            graphics.setFont(styleProvider.getMessageDependencyLabelFont(messageDependencyPtr));
+        if (styleProvider.getMessageDependencyLabelFont(messageDependency) != null)
+            graphics.setFont(styleProvider.getMessageDependencyLabelFont(messageDependency));
         else
             graphics.setFont(getFont());
-        drawText(graphics, labelProvider.getMessageDependencyLabel(messageDependencyPtr), x, y);
+        drawText(graphics, labelProvider.getMessageDependencyLabel(messageDependency), x, y);
     }
 
     // KLUDGE: This is a workaround for SWT bug https://bugs.eclipse.org/215243
@@ -4837,11 +5013,13 @@ public class SequenceChart
         int y1 = (int)Math.round(yt - dwy);
         int x2 = (int)Math.round(xt + dwx);
         int y2 = (int)Math.round(yt + dwy);
+        graphics.pushState();
         graphics.setLineWidth(1);
         graphics.setLineStyle(SWT.LINE_SOLID);
         graphics.setBackgroundColor(fillColor == null ? graphics.getForegroundColor() : fillColor);
         graphics.fillPolygon(new int[] {x, y, x1, y1, x2, y2});
         graphics.drawPolygon(new int[] {x, y, x1, y1, x2, y2});
+        graphics.popState();
     }
 
     private double getAxisHeaderHeight(AxisHeader axisHeader) {
@@ -4890,49 +5068,48 @@ public class SequenceChart
                         int y = viewportY - getGutterHeight(null);
 
                         if (showEventMarks) {
-                            long[] eventPtrRange = getFirstLastEventPtrForViewportRange(0, getViewportWidth());
-                            long startEventPtr = eventPtrRange[0];
-                            long endEventPtr = eventPtrRange[1];
+                            IEvent[] eventRange = getFirstLastEventForViewportRange(0, getViewportWidth());
+                            IEvent startEvent = eventRange[0];
+                            IEvent endEvent = eventRange[1];
 
-                            if (startEventPtr != 0 && endEventPtr != 0) {
-                                for (long eventPtr = startEventPtr;; eventPtr = sequenceChartFacade.IEvent_getNextEvent(eventPtr)) {
-                                    int xBegin = (int)getEventXViewportCoordinateBegin(eventPtr);
-                                    int xEnd = (int)getEventXViewportCoordinateEnd(eventPtr);
-                                    if (isInitializationEvent(eventPtr)) {
+                            if (startEvent != null && endEvent != null) {
+                                for (IEvent event = startEvent;; event = event.getNextEvent()) {
+                                    int xBegin = (int)getEventXViewportCoordinateBegin(event);
+                                    int xEnd = (int)getEventXViewportCoordinateEnd(event);
+                                    if (isInitializationEvent(event)) {
                                         if (showInitializationEvent) {
-                                            for (int i = 0; i < sequenceChartFacade.IEvent_getNumConsequences(eventPtr); i++) {
-                                                long consequencePtr = sequenceChartFacade.IEvent_getConsequence(eventPtr, i);
-                                                int yInitializationEvent = getInitializationEventYViewportCoordinate(consequencePtr, -1);
+                                            for (IMessageDependency consequence : event.getConsequences()) {
+                                                int yInitializationEvent = getInitializationEventYViewportCoordinate(consequence, -1);
                                                 if (yInitializationEvent != -1 && eventSymbolContainsPoint(x, y, xBegin, xEnd, yInitializationEvent, MOUSE_TOLERANCE + 3))
-                                                    result.add(sequenceChartFacade.IEvent_getEvent(eventPtr));
+                                                    result.add(event);
                                             }
                                         }
                                     }
-                                    else if (getEventAxisModuleIndex(eventPtr) != -1) {
-                                        if (eventSymbolContainsPoint(x, y, xBegin, xEnd, getEventYViewportCoordinate(eventPtr), MOUSE_TOLERANCE + 3))
-                                            result.add(sequenceChartFacade.IEvent_getEvent(eventPtr));
+                                    else if (getEventAxisModuleIndex(event) != -1) {
+                                        if (eventSymbolContainsPoint(x, y, xBegin, xEnd, getEventYViewportCoordinate(event), MOUSE_TOLERANCE + 3))
+                                            result.add(event);
                                     }
 
-                                    if (eventPtr == endEventPtr)
+                                    if (event == endEvent)
                                         break;
                                 }
                             }
                         }
 
                         if (showMessageSends || showMessageReuses) {
-                            long[] eventPtrRange = getFirstLastEventPtrForMessageDependencies();
-                            long startEventPtr = eventPtrRange[0];
-                            long endEventPtr = eventPtrRange[1];
+                            IEvent[] eventRange = getFirstLastEventForMessageDependencies();
+                            IEvent startEvent = eventRange[0];
+                            IEvent endEvent = eventRange[1];
 
-                            if (startEventPtr != 0 && endEventPtr != 0) {
-                                PtrVector messageDependencies = sequenceChartFacade.getIntersectingMessageDependencies(startEventPtr, endEventPtr);
+                            if (startEvent != null && endEvent != null) {
+                                ArrayList<IMessageDependency> messageDependencies = sequenceChartFacade.getIntersectingMessageDependencies(startEvent, endEvent);
 
                                 for (int i = 0; i < messageDependencies.size(); i++) {
-                                    long messageDependencyPtr = messageDependencies.get(i);
-                                    long causeEventPtr = sequenceChartFacade.IMessageDependency_getCauseEvent(messageDependencyPtr);
-                                    if (!isInitializationEvent(causeEventPtr) || showInitializationEvent) {
-                                        if (drawOrFitMessageDependency(null, messageDependencyPtr, x, y, null, startEventPtr, endEventPtr))
-                                            result.add(sequenceChartFacade.IMessageDependency_getMessageDependency(messageDependencyPtr));
+                                    IMessageDependency messageDependency = messageDependencies.get(i);
+                                    IEvent causeEvent = messageDependency.getCauseEvent();
+                                    if (!isInitializationEvent(causeEvent) || showInitializationEvent) {
+                                        if (drawOrFitMessageDependency(null, messageDependency, x, y, null, startEvent, endEvent))
+                                            result.add(messageDependency);
                                     }
                                 }
                             }
@@ -4954,23 +5131,24 @@ public class SequenceChart
                         }
 
                         if (showComponentMethodCalls) {
-                            long[] eventPtrRange = getFirstLastEventPtrForViewportRange(0, getViewportWidth());
-                            long startEventPtr = eventPtrRange[0];
-                            long endEventPtr = eventPtrRange[1];
+                            IEvent[] eventRange = getFirstLastEventForViewportRange(0, getViewportWidth());
+                            IEvent startEvent = eventRange[0];
+                            IEvent endEvent = eventRange[1];
 
-                            if (startEventPtr != 0 && endEventPtr != 0) {
-                                PtrVector componentMethodBeginEntries = sequenceChartFacade.getComponentMethodBeginEntries(startEventPtr, endEventPtr);
+                            if (startEvent != null && endEvent != null) {
+                                ArrayList<ComponentMethodBeginEntry> componentMethodBeginEntries = sequenceChartFacade.getComponentMethodBeginEntries(startEvent, endEvent);
 
                                 for (int i = 0; i < componentMethodBeginEntries.size(); i++) {
-                                    long componentMethodBeginEntryPtr = componentMethodBeginEntries.get(i);
+                                    ComponentMethodBeginEntry componentMethodBeginEntry = componentMethodBeginEntries.get(i);
 
-                                    if (drawOrFitComponentMethodCall(null, componentMethodBeginEntryPtr, x, y))
-                                        result.add((ComponentMethodBeginEntry)sequenceChartFacade.EventLogEntry_getEventLogEntry(componentMethodBeginEntryPtr));
+                                    if (drawOrFitComponentMethodCall(null, componentMethodBeginEntry, x, y))
+                                        result.add(componentMethodBeginEntry);
                                 }
                             }
                         }
 
-                        result.add(getTimelineCoordinateForViewportCoordinate(x));
+                        if (getPixelPerTimelineUnit() != 0)
+                            result.add(getTimelineCoordinateForViewportCoordinate(x));
 
                         long totalMillis = System.currentTimeMillis() - startMillis;
                         if (debug)
@@ -5129,13 +5307,38 @@ public class SequenceChart
      * EVENT RANGE HANDLING
      */
 
+    private boolean isVisibleEvent(IEvent event) {
+        if (isInitializationEvent(event))
+            return showInitializationEvent;
+        else
+            return getModuleIdToAxisModuleIndexMap().containsKey(event.getModuleId());
+    }
+
+    private boolean hasVisibleEvents() {
+        return eventLog != null && !eventLog.isEmpty() && getFirstVisibleEvent() != null;
+    }
+
+    private IEvent getFirstVisibleEvent() {
+        IEvent event = eventLog.getFirstEvent();
+        if (!showInitializationEvent && isInitializationEvent(event))
+            event = event.getNextEvent();
+        return event;
+    }
+
+    private IEvent getLastVisibleEvent() {
+        IEvent event = eventLog.getLastEvent();
+        if (!showInitializationEvent && isInitializationEvent(event))
+            event = null;
+        return event;
+    }
+
     /**
      * Determines the event range that covers the given viewport range.
      * Returns an array of size 2 with the two event pointers, may return null pointers.
      */
-    private long[] getFirstLastEventPtrForViewportRange(long x1, long x2) {
-        if (eventLog == null || eventLog.isEmpty() || eventLog.getApproximateNumberOfEvents() == 0)
-            return new long[] {0, 0};
+    private IEvent[] getFirstLastEventForViewportRange(long x1, long x2) {
+        if (!hasVisibleEvents())
+            return new IEvent[] {null, null};
         else {
             double leftTimelineCoordinate = getTimelineCoordinateForViewportCoordinate(x1);
             double rightTimelineCoordinate = getTimelineCoordinateForViewportCoordinate(x2);
@@ -5148,18 +5351,18 @@ public class SequenceChart
             if (endEvent == null)
                 endEvent = eventLog.getLastEvent();
 
-            return new long[] {startEvent == null ? 0 : startEvent.getCPtr(), endEvent == null ? 0 : endEvent.getCPtr()};
+            return new IEvent[] {startEvent == null ? null : startEvent, endEvent == null ? null : endEvent};
         }
     }
 
     /**
      * Determines the event range that covers all message dependencies for the current viewport.
      */
-    private long[] getFirstLastEventPtrForMessageDependencies() {
+    private IEvent[] getFirstLastEventForMessageDependencies() {
         int width = getViewportWidth();
         int maximumWidth = getMaximumMessageDependencyDisplayWidth();
         int extraWidth = (maximumWidth - width) / 2;
-        return getFirstLastEventPtrForViewportRange(-extraWidth, extraWidth * 2);
+        return getFirstLastEventForViewportRange(-extraWidth, extraWidth * 2);
     }
 
     /**
@@ -5183,12 +5386,8 @@ public class SequenceChart
         return axis.y + axis.axisRenderer.getHeight() / 2 - (int)getViewportTop();
     }
 
-    private int getEventAxisModuleIndex(long eventPtr) {
-        return getAxisModuleIndexByModuleId(sequenceChartFacade.IEvent_getModuleId(eventPtr));
-    }
-
-    private boolean isInitializationEvent(long eventPtr) {
-        return sequenceChartFacade.IEvent_getEventNumber(eventPtr) == 0;
+    private int getEventAxisModuleIndex(IEvent event) {
+        return getAxisModuleIndexByModuleId(event.getModuleId());
     }
 
     private boolean isInitializationEvent(IEvent event) {
@@ -5199,14 +5398,14 @@ public class SequenceChart
      * The initialization event is drawn on multiple module axes (one for each message sent).
      * The vertical coordinate is determined by the message dependency between the initialize event and the event it caused.
      */
-    private int getInitializationEventYViewportCoordinate(long messageDependencyPtr) {
-        int contextModuleId = getInitializationEventContextModuleId(messageDependencyPtr);
+    private int getInitializationEventYViewportCoordinate(IMessageDependency messageDependency) {
+        int contextModuleId = getInitializationEventContextModuleId(messageDependency);
         int moduleIndex = getAxisModuleIndexByModuleId(contextModuleId);
         return getModuleYViewportCoordinateByModuleIndex(moduleIndex);
     }
 
-    private int getInitializationEventYViewportCoordinate(long messageDependencyPtr, int defaultValue) {
-        int contextModuleId = getInitializationEventContextModuleId(messageDependencyPtr);
+    private int getInitializationEventYViewportCoordinate(IMessageDependency messageDependency, int defaultValue) {
+        int contextModuleId = getInitializationEventContextModuleId(messageDependency);
         int moduleIndex = getAxisModuleIndexByModuleId(contextModuleId);
         if (moduleIndex == -1)
             return defaultValue;
@@ -5214,35 +5413,35 @@ public class SequenceChart
             return getModuleYViewportCoordinateByModuleIndex(moduleIndex);
     }
 
-    private int getInitializationEventContextModuleId(long messageDependencyPtr) {
-        long messageEntryPtr = sequenceChartFacade.IMessageDependency_getMessageEntry(messageDependencyPtr);
-        return sequenceChartFacade.EventLogEntry_getContextModuleId(messageEntryPtr);
+    private int getInitializationEventContextModuleId(IMessageDependency messageDependency) {
+        MessageDescriptionEntry messageEntry = messageDependency.getBeginMessageDescriptionEntry();
+        return messageEntry.getContextModuleId();
     }
 
-    public long getEventXViewportCoordinateBegin(long eventPtr) {
-        return getViewportCoordinateForTimelineCoordinate(sequenceChartFacade.IEvent_getTimelineCoordinateBegin(eventPtr));
+    public long getEventXViewportCoordinateBegin(IEvent event) {
+        return getViewportCoordinateForTimelineCoordinate(sequenceChartFacade.getTimelineCoordinateBegin(event));
     }
 
-    public long getEventXViewportCoordinateEnd(long eventPtr) {
-        return getViewportCoordinateForTimelineCoordinate(sequenceChartFacade.IEvent_getTimelineCoordinateEnd(eventPtr));
+    public long getEventXViewportCoordinateEnd(IEvent event) {
+        return getViewportCoordinateForTimelineCoordinate(sequenceChartFacade.getTimelineCoordinateEnd(event));
     }
 
-    public long getEventViewportWidth(long eventPtr) {
-        return getEventXViewportCoordinateEnd(eventPtr) - getEventXViewportCoordinateBegin(eventPtr);
+    public long getEventViewportWidth(IEvent event) {
+        return Math.round(sequenceChartFacade.getTimelineCoordinateDelta(event) * getPixelPerTimelineUnit());
     }
 
-    public long getEventLogEntryXViewportCoordinateBegin(long eventLogEntryPtr) {
-        return getViewportCoordinateForTimelineCoordinate(sequenceChartFacade.EventLogEntry_getTimelineCoordinate(eventLogEntryPtr));
+    public long getEventLogEntryXViewportCoordinateBegin(EventLogEntry eventLogEntry) {
+        return getViewportCoordinateForTimelineCoordinate(sequenceChartFacade.EventLogEntry_getTimelineCoordinate(eventLogEntry));
     }
 
-    public int getEventYViewportCoordinate(long eventPtr) {
-        Assert.isTrue(!isInitializationEvent(eventPtr));
-        return getModuleYViewportCoordinateByModuleIndex(getEventAxisModuleIndex(eventPtr));
+    public int getEventYViewportCoordinate(IEvent event) {
+        Assert.isTrue(!isInitializationEvent(event));
+        return getModuleYViewportCoordinateByModuleIndex(getEventAxisModuleIndex(event));
     }
 
-    public int getEventYViewportCoordinate(long eventPtr, int defaultValue) {
-        Assert.isTrue(!isInitializationEvent(eventPtr));
-        int index = getEventAxisModuleIndex(eventPtr);
+    public int getEventYViewportCoordinate(IEvent event, int defaultValue) {
+        Assert.isTrue(!isInitializationEvent(event));
+        int index = getEventAxisModuleIndex(event);
         if (index == -1)
             return defaultValue;
         else
@@ -5259,47 +5458,44 @@ public class SequenceChart
      */
     private void calculateTicks(int viewportWidth) {
         ticks = new ArrayList<BigDecimal>();
-        BigDecimal leftSimulationTime = calculateTick(0, 1);
-        BigDecimal rightSimulationTime = calculateTick(viewportWidth, 1);
-        tickPrefix = TimeUtils.commonPrefix(leftSimulationTime, rightSimulationTime);
-
-        if (!eventLog.isEmpty()) {
-            int tickSpacing = styleProvider.getTickSpacing();
-            if (getTimelineMode() == TimelineMode.SIMULATION_TIME) {
-                // puts ticks to constant distance from each other measured in timeline units
-                int tickScale = (int)Math.ceil(Math.log10(tickSpacing / getPixelPerTimelineUnit()));
-                BigDecimal tickSpacingInTimelineUnits = BigDecimal.valueOf(tickSpacing / getPixelPerTimelineUnit());
-                BigDecimal tickStart = leftSimulationTime.setScale(-tickScale, RoundingMode.FLOOR);
-                BigDecimal tickEnd = rightSimulationTime.setScale(-tickScale, RoundingMode.CEILING);
-                BigDecimal tickIntvl = new BigDecimal(1).scaleByPowerOfTen(tickScale);
-
-                // use 2, 4, 6, 8, etc. if possible
-                if (tickIntvl.divide(BigDecimal.valueOf(5)).compareTo(tickSpacingInTimelineUnits) > 0)
-                    tickIntvl = tickIntvl.divide(BigDecimal.valueOf(5));
-                // use 5, 10, 15, 20, etc. if possible
-                else if (tickIntvl.divide(BigDecimal.valueOf(2)).compareTo(tickSpacingInTimelineUnits) > 0)
-                    tickIntvl = tickIntvl.divide(BigDecimal.valueOf(2));
-
-                for (BigDecimal tick = tickStart; tick.compareTo(tickEnd)<0; tick = tick.add(tickIntvl))
-                    if (tick.compareTo(BigDecimal.ZERO) >= 0)
-                        ticks.add(tick);
-            }
-            else {
-                // tries to put ticks constant distance from each other measured in pixels
-                long modX = fixPointViewportCoordinate % tickSpacing;
-                long tleft = modX - tickSpacing;
-                long tright = modX + viewportWidth + tickSpacing;
-
-                IEvent lastEvent = eventLog.getLastEvent();
-
-                if (lastEvent != null) {
-                    BigDecimal endSimulationTime = lastEvent.getSimulationTime().toBigDecimal();
-
-                    for (long t = tleft; t < tright; t += tickSpacing) {
-                        BigDecimal tick = calculateTick(t, tickSpacing / 2);
-
-                        if (tick.compareTo(BigDecimal.ZERO) >= 0 && tick.compareTo(endSimulationTime) <= 0)
+        if (getPixelPerTimelineUnit() == 0)
+            tickPrefix = BigDecimal.ZERO;
+        else {
+            BigDecimal leftSimulationTime = calculateTick(0, 1);
+            BigDecimal rightSimulationTime = calculateTick(viewportWidth, 1);
+            tickPrefix = TimeUtils.commonPrefix(leftSimulationTime, rightSimulationTime);
+            if (!eventLog.isEmpty()) {
+                int tickSpacing = styleProvider.getTickSpacing();
+                if (getTimelineMode() == TimelineMode.SIMULATION_TIME) {
+                    // puts ticks to constant distance from each other measured in timeline units
+                    int tickScale = (int)Math.ceil(Math.log10(tickSpacing / getPixelPerTimelineUnit()));
+                    BigDecimal tickSpacingInTimelineUnits = BigDecimal.valueOf(tickSpacing / getPixelPerTimelineUnit());
+                    BigDecimal tickStart = leftSimulationTime.setScale(-tickScale, RoundingMode.FLOOR);
+                    BigDecimal tickEnd = rightSimulationTime.setScale(-tickScale, RoundingMode.CEILING);
+                    BigDecimal tickIntvl = new BigDecimal(1).scaleByPowerOfTen(tickScale);
+                    // use 2, 4, 6, 8, etc. if possible
+                    if (tickIntvl.divide(BigDecimal.valueOf(5)).compareTo(tickSpacingInTimelineUnits) > 0)
+                        tickIntvl = tickIntvl.divide(BigDecimal.valueOf(5));
+                    // use 5, 10, 15, 20, etc. if possible
+                    else if (tickIntvl.divide(BigDecimal.valueOf(2)).compareTo(tickSpacingInTimelineUnits) > 0)
+                        tickIntvl = tickIntvl.divide(BigDecimal.valueOf(2));
+                    for (BigDecimal tick = tickStart; tick.compareTo(tickEnd)<0; tick = tick.add(tickIntvl))
+                        if (tick.compareTo(BigDecimal.ZERO) >= 0)
                             ticks.add(tick);
+                }
+                else {
+                    // tries to put ticks constant distance from each other measured in pixels
+                    long modX = fixPointViewportCoordinate % tickSpacing;
+                    long tleft = modX - tickSpacing;
+                    long tright = modX + viewportWidth + tickSpacing;
+                    IEvent lastEvent = eventLog.getLastEvent();
+                    if (lastEvent != null) {
+                        BigDecimal endSimulationTime = lastEvent.getSimulationTime().toBigDecimal();
+                        for (long t = tleft; t < tright; t += tickSpacing) {
+                            BigDecimal tick = calculateTick(t, tickSpacing / 2);
+                            if (tick.compareTo(BigDecimal.ZERO) >= 0 && tick.compareTo(endSimulationTime) <= 0)
+                                ticks.add(tick);
+                        }
                     }
                 }
             }
@@ -5499,7 +5695,11 @@ public class SequenceChart
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.keyCode == SWT.F5)
+                if (e.keyCode == SWT.ESC) {
+                    clearSelection();
+                    redraw();
+                }
+                else if (e.keyCode == SWT.F5)
                     refresh();
                 else if (e.keyCode == SWT.TAB)
                     setShowTimeDifferences(!getShowTimeDifferences());
@@ -5569,7 +5769,7 @@ public class SequenceChart
                         IEvent event = getSelectedEvent();
 
                         if (event != null) {
-                            IMessageDependencyList consequences = event.getConsequences();
+                            ArrayList<IMessageDependency> consequences = event.getConsequences();
 
                             if (consequences.size() > 0) {
                                 event = consequences.get(0).getConsequenceEvent();
@@ -5626,67 +5826,94 @@ public class SequenceChart
         // zoom by wheel
         addListener(SWT.MouseWheel, new Listener() {
             public void handleEvent(Event event) {
-                if (!eventLogInput.isCanceled()) {
-                    if ((event.stateMask & SWT.MOD1) != 0) {
-                        for (int i = 0; i < event.count; i++)
-                            zoomBy(1.1);
-
-                        for (int i = 0; i < -event.count; i++)
-                            zoomBy(1.0 / 1.1);
+                try {
+                    if (!eventLogInput.isCanceled()) {
+                        if ((event.stateMask & SWT.MOD1) != 0) {
+                            for (int i = 0; i < event.count; i++)
+                                zoomBy(1.1);
+                            for (int i = 0; i < -event.count; i++)
+                                zoomBy(1.0 / 1.1);
+                        }
+                        else if ((event.stateMask & SWT.SHIFT) != 0)
+                            scrollHorizontal(-getViewportWidth() * event.count / 20);
                     }
-                    else if ((event.stateMask & SWT.SHIFT) != 0)
-                        scrollHorizontal(-getViewportWidth() * event.count / 20);
+                }
+                catch (RuntimeException e) {
+                    eventLogInput.handleRuntimeException(e);
                 }
             }
         });
 
         addMouseTrackListener(new MouseTrackAdapter() {
             @Override
-            public void mouseEnter(MouseEvent e) {
-                redraw();
+            public void mouseEnter(MouseEvent event) {
+                try {
+                    redraw();
+                }
+                catch (RuntimeException e) {
+                    eventLogInput.handleRuntimeException(e);
+                }
             }
 
             @Override
-            public void mouseExit(MouseEvent e) {
-                redraw();
+            public void mouseExit(MouseEvent event) {
+                try {
+                    redraw();
+                }
+                catch (RuntimeException e) {
+                    eventLogInput.handleRuntimeException(e);
+                }
             }
 
             @Override
-            public void mouseHover(MouseEvent e) {
-                highlightedObjects = collectVisibleObjectsAtPosition(e.x, e.y);
-                redraw();
+            public void mouseHover(MouseEvent event) {
+                try {
+                    highlightedObjects = collectVisibleObjectsAtPosition(event.x, event.y);
+                    redraw();
+                }
+                catch (RuntimeException e) {
+                    eventLogInput.handleRuntimeException(e);
+                }
             }
         });
 
         // dragging
         addMouseMoveListener(new MouseMoveListener() {
-            public void mouseMove(MouseEvent e) {
-                if (eventLogInput != null && !eventLogInput.isCanceled()) {
-                    highlightedObjects.clear();
-                    if (dragStartX != -1 && dragStartY != -1 && (e.stateMask & SWT.BUTTON_MASK) != 0 && (e.stateMask & SWT.MODIFIER_MASK) == 0)
-                        mouseDragged(e);
-                    else {
-                        setCursor(null); // restore cursor at end of drag (must do it here too, because we
-                                         // don't get the "released" event if user releases mouse outside the canvas)
-                        redraw();
+            public void mouseMove(MouseEvent event) {
+                try {
+                    if (eventLogInput != null && !eventLogInput.isCanceled()) {
+                        highlightedObjects.clear();
+                        if (dragStartX != -1 && dragStartY != -1 && (event.stateMask & SWT.BUTTON_MASK) != 0 && (event.stateMask & SWT.MODIFIER_MASK) == 0)
+                            mouseDragged(event);
+                        else {
+                            setCursor(null); // restore cursor at end of drag (must do it here too, because we
+                                             // don't get the "released" event if user releases mouse outside the canvas)
+                            redraw();
+                        }
                     }
+                }
+                catch (RuntimeException e) {
+                    eventLogInput.handleRuntimeException(e);
                 }
             }
 
-            private void mouseDragged(MouseEvent e) {
-                if (eventLogInput != null && !eventLogInput.isCanceled()) {
-                    if (!isDragging)
-                        setCursor(DRAG_CURSOR);
-
-                    isDragging = true;
-
-                    // scroll by the amount moved since last drag call
-                    dragDeltaX = e.x - dragStartX;
-                    dragDeltaY = e.y - dragStartY;
-                    scrollHorizontal(-dragDeltaX);
-                    scrollVertical(-dragDeltaY);
-                    dragStartX = e.x;
-                    dragStartY = e.y;
+            private void mouseDragged(MouseEvent event) {
+                try {
+                    if (eventLogInput != null && !eventLogInput.isCanceled()) {
+                        if (!isDragging)
+                            setCursor(DRAG_CURSOR);
+                        isDragging = true;
+                        // scroll by the amount moved since last drag call
+                        dragDeltaX = event.x - dragStartX;
+                        dragDeltaY = event.y - dragStartY;
+                        scrollHorizontal(-dragDeltaX);
+                        scrollVertical(-dragDeltaY);
+                        dragStartX = event.x;
+                        dragStartY = event.y;
+                    }
+                }
+                catch (RuntimeException e) {
+                    eventLogInput.handleRuntimeException(e);
                 }
             }
         });
@@ -5695,147 +5922,160 @@ public class SequenceChart
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseDoubleClick(MouseEvent mouseEvent) {
-                if (eventLogInput != null && !eventLogInput.isCanceled()) {
-                    ArrayList<Object> objects = collectVisibleObjectsAtPosition(mouseEvent.x, mouseEvent.y);
-                    for (Object object : objects) {
-                        if (object instanceof IMessageDependency) {
-                            zoomToMessageDependency((IMessageDependency)object);
-                            break;
-                        }
-                        else if (object instanceof ModuleTreeItem) {
-                            if ((mouseEvent.stateMask & SWT.MOD1) != 0)
-                                openModuleRecursively((ModuleTreeItem)object);
-                            else
-                                openModule((ModuleTreeItem)object);
-                            break;
-                        }
-                        else if (object instanceof AxisHeader) {
-                            AxisHeader axisHeader = (AxisHeader)object;
-                            if (axisHeader.module != null) {
-                                if ((mouseEvent.stateMask & SWT.MOD1) != 0)
-                                    openModuleRecursively(axisHeader.module);
-                                else
-                                    openModule(axisHeader.module);
+                try {
+                    if (eventLogInput != null && !eventLogInput.isCanceled()) {
+                        ArrayList<Object> objects = collectVisibleObjectsAtPosition(mouseEvent.x, mouseEvent.y);
+                        for (Object object : objects) {
+                            if (object instanceof IMessageDependency) {
+                                zoomToMessageDependency((IMessageDependency)object);
                                 break;
+                            }
+                            else if (object instanceof ModuleTreeItem) {
+                                if ((mouseEvent.stateMask & SWT.MOD1) != 0)
+                                    openModuleRecursively((ModuleTreeItem)object);
+                                else
+                                    openModule((ModuleTreeItem)object);
+                                break;
+                            }
+                            else if (object instanceof AxisHeader) {
+                                AxisHeader axisHeader = (AxisHeader)object;
+                                if (axisHeader.module != null) {
+                                    if ((mouseEvent.stateMask & SWT.MOD1) != 0)
+                                        openModuleRecursively(axisHeader.module);
+                                    else
+                                        openModule(axisHeader.module);
+                                    break;
+                                }
                             }
                         }
                     }
                 }
+                catch (RuntimeException e) {
+                    eventLogInput.handleRuntimeException(e);
+                }
             }
 
             @Override
-            public void mouseDown(MouseEvent e) {
-                if (eventLogInput != null && !eventLogInput.isCanceled()) {
-                    setFocus();
-
-                    if (e.button == 1) {
-                        dragStartX = e.x;
-                        dragStartY = e.y;
+            public void mouseDown(MouseEvent mouseEvent) {
+                try {
+                    if (eventLogInput != null && !eventLogInput.isCanceled()) {
+                        setFocus();
+                        if (mouseEvent.button == 1) {
+                            dragStartX = mouseEvent.x;
+                            dragStartY = mouseEvent.y;
+                        }
                     }
+                }
+                catch (RuntimeException e) {
+                    eventLogInput.handleRuntimeException(e);
                 }
             }
 
             @Override
             public void mouseUp(MouseEvent mouseEvent) {
-                if (eventLogInput != null && !eventLogInput.isCanceled()) {
-                    if (mouseEvent.button == 1 && mouseEvent.count == 1 && !isDragging) {
-                        ArrayList<Object> objects = collectVisibleObjectsAtPosition(mouseEvent.x, mouseEvent.y);
-                        if (objects.stream().filter(o -> o instanceof ModuleAction).count() != 0)
-                            objects = new ArrayList<Object>(Arrays.asList(objects.stream().filter(o -> o instanceof ModuleAction).toArray()));
-                        else if (objects.stream().filter(o -> o instanceof IEvent).count() != 0)
-                            objects = new ArrayList<Object>(Arrays.asList(objects.stream().filter(o -> o instanceof IEvent).toArray()));
-                        else if (objects.stream().filter(o -> o instanceof IMessageDependency).count() != 0)
-                            objects = new ArrayList<Object>(Arrays.asList(objects.stream().filter(o -> o instanceof IMessageDependency).toArray()));
-                        else if (objects.stream().filter(o -> o instanceof ComponentMethodBeginEntry).count() != 0)
-                            objects = new ArrayList<Object>(Arrays.asList(objects.stream().filter(o -> o instanceof ComponentMethodBeginEntry).toArray()));
-                        else if (objects.stream().filter(o -> o instanceof ModuleTreeItem).count() != 0)
-                            objects = new ArrayList<Object>(Arrays.asList(objects.stream().filter(o -> o instanceof ModuleTreeItem).toArray()));
-                        else if (objects.stream().filter(o -> o instanceof Double).count() != 0)
-                            objects = new ArrayList<Object>(Arrays.asList(objects.stream().filter(o -> o instanceof Double).toArray()));
-                        // CTRL key toggles selection
-                        if ((mouseEvent.stateMask & SWT.MOD1) != 0) {
-                            boolean isSelectionChanged = false;
-                            EventNumberRangeSet selectedEventNumberRangeSet = (EventNumberRangeSet)selectedObjects.stream().filter(o -> o instanceof EventNumberRangeSet).findFirst().orElse(new EventNumberRangeSet());
-                            for (Object object : objects) {
-                                if (object instanceof IEvent) {
-                                    IEvent event = (IEvent)object;
-                                    long eventNumber = event.getEventNumber();
-                                    if (selectedEventNumberRangeSet.contains(eventNumber))
-                                        selectedEventNumberRangeSet.remove(eventNumber);
-                                    else
-                                        selectedEventNumberRangeSet.add(eventNumber);
-                                    isSelectionChanged = true;
+                try {
+                    if (eventLogInput != null && !eventLogInput.isCanceled()) {
+                        if (mouseEvent.button == 1 && mouseEvent.count == 1 && !isDragging) {
+                            ArrayList<Object> objects = collectVisibleObjectsAtPosition(mouseEvent.x, mouseEvent.y);
+                            if (objects.stream().filter(o -> o instanceof ModuleAction).count() != 0)
+                                objects = new ArrayList<Object>(Arrays.asList(objects.stream().filter(o -> o instanceof ModuleAction).toArray()));
+                            else if (objects.stream().filter(o -> o instanceof IEvent).count() != 0)
+                                objects = new ArrayList<Object>(Arrays.asList(objects.stream().filter(o -> o instanceof IEvent).toArray()));
+                            else if (objects.stream().filter(o -> o instanceof IMessageDependency).count() != 0)
+                                objects = new ArrayList<Object>(Arrays.asList(objects.stream().filter(o -> o instanceof IMessageDependency).toArray()));
+                            else if (objects.stream().filter(o -> o instanceof ComponentMethodBeginEntry).count() != 0)
+                                objects = new ArrayList<Object>(Arrays.asList(objects.stream().filter(o -> o instanceof ComponentMethodBeginEntry).toArray()));
+                            else if (objects.stream().filter(o -> o instanceof ModuleTreeItem).count() != 0)
+                                objects = new ArrayList<Object>(Arrays.asList(objects.stream().filter(o -> o instanceof ModuleTreeItem).toArray()));
+                            else if (objects.stream().filter(o -> o instanceof Double).count() != 0)
+                                objects = new ArrayList<Object>(Arrays.asList(objects.stream().filter(o -> o instanceof Double).toArray()));
+                            // CTRL key toggles selection
+                            if ((mouseEvent.stateMask & SWT.MOD1) != 0) {
+                                boolean isSelectionChanged = false;
+                                EventNumberRangeSet selectedEventNumberRangeSet = (EventNumberRangeSet)selectedObjects.stream().filter(o -> o instanceof EventNumberRangeSet).findFirst().orElse(new EventNumberRangeSet());
+                                for (Object object : objects) {
+                                    if (object instanceof IEvent) {
+                                        IEvent event = (IEvent)object;
+                                        long eventNumber = event.getEventNumber();
+                                        if (selectedEventNumberRangeSet.contains(eventNumber))
+                                            selectedEventNumberRangeSet.remove(eventNumber);
+                                        else
+                                            selectedEventNumberRangeSet.add(eventNumber);
+                                        isSelectionChanged = true;
+                                    }
+                                    else {
+                                        if (selectedObjects.contains(object))
+                                            selectedObjects.remove(object);
+                                        else
+                                            selectedObjects.add(object);
+                                        isSelectionChanged = true;
+                                    }
                                 }
-                                else {
-                                    if (selectedObjects.contains(object))
-                                        selectedObjects.remove(object);
-                                    else
-                                        selectedObjects.add(object);
-                                    isSelectionChanged = true;
+                                if (selectedEventNumberRangeSet.isEmpty())
+                                    selectedObjects.remove(selectedEventNumberRangeSet);
+                                else if (!selectedObjects.contains(selectedEventNumberRangeSet))
+                                    selectedObjects.add(selectedEventNumberRangeSet);
+                                if (isSelectionChanged) {
+                                    fireSelection(false);
+                                    fireSelectionChanged();
+                                    redraw();
                                 }
                             }
-                            if (selectedEventNumberRangeSet.isEmpty())
-                                selectedObjects.remove(selectedEventNumberRangeSet);
-                            else if (!selectedObjects.contains(selectedEventNumberRangeSet))
-                                selectedObjects.add(selectedEventNumberRangeSet);
-                            if (isSelectionChanged) {
-                                fireSelection(false);
-                                fireSelectionChanged();
-                                redraw();
-                            }
-                        }
-                        else if (objects.stream().filter(o -> o instanceof ModuleAction).count() != 0) {
-                            for (Object object : objects) {
-                                if (object instanceof ModuleAction) {
-                                    ModuleAction action = (ModuleAction)object;
-                                    if (action.identifier.equals(labelProvider.getExpandImage()))
-                                        expandOpenAxisModule(action.module);
-                                    else if (action.identifier.equals(labelProvider.getCollapseImage()))
-                                        collapseOpenAxisModule(action.module);
-                                    else if (action.identifier.equals(labelProvider.getCloseImage())) {
-                                        if (action.source instanceof Axis)
-                                            removeOpenAxisModule(action.module);
-                                        else if (action.source instanceof AxisHeader) {
-                                            action.module.visitItems(new IModuleTreeItemVisitor() {
-                                                public void visit(ModuleTreeItem moduleTreeItem) {
-                                                    removeOpenAxisModule(moduleTreeItem);
-                                                }
-                                            });
+                            else if (objects.stream().filter(o -> o instanceof ModuleAction).count() != 0) {
+                                for (Object object : objects) {
+                                    if (object instanceof ModuleAction) {
+                                        ModuleAction action = (ModuleAction)object;
+                                        if (action.identifier.equals(labelProvider.getExpandImage()))
+                                            expandOpenAxisModule(action.module);
+                                        else if (action.identifier.equals(labelProvider.getCollapseImage()))
+                                            collapseOpenAxisModule(action.module);
+                                        else if (action.identifier.equals(labelProvider.getCloseImage())) {
+                                            if (action.source instanceof Axis)
+                                                removeOpenAxisModule(action.module);
+                                            else if (action.source instanceof AxisHeader) {
+                                                action.module.visitItems(new IModuleTreeItemVisitor() {
+                                                    public void visit(ModuleTreeItem moduleTreeItem) {
+                                                        removeOpenAxisModule(moduleTreeItem);
+                                                    }
+                                                });
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }
-                        else {
-                            ArrayList<Object> newSelectedObjects = new ArrayList<Object>();
-                            EventNumberRangeSet newSelectedEventNumbers = new EventNumberRangeSet();
-                            for (Object object : objects) {
-                                if (object instanceof IEvent) {
-                                    if (!newSelectedObjects.contains(newSelectedEventNumbers))
-                                        newSelectedObjects.add(newSelectedEventNumbers);
-                                    newSelectedEventNumbers.add(((IEvent)object).getEventNumber());
+                            else {
+                                ArrayList<Object> newSelectedObjects = new ArrayList<Object>();
+                                EventNumberRangeSet newSelectedEventNumbers = new EventNumberRangeSet();
+                                for (Object object : objects) {
+                                    if (object instanceof IEvent) {
+                                        if (!newSelectedObjects.contains(newSelectedEventNumbers))
+                                            newSelectedObjects.add(newSelectedEventNumbers);
+                                        newSelectedEventNumbers.add(((IEvent)object).getEventNumber());
+                                    }
+                                    else
+                                        newSelectedObjects.add(object);
                                 }
-                                else
-                                    newSelectedObjects.add(object);
-                            }
-                            if (!selectedObjects.equals(newSelectedObjects)) {
-                                selectedObjects = newSelectedObjects;
-                                fireSelection(false);
-                                fireSelectionChanged();
-                                redraw();
-                            }
-                            else if (newSelectedObjects.size() != 0) {
-                                selectedObjects.clear();
-                                fireSelection(false);
-                                fireSelectionChanged();
-                                redraw();
+                                if (!selectedObjects.equals(newSelectedObjects)) {
+                                    selectedObjects = newSelectedObjects;
+                                    fireSelection(false);
+                                    fireSelectionChanged();
+                                    redraw();
+                                }
+                                else if (newSelectedObjects.size() != 0) {
+                                    selectedObjects.clear();
+                                    fireSelection(false);
+                                    fireSelectionChanged();
+                                    redraw();
+                                }
                             }
                         }
+                        setCursor(null); // restore cursor at end of drag
+                        dragStartX = dragStartY = -1;
+                        isDragging = false;
                     }
-
-                    setCursor(null); // restore cursor at end of drag
-                    dragStartX = dragStartY = -1;
-                    isDragging = false;
+                }
+                catch (RuntimeException e) {
+                    eventLogInput.handleRuntimeException(e);
                 }
             }
         });
@@ -5925,8 +6165,8 @@ public class SequenceChart
                 setInput(selectionEventLogInput);
             org.omnetpp.common.engine.BigDecimal simulationTime = eventLogSelection.getFirstSimulationTime();
             Double newSelectedTimelineCoordinate = simulationTime != null ? sequenceChartFacade.getTimelineCoordinateForSimulationTime(simulationTime) : null;
-            Object selectedTimelineCoordinate = selectedObjects.stream().filter(o -> o instanceof Double).findFirst().get();
-            EventNumberRangeSet selectedEventNumberRangeSet = (EventNumberRangeSet)selectedObjects.stream().filter(o -> o instanceof EventNumberRangeSet).findFirst().get();
+            Object selectedTimelineCoordinate = selectedObjects.stream().filter(o -> o instanceof Double).findFirst().orElse(null);
+            EventNumberRangeSet selectedEventNumberRangeSet = (EventNumberRangeSet)selectedObjects.stream().filter(o -> o instanceof EventNumberRangeSet).findFirst().orElse(null);
             EventNumberRangeSet newSelectedEventNumberRangeSet = eventLogSelection.getEventNumbers();
             boolean isSelectionChanged = !newSelectedEventNumberRangeSet.equals(selectedEventNumberRangeSet) || !ObjectUtils.equals(newSelectedTimelineCoordinate, selectedTimelineCoordinate);
             if (isSelectionChanged && !isSelectionChangeInProgress) {
@@ -6030,7 +6270,7 @@ public class SequenceChart
 
     private boolean isVisibleObject(Object object) {
         if (object instanceof IEvent)
-            return getModuleIdToAxisModuleIndexMap().containsKey(((IEvent)object).getModuleId());
+            return isVisibleEvent((IEvent)object);
         else if (object instanceof EventNumberRangeSet)
             return true;
         else if (object instanceof ModuleTreeItem)

@@ -7,14 +7,16 @@
 
 package org.omnetpp.sequencechart.widgets.axisorder;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
+import org.omnetpp.eventlog.IEvent;
+import org.omnetpp.eventlog.SequenceChartFacade;
 import org.omnetpp.eventlog.engine.IntIntMap;
 import org.omnetpp.eventlog.engine.IntVector;
-import org.omnetpp.eventlog.engine.SequenceChartFacade;
 
 /**
  * This class implements a sort method that tries to minimize the total number of axes that arrows are crossing.
@@ -24,25 +26,25 @@ import org.omnetpp.eventlog.engine.SequenceChartFacade;
  */
 public class FlatAxisOrderByMinimizingCost {
     private EventLogInput eventLogInput;
-    private long startEventPtr;
-    private long endEventPtr;
+    private IEvent startEvent;
+    private IEvent endEvent;
 
     private static int TIME_LIMIT = 1000; // in milliseconds
 
-    public FlatAxisOrderByMinimizingCost(EventLogInput eventLogInput, long startEventPtr, long endEventPtr) {
+    public FlatAxisOrderByMinimizingCost(EventLogInput eventLogInput, IEvent startEvent, IEvent endEvent) {
         this.eventLogInput = eventLogInput;
-        this.startEventPtr = startEventPtr;
-        this.endEventPtr = endEventPtr;
+        this.startEvent = startEvent;
+        this.endEvent = endEvent;
     }
 
     public int[] calculateOrdering(ModuleTreeItem[] axisModules, Map<Integer, Integer> moduleIdToAxisModuleIndexMap) {
         int eventCount = 1000;
         SequenceChartFacade sequenceChartFacade = eventLogInput.getSequenceChartFacade();
         IntIntMap cppModuleIdToAxisModuleIndexMap = getCppModuleIdToAxisModuleIndexMap(moduleIdToAxisModuleIndexMap);
-        boolean isSmallEventRange = sequenceChartFacade.IEvent_getEventNumber(endEventPtr) - sequenceChartFacade.IEvent_getEventNumber(startEventPtr) < eventCount;
-        IntVector cppAxisMessageDependecyWeightMatrix = isSmallEventRange ? 
-                eventLogInput.getSequenceChartFacade().getMessageDependencyCountAdjacencyMatrix(cppModuleIdToAxisModuleIndexMap, startEventPtr, endEventPtr, 1, 0) :
-                eventLogInput.getSequenceChartFacade().getApproximateMessageDependencyCountAdjacencyMatrix(cppModuleIdToAxisModuleIndexMap, eventCount, 1, 0);
+        boolean isSmallEventRange = endEvent != null && startEvent != null ? endEvent.getEventNumber() - startEvent.getEventNumber() < eventCount : true;
+        ArrayList<Integer> cppAxisMessageDependecyWeightMatrix = isSmallEventRange ?
+                eventLogInput.getSequenceChartFacade().getMessageDependencyCountAdjacencyMatrix(moduleIdToAxisModuleIndexMap, startEvent, endEvent, 1, 0) :
+                eventLogInput.getSequenceChartFacade().getApproximateMessageDependencyCountAdjacencyMatrix(moduleIdToAxisModuleIndexMap, eventCount, 1, 0);
         int[][] axisMessageDependecyWeightMatrix = getAxisMessageDependecyWeightMatrix(cppAxisMessageDependecyWeightMatrix, axisModules.length);
 
         ModuleTreeItem[] orderedAxisModules = (ModuleTreeItem[])ArrayUtils.clone(axisModules);
@@ -123,7 +125,7 @@ public class FlatAxisOrderByMinimizingCost {
         return cost;
     }
 
-    private int[][] getAxisMessageDependecyWeightMatrix(IntVector cppAxisMessageDependecyWeightMatrix, int numberOfAxes) {
+    private int[][] getAxisMessageDependecyWeightMatrix(ArrayList<Integer> cppAxisMessageDependecyWeightMatrix, int numberOfAxes) {
         int[][] axisMessageDependecyWeightMatrix = new int[numberOfAxes][numberOfAxes];
 
         for (int i = 0; i < numberOfAxes; i++)

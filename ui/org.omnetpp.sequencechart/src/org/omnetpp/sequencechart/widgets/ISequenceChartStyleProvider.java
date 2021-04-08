@@ -6,92 +6,103 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
+import org.omnetpp.eventlog.IEvent;
+import org.omnetpp.eventlog.IMessageDependency;
+import org.omnetpp.eventlog.entry.ComponentMethodBeginEntry;
 
 public interface ISequenceChartStyleProvider
 {
-    void setEventLogInput(EventLogInput eventLogInput);
+    public void setEventLogInput(EventLogInput eventLogInput);
 
-    Color getBackgroundColor();
+    public Color getBackgroundColor();
 
-    Color getSelectionColor();
+    public Color getSelectionColor();
 
-    Color getHighlightColor();
+    public Color getHighlightColor();
 
-    Color getBookmarkColor();
+    public Color getBookmarkColor();
 
-    Color getZeroSimulationTimeRegionColor();
+    public Color getZeroSimulationTimeRegionColor();
 
-    Color getLongArrowheadColor();
+    public Color getLongArrowheadColor();
 
-    Color getInfoBackgroundColor();
+    public Color getInfoBackgroundColor();
 
-    Color getInfoLabelColor();
+    public Color getInfoLabelColor();
 
-    Color getGutterBackgroundColor();
+    public Color getGutterBackgroundColor();
 
-    Color getGutterBorderColor();
+    public Color getGutterBorderColor();
 
-    Color getTickLineColor();
+    public Color getTickLineColor();
 
-    Color getMouseTickLineColor();
+    public Color getMouseTickLineColor();
 
-    Font getAxisLabelFont(ModuleTreeItem axisModule);
+    public Color getAxisHeaderColor(ModuleTreeItem axisModule);
 
-    Color getAxisLabelColor(ModuleTreeItem axisModule);
+    public Color getAxisColor(ModuleTreeItem axisModule);
 
-    Font getTickLabelFont(BigDecimal tick);
+    public Font getAxisLabelFont(ModuleTreeItem axisModule);
 
-    Color getTickLabelColor(BigDecimal tick);
+    public Color getAxisLabelColor(ModuleTreeItem axisModule);
 
-    Font getEventLabelFont(long eventPtr);
+    public Font getTickLabelFont(BigDecimal tick);
 
-    Color getEventLabelColor(long eventPtr);
+    public Color getTickLabelColor(BigDecimal tick);
 
-    Color getEventStrokeColor(long eventPtr);
+    public Font getEventLabelFont(IEvent event);
 
-    Color getEventFillColor(long eventPtr);
+    public Color getEventLabelColor(IEvent event);
 
-    Font getMessageDependencyLabelFont(long messageDependencyPtr);
+    public Color getEventStrokeColor(IEvent event);
 
-    Color getMessageDependencyColor(long messageDependencyPtr);
+    public Color getEventFillColor(IEvent event);
 
-    int getMessageDependencyLineStyle(long messageDependencyPtr);
+    public Font getMessageDependencyLabelFont(IMessageDependency messageDependency);
 
-    int[] getMessageDependencyLineDash(long messageDependencyPtr);
+    public Color getMessageDependencyColor(IMessageDependency messageDependency);
 
-    Color getComponentMethodCallColor(long moduleMethodCallPtr);
+    public int getMessageDependencyLineStyle(IMessageDependency messageDependency);
 
-    int getComponentMethodCallLineStyle(long messageDependencyPtr);
+    public int[] getMessageDependencyLineDash(IMessageDependency messageDependency);
 
-    int[] getComponentMethodCallLineDash(long moduleMethodCallPtr);
+    public Color getComponentMethodCallColor(ComponentMethodBeginEntry moduleMethodCall);
 
-    int getTextSpacing();
+    public int getComponentMethodCallLineStyle(ComponentMethodBeginEntry messageDependency);
 
-    int getTickSpacing();
+    public int[] getComponentMethodCallLineDash(ComponentMethodBeginEntry moduleMethodCall);
+
+    public int getComponentMethodCallReturnLineStyle(ComponentMethodBeginEntry messageDependency);
+
+    public int[] getComponentMethodCallReturnLineDash(ComponentMethodBeginEntry moduleMethodCall);
+
+    public int getTextSpacing();
+
+    public int getTickSpacing();
 
     /**
      * Returns the extra y distance before and after first and last axes.
      */
-    int getAxisOffset();
+    public int getAxisOffset();
 
-    int getArrowheadLength();
+    public int getArrowheadLength();
 
-    int getArrowheadWidth();
+    public int getArrowheadWidth();
 
     /**
      * Returns the vertical radius of ellipse for message arrows on one axis.
      */
-    int getMinimumHalfEllipseHeight();
+    public int getMinimumHalfEllipseHeight();
 
     /**
      * Returns the width for too long message lines and half ellipses.
      */
-    int getLongMessageArrowWidth();
+    public int getLongMessageArrowWidth();
 
-    int getEventRadius();
+    public int getEventRadius();
 
     /**
      * Returns the radius of the event selection mark circle.
      */
-    int getEventSelectionRadius();
+    public int getEventSelectionRadius();
 }

@@ -103,6 +103,7 @@ public class ListReorderDialog extends SelectionDialog {
         return tableViewer;
     }
 
+    @Override
     protected Control createDialogArea(Composite container) {
         Composite parent = (Composite) super.createDialogArea(container);
         createMessageArea(parent);
@@ -158,6 +159,7 @@ public class ListReorderDialog extends SelectionDialog {
         button.setFont(JFaceResources.getDialogFont());
         button.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
         button.addSelectionListener(new SelectionAdapter() {
+            @Override
             public void widgetSelected(SelectionEvent event) {
                 buttonPressed(buttonID);
             }
@@ -168,6 +170,7 @@ public class ListReorderDialog extends SelectionDialog {
     /*
      * Overrides method from Dialog
      */
+    @Override
     protected void okPressed() {
         // Build a list of selected children.
         IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();

@@ -10,11 +10,14 @@ package org.omnetpp.sequencechart.widgets.axisorder;
 import java.util.ArrayList;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
+import org.omnetpp.common.util.UIUtils;
+import org.omnetpp.sequencechart.SequenceChartPlugin;
 
 public class ManualAxisOrder {
     // this is a total ordering among all modules seen so far
@@ -90,6 +93,7 @@ public class ManualAxisOrder {
 
         dialog.setTitle("Manual Axis Ordering");
         dialog.setMessage("Reorder chart axes:");
+        dialog.setDialogBoundsSettings(UIUtils.getDialogSettings(SequenceChartPlugin.getDefault(), "SequanceChartAxesManualOrderDialog"), Dialog.DIALOG_PERSISTSIZE + Dialog.DIALOG_PERSISTLOCATION);
         dialog.setInput(updatedCurrentAxisModuleOrder);
         dialog.setOriginalOrder(selectedAxisModules);
         dialog.open();

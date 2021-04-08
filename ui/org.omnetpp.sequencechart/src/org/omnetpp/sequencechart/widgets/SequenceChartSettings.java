@@ -2,12 +2,14 @@ package org.omnetpp.sequencechart.widgets;
 
 import java.io.Serializable;
 
-import org.omnetpp.common.eventlog.EventLogInput.TimelineMode;
+import org.eclipse.swt.graphics.Color;
+import org.omnetpp.common.util.Pair;
+import org.omnetpp.eventlog.TimelineMode;
 
 /**
  * Used to persistently store the sequence chart settings.
  */
-class SequenceChartState implements Serializable {
+class SequenceChartSettings implements Serializable {
 
     /**
      * Used to persistently store the per axis sequence chart settings.
@@ -63,4 +65,10 @@ class SequenceChartState implements Serializable {
     public Boolean showZeroSimulationTimeRegions;
     public String fontName;
     public int fontHeight;
+    public Pair<String, String[]>[] axesColorFallback;
+    public Pair<String, String[]>[] axesHeaderColorFallback;
+    public Pair<String, String[]>[] eventColorFallback;
+    public Pair<String, String[]>[] selfMessageEventColorFallback;
+    public Pair<String, String[]>[] messageSendColorFallback;
+    public Pair<String, String[]>[] componentMethodCallColorFallback;
 }

@@ -23,11 +23,10 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
-import org.eclipse.ui.IFileEditorInput;
-import org.eclipse.ui.IMemento;
 import org.eclipse.ui.INavigationLocation;
 import org.eclipse.ui.INavigationLocationProvider;
 import org.eclipse.ui.ISelectionListener;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.contexts.IContextService;
@@ -41,11 +40,11 @@ import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.eventlog.EventLogEditor;
 import org.omnetpp.common.eventlog.IEventLogSelection;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
-import org.omnetpp.eventlog.engine.ComponentMethodBeginEntry;
-import org.omnetpp.eventlog.engine.EventLogEntry;
-import org.omnetpp.eventlog.engine.IEvent;
-import org.omnetpp.eventlog.engine.IEventLog;
-import org.omnetpp.eventlog.engine.IMessageDependency;
+import org.omnetpp.eventlog.EventLogEntry;
+import org.omnetpp.eventlog.IEvent;
+import org.omnetpp.eventlog.IEventLog;
+import org.omnetpp.eventlog.IMessageDependency;
+import org.omnetpp.eventlog.entry.ComponentMethodBeginEntry;
 import org.omnetpp.sequencechart.SequenceChartPlugin;
 import org.omnetpp.sequencechart.widgets.SequenceChart;
 
@@ -83,8 +82,9 @@ public class SequenceChartEditor
             public void run() {
                 try {
                     // Eclipse feature: during startup, showView() throws "Abnormal Workbench Condition" because perspective is null
-                    if (getSite().getPage().getPerspective() != null)
-                        getSite().getPage().showView("org.omnetpp.eventlogtable.editors.EventLogTableView");
+                    IWorkbenchPage page = getSite().getPage();
+                    if (page != null && page.getPerspective() != null)
+                        page.showView("org.omnetpp.eventlogtable.editors.EventLogTableView", null, IWorkbenchPage.VIEW_VISIBLE);
                 }
                 catch (PartInitException e) {
                     SequenceChartPlugin.getDefault().logException(e);
@@ -97,10 +97,9 @@ public class SequenceChartEditor
     public void dispose() {
         if (resourceChangeListener != null)
             ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
-
         if (selectionListener != null)
             getSite().getPage().removeSelectionListener(selectionListener);
-
+        getSite().setSelectionProvider(null);
         super.dispose();
     }
 
@@ -135,107 +134,8 @@ public class SequenceChartEditor
         sequenceChart.setFocus();
     }
 
-    public class SequenceChartLocation implements INavigationLocation {
-        // TODO: ambiguous when restored
-        private org.omnetpp.common.engine.BigDecimal startSimulationTime;
-
-        private org.omnetpp.common.engine.BigDecimal endSimulationTime;
-
-        public SequenceChartLocation(org.omnetpp.common.engine.BigDecimal startSimulationTime, org.omnetpp.common.engine.BigDecimal endSimulationTime) {
-            this.startSimulationTime = startSimulationTime;
-            this.endSimulationTime = endSimulationTime;
-        }
-
-        public void dispose() {
-            // void
-        }
-
-        public Object getInput() {
-            return SequenceChartEditor.this.getEditorInput();
-        }
-
-        public String getText() {
-            return SequenceChartEditor.this.getPartName() + ": " + startSimulationTime + "s - " + endSimulationTime + "s";
-        }
-
-        public boolean mergeInto(INavigationLocation currentLocation) {
-            return equals(currentLocation);
-        }
-
-        public void releaseState() {
-            // void
-        }
-
-        public void restoreLocation() {
-            sequenceChart.zoomToSimulationTimeRange(startSimulationTime, endSimulationTime);
-        }
-
-        public void restoreState(IMemento memento) {
-            String value = memento.getString("StartSimulationTime");
-            if (value != null)
-                startSimulationTime = org.omnetpp.common.engine.BigDecimal.parse(value);
-
-            value = memento.getString("EndSimulationTime");
-            if (value != null)
-                endSimulationTime = org.omnetpp.common.engine.BigDecimal.parse(value);
-        }
-
-        public void saveState(IMemento memento) {
-            memento.putString("StartSimulationTime", startSimulationTime.toString());
-            memento.putString("EndSimulationTime", endSimulationTime.toString());
-        }
-
-        public void setInput(Object input) {
-            SequenceChartEditor.this.setInput((IFileEditorInput)input);
-        }
-
-        public void update() {
-            // void
-        }
-
-        @Override
-        public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + getOuterType().hashCode();
-            result = prime * result + ((endSimulationTime == null) ? 0 : endSimulationTime.hashCode());
-            result = prime * result + ((startSimulationTime == null) ? 0 : startSimulationTime.hashCode());
-            return result;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj)
-                return true;
-            if (obj == null)
-                return false;
-            if (getClass() != obj.getClass())
-                return false;
-            SequenceChartLocation other = (SequenceChartLocation) obj;
-            if (!getOuterType().equals(other.getOuterType()))
-                return false;
-            if (endSimulationTime == null) {
-                if (other.endSimulationTime != null)
-                    return false;
-            }
-            else if (!endSimulationTime.equals(other.endSimulationTime))
-                return false;
-            if (startSimulationTime == null) {
-                if (other.startSimulationTime != null)
-                    return false;
-            }
-            else if (!startSimulationTime.equals(other.startSimulationTime))
-                return false;
-            return true;
-        }
-
-        private SequenceChartEditor getOuterType() {
-            return SequenceChartEditor.this;
-        }
-    }
-
     public INavigationLocation createEmptyNavigationLocation() {
-        return new SequenceChartLocation(org.omnetpp.common.engine.BigDecimal.getZero(), org.omnetpp.common.engine.BigDecimal.getNaN());
+        return new SequenceChartLocation(this, org.omnetpp.common.engine.BigDecimal.getZero(), org.omnetpp.common.engine.BigDecimal.getNaN());
     }
 
     @Override
@@ -244,10 +144,16 @@ public class SequenceChartEditor
     }
 
     public INavigationLocation createNavigationLocation() {
-        if (!canCreateNavigationLocation())
+        try {
+            if (!canCreateNavigationLocation())
+                return null;
+            else
+                return new SequenceChartLocation(this, sequenceChart.getViewportLeftSimulationTime(), sequenceChart.getViewportRightSimulationTime());
+        }
+        catch (RuntimeException e) {
+            eventLogInput.handleRuntimeException(e);
             return null;
-        else
-            return new SequenceChartLocation(sequenceChart.getViewportLeftSimulationTime(), sequenceChart.getViewportRightSimulationTime());
+        }
     }
 
     public void gotoMarker(IMarker marker)
@@ -272,7 +178,7 @@ public class SequenceChartEditor
                 String messageDependencyIndexString = marker.getAttribute("MessageDependencyIndex", null);
                 IMessageDependency messageDependency = event.getConsequences().get(Integer.parseInt(messageDependencyIndexString));
                 String messageIdString = marker.getAttribute("MessageId", null);
-                if (messageDependency.getMessageEntry().getMessageId() == Integer.parseInt(messageIdString))
+                if (messageDependency.getBeginMessageDescriptionEntry().getMessageId() == Integer.parseInt(messageIdString))
                     sequenceChart.scrollToMessageDependency(messageDependency);
             }
         }
@@ -284,7 +190,7 @@ public class SequenceChartEditor
                 if (eventLogEntry instanceof ComponentMethodBeginEntry) {
                     ComponentMethodBeginEntry componentMethodBeginEntry = (ComponentMethodBeginEntry)eventLogEntry;
                     String methodNameString = marker.getAttribute("MethodName", null);
-                    if (componentMethodBeginEntry.getMethod().equals(methodNameString))
+                    if (componentMethodBeginEntry.getMethodName().equals(methodNameString))
                         sequenceChart.scrollToComponentMethodCall(componentMethodBeginEntry);
                 }
             }
@@ -323,11 +229,17 @@ public class SequenceChartEditor
         }
 
         public boolean visit(IResourceDelta delta) {
+            // TODO: why do we redraw here, the eventlog is not reread automatically!
             if (delta != null && delta.getResource() != null && delta.getResource().equals(eventLogInput.getFile())) {
                 Display.getDefault().asyncExec(new Runnable() {
                     public void run() {
-                        if (!sequenceChart.isDisposed())
-                            sequenceChart.clearCanvasCacheAndRedraw();
+                        try {
+                            if (!sequenceChart.isDisposed())
+                                sequenceChart.clearCanvasCacheAndRedraw();
+                        }
+                        catch (RuntimeException e) {
+                            sequenceChart.handleRuntimeException(e);
+                        }
                     }
                 });
             }

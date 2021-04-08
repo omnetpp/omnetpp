@@ -12,6 +12,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
+import org.omnetpp.eventlog.IEvent;
 import org.omnetpp.sequencechart.widgets.SequenceChart;
 
 /**
@@ -31,15 +32,12 @@ public class AxisLineRenderer implements IAxisRenderer {
         return module.isCompoundModule() ? 3 : 1;
     }
 
-    public void drawAxis(Graphics graphics, long startEventPtr, long endEventPtr)
+    public void drawAxis(Graphics graphics, IEvent startEvent, IEvent endEvent)
     {
         Rectangle rect = graphics.getClip(Rectangle.SINGLETON);
         graphics.setLineCap(SWT.CAP_SQUARE);
         graphics.setLineStyle(SWT.LINE_SOLID);
-
-        graphics.setForegroundColor(module.isCompoundModule() ? ColorFactory.DIM_GREY : ColorFactory.BLACK);
         graphics.drawLine(rect.x, 0, rect.right(), 0);
-
         if (module.isCompoundModule()) {
             graphics.drawLine(rect.x, 2, rect.right(), 2);
             graphics.setForegroundColor(ColorFactory.WHITE);

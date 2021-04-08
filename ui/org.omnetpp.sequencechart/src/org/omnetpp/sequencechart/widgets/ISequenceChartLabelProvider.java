@@ -6,83 +6,82 @@ import java.util.ArrayList;
 import org.eclipse.swt.graphics.Image;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
-import org.omnetpp.eventlog.engine.ComponentMethodBeginEntry;
-import org.omnetpp.eventlog.engine.IEvent;
-import org.omnetpp.eventlog.engine.IMessageDependency;
-import org.omnetpp.eventlog.engine.MessageEntry;
-import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
+import org.omnetpp.eventlog.IEvent;
+import org.omnetpp.eventlog.IMessageDependency;
+import org.omnetpp.eventlog.entry.ComponentMethodBeginEntry;
+import org.omnetpp.eventlog.entry.MessageDescriptionEntry;
+import org.omnetpp.eventlog.entry.ModuleCreatedEntry;
 
 public interface ISequenceChartLabelProvider
 {
-    void setEventLogInput(EventLogInput eventLogInput);
+    public void setEventLogInput(EventLogInput eventLogInput);
 
-    String getAxisLabel(ModuleTreeItem axisModule);
+    public String getAxisLabel(ModuleTreeItem axisModule);
 
-    String getTickLabel(BigDecimal tick);
+    public String getTickLabel(BigDecimal tick);
 
-    String getEventLabel(long eventPtr);
+    public String getEventLabel(IEvent event);
 
-    String getMessageDependencyLabel(long messageDependencyPtr);
+    public String getMessageDependencyLabel(IMessageDependency messageDependency);
 
     /**
      * Returns a possibly multi-line human readable description for the given objects.
      */
-    String getDescriptiveText(ArrayList<Object> objects, boolean formatted);
+    public String getDescriptiveText(ArrayList<Object> objects, boolean formatted);
 
     /**
      * Returns a human readable description for the event.
      */
-    String getEventText(IEvent event, boolean formatted);
+    public String getEventText(IEvent event, boolean formatted);
 
     /**
      * Returns a human readable description for the module.
      */
-    String getModuleText(ModuleCreatedEntry moduleCreatedEntry, boolean formatted);
+    public String getModuleText(ModuleCreatedEntry moduleCreatedEntry, boolean formatted);
 
     /**
      * Returns a human readable description for the module.
      */
-    String getAxisText(ModuleTreeItem axisModule, boolean formatted);
+    public String getAxisText(ModuleTreeItem axisModule, boolean formatted);
 
     /**
      * Returns a human readable description for the message dependency.
      */
-    String getMessageDependencyText(IMessageDependency messageDependency, boolean formatted);
+    public String getMessageDependencyText(IMessageDependency messageDependency, boolean formatted);
 
     /**
      * Returns a human readable description for the message.
      */
-    String getMessageDetailText(MessageEntry messageEntry, boolean formatted);
+    public String getMessageDetailText(MessageDescriptionEntry messageDescriptionEntry, boolean formatted);
 
     /**
      * Returns a human readable description for the event numbers of the given message dependency.
      */
-    String getMessageDependencyEventNumbersText(IMessageDependency messageDependency, boolean formatted);
+    public String getMessageDependencyEventNumbersText(IMessageDependency messageDependency, boolean formatted);
 
     /**
      * Returns a human readable description for the message name.
      */
-    String getMessageNameText(MessageEntry messageEntry, boolean formatted);
+    public String getMessageNameText(MessageDescriptionEntry messageDescriptionEntry, boolean formatted);
 
     /**
      * Returns a human readable description for the method call.
      */
-    String getComponentMethodCallText(ComponentMethodBeginEntry componentMethodCall, boolean formatted);
+    public String getComponentMethodCallText(ComponentMethodBeginEntry componentMethodCall, boolean formatted);
 
     /**
      * Returns a human readable description for the simulation time delta.
      */
-    String getSimulationTimeDeltaText(IMessageDependency messageDependency, boolean formatted);
+    public String getSimulationTimeDeltaText(IMessageDependency messageDependency, boolean formatted);
 
     /**
      * Returns a human readable description for the message ids of the given message entry.
      */
-    String getMessageIdText(MessageEntry messageEntry, boolean formatted);
+    public String getMessageIdText(MessageDescriptionEntry messageDescriptionEntry, boolean formatted);
 
-    Image getExpandImage();
+    public Image getExpandImage();
 
-    Image getCollapseImage();
+    public Image getCollapseImage();
 
-    Image getCloseImage();
-
+    public Image getCloseImage();
 }

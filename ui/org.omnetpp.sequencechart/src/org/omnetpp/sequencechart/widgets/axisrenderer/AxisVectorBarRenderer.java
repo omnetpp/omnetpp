@@ -14,7 +14,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.eventlog.engine.SequenceChartFacade;
+import org.omnetpp.eventlog.IEvent;
+import org.omnetpp.eventlog.IEventLog;
+import org.omnetpp.eventlog.SequenceChartFacade;
 import org.omnetpp.scave.engine.EnumType;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.XYArray;
@@ -90,16 +92,16 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
     /**
      * Draws a colored tick bar based on the values in the data vector in the given range.
      */
-    public void drawAxis(Graphics graphics, long startEventPtr, long endEventPtr)
+    public void drawAxis(Graphics graphics, IEvent startEvent, IEvent endEvent)
     {
         Rectangle rect = graphics.getClip(Rectangle.SINGLETON);
         int size = getDataLength();
 
-        int startIndex = getIndex(startEventPtr, true);
+        int startIndex = getIndex(startEvent, true);
         if (startIndex == -1)
             startIndex = 0;
 
-        int endIndex = getIndex(endEventPtr, false);
+        int endIndex = getIndex(endEvent, false);
         if (endIndex == -1)
             endIndex = size;
 
@@ -110,7 +112,8 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
         graphics.fillRectangle(rect.x, 0, rect.right() - rect.x, getHeight());
 
         SequenceChartFacade sequenceChartFacade = sequenceChart.getInput().getSequenceChartFacade();
-        long endEventNumber = sequenceChartFacade.IEvent_getEventNumber(endEventPtr);
+        IEventLog eventLog = sequenceChart.getInput().getEventLog();
+        long endEventNumber = endEvent.getEventNumber();
 
         // draw axis as a colored thick line with labels representing values
         // two phases: first draw the background and after that draw the values
@@ -119,32 +122,32 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
                 long eventNumber = getEventNumber(i);
                 long nextEventNumber = Math.min(endEventNumber, (i == size - 1) ? endEventNumber : getEventNumber(i + 1));
 
-                if (eventNumber == -1 || nextEventNumber == -1)
+                if (eventNumber == -1 || nextEventNumber == -1 || eventNumber >= nextEventNumber)
                     continue;
 
-                long eventPtr = sequenceChartFacade.IEvent_getEventForEventNumber(eventNumber);
-                long nextEventPtr = sequenceChartFacade.IEvent_getEventForEventNumber(nextEventNumber);
+                IEvent event = eventLog.getEventForEventNumber(eventNumber);
+                IEvent nextEvent = eventLog.getEventForEventNumber(nextEventNumber);
 
                 int x1 = Integer.MAX_VALUE;
                 int x2 = Integer.MAX_VALUE;
 
                 // check for events being filtered out
-                if (eventPtr != 0)
-                    x1 = (int)sequenceChart.getViewportCoordinateForTimelineCoordinate(sequenceChartFacade.getTimelineCoordinateBegin(eventPtr));
+                if (event != null)
+                    x1 = (int)sequenceChart.getViewportCoordinateForTimelineCoordinate(sequenceChartFacade.getTimelineCoordinateBegin(event));
                 else {
-                    eventPtr = sequenceChartFacade.IEvent_getNonFilteredEventForEventNumber(eventNumber);
-                    org.omnetpp.common.engine.BigDecimal eventSimulationTime = sequenceChartFacade.IEvent_getSimulationTime(eventPtr);
+                    event = sequenceChartFacade.getNonFilteredEventForEventNumber(eventNumber);
+                    org.omnetpp.common.engine.BigDecimal eventSimulationTime = event.getSimulationTime();
                     double eventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinateForSimulationTime(eventSimulationTime, false);
 
                     if (eventTimelineCoordinate == sequenceChartFacade.getTimelineCoordinateForSimulationTime(eventSimulationTime, true))
                         x1 = (int)sequenceChart.getViewportCoordinateForTimelineCoordinate(eventTimelineCoordinate);
                 }
 
-                if (nextEventPtr != 0)
-                    x2 = (int)sequenceChart.getViewportCoordinateForTimelineCoordinate(sequenceChartFacade.getTimelineCoordinateBegin(nextEventPtr));
+                if (nextEvent != null)
+                    x2 = (int)sequenceChart.getViewportCoordinateForTimelineCoordinate(sequenceChartFacade.getTimelineCoordinateBegin(nextEvent));
                 else {
-                    nextEventPtr = sequenceChartFacade.IEvent_getNonFilteredEventForEventNumber(nextEventNumber);
-                    org.omnetpp.common.engine.BigDecimal nextEventSimulationTime = sequenceChartFacade.IEvent_getSimulationTime(nextEventPtr);
+                    nextEvent = sequenceChartFacade.getNonFilteredEventForEventNumber(nextEventNumber);
+                    org.omnetpp.common.engine.BigDecimal nextEventSimulationTime = nextEvent.getSimulationTime();
                     double nextEventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinateForSimulationTime(nextEventSimulationTime, false);
 
                     if (nextEventTimelineCoordinate == sequenceChartFacade.getTimelineCoordinateForSimulationTime(nextEventSimulationTime, true))
@@ -192,12 +195,12 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
     /**
      * Returns the element index having less or greater or equal event number in the data array depending on the given flag.
      */
-    public int getIndex(long eventPtr, boolean before)
+    public int getIndex(IEvent event, boolean before)
     {
         int index = -1;
         int left = 0;
-        int right = getDataLength();
-        long eventNumber = sequenceChart.getInput().getSequenceChartFacade().IEvent_getEventNumber(eventPtr);
+        int right = getDataLength() - 1;
+        long eventNumber = event.getEventNumber();
 
         while (left <= right) {
             int mid = (right + left) / 2;
@@ -322,17 +325,21 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
     {
         if (type == ResultItem.DataType.TYPE_ENUM || type == ResultItem.DataType.TYPE_INT)
             return (int)Math.floor(getValue(index));
-        else
-            return index;
+        else {
+            double value = getValue(index);
+            if (Math.floor(value) == value)
+                return (int)value;
+            else
+                return index;
+        }
     }
 
     private String getValueText(int index)
     {
         if (type == ResultItem.DataType.TYPE_ENUM)
-            return enumType.nameOf((int)getValue(index));
+            return enumType.nameOf((int)Math.floor(getValue(index)));
         else {
             double value = getValue(index);
-
             if (value == Math.floor(value))
                 return String.valueOf((long)value);
             else

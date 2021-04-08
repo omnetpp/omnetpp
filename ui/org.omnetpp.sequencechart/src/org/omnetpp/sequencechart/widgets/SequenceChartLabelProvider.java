@@ -8,16 +8,16 @@ import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.TimeUtils;
-import org.omnetpp.eventlog.engine.ComponentMethodBeginEntry;
-import org.omnetpp.eventlog.engine.EventLogMessageEntry;
-import org.omnetpp.eventlog.engine.FilteredMessageDependency;
-import org.omnetpp.eventlog.engine.IEvent;
-import org.omnetpp.eventlog.engine.IEventLog;
-import org.omnetpp.eventlog.engine.IMessageDependency;
-import org.omnetpp.eventlog.engine.MessageEntry;
-import org.omnetpp.eventlog.engine.MessageReuseDependency;
-import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
-import org.omnetpp.eventlog.engine.SequenceChartFacade;
+import org.omnetpp.eventlog.EventLogMessageEntry;
+import org.omnetpp.eventlog.FilteredMessageDependency;
+import org.omnetpp.eventlog.IEvent;
+import org.omnetpp.eventlog.IEventLog;
+import org.omnetpp.eventlog.IMessageDependency;
+import org.omnetpp.eventlog.MessageReuseDependency;
+import org.omnetpp.eventlog.SequenceChartFacade;
+import org.omnetpp.eventlog.entry.ComponentMethodBeginEntry;
+import org.omnetpp.eventlog.entry.MessageDescriptionEntry;
+import org.omnetpp.eventlog.entry.ModuleCreatedEntry;
 import org.omnetpp.sequencechart.SequenceChartPlugin;
 
 public final class SequenceChartLabelProvider implements ISequenceChartLabelProvider {
@@ -56,18 +56,21 @@ public final class SequenceChartLabelProvider implements ISequenceChartLabelProv
     }
 
     @Override
-    public final String getEventLabel(long eventPtr) {
-        return "#" + sequenceChartFacade.IEvent_getEventNumber(eventPtr);
+    public final String getEventLabel(IEvent event) {
+        return "#" + event.getEventNumber();
     }
 
     @Override
-    public final String getMessageDependencyLabel(long messageDependencyPtr) {
-        if (sequenceChartFacade.IMessageDependency_isFilteredMessageDependency(messageDependencyPtr))
-            return sequenceChartFacade.FilteredMessageDependency_getBeginMessageName(messageDependencyPtr) +
-                   " -> " +
-                   sequenceChartFacade.FilteredMessageDependency_getEndMessageName(messageDependencyPtr);
+    public final String getMessageDependencyLabel(IMessageDependency messageDependency) {
+        if (messageDependency instanceof FilteredMessageDependency) {
+            String beginMessageName = messageDependency.getBeginMessageDescriptionEntry().getMessageName();
+            String endMessageName = messageDependency.getEndMessageDescriptionEntry().getMessageName();
+            return beginMessageName.equals(endMessageName) ? beginMessageName : beginMessageName + " -> " + endMessageName;
+        }
+        else if (messageDependency.getEndMessageDescriptionEntry() != null)
+            return messageDependency.getEndMessageDescriptionEntry().getMessageName();
         else
-            return sequenceChartFacade.IMessageDependency_getMessageName(messageDependencyPtr);
+            return messageDependency.getBeginMessageDescriptionEntry().getMessageName();
     }
 
     @Override
@@ -145,7 +148,7 @@ public final class SequenceChartLabelProvider implements ISequenceChartLabelProv
         String boldStart = formatted ? "<b>" : "";
         String boldEnd = formatted ? "</b>" : "";
 
-        ModuleCreatedEntry moduleCreatedEntry = eventLog.getModuleCreatedEntry(event.getModuleId());
+        ModuleCreatedEntry moduleCreatedEntry = eventLog.getEventLogEntryCache().getModuleCreatedEntry(event.getModuleId());
         String result = boldStart + "Event" + boldEnd + " #" + boldStart + event.getEventNumber() + boldEnd;
 
         if (formatted)
@@ -159,17 +162,17 @@ public final class SequenceChartLabelProvider implements ISequenceChartLabelProv
         result += getModuleText(moduleCreatedEntry, formatted) + " (id = " + event.getModuleId() + ")";
 
         IMessageDependency messageDependency = event.getCause();
-        MessageEntry messageEntry = null;
+        MessageDescriptionEntry messageDescriptionEntry = null;
 
         if (messageDependency instanceof FilteredMessageDependency)
             messageDependency = ((FilteredMessageDependency)messageDependency).getEndMessageDependency();
 
         if (messageDependency != null)
-            messageEntry = messageDependency.getMessageEntry();
+            messageDescriptionEntry = messageDependency.getBeginMessageDescriptionEntry();
 
-        if (formatted && messageEntry != null) {
-            result += " message (" + messageEntry.getMessageClassName() + ") " + boldStart + messageEntry.getMessageName() + boldEnd;
-            result += getMessageIdText(messageEntry, formatted);
+        if (formatted && messageDescriptionEntry != null) {
+            result += " message (" + messageDescriptionEntry.getMessageClassName() + ") " + boldStart + messageDescriptionEntry.getMessageName() + boldEnd;
+            result += getMessageIdText(messageDescriptionEntry, formatted);
         }
 
         if (debug)
@@ -182,7 +185,7 @@ public final class SequenceChartLabelProvider implements ISequenceChartLabelProv
     public final String getModuleText(ModuleCreatedEntry moduleCreatedEntry, boolean formatted) {
         String boldStart = formatted ? "<b>" : "";
         String boldEnd = formatted ? "</b>" : "";
-        String moduleName = (formatted ? eventLogInput.getEventLogTableFacade().ModuleCreatedEntry_getModuleFullPath(moduleCreatedEntry.getCPtr()) : moduleCreatedEntry.getFullName());
+        String moduleName = (formatted ? eventLogInput.getEventLogTableFacade().ModuleDescriptionEntry_getModuleFullPath(moduleCreatedEntry) : moduleCreatedEntry.getFullName());
         String typeName = moduleCreatedEntry.getNedTypeName();
 
         if (!formatted && typeName.contains("."))
@@ -205,55 +208,55 @@ public final class SequenceChartLabelProvider implements ISequenceChartLabelProv
     public final String getMessageDependencyText(IMessageDependency messageDependency, boolean formatted) {
         String boldStart = formatted ? "<b>" : "";
         String boldEnd = formatted ? "</b>" : "";
-        if (sequenceChartFacade.IMessageDependency_isFilteredMessageDependency(messageDependency.getCPtr())) {
+        if (messageDependency instanceof FilteredMessageDependency) {
             FilteredMessageDependency filteredMessageDependency = (FilteredMessageDependency)messageDependency;
-            MessageEntry beginMessageEntry = filteredMessageDependency.getBeginMessageDependency().getMessageEntry();
-            MessageEntry endMessageEntry = filteredMessageDependency.getEndMessageDependency().getMessageEntry();
-            boolean sameMessage = beginMessageEntry.getMessageId() == endMessageEntry.getMessageId();
+            MessageDescriptionEntry beginMessageDescriptionEntry = filteredMessageDependency.getBeginMessageDependency().getEndMessageDescriptionEntry();
+            MessageDescriptionEntry endMessageDescriptionEntry = filteredMessageDependency.getEndMessageDependency().getEndMessageDescriptionEntry();
+            boolean sameMessage = beginMessageDescriptionEntry.getMessageId() == endMessageDescriptionEntry.getMessageId();
 
             String kind = "";
             switch (((FilteredMessageDependency)messageDependency).getKind()) {
-                case FilteredMessageDependency.Kind.SENDS:
+                case SENDS:
                     kind = "message sends ";
                     break;
-                case FilteredMessageDependency.Kind.REUSES:
+                case REUSES:
                     kind = "message reuses ";
                     break;
-                case FilteredMessageDependency.Kind.MIXED:
+                case MIXED:
                     kind = "message sends and message reuses ";
                     break;
                 default:
                     throw new RuntimeException("Unknown kind");
             }
-            String result = boldStart + "Derived " + boldEnd + kind + getMessageNameText(beginMessageEntry, formatted);
+            String result = boldStart + "Derived " + boldEnd + kind + getMessageNameText(beginMessageDescriptionEntry, formatted);
             if (!sameMessage)
-                result += " -> " + getMessageNameText(endMessageEntry, formatted);
+                result += " -> " + getMessageNameText(endMessageDescriptionEntry, formatted);
 
             if (formatted)
                 result += getMessageDependencyEventNumbersText(messageDependency, formatted) + getSimulationTimeDeltaText(messageDependency, formatted);
 
-            result += getMessageIdText(beginMessageEntry, formatted);
+            result += getMessageIdText(beginMessageDescriptionEntry, formatted);
             if (!sameMessage)
-                result += " -> " + getMessageIdText(endMessageEntry, formatted);
+                result += " -> " + getMessageIdText(endMessageDescriptionEntry, formatted);
 
             if (formatted) {
-                if (beginMessageEntry.getDetail() != null) {
+                if (beginMessageDescriptionEntry.getDetail() != null) {
                     if (!sameMessage)
                         result += "<br/>First: ";
 
-                    result += getMessageDetailText(beginMessageEntry, formatted);
+                    result += getMessageDetailText(beginMessageDescriptionEntry, formatted);
                 }
 
-                if (!sameMessage && endMessageEntry.getDetail() != null) {
+                if (!sameMessage && endMessageDescriptionEntry.getDetail() != null) {
                     result += "<br/>Last: ";
-                    result += getMessageDetailText(endMessageEntry, formatted);
+                    result += getMessageDetailText(endMessageDescriptionEntry, formatted);
                 }
             }
 
             return result;
         }
         else {
-            MessageEntry beginSendEntry = messageDependency.getMessageEntry();
+            MessageDescriptionEntry beginSendEntry = messageDependency.getEndMessageDescriptionEntry();
             String result = boldStart + (messageDependency instanceof MessageReuseDependency ? "Reusing " : "Sending ") + boldEnd + getMessageNameText(beginSendEntry, formatted);
 
             if (formatted)
@@ -269,8 +272,8 @@ public final class SequenceChartLabelProvider implements ISequenceChartLabelProv
     }
 
     @Override
-    public final String getMessageDetailText(MessageEntry messageEntry, boolean formatted) {
-        String detail = messageEntry.getDetail();
+    public final String getMessageDetailText(MessageDescriptionEntry messageDescriptionEntry, boolean formatted) {
+        String detail = messageDescriptionEntry.getDetail();
         int longestLineLength = 0;
         for (String line : detail.split("\n"))
             longestLineLength = Math.max(longestLineLength, line.length());
@@ -283,19 +286,19 @@ public final class SequenceChartLabelProvider implements ISequenceChartLabelProv
     }
 
     @Override
-    public final String getMessageNameText(MessageEntry messageEntry, boolean formatted) {
+    public final String getMessageNameText(MessageDescriptionEntry messageDescriptionEntry, boolean formatted) {
         String boldStart = formatted ? "<b>" : "";
         String boldEnd = formatted ? "</b>" : "";
-        return "(" + messageEntry.getMessageClassName() + ") " + boldStart + messageEntry.getMessageName() + boldEnd;
+        return "(" + messageDescriptionEntry.getMessageClassName() + ") " + boldStart + messageDescriptionEntry.getMessageName() + boldEnd;
     }
 
     @Override
     public final String getComponentMethodCallText(ComponentMethodBeginEntry componentMethodCall, boolean formatted) {
         String boldStart = formatted ? "<b>" : "";
         String boldEnd = formatted ? "</b>" : "";
-        ModuleCreatedEntry fromModuleCreatedEntry = eventLog.getModuleCreatedEntry(componentMethodCall.getSourceComponentId()); // null if component is a channel
-        ModuleCreatedEntry toModuleCreatedEntry = eventLog.getModuleCreatedEntry(componentMethodCall.getTargetComponentId()); // null if component is a channel
-        String result = boldStart + "Calling " + componentMethodCall.getMethod() + boldEnd;
+        ModuleCreatedEntry fromModuleCreatedEntry = eventLog.getEventLogEntryCache().getModuleCreatedEntry(componentMethodCall.getSourceComponentId()); // null if component is a channel
+        ModuleCreatedEntry toModuleCreatedEntry = eventLog.getEventLogEntryCache().getModuleCreatedEntry(componentMethodCall.getTargetComponentId()); // null if component is a channel
+        String result = boldStart + "Calling " + componentMethodCall.getMethodName() + boldEnd;
         if (fromModuleCreatedEntry != null)
             result += " from module " + getModuleText(fromModuleCreatedEntry, formatted);
         if (toModuleCreatedEntry != null)
@@ -311,20 +314,20 @@ public final class SequenceChartLabelProvider implements ISequenceChartLabelProv
     }
 
     @Override
-    public final String getMessageIdText(MessageEntry messageEntry, boolean formatted) {
-        int messageId = messageEntry.getMessageId();
+    public final String getMessageIdText(MessageDescriptionEntry messageDescriptionEntry, boolean formatted) {
+        long messageId = messageDescriptionEntry.getMessageId();
         String result = " (id = " + messageId;
 
         if (formatted) {
-            int messageTreeId = messageEntry.getMessageTreeId();
+            long messageTreeId = messageDescriptionEntry.getMessageTreeId();
             if (messageTreeId != -1 && messageTreeId != messageId)
                 result += ", tree id = " + messageTreeId;
 
-            int messageEncapsulationId = messageEntry.getMessageEncapsulationId();
+            long messageEncapsulationId = messageDescriptionEntry.getMessageEncapsulationId();
             if (messageEncapsulationId != -1 && messageEncapsulationId != messageId)
                 result += ", encapsulation id = " + messageEncapsulationId;
 
-            int messageEncapsulationTreeId = messageEntry.getMessageEncapsulationTreeId();
+            long messageEncapsulationTreeId = messageDescriptionEntry.getMessageEncapsulationTreeId();
             if (messageEncapsulationTreeId != -1 && messageEncapsulationTreeId != messageEncapsulationId)
                 result += ", encapsulation tree id = " + messageEncapsulationTreeId;
         }
