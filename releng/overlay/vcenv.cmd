@@ -21,12 +21,12 @@ echo We need to unpack the MinGW toolchain before continuing.
 echo This can take a while, please be patient.
 echo.
 pause
-7za x -y opp-tools-win64-msys.7z
+7za x -aos -y opp-tools-win64-msys.7z
 del opp-tools-win64-msys.7z
 )
 
 IF EXIST "opp-tools-win64-extra.7z" (
-7za x -y opp-tools-win64-extra.7z
+7za x -aos -y opp-tools-win64-extra.7z
 del opp-tools-win64-extra.7z
 )
 
@@ -37,7 +37,7 @@ echo We need to unpack the libraries required by the ms-clang toolchain before c
 echo This can take a while, please be patient.
 echo.
 pause
-7za x -y opp-tools-win64-visualc.7z
+7za x -aos -y opp-tools-win64-visualc.7z
 del opp-tools-win64-visualc.7z
 
 "win64\visualc\bin\qtbinpatcher.exe" --qt-dir=win64\visualc
