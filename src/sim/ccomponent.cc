@@ -85,6 +85,7 @@ cComponent::cComponent(const char *name) : cSoftOwner(name)
 
     signalTable = nullptr;
 
+    setNamePooling(true);
     setLogLevel(LOGLEVEL_TRACE);
 }
 
