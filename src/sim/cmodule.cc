@@ -104,8 +104,7 @@ cModule::~cModule()
     delete osgCanvas;
 
     nameStringPool.release(displayName);
-
-    delete[] fullName;
+    nameStringPool.release(fullName);
     delete[] fullPath;
 }
 
@@ -318,14 +317,13 @@ void cModule::setName(const char *s)
 
 void cModule::updateFullName()
 {
-    if (fullName) {
-        delete[] fullName;
-        fullName = nullptr;
-    }
+    nameStringPool.release(fullName);
+    fullName = nullptr;
+
     if (isVector()) {
-        fullName = new char[omnetpp::opp_strlen(getName()) + 10];
-        strcpy(fullName, getName());
-        opp_appendindex(fullName, getIndex());
+        char tmp[32];
+        std::string buf = std::string(getName()) + "[" + opp_itoa(tmp, getIndex()) + "]";
+        fullName = nameStringPool.get(buf.c_str());
     }
 
     if (lastModuleFullPathModule == this)

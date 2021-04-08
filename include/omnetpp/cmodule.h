@@ -272,11 +272,11 @@ class SIM_API cModule : public cComponent //implies noncopyable
     };
 
   private:
-    mutable char *fullPath = nullptr; // cached fullPath string (caching is optional, so it may be nullptr)
-    mutable char *fullName = nullptr; // buffer to store full name of object
+    mutable const char *fullPath = nullptr; // cached fullPath string (caching is optional, so it may be nullptr)
+    mutable const char *fullName = nullptr; // buffer to store full name of object; stringpooled
     static bool cacheFullPath; // whether to cache the fullPath string or not
-    const char *displayName = nullptr;  // stringpooled
-    static cStringPool nameStringPool;  // pool for shared storage of display names
+    const char *displayName = nullptr;  // optional display name; stringpooled
+    static cStringPool nameStringPool;  // pool for shared storage of full names and display names
 
     // Note: parent module is stored in ownerp -- a module is always owned by its parent
     // module. If ownerp cannot be cast to a cModule, the module has no parent module
