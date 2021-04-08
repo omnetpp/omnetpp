@@ -888,7 +888,7 @@ public class LargeTable extends Composite
                 if (!isSelectedElement || selectionIndices.size() > 1) { // suppress focus border if it's the only selected element
                     gc.setForeground(Display.getCurrent().getSystemColor(isSelectedElement ? SWT.COLOR_LIST_SELECTION_TEXT : SWT.COLOR_LIST_FOREGROUND));
                     gc.setLineStyle(SWT.LINE_DOT);
-                    gc.drawRectangle(1, i * getRowHeight(), getClientArea().width - 2, getRowHeight() - 2);
+                    gc.drawRectangle(1, i * getRowHeight(), table.getSize().x - 2, getRowHeight() - 2);
                     gc.setLineStyle(SWT.LINE_SOLID);
                 }
             }
