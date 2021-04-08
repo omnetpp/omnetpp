@@ -92,7 +92,8 @@ void cEventHeap::forEachChild(cVisitor *v)
 
     for (int i = 1; i <= heapLength; i++)
         if (heap[i])
-            v->visit(heap[i]);
+            if (!v->visit(heap[i]))
+                return;
 }
 
 void cEventHeap::clear()

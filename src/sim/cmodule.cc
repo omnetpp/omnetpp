@@ -211,7 +211,8 @@ void cModule::releaseListeners()
 void cModule::forEachChild(cVisitor *v)
 {
     for (GateIterator it(this); !it.end(); ++it)
-        v->visit(*it);
+        if (!v->visit(*it))
+            return;
 
     cComponent::forEachChild(v);
 }

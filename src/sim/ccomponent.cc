@@ -124,7 +124,8 @@ void cComponent::forEachChild(cVisitor *v)
                     // as they are visited from their parents too; objects owned by this module may already
                     // be visited from this module via another place.)
                     if (listenerObj != this && listenerObj->getOwner() == nullptr)
-                        v->visit(listenerObj);
+                        if (!v->visit(listenerObj))
+                            return;
         }
     }
 

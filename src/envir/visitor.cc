@@ -62,9 +62,6 @@ void cCollectObjectsVisitor::setSizeLimit(int limit)
 
 void cCollectObjectsVisitor::addPointer(cObject *obj)
 {
-    if (sizeLimit && numObjs == sizeLimit)
-        throw EndTraversalException();
-
     // if array is full, reallocate
     if (numObjs == capacity) {
         cObject **arr2 = new cObject *[2*capacity];
@@ -79,12 +76,16 @@ void cCollectObjectsVisitor::addPointer(cObject *obj)
     objs[numObjs++] = obj;
 }
 
-void cCollectObjectsVisitor::visit(cObject *obj)
+bool cCollectObjectsVisitor::visit(cObject *obj)
 {
+    if (isFull())
+        return false;
+
     addPointer(obj);
 
     // go to children
     obj->forEachChild(this);
+    return true;
 }
 
 //-----------------------------------------------------------------------
@@ -115,7 +116,7 @@ void cFilteredCollectObjectsVisitor::setFilterPars(unsigned int cat,
         objFullpathPattern = new MatchExpression(objfullpathpatt, false, true, true);
 }
 
-void cFilteredCollectObjectsVisitor::visit(cObject *obj)
+bool cFilteredCollectObjectsVisitor::visit(cObject *obj)
 {
     bool ok = (category == ~0U) ||
         ((category&CATEGORY_MODULES) && dynamic_cast<cModule *>(obj)) ||
@@ -159,37 +160,42 @@ void cFilteredCollectObjectsVisitor::visit(cObject *obj)
 
     // go to children
     obj->forEachChild(this);
+    return true;
 }
 
 //----------------------------------------------------------------
 
-void cCollectChildrenVisitor::visit(cObject *obj)
+bool cCollectChildrenVisitor::visit(cObject *obj)
 {
     if (obj == parent)
         obj->forEachChild(this);
     else
         addPointer(obj);
+    return true;
 }
 
 //----------------------------------------------------------------
 
-void cCountChildrenVisitor::visit(cObject *obj)
+bool cCountChildrenVisitor::visit(cObject *obj)
 {
     if (obj == parent)
         obj->forEachChild(this);
     else
         count++;
+    return true;
 }
 
 //----------------------------------------------------------------
 
-void cHasChildrenVisitor::visit(cObject *obj)
+bool cHasChildrenVisitor::visit(cObject *obj)
 {
-    if (obj == parent)
+    if (obj == parent) {
         obj->forEachChild(this);
+        return true;
+    }
     else {
         hasChildren = true;
-        throw EndTraversalException();
+        return false;
     }
 }
 

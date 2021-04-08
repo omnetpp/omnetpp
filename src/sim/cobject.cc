@@ -184,11 +184,10 @@ class cChildObjectFinderVisitor : public cVisitor
   public:
     cChildObjectFinderVisitor(const char *objname): name(objname) { }
 
-    virtual void visit(cObject *obj) override {
-        if (obj->isName(name)) {
+    virtual bool visit(cObject *obj) override {
+        if (obj->isName(name))
             result = obj;
-            throw EndTraversalException();
-        }
+        return result == nullptr;
     }
 
     cObject *getResult() { return result; }
@@ -206,12 +205,12 @@ class cRecursiveObjectFinderVisitor : public cVisitor
   public:
     cRecursiveObjectFinderVisitor(const char *objname): name(objname) { }
 
-    virtual void visit(cObject *obj) override {
-        if (obj->isName(name)) {
+    virtual bool visit(cObject *obj) override {
+        if (obj->isName(name))
             result = obj;
-            throw EndTraversalException();
-        }
-        obj->forEachChild(this);
+        if (!result)
+            obj->forEachChild(this);
+        return result == nullptr;
     }
 
     cObject *getResult() { return result; }

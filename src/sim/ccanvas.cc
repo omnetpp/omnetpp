@@ -920,7 +920,8 @@ cFigure& cFigure::operator=(const cFigure& other)
 void cFigure::forEachChild(cVisitor *v)
 {
     for (auto & child : children)
-        v->visit(child);
+        if (!v->visit(child))
+            return;
 }
 
 std::string cFigure::str() const

@@ -57,7 +57,7 @@ class QTENV_API cFindByPathVisitor : public omnetpp::envir::cCollectObjectsVisit
     const char *className; // optional
     long objectId; // optional message or component Id; use -1 for none
   protected:
-    virtual void visit(cObject *obj) override;
+    virtual bool visit(cObject *obj) override;
   public:
     cFindByPathVisitor(const char *fullPath, const char *className=nullptr, long objectId=-1) :
         fullPath(fullPath), className(className), objectId(objectId) {}
@@ -71,12 +71,13 @@ class QTENV_API cFindByPathVisitor : public omnetpp::envir::cCollectObjectsVisit
 template<typename T>
 class QTENV_API cCollectObjectsOfTypeVisitor : public omnetpp::envir::cCollectObjectsVisitor {
   protected:
-    void visit(cObject *obj) override {
+    bool visit(cObject *obj) override {
         if (dynamic_cast<T*>(obj))
             addPointer(obj);
 
         // go to children
         obj->forEachChild(this);
+        return true;
     }
 };
 

@@ -105,7 +105,8 @@ void cValueArray::forEachChild(cVisitor* v)
     for (const cValue& value : array)
         if (value.getType() == cValue::OBJECT)
             if (cObject *child = value.objectValue())
-                v->visit(child);
+                if (!v->visit(child))
+                    return;
 }
 
 void cValueArray::parsimPack(cCommBuffer* buffer) const

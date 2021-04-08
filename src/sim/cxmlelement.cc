@@ -74,7 +74,8 @@ std::string cXMLElement::str() const
 void cXMLElement::forEachChild(cVisitor *v)
 {
     for (cXMLElement *child = getFirstChild(); child; child = child->getNextSibling())
-        v->visit(child);
+        if (!v->visit(child))
+            return;
 }
 
 const char *cXMLElement::getPooledName(const char *s)

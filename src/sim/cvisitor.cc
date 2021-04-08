@@ -24,26 +24,14 @@
 
 namespace omnetpp {
 
-bool cVisitor::process(cObject *obj)
+void cVisitor::process(cObject *obj)
 {
-    try {
-        visit(obj);
-    }
-    catch (EndTraversalException& e) {
-        return false;
-    }
-    return true;
+    visit(obj);
 }
 
-bool cVisitor::processChildrenOf(cObject *obj)
+void cVisitor::processChildrenOf(cObject *obj)
 {
-    try {
-        obj->forEachChild(this);
-    }
-    catch (EndTraversalException& e) {
-        return false;
-    }
-    return true;
+    obj->forEachChild(this);
 }
 
 }  // namespace omnetpp

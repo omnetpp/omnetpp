@@ -134,7 +134,8 @@ void cArray::forEachChild(cVisitor *v)
 {
     for (int i = 0; i <= last; i++)
         if (vect[i])
-            v->visit(vect[i]);
+            if (!v->visit(vect[i]))
+                return;
 }
 
 void cArray::parsimPack(cCommBuffer *buffer) const

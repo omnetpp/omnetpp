@@ -78,7 +78,8 @@ std::string cQueue::str() const
 void cQueue::forEachChild(cVisitor *v)
 {
     for (QElem *p = frontp; p != nullptr; p = p->next)
-        v->visit(p->obj);
+        if (!v->visit(p->obj))
+            return;
 }
 
 void cQueue::parsimPack(cCommBuffer *buffer) const

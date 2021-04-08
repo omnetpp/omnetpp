@@ -46,7 +46,8 @@ std::string cRegistrationList::str() const
 void cRegistrationList::forEachChild(cVisitor *visitor)
 {
     for (auto & obj : vec)
-        visitor->visit(obj);
+        if (!visitor->visit(obj))
+            return;
 }
 
 void cRegistrationList::add(cOwnedObject *obj)

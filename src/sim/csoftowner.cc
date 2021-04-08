@@ -175,7 +175,8 @@ std::string cSoftOwner::str() const
 void cSoftOwner::forEachChild(cVisitor *v)
 {
     for (int i = 0; i < numObjs; i++)
-        v->visit(objs[i]);
+        if (!v->visit(objs[i]))
+            return;
 }
 
 void cSoftOwner::parsimPack(cCommBuffer *buffer) const

@@ -151,7 +151,7 @@ class cSnapshotWriterVisitor : public cVisitor
   public:
     cSnapshotWriterVisitor(ostream& ostr) : os(ostr) {}
 
-    virtual void visit(cObject *obj) override {
+    virtual bool visit(cObject *obj) override {
         std::string indent(2 * indentLevel, ' ');
         os << indent << "<object class=\"" << obj->getClassName() << "\" fullpath=\"" << opp_xmlQuote(obj->getFullPath()) << "\">\n";
         os << indent << "  <info>" << opp_xmlQuote(obj->str()) << "</info>\n";
@@ -159,9 +159,9 @@ class cSnapshotWriterVisitor : public cVisitor
         obj->forEachChild(this);
         indentLevel--;
         os << indent << "</object>\n\n";
-
         if (os.fail())
-            throw EndTraversalException();
+            return false;
+        return true;
     }
 };
 

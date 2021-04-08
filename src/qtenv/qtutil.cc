@@ -86,7 +86,7 @@ QColor parseColor(const QString& name, const QColor& fallbackColor)
 
 //----------------------------------------------------------------------
 
-void cFindByPathVisitor::visit(cObject *obj)
+bool cFindByPathVisitor::visit(cObject *obj)
 {
     // we have to do exhaustive search here, because full path may not exactly
     // follow the object hierarchy (some objects may be omitted)
@@ -99,7 +99,7 @@ void cFindByPathVisitor::visit(cObject *obj)
         && !opp_stringbeginswith(fullPath, objPath.c_str()))
     {
         // skip (do not search) this subtree
-        return;
+        return true;
     }
 
     // found it?
@@ -111,11 +111,12 @@ void cFindByPathVisitor::visit(cObject *obj)
         addPointer(obj);
 
         // makes no sense to go further down
-        return;
+        return true;
     }
 
     // search recursively
     obj->forEachChild(this);
+    return true;
 }
 
 // =======================================================================

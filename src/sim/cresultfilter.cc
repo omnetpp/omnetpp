@@ -97,7 +97,8 @@ cResultFilter::~cResultFilter()
 void cResultFilter::forEachChild(cVisitor *v)
 {
     for (int i = 0; delegates[i]; i++)
-        v->visit(delegates[i]);
+        if (!v->visit(delegates[i]))
+            return;
     cResultListener::forEachChild(v);
 }
 

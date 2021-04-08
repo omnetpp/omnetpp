@@ -55,12 +55,6 @@ class cObject;
  */
 class SIM_API cVisitor
 {
-  protected:
-    /**
-     * @brief Can be thrown to get out in the middle of the traversal process.
-     */
-     class EndTraversalException { };
-
   public:
     /**
      * Virtual destructor.
@@ -68,31 +62,29 @@ class SIM_API cVisitor
     virtual ~cVisitor() {}
 
     /**
-     * Starts the visiting process. This version simply calls visit(obj),
-     * and catches EndTraversalException if one occurs. Return value is true if
-     * traversal went through and false if EndTraversalException was caught.
+     * Starts the visiting process. This version simply calls visit(obj).
      */
-    virtual bool process(cObject *obj);
+    virtual void process(cObject *obj);
 
     /**
      * Similar to process(), except that it skips the object itself, i.e. it begins
-     * with processing the children. Calls obj->forEachChild(this),
-     * and catches EndTraversalException if one occurs. Return value is true if
-     * traversal went through and false if EndTraversalException was caught.
+     * with processing the children. Calls obj->forEachChild(this).
      */
-    virtual bool processChildrenOf(cObject *obj);
+    virtual void processChildrenOf(cObject *obj);
 
     /**
      * Method called from the forEachChild() methods of every class derived
      * from cObject, for each contained object. visit() should be
      * redefined by user to encapsulate the operation to be performed
      * on the object. If you want recursively traversal, call
-     * obj->forEachChild(this) from here.
+     * obj->forEachChild(this) from here. A return value of false
+     * indicates to the caller i.e. the forEachChild() method that
+     * the rest of the children may be skipped.
      *
      * This method should NOT be called to to initiate the traversal -- use
      * process() or processChildrenOf() for that.
      */
-    virtual void visit(cObject *obj) = 0;
+    virtual bool visit(cObject *obj) = 0;
 };
 
 }  // namespace omnetpp
