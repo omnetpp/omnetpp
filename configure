@@ -5080,17 +5080,17 @@ rm -f core conftest.err conftest.$ac_objext \
 
         # Test on Mac OS X using the local Qt framework
         if test $qt_ok = no; then
-            QT_LIBS="-framework QtGui -framework QtCore -framework QtWidgets -framework QtPrintSupport -framework QtOpenGL"
+            QT_LIBS="-framework QtGui -framework QtCore -framework QtWidgets -framework QtPrintSupport -framework QtOpenGL -F $QT_INSTALL_LIBS"
             QTENV_LDFLAGS=""
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
    CXXFLAGS="$CXXFLAGS $CFLAGS $QT_CFLAGS"
-   LIBS="$LDFLAGS_TOOLS_MACOSX $QT_LIBS"
+   LIBS="$QT_LIBS $LDFLAGS_TOOLS_MACOSX"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Qt5 with CFLAGS=\"$CXXFLAGS $CFLAGS $QT_CFLAGS\" LIBS=\"$LDFLAGS_TOOLS_MACOSX $QT_LIBS\"" >&5
-$as_echo_n "checking for Qt5 with CFLAGS=\"$CXXFLAGS $CFLAGS $QT_CFLAGS\" LIBS=\"$LDFLAGS_TOOLS_MACOSX $QT_LIBS\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Qt5 with CFLAGS=\"$CXXFLAGS $CFLAGS $QT_CFLAGS\" LIBS=\"$QT_LIBS $LDFLAGS_TOOLS_MACOSX\"" >&5
+$as_echo_n "checking for Qt5 with CFLAGS=\"$CXXFLAGS $CFLAGS $QT_CFLAGS\" LIBS=\"$QT_LIBS $LDFLAGS_TOOLS_MACOSX\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */

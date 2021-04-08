@@ -886,9 +886,9 @@ EOT
 
         # Test on Mac OS X using the local Qt framework
         if test $qt_ok = no; then
-            QT_LIBS="-framework QtGui -framework QtCore -framework QtWidgets -framework QtPrintSupport -framework QtOpenGL"
+            QT_LIBS="-framework QtGui -framework QtCore -framework QtWidgets -framework QtPrintSupport -framework QtOpenGL -F $QT_INSTALL_LIBS"
             QTENV_LDFLAGS=""
-            OPP_CHECK_LIB(Qt5, QtCore/QtGlobal, $QT_VERSIONCHECK_CODE, $CXXFLAGS $CFLAGS $QT_CFLAGS, $LDFLAGS_TOOLS_MACOSX $QT_LIBS, qt_ok)
+            OPP_CHECK_LIB(Qt5, QtCore/QtGlobal, $QT_VERSIONCHECK_CODE, $CXXFLAGS $CFLAGS $QT_CFLAGS, $QT_LIBS $LDFLAGS_TOOLS_MACOSX, qt_ok)
         fi
 
         if test $qt_ok = no; then
