@@ -10,7 +10,7 @@
     <tycho.version>1.6.0</tycho.version>
     <tycho.extras.version>1.6.0</tycho.extras.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <eclipse-repo.url>https://download.eclipse.org/releases/2021-03</eclipse-repo.url>
+    <eclipse-repo.url>https://download.eclipse.org/releases/2020-12</eclipse-repo.url>
     <pydev-repo.url>https://pydev.org/update_sites/8.2.0</pydev-repo.url>
     <ansiconsole-repo.url>https://www.mihai-nita.net/eclipse</ansiconsole-repo.url>
   </properties>
