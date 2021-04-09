@@ -1,401 +1,402 @@
+SB ov 1536 ev 2 rid PureAloha2-0-20210409-17:05:55-244613
+
 E # 0 t 0 m 1 ce -1 msg -1
-SB v 1281 rid PureAloha2-0-20170320-11:14:54-11186 b 1000
-KF p -1 c "" s ""
 MC id 1 c omnetpp::cModule t Aloha n Aloha cm 1
-MS id 1 d bgi=background/terrain,s;bgb=1000,1000
+MDC id 1 d bgi=background/terrain,s;bgb=1000,1000
 MC id 2 c aloha::Server t Server pid 1 n server
 GC m 2 g 0 n in o 0
-MS id 2 d i=device/antennatower_l
+MDC id 2 d i=device/antennatower_l
 MC id 3 c aloha::Host t Host pid 1 n host[0]
-MS id 3 d i=device/pc_s
+MDC id 3 d i=device/pc_s
 MC id 4 c aloha::Host t Host pid 1 n host[1]
-MS id 4 d i=device/pc_s
+MDC id 4 d i=device/pc_s
 MC id 5 c aloha::Host t Host pid 1 n host[2]
-MS id 5 d i=device/pc_s
+MDC id 5 d i=device/pc_s
 MC id 6 c aloha::Host t Host pid 1 n host[3]
-MS id 6 d i=device/pc_s
+MDC id 6 d i=device/pc_s
 MC id 7 c aloha::Host t Host pid 1 n host[4]
-MS id 7 d i=device/pc_s
+MDC id 7 d i=device/pc_s
 MC id 8 c aloha::Host t Host pid 1 n host[5]
-MS id 8 d i=device/pc_s
+MDC id 8 d i=device/pc_s
 MC id 9 c aloha::Host t Host pid 1 n host[6]
-MS id 9 d i=device/pc_s
+MDC id 9 d i=device/pc_s
 MC id 10 c aloha::Host t Host pid 1 n host[7]
-MS id 10 d i=device/pc_s
+MDC id 10 d i=device/pc_s
 MC id 11 c aloha::Host t Host pid 1 n host[8]
-MS id 11 d i=device/pc_s
+MDC id 11 d i=device/pc_s
 MC id 12 c aloha::Host t Host pid 1 n host[9]
-MS id 12 d i=device/pc_s
+MDC id 12 d i=device/pc_s
 MC id 13 c aloha::Host t Host pid 1 n host[10]
-MS id 13 d i=device/pc_s
+MDC id 13 d i=device/pc_s
 MC id 14 c aloha::Host t Host pid 1 n host[11]
-MS id 14 d i=device/pc_s
+MDC id 14 d i=device/pc_s
 MC id 15 c aloha::Host t Host pid 1 n host[12]
-MS id 15 d i=device/pc_s
+MDC id 15 d i=device/pc_s
 MC id 16 c aloha::Host t Host pid 1 n host[13]
-MS id 16 d i=device/pc_s
+MDC id 16 d i=device/pc_s
 MC id 17 c aloha::Host t Host pid 1 n host[14]
-MS id 17 d i=device/pc_s
+MDC id 17 d i=device/pc_s
 MC id 18 c aloha::Host t Host pid 1 n host[15]
-MS id 18 d i=device/pc_s
+MDC id 18 d i=device/pc_s
 MC id 19 c aloha::Host t Host pid 1 n host[16]
-MS id 19 d i=device/pc_s
+MDC id 19 d i=device/pc_s
 MC id 20 c aloha::Host t Host pid 1 n host[17]
-MS id 20 d i=device/pc_s
+MDC id 20 d i=device/pc_s
 MC id 21 c aloha::Host t Host pid 1 n host[18]
-MS id 21 d i=device/pc_s
+MDC id 21 d i=device/pc_s
 MC id 22 c aloha::Host t Host pid 1 n host[19]
-MS id 22 d i=device/pc_s
-MB sm 1 tm 2 m initialize(0)
+MDC id 22 d i=device/pc_s
+CMB sm 1 tm 2 m initialize(0)
 CM id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception pe -1
-MS id 2 d p=548;i=device/antennatower_l
-MS id 2 d p=548,592;i=device/antennatower_l
-ME
-MB sm 1 tm 3 m initialize(0)
+MDC id 2 d p=548;i=device/antennatower_l
+MDC id 2 d p=548,592;i=device/antennatower_l
+CME
+CMB sm 1 tm 3 m initialize(0)
 CM id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n send/endTx pe -1
-MS id 3 d p=715;i=device/pc_s
-MS id 3 d p=715,844;i=device/pc_s
-BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n send/endTx pe 0
-ES t 9.631437342369
-ME
-MB sm 1 tm 4 m initialize(0)
+MDC id 3 d p=715;i=device/pc_s
+MDC id 3 d p=715,844;i=device/pc_s
+BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n send/endTx sm 3 st 0 am 3 at 9.631437342369 pe 0
+ES id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n send/endTx sm 3 st 0 am 3 at 9.631437342369 pe 0
+CME
+CMB sm 1 tm 4 m initialize(0)
 CM id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n send/endTx pe -1
-MS id 4 d p=602;i=device/pc_s
-MS id 4 d p=602,857;i=device/pc_s
-BS id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n send/endTx pe 0
-ES t 9.684012449355
-ME
-MB sm 1 tm 5 m initialize(0)
+MDC id 4 d p=602;i=device/pc_s
+MDC id 4 d p=602,857;i=device/pc_s
+BS id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n send/endTx sm 4 st 0 am 4 at 9.684012449355 pe 0
+ES id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n send/endTx sm 4 st 0 am 4 at 9.684012449355 pe 0
+CME
+CMB sm 1 tm 5 m initialize(0)
 CM id 3 tid 3 eid 3 etid 3 c omnetpp::cMessage n send/endTx pe -1
-MS id 5 d p=544;i=device/pc_s
-MS id 5 d p=544,847;i=device/pc_s
-BS id 3 tid 3 eid 3 etid 3 c omnetpp::cMessage n send/endTx pe 0
-ES t 3.71357675776
-ME
-MB sm 1 tm 6 m initialize(0)
+MDC id 5 d p=544;i=device/pc_s
+MDC id 5 d p=544,847;i=device/pc_s
+BS id 3 tid 3 eid 3 etid 3 c omnetpp::cMessage n send/endTx sm 5 st 0 am 5 at 3.71357675776 pe 0
+ES id 3 tid 3 eid 3 etid 3 c omnetpp::cMessage n send/endTx sm 5 st 0 am 5 at 3.71357675776 pe 0
+CME
+CMB sm 1 tm 6 m initialize(0)
 CM id 4 tid 4 eid 4 etid 4 c omnetpp::cMessage n send/endTx pe -1
-MS id 6 d p=423;i=device/pc_s
-MS id 6 d p=423,623;i=device/pc_s
-BS id 4 tid 4 eid 4 etid 4 c omnetpp::cMessage n send/endTx pe 0
-ES t 4.409786527139
-ME
-MB sm 1 tm 7 m initialize(0)
+MDC id 6 d p=423;i=device/pc_s
+MDC id 6 d p=423,623;i=device/pc_s
+BS id 4 tid 4 eid 4 etid 4 c omnetpp::cMessage n send/endTx sm 6 st 0 am 6 at 4.409786527139 pe 0
+ES id 4 tid 4 eid 4 etid 4 c omnetpp::cMessage n send/endTx sm 6 st 0 am 6 at 4.409786527139 pe 0
+CME
+CMB sm 1 tm 7 m initialize(0)
 CM id 5 tid 5 eid 5 etid 5 c omnetpp::cMessage n send/endTx pe -1
-MS id 7 d p=645;i=device/pc_s
-MS id 7 d p=645,384;i=device/pc_s
-BS id 5 tid 5 eid 5 etid 5 c omnetpp::cMessage n send/endTx pe 0
-ES t 9.099215843941
-ME
-MB sm 1 tm 8 m initialize(0)
+MDC id 7 d p=645;i=device/pc_s
+MDC id 7 d p=645,384;i=device/pc_s
+BS id 5 tid 5 eid 5 etid 5 c omnetpp::cMessage n send/endTx sm 7 st 0 am 7 at 9.099215843941 pe 0
+ES id 5 tid 5 eid 5 etid 5 c omnetpp::cMessage n send/endTx sm 7 st 0 am 7 at 9.099215843941 pe 0
+CME
+CMB sm 1 tm 8 m initialize(0)
 CM id 6 tid 6 eid 6 etid 6 c omnetpp::cMessage n send/endTx pe -1
-MS id 8 d p=437;i=device/pc_s
-MS id 8 d p=437,297;i=device/pc_s
-BS id 6 tid 6 eid 6 etid 6 c omnetpp::cMessage n send/endTx pe 0
-ES t 6.815633650261
-ME
-MB sm 1 tm 9 m initialize(0)
+MDC id 8 d p=437;i=device/pc_s
+MDC id 8 d p=437,297;i=device/pc_s
+BS id 6 tid 6 eid 6 etid 6 c omnetpp::cMessage n send/endTx sm 8 st 0 am 8 at 6.815633650261 pe 0
+ES id 6 tid 6 eid 6 etid 6 c omnetpp::cMessage n send/endTx sm 8 st 0 am 8 at 6.815633650261 pe 0
+CME
+CMB sm 1 tm 9 m initialize(0)
 CM id 7 tid 7 eid 7 etid 7 c omnetpp::cMessage n send/endTx pe -1
-MS id 9 d p=891;i=device/pc_s
-MS id 9 d p=891,56;i=device/pc_s
-BS id 7 tid 7 eid 7 etid 7 c omnetpp::cMessage n send/endTx pe 0
-ES t 0.755246456628
-ME
-MB sm 1 tm 10 m initialize(0)
+MDC id 9 d p=891;i=device/pc_s
+MDC id 9 d p=891,56;i=device/pc_s
+BS id 7 tid 7 eid 7 etid 7 c omnetpp::cMessage n send/endTx sm 9 st 0 am 9 at 0.755246456628 pe 0
+ES id 7 tid 7 eid 7 etid 7 c omnetpp::cMessage n send/endTx sm 9 st 0 am 9 at 0.755246456628 pe 0
+CME
+CMB sm 1 tm 10 m initialize(0)
 CM id 8 tid 8 eid 8 etid 8 c omnetpp::cMessage n send/endTx pe -1
-MS id 10 d p=963;i=device/pc_s
-MS id 10 d p=963,272;i=device/pc_s
-BS id 8 tid 8 eid 8 etid 8 c omnetpp::cMessage n send/endTx pe 0
-ES t 7.651366213342
-ME
-MB sm 1 tm 11 m initialize(0)
+MDC id 10 d p=963;i=device/pc_s
+MDC id 10 d p=963,272;i=device/pc_s
+BS id 8 tid 8 eid 8 etid 8 c omnetpp::cMessage n send/endTx sm 10 st 0 am 10 at 7.651366213342 pe 0
+ES id 8 tid 8 eid 8 etid 8 c omnetpp::cMessage n send/endTx sm 10 st 0 am 10 at 7.651366213342 pe 0
+CME
+CMB sm 1 tm 11 m initialize(0)
 CM id 9 tid 9 eid 9 etid 9 c omnetpp::cMessage n send/endTx pe -1
-MS id 11 d p=383;i=device/pc_s
-MS id 11 d p=383,477;i=device/pc_s
-BS id 9 tid 9 eid 9 etid 9 c omnetpp::cMessage n send/endTx pe 0
-ES t 6.128591246095
-ME
-MB sm 1 tm 12 m initialize(0)
+MDC id 11 d p=383;i=device/pc_s
+MDC id 11 d p=383,477;i=device/pc_s
+BS id 9 tid 9 eid 9 etid 9 c omnetpp::cMessage n send/endTx sm 11 st 0 am 11 at 6.128591246095 pe 0
+ES id 9 tid 9 eid 9 etid 9 c omnetpp::cMessage n send/endTx sm 11 st 0 am 11 at 6.128591246095 pe 0
+CME
+CMB sm 1 tm 12 m initialize(0)
 CM id 10 tid 10 eid 10 etid 10 c omnetpp::cMessage n send/endTx pe -1
-MS id 12 d p=791;i=device/pc_s
-MS id 12 d p=791,812;i=device/pc_s
-BS id 10 tid 10 eid 10 etid 10 c omnetpp::cMessage n send/endTx pe 0
-ES t 5.233927170253
-ME
-MB sm 1 tm 13 m initialize(0)
+MDC id 12 d p=791;i=device/pc_s
+MDC id 12 d p=791,812;i=device/pc_s
+BS id 10 tid 10 eid 10 etid 10 c omnetpp::cMessage n send/endTx sm 12 st 0 am 12 at 5.233927170253 pe 0
+ES id 10 tid 10 eid 10 etid 10 c omnetpp::cMessage n send/endTx sm 12 st 0 am 12 at 5.233927170253 pe 0
+CME
+CMB sm 1 tm 13 m initialize(0)
 CM id 11 tid 11 eid 11 etid 11 c omnetpp::cMessage n send/endTx pe -1
-MS id 13 d p=528;i=device/pc_s
-MS id 13 d p=528,479;i=device/pc_s
-BS id 11 tid 11 eid 11 etid 11 c omnetpp::cMessage n send/endTx pe 0
-ES t 0.928378083
-ME
-MB sm 1 tm 14 m initialize(0)
+MDC id 13 d p=528;i=device/pc_s
+MDC id 13 d p=528,479;i=device/pc_s
+BS id 11 tid 11 eid 11 etid 11 c omnetpp::cMessage n send/endTx sm 13 st 0 am 13 at 0.928378083 pe 0
+ES id 11 tid 11 eid 11 etid 11 c omnetpp::cMessage n send/endTx sm 13 st 0 am 13 at 0.928378083 pe 0
+CME
+CMB sm 1 tm 14 m initialize(0)
 CM id 12 tid 12 eid 12 etid 12 c omnetpp::cMessage n send/endTx pe -1
-MS id 14 d p=568;i=device/pc_s
-MS id 14 d p=568,392;i=device/pc_s
-BS id 12 tid 12 eid 12 etid 12 c omnetpp::cMessage n send/endTx pe 0
-ES t 4.625007950804
-ME
-MB sm 1 tm 15 m initialize(0)
+MDC id 14 d p=568;i=device/pc_s
+MDC id 14 d p=568,392;i=device/pc_s
+BS id 12 tid 12 eid 12 etid 12 c omnetpp::cMessage n send/endTx sm 14 st 0 am 14 at 4.625007950804 pe 0
+ES id 12 tid 12 eid 12 etid 12 c omnetpp::cMessage n send/endTx sm 14 st 0 am 14 at 4.625007950804 pe 0
+CME
+CMB sm 1 tm 15 m initialize(0)
 CM id 13 tid 13 eid 13 etid 13 c omnetpp::cMessage n send/endTx pe -1
-MS id 15 d p=925;i=device/pc_s
-MS id 15 d p=925,836;i=device/pc_s
-BS id 13 tid 13 eid 13 etid 13 c omnetpp::cMessage n send/endTx pe 0
-ES t 17.366522867922
-ME
-MB sm 1 tm 16 m initialize(0)
+MDC id 15 d p=925;i=device/pc_s
+MDC id 15 d p=925,836;i=device/pc_s
+BS id 13 tid 13 eid 13 etid 13 c omnetpp::cMessage n send/endTx sm 15 st 0 am 15 at 17.366522867922 pe 0
+ES id 13 tid 13 eid 13 etid 13 c omnetpp::cMessage n send/endTx sm 15 st 0 am 15 at 17.366522867922 pe 0
+CME
+CMB sm 1 tm 16 m initialize(0)
 CM id 14 tid 14 eid 14 etid 14 c omnetpp::cMessage n send/endTx pe -1
-MS id 16 d p=71;i=device/pc_s
-MS id 16 d p=71,337;i=device/pc_s
-BS id 14 tid 14 eid 14 etid 14 c omnetpp::cMessage n send/endTx pe 0
-ES t 8.528188080562
-ME
-MB sm 1 tm 17 m initialize(0)
+MDC id 16 d p=71;i=device/pc_s
+MDC id 16 d p=71,337;i=device/pc_s
+BS id 14 tid 14 eid 14 etid 14 c omnetpp::cMessage n send/endTx sm 16 st 0 am 16 at 8.528188080562 pe 0
+ES id 14 tid 14 eid 14 etid 14 c omnetpp::cMessage n send/endTx sm 16 st 0 am 16 at 8.528188080562 pe 0
+CME
+CMB sm 1 tm 17 m initialize(0)
 CM id 15 tid 15 eid 15 etid 15 c omnetpp::cMessage n send/endTx pe -1
-MS id 17 d p=87;i=device/pc_s
-MS id 17 d p=87,648;i=device/pc_s
-BS id 15 tid 15 eid 15 etid 15 c omnetpp::cMessage n send/endTx pe 0
-ES t 4.426963750535
-ME
-MB sm 1 tm 18 m initialize(0)
+MDC id 17 d p=87;i=device/pc_s
+MDC id 17 d p=87,648;i=device/pc_s
+BS id 15 tid 15 eid 15 etid 15 c omnetpp::cMessage n send/endTx sm 17 st 0 am 17 at 4.426963750535 pe 0
+ES id 15 tid 15 eid 15 etid 15 c omnetpp::cMessage n send/endTx sm 17 st 0 am 17 at 4.426963750535 pe 0
+CME
+CMB sm 1 tm 18 m initialize(0)
 CM id 16 tid 16 eid 16 etid 16 c omnetpp::cMessage n send/endTx pe -1
-MS id 18 d p=20;i=device/pc_s
-MS id 18 d p=20,368;i=device/pc_s
-BS id 16 tid 16 eid 16 etid 16 c omnetpp::cMessage n send/endTx pe 0
-ES t 0.671676963796
-ME
-MB sm 1 tm 19 m initialize(0)
+MDC id 18 d p=20;i=device/pc_s
+MDC id 18 d p=20,368;i=device/pc_s
+BS id 16 tid 16 eid 16 etid 16 c omnetpp::cMessage n send/endTx sm 18 st 0 am 18 at 0.671676963796 pe 0
+ES id 16 tid 16 eid 16 etid 16 c omnetpp::cMessage n send/endTx sm 18 st 0 am 18 at 0.671676963796 pe 0
+CME
+CMB sm 1 tm 19 m initialize(0)
 CM id 17 tid 17 eid 17 etid 17 c omnetpp::cMessage n send/endTx pe -1
-MS id 19 d p=832;i=device/pc_s
-MS id 19 d p=832,957;i=device/pc_s
-BS id 17 tid 17 eid 17 etid 17 c omnetpp::cMessage n send/endTx pe 0
-ES t 3.213394321367
-ME
-MB sm 1 tm 20 m initialize(0)
+MDC id 19 d p=832;i=device/pc_s
+MDC id 19 d p=832,957;i=device/pc_s
+BS id 17 tid 17 eid 17 etid 17 c omnetpp::cMessage n send/endTx sm 19 st 0 am 19 at 3.213394321367 pe 0
+ES id 17 tid 17 eid 17 etid 17 c omnetpp::cMessage n send/endTx sm 19 st 0 am 19 at 3.213394321367 pe 0
+CME
+CMB sm 1 tm 20 m initialize(0)
 CM id 18 tid 18 eid 18 etid 18 c omnetpp::cMessage n send/endTx pe -1
-MS id 20 d p=778;i=device/pc_s
-MS id 20 d p=778,140;i=device/pc_s
-BS id 18 tid 18 eid 18 etid 18 c omnetpp::cMessage n send/endTx pe 0
-ES t 3.850168212187
-ME
-MB sm 1 tm 21 m initialize(0)
+MDC id 20 d p=778;i=device/pc_s
+MDC id 20 d p=778,140;i=device/pc_s
+BS id 18 tid 18 eid 18 etid 18 c omnetpp::cMessage n send/endTx sm 20 st 0 am 20 at 3.850168212187 pe 0
+ES id 18 tid 18 eid 18 etid 18 c omnetpp::cMessage n send/endTx sm 20 st 0 am 20 at 3.850168212187 pe 0
+CME
+CMB sm 1 tm 21 m initialize(0)
 CM id 19 tid 19 eid 19 etid 19 c omnetpp::cMessage n send/endTx pe -1
-MS id 21 d p=870;i=device/pc_s
-MS id 21 d p=870,870;i=device/pc_s
-BS id 19 tid 19 eid 19 etid 19 c omnetpp::cMessage n send/endTx pe 0
-ES t 1.843682112915
-ME
-MB sm 1 tm 22 m initialize(0)
+MDC id 21 d p=870;i=device/pc_s
+MDC id 21 d p=870,870;i=device/pc_s
+BS id 19 tid 19 eid 19 etid 19 c omnetpp::cMessage n send/endTx sm 21 st 0 am 21 at 1.843682112915 pe 0
+ES id 19 tid 19 eid 19 etid 19 c omnetpp::cMessage n send/endTx sm 21 st 0 am 21 at 1.843682112915 pe 0
+CME
+CMB sm 1 tm 22 m initialize(0)
 CM id 20 tid 20 eid 20 etid 20 c omnetpp::cMessage n send/endTx pe -1
-MS id 22 d p=978;i=device/pc_s
-MS id 22 d p=978,473;i=device/pc_s
-BS id 20 tid 20 eid 20 etid 20 c omnetpp::cMessage n send/endTx pe 0
-ES t 1.237219692183
-ME
+MDC id 22 d p=978;i=device/pc_s
+MDC id 22 d p=978,473;i=device/pc_s
+BS id 20 tid 20 eid 20 etid 20 c omnetpp::cMessage n send/endTx sm 22 st 0 am 22 at 1.237219692183 pe 0
+ES id 20 tid 20 eid 20 etid 20 c omnetpp::cMessage n send/endTx sm 22 st 0 am 22 at 1.237219692183 pe 0
+CME
 
 E # 1 t 0.671676963796 m 18 ce 0 msg 16
 CM id 21 tid 21 eid 21 etid 21 c omnetpp::cMessage n pk-18-#0 pe -1
-BS id 21 tid 21 eid 21 etid 21 c omnetpp::cPacket n pk-18-#0 l 952 pe 1
-SD sm 18 dm 2 dg 0 pd 0.000001915771 td 0.099166666667
-ES t 0.671678879567 is 1
-BS id 16 tid 16 eid 16 etid 16 c omnetpp::cMessage n send/endTx pe 1
-ES t 0.770843630463
+BS id 21 tid 21 eid 21 etid 21 c omnetpp::cPacket n pk-18-#0 l 952 m 18 pe 1
+SD sm 18 dm 2 dg 0 pd 0.000001915771 td 0.099166666667 rd 0.099166666667
+ES id 21 tid 21 eid 21 etid 21 c omnetpp::cPacket n pk-18-#0 l 952 sm 18 st 0.671676963796 am 2 ag 0 at 0.671678879567 pe 1 i 1
+BS id 16 tid 16 eid 16 etid 16 c omnetpp::cMessage n send/endTx sm 18 st 0.671676963796 am 18 at 0.770843630463 pe 1
+ES id 16 tid 16 eid 16 etid 16 c omnetpp::cMessage n send/endTx sm 18 st 0.671676963796 am 18 at 0.770843630463 pe 1
 
 E # 2 t 0.671678879567 m 2 ce 1 msg 21
-BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception pe 0
-ES t 0.770845546234
-DM id 21 tid 21 eid 21 etid 21 c omnetpp::cMessage n pk-18-#0 pe 2
+BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception sm 2 st 0.671678879567 am 2 at 0.770845546234 pe 2
+ES id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception sm 2 st 0.671678879567 am 2 at 0.770845546234 pe 2
+DM id 21 tid 21 eid 21 etid 21 c omnetpp::cMessage n pk-18-#0 m 2 pe 2
 
 E # 3 t 0.755246456628 m 9 ce 0 msg 7
 CM id 22 tid 22 eid 22 etid 22 c omnetpp::cMessage n pk-9-#0 pe -1
-BS id 22 tid 22 eid 22 etid 22 c omnetpp::cPacket n pk-9-#0 l 952 pe 3
-SD sm 9 dm 2 dg 0 pd 0.000002122942 td 0.099166666667
-ES t 0.75524857957 is 1
-BS id 7 tid 7 eid 7 etid 7 c omnetpp::cMessage n send/endTx pe 3
-ES t 0.854413123295
+BS id 22 tid 22 eid 22 etid 22 c omnetpp::cPacket n pk-9-#0 l 952 m 9 pe 3
+SD sm 9 dm 2 dg 0 pd 0.000002122942 td 0.099166666667 rd 0.099166666667
+ES id 22 tid 22 eid 22 etid 22 c omnetpp::cPacket n pk-9-#0 l 952 sm 9 st 0.755246456628 am 2 ag 0 at 0.75524857957 pe 3 i 1
+BS id 7 tid 7 eid 7 etid 7 c omnetpp::cMessage n send/endTx sm 9 st 0.755246456628 am 9 at 0.854413123295 pe 3
+ES id 7 tid 7 eid 7 etid 7 c omnetpp::cMessage n send/endTx sm 9 st 0.755246456628 am 9 at 0.854413123295 pe 3
 
 E # 4 t 0.75524857957 m 2 ce 3 msg 22
-CE id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception pe 2
-BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception pe 4
-ES t 0.854415246237
-DM id 22 tid 22 eid 22 etid 22 c omnetpp::cMessage n pk-9-#0 pe 4
+CE id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception m 2 pe 2
+BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception sm 2 st 0.75524857957 am 2 at 0.854415246237 pe 4
+ES id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception sm 2 st 0.75524857957 am 2 at 0.854415246237 pe 4
+DM id 22 tid 22 eid 22 etid 22 c omnetpp::cMessage n pk-9-#0 m 2 pe 4
 
 E # 5 t 0.770843630463 m 18 ce 1 msg 16
-BS id 16 tid 16 eid 16 etid 16 c omnetpp::cMessage n send/endTx pe 5
-ES t 9.700372584973
+BS id 16 tid 16 eid 16 etid 16 c omnetpp::cMessage n send/endTx sm 18 st 0.770843630463 am 18 at 9.700372584973 pe 5
+ES id 16 tid 16 eid 16 etid 16 c omnetpp::cMessage n send/endTx sm 18 st 0.770843630463 am 18 at 9.700372584973 pe 5
 
 E # 6 t 0.854413123295 m 9 ce 3 msg 7
-BS id 7 tid 7 eid 7 etid 7 c omnetpp::cMessage n send/endTx pe 6
-ES t 8.866154231039
+BS id 7 tid 7 eid 7 etid 7 c omnetpp::cMessage n send/endTx sm 9 st 0.854413123295 am 9 at 8.866154231039 pe 6
+ES id 7 tid 7 eid 7 etid 7 c omnetpp::cMessage n send/endTx sm 9 st 0.854413123295 am 9 at 8.866154231039 pe 6
 
 E # 7 t 0.854415246237 m 2 ce 4 msg 0
 
 E # 8 t 0.928378083 m 13 ce 0 msg 11
 CM id 23 tid 23 eid 23 etid 23 c omnetpp::cMessage n pk-13-#0 pe -1
-BS id 23 tid 23 eid 23 etid 23 c omnetpp::cPacket n pk-13-#0 l 952 pe 8
-SD sm 13 dm 2 dg 0 pd 0.000000382303 td 0.099166666667
-ES t 0.928378465303 is 1
-BS id 11 tid 11 eid 11 etid 11 c omnetpp::cMessage n send/endTx pe 8
-ES t 1.027544749667
+BS id 23 tid 23 eid 23 etid 23 c omnetpp::cPacket n pk-13-#0 l 952 m 13 pe 8
+SD sm 13 dm 2 dg 0 pd 0.000000382303 td 0.099166666667 rd 0.099166666667
+ES id 23 tid 23 eid 23 etid 23 c omnetpp::cPacket n pk-13-#0 l 952 sm 13 st 0.928378083 am 2 ag 0 at 0.928378465303 pe 8 i 1
+BS id 11 tid 11 eid 11 etid 11 c omnetpp::cMessage n send/endTx sm 13 st 0.928378083 am 13 at 1.027544749667 pe 8
+ES id 11 tid 11 eid 11 etid 11 c omnetpp::cMessage n send/endTx sm 13 st 0.928378083 am 13 at 1.027544749667 pe 8
 
 E # 9 t 0.928378465303 m 2 ce 8 msg 23
-BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception pe 7
-ES t 1.02754513197
-DM id 23 tid 23 eid 23 etid 23 c omnetpp::cMessage n pk-13-#0 pe 9
+BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception sm 2 st 0.928378465303 am 2 at 1.02754513197 pe 9
+ES id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception sm 2 st 0.928378465303 am 2 at 1.02754513197 pe 9
+DM id 23 tid 23 eid 23 etid 23 c omnetpp::cMessage n pk-13-#0 m 2 pe 9
 
 E # 10 t 1.027544749667 m 13 ce 8 msg 11
-BS id 11 tid 11 eid 11 etid 11 c omnetpp::cMessage n send/endTx pe 10
-ES t 4.682039288765
+BS id 11 tid 11 eid 11 etid 11 c omnetpp::cMessage n send/endTx sm 13 st 1.027544749667 am 13 at 4.682039288765 pe 10
+ES id 11 tid 11 eid 11 etid 11 c omnetpp::cMessage n send/endTx sm 13 st 1.027544749667 am 13 at 4.682039288765 pe 10
 
 E # 11 t 1.02754513197 m 2 ce 9 msg 0
 
 E # 12 t 1.237219692183 m 22 ce 0 msg 20
 CM id 24 tid 24 eid 24 etid 24 c omnetpp::cMessage n pk-22-#0 pe -1
-BS id 24 tid 24 eid 24 etid 24 c omnetpp::cPacket n pk-22-#0 l 952 pe 12
-SD sm 22 dm 2 dg 0 pd 0.000001487821 td 0.099166666667
-ES t 1.237221180004 is 1
-BS id 20 tid 20 eid 20 etid 20 c omnetpp::cMessage n send/endTx pe 12
-ES t 1.33638635885
+BS id 24 tid 24 eid 24 etid 24 c omnetpp::cPacket n pk-22-#0 l 952 m 22 pe 12
+SD sm 22 dm 2 dg 0 pd 0.000001487821 td 0.099166666667 rd 0.099166666667
+ES id 24 tid 24 eid 24 etid 24 c omnetpp::cPacket n pk-22-#0 l 952 sm 22 st 1.237219692183 am 2 ag 0 at 1.237221180004 pe 12 i 1
+BS id 20 tid 20 eid 20 etid 20 c omnetpp::cMessage n send/endTx sm 22 st 1.237219692183 am 22 at 1.33638635885 pe 12
+ES id 20 tid 20 eid 20 etid 20 c omnetpp::cMessage n send/endTx sm 22 st 1.237219692183 am 22 at 1.33638635885 pe 12
 
 E # 13 t 1.237221180004 m 2 ce 12 msg 24
-BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception pe 11
-ES t 1.336387846671
-DM id 24 tid 24 eid 24 etid 24 c omnetpp::cMessage n pk-22-#0 pe 13
+BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception sm 2 st 1.237221180004 am 2 at 1.336387846671 pe 13
+ES id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception sm 2 st 1.237221180004 am 2 at 1.336387846671 pe 13
+DM id 24 tid 24 eid 24 etid 24 c omnetpp::cMessage n pk-22-#0 m 2 pe 13
 
 E # 14 t 1.33638635885 m 22 ce 12 msg 20
-BS id 20 tid 20 eid 20 etid 20 c omnetpp::cMessage n send/endTx pe 14
-ES t 2.800677303269
+BS id 20 tid 20 eid 20 etid 20 c omnetpp::cMessage n send/endTx sm 22 st 1.33638635885 am 22 at 2.800677303269 pe 14
+ES id 20 tid 20 eid 20 etid 20 c omnetpp::cMessage n send/endTx sm 22 st 1.33638635885 am 22 at 2.800677303269 pe 14
 
 E # 15 t 1.336387846671 m 2 ce 13 msg 0
 
 E # 16 t 1.843682112915 m 21 ce 0 msg 19
 CM id 25 tid 25 eid 25 etid 25 c omnetpp::cMessage n pk-21-#0 pe -1
-BS id 25 tid 25 eid 25 etid 25 c omnetpp::cPacket n pk-21-#0 l 952 pe 16
-SD sm 21 dm 2 dg 0 pd 0.000001415319 td 0.099166666667
-ES t 1.843683528234 is 1
-BS id 19 tid 19 eid 19 etid 19 c omnetpp::cMessage n send/endTx pe 16
-ES t 1.942848779582
+BS id 25 tid 25 eid 25 etid 25 c omnetpp::cPacket n pk-21-#0 l 952 m 21 pe 16
+SD sm 21 dm 2 dg 0 pd 0.000001415319 td 0.099166666667 rd 0.099166666667
+ES id 25 tid 25 eid 25 etid 25 c omnetpp::cPacket n pk-21-#0 l 952 sm 21 st 1.843682112915 am 2 ag 0 at 1.843683528234 pe 16 i 1
+BS id 19 tid 19 eid 19 etid 19 c omnetpp::cMessage n send/endTx sm 21 st 1.843682112915 am 21 at 1.942848779582 pe 16
+ES id 19 tid 19 eid 19 etid 19 c omnetpp::cMessage n send/endTx sm 21 st 1.843682112915 am 21 at 1.942848779582 pe 16
 
 E # 17 t 1.843683528234 m 2 ce 16 msg 25
-BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception pe 15
-ES t 1.942850194901
-DM id 25 tid 25 eid 25 etid 25 c omnetpp::cMessage n pk-21-#0 pe 17
+BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception sm 2 st 1.843683528234 am 2 at 1.942850194901 pe 17
+ES id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception sm 2 st 1.843683528234 am 2 at 1.942850194901 pe 17
+DM id 25 tid 25 eid 25 etid 25 c omnetpp::cMessage n pk-21-#0 m 2 pe 17
 
 E # 18 t 1.942848779582 m 21 ce 16 msg 19
-BS id 19 tid 19 eid 19 etid 19 c omnetpp::cMessage n send/endTx pe 18
-ES t 6.984857013255
+BS id 19 tid 19 eid 19 etid 19 c omnetpp::cMessage n send/endTx sm 21 st 1.942848779582 am 21 at 6.984857013255 pe 18
+ES id 19 tid 19 eid 19 etid 19 c omnetpp::cMessage n send/endTx sm 21 st 1.942848779582 am 21 at 6.984857013255 pe 18
 
 E # 19 t 1.942850194901 m 2 ce 17 msg 0
 
 E # 20 t 2.800677303269 m 22 ce 14 msg 20
 CM id 26 tid 26 eid 26 etid 26 c omnetpp::cMessage n pk-22-#1 pe -1
-BS id 26 tid 26 eid 26 etid 26 c omnetpp::cPacket n pk-22-#1 l 952 pe 20
-SD sm 22 dm 2 dg 0 pd 0.000001487821 td 0.099166666667
-ES t 2.80067879109 is 1
-BS id 20 tid 20 eid 20 etid 20 c omnetpp::cMessage n send/endTx pe 20
-ES t 2.899843969936
+BS id 26 tid 26 eid 26 etid 26 c omnetpp::cPacket n pk-22-#1 l 952 m 22 pe 20
+SD sm 22 dm 2 dg 0 pd 0.000001487821 td 0.099166666667 rd 0.099166666667
+ES id 26 tid 26 eid 26 etid 26 c omnetpp::cPacket n pk-22-#1 l 952 sm 22 st 2.800677303269 am 2 ag 0 at 2.80067879109 pe 20 i 1
+BS id 20 tid 20 eid 20 etid 20 c omnetpp::cMessage n send/endTx sm 22 st 2.800677303269 am 22 at 2.899843969936 pe 20
+ES id 20 tid 20 eid 20 etid 20 c omnetpp::cMessage n send/endTx sm 22 st 2.800677303269 am 22 at 2.899843969936 pe 20
 
 E # 21 t 2.80067879109 m 2 ce 20 msg 26
-BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception pe 19
-ES t 2.899845457757
-DM id 26 tid 26 eid 26 etid 26 c omnetpp::cMessage n pk-22-#1 pe 21
+BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception sm 2 st 2.80067879109 am 2 at 2.899845457757 pe 21
+ES id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception sm 2 st 2.80067879109 am 2 at 2.899845457757 pe 21
+DM id 26 tid 26 eid 26 etid 26 c omnetpp::cMessage n pk-22-#1 m 2 pe 21
 
 E # 22 t 2.899843969936 m 22 ce 20 msg 20
-BS id 20 tid 20 eid 20 etid 20 c omnetpp::cMessage n send/endTx pe 22
-ES t 3.771512133689
+BS id 20 tid 20 eid 20 etid 20 c omnetpp::cMessage n send/endTx sm 22 st 2.899843969936 am 22 at 3.771512133689 pe 22
+ES id 20 tid 20 eid 20 etid 20 c omnetpp::cMessage n send/endTx sm 22 st 2.899843969936 am 22 at 3.771512133689 pe 22
 
 E # 23 t 2.899845457757 m 2 ce 21 msg 0
 
 E # 24 t 3.213394321367 m 19 ce 0 msg 17
 CM id 27 tid 27 eid 27 etid 27 c omnetpp::cMessage n pk-19-#0 pe -1
-BS id 27 tid 27 eid 27 etid 27 c omnetpp::cPacket n pk-19-#0 l 952 pe 24
-SD sm 19 dm 2 dg 0 pd 0.000001540431 td 0.099166666667
-ES t 3.213395861798 is 1
-BS id 17 tid 17 eid 17 etid 17 c omnetpp::cMessage n send/endTx pe 24
-ES t 3.312560988034
+BS id 27 tid 27 eid 27 etid 27 c omnetpp::cPacket n pk-19-#0 l 952 m 19 pe 24
+SD sm 19 dm 2 dg 0 pd 0.000001540431 td 0.099166666667 rd 0.099166666667
+ES id 27 tid 27 eid 27 etid 27 c omnetpp::cPacket n pk-19-#0 l 952 sm 19 st 3.213394321367 am 2 ag 0 at 3.213395861798 pe 24 i 1
+BS id 17 tid 17 eid 17 etid 17 c omnetpp::cMessage n send/endTx sm 19 st 3.213394321367 am 19 at 3.312560988034 pe 24
+ES id 17 tid 17 eid 17 etid 17 c omnetpp::cMessage n send/endTx sm 19 st 3.213394321367 am 19 at 3.312560988034 pe 24
 
 E # 25 t 3.213395861798 m 2 ce 24 msg 27
-BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception pe 23
-ES t 3.312562528465
-DM id 27 tid 27 eid 27 etid 27 c omnetpp::cMessage n pk-19-#0 pe 25
+BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception sm 2 st 3.213395861798 am 2 at 3.312562528465 pe 25
+ES id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception sm 2 st 3.213395861798 am 2 at 3.312562528465 pe 25
+DM id 27 tid 27 eid 27 etid 27 c omnetpp::cMessage n pk-19-#0 m 2 pe 25
 
 E # 26 t 3.312560988034 m 19 ce 24 msg 17
-BS id 17 tid 17 eid 17 etid 17 c omnetpp::cMessage n send/endTx pe 26
-ES t 3.426372403241
+BS id 17 tid 17 eid 17 etid 17 c omnetpp::cMessage n send/endTx sm 19 st 3.312560988034 am 19 at 3.426372403241 pe 26
+ES id 17 tid 17 eid 17 etid 17 c omnetpp::cMessage n send/endTx sm 19 st 3.312560988034 am 19 at 3.426372403241 pe 26
 
 E # 27 t 3.312562528465 m 2 ce 25 msg 0
 
 E # 28 t 3.426372403241 m 19 ce 26 msg 17
 CM id 28 tid 28 eid 28 etid 28 c omnetpp::cMessage n pk-19-#1 pe -1
-BS id 28 tid 28 eid 28 etid 28 c omnetpp::cPacket n pk-19-#1 l 952 pe 28
-SD sm 19 dm 2 dg 0 pd 0.000001540431 td 0.099166666667
-ES t 3.426373943672 is 1
-BS id 17 tid 17 eid 17 etid 17 c omnetpp::cMessage n send/endTx pe 28
-ES t 3.525539069908
+BS id 28 tid 28 eid 28 etid 28 c omnetpp::cPacket n pk-19-#1 l 952 m 19 pe 28
+SD sm 19 dm 2 dg 0 pd 0.000001540431 td 0.099166666667 rd 0.099166666667
+ES id 28 tid 28 eid 28 etid 28 c omnetpp::cPacket n pk-19-#1 l 952 sm 19 st 3.426372403241 am 2 ag 0 at 3.426373943672 pe 28 i 1
+BS id 17 tid 17 eid 17 etid 17 c omnetpp::cMessage n send/endTx sm 19 st 3.426372403241 am 19 at 3.525539069908 pe 28
+ES id 17 tid 17 eid 17 etid 17 c omnetpp::cMessage n send/endTx sm 19 st 3.426372403241 am 19 at 3.525539069908 pe 28
 
 E # 29 t 3.426373943672 m 2 ce 28 msg 28
-BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception pe 27
-ES t 3.525540610339
-DM id 28 tid 28 eid 28 etid 28 c omnetpp::cMessage n pk-19-#1 pe 29
+BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception sm 2 st 3.426373943672 am 2 at 3.525540610339 pe 29
+ES id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception sm 2 st 3.426373943672 am 2 at 3.525540610339 pe 29
+DM id 28 tid 28 eid 28 etid 28 c omnetpp::cMessage n pk-19-#1 m 2 pe 29
 
 E # 30 t 3.525539069908 m 19 ce 28 msg 17
-BS id 17 tid 17 eid 17 etid 17 c omnetpp::cMessage n send/endTx pe 30
-ES t 5.876163933968
+BS id 17 tid 17 eid 17 etid 17 c omnetpp::cMessage n send/endTx sm 19 st 3.525539069908 am 19 at 5.876163933968 pe 30
+ES id 17 tid 17 eid 17 etid 17 c omnetpp::cMessage n send/endTx sm 19 st 3.525539069908 am 19 at 5.876163933968 pe 30
 
 E # 31 t 3.525540610339 m 2 ce 29 msg 0
 
 E # 32 t 3.71357675776 m 5 ce 0 msg 3
 CM id 29 tid 29 eid 29 etid 29 c omnetpp::cMessage n pk-5-#0 pe -1
-BS id 29 tid 29 eid 29 etid 29 c omnetpp::cPacket n pk-5-#0 l 952 pe 32
-SD sm 5 dm 2 dg 0 pd 0.000000848712 td 0.099166666667
-ES t 3.713577606472 is 1
-BS id 3 tid 3 eid 3 etid 3 c omnetpp::cMessage n send/endTx pe 32
-ES t 3.812743424427
+BS id 29 tid 29 eid 29 etid 29 c omnetpp::cPacket n pk-5-#0 l 952 m 5 pe 32
+SD sm 5 dm 2 dg 0 pd 0.000000848712 td 0.099166666667 rd 0.099166666667
+ES id 29 tid 29 eid 29 etid 29 c omnetpp::cPacket n pk-5-#0 l 952 sm 5 st 3.71357675776 am 2 ag 0 at 3.713577606472 pe 32 i 1
+BS id 3 tid 3 eid 3 etid 3 c omnetpp::cMessage n send/endTx sm 5 st 3.71357675776 am 5 at 3.812743424427 pe 32
+ES id 3 tid 3 eid 3 etid 3 c omnetpp::cMessage n send/endTx sm 5 st 3.71357675776 am 5 at 3.812743424427 pe 32
 
 E # 33 t 3.713577606472 m 2 ce 32 msg 29
-BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception pe 31
-ES t 3.812744273139
-DM id 29 tid 29 eid 29 etid 29 c omnetpp::cMessage n pk-5-#0 pe 33
+BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception sm 2 st 3.713577606472 am 2 at 3.812744273139 pe 33
+ES id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception sm 2 st 3.713577606472 am 2 at 3.812744273139 pe 33
+DM id 29 tid 29 eid 29 etid 29 c omnetpp::cMessage n pk-5-#0 m 2 pe 33
 
 E # 34 t 3.771512133689 m 22 ce 22 msg 20
 CM id 30 tid 30 eid 30 etid 30 c omnetpp::cMessage n pk-22-#2 pe -1
-BS id 30 tid 30 eid 30 etid 30 c omnetpp::cPacket n pk-22-#2 l 952 pe 34
-SD sm 22 dm 2 dg 0 pd 0.000001487821 td 0.099166666667
-ES t 3.77151362151 is 1
-BS id 20 tid 20 eid 20 etid 20 c omnetpp::cMessage n send/endTx pe 34
-ES t 3.870678800356
+BS id 30 tid 30 eid 30 etid 30 c omnetpp::cPacket n pk-22-#2 l 952 m 22 pe 34
+SD sm 22 dm 2 dg 0 pd 0.000001487821 td 0.099166666667 rd 0.099166666667
+ES id 30 tid 30 eid 30 etid 30 c omnetpp::cPacket n pk-22-#2 l 952 sm 22 st 3.771512133689 am 2 ag 0 at 3.77151362151 pe 34 i 1
+BS id 20 tid 20 eid 20 etid 20 c omnetpp::cMessage n send/endTx sm 22 st 3.771512133689 am 22 at 3.870678800356 pe 34
+ES id 20 tid 20 eid 20 etid 20 c omnetpp::cMessage n send/endTx sm 22 st 3.771512133689 am 22 at 3.870678800356 pe 34
 
 E # 35 t 3.77151362151 m 2 ce 34 msg 30
-CE id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception pe 33
-BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception pe 35
-ES t 3.870680288177
-DM id 30 tid 30 eid 30 etid 30 c omnetpp::cMessage n pk-22-#2 pe 35
+CE id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception m 2 pe 33
+BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception sm 2 st 3.77151362151 am 2 at 3.870680288177 pe 35
+ES id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception sm 2 st 3.77151362151 am 2 at 3.870680288177 pe 35
+DM id 30 tid 30 eid 30 etid 30 c omnetpp::cMessage n pk-22-#2 m 2 pe 35
 
 E # 36 t 3.812743424427 m 5 ce 32 msg 3
-BS id 3 tid 3 eid 3 etid 3 c omnetpp::cMessage n send/endTx pe 36
-ES t 9.581029058822
+BS id 3 tid 3 eid 3 etid 3 c omnetpp::cMessage n send/endTx sm 5 st 3.812743424427 am 5 at 9.581029058822 pe 36
+ES id 3 tid 3 eid 3 etid 3 c omnetpp::cMessage n send/endTx sm 5 st 3.812743424427 am 5 at 9.581029058822 pe 36
 
 E # 37 t 3.850168212187 m 20 ce 0 msg 18
 CM id 31 tid 31 eid 31 etid 31 c omnetpp::cMessage n pk-20-#0 pe -1
-BS id 31 tid 31 eid 31 etid 31 c omnetpp::cPacket n pk-20-#0 l 952 pe 37
-SD sm 20 dm 2 dg 0 pd 0.000001692157 td 0.099166666667
-ES t 3.850169904344 is 1
-BS id 18 tid 18 eid 18 etid 18 c omnetpp::cMessage n send/endTx pe 37
-ES t 3.949334878854
+BS id 31 tid 31 eid 31 etid 31 c omnetpp::cPacket n pk-20-#0 l 952 m 20 pe 37
+SD sm 20 dm 2 dg 0 pd 0.000001692157 td 0.099166666667 rd 0.099166666667
+ES id 31 tid 31 eid 31 etid 31 c omnetpp::cPacket n pk-20-#0 l 952 sm 20 st 3.850168212187 am 2 ag 0 at 3.850169904344 pe 37 i 1
+BS id 18 tid 18 eid 18 etid 18 c omnetpp::cMessage n send/endTx sm 20 st 3.850168212187 am 20 at 3.949334878854 pe 37
+ES id 18 tid 18 eid 18 etid 18 c omnetpp::cMessage n send/endTx sm 20 st 3.850168212187 am 20 at 3.949334878854 pe 37
 
 E # 38 t 3.850169904344 m 2 ce 37 msg 31
-CE id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception pe 35
-BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception pe 38
-ES t 3.949336571011
-DM id 31 tid 31 eid 31 etid 31 c omnetpp::cMessage n pk-20-#0 pe 38
+CE id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception m 2 pe 35
+BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception sm 2 st 3.850169904344 am 2 at 3.949336571011 pe 38
+ES id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception sm 2 st 3.850169904344 am 2 at 3.949336571011 pe 38
+DM id 31 tid 31 eid 31 etid 31 c omnetpp::cMessage n pk-20-#0 m 2 pe 38
 
 E # 39 t 3.870678800356 m 22 ce 34 msg 20
-BS id 20 tid 20 eid 20 etid 20 c omnetpp::cMessage n send/endTx pe 39
-ES t 4.843497737032
+BS id 20 tid 20 eid 20 etid 20 c omnetpp::cMessage n send/endTx sm 22 st 3.870678800356 am 22 at 4.843497737032 pe 39
+ES id 20 tid 20 eid 20 etid 20 c omnetpp::cMessage n send/endTx sm 22 st 3.870678800356 am 22 at 4.843497737032 pe 39
 
 E # 40 t 3.949334878854 m 20 ce 37 msg 18
-BS id 18 tid 18 eid 18 etid 18 c omnetpp::cMessage n send/endTx pe 40
-ES t 9.631314941904
+BS id 18 tid 18 eid 18 etid 18 c omnetpp::cMessage n send/endTx sm 20 st 3.949334878854 am 20 at 9.631314941904 pe 40
+ES id 18 tid 18 eid 18 etid 18 c omnetpp::cMessage n send/endTx sm 20 st 3.949334878854 am 20 at 9.631314941904 pe 40
 
 E # 41 t 3.949336571011 m 2 ce 38 msg 0
+
+
 SE e 0 c 38 m "Simulation time limit reached -- at t=4s, event #42"
-- [INFO]	duration: 4

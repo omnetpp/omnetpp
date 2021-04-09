@@ -1,234 +1,236 @@
+SB ov 1536 ev 2 rid Tictoc6-0-20210409-17:05:55-244616
+
 E # 0 t 0 m 1 ce -1 msg -1
-SB v 1281 rid Tictoc6-0-20170320-11:06:01-10889 b 1000
-KF p -1 c "" s ""
 MC id 1 c omnetpp::cModule t Tictoc6 n Tictoc6 cm 1
-MS id 1 d ""
+MDC id 1 d ""
 MC id 2 c Txc6 t Txc6 pid 1 n tic
 GC m 2 g 0 n in o 0
 GC m 2 g 3 n out o 1
-MS id 2 d i=block/routing,cyan
+MDC id 2 d i=block/routing,cyan
 MC id 3 c Txc6 t Txc6 pid 1 n toc
 GC m 3 g 0 n in o 0
 GC m 3 g 3 n out o 1
-MS id 3 d i=block/routing,gold
+MDC id 3 d i=block/routing,gold
 CC sm 2 sg 3 dm 3 dg 0
-CS sm 2 sg 3 d ""
+CDC sm 2 sg 3 d ""
 CC sm 3 sg 3 dm 2 dg 0
-CS sm 3 sg 3 d ""
-MB sm 1 tm 2 m initialize(0)
+CDC sm 3 sg 3 d ""
+CMB sm 1 tm 2 m initialize(0)
 CM id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n event pe -1
 CM id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg pe -1
-BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n event pe 0
-ES t 5
-ME
-MB sm 1 tm 3 m initialize(0)
+BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n event sm 2 st 0 am 2 at 5 pe 0
+ES id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n event sm 2 st 0 am 2 at 5 pe 0
+CME
+CMB sm 1 tm 3 m initialize(0)
 CM id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n event pe -1
-ME
+CME
 
 E # 1 t 5 m 2 ce 0 msg 0
-BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg pe 0
+BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg m 2 pe 0
 SH sm 2 sg 3 pd 0.1
-ES t 5.1
+ES id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg sm 2 sg 3 st 5 am 3 ag 0 at 5.1 pe 1
 
 E # 2 t 5.1 m 3 ce 1 msg 1
-BS id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n event pe 0
-ES t 6.1
+BS id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n event sm 3 st 5.1 am 3 at 6.1 pe 2
+ES id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n event sm 3 st 5.1 am 3 at 6.1 pe 2
 
 E # 3 t 6.1 m 3 ce 2 msg 2
-BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg pe 2
+BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg m 3 pe 2
 SH sm 3 sg 3 pd 0.1
-ES t 6.2
+ES id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg sm 3 sg 3 st 6.1 am 2 ag 0 at 6.2 pe 3
 
 E # 4 t 6.2 m 2 ce 3 msg 1
-BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n event pe 1
-ES t 7.2
+BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n event sm 2 st 6.2 am 2 at 7.2 pe 4
+ES id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n event sm 2 st 6.2 am 2 at 7.2 pe 4
 
 E # 5 t 7.2 m 2 ce 4 msg 0
-BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg pe 4
+BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg m 2 pe 4
 SH sm 2 sg 3 pd 0.1
-ES t 7.3
+ES id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg sm 2 sg 3 st 7.2 am 3 ag 0 at 7.3 pe 5
 
 E # 6 t 7.3 m 3 ce 5 msg 1
-BS id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n event pe 3
-ES t 8.3
+BS id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n event sm 3 st 7.3 am 3 at 8.3 pe 6
+ES id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n event sm 3 st 7.3 am 3 at 8.3 pe 6
 
 E # 7 t 8.3 m 3 ce 6 msg 2
-BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg pe 6
+BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg m 3 pe 6
 SH sm 3 sg 3 pd 0.1
-ES t 8.4
+ES id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg sm 3 sg 3 st 8.3 am 2 ag 0 at 8.4 pe 7
 
 E # 8 t 8.4 m 2 ce 7 msg 1
-BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n event pe 5
-ES t 9.4
+BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n event sm 2 st 8.4 am 2 at 9.4 pe 8
+ES id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n event sm 2 st 8.4 am 2 at 9.4 pe 8
 
 E # 9 t 9.4 m 2 ce 8 msg 0
-BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg pe 8
+BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg m 2 pe 8
 SH sm 2 sg 3 pd 0.1
-ES t 9.5
+ES id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg sm 2 sg 3 st 9.4 am 3 ag 0 at 9.5 pe 9
 
 E # 10 t 9.5 m 3 ce 9 msg 1
-BS id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n event pe 7
-ES t 10.5
+BS id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n event sm 3 st 9.5 am 3 at 10.5 pe 10
+ES id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n event sm 3 st 9.5 am 3 at 10.5 pe 10
 
 E # 11 t 10.5 m 3 ce 10 msg 2
-BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg pe 10
+BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg m 3 pe 10
 SH sm 3 sg 3 pd 0.1
-ES t 10.6
+ES id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg sm 3 sg 3 st 10.5 am 2 ag 0 at 10.6 pe 11
 
 E # 12 t 10.6 m 2 ce 11 msg 1
-BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n event pe 9
-ES t 11.6
+BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n event sm 2 st 10.6 am 2 at 11.6 pe 12
+ES id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n event sm 2 st 10.6 am 2 at 11.6 pe 12
 
 E # 13 t 11.6 m 2 ce 12 msg 0
-BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg pe 12
+BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg m 2 pe 12
 SH sm 2 sg 3 pd 0.1
-ES t 11.7
+ES id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg sm 2 sg 3 st 11.6 am 3 ag 0 at 11.7 pe 13
 
 E # 14 t 11.7 m 3 ce 13 msg 1
-BS id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n event pe 11
-ES t 12.7
+BS id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n event sm 3 st 11.7 am 3 at 12.7 pe 14
+ES id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n event sm 3 st 11.7 am 3 at 12.7 pe 14
 
 E # 15 t 12.7 m 3 ce 14 msg 2
-BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg pe 14
+BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg m 3 pe 14
 SH sm 3 sg 3 pd 0.1
-ES t 12.8
+ES id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg sm 3 sg 3 st 12.7 am 2 ag 0 at 12.8 pe 15
 
 E # 16 t 12.8 m 2 ce 15 msg 1
-BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n event pe 13
-ES t 13.8
+BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n event sm 2 st 12.8 am 2 at 13.8 pe 16
+ES id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n event sm 2 st 12.8 am 2 at 13.8 pe 16
 
 E # 17 t 13.8 m 2 ce 16 msg 0
-BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg pe 16
+BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg m 2 pe 16
 SH sm 2 sg 3 pd 0.1
-ES t 13.9
+ES id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg sm 2 sg 3 st 13.8 am 3 ag 0 at 13.9 pe 17
 
 E # 18 t 13.9 m 3 ce 17 msg 1
-BS id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n event pe 15
-ES t 14.9
+BS id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n event sm 3 st 13.9 am 3 at 14.9 pe 18
+ES id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n event sm 3 st 13.9 am 3 at 14.9 pe 18
 
 E # 19 t 14.9 m 3 ce 18 msg 2
-BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg pe 18
+BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg m 3 pe 18
 SH sm 3 sg 3 pd 0.1
-ES t 15
+ES id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg sm 3 sg 3 st 14.9 am 2 ag 0 at 15 pe 19
 
 E # 20 t 15 m 2 ce 19 msg 1
-BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n event pe 17
-ES t 16
+BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n event sm 2 st 15 am 2 at 16 pe 20
+ES id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n event sm 2 st 15 am 2 at 16 pe 20
 
 E # 21 t 16 m 2 ce 20 msg 0
-BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg pe 20
+BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg m 2 pe 20
 SH sm 2 sg 3 pd 0.1
-ES t 16.1
+ES id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg sm 2 sg 3 st 16 am 3 ag 0 at 16.1 pe 21
 
 E # 22 t 16.1 m 3 ce 21 msg 1
-BS id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n event pe 19
-ES t 17.1
+BS id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n event sm 3 st 16.1 am 3 at 17.1 pe 22
+ES id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n event sm 3 st 16.1 am 3 at 17.1 pe 22
 
 E # 23 t 17.1 m 3 ce 22 msg 2
-BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg pe 22
+BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg m 3 pe 22
 SH sm 3 sg 3 pd 0.1
-ES t 17.2
+ES id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg sm 3 sg 3 st 17.1 am 2 ag 0 at 17.2 pe 23
 
 E # 24 t 17.2 m 2 ce 23 msg 1
-BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n event pe 21
-ES t 18.2
+BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n event sm 2 st 17.2 am 2 at 18.2 pe 24
+ES id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n event sm 2 st 17.2 am 2 at 18.2 pe 24
 
 E # 25 t 18.2 m 2 ce 24 msg 0
-BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg pe 24
+BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg m 2 pe 24
 SH sm 2 sg 3 pd 0.1
-ES t 18.3
+ES id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg sm 2 sg 3 st 18.2 am 3 ag 0 at 18.3 pe 25
 
 E # 26 t 18.3 m 3 ce 25 msg 1
-BS id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n event pe 23
-ES t 19.3
+BS id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n event sm 3 st 18.3 am 3 at 19.3 pe 26
+ES id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n event sm 3 st 18.3 am 3 at 19.3 pe 26
 
 E # 27 t 19.3 m 3 ce 26 msg 2
-BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg pe 26
+BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg m 3 pe 26
 SH sm 3 sg 3 pd 0.1
-ES t 19.4
+ES id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg sm 3 sg 3 st 19.3 am 2 ag 0 at 19.4 pe 27
 
 E # 28 t 19.4 m 2 ce 27 msg 1
-BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n event pe 25
-ES t 20.4
+BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n event sm 2 st 19.4 am 2 at 20.4 pe 28
+ES id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n event sm 2 st 19.4 am 2 at 20.4 pe 28
 
 E # 29 t 20.4 m 2 ce 28 msg 0
-BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg pe 28
+BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg m 2 pe 28
 SH sm 2 sg 3 pd 0.1
-ES t 20.5
+ES id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg sm 2 sg 3 st 20.4 am 3 ag 0 at 20.5 pe 29
 
 E # 30 t 20.5 m 3 ce 29 msg 1
-BS id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n event pe 27
-ES t 21.5
+BS id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n event sm 3 st 20.5 am 3 at 21.5 pe 30
+ES id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n event sm 3 st 20.5 am 3 at 21.5 pe 30
 
 E # 31 t 21.5 m 3 ce 30 msg 2
-BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg pe 30
+BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg m 3 pe 30
 SH sm 3 sg 3 pd 0.1
-ES t 21.6
+ES id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg sm 3 sg 3 st 21.5 am 2 ag 0 at 21.6 pe 31
 
 E # 32 t 21.6 m 2 ce 31 msg 1
-BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n event pe 29
-ES t 22.6
+BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n event sm 2 st 21.6 am 2 at 22.6 pe 32
+ES id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n event sm 2 st 21.6 am 2 at 22.6 pe 32
 
 E # 33 t 22.6 m 2 ce 32 msg 0
-BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg pe 32
+BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg m 2 pe 32
 SH sm 2 sg 3 pd 0.1
-ES t 22.7
+ES id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg sm 2 sg 3 st 22.6 am 3 ag 0 at 22.7 pe 33
 
 E # 34 t 22.7 m 3 ce 33 msg 1
-BS id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n event pe 31
-ES t 23.7
+BS id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n event sm 3 st 22.7 am 3 at 23.7 pe 34
+ES id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n event sm 3 st 22.7 am 3 at 23.7 pe 34
 
 E # 35 t 23.7 m 3 ce 34 msg 2
-BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg pe 34
+BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg m 3 pe 34
 SH sm 3 sg 3 pd 0.1
-ES t 23.8
+ES id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg sm 3 sg 3 st 23.7 am 2 ag 0 at 23.8 pe 35
 
 E # 36 t 23.8 m 2 ce 35 msg 1
-BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n event pe 33
-ES t 24.8
+BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n event sm 2 st 23.8 am 2 at 24.8 pe 36
+ES id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n event sm 2 st 23.8 am 2 at 24.8 pe 36
 
 E # 37 t 24.8 m 2 ce 36 msg 0
-BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg pe 36
+BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg m 2 pe 36
 SH sm 2 sg 3 pd 0.1
-ES t 24.9
+ES id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg sm 2 sg 3 st 24.8 am 3 ag 0 at 24.9 pe 37
 
 E # 38 t 24.9 m 3 ce 37 msg 1
-BS id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n event pe 35
-ES t 25.9
+BS id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n event sm 3 st 24.9 am 3 at 25.9 pe 38
+ES id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n event sm 3 st 24.9 am 3 at 25.9 pe 38
 
 E # 39 t 25.9 m 3 ce 38 msg 2
-BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg pe 38
+BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg m 3 pe 38
 SH sm 3 sg 3 pd 0.1
-ES t 26
+ES id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg sm 3 sg 3 st 25.9 am 2 ag 0 at 26 pe 39
 
 E # 40 t 26 m 2 ce 39 msg 1
-BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n event pe 37
-ES t 27
+BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n event sm 2 st 26 am 2 at 27 pe 40
+ES id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n event sm 2 st 26 am 2 at 27 pe 40
 
 E # 41 t 27 m 2 ce 40 msg 0
-BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg pe 40
+BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg m 2 pe 40
 SH sm 2 sg 3 pd 0.1
-ES t 27.1
+ES id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg sm 2 sg 3 st 27 am 3 ag 0 at 27.1 pe 41
 
 E # 42 t 27.1 m 3 ce 41 msg 1
-BS id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n event pe 39
-ES t 28.1
+BS id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n event sm 3 st 27.1 am 3 at 28.1 pe 42
+ES id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n event sm 3 st 27.1 am 3 at 28.1 pe 42
 
 E # 43 t 28.1 m 3 ce 42 msg 2
-BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg pe 42
+BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg m 3 pe 42
 SH sm 3 sg 3 pd 0.1
-ES t 28.2
+ES id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg sm 3 sg 3 st 28.1 am 2 ag 0 at 28.2 pe 43
 
 E # 44 t 28.2 m 2 ce 43 msg 1
-BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n event pe 41
-ES t 29.2
+BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n event sm 2 st 28.2 am 2 at 29.2 pe 44
+ES id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n event sm 2 st 28.2 am 2 at 29.2 pe 44
 
 E # 45 t 29.2 m 2 ce 44 msg 0
-BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg pe 44
+BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg m 2 pe 44
 SH sm 2 sg 3 pd 0.1
-ES t 29.3
+ES id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n tictocMsg sm 2 sg 3 st 29.2 am 3 ag 0 at 29.3 pe 45
 
 E # 46 t 29.3 m 3 ce 45 msg 1
-BS id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n event pe 43
-ES t 30.3
+BS id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n event sm 3 st 29.3 am 3 at 30.3 pe 46
+ES id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n event sm 3 st 29.3 am 3 at 30.3 pe 46
+
+
 SE e 0 c 38 m "Simulation time limit reached -- at t=30s, event #47"

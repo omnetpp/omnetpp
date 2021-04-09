@@ -9,6 +9,14 @@ DBG=_dbg
 rm -rf aloha routing routing2 fifo
 mkdir aloha routing routing2 fifo
 
+# re-create eventlog files
+(cd ../fifo && rm -f results/* && ./fifo$DBG -u Cmdenv -c Fifo1 --sim-time-limit=2s --record-eventlog=true && cp results/*.elog $HERE)
+(cd ../aloha && rm -f results/* && ./aloha$DBG -u Cmdenv -c PureAloha2 --sim-time-limit=4s --record-eventlog=true && cp results/*.elog $HERE)
+(cd ../tictoc && rm -f results/* && ./tictoc$DBG -u Cmdenv -c Tictoc6 --sim-time-limit=30s --record-eventlog=true && cp results/*.elog $HERE)
+(cd ../routing && rm -f results/* && ./routing$DBG -u Cmdenv -c Net60StoreAndForward --sim-time-limit=0.0015s --record-eventlog=true && cp results/*.elog $HERE)
+(cd ../routing && rm -f results/* && ./routing$DBG -u Cmdenv -c Net60CutThrough --sim-time-limit=0.0015s --record-eventlog=true && cp results/*.elog $HERE)
+
+# re-create result files
 (cd ../aloha; rm -f results/*; opp_runall ./aloha$DBG -u Cmdenv -c PureAlohaExperiment && cp results/*.sca results/*-numHosts=10,iaMean=3-#0.vec results/*-numHosts=10,iaMean=9-#0.vec $HERE/aloha)
 (cd ../routing; rm -f results/*; opp_runall ./routing$DBG -u Cmdenv -c Net5SaturatedQueue && cp results/* $HERE/routing)
 (cd ../routing; rm -f results/*; opp_runall ./routing$DBG -u Cmdenv -c Net10Experiment && cp results/*.sca $HERE/routing2)
