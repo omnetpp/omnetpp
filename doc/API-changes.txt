@@ -24,6 +24,17 @@ Legend:
 OMNeT++ 6.0
 ~~~~~~~~~~~
 
+(!)     cVisitor: Return type of visit(cObject *obj) method changed
+        from void to bool. Implementations can return false to indicate
+        that the called forEachChild() method may skip calling it for
+        further child objects. EndTraversalException, which used to serve
+        a similar purpose, was removed. The motivation was that using
+        exceptions for control flow is not recommended in C++, and it also
+        made it difficult to use some debuggers.
+
+(!)     cIEventlogManager: stopRecording() renamed to resume(), stopRecording()
+        to suspend(); added endRun().
+
 (!!!)	cPar: Setting the parameter will now result in a call to the component's
         handleParameterChange() method during initialize() as well. At the
         same time, the handleParameter(nullptr) call at the end of the
