@@ -64,6 +64,11 @@ mkdir -p tools/macosx
 echo "Extracting tools archive..."
 tar xfz $TOOLS_DIR/$TOOLS_VERSION/macosx/opp-tools-macosx.tar.gz --keep-old-files --directory tools/macosx || { echo --- error extracting opp-tools-macosx.tar.gz ---; exit 1;}
 
+# customized files for macosx
+PATCH_DIR=$OMNETPP_ROOT/releng/overlay/macosx
+echo "Copying overlay files from $PATCH_DIR directory..."
+cp -R $PATCH_DIR/* .
+
 # pack the distro
 cd ..
 # create macOS version - tgz with macOS tools added

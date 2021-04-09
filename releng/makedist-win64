@@ -70,7 +70,7 @@ cp $TOOLS_DIR/$TOOLS_VERSION/win64/7za.exe tools || { echo --- error copying 7za
 cp $TOOLS_DIR/$TOOLS_VERSION/win64/opp-tools-win64-*.7z tools || { echo --- error copying opp-tools-win64-XXXX.7z ---; exit 1;}
 
 # customized files for win32
-PATCH_DIR=$OMNETPP_ROOT/releng/overlay
+PATCH_DIR=$OMNETPP_ROOT/releng/overlay/win64
 echo "Copying overlay files from $PATCH_DIR directory..."
 cp -R $PATCH_DIR/* .
 
