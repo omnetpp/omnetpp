@@ -174,6 +174,12 @@ public class ConfigRegistry {
     // Set InifileFormEditor.DUMP_FORGOTTEN_CONFIG_KEYS = true, run the IDE,
     // open an omnetpp.ini, and watch the console.
 
+    public static final ConfigOption CFGID_ALLOW_OBJECT_STEALING_ON_DELETION = addPerRunOption(
+        "allow-object-stealing-on-deletion", CFG_BOOL, "false",
+        "Setting it to true disables the \"Context component is deleting an object it " +
+        "doesn't own\" error message. This option exists primarily for backward " +
+        "compatibility with pre-6.0 versions that were more permissive during object " +
+        "deletion.");
     public static final ConfigOption CFGID_BIN_RECORDING = addPerObjectOption(
         "bin-recording", KIND_SCALAR, CFG_BOOL, "true",
         "Whether the bins of the matching histogram object should be recorded, " +
@@ -366,9 +372,27 @@ public class ConfigRegistry {
         "description", CFG_STRING, null,
         "Descriptive name for the given simulation configuration. Descriptions get " +
         "displayed in the run selection dialog.");
+    public static final ConfigOption CFGID_DISPLAY_NAME = addPerObjectOption(
+        "display-name", KIND_MODULE, CFG_STRING, null,
+        "Specifies a display name for the module, which is shown e.g. in Qtenv's " +
+        "graphical module view.");
+    public static final ConfigOption CFGID_DISPLAY_STRING = addPerObjectOption(
+        "display-string", KIND_COMPONENT, CFG_STRING, null,
+        "Additional display string for the module/channel; it will be merged into " +
+        "the display string given via `@display` properties, and override its " +
+        "content.");
     public static final ConfigOption CFGID_EVENTLOG_FILE = addPerRunOption(
         "eventlog-file", CFG_FILENAME, "${resultdir}/${configname}-${iterationvarsf}#${repetition}.elog",
         "Name of the eventlog file to generate.");
+    public static final ConfigOption CFGID_EVENTLOG_INDEX_FREQUENCY = addPerRunOptionU(
+        "eventlog-index-frequency", "B", "1 MiB",
+        "The eventlog file contains incremental snapshots called index. An index is " +
+        "much smaller than a full snapshot, but it only contains the differences " +
+        "since the last index.");
+    public static final ConfigOption CFGID_EVENTLOG_MAX_SIZE = addPerRunOptionU(
+        "eventlog-max-size", "B", "10 GiB",
+        "Specify the maximum size of the eventlog file in bytes. The eventlog file " +
+        "is automatically truncated when this limit is reached.");
     public static final ConfigOption CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN = addPerRunOption(
         "eventlog-message-detail-pattern", CFG_CUSTOM, null,
         "A list of patterns separated by '|' character which will be used to write " +
@@ -393,12 +417,30 @@ public class ConfigRegistry {
         "recording the fields declared on the MyMessage class\n" +
         "  `*:(not declaredOn=~cMessage and not declaredOn=~cNamedObject and not " +
         "declaredOn=~cObject)`: records user-defined fields from all messages");
+    public static final ConfigOption CFGID_EVENTLOG_MIN_TRUNCATED_SIZE = addPerRunOptionU(
+        "eventlog-min-truncated-size", "B", "1 GiB",
+        "Specify the minimum size of the eventlog file in bytes after the file is " +
+        "truncated. Truncation means older events are discarded while newer ones are " +
+        "kept.");
+    public static final ConfigOption CFGID_EVENTLOG_OPTIONS = addPerRunOption(
+        "eventlog-options", CFG_CUSTOM, null,
+        "The content of the eventlog is diveded into categories. This option allows " +
+        "to record only certain categories reducing the file size. Specify a comma " +
+        "separated subset of the following keywords: text, message, module, " +
+        "methodcall, displaystring and custom. By default all categories are " +
+        "enabled.");
     public static final ConfigOption CFGID_EVENTLOG_RECORDING_INTERVALS = addPerRunOption(
         "eventlog-recording-intervals", CFG_CUSTOM, null,
         "Simulation time interval(s) when events should be recorded. Syntax: " +
         "`[<from>]..[<to>],...` That is, both start and end of an interval are " +
         "optional, and intervals are separated by comma. Example: `..10.2, " +
         "22.2..100, 233.3..`");
+    public static final ConfigOption CFGID_EVENTLOG_SNAPSHOT_FREQUENCY = addPerRunOptionU(
+        "eventlog-snapshot-frequency", "B", "100 MiB",
+        "The eventlog file contains snapshots periodically. Each one describes the " +
+        "complete simulation state at a specific event. Snapshots help various tools " +
+        "to handle large eventlog files more efficiently. Specifying greater value " +
+        "means less help, while smaller value means bigger eventlog files.");
     public static final ConfigOption CFGID_EVENTLOGMANAGER_CLASS = addPerRunOption(
         "eventlogmanager-class", CFG_STRING, "omnetpp::envir::EventlogFileManager",
         "Part of the Envir plugin mechanism: selects the eventlog manager class to " +
@@ -907,7 +949,7 @@ public class ConfigRegistry {
     public static final String CFGVAR_REPETITION = addConfigVariable("repetition", "The iteration number in `0..N-1`, where `N` is the value of the `repeat` configuration option");
     public static final String CFGVAR_SEEDSET = addConfigVariable("seedset", "Value of the `seed-set` configuration option");
     public static final String CFGVAR_ITERATIONVARS = addConfigVariable("iterationvars", "Concatenation of all user-defined iteration variables in `name=value` form");
-    public static final String CFGVAR_ITERATIONVARSF = addConfigVariable("iterationvarsf", "Like ${iterationvars}, but sanitized for use as part of file names");
+    public static final String CFGVAR_ITERATIONVARSF = addConfigVariable("iterationvarsf", "Like ${iterationvars}, but sanitized for use as part of a file name");
     public static final String CFGVAR_ITERATIONVARSD = addConfigVariable("iterationvarsd", "Like ${iterationvars}, but for use as hierarchical folder name (it contains slashes where ${iterationvarsf} has commas)");
 
     static {
