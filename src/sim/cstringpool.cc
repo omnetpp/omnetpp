@@ -31,7 +31,6 @@ cStringPool::~cStringPool()
     // for their strings, so cStringPool gets empty by itself.
 
     // we may want to dump unreleased strings (except after Ctrl+C on Windows)
-    //TODO: put it into some #ifdef DEVELOPER_DEBUG
     //if (!cStaticFlag::isExiting())
     //    dump();
 
@@ -53,10 +52,11 @@ const char *cStringPool::get(const char *s)
         fprintf(stderr, "ERROR: cStringPool::get(\"%s\") invoked outside main() -- please do not use cStringPool from global objects", s);
         return omnetpp::opp_strdup(s);
     }
+
     if (!s)
         return nullptr;
 
-    StringIntMap::iterator it = pool.find(const_cast<char *>(s));
+    auto it = pool.find(s);
     if (it == pool.end()) {
         // allocate new string
         char *str = new char[strlen(s)+1];
@@ -77,10 +77,11 @@ const char *cStringPool::peek(const char *s) const
         fprintf(stderr, "ERROR: cStringPool::peek(\"%s\") invoked outside main() -- please do not use cStringPool from global objects", s);
         return nullptr;
     }
+
     if (!s)
         return nullptr;
 
-    StringIntMap::const_iterator it = pool.find(const_cast<char *>(s));
+    auto it = pool.find(s);
     return it == pool.end() ? nullptr : it->first;
 }
 
@@ -95,7 +96,7 @@ void cStringPool::release(const char *s)
         return;
     }
 
-    StringIntMap::iterator it = pool.find(const_cast<char *>(s));
+    auto it = pool.find(s);
 
     // sanity checks
     if (it == pool.end()) {

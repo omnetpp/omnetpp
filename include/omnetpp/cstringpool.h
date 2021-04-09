@@ -18,7 +18,7 @@
 
 #include <cstring>
 #include <string>
-#include <map>
+#include <unordered_map>
 #include "simkerneldefs.h"
 
 namespace omnetpp {
@@ -36,16 +36,17 @@ namespace omnetpp {
 class cStringPool
 {
   protected:
-    struct strless {
-        bool operator()(const char *s1, const char *s2) const {
-            int d0 = *s1 - *s2;
-            if (d0<0) return true; else if (d0>0) return false;
-            return strcmp(s1,s2) < 0;  // note: (s1+1,s2+1) not good because either strings may be empty
+    struct str_hash {
+        std::size_t operator()(const char *s) const {
+            size_t result = 0;
+            const size_t prime = 31;
+            for (; *s; s++)
+                result = result*prime + *s;
+            return result;
         }
     };
     std::string name;
-    typedef std::map<char *,int,strless> StringIntMap;
-    StringIntMap pool; // map<string,refcount>
+    std::unordered_map<const char *,int,str_hash> pool; // map<string,refcount>
     bool alive = true; // useful when stringpool is a global variable
 
   public:

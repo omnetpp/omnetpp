@@ -16,6 +16,7 @@
 #ifndef __OMNETPP_CDYNAMICEXPRESSION_H
 #define __OMNETPP_CDYNAMICEXPRESSION_H
 
+#include <map>
 #include "cvalue.h"
 #include "cexpression.h"
 #include "cstringpool.h"
