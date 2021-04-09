@@ -1,3 +1,51 @@
+2021-04-09  Andras Varga
+
+	* cStringPool: use std::unordered_map instead of std::map, for better performance.
+
+2021-04-08  Andras Varga
+
+	* cComponent: Turn on name pooling for modules and channels.
+	This results in saving some memory. E.g. in INET, the same names occur in
+	each host/router; now they are stored in one copy only. The price is a
+	small extra runtime cost at network build time.
+
+2021-04-08  Andras Varga
+
+	* cModule: use stringpooling for full name.	This results in conserving
+	memory if similarly-named submodule vectors occur among several modules,
+	in exchange for a (small) extra cost during network setup. E.g consider
+	that names like "app[0]" or "eth[0]" occur in many hosts in an INET
+	simulation; now such strings are stored in one copy only.
+
+2021-04-07  Andras Varga
+
+	* cModule: namePool renamed to gateNamePool
+
+2021-04-08  Andras Varga
+
+	* cVisitor: implement/follow changes:
+
+	- visit(cObject *obj) changed from void to bool
+	- EndTraversalException removed
+	- existing visitor classes and forEachChild() methods updated accordingly
+
+2021-04-07  Andras Varga
+
+	* cDefaultMessagePrinter: support for new columns: TxUpdate, Durations,
+	Length, Info. This makes it possible to see in Qtenv's packet log if
+	a packet is a transmission update (except if the simulation installs
+	its own packet printer like INET does).
+
+2021-03-29  Andras Varga
+
+	* cComponent: Added "display-string" config option. This allows specifying
+	(or contributing to) display strings from the configuration.
+
+2021-03-27  Andras Varga
+
+	* cModule: implemented display name support, including a new "display-name"
+	config option.
+
 2021-03-23  Andras Varga
 
 	* cObjectParImpl: Resolve "undisposed object" when checkType() throws.

@@ -1,6 +1,11 @@
+2021-03-31  Andras Varga
+
+	* More helpful error message for the "no gate left for '++' operator"
+	NED error
+
 2021-03-22  Andras Varga
 
-	* netbuilder: cNedDeclaration: cosmetics
+	* cNedDeclaration: cosmetics
 
 2020-11-13  Attila Torok
 

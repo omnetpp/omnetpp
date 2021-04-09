@@ -1,3 +1,8 @@
+
+2021-04-09  Rudolf Hornig
+
+	* Re-created eventlog examples for the new Sequence Chart tool
+
 2021-02-23  Attila Torok
 
 	* Fix vector operations in Net5SaturatedQueue.anf

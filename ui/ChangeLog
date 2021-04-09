@@ -1,3 +1,40 @@
+2021-03-29  Attila Torok
+
+	* Analysis Tool: Fix bug in transferring data between the IDE and the chart
+	Python process on Windows.
+
+2021-04-08  Attila Torok
+
+	* Analysis Tool: Minor visual fix in the Browse Data page. In LargeTable,
+	draw the focus rectangle as wide as the table, not as the scrolling viewport.
+
+2021-04-08  Rudolf Hornig
+
+	* Downgrade to Eclipse 4.18 because of bug:
+	https://bugs.eclipse.org/bugs/show_bug.cgi?id=571990
+
+2021-04-08  Levente Meszaros
+
+	* Sequence Chart: Adapted to the new eventlog format and the Java eventlog API.
+
+2021-04-07  Levente Meszaros
+
+	* Sequence Chart: Adapted the common eventlog view and editor support, dialogs,
+	selections, etc. to the new eventlog format and Java based API.
+
+2021-03-24  Levente Meszaros
+
+	* Sequence Chart: Added a completely new eventlog implementation for
+	representing the eventlog using pure Java objects without native calls.
+
+2021-03-29  Attila Torok
+
+	* NED Editor: Fix: Use a custom cursor for the creation tool of the Palette.
+
+	Because of a whole stack of bugs and workarounds in SWT and GEF about a
+	pair of swapped parameters in some places:
+	https://bugs.eclipse.org/bugs/show_bug.cgi?id=467983
+
 2021-03-19  Rudolf Hornig
 
 	* Updated to use Eclipse 4.19 and CDT 10.2
@@ -64,10 +101,6 @@
 
 	* Analysis Tool: PlotProperty: annotate which property is per-item, and use it
 	in content assist
-
-2021-03-03  Attila Torok
-
-	scave/python: Add comments to swtplot.py about per-item property keys
 
 2021-02-27  Andras Varga
 

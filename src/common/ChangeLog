@@ -1,3 +1,15 @@
+2021-04-09  Andras Varga
+
+	* StringPool: change from std::set to std::unordered_set for performance.
+
+2021-03-30  Rudolf Hornig
+
+	* Add destructor to opp_runtime_error to fix build error on macOS.
+
+2021-03-25  Levente Meszaros
+
+	* Added JavaMatchableObject that makes match expressions accessible from Java.
+
 2021-02-05  Levente Meszaros
 
 	* Added optional file locking to FileReader and implemented

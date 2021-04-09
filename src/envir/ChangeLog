@@ -1,3 +1,17 @@
+2021-04-08  Andras Varga
+
+	* Follow cVisitor change: use retval=false in visit(cObject *obj) instead of
+	EndTraversalException to stop iterating.
+
+2021-02-05  Levente Meszaros
+
+	* EventlogFileManager: Implemented snapshot and incremental index support.
+
+	IMPORTANT: This means significant (breaking) changes in the elog file format.
+
+	New config options: "eventlog-max-size", "eventlog-min-truncated-size",
+	"eventlog-snapshot-frequency", "eventlog-index-frequency", "eventlog-options"
+
 2020-04-30  Attila Torok
 
 	* Properly register "${iterationvarsd}" where needed

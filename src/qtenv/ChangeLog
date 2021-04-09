@@ -1,3 +1,46 @@
+2021-04-08  Andras Varga
+
+	* Follow cVisitor change: use retval=false in visit(cObject *obj) instead of
+	EndTraversalException to stop iterating.
+
+2021-04-07  Attila Torok
+
+	* Set minimum log inspector header section size to a smaller value.
+
+2021-03-26  Andras Varga
+
+	* Add support for the "g" display string tag (layout groups).
+	Layout groups make submodule vector layouts (row, column, matrix etc)
+	available for groups of independent submodules.
+
+2021-03-26  Andras Varga
+
+	* ModuleLayouter: refactoring: getSubmoduleCoords() return result via
+	struct, not via output args.
+
+2021-03-28  Andras Varga
+
+	* Added support for showing a submodule's display name under the icon
+	instead of, or in addition to, the normal name. The format can be
+	selected in the context menu.
+
+2021-03-31  Andras Varga
+
+	* Change the way Qt headers are included: spell out the Qt module name
+	too, i.e. #include <QDialog> becomes #include <QtWidgets/QDialog>.
+	Motivation: this way we don't need to add each Qt module individually
+	to the include path, i.e. now is enough to add "/usr/include/qt5" or
+	equivalent.
+
+2021-04-06  Andras Varga
+
+	* A number of bug fixes related to handling exceptions during inspector update:
+
+	- ModuleInspector: fix ASSERT FAILED dialog when running Dyna in Fast mode.
+	- ModuleInspector: fix crash on module deletion when it's just popped up a bubble.
+	- callRefreshInspectors(): fix: remove repeated call to refreshInspectors().
+	- callRefreshInspectors(): fix: remove bogus assert.
+
 2021-01-26  Attila Torok
 
 	* Fix transmission update animations.

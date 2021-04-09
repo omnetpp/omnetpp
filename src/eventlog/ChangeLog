@@ -1,3 +1,12 @@
+2021-03-26  Levente Meszaros
+
+	* Deleted unused facade classes.
+
+2021-03-20  Levente Meszaros
+
+	* Revised to support snapshots and incremental index chunks found
+	in the new elog file format.
+
 2021-03-20  Andras Varga
 
 	* Follow change in the FileReader class: FileChangedState was renamed
