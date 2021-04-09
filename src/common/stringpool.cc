@@ -36,7 +36,7 @@ const char *StringPool::get(const char *s)
 {
     if (s == nullptr)
         return "";  // must not be nullptr because SWIG-generated code will crash!
-    StringSet::iterator it = pool.find(s);
+    auto it = pool.find(s);
     if (it != pool.end())
         return *it;
     char *str = new char[strlen(s)+1];

@@ -17,7 +17,7 @@
 #ifndef __OMNETPP_COMMON_STRINGPOOL_H
 #define __OMNETPP_COMMON_STRINGPOOL_H
 
-#include <set>
+#include <unordered_set>
 #include <cstring>
 #include "commondefs.h"
 
@@ -35,19 +35,16 @@ namespace common {
 class COMMON_API StringPool
 {
   protected:
-    struct strless {
-        bool operator()(const char *s1, const char *s2) const {
-            int diff = *s1 - *s2;
-            if (diff < 0)
-                return true;
-            else if (diff > 0)
-                return false;
-            else
-                return strcmp(s1, s2)<0;
+    struct str_hash {
+        std::size_t operator()(const char *s) const {
+            size_t result = 0;
+            const size_t prime = 31;
+            for (; *s; s++)
+                result = result*prime + *s;
+            return result;
         }
     };
-    typedef std::set<const char *,strless> StringSet;
-    StringSet pool;
+    std::unordered_set<const char *,str_hash> pool;
 
   public:
     StringPool() {}

@@ -19,6 +19,7 @@
 #include <cmath>
 #include <clocale>
 #include <algorithm>
+#include <set>
 #include "common/opp_ctype.h"
 #include "common/stringutil.h"
 #include "common/commonutil.h"
