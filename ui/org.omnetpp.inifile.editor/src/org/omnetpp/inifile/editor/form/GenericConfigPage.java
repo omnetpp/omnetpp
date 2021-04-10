@@ -47,6 +47,7 @@ public class GenericConfigPage extends ScrolledFormPage {
     public static final String CAT_DEBUGGING = "Debugging";
     public static final String CAT_FINGERPRINT = "Fingerprint";
     public static final String CAT_EVENTLOG = "Event Log";
+    public static final String CAT_VISUAL = "Visual";
     public static final String CAT_CMDENV = "Cmdenv";
     public static final String CAT_QTENV = "Qtenv";
     public static final String CAT_EXTENSIONS = "Extensions";
@@ -60,6 +61,7 @@ public class GenericConfigPage extends ScrolledFormPage {
                 CAT_SCENARIO,
                 CAT_RANDOMNUMBERS,
                 CAT_RESULTRECORDING,
+                CAT_VISUAL,
                 CAT_DEBUGGING,
                 CAT_FINGERPRINT,
                 CAT_EVENTLOG,
@@ -152,6 +154,11 @@ public class GenericConfigPage extends ScrolledFormPage {
             //addTextTableFieldEditor(form, CFGID_SEED_n_LCG32, "Seed for LCG32 RNG");
             //addTextTableFieldEditor(form, CFGID_SEED_n_MT, "Seed for Mersenne Twister RNG");
             //addTextTableFieldEditor(form, CFGID_SEED_n_MT_Pn, "Per-partition Mersenne Twister seeds (for parsim)");
+        }
+        else if (category.equals(CAT_VISUAL)) {
+            group = createGroup(form, "Visual");
+            addTextFieldEditor(group, CFGID_DISPLAY_NAME, "Module display name", c("Module", "Value"));
+            addTextFieldEditor(group, CFGID_DISPLAY_STRING, "Additional display string", c("Module", "Value"));
         }
         else if (category.equals(CAT_SCENARIO)) {
             group = createGroup(form, "Run Labeling");
