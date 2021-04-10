@@ -216,16 +216,14 @@ public class GenericConfigPage extends ScrolledFormPage {
             group = createGroup(form, "Fingerprint");
             addTextFieldEditor(group, CFGID_FINGERPRINT, "Expected fingerprint(s)", c(null, "Fingerprint (Hex)"));
             addTextFieldEditor(group, CFGID_FINGERPRINT_INGREDIENTS, "Default ingredients");
+            addCheckboxFieldEditor(group, CFGID_CMDENV_FAKE_GUI, "Enable FakeGUI mode in Cmdenv (for graphical fingerprints)");
             addSpacer(form);
             group = createGroup(form, "Filter");
             addTextFieldEditor(group, CFGID_FINGERPRINT_EVENTS, "Events");
             addTextFieldEditor(group, CFGID_FINGERPRINT_MODULES, "Modules");
             addTextFieldEditor(group, CFGID_FINGERPRINT_RESULTS, "Results");
             addSpacer(form);
-            group = createGroup(form, "Fake GUI");
-            addCheckboxFieldEditor(group, CFGID_CMDENV_FAKE_GUI, "Enable FakeGUI mode in Cmdenv (for graphical fingerprints)");
-            addSpacer(group);
-            addLabel(group, "Frequency of refreshDisplay() calls:");
+            group = createGroup(form, "Frequency of refreshDisplay() calls in Fake GUI mode");
             addTextFieldEditor(group, CFGID_CMDENV_FAKE_GUI_AFTER_EVENT_PROBABILITY, "After-event probability");
             addTextFieldEditor(group, CFGID_CMDENV_FAKE_GUI_BEFORE_EVENT_PROBABILITY, "Before-event probability");
             addTextFieldEditor(group, CFGID_CMDENV_FAKE_GUI_ON_HOLD_NUMSTEPS, "On-hold numsteps");
