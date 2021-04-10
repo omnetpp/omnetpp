@@ -189,6 +189,9 @@ public class GenericConfigPage extends ScrolledFormPage {
             addCheckboxFieldEditor(group, CFGID_PARAM_RECORDING, "Record parameters", c("Parameter (module-path.paramname pattern)", "Value"));
             addCheckboxFieldEditor(group, CFGID_PARAM_RECORD_AS_SCALAR, "Record parameters as scalars (obsolete)", c("Parameter (module-path.paramname pattern)", "Value"));
             addSpacer(form);
+            group = createGroup(form, "Snapshot Files");
+            addTextFieldEditor(group, CFGID_SNAPSHOT_FILE, "Snapshot file", c(null, "Filename"));
+            addSpacer(form);
         }
         else if (category.equals(CAT_DEBUGGING)) {
             group = createGroup(form, "General");
@@ -202,9 +205,10 @@ public class GenericConfigPage extends ScrolledFormPage {
             addLabel(group, "Note: Using an external debugger requires extra configuration on some systems, including Ubuntu (hint: \"ptrace_scope\").");
             addSpacer(form);
             group = createGroup(form, "Related Options");
+            addCheckboxFieldEditor(group, CFGID_PRINT_UNDISPOSED, "Dump names of undisposed objects");
+            addCheckboxFieldEditor(group, CFGID_ALLOW_OBJECT_STEALING_ON_DELETION, "Allow object stealing on component deletion");
             addCheckboxFieldEditor(group, CFGID_CHECK_SIGNALS, "Check emitted signals against @signal declarations");
             addCheckboxFieldEditor(group, CFGID_DEBUG_STATISTICS_RECORDING, "Debug result recording");
-            addCheckboxFieldEditor(group, CFGID_PRINT_UNDISPOSED, "Dump names of undisposed objects");
             addCheckboxFieldEditor(group, CFGID_WARNINGS, "Warnings"); //XXX
             addSpacer(form);
         }
@@ -233,13 +237,19 @@ public class GenericConfigPage extends ScrolledFormPage {
             group = createGroup(form, "Eventlog");
             addCheckboxFieldEditor(group, CFGID_RECORD_EVENTLOG, "Enable eventlog recording");
             addTextFieldEditor(group, CFGID_EVENTLOG_FILE, "Eventlog file", c(null, "Filename"));
+            addLabel(group, "Note: Eventlog files (.elog) can be visualized in the Sequence Chart Tool.");
+            addSpacer(form);
+            group = createGroup(form, "Content");
             addTextFieldEditor(group, CFGID_EVENTLOG_RECORDING_INTERVALS, "Recording intervals", c(null, "Intervals"));
             addTextFieldEditor(group, CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "Message details to record", c(null, "Pattern Expression"));
             addCheckboxFieldEditor(group, CFGID_MODULE_EVENTLOG_RECORDING, "Modules to record", c("Module", "Value"));
-            addLabel(group, "Event log files (.elog) can be visualized in the Sequence Chart Tool.");
+            addTextFieldEditor(group, CFGID_EVENTLOG_OPTIONS, "Eventlog options", c(null, "Value"));
             addSpacer(form);
-            group = createGroup(form, "Snapshots");
-            addTextFieldEditor(group, CFGID_SNAPSHOT_FILE, "Snapshot file", c(null, "Filename"));
+            group = createGroup(form, "Technical");
+            addTextFieldEditor(group, CFGID_EVENTLOG_SNAPSHOT_FREQUENCY, "Eventlog snapshot frequency", c(null, "Value"));
+            addTextFieldEditor(group, CFGID_EVENTLOG_INDEX_FREQUENCY, "Eventlog index frequency", c(null, "Value"));
+            addTextFieldEditor(group, CFGID_EVENTLOG_MAX_SIZE, "Maximum eventlog size", c(null, "Size"));
+            addTextFieldEditor(group, CFGID_EVENTLOG_MIN_TRUNCATED_SIZE, "Minimum truncated size", c(null, "Size"));
             addSpacer(form);
         }
         else if (category.equals(CAT_EXTENSIONS)) {
@@ -280,7 +290,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             addCheckboxFieldEditor(group, CFGID_CMDENV_STOP_BATCH_ON_ERROR, "Stop batch on first error");
             addCheckboxFieldEditor(group, CFGID_CMDENV_INTERACTIVE, "Allow interactivity");  //TODO when opened (table), it should contain a 3rd, combobox-based column (true/false) instead of a checkbox
             addCheckboxFieldEditor(group, CFGID_CMDENV_AUTOFLUSH, "Auto-flush output files");
-            addTextFieldEditor(group, CFGID_CMDENV_REDIRECT_OUTPUT, "Redirect stdout to per-run file");
+            addCheckboxFieldEditor(group, CFGID_CMDENV_REDIRECT_OUTPUT, "Redirect stdout to per-run file");
             addTextFieldEditor(group, CFGID_CMDENV_OUTPUT_FILE, "Output file name");
             addTextFieldEditor(group, CFGID_CMDENV_EXTRA_STACK, "Extra coroutine stack");
         }
