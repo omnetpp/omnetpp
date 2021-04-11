@@ -65,12 +65,12 @@ Shape of object. Values: rectangle (rect), oval (oval). Default: rect
  \hline
 \tbf{b}[3] - fill color
 &
-Fill color of the object (colorname or \#RRGGBB or @HHSSBB). Default: \#8080ff
+Fill color of the object (color name, \#RRGGBB or @HHSSBB). Default: #8080ff
 \\
  \hline
 \tbf{b}[4] - border color
 &
-Border color of the object (colorname or \#RRGGBB or @HHSSBB). Default: black
+Border color of the object (color name, \#RRGGBB or @HHSSBB). Default: black
 \\
  \hline
 \tbf{b}[5] - border width
@@ -83,14 +83,14 @@ Border width of the object. Default: 2
 An icon representing the object
 \\
  \hline
-\tbf{i}[1] - icon color
+\tbf{i}[1] - icon tint
 &
-A color to colorize the icon (colorname or \#RRGGBB or @HHSSBB)
+A color for tinting the icon (color name, \#RRGGBB or @HHSSBB)
 \\
  \hline
-\tbf{i}[2] - icon colorization %
+\tbf{i}[2] - icon tint %
 &
-Amount of colorization in percent. Default: 30
+Amount of tinting in percent. Default: 30
 \\
  \hline
 \tbf{is}[0] - icon size
@@ -103,14 +103,14 @@ The size of the image. Values: very small (vs), small (s), normal (n), large (l)
 An icon added to the upper right corner of the original image
 \\
  \hline
-\tbf{i2}[1] - overlay icon color
+\tbf{i2}[1] - overlay icon tint
 &
-A color to colorize the overlay icon (colorname or \#RRGGBB or @HHSSBB)
+A color for tinting the overlay icon (color name, \#RRGGBB or @HHSSBB)
 \\
  \hline
-\tbf{i2}[2] - overlay icon colorization %
+\tbf{i2}[2] - overlay icon tint %
 &
-Amount of colorization in percent. Default: 30
+Amount of tinting in percent. Default: 30
 \\
  \hline
 \tbf{r}[0] - range
@@ -120,12 +120,12 @@ Radius of the range indicator
  \hline
 \tbf{r}[1] - range fill color
 &
-Fill color of the range indicator (colorname or \#RRGGBB or @HHSSBB)
+Fill color of the range indicator (color name, \#RRGGBB or @HHSSBB)
 \\
  \hline
 \tbf{r}[2] - range border color
 &
-Border color of the range indicator (colorname or \#RRGGBB or @HHSSBB). Default: black
+Border color of the range indicator (color name, \#RRGGBB or @HHSSBB). Default: black
 \\
  \hline
 \tbf{r}[3] - range border width
@@ -150,7 +150,7 @@ Position of the text. Values: left (l), right (r), top (t). Default: t
  \hline
 \tbf{t}[2] - text color
 &
-Color of the displayed text (colorname or \#RRGGBB or @HHSSBB). Default: blue
+Color of the displayed text (color name, \#RRGGBB or @HHSSBB). Default: blue
 \\
  \hline
 \tbf{tt}[0] - tooltip
@@ -170,12 +170,12 @@ Height of the module background rectangle
  \hline
 \tbf{bgb}[2] - bg fill color
 &
-Background fill color (colorname or \#RRGGBB or @HHSSBB). Default: grey82
+Background fill color (color name, \#RRGGBB or @HHSSBB). Default: grey82
 \\
  \hline
 \tbf{bgb}[3] - bg border color
 &
-Border color of the module background rectangle (colorname or \#RRGGBB or @HHSSBB). Default: black
+Border color of the module background rectangle (color name, \#RRGGBB or @HHSSBB). Default: black
 \\
  \hline
 \tbf{bgb}[4] - bg border width
@@ -198,24 +198,24 @@ An image to be displayed as a module background
 How to arrange the module's background image. Values: fix (f), tile (t), stretch (s), center (c). Default: fixed
 \\
  \hline
-\tbf{bgg}[0] - grid tick distance
+\tbf{bgg}[0] - grid distance
 &
-Distance between two major ticks measured in units
+Distance between two major gridlines, in units
 \\
  \hline
-\tbf{bgg}[1] - grid minor ticks
+\tbf{bgg}[1] - grid subdivision
 &
-Minor ticks per major ticks. Default: 1
+Minor gridlines per major gridlines. Default: 1
 \\
  \hline
 \tbf{bgg}[2] - grid color
 &
-Color of the grid lines (colorname or \#RRGGBB or @HHSSBB). Default: grey
+Color of the grid lines (color name, \#RRGGBB or @HHSSBB). Default: grey
 \\
  \hline
 \tbf{bgu}[0] - distance unit
 &
-Name of distance unit (default: meter)
+Name of distance unit. Default: m
 \\
  \hline
 \tbf{m}[0] - routing constraint
@@ -223,29 +223,29 @@ Name of distance unit (default: meter)
 Connection routing constraint. Values: auto (a), south (s), north (n), east (e), west (w), manual (m)
 \\
  \hline
-\tbf{m}[1] - routing x1
+\tbf{m}[1] - src anchor x
 &
-Connection routing source coordinate. When m[0] is 'm', this is the x coordinate of one point of the connection line, in integer percentages of the source rectangle.
+When m[0] is 'm', this is the x coordinate of one point of the connection line, in integer percentages of the source rectangle
 \\
  \hline
-\tbf{m}[2] - routing y1
+\tbf{m}[2] - src anchor y
 &
-Connection routing source coordinate. When m[0] is 'm', this is the y coordinate of one point of the connection line, in integer percentages of the source rectangle.
+When m[0] is 'm', this is the y coordinate of one point of the connection line, in integer percentages of the source rectangle
 \\
  \hline
-\tbf{m}[3] - routing x2
+\tbf{m}[3] - dest anchor x
 &
-Connection routing destination coordinate. When m[0] is 'm', this is the x coordinate of another point of the connection line, in integer percentages of the destination rectangle.
+When m[0] is 'm', this is the x coordinate of another point of the connection line, in integer percentages of the destination rectangle
 \\
  \hline
-\tbf{m}[4] - routing y2
+\tbf{m}[4] - dest anchor y
 &
-Connection routing destination coordinate. When m[0] is 'm', this is the y coordinate of another point of the connection line, in integer percentages of the destination rectangle.
+When m[0] is 'm', this is the y coordinate of another point of the connection line, in integer percentages of the destination rectangle
 \\
  \hline
 \tbf{ls}[0] - line color
 &
-Connection color (colorname or \#RRGGBB or @HHSSBB). Default: black
+Connection color (color name, \#RRGGBB or @HHSSBB). Default: black
 \\
  \hline
 \tbf{ls}[1] - line width
