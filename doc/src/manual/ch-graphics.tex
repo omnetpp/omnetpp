@@ -511,11 +511,12 @@ context, that is, when the module is displayed as a submodule of another
 module:
 
 \begin{itemize}
-  \item \ttt{p} -- positioning and layout
-  \item \ttt{b} -- shape (box, oval, etc.)
   \item \ttt{i} -- icon
   \item \ttt{is} -- icon size
   \item \ttt{i2} -- auxiliary or status icon
+  \item \ttt{b} -- shape (box, oval, etc.)
+  \item \ttt{p} -- positioning and layout
+  \item \ttt{g} -- layout group
   \item \ttt{r} -- range indicator
   \item \ttt{q} -- queue information text
   \item \ttt{t} -- text
@@ -625,14 +626,16 @@ tag how to arrange the elements of the vector. They can be arranged in a
 row, a column, a matrix or a ring. The rest of the arguments in the \ttt{p}
 tag depend on the layout type:
 
+TODO refine, e.g. list accepted abbreviations for matrix etc; what if x,y are missing; delta args are optional; etc
+
 \begin{itemize}
-  \item \ttt{row -- p=100,100,r,$deltaX$} (A row of modules with $deltaX$ units between the modules)
-  \item \ttt{column -- p=100,100,c,$deltaY$} (A column of modules with $deltaX$ units between the modules)
-  \item \ttt{matrix -- p=100,100,m,$noOfCols$,$deltaX$,$deltaY$} (A matrix with $noOfCols$ columns.
+  \item Row: \ttt{p=$x$,$y$,r,$deltaX$} (A row of modules with $deltaX$ units between the modules)
+  \item Column: \ttt{p=$x$,$y$,c,$deltaY$} (A column of modules with $deltaY$ units between the modules)
+  \item Matrix: \ttt{p=$x$,$y$,m,$numCols$,$deltaX$,$deltaY$} (A matrix with $numCols$ columns, with
             $deltaX$ and $deltaY$ units between rows and columns)
-  \item \ttt{ring -- p=100,100,ri,$rx$,$ry$} (A ring (oval) with $rx$ and $ry$ as the horizontal and vertical radius.)
-  \item \ttt{exact (default) -- p=100,100,x,$deltaX$,$deltaY$} (Place each module at $(100+deltaX, 100+deltaY)$.
-            The coordinates are usually set at runtime.)
+  \item Ring \ttt{p=$x$,$y$,ri,$rx$,$ry$} (A ring (oval) with $rx$ and $ry$ as the horizontal and vertical radius.)
+  \item Exact (default): \ttt{p=$x$,$y$,x,$deltaX$,$deltaY$} (Place each module at $(x+deltaX, y+deltaY)$.
+            The coordinates are often set at runtime.)
 \end{itemize}
 
 A matrix layout for a module vector (note that the first two arguments, $x$
@@ -652,6 +655,20 @@ host[20]: Host {
     \label{fig:graphics-ptag}
   \end{center}
 \end{figure}
+
+
+\subsubsection{Layout Group}
+\label{sec:graphics:submodule-layout-group}
+
+Layout groups allow modules that are not part of the same submodule vector to be
+arranged in a row, column, matrix or ring formation as described in the \ttt{p}
+tag's third (and further) parameters.
+
+The \ttt{g} tag expects a single string parameter, the group name. All sibling
+modules that share the same group name are treated for layouting purposes as if
+they were part of the same submodule vector, the "index" being the order of
+submodules within their parent.
+
 
 \subsubsection{Wireless Range}
 \label{sec:graphics:submodule-wireless-range}
