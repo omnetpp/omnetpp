@@ -47,7 +47,8 @@ public interface IDisplayString {
         bgu(COMPOUNDMODULE, "Distance unit"),
 
         p(COMPOUNDMODULE | SUBMODULE, "Position"),
-        b(COMPOUNDMODULE | SUBMODULE, "box"),
+        g(COMPOUNDMODULE | SUBMODULE, "Layout group"),
+        b(COMPOUNDMODULE | SUBMODULE, "Box"),
         i(COMPOUNDMODULE | SUBMODULE, "Icon"),
         is(COMPOUNDMODULE | SUBMODULE, "Icon size"),
         i2(COMPOUNDMODULE | SUBMODULE, "Status icon"),
@@ -205,6 +206,9 @@ public interface IDisplayString {
         LAYOUT_PAR1(Tag.p, 3, PropType.STRING, PropGroup.Position, "arr. par1", "Depends on arrangement: matrix => ncols, ring => rx, exact => dx, row => dx, column => dy", null),
         LAYOUT_PAR2(Tag.p, 4, PropType.STRING, PropGroup.Position, "arr. par2", "Depends on arrangement: matrix => dx, ring => ry, exact => dy", null),
         LAYOUT_PAR3(Tag.p, 5, PropType.STRING, PropGroup.Position, "arr. par3", "Depends on arrangement: matrix => dy", null),
+
+        // G tag
+        LAYOUT_GROUP(Tag.g, 0, PropType.STRING, PropGroup.Position, "layout group", "Allows unrelated modules to be arranged in a row, column, matrix, etc. using the 'p' tag", null),
 
         // B tag and former O tag
         SHAPE_WIDTH(Tag.b, 0, PropType.DISTANCE, PropGroup.Polygon, "width", "Width of object. Default: match the object height, or the icon width", null),
