@@ -68,7 +68,7 @@
 	CAUTION: In model code, handleParameterChange() needs to be implemented
 	carefully, being aware that the module may not have completed initialization
 	yet. Also: if an existing model relied on handleParameter(nullptr) being
-	ported, it needs to be changed.
+	called, it needs to be changed.
 
 2021-02-19  Andras Varga
 

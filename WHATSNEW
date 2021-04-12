@@ -5,6 +5,161 @@ This file summarizes OMNeT++ changes in each release. For changes related to
 simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
+
+OMNeT++ 6.0pre11 (Apr 2021)
+---------------------------
+
+This prerelease contains many small changes and improvements. The highlight
+of this release is the Sequence Chart tool in the IDE which has been revised
+and significantly extended with new functionality. NOTE: the eventlog (.elog)
+file format has changed in a non-backward-compatible way.
+
+The summary of changes since 6.0pre10:
+
+Core:
+
+  - Added display name support to modules. Display name is a string that
+    optionally appears in Qtenv next to (or instead of) the normal module
+    name, in order to help the user distinguish between similarly-named
+    submodules. For example, application-layer modules app[0], app[1], etc.
+    in INET may be given descriptive names like "file transfer", "video",
+    "voice", or "CBR", and have them displayed in Qtenv. Display names may be
+    set using the **.display-name per-module configuration option, or
+    programmatically by calling setDisplayName().
+
+  - Added the "g" (layout group) display string tag, which makes it possible
+    to apply predefined arrangements like row, column, matrix or ring to
+    a group of unrelated submodules. This layouting feature was previously
+    only available for submodule vectors. When "g" tags are used, submodules
+    in the same group are now regarded for layouting purposes as if they
+    were part of the same submodule vector.
+
+  - Made it possible to specify display strings in the configuration. The
+    value given in the **.display-string per-component configuration option
+    is merged into the component's display string in the same way inheritance
+    or submodule display strings are: it may add, overwrite or remove items
+    from it.
+
+	- Change in the parameter change notification mechanism: Calls to the
+    handleParameterChange() method during initialization are no longer
+    suppressed. Because now every change results in a notification, the
+    umbrella handleParameter(nullptr) call at the end of the initialization
+	  is no longer needed and has been removed. The consequence is that
+    handleParameterChange() methods need to be implemented more carefully,
+    because they may be called at a time when the module may not have
+    completed all initialization stages. Also, if an existing model relied on
+    handleParameter(nullptr) being called, it needs to be changed.
+
+  - Module name and full name (i.e. name[index]) are now stringpooled, which
+    reduces memory usage in exchange for a small build-time extra cost.
+    In addition, string pools now use std::unordered_map instead of std::map,
+    which results in a performance improvement.
+
+  - Signature change of the cVisitor::visit(cObject *obj) virtual method: it
+    can now request end of iteration via returning false (hence, return type
+    changed from void to bool) instead of throwing EndTraversalException.
+    Existing cVisitor subclasses in model code will need to be adjusted.
+
+  - cValue's doubleValue() and intValue() methods now throw an exception when
+    called on a value that has a measurement unit, in order to reduce usage
+    mistakes. If the value has a unit, call either doubleValueInUnit() /
+    intValueInUnit(), or doubleValueRaw()/intValueRaw() plus getUnit().
+
+  - The setPerformFinalGC() method was removed. It was meant for internal
+    use, and pretty much unused by model code.
+
+  - cHasher: add(const std::string&) changed to be consistent with the
+    add(const char *) overload. This may cause fingerprint changes in models
+    that use it.
+
+  - Eventlog recording: Implemented snapshot and incremental index support.
+    This introduces means significant (breaking) changes in the elog file
+    format. Several new configuration options to control eventlog recording:
+    eventlog-max-size, eventlog-min-truncated-size, eventlog-snapshot-frequency,
+    eventlog-index-frequency, eventlog-options. See also changes in the
+    Sequence Chart Tool below.
+
+  - Many other bug fixes and improvements; see the ChangeLog files under src/
+    for details.
+
+Qtenv:
+
+  - Added support for showing a submodule's display name under the icon
+    instead of, or in addition to, the normal name. The format can be
+    selected in the context menu.
+
+  - Added support for new columns in the packet log view: TxUpdate, Durations,
+    Length, Info. This was implemented in the cDefaultMessagePrinter class
+    which is part of the simulation library. This change makes it possible
+    to see if a packet is a transmission update (except if the simulation
+    installs its own packet printer like INET does).
+
+Sequence Chart:
+
+  - IMPORTANT: The eventlog (.elog) file format was changed significantly
+    in a non-backward-compatible way. You won't be able to open older eventlog
+    files with this version of the IDE, nor new files in previous IDE versions.
+    The file format changes were necessary to be able to represent new simulation
+    kernel features like transmission updates, and for enabling new Sequence Chart
+    features by providing more information and increasing performance, scalability
+    and robustness.
+
+Analysis Tool:
+
+  - Allow editing the pages of the "Configure Chart" dialog. The "Edit pages"
+    button in the dialog brings up the new "Edit Chart Dialog Pages" dialog.
+
+  - Chart template gallery improvements: improved dialog and content.
+
+  - "Reset Chart To Template": added dialog for choosing which elements to reset.
+
+  - Properties view to show chart properties when chart is selected.
+
+  - Vector Operations: on selecting the operation from the context menu,
+    ask the filter's parameters before adding it.
+
+  - In the "Configure Chart" dialog, added content assist to the "Vector
+    Operations" field.
+
+  - Make native plot legend background and border semi-transparent.
+
+  - Automatically refresh open chart when set of loaded result files change.
+
+  - Chart page toolbar: added "Refresh Result Files" icon; zoom icons redesigned;
+    other improvements.
+
+  - Improved scatterchart and boxplots chart templates.
+
+  - Fix: Don't move the cursor upon error when the source editor is focused.
+
+  - Many more bugfixes and improvements; see the ChangeLog files under ui/
+    for details.
+
+Inifile Editor:
+
+  - Added support for ignorable options. User can mark custom config options
+    as ones to be ignored by the editor.
+
+  - Get rid of asynchronous/delayed form page reread in FormPage.
+
+IDE General:
+
+  - Install Simulation Models dialog: Added support for changing the project
+    name and location on download. The (default) project name is now coming
+    from the descriptor file even if INET is installed on the Welcome screen.
+
+  - Turned on showing line numbers ruler in source editors by default.
+
+  - Added an XML editor, language server, terminal, and marketplace client
+    to the IDE.
+
+Tools:
+
+  - opp_charttool: The functionality of opp_charttool has been made available
+    for Python programs as a library module called "omnetpp.scave.analysis".
+
+
+
 OMNeT++ 6.0pre10 (December 2020)
 --------------------------------
 
@@ -75,7 +230,7 @@ Qtenv:
 
 IDE:
 
-  - Analysis Tool: Numerous bug fixes
+  - Numerous bug fixes
 
   - Launcher: Pass NED exclusions to the simulation program as -x options.
     NED exclusions typically come from disabled project features, e.g. in INET.
@@ -649,7 +804,7 @@ IDE:
   - IDE: Made the "Project Features" menu item more creative in finding
     the project. (It said "Select a project first" much too often.)
 
-  - Analysis Tool: Fix weighted histogram PDF/CDF computation (use sum of
+  - Fix weighted histogram PDF/CDF computation (use sum of
     weights instead of observation count).
 
   - NED editor: added manual connection routing using the "m" tag.

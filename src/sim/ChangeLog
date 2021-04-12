@@ -11,7 +11,7 @@
 
 2021-04-08  Andras Varga
 
-	* cModule: use stringpooling for full name.	This results in conserving
+	* cModule: use stringpooling for full name. This results in conserving
 	memory if similarly-named submodule vectors occur among several modules,
 	in exchange for a (small) extra cost during network setup. E.g consider
 	that names like "app[0]" or "eth[0]" occur in many hosts in an INET
