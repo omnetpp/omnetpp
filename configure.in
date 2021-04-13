@@ -765,6 +765,7 @@ def try_import(name):
 try_import("difflib") # for opp_test and scave python tester
 
 # for the Analysis Tool:
+try_import("omnetpp")
 try_import("numpy")
 try_import("scipy")
 try_import("pandas")
@@ -777,7 +778,7 @@ else:
   try_import("msvcrt")
 
 if failed:
-  print("Failed to import: " + ", ".join(failed))
+  print(" ".join(failed))
   exit(1)
 
 # The utils module checks the versions of some Python packages when imported
