@@ -8,13 +8,14 @@
 package org.omnetpp.common.util;
 
 import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
+import org.apache.commons.io.IOUtils;
 
 public class FileUtils {
 
@@ -113,12 +114,7 @@ public class FileUtils {
     }
 
     public static byte[] readBinaryFile(InputStream stream) throws IOException {
-        DataInputStream in = new DataInputStream(stream);
-        byte[] b = new byte[in.available()];
-        in.readFully(b);
-        in.close();
-
-        return b;
+    	return IOUtils.toByteArray(stream);
     }
 
     public static String readTextFile(File file, String charset) throws IOException {
