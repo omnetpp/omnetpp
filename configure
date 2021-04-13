@@ -7446,8 +7446,7 @@ else
     cat 1>&2 << EOT
 
 WARNING: your PATH doesn't contain $omnetpp_bin_dir!
-Add the following line to your .profile or .bash_profile (provided you use bash):
-  export PATH=\$PATH:$omnetpp_bin_dir
+Use 'source setenv' to set up your environment.
 
 EOT
   fi
@@ -7466,8 +7465,8 @@ WARNING: Your linker does not support the -rpath option.
   You must set the LD_LIBRARY_PATH environment variable to point
   to the directory where your shared libraries can be found.
 
-Add the following line to your .profile or .bash_profile (provided you use bash):
-  export LD_LIBRARY_PATH=$OMNETPP_ROOT/lib:\$LD_LIBRARY_PATH
+  Use 'source setenv' to set up your environment.
+
 EOT
 
 fi
