@@ -40,11 +40,11 @@ Core:
     or submodule display strings are: it may add, overwrite or remove items
     from it.
 
-	- Change in the parameter change notification mechanism: Calls to the
+  - Change in the parameter change notification mechanism: Calls to the
     handleParameterChange() method during initialization are no longer
     suppressed. Because now every change results in a notification, the
     umbrella handleParameter(nullptr) call at the end of the initialization
-	  is no longer needed and has been removed. The consequence is that
+    is no longer needed and has been removed. The consequence is that
     handleParameterChange() methods need to be implemented more carefully,
     because they may be called at a time when the module may not have
     completed all initialization stages. Also, if an existing model relied on
@@ -94,15 +94,80 @@ Qtenv:
     to see if a packet is a transmission update (except if the simulation
     installs its own packet printer like INET does).
 
+Eventlog:
+
+  - The eventlog file format has been changed substantially. You won't be able
+    to open older eventlog files with this version of the IDE, nor new files in
+    previous IDE versions. 
+
+  - The most prominent change is the introduction of snapshot and index chunks in
+    addition to the already recorded event chunks. The former contains a complete
+    snapshot of the relevant simulation state without referring to any other line
+    in the file. The latter provides the set of changes in the relevant simulation
+    state since the last index or snapshot chunk. The contents of the index chunk
+    is expressed as references to other lines of the eventlog file. This change in
+    the eventlog format provides the foundation for a better user experience in
+    the IDE especially for large eventlog files.
+
+  - Several new eventlog recording related configuration options have been added
+    to the INI file format.
+
+    - the 'eventlog-snapshot-frequency' configuration option specifies how often
+      snapshots are recorded in the evenlog file. Snapshots help various tools to
+      handle large eventlog files more efficiently. Specifying greater value means
+      less help, while smaller value means bigger eventlog files.
+
+    - the 'eventlog-index-frequency' configuration option specifies how often
+      indices are recorder in the eventlog file. An index is much smaller than a
+      full snapshot, but it only contains the differences since the last index.
+      Specifying greater value means less help, while smaller value means bigger
+      eventlog files.
+
+    - the 'eventlog-max-size' configuration option specifies the maximum size of
+      the eventlog file in bytes. The eventlog file is automatically truncated
+      when this limit is reached.
+
+    - the 'eventlog-min-truncated-size' configuration options specifies the minimum
+      size of the eventlog file in bytes after the file is truncated. Truncation
+      means older events are discarded while newer ones are kept.
+
+    - the 'eventlog-options' configuration option allows to record only certain
+      categories reducing the eventlog file size (e.g. text, message, module,
+      methodcall, displaystring).
+
 Sequence Chart:
 
-  - IMPORTANT: The eventlog (.elog) file format was changed significantly
-    in a non-backward-compatible way. You won't be able to open older eventlog
-    files with this version of the IDE, nor new files in previous IDE versions.
-    The file format changes were necessary to be able to represent new simulation
-    kernel features like transmission updates, and for enabling new Sequence Chart
-    features by providing more information and increasing performance, scalability
-    and robustness.
+  - The visualization of events have been horizontally expanded on the chart, now
+    it uses long rounded rectangles instead of small circles. This change allows
+    the separate visualization of method calls without overlapping. If method
+    calls are hidden then the chart falls back to the old behavior where events
+    are small circles.
+
+  - The set of displayed axes can be explicitly configured independently from the
+    set of displayed events. The chart now also supports displaying events on a
+    compound module axis if the corresponding submodule axis is hidden. Collapsing
+    and expanding module axes can be done using the mouse.
+
+  - The chart now also displays a set of axis headers on the left side that shows
+    the module hierarchy in a compact and interactive way.
+
+  - All parts of the sequence chart can be separately shown/hidden.
+
+  - The selection has been extended with support for axis and method calls.
+
+  - A new time measurement feature has been added that allows measuring the time
+    difference between multiple events and other interesting points in time.
+
+  - Several automatic configuration presets have been added (e.g. network level,
+    full detail, default) to make the configuration for the most common chart use
+    cases easier.
+
+  - A new pattern matching based user defined colorization (e.g. message sends,
+    method calls, axes, events) feature has been added. This feature allows
+    creating more easily understandable sequence charts by encoding certain model
+    properties as colors.
+
+  - The chart can display eventlog file statistics and operation statistics.
 
 Analysis Tool:
 
@@ -157,7 +222,6 @@ Tools:
 
   - opp_charttool: The functionality of opp_charttool has been made available
     for Python programs as a library module called "omnetpp.scave.analysis".
-
 
 
 OMNeT++ 6.0pre10 (December 2020)
