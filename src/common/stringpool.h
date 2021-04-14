@@ -44,7 +44,12 @@ class COMMON_API StringPool
             return result;
         }
     };
-    std::unordered_set<const char *,str_hash> pool;
+    struct str_eq {
+        bool operator()(const char *lhs, const char *rhs) const {
+            return strcmp(lhs, rhs) == 0;
+        }
+    };
+    std::unordered_set<const char *,str_hash,str_eq> pool;
 
   public:
     StringPool() {}

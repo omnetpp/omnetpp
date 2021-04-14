@@ -45,8 +45,13 @@ class cStringPool
             return result;
         }
     };
+    struct str_eq {
+        bool operator()(const char *lhs, const char *rhs) const {
+            return strcmp(lhs, rhs) == 0;
+        }
+    };
     std::string name;
-    std::unordered_map<const char *,int,str_hash> pool; // map<string,refcount>
+    std::unordered_map<const char *,int,str_hash, str_eq> pool; // map<string,refcount>
     bool alive = true; // useful when stringpool is a global variable
 
   public:
