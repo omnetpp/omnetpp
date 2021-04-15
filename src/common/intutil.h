@@ -17,9 +17,9 @@
 #define __OMNETPP_COMMON_INTUTIL_H
 
 #include <cinttypes>
-#include <limits>
-#include <type_traits>
+#include <cmath>
 #include <string>
+#include <type_traits>
 #include "commondefs.h"
 #include "exception.h"
 
@@ -34,7 +34,7 @@ void intCastError(const std::string& num, const char *errmsg=nullptr);
 /**
  * @brief Safe integer cast: it throws an exception if in case of an overflow,
  * i.e. when if the target type cannot represent the value in the source type.
- * The context argument will be used for the error message.
+ * The errmsg argument will be used for the error message.
  */
 template<typename ToInt, typename FromInt>
 ToInt checked_int_cast(FromInt x, const char *errmsg=nullptr)
@@ -49,15 +49,16 @@ ToInt checked_int_cast(FromInt x, const char *errmsg=nullptr)
 /**
  * @brief Safe integer cast: it throws an exception if in case of an overflow,
  * i.e. when if the target type cannot represent the value in the source type.
- * The context argument will be used for the error message.
+ * The errmsg argument will be used for the error message.
  */
 template<typename ToInt>
 ToInt checked_int_cast(double d, const char *errmsg=nullptr)
 {
     static_assert(std::is_integral<ToInt>::value, "checked_int_cast expects integer template argument");
-    if (d < std::numeric_limits<ToInt>::min() || d > std::numeric_limits<ToInt>::max())
+    ToInt res = d;
+    if ((double)res != std::trunc(d))
         omnetpp::common::intCastError(std::to_string(d), errmsg);
-    return (ToInt)d;
+    return res;
 }
 
 inline double safeCastToDouble(intval_t x)
