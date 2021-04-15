@@ -1,0 +1,420 @@
+%description:
+Tests UnitConversion::getBestUnit().
+
+Units to watch (they are tricky): min/hour/day; deg/rad; cm; As/mAs; pct/ratio; dB/dBm
+
+Treatment of zero and negative numbers are checked programmatically.
+
+There's some issue: tends to change "mAs" to "C" (and not to "As")
+
+%includes:
+#include <common/unitconversion.h>
+
+%global:
+using namespace omnetpp::common;
+
+static void print(double d, const char *unit)
+{
+    const char *bestUnit = UnitConversion::getBestUnit(d, unit);
+    const char *bestUnit2 = UnitConversion::getBestUnit(-d, unit);
+    if (bestUnit != bestUnit2)
+        throw cRuntimeError("Behavior differs for negative numbers!");
+
+    EV << d << unit << " --> ";
+    if (strcmp(bestUnit,unit) == 0)
+        EV << "unchanged";
+    else {
+        double res = UnitConversion::convertUnit(d, unit, bestUnit);
+        EV << res << bestUnit;
+    }
+    EV << endl;
+}
+
+%activity:
+for (std::string unit : UnitConversion::getAllUnits()) {
+    if (unit != UnitConversion::getBestUnit(0, unit.c_str()))
+        throw cRuntimeError("Shouldn't change unit for a zero value!");
+    for (double d : std::vector<double>({15200, 62.5, 0.0023}))
+        print(d, unit.c_str());
+    EV << endl;
+}
+EV << ".\n";
+
+%subst: /e\+0(\d\d)/e+$1/
+%subst: /e\-0(\d\d)/e-$1/
+
+%contains: stdout
+** Event #1  t=0   Test (Test, id=1)
+15200s --> unchanged
+62.5s --> unchanged
+0.0023s --> 2.3ms
+
+15200d --> unchanged
+62.5d --> unchanged
+0.0023d --> unchanged
+
+15200h --> unchanged
+62.5h --> unchanged
+0.0023h --> unchanged
+
+15200min --> unchanged
+62.5min --> unchanged
+0.0023min --> unchanged
+
+15200ms --> 15.2s
+62.5ms --> unchanged
+0.0023ms --> 2.3us
+
+15200us --> 15.2ms
+62.5us --> unchanged
+0.0023us --> 2.3ns
+
+15200ns --> 15.2us
+62.5ns --> unchanged
+0.0023ns --> 2.3ps
+
+15200ps --> 15.2ns
+62.5ps --> unchanged
+0.0023ps --> 2.3fs
+
+15200fs --> 15.2ps
+62.5fs --> unchanged
+0.0023fs --> unchanged
+
+15200as --> 15.2fs
+62.5as --> unchanged
+0.0023as --> unchanged
+
+15200bps --> 15.2kbps
+62.5bps --> unchanged
+0.0023bps --> unchanged
+
+15200kbps --> 15.2Mbps
+62.5kbps --> unchanged
+0.0023kbps --> 2.3bps
+
+15200Mbps --> 15.2Gbps
+62.5Mbps --> unchanged
+0.0023Mbps --> 2.3kbps
+
+15200Gbps --> 15.2Tbps
+62.5Gbps --> unchanged
+0.0023Gbps --> 2.3Mbps
+
+15200Tbps --> unchanged
+62.5Tbps --> unchanged
+0.0023Tbps --> 2.3Gbps
+
+15200B --> unchanged
+62.5B --> unchanged
+0.0023B --> unchanged
+
+15200KiB --> unchanged
+62.5KiB --> unchanged
+0.0023KiB --> unchanged
+
+15200MiB --> unchanged
+62.5MiB --> unchanged
+0.0023MiB --> unchanged
+
+15200GiB --> unchanged
+62.5GiB --> unchanged
+0.0023GiB --> unchanged
+
+15200TiB --> unchanged
+62.5TiB --> unchanged
+0.0023TiB --> unchanged
+
+15200kB --> 15.2MB
+62.5kB --> unchanged
+0.0023kB --> unchanged
+
+15200MB --> 15.2GB
+62.5MB --> unchanged
+0.0023MB --> 2.3kB
+
+15200GB --> 15.2TB
+62.5GB --> unchanged
+0.0023GB --> 2.3MB
+
+15200TB --> unchanged
+62.5TB --> unchanged
+0.0023TB --> 2.3GB
+
+15200b --> 15.2kb
+62.5b --> unchanged
+0.0023b --> unchanged
+
+15200Kib --> unchanged
+62.5Kib --> unchanged
+0.0023Kib --> unchanged
+
+15200Mib --> unchanged
+62.5Mib --> unchanged
+0.0023Mib --> unchanged
+
+15200Gib --> unchanged
+62.5Gib --> unchanged
+0.0023Gib --> unchanged
+
+15200Tib --> unchanged
+62.5Tib --> unchanged
+0.0023Tib --> unchanged
+
+15200kb --> 15.2Mb
+62.5kb --> unchanged
+0.0023kb --> 2.3b
+
+15200Mb --> 15.2Gb
+62.5Mb --> unchanged
+0.0023Mb --> 2.3kb
+
+15200Gb --> 15.2Tb
+62.5Gb --> unchanged
+0.0023Gb --> 2.3Mb
+
+15200Tb --> unchanged
+62.5Tb --> unchanged
+0.0023Tb --> 2.3Gb
+
+15200rad --> unchanged
+62.5rad --> unchanged
+0.0023rad --> unchanged
+
+15200deg --> unchanged
+62.5deg --> unchanged
+0.0023deg --> unchanged
+
+15200m --> 15.2km
+62.5m --> unchanged
+0.0023m --> 2.3mm
+
+15200cm --> 152m
+62.5cm --> unchanged
+0.0023cm --> 23um
+
+15200mm --> 15.2m
+62.5mm --> unchanged
+0.0023mm --> 2.3um
+
+15200um --> 15.2mm
+62.5um --> unchanged
+0.0023um --> 2.3nm
+
+15200nm --> 15.2um
+62.5nm --> unchanged
+0.0023nm --> unchanged
+
+15200km --> unchanged
+62.5km --> unchanged
+0.0023km --> 2.3m
+
+15200W --> 15.2kW
+62.5W --> unchanged
+0.0023W --> 2.3mW
+
+15200mW --> 15.2W
+62.5mW --> unchanged
+0.0023mW --> 2.3uW
+
+15200uW --> 15.2mW
+62.5uW --> unchanged
+0.0023uW --> 2.3nW
+
+15200nW --> 15.2uW
+62.5nW --> unchanged
+0.0023nW --> 2.3pW
+
+15200pW --> 15.2nW
+62.5pW --> unchanged
+0.0023pW --> 2.3fW
+
+15200fW --> 15.2pW
+62.5fW --> unchanged
+0.0023fW --> unchanged
+
+15200kW --> 15.2MW
+62.5kW --> unchanged
+0.0023kW --> 2.3W
+
+15200MW --> 15.2GW
+62.5MW --> unchanged
+0.0023MW --> 2.3kW
+
+15200GW --> unchanged
+62.5GW --> unchanged
+0.0023GW --> 2.3MW
+
+15200Hz --> 15.2kHz
+62.5Hz --> unchanged
+0.0023Hz --> unchanged
+
+15200kHz --> 15.2MHz
+62.5kHz --> unchanged
+0.0023kHz --> 2.3Hz
+
+15200MHz --> 15.2GHz
+62.5MHz --> unchanged
+0.0023MHz --> 2.3kHz
+
+15200GHz --> 15.2THz
+62.5GHz --> unchanged
+0.0023GHz --> 2.3MHz
+
+15200THz --> unchanged
+62.5THz --> unchanged
+0.0023THz --> 2.3GHz
+
+15200kg --> unchanged
+62.5kg --> unchanged
+0.0023kg --> 2.3g
+
+15200g --> 15.2kg
+62.5g --> unchanged
+0.0023g --> unchanged
+
+15200K --> unchanged
+62.5K --> unchanged
+0.0023K --> unchanged
+
+15200J --> 15.2kJ
+62.5J --> unchanged
+0.0023J --> unchanged
+
+15200kJ --> 15.2MJ
+62.5kJ --> unchanged
+0.0023kJ --> 2.3J
+
+15200MJ --> unchanged
+62.5MJ --> unchanged
+0.0023MJ --> 2.3kJ
+
+15200Ws --> 15.2kJ
+62.5Ws --> unchanged
+0.0023Ws --> unchanged
+
+15200Wh --> unchanged
+62.5Wh --> unchanged
+0.0023Wh --> unchanged
+
+15200kWh --> unchanged
+62.5kWh --> unchanged
+0.0023kWh --> unchanged
+
+15200MWh --> unchanged
+62.5MWh --> unchanged
+0.0023MWh --> unchanged
+
+15200V --> 15.2kV
+62.5V --> unchanged
+0.0023V --> 2.3mV
+
+15200kV --> unchanged
+62.5kV --> unchanged
+0.0023kV --> 2.3V
+
+15200mV --> 15.2V
+62.5mV --> unchanged
+0.0023mV --> unchanged
+
+15200A --> unchanged
+62.5A --> unchanged
+0.0023A --> 2.3mA
+
+15200mA --> 15.2A
+62.5mA --> unchanged
+0.0023mA --> 2.3uA
+
+15200uA --> 15.2mA
+62.5uA --> unchanged
+0.0023uA --> unchanged
+
+15200Ohm --> 15.2kOhm
+62.5Ohm --> unchanged
+0.0023Ohm --> 2.3mOhm
+
+15200mOhm --> 15.2Ohm
+62.5mOhm --> unchanged
+0.0023mOhm --> unchanged
+
+15200kOhm --> 15.2MOhm
+62.5kOhm --> unchanged
+0.0023kOhm --> 2.3Ohm
+
+15200MOhm --> unchanged
+62.5MOhm --> unchanged
+0.0023MOhm --> 2.3kOhm
+
+15200mps --> 15.2kmps
+62.5mps --> unchanged
+0.0023mps --> unchanged
+
+15200kmps --> unchanged
+62.5kmps --> unchanged
+0.0023kmps --> 2.3mps
+
+15200kmph --> unchanged
+62.5kmph --> unchanged
+0.0023kmph --> unchanged
+
+15200C --> unchanged
+62.5C --> unchanged
+0.0023C --> 2.3mAs
+
+15200As --> unchanged
+62.5As --> unchanged
+0.0023As --> 2.3mAs
+
+15200mAs --> 15.2C
+62.5mAs --> unchanged
+0.0023mAs --> unchanged
+
+15200Ah --> unchanged
+62.5Ah --> unchanged
+0.0023Ah --> unchanged
+
+15200mAh --> unchanged
+62.5mAh --> unchanged
+0.0023mAh --> unchanged
+
+15200ratio --> unchanged
+62.5ratio --> unchanged
+0.0023ratio --> unchanged
+
+15200pct --> 152ratio
+62.5pct --> unchanged
+0.0023pct --> unchanged
+
+15200dBW --> unchanged
+62.5dBW --> unchanged
+0.0023dBW --> unchanged
+
+15200dBm --> unchanged
+62.5dBm --> unchanged
+0.0023dBm --> unchanged
+
+15200dBmW --> unchanged
+62.5dBmW --> unchanged
+0.0023dBmW --> unchanged
+
+15200dBV --> unchanged
+62.5dBV --> unchanged
+0.0023dBV --> unchanged
+
+15200dBmV --> unchanged
+62.5dBmV --> unchanged
+0.0023dBmV --> unchanged
+
+15200dBA --> unchanged
+62.5dBA --> unchanged
+0.0023dBA --> unchanged
+
+15200dBmA --> unchanged
+62.5dBmA --> unchanged
+0.0023dBmA --> unchanged
+
+15200dB --> unchanged
+62.5dB --> unchanged
+0.0023dB --> unchanged
+
+.

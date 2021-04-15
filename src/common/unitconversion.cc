@@ -20,6 +20,7 @@
 #include <cstdlib>
 #include <cerrno>
 #include <cmath>
+#include <algorithm>
 #include "omnetpp/platdep/platmisc.h"  // strcasecmp
 #include "opp_ctype.h"
 #include "stringutil.h"
@@ -470,6 +471,65 @@ double UnitConversion::tryConvert(double value, UnitDesc *unitDesc, UnitDesc *ta
     }
 
     return NaN;
+}
+
+inline bool isPowerOf10(double d)
+{
+    double exp = log10(d);
+    return fabs(exp - floor(exp+0.5)) < 0.01;
+}
+
+inline bool isSIMultiple(double d)
+{
+    double multiples[] = { 1, 1e3, 1e6, 1e9, 1e12, 1e15, 1e-3, 1e-6, 1e-9, 1e-12, 1e-15 };
+    return std::find(std::begin(multiples), std::end(multiples), d) != std::end(multiples);
+}
+
+const char *UnitConversion::getBestUnit(double d, const char *unit)
+{
+    // We do not touch the unit (return the original unit) in a number of cases:
+    // if value is zero, infinite or NaN; if we don't know about the unit; if it's a logarithmic unit;
+    // or if it's a linear unit but not a power-of-ten multiples of their base units (think
+    // deg<->rad, hour<->sec, or Wh<->Ws). Also, we only choose SI units (10^3k) as "best" ones.
+    UnitDesc *origUnitDesc = lookupUnit(unit);
+    if (d==0 || !std::isfinite(d) || origUnitDesc == nullptr || origUnitDesc->mapping != LINEAR || !isPowerOf10(origUnitDesc->mult))
+        return unit;
+
+    UnitDesc *baseUnitDesc = origUnitDesc->baseUnitDesc;
+
+    // fill in bestUnitCandidates[] if not yet done
+    if (baseUnitDesc->bestUnitCandidates.empty()) // note: even if it has no SI multiples, itself will be added (base of itself w/ mult=1)
+        for (UnitDesc *p = unitTable; p->unit; p++)
+            if (p->baseUnitDesc == baseUnitDesc && p->mapping == LINEAR && isSIMultiple(p->mult))
+                baseUnitDesc->bestUnitCandidates.push_back(p);
+
+    // treat negative numbers exactly as positive ones
+    d = fabs(d);
+
+    // pick best one
+    auto& candidates = baseUnitDesc->bestUnitCandidates;
+    double valueInBaseUnit = d * origUnitDesc->mult;
+    auto better = [=](UnitDesc *a, UnitDesc *b) {
+        // return true if "a" is better than "b", false otherwise
+        bool greaterThanOneInUnitA = (valueInBaseUnit / a->mult) >= 1.0;
+        bool greaterThanOneInUnitB = (valueInBaseUnit / b->mult) >= 1.0;
+        if (greaterThanOneInUnitA && greaterThanOneInUnitB)
+            return a->mult > b->mult; // prefer bigger unit (results in smaller value)
+        else if (!greaterThanOneInUnitA && !greaterThanOneInUnitB)
+            return a->mult < b->mult; // prefer smaller unit (value will be < 1.0 but to closer to 1.0)
+        else
+            return greaterThanOneInUnitA; // prefer the one that results in >= 1.0 value
+    };
+    auto it = std::min_element(candidates.begin(), candidates.end(), better);
+    Assert(it != candidates.end()); // array was not empty
+    UnitDesc *bestDesc = *it;
+
+    // give the original unit a chance to win too (so we don't pointlessly convert e.g. "cm" to "mm");
+    // also, do not change the unit if it wouldn't change the value (e.g. don't change "As" to "C")
+    if (bestDesc != origUnitDesc && (better(origUnitDesc, bestDesc) || bestDesc->mult == origUnitDesc->mult))
+        bestDesc = origUnitDesc;
+
+    return bestDesc->unit;
 }
 
 const char *UnitConversion::getLongName(const char *unit)

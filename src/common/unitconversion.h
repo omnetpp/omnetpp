@@ -32,7 +32,7 @@ class COMMON_API UnitConversion
 {
   protected:
     enum Mapping { LINEAR, LOG10 };
-    struct UnitDesc { const char *unit; double mult; Mapping mapping; const char *baseUnit; const char *longName; UnitDesc *baseUnitDesc; };
+    struct UnitDesc { const char *unit; double mult; Mapping mapping; const char *baseUnit; const char *longName; UnitDesc *baseUnitDesc; std::vector<UnitDesc*> bestUnitCandidates;};
     static UnitDesc unitTable[];
 
     static const int HASHTABLESIZE = 2048; // must be power of 2
@@ -77,9 +77,10 @@ class COMMON_API UnitConversion
      *
      * Syntax: <number> | (<number> <unit>)+
      *
-     * To reduce the chance of confusion, negative numbers may only occur
-     * at the start of the quantity, and the minus sign refers to the whole quantity.
-     * For example, "-1s200ms" means -1.2s and not -0.8s; and "1s-100ms" is illegal.
+     * To reduce the chance of confusion, units must be in strictly decreasing order
+     * of magnitude, and negative numbers may only occur at the start of the quantity.
+     * The potential minus sign refers to the whole quantity. For example, "-1s200ms"
+     * means -1.2s and not -0.8s; and "1s-100ms" is illegal.
      *
      * If there is a syntax error, or if unit mismatch is found (i.e. distance
      * is given instead of time), the method throws an exception.
@@ -121,6 +122,12 @@ class COMMON_API UnitConversion
      * Throws an error if the conversion is not possible.
      */
     static double convertUnit(double d, const char *unit, const char *targetUnit);
+
+    /**
+     * Returns the best unit for human consumption for the given quantity. Returns
+     * the unit in which the value is closest to 1.0 but >= 1.0 if at all possible.
+     */
+    static const char *getBestUnit(double d, const char *unit);
 
     /**
      * Returns the long name for the given unit, or nullptr if it is unrecognized.
