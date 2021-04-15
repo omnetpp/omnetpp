@@ -85,7 +85,7 @@ unsigned long cLCG32::intRandMax()
 unsigned long cLCG32::intRand(unsigned long n)
 {
     if (n > LCG32_MAX)
-        throw cRuntimeError("cLCG32: intRand(%d): Argument out of range 1..2^31-2");
+        throw cRuntimeError("cLCG32: intRand(%lu): Argument out of range 1..2^31-2", n);
 
     // code from MersenneTwister.h, Richard J. Wagner rjwagner@writeme.com
     // Find which bits are used in n

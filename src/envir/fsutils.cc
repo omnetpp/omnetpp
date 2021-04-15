@@ -77,7 +77,7 @@ void loadExtensionLibrary(const char *lib)
         CodeFragments::executeAll(CodeFragments::STARTUP);
     }
     catch (std::runtime_error& e) {
-        throw cRuntimeError(e.what());
+        throw cRuntimeError("%s", e.what());
     }
 }
 

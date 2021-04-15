@@ -74,7 +74,7 @@ static void alert(cModule *module, const char *msg)
 {
     // called from the destructor.
     // note: C++ forbids throwing in a destructor, and noexcept(false) is not workable
-    getEnvir()->alert(cRuntimeError(module, msg).getFormattedMessage().c_str());
+    getEnvir()->alert(cRuntimeError(module, "%s", msg).getFormattedMessage().c_str());
 }
 
 cModule::~cModule()

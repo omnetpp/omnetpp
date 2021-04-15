@@ -482,7 +482,7 @@ void NedObjectNode::setFieldElement(cClassDescriptor *desc, void *object, const 
         cValueMap *valueMap = value.getType()==cValue::OBJECT ? dynamic_cast<cValueMap *>(value.objectValue()) : nullptr;
         if (valueMap == nullptr)
             throw cRuntimeError("Map value expected for object field '%s%s' inside a '%s'",
-                    cValue::getTypeName(value.getType()), fieldName, (fieldIndex==-1 ? "" : "[]"), desc->getFullName());
+                    fieldName, (fieldIndex==-1 ? "" : "[]"), desc->getFullName());
 
         fillObject(fieldDesc, fieldPtr, valueMap);
     }

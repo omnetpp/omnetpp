@@ -903,7 +903,7 @@ cValue nedf_select(cComponent *contextComponent, cValue argv[], int argc)
     if (index < 0)
         throw cRuntimeError("Negative index %ld", index);
     if (index >= argc-1)
-        throw cRuntimeError("Index=%ld is too large", index, argc-1);
+        throw cRuntimeError("Index=%ld is too large (max: %d)", index, argc-2);
     return argv[index+1];
 }
 
