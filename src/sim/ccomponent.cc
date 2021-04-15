@@ -89,12 +89,17 @@ cComponent::cComponent(const char *name) : cSoftOwner(name)
     setLogLevel(LOGLEVEL_TRACE);
 }
 
+// cannot throw in destructors, so just print to stderr instead
+#define ASSERT_SOFT(expr) \
+  ((void) ((expr) ? 0 : fprintf(stderr, "ASSERT: Condition '%s' does not hold in function '%s' at %s:%d", #expr, __FUNCTION__, __FILE__, __LINE__), 0))
+
 cComponent::~cComponent()
 {
     if (componentId != -1)
         simulation->deregisterComponent(this);
 
-    ASSERT(signalTable == nullptr);  // note: releaseLocalListeners() gets called in subclasses, ~cModule and ~cChannel
+    ASSERT_SOFT(signalTable == nullptr);  // note: releaseLocalListeners() gets called in subclasses, ~cModule and ~cChannel
+
     delete[] rngMap;
     delete[] parArray;
     delete displayString;
