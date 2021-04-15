@@ -21,6 +21,7 @@
 *.vci
 *.pyc
 *.out
+*.aux
 .ccls-cache
 .clangd
 .vscode/ipch
@@ -153,3 +154,12 @@ backups
 /samples/*/doc/
 /configure.user
 /configuser.vc
+/test/scave/charttemplates/export/
+/test/scave/results_api/results/
+/test/misc/neddocext/doc/neddoc/
+/test/misc/filereader/generated/
+/test/misc/filereader/results/
+/doc/src/manual/usman.fls
+/doc/src/manual/usman.idx
+/doc/src/manual/usman.ilg
+/doc/src/manual/usman.log
