@@ -16,14 +16,14 @@
 #ifndef __OMNETPP_SIMUTIL_H
 #define __OMNETPP_SIMUTIL_H
 
-#include <type_traits> // is_integer
-#include <limits>   // numeric_limits
+#include <cmath>
 #include <cstring>  // for strlen, etc.
 #include <cstdarg>  // for va_list
 #include <cstdio>   // for sprintf
 #include <cstdlib>  // for gcvt
-#include <typeinfo>  // for type_info
 #include <string>    // for std::string
+#include <typeinfo>  // for type_info
+#include <type_traits> // is_integer
 #include "platdep/platmisc.h" // for gcvt, etc
 #include "simkerneldefs.h"
 #include "errmsg.h"
@@ -48,7 +48,7 @@ void intCastError(const std::string& num, const cObject *context, const char *er
 /**
  * @brief Safe integer cast: it throws an exception if in case of an overflow,
  * i.e. when if the target type cannot represent the value in the source type.
- * The context argument will be used for the error message.
+ * The errmsg argument will be used for the error message.
  */
 template<typename ToInt, typename FromInt>
 ToInt checked_int_cast(FromInt x, const char *errmsg=nullptr)
@@ -63,7 +63,7 @@ ToInt checked_int_cast(FromInt x, const char *errmsg=nullptr)
 /**
  * @brief Safe integer cast: it throws an exception if in case of an overflow,
  * i.e. when if the target type cannot represent the value in the source type.
- * The context argument will be used for the error message.
+ * The context and errmsg arguments will be used for the error message.
  */
 template<typename ToInt, typename FromInt>
 ToInt checked_int_cast(FromInt x, const cObject *context, const char *errmsg=nullptr)
@@ -78,15 +78,16 @@ ToInt checked_int_cast(FromInt x, const cObject *context, const char *errmsg=nul
 /**
  * @brief Safe integer cast: it throws an exception if in case of an overflow,
  * i.e. when if the target type cannot represent the value in the source type.
- * The context argument will be used for the error message.
+ * The errmsg argument will be used for the error message.
  */
 template<typename ToInt>
 ToInt checked_int_cast(double d, const char *errmsg=nullptr)
 {
     static_assert(std::is_integral<ToInt>::value, "checked_int_cast expects integer template argument");
-    if (d < std::numeric_limits<ToInt>::min() || d > std::numeric_limits<ToInt>::max())
-        intCastError(std::to_string(d), errmsg);
-    return (ToInt)d;
+    ToInt res = d;
+    if ((double)res != std::trunc(d))
+        omnetpp::intCastError(std::to_string(d), errmsg);
+    return res;
 }
 
 /**
