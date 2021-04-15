@@ -18,6 +18,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.window.Window;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.GC;
@@ -267,7 +268,7 @@ public class EventLogTable
         int x = p.x / 2;
         int y = p.y / 2;
         String[] lines = text.split("\n");
-        gc.setForeground(ColorFactory.BLACK);
+        gc.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_TITLE_FOREGROUND));
         gc.setFont(JFaceResources.getHeaderFont());
         p = gc.textExtent(title);
         gc.drawText(title, x - p.x / 2, y - (lines.length / 2 + 2) * p.y);

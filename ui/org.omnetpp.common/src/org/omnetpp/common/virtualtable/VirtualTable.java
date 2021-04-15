@@ -57,7 +57,6 @@ import org.omnetpp.common.Debug;
 import org.omnetpp.common.collections.IEnumerator;
 import org.omnetpp.common.collections.IRangeSet;
 import org.omnetpp.common.collections.RangeSet;
-import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.IHoverInfoProvider;
@@ -92,7 +91,7 @@ public class VirtualTable<T>
     extends Composite
     implements IVirtualContentWidget<T>, ISelectionProvider
 {
-    private static final Color LINE_COLOR = ColorFactory.GREY95;
+    private static final Color LINE_COLOR = Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW);
 
     private final static boolean debug = false;
 
