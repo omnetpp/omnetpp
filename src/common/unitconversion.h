@@ -32,18 +32,21 @@ class COMMON_API UnitConversion
 {
   protected:
     enum Mapping { LINEAR, LOG10 };
-    struct UnitDesc { const char *unit; double mult; Mapping mapping; const char *baseUnit; const char *longName; };
+    struct UnitDesc { const char *unit; double mult; Mapping mapping; const char *baseUnit; const char *longName; UnitDesc *baseUnitDesc; };
     static UnitDesc unitTable[];
 
     static const int HASHTABLESIZE = 2048; // must be power of 2
     static UnitDesc *hashTable[HASHTABLESIZE];
     static int numCollisions;
+    static bool initCalled;
 
   protected:
     static int hashCode(const char *unit);
     static bool matches(UnitDesc *desc, const char *unit);
     static void insert(const char *key, UnitDesc *desc);
+    static void init();
     static void fillHashtable();
+    static void fillBaseUnitDescs();
 
     static UnitDesc *lookupUnit(const char *unit);
     static bool readNumber(const char *&s, double& number);

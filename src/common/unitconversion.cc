@@ -135,12 +135,12 @@ UnitConversion::UnitDesc UnitConversion::unitTable[] = {  // note: imperial unit
 UnitConversion::UnitDesc *UnitConversion::hashTable[HASHTABLESIZE];
 int UnitConversion::numCollisions = 0;
 
-inline bool equal(const char *a, const char *b) {return strcmp(a,b)==0;}
+bool UnitConversion::initCalled = false;
 
 bool UnitConversion::matches(UnitDesc *desc, const char *unit)
 {
     // short name
-    if (equal(desc->unit, unit))
+    if (strcmp(desc->unit, unit) == 0)
         return true;
     // if unit is at least 3 chars, look up by long name, case insensitive ("herz", "milliwatt")
     if (unit[1] && unit[2] && strcasecmp(desc->longName, unit) == 0)
@@ -165,7 +165,8 @@ inline int UnitConversion::UnitConversion::hashCode(const char *unit)
 UnitConversion::UnitDesc *UnitConversion::lookupUnit(const char *unit)
 {
     // fill hash table on first call
-    static struct Init { Init() {fillHashtable();} } dummy;
+    if (!initCalled)
+        init();
 
     if (!*unit)
         return nullptr; // empty string is not a unit
@@ -196,6 +197,13 @@ void UnitConversion::insert(const char *key, UnitDesc *desc)
     Assert(localCollisions <= 2); // usually 0, rarely 1 collision observed at the time of writing
 }
 
+void UnitConversion::init()
+{
+    initCalled = true;
+    fillHashtable();
+    fillBaseUnitDescs();
+}
+
 void UnitConversion::fillHashtable()
 {
     for (UnitDesc *p = unitTable; p->unit; p++) {
@@ -203,6 +211,12 @@ void UnitConversion::fillHashtable()
         insert(p->longName, p);
     }
     Assert(numCollisions <= 25); // 21 collisions observed at the time of writing
+}
+
+void UnitConversion::fillBaseUnitDescs()
+{
+    for (UnitDesc *p = unitTable; p->unit; p++)
+        p->baseUnitDesc = lookupUnit(p->baseUnit);
 }
 
 bool UnitConversion::readNumber(const char *& s, double& number)
@@ -361,20 +375,20 @@ double UnitConversion::tryGetConversionFactor(UnitDesc *unitDesc, UnitDesc *targ
     // if they are the same units, or one is the base unit of the other, we're done
     if (unitDesc == targetUnitDesc)
         return 1.0;
-    if (equal(unitDesc->baseUnit, targetUnitDesc->unit) && unitDesc->mapping == LINEAR)
+    if (unitDesc->baseUnitDesc == targetUnitDesc && unitDesc->mapping == LINEAR)
         return unitDesc->mult;
-    if (equal(unitDesc->unit, targetUnitDesc->baseUnit) && targetUnitDesc->mapping == LINEAR)
+    if (unitDesc == targetUnitDesc->baseUnitDesc && targetUnitDesc->mapping == LINEAR)
         return 1.0 / targetUnitDesc->mult;
 
     // convert unit to the base, and try again
-    if (!equal(unitDesc->unit, unitDesc->baseUnit) && unitDesc->mapping == LINEAR) {
+    if (unitDesc != unitDesc->baseUnitDesc && unitDesc->mapping == LINEAR) {
         UnitDesc *baseUnitDesc = lookupUnit(unitDesc->baseUnit);
         return unitDesc->mult * tryGetConversionFactor(baseUnitDesc, targetUnitDesc);
     }
 
     // try converting via the target unit's base
-    if (!equal(targetUnitDesc->unit, targetUnitDesc->baseUnit) && targetUnitDesc->mapping == LINEAR) {
-        UnitDesc *targetBaseDesc = lookupUnit(targetUnitDesc->baseUnit);
+    if (targetUnitDesc != targetUnitDesc->baseUnitDesc && targetUnitDesc->mapping == LINEAR) {
+        UnitDesc *targetBaseDesc = targetUnitDesc->baseUnitDesc;
         return tryGetConversionFactor(unitDesc, targetBaseDesc) / targetUnitDesc->mult;
     }
 
@@ -438,20 +452,20 @@ double UnitConversion::tryConvert(double value, UnitDesc *unitDesc, UnitDesc *ta
     // if they are the same units, or one is the base unit of the other, we're done
     if (unitDesc == targetUnitDesc)
         return value;
-    if (equal(unitDesc->baseUnit, targetUnitDesc->unit))
+    if (unitDesc->baseUnitDesc == targetUnitDesc)
         return convertToBase(value, unitDesc);
-    if (equal(unitDesc->unit, targetUnitDesc->baseUnit))
+    if (unitDesc == targetUnitDesc->baseUnitDesc)
         return convertFromBase(value, targetUnitDesc);
 
     // convert unit to the base, and try again
-    if (!equal(unitDesc->unit, unitDesc->baseUnit)) {
-        UnitDesc *baseUnitDesc = lookupUnit(unitDesc->baseUnit);
+    if (unitDesc != unitDesc->baseUnitDesc) {
+        UnitDesc *baseUnitDesc = unitDesc->baseUnitDesc;
         return tryConvert(convertToBase(value, unitDesc), baseUnitDesc, targetUnitDesc);
     }
 
     // try converting via the target unit's base
-    if (!equal(targetUnitDesc->unit, targetUnitDesc->baseUnit)) {
-        UnitDesc *targetBaseDesc = lookupUnit(targetUnitDesc->baseUnit);
+    if (targetUnitDesc->unit != targetUnitDesc->baseUnit) {
+        UnitDesc *targetBaseDesc = targetUnitDesc->baseUnitDesc;
         return convertFromBase(tryConvert(value, unitDesc, targetBaseDesc), targetUnitDesc);
     }
 
