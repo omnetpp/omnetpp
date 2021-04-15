@@ -162,7 +162,7 @@ bool cFileCommunications::receiveNonblocking(int filtTag, cCommBuffer *buffer, i
         // read data
         struct stat statbuf;
         if (stat(fname, &statbuf) != 0)
-            throw cRuntimeError("cFileCommunications: Cannot stat() file %s: ", fname, strerror(errno));
+            throw cRuntimeError("cFileCommunications: Cannot stat() file %s: %s", fname, strerror(errno));
         int len = statbuf.st_size;
         b->allocateAtLeast(len);
         FILE *f = fopen(fname, "rb");

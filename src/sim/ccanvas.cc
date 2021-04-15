@@ -2576,8 +2576,7 @@ void cPathFigure::setPath(const char *pathString)
         }
     }
     catch (std::exception& e) {
-        std::string msg = opp_stringf("%s in path near column %d", e.what(), s - pathString);
-        throw cRuntimeError(msg.c_str());
+        throw cRuntimeError("%s in path near column %ld", e.what(), s - pathString);
     }
 }
 
