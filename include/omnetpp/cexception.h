@@ -99,6 +99,7 @@ class SIM_API cException : public std::exception
     /**
      * To be called like printf(). The error code is set to E_CUSTOM.
      */
+    _OPP_GNU_ATTRIBUTE(format(printf, 2, 3))
     cException(const char *msg,...);
 
     /**
@@ -115,6 +116,7 @@ class SIM_API cException : public std::exception
      * The 1st arg is the object where the error occurred: its class and
      * object name will be prepended to the message like this: "(cArray)arr".
      */
+    _OPP_GNU_ATTRIBUTE(format(printf, 3, 4))
     cException(const cObject *where, const char *msg,...);
 
     /**
@@ -249,6 +251,7 @@ class SIM_API cTerminationException : public cException
     /**
      * To be called like printf(). The error code is set to E_CUSTOM.
      */
+    _OPP_GNU_ATTRIBUTE(format(printf, 2, 3))
     cTerminationException(const char *msg,...);
 
     /**
@@ -301,6 +304,7 @@ class SIM_API cRuntimeError : public cException
     /**
      * To be called like printf(). The error code is set to E_CUSTOM.
      */
+    _OPP_GNU_ATTRIBUTE(format(printf, 2, 3))
     cRuntimeError(const char *msg,...);
 
     /**
@@ -317,6 +321,7 @@ class SIM_API cRuntimeError : public cException
      * The 1st arg is the object where the error occurred: its class and
      * object name will be prepended to the message like this: "(cArray)arr".
      */
+    _OPP_GNU_ATTRIBUTE(format(printf, 3, 4))
     cRuntimeError(const cObject *where, const char *msg,...);
 
     /**
