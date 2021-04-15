@@ -143,7 +143,7 @@ void cValueArray::add(const cValue& value)
 void cValueArray::insert(int k, const cValue& value)
 {
     if (k < 0 || k >= (int)array.size())
-        throw cRuntimeError(this, "insert(): index %s is out of bounds", k);
+        throw cRuntimeError(this, "insert(): index %d is out of bounds", k);
 
     array.insert(array.begin() + k, value);
     takeValue(value);
@@ -152,14 +152,14 @@ void cValueArray::insert(int k, const cValue& value)
 const cValue& cValueArray::get(int k) const
 {
     if (k < 0 || k >= (int)array.size())
-        throw cRuntimeError(this, "get(): index %s is out of bounds", k);
+        throw cRuntimeError(this, "get(): index %d is out of bounds", k);
     return array.at(k);
 }
 
 void cValueArray::set(int k, const cValue& value)
 {
     if (k < 0 || k >= (int)array.size())
-        throw cRuntimeError(this, "set(): index %s is out of bounds", k);
+        throw cRuntimeError(this, "set(): index %d is out of bounds", k);
     dropAndDeleteValue(array[k]);
     array[k] = value;
     takeValue(value);
@@ -168,7 +168,7 @@ void cValueArray::set(int k, const cValue& value)
 void cValueArray::erase(int k)
 {
     if (k < 0 || k >= (int)array.size())
-        throw cRuntimeError(this, "erase(): index %s is out of bounds", k);
+        throw cRuntimeError(this, "erase(): index %d is out of bounds", k);
     dropAndDeleteValue(array[k]);
     array.erase(array.begin() + k);
 }
@@ -176,7 +176,7 @@ void cValueArray::erase(int k)
 cValue cValueArray::remove(int k)
 {
     if (k < 0 || k >= (int)array.size())
-        throw cRuntimeError(this, "remove(): index %s is out of bounds", k);
+        throw cRuntimeError(this, "remove(): index %d is out of bounds", k);
     if (array[k].getType() == cValue::OBJECT) {
         cObject *obj = array[k].objectValue();
         if (obj && obj->getOwner() == this)
