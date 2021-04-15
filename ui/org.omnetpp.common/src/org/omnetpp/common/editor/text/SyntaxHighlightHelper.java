@@ -15,6 +15,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.util.DisplayUtils;
+import org.omnetpp.common.util.UIUtils;
 
 /**
  * Data for syntax highlighting
@@ -29,35 +30,54 @@ public class SyntaxHighlightHelper {
     public final static String[] highlightNedTypes = Keywords.NED_TYPE_KEYWORDS;
     public final static String[] highlightNedSpecialKeywords = Keywords.NED_SPECIAL_KEYWORDS;
     public final static String[] highlightNedKeywords = Keywords.concat(Keywords.NED_NONEXPR_KEYWORDS, Keywords.NED_EXPR_KEYWORDS);
+    public final static String[] highlightNedExprKeywords = Keywords.NED_EXPR_KEYWORDS;
     public final static String[] highlightNedFunctions = Keywords.NED_FUNCTIONS;
     public final static String[] highlightMsgTypes = Keywords.MSG_TYPE_KEYWORDS;
     public final static String[] highlightMsgKeywords = Keywords.concat(Keywords.MSG_KEYWORDS, Keywords.MSG_SECTION_KEYWORDS);
     public final static String[] highlightConstants = Keywords.BOOL_CONSTANTS;
 
-    // tokens for syntax highlighting
-    public final static IToken docDefaultToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GRAY), null, SWT.ITALIC));
-    public final static IToken docKeywordToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_BLUE)));
-    public final static IToken docTagToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_RED)));
-    public final static IToken docPrivateDefaultToken = new Token(new TextAttribute(getColor(SWT.COLOR_BLUE), null, SWT.ITALIC));
-    public final static IToken docPrivateTodoToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_BLUE)));
-    public final static IToken codeDefaultToken = new Token(new TextAttribute(getColor(SWT.COLOR_BLACK)));
-    public final static IToken codeKeywordToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_RED), null, SWT.BOLD));
-    public final static IToken codeFunctionToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_MAGENTA), null, SWT.BOLD));
-    public final static IToken codeTypeToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_BLUE), null, SWT.BOLD));
-    public final static IToken codeIdentifierToken = new Token(new TextAttribute(getColor(SWT.COLOR_BLACK)));
-    public final static IToken codePropertyToken = new Token(new TextAttribute(getColor(SWT.COLOR_BLACK), null, SWT.BOLD));
-    public final static IToken codeStringToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GREEN)));
-    public final static IToken codeNumberToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GREEN)));
+    // tokens for syntax highlighting (in light theme)
+    public static IToken docDefaultToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GRAY), null, SWT.ITALIC));
+    public static IToken docKeywordToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_BLUE)));
+    public static IToken docTagToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_RED)));
+    public static IToken docPrivateDefaultToken = new Token(new TextAttribute(getColor(SWT.COLOR_BLUE), null, SWT.ITALIC));
+    public static IToken docPrivateTodoToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_BLUE)));
+    public static IToken codeDefaultToken = new Token(new TextAttribute(getColor(SWT.COLOR_WIDGET_FOREGROUND)));
+    public static IToken codeKeywordToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_RED), null, SWT.BOLD));
+    public static IToken codeFunctionToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_MAGENTA)));
+    public static IToken codeTypeToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_BLUE), null, SWT.BOLD));
+    public static IToken codeIdentifierToken = new Token(new TextAttribute(getColor(SWT.COLOR_WIDGET_FOREGROUND)));
+    public static IToken codePropertyToken = new Token(new TextAttribute(getColor(SWT.COLOR_WIDGET_FOREGROUND), null, SWT.BOLD));
+    public static IToken codeStringToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GREEN)));
+    public static IToken codeNumberToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GREEN)));
+    
+    static {
+    	if (UIUtils.isDarkTheme()) {
+    		docDefaultToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GRAY), null, SWT.ITALIC));
+    		docKeywordToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_YELLOW)));
+    		docTagToken = new Token(new TextAttribute(new Color(80, 80, 80)));
+    		docPrivateDefaultToken = new Token(new TextAttribute(getColor(SWT.COLOR_BLUE), null, SWT.ITALIC));
+    		docPrivateTodoToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_BLUE)));
+    		codeDefaultToken = new Token(new TextAttribute(getColor(SWT.COLOR_WIDGET_FOREGROUND)));
+    		codeKeywordToken = new Token(new TextAttribute(new Color(128, 128, 64), null, SWT.BOLD));
+    		codeFunctionToken = new Token(new TextAttribute(new Color(128, 128, 255)));
+    		codeTypeToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_CYAN), null, SWT.BOLD));
+    		codeIdentifierToken = new Token(new TextAttribute(getColor(SWT.COLOR_WIDGET_FOREGROUND)));
+    		codePropertyToken = new Token(new TextAttribute(new Color(192, 192, 128), null, SWT.BOLD));
+    		codeStringToken = new Token(new TextAttribute(new Color(128, 220, 128)));
+    		codeNumberToken = new Token(new TextAttribute(new Color(128, 220, 128)));
+    	}
+    }
 
     /**
      * Convenience method, to return a system default color. Color constants come from SWT class e.g. SWT.COLOR_RED
      */
-    private static Color getColor(final int color) {
+    private static Color getColor(final int swtColor) {
         final Color colors[] = new Color[1];
 
         DisplayUtils.runNowOrSyncInUIThread(new Runnable() {
             public void run() {
-                colors[0] = Display.getDefault().getSystemColor(color);
+                colors[0] = Display.getDefault().getSystemColor(swtColor);
             }
         });
 

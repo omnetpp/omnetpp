@@ -15,6 +15,7 @@ import org.eclipse.jface.text.rules.Token;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
+import org.omnetpp.common.util.UIUtils;
 
 /**
  * This class contains all the possible keywords for syntax highlighting and context assist functions.
@@ -77,16 +78,29 @@ public class InifileTextEditorHelper {
     public final static IWordDetector spaceSeparatedWordDetector = new SpaceSeparatedWordDetector();
     public final static IWordDetector inifileWordDetector = new InifileWordDetector();
 
-    // tokens for syntax highlighting
+    // tokens for syntax highlighting in light theme
     // TODO these styles should be configurable
-    public final static IToken commentToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GRAY), null, SWT.ITALIC));
-    public final static IToken codeDefaultToken = new Token(new TextAttribute(getColor(SWT.COLOR_BLACK)));
-    public final static IToken codeIdentifierToken = new Token(new TextAttribute(getColor(SWT.COLOR_BLACK)));
-    public final static IToken codeConfigKeyToken = new Token(new TextAttribute(new Color(null, 0, 0, 192))); // Eclipse text editor blue
-    public final static IToken codeKeywordToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_MAGENTA), null, SWT.BOLD));
-    public final static IToken codeFunctionToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_MAGENTA)));
-    public final static IToken codeStringToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GREEN)));
-    public final static IToken codeNumberToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GREEN)));
-
+    public static IToken commentToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GRAY), null, SWT.ITALIC));
+    public static IToken codeDefaultToken = new Token(new TextAttribute(getColor(SWT.COLOR_BLACK)));
+    public static IToken codeIdentifierToken = new Token(new TextAttribute(getColor(SWT.COLOR_BLACK)));
+    public static IToken codeConfigKeyToken = new Token(new TextAttribute(new Color(0, 0, 192), null, SWT.BOLD)); // Eclipse text editor blue
+    public static IToken codeKeywordToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_MAGENTA), null, SWT.BOLD));
+    public static IToken codeFunctionToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_MAGENTA)));
+    public static IToken codeStringToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GREEN)));
+    public static IToken codeNumberToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GREEN)));
     public static IToken codeBoolToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GREEN)));
+    
+    static {
+    	if (UIUtils.isDarkTheme()) {
+    		commentToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GRAY), null, SWT.ITALIC));
+    		codeDefaultToken = new Token(new TextAttribute(getColor(SWT.COLOR_WIDGET_FOREGROUND)));
+    		codeIdentifierToken = new Token(new TextAttribute(getColor(SWT.COLOR_WIDGET_FOREGROUND)));
+    		codeConfigKeyToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_CYAN), null, SWT.BOLD));
+    		codeKeywordToken = new Token(new TextAttribute(new Color(192, 192, 128), null, SWT.BOLD));
+    		codeFunctionToken = new Token(new TextAttribute(new Color(128, 128, 255)));
+    		codeStringToken = new Token(new TextAttribute(new Color(128, 220, 128)));
+    		codeNumberToken = new Token(new TextAttribute(new Color(128, 220, 128)));
+    		codeBoolToken = new Token(new TextAttribute(new Color(128, 220, 128)));
+    	}
+    }    
 }
