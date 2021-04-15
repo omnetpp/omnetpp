@@ -71,7 +71,7 @@
 #endif
 
 #if defined __GNUC__
-#  define _OPP_GNU_ATTRIBUTE(x)  __attribute__(x)
+#  define _OPP_GNU_ATTRIBUTE(x) [[gnu::x]]
 #else
 #  define _OPP_GNU_ATTRIBUTE(x)
 #endif

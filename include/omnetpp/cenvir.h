@@ -496,6 +496,7 @@ class SIM_API cEnvir
     /**
      * A printf-like frontend for alert().
      */
+    _OPP_GNU_ATTRIBUTE(format(printf, 2, 3))
     virtual void printfmsg(const char *fmt,...);
 
     /**

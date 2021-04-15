@@ -38,7 +38,8 @@ class SIM_API cStatistic : public cRandom
 
   protected:
     // internal: utility function for implementing loadFromFile() functions
-    void freadvarsf (FILE *f,  const char *fmt, ...) _OPP_GNU_ATTRIBUTE((format(scanf, 3, 4)));
+    _OPP_GNU_ATTRIBUTE(format(scanf, 3, 4))
+    void freadvarsf (FILE *f,  const char *fmt, ...);
     // internal: for collecting the attributes to record into the scalar file
     virtual void getAttributesToRecord(opp_string_map& attributes) {}
 
