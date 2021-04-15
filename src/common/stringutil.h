@@ -151,6 +151,7 @@ inline std::string opp_quotestr_ifneeded(const std::string& txt)
 /**
  * Create a string using printf-like formatting. Allocates storage dynamically.
  */
+_OPP_GNU_ATTRIBUTE(format(printf, 1, 2))
 COMMON_API std::string opp_stringf(const char *fmt, ...);
 
 /**

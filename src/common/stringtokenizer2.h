@@ -34,6 +34,7 @@ class COMMON_API StringTokenizerException : public opp_runtime_error
     /**
      * Constructor with error message generated in a printf-like manner.
      */
+    _OPP_GNU_ATTRIBUTE(format(printf, 2, 3))
     StringTokenizerException(const char *msg, ...);
 
     /**

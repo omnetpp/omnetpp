@@ -89,8 +89,11 @@ class COMMON_API CallTracer
     std::string funcname;
     std::string result;
   public:
+    _OPP_GNU_ATTRIBUTE(format(printf, 2, 3))
     CallTracer(const char *fmt,...);
     ~CallTracer();
+
+    _OPP_GNU_ATTRIBUTE(format(printf, 1, 2))
     static void printf(const char *fmt, ...);
     static void setDepth(int d) {depth = d;}
     template <class T> void setResult(T x) { result = ToString<T>::toString(x); };

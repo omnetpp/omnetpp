@@ -241,7 +241,9 @@ class SIM_API cMethodCallContextSwitcher : public cContextSwitcher
      * Various ways to tell the user interface about the method call so that
      * the call can be animated, recorded into the event log, etc.
      */
+    _OPP_GNU_ATTRIBUTE(format(printf, 2, 3))
     void methodCall(const char *methodFmt,...);
+    _OPP_GNU_ATTRIBUTE(format(printf, 2, 3))
     void methodCallSilent(const char *methodFm,...);
     void methodCallSilent();
 
