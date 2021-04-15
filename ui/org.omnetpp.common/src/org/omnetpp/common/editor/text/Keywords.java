@@ -45,24 +45,30 @@ public class Keywords {
 
     public final static String[] NED_NONEXPR_KEYWORDS = concat(NED_COMPONENTTYPE_KEYWORDS, NED_SECTION_KEYWORDS, NED_OTHER_KEYWORDS);
 
-    public final static String[] NED_EXPR_KEYWORDS = { "sizeof", "const", "default", "ask", "this", "index", "typename", "xmldoc" };
+    public final static String[] NED_EXPR_KEYWORDS = { "sizeof", "const", "default", "ask", "this", "index", "typename" };
 
     public final static String[] BOOL_CONSTANTS = { "false", "true", "undefined", "nan", "inf", "null", "nullptr" };
+    
+    public final static String[] MSG_TYPE_KEYWORDS = { // types recognized by the message compiler
+    		"abstract", "bool", "char", "short", "int", "long", "float", "double", "unsigned", "string", "simtime_t", 
+    		"int8_t", "int16_t", "int32_t", "int64_t", "uint8_t", "uint16_t", "uint32_t", "uint64_t",
+    		"int8", "int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64" };  
 
-    public final static String[] MSG_TYPE_KEYWORDS = {"abstract", "readonly", "bool", "char", "short", "int", "long", "double", "unsigned", "string"};
-
-    public final static String[] MSG_KEYWORDS = {"cplusplus", "namespace", "struct", "message", "packet", "class", "noncobject", "enum", "extends"};
+    public final static String[] MSG_KEYWORDS = {"cplusplus", "namespace", "struct", "message", "packet", "class", "enum", "extends", "import" };
 
     public final static String[] MSG_SECTION_KEYWORDS = { "properties", "fields"};
 
 
-    public final static String[] NED_FUNCTIONS = { "acos", "asin", "atan", "atan2", "bernoulli",
-            "beta", "binomial", "cauchy", "ceil", "chi_square", "cos", "erlang_k", "exp",
-            "exponential", "fabs", "floor", "fmod", "gamma_d", "genk_exponential",
-            "genk_intuniform", "genk_normal", "genk_truncnormal", "genk_uniform", "geometric",
-            "hypergeometric", "hypot", "intuniform", "log", "log10", "lognormal", "max", "min",
-            "negbinomial", "normal", "pareto_shifted", "poisson", "pow", "simTime", "sin", "sqrt",
-            "student_t", "tan", "triang", "truncnormal", "uniform", "weibull", "xml", "xmldoc" };
+    public final static String[] NED_FUNCTIONS = { "acos", "ancestorIndex", "asin", "atan", "atan2", "bernoulli",
+            "beta", "binomial", "cauchy", "ceil", "chi_square", "choose", "contains", "convertUnit", "cos", "dropUnit",
+            "endsWith", "erlang_k", "exp", "expand", "exponential", "fabs", "firstAvailable", "floor", "fmod", "fullName",
+            "fullPath", "gamma_d", "genk_exponential", "genk_intuniform", "genk_normal", "genk_truncnormal",
+            "genk_uniform", "geometric", "hypergeometric", "hypot", "indexOf", "intuniform", "intuniformexl", "length",
+            "log", "log10", "lognormal", "max", "min", "negbinomial", "normal", "parentIndex", "pareto_shifted",
+            "poisson", "pow", "replace", "replaceFirst", "replaceUnit", "select", "simTime", "sin", "sqrt",
+            "startsWith", "student_t", "substring", "substringAfter", "substringAfterLast", "substringBefore",
+            "substringBeforeLast", "tail", "tan", "toLower", "toUpper", "triang", "trim", "truncnormal", "uniform",
+            "unitOf", "weibull", "xml", "xmldoc" };
 
     public final static String[] NED_RESERVED_WORDS = concat(NED_TYPE_KEYWORDS, NED_SPECIAL_KEYWORDS, NED_NONEXPR_KEYWORDS, NED_EXPR_KEYWORDS, BOOL_CONSTANTS);
 
