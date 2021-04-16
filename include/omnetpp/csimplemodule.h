@@ -419,6 +419,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
     /**
      * Equivalent to <tt>throw cRuntimeError(<i>same argument list</i>)</tt>.
      */
+    _OPP_GNU_ATTRIBUTE(format(printf, 2, 3))
     virtual void error(const char *format,...) const;
     //@}
 

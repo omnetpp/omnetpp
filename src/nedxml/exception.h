@@ -39,11 +39,13 @@ class NEDXML_API NedException : public std::runtime_error
     /**
      * The error message can be generated in a printf-like manner.
      */
+    _OPP_GNU_ATTRIBUTE(format(printf, 2, 3))
     NedException(const char *messagefmt,...);
 
     /**
      * The error message can be generated in a printf-like manner.
      */
+    _OPP_GNU_ATTRIBUTE(format(printf, 3, 4))
     NedException(ASTNode *context, const char *messagefmt,...);
 
     /**

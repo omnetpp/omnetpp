@@ -12,6 +12,7 @@
 
 using namespace omnetpp;
 
+_OPP_GNU_ATTRIBUTE(format(printf, 1, 2))
 std::string stringf(const char *format, ...)
 {
     const int BUFLEN = 1024;
