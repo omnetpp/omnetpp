@@ -31,9 +31,9 @@ import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.eventlog.EventLogEntryReference;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.TimeUtils;
-import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.common.virtualtable.IVirtualTableRowRenderer;
 import org.omnetpp.eventlog.Event;
 import org.omnetpp.eventlog.EventLogEntry;
@@ -73,7 +73,7 @@ import org.omnetpp.eventlog.entry.SimulationEndEntry;
 import org.omnetpp.eventlogtable.widgets.EventLogTable.NameMode;
 
 public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventLogEntryReference> {
-    private static final boolean isLightTheme = !UIUtils.isDarkTheme(); 
+    private static final boolean isLightTheme = !DisplayUtils.isDarkTheme(); 
     private static final Font FONT;
     private static final Font BOLD_FONT;
     private static final Color FOREGROUND_COLOR = Display.getCurrent().getSystemColor(SWT.COLOR_WIDGET_FOREGROUND);

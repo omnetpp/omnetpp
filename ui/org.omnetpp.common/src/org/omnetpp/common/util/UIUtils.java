@@ -14,13 +14,10 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.fieldassist.ControlDecoration;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
@@ -139,14 +136,5 @@ public class UIUtils {
         for (int i=0; i<listeners.length; i++)
             if (listeners[i] != null)
                 widget.removeListener(types[i], listeners[i]);
-    }
-    
-    public static boolean isDarkTheme() {
-    	Display display= Display.getCurrent();
-    	if (display == null) 
-    		return false; 
-    	Color bgColor = display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND);
-    	double brightness = bgColor.getRed()*0.299 + bgColor.getGreen()*0.587 + bgColor.getBlue()*0.114;
-    	return brightness < 128.0;
     }    	
 }

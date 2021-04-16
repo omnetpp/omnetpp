@@ -15,7 +15,7 @@ import org.eclipse.jface.text.rules.Token;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
-import org.omnetpp.common.util.UIUtils;
+import org.omnetpp.common.util.DisplayUtils;
 
 /**
  * This class contains all the possible keywords for syntax highlighting and context assist functions.
@@ -91,7 +91,7 @@ public class InifileTextEditorHelper {
     public static IToken codeBoolToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GREEN)));
     
     static {
-    	if (UIUtils.isDarkTheme()) {
+    	if (DisplayUtils.isDarkTheme()) {
     		commentToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GRAY), null, SWT.ITALIC));
     		codeDefaultToken = new Token(new TextAttribute(getColor(SWT.COLOR_WIDGET_FOREGROUND)));
     		codeIdentifierToken = new Token(new TextAttribute(getColor(SWT.COLOR_WIDGET_FOREGROUND)));

@@ -57,6 +57,7 @@ import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.IHoverInfoProvider;
 import org.omnetpp.common.util.CsvWriter;
+import org.omnetpp.common.util.DisplayUtils;
 
 /**
  * Custom-drawn table control that can display a virtually unlimited number of
@@ -107,7 +108,7 @@ import org.omnetpp.common.util.CsvWriter;
  */
 public class LargeTable extends Composite
 {
-    private static final Color LINE_COLOR = ColorFactory.GREY95;
+    private static final Color LINE_COLOR = Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW);
 
     private final static boolean debug = false;
 
@@ -258,14 +259,8 @@ public class LargeTable extends Composite
         selectionBackground = display.getSystemColor(SWT.COLOR_LIST_SELECTION);
         selectionForeground = display.getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT);
         unfocusedSelectionBackground = display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND); // ?
-        unfocusedSelectionForeground = getContrastingForegroundColor(unfocusedSelectionBackground);
+        unfocusedSelectionForeground = display.getSystemColor(SWT.COLOR_WIDGET_FOREGROUND);
     }
-
-    protected static Color getContrastingForegroundColor(Color bg) {
-        boolean isDark = (bg.getRed() + bg.getGreen() + bg.getBlue()) / 3 < 128; // completely unscientific
-        return isDark ? ColorFactory.WHITE : ColorFactory.BLACK;
-    }
-
 
     /**
      * Sets the runnable context (e.g. progress dialog) for long running operations.

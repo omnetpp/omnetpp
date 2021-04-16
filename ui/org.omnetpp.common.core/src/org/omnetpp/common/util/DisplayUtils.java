@@ -7,6 +7,8 @@
 
 package org.omnetpp.common.util;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Listener;
 
@@ -51,4 +53,13 @@ public class DisplayUtils {
             }
         }
     }
+
+	public static boolean isDarkTheme() {
+		Display display= Display.getCurrent();
+		if (display == null) 
+			return false; 
+		Color bgColor = display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND);
+		double brightness = bgColor.getRed()*0.299 + bgColor.getGreen()*0.587 + bgColor.getBlue()*0.114;
+		return brightness < 128.0;
+	}
 }

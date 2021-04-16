@@ -24,7 +24,6 @@ import org.eclipse.draw2d.LineBorder;
 import org.eclipse.draw2d.MarginBorder;
 import org.eclipse.draw2d.RectangleFigure;
 import org.eclipse.draw2d.XYLayout;
-import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.util.LocalSelectionTransfer;
@@ -68,7 +67,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.common.color.ColorFactory;
-
+import org.omnetpp.common.util.DisplayUtils;
 
 /**
  * Viewer that displays its contents like a file manager's "large icons" view.
@@ -85,7 +84,7 @@ public class IconGridViewer extends ContentViewer {
     private static final int DEFAULT_HORIZ_SPACING = 20, DEFAULT_VERT_SPACING = 20;
     private Color dragRectangleOutlineColor = ColorFactory.LIGHT_BLUE4;
     private Color dragRectangleFillColor = ColorFactory.LIGHT_BLUE;
-    private Color selectionFillColor = new Color(Display.getDefault(), 216, 235, 243); // very light blue
+    private Color selectionFillColor = DisplayUtils.isDarkTheme() ? ColorFactory.GREY30 : new Color(216, 235, 243); // very light blue
     private Color focusElementBorderColor = ColorFactory.LIGHT_BLUE;
     private ViewMode viewMode = ViewMode.ICONS;
     private int itemWidth = 140; // in ICONS mode

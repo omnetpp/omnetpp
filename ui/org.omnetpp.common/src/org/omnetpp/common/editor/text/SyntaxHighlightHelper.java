@@ -15,7 +15,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.util.DisplayUtils;
-import org.omnetpp.common.util.UIUtils;
 
 /**
  * Data for syntax highlighting
@@ -52,7 +51,7 @@ public class SyntaxHighlightHelper {
     public static IToken codeNumberToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GREEN)));
     
     static {
-    	if (UIUtils.isDarkTheme()) {
+    	if (DisplayUtils.isDarkTheme()) {
     		docDefaultToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GRAY), null, SWT.ITALIC));
     		docKeywordToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_YELLOW)));
     		docTagToken = new Token(new TextAttribute(new Color(80, 80, 80)));
