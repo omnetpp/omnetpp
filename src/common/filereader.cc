@@ -347,7 +347,7 @@ bool FileReader::isLineStart(char *s)
             if (ferror(file))
                 throw opp_runtime_error("Read error in file '%s', error code %d", fileName.c_str(), ferror(file));
             if (bytesRead != 1)
-                throw opp_runtime_error("Cannot read 1 bytes (got %d) from file '%s'", fileName.c_str(), bytesRead);
+                throw opp_runtime_error("Cannot read 1 bytes (got %d) from file '%s'", bytesRead, fileName.c_str());
             return previousChar == '\n';
         }
     }
@@ -402,7 +402,7 @@ char *FileReader::findNextLineStart(char *start, bool bufferFilled)
         else if (getDataEndFileOffset() == getFileSize()) // searching reached to the end of the file without CR/LF
             return NULL;
         else // line too long
-            throw opp_runtime_error("Line too long, should be below %d in file '%s'", maxLineSize, fileName.c_str());
+            throw opp_runtime_error("Line too long, should be below %ld in file '%s'", maxLineSize, fileName.c_str());
     }
 
 #ifdef TRACE_FILEREADER
@@ -457,7 +457,7 @@ char *FileReader::findPreviousLineStart(char *start, bool bufferFilled)
         else if (getDataBeginFileOffset() == 0)  // searching reached to the beginning of the file without CR/LF
             return dataBegin;
         else // line too long
-            throw opp_runtime_error("Line too long, should be below %d in file '%s'", maxLineSize, fileName.c_str());
+            throw opp_runtime_error("Line too long, should be below %ld in file '%s'", maxLineSize, fileName.c_str());
     }
 
 #ifdef TRACE_FILEREADER

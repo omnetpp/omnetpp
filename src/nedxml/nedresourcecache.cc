@@ -61,7 +61,7 @@ void NedResourceCache::registerBuiltinDeclarations()
     ASTNode *tree = parser.parseNedText(nedCode, "built-in-declarations");
     if (errors.containsError()) {
         delete tree;
-        throw NedException(getFirstError(&errors).c_str());
+        throw NedException("%s", getFirstError(&errors).c_str());
     }
     NedFileElement *nedFileElement = dynamic_cast<NedFileElement*>(tree);
     Assert(nedFileElement);
@@ -179,7 +179,7 @@ NedFileElement *NedResourceCache::parseAndValidateNedFileOrText(const char *fnam
     }
     if (errors.containsError()) {
         delete tree;
-        throw NedException(getFirstError(&errors).c_str());
+        throw NedException("%s", getFirstError(&errors).c_str());
     }
 
     // DTD validation and additional syntax validation
@@ -187,14 +187,14 @@ NedFileElement *NedResourceCache::parseAndValidateNedFileOrText(const char *fnam
     dtdvalidator.validate(tree);
     if (errors.containsError()) {
         delete tree;
-        throw NedException(getFirstError(&errors, "NED internal DTD validation failure: ").c_str());
+        throw NedException("%s", getFirstError(&errors, "NED internal DTD validation failure: ").c_str());
     }
 
     NedSyntaxValidator syntaxvalidator(&errors);
     syntaxvalidator.validate(tree);
     if (errors.containsError()) {
         delete tree;
-        throw NedException(getFirstError(&errors).c_str());
+        throw NedException("%s", getFirstError(&errors).c_str());
     }
     NedFileElement *nedFileElement = dynamic_cast<NedFileElement*>(tree);
     if (!nedFileElement)
