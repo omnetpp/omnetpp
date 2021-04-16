@@ -44,22 +44,21 @@ EV << ".\n";
 %subst: /e\-0(\d\d)/e-$1/
 
 %contains: stdout
-** Event #1  t=0   Test (Test, id=1)
-15200s --> unchanged
-62.5s --> unchanged
-0.0023s --> 2.3ms
-
 15200d --> unchanged
 62.5d --> unchanged
-0.0023d --> unchanged
+0.0023d --> 198.72s
 
 15200h --> unchanged
 62.5h --> unchanged
-0.0023h --> unchanged
+0.0023h --> 8.28s
 
 15200min --> unchanged
 62.5min --> unchanged
 0.0023min --> unchanged
+
+15200s --> unchanged
+62.5s --> unchanged
+0.0023s --> 2.3ms
 
 15200ms --> 15.2s
 62.5ms --> unchanged
@@ -79,7 +78,7 @@ EV << ".\n";
 
 15200fs --> 15.2ps
 62.5fs --> unchanged
-0.0023fs --> unchanged
+0.0023fs --> 2.3as
 
 15200as --> 15.2fs
 62.5as --> unchanged
@@ -125,23 +124,23 @@ EV << ".\n";
 62.5TiB --> unchanged
 0.0023TiB --> unchanged
 
-15200kB --> 15.2MB
+15200kB --> unchanged
 62.5kB --> unchanged
 0.0023kB --> unchanged
 
-15200MB --> 15.2GB
+15200MB --> unchanged
 62.5MB --> unchanged
-0.0023MB --> 2.3kB
+0.0023MB --> unchanged
 
-15200GB --> 15.2TB
+15200GB --> unchanged
 62.5GB --> unchanged
-0.0023GB --> 2.3MB
+0.0023GB --> unchanged
 
 15200TB --> unchanged
 62.5TB --> unchanged
-0.0023TB --> 2.3GB
+0.0023TB --> unchanged
 
-15200b --> 15.2kb
+15200b --> unchanged
 62.5b --> unchanged
 0.0023b --> unchanged
 
@@ -161,21 +160,21 @@ EV << ".\n";
 62.5Tib --> unchanged
 0.0023Tib --> unchanged
 
-15200kb --> 15.2Mb
+15200kb --> unchanged
 62.5kb --> unchanged
-0.0023kb --> 2.3b
+0.0023kb --> unchanged
 
-15200Mb --> 15.2Gb
+15200Mb --> unchanged
 62.5Mb --> unchanged
-0.0023Mb --> 2.3kb
+0.0023Mb --> unchanged
 
-15200Gb --> 15.2Tb
+15200Gb --> unchanged
 62.5Gb --> unchanged
-0.0023Gb --> 2.3Mb
+0.0023Gb --> unchanged
 
 15200Tb --> unchanged
 62.5Tb --> unchanged
-0.0023Tb --> 2.3Gb
+0.0023Tb --> unchanged
 
 15200rad --> unchanged
 62.5rad --> unchanged
@@ -243,7 +242,7 @@ EV << ".\n";
 
 15200GW --> unchanged
 62.5GW --> unchanged
-0.0023GW --> 2.3MW
+0.0023GW --> unchanged
 
 15200Hz --> 15.2kHz
 62.5Hz --> unchanged
@@ -289,21 +288,21 @@ EV << ".\n";
 62.5MJ --> unchanged
 0.0023MJ --> 2.3kJ
 
-15200Ws --> 15.2kJ
+15200Ws --> unchanged
 62.5Ws --> unchanged
 0.0023Ws --> unchanged
 
-15200Wh --> unchanged
+15200Wh --> 15.2kWh
 62.5Wh --> unchanged
 0.0023Wh --> unchanged
 
-15200kWh --> unchanged
+15200kWh --> 15.2MWh
 62.5kWh --> unchanged
-0.0023kWh --> unchanged
+0.0023kWh --> 2.3Wh
 
 15200MWh --> unchanged
 62.5MWh --> unchanged
-0.0023MWh --> unchanged
+0.0023MWh --> 2.3kWh
 
 15200V --> 15.2kV
 62.5V --> unchanged
@@ -345,13 +344,13 @@ EV << ".\n";
 62.5MOhm --> unchanged
 0.0023MOhm --> 2.3kOhm
 
-15200mps --> 15.2kmps
+15200mps --> unchanged
 62.5mps --> unchanged
 0.0023mps --> unchanged
 
 15200kmps --> unchanged
 62.5kmps --> unchanged
-0.0023kmps --> 2.3mps
+0.0023kmps --> unchanged
 
 15200kmph --> unchanged
 62.5kmph --> unchanged
@@ -359,21 +358,21 @@ EV << ".\n";
 
 15200C --> unchanged
 62.5C --> unchanged
-0.0023C --> 2.3mAs
+0.0023C --> unchanged
 
 15200As --> unchanged
 62.5As --> unchanged
 0.0023As --> 2.3mAs
 
-15200mAs --> 15.2C
+15200mAs --> 15.2As
 62.5mAs --> unchanged
 0.0023mAs --> unchanged
 
 15200Ah --> unchanged
 62.5Ah --> unchanged
-0.0023Ah --> unchanged
+0.0023Ah --> 2.3mAh
 
-15200mAh --> unchanged
+15200mAh --> 15.2Ah
 62.5mAh --> unchanged
 0.0023mAh --> unchanged
 
@@ -381,7 +380,7 @@ EV << ".\n";
 62.5ratio --> unchanged
 0.0023ratio --> unchanged
 
-15200pct --> 152ratio
+15200pct --> unchanged
 62.5pct --> unchanged
 0.0023pct --> unchanged
 
@@ -418,3 +417,4 @@ EV << ".\n";
 0.0023dB --> unchanged
 
 .
+

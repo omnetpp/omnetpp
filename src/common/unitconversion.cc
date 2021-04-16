@@ -25,6 +25,7 @@
 #include "opp_ctype.h"
 #include "stringutil.h"
 #include "unitconversion.h"
+#include "stringtokenizer.h"
 
 using namespace std;
 
@@ -35,21 +36,21 @@ const double K = 1024.0;
 
 UnitConversion::UnitDesc UnitConversion::unitTable[] = {  // note: imperial units (mile,foot,yard,etc.) intentionally left out
 #define _ LINEAR
-    { "s",       1, _, "s",    "second" },
-    { "d",   86400, _, "s",    "day" },
-    { "h",    3600, _, "s",    "hour" },
-    { "min",    60, _, "s",    "minute" }, // "m" is reserved for meter
-    { "ms",   1e-3, _, "s",    "millisecond" },
-    { "us",   1e-6, _, "s",    "microsecond" },
-    { "ns",   1e-9, _, "s",    "nanosecond" },
-    { "ps",  1e-12, _, "s",    "picosecond" },
-    { "fs",  1e-15, _, "s",    "femtosecond" },
-    { "as",  1e-18, _, "s",    "attosecond" },
-    { "bps",     1, _, "bps",  "bit/sec" },
-    { "kbps",  1e3, _, "bps",  "kilobit/sec" },
-    { "Mbps",  1e6, _, "bps",  "megabit/sec" },
-    { "Gbps",  1e9, _, "bps",  "gigabit/sec" },
-    { "Tbps", 1e12, _, "bps",  "terabit/sec" },
+    { "d",   86400, _, "s",    "day",         "s ms us ns ps fs as" },
+    { "h",    3600, _, "s",    "hour",        "s ms us ns ps fs as" },
+    { "min",    60, _, "s",    "minute"       "s ms us ns ps fs as" }, // "m" is reserved for meter
+    { "s",       1, _, "s",    "second",      "s ms us ns ps fs as" },
+    { "ms",   1e-3, _, "s",    "millisecond", "s ms us ns ps fs as" },
+    { "us",   1e-6, _, "s",    "microsecond", "s ms us ns ps fs as" },
+    { "ns",   1e-9, _, "s",    "nanosecond",  "s ms us ns ps fs as" },
+    { "ps",  1e-12, _, "s",    "picosecond",  "s ms us ns ps fs as" },
+    { "fs",  1e-15, _, "s",    "femtosecond", "s ms us ns ps fs as" },
+    { "as",  1e-18, _, "s",    "attosecond",  "s ms us ns ps fs as" },
+    { "bps",     1, _, "bps",  "bit/sec",     "bps kbps Mbps Gbps Tbps" },
+    { "kbps",  1e3, _, "bps",  "kilobit/sec", "bps kbps Mbps Gbps Tbps" },
+    { "Mbps",  1e6, _, "bps",  "megabit/sec", "bps kbps Mbps Gbps Tbps" },
+    { "Gbps",  1e9, _, "bps",  "gigabit/sec", "bps kbps Mbps Gbps Tbps" },
+    { "Tbps", 1e12, _, "bps",  "terabit/sec", "bps kbps Mbps Gbps Tbps" },
     { "B",       8, _, "b",    "byte" },
     { "KiB",     K, _, "B",    "kibibyte" },
     { "MiB",   K*K, _, "B",    "mebibyte" },
@@ -69,55 +70,55 @@ UnitConversion::UnitDesc UnitConversion::unitTable[] = {  // note: imperial unit
     { "Gb",    1e9, _, "b",    "gigabit" },
     { "Tb",   1e12, _, "b",    "terabit" },
     { "rad",   1,   _, "rad",  "radian"  },
-    { "deg",M_PI/180,_,"rad",  "degree" },
-    { "m",       1, _, "m",    "meter" },
-    { "cm",   1e-2, _, "m",    "centimeter" },
-    { "mm",   1e-3, _, "m",    "millimeter" },
-    { "um",   1e-6, _, "m",    "micrometer" },
-    { "nm",   1e-9, _, "m",    "nanometer" },
-    { "km",    1e3, _, "m",    "kilometer" },
-    { "W",       1, _, "W",    "watt" },
-    { "mW",   1e-3, _, "W",    "milliwatt" },
-    { "uW",   1e-6, _, "W",    "microwatt" },
-    { "nW",   1e-9, _, "W",    "nanowatt" },
-    { "pW",  1e-12, _, "W",    "picowatt" },
-    { "fW",  1e-15, _, "W",    "femtowatt" },
-    { "kW",    1e3, _, "W",    "kilowatt" },
-    { "MW",    1e6, _, "W",    "megawatt" },
-    { "GW",    1e9, _, "W",    "gigawatt" },
-    { "Hz",      1, _, "Hz",   "hertz" },
-    { "kHz",   1e3, _, "Hz",   "kilohertz" },
-    { "MHz",   1e6, _, "Hz",   "megahertz" },
-    { "GHz",   1e9, _, "Hz",   "gigahertz" },
-    { "THz",  1e12, _, "Hz",   "terahertz" },
-    { "kg",      1, _, "kg",   "kilogram" },
-    { "g",    1e-3, _, "kg",   "gram" },
+    { "deg",M_PI/180,_,"rad",  "degree"  },
+    { "m",       1, _, "m",    "meter",      "km m mm um nm" },
+    { "cm",   1e-2, _, "m",    "centimeter", "km m mm um nm" },
+    { "mm",   1e-3, _, "m",    "millimeter", "km m mm um nm" },
+    { "um",   1e-6, _, "m",    "micrometer", "km m mm um nm" },
+    { "nm",   1e-9, _, "m",    "nanometer",  "km m mm um nm" },
+    { "km",    1e3, _, "m",    "kilometer",  "km m mm um nm" },
+    { "W",       1, _, "W",    "watt",       "GW MW kW W mW uW nW pW fW" },
+    { "mW",   1e-3, _, "W",    "milliwatt",  "GW MW kW W mW uW nW pW fW" },
+    { "uW",   1e-6, _, "W",    "microwatt",  "GW MW kW W mW uW nW pW fW" },
+    { "nW",   1e-9, _, "W",    "nanowatt",   "GW MW kW W mW uW nW pW fW" },
+    { "pW",  1e-12, _, "W",    "picowatt",   "GW MW kW W mW uW nW pW fW" },
+    { "fW",  1e-15, _, "W",    "femtowatt",  "GW MW kW W mW uW nW pW fW" },
+    { "kW",    1e3, _, "W",    "kilowatt",   "GW MW kW W mW uW nW pW fW" },
+    { "MW",    1e6, _, "W",    "megawatt",   "GW MW kW W mW uW nW pW fW" },
+    { "GW",    1e9, _, "W",    "gigawatt"    "GW MW kW W mW uW nW pW fW" },
+    { "Hz",      1, _, "Hz",   "hertz",      "Hz kHz MHz GHz THz" },
+    { "kHz",   1e3, _, "Hz",   "kilohertz",  "Hz kHz MHz GHz THz" },
+    { "MHz",   1e6, _, "Hz",   "megahertz",  "Hz kHz MHz GHz THz" },
+    { "GHz",   1e9, _, "Hz",   "gigahertz",  "Hz kHz MHz GHz THz" },
+    { "THz",  1e12, _, "Hz",   "terahertz",  "Hz kHz MHz GHz THz" },
+    { "kg",      1, _, "kg",   "kilogram",   "kg g" },
+    { "g",    1e-3, _, "kg",   "gram",       "kg g" },
     { "K",      1, _,  "K",    "kelvin" },
-    { "J",       1, _, "J",    "joule" },
-    { "kJ",    1e3, _, "J",    "kilojoule" },
-    { "MJ",    1e6, _, "J",    "megajoule" },
-    { "Ws",      1, _, "J",    "watt-second" },
-    { "Wh",   3600, _, "J",    "watt-hour" },
-    { "kWh",3600e3, _, "J",    "kilowatt-hour" },
-    { "MWh",3600e6, _, "J",    "megawatt-hour" },
-    { "V",       1, _, "V",    "volt" },
-    { "kV",    1e3, _, "V",    "kilovolt" },
-    { "mV",   1e-3, _, "V",    "millivolt" },
-    { "A",       1, _, "A",    "ampere" },
-    { "mA",   1e-3, _, "A",    "milliampere" },
-    { "uA",   1e-6, _, "A",    "microampere" },
-    { "Ohm",     1, _, "Ohm",  "ohm"},
-    { "mOhm", 1e-3, _, "Ohm",  "milliohm"},
-    { "kOhm",  1e3, _, "Ohm",  "kiloohm"},
-    { "MOhm",  1e6, _, "Ohm",  "megaohm"},
+    { "J",       1, _, "J",    "joule",         "J kJ MJ" },
+    { "kJ",    1e3, _, "J",    "kilojoule",     "J kJ MJ" },
+    { "MJ",    1e6, _, "J",    "megajoule",     "J kJ MJ" },
+    { "Ws",      1, _, "J",    "watt-second",   "Ws" },
+    { "Wh",   3600, _, "J",    "watt-hour",     "Wh kWh MWh" },
+    { "kWh",3600e3, _, "J",    "kilowatt-hour", "Wh kWh MWh" },
+    { "MWh",3600e6, _, "J",    "megawatt-hour", "Wh kWh MWh" },
+    { "V",       1, _, "V",    "volt",          "V kV mV" },
+    { "kV",    1e3, _, "V",    "kilovolt",      "V kV mV" },
+    { "mV",   1e-3, _, "V",    "millivolt",     "V kV mV" },
+    { "A",       1, _, "A",    "ampere",        "A mA uA" },
+    { "mA",   1e-3, _, "A",    "milliampere",   "A mA uA" },
+    { "uA",   1e-6, _, "A",    "microampere",   "A mA uA" },
+    { "Ohm",     1, _, "Ohm",  "ohm",       "Ohm mOhm kOhm MOhm" },
+    { "mOhm", 1e-3, _, "Ohm",  "milliohm",  "Ohm mOhm kOhm MOhm" },
+    { "kOhm",  1e3, _, "Ohm",  "kiloohm",   "Ohm mOhm kOhm MOhm" },
+    { "MOhm",  1e6, _, "Ohm",  "megaohm",   "Ohm mOhm kOhm MOhm" },
     { "mps",     1, _, "mps",  "meter/sec" },
     { "kmps",  1e3, _, "mps",  "kilometer/sec" },
     { "kmph",1/3.6, _, "mps",  "kilometer/hour" },
-    { "C",       1, _, "C",    "coulomb" },
-    { "As",      1, _, "C",    "ampere-second" },
-    { "mAs",  1e-3, _, "C",    "milliampere-second" },
-    { "Ah",   3600, _, "C",    "ampere-hour" },
-    { "mAh",   3.6, _, "C",    "milliampere-hour" },
+    { "C",       1, _, "As",   "coulomb" },
+    { "As",      1, _, "As",   "ampere-second",      "As mAs" },
+    { "mAs",  1e-3, _, "As",   "milliampere-second", "As mAs" },
+    { "Ah",   3600, _, "As",   "ampere-hour",        "Ah mAh" },
+    { "mAh",   3.6, _, "As",   "milliampere-hour",   "Ah mAh" },
     { "ratio",   1, _, "ratio","ratio" },
     { "pct",  0.01, _, "ratio","percent" },
     // logarithmic
@@ -216,8 +217,11 @@ void UnitConversion::fillHashtable()
 
 void UnitConversion::fillBaseUnitDescs()
 {
-    for (UnitDesc *p = unitTable; p->unit; p++)
+    for (UnitDesc *p = unitTable; p->unit; p++) {
         p->baseUnitDesc = lookupUnit(p->baseUnit);
+        for (std::string unit : StringTokenizer(p->bestUnitCandidatesStr).asVector())
+            p->bestUnitCandidates.push_back(lookupUnit(unit.c_str()));
+    }
 }
 
 bool UnitConversion::readNumber(const char *& s, double& number)
@@ -473,42 +477,21 @@ double UnitConversion::tryConvert(double value, UnitDesc *unitDesc, UnitDesc *ta
     return NaN;
 }
 
-inline bool isPowerOf10(double d)
-{
-    double exp = log10(d);
-    return fabs(exp - floor(exp+0.5)) < 0.01;
-}
-
-inline bool isSIMultiple(double d)
-{
-    double multiples[] = { 1, 1e3, 1e6, 1e9, 1e12, 1e15, 1e-3, 1e-6, 1e-9, 1e-12, 1e-15 };
-    return std::find(std::begin(multiples), std::end(multiples), d) != std::end(multiples);
-}
-
 const char *UnitConversion::getBestUnit(double d, const char *unit)
 {
     // We do not touch the unit (return the original unit) in a number of cases:
-    // if value is zero, infinite or NaN; if we don't know about the unit; if it's a logarithmic unit;
-    // or if it's a linear unit but not a power-of-ten multiples of their base units (think
-    // deg<->rad, hour<->sec, or Wh<->Ws). Also, we only choose SI units (10^3k) as "best" ones.
-    UnitDesc *origUnitDesc = lookupUnit(unit);
-    if (d==0 || !std::isfinite(d) || origUnitDesc == nullptr || origUnitDesc->mapping != LINEAR || !isPowerOf10(origUnitDesc->mult))
+    // if value is zero, infinite or NaN; if we don't know about the unit.
+    UnitDesc *unitDesc = lookupUnit(unit);
+    if (d == 0 || !std::isfinite(d) || unitDesc == nullptr)
         return unit;
 
-    UnitDesc *baseUnitDesc = origUnitDesc->baseUnitDesc;
-
-    // fill in bestUnitCandidates[] if not yet done
-    if (baseUnitDesc->bestUnitCandidates.empty()) // note: even if it has no SI multiples, itself will be added (base of itself w/ mult=1)
-        for (UnitDesc *p = unitTable; p->unit; p++)
-            if (p->baseUnitDesc == baseUnitDesc && p->mapping == LINEAR && isSIMultiple(p->mult))
-                baseUnitDesc->bestUnitCandidates.push_back(p);
-
-    // treat negative numbers exactly as positive ones
-    d = fabs(d);
+    auto& candidates = unitDesc->bestUnitCandidates;
+    if (candidates.empty())
+        return unit;
 
     // pick best one
-    auto& candidates = baseUnitDesc->bestUnitCandidates;
-    double valueInBaseUnit = d * origUnitDesc->mult;
+    d = fabs(d);
+    double valueInBaseUnit = d * unitDesc->mult;
     auto better = [=](UnitDesc *a, UnitDesc *b) {
         // return true if "a" is better than "b", false otherwise
         bool greaterThanOneInUnitA = (valueInBaseUnit / a->mult) >= 1.0;
@@ -521,13 +504,12 @@ const char *UnitConversion::getBestUnit(double d, const char *unit)
             return greaterThanOneInUnitA; // prefer the one that results in >= 1.0 value
     };
     auto it = std::min_element(candidates.begin(), candidates.end(), better);
-    Assert(it != candidates.end()); // array was not empty
     UnitDesc *bestDesc = *it;
 
-    // give the original unit a chance to win too (so we don't pointlessly convert e.g. "cm" to "mm");
-    // also, do not change the unit if it wouldn't change the value (e.g. don't change "As" to "C")
-    if (bestDesc != origUnitDesc && (better(origUnitDesc, bestDesc) || bestDesc->mult == origUnitDesc->mult))
-        bestDesc = origUnitDesc;
+    // give the original unit a chance to win too (so we don't pointlessly convert e.g. 1cm to 10mm);
+    // also, do not change the unit if it wouldn't change the value (e.g. don't change 1As to 1C)
+    if (bestDesc != unitDesc && (better(unitDesc, bestDesc) || bestDesc->mult == unitDesc->mult))
+        bestDesc = unitDesc;
 
     return bestDesc->unit;
 }
