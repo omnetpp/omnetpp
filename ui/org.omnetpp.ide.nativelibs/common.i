@@ -32,6 +32,7 @@ namespace std {
 #define COMMON_API
 #define OPP_DLLEXPORT
 #define OPP_DLLIMPORT
+#define _OPP_GNU_ATTRIBUTE(x)
 
 %include "std_set.i"     // our custom version
 namespace std {
