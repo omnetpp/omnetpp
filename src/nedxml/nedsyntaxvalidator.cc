@@ -610,7 +610,7 @@ void NedSyntaxValidator::validateElement(LiteralElement *node)
             UnitConversion::parseQuantity(value, unit);
         }
         catch (std::exception& e) {
-            errors->addError(node, e.what());
+            errors->addError(node, "%s", e.what());
         }
         // TBD check that if text is present, it's the same as value (modulo whitespace)
     }

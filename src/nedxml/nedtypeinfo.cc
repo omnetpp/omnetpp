@@ -227,7 +227,7 @@ std::string NedTypeInfo::getNedSource() const
 const char *NedTypeInfo::getInterfaceName(int k) const
 {
     if (k < 0 || k >= (int)interfaceNames.size())
-        throw NedException("NedTypeInfo: Interface index %d out of range 0..%d", k, interfaceNames.size()-1);
+        throw NedException("NedTypeInfo: Interface index %d out of range 0..%d", k, (int)interfaceNames.size()-1);
     return interfaceNames[k].c_str();
 }
 
@@ -244,7 +244,7 @@ bool NedTypeInfo::supportsInterface(const char *qname)
 const char *NedTypeInfo::getExtendsName(int k) const
 {
     if (k < 0 || k >= (int)extendsNames.size())
-        throw NedException("NedTypeInfo: extendsName(): Index %d out of range 0..%d", k, extendsNames.size()-1);
+        throw NedException("NedTypeInfo: extendsName(): Index %d out of range 0..%d", k, (int)extendsNames.size()-1);
     return extendsNames[k].c_str();
 }
 

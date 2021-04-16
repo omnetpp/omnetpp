@@ -60,7 +60,7 @@ void NedResourceCache::registerBuiltinDeclarations()
     ASTNode *tree = parser.parseNedText(nedcode, "built-in-declarations");
     if (errors.containsError()) {
         delete tree;
-        throw NedException(getFirstError(&errors).c_str());
+        throw NedException("%s", getFirstError(&errors).c_str());
     }
 
     // note: file must be called package.ned so that @namespace("") takes effect
@@ -145,7 +145,7 @@ ASTNode *NedResourceCache::parseAndValidateNedFileOrText(const char *fname, cons
     }
     if (errors.containsError()) {
         delete tree;
-        throw NedException(getFirstError(&errors).c_str());
+        throw NedException("%s", getFirstError(&errors).c_str());
     }
 
     // DTD validation and additional syntax validation
@@ -153,14 +153,14 @@ ASTNode *NedResourceCache::parseAndValidateNedFileOrText(const char *fname, cons
     dtdvalidator.validate(tree);
     if (errors.containsError()) {
         delete tree;
-        throw NedException(getFirstError(&errors, "NED internal DTD validation failure: ").c_str());
+        throw NedException("%s", getFirstError(&errors, "NED internal DTD validation failure: ").c_str());
     }
 
     NedSyntaxValidator syntaxvalidator(true, &errors);
     syntaxvalidator.validate(tree);
     if (errors.containsError()) {
         delete tree;
-        throw NedException(getFirstError(&errors).c_str());
+        throw NedException("%s", getFirstError(&errors).c_str());
     }
     return tree;
 }
