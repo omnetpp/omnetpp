@@ -3288,12 +3288,12 @@ public class SequenceChart
         int x = p.x / 2;
         int y = p.y / 2;
         String[] lines = text.split("\n");
-        gc.setForeground(ColorFactory.BLACK);
+        gc.setForeground(ColorFactory.FOREGROUND);
         gc.setFont(JFaceResources.getHeaderFont());
         p = gc.textExtent(title);
         gc.drawText(title, x - p.x / 2, y - (lines.length / 2 + 2) * p.y);
         gc.setFont(JFaceResources.getDefaultFont());
-        gc.setForeground(ColorFactory.BLACK);
+        gc.setForeground(ColorFactory.FOREGROUND);
         gc.setFont(JFaceResources.getHeaderFont());
         p = gc.textExtent(title);
         gc.drawText(title, x - p.x / 2, y - (lines.length / 2 + 2) * p.y);
