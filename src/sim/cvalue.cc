@@ -211,14 +211,24 @@ std::string cValue::str() const
         case UNDEF: return "undefined";
         case BOOL: return bl ? "true" : "false";
         case INT: sprintf(buf, "%" PRId64 "%s", (int64_t)intv, opp_nulltoempty(unit)); return buf;
-        case DOUBLE:
-            opp_dtoa(buf, "%g", dbl);
-            if (!opp_isempty(unit)) {
+        case DOUBLE: {
+            if (opp_isempty(unit)) {
+                opp_dtoa(buf, "%g", dbl);
+            }
+            else {
+                double dbl = this->dbl;
+                const char *unit = this->unit;
+                if (dbl < 0.1 || dbl >= 10000) {
+                    unit = UnitConversion::getBestUnit(dbl, unit);
+                    dbl = UnitConversion::convertUnit(dbl, this->unit, unit);
+                }
+                opp_dtoa(buf, "%g", dbl);
                 if (!std::isfinite(dbl))
                     strcat(buf, " ");
                 strcat(buf, unit);
             }
             return buf;
+        }
         case STRING: return opp_quotestr(s);
         case OBJECT: return obj ? obj->str() : "nullptr";
         default: throw cRuntimeError("Internal error: Invalid cValue type");
