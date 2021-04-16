@@ -15,12 +15,14 @@ import org.eclipse.jface.resource.DataFormatException;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.RGBA;
+import org.eclipse.swt.widgets.Display;
 
 /**
  * A factory that creates and manages colors using symbolic names or
@@ -37,6 +39,8 @@ public class ColorFactory {
     private static Color[] goodDarkColors;
     private static Color[] goodLightColors;
 
+    public static final Color FOREGROUND = addMapping("foreground",Display.getCurrent().getSystemColor(SWT.COLOR_WIDGET_FOREGROUND).getRGB());
+    public static final Color BACKGROUND = addMapping("background",Display.getCurrent().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND).getRGB());
     public static final Color ANTIQUE_WHITE = addMapping("antiqueWhite",new RGB(250,235,215));
     public static final Color ANTIQUE_WHITE1 = addMapping("antiqueWhite1",new RGB(255,239,219));
     public static final Color ANTIQUE_WHITE2 = addMapping("antiqueWhite2",new RGB(238,223,204));
