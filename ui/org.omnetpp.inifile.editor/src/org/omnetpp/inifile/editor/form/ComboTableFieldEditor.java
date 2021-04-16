@@ -47,8 +47,8 @@ import org.omnetpp.inifile.editor.model.SectionKey;
 public class ComboTableFieldEditor extends TableFieldEditor {
     private ComboBoxCellEditor valueCellEditor;
 
-    public ComboTableFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText, Map<String,Object> hints) {
-        super(parent, entry, inifile, formPage, labelText, hints);
+    public ComboTableFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, Map<String,Object> hints) {
+        super(parent, entry, inifile, formPage, hints);
     }
 
     public void setSectionColumnTitle(String text) {

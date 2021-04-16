@@ -22,14 +22,14 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
 public class ExpandableTextFieldEditor extends ExpandableFieldEditor {
 
     public ExpandableTextFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText, Map<String,Object> hints) {
-        super(parent, entry, inifile, formPage, labelText, hints);
+        super(parent, entry, inifile, formPage, hints);
     }
 
     @Override
     protected FieldEditor createFieldEditor(boolean isExpanded) {
         return isExpanded ?
-                new TextTableFieldEditor(this, entry, inifile, formPage, labelText, hints) :
-                new TextFieldEditor(this, entry, inifile, formPage, labelText, hints);
+                new TextTableFieldEditor(this, entry, inifile, formPage, hints) :
+                new TextFieldEditor(this, entry, inifile, formPage, hints);
     }
 
 }

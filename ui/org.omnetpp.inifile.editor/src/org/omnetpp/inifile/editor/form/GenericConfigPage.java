@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.omnetpp.common.ui.SWTFactory;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.ConfigOption;
@@ -77,7 +78,7 @@ public class GenericConfigPage extends ScrolledFormPage {
         super(parent, inifileEditor);
         this.category = category;
 
-        GridLayout gridLayout = new GridLayout(1,false);
+        GridLayout gridLayout = new GridLayout(2, false);
         gridLayout.verticalSpacing = 0;
         form.setLayout(gridLayout);
 
@@ -344,21 +345,19 @@ public class GenericConfigPage extends ScrolledFormPage {
     }
 
     protected Label addSpacer(Composite parent) {
-        return new Label(parent, SWT.NONE);
+        return SWTFactory.createLabel(parent, "", 2);
     }
 
-    protected Label addLabel(Composite parent, String text) {
-        Label label = new Label(parent, SWT.NONE);
-        label.setText(text);
-        return label;
+    protected Label addNote(Composite parent, String text) {
+        return SWTFactory.createWrapLabel(parent, text, 2);
     }
 
     protected Group createGroup(Composite parent, String groupLabel) {
         final Group group = new Group(parent, SWT.NONE);
-        group.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+        group.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false, 2, 1));
         group.setText(groupLabel);
 
-        GridLayout gridLayout = new GridLayout(1, false);
+        GridLayout gridLayout = new GridLayout(2, false);
         gridLayout.verticalSpacing = 0;
         gridLayout.marginHeight = 5;
         group.setLayout(gridLayout);
@@ -388,10 +387,11 @@ public class GenericConfigPage extends ScrolledFormPage {
     }
 
     protected FieldEditor addTextFieldEditor(Composite parent, ConfigOption e, String label, Map<String,Object> hints) {
+        Label l = addFieldEditorLabel(parent, e, label);
         FieldEditor editor = e.isGlobal() ?
-                new TextFieldEditor(parent, e, getInifileDocument(), this, label, hints) :
-                new ExpandableTextFieldEditor(parent, e, getInifileDocument(), this, label, hints);
-        addFieldEditor(editor);
+                new TextFieldEditor(parent, e, getInifileDocument(), this, hints) :
+                new ExpandableTextFieldEditor(parent, e, getInifileDocument(), this, "", hints);
+        addFieldEditor(l, editor);
         return editor;
     }
 
@@ -400,10 +400,11 @@ public class GenericConfigPage extends ScrolledFormPage {
     }
 
     protected FieldEditor addComboboxFieldEditor(Composite parent, ConfigOption e, String label, Map<String,Object> hints, boolean enableTypein) {
+        Label l = addFieldEditorLabel(parent, e, label);
         FieldEditor editor = e.isGlobal() ?
-                new ComboFieldEditor(parent, e, getInifileDocument(), this, label, hints, enableTypein) :
-                new ExpandableComboFieldEditor(parent, e, getInifileDocument(), this, label, hints, enableTypein);
-        addFieldEditor(editor);
+                new ComboFieldEditor(parent, e, getInifileDocument(), this, hints, enableTypein) :
+                new ExpandableComboFieldEditor(parent, e, getInifileDocument(), this, "", hints, enableTypein);
+        addFieldEditor(l, editor);
         return editor;
     }
 
@@ -412,10 +413,11 @@ public class GenericConfigPage extends ScrolledFormPage {
     }
 
     protected FieldEditor addCheckboxFieldEditor(Composite parent, ConfigOption e, String label, Map<String,Object> hints) {
+        Label l = addFieldEditorLabel(parent, e, label);
         FieldEditor editor = e.isGlobal() ?
-                new CheckboxFieldEditor(parent, e, getInifileDocument(), this, label, hints) :
-                new ExpandableCheckboxFieldEditor(parent, e, getInifileDocument(), this, label, hints);
-        addFieldEditor(editor);
+                new CheckboxFieldEditor(parent, e, getInifileDocument(), this, hints) :
+                new ExpandableCheckboxFieldEditor(parent, e, getInifileDocument(), this, "", hints);
+        addFieldEditor(l, editor);
         return editor;
     }
 
@@ -424,8 +426,9 @@ public class GenericConfigPage extends ScrolledFormPage {
     }
 
     protected FieldEditor addTextTableFieldEditor(Composite parent, ConfigOption e, String label, Map<String,Object> hints) {
-        FieldEditor editor = new TextTableFieldEditor(parent, e, getInifileDocument(), this, label, hints);
-        addFieldEditor(editor);
+        Label l = addFieldEditorLabel(parent, e, label);
+        FieldEditor editor = new TextTableFieldEditor(parent, e, getInifileDocument(), this, hints);
+        addFieldEditor(l, editor);
         return editor;
     }
 
@@ -434,14 +437,24 @@ public class GenericConfigPage extends ScrolledFormPage {
     }
 
     protected FieldEditor addCheckboxTableFieldEditor(Composite parent, ConfigOption e, String label, Map<String,Object> hints) {
-        FieldEditor editor = new CheckboxTableFieldEditor(parent, e, getInifileDocument(), this, label, hints);
-        addFieldEditor(editor);
+        Label l = addFieldEditorLabel(parent, e, label);
+        FieldEditor editor = new CheckboxTableFieldEditor(parent, e, getInifileDocument(), this, hints);
+        addFieldEditor(l, editor);
         return editor;
     }
 
-    protected void addFieldEditor(FieldEditor editor) {
+    protected Label addFieldEditorLabel(Composite parent, ConfigOption e, String text) {
+        var label = SWTFactory.createLabel(parent, text, 1);
+        var gd = (GridData)label.getLayoutData();
+        gd.verticalIndent = 3;
+        gd.verticalAlignment = SWT.BEGINNING;
+        return label;
+    }
+
+    protected void addFieldEditor(Label label, FieldEditor editor) {
         fieldEditors.add(editor);
         editor.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+        editor.addTooltipSupport(label);
     }
 
     protected FieldEditor getFieldEditorFor(ConfigOption configOption) {

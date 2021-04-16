@@ -28,7 +28,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Item;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.dialogs.ListDialog;
@@ -54,7 +53,7 @@ public abstract class TableFieldEditor extends FieldEditor {
     protected Button addButton;
     protected Button removeButton;
 
-    public TableFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText, Map<String,Object> hints) {
+    public TableFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, Map<String,Object> hints) {
         super(parent, SWT.NONE, entry, inifile, formPage, hints);
 
         GridLayout gridLayout = new GridLayout(1, false);
@@ -62,9 +61,8 @@ public abstract class TableFieldEditor extends FieldEditor {
         gridLayout.marginHeight = 2;
         setLayout(gridLayout);
 
-        Label label = createLabel(entry, labelText+":  (default: "+(entry.getDefaultValue()==null ? "none" : entry.getDefaultValue().toString())+")");
+        //TODO display default somewhere? entry.getDefaultValue()
         createTableWithButtons(this);
-        addFocusTransfer(label, tableViewer.getTable());
         addFocusTransfer(this, tableViewer.getTable());
 
         reread();

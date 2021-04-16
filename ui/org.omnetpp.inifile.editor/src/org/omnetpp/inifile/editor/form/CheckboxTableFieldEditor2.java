@@ -42,7 +42,7 @@ import org.omnetpp.inifile.editor.model.SectionKey;
 public class CheckboxTableFieldEditor2 extends TableFieldEditor {
 
     public CheckboxTableFieldEditor2(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText, Map<String,Object> hints) {
-        super(parent, entry, inifile, formPage, labelText, hints);
+        super(parent, entry, inifile, formPage, hints);
     }
 
     public void setSectionColumnTitle(String text) {

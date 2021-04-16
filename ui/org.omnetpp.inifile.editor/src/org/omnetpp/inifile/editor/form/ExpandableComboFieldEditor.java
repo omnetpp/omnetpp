@@ -25,15 +25,15 @@ public class ExpandableComboFieldEditor extends ExpandableFieldEditor {
     protected List<String> comboContents;
 
     public ExpandableComboFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText, Map<String,Object> hints, boolean enableTypein) {
-        super(parent, entry, inifile, formPage, labelText, hints);
+        super(parent, entry, inifile, formPage, hints);
         this.enableTypein = enableTypein;
     }
 
     @Override
     protected FieldEditor createFieldEditor(boolean isExpanded) {
         FieldEditor result = isExpanded ?
-                new ComboTableFieldEditor(this, entry, inifile, formPage, labelText, hints) :
-                new ComboFieldEditor(this, entry, inifile, formPage, labelText, hints, enableTypein);
+                new ComboTableFieldEditor(this, entry, inifile, formPage, hints) :
+                new ComboFieldEditor(this, entry, inifile, formPage, hints, enableTypein);
         result.setComboContents(comboContents);
         return result;
     }

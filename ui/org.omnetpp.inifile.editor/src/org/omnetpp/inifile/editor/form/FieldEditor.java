@@ -29,7 +29,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.omnetpp.common.ui.HtmlHoverInfo;
@@ -143,14 +142,7 @@ public abstract class FieldEditor extends Composite {
             return defaultValue;
     }
 
-    protected Label createLabel(ConfigOption entry, String labelText) {
-        Label label = new Label(this, SWT.NONE);
-        label.setText(labelText);
-        addTooltipSupport(label);
-        return label;
-    }
-
-    protected void addTooltipSupport(Control control) {
+    public void addTooltipSupport(Control control) {
         formPage.addTooltipSupport(control, hoverTextProvider);
     }
 

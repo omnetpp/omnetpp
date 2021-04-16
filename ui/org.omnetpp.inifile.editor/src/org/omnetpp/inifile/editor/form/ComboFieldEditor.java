@@ -23,7 +23,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ToolItem;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.inifile.editor.model.ConfigOption;
@@ -46,13 +45,12 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
 //XXX set up content assist (like in TextFieldEditor)
 public class ComboFieldEditor extends FieldEditor {
     private Combo combo;
-    private Label label;
     private ToolItem resetButton;
     private boolean isEdited;
     private ControlDecoration problemDecoration;
     private boolean enableTypein;
 
-    public ComboFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText, Map<String,Object> hints, boolean enableTypein) {
+    public ComboFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, Map<String,Object> hints, boolean enableTypein) {
         super(parent, SWT.NONE, entry, inifile, formPage, hints);
         this.enableTypein = enableTypein;
 
@@ -62,7 +60,6 @@ public class ComboFieldEditor extends FieldEditor {
         setLayout(gridLayout);
 
         // child widgets
-        label = createLabel(entry, labelText+":");
         combo = createCombo();
         addTooltipSupport(combo);
         resetButton = createResetButton();
@@ -71,7 +68,6 @@ public class ComboFieldEditor extends FieldEditor {
         problemDecoration.setShowOnlyOnFocus(false);
 
         // set layout data
-        label.setLayoutData(new GridData());
         int width = (entry.getDataType()==DataType.CFG_INT || entry.getDataType()==DataType.CFG_DOUBLE) ? 80 : 250;
         combo.setLayoutData(new GridData(width, SWT.DEFAULT));
         ((GridData)combo.getLayoutData()).horizontalIndent = 3; // room for the decoration
@@ -99,7 +95,6 @@ public class ComboFieldEditor extends FieldEditor {
         addFocusListenerTo(combo);
 
         // when the background gets clicked, transfer focus to the text widget
-        addFocusTransfer(label, combo);
         addFocusTransfer(this, combo);
 
     }

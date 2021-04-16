@@ -18,7 +18,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.ui.HoverSupport;
@@ -141,7 +140,7 @@ public abstract class FormPage extends Composite {
      */
     protected Composite createTitleArea(Composite parent, String category) {
         Composite titleArea = new Composite(parent, SWT.BORDER);
-        GridData gridData = new GridData(SWT.FILL, SWT.BEGINNING, true, false);
+        GridData gridData = new GridData(SWT.FILL, SWT.BEGINNING, true, false, 2, 1);
         gridData.heightHint = 44;
         titleArea.setLayoutData(gridData);
         titleArea.setBackground(ColorFactory.WHITE);

@@ -25,7 +25,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
@@ -51,12 +50,11 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
 public class TextFieldEditor extends FieldEditor {
     private static final char[] AUTOACTIVATION_CHARS = null; // "( ".toCharArray();
     private Text textField;
-    private Label label;
     private ToolItem resetButton;
     private boolean isEdited;
     private ControlDecoration problemDecoration;
 
-    public TextFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText, Map<String,Object> hints) {
+    public TextFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, Map<String,Object> hints) {
         super(parent, SWT.NONE, entry, inifile, formPage, hints);
 
         // layout
@@ -65,7 +63,6 @@ public class TextFieldEditor extends FieldEditor {
         setLayout(gridLayout);
 
         // child widgets
-        label = createLabel(entry, labelText+":");
         textField = createContentAssistField();
         addTooltipSupport(textField);
         resetButton = createResetButton();
@@ -74,7 +71,6 @@ public class TextFieldEditor extends FieldEditor {
         problemDecoration.setShowOnlyOnFocus(false);
 
         // set layout data
-        label.setLayoutData(new GridData());
         int width = (entry.getDataType()==DataType.CFG_INT || entry.getDataType()==DataType.CFG_DOUBLE) ? 80 : 250;
         textField.setLayoutData(new GridData(width, SWT.DEFAULT));
         ((GridData)textField.getLayoutData()).horizontalIndent = 3; // room for the decoration
@@ -107,9 +103,7 @@ public class TextFieldEditor extends FieldEditor {
         });
 
         // when the background gets clicked, transfer focus to the text widget
-        addFocusTransfer(label, textField);
         addFocusTransfer(this, textField);
-
     }
 
     protected Text createContentAssistField() {

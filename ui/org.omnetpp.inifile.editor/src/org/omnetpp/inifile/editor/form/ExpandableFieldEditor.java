@@ -39,7 +39,6 @@ public abstract class ExpandableFieldEditor extends FieldEditor  {
     private static Image IMAGE_EXPAND = InifileEditorPlugin.getCachedImage("icons/full/elcl16/expand.png");
     private static Image IMAGE_COLLAPSE = InifileEditorPlugin.getCachedImage("icons/full/elcl16/collapse.png");
 
-    protected String labelText;
     protected FieldEditor fieldEditor;
     protected boolean isExpanded;
     protected ToolItem toggleButton;
@@ -55,9 +54,8 @@ public abstract class ExpandableFieldEditor extends FieldEditor  {
         }
     };
 
-    public ExpandableFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText, Map<String,Object> hints) {
+    public ExpandableFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, Map<String,Object> hints) {
         super(parent, SWT.NONE, entry, inifile, formPage, hints);
-        this.labelText = labelText;
         GridLayout gridLayout = new GridLayout(2, false);
         gridLayout.marginHeight = gridLayout.marginWidth = 0;
         setLayout(gridLayout);

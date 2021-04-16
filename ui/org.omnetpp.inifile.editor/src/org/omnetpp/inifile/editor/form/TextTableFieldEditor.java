@@ -45,8 +45,8 @@ import org.omnetpp.inifile.editor.model.SectionKey;
 //XXX fix up content assist!!!
 //XXX todo: content assist for the "object" column too
 public class TextTableFieldEditor extends TableFieldEditor {
-    public TextTableFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText, Map<String,Object> hints) {
-        super(parent, entry, inifile, formPage, labelText, hints);
+    public TextTableFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, Map<String,Object> hints) {
+        super(parent, entry, inifile, formPage, hints);
     }
 
     public void setSectionColumnTitle(String text) {

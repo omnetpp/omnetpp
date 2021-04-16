@@ -21,7 +21,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ToolItem;
 import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
@@ -41,11 +40,10 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
 //XXX disable checkbox when value is not editable (comes from included file)?
 public class CheckboxFieldEditor extends FieldEditor {
     private Button checkbox;
-    private Label label;
     private ControlDecoration problemDecoration;
     private ToolItem resetButton;
 
-    public CheckboxFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText, Map<String,Object> hints) {
+    public CheckboxFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, Map<String,Object> hints) {
         super(parent, SWT.NONE, entry, inifile, formPage, hints);
 
         Assert.isTrue(entry.getDataType()==ConfigOption.DataType.CFG_BOOL);
@@ -55,15 +53,13 @@ public class CheckboxFieldEditor extends FieldEditor {
         setLayout(gridLayout);
 
         checkbox = new Button(this, SWT.CHECK);
+        checkbox.setText(" "); // make room for potential problem decoration
         addTooltipSupport(checkbox);
         problemDecoration = new ControlDecoration(checkbox, SWT.RIGHT | SWT.TOP);
         problemDecoration.setShowOnlyOnFocus(false);
-        label = createLabel(entry, labelText);
         resetButton = createResetButton();
 
         checkbox.setLayoutData(new GridData());
-        label.setLayoutData(new GridData());
-        ((GridData)label.getLayoutData()).horizontalIndent = 5; // room for the problem decoration
 
         reread();
 
@@ -75,7 +71,6 @@ public class CheckboxFieldEditor extends FieldEditor {
             }
         });
 
-        addFocusTransfer(label, checkbox);
         addFocusTransfer(this, checkbox);
     }
 
