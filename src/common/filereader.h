@@ -315,6 +315,7 @@ class COMMON_API FileChangedError : public opp_runtime_error
     /**
      * The error message can be generated in a printf-like manner.
      */
+    _OPP_GNU_ATTRIBUTE(format(printf, 3, 4))
     FileChangedError(FileReader::FileChange change, const char *msg, ...);
 
     /**

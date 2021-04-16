@@ -22,6 +22,7 @@ Reg(a40) Reg(a41) Reg(a42) Reg(a43) Reg(a44) Reg(a45) Reg(a46) Reg(a47) Reg(a48)
 Reg(a50) Reg(a51) Reg(a52) Reg(a53) Reg(a54) Reg(a55) Reg(a56) Reg(a57) Reg(a58) Reg(a59)
 Reg(a60) Reg(a61) Reg(a62) Reg(a63) Reg(a64) Reg(a65) Reg(a66) Reg(a67) Reg(a68) Reg(a69)
 
+_OPP_GNU_ATTRIBUTE(format(printf, 1, 2))
 std::string stringf(const char *format, ...)
 {
     const int BUFLEN = 1024;

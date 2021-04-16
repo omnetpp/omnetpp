@@ -40,6 +40,7 @@ class COMMON_API opp_runtime_error : public std::runtime_error
     /**
      * Constructor with a printf-like argument list.
      */
+    _OPP_GNU_ATTRIBUTE(format(printf, 2, 3))
     opp_runtime_error(const char *msg,...);
 
     /**

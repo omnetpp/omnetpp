@@ -65,31 +65,37 @@ class NEDXML_API ErrorStore
         /**
          * Add an error message with the severity ERROR.
          */
+        _OPP_GNU_ATTRIBUTE(format(printf, 3, 4))
         void addError(ASTNode *context, const char *messagefmt, ...);
 
         /**
          * Add an error message with the severity ERROR.
          */
+        _OPP_GNU_ATTRIBUTE(format(printf, 3, 4))
         void addError(const char *location, const char *messagefmt, ...);
 
         /**
          * Add an error message with the severity WARNING.
          */
+        _OPP_GNU_ATTRIBUTE(format(printf, 3, 4))
         void addWarning(ASTNode *context, const char *messagefmt, ...);
 
         /**
          * Add an error message with the severity WARNING.
          */
+        _OPP_GNU_ATTRIBUTE(format(printf, 3, 4))
         void addWarning(const char *location, const char *messagefmt, ...);
 
         /**
          * Add an error message.
          */
+        _OPP_GNU_ATTRIBUTE(format(printf, 4, 5))
         void add(ASTNode *context, int severity, const char *messagefmt, ...);
 
         /**
          * Add an error message.
          */
+        _OPP_GNU_ATTRIBUTE(format(printf, 4, 5))
         void add(const char *location, int severity, const char *messagefmt, ...);
 
         /**
@@ -144,6 +150,7 @@ class NEDXML_API ErrorStore
  * This method is typically used via the INTERNAL_ERROR0()...INTERNAL_ERROR4() macros that
  * add the __FILE__, __LINE__ args implicitly.
  */
+_OPP_GNU_ATTRIBUTE(format(printf, 4, 5))
 void NedInternalError(const char *file, int line, ASTNode *context, const char *messagefmt, ...);
 
 
