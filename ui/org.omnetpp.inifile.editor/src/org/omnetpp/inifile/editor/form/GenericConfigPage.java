@@ -105,9 +105,9 @@ public class GenericConfigPage extends ScrolledFormPage {
             addTextFieldEditor(group, CFGID_NETWORK, "Network to simulate", c(null, "Name")); //FIXME use ComboBoxFieldEditor
             addSpacer(form);
             group = createGroup(form, "Stopping Condition");
-            addTextFieldEditor(group, CFGID_SIM_TIME_LIMIT, "Simulation time limit", c(null, "Simulation Time Limit"));
-            addTextFieldEditor(group, CFGID_CPU_TIME_LIMIT, "CPU time limit", c(null, "CPU Time Limit"));
-            addTextFieldEditor(group, CFGID_REAL_TIME_LIMIT, "Real time limit", c(null, "Real Time Limit"));
+            addTextFieldEditor(group, CFGID_SIM_TIME_LIMIT, "Simulation time limit", c(null, "Limit"));
+            addTextFieldEditor(group, CFGID_CPU_TIME_LIMIT, "CPU time limit", c(null, "Limit"));
+            addTextFieldEditor(group, CFGID_REAL_TIME_LIMIT, "Real time limit", c(null, "Limit"));
             addSpacer(form);
             group = createGroup(form, "Other");
             addComboboxFieldEditor(group, CFGID_SIMTIME_RESOLUTION, "Simulation time resolution", true);
@@ -117,14 +117,15 @@ public class GenericConfigPage extends ScrolledFormPage {
         }
         else if (category.equals(CAT_ADVANCED)) {
             group = createGroup(form, "Output Vector Recording");
-            addTextFieldEditor(group, CFGID_OUTPUT_VECTOR_PRECISION, "Precision", c(null, "Precision"));
+            addTextFieldEditor(group, CFGID_OUTPUT_VECTOR_PRECISION, "Precision", c(null, "#Decimal Places"));
             addCheckboxFieldEditor(group, CFGID_VECTOR_RECORD_EVENTNUMBERS, "Record event numbers", c("Vector (module-path.vectorname pattern)", "Value"));
-            addTextFieldEditor(group, CFGID_VECTOR_BUFFER, "Per-vector buffer size", c("Vector (module-path.vectorname pattern)", "Buffer size"));
+            addTextFieldEditor(group, CFGID_VECTOR_BUFFER, "Per-vector buffer size", c("Vector (module-path.vectorname pattern)", "Size"));
             addTextFieldEditor(group, CFGID_OUTPUT_VECTORS_MEMORY_LIMIT, "Total memory limit", c(null, "Memory Limit"));
-            addCheckboxFieldEditor(group, CFGID_WITH_AKAROA, "Use vector with Akaroa (needs Akaroa to be installed)", c("Parameter (module-path.paramname pattern)", "Value"));
+            addCheckboxFieldEditor(group, CFGID_WITH_AKAROA, "Use vector with Akaroa*", c("Parameter (module-path.paramname pattern)", "Value"));
+            addNote(group, "* Akaroa needs to be obtained and installed separately");
             addSpacer(form);
             group = createGroup(form, "Output Scalar Recording");
-            addTextFieldEditor(group, CFGID_OUTPUT_SCALAR_PRECISION, "Precision", c(null, "Precision"));
+            addTextFieldEditor(group, CFGID_OUTPUT_SCALAR_PRECISION, "Precision", c(null, "#Decimal Places"));
             addCheckboxFieldEditor(group, CFGID_OUTPUT_SCALAR_FILE_APPEND, "Append to existing scalar file");
             addCheckboxFieldEditor(group, CFGID_OUTPUT_VECTOR_FILE_APPEND, "Append to existing vector file");
             addTextFieldEditor(group, CFGID_OUTPUT_SCALAR_DB_COMMIT_FREQ, "SQLite scalar file commit frequency");
@@ -132,7 +133,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             addSpacer(form);
             group = createGroup(form, "Limits");
             addTextFieldEditor(group, CFGID_TOTAL_STACK, "Total activity stack");
-            addTextFieldEditor(group, CFGID_MAX_MODULE_NESTING, "Allowed maximum module nesting", c(null, "Nesting Level"));
+            addTextFieldEditor(group, CFGID_MAX_MODULE_NESTING, "Allowed maximum module nesting", c(null, "#Levels"));
             addSpacer(form);
             group = createGroup(form, "Other");
             addTextFieldEditor(group, CFGID_RUNNUMBER_WIDTH, "Run number width", c(null, "Width"));
@@ -143,12 +144,12 @@ public class GenericConfigPage extends ScrolledFormPage {
         }
         else if (category.equals(CAT_RANDOMNUMBERS)) {
             group = createGroup(form, "Random Number Generators");
-            addTextFieldEditor(group, CFGID_NUM_RNGS, "Number of RNGs", c(null, "Number of RNGs"));
-            addTextFieldEditor(group, CFGID_RNG_CLASS, "RNG class", c(null, "RNG Class"));
-            addLabel(group, "Further options allow mapping of the global RNGs to module-local RNGs.");
+            addTextFieldEditor(group, CFGID_NUM_RNGS, "Number of RNGs", c(null, "#RNGs"));
+            addTextFieldEditor(group, CFGID_RNG_CLASS, "RNG class", c(null, "Class"));
             addSpacer(form);
             group = createGroup(form, "Automatic Seeds");
-            addTextFieldEditor(group, CFGID_SEED_SET, "Seed set", c(null, "Index of Seed Set"));
+            addTextFieldEditor(group, CFGID_SEED_SET, "Seed set", c(null, "Index"));
+            addNote(group, "Note: Further options also exist that allow specifying manual seeds, and mapping of the global RNGs to module-local RNGs.");
             //TODO the ones that contain "%":
             //group = createGroup(form, "Manual Seeds");
             //addTextTableFieldEditor(form, CFGID_RNG_n, "Module RNG mapping");
@@ -158,8 +159,8 @@ public class GenericConfigPage extends ScrolledFormPage {
         }
         else if (category.equals(CAT_VISUAL)) {
             group = createGroup(form, "Visual");
-            addTextFieldEditor(group, CFGID_DISPLAY_NAME, "Module display name", c("Module", "Value"));
-            addTextFieldEditor(group, CFGID_DISPLAY_STRING, "Additional display string", c("Module", "Value"));
+            addTextTableFieldEditor(group, CFGID_DISPLAY_NAME, "Module display name", c("Module", "Value"));
+            addTextTableFieldEditor(group, CFGID_DISPLAY_STRING, "Additional display string", c("Module", "Value"));
         }
         else if (category.equals(CAT_SCENARIO)) {
             group = createGroup(form, "Run Labeling");
@@ -168,31 +169,32 @@ public class GenericConfigPage extends ScrolledFormPage {
             addTextFieldEditor(group, CFGID_REPLICATION_LABEL, "Replication label", c(null, "Label"));
             addSpacer(form);
             group = createGroup(form, "Scenario Generation");
-            addTextFieldEditor(group, CFGID_REPEAT, "Repeat count", c(null, "Repeat Count"));
+            addTextFieldEditor(group, CFGID_REPEAT, "Repeat count", c(null, "Count"));
             addTextFieldEditor(group, CFGID_CONSTRAINT, "Constraint expression", c(null, "Expression"));
-            addTextFieldEditor(group, CFGID_ITERATION_NESTING_ORDER, "Loop nesting order", c(null, "Nesting Order"));
+            addTextFieldEditor(group, CFGID_ITERATION_NESTING_ORDER, "Loop nesting order", c(null, "Order"));
             addSpacer(form);
         }
         else if (category.equals(CAT_RESULTRECORDING)) {
-            addTextFieldEditor(form, CFGID_RESULT_DIR, "Result folder", c(null, "Results Folder"));
-            addCheckboxFieldEditor(form, CFGID_RESULTDIR_SUBDIVISION, "Create sub-folders under the results folder");
-            addCheckboxFieldEditor(form, CFGID_FNAME_APPEND_HOST, "Append host name to filenames");
-            addComboboxFieldEditor(form, CFGID_CONFIG_RECORDING, "Config options to record", false);
+            group = createGroup(form, "General");
+            addTextFieldEditor(group, CFGID_RESULT_DIR, "Result folder", c(null, "Folder"));
+            addCheckboxFieldEditor(group, CFGID_RESULTDIR_SUBDIVISION, "Create sub-folders under results folder");
+            addCheckboxFieldEditor(group, CFGID_FNAME_APPEND_HOST, "Append host name to filenames");
+            addComboboxFieldEditor(group, CFGID_CONFIG_RECORDING, "Config options to record", false);
             setCombo(CFGID_CONFIG_RECORDING, CONFIG_RECORDING_CHOICES);
             addSpacer(form);
             group = createGroup(form, "Statistic Recording");
             addCheckboxFieldEditor(group, CFGID_STATISTIC_RECORDING, "Enable recording of @statistics", c("Statistic (module-path.statisticname pattern)", "Value"));
             addTextFieldEditor(group, CFGID_RESULT_RECORDING_MODES, "Result recording modes", c("Statistic (module-path.statisticname pattern)", "Recording Modes"));
-            addTextFieldEditor(group, CFGID_WARMUP_PERIOD, "Warm-up period", c(null, "Warm-up Period"));
+            addTextFieldEditor(group, CFGID_WARMUP_PERIOD, "Warm-up period", c(null, "Value"));
             addSpacer(form);
             group = createGroup(form, "Output Vector Recording");
-            addTextFieldEditor(group, CFGID_OUTPUT_VECTOR_FILE, "Output vector file", c(null, "Filename"));
             addCheckboxFieldEditor(group, CFGID_VECTOR_RECORDING, "Enable recording of vectors", c("Vector (module-path.vectorname pattern)", "Value"));
+            addTextFieldEditor(group, CFGID_OUTPUT_VECTOR_FILE, "Output vector file", c(null, "Filename"));
             addTextFieldEditor(group, CFGID_VECTOR_RECORDING_INTERVALS, "Recording intervals", c("Vector (module-path.vectorname pattern)", "Intervals"));
             addSpacer(form);
             group = createGroup(form, "Output Scalar Recording");
-            addTextFieldEditor(group, CFGID_OUTPUT_SCALAR_FILE, "Output scalar file", c(null, "Filename"));
             addCheckboxFieldEditor(group, CFGID_SCALAR_RECORDING, "Enable recording of scalars", c("Scalar (module-path.scalarname pattern)", "Value"));
+            addTextFieldEditor(group, CFGID_OUTPUT_SCALAR_FILE, "Output scalar file", c(null, "Filename"));
             addCheckboxFieldEditor(group, CFGID_BIN_RECORDING, "Record histogram bins", c("Scalar (module-path.scalarname pattern)", "Value"));
             addCheckboxFieldEditor(group, CFGID_PARAM_RECORDING, "Record parameters", c("Parameter (module-path.paramname pattern)", "Value"));
             addCheckboxFieldEditor(group, CFGID_PARAM_RECORD_AS_SCALAR, "Record parameters as scalars (obsolete)", c("Parameter (module-path.paramname pattern)", "Value"));
@@ -210,7 +212,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             addCheckboxFieldEditor(group, CFGID_DEBUGGER_ATTACH_ON_ERROR, "Attach debugger on error");
             addTextFieldEditor(group, CFGID_DEBUGGER_ATTACH_COMMAND, "Debugger command");
             addTextFieldEditor(group, CFGID_DEBUGGER_ATTACH_WAIT_TIME, "Attach timeout");
-            addLabel(group, "Note: Using an external debugger requires extra configuration on some systems, including Ubuntu (hint: \"ptrace_scope\").");
+            addNote(group, "Note: Using an external debugger requires extra configuration on some systems, including Ubuntu. Hint: \"ptrace_scope\".");
             addSpacer(form);
             group = createGroup(form, "Related Options");
             addCheckboxFieldEditor(group, CFGID_PRINT_UNDISPOSED, "Dump names of undisposed objects");
@@ -224,12 +226,13 @@ public class GenericConfigPage extends ScrolledFormPage {
             group = createGroup(form, "Fingerprint");
             addTextFieldEditor(group, CFGID_FINGERPRINT, "Expected fingerprint(s)", c(null, "Fingerprint (Hex)"));
             addTextFieldEditor(group, CFGID_FINGERPRINT_INGREDIENTS, "Default ingredients");
-            addCheckboxFieldEditor(group, CFGID_CMDENV_FAKE_GUI, "Enable FakeGUI mode in Cmdenv (for graphical fingerprints)");
+            addCheckboxFieldEditor(group, CFGID_CMDENV_FAKE_GUI, "Enable FakeGUI mode*");
+            addNote(group, "* In FakeGUI mode, Cmdenv calls refreshDisplay() periodically, allowing graphics to be included in the fingerprint");
             addSpacer(form);
             group = createGroup(form, "Filter");
-            addTextFieldEditor(group, CFGID_FINGERPRINT_EVENTS, "Events");
-            addTextFieldEditor(group, CFGID_FINGERPRINT_MODULES, "Modules");
-            addTextFieldEditor(group, CFGID_FINGERPRINT_RESULTS, "Results");
+            addTextFieldEditor(group, CFGID_FINGERPRINT_EVENTS, "Events to include");
+            addTextFieldEditor(group, CFGID_FINGERPRINT_MODULES, "Modules to include");
+            addTextFieldEditor(group, CFGID_FINGERPRINT_RESULTS, "Results to include");
             addSpacer(form);
             group = createGroup(form, "Frequency of refreshDisplay() calls in Fake GUI mode");
             addTextFieldEditor(group, CFGID_CMDENV_FAKE_GUI_AFTER_EVENT_PROBABILITY, "After-event probability");
@@ -243,7 +246,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             group = createGroup(form, "Eventlog");
             addCheckboxFieldEditor(group, CFGID_RECORD_EVENTLOG, "Enable eventlog recording");
             addTextFieldEditor(group, CFGID_EVENTLOG_FILE, "Eventlog file", c(null, "Filename"));
-            addLabel(group, "Note: Eventlog files (.elog) can be visualized in the Sequence Chart Tool.");
+            addNote(group, "Note: Eventlog files (.elog) can be visualized in the Sequence Chart Tool.");
             addSpacer(form);
             group = createGroup(form, "Content");
             addTextFieldEditor(group, CFGID_EVENTLOG_RECORDING_INTERVALS, "Recording intervals", c(null, "Intervals"));
@@ -275,15 +278,16 @@ public class GenericConfigPage extends ScrolledFormPage {
             addSpacer(form);
         }
         else if (category.equals(CAT_CMDENV)) {
-            group = createGroup(form, "When command-line options do not say otherwise, run the following:");
+            group = createGroup(form, "Default inifile configuration and run number:");
             addTextFieldEditor(group, CFGID_CMDENV_CONFIG_NAME, "Config name");
             addTextFieldEditor(group, CFGID_CMDENV_RUNS_TO_EXECUTE, "Runs to execute");
+            addNote(group, "Note: Command line options (-c, -r) override the above settings");
             addSpacer(form);
             addCheckboxFieldEditor(form, CFGID_CMDENV_EXPRESS_MODE, "Run in Express mode");
             addSpacer(form);
             group = createGroup(form, "Express Mode");
-            addCheckboxFieldEditor(group, CFGID_CMDENV_PERFORMANCE_DISPLAY, "Display performance data");
-            addTextFieldEditor(group, CFGID_CMDENV_STATUS_FREQUENCY, "Status frequency");
+            addTextFieldEditor(group, CFGID_CMDENV_STATUS_FREQUENCY, "Status update frequency");
+            addCheckboxFieldEditor(group, CFGID_CMDENV_PERFORMANCE_DISPLAY, "Print performance data");
             addSpacer(form);
             group = createGroup(form, "Normal (Non-Express) Mode");
             addCheckboxFieldEditor(group, CFGID_CMDENV_EVENT_BANNERS, "Print event banners");
