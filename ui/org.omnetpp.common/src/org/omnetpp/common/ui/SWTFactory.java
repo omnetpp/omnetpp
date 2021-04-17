@@ -12,6 +12,7 @@ import org.eclipse.swt.custom.ViewForm;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -19,6 +20,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
@@ -41,6 +43,7 @@ public class SWTFactory {
     public static int FILL_BOTH = GridData.VERTICAL_ALIGN_FILL | GridData.HORIZONTAL_ALIGN_FILL;
     public static int GRAB_AND_FILL_BOTH = GridData.VERTICAL_ALIGN_FILL | GridData.HORIZONTAL_ALIGN_FILL| GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL;
     public static int GRAB_AND_FILL_HORIZONTAL = GridData.VERTICAL_ALIGN_BEGINNING | GridData.HORIZONTAL_ALIGN_FILL| GridData.GRAB_HORIZONTAL;
+    private static Font smallFont = null;
 
     /**
      * Returns a width hint for a button control.
@@ -857,5 +860,16 @@ public class SWTFactory {
         if (control instanceof Composite)
             for (Control c : ((Composite)control).getChildren())
                 setEnabled(c, enabled, except);
+    }
+
+    public static Font getSmallFont() {
+        if (smallFont == null) {
+            FontData baseFontData = JFaceResources.getDialogFont().getFontData()[0];
+            String name = baseFontData.getName();
+            int height = (7 * baseFontData.getHeight() + 1) / 8;
+            FontData fontData = new FontData(name, height, SWT.NONE);
+            smallFont = new Font(Display.getCurrent(), fontData);
+        }
+        return smallFont;
     }
 }

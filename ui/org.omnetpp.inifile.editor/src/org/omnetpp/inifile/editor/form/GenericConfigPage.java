@@ -353,7 +353,9 @@ public class GenericConfigPage extends ScrolledFormPage {
     }
 
     protected Label addNote(Composite parent, String text) {
-        return SWTFactory.createWrapLabel(parent, text, 2);
+        Label label = SWTFactory.createWrapLabel(parent, text, 2);
+        label.setFont(SWTFactory.getSmallFont());
+        return label;
     }
 
     protected Group createGroup(Composite parent, String groupLabel) {
