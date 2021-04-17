@@ -15,6 +15,7 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.fieldassist.ContentProposalAdapter;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.fieldassist.TextContentAdapter;
+import org.eclipse.jface.layout.PixelConverter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
@@ -71,7 +72,8 @@ public class TextFieldEditor extends FieldEditor {
         problemDecoration.setShowOnlyOnFocus(false);
 
         // set layout data
-        int width = (entry.getDataType()==DataType.CFG_INT || entry.getDataType()==DataType.CFG_DOUBLE) ? 80 : 250;
+        int chars = (entry.getDataType()==DataType.CFG_INT || entry.getDataType()==DataType.CFG_DOUBLE) ? 15 : 50;
+        int width = new PixelConverter(textField).convertWidthInCharsToPixels(chars);
         textField.setLayoutData(new GridData(width, SWT.DEFAULT));
         ((GridData)textField.getLayoutData()).horizontalIndent = 3; // room for the decoration
 
