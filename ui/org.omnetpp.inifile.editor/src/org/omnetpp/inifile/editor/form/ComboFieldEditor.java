@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ToolItem;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.ui.SWTFactory;
 import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.ConfigOption.DataType;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
@@ -63,6 +64,7 @@ public class ComboFieldEditor extends FieldEditor {
         combo = createCombo();
         addTooltipSupport(combo);
         resetButton = createResetButton();
+        SWTFactory.autoHide(resetButton.getParent(), this);
 
         problemDecoration = new ControlDecoration(combo, SWT.LEFT | SWT.TOP);
         problemDecoration.setShowOnlyOnFocus(false);

@@ -251,4 +251,9 @@ public abstract class FieldEditor extends Composite {
     public ConfigOption getConfigKey() {
         return entry;
     }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" + entry.getName() + ")";
+    }
 }

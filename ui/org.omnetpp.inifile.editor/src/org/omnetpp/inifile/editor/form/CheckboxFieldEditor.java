@@ -22,6 +22,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ToolItem;
+import org.omnetpp.common.ui.SWTFactory;
 import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
@@ -58,6 +59,7 @@ public class CheckboxFieldEditor extends FieldEditor {
         problemDecoration = new ControlDecoration(checkbox, SWT.RIGHT | SWT.TOP);
         problemDecoration.setShowOnlyOnFocus(false);
         resetButton = createResetButton();
+        SWTFactory.autoHide(resetButton.getParent(), this);
 
         checkbox.setLayoutData(new GridData());
 

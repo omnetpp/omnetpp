@@ -31,6 +31,7 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.ui.SWTFactory;
 import org.omnetpp.inifile.editor.contentassist.InifileValueContentProposalProvider;
 import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.ConfigOption.DataType;
@@ -67,6 +68,7 @@ public class TextFieldEditor extends FieldEditor {
         textField = createContentAssistField();
         addTooltipSupport(textField);
         resetButton = createResetButton();
+        SWTFactory.autoHide(resetButton.getParent(), this);
 
         problemDecoration = new ControlDecoration(textField, SWT.LEFT | SWT.TOP);
         problemDecoration.setShowOnlyOnFocus(false);

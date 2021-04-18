@@ -14,6 +14,9 @@ import java.util.Map;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseTrackAdapter;
+import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
@@ -23,6 +26,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ToolItem;
+import org.omnetpp.common.ui.MouseTracker;
+import org.omnetpp.common.ui.SWTFactory;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.IInifileChangeListener;
@@ -63,6 +68,19 @@ public abstract class ExpandableFieldEditor extends FieldEditor  {
         isExpanded = (!entry.isGlobal() && !canBeCollapsed());
         createControl();
 
+        // note: SWTFactory.autoHide() cannot be used because toggleButton is recreated on every expand/collapse
+        MouseTrackListener listener = new MouseTrackAdapter() {
+            @Override
+            public void mouseExit(MouseEvent e) {
+                toggleButton.getParent().setVisible(false);
+            }
+            @Override
+            public void mouseEnter(MouseEvent e) {
+                toggleButton.getParent().setVisible(true);
+            }
+        };
+        MouseTracker.getInstance().addMouseTrackListener(this, listener);
+
         // need to update the toggle button's state on inifile changes
         inifile.addInifileChangeListener(inifileChangeListener);
         addDisposeListener(new DisposeListener() {
@@ -70,6 +88,7 @@ public abstract class ExpandableFieldEditor extends FieldEditor  {
                 ExpandableFieldEditor.this.inifile.removeInifileChangeListener(inifileChangeListener);
             }
         });
+
     }
 
     protected void recreateControl() {
