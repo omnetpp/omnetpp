@@ -11,11 +11,10 @@ public class ScaveEditorActionBarContributor extends MultiPageEditorActionBarCon
 
     @Override
     public void setActivePage(IEditorPart activeEditor) {
-        ScaveEditor scaveEditor = (ScaveEditor)getPage().getActiveEditor();
-
-        if (scaveEditor == null)
+        if (!(getPage().getActiveEditor() instanceof ScaveEditor)) // this fixes ClassCastException "InifileEditor cannot be cast to ScaveEditor" after an InifileEditor was closed and next editor was a ScaveEditor
             return;
 
+        ScaveEditor scaveEditor = (ScaveEditor)getPage().getActiveEditor();
         FormEditorPage editorPage = scaveEditor.getActiveEditorPage();
 
         if (editorPage instanceof ChartPage) {
