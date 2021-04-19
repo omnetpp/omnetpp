@@ -28,6 +28,7 @@ import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.common.ui.TableTextCellEditor;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.ConfigOption;
+import org.omnetpp.inifile.editor.model.ConfigRegistry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.SectionKey;
@@ -90,7 +91,7 @@ public class CheckboxTableFieldEditor2 extends TableFieldEditor {
                 else
                     switch (columnIndex) {
                         case 0: return StringUtils.removeEnd(sectionKey.key, "."+entry.getName());
-                        case 1: return "["+sectionKey.section+"]";
+                        case 1: return StringUtils.removeStart(sectionKey.section, ConfigRegistry.CONFIG_);
                         default: throw new IllegalArgumentException();
                     }
             }

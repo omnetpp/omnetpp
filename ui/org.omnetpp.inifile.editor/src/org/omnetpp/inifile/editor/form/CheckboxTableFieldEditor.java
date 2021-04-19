@@ -34,6 +34,7 @@ import org.omnetpp.common.ui.TableTextCellEditor;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.contentassist.InifileModulePathContentProposalProvider;
 import org.omnetpp.inifile.editor.model.ConfigOption;
+import org.omnetpp.inifile.editor.model.ConfigRegistry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileUtils;
@@ -103,7 +104,7 @@ public class CheckboxTableFieldEditor extends TableFieldEditor {
             public String getColumnText(Object element, int columnIndex) {
                 SectionKey sectionKey = (SectionKey) element;
                 if (columnIndex == 0)
-                    return "["+sectionKey.section+"]";
+                    return StringUtils.removeStart(sectionKey.section, ConfigRegistry.CONFIG_);
                 if (columnIndex == objectColumnIndex)
                     return StringUtils.removeEnd(sectionKey.key, "."+entry.getName());
                 if (columnIndex == valueColumnIndex)
