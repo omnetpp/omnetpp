@@ -117,72 +117,76 @@ public class InifileParser {
                     line = concatenatedLines.toString();
                 }
 
-                // process the line
-                line = line.trim();
-                char lineStart = line.length()==0 ? 0 : line.charAt(0);
-                if (line.length()==0) {
-                    // blank line
-                    callback.blankOrCommentLine(lineNumber, numLines, rawLine, "");
-                }
-                else if (lineStart=='#') {
-                    // comment line
-                    callback.blankOrCommentLine(lineNumber, numLines, rawLine, line);
-                }
-                else if (lineStart==';') {
-                    // obsolete comment line
-                    callback.parseError(lineNumber, numLines, "Semicolon is no longer a comment start character, please use hashmark ('#')");
-                }
-                else if (lineStart=='i' && line.matches(INCLUDE + "\\s.*")) {
-                    // include directive
-                    String directive = INCLUDE;
-                    String rest = line.substring(directive.length());
-                    int endPos = findEndContent(rest, 0);
-                    if (endPos == -1) {
-                        callback.parseError(lineNumber, numLines, "Unterminated string constant");
-                        continue;
-                    }
-                    String args = rest.substring(0, endPos).trim();
-                    String rawComment = rest.substring(endPos);
-                    callback.directiveLine(lineNumber, numLines, rawLine, directive, args, rawComment);
-                }
-                else if (lineStart=='[') {
-                    // section heading
-                    Matcher m = Pattern.compile("\\[([^#\"]+)\\]\\s*?(\\s*#.*)?").matcher(line);
-                    if (!m.matches()) {
-                        callback.parseError(lineNumber, numLines, "Syntax error in section heading");
-                        continue;
-                    }
-                    String sectionName = StringUtils.removeStart(m.group(1).trim(), CONFIG_).trim(); // "Config " prefix is optional, starting from OMNeT++ 6.0
-                    String rawComment = m.groupCount()>1 ? m.group(2) : "";
-                    if (rawComment == null) rawComment = "";
-                    callback.sectionHeadingLine(lineNumber, numLines, rawLine, sectionName, rawComment);
-                }
-                else {
-                    // key = value
-                    int endPos = findEndContent(line, 0);
-                    if (endPos == -1) {
-                        callback.parseError(lineNumber, numLines, "Unterminated string constant");
-                        continue;
-                    }
-                    String rawComment = line.substring(endPos);
-                    String keyValue = line.substring(0, endPos);
-                    int equalSignPos = keyValue.indexOf('=');
-                    if (equalSignPos == -1) {
-                        callback.parseError(lineNumber, numLines, "Line must be in the form key=value");
-                        continue;
-                    }
-                    String key = keyValue.substring(0, equalSignPos).trim();
-                    if (key.length()==0) {
-                        callback.parseError(lineNumber, numLines, "Line must be in the form key=value");
-                        continue;
-                    }
-                    String value = keyValue.substring(equalSignPos+1).trim();
-                    callback.keyValueLine(lineNumber, numLines, rawLine, key, value, rawComment);
-                }
+                processLine(line, callback, lineNumber, numLines, rawLine);
             }
         }
         catch (IOException e) {
             throw InifileEditorPlugin.wrapIntoCoreException(e);
+        }
+    }
+
+    protected void processLine(String line, ParserCallback callback, int lineNumber, int numLines, String rawLine) {
+        // process the line
+        line = line.trim();
+        char lineStart = line.length()==0 ? 0 : line.charAt(0);
+        if (line.length()==0) {
+            // blank line
+            callback.blankOrCommentLine(lineNumber, numLines, rawLine, "");
+        }
+        else if (lineStart=='#') {
+            // comment line
+            callback.blankOrCommentLine(lineNumber, numLines, rawLine, line);
+        }
+        else if (lineStart==';') {
+            // obsolete comment line
+            callback.parseError(lineNumber, numLines, "Semicolon is no longer a comment start character, please use hashmark ('#')");
+        }
+        else if (lineStart=='i' && line.matches(INCLUDE + "\\s.*")) {
+            // include directive
+            String directive = INCLUDE;
+            String rest = line.substring(directive.length());
+            int endPos = findEndContent(rest, 0);
+            if (endPos == -1) {
+                callback.parseError(lineNumber, numLines, "Unterminated string constant");
+                return;
+            }
+            String args = rest.substring(0, endPos).trim();
+            String rawComment = rest.substring(endPos);
+            callback.directiveLine(lineNumber, numLines, rawLine, directive, args, rawComment);
+        }
+        else if (lineStart=='[') {
+            // section heading
+            Matcher m = Pattern.compile("\\[([^#\"]+)\\]\\s*?(\\s*#.*)?").matcher(line);
+            if (!m.matches()) {
+                callback.parseError(lineNumber, numLines, "Syntax error in section heading");
+                return;
+            }
+            String sectionName = StringUtils.removeStart(m.group(1).trim(), CONFIG_).trim(); // "Config " prefix is optional, starting from OMNeT++ 6.0
+            String rawComment = m.groupCount()>1 ? m.group(2) : "";
+            if (rawComment == null) rawComment = "";
+            callback.sectionHeadingLine(lineNumber, numLines, rawLine, sectionName, rawComment);
+        }
+        else {
+            // key = value
+            int endPos = findEndContent(line, 0);
+            if (endPos == -1) {
+                callback.parseError(lineNumber, numLines, "Unterminated string constant");
+                return;
+            }
+            String rawComment = line.substring(endPos);
+            String keyValue = line.substring(0, endPos);
+            int equalSignPos = keyValue.indexOf('=');
+            if (equalSignPos == -1) {
+                callback.parseError(lineNumber, numLines, "Line must be in the form key=value");
+                return;
+            }
+            String key = keyValue.substring(0, equalSignPos).trim();
+            if (key.length()==0) {
+                callback.parseError(lineNumber, numLines, "Line must be in the form key=value");
+                return;
+            }
+            String value = keyValue.substring(equalSignPos+1).trim();
+            callback.keyValueLine(lineNumber, numLines, rawLine, key, value, rawComment);
         }
     }
 
