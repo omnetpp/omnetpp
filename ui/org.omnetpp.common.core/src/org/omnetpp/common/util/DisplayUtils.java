@@ -62,4 +62,7 @@ public class DisplayUtils {
 		double brightness = bgColor.getRed()*0.299 + bgColor.getGreen()*0.587 + bgColor.getBlue()*0.114;
 		return brightness < 128.0;
 	}
+
+	public static final Color FOREGROUND_COLOR = Display.getCurrent().getSystemColor(SWT.COLOR_WIDGET_FOREGROUND);
+	public static final Color BACKGROUND_COLOR = Display.getCurrent().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND);
 }
