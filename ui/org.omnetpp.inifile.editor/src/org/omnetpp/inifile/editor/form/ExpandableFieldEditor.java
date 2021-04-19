@@ -27,7 +27,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ToolItem;
 import org.omnetpp.common.ui.MouseTracker;
-import org.omnetpp.common.ui.SWTFactory;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.IInifileChangeListener;
@@ -80,6 +79,8 @@ public abstract class ExpandableFieldEditor extends FieldEditor  {
             }
         };
         MouseTracker.getInstance().addMouseTrackListener(this, listener);
+        toggleButton.addDisposeListener((e) -> MouseTracker.getInstance().removeMouseTrackListener(this, listener));
+        toggleButton.getParent().setVisible(false);
 
         // need to update the toggle button's state on inifile changes
         inifile.addInifileChangeListener(inifileChangeListener);
