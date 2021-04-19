@@ -9,6 +9,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.custom.ViewForm;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseTrackAdapter;
+import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
@@ -854,6 +857,10 @@ public class SWTFactory {
             checkButton.notifyListeners(SWT.Selection, new Event()); // update enablements
     }
 
+    /**
+     * Set the enabled state of the given control and recursively all its children,
+     * except for the the specified one.
+     */
     public static void setEnabled(Control control, boolean enabled, Control except) {
         if (except == null || (control != except && control != except.getParent()))
             control.setEnabled(enabled);
@@ -871,5 +878,27 @@ public class SWTFactory {
             smallFont = new Font(Display.getCurrent(), fontData);
         }
         return smallFont;
+    }
+
+    /**
+     * Configures the control to disappear when the mouse is outside the
+     * specified container. Returns the installed listener so that it's
+     * possible to remove this behavior later by uninstalling the listener.
+     */
+    public static MouseTrackListener autoHide(Control control, Composite container) {
+        MouseTrackListener listener = new MouseTrackAdapter() {
+            @Override
+            public void mouseExit(MouseEvent e) {
+                control.setVisible(false);
+            }
+            @Override
+            public void mouseEnter(MouseEvent e) {
+                control.setVisible(true);
+            }
+        };
+        MouseTracker.getInstance().addMouseTrackListener(container, listener);
+        control.addDisposeListener((e) -> MouseTracker.getInstance().removeMouseTrackListener(container, listener));
+        control.setVisible(MouseTracker.containsMouse(container)); // initial state
+        return listener;
     }
 }
