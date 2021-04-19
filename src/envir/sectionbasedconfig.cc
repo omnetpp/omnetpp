@@ -193,15 +193,8 @@ int SectionBasedConfiguration::getActiveRunNumber() const
 std::vector<std::string> SectionBasedConfiguration::getConfigNames()
 {
     std::vector<std::string> result;
-    for (int i = 0; i < ini->getNumSections(); i++) {
-        const char *section = ini->getSectionName(i);
-        if (strcmp(section, "General") == 0)
-            result.push_back(section);
-        else if (strncmp(section, "Config ", 7) == 0)
-            result.push_back(section+7);
-        else
-            ;  // nothing - leave out bogus section names
-    }
+    for (int i = 0; i < ini->getNumSections(); i++)
+        result.push_back(ini->getSectionName(i));
     return result;
 }
 
@@ -266,15 +259,8 @@ std::vector<std::string> SectionBasedConfiguration::getConfigChain(const char *c
 {
     std::vector<std::string> result;
     std::vector<int> sectionIds = resolveSectionChain(configName);
-    for (int & sectionId : sectionIds) {
-        const char *section = ini->getSectionName(sectionId);
-        if (strcmp(section, "General") == 0)
-            result.push_back(section);
-        else if (strncmp(section, "Config ", 7) == 0)
-            result.push_back(section+7);
-        else
-            ;  // nothing - leave out bogus section names
-    }
+    for (int sectionId : sectionIds)
+        result.push_back(ini->getSectionName(sectionId));
     return result;
 }
 
@@ -282,12 +268,7 @@ int SectionBasedConfiguration::resolveConfigName(const char *configName) const
 {
     if (!configName || !configName[0])
         throw cRuntimeError("Empty config name specified");
-    int id = -1;
-    if (!strcmp(configName, "General"))
-        id = internalFindSection("General");
-    if (id == -1)
-        id = internalFindSection((std::string("Config ")+configName).c_str());
-    return id;
+    return internalFindSection(configName);
 }
 
 void SectionBasedConfiguration::activateGlobalConfig()
@@ -1086,25 +1067,17 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
     // check section names
     std::set<std::string> configNames;
     for (int i = 0; i < ini->getNumSections(); i++) {
-        const char *section = ini->getSectionName(i);
-        const char *configName = nullptr;
-        if (strcmp(section, "General") == 0)
-            ;  // OK
-        else if (strncmp(section, "Config ", 7) == 0)
-            configName = section+7;
-        else
-            throw cRuntimeError("Invalid section name [%s], should be [General] or [Config <name>]", section);
+        const char *configName = ini->getSectionName(i);
         if (configName) {
-            if (*configName == ' ')
-                throw cRuntimeError("Invalid section name [%s]: Too many spaces", section);
+            if (strchr(configName, ' ') != nullptr)
+                throw cRuntimeError("Invalid section name [%s]: It may not contain spaces", configName);
             if (!opp_isalphaext(*configName) && *configName != '_')
-                throw cRuntimeError("Invalid section name [%s]: Config name must begin with a letter or underscore", section);
+                throw cRuntimeError("Invalid section name [%s]: Must begin with a letter or underscore", configName);
             for (const char *s = configName; *s; s++)
                 if (!opp_isalnumext(*s) && strchr("-_@", *s) == nullptr)
-                    throw cRuntimeError("Invalid section name [%s], contains illegal character '%c'", section, *s);
-
+                    throw cRuntimeError("Invalid section name [%s]: Contains illegal character '%c'", configName, *s);
             if (configNames.find(configName) != configNames.end())
-                throw cRuntimeError("Configuration name '%s' not unique", configName);
+                throw cRuntimeError("Duplicate section [%s]", configName);
             configNames.insert(configName);
         }
     }
@@ -1143,8 +1116,7 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
                     StringTokenizer tokenizer(value, ", \t");
                     while (tokenizer.hasMoreTokens()) {
                         const char *configName = tokenizer.nextToken();
-                        std::string sectionName = std::string("Config ") + configName;
-                        int configId = internalFindSection(sectionName.c_str());
+                        int configId = internalFindSection(configName);
                         if (strcmp(configName, "General") != 0 && configId == -1)
                             throw cRuntimeError("No such config: %s", configName);
                         if (configId != -1)

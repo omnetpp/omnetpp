@@ -7,9 +7,7 @@
 
 package org.omnetpp.inifile.editor.form;
 
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CONFIG_;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
-import static org.omnetpp.inifile.editor.model.InifileUtils.configNameToSectionName;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -187,7 +185,7 @@ public class SectionDialog extends TitleAreaDialog {
 
         // fill dialog fields with initial contents
         if (sectionName!=null)
-            configNameText.setText(sectionName.replaceFirst(CONFIG_+" *", ""));
+            configNameText.setText(sectionName);
         if (description!=null)
             descriptionText.setText(description);
         if (baseConfigNames!=null)
@@ -290,7 +288,7 @@ public class SectionDialog extends TitleAreaDialog {
         String ownNetworkName = doc.getValue(originalSectionName, ConfigRegistry.CFGID_NETWORK.getName());
         String inheritedNetworkName = null;
         for (String configName : InifileUtils.parseExtendsList(baseConfigNames)) {
-            inheritedNetworkName = InifileUtils.lookupConfig(CONFIG_+configName, ConfigRegistry.CFGID_NETWORK.getName(), doc);
+            inheritedNetworkName = InifileUtils.lookupConfig(configName, ConfigRegistry.CFGID_NETWORK.getName(), doc);
             if (inheritedNetworkName != null)
                 break;
         }
@@ -320,17 +318,16 @@ public class SectionDialog extends TitleAreaDialog {
             return "Config name must not contain spaces";
         if (!configName.replaceAll("[a-zA-Z0-9-_]", "").equals(""))
             return "Config name contains illegal character(s)";
-        if (!(CONFIG_+configName).equals(originalSectionName))
-            if (doc.containsSection(CONFIG_+configName))
-                return "A section named ["+CONFIG_+configName+"] already exists";
+        if (!configName.equals(originalSectionName))
+            if (doc.containsSection(configName))
+                return "A config named ["+configName+"] already exists";
 
         // validate base config names
         List<String> baseConfigNames = InifileUtils.parseExtendsList(baseConfigsText.getText().trim());
-        for (String baseConfigName : baseConfigNames)
-        {
+        for (String baseConfigName : baseConfigNames) {
             if (!baseConfigName.matches("[a-zA-Z0-9-_]+"))
                 return "Base config name contains illegal character(s)";
-            if (!doc.containsSection(CONFIG_+baseConfigName))
+            if (!doc.containsSection(baseConfigName))
                 return "Base config '"+baseConfigName+"' does not exist";
         }
 
@@ -342,7 +339,7 @@ public class SectionDialog extends TitleAreaDialog {
     @Override
     protected void okPressed() {
         // save dialog state into variables, so that client can retrieve them after the dialog was disposed
-        sectionName = configNameToSectionName(configNameText.getText().trim());
+        sectionName = configNameText.getText().trim();
         description = descriptionText.getText().trim();
         baseConfigNames = baseConfigsText.getText().trim();
         networkName = networkCombo.isEnabled() ? networkCombo.getText().trim() : "";

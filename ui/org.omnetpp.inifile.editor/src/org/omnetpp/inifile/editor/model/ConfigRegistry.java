@@ -56,9 +56,6 @@ public class ConfigRegistry {
     /** Name of the [General] section */
     public static final String GENERAL = "General";
 
-    /** Name prefix for the [Section &lt;name&gt;] sections; includes a trailing space. */
-    public static final String CONFIG_ = "Config ";
-
     /** Name of the "extends=" config option */
     public static final String EXTENDS; // initialized at the bottom of this file
 

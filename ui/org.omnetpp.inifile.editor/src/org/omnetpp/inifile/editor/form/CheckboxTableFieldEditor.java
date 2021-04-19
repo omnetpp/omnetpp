@@ -104,7 +104,7 @@ public class CheckboxTableFieldEditor extends TableFieldEditor {
             public String getColumnText(Object element, int columnIndex) {
                 SectionKey sectionKey = (SectionKey) element;
                 if (columnIndex == 0)
-                    return StringUtils.removeStart(sectionKey.section, ConfigRegistry.CONFIG_);
+                    return sectionKey.section;
                 if (columnIndex == objectColumnIndex)
                     return StringUtils.removeEnd(sectionKey.key, "."+entry.getName());
                 if (columnIndex == valueColumnIndex)

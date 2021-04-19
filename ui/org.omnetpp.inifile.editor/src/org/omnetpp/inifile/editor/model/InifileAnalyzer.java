@@ -12,7 +12,6 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SIMTIME_RESOLUTION;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SIMTIME_SCALE;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_RECORDING_INTERVALS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CONFIG_;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.OBSOLETE_OPTIONS;
@@ -554,19 +553,17 @@ public final class InifileAnalyzer {
 
         for (String section : doc.getSectionNames()) {
             if (!section.equals(GENERAL)) {
-                if (!section.startsWith(CONFIG_))
-                    markers.addError(section, "Invalid section name: must be [General] or [Config <name>]");
-                else if (section.contains("  "))
-                    markers.addError(section, "Invalid section name: contains too many spaces");
-                else if (!String.valueOf(section.charAt(CONFIG_.length())).matches("[a-zA-Z_]"))
-                    markers.addError(section, "Invalid section name: config name must begin a letter or underscore");
-                else if (!section.matches("[^ ]+ [a-zA-Z0-9_@-]+"))
-                    markers.addError(section, "Invalid section name: contains illegal character(s)");
+                if (section.contains(" "))
+                    markers.addError(section, "Section name may not contain space");
+                else if (!String.valueOf(section.charAt(0)).matches("[a-zA-Z_]"))
+                    markers.addError(section, "Section name must begin with a letter or underscore");
+                else if (!section.matches("[a-zA-Z0-9_@-]+"))
+                    markers.addError(section, "Section name contains illegal character(s)");
                 String extendsList = doc.getValue(section, EXTENDS);
                 if (!StringUtils.isEmpty(extendsList)) {
                     for (String configName : InifileUtils.parseExtendsList(extendsList))
-                        if (!doc.containsSection(CONFIG_+configName))
-                            markers.addError(section, EXTENDS, "No such section: [Config "+configName+"]");
+                        if (!doc.containsSection(configName))
+                            markers.addError(section, EXTENDS, "No such section: ["+configName+"]");
                 }
             }
         }

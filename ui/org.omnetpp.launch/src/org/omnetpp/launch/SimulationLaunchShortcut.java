@@ -9,7 +9,6 @@ package org.omnetpp.launch;
 
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_DESCRIPTION;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CONFIG_;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
 
@@ -518,7 +517,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
             public void sectionHeadingLine(int lineNumber, int numLines, String rawLine, String sectionName, String rawComment) {
                 currentSection = sections.get(sectionName);
                 if (currentSection == null) {
-                    currentSection = new IniSection(iniFile, StringUtils.removeStart(sectionName, CONFIG_));
+                    currentSection = new IniSection(iniFile, sectionName);
                     sections.put(currentSection.configName, currentSection);
                 }
             }
@@ -597,13 +596,10 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
             public String getText(Object element) {
                 IniSection cfg = (IniSection)element;
                 String friendlyFileName = defaultDir.equals(cfg.iniFile.getParent()) ? cfg.iniFile.getName() : cfg.iniFile.getFullPath().toString();
-                if (cfg.configName == null) {
+                if (cfg.configName == null)
                     return friendlyFileName;
-                }
-                else {
-                    String sectionName = cfg.configName.equals(GENERAL) ? cfg.configName : CONFIG_ + cfg.configName;
-                    return friendlyFileName + " - [" + sectionName + "]"+ (cfg.description==null ? "" : " - " + cfg.description);
-                }
+                else
+                    return friendlyFileName + " - [" + cfg.configName + "]"+ (cfg.description==null ? "" : " - " + cfg.description);
             }
             @Override
             public Image getImage(Object element) {

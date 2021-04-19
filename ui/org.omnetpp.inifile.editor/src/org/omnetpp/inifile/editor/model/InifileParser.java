@@ -15,6 +15,7 @@ import java.io.StringReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.omnetpp.common.Debug;
@@ -70,6 +71,9 @@ public class InifileParser {
             Debug.println(lineNumber+": PARSE ERROR: "+message);
         }
     }
+
+    private static final String INCLUDE = "include"; // name of inifile directive
+    public static final String CONFIG_ = "Config "; // optional name prefix for the section headers; includes a trailing space
 
     /**
      * Parses an IFile.
@@ -128,9 +132,9 @@ public class InifileParser {
                     // obsolete comment line
                     callback.parseError(lineNumber, numLines, "Semicolon is no longer a comment start character, please use hashmark ('#')");
                 }
-                else if (lineStart=='i' && line.matches("include\\s.*")) {
+                else if (lineStart=='i' && line.matches(INCLUDE + "\\s.*")) {
                     // include directive
-                    String directive = "include";
+                    String directive = INCLUDE;
                     String rest = line.substring(directive.length());
                     int endPos = findEndContent(rest, 0);
                     if (endPos == -1) {
@@ -148,7 +152,7 @@ public class InifileParser {
                         callback.parseError(lineNumber, numLines, "Syntax error in section heading");
                         continue;
                     }
-                    String sectionName = m.group(1).trim();
+                    String sectionName = StringUtils.removeStart(m.group(1).trim(), CONFIG_).trim(); // "Config " prefix is optional, starting from OMNeT++ 6.0
                     String rawComment = m.groupCount()>1 ? m.group(2) : "";
                     if (rawComment == null) rawComment = "";
                     callback.sectionHeadingLine(lineNumber, numLines, rawLine, sectionName, rawComment);
@@ -176,7 +180,7 @@ public class InifileParser {
                     callback.keyValueLine(lineNumber, numLines, rawLine, key, value, rawComment);
                 }
             }
-        } 
+        }
         catch (IOException e) {
             throw InifileEditorPlugin.wrapIntoCoreException(e);
         }

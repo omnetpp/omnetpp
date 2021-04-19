@@ -21,6 +21,7 @@
 #include <fstream>
 #include "common/opp_ctype.h"
 #include "common/fileutil.h"  // directoryOf
+#include "common/stringutil.h"
 #include "omnetpp/cexception.h"
 #include "inifilereader.h"
 #include "fsutils.h"
@@ -179,7 +180,7 @@ void InifileReader::internalReadFile(const char *filename, int currentSectionInd
             const char *endPos = findEndContent(line, filename, lineNumber);
             if (*(endPos-1) != ']')
                 throw cRuntimeError("Syntax error in section heading, '%s' line %d", filename, lineNumber);
-            std::string sectionName = trim(line+1, endPos-1);
+            std::string sectionName = opp_trim(opp_removestart(trim(line+1, endPos-1).c_str(), "Config ")); // "Config " prefix is optional, starting from OMNeT++ 6.0
             if (sectionName.empty())
                 throw cRuntimeError("Section name cannot be empty, '%s' line %d", filename, lineNumber);
 

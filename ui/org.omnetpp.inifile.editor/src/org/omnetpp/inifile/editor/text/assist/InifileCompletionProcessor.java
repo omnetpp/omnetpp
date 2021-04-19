@@ -7,7 +7,6 @@
 
 package org.omnetpp.inifile.editor.text.assist;
 
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CONFIG_;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
 
 import java.util.ArrayList;
@@ -46,6 +45,7 @@ import org.omnetpp.inifile.editor.contentassist.PerObjectConfigKeyContentProposa
 import org.omnetpp.inifile.editor.editors.InifileEditorData;
 import org.omnetpp.inifile.editor.model.IReadonlyInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
+import org.omnetpp.inifile.editor.model.InifileParser;
 import org.omnetpp.inifile.editor.text.InifileTextEditorHelper;
 
 /**
@@ -150,7 +150,7 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
                 // section heading
                 if (!doc.containsSection(GENERAL))
                     proposals.add("["+GENERAL+"]");
-                proposals.add("["+CONFIG_);
+                proposals.add("["+InifileParser.CONFIG_);
             }
 
             if (!linePrefix.startsWith("[") && !linePrefix.matches("include\\s.*")) {

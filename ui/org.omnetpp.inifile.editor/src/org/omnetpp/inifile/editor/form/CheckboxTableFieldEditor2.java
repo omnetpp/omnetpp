@@ -91,7 +91,7 @@ public class CheckboxTableFieldEditor2 extends TableFieldEditor {
                 else
                     switch (columnIndex) {
                         case 0: return StringUtils.removeEnd(sectionKey.key, "."+entry.getName());
-                        case 1: return StringUtils.removeStart(sectionKey.section, ConfigRegistry.CONFIG_);
+                        case 1: return sectionKey.section;
                         default: throw new IllegalArgumentException();
                     }
             }

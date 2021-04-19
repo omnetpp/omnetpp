@@ -11,7 +11,6 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_DESCRIPTION;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_REPEAT;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CONFIG_;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.DEFAULT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
@@ -182,10 +181,6 @@ public class InifileUtils {
         return configNames;
     }
 
-    public static String configNameToSectionName(String configName) {
-        return GENERAL.equals(configName) ? GENERAL : CONFIG_ + configName;
-    }
-
     /**
      * Resolves the run-time NED type of a "like" submodule, using the parameter
      * settings in the inifile. Returns null if the lookup is unsuccessful.
@@ -317,9 +312,8 @@ public class InifileUtils {
         }
         else {
             for (String configName : extendsList) {
-                String sectionName = configNameToSectionName(configName);
-                if (doc.containsSection(sectionName))
-                    baseSections.add(sectionName);
+                if (doc.containsSection(configName))
+                    baseSections.add(configName);
             }
         }
 
