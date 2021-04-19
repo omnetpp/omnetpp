@@ -96,28 +96,36 @@ public class InifileParser {
         try {
             LineNumberReader reader = new LineNumberReader(streamReader);
 
-            String rawLine;
-            while ((rawLine=reader.readLine()) != null) {
-                int lineNumber = reader.getLineNumber();
-                int numLines = 1;
-
-                // join continued lines
-                String line = rawLine;
-                if (rawLine.endsWith("\\")) {
-                    StringBuilder concatenatedLines = new StringBuilder();
-                    while (rawLine != null && rawLine.endsWith("\\")) {
-                        concatenatedLines.append(rawLine, 0, rawLine.length()-1);
-                        rawLine = reader.readLine();
-                        numLines++;
-                    }
-                    if (rawLine == null)
-                        callback.parseError(lineNumber, numLines, "Stray backslash at end of file");
-                    else
-                        concatenatedLines.append(rawLine);
-                    line = concatenatedLines.toString();
+            String concatenatedLine = "";
+            String concatenatedRawLines = "";
+            int startLineNumber = -1;
+            int lineNumber = 0;
+            while (true) {
+                String rawLine = reader.readLine();
+                if (rawLine == null)
+                    break;
+                lineNumber = reader.getLineNumber();
+                if (concatenatedLine.endsWith("\\")) {
+                    concatenatedLine = StringUtils.removeEnd(concatenatedLine, "\\") + rawLine;
+                    concatenatedRawLines += "\n" + rawLine;
                 }
-
-                processLine(line, callback, lineNumber, numLines, rawLine);
+                else if (!rawLine.isBlank() && (rawLine.startsWith(" ") || rawLine.startsWith("\t"))) {
+                    concatenatedLine += "\n" + rawLine;
+                    concatenatedRawLines += "\n" + rawLine;
+                }
+                else {
+                    if (startLineNumber != -1) {
+                        int numLines = lineNumber - startLineNumber;
+                        processLine(concatenatedLine, callback, startLineNumber, numLines, concatenatedRawLines);
+                    }
+                    concatenatedLine = concatenatedRawLines = rawLine;
+                    startLineNumber = lineNumber;
+                }
+            }
+            if (startLineNumber != -1) {
+                concatenatedLine = StringUtils.removeEnd(concatenatedLine, "\\"); // remove final stray backslash
+                int numLines = lineNumber - startLineNumber + 1;
+                processLine(concatenatedLine, callback, startLineNumber, numLines, concatenatedRawLines);
             }
         }
         catch (IOException e) {
