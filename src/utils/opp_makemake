@@ -342,8 +342,6 @@ sub makemake()
 
     $folder = cwd;
 
-    print "Creating $makefile in $folder...\n";
-
     @objs = ();
     @generatedHeaders = ();
     @extraObjs = ();
@@ -653,9 +651,14 @@ sub makemake()
 
     my $content = substituteIntoTemplate(template(), \%m, "{", "}");
 
-    open(OUT, ">$makefile");
-    print OUT $content;
-    close OUT;
+    my $oldContent = (-e $makefile) ? readTextFile($makefile) : "";
+
+    if ($content ne $oldContent) {
+        print (((-e $makefile) ? "Updating" : "Creating") . " $makefile in $folder...\n");
+        open(OUT, ">$makefile");
+        print OUT $content;
+        close OUT;
+    }
 }
 
 sub collectDirs($;$);
