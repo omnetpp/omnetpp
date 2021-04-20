@@ -943,19 +943,7 @@ def _compute_vector_op(df, op_str, operation, *args, **kwargs):
     """
     Process a vector operation with the `compute` prefix. Helper for `perform_vector_ops()`.
     """
-    if operation == vectorops.aggregate:
-        return df.append(vectorops.aggregate(df, *args, **kwargs), sort=False)
-    elif operation == vectorops.merge:
-        return df.append(vectorops.merge(df), sort=False)
-    else:
-        condition = kwargs.pop('condition', None)
-        clone = df.copy()
-        def process(row):
-            row = operation(row, *args, **kwargs)
-            row["name"] = row["name"] + ":" + op_str
-            return row
-        clone = clone.transform(lambda row: process(row.copy()) if not condition or condition(row) else row, axis='columns')
-        return df.append(clone, sort=False)
+    return df.append(_apply_vector_op(df, op_str, operation, *args, **kwargs), sort=False)
 
 
 def set_plot_title(title, suggested_chart_name=None):
