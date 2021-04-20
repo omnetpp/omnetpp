@@ -34,7 +34,7 @@ static void eval(const char *txt)
         Expression expr;
         VariableTranslator variableTranslator;
         Expression::MultiAstTranslator multiTranslator({ &variableTranslator, Expression::getDefaultAstTranslator() });
-        
+
         expr.parse(txt, &multiTranslator);
         //EV << expr.str() << " --> ";  // echo parsed form
         EV << expr.evaluate().str() << "\n";
@@ -113,6 +113,8 @@ EV << ".\n";
 
 %exitcode: 0
 
+%subst: /exception: syntax error.*/exception: syntax error/
+
 %contains: stdout
 3+2 -> 5
 3+2*5 -> 13
@@ -122,9 +124,9 @@ a2 -> 2
 a3 -> 3
 aaa:bbb -> 49
 a0:b -> 0
-a0: -> exception: syntax error, unexpected ':', expecting $end
-a0: a -> exception: syntax error, unexpected ':', expecting $end
-:a2 -> exception: syntax error, unexpected ':'
+a0: -> exception: syntax error
+a0: a -> exception: syntax error
+:a2 -> exception: syntax error
 a1+a2+a3 -> 6
 fabs(-3.14) -> 3.14
 pow(2,8) -> 256

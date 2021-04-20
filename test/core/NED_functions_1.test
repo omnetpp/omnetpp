@@ -299,7 +299,7 @@ s(0.5) ==> 0.5s
 ms(0.5s) ==> 500ms
 W(0.15) ==> 0.15W
 W(150mW) ==> 0.15W
-W(0dBm) ==> 0.001W
+W(0dBm) ==> 1mW
 dBm(10W) ==> 40dBm
 ratio(-10dB) ==> 0.316228ratio
 ratio(0dB) ==> 1ratio
