@@ -180,7 +180,7 @@ public class ParametersPage extends FormPage {
                     SectionKey item = (SectionKey) element;
                     switch (columnIndex) {
                     case 0: return item.key;
-                    case 1: return nullToEmpty(getInifileDocument().getValue(item.section, item.key));
+                    case 1: return nullToEmpty(getInifileDocument().getRawValue(item.section, item.key));
                     case 2: return nullToEmpty(getInifileDocument().getComment(item.section, item.key));
                     default: throw new IllegalArgumentException();
                     }
@@ -242,7 +242,7 @@ public class ParametersPage extends FormPage {
                 if (property.equals("key"))
                     return item.key;
                 else if (property.equals("value"))
-                    return nullToEmpty(getInifileDocument().getValue(item.section, item.key));
+                    return nullToEmpty(getInifileDocument().getRawValue(item.section, item.key));
                 else if (property.equals("comment"))
                     return nullToEmpty(getInifileDocument().getComment(item.section, item.key));
                 else
@@ -274,8 +274,8 @@ public class ParametersPage extends FormPage {
                         }
                     }
                     else if (property.equals("value")) {
-                        if (!value.equals(doc.getValue(item.section, item.key))) {
-                            doc.setValue(item.section, item.key, (String)value);
+                        if (!value.equals(doc.getRawValue(item.section, item.key))) {
+                            doc.setRawValue(item.section, item.key, (String)value);
                             treeViewer.refresh();
                         }
                     }
@@ -433,7 +433,7 @@ public class ParametersPage extends FormPage {
             for (int i=0; i<n; i++) {
                 sections[i] = draggedEntries[i].section;
                 keys[i] = draggedEntries[i].key;
-                values[i] = doc.getValue(draggedEntries[i].section, draggedEntries[i].key);
+                values[i] = doc.getRawValue(draggedEntries[i].section, draggedEntries[i].key);
                 rawComments[i] = doc.getRawComment(draggedEntries[i].section, draggedEntries[i].key);
             }
 

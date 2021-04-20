@@ -45,10 +45,20 @@ public interface IReadonlyInifileDocument {
     boolean containsKey(String section, String key);
 
     /**
-     * Returns the value of the given entry. Returns null if section,
-     * or key in it does not exist.
+     * Returns the value of the given entry. The value may be multi-line,
+     * and does NOT contain comments. Returns null if section, or key
+     * in it does not exist.
      */
     String getValue(String section, String key);
+
+    /**
+     * Returns the value of the given entry. The value may be multi-line,
+     * and may include comments. Returns null if section, or key in it
+     * does not exist.
+     *
+     * Fields editors should use this method instead of getValue().
+     */
+    String getRawValue(String section, String key);
 
     /**
      * Returns immutable value object with file/line/isReadonly info.

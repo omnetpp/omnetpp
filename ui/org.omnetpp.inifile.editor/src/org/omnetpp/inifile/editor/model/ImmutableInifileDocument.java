@@ -70,10 +70,14 @@ final class ImmutableInifileDocument implements IReadonlyInifileDocument {
         return section == null ? null : section.entries.get(key);
     }
 
-
     public String getValue(String section, String key) {
         KeyValueLine line = lookupEntry(section, key);
         return line == null ? null : line.value;
+    }
+
+    public String getRawValue(String section, String key) {
+        KeyValueLine line = lookupEntry(section, key);
+        return line == null ? null : line.rawValue;
     }
 
     public LineInfo getEntryLineDetails(String section, String key) {

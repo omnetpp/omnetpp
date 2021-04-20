@@ -288,7 +288,7 @@ public class SectionsPage extends FormPage {
         else {
             String value = InifileUtils.removeSectionNamePrefix(extendsSectionName);
             if (doc.containsKey(sectionName, EXTENDS))
-                doc.setValue(sectionName, EXTENDS, value);
+                doc.setRawValue(sectionName, EXTENDS, value);
             else
                 InifileUtils.addEntry(doc, sectionName, EXTENDS, value, "");
         }

@@ -12,13 +12,12 @@ import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.omnetpp.common.Debug;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 
 /**
@@ -29,13 +28,12 @@ public class InifileParser {
     /**
      * Implement this interface to store ini file contents as it gets parsed. Comments are
      * passed back with leading "#" and preceding whitespace, or as "" if there's no comment
-     * on that line. Lines that end in backslash are passed to incompleteLine(), with all
-     * content assigned to their completing (non-backslash) line.
+     * on that line.
      */
     public interface ParserCallback {
         void blankOrCommentLine(int lineNumber, int numLines, String rawLine, String rawComment);
         void sectionHeadingLine(int lineNumber, int numLines, String rawLine, String sectionName, String rawComment);
-        void keyValueLine(int lineNumber, int numLines, String rawLine, String key, String value, String rawComment);
+        void keyValueLine(int lineNumber, int numLines, String rawLine, String key, String rawValue, String rawComment);
         void directiveLine(int lineNumber, int numLines, String rawLine, String directive, String args, String rawComment);
         void parseError(int lineNumber, int numLines, String message);
     }
@@ -46,7 +44,7 @@ public class InifileParser {
     public static class ParserAdapter implements ParserCallback {
         public void blankOrCommentLine(int lineNumber, int numLines, String rawLine, String rawComment) {}
         public void sectionHeadingLine(int lineNumber, int numLines, String rawLine, String sectionName, String rawComment) {}
-        public void keyValueLine(int lineNumber, int numLines, String rawLine, String key, String value, String rawComment) {}
+        public void keyValueLine(int lineNumber, int numLines, String rawLine, String key, String rawValue, String rawComment) {}
         public void directiveLine(int lineNumber, int numLines, String rawLine, String directive, String args, String rawComment) {}
         public void parseError(int lineNumber, int numLines, String message) {}
     }
@@ -56,16 +54,16 @@ public class InifileParser {
      */
     public static class DebugParserAdapter implements ParserCallback {
         public void blankOrCommentLine(int lineNumber, int numLines, String rawLine, String rawComment) {
-            Debug.println(lineNumber+": "+rawLine+" --> comment="+rawComment);
+            Debug.println(lineNumber+": "+rawLine+" --> rawComment="+rawComment);
         }
         public void sectionHeadingLine(int lineNumber, int numLines, String rawLine, String sectionName, String rawComment) {
-            Debug.println(lineNumber+": "+rawLine+" --> section '"+sectionName+"'  comment="+rawComment);
+            Debug.println(lineNumber+": "+rawLine+" --> section '"+sectionName+"'  rawComment="+rawComment);
         }
-        public void keyValueLine(int lineNumber, int numLines, String rawLine, String key, String value, String rawComment) {
-            Debug.println(lineNumber+": "+rawLine+" --> key='"+key+"' value='"+value+"'  comment="+rawComment);
+        public void keyValueLine(int lineNumber, int numLines, String rawLine, String key, String rawValue, String rawComment) {
+            Debug.println(lineNumber+": "+rawLine+" --> key='"+key+"' rawValue='"+rawValue+"'  rawComment="+rawComment);
         }
         public void directiveLine(int lineNumber, int numLines, String rawLine, String directive, String args, String rawComment) {
-            Debug.println(lineNumber+": "+rawLine+" --> directive='"+directive+"' args='"+args+"'  comment="+rawComment);
+            Debug.println(lineNumber+": "+rawLine+" --> directive='"+directive+"' args='"+args+"'  rawComment="+rawComment);
         }
         public void parseError(int lineNumber, int numLines, String message) {
             Debug.println(lineNumber+": PARSE ERROR: "+message);
@@ -134,101 +132,153 @@ public class InifileParser {
     }
 
     protected void processLine(String line, ParserCallback callback, int lineNumber, int numLines, String rawLine) {
+        // separate significant content and comments
+        String cleanedLine; // with comments removed
+        String rawComment; // including '#' and the whitespace before it; but empty for multi-line values
+        boolean isMultiline = line.contains("\n");
+        if (!isMultiline) {
+            int endPos = findEndContent(line, 0);
+            if (endPos == -1) {
+                callback.parseError(lineNumber, 1, "Unterminated string constant");
+                return;
+            }
+            rawComment = line.substring(endPos);
+            cleanedLine = line.substring(0, endPos);
+        }
+        else {
+            cleanedLine = "";
+            int k = 0;
+            for (String l : line.split("\n")) {
+                int endPos = findEndContent(l, 0);
+                if (endPos == -1) {
+                    callback.parseError(lineNumber + k, 1, "Unterminated string constant");
+                    return;
+                }
+                cleanedLine += l.substring(0, endPos) + "\n";
+                k++;
+            }
+            rawComment = "";
+            cleanedLine = StringUtils.removeEnd(cleanedLine, "\n");
+        }
+
         // process the line
-        line = line.trim();
-        char lineStart = line.length()==0 ? 0 : line.charAt(0);
-        if (line.length()==0) {
-            // blank line
-            callback.blankOrCommentLine(lineNumber, numLines, rawLine, "");
+        char firstChar = cleanedLine.isEmpty() ? 0 : cleanedLine.charAt(0);
+        if (cleanedLine.isEmpty()) {
+            // blank or comment
+            callback.blankOrCommentLine(lineNumber, numLines, rawLine, rawLine);
         }
-        else if (lineStart=='#') {
-            // comment line
-            callback.blankOrCommentLine(lineNumber, numLines, rawLine, line);
+        else if (Character.isWhitespace(firstChar)) { // space or newline
+            callback.parseError(lineNumber, 1, "Content must begin on column 1 because indentation is used for line continuation");
         }
-        else if (lineStart==';') {
+        else if (firstChar == ';') {
             // obsolete comment line
             callback.parseError(lineNumber, numLines, "Semicolon is no longer a comment start character, please use hashmark ('#')");
         }
-        else if (lineStart=='i' && line.matches(INCLUDE + "\\s.*")) {
+        else if (firstChar == 'i' && cleanedLine.matches(INCLUDE + "\\s.*")) {
             // include directive
             String directive = INCLUDE;
-            String rest = line.substring(directive.length());
-            int endPos = findEndContent(rest, 0);
-            if (endPos == -1) {
-                callback.parseError(lineNumber, numLines, "Unterminated string constant");
-                return;
-            }
-            String args = rest.substring(0, endPos).trim();
-            String rawComment = rest.substring(endPos);
+            String args = StringUtils.removeStart(cleanedLine, directive).trim();
             callback.directiveLine(lineNumber, numLines, rawLine, directive, args, rawComment);
         }
-        else if (lineStart=='[') {
+        else if (firstChar == '[') {
             // section heading
-            Matcher m = Pattern.compile("\\[([^#\"]+)\\]\\s*?(\\s*#.*)?").matcher(line);
-            if (!m.matches()) {
+            if (!cleanedLine.endsWith("]")) {
                 callback.parseError(lineNumber, numLines, "Syntax error in section heading");
                 return;
             }
-            String sectionName = StringUtils.removeStart(m.group(1).trim(), CONFIG_).trim(); // "Config " prefix is optional, starting from OMNeT++ 6.0
-            String rawComment = m.groupCount()>1 ? m.group(2) : "";
-            if (rawComment == null) rawComment = "";
+            String sectionName = StringUtils.removeEnd(StringUtils.removeStart(cleanedLine, "["), "]").trim();
+            sectionName = StringUtils.removeStart(sectionName,  CONFIG_).trim(); // "Config " prefix is optional, starting from OMNeT++ 6.0
             callback.sectionHeadingLine(lineNumber, numLines, rawLine, sectionName, rawComment);
         }
         else {
             // key = value
-            int endPos = findEndContent(line, 0);
-            if (endPos == -1) {
-                callback.parseError(lineNumber, numLines, "Unterminated string constant");
-                return;
-            }
-            String rawComment = line.substring(endPos);
-            String keyValue = line.substring(0, endPos);
-            int equalSignPos = keyValue.indexOf('=');
+            int equalSignPos = cleanedLine.indexOf('=');
             if (equalSignPos == -1) {
                 callback.parseError(lineNumber, numLines, "Line must be in the form key=value");
                 return;
             }
-            String key = keyValue.substring(0, equalSignPos).trim();
-            if (key.length()==0) {
+            String key = cleanedLine.substring(0, equalSignPos).trim();
+            if (key.isEmpty()) {
                 callback.parseError(lineNumber, numLines, "Line must be in the form key=value");
                 return;
             }
-            String value = keyValue.substring(equalSignPos+1).trim();
-            callback.keyValueLine(lineNumber, numLines, rawLine, key, value, rawComment);
+            if (!isMultiline) {
+                String value = cleanedLine.substring(equalSignPos+1).trim();
+                callback.keyValueLine(lineNumber, numLines, rawLine, key, value, rawComment);
+            }
+            else {
+                // for multi-line values, we don't separate the value and comments, because there's no
+                // meaningful way of editing them separately and then put them back into the file.
+                // Thus, we leave comments as part of the value string, and pass "" as rawComment.
+                int rawEqualSignPos = findEqualSign(line);
+                Assert.isTrue(rawEqualSignPos != -1); // we checked it before
+                String rawValue = line.substring(rawEqualSignPos+1).trim();
+                callback.keyValueLine(lineNumber, numLines, rawLine, key, rawValue, "");
+            }
         }
     }
 
     /**
-     * Returns the position of the comment on the given line (i.e. the position of the
-     * # character), or line.length() if no comment is found. String literals
-     * are recognized and skipped properly.
+     * Returns the position right after the end of significant content on the
+     * first line of the given string. Scanning stops at the first newline (LF) character.
+     * String literals are recognized and skipped properly.
      *
-     * Returns -1 if line contains an unterminated string literal.
+     * Returns -1 if the line contains an unterminated string literal.
      */
     private static int findEndContent(String line, int fromPos) {
-        int k = fromPos;
-        while (k < line.length()) {
-            switch (line.charAt(k)) {
-            case '"':
+        int k;
+        for (k = fromPos; k < line.length() && line.charAt(k) != '\n' && line.charAt(k) != '#'; k++) {
+            if (line.charAt(k) == '"') {
                 // string literal: skip it
                 k++;
-                while (k < line.length() && line.charAt(k) != '"') {
+                while (k < line.length() && line.charAt(k) != '"' && line.charAt(k) != '\n') {
                     if (line.charAt(k) == '\\')  // skip \", \\, etc.
                         k++;
                     k++;
                 }
-                if (k >= line.length())
+                if (k >= line.length() || line.charAt(k) != '"')
                     return -1; // meaning "unterminated string literal"
-                k++;
-                break;
-            case '#':
-                // comment
-                while (k > 0 && Character.isWhitespace(line.charAt(k-1))) k--;
-                return k;
-            default:
-                k++;
             }
         }
+        while (k > 0 && Character.isWhitespace(line.charAt(k-1)) && line.charAt(k-1) != '\n')
+            k--;
         return k;
     }
+
+    /**
+     * Return the position of the first significant (non-comment) '=' sign
+     * in the given multi-line string, or -1 of not found.
+     */
+    private static int findEqualSign(String rawLine) {
+        int pos = 0;
+        while (true) {
+            int endPos = findEndContent(rawLine, pos);
+            Assert.isTrue(endPos != -1);  // checked before
+            int equalSignPos = rawLine.substring(0,endPos).indexOf('=', pos);
+            if (equalSignPos != -1)
+                return equalSignPos;
+            pos = rawLine.indexOf('\n', endPos); // skip comment
+            if (pos == -1)
+                break;
+            pos++;
+        }
+        return -1;
+    }
+
+    /**
+     * Removes comments from the given string that may contain multiple lines.
+     * If a line contains an unterminated string constant, its the entire line
+     * is included in the output.
+     */
+    public static String stripComments(String rawLine) {
+        StringBuilder buffer  = new StringBuilder();
+        for (String l : rawLine.split("\n")) {
+            int endPos = findEndContent(l, 0);
+            buffer.append(endPos==-1 ? l : l.substring(0, endPos));
+            buffer.append("\n");
+        }
+        return StringUtils.removeEnd(buffer.toString(), "\n");
+    }
+
+
 }

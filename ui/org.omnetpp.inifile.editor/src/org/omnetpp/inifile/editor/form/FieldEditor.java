@@ -77,7 +77,7 @@ public abstract class FieldEditor extends Composite {
 
     protected String getValueFromFile(String section, String key) {
         Assert.isTrue(entry.isPerObject() ? key.endsWith("."+entry.getName()) : key.equals(entry.getName()));
-        return inifile.getValue(section, key);
+        return inifile.getRawValue(section, key);
     }
 
     protected void setValueInFile(String section, String key, String value) {
@@ -86,7 +86,7 @@ public abstract class FieldEditor extends Composite {
             if (!inifile.containsKey(section, key))
                 InifileUtils.addEntry(inifile, section, key, value, "");
             else
-                inifile.setValue(section, key, value);
+                inifile.setRawValue(section, key, value);
         }
         catch (RuntimeException e) {
             showErrorDialog(e);

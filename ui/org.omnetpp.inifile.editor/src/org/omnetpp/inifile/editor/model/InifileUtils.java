@@ -434,8 +434,8 @@ public class InifileUtils {
         return 100; // cannot get here
     }
 
-    public static void addOrSetOrRemoveEntry(IInifileDocument doc, String section, String key, String value) {
-        if (value==null) {
+    public static void addOrSetOrRemoveEntry(IInifileDocument doc, String section, String key, String rawValue) {
+        if (rawValue == null) {
             // remove
             if (doc.containsKey(section, key))
                 doc.removeKey(section, key);
@@ -443,9 +443,9 @@ public class InifileUtils {
         else {
             // set or add
             if (!doc.containsKey(section, key))
-                addEntry(doc, section, key, value, "");
-            else if (!value.equals(doc.getValue(section, key)))
-                doc.setValue(section, key, value);
+                addEntry(doc, section, key, rawValue, "");
+            else if (!rawValue.equals(doc.getValue(section, key)))
+                doc.setRawValue(section, key, rawValue);
         }
     }
 
@@ -466,7 +466,7 @@ public class InifileUtils {
                 StringBuilder newValue = new StringBuilder();
                 for (String token : StringUtils.splitPreservingSeparators(oldValue, Pattern.compile("[, \t]")))
                     newValue.append(token.equals(oldName) ? newName : token);
-                doc.setValue(section, EXTENDS, newValue.toString());
+                doc.setRawValue(section, EXTENDS, newValue.toString());
             }
         }
     }

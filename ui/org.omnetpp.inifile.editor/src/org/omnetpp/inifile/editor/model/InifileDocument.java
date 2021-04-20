@@ -79,7 +79,8 @@ public class InifileDocument implements IInifileDocument {
     }
     static class KeyValueLine extends Line implements Cloneable {
         String key;
-        String value;
+        String value; // may be multi-line; comments stripped
+        String rawValue; // may be multi-line; includes comments
 
         protected KeyValueLine clone() throws CloneNotSupportedException {
             return (KeyValueLine)super.clone();
@@ -246,17 +247,17 @@ public class InifileDocument implements IInifileDocument {
             bottomIncludes.clear();
             includedFiles.clear();
 
-            class Callback implements InifileParser.ParserCallback {
+            class Builder implements InifileParser.ParserCallback {
                 Section currentSection = null; // can point into the parent file
                 SectionHeadingLine currentSectionHeading = null; // points into current file
                 IFile currentFile;
                 IFile[] includeStack;
 
-                public Callback(IFile file, Section currentSection) {
+                public Builder(IFile file, Section currentSection) {
                     this(file, currentSection, new IFile[0]);
                 }
 
-                private Callback(IFile file, Section currentSection, IFile[] includeStack) {
+                private Builder(IFile file, Section currentSection, IFile[] includeStack) {
                     this.currentFile = file;
                     this.currentSection = currentSection;
                     this.includeStack = ArrayUtils.add(includeStack, currentFile);
@@ -289,7 +290,7 @@ public class InifileDocument implements IInifileDocument {
                     currentSectionHeading = line;
                 }
 
-                public void keyValueLine(int lineNumber, int numLines, String rawLine, String key, String value, String rawComment) {
+                public void keyValueLine(int lineNumber, int numLines, String rawLine, String key, String rawValue, String rawComment) {
                     if (currentSection == null) {
                         markers.addError(currentFile, lineNumber, "Missing section heading");
                         sectionHeadingLine(0, 1, "", ConfigRegistry.GENERAL, ""); // implicit general section, might happen in the main file only
@@ -310,7 +311,8 @@ public class InifileDocument implements IInifileDocument {
                         line.numLines = numLines;
                         line.rawComment = rawComment;
                         line.key = key;
-                        line.value = value;
+                        line.rawValue = rawValue;
+                        line.value = InifileParser.stripComments(rawValue);
                         if (currentFile == documentFile)
                             mainFileKeyValueLines.add(line);
                         currentSection.entries.put(key, line);
@@ -337,7 +339,7 @@ public class InifileDocument implements IInifileDocument {
                             else {
                                 includedFiles.add(file);
                                 markers.register(file);
-                                new InifileParser().parse(file, new Callback(file, currentSection, includeStack));
+                                new InifileParser().parse(file, new Builder(file, currentSection, includeStack));
                             }
                         } catch (CoreException e) {
                             markers.addError(currentFile, lineNumber, e.getMessage());
@@ -351,7 +353,7 @@ public class InifileDocument implements IInifileDocument {
             }
 
             try {
-                new InifileParser().parse(streamReader, new Callback(documentFile, null));
+                new InifileParser().parse(streamReader, new Builder(documentFile, null));
             }
             catch (CoreException e) {
                 markers.addError(documentFile, 1, e.getMessage());
@@ -525,11 +527,17 @@ public class InifileDocument implements IInifileDocument {
         return line == null ? null : line.value;
     }
 
-    public void setValue(String section, String key, String value) {
+    public String getRawValue(String section, String key) {
+        KeyValueLine line = lookupEntry(section, key);
+        return line == null ? null : line.rawValue;
+    }
+
+    public void setRawValue(String section, String key, String rawValue) {
         KeyValueLine line = getEditableEntry(section, key);
-        if (!nullSafeEquals(line.value, value)) {
-            line.value = value;
-            String text = line.key + " = " + line.value + line.rawComment;
+        if (!nullSafeEquals(line.value, rawValue)) {
+            line.rawValue = rawValue;
+            line.value = InifileParser.stripComments(rawValue);
+            String text = line.key + " = " + line.rawValue + line.rawComment;
             replaceLine(line, text);
         }
     }

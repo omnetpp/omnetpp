@@ -36,7 +36,7 @@ public interface IInifileDocument extends IReadonlyInifileDocument {
      * Sets the value of the given entry. Throws error if key does not exist
      * in that section, or it is readonly.
      */
-    void setValue(String section, String key, String value);
+    void setRawValue(String section, String key, String value);
 
     /**
      * Creates a new entry. Throws error if already exists, or section or beforeKey does not exist.
