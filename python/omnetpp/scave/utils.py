@@ -932,8 +932,12 @@ def _apply_vector_op(df, op_str, operation, *args, **kwargs):
         condition = kwargs.pop('condition', None)
         clone = df.copy()
         def process(row):
+            row["vectime"].flags.writeable = False
+            row["vecvalue"].flags.writeable = False
             row = operation(row, *args, **kwargs)
             row["name"] = row["name"] + ":" + op_str
+            row["vectime"].flags.writeable = True
+            row["vecvalue"].flags.writeable = True
             return row
         clone = clone.transform(lambda row: process(row.copy()) if not condition or condition(row) else row, axis='columns')
         return clone
