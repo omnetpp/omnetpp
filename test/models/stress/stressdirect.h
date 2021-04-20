@@ -25,7 +25,7 @@ class RandomModuleSelector : public cVisitor
     public:
         RandomModuleSelector();
 
-        virtual void visit(cObject *object);
+        virtual bool visit(cObject *object);
 };
 
 class StressDirect : public cSimpleModule

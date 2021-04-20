@@ -19,7 +19,7 @@ RandomModuleSelector::RandomModuleSelector()
     numberOfVisitedModules = 0;
 }
 
-void RandomModuleSelector::visit(cObject *object)
+bool RandomModuleSelector::visit(cObject *object)
 {
     cModule *module = dynamic_cast<cModule *>(object);
 
@@ -32,6 +32,7 @@ void RandomModuleSelector::visit(cObject *object)
     }
     else if (module->hasSubmodules())
         module->forEachChild(this);
+    return true;
 }
 
 cModule *StressDirect::getRandomModule()
