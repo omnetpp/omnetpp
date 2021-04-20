@@ -25,7 +25,7 @@ they exist) to reflect the processing in the name. For example, an operation
 that computes *mean* may return `mean(%s)` as name and `Mean of %s` as title
 (where `%s` indicates the original name/title).
 
-The `aggregate()` and `compute()` functions are special. They receive a DataFrame
+The `aggregate()` and `merge()` functions are special. They receive a DataFrame
 instead of a row in the first argument, and return new DataFrame with the result.
 
 Vector operations can be applied to a DataFrame using `utils.perform_vector_ops(df,ops)`.
@@ -41,15 +41,29 @@ If the package name is omitted, `omnetpp.scave.vectorops` is assumed.
 the input row in the DataFrame (*apply*) or added as extra lines (*compute*).
 The default is *apply*.
 
-To define a new vector operation, define a function that fulfills the above
-interface (e.g. in the chart script), and add it to the `omnetpp.scave.vectorops`
-package.
+
+To register a new vector operation, define a function that fulfills the above interface
+(e.g. in the chart script, or an external `.py` file, that the chart script imports),
+with the `omnetpp.scave.vectorops.vector_operation` decorator on it.
+
+Make sure that the registered function does not modify the data of the NumPy array
+instances in the rows, because it would have an unwanted effect when used in `compute`
+(as opposed to `apply`) mode.
+
+Example:
 
 ```
-def foo(r, args):
-    ...
 from omnetpp.scave import vectorops
-vectorops.foo = foo
+
+@vectorops.vector_operation("Fooize", "foo(42)")
+def foo(r, arg1, arg2=5):
+    # r.vectime = r.vectime * 2    # <- this is okay
+    # r.vectime *= 2               # <- this is NOT okay!
+
+    r.vectime = r.vectime * arg1 + arg2
+    if "title" in r:
+        r.title = r.title + ", but fooized" # this is also okay
+    return r
 ```
 """
 
@@ -57,13 +71,79 @@ import numpy as np
 import pandas as pd
 
 def perform_vector_ops(df, operations : str):
+    """ See: utils.perform_vector_ops """
     import omnetpp.scave.utils as utils
     return utils.perform_vector_ops(df, operations)
 
+
+"""
+An internal registry of the available vector operations.
+Stores 3-tuples of: (<function>, "label", "example")
+The <function> is the Python function itself, the "label"
+is what will appear on the GUI, and "example" is what will be
+inserted intially when the operation is chosen by the user.
+"""
+_operations = []
+
+
+def _get_vectorop_signature(func):
+    """
+    Returns the signature of `func` as a string that can be used to prescribe it
+    as a vector operation - so, without the first parameter, which is used
+    internally to pass the DataFrame/row to process.
+    """
+    import inspect
+    import functools
+    m = functools.partial(func, None) # binding the row parameter
+    return str(inspect.signature(m))
+
+
+def vector_operation(label : str = None, example : str = None):
+    """
+    Returns, or acts as, a decorator; to be used on methods you wish to register as vector operations.
+    Parameters:
+      - `label`: will be shown on the GUI for the user
+      - `example`: should be string, containing a valid invocation of the function
+    Alternatively, this can also be used directly as decorator (without calling it first).
+    """
+
+    def decorator(function):
+        global _operations
+        lbl = label or function.__name__.title()
+        ex = example or (function.__name__ + _get_vectorop_signature(function))
+        _operations.append((function, lbl, ex))
+        return function
+
+    if callable(label):
+        # In case the user omitted the () after @vector_operation, Python will call _this_ method
+        # directly, with the vector operation function itself in place of the label parameter.
+        # We could error out, OR we could cheat and recover, like this:
+        function = label
+        label = None
+        decorator(function)
+        return function
+    else:
+        return decorator
+
+
+def lookup_operation(module, name):
+    """
+    Returns a function from the registered vector operations by name, and optionally module.
+    `module` and `name` are both strings. `module` can also be `None`, in which case it is ignored.
+    """
+    global _operations
+    for fn, _label, _example in _operations:
+        if (module is None or fn.__module__ == module) and fn.__name__ == name:
+            return fn
+    return None
+
+
+@vector_operation
 def aggregate(df, function='average'):
     """
     Aggregates several vectors into a single one, aggregating the
     y values *at the same time coordinate* with the specified function.
+    Possible values: 'sum', 'average', 'count', 'maximum', 'minimum'
     """
     vectimes = df['vectime']
     vecvalues = df['vecvalue']
@@ -74,7 +154,7 @@ def aggregate(df, function='average'):
 
     # the sum of all vector lengths
     capacity = vectimes.apply(len).sum()
-    # print(capacity)
+
     # these are uninitialized, and might be oversized, but always large enough
     out_times = np.empty(capacity)
     out_values = np.empty(capacity)
@@ -135,6 +215,7 @@ def aggregate(df, function='average'):
     return out_df
 
 
+@vector_operation
 def merge(df):
     """
     Merges several series into a single one, maintaining increasing
@@ -217,6 +298,7 @@ def _combine_rows(df, out_times, out_values, comment):
     result = pd.DataFrame(data)
     return result
 
+@vector_operation
 def mean(r):
     """
     Computes mean on (0,t): yout[k] = sum(y[i], i=0..k) / (k+1).
@@ -228,6 +310,7 @@ def mean(r):
     return r
 
 
+@vector_operation
 def sum(r):
     """
     Sums up values: yout[k] = sum(y[i], i=0..k)
@@ -238,9 +321,10 @@ def sum(r):
     return r
 
 
+@vector_operation("Add constant", "add(100)")
 def add(r, c):
     """
-    Adds a constant to the input: yout[k] = y[k] + c
+    Adds a constant to all values in the input: yout[k] = y[k] + c
     """
     v = r['vecvalue']
     r['vecvalue'] = v + c
@@ -249,6 +333,7 @@ def add(r, c):
     return r
 
 
+@vector_operation("Compare with threshold", "compare(threshold=9000, less=-1, equal=0, greater=1)")
 def compare(r, threshold, less=None, equal=None, greater=None):
     """
     Compares value against a threshold, and optionally replaces it with a constant.
@@ -256,6 +341,7 @@ def compare(r, threshold, less=None, equal=None, greater=None):
          else if y[k] == threshold and equal != None then equal;
          else if y[k] > threshold and greater != None then greater;
          else y[k]
+    The last three parameters are all independently optional.
     """
     v = r['vecvalue']
 
@@ -279,6 +365,7 @@ def compare(r, threshold, less=None, equal=None, greater=None):
     return r
 
 
+@vector_operation("Crop in time", "crop(t1=10, t2=100) The time values are in seconds")
 def crop(r, t1, t2):
     """
     Discards values outside the [t1, t2] interval
@@ -297,6 +384,7 @@ def crop(r, t1, t2):
     return r
 
 
+@vector_operation
 def difference(r):
     """
     Subtracts the previous value from every value: yout[k] = y[k] - y[k-1]
@@ -310,6 +398,7 @@ def difference(r):
     return r
 
 
+@vector_operation("Difference quotient")
 def diffquot(r):
     """
     Calculates the difference quotient of every value and the subsequent one:
@@ -329,9 +418,10 @@ def diffquot(r):
     return r
 
 
+@vector_operation("Divide by constant", "divide_by(1000)")
 def divide_by(r, a):
     """
-    Divides input by a constant: yout[k] = y[k] / a
+    Divides every value in the input by a constant: yout[k] = y[k] / a
     """
     v = r['vecvalue']
     r['vecvalue'] = v / a
@@ -340,9 +430,10 @@ def divide_by(r, a):
     return r
 
 
+@vector_operation("Divide by time")
 def divtime(r):
     """
-    Divides input by the current time: yout[k] = y[k] / t[k]
+    Divides every value in the input by the corresponding time: yout[k] = y[k] / t[k]
     """
     t = r['vectime']
     v = r['vecvalue']
@@ -352,6 +443,7 @@ def divtime(r):
     return r
 
 
+@vector_operation(example="expression('y + (t - tprev) * 100')")
 def expression(r, expression, as_time=False):
     """
     Replaces the value with the result of evaluating the Python arithmetic expression
@@ -423,9 +515,11 @@ def _integrate_helper(t, v, interpolation):
     return np.cumsum(increments)
 
 
+@vector_operation(example="integrate(interpolation='linear')")
 def integrate(r, interpolation='sample-hold'):
     """
-    Integrates the input as a step function (sample-hold or backward-sample-hold) or with linear interpolation
+    Integrates the input as a step function ("sample-hold" or "backward-sample-hold")
+    or with linear ("linear") interpolation.
     """
     t = r['vectime']
     v = r['vecvalue']
@@ -437,9 +531,10 @@ def integrate(r, interpolation='sample-hold'):
     return r
 
 
+@vector_operation("Linear trend", "lineartrend(0.5)")
 def lineartrend(r, a):
     """
-    Adds a linear component to input series: yout[k] = y[k] + a * t[k]
+    Adds a linear component with the given steepness to the input series: yout[k] = y[k] + a * t[k]
     """
     t = r['vectime']
     v = r['vecvalue']
@@ -451,9 +546,10 @@ def lineartrend(r, a):
     return r
 
 
+@vector_operation(example="modulo(256.0)")
 def modulo(r, m):
     """
-    Computes input modulo a constant: yout[k] = y[k] % m
+    Computes floating point reminder (modulo) of the input values with a constant: yout[k] = y[k] % m
     """
     v = r['vecvalue']
     r['vecvalue'] = np.remainder(v, m)
@@ -462,9 +558,11 @@ def modulo(r, m):
     return r
 
 
+@vector_operation("Moving average", "movingavg(alpha=0.1)")
 def movingavg(r, alpha):
     """
-    Applies the exponentially weighted moving average filter:
+    Applies the exponentially weighted moving average filter with
+    the given smoothing coefficient in range (0.0, 1.0]:
     yout[k] = yout[k-1] + alpha * (y[k]-yout[k-1])
     """
     v = r['vecvalue']
@@ -475,9 +573,10 @@ def movingavg(r, alpha):
     return r
 
 
+@vector_operation("Multiply by constant", "multiply_by(2)")
 def multiply_by(r, a):
     """
-    Multiplies input by a constant: yout[k] = a * y[k]
+    Multiplies every value in the input by a constant: yout[k] = a * y[k]
     """
     v = r['vecvalue']
     r['vecvalue'] = v * a
@@ -486,9 +585,10 @@ def multiply_by(r, a):
     return r
 
 
+@vector_operation("Remove repeating values")
 def removerepeats(r):
     """
-    Removes repeated y values
+    Removes repeated (consecutive) y values
     """
     t = r['vectime']
     v = r['vecvalue']
@@ -504,6 +604,7 @@ def removerepeats(r):
     return r
 
 
+@vector_operation("Sliding window average", "slidingwinavg(window_size=10)")
 def slidingwinavg(r, window_size, min_samples=None):
     """
     Replaces every value with the mean of values in the window:
@@ -519,9 +620,10 @@ def slidingwinavg(r, window_size, min_samples=None):
     return r
 
 
+@vector_operation("Subtract first value")
 def subtractfirstval(r):
     """
-    Subtract the first value from every subsequent values: yout[k] = y[k] - y[0]
+    Subtract the first value from every subsequent value: yout[k] = y[k] - y[0]
     """
     v = r['vecvalue']
     r['vecvalue'] = v - v[0]
@@ -530,9 +632,11 @@ def subtractfirstval(r):
     return r
 
 
+@vector_operation("Time average", "timeavg(interpolation='linear')")
 def timeavg(r, interpolation):
     """
-    Calculates the time average of the input (integral divided by time)
+    Average over time (integral divided by time), possible
+    parameter values: 'sample-hold', 'backward-sample-hold', 'linear'
     """
     # TODO: add "auto" - where we choose interpolation based on interpolationmode and enum
     t = r['vectime']
@@ -549,9 +653,10 @@ def timeavg(r, interpolation):
     return r
 
 
+@vector_operation("Time difference")
 def timediff(r):
     """
-    Subtracts the previous value's timestamp from every timestamp:
+    Sets each value to the elapsed time (delta) since the previous value:
     tout[k] = t[k] - t[k-1]
     """
     t = r['vectime']
@@ -563,9 +668,10 @@ def timediff(r):
     return r
 
 
+@vector_operation("Time shift", "timeshift(dt=100)")
 def timeshift(r, dt):
     """
-    Shifts the input series in time by a constant: tout[k] = t[k] + dt
+    Shifts the input series in time by a constant (in seconds): tout[k] = t[k] + dt
     """
     t = r['vectime']
 
@@ -576,6 +682,7 @@ def timeshift(r, dt):
     return r
 
 
+@vector_operation("Time to serial")
 def timetoserial(r):
     """
     Replaces time values with their index: tout[k] = k
@@ -589,9 +696,11 @@ def timetoserial(r):
     return r
 
 
+@vector_operation("Time window average", "timewinavg(window_size=0.1)")
 def timewinavg(r, window_size=1):
     """
-    Calculates time average: replaces input values in every 'windowSize' interval with their mean:
+    Calculates time average: Replaces the input values with one every 'window_size'
+    interval (in seconds), that is the mean of the original values in that interval.
     tout[k] = k * winSize,
     yout[k] = average of y values in the [(k-1)*winSize, k*winSize) interval
     """
@@ -611,6 +720,7 @@ def timewinavg(r, window_size=1):
     return r
 
 
+@vector_operation("Window average", "winavg(window_size=10)")
 def winavg(r, window_size=10):
     """
     Calculates batched average: replaces every 'winsize' input values
@@ -631,3 +741,24 @@ def winavg(r, window_size=10):
     if "title" in r:
         r['title'] = r['title'] + " winavg"
     return r
+
+
+def _report_ops():
+    """
+    Internal. Returns a list of the registered vector operations, each as a tuple of 6 strings:
+    ("module", "name", "signature", "docstring", "label", "example")
+    """
+    import inspect
+
+    result = []
+    global _operations
+    for op in _operations:
+        result.append((
+            op[0].__module__,
+            op[0].__name__,
+            _get_vectorop_signature(op[0]),
+            inspect.getdoc(op[0]),
+            op[1],
+            op[2]))
+
+    return result

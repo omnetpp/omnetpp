@@ -7,8 +7,8 @@
 
 package org.omnetpp.scave.pychart;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import py4j.Py4JException;
 
@@ -72,4 +72,6 @@ public interface IPythonEntryPoint {
     Object evaluate(String expression) throws Py4JException;
 
     HashMap<String, String> getRcParams();
+    // return type would be better as List<VectorOperations.VectorOp>, but the bundle dependencies don't make that possible
+    List<Object> getVectorOps();
 }

@@ -9,6 +9,8 @@ package org.omnetpp.scave.editors;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,6 +41,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IMemento;
@@ -88,6 +91,7 @@ import org.omnetpp.scave.actions.nativeplots.ZoomChartAction;
 import org.omnetpp.scave.actions.ui.GotoChartDefinitionAction;
 import org.omnetpp.scave.actions.ui.ToggleShowSourceAction;
 import org.omnetpp.scave.charting.PlotBase;
+import org.omnetpp.scave.editors.VectorOperations.VectorOp;
 import org.omnetpp.scave.editors.ui.ChartPage;
 import org.omnetpp.scave.engineext.IResultFilesChangeListener;
 import org.omnetpp.scave.engineext.ResultFileManagerChangeEvent;
@@ -217,48 +221,11 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
     // if the document has changed since last saving (independent of the Chart object in the model)
     private boolean scriptChangedFlag = false;
 
-    public static class VectorOp {
-        public final String label;
-        public final String code;
-        public final String comment;
-        public final boolean hasArgs;
+    private VectorOperations vectorOps;
 
-        public VectorOp(String label, String code, String comment) {
-            this.label = label;
-            this.code = code;
-            this.comment = comment;
-            this.hasArgs = code.contains("(") && !code.endsWith("()");
-        }
+    public List<VectorOp> getVectorOpData() {
+        return vectorOps.getVectorOpData();
     }
-
-    static final VectorOp[] vectorOpData = new VectorOp[] {
-        new VectorOp("Mean", "mean", ""),
-        new VectorOp("Aggregate", "aggregate(function='average')", "Possible values: 'sum', 'average', 'count', 'maximum', 'minimum'"),
-        new VectorOp("Merge", "merge", ""),
-        new VectorOp("Sum", "sum", ""),
-        new VectorOp("Add constant", "add(100)", "Adds a constant value to all values in the vectors"),
-        new VectorOp("Compare with threshold", "compare(threshold=9000, less=-1, equal=0, greater=1)", "The last three parameters are all optional"),
-        new VectorOp("Crop in time", "crop(t1=10, t2=100)", "The time values are in seconds"),
-        new VectorOp("Difference", "difference", "The difference of each value compared to the previous"),
-        new VectorOp("Difference quotient", "diffquot", "The difference quotient at each value"),
-        new VectorOp("Divide by constant", "divide_by(1000)", "Divides every value in each vector by a constant"),
-        new VectorOp("Divide by time", "divtime", ""),
-        new VectorOp("Expression", "expression('y + (t - tprev) * 100')", "Available variables: t, y, tprev, yprev, tnext, ynext, k, n"),
-        new VectorOp("Integrate", "integrate(interpolation='linear')", "Possible parameter values: 'sample-hold', 'backward-sample-hold', 'linear'"),
-        new VectorOp("Linear trend", "lineartrend(0.5)", "Add a linear trend to the values, with the given steepness"),
-        new VectorOp("Modulo", "modulo(256.0)", "Floating point remainder with the given divisor"),
-        new VectorOp("Moving average", "movingavg(alpha=0.1)", "Moving average using the given smoothing constant in range (0.0, 1.0]"),
-        new VectorOp("Multiply by constant", "multiply_by(2)", "You can change the multiplier constant"),
-        new VectorOp("Remove repeating values", "removerepeats", "Removes consequtive equal values"),
-        new VectorOp("Sliding window average", "slidingwinavg(window_size=10)", "The average of the last window_size values"),
-        new VectorOp("Subtract first value", "subtractfirstval", "Subtracts the first value from all values"),
-        new VectorOp("Time average", "timeavg(interpolation='linear')", "Average over time (integral divided by time), possible parameter values: 'sample-hold', 'backward-sample-hold', 'linear'"),
-        new VectorOp("Time difference", "timediff", "The elapsed time (delta) since the previous value"),
-        new VectorOp("Time shift", "timeshift(dt=100)", "Shifts all values with the given time delta (in seconds)"),
-        new VectorOp("Time to serial", "timetoserial", "Replaces all times with a serial number: 0, 1, 2, ..."),
-        new VectorOp("Time window average", "timewinavg(window_size=0.1)", "Average of all values in every window_size long interval (in seconds)"),
-        new VectorOp("Window average", "winavg(window_size=10)", "Average of every window_size long batch of values"),
-    };
 
     // This runs in an extension point of the PyDev editor creation process.
     // Wedges the splitter (sashForm) control between the text editor and its originally intended parent.
@@ -516,6 +483,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         this.scaveEditor = scaveEditor;
 
         this.documentProvider = new ChartScriptDocumentProvider();
+        this.vectorOps = new VectorOperations();
 
         console = new IOConsole("Chart script output of " + getChartDisplayName(), null);
         IConsoleManager consoleManager = ConsolePlugin.getDefault().getConsoleManager();
@@ -547,9 +515,6 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         return commandStack;
     }
 
-    public static VectorOp[] getVectorOpData() {
-        return vectorOpData;
-    }
 
     protected MenuManager createMenuManager() {
         boolean isMatplotlib = chart.getType() == ChartType.MATPLOTLIB;

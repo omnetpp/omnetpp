@@ -43,6 +43,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.console
 Export-Package: org.omnetpp.scave,
  org.omnetpp.scave.charting,
+ org.omnetpp.scave.editors,
  org.omnetpp.scave.model2,
  org.omnetpp.scave.wizard
 Eclipse-BuddyPolicy: global

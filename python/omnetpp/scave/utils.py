@@ -861,17 +861,13 @@ def _perform_vector_op(df, line: str):
     if name is None: # empty line
         return df
 
-    # look up function
-    function = None
-    if not module and name in globals():  # unfortunately this doesn't work, because the chart script sees a different "globals" dict than we in this module, due it being called via exec()
-        function = globals()[name]
-    else:
-        if not module:
-            module = "omnetpp.scave.vectorops"
-        mod = importlib.import_module(module)
-        if not name in mod.__dict__:
-            raise ValueError("Vector filter function '" + name + "' not found in module '" + module + "'")
-        function = mod.__dict__[name]
+    # look up operation
+    function = vectorops.lookup_operation(module, name)
+    if function is None:
+        errmsg = "Vector filter function '" + name + "' not found"
+        if module is not None:
+            errmsg += " in module '" + module + "'"
+        raise ValueError(errmsg)
 
     # perform operation
     if type == "apply":

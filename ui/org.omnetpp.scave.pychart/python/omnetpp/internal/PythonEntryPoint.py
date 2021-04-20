@@ -17,7 +17,9 @@ import pickle as pl
 import functools
 print = functools.partial(print, flush=True)
 
-from py4j.java_collections import MapConverter
+# the manual conversions are only necessary because of a Py4J bug:
+# https://github.com/bartdag/py4j/issues/359
+from py4j.java_collections import MapConverter, ListConverter
 
 from omnetpp.internal.TimeAndGuard import TimeAndGuard
 from omnetpp.internal import Gateway
@@ -77,6 +79,15 @@ class PythonEntryPoint(object):
 
     def getRcParams(self):
         return MapConverter().convert({str(k) : str(v) for k,v in mpl.rcParams.items()}, Gateway.gateway._gateway_client)
+
+    def getVectorOps(self):
+        from omnetpp.scave import vectorops
+
+        # ctor is: VectorOp(String module, String name, String signature, String docstring, String label, String example)
+        ops = [Gateway.gateway.jvm.org.omnetpp.scave.editors.VectorOperations.VectorOp(*o)
+               for o in vectorops._report_ops()]
+
+        return ListConverter().convert(ops, Gateway.gateway._gateway_client)
 
     def setGlobalObjectPickle(self, name, pickle):
         self.execContext[name] = pl.loads(pickle)
