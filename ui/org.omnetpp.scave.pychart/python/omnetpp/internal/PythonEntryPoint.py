@@ -73,8 +73,7 @@ class PythonEntryPoint(object):
 
     # @TimeAndGuard(measureTime=False)
     def evaluate(self, expression):
-        global execContext
-        return eval(expression, execContext)
+        return eval(expression, self.execContext)
 
     def getRcParams(self):
         return MapConverter().convert({str(k) : str(v) for k,v in mpl.rcParams.items()}, Gateway.gateway._gateway_client)
