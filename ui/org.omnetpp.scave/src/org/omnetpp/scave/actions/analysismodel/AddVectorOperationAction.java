@@ -27,20 +27,20 @@ import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.commands.SetChartPropertyCommand;
 
 public class AddVectorOperationAction extends AbstractScaveAction {
-    private String operation;
-    private String comment;
+    private String label;
+    private String code;
     private boolean offerEditing;
 
-    public AddVectorOperationAction(String name, String operation, String comment, boolean offerEditing) {
-        this.operation = operation;
-        this.comment = comment;
+    public AddVectorOperationAction(String label, String code, boolean offerEditing) {
+        this.label = label;
+        this.code = code;
         this.offerEditing = offerEditing;
 
-        setText(name);
+        setText(label);
 
-        setDescription("Add " + name + " operation to vector");
+        setDescription("Add '" + label + "' operation to vector");
         setImageDescriptor(ScavePlugin.getImageDescriptor(
-                operation.startsWith("compute:") ? ScaveImages.IMG_ETOOL16_COMPUTE : ScaveImages.IMG_ETOOL16_APPLY));
+                code.startsWith("compute:") ? ScaveImages.IMG_ETOOL16_COMPUTE : ScaveImages.IMG_ETOOL16_APPLY));
     }
 
 
@@ -52,7 +52,7 @@ public class AddVectorOperationAction extends AbstractScaveAction {
 
         Chart chart = scriptEditor.getChart();
 
-        String operation = this.operation;
+        String operation = this.code;
         if (offerEditing) {
             var dialog = new InputDialog(Display.getCurrent().getActiveShell(), "Add Vector Operation", "Edit parameters:", operation, null);
             if (dialog.open() != Dialog.OK)
@@ -63,8 +63,6 @@ public class AddVectorOperationAction extends AbstractScaveAction {
         String operations = StringUtils.nullToEmpty(chart.getPropertyValue("vector_operations"));
 
         String append = operation;
-        if (!comment.isEmpty())
-            append += " # " + comment;
 
         if (operations.isEmpty())
             operations = append;
@@ -86,7 +84,7 @@ public class AddVectorOperationAction extends AbstractScaveAction {
             MessageDialogWithToggle.openInformation(
                     Display.getCurrent().getActiveShell(),
                     "Vector Operation Added",
-                    "Operation \"" + operation + "\" added.\n\n" +
+                    "Operation \"" + label + "\" added.\n\n" +
                     "Note: Vector operations can be reviewed and edited on Input tab of the Configure Chart dialog.",
                     "Do not show this message again", false,
                     preferences, preferenceKey);

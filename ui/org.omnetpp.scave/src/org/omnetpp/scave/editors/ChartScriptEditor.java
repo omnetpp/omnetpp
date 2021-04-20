@@ -17,6 +17,7 @@ import java.util.regex.Pattern;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
@@ -522,12 +523,37 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
 
         // Make the Apply/Compute submenus
         IMenuManager applySubmenuManager = new MenuManager("Apply...", ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_APPLY), null);
-        for (VectorOp op : vectorOpData)
-            applySubmenuManager.add(new AddVectorOperationAction(op.label, "apply: " + op.code, op.comment, op.hasArgs));
-
         IMenuManager computeSubmenuManager = new MenuManager("Compute...", ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_COMPUTE), null);
-        for (VectorOp op : vectorOpData)
-            computeSubmenuManager.add(new AddVectorOperationAction(op.label, "compute: " + op.code, op.comment, op.hasArgs));
+        applySubmenuManager.setRemoveAllWhenShown(true);
+        computeSubmenuManager.setRemoveAllWhenShown(true);
+
+        IMenuListener submenuListener = (submenuManager) -> {
+            // This is done twice, for each submenu independently. Oh well...
+            List<VectorOp> vectorOpData = new ArrayList<>(vectorOps.getVectorOpData());
+            vectorOpData.add(null); // represents the separator between user-added and built-in ops
+            vectorOpData.sort((VectorOp a, VectorOp b) -> {
+                Assert.isTrue(a != null || b != null); // only one null accepted
+
+                // custom ops are put first, then the separator, then the built-in ones
+                int groupA = (a == null) ? 1 : "omnetpp.scave.vectorops".equals(a.module) ? 2 : 0;
+                int groupB = (b == null) ? 1 : "omnetpp.scave.vectorops".equals(b.module) ? 2 : 0;
+
+                // within each group, sort alphabetically
+                return (groupA == groupB) ? a.label.compareToIgnoreCase(b.label) : Integer.compare(groupA, groupB);
+            });
+
+            for (VectorOp op : vectorOpData) {
+                if (op == null)
+                    submenuManager.add(new Separator());
+                else {
+                    String prefix = (submenuManager == applySubmenuManager) ? "apply: " : "compute: ";
+                    submenuManager.add(new AddVectorOperationAction(op.label, prefix + op.example, op.hasArgs));
+                }
+            }
+        };
+
+        applySubmenuManager.addMenuListener(submenuListener);
+        computeSubmenuManager.addMenuListener(submenuListener);
 
         ScaveEditorActions actions = scaveEditor.getActions();
 
@@ -736,6 +762,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
             errorMarker = null;
 
             Runnable afterRun = () -> {
+                vectorOps.updateVectorOpDataFromProcess(getChartViewer().getPythonProcess());
                 Display.getDefault().syncExec(() -> {
                     updateActions();
                 });
