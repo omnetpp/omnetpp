@@ -38,7 +38,7 @@ UnitConversion::UnitDesc UnitConversion::unitTable[] = {  // note: imperial unit
 #define _ LINEAR
     { "d",   86400, _, "s",    "day",         "s ms us ns ps fs as" },
     { "h",    3600, _, "s",    "hour",        "s ms us ns ps fs as" },
-    { "min",    60, _, "s",    "minute"       "s ms us ns ps fs as" }, // "m" is reserved for meter
+    { "min",    60, _, "s",    "minute",      "s ms us ns ps fs as" }, // "m" is reserved for meter
     { "s",       1, _, "s",    "second",      "s ms us ns ps fs as" },
     { "ms",   1e-3, _, "s",    "millisecond", "s ms us ns ps fs as" },
     { "us",   1e-6, _, "s",    "microsecond", "s ms us ns ps fs as" },
@@ -85,7 +85,7 @@ UnitConversion::UnitDesc UnitConversion::unitTable[] = {  // note: imperial unit
     { "fW",  1e-15, _, "W",    "femtowatt",  "GW MW kW W mW uW nW pW fW" },
     { "kW",    1e3, _, "W",    "kilowatt",   "GW MW kW W mW uW nW pW fW" },
     { "MW",    1e6, _, "W",    "megawatt",   "GW MW kW W mW uW nW pW fW" },
-    { "GW",    1e9, _, "W",    "gigawatt"    "GW MW kW W mW uW nW pW fW" },
+    { "GW",    1e9, _, "W",    "gigawatt",   "GW MW kW W mW uW nW pW fW" },
     { "Hz",      1, _, "Hz",   "hertz",      "Hz kHz MHz GHz THz" },
     { "kHz",   1e3, _, "Hz",   "kilohertz",  "Hz kHz MHz GHz THz" },
     { "MHz",   1e6, _, "Hz",   "megahertz",  "Hz kHz MHz GHz THz" },
