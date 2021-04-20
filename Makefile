@@ -225,13 +225,13 @@ cleanui:
 	done
 
 makefiles:
-	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/embedding && (test -f Makefile || (MAKE="$(MAKE)" opp_makemake -f --deep --nolink)))
-	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/embedding2 && (test -f Makefile || (MAKE="$(MAKE)" opp_makemake -f --deep --nolink)))
-	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/queueinglib && (test -f Makefile || (MAKE="$(MAKE)" opp_makemake -f --make-so -pQUEUEING -I.)))
-	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/queueinglibext && (test -f Makefile || (MAKE="$(MAKE)" opp_makemake -f --make-so -I../queueinglib -L'../queueinglib' -l'queueinglib$$(D)' -KQUEUEINGLIB_PROJ=../queueinglib)))
-	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/queuenet && (test -f Makefile || (MAKE="$(MAKE)" opp_makemake -f -n)))
-	$(Q)for i in $(SAMPLES) ""; do \
-	    if [ "$$i" != "" ]; then (cd $(OMNETPP_SAMPLES_DIR)/$$i && (test -f Makefile || (MAKE="$(MAKE)" opp_makemake -f --deep))); fi;\
+	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/embedding && MAKE="$(MAKE)" opp_makemake -f --deep --nolink)
+	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/embedding2 && MAKE="$(MAKE)" opp_makemake -f --deep --nolink)
+	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/queueinglib && MAKE="$(MAKE)" opp_makemake -f --make-so -pQUEUEING -I.)
+	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/queueinglibext && MAKE="$(MAKE)" opp_makemake -f --make-so -I../queueinglib -L'../queueinglib' -l'queueinglib$$(D)' -KQUEUEINGLIB_PROJ=../queueinglib)
+	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/queuenet && MAKE="$(MAKE)" opp_makemake -f -n)
+	$(Q)for i in $(filter-out embedding embedding2 queueinglib queueinglibext queuenet, $(SAMPLES)) ""; do \
+	    if [ "$$i" != "" ]; then (cd $(OMNETPP_SAMPLES_DIR)/$$i && MAKE="$(MAKE)" opp_makemake -f --deep); fi;\
 	done
 
 # copy the documentation to the UI doc folder too.
