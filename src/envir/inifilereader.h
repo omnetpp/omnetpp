@@ -21,6 +21,8 @@
 #include <string>
 #include <set>
 #include <vector>
+#include <iostream>
+#include <functional>
 #include "omnetpp/cconfigreader.h"
 #include "envirdefs.h"
 
@@ -71,6 +73,7 @@ class ENVIR_API InifileReader : public cConfigurationReader
 
   protected:
     void doReadFile(const char *filename, int currentSectionIndex, std::vector<std::string> &includedFiles);
+    void forEachJoinedLine(std::istream& in, const std::function<void(std::string&,int,int)>& processLine);
     const Section& getSection(int sectionId) const;
     int getOrCreateSection(const char *sectionName); // returns index into sections[]
     static const char *findEndContent(const char *line, const char *filename, int lineNumber);

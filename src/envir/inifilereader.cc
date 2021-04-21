@@ -17,11 +17,11 @@
 
 #include <set>
 #include <algorithm>
-#include <iostream>
 #include <fstream>
 #include "common/opp_ctype.h"
 #include "common/fileutil.h"  // directoryOf
 #include "common/stringutil.h"
+#include "common/stringtokenizer.h"
 #include "omnetpp/cexception.h"
 #include "inifilereader.h"
 #include "fsutils.h"
@@ -126,31 +126,27 @@ void InifileReader::doReadFile(const char *filename, int currentSectionIndex, st
 
     std::set<std::string> sectionsInFile;  // we'll check for uniqueness
 
-    int lineNumber = 0;
-    std::string rawLine;
-    while (std::getline(in, rawLine)) {
-        // chop off trailing whitespace (e.g. garbage CR when processing Windows file on Linux)
-        rtrim(rawLine);
-
-        // join continued lines
-        lineNumber++;
-        std::string lineBuf = rawLine;
-        if (!rawLine.empty() && *(rawLine.end()-1) == '\\') {
-            while (std::getline(in, rawLine)) {
-                lineNumber++;
-                lineBuf.resize(lineBuf.size()-1);  // cut off backslash from previous line
-                lineBuf += rawLine;
-                if (rawLine.empty() || *(rawLine.end()-1) != '\\')
-                    break;
+    // open and read this file
+    forEachJoinedLine(in, [&](std::string& lineBuf, int lineNumber, int numLines) {
+        // remove comments (and catch unterminated string constants) inside multi-line lines
+        const char *line = lineBuf.c_str();
+        if (strchr(line, '\n') != nullptr) { // note: no check for presence of '#'!
+            std::string tmp;
+            int i = 0;
+            for (std::string l : StringTokenizer(line, "\n").asVector()) {
+                const char *endContent = findEndContent(l.c_str(), filename, lineNumber+i);  // also raises error for unterminated string constant
+                tmp += l.substr(0, endContent - l.c_str()) + "\n";
+                i++;
             }
+            tmp.resize(tmp.size()-1);  // remove last newline
+            lineBuf = tmp;
+            line = lineBuf.c_str();
         }
 
-        // process the line
-        const char *line = lineBuf.c_str();
         while (opp_isspace(*line))
             line++;
 
-        if (!strncmp(line, "#% old-wildcards", 16)) {
+        if (opp_stringbeginswith(line, "#% old-wildcards")) {
             // in old ini files, "*" matched dots as well, like "**" does now;
             // we don't support this backward compatibility feature any longer
             throw cRuntimeError("Old-wildcards mode (#%% old-wildcards syntax) no longer supported, '%s' line %d", filename, lineNumber);
@@ -162,7 +158,7 @@ void InifileReader::doReadFile(const char *filename, int currentSectionIndex, st
             // obsolete comment line
             throw cRuntimeError("Use hash mark instead of semicolon to start comments, '%s' line %d", filename, lineNumber);
         }
-        else if (*line == 'i' && strncmp(line, "include", 7) == 0 && opp_isspace(line[7])) {
+        else if (opp_stringbeginswith(line, "include") && opp_isspace(line[7])) {
             // include directive
             const char *rest = line+7;
             const char *endPos = findEndContent(rest, filename, lineNumber);
@@ -188,7 +184,7 @@ void InifileReader::doReadFile(const char *filename, int currentSectionIndex, st
 
             // section name must be unique within file (to reduce risk of copy/paste errors)
             if (sectionsInFile.find(sectionName) != sectionsInFile.end())
-                throw cRuntimeError("Section name must be unique within file, '%s' line %d", filename, lineNumber);
+                throw cRuntimeError("Duplicate section '%s' within file, '%s' line %d", sectionName.c_str(), filename, lineNumber);
             sectionsInFile.insert(sectionName);
 
             // add section of not yet seen (in another file)
@@ -209,12 +205,51 @@ void InifileReader::doReadFile(const char *filename, int currentSectionIndex, st
 
             sections[currentSectionIndex].entries.push_back(KeyValue1(basedirRef, filenameRef, lineNumber, key.c_str(), value.c_str()));
         }
-    }
+    });
 
     if (in.bad())
         throw cRuntimeError("Cannot read ini file '%s'", filename);
 
     in.close();
+}
+
+void InifileReader::forEachJoinedLine(std::istream& in, const std::function<void(std::string&,int,int)>& processLine)
+{
+    // join continued lines, and call processLine() for each line
+    std::string concatenatedLine = "";
+    int startLineNumber = -1;
+    int lineNumber = 0;
+    while (true) {
+        lineNumber++;
+        std::string rawLine;
+        if (!std::getline(in, rawLine))
+            break;
+        if (!rawLine.empty() && opp_iscntrl(rawLine.back()))
+            rawLine.resize(rawLine.size()-1);  // remove trailing CR (for CRLF files on Linux))
+        if (!concatenatedLine.empty() && concatenatedLine.back() == '\\') { // lines that end in backslash are continued on next line
+            concatenatedLine.resize(concatenatedLine.size()-1);  // remove backslash
+            concatenatedLine += rawLine;
+        }
+        else if (!opp_isblank(rawLine.c_str()) && (rawLine[0] == ' ' || rawLine[0] == '\t')) {  // indented lines are continuation of the previous line
+            concatenatedLine += "\n" + rawLine;
+        }
+        else {
+            if (startLineNumber != -1) {
+                int numLines = lineNumber - startLineNumber;
+                processLine(concatenatedLine, startLineNumber, numLines);
+            }
+            concatenatedLine = rawLine;
+            startLineNumber = lineNumber;
+        }
+    }
+
+    // last line
+    if (startLineNumber != -1) {
+        if (!concatenatedLine.empty() && concatenatedLine.back() == '\\')
+            concatenatedLine.resize(concatenatedLine.size()-1);  // remove final stray backslash
+        int numLines = lineNumber - startLineNumber;
+        processLine(concatenatedLine, startLineNumber, numLines);
+    }
 }
 
 /**
