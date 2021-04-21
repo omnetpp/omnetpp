@@ -99,32 +99,34 @@ void InifileReader::readFile(const char *filename)
         defaultBasedir = directoryOf(rootFilename.c_str());
 
     std::vector<std::string> includedFiles;
-    internalReadFile(filename, -1, includedFiles);
+    doReadFile(filename, -1, includedFiles);
 }
 
-void InifileReader::internalReadFile(const char *filename, int currentSectionIndex, std::vector<std::string>& includedFiles)
+void InifileReader::doReadFile(const char *filename, int currentSectionIndex, std::vector<std::string>& includedFiles)
 {
     // create an entry for this file, checking against circular inclusion
-    std::string tmpfname = tidyFilename(toAbsolutePath(filename).c_str(), true);
-    std::string tmpdir = directoryOf(tmpfname.c_str());
-    if (find(includedFiles.begin(), includedFiles.end(), tmpfname) != includedFiles.end())
+    std::string absoluteFilename = tidyFilename(toAbsolutePath(filename).c_str(), true);
+    if (find(includedFiles.begin(), includedFiles.end(), absoluteFilename) != includedFiles.end())
         throw cRuntimeError("Ini file '%s' includes itself, directly or indirectly", filename);
-    filenames.insert(tmpfname);
-    if (basedirs.find(tmpdir) == basedirs.end())
-        basedirs.insert(tmpdir);
+    filenames.insert(absoluteFilename);
+
+    // base dir
+    std::string absoluteFileDir = directoryOf(absoluteFilename.c_str());
+    if (basedirs.find(absoluteFileDir) == basedirs.end())
+        basedirs.insert(absoluteFileDir);
 
     // get a reference to the string instance in filenames[], we'll refer to it in KeyValue
-    const std::string *filenameRef = &(*filenames.find(tmpfname));
-    const std::string *basedirRef = &(*basedirs.find(tmpdir));
+    const std::string *filenameRef = &(*filenames.find(absoluteFilename));
+    const std::string *basedirRef = &(*basedirs.find(absoluteFileDir));
 
     // open and read this file
     std::ifstream in(filename, std::ios::in);
     if (!in.is_open())
         throw cRuntimeError("Cannot open ini file '%s'", filename);
 
-    int lineNumber = 0;
     std::set<std::string> sectionsInFile;  // we'll check for uniqueness
 
+    int lineNumber = 0;
     std::string rawLine;
     while (std::getline(in, rawLine)) {
         // chop off trailing whitespace (e.g. garbage CR when processing Windows file on Linux)
@@ -171,8 +173,8 @@ void InifileReader::internalReadFile(const char *filename, int currentSectionInd
             PushDir d(directoryOf(filename).c_str());
 
             // process included inifile
-            includedFiles.push_back(tmpfname);
-            internalReadFile(includeFilename.c_str(), currentSectionIndex, includedFiles);
+            includedFiles.push_back(absoluteFilename);
+            doReadFile(includeFilename.c_str(), currentSectionIndex, includedFiles);
             includedFiles.pop_back();
         }
         else if (*line == '[') {
