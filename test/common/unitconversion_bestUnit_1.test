@@ -54,7 +54,7 @@ EV << ".\n";
 
 15200min --> unchanged
 62.5min --> unchanged
-0.0023min --> unchanged
+0.0023min --> 138ms
 
 15200s --> unchanged
 62.5s --> unchanged
@@ -242,7 +242,7 @@ EV << ".\n";
 
 15200GW --> unchanged
 62.5GW --> unchanged
-0.0023GW --> unchanged
+0.0023GW --> 2.3MW
 
 15200Hz --> 15.2kHz
 62.5Hz --> unchanged
