@@ -10,10 +10,13 @@ package org.omnetpp.inifile.editor.text;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.text.DefaultTextDoubleClickStrategy;
+import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextDoubleClickStrategy;
 import org.eclipse.jface.text.ITextHover;
+import org.eclipse.jface.text.ITypedRegion;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
@@ -92,7 +95,18 @@ public class InifileSourceViewerConfiguration extends SourceViewerConfiguration 
         reconciler.setDocumentPartitioning(InifileSyntaxHighlightPartitionScanner.PARTITIONING_ID);
 
         // colorizers for inifile code
-        DefaultDamagerRepairer dr = new DefaultDamagerRepairer(new InifileCodeColorizerScanner());
+        DefaultDamagerRepairer dr = new DefaultDamagerRepairer(new InifileCodeColorizerScanner()) {
+            @Override
+            public IRegion getDamageRegion(ITypedRegion partition, DocumentEvent e, boolean documentPartitioningChanged) {
+                // Note: the default getDamageRegion() returns the line of change, so syntax highlighting
+                // begins from the start of the line. That is not enough for string constants broken
+                // onto multiple lines using backslash line continuation, because the string colorizer
+                // scanner doesn't know that the start of the line is already inside the string.
+                // The solution is to start scanning at an earlier point (before the open quote),
+                // i.e. at the start of the partition.
+                return partition;
+            }
+        };
         reconciler.setDamager(dr, IDocument.DEFAULT_CONTENT_TYPE);
         reconciler.setRepairer(dr, IDocument.DEFAULT_CONTENT_TYPE);
 

@@ -33,7 +33,7 @@ public class InifileCodeColorizerScanner extends RuleBasedScanner {
         List<IRule> rules = new ArrayList<IRule>();
 
         // Add rule for strings
-        rules.add(new SingleLineRule("\"", "\"", InifileTextEditorHelper.codeStringToken, '\\'));
+        rules.add(new SingleLineRule("\"", "\"", InifileTextEditorHelper.codeStringToken, '\\', true, true));
 
         // Add rule for detecting numeric constants
         rules.add(new NumberRule(InifileTextEditorHelper.codeNumberToken));
