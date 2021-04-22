@@ -13,7 +13,9 @@ import org.eclipse.jface.text.rules.EndOfLineRule;
 import org.eclipse.jface.text.rules.IPredicateRule;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.RuleBasedPartitionScanner;
+import org.eclipse.jface.text.rules.SingleLineRule;
 import org.eclipse.jface.text.rules.Token;
+import org.omnetpp.inifile.editor.text.InifileTextEditorHelper;
 
 /**
  * This scanner recognizes the different partitions needed for different syntax highlighting areas.
@@ -29,10 +31,12 @@ public class InifileSyntaxHighlightPartitionScanner extends RuleBasedPartitionSc
      * Creates the partitioner and sets up the appropriate rules.
      */
     public InifileSyntaxHighlightPartitionScanner() {
-        // Add rule for single-line comments.
-        //XXX problem: this also fires inside string constants...
-        IToken nedDocToken = new Token(INI_COMMENT);
-        IPredicateRule commentRule = new EndOfLineRule("#", nedDocToken, '\\', true);
-        setPredicateRules(new IPredicateRule[] { commentRule });
+        // Add rule for single-line comments. To prevent hashmarks inside string constants
+        // from triggering the rule (and marking the rest of the string as comment), we
+        // add a rule for string constants that fires BEFORE the comment rule.
+        IToken commentToken = new Token(INI_COMMENT);
+        IPredicateRule stringConstantRule = new SingleLineRule("\"", "\"", InifileTextEditorHelper.codeStringToken, '\\', true, true);
+        IPredicateRule commentRule = new EndOfLineRule("#", commentToken, '\\', true);
+        setPredicateRules(new IPredicateRule[] { stringConstantRule, commentRule });
     }
 }
