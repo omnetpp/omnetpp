@@ -1,0 +1,10 @@
+%description:
+Inifile syntax
+
+%inifile: test.ini
+[Foo bar]
+
+%exitcode: 1
+
+%contains: stderr
+Error: Invalid section name [Foo bar]: It may not contain spaces

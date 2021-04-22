@@ -1,0 +1,10 @@
+%description:
+Unterminated string constant
+
+%inifile: test.ini
+*.foo = "hello
+
+%exitcode: 1
+
+%contains: stderr
+Error: Unterminated string constant, 'test.ini' line 1

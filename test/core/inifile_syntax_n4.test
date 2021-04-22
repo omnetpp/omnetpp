@@ -1,0 +1,10 @@
+%description:
+Inifile syntax
+
+%inifile: test.ini
+[Foo+Bar]
+
+%exitcode: 1
+
+%contains: stderr
+Error: Invalid section name [Foo+Bar]: Contains illegal character '+'

@@ -1,0 +1,10 @@
+%description:
+Inifile syntax
+
+%inifile: test.ini
+[General
+
+%exitcode: 1
+
+%contains: stderr
+Error: Syntax error in section heading, 'test.ini' line 1

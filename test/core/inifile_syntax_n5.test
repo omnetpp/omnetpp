@@ -1,0 +1,11 @@
+%description:
+Duplicate section
+
+%inifile: test.ini
+[Config Foo]
+[Foo]   # the word "Config" is optional
+
+%exitcode: 1
+
+%contains: stderr
+Error: Duplicate section 'Foo' within file, 'test.ini' line 2

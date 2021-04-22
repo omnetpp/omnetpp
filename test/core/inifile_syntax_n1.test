@@ -1,0 +1,10 @@
+%description:
+Invalid line causes syntax error
+
+%inifile: test.ini
+garbage
+
+%exitcode: 1
+
+%contains: stderr
+Error: Line must be in the form key=value, 'test.ini' line 1
