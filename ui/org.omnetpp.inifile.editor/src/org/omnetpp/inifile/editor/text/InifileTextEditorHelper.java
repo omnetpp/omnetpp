@@ -89,7 +89,8 @@ public class InifileTextEditorHelper {
     public static IToken codeStringToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GREEN)));
     public static IToken codeNumberToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GREEN)));
     public static IToken codeBoolToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GREEN)));
-    
+    public static IToken sectionHeadingToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_MAGENTA), null, SWT.BOLD));
+
     static {
     	if (DisplayUtils.isDarkTheme()) {
     		commentToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GRAY), null, SWT.ITALIC));
@@ -101,6 +102,7 @@ public class InifileTextEditorHelper {
     		codeStringToken = new Token(new TextAttribute(new Color(128, 220, 128)));
     		codeNumberToken = new Token(new TextAttribute(new Color(128, 220, 128)));
     		codeBoolToken = new Token(new TextAttribute(new Color(128, 220, 128)));
+    		sectionHeadingToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_CYAN), null, SWT.BOLD));
     	}
     }    
 }

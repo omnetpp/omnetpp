@@ -13,6 +13,7 @@ import java.util.List;
 
 import org.eclipse.jface.text.rules.IRule;
 import org.eclipse.jface.text.rules.NumberRule;
+import org.eclipse.jface.text.rules.PatternRule;
 import org.eclipse.jface.text.rules.RuleBasedScanner;
 import org.eclipse.jface.text.rules.SingleLineRule;
 import org.eclipse.jface.text.rules.WordRule;
@@ -50,8 +51,11 @@ public class InifileCodeColorizerScanner extends RuleBasedScanner {
             wordRule.addWord(entry.getName(), InifileTextEditorHelper.codeConfigKeyToken);
         for (ConfigOption entry : ConfigRegistry.getPerObjectOptions())
             wordRule.addWord(entry.getName(), InifileTextEditorHelper.codeConfigKeyToken);
-
         rules.add(wordRule);
+
+        PatternRule sectionHeadingRule = new PatternRule("[", "]", InifileTextEditorHelper.sectionHeadingToken, '\\', true, true, true);
+        sectionHeadingRule.setColumnConstraint(0);
+        rules.add(sectionHeadingRule);
 
         setRules(rules.toArray(new IRule[]{}));
     }
