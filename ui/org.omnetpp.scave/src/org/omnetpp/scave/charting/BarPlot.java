@@ -113,13 +113,11 @@ public class BarPlot extends PlotBase {
             }
         });
 
-        resetProperties();
-    }
+        addDisposeListener((e) -> { // Overriding dispose() does not work, see Widget.dispose()
+            domainAxis.dispose();
+        });
 
-    @Override
-    public void dispose() {
-        domainAxis.dispose();
-        super.dispose();
+        resetProperties();
     }
 
     @Override

@@ -316,6 +316,10 @@ public class MatplotlibWidget extends Canvas implements IMatplotlibWidget {
                 }
             }
         });
+
+        addDisposeListener((e) -> { // Overriding dispose() does not work, see Widget.dispose()
+            onDispose();
+        });
     }
 
     @Override
@@ -364,16 +368,13 @@ public class MatplotlibWidget extends Canvas implements IMatplotlibWidget {
             }
 
         });
-
     }
 
-    @Override
-    public void dispose() {
+    protected void onDispose() {
         if (buf != null)
             ScaveEngine.unmapSharedMemory(buf);
         if (image != null)
             image.dispose();
-        super.dispose();
     }
 
     /**

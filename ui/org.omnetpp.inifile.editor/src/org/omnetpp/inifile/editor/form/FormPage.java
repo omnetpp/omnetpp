@@ -77,13 +77,14 @@ public abstract class FormPage extends Composite {
         this.inifileEditor = inifileEditor;
         getInifileDocument().addInifileChangeListener(inifileListener);
         getInifileAnalyzer().addAnalysisListener(analysisListener);
+        addDisposeListener((e) -> { // Overriding dispose() does not work, see Widget.dispose()
+            onDispose();
+        });
     }
 
-    @Override
-    public void dispose() {
+    protected void onDispose() {
         getInifileDocument().removeInifileChangeListener(inifileListener);
         getInifileAnalyzer().removeAnalysisListener(analysisListener);
-        super.dispose();
     }
 
     protected InifileEditorData getEditorData() {

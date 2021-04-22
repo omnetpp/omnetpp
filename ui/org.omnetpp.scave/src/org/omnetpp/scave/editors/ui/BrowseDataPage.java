@@ -84,12 +84,9 @@ public class BrowseDataPage extends FormEditorPage {
         super(parent, SWT.NONE, editor);
         initialize();
         hookListeners();
-    }
-
-    @Override
-    public void dispose() {
-        unhookListeners();
-        super.dispose();
+        addDisposeListener((e) -> { // Overriding dispose() does not work, see Widget.dispose()
+            unhookListeners();
+        });
     }
 
     public FilteredDataPanel getAllPanel() {

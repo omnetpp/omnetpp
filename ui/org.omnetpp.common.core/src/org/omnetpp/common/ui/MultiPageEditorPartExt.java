@@ -66,14 +66,11 @@ public abstract class MultiPageEditorPartExt extends MultiPageEditorPart {
 
         // CTabItem does not dispose the page contents widget, only calls
         // setVisible(false) on it; so we have to do it here
-        item.addDisposeListener(new DisposeListener() {
-            public void widgetDisposed(DisposeEvent e) {
-                Control client = ((CTabItem)e.widget).getControl();
-                pageClosed(client);
-                client.dispose();
-            }
+        item.addDisposeListener((e) -> {
+            Control client = ((CTabItem)e.widget).getControl();
+            pageClosed(client);
+            client.dispose();
         });
-
     }
 
     public void addClosablePage(int index, IEditorPart editorPart, IEditorInput editorInput) throws PartInitException {
