@@ -1,0 +1,67 @@
+%description:
+Check that indented lines are taken as a continuation of the previous one.
+
+Details:
+- The newline becomes part of the value
+- Comments are removed from each line.
+
+Consequence:
+- It is not possible to break string constants with indentation (causes parse error)
+
+%activity:
+cConfigurationEx *cfg = getEnvir()->getConfigEx();
+for (const char *name : {"mult", "mult2", "space", "comment"}) {
+    const char *value = cfg->getParameterValue("X", name, false);
+    EV << name << ": >>>" << (value ? value : "nullptr") << "<<<\n";
+}
+EV << ".\n";
+
+%inifile: test.ini
+[General]
+
+# multiple continued lines
+*.mult =
+    1 +
+    2 +
+    3
+
+# multiple continued lines, in a mixed way
+*.mult2 =
+    1 +
+    2 + \
+    3 +
+    4
+
+# spaces are preserved
+*.space = "hello" +
+    "world"
+
+# comments are stripped
+*.comment = "hello" + # blah blah
+    # comment
+    "world"  # more blah blah
+
+# STUFF BELOW HERE ARE NOT CHECKED BY THE CODE.
+# They are here to assert they are syntactically correct.
+
+# works everywhere on all types of lines
+[
+    Dummy
+    ]
+
+network =
+   Foo
+
+%contains: stdout
+mult: >>>1 +
+    2 +
+    3<<<
+mult2: >>>1 +
+    2 +     3 +
+    4<<<
+space: >>>"hello" +
+    "world"<<<
+comment: >>>"hello" +
+
+    "world"<<<
+.

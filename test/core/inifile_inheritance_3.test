@@ -21,4 +21,4 @@ extends = C,D
 
 %exitcode: 1
 %contains: stderr
-Detected section fallback chain inconsistency at [Config E]
+Detected section fallback chain inconsistency at [E]

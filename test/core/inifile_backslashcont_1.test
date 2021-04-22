@@ -1,0 +1,85 @@
+%description:
+Check that backslash line continuation works.
+
+Processing: The '\'+LF two-char sequences are simply removed from the input.
+
+Consequences:
+- may break lines anywhere, including inside a string constant
+- whitespace is preserved, both before the backslash and in the continuation line
+- trailing backslash cannot be escaped
+- one '#' comment inside a multi-line value makes the rest of the value part of the comment (!!!)
+
+%activity:
+// print the raw values
+cConfigurationEx *cfg = getEnvir()->getConfigEx();
+for (const char *name : {"mult", "stray", "str1", "str2", "space1", "space2", "comment", "extra"}) {
+    const char *value = cfg->getParameterValue("X", name, false);
+    EV << name << ": >>>" << (value ? value : nullptr) << "<<<\n";
+}
+EV << ".\n";
+
+%inifile: test.ini
+[General]
+
+# multiple continued lines
+*.mult = 1+\
+2+\
+\
+\
+3\
+
+# stay backslash mid-line doesn't make a difference
+*.stray = 1+\2
+
+# break outside string constants
+*.str1 = "hello" + \
+"world" \
++ "!"
+
+# break inside string constants
+*.str2 = "he\
+ll\
+o"
+
+# spaces are preserved, both before "\" and on the new line
+*.space1 = "hello\
+ world"
+
+*.space2  = "hello \
+world"
+
+# comments are not stripped
+*.comment  = "hello" + \
+# blah blah \
+"world" # <--- actually this becomes part of the previous comment, so ignored!
+
+# extra backslash doesn't affect processing
+*.extra  = "he\\
+llo"
+
+# STUFF BELOW HERE ARE NOT CHECKED BY THE CODE.
+# They are here to assert they are syntactically correct.
+
+# works everywhere on all types of lines
+[Dum\
+my]
+
+# this \
+is a very long\
+ comment...
+
+net\
+work = Foo\
+bar # this \
+is a long comment...
+
+%contains: stdout
+mult: >>>1+2+3<<<
+stray: >>>1+\2<<<
+str1: >>>"hello" + "world" + "!"<<<
+str2: >>>"hello"<<<
+space1: >>>"hello world"<<<
+space2: >>>"hello world"<<<
+comment: >>>"hello" +<<<
+extra: >>>"he\llo"<<<
+.
