@@ -8,16 +8,13 @@
 package org.omnetpp.ned.editor.text.highlight;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.rules.EndOfLineRule;
 import org.eclipse.jface.text.rules.IPredicateRule;
-import org.eclipse.jface.text.rules.IRule;
-import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.RuleBasedPartitionScanner;
+import org.eclipse.jface.text.rules.SingleLineRule;
 import org.eclipse.jface.text.rules.Token;
+import org.omnetpp.common.editor.text.SyntaxHighlightHelper;
 
 /**
  * This scanner recognizes the different partitions needed for different syntax highlighting areas.
@@ -39,17 +36,13 @@ public class NedSyntaxHighlightPartitionScanner extends RuleBasedPartitionScanne
     public NedSyntaxHighlightPartitionScanner() {
         super();
 
-        IToken nedDocToken= new Token(NED_DOC);
-        IToken nedPrivateDocToken= new Token(NED_PRIVATE_DOC);
+        // Add rule for single-line comments. To prevent "//" inside string constants
+        // from triggering the rule (and marking the rest of the string as comment), we
+        // add a rule for string constants that fires BEFORE the comment rule.
+        IPredicateRule stringConstantRule = new SingleLineRule("\"", "\"", SyntaxHighlightHelper.codeStringToken, '\\');
+        IPredicateRule privateCommentRule = new EndOfLineRule("//#", new Token(NED_PRIVATE_DOC));
+        IPredicateRule commentRule = new EndOfLineRule("//", new Token(NED_DOC));
 
-        List<IRule> rules= new ArrayList<IRule>();
-
-        // Add rule for single line private comments.
-        rules.add(new EndOfLineRule("//#", nedPrivateDocToken));
-
-        // Add rule for single line comments.
-        rules.add(new EndOfLineRule("//", nedDocToken));
-
-        setPredicateRules(rules.toArray(new IPredicateRule[]{}));
+        setPredicateRules(new IPredicateRule[] { stringConstantRule, privateCommentRule, commentRule });
     }
 }
