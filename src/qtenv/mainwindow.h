@@ -94,15 +94,16 @@ public:
 
 public slots:
 
-    void on_actionOneStep_triggered() { runSimulation(RUNMODE_STEP); }
-    void on_actionRun_triggered() { runSimulation(RUNMODE_NORMAL); }
-    void on_actionFastRun_triggered() { runSimulation(RUNMODE_FAST); }
-    void on_actionExpressRun_triggered() { runSimulation(RUNMODE_EXPRESS); }
+    void on_actionOneStep_triggered() { runSimulation(RUNMODE_STEP); } // has special skipping behavior of its own
+    void on_actionRun_triggered() { stopOrRunSimulation(RUNMODE_NORMAL); }
+    void on_actionFastRun_triggered() { stopOrRunSimulation(RUNMODE_FAST); }
+    void on_actionExpressRun_triggered() { runSimulation(RUNMODE_EXPRESS); } // the whole window is disabled in express mode anyway
+    void on_actionStop_triggered() { stopSimulation(); }
+
     void on_actionRunUntil_triggered();
     void on_actionDebugNextEvent_triggered();
     void on_actionDebugOnErrors_triggered(bool checked);
     void on_actionDebugNow_triggered();
-    void on_actionStop_triggered();
 
     void on_actionQuit_triggered() { close(); }
     void onSliderValueChanged(int value);
@@ -192,6 +193,10 @@ private:
     } simTimeDigitGrouping, eventNumDigitGrouping;
 
     void runSimulation(RunMode runMode);
+    void stopSimulation();
+    // If runMode is currently active, stops; otherwise starts in runMode.
+    // adds radiobutton-like functionality to the "run"-like actions.
+    void stopOrRunSimulation(RunMode runMode);
 
     void updatePerformanceDisplay();
     void updateNextEventDisplay();
