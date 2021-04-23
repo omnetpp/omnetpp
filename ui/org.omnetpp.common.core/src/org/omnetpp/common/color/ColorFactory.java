@@ -919,6 +919,22 @@ public class ColorFactory {
         return new Color(null, rgb);
     }
 
+    private static double dist(RGB a, RGB b) {
+        double dr = a.red - b.red, dg = a.green-b.green, db = a.blue-b.blue;
+        return dr*dr + dg*dg + db*db;
+    }
+
+    public static String getClosestNamedColor(RGB rgb) {
+        RGB best = null;
+        for (RGB c : rgbToStringMap.keySet()) {
+            if (best == null)
+                best = c;
+            else if (dist(c,rgb) < dist(best,rgb))
+                best = c;
+        }
+        return rgbToStringMap.get(best);
+    }
+
     /**
      * Creates and returns a color image for the RGB value. The image is 15x15 pixels, and the
      * color rectangle is 11x11 pixels in it, CENTERED.
