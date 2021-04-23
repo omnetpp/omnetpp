@@ -68,7 +68,7 @@ export OMNETPP_ROOT=$HOME
 export TERM=xterm-256color
 
 export PATH=".:${OMNETPP_ROOT}/bin:/opt/mingw64/bin:${PATH}"
-export PYTHONPATH=${OMNETPP_ROOT}/python;${PYTHONPATH} # on Windows, the separator of $PYTHONPATH is always ;
+export PYTHONPATH=${OMNETPP_ROOT}/python
 export QT_LOGGING_RULES='*.debug=false;qt.qpa.*=false' # disable some qt logging
 
 # source the git completion script if exsist
