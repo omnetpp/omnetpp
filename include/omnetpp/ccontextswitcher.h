@@ -58,7 +58,7 @@ enum {CTX_NONE, CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_REFRESHDISPLAY, CTX_FI
  * @ingroup SimSupport
  * @hideinitializer
  */
-#define Enter_Method  omnetpp::cMethodCallContextSwitcher __ctx(this); __ctx.methodCall
+#define Enter_Method(...)  omnetpp::cMethodCallContextSwitcher __ctx(this); __ctx.methodCall(__VA_ARGS__)
 
 /**
  * @brief Denotes module class member function as callable from other modules.
@@ -79,7 +79,7 @@ enum {CTX_NONE, CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_REFRESHDISPLAY, CTX_FI
  * @ingroup SimSupport
  * @hideinitializer
  */
-#define Enter_Method_Silent  omnetpp::cMethodCallContextSwitcher __ctx(this); __ctx.methodCallSilent
+#define Enter_Method_Silent(...)  omnetpp::cMethodCallContextSwitcher __ctx(this); __ctx.methodCallSilent(__VA_ARGS__)
 
 /**
  * @brief The constructor switches the context to the given component, and the

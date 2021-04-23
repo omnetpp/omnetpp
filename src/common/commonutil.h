@@ -118,9 +118,9 @@ template <class T> struct ToString<T*>
     static std::string toString(const T* x) { std::ostringstream s; s << ((void*)x); return s.str(); }
 };
 
-#define TRACE_CALL  CallTracer __x
+#define TRACE_CALL(...)  CallTracer __x(__VA_ARGS__)
 
-#define TPRINTF CallTracer::printf
+#define TPRINTF(...)  CallTracer::printf(__VA_ARGS__)
 
 #define RETURN(x) { __x.setResult(x); return x; }
 
