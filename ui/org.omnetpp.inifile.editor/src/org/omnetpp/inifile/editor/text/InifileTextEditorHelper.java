@@ -15,6 +15,8 @@ import org.eclipse.jface.text.rules.Token;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
+import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.editor.text.SyntaxHighlightHelper;
 import org.omnetpp.common.util.DisplayUtils;
 
 /**
@@ -80,26 +82,27 @@ public class InifileTextEditorHelper {
     public static IToken commentToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GRAY), null, SWT.ITALIC));
     public static IToken codeDefaultToken = new Token(new TextAttribute(getColor(SWT.COLOR_BLACK)));
     public static IToken codeIdentifierToken = new Token(new TextAttribute(getColor(SWT.COLOR_BLACK)));
-    public static IToken codeConfigKeyToken = new Token(new TextAttribute(new Color(0, 0, 192), null, SWT.BOLD)); // Eclipse text editor blue
+    public static IToken codeConfigKeyToken = new Token(new TextAttribute(SyntaxHighlightHelper.ECLIPSE_PURPLE, null, SWT.BOLD));
     public static IToken codeKeywordToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_MAGENTA), null, SWT.BOLD));
     public static IToken codeFunctionToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_MAGENTA)));
     public static IToken codeStringToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GREEN)));
     public static IToken codeNumberToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GREEN)));
     public static IToken codeBoolToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GREEN)));
-    public static IToken sectionHeadingToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_MAGENTA), null, SWT.BOLD));
+    public static IToken sectionHeadingToken = new Token(new TextAttribute(SyntaxHighlightHelper.ECLIPSE_DARKBLUE, null, SWT.BOLD));
 
     static {
-    	if (DisplayUtils.isDarkTheme()) {
-    		commentToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GRAY), null, SWT.ITALIC));
-    		codeDefaultToken = new Token(new TextAttribute(getColor(SWT.COLOR_WIDGET_FOREGROUND)));
-    		codeIdentifierToken = new Token(new TextAttribute(getColor(SWT.COLOR_WIDGET_FOREGROUND)));
-    		codeConfigKeyToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_CYAN), null, SWT.BOLD));
-    		codeKeywordToken = new Token(new TextAttribute(new Color(192, 192, 128), null, SWT.BOLD));
-    		codeFunctionToken = new Token(new TextAttribute(new Color(128, 128, 255)));
-    		codeStringToken = new Token(new TextAttribute(new Color(128, 220, 128)));
-    		codeNumberToken = new Token(new TextAttribute(new Color(128, 220, 128)));
-    		codeBoolToken = new Token(new TextAttribute(new Color(128, 220, 128)));
-    		sectionHeadingToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_CYAN), null, SWT.BOLD));
-    	}
-    }    
+        if (DisplayUtils.isDarkTheme()) {
+            commentToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GRAY), null, SWT.ITALIC));
+            codeDefaultToken = new Token(new TextAttribute(getColor(SWT.COLOR_WIDGET_FOREGROUND)));
+            codeIdentifierToken = new Token(new TextAttribute(getColor(SWT.COLOR_WIDGET_FOREGROUND)));
+            codeConfigKeyToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_CYAN), null, SWT.BOLD));
+            codeKeywordToken = new Token(new TextAttribute(ColorFactory.KHAKI3, null, SWT.BOLD));
+            codeFunctionToken = new Token(new TextAttribute(ColorFactory.LIGHT_SLATE_BLUE));
+            codeStringToken = new Token(new TextAttribute(ColorFactory.PALE_GREEN3));
+            codeNumberToken = new Token(new TextAttribute(ColorFactory.PALE_GREEN3));
+            codeBoolToken = new Token(new TextAttribute(ColorFactory.PALE_GREEN3));
+            sectionHeadingToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_CYAN), null, SWT.BOLD));
+        }
+    }
+
 }
