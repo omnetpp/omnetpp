@@ -507,6 +507,26 @@ void MainWindow::runSimulation(RunMode runMode)
     }
 }
 
+void MainWindow::stopSimulation()
+{
+    // implements Simulate|Stop
+    if (env->getSimulationState() == Qtenv::SIM_RUNNING || env->getSimulationState() == Qtenv::SIM_BUSY) {
+        // This just *asks* the simulation to stop, causing it to break from the loop in env->runSimulation().
+        // setGuiForRunmode(...NOT_RUNNING) will be called after env->runSimulation() has returned.
+        env->setStopSimulationFlag();
+    }
+
+    closeStopDialog();
+}
+
+void MainWindow::stopOrRunSimulation(RunMode runMode)
+{
+    if (env->getSimulationRunMode() == runMode)
+        stopSimulation();
+    else
+        runSimulation(runMode);
+}
+
 // newRun
 void MainWindow::on_actionSetUpConfiguration_triggered()
 {
@@ -529,25 +549,6 @@ void MainWindow::on_actionSetUpConfiguration_triggered()
         busy();
         reflectRecordEventlog();
     }
-}
-
-// stopSimulation
-void MainWindow::on_actionStop_triggered()
-{
-    // implements Simulate|Stop
-    if (env->getSimulationState() == Qtenv::SIM_RUNNING || env->getSimulationState() == Qtenv::SIM_BUSY) {
-        // "opp_stopsimulation" just *asks* the simulation to stop, causing it to return
-        // from the "opp_run" command.
-        // "setGuiForRunmode notrunning" will be called after "opp_run" has returned.
-        env->setStopSimulationFlag();
-    }
-
-    closeStopDialog();
-
-    // this proc doubles as "stop layouting", when in graphical module inspectors
-    // TODO
-    // global stoplayouting
-    // set stoplayouting 1
 }
 
 // runUntil
