@@ -76,7 +76,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
     private static final boolean isLightTheme = !DisplayUtils.isDarkTheme(); 
     private static final Font FONT;
     private static final Font BOLD_FONT;
-    private static final Color FOREGROUND_COLOR = DisplayUtils.FOREGROUND_COLOR;
+    private static Color FOREGROUND_COLOR = DisplayUtils.getForegroundColor();
     private static final Color HIGHLIGHT_COLOR = isLightTheme ? ColorFactory.BLUE3 : ColorFactory.CYAN3;
     private static final Color MESSAGE_COLOR = isLightTheme ? new Color(null, 127, 0, 85) : ColorFactory.SALMON;
     private static final Color BUBBLE_COLOR = isLightTheme ? ColorFactory.RED2 : ColorFactory.PERU;

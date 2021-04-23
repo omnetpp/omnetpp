@@ -268,7 +268,7 @@ public class EventLogTable
         int x = p.x / 2;
         int y = p.y / 2;
         String[] lines = text.split("\n");
-        gc.setForeground(DisplayUtils.FOREGROUND_COLOR);
+        gc.setForeground(DisplayUtils.getForegroundColor());
         gc.setFont(JFaceResources.getHeaderFont());
         p = gc.textExtent(title);
         gc.drawText(title, x - p.x / 2, y - (lines.length / 2 + 2) * p.y);

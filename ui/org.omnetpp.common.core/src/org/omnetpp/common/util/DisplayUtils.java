@@ -11,6 +11,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Listener;
+import org.omnetpp.common.color.ColorFactory;
 
 public class DisplayUtils {
     public static void runNowOrAsyncInUIThread(Runnable runnable) {
@@ -63,6 +64,11 @@ public class DisplayUtils {
 		return brightness < 128.0;
 	}
 
-	public static final Color FOREGROUND_COLOR = Display.getCurrent().getSystemColor(SWT.COLOR_WIDGET_FOREGROUND);
-	public static final Color BACKGROUND_COLOR = Display.getCurrent().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND);
+	public static Color getForegroundColor() {
+		var display = Display.getCurrent();
+		if (display == null)
+			return ColorFactory.BLACK;
+
+		return display.getSystemColor(SWT.COLOR_WIDGET_FOREGROUND); 
+	}
 }
