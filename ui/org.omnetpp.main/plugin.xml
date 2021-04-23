@@ -2,69 +2,29 @@
 <?eclipse version="3.2"?>
 <plugin>
 
-     <extension id="product"
+   <extension id="product"
          name="OMNeT++ Integrated Development Environment"
-	 point="org.eclipse.core.runtime.products">
-      <product
-            application="org.eclipse.ui.ide.workbench"
-            name="OMNeT++ IDE">
-          <property name="appName" value="OMNeT++ IDE"/>
-         <property
-          		name="introTitle"
-          		value="Introduction to OMNeT++"/>
-          <property
-          		name="introBrandingImage"
-			value="product:/icons/intro-omnetpp.png"/>
-          <property
-          		name="introBrandingImageText"
-          		value="OMNeT++ Simulation Environment"/>
-		  <property
-				name="introDescription-overview"
-				value="Welcome to the OMNeT++ Simulation Environment. Choose a topic you want to learn more about."/>
-		  <property
-          name="introDescription-tutorials"
-          value=" "/>
-		  <property
-          name="introDescription-samples"
-          value=" "/>
-		  <property
-          name="introDescription-migrate"
-          value=" "/>
-    <property
-          name="startupForegroundColor"
-          value="000000">
-    </property>
-    <property
-          name="startupMessageRect"
-          value="10,20,500,25">
-    </property>
-    <property
-          name="startupProgressRect"
-          value="10,10,298,10">
-    </property>
-    <property
-          name="aboutImage"
-          value="/icons/about-image.png">
-    </property>
-    <property
-          name="windowImages"
-          value="icons/logo16.png,icons/logo256.png">
-    </property>
-    <property
-          name="aboutText"
-          value="%aboutText">
-    </property>
-    <property
-            name="cssTheme"
-            value="org.eclipse.e4.ui.css.theme.e4_classic">
-    </property>
-    <property
-          name="preferenceCustomization"
-          value="plugin_customization.ini">
-    </property>
+         point="org.eclipse.core.runtime.products">
 
-    </product>
-   </extension>
+      <product application="org.eclipse.ui.ide.workbench" name="OMNeT++ IDE">
+            <property name="appName" value="OMNeT++ IDE"/>
+            <property name="introTitle" value="Introduction to OMNeT++"/>
+            <property name="introBrandingImage" value="product:/icons/intro-omnetpp.png"/>
+            <property name="introBrandingImageText" value="OMNeT++ Simulation Environment"/>
+            <property name="introDescription-overview" value="Welcome to the OMNeT++ Simulation Environment. Choose a topic you want to learn more about."/>
+            <property name="introDescription-tutorials" value=" "/>
+            <property name="introDescription-samples" value=" "/>
+            <property name="introDescription-migrate" value=" "/>
+            <property name="startupForegroundColor" value="000000" />
+            <property name="startupMessageRect" value="10,20,500,25" />
+            <property name="startupProgressRect" value="10,10,298,10" />
+            <property name="aboutImage" value="/icons/about-image.png" />
+            <property name="windowImages" value="icons/logo16.png,icons/logo256.png" />
+            <property name="aboutText" value="%aboutText" />
+            <property name="cssTheme" value="org.eclipse.e4.ui.css.theme.e4_classic"/>
+            <property name="preferenceCustomization" value="plugin_customization.ini" />
+      </product>
+   </extension>   
    <extension
          id="omnetppnature"
          name="OMNeT++ Nature"
@@ -125,13 +85,13 @@
             name="OMNeT++ Elements"
             priority="high">
        <enablement>
-			               <adapt
-			                     type="org.eclipse.core.resources.IResource">
-			                 <test
-			                     property="org.eclipse.core.resources.projectNature"
-			                     value="org.omnetpp.main.omnetppnature">
-			                 </test>
-			               </adapt>
+               <adapt
+                     type="org.eclipse.core.resources.IResource">
+                 <test
+                     property="org.eclipse.core.resources.projectNature"
+                     value="org.omnetpp.main.omnetppnature">
+                 </test>
+               </adapt>
        </enablement>
        <override
              policy="InvokeAlwaysRegardlessOfSuppressedExt"
@@ -146,11 +106,11 @@
          <filterExpression>
             <adapt type="org.eclipse.core.resources.IFile">
               <or>
-        		<test property="org.eclipse.core.resources.name" value="*.vci"/>
-        		<test property="org.eclipse.core.resources.name" value="*_m.cc"/>
-        		<test property="org.eclipse.core.resources.name" value="*_m.h"/>
-        	  </or>
-        	</adapt>
+                <test property="org.eclipse.core.resources.name" value="*.vci"/>
+                <test property="org.eclipse.core.resources.name" value="*_m.cc"/>
+                <test property="org.eclipse.core.resources.name" value="*_m.h"/>
+              </or>
+            </adapt>
          </filterExpression>
       </commonFilter>
       <commonFilter
@@ -160,24 +120,24 @@
             name="Show only OMNeT++ files">
          <filterExpression>
             <adapt type="org.eclipse.core.resources.IFile">
-            <or>
-	            <not>
-		              <or>
-		        		<test property="org.eclipse.core.resources.name" value="*.ned"/>
-		        		<test property="org.eclipse.core.resources.name" value="*.cc"/>
-		        		<test property="org.eclipse.core.resources.name" value="*.h"/>
-		        		<test property="org.eclipse.core.resources.name" value="*.msg"/>
-		        		<test property="org.eclipse.core.resources.name" value="*.ini"/>
-		        		<test property="org.eclipse.core.resources.name" value="*.elog"/>
-		        		<test property="org.eclipse.core.resources.name" value="*.anf"/>
-		        		<test property="org.eclipse.core.resources.name" value="*.vec"/>
-		        		<test property="org.eclipse.core.resources.name" value="*.sca"/>
-		        	  </or>
-	        	 </not>
-	        	 <test property="org.eclipse.core.resources.name" value="*_m.h"/>
-	         	 <test property="org.eclipse.core.resources.name" value="*_m.cc"/>
-        	 </or>
-        	</adapt>
+              <or>
+                <not>
+                  <or>
+                    <test property="org.eclipse.core.resources.name" value="*.ned"/>
+                    <test property="org.eclipse.core.resources.name" value="*.cc"/>
+                    <test property="org.eclipse.core.resources.name" value="*.h"/>
+                    <test property="org.eclipse.core.resources.name" value="*.msg"/>
+                    <test property="org.eclipse.core.resources.name" value="*.ini"/>
+                    <test property="org.eclipse.core.resources.name" value="*.elog"/>
+                    <test property="org.eclipse.core.resources.name" value="*.anf"/>
+                    <test property="org.eclipse.core.resources.name" value="*.vec"/>
+                    <test property="org.eclipse.core.resources.name" value="*.sca"/>
+                  </or>
+                </not>
+                <test property="org.eclipse.core.resources.name" value="*_m.h"/>
+                <test property="org.eclipse.core.resources.name" value="*_m.cc"/>
+              </or>
+            </adapt>
          </filterExpression>
       </commonFilter>
    </extension>
