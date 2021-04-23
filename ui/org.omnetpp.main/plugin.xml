@@ -21,7 +21,6 @@
             <property name="aboutImage" value="/icons/about-image.png" />
             <property name="windowImages" value="icons/logo16.png,icons/logo256.png" />
             <property name="aboutText" value="%aboutText" />
-            <property name="cssTheme" value="org.eclipse.e4.ui.css.theme.e4_classic"/>
             <property name="preferenceCustomization" value="plugin_customization.ini" />
       </product>
    </extension>   
