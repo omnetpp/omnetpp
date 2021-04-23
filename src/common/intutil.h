@@ -29,7 +29,7 @@ namespace common {
 typedef int64_t intval_t;
 
 // helper for checked_int_cast
-void intCastError(const std::string& num, const char *errmsg=nullptr);
+COMMON_API void intCastError(const std::string& num, const char *errmsg=nullptr);
 
 /**
  * @brief Safe integer cast: it throws an exception if in case of an overflow,
