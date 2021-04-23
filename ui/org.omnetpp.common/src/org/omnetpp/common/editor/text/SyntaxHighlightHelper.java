@@ -72,15 +72,9 @@ public class SyntaxHighlightHelper {
      * Convenience method, to return a system default color. Color constants come from SWT class e.g. SWT.COLOR_RED
      */
     private static Color getColor(final int swtColor) {
-        final Color colors[] = new Color[1];
-
-        DisplayUtils.runNowOrSyncInUIThread(new Runnable() {
-            public void run() {
-                colors[0] = Display.getDefault().getSystemColor(swtColor);
-            }
-        });
-
-        return colors[0];
+        Color[] holder = new Color[1];
+        DisplayUtils.runNowOrSyncInUIThread(() -> { holder[0] = Display.getDefault().getSystemColor(swtColor); });
+        return holder[0];
     }
 
     /**

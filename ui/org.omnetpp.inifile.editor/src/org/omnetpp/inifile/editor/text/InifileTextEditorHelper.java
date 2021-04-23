@@ -21,18 +21,9 @@ import org.omnetpp.common.util.DisplayUtils;
  * This class contains all the possible keywords for syntax highlighting and context assist functions.
  *
  * @author rhornig
- *
  */
-//XXX revise...
 public class InifileTextEditorHelper {
     public static final String DEFAULT_CONTEXT_TYPE = "org.omnetpp.inifile.editor.default";
-
-    /**
-     * Convenience method, to return a system default color. Color constants come from SWT class e.g. SWT.COLOR_RED
-     */
-    public static Color getColor(int color) {
-        return Display.getDefault().getSystemColor(color);
-    }
 
     /**
      * A generic white space detector
@@ -71,6 +62,12 @@ public class InifileTextEditorHelper {
         public boolean isWordPart(char character) {
             return Character.isLetterOrDigit(character) || character == '_' || character == '-';
         }
+    }
+
+    private static Color getColor(int swtColor) {
+        Color[] holder = new Color[1];
+        DisplayUtils.runNowOrSyncInUIThread(() -> { holder[0] = Display.getDefault().getSystemColor(swtColor); });
+        return holder[0];
     }
 
     // whitespace and word detectors for tokenization
