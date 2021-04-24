@@ -143,8 +143,8 @@ void InifileReader::doReadFile(const char *filename, int currentSectionIndex, st
             line = lineBuf.c_str();
         }
 
-        while (opp_isspace(*line))
-            line++;
+        if (opp_isspace(*line)) // space or newline
+            throw cRuntimeError("Content must begin on column 1 because indentation is used for line continuation, '%s' line %d", filename, lineNumber);
 
         if (opp_stringbeginswith(line, "#% old-wildcards")) {
             // in old ini files, "*" matched dots as well, like "**" does now;

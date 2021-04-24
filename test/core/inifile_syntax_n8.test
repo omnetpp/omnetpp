@@ -1,0 +1,11 @@
+%description:
+Indented content is illegal
+
+%inifile: test.ini
+#next line will be indented:
+  [Foo]
+
+%exitcode: 1
+
+%contains: stderr
+Content must begin on column 1 because indentation is used for line continuation, 'test.ini' line 1
