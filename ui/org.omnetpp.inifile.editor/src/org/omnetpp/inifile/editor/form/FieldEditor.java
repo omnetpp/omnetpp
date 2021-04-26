@@ -31,6 +31,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.IHoverInfoProvider;
 import org.omnetpp.common.util.UIUtils;
@@ -71,8 +72,7 @@ public abstract class FieldEditor extends Composite {
         this.inifile = inifile;
         this.formPage = formPage;
         this.hints = hints;
-        setBackground(formPage.getBackground());
-
+        setBackground(parent.getBackground());
     }
 
     protected String getValueFromFile(String section, String key) {
