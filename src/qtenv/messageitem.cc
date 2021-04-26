@@ -334,7 +334,9 @@ void MessageItem::updateLineItem()
     double width = 6;
 
     // to make it go on the right side of the connection, with a bit of spacing
-    QPointF sideOffset = (width / 2 + 2) * line.normalVector().unitVector().translated(-line.p1()).p2();
+    QPointF sideOffset = (line.isNull() || std::isnan(line.x1() + line.y1() + line.x2() + line.y2()))
+        ? QPointF(0, 0)
+        : ((width / 2 + 2) * line.normalVector().unitVector().translated(-line.p1()).p2());
 
     QPen pen(shapeFillColor, width, Qt::SolidLine, Qt::FlatCap);
 
@@ -349,6 +351,9 @@ void MessageItem::updateLineItem()
         localLine.setLength(2);
         localLine.translate(-localLine.pointAt(0.5));
     }
+
+    if (std::isnan(localLine.x1() + localLine.y1() + localLine.x2() + localLine.y2()))
+        localLine = QLineF(0, 0, 0, 0);
 
     arrowheadLength = std::min(arrowheadLength, localLine.length()/2);
 
