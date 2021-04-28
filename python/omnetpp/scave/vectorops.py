@@ -69,6 +69,7 @@ def foo(r, arg1, arg2=5):
 
 import numpy as np
 import pandas as pd
+import inspect
 
 def perform_vector_ops(df, operations : str):
     """ See: utils.perform_vector_ops """
@@ -92,7 +93,6 @@ def _get_vectorop_signature(func):
     as a vector operation - so, without the first parameter, which is used
     internally to pass the DataFrame/row to process.
     """
-    import inspect
     import functools
     m = functools.partial(func, None) # binding the row parameter
     return str(inspect.signature(m))
@@ -111,10 +111,16 @@ def vector_operation(label : str = None, example : str = None):
         global _operations
         lbl = label or function.__name__.title()
         ex = example or (function.__name__ + _get_vectorop_signature(function))
+
+        if not isinstance(lbl, str):
+            raise ValueError("@vector_operation: label argument must be string")
+        if not isinstance(ex, str):
+            raise ValueError("@vector_operation: example argument must be string")
+
         _operations.append((function, lbl, ex))
         return function
 
-    if callable(label):
+    if inspect.isfunction(label):
         # In case the user omitted the () after @vector_operation, Python will call _this_ method
         # directly, with the vector operation function itself in place of the label parameter.
         # We could error out, OR we could cheat and recover, like this:
@@ -755,10 +761,10 @@ def _report_ops():
     for op in _operations:
         result.append((
             op[0].__module__,
-            op[0].__name__,
+            str(op[0].__name__),
             _get_vectorop_signature(op[0]),
             inspect.getdoc(op[0]),
-            op[1],
-            op[2]))
+            str(op[1]),
+            str(op[2])))
 
     return result

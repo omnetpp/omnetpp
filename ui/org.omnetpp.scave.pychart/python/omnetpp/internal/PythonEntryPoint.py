@@ -83,9 +83,13 @@ class PythonEntryPoint(object):
     def getVectorOps(self):
         from omnetpp.scave import vectorops
 
+        ops = []
         # ctor is: VectorOp(String module, String name, String signature, String docstring, String label, String example)
-        ops = [Gateway.gateway.jvm.org.omnetpp.scave.editors.VectorOperations.VectorOp(*o)
-               for o in vectorops._report_ops()]
+        for o in vectorops._report_ops():
+            try:
+                ops.append(Gateway.gateway.jvm.org.omnetpp.scave.editors.VectorOperations.VectorOp(*o))
+            except Exception as E:
+                print("Exception while processing vector operation:", o[4])
 
         return ListConverter().convert(ops, Gateway.gateway._gateway_client)
 
