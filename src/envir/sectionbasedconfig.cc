@@ -125,25 +125,9 @@ void SectionBasedConfiguration::setCommandLineConfigOptions(const std::map<std::
     commandLineOptions.clear();
     const std::string *basedirRef = getPooledBaseDir(baseDir);
     for (const auto & it : options) {
-        // validate the key, then store the option
         const char *key = it.first.c_str();
         const char *value = it.second.c_str();
-        bool containsDot = strchr(key, '.') != nullptr;
-        const char *option = strchr(key, '.') ? strrchr(key, '.')+1 : key;  // check only the part after the last dot, i.e. recognize per-object keys as well
-        bool containsHyphen = strchr(option, '-') != nullptr;
-        std::string tmp;
-        if (containsDot && !containsHyphen)
-            ; // parameter or "**.typename", just store it
-        else {
-            cConfigOption *e = lookupConfigOption(option);
-            if (!e)
-                throw cRuntimeError("Unknown command-line configuration option --%s", key);
-            if (containsDot && !e->isPerObject())
-                throw cRuntimeError("Invalid command-line configuration option --%s: %s is not a per-object option", key, e->getName());
-            if (!containsDot && e->isPerObject())
-                key = (tmp = std::string("**.")+key).c_str();  // prepend with "**."
-        }
-        if (!value[0])
+        if (opp_isempty(value))
             throw cRuntimeError("Missing value for command-line option --%s", key);
         commandLineOptions.push_back(Entry(basedirRef, key, value));
     }
@@ -1064,6 +1048,24 @@ static bool visit(SectionGraph& graph, SectionGraphNode& node)
 
 void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
 {
+    // check command-line options
+    for (const auto & entry : commandLineOptions) {
+        const char *key = entry.key.c_str();
+        bool containsDot = strchr(key, '.') != nullptr;
+        const char *option = strchr(key, '.') ? strrchr(key, '.')+1 : key;  // check only the part after the last dot, i.e. recognize per-object keys as well
+        bool lastSegmentContainsHyphen = strchr(option, '-') != nullptr;
+        bool isConfigKey = !containsDot || lastSegmentContainsHyphen;
+        if (isConfigKey) {
+            cConfigOption *e = lookupConfigOption(option);
+            if (!e)
+                throw cRuntimeError("Unknown command-line configuration option --%s", key);
+            if (containsDot && !e->isPerObject())
+                throw cRuntimeError("Invalid command-line configuration option --%s: %s is not a per-object option", key, e->getName());
+            if (!containsDot && e->isPerObject())
+                const_cast<Entry&>(entry).key = "**." + entry.key;  // TODO this is quite ugly -- we should rather allow per-object options without object-path part to mean the same thing with "**." prefix
+        }
+    }
+
     // check section names
     std::set<std::string> configNames;
     for (int i = 0; i < ini->getNumSections(); i++) {
