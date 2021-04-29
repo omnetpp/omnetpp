@@ -1,0 +1,31 @@
+%description:
+Check that inifile include recursion is properly detected.
+omnetpp.ini -> a.ini -> b.ini -> a.ini (ERROR)
+
+%file: test.ned
+import testlib.Dump;
+
+network Test {
+    parameters:
+        int a;
+        int b;
+    submodules:
+        dump: Dump;
+}
+
+%inifile: test.ini
+[General]
+network = Test
+include a.ini
+
+%file: a.ini
+include b.ini
+
+%file: b.ini
+include a.ini
+
+%exitcode: 1
+
+%contains: stderr
+<!> Error: Ini file 'a.ini' includes itself, directly or indirectly
+

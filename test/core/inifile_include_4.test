@@ -1,0 +1,41 @@
+%description:
+Test multiple inifiles with implicit sections.
+"Duplicate section" error should not be triggered when an included file
+contains a section already seen in the main file.
+
+%extraargs: -c Test
+
+%file: test.ned
+import testlib.Dump;
+
+network Test {
+    parameters:
+        int a;
+        int b;
+    submodules:
+        dump: Dump;
+}
+
+%inifile: test.ini
+[General]
+network = Test
+*.a = 0
+*.b = 0
+
+[Test]
+*.a = 1
+
+include include.ini
+
+%file: include.ini
+[Test]
+*.b = 2
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+        a = 1
+        b = 2
+    submodules:
+}
