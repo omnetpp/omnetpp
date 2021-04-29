@@ -118,33 +118,30 @@ AC_INIT
 # OMNeT++/OMNEST version number
 #
 OMNETPP_PRODUCT="OMNeT++"
-OMNETPP_RELEASE=`cat Version`
-OMNETPP_VERSION=`cat Version | sed 's/^.*-//'`
+OMNETPP_RELEASE=$(cat Version)
+OMNETPP_VERSION=$(cat Version | sed 's/^.*-//')
 OMNETPP_BUILDID="internal"
 
 #
 # Edition identifier in banner: Academic / Commercial / Evaluation
 OMNETPP_EDITION="Academic Public License -- NOT FOR COMMERCIAL USE"
 
-# IDE executable name
-if test "$OMNETPP_PRODUCT" = "OMNeT++"; then
-    OMNETPP_IDE_EXECUTABLE="omnetpp"
-else
-    OMNETPP_IDE_EXECUTABLE="omnest"
-fi
-
 # We'll collect in this variable the components we've detected problems with
 OPP_PROBLEM_PACKAGES=
 
-# determine OMNETPP_ROOT
-OMNETPP_ROOT=$(cd $(dirname "$0"); pwd)
+# check if 'setenv' was correctly sourced
+CURRENT_DIR=$(cd $(dirname "$0"); pwd)
+if test "$OMNETPP_ROOT" = "$CURRENT_DIR" -a -z "${PATH##*${CURRENT_DIR}/bin:*}" -a -z "${PYTHONPATH##*${CURRENT_DIR}/python:*}"; then  # this uses magic substring matching with parameter expansion
+  AC_MSG_NOTICE([Environment variables (OMNETPP_ROOT, PATH and PYTHONPATH) are correctly set.])
+else
+  AC_MSG_ERROR([Before running 'configure', please use 'source setenv' to set up your environment.])
+fi
+CURRENT_DIR=
 
 #----------------------
 # Read user settings (and allow override the above settings)
 #----------------------
-AC_MSG_NOTICE(-----------------------------------------------)
 AC_MSG_NOTICE(reading configure.user for your custom settings)
-AC_MSG_NOTICE(-----------------------------------------------)
 . ./configure.user
 
 # force MS-ABI / x64 compatible target if requested by the user

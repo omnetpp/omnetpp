@@ -2023,36 +2023,32 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 # OMNeT++/OMNEST version number
 #
 OMNETPP_PRODUCT="OMNeT++"
-OMNETPP_RELEASE=`cat Version`
-OMNETPP_VERSION=`cat Version | sed 's/^.*-//'`
+OMNETPP_RELEASE=$(cat Version)
+OMNETPP_VERSION=$(cat Version | sed 's/^.*-//')
 OMNETPP_BUILDID="internal"
 
 #
 # Edition identifier in banner: Academic / Commercial / Evaluation
 OMNETPP_EDITION="Academic Public License -- NOT FOR COMMERCIAL USE"
 
-# IDE executable name
-if test "$OMNETPP_PRODUCT" = "OMNeT++"; then
-    OMNETPP_IDE_EXECUTABLE="omnetpp"
-else
-    OMNETPP_IDE_EXECUTABLE="omnest"
-fi
-
 # We'll collect in this variable the components we've detected problems with
 OPP_PROBLEM_PACKAGES=
 
-# determine OMNETPP_ROOT
-OMNETPP_ROOT=$(cd $(dirname "$0"); pwd)
+# check if 'setenv' was correctly sourced
+CURRENT_DIR=$(cd $(dirname "$0"); pwd)
+if test "$OMNETPP_ROOT" = "$CURRENT_DIR" -a -z "${PATH##*${CURRENT_DIR}/bin:*}" -a -z "${PYTHONPATH##*${CURRENT_DIR}/python:*}"; then  # this uses magic substring matching with parameter expansion
+  { $as_echo "$as_me:${as_lineno-$LINENO}: Environment variables (OMNETPP_ROOT, PATH and PYTHONPATH) are correctly set." >&5
+$as_echo "$as_me: Environment variables (OMNETPP_ROOT, PATH and PYTHONPATH) are correctly set." >&6;}
+else
+  as_fn_error $? "Before running 'configure', please use 'source setenv' to set up your environment." "$LINENO" 5
+fi
+CURRENT_DIR=
 
 #----------------------
 # Read user settings (and allow override the above settings)
 #----------------------
-{ $as_echo "$as_me:${as_lineno-$LINENO}: -----------------------------------------------" >&5
-$as_echo "$as_me: -----------------------------------------------" >&6;}
 { $as_echo "$as_me:${as_lineno-$LINENO}: reading configure.user for your custom settings" >&5
 $as_echo "$as_me: reading configure.user for your custom settings" >&6;}
-{ $as_echo "$as_me:${as_lineno-$LINENO}: -----------------------------------------------" >&5
-$as_echo "$as_me: -----------------------------------------------" >&6;}
 . ./configure.user
 
 # force MS-ABI / x64 compatible target if requested by the user
