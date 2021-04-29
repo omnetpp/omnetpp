@@ -156,11 +156,6 @@ class SIM_API cNullEnvir : public cEnvir
     virtual void unrefOsgNode(osg::Node *scene) override {}
     virtual bool idle() override  {return false;}
     virtual bool ensureDebugger(cRuntimeError *) override { return false; }
-
-    // lifecycle listeners
-    virtual void addLifecycleListener(cISimulationLifecycleListener *listener) override;
-    virtual void removeLifecycleListener(cISimulationLifecycleListener *listener) override;
-    virtual void notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details) override;
 };
 
 

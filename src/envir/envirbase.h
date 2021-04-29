@@ -289,10 +289,6 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     virtual bool idle() override;
 
     virtual bool ensureDebugger(cRuntimeError *error = nullptr) override;
-
-    virtual void addLifecycleListener(cISimulationLifecycleListener *listener) override;
-    virtual void removeLifecycleListener(cISimulationLifecycleListener *listener) override;
-    virtual void notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details=nullptr) override;
     //@}
 
   protected:

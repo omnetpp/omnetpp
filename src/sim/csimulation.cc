@@ -817,11 +817,6 @@ class StaticEnv : public cEnvir
     virtual double getAnimationTime() const override {return 0;}
     virtual double getAnimationSpeed() const override {return 0;}
     virtual double getRemainingAnimationHoldTime() const override {return 0;}
-
-    // lifecycle listeners
-    virtual void addLifecycleListener(cISimulationLifecycleListener *listener) override {}
-    virtual void removeLifecycleListener(cISimulationLifecycleListener *listener) override {}
-    virtual void notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details) override {}
 };
 
 void StaticEnv::undisposedObject(cObject *obj)

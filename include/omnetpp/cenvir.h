@@ -90,6 +90,9 @@ class SIM_API cEnvir
     // Debugging. When set, cRuntimeError constructor executes a debug trap/launches debugger
     bool debugOnErrors = false;
 
+    // Lifecycle listeners
+    std::vector<cISimulationLifecycleListener*> listeners;
+
   public:
     /** @name Constructor, destructor. */
     //@{
@@ -870,16 +873,23 @@ class SIM_API cEnvir
      * It has no effect if the listener is already subscribed.
      * NOTE: The listeners will NOT be deleted when the program exits.
      */
-    virtual void addLifecycleListener(cISimulationLifecycleListener *listener) = 0;
+    virtual void addLifecycleListener(cISimulationLifecycleListener *listener);
 
     /**
      * Removes the given listener. This method has no effect if the listener
      * is not currently subscribed.
      */
-    virtual void removeLifecycleListener(cISimulationLifecycleListener *listener) = 0;
+    virtual void removeLifecycleListener(cISimulationLifecycleListener *listener);
 
-    // internal. TODO it swallows exceptions, which is sometimes desirable, sometimes not!
-    virtual void notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details=nullptr) = 0;
+    /**
+     * Returns the list of installed lifecycle listeners.
+     */
+    virtual std::vector<cISimulationLifecycleListener*> getLifecycleListeners() const;
+
+    /**
+     * Notify lifecycle listeners
+     */
+    virtual void notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details=nullptr);
     //@}
 };
 

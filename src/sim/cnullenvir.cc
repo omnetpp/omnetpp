@@ -37,37 +37,3 @@ cNullEnvir::~cNullEnvir()
     delete rng;
 }
 
-void cNullEnvir::addLifecycleListener(cISimulationLifecycleListener *listener)
-{
-    std::vector<cISimulationLifecycleListener *>::iterator it = std::find(listeners.begin(), listeners.end(), listener);
-    if (it == listeners.end()) {
-        listeners.push_back(listener);
-        listener->listenerAdded();
-    }
-}
-
-void cNullEnvir::removeLifecycleListener(cISimulationLifecycleListener *listener)
-{
-    std::vector<cISimulationLifecycleListener *>::iterator it = std::find(listeners.begin(), listeners.end(), listener);
-    if (it != listeners.end()) {
-        listeners.erase(it);
-        listener->listenerRemoved();
-    }
-}
-
-void cNullEnvir::notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details)
-{
-    // make a copy of the listener list, to avoid problems from listeners
-    // getting added/removed during notification
-    std::vector<cISimulationLifecycleListener *> copy = listeners;
-    for (auto & listener : copy) {
-        try {
-            listener->lifecycleEvent(eventType, details);
-        }
-        catch (std::exception& e) {  //XXX perhaps we shouldn't hide the exception!!!! just re-throw? then all notifyLifecycleListeners() calls MUST be surrounded with try-catch!!!!
-            const char *eventName = cISimulationLifecycleListener::getSimulationLifecycleEventName(eventType);
-            printfmsg("Error: Exception during notifying lifecycle listeners about %s event: %s", eventName, e.what());
-        }
-    }
-}
-
