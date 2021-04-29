@@ -273,7 +273,6 @@ void SectionBasedConfiguration::activateGlobalConfig()
             addEntry(Entry(basedirRef, e.getKey(), value.c_str()));
         }
     }
-
 }
 
 void SectionBasedConfiguration::activateConfig(const char *configName, int runNumber)
@@ -308,21 +307,32 @@ void SectionBasedConfiguration::activateConfig(const char *configName, int runNu
         throw cRuntimeError("Scenario generator: %s", e.what());
     }
 
+    auto addWildcardIfNeeded = [](const char *key) {
+        if (strchr(key, '.') == nullptr) {
+            cConfigOption *e = lookupConfigOption(key);
+            if (e && e->isPerObject())
+                return std::string("**.") + key; // if it's per-object option but specified without an object path, pretend it was specified with "**."
+        }
+        return std::string(key);
+    };
+
     // walk the list of fallback sections, and add entries to our tables
     // (config[] and suffixBins[]). Meanwhile, substitute the iteration values.
     // Note: entries added first will have precedence over those added later.
     for (auto & e : commandLineOptions) {
+        std::string key = addWildcardIfNeeded(e.getKey());
         std::string value = substituteVariables(e.getValue());
         const std::string *basedirRef = getPooledBaseDir(e.getBaseDirectory());
-        addEntry(Entry(basedirRef, e.getKey(), value.c_str()));
+        addEntry(Entry(basedirRef, key.c_str(), value.c_str()));
     }
     for (int sectionId : sectionChain) {
         for (int entryId = 0; entryId < ini->getNumEntries(sectionId); entryId++) {
             // add entry to our tables
             const auto& e = ini->getEntry(sectionId, entryId);
+            std::string key = addWildcardIfNeeded(e.getKey());
             std::string value = substituteVariables(e.getValue(), sectionId, entryId, variables, locationToVarName);
             const std::string *basedirRef = getPooledBaseDir(e.getBaseDirectory());
-            addEntry(Entry(basedirRef, e.getKey(), value.c_str()));
+            addEntry(Entry(basedirRef, key.c_str(), value.c_str()));
         }
     }
 }
@@ -1061,8 +1071,6 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
                 throw cRuntimeError("Unknown command-line configuration option --%s", key);
             if (containsDot && !e->isPerObject())
                 throw cRuntimeError("Invalid command-line configuration option --%s: %s is not a per-object option", key, e->getName());
-            if (!containsDot && e->isPerObject())
-                const_cast<Entry&>(entry).key = "**." + entry.key;  // TODO this is quite ugly -- we should rather allow per-object options without object-path part to mean the same thing with "**." prefix
         }
     }
 
@@ -1104,7 +1112,7 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
                 if (!e)
                     throw cRuntimeError("Unknown configuration option: %s", key);
                 if (e->isPerObject())
-                    throw cRuntimeError("Configuration option %s should be specified per object, try **.%s=", key, key);
+                    throw cRuntimeError("Configuration option %s should be specified per object, try **.%s=", key, key); //TODO this could now be allowed (it works)
                 if (e->isGlobal() && strcmp(section, "General") != 0)
                     throw cRuntimeError("Configuration option %s may only occur in the [General] section", key);
 

@@ -59,7 +59,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
         std::string key;
         std::string value;
         Entry() {basedirRef = &nullBasedir;}
-        Entry(const std::string *bd, const char *k, const char *v) {basedirRef = bd; key = k; value = v;}
+        Entry(const std::string *bd, const char *k, const char *v) : basedirRef(bd), key(k), value(v) {}
 
         // virtual functions implementing the KeyValue interface
         virtual const char *getKey() const override   {return key.c_str();}
