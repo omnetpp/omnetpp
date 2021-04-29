@@ -284,8 +284,12 @@ public class InifileDocument implements IInifileDocument {
                     line.sectionName = sectionName;
                     line.lastLine = line.lineNumber + line.numLines - 1;
                     section.headingLines.add(line);
-                    if (currentFile == documentFile)
+                    if (currentFile == documentFile) {
+                        var duplicate = mainFileSectionHeadingLines.stream().filter(li -> li.sectionName.equals(sectionName)).findFirst().orElse(null);
+                        if (duplicate != null)
+                            markers.addError(currentFile, lineNumber, "Duplicate section " +  sectionName);
                         mainFileSectionHeadingLines.add(line);
+                    }
                     currentSection = section;
                     currentSectionHeading = line;
                 }
