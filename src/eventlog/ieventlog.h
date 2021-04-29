@@ -164,33 +164,33 @@ class EVENTLOG_API IEventLog
         virtual EventLogEntry *findEventLogEntry(EventLogEntry *start, const char *search, bool forward, bool caseSensitive) = 0;
 
         /**
-         * Returns the first index or NULL.
+         * Returns the first index or nullptr.
          */
         virtual Index *getFirstIndex() = 0;
 
         /**
-         * Returns the last index or NULL.
+         * Returns the last index or nullptr.
          */
         virtual Index *getLastIndex() = 0;
 
         /**
-         * Returns the index with the provided event or NULL if none found.
+         * Returns the index with the provided event or nullptr if none found.
          * Returns the index that doesn't have the provided event number when searching for the next or the previous.
          */
         virtual Index *getIndex(eventnumber_t eventNumber, MatchKind matchKind = EXACT) = 0;
 
         /**
-         * Returns the first snapshot or NULL.
+         * Returns the first snapshot or nullptr.
          */
         virtual Snapshot *getFirstSnapshot() = 0;
 
         /**
-         * Returns the last snapshot or NULL.
+         * Returns the last snapshot or nullptr.
          */
         virtual Snapshot *getLastSnapshot() = 0;
 
         /**
-         * Returns the snapshot with the provided event number or NULL if none found.
+         * Returns the snapshot with the provided event number or nullptr if none found.
          * Returns the snapshot that doesn't have the provided event number when searching for the next or the previous.
          */
         virtual Snapshot *getSnapshot(eventnumber_t eventNumber, MatchKind matchKind = EXACT) = 0;

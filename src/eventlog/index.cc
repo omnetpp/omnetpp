@@ -28,15 +28,15 @@ Index::Index(EventLog *eventLog, file_offset_t beginOffset, Snapshot *previousSn
     this->eventLog = eventLog;
     this->beginOffset = beginOffset;
     this->previousSnapshot = previousSnapshot;
-    event = NULL;
-    indexEntry = NULL;
-    nextSnapshot = NULL;
-    previousIndex = NULL;
-    nextIndex = NULL;
-    referenceFoundEntries = NULL;
-    addedEventLogEntries = NULL;
-    removedEventLogEntries = NULL;
-    foundEventLogEntries = NULL;
+    event = nullptr;
+    indexEntry = nullptr;
+    nextSnapshot = nullptr;
+    previousIndex = nullptr;
+    nextIndex = nullptr;
+    referenceFoundEntries = nullptr;
+    addedEventLogEntries = nullptr;
+    removedEventLogEntries = nullptr;
+    foundEventLogEntries = nullptr;
 }
 
 Index::~Index()
@@ -71,7 +71,7 @@ file_offset_t Index::parse(FileReader *reader)
             endOffset = reader->getFileSize();
             break;
         }
-        EventLogEntry *eventLogEntry = EventLogEntry::parseEntry(eventLog, NULL, index, reader->getCurrentLineStartOffset(), line, reader->getCurrentLineLength());
+        EventLogEntry *eventLogEntry = EventLogEntry::parseEntry(eventLog, nullptr, index, reader->getCurrentLineStartOffset(), line, reader->getCurrentLineLength());
         // stop at first empty line
         if (!eventLogEntry) {
             endOffset = reader->getCurrentLineEndOffset();
@@ -135,7 +135,7 @@ std::vector<EventLogEntry *> *Index::resolveReferenceEntries(std::vector<Referen
 
 Event *Index::getEvent()
 {
-    if (event == NULL)
+    if (event == nullptr)
         event = eventLog->getEventForEventNumber(getIndexEntry()->eventNumber);
     return event;
 }
@@ -159,7 +159,7 @@ std::vector<ReferenceEntry *> *Index::getReferenceFoundEntries()
     if (!referenceFoundEntries) {
         ensureParsed();
         referenceFoundEntries = new std::vector<ReferenceEntry *>();
-        std::vector<ReferenceEntry *> *previousReferenceFoundEntries = NULL;
+        std::vector<ReferenceEntry *> *previousReferenceFoundEntries = nullptr;
         if (previousSnapshot && (!previousIndex || previousIndex->getEventNumber() <= previousSnapshot->getEventNumber()))
             previousReferenceFoundEntries = previousSnapshot->getReferenceFoundEntries();
         else if (previousIndex)
@@ -235,7 +235,7 @@ EventLogEntryCache *Index::getFoundEventLogEntries()
     if (!foundEventLogEntries) {
         ensureParsed();
         foundEventLogEntries = new EventLogEntryCache();
-        std::vector<EventLogEntry *> *previousFoundEventLogEntries = NULL;
+        std::vector<EventLogEntry *> *previousFoundEventLogEntries = nullptr;
         if (previousSnapshot && (!previousIndex || previousIndex->getEventNumber() <= previousSnapshot->getEventNumber()))
             previousFoundEventLogEntries = previousSnapshot->getFoundEventLogEntries();
         else if (previousIndex)
@@ -263,8 +263,8 @@ void Index::linkIndices(Index *previousIndex, Index *nextIndex)
 
 void Index::unlinkIndices(Index *previousIndex, Index *nextIndex)
 {
-    previousIndex->nextIndex = NULL;
-    nextIndex->previousIndex = NULL;
+    previousIndex->nextIndex = nullptr;
+    nextIndex->previousIndex = nullptr;
 }
 
 void Index::unlinkNeighbourIndices(Index *index)

@@ -56,7 +56,7 @@ void IEventLog::print(FILE *file, eventnumber_t fromEventNumber, eventnumber_t t
         fprintf(file, "\n");
     }
     IEvent *event = fromEventNumber == -1 ? getFirstEvent() : getFirstEventNotBeforeEventNumber(fromEventNumber);
-    while (event != NULL && (toEventNumber == -1 || event->getEventNumber() <= toEventNumber))
+    while (event != nullptr && (toEventNumber == -1 || event->getEventNumber() <= toEventNumber))
     {
         event->print(file, outputEventLogMessages);
         if (event) {

@@ -211,7 +211,7 @@ SimulationBeginEntry *EventLog::getSimulationBeginEntry()
         reader->seekTo(0);
         char *line = reader->getNextLineBufferPointer();
         if (line) {
-            EventLogEntry *eventLogEntry = (EventLogEntry *)EventLogEntry::parseEntry(this, NULL, 0, reader->getCurrentLineStartOffset(), line, reader->getCurrentLineLength());
+            EventLogEntry *eventLogEntry = (EventLogEntry *)EventLogEntry::parseEntry(this, nullptr, 0, reader->getCurrentLineStartOffset(), line, reader->getCurrentLineLength());
             SimulationBeginEntry *simulationBeginEntry = dynamic_cast<SimulationBeginEntry *>(eventLogEntry);
             if (simulationBeginEntry)
                 this->simulationBeginEntry = simulationBeginEntry;
@@ -226,7 +226,7 @@ SimulationEndEntry *EventLog::getSimulationEndEntry()
         reader->seekTo(reader->getFileSize());
         char *line = reader->getPreviousLineBufferPointer();
         if (line) {
-            EventLogEntry *eventLogEntry = (EventLogEntry *)EventLogEntry::parseEntry(this, NULL, 0, reader->getCurrentLineStartOffset(), line, reader->getCurrentLineLength());
+            EventLogEntry *eventLogEntry = (EventLogEntry *)EventLogEntry::parseEntry(this, nullptr, 0, reader->getCurrentLineStartOffset(), line, reader->getCurrentLineLength());
             SimulationEndEntry *simulationEndEntry = dynamic_cast<SimulationEndEntry *>(eventLogEntry);
             if (simulationEndEntry)
                 this->simulationEndEntry = simulationEndEntry;
@@ -245,7 +245,7 @@ void EventLog::parseIndex()
     char *line = reader->getPreviousLineBufferPointer();
     std::vector<Index *> indices;
     while (line) {
-        EventLogEntry *eventLogEntry = (EventLogEntry *)EventLogEntry::parseEntry(this, NULL, 0, reader->getCurrentLineStartOffset(), line, reader->getCurrentLineLength());
+        EventLogEntry *eventLogEntry = (EventLogEntry *)EventLogEntry::parseEntry(this, nullptr, 0, reader->getCurrentLineStartOffset(), line, reader->getCurrentLineLength());
         IndexEntry *indexEntry = dynamic_cast<IndexEntry *>(eventLogEntry);
         if (indexEntry) {
             // check if we already have this index
@@ -256,14 +256,14 @@ void EventLog::parseIndex()
                 break;
             }
             // jump to previous snapshot entry
-            Snapshot *snapshot = NULL;
+            Snapshot *snapshot = nullptr;
             std::map<file_offset_t, Snapshot *>::iterator jt = snapshotFileOffsetsToSnapshotMap.find(indexEntry->previousSnapshotFileOffset);
             if (indexEntry->previousSnapshotFileOffset != -1 && jt == snapshotFileOffsetsToSnapshotMap.end()) {
                 file_offset_t realFileOffset = indexEntry->getOffset() - indexEntry->fileOffset + indexEntry->previousSnapshotFileOffset;
                 if (realFileOffset >= 0) {
                     reader->seekTo(indexEntry->getOffset() - indexEntry->fileOffset + indexEntry->previousSnapshotFileOffset);
                     line = reader->getNextLineBufferPointer();
-                    EventLogEntry *eventLogEntry = (EventLogEntry *)EventLogEntry::parseEntry(this, NULL, 0, reader->getCurrentLineStartOffset(), line, reader->getCurrentLineLength());
+                    EventLogEntry *eventLogEntry = (EventLogEntry *)EventLogEntry::parseEntry(this, nullptr, 0, reader->getCurrentLineStartOffset(), line, reader->getCurrentLineLength());
                     SnapshotEntry *snapshotEntry = dynamic_cast<SnapshotEntry *>(eventLogEntry);
                     Assert(snapshotEntry);
                     EventNumberToSnapshotMap::iterator kt = eventNumberToSnapshotMap.find(snapshotEntry->eventNumber);
@@ -290,7 +290,7 @@ void EventLog::parseIndex()
                 line = reader->getNextLineBufferPointer();
             }
             else
-                line = NULL;
+                line = nullptr;
         }
         else
             line = reader->getPreviousLineBufferPointer();
@@ -422,11 +422,11 @@ EventLogEntry *EventLog::findEventLogEntry(EventLogEntry *start, const char *sea
         char *line;
         file_offset_t eventBeginOffset = -1;
         file_offset_t matchOffset = -1;
-        Event *matchEvent = NULL;
+        Event *matchEvent = nullptr;
         reader->seekTo(start->getOffset());
         if (forward) {
             reader->getNextLineBufferPointer();
-            while ((line = reader->getNextLineBufferPointer()) != NULL) {
+            while ((line = reader->getNextLineBufferPointer()) != nullptr) {
                 if (line[0] == 'E' && line[1] == ' ')
                     eventBeginOffset = reader->getCurrentLineStartOffset();
                 if (opp_strnistr(line, search, reader->getCurrentLineLength(), caseSensitive)) {
@@ -442,7 +442,7 @@ EventLogEntry *EventLog::findEventLogEntry(EventLogEntry *start, const char *sea
             }
         }
         else {
-            while ((line = reader->getPreviousLineBufferPointer()) != NULL) {
+            while ((line = reader->getPreviousLineBufferPointer()) != nullptr) {
                 if (opp_strnistr(line, search, reader->getCurrentLineLength(), caseSensitive)) {
                     file_offset_t currentLineStartOffset = reader->getCurrentLineStartOffset();
                     Event *event = eventBeginOffset == -1 ? (start->getEntryIndex() == 0 ? start->getEvent()->getPreviousEvent() : start->getEvent()) : getEventForBeginOffset(eventBeginOffset)->getPreviousEvent();
@@ -464,7 +464,7 @@ EventLogEntry *EventLog::findEventLogEntry(EventLogEntry *start, const char *sea
                     return eventLogEntry;
             }
         }
-        return NULL;
+        return nullptr;
     }
 }
 
@@ -531,7 +531,7 @@ Index *EventLog::getIndex(eventnumber_t eventNumber, MatchKind matchKind)
             throw opp_runtime_error("Unknown match kind");
     }
     if (it == eventNumberToIndexMap.end())
-        return NULL;
+        return nullptr;
     else
         return it->second;
 }
@@ -561,7 +561,7 @@ Snapshot *EventLog::getSnapshot(eventnumber_t eventNumber, MatchKind matchKind)
             throw opp_runtime_error("Unknown match kind");
     }
     if (it == eventNumberToSnapshotMap.end())
-        return NULL;
+        return nullptr;
     else
         return it->second;
 }

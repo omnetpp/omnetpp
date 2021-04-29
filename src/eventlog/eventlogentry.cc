@@ -83,7 +83,7 @@ EventLogEntry *EventLogEntry::getPreviousEventLogEntry()
     Event *event = getEvent();
     if (entryIndex == 0) {
         IEvent *previousEvent = event->getPreviousEvent();
-        return previousEvent ? previousEvent->getEventLogEntry(previousEvent->getNumEventLogEntries() - 1) : NULL;
+        return previousEvent ? previousEvent->getEventLogEntry(previousEvent->getNumEventLogEntries() - 1) : nullptr;
     }
     else
         return event->getEventLogEntry(entryIndex - 1);
@@ -94,7 +94,7 @@ EventLogEntry *EventLogEntry::getNextEventLogEntry()
     Event *event = getEvent();
     if (entryIndex == event->getNumEventLogEntries() - 1) {
         IEvent *nextEvent = event->getNextEvent();
-        return nextEvent ? nextEvent->getEventLogEntry(0) : NULL;
+        return nextEvent ? nextEvent->getEventLogEntry(0) : nullptr;
     }
     else
         return event->getEventLogEntry(entryIndex + 1);

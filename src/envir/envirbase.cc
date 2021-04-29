@@ -1508,7 +1508,7 @@ int EnvirBase::parseSimtimeResolution(const char *resolution)
 
 void EnvirBase::setEventlogRecording(bool enabled)
 {
-    // NOTE: eventlogManager must be non-NULL when recordEventlog is true
+    // NOTE: eventlogManager must be non-nullptr when recordEventlog is true
     if (recordEventlog != enabled) {
         if (enabled)
             eventlogManager->resume();
@@ -1816,7 +1816,7 @@ DebuggerPresence EnvirBase::detectDebugger()
     // Call sysctl.
 
     size = sizeof(info);
-    junk = sysctl(mib, sizeof(mib) / sizeof(*mib), &info, &size, NULL, 0);
+    junk = sysctl(mib, sizeof(mib) / sizeof(*mib), &info, &size, nullptr, 0);
     if (junk != 0)
         return DebuggerPresence::CANT_DETECT;
 
@@ -1936,7 +1936,7 @@ char **EnvirBase::getArgVector() const
 
 void EnvirBase::addLifecycleListener(cISimulationLifecycleListener *listener)
 {
-    std::vector<cISimulationLifecycleListener *>::iterator it = std::find(listeners.begin(), listeners.end(), listener);
+    auto it = std::find(listeners.begin(), listeners.end(), listener);
     if (it == listeners.end()) {
         listeners.push_back(listener);
         listener->listenerAdded();
@@ -1945,7 +1945,7 @@ void EnvirBase::addLifecycleListener(cISimulationLifecycleListener *listener)
 
 void EnvirBase::removeLifecycleListener(cISimulationLifecycleListener *listener)
 {
-    std::vector<cISimulationLifecycleListener *>::iterator it = std::find(listeners.begin(), listeners.end(), listener);
+    auto it = std::find(listeners.begin(), listeners.end(), listener);
     if (it != listeners.end()) {
         listeners.erase(it);
         listener->listenerRemoved();
@@ -1955,8 +1955,8 @@ void EnvirBase::removeLifecycleListener(cISimulationLifecycleListener *listener)
 void EnvirBase::notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details)
 {
     // make a copy of the listener list, to avoid problems from listeners getting added/removed during notification
-    std::vector<cISimulationLifecycleListener *> copy = listeners;
-    for (auto & listener : copy)
+    auto copy = listeners;
+    for (auto& listener : copy)
         listener->lifecycleEvent(eventType, details);  // let exceptions through, because errors must cause exitCode!=0
 }
 

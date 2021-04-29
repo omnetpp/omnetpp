@@ -128,7 +128,7 @@ class EVENTLOG_API Event : public IEvent
         /**
          * Searches for the first eventlog entry that is reusing the provided message id.
          * The search starts from the immediately following event and ends at the end of
-         * the eventlog. Returns NULL if no such eventlog entry is found.
+         * the eventlog. Returns nullptr if no such eventlog entry is found.
          */
         MessageDescriptionEntry *findReuseMessageDescriptionEntry(int messageId);
         MessageDescriptionEntry *findLocalReuseMessageDescriptionEntry(eventnumber_t previousEventNumber, int messageId);

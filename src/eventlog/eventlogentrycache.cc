@@ -24,25 +24,25 @@ namespace eventlog {
 EventLogEntryCache::EventLogEntryCache()
 {
     // module
-    this->moduleIdToModuleDescriptionEntryMap = NULL;
-    this->moduleIdToModuleCreatedEntryMap = NULL;
-    this->moduleIdToModuleDeletedEntryMap = NULL;
-    this->moduleIdToModuleDisplayStringChangedVectorMap = NULL;
+    this->moduleIdToModuleDescriptionEntryMap = nullptr;
+    this->moduleIdToModuleCreatedEntryMap = nullptr;
+    this->moduleIdToModuleDeletedEntryMap = nullptr;
+    this->moduleIdToModuleDisplayStringChangedVectorMap = nullptr;
     // connection
-    this->moduleIdAndGateIdToConnectionDescriptionEntryMap = NULL;
-    this->moduleIdAndGateIdToConnectionCreatedEntryMap = NULL;
-    this->moduleIdAndGateIdToConnectionDeletedEntryMap = NULL;
-    this->moduleIdAndGateIdToConnectionDisplayStringChangedVectorMap = NULL;
+    this->moduleIdAndGateIdToConnectionDescriptionEntryMap = nullptr;
+    this->moduleIdAndGateIdToConnectionCreatedEntryMap = nullptr;
+    this->moduleIdAndGateIdToConnectionDeletedEntryMap = nullptr;
+    this->moduleIdAndGateIdToConnectionDisplayStringChangedVectorMap = nullptr;
     // gate
-    this->moduleIdAndGateIdToGateDescriptionEntryMap = NULL;
-    this->moduleIdAndGateIdToGateCreatedEntryMap = NULL;
-    this->moduleIdAndGateIdToGateDeletedEntryMap = NULL;
-    this->moduleIdAndGateIdToGateDisplayStringChangedVectorMap = NULL;
+    this->moduleIdAndGateIdToGateDescriptionEntryMap = nullptr;
+    this->moduleIdAndGateIdToGateCreatedEntryMap = nullptr;
+    this->moduleIdAndGateIdToGateDeletedEntryMap = nullptr;
+    this->moduleIdAndGateIdToGateDisplayStringChangedVectorMap = nullptr;
     // custom
-    this->typeAndKeyToCustomDescriptionEntryMap = NULL;
-    this->typeAndKeyToCustomCreatedEntryMap = NULL;
-    this->typeAndKeyToCustomDeletedEntryMap = NULL;
-    this->typeAndKeyToCustomChangedVectorMap = NULL;
+    this->typeAndKeyToCustomDescriptionEntryMap = nullptr;
+    this->typeAndKeyToCustomCreatedEntryMap = nullptr;
+    this->typeAndKeyToCustomDeletedEntryMap = nullptr;
+    this->typeAndKeyToCustomChangedVectorMap = nullptr;
 
 }
 
@@ -257,7 +257,7 @@ ModuleDescriptionEntry *EventLogEntryCache::getModuleDescriptionEntry(int module
                 return moduleDescriptionEntry;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 std::vector<ModuleDescriptionEntry *> EventLogEntryCache::getModuleDescriptionEntries()
@@ -285,7 +285,7 @@ ModuleCreatedEntry *EventLogEntryCache::getModuleCreatedEntry(int moduleId)
                 return moduleCreatedEntry;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 ModuleDeletedEntry *EventLogEntryCache::getModuleDeletedEntry(int moduleId)
@@ -303,7 +303,7 @@ ModuleDeletedEntry *EventLogEntryCache::getModuleDeletedEntry(int moduleId)
                 return moduleDeletedEntry;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 ModuleDisplayStringChangedEntry *EventLogEntryCache::getModuleDisplayStringChangedEntry(int moduleId, int entryIndex)
@@ -327,7 +327,7 @@ ModuleDisplayStringChangedEntry *EventLogEntryCache::getModuleDisplayStringChang
                 return moduleDisplayStringChangedEntry;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 ConnectionDescriptionEntry *EventLogEntryCache::getConnectionDescriptionEntry(int sourceModuleId, int sourceGateId)
@@ -345,7 +345,7 @@ ConnectionDescriptionEntry *EventLogEntryCache::getConnectionDescriptionEntry(in
                 return connectionDescriptionEntry;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 ConnectionCreatedEntry *EventLogEntryCache::getConnectionCreatedEntry(int sourceModuleId, int sourceGateId)
@@ -363,7 +363,7 @@ ConnectionCreatedEntry *EventLogEntryCache::getConnectionCreatedEntry(int source
                 return connectionCreatedEntry;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 ConnectionDeletedEntry *EventLogEntryCache::getConnectionDeletedEntry(int sourceModuleId, int sourceGateId)
@@ -381,7 +381,7 @@ ConnectionDeletedEntry *EventLogEntryCache::getConnectionDeletedEntry(int source
                 return connectionDeletedEntry;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 ConnectionDisplayStringChangedEntry *EventLogEntryCache::getConnectionDisplayStringChangedEntry(int sourceModuleId, int sourceGateId, int entryIndex)
@@ -405,7 +405,7 @@ ConnectionDisplayStringChangedEntry *EventLogEntryCache::getConnectionDisplayStr
                 return connectionDisplayStringChangedEntry;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 GateDescriptionEntry *EventLogEntryCache::getGateDescriptionEntry(int moduleId, int gateId)
@@ -423,7 +423,7 @@ GateDescriptionEntry *EventLogEntryCache::getGateDescriptionEntry(int moduleId, 
                 return gateDescriptionEntry;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 GateCreatedEntry *EventLogEntryCache::getGateCreatedEntry(int moduleId, int gateId)
@@ -441,7 +441,7 @@ GateCreatedEntry *EventLogEntryCache::getGateCreatedEntry(int moduleId, int gate
                 return gateCreatedEntry;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 GateDeletedEntry *EventLogEntryCache::getGateDeletedEntry(int moduleId, int gateId)
@@ -459,7 +459,7 @@ GateDeletedEntry *EventLogEntryCache::getGateDeletedEntry(int moduleId, int gate
                 return gateDeletedEntry;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 GateDisplayStringChangedEntry *EventLogEntryCache::getGateDisplayStringChangedEntry(int moduleId, int gateId, int entryIndex)
@@ -483,7 +483,7 @@ GateDisplayStringChangedEntry *EventLogEntryCache::getGateDisplayStringChangedEn
                 return gateDisplayStringChangedEntry;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 CustomDescriptionEntry *EventLogEntryCache::getCustomDescriptionEntry(std::string type, long key)
@@ -501,7 +501,7 @@ CustomDescriptionEntry *EventLogEntryCache::getCustomDescriptionEntry(std::strin
                 return customDescriptionEntry;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 CustomCreatedEntry *EventLogEntryCache::getCustomCreatedEntry(std::string type, long key)
@@ -519,7 +519,7 @@ CustomCreatedEntry *EventLogEntryCache::getCustomCreatedEntry(std::string type, 
                 return customCreatedEntry;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 CustomDeletedEntry *EventLogEntryCache::getCustomDeletedEntry(std::string type, long key)
@@ -537,7 +537,7 @@ CustomDeletedEntry *EventLogEntryCache::getCustomDeletedEntry(std::string type, 
                 return customDeletedEntry;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 CustomChangedEntry *EventLogEntryCache::getCustomChangedEntry(std::string type, long key, int entryIndex)
@@ -561,7 +561,7 @@ CustomChangedEntry *EventLogEntryCache::getCustomChangedEntry(std::string type, 
                 return customChangedEntry;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 } // namespace eventlog

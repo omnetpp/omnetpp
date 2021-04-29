@@ -214,7 +214,7 @@ int setupUserInterface(int argc, char *argv[])
         std::string ignorableKeys;
         if (omnetapps.getInstance()->lookup("Cmdenv") == nullptr)
             ignorableKeys += " cmdenv-*";
-        if (omnetapps.getInstance()->lookup("Qtenv")==NULL)
+        if (omnetapps.getInstance()->lookup("Qtenv") == nullptr)
             ignorableKeys += " qtenv-*";
 #ifndef WITH_PARSIM
         ignorableKeys += " parsim-*";

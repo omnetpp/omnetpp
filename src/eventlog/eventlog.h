@@ -121,12 +121,12 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
 
         virtual EventLogEntry *findEventLogEntry(EventLogEntry *start, const char *search, bool forward, bool caseSensitive) override;
 
-        virtual Index *getFirstIndex() override { return eventNumberToIndexMap.empty() ? NULL : eventNumberToIndexMap.begin()->second; }
-        virtual Index *getLastIndex() override { return eventNumberToIndexMap.empty() ? NULL : eventNumberToIndexMap.rbegin()->second; }
+        virtual Index *getFirstIndex() override { return eventNumberToIndexMap.empty() ? nullptr : eventNumberToIndexMap.begin()->second; }
+        virtual Index *getLastIndex() override { return eventNumberToIndexMap.empty() ? nullptr : eventNumberToIndexMap.rbegin()->second; }
         virtual Index *getIndex(eventnumber_t eventNumber, MatchKind matchKind = EXACT) override;
 
-        virtual Snapshot *getFirstSnapshot() override { return eventNumberToSnapshotMap.empty() ? NULL : eventNumberToSnapshotMap.begin()->second; }
-        virtual Snapshot *getLastSnapshot() override { return eventNumberToSnapshotMap.empty() ? NULL : eventNumberToSnapshotMap.rbegin()->second; }
+        virtual Snapshot *getFirstSnapshot() override { return eventNumberToSnapshotMap.empty() ? nullptr : eventNumberToSnapshotMap.begin()->second; }
+        virtual Snapshot *getLastSnapshot() override { return eventNumberToSnapshotMap.empty() ? nullptr : eventNumberToSnapshotMap.rbegin()->second; }
         virtual Snapshot *getSnapshot(eventnumber_t eventNumber, MatchKind matchKind = EXACT) override;
 
         virtual eventnumber_t getApproximateNumberOfEvents() override;

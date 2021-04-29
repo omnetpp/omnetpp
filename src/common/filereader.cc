@@ -55,8 +55,8 @@ FileReader::FileReader(const char *fileName, size_t bufferSize)
 #ifdef TRACE_FILEREADER
     TRACE_CALL("FileReader::FileReader(%s, %d)", fileName, bufferSize);
 #endif
-    file = NULL;
-    fileLock = NULL;
+    file = nullptr;
+    fileLock = nullptr;
     lastFileSize = -1;
     lastSavedSize = -1;
     bufferFileOffset = -1;
@@ -66,9 +66,9 @@ FileReader::FileReader(const char *fileName, size_t bufferSize)
     fileOverwrittenAction = SIGNAL;
     numReadLines = 0;
     numReadBytes = 0;
-    dataBegin = NULL;
-    dataEnd = NULL;
-    currentDataPointer = NULL;
+    dataBegin = nullptr;
+    dataEnd = nullptr;
+    currentDataPointer = nullptr;
     currentLineStartOffset = -1;
     currentLineEndOffset = -1;
 }
@@ -127,7 +127,7 @@ void FileReader::ensureFileClosed()
     }
     if (fileLock) {
         delete fileLock;
-        fileLock = NULL;
+        fileLock = nullptr;
     }
 }
 
@@ -219,8 +219,8 @@ void FileReader::synchronize(FileChange change)
     FileLockAcquirer fileLockAcquirer(fileLock, FILE_LOCK_SHARED, enableFileLocking);
     getFileInformation(lastFileSize, lastModificationTime);
     lastSavedSize = readFileEnd(lastFileSize, savedBufferSize, lastSavedBufferBegin);
-    dataBegin = NULL;
-    dataEnd = NULL;
+    dataBegin = nullptr;
+    dataEnd = nullptr;
 }
 
 void FileReader::setCurrentDataPointer(char *dataPointer)
@@ -400,7 +400,7 @@ char *FileReader::findNextLineStart(char *start, bool bufferFilled)
             s = findNextLineStart(fileOffsetToPointer(fileOffset), true);
         }
         else if (getDataEndFileOffset() == getFileSize()) // searching reached to the end of the file without CR/LF
-            return NULL;
+            return nullptr;
         else // line too long
             throw opp_runtime_error("Line too long, should be below %ld in file '%s'", maxLineSize, fileName.c_str());
     }

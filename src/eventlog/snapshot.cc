@@ -24,13 +24,13 @@ Snapshot::Snapshot(EventLog *eventLog, file_offset_t beginOffset)
     Assert(beginOffset >= 0);
     this->eventLog = eventLog;
     this->beginOffset = beginOffset;
-    event = NULL;
-    snapshotEntry = NULL;
-    previousSnapshot = NULL;
-    nextSnapshot = NULL;
-    previousIndex = NULL;
-    nextIndex = NULL;
-    foundEventLogEntries = NULL;
+    event = nullptr;
+    snapshotEntry = nullptr;
+    previousSnapshot = nullptr;
+    nextSnapshot = nullptr;
+    previousIndex = nullptr;
+    nextIndex = nullptr;
+    foundEventLogEntries = nullptr;
 }
 
 Snapshot::~Snapshot()
@@ -50,7 +50,7 @@ file_offset_t Snapshot::parse(FileReader *reader)
             endOffset = reader->getFileSize();
             break;
         }
-        EventLogEntry *eventLogEntry = EventLogEntry::parseEntry(eventLog, NULL, index, reader->getCurrentLineStartOffset(), line, reader->getCurrentLineLength());
+        EventLogEntry *eventLogEntry = EventLogEntry::parseEntry(eventLog, nullptr, index, reader->getCurrentLineStartOffset(), line, reader->getCurrentLineLength());
         // stop at first empty line
         if (!eventLogEntry) {
             endOffset = reader->getCurrentLineEndOffset();
@@ -92,7 +92,7 @@ void Snapshot::ensureParsed()
 
 Event *Snapshot::getEvent()
 {
-    if (event == NULL)
+    if (event == nullptr)
         event = eventLog->getEventForEventNumber(getSnapshotEntry()->eventNumber);
     return event;
 }

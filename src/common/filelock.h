@@ -39,8 +39,8 @@ enum FileLockType
 class COMMON_API FileLock
 {
     private:
-        FILE *file; // cannot be NULL
-        const char *fileName; // may be NULL
+        FILE *file; // cannot be nullptr
+        const char *fileName; // may be nullptr
         int counter; // 0 means unlocked
 #ifdef _WIN32
         HANDLE handle; // os specific handle

@@ -44,11 +44,11 @@ void Event::clearInternalState()
     numEventLogMessages = -1;
     numBeginSendEntries = -1;
     numCustomEntries = -1;
-    eventEntry = NULL;
-    moduleDescriptionEntry = NULL;
-    cause = NULL;
-    causes = NULL;
-    consequences = NULL;
+    eventEntry = nullptr;
+    moduleDescriptionEntry = nullptr;
+    cause = nullptr;
+    causes = nullptr;
+    consequences = nullptr;
     eventLogEntries.clear();
 }
 
@@ -62,8 +62,8 @@ void Event::deleteCauses()
         for (auto & cause : *causes)
             delete cause;
         delete causes;
-        causes = NULL;
-        cause = NULL;
+        causes = nullptr;
+        cause = nullptr;
     }
 }
 
@@ -73,7 +73,7 @@ void Event::deleteConsequences()
         for (IMessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++)
             delete *it;
         delete consequences;
-        consequences = NULL;
+        consequences = nullptr;
     }
 }
 
@@ -285,7 +285,7 @@ ComponentMethodEndEntry *Event::getComponentMethodEndEntry(ComponentMethodBeginE
         }
     }
     // premature end of file
-    return NULL;
+    return nullptr;
 }
 
 simtime_t Event::getTransmissionDelay(BeginSendEntry *beginSendEntry)
@@ -468,13 +468,13 @@ MessageDescriptionEntry *Event::findReuseMessageDescriptionEntry(int messageId)
 {
     // TODO: optimization: cache first message description entries between this event and the first index
     // 1. linear search among the events starting from the immediately following event until the first index
-    Index *index = NULL;
+    Index *index = nullptr;
     Event *event = getNextEvent();
     eventnumber_t previousEventNumber = getEventNumber();
     while (event) {
         if (event->getMessageId() == messageId)
             // we found an EventEntry but that is not a message reuse
-            return NULL;
+            return nullptr;
         else {
             MessageDescriptionEntry *messageDescriptionEntry = event->findLocalReuseMessageDescriptionEntry(previousEventNumber, messageId);
             if (messageDescriptionEntry)
@@ -486,7 +486,7 @@ MessageDescriptionEntry *Event::findReuseMessageDescriptionEntry(int messageId)
         event = event->getNextEvent();
     }
     // 2. linear search among the indices starting from the first index after this event until the last index
-    event = NULL;
+    event = nullptr;
     while (index) {
         // check if there's any reference to this event
         if (index->containsReferenceRemovedEntry(previousEventNumber, -1)) {
@@ -517,7 +517,7 @@ MessageDescriptionEntry *Event::findReuseMessageDescriptionEntry(int messageId)
                         while (event) {
                             if (event->getMessageId() == messageId)
                                 // we found an EventEntry but that is not a message reuse
-                                return NULL;
+                                return nullptr;
                             else {
                                 MessageDescriptionEntry *messageDescriptionEntry = event->findLocalReuseMessageDescriptionEntry(previousEventNumber, messageId);
                                 if (messageDescriptionEntry)
@@ -529,7 +529,7 @@ MessageDescriptionEntry *Event::findReuseMessageDescriptionEntry(int messageId)
                         }
                     }
                     // we can stop here, because there is no sign of the message
-                    return NULL;
+                    return nullptr;
                 }
             }
         }
@@ -542,7 +542,7 @@ MessageDescriptionEntry *Event::findReuseMessageDescriptionEntry(int messageId)
     while (event) {
         if (event->getMessageId() == messageId)
             // we found an EventEntry but that is not a message reuse
-            return NULL;
+            return nullptr;
         else {
             MessageDescriptionEntry *messageDescriptionEntry = event->findLocalReuseMessageDescriptionEntry(previousEventNumber, messageId);
             if (messageDescriptionEntry)
@@ -551,7 +551,7 @@ MessageDescriptionEntry *Event::findReuseMessageDescriptionEntry(int messageId)
         event = event->getNextEvent();
     }
     // reached end of eventlog
-    return NULL;
+    return nullptr;
 }
 
 MessageDescriptionEntry *Event::findLocalReuseMessageDescriptionEntry(eventnumber_t previousEventNumber, int messageId)
@@ -561,7 +561,7 @@ MessageDescriptionEntry *Event::findLocalReuseMessageDescriptionEntry(eventnumbe
         if (messageDescriptionEntry && messageDescriptionEntry->messageId == messageId && messageDescriptionEntry->previousEventNumber == previousEventNumber)
             return messageDescriptionEntry;
     }
-    return NULL;
+    return nullptr;
 }
 
 } // namespace eventlog
