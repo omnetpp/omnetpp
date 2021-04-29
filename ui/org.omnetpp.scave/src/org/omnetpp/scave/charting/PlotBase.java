@@ -415,19 +415,19 @@ public abstract class PlotBase extends ZoomableCachingCanvas implements IPlotVie
 
     public void setBackgroundColor(RGB rgb) {
         Assert.isNotNull(rgb);
-        this.backgroundColor = new Color(null, rgb);
+        this.backgroundColor = new Color(rgb);
         chartChanged();
     }
 
     public void setInsetsLineColor(RGB rgb) {
         Assert.isNotNull(rgb);
-        this.insetsLineColor = new Color(null, rgb);
+        this.insetsLineColor = new Color(rgb);
         chartChanged();
     }
 
     public void setInsetsBackgroundColor(RGB rgb) {
         Assert.isNotNull(rgb);
-        this.insetsBackgroundColor = new Color(null, rgb);
+        this.insetsBackgroundColor = new Color(rgb);
         chartChanged();
     }
 

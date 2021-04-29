@@ -238,7 +238,7 @@ public class ImageUtils {
         // produce a high-quality re-sampled image (but transparency got lost along the way)
         Image scaledImage = new Image(null, width, height);
         GC gc = new GC(scaledImage);
-        Color backgroundColor = new Color(null, 240, 241, 240);
+        Color backgroundColor = new Color(240, 241, 240);
         gc.setBackground(backgroundColor);
         gc.fillRectangle(0, 0, width, height);
         gc.setInterpolation(SWT.HIGH);
@@ -325,7 +325,7 @@ public class ImageUtils {
             Rectangle r = smallImage.getBounds();
             r.x += x;
             r.y += y;
-            gc.setBackground(new Color(null, 0, 0, 0));
+            gc.setBackground(new Color(0, 0, 0));
             gc.drawRectangle(r);
 
             k++;

@@ -615,86 +615,86 @@ public class ColorFactory {
         /*
         // the Tableau 10 palette
         goodDarkColors = new Color[] {
-                new Color(null, 255, 127, 14),
-                new Color(null, 214, 39, 40),
-                new Color(null, 148, 103, 189),
-                new Color(null, 44, 160, 44),
-                new Color(null, 31, 119, 180),
-                new Color(null, 227, 119, 194),
-                new Color(null, 188, 189, 34),
-                new Color(null, 140, 86, 75),
-                new Color(null, 127, 127, 127),
-                new Color(null, 23, 190, 207),
+                new Color(255, 127, 14),
+                new Color(214, 39, 40),
+                new Color(148, 103, 189),
+                new Color(44, 160, 44),
+                new Color(31, 119, 180),
+                new Color(227, 119, 194),
+                new Color(188, 189, 34),
+                new Color(140, 86, 75),
+                new Color(127, 127, 127),
+                new Color(23, 190, 207),
         };
 
         // the Tableau 10 Light palette
         goodLightColors = new Color[] {
-                new Color(null, 255, 187, 120),
-                new Color(null, 255, 152, 150),
-                new Color(null, 197, 176, 213),
-                new Color(null, 174, 199, 232),
-                new Color(null, 152, 223, 138),
-                new Color(null, 247, 182, 210),
-                new Color(null, 219, 219, 141),
-                new Color(null, 199, 199, 199),
-                new Color(null, 196, 156, 148),
-                new Color(null, 158, 218, 229),
+                new Color(255, 187, 120),
+                new Color(255, 152, 150),
+                new Color(197, 176, 213),
+                new Color(174, 199, 232),
+                new Color(152, 223, 138),
+                new Color(247, 182, 210),
+                new Color(219, 219, 141),
+                new Color(199, 199, 199),
+                new Color(196, 156, 148),
+                new Color(158, 218, 229),
         };
         */
 
 
         // half of the Tableau 20 palette, in reverse order
         goodDarkColors = new Color[] {
-                new Color(null, 31, 119, 180),
-                new Color(null, 255, 127, 14),
-                new Color(null, 44, 160, 44),
-                new Color(null, 214, 39, 40),
-                new Color(null, 148, 103, 189),
-                new Color(null, 140, 86, 75),
-                new Color(null, 227, 119, 194),
-                new Color(null, 127, 127, 127),
-                new Color(null, 188, 189, 34),
-                new Color(null, 23, 190, 207),
+                new Color(31, 119, 180),
+                new Color(255, 127, 14),
+                new Color(44, 160, 44),
+                new Color(214, 39, 40),
+                new Color(148, 103, 189),
+                new Color(140, 86, 75),
+                new Color(227, 119, 194),
+                new Color(127, 127, 127),
+                new Color(188, 189, 34),
+                new Color(23, 190, 207),
         };
 
         // the other half of the Tableau 20 palette, in reverse order
         goodLightColors = new Color[] {
-                new Color(null, 174, 199, 232),
-                new Color(null, 255, 187, 120),
-                new Color(null, 152, 223, 138),
-                new Color(null, 255, 152, 150),
-                new Color(null, 197, 176, 213),
-                new Color(null, 196, 156, 148),
-                new Color(null, 247, 182, 210),
-                new Color(null, 199, 199, 199),
-                new Color(null, 219, 219, 141),
-                new Color(null, 158, 218, 229),
+                new Color(174, 199, 232),
+                new Color(255, 187, 120),
+                new Color(152, 223, 138),
+                new Color(255, 152, 150),
+                new Color(197, 176, 213),
+                new Color(196, 156, 148),
+                new Color(247, 182, 210),
+                new Color(199, 199, 199),
+                new Color(219, 219, 141),
+                new Color(158, 218, 229),
         };
 
 
         /*
         // part of the GNOME 3.32 palette
         goodDarkColors = new Color[] {
-                new Color(null, 27, 95, 180),
-                new Color(null, 38, 161, 104),
-                new Color(null, 229, 164, 10),
-                new Color(null, 198, 70, 0),
-                new Color(null, 165, 28, 44),
-                new Color(null, 97, 53, 132),
-                new Color(null, 99, 69, 43),
-                new Color(null, 60, 56, 70),
+                new Color(27, 95, 180),
+                new Color(38, 161, 104),
+                new Color(229, 164, 10),
+                new Color(198, 70, 0),
+                new Color(165, 28, 44),
+                new Color(97, 53, 132),
+                new Color(99, 69, 43),
+                new Color(60, 56, 70),
         };
 
         // part of the GNOME 3.32 palette
         goodLightColors = new Color[] {
-                new Color(null, 153, 193, 242),
-                new Color(null, 143, 240, 163),
-                new Color(null, 249, 241, 108),
-                new Color(null, 255, 189, 111),
-                new Color(null, 247, 97, 82),
-                new Color(null, 220, 138, 222),
-                new Color(null, 205, 171, 143),
-                new Color(null, 192, 191, 187),
+                new Color(153, 193, 242),
+                new Color(143, 240, 163),
+                new Color(249, 241, 108),
+                new Color(255, 189, 111),
+                new Color(247, 97, 82),
+                new Color(220, 138, 222),
+                new Color(205, 171, 143),
+                new Color(192, 191, 187),
         };
         */
     };
@@ -789,7 +789,7 @@ public class ColorFactory {
      */
     public static Color asColor(java.awt.Color color)
     {
-        return color == null ? null : new Color(null, color.getRed(), color.getGreen(), color.getBlue());
+        return color == null ? null : new Color(color.getRed(), color.getGreen(), color.getBlue());
     }
 
     /**
@@ -811,7 +811,7 @@ public class ColorFactory {
         if (rgb == null)
             return null;
 
-        return new Color(null, rgb); // this might be a problem if we are running on a 256-color display
+        return new Color(rgb); // this might be a problem if we are running on a 256-color display
     }
 
     /**
@@ -916,7 +916,7 @@ public class ColorFactory {
             rgbToStringMap.remove(rgb);
             rgbToStringMap.put(rgb, name);
         }
-        return new Color(null, rgb);
+        return new Color(rgb);
     }
 
     private static double dist(RGB a, RGB b) {

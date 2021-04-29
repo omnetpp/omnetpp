@@ -51,7 +51,7 @@ class CrossHair {
     public static final Cursor CROSS_CURSOR = new Cursor(null, SWT.CURSOR_CROSS);
     public static final Font CROSSHAIR_NORMAL_FONT = new Font(null, "Arial", 8, SWT.NORMAL);
     public static final Font CROSSHAIR_BOLD_FONT = new Font(null, "Arial", 8, SWT.BOLD);
-    public static final Color TOOLTIP_COLOR = new Color(null, 255, 255, 225);
+    public static final Color TOOLTIP_COLOR = new Color(255, 255, 225);
 
     private static final int MAXCOUNT = 100;
     private static final int HALO = 3;

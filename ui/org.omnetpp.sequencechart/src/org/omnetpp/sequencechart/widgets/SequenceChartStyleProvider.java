@@ -145,7 +145,7 @@ public final class SequenceChartStyleProvider implements ISequenceChartStyleProv
 
     @Override
     public final Color getGutterBackgroundColor() {
-        return new Color(null, 255, 255, 160);
+        return new Color(255, 255, 160);
     }
 
     @Override

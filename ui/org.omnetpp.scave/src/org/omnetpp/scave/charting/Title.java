@@ -60,7 +60,7 @@ public class Title {
     }
 
     public void setColor(RGB color) {
-        this.color = new Color(null, color);
+        this.color = new Color(color);
     }
 
     public Rectangle layout(Graphics graphics, Rectangle parent) {

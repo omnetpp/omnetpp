@@ -165,8 +165,8 @@ public class GraphicalNedEditor
     implements INedChangeListener
 {
     private static final String PROP_PALETTE_FILTER = "paletteFilter";
-    public final static Color HIGHLIGHT_COLOR = new Color(null, 255, 0, 0);
-    public final static Color LOWLIGHT_COLOR = new Color(null, 128, 0, 0);
+    public final static Color HIGHLIGHT_COLOR = new Color(255, 0, 0);
+    public final static Color LOWLIGHT_COLOR = new Color(128, 0, 0);
     public final static String ID = NedEditor.ID+".graph";
 
     private KeyHandler sharedKeyHandler;

@@ -45,10 +45,10 @@ import org.omnetpp.scave.python.ChartViewerBase;
  * @author andras
  */
 public class FormEditorPage extends Composite {
-    //private static final Color PALETTE_BG_COLOR = new Color(null, 234, 240, 252);
-    //private static final Color BUTTONS_BG_COLOR = new Color(null, 239, 244, 253);
-    //private static final Color PALETTE_BG_COLOR = new Color(null, 241, 245, 253);
-    //private static final Color BUTTONS_BG_COLOR = new Color(null, 249, 251, 254);
+    //private static final Color PALETTE_BG_COLOR = new Color(234, 240, 252);
+    //private static final Color BUTTONS_BG_COLOR = new Color(239, 244, 253);
+    //private static final Color PALETTE_BG_COLOR = new Color(241, 245, 253);
+    //private static final Color BUTTONS_BG_COLOR = new Color(249, 251, 254);
 
     protected ScaveEditor scaveEditor = null;  // backreference to the containing editor
 
@@ -88,7 +88,7 @@ public class FormEditorPage extends Composite {
 
     public void setFormTitle(String title) {
         formTitle.setFont(new Font(null, "Arial", 12, SWT.BOLD));
-        formTitle.setForeground(new Color(null, 0, 128, 255));
+        formTitle.setForeground(new Color(0, 128, 255));
         formTitle.setText(title);
     }
 

@@ -459,7 +459,7 @@ class Histograms {
 
     protected Color getHistogramColor(int series) {
         String key = parent.getDataset().getSeriesKey(series);
-        return new Color(null, parent.getHistogramColor(key));
+        return new Color(parent.getHistogramColor(key));
     }
 
     protected double transformValue(double y) {

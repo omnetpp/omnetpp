@@ -24,9 +24,9 @@ import org.omnetpp.common.util.DisplayUtils;
  */
 public class SyntaxHighlightHelper {
     // colors from the default Eclipse source code editors (JDT,CDT)
-    public final static Color ECLIPSE_DARKBLUE = new Color(null, 0, 0, 192); // constants
-    public final static Color ECLIPSE_PURPLE = new Color(null, 127, 0, 85); // keywords
-    public final static Color ECLIPSE_GREEN = new Color(null, 63, 127, 95); // comments
+    public final static Color ECLIPSE_DARKBLUE = new Color(0, 0, 192); // constants
+    public final static Color ECLIPSE_PURPLE = new Color(127, 0, 85); // keywords
+    public final static Color ECLIPSE_GREEN = new Color(63, 127, 95); // comments
 
     // word lists for syntax highlighting
     public final static String[] highlightPrivateDocTodo = Keywords.DOC_TODO;

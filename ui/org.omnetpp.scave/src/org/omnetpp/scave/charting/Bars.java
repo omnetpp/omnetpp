@@ -81,7 +81,7 @@ class Bars {
             graphics.pushState();
 
             long y = coordsMapping.toCanvasY(baseline);
-            graphics.setForegroundColor(new Color(null, barBaselineColor));
+            graphics.setForegroundColor(new Color(barBaselineColor));
             LargeGraphics.drawLine(graphics, rect.x + 1, y, rect.x + rect.width - 1, y);
 
             graphics.popState();
@@ -131,12 +131,12 @@ class Bars {
 
     protected Color getBarColor(int series) {
         RGB color = parent.getEffectiveBarColor(parent.getKeyFor(series));
-        return new Color(null, color);
+        return new Color(color);
     }
 
     protected Color getBarOutlineColor(int series) {
         RGB color = parent.getEffectiveBarOutlineColor(parent.getKeyFor(series));
-        return new Color(null, color);
+        return new Color(color);
     }
 
     protected LargeRect getBarRectangle(int group, int series, ICoordsMapping coordsMapping) {

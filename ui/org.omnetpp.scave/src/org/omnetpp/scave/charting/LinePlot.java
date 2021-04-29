@@ -176,7 +176,7 @@ public class LinePlot extends PlotBase {
         }
 
         public Color getEffectiveLineColor() {
-            return new Color(null, lineColor == null ? defaultLineColor : lineColor);
+            return new Color(lineColor == null ? defaultLineColor : lineColor);
         }
 
         public LineStyle getEffectiveLineStyle() {
