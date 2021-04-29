@@ -292,7 +292,7 @@ public class InifileDocument implements IInifileDocument {
 
                 public void keyValueLine(int lineNumber, int numLines, String rawLine, String key, String rawValue, String rawComment) {
                     if (currentSection == null) {
-                        markers.addError(currentFile, lineNumber, "Missing section heading");
+                        markers.addWarning(currentFile, lineNumber, "Missing section heading, assuming [General]");
                         sectionHeadingLine(0, 1, "", ConfigRegistry.GENERAL, ""); // implicit general section, might happen in the main file only
                     }
                     if (currentSectionHeading == null) {
