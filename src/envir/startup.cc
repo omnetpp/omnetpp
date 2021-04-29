@@ -276,6 +276,11 @@ int setupUserInterface(int argc, char *argv[])
     //
     try {
         if (app) {
+            // as we'll install app as the active envir, take over the listeners added to the boot-time envir
+            for (auto l : getEnvir()->getLifecycleListeners())
+                app->addLifecycleListener(l);
+
+            // install and run app
             simulation = new cSimulation("simulation", app);
             cSimulation::setActiveSimulation(simulation);
             exitCode = app->run(argc, argv, config);
