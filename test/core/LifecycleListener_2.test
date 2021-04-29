@@ -1,0 +1,28 @@
+%description:
+Using lifecycle listeners for reading a custom configuration option.
+
+%global:
+
+Register_PerRunConfigOption(CFGID_TEST_OPTION, "test-option", CFG_INT, "0", "A random config option for testing");
+
+static int optionValue;
+
+namespace {
+class LocalLifecycleListener : public cISimulationLifecycleListener {
+    virtual void lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details) override {
+        if (eventType == LF_PRE_NETWORK_SETUP) {
+            optionValue = cSimulation::getActiveEnvir()->getConfig()->getAsInt(CFGID_TEST_OPTION);
+        }
+    }
+} listener;
+}
+
+EXECUTE_ON_STARTUP(cSimulation::getActiveEnvir()->addLifecycleListener(&listener));
+
+%activity:
+EV << "optionValue=" << optionValue << endl;
+
+%extraargs: --test-option=999
+
+%contains: stdout
+optionValue=999
