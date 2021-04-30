@@ -1,0 +1,14 @@
+%description:
+Leading blank lines (i.e. blank lines before indented content) are ignored.
+Make sure reported line number is correct!
+
+%inifile: test.ini
+# IMPORTANT: Ensure the line before [Foo] contains SPACES or TABS!
+     
+  [Foo]
+
+%exitcode: 1
+
+%contains: stderr
+Content must begin on column 1 because indentation is used for line continuation, 'test.ini' line 3
+

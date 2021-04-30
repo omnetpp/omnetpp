@@ -263,7 +263,7 @@ public class InifileDocument implements IInifileDocument {
                     this.includeStack = ArrayUtils.add(includeStack, currentFile);
                 }
 
-                public void blankOrCommentLine(int lineNumber, int numLines, String rawLine, String rawComment) {
+                public void commentLine(int lineNumber, int numLines, String rawLine, String rawComment) {
                     // ignore
                 }
 
@@ -316,7 +316,7 @@ public class InifileDocument implements IInifileDocument {
                         line.rawComment = rawComment;
                         line.key = key;
                         line.rawValue = rawValue;
-                        line.value = InifileParser.stripComments(rawValue);
+                        line.value = InifileParser.stripComments(rawValue).trim();
                         if (currentFile == documentFile)
                             mainFileKeyValueLines.add(line);
                         currentSection.entries.put(key, line);
@@ -540,7 +540,7 @@ public class InifileDocument implements IInifileDocument {
         KeyValueLine line = getEditableEntry(section, key);
         if (!nullSafeEquals(line.value, rawValue)) {
             line.rawValue = rawValue;
-            line.value = InifileParser.stripComments(rawValue);
+            line.value = InifileParser.stripComments(rawValue).trim();
             String text = line.key + " = " + line.rawValue + line.rawComment;
             replaceLine(line, text);
         }

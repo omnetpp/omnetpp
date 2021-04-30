@@ -31,7 +31,7 @@ public class InifileParser {
      * on that line.
      */
     public interface ParserCallback {
-        void blankOrCommentLine(int lineNumber, int numLines, String rawLine, String rawComment);
+        void commentLine(int lineNumber, int numLines, String rawLine, String rawComment);
         void sectionHeadingLine(int lineNumber, int numLines, String rawLine, String sectionName, String rawComment);
         void keyValueLine(int lineNumber, int numLines, String rawLine, String key, String rawValue, String rawComment);
         void directiveLine(int lineNumber, int numLines, String rawLine, String directive, String args, String rawComment);
@@ -42,7 +42,7 @@ public class InifileParser {
      * A ParserCallback with all methods defined to be empty.
      */
     public static class ParserAdapter implements ParserCallback {
-        public void blankOrCommentLine(int lineNumber, int numLines, String rawLine, String rawComment) {}
+        public void commentLine(int lineNumber, int numLines, String rawLine, String rawComment) {}
         public void sectionHeadingLine(int lineNumber, int numLines, String rawLine, String sectionName, String rawComment) {}
         public void keyValueLine(int lineNumber, int numLines, String rawLine, String key, String rawValue, String rawComment) {}
         public void directiveLine(int lineNumber, int numLines, String rawLine, String directive, String args, String rawComment) {}
@@ -53,7 +53,7 @@ public class InifileParser {
      * A ParserCallback for debug purposes.
      */
     public static class DebugParserAdapter implements ParserCallback {
-        public void blankOrCommentLine(int lineNumber, int numLines, String rawLine, String rawComment) {
+        public void commentLine(int lineNumber, int numLines, String rawLine, String rawComment) {
             Debug.println(lineNumber+": "+rawLine+" --> rawComment="+rawComment);
         }
         public void sectionHeadingLine(int lineNumber, int numLines, String rawLine, String sectionName, String rawComment) {
@@ -104,23 +104,29 @@ public class InifileParser {
                     break;
                 lineNumber = reader.getLineNumber();
                 if (concatenatedLine.endsWith("\\")) {
+                    // backslash continuation: basically delete the backslash+LF sequence
                     concatenatedLine = StringUtils.removeEnd(concatenatedLine, "\\") + rawLine;
                     concatenatedRawLines += "\n" + rawLine;
                 }
-                else if (!rawLine.isBlank() && (rawLine.startsWith(" ") || rawLine.startsWith("\t"))) {
+                else if (!concatenatedLine.isBlank() && !concatenatedLine.trim().startsWith("#") && // only start appending to non-blank and NON-COMMENT (!) lines
+                        !rawLine.isBlank() && (rawLine.startsWith(" ") || rawLine.startsWith("\t"))) // only append non-blank, indented lines
+                {
                     concatenatedLine += "\n" + rawLine;
                     concatenatedRawLines += "\n" + rawLine;
                 }
                 else {
-                    if (startLineNumber != -1) {
+                    // process concatenated line collected so far
+                    if (startLineNumber != -1 && !concatenatedLine.isBlank()) {
                         int numLines = lineNumber - startLineNumber;
                         processLine(concatenatedLine, callback, startLineNumber, numLines, concatenatedRawLines);
                     }
+                    // start a new one
                     concatenatedLine = concatenatedRawLines = rawLine;
                     startLineNumber = lineNumber;
                 }
             }
-            if (startLineNumber != -1) {
+            // process final line
+            if (startLineNumber != -1 && !concatenatedLine.isBlank()) {
                 concatenatedLine = StringUtils.removeEnd(concatenatedLine, "\\"); // remove final stray backslash
                 int numLines = lineNumber - startLineNumber + 1;
                 processLine(concatenatedLine, callback, startLineNumber, numLines, concatenatedRawLines);
@@ -136,6 +142,9 @@ public class InifileParser {
         String cleanedLine; // with comments removed
         String rawComment; // including '#' and the whitespace before it; but empty for multi-line values
         boolean isMultiline = line.contains("\n");
+        Assert.isTrue(!rawLine.isBlank()); // reader swallows blank lines
+        Assert.isTrue(!isMultiline || !rawLine.trim().startsWith("#")); // reader never starts appending to comment lines
+
         if (!isMultiline) {
             int endPos = findEndContent(line, 0);
             if (endPos == -1) {
@@ -149,6 +158,7 @@ public class InifileParser {
             cleanedLine = "";
             int k = 0;
             for (String l : line.split("\n")) {
+                Assert.isTrue(!l.isBlank()); // reader never appends blank lines
                 int endPos = findEndContent(l, 0);
                 if (endPos == -1) {
                     callback.parseError(lineNumber + k, 1, "Unterminated string constant");
@@ -162,17 +172,17 @@ public class InifileParser {
         }
 
         // process the line
-        char firstChar = cleanedLine.isEmpty() ? 0 : cleanedLine.charAt(0);
-        if (cleanedLine.isEmpty()) {
-            // blank or comment
-            callback.blankOrCommentLine(lineNumber, numLines, rawLine, rawLine);
-        }
-        else if (Character.isWhitespace(firstChar)) { // space or newline
+        char firstChar = line.isEmpty() ? 0 : line.charAt(0);
+        if (firstChar == ' ' || firstChar == '\t') {
             callback.parseError(lineNumber, 1, "Content must begin on column 1 because indentation is used for line continuation");
+        }
+        else if (firstChar == '#') {
+            // comment line
+            callback.commentLine(lineNumber, numLines, rawLine, rawLine);
         }
         else if (firstChar == ';') {
             // obsolete comment line
-            callback.parseError(lineNumber, numLines, "Semicolon is no longer a comment start character, please use hashmark ('#')");
+            callback.parseError(lineNumber, numLines, "Semicolon is no longer a comment start character, use hashmark ('#')");
         }
         else if (firstChar == 'i' && cleanedLine.matches(INCLUDE + "\\s.*")) {
             // include directive
@@ -271,6 +281,8 @@ public class InifileParser {
      * is included in the output.
      */
     public static String stripComments(String rawLine) {
+        if (!rawLine.contains("\n") && !rawLine.contains("#"))
+            return rawLine;
         StringBuilder buffer  = new StringBuilder();
         for (String l : rawLine.split("\n")) {
             int endPos = findEndContent(l, 0);

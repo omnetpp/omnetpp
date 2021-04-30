@@ -102,6 +102,12 @@ void InifileReader::readFile(const char *filename)
     doReadFile(filename, -1, includedFiles);
 }
 
+inline char firstNonwhitespaceChar(const char *s) {
+    for (; *s == ' ' || *s == '\t'; s++)
+        /**/;
+    return *s;
+}
+
 void InifileReader::doReadFile(const char *filename, int currentSectionIndex, std::vector<std::string>& includedFiles)
 {
     // create an entry for this file, checking against circular inclusion
@@ -130,7 +136,12 @@ void InifileReader::doReadFile(const char *filename, int currentSectionIndex, st
     forEachJoinedLine(in, [&](std::string& lineBuf, int lineNumber, int numLines) {
         // remove comments (and catch unterminated string constants) inside multi-line lines
         const char *line = lineBuf.c_str();
-        if (strchr(line, '\n') != nullptr) { // note: no check for presence of '#'!
+        bool isMultiline = strchr(line, '\n') != nullptr;
+        Assert(!opp_isblank(line));  // reader swallows blank lines
+        Assert(!isMultiline || firstNonwhitespaceChar(line) != "#"); // reader never starts appending to comment lines
+
+        if (isMultiline) {
+            // strip out comments
             std::string tmp;
             int i = 0;
             for (std::string l : StringTokenizer(line, "\n").asVector()) {
@@ -143,15 +154,15 @@ void InifileReader::doReadFile(const char *filename, int currentSectionIndex, st
             line = lineBuf.c_str();
         }
 
-        if (opp_isspace(*line)) // space or newline
+        if (*line == ' ' || *line == '\t') {
             throw cRuntimeError("Content must begin on column 1 because indentation is used for line continuation, '%s' line %d", filename, lineNumber);
-
-        if (opp_stringbeginswith(line, "#% old-wildcards")) {
+        }
+        else if (opp_stringbeginswith(line, "#% old-wildcards")) {
             // in old ini files, "*" matched dots as well, like "**" does now;
             // we don't support this backward compatibility feature any longer
             throw cRuntimeError("Old-wildcards mode (#%% old-wildcards syntax) no longer supported, '%s' line %d", filename, lineNumber);
         }
-        else if (!*line || *line == '#') {
+        else if (*line == '#') {
             // blank or comment line, ignore
         }
         else if (*line == ';') {
@@ -226,15 +237,18 @@ void InifileReader::forEachJoinedLine(std::istream& in, const std::function<void
             break;
         if (!rawLine.empty() && opp_iscntrl(rawLine.back()))
             rawLine.resize(rawLine.size()-1);  // remove trailing CR (for CRLF files on Linux))
-        if (!concatenatedLine.empty() && concatenatedLine.back() == '\\') { // lines that end in backslash are continued on next line
+        if (!concatenatedLine.empty() && concatenatedLine.back() == '\\') {
+            // backslash continuation: basically delete the backslash+LF sequence
             concatenatedLine.resize(concatenatedLine.size()-1);  // remove backslash
             concatenatedLine += rawLine;
         }
-        else if (!opp_isblank(rawLine.c_str()) && (rawLine[0] == ' ' || rawLine[0] == '\t')) {  // indented lines are continuation of the previous line
-            concatenatedLine += "\n" + rawLine;
+        else if (!opp_isblank(concatenatedLine.c_str()) && firstNonwhitespaceChar(concatenatedLine.c_str()) != '#' && // only start appending to non-blank and NON-COMMENT (!) lines
+                 !opp_isblank(rawLine.c_str()) && (rawLine[0] == ' ' || rawLine[0] == '\t')) // only append non-blank, indented lines
+        {
+                concatenatedLine += "\n" + rawLine;
         }
         else {
-            if (startLineNumber != -1) {
+            if (startLineNumber != -1 && !opp_isblank(concatenatedLine.c_str())) {
                 int numLines = lineNumber - startLineNumber;
                 processLine(concatenatedLine, startLineNumber, numLines);
             }
@@ -244,7 +258,7 @@ void InifileReader::forEachJoinedLine(std::istream& in, const std::function<void
     }
 
     // last line
-    if (startLineNumber != -1) {
+    if (startLineNumber != -1 && !opp_isblank(concatenatedLine.c_str())) {
         if (!concatenatedLine.empty() && concatenatedLine.back() == '\\')
             concatenatedLine.resize(concatenatedLine.size()-1);  // remove final stray backslash
         int numLines = lineNumber - startLineNumber;
