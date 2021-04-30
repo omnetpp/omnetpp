@@ -1284,51 +1284,6 @@ EOT
   fi
 fi
 
-
-#----------------------
-# Check if the path contains omnetpp/bin (it should)
-#----------------------
-
-# first we need to expand the ${HOME} variable and make sure the dir exists..
-omnetpp_bin_dir=$OMNETPP_ROOT/bin
-if test ! -d $omnetpp_bin_dir; then
-   echo "PROBLEM: the $omnetpp_bin_dir directory does not exist!"
-else
-  # ...then we create a small tmp file to check if the dir is in the path
-  probefile=__probe__
-  echo '' >$omnetpp_bin_dir/$probefile
-  chmod +x  $omnetpp_bin_dir/$probefile
-  if ($probefile) >/dev/null 2>/dev/null; then
-    echo "Your PATH contains $omnetpp_bin_dir. Good!"
-  else
-    cat 1>&2 << EOT
-
-WARNING: your PATH doesn't contain $omnetpp_bin_dir!
-Use 'source setenv' to set up your environment.
-
-EOT
-  fi
-  rm $omnetpp_bin_dir/$probefile
-fi
-
-#----------------------
-# Check if the rpath option is unsupported. in this warn the user to provide the LD_LIBRARY_PATH variable
-# (we do not care about this if we are using the clang-msabi toolchain)
-#----------------------
-if test -n "$RPATH_UNSUPPORTED" -a "$PLATFORM" != "win32.x86_64" ; then
-
-    cat 1>&2 << EOT
-
-WARNING: Your linker does not support the -rpath option.
-  You must set the LD_LIBRARY_PATH environment variable to point
-  to the directory where your shared libraries can be found.
-
-  Use 'source setenv' to set up your environment.
-
-EOT
-
-fi
-
 #--------------
 # Qtenv warning
 #--------------
