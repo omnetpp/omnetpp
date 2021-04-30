@@ -9,6 +9,8 @@ namespace testlib {
 
 void printEnum(const char *enumname);
 
+bool isRunningTest(const char *testname);
+
 }
 
 #endif

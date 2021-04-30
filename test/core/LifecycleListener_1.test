@@ -1,6 +1,9 @@
 %description:
 Basic test for lifecycle listeners.
 
+%includes:
+#include "../lib/testutil.h"
+
 %global:
 
 namespace {
@@ -11,7 +14,10 @@ class LocalLifecycleListener : public cISimulationLifecycleListener {
 } listener;
 }
 
-EXECUTE_ON_STARTUP(cSimulation::getActiveEnvir()->addLifecycleListener(&listener));
+EXECUTE_ON_STARTUP(
+    if (testlib::isRunningTest("@TESTNAME@"))
+        cSimulation::getActiveEnvir()->addLifecycleListener(&listener)
+);
 
 
 %subst: /Assigned runID=.*/Assigned runID=xxx/

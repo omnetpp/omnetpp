@@ -1,8 +1,10 @@
 %description:
 Using lifecycle listeners for reading a custom configuration option.
 
-%global:
+%includes:
+#include "../lib/testutil.h"
 
+%global:
 Register_PerRunConfigOption(CFGID_TEST_OPTION, "test-option", CFG_INT, "0", "A random config option for testing");
 
 static int optionValue;
@@ -17,7 +19,10 @@ class LocalLifecycleListener : public cISimulationLifecycleListener {
 } listener;
 }
 
-EXECUTE_ON_STARTUP(cSimulation::getActiveEnvir()->addLifecycleListener(&listener));
+EXECUTE_ON_STARTUP(
+    if (testlib::isRunningTest("@TESTNAME@"))
+        cSimulation::getActiveEnvir()->addLifecycleListener(&listener);
+);
 
 %activity:
 EV << "optionValue=" << optionValue << endl;
