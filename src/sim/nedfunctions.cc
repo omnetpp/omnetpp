@@ -17,6 +17,7 @@
 #include <cmath>
 #include <cstring>
 #include <algorithm>
+#include <fstream>
 #include "common/stringutil.h"
 #include "common/opp_ctype.h"
 #include "common/unitconversion.h"
@@ -31,6 +32,7 @@
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cxmlelement.h"
+#include "omnetpp/cvaluearray.h"
 
 using namespace omnetpp::common;
 
@@ -843,15 +845,14 @@ DEF2(nedf_xmldoc,
 
 cValue nedf_xmldoc(cExpression::Context *context, cValue argv[], int argc)
 {
-    const char *filename = argv[0].stringValue();
-    std::string filepath = opp_isempty(context->baseDirectory) ? filename : tidyFilename(concatDirAndFile(context->baseDirectory, filename).c_str());
+    std::string filepath = concatDirAndFile(context->baseDirectory, argv[0].stringValue());
     const char *xpath = argc == 1 ? nullptr : argv[1].stringValue();
     cXMLElement *node = getEnvir()->getXMLDocument(filepath.c_str(), xpath);
     if (!node) {
         if (argc == 1)
-            throw cRuntimeError("File \"%s\"not found", filename);
+            throw cRuntimeError("File \"%s\"not found", filepath.c_str());
         else
-            throw cRuntimeError("Element \"%s\" in file \"%s\" not found", xpath, filename);
+            throw cRuntimeError("Element \"%s\" in file \"%s\" not found", xpath, filepath.c_str());
     }
     return static_cast<cObject*>(node);
 }
@@ -877,6 +878,88 @@ cValue nedf_xml(cComponent *contextComponent, cValue argv[], int argc)
     return static_cast<cObject*>(node);
 }
 
+DEF2(nedf_readFile,
+    "string readFile(string filename)",
+    "misc",
+    "Opens the specified text file, and returns its content as a string. "
+    "If filename is a relative path, it is understood as relative to the "
+    "location of the ini or NED file where the readFile() call occurs.")
+
+cValue nedf_readFile(cExpression::Context *context, cValue argv[], int argc)
+{
+    std::string filepath = concatDirAndFile(context->baseDirectory, argv[0].stringValue());
+    std::ifstream in(filepath.c_str());
+    if (in.fail())
+        throw cRuntimeError("Cannot open file \"%s\" for read", filepath.c_str());
+    std::ostringstream sstr;
+    sstr << in.rdbuf();
+    if (in.bad())
+        throw cRuntimeError("Could not read file \"%s\"", filepath.c_str());
+    return sstr.str();
+}
+
+DEF2(nedf_workingDir,
+    "string workingDir()",
+    "misc",
+    "Returns the current working directory."
+    "")
+cValue nedf_workingDir(cExpression::Context *context, cValue argv[], int argc)
+{
+    return getWorkingDir();
+}
+
+DEF2(nedf_baseDir,
+    "string baseDir()",
+    "misc",
+    "Returns the absolute filesystem path to the directory of the ini or NED file "
+    "where the baseDir() call occurs.")
+
+cValue nedf_baseDir(cExpression::Context *context, cValue argv[], int argc)
+{
+    return context->baseDirectory;
+}
+
+DEF2(nedf_resolveFile,
+    "string resolveFile(string directory, string filename)",
+    "misc",
+    "Joins its arguments as file paths, except that when the second argument is an "
+    "absolute filesystem path, it is returned unchanged. This is purely a string "
+    "operation; neither directory nor filename needs to exist in the file system.")
+
+cValue nedf_resolveFile(cExpression::Context *context, cValue argv[], int argc)
+{
+    return concatDirAndFile(argv[0].stringValue(), argv[1].stringValue());
+}
+
+DEF2(nedf_absFilePath,
+    "string absFilePath(string filename)",
+    "misc",
+    "Converts filename to an absolute filesystem path. Absolute paths are returned "
+    "unchanged; relative paths are understood as relative to the location of the ini "
+    "or NED file where the call occurs (see baseDir()).")
+
+cValue nedf_absFilePath(cExpression::Context *context, cValue argv[], int argc)
+{
+    return concatDirAndFile(context->baseDirectory, argv[0].stringValue());
+}
+
+DEF2(nedf_eval,
+    "any eval(string expr)",
+    "misc",
+    "Evaluate the expression in the call site's context.")
+
+cValue nedf_eval(cExpression::Context *context, cValue argv[], int argc)
+{
+    const char *str = argv[0].stringValue();
+    try {
+        cDynamicExpression expr;
+        expr.parseNedExpr(str, false);
+        return expr.evaluate(context);
+    }
+    catch (std::exception& e) {
+        throw cRuntimeError("Error evaluating expression \"%s\": %s", str, e.what());
+    }
+}
 
 //
 // misc utility functions

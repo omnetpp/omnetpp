@@ -204,6 +204,8 @@ std::string toAbsolutePath(const char *pathname)
 
 std::string concatDirAndFile(const char *basedir, const char *pathname)
 {
+    if (opp_isempty(basedir))
+        return pathname;
 #ifdef _WIN32
     if ((pathname[0] && pathname[1] == ':' && (pathname[2] == '/' || pathname[2] == '\\')) ||
         ((pathname[0] == '/' || pathname[0] == '\\') && (pathname[1] == '/' || pathname[1] == '\\')))
