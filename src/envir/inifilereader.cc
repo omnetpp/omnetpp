@@ -138,7 +138,7 @@ void InifileReader::doReadFile(const char *filename, int currentSectionIndex, st
         const char *line = lineBuf.c_str();
         bool isMultiline = strchr(line, '\n') != nullptr;
         Assert(!opp_isblank(line));  // reader swallows blank lines
-        Assert(!isMultiline || firstNonwhitespaceChar(line) != "#"); // reader never starts appending to comment lines
+        Assert(!isMultiline || firstNonwhitespaceChar(line) != '#'); // reader never starts appending to comment lines
 
         if (isMultiline) {
             // strip out comments
