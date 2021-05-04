@@ -59,11 +59,14 @@ typedef NedFunction NEDFunction;
  */
 class SIM_API cNedFunction : public cNoncopyableOwnedObject
 {
+  public:
+    enum Type { UNDEF=0, BOOL, INT, INTQ, DOUBLE, DOUBLEQ, STRING, XML, ANY };
+
   private:
     std::string signature; // function signature, as passed to the ctor
-    std::string argTypes;  // sequence of B,L,T,D,Q,S,X,*
+    std::vector<Type> argTypes;  // argument types
     bool hasVarargs_;      // if true, signature contains "..." after the last typed arg
-    char returnType;       // one of B,L,T,D,Q,S,X,*
+    Type returnType;       // return type
     int minArgc, maxArgc;  // minimum and maximum argument count
     NedFunction f = nullptr; // implementation function
     NedFunctionExt fext = nullptr; // alternative function that takes cExpression::Context as arg
@@ -135,17 +138,14 @@ class SIM_API cNedFunction : public cNoncopyableOwnedObject
     const char *getSignature() const {return signature.c_str();}
 
     /**
-     * Returns the function return type, one of the characters B,L,D,Q,S,X,*
-     * for bool, long, double, quantity, string, xml and any, respectively.
+     * Returns the function return type.
      */
-    char getReturnType() const  {return returnType;}
+    Type getReturnType() const  {return returnType;}
 
     /**
-     * Returns the type of the kth argument; result is one of the characters
-     * B,L,D,Q,S,X,* for bool, long, double, quantity, string, xml and any,
-     * respectively.
+     * Returns the type of the kth argument.
      */
-    char getArgType(int k) const  {return argTypes[k];}
+    Type getArgType(int k) const  {return argTypes[k];}
 
     /**
      * Returns the minimum number of arguments (i.e. the number

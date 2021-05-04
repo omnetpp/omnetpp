@@ -62,42 +62,42 @@ static bool contains(const std::string& str, const std::string& substr)
     return str.find(substr) != std::string::npos;
 }
 
-static char parseType(const std::string& str)
+static cNedFunction::Type parseType(const std::string& str)
 {
+    typedef cNedFunction::Type Type;
     if (str == "bool")
-        return 'B';
+        return Type::BOOL;
     if (str == "int" || str == "long")
-        return 'L';
+        return Type::INT;
     if (str == "intquantity")
-        return 'T';
+        return Type::INTQ;
     if (str == "double")
-        return 'D';
+        return Type::DOUBLE;
     if (str == "quantity")
-        return 'Q';
+        return Type::DOUBLEQ;
     if (str == "string")
-        return 'S';
+        return Type::STRING;
     if (str == "xml")
-        return 'X';
+        return Type::XML;
     if (str == "any")
-        return '*';
-    return 0;
+        return Type::ANY;
+    return Type::UNDEF;
 }
 
-static bool splitTypeAndName(const std::string& pair, char& type, std::string& name)
+static bool splitTypeAndName(const std::string& pair, cNedFunction::Type& type, std::string& name)
 {
     std::vector<std::string> v = StringTokenizer(pair.c_str()).asVector();
     if (v.size() != 2)
         return false;
 
     type = parseType(v[0]);
-    if (type == 0)
+    if (type == cNedFunction::Type::UNDEF)
         return false;
 
     name = v[1];
     for (const char *s = name.c_str(); *s; s++)
         if (!opp_isalnum(*s) && *s != '_' && *s != '?')  // '?': optional arg
             return false;
-
 
     return true;
 }
@@ -113,7 +113,7 @@ void cNedFunction::parseSignature(const char *signature)
 {
     std::string str = opp_nulltoempty(signature);
     std::string typeAndName = opp_trim(opp_substringbefore(str, "("));
-    char type;
+    Type type;
     std::string name;
     if (!splitTypeAndName(typeAndName, type, name))
         throw cRuntimeError(syntaxErrorMessage, signature);
@@ -137,11 +137,11 @@ void cNedFunction::parseSignature(const char *signature)
             hasVarargs_ = true;
         }
         else {
-            char argType;
+            Type argType;
             std::string argName;
             if (!splitTypeAndName(args[i], argType, argName))
                 throw cRuntimeError(syntaxErrorMessage, signature);
-            argTypes += argType;
+            argTypes.push_back(argType);
             if (contains(argName, "?") && minArgc == -1)
                 minArgc = i;
         }
@@ -165,16 +165,17 @@ static void errorDimlessArgExpected(cNedFunction *self, int index, const cValue&
     throw cRuntimeError("Argument %d must be dimensionless, got %s", index, actual.str().c_str());
 }
 
-static cValue::Type toValueType(char t)
+static cValue::Type toValueType(cNedFunction::Type t)
 {
+    typedef cNedFunction::Type Type;
     switch(t) {
-    case 'B': return cValue::BOOL;
-    case 'L': return cValue::INT;
-    case 'D': return cValue::DOUBLE;
-    case 'S': return cValue::STRING;
-    case 'X': return cValue::XML;
-    case 'Q': case 'T': case '*': throw cRuntimeError("No equivalent cValue type to '%c'", t);
-    default: throw cRuntimeError("Illegal argument '%c'", t);
+    case Type::BOOL: return cValue::BOOL;
+    case Type::INT: return cValue::INT;
+    case Type::DOUBLE: return cValue::DOUBLE;
+    case Type::STRING: return cValue::STRING;
+    case Type::XML: return cValue::XML;
+    case Type::DOUBLEQ: case Type::INTQ: case Type::ANY: throw cRuntimeError("No equivalent cValue type for type=%d", (int)t);
+    default: throw cRuntimeError("Illegal argument type=%d", (int)t);
     }
 }
 
@@ -185,28 +186,30 @@ void cNedFunction::checkArgs(cValue argv[], int argc)
 
     int n = std::min(argc, maxArgc);
     for (int i = 0; i < n; i++) {
-        char declType = argTypes[i];
-        if (declType == 'L') {
+        Type declType = argTypes[i];
+        if (declType == ANY)
+            (void)i; //no-op
+        else if (declType == INT) {
             if (argv[i].type != cValue::INT)
                 errorBadArgType(this, i, cValue::INT, argv[i]);
             if (!opp_isempty(argv[i].getUnit()))
                 errorDimlessArgExpected(this, i, argv[i]);
         }
-        if (declType == 'T') {
+        else if (declType == INTQ) {
             if (argv[i].type != cValue::INT)
                 errorBadArgType(this, i, cValue::INT, argv[i]);
         }
-        else if (declType == 'D') {
+        else if (declType == DOUBLE) {
             if (argv[i].type != cValue::DOUBLE && argv[i].type != cValue::INT) // allow implicit INT-to-DOUBLE conversion
                 errorBadArgType(this, i, cValue::DOUBLE, argv[i]);
             if (!opp_isempty(argv[i].getUnit()))
                 errorDimlessArgExpected(this, i, argv[i]);
         }
-        else if (declType == 'Q') {
+        else if (declType == DOUBLEQ) {
             if (argv[i].type != cValue::DOUBLE && argv[i].type != cValue::INT) // allow implicit INT-to-DOUBLE conversion
                 errorBadArgType(this, i, cValue::DOUBLE, argv[i]);
         }
-        else if (declType != '*' && argv[i].type != declType) {
+        else if (argv[i].type != toValueType(declType)) { // no implicit conversion for BOOL, STRING, and XML
             errorBadArgType(this, i, toValueType(declType), argv[i]);
         }
     }
