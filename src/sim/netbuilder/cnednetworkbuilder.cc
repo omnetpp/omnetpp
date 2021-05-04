@@ -236,7 +236,7 @@ void cNedNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
             ASSERT(impl == component->par(paramName).impl() && !impl->isShared());
             try {
                 cDynamicExpression *expr = new cDynamicExpression();
-                expr->parseNedExpr(valueExpr.getExprText(), isSubcomponent, false);
+                expr->parseNedExpr(valueExpr.getExprText(), isSubcomponent);
                 impl->setBaseDirectory(paramNode->getSourceFileDirectory());
                 impl->setExpression(expr);
                 if (expr->isAConstant())
@@ -363,7 +363,7 @@ void cNedNetworkBuilder::doAssignParameterFromPattern(cPar& par, ParamElement *p
             // assign the parameter
             ASSERT(impl == par.impl() && !impl->isShared());
             cDynamicExpression *expr = new cDynamicExpression();
-            expr->parseNedExpr(valueExpr.getExprText(), isInSubcomponent, false);
+            expr->parseNedExpr(valueExpr.getExprText(), isInSubcomponent);
             impl->setBaseDirectory(patternNode->getSourceFileDirectory());
             impl->setExpression(expr);
             if (expr->isAConstant())
@@ -420,7 +420,7 @@ void cNedNetworkBuilder::doGateSize(cModule *module, GateElement *gateNode, bool
                 if (!value) {
                     // not yet seen, compile and cache it
                     cDynamicExpression *dynamicExpr = new cDynamicExpression();
-                    dynamicExpr->parseNedExpr(vectorSizeExpr.getExprText(), isSubcomponent, false);
+                    dynamicExpr->parseNedExpr(vectorSizeExpr.getExprText(), isSubcomponent);
                     value = new cIntParImpl();
                     value->setName("gatesize-expression");
                     value->setBaseDirectory(gateNode->getSourceFileDirectory());

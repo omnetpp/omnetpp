@@ -92,7 +92,7 @@ cDynamicExpression *cNedLoader::getCompiledExpression(const ExprRef& key, bool i
     if (it != cachedExpresssions.end())
         return it->second;
     cDynamicExpression *expr = new cDynamicExpression();
-    expr->parseNedExpr(key.getExprText(), inSubcomponentScope, false);
+    expr->parseNedExpr(key.getExprText(), inSubcomponentScope);
     cachedExpresssions[key] = expr;
     return expr;
 }

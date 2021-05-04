@@ -542,7 +542,6 @@ inline AstNode *getSingleChild(AstNode *astNode) {
 
 ExprNode *NedOperatorTranslator::translateToExpressionTree(AstNode *astNode, AstTranslator *translatorForChildren)
 {
-    (void)inInifile; // eliminate "unused variable" warning
     if (isFunction(astNode, "sizeof"))
         return translateSizeof(astNode, translatorForChildren);
     else if (isFunction(astNode, "exists"))

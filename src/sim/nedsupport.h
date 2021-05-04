@@ -269,7 +269,6 @@ class NedOperatorTranslator : public Expression::AstTranslator
 {
   private:
     bool inSubcomponentScope;
-    bool inInifile;
   protected:
     typedef Expression::AstNode AstNode;
     ExprNode *translateSizeof(AstNode *astNode, AstTranslator *translatorForChildren);
@@ -279,7 +278,7 @@ class NedOperatorTranslator : public Expression::AstTranslator
     ExprNode *translateMember(AstNode *astNode, AstTranslator *translatorForChildren);
 
   public:
-    NedOperatorTranslator(bool inSubcomponentScope, bool inInifile) : inSubcomponentScope(inSubcomponentScope), inInifile(inInifile) {}
+    NedOperatorTranslator(bool inSubcomponentScope) : inSubcomponentScope(inSubcomponentScope) {}
     virtual ExprNode *translateToExpressionTree(AstNode *astNode, AstTranslator *translatorForChildren) override;
 };
 

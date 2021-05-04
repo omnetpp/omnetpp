@@ -246,7 +246,7 @@ void cObjectParImpl::parse(const char *text)
     // try parsing it as an expression
     cDynamicExpression *dynexpr = new cDynamicExpression();
     try {
-        dynexpr->parseNedExpr(text, true, true);
+        dynexpr->parseNedExpr(text, true);
     }
     catch (std::exception& e) {
         delete dynexpr;

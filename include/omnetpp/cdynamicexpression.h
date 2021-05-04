@@ -174,7 +174,7 @@ class SIM_API cDynamicExpression : public cExpression
     /**
      * Interprets the string as a NED expression, and stores it.
      */
-    virtual void parseNedExpr(const char *text, bool inSubcomponentScope, bool inInifile);
+    virtual void parseNedExpr(const char *text, bool inSubcomponentScope);
 
     /**
      * Evaluate the expression, and return the results as a cValue.
