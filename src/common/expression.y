@@ -80,7 +80,8 @@ namespace omnetpp { class cObject; };
 %left '*' '/' '%'
 %right '^'
 %right UMIN_ NEG_ NOT_
-%left BANG_
+%left '!'
+%left '.'
 
 %start expression
 
@@ -238,7 +239,6 @@ operation
                 { $<node>$ = newOp("!", $<node>2); }
 
         | expr '!'
-                %prec BANG_
                 { $<node>$ = newOp("_!", $<node>1); /*!!!*/ }
 
         | expr '&' expr
