@@ -48,6 +48,7 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <limits>
 #include "common/commonutil.h"
 #include "expryydefs.h"
 

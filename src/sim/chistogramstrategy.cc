@@ -14,6 +14,7 @@
 *--------------------------------------------------------------*/
 
 #include <algorithm>
+#include <limits>
 #include "omnetpp/regmacros.h"
 #include "omnetpp/onstartup.h"
 #include "omnetpp/globals.h"

@@ -19,6 +19,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <algorithm>
+#include <limits>
 
 #include "common/stringutil.h"
 #include "common/unitconversion.h"
