@@ -165,6 +165,19 @@ static void errorDimlessArgExpected(cNedFunction *self, int index, const cValue&
     throw cRuntimeError("Argument %d must be dimensionless, got %s", index, actual.str().c_str());
 }
 
+static cValue::Type toValueType(char t)
+{
+    switch(t) {
+    case 'B': return cValue::BOOL;
+    case 'L': return cValue::INT;
+    case 'D': return cValue::DOUBLE;
+    case 'S': return cValue::STRING;
+    case 'X': return cValue::XML;
+    case 'Q': case 'T': case '*': throw cRuntimeError("No equivalent cValue type to '%c'", t);
+    default: throw cRuntimeError("Illegal argument '%c'", t);
+    }
+}
+
 void cNedFunction::checkArgs(cValue argv[], int argc)
 {
     if (argc < minArgc || (argc > maxArgc && !hasVarargs_))
@@ -194,7 +207,7 @@ void cNedFunction::checkArgs(cValue argv[], int argc)
                 errorBadArgType(this, i, cValue::DOUBLE, argv[i]);
         }
         else if (declType != '*' && argv[i].type != declType) {
-            errorBadArgType(this, i, argv[i].type, argv[i]);
+            errorBadArgType(this, i, toValueType(declType), argv[i]);
         }
     }
 }
