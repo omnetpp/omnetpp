@@ -14,6 +14,7 @@
 *--------------------------------------------------------------*/
 
 #include <sstream>
+#include <limits>
 #include "common/opp_ctype.h"
 #include "common/unitconversion.h"
 #include "common/stringutil.h"
