@@ -1556,7 +1556,9 @@ functioncall
         ;
 
 array
-        : '[' opt_exprlist ']'
+        : '[' ']'
+        | '[' exprlist ']'
+        | '[' exprlist ',' ']'
         ;
 
 object
@@ -1567,8 +1569,7 @@ object
         | NAME DOUBLECOLON NAME DOUBLECOLON NAME DOUBLECOLON NAME '{' opt_keyvaluelist '}'
         ;
 
-
-opt_exprlist
+opt_exprlist  /* note: do not move optional final ',' into this rule, as it is also used as function arg lists */
         : exprlist
         | %empty
         ;
@@ -1580,6 +1581,7 @@ exprlist
 
 opt_keyvaluelist
         : keyvaluelist
+        | keyvaluelist ','
         | %empty
         ;
 

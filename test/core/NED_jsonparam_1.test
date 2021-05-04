@@ -24,6 +24,8 @@ network Test {
     object objkeys3 = { nan: 1, inf: 2, true: 4, false: 5 };
     object objkeys4 = { -inf: 3 };
     object objkeys5 = { null: 5, nullptr: 6 };
+    object extracomma1 = [ 1, 2, ];
+    object extracomma2 = { a:1, b:2, };
 
   submodules:
     dump: Dump;
@@ -50,6 +52,8 @@ module Test: Test {
         objkeys3 = (omnetpp::cValueMap)object: {false: 5, inf: 2, nan: 1, true: 4}
         objkeys4 = (omnetpp::cValueMap)object: {-inf: 3}
         objkeys5 = (omnetpp::cValueMap)object: {null: 5, nullptr: 6}
+        extracomma1 = (omnetpp::cValueArray)array: [1, 2]
+        extracomma2 = (omnetpp::cValueMap)object: {a: 1, b: 2}
     submodules:
 }
 

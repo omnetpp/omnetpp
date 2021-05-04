@@ -270,7 +270,11 @@ methodcall
         ;
 
 array
-        : '[' opt_exprlist ']'
+        : '[' ']'
+                { $<node>$ = new AstNode(AstNode::ARRAY, ""); }
+        | '[' exprlist ']'
+                { $<node>2->type = AstNode::ARRAY; $<node>$ = $<node>2; }
+        | '[' exprlist ',' ']'
                 { $<node>2->type = AstNode::ARRAY; $<node>$ = $<node>2; }
         ;
 
@@ -288,7 +292,7 @@ qname
                 { $<str>$ = $<str>1; }
         ;
 
-opt_exprlist
+opt_exprlist  /* note: do not move optional final ',' into this rule, as it is also used as function arg lists */
         : exprlist
         | %empty
                 { $<node>$ = new AstNode(); }
@@ -303,6 +307,7 @@ exprlist
 
 opt_keyvaluelist
         : keyvaluelist
+        | keyvaluelist ','
         | %empty
                 { $<node>$ = new AstNode(); }
         ;
