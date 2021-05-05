@@ -21,7 +21,6 @@
 #include "common/opp_ctype.h"
 #include "common/patternmatcher.h"
 #include "common/stringtokenizer.h"
-#include "common/stringtokenizer2.h"
 #include "common/stringutil.h"
 #include "common/fileutil.h"
 #include "common/stlutil.h"
@@ -566,11 +565,12 @@ void SectionBasedConfiguration::parseVariable(const char *txt, std::string& outV
 {
     Assert(txt[0] == '$' && txt[1] == '{');  // this is the way we've got to be invoked
 
-    StringTokenizer2 tokenizer(txt+1, "}", "{}", "\"");
+    StringTokenizer tokenizer(txt+2, "}", StringTokenizer::NO_TRIM | StringTokenizer::HONOR_QUOTES | StringTokenizer::HONOR_PARENS); // NO_TRIM is important because do strlen(token) to find the "}"!
     const char *token = tokenizer.nextToken();  // ends at matching '}'
     if (!token)
         throw cRuntimeError("Missing '}' for '${'");
-    outEndPtr = txt + 1 + tokenizer.getTokenLength();
+    outEndPtr = txt + 2 + strlen(token) + 1;
+    Assert(*(outEndPtr-1) == '}');
 
     // parse what's inside the ${...}
     const char *varNameBegin = nullptr;
@@ -610,7 +610,7 @@ void SectionBasedConfiguration::parseVariable(const char *txt, std::string& outV
     else {
         valueBegin = s;
     }
-    valueEnd = outEndPtr;
+    valueEnd = outEndPtr-1;
 
     if (valueBegin) {
         // try to parse parvar, present when value ends in "! variable"
@@ -654,7 +654,7 @@ std::string SectionBasedConfiguration::substituteVariables(const char *text, int
         std::string varName, dummy1, dummy2;
         const char *endPtr;
         parseVariable(result.c_str() + pos, varName, dummy1, dummy2, endPtr);
-        size_t endPos = endPtr - result.c_str();
+        size_t len = endPtr - (result.c_str() + pos);
 
         // handle named and unnamed iteration variable references
         if (varName.empty()) {
@@ -668,7 +668,7 @@ std::string SectionBasedConfiguration::substituteVariables(const char *text, int
             throw cRuntimeError("No such variable: ${%s}", varName.c_str());
         std::string value = it->second;
 
-        result.replace(pos, endPos-pos+1, value);
+        result.replace(pos, len, value);
         pos += value.length(); // skip over contents just inserted
 
         k++;

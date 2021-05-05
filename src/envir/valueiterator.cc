@@ -23,7 +23,7 @@
 #include "common/opp_ctype.h"
 #include "common/stringutil.h"
 #include "common/commonutil.h"
-#include "common/stringtokenizer2.h"
+#include "common/stringtokenizer.h"
 #include "common/exprnodes.h"
 #include "common/unitconversion.h"
 #include "omnetpp/cexception.h"
@@ -223,11 +223,11 @@ void ValueIterator::parse(const char *s)
 {
     items.clear();
     referredVariables.clear();
-    StringTokenizer2 tokenizer(s, ",", "()[]{}", "\"");
+    StringTokenizer tokenizer(s, ",", StringTokenizer::HONOR_QUOTES | StringTokenizer::HONOR_PARENS);
     while (tokenizer.hasMoreTokens()) {
+        const char *token = tokenizer.nextToken();
         Item item;
-        std::string token = opp_trim(tokenizer.nextToken());
-        item.parse(token.c_str());
+        item.parse(token);
         item.collectVariablesInto(referredVariables);
         items.push_back(item);
     }

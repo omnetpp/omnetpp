@@ -19,7 +19,6 @@ static void printConfigValues(const char *configName, const char *key)
 %activity:
 printConfigValues("A", "dblPar");
 printConfigValues("B", "strPar");
-printConfigValues("C", "strPar");
 
 %file: test.ned
 simple Test
@@ -35,32 +34,21 @@ simple Test
 network = Test
 
 [Config A]
-Test.dblPar=${ 1.0, 2.0, uniform(1.0,2.0) }ms
+Test.dblPar=${ 1.0, 2.0, uniform(1.0,2.0), len([{a:[(1+1)]}]) }ms
 
 [Config B]
 Test.strPar=${ "x", ",", "}" }
-
-[Config C]
-Test.strPar="x ${\\, \,, \{, \}, \(, \), \\\"} y"
 
 %contains: stdout
 A:
   dblPar=1.0ms
   dblPar=2.0ms
   dblPar=uniform(1.0,2.0)ms
+  dblPar=len([{a:[(1+1)]}])ms
   .
 B:
   strPar="x"
   strPar=","
   strPar="}"
-  .
-C:
-  strPar="x \ y"
-  strPar="x , y"
-  strPar="x { y"
-  strPar="x } y"
-  strPar="x ( y"
-  strPar="x ) y"
-  strPar="x \" y"
   .
 

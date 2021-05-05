@@ -53,6 +53,16 @@ std::string opp_trim(const std::string& text)
     return text.substr(pos, endpos-pos);
 }
 
+const char *opp_findclosequote(const char *txt)
+{
+    char quot = txt[0];
+    const char *s = txt+1;
+    for (; *s && *s != quot; s++)
+        if (*s == '\\' && *(s+1))
+            s++;
+    return (*s == quot) ? s : nullptr;
+}
+
 std::string opp_parsequotedstr(const char *txt, char quot)
 {
     const char *endp;

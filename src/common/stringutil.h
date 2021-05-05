@@ -104,6 +104,14 @@ inline int opp_strcmp(const char *s1, const char *s2)
 COMMON_API std::string opp_trim(const std::string& text);
 
 /**
+ * Find the end of a quoted string constant, obeying backslashed escapes.
+ * The first character of the string specifies which character is used as
+ * quotation mark. Returns a pointer to the matching quote character, or
+ * nullptr if the string ended without finding one.
+ */
+COMMON_API const char *opp_findclosequote(const char *txt);
+
+/**
  * Reverse of opp_quotestr(): remove quotes and resolve backslashed escapes.
  * The quot argument specifies which character is used as quotation mark;
  * acceptable values are double quote ("hello") and apostrophe ('hello'),

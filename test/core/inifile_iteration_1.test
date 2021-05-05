@@ -19,7 +19,6 @@ static void printValues(const char *configName, const char *iterationVariable)
 printValues("A", "common");
 printValues("B", "quotes");
 printValues("C", "parens");
-printValues("D", "escape");
 EV << ".\n";
 
 %file: test.ned
@@ -41,9 +40,6 @@ Test.unused = ${quotes = "foo,bar", "foo{bar", "foo}bar", "\"}",  "\\a", "foo\,b
 
 [Config C]
 Test.unused = ${parens = (a,b), {a,b}, [a,b], (a,[b,{c,d}]) }
-
-[Config D]
-Test.unused = ${escape = foo\,bar, foo\)bar, foo\}bar, foo\]bar, a\\b }
 
 %contains: stdout
 common
@@ -67,11 +63,5 @@ parens
   {a,b}
   [a,b]
   (a,[b,{c,d}])
-escape
-  foo,bar
-  foo)bar
-  foo}bar
-  foo]bar
-  a\b
 .
 

@@ -1,23 +1,23 @@
 %description:
-Positive test cases for StringTokenizer2.
+Positive test cases for StringTokenizer.
 
 %includes:
 
-#include <common/stringtokenizer2.h>
+#include <common/stringtokenizer.h>
 
 %global:
 using namespace omnetpp::common;
 
-static void tokenize(const char *text)
+static void print(StringTokenizer& tokenizer)
 {
     try {
-    	StringTokenizer2 tokenizer(text, " ", "{}[]()", "'");
-    	while (tokenizer.hasMoreTokens()) {
-    		EV << tokenizer.nextToken();
-    		if (tokenizer.hasMoreTokens())
-    		    EV << "|";
-    	}
-        EV << "\n";
+        int n = 0;
+        while (tokenizer.hasMoreTokens()) {
+            if (n++ != 0)
+                EV << ":";
+            EV << tokenizer.nextToken();
+        }
+        EV << ". (" << n << " item" << (n==1?"":"s") << ")\n";
     } catch (std::exception& e) {
         EV << "ERROR: " << e.what() << "\n";
     }
@@ -25,14 +25,155 @@ static void tokenize(const char *text)
 
 %activity:
 
-#define T(x) tokenize(x);
+#define P(args) {EV << #args << " --> "; StringTokenizer tok args; print(tok);}
+#define P2(args, cmd) {EV << #args << " --> "; StringTokenizer tok args; cmd; print(tok);}
 
-T("This 'string contains' {a lot} (of {[{irritating}]}) 'parentheses: {,[ and ('");
-T("\\\\ \\  \\{ \\} \\( \\) \\[ \\] \\' \\n");
+const char *COMMA = ",";
+const char *TAB = "\t";
+const char *SPACE = " ";
+
+EV << "Whitespace separated\n";
+P((""))
+P(("  "))
+P(("foo"))
+P((" foo "))
+P((" foo bar "))
+P((" \tfoo\r\n\fbar\t"))
+P((" \"Hello world\" (1 2)"))  // by default it doesn't honor quotes or parens
+
+EV << "Delimiter separated, trimming\n";
+int options = StringTokenizer::KEEP_EMPTY;
+P(("", COMMA, options))
+P(("  ", COMMA, options))
+P(("foo", COMMA, options))
+P(("foo,bar", COMMA, options))
+P((" foo , bar ", COMMA, options))
+P((",", COMMA, options))
+P((",,", COMMA, options))
+P((",,foo", COMMA, options))
+P((",,foo , , ", COMMA, options))
+P((" \"Hello, world\", (1, 2)", COMMA, options))  // by default it doesn't honor quotes or parens
+
+EV << "Delimiter separated, no trimming\n";
+options = StringTokenizer::KEEP_EMPTY | StringTokenizer::NO_TRIM;
+P(("", COMMA, options))
+P(("  ", COMMA, options))
+P(("foo", COMMA, options))
+P(("foo,bar", COMMA, options))
+P((" foo , bar ", COMMA, options))
+P((",", COMMA, options))
+P((",,", COMMA, options))
+P((",,foo", COMMA, options))
+P((",,foo , , ", COMMA, options))
+P((" \"Hello, world\", (1, 2)", COMMA, options))  // by default it doesn't honor quotes or parens
+
+EV << "Tab as delimiter, trim\n";
+options = StringTokenizer::KEEP_EMPTY;
+P(("", TAB, options))
+P(("  ", TAB, options))
+P(("foo", TAB, options))
+P(("foo\tbar", TAB, options))
+P(("foo \t", TAB, options))
+P(("foo \t ", TAB, options))
+P(("foo \t bar", TAB, options))
+
+EV << "Quoting, trim\n";
+options = StringTokenizer::HONOR_QUOTES;
+P(("\"foo bar\" ", SPACE, options))
+P(("\"foo bar\" hello \"bello\"", SPACE, options))
+P(("   \" spacious \"  ", SPACE, options))
+
+EV << "Quoting with apos, trim\n";
+P(("'foo bar' ", SPACE, options))
+P(("'foo bar' hello 'bello'", SPACE, options))
+P(("   ' spacious '  ", SPACE, options))
+
+EV << "Parens, space, trim\n";
+options = StringTokenizer::HONOR_PARENS;
+P(("(a b) [c d] {e f} (g [h {i}]) end", SPACE, options))
+
+EV << "Backslash escapes within quotes, trim\n";
+P((R"( "\t\"\'\0" )", TAB, options))
+P((R"( '\t\"\'\0' )", TAB, options))
+
+EV << "Quote, open/close paren as separator\n";
+options = StringTokenizer::HONOR_PARENS | StringTokenizer::HONOR_QUOTES;
+P(("a 'b' ['c']", "'", options))
+P(("a (b (c '(d'", "(", options))
+P(("a (b) [(c)] *)* d (e f)", ")", options))
+
+EV << "Error cases\n";
+options = StringTokenizer::HONOR_PARENS | StringTokenizer::HONOR_QUOTES;
+P(("(a", SPACE, options))
+P(("a)", SPACE, options))
+P(("(a]", SPACE, options))
+P(("([a)]", SPACE, options))
+P(("'a", SPACE, options))
+P(("\"a", SPACE, options))
 
 EV << ".\n";
 
 %contains: stdout
-This|'string contains'|{a lot}|(of {[{irritating}]})|'parentheses: {,[ and ('
-\| |{|}|(|)|[|]|'|\n
+("") --> . (0 items)
+("  ") --> . (0 items)
+("foo") --> foo. (1 item)
+(" foo ") --> foo. (1 item)
+(" foo bar ") --> foo:bar. (2 items)
+(" \tfoo\r\n\fbar\t") --> foo:bar. (2 items)
+(" \"Hello world\" (1 2)") --> "Hello:world":(1:2). (4 items)
+Delimiter separated, trimming
+("", COMMA, options) --> . (0 items)
+("  ", COMMA, options) --> . (1 item)
+("foo", COMMA, options) --> foo. (1 item)
+("foo,bar", COMMA, options) --> foo:bar. (2 items)
+(" foo , bar ", COMMA, options) --> foo:bar. (2 items)
+(",", COMMA, options) --> :. (2 items)
+(",,", COMMA, options) --> ::. (3 items)
+(",,foo", COMMA, options) --> ::foo. (3 items)
+(",,foo , , ", COMMA, options) --> ::foo::. (5 items)
+(" \"Hello, world\", (1, 2)", COMMA, options) --> "Hello:world":(1:2). (4 items)
+Delimiter separated, no trimming
+("", COMMA, options) --> . (0 items)
+("  ", COMMA, options) -->   . (1 item)
+("foo", COMMA, options) --> foo. (1 item)
+("foo,bar", COMMA, options) --> foo:bar. (2 items)
+(" foo , bar ", COMMA, options) -->  foo : bar . (2 items)
+(",", COMMA, options) --> :. (2 items)
+(",,", COMMA, options) --> ::. (3 items)
+(",,foo", COMMA, options) --> ::foo. (3 items)
+(",,foo , , ", COMMA, options) --> ::foo : : . (5 items)
+(" \"Hello, world\", (1, 2)", COMMA, options) -->  "Hello: world": (1: 2). (4 items)
+Tab as delimiter, trim
+("", TAB, options) --> . (0 items)
+("  ", TAB, options) --> . (1 item)
+("foo", TAB, options) --> foo. (1 item)
+("foo\tbar", TAB, options) --> foo:bar. (2 items)
+("foo \t", TAB, options) --> foo:. (2 items)
+("foo \t ", TAB, options) --> foo:. (2 items)
+("foo \t bar", TAB, options) --> foo:bar. (2 items)
+Quoting, trim
+("\"foo bar\" ", SPACE, options) --> "foo bar". (1 item)
+("\"foo bar\" hello \"bello\"", SPACE, options) --> "foo bar":hello:"bello". (3 items)
+("   \" spacious \"  ", SPACE, options) --> " spacious ". (1 item)
+Quoting with apos, trim
+("'foo bar' ", SPACE, options) --> 'foo bar'. (1 item)
+("'foo bar' hello 'bello'", SPACE, options) --> 'foo bar':hello:'bello'. (3 items)
+("   ' spacious '  ", SPACE, options) --> ' spacious '. (1 item)
+Parens, space, trim
+("(a b) [c d] {e f} (g [h {i}]) end", SPACE, options) --> (a b):[c d]:{e f}:(g [h {i}]):end. (5 items)
+Backslash escapes within quotes, trim
+(R"( "\t\"\'\0" )", TAB, options) --> "\t\"\'\0". (1 item)
+(R"( '\t\"\'\0' )", TAB, options) --> '\t\"\'\0'. (1 item)
+Quote, open/close paren as separator
+("a 'b' ['c']", "'", options) --> a:b:['c']. (3 items)
+("a (b (c '(d'", "(", options) --> a:b:c '(d'. (3 items)
+("a (b) [(c)] *)* d (e f)", ")", options) --> a (b) [(c)] *:* d (e f). (2 items)
+Error cases
+("(a", SPACE, options) --> ERROR: Unclosed parenthesis '('
+("a)", SPACE, options) --> ERROR: Unmatched close parenthesis ')'
+("(a]", SPACE, options) --> ERROR: Unmatched close parenthesis ']'
+("([a)]", SPACE, options) --> ERROR: Unmatched close parenthesis ')'
+("'a", SPACE, options) --> ERROR: Unclosed string constant
+("\"a", SPACE, options) --> ERROR: Unclosed string constant
 .
+
