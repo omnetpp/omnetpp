@@ -22,8 +22,8 @@ network Aloha
     submodules:
         server: Server;
         host[numHosts]: Host {
-            txRate = txRate;
-            slotTime = slotTime;
+            txRate = parent.txRate;
+            slotTime = parent.slotTime;
         }
 }
 

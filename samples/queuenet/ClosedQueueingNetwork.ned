@@ -38,13 +38,13 @@ network ClosedQueueingNetwork
                         routingAlgorithm = "random";
                         @display("p=60,80");
                     gates:
-                        out[sizeof(in)];
+                        out[sizeof(parent.in)];
                 }
                 queue[numQueues]: Queue {
                     parameters:
                         @display("p=60,160,row,80");
                     gates:
-                        in[(index==0 ? sizeof(in)+1 : 1)];
+                        in[(index==0 ? sizeof(parent.in)+1 : 1)];
                 }
                 initialSource: SourceOnce {
                     @display("p=150,40");
@@ -61,15 +61,15 @@ network ClosedQueueingNetwork
                 }
 
                 // connect switch to first queue
-                switch.out[ownIndex] --> {  delay = sDelay; } --> queue[0].in[ownIndex];
+                switch.out[ownIndex] --> {  delay = parent.sDelay; } --> queue[0].in[ownIndex];
 
                 // connect queues to each other
                 for i=0..numQueues-2 {
-                    queue[i].out --> {  delay = qDelay; } --> queue[i+1].in[0];
+                    queue[i].out --> {  delay = parent.qDelay; } --> queue[i+1].in[0];
                 }
 
                 // connect last queue back to switch
-                queue[numQueues-1].out --> {  delay = qDelay; } --> switch.in++;
+                queue[numQueues-1].out --> {  delay = parent.qDelay; } --> switch.in++;
 
                 // inject initial jobs into the first queue
                 initialSource.out --> queue[0].in[sizeof(in)];
@@ -79,15 +79,15 @@ network ClosedQueueingNetwork
     submodules:
         tandemQueue[numTandems]: TandemQueue {
             parameters:
-                sDelay = sDelay;
+                sDelay = parent.sDelay;
                 ownIndex = index;
             gates:
-                in[numTandems];
-                out[numTandems];
+                in[parent.numTandems];
+                out[parent.numTandems];
         }
     connections allowunconnected:
         for i=0..numTandems-1, for j=0..numTandems-1 {
-            tandemQueue[i].out[j] --> {  delay = sDelay; } --> tandemQueue[j].in[i] if i!=j;
+            tandemQueue[i].out[j] --> {  delay = parent.sDelay; } --> tandemQueue[j].in[i] if i!=j;
         }
 }
 

@@ -21,11 +21,11 @@ network ClientServer
         }
         switch: Switch {
             parameters:
-                pkRate = 1.5*numClients; // pkRate should be >= numClients, otherwise switch will become the bottleneck
+                pkRate = 1.5*parent.numClients; // pkRate should be >= numClients, otherwise switch will become the bottleneck
                 queueMaxLen = 20; // buffer max 20 packets
                 @display("p=210,170");
             gates:
-                port[numClients+1];
+                port[parent.numClients+1];
         }
         client[numClients]: Client {
             parameters:

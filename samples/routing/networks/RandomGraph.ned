@@ -21,7 +21,7 @@ network RandomGraph
                 address = index;
                 @display("p=100,100,ring");
             gates:
-                port[n];
+                port[parent.n];
         }
     connections allowunconnected:
         for i=0..n-2, for j=i+1..n-1 {

@@ -25,15 +25,15 @@ module Node
     submodules:
         app: <appType> like IApp {
             parameters:
-                address = address;
+                address = parent.address;
                 @display("p=140,60");
         }
         routing: Routing {
             parameters:
                 @display("p=140,130");
             gates:
-                in[sizeof(port)];
-                out[sizeof(port)];
+                in[sizeof(parent.port)];
+                out[sizeof(parent.port)];
         }
         queue[sizeof(port)]: L2Queue {
             parameters:

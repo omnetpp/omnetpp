@@ -42,7 +42,7 @@ module Hypercube
         node[2^dim]: <nodetype> like IHypercubeNode {
             parameters:
                 address = index; // module's position in (2^dim)-size vector
-                dim = dim;
+                dim = parent.dim;
         }
     connections:
         for i=0..2^dim-1, for j=0..dim-1 {

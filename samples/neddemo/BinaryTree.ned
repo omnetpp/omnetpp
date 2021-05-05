@@ -13,7 +13,7 @@ simple BinaryTreeNode extends Node
     parameters:
         @display("i=misc/node2_vs");
     gates:
-        inout parent;
+        inout toParent;
         inout leftChild;
         inout rightChild;
 }
@@ -27,8 +27,8 @@ network BinaryTree1
         node[2^height-1]: BinaryTreeNode;
     connections allowunconnected:
         for i=0..2^height-2, for j=0..2^height-2 {
-            node[i].leftChild <--> node[j].parent if j==2*i+1;
-            node[i].rightChild <--> node[j].parent if j==2*i+2;
+            node[i].leftChild <--> node[j].toParent if j==2*i+1;
+            node[i].rightChild <--> node[j].toParent if j==2*i+2;
         }
 }
 
@@ -41,8 +41,8 @@ network BinaryTree2
         node[2^height-1]: BinaryTreeNode;
     connections allowunconnected:
         for i=0..2^(height-1)-2 {
-            node[i].leftChild <--> node[2*i+1].parent;
-            node[i].rightChild <--> node[2*i+2].parent;
+            node[i].leftChild <--> node[2*i+1].toParent;
+            node[i].rightChild <--> node[2*i+2].toParent;
         }
 }
 

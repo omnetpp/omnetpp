@@ -24,7 +24,7 @@ network FullGraph
             parameters:
                 @display("p=100,100,ring");
             gates:
-                g[n];
+                g[parent.n];
         }
     connections allowunconnected:
         for i=0..(n-2), for j=(i+1)..(n-1) {

@@ -18,15 +18,15 @@ network ClosedQueueingNetB
     submodules:
         tandemQueue[numTandems]: TandemQueue {
             parameters:
-                sDelay = sDelay;
+                sDelay = parent.sDelay;
                 ownIndex = index;
             gates:
-                in[numTandems];
-                out[numTandems];
+                in[parent.numTandems];
+                out[parent.numTandems];
         }
     connections allowunconnected:
         for i=0..numTandems-1, for j=0..numTandems-1 {
-            tandemQueue[i].out[j] --> {  delay = sDelay; } --> tandemQueue[j].in[i] if i!=j;
+            tandemQueue[i].out[j] --> {  delay = parent.sDelay; } --> tandemQueue[j].in[i] if i!=j;
         }
 }
 

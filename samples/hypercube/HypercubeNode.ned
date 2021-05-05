@@ -21,20 +21,20 @@ module HypercubeNode like IHypercubeNode
     submodules:
         gen: HCGenerator {
             parameters:
-                numStations = 2^dim;
-                address = address;
+                numStations = 2^parent.dim;
+                address = parent.address;
                 iaTime = default(exponential(1s));
                 @display("p=82,82");
         }
         sink: HCSink {
             parameters:
-                address = address;
+                address = parent.address;
                 @display("p=176,82");
         }
         rte: HCRouter {
             parameters:
-                address = address;
-                dim = dim;
+                address = parent.address;
+                dim = parent.dim;
                 @display("p=125,171");
             gates:
                 in[dim];

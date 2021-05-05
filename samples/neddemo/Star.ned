@@ -39,7 +39,7 @@ network Star
             parameters:
                 @display("p=200,200");
             gates:
-                g[n];
+                g[parent.n];
         }
     connections allowunconnected:
         for i=0..n-1 {

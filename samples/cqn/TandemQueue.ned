@@ -27,13 +27,13 @@ module TandemQueue
             parameters:
                 @display("p=60,80");
             gates:
-                out[sizeof(in)];
+                out[sizeof(parent.in)];
         }
         queue[numQueues]: Queue {
             parameters:
                 @display("p=60,160,row,80");
             gates:
-                in[(index==0 ? sizeof(in) : 1)];
+                in[(index==0 ? sizeof(parent.in) : 1)];
         }
     connections allowunconnected:
         // connect switch outputs outside
@@ -47,15 +47,15 @@ module TandemQueue
         }
 
         // connect switch to first queue
-        switch.out[ownIndex] --> {  delay = sDelay; } --> queue[0].in[ownIndex];
+        switch.out[ownIndex] --> { delay = parent.sDelay; } --> queue[0].in[ownIndex];
 
         // connect queues to each other
         for i=0..numQueues-2 {
-            queue[i].out --> {  delay = qDelay; } --> queue[i+1].in[0];
+            queue[i].out --> { delay = parent.qDelay; } --> queue[i+1].in[0];
         }
 
         // connect last queue back to switch
-        queue[numQueues-1].out --> {  delay = qDelay; } --> switch.in;
+        queue[numQueues-1].out --> { delay = parent.qDelay; } --> switch.in;
 
 }
 
