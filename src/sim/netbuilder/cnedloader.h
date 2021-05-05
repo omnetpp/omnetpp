@@ -78,7 +78,7 @@ class SIM_API cNedLoader : public NedResourceCache
     virtual cNedDeclaration *getDecl(const char *qname) const override;
 
     /** Compile NED expression (which occurs in given attribute of the given node) to a cDynamicExpression, and cache it */
-    virtual cDynamicExpression *getCompiledExpression(const ExprRef& expr, bool inSubcomponentScope);
+    virtual cDynamicExpression *getCompiledExpression(const ExprRef& expr);
 };
 
 }  // namespace omnetpp

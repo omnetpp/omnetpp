@@ -86,13 +86,13 @@ cNedDeclaration *cNedLoader::getDecl(const char *qname) const
     return decl;
 }
 
-cDynamicExpression *cNedLoader::getCompiledExpression(const ExprRef& key, bool inSubcomponentScope)
+cDynamicExpression *cNedLoader::getCompiledExpression(const ExprRef& key)
 {
     auto it = cachedExpresssions.find(key);
     if (it != cachedExpresssions.end())
         return it->second;
     cDynamicExpression *expr = new cDynamicExpression();
-    expr->parseNedExpr(key.getExprText(), inSubcomponentScope);
+    expr->parseNedExpr(key.getExprText());
     cachedExpresssions[key] = expr;
     return expr;
 }

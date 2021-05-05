@@ -236,7 +236,7 @@ void cNedNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
             ASSERT(impl == component->par(paramName).impl() && !impl->isShared());
             try {
                 cDynamicExpression *expr = new cDynamicExpression();
-                expr->parseNedExpr(valueExpr.getExprText(), isSubcomponent);
+                expr->parseNedExpr(valueExpr.getExprText());
                 impl->setBaseDirectory(paramNode->getSourceFileDirectory());
                 impl->setExpression(expr);
                 if (expr->isAConstant())
@@ -352,7 +352,7 @@ void cNedNetworkBuilder::doAssignParametersFromPatterns(cComponent *component, c
     }
 }
 
-void cNedNetworkBuilder::doAssignParameterFromPattern(cPar& par, ParamElement *patternNode, bool isInSubcomponent, cComponent *evalContext)
+void cNedNetworkBuilder::doAssignParameterFromPattern(cPar& par, ParamElement *patternNode, bool isInSubcomponent, cComponent *evalContext) // TODO isSubcomponent: needed?
 {
     // note: this code should look similar to relevant part of doParam()
     try {
@@ -363,7 +363,7 @@ void cNedNetworkBuilder::doAssignParameterFromPattern(cPar& par, ParamElement *p
             // assign the parameter
             ASSERT(impl == par.impl() && !impl->isShared());
             cDynamicExpression *expr = new cDynamicExpression();
-            expr->parseNedExpr(valueExpr.getExprText(), isInSubcomponent);
+            expr->parseNedExpr(valueExpr.getExprText());
             impl->setBaseDirectory(patternNode->getSourceFileDirectory());
             impl->setExpression(expr);
             if (expr->isAConstant())
@@ -407,7 +407,7 @@ void cNedNetworkBuilder::doGateSizes(cModule *module, GatesElement *gatesNode, b
         doGateSize(module, (GateElement *)child, isSubcomponent);
 }
 
-void cNedNetworkBuilder::doGateSize(cModule *module, GateElement *gateNode, bool isSubcomponent)
+void cNedNetworkBuilder::doGateSize(cModule *module, GateElement *gateNode, bool isSubcomponent) // TODO isSubcomponent: needed?
 {
     try {
         if (gateNode->getIsVector()) {
@@ -420,7 +420,7 @@ void cNedNetworkBuilder::doGateSize(cModule *module, GateElement *gateNode, bool
                 if (!value) {
                     // not yet seen, compile and cache it
                     cDynamicExpression *dynamicExpr = new cDynamicExpression();
-                    dynamicExpr->parseNedExpr(vectorSizeExpr.getExprText(), isSubcomponent);
+                    dynamicExpr->parseNedExpr(vectorSizeExpr.getExprText());
                     value = new cIntParImpl();
                     value->setName("gatesize-expression");
                     value->setBaseDirectory(gateNode->getSourceFileDirectory());
@@ -634,7 +634,7 @@ std::string cNedNetworkBuilder::getSubmoduleTypeName(cModule *modp, SubmoduleEle
         if (!submoduleNode->getIsDefault()) {
             ExprRef likeExpr(submoduleNode, SubmoduleElement::ATT_LIKE_EXPR);
             if (!likeExpr.empty())
-                return evaluateAsString(likeExpr, modp, false);
+                return evaluateAsString(likeExpr, modp);
         }
 
         std::string submodFullName = submodName;
@@ -665,7 +665,7 @@ std::string cNedNetworkBuilder::getSubmoduleTypeName(cModule *modp, SubmoduleEle
         if (submoduleNode->getIsDefault()) {
             ExprRef likeExpr(submoduleNode, SubmoduleElement::ATT_LIKE_EXPR);
             if (!likeExpr.empty())
-                return evaluateAsString(likeExpr, modp, false);
+                return evaluateAsString(likeExpr, modp);
         }
         throw cRuntimeError(modp, "Unable to determine type name for submodule %s, missing entry %s.%s and no default value", submodName, key.c_str(), CFGID_TYPENAME->getName());
     }
@@ -706,7 +706,7 @@ bool cNedNetworkBuilder::getSubmoduleOrChannelTypeNameFromDeepAssignments(cModul
                         // return the value if it's not enclosed in 'default()', otherwise remember it
                         ExprRef typeNameExpr(patterns[j].patternNode, ParamElement::ATT_VALUE);
                         if (!typeNameExpr.empty()) {
-                            outTypeName = evaluateAsString(typeNameExpr, mod, false);
+                            outTypeName = evaluateAsString(typeNameExpr, mod);
                             if (patterns[j].patternNode->getIsDefault())
                                 found = true;
                             else
@@ -734,7 +734,7 @@ bool cNedNetworkBuilder::getSubmoduleOrChannelTypeNameFromDeepAssignments(cModul
                         // return the value if it's not enclosed in 'default()', otherwise remember it
                         ExprRef typeNameExpr(submodPatterns[j].patternNode, ParamElement::ATT_VALUE);
                         if (!typeNameExpr.empty()) {
-                            outTypeName = evaluateAsString(typeNameExpr, mod, true);
+                            outTypeName = evaluateAsString(typeNameExpr, mod);
                             if (submodPatterns[j].patternNode->getIsDefault())
                                 found = true;
                             else
@@ -778,7 +778,7 @@ void cNedNetworkBuilder::addSubmodule(cModule *compoundModule, SubmoduleElement 
                 ExprRef conditionExpr(conditionNode, ConditionElement::ATT_CONDITION);
                 const char *baseDirectory = compoundModule->getComponentType()->getSourceFileDirectory();
                 NedExpressionContext context(compoundModule, baseDirectory, NedExpressionContext::SUBMODULE_CONDITION, submodTypeName.c_str());
-                if (evaluateAsBool(conditionExpr, &context, false) == false)
+                if (evaluateAsBool(conditionExpr, &context) == false)
                     return;
             }
 
@@ -807,12 +807,12 @@ void cNedNetworkBuilder::addSubmodule(cModule *compoundModule, SubmoduleElement 
             // per-element, and we want to evaluate the condition only once for the whole vector
             const char *baseDirectory = compoundModule->getComponentType()->getSourceFileDirectory();
             NedExpressionContext context(compoundModule, baseDirectory, NedExpressionContext::SUBMODULE_ARRAY_CONDITION, nullptr);
-            if (evaluateAsBool(conditionExpr, &context, false) == false)
+            if (evaluateAsBool(conditionExpr, &context) == false)
                 return;
         }
 
         // note: we don't try to resolve moduleType if vector size is zero
-        int vectorSize = (int)evaluateAsLong(vectorSizeExpr, compoundModule, false);
+        int vectorSize = (int)evaluateAsLong(vectorSizeExpr, compoundModule);
         compoundModule->addSubmoduleVector(submodName, vectorSize);
         ModulePtrVector& v = submodMap[submodName];
         cModuleType *submodType = nullptr;
@@ -886,7 +886,7 @@ void cNedNetworkBuilder::doLoopOrCondition(cModule *modp, NedElement *loopOrCond
         // check condition
         ConditionElement *conditionNode = (ConditionElement *)loopOrConditionNode;
         ExprRef conditionExpr(conditionNode, ConditionElement::ATT_CONDITION);
-        if (evaluateAsBool(conditionExpr, modp, false) == true) {
+        if (evaluateAsBool(conditionExpr, modp) == true) {
             // do the body of the "if": either further "for"'s and "if"'s, or
             // the connection(group) itself that we are children of.
             doConnOrConnGroupBody(modp, loopOrConditionNode->getParent(), loopOrConditionNode->getNextSibling());
@@ -896,8 +896,8 @@ void cNedNetworkBuilder::doLoopOrCondition(cModule *modp, NedElement *loopOrCond
         LoopElement *loopNode = (LoopElement *)loopOrConditionNode;
         ExprRef startExpr(loopNode, LoopElement::ATT_FROM_VALUE);
         ExprRef endExpr(loopNode, LoopElement::ATT_TO_VALUE);
-        long start = evaluateAsLong(startExpr, modp, false);
-        long end = evaluateAsLong(endExpr, modp, false);
+        long start = evaluateAsLong(startExpr, modp);
+        long end = evaluateAsLong(endExpr, modp);
 
         // do loop
         long& i = LoopVar::pushVar(loopNode->getParamName());
@@ -1052,7 +1052,7 @@ cGate *cNedNetworkBuilder::resolveGate(cModule *compoundModule,
         }
     }
     else {  // (gateIndexExpr)
-        int gateIndex = (int)evaluateAsLong(gateIndexExpr, compoundModule, false);
+        int gateIndex = (int)evaluateAsLong(gateIndexExpr, compoundModule);
         gate = module->gate(gateName2, gateIndex);
     }
     return gate;
@@ -1090,7 +1090,7 @@ void cNedNetworkBuilder::resolveInoutGate(cModule *compoundModule,
     }
     else {  // (gateIndexExpr)
         // optimization possibility: add gatePair() method to cModule to spare one lookup
-        int gateIndex = (int)evaluateAsLong(gateIndexExpr, compoundModule, false);
+        int gateIndex = (int)evaluateAsLong(gateIndexExpr, compoundModule);
         outGate1 = module->gateHalf(gateName, cGate::INPUT, gateIndex);
         outGate2 = module->gateHalf(gateName, cGate::OUTPUT, gateIndex);
     }
@@ -1106,7 +1106,7 @@ cModule *cNedNetworkBuilder::resolveModuleForConnection(cModule *compoundModule,
         return compoundModule;
     }
     else {
-        int moduleIndex = moduleIndexExpr.empty() ? 0 : (int)evaluateAsLong(moduleIndexExpr, compoundModule, false);
+        int moduleIndex = moduleIndexExpr.empty() ? 0 : (int)evaluateAsLong(moduleIndexExpr, compoundModule);
         cModule *module = _submodule(compoundModule, moduleName, moduleIndex);
         if (!module) {
             if (moduleIndexExpr.empty())
@@ -1146,7 +1146,7 @@ std::string cNedNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *s
         if (!connectionNode->getIsDefault()) {
             ExprRef likeExpr(connectionNode, ConnectionElement::ATT_LIKE_EXPR);
             if (!likeExpr.empty())
-                return evaluateAsString(likeExpr, parentmodp, false);
+                return evaluateAsString(likeExpr, parentmodp);
         }
 
         // produce key to identify channel within the parent module, e.g. "in[3].channel" or "queue.out.channel"
@@ -1179,7 +1179,7 @@ std::string cNedNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *s
                 return parentmodp->par(connectionNode->getLikeExpr()).stringValue();
             ExprRef likeExpr(connectionNode, ConnectionElement::ATT_LIKE_EXPR);
             if (!likeExpr.empty())
-                return evaluateAsString(likeExpr, parentmodp, false);
+                return evaluateAsString(likeExpr, parentmodp);
         }
         throw cRuntimeError(parentmodp, "Unable to determine type name for channel: Missing config entry %s.%s and no default value", key.c_str(), CFGID_TYPENAME->getName());
     }
@@ -1252,36 +1252,36 @@ cChannelType *cNedNetworkBuilder::findAndCheckChannelTypeLike(const char *channe
     return (cChannelType *)componenttype;
 }
 
-cDynamicExpression *cNedNetworkBuilder::getOrCreateExpression(const ExprRef& exprRef, bool inSubcomponentScope)
+cDynamicExpression *cNedNetworkBuilder::getOrCreateExpression(const ExprRef& exprRef)
 {
-    return cNedLoader::getInstance()->getCompiledExpression(exprRef, inSubcomponentScope);
+    return cNedLoader::getInstance()->getCompiledExpression(exprRef);
 }
 
-long cNedNetworkBuilder::evaluateAsLong(const ExprRef& exprRef, cComponent *contextComponent, bool inSubcomponentScope)
-{
-    const char *baseDirectory = contextComponent->getComponentType()->getSourceFileDirectory();
-    cExpression::Context context(contextComponent, baseDirectory);
-    return evaluateAsLong(exprRef, &context, inSubcomponentScope);
-}
-
-bool cNedNetworkBuilder::evaluateAsBool(const ExprRef& exprRef, cComponent *contextComponent, bool inSubcomponentScope)
+long cNedNetworkBuilder::evaluateAsLong(const ExprRef& exprRef, cComponent *contextComponent)
 {
     const char *baseDirectory = contextComponent->getComponentType()->getSourceFileDirectory();
     cExpression::Context context(contextComponent, baseDirectory);
-    return evaluateAsBool(exprRef, &context, inSubcomponentScope);
+    return evaluateAsLong(exprRef, &context);
 }
 
-std::string cNedNetworkBuilder::evaluateAsString(const ExprRef& exprRef, cComponent *contextComponent, bool inSubcomponentScope)
+bool cNedNetworkBuilder::evaluateAsBool(const ExprRef& exprRef, cComponent *contextComponent)
 {
     const char *baseDirectory = contextComponent->getComponentType()->getSourceFileDirectory();
     cExpression::Context context(contextComponent, baseDirectory);
-    return evaluateAsString(exprRef, &context, inSubcomponentScope);
+    return evaluateAsBool(exprRef, &context);
 }
 
-long cNedNetworkBuilder::evaluateAsLong(const ExprRef& exprRef, cExpression::Context *context, bool inSubcomponentScope)
+std::string cNedNetworkBuilder::evaluateAsString(const ExprRef& exprRef, cComponent *contextComponent)
+{
+    const char *baseDirectory = contextComponent->getComponentType()->getSourceFileDirectory();
+    cExpression::Context context(contextComponent, baseDirectory);
+    return evaluateAsString(exprRef, &context);
+}
+
+long cNedNetworkBuilder::evaluateAsLong(const ExprRef& exprRef, cExpression::Context *context)
 {
     try {
-        cDynamicExpression *expr = getOrCreateExpression(exprRef, inSubcomponentScope);
+        cDynamicExpression *expr = getOrCreateExpression(exprRef);
         return expr->intValue(context);
     }
     catch (std::exception& e) {
@@ -1290,10 +1290,10 @@ long cNedNetworkBuilder::evaluateAsLong(const ExprRef& exprRef, cExpression::Con
     }
 }
 
-bool cNedNetworkBuilder::evaluateAsBool(const ExprRef& exprRef, cExpression::Context *context, bool inSubcomponentScope)
+bool cNedNetworkBuilder::evaluateAsBool(const ExprRef& exprRef, cExpression::Context *context)
 {
     try {
-        cDynamicExpression *expr = getOrCreateExpression(exprRef, inSubcomponentScope);
+        cDynamicExpression *expr = getOrCreateExpression(exprRef);
         return expr->boolValue(context);
     }
     catch (std::exception& e) {
@@ -1302,10 +1302,10 @@ bool cNedNetworkBuilder::evaluateAsBool(const ExprRef& exprRef, cExpression::Con
     }
 }
 
-std::string cNedNetworkBuilder::evaluateAsString(const ExprRef& exprRef, cExpression::Context *context, bool inSubcomponentScope)
+std::string cNedNetworkBuilder::evaluateAsString(const ExprRef& exprRef, cExpression::Context *context)
 {
     try {
-        cDynamicExpression *expr = getOrCreateExpression(exprRef, inSubcomponentScope);
+        cDynamicExpression *expr = getOrCreateExpression(exprRef);
         return expr->stringValue(context);
     }
     catch (std::exception& e) {

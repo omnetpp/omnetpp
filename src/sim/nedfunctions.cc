@@ -844,7 +844,7 @@ static cValue opp_eval(const char *txt, cExpression::Context *context) //TOOD si
 {
     try {
         cDynamicExpression expr;
-        expr.parseNedExpr(txt, false);
+        expr.parseNedExpr(txt);
         return expr.evaluate(context);
     }
     catch (std::exception& e) {

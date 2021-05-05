@@ -77,6 +77,8 @@ static int parenDepth = 0;
 
 using namespace omnetpp::nedxml;
 
+//TODO "parent"
+
 %}
 
 %%

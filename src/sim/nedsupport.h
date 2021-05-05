@@ -78,13 +78,12 @@ class ModuleIndex : public LeafNode
 class Exists : public LeafNode
 {
     std::string name;
-    bool inSubcomponentScope;
   protected:
     virtual ExprValue evaluate(Context *context) const override;
     virtual void print(std::ostream& out, int spaciousness) const override;
   public:
-    Exists(const char *ident, bool inSubcomponentScope) : name(ident), inSubcomponentScope(inSubcomponentScope) {}
-    Exists *dup() const override {return new Exists(name.c_str(), inSubcomponentScope);}
+    Exists(const char *ident) : name(ident) {}
+    Exists *dup() const override {return new Exists(name.c_str());}
     virtual std::string getName() const override {return "exists";}
 };
 
@@ -106,16 +105,15 @@ class ParameterRef : public LeafNode
 {
   protected:
     std::string paramName;
-    bool inSubcomponentScope;  // if true, operate on context module's parent
     bool ofThis; // if true, "this.ident" form
+    bool ofParent; // if true, "parent.ident" form
   protected:
     virtual ExprValue evaluate(Context *context) const override;
     virtual void print(std::ostream& out, int spaciousness) const override;
   public:
-    ParameterRef(const char *paramName, bool inSubcomponentScope, bool ofThis) :
-        paramName(paramName), inSubcomponentScope(inSubcomponentScope), ofThis(ofThis) {}
-    ParameterRef *dup() const override {return new ParameterRef(paramName.c_str(), inSubcomponentScope, ofThis);}
-    virtual std::string getName() const override {return std::string(ofThis ? "this." : "") + paramName;}
+    ParameterRef(const char *paramName, bool ofThis, bool ofParent) : paramName(paramName), ofThis(ofThis), ofParent(ofParent) {}
+    ParameterRef *dup() const override {return new ParameterRef(paramName.c_str(), ofThis, ofParent);}
+    virtual std::string getName() const override {return std::string(ofThis ? "this." : ofParent ? "parent." : "") + paramName;}
 };
 
 /**
@@ -126,14 +124,12 @@ class SubmoduleParameterRef : public LeafNode
   protected:
     std::string submoduleName;
     std::string paramName;
-    bool inSubcomponentScope;  // if true, operate on context module's parent
   protected:
     virtual ExprValue evaluate(Context *context) const override;
     virtual void print(std::ostream& out, int spaciousness) const override;
   public:
-    SubmoduleParameterRef(const char *submoduleName, const char *paramName, bool inSubcomponentScope) :
-        submoduleName(submoduleName), paramName(paramName), inSubcomponentScope(inSubcomponentScope) {}
-    SubmoduleParameterRef *dup() const override {return new SubmoduleParameterRef(submoduleName.c_str(), paramName.c_str(), inSubcomponentScope);}
+    SubmoduleParameterRef(const char *submoduleName, const char *paramName) : submoduleName(submoduleName), paramName(paramName) {}
+    SubmoduleParameterRef *dup() const override {return new SubmoduleParameterRef(submoduleName.c_str(), paramName.c_str());}
     virtual std::string getName() const override {return submoduleName+"."+paramName;}
 };
 
@@ -145,13 +141,12 @@ class IndexedSubmoduleParameterRef : public UnaryNode
   protected:
     std::string submoduleName;
     std::string paramName;
-    bool inSubcomponentScope;  // if true, operate on context module's parent
   protected:
     virtual ExprValue evaluate(Context *context) const override;
     virtual void print(std::ostream& out, int spaciousness) const override;
   public:
-    IndexedSubmoduleParameterRef(const char *submoduleName, const char *paramName, bool inSubcomponentScope);
-    IndexedSubmoduleParameterRef *dup() const override {return new IndexedSubmoduleParameterRef(submoduleName.c_str(), paramName.c_str(), inSubcomponentScope);}
+    IndexedSubmoduleParameterRef(const char *submoduleName, const char *paramName);
+    IndexedSubmoduleParameterRef *dup() const override {return new IndexedSubmoduleParameterRef(submoduleName.c_str(), paramName.c_str());}
     virtual std::string getName() const override {return submoduleName+"[]."+paramName;}
     virtual Precedence getPrecedence() const override {return ELEM;}
 };
@@ -187,41 +182,26 @@ class LoopVar : public LeafNode
 
 
 /**
- * @brief sizeof operator: sizeof(ident), sizeof(this.ident) form
+ * @brief sizeof operator: sizeof(ident), sizeof(this), sizeof(parent),
+ * sizeof(this.ident), sizeof(parent.ident) forms.
  */
 class SizeofGateOrSubmodule : public LeafNode
 {
   protected:
-    std::string name;
-    bool inSubcomponentScope;  // if true, operate on context module's parent
-    bool ofThis; // "sizeof(this.ident)"; only when inSubcomponentScope==false
+    std::string name1;
+    std::string name2;  // may be empty
   protected:
     virtual ExprValue evaluate(Context *context) const override;
     virtual void print(std::ostream& out, int spaciousness) const override;
+    // helpers:
+    virtual cModule *parentModule(cExpression::Context *context) const;
+    virtual cModule *contextAsModule(cExpression::Context *context) const;
+    virtual cModule *submodule(cModule *module, const char *name) const;
+    virtual intval_t gateOrSubmoduleSize(cModule *module, const char *name) const;
   public:
-    SizeofGateOrSubmodule(const char *name, bool inSubcomponentScope, bool ofThis) :
-        name(name), inSubcomponentScope(inSubcomponentScope), ofThis(ofThis) {}
-    SizeofGateOrSubmodule *dup() const override {return new SizeofGateOrSubmodule(name.c_str(), inSubcomponentScope, ofThis);}
-    virtual std::string getName() const override {return std::string("sizeof(")+(ofThis?"this.":"")+name+")";}
-};
-
-/**
- * @brief sizeof operator: sizeof(ident.ident) form
- */
-class SizeofSubmoduleGate : public LeafNode
-{
-  protected:
-    std::string submoduleName;
-    std::string gateName;
-    bool inSubcomponentScope;  // if true, operate on context module's parent
-  protected:
-    virtual ExprValue evaluate(Context *context) const override;
-    virtual void print(std::ostream& out, int spaciousness) const override;
-  public:
-    SizeofSubmoduleGate(const char *submodule, const char *gate, bool inSubcomponentScope) :
-        submoduleName(submodule), gateName(gate), inSubcomponentScope(inSubcomponentScope) {}
-    SizeofSubmoduleGate *dup() const override {return new SizeofSubmoduleGate(submoduleName.c_str(), gateName.c_str(), inSubcomponentScope);}
-    virtual std::string getName() const override {return "sizeof("+submoduleName+"."+gateName+")";}
+    SizeofGateOrSubmodule(const char *name1, const char *name2) : name1(name1), name2(opp_nulltoempty(name2)) {}
+    SizeofGateOrSubmodule *dup() const override {return new SizeofGateOrSubmodule(name1.c_str(), name2.c_str());}
+    virtual std::string getName() const override {return std::string("sizeof(") + (name2.empty() ? name1 : (name1 + "." + name2)) + ")";}
 };
 
 /**
@@ -232,14 +212,13 @@ class SizeofIndexedSubmoduleGate : public UnaryNode
   protected:
     std::string submoduleName;
     std::string gateName;
-    bool inSubcomponentScope;  // if true, operate on context module's parent
   protected:
     virtual ExprValue evaluate(Context *context) const override;
     virtual void print(std::ostream& out, int spaciousness) const override;
   public:
-    SizeofIndexedSubmoduleGate(const char *submodule, const char *gate, bool inSubcomponentScope) :
-        submoduleName(submodule), gateName(gate), inSubcomponentScope(inSubcomponentScope) {}
-    SizeofIndexedSubmoduleGate *dup() const override {return new SizeofIndexedSubmoduleGate(submoduleName.c_str(), gateName.c_str(), inSubcomponentScope);}
+    SizeofIndexedSubmoduleGate(const char *submodule, const char *gate) :
+        submoduleName(submodule), gateName(gate) {}
+    SizeofIndexedSubmoduleGate *dup() const override {return new SizeofIndexedSubmoduleGate(submoduleName.c_str(), gateName.c_str());}
     virtual std::string getName() const override {return "sizeof("+submoduleName+"[]."+gateName+")";}
     virtual Precedence getPrecedence() const override {return ELEM;}
 };
@@ -268,8 +247,6 @@ class NedArrayNode : public ArrayNode
 
 class NedOperatorTranslator : public Expression::AstTranslator
 {
-  private:
-    bool inSubcomponentScope;
   protected:
     typedef Expression::AstNode AstNode;
     ExprNode *translateSizeof(AstNode *astNode, AstTranslator *translatorForChildren);
@@ -279,7 +256,7 @@ class NedOperatorTranslator : public Expression::AstTranslator
     ExprNode *translateMember(AstNode *astNode, AstTranslator *translatorForChildren);
 
   public:
-    NedOperatorTranslator(bool inSubcomponentScope) : inSubcomponentScope(inSubcomponentScope) {}
+    NedOperatorTranslator() {}
     virtual ExprNode *translateToExpressionTree(AstNode *astNode, AstTranslator *translatorForChildren) override;
 };
 

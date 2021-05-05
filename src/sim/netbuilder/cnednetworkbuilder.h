@@ -110,13 +110,13 @@ class SIM_API cNedNetworkBuilder
 
     cChannelType *findAndCheckChannelType(const char *channelTypeName, cModule *modp);
     cChannelType *findAndCheckChannelTypeLike(const char *channelTypeName, const char *likeType, cModule *modp);
-    cDynamicExpression *getOrCreateExpression(const ExprRef& exprRef, bool inSubcomponentScope);
-    long evaluateAsLong(const ExprRef& exprRef, cComponent *contextComponent, bool inSubcomponentScope);
-    bool evaluateAsBool(const ExprRef& exprRef, cComponent *contextComponent, bool inSubcomponentScope);
-    std::string evaluateAsString(const ExprRef& exprRef, cComponent *contextComponent, bool inSubcomponentScope);
-    long evaluateAsLong(const ExprRef& exprRef, cExpression::Context *context, bool inSubcomponentScope);
-    bool evaluateAsBool(const ExprRef& exprRef, cExpression::Context *context, bool inSubcomponentScope);
-    std::string evaluateAsString(const ExprRef& exprRef, cExpression::Context *context, bool inSubcomponentScope);
+    cDynamicExpression *getOrCreateExpression(const ExprRef& exprRef);
+    long evaluateAsLong(const ExprRef& exprRef, cComponent *contextComponent);
+    bool evaluateAsBool(const ExprRef& exprRef, cComponent *contextComponent);
+    std::string evaluateAsString(const ExprRef& exprRef, cComponent *contextComponent);
+    long evaluateAsLong(const ExprRef& exprRef, cExpression::Context *context);
+    bool evaluateAsBool(const ExprRef& exprRef, cExpression::Context *context);
+    std::string evaluateAsString(const ExprRef& exprRef, cExpression::Context *context);
     bool getBooleanProperty(NedElement *componentNode, const char *name);
 
   public:

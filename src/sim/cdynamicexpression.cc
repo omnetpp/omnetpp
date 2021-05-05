@@ -215,9 +215,9 @@ void cDynamicExpression::parse(const char *text, IResolver *res)
     expression->parse(text, &translator);
 }
 
-void cDynamicExpression::parseNedExpr(const char *text, bool inSubcomponentScope)
+void cDynamicExpression::parseNedExpr(const char *text)
 {
-    NedOperatorTranslator nedOperatorTranslator(inSubcomponentScope);
+    NedOperatorTranslator nedOperatorTranslator;
     NedFunctionTranslator nedFunctionTranslator;
     Expression::MultiAstTranslator translator({ &nedOperatorTranslator, &nedFunctionTranslator, Expression::getDefaultAstTranslator() });
     expression->parse(text, &translator);
