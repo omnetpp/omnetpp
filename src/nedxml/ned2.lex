@@ -77,8 +77,6 @@ static int parenDepth = 0;
 
 using namespace omnetpp::nedxml;
 
-//TODO "parent"
-
 %}
 
 %%
@@ -136,6 +134,7 @@ using namespace omnetpp::nedxml;
 "nullptr"                { countChars(); return NULLPTR_; }
 "null"                   { countChars(); return NULL_; }
 "this"                   { countChars(); return THIS_; }
+"parent"                 { countChars(); return PARENT; }
 "default"                { countChars(); return DEFAULT; }
 "ask"                    { countChars(); return ASK; }
 "const"                  { countChars(); return CONST_; }

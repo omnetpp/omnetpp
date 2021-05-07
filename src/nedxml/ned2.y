@@ -28,7 +28,7 @@
 %token INPUT_ OUTPUT_ INOUT_
 %token IF FOR
 %token RIGHTARROW LEFTARROW DBLARROW TO
-%token THIS_ DEFAULT ASK CONST_ SIZEOF INDEX_ EXISTS TYPENAME XMLDOC
+%token THIS_ PARENT DEFAULT ASK CONST_ SIZEOF INDEX_ EXISTS TYPENAME XMLDOC
 %token TRUE_ FALSE_ NAN_ INF_ UNDEFINED_ NULLPTR_ NULL_
 
 /* Other tokens: identifiers, numeric literals, operators etc */
@@ -1613,7 +1613,7 @@ key
         ;
 
 simple_expr
-        : identifier
+        : qname
         | operator
         | literal
         ;
@@ -1629,19 +1629,25 @@ funcname
         | XMLDOC
         ;
 
-identifier
+qname_elem
         : NAME
-        | THIS_ '.' NAME
-        | NAME '.' NAME
-        | NAME '[' expr ']' '.' NAME
+        | NAME '[' expr ']'
+        | THIS_
+        | PARENT
+        ;
+
+qname
+        : qname '.' qname_elem
+        | qname_elem
         ;
 
 operator
         : INDEX_
-        | INDEX_ '(' ')'
-        | EXISTS '(' identifier ')'
-        | SIZEOF '(' identifier ')'
         | TYPENAME
+        | qname '.' INDEX_
+        | qname '.' TYPENAME
+        | EXISTS '(' qname ')'
+        | SIZEOF '(' qname ')'
         ;
 
 literal
