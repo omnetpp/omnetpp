@@ -34,7 +34,7 @@ class cObject;
 class cComponent;
 
 // logically belongs to csimulation.h but must be here because of declaration order
-enum {CTX_NONE, CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_REFRESHDISPLAY, CTX_FINISH, CTX_CLEANUP};
+enum ContextType {CTX_NONE, CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_REFRESHDISPLAY, CTX_FINISH, CTX_CLEANUP};
 
 
 /**
@@ -151,13 +151,13 @@ class SIM_API cMethodCallContextSwitcher : public cContextSwitcher
 class SIM_API cContextTypeSwitcher
 {
   private:
-    int savedContextType;
+    ContextType savedContextType;
 
   public:
     /**
-     * Switches the context type (see CTX_xxx constants)
+     * Switches the to the given context type.
      */
-    cContextTypeSwitcher(int contexttype);
+    cContextTypeSwitcher(ContextType contexttype);
 
     /**
      * Restores the original context type

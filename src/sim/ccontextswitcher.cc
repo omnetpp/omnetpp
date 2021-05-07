@@ -101,7 +101,7 @@ cMethodCallContextSwitcher::~cMethodCallContextSwitcher()
 
 //----
 
-cContextTypeSwitcher::cContextTypeSwitcher(int contextType)
+cContextTypeSwitcher::cContextTypeSwitcher(ContextType contextType)
 {
     // save current context type and switch to new one
     cSimulation *simulation = getSimulation();

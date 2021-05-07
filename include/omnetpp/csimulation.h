@@ -19,6 +19,7 @@
 #include "simkerneldefs.h"
 #include "simtime_t.h"
 #include "ccomponent.h"
+#include "ccontextswitcher.h"
 #include "cexception.h"
 
 namespace omnetpp {
@@ -79,14 +80,14 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     cModule *systemModule = nullptr;    // pointer to system (root) module
     cSimpleModule *currentActivityModule = nullptr; // the module currently executing activity() (nullptr if handleMessage() or in main)
     cComponent *contextComponent = nullptr;  // component in context (or nullptr)
-    int contextType;                    // the innermost context type (one of CTX_BUILD, CTX_EVENT, CTX_INITIALIZE, CTX_FINISH)
+    ContextType contextType;            // the innermost context type
     cModuleType *networkType = nullptr; // network type
     cFutureEventSet *fes = nullptr;     // stores future events
     cScheduler *scheduler = nullptr;    // event scheduler
     simtime_t warmupPeriod;             // warm-up period
 
-    int simulationStage;       // simulation stage (one of CTX_NONE, CTX_BUILD, CTX_EVENT, CTX_INITIALIZE, CTX_FINISH or CTX_CLEANUP)
-    simtime_t currentSimtime;  // simulation time (time of current event)
+    ContextType simulationStage;        // simulation stage
+    simtime_t currentSimtime;           // simulation time (time of current event)
     eventnumber_t currentEventNumber = 0; // sequence number of current event
 
     cException *exception;    // helper variable to get exceptions back from activity()
@@ -488,9 +489,9 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     void setContext(cComponent *component);
 
     /**
-     * Sets the context type (see CTX_xxx constants). Used internally.
+     * Sets the context type for the context module. Used internally.
      */
-    void setContextType(int type)  {contextType = type;}
+    void setContextType(ContextType type)  {contextType = type;}
 
     /**
      * Sets global context. Used internally.
@@ -510,13 +511,13 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     cComponent *getContext() const {return contextComponent;}
 
     /**
-     * Returns value only valid if getContextModule()!=nullptr. Returns one of:
-     * CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_FINISH, depending on
-     * what the module in context is doing. In case of nested contexts
+     * Returns one of the CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_FINISH constants,
+     * depending on what the module in context is doing. In case of nested contexts
      * (e.g. when a module is dynamically created, initialized or manually
      * finalized during simulation), the innermost context type is returned.
+     * The return value is only valid if getContextModule() != nullptr.
      */
-    int getContextType() const {return contextType;}
+    ContextType getContextType() const {return contextType;}
 
     /**
      * If the current context is a module, returns its pointer,
