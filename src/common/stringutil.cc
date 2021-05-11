@@ -478,7 +478,7 @@ static std::vector<int> computeMaxColumnWidths(const std::string& text)
     return widths;
 }
 
-std::string opp_formatTable(const std::string& text, int spacing, const std::vector<int>& userColumnWidths)
+std::string opp_format_table(const std::string& text, int spacing, const std::vector<int>& userColumnWidths)
 {
     std::vector<int> columnWidths = computeMaxColumnWidths(text);
     for (size_t i = 0; i < std::min(userColumnWidths.size(), columnWidths.size()); i++)
@@ -651,7 +651,7 @@ std::string opp_join(const std::vector<std::string>& strings, const char *separa
 }
 
 // returns 0 iff the two strings are equal by strcmp().
-int strdictcmp(const char *s1, const char *s2)
+int opp_strdictcmp(const char *s1, const char *s2)
 {
     int firstdiff = 0;
     char c1, c2;
@@ -974,7 +974,7 @@ static bool isInvalidChar(char c)  // illegal or trouble-causing
     return c < ' ' || c >= 127 || strchr("/\\:?*<>|'`\"$%{}^&", c) != nullptr;
 }
 
-std::string opp_sanitizeFileName(const std::string& fileName)
+std::string opp_sanitizefilename(const std::string& fileName)
 {
     std::string tmp = fileName;
     tmp.erase(std::remove_if(tmp.begin(), tmp.end(), &isInvalidChar), tmp.end());
@@ -1054,7 +1054,7 @@ const char *opp_strnistr(const char *haystack, const char *needle, int n, bool c
     return nullptr;
 }
 
-std::string opp_latexQuote(const std::string& str)
+std::string opp_latexquote(const std::string& str)
 {
     std::string tmp = str;
     tmp = opp_replacesubstring(tmp, "\\", "\b", true);  // temporarily
@@ -1072,7 +1072,7 @@ std::string opp_latexQuote(const std::string& str)
     return tmp.c_str();
 }
 
-std::string opp_latexInsertBreaks(const std::string& str)
+std::string opp_latex_insert_breaks(const std::string& str)
 {
     std::string tmp = str;
     tmp = opp_replacesubstring(tmp, "-", "-{\\allowbreak}", true);
@@ -1115,7 +1115,7 @@ std::string opp_latexInsertBreaks(const std::string& str)
     return tmp;
 }
 
-std::string opp_markup2Latex(const std::string& str)
+std::string opp_markup2latex(const std::string& str)
 {
     // replace `monospace text` to \ttt{monospace text}
     std::string tmp = str;
@@ -1139,7 +1139,7 @@ std::string opp_markup2Latex(const std::string& str)
             tmp.replace(pos, strlen(substring), replacement[idx]);
             pos += strlen(replacement[idx]);
             // replace content
-            std::string processed = opp_latexInsertBreaks(tmp.substr(begin, end - begin));
+            std::string processed = opp_latex_insert_breaks(tmp.substr(begin, end - begin));
             pos += strlen(processed.c_str()) - (end - begin);
             tmp.replace(begin, end - begin, processed);
         }
@@ -1151,7 +1151,7 @@ std::string opp_markup2Latex(const std::string& str)
     return tmp;
 }
 
-std::string opp_xmlQuote(const std::string& str)
+std::string opp_xmlquote(const std::string& str)
 {
     if (!strchr(str.c_str(), '<') && !strchr(str.c_str(), '>') && !strchr(str.c_str(), '&') && !strchr(str.c_str(), '"'))
         return str;

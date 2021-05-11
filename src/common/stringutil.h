@@ -232,7 +232,7 @@ COMMON_API std::vector<std::string> opp_split_and_trim(const std::string& text, 
  * by specifying positive numbers at the respective indices in userColumnWidths[]
  * (i.e. specify 0 or -1 in the array to use automatic width.)
  */
-COMMON_API std::string opp_formatTable(const std::string& text, int spacing=2, const std::vector<int>& userColumnWidths=std::vector<int>());
+COMMON_API std::string opp_format_table(const std::string& text, int spacing=2, const std::vector<int>& userColumnWidths=std::vector<int>());
 
 /**
  * Returns true if the first string begins with the second string.
@@ -325,7 +325,7 @@ COMMON_API std::string opp_join(const std::vector<std::string>& strings, const c
  * being that integers embedded in the strings are compared in
  * numerical order.
  */
-COMMON_API int strdictcmp(const char *s1, const char *s2);
+COMMON_API int opp_strdictcmp(const char *s1, const char *s2);
 
 /**
  * Prints the d integer into the given buffer, then returns the buffer pointer.
@@ -476,7 +476,7 @@ COMMON_API const char *opp_findmatchingparen(const char *s);
  * also removed. The file name should not contain a directory part, because
  * slashes (and backslashes) are also removed from the string.
  */
-COMMON_API std::string opp_sanitizeFileName(const std::string& fileName);
+COMMON_API std::string opp_sanitizefilename(const std::string& fileName);
 
 /**
  * Encode a string for use as (part of) a file name, in a URLEncode-like
@@ -500,22 +500,22 @@ COMMON_API const char *opp_strnistr(const char *haystack, const char *needle, in
 /**
  * Rudimentary quoting for LaTeX. Escape underscores, backslashes, dollar signs, etc.
  */
-COMMON_API std::string opp_latexQuote(const std::string& str);
+COMMON_API std::string opp_latexquote(const std::string& str);
 
 /**
- * Add break opportunities.
+ * Add break opportunities to LaTeX source.
  */
-COMMON_API std::string opp_latexInsertBreaks(const std::string& str);
+COMMON_API std::string opp_latex_insert_breaks(const std::string& str);
 
 /**
  * Convert opp markup to LaTeX.
  */
-COMMON_API std::string opp_markup2Latex(const std::string& str);
+COMMON_API std::string opp_markup2latex(const std::string& str);
 
 /**
  * XML-quote the string.
  */
-COMMON_API std::string opp_xmlQuote(const std::string& str);
+COMMON_API std::string opp_xmlquote(const std::string& str);
 
 /**
  * Convert an integer to string, using the specified string to separate digit groups.

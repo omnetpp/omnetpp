@@ -207,7 +207,7 @@ void IDList::doSort<const char *>(const std::function<const char *(ID)>& getter,
 {
     READER_MUTEX(mgr);
 
-    // This method only differs from the templated one in that it uses strdicttmp() instead of op<.
+    // This method only differs from the templated one in that it uses opp_strdicttmp() instead of op<.
 
     size_t n = v.size();
     std::vector<std::pair<const char *,ID>> a(n);
@@ -218,11 +218,11 @@ void IDList::doSort<const char *>(const std::function<const char *(ID)>& getter,
         if (index >= 0 && index < n)
             ResultFileManager::_setreservedbit(a[index].second); // use ID's reserved bit to store whether that ID is part of the selection or not
 
-    // sorting. note: in debug mode, strdictcmp() is significantly slower than str(case)cmp(), but in release mode the difference is smaller
+    // sorting. note: in debug mode, opp_strdictcmp() is significantly slower than str(case)cmp(), but in release mode the difference is smaller
     if (ascending)
-        std::stable_sort(a.begin(), a.end(), [intrpt](const auto& lhs, const auto& rhs) {check(intrpt); return strdictcmp(lhs.first, rhs.first) < 0;});
+        std::stable_sort(a.begin(), a.end(), [intrpt](const auto& lhs, const auto& rhs) {check(intrpt); return opp_strdictcmp(lhs.first, rhs.first) < 0;});
     else
-        std::stable_sort(a.begin(), a.end(), [intrpt](const auto& lhs, const auto& rhs) {check(intrpt); return strdictcmp(lhs.first, rhs.first) > 0;});
+        std::stable_sort(a.begin(), a.end(), [intrpt](const auto& lhs, const auto& rhs) {check(intrpt); return opp_strdictcmp(lhs.first, rhs.first) > 0;});
 
     selectionIndices.clear();
     for (int i = 0; i < n; i++) {

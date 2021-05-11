@@ -1402,7 +1402,7 @@ class DuplicateStringCollector
 
 inline bool strdictLess(const std::string& first, const std::string& second)
 {
-    return strdictcmp(first.c_str(), second.c_str()) < 0;
+    return opp_strdictcmp(first.c_str(), second.c_str()) < 0;
 }
 
 struct StrDictCompare

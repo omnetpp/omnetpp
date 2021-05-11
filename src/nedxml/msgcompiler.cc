@@ -457,7 +457,7 @@ void MsgCompiler::printPropertiesLatexDocu(std::ostream& out)
         out << "\\item[" << p->getIndex() << "] ";
         out << "\\textit{(type: " << opp_join(p->getValue("type"), "") << ", ";
         out << "use: " << opp_join(p->getValue("usage"), ", ") << ")} \\\\\n";
-        out << opp_indentlines(opp_breaklines(opp_latexQuote(opp_join(p->getValue("desc"), "")), 76), "  ") << "\n\n";
+        out << opp_indentlines(opp_breaklines(opp_latexquote(opp_join(p->getValue("desc"), "")), 76), "  ") << "\n\n";
     }
     out << "\\end{description}\n";
 }

@@ -131,15 +131,15 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category, bool
         for (int i = 0; i < table->size(); i++) {
             cConfigOption *obj = dynamic_cast<cConfigOption *>(table->get(i));
             ASSERT(obj);
-            out << "\\item[" << (obj->isPerObject() ? "**." : "") << opp_latexQuote(obj->getName()) << "] = ";
+            out << "\\item[" << (obj->isPerObject() ? "**." : "") << opp_latexquote(obj->getName()) << "] = ";
             out << "\\textit{<" << cConfigOption::getTypeName(obj->getType()) << ">}";
             if (obj->getUnit())
                 out << ", unit=\\ttt{" << obj->getUnit() << "}";
             if (obj->getDefaultValue())
-                out << ", default: \\ttt{" << opp_latexInsertBreaks(opp_latexQuote(obj->getDefaultValue())) << "}";
+                out << ", default: \\ttt{" << opp_latex_insert_breaks(opp_latexquote(obj->getDefaultValue())) << "}";
             out << "\\\\\n";
             out << "    \\textit{" << getConfigOptionType(obj) << ".}\\\\\n";
-            out << opp_indentlines(opp_breaklines(opp_markup2Latex(opp_latexQuote(obj->getDescription())), 75), "    ") << "\n";
+            out << opp_indentlines(opp_breaklines(opp_markup2latex(opp_latexquote(obj->getDescription())), 75), "    ") << "\n";
         }
         out << "\\end{description}\n\n";
 
@@ -149,7 +149,7 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category, bool
         for (auto & varName : varNames) {
             out << "\\item[\\$\\{" << varName << "\\}] : \\\\\n";
             const char *desc = config->getVariableDescription(varName);
-            out << opp_indentlines(opp_breaklines(opp_markup2Latex(opp_latexQuote(desc)), 75), "    ") << "\n";
+            out << opp_indentlines(opp_breaklines(opp_markup2latex(opp_latexquote(desc)), 75), "    ") << "\n";
         }
         out << "\\end{description}\n\n";
     }

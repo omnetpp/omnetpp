@@ -10,7 +10,7 @@
 %{
 #include "common/statistics.h"
 #include "common/histogram.h"
-#include "common/stringutil.h"   // strdictcmp
+#include "common/stringutil.h"
 #include "scave/scavedefs.h"
 #include "scave/enumtype.h"
 #include "scave/interruptedflag.h"
@@ -273,7 +273,7 @@ namespace omnetpp { namespace scave {
 
 // Java doesn't appear to have dictionary sort, export it
 namespace omnetpp { namespace common {
-int strdictcmp(const char *s1, const char *s2);
+int opp_strdictcmp(const char *s1, const char *s2);
 } } // namespaces
 
 /* ------------- statistics.h  ----------------- */

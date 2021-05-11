@@ -59,7 +59,7 @@ std::string cXMLElement::str() const
     std::stringstream os;
     os << "<" << getTagName();
     for (int i = 0; i < getNumAttrs(); i++)
-        os << " " << getAttrName(i) << "=\"" << opp_xmlQuote(getAttrValue(i)) << "\"";
+        os << " " << getAttrName(i) << "=\"" << opp_xmlquote(getAttrValue(i)) << "\"";
     if (!*getNodeValue() && !getFirstChild())
         os << "/>";
     else
@@ -406,13 +406,13 @@ void cXMLElement::print(std::ostream& os, int indentLevel) const
         os << "  ";
     os << "<" << getTagName();
     for (auto & attr : getAttributes())
-        os << " " << attr.first << "=\"" << opp_xmlQuote(attr.second.c_str()) << "\"";
+        os << " " << attr.first << "=\"" << opp_xmlquote(attr.second.c_str()) << "\"";
     if (!*getNodeValue() && !getFirstChild()) {
         os << "/>\n";
         return;
     }
     os << ">";
-    os << opp_xmlQuote(getNodeValue());
+    os << opp_xmlquote(getNodeValue());
     if (!getFirstChild()) {
         os << "</" << getTagName() << ">\n";
         return;
@@ -445,7 +445,7 @@ const char *cXMLElement::getAttrValue(int index) const
 std::string cXMLElement::getAttrDesc(int index) const
 {
     std::stringstream out;
-    out << getAttrName(index) << "=\"" + opp_xmlQuote(getAttrValue(index)) << "\"";
+    out << getAttrName(index) << "=\"" + opp_xmlquote(getAttrValue(index)) << "\"";
     return out.str();
 }
 

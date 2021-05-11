@@ -153,8 +153,8 @@ class cSnapshotWriterVisitor : public cVisitor
 
     virtual bool visit(cObject *obj) override {
         std::string indent(2 * indentLevel, ' ');
-        os << indent << "<object class=\"" << obj->getClassName() << "\" fullpath=\"" << opp_xmlQuote(obj->getFullPath()) << "\">\n";
-        os << indent << "  <info>" << opp_xmlQuote(obj->str()) << "</info>\n";
+        os << indent << "<object class=\"" << obj->getClassName() << "\" fullpath=\"" << opp_xmlquote(obj->getFullPath()) << "\">\n";
+        os << indent << "  <info>" << opp_xmlquote(obj->str()) << "</info>\n";
         indentLevel++;
         obj->forEachChild(this);
         indentLevel--;
@@ -178,10 +178,10 @@ void cSimulation::snapshot(cObject *object, const char *label)
 
     os << "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n";
     os << "<snapshot\n";
-    os << "    object=\"" << opp_xmlQuote(object->getFullPath()) << "\"\n";
-    os << "    label=\"" << opp_xmlQuote(label ? label : "") << "\"\n";
-    os << "    simtime=\"" << opp_xmlQuote(SIMTIME_STR(simTime())) << "\"\n";
-    os << "    network=\"" << opp_xmlQuote(networkType ? networkType->getName() : "") << "\"\n";
+    os << "    object=\"" << opp_xmlquote(object->getFullPath()) << "\"\n";
+    os << "    label=\"" << opp_xmlquote(label ? label : "") << "\"\n";
+    os << "    simtime=\"" << opp_xmlquote(SIMTIME_STR(simTime())) << "\"\n";
+    os << "    network=\"" << opp_xmlquote(networkType ? networkType->getName() : "") << "\"\n";
     os << "    >\n";
 
     cSnapshotWriterVisitor v(os);

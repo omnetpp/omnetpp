@@ -442,7 +442,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
         if (second == null)
             return -1;
 
-        return Common.strdictcmp(first, second);
+        return Common.opp_strdictcmp(first, second);
     }
 
     /**

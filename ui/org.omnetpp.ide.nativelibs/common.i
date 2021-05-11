@@ -56,7 +56,7 @@ std::string opp_parsequotedstr(const char *txt);
 std::string opp_quotestr(const std::string& txt);
 bool opp_needsquotes(const char *txt);
 std::string opp_quotestr_ifneeded(const std::string& txt);
-int strdictcmp(const char *s1, const char *s2);
+int opp_strdictcmp(const char *s1, const char *s2);
 std::string opp_formatdouble(double value, int numSignificantDigits);
 //int getPEVersion(const char *fileName);
 
