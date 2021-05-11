@@ -12,18 +12,16 @@ while ((token = tok1.nextToken())!=nullptr)
     EV << ":" << token;
 EV << ".\n";
 
-cStringTokenizer tok2(str);
-tok2.setDelimiter("- ");
+cStringTokenizer tok2(str, "- ");
 while ((token = tok2.nextToken())!=nullptr)
     EV << ":" << token;
 EV << ".\n";
 
 // change delimiter along the way
-cStringTokenizer tok3(str);
-tok3.setDelimiter("- ");
+cStringTokenizer tok3(str, "- ", cStringTokenizer::NO_TRIM);
 tok3.nextToken();
 tok3.nextToken();
-tok3.setDelimiter("/");
+tok3.setDelimiterChars("/");
 while ((token = tok3.nextToken())!=nullptr)
     EV << ":" << token;
 EV << ".\n";

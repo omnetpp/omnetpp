@@ -24,93 +24,57 @@
 #include <clocale>
 #include "omnetpp/cstringtokenizer.h"
 #include "omnetpp/cexception.h"
+#include "common/stringtokenizer.h"
 
 namespace omnetpp {
 
-cStringTokenizer::cStringTokenizer(const char *s, const char *delim)
-{
-    if (!s)
-        s = "";
-    if (!delim || !*delim)
-        delim = " \t\n\r\f";
-    delimiter = delim;
-    str = new char[strlen(s)+1];
-    strcpy(str, s);
-    rest = str;
-}
+static_assert(cStringTokenizer::NONE == (int)common::StringTokenizer::NONE, "enum value mismatch");
+static_assert(cStringTokenizer::KEEP_EMPTY == (int)common::StringTokenizer::KEEP_EMPTY, "enum value mismatch");
+static_assert(cStringTokenizer::NO_TRIM == (int)common::StringTokenizer::NO_TRIM, "enum value mismatch");
+static_assert(cStringTokenizer::HONOR_QUOTES == (int)common::StringTokenizer::HONOR_QUOTES, "enum value mismatch");
+static_assert(cStringTokenizer::HONOR_PARENS == (int)common::StringTokenizer::HONOR_PARENS, "enum value mismatch");
 
-cStringTokenizer::cStringTokenizer(const cStringTokenizer& other): str(nullptr)
+cStringTokenizer::cStringTokenizer(const char *s, const char *delim, int options)
 {
-    copy(other);
+    impl = new common::StringTokenizer(s, delim, options);
 }
 
 cStringTokenizer::~cStringTokenizer()
 {
-    delete[] str;
+    delete impl;
 }
 
-void cStringTokenizer::copy(const cStringTokenizer& other)
+void cStringTokenizer::setDelimiterChars(const char *delim)
 {
-    delimiter = other.delimiter;
-    delete[] str;
-    size_t len = (other.rest - other.str) + strlen(other.rest);
-    str = new char[len+1];
-    memcpy(str, other.str, len+1);
-    rest = str + (other.rest - other.str);
+    impl->setDelimiterChars(delim);
 }
 
-cStringTokenizer& cStringTokenizer::operator=(const cStringTokenizer& other)
+void cStringTokenizer::setParenthesisChars(const char *parens)
 {
-    if (this == &other)
-        return *this;
-    copy(other);
-    return *this;
+    impl->setParenthesisChars(parens);
 }
 
-void cStringTokenizer::setDelimiter(const char *delim)
+void cStringTokenizer::setQuoteChars(const char *quotes)
 {
-    if (!delim || !*delim)
-        delim = " ";
-    delimiter = delim;
-}
-
-inline void skipDelimiters(char *& s, const char *delims)
-{
-    while (*s && strchr(delims, *s) != nullptr)
-        s++;
-}
-
-inline void skipToken(char *& s, const char *delims)
-{
-    while (*s && strchr(delims, *s) == nullptr)
-        s++;
+    impl->setQuoteChars(quotes);
 }
 
 const char *cStringTokenizer::nextToken()
 {
-    skipDelimiters(rest, delimiter.c_str());
-    if (!*rest)
-        return nullptr;
-    const char *token = rest;
-    skipToken(rest, delimiter.c_str());
-    if (*rest)
-        *rest++ = '\0';
-    return token;
+    return impl->nextToken();
 }
 
 bool cStringTokenizer::hasMoreTokens()
 {
-    skipDelimiters(rest, delimiter.c_str());
-    return *rest;
+    return impl->hasMoreTokens();
 }
 
 std::vector<std::string> cStringTokenizer::asVector()
 {
-    const char *s;
-    std::vector<std::string> v;
-    while ((s = nextToken()) != nullptr)
-        v.push_back(std::string(s));
-    return v;
+    std::vector<std::string> vec;
+    while (const char *token = nextToken())
+        vec.push_back(token);
+    return vec;
 }
 
 std::vector<int> cStringTokenizer::asIntVector()
