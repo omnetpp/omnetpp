@@ -16,7 +16,7 @@
 *--------------------------------------------------------------*/
 
 #include "common/opp_ctype.h"
-#include "common/stringtokenizer.h"
+#include "common/stringutil.h"
 #include "envirbase.h"
 #include "intervals.h"
 
@@ -38,27 +38,18 @@ Intervals::~Intervals()
 void Intervals::parse(const char *text)
 {
     std::vector<Interval> parsedIntervals;
-    StringTokenizer tokenizer(text, ",");
-    while (tokenizer.hasMoreTokens()) {
+    for (std::string item : opp_split_and_trim(opp_nulltoempty(text), ",")) {
         // parse interval string
-        const char *s = tokenizer.nextToken();
-        const char *ellipsis = strstr(s, "..");
-        if (!ellipsis)
-            throw cRuntimeError("Wrong syntax in interval %s=%s", text, s);
-
-        const char *startstr = s;
-        const char *stopstr = ellipsis+2;
-        while (opp_isspace(*startstr))
-            startstr++;
-        while (opp_isspace(*stopstr))
-            stopstr++;
+        auto parts = opp_split_and_trim(item, "..");
+        if (parts.size() != 2)
+            throw cRuntimeError("Wrong syntax in interval %s, [start]..[end] expected", item.c_str());
 
         // add to vector
         Interval interval;
-        if (startstr != ellipsis)
-            interval.startTime = SimTime::parse(std::string(startstr, ellipsis-startstr).c_str());
-        if (*stopstr)
-            interval.stopTime = SimTime::parse(stopstr);
+        if (!parts[0].empty())
+            interval.startTime = SimTime::parse(parts[0].c_str());
+        if (!parts[1].empty())
+            interval.stopTime = SimTime::parse(parts[1].c_str());
         parsedIntervals.push_back(interval);
     }
 
@@ -77,7 +68,6 @@ bool Intervals::contains(simtime_t t) const
     for (Interval *i = intervals; i->startTime != 0 || i->stopTime != 0; i++)
         if (i->startTime <= t && (i->stopTime == 0 || t <= i->stopTime))
             return true;
-
 
     return false;
 }

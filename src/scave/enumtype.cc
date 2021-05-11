@@ -17,7 +17,7 @@
 
 #include <sstream>
 #include <algorithm>
-#include "common/stringtokenizer.h"
+#include "common/stringutil.h"
 #include "scaveutils.h"
 #include "enumtype.h"
 
@@ -98,10 +98,8 @@ void EnumType::parseFromString(const char *str)
     valueToNameMap.clear();
     nameToValueMap.clear();
 
-    StringTokenizer tokenizer(str, ", ");
     int value = -1;
-    while (tokenizer.hasMoreTokens()) {
-        std::string nameValue = tokenizer.nextToken();
+    for (std::string nameValue : opp_split_and_trim(str, ",")) {
         std::string::size_type pos = nameValue.find('=');
         if (pos == std::string::npos) {
             insert(++value, nameValue.c_str());
