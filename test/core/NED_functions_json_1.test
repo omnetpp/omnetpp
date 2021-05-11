@@ -1,0 +1,61 @@
+%description:
+Test the following NED functions:
+   readJSON()
+   parseJSON()
+   readExtendedJSON()
+   parseExtendedJSON()
+
+Note: use of the "plus" sign (+5, +inf) is not accepted by our JSON parser.
+
+%file: test.ned
+
+import testlib.Dump;
+
+network Test
+{
+    parameters:
+       int foo = 20;
+       string hello = "Hello world";
+       object readJSON = readJSON("data1.json");
+       object parseJSON1 = parseJSON(readFile("data1.json"));
+       object parseJSON2 = parseJSON("[ { foo:1,bar:2 }, true, false, 42,-32,-1.33e-6, \"Las Vegas\", 'Los Angeles' ]");
+       object readExtendedJSON = readExtendedJSON("data2.json");
+       object parseExtendedJSON1 = parseExtendedJSON(readFile("data2.json"));
+       object parseExtendedJSON2 = parseExtendedJSON("[ { foo: 1+1, bar:1/0 }, 2*(foo+1), hello+'!' ]");
+
+    submodules:
+        dump : Dump;
+}
+
+%file: data1.json
+{
+    bool: [ true, false ], // this is a comment
+    int: [ 42 ,-32, ],
+    double: [ 123.44, -1.33e-6, nan, inf,-inf, ],
+    string: [ "Las Vegas", 'Los Angeles', "[{(',\")}]", "'\"\t\f\n" ]
+}
+
+%file: data2.json
+{
+    a: [1+1, 1/0, 0/0, intuniform(0,100)],
+    b: endsWith("foobar", "bar"),
+    c: 2*(foo+1),
+    d: hello + "!",
+    e: cMessage { name: "msg" }
+}
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+        foo = 20
+        hello = "Hello world"
+        readJSON = (omnetpp::cValueMap)object: {bool: [true, false], double: [123.44, -1.33e-06, nan, inf, -inf], int: [42, -32], string: ["Las Vegas", "Los Angeles", "[{(',\")}]", "'\"\t\f\n"]}
+        parseJSON1 = (omnetpp::cValueMap)object: {bool: [true, false], double: [123.44, -1.33e-06, nan, inf, -inf], int: [42, -32], string: ["Las Vegas", "Los Angeles", "[{(',\")}]", "'\"\t\f\n"]}
+        parseJSON2 = (omnetpp::cValueArray)array: [{bar: 2, foo: 1}, true, false, 42, -32, -1.33e-06, "Las Vegas", "Los Angeles"]
+        readExtendedJSON = (omnetpp::cValueMap)object: {a: [2, inf, nan, 44], b: true, c: 42, d: "Hello world!", e: (new msg)}
+        parseExtendedJSON1 = (omnetpp::cValueMap)object: {a: [2, inf, nan, 47], b: true, c: 42, d: "Hello world!", e: (new msg)}
+        parseExtendedJSON2 = (omnetpp::cValueArray)array: [{bar: inf, foo: 2}, 42, "Hello world!"]
+    submodules:
+}
+

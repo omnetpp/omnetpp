@@ -1,0 +1,57 @@
+%description:
+Test the following NED functions:
+   readCSV()
+   parseCSV()
+   readExtendedCSV()
+   parseExtendedCSV()
+
+%file: test.ned
+
+import testlib.Dump;
+
+network Test
+{
+    parameters:
+       int foo = 20;
+       string hello = "Hello world";
+       object readCSV = readCSV("data1.csv");
+       object parseCSV1 = parseCSV(readFile("data1.csv"));
+       object parseCSV2 = parseCSV("true, false \n 42,-32,-1.33e-6 \n \"Las Vegas\", 'Los Angeles'");
+       object readExtendedCSV = readExtendedCSV("data2.csv");
+       object parseExtendedCSV1 = parseExtendedCSV(readFile("data2.csv"));
+       object parseExtendedCSV2 = parseExtendedCSV("1+1, 1/0 \n 2*(foo+1), hello+'!'");
+
+    submodules:
+        dump : Dump;
+}
+
+%file: data1.csv
+true, false
+42 ,-32, +3, 123.44 ,-1.33e-6
+nan, inf,-inf,+inf
+"Las Vegas", 'Los Angeles', "a,b,c,d", "'\"\t\f\n"
+99 something else, foo, mz/x!%^(*&^%$#@!), (x,y)
+spaces:,  , trailing comma,
+trailing backslash \
+trailing comma,
+
+%file: data2.csv
+1+1, 1/0, 0/0, endsWith("foobar", "bar")
+2*(foo+1), hello + "!", length(hello)
+intuniform(0,5), intuniform(0,5), intuniform(0,5)
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+        foo = 20
+        hello = "Hello world"
+        readCSV = (omnetpp::cValueArray): [[true, false], [42, -32, 3, 123.44, -1.33e-06], [nan, inf, -inf, inf], ["Las Vegas", "Los Angeles", "a,b,c,d", "'\"\t\f\n"], ["99 something else", "foo", "mz/x!%^(*&^%$#@!)", "(x", "y)"], ["spaces:", "", "trailing comma", ""], ["trailing backslash \\"], ["trailing comma", ""]]
+        parseCSV1 = (omnetpp::cValueArray): [[true, false], [42, -32, 3, 123.44, -1.33e-06], [nan, inf, -inf, inf], ["Las Vegas", "Los Angeles", "a,b,c,d", "'\"\t\f\n"], ["99 something else", "foo", "mz/x!%^(*&^%$#@!)", "(x", "y)"], ["spaces:", "", "trailing comma", ""], ["trailing backslash \\"], ["trailing comma", ""]]
+        parseCSV2 = (omnetpp::cValueArray): [[true, false], [42, -32, -1.33e-06], ["Las Vegas", "Los Angeles"]]
+        readExtendedCSV = (omnetpp::cValueArray): [[2, inf, nan, true], [42, "Hello world!", 11], [4, 5, 0]]
+        parseExtendedCSV1 = (omnetpp::cValueArray): [[2, inf, nan, true], [42, "Hello world!", 11], [3, 3, 3]]
+        parseExtendedCSV2 = (omnetpp::cValueArray): [[2, inf], [42, "Hello world!"]]
+    submodules:
+}
+

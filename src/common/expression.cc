@@ -40,8 +40,8 @@ std::string Expression::AstNode::str() const
     out << typeName(type);
     if (type == CONSTANT)
         out << " " << constant.str();
-    else if (type != UNDEF)
-        out << " " << name;  // OP, IDENT, etc all have names
+    else if (type != UNDEF && !name.empty())
+        out << " '" << name << "'";  // OP, IDENT, etc all have names
     return out.str();
 }
 

@@ -18,10 +18,14 @@
 #include <cstring>
 #include <algorithm>
 #include <fstream>
+#include <functional>
+#include "common/expression.h"
 #include "common/stringutil.h"
 #include "common/opp_ctype.h"
 #include "common/unitconversion.h"
 #include "common/fileutil.h"
+#include "common/stringutil.h"
+#include "common/stringtokenizer.h"
 #include "omnetpp/distrib.h"
 #include "omnetpp/cnedmathfunction.h"
 #include "omnetpp/cnedfunction.h"
@@ -833,17 +837,44 @@ cValue nedf_poisson(cComponent *contextComponent, cValue argv[], int argc)
 }
 
 //
-// XML functions
+// Misc functions
 //
 
-DEF2(nedf_xmldoc,
-    "xml xmldoc(string filename, string xpath?)",
-    "xml",
+static cValue opp_eval(const char *txt, cExpression::Context *context) //TOOD simutil?
+{
+    try {
+        cDynamicExpression expr;
+        expr.parseNedExpr(txt, false);
+        return expr.evaluate(context);
+    }
+    catch (std::exception& e) {
+        throw cRuntimeError("Error evaluating expression \"%s\": %s", txt, e.what());
+    }
+}
+
+DEF2(nedf_eval,
+    "any eval(string expr)",
+    "misc",
+    "Evaluates the NED expression in the call site's context.")
+
+cValue nedf_eval(cExpression::Context *context, cValue argv[], int argc)
+{
+    return opp_eval(argv[0].stringValue(), context);
+}
+
+
+//
+// I/O functions
+//
+
+DEF2(nedf_readXML,
+    "xml readXML(string filename, string xpath?)",
+    "i/o",
     "Parses the given XML file into a cXMLElement tree, and returns the root element. "
     "When called with two arguments, it returns the first element from the tree that "
     "matches the expression given in simplified XPath syntax.")
 
-cValue nedf_xmldoc(cExpression::Context *context, cValue argv[], int argc)
+cValue nedf_readXML(cExpression::Context *context, cValue argv[], int argc)
 {
     std::string filepath = concatDirAndFile(context->baseDirectory, argv[0].stringValue());
     const char *xpath = argc == 1 ? nullptr : argv[1].stringValue();
@@ -857,14 +888,14 @@ cValue nedf_xmldoc(cExpression::Context *context, cValue argv[], int argc)
     return static_cast<cObject*>(node);
 }
 
-DEF(nedf_xml,
-    "xml xml(string xmlstring, string xpath?)",
-    "xml",
+DEF2(nedf_parseXML,
+    "xml parseXML(string xmlstring, string xpath?)",
+    "i/o",
     "Parses the given XML string into a cXMLElement tree, and returns the root element. "
     "When called with two arguments, it returns the first element from the tree that "
     "matches the expression given in simplified XPath syntax.")
 
-cValue nedf_xml(cComponent *contextComponent, cValue argv[], int argc)
+cValue nedf_parseXML(cExpression::Context *context, cValue argv[], int argc)
 {
     const char *xmlText = argv[0].stringValue();
     const char *xpath = argc == 1 ? nullptr : argv[1].stringValue();
@@ -878,9 +909,35 @@ cValue nedf_xml(cComponent *contextComponent, cValue argv[], int argc)
     return static_cast<cObject*>(node);
 }
 
+DEF2(nedf_xmldoc,
+    "xml xmldoc(string filename, string xpath?)",
+    "xml",
+    "Parses the given XML file into a cXMLElement tree, and returns the root element. "
+    "When called with two arguments, it returns the first element from the tree that "
+    "matches the expression given in simplified XPath syntax. "
+    "Note: This is an alias to the readXML() function.")
+
+cValue nedf_xmldoc(cExpression::Context *context, cValue argv[], int argc)
+{
+    return nedf_readXML(context, argv, argc);
+}
+
+DEF2(nedf_xml,
+    "xml xml(string xmlstring, string xpath?)",
+    "xml",
+    "Parses the given XML string into a cXMLElement tree, and returns the root element. "
+    "When called with two arguments, it returns the first element from the tree that "
+    "matches the expression given in simplified XPath syntax. "
+    "Note: This is an alias to the parseXML() function.")
+
+cValue nedf_xml(cExpression::Context *context, cValue argv[], int argc)
+{
+    return nedf_parseXML(context, argv, argc);
+}
+
 DEF2(nedf_readFile,
     "string readFile(string filename)",
-    "misc",
+    "i/o",
     "Opens the specified text file, and returns its content as a string. "
     "If filename is a relative path, it is understood as relative to the "
     "location of the ini or NED file where the readFile() call occurs.")
@@ -900,7 +957,7 @@ cValue nedf_readFile(cExpression::Context *context, cValue argv[], int argc)
 
 DEF2(nedf_workingDir,
     "string workingDir()",
-    "misc",
+    "i/o",
     "Returns the current working directory."
     "")
 cValue nedf_workingDir(cExpression::Context *context, cValue argv[], int argc)
@@ -910,7 +967,7 @@ cValue nedf_workingDir(cExpression::Context *context, cValue argv[], int argc)
 
 DEF2(nedf_baseDir,
     "string baseDir()",
-    "misc",
+    "i/o",
     "Returns the absolute filesystem path to the directory of the ini or NED file "
     "where the baseDir() call occurs.")
 
@@ -921,7 +978,7 @@ cValue nedf_baseDir(cExpression::Context *context, cValue argv[], int argc)
 
 DEF2(nedf_resolveFile,
     "string resolveFile(string directory, string filename)",
-    "misc",
+    "i/o",
     "Joins its arguments as file paths, except that when the second argument is an "
     "absolute filesystem path, it is returned unchanged. This is purely a string "
     "operation; neither directory nor filename needs to exist in the file system.")
@@ -933,7 +990,7 @@ cValue nedf_resolveFile(cExpression::Context *context, cValue argv[], int argc)
 
 DEF2(nedf_absFilePath,
     "string absFilePath(string filename)",
-    "misc",
+    "i/o",
     "Converts filename to an absolute filesystem path. Absolute paths are returned "
     "unchanged; relative paths are understood as relative to the location of the ini "
     "or NED file where the call occurs (see baseDir()).")
@@ -943,22 +1000,215 @@ cValue nedf_absFilePath(cExpression::Context *context, cValue argv[], int argc)
     return concatDirAndFile(context->baseDirectory, argv[0].stringValue());
 }
 
-DEF2(nedf_eval,
-    "any eval(string expr)",
-    "misc",
-    "Evaluate the expression in the call site's context.")
+static cValue parseCSVCell(const char *s)
+{
+    // assume trimmed items
+    ASSERT(!opp_isspace(*s));
 
-cValue nedf_eval(cExpression::Context *context, cValue argv[], int argc)
+    // empty -> ""
+    if (opp_isempty(s))
+        return s;
+
+    // try as boolean
+    if (strcmp(s, "true") == 0)
+        return true;
+    if (strcmp(s, "false") == 0)
+        return false;
+
+    // try as quoted string
+    if (*s == '"' || *s == '\'') {
+        try {
+            return opp_parsequotedstr(s, *s);
+        }
+        catch (std::exception&) {}
+        return s; // fallback: verbatim string
+    }
+
+    // try as integer
+    try {
+        char *endp;
+        intval_t l = opp_strtoll(s, &endp);
+        if (opp_isblank(endp))
+            return l;
+    }
+    catch (std::exception&) {}
+
+    // try as double
+    try {
+        char *endp;
+        double d = opp_strtod(s, &endp);
+        if (opp_isblank(endp))
+            return d;
+    }
+    catch (std::exception&) {}
+
+    return s; // fallback: verbatim string
+}
+
+DEF2(nedf_parseCSV,
+    "any parseCSV(string str)",
+    "i/o",
+    "Parses the given string as a comma-separated CSV, and returns it as an array of "
+    "arrays. Elements can be boolean (true/false), numeric (integer or double, "
+    "with or without measurement unit), quoted string, or unquoted string. "
+    "Items that cannot be parsed as any of the more specific types are interpreted "
+    "as unquoted strings. "
+    "See readCSV() for details of the the accepted CSV flavor.")
+
+cValue nedf_parseCSV(cExpression::Context *context, cValue argv[], int argc)
 {
     const char *str = argv[0].stringValue();
-    try {
-        cDynamicExpression expr;
-        expr.parseNedExpr(str, false);
-        return expr.evaluate(context);
+    cValueArray *rows = new cValueArray();
+    for (std::string line : opp_split(str, "\n")) {
+        if (opp_isblank(line.c_str()) || line.c_str()[0] == '#')
+            continue;
+        cValueArray *row = new cValueArray();
+        StringTokenizer tokenizer(line.c_str(), ",", StringTokenizer::HONOR_QUOTES | StringTokenizer::KEEP_EMPTY);
+        while (tokenizer.hasMoreTokens()) {
+            const char *item = tokenizer.nextToken();
+            row->add(parseCSVCell(item));
+        }
+        rows->add(cValue(row));
     }
-    catch (std::exception& e) {
-        throw cRuntimeError("Error evaluating expression \"%s\": %s", str, e.what());
+    return rows;
+}
+
+DEF2(nedf_parseExtendedCSV,
+    "any parseExtendedCSV(string str)",
+    "i/o",
+    "Parses the given string as a comma-separated CSV, and returns it as "
+    "an array of arrays. Elements are parsed as NED expressions, and are "
+    "evaluated in the caller's context. "
+    "See readCSV() for details of the the accepted CSV flavor.")
+
+cValue nedf_parseExtendedCSV(cExpression::Context *context, cValue argv[], int argc)
+{
+    const char *str = argv[0].stringValue();
+    cValueArray *rows = new cValueArray();
+    for (std::string line : opp_split(str, "\n")) {
+        if (opp_isblank(line.c_str()) || line.c_str()[0] == '#')
+            continue;
+        cValueArray *row = new cValueArray();
+        StringTokenizer tokenizer(line.c_str(), ",", StringTokenizer::HONOR_QUOTES | StringTokenizer::HONOR_PARENS | StringTokenizer::KEEP_EMPTY);
+        while (tokenizer.hasMoreTokens()) {
+            const char *item = tokenizer.nextToken();
+            row->add(opp_eval(item, context));
+        }
+        rows->add(cValue(row));
     }
+    return rows;
+}
+
+DEF2(nedf_readCSV,
+    "any readCSV(string filename)",
+    "i/o",
+    "Parses the content of the given text file as comma-separated CSV, and returns it "
+    "as an array of arrays. Elements can be boolean (`true` or `false`), numeric (integer "
+    "or double, with or without measurement unit), quoted string, or unquoted string. "
+    "Items that cannot be parsed as any of the more specific types are interpreted as "
+    "unquoted strings. "
+    "CSV parsing rules: separator is comma; "
+    "blank (whitespace-only) lines are ignored; "
+    "lines that contain hash mark `#` on column 1 are considered comments and are ignored; "
+    "items are trimmed of leading and trailing whitespace before processing; "
+    "no line continuation with backslash; "
+    "quoted strings may be delimited with single or double quotes; "
+    "quoted strings may contain C-like backslash escapes; "
+    "no support for splitting strings over multiple lines; "
+    "no special treatment for the first (possibly header) line.")
+
+cValue nedf_readCSV(cExpression::Context *context, cValue argv[], int argc)
+{
+    argv[0] = nedf_readFile(context, argv, argc);
+    return nedf_parseCSV(context, argv, argc);
+}
+
+DEF2(nedf_readExtendedCSV,
+    "any readExtendedCSV(string filename)",
+    "i/o",
+    "Parses the content of the given text file as comma-separated CSV, and returns it "
+    "as an array of arrays. Elements are parsed as NED expressions, and are evaluated "
+    "in the caller's context. See readCSV() for details of the the accepted CSV flavor.")
+
+cValue nedf_readExtendedCSV(cExpression::Context *context, cValue argv[], int argc)
+{
+    argv[0] = nedf_readFile(context, argv, argc);
+    return nedf_parseExtendedCSV(context, argv, argc);
+}
+
+DEF2(nedf_parseJSON,
+    "any parseJSON(string str)",
+    "i/o",
+    "Parses the given string as JSON, and returns its contents. The syntax is more "
+    "permissive than standard JSON: it additionally allows the special numeric values "
+    "`nan`, `inf` and `-inf`, the use of measurement units, and object keys are also "
+    "accepted without quotation marks if it doesn't interfere with parsing.")
+
+cValue nedf_parseJSON(cExpression::Context *context, cValue argv[], int argc)
+{
+    // validate that input only contains constructs valid in JSON
+    Expression expr;
+    using AstNode = Expression::AstNode;
+    AstNode *tree = expr.parseToAst(argv[0].stringValue());
+
+    std::function<void(AstNode *node)> check;
+    check = [&](AstNode *node) {
+        auto type = node->type;
+        if (type != AstNode::CONSTANT && type != AstNode::ARRAY && type != AstNode::OBJECT && type != AstNode::KEYVALUE)
+            throw cRuntimeError("Illegal construct in JSON: %s", node->str().c_str());
+        if (type == AstNode::OBJECT && !node->name.empty())
+            throw cRuntimeError("Tagged objects are not allowed in JSON: '%s {...}'", node->name.c_str());
+        for (AstNode *child : node->children)
+            check(child);
+    };
+    check(tree);
+
+    delete tree;
+
+    return nedf_eval(context, argv, argc);
+}
+
+DEF2(nedf_readJSON,
+    "any readJSON(string filename)",
+    "i/o",
+    "Parses the given text file as JSON, and returns its contents. The syntax is more "
+    "permissive than standard JSON: it additionally allows the special numeric values "
+    "`nan`, `inf` and `-inf`, the use of measurement units, and object keys are also "
+    "accepted without quotation marks if it doesn't interfere with parsing.")
+
+cValue nedf_readJSON(cExpression::Context *context, cValue argv[], int argc)
+{
+    argv[0] = nedf_readFile(context, argv, argc);
+    return nedf_parseJSON(context, argv, argc);
+}
+
+DEF2(nedf_parseExtendedJSON,
+    "any parseExtendedJSON(string str)",
+    "i/o",
+    "Parses the given string as Extended JSON, and returns its contents. Extended JSON "
+    "allows any value to be a valid NED expression (instead of just constants allowed "
+    "by strict JSON), and some extensions to the object syntax. Actually, as the "
+    "NED expression syntax includes JSON-like arrays and objects, \"parsing\" is done "
+    "simply by evaluating the string as a NED expression in the caller's context.")
+
+cValue nedf_parseExtendedJSON(cExpression::Context *context, cValue argv[], int argc)
+{
+    return opp_eval(argv[0].stringValue(), context);
+}
+
+DEF2(nedf_readExtendedJSON,
+    "any readExtendedJSON(string filename)",
+    "i/o",
+    "Parses the given text file as Extended JSON, and returns its contents. Extended JSON "
+    "allows any value to be a valid NED expression (instead of just constants allowed "
+    "by strict JSON), and some extensions to the object syntax. Actually, as the "
+    "NED expression syntax includes JSON-like arrays and objects, \"parsing\" is done "
+    "simply by evaluating the content as a NED expression in the caller's context.")
+
+cValue nedf_readExtendedJSON(cExpression::Context *context, cValue argv[], int argc)
+{
+    argv[0] = nedf_readFile(context, argv, argc);
+    return nedf_parseExtendedJSON(context, argv, argc);
 }
 
 //
