@@ -16,9 +16,10 @@ static void compare(const char *s1, const char *s2)
 {
     EV << '"' << s1 << "\",\"" << s2 << "\":";
     try {
-        int res = strdictcmp(s1, s2);
+        int res = opp_strdictcmp(s1, s2);
         EV << sgn(res) << endl;
-    } catch (std::exception& e) {
+    }
+    catch (std::exception& e) {
         EV << "exception\n";  // e.what() << "\n";
     }
 }
