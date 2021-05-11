@@ -562,33 +562,33 @@ std::vector<Scenario::IterationVariable> SectionBasedConfiguration::collectItera
     return v;
 }
 
-void SectionBasedConfiguration::parseVariable(const char *pos, std::string& outVarname, std::string& outValue, std::string& outParvar, const char *& outEndPos)
+void SectionBasedConfiguration::parseVariable(const char *txt, std::string& outVarname, std::string& outValue, std::string& outParvar, const char *& outEndPtr)
 {
-    Assert(pos[0] == '$' && pos[1] == '{');  // this is the way we've got to be invoked
+    Assert(txt[0] == '$' && txt[1] == '{');  // this is the way we've got to be invoked
 
-    StringTokenizer2 tokenizer(pos+1, "}", "{}", "\"");
+    StringTokenizer2 tokenizer(txt+1, "}", "{}", "\"");
     const char *token = tokenizer.nextToken();  // ends at matching '}'
     if (!token)
         throw cRuntimeError("Missing '}' for '${'");
-    outEndPos = pos + 1 + tokenizer.getTokenLength();
+    outEndPtr = txt + 1 + tokenizer.getTokenLength();
 
     // parse what's inside the ${...}
-    const char *varbegin = nullptr;
-    const char *varend = nullptr;
-    const char *valuebegin = nullptr;
-    const char *valueend = nullptr;
-    const char *parvarbegin = nullptr;
-    const char *parvarend = nullptr;
+    const char *varNameBegin = nullptr;
+    const char *varNameEnd = nullptr;
+    const char *valueBegin = nullptr;
+    const char *valueEnd = nullptr;
+    const char *parvarBegin = nullptr;
+    const char *parvarEnd = nullptr;
 
-    const char *s = pos+2;
+    const char *s = txt+2;
     while (opp_isspace(*s))
         s++;
     if (opp_isalphaext(*s)) {
         // must be a variable or a variable reference
-        varbegin = varend = s;
-        while (opp_isalnumext(*varend))
-            varend++;
-        s = varend;
+        varNameBegin = varNameEnd = s;
+        while (opp_isalnumext(*varNameEnd))
+            varNameEnd++;
+        s = varNameEnd;
         while (opp_isspace(*s))
             s++;
         if (*s == '}') {
@@ -596,53 +596,53 @@ void SectionBasedConfiguration::parseVariable(const char *pos, std::string& outV
         }
         else if (*s == '=' && *(s+1) != '=') {
             // ${x=...} syntax -- OK
-            valuebegin = s+1;
+            valueBegin = s+1;
         }
         else if (strchr(s, ',')) {
             // part of a valuelist -- OK
-            valuebegin = varbegin;
-            varbegin = varend = nullptr;
+            valueBegin = varNameBegin;
+            varNameBegin = varNameEnd = nullptr;
         }
         else {
             throw cRuntimeError("Missing '=' after '${varname'");
         }
     }
     else {
-        valuebegin = s;
+        valueBegin = s;
     }
-    valueend = outEndPos;
+    valueEnd = outEndPtr;
 
-    if (valuebegin) {
+    if (valueBegin) {
         // try to parse parvar, present when value ends in "! variable"
-        const char *exclamationMark = strrchr(valuebegin, '!');
+        const char *exclamationMark = strrchr(valueBegin, '!');
         if (exclamationMark) {
             const char *s = exclamationMark+1;
             while (opp_isspace(*s))
                 s++;
             if (opp_isalphaext(*s)) {
-                parvarbegin = s;
+                parvarBegin = s;
                 while (opp_isalnumext(*s))
                     s++;
-                parvarend = s;
+                parvarEnd = s;
                 while (opp_isspace(*s))
                     s++;
-                if (s != valueend) {
-                    parvarbegin = parvarend = nullptr;  // no parvar after all
+                if (s != valueEnd) {
+                    parvarBegin = parvarEnd = nullptr;  // no parvar after all
                 }
             }
-            if (parvarbegin) {
-                valueend = exclamationMark;  // chop off "!parvarname"
+            if (parvarBegin) {
+                valueEnd = exclamationMark;  // chop off "!parvarname"
             }
         }
     }
 
     outVarname = outValue = outParvar = "";
-    if (varbegin)
-        outVarname.assign(varbegin, varend-varbegin);
-    if (valuebegin)
-        outValue.assign(valuebegin, valueend-valuebegin);
-    if (parvarbegin)
-        outParvar.assign(parvarbegin, parvarend-parvarbegin);
+    if (varNameBegin)
+        outVarname.assign(varNameBegin, varNameEnd-varNameBegin);
+    if (valueBegin)
+        outValue.assign(valueBegin, valueEnd-valueBegin);
+    if (parvarBegin)
+        outParvar.assign(parvarBegin, parvarEnd-parvarBegin);
 }
 
 std::string SectionBasedConfiguration::substituteVariables(const char *text, int sectionId, int entryId, const StringMap& variables, const StringMap& locationToVarName) const

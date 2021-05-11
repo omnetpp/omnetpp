@@ -171,7 +171,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     static void splitKey(const char *key, std::string& outOwnerName, std::string& outBinName);
     static bool entryMatches(const MatchableEntry& entry, const char *moduleFullPath, const char *paramName);
     std::vector<Scenario::IterationVariable> collectIterationVariables(const std::vector<int>& sectionChain, StringMap& outLocationToNameMap) const;
-    static void parseVariable(const char *pos, std::string& outVarname, std::string& outValue, std::string& outParVar, const char *&outEndPos);
+    static void parseVariable(const char *txt, std::string& outVarname, std::string& outValue, std::string& outParVar, const char *&outEndPtr);
     std::string substituteVariables(const char *text, int sectionId, int entryId, const StringMap& variables, const StringMap& locationToVarName) const;
     bool isPredefinedVariable(const char *varname) const;
     StringMap computeVariables(const char *configName, int runNumber, std::vector<int> sectionChain, const Scenario *scenario, const StringMap& locationToVarName) const;
