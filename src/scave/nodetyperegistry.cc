@@ -148,7 +148,7 @@ Node *NodeTypeRegistry::createNode(const char *filterSpec, DataflowManager *mgr)
     StringMap attrs;
     nodeType->getAttributes(attrs);
     if (attrs.size() != args.size())
-        throw opp_runtime_error("Error in filter spec '%s' -- %s expects %d parameters", filterSpec, name.c_str(), attrs.size());
+        throw opp_runtime_error("Error in filter spec '%s' -- %s expects %zd parameters", filterSpec, name.c_str(), attrs.size());
 
     // fill in args map
     // FIXME this is completely unsafe! it would be better to match them by name, since ordering in Map is undefined...

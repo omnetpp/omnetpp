@@ -26,7 +26,7 @@ namespace scave {
 Port *XYPlotNode::getPortY(int k)
 {
     if (k < 0 || yin.size() < (unsigned)k)
-        throw opp_runtime_error("XYPlotNode::getPortY(k): K=%d out of range, size of yin[] is %d", k, yin.size());
+        throw opp_runtime_error("XYPlotNode::getPortY(k): K=%d out of range, size of yin[] is %zd", k, yin.size());
     if (yin.size() == (unsigned)k) {
         yin.push_back(Port(this));
         out.push_back(Port(this));
@@ -37,7 +37,7 @@ Port *XYPlotNode::getPortY(int k)
 Port *XYPlotNode::getPortOut(int k)
 {
     if (k < 0 || out.size() <= (unsigned)k)
-        throw opp_runtime_error("XYPlotNode::getPortOut(k): K=%d out of range, size of out[] is %d", k, out.size());
+        throw opp_runtime_error("XYPlotNode::getPortOut(k): K=%d out of range, size of out[] is %zd", k, out.size());
     return &out[k];
 }
 
