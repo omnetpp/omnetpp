@@ -208,9 +208,23 @@ COMMON_API std::string opp_breaklines(const std::string& text, int maxLineLength
 COMMON_API std::string opp_indentlines(const std::string& text, const std::string& indent);
 
 /**
- * Split a string into parts separated by the give separator.
+ * Split a string into parts by whitespace sequences. Returned items will have no
+ * leading or trailing whitespace. Returns an empty array if the input string is
+ * empty or only contains whitespace.
+ */
+COMMON_API std::vector<std::string> opp_split_and_trim(const std::string& text);
+
+/**
+ * Split a string into parts separated by the given separator. If the input string is empty,
+ * it returns an empty array. Otherwise, it returns exactly #separators+1 items.
  */
 COMMON_API std::vector<std::string> opp_split(const std::string& text, const std::string& separator);
+
+/**
+ * Split a string into parts separated by the given separator, trimming each item of whitespace.
+ * Returns an empty array if the input string doesn't contain anything but whitespace.
+ */
+COMMON_API std::vector<std::string> opp_split_and_trim(const std::string& text, const std::string& separator);
 
 /**
  * Aligns columns of a table. Table columns should be separated by tab.

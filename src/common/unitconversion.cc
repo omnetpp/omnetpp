@@ -219,7 +219,7 @@ void UnitConversion::fillBaseUnitDescs()
 {
     for (UnitDesc *p = unitTable; p->unit; p++) {
         p->baseUnitDesc = lookupUnit(p->baseUnit);
-        for (std::string unit : StringTokenizer(p->bestUnitCandidatesStr).asVector())
+        for (std::string unit : opp_split_and_trim(p->bestUnitCandidatesStr))
             p->bestUnitCandidates.push_back(lookupUnit(unit.c_str()));
     }
 }

@@ -121,7 +121,7 @@ Scenario::~Scenario()
 
 std::vector<std::string> Scenario::resolveNestingOrderSpec(const char *orderSpec)
 {
-    std::vector<std::string> orderedNames = StringTokenizer(orderSpec, ", ").asVector();
+    std::vector<std::string> orderedNames = opp_split_and_trim(opp_nulltoempty(orderSpec), ",");
 
     // check names are valid, and there's only one '*'
     for (std::string orderedName : orderedNames)

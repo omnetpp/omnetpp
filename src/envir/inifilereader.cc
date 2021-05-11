@@ -144,7 +144,7 @@ void InifileReader::doReadFile(const char *filename, int currentSectionIndex, st
             // strip out comments
             std::string tmp;
             int i = 0;
-            for (std::string l : StringTokenizer(line, "\n").asVector()) {
+            for (std::string l : opp_split(line,  "\n")) {
                 const char *endContent = findEndContent(l.c_str(), filename, lineNumber+i);  // also raises error for unterminated string constant
                 tmp += l.substr(0, endContent - l.c_str()) + "\n";
                 i++;

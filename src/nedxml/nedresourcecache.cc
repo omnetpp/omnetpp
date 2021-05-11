@@ -88,9 +88,9 @@ int NedResourceCache::loadNedSourceFolder(const char *folderName, const char *ex
 {
     try {
         std::vector<std::string> excludedPackages;
-        for (std::string pkg : opp_split(opp_nulltoempty(excludedPackagesStr), ";"))
-            if (!opp_trim(pkg).empty())
-                excludedPackages.push_back(opp_trim(pkg));
+        for (std::string pkg : opp_split_and_trim(opp_nulltoempty(excludedPackagesStr), ";"))
+            if (!pkg.empty())
+                excludedPackages.push_back(pkg);
         std::string canonicalFolderName = canonicalize(folderName);
         std::string rootPackageName = determineRootPackageName(folderName);
         folderPackages[canonicalFolderName] = rootPackageName;

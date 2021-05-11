@@ -257,7 +257,7 @@ int ScaveTool::resolveResultTypeFilter(const std::string& filter)
     }
     else {
         // long form
-        for (string token : StringTokenizer(filter.c_str(), ",").asVector()) {
+        for (string token : opp_split_and_trim(filter, ",")) {
             if (token == "scalars")
                 result |= ResultFileManager::SCALAR;
             else if (token == "vectors")
@@ -639,7 +639,7 @@ void ScaveTool::queryCommand(int argc, char **argv)
     } // switch
 
     if (&out == &buffer)
-        cout << opp_formatTable(buffer.str());
+        cout << opp_format_table(buffer.str());
 }
 
 inline void pushCountIfPositive(vector<string>& v, int count, const string& noun, const string& pluralSuffix="s")

@@ -409,10 +409,29 @@ std::string opp_indentlines(const std::string& text, const std::string& indent)
     return tmp;
 }
 
+std::vector<std::string> opp_split_and_trim(const std::string& text)
+{
+    const char * const WHITESPACE = " \t\f\r\n";
+    std::vector<std::string> items;
+    size_t itemStart = text.find_first_not_of(WHITESPACE);
+    while (itemStart != text.npos) {
+        size_t endPos = text.find_first_of(WHITESPACE, itemStart);
+        if (endPos == text.npos) {
+            items.push_back(text.substr(itemStart));
+            break;
+        }
+        else {
+            items.push_back(text.substr(itemStart, endPos - itemStart));
+            itemStart = text.find_first_not_of(WHITESPACE, endPos);
+        }
+    }
+    return items;
+}
+
 std::vector<std::string> opp_split(const std::string& text, const std::string& separator)
 {
     std::vector<std::string> items;
-    int itemStart = 0;
+    size_t itemStart = 0;
     while (true) {
         size_t separatorPos = text.find(separator, itemStart);
         if (separatorPos == text.npos) {
@@ -424,6 +443,16 @@ std::vector<std::string> opp_split(const std::string& text, const std::string& s
             itemStart = separatorPos + separator.length();
         }
     }
+    return items;
+}
+
+std::vector<std::string> opp_split_and_trim(const std::string& text, const std::string& separator)
+{
+    std::vector<std::string> items = opp_split(text, separator);
+    for (auto& item : items)
+        item = opp_trim(item);
+    if (items.size() == 1 && items[0].empty())
+        items.clear();
     return items;
 }
 
