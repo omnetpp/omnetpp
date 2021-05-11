@@ -60,6 +60,6 @@ void Simple::activity()
 
 %exitcode: 1
 
-%contains: stderr
-Cannot evaluate parameter 'xmlconfig': xmldoc(): Element "foo/nothing" in file "test.xml" not found
+%contains-regex: stderr
+Cannot evaluate parameter 'xmlconfig': xmldoc\(\): Element "foo/nothing" in file ".*/test.xml" not found
 
