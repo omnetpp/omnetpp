@@ -215,6 +215,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             addSpacer(form);
             group = createGroup(form, "Fake GUI");
             addCheckboxFieldEditor(group, CFGID_CMDENV_FAKE_GUI, "Enable FakeGUI mode in Cmdenv (for graphical fingerprints)");
+            addTextFieldEditor(group, CFGID_CMDENV_FAKE_GUI_SEED, "Seed");
             addSpacer(group);
             addLabel(group, "Frequency of refreshDisplay() calls:");
             addTextFieldEditor(group, CFGID_CMDENV_FAKE_GUI_AFTER_EVENT_PROBABILITY, "After-event probability");

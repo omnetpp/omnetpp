@@ -201,6 +201,10 @@ public class ConfigRegistry {
         "cmdenv-fake-gui", CFG_BOOL, "false",
         "Causes Cmdenv to lie to simulations that is a GUI (isGui()=true), and to " +
         "periodically invoke refreshDisplay() during simulation execution.");
+    public static final ConfigOption CFGID_CMDENV_FAKE_GUI_SEED = addPerRunOption(
+        "cmdenv-fake-gui-seed", CFG_INT, "1",
+        "When `cmdenv-fake-gui=true`: The seed for the RNG governing the operation of " +
+        "the fake GUI component. This is entirely independent of the RNGs used by the model.");
     public static final ConfigOption CFGID_CMDENV_FAKE_GUI_AFTER_EVENT_PROBABILITY = addPerRunOption(
         "cmdenv-fake-gui-after-event-probability", CFG_DOUBLE, "1",
         "When `cmdenv-fake-gui=true`: The probability with which `refreshDisplay()` " +
