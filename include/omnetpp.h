@@ -134,6 +134,7 @@
 #include "omnetpp/simtime.h"
 #include "omnetpp/simtimemath.h"
 #include "omnetpp/simutil.h"
+#include "omnetpp/stringutil.h"
 
 #ifdef AUTOIMPORT_OMNETPP_NAMESPACE
 using namespace omnetpp;

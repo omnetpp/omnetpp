@@ -49,22 +49,6 @@ void intCastError(const std::string& num, const cObject *context, const char *er
     throw cRuntimeError(context, errmsg ? errmsg : "Overflow casting %s to the target integer type", num.c_str());
 }
 
-char *opp_strprettytrunc(char *dest, const char *src, unsigned maxlen)
-{
-    if (!src) {
-        *dest = '\0';
-        return dest;
-    }
-    strncpy(dest, src, maxlen);
-    if (strlen(src) > maxlen) {
-        dest[maxlen] = '\0';
-        if (maxlen >= 3)
-            dest[maxlen-1] = dest[maxlen-2] = dest[maxlen-3] = '.';
-    }
-    return dest;
-}
-
-//----
 
 const char *opp_typename(const std::type_info& t)
 {

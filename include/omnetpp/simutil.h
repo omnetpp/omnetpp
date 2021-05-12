@@ -17,14 +17,9 @@
 #define __OMNETPP_SIMUTIL_H
 
 #include <cmath>
-#include <cstring>  // for strlen, etc.
-#include <cstdarg>  // for va_list
-#include <cstdio>   // for sprintf
-#include <cstdlib>  // for gcvt
 #include <string>    // for std::string
 #include <typeinfo>  // for type_info
 #include <type_traits> // is_integer
-#include "platdep/platmisc.h" // for gcvt, etc
 #include "simkerneldefs.h"
 
 namespace omnetpp {
@@ -86,37 +81,6 @@ ToInt checked_int_cast(double d, const char *errmsg=nullptr)
 }
 
 /**
- * @brief Same as the standard strlen() function, except that it also accepts
- * nullptr and returns 0 for it.
- */
-inline int opp_strlen(const char *);
-
-/**
- * @brief Duplicates the string, using <tt>new char[]</tt>. For nullptr and empty
- * strings it returns nullptr.
- */
-inline char *opp_strdup(const char *);
-
-/**
- * @brief Same as the standard strcpy() function, except that nullptr as the
- * second argument is treated as an empty string ("").
- */
-inline char *opp_strcpy(char *,const char *);
-
-/**
- * @brief Same as the standard strcmp() function, except that nullptr is treated
- * exactly as an empty string ("").
- */
-inline int opp_strcmp(const char *, const char *);
-
-/**
- * @brief Copies src string into dest, and if its length would exceed maxlen,
- * it is truncated with an ellipsis. For example, <tt>opp_strprettytrunc(buf,
- * "long-long",6)</tt> yields <tt>"lon..."</tt>.
- */
-SIM_API char *opp_strprettytrunc(char *dest, const char *src, unsigned maxlen);
-
-/**
  * @brief Returns the name of a C++ type, correcting the quirks of various compilers.
  */
 SIM_API const char *opp_typename(const std::type_info& t);
@@ -140,70 +104,6 @@ SIM_API int64_t opp_get_monotonic_clock_nsecs();  // in gettime.cc
 SIM_API int64_t opp_get_monotonic_clock_usecs();  // in gettime.cc
 
 //@}
-
-// INTERNAL: returns the name of a C++ type, correcting the quirks of various compilers.
-SIM_API const char *opp_demangle_typename(const char *mangledName);
-
-
-// implementations:
-
-inline char *opp_strcpy(char *s1,const char *s2)
-{
-    return strcpy(s1, s2 ? s2 : "");
-}
-
-inline int opp_strlen(const char *s)
-{
-    return s ? strlen(s) : 0;
-}
-
-inline char *opp_strdup(const char *s)
-{
-    if (!s || !s[0]) return nullptr;
-    char *p = new char[strlen(s)+1];
-    strcpy(p,s);
-    return p;
-}
-
-inline char *opp_strdup(const char *s, int len)
-{
-    if (!s || !s[0]) return nullptr;
-    char *p = new char[len+1];
-    strncpy(p,s,len);
-    p[len] = 0;
-    return p;
-}
-
-inline int opp_strcmp(const char *s1, const char *s2)
-{
-    if (s1)
-        return s2 ? strcmp(s1,s2) : (*s1 ? 1 : 0);
-    else
-        return (s2 && *s2) ? -1 : 0;
-}
-
-// internally used: appends [num] to the given string
-inline void opp_appendindex(char *s, unsigned int i)
-{
-   while (*s) s++;
-   *s++ = '[';
-   if (i<10)
-       {*s++ = '0'+i; *s++=']'; *s=0; return;}
-   if (i<100)
-       {*s++ = '0'+i/10; *s++='0'+i%10; *s++=']'; *s=0; return;}
-   sprintf(s,"%d]",i);
-}
-
-// internal
-inline std::string double_to_str(double t)
-{
-#if __cplusplus >= 201103L
-   return std::to_string(t);
-#else
-   char buf[32];
-   return gcvt(t,16,buf);
-#endif
-}
 
 }  // namespace omnetpp
 

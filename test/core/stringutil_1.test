@@ -1,0 +1,185 @@
+%description:
+stringutil.h functions
+
+%global:
+static int qsortfunc(const void *a, const void *b) { return opp_strdictcmp(*(char**)a, *(char**)b); }
+
+%activity:
+
+#define P(x)  EV << #x << " --> '" << (x) << "'\n"
+
+char buf[256];
+char *endptr;
+
+P(opp_isempty(nullptr));
+P(opp_isempty(""));
+P(opp_isempty("foo"));
+P(opp_nulltoempty(nullptr));
+P(opp_nulltoempty("foo"));
+P(opp_emptytodefault(nullptr, "foo"));
+P(opp_emptytodefault("", "foo"));
+P(opp_emptytodefault(" ", "foo"));
+P(opp_emptytodefault("bar", "foo"));
+P(opp_isblank(nullptr));
+P(opp_isblank(" \t\n\f\r"));
+P(opp_isblank(" foo "));
+P(opp_strlen(nullptr));
+P(opp_strlen("foo"));
+P(opp_strdup(nullptr)==nullptr);
+P(opp_strdup("")==nullptr);
+P(opp_strdup("foo"));
+P(opp_strcpy(buf, "foo"));
+P(opp_strcmp("aaa", "aab"));
+P(opp_trim("  foo\r\n"));
+P(opp_strprettytrunc(buf, "lorem ipsum dolor", 10));
+P(opp_stringf("Z=%d%s", 12, "ms"));
+// skipped: opp_vstringf(const char *fmt, va_list& args)
+P(opp_replacesubstring("foo bar foo", "foo", "FOO", true));
+
+P(opp_join(opp_split_and_trim("hello,\n big, \t world "), ":"));
+P(opp_join(opp_split("hello, big, \t world ", ","), ":"));
+P(opp_join(opp_split_and_trim("hello,\n big, \t world ", ","), ":"));
+
+P(opp_stringbeginswith("foobar", "bar"));
+P(opp_stringbeginswith("foobar", "foo"));
+P(opp_stringendswith("foobar", "bar"));
+P(opp_stringendswith("foobar", "foo"));
+P(opp_substringbefore("hello,big,world", ","));
+P(opp_substringbefore("hello,big,world", "#"));
+P(opp_substringafter("hello,big,world", ","));
+P(opp_substringafter("hello,big,world", "#"));
+P(opp_substringbeforelast("hello,big,world", ","));
+P(opp_substringbeforelast("hello,big,world", "#"));
+P(opp_substringafterlast("hello,big,world", ","));
+P(opp_substringafterlast("hello,big,world", "#"));
+P(opp_removestart("foobar", "bar"));
+P(opp_removestart("foobar", "foo"));
+P(opp_removeend("foobar", "bar"));
+P(opp_removeend("foobar", "foo"));
+
+P(opp_strlower("Foo"));
+P(opp_strupper("Foo"));
+
+P(opp_strnistr("hello,big,world", "foo", 10, true)==nullptr);
+P(opp_strnistr("hello,big,world", "foo", 100, true)==nullptr);
+P(opp_strnistr("hello,big,world", "big", 10, true));
+P(opp_strnistr("hello,big,world", "BIG", 10, false));
+P(opp_strnistr("hello,big,world", "BIG", 10, true)==nullptr);
+P(opp_strnistr("hello,big,world", "big", 3, true)==nullptr);
+
+const char *words1[] = { "a", "b", "c", "d", "c1", "c2", "ca", "cd" };
+const char *words2[] = { "a", "aaa", "aa", "aaaaa", "aaaa" };
+const char *words3[] = { "a", "aaa", "Aa", "AaAaa", "aaaa" };
+const char *words4[] = { "a1b", "a2b", "a11b", "a13b", "a20b" };
+qsort(words1, 8, sizeof(char*), qsortfunc); EV << "opp_strdictcmp: " << opp_join(words1, 8, " ") << endl;
+qsort(words2, 5, sizeof(char*), qsortfunc); EV << "opp_strdictcmp: " << opp_join(words2, 5, " ") << endl;
+qsort(words3, 5, sizeof(char*), qsortfunc); EV << "opp_strdictcmp: " << opp_join(words3, 5, " ") << endl;
+qsort(words4, 5, sizeof(char*), qsortfunc); EV << "opp_strdictcmp: " << opp_join(words4, 5, " ") << endl;
+
+P(opp_join(", ", "foo", "bar"));
+P(opp_join(", ", std::string("foo"), std::string("bar")));
+const char *parts[] = {"hello", "big", "world", nullptr};
+P(opp_join(parts, ", "));
+P(opp_join(parts, ", ", '`'));
+P(opp_join(std::vector<std::string>{"hello", "big", "world"}, ", "));
+P(opp_join(std::vector<std::string>{"hello", "big", "world"}, ", ", '`'));
+
+P(opp_itoa(buf, 12345));
+P(opp_ltoa(buf, 12345L));
+P(opp_i64toa(buf, 12345LL));
+P(opp_dtoa(buf, "%g", 16437.0/54.0));
+P(opp_strtol(" 12345678 ", &endptr)); P(endptr);
+P(opp_atol(" -12345678 "));
+P(opp_strtoul(" 12345678 ", &endptr)); P(endptr);
+P(opp_atoul(" 12345678 "));
+P(opp_strtoll(" -12345678 ", &endptr)); P(endptr);
+P(opp_atoll(" -12345678 "));
+P(opp_strtoull(" 12345678 ", &endptr)); P(endptr);
+P(opp_atoull(" 12345678 "));
+P(opp_strtod(" 123.456 ", &endptr)); P(endptr);
+P(opp_atof(" 123.456 "));
+
+EV << ".\n";
+
+%contains: stdout
+opp_isempty(nullptr) --> '1'
+opp_isempty("") --> '1'
+opp_isempty("foo") --> '0'
+opp_nulltoempty(nullptr) --> ''
+opp_nulltoempty("foo") --> 'foo'
+opp_emptytodefault(nullptr, "foo") --> 'foo'
+opp_emptytodefault("", "foo") --> 'foo'
+opp_emptytodefault(" ", "foo") --> ' '
+opp_emptytodefault("bar", "foo") --> 'bar'
+opp_isblank(nullptr) --> '1'
+opp_isblank(" \t\n\f\r") --> '1'
+opp_isblank(" foo ") --> '0'
+opp_strlen(nullptr) --> '0'
+opp_strlen("foo") --> '3'
+opp_strdup(nullptr)==nullptr --> '1'
+opp_strdup("")==nullptr --> '1'
+opp_strdup("foo") --> 'foo'
+opp_strcpy(buf, "foo") --> 'foo'
+opp_strcmp("aaa", "aab") --> '-1'
+opp_trim("  foo\r\n") --> 'foo'
+opp_strprettytrunc(buf, "lorem ipsum dolor", 10) --> 'lorem i...'
+opp_stringf("Z=%d%s", 12, "ms") --> 'Z=12ms'
+opp_replacesubstring("foo bar foo", "foo", "FOO", true) --> 'FOO bar FOO'
+opp_join(opp_split_and_trim("hello,\n big, \t world "), ":") --> 'hello,:big,:world'
+opp_join(opp_split("hello, big, \t world ", ","), ":") --> 'hello: big: 	 world '
+opp_join(opp_split_and_trim("hello,\n big, \t world ", ","), ":") --> 'hello:big:world'
+opp_stringbeginswith("foobar", "bar") --> '0'
+opp_stringbeginswith("foobar", "foo") --> '1'
+opp_stringendswith("foobar", "bar") --> '1'
+opp_stringendswith("foobar", "foo") --> '0'
+opp_substringbefore("hello,big,world", ",") --> 'hello'
+opp_substringbefore("hello,big,world", "#") --> ''
+opp_substringafter("hello,big,world", ",") --> 'big,world'
+opp_substringafter("hello,big,world", "#") --> ''
+opp_substringbeforelast("hello,big,world", ",") --> 'hello,big'
+opp_substringbeforelast("hello,big,world", "#") --> ''
+opp_substringafterlast("hello,big,world", ",") --> 'world'
+opp_substringafterlast("hello,big,world", "#") --> ''
+opp_removestart("foobar", "bar") --> 'foobar'
+opp_removestart("foobar", "foo") --> 'bar'
+opp_removeend("foobar", "bar") --> 'foo'
+opp_removeend("foobar", "foo") --> 'foobar'
+opp_strlower("Foo") --> 'foo'
+opp_strupper("Foo") --> 'FOO'
+opp_strnistr("hello,big,world", "foo", 10, true)==nullptr --> '1'
+opp_strnistr("hello,big,world", "foo", 100, true)==nullptr --> '1'
+opp_strnistr("hello,big,world", "big", 10, true) --> 'big,world'
+opp_strnistr("hello,big,world", "BIG", 10, false) --> 'big,world'
+opp_strnistr("hello,big,world", "BIG", 10, true)==nullptr --> '1'
+opp_strnistr("hello,big,world", "big", 3, true)==nullptr --> '1'
+opp_strdictcmp: a b c c1 c2 ca cd d
+opp_strdictcmp: a aa aaa aaaa aaaaa
+opp_strdictcmp: a Aa aaa aaaa AaAaa
+opp_strdictcmp: a1b a2b a11b a13b a20b
+opp_join(", ", "foo", "bar") --> 'foo, bar'
+opp_join(", ", std::string("foo"), std::string("bar")) --> 'foo, bar'
+opp_join(parts, ", ") --> 'hello, big, world'
+opp_join(parts, ", ", '`') --> 'hello, big, world'
+opp_join(std::vector<std::string>{"hello", "big", "world"}, ", ") --> 'hello, big, world'
+opp_join(std::vector<std::string>{"hello", "big", "world"}, ", ", '`') --> 'hello, big, world'
+opp_itoa(buf, 12345) --> '12345'
+opp_ltoa(buf, 12345L) --> '12345'
+opp_i64toa(buf, 12345LL) --> '12345'
+opp_dtoa(buf, "%g", 16437.0/54.0) --> '304.389'
+opp_strtol(" 12345678 ", &endptr) --> '12345678'
+endptr --> ' '
+opp_atol(" -12345678 ") --> '-12345678'
+opp_strtoul(" 12345678 ", &endptr) --> '12345678'
+endptr --> ' '
+opp_atoul(" 12345678 ") --> '12345678'
+opp_strtoll(" -12345678 ", &endptr) --> '-12345678'
+endptr --> ' '
+opp_atoll(" -12345678 ") --> '-12345678'
+opp_strtoull(" 12345678 ", &endptr) --> '12345678'
+endptr --> ' '
+opp_atoull(" 12345678 ") --> '12345678'
+opp_strtod(" 123.456 ", &endptr) --> '123.456'
+endptr --> ' '
+opp_atof(" 123.456 ") --> '123.456'
+.
+
