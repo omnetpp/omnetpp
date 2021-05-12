@@ -1,5 +1,3 @@
-#! /bin/sh
-
 # first argument can be (e.g. 'source setenv -q'):
 # -q : do not show banner text on configuration success
 # -r : remove an already configured environment
