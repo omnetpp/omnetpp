@@ -53,14 +53,6 @@ class CMDENV_API FakeGUI
     simtime_t simulationTimeDelta;
     double animationTimeDelta;
 
-    class Translator : public common::Expression::BasicAstTranslator {
-        FakeGUI *fakeGui;
-      public:
-        Translator(FakeGUI *fakeGui) : fakeGui(fakeGui) {}
-        virtual common::Expression::ExprNode *createIdentNode(const char *varName, bool withIndex) override;
-        virtual common::Expression::ExprNode *createFunctionNode(const char *functionName, int argCount) override;
-    };
-
    protected:
      virtual void parseExpression(cConfiguration *cfg, cConfigOption *configOption, common::Expression& expression);
      virtual double getAnimationHoldEndTime() const;

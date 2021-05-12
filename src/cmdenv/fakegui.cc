@@ -29,10 +29,8 @@
 #include "omnetpp/ccanvas.h"
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/cconfigoption.h"
-#include "sim/nedsupport.h"
 
 using namespace omnetpp::common;
-using namespace omnetpp::nedsupport;
 
 namespace omnetpp {
 namespace cmdenv {
@@ -55,27 +53,11 @@ void FakeGUI::readConfigOptions(cConfiguration *cfg)
     parseExpression(cfg, CFGID_CMDENV_FAKEGUI_ON_SIMTIME_NUMSTEPS, onSimtimeNumSteps);
 }
 
-Expression::ExprNode *FakeGUI::Translator::createIdentNode(const char *varName, bool withIndex)
-{
-    if (std::string(varName) == "dt") {
-        auto fakeGui = this->fakeGui; // note: [=] will only capture local variables and "this", but not members
-        return new LambdaVariableNode("dt", [fakeGui](Context*) {return fakeGui->getCurrentTimeDelta();});
-    }
-    return nullptr;
-}
-
-Expression::ExprNode *FakeGUI::Translator::createFunctionNode(const char *functionName, int argCount)
-{
-    return nullptr; //TODO int(), uniform(), normal(), exponential(), etc.
-}
-
 void FakeGUI::parseExpression(cConfiguration *cfg, cConfigOption *configOption, common::Expression& expression)
 {
     try {
         const char *text = cfg->getAsCustom(configOption, "");
-        Translator extraTranslator(this);
-        Expression::MultiAstTranslator translator({ &extraTranslator, Expression::getDefaultAstTranslator() });
-        expression.parse(text, &translator);
+        expression.parse(text);
     }
     catch (std::exception& e) {
         throw cRuntimeError("Error in config option '%s': %s", configOption->getName(), e.what());
@@ -162,7 +144,7 @@ int FakeGUI::getHoldNumFrames(double dt)
         return 0;
     this->isWithinHold = true;
     this->animationTimeDelta = dt;
-    return std::min((intval_t)1000, onHoldNumSteps.intValue());
+    return std::min((long)1000, onHoldNumSteps.longValue());
 }
 
 int FakeGUI::getSimulationNumFrames(simtime_t dt)
@@ -171,7 +153,7 @@ int FakeGUI::getSimulationNumFrames(simtime_t dt)
         return 0;
     this->isWithinHold = false;
     this->simulationTimeDelta = dt;
-    return std::min((intval_t)1000, onSimtimeNumSteps.intValue());
+    return std::min((long)1000, onSimtimeNumSteps.longValue());
 }
 
 double FakeGUI::getAnimationTime() const
