@@ -37,6 +37,7 @@ using namespace omnetpp::nedsupport;
 namespace omnetpp {
 namespace cmdenv {
 
+Register_PerRunConfigOption(CFGID_CMDENV_FAKEGUI_SEED, "cmdenv-fake-gui-seed", CFG_INT, "1", "When `cmdenv-fake-gui=true`: The seed for the RNG governing the operation of the fake GUI component. This is entirely independent of the RNGs used by the model.");
 Register_PerRunConfigOption(CFGID_CMDENV_FAKEGUI_BEFORE_EVENT_PROBABILITY, "cmdenv-fake-gui-before-event-probability", CFG_DOUBLE, "1", "When `cmdenv-fake-gui=true`: The probability with which `refreshDisplay()` is called before each event.");
 Register_PerRunConfigOption(CFGID_CMDENV_FAKEGUI_AFTER_EVENT_PROBABILITY, "cmdenv-fake-gui-after-event-probability", CFG_DOUBLE, "1", "When `cmdenv-fake-gui=true`: The probability with which `refreshDisplay()` is called after each event.");
 Register_PerRunConfigOption(CFGID_CMDENV_FAKEGUI_ON_HOLD_PROBABILITY, "cmdenv-fake-gui-on-hold-probability", CFG_DOUBLE, "0.5", "When `cmdenv-fake-gui=true`: The probability with which `refreshDisplay()` is called (possibly multiple times, see `cmdenv-fake-gui-on-hold-numsteps`) during a \"hold\" period (animation during which simulation time does not advance).");
@@ -46,6 +47,8 @@ Register_PerRunConfigOption(CFGID_CMDENV_FAKEGUI_ON_SIMTIME_NUMSTEPS, "cmdenv-fa
 
 void FakeGUI::readConfigOptions(cConfiguration *cfg)
 {
+    rng.setSeed(cfg->getAsInt(CFGID_CMDENV_FAKEGUI_SEED));
+
     beforeEventProbability = cfg->getAsDouble(CFGID_CMDENV_FAKEGUI_BEFORE_EVENT_PROBABILITY);
     afterEventProbability = cfg->getAsDouble(CFGID_CMDENV_FAKEGUI_AFTER_EVENT_PROBABILITY);
     onHoldProbability = cfg->getAsDouble(CFGID_CMDENV_FAKEGUI_ON_HOLD_PROBABILITY);

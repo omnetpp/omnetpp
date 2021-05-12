@@ -228,6 +228,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             addTextFieldEditor(group, CFGID_FINGERPRINT_INGREDIENTS, "Default ingredients");
             addCheckboxFieldEditor(group, CFGID_CMDENV_FAKE_GUI, "Enable FakeGUI mode*");
             addNote(group, "* In FakeGUI mode, Cmdenv calls refreshDisplay() periodically, allowing graphics to be included in the fingerprint");
+            addTextFieldEditor(group, CFGID_CMDENV_FAKE_GUI_SEED, "Seed");
             addSpacer(form);
             group = createGroup(form, "Filter");
             addTextFieldEditor(group, CFGID_FINGERPRINT_EVENTS, "Events to include");
