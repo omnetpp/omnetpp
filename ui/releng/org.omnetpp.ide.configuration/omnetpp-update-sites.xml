@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bookmarks>
+   <site url="https://download.eclipse.org/releases/2020-12" selected="true" name="Eclipse release 2020-12"/>
+   <site url="https://pydev.org/update_sites/8.2.0" selected="true" name="PyDev"/> <!-- from: https://www.pydev.org/update_sites/ -->
+   <site url="https://download.eclipse.org/tools/cdt/releases/10.2" selected="false" name="CDT SDK"/>
+   <site url="https://download.eclipse.org/tools/gef/updates/legacy/releases/" selected="false" name="GEF3 Legacy SDK"/>
+   <site url="https://download.eclipse.org/eclipse/updates/4.18" selected="false" name="Eclipse 4.18 SDK"/>
+</bookmarks>

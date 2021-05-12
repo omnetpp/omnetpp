@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # create an OMNeT++ source distribution package
 #
@@ -16,6 +16,10 @@ REGEXPREPLACE="perl -i -pe"
 
 cd `dirname $0`/..
 OMNETPP_ROOT=`pwd`
+
+cp configure.user.dist configure.user
+
+source ./setenv -f
 
 if test -z "$what"; then
     export what="omnetpp"
@@ -80,8 +84,6 @@ fi
 RELEASE="$what-$VERSION"
 
 echo $RELEASE >Version
-
-cp configure.user.dist configure.user
 
 # do some edition specific preprocessing
 . $OMNETPP_ROOT/releng/makedist-${what}.sh

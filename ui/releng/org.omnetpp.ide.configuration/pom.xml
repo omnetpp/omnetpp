@@ -7,13 +7,10 @@
   <packaging>pom</packaging>
 
   <properties>
-    <tycho.version>1.3.0</tycho.version>
-    <tycho.extras.version>1.3.0</tycho.extras.version>
+    <tycho.version>1.6.0</tycho.version>
+    <tycho.extras.version>1.6.0</tycho.extras.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <repo.url>http://download.eclipse.org/releases/latest</repo.url>
-    <update-repo.url>http://download.eclipse.org/eclipse/updates/4.14</update-repo.url>
-    <cdt-repo.url>http://download.eclipse.org/tools/cdt/releases/9.10</cdt-repo.url>
-<!--    <cdt-repo.url>http://download.eclipse.org/tools/cdt/builds/master/nightly</cdt-repo.url> -->
+    <eclipse-repo.url>https://download.eclipse.org/releases/2020-12</eclipse-repo.url>
   </properties>
 
   <pluginRepositories>
@@ -30,22 +27,20 @@
   <repositories>
     <repository>
       <id>main</id>
-      <url>${repo.url}</url>
-      <layout>p2</layout>
-    </repository>
-    <repository>
-      <id>update</id>
-      <url>${update-repo.url}</url>
-      <layout>p2</layout>
-    </repository>
-    <repository>
-      <id>cdt</id>
-      <url>${cdt-repo.url}</url>
+      <url>${eclipse-repo.url}</url>
       <layout>p2</layout>
     </repository>
   </repositories>
 
   <build>
+    <extensions>
+      <extension>
+        <groupId>org.eclipse.tycho.extras</groupId>
+        <artifactId>tycho-pomless</artifactId>
+        <version>${tycho.version}</version>
+      </extension>
+    </extensions>
+
     <plugins>
       <plugin>
         <groupId>org.eclipse.tycho</groupId>
@@ -74,22 +69,6 @@
         </configuration>
       </plugin>
 
-      <!-- Compiler configuration -->
-      <plugin>
-          <groupId>org.eclipse.tycho</groupId>
-          <artifactId>tycho-compiler-plugin</artifactId>
-          <version>${tycho.version}</version>
-          <configuration>
-            <compilerArgs>
-            </compilerArgs>
-            <useProjectSettings>false</useProjectSettings>
-
-            <!-- Java 8  -->
-            <source>1.8</source>
-            <target>1.8</target>
-          </configuration>
-      </plugin>
-
       <!-- enable source bundle generation -->
       <plugin>
          <groupId>org.eclipse.tycho</groupId>
@@ -105,6 +84,21 @@
          </executions>
       </plugin>
 
+      <!-- Compiler configuration -->
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>tycho-compiler-plugin</artifactId>
+        <version>${tycho.version}</version>
+        <configuration>
+          <compilerArgs>
+          </compilerArgs>
+          <useProjectSettings>false</useProjectSettings>
+
+          <!-- Java 11  -->
+          <source>11</source>
+          <target>11</target>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
@@ -166,8 +160,8 @@
                 <phase>process-sources</phase>
                 <configuration>
                   <target>
-                    <replace dir="." token="##VERSION##" value="${VERSION}"/>
-                    <replace dir="." token="##BUILDID##" value="${BUILDID}"/>
+                    <replace dir="." token="##VERSION##" value="${VERSION}" />
+                    <replace dir="." token="##BUILDID##" value="${BUILDID}" />
                     <replace dir="." token= "intro-omnetpp.png" value="intro-omnest.png" >
                       <include name="plugin.xml" />
                     </replace>

@@ -25,8 +25,7 @@
     <module>org.omnetpp.inifile.editor</module>
     <module>org.omnetpp.launch</module>
     <module>org.omnetpp.main</module>
-    <module>org.omnetpp.main.omnest</module>
-    <module>org.omnetpp.main.omnetpp</module>
+    <module>org.omnetpp.main.${what}</module>
     <module>org.omnetpp.msg.editor</module>
     <module>org.omnetpp.ned.core</module>
     <module>org.omnetpp.ned.editor</module>
@@ -41,7 +40,7 @@
     <module>org.visigoths.freemarker.ide</module>
 
     <module>features</module>
-    <module>releng</module>
+    <module>releng/org.omnetpp.ide.${what}.product</module>
  </modules>
 
 </project>
