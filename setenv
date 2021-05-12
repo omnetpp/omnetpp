@@ -1,29 +1,72 @@
-#! /bin/sh
+#!/usr/bin/env -S sh -c "echo >&2 \"Error: You are running this script instead of sourcing it. Make sure to use it as 'source setenv' or '. setenv', otherwise its settings won't take effect.\"; exit 1"
 
-case "$-" in
-*i*) ;;
-*)  if [ "$1" != "-f" ]; then # allow use from scripts, as ". setenv -f"
-        echo "Error: not a login shell -- run this script as 'source setenv' or '. setenv'"
-        exit 1
-    fi
-esac
+# first argument can be (e.g. 'source setenv -q'):
+# -q : do not show banner text on configuration success
+# -r : remove an already configured environment
 
-if [ ! -f configure.user -o ! -f include/omnetpp.h ]; then
-    echo "Error: current working directory does not look like an OMNeT++ root directory"
-    # no exit -- it would close the shell
-else
-    omnetpp_root=`pwd`
-    echo $omnetpp_root
-    if [ `uname` = "Darwin" ]; then
-      if [ ! -d $omnetpp_root/tools/macosx ]; then
-          echo "WARNING! We are on Mac OS X, but it seems that you have downloaded the Linux version of the installation package!"
-      fi
-      export PATH=$omnetpp_root/tools/macosx/bin:$PATH
-      export QT_PLUGIN_PATH=$omnetpp_root/tools/macosx/plugins
-    fi
-    export PATH=$omnetpp_root/bin:$PATH
-    export HOSTNAME
-    export HOST
-    export QT_SELECT=5 # on systems with qtchooser, switch to Qt5
+# Get the directory where this script reside using a trick (works differently on bash and zsh)
+# On bash, the current script's name is in 'BASH_SOURCE[0]'
+if [ "$BASH_VERSION" != "" ]; then # for BASH
+  dir=$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)
+elif [ "$ZSH_VERSION" != "" ]; then # on zsh the script name is in '$0'
+  dir=$(cd $(dirname $0) && pwd)
+else # on any other SH compatible shell we assume that the current working directory is the OMNeT++ root directory
+  dir=$(pwd)
 fi
 
+# check if dir is really pointing to an omnet++ installation dir
+if [ ! -f $dir/configure.user -o ! -f $dir/include/omnetpp.h -o ! -f $dir/Version ]; then
+    echo "Error: '$dir' does not look like an OMNeT++ root directory"
+    return 1
+fi
+
+# remove previous environment to prevent the accumulation of path elements
+if [ -n "$__omnetpp_root_dir" ]; then
+  if [ "$1" = "-r" ]; then
+    echo "Removed previous environment for '$__omnetpp_root_dir'."
+    dir=
+  else
+    echo "Warning: overwriting previous environment for '$__omnetpp_root_dir'."
+  fi
+  export PATH=${PATH#$__omnetpp_root_dir/bin:}
+  export PYTHONPATH=${PYTHONPATH#$__omnetpp_root_dir/python:}
+  export __omnetpp_root_dir=
+  export OMNETPP_RELEASE=
+  export QT_SELECT=
+  export QT_LOGGING_RULES=
+fi
+
+# do not continue if removal was requested
+if [ "$1" = "-r" ]; then
+    return 0
+fi
+
+if [ $(uname) = "Darwin" ]; then
+  if [ ! -d $dir/tools/macosx ]; then
+      echo "Error: We are running on macOS, but you seem to have downloaded the Linux version of the installation package!"
+      return 1
+  else
+      if [ $(arch) = "arm64" ]; then
+        echo "Error: We are running on an Apple Mx processor which is not supported natively."
+        echo "Start a new shell with 'arch -x86_64 /bin/zsh --login' to turn on x86 emulation"
+        echo "and then execute 'source setenv' again from that shell."
+        return 1
+      else
+        cd $dir/tools/macosx && source setenv ; cd - >/dev/null
+      fi
+  fi
+fi
+
+export __omnetpp_root_dir=$dir
+export OMNETPP_RELEASE=$(cat $__omnetpp_root_dir/Version)
+export PATH=$__omnetpp_root_dir/bin:$PATH
+export PYTHONPATH=$__omnetpp_root_dir/python:$PYTHONPATH
+export HOSTNAME
+export HOST
+export QT_SELECT=5 # on systems with qtchooser, switch to Qt5
+export QT_LOGGING_RULES='*.debug=false;qt.qpa.*=false' # disable some annoying qt logging
+dir=
+
+if [ "$1" != "-q" ]; then
+  echo "Environment for '$OMNETPP_RELEASE' in directory '$__omnetpp_root_dir' is ready."
+fi
