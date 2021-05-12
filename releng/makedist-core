@@ -1,0 +1,62 @@
+#!/bin/sh
+#
+# create an OMNeT++/OMNEST source distribution package for Unix systems (NO IDE and othe graphical tools)
+# in: SOURCE_DISTRIBUTION_BASE_NAME (1st arg optionally) contains the source file name (minus the .tgz extension)
+#     (placed in DISTDIR) that is used as a source for the windows build
+# in: TOOLS_DIR - the directory storing the platform specific binaries (JRE, toolchain etc.) (without the version and the last platform specific segment!)
+# in: VERSION - the version suffix used in the build (i.e. 5.0b3)
+
+if [ "$1" != "" ]; then
+   SOURCE_DISTRIBUTION_BASE_NAME=$1
+fi
+if test -z "$SOURCE_DISTRIBUTION_BASE_NAME"; then
+  echo "SOURCE_DISTRIBUTION_BASE_NAME environment variable is not specified!"; exit 1;
+fi
+
+if test -z "$TOOLS_DIR"; then
+  echo "TOOLS_DIR environment variable is not specified!"; exit 1;
+fi
+
+if test -z "$VERSION"; then
+  echo "VERSION environment variable is not specified!"; exit 1;
+fi
+
+if [ "$what" != "omnest" ]; then
+    what="omnetpp"
+fi
+
+cd `dirname $0`/..
+OMNETPP_ROOT=`pwd`
+
+# the directory where the distribution file will created
+DISTDIR=$OMNETPP_ROOT/out/dist
+
+if [ -d $DISTDIR/$what-$VERSION ]; then
+    echo "Deleting old target directory: $DISTDIR/$what-$VERSION !"
+    rm -rf $DISTDIR/$what-$VERSION
+fi
+
+# extract the source archive
+echo "Extracting source distribution: $SOURCE_DISTRIBUTION_BASE_NAME.tgz "
+cd $DISTDIR
+tar xfz $SOURCE_DISTRIBUTION_BASE_NAME.tgz || { echo --- error extracting source ---; exit 1;}
+
+# cd into the extracted source achive dir
+cd $what-$VERSION || exit 1
+
+echo "Preparing to create distribution package: $what, version: $VERSION platform: architecture independent..."
+
+# Remove IDE
+rm -rf ide
+# TODO disable Tkenv/Qtenv and OSG in configure.user
+
+# pack the distro
+cd ..
+# create core version - tgz
+export SOURCE_DISTRIBUTION_NAME_CORE=$SOURCE_DISTRIBUTION_BASE_NAME-core.tgz
+echo Creating $DISTDIR/$SOURCE_DISTRIBUTION_NAME_CORE
+tar cfz $SOURCE_DISTRIBUTION_NAME_CORE $what-$VERSION || { echo --- error creating src-core.tgz ---; exit 1;}
+
+# delete the source stuff
+rm -rf $what-$VERSION
+

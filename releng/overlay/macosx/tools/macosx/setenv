@@ -1,0 +1,8 @@
+# source this file to enable the macOS specific toolchain
+
+TOOLS_DIR="$(pwd)"
+export PATH=$TOOLS_DIR/bin:$PATH
+export PIP_PREFIX=$TOOLS_DIR/lib/Python.framework/Versions/Current
+export PYTHONNOUSERSITE=1
+export BISON_PKGDATADIR=$TOOLS_DIR/share/bison
+export QT_PLUGIN_PATH=$TOOLS_DIR/plugins

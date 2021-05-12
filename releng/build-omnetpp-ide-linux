@@ -1,0 +1,15 @@
+#!/bin/sh
+#
+# This script is called by the 'ide' target of the main makefile. It builds a linux distro only without documentation
+# to save time.
+
+# variables used by the build script
+export what=omnetpp
+export BUILD_CORE_DISTRO=false
+export BUILD_LINUX_DISTRO=true
+export BUILD_WIN64_DISTRO=false
+export BUILD_MACOSX_DISTRO=false
+export BUILD_DOC=false
+export GIT_VERSION=$(git rev-parse HEAD)
+
+. $(dirname $0)/docker-build.sh

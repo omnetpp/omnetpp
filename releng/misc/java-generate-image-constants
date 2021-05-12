@@ -1,0 +1,41 @@
+#!/bin/sh
+
+PACKAGE=${1:-org.omnetpp.TODO}
+CLASSNAME=${2:-IxxxImages}
+PROJROOT=${3:-.}
+SCRIPTNAME=${4:-_scripts/misc/java-generate-image-constants}
+
+echo "\
+/*--------------------------------------------------------------*
+  Copyright (C) 2006-2017 OpenSim Ltd.
+
+  This file is distributed WITHOUT ANY WARRANTY. See the file
+  'License' for details on this and other legal matters.
+*--------------------------------------------------------------*/
+
+package $PACKAGE;
+
+/**
+ * Image file constants.
+ *
+ * Remember: other sources of images are: 
+ * - org.eclipse.ui.ISharedImages (use PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_xxx))
+ * - org.omnetpp.common.image.ImageFactory
+ *
+ * Source file generated with $SCRIPTNAME.
+ *
+ * @author andras
+ */
+public class $CLASSNAME {\
+"
+
+files=$(find $PROJROOT/icons -type f -name *.png -o -name *.gif | sort)
+
+for file in $files; do
+    file=$(echo $file | sed -e 's:.*\bicons/:icons/:' )
+    symbol=$(echo $file | sed -e 's:.*\bicons/::' -e 's:full/::' -e 's:\.gif::' -e 's:\.png::' -e 's:/:_:g' -e 's:\(.*\):IMG_\U\1:' )
+    echo "    public static final String $symbol = \"$file\";"
+done
+
+echo "}"
+
