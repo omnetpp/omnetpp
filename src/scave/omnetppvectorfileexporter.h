@@ -57,7 +57,7 @@ class SCAVE_API OmnetppVectorFileExporter : public Exporter
 
 };
 
-} // namespace scave
+}  // namespace scave
 }  // namespace omnetpp
 
 #endif

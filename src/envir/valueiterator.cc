@@ -84,7 +84,7 @@ struct Resolver : public opp_substitutevariables_resolver
         return it->second->get();
     }
 };
-} // namespace
+}  // namespace
 
 void ValueIterator::Expr::substituteVariables(const VariableMap& map)
 {

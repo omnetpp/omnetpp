@@ -103,8 +103,8 @@ struct ComponentLogActionData
     LogLevel logLevel;
 };
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 
 // In case of enum always use QVariant::fromValue method instead of implicit cast
 // because it cause int cast and thus QVariant::value<enumtype> will give wrong value.

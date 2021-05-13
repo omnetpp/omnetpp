@@ -29,8 +29,8 @@ class EVENTLOG_API EventLogEntryFactory
       static EventLogTokenBasedEntry * parseEntry(IChunk *chunk, int index, char **tokens, int numTokens);
 };
 
-} // namespace eventlog
-} // namespace omnetpp
+}  // namespace eventlog
+}  // namespace omnetpp
 
 
 #endif

@@ -64,7 +64,7 @@ enum TimelineMode {
     NONLINEAR
 };
 
-} // namespace eventlog
-} // namespace omnetpp
+}  // namespace eventlog
+}  // namespace omnetpp
 
 #endif

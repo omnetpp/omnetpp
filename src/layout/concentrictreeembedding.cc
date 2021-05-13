@@ -42,6 +42,6 @@ void ConcentricTreeEmbedding::calculateCenterRecursive(Vertex *vertex, int level
         calculateCenterRecursive(*it, level + 1);
 }
 
-} // namespace layout
+}  // namespace layout
 }  // namespace omnetpp
 

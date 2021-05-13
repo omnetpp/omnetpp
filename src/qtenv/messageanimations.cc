@@ -95,7 +95,7 @@ static PathVec findDirectPath(cModule *srcmod, cModule *destmod)
     return path;
 }
 
-} // namespace
+}  // namespace
 
 // --------  Animation functions  --------
 
@@ -1256,5 +1256,5 @@ QString DeliveryAnimation::str() const
             + " state: " + stateText[state];
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp

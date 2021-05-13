@@ -123,7 +123,7 @@ signals:
     void entryDiscarded(LogBuffer::Entry *discardedEntry);
 };
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 
 #endif

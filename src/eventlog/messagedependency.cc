@@ -330,6 +330,6 @@ void FilteredMessageDependency::print(FILE *file)
     endMessageDependency->print(file);
 }
 
-} // namespace eventlog
-} // namespace omnetpp
+}  // namespace eventlog
+}  // namespace omnetpp
 

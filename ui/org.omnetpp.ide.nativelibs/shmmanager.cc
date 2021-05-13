@@ -131,5 +131,5 @@ void ShmSendBufferManager::garbageCollect()
             delete p; // ptr will be set to nullptr in deleted()
 }
 
-} // namespace scave
-} // namespace omnetpp
+}  // namespace scave
+}  // namespace omnetpp

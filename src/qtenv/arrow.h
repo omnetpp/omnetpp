@@ -44,8 +44,8 @@ QTENV_API QLineF arrowcoords(double src_x1, double src_y1, double src_x2, double
                   double dest_anch_dx = 50, double dest_anch_dy = 50); // dest anchor percentages
 
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 
 
 #endif

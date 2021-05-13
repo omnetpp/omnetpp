@@ -75,7 +75,7 @@ class SCAVE_API IndexedVectorFileReader : public IVectorDataReader
 };
 
 
-} // namespace scave
+}  // namespace scave
 }  // namespace omnetpp
 
 #endif

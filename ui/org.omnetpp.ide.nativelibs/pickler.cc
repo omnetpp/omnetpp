@@ -243,5 +243,5 @@ void ShmPickler::makeRoom(size_t bytesNeeded)
     sendBuffer->extendTo(bufferSize);
 }
 
-} // namespace scave
-} // namespace omnetpp
+}  // namespace scave
+}  // namespace omnetpp

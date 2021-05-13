@@ -123,7 +123,7 @@ class OmnetppOutputVectorManager : public cIOutputVectorManager
     //@}
 };
 
-} // namespace envir
+}  // namespace envir
 }  // namespace omnetpp
 
 #endif

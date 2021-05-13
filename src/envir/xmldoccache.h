@@ -97,7 +97,7 @@ class ENVIR_API XMLDocCache : public cObject
     virtual void flushParsedContentCache();
 };
 
-} // namespace envir
+}  // namespace envir
 }  // namespace omnetpp
 
 

@@ -105,7 +105,7 @@ public:
     void garbageCollect();
 };
 
-} // namespace scave
-} // namespace omnetpp
+}  // namespace scave
+}  // namespace omnetpp
 
 #endif // __OMNETPP_SHMMANAGER_H

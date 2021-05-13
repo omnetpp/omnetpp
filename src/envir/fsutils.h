@@ -34,7 +34,7 @@ namespace envir {
  */
 ENVIR_API void loadExtensionLibrary(const char *lib);
 
-} // namespace envir
+}  // namespace envir
 }  // namespace omnetpp
 
 

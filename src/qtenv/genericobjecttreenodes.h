@@ -261,7 +261,7 @@ class QTENV_API ArrayElementNode : public TreeNode
     bool matchesPropertyFilter(const QString &property) override;
 };
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 
 #endif // __OMNETPP_QTENV_GENERICOBJECTTREENODES_H

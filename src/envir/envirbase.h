@@ -356,7 +356,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     void stoppedWithException(std::exception& e);
 };
 
-} // namespace envir
+}  // namespace envir
 }  // namespace omnetpp
 
 #endif

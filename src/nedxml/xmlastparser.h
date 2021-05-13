@@ -32,7 +32,7 @@ namespace nedxml {
  */
 NEDXML_API ASTNode *parseXML(const char *filename, ErrorStore *errors);
 
-} // namespace nedxml
+}  // namespace nedxml
 }  // namespace omnetpp
 
 

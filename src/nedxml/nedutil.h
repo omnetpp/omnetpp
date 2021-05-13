@@ -57,7 +57,7 @@ class NEDXML_API ASTNodeUtil
     //@}
 };
 
-} // namespace nedxml
+}  // namespace nedxml
 }  // namespace omnetpp
 
 

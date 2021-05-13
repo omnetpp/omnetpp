@@ -68,7 +68,7 @@ private:
     cObject **getSubObjectsFilt(cObject *object, const char *classNamePattern, const char *objFullPathPattern, int maxCount, int &num);
 };
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 
 #endif // __OMNETPP_QTENV_FINDOBJECTSDIALOG_H

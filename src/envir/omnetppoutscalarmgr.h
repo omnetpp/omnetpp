@@ -111,7 +111,7 @@ class ENVIR_API OmnetppOutputScalarManager : public cIOutputScalarManager
     //@}
 };
 
-} // namespace envir
+}  // namespace envir
 }  // namespace omnetpp
 
 #endif

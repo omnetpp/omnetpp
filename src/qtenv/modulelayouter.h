@@ -85,7 +85,7 @@ public:
     QRectF getModuleRectangle(cModule *module, double zoomFactor = 1.0, double imageSizeFactor = 1.0); // the bounding box of the shape and/or icon. full of NANs if not yet layouted
 };
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 
 #endif // __OMNETPP_QTENV_MODULELAYOUTER_H

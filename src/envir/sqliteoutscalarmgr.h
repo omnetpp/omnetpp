@@ -110,7 +110,7 @@ class SqliteOutputScalarManager : public cIOutputScalarManager
     //@}
 };
 
-} // namespace envir
+}  // namespace envir
 }  // namespace omnetpp
 
 #endif

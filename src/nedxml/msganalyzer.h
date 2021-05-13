@@ -138,7 +138,7 @@ class NEDXML_API MsgAnalyzer
     static constexpr const char* PROP_CUSTOM = "custom";
 };
 
-} // namespace nedxml
+}  // namespace nedxml
 }  // namespace omnetpp
 
 

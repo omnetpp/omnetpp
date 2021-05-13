@@ -97,7 +97,7 @@ class SCAVE_API IVectorDataReader
 };
 
 
-} // namespace scave
+}  // namespace scave
 }  // namespace omnetpp
 
 #endif

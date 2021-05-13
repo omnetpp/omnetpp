@@ -276,6 +276,6 @@ const char *EventLogMessageEntry::getAsString(const char *attribute) const
         return nullptr;
 }
 
-} // namespace eventlog
-} // namespace omnetpp
+}  // namespace eventlog
+}  // namespace omnetpp
 

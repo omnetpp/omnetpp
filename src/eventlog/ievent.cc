@@ -81,6 +81,6 @@ void IEvent::unlinkNeighbourEvents(IEvent *event)
         unlinkEvents(event, event->nextEvent);
 }
 
-} // namespace eventlog
-} // namespace omnetpp
+}  // namespace eventlog
+}  // namespace omnetpp
 

@@ -57,7 +57,7 @@ class HeapEmbedding
         void pushPtUnlessRcsContains(std::vector<Pt>& pts, const std::vector<Rc>& circles, const Pt& pt);
 };
 
-} // namespace layout
+}  // namespace layout
 }  // namespace omnetpp
 
 

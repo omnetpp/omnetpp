@@ -214,7 +214,7 @@ public:
     }
 };
 
-} // namespace scave
+}  // namespace scave
 }  // namespace omnetpp
 
 

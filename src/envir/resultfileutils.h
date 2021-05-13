@@ -44,7 +44,7 @@ class ResultFileUtils {
     static StringMap convertMap(const opp_string_map *m);
 };
 
-} // namespace envir
+}  // namespace envir
 }  // namespace omnetpp
 
 #endif

@@ -84,7 +84,7 @@ class COMMON_API FileGlobber
     std::vector<std::string> getFilenames();
 };
 
-} // namespace common
+}  // namespace common
 }  // namespace omnetpp
 
 #endif

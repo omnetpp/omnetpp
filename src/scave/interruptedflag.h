@@ -32,7 +32,7 @@ class SCAVE_API InterruptedException : public std::runtime_error {
     InterruptedException(const char *msg="Interrupted") : std::runtime_error(msg) {}
 };
 
-} // namespace scave
+}  // namespace scave
 }  // namespace omnetpp
 
 

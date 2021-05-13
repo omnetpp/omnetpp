@@ -76,7 +76,7 @@ class SCAVE_API SqliteVectorDataReader : public IVectorDataReader
         virtual void collectEntriesInEventnumInterval(const std::set<int>& vectorIds, eventnumber_t startEventNum, eventnumber_t endEventNum) override;
 };
 
-} // namespace scave
+}  // namespace scave
 }  // namespace omnetpp
 
 

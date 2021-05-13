@@ -393,7 +393,7 @@ class LAYOUT_API ForceDirectedEmbedding
         }
 };
 
-} // namespace layout
+}  // namespace layout
 }  // namespace omnetpp
 
 #endif

@@ -67,7 +67,7 @@ public:
     void setExceptTags(const char* tags);
 };
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 
 #endif

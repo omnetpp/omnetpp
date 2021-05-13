@@ -50,7 +50,7 @@ private:
                           const QFont &canvasFont, const QFont &logBoxFont, const QFont &timeFont);
 };
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 
 #endif // __OMNETPP_QTENV_PREFERENCESDIALOG_H

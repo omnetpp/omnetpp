@@ -684,6 +684,6 @@ void BasicSpringEmbedderLayout::debugDraw(int step)
     environment->showGraphics(buf);
 }
 
-} // namespace layout
+}  // namespace layout
 }  // namespace omnetpp
 

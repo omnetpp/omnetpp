@@ -213,7 +213,7 @@ namespace nedxml {
  * file (opp_msgc functionality).
  */
 
-} // namespace nedxml
+}  // namespace nedxml
 
-} // namespace omnetpp
+}  // namespace omnetpp
 

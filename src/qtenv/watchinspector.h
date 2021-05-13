@@ -42,8 +42,8 @@ public:
     virtual void refresh() override;
 };
 
-} // namespace qtenv qtenv
-} // namespace omnetpp
+}  // namespace qtenv qtenv
+}  // namespace omnetpp
 
 #endif // __OMNETPP_QTENV_WATCHINSPECTOR_H
 

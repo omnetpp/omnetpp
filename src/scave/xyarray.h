@@ -50,7 +50,7 @@ class SCAVE_API XYArray
         eventnumber_t getEventNumber(int i) const {return ens.at(i); }
 };
 
-} // namespace scave
+}  // namespace scave
 }  // namespace omnetpp
 
 

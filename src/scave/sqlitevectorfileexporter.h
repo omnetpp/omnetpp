@@ -57,7 +57,7 @@ class SCAVE_API SqliteVectorFileExporter : public Exporter
         static ExporterType *getDescription();
 };
 
-} // namespace scave
+}  // namespace scave
 }  // namespace omnetpp
 
 #endif

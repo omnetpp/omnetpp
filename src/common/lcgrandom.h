@@ -48,7 +48,7 @@ class COMMON_API LCGRandom
         void selfTest();
 };
 
-} // namespace common
+}  // namespace common
 }  // namespace omnetpp
 
 

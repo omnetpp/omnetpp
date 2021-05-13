@@ -172,7 +172,7 @@ class LAYOUT_API BasicSpringEmbedderLayout : public GraphLayouter
     }
 };
 
-} // namespace layout
+}  // namespace layout
 }  // namespace omnetpp
 
 

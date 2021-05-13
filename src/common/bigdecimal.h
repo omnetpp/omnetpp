@@ -279,7 +279,7 @@ inline const BigDecimal min(const BigDecimal& x, const BigDecimal& y)
 
 #endif // SWIG
 
-} // namespace common
+}  // namespace common
 }  // namespace omnetpp
 
 #endif

@@ -190,5 +190,5 @@ void CsvWriter::writeChar(char ch)
     }
 }
 
-} // namespace common
+}  // namespace common
 }  // namespace omnetpp

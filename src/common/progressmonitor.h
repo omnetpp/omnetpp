@@ -95,7 +95,7 @@ class IProgressMonitor
     virtual void worked(int work) = 0;
 };
 
-} // namespace common
+}  // namespace common
 }  // namespace omnetpp
 
 

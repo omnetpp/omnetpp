@@ -53,7 +53,7 @@ public:
     static QString formatDouble(double num);
 };
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 
 #endif // __OMNETPP_QTENV_INSPECTORUTIL_H

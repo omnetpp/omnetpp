@@ -669,6 +669,6 @@ bool FilteredEventLog::isAncestorModuleDescriptionEntry(ModuleDescriptionEntry *
     return false;
 }
 
-} // namespace eventlog
-} // namespace omnetpp
+}  // namespace eventlog
+}  // namespace omnetpp
 

@@ -631,5 +631,5 @@ void EventLogIndex::dump()
         printf("  %.*g --> offset %" PRId64 " (0x%" PRId64 "x)\n", 12, it.first.dbl(), it.second.beginOffset, it.second.beginOffset);
 }
 
-} // namespace eventlog
-} // namespace omnetpp
+}  // namespace eventlog
+}  // namespace omnetpp

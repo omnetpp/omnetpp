@@ -85,7 +85,7 @@ public:
     ShmSendBuffer *getParamAssignmentsForRunsPickle(const std::vector<std::string>& runIds);
 };
 
-} // namespace scave
-} // namespace omnetpp
+}  // namespace scave
+}  // namespace omnetpp
 
 #endif

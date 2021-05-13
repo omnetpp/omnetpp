@@ -62,7 +62,7 @@ public:
     cObject *getObjectFromIndex(const QModelIndex &index) const;
 };
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 
 #endif

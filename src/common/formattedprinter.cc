@@ -54,6 +54,6 @@ void FormattedPrinter::table(const std::string& text, const std::vector<int>& us
     out << opp_format_table(text, columnSpacing, userColumnWidths);
 }
 
-} // namespace common
-} // namespace omnetpp
+}  // namespace common
+}  // namespace omnetpp
 

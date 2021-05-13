@@ -119,7 +119,7 @@ class ENVIR_API Scenario
     std::string str() const;
 };
 
-} // namespace envir
+}  // namespace envir
 }  // namespace omnetpp
 
 

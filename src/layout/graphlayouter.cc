@@ -70,6 +70,6 @@ void GraphLayouter::setSize(double w, double h, double bd)
         throw opp_runtime_error("GraphLayouter::setSize(): Required width or height smaller than 2*border");
 }
 
-} // namespace layout
+}  // namespace layout
 }  // namespace omnetpp
 

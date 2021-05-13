@@ -84,7 +84,7 @@ class ENVIR_API FileSnapshotManager : public cISnapshotManager
     //@}
 };
 
-} // namespace envir
+}  // namespace envir
 }  // namespace omnetpp
 
 

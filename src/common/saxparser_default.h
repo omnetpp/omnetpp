@@ -33,7 +33,7 @@ class COMMON_API DefaultSaxParser : public SaxParser
     virtual int getCurrentLineNumber() override {return -1;} // unused
 };
 
-} // namespace common
+}  // namespace common
 }  // namespace omnetpp
 
 #endif

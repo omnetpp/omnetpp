@@ -748,6 +748,6 @@ QString stripSuffixes(const QString& from, const QString& suffix)
     return result;
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 

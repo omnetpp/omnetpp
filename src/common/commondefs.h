@@ -30,7 +30,7 @@ namespace common {
 #  define COMMON_API
 #endif
 
-} // namespace common
+}  // namespace common
 }  // namespace omnetpp
 
 

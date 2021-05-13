@@ -47,7 +47,7 @@ class ENVIR_API MatchableFieldAdapter : public omnetpp::common::MatchExpression:
     virtual const char *getAsString(const char *attribute) const override;
 };
 
-} // namespace envir
+}  // namespace envir
 }  // namespace omnetpp
 
 #endif

@@ -114,7 +114,7 @@ class COMMON_API ReentrantReadWriteLock : public IReadWriteLock
         ILock& writeLock() { return _writeLock; }
 };
 
-} // namespace common
+}  // namespace common
 }  // namespace omnetpp
 
 

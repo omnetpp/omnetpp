@@ -245,7 +245,7 @@ class SIM_API cMultiFingerprintCalculator : public cFingerprintCalculator
     virtual bool checkFingerprint() const override;
 };
 
-} // namespace omnetpp
+}  // namespace omnetpp
 
 #endif
 

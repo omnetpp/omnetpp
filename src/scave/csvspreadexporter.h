@@ -78,7 +78,7 @@ class SCAVE_API CsvForSpreadsheetExporter : public Exporter
         std::string makeRunTag(Run *run);
 };
 
-} // namespace scave
+}  // namespace scave
 }  // namespace omnetpp
 
 #endif

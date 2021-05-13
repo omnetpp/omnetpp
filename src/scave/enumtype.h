@@ -94,7 +94,7 @@ class SCAVE_API EnumType
     void parseFromString(const char *str);
 };
 
-} // namespace scave
+}  // namespace scave
 }  // namespace omnetpp
 
 

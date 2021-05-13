@@ -23,7 +23,7 @@
 namespace Ui {
 
 class OutputVectorInspectorConfigDialog;
-} // namespace Ui
+}  // namespace Ui
 
 namespace omnetpp {
 namespace qtenv {

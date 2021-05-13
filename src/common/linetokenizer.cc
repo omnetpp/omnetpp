@@ -201,6 +201,6 @@ int main(int argc, char **argv)
 }
 */
 
-} // namespace common
+}  // namespace common
 }  // namespace omnetpp
 

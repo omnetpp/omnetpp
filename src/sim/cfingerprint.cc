@@ -425,4 +425,4 @@ std::string cMultiFingerprintCalculator::str() const
     return stream.str().substr(2);
 }
 
-} // namespace omnetpp
+}  // namespace omnetpp

@@ -65,7 +65,7 @@ class SCAVE_API ResultFileFormatException : public opp_runtime_error
     file_offset_t getFileOffset() const { return offset; }
 };
 
-} // namespace scave
+}  // namespace scave
 }  // namespace omnetpp
 
 

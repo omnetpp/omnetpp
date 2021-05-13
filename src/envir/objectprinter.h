@@ -112,7 +112,7 @@ class ENVIR_API ObjectPrinter
         bool matchesObjectField(cObject *object, int fieldIndex);
 };
 
-} // namespace envir
+}  // namespace envir
 }  // namespace omnetpp
 
 

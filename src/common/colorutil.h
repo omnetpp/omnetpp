@@ -31,7 +31,7 @@ namespace common {
  */
 COMMON_API void parseColor(const char *s, uint8_t &r, uint8_t &g, uint8_t &b);
 
-} // namespace common
-} // namespace omnetpp
+}  // namespace common
+}  // namespace omnetpp
 
 #endif // __OMNETPP_COMMON_COLORUTIL_H

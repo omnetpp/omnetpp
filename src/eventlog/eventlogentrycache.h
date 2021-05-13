@@ -120,7 +120,7 @@ class EVENTLOG_API EventLogEntryCache : public EventLogEntryList
         void ensureCacheBuilt();
 };
 
-} // namespace eventlog
-} // namespace omnetpp
+}  // namespace eventlog
+}  // namespace omnetpp
 
 #endif

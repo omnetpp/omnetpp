@@ -89,7 +89,7 @@ class ENVIR_API cAkaroaRNG : public cRNG
     virtual double doubleRandIncl1();
 };
 
-} // namespace envir
+}  // namespace envir
 }  // namespace omnetpp
 
 #endif

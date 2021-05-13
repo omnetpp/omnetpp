@@ -51,7 +51,7 @@ class EVENTLOG_API IChunk
         virtual simtime_t getSimulationTime() = 0;
 };
 
-} // namespace eventlog
-} // namespace omnetpp
+}  // namespace eventlog
+}  // namespace omnetpp
 
 #endif

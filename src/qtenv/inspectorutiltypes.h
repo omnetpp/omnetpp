@@ -53,8 +53,8 @@ enum eTab
     TAB_NOTDEFINED = -1
 };
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 
 #endif
 

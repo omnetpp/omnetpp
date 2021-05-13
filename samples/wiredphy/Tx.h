@@ -57,7 +57,7 @@ class Tx : public cSimpleModule
     virtual void scheduleTxEnd(simtime_t duration);
 };
 
-} // namespace phy
+}  // namespace phy
 
 #endif
 

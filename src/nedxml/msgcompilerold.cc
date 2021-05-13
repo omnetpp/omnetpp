@@ -2293,8 +2293,8 @@ void MsgCompilerOld::generateNamespaceEnd()
     }
 #else
     for (StringVector::const_reverse_iterator it = namespaceNameVector.rbegin(); it != namespaceNameVector.rend(); ++it) {
-        H << "} // namespace " << *it << std::endl;
-        CC << "} // namespace " << *it << std::endl;
+        H << "}  // namespace " << *it << std::endl;
+        CC << "}  // namespace " << *it << std::endl;
     }
 #endif
     H << std::endl;

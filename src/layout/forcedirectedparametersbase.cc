@@ -19,6 +19,6 @@
 namespace omnetpp {
 namespace layout {
 
-} // namespace layout
+}  // namespace layout
 }  // namespace omnetpp
 

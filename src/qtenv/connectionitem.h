@@ -89,7 +89,7 @@ public:
     QPainterPath shape() const override { return lineItem->shape(); }
 };
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 
 #endif // __OMNETPP_QTENV_CONNECTIONITEM_H

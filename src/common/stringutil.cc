@@ -319,7 +319,7 @@ struct MapBasedResolver : public opp_substitutevariables_resolver
         return it->second;
     }
 };
-} // namespace {
+}  // namespace {
 
 std::string opp_substitutevariables(const std::string& raw, const std::map<std::string, std::string>& vars)
 {

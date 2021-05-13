@@ -69,7 +69,7 @@ class SCAVE_API CsvRecordsExporter : public Exporter
         virtual void finishRecord(int numColumns);
 };
 
-} // namespace scave
+}  // namespace scave
 }  // namespace omnetpp
 
 #endif

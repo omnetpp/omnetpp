@@ -75,7 +75,7 @@ class COMMON_API FilenamesListTokenizer
     std::vector<std::string> asVector();
 };
 
-} // namespace common
+}  // namespace common
 }  // namespace omnetpp
 
 

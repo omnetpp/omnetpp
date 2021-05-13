@@ -150,7 +150,7 @@ class SCAVE_API IDList
         void reverse();
 };
 
-} // namespace scave
+}  // namespace scave
 }  // namespace omnetpp
 
 

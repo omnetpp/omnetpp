@@ -163,4 +163,4 @@ int64_t RxAtStart::computeNumBitsReceived(cPacket *packet, simtime_t receptionTi
     }
 }
 
-} // namespace phy
+}  // namespace phy

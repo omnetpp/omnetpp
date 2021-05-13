@@ -564,6 +564,6 @@ MessageDescriptionEntry *Event::findLocalReuseMessageDescriptionEntry(eventnumbe
     return nullptr;
 }
 
-} // namespace eventlog
-} // namespace omnetpp
+}  // namespace eventlog
+}  // namespace omnetpp
 

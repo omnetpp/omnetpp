@@ -69,7 +69,7 @@ inline YYLoc makeEmptyYYLoc() {  //TODO ctor!
     return makeYYLoc(1,0,1,0);
 }
 
-} // namespace nedxml
+}  // namespace nedxml
 }  // namespace omnetpp
 
 

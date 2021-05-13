@@ -154,7 +154,7 @@ _OPP_GNU_ATTRIBUTE(format(printf, 4, 5))
 void NedInternalError(const char *file, int line, ASTNode *context, const char *messagefmt, ...);
 
 
-} // namespace nedxml
+}  // namespace nedxml
 }  // namespace omnetpp
 
 

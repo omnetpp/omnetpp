@@ -126,7 +126,7 @@ class ENVIR_API ArgList
     char **getArgVector() const  {return argv;}
 };
 
-} // namespace envir
+}  // namespace envir
 }  // namespace omnetpp
 
 #endif

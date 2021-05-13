@@ -122,7 +122,7 @@ public:
     void doWriteNewLine(int relDepth=0);
 };
 
-} // namespace common
+}  // namespace common
 }  // namespace omnetpp
 
 

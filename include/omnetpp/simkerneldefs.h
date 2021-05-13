@@ -95,7 +95,7 @@ typedef uint64_t uintval_t;
  */
 [[deprecated]] typedef intval_t intpar_t;
 
-} // namespace
+}  // namespace
 
 #endif
 

@@ -282,5 +282,5 @@ Snapshot *Index::getNextSnapshot()
     return nextSnapshot;
 }
 
-} // namespace eventlog
-} // namespace omnetpp
+}  // namespace eventlog
+}  // namespace omnetpp

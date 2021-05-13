@@ -32,7 +32,7 @@ class RxAtEnd : public cSimpleModule
     virtual void sendToUpperLayer(cPacket *packet);
 };
 
-} // namespace phy
+}  // namespace phy
 
 #endif
 

@@ -34,7 +34,7 @@ class SCAVE_API SqliteResultFileUtils
 };
 
 
-} // namespace scave
+}  // namespace scave
 }  // namespace omnetpp
 
 

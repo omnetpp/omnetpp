@@ -91,7 +91,7 @@ public:
     int getColumn() const {return columnNumber;}
 };
 
-} // namespace common
+}  // namespace common
 }  // namespace omnetpp
 
 

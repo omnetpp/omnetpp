@@ -65,7 +65,7 @@ class NEDXML_API NedTools
 
 };
 
-} // namespace nedxml
+}  // namespace nedxml
 }  // namespace omnetpp
 
 

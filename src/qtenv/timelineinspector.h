@@ -46,7 +46,7 @@ public:
     double getInitHeight();
 };
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 
 #endif // __OMNETPP_QTENV_TIMELINEINSPECTOR_H

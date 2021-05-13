@@ -365,7 +365,7 @@ class SCAVE_API FileRun
 inline ResultFile *ResultItem::getFile() const {return fileRunRef->fileRef;}
 inline Run *ResultItem::getRun() const {return fileRunRef->runRef;}
 
-} // namespace scave
+}  // namespace scave
 }  // namespace omnetpp
 
 

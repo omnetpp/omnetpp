@@ -39,7 +39,7 @@ class SCAVE_API VectorFileIndexer
         void generateIndex(const char *filename, IProgressMonitor *monitor = nullptr);
 };
 
-} // namespace scave
+}  // namespace scave
 }  // namespace omnetpp
 
 

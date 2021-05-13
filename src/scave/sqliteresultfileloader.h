@@ -81,7 +81,7 @@ class SCAVE_API SqliteResultFileLoader : public IResultFileLoader
     virtual ResultFile *loadFile(const char *displayName, const char *fileSystemFileName) override;
 };
 
-} // namespace scave
+}  // namespace scave
 }  // namespace omnetpp
 
 

@@ -126,5 +126,5 @@ XYArrayVector *readVectorsIntoArrays2(ResultFileManager *manager, const IDList& 
     return new XYArrayVector(readVectorsIntoArrays(manager, idlist, includePreciseX, includeEventNumbers, memoryLimitBytes, simTimeStart, simTimeEnd, interrupted));
 }
 
-} // namespace scave
+}  // namespace scave
 }  // namespace omnetpp

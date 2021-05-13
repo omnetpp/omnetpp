@@ -200,7 +200,7 @@ class ENVIR_API LogFormatter
     bool containsDirective(FormatDirective directive) const;
 };
 
-} // namespace envir
+}  // namespace envir
 }  // namespace omnetpp
 
 #endif

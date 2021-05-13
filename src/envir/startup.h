@@ -25,7 +25,7 @@ namespace envir {
 
 int ENVIR_API setupUserInterface(int argc, char *argv[]);
 
-} // namespace envir
+}  // namespace envir
 }  // namespace omnetpp
 
 #endif

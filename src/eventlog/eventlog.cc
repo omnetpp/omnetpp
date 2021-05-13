@@ -602,6 +602,6 @@ void EventLog::cacheEvent(Event *event)
     endOffsetToEventMap[event->getEndOffset()] = event;
 }
 
-} // namespace eventlog
-} // namespace omnetpp
+}  // namespace eventlog
+}  // namespace omnetpp
 

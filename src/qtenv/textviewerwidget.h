@@ -260,7 +260,7 @@ public:
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(TextViewerWidget::FindOptions)
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 
 #endif // __OMNETPP_QTENV_TEXTVIEWERWIDGET_H

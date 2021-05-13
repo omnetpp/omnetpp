@@ -56,4 +56,4 @@ void RxAtEnd::sendToUpperLayer(cPacket *packet)
     send(packet, gate("upperLayerOut"));
 }
 
-} // namespace phy
+}  // namespace phy

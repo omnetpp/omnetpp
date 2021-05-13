@@ -713,4 +713,4 @@ ExprNode *NedFunctionTranslator::createMathFunctionNode(cNedMathFunction *mathFu
 }
 
 }  // namespace omnetpp
-} // namespace nedsupport
+}  // namespace nedsupport

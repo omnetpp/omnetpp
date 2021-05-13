@@ -134,8 +134,8 @@ class EVENTLOG_API Event : public IEvent
         MessageDescriptionEntry *findLocalReuseMessageDescriptionEntry(eventnumber_t previousEventNumber, int messageId);
 };
 
-} // namespace eventlog
-} // namespace omnetpp
+}  // namespace eventlog
+}  // namespace omnetpp
 
 
 #endif

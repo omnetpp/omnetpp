@@ -75,7 +75,7 @@ public:
     ~RunSelectionDialog();
 };
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 
 #endif

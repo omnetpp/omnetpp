@@ -137,8 +137,8 @@ class EVENTLOG_API IEvent : public IChunk
         void clearInternalState();
 };
 
-} // namespace eventlog
-} // namespace omnetpp
+}  // namespace eventlog
+}  // namespace omnetpp
 
 
 #endif

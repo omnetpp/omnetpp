@@ -78,5 +78,5 @@ int64_t getAvailableMemoryBytes()
 #endif
 }
 
-} // namespace scave
-} // namespace omnetpp
+}  // namespace scave
+}  // namespace omnetpp

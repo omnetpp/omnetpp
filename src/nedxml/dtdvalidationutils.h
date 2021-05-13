@@ -55,7 +55,7 @@ class NEDXML_API DtdValidationUtils
     void checkCommentAttribute(ASTNode *node, const char *attr);
 };
 
-} // namespace nedxml
+}  // namespace nedxml
 }  // namespace omnetpp
 
 

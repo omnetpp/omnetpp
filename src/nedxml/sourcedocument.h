@@ -138,7 +138,7 @@ class NEDXML_API SourceDocument
     void trimSpaceAndComments(YYLoc& pos);
 };
 
-} // namespace nedxml
+}  // namespace nedxml
 }  // namespace omnetpp
 
 

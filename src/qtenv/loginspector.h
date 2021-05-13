@@ -117,7 +117,7 @@ signals:
       virtual void setMode(Mode mode);
 };
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 
 #endif

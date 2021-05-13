@@ -404,6 +404,6 @@ void DisplayString::strcatEscaped(char *d, const char *s)
     *d = '\0';
 }
 
-} // namespace common
+}  // namespace common
 }  // namespace omnetpp
 

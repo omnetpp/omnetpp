@@ -102,7 +102,7 @@ class NEDXML_API NedCrossValidator : public NedValidatorBase
     //@}
 };
 
-} // namespace nedxml
+}  // namespace nedxml
 }  // namespace omnetpp
 
 

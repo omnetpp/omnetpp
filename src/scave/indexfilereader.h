@@ -62,7 +62,7 @@ class SCAVE_API IndexFileReader  //TODO this class should share the reader/parse
 };
 
 
-} // namespace scave
+}  // namespace scave
 }  // namespace omnetpp
 
 

@@ -23,7 +23,7 @@
 namespace Ui {
 
 class HistogramInspectorConfigDialog;
-} // namespace Ui
+}  // namespace Ui
 
 namespace omnetpp {
 namespace qtenv {

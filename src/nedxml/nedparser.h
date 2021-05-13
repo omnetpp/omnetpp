@@ -107,7 +107,7 @@ class NEDXML_API NedParser
     bool isValidNedExpression(const char *expr);
 };
 
-} // namespace nedxml
+}  // namespace nedxml
 }  // namespace omnetpp
 
 

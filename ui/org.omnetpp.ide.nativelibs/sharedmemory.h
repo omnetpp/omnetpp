@@ -37,6 +37,6 @@ void unmapSharedMemory(void *buffer, int64_t size);
 void closeSharedMemory(shmhandle_t handle);
 void removeSharedMemory(const char *name);
 
-} // namespace omnetpp
+}  // namespace omnetpp
 
 #endif

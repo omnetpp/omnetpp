@@ -324,7 +324,7 @@ class COMMON_API FileChangedError : public opp_runtime_error
     virtual ~FileChangedError() throw() {}
 };
 
-} // namespace common
+}  // namespace common
 }  // namespace omnetpp
 
 

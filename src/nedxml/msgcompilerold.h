@@ -240,7 +240,7 @@ class NEDXML_API MsgCompilerOld
     void generate(MsgFileElement *fileElement, const char *hFile, const char *ccFile);
 };
 
-} // namespace nedxml
+}  // namespace nedxml
 }  // namespace omnetpp
 
 

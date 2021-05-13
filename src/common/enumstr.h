@@ -41,7 +41,7 @@ class COMMON_API EnumStringIterator
      bool hasError() const {return err;}
 };
 
-} // namespace common
+}  // namespace common
 }  // namespace omnetpp
 
 

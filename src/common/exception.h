@@ -56,7 +56,7 @@ class COMMON_API opp_runtime_error : public std::runtime_error
     virtual const char *what() const throw() override {return errormsg.c_str();}
 };
 
-} // namespace common
+}  // namespace common
 }  // namespace omnetpp
 
 

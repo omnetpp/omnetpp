@@ -190,7 +190,7 @@ class COMMON_API PatternMatcher
 
 };
 
-} // namespace common
+}  // namespace common
 }  // namespace omnetpp
 
 

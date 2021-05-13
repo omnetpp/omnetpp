@@ -41,7 +41,7 @@ class QTENV_API HighlighterItemDelegate : public QStyledItemDelegate
     void destroyEditor(QWidget *editor, const QModelIndex &index) const;
 };
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 
 #endif // __OMNETPP_QTENV_HIGHLIGHTERITEMDELEGATE_H

@@ -447,7 +447,7 @@ inline Qtenv *getQtenv()
     return dynamic_cast<Qtenv *>(cSimulation::getActiveEnvir());
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 
 #endif

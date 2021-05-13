@@ -223,4 +223,4 @@ void removeSharedMemory(const char *name)
     DEBUG("C++: removeSharedMemory end");
 }
 
-} // namespace omnetpp
+}  // namespace omnetpp

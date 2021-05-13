@@ -34,7 +34,7 @@ class Sink : public cSimpleModule
     virtual void handleMessage(cMessage *message) override;
 };
 
-} // namespace phy
+}  // namespace phy
 
 #endif
 

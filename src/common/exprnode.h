@@ -204,9 +204,9 @@ public:
     virtual std::vector<ExprNode*> getChildren() const override {return children;}
 };
 
-} // namespace common
-} // namespace common
-} // namespace omnetpp
+}  // namespace common
+}  // namespace common
+}  // namespace omnetpp
 
 
 #endif

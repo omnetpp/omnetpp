@@ -293,8 +293,8 @@ public:
 };
 
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 
 
 #endif

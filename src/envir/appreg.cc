@@ -37,6 +37,6 @@ cOmnetAppRegistration *cOmnetAppRegistration::chooseBest()
     return best;
 }
 
-} // namespace envir
+}  // namespace envir
 }  // namespace omnetpp
 

@@ -228,7 +228,7 @@ class LAYOUT_API ForceDirectedGraphLayouter : public GraphLayouter
     void debugDraw();
 };
 
-} // namespace layout
+}  // namespace layout
 }  // namespace omnetpp
 
 

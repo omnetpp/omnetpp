@@ -78,7 +78,7 @@ class StarTreeEmbedding
         void calculatePositionRecursive(Vertex *vertex, Pt pt);
 };
 
-} // namespace layout
+}  // namespace layout
 }  // namespace omnetpp
 
 

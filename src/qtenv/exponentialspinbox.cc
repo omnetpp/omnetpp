@@ -109,5 +109,5 @@ QValidator::State ExponentialSpinBox::validate(QString &input, int &pos) const
     return ok ? QValidator::Acceptable : QValidator::Invalid;
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp

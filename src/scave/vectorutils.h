@@ -60,7 +60,7 @@ class SCAVE_API XYArrayVector {
  */
 SCAVE_API XYArrayVector *readVectorsIntoArrays2(ResultFileManager *manager, const IDList& idlist, bool includePreciseX, bool includeEventNumbers, size_t memoryLimitBytes = std::numeric_limits<size_t>::max(), double simTimeStart = -INFINITY, double simTimeEnd = INFINITY, InterruptedFlag *interrupted=nullptr);
 
-} // namespace scave
+}  // namespace scave
 }  // namespace omnetpp
 
 #endif

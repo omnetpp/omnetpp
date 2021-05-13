@@ -74,7 +74,7 @@ class SCAVE_API JsonExporter : public Exporter
         static ExporterType *getDescription();
 };
 
-} // namespace scave
+}  // namespace scave
 }  // namespace omnetpp
 
 #endif

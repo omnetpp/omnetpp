@@ -40,8 +40,8 @@ void storeBannerAndRightComments(ParseContext *np, ASTNode *node, YYLoc pos);
 void storeBannerAndRightComments(ParseContext *np, ASTNode *node, YYLoc firstpos, YYLoc lastpos);
 void storeInnerComments(ParseContext *np, ASTNode *node, YYLoc pos);
 
-} // namespace msgyyutil
-} // namespace nedxml
+}  // namespace msgyyutil
+}  // namespace nedxml
 }  // namespace omnetpp
 
 

@@ -541,7 +541,7 @@ COMMON_API std::string opp_garble(const std::string& str, const std::string& gar
  */
 COMMON_API std::string opp_ungarble(const std::string& str, const std::string& garblephrase);
 
-} // namespace common
+}  // namespace common
 }  // namespace omnetpp
 
 #endif

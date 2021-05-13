@@ -84,7 +84,7 @@ class EVENTLOG_API Snapshot : public IChunk
         void ensureParsed();
 };
 
-} // namespace eventlog
-} // namespace omnetpp
+}  // namespace eventlog
+}  // namespace omnetpp
 
 #endif

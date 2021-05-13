@@ -60,7 +60,7 @@ class NEDXML_API NedException : public std::runtime_error
 };
 
 
-} // namespace nedxml
+}  // namespace nedxml
 }  // namespace omnetpp
 
 

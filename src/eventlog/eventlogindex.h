@@ -160,7 +160,7 @@ class EVENTLOG_API EventLogIndex
         void dump();
 };
 
-} // namespace eventlog
-} // namespace omnetpp
+}  // namespace eventlog
+}  // namespace omnetpp
 
 #endif

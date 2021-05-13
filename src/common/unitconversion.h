@@ -158,7 +158,7 @@ class COMMON_API UnitConversion
     static std::vector<const char *> getAllUnits();
 };
 
-} // namespace common
+}  // namespace common
 }  // namespace omnetpp
 
 #endif

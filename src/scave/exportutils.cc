@@ -35,7 +35,7 @@ using namespace common;
 namespace scave {
 
 
-} // namespace scave
+}  // namespace scave
 }  // namespace omnetpp
 
 

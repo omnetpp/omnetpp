@@ -57,5 +57,5 @@ void Source::scheduleTimer()
     scheduleAt(simTime() + par("interval"), timer);
 }
 
-} // namespace phy
+}  // namespace phy
 

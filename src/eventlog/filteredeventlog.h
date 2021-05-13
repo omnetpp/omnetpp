@@ -226,8 +226,8 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         bool isAncestorModuleDescriptionEntry(ModuleDescriptionEntry *ancestor, ModuleDescriptionEntry *descendant);
 };
 
-} // namespace eventlog
-} // namespace omnetpp
+}  // namespace eventlog
+}  // namespace omnetpp
 
 
 #endif

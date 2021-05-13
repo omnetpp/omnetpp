@@ -58,7 +58,7 @@ class ENVIR_API Speedometer
     double getSimSecPerSec();
 };
 
-} // namespace envir
+}  // namespace envir
 }  // namespace omnetpp
 
 #endif

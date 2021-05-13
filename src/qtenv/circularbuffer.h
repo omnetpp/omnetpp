@@ -97,8 +97,8 @@ class QTENV_API circular_buffer
         }
 };
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 
 #endif
 

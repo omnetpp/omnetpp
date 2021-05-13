@@ -167,7 +167,7 @@ class COMMON_API StringTokenizer
     std::vector<std::string> asVector();
 };
 
-} // namespace common
+}  // namespace common
 }  // namespace omnetpp
 
 

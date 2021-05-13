@@ -605,6 +605,6 @@ void ForceDirectedGraphLayouter::debugDraw()
     usleep((int)(debugWaitTime*1000));
 }
 
-} // namespace layout
+}  // namespace layout
 }  // namespace omnetpp
 

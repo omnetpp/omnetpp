@@ -98,7 +98,7 @@ class NEDXML_API NedSyntaxValidator : public NedValidatorBase
     //@}
 };
 
-} // namespace nedxml
+}  // namespace nedxml
 }  // namespace omnetpp
 
 

@@ -97,7 +97,7 @@ inline void cObjectOsgNode::setObject(const cObject *obj)
     }
 }
 
-} // namespace omnetpp
+}  // namespace omnetpp
 
 #endif // WITH_OSG
 

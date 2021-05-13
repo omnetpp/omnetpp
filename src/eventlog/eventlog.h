@@ -147,8 +147,8 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         void parseAll();
 };
 
-} // namespace eventlog
-} // namespace omnetpp
+}  // namespace eventlog
+}  // namespace omnetpp
 
 
 #endif

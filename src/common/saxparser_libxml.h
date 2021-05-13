@@ -50,7 +50,7 @@ class COMMON_API LibxmlSaxParser : public SaxParser
     bool getDiscardIgnorableWhitespace() const {return discardIgnorableWhiteSpace;}
 };
 
-} // namespace common
+}  // namespace common
 }  // namespace omnetpp
 
 #endif //WITH_LIBXML

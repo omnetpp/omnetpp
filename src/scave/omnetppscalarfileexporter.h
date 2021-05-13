@@ -48,7 +48,7 @@ class SCAVE_API OmnetppScalarFileExporter : public Exporter
         static ExporterType *getDescription();
 };
 
-} // namespace scave
+}  // namespace scave
 }  // namespace omnetpp
 
 #endif

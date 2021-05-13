@@ -108,7 +108,7 @@ class EVENTLOG_API Index : public IChunk
         bool containsReferenceEntry(std::vector<ReferenceEntry *> *referenceEntries, eventnumber_t eventNumber, int entryIndex);
 };
 
-} // namespace eventlog
-} // namespace omnetpp
+}  // namespace eventlog
+}  // namespace omnetpp
 
 #endif

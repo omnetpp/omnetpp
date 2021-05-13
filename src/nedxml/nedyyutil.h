@@ -59,8 +59,8 @@ ASTNode *prependMinusSign(ParseContext *np, ASTNode *node);
 void addOptionalExpression(ParseContext *np, ASTNode *elem, const char *attrname, YYLoc exprpos, ASTNode *expr);
 void addExpression(ParseContext *np, ASTNode *elem, const char *attrname, YYLoc exprpos, ASTNode *expr);
 
-} // namespace nedyyutil
-} // namespace nedxml
+}  // namespace nedyyutil
+}  // namespace nedxml
 }  // namespace omnetpp
 
 

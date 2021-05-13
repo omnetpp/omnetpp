@@ -115,7 +115,7 @@ class COMMON_API SqliteVectorFileWriter
 };
 
 
-} // namespace envir
+}  // namespace envir
 }  // namespace omnetpp
 
 #endif

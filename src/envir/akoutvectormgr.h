@@ -84,7 +84,7 @@ class ENVIR_API AkOutputVectorManager : public OmnetppOutputVectorManager
 };
 
 #endif
-} // namespace envir
+}  // namespace envir
 }  // namespace omnetpp
 
 

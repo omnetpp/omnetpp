@@ -181,8 +181,8 @@ struct pair_hash
     }
 };
 
-} // namespace common
-} // namespace omnetpp
+}  // namespace common
+}  // namespace omnetpp
 
 #endif
 

@@ -152,5 +152,5 @@ EventLogEntryCache *Snapshot::getFoundEventLogEntries()
     return foundEventLogEntries;
 }
 
-} // namespace eventlog
-} // namespace omnetpp
+}  // namespace eventlog
+}  // namespace omnetpp

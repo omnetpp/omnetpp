@@ -485,7 +485,7 @@ class SCAVE_API IResultFileLoader
     virtual ResultFile *loadFile(const char *displayName, const char *fileSystemFileName) = 0;
 };
 
-} // namespace scave
+}  // namespace scave
 }  // namespace omnetpp
 
 

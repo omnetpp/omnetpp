@@ -111,8 +111,8 @@ private:
     void expandNodes(const QSet<QString>& ids, const QModelIndex& index);
 };
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 
 #endif
 

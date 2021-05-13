@@ -263,7 +263,7 @@ class COMMON_API DisplayString
     //@}
 };
 
-} // namespace common
+}  // namespace common
 }  // namespace omnetpp
 
 

@@ -98,7 +98,7 @@ class NEDXML_API MsgParser
     ASTNode *parseMsgText(const char *text, const char *fname=nullptr);
 };
 
-} // namespace nedxml
+}  // namespace nedxml
 }  // namespace omnetpp
 
 

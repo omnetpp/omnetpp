@@ -81,7 +81,7 @@ class SCAVE_API ExporterFactory
         static Exporter *createExporter(const std::string& format);
 };
 
-} // namespace scave
+}  // namespace scave
 }  // namespace omnetpp
 
 

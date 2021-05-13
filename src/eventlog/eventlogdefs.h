@@ -25,7 +25,7 @@
 
 namespace omnetpp {
 namespace common { class FileReader; };
-} // namespace omnetpp
+}  // namespace omnetpp
 
 namespace omnetpp {
 namespace eventlog {
@@ -67,8 +67,8 @@ using omnetpp::common::opp_runtime_error;
 typedef BigDecimal simtime_t;
 #define simtime_nil BigDecimal::MinusOne
 
-} // namespace eventlog
-} // namespace omnetpp
+}  // namespace eventlog
+}  // namespace omnetpp
 
 
 #endif

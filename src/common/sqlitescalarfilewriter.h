@@ -90,7 +90,7 @@ class COMMON_API SqliteScalarFileWriter
     void flush();
 };
 
-} // namespace common
+}  // namespace common
 }  // namespace omnetpp
 
 #endif

@@ -88,8 +88,8 @@ class NEDXML_API MsgCodeGenerator
     void generateTemplates();
 };
 
-} // namespace nedxml
-} // namespace omnetpp
+}  // namespace nedxml
+}  // namespace omnetpp
 
 
 #endif

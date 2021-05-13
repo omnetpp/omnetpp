@@ -125,7 +125,7 @@ class COMMON_API OmnetppVectorFileWriter
 };
 
 
-} // namespace envir
+}  // namespace envir
 }  // namespace omnetpp
 
 #endif

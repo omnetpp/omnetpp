@@ -38,7 +38,7 @@ class QTENV_API OsgCanvasInspector : public Inspector
       virtual void refresh() override;
 };
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 
 #endif

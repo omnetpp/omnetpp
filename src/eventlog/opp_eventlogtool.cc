@@ -418,8 +418,8 @@ void parseStringTokens(std::vector<std::string>& parameter, char *str)
         parameter.push_back((char *)eventLogStringPool.get(tokens[j]));
 }
 
-} // namespace eventlog
-} // namespace omnetpp
+}  // namespace eventlog
+}  // namespace omnetpp
 
 using namespace omnetpp::eventlog;
 

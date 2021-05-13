@@ -114,7 +114,7 @@ class COMMON_API SaxParser
     virtual int getCurrentLineNumber() = 0;
 };
 
-} // namespace common
+}  // namespace common
 }  // namespace omnetpp
 
 #endif

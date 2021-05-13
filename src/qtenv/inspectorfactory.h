@@ -92,8 +92,8 @@ extern cGlobalRegistrationList inspectorfactories;
  */
 InspectorFactory *findInspectorFactoryFor(cObject *obj, InspectorType type);
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 
 #endif
 

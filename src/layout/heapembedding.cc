@@ -150,6 +150,6 @@ void HeapEmbedding::pushPtUnlessRcsContains(std::vector<Pt>& pts, const std::vec
     pts.push_back(pt);
 }
 
-} // namespace layout
+}  // namespace layout
 }  // namespace omnetpp
 

@@ -83,7 +83,7 @@ class ScaveStringPool
         void clear() { lastInsertedPtr = nullptr; pool.clear(); }
 };
 
-} // namespace scave
+}  // namespace scave
 }  // namespace omnetpp
 
 

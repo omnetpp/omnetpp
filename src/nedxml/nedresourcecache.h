@@ -209,7 +209,7 @@ class NEDXML_API NedResourceCache
 
 };
 
-} // namespace nedxml
+}  // namespace nedxml
 }  // namespace omnetpp
 
 

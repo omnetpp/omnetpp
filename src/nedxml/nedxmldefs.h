@@ -31,7 +31,7 @@ namespace nedxml {
 #  define NEDXML_API
 #endif
 
-} // namespace nedxml
+}  // namespace nedxml
 }  // namespace omnetpp
 
 

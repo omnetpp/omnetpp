@@ -564,5 +564,5 @@ CustomChangedEntry *EventLogEntryCache::getCustomChangedEntry(std::string type, 
     return nullptr;
 }
 
-} // namespace eventlog
-} // namespace omnetpp
+}  // namespace eventlog
+}  // namespace omnetpp

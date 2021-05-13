@@ -127,4 +127,4 @@ std::string cOsgCanvas::Vec3d::str()
     return ss.str();
 }
 
-} // namespace omnetpp
+}  // namespace omnetpp

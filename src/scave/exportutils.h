@@ -39,7 +39,7 @@ T translateOptionValue(const std::map<std::string,T>& mapping, const std::string
     return it->second;
 }
 
-} // namespace scave
+}  // namespace scave
 }  // namespace omnetpp
 
 #endif

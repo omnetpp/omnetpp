@@ -305,6 +305,6 @@ namespace omnetpp {
  * directory.
  */
 
-} // namespace omnetpp
+}  // namespace omnetpp
 
 

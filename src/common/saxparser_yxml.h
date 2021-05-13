@@ -59,7 +59,7 @@ class COMMON_API YxmlSaxParser : public SaxParser
     bool getDiscardIgnorableWhitespace() const {return discardIgnorableWhitespace;}
 };
 
-} // namespace common
+}  // namespace common
 }  // namespace omnetpp
 
 #endif

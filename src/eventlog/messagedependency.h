@@ -173,8 +173,8 @@ class EVENTLOG_API FilteredMessageDependency : public IMessageDependency
         virtual int getClassIndex() override { return 3; }
 };
 
-} // namespace eventlog
-} // namespace omnetpp
+}  // namespace eventlog
+}  // namespace omnetpp
 
 
 #endif

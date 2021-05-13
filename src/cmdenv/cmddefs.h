@@ -33,7 +33,7 @@ namespace cmdenv {
 #  define CMDENV_API
 #endif
 
-} // namespace cmdenv
+}  // namespace cmdenv
 }  // namespace omnetpp
 
 

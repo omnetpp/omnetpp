@@ -521,5 +521,5 @@ void ModuleLayouter::saveSeeds()
         env->setPref(QString("LayoutSeeds/") + p.first.c_str(), p.second);
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp

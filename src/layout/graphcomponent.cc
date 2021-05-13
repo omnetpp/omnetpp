@@ -197,6 +197,6 @@ void GraphComponent::colorizeConnectedSubComponent(GraphComponent *childComponen
     }
 }
 
-} // namespace layout
+}  // namespace layout
 }  // namespace omnetpp
 

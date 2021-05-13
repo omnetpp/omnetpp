@@ -261,7 +261,7 @@ protected:
     virtual void refreshTransform(const FigureRenderingArgs& args) override;
 };
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 
 #endif

@@ -119,6 +119,6 @@ double IEventLog::getApproximatePercentageForEventNumber(eventnumber_t eventNumb
     }
 }
 
-} // namespace eventlog
-} // namespace omnetpp
+}  // namespace eventlog
+}  // namespace omnetpp
 

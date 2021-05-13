@@ -619,9 +619,9 @@ public:
     virtual ExprNode *dup() const override {return new LambdaMethodNode(name.c_str(),function);}
 };
 
-} // namespace common
-} // namespace common
-} // namespace omnetpp
+}  // namespace common
+}  // namespace common
+}  // namespace omnetpp
 
 
 #endif

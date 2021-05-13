@@ -84,7 +84,7 @@ typedef const double   const_simtime_t;
  */
 #define SIMTIME_DBL(t) ((t).dbl())
 
-} // namespace omnetpp
+}  // namespace omnetpp
 
 #endif
 

@@ -98,7 +98,7 @@ class ENVIR_API InifileReader : public cConfigurationReader
     //@}
 };
 
-} // namespace envir
+}  // namespace envir
 }  // namespace omnetpp
 
 

@@ -819,7 +819,7 @@ class CircleConstraint : public BodyConstraint {
         }
 };
 
-} // namespace layout
+}  // namespace layout
 }  // namespace omnetpp
 
 

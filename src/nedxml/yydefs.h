@@ -65,7 +65,7 @@ extern LineColumn pos, prevpos;  //FIXME into context!
 void msgLexerSetRecognizeNewKeywords(bool opt);
 void msgLexerSetRecognizeObsoleteKeywords(bool opt);
 
-} // namespace nedxml
+}  // namespace nedxml
 }  // namespace omnetpp
 
 omnetpp::nedxml::ASTNode *doParseNed(omnetpp::nedxml::ParseContext *np, const char *text);

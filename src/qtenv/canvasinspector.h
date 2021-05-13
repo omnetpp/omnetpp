@@ -57,7 +57,7 @@ class QTENV_API CanvasInspector : public Inspector
       virtual void postRefresh() override;
 };
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 
 #endif

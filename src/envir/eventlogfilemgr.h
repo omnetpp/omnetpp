@@ -307,7 +307,7 @@ class ENVIR_API EventlogFileManager : public cIEventlogManager, public cISimulat
     file_offset_t toVirtualFileOffset(file_offset_t realFileOffset) const { return realFileOffset + beginningFileOffset; }
 };
 
-} // namespace envir
+}  // namespace envir
 }  // namespace omnetpp
 
 #endif

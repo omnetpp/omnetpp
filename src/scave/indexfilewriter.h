@@ -92,7 +92,7 @@ class SCAVE_API IndexFileWriter
         void closeFile();
 };
 
-} // namespace scave
+}  // namespace scave
 }  // namespace omnetpp
 
 

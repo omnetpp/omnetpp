@@ -94,8 +94,8 @@ signals:
     void dataEdited(const QModelIndex& index) ;
 };
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 
 // this is needed to wrap the HighlightRange into a QVariant
 // according to the Qt docs, this must not be in a namespace

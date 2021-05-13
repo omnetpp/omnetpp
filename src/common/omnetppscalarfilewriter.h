@@ -68,7 +68,7 @@ class COMMON_API OmnetppScalarFileWriter
     void flush();
 };
 
-} // namespace common
+}  // namespace common
 }  // namespace omnetpp
 
 #endif

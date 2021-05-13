@@ -49,7 +49,7 @@ class SCAVE_API SqliteScalarFileExporter : public Exporter
         static ExporterType *getDescription();
 };
 
-} // namespace scave
+}  // namespace scave
 }  // namespace omnetpp
 
 #endif

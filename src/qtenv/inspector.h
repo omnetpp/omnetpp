@@ -126,7 +126,7 @@ class QTENV_API Inspector : public QWidget
       virtual void objectDeleted(cObject *);
 };
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 
 #endif

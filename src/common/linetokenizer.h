@@ -82,7 +82,7 @@ class COMMON_API LineTokenizer
     }
 };
 
-} // namespace common
+}  // namespace common
 }  // namespace omnetpp
 
 

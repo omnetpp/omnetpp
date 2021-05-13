@@ -73,8 +73,8 @@ class COMMON_API JavaMatchableObject : public omnetpp::common::MatchExpression::
     }
 };
 
-} // namespace common
-} // namespace omnetpp
+}  // namespace common
+}  // namespace omnetpp
 
 #endif
 

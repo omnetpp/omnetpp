@@ -56,7 +56,7 @@ class ENVIR_API cOmnetAppRegistration : public cOwnedObject
     static cOmnetAppRegistration *chooseBest();
 };
 
-} // namespace envir
+}  // namespace envir
 }  // namespace omnetpp
 
 #endif

@@ -143,7 +143,7 @@ class COMMON_API PushDir
     ~PushDir() noexcept(false);
 };
 
-} // namespace common
+}  // namespace common
 }  // namespace omnetpp
 
 #endif

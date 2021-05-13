@@ -331,6 +331,6 @@ void FilteredEvent::pushNewFilteredMessageDependency(IMessageDependencyList *mes
     messageDependencies->push_back(newMessageDependency);
 }
 
-} // namespace eventlog
-} // namespace omnetpp
+}  // namespace eventlog
+}  // namespace omnetpp
 

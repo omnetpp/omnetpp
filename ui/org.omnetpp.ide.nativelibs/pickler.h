@@ -212,7 +212,7 @@ class ShmPickler : public Pickler
     ShmSendBuffer *get() {ShmSendBuffer *ret = sendBuffer; sendBuffer = nullptr; return ret;}
 };
 
-} // namespace scave
-} // namespace omnetpp
+}  // namespace scave
+}  // namespace omnetpp
 
 #endif

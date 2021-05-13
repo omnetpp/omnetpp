@@ -30,6 +30,6 @@ opp_runtime_error::opp_runtime_error(const char *messagefmt, ...) : std::runtime
     errormsg = buf;
 }
 
-} // namespace common
+}  // namespace common
 }  // namespace omnetpp
 

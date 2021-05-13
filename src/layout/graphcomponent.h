@@ -224,7 +224,7 @@ class LAYOUT_API GraphComponent {
         void colorizeConnectedSubComponent(GraphComponent *childComponent, Vertex *vertex, int color);
 };
 
-} // namespace layout
+}  // namespace layout
 }  // namespace omnetpp
 
 

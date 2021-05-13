@@ -37,7 +37,7 @@ using omnetpp::common::isNaN;
 using omnetpp::common::POSITIVE_INFINITY;
 using omnetpp::common::NEGATIVE_INFINITY;
 
-} // namespace layout
+}  // namespace layout
 }  // namespace omnetpp
 
 

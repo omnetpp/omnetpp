@@ -649,7 +649,7 @@ class LAYOUT_API Cc {
         }
 };
 
-} // namespace layout
+}  // namespace layout
 }  // namespace omnetpp
 
 

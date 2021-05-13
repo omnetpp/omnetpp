@@ -34,5 +34,5 @@ void Sink::handleMessage(cMessage *message)
     delete message;
 }
 
-} // namespace phy
+}  // namespace phy
 

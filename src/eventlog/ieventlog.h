@@ -232,8 +232,8 @@ class EVENTLOG_API IEventLog
         void clearInternalState();
 };
 
-} // namespace eventlog
-} // namespace omnetpp
+}  // namespace eventlog
+}  // namespace omnetpp
 
 
 #endif

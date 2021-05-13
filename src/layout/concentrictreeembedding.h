@@ -51,7 +51,7 @@ class LAYOUT_API ConcentricTreeEmbedding
         void calculateCenterRecursive(Vertex *vertex, int level);
 };
 
-} // namespace layout
+}  // namespace layout
 }  // namespace omnetpp
 
 

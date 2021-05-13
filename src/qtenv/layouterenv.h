@@ -77,8 +77,8 @@ public:
     virtual void drawRectangle(double x1, double y1, double x2, double y2, const char *tags, const char *color) override;
 };
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 
 
 #endif

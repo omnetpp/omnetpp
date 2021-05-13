@@ -136,7 +136,7 @@ template <class T> struct ToString<T*>
       ~Guard() {active=false;} \
     } __guard;
 
-} // namespace common
+}  // namespace common
 }  // namespace omnetpp
 
 #endif

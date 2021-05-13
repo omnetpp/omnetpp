@@ -103,7 +103,7 @@ class SCAVE_API Scave
 
 
 
-} // namespace scave
+}  // namespace scave
 }  // namespace omnetpp
 
 

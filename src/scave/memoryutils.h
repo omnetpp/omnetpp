@@ -26,7 +26,7 @@ SCAVE_API int malloc_trim();
 // returns -1 if could not be determined
 SCAVE_API int64_t getAvailableMemoryBytes();
 
-} // namespace scave
-} // namespace omnetpp
+}  // namespace scave
+}  // namespace omnetpp
 
 #endif // __OMNETPP_SCAVE_MEMORYUTILS_H

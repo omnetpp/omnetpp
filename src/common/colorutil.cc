@@ -995,5 +995,5 @@ static void fillColorsMap()
     colors()["yellowgreen"] = rgb_t(154, 205, 50);
 }
 
-} // namespace common
-} // namespace omnetpp
+}  // namespace common
+}  // namespace omnetpp

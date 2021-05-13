@@ -177,4 +177,4 @@ void Tx::scheduleTxEnd(simtime_t duration)
     scheduleAt(simTime() + duration, txEndTimer);
 }
 
-} // namespace phy
+}  // namespace phy

@@ -58,7 +58,7 @@ class RxAtStart : public cSimpleModule
     int64_t computeNumBitsReceived(cPacket *packet, simtime_t receptionTime);
 };
 
-} // namespace phy
+}  // namespace phy
 
 #endif
 

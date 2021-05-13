@@ -59,7 +59,7 @@ class COMMON_API StringPool
     void clear();
 };
 
-} // namespace common
+}  // namespace common
 }  // namespace omnetpp
 
 

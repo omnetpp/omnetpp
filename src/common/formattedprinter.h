@@ -43,7 +43,7 @@ public:
     void table(const std::string& text, const std::vector<int>& userColumnWidths=std::vector<int>());
 };
 
-} // namespace common
-} // namespace omnetpp
+}  // namespace common
+}  // namespace omnetpp
 
 #endif

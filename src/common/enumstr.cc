@@ -104,6 +104,6 @@ int EnumStringIterator::operator++(int)
     return current;
 }
 
-} // namespace common
+}  // namespace common
 }  // namespace omnetpp
 

@@ -163,5 +163,5 @@ void AnimationControllerDialog::displayControlValues()
     ui->playbackSpeedSpinBox->adjust(selectedProfile->playbackSpeed);
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp

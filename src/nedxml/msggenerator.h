@@ -130,7 +130,7 @@ class NEDXML_API MsgGenerator
     //@}
 };
 
-} // namespace nedxml
+}  // namespace nedxml
 }  // namespace omnetpp
 
 

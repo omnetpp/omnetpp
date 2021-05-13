@@ -153,5 +153,5 @@ void HighlighterItemDelegate::destroyEditor(QWidget *editor, const QModelIndex& 
     QStyledItemDelegate::destroyEditor(editor, index);
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp

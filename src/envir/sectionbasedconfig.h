@@ -242,7 +242,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     //@}
 };
 
-} // namespace envir
+}  // namespace envir
 }  // namespace omnetpp
 
 

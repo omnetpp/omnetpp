@@ -41,7 +41,7 @@ private:
     Ui::ComboSelectionDialog *ui;
 };
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 
 #endif // __OMNETPP_QTENV_COMBOSELECTIONDIALOG_H

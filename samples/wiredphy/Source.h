@@ -41,7 +41,7 @@ class Source : public cSimpleModule
     virtual ~Source();
 };
 
-} // namespace phy
+}  // namespace phy
 
 #endif
 

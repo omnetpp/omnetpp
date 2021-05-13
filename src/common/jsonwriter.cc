@@ -279,5 +279,5 @@ void JsonWriter::closeArray()
         out() << "\n";
 }
 
-} // namespace common
+}  // namespace common
 }  // namespace omnetpp

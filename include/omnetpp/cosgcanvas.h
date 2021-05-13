@@ -303,6 +303,6 @@ class SIM_API cOsgCanvas : public cOwnedObject
         //@}
 };
 
-} // namespace omnetpp
+}  // namespace omnetpp
 
 #endif

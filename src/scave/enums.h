@@ -28,7 +28,7 @@ namespace scave {
  */
 enum InterpolationMode { UNSPECIFIED, NONE, SAMPLE_HOLD, BACKWARD_SAMPLE_HOLD, LINEAR };
 
-} // namespace scave
+}  // namespace scave
 }  // namespace omnetpp
 
 #endif

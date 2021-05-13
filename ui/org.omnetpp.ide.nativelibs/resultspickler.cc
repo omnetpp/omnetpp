@@ -944,5 +944,5 @@ ShmSendBuffer *ResultsPickler::getParamAssignmentsForRunsPickle(const std::vecto
     return p.get();
 }
 
-} // namespace scave
-} // namespace omnetpp
+}  // namespace scave
+}  // namespace omnetpp

@@ -49,7 +49,7 @@ class ENVIR_API Intervals
         bool empty() const;
 };
 
-} // namespace envir
+}  // namespace envir
 }  // namespace omnetpp
 
 #endif

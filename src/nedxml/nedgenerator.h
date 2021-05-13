@@ -147,7 +147,7 @@ class NEDXML_API NedGenerator
     //@}
 };
 
-} // namespace nedxml
+}  // namespace nedxml
 }  // namespace omnetpp
 
 

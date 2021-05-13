@@ -49,7 +49,7 @@ class SCAVE_API IndexFileUtils
 };
 
 
-} // namespace scave
+}  // namespace scave
 }  // namespace omnetpp
 
 

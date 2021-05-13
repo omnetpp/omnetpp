@@ -43,7 +43,7 @@ public:
     explicit ExponentialSpinBox(QWidget *parent);
 };
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 
 #endif // __OMNETPP_QTENV_EXPONENTIALSPINBOX_H

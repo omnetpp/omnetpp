@@ -654,5 +654,5 @@ void RunModeProfile::load(const QString &prefix)
     maxAnimationSpeed = qtenv->getPref("RunModeProfiles/" + prefix + "-max-animation-speed", maxAnimationSpeed).toDouble();
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp

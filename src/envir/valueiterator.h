@@ -208,7 +208,7 @@ class ENVIR_API ValueIterator
     void dump() const;
 };
 
-} // namespace envir
+}  // namespace envir
 }  // namespace omnetpp
 
 

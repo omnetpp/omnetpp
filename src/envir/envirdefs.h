@@ -36,7 +36,7 @@ namespace envir {
 
 using omnetpp::common::opp_runtime_error;
 
-} // namespace envir
+}  // namespace envir
 }  // namespace omnetpp
 
 #endif

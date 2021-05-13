@@ -441,7 +441,7 @@ class NEDXML_API ASTNodeFactory
     virtual ASTNode *createElementWithTag(int tagCode) = 0;
 };
 
-} // namespace nedxml
+}  // namespace nedxml
 }  // namespace omnetpp
 
 

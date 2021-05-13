@@ -77,7 +77,7 @@ class NEDXML_API ASTBuilder : public omnetpp::common::SaxHandler
     //@}
 };
 
-} // namespace nedxml
+}  // namespace nedxml
 }  // namespace omnetpp
 
 

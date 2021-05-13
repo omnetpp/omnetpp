@@ -174,7 +174,7 @@ public:
     QRect getModuleRect(bool includeBorder, int margin);
 };
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 
 #endif

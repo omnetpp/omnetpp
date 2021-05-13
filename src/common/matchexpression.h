@@ -172,7 +172,7 @@ class COMMON_API MatchableStringMap : public MatchExpression::Matchable
     virtual const char *getAsString(const char* attribute) const override;
 };
 
-} // namespace common
+}  // namespace common
 }  // namespace omnetpp
 
 

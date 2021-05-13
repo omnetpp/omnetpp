@@ -234,6 +234,6 @@ const char *opp_typename(const std::type_info& t)
 }
 
 
-} // namespace common
+}  // namespace common
 }  // namespace omnetpp
 

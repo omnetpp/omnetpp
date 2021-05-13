@@ -34,7 +34,7 @@ class MatchExpressionLexer
         int getNextToken(char **valuep);
 };
 
-} // namespace common
+}  // namespace common
 }  // namespace omnetpp
 
 

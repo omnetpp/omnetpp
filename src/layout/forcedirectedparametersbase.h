@@ -377,7 +377,7 @@ class LAYOUT_API IForceProvider {
         virtual double getPotentialEnergy() = 0;
 };
 
-} // namespace layout
+}  // namespace layout
 }  // namespace omnetpp
 
 
