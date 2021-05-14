@@ -1,6 +1,10 @@
 %description:
 Test auto range histogram strategy.
 
+%includes:
+
+#include <limits>
+
 %global:
 
 static void dumpBins(cHistogram& hist)
