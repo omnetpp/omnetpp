@@ -13,10 +13,12 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.variables.VariablesPlugin;
@@ -505,6 +507,69 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     }
 
     /**
+     * Find the end of a quoted string constant, obeying backslashed escapes.
+     * The character at startPos specifies which character is used as
+     * quotation mark. Returns the position of the matching quote character, or
+     * throws an exception if the string ended without finding one.
+     */
+    public static int findCloseQuote(String txt, int startPos) {
+        char quot = txt.charAt(startPos);
+        int len = txt.length();
+        int pos = startPos + 1;
+        for (; pos < len && txt.charAt(pos) != quot; pos++)
+            if (txt.charAt(pos) == '\\' && pos+1 < len)
+                pos++;
+        if (pos == len)
+            throw new ParseException("Unterminated string constant");
+        return pos;
+    }
+
+    public static int findCloseParen(String txt, int startPos) {
+        return findCloseParen(txt, startPos, "(){}[]".toCharArray(), "'\"".toCharArray());
+    }
+
+    /**
+     * Find the matching close paren in a string, observing nesting and quoted
+     * string constants too. The character at startPos must be the open
+     * parenthesis. Returns the position of the matching close paren. Exception
+     * is thrown if it is not found, or nesting is broken.
+     */
+    public static int findCloseParen(String txt, int startPos, char[] parenChars, char[] quoteChars) {
+        int pi  = ArrayUtils.indexOf(parenChars, txt.charAt(startPos));
+        if (pi == -1 || pi % 2 != 0)
+            throw new ParseException("Not at an open parenthesis");
+        char closeParen = parenChars[pi+1];
+
+        int pos = startPos;
+        Stack<Character> parenStack = new Stack<>();
+        while (pos < txt.length()) {
+            char ch = txt.charAt(pos);
+
+            if (ArrayUtils.contains(quoteChars, ch)) { // skip string constant
+                pos = StringUtils.findCloseQuote(txt, pos);
+            }
+            else if ((pi = ArrayUtils.indexOf(parenChars, ch)) != -1) {  // paren
+                if (pi % 2 == 0)  // open
+                    parenStack.push(ch);
+                else {  // close
+                    if (parenStack.isEmpty())
+                        throw new ParseException("Unmatched close parenthesis '" + ch + "'");
+                    if (parenStack.peek() != parenChars[pi-1])
+                        throw new ParseException("Mismatched parentheses '" + parenStack.peek() + "' and '" + ch + "'");
+                    parenStack.pop();
+                }
+            }
+
+            if (ch == closeParen && parenStack.isEmpty()) // close paren reached
+                return pos;
+
+            pos++;
+        }
+
+        throw new ParseException("Unclosed parenthesis '" + parenStack.peek() + "'");
+    }
+
+    /**
      * Joins two string with a separator, s1 and s2 can be NULL.
      */
     public static String join(String s1, String separator, String s2) {
@@ -677,9 +742,9 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     private static String getFromMapAsString(Map<String, Object> map, String key) {
         Object object = map.get(key);
         if (object == null)
-            throw new RuntimeException("template error: undefined (or null) template parameter '" + key + "'");
+            throw new IllegalArgumentException("template error: undefined (or null) template parameter '" + key + "'");
         if (!(object instanceof String))
-            throw new RuntimeException("template error: template parameter '" + key + "' was expected to be a string, but it is " + object.getClass().toString());
+            throw new IllegalArgumentException("template error: template parameter '" + key + "' was expected to be a string, but it is " + object.getClass().toString());
         return (String)object;
     }
 
@@ -688,7 +753,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     private static boolean getFromMapAsBool(Map<String, Object> map, String key) {
         Object object = map.get(key);
         if (object == null)
-            throw new RuntimeException("template error: undefined (or null) template parameter '" + key + "'");
+            throw new IllegalArgumentException("template error: undefined (or null) template parameter '" + key + "'");
         if (object instanceof Boolean)
             return (Boolean)object;
         else if (object instanceof String)
@@ -696,18 +761,18 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
         else if (object instanceof List)
             return !((List)object).isEmpty();
         else
-            throw new RuntimeException("template error: template parameter '" + key + "' was expected to be a string or boolean, but it is " + object.getClass().toString());
+            throw new IllegalArgumentException("template error: template parameter '" + key + "' was expected to be a string or boolean, but it is " + object.getClass().toString());
     }
 
     @SuppressWarnings("unchecked")
     private static List<String> getFromMapAsList(Map<String, Object> map, String key) {
         Object object = map.get(key);
         if (object == null)
-            throw new RuntimeException("template error: undefined (or null) template parameter '" + key + "'");
+            throw new IllegalArgumentException("template error: undefined (or null) template parameter '" + key + "'");
         if (object instanceof List)
             return (List<String>)object;
         else
-            throw new RuntimeException("template error: template parameter '" + key + "' was expected to be list, but it is " + object.getClass().toString());
+            throw new IllegalArgumentException("template error: template parameter '" + key + "' was expected to be list, but it is " + object.getClass().toString());
     }
 
     public static String formatList(Collection<? extends Object> list, String elementFormat, String separator) {

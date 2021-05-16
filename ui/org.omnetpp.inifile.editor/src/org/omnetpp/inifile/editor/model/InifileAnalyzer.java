@@ -49,10 +49,9 @@ import org.omnetpp.common.collections.ProductIterator;
 import org.omnetpp.common.engine.Common;
 import org.omnetpp.common.engine.PatternMatcher;
 import org.omnetpp.common.engine.StringSet;
-import org.omnetpp.common.engine.StringTokenizer2;
 import org.omnetpp.common.engine.UnitConversion;
-import org.omnetpp.common.engineext.StringTokenizerException;
 import org.omnetpp.common.util.Pair;
+import org.omnetpp.common.util.ParseException;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.form.AnalysisTimeoutDialog;
@@ -739,7 +738,7 @@ public final class InifileAnalyzer {
                     count++;
                 }
             }
-            catch (StringTokenizerException e) {
+            catch (ParseException e) {
                 markers.addError(section, key, "Syntax error: " + e.getMessage());
             }
         }
@@ -858,15 +857,10 @@ public final class InifileAnalyzer {
 
     static Pair<Integer,Integer> findNextIterationVariable(String value, int startPos) {
         int index = value.indexOf("${", startPos);
-        if (index >= 0) {
-            StringTokenizer2 tokenizer = new StringTokenizer2(value.substring(index), "}", "{}()[]", "\"");
-            String token = tokenizer.nextToken(); // does not contain ending '}' !
-            int start = index;
-            int end = start + token.length() + 1; // note: do not use tokenizer.getTokenLength(), as it fails for multi-byte chars (returns byte count instead of character count)
-            return Pair.pair(start, end);
-        }
-        else
+        if (index == -1)
             return null;
+        int end = StringUtils.findCloseParen(value, index+1);
+        return Pair.pair(index, end+1);
     }
 
     static List<String> splitValueByIterationVariables(String value) {
@@ -952,15 +946,51 @@ public final class InifileAnalyzer {
     }
 
     /**
+     * Split the string by comma, minding parens and quotes.
+     */
+    static class Tokenizer {
+        private static final String EMPTY_TOKEN = "\0";
+
+        String values;
+        int pos = 0;
+
+        Tokenizer(String values) {
+            if (values.endsWith(","))
+                values += EMPTY_TOKEN; // placeholder for the last, empty token (otherwise it is not returned)
+            this.values = values;
+        }
+
+        boolean hasMoreTokens() {
+            return pos < values.length();
+        }
+
+        String nextToken() {
+            int startPos = pos;
+            while (pos < values.length()) {
+                char ch = values.charAt(pos);
+                if (ch == ',')
+                    return values.substring(startPos, pos++);
+                else if (ch == '"' || ch == '\'')
+                    pos = StringUtils.findCloseQuote(values, pos);
+                else if (ch == '(' || ch == '{' || ch == '[')
+                    pos = StringUtils.findCloseParen(values, pos);
+                pos++;
+            }
+            String token = values.substring(startPos);
+            return token.equals(EMPTY_TOKEN) ? "" : token;
+        }
+
+    }
+
+    /**
      * Iterates on the constants in one iteration variable.
      *
-     * Example: ${x=1,3..10 step 2} gives [1,3,10,2].
+     * Example: ${x=1,3..10 step 2} gives [1,3,10,2].  <---- This kind of makes no sense, but oh well. Needs to be revised.
      *
      */
-    static class IterationVariableIterator implements ResettableIterator
-    {
+    static class IterationVariableIterator implements ResettableIterator {
         String values;
-        StringTokenizer2 tokenizer;
+        Tokenizer tokenizer;
         Matcher matcher;
         int groupIndex;
 
@@ -981,8 +1011,9 @@ public final class InifileAnalyzer {
             reset();
         }
 
+
         public void reset() {
-            tokenizer = new StringTokenizer2(values, ",", "()[]{}", "\"");
+            tokenizer = new Tokenizer(values);
             matcher = null;
             groupIndex = 0;
         }
@@ -1254,7 +1285,7 @@ public final class InifileAnalyzer {
                         sectionData.namedIterations.put(v.varname, v);
                 }
             }
-        } catch (StringTokenizerException e) {
+        } catch (ParseException e) {
             markers.addError(section, key, "Syntax error: " + e.getMessage());
         }
     }

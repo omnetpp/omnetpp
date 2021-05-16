@@ -13,7 +13,6 @@
 #include "common/bigdecimal.h"
 #include "common/rwlock.h"
 #include "common/expression.h"
-#include "common/stringtokenizer2.h"
 #include "common/fileutil.h"
 #include "common/linetokenizer.h"
 
@@ -218,37 +217,6 @@ namespace omnetpp { namespace common {
 } } // namespaces
 
 %include "common/expression.h"
-
-/* -------------------- stringtokenizer2.h -------------------------- */
-
-namespace omnetpp { namespace common {
-
-%define CHECK_STRINGTOKENIZER_EXCEPTION(METHOD)
-%exception METHOD {
-    try {
-        $action
-    } catch (StringTokenizerException& e) {
-        jclass clazz = jenv->FindClass("org/omnetpp/common/engineext/StringTokenizerException");
-        jmethodID methodId = jenv->GetMethodID(clazz, "<init>", "(Ljava/lang/String;)V");
-        jthrowable exception = (jthrowable)(jenv->NewObject(clazz, methodId, jenv->NewStringUTF(e.what())));
-        jenv->Throw(exception);
-        return $null;
-    } catch (std::exception& e) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaRuntimeException, const_cast<char*>(e.what()));
-        return $null;
-    }
-}
-%enddef
-
-CHECK_STRINGTOKENIZER_EXCEPTION(StringTokenizer2::StringTokenizer2)
-CHECK_STRINGTOKENIZER_EXCEPTION(StringTokenizer2::setParentheses)
-CHECK_STRINGTOKENIZER_EXCEPTION(StringTokenizer2::nextToken)
-
-%ignore StringTokenizerException;
-
-} } // namespaces
-
-%include "common/stringtokenizer2.h"
 
 /* -------------------- fileutil.h -------------------------- */
 
