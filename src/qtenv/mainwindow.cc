@@ -271,7 +271,7 @@ void MainWindow::updateEventNumLabel()
     eventnumber_t numToShow = getSimulation()->getEventNumber() + (showNextEvent ? 1 : 0);
     const char *prefix = showNextEvent ? "next: " : "last: ";
     QString eventNumText = QString("<font color=grey><small>%1</small>#</font>").arg(prefix)
-            + opp_format(numToShow, digitSeparator).c_str();
+            + opp_formati64(numToShow, digitSeparator).c_str();
     eventNumLabel->setText(eventNumText);
     eventNumLabel->setStyleSheet(showNextEvent ? "" : "QLabel { background: palette(alternate-base); }");
 }

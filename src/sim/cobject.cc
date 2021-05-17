@@ -16,6 +16,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include "common/stringutil.h"
 #include "omnetpp/cobject.h"
 #include "omnetpp/cownedobject.h"
 #include "omnetpp/csoftowner.h"
@@ -26,6 +27,8 @@
 #include "omnetpp/simutil.h"
 
 namespace omnetpp {
+
+using namespace omnetpp::common;
 
 #ifdef SIMFRONTEND_SUPPORT
 int64_t cObject::changeCounter = 0;
@@ -43,7 +46,7 @@ bool cObject::isName(const char *s) const
 
 const char *cObject::getClassName() const
 {
-    return opp_typename(typeid(*this));
+    return omnetpp::opp_typename(typeid(*this));
 }
 
 cClassDescriptor *cObject::getDescriptor() const

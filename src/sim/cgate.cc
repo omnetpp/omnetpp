@@ -73,14 +73,15 @@ int cGate::lastConnectionId = -1;
 cGate::Name::Name(const char *name, Type type) : name(name), type(type)
 {
     if (type == cGate::INOUT) {
-        namei = opp_concat(name, "$i");
-        nameo = opp_concat(name, "$o");
+        int len = strlen(name);
+        namei.reserve(len+3); strcpy(namei.buffer(), name); strcpy(namei.buffer()+len, "$i");
+        nameo.reserve(len+3); strcpy(nameo.buffer(), name); strcpy(nameo.buffer()+len, "$o");
     }
 }
 
 bool cGate::Name::operator<(const Name& other) const
 {
-    int d = omnetpp::opp_strcmp(name.c_str(), other.name.c_str());
+    int d = opp_strcmp(name.c_str(), other.name.c_str());
     if (d < 0)
         return true;
     else if (d > 0)
@@ -139,6 +140,18 @@ const char *cGate::getNameSuffix() const
         return "";
 }
 
+inline void appendindex(char *s, unsigned int i)
+{
+   while (*s) s++;
+   *s++ = '[';
+   if (i < 10)
+       {*s++ = '0'+i; *s++ = ']'; *s = 0;}
+   else if (i < 100)
+       {*s++ = '0'+i/10; *s++ = '0'+i%10; *s++ = ']'; *s = 0;}
+   else
+       sprintf(s,"%d]", i);
+}
+
 const char *cGate::getFullName() const
 {
     // if not in a vector, normal getName() will do
@@ -148,12 +161,12 @@ const char *cGate::getFullName() const
     // otherwise, produce fullname in a temp buffer, and return its stringpooled copy
     // note: this implementation assumes that this method will be called infrequently
     // (ie. we reproduce the string every time).
-    if (omnetpp::opp_strlen(getName()) > 100)
+    if (opp_strlen(getName()) > 100)
         throw cRuntimeError(this, "getFullName(): Gate name too long, should be under 100 characters");
 
     static char tmp[128];
     strcpy(tmp, getName());
-    opp_appendindex(tmp, getIndex());
+    appendindex(tmp, getIndex());
     return gateFullnamePool.get(tmp);  // non-refcounted stringpool
 }
 

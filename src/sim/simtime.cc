@@ -15,6 +15,7 @@
 
 #include <sstream>
 #include <limits>
+#include <cinttypes>  // PRId64
 #include "common/opp_ctype.h"
 #include "common/unitconversion.h"
 #include "common/stringutil.h"

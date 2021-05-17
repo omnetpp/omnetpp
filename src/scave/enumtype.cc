@@ -99,7 +99,7 @@ void EnumType::parseFromString(const char *str)
     nameToValueMap.clear();
 
     int value = -1;
-    for (std::string nameValue : opp_split_and_trim(str, ",")) {
+    for (std::string nameValue : opp_splitandtrim(str, ",")) {
         std::string::size_type pos = nameValue.find('=');
         if (pos == std::string::npos) {
             insert(++value, nameValue.c_str());

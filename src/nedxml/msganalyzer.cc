@@ -341,7 +341,7 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
     // additional base classes (interfaces)
     std::string s = getProperty(classInfo.props, PROP_IMPLEMENTS);
     if (!s.empty())
-        classInfo.implements = opp_split_and_trim(s, ",");
+        classInfo.implements = opp_splitandtrim(s, ",");
 }
 
 void MsgAnalyzer::analyzeFields(ClassInfo& classInfo, const std::string& namespaceName)

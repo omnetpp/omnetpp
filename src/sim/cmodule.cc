@@ -361,7 +361,7 @@ void cModule::updateFullPathRec()
 {
     delete[] fullPath;
     fullPath = nullptr;  // for the next getFullPath() call
-    fullPath = omnetpp::opp_strdup(getFullPath().c_str());
+    fullPath = opp_strdup(getFullPath().c_str());
 
     for (cModule *child = firstSubmodule; child; child = child->nextSibling)
         child->updateFullPathRec();
@@ -1590,7 +1590,7 @@ void cModule::callRefreshDisplay()
     cContextTypeSwitcher tmp2(CTX_REFRESHDISPLAY);
     try {
         refreshDisplay();
-   }
+    }
     catch (cException&) {
         throw;
     }

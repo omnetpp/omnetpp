@@ -949,7 +949,7 @@ void MsgCompilerOld::prepareForCodeGeneration(ClassInfo& info)
 
     std::string s = getProperty(info.props, "implements");
     if (!s.empty()) {
-        info.implements = opp_split_and_trim(s, ",");
+        info.implements = opp_splitandtrim(s, ",");
     }
 
     for (ClassInfo::Fieldlist::iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {

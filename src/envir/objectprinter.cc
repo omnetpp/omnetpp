@@ -57,7 +57,7 @@ ObjectPrinter::ObjectPrinter(ObjectPrinterRecursionPredicate recursionPredicate,
     std::vector<MatchExpression *> objectMatchExpressions;
     std::vector<std::vector<MatchExpression *> > fieldNameMatchExpressionsList;
 
-    std::vector<std::string> patterns = opp_split_and_trim(objectFieldMatcherPattern, "|"); // TODO: use ; when it does not mean comment anymore
+    std::vector<std::string> patterns = opp_splitandtrim(objectFieldMatcherPattern, "|"); // TODO: use ; when it does not mean comment anymore
 
     for (auto & pattern : patterns) {
         char *objectPattern = (char *)pattern.c_str();
@@ -65,7 +65,7 @@ ObjectPrinter::ObjectPrinter(ObjectPrinterRecursionPredicate recursionPredicate,
 
         if (fieldNamePattern) {
             *fieldNamePattern = '\0';
-            std::vector<std::string> fieldNamePatterns = opp_split_and_trim(fieldNamePattern + 1, ",");
+            std::vector<std::string> fieldNamePatterns = opp_splitandtrim(fieldNamePattern + 1, ",");
             std::vector<MatchExpression *> fieldNameMatchExpressions;
 
             for (auto & fieldNamePattern : fieldNamePatterns)

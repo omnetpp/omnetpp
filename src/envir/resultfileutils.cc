@@ -90,7 +90,7 @@ OrderedKeyValueList ResultFileUtils::getSelectedConfigEntries()
     cConfigurationEx *cfg = getEnvir()->getConfigEx();
     const char *option = cfg->getAsCustom(CFGID_CONFIG_RECORDING);
     int flags = 0;
-    for (std::string e : opp_split_and_trim(option)) {
+    for (std::string e : opp_splitandtrim(option)) {
         if (e == "none")
             flags |= 0;
         else if (e == "all")

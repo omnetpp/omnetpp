@@ -27,6 +27,7 @@
 #include <algorithm>
 #include <sstream>
 #include "common/patternmatcher.h"
+#include "common/stringutil.h"
 #include "omnetpp/ctopology.h"
 #include "omnetpp/cpar.h"
 #include "omnetpp/globals.h"

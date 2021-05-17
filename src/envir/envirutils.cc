@@ -229,11 +229,9 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category, bool
         out << "\n";
 
         std::vector<const char *> varNames = config->getPredefinedVariableNames();
-        for (auto & varName : varNames) {
-            opp_string id = varName;
-            opp_strupr(id.buffer());
+        for (const char *varName : varNames) {
             const char *desc = config->getVariableDescription(varName);
-            out << "    public static final String CFGVAR_" << id << " = addConfigVariable(";
+            out << "    public static final String CFGVAR_" << opp_strupper(varName) << " = addConfigVariable(";
             out << "\"" << varName << "\", \"" << opp_replacesubstring(desc, "\"", "\\\"", true) << "\");\n";
         }
         out << "\n";

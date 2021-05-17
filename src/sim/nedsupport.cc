@@ -228,7 +228,7 @@ void SubmoduleParameterRef::print(std::ostream& out, int spaciousness) const
 
 IndexedSubmoduleParameterRef::IndexedSubmoduleParameterRef(const char *moduleName, const char *paramName, bool inSubcomponentScope)
 {
-    ASSERT(!opp_isempty(moduleName) && !opp_isempty(paramName) && omnetpp::opp_strcmp(moduleName, "this") != 0);
+    ASSERT(!opp_isempty(moduleName) && !opp_isempty(paramName) && opp_strcmp(moduleName, "this") != 0);
     this->submoduleName = moduleName;
     this->paramName = paramName;
     this->inSubcomponentScope = inSubcomponentScope;

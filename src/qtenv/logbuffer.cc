@@ -17,10 +17,13 @@
 #include <cstring>
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cmessage.h"
+#include "common/stringutil.h"
 #include "logbuffer.h"
 #include "qtutil.h"
 
 #define emit    // Qt...
+
+using namespace omnetpp::common;
 
 namespace omnetpp {
 namespace qtenv {
@@ -93,7 +96,7 @@ void LogBuffer::addLogLine(LogLevel logLevel, const char *prefix, const char *te
     Entry *entry = entries.back();
     cComponent *contextComponent = getSimulation()->getContext();
     int contextComponentId = contextComponent ? contextComponent->getId() : 0;
-    entry->lines.push_back(Line(contextComponentId, logLevel, opp_strdup(prefix), opp_strdup(text, len)));
+    entry->lines.push_back(Line(contextComponentId, logLevel, opp_strdup(prefix), opp_strndup(text, len)));
 
     emit logLineAdded();
 }
@@ -103,7 +106,7 @@ void LogBuffer::addInfo(const char *text, int len)
     // TODO ha inline info (contextmodule!=nullptr), sima logline-kent adjuk hozza!!!!
     Entry *entry = new Entry();
     entries.push_back(entry);
-    fillEntry(entry, 0, simTime(), nullptr, opp_strdup(text, len));
+    fillEntry(entry, 0, simTime(), nullptr, opp_strndup(text, len));
     discardEventsIfLimitExceeded();
 
     emit logEntryAdded();

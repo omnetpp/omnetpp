@@ -887,11 +887,11 @@ void EnvirBase::readParameter(cPar *par)
     const cConfiguration::KeyValue& entry = getConfigEx()->getParameterEntry(moduleFullPath.c_str(), par->getName(), par->containsValue());
     const char *str = entry.getValue();
 
-    if (omnetpp::opp_strcmp(str, "default") == 0) {
+    if (opp_strcmp(str, "default") == 0) {
         ASSERT(par->containsValue());  // cConfiguration should not return "=default" lines for params that have no default value
         par->acceptDefault();
     }
-    else if (omnetpp::opp_strcmp(str, "ask") == 0) {
+    else if (opp_strcmp(str, "ask") == 0) {
         askParameter(par, false);
     }
     else if (!opp_isempty(str)) {
@@ -1340,7 +1340,7 @@ void EnvirBase::readOptions()
     // NED path. It is taken from the "-n" command-line options, the OMNETPP_NED_PATH
     // environment variable, and the "ned-path=" config option. If the result is still
     // empty, we fall back to "." -- this is needed for single-directory models to work.
-    std::string nedPath = opp_join(args->optionValues('n'), ";");
+    std::string nedPath = opp_join(args->optionValues('n'), ";", true);
     nedPath = opp_join(";", nedPath, getConfig()->getAsPath(CFGID_NED_PATH));
     nedPath = opp_join(";", nedPath, opp_nulltoempty(getenv("OMNETPP_NED_PATH")));
     nedPath = opp_join(";", nedPath, opp_nulltoempty(getenv("NEDPATH")));
@@ -1349,7 +1349,7 @@ void EnvirBase::readOptions()
     opt->nedPath = nedPath;
 
     // NED packages to exclude
-    std::string nedExcludedPackages = opp_join(args->optionValues('x'), ";");
+    std::string nedExcludedPackages = opp_join(args->optionValues('x'), ";", true);
     nedExcludedPackages = opp_join(";", nedExcludedPackages, opp_nulltoempty(getConfig()->getAsCustom(CFGID_NED_PACKAGE_EXCLUSIONS)));
     nedExcludedPackages = opp_join(";", nedExcludedPackages, opp_nulltoempty(getenv("OMNETPP_NED_PACKAGE_EXCLUSIONS")));
     opt->nedExcludedPackages = nedExcludedPackages;
@@ -1360,8 +1360,8 @@ void EnvirBase::readOptions()
     for (std::string opt : args->optionValues('i'))
         imagePath = opp_join(";", imagePath, opt);
     imagePath = opp_join(";", imagePath, getConfig()->getAsPath(CFGID_IMAGE_PATH));
-    const char *builtinImagePath = opp_removestart(OMNETPP_IMAGE_PATH, "/;"); // strip away the /; sequence from the beginning (a workaround for MinGW path conversion). See #785
-    imagePath = opp_join(";", imagePath, opp_emptytodefault(getenv("OMNETPP_IMAGE_PATH"), builtinImagePath));
+    std::string builtinImagePath = opp_removestart(OMNETPP_IMAGE_PATH, "/;"); // strip away the /; sequence from the beginning (a workaround for MinGW path conversion). See #785
+    imagePath = opp_join(";", imagePath, opp_emptytodefault(getenv("OMNETPP_IMAGE_PATH"), builtinImagePath.c_str()));
     opt->imagePath = imagePath;
 
     // other options are read on per-run basis

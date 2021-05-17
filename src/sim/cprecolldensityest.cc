@@ -19,6 +19,7 @@
 #include <cstdio>
 #include <cstring>
 #include <cmath>
+#include <cinttypes>  // PRId64
 #include <sstream>
 #include <algorithm>
 #include "omnetpp/globals.h"

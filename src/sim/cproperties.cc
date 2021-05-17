@@ -92,7 +92,7 @@ cProperty *cProperties::get(int k) const
 cProperty *cProperties::get(const char *name, const char *index) const
 {
     for (auto property : properties)
-        if (!strcmp(property->getName(), name) && !omnetpp::opp_strcmp(index, property->getIndex()))
+        if (!strcmp(property->getName(), name) && !opp_strcmp(index, property->getIndex()))
             return property;
     return nullptr;
 }
@@ -106,7 +106,7 @@ bool cProperties::getAsBool(const char *name, const char *index) const
     if (!opp_isempty(value) && strcmp(value, "true") != 0 && strcmp(value, "false") != 0)
         throw cRuntimeError(this, "@%s property: Boolean value expected, got '%s'", name, value);
 
-    return omnetpp::opp_strcmp(value, "false") == 0 ? false : true;
+    return opp_strcmp(value, "false") == 0 ? false : true;
 }
 
 void cProperties::add(cProperty *p)

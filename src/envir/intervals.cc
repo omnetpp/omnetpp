@@ -38,9 +38,9 @@ Intervals::~Intervals()
 void Intervals::parse(const char *text)
 {
     std::vector<Interval> parsedIntervals;
-    for (std::string item : opp_split_and_trim(opp_nulltoempty(text), ",")) {
+    for (std::string item : opp_splitandtrim(opp_nulltoempty(text), ",")) {
         // parse interval string
-        auto parts = opp_split_and_trim(item, "..");
+        auto parts = opp_splitandtrim(item, "..");
         if (parts.size() != 2)
             throw cRuntimeError("Wrong syntax in interval %s, [start]..[end] expected", item.c_str());
 

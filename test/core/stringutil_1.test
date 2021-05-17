@@ -36,9 +36,9 @@ P(opp_stringf("Z=%d%s", 12, "ms"));
 // skipped: opp_vstringf(const char *fmt, va_list& args)
 P(opp_replacesubstring("foo bar foo", "foo", "FOO", true));
 
-P(opp_join(opp_split_and_trim("hello,\n big, \t world "), ":"));
+P(opp_join(opp_splitandtrim("hello,\n big, \t world "), ":"));
 P(opp_join(opp_split("hello, big, \t world ", ","), ":"));
-P(opp_join(opp_split_and_trim("hello,\n big, \t world ", ","), ":"));
+P(opp_join(opp_splitandtrim("hello,\n big, \t world ", ","), ":"));
 
 P(opp_stringbeginswith("foobar", "bar"));
 P(opp_stringbeginswith("foobar", "foo"));
@@ -125,9 +125,9 @@ opp_trim("  foo\r\n") --> 'foo'
 opp_strprettytrunc(buf, "lorem ipsum dolor", 10) --> 'lorem i...'
 opp_stringf("Z=%d%s", 12, "ms") --> 'Z=12ms'
 opp_replacesubstring("foo bar foo", "foo", "FOO", true) --> 'FOO bar FOO'
-opp_join(opp_split_and_trim("hello,\n big, \t world "), ":") --> 'hello,:big,:world'
+opp_join(opp_splitandtrim("hello,\n big, \t world "), ":") --> 'hello,:big,:world'
 opp_join(opp_split("hello, big, \t world ", ","), ":") --> 'hello: big: 	 world '
-opp_join(opp_split_and_trim("hello,\n big, \t world ", ","), ":") --> 'hello:big:world'
+opp_join(opp_splitandtrim("hello,\n big, \t world ", ","), ":") --> 'hello:big:world'
 opp_stringbeginswith("foobar", "bar") --> '0'
 opp_stringbeginswith("foobar", "foo") --> '1'
 opp_stringendswith("foobar", "bar") --> '1'

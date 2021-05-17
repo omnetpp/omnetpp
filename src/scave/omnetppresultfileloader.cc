@@ -358,7 +358,7 @@ void OmnetppResultFileLoader::separateItervarsFromAttrs(StringMap& attrs, String
     if (itervars.empty()) {
         std::string itervarsAttr = attrs.find("iterationvars") != attrs.end() ? attrs["iterationvars"] : "";
         if (!itervarsAttr.empty()) {
-            for (auto part : opp_split_and_trim(itervarsAttr, ",")) {
+            for (auto part : opp_splitandtrim(itervarsAttr, ",")) {
                 std::string varName = opp_substringafter(opp_substringbefore(part, "="), "$");
                 if (attrs.find(varName) != attrs.end()) {
                     itervars[varName] = attrs[varName];

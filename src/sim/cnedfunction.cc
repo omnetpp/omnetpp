@@ -86,7 +86,7 @@ static cNedFunction::Type parseType(const std::string& str)
 
 static bool splitTypeAndName(const std::string& pair, cNedFunction::Type& type, std::string& name)
 {
-    std::vector<std::string> v = opp_split_and_trim(pair);
+    std::vector<std::string> v = opp_splitandtrim(pair);
     if (v.size() != 2)
         return false;
 
@@ -129,7 +129,7 @@ void cNedFunction::parseSignature(const char *signature)
 
     minArgc = -1;
     hasVarargs_ = false;
-    std::vector<std::string> args = opp_split_and_trim(argList, ",");
+    std::vector<std::string> args = opp_splitandtrim(argList, ",");
     for (int i = 0; i < (int)args.size(); i++) {
         if (args[i] == "...") {
             if (i != (int)args.size() - 1)

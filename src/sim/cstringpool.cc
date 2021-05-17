@@ -50,7 +50,7 @@ const char *cStringPool::get(const char *s)
 {
     if (!cStaticFlag::insideMain()) {
         fprintf(stderr, "ERROR: cStringPool::get(\"%s\") invoked outside main() -- please do not use cStringPool from global objects", s);
-        return omnetpp::opp_strdup(s);
+        return opp_strdup(s);
     }
 
     if (!s)

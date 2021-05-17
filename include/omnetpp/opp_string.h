@@ -16,11 +16,11 @@
 #ifndef __OMNETPP_OPP_STRING_H
 #define __OMNETPP_OPP_STRING_H
 
+#include <cstring>
 #include <vector>
 #include <map>
 #include <ostream>
 #include "simkerneldefs.h"
-#include "simutil.h"
 
 namespace omnetpp {
 
@@ -40,6 +40,20 @@ class SIM_API opp_string
 {
   private:
     char *buf;
+
+    static char *opp_strdup(const char *s) {
+        if (!s || !s[0]) return nullptr;
+        char *p = new char[strlen(s)+1];
+        strcpy(p,s);
+        return p;
+    }
+
+    static int opp_strcmp(const char *s1, const char *s2) {
+        if (s1)
+            return s2 ? strcmp(s1,s2) : (*s1 ? 1 : 0);
+        else
+            return (s2 && *s2) ? -1 : 0;
+    }
 
   public:
     /**

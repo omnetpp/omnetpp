@@ -17,11 +17,11 @@
 *--------------------------------------------------------------*/
 
 #include <sstream>
+#include "common/stringutil.h"
 #include "omnetpp/cparimpl.h"
 #include "omnetpp/cproperties.h"
 #include "omnetpp/ccomponent.h"
 #include "omnetpp/csimulation.h"
-
 #include "omnetpp/cboolparimpl.h"
 #include "omnetpp/cintparimpl.h"
 #include "omnetpp/cdoubleparimpl.h"
@@ -34,6 +34,8 @@
 #endif
 
 namespace omnetpp {
+
+using namespace omnetpp::common;
 
 long cParImpl::totalParimplObjs;
 long cParImpl::liveParimplObjs;

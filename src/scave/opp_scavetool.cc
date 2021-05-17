@@ -257,7 +257,7 @@ int ScaveTool::resolveResultTypeFilter(const std::string& filter)
     }
     else {
         // long form
-        for (string token : opp_split_and_trim(filter, ",")) {
+        for (string token : opp_splitandtrim(filter, ",")) {
             if (token == "scalars")
                 result |= ResultFileManager::SCALAR;
             else if (token == "vectors")

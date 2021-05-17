@@ -87,7 +87,7 @@ bool cNedNetworkBuilder::getBooleanProperty(NedElement *componentNode, const cha
     ParametersElement *paramsNode = dynamic_cast<ParametersElement*>(componentNode->getFirstChildWithTag(NED_PARAMETERS));
     if (paramsNode)
         for (PropertyElement *prop = paramsNode->getFirstPropertyChild(); prop != nullptr; prop = prop->getNextPropertySibling())
-            if (omnetpp::opp_strcmp(prop->getName(), name) == 0 && ASTNodeUtil::propertyAsBool(prop) == true)
+            if (opp_strcmp(prop->getName(), name) == 0 && ASTNodeUtil::propertyAsBool(prop) == true)
                 return true;
     return false;
 }

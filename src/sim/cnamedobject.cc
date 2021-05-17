@@ -22,6 +22,7 @@
 #include "omnetpp/cownedobject.h"
 #include "omnetpp/globals.h"
 #include "omnetpp/opp_string.h"
+#include "common/stringutil.h"
 
 #ifdef WITH_PARSIM
 #include "omnetpp/ccommbuffer.h"
@@ -30,6 +31,7 @@
 namespace omnetpp {
 
 using std::ostream;
+using namespace omnetpp::common;
 
 Register_Class(cNamedObject);
 

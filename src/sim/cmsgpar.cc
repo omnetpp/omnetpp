@@ -24,6 +24,7 @@
 #include <string>
 #include <algorithm>
 #include "common/opp_ctype.h"
+#include "common/stringutil.h"
 #include "omnetpp/cmsgpar.h"
 #include "omnetpp/cstatistic.h"
 #include "omnetpp/globals.h"
