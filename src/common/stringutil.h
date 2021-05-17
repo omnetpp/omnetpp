@@ -78,6 +78,20 @@ inline char *opp_strdup(const char *s)
 }
 
 /**
+ * Duplicates the string, using <tt>new char[]</tt>. For nullptr and empty
+ * strings it returns nullptr. len is maximum length, longer strings will
+ * be truncated.
+ */
+inline char *opp_strndup(const char *s, int len)
+{
+    if (!s || !s[0]) return nullptr;
+    char *p = new char[len+1];
+    strncpy(p,s,len);
+    p[len] = 0;
+    return p;
+}
+
+/**
  * Same as the standard strcpy() function, except that nullptr
  * in the second argument is treated as a pointer to an empty string ("").
  */
@@ -220,19 +234,21 @@ COMMON_API std::string opp_indentlines(const std::string& text, const std::strin
  * leading or trailing whitespace. Returns an empty array if the input string is
  * empty or only contains whitespace.
  */
-COMMON_API std::vector<std::string> opp_split_and_trim(const std::string& text);
+COMMON_API std::vector<std::string> opp_splitandtrim(const std::string& text);
 
 /**
- * Split a string into parts separated by the given separator. If the input string is empty,
- * it returns an empty array. Otherwise, it returns exactly #separators+1 items.
+ * Split a string into parts separated by the given separator. The separator
+ * cannot be empty. If the input string is empty, it returns an empty array.
+ * Otherwise, it returns exactly #separators+1 items.
  */
 COMMON_API std::vector<std::string> opp_split(const std::string& text, const std::string& separator);
 
 /**
  * Split a string into parts separated by the given separator, trimming each item of whitespace.
- * Returns an empty array if the input string doesn't contain anything but whitespace.
+ * The separator cannot be empty. Returns an empty array if the input string doesn't contain
+ * anything but whitespace.
  */
-COMMON_API std::vector<std::string> opp_split_and_trim(const std::string& text, const std::string& separator);
+COMMON_API std::vector<std::string> opp_splitandtrim(const std::string& text, const std::string& separator);
 
 /**
  * Aligns columns of a table. Table columns should be separated by tab.
@@ -275,23 +291,19 @@ COMMON_API std::string opp_substringafterlast(const std::string& str, const std:
 /**
  * Remove the prefix if the string starts with it, otherwise return the string unchanged.
  */
-COMMON_API const char *opp_removestart(const char *s, const char *prefix);
+COMMON_API std::string opp_removestart(const std::string& str, const std::string& prefix);
 
 /**
- * Concatenates up to four strings. Returns a pointer to a static buffer
- * of length 256. If the result length would exceed 256, it is truncated.
+ * Remove the given end string if the s string ends with it, otherwise return the string unchanged.
  */
-COMMON_API char *opp_concat(const char *s1, const char *s2, const char *s3=nullptr, const char *s4=nullptr);
+COMMON_API std::string opp_removeend(const std::string& str, const std::string& end);
 
 /**
- * Converts the string to upper case in-place. Returns a pointer to  the argument.
+ * Locates the first occurrence of the nul-terminated string needle in the
+ * string haystack, where not more than n characters are searched. Characters
+ * that appear after a '\0' character are not searched.
  */
-COMMON_API char *opp_strupr(char *s);
-
-/**
- * Converts the string to lower case in-place. Returns a pointer to  the argument.
- */
-COMMON_API char *opp_strlwr(char *s);
+COMMON_API const char *opp_strnistr(const char *haystack, const char *needle, int n, bool caseSensitive);
 
 /**
  * Converts the string to lower case, and returns the result.
@@ -302,6 +314,13 @@ COMMON_API std::string opp_strlower(const char *s);
  * Converts the string to upper case, and returns the result.
  */
 COMMON_API std::string opp_strupper(const char *s);
+
+/**
+ * Dictionary-compare two strings, the main difference from strcasecmp()
+ * being that integers embedded in the strings are compared in
+ * numerical order.
+ */
+COMMON_API int opp_strdictcmp(const char *s1, const char *s2);
 
 /**
  * If either s1 or s2 is empty, returns the other one, otherwise returns
@@ -318,22 +337,23 @@ COMMON_API std::string opp_join(const char *separator, const std::string& s1, co
 /**
  * Concatenate the strings passed in the nullptr-terminated const char * array, using
  * the given separator and putting each item between quoteChars unless it is '\0'.
- * Empty elements are skipped.
+ * Empty elements are optionally skipped.
  */
-COMMON_API std::string opp_join(const char **strings, const char *separator, char quoteChar=0);
+COMMON_API std::string opp_join(const char **strings, const char *separator, bool skipEmpty=false, char quoteChar=0);
+
+/**
+ * Concatenate the strings passed in the const char * array of size n, using
+ * the given separator and putting each item between quoteChars unless it is '\0'.
+ * Empty elements are optionally skipped.
+ */
+COMMON_API std::string opp_join(const char **strings, int n, const char *separator, bool skipEmpty=false, char quoteChar=0);
 
 /**
  * Concatenate the strings passed in the vector, using the given separator,
- * and putting each item between quoteChars unless it is '\0'. Empty elements are skipped.
+ * and putting each item between quoteChars unless it is '\0'.
+ * Empty elements are optionally skipped.
  */
-COMMON_API std::string opp_join(const std::vector<std::string>& strings, const char *separator, char quoteChar=0);
-
-/**
- * Dictionary-compare two strings, the main difference from strcasecmp()
- * being that integers embedded in the strings are compared in
- * numerical order.
- */
-COMMON_API int opp_strdictcmp(const char *s1, const char *s2);
+COMMON_API std::string opp_join(const std::vector<std::string>& strings, const char *separator, bool skipEmpty=false, char quoteChar=0);
 
 /**
  * Prints the d integer into the given buffer, then returns the buffer pointer.
@@ -462,14 +482,6 @@ COMMON_API std::string opp_formatdouble(double value, int numSignificantDigits);
 COMMON_API std::string opp_makedatetimestring();
 
 /**
- * s should point to a double quote '"'. The function returns a pointer to
- * the matching quote (i.e. the end of the string literal), or nullptr if
- * not found. It recognizes escaping embedded quotes with backslashes
- * (C-style string literals).
- */
-COMMON_API const char *opp_findmatchingquote(const char *s);
-
-/**
  * s should point to an open parenthesis. The function returns the matching
  * paren, or nullptr if not found. It does not search inside string constants
  * delimited by double quotes ('"'); it uses opp_findmatchingquote() to
@@ -499,13 +511,6 @@ COMMON_API std::string opp_filenameencode(const std::string& src);
 COMMON_API std::string opp_urldecode(const std::string& src);
 
 /**
- * Locates the first occurrence of the nul-terminated string needle in the
- * string haystack, where not more than n characters are searched. Characters
- * that appear after a '\0' character are not searched.
- */
-COMMON_API const char *opp_strnistr(const char *haystack, const char *needle, int n, bool caseSensitive);
-
-/**
  * Rudimentary quoting for LaTeX. Escape underscores, backslashes, dollar signs, etc.
  */
 COMMON_API std::string opp_latexquote(const std::string& str);
@@ -528,7 +533,7 @@ COMMON_API std::string opp_xmlquote(const std::string& str);
 /**
  * Convert an integer to string, using the specified string to separate digit groups.
  */
-COMMON_API std::string opp_format(int64_t n, const char *digitSep);
+COMMON_API std::string opp_formati64(int64_t n, const char *digitSep);
 
 /**
  * Garble a string so that it is not directly readable as ASCII.

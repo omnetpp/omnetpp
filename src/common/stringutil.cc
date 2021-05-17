@@ -419,7 +419,7 @@ std::string opp_indentlines(const std::string& text, const std::string& indent)
     return tmp;
 }
 
-std::vector<std::string> opp_split_and_trim(const std::string& text)
+std::vector<std::string> opp_splitandtrim(const std::string& text)
 {
     const char * const WHITESPACE = " \t\f\r\n";
     std::vector<std::string> items;
@@ -440,6 +440,8 @@ std::vector<std::string> opp_split_and_trim(const std::string& text)
 
 std::vector<std::string> opp_split(const std::string& text, const std::string& separator)
 {
+    if (separator.empty())
+        throw opp_runtime_error("opp_split(): separator cannot be empty");
     std::vector<std::string> items;
     size_t itemStart = 0;
     while (true) {
@@ -456,8 +458,10 @@ std::vector<std::string> opp_split(const std::string& text, const std::string& s
     return items;
 }
 
-std::vector<std::string> opp_split_and_trim(const std::string& text, const std::string& separator)
+std::vector<std::string> opp_splitandtrim(const std::string& text, const std::string& separator)
 {
+    if (separator.empty())
+        throw opp_runtime_error("opp_splitandtrim(): separator cannot be empty");
     std::vector<std::string> items = opp_split(text, separator);
     for (auto& item : items)
         item = opp_trim(item);
@@ -551,48 +555,14 @@ std::string opp_substringafterlast(const std::string& str, const std::string& su
     return pos == std::string::npos ? "" : str.substr(pos+substr.size());
 }
 
-const char *opp_removestart(const char *s, const char *prefix)
+std::string opp_removestart(const std::string& str, const std::string& prefix)
 {
-    return opp_stringbeginswith(s, prefix) ? s + strlen(prefix) : s;
+    return opp_stringbeginswith(str.c_str(), prefix.c_str()) ? str.substr(prefix.length()) : str;
 }
 
-char *opp_concat(const char *s1,
-                 const char *s2,
-                 const char *s3,
-                 const char *s4)
+std::string opp_removeend(const std::string& str, const std::string& end)
 {
-    const int BUFLEN = 256;
-    static char buf[BUFLEN];
-    char *bufEnd = buf+BUFLEN-1;
-    char *dest = buf;
-    if (s1) while (*s1 && dest!=bufEnd) *dest++ = *s1++;
-    if (s2) while (*s2 && dest!=bufEnd) *dest++ = *s2++;
-    if (s3) while (*s3 && dest!=bufEnd) *dest++ = *s3++;
-    if (s4) while (*s4 && dest!=bufEnd) *dest++ = *s4++;
-    *dest = 0;
-    if (dest==bufEnd)
-        throw opp_runtime_error("Concatenated string '%s%s%s%s' exceeds buffer length %d", s1, s2, s3, s4, BUFLEN);
-    return buf;
-}
-
-char *opp_strupr(char *s)
-{
-    char *txt = s;
-    while (*s) {
-        *s = opp_toupper(*s);
-        s++;
-    }
-    return txt;
-}
-
-char *opp_strlwr(char *s)
-{
-    char *txt = s;
-    while (*s) {
-        *s = opp_tolower(*s);
-        s++;
-    }
-    return txt;
+    return opp_stringendswith(str.c_str(), end.c_str()) ? str.substr(0, str.length()-end.length()) : str;
 }
 
 std::string opp_strlower(const char *s)
@@ -609,58 +579,21 @@ std::string opp_strupper(const char *s)
     return tmp;
 }
 
-std::string opp_join(const char *separator, const char *s1, const char *s2)
+const char *opp_strnistr(const char *haystack, const char *needle, int n, bool caseSensitive)
 {
-    if (opp_isempty(s1))
-        return opp_nulltoempty(s2);
-    else if (opp_isempty(s2))
-        return opp_nulltoempty(s1);
-    else
-        return std::string(s1) + separator + s2;
+    int needleLen = strlen(needle);
+    if (n == 0)
+        n = strlen(haystack);
+
+    int slen = n - needleLen;
+
+    for (const char *s = haystack; slen >= 0 && *s; s++, slen--)
+        if (!(caseSensitive ? strncmp(s, needle, needleLen) : strncasecmp(s, needle, needleLen)))
+            return s;
+
+    return nullptr;
 }
 
-std::string opp_join(const char *separator, const std::string& s1, const std::string& s2)
-{
-    return s1.empty() ? s2 : s2.empty() ? s1 : s1 + separator + s2;
-}
-
-std::string opp_join(const char **strings, const char *separator, char quoteChar)
-{
-    bool first = true;
-    std::stringstream os;
-    for (const char **itemptr = strings; *itemptr; itemptr++) {
-        if (opp_isempty(*itemptr))
-            continue;
-        if (!first)
-            os << separator;
-        if (quoteChar)
-            os << quoteChar << *itemptr << quoteChar;
-        else
-            os << *itemptr;
-        first = false;
-    }
-    return os.str();
-}
-
-std::string opp_join(const std::vector<std::string>& strings, const char *separator, char quoteChar)
-{
-    bool first = true;
-    std::stringstream os;
-    for (auto item : strings) {
-        if (item.empty())
-            continue;
-        if (!first)
-            os << separator;
-        if (quoteChar)
-            os << quoteChar << item << quoteChar;
-        else
-            os << item;
-        first = false;
-    }
-    return os.str();
-}
-
-// returns 0 iff the two strings are equal by strcmp().
 int opp_strdictcmp(const char *s1, const char *s2)
 {
     int firstdiff = 0;
@@ -703,28 +636,75 @@ int opp_strdictcmp(const char *s1, const char *s2)
     return *s2 ? -1 : 1;
 }
 
-/* for testing:
-   #include <cstdio>
-   int qsortfunc(const void *a, const void *b)
-   {
-    return strdictcmp(*(char**)a, *(char**)b);
-   }
+std::string opp_join(const char *separator, const char *s1, const char *s2)
+{
+    if (opp_isempty(s1))
+        return opp_nulltoempty(s2);
+    else if (opp_isempty(s2))
+        return opp_nulltoempty(s1);
+    else
+        return std::string(s1) + separator + s2;
+}
 
-   int main(int argc, char **argv)
-   {
-    qsort(argv+1, argc-1, sizeof(char*), qsortfunc);
-    for (int i=1; i<argc; i++)
-        printf("%s ", argv[i]);
-    printf("\n");
-    return 0;
-   }
+std::string opp_join(const char *separator, const std::string& s1, const std::string& s2)
+{
+    return s1.empty() ? s2 : s2.empty() ? s1 : s1 + separator + s2;
+}
 
-   Expected results:
-   dictcmp a b c d c1 c2 ca cd --> a b c c1 c2 ca cd d
-   dictcmp a aaa aa aaaaa aaaa --> a aa aaa aaaa aaaaa
-   dictcmp a aaa Aa AaAaa aaaa --> a Aa aaa aaaa AaAaa
-   dictcmp a1b a2b a11b a13b a20b --> a1b a2b a11b a13b a20b
- */
+std::string opp_join(const char **strings, const char *separator, bool skipEmpty, char quoteChar)
+{
+    bool first = true;
+    std::stringstream os;
+    for (const char **itemptr = strings; *itemptr; itemptr++) {
+        if (skipEmpty && opp_isempty(*itemptr))
+            continue;
+        if (!first)
+            os << separator;
+        if (quoteChar)
+            os << quoteChar << *itemptr << quoteChar;
+        else
+            os << *itemptr;
+        first = false;
+    }
+    return os.str();
+}
+
+std::string opp_join(const char **strings, int n, const char *separator, bool skipEmpty, char quoteChar)
+{
+    bool first = true;
+    std::stringstream os;
+    for (int i = 0; i < n; i++) {
+        const char *item = strings[i];
+        if (skipEmpty && opp_isempty(item))
+            continue;
+        if (!first)
+            os << separator;
+        if (quoteChar)
+            os << quoteChar << item << quoteChar;
+        else
+            os << item;
+        first = false;
+    }
+    return os.str();
+}
+
+std::string opp_join(const std::vector<std::string>& strings, const char *separator, bool skipEmpty, char quoteChar)
+{
+    bool first = true;
+    std::stringstream os;
+    for (auto item : strings) {
+        if (skipEmpty && item.empty())
+            continue;
+        if (!first)
+            os << separator;
+        if (quoteChar)
+            os << quoteChar << item << quoteChar;
+        else
+            os << item;
+        first = false;
+    }
+    return os.str();
+}
 
 char *opp_itoa(char *buf, int d)
 {
@@ -942,19 +922,6 @@ std::string opp_makedatetimestring()
     return timestr;
 }
 
-const char *opp_findmatchingquote(const char *s)
-{
-    while (opp_isspace(*s))
-        s++;
-    if (*s++ != '"')
-        throw opp_runtime_error("Missing opening quote");
-    for ( ; *s && *s != '"'; s++)
-        if (*s == '\\')
-            s++;
-
-    return *s ? s : nullptr;
-}
-
 const char *opp_findmatchingparen(const char *s)
 {
     while (opp_isspace(*s))
@@ -969,7 +936,7 @@ const char *opp_findmatchingparen(const char *s)
         else if (*s == ')')
             parens--;
         else if (*s == '"') {
-            s = opp_findmatchingquote(s);
+            s = opp_findclosequote(s);
             if (!s)
                 return nullptr;
         }
@@ -1047,21 +1014,6 @@ std::string opp_urldecode(const std::string& src)
     }
 
     return result;
-}
-
-const char *opp_strnistr(const char *haystack, const char *needle, int n, bool caseSensitive)
-{
-    int needleLen = strlen(needle);
-    if (n == 0)
-        n = strlen(haystack);
-
-    int slen = n - needleLen;
-
-    for (const char *s = haystack; slen >= 0 && *s; s++, slen--)
-        if (!(caseSensitive ? strncmp(s, needle, needleLen) : strncasecmp(s, needle, needleLen)))
-            return s;
-
-    return nullptr;
 }
 
 std::string opp_latexquote(const std::string& str)
@@ -1180,7 +1132,7 @@ std::string opp_xmlquote(const std::string& str)
     return out.str();
 }
 
-std::string opp_format(int64_t n, const char *digitSep)
+std::string opp_formati64(int64_t n, const char *digitSep)
 {
     std::stringstream os;
     os << n;
