@@ -202,7 +202,7 @@ public slots:
     /**
      * Scroll the caret into view
      */
-    void revealCaret();
+    void revealCaret(const QMargins& margins = QMargins());
 
 signals:
     void caretMoved(int lineIndex, int column);

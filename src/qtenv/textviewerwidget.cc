@@ -293,7 +293,10 @@ void TextViewerWidget::find(QString text, FindOptions options)
     }
 
     if (found) {
-        revealCaret();
+        int horizontalMargin = viewport()->width() / 5;
+        int verticalMargin = viewport()->height() / 5;
+        // 20% on the top and left, 40% on the bottom and right
+        revealCaret(QMargins(horizontalMargin, verticalMargin, horizontalMargin * 2, verticalMargin * 2));
     }
     else {
         clearSelection();
@@ -1458,7 +1461,7 @@ void TextViewerWidget::handleContentChange()
     contentChangedFlag = false;
 }
 
-void TextViewerWidget::revealCaret()
+void TextViewerWidget::revealCaret(const QMargins& margins)
 {
     int topPixel = caretLineIndex * lineSpacing;
     int bottomPixel = topPixel + lineSpacing - 1;
@@ -1467,11 +1470,13 @@ void TextViewerWidget::revealCaret()
 
     int val = vsb->value();
 
-    if (val < bottomPixel - viewport()->height())
-        val = bottomPixel - viewport()->height();
+    int minVal = bottomPixel + margins.bottom() - viewport()->height();
+    if (val < minVal)
+        val = minVal; // have to scroll down
 
-    if (val > topPixel)
-        val = topPixel;
+    int maxVal = topPixel - margins.top();
+    if (val > maxVal)
+        val = maxVal; // have to scroll up
 
     vsb->setValue(val);
 
@@ -1482,11 +1487,13 @@ void TextViewerWidget::revealCaret()
 
     val = hsb->value();
 
-    if (val < caretX - viewport()->width() + 1)
-        val = caretX - viewport()->width() + 1;
+    minVal = caretX + margins.right() - viewport()->width() + 1;
+    if (val < minVal)
+        val = minVal; // have to scroll to the right
 
-    if (val > caretX)
-        val = caretX;
+    maxVal = caretX - margins.left();
+    if (val > maxVal)
+        val = maxVal; // have to scroll to the left
 
     hsb->setValue(val);
 }
