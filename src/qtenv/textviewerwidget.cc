@@ -1368,7 +1368,7 @@ void TextViewerWidget::updateScrollbars()
     // So with any combination of followContentEnd's value, both scrollbars
     // being visible or not, etc, invoking this function more than once
     // with no other state changing should give the exact same result.
-    // Note that it can happen that we are showing a toolbar that is
+    // Note that it can happen that we are showing a scrollbar that is
     // not scrollable at all, but this can not be avoided, deal with it.
 
     // Counts how many times this function is on the stack.
