@@ -29,6 +29,7 @@ LogFindDialog::LogFindDialog(QWidget *parent, QString lastText, TextViewerWidget
     setFont(getQtenv()->getBoldFont());
 
     ui->text->setText(lastText);
+    ui->text->selectAll();
     ui->caseCheckBox->setChecked(options.testFlag(TextViewerWidget::FIND_CASE_SENSITIVE));
     ui->regexpCheckBox->setChecked(options.testFlag(TextViewerWidget::FIND_REGULAR_EXPRESSION));
     ui->wholeWordsCheckBox->setChecked(options.testFlag(TextViewerWidget::FIND_WHOLE_WORDS));
