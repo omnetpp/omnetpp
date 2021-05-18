@@ -23,7 +23,7 @@ using namespace omnetpp;
 class Tester : public cSimpleModule
 {
     cMessage *msg;
-    int i;
+    int i = 0;
 
   protected:
     virtual void initialize();
