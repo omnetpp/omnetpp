@@ -273,20 +273,30 @@ void TextViewerWidget::find(QString text, FindOptions options)
     int offset = backwards ? getSelectionStart().column - 1 : getSelectionEnd().column;
     int line = backwards ? getSelectionStart().line : getSelectionEnd().line;
 
+    offset = mapColumnToFormatted(content->getLineText(line).data(), offset);
+
     for (  /* nothing */; (line >= 0) && (line < content->getLineCount()); line += (backwards ? -1 : 1)) {
         int index = -1;
 
+        QString lineText = content->getLineText(line);
+        QString strippedText = stripFormatting(lineText);
+
         if (backwards) {
-            index = re.lastIndexIn(content->getLineText(line), offset);
+            index = re.lastIndexIn(strippedText, offset);
             offset = -1;  // was needed only for the first searched line
         }
         else {
-            index = re.indexIn(content->getLineText(line), offset);
+            index = re.indexIn(strippedText, offset);
             offset = 0;  // was needed only for the first searched line
         }
 
         if (index >= 0) {
-            setSelection(line, index, line, index + re.matchedLength());
+            int endIndex = index + re.matchedLength();
+
+            index = mapColumnToUnformatted(lineText.data(), index);
+            endIndex = mapColumnToUnformatted(lineText.data(), endIndex);
+
+            setSelection(line, index, line, endIndex);
             found = true;  // yay!
             break;  // ouch.
         }
