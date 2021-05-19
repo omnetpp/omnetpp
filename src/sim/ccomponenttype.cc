@@ -275,10 +275,10 @@ cModuleType::cModuleType(const char *qname) : cComponentType(qname)
 
 cModule *cModuleType::create(const char *moduleName, cModule *parentModule)
 {
-    return create(moduleName, parentModule, -1, 0);
+    return create(moduleName, parentModule, -1);
 }
 
-cModule *cModuleType::create(const char *moduleName, cModule *parentModule, int vectorSize, int index)
+cModule *cModuleType::create(const char *moduleName, cModule *parentModule, int index)
 {
     // notify pre-change listeners
     if (parentModule && parentModule->hasListeners(PRE_MODEL_CHANGE)) {
@@ -286,7 +286,6 @@ cModule *cModuleType::create(const char *moduleName, cModule *parentModule, int 
         tmp.moduleType = this;
         tmp.moduleName = moduleName;
         tmp.parentModule = parentModule;
-        tmp.vectorSize = vectorSize;
         tmp.index = index;
         parentModule->emit(PRE_MODEL_CHANGE, &tmp);
     }
@@ -297,7 +296,7 @@ cModule *cModuleType::create(const char *moduleName, cModule *parentModule, int 
     // create the new module object
     cTemporaryOwner tmp(cTemporaryOwner::DestructorMode::ASSERTNONE); // for collecting members of the new object
 #ifdef WITH_PARSIM
-    bool isLocal = getEnvir()->isModuleLocal(parentModule, moduleName, vectorSize < 0 ? -1 : index);
+    bool isLocal = getEnvir()->isModuleLocal(parentModule, moduleName, index);
     cModule *module = isLocal ? createModuleObject() : new cPlaceholderModule();
 #else
     cModule *module = createModuleObject();
@@ -307,17 +306,12 @@ cModule *cModuleType::create(const char *moduleName, cModule *parentModule, int 
     module->takeAllObjectsFrom(&tmp);
 
     // set up module: set parent, module type, name, vector size
+    module->setComponentType(this);
+    module->setNameAndIndex(moduleName, index);
+
     if (parentModule)
         parentModule->insertSubmodule(module);
-    module->setComponentType(this);
-    if (vectorSize < 0)
-        module->setName(moduleName);
     else
-        module->setNameAndIndex(moduleName, index, vectorSize);
-
-    // set system module (must be done before takeAllObjectsFrom(tmplist) because
-    // if parentmod==nullptr, mod itself is on tmplist)
-    if (!parentModule)
         getSimulation()->setSystemModule(module);
 
     // register with cSimulation

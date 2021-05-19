@@ -260,7 +260,7 @@ class SIM_API cModuleType : public cComponentType
      * The last two arguments specify the vector size and the index
      * of the new module within the vector.
      */
-    virtual cModule *create(const char *name, cModule *parentmod, int vectorsize, int index);
+    virtual cModule *create(const char *name, cModule *parentmod, int index);
 
     /**
      * This is a convenience function to get a module up and running in one step.

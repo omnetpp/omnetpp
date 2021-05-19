@@ -106,6 +106,13 @@ module Test: Test {
                 gc[0]: not connected
                 gc[1]: not connected
         }
+        module Test.ini: Node {
+            parameters:
+                p = 4
+                a = 1
+                b = 4
+                c = 2
+        }
         module Test.ma[0]: Nil {
         }
         module Test.mb[0]: Nil {
@@ -113,13 +120,6 @@ module Test: Test {
         module Test.mc[0]: Nil {
         }
         module Test.mc[1]: Nil {
-        }
-        module Test.ini: Node {
-            parameters:
-                p = 4
-                a = 1
-                b = 4
-                c = 2
         }
 }
 

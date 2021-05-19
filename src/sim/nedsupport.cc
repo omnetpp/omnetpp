@@ -139,7 +139,7 @@ ExprValue Exists::evaluate(Context *context_) const
     cModule *module = inSubcomponentScope ? context->component->getParentModule() : dynamic_cast<cModule *>(context->component);
     if (!module)
         throw cRuntimeError("'exists()' may only occur in module or submodule context");
-    bool exists = module->getSubmodule(name.c_str()) || module->getSubmodule(name.c_str(), 0);
+    bool exists = module->getSubmodule(name.c_str()) != nullptr || (module->hasSubmoduleVector(name.c_str()) && module->getSubmodule(name.c_str(), 0) != nullptr); // note: legacy behavior
     return exists;
 }
 
@@ -336,13 +336,12 @@ ExprValue SizeofGateOrSubmodule::evaluate(Context *context_) const
             return (intval_t)module->gateSize(name.c_str());  // returns 1 if it's not a vector
         }
         else {
-            // Find ident among submodules. If there's no such submodule, it may
-            // be that such submodule vector never existed, or can be that it's zero
-            // size -- we cannot tell, so we have to return 0 (and cannot throw error).
-            cModule *submodule0 = module->getSubmodule(name.c_str(), 0);  // returns nullptr if submodule is not a vector
-            if (!submodule0 && module->getSubmodule(name.c_str()))
-                return (intval_t)1;  // return 1 if submodule exists but not a vector
-            return (intval_t)(submodule0 ? submodule0->getVectorSize() : 0L);
+            if (module->getSubmodule(name.c_str()) != nullptr)
+                return (intval_t)1; // mimic the old, dubious behavior
+            else if (module->hasSubmoduleVector(name.c_str()))
+                return (intval_t)module->getSubmoduleVectorSize(name.c_str());
+            else
+                return (intval_t)0; // mimic the old, dubious behavior
         }
     }
 }

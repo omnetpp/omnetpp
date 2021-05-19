@@ -813,7 +813,7 @@ void cNedNetworkBuilder::addSubmodule(cModule *compoundModule, SubmoduleElement 
 
         // note: we don't try to resolve moduleType if vector size is zero
         int vectorSize = (int)evaluateAsLong(vectorSizeExpr, compoundModule, false);
-
+        compoundModule->addSubmoduleVector(submodName, vectorSize);
         ModulePtrVector& v = submodMap[submodName];
         cModuleType *submodType = nullptr;
         for (int index = 0; index < vectorSize; index++) {
@@ -829,7 +829,7 @@ void cNedNetworkBuilder::addSubmodule(cModule *compoundModule, SubmoduleElement 
                     throw;
                 }
             }
-            cModule *submodp = submodType->create(submodName, compoundModule, vectorSize, index);
+            cModule *submodp = submodType->create(submodName, compoundModule, index);
             v.push_back(submodp);
 
             cContextSwitcher __ctx(submodp);  // params need to be evaluated in the module's context

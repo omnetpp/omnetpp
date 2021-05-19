@@ -20,6 +20,7 @@
 #include <cstring>  // strcpy
 #include <algorithm>
 #include "common/stringutil.h"
+#include "common/stlutil.h"
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/cmodule.h"
@@ -89,7 +90,7 @@ cModule::~cModule()
     // have been already destroyed by deleteModule(). If one still exists, it can only
     // have been added by a subclass destructor. Warn the user about this.
 
-    if (firstSubmodule != nullptr)
+    if (hasSubmodules())
         alert(this, "~cModule(): module should not have submodules at the time cModule destructor runs");
     if (gateDescArraySize != 0)
         alert(this, "~cModule(): module should not to have gates at the time cModule destructor runs");
@@ -99,6 +100,8 @@ cModule::~cModule()
     // remove from parent
     if (getParentModule())
         getParentModule()->removeSubmodule(this);
+
+    delete subcomponentData;
 
     delete canvas;
     delete osgCanvas;
@@ -146,10 +149,14 @@ void cModule::doDeleteModule()
     }
 
     // delete submodules
-    for (SubmoduleIterator it(this); !it.end(); ) {
-        cModule *submodule = *it;
-        ++it;
-        submodule->doDeleteModule();
+    if (subcomponentData != nullptr) {
+        auto& scalars = subcomponentData->scalarSubmodules;
+        while (!scalars.empty())
+            scalars.front()->doDeleteModule();
+        for (const auto& vector: subcomponentData->submoduleVectors)
+            for (cModule *module: vector.array)
+                if (module != nullptr)
+                    module->deleteModule();
     }
 
     // delete remaining connections
@@ -217,12 +224,11 @@ void cModule::forEachChild(cVisitor *v)
     cComponent::forEachChild(v);
 }
 
-void cModule::setNameAndIndex(const char *s, int i, int n)
+// a two-in-one function, so that we don't end up calling updateFullPath() twice
+void cModule::setNameAndIndex(const char *name, int index)
 {
-    // a two-in-one function, so that we don't end up calling updateFullPath() twice
-    cOwnedObject::setName(s);
-    vectorIndex = i;
-    vectorSize = n;
+    cOwnedObject::setName(name);
+    vectorIndex = index;
     updateFullName();
 }
 
@@ -235,17 +241,28 @@ std::string cModule::str() const
 
 void cModule::insertSubmodule(cModule *mod)
 {
-    // take ownership
+    ASSERT(mod->parentModule == nullptr);
+    mod->parentModule = this;
     take(mod);
 
-    // append at end of submodule list
-    mod->nextSibling = nullptr;
-    mod->prevSibling = lastSubmodule;
-    if (mod->prevSibling)
-        mod->prevSibling->nextSibling = mod;
-    if (!firstSubmodule)
-        firstSubmodule = mod;
-    lastSubmodule = mod;
+    if (!subcomponentData)
+        subcomponentData = new SubcomponentData;
+
+    int index = mod->vectorIndex;
+    if (index == -1)
+        subcomponentData->scalarSubmodules.push_back(mod);
+    else {
+        // add to submodule vectors array (name and index must already be set)
+        auto& array = getSubmoduleArray(mod->getName());
+        if (index < 0 || index >= array.size())
+            throw cRuntimeError(this, "Cannot insert module '%s' into parent: index is out of range (vector size is %d)", mod->getClassAndFullName().c_str(), (int)array.size());
+        if (array.at(index) != nullptr)
+            throw cRuntimeError(this, "Cannot insert module '%s' into parent: vector index already occupied", mod->getClassAndFullName().c_str());
+        array[index] = mod;
+    }
+
+    if (cacheFullPath)
+        mod->updateFullPathRec();
 
     // cached module getFullPath() possibly became invalid
     lastModuleFullPathModule = nullptr;
@@ -253,66 +270,58 @@ void cModule::insertSubmodule(cModule *mod)
 
 void cModule::removeSubmodule(cModule *mod)
 {
+    mod->parentModule = nullptr;
+
     // NOTE: no drop(mod): anyone can take ownership anyway (because we're soft owners)
     // and otherwise it'd cause trouble if mod itself is in context (it'd get inserted
     // on its own DefaultList)
 
-    // remove from submodule list
-    if (mod->nextSibling)
-        mod->nextSibling->prevSibling = mod->prevSibling;
-    if (mod->prevSibling)
-        mod->prevSibling->nextSibling = mod->nextSibling;
-    if (firstSubmodule == mod)
-        firstSubmodule = mod->nextSibling;
-    if (lastSubmodule == mod)
-        lastSubmodule = mod->prevSibling;
-
-    // this is not strictly needed but makes it cleaner
-    mod->prevSibling = mod->nextSibling = nullptr;
-
     // cached module getFullPath() possibly became invalid
     lastModuleFullPathModule = nullptr;
+
+    int index = mod->vectorIndex;
+    if (index == -1) {
+        ASSERT(subcomponentData != nullptr);
+        auto& submodules = subcomponentData->scalarSubmodules;
+        auto it = std::find(submodules.begin(), submodules.end(), mod);
+        ASSERT(it != submodules.end());
+        submodules.erase(it);
+    }
+    else {
+        // remove from submodule vectors array
+        auto& array = getSubmoduleArray(mod->getName());
+        ASSERT(array.at(index) == mod);
+        array[index] = nullptr;
+    }
 }
 
 void cModule::insertChannel(cChannel *channel)
 {
     // note: no take(channel), as channels are owned by their src gates.
 
-    // append at end of channel list
-    channel->nextSibling = nullptr;
-    channel->prevSibling = lastChannel;
-    if (channel->prevSibling)
-        channel->prevSibling->nextSibling = channel;
-    if (!firstChannel)
-        firstChannel = channel;
-    lastChannel = channel;
+    if (!subcomponentData)
+        subcomponentData = new SubcomponentData;
+
+    subcomponentData->channels.push_back(channel);
 }
 
 void cModule::removeChannel(cChannel *channel)
 {
-    // remove from channel list
-    if (channel->nextSibling)
-        channel->nextSibling->prevSibling = channel->prevSibling;
-    if (channel->prevSibling)
-        channel->prevSibling->nextSibling = channel->nextSibling;
-    if (firstChannel == channel)
-        firstChannel = channel->nextSibling;
-    if (lastChannel == channel)
-        lastChannel = channel->prevSibling;
-
-    // this is not strictly needed but makes it cleaner
-    channel->prevSibling = channel->nextSibling = nullptr;
+    ASSERT(subcomponentData != nullptr);
+    auto it = find(subcomponentData->channels, channel);
+    ASSERT(it != subcomponentData->channels.end());
+    subcomponentData->channels.erase(it);
 }
 
-cModule *cModule::getParentModule() const
+void cModule::setName(const char *name)
 {
-    return dynamic_cast<cModule *>(getOwner());
-}
-
-void cModule::setName(const char *s)
-{
-    cOwnedObject::setName(s);
+    cModule *parent = getParentModule();
+    if (parent)
+        parent->removeSubmodule(this);
+    cOwnedObject::setName(name);
     updateFullName();
+    if (parent)
+        parent->insertSubmodule(this);
 }
 
 void cModule::updateFullName()
@@ -328,9 +337,6 @@ void cModule::updateFullName()
 
     if (lastModuleFullPathModule == this)
         lastModuleFullPathModule = nullptr;  // invalidate
-
-    if (cacheFullPath)
-        updateFullPathRec();
 
 #ifdef SIMFRONTEND_SUPPORT
     updateLastChangeSerial();
@@ -353,8 +359,8 @@ void cModule::reassignModuleIdRec()
                 msg->setArrival(newId, msg->getArrivalGateId());
     }
 
-    for (cModule *child = firstSubmodule; child; child = child->nextSibling)
-        child->reassignModuleIdRec();
+    for (SubmoduleIterator it(this); !it.end(); ++it)
+        (*it)->reassignModuleIdRec();
 }
 
 void cModule::updateFullPathRec()
@@ -363,8 +369,8 @@ void cModule::updateFullPathRec()
     fullPath = nullptr;  // for the next getFullPath() call
     fullPath = opp_strdup(getFullPath().c_str());
 
-    for (cModule *child = firstSubmodule; child; child = child->nextSibling)
-        child->updateFullPathRec();
+    for (SubmoduleIterator it(this); !it.end(); ++it)
+        (*it)->updateFullPathRec();
 }
 
 const char *cModule::getFullName() const
@@ -401,6 +407,55 @@ void cModule::setDisplayName(const char *name)
     nameStringPool.release(displayName);
     displayName = nameStringPool.get(name);
 }
+
+template<typename T>
+typename std::vector<T>::iterator findByName(std::vector<T>& v, std::string& name) {
+    for (auto it = v.begin(); it != v.end; ++it)
+        if (it->name == name)
+            return it;
+    return v.end();
+}
+
+template<typename T>
+typename std::vector<T>::const_iterator findByName(const std::vector<T>& v, const char *name) {
+    std::string namestr = name;
+    for (auto it = v.cbegin(); it != v.cend(); ++it)
+        if (it->name == namestr)
+            return it;
+    return v.cend();
+}
+
+std::vector<cModule*>& cModule::getSubmoduleArray(const char *name) const
+{
+    if (subcomponentData != nullptr) {
+        std::string namestr = name;
+        for (const auto& v : subcomponentData->submoduleVectors)
+            if (v.name == namestr)
+                return const_cast<std::vector<cModule*>&>(v.array);
+    }
+    throw cRuntimeError("Module '%s' has no submodule vector named '%s'", getFullPath().c_str(), name);
+}
+
+int cModule::getVectorSize() const
+{
+    if (vectorIndex == -1)
+        return 1;
+
+    cModule *parent = getParentModule();
+    ASSERT(parent != nullptr);
+    auto& array = parent->getSubmoduleArray(getName());
+    int size = array.size();
+    ASSERT(vectorIndex < size);
+    return size;
+}
+
+int cModule::getIndex() const
+{
+    if (vectorIndex == -1)
+        return 0;
+    return vectorIndex;
+}
+
 
 cProperties *cModule::getProperties() const
 {
@@ -1143,26 +1198,110 @@ bool cModule::checkInternalConnections() const
     return true;
 }
 
+bool cModule::hasSubmodules() const
+{
+    if (subcomponentData == nullptr)
+        return false;
+    if (!subcomponentData->scalarSubmodules.empty())
+        return true;
+    for (const auto& v: subcomponentData->submoduleVectors)
+        for (cModule *m: v.array)
+            if (m != nullptr)
+                return true;
+    return false;
+}
+
+bool cModule::hasSubmoduleVector(const char *name) const
+{
+    if (subcomponentData == nullptr)
+        return false;
+    const auto& submoduleVectors = subcomponentData->submoduleVectors;
+    return findByName(submoduleVectors, name) != submoduleVectors.end();
+}
+
+std::vector<std::string> cModule::getSubmoduleVectorNames() const
+{
+     std::vector<std::string> result;
+     if (subcomponentData != nullptr)
+         for (const auto& v: subcomponentData->submoduleVectors)
+             result.push_back(v.name);
+     return result;
+}
+
+int cModule::getSubmoduleVectorSize(const char *name) const
+{
+    auto& array = getSubmoduleArray(name);
+    return array.size();
+}
+
+void cModule::addSubmoduleVector(const char *name, int size)
+{
+    if (subcomponentData == nullptr)
+        subcomponentData = new SubcomponentData;
+
+    auto& submoduleVectors = subcomponentData->submoduleVectors;
+    if (findByName(submoduleVectors, name) != subcomponentData->submoduleVectors.end())
+        throw cRuntimeError(this, "Cannot add submodule vector, module already has a submodule vector named '%s'", name);
+    submoduleVectors.push_back(SubmoduleVector());
+    submoduleVectors.back().name = name;
+    submoduleVectors.back().array.resize(size);
+}
+
+void cModule::deleteSubmoduleVector(const char *name)
+{
+    if (subcomponentData == nullptr)
+        subcomponentData = new SubcomponentData;
+
+    auto& submoduleVectors = subcomponentData->submoduleVectors;
+    auto it = findByName(submoduleVectors, name);
+    if (it == submoduleVectors.end())
+        throw cRuntimeError("Module '%s' has no submodule vector named '%s'", getFullPath().c_str(), name);
+
+    for (cModule *submodule : it->array)
+        if (submodule)
+            submodule->deleteModule();
+
+    submoduleVectors.erase(it);
+}
+
+void cModule::setSubmoduleVectorSize(const char *name, int newSize)
+{
+    auto& array = getSubmoduleArray(name);
+    for (int index = newSize; index < array.size(); index++)
+        if (cModule *submodule = array[index])
+            throw cRuntimeError("Cannot shrink submodule vector '%s.%s[]' to size %d: Submodule '%s' still exists", getFullPath().c_str(), name, newSize, submodule->getFullName());
+
+    array.resize(newSize, nullptr);
+}
+
 int cModule::findSubmodule(const char *name, int index) const
 {
-    for (SubmoduleIterator it(this); !it.end(); ++it) {
-        cModule *submodule = *it;
-        if (submodule->isName(name) && ((index == -1 && !submodule->isVector()) || submodule->getIndex() == index))
-            return submodule->getId();
-    }
-
-    return -1;
+    cModule *submodule = getSubmodule(name, index);
+    return submodule != nullptr ? submodule->getId() : -1;
 }
 
 cModule *cModule::getSubmodule(const char *name, int index) const
 {
-    for (SubmoduleIterator it(this); !it.end(); ++it) {
-        cModule *submodule = *it;
-        if (submodule->isName(name) && ((index == -1 && !submodule->isVector()) || submodule->getIndex() == index))
-            return submodule;
-    }
+    if (subcomponentData == nullptr)
+        return nullptr;
 
-    return nullptr;
+    if (index == -1) {
+        // scalar
+        for (cModule *submodule : subcomponentData->scalarSubmodules)
+            if (submodule->isName(name))
+                return submodule;
+        return nullptr;
+    }
+    else {
+        // vector
+        auto it = findByName(subcomponentData->submoduleVectors, name);
+        if (it == subcomponentData->submoduleVectors.end())
+            return nullptr;
+        auto& array = it->array;
+        if (index < 0 || index >= array.size())
+            return nullptr;
+        return array[index];
+    }
 }
 
 inline char *nextToken(char *& rest)
@@ -1327,7 +1466,6 @@ void cModule::changeParentTo(cModule *module)
     for (cModule *m = module; m; m = m->getParentModule())
         if (m == this)
             throw cRuntimeError(this, "changeParentTo(): Cannot move module under one of its own submodules");
-
 
     // notify pre-change listeners
     if (hasListeners(PRE_MODEL_CHANGE)) {
@@ -1612,9 +1750,8 @@ void cModule::arrived(cMessage *msg, cGate *ongate, const SendOptions& options, 
 
 //----
 
-void cModule::GateIterator::init(const cModule *module)
+void cModule::GateIterator::reset()
 {
-    this->module = module;
     descIndex = 0;
     isOutput = false;
     index = 0;
@@ -1681,14 +1818,72 @@ void cModule::GateIterator::advance()
     } while (!end() && current() == nullptr);
 }
 
-void cModule::ChannelIterator::advance()
+//----
+
+void cModule::SubmoduleIterator::reset()
 {
-    p = p->getNextSibling();
+    slot = index = -1;
+    advance();
 }
 
-void cModule::ChannelIterator::retreat()
+void cModule::SubmoduleIterator::advance()
 {
-    p = p->getPreviousSibling();
+    if (parent->subcomponentData == nullptr) {
+        current = nullptr;
+        return;
+    }
+
+    const auto& scalars = parent->subcomponentData->scalarSubmodules;
+    const auto& vectors = parent->subcomponentData->submoduleVectors;
+
+    if (slot < (int)scalars.size()) {
+        slot++;
+        index = -1;
+        if (slot < (int)scalars.size()) {
+            current = scalars[slot];
+            return;
+        }
+    }
+
+    int totalSlots = scalars.size() + vectors.size();
+    int base = scalars.size();
+
+    while (true) {
+        index++;
+        while (slot < totalSlots && index >= (int)vectors[slot-base].array.size()) {
+            index = 0;
+            slot++;
+        }
+        if (slot >= totalSlots)
+            break;
+        if (vectors[slot-base].array[index] != nullptr) {
+            current = vectors[slot-base].array[index];
+            return;
+        }
+    }
+
+    current = nullptr;
+}
+
+//----
+
+void cModule::ChannelIterator::reset()
+{
+    slot = -1;
+    advance();
+}
+
+void cModule::ChannelIterator::advance()
+{
+    const auto data = parent->subcomponentData;
+    if (data == nullptr) {
+        current = nullptr;
+        return;
+    }
+
+    if (slot < (int)data->channels.size())
+        slot++;
+    current = (slot < (int)data->channels.size()) ? data->channels[slot] : nullptr;
 }
 
 }  // namespace omnetpp

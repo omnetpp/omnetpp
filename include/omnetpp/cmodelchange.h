@@ -118,8 +118,7 @@ class SIM_API cPreModuleAddNotification : public cModelChangeNotification
     cModuleType *moduleType;  ///< Type of the new module
     const char *moduleName;   ///< Name of the new module
     cModule *parentModule;    ///< Parent module
-    int vectorSize;           ///< Size of the module vector that will contain the new module; -1 if not a vector
-    int index;                ///< Index of the new module in its vector; 0 if not part of a module vector
+    int index;                ///< Index of the new module in its vector; -1 if not part of a module vector
 };
 
 /**

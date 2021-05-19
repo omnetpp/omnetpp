@@ -48,15 +48,15 @@ module Test: Test {
                     parameters:
                         @display(p=10,10)
                 }
-                module Test.all.x3[0]: Node {
-                }
-                module Test.all.x3[1]: Node {
-                }
                 module Test.all.x4: Node {
                 }
                 module Test.all.x5: Node {
                     parameters:
                         @display(p=10,10)
+                }
+                module Test.all.x3[0]: Node {
+                }
+                module Test.all.x3[1]: Node {
                 }
                 module Test.all.x6[0]: Node {
                 }

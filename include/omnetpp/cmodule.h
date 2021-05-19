@@ -81,12 +81,12 @@ class SIM_API cModule : public cComponent //implies noncopyable
         /**
          * Constructor. It takes the module on which to iterate.
          */
-        GateIterator(const cModule *m)  {init(m);}
+        GateIterator(const cModule *module) : module(module) {reset();}
 
         /**
          * Reinitializes the iterator.
          */
-        void init(const cModule *m);
+        void reset();
 
         /**
          * Returns the current gate, or nullptr if the iterator is not
@@ -128,61 +128,49 @@ class SIM_API cModule : public cComponent //implies noncopyable
     class SIM_API SubmoduleIterator
     {
       private:
-        cModule *p;
+        const cModule *parent;
+        int slot; // identifies scalar submodule or submodule vector
+        int index; // index within submodule vector
+        cModule *current; // element the iterator is at
 
       private:
-        void advance() {p = p->nextSibling;}
-        void retreat() {p = p->prevSibling;}
+        void advance();
 
       public:
         /**
          * Constructor. It takes the parent module on which to iterate.
          */
-        SubmoduleIterator(const cModule *m)  {init(m);}
+        SubmoduleIterator(const cModule *module) : parent(module) {reset();}
 
         /**
          * Reinitializes the iterator.
          */
-        void init(const cModule *m)  {p = m ? const_cast<cModule *>(m->firstSubmodule) : nullptr;}
+        void reset();
 
         /**
          * Returns a pointer to the current module. Returns nullptr if the iterator
          * has reached the end of the list.
          */
-        cModule *operator*() const {return p;}
+        cModule *operator*() const {return current;}
 
         /**
          * Returns true if the iterator reached the end of the list.
          */
-        bool end() const  {return p==nullptr;}
+        bool end() const {return current == nullptr;}
 
         /**
          * Prefix increment operator (++it). Moves the iterator to the next
          * submodule. It has no effect if the iterator has reached either
          * end of the list.
          */
-        SubmoduleIterator& operator++() {if (!end()) advance(); return *this;}
+        SubmoduleIterator& operator++() {advance(); return *this;}
 
         /**
          * Postfix increment operator (it++). Moves the iterator to the next
          * submodule, and returns the iterator's previous state. It has no effect
          * if the iterator has reached either end of the list.
          */
-        SubmoduleIterator operator++(int) {SubmoduleIterator tmp(*this); if (!end()) advance(); return tmp;}
-
-        /**
-         * Prefix decrement operator (--it). Moves the iterator to the previous
-         * submodule. It has no effect if the iterator has reached either end
-         * of the list.
-         */
-        SubmoduleIterator& operator--() {if (!end()) retreat(); return *this;}
-
-        /**
-         * Postfix decrement operator (it--). Moves the iterator to the previous
-         * submodule, and returns the iterator's previous state. It has no effect
-         * if the iterator has reached either end of the list.
-         */
-        SubmoduleIterator operator--(int) {SubmoduleIterator tmp(*this); if (!end()) retreat(); return tmp;}
+        SubmoduleIterator operator++(int) {SubmoduleIterator tmp(*this); advance(); return tmp;}
     };
 
     /**
@@ -203,61 +191,48 @@ class SIM_API cModule : public cComponent //implies noncopyable
     class SIM_API ChannelIterator
     {
       private:
-        cChannel *p;
+        const cModule *parent;
+        int slot; // index into the channels[] array
+        cChannel *current;
 
       private:
         void advance();
-        void retreat();
 
       public:
         /**
          * Constructor. It takes the parent module on which to iterate.
          */
-        ChannelIterator(const cModule *m)  {init(m);}
+        ChannelIterator(const cModule *module) : parent(module) {reset();}
 
         /**
          * Reinitializes the iterator.
          */
-        void init(const cModule *m)  {p = m ? const_cast<cChannel *>(m->firstChannel) : nullptr;}
+        void reset();
 
         /**
          * Returns a pointer to the current channel. Returns nullptr if the iterator
          * has reached the end of the list.
          */
-        cChannel *operator*() const {return p;}
+        cChannel *operator*() const {return current;}
 
         /**
          * Returns true if the iterator reached the end of the list.
          */
-        bool end() const  {return p==nullptr;}
+        bool end() const  {return current == nullptr;}
 
         /**
          * Prefix increment operator (++it). Moves the iterator to the next
          * channel. It has no effect if the iterator has reached either
          * end of the list.
          */
-        ChannelIterator& operator++() {if (!end()) advance(); return *this;}
+        ChannelIterator& operator++() { advance(); return *this;}
 
         /**
          * Postfix increment operator (it++). Moves the iterator to the next
          * channel, and returns the iterator's previous state. It has no effect
          * if the iterator has reached either end of the list.
          */
-        ChannelIterator operator++(int) {ChannelIterator tmp(*this); if (!end()) advance(); return tmp;}
-
-        /**
-         * Prefix decrement operator (--it). Moves the iterator to the previous
-         * channel. It has no effect if the iterator has reached either end
-         * of the list.
-         */
-        ChannelIterator& operator--() {if (!end()) retreat(); return *this;}
-
-        /**
-         * Postfix decrement operator (it--). Moves the iterator to the previous
-         * channel, and returns the iterator's previous state. It has no effect
-         * if the iterator has reached either end of the list.
-         */
-        ChannelIterator operator--(int) {ChannelIterator tmp(*this); if (!end()) retreat(); return tmp;}
+        ChannelIterator operator++(int) {ChannelIterator tmp(*this); advance(); return tmp;}
     };
 
   private:
@@ -278,22 +253,24 @@ class SIM_API cModule : public cComponent //implies noncopyable
     const char *displayName = nullptr;  // optional display name; stringpooled
     static cStringPool nameStringPool;  // pool for shared storage of full names and display names
 
-    // Note: parent module is stored in ownerp -- a module is always owned by its parent
-    // module. If ownerp cannot be cast to a cModule, the module has no parent module
-    // (e.g. the system module which is owned by the global object 'simulation').
-    cModule *prevSibling = nullptr, *nextSibling = nullptr; // pointers to sibling submodules
-    cModule *firstSubmodule = nullptr;  // pointer to first submodule
-    cModule *lastSubmodule = nullptr;   // pointer to last submodule (needed for efficient append operation)
-    cChannel *firstChannel = nullptr;   // pointer to first channel in this compound module (list is needed for ChannelIterator)
-    cChannel *lastChannel = nullptr;    // pointer to last channel (needed for efficient append operation)
+    cModule *parentModule = nullptr;
+    struct SubmoduleVector {
+        std::string name;
+        std::vector<cModule*> array;
+    };
+    struct SubcomponentData {
+        std::vector<cModule*> scalarSubmodules;
+        std::vector<SubmoduleVector> submoduleVectors;
+        std::vector<cChannel*> channels;
+    };
+    SubcomponentData *subcomponentData = nullptr;
 
     typedef std::set<cGate::Name> GateNamePool;
     static GateNamePool gateNamePool;
     cGate::Desc *gateDescArray = nullptr;  // array with one element per gate or gate vector
     int gateDescArraySize = 0;  // size of the descv array
 
-    int vectorIndex = 0;        // index if module vector, 0 otherwise
-    int vectorSize = -1;        // vector size, -1 if not a vector
+    int vectorIndex = -1;       // index if module vector, -1 otherwise
 
     mutable cCanvas *canvas = nullptr;        // nullptr when unused
     mutable cOsgCanvas *osgCanvas = nullptr;  // nullptr when unused
@@ -320,7 +297,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
 
     // internal: sets module name and its index within vector (if module is
     // part of a module vector). Called as part of the module creation process.
-    virtual void setNameAndIndex(const char *s, int i, int n);
+    virtual void setNameAndIndex(const char *name, int index);
 
     // internal: called from setName() and setIndex()
     void updateFullName();
@@ -342,6 +319,9 @@ class SIM_API cModule : public cComponent //implies noncopyable
 
     // internal: removes a channel
     void removeChannel(cChannel *channel);
+
+    // internal: returns the ptr array for a submodule vector, exception if not found
+    std::vector<cModule*>& getSubmoduleArray(const char *name) const;
 
     // internal: "virtual ctor" for cGate, because in cPlaceholderModule we need
     // different gate objects; type should be INPUT or OUTPUT, but not INOUT
@@ -425,7 +405,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
     virtual void forEachChild(cVisitor *v) override;
 
     /**
-     * Sets object's name. Redefined to update the stored fullName string.
+     * Sets module's name.
      */
     virtual void setName(const char *s) override;
 
@@ -555,7 +535,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * Returns the module containing this module. For the system module,
      * it returns nullptr.
      */
-    virtual cModule *getParentModule() const override;
+    virtual cModule *getParentModule() const override  { return parentModule; }
 
     /**
      * Convenience method: casts the return value of getComponentType() to cModuleType.
@@ -585,18 +565,18 @@ class SIM_API cModule : public cComponent //implies noncopyable
     /**
      * Returns true if this module is in a module vector.
      */
-    bool isVector() const  {return vectorSize>=0;}
+    bool isVector() const  {return vectorIndex != -1;}
 
     /**
      * Returns the index of the module if it is in a module vector, otherwise 0.
      */
-    int getIndex() const  {return vectorIndex;}
+    int getIndex() const;
 
     /**
      * Returns the size of the module vector the module is in. For non-vector
      * modules it returns 1.
      */
-    int getVectorSize() const  {return vectorSize<0 ? 1 : vectorSize;}
+    int getVectorSize() const;
     //@}
 
     /** @name Submodule access. */
@@ -605,7 +585,56 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * Returns true if the module has submodules, and false otherwise.
      * To enumerate the submodules use SubmoduleIterator.
      */
-    virtual bool hasSubmodules() const {return firstSubmodule!=nullptr;}
+    virtual bool hasSubmodules() const;
+
+    /**
+     * Returns true if the module has a submodule vector (not necessarily of
+     * nonzero size) of the given name, and false otherwise.
+     */
+    virtual bool hasSubmoduleVector(const char *name) const;
+
+    /**
+     * Returns the names of the module's submodule vectors. Zero-size submodule
+     * vectors will also be included. The strings in the returned array do not
+     * need to be deallocated and must not be modified.
+     */
+    virtual std::vector<std::string> getSubmoduleVectorNames() const;
+
+    /**
+     * Returns the size of the submodule vector of the given name. Throws
+     * an error if there is no such submodule vector.
+     */
+    virtual int getSubmoduleVectorSize(const char *name) const;
+
+    /**
+     * Adds a submodule vector with the given name and size. Throws an error
+     * if a submodule vector with the given name already exists. This operation
+     * does not create modules. The slots in the vector will be empty, i.e.
+     * getSubmodule(name,index) will return nullptr for all indices.
+     *
+     * Modules can be added one by one by using cModuleType::create(name,
+     * parentModule, index). Deleting a module (via cModule::deleteModule())
+     * which is part of a submodule vector will also remove it from the
+     * submodule vector and set its slot to nullptr.
+     */
+    virtual void addSubmoduleVector(const char *name, int size);
+
+    /**
+     * Deletes the submodule vector with the given name. All submodules
+     * in the given vector will be deleted. Throws an error if a submodule
+     * vector with the given name does not exist.
+     */
+    virtual void deleteSubmoduleVector(const char *name);
+
+    /**
+     * Resizes the given submodule vector. A submodule vector can be extended
+     * any time; it can be shrunk only if it contains no submodules in the
+     * index range which is going to be removed. Throws an error if there
+     * is no such submodule vector, or the removed range contains submodules.
+     * Modules can be removed from the submodule vector by calling their
+     * deleteModule() method.
+     */
+    virtual void setSubmoduleVectorSize(const char *name, int size);
 
     /**
      * Finds a direct submodule with the given name and index, and returns
@@ -923,10 +952,9 @@ class SIM_API cModule : public cComponent //implies noncopyable
      *     also enforced by the implementation of this function.
      *  -# it is recommended that the module name be made unique among the
      *     submodules of its new parent.
-     *  -# be aware that if the module is part of a module vector, its
-     *     isVector(), getIndex() and size() functions will continue to deliver
-     *     the same info -- although other elements of the vector will not
-     *     necessarily be present under the same parent module.
+     *  -# if the module is part of a module vector, the new parent must already
+     *     have a submodule vector of the same name, with size>index, and
+     *     the corresponding (indexth) array element being vacant (nullptr).
      *
      *  @see getId()
      */

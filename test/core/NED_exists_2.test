@@ -56,8 +56,6 @@ module Test: Test {
         zerosizeExists = false
         nonexistentExists = false
     submodules:
-        module Test.existent[0]: Node {
-        }
         module Test.ifExistent: Node {
         }
         module Test.params: Params {
@@ -79,5 +77,7 @@ module Test: Test {
                 i[1]: <-- a.o[1], (ned.DelayChannel)channel disabled=false delay=10s
                 i[2]: <-- a.o[2], (ned.DelayChannel)channel disabled=false delay=20s
                 i[3]: <-- a.o[3], (ned.DelayChannel)channel disabled=false delay=30s
+        }
+        module Test.existent[0]: Node {
         }
 }

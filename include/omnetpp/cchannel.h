@@ -50,9 +50,6 @@ class SIM_API cChannel : public cComponent //implies noncopyable
     cGate *srcGate = nullptr; // gate the channel is attached to
     int nedConnectionElementId = -1;  // for cChannel::getProperties(); usually the NED connection element's id
 
-    // Note: the containing compound module can be derived from the srcGate pointer.
-    cChannel *prevSibling = nullptr, *nextSibling = nullptr; // pointers to other channels in the same compound module
-
   public:
     // internal: called from cGate
     void setSourceGate(cGate *g) {srcGate=g;}
@@ -73,10 +70,6 @@ class SIM_API cChannel : public cComponent //implies noncopyable
 
     // internal: calls preDelete() recursively
     virtual void callPreDelete(cComponent *root) override;
-
-    // internal: for cModule::ChannelIterator
-    cChannel *getPreviousSibling() const {return prevSibling;}
-    cChannel *getNextSibling() const {return nextSibling;}
 
   public:
     typedef ChannelResult Result;
