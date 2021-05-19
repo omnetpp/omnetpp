@@ -332,17 +332,12 @@ ExprValue SizeofGateOrSubmodule::evaluate(Context *context_) const
         if (!module)
             throw cRuntimeError(context->component, E_ENOPARENT);
         // name is either a submodule vector or a gate vector of the module
-        if (module->hasGate(name.c_str())) {
-            return (intval_t)module->gateSize(name.c_str());  // returns 1 if it's not a vector
-        }
-        else {
-            if (module->getSubmodule(name.c_str()) != nullptr)
-                return (intval_t)1; // mimic the old, dubious behavior
-            else if (module->hasSubmoduleVector(name.c_str()))
-                return (intval_t)module->getSubmoduleVectorSize(name.c_str());
-            else
-                return (intval_t)0; // mimic the old, dubious behavior
-        }
+        if (module->hasGate(name.c_str()) && module->isGateVector(name.c_str()))
+            return (intval_t)module->gateSize(name.c_str());
+        else if (module->hasSubmoduleVector(name.c_str()))
+            return (intval_t)module->getSubmoduleVectorSize(name.c_str());
+        else
+            throw cRuntimeError("'%s': Module %s has no such gate vector or submodule vector", getName().c_str(), module->getClassAndFullPath().c_str()); //TODO getNedTypeAndFullPath()
     }
 }
 
@@ -366,6 +361,8 @@ ExprValue SizeofSubmoduleGate::evaluate(Context *context_) const
     cModule *submodule = module->getSubmodule(submoduleName.c_str());
     if (!submodule)
         throw cRuntimeError("'%s': Submodule '%s' not found", getName().c_str(), submoduleName.c_str());
+    if (!submodule->isGateVector(gateName.c_str()))
+        throw cRuntimeError("'%s': Module %s has no such gate vector", getName().c_str(), module->getClassAndFullPath().c_str()); //TODO getNedTypeAndFullPath()
      return (intval_t)submodule->gateSize(gateName.c_str());
 }
 
