@@ -49,6 +49,7 @@
         <file alias="forward">icons/tools/forward.svg</file>
         <file alias="horizontal">icons/tools/horizontal.svg</file>
         <file alias="inspectas">icons/tools/inspectas.svg</file>
+        <file alias="layers">icons/tools/layers.svg</file>
         <file alias="loadned">icons/tools/loadned.svg</file>
         <file alias="log">icons/tools/log.svg</file>
         <file alias="mfast">icons/tools/mfast.svg</file>

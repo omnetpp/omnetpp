@@ -210,6 +210,8 @@ QToolBar *ModuleInspector::createToolbar(bool isTopLevel)
     action = toolbar->addAction(QIcon(":/tools/zoomout"), "Zoom out", this, SLOT(zoomOut()));
     action->setShortcut(Qt::CTRL + Qt::Key_Minus);
     canvasZoomOutAction = action;
+    action = toolbar->addAction(QIcon(":/tools/layers"), "Show/Hide Canvas Layers...", this, SLOT(showCanvasLayersDialog()));
+    canvasLayersAction = action;
 
     // osg-specific
     action = toolbar->addAction(QIcon(":/tools/reset"), "Reset view");
@@ -687,7 +689,7 @@ void ModuleInspector::createContextMenu(const std::vector<cObject *>& objects, c
     QMenu *menu = InspectorUtil::createInspectorContextMenu(o, this);
 
     menu->addSeparator();
-    menu->addAction("Show/Hide Canvas Layers...", this, SLOT(showCanvasLayersDialog()));
+    menu->addAction(canvasLayersAction);
 
     menu->addSeparator();
     menu->addAction(showMethodCallsAction);

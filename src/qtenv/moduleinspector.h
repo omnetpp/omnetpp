@@ -100,6 +100,7 @@ protected:
     QAction *canvasRelayoutAction;
     QAction *canvasZoomInAction;
     QAction *canvasZoomOutAction;
+    QAction *canvasLayersAction;
     QAction *resetOsgViewAction;
     QAction *showMethodCallsAction;
     QAction *showModuleNamesAction;
