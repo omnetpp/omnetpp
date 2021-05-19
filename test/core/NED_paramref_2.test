@@ -68,17 +68,6 @@ module Test: Test {
         @isNetwork
         p = 0
     submodules:
-        module Test.m: Node {
-            parameters:
-                c = 1
-            gates:
-                gc[0]: not connected
-                gc[1]: not connected
-        }
-        module Test.ini: Node {
-            parameters:
-                c = 2
-        }
         module Test.ref[0]: Ref {
             parameters:
                 p = 1
@@ -87,7 +76,18 @@ module Test: Test {
             parameters:
                 p = 2
         }
+        module Test.m: Node {
+            parameters:
+                c = 1
+            gates:
+                gc[0]: not connected
+                gc[1]: not connected
+        }
         module Test.mc[0]: Nil {
+        }
+        module Test.ini: Node {
+            parameters:
+                c = 2
         }
 }
 
