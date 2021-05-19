@@ -481,8 +481,8 @@ void cNedNetworkBuilder::buildInside(cModule *modp, cNedDeclaration *decl)
     buildRecursively(modp, decl);
 
     // check if there are unconnected gates left -- unless unconnected gates were already permitted in the super type
-    ConnectionsElement *conns = decl->getConnectionsElement();
-    if ((!conns || !conns->getAllowUnconnected()) && !superTypeAllowsUnconnected(decl))
+    ConnectionsElement *connectionsNode = decl->getConnectionsElement();
+    if ((!connectionsNode || !connectionsNode->getAllowUnconnected()) && !superTypeAllowsUnconnected(decl))
         modp->checkInternalConnections();
 
     // recursively build the submodules too (top-down)
@@ -506,18 +506,17 @@ void cNedNetworkBuilder::buildRecursively(cModule *modp, cNedDeclaration *decl)
 
 void cNedNetworkBuilder::addSubmodulesAndConnections(cModule *modp)
 {
-    SubmodulesElement *submods = currentDecl->getSubmodulesElement();
-    if (submods)
-        for (SubmoduleElement *submod = submods->getFirstSubmoduleChild(); submod; submod = submod->getNextSubmoduleSibling())
-            addSubmodule(modp, submod);
-
+    SubmodulesElement *submodulesNode = currentDecl->getSubmodulesElement();
+    if (submodulesNode)
+        for (SubmoduleElement *submoduleNode = submodulesNode->getFirstSubmoduleChild(); submoduleNode; submoduleNode = submoduleNode->getNextSubmoduleSibling())
+            addSubmodule(modp, submoduleNode);
 
     // loop through connections and add them
-    ConnectionsElement *conns = currentDecl->getConnectionsElement();
-    if (conns)
-        for (NedElement *child = conns->getFirstChild(); child; child = child->getNextSibling())
-            if (child->getTagCode() == NED_CONNECTION || child->getTagCode() == NED_CONNECTION_GROUP)
-                addConnectionOrConnectionGroup(modp, child);
+    ConnectionsElement *connectionsNode = currentDecl->getConnectionsElement();
+    if (connectionsNode)
+        for (NedElement *childNode = connectionsNode->getFirstChild(); childNode; childNode = childNode->getNextSibling())
+            if (childNode->getTagCode() == NED_CONNECTION || childNode->getTagCode() == NED_CONNECTION_GROUP)
+                addConnectionOrConnectionGroup(modp, childNode);
 
 }
 
@@ -528,8 +527,8 @@ bool cNedNetworkBuilder::superTypeAllowsUnconnected(cNedDeclaration *decl) const
         const char *superName = decl->getExtendsName(0);
         decl = cNedLoader::getInstance()->getDecl(superName);
         ASSERT(decl);  // all super classes must be loaded before we start building
-        ConnectionsElement *conns = decl->getConnectionsElement();
-        if (conns && conns->getAllowUnconnected())
+        ConnectionsElement *connectionsNode = decl->getConnectionsElement();
+        if (connectionsNode && connectionsNode->getAllowUnconnected())
             return true;
     }
     return false;
@@ -623,17 +622,17 @@ std::vector<std::string> cNedNetworkBuilder::findTypeWithInterface(const char *n
     return candidates;
 }
 
-std::string cNedNetworkBuilder::getSubmoduleTypeName(cModule *modp, SubmoduleElement *submod, int index)
+std::string cNedNetworkBuilder::getSubmoduleTypeName(cModule *modp, SubmoduleElement *submoduleNode, int index)
 {
     // note: this code is nearly identical to getChannelTypeName(), with subtle differences
-    const char *submodName = submod->getName();
-    if (opp_isempty(submod->getLikeType())) {
-        return submod->getType();
+    const char *submodName = submoduleNode->getName();
+    if (opp_isempty(submoduleNode->getLikeType())) {
+        return submoduleNode->getType();
     }
     else {
         // first, try to use expression between angle braces from the NED file
-        if (!submod->getIsDefault()) {
-            ExprRef likeExpr(submod, SubmoduleElement::ATT_LIKE_EXPR);
+        if (!submoduleNode->getIsDefault()) {
+            ExprRef likeExpr(submoduleNode, SubmoduleElement::ATT_LIKE_EXPR);
             if (!likeExpr.empty())
                 return evaluateAsString(likeExpr, modp, false);
         }
@@ -663,8 +662,8 @@ std::string cNedNetworkBuilder::getSubmoduleTypeName(cModule *modp, SubmoduleEle
             return submodTypeName;
 
         // last, use default(expression) between angle braces from the NED file
-        if (submod->getIsDefault()) {
-            ExprRef likeExpr(submod, SubmoduleElement::ATT_LIKE_EXPR);
+        if (submoduleNode->getIsDefault()) {
+            ExprRef likeExpr(submoduleNode, SubmoduleElement::ATT_LIKE_EXPR);
             if (!likeExpr.empty())
                 return evaluateAsString(likeExpr, modp, false);
         }
@@ -756,27 +755,27 @@ bool cNedNetworkBuilder::getSubmoduleOrChannelTypeNameFromDeepAssignments(cModul
     return found;
 }
 
-void cNedNetworkBuilder::addSubmodule(cModule *compoundModule, SubmoduleElement *submod)
+void cNedNetworkBuilder::addSubmodule(cModule *compoundModule, SubmoduleElement *submoduleNode)
 {
     // if there is a @dynamic or @dynamic(true), do not instantiate the submodule
-    if (getBooleanProperty(submod, "dynamic"))
+    if (getBooleanProperty(submoduleNode, "dynamic"))
         return;
 
     // find vector size expression
-    const char *submodName = submod->getName();
-    bool usesLike = !opp_isempty(submod->getLikeType());
-    ExprRef vectorSizeExpr(submod, SubmoduleElement::ATT_VECTOR_SIZE);
+    const char *submodName = submoduleNode->getName();
+    bool usesLike = !opp_isempty(submoduleNode->getLikeType());
+    ExprRef vectorSizeExpr(submoduleNode, SubmoduleElement::ATT_VECTOR_SIZE);
 
     // create submodule
     if (vectorSizeExpr.empty()) {
         cModuleType *submodType;
         try {
-            std::string submodTypeName = getSubmoduleTypeName(compoundModule, submod);
+            std::string submodTypeName = getSubmoduleTypeName(compoundModule, submoduleNode);
 
             // handle conditional submodule
-            ConditionElement *condition = submod->getFirstConditionChild();
-            if (condition) {
-                ExprRef conditionExpr(condition, ConditionElement::ATT_CONDITION);
+            ConditionElement *conditionNode = submoduleNode->getFirstConditionChild();
+            if (conditionNode) {
+                ExprRef conditionExpr(conditionNode, ConditionElement::ATT_CONDITION);
                 const char *baseDirectory = compoundModule->getComponentType()->getSourceFileDirectory();
                 NedExpressionContext context(compoundModule, baseDirectory, NedExpressionContext::SUBMODULE_CONDITION, submodTypeName.c_str());
                 if (evaluateAsBool(conditionExpr, &context, false) == false)
@@ -784,11 +783,11 @@ void cNedNetworkBuilder::addSubmodule(cModule *compoundModule, SubmoduleElement 
             }
 
             submodType = usesLike ?
-                findAndCheckModuleTypeLike(submodTypeName.c_str(), submod->getLikeType(), compoundModule, submodName) :
+                findAndCheckModuleTypeLike(submodTypeName.c_str(), submoduleNode->getLikeType(), compoundModule, submodName) :
                 findAndCheckModuleType(submodTypeName.c_str(), compoundModule, submodName);
         }
         catch (std::exception& e) {
-            updateOrRethrowException(e, submod);
+            updateOrRethrowException(e, submoduleNode);
             throw;
         }
         cModule *submodp = submodType->create(submodName, compoundModule);
@@ -797,13 +796,13 @@ void cNedNetworkBuilder::addSubmodule(cModule *compoundModule, SubmoduleElement 
 
         cContextSwitcher __ctx(submodp);  // params need to be evaluated in the module's context
         submodp->finalizeParameters();  // also sets up gate sizes declared inside the type
-        setupSubmoduleGateVectors(submodp, submod);
+        setupSubmoduleGateVectors(submodp, submoduleNode);
     }
     else {
         // handle conditional submodule vector
-        ConditionElement *condition = submod->getFirstConditionChild();
-        if (condition) {
-            ExprRef conditionExpr(condition, ConditionElement::ATT_CONDITION);
+        ConditionElement *conditionNode = submoduleNode->getFirstConditionChild();
+        if (conditionNode) {
+            ExprRef conditionExpr(conditionNode, ConditionElement::ATT_CONDITION);
             // note: "typename" may NOT occur in vector submodules' condition, because type is
             // per-element, and we want to evaluate the condition only once for the whole vector
             const char *baseDirectory = compoundModule->getComponentType()->getSourceFileDirectory();
@@ -813,28 +812,29 @@ void cNedNetworkBuilder::addSubmodule(cModule *compoundModule, SubmoduleElement 
         }
 
         // note: we don't try to resolve moduleType if vector size is zero
-        int vectorsize = (int)evaluateAsLong(vectorSizeExpr, compoundModule, false);
+        int vectorSize = (int)evaluateAsLong(vectorSizeExpr, compoundModule, false);
+
         ModulePtrVector& v = submodMap[submodName];
         cModuleType *submodType = nullptr;
-        for (int i = 0; i < vectorsize; i++) {
+        for (int index = 0; index < vectorSize; index++) {
             if (!submodType || usesLike) {
                 try {
-                    std::string submodTypeName = getSubmoduleTypeName(compoundModule, submod, i);
+                    std::string submodTypeName = getSubmoduleTypeName(compoundModule, submoduleNode, index);
                     submodType = usesLike ?
-                        findAndCheckModuleTypeLike(submodTypeName.c_str(), submod->getLikeType(), compoundModule, submodName) :
+                        findAndCheckModuleTypeLike(submodTypeName.c_str(), submoduleNode->getLikeType(), compoundModule, submodName) :
                         findAndCheckModuleType(submodTypeName.c_str(), compoundModule, submodName);
                 }
                 catch (std::exception& e) {
-                    updateOrRethrowException(e, submod);
+                    updateOrRethrowException(e, submoduleNode);
                     throw;
                 }
             }
-            cModule *submodp = submodType->create(submodName, compoundModule, vectorsize, i);
+            cModule *submodp = submodType->create(submodName, compoundModule, index);
             v.push_back(submodp);
 
             cContextSwitcher __ctx(submodp);  // params need to be evaluated in the module's context
             submodp->finalizeParameters();  // also sets up gate sizes declared inside the type
-            setupSubmoduleGateVectors(submodp, submod);
+            setupSubmoduleGateVectors(submodp, submoduleNode);
         }
     }
 
@@ -856,7 +856,7 @@ void cNedNetworkBuilder::setupSubmoduleGateVectors(cModule *submodule, NedElemen
         doGateSizes(submodule, gatesNode, true);
 }
 
-void cNedNetworkBuilder::addConnectionOrConnectionGroup(cModule *modp, NedElement *connOrConnGroup)
+void cNedNetworkBuilder::addConnectionOrConnectionGroup(cModule *modp, NedElement *connOrConnGroupNode)
 {
     // this is tricky: elements representing "for" and "if" in NED are children
     // of the ConnectionElement or ConnectionGroupElement. So, first we have to go through
@@ -864,47 +864,47 @@ void cNedNetworkBuilder::addConnectionOrConnectionGroup(cModule *modp, NedElemen
     // nested loops etc, then after (inside) the last one create the connection(s)
     // themselves, which is (are) then parent of the LoopNode/ConditionNode.
     LoopVar::clear();
-    doConnOrConnGroupBody(modp, connOrConnGroup, connOrConnGroup->getFirstChild());
+    doConnOrConnGroupBody(modp, connOrConnGroupNode, connOrConnGroupNode->getFirstChild());
 }
 
-void cNedNetworkBuilder::doConnOrConnGroupBody(cModule *modp, NedElement *connOrConnGroup, NedElement *loopOrCondition)
+void cNedNetworkBuilder::doConnOrConnGroupBody(cModule *modp, NedElement *connOrConnGroupNode, NedElement *loopOrConditionNode)
 {
     // find first "for" or "if" at loopOrCondition (or among its next siblings)
-    while (loopOrCondition && loopOrCondition->getTagCode() != NED_LOOP && loopOrCondition->getTagCode() != NED_CONDITION)
-        loopOrCondition = loopOrCondition->getNextSibling();
+    while (loopOrConditionNode && loopOrConditionNode->getTagCode() != NED_LOOP && loopOrConditionNode->getTagCode() != NED_CONDITION)
+        loopOrConditionNode = loopOrConditionNode->getNextSibling();
 
     // if there's a "for" or "if", do that, otherwise create the connection(s) themselves
-    if (loopOrCondition)
-        doLoopOrCondition(modp, loopOrCondition);
+    if (loopOrConditionNode)
+        doLoopOrCondition(modp, loopOrConditionNode);
     else
-        doAddConnOrConnGroup(modp, connOrConnGroup);
+        doAddConnOrConnGroup(modp, connOrConnGroupNode);
 }
 
-void cNedNetworkBuilder::doLoopOrCondition(cModule *modp, NedElement *loopOrCondition)
+void cNedNetworkBuilder::doLoopOrCondition(cModule *modp, NedElement *loopOrConditionNode)
 {
-    if (loopOrCondition->getTagCode() == NED_CONDITION) {
+    if (loopOrConditionNode->getTagCode() == NED_CONDITION) {
         // check condition
-        ConditionElement *condition = (ConditionElement *)loopOrCondition;
-        ExprRef conditionExpr(condition, ConditionElement::ATT_CONDITION);
+        ConditionElement *conditionNode = (ConditionElement *)loopOrConditionNode;
+        ExprRef conditionExpr(conditionNode, ConditionElement::ATT_CONDITION);
         if (evaluateAsBool(conditionExpr, modp, false) == true) {
             // do the body of the "if": either further "for"'s and "if"'s, or
             // the connection(group) itself that we are children of.
-            doConnOrConnGroupBody(modp, loopOrCondition->getParent(), loopOrCondition->getNextSibling());
+            doConnOrConnGroupBody(modp, loopOrConditionNode->getParent(), loopOrConditionNode->getNextSibling());
         }
     }
-    else if (loopOrCondition->getTagCode() == NED_LOOP) {
-        LoopElement *loop = (LoopElement *)loopOrCondition;
-        ExprRef startExpr(loop, LoopElement::ATT_FROM_VALUE);
-        ExprRef endExpr(loop, LoopElement::ATT_TO_VALUE);
+    else if (loopOrConditionNode->getTagCode() == NED_LOOP) {
+        LoopElement *loopNode = (LoopElement *)loopOrConditionNode;
+        ExprRef startExpr(loopNode, LoopElement::ATT_FROM_VALUE);
+        ExprRef endExpr(loopNode, LoopElement::ATT_TO_VALUE);
         long start = evaluateAsLong(startExpr, modp, false);
         long end = evaluateAsLong(endExpr, modp, false);
 
         // do loop
-        long& i = LoopVar::pushVar(loop->getParamName());
+        long& i = LoopVar::pushVar(loopNode->getParamName());
         for (i = start; i <= end; i++) {
             // do the body of the "if": either further "for"'s and "if"'s, or
             // the connection(group) itself that we are children of.
-            doConnOrConnGroupBody(modp, loopOrCondition->getParent(), loopOrCondition->getNextSibling());
+            doConnOrConnGroupBody(modp, loopOrConditionNode->getParent(), loopOrConditionNode->getNextSibling());
         }
         LoopVar::popVar();
     }
@@ -913,38 +913,37 @@ void cNedNetworkBuilder::doLoopOrCondition(cModule *modp, NedElement *loopOrCond
     }
 }
 
-void cNedNetworkBuilder::doAddConnOrConnGroup(cModule *modp, NedElement *connOrConnGroup)
+void cNedNetworkBuilder::doAddConnOrConnGroup(cModule *modp, NedElement *connOrConnGroupNode)
 {
-    if (connOrConnGroup->getTagCode() == NED_CONNECTION) {
-        doAddConnection(modp, (ConnectionElement *)connOrConnGroup);
+    if (connOrConnGroupNode->getTagCode() == NED_CONNECTION) {
+        doAddConnection(modp, (ConnectionElement *)connOrConnGroupNode);
     }
-    else if (connOrConnGroup->getTagCode() == NED_CONNECTION_GROUP) {
-        ConnectionGroupElement *conngroup = (ConnectionGroupElement *)connOrConnGroup;
-        for (ConnectionElement *conn = conngroup->getFirstConnectionChild(); conn; conn = conn->getNextConnectionSibling()) {
-            doConnOrConnGroupBody(modp, conn, conn->getFirstChild());
-        }
+    else if (connOrConnGroupNode->getTagCode() == NED_CONNECTION_GROUP) {
+        ConnectionGroupElement *connGroupNode = (ConnectionGroupElement *)connOrConnGroupNode;
+        for (ConnectionElement *connNode = connGroupNode->getFirstConnectionChild(); connNode; connNode = connNode->getNextConnectionSibling())
+            doConnOrConnGroupBody(modp, connNode, connNode->getFirstChild());
     }
     else {
         ASSERT(false);
     }
 }
 
-void cNedNetworkBuilder::doAddConnection(cModule *modp, ConnectionElement *conn)
+void cNedNetworkBuilder::doAddConnection(cModule *modp, ConnectionElement *connectionNode)
 {
 // FIXME spurious error message comes when trying to connect INOUT gate with "-->"
     try {
-        if (!conn->getIsBidirectional()) {
+        if (!connectionNode->getIsBidirectional()) {
             // find gates and create connection
-            ExprRef srcModuleIndexExpr(conn, ConnectionElement::ATT_SRC_MODULE_INDEX);
-            ExprRef srcGateIndexExpr(conn, ConnectionElement::ATT_SRC_GATE_INDEX);
-            ExprRef destModuleIndexExpr(conn, ConnectionElement::ATT_DEST_MODULE_INDEX);
-            ExprRef destGateIndexExpr(conn, ConnectionElement::ATT_DEST_GATE_INDEX);
-            cGate *srcGate = resolveGate(modp, conn->getSrcModule(), srcModuleIndexExpr,
-                        conn->getSrcGate(), srcGateIndexExpr,
-                        conn->getSrcGateSubg(), conn->getSrcGatePlusplus());
-            cGate *destGate = resolveGate(modp, conn->getDestModule(), destModuleIndexExpr,
-                        conn->getDestGate(), destGateIndexExpr,
-                        conn->getDestGateSubg(), conn->getDestGatePlusplus());
+            ExprRef srcModuleIndexExpr(connectionNode, ConnectionElement::ATT_SRC_MODULE_INDEX);
+            ExprRef srcGateIndexExpr(connectionNode, ConnectionElement::ATT_SRC_GATE_INDEX);
+            ExprRef destModuleIndexExpr(connectionNode, ConnectionElement::ATT_DEST_MODULE_INDEX);
+            ExprRef destGateIndexExpr(connectionNode, ConnectionElement::ATT_DEST_GATE_INDEX);
+            cGate *srcGate = resolveGate(modp, connectionNode->getSrcModule(), srcModuleIndexExpr,
+                        connectionNode->getSrcGate(), srcGateIndexExpr,
+                        connectionNode->getSrcGateSubg(), connectionNode->getSrcGatePlusplus());
+            cGate *destGate = resolveGate(modp, connectionNode->getDestModule(), destModuleIndexExpr,
+                        connectionNode->getDestGate(), destGateIndexExpr,
+                        connectionNode->getDestGateSubg(), connectionNode->getDestGatePlusplus());
 
             // check directions
             cGate *errorGate = nullptr;
@@ -956,49 +955,49 @@ void cNedNetworkBuilder::doAddConnection(cModule *modp, ConnectionElement *conn)
                 throw cRuntimeError(modp, "Gate %s is being connected in the wrong direction",
                         errorGate->getFullPath().c_str());
 
-            doConnectGates(modp, srcGate, destGate, conn);
+            doConnectGates(modp, srcGate, destGate, connectionNode);
         }
         else {
             // find gates and create connection in both ways
-            if (conn->getSrcGateSubg() != SUBGATE_NONE || conn->getDestGateSubg() != SUBGATE_NONE)
+            if (connectionNode->getSrcGateSubg() != SUBGATE_NONE || connectionNode->getDestGateSubg() != SUBGATE_NONE)
                 throw cRuntimeError(modp, "gate$i or gate$o used with bidirectional connections");
 
             // now: 1 is input, 2 is output, except for parent module gates where it is the other way round
             // (because we connect xx.out --> yy.in, but xx.out --> out!)
             cGate *srcGate1, *srcGate2, *destGate1, *destGate2;
-            ExprRef srcModuleIndexExpr(conn, ConnectionElement::ATT_SRC_MODULE_INDEX);
-            ExprRef srcGateIndexExpr(conn, ConnectionElement::ATT_SRC_GATE_INDEX);
-            ExprRef destModuleIndexExpr(conn, ConnectionElement::ATT_DEST_MODULE_INDEX);
-            ExprRef destGateIndexExpr(conn, ConnectionElement::ATT_DEST_GATE_INDEX);
-            resolveInoutGate(modp, conn->getSrcModule(), srcModuleIndexExpr,
-                    conn->getSrcGate(), srcGateIndexExpr,
-                    conn->getSrcGatePlusplus(),
+            ExprRef srcModuleIndexExpr(connectionNode, ConnectionElement::ATT_SRC_MODULE_INDEX);
+            ExprRef srcGateIndexExpr(connectionNode, ConnectionElement::ATT_SRC_GATE_INDEX);
+            ExprRef destModuleIndexExpr(connectionNode, ConnectionElement::ATT_DEST_MODULE_INDEX);
+            ExprRef destGateIndexExpr(connectionNode, ConnectionElement::ATT_DEST_GATE_INDEX);
+            resolveInoutGate(modp, connectionNode->getSrcModule(), srcModuleIndexExpr,
+                    connectionNode->getSrcGate(), srcGateIndexExpr,
+                    connectionNode->getSrcGatePlusplus(),
                     srcGate1, srcGate2);
-            resolveInoutGate(modp, conn->getDestModule(), destModuleIndexExpr,
-                    conn->getDestGate(), destGateIndexExpr,
-                    conn->getDestGatePlusplus(),
+            resolveInoutGate(modp, connectionNode->getDestModule(), destModuleIndexExpr,
+                    connectionNode->getDestGate(), destGateIndexExpr,
+                    connectionNode->getDestGatePlusplus(),
                     destGate1, destGate2);
 
-            doConnectGates(modp, srcGate2, destGate1, conn);
-            doConnectGates(modp, destGate2, srcGate1, conn);
+            doConnectGates(modp, srcGate2, destGate1, connectionNode);
+            doConnectGates(modp, destGate2, srcGate1, connectionNode);
         }
     }
     catch (std::exception& e) {
-        updateOrRethrowException(e, conn);
+        updateOrRethrowException(e, connectionNode);
         throw;
     }
 }
 
-void cNedNetworkBuilder::doConnectGates(cModule *modp, cGate *srcGate, cGate *destGate, ConnectionElement *conn)
+void cNedNetworkBuilder::doConnectGates(cModule *modp, cGate *srcGate, cGate *destGate, ConnectionElement *connectionNode)
 {
-    if (opp_isempty(conn->getName()) && opp_isempty(conn->getType()) &&
-        opp_isempty(conn->getLikeType()) && !conn->getFirstParametersChild())
+    if (opp_isempty(connectionNode->getName()) && opp_isempty(connectionNode->getType()) &&
+        opp_isempty(connectionNode->getLikeType()) && !connectionNode->getFirstParametersChild())
     {
         srcGate->connectTo(destGate);
     }
     else {
         if (srcGate->getNextGate() || destGate->getPreviousGate()) {
-            bool reconnectAllowed = getBooleanProperty(conn, "reconnect");
+            bool reconnectAllowed = getBooleanProperty(connectionNode, "reconnect");
             if (reconnectAllowed) {
                 if (srcGate->getNextGate())
                     srcGate->disconnect();
@@ -1006,10 +1005,10 @@ void cNedNetworkBuilder::doConnectGates(cModule *modp, cGate *srcGate, cGate *de
                     destGate->getPreviousGate()->disconnect();
             }
         }
-        cChannel *channel = createChannel(conn, modp, srcGate);
-        channel->setNedConnectionElementId(conn->getId());  // so that properties will be found
+        cChannel *channel = createChannel(connectionNode, modp, srcGate);
+        channel->setNedConnectionElementId(connectionNode->getId());  // so that properties will be found
         srcGate->connectTo(destGate, channel);
-        assignSubcomponentParams(channel, conn);
+        assignSubcomponentParams(channel, connectionNode);
         channel->finalizeParameters();
     }
 }
@@ -1119,19 +1118,19 @@ cModule *cNedNetworkBuilder::resolveModuleForConnection(cModule *compoundModule,
     }
 }
 
-std::string cNedNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *srcGate, ConnectionElement *conn, const char *channelName)
+std::string cNedNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *srcGate, ConnectionElement *connectionNode, const char *channelName)
 {
     // note: this code is nearly identical to getSubmoduleTypeName(), with subtle differences
-    if (opp_isempty(conn->getLikeType())) {
-        if (!opp_isempty(conn->getType())) {
-            return conn->getType();
+    if (opp_isempty(connectionNode->getLikeType())) {
+        if (!opp_isempty(connectionNode->getType())) {
+            return connectionNode->getType();
         }
         else {
             bool hasDelayChannelParams = false, hasOtherParams = false;
-            ParametersElement *channelParams = conn->getFirstParametersChild();
-            if (channelParams) {
-                for (ParamElement *param = channelParams->getFirstParamChild(); param; param = param->getNextParamSibling())
-                    if (strcmp(param->getName(), "delay") == 0 || strcmp(param->getName(), "disabled") == 0)
+            ParametersElement *parametersNode = connectionNode->getFirstParametersChild();
+            if (parametersNode) {
+                for (ParamElement *paramNode = parametersNode->getFirstParamChild(); paramNode; paramNode = paramNode->getNextParamSibling())
+                    if (strcmp(paramNode->getName(), "delay") == 0 || strcmp(paramNode->getName(), "disabled") == 0)
                         hasDelayChannelParams = true;
                     else
                         hasOtherParams = true;
@@ -1144,8 +1143,8 @@ std::string cNedNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *s
     }
     else {
         // first, try to use expression between angle braces from the NED file
-        if (!conn->getIsDefault()) {
-            ExprRef likeExpr(conn, ConnectionElement::ATT_LIKE_EXPR);
+        if (!connectionNode->getIsDefault()) {
+            ExprRef likeExpr(connectionNode, ConnectionElement::ATT_LIKE_EXPR);
             if (!likeExpr.empty())
                 return evaluateAsString(likeExpr, parentmodp, false);
         }
@@ -1175,10 +1174,10 @@ std::string cNedNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *s
             return connTypeName;
 
         // last, use default(expression) between angle braces from the NED file
-        if (conn->getIsDefault()) {
-            if (!opp_isempty(conn->getLikeExpr()))
-                return parentmodp->par(conn->getLikeExpr()).stringValue();
-            ExprRef likeExpr(conn, ConnectionElement::ATT_LIKE_EXPR);
+        if (connectionNode->getIsDefault()) {
+            if (!opp_isempty(connectionNode->getLikeExpr()))
+                return parentmodp->par(connectionNode->getLikeExpr()).stringValue();
+            ExprRef likeExpr(connectionNode, ConnectionElement::ATT_LIKE_EXPR);
             if (!likeExpr.empty())
                 return evaluateAsString(likeExpr, parentmodp, false);
         }
@@ -1186,24 +1185,24 @@ std::string cNedNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *s
     }
 }
 
-cChannel *cNedNetworkBuilder::createChannel(ConnectionElement *conn, cModule *parentmodp, cGate *srcGate)
+cChannel *cNedNetworkBuilder::createChannel(ConnectionElement *connectionNode, cModule *parentmodp, cGate *srcGate)
 {
     // resolve channel type
-    const char *channelName = conn->getName();
+    const char *channelName = connectionNode->getName();
     if (opp_isempty(channelName))
         channelName = nullptr;  // use nullptr to indicate "no name"
 
     cChannelType *channelType;
     try {
         // note: for **.channelname.liketype= lookups we cannot take the channel type @defaultname into account, because we don't have the type yet!
-        std::string channelTypeName = getChannelTypeName(parentmodp, srcGate, conn, (channelName ? channelName : "channel"));
-        bool usesLike = !opp_isempty(conn->getLikeType());
+        std::string channelTypeName = getChannelTypeName(parentmodp, srcGate, connectionNode, (channelName ? channelName : "channel"));
+        bool usesLike = !opp_isempty(connectionNode->getLikeType());
         channelType = usesLike ?
-            findAndCheckChannelTypeLike(channelTypeName.c_str(), conn->getLikeType(), parentmodp) :
+            findAndCheckChannelTypeLike(channelTypeName.c_str(), connectionNode->getLikeType(), parentmodp) :
             findAndCheckChannelType(channelTypeName.c_str(), parentmodp);
     }
     catch (std::exception& e) {
-        updateOrRethrowException(e, conn);
+        updateOrRethrowException(e, connectionNode);
         throw;
     }
     // create channel object
