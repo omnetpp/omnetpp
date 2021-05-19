@@ -22,7 +22,7 @@ network Test
     submodules:
         h1: Base;
         h2: Base {
-             a = 50 + par;
+             a = 50 + parent.par;
         }
         dump: Dump;
 }

@@ -11,7 +11,6 @@ module App like IApp { }
 module Host
 {
     parameters:
-        string letterP = "p";
         app.typename = default("!@#$%"); // decoy
     submodules:
         app: <default("!@#$%")> like IApp; // default(): decoy
@@ -19,11 +18,9 @@ module Host
 
 network Test
 {
-    parameters:
-        string letterA = "A";
     submodules:
         host: Host {
-            app.typename = default(letterA + this.letterP + this.letterP); // that is, "App"
+            app.typename = default("App"); // this is the one
         }
         dump: Dump;
 }
@@ -32,11 +29,8 @@ network Test
 module Test: Test {
     parameters:
         @isNetwork
-        letterA = "A"
     submodules:
         module Test.host: Host {
-            parameters:
-                letterP = "p"
             submodules:
                 module Test.host.app: App {
                 }

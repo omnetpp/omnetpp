@@ -24,7 +24,7 @@ module Node
     submodules:
         c: Core {
             gates:
-                gv1[sizeof(gv1)];
+                gv1[sizeof(parent.gv1)];
         }
     connections:
         g <--> c.g;

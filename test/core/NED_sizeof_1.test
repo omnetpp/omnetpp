@@ -44,29 +44,29 @@ module Compound
         dum2[sizeof(foo1)]: Foo;
         dum3[sizeof(in0)]: Foo;
         dum4[sizeof(in1)]: Foo;
-        dum5[a+sizeof(foo0)]: Foo;
-        dum6[a+sizeof(foo1)]: Foo;
-        dum7[a+sizeof(in0)]: Foo;
-        dum8[a+sizeof(in1)]: Foo;
+        dum5[a + sizeof(foo0)]: Foo;
+        dum6[a + sizeof(foo1)]: Foo;
+        dum7[a + sizeof(in0)]: Foo;
+        dum8[a + sizeof(in1)]: Foo;
         sub: Simple {
             parameters:
-                p1 = sizeof(foo0);
-                p2 = sizeof(foo1);
-                p3 = sizeof(in0);
-                p4 = sizeof(in1);
-                p5 = a+sizeof(foo0);
-                p6 = a+sizeof(foo1);
-                p7 = a+sizeof(in0);
-                p8 = a+sizeof(in1);
+                p1 = sizeof(parent.foo0);
+                p2 = sizeof(parent.foo1);
+                p3 = sizeof(parent.in0);
+                p4 = sizeof(parent.in1);
+                p5 = parent.a + sizeof(parent.foo0);
+                p6 = parent.a + sizeof(parent.foo1);
+                p7 = parent.a + sizeof(parent.in0);
+                p8 = parent.a + sizeof(parent.in1);
             gates:
-                g1[sizeof(foo0)];
-                g2[sizeof(foo1)];
-                g3[sizeof(in0)];
-                g4[sizeof(in1)];
-                g5[a+sizeof(foo0)];
-                g6[a+sizeof(foo1)];
-                g7[a+sizeof(in0)];
-                g8[a+sizeof(in1)];
+                g1[sizeof(parent.foo0)];
+                g2[sizeof(parent.foo1)];
+                g3[sizeof(parent.in0)];
+                g4[sizeof(parent.in1)];
+                g5[parent.a + sizeof(parent.foo0)];
+                g6[parent.a + sizeof(parent.foo1)];
+                g7[parent.a + sizeof(parent.in0)];
+                g8[parent.a + sizeof(parent.in1)];
         }
     connections allowunconnected:
 }

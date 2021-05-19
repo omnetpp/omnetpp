@@ -13,15 +13,15 @@ network Test
 {
     submodules:
         a: Node {p = 1;}
-        b: Node {p = a.p;} // OK
+        b: Node {p = parent.a.p;} // OK
 
-        c: Node {p = d.p;} // Error: d not declared yet
+        c: Node {p = parent.d.p;} // Error: d not declared yet
         d: Node {p = 5;}
 }
 
 %exitcode: 1
 
 %contains: stderr
-Cannot evaluate parameter 'p': 'd.p': Submodule 'd' not found
+Cannot evaluate parameter 'p': 'parent.d.p': Submodule 'd' not found
 
 

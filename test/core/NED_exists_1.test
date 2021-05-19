@@ -13,19 +13,19 @@ network Test
         // test exists() in param assignment (should cause error, but for now it just returns false)
         bool existentExists = exists(existent);
         bool nonexistentExists = exists(nonexistent);
-    
+
     submodules:
         existent: Node if true;
         nonexistent: Node if false;
-        
+
         // test exists() in submodule condition
         ifExistent: Node if exists(existent);
         ifNonexistent: Node if exists(nonexistent);
 
         // test exists() in submodule param assignment
         params: Params {
-            existentExists = exists(existent);
-            nonexistentExists = exists(nonexistent);
+            existentExists = exists(parent.existent);
+            nonexistentExists = exists(parent.nonexistent);
         }
 
         a: Node;
@@ -38,8 +38,8 @@ network Test
        a.o++ --> { delay = 2s; } --> b.i++ if exists(nonexistent);
 
        // test exists() in channel param assignment
-       a.o++ --> { delay = exists(existent) ? 10s : 0s; } --> b.i++;
-       a.o++ --> { delay = exists(nonexistent) ? 0s : 20s; } --> b.i++;
+       a.o++ --> { delay = exists(parent.existent) ? 10s : 0s; } --> b.i++;
+       a.o++ --> { delay = exists(parent.nonexistent) ? 0s : 20s; } --> b.i++;
 }
 
 %contains: stdout

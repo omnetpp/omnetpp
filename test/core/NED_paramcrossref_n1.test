@@ -12,5 +12,5 @@ network Test
 %exitcode: 1
 
 %contains: stderr
-Cannot evaluate parameter 'a': Unknown parameter 'foo'
+Cannot evaluate parameter 'a': (Test)Test has no parameter named 'foo'
 

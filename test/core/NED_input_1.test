@@ -33,13 +33,13 @@ module Compound
             parameters:
                 p1 = default(1);
                 p2 = default(1+1);
-                p3 = default(a);
+                p3 = default(parent.a);
                 p4 = default(index);
-                p5 = default(a+index);
-                p6 = default(sizeof(in));
-                p7 = default(sizeof(foo));
-                p8 = default(a+sizeof(in));
-                p9 = default(a+sizeof(foo));
+                p5 = default(parent.a + index);
+                p6 = default(sizeof(parent.in));
+                p7 = default(sizeof(parent.foo));
+                p8 = default(parent.a + sizeof(parent.in));
+                p9 = default(parent.a + sizeof(parent.foo));
         }
     connections allowunconnected:
 }

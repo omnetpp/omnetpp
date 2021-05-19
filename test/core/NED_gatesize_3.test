@@ -19,7 +19,7 @@ network TestBase
     submodules:
         n: Node {
             gates:
-                g[p];
+                g[parent.p];
         }
         dump: Dump;
 }

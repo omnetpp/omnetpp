@@ -19,7 +19,7 @@ network TestBase
     submodules:
         n: Node {
             parameters:
-                p = p;
+                p = parent.p;
         }
         dump: Dump;
     connections allowunconnected:

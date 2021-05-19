@@ -15,7 +15,7 @@ network Test
 {
     submodules:
         a: Node {i = 5;}
-        b: Node {i = 2*a.i;}
+        b: Node {i = 2 * parent.a.i;}
         dump: Dump;
 }
 

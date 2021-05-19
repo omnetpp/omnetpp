@@ -19,10 +19,12 @@ module Node
         int a = default(111);
         int b = default(222);
         int c = default(333);
+        int d = default(444);
     gates:
         input ga[];
         input gb[];
         input gc[];
+        input gd[];
     connections allowunconnected:
 }
 
@@ -43,20 +45,24 @@ network Test
             parameters:
                 p = 3;
                 // from parameter assignment:
-                a = p;      // parent module's parameter
-                b = this.p; // local submodule's parameter
-                c = n.p;    // other submodule's parameter
+                a = p;      // ~ this.p
+                b = this.p;
+                c = parent.p;
+                d = parent.n.p;
             gates:
                 // from gate vector size:
-                ga[p];      // parent module's parameter
-                gb[this.p]; // local submodule's parameter
-                gc[n.p];    // other submodule's parameter
+                ga[p];      // ~ this.p
+                gb[this.p];
+                gc[parent.p];
+                gd[parent.n.p];
         };
 
         // from module vector size:
-        ma[p]: Nil;      // parent module's parameter
-        mb[this.p]: Nil; // parent submodule's parameter, too
-        mc[n.p]: Nil;    // other submodule's parameter
+        ma[p]: Nil;      // compound module's parameter
+        mb[this.p]: Nil; // compound module's parameter (!!!)
+        mc[n.p]: Nil;    // n submodule's parameter
+        //md[parent.p]: Nil; ==> ERROR (refers to compound module's parent which it doesn't have)
+        //me[parent.n.p]: Nil; ==> ERROR (refers to compound module's parent which it doesn't have)
 
         // from ini file
         ini: Node;
@@ -73,9 +79,10 @@ cmdenv-express-mode = false
 cmdenv-event-banners = false
 
 *.ini.p = 4
-*.ini.a = p      # parent module's parameter
-*.ini.b = this.p # local submodule's parameter
-*.ini.c = n.p    # other submodule's parameter
+*.ini.a = p          # local module's parameter
+*.ini.b = this.p     # local module's parameter
+*.ini.c = parent.p   # parent's parameter
+*.ini.d = parent.n.p # other submodule's parameter
 
 #Note: default params will be assigned automatically
 
@@ -91,20 +98,25 @@ module Test: Test {
                 a = 111
                 b = 222
                 c = 333
+                d = 444
         }
         module Test.m: Node {
             parameters:
                 p = 3
-                a = 1
+                a = 3
                 b = 3
-                c = 2
+                c = 1
+                d = 2
             gates:
                 ga[0]: not connected
+                ga[1]: not connected
+                ga[2]: not connected
                 gb[0]: not connected
                 gb[1]: not connected
                 gb[2]: not connected
                 gc[0]: not connected
-                gc[1]: not connected
+                gd[0]: not connected
+                gd[1]: not connected
         }
         module Test.ma[0]: Nil {
         }
@@ -117,9 +129,10 @@ module Test: Test {
         module Test.ini: Node {
             parameters:
                 p = 4
-                a = 1
+                a = 4
                 b = 4
-                c = 2
+                c = 1
+                d = 2
         }
 }
 

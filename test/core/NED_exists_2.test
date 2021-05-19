@@ -27,9 +27,9 @@ network Test
 
         // test exists() in submodule param assignment
         params: Params {
-            existentExists = exists(existent);
-            zerosizeExists = exists(zerosize);
-            nonexistentExists = exists(nonexistent);
+            existentExists = exists(parent.existent);
+            zerosizeExists = exists(parent.zerosize);
+            nonexistentExists = exists(parent.nonexistent);
         }
 
         a: Node;
@@ -43,9 +43,9 @@ network Test
        a.o++ --> { delay = 3s; } --> b.i++ if exists(nonexistent);
 
        // test exists() in channel param assignment
-       a.o++ --> { delay = exists(existent) ? 10s : 0s; } --> b.i++;
-       a.o++ --> { delay = exists(zerosize) ? 20s : 0s; } --> b.i++;
-       a.o++ --> { delay = exists(nonexistent) ? 0s : 30s; } --> b.i++;
+       a.o++ --> { delay = exists(parent.existent) ? 10s : 0s; } --> b.i++;
+       a.o++ --> { delay = exists(parent.zerosize) ? 20s : 0s; } --> b.i++;
+       a.o++ --> { delay = exists(parent.nonexistent) ? 0s : 30s; } --> b.i++;
 }
 
 %contains: stdout

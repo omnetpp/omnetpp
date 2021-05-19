@@ -24,7 +24,7 @@ module Subnet
         string letterA = "A";
     submodules:
         host: Host {
-            app.typename = letterA + this.letterP + this.letterP; // that is, "App"
+            app.typename = parent.letterA + this.letterP + this.letterP; // that is, "App"
         }
 }
 

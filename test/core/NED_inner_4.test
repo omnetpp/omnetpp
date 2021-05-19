@@ -1,11 +1,6 @@
 %description:
-Test parameter references in expressions inside an inner type: they should
-refer to the parent module's parameters (which is the same as the enclosing
-type, since inner types are not visible outside their enclosing types).
-If there is no such parent module parameter, it should refer to the local
-parameter with that name.
 
-Identifiers qualified with "this" should always refer to the local type.
+Test parameter references in expressions inside an inner type.
 
 %file: test.ned
 
@@ -20,26 +15,35 @@ network Test
     types:
         module Node {
           parameters:
-            int local = foo;    // parent foo
-            int bar = bar;      // parent bar
-            int third = local;  // local param
-            int foobar = 99;    // the local foobar
-            int foobar2 = this.foobar; // the local foobar
+            int local = parent.foo;
+            int bar = parent.bar;
+            int third = local;
+            int foobar = 99;
+            int foobar2 = this.foobar;
           gates:
-            output out;
-            input in;
+            output out @loose;
+            input in @loose;
           connections allowunconnected:
+        }
+        module BoxedNode {
+          parameters:
+            int foo = 4;
+            int bar = 5;
+            int foobar = 6;
+          submodules:
+            node: Node;
         }
         channel X extends ned.DelayChannel {
           parameters:
-            int local = foo;    // parent foo
-            int bar = bar;      // parent bar
-            int third = local;  // local param
-            int foobar = 99;    // the local foobar
-            int foobar2 = this.foobar; // the local foobar
+            int local = parent.foo;
+            int bar = parent.bar;
+            int third = local;
+            int foobar = 99;
+            int foobar2 = this.foobar;
         }
     submodules:
         node: Node;
+        boxedNode: BoxedNode;
         dump: Dump;
     connections:
         node.out --> X --> node.in;
@@ -66,8 +70,26 @@ module Test: Test {
                 foobar = 99
                 foobar2 = 99
             gates:
-                out: --> node.in, (Test.X)channel disabled=false delay=0s local=1 bar=2 third=1 foobar=99 foobar2=99
-                in: <-- node.out, (Test.X)channel disabled=false delay=0s local=1 bar=2 third=1 foobar=99 foobar2=99
+                out @loose: --> node.in, (Test.X)channel disabled=false delay=0s local=1 bar=2 third=1 foobar=99 foobar2=99
+                in @loose: <-- node.out, (Test.X)channel disabled=false delay=0s local=1 bar=2 third=1 foobar=99 foobar2=99
+        }
+        module Test.boxedNode: Test.BoxedNode {
+            parameters:
+                foo = 4
+                bar = 5
+                foobar = 6
+            submodules:
+                module Test.boxedNode.node: Test.Node {
+                    parameters:
+                        local = 4
+                        bar = 5
+                        third = 4
+                        foobar = 99
+                        foobar2 = 99
+                    gates:
+                        out @loose: not connected
+                        in @loose: not connected
+                }
         }
 }
 

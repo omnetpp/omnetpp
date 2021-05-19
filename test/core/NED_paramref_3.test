@@ -50,7 +50,7 @@ network Test
         }
 
         // from channel parameter
-        r.o[6] --> {delay=p*1s; datarate=r.p*1bps;} --> n[6].i[0];
+        r.o[6] --> { delay = parent.p * 1s; datarate = parent.r.p * 1bps; } --> n[6].i[0];
 }
 
 %contains: stdout

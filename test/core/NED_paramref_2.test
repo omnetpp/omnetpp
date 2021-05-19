@@ -38,9 +38,9 @@ network Test
         ref[2] : Ref { p = index+1; }
         m: Node {
             parameters:
-                c = ref[0].p;  //1
+                c = parent.ref[0].p;  //1
             gates:
-                gc[ref[1].p];  //2
+                gc[parent.ref[1].p];  //2
         };
 
         mc[ref[0].p]: Nil;     //1
@@ -56,9 +56,8 @@ network Test
 network = Test
 cmdenv-express-mode = false
 cmdenv-event-banners = false
-debug-on-errors = true
 
-*.ini.c = ref[1].p  #2
+*.ini.c = parent.ref[1].p  #2
 
 #Note: default params will be assigned automatically
 

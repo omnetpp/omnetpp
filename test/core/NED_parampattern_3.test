@@ -30,7 +30,7 @@ network Test
         host[*].app.p1 = p;  // ==> network's p
     submodules:
         host[2]: Host {
-            app.p2 = p; // ==> network's p
+            app.p2 = parent.p; // ==> network's p
             app.p3 = this.p + " #" + string(index); // ==> host's p
         }
         dump: Dump;
