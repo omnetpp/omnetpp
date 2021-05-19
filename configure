@@ -4796,8 +4796,10 @@ fi
 # Check for Qt cflags and libs
 #-----------------------------
 if test "$WITH_QTENV" = "yes"; then
-    # Check for qmake.
-    for ac_prog in qmake qmake-qt5 qmake5
+    if test "$QMAKE" = ""; then
+        # Check for qmake variants on path if the user did not specify the QMAKE variable to use its own Qt installation.
+        # first try qt5 specific variants to force qt5 in case either qt4 or qt6 is installed on the user's system
+        for ac_prog in qmake-qt5 qmake5 qmake
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
@@ -4812,7 +4814,7 @@ else
   ;;
   *)
   as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in path = $QT_PATH$PATH_SEPARATOR$PATH
+for as_dir in $PATH
 do
   IFS=$as_save_IFS
   test -z "$as_dir" && as_dir=.
@@ -4843,11 +4845,17 @@ fi
 done
 test -n "$QMAKE" || QMAKE="nope"
 
+    elif test ! -x "$QMAKE"; then
+        as_fn_error $? "Qtenv cannot find qmake specified in the QMAKE variable (or it is not executable) -- $QMAKE" "$LINENO" 5
+    fi
 
     if test "$QMAKE" = nope; then
-        as_fn_error $? "Qtenv cannot find qmake -- maybe it is not in the PATH or has some exotic name (tested names were: qmake qmake-qt5 qmake5) - You can disable Qtenv by setting the WITH_QTENV variable to \"no\" in configure.user, or try setting the QT_PATH variable to a valid location." "$LINENO" 5
+        as_fn_error $? "Qtenv cannot find qmake -- maybe it is not in the PATH or has some exotic name (tested names were: qmake-qt5 qmake5 qmake) - You can disable Qtenv by setting the WITH_QTENV variable to \"no\" in configure.user, or try setting the QMAKE variable to point your Qt installation's qmake file." "$LINENO" 5
     else
-        for ac_prog in moc moc-qt5 moc5
+        QT_INSTALL_BINS=$($QMAKE -query QT_INSTALL_BINS)
+        QT_INSTALL_HEADERS=$($QMAKE -query QT_INSTALL_HEADERS)
+        QT_INSTALL_LIBS=$($QMAKE -query QT_INSTALL_LIBS)
+        for ac_prog in moc-qt5 moc5 moc
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
@@ -4862,7 +4870,7 @@ else
   ;;
   *)
   as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in path = $QT_PATH$PATH_SEPARATOR$PATH
+for as_dir in path = $QT_INSTALL_BINS$PATH_SEPARATOR$QT_INSTALL_LIBS
 do
   IFS=$as_save_IFS
   test -z "$as_dir" && as_dir=.
@@ -4893,7 +4901,7 @@ fi
 done
 test -n "$MOC" || MOC="nope"
 
-        for ac_prog in uic uic-qt5 uic5
+        for ac_prog in uic-qt5 uic5 uic
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
@@ -4908,7 +4916,7 @@ else
   ;;
   *)
   as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in path = $QT_PATH$PATH_SEPARATOR$PATH
+for as_dir in path = $QT_INSTALL_BINS$PATH_SEPARATOR$QT_INSTALL_LIBS
 do
   IFS=$as_save_IFS
   test -z "$as_dir" && as_dir=.
@@ -4939,7 +4947,7 @@ fi
 done
 test -n "$UIC" || UIC="nope"
 
-        for ac_prog in rcc rcc-qt5 rcc5
+        for ac_prog in rcc-qt5 rcc5 rcc
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
@@ -4954,7 +4962,7 @@ else
   ;;
   *)
   as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in path = $QT_PATH$PATH_SEPARATOR$PATH
+for as_dir in path = $QT_INSTALL_BINS$PATH_SEPARATOR$QT_INSTALL_LIBS
 do
   IFS=$as_save_IFS
   test -z "$as_dir" && as_dir=.
@@ -4985,17 +4993,20 @@ fi
 done
 test -n "$RCC" || RCC="nope"
 
-        QT_INSTALL_HEADERS=`$QMAKE -query QT_INSTALL_HEADERS`
-        QT_INSTALL_LIBS=`$QMAKE -query QT_INSTALL_LIBS`
+
+        if test "$MOC" = nope || test "$UIC" = nope || test "$RCC" = nope ; then
+          as_fn_error $? "Could not find all of moc, rcc, and uic for Qt5 -- $MOC, $RCC, $UIC" "$LINENO" 5
+        fi
+
         QT_CFLAGS=${QT_CFLAGS:-"-isystem $QT_INSTALL_HEADERS"}
         QT_LIBS=${QT_LIBS:-"-lQt5Gui -lQt5Core -lQt5Widgets -lQt5PrintSupport -lQt5OpenGL $LDFLAG_LIBPATH$QT_INSTALL_LIBS"}
         if test -z "$RPATH_UNSUPPORTED"; then
-            QTENV_LDFLAGS="-Wl,-rpath-link=$QT_INSTALL_LIBS"
+            QTENV_LDFLAGS="-Wl,-rpath=$QT_INSTALL_LIBS"
         fi
 
 QT_VERSIONCHECK_CODE=$(cat <<-EOT
     qVersion();
-    #if QT_VERSION < QT_VERSION_CHECK(5,6,0)
+    #if QT_VERSION < QT_VERSION_CHECK(5,9,0) || QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     #error
     #endif
 EOT
@@ -5116,7 +5127,7 @@ rm -f core conftest.err conftest.$ac_objext \
         fi
 
         if test $qt_ok = no; then
-            as_fn_error $? "Cannot build Qt apps, probably due to missing or too old Qt packages. Make sure Qt development packages are installed and newer than Qt 5.6. You can disable Qtenv by setting the WITH_QTENV variable to \"no\" in configure.user, or try setting the QT_PATH variable to a valid location." "$LINENO" 5
+            as_fn_error $? "Cannot build Qt apps, probably due to missing or too old Qt 5 packages. Make sure Qt 5 development packages are installed and is version Qt 5.9 or newer. You can disable Qtenv by setting the WITH_QTENV variable to \"no\" in configure.user, or try setting the QMAKE variable to point your Qt installation's qmake file." "$LINENO" 5
         fi
     fi
 fi # WITH_QTENV

@@ -119,12 +119,12 @@ SHARED_LIBS=yes
 # If you wish to use a custom Qt bundle (for example downloaded from the
 # official Qt web page, or built from source) instead of the one installed
 # on your system as the default (most likely by the package manager), set
-# this variable to the 'bin' directory of that bundle, where qmake is.
+# this variable to point to the 'qmake' program in that installation.
 # Leave it empty or commented out to use the default Qt installation.
 # Please note that on Windows and macOS it is highly recommended to just
 # use the Qt bundle included in the OMNeT++ release, and not change this.
 #
-#QT_PATH="/home/user/Qt/5.7/gcc_64/bin"
+#QMAKE="/home/user/Qt/5.12/gcc_64/bin/qmake"
 #
 # You can also explicitly tell 'configure' what compiler options (QT_CFLAGS)
 # and linker switches (QT_LIBS) are needed to build an application with Qt
