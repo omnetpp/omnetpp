@@ -829,7 +829,7 @@ void cNedNetworkBuilder::addSubmodule(cModule *compoundModule, SubmoduleElement 
                     throw;
                 }
             }
-            cModule *submodp = submodType->create(submodName, compoundModule, index);
+            cModule *submodp = submodType->create(submodName, compoundModule, vectorSize, index);
             v.push_back(submodp);
 
             cContextSwitcher __ctx(submodp);  // params need to be evaluated in the module's context
