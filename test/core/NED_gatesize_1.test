@@ -9,12 +9,10 @@ check "gatesizes" in NED:
 simple GenMod
 {
     gates:
-        input in;
         input in1[];
         input in2[];
         input in3[];
         input in4[];
-        output out;
         output out1[];
         output out2[];
         output out3[];
@@ -53,17 +51,14 @@ class GenMod : public cSimpleModule
 
 Define_Module(GenMod);
 
-#define PRINT(name)  EV << name << (isGateVector(name) ? "[]" : "") << ":" \
-                        << gateSize(name) << "," << gateSize(name) << "\n"
+#define PRINT(name)  EV << name << "[]:" << gateSize(name) << "\n"
 
 void GenMod::activity()
 {
-   PRINT("in");
    PRINT("in1");
    PRINT("in2");
    PRINT("in3");
    PRINT("in4");
-   PRINT("out");
    PRINT("out1");
    PRINT("out2");
    PRINT("out3");
@@ -74,15 +69,13 @@ void GenMod::activity()
 
 
 %contains: stdout
-in:1,1
-in1[]:0,0
-in2[]:10,10
-in3[]:0,0
-in4[]:1,1
-out:1,1
-out1[]:0,0
-out2[]:20,20
-out3[]:0,0
-out4[]:1,1
+in1[]:0
+in2[]:10
+in3[]:0
+in4[]:1
+out1[]:0
+out2[]:20
+out3[]:0
+out4[]:1
 
 

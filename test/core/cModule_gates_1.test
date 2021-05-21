@@ -87,13 +87,15 @@ void Node::createTestGate(const char *gatename, cGate::Type type, bool isVector)
 
 void Node::checkOneGate(const char *gatename, cGate::Type type, int size, int index)
 {
-    ASSERT(type!=cGate::INOUT);
+    ASSERT(type != cGate::INOUT);
+    bool isVector = size!=-1;
 
     // TODO assert that getGateNames() contains gatename (less $i/$o)
     ASSERT(hasGate(gatename));
-    ASSERT(gateType(gatename)==type);
-    ASSERT(isGateVector(gatename)==(size!=-1));
-    ASSERT(gateSize(gatename)==(size!=-1 ? size : 1));
+    ASSERT(gateType(gatename) == type);
+    ASSERT(isGateVector(gatename) == isVector);
+    if (isVector)
+        ASSERT(gateSize(gatename) == size);
 
     if (size!=0) {
         ASSERT(hasGate(gatename, index));
@@ -105,9 +107,9 @@ void Node::checkOneGate(const char *gatename, cGate::Type type, int size, int in
         ASSERT(g->getName() == std::string(gatename));
         ASSERT(g->getType() == type);
 
-        if (size>0) { // is vector
+        if (isVector) {
             ASSERT(g->getIndex() == index);
-            ASSERT(g->size() == size);
+            ASSERT(g->getVectorSize() == size);
         }
 
         if (strchr(gatename, '$')) {
@@ -215,12 +217,9 @@ void Node::checkAllGateIds()
     //  2. when a gate was deleted, no gate should be accesible at its ID (ie IDs must not be reused)
     //
 
-    //EV <<"checking " << gateIds.size() << " gates\n";
-    std::map<std::string,int>::iterator it;
-    for (it=gateIds.begin(); it!=gateIds.end(); it++)
-    {
-        const char *gatename = it->first.c_str();
-        int id = it->second;
+    for (auto pair: gateIds) {
+        const char *gatename = pair.first.c_str();
+        int id = pair.second;
 
         bool exists = hasGate(gatename);
 
@@ -232,7 +231,7 @@ void Node::checkAllGateIds()
         if (g && !g->isName(gatename))
             throw cRuntimeError("found another gate under the same ID -- IDs get reused???");
 
-        if (exists && gateSize(gatename)!=0 && g==nullptr)
+        if (exists && g==nullptr && !(isGateVector(gatename) && gateSize(gatename)==0))
             throw cRuntimeError("gate not found by old ID -- IDs change???");
         if (!exists && g!=nullptr)
             throw cRuntimeError("found a gate with the ID of a deleted gate -- IDs get reused???");
@@ -242,7 +241,7 @@ void Node::checkAllGateIds()
 std::string Node::chooseRandom(const std::set<std::string>& names)
 {
     int k = intrand(names.size());
-    std::set<std::string>::const_iterator it = names.begin();
+    auto it = names.cbegin();
     for (int i=0; i<k; i++)
         it++;
     return *it;

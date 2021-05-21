@@ -110,12 +110,12 @@ class SIM_API cGate : public cObject, noncopyable
         Type getType() const {return name->type;}
         bool isVector() const {return vectorSize>=0;}
         const char *nameFor(Type t) const {return (t==INOUT||name->type!=INOUT) ? name->name.c_str() : t==INPUT ? name->namei.c_str() : name->nameo.c_str();}
-        int indexOf(const cGate *g) const {return (g->pos>>2)==-1 ? 0 : g->pos>>2;}
+        int indexOf(const cGate *g) const {ASSERT(isVector()); return g->pos >> 2;}
         bool deliverOnReceptionStart(const cGate *g) const {return g->pos&2;}
         Type getTypeOf(const cGate *g) const {return (g->pos&1)==0 ? INPUT : OUTPUT;}
         bool isInput(const cGate *g) const {return (g->pos&1)==0;}
         bool isOutput(const cGate *g) const {return (g->pos&1)==1;}
-        int gateSize() const {return vectorSize>=0 ? vectorSize : 1;}
+        int gateSize() const {ASSERT(isVector()); return vectorSize;}
         void setInputGate(cGate *g) {ASSERT(getType()!=OUTPUT && !isVector()); input.gate=g; g->desc=this; g->pos=(-(1<<2));}
         void setOutputGate(cGate *g) {ASSERT(getType()!=INPUT && !isVector()); output.gate=g; g->desc=this; g->pos=(-(1<<2))|1;}
         void setInputGate(cGate *g, int index) {ASSERT(getType()!=OUTPUT && isVector()); input.gatev[index]=g; g->desc=this; g->pos=(index<<2);}
@@ -319,17 +319,17 @@ class SIM_API cGate : public cObject, noncopyable
 
     /**
      * If the gate is part of a gate vector, returns the gate's index in the vector.
-     * Otherwise, it returns 0.
+     * For non-vector gates it throws an error.
      */
-    int getIndex() const  {return desc->indexOf(this);}
+    int getIndex() const;
 
     /**
      * If the gate is part of a gate vector, returns the size of the vector.
-     * For non-vector gates it returns 1.
+     * For non-vector gates it throws an error.
      *
-     * The gate vector size can also be obtained by calling the cModule::gateSize().
+     * @see cModule::gateSize()
      */
-    int getVectorSize() const  {return desc->gateSize();}
+    int getVectorSize() const;
 
     /**
      * Alias for getVectorSize().

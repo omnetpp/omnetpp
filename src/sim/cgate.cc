@@ -38,6 +38,7 @@
 #include "omnetpp/ccomponenttype.h"
 #include "omnetpp/simutil.h"
 #include "omnetpp/cmodelchange.h"
+#include "omnetpp/cexception.h"
 
 using namespace omnetpp::common;
 
@@ -248,6 +249,20 @@ const char *cGate::getTypeName(Type t)
         case INOUT: return "inout";
         default: return "(unknown type)";
     }
+}
+
+int cGate::getIndex() const
+{
+    if (!desc->isVector())
+        throw cRuntimeError(this, "getIndex(): Gate is not member of a gate vector");
+    return desc->indexOf(this);
+}
+
+int cGate::getVectorSize() const
+{
+    if (!desc->isVector())
+        throw cRuntimeError(this, "getVectorSize(): Gate is not member of a gate vector");
+    return desc->gateSize();
 }
 
 cProperties *cGate::getProperties() const

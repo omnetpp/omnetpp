@@ -568,13 +568,14 @@ class SIM_API cModule : public cComponent //implies noncopyable
     bool isVector() const  {return vectorIndex != -1;}
 
     /**
-     * Returns the index of the module if it is in a module vector, otherwise 0.
+     * Returns the index of the module in a module vector. If the module is not
+     * member of a module vector, an exception is thrown.
      */
     int getIndex() const;
 
     /**
-     * Returns the size of the module vector the module is in. For non-vector
-     * modules it returns 1.
+     * Returns the size of the module vector the module is in. If the module
+     * is not member of a module vector, an exception is thrown.
      */
     int getVectorSize() const;
     //@}
@@ -829,14 +830,11 @@ class SIM_API cModule : public cComponent //implies noncopyable
     virtual bool isGateVector(const char *gatename) const;
 
     /**
-     * Returns the size of the gate vector with the given name. It returns 1 for
-     * non-vector gates, and 0 if the gate does not exist or the vector has size 0.
-     * (Zero-size vectors are represented by a single gate whose size() returns 0.)
-     * Gate names with the "$i" or "$o" suffix are also accepted.  Throws an error if
-     * there is no such gate or gate vector.
+     * Returns the size of the gate vector with the given name. Gate names with
+     * the "$i" or "$o" suffix are also accepted.  Throws an error if there is
+     * no such gate, or it is not a gate vector.
      *
-     * Note: The gate vector size can also be obtained by calling the cGate::size()
-     * method of any gate object.
+     * @see cGate::getVectorSize()
      */
     virtual int gateSize(const char *gatename) const;
 

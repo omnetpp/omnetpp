@@ -439,7 +439,7 @@ std::vector<cModule*>& cModule::getSubmoduleArray(const char *name) const
 int cModule::getVectorSize() const
 {
     if (vectorIndex == -1)
-        return 1;
+        throw cRuntimeError(this, "getVectorSize(): Module is not member of a submodule vector");
 
     cModule *parent = getParentModule();
     ASSERT(parent != nullptr);
@@ -452,7 +452,7 @@ int cModule::getVectorSize() const
 int cModule::getIndex() const
 {
     if (vectorIndex == -1)
-        return 0;
+        throw cRuntimeError(this, "getIndex(): Module is not member of a submodule vector");
     return vectorIndex;
 }
 
@@ -526,7 +526,7 @@ void cModule::disposeGateDesc(cGate::Desc *desc, bool checkConnected)
         tmp.gateName = gatename;  // points into namePool
         tmp.gateType = gatetype;
         tmp.isVector = desc->isVector();  // desc still exists, only namep was nullptr'd
-        tmp.vectorSize = desc->gateSize();
+        tmp.vectorSize = desc->isVector() ? desc->gateSize() : -1;
         emit(POST_MODEL_CHANGE, &tmp);
     }
 }
@@ -884,6 +884,8 @@ int cModule::gateSize(const char *gatename) const
 {
     char dummy;
     const cGate::Desc *desc = gateDesc(gatename, dummy);
+    if (!desc->isVector())
+        throw cRuntimeError(this, "Gate '%s' is not a gate vector", gatename);
     return desc->gateSize();
 }
 
@@ -1194,7 +1196,7 @@ bool cModule::checkInternalConnections() const
     if (!isSimple()) {
         for (GateIterator it(this); !it.end(); ++it) {
             cGate *gate = *it;
-            if (gate->size() != 0 && !gate->isConnectedInside())
+            if (!gate->isConnectedInside())
                 throw cRuntimeError(this, "Gate '%s' is not connected to a submodule (or internally to another gate of the same module)", gate->getFullPath().c_str());
         }
     }
@@ -1204,7 +1206,7 @@ bool cModule::checkInternalConnections() const
         cModule *submodule = *it;
         for (GateIterator git(submodule); !git.end(); ++git) {
             cGate *gate = *git;
-            if (gate->size() != 0 && !gate->isConnectedOutside() &&
+            if (!gate->isConnectedOutside() &&
                 gate->getProperties()->getAsBool("loose") == false &&
                 gate->getProperties()->getAsBool("directIn") == false)
                 throw cRuntimeError(this, "Gate '%s' is not connected to sibling or parent module", gate->getFullPath().c_str());

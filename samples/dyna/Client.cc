@@ -41,7 +41,7 @@ void Client::activity()
 
     // assign address: index of Switch's gate to which we are connected
     int ownAddr = gate("port$o")->getNextGate()->getIndex();
-    int serverAddr = gate("port$o")->getNextGate()->size()-1;
+    int serverAddr = gate("port$o")->getNextGate()->getVectorSize()-1;
     int serverprocId = 0;
     WATCH(ownAddr);
     WATCH(serverAddr);
