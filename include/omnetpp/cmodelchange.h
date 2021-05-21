@@ -217,7 +217,7 @@ class SIM_API cPostModuleDeleteNotification : public cModelChangeNotification
     const char *moduleName;   ///< Name of the deleted module
     cModule *parentModule;    ///< Parent module of the deleted module
     int vectorSize;           ///< Size of the module vector that contained the deleted module; -1 if not a vector
-    int index;                ///< Index of the deleted in its vector; 0 if not part of a module vector
+    int index;                ///< Index of the deleted in its vector; -1 if not part of a module vector
 };
 
 /**

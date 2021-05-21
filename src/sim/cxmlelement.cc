@@ -474,13 +474,6 @@ std::string cXMLElement::getXML() const
 
 //---------------
 
-static std::string my_itostr(int d)
-{
-    char buf[32];
-    sprintf(buf, "%d", d);
-    return std::string(buf);
-}
-
 bool ModNameParamResolver::resolve(const char *paramName, std::string& value)
 {
     if (!mod)
@@ -496,31 +489,31 @@ bool ModNameParamResolver::resolve(const char *paramName, std::string& value)
     else if (!strcmp(paramName, "MODULE_NAME"))
         value = mod->getName();
     else if (!strcmp(paramName, "MODULE_INDEX"))
-        value = my_itostr(mod->getIndex());
+        value = mod->isVector() ? std::to_string(mod->getIndex()) : "";
     else if (!strcmp(paramName, "MODULE_ID"))
-        value = my_itostr(mod->getId());
+        value = std::to_string(mod->getId());
 
-    else if (!strcmp(paramName, "PARENTMODULE_FULLPATH") && parentModule)
-        value = parentModule->getFullPath();
-    else if (!strcmp(paramName, "PARENTMODULE_FULLNAME") && parentModule)
-        value = parentModule->getFullName();
-    else if (!strcmp(paramName, "PARENTMODULE_NAME") && parentModule)
-        value = parentModule->getName();
-    else if (!strcmp(paramName, "PARENTMODULE_INDEX") && parentModule)
-        value = my_itostr(parentModule->getIndex());
-    else if (!strcmp(paramName, "PARENTMODULE_ID") && parentModule)
-        value = my_itostr(parentModule->getId());
+    else if (!strcmp(paramName, "PARENTMODULE_FULLPATH"))
+        value = parentModule ? parentModule->getFullPath() : "";
+    else if (!strcmp(paramName, "PARENTMODULE_FULLNAME"))
+        value = parentModule ? parentModule->getFullName() : "";
+    else if (!strcmp(paramName, "PARENTMODULE_NAME"))
+        value = parentModule ? parentModule->getName() : "";
+    else if (!strcmp(paramName, "PARENTMODULE_INDEX"))
+        value = (parentModule  && parentModule->isVector()) ? std::to_string(parentModule->getIndex()) : "";
+    else if (!strcmp(paramName, "PARENTMODULE_ID"))
+        value = parentModule ? std::to_string(parentModule->getId()) : "";
 
-    else if (!strcmp(paramName, "GRANDPARENTMODULE_FULLPATH") && grandparentModule)
-        value = grandparentModule->getFullPath();
-    else if (!strcmp(paramName, "GRANDPARENTMODULE_FULLNAME") && grandparentModule)
-        value = grandparentModule->getFullName();
-    else if (!strcmp(paramName, "GRANDPARENTMODULE_NAME") && grandparentModule)
-        value = grandparentModule->getName();
-    else if (!strcmp(paramName, "GRANDPARENTMODULE_INDEX") && grandparentModule)
-        value = my_itostr(grandparentModule->getIndex());
-    else if (!strcmp(paramName, "GRANDPARENTMODULE_ID") && grandparentModule)
-        value = my_itostr(grandparentModule->getId());
+    else if (!strcmp(paramName, "GRANDPARENTMODULE_FULLPATH"))
+        value = grandparentModule ? grandparentModule->getFullPath() : "";
+    else if (!strcmp(paramName, "GRANDPARENTMODULE_FULLNAME"))
+        value = grandparentModule ? grandparentModule->getFullName() : "";
+    else if (!strcmp(paramName, "GRANDPARENTMODULE_NAME"))
+        value = grandparentModule ? grandparentModule->getName() : "";
+    else if (!strcmp(paramName, "GRANDPARENTMODULE_INDEX"))
+        value = (grandparentModule && grandparentModule->isVector()) ? std::to_string(grandparentModule->getIndex()) : "";
+    else if (!strcmp(paramName, "GRANDPARENTMODULE_ID"))
+        value = grandparentModule ? std::to_string(grandparentModule->getId()) : "";
     else
         return false;
 

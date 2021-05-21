@@ -22,7 +22,7 @@ $GRANDPARENTMODULE_FULLPATH,...
     <pfoo id="p_id" att="2"/>
 
     <gpfoo id="gp_fp/fn/n" att="Net"/>
-    <gpfoo id="gp_i"  att="0"/>
+    <gpfoo id="gp_i"  att=""/>
     <gpfoo id="gp_id" att="1"/>
 </foo>
 

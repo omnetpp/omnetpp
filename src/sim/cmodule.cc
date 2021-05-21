@@ -185,8 +185,8 @@ void cModule::doDeleteModule()
         std::string tmpname = getName();
         tmp.moduleName = tmpname.c_str();
         tmp.parentModule = getParentModule();
-        tmp.vectorSize = getVectorSize();
-        tmp.index = getIndex();
+        tmp.vectorSize = isVector() ? getVectorSize() : -1;
+        tmp.index = isVector() ? getIndex() : -1;
 
         {
             setFlag(cComponent::FL_DELETING, true);
