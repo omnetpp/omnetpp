@@ -289,8 +289,8 @@ class SIM_API cModule : public cComponent //implies noncopyable
 
     typedef std::set<cGate::Name> GateNamePool;
     static GateNamePool gateNamePool;
-    int gateDescArraySize = 0;  // size of the descv array
     cGate::Desc *gateDescArray = nullptr;  // array with one element per gate or gate vector
+    int gateDescArraySize = 0;  // size of the descv array
 
     int vectorIndex = 0;        // index if module vector, 0 otherwise
     int vectorSize = -1;        // vector size, -1 if not a vector
