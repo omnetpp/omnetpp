@@ -20,7 +20,6 @@ module Container
         x4: <default("Node")> like INode if needed;
         x5: <default("Node")> like INode if needed || x==1 {@display("p=10,10");}
         x6[2]: <default("Node")> like INode if needed || x==2;
-        dump: Dump;
 }
 
 network Test
@@ -68,11 +67,6 @@ module Test: Test {
             parameters:
                 needed = false
                 x = 0
-            submodules:
-                module Test.none.dump: testlib.Dump {
-                    parameters:
-                        printClassNames = false
-                }
         }
         module Test.misc1: Container {
             parameters:
@@ -86,10 +80,6 @@ module Test: Test {
                 module Test.misc1.x5: Node {
                     parameters:
                         @display(p=10,10)
-                }
-                module Test.misc1.dump: testlib.Dump {
-                    parameters:
-                        printClassNames = false
                 }
         }
         module Test.misc2: Container {
@@ -105,14 +95,6 @@ module Test: Test {
                 }
                 module Test.misc2.x6[1]: Node {
                 }
-                module Test.misc2.dump: testlib.Dump {
-                    parameters:
-                        printClassNames = false
-                }
-        }
-        module Test.dump: testlib.Dump {
-            parameters:
-                printClassNames = false
         }
 }
 
