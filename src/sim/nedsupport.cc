@@ -139,7 +139,7 @@ ExprValue Exists::evaluate(Context *context_) const
     cModule *module = inSubcomponentScope ? context->component->getParentModule() : dynamic_cast<cModule *>(context->component);
     if (!module)
         throw cRuntimeError("'exists()' may only occur in module or submodule context");
-    bool exists = module->getSubmodule(name.c_str()) != nullptr || (module->hasSubmoduleVector(name.c_str()) && module->getSubmodule(name.c_str(), 0) != nullptr); // note: legacy behavior
+    bool exists = module->hasSubmodule(name.c_str()) || module->hasSubmoduleVector(name.c_str());
     return exists;
 }
 
