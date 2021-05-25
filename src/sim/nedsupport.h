@@ -61,6 +61,7 @@ class NedFunctionNode : public NaryNode
     NedFunctionNode *dup() const override {return new NedFunctionNode(nedFunction);}
     virtual Precedence getPrecedence() const override {return ELEM;}
     virtual std::string getName() const override;
+    virtual std::string str() const override {return getName() + "()";}
 };
 
 class ModuleIndex : public LeafNode

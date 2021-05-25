@@ -36,30 +36,9 @@ ExprNode *ExprNode::dupTree() const
     return newNode;
 }
 
-std::string ExprNode::str(int spaciousness) const
-{
-    std::stringstream out;
-    print(out, spaciousness);
-    return out.str();
-}
-
 std::string ExprNode::makeErrorMessage(std::exception& e) const
 {
-    if (dynamic_cast<const UnaryOperatorNode*>(this) ||
-            dynamic_cast<const BinaryOperatorNode*>(this) ||
-            dynamic_cast<const TernaryOperatorNode*>(this))
-        return std::string("operator \"") + getName() + "\": " + e.what();
-    else if (dynamic_cast<const IntCastNode*>(this) ||
-            dynamic_cast<const DoubleCastNode*>(this) ||
-            dynamic_cast<const MathFunc0Node*>(this) ||
-            dynamic_cast<const MathFunc1Node*>(this) ||
-            dynamic_cast<const MathFunc2Node*>(this) ||
-            dynamic_cast<const MathFunc3Node*>(this) ||
-            dynamic_cast<const MathFunc4Node*>(this) ||
-            dynamic_cast<const FunctionNode*>(this))
-        return getName() + "(): " + e.what();
-    else
-        return e.what(); // leave it to subclasses to add context to the error message if they wish, using getName() usually does not work out that well
+    return str() + ": " + e.what();
 }
 
 void ExprNode::bringToCommonTypeAndUnit(ExprValue& a, ExprValue& b)

@@ -79,7 +79,6 @@ public:
 protected:
     virtual ExprValue evaluate(Context *context) const = 0; // do not call directly! only via tryEvaluate()
     virtual std::string makeErrorMessage(std::exception& e) const;
-    virtual void print(std::ostream& out, int spaciousness) const = 0; // helper for str(); in subclasses, call printChild() instead of this
     virtual void printFunction(std::ostream& out, int spaciousness, int startIndex=0) const;
     virtual void printChild(std::ostream& out, ExprNode *child, int spaciousness) const;
     virtual bool needSpaces(int spaciousness) const {return spaciousness >= (LASTPREC-getPrecedence());}
@@ -102,12 +101,13 @@ public:
     virtual ~ExprNode() {}
     inline ExprValue tryEvaluate(Context *context) const;
     virtual std::string getName() const = 0;
+    virtual std::string str() const {return getName();}
     virtual ExprNode *dupTree() const;
     virtual ExprNode *dup() const = 0;
-    virtual std::string str(int spaciousness=SPACIOUSNESS_DEFAULT) const;
     virtual Precedence getPrecedence() const = 0;
     virtual void setChildren(const std::vector<ExprNode*>& children) = 0;
     virtual std::vector<ExprNode*> getChildren() const = 0;
+    virtual void print(std::ostream& out, int spaciousness) const = 0; // helper for Expression::str(); in subclasses, call printChild() instead of this
 };
 
 inline ExprValue ExprNode::tryEvaluate(Context *context) const

@@ -81,6 +81,7 @@ protected:
 protected:
     virtual ExprValue getValue(Context *context) const override
         {return makeExprValue(resolver->readVariable(ctx(context), getName().c_str()));}
+    virtual std::string makeErrorMessage(std::exception& e) const override {return e.what();} // don't prepend variable name, as msg already contains it
 public:
     DynVariableNode(const char *name, cDynamicExpression::IResolver *resolver) : VariableNode(name), resolver(resolver) {}
     virtual ExprNode *dup() const override {return new DynVariableNode(getName().c_str(), resolver);}
@@ -92,6 +93,7 @@ protected:
 protected:
     virtual ExprValue getValue(Context *context, intval_t index) const override
         {return makeExprValue(resolver->readVariable(ctx(context), getName().c_str(), index));}
+    virtual std::string makeErrorMessage(std::exception& e) const override {return e.what();} // don't prepend variable name, as msg already contains it
 public:
     DynIndexedVariableNode(const char *name, cDynamicExpression::IResolver *resolver) : IndexedVariableNode(name), resolver(resolver) {}
     virtual ExprNode *dup() const override {return new DynIndexedVariableNode(getName().c_str(), resolver);}
@@ -103,6 +105,7 @@ protected:
 protected:
     virtual ExprValue getValue(Context *context, const ExprValue& object) const override
         {return makeExprValue(resolver->readMember(ctx(context), makeNedValue(object), getName().c_str()));}
+    virtual std::string makeErrorMessage(std::exception& e) const override {return e.what();} // don't prepend variable name, as msg already contains it
 public:
     DynMemberNode(const char *name, cDynamicExpression::IResolver *resolver) : MemberNode(name), resolver(resolver) {}
     virtual ExprNode *dup() const override {return new DynMemberNode(getName().c_str(), resolver);}
@@ -114,6 +117,7 @@ protected:
 protected:
     virtual ExprValue getValue(Context *context, const ExprValue& object, intval_t index) const override
         {return makeExprValue(resolver->readMember(ctx(context), makeNedValue(object), getName().c_str(), index));}
+    virtual std::string makeErrorMessage(std::exception& e) const override {return e.what();} // don't prepend variable name, as msg already contains it
 public:
     DynIndexedMemberNode(const char *name, cDynamicExpression::IResolver *resolver) : IndexedMemberNode(name), resolver(resolver) {}
     virtual ExprNode *dup() const override {return new DynIndexedMemberNode(getName().c_str(), resolver);}

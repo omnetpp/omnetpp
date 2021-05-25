@@ -244,12 +244,27 @@ ExprValue NegateNode::evaluate(Context *context) const
     return value;
 }
 
+std::string UnaryOperatorNode::str() const
+{
+    return "operator '" + getName() + "'";
+}
+
 void UnaryOperatorNode::print(std::ostream& out, int spaciousness) const
 {
     out << getName();
     if (needSpaces(spaciousness))
         out << " ";
     printChild(out, child, spaciousness);
+}
+
+std::string BinaryOperatorNode::str() const
+{
+    return "operator '" + getName() + "'";
+}
+
+std::string TernaryOperatorNode::str() const
+{
+    return "operator '" + getName() + "'";
 }
 
 void BinaryOperatorNode::print(std::ostream& out, int spaciousness) const

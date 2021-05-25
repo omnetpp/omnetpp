@@ -34,15 +34,18 @@ public:
 
 class COMMON_API UnaryOperatorNode : public UnaryNode {
 public:
+    virtual std::string str() const override;
     virtual void print(std::ostream& out, int spaciousness) const override;
 };
 
 class COMMON_API BinaryOperatorNode : public BinaryNode {
 public:
+    virtual std::string str() const override;
     virtual void print(std::ostream& out, int spaciousness) const override;
 };
 
 class COMMON_API TernaryOperatorNode : public TernaryNode {
+    virtual std::string str() const override;
 };
 
 class COMMON_API ExprNodeFactory {
@@ -96,6 +99,7 @@ class COMMON_API ObjectNode : public NaryNode
   public:
     ObjectNode(const char *typeName, const std::vector<std::string>& fieldNames) : typeName(typeName), fieldNames(fieldNames) {}
     virtual std::string getName() const override {return typeName;}
+    virtual std::string str() const override {return typeName + "{...}";}
     virtual Precedence getPrecedence() const override {return ELEM;}
 };
 
@@ -473,6 +477,7 @@ protected:
 public:
     virtual ExprNode *dup() const override {return new IntCastNode;}
     virtual std::string getName() const override {return "int";}
+    virtual std::string str() const override {return getName() + "()";}
     virtual Precedence getPrecedence() const override {return ELEM;}
 };
 
@@ -483,6 +488,7 @@ protected:
 public:
     virtual ExprNode *dup() const override {return new DoubleCastNode;}
     virtual std::string getName() const override {return "double";}
+    virtual std::string str() const override {return getName() + "()";}
     virtual Precedence getPrecedence() const override {return ELEM;}
 };
 
@@ -510,6 +516,7 @@ public:
     MathFunc0Node(const char *name, double (*f)()) : name(name), f(f) {}
     virtual ExprNode *dup() const override {return new MathFunc0Node(name.c_str(), f);}
     virtual std::string getName() const override {return name;}
+    virtual std::string str() const override {return getName() + "()";}
     virtual Precedence getPrecedence() const override {return ELEM;}
 };
 
@@ -524,6 +531,7 @@ public:
     MathFunc1Node(const char *name, double (*f)(double)) : name(name), f(f) {}
     virtual ExprNode *dup() const override {return new MathFunc1Node(name.c_str(), f);}
     virtual std::string getName() const override {return name;}
+    virtual std::string str() const override {return getName() + "()";}
     virtual Precedence getPrecedence() const override {return ELEM;}
 };
 
@@ -538,6 +546,7 @@ public:
     MathFunc2Node(const char *name, double (*f)(double,double)) : name(name), f(f) {}
     virtual ExprNode *dup() const override {return new MathFunc2Node(name.c_str(), f);}
     virtual std::string getName() const override {return name;}
+    virtual std::string str() const override {return getName() + "()";}
     virtual Precedence getPrecedence() const override {return ELEM;}
 };
 
@@ -552,6 +561,7 @@ public:
     MathFunc3Node(const char *name, double (*f)(double,double,double)) : name(name), f(f) {}
     virtual ExprNode *dup() const override {return new MathFunc3Node(name.c_str(), f);}
     virtual std::string getName() const override {return name;}
+    virtual std::string str() const override {return getName() + "()";}
     virtual Precedence getPrecedence() const override {return ELEM;}
 };
 
@@ -566,6 +576,7 @@ public:
     MathFunc4Node(const char *name, double (*f)(double,double,double,double)) : name(name), f(f) {}
     virtual ExprNode *dup() const override {return new MathFunc4Node(name.c_str(), f);}
     virtual std::string getName() const override {return name;}
+    virtual std::string str() const override {return getName() + "()";}
     virtual Precedence getPrecedence() const override {return ELEM;}
 };
 
@@ -581,6 +592,7 @@ public:
     FunctionNode(const char *name) : name(name) {}
     ~FunctionNode() {delete[] values;}
     virtual std::string getName() const override {return name;}
+    virtual std::string str() const override {return getName() + "()";}
     virtual Precedence getPrecedence() const override {return ELEM;}
 };
 
@@ -606,6 +618,7 @@ public:
     MethodNode(const char *name) : name(name) {}
     ~MethodNode() {delete[] values;}
     virtual std::string getName() const override {return name;}
+    virtual std::string str() const override {return "." + getName() + "()";}
     virtual Precedence getPrecedence() const override {return ELEM;}
 };
 

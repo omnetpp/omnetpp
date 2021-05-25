@@ -78,6 +78,13 @@ Expression& Expression::operator=(const Expression& other)
     return *this;
 }
 
+std::string Expression::str(int spaciousness) const
+{
+    std::stringstream out;
+    tree->print(out, spaciousness);
+    return out.str();
+}
+
 Expression& Expression::parse(const char *expr, AstTranslator *translator)
 {
     setExpressionTree(parseAndTranslate(expr, translator));

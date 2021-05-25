@@ -145,8 +145,7 @@ public:
     /**
      * Returns the string form of the expression, as assembled by the ExprNode expression tree.
      */
-    virtual std::string str() const {return tree->str();}
-    virtual std::string str(int spaciousness) const {return tree->str(spaciousness);}
+    virtual std::string str(int spaciousness=SPACIOUSNESS_DEFAULT) const;
 
     /**
      * Interprets the string as an expression, and stores it. The translator can be used
