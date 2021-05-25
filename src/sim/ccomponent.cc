@@ -183,6 +183,20 @@ const char *cComponent::getNedTypeName() const
     return getComponentType()->getFullName();
 }
 
+std::string cComponent::getNedTypeAndFullName() const
+{
+    std::stringstream os;
+    os << "(" << getNedTypeName() << ")" << getFullName();
+    return os.str();
+}
+
+std::string cComponent::getNedTypeAndFullPath() const
+{
+    std::stringstream os;
+    os << "(" << getNedTypeName() << ")" << getFullPath();
+    return os.str();
+}
+
 cModule *cComponent::getSystemModule() const
 {
     return simulation->getSystemModule();

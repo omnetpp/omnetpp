@@ -418,7 +418,23 @@ class SIM_API cComponent : public cSoftOwner //implies noncopyable
     virtual const char *getNedTypeName() const;
 
     /**
-     * Returns the kind of tke component.
+     * Returns a string that contains the NED type name and the full name
+     * of the component in a human-friendly format. Example: "(StandardHost)host[2]"
+     *
+     * @see getClassAndFullName()
+     */
+    virtual std::string getNedTypeAndFullName() const;
+
+    /**
+     * Returns a string that contains the NED type name and the full path of the
+     * component in a human-friendly format. Example: "(StandardHost)Network.subnet1.host[2]"
+     *
+     * @see getClassAndFullPath()
+     */
+    virtual std::string getNedTypeAndFullPath() const;
+
+    /**
+     * Returns the kind of the component.
      *
      * @see isModule(), isChannel()
      */
