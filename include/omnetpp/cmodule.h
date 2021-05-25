@@ -594,9 +594,8 @@ class SIM_API cModule : public cComponent //implies noncopyable
     virtual bool hasSubmoduleVector(const char *name) const;
 
     /**
-     * Returns the names of the module's submodule vectors. Zero-size submodule
-     * vectors will also be included. The strings in the returned array do not
-     * need to be deallocated and must not be modified.
+     * Returns the names of the module's submodule vectors, including zero-size
+     * submodule vectors.
      */
     virtual std::vector<std::string> getSubmoduleVectorNames() const;
 
@@ -637,6 +636,13 @@ class SIM_API cModule : public cComponent //implies noncopyable
     virtual void setSubmoduleVectorSize(const char *name, int size);
 
     /**
+     * Returns true if a submodule with the given name (and index) exists,
+     * and false otherwise. Index must be specified exactly if the module
+     * is member of a module vector.
+     */
+    virtual bool hasSubmodule(const char *name, int index=-1) const;
+
+    /**
      * Finds a direct submodule with the given name and index, and returns
      * its module ID. If the submodule was not found, returns -1. Index
      * must be specified exactly if the module is member of a module vector.
@@ -649,6 +655,12 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * Index must be specified exactly if the module is member of a module vector.
      */
     virtual cModule *getSubmodule(const char *name, int index=-1) const;
+
+    /**
+     * Returns the names of the module's submodules and submodule vectors,
+     * including zero-size submodule vectors.
+     */
+    virtual std::vector<std::string> getSubmoduleNames() const;
 
     /**
      * Finds a module in the module tree, given by its absolute or relative path.
@@ -695,6 +707,12 @@ class SIM_API cModule : public cComponent //implies noncopyable
 
     /** @name Gates. */
     //@{
+
+    /**
+     * Returns true if the module has any gates, and false otherwise.
+     * If it does, getGateNames() or GateIterator be used to enumerate them.
+     */
+    virtual bool hasGates() const;
 
     /**
      * Looks up a gate by its name and index. Gate names with the "$i" or "$o"
@@ -787,7 +805,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
      *
      * @see gateType(), isGateVector(), gateSize()
      */
-    virtual std::vector<const char *> getGateNames() const;
+    virtual std::vector<std::string> getGateNames() const;
 
     /**
      * Returns the type of the gate (or gate vector) with the given name.
@@ -795,6 +813,13 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * an error if there is no such gate or gate vector.
      */
     virtual cGate::Type gateType(const char *gatename) const;
+
+    /**
+     * Returns true if there is a gate vector with the given name, and false
+     * otherwise. Names with the "$i" and "$o" suffix are also accepted.
+     * Zero-size gate vectors will also be included.
+     */
+    virtual bool hasGateVector(const char *gatename) const;
 
     /**
      * Returns whether the given gate is a gate vector. Gate names with the "$i"

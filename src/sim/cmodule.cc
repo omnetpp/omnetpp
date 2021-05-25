@@ -650,6 +650,11 @@ cGate::Desc *cModule::gateDesc(const char *gatename, char& suffix) const
     return gateDescArray + descIndex;
 }
 
+bool cModule::hasGates() const
+{
+    return gateDescArraySize != 0;
+}
+
 #define ENSURE(x)  if (!(x)) throw cRuntimeError(this, E_GATEID, id)
 
 cGate *cModule::gate(int id)
@@ -979,9 +984,9 @@ void cModule::deleteGate(const char *gatename)
     disposeGateDesc(desc, true);
 }
 
-std::vector<const char *> cModule::getGateNames() const
+std::vector<std::string> cModule::getGateNames() const
 {
-    std::vector<const char *> result;
+    std::vector<std::string> result;
     for (int i = 0; i < gateDescArraySize; i++)
         if (gateDescArray[i].name)
             result.push_back(gateDescArray[i].name->name.c_str());
@@ -997,6 +1002,16 @@ cGate::Type cModule::gateType(const char *gatename) const
         return suffix == 'i' ? cGate::INPUT : cGate::OUTPUT;
     else
         return desc->name->type;
+}
+
+bool cModule::hasGateVector(const char *gatename) const
+{
+    char suffix;
+    int descIndex = findGateDesc(gatename, suffix);
+    if (descIndex < 0)
+        return false;
+    const cGate::Desc *desc = gateDescArray + descIndex;
+    return desc->isVector();
 }
 
 bool cModule::isGateVector(const char *gatename) const
@@ -1228,6 +1243,18 @@ std::vector<std::string> cModule::getSubmoduleVectorNames() const
      return result;
 }
 
+std::vector<std::string> cModule::getSubmoduleNames() const
+{
+    std::vector<std::string> result;
+    if (subcomponentData != nullptr) {
+        for (cModule *m : subcomponentData->scalarSubmodules)
+            result.push_back(m->getFullName());
+        for (const auto& v: subcomponentData->submoduleVectors)
+            result.push_back(v.name);
+    }
+    return result;
+}
+
 int cModule::getSubmoduleVectorSize(const char *name) const
 {
     auto& array = getSubmoduleArray(name);
@@ -1272,6 +1299,11 @@ void cModule::setSubmoduleVectorSize(const char *name, int newSize)
             throw cRuntimeError("Cannot shrink submodule vector '%s.%s[]' to size %d: Submodule '%s' still exists", getFullPath().c_str(), name, newSize, submodule->getFullName());
 
     array.resize(newSize, nullptr);
+}
+
+bool cModule::hasSubmodule(const char *name, int index) const
+{
+    return getSubmodule(name, index) != nullptr;
 }
 
 int cModule::findSubmodule(const char *name, int index) const
