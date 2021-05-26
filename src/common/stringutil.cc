@@ -706,6 +706,44 @@ std::string opp_join(const std::vector<std::string>& strings, const char *separa
     return os.str();
 }
 
+std::string opp_indexedname(const char *name, int index)
+{
+    if (index == -1)
+        return name;
+    else {
+        std::stringstream os;
+        os << name << "[" << index << "]";
+        return os.str();
+    }
+}
+
+char *opp_indexedname(char *buf, size_t bufsize, const char *name, int index)
+{
+    size_t len = strlen(name);
+    if (bufsize < len + 16)
+        throw opp_runtime_error("Name '%s' is too long", name);
+
+    strcpy(buf, name);
+    char *s = buf + len;
+    *s++ = '[';
+    if ((unsigned)index < 10) {
+        *s++ = '0' + index;
+        *s++ = ']';
+        *s++ = 0;
+    }
+    else if ((unsigned)index < 100) {
+        *s++ = '0' + index/10;
+        *s++ = '0' + index%10;
+        *s++ = ']';
+        *s++ = 0;
+    }
+    else {
+        sprintf(s, "%d]", index);
+    }
+    return buf;
+}
+
+
 char *opp_itoa(char *buf, int d)
 {
     sprintf(buf, "%d", d);

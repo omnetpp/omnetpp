@@ -356,6 +356,16 @@ COMMON_API std::string opp_join(const char **strings, int n, const char *separat
 COMMON_API std::string opp_join(const std::vector<std::string>& strings, const char *separator, bool skipEmpty=false, char quoteChar=0);
 
 /**
+ * Returns "name[index]", or "name" if index==-1.
+ */
+COMMON_API std::string opp_indexedname(const char *name, int index=-1);
+
+/**
+ * Prints "name[index]" into the buffer in an efficient way, and returns its pointer.
+ */
+char *opp_indexedname(char *buf, size_t bufsize, const char *name, int index);
+
+/**
  * Prints the d integer into the given buffer, then returns the buffer pointer.
  */
 COMMON_API char *opp_itoa(char *buf, int d);

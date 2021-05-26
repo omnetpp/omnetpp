@@ -379,9 +379,9 @@ void cModule::updateFullName()
     fullName = nullptr;
 
     if (isVector()) {
-        char tmp[32];
-        std::string buf = std::string(getName()) + "[" + opp_itoa(tmp, getIndex()) + "]";
-        fullName = nameStringPool.get(buf.c_str());
+        static char buf[128];
+        opp_indexedname(buf, sizeof(buf), getName(), getIndex());
+        fullName = nameStringPool.get(buf);
     }
 
     if (lastModuleFullPathModule == this)

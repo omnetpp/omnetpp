@@ -141,34 +141,15 @@ const char *cGate::getNameSuffix() const
         return "";
 }
 
-inline void appendindex(char *s, unsigned int i)
-{
-   while (*s) s++;
-   *s++ = '[';
-   if (i < 10)
-       {*s++ = '0'+i; *s++ = ']'; *s = 0;}
-   else if (i < 100)
-       {*s++ = '0'+i/10; *s++ = '0'+i%10; *s++ = ']'; *s = 0;}
-   else
-       sprintf(s,"%d]", i);
-}
-
 const char *cGate::getFullName() const
 {
-    // if not in a vector, normal getName() will do
     if (!isVector())
         return getName();
-
-    // otherwise, produce fullname in a temp buffer, and return its stringpooled copy
-    // note: this implementation assumes that this method will be called infrequently
-    // (ie. we reproduce the string every time).
-    if (opp_strlen(getName()) > 100)
-        throw cRuntimeError(this, "getFullName(): Gate name too long, should be under 100 characters");
-
-    static char tmp[128];
-    strcpy(tmp, getName());
-    appendindex(tmp, getIndex());
-    return gateFullnamePool.get(tmp);  // non-refcounted stringpool
+    else {
+        static char buf[128];
+        opp_indexedname(buf, sizeof(buf), getName(), getIndex());
+        return gateFullnamePool.get(buf);  // non-refcounted stringpool
+    }
 }
 
 std::string cGate::str() const
