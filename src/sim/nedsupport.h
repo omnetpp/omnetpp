@@ -38,6 +38,10 @@ ExprValue makeExprValue(const cValue& value);
 ExprValue makeExprValue(const cPar& par);
 cValue *makeNedValues(cValue *&buffer, const ExprValue argv[], int argc);
 
+enum IdentQualifier { NONE, THIS, PARENT };
+
+inline std::string qualifierToPrefix(IdentQualifier q) {return q==THIS ? "this." : q==PARENT ? "parent." : "";}
+
 class NedExpressionContext : public cExpression::Context
 {
   public:
@@ -55,7 +59,6 @@ class NedFunctionNode : public NaryNode
   protected:
     virtual ExprValue evaluate(Context *context) const override;
     virtual void print(std::ostream& out, int spaciousness) const override;
-    virtual std::string makeErrorMessage(std::exception& e) const override;
   public:
     NedFunctionNode(cNedFunction *f) : nedFunction(f) {}
     NedFunctionNode *dup() const override {return new NedFunctionNode(nedFunction);}
@@ -64,90 +67,143 @@ class NedFunctionNode : public NaryNode
     virtual std::string str() const override {return getName() + "()";}
 };
 
-class ModuleIndex : public LeafNode
+class Index : public LeafNode
 {
   protected:
+    IdentQualifier qualifier;
     virtual ExprValue evaluate(Context *context) const override;
     virtual void print(std::ostream& out, int spaciousness) const override;
   public:
-    ModuleIndex() {}
-    ModuleIndex *dup() const override {return new ModuleIndex();}
-    virtual std::string getName() const override {return "index";}
+    Index(IdentQualifier qualifier) : qualifier(qualifier) {}
+    Index *dup() const override {return new Index(qualifier);}
+    virtual std::string getName() const override {return qualifierToPrefix(qualifier) + "index";}
+    virtual std::string str() const override {return asPrinted(true);}
 };
 
 class Exists : public LeafNode
 {
+  protected:
+    IdentQualifier qualifier;
     std::string name;
   protected:
     virtual ExprValue evaluate(Context *context) const override;
     virtual void print(std::ostream& out, int spaciousness) const override;
   public:
-    Exists(const char *ident) : name(ident) {}
-    Exists *dup() const override {return new Exists(name.c_str());}
-    virtual std::string getName() const override {return "exists";}
+    Exists(IdentQualifier qualifier, const char *ident) : qualifier(qualifier), name(ident) {}
+    Exists *dup() const override {return new Exists(qualifier, name.c_str());}
+    virtual std::string getName() const override {return "exists(" + qualifierToPrefix(qualifier) + name + ")";}
+    virtual std::string str() const override {return asPrinted(true);}
 };
 
 class Typename : public LeafNode
 {
   protected:
+    IdentQualifier qualifier;
+  protected:
     virtual ExprValue evaluate(Context *context) const override;
     virtual void print(std::ostream& out, int spaciousness) const override;
   public:
-    Typename() {}
-    Typename *dup() const override {return new Typename();}
-    virtual std::string getName() const override {return "typename";}
+    Typename(IdentQualifier qualifier) : qualifier(qualifier) {}
+    Typename *dup() const override {return new Typename(qualifier);}
+    virtual std::string getName() const override {return qualifierToPrefix(qualifier) + "typename";}
+    virtual std::string str() const override {return asPrinted(true);}
 };
 
 /**
  * @brief Parameter reference, ident and this.ident forms
  */
-class ParameterRef : public LeafNode
+class Parameter : public LeafNode
 {
   protected:
+    IdentQualifier qualifier;
     std::string paramName;
-    bool ofThis; // if true, "this.ident" form
-    bool ofParent; // if true, "parent.ident" form
   protected:
     virtual ExprValue evaluate(Context *context) const override;
     virtual void print(std::ostream& out, int spaciousness) const override;
+    virtual std::string makeErrorMessage(std::exception& e) const override {return e.what();} // don't prepend parameter name, as msg already contains it
   public:
-    ParameterRef(const char *paramName, bool ofThis, bool ofParent) : paramName(paramName), ofThis(ofThis), ofParent(ofParent) {}
-    ParameterRef *dup() const override {return new ParameterRef(paramName.c_str(), ofThis, ofParent);}
-    virtual std::string getName() const override {return std::string(ofThis ? "this." : ofParent ? "parent." : "") + paramName;}
+    Parameter(IdentQualifier qualifier, const char *paramName) : qualifier(qualifier), paramName(paramName) {}
+    Parameter *dup() const override {return new Parameter(qualifier, paramName.c_str());}
+    virtual std::string getName() const override {return qualifierToPrefix(qualifier) + paramName;}
+    virtual std::string str() const override {return asPrinted(true);}
 };
 
 /**
  * @brief Parameter reference, ident.ident form
  */
-class SubmoduleParameterRef : public LeafNode
+class SubmoduleParameter : public LeafNode
 {
   protected:
+    IdentQualifier qualifier;
     std::string submoduleName;
     std::string paramName;
   protected:
     virtual ExprValue evaluate(Context *context) const override;
     virtual void print(std::ostream& out, int spaciousness) const override;
   public:
-    SubmoduleParameterRef(const char *submoduleName, const char *paramName) : submoduleName(submoduleName), paramName(paramName) {}
-    SubmoduleParameterRef *dup() const override {return new SubmoduleParameterRef(submoduleName.c_str(), paramName.c_str());}
-    virtual std::string getName() const override {return submoduleName+"."+paramName;}
+    SubmoduleParameter(IdentQualifier qualifier, const char *submoduleName, const char *paramName) : qualifier(qualifier), submoduleName(submoduleName), paramName(paramName) {}
+    SubmoduleParameter *dup() const override {return new SubmoduleParameter(qualifier, submoduleName.c_str(), paramName.c_str());}
+    virtual std::string getName() const override {return qualifierToPrefix(qualifier) + submoduleName + "." + paramName;}
+    virtual std::string str() const override {return asPrinted(true);}
 };
 
 /**
  * @brief Parameter reference, ident[expr].ident form
  */
-class IndexedSubmoduleParameterRef : public UnaryNode
+class IndexedSubmoduleParameter : public UnaryNode
 {
   protected:
+    IdentQualifier qualifier;
     std::string submoduleName;
     std::string paramName;
   protected:
     virtual ExprValue evaluate(Context *context) const override;
     virtual void print(std::ostream& out, int spaciousness) const override;
   public:
-    IndexedSubmoduleParameterRef(const char *submoduleName, const char *paramName);
-    IndexedSubmoduleParameterRef *dup() const override {return new IndexedSubmoduleParameterRef(submoduleName.c_str(), paramName.c_str());}
-    virtual std::string getName() const override {return submoduleName+"[]."+paramName;}
+    IndexedSubmoduleParameter(IdentQualifier qualifier, const char *submoduleName, const char *paramName) : qualifier(qualifier), submoduleName(submoduleName), paramName(paramName) {}
+    IndexedSubmoduleParameter *dup() const override {return new IndexedSubmoduleParameter(qualifier, submoduleName.c_str(), paramName.c_str());}
+    virtual std::string getName() const override {return qualifierToPrefix(qualifier) + submoduleName + "[*]." + paramName;}
+    virtual std::string str() const override {return asPrinted(true);}
+    virtual Precedence getPrecedence() const override {return ELEM;}
+};
+
+/**
+ * @brief sizeof operator: sizeof(this), sizeof(parent), sizeof(ident), sizeof(this.ident), sizeof(parent.ident) forms
+ */
+class Sizeof : public LeafNode
+{
+  protected:
+    IdentQualifier qualifier;
+    std::string optName1; // may be empty
+    std::string optName2;  // may be empty
+  protected:
+    virtual ExprValue evaluate(Context *context) const override;
+    virtual void print(std::ostream& out, int spaciousness) const override;
+    virtual intval_t gateOrSubmoduleSize(cModule *module, const char *name) const;
+  public:
+    Sizeof(IdentQualifier qualifier, const char *name1=nullptr, const char *name2=nullptr) : qualifier(qualifier), optName1(opp_nulltoempty(name1)), optName2(opp_nulltoempty(name2)) {}
+    Sizeof *dup() const override {return new Sizeof(qualifier, optName1.c_str(), optName2.c_str());}
+    virtual std::string getName() const override {return "sizeof(" + qualifierToPrefix(qualifier) + opp_join(".", optName1.c_str(), optName2.c_str()) + ")";}
+    virtual std::string str() const override {return asPrinted(true);}
+};
+
+/**
+ * @brief sizeof operator: sizeof(ident[expr].ident) form
+ */
+class SizeofIndexedSubmoduleGate : public UnaryNode
+{
+  protected:
+    IdentQualifier qualifier;
+    std::string submoduleName;
+    std::string gateName;
+  protected:
+    virtual ExprValue evaluate(Context *context) const override;
+    virtual void print(std::ostream& out, int spaciousness) const override;
+  public:
+    SizeofIndexedSubmoduleGate(IdentQualifier qualifier, const char *submodule, const char *gate) : qualifier(qualifier), submoduleName(submodule), gateName(gate) {}
+    SizeofIndexedSubmoduleGate *dup() const override {return new SizeofIndexedSubmoduleGate(qualifier, submoduleName.c_str(), gateName.c_str());}
+    virtual std::string getName() const override {return "sizeof(" + qualifierToPrefix(qualifier) + submoduleName + "[*]." + gateName + ")";}
+    virtual std::string str() const override {return asPrinted(true);}
     virtual Precedence getPrecedence() const override {return ELEM;}
 };
 
@@ -178,49 +234,7 @@ class LoopVar : public LeafNode
     LoopVar(const char *varName) {this->varName = varName;}
     LoopVar *dup() const override {return new LoopVar(varName.c_str());}
     virtual std::string getName() const override {return varName;}
-};
-
-
-/**
- * @brief sizeof operator: sizeof(ident), sizeof(this), sizeof(parent),
- * sizeof(this.ident), sizeof(parent.ident) forms.
- */
-class SizeofGateOrSubmodule : public LeafNode
-{
-  protected:
-    std::string name1;
-    std::string name2;  // may be empty
-  protected:
-    virtual ExprValue evaluate(Context *context) const override;
-    virtual void print(std::ostream& out, int spaciousness) const override;
-    // helpers:
-    virtual cModule *parentModule(cExpression::Context *context) const;
-    virtual cModule *contextAsModule(cExpression::Context *context) const;
-    virtual cModule *submodule(cModule *module, const char *name) const;
-    virtual intval_t gateOrSubmoduleSize(cModule *module, const char *name) const;
-  public:
-    SizeofGateOrSubmodule(const char *name1, const char *name2) : name1(name1), name2(opp_nulltoempty(name2)) {}
-    SizeofGateOrSubmodule *dup() const override {return new SizeofGateOrSubmodule(name1.c_str(), name2.c_str());}
-    virtual std::string getName() const override {return std::string("sizeof(") + (name2.empty() ? name1 : (name1 + "." + name2)) + ")";}
-};
-
-/**
- * @brief sizeof operator: sizeof(ident[expr].ident) form
- */
-class SizeofIndexedSubmoduleGate : public UnaryNode
-{
-  protected:
-    std::string submoduleName;
-    std::string gateName;
-  protected:
-    virtual ExprValue evaluate(Context *context) const override;
-    virtual void print(std::ostream& out, int spaciousness) const override;
-  public:
-    SizeofIndexedSubmoduleGate(const char *submodule, const char *gate) :
-        submoduleName(submodule), gateName(gate) {}
-    SizeofIndexedSubmoduleGate *dup() const override {return new SizeofIndexedSubmoduleGate(submoduleName.c_str(), gateName.c_str());}
-    virtual std::string getName() const override {return "sizeof("+submoduleName+"[]."+gateName+")";}
-    virtual Precedence getPrecedence() const override {return ELEM;}
+    virtual std::string str() const override {return asPrinted(true);}
 };
 
 class NedObjectNode : public ObjectNode
@@ -252,9 +266,10 @@ class NedOperatorTranslator : public Expression::AstTranslator
     ExprNode *translateSizeof(AstNode *astNode, AstTranslator *translatorForChildren);
     ExprNode *translateExists(AstNode *astNode, AstTranslator *translatorForChildren);
     ExprNode *translateIndex(AstNode *astNode, AstTranslator *translatorForChildren);
-    ExprNode *translateIdent(AstNode *astNode, AstTranslator *translatorForChildren);
-    ExprNode *translateMember(AstNode *astNode, AstTranslator *translatorForChildren);
-
+    ExprNode *translateTypename(AstNode *astNode, AstTranslator *translatorForChildren);
+    ExprNode *translateParameter(AstNode *astNode, AstTranslator *translatorForChildren);
+    enum IdentSyntax { UNKNOWN, QUALIFIER, OPTQUALIFIER_NAME1, OPTQUALIFIER_INDEXEDNAME1, OPTQUALIFIER_NAME1_DOT_NAME2, OPTQUALIFIER_INDEXEDNAME1_DOT_NAME2 };
+    IdentSyntax matchSyntax(AstNode *astNode, IdentQualifier& qualifier, std::string& name1, AstNode *& index, std::string& name2);
   public:
     NedOperatorTranslator() {}
     virtual ExprNode *translateToExpressionTree(AstNode *astNode, AstTranslator *translatorForChildren) override;

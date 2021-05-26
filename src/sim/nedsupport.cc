@@ -91,11 +91,6 @@ std::string NedFunctionNode::getName() const
     return nedFunction->getName();
 }
 
-std::string NedFunctionNode::makeErrorMessage(std::exception& e) const
-{
-    return getName() + "(): " + e.what();
-}
-
 ExprValue NedFunctionNode::evaluate(Context *context_) const
 {
     cExpression::Context *context = dynamic_cast<cExpression::Context*>(context_->simContext);
@@ -115,155 +110,225 @@ void NedFunctionNode::print(std::ostream& out, int spaciousness) const
 
 //----
 
-ExprValue ModuleIndex::evaluate(Context *context_) const
+static cComponent *getOptionalContextComponent(Context *context_, IdentQualifier qualifier)
 {
     cExpression::Context *context = dynamic_cast<cExpression::Context*>(context_->simContext);
     ASSERT(context != nullptr);
-    cModule *module = dynamic_cast<cModule *>(context->component);
-    if (!module)
-        throw cRuntimeError("'index' may only occur in submodule context");
-    return (intval_t)module->getIndex();
+    cComponent *component = context->component;
+    if (qualifier == NONE || qualifier == THIS)
+        return component;
+    else if (qualifier == PARENT) {
+        if (component == nullptr)
+            throw cRuntimeError("'parent' may only occur in module or channel context");
+        cModule *parent = component->getParentModule();
+        if (parent == nullptr)
+            throw cRuntimeError("%s has no parent module", component->getNedTypeAndFullPath().c_str());
+        return parent;
+    }
+    else
+        throw cRuntimeError("Internal error");
 }
 
-void ModuleIndex::print(std::ostream& out, int spaciousness) const
+static cComponent *getContextComponent(Context *context, IdentQualifier qualifier)
 {
-    out << "index";
+    cComponent *component = getOptionalContextComponent(context, qualifier);
+    if (component == nullptr)
+        throw cRuntimeError("May only be used in the context of a module or channel");
+    return component;
+}
+
+static cModule *getContextModule(Context *context, IdentQualifier qualifier)
+{
+    cComponent *component = getOptionalContextComponent(context, qualifier);
+    cModule *module = dynamic_cast<cModule*>(component);
+    if (module == nullptr)
+        throw cRuntimeError("May only be used in the context of a module");
+    return module;
+}
+
+static cModule *getContextSubmodule(Context *context, IdentQualifier qualifier, const char *name, int index=-1)
+{
+    cModule *module = getContextModule(context, qualifier);
+    cModule *submodule = module->getSubmodule(name, index);
+    if (!submodule) {
+        std::string fullName = opp_indexedname(name, index);
+        std::vector<std::string> notes;
+        if (!module->parametersFinalized())
+            notes.push_back("submodules not yet created at this point");
+        if (qualifier == NONE && module->getParentModule() && module->getParentModule()->getSubmodule(name, index))
+            notes.push_back(opp_stringf("did you mean 'parent.%s'?", fullName.c_str()));
+        std::string note = notes.empty() ? "" : " (" + opp_join(notes,  ", ") + ")";
+        throw cRuntimeError("Submodule '%s' not found in module %s%s", fullName.c_str(), module->getNedTypeAndFullPath().c_str(), note.c_str());
+    }
+    return submodule;
 }
 
 //----
 
-ExprValue Exists::evaluate(Context *context_) const
+ExprValue Index::evaluate(Context *context) const
 {
-    cExpression::Context *context = dynamic_cast<cExpression::Context*>(context_->simContext);
-    ASSERT(context != nullptr);
-    cModule *module = dynamic_cast<cModule *>(context->component); //TODO revise
-    if (!module)
-        throw cRuntimeError("'exists()' may only occur in module or submodule context");
+    cModule *module = getContextModule(context, qualifier);
+    return (intval_t)module->getIndex();
+}
+
+void Index::print(std::ostream& out, int spaciousness) const
+{
+    out << qualifierToPrefix(qualifier) << "index";
+}
+
+//----
+
+ExprValue Exists::evaluate(Context *context) const
+{
+    cModule *module = getContextModule(context, qualifier);
     bool exists = module->hasSubmodule(name.c_str()) || module->hasSubmoduleVector(name.c_str());
     return exists;
 }
 
 void Exists::print(std::ostream& out, int spaciousness) const
 {
-    out << "exists(" << name << ")";
+    out << "exists(" << qualifierToPrefix(qualifier) << name << ")";
 }
 
 //----
 
-ExprValue Typename::evaluate(Context *context_) const
+ExprValue Typename::evaluate(Context *context) const
 {
-    cExpression::Context *context = dynamic_cast<cExpression::Context*>(context_->simContext);
-    ASSERT(context != nullptr);
-    if (!context->component)
-        throw cRuntimeError("'typename' may only occur in submodule context");
-    NedExpressionContext *nedContext = dynamic_cast<NedExpressionContext*>(context);
-    if (!nedContext)
-        return context->component->getNedTypeName();
+    NedExpressionContext *nedContext = dynamic_cast<NedExpressionContext*>(context->simContext);
+    if (!nedContext) {
+        cComponent *component = getContextComponent(context, qualifier);
+        return component->getNedTypeName();
+    }
     switch(nedContext->role) {
         case NedExpressionContext::SUBMODULE_CONDITION: return nedContext->computedTypename;
         case NedExpressionContext::SUBMODULE_ARRAY_CONDITION: throw cRuntimeError("'typename' may not occur in the condition of a submodule vector");
-        default: return context->component->getNedTypeName();
+        default: {return getContextComponent(context, qualifier)->getNedTypeName();}
     }
 }
 
 void Typename::print(std::ostream& out, int spaciousness) const
 {
-    out << "typename";
+    out << qualifierToPrefix(qualifier) << "typename";
 }
 
 //----
 
-ExprValue ParameterRef::evaluate(Context *context_) const
+ExprValue Parameter::evaluate(Context *context) const
 {
-    cExpression::Context *context = dynamic_cast<cExpression::Context*>(context_->simContext);
-    ASSERT(context != nullptr);
-    if (!context->component)
-        throw cRuntimeError("Parameter reference '%s' may only occur in component context", getName().c_str());
-    if (ofThis) {
-        cComponent *component = context->component;
-        return makeExprValue(component->par(paramName.c_str()));
+    cComponent *component = getOptionalContextComponent(context, qualifier);
+    if (!component)
+        throw cRuntimeError("Parameter references may only occur in component context");
+
+    cExpression::Context *simContext = dynamic_cast<cExpression::Context*>(context->simContext);
+    if (qualifier == NONE && simContext->paramName != nullptr && paramName == simContext->paramName)
+        throw cRuntimeError("Parameter refers to itself in its assignment (did you mean 'parent.%s'?)", paramName.c_str());
+
+    int parId = component->findPar(paramName.c_str());
+    if (parId == -1) {
+        if (qualifier == NONE && component->getParentModule() && component->getParentModule()->hasPar(paramName.c_str()))
+            throw cRuntimeError("%s has no parameter named '%s' (did you mean 'parent.%s'?)", component->getNedTypeAndFullPath().c_str(), paramName.c_str(), paramName.c_str());
+        else
+            throw cRuntimeError("%s has no parameter named '%s'", component->getNedTypeAndFullPath().c_str(), paramName.c_str());
     }
-    else if (ofParent) {
-        cComponent *component = context->component->getParentModule();
-        if (!component)
-            throw cRuntimeError(context->component, E_ENOPARENT);
-        return makeExprValue(component->par(paramName.c_str()));
-    }
-    else {
-        cComponent *component = context->component;
-        // In inner types, a "paramName" should be first tried as the enclosing type's
-        // parameter, only then as local parameter. TODO no, no! revise!
-        if (component->getComponentType()->isInnerType())
-            if (component->getParentModule() && component->getParentModule()->hasPar(paramName.c_str()))
-                return makeExprValue(component->getParentModule()->par(paramName.c_str()));
-        return makeExprValue(component->par(paramName.c_str()));
-    }
+    return makeExprValue(component->par(parId));
 }
 
-void ParameterRef::print(std::ostream& out, int spaciousness) const
+void Parameter::print(std::ostream& out, int spaciousness) const
 {
-    out << (ofThis ? "this." : ofParent ? "parent." : "") << paramName;
+    out << qualifierToPrefix(qualifier) << paramName;
 }
 
 //----
 
-ExprValue SubmoduleParameterRef::evaluate(Context *context_) const
+ExprValue SubmoduleParameter::evaluate(Context *context) const
 {
-    cExpression::Context *context = dynamic_cast<cExpression::Context*>(context_->simContext);
-    ASSERT(context != nullptr);
-    if (!context->component)
-        throw cRuntimeError(context->component, "Cannot evaluate parameter '%s' without component context", getName().c_str());
-    cModule *compoundModule = dynamic_cast<cModule *>(context->component);  // this works for channels too
-    if (!compoundModule)
-        throw cRuntimeError(context->component, E_ENOPARENT);
-    cModule *submodule = compoundModule->getSubmodule(submoduleName.c_str());
-    if (!submodule)
-        throw cRuntimeError("'%s': Submodule '%s' not found", getName().c_str(), submoduleName.c_str());
+    cModule *submodule = getContextSubmodule(context, qualifier, submoduleName.c_str());
     return makeExprValue(submodule->par(paramName.c_str()));
 }
 
-void SubmoduleParameterRef::print(std::ostream& out, int spaciousness) const
+void SubmoduleParameter::print(std::ostream& out, int spaciousness) const
 {
-    out << submoduleName << "." << paramName;
+    out << qualifierToPrefix(qualifier) << submoduleName << "." << paramName;
 }
 
 //----
 
-IndexedSubmoduleParameterRef::IndexedSubmoduleParameterRef(const char *moduleName, const char *paramName)
+ExprValue IndexedSubmoduleParameter::evaluate(Context *context) const
 {
-    ASSERT(!opp_isempty(moduleName) && !opp_isempty(paramName) && opp_strcmp(moduleName, "this") != 0);
-    this->submoduleName = moduleName;
-    this->paramName = paramName;
-}
-
-ExprValue IndexedSubmoduleParameterRef::evaluate(Context *context_) const
-{
-    cExpression::Context *context = dynamic_cast<cExpression::Context*>(context_->simContext);
-    ASSERT(context != nullptr);
-    if (!context->component)
-        throw cRuntimeError(context->component, "Cannot evaluate parameter '%s' without component context", getName().c_str());
-    cModule *compoundModule = dynamic_cast<cModule *>(context->component);  // this works for channels too
-    if (!compoundModule)
-        throw cRuntimeError(context->component, E_ENOPARENT);
-
-    ExprValue indexValue = child->tryEvaluate(context_);
+    ExprValue indexValue = child->tryEvaluate(context);
     if (indexValue.getUnit() != nullptr)
-        throw cRuntimeError("'%s': Module index must be dimensionless, got '%s'", getName().c_str(), indexValue.str().c_str());
+        throw cRuntimeError("Module index must be dimensionless, got '%s'", indexValue.str().c_str());
     int index = indexValue.intValue();
-    cModule *submodule = compoundModule->getSubmodule(submoduleName.c_str(), index);
-    if (!submodule)
-        throw cRuntimeError("'%s': Submodule '%s[%d]' not found", getName().c_str(), submoduleName.c_str(), index);
-    return makeExprValue(submodule->par(paramName.c_str())); //TODO make a copy here??? (and similar places)
+    cModule *submodule = getContextSubmodule(context, qualifier, submoduleName.c_str(), index);
+    return makeExprValue(submodule->par(paramName.c_str()));
 }
 
-void IndexedSubmoduleParameterRef::print(std::ostream& out, int spaciousness) const
+void IndexedSubmoduleParameter::print(std::ostream& out, int spaciousness) const
 {
-    out << submoduleName << "[";
+    out << qualifierToPrefix(qualifier) << submoduleName << "[";
     printChild(out, child, spaciousness);
     out<< "]." << paramName;
 }
 
 //----
+
+ExprValue Sizeof::evaluate(Context *context) const
+{
+    cModule *module = getContextModule(context, qualifier);
+    if (optName1.empty()) { // both names empty, i.e. sizeof(this) or sizeof(parent)
+        ASSERT(optName2.empty());
+        if (!module->isVector())
+            throw cRuntimeError("Module %s is not part of a submodule vector", module->getNedTypeAndFullPath().c_str());
+        return (intval_t)module->getVectorSize();
+    }
+    else if (optName2.empty())
+        return gateOrSubmoduleSize(module, optName1.c_str());
+    else {
+        cModule *submodule = getContextSubmodule(context, qualifier, optName1.c_str());
+        return gateOrSubmoduleSize(submodule, optName2.c_str());
+    }
+}
+
+intval_t Sizeof::gateOrSubmoduleSize(cModule *module, const char *name) const
+{
+    // name is either a submodule vector or a gate vector of the module
+    if (!module->parametersFinalized())
+        throw cRuntimeError("Call too early, gate vectors have not yet been finalized and submodules not yet created at this point");
+    if (module->hasGateVector(name))
+        return (intval_t)module->gateSize(name);
+    else if (module->hasSubmoduleVector(name))
+        return (intval_t)module->getSubmoduleVectorSize(name);
+    else
+        throw cRuntimeError("Module %s has no gate vector or submodule vector named '%s'", module->getNedTypeAndFullPath().c_str(), name);
+}
+
+void Sizeof::print(std::ostream& out, int spaciousness) const
+{
+    out << "sizeof(" << qualifierToPrefix(qualifier) << opp_join(".", optName1.c_str(), optName2.c_str()) << ")";
+}
+
+//---
+
+ExprValue SizeofIndexedSubmoduleGate::evaluate(Context *context) const
+{
+    ExprValue indexValue = child->tryEvaluate(context);
+    if (indexValue.getUnit() != nullptr)
+        throw cRuntimeError("Module index must be dimensionless, got '%s'", indexValue.str().c_str());
+    int index = indexValue.intValue();
+    cModule *submodule = getContextSubmodule(context, qualifier, submoduleName.c_str(), index);
+    if (!submodule->parametersFinalized())
+        throw cRuntimeError("Call too early, gate vectors have not yet been finalized at this point");
+    return (intval_t)submodule->gateSize(gateName.c_str());
+}
+
+void SizeofIndexedSubmoduleGate::print(std::ostream& out, int spaciousness) const
+{
+    out << "sizeof(" << qualifierToPrefix(qualifier) << submoduleName << "[";
+    printChild(out, child, spaciousness);
+    out << "]." << gateName << ")";
+}
+
+//---
 
 const char *LoopVar::varNames[32];
 long LoopVar::vars[32];
@@ -310,102 +375,6 @@ ExprValue LoopVar::evaluate(Context *context_) const
 void LoopVar::print(std::ostream& out, int spaciousness) const
 {
     out << varName;
-}
-
-//---
-
-ExprValue SizeofGateOrSubmodule::evaluate(Context *context_) const
-{
-    cExpression::Context *context = dynamic_cast<cExpression::Context*>(context_->simContext);
-    ASSERT(context != nullptr);
-    if (!context->component)
-        throw cRuntimeError(context->component, "Cannot evaluate '%s' without component context", getName().c_str());
-
-    if (name2.empty()) {
-        if (name1 == "this")  // sizeof(this)
-            return (intval_t)contextAsModule(context)->getVectorSize();
-        else if (name1 == "parent")  // sizeof(parent)
-            return (intval_t)parentModule(context)->getVectorSize();
-        else   // sizeof(ident)
-            return gateOrSubmoduleSize(contextAsModule(context), name1.c_str());
-    }
-    else {
-        if (name1 == "this") // sizeof(this.ident)
-            return gateOrSubmoduleSize(contextAsModule(context), name2.c_str());
-        else if (name1 == "parent")  // sizeof(parent.ident)
-            return gateOrSubmoduleSize(parentModule(context), name2.c_str());
-        else // sizeof(ident.ident)
-            return gateOrSubmoduleSize(submodule(contextAsModule(context), name1.c_str()), name2.c_str());
-    }
-}
-
-cModule *SizeofGateOrSubmodule::parentModule(cExpression::Context *context) const
-{
-    cModule *module = context->component->getParentModule();
-    if (!module)
-        throw cRuntimeError("'%s': No parent module", getName().c_str());
-    return module;
-}
-
-cModule *SizeofGateOrSubmodule::contextAsModule(cExpression::Context *context) const
-{
-    cModule *module = dynamic_cast<cModule *>(context->component);
-    if (!module)
-        throw cRuntimeError("'%s': May only be invoked on a module", getName().c_str());
-    return module;
-}
-
-cModule *SizeofGateOrSubmodule::submodule(cModule *module, const char *name) const
-{
-    cModule *submodule = module->getSubmodule(name);
-    if (!submodule)
-        throw cRuntimeError("'%s': No parent module", getName().c_str());
-    return submodule;
-}
-
-intval_t SizeofGateOrSubmodule::gateOrSubmoduleSize(cModule *module, const char *name) const
-{
-    // name is either a submodule vector or a gate vector of the module
-    if (module->hasGate(name) && module->isGateVector(name))
-        return (intval_t)module->gateSize(name);
-    else if (module->hasSubmoduleVector(name))
-        return (intval_t)module->getSubmoduleVectorSize(name);
-    else
-        throw cRuntimeError("'%s': Module %s has no such gate vector or submodule vector", getName().c_str(), module->getClassAndFullPath().c_str());
-}
-
-void SizeofGateOrSubmodule::print(std::ostream& out, int spaciousness) const
-{
-    out << "sizeof(" << (name2.empty() ? name1 : (name1 + "." + name2)) << ")";
-}
-
-//---
-
-ExprValue SizeofIndexedSubmoduleGate::evaluate(Context *context_) const
-{
-    cExpression::Context *context = dynamic_cast<cExpression::Context*>(context_->simContext);
-    ASSERT(context != nullptr);
-    if (!context->component)
-        throw cRuntimeError(context->component, "Cannot evaluate '%s' without component context", getName().c_str());
-    cModule *module = dynamic_cast<cModule *>(context->component);
-    if (!module)
-        throw cRuntimeError(context->component, E_ENOPARENT);
-
-    ExprValue indexValue = child->tryEvaluate(context_);
-    if (indexValue.getUnit() != nullptr)
-        throw cRuntimeError("'%s': Module index must be dimensionless, got '%s'", getName().c_str(), indexValue.str().c_str());
-    int index = indexValue.intValue();
-    cModule *submodule = module->getSubmodule(submoduleName.c_str(), index);
-    if (!submodule)
-        throw cRuntimeError("'%s': Submodule '%s[%d]' not found", getName().c_str(), submoduleName.c_str(), index);
-     return (intval_t)submodule->gateSize(gateName.c_str());
-}
-
-void SizeofIndexedSubmoduleGate::print(std::ostream& out, int spaciousness) const
-{
-    out << "sizeof(" << submoduleName << "[";
-    printChild(out, child, spaciousness);
-    out << "]." << gateName << ")";
 }
 
 //---
@@ -516,23 +485,36 @@ ExprValue NedArrayNode::evaluate(Context *context_) const
 
 typedef Expression::AstNode AstNode;
 
-inline bool isIdent(AstNode *astNode) {
-    return astNode->type == AstNode::IDENT;
-}
-inline bool isIdentWithIndex(AstNode *astNode) {
-    return astNode->type == AstNode::IDENT_W_INDEX;
-}
 inline bool isFunction(AstNode *astNode) {
     return astNode->type == AstNode::FUNCTION;
 }
-inline bool isMember(AstNode *astNode) {
-    return astNode->type == AstNode::MEMBER;
+inline bool isFunction(AstNode *astNode, const std::string& name) {
+    return astNode->type == AstNode::FUNCTION && astNode->name == name;
+}
+inline bool isIdentOrMember(AstNode *astNode) {
+    return astNode->type == AstNode::IDENT || astNode->type == AstNode::MEMBER;
+}
+inline bool isIndexed(AstNode *astNode) {
+    return astNode->type == AstNode::IDENT_W_INDEX || astNode->type == AstNode::MEMBER_W_INDEX;
+}
+inline AstNode *getIndexChild(AstNode *astNode) {
+    return astNode->type == AstNode::IDENT_W_INDEX ? astNode->children.at(0) :
+            astNode->type == AstNode::MEMBER_W_INDEX ? astNode->children.at(1) : nullptr;
+}
+inline bool isIdentOrIndexedIdent(AstNode *astNode) {
+    return astNode->type == AstNode::IDENT || astNode->type == AstNode::IDENT_W_INDEX;
+}
+inline bool isMemberOrIndexedMember(AstNode *astNode) {
+    return astNode->type == AstNode::MEMBER || astNode->type == AstNode::MEMBER_W_INDEX;
+}
+inline bool isIdent(AstNode *astNode) {
+    return astNode->type == AstNode::IDENT;
 }
 inline bool isIdent(AstNode *astNode, const std::string& name) {
     return astNode->type == AstNode::IDENT && astNode->name == name;
 }
-inline bool isFunction(AstNode *astNode, const std::string& name) {
-    return astNode->type == AstNode::FUNCTION && astNode->name == name;
+inline bool isMember(AstNode *astNode) {
+    return astNode->type == AstNode::MEMBER;
 }
 inline bool isMember(AstNode *astNode, const std::string& name) {
     return astNode->type == AstNode::MEMBER && astNode->name == name;
@@ -540,7 +522,74 @@ inline bool isMember(AstNode *astNode, const std::string& name) {
 inline AstNode *getSingleChild(AstNode *astNode) {
     if (astNode->children.size() != 1)
         throw cRuntimeError("%s() expects one argument", astNode->name.c_str());
-    return astNode->children[0];
+    return astNode->children.at(0);
+}
+
+NedOperatorTranslator::IdentSyntax NedOperatorTranslator::matchSyntax(AstNode *astNode, IdentQualifier& qualifier, std::string& name1, AstNode *& indexNode, std::string& name2)
+{
+    qualifier = NONE;
+    name1 = name2 = "";
+    indexNode = nullptr;
+
+    // linearize the tree: ident1.ident2.ident3
+    AstNode *ident1 = astNode, *ident2 = nullptr, *ident3 = nullptr;
+    ident1 = astNode;
+    if (isMemberOrIndexedMember(ident1)) {
+        ident2 = ident1;
+        ident1 = ident1->children.at(0);
+        if (isMemberOrIndexedMember(ident1)) {
+            ident3 = ident2;
+            ident2 = ident1;
+            ident1 = ident1->children.at(0);
+            if (isMemberOrIndexedMember(ident1))
+                return UNKNOWN;  // chain too long -- not supported
+        }
+    }
+    else if (isIndexed(ident1)) {
+        return UNKNOWN;  // ident1[] -- not supported
+    }
+
+    // resolve if ident1 is "this." or "parent."
+    if (isIdent(ident1, "this") || isIdent(ident1, "parent")) {
+        qualifier = (ident1->name == "this") ? THIS : PARENT;
+        ident1 = ident2;
+        ident2 = ident3;
+        ident3 = nullptr;
+    }
+
+    if (ident3 != nullptr)
+        return UNKNOWN;  // only two levels are supported
+
+    if (ident2) {
+        if (!isMember(ident2))
+            return UNKNOWN;  // must be member, may NOT be indexed
+        if (ident2->name == "this" || ident2->name == "parent")
+            return UNKNOWN; // may not be "this" or "parent"
+        name2 = ident2->name;
+        if (isIndexed(ident2))
+            indexNode = getIndexChild(ident2);
+    }
+
+    if (ident1) {
+        if (!isIdentOrIndexedIdent(ident1) && !isMemberOrIndexedMember(ident1))
+            return UNKNOWN; // must be a member or ident, potentially indexed
+        if (ident1->name == "this" || ident1->name == "parent")
+            return UNKNOWN; // may not be "this" or "parent"
+        name1 = ident1->name;
+        if (isIndexed(ident1)) {
+            if (ident2 && isIndexed(ident2))
+                return UNKNOWN; // ident1[...].ident2[...] is not a supported syntax
+            indexNode = getIndexChild(ident1);
+        }
+    }
+
+    // return code
+    if (!ident1)
+        return QUALIFIER;
+    else if (!ident2)
+        return !indexNode ? OPTQUALIFIER_NAME1 : OPTQUALIFIER_INDEXEDNAME1;
+    else
+        return !indexNode ? OPTQUALIFIER_NAME1_DOT_NAME2 : OPTQUALIFIER_INDEXEDNAME1_DOT_NAME2;
 }
 
 ExprNode *NedOperatorTranslator::translateToExpressionTree(AstNode *astNode, AstTranslator *translatorForChildren)
@@ -549,113 +598,134 @@ ExprNode *NedOperatorTranslator::translateToExpressionTree(AstNode *astNode, Ast
         return translateSizeof(astNode, translatorForChildren);
     else if (isFunction(astNode, "exists"))
         return translateExists(astNode, translatorForChildren);
-    else if (isIdent(astNode, "typename"))
-        return new Typename();
-    else if (isIdent(astNode, "index"))
+    else if (isIdent(astNode, "index") || isMember(astNode, "index"))
         return translateIndex(astNode, translatorForChildren);
-    else if (isIdent(astNode))
-        return translateIdent(astNode, translatorForChildren);
-    else if (isMember(astNode))
-        return translateMember(astNode, translatorForChildren);
+    else if (isIdent(astNode, "typename") || isMember(astNode, "typename"))
+        return translateTypename(astNode, translatorForChildren);
+    else if (isIdentOrIndexedIdent(astNode) || isMemberOrIndexedMember(astNode))
+        return translateParameter(astNode, translatorForChildren);
     else
         return nullptr; // not recognized here
 }
 
 ExprNode *NedOperatorTranslator::translateSizeof(AstNode *sizeofNode, AstTranslator *translatorForChildren)
 {
-    // Excerpt from the NED Reference:
-    // """
-    // The sizeof() operator expects one argument, and it is only accepted in compound module definitions.
-    //
-    // The sizeof(identifier) syntax occurring anywhere in a compound module yields the size of the
-    // named submodule or gate vector of the compound module.
-    //
-    // Inside submodule bodies, the size of a gate vector of the same submodule can be referred to
-    // with the this qualifier: sizeof(this.out).
-    //
-    // To refer to the size of a submodule's gate vector defined earlier in the NED file, use the
-    // sizeof(submoduleName.gateVectorName) or sizeof(submoduleName[index].gateVectorName) syntax.
-    // """
+    IdentQualifier qualifier;
+    std::string name1, name2;
+    AstNode *indexNode;
 
-    AstNode *childNode = getSingleChild(sizeofNode);
-    if (isIdent(childNode)) { // sizeof(ident), sizeof(this), sizeof(parent)
-        return new SizeofGateOrSubmodule(childNode->name.c_str(), nullptr);
+    IdentSyntax syntax = matchSyntax(getSingleChild(sizeofNode), qualifier, name1, indexNode, name2);
+
+    switch (syntax) {
+    case UNKNOWN:
+        throw cRuntimeError("Illegal argument for sizeof() in '%s'", sizeofNode->unparse().c_str());
+    case QUALIFIER:
+        return new Sizeof(qualifier);
+    case OPTQUALIFIER_NAME1:
+        return new Sizeof(qualifier, name1.c_str());
+    case OPTQUALIFIER_INDEXEDNAME1:
+        throw cRuntimeError("Illegal argument for sizeof() in '%s'", sizeofNode->unparse().c_str());
+    case OPTQUALIFIER_NAME1_DOT_NAME2:
+        return new Sizeof(qualifier, name1.c_str(), name2.c_str());
+    case OPTQUALIFIER_INDEXEDNAME1_DOT_NAME2:
+        auto result = new SizeofIndexedSubmoduleGate(qualifier, name1.c_str(), name2.c_str());
+        result->setChild(translateChild(indexNode, translatorForChildren));
+        return result;
     }
-    else if (isMember(childNode)) {
-        ASSERT(childNode->children.size() >= 1);
-        AstNode *grandChildNode = childNode->children[0];
-        if (isIdent(grandChildNode)) { // sizeof(ident.ident), sizeof(this.ident), sizeof(parent.ident)
-            return new SizeofGateOrSubmodule(grandChildNode->name.c_str(), childNode->name.c_str());
-        }
-        else if (isIdentWithIndex(grandChildNode)) { // sizeof(ident[expr].ident)
-            const char *submoduleName = grandChildNode->name.c_str();
-            const char *gateVectorName = childNode->name.c_str();
-            auto result = new SizeofIndexedSubmoduleGate(submoduleName, gateVectorName);
-            translateChildren(grandChildNode, result, translatorForChildren);
-            return result;
-        }
-        else
-            throw cRuntimeError("Illegal argument for sizeof()");
-    }
-    else {
-        throw cRuntimeError("Illegal argument for sizeof()");
-    }
+    throw cRuntimeError("internal error");
 }
 
 ExprNode *NedOperatorTranslator::translateExists(AstNode *existsNode, AstTranslator *translatorForChildren)
 {
-    AstNode *argNode = getSingleChild(existsNode);
-    if (isIdent(argNode)) {
-        // exists(ident)
-        const char *name = argNode->name.c_str();
-        return new Exists(name);
+    IdentQualifier qualifier;
+    std::string name1, name2;
+    AstNode *indexNode;
+
+    IdentSyntax syntax = matchSyntax(getSingleChild(existsNode), qualifier, name1, indexNode, name2);
+
+    switch (syntax) {
+    case OPTQUALIFIER_NAME1:
+        return new Exists(qualifier, name1.c_str());
+    case UNKNOWN:
+    case QUALIFIER:
+    case OPTQUALIFIER_INDEXEDNAME1:
+    case OPTQUALIFIER_NAME1_DOT_NAME2:
+    case OPTQUALIFIER_INDEXEDNAME1_DOT_NAME2:
+        throw cRuntimeError("Illegal argument for exists() in '%s'", existsNode->unparse().c_str());
     }
-    else
-        throw cRuntimeError("Illegal argument for exists()");
+    throw cRuntimeError("internal error");
 }
 
-ExprNode *NedOperatorTranslator::translateIndex(AstNode *identNode, AstTranslator *translatorForChildren)
+ExprNode *NedOperatorTranslator::translateIndex(AstNode *indexNode, AstTranslator *translatorForChildren)
 {
-    //TODO
-    //if (!inSubcomponentScope)
-    //    throw cRuntimeError("'index' may only occur in submodule context");
-    return new ModuleIndex();
+    IdentQualifier qualifier;
+    std::string name1, name2;
+    AstNode *nameIndexNode;
+
+    IdentSyntax syntax = matchSyntax(indexNode, qualifier, name1, nameIndexNode, name2);
+
+    switch (syntax) {
+    case OPTQUALIFIER_NAME1:  // NAME1 is "index"
+       return new Index(qualifier);
+    case QUALIFIER:
+    case UNKNOWN:
+    case OPTQUALIFIER_INDEXEDNAME1:
+    case OPTQUALIFIER_NAME1_DOT_NAME2:
+    case OPTQUALIFIER_INDEXEDNAME1_DOT_NAME2:
+       throw cRuntimeError("Invalid use of 'index' in '%s'", indexNode->unparse().c_str());
+    }
+    throw cRuntimeError("internal error");
 }
 
-ExprNode *NedOperatorTranslator::translateIdent(AstNode *identNode, AstTranslator *translatorForChildren)
+ExprNode *NedOperatorTranslator::translateTypename(AstNode *typenameNode, AstTranslator *translatorForChildren)
 {
-    const char *name = identNode->name.c_str();
-    if (LoopVar::contains(name))
-        return new LoopVar(name);
-    else
-        return new ParameterRef(name, false, false);
+    IdentQualifier qualifier;
+    std::string name1, name2;
+    AstNode *indexNode;
+
+    IdentSyntax syntax = matchSyntax(typenameNode, qualifier, name1, indexNode, name2);
+
+    switch (syntax) {
+    case OPTQUALIFIER_NAME1:
+        return new Typename(qualifier); // NAME1 is "typename"
+    case UNKNOWN:
+    case QUALIFIER:
+    case OPTQUALIFIER_INDEXEDNAME1:
+    case OPTQUALIFIER_NAME1_DOT_NAME2:
+    case OPTQUALIFIER_INDEXEDNAME1_DOT_NAME2:
+        throw cRuntimeError("Invalid use of 'typename' in '%s'", typenameNode->unparse().c_str());
+    }
+    throw cRuntimeError("internal error");
 }
 
-ExprNode *NedOperatorTranslator::translateMember(AstNode *memberNode, AstTranslator *translatorForChildren)
+ExprNode *NedOperatorTranslator::translateParameter(AstNode *paramNode, AstTranslator *translatorForChildren)
 {
-    ASSERT(memberNode->children.size() == 1);
-    AstNode *objectNode = memberNode->children[0];
-    if (isIdent(objectNode, "this")) {
-        // this.foo
-        return new ParameterRef(memberNode->name.c_str(), true, false);
+    IdentQualifier qualifier;
+    std::string name1, name2;
+    AstNode *indexNode;
+
+    IdentSyntax syntax = matchSyntax(paramNode, qualifier, name1, indexNode, name2);
+
+    switch (syntax) {
+    case UNKNOWN:
+    case QUALIFIER:
+        throw cRuntimeError("Invalid parameter reference '%s'", paramNode->unparse().c_str());
+    case OPTQUALIFIER_NAME1:
+        if (qualifier == NONE && LoopVar::contains(name1.c_str()))
+            return new LoopVar(name1.c_str());
+        else
+            return new Parameter(qualifier, name1.c_str());
+    case OPTQUALIFIER_INDEXEDNAME1:
+        throw cRuntimeError("Invalid parameter reference '%s'", paramNode->unparse().c_str());
+    case OPTQUALIFIER_NAME1_DOT_NAME2:
+        return new SubmoduleParameter(qualifier, name1.c_str(), name2.c_str());
+    case OPTQUALIFIER_INDEXEDNAME1_DOT_NAME2: {
+        auto result = new IndexedSubmoduleParameter(qualifier, name1.c_str(), name2.c_str());
+        result->setChild(translateChild(indexNode, translatorForChildren));
+        return result;
     }
-    else if (isIdent(objectNode, "parent")) {
-        // parent.foo
-        return new ParameterRef(memberNode->name.c_str(), false, true);
     }
-    else if (isIdent(objectNode)) {
-        // foo.bar
-        return new SubmoduleParameterRef(objectNode->name.c_str(), memberNode->name.c_str());
-    }
-    else if (isIdentWithIndex(objectNode)) {
-        // foo[i].bar
-        ASSERT(objectNode->children.size() == 1);
-        ExprNode *node = new IndexedSubmoduleParameterRef(objectNode->name.c_str(), memberNode->name.c_str());
-        translateChildren(objectNode, node, translatorForChildren);
-        return node;
-    }
-    else
-        throw cRuntimeError("'.%s': invalid member access", memberNode->name.c_str());
+    throw cRuntimeError("internal error");
 }
 
 //---

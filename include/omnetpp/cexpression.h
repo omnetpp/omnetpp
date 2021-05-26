@@ -39,9 +39,11 @@ class SIM_API cExpression : public cObject
     class SIM_API Context : public cObject
     {
       public:
-        explicit Context(cComponent *component, const char *baseDirectory) : component(component), baseDirectory(baseDirectory) {}
+        explicit Context(cComponent *component, const char *baseDirectory, const char *paramName=nullptr) :
+            component(component), baseDirectory(baseDirectory), paramName(paramName) {}
         cComponent *component = nullptr;
         const char *baseDirectory = nullptr;
+        const char *paramName = nullptr;
     };
 
   public:

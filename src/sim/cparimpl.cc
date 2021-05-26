@@ -108,7 +108,7 @@ cValue cParImpl::evaluate(cExpression *expr, cComponent *contextComponent) const
         depth++;
         if (depth >= 5)
             throw cRuntimeError("Evaluation nesting too deep (circular parameter references?)");
-        cExpression::Context context(contextComponent, baseDirectory);
+        cExpression::Context context(contextComponent, baseDirectory, getName());
         cValue ret = expr->evaluate(&context);
         depth--;
         return ret;
