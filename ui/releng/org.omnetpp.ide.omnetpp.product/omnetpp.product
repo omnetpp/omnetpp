@@ -18,10 +18,6 @@
 &quot;OMNeT++ IDE&quot;
 --launcher.appendVmargs
       </programArgs>
-      <programArgsMac>
--vm
-jre/lib/jli/libjli.dylib
-      </programArgsMac>
       <vmArgs>--add-modules=ALL-SYSTEM
 -Xmx1024m
       </vmArgs>
@@ -52,6 +48,7 @@ jre/lib/jli/libjli.dylib
    </plugins>
 
    <features>
+      <feature id="org.eclipse.justj.openjdk.hotspot.jre.full" installMode="root"/>
       <feature id="org.eclipse.egit"/>
       <feature id="org.eclipse.linuxtools.valgrind"/>
       <feature id="org.eclipse.wst.xml_ui.feature"/>
@@ -70,6 +67,7 @@ jre/lib/jli/libjli.dylib
        <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="4" />
        <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
        <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="2" />
+       <plugin id="org.eclipse.equinox.p2.reconciler.dropins" autoStart="true" startLevel="4" />
        <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
        <plugin id="org.eclipse.osgi" autoStart="true" startLevel="-1" />
        <plugin id="org.eclipse.update.configurator" autoStart="true" startLevel="3" />

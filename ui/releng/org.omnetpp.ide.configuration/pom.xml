@@ -10,8 +10,9 @@
     <tycho.version>2.3.0</tycho.version>
     <tycho.extras.version>2.3.0</tycho.extras.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <eclipse-repo.url>https://download.eclipse.org/releases/2020-12</eclipse-repo.url>
-    <pydev-repo.url>https://pydev.org/update_sites/8.2.0</pydev-repo.url>
+    <eclipse-repo.url>https://download.eclipse.org/releases/2021-06</eclipse-repo.url>
+    <justj-repo.url>https://download.eclipse.org/justj/jres/11/updates/release/latest</justj-repo.url>
+    <pydev-repo.url>https://pydev.org/update_sites/8.3.0</pydev-repo.url>
     <ansiconsole-repo.url>https://www.mihai-nita.net/eclipse</ansiconsole-repo.url>
   </properties>
 
@@ -30,6 +31,11 @@
     <repository>
       <id>main</id>
       <url>${eclipse-repo.url}</url>
+      <layout>p2</layout>
+    </repository>
+    <repository>
+      <id>justj</id>
+      <url>${justj-repo.url}</url>
       <layout>p2</layout>
     </repository>
     <repository>
@@ -67,6 +73,7 @@
         <artifactId>target-platform-configuration</artifactId>
         <version>${tycho.version}</version>
         <configuration>
+         <executionEnvironment>org.eclipse.justj.openjdk.hotspot.jre.full-11</executionEnvironment>
          <environments>
           <environment>
            <os>linux</os><ws>gtk</ws><arch>x86_64</arch>
