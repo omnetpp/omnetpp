@@ -7,8 +7,8 @@
   <packaging>pom</packaging>
 
   <properties>
-    <tycho.version>1.6.0</tycho.version>
-    <tycho.extras.version>1.6.0</tycho.extras.version>
+    <tycho.version>2.3.0</tycho.version>
+    <tycho.extras.version>2.3.0</tycho.extras.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <eclipse-repo.url>https://download.eclipse.org/releases/2020-12</eclipse-repo.url>
     <pydev-repo.url>https://pydev.org/update_sites/8.2.0</pydev-repo.url>
