@@ -225,8 +225,9 @@ void cModule::forEachChild(cVisitor *v)
 }
 
 // a two-in-one function, so that we don't end up calling updateFullPath() twice
-void cModule::setNameAndIndex(const char *name, int index)
+void cModule::setInitialNameAndIndex(const char *name, int index)
 {
+    ASSERT(parentModule == nullptr);
     cOwnedObject::setName(name);
     vectorIndex = index;
     updateFullName();
@@ -248,12 +249,13 @@ void cModule::insertSubmodule(cModule *mod)
     if (!subcomponentData)
         subcomponentData = new SubcomponentData;
 
+    const char *name = mod->getName();
     int index = mod->vectorIndex;
     if (index == -1)
         subcomponentData->scalarSubmodules.push_back(mod);
     else {
         // add to submodule vectors array (name and index must already be set)
-        auto& array = getSubmoduleArray(mod->getName());
+        auto& array = getSubmoduleArray(name);
         if (index < 0 || index >= array.size())
             throw cRuntimeError(this, "Cannot insert module '%s' into parent: index is out of range (vector size is %d)", mod->getClassAndFullName().c_str(), (int)array.size());
         if (array.at(index) != nullptr)
@@ -315,11 +317,27 @@ void cModule::removeChannel(cChannel *channel)
 
 void cModule::setName(const char *name)
 {
+    setNameAndIndex(name, vectorIndex);
+}
+
+void cModule::setIndex(int index)
+{
+    setNameAndIndex(getName(), index);
+}
+
+void cModule::setNameAndIndex(const char *name, int index)
+{
     cModule *parent = getParentModule();
+    if (parent == nullptr && index != -1)
+        throw cRuntimeError(this, "Cannot set module index to %d: toplevel module cannot be part of a module vector", index);
+
     if (parent)
         parent->removeSubmodule(this);
+
     cOwnedObject::setName(name);
+    vectorIndex = index;
     updateFullName();
+
     if (parent)
         parent->insertSubmodule(this);
 }

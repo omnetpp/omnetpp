@@ -307,7 +307,7 @@ cModule *cModuleType::create(const char *moduleName, cModule *parentModule, int 
 
     // set up module: set parent, module type, name, vector size
     module->setComponentType(this);
-    module->setNameAndIndex(moduleName, index);
+    module->setInitialNameAndIndex(moduleName, index);
 
     if (parentModule)
         parentModule->insertSubmodule(module);

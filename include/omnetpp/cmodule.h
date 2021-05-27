@@ -297,7 +297,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
 
     // internal: sets module name and its index within vector (if module is
     // part of a module vector). Called as part of the module creation process.
-    virtual void setNameAndIndex(const char *name, int index);
+    virtual void setInitialNameAndIndex(const char *name, int index);
 
     // internal: called from setName() and setIndex()
     void updateFullName();
@@ -405,7 +405,12 @@ class SIM_API cModule : public cComponent //implies noncopyable
     virtual void forEachChild(cVisitor *v) override;
 
     /**
-     * Sets module's name.
+     * Sets module's name. If the module is part of a submodule vector,
+     * the name change implies relocating the module into another
+     * submodule vector (which must already exist, and the same index
+     * position in it must be available and empty).
+     *
+     * @see setIndex(), setNameAndIndex()
      */
     virtual void setName(const char *s) override;
 
@@ -431,6 +436,21 @@ class SIM_API cModule : public cComponent //implies noncopyable
 
     /** @name Setting up the module. */
     //@{
+    /**
+     * Sets the module's index. The module must be part of a submodule
+     * vector. The index change implies relocating the module into another
+     * slot in the same submodule vector; the destination index position
+     * must be available and empty.
+     */
+    virtual void setIndex(int index);
+
+    /**
+     * Sets the module's name and index. If index is not -1, the change implies
+     * relocating the module into another submodule vector and index position.
+     * The destination submodule vector must already exist, and its indexth
+     * slot must be available and empty.
+     */
+    virtual void setNameAndIndex(const char *name, int index=-1);
 
     /**
      * Adds a gate or gate vector to the module. Gate vectors are created with

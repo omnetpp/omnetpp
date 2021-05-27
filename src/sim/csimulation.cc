@@ -284,6 +284,8 @@ std::string cSimulation::getNedPackageForFolder(const char *folder)
 
 int cSimulation::registerComponent(cComponent *component)
 {
+    ASSERT(component->simulation == nullptr && component->componentId == -1);
+
     lastComponentId++;
 
     if (lastComponentId >= size) {
@@ -306,6 +308,8 @@ int cSimulation::registerComponent(cComponent *component)
 
 void cSimulation::deregisterComponent(cComponent *component)
 {
+    ASSERT(component->simulation == this && component->componentId != -1);
+
     int id = component->componentId;
     component->simulation = nullptr;
     component->componentId = -1;
@@ -320,6 +324,13 @@ void cSimulation::deregisterComponent(cComponent *component)
 
 void cSimulation::setSystemModule(cModule *module)
 {
+    if (systemModule != nullptr)
+        throw cRuntimeError(this, "Cannot set module '%s' as toplevel (system) module: there is already a system module ", module->getFullName());
+    if (module->parentModule != nullptr)
+        throw cRuntimeError(this, "Cannot set module '%s' as toplevel (system) module: it already has a parent module", module->getFullName());
+    if (module->vectorIndex != -1)
+        throw cRuntimeError(this, "Cannot set module '%s' as toplevel (system) module: toplevel module cannot be part of a module vector", module->getFullName());
+
     systemModule = module;
     take(module);
 }
