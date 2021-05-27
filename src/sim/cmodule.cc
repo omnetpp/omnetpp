@@ -240,6 +240,23 @@ std::string cModule::str() const
     return out.str();
 }
 
+template<typename T>
+typename std::vector<T>::iterator findByName(std::vector<T>& v, const std::string& name) {
+    for (auto it = v.begin(); it != v.end(); ++it)
+        if (it->name == name)
+            return it;
+    return v.end();
+}
+
+template<typename T>
+typename std::vector<T>::const_iterator findByName(const std::vector<T>& v, const std::string& name) {
+    std::string namestr = name;
+    for (auto it = v.cbegin(); it != v.cend(); ++it)
+        if (it->name == namestr)
+            return it;
+    return v.cend();
+}
+
 void cModule::insertSubmodule(cModule *mod)
 {
     ASSERT(mod->parentModule == nullptr);
@@ -251,15 +268,23 @@ void cModule::insertSubmodule(cModule *mod)
 
     const char *name = mod->getName();
     int index = mod->vectorIndex;
-    if (index == -1)
+    if (index == -1) {
+        if (hasSubmodule(name))
+            throw cRuntimeError("Cannot insert module %s into parent %s: a submodule of the same name already exists", mod->getClassAndFullName().c_str(), getNedTypeAndFullPath().c_str());
+        if (hasSubmoduleVector(name))
+            throw cRuntimeError("Cannot insert module %s into parent %s: a submodule vector of the same name already exists", mod->getClassAndFullName().c_str(), getNedTypeAndFullPath().c_str());
         subcomponentData->scalarSubmodules.push_back(mod);
+    }
     else {
         // add to submodule vectors array (name and index must already be set)
-        auto& array = getSubmoduleArray(name);
+        auto it = findByName(subcomponentData->submoduleVectors, name);
+        if (it == subcomponentData->submoduleVectors.end())
+            throw cRuntimeError("Cannot insert module %s into parent %s: There is no submodule vector named '%s'", mod->getClassAndFullName().c_str(), getNedTypeAndFullPath().c_str(), name);
+        auto& array = it->array;
         if (index < 0 || index >= array.size())
-            throw cRuntimeError(this, "Cannot insert module '%s' into parent: index is out of range (vector size is %d)", mod->getClassAndFullName().c_str(), (int)array.size());
+            throw cRuntimeError("Cannot insert module %s into parent %s: index is out of range (vector size is %d)", mod->getClassAndFullName().c_str(), getNedTypeAndFullPath().c_str(), (int)array.size());
         if (array.at(index) != nullptr)
-            throw cRuntimeError(this, "Cannot insert module '%s' into parent: vector index already occupied", mod->getClassAndFullName().c_str());
+            throw cRuntimeError("Cannot insert module %s into parent %s: vector index already occupied", mod->getClassAndFullName().c_str(), getNedTypeAndFullPath().c_str());
         array[index] = mod;
     }
 
@@ -426,23 +451,6 @@ void cModule::setDisplayName(const char *name)
     displayName = nameStringPool.get(name);
 }
 
-template<typename T>
-typename std::vector<T>::iterator findByName(std::vector<T>& v, std::string& name) {
-    for (auto it = v.begin(); it != v.end; ++it)
-        if (it->name == name)
-            return it;
-    return v.end();
-}
-
-template<typename T>
-typename std::vector<T>::const_iterator findByName(const std::vector<T>& v, const char *name) {
-    std::string namestr = name;
-    for (auto it = v.cbegin(); it != v.cend(); ++it)
-        if (it->name == namestr)
-            return it;
-    return v.cend();
-}
-
 std::vector<cModule*>& cModule::getSubmoduleArray(const char *name) const
 {
     if (subcomponentData != nullptr) {
@@ -451,7 +459,10 @@ std::vector<cModule*>& cModule::getSubmoduleArray(const char *name) const
             if (v.name == namestr)
                 return const_cast<std::vector<cModule*>&>(v.array);
     }
-    throw cRuntimeError("Module '%s' has no submodule vector named '%s'", getFullPath().c_str(), name);
+    if (hasSubmodule(name))
+        throw cRuntimeError("Module '%s' has no submodule vector named '%s' ('%s' is a scalar submodule)", getFullPath().c_str(), name, name);
+    else
+        throw cRuntimeError("Module '%s' has no submodule vector named '%s'", getFullPath().c_str(), name);
 }
 
 int cModule::getVectorSize() const
@@ -1283,12 +1294,12 @@ int cModule::getSubmoduleVectorSize(const char *name) const
 
 void cModule::addSubmoduleVector(const char *name, int size)
 {
+    if (hasSubmodule(name) || hasSubmoduleVector(name))
+        throw cRuntimeError(this, "Cannot add submodule vector '%s': a submodule or submodule vector of the same name already exists", name);
+
     if (subcomponentData == nullptr)
         subcomponentData = new SubcomponentData;
-
     auto& submoduleVectors = subcomponentData->submoduleVectors;
-    if (findByName(submoduleVectors, name) != subcomponentData->submoduleVectors.end())
-        throw cRuntimeError(this, "Cannot add submodule vector, module already has a submodule vector named '%s'", name);
     submoduleVectors.push_back(SubmoduleVector());
     submoduleVectors.back().name = name;
     submoduleVectors.back().array.resize(size);

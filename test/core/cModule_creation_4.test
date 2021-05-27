@@ -1,0 +1,40 @@
+%description:
+Test that submodule name uniqueness is enforced with dynamic module creation.
+
+%file: node.ned
+module Node {}
+
+%activity:
+#define TRY(code)  try { EV << #code; code; EV << " ==> OK\n"; } catch(std::exception& e) {EV << " ==> " << e.what() << "\n";}
+
+cModule *parent = this;
+cModuleType *nedType = cModuleType::find("Node");
+
+nedType->create("scalar", parent);
+parent->addSubmoduleVector("vector", 5);
+
+TRY(nedType->create("scalar", parent));
+TRY(nedType->create("vector", parent));
+TRY(parent->addSubmoduleVector("scalar", 0));
+TRY(parent->addSubmoduleVector("vector", 0));
+
+TRY(nedType->create("scalar", parent, 1));
+TRY(nedType->create("vector", parent, 1));
+TRY(nedType->create("vector", parent, 1)); // duplicate index
+TRY(nedType->create("vector", parent, 5)); // out of bounds
+TRY(nedType->create("vector", parent, -2)); // out of bounds
+
+EV << ".\n";
+
+%contains: stdout
+nedType->create("scalar", parent) ==> Cannot insert module (omnetpp::cModule)scalar into parent (Test)Test: a submodule of the same name already exists
+nedType->create("vector", parent) ==> Cannot insert module (omnetpp::cModule)vector into parent (Test)Test: a submodule vector of the same name already exists
+parent->addSubmoduleVector("scalar", 0) ==> Cannot add submodule vector 'scalar': a submodule or submodule vector of the same name already exists
+parent->addSubmoduleVector("vector", 0) ==> Cannot add submodule vector 'vector': a submodule or submodule vector of the same name already exists
+nedType->create("scalar", parent, 1) ==> Cannot insert module (omnetpp::cModule)scalar[1] into parent (Test)Test: There is no submodule vector named 'scalar'
+nedType->create("vector", parent, 1) ==> OK
+nedType->create("vector", parent, 1) ==> Cannot insert module (omnetpp::cModule)vector[1] into parent (Test)Test: vector index already occupied
+nedType->create("vector", parent, 5) ==> Cannot insert module (omnetpp::cModule)vector[5] into parent (Test)Test: index is out of range (vector size is 5)
+nedType->create("vector", parent, -2) ==> Cannot insert module (omnetpp::cModule)vector[-2] into parent (Test)Test: index is out of range (vector size is 5)
+.
+

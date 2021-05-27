@@ -56,7 +56,9 @@ void Simple::activity()
         if (i == 3)
         {
             EV << "creating new module\n";
-            offspring = getModuleType()->createScheduleInit("x", getParentModule());
+            static int counter;
+            std::string name = "x" + std::to_string(++counter);
+            offspring = getModuleType()->createScheduleInit(name.c_str(), getParentModule());
         }
         if (i == 8)
         {
@@ -103,214 +105,214 @@ starting module
 ** Event #19  t=2.92025157268   Test.a[3] (Simple, id=5)
 ** Event #20  t=3.015927093997   Test.a[1] (Simple, id=3)
 creating new module
-Initializing module Test.x, stage 0
-** Event #21  t=3.015927093997   Test.x (Simple, id=7)
+Initializing module Test.x1, stage 0
+** Event #21  t=3.015927093997   Test.x1 (Simple, id=7)
 starting module
 ** Event #22  t=3.178927995609   Test.a[4] (Simple, id=6)
 creating new module
-Initializing module Test.x, stage 0
-** Event #23  t=3.178927995609   Test.x (Simple, id=8)
+Initializing module Test.x2, stage 0
+** Event #23  t=3.178927995609   Test.x2 (Simple, id=8)
 starting module
 ** Event #24  t=3.403853677628   Test.a[3] (Simple, id=5)
 creating new module
-Initializing module Test.x, stage 0
-** Event #25  t=3.403853677628   Test.x (Simple, id=9)
+Initializing module Test.x3, stage 0
+** Event #25  t=3.403853677628   Test.x3 (Simple, id=9)
 starting module
 ** Event #26  t=3.665373442248   Test.a[1] (Simple, id=3)
-** Event #27  t=3.931602108922   Test.x (Simple, id=8)
+** Event #27  t=3.931602108922   Test.x2 (Simple, id=8)
 ** Event #28  t=4.057736244849   Test.a[3] (Simple, id=5)
 ** Event #29  t=4.164245451264   Test.a[1] (Simple, id=3)
 ** Event #30  t=4.237930806729   Test.a[1] (Simple, id=3)
-** Event #31  t=4.243286530528   Test.x (Simple, id=9)
-** Event #32  t=4.334447556652   Test.x (Simple, id=9)
-** Event #33  t=4.58482321162   Test.x (Simple, id=7)
-** Event #34  t=4.605248800019   Test.x (Simple, id=7)
+** Event #31  t=4.243286530528   Test.x3 (Simple, id=9)
+** Event #32  t=4.334447556652   Test.x3 (Simple, id=9)
+** Event #33  t=4.58482321162   Test.x1 (Simple, id=7)
+** Event #34  t=4.605248800019   Test.x1 (Simple, id=7)
 ** Event #35  t=4.649508802972   Test.a[1] (Simple, id=3)
 ** Event #36  t=4.851139195934   Test.a[4] (Simple, id=6)
 ** Event #37  t=4.970944262486   Test.a[0] (Simple, id=2)
-** Event #38  t=5.064496937274   Test.x (Simple, id=7)
-** Event #39  t=5.215727790939   Test.x (Simple, id=7)
+** Event #38  t=5.064496937274   Test.x1 (Simple, id=7)
+** Event #39  t=5.215727790939   Test.x1 (Simple, id=7)
 creating new module
-Initializing module Test.x, stage 0
-** Event #40  t=5.215727790939   Test.x (Simple, id=10)
+Initializing module Test.x4, stage 0
+** Event #40  t=5.215727790939   Test.x4 (Simple, id=10)
 starting module
-** Event #41  t=5.37906006496   Test.x (Simple, id=9)
+** Event #41  t=5.37906006496   Test.x3 (Simple, id=9)
 ** Event #42  t=5.866105509124   Test.a[3] (Simple, id=5)
 ** Event #43  t=6.160050825309   Test.a[2] (Simple, id=4)
 creating new module
-Initializing module Test.x, stage 0
-** Event #44  t=6.160050825309   Test.x (Simple, id=11)
+Initializing module Test.x5, stage 0
+** Event #44  t=6.160050825309   Test.x5 (Simple, id=11)
 starting module
 ** Event #45  t=6.436996466411   Test.a[1] (Simple, id=3)
 deleting new module
 ** Event #46  t=6.476728521123   Test.a[0] (Simple, id=2)
 creating new module
-Initializing module Test.x, stage 0
-** Event #47  t=6.476728521123   Test.x (Simple, id=12)
+Initializing module Test.x6, stage 0
+** Event #47  t=6.476728521123   Test.x6 (Simple, id=12)
 starting module
 ** Event #48  t=6.507814681802   Test.a[3] (Simple, id=5)
-** Event #49  t=6.529856194771   Test.x (Simple, id=8)
-** Event #50  t=6.655730604209   Test.x (Simple, id=8)
+** Event #49  t=6.529856194771   Test.x2 (Simple, id=8)
+** Event #50  t=6.655730604209   Test.x2 (Simple, id=8)
 ** Event #51  t=7.055925926038   Test.a[1] (Simple, id=3)
 ** Event #52  t=7.211692942313   Test.a[0] (Simple, id=2)
-** Event #53  t=7.256620006851   Test.x (Simple, id=10)
+** Event #53  t=7.256620006851   Test.x4 (Simple, id=10)
 ** Event #54  t=7.643753623512   Test.a[3] (Simple, id=5)
 ** Event #55  t=7.765290382371   Test.a[2] (Simple, id=4)
-** Event #56  t=7.774052900202   Test.x (Simple, id=11)
+** Event #56  t=7.774052900202   Test.x5 (Simple, id=11)
 ** Event #57  t=7.798483304012   Test.a[3] (Simple, id=5)
 deleting new module
-** Event #58  t=7.930958306433   Test.x (Simple, id=8)
+** Event #58  t=7.930958306433   Test.x2 (Simple, id=8)
 creating new module
-Initializing module Test.x, stage 0
-** Event #59  t=7.930958306433   Test.x (Simple, id=13)
+Initializing module Test.x7, stage 0
+** Event #59  t=7.930958306433   Test.x7 (Simple, id=13)
 starting module
-** Event #60  t=7.993264495113   Test.x (Simple, id=12)
+** Event #60  t=7.993264495113   Test.x6 (Simple, id=12)
 ** Event #61  t=8.00130912461   Test.a[4] (Simple, id=6)
-** Event #62  t=8.042904467066   Test.x (Simple, id=13)
-** Event #63  t=8.128941201893   Test.x (Simple, id=10)
+** Event #62  t=8.042904467066   Test.x7 (Simple, id=13)
+** Event #63  t=8.128941201893   Test.x4 (Simple, id=10)
 ** Event #64  t=8.233124816662   Test.a[0] (Simple, id=2)
-** Event #65  t=8.335144483923   Test.x (Simple, id=10)
-** Event #66  t=8.350184819219   Test.x (Simple, id=13)
-** Event #67  t=8.528830215341   Test.x (Simple, id=12)
+** Event #65  t=8.335144483923   Test.x4 (Simple, id=10)
+** Event #66  t=8.350184819219   Test.x7 (Simple, id=13)
+** Event #67  t=8.528830215341   Test.x6 (Simple, id=12)
 ** Event #68  t=8.536125040838   Test.a[2] (Simple, id=4)
 ** Event #69  t=8.643003826641   Test.a[4] (Simple, id=6)
-** Event #70  t=8.668785598189   Test.x (Simple, id=8)
-** Event #71  t=8.68775416739   Test.x (Simple, id=8)
-** Event #72  t=8.772878706078   Test.x (Simple, id=12)
+** Event #70  t=8.668785598189   Test.x2 (Simple, id=8)
+** Event #71  t=8.68775416739   Test.x2 (Simple, id=8)
+** Event #72  t=8.772878706078   Test.x6 (Simple, id=12)
 ** Event #73  t=8.788281853933   Test.a[4] (Simple, id=6)
 ** Event #74  t=8.950418343379   Test.a[4] (Simple, id=6)
 deleting new module
-** Event #75  t=8.959267242402   Test.x (Simple, id=13)
-** Event #76  t=9.210709174477   Test.x (Simple, id=13)
+** Event #75  t=8.959267242402   Test.x7 (Simple, id=13)
+** Event #76  t=9.210709174477   Test.x7 (Simple, id=13)
 creating new module
-Initializing module Test.x, stage 0
-** Event #77  t=9.210709174477   Test.x (Simple, id=14)
+Initializing module Test.x8, stage 0
+** Event #77  t=9.210709174477   Test.x8 (Simple, id=14)
 starting module
 ** Event #78  t=9.219847984106   Test.a[3] (Simple, id=5)
 ** Event #79  t=9.37645974645   Test.a[2] (Simple, id=4)
-** Event #80  t=9.670434668547   Test.x (Simple, id=10)
+** Event #80  t=9.670434668547   Test.x4 (Simple, id=10)
 creating new module
-Initializing module Test.x, stage 0
-** Event #81  t=9.670434668547   Test.x (Simple, id=15)
+Initializing module Test.x9, stage 0
+** Event #81  t=9.670434668547   Test.x9 (Simple, id=15)
 starting module
-** Event #82  t=9.699266223785   Test.x (Simple, id=14)
+** Event #82  t=9.699266223785   Test.x8 (Simple, id=14)
 ** Event #83  t=9.721379642414   Test.a[0] (Simple, id=2)
-** Event #84  t=9.734259645144   Test.x (Simple, id=12)
+** Event #84  t=9.734259645144   Test.x6 (Simple, id=12)
 creating new module
-Initializing module Test.x, stage 0
-** Event #85  t=9.734259645144   Test.x (Simple, id=16)
+Initializing module Test.x10, stage 0
+** Event #85  t=9.734259645144   Test.x10 (Simple, id=16)
 starting module
 ** Event #86  t=9.897415020554   Test.a[4] (Simple, id=6)
 ** Event #87  t=10.166898137465   Test.a[0] (Simple, id=2)
-** Event #88  t=10.170257151845   Test.x (Simple, id=13)
-** Event #89  t=10.297012300603   Test.x (Simple, id=14)
-** Event #90  t=10.308792051885   Test.x (Simple, id=16)
-** Event #91  t=10.370907342351   Test.x (Simple, id=16)
-** Event #92  t=10.401573526378   Test.x (Simple, id=14)
-** Event #93  t=10.668473378189   Test.x (Simple, id=11)
-** Event #94  t=10.683754228641   Test.x (Simple, id=12)
-** Event #95  t=10.815573623247   Test.x (Simple, id=15)
-** Event #96  t=11.002999689265   Test.x (Simple, id=15)
-** Event #97  t=11.239206395348   Test.x (Simple, id=15)
-** Event #98  t=11.366364951302   Test.x (Simple, id=13)
-** Event #99  t=11.500485993929   Test.x (Simple, id=14)
+** Event #88  t=10.170257151845   Test.x7 (Simple, id=13)
+** Event #89  t=10.297012300603   Test.x8 (Simple, id=14)
+** Event #90  t=10.308792051885   Test.x10 (Simple, id=16)
+** Event #91  t=10.370907342351   Test.x10 (Simple, id=16)
+** Event #92  t=10.401573526378   Test.x8 (Simple, id=14)
+** Event #93  t=10.668473378189   Test.x5 (Simple, id=11)
+** Event #94  t=10.683754228641   Test.x6 (Simple, id=12)
+** Event #95  t=10.815573623247   Test.x9 (Simple, id=15)
+** Event #96  t=11.002999689265   Test.x9 (Simple, id=15)
+** Event #97  t=11.239206395348   Test.x9 (Simple, id=15)
+** Event #98  t=11.366364951302   Test.x7 (Simple, id=13)
+** Event #99  t=11.500485993929   Test.x8 (Simple, id=14)
 creating new module
-Initializing module Test.x, stage 0
-** Event #100  t=11.500485993929   Test.x (Simple, id=17)
+Initializing module Test.x11, stage 0
+** Event #100  t=11.500485993929   Test.x11 (Simple, id=17)
 starting module
-** Event #101  t=11.50439363973   Test.x (Simple, id=13)
-** Event #102  t=11.682610423969   Test.x (Simple, id=15)
+** Event #101  t=11.50439363973   Test.x7 (Simple, id=13)
+** Event #102  t=11.682610423969   Test.x9 (Simple, id=15)
 creating new module
-Initializing module Test.x, stage 0
-** Event #103  t=11.682610423969   Test.x (Simple, id=18)
+Initializing module Test.x12, stage 0
+** Event #103  t=11.682610423969   Test.x12 (Simple, id=18)
 starting module
-** Event #104  t=11.727307509677   Test.x (Simple, id=11)
-** Event #105  t=11.794351674328   Test.x (Simple, id=12)
-** Event #106  t=11.833534830741   Test.x (Simple, id=12)
-** Event #107  t=11.879447958212   Test.x (Simple, id=17)
-** Event #108  t=11.999348042761   Test.x (Simple, id=10)
-** Event #109  t=12.075722981273   Test.x (Simple, id=18)
-** Event #110  t=12.134712484194   Test.x (Simple, id=15)
-** Event #111  t=12.24234759235   Test.x (Simple, id=15)
+** Event #104  t=11.727307509677   Test.x5 (Simple, id=11)
+** Event #105  t=11.794351674328   Test.x6 (Simple, id=12)
+** Event #106  t=11.833534830741   Test.x6 (Simple, id=12)
+** Event #107  t=11.879447958212   Test.x11 (Simple, id=17)
+** Event #108  t=11.999348042761   Test.x4 (Simple, id=10)
+** Event #109  t=12.075722981273   Test.x12 (Simple, id=18)
+** Event #110  t=12.134712484194   Test.x9 (Simple, id=15)
+** Event #111  t=12.24234759235   Test.x9 (Simple, id=15)
 ** Event #112  t=12.254374767728   Test.a[2] (Simple, id=4)
-** Event #113  t=12.410859141548   Test.x (Simple, id=12)
-** Event #114  t=12.440455199501   Test.x (Simple, id=13)
+** Event #113  t=12.410859141548   Test.x6 (Simple, id=12)
+** Event #114  t=12.440455199501   Test.x7 (Simple, id=13)
 ** Event #115  t=12.488676286504   Test.a[2] (Simple, id=4)
 deleting new module
 ** Event #116  t=12.493249199159   Test.a[0] (Simple, id=2)
 deleting new module
-** Event #117  t=12.616368744927   Test.x (Simple, id=13)
+** Event #117  t=12.616368744927   Test.x7 (Simple, id=13)
 deleting new module
-** Event #118  t=12.885318963379   Test.x (Simple, id=17)
-** Event #119  t=13.177399496646   Test.x (Simple, id=17)
-** Event #120  t=13.300174005702   Test.x (Simple, id=15)
-** Event #121  t=13.488284598553   Test.x (Simple, id=13)
+** Event #118  t=12.885318963379   Test.x11 (Simple, id=17)
+** Event #119  t=13.177399496646   Test.x11 (Simple, id=17)
+** Event #120  t=13.300174005702   Test.x9 (Simple, id=15)
+** Event #121  t=13.488284598553   Test.x7 (Simple, id=13)
 ** Event #122  t=13.551991914253   Test.a[0] (Simple, id=2)
-** Event #123  t=13.712464173729   Test.x (Simple, id=17)
+** Event #123  t=13.712464173729   Test.x11 (Simple, id=17)
 creating new module
-Initializing module Test.x, stage 0
-** Event #124  t=13.712464173729   Test.x (Simple, id=19)
+Initializing module Test.x13, stage 0
+** Event #124  t=13.712464173729   Test.x13 (Simple, id=19)
 starting module
-** Event #125  t=13.871121026806   Test.x (Simple, id=16)
-** Event #126  t=13.928115586693   Test.x (Simple, id=15)
-** Event #127  t=13.992741182208   Test.x (Simple, id=19)
-** Event #128  t=14.101243042839   Test.x (Simple, id=15)
+** Event #125  t=13.871121026806   Test.x10 (Simple, id=16)
+** Event #126  t=13.928115586693   Test.x9 (Simple, id=15)
+** Event #127  t=13.992741182208   Test.x13 (Simple, id=19)
+** Event #128  t=14.101243042839   Test.x9 (Simple, id=15)
 deleting new module
-** Event #129  t=14.218198452631   Test.x (Simple, id=15)
-** Event #130  t=14.356245175332   Test.x (Simple, id=17)
-** Event #131  t=14.40524241213   Test.x (Simple, id=19)
-** Event #132  t=14.847985100877   Test.x (Simple, id=16)
+** Event #129  t=14.218198452631   Test.x9 (Simple, id=15)
+** Event #130  t=14.356245175332   Test.x11 (Simple, id=17)
+** Event #131  t=14.40524241213   Test.x13 (Simple, id=19)
+** Event #132  t=14.847985100877   Test.x10 (Simple, id=16)
 creating new module
-Initializing module Test.x, stage 0
-** Event #133  t=14.847985100877   Test.x (Simple, id=20)
+Initializing module Test.x14, stage 0
+** Event #133  t=14.847985100877   Test.x14 (Simple, id=20)
 starting module
-** Event #134  t=14.996697370129   Test.x (Simple, id=20)
-** Event #135  t=15.229540944251   Test.x (Simple, id=16)
-** Event #136  t=15.448421540758   Test.x (Simple, id=16)
-** Event #137  t=15.47331460928   Test.x (Simple, id=19)
-** Event #138  t=15.479413476865   Test.x (Simple, id=17)
-** Event #139  t=15.93332856702   Test.x (Simple, id=19)
+** Event #134  t=14.996697370129   Test.x14 (Simple, id=20)
+** Event #135  t=15.229540944251   Test.x10 (Simple, id=16)
+** Event #136  t=15.448421540758   Test.x10 (Simple, id=16)
+** Event #137  t=15.47331460928   Test.x13 (Simple, id=19)
+** Event #138  t=15.479413476865   Test.x11 (Simple, id=17)
+** Event #139  t=15.93332856702   Test.x13 (Simple, id=19)
 creating new module
-Initializing module Test.x, stage 0
-** Event #140  t=15.93332856702   Test.x (Simple, id=21)
+Initializing module Test.x15, stage 0
+** Event #140  t=15.93332856702   Test.x15 (Simple, id=21)
 starting module
-** Event #141  t=15.946993145451   Test.x (Simple, id=21)
-** Event #142  t=16.049138026976   Test.x (Simple, id=21)
-** Event #143  t=16.453844888937   Test.x (Simple, id=10)
-** Event #144  t=16.503332703402   Test.x (Simple, id=20)
-** Event #145  t=16.565682857743   Test.x (Simple, id=17)
-** Event #146  t=16.666717633052   Test.x (Simple, id=17)
-** Event #147  t=17.024239961132   Test.x (Simple, id=21)
-** Event #148  t=17.623147069156   Test.x (Simple, id=20)
-** Event #149  t=17.653660224737   Test.x (Simple, id=19)
+** Event #141  t=15.946993145451   Test.x15 (Simple, id=21)
+** Event #142  t=16.049138026976   Test.x15 (Simple, id=21)
+** Event #143  t=16.453844888937   Test.x4 (Simple, id=10)
+** Event #144  t=16.503332703402   Test.x14 (Simple, id=20)
+** Event #145  t=16.565682857743   Test.x11 (Simple, id=17)
+** Event #146  t=16.666717633052   Test.x11 (Simple, id=17)
+** Event #147  t=17.024239961132   Test.x15 (Simple, id=21)
+** Event #148  t=17.623147069156   Test.x14 (Simple, id=20)
+** Event #149  t=17.653660224737   Test.x13 (Simple, id=19)
 ** Event #150  t=17.848776636747   Test.a[2] (Simple, id=4)
-** Event #151  t=18.273663808221   Test.x (Simple, id=10)
-** Event #152  t=18.285996821133   Test.x (Simple, id=19)
-** Event #153  t=18.43561143261   Test.x (Simple, id=16)
-** Event #154  t=18.492938359034   Test.x (Simple, id=16)
-** Event #155  t=18.986247401554   Test.x (Simple, id=10)
-** Event #156  t=19.421416855935   Test.x (Simple, id=16)
+** Event #151  t=18.273663808221   Test.x4 (Simple, id=10)
+** Event #152  t=18.285996821133   Test.x13 (Simple, id=19)
+** Event #153  t=18.43561143261   Test.x10 (Simple, id=16)
+** Event #154  t=18.492938359034   Test.x10 (Simple, id=16)
+** Event #155  t=18.986247401554   Test.x4 (Simple, id=10)
+** Event #156  t=19.421416855935   Test.x10 (Simple, id=16)
 deleting new module
-** Event #157  t=19.586194288195   Test.x (Simple, id=10)
+** Event #157  t=19.586194288195   Test.x4 (Simple, id=10)
 deleting new module
-** Event #158  t=19.606384416341   Test.x (Simple, id=10)
-** Event #159  t=20.240306005396   Test.x (Simple, id=17)
+** Event #158  t=19.606384416341   Test.x4 (Simple, id=10)
+** Event #159  t=20.240306005396   Test.x11 (Simple, id=17)
 deleting new module
-** Event #160  t=20.280282304454   Test.x (Simple, id=17)
-** Event #161  t=20.765662128087   Test.x (Simple, id=16)
-** Event #162  t=20.773271420716   Test.x (Simple, id=21)
+** Event #160  t=20.280282304454   Test.x11 (Simple, id=17)
+** Event #161  t=20.765662128087   Test.x10 (Simple, id=16)
+** Event #162  t=20.773271420716   Test.x15 (Simple, id=21)
 creating new module
-Initializing module Test.x, stage 0
-** Event #163  t=20.773271420716   Test.x (Simple, id=22)
+Initializing module Test.x16, stage 0
+** Event #163  t=20.773271420716   Test.x16 (Simple, id=22)
 starting module
-** Event #164  t=21.10568166168   Test.x (Simple, id=22)
-** Event #165  t=21.356149809583   Test.x (Simple, id=21)
-** Event #166  t=21.484206574894   Test.x (Simple, id=21)
-** Event #167  t=21.929626036814   Test.x (Simple, id=21)
-** Event #168  t=22.280802126195   Test.x (Simple, id=21)
-** Event #169  t=22.936448410559   Test.x (Simple, id=21)
+** Event #164  t=21.10568166168   Test.x16 (Simple, id=22)
+** Event #165  t=21.356149809583   Test.x15 (Simple, id=21)
+** Event #166  t=21.484206574894   Test.x15 (Simple, id=21)
+** Event #167  t=21.929626036814   Test.x15 (Simple, id=21)
+** Event #168  t=22.280802126195   Test.x15 (Simple, id=21)
+** Event #169  t=22.936448410559   Test.x15 (Simple, id=21)
 deleting new module
-** Event #170  t=23.062837046984   Test.x (Simple, id=21)
+** Event #170  t=23.062837046984   Test.x15 (Simple, id=21)
 
 <!> No more events, simulation completed -- at t=23.062837046984s, event #170
 
