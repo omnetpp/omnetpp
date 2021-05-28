@@ -116,6 +116,11 @@ class SIM_API cModule : public cComponent //implies noncopyable
 
     /**
      * @brief Iterates through the submodules of a compound module.
+     * Iteration order corresponds to declaration order in NED files.
+     *
+     * It is not allowed to delete or insert modules during iteration.
+     * If such thing occurs, restart the iteration by calling reset(),
+     * or query the submodule list in advance.
      *
      * Usage:
      * \code
@@ -124,17 +129,38 @@ class SIM_API cModule : public cComponent //implies noncopyable
      *     ...
      * }
      * \endcode
+     *
+     * When submodules may be created in the loop body:
+     *
+     * \code
+     * for (cModule::SubmoduleIterator it(module); !it.end();) {
+     *     cModule *submodule = *it;
+     *     ...
+     *     ... (code that may create/delete/move submodules)
+     *     ...
+     *     if (!it.changesDetected())
+     *         it++;
+     *     else
+     *         it.reset(); // start over
+     * }
+     * \endcode
      */
     class SIM_API SubmoduleIterator
     {
       private:
         const cModule *parent;
-        int slot; // identifies scalar submodule or submodule vector
-        int index; // index within submodule vector
+        int scalarsSlot;
+        int vectorsSlot;
+        int vectorIndex;
+        cModule *currentScalar;
+        cModule *currentVector;
         cModule *current; // element the iterator is at
+        int initialModuleChangeCount;
 
       private:
         void advance();
+        void bumpScalars();
+        void bumpVectors();
 
       public:
         /**
@@ -171,6 +197,16 @@ class SIM_API cModule : public cComponent //implies noncopyable
          * if the iterator has reached either end of the list.
          */
         SubmoduleIterator operator++(int) {SubmoduleIterator tmp(*this); advance(); return tmp;}
+
+        /**
+         * Returns true if it was detected that the list of submodules has
+         * changed since the the start of the iteration due to insertion,
+         * removal, or possibly as a byproduct of name/index change. When this
+         * method returns true, incrementing the iterator will result in an
+         * exception being thrown. One possible solution for when changesDetected()
+         * returns true is starting over the iteration (see reset()).
+         */
+        bool changesDetected() const;
     };
 
     /**
@@ -259,9 +295,10 @@ class SIM_API cModule : public cComponent //implies noncopyable
         std::vector<cModule*> array;
     };
     struct SubcomponentData {
-        std::vector<cModule*> scalarSubmodules;
-        std::vector<SubmoduleVector> submoduleVectors;
-        std::vector<cChannel*> channels;
+        std::vector<cModule*> scalarSubmodules; // scalar submodules in creation order
+        std::vector<SubmoduleVector> submoduleVectors; // submodule vectors in creation order
+        std::vector<cChannel*> channels;  // channels among submodules
+        int submoduleChangeCount = 0;
     };
     SubcomponentData *subcomponentData = nullptr;
 

@@ -288,6 +288,8 @@ void cModule::insertSubmodule(cModule *mod)
         array[index] = mod;
     }
 
+    subcomponentData->submoduleChangeCount++;
+
     if (cacheFullPath)
         mod->updateFullPathRec();
 
@@ -320,6 +322,8 @@ void cModule::removeSubmodule(cModule *mod)
         ASSERT(array.at(index) == mod);
         array[index] = nullptr;
     }
+
+    subcomponentData->submoduleChangeCount++;
 }
 
 void cModule::insertChannel(cChannel *channel)
@@ -356,14 +360,16 @@ void cModule::setNameAndIndex(const char *name, int index)
     if (parent == nullptr && index != -1)
         throw cRuntimeError(this, "Cannot set module index to %d: toplevel module cannot be part of a module vector", index);
 
-    if (parent)
+    bool reinsertNeeded = parent && !(vectorIndex == -1 && index == -1);  // renaming of a scalar submodule doesn't need re-insertion
+
+    if (reinsertNeeded)
         parent->removeSubmodule(this);
 
     cOwnedObject::setName(name);
     vectorIndex = index;
     updateFullName();
 
-    if (parent)
+    if (reinsertNeeded)
         parent->insertSubmodule(this);
 }
 
@@ -1885,47 +1891,110 @@ void cModule::GateIterator::advance()
 
 void cModule::SubmoduleIterator::reset()
 {
-    slot = index = -1;
+    scalarsSlot = -1;
+    vectorsSlot = 0;
+    vectorIndex = -1;
+    initialModuleChangeCount = parent->subcomponentData ? parent->subcomponentData->submoduleChangeCount : 0;
+    currentScalar = currentVector = current = nullptr;
+
+    bumpScalars();
+    bumpVectors();
     advance();
 }
 
 void cModule::SubmoduleIterator::advance()
 {
-    if (parent->subcomponentData == nullptr) {
+    if (!parent->subcomponentData)
+        return;
+
+    // currentScalar/currentVector pointers may become invalid if modules are being deleted
+    if (parent->subcomponentData->submoduleChangeCount != initialModuleChangeCount)
+        throw cRuntimeError("SubmoduleIterator: Submodule insertion/deletion detected during enumerating the submodules of %s", parent->getNedTypeAndFullPath().c_str());
+
+    // We keep a "cursor" that enumerates scalars submodules, and another
+    // "cursor" that enumerates vector submodules. We merge the two iteration
+    // sequences by drawing at each step from the one whose next module
+    // has the numerically smaller module ID of the two.
+    //
+    // The numeric values of module IDs correspond the creation order of modules,
+    // and because NED creates a submodule vector and all modules in it together
+    // in one go and in increasing index order, the following condition ensures
+    // that iteration order will reflect the submodule declaration order in
+    // NED files. (The order within subcomponentData's scalarSubmodules and
+    // submoduleVectors arrays also reflects creation order.)
+    //
+    if (currentScalar && currentVector) {
+        if (currentScalar->getId() < currentVector->getId()) {
+            current = currentScalar;
+            bumpScalars();
+        }
+        else {
+            current = currentVector;
+            bumpVectors();
+        }
+    }
+    else if (currentScalar) {
+        current = currentScalar;
+        bumpScalars();
+    }
+    else if (currentVector) {
+        current = currentVector;
+        bumpVectors();
+    }
+    else {
         current = nullptr;
+    }
+}
+
+void cModule::SubmoduleIterator::bumpScalars()
+{
+    if (parent->subcomponentData == nullptr) {
+        currentScalar = nullptr;
         return;
     }
 
     const auto& scalars = parent->subcomponentData->scalarSubmodules;
-    const auto& vectors = parent->subcomponentData->submoduleVectors;
+    if (scalarsSlot < (int)scalars.size())
+        scalarsSlot++;
+    currentScalar = (scalarsSlot < (int)scalars.size()) ? scalars[scalarsSlot] : nullptr;
+}
 
-    if (slot < (int)scalars.size()) {
-        slot++;
-        index = -1;
-        if (slot < (int)scalars.size()) {
-            current = scalars[slot];
-            return;
-        }
+void cModule::SubmoduleIterator::bumpVectors()
+{
+    if (parent->subcomponentData == nullptr) {
+        currentVector = nullptr;
+        return;
     }
 
-    int totalSlots = scalars.size() + vectors.size();
-    int base = scalars.size();
+    const auto& vectors = parent->subcomponentData->submoduleVectors;
+    int numVectors = vectors.size();
+    if (vectorsSlot >= numVectors) {
+        currentVector = nullptr;
+        return;
+    }
 
     while (true) {
-        index++;
-        while (slot < totalSlots && index >= (int)vectors[slot-base].array.size()) {
-            index = 0;
-            slot++;
+        vectorIndex++;
+        while (vectorIndex >= (int)vectors[vectorsSlot].array.size()) {
+            vectorsSlot++;
+            vectorIndex = 0;
+            if (vectorsSlot >= numVectors) {
+                currentVector = nullptr;
+                return;
+            }
         }
-        if (slot >= totalSlots)
-            break;
-        if (vectors[slot-base].array[index] != nullptr) {
-            current = vectors[slot-base].array[index];
+        if (vectors[vectorsSlot].array[vectorIndex] != nullptr) {
+            currentVector = vectors[vectorsSlot].array[vectorIndex];
             return;
         }
     }
 
-    current = nullptr;
+}
+
+bool cModule::SubmoduleIterator::changesDetected() const
+{
+    int count = parent->subcomponentData ? parent->subcomponentData->submoduleChangeCount : 0;
+    return count != initialModuleChangeCount;
 }
 
 //----

@@ -1,0 +1,90 @@
+%description:
+Test cModule::SubmoduleIterator:
+- NED order is kept
+- test submodule vectors with holes (vectors are listed in creation order,
+  and within vectors in increasing index order)
+
+%file: test.ned
+
+module Node {}
+
+simple Simple {}
+
+network Test
+{
+    submodules:
+        va[3]: Node;
+        a: Node;
+        b: Node;
+        vb[3]: Node;
+        c: Node;
+        d: Node;
+        test: Simple;
+        vc[3]: Node;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class Simple : public cSimpleModule
+{
+  public:
+    Simple() : cSimpleModule(16384) { }
+    virtual void activity() override;
+};
+
+Define_Module(Simple);
+
+void Simple::activity()
+{
+    // create some modules dynamically
+    cModule *parent = getParentModule();
+    parent->addSubmoduleVector("zerosize", 0);
+    parent->addSubmoduleVector("empty", 3);
+    parent->addSubmoduleVector("alpha", 5);
+    parent->addSubmoduleVector("bravo", 5);
+
+    cModuleType *nedType = cModuleType::find("Node");
+    nedType->create("alpha", parent, 1);
+    nedType->create("bravo", parent, 4);
+    nedType->create("foo",  parent);
+    nedType->create("bravo", parent, 3);
+    nedType->create("alpha", parent, 3);
+    nedType->create("bar",  parent);
+
+    // print iteration order
+    for (cModule::SubmoduleIterator it(parent); !it.end(); it++)
+        EV << (*it)->getFullName() << endl;
+    EV << ".\n";
+}
+
+}; //namespace
+
+%contains: stdout
+va[0]
+va[1]
+va[2]
+a
+b
+vb[0]
+vb[1]
+vb[2]
+c
+d
+test
+vc[0]
+vc[1]
+vc[2]
+alpha[1]
+foo
+alpha[3]
+bravo[3]
+bravo[4]
+bar
+.
+
