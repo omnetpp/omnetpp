@@ -7,6 +7,7 @@
 // `license' for details on this and other legal matters.
 //
 
+#include <regex>
 #include <omnetpp.h>
 #include "Transition.h"
 #include "TransitionScheduler.h"
@@ -15,7 +16,7 @@ using namespace omnetpp;
 
 /**
  * Builds a network dynamically, with the topology coming from a
- * text file.
+ * PNML file.
  */
 class PetriNetBuilder : public cSimpleModule
 {
@@ -55,8 +56,23 @@ inline const char *getAttributeFrom(cXMLElement *node, const char *xpath, const 
 inline int parseInt(const char *s)
 {
     return std::stoi(s);
-
 }
+
+static std::string makeUnique(const char *name, cModule *parent)
+{
+    if (!parent->hasSubmodule(name) && !parent->hasSubmoduleVector(name))
+        return name;
+    int k = 1;
+    std::cmatch match;
+    if (std::regex_match(name, match, std::regex("[0-9]+$")))
+        k = std::stoi(match[0]);
+    while (true) {
+        std::string newName = std::regex_replace(name, std::regex("[0-9]*$"), std::to_string(++k));
+        if (!parent->hasSubmodule(newName.c_str()) && !parent->hasSubmoduleVector(newName.c_str()))
+            return newName;
+    }
+}
+
 void PetriNetBuilder::buildNetwork(cModule *parent)
 {
     cXMLElement *root = par("pnmlFile");
@@ -100,7 +116,7 @@ void PetriNetBuilder::buildNetwork(cModule *parent)
         cXMLElement *place = places[i];
         const char *id = place->getAttribute("id");
         const char *name = getTextFrom(place, "name/text", id);
-        cModule *placeModule = placeModuleType->create(name, parent);
+        cModule *placeModule = placeModuleType->create(makeUnique(name,parent).c_str(), parent);
 
         const char *xPos = getAttributeFrom(place, "graphics/position", "x", "");
         const char *yPos = getAttributeFrom(place, "graphics/position", "y", "");
@@ -129,7 +145,7 @@ void PetriNetBuilder::buildNetwork(cModule *parent)
         cXMLElement *transition = transitions[i];
         const char *id = transition->getAttribute("id");
         const char *name = getTextFrom(transition, "name/text", id);
-        cModule *transitionModule = transitionModuleType->create(name, parent);
+        cModule *transitionModule = transitionModuleType->create(makeUnique(name,parent).c_str(), parent);
         transitionModule->finalizeParameters();
 
         if (counts.find(name) == counts.end())
