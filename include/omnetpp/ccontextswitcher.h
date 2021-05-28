@@ -102,6 +102,11 @@ class SIM_API cContextSwitcher
      * Restores the original context
      */
     ~cContextSwitcher();
+
+    /**
+     * Returns the original context
+     */
+    cComponent *getCallerContext() const { return callerContext; }
 };
 
 /**
