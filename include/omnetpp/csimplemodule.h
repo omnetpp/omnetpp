@@ -207,10 +207,10 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
 
   private:
     enum {
-        FL_USESACTIVITY        = 1 << 14, // uses activity() or handleMessage()
-        FL_ISTERMINATED        = 1 << 15, // for both activity and handleMessage modules
-        FL_STACKALREADYUNWOUND = 1 << 16, // only for activity modules
-        FL_SUPPORTSTXUPDATES   = 1 << 17, // whether module is prepared to receive tx updates (see SendOptions)
+        FL_USESACTIVITY        = 1 << 13, // uses activity() or handleMessage()
+        FL_ISTERMINATED        = 1 << 14, // for both activity and handleMessage modules
+        FL_STACKALREADYUNWOUND = 1 << 15, // only for activity modules
+        FL_SUPPORTSTXUPDATES   = 1 << 16, // whether module is prepared to receive tx updates (see SendOptions)
     };
 
     cMessage *timeoutMessage;   // msg used in wait() and receive() with timeout
