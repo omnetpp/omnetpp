@@ -39,6 +39,12 @@ def fail(msg):
 def addMissingNewLine(str):
     return str if str.endswith("\n") else str + "\n"
 
+def space(s):
+    if isinstance(s, list):
+        return (" " + " ".join(s)) if s else ""
+    else:
+        return (" " + s) if s else ""
+
 def compressOneDiff(tmpDiff, maxLines):
     if len(tmpDiff) <= 2 * maxLines + 3:
         return tmpDiff
@@ -592,11 +598,15 @@ Supported .test file entry types:
 
         global use_colors
 
+        testworkdir = os.path.join(self.args.workdir, self.testname)
+
         outfname = "test.out"
         errfname = "test.err"
 
         nedPath = os.environ['NEDPATH'] if 'NEDPATH' in os.environ else ''
-        runscript = "#! /bin/sh\n#\n# Convenience script to run the simulation manually\n#\n\nexport NEDPATH=\""+nedPath+"\"\n"
+        runCommands = []
+        if nedPath:
+            runCommands.append('export NEDPATH="{}"'.format(nedPath))
 
         if (self.args.mode == 'run'):
             # delete temp files before running the test case
@@ -628,7 +638,7 @@ Supported .test file entry types:
                 envkey = m.group(1)
                 envvalue = m.group(2)
                 os.environ[envkey] = envvalue
-                runscript += "export " + envkey + "=\""+envvalue+"\"\n"
+                runCommands.append('export {}="{}"'.format(envkey,envvalue))
                 self.lprint(2, "  setting environment variable `{}' = `{}'".format(envkey, envvalue))
 
         # execute pre-run commands
@@ -636,10 +646,11 @@ Supported .test file entry types:
             for key,value in sorted(self.values.items()):
                 if (key.startswith('prerun-command(')):
                     # execute file
-                    runscript += value + ">" + key + ".out 2>" + key + ".err\n"
-                    exitcode = self.exec_program(value, os.path.join(self.args.workdir, self.testname), key+".out", key+".err")
+                    runCommands.append(value + ">" + key + ".out 2>" + key + ".err")
+                    exitcode = self.exec_program(value, testworkdir, key+".out", key+".err")
                     if (exitcode != 0):
                         self.testunresolved(testfilename, "pre-run command \""+value+"\" returned nonzero exit code: "+str(exitcode))
+                        self.lprint(1, "CMD: (cd " + testworkdir + " && " + " && ".join(runCommands) + ")")
                         return
 
         # run the program
@@ -655,8 +666,8 @@ Supported .test file entry types:
                 fail('Not found any inifile key')   # at least the implicit _defaults.ini should be there
 
             if 'testprog(1)' in self.values:
-                cmdline = self.values['testprog(1)'] + " " +myargs+" "+(" ".join(self.args.extraargs))
-                runscript += cmdline + ' "$@"\n'
+                cmdline = self.values['testprog(1)'] + space(myargs) + space(self.args.extraargs)
+                runCommands.append(cmdline)
                 exitcode = self.exec_program(cmdline, os.path.join(self.args.workdir,self.testname), outfname, errfname)
             else:
                 testprogwithpath = os.path.join(self.args.workdir, self.args.testprogram)
@@ -664,12 +675,13 @@ Supported .test file entry types:
                     fail("test program '" + testprogwithpath + "' not found\n")
                 if (not os.access(testprogwithpath, os.X_OK) and not os.access(testprogwithpath+".exe", os.X_OK)):
                     fail("test program '" + testprogwithpath + "' is not executable\n")
-                cmdline = os.path.join("..",self.args.testprogram)+" -u Cmdenv "+myargs+" "+(" ".join(self.args.extraargs))+" "+inifilenames
-                runscript += cmdline + ' "$@"\n'
+                cmdline = os.path.join("..",self.args.testprogram) + " -u Cmdenv" + space(myargs) + space(self.args.extraargs) + space(inifilenames)
+                runCommands.append(cmdline + ' "$@"')
                 exitcode = self.exec_program(cmdline, os.path.join(self.args.workdir,self.testname), outfname, errfname)
 
             if (exitcode == 127):
                 self.testunresolved(testfilename, "could not execute test program")
+                self.lprint(1, "CMD: (cd " + testworkdir + " && " + " && ".join(runCommands) + ")")
                 return
 
         # if stdout contains "#UNRESOLVED" or "#UNRESOLVED: some explanation", count this test as unresolved;
@@ -704,8 +716,9 @@ Supported .test file entry types:
             if exitCodeFail:
                 self.testfailed(testfilename, "test program returned exit code {}{}".format(exitcode, insteadOf))
                 if self.args.verbose > 0:
-                    self.print_tail("stdout", os.path.join(self.args.workdir, self.testname, outfname))
-                    self.print_tail("stderr", os.path.join(self.args.workdir, self.testname, errfname))
+                    self.print_tail("stdout", os.path.join(testworkdir, outfname))
+                    self.print_tail("stderr", os.path.join(testworkdir, errfname))
+                self.lprint(1, "CMD: (cd " + testworkdir + " && " + " && ".join(runCommands) + ")")
                 return
 
         # execute post-run commands
@@ -713,12 +726,14 @@ Supported .test file entry types:
             for key, value in  sorted(self.values.items()):
                 if (key.startswith('postrun-command(')):
                     # execute file
-                    runscript += value + "\n"
-                    exitcode = self.exec_program(value, os.path.join(self.args.workdir, self.testname), key+".out", key+".err")
+                    runCommands.append(value)
+                    exitcode = self.exec_program(value, testworkdir, key+".out", key+".err")
                     if (exitcode != 0):
                         self.testunresolved(testfilename, "post-run command \"{}\" returned nonzero exit code: {}".format(value, exitcode))
+                        self.lprint(1, "CMD: (cd " + testworkdir + " && " + " && ".join(runCommands) + ")")
                         return
 
+        runscript = "#!/bin/sh\n" + "\n".join(runCommands) + "\n"
         runfile = os.path.join(self.args.workdir, self.testname,"run")
         self.writefile(runfile, runscript)
         os.chmod(runfile, 0o755) # make it executable
@@ -748,6 +763,7 @@ Supported .test file entry types:
                     f.close()
                 except (IOError, OSError) as e:
                     self.testunresolved(testfilename, "cannot read test case output file `{}: {}".format(infname, e))
+                    self.lprint(1, "CMD: (cd " + testworkdir + " && " + " && ".join(runCommands) + ")")
                     return
 
                 # do substitutions on it
@@ -815,6 +831,7 @@ Supported .test file entry types:
                             self.lprint(1, "expected pattern:\n>>>>{}<<<<\nactual output:\n>>>>{}<<<<\n".format(pattern, txt))
                         else:
                             self.lprint(1, "expected pattern:\n>>>>{}<<<<\nactual output too long to dump, see file `{}' in work directory\n".format(pattern, realinfname))
+                        self.lprint(1, "CMD: (cd " + testworkdir + " && " + " && ".join(runCommands) + ")")
                         self.lprint(1, "TRY: meld '{}' '{}'".format(patternfilename, resultfilename))
                         self.lprint(1, " OR: meld '{}' '{}'\n".format(testfilename, resultfilename))
                         return
@@ -826,6 +843,7 @@ Supported .test file entry types:
                         else:
                             self.lprint(1, "unexpected pattern:\n>>>>{}<<<<\nactual output too long to dump, see file `{}' in work directory\n".format(pattern, realinfname))
                             self.lprint(1, "at line {}\n".format(txt.count("\n", 0, match.start())+1))
+                        self.lprint(1, "CMD: (cd " + testworkdir + " && " + " && ".join(runCommands) + ")")
                         self.lprint(1, "TRY: meld '{}' '{}'".format(patternfilename, resultfilename))
                         self.lprint(1, " OR: meld '{}' '{}'\n".format(testfilename, resultfilename))
                         return
@@ -846,6 +864,7 @@ Supported .test file entry types:
                             self.lprint(1, "\n" + difftxt)
                         else:
                             self.lprint(1, "expected substring:\n>>>>{}<<<<\nactual output too long to dump, see file `{}' in work directory\n".format(pattern, realinfname))
+                        self.lprint(1, "CMD: (cd " + testworkdir + " && " + " && ".join(runCommands) + ")")
                         self.lprint(1, "TRY: meld '{}' '{}'".format(patternfilename, resultfilename))
                         self.lprint(1, " OR: meld '{}' '{}'\n".format(testfilename, resultfilename))
                         return
@@ -857,6 +876,7 @@ Supported .test file entry types:
                         else:
                             self.lprint(1, "unexpected substring:\n>>>>{}<<<<\nactual output too long to dump, see file `{}' in work directory\n".format(pattern, realinfname))
                             self.lprint(1, "at line {}\n".format(txt.count("\n", 0, match)+1))
+                        self.lprint(1, "CMD: (cd " + testworkdir + " && " + " && ".join(runCommands) + ")")
                         self.lprint(1, "TRY: meld '{}' '{}'".format(patternfilename, resultfilename))
                         self.lprint(1, " OR: meld '{}' '{}'\n".format(testfilename, resultfilename))
                         return
@@ -864,10 +884,12 @@ Supported .test file entry types:
             elif (key.startswith('file-exists(')):
                 if (not os.path.exists(os.path.join(self.args.workdir, self.testname,self.values[key]))):
                     self.testfailed(testfilename, "{} fails \%{} rule".format(self.values[key], key))
+                    self.lprint(1, "CMD: (cd " + testworkdir + " && " + " && ".join(runCommands) + ")")
                     return
             elif (key.startswith('file-not-exists(')):
                 if (os.path.exists(os.path.join(self.args.workdir, self.testname, self.values[key]))):
                     self.testfailed(testfilename, "{} fails \%{} rule".format(self.values[key], key))
+                    self.lprint(1, "CMD: (cd " + testworkdir + " && " + " && ".join(runCommands) + ")")
                     return
 
         self.testpassed(testfilename)
