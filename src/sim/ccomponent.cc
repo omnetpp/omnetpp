@@ -77,6 +77,7 @@ cComponent::cComponent(const char *name) : cSoftOwner(name)
     componentId = -1;
     rngMapSize = 0;
     rngMap = nullptr;
+    lastCompletedInitStage = -1;
 
     parArraySize = numPars = 0;
     parArray = nullptr;

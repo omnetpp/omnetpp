@@ -117,12 +117,13 @@ bool cChannel::initializeChannel(int stage)
     }
 
     int numStages = numInitStages();
-    if (!initialized() && stage < numStages) {
+    if (stage > lastCompletedInitStage && stage < numStages) {
         // switch context for the duration of the call
         cContextSwitcher tmp(this);
         getEnvir()->componentInitBegin(this, stage);
         try {
             initialize(stage);
+            lastCompletedInitStage = stage;
         }
         catch (cException&) {
             throw;

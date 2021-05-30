@@ -1651,7 +1651,7 @@ bool cModule::initializeModules(int stage)
     // call initialize(stage) for this module, provided it has not been been initialized yet
     int numStages = numInitStages();
     int ownId = getId();
-    if (!initialized() && stage < numStages) {
+    if (stage > lastCompletedInitStage && stage < numStages) {
         try {
             // switch context for the duration of the call
             Enter_Method_Silent("initialize(%d)", stage);
@@ -1663,6 +1663,8 @@ bool cModule::initializeModules(int stage)
             // bail out if this module was deleted by user code
             if (simulation->getComponent(ownId) == nullptr)
                 return false;
+
+            lastCompletedInitStage = stage;
         }
         catch (cException&) {
             throw;
@@ -1674,46 +1676,31 @@ bool cModule::initializeModules(int stage)
 
     // then recursively initialize submodules
     //
-    // This is supposed to be simple: just call initializeModules(stage) on
-    // all submodules, and report if any of them want more stages. What makes
-    // it complicated is that while doing this, user code is allowed
-    // to delete *any* submodule, and/or create new submodules.
-    // One fact we can exploit is that newly created submodules are inserted at
-    // the end of the list, so it's not possible to accidentally skip them.
-    // The strategy is to iterate normally until the current submodule is deleted;
-    // if that happens, we start over (we have to start from the beginning, because
-    // any previous submodule might have been deleted since!), and skip the ones
-    // we already initialized.
+    // In theory, ths is simple: just call initializeModules(stage) on all
+    // submodules, and report if any of them want more stages. However,
+    // submodule insertions/deletions during iteration may happen; in that
+    // case, just start over. It is possible because every module knows
+    // the number of stages it completed, so duplicate initialization can
+    // be prevented.
+
     bool moreStages = stage < numStages-1;
-    for (SubmoduleIterator it(this); !it.end(); ++it)
-        (*it)->setFlag(FL_CURRENTSTAGEDONE, false); // mark as not yet done
-    bool again;
-    do {
-        again = false;
-        for (SubmoduleIterator it(this); !it.end(); ++it) {
-            cModule *submodule = *it;
-            if (submodule->getFlag(FL_CURRENTSTAGEDONE))
-                continue; // already done, skip
+    for (SubmoduleIterator it(this); !it.end(); /**/) {
+        cModule *submodule = *it;
 
-            // recurse
-            int submoduleId = submodule->getId();
-            if (submodule->initializeModules(stage))
-                moreStages = true;
-
-            // start again if current submodule was deleted (possibly as part of its parent)
-            if (simulation->getComponent(submoduleId) == nullptr) {
-                again = true;
-                break;
-            }
-
-            // still exists: mark as done
-            submodule->setFlag(FL_CURRENTSTAGEDONE, true);
-        }
+        // initialize subtree
+        if (submodule->initializeModules(stage))
+            moreStages = true;
 
         // bail out if this whole module got deleted
-        if (again && simulation->getComponent(ownId) == nullptr)
+        if (simulation->getComponent(ownId) == nullptr)
             return false;
-    } while (again);
+
+        // start over if some submodule was removed/inserted, otherwise take next one
+        if (it.changesDetected())
+            it.reset();
+        else
+            ++it;
+    }
 
     // a few more things to do when initialization is complete
     if (!moreStages) {

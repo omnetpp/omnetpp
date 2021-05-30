@@ -63,7 +63,6 @@ class SIM_API cComponent : public cSoftOwner //implies noncopyable
   private:
     enum {
       FL_PARAMSFINALIZED  = 1 << 2, // whether finalizeParameters() has been called
-      FL_CURRENTSTAGEDONE = 1 << 3, // during initialization: whether initialize(stage) has been called already in the current stage
       FL_INITIALIZED      = 1 << 4, // whether initialize() has completed for this module
       FL_DELETING         = 1 << 5, // module or channel is being deleted (via deleteModule(), disconnect(), etc.)
       FL_DISPSTR_CHECKED  = 1 << 6, // for hasDisplayString(): whether the FL_DISPSTR_NOTEMPTY flag is valid
@@ -75,6 +74,8 @@ class SIM_API cComponent : public cSoftOwner //implies noncopyable
     cComponentType *componentType;  // component type object
     cSimulation *simulation; // the simulation it belongs to
     int componentId;   // id in cSimulation
+
+    short lastCompletedInitStage;
 
     short rngMapSize;  // size of the rngMap array (RNGs with index >= rngMapSize are mapped one-to-one to global RNGs)
     int *rngMap;       // maps local RNG numbers (may be nullptr if rngMapSize==0)
