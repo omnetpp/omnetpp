@@ -1002,8 +1002,8 @@ public class DocumentationGenerator {
                         public boolean visit(PageType pageType, String file, String title, String content) throws Exception {
                             if (pageType == PageType.PAGE) {
                                 generateNavigationMenuItem(2, title, file, null);
-                                generatePage(file, title,
-                                        renderer.sectionTag("title", null) + processHTMLContent("comment", content));
+                                generatePage(new Path(file).removeFileExtension().toPortableString(), title,
+                                        renderer.sectionTag(title, null) + processHTMLContent("comment", content));
 
                             }
                             else if (pageType == PageType.EXTERNAL_PAGE) {
