@@ -576,6 +576,18 @@ cModuleType *cNedNetworkBuilder::findAndCheckModuleTypeLike(const char *modTypeN
         throw cRuntimeError(modp, "Submodule %s: '%s' is not a module interface",
                 submodName, interfaceQName.c_str());
 
+    // handle @omittedTypename
+    if (opp_isempty(modTypeName)) {
+        cProperties *properties = currentDecl->getSubmoduleProperties(submodName, likeType);
+        cProperty *omittedTypeNameProperty = properties->get("omittedTypename");
+        if (omittedTypeNameProperty) {
+            const char *omittedTypeName = omittedTypeNameProperty->getValue();
+            if (opp_isempty(omittedTypeName))
+                return nullptr; // meaning "don't create this submodule"
+            modTypeName = omittedTypeName;
+        }
+    }
+
     // search for module type that implements the interface
     std::vector<std::string> candidates = findTypeWithInterface(modTypeName, interfaceQName.c_str());
     if (candidates.empty())
@@ -787,6 +799,8 @@ void cNedNetworkBuilder::addSubmodule(cModule *compoundModule, SubmoduleElement 
             submodType = usesLike ?
                 findAndCheckModuleTypeLike(submodTypeName.c_str(), submoduleNode->getLikeType(), compoundModule, submodName) :
                 findAndCheckModuleType(submodTypeName.c_str(), compoundModule, submodName);
+            if (submodType == nullptr)
+                return;
         }
         catch (std::exception& e) {
             updateOrRethrowException(e, submoduleNode);
@@ -831,12 +845,14 @@ void cNedNetworkBuilder::addSubmodule(cModule *compoundModule, SubmoduleElement 
                     throw;
                 }
             }
-            cModule *submodp = submodType->create(submodName, compoundModule, index);
-            v.push_back(submodp);
+            if (submodType != nullptr) {  // note: this way we can create "holey" arrays!
+                cModule *submodp = submodType->create(submodName, compoundModule, index);
+                v.push_back(submodp);
 
-            cContextSwitcher __ctx(submodp);  // params need to be evaluated in the module's context
-            submodp->finalizeParameters();  // also sets up gate sizes declared inside the type
-            setupSubmoduleGateVectors(submodp, submoduleNode);
+                cContextSwitcher __ctx(submodp);  // params need to be evaluated in the module's context
+                submodp->finalizeParameters();  // also sets up gate sizes declared inside the type
+                setupSubmoduleGateVectors(submodp, submoduleNode);
+            }
         }
     }
 
@@ -1008,10 +1024,14 @@ void cNedNetworkBuilder::doConnectGates(cModule *modp, cGate *srcGate, cGate *de
             }
         }
         cChannel *channel = createChannel(connectionNode, modp, srcGate);
-        channel->setNedConnectionElementId(connectionNode->getId());  // so that properties will be found
-        srcGate->connectTo(destGate, channel);
-        assignSubcomponentParams(channel, connectionNode);
-        channel->finalizeParameters();
+        if (channel == nullptr)
+            srcGate->connectTo(destGate);
+        else {
+            channel->setNedConnectionElementId(connectionNode->getId());  // so that properties will be found
+            srcGate->connectTo(destGate, channel);
+            assignSubcomponentParams(channel, connectionNode);
+            channel->finalizeParameters();
+        }
     }
 }
 
@@ -1200,8 +1220,10 @@ cChannel *cNedNetworkBuilder::createChannel(ConnectionElement *connectionNode, c
         std::string channelTypeName = getChannelTypeName(parentmodp, srcGate, connectionNode, (channelName ? channelName : "channel"));
         bool usesLike = !opp_isempty(connectionNode->getLikeType());
         channelType = usesLike ?
-            findAndCheckChannelTypeLike(channelTypeName.c_str(), connectionNode->getLikeType(), parentmodp) :
+            findAndCheckChannelTypeLike(channelTypeName.c_str(), connectionNode->getLikeType(), parentmodp, connectionNode->getId()) :
             findAndCheckChannelType(channelTypeName.c_str(), parentmodp);
+        if (channelType == nullptr)
+            return nullptr; // "omitted"
     }
     catch (std::exception& e) {
         updateOrRethrowException(e, connectionNode);
@@ -1226,7 +1248,7 @@ cChannelType *cNedNetworkBuilder::findAndCheckChannelType(const char *channelTyp
     return (cChannelType *)componentType;
 }
 
-cChannelType *cNedNetworkBuilder::findAndCheckChannelTypeLike(const char *channelTypeName, const char *likeType, cModule *modp)
+cChannelType *cNedNetworkBuilder::findAndCheckChannelTypeLike(const char *channelTypeName, const char *likeType, cModule *modp, int connectionId)
 {
     // TODO cache the result to speed up further lookups
 
@@ -1238,6 +1260,18 @@ cChannelType *cNedNetworkBuilder::findAndCheckChannelTypeLike(const char *channe
         throw cRuntimeError(modp, "Cannot resolve channel interface '%s'", likeType);
     if (interfaceDecl->getTree()->getTagCode() != NED_CHANNEL_INTERFACE)
         throw cRuntimeError(modp, "'%s' is not a channel interface", interfaceQName.c_str());
+
+    // handle @omittedTypename
+    if (opp_isempty(channelTypeName)) {
+        cProperties *properties = currentDecl->getConnectionProperties(connectionId, likeType);
+        cProperty *omittedTypeNameProperty = properties->get("omittedTypename");
+        if (omittedTypeNameProperty) {
+            const char *omittedTypeName = omittedTypeNameProperty->getValue();
+            if (opp_isempty(omittedTypeName))
+                return nullptr; // meaning "no channel"
+            channelTypeName = omittedTypeName;
+        }
+    }
 
     // search for channel type that implements the interface
     std::vector<std::string> candidates = findTypeWithInterface(channelTypeName, interfaceQName.c_str());

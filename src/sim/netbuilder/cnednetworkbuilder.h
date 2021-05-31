@@ -109,7 +109,7 @@ class SIM_API cNedNetworkBuilder
     cChannel *createChannel(ConnectionElement *conn, cModule *parentmodp, cGate *srcgate);
 
     cChannelType *findAndCheckChannelType(const char *channelTypeName, cModule *modp);
-    cChannelType *findAndCheckChannelTypeLike(const char *channelTypeName, const char *likeType, cModule *modp);
+    cChannelType *findAndCheckChannelTypeLike(const char *channelTypeName, const char *likeType, cModule *modp, int connectionId);
     cDynamicExpression *getOrCreateExpression(const ExprRef& exprRef);
     long evaluateAsLong(const ExprRef& exprRef, cComponent *contextComponent);
     bool evaluateAsBool(const ExprRef& exprRef, cComponent *contextComponent);
