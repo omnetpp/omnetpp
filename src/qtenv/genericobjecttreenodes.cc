@@ -408,6 +408,8 @@ int ChildObjectNode::computeChildCount()
 
 QVariant ChildObjectNode::computeData(int role)
 {
+    DisableDebugOnErrors dummy;
+
     QString defaultText = getDefaultObjectData(object, Qt::DisplayRole).value<QString>();
     QString infoText = object->str().c_str();
 
@@ -514,6 +516,8 @@ bool FieldNode::isSameAs(TreeNode *other)
 
 QVariant FieldNode::computeData(int role)
 {
+    DisableDebugOnErrors dummy;
+
     cObject *objectCasted =
               (containingDesc && containingDesc->getFieldIsCObject(fieldIndex))
                 ? static_cast<cObject *>(object)
@@ -667,6 +671,8 @@ int RootNode::computeChildCount()
 
 QVariant RootNode::computeData(int role)
 {
+    DisableDebugOnErrors dummy;
+
     if (!object)
         return getDefaultObjectData(object, role);
 
@@ -795,6 +801,8 @@ int ArrayElementNode::computeChildCount()
 
 QVariant ArrayElementNode::computeData(int role)
 {
+    DisableDebugOnErrors dummy;
+
     QString indexEquals = QString("[%1] ").arg(arrayIndex);
     QString value;
     QString info;
