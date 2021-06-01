@@ -76,35 +76,27 @@ This will create an ``|omnetpp|-|version|`` subdirectory with the |omnet++| file
 Environment Variables
 ---------------------
 
-|omnet++| needs its ``bin/`` directory to be in the path. To add ``bin/`` to ``PATH`` temporarily (in the current shell
-only), change into the |omnet++| directory and source the ``setenv`` script:
+In general |omnet++| requires that certain environment variables are set and the
+`|omnetpp|-|version|/bin` directory is in the PATH. Source the `setenv` 
+script to set up all these variables. 
 
 ::
 
-   $ cd |omnetpp|-|version|
-   $ source setenv
+  $ cd |omnetpp|-|version|
+  $ source setenv
 
-The script also adds the ``lib/`` subdirectory to ``LD_LIBRARY_PATH``, which may be necessary on systems that don’t
-support the rpath mechanism.
-
-To set the environment variables permanently, edit ``.bashrc`` in your home directory. Use your favourite text editor to
-edit ``.bashrc``, for example gedit:
-
-::
-
-   $ gedit ~/.bashrc
-
-Add the following line at the end of the file, then save it:
-
-::
-
-   export PATH=$HOME/|omnetpp|-|version|/bin:$PATH
-
-You need to close and re-open the terminal for the changes to take effect.
-
-Alternatively, you can put the above line into ``~/.bash_profile``, but then you need to log out and log in again for
-the changes to take effect.
-
+  To set the environment variables permanently, edit ``.profile`` or ``.zprofile`` in your home directory and
+  add a line something like this:
+  
+  ::
+  
+     [ -f "$HOME/|omnetpp|-|version|/setenv" ] && source "$HOME/|omnetpp|-|version|/setenv" -f
+  
+  .. note::
+  
+     If you use a shell other than bash, consult the man page of that shell to find out which startup file to edit, and
+     how to set and export variables.
+  
 .. note::
 
    If you use a shell other than *bash*, consult the man page of that shell to find out which startup file to edit, and

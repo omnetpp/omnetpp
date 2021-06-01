@@ -37,7 +37,7 @@ OpenJDK, version 11.0 or later
    been found to have problems running the IDE. You do not need this package if you do not plan to use the Simulation
    IDE.
 
-Qt 5.6 or later
+Qt 5.9 or later
    Required by the Qtenv simulation runtime environment. You need the *devel* packages that include header files as
    well.
 
@@ -115,21 +115,21 @@ This will create an ``|omnetpp|-|version|`` subdirectory with the |omnet++| file
 Environment Variables
 ---------------------
 
-In general |omnet++| requires that its bin directory should be in the PATH. You should add a line something like this to
-your ``.bashrc``:
+In general |omnet++| requires that certain environment variables are set and the
+`|omnetpp|-|version|/bin` directory is in the PATH. Source the `setenv`
+script to set up all these variables.
 
 ::
 
-   $ export PATH=$HOME/|omnetpp|-|version|/bin:$PATH
+  $ cd |omnetpp|-|version|
+  $ source setenv
 
-You may also have to specify the path where shared libraries are loaded from. Use:
+To set the environment variables permanently, edit ``.profile`` or ``.zprofile`` in your home directory and
+add a line something like this:
 
 ::
 
-   $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/|omnetpp|-|version|/lib
-
-If ``configure`` complains about not finding the Tcl library directory, you may specify it by setting the
-``TCL_LIBRARY`` environment variable.
+   [ -f "$HOME/|omnetpp|-|version|/setenv" ] && source "$HOME/|omnetpp|-|version|/setenv" -f
 
 .. note::
 

@@ -90,19 +90,8 @@ running, and select *Pin this program to taskbar* from the context menu.
 Environment Variables
 ---------------------
 
-If you want to start |omnet++| simulations outside the shell as well (for example from Exlorer), you need to add
-|omnet++|'s ``bin``, ``tools/win64/usr/bin`` and ``tools/win64/mingw64/bin`` directories to the path.
-
-First, open the *Environment Variables* dialog.
-
-Click the Start button, then start typing ``environment variables`` into the search box. Choose *Edit environment
-variables for your account* when it appears in the list. The dialog comes up.
-
-In the dialog, select ``path`` or ``PATH`` in the list, click *Edit*. Append "``;<omnetpp-dir>\bin``" and the other
-needed directories to the value (without quotes), where ``<omnetpp-dir>`` is the name of the |omnet++| root directory
-(for example ``C:\|omnetpp|-|version|``). Hit Enter to accept.
-
-You need to log-out and then log-in for the changes to take effect.
+In general |omnet++| requires that certain environment variables are set. Always use the 
+the provided shell window to start the IDE or your simulations.
 
 Reconfiguring the Libraries
 ---------------------------

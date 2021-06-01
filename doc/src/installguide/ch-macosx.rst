@@ -66,44 +66,22 @@ Alternatively, you can also unpack the archive using Finder.
 Environment Variables
 ---------------------
 
-|omnet++| needs its ``bin/`` and ``tools/macosx/bin`` directories to be in the path. To add them to ``PATH`` temporarily
-(in the current shell only), change into the |omnet++| directory and source the ``setenv`` script:
+In general |omnet++| requires that certain environment variables are set and the
+`|omnetpp|-|version|/bin` directory is in the PATH. Source the `setenv` 
+script to set up all these variables. 
 
 ::
 
-   $ cd |omnetpp|-|version|
-   $ source setenv
+  $ cd |omnetpp|-|version|
+  $ source setenv
 
-To set the environment variables permanently, edit ``.bashrc`` in your home directory. Use your favourite text editor to
-edit ``.bashrc``, for example TextEdit:
-
-::
-
-   $ touch ~/.bashrc
-   $ open -e ~/.bashrc
-
-.. note::
-
-   ``touch`` is needed because ``open -e`` only opens existing files. Alternatively, you can use the terminal-based
-   *pico* editor (``pico ~/.bashrc``)
-
-Add the following line at the end of the file, then save it:
-
-::
-
-   export PATH=$HOME/|omnetpp|-|version|/bin:$HOME/|omnetpp|-|version|/tools/macosx/bin:$PATH
-   export QT_PLUGIN_PATH=$HOME/|omnetpp|-|version|/tools/macosx/plugins
-
-You need to close and re-open the terminal for the changes to take effect.
-
-Alternatively, you can put the above line into ``~/.bash_profile``, but then you need to log out and log in again for
-the changes to take effect.
-
-.. note::
-
-   If you use a shell other than *bash* (new installations of macOS may use the *zsh* shell by default), consult the man
-   page of that shell to find out which startup file to edit, and how to set and export variables. e.g.: for *zsh* use
-   ``~/.zshrc`` and ``~/.zsh_profile``.
+  To set the environment variables permanently, edit ``.profile``, ``.zprofile`` or ``.zshenv`` in your home directory and
+  add a line something like this:
+  
+  ::
+  
+     [ -f "$HOME/|omnetpp|-|version|/setenv" ] && source "$HOME/|omnetpp|-|version|/setenv" -f
+  
 
 Configuring and Building |omnet++|
 ----------------------------------
