@@ -2036,9 +2036,9 @@ OPP_PROBLEM_PACKAGES=
 
 # check if 'setenv' was correctly sourced
 CURRENT_DIR=$(cd $(dirname "$0"); pwd)
-if test "$OMNETPP_ROOT" = "$CURRENT_DIR" -a -z "${PATH##*${CURRENT_DIR}/bin:*}" -a -z "${PYTHONPATH##*${CURRENT_DIR}/python:*}"; then  # this uses magic substring matching with parameter expansion
-  { $as_echo "$as_me:${as_lineno-$LINENO}: Environment variables (OMNETPP_ROOT, PATH and PYTHONPATH) are correctly set." >&5
-$as_echo "$as_me: Environment variables (OMNETPP_ROOT, PATH and PYTHONPATH) are correctly set." >&6;}
+if test "$__omnetpp_root_dir" = "$CURRENT_DIR" -a -z "${PATH##*${CURRENT_DIR}/bin:*}" -a -z "${PYTHONPATH##*${CURRENT_DIR}/python:*}"; then  # this uses magic substring matching with parameter expansion
+  { $as_echo "$as_me:${as_lineno-$LINENO}: Environment variables (PATH and PYTHONPATH) are correctly set." >&5
+$as_echo "$as_me: Environment variables (PATH and PYTHONPATH) are correctly set." >&6;}
 else
   as_fn_error $? "Before running 'configure', please use 'source setenv' to set up your environment." "$LINENO" 5
 fi

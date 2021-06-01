@@ -1,45 +1,44 @@
 # first argument can be (e.g. 'source setenv -q'):
 # -q : do not show banner text on configuration success
 # -r : remove an already configured environment
-# -f : allow use from scripts
+# -f : allow usage from non-interactive scripts
 
 case "$-" in
 *i*) ;;
-*)  if [ "$1" != "-f" ]; then # allow use from scripts, as "source setenv -f"
-        echo "Error: not a login shell -- run this script as 'source setenv' or '. setenv'"
-        exit 1
+*)  if [ "$1" != "-f" ]; then # allow use from non-interactive scripts as "source setenv -f"
+        echo "Error: Not running in an interactive shell. Run this script as 'source setenv' or '. setenv' from an interactive shell or as 'source setenv -f' from a non-interactive shell."
+        # trick if we cannot 'return' because we were NOT sourced, use 'exit' to exit from the subshell.
+        return 1 2>/dev/null || exit 1
     fi
 esac
 
-# Get the directory where this script reside using a trick that works both on bash and zsh.
+# Get the directory where this script reside using a trick (works differently on bash and zsh)
 # On bash, the current script's name is in 'BASH_SOURCE[0]'
-if [ "$(basename $0)" = "bash" ]; then # for BASH
-  MY_DIR=$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)
-elif [ "$(basename $0)" = "setenv" ]; then # on zsh the script name is in '$0'
-  MY_DIR=$(cd $(dirname $0) && pwd)
+if [ "$BASH_VERSION" != "" ]; then # for BASH
+  dir=$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)
+elif [ "$ZSH_VERSION" != "" ]; then # on zsh the script name is in '$0'
+  dir=$(cd $(dirname $0) && pwd)
 else # on any other SH compatible shell we assume that the current working directory is the OMNeT++ root directory
-  MY_DIR=$(pwd)
+  dir=$(pwd)
 fi
 
-# check if MY_DIR is really point to an omnet installation dir
-if [ ! -f $MY_DIR/configure.user -o ! -f $MY_DIR/include/omnetpp.h -o ! -f $MY_DIR/Version ]; then
-    echo "Error: '$MY_DIR' does not look like an OMNeT++ root directory"
-    return
+# check if dir is really pointing to an omnet++ installation dir
+if [ ! -f $dir/configure.user -o ! -f $dir/include/omnetpp.h -o ! -f $dir/Version ]; then
+    echo "Error: '$dir' does not look like an OMNeT++ root directory"
+    return 1
 fi
 
 # remove previous environment to prevent the accumulation of path elements
-if [ -n "$OMNETPP_ROOT" ]; then
+if [ -n "$__omnetpp_root_dir" ]; then
   if [ "$1" = "-r" ]; then
-    echo "Removed previous environment for '$OMNETPP_ROOT'."
-    MY_DIR=
+    echo "Removed previous environment for '$__omnetpp_root_dir'."
+    dir=
   else
-    echo "Warning: overwriting previous environment for '$OMNETPP_ROOT'."
+    echo "Warning: overwriting previous environment for '$__omnetpp_root_dir'."
   fi
-  export PATH=${PATH#$OMNETPP_ROOT/bin:}
-  export PYTHONPATH=${PYTHONPATH#$OMNETPP_ROOT/python:}
-  export LD_LIBRARY_PATH=${LD_LIBRARY_PATH#$OMNETPP_ROOT/lib:}
-  export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH#$OMNETPP_ROOT/lib:}
-  export OMNETPP_ROOT=
+  export PATH=${PATH#$__omnetpp_root_dir/bin:}
+  export PYTHONPATH=${PYTHONPATH#$__omnetpp_root_dir/python:}
+  export __omnetpp_root_dir=
   export OMNETPP_RELEASE=
   export QT_SELECT=
   export QT_LOGGING_RULES=
@@ -50,12 +49,8 @@ if [ "$1" = "-r" ]; then
     return 0
 fi
 
-if [ $(uname) = "Linux" ]; then
-  export LD_LIBRARY_PATH=$MY_DIR/lib:$LD_LIBRARY_PATH
-fi
-
 if [ $(uname) = "Darwin" ]; then
-  if [ ! -d $MY_DIR/tools/macosx ]; then
+  if [ ! -d $dir/tools/macosx ]; then
       echo "Error: We are running on macOS, but you seem to have downloaded the Linux version of the installation package!"
       return 1
   else
@@ -65,22 +60,21 @@ if [ $(uname) = "Darwin" ]; then
         echo "and then execute 'source setenv' again from that shell."
         return 1
       else
-        cd $MY_DIR/tools/macosx && source setenv ; cd - >/dev/null
+        cd $dir/tools/macosx && source setenv ; cd - >/dev/null
       fi
   fi
-  export DYLD_LIBRARY_PATH=$MY_DIR/lib:$DYLD_LIBRARY_PATH
 fi
 
-export OMNETPP_ROOT=$MY_DIR
-export OMNETPP_RELEASE=$(cat $OMNETPP_ROOT/Version)
-export PATH=$OMNETPP_ROOT/bin:$PATH
-export PYTHONPATH=$OMNETPP_ROOT/python:$PYTHONPATH
+export __omnetpp_root_dir=$dir
+export OMNETPP_RELEASE=$(cat $__omnetpp_root_dir/Version)
+export PATH=$__omnetpp_root_dir/bin:$PATH
+export PYTHONPATH=$__omnetpp_root_dir/python:$PYTHONPATH
 export HOSTNAME
 export HOST
 export QT_SELECT=5 # on systems with qtchooser, switch to Qt5
 export QT_LOGGING_RULES='*.debug=false;qt.qpa.*=false' # disable some annoying qt logging
-MY_DIR=
+dir=
 
 if [ "$1" != "-q" ]; then
-  echo "Environment for '$OMNETPP_RELEASE' in directory '$OMNETPP_ROOT' is ready."
+  echo "Environment for '$OMNETPP_RELEASE' in directory '$__omnetpp_root_dir' is ready."
 fi
