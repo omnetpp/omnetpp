@@ -42,8 +42,8 @@ To install the required packages, type in the terminal:
 ::
 
    $ sudo apt-get install build-essential clang lld gdb bison flex perl \
-        python3 python3-pip qt5-default libqt5opengl5-dev \
-        libxml2-dev zlib1g-dev doxygen graphviz libwebkit2gtk-4.0-37
+        python3 python3-pip qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools \
+        libqt5opengl5-dev libxml2-dev zlib1g-dev doxygen graphviz libwebkit2gtk-4.0-37
    $ python3 -m pip install --user --upgrade numpy pandas matplotlib scipy seaborn posix_ipc
 
 To use Qtenv with 3D visualization support, install the development packages for OpenSceneGraph (3.4 or later) and the
@@ -87,8 +87,8 @@ If the *Mark additional required changes?* dialog comes up, choose the *Mark* bu
 
 The packages:
 
--  required: build-essential, gcc, g++, bison, flex, perl, qt5-default, python3, libxml2-dev, zlib1g-dev, doxygen,
-   graphviz, libwebkit2gtk-4.0-37
+-  required: build-essential, gcc, g++, bison, flex, perl, qtbase5-dev, qtchooser, qt5-qmake, qtbase5-dev-tools,
+-  python3, libxml2-dev, zlib1g-dev, doxygen, graphviz, libwebkit2gtk-4.0-37
 
 -  recommended: libopenscenegraph-dev, openscenegraph-plugin-osgearth, libosgearth-dev, openmpi-bin, libopenmpi-dev
 
