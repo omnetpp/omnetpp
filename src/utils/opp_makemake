@@ -246,7 +246,7 @@ sub makemake()
             $defaultMode = substr($arg, 2);
         }
         elsif ($arg eq "-c" || $arg eq "--configfile") {
-            error("option $arg is no longer supported, config file is located using variables (OMNETPP_CONFIGFILE or OMNETPP_ROOT), or by invoking opp_configfilepath");
+            error("option $arg is no longer supported, config file is located using the OMNETPP_CONFIGFILE, or by invoking opp_configfilepath");
         }
         elsif ($arg eq "-d" || $arg eq "--subdir") {
             push(@submakeDirs, shift @ARGV);
@@ -1145,11 +1145,7 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 ifneq ("$(OMNETPP_CONFIGFILE)","")
 CONFIGFILE = $(OMNETPP_CONFIGFILE)
 else
-ifneq ("$(OMNETPP_ROOT)","")
-CONFIGFILE = $(OMNETPP_ROOT)/Makefile.inc
-else
 CONFIGFILE = $(shell opp_configfilepath)
-endif
 endif
 
 ifeq ("$(wildcard $(CONFIGFILE))","")

@@ -187,7 +187,7 @@ public class MakemakeOptions implements Cloneable {
                 defaultMode = arg.substring(2);
             }
             else if (arg.equals("-c") || arg.equals("--configfile")) {
-                addError("option "+arg+" is no longer supported, config file is located using variables (OMNETPP_CONFIGFILE or OMNETPP_ROOT), or by invoking opp_configfilepath");
+                addError("option "+arg+" is no longer supported, config file is located using the OMNETPP_CONFIGFILE variables, or by invoking opp_configfilepath");
             }
             else if (arg.equals("-d") || arg.equals("--subdir")) {
                 if (checkArg(argv, i))
