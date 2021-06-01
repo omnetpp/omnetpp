@@ -36,6 +36,7 @@ typedef Expression::AstNode AstNode;
 
 std::string Expression::AstNode::str() const
 {
+    // note: the result of str() may appear in user-facing messages, e.g. exceptions
     std::stringstream out;
     out << typeName(type);
     if (type == CONSTANT)
@@ -52,10 +53,10 @@ const char *Expression::AstNode::typeName(Type type)
         case AstNode::OP: return "operator";
         case AstNode::FUNCTION: return "function";
         case AstNode::METHOD: return "method";
-        case AstNode::IDENT:
-        case AstNode::IDENT_W_INDEX: return "identifier";
-        case AstNode::MEMBER:
-        case AstNode::MEMBER_W_INDEX: return "member";
+        case AstNode::IDENT: return "identifier";
+        case AstNode::IDENT_W_INDEX: return "indexed identifier";
+        case AstNode::MEMBER: return "member";
+        case AstNode::MEMBER_W_INDEX: return "indexed member";
         case AstNode::OBJECT: return "object";
         case AstNode::ARRAY: return "array";
         case AstNode::KEYVALUE: return "key-value";

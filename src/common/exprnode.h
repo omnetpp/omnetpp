@@ -82,6 +82,7 @@ protected:
     virtual void printFunction(std::ostream& out, int spaciousness, int startIndex=0) const;
     virtual void printChild(std::ostream& out, ExprNode *child, int spaciousness) const;
     virtual bool needSpaces(int spaciousness) const {return spaciousness >= (LASTPREC-getPrecedence());}
+    virtual std::string asPrinted(bool quote=false) const;
     static void bringToCommonTypeAndUnit(ExprValue& a, ExprValue& b);
     inline static void ensureArgType(int index, ExprValue::Type type, const ExprValue& actual);
     inline static void ensureNumericArg(const ExprValue& actual);

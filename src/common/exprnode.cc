@@ -36,6 +36,17 @@ ExprNode *ExprNode::dupTree() const
     return newNode;
 }
 
+std::string ExprNode::asPrinted(bool quote) const
+{
+    std::stringstream ss;
+    if (quote)
+        ss << "'";
+    print(ss, 0);
+    if (quote)
+        ss << "'";
+    return ss.str();
+}
+
 std::string ExprNode::makeErrorMessage(std::exception& e) const
 {
     return str() + ": " + e.what();
