@@ -37,5 +37,5 @@ void Test::activity()
 %exitcode: 1
 
 %contains: stderr
-Cannot evaluate parameter 'p1': operator '*': Refusing to perform computations involving quantities with nonlinear units (10dBm)
+Cannot evaluate expression for parameter 'p1': operator '*': Refusing to perform computations involving quantities with nonlinear units (10dBm)
 

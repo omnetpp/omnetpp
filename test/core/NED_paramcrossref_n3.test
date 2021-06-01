@@ -22,6 +22,6 @@ network Test
 %exitcode: 1
 
 %contains: stderr
-Cannot evaluate parameter 'p': 'parent.d.p': Submodule 'd' not found
+Cannot evaluate expression for parameter 'p': 'parent.d.p': Submodule 'd' not found
 
 

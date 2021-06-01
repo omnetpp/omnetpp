@@ -448,7 +448,7 @@ void cPar::parse(const char *text, const char *baseDirectory)
         }
         catch (std::exception& e) {
             delete tmp;
-            throw cRuntimeError("Wrong value '%s' for parameter '%s': %s", text, getFullPath().c_str(), e.what());
+            throw cRuntimeError("Error in expression '%s' for parameter '%s': %s", text, getFullPath().c_str(), e.what());
         }
 
         // successfully parsed: install it

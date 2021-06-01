@@ -16,7 +16,7 @@ network Test {
 
 %exitcode: 1
 %contains: stderr
-<!> Error: Cannot evaluate parameter 'bar': Using NED parameters of type 'object' in expressions is currently not supported
+<!> Error: Cannot evaluate expression for parameter 'bar': Using NED parameters of type 'object' in expressions is currently not supported
 
 %not-contains: stdout
 undisposed object
