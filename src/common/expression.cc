@@ -61,7 +61,42 @@ const char *Expression::AstNode::typeName(Type type)
         case AstNode::ARRAY: return "array";
         case AstNode::KEYVALUE: return "key-value";
         case AstNode::UNDEF: return "undefined";
-	default: throw opp_runtime_error("Unrecognized enum value %d", type);
+        default: throw opp_runtime_error("Unrecognized enum value %d", type);
+    }
+}
+
+static std::string unparseList(std::vector<AstNode*> children, int startIndex=0)
+{
+    std::stringstream out;
+    for (int i = startIndex; i < children.size(); i++) {
+        if (i != 0) out << ",";
+        out << children[i]->unparse();
+    }
+    return out.str();
+}
+
+std::string Expression::AstNode::unparse() const
+{
+    switch (type) {
+        case AstNode::CONSTANT: return constant.str();
+        case AstNode::OP:
+            if (children.size()==0) return name; // cannot happen
+            else if (children.size()==1 && name == "_!") return children.at(0)->unparse() + "!";
+            else if (children.size()==1) return name + children.at(0)->unparse();
+            else if (children.size()==2) return children.at(0)->unparse() + name + children.at(1)->unparse();
+            else if (children.size()==3) return children.at(0)->unparse() + name[0] + children.at(1)->unparse() + name[1] + children.at(2)->unparse(); // ?:
+            else return name + "(" + unparseList(children) + ")"; // cannot happen
+        case AstNode::FUNCTION: return name + "(" + unparseList(children) + ")";
+        case AstNode::METHOD: return children.at(0)->unparse() + "(" + unparseList(children,1) + ")";
+        case AstNode::IDENT: return name;
+        case AstNode::IDENT_W_INDEX: return name + "[" + children.at(0)->unparse() + "]";
+        case AstNode::MEMBER: return children.at(0)->unparse() + "." + name;
+        case AstNode::MEMBER_W_INDEX: return children.at(0)->unparse() + "." + name + "[" + children.at(1)->unparse() + "]";
+        case AstNode::OBJECT: return name + "{" + unparseList(children) + "}";
+        case AstNode::ARRAY: return "[" + unparseList(children) + "]";
+        case AstNode::KEYVALUE: return name + ": " + children.at(0)->unparse();
+        case AstNode::UNDEF: return "undefined";
+        default: throw opp_runtime_error("Unrecognized enum value %d", type);
     }
 }
 

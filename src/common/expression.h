@@ -54,6 +54,7 @@ public:
         void prepend(AstNode *node) {children.insert(children.begin(), node);}
         std::string str() const;
         static const char *typeName(Type type);
+        std::string unparse() const;
     };
 
     /**
