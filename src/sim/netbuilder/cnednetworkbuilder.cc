@@ -136,7 +136,7 @@ void cNedNetworkBuilder::doAddParametersAndGatesTo(cComponent *component, cNedDe
     GatesElement *gatesNode = decl->getGatesElement();
     if (gatesNode) {
         currentDecl = decl;  // switch "context"
-        doGates((cModule *)component, gatesNode, false);
+        doGates((cModule *)component, gatesNode);
     }
 }
 
@@ -178,7 +178,9 @@ void cNedNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
         // isSubComponent==false: we are called from cModuleType::addParametersAndGatesTo();
         // isSubComponent==true: we are called from assignSubcomponentParams().
         // if type==NONE, this is an inherited parameter (must have been added already)
-        bool isNewParam = !isSubcomponent && paramNode->getType() != PARTYPE_NONE;
+        bool isNewParam = paramNode->getType() != PARTYPE_NONE;
+        if (isNewParam && isSubcomponent)
+            throw cRuntimeError(component, "Cannot add new parameter '%s' in a submodule or connection", paramName); // this error is normally discovered already during NED validation
 
         // try to find an impl object with this value; we'll reuse it to optimize memory consumption
         cParImpl *impl = currentDecl->getSharedParImplFor(paramNode);
@@ -266,18 +268,18 @@ void cNedNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
     }
 }
 
-void cNedNetworkBuilder::doGates(cModule *module, GatesElement *gatesNode, bool isSubcomponent)
+void cNedNetworkBuilder::doGates(cModule *module, GatesElement *gatesNode)
 {
     ASSERT(gatesNode != nullptr);
     for (NedElement *child = gatesNode->getFirstChildWithTag(NED_GATE); child; child = child->getNextSiblingWithTag(NED_GATE))
-        doGate(module, (GateElement *)child, isSubcomponent);
+        doGate(module, (GateElement *)child);
 }
 
-void cNedNetworkBuilder::doGate(cModule *module, GateElement *gateNode, bool isSubcomponent)
+void cNedNetworkBuilder::doGate(cModule *module, GateElement *gateNode)
 {
     try {
         // add gate if it's declared here
-        if (!isSubcomponent && gateNode->getType() != GATETYPE_NONE)
+        if (gateNode->getType() != GATETYPE_NONE)
             module->addGate(gateNode->getName(), translateGateType(gateNode->getType()), gateNode->getIsVector());
     }
     catch (std::exception& e) {
@@ -307,7 +309,7 @@ void cNedNetworkBuilder::assignParametersFromPatterns(cComponent *component)
         if (decl && !prefix.empty()) {
             const std::vector<PatternData>& submodPatterns = decl->getSubmoduleParamPatterns(child->getName());
             if (!submodPatterns.empty())
-                doAssignParametersFromPatterns(component, prefix, submodPatterns, true, child);
+                doAssignParametersFromPatterns(component, prefix, submodPatterns, child);
         }
 
         // for checking the patterns on the compound module, prefix with submodule name
@@ -326,12 +328,12 @@ void cNedNetworkBuilder::assignParametersFromPatterns(cComponent *component)
         if (decl) {
             const std::vector<PatternData>& patterns = decl->getParamPatterns();
             if (!patterns.empty())
-                doAssignParametersFromPatterns(component, prefix, patterns, false, parent);
+                doAssignParametersFromPatterns(component, prefix, patterns, parent);
         }
     }
 }
 
-void cNedNetworkBuilder::doAssignParametersFromPatterns(cComponent *component, const std::string& prefix, const std::vector<PatternData>& patterns, bool isInSubcomponent, cComponent *evalContext)
+void cNedNetworkBuilder::doAssignParametersFromPatterns(cComponent *component, const std::string& prefix, const std::vector<PatternData>& patterns, cComponent *evalContext)
 {
     int numPatterns = patterns.size();
     int numParams = component->getNumParams();
@@ -343,7 +345,7 @@ void cNedNetworkBuilder::doAssignParametersFromPatterns(cComponent *component, c
             for (int j = 0; j < numPatterns; j++) {
                 if (patterns[j].matcher->matches(paramPath.c_str())) {
                     // pattern matches the parameter's path, assign the value
-                    doAssignParameterFromPattern(par, patterns[j].patternNode, isInSubcomponent, evalContext);
+                    doAssignParameterFromPattern(par, patterns[j].patternNode, evalContext);
                     if (par.isSet())
                         break;
                 }
@@ -352,7 +354,7 @@ void cNedNetworkBuilder::doAssignParametersFromPatterns(cComponent *component, c
     }
 }
 
-void cNedNetworkBuilder::doAssignParameterFromPattern(cPar& par, ParamElement *patternNode, bool isInSubcomponent, cComponent *evalContext) // TODO isSubcomponent: needed?
+void cNedNetworkBuilder::doAssignParameterFromPattern(cPar& par, ParamElement *patternNode, cComponent *evalContext)
 {
     // note: this code should look similar to relevant part of doParam()
     try {
@@ -400,14 +402,14 @@ cModule *cNedNetworkBuilder::_submodule(cModule *, const char *submodName, int i
         return ((unsigned)idx >= v.size()) ? nullptr : v[idx];
 }
 
-void cNedNetworkBuilder::doGateSizes(cModule *module, GatesElement *gatesNode, bool isSubcomponent)
+void cNedNetworkBuilder::doGateSizes(cModule *module, GatesElement *gatesNode)
 {
     ASSERT(gatesNode != nullptr);
     for (NedElement *child = gatesNode->getFirstChildWithTag(NED_GATE); child; child = child->getNextSiblingWithTag(NED_GATE))
-        doGateSize(module, (GateElement *)child, isSubcomponent);
+        doGateSize(module, (GateElement *)child);
 }
 
-void cNedNetworkBuilder::doGateSize(cModule *module, GateElement *gateNode, bool isSubcomponent) // TODO isSubcomponent: needed?
+void cNedNetworkBuilder::doGateSize(cModule *module, GateElement *gateNode)
 {
     try {
         if (gateNode->getIsVector()) {
@@ -455,7 +457,7 @@ void cNedNetworkBuilder::setupGateVectors(cModule *module, cNedDeclaration *decl
     GatesElement *gatesNode = decl->getGatesElement();
     if (gatesNode) {
         currentDecl = decl;  // switch "context"
-        doGateSizes(module, gatesNode, false);
+        doGateSizes(module, gatesNode);
     }
 }
 
@@ -853,7 +855,7 @@ void cNedNetworkBuilder::setupSubmoduleGateVectors(cModule *submodule, NedElemen
 {
     GatesElement *gatesNode = (GatesElement *)submoduleNode->getFirstChildWithTag(NED_GATES);
     if (gatesNode)
-        doGateSizes(submodule, gatesNode, true);
+        doGateSizes(submodule, gatesNode);
 }
 
 void cNedNetworkBuilder::addConnectionOrConnectionGroup(cModule *modp, NedElement *connOrConnGroupNode)

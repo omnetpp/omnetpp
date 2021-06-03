@@ -80,16 +80,16 @@ class SIM_API cNedNetworkBuilder
     bool getSubmoduleOrChannelTypeNameFromDeepAssignments(cModule *modp, const std::string& submodOrChannelKey, std::string& outTypeName, bool& outIsDefault);
     void addSubmodule(cModule *modp, SubmoduleElement *submod);
     void doAddParametersAndGatesTo(cComponent *component, cNedDeclaration *decl);
-    void doAssignParametersFromPatterns(cComponent *component, const std::string& prefix, const std::vector<PatternData>& patterns, bool isInSubcomponent, cComponent *evalContext);
-    void doAssignParameterFromPattern(cPar& par, ParamElement *patternNode, bool isInSubcomponent, cComponent *evalContext);
+    void doAssignParametersFromPatterns(cComponent *component, const std::string& prefix, const std::vector<PatternData>& patterns, cComponent *evalContext);
+    void doAssignParameterFromPattern(cPar& par, ParamElement *patternNode, cComponent *evalContext);
     static cPar::Type translateParamType(int t);
     static cGate::Type translateGateType(int t);
     void doParams(cComponent *component, ParametersElement *paramsNode, bool isSubcomponent);
     void doParam(cComponent *component, ParamElement *paramNode, bool isSubcomponent);
-    void doGates(cModule *component, GatesElement *gatesNode, bool isSubcomponent);
-    void doGate(cModule *component, GateElement *gateNode, bool isSubcomponent);
-    void doGateSizes(cModule *component, GatesElement *gatesNode, bool isSubcomponent);
-    void doGateSize(cModule *component, GateElement *gateNode, bool isSubcomponent);
+    void doGates(cModule *component, GatesElement *gatesNode);
+    void doGate(cModule *component, GateElement *gateNode);
+    void doGateSizes(cModule *component, GatesElement *gatesNode);
+    void doGateSize(cModule *component, GateElement *gateNode);
     void assignSubcomponentParams(cComponent *subcomponent, NedElement *subcomponentNode);
     void setupSubmoduleGateVectors(cModule *submodule, NedElement *submoduleNode);
 
