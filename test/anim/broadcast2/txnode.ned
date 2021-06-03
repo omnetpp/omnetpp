@@ -6,7 +6,7 @@ module TxNode
     submodules:
         tx: Tx {
             gates:
-                out[sizeof(out)];
+                out[sizeof(parent.out)];
         };
     connections:
         for i=0..sizeof(out)-1 {

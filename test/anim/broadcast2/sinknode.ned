@@ -5,7 +5,7 @@ module SinkNode
     submodules:
         sink: Sink {
             gates:
-                in[sizeof(in)];
+                in[sizeof(parent.in)];
         };
     connections:
         for i=0..sizeof(in)-1 {
