@@ -370,17 +370,17 @@ const char *Run::getProperty(const char *propertyName) const
             static_assert(Scave::RUN[0] == Scave::RUNATTR_PREFIX[0], "initial letter mismatch");
             if (strcmp(propertyName, Scave::RUN) == 0)
                 return getRunName().c_str();
-            if (strcmp(propertyName, Scave::RUNATTR_PREFIX) == 0)
+            if (strncmp(propertyName, Scave::RUNATTR_PREFIX, strlen(Scave::RUNATTR_PREFIX)) == 0)
                 return getAttribute(propertyName + strlen(Scave::RUNATTR_PREFIX)).c_str();
             break;
         }
         case Scave::ITERVAR_PREFIX[0]: {
-            if (strcmp(propertyName, Scave::ITERVAR_PREFIX) == 0)
+            if (strncmp(propertyName, Scave::ITERVAR_PREFIX, strlen(Scave::ITERVAR_PREFIX)) == 0)
                 return getIterationVariable(propertyName + strlen(Scave::ITERVAR_PREFIX)).c_str();
             break;
         }
         case Scave::CONFIG_PREFIX[0]: {
-            if (strcmp(propertyName, Scave::CONFIG_PREFIX) == 0)
+            if (strncmp(propertyName, Scave::CONFIG_PREFIX, strlen(Scave::CONFIG_PREFIX)) == 0)
                 return getConfigValue(propertyName + strlen(Scave::CONFIG_PREFIX)).c_str();
             break;
         }
