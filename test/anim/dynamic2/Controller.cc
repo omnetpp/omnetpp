@@ -24,11 +24,14 @@ void Controller::handleMessage(cMessage *msg)
 {
     // delete some modules
     double p = par("deleteProbability");
+    std::vector<cModule *> toDelete; // to avoid modification during iteration
     for (cModule::SubmoduleIterator it(getSystemModule()); !it.end();  /**/) {
         cModule *mod = *it++;
         if (strncmp(mod->getName(), "node-", 5) == 0 && dblrand() < p)
-            mod->deleteModule();
+            toDelete.push_back(mod);
     }
+    for (auto mod : toDelete)
+        mod->deleteModule();
 
     // and create new ones
     int n = par("numToCreate");
