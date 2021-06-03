@@ -29,6 +29,7 @@ namespace scave {
 
 class ResultFileManager;
 class InterruptedFlag;
+class Run;
 
 /**
  * Result ID -- identifies a scalar or a vector in a ResultFileManager
@@ -102,6 +103,7 @@ class SCAVE_API IDList
         // filtering
         IDList getRange(int startIndex, int endIndex) const;
         IDList getSubsetByIndices(int *array, int n) const;
+        IDList filterByRun(Run *run) const;
 
         // query by item types
         int getItemTypes() const;  // SCALAR, VECTOR or their binary OR

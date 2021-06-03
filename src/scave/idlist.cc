@@ -129,6 +129,17 @@ IDList IDList::getSubsetByIndices(int *indices, int n) const
     return newList;
 }
 
+IDList IDList::filterByRun(Run *run) const
+{
+    ResultFileManager *mgr = run->getResultFileManager();
+    IDList result;
+    for (ID id : v)
+        if (mgr->getFileRun(id)->getRun() == run)
+            result.v.push_back(id);
+
+    return result;
+}
+
 void IDList::checkIntegrity(ResultFileManager *mgr) const
 {
     ScalarResult buffer;
