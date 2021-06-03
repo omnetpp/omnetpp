@@ -19,7 +19,18 @@ network EnvirApiTest
 {
     parameters:
         @display("bgb=500,400");
-        @figure[explanation](type=text; pos=25,25; zIndex=2; text="Testing the following cEnvir functions:\nappendToImagePath, loadImage, getSubmodulePosition.\nYou should see five images next to each other:\nLena, the Cornell box, a baboon, the Utah teapot, and the Stanford bunny.\nThe tester module is here to ask the environment to load the images\nat runtime from C++ code, see the initialize() function of the Tester class.\nIt also adds a yellow rectangle which should always be tightly around\nthe submodule icon.\nThe zoom level displayed in the corresponding text figure should always\nmatch (in at least one inspector) the inspector's real zoom level.\nThe dummy module and the connection to it serves no other purpose\nthan to make the positions change when the network is relayouted.");
+        @figure[explanation](type=text; pos=25,25; zIndex=2;
+            text="Testing the following cEnvir functions:\n\
+appendToImagePath, loadImage, getSubmodulePosition.\n\
+You should see five images next to each other:\n\
+Lena, the Cornell box, a baboon, the Utah teapot, and the Stanford bunny.\n\
+The tester module is here to ask the environment to load the images\n\
+at runtime from C++ code, see the initialize() function of the Tester class.\n\
+It also adds a yellow rectangle which should always be tightly around\nthe submodule icon.\n\
+The zoom level displayed in the corresponding text figure should always\n\
+match (in at least one inspector) the inspector's real zoom level.\n\
+The connection between the two submodules should always be\n\
+covered exactly by the purple line.");
         @figure[lena](type=image; image="lena"; pos=50,300);
         @figure[box](type=image; image="box"; pos=150,300);
         @figure[baboon](type=image; image="baboon"; pos=250,300);
