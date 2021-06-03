@@ -26,6 +26,7 @@ namespace omnetpp {
 namespace scave {
 
 class ResultFileManager;
+class Run;
 
 /**
  * Result ID -- identifies a scalar or a vector in a ResultFileManager
@@ -80,6 +81,8 @@ class SCAVE_API IDList
         void intersect(IDList& ids);  // this = intersection(this,ids)
         IDList getSubsetByIndices(int *array, int n) const;
         IDList dup() const;
+
+        // query by item types
         int getItemTypes() const;  // SCALAR, VECTOR or their binary OR
         bool areAllScalars() const;
         bool areAllVectors() const;
@@ -93,6 +96,7 @@ class SCAVE_API IDList
         // filtering
         int countByTypes(int typeMask) const;
         IDList filterByTypes(int typeMask) const;
+        IDList filterByRun(Run *run) const;
 
         // sorting
         // TODO: there's a duplication between vector and histogram sorting due to not having a proper superclass with the statistics inside

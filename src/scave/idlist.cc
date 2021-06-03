@@ -554,6 +554,16 @@ int IDList::countByTypes(int typeMask) const
     return count;
 }
 
+IDList IDList::filterByRun(Run *run) const
+{
+    ResultFileManager *mgr = run->getResultFileManager();
+    IDList result;
+    for (V::const_iterator i = v->begin(); i != v->end(); ++i)
+        if (mgr->getItem(*i).getRun() == run)
+            result.v->push_back(*i);
+    return result;
+}
+
 void IDList::toByteArray(char *array, int n) const
 {
     checkV();
