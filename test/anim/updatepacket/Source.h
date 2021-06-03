@@ -20,8 +20,6 @@
 
 using namespace omnetpp;
 
-std::string opp_trim(const std::string& text);
-
 namespace updatepacket {
 
 class SourceBase : public cSimpleModule

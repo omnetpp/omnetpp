@@ -17,20 +17,6 @@
 
 #include <fstream>
 
-inline bool opp_isspace(unsigned char c)  {return isspace(c);}
-
-std::string opp_trim(const std::string& text)
-{
-    int length = text.length();
-    int pos = 0;
-    while (pos < length && opp_isspace(text[pos]))
-        pos++;
-    int endpos = length;
-    while (endpos > pos && opp_isspace(text[endpos-1]))
-        endpos--;
-    return text.substr(pos, endpos-pos);
-}
-
 namespace updatepacket {
 
 SourceBase::TxInfo::TxInfo(std::string line)
