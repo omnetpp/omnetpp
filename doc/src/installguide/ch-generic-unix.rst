@@ -129,7 +129,7 @@ add a line something like this:
 
 ::
 
-   [ -f "$HOME/|omnetpp|-|version|/setenv" ] && source "$HOME/|omnetpp|-|version|/setenv" -f
+   [ -f "$HOME/|omnetpp|-|version|/setenv" ] && source "$HOME/|omnetpp|-|version|/setenv"
 
 .. note::
 

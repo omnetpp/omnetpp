@@ -80,7 +80,7 @@ script to set up all these variables.
   
   ::
   
-     [ -f "$HOME/|omnetpp|-|version|/setenv" ] && source "$HOME/|omnetpp|-|version|/setenv" -f
+     [ -f "$HOME/|omnetpp|-|version|/setenv" ] && source "$HOME/|omnetpp|-|version|/setenv"
   
 
 Configuring and Building |omnet++|

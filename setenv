@@ -1,16 +1,8 @@
+#!/usr/bin/env -S sh -c "echo >&2 \"Error: You are running this script instead of sourcing it. Make sure to use it as 'source setenv' or '. setenv', otherwise its settings won't take effect.\"; exit 1"
+
 # first argument can be (e.g. 'source setenv -q'):
 # -q : do not show banner text on configuration success
 # -r : remove an already configured environment
-# -f : allow usage from non-interactive scripts
-
-case "$-" in
-*i*) ;;
-*)  if [ "$1" != "-f" ]; then # allow use from non-interactive scripts as "source setenv -f"
-        echo "Error: Not running in an interactive shell. Run this script as 'source setenv' or '. setenv' from an interactive shell or as 'source setenv -f' from a non-interactive shell."
-        # trick if we cannot 'return' because we were NOT sourced, use 'exit' to exit from the subshell.
-        return 1 2>/dev/null || exit 1
-    fi
-esac
 
 # Get the directory where this script reside using a trick (works differently on bash and zsh)
 # On bash, the current script's name is in 'BASH_SOURCE[0]'
