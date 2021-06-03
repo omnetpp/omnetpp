@@ -21,6 +21,7 @@
 #include <vector>
 #include <exception>
 #include <stdexcept>
+#include <algorithm> // std::sort
 #include "scavedefs.h" // int64_t
 
 namespace omnetpp {
