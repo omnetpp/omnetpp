@@ -18,9 +18,9 @@ module RandomPositions
     submodules:
         node[30]: Node {
             parameters:
-                x = nodeX;
-                y = nodeY;
-                ic = icon;
+                x = parent.nodeX;
+                y = parent.nodeY;
+                ic = parent.icon;
                 // NOTE: color and perc params are NOT taken by the submodule,
                 // so the parent module's value will be used! And because perc
                 // is non-const (i.e. volatile), each time a different value will be
