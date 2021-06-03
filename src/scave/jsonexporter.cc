@@ -290,6 +290,8 @@ void JsonExporter::saveResults(const std::string& fileName, ResultFileManager *m
     RunList runList = manager->getUniqueRuns(idlist);
 
     for (Run *run : runList) {
+        IDList idsInRun = idlist.filterByRun(run);
+
         writer.openObject(run->getRunName());
 
         // run metadata
@@ -298,7 +300,7 @@ void JsonExporter::saveResults(const std::string& fileName, ResultFileManager *m
         writeOrderedKeyValueList("config", run->getConfigEntries());
 
         // scalars
-        IDList scalars = idlist.filterByTypes(ResultFileManager::SCALAR);
+        IDList scalars = idsInRun.filterByTypes(ResultFileManager::SCALAR);
         if (!scalars.isEmpty()) {
             writer.openArray("scalars");
             for (ID id : scalars) {
@@ -316,7 +318,7 @@ void JsonExporter::saveResults(const std::string& fileName, ResultFileManager *m
         }
 
         // parameters
-        IDList parameters = idlist.filterByTypes(ResultFileManager::PARAMETER);
+        IDList parameters = idsInRun.filterByTypes(ResultFileManager::PARAMETER);
         if (!parameters.isEmpty()) {
             writer.openArray("parameters");
             for (ID id : parameters) {
@@ -333,7 +335,7 @@ void JsonExporter::saveResults(const std::string& fileName, ResultFileManager *m
         }
 
         // statistics
-        IDList statistics = idlist.filterByTypes(ResultFileManager::STATISTICS);
+        IDList statistics = idsInRun.filterByTypes(ResultFileManager::STATISTICS);
         if (!statistics.isEmpty()) {
             writer.openArray("statistics");
             for (ID id : statistics) {
@@ -350,7 +352,7 @@ void JsonExporter::saveResults(const std::string& fileName, ResultFileManager *m
         }
 
         // histograms
-        IDList histograms = idlist.filterByTypes(ResultFileManager::HISTOGRAM);
+        IDList histograms = idsInRun.filterByTypes(ResultFileManager::HISTOGRAM);
         if (!histograms.isEmpty()) {
             writer.openArray("histograms");
             for (ID id : histograms) {
@@ -373,7 +375,7 @@ void JsonExporter::saveResults(const std::string& fileName, ResultFileManager *m
         }
 
         // vectors
-        IDList vectors = idlist.filterByTypes(ResultFileManager::VECTOR);
+        IDList vectors = idsInRun.filterByTypes(ResultFileManager::VECTOR);
         if (!vectors.isEmpty()) {
             // compute vector data
             std::vector<XYArray *> xyArrays = readVectorsIntoArrays(manager, vectors, true, true, std::numeric_limits<size_t>::max(), vectorStartTime, vectorEndTime);
