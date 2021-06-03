@@ -48,7 +48,7 @@ module Active
         };
         dummy1: Dummy {
             parameters:
-                @display("p=163,259;i=cloud_l");
+                @display("p=163,259;i=old/cloud_l");
         };
         options: Gen {
             parameters:
@@ -58,7 +58,7 @@ module Active
         };
         dummy: Dummy {
             parameters:
-                @display("i=browser;p=84,249");
+                @display("i=old/browser;p=84,249");
         };
         messages: Gen {
             parameters:
