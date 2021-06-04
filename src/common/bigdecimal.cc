@@ -400,7 +400,7 @@ const BigDecimal BigDecimal::parse(const char *s, const char *& endp)
             endp = p+6;
             return NaN;
         }
-        else if (strncasecmp(p+3, "inf", 6) == 0) {
+        else if (strncasecmp(p+3, "inf", 3) == 0) {
             endp = p+6;
             return sign > 0 ? PositiveInfinity : NegativeInfinity;
         }

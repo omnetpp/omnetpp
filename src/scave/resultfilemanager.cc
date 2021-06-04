@@ -864,7 +864,7 @@ const char *MatchableResultItem::getAsString(const char *attribute) const
         return getRunName();
     else if (strncasecmp("attr:", attribute, 5) == 0)
         return getRunAttribute(attribute+5);
-    else if (strncasecmp("itervar:", attribute, 5) == 0)
+    else if (strncasecmp("itervar:", attribute, 8) == 0)
         return getIterationVariable(attribute+8);
     else if (strncasecmp("param:", attribute, 6) == 0)
         return getParamAssignment(attribute+6);
