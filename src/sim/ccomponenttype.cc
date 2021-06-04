@@ -280,16 +280,6 @@ cModule *cModuleType::create(const char *moduleName, cModule *parentModule)
 
 cModule *cModuleType::create(const char *moduleName, cModule *parentModule, int index)
 {
-    // notify pre-change listeners
-    if (parentModule && parentModule->hasListeners(PRE_MODEL_CHANGE)) {
-        cPreModuleAddNotification tmp;
-        tmp.moduleType = this;
-        tmp.moduleName = moduleName;
-        tmp.parentModule = parentModule;
-        tmp.index = index;
-        parentModule->emit(PRE_MODEL_CHANGE, &tmp);
-    }
-
     // set context type to "BUILD"
     cContextTypeSwitcher _(CTX_BUILD);
 
@@ -309,6 +299,15 @@ cModule *cModuleType::create(const char *moduleName, cModule *parentModule, int 
     module->setComponentType(this);
     module->setInitialNameAndIndex(moduleName, index);
 
+    // notify pre-change listeners
+    if (parentModule && parentModule->hasListeners(PRE_MODEL_CHANGE)) {
+        cPreModuleAddNotification tmp;
+        tmp.module = module;
+        tmp.parentModule = parentModule;
+        parentModule->emit(PRE_MODEL_CHANGE, &tmp);
+    }
+
+    // insert into network
     if (parentModule)
         parentModule->insertSubmodule(module);
     else

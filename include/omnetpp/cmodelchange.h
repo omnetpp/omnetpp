@@ -102,11 +102,11 @@ class SIM_API cModelChangeNotification : public cObject, noncopyable
 };
 
 /**
- * @brief Model change notification fired just before a module is created.
+ * @brief Model change notification fired just before a module is inserted
+ * into the network.
  *
- * This notification is fired at the top of cModuleType::create().
- * Fields contain the cModuleType object, and the arguments of the create()
- * method call.
+ * This notification is fired in cModuleType::create(), after the module has
+ * been created but not yet inserted into the network.
  *
  * This object accompanies the PRE_MODEL_CHANGE signal.
  *
@@ -115,14 +115,13 @@ class SIM_API cModelChangeNotification : public cObject, noncopyable
 class SIM_API cPreModuleAddNotification : public cModelChangeNotification
 {
   public:
-    cModuleType *moduleType;  ///< Type of the new module
-    const char *moduleName;   ///< Name of the new module
-    cModule *parentModule;    ///< Parent module
-    int index;                ///< Index of the new module in its vector; -1 if not part of a module vector
+    cModule *module;          ///< The new module
+    cModule *parentModule;    ///< Parent module it is being inserted into
 };
 
 /**
- * @brief Model change notification fired after a module is created.
+ * @brief Model change notification fired just after a module is inserted
+ * into the network.
  *
  * This notification is fired at the end of cModuleType::create(). At that
  * stage, the module is already created, its gates and parameters are added
