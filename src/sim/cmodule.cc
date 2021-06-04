@@ -395,11 +395,12 @@ void cModule::updateFullName()
 void cModule::reassignModuleIdRec()
 {
     int oldId = getId();
-    getSimulation()->deregisterComponent(this);
-    getSimulation()->registerComponent(this);
+    cSimulation *sim = getSimulation();
+    sim->deregisterComponent(this);
+    sim->registerComponent(this);
     int newId = getId();
 
-    cFutureEventSet *fes = getSimulation()->getFES();
+    cFutureEventSet *fes = sim->getFES();
     int fesLen = fes->getLength();
     for (int i = 0; i < fesLen; i++) {
         cEvent *event = fes->get(i);
