@@ -3,7 +3,7 @@
 # create an OMNeT++/OMNEST source distribution package for Windows (64-bit)
 # in: SOURCE_DISTRIBUTION_BASE_NAME (1st arg optionally) contains the source file name (minus the .tgz extension)
 #     (placed in DISTDIR) that is used as a source for the windows build
-# in: TOOLS_DIR - the directory storing the platform specific binaries (JRE, toolchain etc.) (without the version and the last platform specific segment!)
+# in: TOOLS_DIR - the directory storing the platform specific binaries (toolchain etc.) (without the version and the last platform specific segment!)
 # in: TOOLS_VERSION - the (timestamp) version number of the toolchain to be integrated with the distro
 # in: VERSION - the version suffix used in the build (i.e. 5.0b3)
 
@@ -60,8 +60,6 @@ echo "Preparing to create distribution package: $what, version: $VERSION platfor
 # Prepare IDE
 cp -r ide/win64/* ide
 rm -rf ide/win32 ide/win64 ide/linux ide/linux64 ide/macosx
-# extract JRE
-tar xfz $TOOLS_DIR/$TOOLS_VERSION/win64/jre-*-win64.tar.gz --directory=ide || { echo --- error extracting JRE directory ---; exit 1;}
 
 # copy the self extracting toolchain file into the distro
 mkdir -p tools
