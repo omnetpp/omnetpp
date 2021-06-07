@@ -29,7 +29,6 @@ if [ -n "$__omnetpp_root_dir" ]; then
     echo "Warning: overwriting previous environment for '$__omnetpp_root_dir'."
   fi
   export PATH=${PATH#$__omnetpp_root_dir/bin:}
-  export PYTHONPATH=${PYTHONPATH#$__omnetpp_root_dir/python:}
   export __omnetpp_root_dir=
   export OMNETPP_RELEASE=
   export QT_SELECT=
@@ -60,7 +59,6 @@ fi
 export __omnetpp_root_dir=$dir
 export OMNETPP_RELEASE=$(cat $__omnetpp_root_dir/Version)
 export PATH=$__omnetpp_root_dir/bin:$PATH
-export PYTHONPATH=$__omnetpp_root_dir/python:$PYTHONPATH
 export HOSTNAME
 export HOST
 export QT_SELECT=5 # on systems with qtchooser, switch to Qt5
