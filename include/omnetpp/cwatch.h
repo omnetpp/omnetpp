@@ -204,14 +204,16 @@ class SIM_API cWatch_stdstring : public cWatchBase
  */
 class SIM_API cWatch_cObject : public cWatchBase
 {
+    friend class cWatchProxyDescriptor;
   private:
     cObject& r;
+    cClassDescriptor *desc; // for this watch object, not the one being watched
   public:
-    cWatch_cObject(const char *name, cObject& ref) : cWatchBase(name), r(ref) {}
+    cWatch_cObject(const char *name, cObject& ref);
     virtual const char *getClassName() const override {return r.getClassName();}
     virtual std::string str() const override {return r.str();}
     virtual bool supportsAssignment() const override {return false;}
-    virtual cClassDescriptor *getDescriptor() const override {return r.getDescriptor();}
+    virtual cClassDescriptor *getDescriptor() const override {return desc;}
 };
 
 /**
@@ -220,14 +222,16 @@ class SIM_API cWatch_cObject : public cWatchBase
  */
 class SIM_API cWatch_cObjectPtr : public cWatchBase
 {
+    friend class cWatchProxyDescriptor;
   private:
     cObject *&rp;
+    cClassDescriptor *desc; // for this watch object, not the one being watched
   public:
-    cWatch_cObjectPtr(const char *name, cObject *&ptr) : cWatchBase(name), rp(ptr) {}
-    virtual const char *getClassName() const override {return rp? rp->getClassName() : "n/a";}
+    cWatch_cObjectPtr(const char *name, cObject *&ptr);
+    virtual const char *getClassName() const override {return rp ? rp->getClassName() : "n/a";}
     virtual std::string str() const override {return rp ? rp->str() : "<null>";}
     virtual bool supportsAssignment() const override {return false;}
-    virtual cClassDescriptor *getDescriptor() const override {return rp ? rp->getDescriptor() : nullptr;}
+    virtual cClassDescriptor *getDescriptor() const override {return desc;}
 };
 
 
