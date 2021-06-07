@@ -557,6 +557,7 @@ int IDList::countByTypes(int typeMask) const
 IDList IDList::filterByRun(Run *run) const
 {
     ResultFileManager *mgr = run->getResultFileManager();
+    READER_MUTEX
     IDList result;
     for (V::const_iterator i = v->begin(); i != v->end(); ++i)
         if (mgr->getItem(*i).getRun() == run)
