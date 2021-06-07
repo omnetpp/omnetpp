@@ -38,6 +38,8 @@ ExprValue makeExprValue(const cValue& value);
 ExprValue makeExprValue(const cPar& par);
 cValue *makeNedValues(cValue *&buffer, const ExprValue argv[], int argc);
 
+enum IdentSyntax { UNKNOWN, QUALIFIER, OPTQUALIFIER_NAME1, OPTQUALIFIER_INDEXEDNAME1, OPTQUALIFIER_NAME1_DOT_NAME2, OPTQUALIFIER_INDEXEDNAME1_DOT_NAME2 };
+
 enum IdentQualifier { NONE, THIS, PARENT };
 
 inline std::string qualifierToPrefix(IdentQualifier q) {return q==THIS ? "this." : q==PARENT ? "parent." : "";}
@@ -80,18 +82,23 @@ class Index : public LeafNode
     virtual std::string str() const override {return asPrinted(true);}
 };
 
-class Exists : public LeafNode
+class Exists : public NaryNode // zero or one child
 {
   protected:
+    IdentSyntax syntax;
     IdentQualifier qualifier;
-    std::string name;
+    std::string name1, name2;
+
   protected:
     virtual ExprValue evaluate(Context *context) const override;
     virtual void print(std::ostream& out, int spaciousness) const override;
+    int getIndex(Context *context) const;
   public:
-    Exists(IdentQualifier qualifier, const char *ident) : qualifier(qualifier), name(ident) {}
-    Exists *dup() const override {return new Exists(qualifier, name.c_str());}
-    virtual std::string getName() const override {return "exists(" + qualifierToPrefix(qualifier) + name + ")";}
+    Exists(IdentSyntax syntax, IdentQualifier qualifier, std::string name1, std::string name2) :
+        syntax(syntax), qualifier(qualifier), name1(name1), name2(name2) {}
+    Exists *dup() const override {return new Exists(syntax, qualifier, name1, name2);}
+    virtual Precedence getPrecedence() const override {return ELEM;}
+    virtual std::string getName() const override {return asPrinted(true);} //FIXME
     virtual std::string str() const override {return asPrinted(true);}
 };
 
@@ -268,7 +275,6 @@ class NedOperatorTranslator : public Expression::AstTranslator
     ExprNode *translateIndex(AstNode *astNode, AstTranslator *translatorForChildren);
     ExprNode *translateTypename(AstNode *astNode, AstTranslator *translatorForChildren);
     ExprNode *translateParameter(AstNode *astNode, AstTranslator *translatorForChildren);
-    enum IdentSyntax { UNKNOWN, QUALIFIER, OPTQUALIFIER_NAME1, OPTQUALIFIER_INDEXEDNAME1, OPTQUALIFIER_NAME1_DOT_NAME2, OPTQUALIFIER_INDEXEDNAME1_DOT_NAME2 };
     IdentSyntax matchSyntax(AstNode *astNode, IdentQualifier& qualifier, std::string& name1, AstNode *& index, std::string& name2);
   public:
     NedOperatorTranslator() {}

@@ -155,9 +155,13 @@ static cModule *getContextSubmodule(Context *context, IdentQualifier qualifier, 
         std::vector<std::string> notes;
         if (!module->parametersFinalized())
             notes.push_back("submodules not yet created at this point");
-        if (qualifier == NONE && module->getParentModule() && module->getParentModule()->getSubmodule(name, index))
+        if (index != -1 && module->hasSubmodule(name))
+            notes.push_back(opp_stringf("possibly superfluous index, as '%s' is a scalar submodule", name));
+        if (index == -1 && module->hasSubmoduleVector(name))
+            notes.push_back(opp_stringf("possibly missing index, as '%s' is a submodule vector", name));
+        if (qualifier == NONE && module->getParentModule() && (module->getParentModule()->hasSubmodule(name) || module->getParentModule()->hasSubmoduleVector(name)) )
             notes.push_back(opp_stringf("did you mean 'parent.%s'?", fullName.c_str()));
-        std::string note = notes.empty() ? "" : " (" + opp_join(notes,  ", ") + ")";
+        std::string note = notes.empty() ? "" : " (" + opp_join(notes,  "; ") + ")";
         throw cRuntimeError("Submodule '%s' not found in module %s%s", fullName.c_str(), module->getNedTypeAndFullPath().c_str(), note.c_str());
     }
     return submodule;
@@ -180,14 +184,63 @@ void Index::print(std::ostream& out, int spaciousness) const
 
 ExprValue Exists::evaluate(Context *context) const
 {
-    cModule *module = getContextModule(context, qualifier);
-    bool exists = module->hasSubmodule(name.c_str()) || module->hasSubmoduleVector(name.c_str());
-    return exists;
+    const char *n1 = name1.c_str();
+    const char *n2 = name2.c_str();
+    int index = children.empty() ? -1 : getIndex(context);
+
+    switch (syntax) {
+    case QUALIFIER: {
+        return ExprValue(true);
+    }
+    case OPTQUALIFIER_NAME1: {
+        cModule *module = getContextModule(context, qualifier);
+        return module->hasSubmodule(n1) || module->hasSubmoduleVector(n1)
+                || module->hasGate(n1) || module->hasGateVector(n1)
+                || module->hasPar(n1);
+    }
+    case OPTQUALIFIER_INDEXEDNAME1: {
+        cModule *module = getContextModule(context, qualifier);
+        return module->hasSubmodule(n1, index) || module->hasGate(n1, index);
+    }
+    case OPTQUALIFIER_NAME1_DOT_NAME2:
+    case OPTQUALIFIER_INDEXEDNAME1_DOT_NAME2: {
+        cModule *submodule = getContextSubmodule(context, qualifier, n1, index);
+        // Alternative that doesn't throw if submodule (e.g. "foo" in "foo.bar") doesn't exist:
+        // cModule *module = getContextModule(context, qualifier);
+        // cModule *submodule = module->getSubmodule(name, index);
+        // if (submodule == nullptr)
+        //     return ExprValue(false);
+        return submodule->hasGate(n2) || submodule->hasGateVector(n2) || submodule->hasPar(n2);
+    }
+    default: ASSERT(false); return ExprValue(false);
+    }
+}
+
+int Exists::getIndex(Context *context) const
+{
+    ExprValue indexValue = children[0]->tryEvaluate(context);
+    if (indexValue.getUnit() != nullptr)
+        throw cRuntimeError("Module index must be dimensionless, got '%s'", indexValue.str().c_str());
+    return indexValue.intValue();
 }
 
 void Exists::print(std::ostream& out, int spaciousness) const
 {
-    out << "exists(" << qualifierToPrefix(qualifier) << name << ")";
+    out << "exists(";
+    out << (qualifier == THIS ? "this" : qualifier == PARENT ? "parent" : "");
+    if (!name1.empty()) {
+        if (qualifier != NONE)
+            out << ".";
+        out << name1;
+        if (!children.empty()) {
+            out << "[";
+            printChild(out, children[0], spaciousness);
+            out << "]";
+        }
+        if (!name2.empty())
+            out << "." << name2;
+    }
+    out << ")";
 }
 
 //----
@@ -525,7 +578,7 @@ inline AstNode *getSingleChild(AstNode *astNode) {
     return astNode->children.at(0);
 }
 
-NedOperatorTranslator::IdentSyntax NedOperatorTranslator::matchSyntax(AstNode *astNode, IdentQualifier& qualifier, std::string& name1, AstNode *& indexNode, std::string& name2)
+IdentSyntax NedOperatorTranslator::matchSyntax(AstNode *astNode, IdentQualifier& qualifier, std::string& name1, AstNode *& indexNode, std::string& name2)
 {
     qualifier = NONE;
     name1 = name2 = "";
@@ -642,18 +695,13 @@ ExprNode *NedOperatorTranslator::translateExists(AstNode *existsNode, AstTransla
     AstNode *indexNode;
 
     IdentSyntax syntax = matchSyntax(getSingleChild(existsNode), qualifier, name1, indexNode, name2);
-
-    switch (syntax) {
-    case OPTQUALIFIER_NAME1:
-        return new Exists(qualifier, name1.c_str());
-    case UNKNOWN:
-    case QUALIFIER:
-    case OPTQUALIFIER_INDEXEDNAME1:
-    case OPTQUALIFIER_NAME1_DOT_NAME2:
-    case OPTQUALIFIER_INDEXEDNAME1_DOT_NAME2:
+    if (syntax == UNKNOWN)
         throw cRuntimeError("Illegal argument for exists() in '%s'", existsNode->unparse().c_str());
-    }
-    throw cRuntimeError("internal error");
+
+    Exists *result = new Exists(syntax, qualifier, name1, name2);
+    if (indexNode)
+        result->appendChild(translateChild(indexNode, translatorForChildren));
+    return result;
 }
 
 ExprNode *NedOperatorTranslator::translateIndex(AstNode *indexNode, AstTranslator *translatorForChildren)

@@ -71,7 +71,7 @@ void Tester::activity()
     auto params = { "", "foo", "param" };
     auto gates = { "", "foo", "g", "gg" };
     auto submods = { "", "barm", "barm[0]", "node", "nodes[0]" };
-    auto submods2 = { "", "barm", "barm[0]", "node", "nodes[0]", "nodes" };
+    auto submods2 = { "", "barm", "barm[0]", "node", "nodes[0]", "nodes", "node[0]" };
     auto qualifs = { "", "this", "parent" };
 
     // parameter references
@@ -224,9 +224,13 @@ sizeof(nodes[0].foo) ==> ERROR: Cannot evaluate expression for parameter 'i': 's
 sizeof(nodes[0].g) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(nodes[0].g)': Submodule 'nodes[0]' not found in module (Tester)Test.tester (did you mean 'parent.nodes[0]'?)
 sizeof(nodes[0].gg) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(nodes[0].gg)': Submodule 'nodes[0]' not found in module (Tester)Test.tester (did you mean 'parent.nodes[0]'?)
 sizeof(nodes) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(nodes)': Module (Tester)Test.tester has no gate vector or submodule vector named 'nodes'
-sizeof(nodes.foo) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(nodes.foo)': Submodule 'nodes' not found in module (Tester)Test.tester
-sizeof(nodes.g) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(nodes.g)': Submodule 'nodes' not found in module (Tester)Test.tester
-sizeof(nodes.gg) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(nodes.gg)': Submodule 'nodes' not found in module (Tester)Test.tester
+sizeof(nodes.foo) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(nodes.foo)': Submodule 'nodes' not found in module (Tester)Test.tester (did you mean 'parent.nodes'?)
+sizeof(nodes.g) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(nodes.g)': Submodule 'nodes' not found in module (Tester)Test.tester (did you mean 'parent.nodes'?)
+sizeof(nodes.gg) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(nodes.gg)': Submodule 'nodes' not found in module (Tester)Test.tester (did you mean 'parent.nodes'?)
+sizeof(node[0]) ==> ERROR: Error in expression 'sizeof(node[0])' for parameter 'Test.tester.i': Illegal argument for sizeof() in 'sizeof(node[0])'
+sizeof(node[0].foo) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(node[0].foo)': Submodule 'node[0]' not found in module (Tester)Test.tester (did you mean 'parent.node[0]'?)
+sizeof(node[0].g) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(node[0].g)': Submodule 'node[0]' not found in module (Tester)Test.tester (did you mean 'parent.node[0]'?)
+sizeof(node[0].gg) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(node[0].gg)': Submodule 'node[0]' not found in module (Tester)Test.tester (did you mean 'parent.node[0]'?)
 sizeof(this) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(this.)': Module (Tester)Test.tester is not part of a submodule vector
 sizeof(this.foo) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(this.foo)': Module (Tester)Test.tester has no gate vector or submodule vector named 'foo'
 sizeof(this.g) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(this.g)': Module (Tester)Test.tester has no gate vector or submodule vector named 'g'
@@ -251,6 +255,10 @@ sizeof(this.nodes) ==> ERROR: Cannot evaluate expression for parameter 'i': 'siz
 sizeof(this.nodes.foo) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(this.nodes.foo)': Submodule 'nodes' not found in module (Tester)Test.tester
 sizeof(this.nodes.g) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(this.nodes.g)': Submodule 'nodes' not found in module (Tester)Test.tester
 sizeof(this.nodes.gg) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(this.nodes.gg)': Submodule 'nodes' not found in module (Tester)Test.tester
+sizeof(this.node[0]) ==> ERROR: Error in expression 'sizeof(this.node[0])' for parameter 'Test.tester.i': Illegal argument for sizeof() in 'sizeof(this.node[0])'
+sizeof(this.node[0].foo) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(this.node[0].foo)': Submodule 'node[0]' not found in module (Tester)Test.tester
+sizeof(this.node[0].g) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(this.node[0].g)': Submodule 'node[0]' not found in module (Tester)Test.tester
+sizeof(this.node[0].gg) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(this.node[0].gg)': Submodule 'node[0]' not found in module (Tester)Test.tester
 sizeof(parent) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(parent.)': Module (Test)Test is not part of a submodule vector
 sizeof(parent.foo) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(parent.foo)': Module (Test)Test has no gate vector or submodule vector named 'foo'
 sizeof(parent.g) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(parent.g)': Module (Test)Test has no gate vector or submodule vector named 'g'
@@ -272,81 +280,97 @@ sizeof(parent.nodes[0].foo) ==> ERROR: Cannot evaluate expression for parameter 
 sizeof(parent.nodes[0].g) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(parent.nodes[0].g)': (omnetpp::cModule)Test.nodes[0]: Gate 'g' is not a gate vector
 sizeof(parent.nodes[0].gg) ==> 3
 sizeof(parent.nodes) ==> 5
-sizeof(parent.nodes.foo) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(parent.nodes.foo)': Submodule 'nodes' not found in module (Test)Test
-sizeof(parent.nodes.g) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(parent.nodes.g)': Submodule 'nodes' not found in module (Test)Test
-sizeof(parent.nodes.gg) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(parent.nodes.gg)': Submodule 'nodes' not found in module (Test)Test
+sizeof(parent.nodes.foo) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(parent.nodes.foo)': Submodule 'nodes' not found in module (Test)Test (possibly missing index, as 'nodes' is a submodule vector)
+sizeof(parent.nodes.g) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(parent.nodes.g)': Submodule 'nodes' not found in module (Test)Test (possibly missing index, as 'nodes' is a submodule vector)
+sizeof(parent.nodes.gg) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(parent.nodes.gg)': Submodule 'nodes' not found in module (Test)Test (possibly missing index, as 'nodes' is a submodule vector)
+sizeof(parent.node[0]) ==> ERROR: Error in expression 'sizeof(parent.node[0])' for parameter 'Test.tester.i': Illegal argument for sizeof() in 'sizeof(parent.node[0])'
+sizeof(parent.node[0].foo) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(parent.node[0].foo)': Submodule 'node[0]' not found in module (Test)Test (possibly superfluous index, as 'node' is a scalar submodule)
+sizeof(parent.node[0].g) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(parent.node[0].g)': Submodule 'node[0]' not found in module (Test)Test (possibly superfluous index, as 'node' is a scalar submodule)
+sizeof(parent.node[0].gg) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(parent.node[0].gg)': Submodule 'node[0]' not found in module (Test)Test (possibly superfluous index, as 'node' is a scalar submodule)
 
 exists() ==> ERROR: Error in expression 'exists()' for parameter 'Test.tester.b': exists() expects one argument
 exists(foo) ==> false
 exists(g) ==> false
 exists(gg) ==> false
 exists(barm) ==> false
-exists(barm.foo) ==> ERROR: Error in expression 'exists(barm.foo)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(barm.foo)'
-exists(barm.g) ==> ERROR: Error in expression 'exists(barm.g)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(barm.g)'
-exists(barm.gg) ==> ERROR: Error in expression 'exists(barm.gg)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(barm.gg)'
+exists(barm.foo) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(barm.foo)': Submodule 'barm' not found in module (Tester)Test.tester
+exists(barm.g) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(barm.g)': Submodule 'barm' not found in module (Tester)Test.tester
+exists(barm.gg) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(barm.gg)': Submodule 'barm' not found in module (Tester)Test.tester
 exists(barm[0]) ==> ERROR: Error in expression 'exists(barm[0])' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(barm[0])'
-exists(barm[0].foo) ==> ERROR: Error in expression 'exists(barm[0].foo)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(barm[0].foo)'
-exists(barm[0].g) ==> ERROR: Error in expression 'exists(barm[0].g)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(barm[0].g)'
-exists(barm[0].gg) ==> ERROR: Error in expression 'exists(barm[0].gg)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(barm[0].gg)'
+exists(barm[0].foo) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(barm[0].foo)': Submodule 'barm[0]' not found in module (Tester)Test.tester
+exists(barm[0].g) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(barm[0].g)': Submodule 'barm[0]' not found in module (Tester)Test.tester
+exists(barm[0].gg) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(barm[0].gg)': Submodule 'barm[0]' not found in module (Tester)Test.tester
 exists(node) ==> false
-exists(node.foo) ==> ERROR: Error in expression 'exists(node.foo)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(node.foo)'
-exists(node.g) ==> ERROR: Error in expression 'exists(node.g)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(node.g)'
-exists(node.gg) ==> ERROR: Error in expression 'exists(node.gg)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(node.gg)'
+exists(node.foo) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(node.foo)': Submodule 'node' not found in module (Tester)Test.tester (did you mean 'parent.node'?)
+exists(node.g) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(node.g)': Submodule 'node' not found in module (Tester)Test.tester (did you mean 'parent.node'?)
+exists(node.gg) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(node.gg)': Submodule 'node' not found in module (Tester)Test.tester (did you mean 'parent.node'?)
 exists(nodes[0]) ==> ERROR: Error in expression 'exists(nodes[0])' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(nodes[0])'
-exists(nodes[0].foo) ==> ERROR: Error in expression 'exists(nodes[0].foo)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(nodes[0].foo)'
-exists(nodes[0].g) ==> ERROR: Error in expression 'exists(nodes[0].g)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(nodes[0].g)'
-exists(nodes[0].gg) ==> ERROR: Error in expression 'exists(nodes[0].gg)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(nodes[0].gg)'
+exists(nodes[0].foo) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(nodes[0].foo)': Submodule 'nodes[0]' not found in module (Tester)Test.tester (did you mean 'parent.nodes[0]'?)
+exists(nodes[0].g) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(nodes[0].g)': Submodule 'nodes[0]' not found in module (Tester)Test.tester (did you mean 'parent.nodes[0]'?)
+exists(nodes[0].gg) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(nodes[0].gg)': Submodule 'nodes[0]' not found in module (Tester)Test.tester (did you mean 'parent.nodes[0]'?)
 exists(nodes) ==> false
-exists(nodes.foo) ==> ERROR: Error in expression 'exists(nodes.foo)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(nodes.foo)'
-exists(nodes.g) ==> ERROR: Error in expression 'exists(nodes.g)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(nodes.g)'
-exists(nodes.gg) ==> ERROR: Error in expression 'exists(nodes.gg)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(nodes.gg)'
-exists(this) ==> ERROR: Error in expression 'exists(this)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(this)'
+exists(nodes.foo) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(nodes.foo)': Submodule 'nodes' not found in module (Tester)Test.tester (did you mean 'parent.nodes'?)
+exists(nodes.g) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(nodes.g)': Submodule 'nodes' not found in module (Tester)Test.tester (did you mean 'parent.nodes'?)
+exists(nodes.gg) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(nodes.gg)': Submodule 'nodes' not found in module (Tester)Test.tester (did you mean 'parent.nodes'?)
+exists(node[0]) ==> ERROR: Error in expression 'exists(node[0])' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(node[0])'
+exists(node[0].foo) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(node[0].foo)': Submodule 'node[0]' not found in module (Tester)Test.tester (did you mean 'parent.node[0]'?)
+exists(node[0].g) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(node[0].g)': Submodule 'node[0]' not found in module (Tester)Test.tester (did you mean 'parent.node[0]'?)
+exists(node[0].gg) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(node[0].gg)': Submodule 'node[0]' not found in module (Tester)Test.tester (did you mean 'parent.node[0]'?)
+exists(this) ==> true
 exists(this.foo) ==> false
 exists(this.g) ==> false
 exists(this.gg) ==> false
 exists(this.barm) ==> false
-exists(this.barm.foo) ==> ERROR: Error in expression 'exists(this.barm.foo)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(this.barm.foo)'
-exists(this.barm.g) ==> ERROR: Error in expression 'exists(this.barm.g)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(this.barm.g)'
-exists(this.barm.gg) ==> ERROR: Error in expression 'exists(this.barm.gg)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(this.barm.gg)'
-exists(this.barm[0]) ==> ERROR: Error in expression 'exists(this.barm[0])' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(this.barm[0])'
-exists(this.barm[0].foo) ==> ERROR: Error in expression 'exists(this.barm[0].foo)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(this.barm[0].foo)'
-exists(this.barm[0].g) ==> ERROR: Error in expression 'exists(this.barm[0].g)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(this.barm[0].g)'
-exists(this.barm[0].gg) ==> ERROR: Error in expression 'exists(this.barm[0].gg)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(this.barm[0].gg)'
+exists(this.barm.foo) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(this.barm.foo)': Submodule 'barm' not found in module (Tester)Test.tester
+exists(this.barm.g) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(this.barm.g)': Submodule 'barm' not found in module (Tester)Test.tester
+exists(this.barm.gg) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(this.barm.gg)': Submodule 'barm' not found in module (Tester)Test.tester
+exists(this.barm[0]) ==> false
+exists(this.barm[0].foo) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(this.barm[0].foo)': Submodule 'barm[0]' not found in module (Tester)Test.tester
+exists(this.barm[0].g) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(this.barm[0].g)': Submodule 'barm[0]' not found in module (Tester)Test.tester
+exists(this.barm[0].gg) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(this.barm[0].gg)': Submodule 'barm[0]' not found in module (Tester)Test.tester
 exists(this.node) ==> false
-exists(this.node.foo) ==> ERROR: Error in expression 'exists(this.node.foo)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(this.node.foo)'
-exists(this.node.g) ==> ERROR: Error in expression 'exists(this.node.g)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(this.node.g)'
-exists(this.node.gg) ==> ERROR: Error in expression 'exists(this.node.gg)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(this.node.gg)'
-exists(this.nodes[0]) ==> ERROR: Error in expression 'exists(this.nodes[0])' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(this.nodes[0])'
-exists(this.nodes[0].foo) ==> ERROR: Error in expression 'exists(this.nodes[0].foo)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(this.nodes[0].foo)'
-exists(this.nodes[0].g) ==> ERROR: Error in expression 'exists(this.nodes[0].g)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(this.nodes[0].g)'
-exists(this.nodes[0].gg) ==> ERROR: Error in expression 'exists(this.nodes[0].gg)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(this.nodes[0].gg)'
+exists(this.node.foo) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(this.node.foo)': Submodule 'node' not found in module (Tester)Test.tester
+exists(this.node.g) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(this.node.g)': Submodule 'node' not found in module (Tester)Test.tester
+exists(this.node.gg) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(this.node.gg)': Submodule 'node' not found in module (Tester)Test.tester
+exists(this.nodes[0]) ==> false
+exists(this.nodes[0].foo) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(this.nodes[0].foo)': Submodule 'nodes[0]' not found in module (Tester)Test.tester
+exists(this.nodes[0].g) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(this.nodes[0].g)': Submodule 'nodes[0]' not found in module (Tester)Test.tester
+exists(this.nodes[0].gg) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(this.nodes[0].gg)': Submodule 'nodes[0]' not found in module (Tester)Test.tester
 exists(this.nodes) ==> false
-exists(this.nodes.foo) ==> ERROR: Error in expression 'exists(this.nodes.foo)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(this.nodes.foo)'
-exists(this.nodes.g) ==> ERROR: Error in expression 'exists(this.nodes.g)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(this.nodes.g)'
-exists(this.nodes.gg) ==> ERROR: Error in expression 'exists(this.nodes.gg)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(this.nodes.gg)'
-exists(parent) ==> ERROR: Error in expression 'exists(parent)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(parent)'
+exists(this.nodes.foo) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(this.nodes.foo)': Submodule 'nodes' not found in module (Tester)Test.tester
+exists(this.nodes.g) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(this.nodes.g)': Submodule 'nodes' not found in module (Tester)Test.tester
+exists(this.nodes.gg) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(this.nodes.gg)': Submodule 'nodes' not found in module (Tester)Test.tester
+exists(this.node[0]) ==> false
+exists(this.node[0].foo) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(this.node[0].foo)': Submodule 'node[0]' not found in module (Tester)Test.tester
+exists(this.node[0].g) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(this.node[0].g)': Submodule 'node[0]' not found in module (Tester)Test.tester
+exists(this.node[0].gg) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(this.node[0].gg)': Submodule 'node[0]' not found in module (Tester)Test.tester
+exists(parent) ==> true
 exists(parent.foo) ==> false
 exists(parent.g) ==> false
 exists(parent.gg) ==> false
 exists(parent.barm) ==> false
-exists(parent.barm.foo) ==> ERROR: Error in expression 'exists(parent.barm.foo)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(parent.barm.foo)'
-exists(parent.barm.g) ==> ERROR: Error in expression 'exists(parent.barm.g)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(parent.barm.g)'
-exists(parent.barm.gg) ==> ERROR: Error in expression 'exists(parent.barm.gg)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(parent.barm.gg)'
-exists(parent.barm[0]) ==> ERROR: Error in expression 'exists(parent.barm[0])' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(parent.barm[0])'
-exists(parent.barm[0].foo) ==> ERROR: Error in expression 'exists(parent.barm[0].foo)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(parent.barm[0].foo)'
-exists(parent.barm[0].g) ==> ERROR: Error in expression 'exists(parent.barm[0].g)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(parent.barm[0].g)'
-exists(parent.barm[0].gg) ==> ERROR: Error in expression 'exists(parent.barm[0].gg)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(parent.barm[0].gg)'
+exists(parent.barm.foo) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(parent.barm.foo)': Submodule 'barm' not found in module (Test)Test
+exists(parent.barm.g) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(parent.barm.g)': Submodule 'barm' not found in module (Test)Test
+exists(parent.barm.gg) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(parent.barm.gg)': Submodule 'barm' not found in module (Test)Test
+exists(parent.barm[0]) ==> false
+exists(parent.barm[0].foo) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(parent.barm[0].foo)': Submodule 'barm[0]' not found in module (Test)Test
+exists(parent.barm[0].g) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(parent.barm[0].g)': Submodule 'barm[0]' not found in module (Test)Test
+exists(parent.barm[0].gg) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(parent.barm[0].gg)': Submodule 'barm[0]' not found in module (Test)Test
 exists(parent.node) ==> true
-exists(parent.node.foo) ==> ERROR: Error in expression 'exists(parent.node.foo)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(parent.node.foo)'
-exists(parent.node.g) ==> ERROR: Error in expression 'exists(parent.node.g)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(parent.node.g)'
-exists(parent.node.gg) ==> ERROR: Error in expression 'exists(parent.node.gg)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(parent.node.gg)'
-exists(parent.nodes[0]) ==> ERROR: Error in expression 'exists(parent.nodes[0])' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(parent.nodes[0])'
-exists(parent.nodes[0].foo) ==> ERROR: Error in expression 'exists(parent.nodes[0].foo)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(parent.nodes[0].foo)'
-exists(parent.nodes[0].g) ==> ERROR: Error in expression 'exists(parent.nodes[0].g)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(parent.nodes[0].g)'
-exists(parent.nodes[0].gg) ==> ERROR: Error in expression 'exists(parent.nodes[0].gg)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(parent.nodes[0].gg)'
+exists(parent.node.foo) ==> false
+exists(parent.node.g) ==> true
+exists(parent.node.gg) ==> true
+exists(parent.nodes[0]) ==> true
+exists(parent.nodes[0].foo) ==> false
+exists(parent.nodes[0].g) ==> true
+exists(parent.nodes[0].gg) ==> true
 exists(parent.nodes) ==> true
-exists(parent.nodes.foo) ==> ERROR: Error in expression 'exists(parent.nodes.foo)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(parent.nodes.foo)'
-exists(parent.nodes.g) ==> ERROR: Error in expression 'exists(parent.nodes.g)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(parent.nodes.g)'
-exists(parent.nodes.gg) ==> ERROR: Error in expression 'exists(parent.nodes.gg)' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(parent.nodes.gg)'
+exists(parent.nodes.foo) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(parent.nodes.foo)': Submodule 'nodes' not found in module (Test)Test (possibly missing index, as 'nodes' is a submodule vector)
+exists(parent.nodes.g) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(parent.nodes.g)': Submodule 'nodes' not found in module (Test)Test (possibly missing index, as 'nodes' is a submodule vector)
+exists(parent.nodes.gg) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(parent.nodes.gg)': Submodule 'nodes' not found in module (Test)Test (possibly missing index, as 'nodes' is a submodule vector)
+exists(parent.node[0]) ==> false
+exists(parent.node[0].foo) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(parent.node[0].foo)': Submodule 'node[0]' not found in module (Test)Test (possibly superfluous index, as 'node' is a scalar submodule)
+exists(parent.node[0].g) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(parent.node[0].g)': Submodule 'node[0]' not found in module (Test)Test (possibly superfluous index, as 'node' is a scalar submodule)
+exists(parent.node[0].gg) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(parent.node[0].gg)': Submodule 'node[0]' not found in module (Test)Test (possibly superfluous index, as 'node' is a scalar submodule)
 .
 
