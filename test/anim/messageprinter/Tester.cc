@@ -20,9 +20,9 @@ Define_Module(Tester);
 
 class CustomPrinter : public cMessagePrinter
 {
-
-   virtual int getScoreFor(cMessage *msg) const { return 50; }
-   virtual void printMessage(std::ostream& os, cMessage *msg, const Options *options) const { os << "HEJ!"; }
+   virtual int getScoreFor(cMessage *msg) const override { return 50; }
+   std::vector<std::string> getColumnNames(const Options *options) const override { return {"Column 1", "Column 2", "Kind"}; }
+   virtual void printMessage(std::ostream& os, cMessage *msg, const Options *options) const override { os << "HEY\tHO\tKind = " << std::to_string(msg->getKind()); }
 };
 
 Register_MessagePrinter(CustomPrinter);
@@ -31,10 +31,12 @@ void Tester::initialize()
 {
     i = 0;
     msg = new cMessage("selfMsg");
-    scheduleAt(0, msg);
+    send(msg, "out");
 }
 
 void Tester::handleMessage(cMessage *msg)
 {
-    scheduleAt(simTime() + SimTime(33, SIMTIME_MS), msg);
+    ++i;
+    msg->setKind(i);
+    sendDelayed(msg, SimTime(33, SIMTIME_MS), "out");
 }

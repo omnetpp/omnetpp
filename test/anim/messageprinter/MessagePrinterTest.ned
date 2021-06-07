@@ -21,4 +21,6 @@ network MessagePrinterTest
         tester: Tester {
             @display("p=50,50");
         }
+    connections:
+        tester.out --> tester.in;
 }

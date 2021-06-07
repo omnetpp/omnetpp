@@ -15,5 +15,7 @@
 
 simple Tester
 {
-
+    gates:
+        input in;
+        output out;
 }
