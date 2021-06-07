@@ -132,6 +132,7 @@ IDList IDList::getSubsetByIndices(int *indices, int n) const
 IDList IDList::filterByRun(Run *run) const
 {
     ResultFileManager *mgr = run->getResultFileManager();
+    READER_MUTEX(mgr);
     IDList result;
     for (ID id : v)
         if (mgr->getFileRun(id)->getRun() == run)
