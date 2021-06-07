@@ -1,11 +1,11 @@
-FROM omnetpp/distrobuild-base:ubuntu18.04-macos11-210319
+FROM omnetpp/distrobuild-base:ubuntu18.04-macos11-210602
 LABEL maintainer="Rudolf Hornig <rudi@omnetpp.org>"
 
 # during docker image builds, the 'tools' directory in the context dir should contain the Windows and macOS toolchains (i.e. ./tools/170717/...)
+SHELL ["/bin/bash", "-c"]
 ENV TOOLS_DIR /root/tools
 ENV TOOLS_VERSION 201218
 ENV OMNETPP_DIR /root/omnetpp
-ENV PATH $PATH:$OMNETPP_DIR/bin
 
 # clone the directory
 WORKDIR /root
@@ -30,6 +30,7 @@ WORKDIR $OMNETPP_DIR
 # we dummy build the IDE and then delete the whole OMNeT++ source, so as a side effect the maven cache will be updated
 RUN git checkout master && \
     cp configure.user.dist configure.user && \
+    source ./setenv && \
     ./configure WITH_QTENV=no WITH_OSG=no WITH_OSGEARTH=no && \
     make MODE=release ui -j$(nproc) && \
     OFFLINE=no releng/ide/java/build-ide-java && \
