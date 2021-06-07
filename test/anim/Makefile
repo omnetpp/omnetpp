@@ -1,5 +1,5 @@
 FOLDERS = animation animation2 broadcast broadcast2 canvas changeparent chartinspector disabledconn \
-          displaystring dynamic dynamic2 envirapi figureapi methodcall plugin refreshdisplay \
+          displaystring dynamic dynamic2 envirapi figureapi methodcall refreshdisplay \
           senddirect swarm texthalo usman watch
 
 all: makefiles
