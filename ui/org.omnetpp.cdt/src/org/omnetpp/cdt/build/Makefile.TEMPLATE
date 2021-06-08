@@ -7,8 +7,12 @@
 
 ### Some definitions first; note that we only print them if there're going to be needed
 {~nolink:}# Name of target to be created (-o option)
-{~nolink:}TARGET = {targetprefix}{target}$(D){targetsuffix}
 {~nolink:}TARGET_DIR = .
+{~nolink:}TARGET_NAME = {targetprefix}{target}$(D)
+{~nolink:}TARGET = $(TARGET_NAME){targetsuffix}
+{~nolink:}TARGET_IMPLIB = $(TARGET_NAME)$(IMPLIB_SUFFIX)
+{~nolink:}TARGET_IMPDEF = $(TARGET_NAME)$(IMPDEF_SUFFIX)
+{~nolink:}TARGET_FILES = $(TARGET_DIR)/$(TARGET)
 {~nolink:}
 {exe:}# User interface (uncomment one) (-u option)
 {exe:}{~allenv?#}USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(TKENV_LIBS) $(QTENV_LIBS) $(CMDENV_LIBS)
@@ -58,11 +62,7 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 ifneq ("$(OMNETPP_CONFIGFILE)","")
 CONFIGFILE = $(OMNETPP_CONFIGFILE)
 else
-ifneq ("$(OMNETPP_ROOT)","")
-CONFIGFILE = $(OMNETPP_ROOT)/Makefile.inc
-else
 CONFIGFILE = $(shell opp_configfilepath)
-endif
 endif
 
 ifeq ("$(wildcard $(CONFIGFILE))","")
@@ -71,17 +71,10 @@ endif
 
 include $(CONFIGFILE)
 
-### # Check that MODE is valid (not enabled, to allow implementing other MODEs)
-### ifneq ($(MODE),"debug")
-### ifneq ($(MODE),"release")
-### $(error MODE must be "debug" or "release")
-### endif
-### endif
-
 {~nolink:}{~staticlib:}# Simulation kernel and user interface libraries
 {exe:}OMNETPP_LIBS = $(OPPMAIN_LIB) $(USERIF_LIBS) $(KERNEL_LIBS) $(SYS_LIBS)
 {sharedlib:}OMNETPP_LIBS = -loppenvir$D $(KERNEL_LIBS) $(SYS_LIBS)
-{~nolink:}{~staticlib:}{libpathdirs:}ifneq ($(TOOLCHAIN_NAME),clangc2)
+{~nolink:}{~staticlib:}{libpathdirs:}ifneq ($(PLATFORM),win32.x86_64)
 {~nolink:}{~staticlib:}{libpathdirs:}LIBS +={@dir:libpathdirs} -Wl,-rpath,$(abspath {dir}){/@}
 {~nolink:}{~staticlib:}{libpathdirs:}endif
 
@@ -90,22 +83,32 @@ include $(CONFIGFILE)
 {sourcedirs:}SMCOPTS =
 {sourcedirs:}
 # we want to recompile everything if COPTS changes,
-# so we store COPTS into $COPTS_FILE and have object
-# files depend on it (except when "make depend" was called)
+# so we store COPTS into $COPTS_FILE (if COPTS has changed since last build)
+# and make the object files depend on it
 COPTS_FILE = $O/.last-copts
 ifneq ("$(COPTS)","$(shell cat $(COPTS_FILE) 2>/dev/null || echo '')")
-$(shell $(MKPATH) "$O" && echo "$(COPTS)" >$(COPTS_FILE))
+  $(shell $(MKPATH) "$O")
+  $(file >$(COPTS_FILE),$(COPTS))
 endif
 
+{sharedlib:}# On Windows, the target has additional file(s). An import lib and an optional debug symbol file is created too.
+{sharedlib:}ifeq ($(PLATFORM),win32.x86_64)
+{sharedlib:}  TARGET_FILES+= $(TARGET_DIR)/$(TARGET_IMPDEF) $(TARGET_DIR)/$(TARGET_IMPLIB)
+{sharedlib:}  LDFLAGS+=$(LDFLAG_IMPDEF)$O/$(TARGET_IMPDEF) $(LDFLAG_IMPLIB)$O/$(TARGET_IMPLIB)
+{sharedlib:}  ifeq ($(TOOLCHAIN_NAME),clang-msabi)
+{sharedlib:}    ifeq ($(MODE),debug)
+{sharedlib:}      TARGET_FILES+=$(TARGET_DIR)/$(TARGET_NAME).pdb
+{sharedlib:}    endif
+{sharedlib:}  endif
+{sharedlib:}endif
+{sharedlib:}
 #------------------------------------------------------------------------------
 # User-supplied makefile fragment(s)
-# >>>
 {makefrags:}{makefrags}
-# <<<
 #------------------------------------------------------------------------------
 
 # Main target
-{~nolink:}all: $(TARGET_DIR)/$(TARGET)
+{~nolink:}all: $(TARGET_FILES)
 {~nolink:}
 ### Rules for $TARGET. Note that end product will be hardlinked into the
 ### TARGET_DIR (by default, the Makefile's directory); on systems that don't
@@ -115,8 +118,8 @@ endif
 $(TARGET_DIR)/% :: $O/%
 	@mkdir -p $(TARGET_DIR)
 	$(Q)$(LN) $< $@
-ifeq ($(TOOLCHAIN_NAME),clangc2)
-	$(Q)-$(LN) $(<:%.dll=%.lib) $(@:%.dll=%.lib)
+ifeq ($(TOOLCHAIN_NAME),clang-msabi)
+	-$(Q)-$(LN) $(<:%.dll=%.lib) $(@:%.dll=%.lib) 2>/dev/null
 endif
 
 {exe:}$O/$(TARGET): {sourcedirs?$(OBJS)} {submakedirs?submakedirs} $(wildcard $(EXTRA_OBJS)) {makefile} $(CONFIGFILE)
@@ -124,12 +127,15 @@ endif
 {exe:}	@echo Creating executable: $@
 {gcclongline:}{exe:}	$(Q)echo >.tmp$$$$ {sourcedirs?$(OBJS)} $(EXTRA_OBJS) && $(AR) .tmplib$$$$ @.tmp$$$$ && $(CXX) -o $O/$(TARGET) $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) .tmplib$$$$ $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) $(LDFLAGS) && rm .tmp$$$$ && rm .tmplib$$$$
 {~gcclongline:}{exe:}	$(Q)$(CXX) $(LDFLAGS) -o $O/$(TARGET) {sourcedirs?$(OBJS)} $(EXTRA_OBJS) $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS)
-{sharedlib:}$O/$(TARGET): {sourcedirs?$(OBJS)} {submakedirs?submakedirs} $(wildcard $(EXTRA_OBJS)) {makefile} $(CONFIGFILE)
+{sharedlib:}$O/$(TARGET) $O/$(TARGET_IMPDEF) $O/$(TARGET_IMPLIB) &: {sourcedirs?$(OBJS)} {submakedirs?submakedirs} $(wildcard $(EXTRA_OBJS)) {makefile} $(CONFIGFILE)
 {sharedlib:}	@$(MKPATH) $O
 {sharedlib:}	@echo Creating shared library: $@
-{gcclongline:}{sharedlib:}	$(Q)echo >.tmp$$$$ {sourcedirs?$(OBJS)} $(EXTRA_OBJS) && $(AR) .tmplib$$$$ @.tmp$$$$ && $(SHLIB_LD) -o $O/$(TARGET) $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) .tmplib$$$$ $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) $(LDFLAGS) && rm .tmp$$$$ && rm .tmplib$$$$
+{gcclongline:}{sharedlib:}	$(Q)echo >.tmp$$$$ {sourcedirs?$(OBJS)} $(EXTRA_OBJS) && $(SHLIB_LD) -o $O/$(TARGET) @.tmp$$$$ $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) $(LDFLAGS) ; rm .tmp$$$$
 {~gcclongline:}{sharedlib:}	$(Q)$(SHLIB_LD) -o $O/$(TARGET) {sourcedirs?$(OBJS)} $(EXTRA_OBJS) $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) $(LDFLAGS)
 {sharedlib:}	$(Q)$(SHLIB_POSTPROCESS) $O/$(TARGET)
+{sharedlib:}ifeq ($(PLATFORM),win32.x86_64)
+{sharedlib:}	$(Q)llvm-ar d $O/$(TARGET_IMPLIB) $(TARGET) # WORKAROUND: throw away the first file from the archive to make the LLD generated import lib valid
+{sharedlib:}endif
 {staticlib:}$O/$(TARGET): {sourcedirs?$(OBJS)} {submakedirs?submakedirs} $(wildcard $(EXTRA_OBJS)) {makefile} $(CONFIGFILE)
 {staticlib:}	@$(MKPATH) $O
 {staticlib:}	@echo Creating static library: $@
@@ -187,16 +193,20 @@ smheaders: {sourcedirs?$(SMFILES:.sm=_sm.h)}
 clean:
 	$(qecho) Cleaning $(TARGET)
 	$(Q)-rm -rf $O  ### must be done separately, because it fails on MinGW ('rm' is bogus)
-{~nolink:}	$(Q)-rm -f $(TARGET_DIR)/$(TARGET)
-{~nolink:}	$(Q)-rm -f $(TARGET_DIR)/$(TARGET:%.dll=%.lib)
+{~nolink:}	$(Q)-rm -f $(TARGET_FILES)
 	$(Q)-rm -f $(call opp_rwildcard, . , *_m.{cc} *_m.h *_sm.{cc} *_sm.h)
 {@i:submakedirs}	-$(Q)cd {i} && $(MAKE) clean
 {/@}
 
 cleanall:
-	$(Q)$(MAKE) -s clean MODE=release
-	$(Q)$(MAKE) -s clean MODE=debug
+	$(Q)$(CLEANALL_COMMAND)
 	$(Q)-rm -rf $(PROJECT_OUTPUT_DIR)
+
+help:
+	@echo "$$HELP_SYNOPSYS"
+	@echo "$$HELP_TARGETS"
+	@echo "$$HELP_VARIABLES"
+	@echo "$$HELP_EXAMPLES"
 
 # include all dependencies
 -include $(OBJS:%=%.d) $(MSGFILES:%.msg=$O/%_m.h.d)

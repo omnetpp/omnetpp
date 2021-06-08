@@ -287,22 +287,13 @@ public class Makemake {
         }
 
         String makefrags = "";
-        try {
-            if (!options.fragmentFiles.isEmpty()) {
-                for (String frag : options.fragmentFiles) {
-                    makefrags += "# inserted from file '" + frag + "':\n";
-                    makefrags += FileUtils.readTextFile(file(frag), null) + "\n";
-                }
+        if (!options.fragmentFiles.isEmpty()) {
+            for (String frag : options.fragmentFiles) {
+                makefrags += "-include " + frag + "'\n";
             }
-            else {
-                String makefragFilename = "makefrag";
-                if (file(makefragFilename).isFile()) {
-                    makefrags += "# inserted from file '" + makefragFilename + "':\n";
-                    makefrags += FileUtils.readTextFile(file(makefragFilename), null) + "\n";
-                }
-            }
-        } catch (IOException e) {
-            throw Activator.wrapIntoCoreException(e);
+        }
+        else {
+            makefrags += "-include makefrag\n";
         }
 
         // defines
