@@ -102,7 +102,7 @@ ObjectPrinter::~ObjectPrinter()
 void ObjectPrinter::printObjectToStream(std::ostream& ostream, cObject *object)
 {
     void *parents[MAXIMUM_OBJECT_PRINTER_LEVEL];
-    cClassDescriptor *descriptor = cClassDescriptor::getDescriptorFor(object);
+    cClassDescriptor *descriptor = object->getDescriptor();
     ostream << "class " << descriptor->getName() << " {\n";
     printObjectToStream(ostream, object, descriptor, parents, 0);
     ostream << "}\n";
@@ -171,7 +171,7 @@ void ObjectPrinter::printObjectToStream(std::ostream& ostream, void *object, cCl
 
                 if (isCompound) {
                     if (fieldValue) {
-                        cClassDescriptor *fieldDescriptor = isCObject ? cClassDescriptor::getDescriptorFor((cObject *)fieldValue) :
+                        cClassDescriptor *fieldDescriptor = isCObject ? ((cObject *)fieldValue)->getDescriptor() :
                             cClassDescriptor::getDescriptorFor(descriptor->getFieldStructName(fieldIndex));
 
                         if (isCObject && result == FULL_NAME)

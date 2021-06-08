@@ -403,7 +403,7 @@ ChildObjectNode::ChildObjectNode(TreeNode *parent, int indexInParent, void *cont
 
 int ChildObjectNode::computeChildCount()
 {
-    return computeObjectChildCount(object, object ? cClassDescriptor::getDescriptorFor(object) : nullptr, mode);
+    return computeObjectChildCount(object, object ? object->getDescriptor() : nullptr, mode);
 }
 
 QVariant ChildObjectNode::computeData(int role)
@@ -432,7 +432,7 @@ cObject *ChildObjectNode::getCObjectPointer()
 
 std::vector<TreeNode *> ChildObjectNode::makeChildren()
 {
-    return makeObjectChildNodes(object, object ? cClassDescriptor::getDescriptorFor(object) : nullptr);
+    return makeObjectChildNodes(object, object ? object->getDescriptor() : nullptr);
 }
 
 bool ChildObjectNode::isSameAs(TreeNode *other)
@@ -647,7 +647,7 @@ bool FieldNode::matchesPropertyFilter(const QString &property)
 
 std::vector<TreeNode *> RootNode::makeChildren()
 {
-    return makeObjectChildNodes(object, object ? cClassDescriptor::getDescriptorFor(object) : nullptr, false);
+    return makeObjectChildNodes(object, object ? object->getDescriptor() : nullptr, false);
 }
 
 bool RootNode::isSameAs(TreeNode *other)
@@ -666,7 +666,7 @@ RootNode::RootNode(cObject *object, Mode mode)
 
 int RootNode::computeChildCount()
 {
-    return computeObjectChildCount(object, object ? cClassDescriptor::getDescriptorFor(object) : nullptr, mode);
+    return computeObjectChildCount(object, object ? object->getDescriptor() : nullptr, mode);
 }
 
 QVariant RootNode::computeData(int role)
