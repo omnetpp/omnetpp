@@ -16,6 +16,7 @@
 #ifndef __OMNETPP_SIMUTIL_H
 #define __OMNETPP_SIMUTIL_H
 
+#include <limits>   // numeric_limits - just needed for backward compatibility because some projects (e.g. inet 4.2.x implicitly depend on it).
 #include <cmath>
 #include <cstring>  // for strlen, etc.
 #include <cstdarg>  // for va_list
