@@ -250,7 +250,8 @@ cValue cDynamicExpression::evaluate(Context *context) const
 
     tmpOwner.restoreOriginalOwner();
     if (cOwnedObject *obj = ownedObjectIn(value))
-        tmpOwner.drop(obj); // don't let tmpOwner delete the object we are returning
+        if (obj->getOwner() == &tmpOwner)
+            tmpOwner.drop(obj); // don't let tmpOwner delete the object we are returning
 
     return value;
 }
