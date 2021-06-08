@@ -20,8 +20,12 @@
 #include "omnetpp/cdynamicexpression.h"
 #include "omnetpp/cobjectfactory.h"
 #include "omnetpp/ccomponent.h"
+#include "ctemporaryowner.h"
+#include "common/stringutil.h"
 
 namespace omnetpp {
+
+using namespace common;
 
 cObjectParImpl::~cObjectParImpl()
 {
@@ -128,6 +132,63 @@ std::string cObjectParImpl::stdstringValue(cComponent *) const
     throw cRuntimeError(this, E_BADCAST, "object", "string");
 }
 
+static void throwNotOwned(cObject *obj, cObject *parent=nullptr)
+{
+    ASSERT(parent == nullptr || obj->getOwner() != parent);
+
+    std::string msg = opp_stringf("Object parameters may only hold objects they fully own, but object %s", obj->getClassAndFullName().c_str());
+
+    std::string note;
+    if (parent != nullptr)
+        note = opp_stringf(" (which is indirectly contained in the result object, its parent being %s)", parent->getClassAndFullName().c_str());
+
+    std::string reason;
+    if (!obj->isOwnedObject())
+        reason = "is not a cOwnedObject and does not keep track of its owner";
+    else if (obj->getOwner() == nullptr)
+        reason = "has been removed from the ownership hierarchy (owner=nullptr)";
+    else if (dynamic_cast<cParImpl*>(obj->getOwner()) != nullptr)
+        reason = opp_stringf("is already owned by a parameter named '%s'", obj->getOwner()->getName());
+    else
+        reason = opp_stringf("is already owned by %s", obj->getOwner()->getClassAndFullPath().c_str());
+
+    throw cRuntimeError("%s%s %s", msg.c_str(), note.c_str(), reason.c_str());
+}
+
+namespace {
+
+class OwnershipCheckerVisitor : public cVisitor
+{
+  private:
+    cObject *parent;
+  public:
+    OwnershipCheckerVisitor(cObject *parent) : parent(parent) {}
+    virtual bool visit(cObject *obj) override {
+        if (obj->getOwner() != parent)
+            throwNotOwned(obj, parent);
+        cObject *oldParent = parent;
+        parent = obj;
+        obj->forEachChild(this);
+        parent = oldParent;
+        return true;
+    }
+};
+
+} // namespace
+
+void cObjectParImpl::checkOwnership(cObject *obj, cTemporaryOwner& tmp) const
+{
+    if (obj->getOwner() != &tmp)
+        throwNotOwned(obj);
+
+    // Check for external references contained within the object. They cannot
+    // be detected with 100% accuracy (this is C++ after all), our best bet is to
+    // traverse its contents via forEach(), and check that objects in the tree
+    // are fully owned by their parents.
+    OwnershipCheckerVisitor visitor(obj);
+    obj->forEachChild(&visitor);
+}
+
 cObject *cObjectParImpl::objectValue(cComponent *context) const
 {
     if ((flags & FL_ISSET) == 0)
@@ -136,12 +197,17 @@ cObject *cObjectParImpl::objectValue(cComponent *context) const
     if ((flags & FL_ISEXPR) == 0)
         return obj;
     else {
+        cTemporaryOwner tmp(cTemporaryOwner::DestructorMode::DISPOSE);
         cValue v = evaluate(expr, context);
         if (v.type != cValue::OBJECT)
             throw cRuntimeError(E_BADCAST, v.getTypeName(), "object");
 
+        cObject *obj = v.objectValue();
+        if (obj)
+            checkOwnership(obj, tmp);
+
         cObjectParImpl *mutableThis = const_cast<cObjectParImpl*>(this);
-        mutableThis->doSetObject(v.objectValue());
+        mutableThis->doSetObject(obj);
         checkType(obj);
         return obj;
     }

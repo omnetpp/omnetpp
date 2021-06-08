@@ -7,18 +7,18 @@ namespace @TESTNAME@;
 
 cplusplus {{ using namespace omnetpp; }}
 
-class Data extends cObject
+class Data extends cOwnedObject
 {
     int foo;
     string bar;
 }
 
-class DataVector extends cObject
+class DataVector extends cOwnedObject
 {
     Data *data[] @owned;
 }
 
-class Messages extends cObject
+class Messages extends cOwnedObject
 {
     cMessage *msg @owned;
     cMessage *list[] @owned;

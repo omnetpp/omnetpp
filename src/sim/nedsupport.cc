@@ -69,7 +69,7 @@ ExprValue makeExprValue(const cPar& par)
     case cPar::INT: return ExprValue(par.intValue(), par.getUnit());
     case cPar::DOUBLE: return ExprValue(par.doubleValue(), par.getUnit());
     case cPar::STRING: return ExprValue(par.stdstringValue());
-    case cPar::OBJECT: throw cRuntimeError("Using NED parameters of type 'object' in expressions is currently not supported");  // reason: ownership issues (use obj->dup() or not? delete object in destructor or not?)
+    case cPar::OBJECT: return ExprValue(par.objectValue());
     case cPar::XML: return ExprValue(par.xmlValue());
     }
     Assert(false);

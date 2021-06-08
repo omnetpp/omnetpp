@@ -20,6 +20,7 @@
 
 namespace omnetpp {
 
+class cTemporaryOwner;
 
 /**
  * @brief A cParImpl subclass that stores a module/channel parameter of type object.
@@ -50,6 +51,7 @@ class SIM_API cObjectParImpl : public cParImpl
     void deleteObject();
     virtual void doSetObject(cObject *object);
     virtual void checkType(cObject *object) const;
+    virtual void checkOwnership(cObject *obj, cTemporaryOwner& tmp) const;
 
   public:
     /** @name Constructors, destructor, assignment. */

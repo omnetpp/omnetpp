@@ -12,7 +12,7 @@ struct Point {
     double y;
 }
 
-class Trail extends cObject {
+class Trail extends cOwnedObject {
     Point points[];
 }
 

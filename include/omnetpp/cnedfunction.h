@@ -60,7 +60,7 @@ typedef NedFunction NEDFunction;
 class SIM_API cNedFunction : public cNoncopyableOwnedObject
 {
   public:
-    enum Type { UNDEF=0, BOOL, INT, INTQ, DOUBLE, DOUBLEQ, STRING, XML, ANY };
+    enum Type { UNDEF=0, BOOL, INT, INTQ, DOUBLE, DOUBLEQ, STRING, OBJECT, XML, ANY };
 
   private:
     std::string signature; // function signature, as passed to the ctor
