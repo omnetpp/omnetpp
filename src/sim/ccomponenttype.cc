@@ -85,10 +85,7 @@ cComponentType:: cComponentType(const char *qname) : cNoncopyableOwnedObject(qna
 
 cComponentType::~cComponentType()
 {
-    for (auto & it : sharedParMap)
-        delete it.second;
-    for (auto it : sharedParSet)
-        delete it;
+    clearSharedParImpls();
 }
 
 cComponentType *cComponentType::find(const char *qname)
@@ -104,6 +101,16 @@ cComponentType *cComponentType::get(const char *qname)
         throw cRuntimeError("NED type '%s' not found%s", qname, hint);
     }
     return componentType;
+}
+
+void cComponentType::clearSharedParImpls()
+{
+    for (auto & it : sharedParMap)
+        delete it.second;
+    for (auto it : sharedParSet)
+        delete it;
+    sharedParMap.clear();
+    sharedParSet.clear();
 }
 
 cParImpl *cComponentType::getSharedParImpl(const char *key) const

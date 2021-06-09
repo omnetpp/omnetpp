@@ -45,7 +45,7 @@ cNedDeclaration::~cNedDeclaration()
     clearPropsMap(submodulePropsMap);
     clearPropsMap(connectionPropsMap);
 
-    clearSharedParImplMap(parimplMap);
+    clearSharedParImpls();
 
     for (auto & pattern : patterns)
         delete pattern.matcher;
@@ -67,7 +67,7 @@ void cNedDeclaration::clearPropsMap(StringPropsMap& propsMap)
     propsMap.clear();
 }
 
-void cNedDeclaration::clearSharedParImplMap(SharedParImplMap& parimplMap)
+void cNedDeclaration::clearSharedParImpls()
 {
     for (auto & it : parimplMap)
         delete it.second;

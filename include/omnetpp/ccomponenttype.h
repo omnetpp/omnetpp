@@ -48,6 +48,7 @@ class cObjectFactory;
  */
 class SIM_API cComponentType : public cNoncopyableOwnedObject
 {
+    friend class cSimulation; // clearSharedParImpls()
   protected:
     std::string qualifiedName;
     bool availabilityTested = false;
@@ -105,6 +106,9 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
     // internal: sharedParSet access
     cParImpl *getSharedParImpl(cParImpl *p) const;
     void putSharedParImpl(cParImpl *p);
+
+    // internal:
+    virtual void clearSharedParImpls();
 
     // internal: helper for checkSignal()
     cObjectFactory *lookupClass(const char *className) const;

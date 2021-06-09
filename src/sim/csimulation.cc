@@ -479,7 +479,8 @@ void cSimulation::deleteNetwork()
 
     networkType = nullptr;
 
-    //FIXME todo delete cParImpl caches too (cParImplCache, cParImplCache2)
+    for (auto p : componentTypes)
+        static_cast<cComponentType *>(p)->clearSharedParImpls();
     cModule::clearNamePools();
 
     getEnvir()->notifyLifecycleListeners(LF_POST_NETWORK_DELETE);

@@ -123,5 +123,11 @@ bool cDynamicChannelType::isInnerType() const
     return decl->isInnerType();
 }
 
+void cDynamicChannelType::clearSharedParImpls()
+{
+    cChannelType::clearSharedParImpls();
+    getDecl()->clearSharedParImpls();
+}
+
 }  // namespace omnetpp
 

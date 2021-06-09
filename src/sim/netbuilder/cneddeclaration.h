@@ -88,7 +88,6 @@ class SIM_API cNedDeclaration : public NedTypeInfo
     void appendPropsMap(StringPropsMap& toPropsMap, const StringPropsMap& fromPropsMap);
 
     void clearPropsMap(StringPropsMap& propsMap);
-    void clearSharedParImplMap(SharedParImplMap& parimplMap);
 
     static cProperties *mergeProperties(const cProperties *baseprops, NedElement *parent);
     static void updateProperty(PropertyElement *propNode, cProperty *prop);
@@ -156,6 +155,7 @@ class SIM_API cNedDeclaration : public NedTypeInfo
     //@{
     virtual cParImpl *getSharedParImplFor(NedElement *node);
     virtual void putSharedParImplFor(NedElement *node, cParImpl *value);
+    virtual void clearSharedParImpls();
     //@}
 };
 

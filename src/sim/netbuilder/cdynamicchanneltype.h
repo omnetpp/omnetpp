@@ -54,6 +54,7 @@ class SIM_API cDynamicChannelType : public cChannelType
     virtual std::string getCxxNamespace() const override;
     virtual const char *getSourceFileName() const override;
     virtual bool isInnerType() const override;
+    virtual void clearSharedParImpls() override;
 
   public:
     /**
