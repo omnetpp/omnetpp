@@ -149,6 +149,13 @@ class SIM_API cValue
     std::string str() const;
 
     /**
+     * Comparison. Note that two cValues are equal if they are of the same type
+     * (i.e. there is no implicit int <--> double conversion); if they contain
+     * object pointers, they are equal if they point to the same object.
+     */
+    bool operator==(const cValue& other);
+
+    /**
      * Convert the given number into the target unit (e.g. milliwatt to watt).
      * Throws an exception if conversion is not possible (unknown/unrelated units).
      *

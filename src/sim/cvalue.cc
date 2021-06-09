@@ -235,5 +235,21 @@ std::string cValue::str() const
     }
 }
 
+bool cValue::operator==(const cValue& other)
+{
+    if (type != other.type)
+        return false;  // note: no implicit int <--> double conversion
+
+    switch (type) {
+        case UNDEF: return true;
+        case BOOL: return bl == other.bl;
+        case INT: return intv == other.intv && opp_strcmp(unit, other.unit) == 0;
+        case DOUBLE: return dbl == other.dbl && opp_strcmp(unit, other.unit) == 0;
+        case STRING: return s == other.s;
+        case OBJECT: return obj == other.obj; // same object
+        default: throw cRuntimeError("Internal error: Invalid cValue type");
+    }
+}
+
 }  // namespace omnetpp
 
