@@ -461,7 +461,7 @@ foreach $element (@elements)
     {
         print CC "        case $attrids[$i]: return \"$attnames[$i]\";\n";
     }
-    print CC "        default: return 0;\n";
+    print CC "        default: return nullptr;\n";
     print CC "    }\n";
     print CC "}\n\n";
 
@@ -480,7 +480,7 @@ foreach $element (@elements)
             print CC "        case $attrids[$i]: return enumToString($varnames[$i], $enumnames[$i]_vals, $enumnames[$i]_nums, $enumnames[$i]_n);\n";
         }
     }
-    print CC "        default: return 0;\n";
+    print CC "        default: return nullptr;\n";
     print CC "    }\n";
     print CC "}\n\n";
 
@@ -518,7 +518,7 @@ foreach $element (@elements)
             print CC "        case $attrids[$i]: return $attval;\n";
         }
     }
-    print CC "        default: return 0;\n";
+    print CC "        default: return nullptr;\n";
     print CC "    }\n";
     print CC "}\n\n";
 
