@@ -88,6 +88,7 @@ class CMDENV_API Cmdenv : public EnvirBase
      virtual bool isExpressMode() const override {return opt->expressMode;}
      virtual std::string gets(const char *prompt, const char *defaultReply) override;
      virtual bool idle() override;
+     virtual void pausePoint() override { /* currently no-op */ };
      virtual unsigned getExtraStackForEnvir() const override;
 
      virtual void getImageSize(const char *imageName, double& outWidth, double& outHeight) override;

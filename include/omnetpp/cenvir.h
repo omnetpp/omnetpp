@@ -849,6 +849,15 @@ class SIM_API cEnvir
     virtual bool idle() = 0;
 
     /**
+     * Potentially blocks the execution of model code when called.
+     * When using user interfaces (graphical environments) that support it,
+     * gives the user opportunity to examine the state of the simulation even
+     * in the middle of performing an event, and resume on demand.
+     * This is similar to how breakpoints work in debuggers.
+     */
+    virtual void pausePoint() = 0;
+
+    /**
      * Starts an external debugger program and attaches it to this process,
      * if no already attached debugger is detected.
      * The command line to start the debugger can be configured.
