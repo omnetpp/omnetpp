@@ -1,0 +1,19 @@
+%description:
+Test that file:line info is included when there is an error parsing/translating
+an expression for a module parameter.
+
+%file: test.ned
+network TestNet {
+    parameters:
+        int p;
+}
+
+%inifile: test.ini
+[General]
+network = TestNet
+*.p = foo(3)  # no such function
+
+%exitcode: 1
+
+%contains-regex: stderr
+Error .* -- at .*/test.ini:3 -- .*

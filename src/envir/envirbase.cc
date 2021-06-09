@@ -56,6 +56,7 @@
 #include "omnetpp/simtime.h"
 #include "omnetpp/platdep/platmisc.h"
 #include "omnetpp/cstatisticbuilder.h"
+#include "omnetpp/fileline.h"
 #include "args.h"
 #include "envirbase.h"
 #include "envirutils.h"
@@ -895,7 +896,12 @@ void EnvirBase::readParameter(cPar *par)
         askParameter(par, false);
     }
     else if (!opp_isempty(str)) {
-        par->parse(str, entry.getBaseDirectory());
+        try {
+            par->parse(str, entry.getBaseDirectory());
+        }
+        catch (std::exception& e) {
+            throw cRuntimeError("%s -- at %s", e.what(), entry.getSourceLocation().str().c_str());
+        }
     }
     else {
         // str empty: no value in the ini file

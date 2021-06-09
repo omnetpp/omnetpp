@@ -86,22 +86,19 @@ class cMySQLConfigReader : public cConfigurationReader, public cObject
     class KeyValue1 : public KeyValue {
       private:
         const std::string *basedir;  // points into basedirs[]
-        const std::string *filename; // points into filenames[]
-        int lineNumber;
+        FileLine loc;
         std::string key;
-        std::string value; //XXX stringpool it?
+        std::string value;
 
       public:
-        KeyValue1(const std::string *bdir, const std::string *fname, int li, const char *k, const char *v) {
-            basedir = bdir; filename = fname; lineNumber = li; key = k; value = v;
-        }
+        KeyValue1(const std::string *baseDir, const std::string *fileName, int line, const char *key, const char *value) :
+            basedir(baseDir), loc(fileName->c_str(),line), key(key), value(value) {}
 
         // virtual functions implementing the KeyValue interface
-        virtual const char *getKey() const   {return key.c_str();}
-        virtual const char *getValue() const {return value.c_str();}
-        virtual const char *getBaseDirectory() const  {return basedir->c_str();}
-        virtual const char *getFileName() const  {return filename->c_str();}
-        virtual int getLineNumber() const  {return lineNumber;}
+        virtual const char *getKey() const override   {return key.c_str();}
+        virtual const char *getValue() const override {return value.c_str();}
+        virtual const char *getBaseDirectory() const override  {return basedir->c_str();}
+        virtual FileLine getSourceLocation() const override {return loc;}
     };
 
     std::string rootfilename;  // name of "root" ini file read

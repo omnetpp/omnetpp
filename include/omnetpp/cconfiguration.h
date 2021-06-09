@@ -24,6 +24,7 @@
 
 namespace omnetpp {
 
+class FileLine;
 class cConfigOption;
 
 /**
@@ -81,6 +82,7 @@ class SIM_API cConfiguration : public cObject
         virtual const char *getKey() const = 0;
         virtual const char *getValue() const = 0;
         virtual const char *getBaseDirectory() const = 0;
+        virtual FileLine getSourceLocation() const;
     };
 
     /**

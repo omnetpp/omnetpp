@@ -27,10 +27,16 @@
 #include "common/exception.h"
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/cconfigoption.h"
+#include "omnetpp/fileline.h"
 
 using namespace omnetpp::common;
 
 namespace omnetpp {
+
+ FileLine cConfiguration::KeyValue::getSourceLocation() const
+ {
+     return FileLine();
+ }
 
 bool cConfiguration::parseBool(const char *s, const char *defaultValue, bool fallbackValue)
 {

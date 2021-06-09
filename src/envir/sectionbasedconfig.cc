@@ -322,7 +322,7 @@ void SectionBasedConfiguration::activateConfig(const char *configName, int runNu
         std::string key = addWildcardIfNeeded(e.getKey());
         std::string value = substituteVariables(e.getValue());
         const std::string *basedirRef = getPooledBaseDir(e.getBaseDirectory());
-        addEntry(Entry(basedirRef, key.c_str(), value.c_str()));
+        addEntry(Entry(basedirRef, key.c_str(), value.c_str(), FileLine("<commandline>",-1))); //TODO
     }
     for (int sectionId : sectionChain) {
         for (int entryId = 0; entryId < ini->getNumEntries(sectionId); entryId++) {
@@ -331,7 +331,7 @@ void SectionBasedConfiguration::activateConfig(const char *configName, int runNu
             std::string key = addWildcardIfNeeded(e.getKey());
             std::string value = substituteVariables(e.getValue(), sectionId, entryId, variables, locationToVarName);
             const std::string *basedirRef = getPooledBaseDir(e.getBaseDirectory());
-            addEntry(Entry(basedirRef, key.c_str(), value.c_str()));
+            addEntry(Entry(basedirRef, key.c_str(), value.c_str(), e.getSourceLocation()));
         }
     }
 }

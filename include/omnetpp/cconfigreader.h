@@ -17,6 +17,7 @@
 #define __OMNETPP_CCONFIGREADER_H
 
 #include "simkerneldefs.h"
+#include "fileline.h"
 
 namespace omnetpp {
 
@@ -45,8 +46,7 @@ class cConfigurationReader
         virtual const char *getKey() const = 0;
         virtual const char *getValue() const = 0;
         virtual const char *getBaseDirectory() const = 0;
-        virtual const char *getFileName() const = 0;
-        virtual int getLineNumber() const = 0;
+        virtual FileLine getSourceLocation() const = 0;
     };
 
   public:

@@ -40,30 +40,27 @@ class ENVIR_API InifileReader : public cConfigurationReader
     class KeyValue1 : public KeyValue {
       private:
         const std::string *basedir;  // points into basedirs[]
-        const std::string *filename; // points into filenames[]
-        int lineNumber;
+        FileLine loc;
         std::string key;
-        std::string value; //XXX stringpool it?
+        std::string value;
 
       public:
-        KeyValue1(const std::string *bdir, const std::string *fname, int li, const char *k, const char *v) {
-            basedir = bdir; filename = fname; lineNumber = li; key = k; value = v;
-        }
+        KeyValue1(const std::string *baseDir, const std::string *fileName, int line, const char *key, const char *value) :
+            basedir(baseDir), loc(fileName->c_str(),line), key(key), value(value) {}
 
         // virtual functions implementing the KeyValue interface
         virtual const char *getKey() const override   {return key.c_str();}
         virtual const char *getValue() const override {return value.c_str();}
         virtual const char *getBaseDirectory() const override  {return basedir->c_str();}
-        virtual const char *getFileName() const override  {return filename->c_str();}
-        virtual int getLineNumber() const override  {return lineNumber;}
+        virtual FileLine getSourceLocation() const override {return loc;}
     };
 
     std::string rootFilename;  // name of "root" ini file read
     std::string defaultBasedir; // the default base directory
 
     typedef std::set<std::string> StringSet;
-    StringSet filenames; // stores ini file names (absolute paths)
-    StringSet basedirs;  // stores base directory names (absolute paths)
+    StringSet filenames; // stores ini file names (absolute paths) --TODO not really needed
+    StringSet basedirs;  // stores base directory names (absolute paths)  --TODO not really needed
 
     struct Section {
         std::string name;

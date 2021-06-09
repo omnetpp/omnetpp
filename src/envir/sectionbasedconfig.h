@@ -25,6 +25,7 @@
 #include "common/stringpool.h"
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/cconfigreader.h"
+#include "omnetpp/cdynamicexpression.h" //FileLine, TODO
 #include "envirdefs.h"
 #include "scenario.h"
 
@@ -58,13 +59,15 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
         const std::string *basedirRef; // points into basedirs[]
         std::string key;
         std::string value;
+        FileLine loc;
         Entry() {basedirRef = &nullBasedir;}
-        Entry(const std::string *bd, const char *k, const char *v) : basedirRef(bd), key(k), value(v) {}
+        Entry(const std::string *bd, const char *k, const char *v, FileLine loc=FileLine()) : basedirRef(bd), key(k), value(v), loc(loc) {}
 
         // virtual functions implementing the KeyValue interface
         virtual const char *getKey() const override   {return key.c_str();}
         virtual const char *getValue() const override {return value.c_str();}
         virtual const char *getBaseDirectory() const override {return basedirRef->c_str();}
+        virtual FileLine getSourceLocation() const override {return loc;}
     };
 
     class MatchableEntry : public Entry {
