@@ -37,6 +37,7 @@
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cxmlelement.h"
 #include "omnetpp/cvaluearray.h"
+#include "omnetpp/cvaluemap.h"
 
 using namespace omnetpp::common;
 
@@ -1270,6 +1271,56 @@ cValue nedf_firstAvailable(cComponent *contextComponent, cValue argv[], int argc
     for (int i = 0; i < argc; i++)
         typelist += std::string(i == 0 ? "" : ", ") + argv[i].stdstringValue();
     throw cRuntimeError("None of the following NED types are available: %s", typelist.c_str());
+}
+
+DEF(nedf_get,
+    "any get(object arrayOrMap, any keyOrIndex)",
+    "misc",
+    "Obtain a value from a NED map or array. "
+    "Examples: get([10,20,30], 1) returns 20; get({foo:10,bar:20}, 'foo') returns 10. "
+    "Note that get(x,i) may also be written as x.get(i), with the two being completely equivalent.")
+
+cValue nedf_get(cComponent *contextComponent, cValue argv[], int argc)
+{
+    cObject *obj = argv[0].objectValue();
+    cValue& ii = argv[1];
+    if (cValueArray *arr = dynamic_cast<cValueArray *>(obj)) {
+        long index = ii.intValue();
+        return arr->get(index);
+    }
+    else if (cValueMap *map = dynamic_cast<cValueMap *>(obj)) {
+        std::string key = ii.getType() == cValue::STRING ? ii.stringValue() : ii.str();
+        return map->get(key.c_str());
+    }
+    else
+        throw cRuntimeError("Unsupported C++ type '%s', get() only supports cValueArray and cValueMap", obj->getClassName());
+}
+
+DEF(nedf_size,
+    "int size(object arrayOrMap)",
+    "misc",
+    "Returns the length of an array, or the number of elements in a map.")
+
+cValue nedf_size(cComponent *contextComponent, cValue argv[], int argc)
+{
+    cObject *obj = argv[0].objectValue();
+    if (cValueArray *arr = dynamic_cast<cValueArray *>(obj))
+        return arr->size();
+    else if (cValueMap *map = dynamic_cast<cValueMap *>(obj))
+        return map->size();
+    else
+        throw cRuntimeError("Unsupported C++ type '%s', size() only supports cValueArray and cValueMap", obj->getClassName());
+}
+
+DEF(nedf_dup,
+    "object dup(object obj)",
+    "misc",
+    "Clones the given object by calling its dup() C++ method.")
+
+cValue nedf_dup(cComponent *contextComponent, cValue argv[], int argc)
+{
+    cObject *obj = argv[0].objectValue();
+    return obj->dup();
 }
 
 }  // namespace omnetpp
