@@ -69,7 +69,7 @@ x = true --> ERROR: Error in expression 'true' for parameter 'Test.x': Cannot ca
 x = 12 --> ERROR: Error in expression '12' for parameter 'Test.x': Cannot cast from type integer to XML
 x = 3.14 --> ERROR: Error in expression '3.14' for parameter 'Test.x': Cannot cast from type double to XML
 x = "hello" --> ERROR: Error in expression '"hello"' for parameter 'Test.x': Cannot cast from type string to XML
-x = [] --> ERROR: Cannot evaluate expression for parameter 'x': check_and_cast(): Cannot cast (omnetpp::cValueArray*)Test..array to type 'omnetpp::cXMLElement *'
+x = [] --> ERROR: Cannot evaluate expression for parameter 'x': check_and_cast(): Cannot cast (omnetpp::cValueArray*)Test..array5 to type 'omnetpp::cXMLElement *'
 x = nullptr --> nullptr
 x = undefined --> ERROR: Error in expression 'undefined' for parameter 'Test.x': Cannot cast from type undefined to XML
 
@@ -77,7 +77,7 @@ o = true --> ERROR: Error in expression 'true' for parameter 'Test.o': Cannot ca
 o = 12 --> ERROR: Error in expression '12' for parameter 'Test.o': Cannot cast from type integer to object
 o = 3.14 --> ERROR: Error in expression '3.14' for parameter 'Test.o': Cannot cast from type double to object
 o = "hello" --> ERROR: Error in expression '"hello"' for parameter 'Test.o': Cannot cast from type string to object
-o = [] --> (omnetpp::cValueArray)array: []
+o = [] --> (omnetpp::cValueArray)array6: []
 o = nullptr --> nullptr
 o = undefined --> ERROR: Error in expression 'undefined' for parameter 'Test.o': Cannot cast from type undefined to object
 

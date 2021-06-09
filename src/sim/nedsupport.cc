@@ -436,15 +436,19 @@ ExprValue NedObjectNode::evaluate(Context *context_) const
 {
     ASSERT(children.size() == fieldNames.size());
     if (typeName.empty()) {
-        cValueMap *object = new cValueMap();
+        static int counter = 0;
+        cValueMap *object = new cValueMap(opp_stringf("map%d", ++counter).c_str());
         cTemporaryOwner tmp(cTemporaryOwner::DestructorMode::DISPOSE); // dispose temp objects created during evaluation
-        object->setName("object");
         for (int i = 0; i < fieldNames.size(); i++)
             object->set(fieldNames[i].c_str(), makeNedValue(children[i]->tryEvaluate(context_))); // note: set() includes taking added cOwnedObject
         return object;
     }
     else {
         cObject *object = createOne(typeName.c_str());
+        if (object->isOwnedObject()) {
+            static int counter = 0;
+            static_cast<cOwnedObject*>(object)->setName(opp_stringf("obj%d", ++counter).c_str());
+        }
         cTemporaryOwner tmp(cTemporaryOwner::DestructorMode::DISPOSE); // dispose temp objects created during evaluation
         cClassDescriptor *desc = object->getDescriptor();
         for (int i = 0; i < fieldNames.size(); i++)
@@ -526,8 +530,8 @@ void NedObjectNode::fillObject(cClassDescriptor *desc, void *object, const cValu
 
 ExprValue NedArrayNode::evaluate(Context *context_) const
 {
-    cValueArray *array = new cValueArray();
-    array->setName("array");
+    static int counter = 0;
+    cValueArray *array = new cValueArray(opp_stringf("array%d", ++counter).c_str());
     cTemporaryOwner tmp(cTemporaryOwner::DestructorMode::DISPOSE); // dispose temp objects created during evaluation
     for (ExprNode *child : children)
         array->add(makeNedValue(child->tryEvaluate(context_))); // note: add() includes taking added cOwnedObject

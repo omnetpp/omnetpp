@@ -127,46 +127,46 @@ module Test: Test {
     submodules:
         module Test.node[0]: Node {
             parameters:
-                fixed = (omnetpp::cValueMap)object: {moduleindex: 0, rndvalue: 44}
+                fixed = (omnetpp::cValueMap)map1: {moduleindex: 0, rndvalue: 44}
                 volatile_fixed = { moduleindex: ancestorIndex(0), rndvalue: intuniform(0, 100) }
-                defaultval = (omnetpp::cValueMap)object: {moduleindex: 0, rndvalue: 47}
+                defaultval = (omnetpp::cValueMap)map2: {moduleindex: 0, rndvalue: 47}
                 volatile_defaultval = { moduleindex: ancestorIndex(0), rndvalue: intuniform(0, 100) }
-                fromned_nodef = (omnetpp::cValueMap)object: {moduleindex: 0, rndvalue: 64}
-                fromned_wdef = (omnetpp::cValueMap)object: {moduleindex: 0, rndvalue: 67}
+                fromned_nodef = (omnetpp::cValueMap)map3: {moduleindex: 0, rndvalue: 64}
+                fromned_wdef = (omnetpp::cValueMap)map4: {moduleindex: 0, rndvalue: 67}
                 volatile_fromned_nodef = { moduleindex: index, rndvalue: intuniform(0, 100) }
                 volatile_fromned_wdef = { moduleindex: index, rndvalue: intuniform(0, 100) }
-                fromini_nodef = (omnetpp::cValueMap)object: {moduleindex: 0, rndvalue: 67}
-                fromini_wdef = (omnetpp::cValueMap)object: {moduleindex: 0, rndvalue: 9}
+                fromini_nodef = (omnetpp::cValueMap)map5: {moduleindex: 0, rndvalue: 67}
+                fromini_wdef = (omnetpp::cValueMap)map6: {moduleindex: 0, rndvalue: 9}
                 volatile_fromini_nodef = { moduleindex: index, rndvalue: intuniform(0, 100) }
                 volatile_fromini_wdef = { moduleindex: index, rndvalue: intuniform(0, 100) }
         }
         module Test.node[1]: Node {
             parameters:
-                fixed = (omnetpp::cValueMap)object: {moduleindex: 1, rndvalue: 83}
+                fixed = (omnetpp::cValueMap)map7: {moduleindex: 1, rndvalue: 83}
                 volatile_fixed = { moduleindex: ancestorIndex(0), rndvalue: intuniform(0, 100) }
-                defaultval = (omnetpp::cValueMap)object: {moduleindex: 1, rndvalue: 21}
+                defaultval = (omnetpp::cValueMap)map8: {moduleindex: 1, rndvalue: 21}
                 volatile_defaultval = { moduleindex: ancestorIndex(0), rndvalue: intuniform(0, 100) }
-                fromned_nodef = (omnetpp::cValueMap)object: {moduleindex: 1, rndvalue: 36}
-                fromned_wdef = (omnetpp::cValueMap)object: {moduleindex: 1, rndvalue: 87}
+                fromned_nodef = (omnetpp::cValueMap)map9: {moduleindex: 1, rndvalue: 36}
+                fromned_wdef = (omnetpp::cValueMap)map10: {moduleindex: 1, rndvalue: 87}
                 volatile_fromned_nodef = { moduleindex: index, rndvalue: intuniform(0, 100) }
                 volatile_fromned_wdef = { moduleindex: index, rndvalue: intuniform(0, 100) }
-                fromini_nodef = (omnetpp::cValueMap)object: {moduleindex: 1, rndvalue: 70}
-                fromini_wdef = (omnetpp::cValueMap)object: {moduleindex: 1, rndvalue: 88}
+                fromini_nodef = (omnetpp::cValueMap)map11: {moduleindex: 1, rndvalue: 70}
+                fromini_wdef = (omnetpp::cValueMap)map12: {moduleindex: 1, rndvalue: 88}
                 volatile_fromini_nodef = { moduleindex: index, rndvalue: intuniform(0, 100) }
                 volatile_fromini_wdef = { moduleindex: index, rndvalue: intuniform(0, 100) }
         }
         module Test.node[2]: Node {
             parameters:
-                fixed = (omnetpp::cValueMap)object: {moduleindex: 2, rndvalue: 88}
+                fixed = (omnetpp::cValueMap)map13: {moduleindex: 2, rndvalue: 88}
                 volatile_fixed = { moduleindex: ancestorIndex(0), rndvalue: intuniform(0, 100) }
-                defaultval = (omnetpp::cValueMap)object: {moduleindex: 2, rndvalue: 12}
+                defaultval = (omnetpp::cValueMap)map14: {moduleindex: 2, rndvalue: 12}
                 volatile_defaultval = { moduleindex: ancestorIndex(0), rndvalue: intuniform(0, 100) }
-                fromned_nodef = (omnetpp::cValueMap)object: {moduleindex: 2, rndvalue: 58}
-                fromned_wdef = (omnetpp::cValueMap)object: {moduleindex: 2, rndvalue: 65}
+                fromned_nodef = (omnetpp::cValueMap)map15: {moduleindex: 2, rndvalue: 58}
+                fromned_wdef = (omnetpp::cValueMap)map16: {moduleindex: 2, rndvalue: 65}
                 volatile_fromned_nodef = { moduleindex: index, rndvalue: intuniform(0, 100) }
                 volatile_fromned_wdef = { moduleindex: index, rndvalue: intuniform(0, 100) }
-                fromini_nodef = (omnetpp::cValueMap)object: {moduleindex: 2, rndvalue: 39}
-                fromini_wdef = (omnetpp::cValueMap)object: {moduleindex: 2, rndvalue: 87}
+                fromini_nodef = (omnetpp::cValueMap)map17: {moduleindex: 2, rndvalue: 39}
+                fromini_wdef = (omnetpp::cValueMap)map18: {moduleindex: 2, rndvalue: 87}
                 volatile_fromini_nodef = { moduleindex: index, rndvalue: intuniform(0, 100) }
                 volatile_fromini_wdef = { moduleindex: index, rndvalue: intuniform(0, 100) }
         }

@@ -57,10 +57,10 @@ module Test: Test {
     parameters:
         @isNetwork
         a0 = (omnetpp::cMessage)hello: (new msg)
-        a1 = (NED_jsonparam_2::Data):
-        a2 = (NED_jsonparam_2::DataVector):
-        a3 = (NED_jsonparam_2::Messages):
-        a4 = (NED_jsonparam_2::Messages):
+        a1 = (NED_jsonparam_2::Data)obj2:
+        a2 = (NED_jsonparam_2::DataVector)obj3:
+        a3 = (NED_jsonparam_2::Messages)obj6:
+        a4 = (NED_jsonparam_2::Messages)obj8:
     submodules:
 }
 

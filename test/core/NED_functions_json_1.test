@@ -50,12 +50,12 @@ module Test: Test {
         @isNetwork
         foo = 20
         hello = "Hello world"
-        readJSON = (omnetpp::cValueMap)object: {bool: [true, false], double: [123.44, -1.33e-06, nan, inf, -inf], int: [42, -32], string: ["Las Vegas", "Los Angeles", "[{(',\")}]", "'\"\t\f\n"]}
-        parseJSON1 = (omnetpp::cValueMap)object: {bool: [true, false], double: [123.44, -1.33e-06, nan, inf, -inf], int: [42, -32], string: ["Las Vegas", "Los Angeles", "[{(',\")}]", "'\"\t\f\n"]}
-        parseJSON2 = (omnetpp::cValueArray)array: [{bar: 2, foo: 1}, true, false, 42, -32, -1.33e-06, "Las Vegas", "Los Angeles"]
-        readExtendedJSON = (omnetpp::cValueMap)object: {a: [2, inf, nan, 44], b: true, c: 42, d: "Hello world!", e: (new msg)}
-        parseExtendedJSON1 = (omnetpp::cValueMap)object: {a: [2, inf, nan, 47], b: true, c: 42, d: "Hello world!", e: (new msg)}
-        parseExtendedJSON2 = (omnetpp::cValueArray)array: [{bar: inf, foo: 2}, 42, "Hello world!"]
+        readJSON = (omnetpp::cValueMap)map1: {bool: [true, false], double: [123.44, -1.33e-06, nan, inf, -inf], int: [42, -32], string: ["Las Vegas", "Los Angeles", "[{(',\")}]", "'\"\t\f\n"]}
+        parseJSON1 = (omnetpp::cValueMap)map2: {bool: [true, false], double: [123.44, -1.33e-06, nan, inf, -inf], int: [42, -32], string: ["Las Vegas", "Los Angeles", "[{(',\")}]", "'\"\t\f\n"]}
+        parseJSON2 = (omnetpp::cValueArray)array9: [{bar: 2, foo: 1}, true, false, 42, -32, -1.33e-06, "Las Vegas", "Los Angeles"]
+        readExtendedJSON = (omnetpp::cValueMap)map4: {a: [2, inf, nan, 44], b: true, c: 42, d: "Hello world!", e: (new msg)}
+        parseExtendedJSON1 = (omnetpp::cValueMap)map5: {a: [2, inf, nan, 47], b: true, c: 42, d: "Hello world!", e: (new msg)}
+        parseExtendedJSON2 = (omnetpp::cValueArray)array12: [{bar: inf, foo: 2}, 42, "Hello world!"]
     submodules:
 }
 

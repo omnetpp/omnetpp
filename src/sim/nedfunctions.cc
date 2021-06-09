@@ -1059,10 +1059,11 @@ cValue nedf_parseCSV(cExpression::Context *context, cValue argv[], int argc)
 {
     const char *str = argv[0].stringValue();
     cValueArray *rows = new cValueArray();
+    int rowNum = 0;
     for (std::string line : opp_split(str, "\n")) {
         if (opp_isblank(line.c_str()) || line.c_str()[0] == '#')
             continue;
-        cValueArray *row = new cValueArray();
+        cValueArray *row = new cValueArray(opp_stringf("row%d", ++rowNum).c_str());
         StringTokenizer tokenizer(line.c_str(), ",", StringTokenizer::HONOR_QUOTES | StringTokenizer::KEEP_EMPTY);
         while (tokenizer.hasMoreTokens()) {
             const char *item = tokenizer.nextToken();
@@ -1085,10 +1086,11 @@ cValue nedf_parseExtendedCSV(cExpression::Context *context, cValue argv[], int a
 {
     const char *str = argv[0].stringValue();
     cValueArray *rows = new cValueArray();
+    int rowNum = 0;
     for (std::string line : opp_split(str, "\n")) {
         if (opp_isblank(line.c_str()) || line.c_str()[0] == '#')
             continue;
-        cValueArray *row = new cValueArray();
+        cValueArray *row = new cValueArray(opp_stringf("row%d", ++rowNum).c_str());
         StringTokenizer tokenizer(line.c_str(), ",", StringTokenizer::HONOR_QUOTES | StringTokenizer::HONOR_PARENS | StringTokenizer::KEEP_EMPTY);
         while (tokenizer.hasMoreTokens()) {
             const char *item = tokenizer.nextToken();

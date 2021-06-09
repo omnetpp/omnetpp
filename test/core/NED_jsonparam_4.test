@@ -56,7 +56,7 @@ network Test {
 module Test: Test {
     parameters:
         @isNetwork
-        trail = (NED_jsonparam_4::Trail):  (1,5) (2,6) (3,7) (4,8)
+        trail = (NED_jsonparam_4::Trail)obj1:  (1,5) (2,6) (3,7) (4,8)
     submodules:
 }
 
