@@ -448,11 +448,15 @@ ExprValue CompareNode::evaluate(Context *context) const
     ExprValue rightValue = child2->tryEvaluate(context);
     if (leftValue.type == ExprValue::UNDEF || rightValue.type == ExprValue::UNDEF)
         return ExprValue();
+    double diff = compare(leftValue, rightValue);
+    return compute(diff);
+}
 
-    double diff;
+double CompareNode::compare(ExprValue& leftValue, ExprValue& rightValue) const
+{
     if (leftValue.type==ExprValue::INT && rightValue.type==ExprValue::INT) {
         bringToCommonTypeAndUnit(rightValue, leftValue);
-        diff = leftValue.intv - rightValue.intv;
+        return leftValue.intv - rightValue.intv;
     }
     else if (leftValue.type==ExprValue::DOUBLE || rightValue.type==ExprValue::DOUBLE) {
         leftValue.convertToDouble();
@@ -461,16 +465,14 @@ ExprValue CompareNode::evaluate(Context *context) const
         // Notes:
         // 1. diff type is double so we can return nan if either is nan
         // 2.leftVal==rightVal part is to make inf==inf return 0 (=equals)
-        diff = leftValue.dbl == rightValue.dbl ? 0 : leftValue.dbl - rightValue.dbl;
+        return leftValue.dbl == rightValue.dbl ? 0 : leftValue.dbl - rightValue.dbl;
     }
     else if (leftValue.type==ExprValue::STRING && rightValue.type==ExprValue::STRING)
-        diff = strcmp(leftValue.s, rightValue.s);
+        return strcmp(leftValue.s, rightValue.s);
     else if (leftValue.type==ExprValue::BOOL && rightValue.type==ExprValue::BOOL)
-        diff = (int)leftValue.bl - (int)rightValue.bl;
+        return (int)leftValue.bl - (int)rightValue.bl;
     else
         throw opp_runtime_error("Wrong argument type for '%s'", getName().c_str());
-
-    return compute(diff);
 }
 
 ExprValue MatchNode::evaluate(Context *context) const

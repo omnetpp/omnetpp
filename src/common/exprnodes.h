@@ -261,6 +261,7 @@ public:
 
 class COMMON_API CompareNode : public BinaryOperatorNode {
 protected:
+    virtual double compare(ExprValue& left, ExprValue& right) const;
     virtual ExprValue compute(double diff) const = 0;
     virtual ExprValue evaluate(Context *context) const override;
 };
