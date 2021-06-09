@@ -471,8 +471,15 @@ double CompareNode::compare(ExprValue& leftValue, ExprValue& rightValue) const
         return strcmp(leftValue.s, rightValue.s);
     else if (leftValue.type==ExprValue::BOOL && rightValue.type==ExprValue::BOOL)
         return (int)leftValue.bl - (int)rightValue.bl;
+    else if (leftValue.type==ExprValue::OBJECT && rightValue.type==ExprValue::OBJECT) {
+        if (!dynamic_cast<const EqualNode*>(this) && !dynamic_cast<const NotEqualNode*>(this))
+            throw opp_runtime_error("Arguments of type 'object' may only be compared for equality");
+        return leftValue.obj == rightValue.obj ? 0 : std::nan("");
+    }
     else
-        throw opp_runtime_error("Wrong argument type for '%s'", getName().c_str());
+        throw opp_runtime_error("Mismatching argument types '%s' vs '%s'",
+                                ExprValue::getTypeName(leftValue.getType()),
+                                ExprValue::getTypeName(rightValue.getType()));
 }
 
 ExprValue MatchNode::evaluate(Context *context) const

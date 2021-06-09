@@ -1,0 +1,359 @@
+%description:
+Test the relational operators for all datatypes incl objects.
+
+%global:
+
+void test(const std::string& expr)
+{
+    cDynamicExpression e;
+    e.parse(expr.c_str());
+    std::string result;
+    try {
+        cValue v = e.evaluate();
+        result = v.str();
+    } catch (std::exception& e) {
+        result = e.what();
+    }
+    EV << expr << " ==> " << result << "\n";
+}
+
+auto ops = { "==", "!=", "< ", "> ", "<=", ">=", "<=>" };
+
+void testOps(const std::string& a, const std::string& b)
+{
+    for (auto op : ops)
+        test(a + " " + op + " " + b);
+    EV << endl;
+}
+
+void testBothWays(const std::string& a, const std::string& b)
+{
+    testOps(a, b);
+    testOps(b, a);
+}
+
+void testCombinations(const std::initializer_list<const char *>& values)
+{
+    for (auto a : values)
+        for (auto b : values)
+            testOps(a, b);
+}
+
+%activity:
+EV << "homogenous:\n\n";
+testCombinations( { "true", "false"} );
+testCombinations( { "1", "2" } );
+testCombinations( { "1.0", "2.0" } );
+testCombinations( { "'foo'", "'bar'" } );
+testCombinations( { "[1,2]", "[2,3]" } );
+testCombinations( { "[1,2]", "nullptr" } );
+
+EV << "int->double promotion:\n\n";
+testBothWays( "1", "1.0" );
+testBothWays( "1", "2.0" );
+
+EV << "mismatched types:\n\n";
+testBothWays( "1", "true" );
+testBothWays( "1", "'foo'" );
+testBothWays( "1", "nullptr" );
+testBothWays( "[1,2]", "'foo'" );
+
+EV << ".\n";
+
+%contains: stdout
+homogenous:
+
+true == true ==> true
+true != true ==> false
+true <  true ==> false
+true >  true ==> false
+true <= true ==> true
+true >= true ==> true
+true <=> true ==> 0
+
+true == false ==> false
+true != false ==> true
+true <  false ==> false
+true >  false ==> true
+true <= false ==> false
+true >= false ==> true
+true <=> false ==> 1
+
+false == true ==> false
+false != true ==> true
+false <  true ==> true
+false >  true ==> false
+false <= true ==> true
+false >= true ==> false
+false <=> true ==> -1
+
+false == false ==> true
+false != false ==> false
+false <  false ==> false
+false >  false ==> false
+false <= false ==> true
+false >= false ==> true
+false <=> false ==> 0
+
+1 == 1 ==> true
+1 != 1 ==> false
+1 <  1 ==> false
+1 >  1 ==> false
+1 <= 1 ==> true
+1 >= 1 ==> true
+1 <=> 1 ==> 0
+
+1 == 2 ==> false
+1 != 2 ==> true
+1 <  2 ==> true
+1 >  2 ==> false
+1 <= 2 ==> true
+1 >= 2 ==> false
+1 <=> 2 ==> -1
+
+2 == 1 ==> false
+2 != 1 ==> true
+2 <  1 ==> false
+2 >  1 ==> true
+2 <= 1 ==> false
+2 >= 1 ==> true
+2 <=> 1 ==> 1
+
+2 == 2 ==> true
+2 != 2 ==> false
+2 <  2 ==> false
+2 >  2 ==> false
+2 <= 2 ==> true
+2 >= 2 ==> true
+2 <=> 2 ==> 0
+
+1.0 == 1.0 ==> true
+1.0 != 1.0 ==> false
+1.0 <  1.0 ==> false
+1.0 >  1.0 ==> false
+1.0 <= 1.0 ==> true
+1.0 >= 1.0 ==> true
+1.0 <=> 1.0 ==> 0
+
+1.0 == 2.0 ==> false
+1.0 != 2.0 ==> true
+1.0 <  2.0 ==> true
+1.0 >  2.0 ==> false
+1.0 <= 2.0 ==> true
+1.0 >= 2.0 ==> false
+1.0 <=> 2.0 ==> -1
+
+2.0 == 1.0 ==> false
+2.0 != 1.0 ==> true
+2.0 <  1.0 ==> false
+2.0 >  1.0 ==> true
+2.0 <= 1.0 ==> false
+2.0 >= 1.0 ==> true
+2.0 <=> 1.0 ==> 1
+
+2.0 == 2.0 ==> true
+2.0 != 2.0 ==> false
+2.0 <  2.0 ==> false
+2.0 >  2.0 ==> false
+2.0 <= 2.0 ==> true
+2.0 >= 2.0 ==> true
+2.0 <=> 2.0 ==> 0
+
+'foo' == 'foo' ==> true
+'foo' != 'foo' ==> false
+'foo' <  'foo' ==> false
+'foo' >  'foo' ==> false
+'foo' <= 'foo' ==> true
+'foo' >= 'foo' ==> true
+'foo' <=> 'foo' ==> 0
+
+'foo' == 'bar' ==> false
+'foo' != 'bar' ==> true
+'foo' <  'bar' ==> false
+'foo' >  'bar' ==> true
+'foo' <= 'bar' ==> false
+'foo' >= 'bar' ==> true
+'foo' <=> 'bar' ==> 1
+
+'bar' == 'foo' ==> false
+'bar' != 'foo' ==> true
+'bar' <  'foo' ==> true
+'bar' >  'foo' ==> false
+'bar' <= 'foo' ==> true
+'bar' >= 'foo' ==> false
+'bar' <=> 'foo' ==> -1
+
+'bar' == 'bar' ==> true
+'bar' != 'bar' ==> false
+'bar' <  'bar' ==> false
+'bar' >  'bar' ==> false
+'bar' <= 'bar' ==> true
+'bar' >= 'bar' ==> true
+'bar' <=> 'bar' ==> 0
+
+[1,2] == [1,2] ==> false
+[1,2] != [1,2] ==> true
+[1,2] <  [1,2] ==> operator '<': Arguments of type 'object' may only be compared for equality
+[1,2] >  [1,2] ==> operator '>': Arguments of type 'object' may only be compared for equality
+[1,2] <= [1,2] ==> operator '<=': Arguments of type 'object' may only be compared for equality
+[1,2] >= [1,2] ==> operator '>=': Arguments of type 'object' may only be compared for equality
+[1,2] <=> [1,2] ==> operator '<=>': Arguments of type 'object' may only be compared for equality
+
+[1,2] == [2,3] ==> false
+[1,2] != [2,3] ==> true
+[1,2] <  [2,3] ==> operator '<': Arguments of type 'object' may only be compared for equality
+[1,2] >  [2,3] ==> operator '>': Arguments of type 'object' may only be compared for equality
+[1,2] <= [2,3] ==> operator '<=': Arguments of type 'object' may only be compared for equality
+[1,2] >= [2,3] ==> operator '>=': Arguments of type 'object' may only be compared for equality
+[1,2] <=> [2,3] ==> operator '<=>': Arguments of type 'object' may only be compared for equality
+
+[2,3] == [1,2] ==> false
+[2,3] != [1,2] ==> true
+[2,3] <  [1,2] ==> operator '<': Arguments of type 'object' may only be compared for equality
+[2,3] >  [1,2] ==> operator '>': Arguments of type 'object' may only be compared for equality
+[2,3] <= [1,2] ==> operator '<=': Arguments of type 'object' may only be compared for equality
+[2,3] >= [1,2] ==> operator '>=': Arguments of type 'object' may only be compared for equality
+[2,3] <=> [1,2] ==> operator '<=>': Arguments of type 'object' may only be compared for equality
+
+[2,3] == [2,3] ==> false
+[2,3] != [2,3] ==> true
+[2,3] <  [2,3] ==> operator '<': Arguments of type 'object' may only be compared for equality
+[2,3] >  [2,3] ==> operator '>': Arguments of type 'object' may only be compared for equality
+[2,3] <= [2,3] ==> operator '<=': Arguments of type 'object' may only be compared for equality
+[2,3] >= [2,3] ==> operator '>=': Arguments of type 'object' may only be compared for equality
+[2,3] <=> [2,3] ==> operator '<=>': Arguments of type 'object' may only be compared for equality
+
+[1,2] == [1,2] ==> false
+[1,2] != [1,2] ==> true
+[1,2] <  [1,2] ==> operator '<': Arguments of type 'object' may only be compared for equality
+[1,2] >  [1,2] ==> operator '>': Arguments of type 'object' may only be compared for equality
+[1,2] <= [1,2] ==> operator '<=': Arguments of type 'object' may only be compared for equality
+[1,2] >= [1,2] ==> operator '>=': Arguments of type 'object' may only be compared for equality
+[1,2] <=> [1,2] ==> operator '<=>': Arguments of type 'object' may only be compared for equality
+
+[1,2] == nullptr ==> false
+[1,2] != nullptr ==> true
+[1,2] <  nullptr ==> operator '<': Arguments of type 'object' may only be compared for equality
+[1,2] >  nullptr ==> operator '>': Arguments of type 'object' may only be compared for equality
+[1,2] <= nullptr ==> operator '<=': Arguments of type 'object' may only be compared for equality
+[1,2] >= nullptr ==> operator '>=': Arguments of type 'object' may only be compared for equality
+[1,2] <=> nullptr ==> operator '<=>': Arguments of type 'object' may only be compared for equality
+
+nullptr == [1,2] ==> false
+nullptr != [1,2] ==> true
+nullptr <  [1,2] ==> operator '<': Arguments of type 'object' may only be compared for equality
+nullptr >  [1,2] ==> operator '>': Arguments of type 'object' may only be compared for equality
+nullptr <= [1,2] ==> operator '<=': Arguments of type 'object' may only be compared for equality
+nullptr >= [1,2] ==> operator '>=': Arguments of type 'object' may only be compared for equality
+nullptr <=> [1,2] ==> operator '<=>': Arguments of type 'object' may only be compared for equality
+
+nullptr == nullptr ==> true
+nullptr != nullptr ==> false
+nullptr <  nullptr ==> operator '<': Arguments of type 'object' may only be compared for equality
+nullptr >  nullptr ==> operator '>': Arguments of type 'object' may only be compared for equality
+nullptr <= nullptr ==> operator '<=': Arguments of type 'object' may only be compared for equality
+nullptr >= nullptr ==> operator '>=': Arguments of type 'object' may only be compared for equality
+nullptr <=> nullptr ==> operator '<=>': Arguments of type 'object' may only be compared for equality
+
+int->double promotion:
+
+1 == 1.0 ==> true
+1 != 1.0 ==> false
+1 <  1.0 ==> false
+1 >  1.0 ==> false
+1 <= 1.0 ==> true
+1 >= 1.0 ==> true
+1 <=> 1.0 ==> 0
+
+1.0 == 1 ==> true
+1.0 != 1 ==> false
+1.0 <  1 ==> false
+1.0 >  1 ==> false
+1.0 <= 1 ==> true
+1.0 >= 1 ==> true
+1.0 <=> 1 ==> 0
+
+1 == 2.0 ==> false
+1 != 2.0 ==> true
+1 <  2.0 ==> true
+1 >  2.0 ==> false
+1 <= 2.0 ==> true
+1 >= 2.0 ==> false
+1 <=> 2.0 ==> -1
+
+2.0 == 1 ==> false
+2.0 != 1 ==> true
+2.0 <  1 ==> false
+2.0 >  1 ==> true
+2.0 <= 1 ==> false
+2.0 >= 1 ==> true
+2.0 <=> 1 ==> 1
+
+mismatched types:
+
+1 == true ==> operator '==': Mismatching argument types 'integer' vs 'bool'
+1 != true ==> operator '!=': Mismatching argument types 'integer' vs 'bool'
+1 <  true ==> operator '<': Mismatching argument types 'integer' vs 'bool'
+1 >  true ==> operator '>': Mismatching argument types 'integer' vs 'bool'
+1 <= true ==> operator '<=': Mismatching argument types 'integer' vs 'bool'
+1 >= true ==> operator '>=': Mismatching argument types 'integer' vs 'bool'
+1 <=> true ==> operator '<=>': Mismatching argument types 'integer' vs 'bool'
+
+true == 1 ==> operator '==': Mismatching argument types 'bool' vs 'integer'
+true != 1 ==> operator '!=': Mismatching argument types 'bool' vs 'integer'
+true <  1 ==> operator '<': Mismatching argument types 'bool' vs 'integer'
+true >  1 ==> operator '>': Mismatching argument types 'bool' vs 'integer'
+true <= 1 ==> operator '<=': Mismatching argument types 'bool' vs 'integer'
+true >= 1 ==> operator '>=': Mismatching argument types 'bool' vs 'integer'
+true <=> 1 ==> operator '<=>': Mismatching argument types 'bool' vs 'integer'
+
+1 == 'foo' ==> operator '==': Mismatching argument types 'integer' vs 'string'
+1 != 'foo' ==> operator '!=': Mismatching argument types 'integer' vs 'string'
+1 <  'foo' ==> operator '<': Mismatching argument types 'integer' vs 'string'
+1 >  'foo' ==> operator '>': Mismatching argument types 'integer' vs 'string'
+1 <= 'foo' ==> operator '<=': Mismatching argument types 'integer' vs 'string'
+1 >= 'foo' ==> operator '>=': Mismatching argument types 'integer' vs 'string'
+1 <=> 'foo' ==> operator '<=>': Mismatching argument types 'integer' vs 'string'
+
+'foo' == 1 ==> operator '==': Mismatching argument types 'string' vs 'integer'
+'foo' != 1 ==> operator '!=': Mismatching argument types 'string' vs 'integer'
+'foo' <  1 ==> operator '<': Mismatching argument types 'string' vs 'integer'
+'foo' >  1 ==> operator '>': Mismatching argument types 'string' vs 'integer'
+'foo' <= 1 ==> operator '<=': Mismatching argument types 'string' vs 'integer'
+'foo' >= 1 ==> operator '>=': Mismatching argument types 'string' vs 'integer'
+'foo' <=> 1 ==> operator '<=>': Mismatching argument types 'string' vs 'integer'
+
+1 == nullptr ==> operator '==': Mismatching argument types 'integer' vs 'object'
+1 != nullptr ==> operator '!=': Mismatching argument types 'integer' vs 'object'
+1 <  nullptr ==> operator '<': Mismatching argument types 'integer' vs 'object'
+1 >  nullptr ==> operator '>': Mismatching argument types 'integer' vs 'object'
+1 <= nullptr ==> operator '<=': Mismatching argument types 'integer' vs 'object'
+1 >= nullptr ==> operator '>=': Mismatching argument types 'integer' vs 'object'
+1 <=> nullptr ==> operator '<=>': Mismatching argument types 'integer' vs 'object'
+
+nullptr == 1 ==> operator '==': Mismatching argument types 'object' vs 'integer'
+nullptr != 1 ==> operator '!=': Mismatching argument types 'object' vs 'integer'
+nullptr <  1 ==> operator '<': Mismatching argument types 'object' vs 'integer'
+nullptr >  1 ==> operator '>': Mismatching argument types 'object' vs 'integer'
+nullptr <= 1 ==> operator '<=': Mismatching argument types 'object' vs 'integer'
+nullptr >= 1 ==> operator '>=': Mismatching argument types 'object' vs 'integer'
+nullptr <=> 1 ==> operator '<=>': Mismatching argument types 'object' vs 'integer'
+
+[1,2] == 'foo' ==> operator '==': Mismatching argument types 'object' vs 'string'
+[1,2] != 'foo' ==> operator '!=': Mismatching argument types 'object' vs 'string'
+[1,2] <  'foo' ==> operator '<': Mismatching argument types 'object' vs 'string'
+[1,2] >  'foo' ==> operator '>': Mismatching argument types 'object' vs 'string'
+[1,2] <= 'foo' ==> operator '<=': Mismatching argument types 'object' vs 'string'
+[1,2] >= 'foo' ==> operator '>=': Mismatching argument types 'object' vs 'string'
+[1,2] <=> 'foo' ==> operator '<=>': Mismatching argument types 'object' vs 'string'
+
+'foo' == [1,2] ==> operator '==': Mismatching argument types 'string' vs 'object'
+'foo' != [1,2] ==> operator '!=': Mismatching argument types 'string' vs 'object'
+'foo' <  [1,2] ==> operator '<': Mismatching argument types 'string' vs 'object'
+'foo' >  [1,2] ==> operator '>': Mismatching argument types 'string' vs 'object'
+'foo' <= [1,2] ==> operator '<=': Mismatching argument types 'string' vs 'object'
+'foo' >= [1,2] ==> operator '>=': Mismatching argument types 'string' vs 'object'
+'foo' <=> [1,2] ==> operator '<=>': Mismatching argument types 'string' vs 'object'
+
+.
+
