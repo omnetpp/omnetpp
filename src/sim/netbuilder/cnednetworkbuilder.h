@@ -84,8 +84,8 @@ class SIM_API cNedNetworkBuilder
     void doAssignParameterFromPattern(cPar& par, ParamElement *patternNode, cComponent *evalContext);
     static cPar::Type translateParamType(int t);
     static cGate::Type translateGateType(int t);
-    void doParams(cComponent *component, ParametersElement *paramsNode, bool isSubcomponent);
-    void doParam(cComponent *component, ParamElement *paramNode, bool isSubcomponent);
+    void doParams(cComponent *component, ParametersElement *paramsNode, bool isSubcomponent, bool isParametricSubcomponent);
+    void doParam(cComponent *component, ParamElement *paramNode, bool isSubcomponent, bool isParametricSubcomponent);
     void doGates(cModule *component, GatesElement *gatesNode);
     void doGate(cModule *component, GateElement *gateNode);
     void doGateSizes(cModule *component, GatesElement *gatesNode);

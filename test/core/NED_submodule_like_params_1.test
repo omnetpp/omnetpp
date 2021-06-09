@@ -1,0 +1,59 @@
+%description:
+Test that in a submodule block for a "like" submodule, assignments
+for extra parameters (those that the interface doesn't have)
+are accepted, and simply ignored if the actual submodule doesn't
+have such parameter.
+
+%file: test.ned
+
+import testlib.Dump;
+
+moduleinterface IModule
+{
+    parameters:
+        int par;
+}
+
+module Foo like IModule
+{
+    parameters:
+        int par;
+        int extraPar;
+}
+
+module Bar like IModule
+{
+    parameters:
+        int par;
+}
+
+network Test
+{
+    submodules:
+        foo : <default("Foo")> like IModule {
+            par = 1;
+            extraPar = 2;  // accepted
+        }
+        bar : <default("Bar")> like IModule {
+            par = 3;
+            extraPar = 4;  // Bar has no such parameter ==> ignored
+        }
+        dump : Dump;
+}
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+    submodules:
+        module Test.foo: Foo {
+            parameters:
+                par = 1
+                extraPar = 2
+        }
+        module Test.bar: Bar {
+            parameters:
+                par = 3
+        }
+}
+

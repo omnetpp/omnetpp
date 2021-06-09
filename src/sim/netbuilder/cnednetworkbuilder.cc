@@ -129,7 +129,7 @@ void cNedNetworkBuilder::doAddParametersAndGatesTo(cComponent *component, cNedDe
     ParametersElement *paramsNode = decl->getParametersElement();
     if (paramsNode) {
         currentDecl = decl;  // switch "context"
-        doParams(component, paramsNode, false);
+        doParams(component, paramsNode, false, false);
     }
 
     // add this decl's gates (if there are any)
@@ -159,16 +159,15 @@ cGate::Type cNedNetworkBuilder::translateGateType(int t)
            (cGate::Type)-1;
 }
 
-void cNedNetworkBuilder::doParams(cComponent *component, ParametersElement *paramsNode, bool isSubcomponent)
+void cNedNetworkBuilder::doParams(cComponent *component, ParametersElement *paramsNode, bool isSubcomponent, bool isParametricSubcomponent)
 {
     ASSERT(paramsNode != nullptr);
     for (ParamElement *paramNode = paramsNode->getFirstParamChild(); paramNode; paramNode = paramNode->getNextParamSibling())
         if (!paramNode->getIsPattern())
-            doParam(component, paramNode, isSubcomponent);
-
+            doParam(component, paramNode, isSubcomponent, isParametricSubcomponent);
 }
 
-void cNedNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode, bool isSubcomponent)
+void cNedNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode, bool isSubcomponent, bool isParametricSubcomponent)
 {
     ASSERT(!paramNode->getIsPattern());  // we only deal with non-pattern assignments
 
@@ -181,6 +180,12 @@ void cNedNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
         bool isNewParam = paramNode->getType() != PARTYPE_NONE;
         if (isNewParam && isSubcomponent)
             throw cRuntimeError(component, "Cannot add new parameter '%s' in a submodule or connection", paramName); // this error is normally discovered already during NED validation
+
+        // if a "like"-submodule (or channel) contains a NED parameter assignment and the submodule
+        // doesn't actually have such parameter, ignore it (do not raise an error). It is possibly
+        // for another NED type that implements the same module interface -- there's no way to know.
+        if (isSubcomponent && isParametricSubcomponent && !component->hasPar(paramName))
+            return;
 
         // try to find an impl object with this value; we'll reuse it to optimize memory consumption
         cParImpl *impl = currentDecl->getSharedParImplFor(paramNode);
@@ -863,8 +868,11 @@ void cNedNetworkBuilder::addSubmodule(cModule *compoundModule, SubmoduleElement 
 void cNedNetworkBuilder::assignSubcomponentParams(cComponent *subcomponent, NedElement *subcomponentNode)
 {
     ParametersElement *paramsNode = (ParametersElement *)subcomponentNode->getFirstChildWithTag(NED_PARAMETERS);
-    if (paramsNode)
-        doParams(subcomponent, paramsNode, true);
+    if (paramsNode) {
+        const char *likeType = subcomponentNode->getAttribute("like-type");
+        bool isParametricSubcomponent = !opp_isempty(likeType);
+        doParams(subcomponent, paramsNode, true, isParametricSubcomponent);
+    }
 }
 
 void cNedNetworkBuilder::setupSubmoduleGateVectors(cModule *submodule, NedElement *submoduleNode)
