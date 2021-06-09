@@ -35,6 +35,7 @@
 #include <QtWidgets/QCheckBox>
 #include <QtGui/QFontDatabase>
 #include <QtCore/QThread>
+#include <QtCore/QEventLoop>
 #include <QtGui/QPainter>
 
 #include "common/stringutil.h"
@@ -654,6 +655,8 @@ void Qtenv::doRun()
         TransformProcessType(&psn, kProcessTransformToForegroundApplication);
 #endif
 
+        pauseEventLoop = new QEventLoop(app);
+
         globalPrefs = new QSettings(QDir::homePath() + "/.qtenvrc", QSettings::IniFormat);
         checkQSettingsStatus(globalPrefs);
         localPrefs = new QSettings(".qtenvrc", QSettings::IniFormat);
@@ -779,6 +782,9 @@ void Qtenv::doRun()
     delete localPrefs;
     localPrefs = nullptr;
 
+    delete pauseEventLoop;
+    pauseEventLoop = nullptr;
+
     delete app;
     app = nullptr;
 }
@@ -805,7 +811,8 @@ void Qtenv::rebuildSim()
 void Qtenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg, cModule *until_module,
                           bool stopOnMsgCancel)
 {
-    ASSERT(simulationState == SIM_NEW || simulationState == SIM_READY);
+    if (!isPaused())
+        ASSERT(simulationState == SIM_NEW || simulationState == SIM_READY);
 
     setSimulationRunMode(mode);
 
@@ -818,6 +825,11 @@ void Qtenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t unti
     stopSimulationFlag = false;
     simulationState = SIM_RUNNING;
     // if there's some animating to do before the event, only do that if stepping.
+
+    if (isPaused()) {
+        requestQuitFromPausePointEventLoop(mode);
+        return;
+    }
 
     doNextEventInStep = getSimulation()->isTrapOnNextEventRequested() || displayUpdateController->rightBeforeEvent();
 
@@ -986,6 +998,7 @@ bool Qtenv::doRunSimulation()
         sim->executeEvent(event);
 
         inspectorsFresh = false;
+        pausePointNumber = 0;
 
         if (animating)
             performHoldAnimations();
@@ -1060,6 +1073,7 @@ bool Qtenv::doRunSimulationExpress()
         speedometer.addEvent(getSimulation()->getSimTime());
 
         getSimulation()->executeEvent(event);
+        pausePointNumber = 0;
 
         // only on every 256. event to make it fast
         if ((getSimulation()->getEventNumber() & 0xff) == 0) {
@@ -1148,17 +1162,23 @@ void Qtenv::finishSimulation()
 
 bool Qtenv::checkRunning()
 {
+    const char *warningText = nullptr;
+
     if (getSimulationState() == Qtenv::SIM_RUNNING) {
-        QMessageBox::warning(mainWindow, tr("Warning"), tr("Sorry, you cannot do this while the simulation is running. Please stop it first."),
-                             QMessageBox::Ok);
+        if (getQtenv()->isPaused())
+            warningText = "The simulation is paused in the middle of an event -- press STOP to finish processing it.";
+        else
+            warningText = "Sorry, you cannot do this while the simulation is running. Please stop it first.";
+    }
+    if (getSimulationState() == Qtenv::SIM_BUSY)
+        warningText = "The simulation is waiting for external synchronization -- press STOP to interrupt it.";
+
+    if (warningText != nullptr) {
+        QMessageBox::warning(mainWindow, "Warning", warningText, QMessageBox::Ok);
         return true;
     }
-    if (getSimulationState() == Qtenv::SIM_BUSY) {
-        QMessageBox::warning(mainWindow, tr("Warning"), tr("The simulation is waiting for external synchronization -- press STOP to interrupt it."),
-                             QMessageBox::Ok);
-        return true;
-    }
-    return false;
+    else
+        return false;
 }
 
 std::vector<int> Qtenv::resolveRunFilter(const char *configName, const char *runFilter)
@@ -1765,6 +1785,37 @@ bool Qtenv::idle()
     simulationState = origsimstate;
 
     return stopSimulationFlag;
+}
+
+void Qtenv::pausePoint()
+{
+    ASSERT(!pauseEventLoop->isRunning());
+
+    if (runMode == RUNMODE_STEP && !stopSimulationFlag) {
+        ++pausePointNumber;
+        // pop out all the "play" buttons
+        mainWindow->setGuiForRunmode(RUNMODE_PAUSED);
+        updateSimtimeDisplay();
+        callRefreshInspectors();
+
+        // have to do it _before_ the blocking event loop,
+        // and this will also process GUI events anyway
+        performHoldAnimations();
+
+        displayUpdateController->pause();
+        pauseEventLoop->exec();
+        displayUpdateController->resume();
+
+        mainWindow->setGuiForRunmode(runMode);
+        updateSimtimeDisplay();
+    }
+}
+
+void Qtenv::requestQuitFromPausePointEventLoop(RunMode continueIn)
+{
+    ASSERT(pauseEventLoop->isRunning());
+    pauseEventLoop->quit();
+    runMode = continueIn;
 }
 
 bool Qtenv::ensureDebugger(cRuntimeError *error)

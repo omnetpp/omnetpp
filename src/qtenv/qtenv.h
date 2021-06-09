@@ -144,6 +144,9 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
       MainWindow *mainWindow = nullptr;
       std::string windowTitlePrefix;// contains "procId=.." when using parsim
 
+      QEventLoop *pauseEventLoop = nullptr; // has to be a pointer so it's not constructed unnecessarily. always exists, only started/stopped as needed
+      int pausePointNumber = 0;    // which "stop" are we within an event, incremented in pause(), reset after an event is done
+
       bool isConfigRun;            // true after newRun(), and false after newConfig()
       eState simulationState;      // state of the simulation run
       RunMode runMode = RUNMODE_NOT_RUNNING; // the current mode the simulation is executing under
@@ -264,6 +267,11 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
       virtual void refOsgNode(osg::Node *scene) override;
       virtual void unrefOsgNode(osg::Node *scene) override;
       virtual bool idle() override;
+
+      virtual void pausePoint() override;
+      virtual void requestQuitFromPausePointEventLoop(RunMode continueIn); // internal
+      virtual bool isPaused() { return pauseEventLoop->isRunning(); }
+      virtual int getPausePointNumber() { return pausePointNumber; }
 
       virtual bool ensureDebugger(cRuntimeError *error = nullptr) override;
 

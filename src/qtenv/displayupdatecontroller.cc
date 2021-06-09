@@ -211,6 +211,7 @@ void DisplayUpdateController::setRunMode(RunMode value)
             // express clears all animations anyway
             break;
         case RUNMODE_NORMAL:
+        case RUNMODE_PAUSED:
             // nothing to do
             break;
     }

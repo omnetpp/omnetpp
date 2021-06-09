@@ -265,14 +265,21 @@ void MainWindow::updateEventNumLabel()
             break;
     }
 
-    double showNextEvent = env->getDisplayUpdateController()->rightBeforeEvent() && env->getSimulationRunMode() == RUNMODE_NOT_RUNNING;
+    int pausePointNumber = env->getPausePointNumber();
+    bool paused = pausePointNumber > 0; // XXX: env->isPaused() might not be accurate yet
+    bool showNextEvent = env->getDisplayUpdateController()->rightBeforeEvent() && env->getSimulationRunMode() == RUNMODE_NOT_RUNNING;
 
     eventnumber_t numToShow = getSimulation()->getEventNumber() + (showNextEvent ? 1 : 0);
-    const char *prefix = showNextEvent ? "next: " : "last: ";
+    const char *prefix = paused ? "in: " : showNextEvent ? "next: " : "last: ";
+
     QString eventNumText = QString("<font color=grey><small>%1</small>#</font>").arg(prefix)
             + opp_formati64(numToShow, digitSeparator).c_str();
+
+    if (pausePointNumber > 0)
+        eventNumText += "/" + QString::number(pausePointNumber);
+
     eventNumLabel->setText(eventNumText);
-    eventNumLabel->setStyleSheet(showNextEvent ? "" : "QLabel { background: palette(alternate-base); }");
+    eventNumLabel->setStyleSheet(paused ? "QLabel { background: orange; }" : showNextEvent ? "" : "QLabel { background: palette(alternate-base); }");
 }
 
 void MainWindow::onEventNumLabelGroupingTriggered()
@@ -489,6 +496,11 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::runSimulation(RunMode runMode)
 {
+    if (getQtenv()->isPaused()) {
+        getQtenv()->requestQuitFromPausePointEventLoop(runMode);
+        return;
+    }
+
     if (isRunning()) {
         setGuiForRunmode(runMode);
         env->setSimulationRunMode(runMode);
@@ -508,6 +520,10 @@ void MainWindow::runSimulation(RunMode runMode)
 
 void MainWindow::stopSimulation()
 {
+    if (getQtenv()->isPaused())
+        getQtenv()->requestQuitFromPausePointEventLoop(RunMode::RUNMODE_NOT_RUNNING);
+        // no return here!
+
     // implements Simulate|Stop
     if (env->getSimulationState() == Qtenv::SIM_RUNNING || env->getSimulationState() == Qtenv::SIM_BUSY) {
         // This just *asks* the simulation to stop, causing it to break from the loop in env->runSimulation().
@@ -520,6 +536,11 @@ void MainWindow::stopSimulation()
 
 void MainWindow::stopOrRunSimulation(RunMode runMode)
 {
+    if (getQtenv()->isPaused()) {
+        getQtenv()->requestQuitFromPausePointEventLoop(runMode);
+        return;
+    }
+
     if (env->getSimulationRunMode() == runMode)
         stopSimulation();
     else
@@ -574,9 +595,12 @@ void MainWindow::on_actionRunUntil_triggered()
 
     bool untilMode = time.dbl() != 0 || event != 0 || msg != nullptr;
     if (isRunning()) {
-        setGuiForRunmode(runMode, untilMode);
+        // XXX: this would cause an assertion failure in DisplayUpdateController
+        //setGuiForRunmode(runMode, untilMode);
         getQtenv()->setSimulationRunMode(runMode);
         getQtenv()->setSimulationRunUntil(time, event, msg, stopOnMsgCancel);
+        if (getQtenv()->isPaused())
+            getQtenv()->requestQuitFromPausePointEventLoop(runMode);
     }
     else {
         if (!networkReady())
@@ -1005,9 +1029,14 @@ void MainWindow::on_actionDebugNextEvent_triggered()
 {
     // implements Simulate|Debug next event
 
-    if (isRunning())
-        QMessageBox::warning(this, tr("Error"), tr("Simulation is currently running -- please stop it first."),
-                QMessageBox::Ok);
+    if (isRunning()) {
+        if (env->isPaused())
+            QMessageBox::warning(this, "Error", "Simulation is paused in the middle of an event -- please press 'stop' first.",
+                    QMessageBox::Ok);
+        else
+            QMessageBox::warning(this, "Error", "Simulation is currently running -- please stop it first.",
+                    QMessageBox::Ok);
+    }
     else {
         if (!networkReady())
             return;
