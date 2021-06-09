@@ -599,6 +599,17 @@ void cSimulation::executeEvent(cEvent *event)
 {
 #ifndef NDEBUG
     checkActive();
+
+    // Sanity check to prevent reentrant event execution - which might
+    // happen for example in a faulty cEnvir::pausePoint() implementation.
+    static bool inExecuteEvent = false;
+    ASSERT(!inExecuteEvent);
+    inExecuteEvent = true;
+    struct ResetInExecEventFlag {
+        ~ResetInExecEventFlag() {
+            inExecuteEvent = false;
+        }
+    } flagResetter;
 #endif
 
     setContextType(CTX_EVENT);
