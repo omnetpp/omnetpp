@@ -1197,8 +1197,6 @@ std::string cNedNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *s
 
         // last, use default(expression) between angle braces from the NED file
         if (connectionNode->getIsDefault()) {
-            if (!opp_isempty(connectionNode->getLikeExpr()))
-                return parentmodp->par(connectionNode->getLikeExpr()).stringValue();
             ExprRef likeExpr(connectionNode, ConnectionElement::ATT_LIKE_EXPR);
             if (!likeExpr.empty())
                 return evaluateAsString(likeExpr, parentmodp);
