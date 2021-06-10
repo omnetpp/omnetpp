@@ -16,7 +16,7 @@ L=$(OMNETPP_LIB_DIR)
 # Rules
 #
 all: $(CONFIGFILE)
-	$(Q)echo "#!/bin/sh" >opp_configfilepath && echo 'echo $(dirname $$0)/../Makefile.inc' >>$(OMNETPP_BIN_DIR)/opp_configfilepath
+	$(Q)echo "#!/bin/sh" >$(OMNETPP_BIN_DIR)/opp_configfilepath && echo '(cd $$(dirname $$0)/.. && echo $$(pwd)/Makefile.inc)' >>$(OMNETPP_BIN_DIR)/opp_configfilepath
 	$(Q)cp opp_makemake $(OMNETPP_BIN_DIR)
 	$(Q)cp opp_featuretool $(OMNETPP_BIN_DIR)
 	$(Q)cp opp_charttool $(OMNETPP_BIN_DIR)
