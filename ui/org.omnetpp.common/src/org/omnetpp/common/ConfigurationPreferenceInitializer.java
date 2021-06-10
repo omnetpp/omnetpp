@@ -31,7 +31,8 @@ public class ConfigurationPreferenceInitializer extends AbstractPreferenceInitia
         store.setDefault(IConstants.PREF_GRAPHVIZ_DOT_EXECUTABLE, getGraphvizDotExecutableDefault());
         store.setDefault(IConstants.PREF_DOXYGEN_EXECUTABLE, getDoxygenExecutableDefault());
         store.setDefault(IConstants.PREF_COPYRIGHT_LINE, "");
-        store.setDefault(IConstants.PREF_DEFAULT_LICENSE, IConstants.IS_COMMERCIAL ? LicenseUtils.CUSTOM : LicenseUtils.LGPL);
+        String license = IConstants.IS_COMMERCIAL ? LicenseUtils.CUSTOM : LicenseUtils.LGPL;
+        store.setDefault(IConstants.PREF_DEFAULT_LICENSE, license);
         store.setDefault(IConstants.PREF_CUSTOM_LICENSE_HEADER, LicenseUtils.DEFAULT_CUSTOM_LICENSE_HEADER);
     }
 
