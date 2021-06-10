@@ -240,7 +240,12 @@ bool Expression::isFoldableNode(ExprNode *node) const
 
 void Expression::errorCouldNotTranslate(AstNode *astNode)
 {
-    throw opp_runtime_error("Unknown %s '%s'", AstNode::typeName(astNode->type), astNode->name.c_str());
+    if (astNode->type == AstNode::FUNCTION)
+        throw opp_runtime_error("A '%s' function accepting %d argument(s) was not found", astNode->name.c_str(), (int)astNode->children.size());
+    else if (astNode->type == AstNode::METHOD)
+        throw opp_runtime_error("A '%s' method accepting %d argument(s) was not found", astNode->name.c_str(), (int)astNode->children.size() - 1);
+    else
+        throw opp_runtime_error("Unknown %s '%s'", AstNode::typeName(astNode->type), astNode->name.c_str());
 }
 
 ExprNode *Expression::translateToExpressionTree(AstNode *ast, AstTranslator *translator) const
