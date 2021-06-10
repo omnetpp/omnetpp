@@ -23,7 +23,7 @@ public class NewChartFromTemplateAction extends NewAnalysisItemAction {
         super(ScaveModelUtil.createChartFromTemplate(template));
         setText(prefix ? "New " + template.getName() : template.getName());
 
-        String iconName = template.getToolbarIconPath();
+        String iconName = template.getMenuIconPath();
 
         if (iconName == null || iconName.isEmpty())
             switch (template.getChartType()) {

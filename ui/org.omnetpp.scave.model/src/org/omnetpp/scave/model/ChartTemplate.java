@@ -27,13 +27,13 @@ public class ChartTemplate {
     private int supportedResultTypes; // a bitwise OR of the constants in ResultFileManager
     private String pythonScript;
     private List<DialogPage> dialogPages;
-    private int toolbarOrder = -1;
-    private String toolbarIconPath;
+    private int score = 0;
+    private String menuIconPath;
     private Map<String,String> properties;
     private String originFolder; // workspace path or plugin-relative path (latter starts with "plugin:")
 
     public ChartTemplate(String id, String name, String description, ChartType chartType, String iconPath, int supportedResultTypes,
-            String pythonScript, List<DialogPage> dialogPages, int toolbarOrder, String toolbarIconPath, Map<String,String> properties, String originFolder) {
+            String pythonScript, List<DialogPage> dialogPages, int score, String menuIconPath, Map<String,String> properties, String originFolder) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -42,8 +42,8 @@ public class ChartTemplate {
         this.supportedResultTypes = supportedResultTypes;
         this.pythonScript = pythonScript;
         this.dialogPages = dialogPages;
-        this.toolbarOrder = toolbarOrder;
-        this.toolbarIconPath = toolbarIconPath;
+        this.score = score;
+        this.menuIconPath = menuIconPath;
         this.properties = properties;
         this.originFolder = originFolder;
     }
@@ -81,12 +81,12 @@ public class ChartTemplate {
         return Collections.unmodifiableList(dialogPages);
     }
 
-    public int getToolbarOrder() {
-        return toolbarOrder;
+    public int getScore() {
+        return score;
     }
 
-    public String getToolbarIconPath() {
-        return toolbarIconPath;
+    public String getMenuIconPath() {
+        return menuIconPath;
     }
 
     public Set<String> getPropertyNames() {

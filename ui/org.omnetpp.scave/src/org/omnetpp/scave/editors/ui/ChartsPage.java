@@ -92,12 +92,6 @@ public class ChartsPage extends FormEditorPage {
 
         addSeparatorToToolbar();
 
-        List<ChartTemplate> templates = getTemplatesForToolbar();
-        for (ChartTemplate templ : templates)
-            addToToolbar(new NewChartFromTemplateAction(templ));
-
-        addSeparatorToToolbar();
-
         addToToolbar(actions.viewIconsAction);
         addToToolbar(actions.viewMulticolumnListAction);
         addToToolbar(actions.viewListAction);
@@ -118,17 +112,6 @@ public class ChartsPage extends FormEditorPage {
 
         // ensure that focus gets restored correctly after user goes somewhere else and then comes back
         setFocusManager(new FocusManager(this));
-    }
-
-    protected List<ChartTemplate> getTemplatesForToolbar() {
-        List<ChartTemplate> templates = new ArrayList<ChartTemplate>();
-        for (ChartTemplate templ : scaveEditor.getChartTemplateRegistry().getAllTemplates())
-            if (templ.getToolbarOrder() >= 0)
-                templates.add(templ);
-        templates.sort((ChartTemplate a, ChartTemplate b) ->  {
-            return Integer.compare(a.getToolbarOrder(), b.getToolbarOrder());
-        });
-        return templates;
     }
 
     public IconGridViewer getViewer() {

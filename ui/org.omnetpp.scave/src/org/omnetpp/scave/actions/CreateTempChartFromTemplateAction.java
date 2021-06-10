@@ -32,7 +32,7 @@ public class CreateTempChartFromTemplateAction extends AbstractScaveAction {
         setText("Plot using " + template.getName());
         setToolTipText("Plot using " + template.getName());
 
-        String iconName = template.getToolbarIconPath();
+        String iconName = template.getMenuIconPath();
 
         if (iconName == null || iconName.isEmpty())
             switch (template.getChartType()) {

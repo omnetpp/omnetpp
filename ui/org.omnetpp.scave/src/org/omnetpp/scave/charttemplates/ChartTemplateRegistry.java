@@ -121,8 +121,8 @@ public class ChartTemplateRegistry {
         String type = props.getProperty("type");
         String icon = props.getProperty("icon");
         String scriptFile = props.getProperty("scriptFile");
-        String toolbarIcon = props.getProperty("toolbarIcon");
-        int toolbarOrder = Integer.parseInt(props.getProperty("toolbarOrder", "-1"));
+        String menuIcon = props.getProperty("menuIcon");
+        int score = Integer.parseInt(props.getProperty("score", "0"));
         String originFolder = new Path(templatesFolder + "/" + propertiesFile).removeLastSegments(1).toString();
 
         // dialog pages
@@ -177,7 +177,7 @@ public class ChartTemplateRegistry {
             }
         }
 
-        ChartTemplate template = new ChartTemplate(id, name, description, chartType, icon, resultTypes, script, pages, toolbarOrder, toolbarIcon, properties, originFolder.toString());
+        ChartTemplate template = new ChartTemplate(id, name, description, chartType, icon, resultTypes, script, pages, score, menuIcon, properties, originFolder.toString());
 
         return template;
     }
@@ -221,16 +221,8 @@ public class ChartTemplateRegistry {
                 long tb = templatesLastUsageTimestamps.getOrDefault(b.getId(), 0l);
                 int result = -Long.compare(ta, tb); // decreasing order of last usage timestamp
 
-                if (result == 0) { // most likely neither of them have been used yet, sort by toolbar order
-                    int oa = a.getToolbarOrder();
-                    int ob = b.getToolbarOrder();
-                    if (oa != -1 && ob != -1)
-                        result = Long.compare(oa, ob);
-                    else if (oa == -1 && ob != -1) // ob is on the toolbar, oa isn't
-                        result = Long.compare(ob+1, ob);
-                    else if (oa != -1 && ob == -1) // oa is on the toolbar, ob isn't
-                        result = Long.compare(oa, oa+1);
-                }
+                if (result == 0) // most likely neither of them have been used yet, sort decreasing by score
+                    result = -Long.compare(a.getScore(), b.getScore());
 
                 return result;
             }

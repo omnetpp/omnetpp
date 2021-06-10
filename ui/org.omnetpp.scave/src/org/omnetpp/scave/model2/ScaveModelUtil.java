@@ -272,8 +272,7 @@ public class ScaveModelUtil {
         buf.append("scriptFile = " + scriptFileName + "\n");
         buf.append("icon = " + chart.getIconPath() + "\n");
         buf.append("resultTypes = " + ScaveModelUtil.getResultTypesAsString(chart.getSupportedResultTypes()) + "\n");
-
-        // omitting toolbarOrder and resultTypes
+        // omitting score...
         buf.append("\n");
 
         int i = 0;
