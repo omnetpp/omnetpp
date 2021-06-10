@@ -785,7 +785,7 @@ ExprNode *NedOperatorTranslator::translateParameter(AstNode *paramNode, AstTrans
 
 ExprNode *NedFunctionTranslator::createFunctionNode(const char *functionName, int argCount)
 {
-    if (cNedFunction *nedFunction = cNedFunction::find(functionName))
+    if (cNedFunction *nedFunction = cNedFunction::find(functionName, argCount))
         return createNedFunctionNode(nedFunction, argCount);
     if (cNedMathFunction *mathFunction = cNedMathFunction::find(functionName, argCount))
         return createMathFunctionNode(mathFunction, argCount);
@@ -809,17 +809,18 @@ ExprNode *NedFunctionTranslator::createArrayNode(int argCount)
 
 ExprNode *NedFunctionTranslator::createNedFunctionNode(cNedFunction *nedFunction, int argCount)
 {
-    int minArgs = nedFunction->getMinArgs();
-    int maxArgs = nedFunction->getMaxArgs();
-    bool varArgs = nedFunction->hasVarArgs();
-    if (argCount < minArgs || (argCount > maxArgs && !varArgs)) {
-        if (varArgs)
-            throw opp_runtime_error("NED function '%s' expects at least %d", nedFunction->getName(), minArgs);
-        else if (minArgs == maxArgs)
-            throw opp_runtime_error("NED function '%s' expects %d arguments", nedFunction->getName(), minArgs);
-        else
-            throw opp_runtime_error("NED function '%s' expects %d to %d arguments", nedFunction->getName(), minArgs, maxArgs);
-    }
+//    if (!nedFunction->acceptsArgCount(argCount)) {
+//        int minArgs = nedFunction->getMinArgs();
+//        int maxArgs = nedFunction->getMaxArgs();
+//        bool varArgs = nedFunction->hasVarArgs();
+//        if (varArgs)
+//            throw opp_runtime_error("NED function '%s' expects at least %d", nedFunction->getName(), minArgs);
+//        else if (minArgs == maxArgs)
+//            throw opp_runtime_error("NED function '%s' expects %d arguments", nedFunction->getName(), minArgs);
+//        else
+//            throw opp_runtime_error("NED function '%s' expects %d to %d arguments", nedFunction->getName(), minArgs, maxArgs);
+//    }
+    ASSERT(nedFunction->acceptsArgCount(argCount));
     return new NedFunctionNode(nedFunction);
 }
 
