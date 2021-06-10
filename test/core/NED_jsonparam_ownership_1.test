@@ -1,0 +1,93 @@
+%description:
+Test that object parameters only accept objects they fully own.
+
+%file: json.msg
+
+namespace @TESTNAME@;
+
+cplusplus {{ using namespace omnetpp; }}
+
+class Nonowned extends cObject
+{
+}
+
+%file: test.ned
+
+network Test {
+  parameters:
+    @class(Tester);
+    object a = { a: 1, b: [2, 3, { c: 4, d: 5 } ] };
+    object b = [];
+}
+
+%file: test.cc
+
+#include <string.h>
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class Tester : public cSimpleModule
+{
+  public:
+    Tester() : cSimpleModule(16384) { }
+    void test(const std::string& expr);
+    virtual void activity() override;
+};
+
+Define_Module(Tester);
+
+void Tester::test(const std::string& expr)
+{
+    try {
+        EV << expr << " ==> ";
+        par("b").parse(expr.c_str());
+        EV << par("b").str() << endl;
+    }
+    catch (std::exception& e) {
+        EV << "ERROR: " << e.what() << endl;
+    }
+}
+
+void Tester::activity()
+{
+    test("@TESTNAME@::Nonowned{}");
+    test("[ 1, 2, @TESTNAME@::Nonowned{} ]");
+    test("{ a: 5, b: @TESTNAME@::Nonowned{} }");
+    EV << endl;
+    test("a");
+    test("dup(a)");
+    EV << endl;
+    test("[a,a]");
+    test("[ dup(a), dup(a) ]");
+    test("dup([a,a])");
+    EV << endl;
+    test("{x: a, y: a}");
+    test("{x: dup(a), y: dup(a)}");
+    test("dup( {x: a, y: a} )");
+    EV << ".\n";
+}
+
+}; //namespace
+
+%contains: stdout
+NED_jsonparam_ownership_1::Nonowned{} ==> ERROR: Cannot evaluate expression for parameter 'b': Object parameters may only hold objects they fully own, but object (NED_jsonparam_ownership_1::Nonowned) is not a cOwnedObject and does not keep track of its owner
+[ 1, 2, NED_jsonparam_ownership_1::Nonowned{} ] ==> ERROR: Cannot evaluate expression for parameter 'b': Object parameters may only hold objects they fully own, but object (NED_jsonparam_ownership_1::Nonowned) (which is indirectly contained in the result object, its parent being (omnetpp::cValueArray)array3) is not a cOwnedObject and does not keep track of its owner
+{ a: 5, b: NED_jsonparam_ownership_1::Nonowned{} } ==> ERROR: Cannot evaluate expression for parameter 'b': Object parameters may only hold objects they fully own, but object (NED_jsonparam_ownership_1::Nonowned) (which is indirectly contained in the result object, its parent being (omnetpp::cValueMap)map3) is not a cOwnedObject and does not keep track of its owner
+
+a ==> ERROR: Cannot evaluate expression for parameter 'b': Object parameters may only hold objects they fully own, but object (omnetpp::cValueMap)map1 is already owned by a parameter named 'a'
+dup(a) ==> (omnetpp::cValueMap)map1: {a: 1, b: [2, 3, {c: 4, d: 5}]}
+
+[a,a] ==> ERROR: Cannot evaluate expression for parameter 'b': Object parameters may only hold objects they fully own, but object (omnetpp::cValueMap)map1 (which is indirectly contained in the result object, its parent being (omnetpp::cValueArray)array4) is already owned by a parameter named 'a'
+[ dup(a), dup(a) ] ==> (omnetpp::cValueArray)array5: [{a: 1, b: [2, 3, {c: 4, d: 5}]}, {a: 1, b: [2, 3, {c: 4, d: 5}]}]
+dup([a,a]) ==> (omnetpp::cValueArray)array6: [{a: 1, b: [2, 3, {c: 4, d: 5}]}, {a: 1, b: [2, 3, {c: 4, d: 5}]}]
+
+{x: a, y: a} ==> ERROR: Cannot evaluate expression for parameter 'b': Object parameters may only hold objects they fully own, but object (omnetpp::cValueMap)map1 (which is indirectly contained in the result object, its parent being (omnetpp::cValueMap)map4) is already owned by a parameter named 'a'
+{x: dup(a), y: dup(a)} ==> (omnetpp::cValueMap)map5: {x: {a: 1, b: [2, 3, {c: 4, d: 5}]}, y: {a: 1, b: [2, 3, {c: 4, d: 5}]}}
+dup( {x: a, y: a} ) ==> (omnetpp::cValueMap)map6: {x: {a: 1, b: [2, 3, {c: 4, d: 5}]}, y: {a: 1, b: [2, 3, {c: 4, d: 5}]}}
+.
+
+%not-contains: stdout
+undisposed object
