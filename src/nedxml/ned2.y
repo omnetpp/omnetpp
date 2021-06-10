@@ -15,7 +15,7 @@
 *--------------------------------------------------------------*/
 
 /* number of expected shift-reduce conflicts */
-%expect 8
+%expect 9
 
 /* Reserved words. Trailing '_' in some token names are there to avoid
  * (potential) conflict with macros defined in system headers.
@@ -61,6 +61,7 @@
 %left '*' '/' '%'
 %right '^'
 %right UMIN_ NEG_ NOT_
+%left '.'
 
 %start startsymbol
 
@@ -1511,6 +1512,7 @@ expression
 expr
         : simple_expr
         | functioncall
+        | expr '.' functioncall
         | object
         | array
         | '(' expr ')'
