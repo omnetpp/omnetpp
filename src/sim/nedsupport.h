@@ -288,6 +288,7 @@ class NedFunctionTranslator : public Expression::BasicAstTranslator
     virtual ExprNode *createMathFunctionNode(cNedMathFunction *nedFunction, int argCount);
   public:
     virtual ExprNode *createFunctionNode(const char *functionName, int argCount) override;
+    virtual ExprNode *createMethodNode(const char *functionName, int argCount) override;
     virtual ExprNode *createObjectNode(const char *typeName, const std::vector<std::string>& fieldNames) override;
     virtual ExprNode *createArrayNode(int argCount) override;
 };

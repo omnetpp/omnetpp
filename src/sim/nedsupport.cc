@@ -792,6 +792,11 @@ ExprNode *NedFunctionTranslator::createFunctionNode(const char *functionName, in
     return nullptr;
 }
 
+ExprNode *NedFunctionTranslator::createMethodNode(const char *functionName, int argCount)
+{
+    return createFunctionNode(functionName, argCount+1);
+}
+
 ExprNode *NedFunctionTranslator::createObjectNode(const char *typeName, const std::vector<std::string>& fieldNames)
 {
     return new NedObjectNode(typeName, fieldNames);
