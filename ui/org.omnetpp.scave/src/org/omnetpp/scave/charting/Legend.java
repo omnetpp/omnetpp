@@ -192,6 +192,18 @@ public class Legend implements ILegend {
         return items.get(index).enabled;
     }
 
+    public void setItemEnabled(int index, boolean enabled) {
+        items.get(index).enabled = enabled;
+    }
+
+    public String getItemText(int index) {
+        return items.get(index).text;
+    }
+
+    public int getItemCount() {
+        return items.size();
+    }
+
     public boolean isVisible() {
         return visible;
     }

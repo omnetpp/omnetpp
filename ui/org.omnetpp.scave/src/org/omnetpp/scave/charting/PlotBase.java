@@ -744,6 +744,9 @@ public abstract class PlotBase extends ZoomableCachingCanvas implements IPlotVie
         return this;
     }
 
+    public Legend getLegend() {
+        return legend;
+    }
 
     @Override
     public Point computeSize(int wHint, int hHint) {

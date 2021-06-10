@@ -8,6 +8,7 @@
 package org.omnetpp.scave.python;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -15,9 +16,11 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
 import org.omnetpp.common.Debug;
+import org.omnetpp.common.util.Pair;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.charting.BarPlot;
 import org.omnetpp.scave.charting.HistogramPlot;
+import org.omnetpp.scave.charting.Legend;
 import org.omnetpp.scave.charting.LinePlot;
 import org.omnetpp.scave.charting.PlotBase;
 import org.omnetpp.scave.editors.FilterCache;
@@ -66,6 +69,14 @@ public class NativeChartViewer extends ChartViewerBase {
         final double zy = chartPlotter.isEmpty() || !plot.isZoomedOutY() ? Double.NaN : plot.getZoomY();
         final long vt = plot.getViewportTop();
         final long vl = plot.getViewportLeft();
+
+        var oldItems = new ArrayList<Pair<String, Boolean>>();
+
+        Legend legend = plot.getLegend();
+        for (int i = 0; i < legend.getItemCount(); ++i)
+            oldItems.add(new Pair<String, Boolean>(legend.getItemText(i), legend.isItemEnabled(i)));
+
+        int itemCount = plot.getLegend().getItemCount();
 
         killPythonProcess();
         plot.setWarningText(null);
@@ -136,6 +147,23 @@ public class NativeChartViewer extends ChartViewerBase {
                     plot.setZoomY(zy);
                     plot.scrollVerticalTo(vt);
                 }
+
+                boolean restoreLegend = false;
+                if (plot.getLegend().getItemCount() == itemCount)
+                    restoreLegend = true;
+                else {
+                    restoreLegend = true;
+                    for (int i = 0; i < oldItems.size() && i < legend.getItemCount(); ++i)
+                        if (!oldItems.get(i).first.equals(legend.getItemText(i))) {
+                            restoreLegend = false;
+                            break;
+                        }
+                }
+
+                if (restoreLegend)
+                    for (int i = 0; i < oldItems.size(); ++i)
+                        if (oldItems.get(i).first.equals(legend.getItemText(i)))
+                            legend.setItemEnabled(i, oldItems.get(i).second);
 
                 killPythonProcess();
             });
