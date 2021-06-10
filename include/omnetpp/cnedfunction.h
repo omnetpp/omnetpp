@@ -167,6 +167,12 @@ class SIM_API cNedFunction : public cNoncopyableOwnedObject
     bool hasVarArgs() const  {return hasVarargs_;}
 
     /**
+     * Convenience method: Returns true if the function accepts the given
+     * number of arguments.
+     */
+    bool acceptsArgCount(int argCount) {return argCount >= minArgc && (hasVarargs_ || argCount <= maxArgc);}
+
+    /**
      * Returns a string that can be useful in classifying NED functions,
      * e.g. "trigonometric".
      */
@@ -184,9 +190,21 @@ class SIM_API cNedFunction : public cNoncopyableOwnedObject
     static cNedFunction *find(const char *name);
 
     /**
+     * Finds a registered function with the given name that accepts the given
+     * number or arguments. Returns nullptr if not found.
+     */
+    static cNedFunction *find(const char *name, int argCount);
+
+    /**
      * Finds a registered function by name. Throws an error if not found.
      */
     static cNedFunction *get(const char *name);
+
+    /**
+     * Finds a registered function with the given name that accepts the given
+     * number or arguments. Throws an error if not found.
+     */
+    static cNedFunction *get(const char *name, int argCount);
 
     /**
      * Finds a registered function by function pointer.

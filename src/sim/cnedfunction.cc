@@ -234,6 +234,17 @@ cNedFunction *cNedFunction::find(const char *name)
     return dynamic_cast<cNedFunction *>(nedFunctions.getInstance()->find(name));
 }
 
+cNedFunction *cNedFunction::find(const char *name, int argCount)
+{
+    cRegistrationList *a = nedFunctions.getInstance();
+    for (int i = 0; i < a->size(); i++) {
+        cNedFunction *f = dynamic_cast<cNedFunction *>(a->get(i));
+        if (f && f->isName(name) && f->acceptsArgCount(argCount))
+            return f;
+    }
+    return nullptr;
+}
+
 cNedFunction *cNedFunction::get(const char *name)
 {
     cNedFunction *p = find(name);
@@ -241,6 +252,16 @@ cNedFunction *cNedFunction::get(const char *name)
         throw cRuntimeError("NED function \"%s\" not found -- perhaps it wasn't registered "
                             "with the Define_NED_Function() macro, or its code is not linked in",
                             name);
+    return p;
+}
+
+cNedFunction *cNedFunction::get(const char *name, int argCount)
+{
+    cNedFunction *p = find(name, argCount);
+    if (!p)
+        throw cRuntimeError("NED function \"%s\" accepting %d argument(s) not found -- perhaps it wasn't registered "
+                            "with the Define_NED_Function() macro, or its code is not linked in",
+                            name, argCount);
     return p;
 }
 
