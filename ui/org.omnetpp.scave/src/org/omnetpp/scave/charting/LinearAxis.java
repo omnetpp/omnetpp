@@ -8,6 +8,8 @@
 package org.omnetpp.scave.charting;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Insets;
@@ -42,6 +44,8 @@ public class LinearAxis {
     private Font titleFont;
     private Font tickFont;
 
+    DecimalFormat decimalFormat;
+    DecimalFormat scientificFormat;
 
     /* Layout parameters */
     private int gap = 2;  // space between axis line and plot area (usually 0)
@@ -54,6 +58,22 @@ public class LinearAxis {
         this.vertical = vertical;
         this.logarithmic = logarithmic;
         this.drawAxisToPlot = drawAxisToPlot;
+
+        DecimalFormatSymbols sym = new DecimalFormatSymbols();
+        sym.setGroupingSeparator(' ');
+        sym.setExponentSeparator("e");
+
+        decimalFormat  = new DecimalFormat("#.#", sym);
+
+        decimalFormat.setMaximumFractionDigits(1000);
+        decimalFormat.setGroupingSize(3);
+        decimalFormat.setGroupingUsed(true);
+
+        scientificFormat  = new DecimalFormat("0.#E0", sym);
+
+        scientificFormat.setMaximumFractionDigits(1000);
+        scientificFormat.setGroupingSize(3);
+        scientificFormat.setGroupingUsed(true);
     }
 
     public double transform(double coord) {
@@ -105,7 +125,17 @@ public class LinearAxis {
     }
 
     private String getTickLabel(BigDecimal tick) {
-        return tick.scale() < 0 ? tick.setScale(0).toString() : tick.toString();
+        if (tick.scale() < 0)
+            tick = tick.setScale(0);
+        tick = tick.stripTrailingZeros();
+
+        if (tick.equals(BigDecimal.ZERO))
+            return "0";
+
+        DecimalFormat format = tick.abs().compareTo(new BigDecimal(0.001)) < 0
+                ? scientificFormat : decimalFormat;
+
+        return format.format(tick);
     }
 
     private int calculateTickLabelHeight(Graphics graphics) {
