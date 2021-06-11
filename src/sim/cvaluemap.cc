@@ -33,7 +33,7 @@ void cValueMap::copy(const cValueMap& other)
     fields = other.fields;
 
     // dup() those objects that were owned by the other container
-    for (auto entry : fields) {
+    for (auto& entry : fields) {
         cValue& value = entry.second;
         if (value.getType() == cValue::OBJECT) {
             cObject *obj = value.objectValue();
