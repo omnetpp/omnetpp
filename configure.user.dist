@@ -15,10 +15,21 @@
 #CXX=g++
 
 #
-# Set to "yes" if you want to use clang/clang++ instead of gcc/g++ when both
+# Set to "no" if you want to use gcc/g++ instead of default clang/clang++ when both
 # compiler is installed.
 #
 PREFER_CLANG=yes
+
+#
+# Set to "no" if you want to use the GNU linker instead of LLVM-LLD when both
+# linker is installed.
+#
+PREFER_LLD=yes
+
+#
+# On Windows, use the separately installed Visual C linker and Windows SDK. This will generate
+# binaries, that are compatible with the Visual C++ compiler.
+# USE_MS_ABI=yes
 
 #
 # Compiler optimization switches. There are two sets of switches,
@@ -30,9 +41,13 @@ PREFER_CLANG=yes
 #CFLAGS_DEBUG='-g -Wall'
 #CFLAGS_RELEASE='-O3 -DNDEBUG=1'
 
-# C++ specific compiler flags. OMNeT++ requires at least -std=c++11 (default), but
-# -std=c++14 should work, too.
-#CXXFLAGS=-std=c++11
+#
+# C++ specific compiler options. As OMNeT++ requires C++11 or later, this is
+# the place to specify -std=c++11 or a similar option if your compiler's
+# default language compliance level is lower than C++11. These options will be
+# used when compiling OMNeT++ and also when compiling simulation models.
+#
+#CXXFLAGS=-std=c++17
 
 #
 # Linker switches used for linking.
@@ -77,11 +92,11 @@ WITH_PARSIM=yes
 
 #
 # Set to "yes" to use SQLite as default file format for output vector and
-# output scalar files. As of version 5.1, SQLite support is an experimental 
+# output scalar files. As of version 5.1, SQLite support is an experimental
 # feature.
 #
 # To try SQLite result files without changing the default, add the following
-# lines into the omnetpp.ini files of your simulations (or specify the same 
+# lines into the omnetpp.ini files of your simulations (or specify the same
 # settings on the simulation command line, with the "--" prefix):
 #
 # outputvectormanager-class="omnetpp::envir::SqliteOutputVectorManager"
@@ -149,12 +164,12 @@ EMBED_TCL_CODE=yes
 # If you wish to use a custom Qt bundle (for example downloaded from the
 # official Qt web page, or built from source) instead of the one installed
 # on your system as the default (most likely by the package manager), set
-# this variable to the 'bin' directory of that bundle, where qmake is.
+# this variable to point to the 'qmake' program in that installation.
 # Leave it empty or commented out to use the default Qt installation.
 # Please note that on Windows and macOS it is highly recommended to just
 # use the Qt bundle included in the OMNeT++ release, and not change this.
 #
-#QT_PATH="/home/user/Qt/5.7/gcc_64/bin"
+#QMAKE="/home/user/Qt/5.12/gcc_64/bin/qmake"
 #
 # You can also explicitly tell 'configure' what compiler options (QT_CFLAGS)
 # and linker switches (QT_LIBS) are needed to build an application with Qt
@@ -177,7 +192,7 @@ EMBED_TCL_CODE=yes
 #OSGEARTH_LIBS=
 
 #
-# ZLib is a compression library needed by libxml2 and Tkenv's png support.
+# ZLib is a compression library needed by libxml2.
 #
 # On MinGW we use the following (dynamically linking against the DLL)
 #
@@ -258,6 +273,6 @@ EMBED_TCL_CODE=yes
 
 #
 #
-# Override the following setting if you have additional icons somewhere else.
+# You may override the following setting if you have additional icons somewhere else.
 #
-# OMNETPP_IMAGE_PATH="./images;./bitmaps;$OMNETPP_ROOT/images"
+# OMNETPP_IMAGE_PATH="$OMNETPP_ROOT/images"
