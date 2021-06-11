@@ -49,9 +49,12 @@ class SIM_API cValueArray : public cOwnedObject
     //@{
 
     /**
-     * Copy constructor. Contained objects that are owned by cValueArray
-     * will be duplicated so that the new cValueArray will have its own
-     * copy of them.
+     * Copy constructor. Contained objects will be duplicated so that the
+     * new cValueArray will have its own copy of them.
+     *
+     * Note that this behavior is different from most other container classes
+     * in the simulation library like cQueue, which only duplicate the objects
+     * they own, and leave externally owned objects alone.
      */
     cValueArray(const cValueArray& other) : cOwnedObject(other) {copy(other);}
 
@@ -80,9 +83,13 @@ class SIM_API cValueArray : public cOwnedObject
     //@{
 
     /**
-     * Creates and returns an exact copy of this object.
-     * Contained objects that are owned by cValueArray will be duplicated
-     * so that the new cValueArray will have its own copy of them.
+     * Creates and returns an exact copy of this object. Contained objects
+     * will be duplicated so that the new cValueArray will have its own copy
+     * of them.
+     *
+     * Note that this behavior is different from most other container classes
+     * in the simulation library like cQueue, which only duplicate the objects
+     * they own, and leave externally owned objects alone.
      */
     virtual cValueArray *dup() const override  {return new cValueArray(*this);}
 

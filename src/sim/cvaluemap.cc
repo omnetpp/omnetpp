@@ -32,17 +32,15 @@ void cValueMap::copy(const cValueMap& other)
 {
     fields = other.fields;
 
-    // dup() those objects that were owned by the other container
+    // duplicate ALL contained objects, not only those owned by the cloned container
     for (auto& entry : fields) {
         cValue& value = entry.second;
         if (value.getType() == cValue::OBJECT) {
             cObject *obj = value.objectValue();
-            if (obj && (!obj->isOwnedObject() || obj->getOwner() == &other)) {
-                cObject *clone = obj->dup();
-                value.set(clone);
-                if (obj->isOwnedObject())
-                    take(static_cast<cOwnedObject*>(clone));
-            }
+            cObject *clone = obj->dup();
+            value.set(clone);
+            if (obj->isOwnedObject())
+                take(static_cast<cOwnedObject*>(clone));
         }
     }
 }

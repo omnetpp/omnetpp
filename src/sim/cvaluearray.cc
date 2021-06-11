@@ -32,16 +32,14 @@ void cValueArray::copy(const cValueArray& other)
 {
     array = other.array;
 
-    // dup() those objects that were owned by the other container
+    // duplicate ALL contained objects, not only those owned by the cloned container
     for (cValue& value : array) {
         if (value.getType() == cValue::OBJECT) {
             cObject *obj = value.objectValue();
-            if (obj && (!obj->isOwnedObject() || obj->getOwner() == &other)) {
-                cObject *clone = obj->dup();
-                value.set(clone);
-                if (obj->isOwnedObject())
-                    take(static_cast<cOwnedObject*>(clone));
-            }
+            cObject *clone = obj->dup();
+            value.set(clone);
+            if (obj->isOwnedObject())
+                take(static_cast<cOwnedObject*>(clone));
         }
     }
 }
