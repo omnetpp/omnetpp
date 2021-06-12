@@ -200,7 +200,7 @@ double cValue::parseQuantity(const char *str, std::string& outActualUnit)
 
 const char *cValue::getPooled(const char *s)
 {
-    static StringPool stringPool;  // non-refcounted
+    static StaticStringPool stringPool;  // non-refcounted
     return stringPool.get(s);
 }
 

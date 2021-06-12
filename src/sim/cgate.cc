@@ -67,7 +67,7 @@ using std::ostream;
  */
 
 // non-refcounting pool for gate fullnames
-static StringPool gateFullnamePool;
+static StaticStringPool gateFullnamePool;
 
 int cGate::lastConnectionId = -1;
 

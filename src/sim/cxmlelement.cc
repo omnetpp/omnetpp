@@ -80,11 +80,11 @@ void cXMLElement::forEachChild(cVisitor *v)
 
 const char *cXMLElement::getPooledName(const char *s)
 {
-    static StringPool namePool;
+    static StaticStringPool namePool;
     return namePool.get(s);
 }
 
-static StringPool valuePool;
+static StaticStringPool valuePool;
 
 const char *cXMLElement::makeValue(const char *s)
 {

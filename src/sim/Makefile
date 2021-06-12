@@ -48,7 +48,7 @@ OBJS_STD=\
     $O/csimulation.o $O/cstatistic.o $O/cstddev.o $O/cstlwatch.o $O/cstringparimpl.o \
     $O/cstringpool.o $O/cstringtokenizer.o $O/cclassdescriptor.o $O/ctemporaryowner.o $O/ctopology.o \
     $O/cvisitor.o $O/cwatch.o $O/cxmlelement.o $O/cxmlparimpl.o $O/distrib.o $O/nedfunctions.o \
-    $O/errmsg.o $O/globals.o $O/cregistrationlist.o $O/minixpath.o $O/onstartup.o \
+    $O/errmsg.o $O/globals.o $O/cregistrationlist.o $O/minixpath.o $O/onstartup.o $O/opp_pooledstring.o \
     $O/simtime.o $O/simtimemath.o $O/task.o $O/util.o $O/gettime.o $O/nedsupport.o $O/sim_std_m.o \
     $O/cstatisticbuilder.o $O/statisticsourceparser.o $O/statisticrecorderparser.o $O/stringutil.o \
     $O/resultfilters.o $O/resultrecorders.o $O/expressionfilter.o $O/ccommbuffer.o $O/cparsimcomm.o

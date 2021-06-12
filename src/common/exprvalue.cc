@@ -152,7 +152,7 @@ void ExprValue::setUnit(const char *unit)
 
 const char *ExprValue::getPooled(const char *s)
 {
-    static StringPool stringPool;  // non-refcounted
+    static StaticStringPool stringPool;  // non-refcounted
     return stringPool.get(s);
 }
 

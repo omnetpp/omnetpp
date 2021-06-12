@@ -124,6 +124,7 @@
 #include "omnetpp/onstartup.h"
 #include "omnetpp/opp_component_ptr.h"
 #include "omnetpp/opp_string.h"
+#include "omnetpp/opp_pooledstring.h"
 #include "omnetpp/packing.h"
 #include "omnetpp/platdep/intlimits.h"
 #include "omnetpp/platdep/timeutil.h"

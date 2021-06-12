@@ -48,7 +48,7 @@ class Scenario;
 class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
 {
   private:
-    typedef omnetpp::common::StringPool StringPool;
+    typedef omnetpp::common::StaticStringPool StringPool;
     typedef omnetpp::common::PatternMatcher PatternMatcher;
     typedef std::set<std::string> StringSet;
     typedef std::map<std::string,std::string> StringMap;
