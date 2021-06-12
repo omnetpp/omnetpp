@@ -33,7 +33,7 @@ namespace omnetpp {
  * @see cNamedObject::cNamedObject, cNamedObject::setNamePooling()
  * @ingroup internals
  */
-class cStringPool
+class SIM_API cStringPool
 {
   protected:
     struct strless {
