@@ -132,7 +132,7 @@ OPP_PROBLEM_PACKAGES=
 # check if 'setenv' was correctly sourced
 CURRENT_DIR=$(cd $(dirname "$0"); pwd)
 if test "$__omnetpp_root_dir" = "$CURRENT_DIR" -a -z "${PATH##*${CURRENT_DIR}/bin:*}"; then  # this uses magic substring matching with parameter expansion
-  AC_MSG_NOTICE([Environment variables (PATH and PYTHONPATH) are correctly set.])
+  AC_MSG_NOTICE([Environment variables (e.g. PATH) are correctly set.])
 else
   AC_MSG_ERROR([Before running 'configure', please use 'source setenv' to set up your environment.])
 fi
@@ -790,9 +790,9 @@ if test "$WITH_QTENV" = "yes"; then
     if test "$QMAKE" = nope; then
         AC_MSG_ERROR([Qtenv cannot find qmake -- maybe it is not in the PATH or has some exotic name (tested names were: qmake-qt5 qmake5 qmake) - You can disable Qtenv by setting the WITH_QTENV variable to "no" in configure.user, or try setting the QMAKE variable to point your Qt installation's qmake file.])
     else
-        QT_INSTALL_BINS=$($QMAKE -query QT_INSTALL_BINS)
-        QT_INSTALL_HEADERS=$($QMAKE -query QT_INSTALL_HEADERS)
-        QT_INSTALL_LIBS=$($QMAKE -query QT_INSTALL_LIBS)
+        QT_INSTALL_BINS=$(cd $($QMAKE -query QT_INSTALL_BINS); pwd)        # make the path MinGW compatible because qmake returns windows style paths
+        QT_INSTALL_HEADERS=$(cd $($QMAKE -query QT_INSTALL_HEADERS); pwd)
+        QT_INSTALL_LIBS=$(cd $($QMAKE -query QT_INSTALL_LIBS); pwd)
         AC_PATH_PROGS(MOC, moc-qt5 moc5 moc, nope, path = $QT_INSTALL_BINS$PATH_SEPARATOR$QT_INSTALL_LIBS)
         AC_PATH_PROGS(UIC, uic-qt5 uic5 uic, nope, path = $QT_INSTALL_BINS$PATH_SEPARATOR$QT_INSTALL_LIBS)
         AC_PATH_PROGS(RCC, rcc-qt5 rcc5 rcc, nope, path = $QT_INSTALL_BINS$PATH_SEPARATOR$QT_INSTALL_LIBS)
@@ -961,18 +961,6 @@ if test "$WITH_TKENV" = "yes"; then
 fi # end of Tcl tests ($WITH_TKENV branch)
 
 #----------------------
-# Check for JRE
-#----------------------
-AC_CHECK_PROGS(JRE, $JRE java, nope)
-if test "$JRE" = nope; then
-    AC_CHECK_PROGS(PRIVATE_JRE, $PRIVATE_JRE java, nope, [`pwd`/ide/jre/bin])
-    if test "$PRIVATE_JRE" = nope; then
-        OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  JRE (recommended)"
-        AC_MSG_WARN([Cannot find a suitable Java Runtime Environment - The IDE requires JRE 1.8 or later. Please install it before configuring])
-    fi
-fi
-
-#----------------------
 # Check for JDK
 #----------------------
 
@@ -1096,19 +1084,15 @@ else
                       libxml_ok, LIBXML_CFLAGS="-I/usr/include/libxml2" LIBXML_LIBS="-lxml2")
     fi
 
-    # test also in the /mingw32 directory because on MSYS2 this is the default
+    # Check on MinGW, too
     if test $libxml_ok = no; then
-        OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $CFLAGS -I/mingw32/include/libxml2, -lxml2,
-                      libxml_ok, LIBXML_CFLAGS="-I/mingw32/include/libxml2" LIBXML_LIBS="-lxml2")
-    fi
-    if test $libxml_ok = no; then
-        OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $CFLAGS -I/mingw64/include/libxml2, -lxml2,
-                      libxml_ok, LIBXML_CFLAGS="-I/mingw64/include/libxml2" LIBXML_LIBS="-lxml2")
+        OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $CFLAGS -I/opt/mingw64/include/libxml2, -lxml2,
+                      libxml_ok, LIBXML_CFLAGS="-I/opt/mingw64/include/libxml2" LIBXML_LIBS="-lxml2")
     fi
     # msys/visualc version
     if test $libxml_ok = no; then
-        OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $CFLAGS_ARCH $CFLAGS -I/visualc/include/libxml2, $LDFLAGS_ARCH -llibxml2,
-                      libxml_ok, LIBXML_CFLAGS="-I/visualc/include/libxml2" LIBXML_LIBS="-llibxml2")
+        OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $CFLAGS_ARCH $CFLAGS -I/opt/visualc/include/libxml2, $LDFLAGS_ARCH -llibxml2,
+                      libxml_ok, LIBXML_CFLAGS="-I/opt/visualc/include/libxml2" LIBXML_LIBS="-llibxml2")
     fi
 fi
 
