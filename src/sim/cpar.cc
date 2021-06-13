@@ -416,7 +416,7 @@ void cPar::convertToConst()
     afterChange();
 }
 
-void cPar::parse(const char *text, const char *baseDirectory)
+void cPar::parse(const char *text, const char *baseDirectory, FileLine loc)
 {
     // Implementation note: we are trying to share cParImpl objects for
     // values coming from the configuration. This is possible because an
@@ -444,7 +444,7 @@ void cPar::parse(const char *text, const char *baseDirectory)
         cParImpl *tmp = p->dup();
         try {
             tmp->setBaseDirectory(baseDirectory);
-            tmp->parse(text);
+            tmp->parse(text, loc);
         }
         catch (std::exception& e) {
             delete tmp;

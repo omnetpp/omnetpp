@@ -20,6 +20,7 @@
 #include "cvalue.h"
 #include "cexpression.h"
 #include "cstringpool.h"
+#include "fileline.h"
 
 namespace omnetpp {
 
@@ -101,6 +102,7 @@ class SIM_API cDynamicExpression : public cExpression
   protected:
     common::Expression *expression = nullptr;
     IResolver *resolver = nullptr;
+    FileLine sourceLoc;
 
   private:
     void copy(const cDynamicExpression& other);
@@ -233,6 +235,18 @@ class SIM_API cDynamicExpression : public cExpression
      * like "2+2"). This can be used for optimization.
      */
     virtual bool isAConstant() const override;
+
+    /**
+     * Returns the file:line info where this expression was parsed from.
+     * Returns empty string if such info is not available.
+     */
+    void setSourceLocation(FileLine loc) {sourceLoc = loc;}
+
+    /**
+     * Returns the file:line info where this expression was parsed from.
+     * Returns empty string if such info is not available.
+     */
+    virtual std::string getSourceLocation() const override {return sourceLoc.str();}
 
     /**
      * Convert the given number into the target unit (e.g. milliwatt to watt).

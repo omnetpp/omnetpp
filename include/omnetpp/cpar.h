@@ -19,6 +19,7 @@
 #include "cownedobject.h"
 #include "cexpression.h"
 #include "cexception.h"
+#include "fileline.h"
 
 namespace omnetpp {
 
@@ -406,7 +407,7 @@ class SIM_API cPar : public cObject
      * Note: this method understands expressions too, but does NOT handle
      * the special values "default" and "ask".
      */
-    void parse(const char *text, const char *baseDirectory=nullptr);
+    void parse(const char *text, const char *baseDirectory=nullptr, FileLine loc=FileLine());
     //@}
 
     /** @name Overloaded assignment and conversion operators. */

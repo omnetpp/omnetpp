@@ -897,7 +897,7 @@ void EnvirBase::readParameter(cPar *par)
     }
     else if (!opp_isempty(str)) {
         try {
-            par->parse(str, entry.getBaseDirectory());
+            par->parse(str, entry.getBaseDirectory(), entry.getSourceLocation());
         }
         catch (std::exception& e) {
             throw cRuntimeError("%s -- at %s", e.what(), entry.getSourceLocation().str().c_str());

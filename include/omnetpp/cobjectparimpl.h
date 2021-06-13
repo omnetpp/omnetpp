@@ -206,7 +206,7 @@ class SIM_API cObjectParImpl : public cParImpl
     /**
      * Converts from text.
      */
-    virtual void parse(const char *text) override;
+    virtual void parse(const char *text, FileLine loc) override;
 
     /**
      * Object comparison.

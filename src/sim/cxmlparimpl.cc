@@ -131,11 +131,17 @@ cXMLElement *cXMLParImpl::xmlValue(cComponent *context) const
     if ((flags & FL_ISEXPR) == 0)
         return val;
     else {
-        cTemporaryOwner tmp(cTemporaryOwner::DestructorMode::DISPOSE); // eventually dispose of potential object result
-        cValue v = evaluate(expr, context);
-        if (v.type != cValue::OBJECT)
-            throw cRuntimeError(E_BADCAST, v.getTypeName(), "XML");
-        return v.xmlValue();
+        try {
+            cTemporaryOwner tmp(cTemporaryOwner::DestructorMode::DISPOSE); // eventually dispose of potential object result
+            cValue v = evaluate(expr, context);
+            if (v.type != cValue::OBJECT)
+                throw cRuntimeError(E_BADCAST, v.getTypeName(), "XML");
+            return v.xmlValue();
+        }
+        catch (std::exception& e) {
+            throw cRuntimeError(e, expr->getSourceLocation().c_str());
+        }
+
     }
 }
 
@@ -175,7 +181,7 @@ std::string cXMLParImpl::str() const
         return val ? val->str() : "nullptr";
 }
 
-void cXMLParImpl::parse(const char *text)
+void cXMLParImpl::parse(const char *text, FileLine loc)
 {
     // try parsing it as an expression
     cDynamicExpression *dynexpr = new cDynamicExpression();
@@ -186,6 +192,7 @@ void cXMLParImpl::parse(const char *text)
         delete dynexpr;
         throw;
     }
+    dynexpr->setSourceLocation(loc);
     setExpression(dynexpr);
 
     // simplify if possible: store as constant instead of expression

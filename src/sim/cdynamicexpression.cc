@@ -193,6 +193,7 @@ void cDynamicExpression::copy(const cDynamicExpression& other)
     delete resolver;
     expression = new Expression(*other.expression);
     resolver = other.resolver ? other.resolver->dup() : nullptr;
+    sourceLoc = other.sourceLoc;
 }
 
 cDynamicExpression& cDynamicExpression::operator=(const cDynamicExpression& other)

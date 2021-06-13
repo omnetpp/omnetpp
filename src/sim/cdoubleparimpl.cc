@@ -111,9 +111,14 @@ double cDoubleParImpl::doubleValue(cComponent *context) const
     if ((flags & FL_ISEXPR) == 0)
         return val;
     else {
-        cTemporaryOwner tmp(cTemporaryOwner::DestructorMode::DISPOSE); // eventually dispose of potential object result
-        cValue v = evaluate(expr, context);
-        return v.doubleValueInUnit(getUnit()); // allows conversion from INT
+        try {
+            cTemporaryOwner tmp(cTemporaryOwner::DestructorMode::DISPOSE); // eventually dispose of potential object result
+            cValue v = evaluate(expr, context);
+            return v.doubleValueInUnit(getUnit()); // allows conversion from INT
+        }
+        catch (std::exception& e) {
+            throw cRuntimeError(e, expr->getSourceLocation().c_str());
+        }
     }
 }
 
@@ -181,7 +186,7 @@ std::string cDoubleParImpl::str() const
     }
 }
 
-void cDoubleParImpl::parse(const char *text)
+void cDoubleParImpl::parse(const char *text, FileLine loc)
 {
     // try parsing it as an expression
     cDynamicExpression *dynexpr = new cDynamicExpression();
@@ -192,6 +197,7 @@ void cDoubleParImpl::parse(const char *text)
         delete dynexpr;
         throw;
     }
+    dynexpr->setSourceLocation(loc);
     setExpression(dynexpr);
 
     // simplify if possible: store as constant instead of expression

@@ -104,9 +104,14 @@ intval_t cIntParImpl::intValue(cComponent *context) const
     if ((flags & FL_ISEXPR) == 0)
         return val;
     else {
-        cTemporaryOwner tmp(cTemporaryOwner::DestructorMode::DISPOSE); // eventually dispose of potential object result
-        cValue v = evaluate(expr, context);
-        return v.intValueInUnit(getUnit());
+        try {
+            cTemporaryOwner tmp(cTemporaryOwner::DestructorMode::DISPOSE); // eventually dispose of potential object result
+            cValue v = evaluate(expr, context);
+            return v.intValueInUnit(getUnit());
+        }
+        catch (std::exception& e) {
+            throw cRuntimeError(e, expr->getSourceLocation().c_str());
+        }
     }
 }
 
@@ -178,7 +183,7 @@ std::string cIntParImpl::str() const
     }
 }
 
-void cIntParImpl::parse(const char *text)
+void cIntParImpl::parse(const char *text, FileLine loc)
 {
     // try parsing it as an expression
     cDynamicExpression *dynexpr = new cDynamicExpression();
@@ -189,6 +194,7 @@ void cIntParImpl::parse(const char *text)
         delete dynexpr;
         throw;
     }
+    dynexpr->setSourceLocation(loc);
     setExpression(dynexpr);
 
     // simplify if possible: store as constant instead of expression

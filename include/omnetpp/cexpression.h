@@ -206,6 +206,12 @@ class SIM_API cExpression : public cObject
      * like "2+2"). This can be used for optimization.
      */
     virtual bool isAConstant() const {return false;}
+
+    /**
+     * Returns the file:line info where this expression was parsed from.
+     * Returns empty string if such info is not available.
+     */
+    virtual std::string getSourceLocation() const = 0;
     //@}
 };
 

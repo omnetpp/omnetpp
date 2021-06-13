@@ -120,11 +120,16 @@ std::string cStringParImpl::stdstringValue(cComponent *context) const
     if ((flags & FL_ISEXPR) == 0)
         return val;
     else {
-        cTemporaryOwner tmp(cTemporaryOwner::DestructorMode::DISPOSE); // eventually dispose of potential object result
-        cValue v = evaluate(expr, context);
-        if (v.type != cValue::STRING)
-            throw cRuntimeError(E_BADCAST, v.getTypeName(), "string");
-        return v.stringValue();
+        try {
+            cTemporaryOwner tmp(cTemporaryOwner::DestructorMode::DISPOSE); // eventually dispose of potential object result
+            cValue v = evaluate(expr, context);
+            if (v.type != cValue::STRING)
+                throw cRuntimeError(E_BADCAST, v.getTypeName(), "string");
+            return v.stringValue();
+        }
+        catch (std::exception& e) {
+            throw cRuntimeError(e, expr->getSourceLocation().c_str());
+        }
     }
 }
 
@@ -174,7 +179,7 @@ std::string cStringParImpl::str() const
     return opp_quotestr(val);
 }
 
-void cStringParImpl::parse(const char *text)
+void cStringParImpl::parse(const char *text, FileLine loc)
 {
     // try parsing it as an expression
     cDynamicExpression *dynexpr = new cDynamicExpression();
@@ -185,6 +190,7 @@ void cStringParImpl::parse(const char *text)
         delete dynexpr;
         throw;
     }
+    dynexpr->setSourceLocation(loc);
     setExpression(dynexpr);
 
     // simplify if possible: store as constant instead of expression

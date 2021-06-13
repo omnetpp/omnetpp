@@ -197,19 +197,24 @@ cObject *cObjectParImpl::objectValue(cComponent *context) const
     if ((flags & FL_ISEXPR) == 0)
         return obj;
     else {
-        cTemporaryOwner tmp(cTemporaryOwner::DestructorMode::DISPOSE);
-        cValue v = evaluate(expr, context);
-        if (v.type != cValue::OBJECT)
-            throw cRuntimeError(E_BADCAST, v.getTypeName(), "object");
+        try {
+            cTemporaryOwner tmp(cTemporaryOwner::DestructorMode::DISPOSE);
+            cValue v = evaluate(expr, context);
+            if (v.type != cValue::OBJECT)
+                throw cRuntimeError(E_BADCAST, v.getTypeName(), "object");
 
-        cObject *obj = v.objectValue();
-        if (obj)
-            checkOwnership(obj, tmp);
+            cObject *obj = v.objectValue();
+            if (obj)
+                checkOwnership(obj, tmp);
 
-        cObjectParImpl *mutableThis = const_cast<cObjectParImpl*>(this);
-        mutableThis->doSetObject(obj);
-        checkType(obj);
-        return obj;
+            cObjectParImpl *mutableThis = const_cast<cObjectParImpl*>(this);
+            mutableThis->doSetObject(obj);
+            checkType(obj);
+            return obj;
+        }
+        catch (std::exception& e) {
+            throw cRuntimeError(e, expr->getSourceLocation().c_str());
+        }
     }
 }
 
@@ -307,7 +312,7 @@ std::string cObjectParImpl::str() const
         return "nullptr";
 }
 
-void cObjectParImpl::parse(const char *text)
+void cObjectParImpl::parse(const char *text, FileLine loc)
 {
     // try parsing it as an expression
     cDynamicExpression *dynexpr = new cDynamicExpression();
@@ -318,6 +323,7 @@ void cObjectParImpl::parse(const char *text)
         delete dynexpr;
         throw;
     }
+    dynexpr->setSourceLocation(loc);
     setExpression(dynexpr);
 
     // simplify if possible: store as constant instead of expression

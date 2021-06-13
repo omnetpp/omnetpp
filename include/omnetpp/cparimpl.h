@@ -20,6 +20,7 @@
 #include "cexpression.h"
 #include "cstringpool.h"
 #include "cexception.h"
+#include "fileline.h"
 
 namespace omnetpp {
 
@@ -318,7 +319,7 @@ class SIM_API cParImpl : public cNamedObject
      * If the text cannot be parsed, an exception is thrown, which
      * can be caught as std::runtime_error& if necessary.
      */
-    virtual void parse(const char *text) = 0;
+    virtual void parse(const char *text, FileLine loc) = 0;
 
     /**
      * Factory method: creates a parameter object representing the given type.
