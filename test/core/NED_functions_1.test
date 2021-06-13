@@ -1,5 +1,5 @@
 %description:
-Test registed NED functions. For convenience we use cDynamicExpression, not NED directly.
+Test registered NED functions. For convenience we use cDynamicExpression, not NED directly.
 
 %global:
 
@@ -146,6 +146,30 @@ P( choose(-1, "Zero One Two Three"));
 P( choose(4, "Zero One Two Three"));
 EV << "\n";
 
+P( get(['foo', 'bar', 'baz'], 0));
+P( get(['foo', 'bar', 'baz'], 2));
+P( get(['foo', 'bar', 'baz'], -1));
+P( get(['foo', 'bar', 'baz'], 3));
+P( get(['foo', 'bar', 'baz'], 'foo'));
+P( get(['foo', 'bar', 'baz'], false));
+P( get(['foo', 'bar', 'baz'], nullptr));
+EV << "\n";
+
+P( get({'f': 'foo', 'b': 'bar', 'z': 'baz'}, 'f'));
+P( get({'f': 'foo', 'b': 'bar', 'z': 'baz'}, 'x'));
+P( get({'f': 'foo', 'b': 'bar', 'z': 'baz'}, nullptr));
+P( get({'f': 'foo', 'b': 'bar', 'z': 'baz'}, 1));
+P( get({'f': 'foo', 'b': 'bar', 'z': 'baz'}, false));
+EV << "\n";
+
+P( size(['foo', 'bar', 'baz']));
+P( size({'f': 'foo', 'b': 'bar', 'z': 'baz'}));
+EV << "\n";
+
+P( dup(['foo', 'bar', ['b', 'a', 'z']]));
+P( dup({'f': 'foo', 'b': 'bar', 'z': ['b', 'a', 'z']}));
+EV << "\n";
+
 P( int(true));
 P( int(3.14));
 P( int(-3.14));
@@ -279,6 +303,26 @@ choose(2, "Zero One Two Three") ==> "Two"
 choose(3, "Zero One Two Three") ==> "Three"
 choose(-1, "Zero One Two Three") ==> choose(): Negative index
 choose(4, "Zero One Two Three") ==> choose(): Index out of bounds: 4
+
+get(['foo', 'bar', 'baz'], 0) ==> "foo"
+get(['foo', 'bar', 'baz'], 2) ==> "baz"
+get(['foo', 'bar', 'baz'], -1) ==> get(): (omnetpp::cValueArray)Test..array3: get(): index -1 is out of bounds
+get(['foo', 'bar', 'baz'], 3) ==> get(): (omnetpp::cValueArray)Test..array4: get(): index 3 is out of bounds
+get(['foo', 'bar', 'baz'], 'foo') ==> get(): Cannot cast "foo" from type string to integer
+get(['foo', 'bar', 'baz'], false) ==> get(): Cannot cast false from type bool to integer
+get(['foo', 'bar', 'baz'], nullptr) ==> get(): Cannot cast nullptr from type object to integer
+
+get({'f': 'foo', 'b': 'bar', 'z': 'baz'}, 'f') ==> "foo"
+get({'f': 'foo', 'b': 'bar', 'z': 'baz'}, 'x') ==> get(): (omnetpp::cValueMap)Test..map2: get(): No such key: "x"
+get({'f': 'foo', 'b': 'bar', 'z': 'baz'}, nullptr) ==> get(): Cannot cast nullptr from type object to string
+get({'f': 'foo', 'b': 'bar', 'z': 'baz'}, 1) ==> get(): Cannot cast 1 from type integer to string
+get({'f': 'foo', 'b': 'bar', 'z': 'baz'}, false) ==> get(): Cannot cast false from type bool to string
+
+size(['foo', 'bar', 'baz']) ==> 3
+size({'f': 'foo', 'b': 'bar', 'z': 'baz'}) ==> 3
+
+dup(['foo', 'bar', ['b', 'a', 'z']]) ==> ["foo", "bar", ["b", "a", "z"]]
+dup({'f': 'foo', 'b': 'bar', 'z': ['b', 'a', 'z']}) ==> {b: "bar", f: "foo", z: ["b", "a", "z"]}
 
 int(true) ==> 1
 int(3.14) ==> 3

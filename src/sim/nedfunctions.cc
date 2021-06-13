@@ -1289,7 +1289,7 @@ cValue nedf_get(cComponent *contextComponent, cValue argv[], int argc)
         return arr->get(index);
     }
     else if (cValueMap *map = dynamic_cast<cValueMap *>(obj)) {
-        std::string key = ii.getType() == cValue::STRING ? ii.stringValue() : ii.str();
+        std::string key = ii.stringValue();
         return map->get(key.c_str());
     }
     else
