@@ -37,7 +37,7 @@ namespace envir {
 class ENVIR_API InifileReader : public cConfigurationReader
 {
   protected:
-    class KeyValue1 : public KeyValue {
+    class IniKeyValue : public KeyValue {
       private:
         const std::string *basedir;  // points into basedirs[]
         FileLine loc;
@@ -45,7 +45,7 @@ class ENVIR_API InifileReader : public cConfigurationReader
         std::string value;
 
       public:
-        KeyValue1(const std::string *baseDir, const std::string *fileName, int line, const char *key, const char *value) :
+        IniKeyValue(const std::string *baseDir, const std::string *fileName, int line, const char *key, const char *value) :
             basedir(baseDir), loc(fileName->c_str(),line), key(key), value(value) {}
 
         // virtual functions implementing the KeyValue interface
@@ -64,7 +64,7 @@ class ENVIR_API InifileReader : public cConfigurationReader
 
     struct Section {
         std::string name;
-        std::vector<KeyValue1> entries;
+        std::vector<IniKeyValue> entries;
     };
     std::vector<Section> sections;
 

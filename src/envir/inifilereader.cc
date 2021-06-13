@@ -21,6 +21,7 @@
 #include "common/opp_ctype.h"
 #include "common/fileutil.h"  // directoryOf
 #include "common/stringutil.h"
+#include "common/stlutil.h"
 #include "common/stringtokenizer.h"
 #include "omnetpp/cexception.h"
 #include "inifilereader.h"
@@ -112,7 +113,7 @@ void InifileReader::doReadFile(const char *filename, int currentSectionIndex, st
 {
     // create an entry for this file, checking against circular inclusion
     std::string absoluteFilename = tidyFilename(toAbsolutePath(filename).c_str(), true);
-    if (find(includedFiles.begin(), includedFiles.end(), absoluteFilename) != includedFiles.end())
+    if (contains(includedFiles, absoluteFilename))
         throw cRuntimeError("Ini file '%s' includes itself, directly or indirectly", filename);
     filenames.insert(absoluteFilename);
 
@@ -214,7 +215,7 @@ void InifileReader::doReadFile(const char *filename, int currentSectionIndex, st
             if (key.empty())
                 throw cRuntimeError("Line must be in the form key=value, '%s' line %d", filename, lineNumber);
 
-            sections[currentSectionIndex].entries.push_back(KeyValue1(basedirRef, filenameRef, lineNumber, key.c_str(), value.c_str()));
+            sections[currentSectionIndex].entries.push_back(IniKeyValue(basedirRef, filenameRef, lineNumber, key.c_str(), value.c_str()));
         }
     });
 
