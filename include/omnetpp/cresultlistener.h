@@ -36,8 +36,6 @@ class SIM_API cResultListener : public cObject, public cIListener
         friend class cResultFilter;
     private:
         int delegatedCount = 0;
-    protected:
-        static const char *getPooled(const char *s);
     public:
         // simplified API that better supports chaining (needs to be public due to DemuxFilter)
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details) = 0;

@@ -29,8 +29,8 @@ namespace omnetpp {
 void cResultRecorder::init(cComponent *comp, const char *statsName, const char *recMode, cProperty *property, opp_string_map *attrs)
 {
     component = comp;
-    statisticName = getPooled(statsName);
-    recordingMode = getPooled(recMode);
+    statisticName = statsName;
+    recordingMode = recMode;
     attrsProperty = property;
     manualAttrs = attrs;
     if ((!attrsProperty) == (!manualAttrs))
@@ -41,7 +41,7 @@ cResultRecorder *cResultRecorder::clone() const
 {
     ASSERT(!finishCalled);
     cResultRecorder *copy = (cResultRecorder *)createOne(getClassName());
-    copy->init(component, statisticName, recordingMode, attrsProperty, manualAttrs ? new opp_string_map(*manualAttrs) : nullptr);
+    copy->init(component, statisticName.c_str(), recordingMode.c_str(), attrsProperty, manualAttrs ? new opp_string_map(*manualAttrs) : nullptr);
     return copy;
 }
 

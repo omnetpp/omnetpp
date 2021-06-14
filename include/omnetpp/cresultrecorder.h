@@ -19,6 +19,7 @@
 #include "cresultlistener.h"
 #include "ccomponent.h"
 #include "onstartup.h"
+#include "opp_pooledstring.h"
 #include "globals.h"
 
 namespace omnetpp {
@@ -68,9 +69,9 @@ class SIM_API cResultRecorder : public cResultListener
 {
     private:
         cComponent *component = nullptr;
-        const char *statisticName = nullptr;
-        const char *recordingMode = nullptr;
-        const char *demuxLabel = nullptr;
+        opp_pooledstring statisticName = nullptr;
+        opp_pooledstring recordingMode = nullptr;
+        opp_pooledstring demuxLabel = nullptr;
         cProperty *attrsProperty = nullptr;  // property to take result attributes from (normally @statistic[statisticName])
         opp_string_map *manualAttrs = nullptr; // if non-null, overrides attrsProperty
         bool finishCalled = false; // to prevent double-recording of scalar results based on multiple signals
@@ -96,10 +97,10 @@ class SIM_API cResultRecorder : public cResultListener
         virtual const char *getName() const override {return getStatisticName();}
         virtual std::string getFullPath() const override {return getComponent()->getFullPath() + "." + getResultName();}
         virtual cComponent *getComponent() const {return component;}
-        virtual const char *getStatisticName() const {return statisticName;}
-        virtual const char *getRecordingMode() const {return recordingMode;}
-        virtual const char *getDemuxLabel() const {return demuxLabel;}
-        virtual void setDemuxLabel(const char *s) {demuxLabel = getPooled(s);}
+        virtual const char *getStatisticName() const {return statisticName.c_str();}
+        virtual const char *getRecordingMode() const {return recordingMode.c_str();}
+        virtual const char *getDemuxLabel() const {return demuxLabel.c_str();}
+        virtual void setDemuxLabel(const char *s) {demuxLabel = s;}
         virtual std::string getResultName() const;
 };
 

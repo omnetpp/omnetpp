@@ -41,12 +41,6 @@ void cResultListener::unsubscribedFrom(cResultFilter *prev)
         delete this;
 }
 
-const char *cResultListener::getPooled(const char *s)
-{
-    static StaticStringPool namesPool;
-    return namesPool.get(s);
-}
-
 // original cIListener API that delegates to the simplified API:
 
 #define THROW(source, signalID, datatype, e) \
