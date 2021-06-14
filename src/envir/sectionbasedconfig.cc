@@ -83,8 +83,6 @@ static struct ConfigVarDescription { const char *name, *description; } configVar
 
 #define VARPOS_PREFIX    std::string("&")
 
-std::string SectionBasedConfiguration::Entry::nullBasedir;
-
 SectionBasedConfiguration::MatchableEntry::MatchableEntry(const MatchableEntry& e) :
     Entry(e),
     ownerPattern(e.ownerPattern ? new PatternMatcher(*e.ownerPattern) : nullptr),
@@ -122,13 +120,12 @@ void SectionBasedConfiguration::setCommandLineConfigOptions(const std::map<std::
 {
     ASSERT(activeConfig.empty()); // only allow setCommandLineConfigOptions() during setup
     commandLineOptions.clear();
-    const std::string *basedirRef = getPooledBaseDir(baseDir);
     for (const auto & it : options) {
         const char *key = it.first.c_str();
         const char *value = it.second.c_str();
         if (opp_isempty(value))
             throw cRuntimeError("Missing value for command-line option --%s", key);
-        commandLineOptions.push_back(Entry(basedirRef, key, value));
+        commandLineOptions.push_back(Entry(baseDir, key, value));
     }
     activateGlobalConfig();
 }
@@ -257,19 +254,13 @@ int SectionBasedConfiguration::resolveConfigName(const char *configName) const
 void SectionBasedConfiguration::activateGlobalConfig()
 {
     clear();
-    for (auto & e : commandLineOptions) {
-        std::string value = e.getValue(); // note: no substituteVariables(), too early for that
-        const std::string *basedirRef = getPooledBaseDir(e.getBaseDirectory());
-        addEntry(Entry(basedirRef, e.getKey(), value.c_str()));
-    }
+    for (auto & e : commandLineOptions)
+        addEntry(Entry(e.getBaseDirectory(), e.getKey(), e.getValue())); // note: no substituteVariables() on value, it's too early for that
     int sectionId = resolveConfigName("General");
     if (sectionId != -1) {
         for (int entryId = 0; entryId < ini->getNumEntries(sectionId); entryId++) {
-            // add entry to our tables
             const auto& e = ini->getEntry(sectionId, entryId);
-            std::string value = e.getValue(); // note: no substituteVariables(), too early for that
-            const std::string *basedirRef = getPooledBaseDir(e.getBaseDirectory());
-            addEntry(Entry(basedirRef, e.getKey(), value.c_str()));
+            addEntry(Entry(e.getBaseDirectory(), e.getKey(), e.getValue())); // note: no substituteVariables() on value, it's too early for that
         }
     }
 }
@@ -321,8 +312,7 @@ void SectionBasedConfiguration::activateConfig(const char *configName, int runNu
     for (auto & e : commandLineOptions) {
         std::string key = addWildcardIfNeeded(e.getKey());
         std::string value = substituteVariables(e.getValue());
-        const std::string *basedirRef = getPooledBaseDir(e.getBaseDirectory());
-        addEntry(Entry(basedirRef, key.c_str(), value.c_str(), FileLine("<commandline>",-1))); //TODO
+        addEntry(Entry(e.getBaseDirectory(), key.c_str(), value.c_str(), FileLine("<commandline>")));
     }
     for (int sectionId : sectionChain) {
         for (int entryId = 0; entryId < ini->getNumEntries(sectionId); entryId++) {
@@ -330,8 +320,7 @@ void SectionBasedConfiguration::activateConfig(const char *configName, int runNu
             const auto& e = ini->getEntry(sectionId, entryId);
             std::string key = addWildcardIfNeeded(e.getKey());
             std::string value = substituteVariables(e.getValue(), sectionId, entryId, variables, locationToVarName);
-            const std::string *basedirRef = getPooledBaseDir(e.getBaseDirectory());
-            addEntry(Entry(basedirRef, key.c_str(), value.c_str(), e.getSourceLocation()));
+            addEntry(Entry(e.getBaseDirectory(), key.c_str(), value.c_str(), e.getSourceLocation()));
         }
     }
 }
@@ -683,7 +672,7 @@ const char *SectionBasedConfiguration::substituteVariables(const char *value) co
 
     // returned string needs to be stringpooled
     std::string result = substituteVariables(value, -1, -1, variables, locationToVarName);
-    return stringPool.get(result.c_str());
+    return opp_staticpooledstring::get(result.c_str());
 }
 
 const char *SectionBasedConfiguration::getVariable(const char *varname) const
@@ -941,17 +930,6 @@ void SectionBasedConfiguration::splitKey(const char *key, std::string& outOwnerN
         outOwnerName.assign(key, lastDotPos - key);
         outBinName.assign(lastDotPos+1);
     }
-}
-
-const std::string *SectionBasedConfiguration::getPooledBaseDir(const char *basedir)
-{
-    StringSet::iterator it = basedirs.find(basedir);
-    if (it == basedirs.end()) {
-        basedirs.insert(basedir);
-        it = basedirs.find(basedir);
-    }
-    const std::string *basedirRef = &(*it);
-    return basedirRef;
 }
 
 int SectionBasedConfiguration::internalFindSection(const char *section) const

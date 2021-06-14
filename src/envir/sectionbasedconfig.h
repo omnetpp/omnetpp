@@ -25,7 +25,7 @@
 #include "common/stringpool.h"
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/cconfigreader.h"
-#include "omnetpp/cdynamicexpression.h" //FileLine, TODO
+#include "omnetpp/fileline.h"
 #include "envirdefs.h"
 #include "scenario.h"
 
@@ -48,25 +48,24 @@ class Scenario;
 class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
 {
   private:
-    typedef omnetpp::common::StaticStringPool StringPool;
+    typedef omnetpp::common::opp_staticpooledstring opp_staticpooledstring;
     typedef omnetpp::common::PatternMatcher PatternMatcher;
     typedef std::set<std::string> StringSet;
     typedef std::map<std::string,std::string> StringMap;
 
     class Entry : public cConfiguration::KeyValue {
       public:
-        static std::string nullBasedir;
-        const std::string *basedirRef; // points into basedirs[]
+        opp_staticpooledstring baseDir;
         std::string key;
         std::string value;
         FileLine loc;
-        Entry() {basedirRef = &nullBasedir;}
-        Entry(const std::string *bd, const char *k, const char *v, FileLine loc=FileLine()) : basedirRef(bd), key(k), value(v), loc(loc) {}
+        Entry() {}
+        Entry(const char *baseDir, const char *k, const char *v, FileLine loc=FileLine()) : baseDir(baseDir), key(k), value(v), loc(loc) {}
 
         // virtual functions implementing the KeyValue interface
         virtual const char *getKey() const override   {return key.c_str();}
         virtual const char *getValue() const override {return value.c_str();}
-        virtual const char *getBaseDirectory() const override {return basedirRef->c_str();}
+        virtual const char *getBaseDirectory() const override {return baseDir.c_str();}
         virtual FileLine getSourceLocation() const override {return loc;}
     };
 
@@ -140,8 +139,6 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     int activeRunNumber = 0;
     std::string runId;
 
-    StringSet basedirs;  // stores ini file locations (absolute paths)
-
     std::vector<Entry> entries; // entries of the activated configuration, with itervars substituted
     std::map<std::string,Entry> config; // config entries (i.e. keys not containing a dot or wildcard)
     std::map<std::string,SuffixBin> suffixBins;  // bins for each non-wildcard suffix
@@ -152,9 +149,6 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     StringMap locationToVarName; // location-to-varName, for identifying unnamed variables inside substituteVariables()
 
     NullEntry nullEntry;
-
-    // storage for values returned by substituteVariables()
-    mutable StringPool stringPool;
 
   private:
     void clear();
@@ -183,7 +177,6 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     bool internalGetConfigAsBool(cConfigOption *option, const std::vector<int>& sectionChain, const StringMap& variables, const StringMap& locationToVarName) const;
     static bool isIgnorableConfigKey(const char *ignoredKeyPatterns, const char *key);
     static cConfigOption *lookupConfigOption(const char *key);
-    const std::string *getPooledBaseDir(const char *basedir);
     virtual bool isEssentialOption(const char *key) const;
 
   public:
