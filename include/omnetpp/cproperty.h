@@ -21,8 +21,8 @@
 #include "simkerneldefs.h"
 #include "globals.h"
 #include "cobject.h"
-#include "cstringpool.h"
 #include "cproperties.h"
+#include "opp_pooledstring.h"
 
 namespace omnetpp {
 
@@ -47,25 +47,22 @@ class SIM_API cProperty : public cNamedObject
     };
 
   protected:
-    // property names, keys and values are all stringpooled to reduce memory consumption
-    static cStringPool stringPool;
-
     cProperties *ownerp = nullptr;
 
-    const char *indexString = nullptr;
-    mutable const char *fullName = nullptr;
+    opp_staticpooledstring indexString = nullptr;
+    mutable opp_staticpooledstring fullName = nullptr;
 
-    typedef std::vector<const char *> CharPtrVector;
-    CharPtrVector keyv;
-    std::vector<CharPtrVector> valuesv;
+    typedef std::vector<opp_staticpooledstring> Values;
+    std::vector<opp_staticpooledstring> keyv;
+    std::vector<Values> valuesv;
 
   private:
     void copy(const cProperty& other);
 
   protected:
-    static void releaseValues(CharPtrVector& vals);
     int findKey(const char *key) const;
-    CharPtrVector& getValuesVector(const char *key) const;
+    Values& getValuesVector(const char *key);
+    const Values& getValuesVector(const char *key) const;
 
   public:
     // internal: merge a property onto this one
@@ -177,7 +174,7 @@ class SIM_API cProperty : public cNamedObject
      * Returns the list of keys if this property. The default key is
      * listed as "".
      */
-    virtual const std::vector<const char *>& getKeys() const;
+    virtual std::vector<const char *> getKeys() const;
 
     /**
      * Returns true if the property contains the given key. Specify ""
