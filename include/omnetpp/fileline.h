@@ -16,7 +16,8 @@
 #ifndef __OMNETPP_FILELINE_H
 #define __OMNETPP_FILELINE_H
 
-#include "ccommbuffer.h"
+#include "simkerneldefs.h"
+#include "opp_pooledstring.h"
 
 namespace omnetpp {
 
@@ -26,7 +27,7 @@ namespace omnetpp {
 class SIM_API FileLine
 {
   private:
-    std::string file; //TODO pooled string or something
+    opp_staticpooledstring file;
     int line = -1;
   public:
     FileLine() {}
@@ -34,7 +35,7 @@ class SIM_API FileLine
     bool empty() const {return file.empty();}
     const char *getFilename() const {return file.c_str();}
     int getLineNumber() const {return line;}
-    std::string str() const {return empty() ? "" : line == -1 ? file : file + ":" + std::to_string(line);}
+    std::string str() const {return empty() ? "" : line == -1 ? file.str() : file.str() + ":" + std::to_string(line);}
 };
 
 }  // namespace omnetpp
