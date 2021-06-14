@@ -28,7 +28,7 @@ class HistogramInspectorConfigDialog;
 namespace omnetpp {
 namespace qtenv {
 
-class HistogramInspectorConfigDialog : public QDialog
+class QTENV_API HistogramInspectorConfigDialog : public QDialog
 {
     Q_OBJECT
 

@@ -20,11 +20,12 @@
 #include <string>
 #include <cstdint>
 #include <cmath>
+#include "qtenvdefs.h"
 
 namespace omnetpp {
 namespace qtenv {
 
-class ChartTickDecimal
+class QTENV_API ChartTickDecimal
 {
     // value == mantissa * pow(10, exponent)
     int64_t mantissa = 0;

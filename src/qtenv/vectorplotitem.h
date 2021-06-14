@@ -23,7 +23,7 @@
 namespace omnetpp {
 namespace qtenv {
 
-class VectorPlotItem : public QGraphicsItem
+class QTENV_API VectorPlotItem : public QGraphicsItem
 {
   public:
     enum PlottingMode {

@@ -31,7 +31,7 @@ class GraphComponent;
 /**
  * A vertex in a graph component.
  */
-class Vertex {
+class LAYOUT_API Vertex {
     public:
         /**
          * All neighbours of this vertex. Updated during building the graph.
@@ -99,7 +99,7 @@ class Vertex {
 /**
  * An edge between two vertices in a graph component.
  */
-class Edge {
+class LAYOUT_API Edge {
     public:
         /**
          * One of the vertices where the edge ends.
@@ -134,7 +134,7 @@ class Edge {
 /**
  * A graph or a connected component of a graph.
  */
-class GraphComponent {
+class LAYOUT_API GraphComponent {
     private:
         /**
          * True means this graphComponent owns the vertices and edges so it will

@@ -274,12 +274,12 @@ class SIM_API SimTime
     friend double operator/(short x, const SimTime& y) { return (long long)x / y; }
     friend double operator/(int x, const SimTime& y) { return (long long)x / y; }
     friend double operator/(long x, const SimTime& y) { return (long long)x / y; }
-    friend double operator/(long long x, const SimTime& y);
+    friend SIM_API double operator/(long long x, const SimTime& y);
     friend double operator/(unsigned short x, const SimTime& y) { return (unsigned long long)x / y; }
     friend double operator/(unsigned int x, const SimTime& y) { return (unsigned long long)x / y; }
     friend double operator/(unsigned long x, const SimTime& y) { return (unsigned long long)x / y; }
-    friend double operator/(unsigned long long x, const SimTime& y);
-    friend double operator/(const cPar& p, const SimTime& x);
+    friend SIM_API double operator/(unsigned long long x, const SimTime& y);
+    friend SIM_API double operator/(const cPar& p, const SimTime& x);
     //@}
 
     /** @name Misc operations and utilities */

@@ -28,7 +28,7 @@ class ForceDirectedEmbedding;
 /**
  * Various parameters driving the algorithm.
  */
-struct ForceDirectedParameters
+struct LAYOUT_API ForceDirectedParameters
 {
     /**
      * For bodies not initialized with a particular size.
@@ -155,7 +155,7 @@ struct ForceDirectedParameters
  * The actual value of the variable is the position, the first derivative is the velocity
  * and the second derivative is the acceleration.
  */
-class Variable {
+class LAYOUT_API Variable {
     protected:
         /**
          * Value of the variable.
@@ -287,7 +287,7 @@ class Variable {
 /**
  * A variable which has fix x and y coordinates but still has a free z coordinate.
  */
-class PointConstrainedVariable : public Variable {
+class LAYOUT_API PointConstrainedVariable : public Variable {
     public:
         PointConstrainedVariable(Pt position) : Variable(position) {
         }
@@ -308,7 +308,7 @@ class PointConstrainedVariable : public Variable {
 /**
  * Interface class for bodies.
  */
-class IBody {
+class LAYOUT_API IBody {
     protected:
         ForceDirectedEmbedding *embedding;
 
@@ -357,7 +357,7 @@ class IBody {
 /**
  * Interface class used by the force directed embedding to generate forces among bodies.
  */
-class IForceProvider {
+class LAYOUT_API IForceProvider {
     protected:
         ForceDirectedEmbedding *embedding;
 

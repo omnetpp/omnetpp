@@ -41,7 +41,7 @@ struct QTENV_API HighlightRange {
 // This is used as a proxy for GenericObjectTreeModel.
 // If the relevant property is set (not empty), it will only show
 // elements (objects/fields) which have that property on them.
-class PropertyFilteredGenericObjectTreeModel : public QSortFilterProxyModel {
+class QTENV_API PropertyFilteredGenericObjectTreeModel : public QSortFilterProxyModel {
     QString relevantProperty;
 
 public:

@@ -90,7 +90,7 @@ public:
 };
 
 
-class DummyOsgViewer: public IOsgViewer
+class QTENV_API DummyOsgViewer: public IOsgViewer
 {
     Q_OBJECT
 

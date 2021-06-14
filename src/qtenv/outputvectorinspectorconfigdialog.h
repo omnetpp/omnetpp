@@ -28,7 +28,7 @@ class OutputVectorInspectorConfigDialog;
 namespace omnetpp {
 namespace qtenv {
 
-class OutputVectorInspectorConfigDialog : public QDialog
+class QTENV_API OutputVectorInspectorConfigDialog : public QDialog
 {
     Q_OBJECT
 
