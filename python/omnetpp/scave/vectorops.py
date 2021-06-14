@@ -726,6 +726,32 @@ def timewinavg(r, window_size=1):
     return r
 
 
+@vector_operation("Time window thruput")
+def timewinthruput(r, window_size=1):
+    """
+    Calculates time windowed throughput: .
+    tout[k] = k * winSize,
+    yout[k] = sum of y values in the [(k-1)*winSize, k*winSize) interval divided by window_size
+    """
+    t = r['vectime']
+    v = r['vecvalue']
+
+    tb = np.arange(0, t[-1] + window_size, window_size)
+
+    hist, bins = np.histogram(t, bins=tb, weights=v)
+
+    r['vectime'] = bins[1:]
+    r['vecvalue'] = hist / window_size
+
+    if "title" in r:
+        r['title'] = r['title'] + " timewinthruput"
+    if "unit" in r:
+        r['unit'] = r['unit'] + "/s"
+    if "interpolationmode" in r:
+        r['interpolationmode'] = "linear"
+    return r
+
+
 @vector_operation("Window average", "winavg(window_size=10)")
 def winavg(r, window_size=10):
     """
