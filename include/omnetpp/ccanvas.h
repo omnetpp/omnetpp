@@ -21,6 +21,7 @@
 #include <vector>
 #include <cmath>
 #include "cownedobject.h"
+#include "opp_pooledstring.h"
 
 namespace omnetpp {
 
@@ -323,15 +324,15 @@ class SIM_API cFigure : public cOwnedObject
 
     private:
         static int lastId;
-        static cStringPool stringPool;
         int id;
-        double zIndex = 0;
         bool visible = true; // treated as structural change, for simpler handling
-        const char *tooltip = nullptr; // stringpool'd
+        bool hasTooltip = false;
+        double zIndex = 0;
+        opp_pooledstring tooltip;
         cObject *associatedObject = nullptr;
         Transform transform;
         std::vector<cFigure*> children;
-        const char *tags = nullptr; // stringpool'd
+        opp_pooledstring tags;
         uint64_t tagBits = 0;  // bit-to-tagname mapping is stored in cCanvas. Note: change to std::bitset if 64 tags are not enough
         uint8_t localChanges = 0;
         uint8_t subtreeChanges = 0;
@@ -510,7 +511,7 @@ class SIM_API cFigure : public cOwnedObject
         /**
          * Returns the tooltip of the figure, or nullptr if it does not have one.
          */
-        virtual const char *getTooltip() const {return tooltip;}
+        virtual const char *getTooltip() const {return hasTooltip ? tooltip.c_str() : nullptr;}
 
         /**
          * Sets the tooltip of the figure. Pass nullptr to clear the tooltip.
@@ -540,7 +541,7 @@ class SIM_API cFigure : public cOwnedObject
          * Tags may be used in the GUI displaying a canvas for implementing
          * layers or other kind of filtering.
          */
-        virtual const char *getTags() const {return tags;}
+        virtual const char *getTags() const {return tags.c_str();}
 
         /**
          * Sets the list of tags associated with the figure. This method accepts

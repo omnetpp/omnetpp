@@ -139,7 +139,6 @@ static const char *PKEY_INTERPOLATION = "interpolation";
 static const char *PKEY_TINT = "tint";
 
 int cFigure::lastId = 0;
-cStringPool cFigure::stringPool;
 
 std::map<std::string,cObjectFactory*> cCanvas::figureFactories;
 
@@ -817,7 +816,6 @@ cFigure::~cFigure()
 {
     for (auto & child : children)
         dropAndDelete(child);
-    stringPool.release(tags);
 }
 
 void cFigure::parse(cProperty *property)
@@ -961,12 +959,11 @@ double cFigure::getEffectiveZIndex() const
 
 void cFigure::setTooltip(const char *tooltip)
 {
-    // opp_strcmp treats nullptr and "" as the same, so we have to check for
-    // that here, because they are treated differently as figure tooltips.
-    if (((this->tooltip == nullptr) != (tooltip == nullptr))
-            || (opp_strcmp(this->tooltip, tooltip) != 0)) {
-        stringPool.release(this->tooltip);
-        this->tooltip = stringPool.get(tooltip);
+    bool newHasTooltip = tooltip != nullptr;
+    const char *newTooltip = opp_nulltoempty(tooltip);
+    if (hasTooltip != newHasTooltip || this->tooltip != newTooltip) {
+        hasTooltip = newHasTooltip;
+        this->tooltip = newTooltip;
         fire(CHANGE_OTHER);
     }
 }
@@ -981,11 +978,9 @@ void cFigure::setAssociatedObject(cObject *obj)
 
 void cFigure::setTags(const char *tags)
 {
-    if (opp_strcmp(this->tags, tags) == 0)
+    if (this->tags == tags)
         return;
-    const char *oldTags = this->tags;
-    stringPool.release(oldTags);
-    this->tags = stringPool.get(tags);
+    this->tags = tags;
     if (cCanvas *ownerCanvas = getCanvas())
         tagBits = ownerCanvas->parseTags(getTags());
     fire(CHANGE_TAGS);
