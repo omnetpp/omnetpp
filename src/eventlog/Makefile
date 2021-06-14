@@ -13,8 +13,8 @@ TARGET_LIB_FILES=$(OMNETPP_LIB_DIR)/$(LIBNAME)$(LIB_SUFFIX)
 # On Windows, the targets are different (DLLs go into the bin dir and separate export libs are created)
 ifeq ($(PLATFORM),win32.x86_64)
   ifeq ($(SHARED_LIBS),yes)
-    TARGET_LIB_FILES=$(OMNETPP_BIN_DIR)/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OMNETPP_LIB_DIR)/$(LIBNAME)$(A_LIB_SUFFIX)
-    ifeq ($(TOOLCHAIN_NAME),clangc2)
+    TARGET_LIB_FILES=$(OMNETPP_BIN_DIR)/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OMNETPP_LIB_DIR)/$(LIBNAME)$(IMPLIB_SUFFIX)
+    ifeq ($(TOOLCHAIN_NAME),clang-msabi)
       ifeq ($(MODE),debug)
         TARGET_LIB_FILES+=$(OMNETPP_BIN_DIR)/$(LIBNAME).pdb
       endif
@@ -66,10 +66,10 @@ $O/%$(SO_LIB_SUFFIX) : $(OBJS)
 	$(Q)$(SHLIB_LD) $(LDFLAGS) -o $O/$(LIBNAME)$(SO_LIB_SUFFIX) $(OBJS) $(IMPLIBS)
 
 # dynamically linked library + import lib (on Windows)
-$O/%$(DLL_LIB_SUFFIX) $O/%$(A_LIB_SUFFIX): $(OBJS)
+$O/%$(DLL_LIB_SUFFIX) $O/%$(IMPLIB_SUFFIX): $(OBJS)
 	@mkdir -p $O
 	@echo Creating DLL and import library: $@
-	$(Q)$(SHLIB_LD) $(LDFLAGS) -o $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OBJS) $(IMPLIBS) $(LDFLAG_IMPLIB)$O/$(LIBNAME)$(A_LIB_SUFFIX)
+	$(Q)$(SHLIB_LD) $(LDFLAGS) -o $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OBJS) $(IMPLIBS) $(LDFLAG_IMPLIB)$O/$(LIBNAME)$(IMPLIB_SUFFIX)
 else
 # statically linked library (on all platforms)
 $O/%$(A_LIB_SUFFIX) : $(OBJS)
