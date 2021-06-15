@@ -144,7 +144,7 @@ DEF(nedf_replaceUnit,
 
 cValue nedf_replaceUnit(cComponent *contextComponent, cValue argv[], int argc)
 {
-    const char *newUnit = cValue::getPooled((const char *)argv[1]);
+    const char *newUnit = (const char *)argv[1];
     argv[0].setUnit(newUnit);
     return argv[0];
 }
@@ -156,7 +156,7 @@ DEF(nedf_convertUnit,
 
 cValue nedf_convertUnit(cComponent *contextComponent, cValue argv[], int argc)
 {
-    const char *newUnit = cValue::getPooled((const char *)argv[1]);
+    const char *newUnit = (const char *)argv[1];
     argv[0].convertTo(newUnit);
     return argv[0];
 }
@@ -465,7 +465,7 @@ cValue nedf_int(cComponent *contextComponent, cValue argv[], int argc)
         case cValue::STRING: {
             std::string unit;
             double d = UnitConversion::parseQuantity(argv[0].stringValue(), unit);
-            return cValue(checked_int_cast<intval_t>(floor(d)), cValue::getPooled(unit.c_str()));
+            return cValue(checked_int_cast<intval_t>(floor(d)), unit.c_str());
         }
         case cValue::OBJECT:
             throw cRuntimeError("Cannot convert object to int");
@@ -493,7 +493,7 @@ cValue nedf_double(cComponent *contextComponent, cValue argv[], int argc)
         case cValue::STRING: {
             std::string unit;
             double d = UnitConversion::parseQuantity(argv[0].stringValue(), unit);
-            return cValue(d, cValue::getPooled(unit.c_str()));
+            return cValue(d, unit.c_str());
         }
         case cValue::OBJECT:
             throw cRuntimeError("Cannot convert object to double");

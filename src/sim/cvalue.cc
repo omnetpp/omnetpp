@@ -83,7 +83,7 @@ intval_t cValue::intValue() const
 {
     if (type != INT)
         cannotCastError(INT);
-    if (unit != nullptr)
+    if (!unit.empty())
         throw cRuntimeError("Attempt to use the value '%s' as a dimensionless number", str().c_str());
     return intv;
 }
@@ -137,7 +137,7 @@ double cValue::doubleValue() const
 {
     if (type != DOUBLE && type != INT)
         cannotCastError(DOUBLE);
-    if (unit != nullptr)
+    if (!unit.empty())
         throw cRuntimeError("Attempt to use the value '%s' as a dimensionless number", str().c_str());
     return type == DOUBLE ? dbl : intv;
 }
@@ -155,9 +155,9 @@ double cValue::doubleValueRaw() const
 double cValue::doubleValueInUnit(const char *targetUnit) const
 {
     if (type == DOUBLE)
-        return UnitConversion::convertUnit(dbl, unit, targetUnit);
+        return UnitConversion::convertUnit(dbl, unit.c_str(), targetUnit);
     else if (type == INT)
-        return UnitConversion::convertUnit(safeCastToDouble(intv), unit, targetUnit);
+        return UnitConversion::convertUnit(safeCastToDouble(intv), unit.c_str(), targetUnit);
     else
         cannotCastError(DOUBLE);
 }
@@ -165,7 +165,7 @@ double cValue::doubleValueInUnit(const char *targetUnit) const
 void cValue::convertTo(const char *targetUnit)
 {
     assertType(DOUBLE);
-    dbl = UnitConversion::convertUnit(dbl, unit, targetUnit);
+    dbl = UnitConversion::convertUnit(dbl, unit.c_str(), targetUnit);
     unit = targetUnit;
 }
 
@@ -198,34 +198,28 @@ double cValue::parseQuantity(const char *str, std::string& outActualUnit)
     return UnitConversion::parseQuantity(str, outActualUnit);
 }
 
-const char *cValue::getPooled(const char *s)
-{
-    static StaticStringPool stringPool;  // non-refcounted
-    return stringPool.get(s);
-}
-
 std::string cValue::str() const
 {
     char buf[32];
     switch (type) {
         case UNDEF: return "undefined";
         case BOOL: return bl ? "true" : "false";
-        case INT: sprintf(buf, "%" PRId64 "%s", (int64_t)intv, opp_nulltoempty(unit)); return buf;
+        case INT: sprintf(buf, "%" PRId64 "%s", (int64_t)intv, opp_nulltoempty(unit.c_str())); return buf;
         case DOUBLE: {
-            if (opp_isempty(unit)) {
+            if (unit.empty()) {
                 opp_dtoa(buf, "%g", dbl);
             }
             else {
-                double dbl = this->dbl;
-                const char *unit = this->unit;
-                if (dbl < 0.1 || dbl >= 10000) {
-                    unit = UnitConversion::getBestUnit(dbl, unit);
-                    dbl = UnitConversion::convertUnit(dbl, this->unit, unit);
+                double value = dbl;
+                const char *displayUnit = unit.c_str();
+                if (value < 0.1 || value >= 10000) {
+                    displayUnit = UnitConversion::getBestUnit(value, displayUnit);
+                    value = UnitConversion::convertUnit(value, unit.c_str(), displayUnit);
                 }
-                opp_dtoa(buf, "%g", dbl);
-                if (!std::isfinite(dbl))
+                opp_dtoa(buf, "%g", value);
+                if (!std::isfinite(value))
                     strcat(buf, " ");
-                strcat(buf, unit);
+                strcat(buf, displayUnit);
             }
             return buf;
         }
@@ -243,8 +237,8 @@ bool cValue::operator==(const cValue& other)
     switch (type) {
         case UNDEF: return true;
         case BOOL: return bl == other.bl;
-        case INT: return intv == other.intv && opp_strcmp(unit, other.unit) == 0;
-        case DOUBLE: return dbl == other.dbl && opp_strcmp(unit, other.unit) == 0;
+        case INT: return intv == other.intv && opp_strcmp(unit.c_str(), other.unit.c_str()) == 0;
+        case DOUBLE: return dbl == other.dbl && opp_strcmp(unit.c_str(), other.unit.c_str()) == 0;
         case STRING: return s == other.s;
         case OBJECT: return obj == other.obj; // same object
         default: throw cRuntimeError("Internal error: Invalid cValue type");

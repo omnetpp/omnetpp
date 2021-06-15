@@ -19,6 +19,7 @@
 #include <string>
 #include "simkerneldefs.h"
 #include "cexception.h"
+#include "opp_pooledstring.h"
 #include "simutil.h"
 
 namespace omnetpp {
@@ -37,18 +38,6 @@ class cDynamicExpression;
  * With type==OBJECT, cValue only remembers the object's pointer, and does
  * nothing extra on top of that. The object's ownership is unaffected,
  * and cValue will never delete or clone the object.
- *
- * <b>Measurement unit strings:</b>
- *
- * For performance reasons, the functions that store a measurement unit
- * will only store the <tt>const char *</tt> pointer and not copy the
- * string itself. Consequently, the passed unit pointers must stay valid
- * at least during the lifetime of the cValue object, or even longer
- * if the same pointer propagates to other cValue objects. It is recommended
- * that you only pass pointers that stay valid during the entire simulation.
- * It is safe to use: (1) string constants from the code; (2) units strings
- * from other cValues; and (3) stringpooled strings, e.g. from the
- * getPooled() method or from cStringPool.
  *
  * @see cDynamicExpression, cNedFunction, Define_NED_Function()
  * @ingroup SimSupport
@@ -78,7 +67,7 @@ class SIM_API cValue
     bool bl;
     intval_t intv;
     double dbl;
-    const char *unit; // for INT/DOUBLE; must point to string constant or pooled string; may be nullptr
+    opp_staticpooledstring unit = nullptr; // for INT/DOUBLE; may be nullptr
     std::string s;
     cObject *obj;
     static const char *OVERFLOW_MSG;
@@ -181,16 +170,6 @@ class SIM_API cValue
      * is given instead of time), the method throws an exception.
      */
     static double parseQuantity(const char *str, std::string& outActualUnit);
-
-    /**
-     * Returns a copy of the string that is guaranteed to stay valid
-     * until the program exits. Multiple calls with identical strings as
-     * parameter will return the same copy. Useful for getting measurement
-     * unit strings suitable for cValue; see related class comment.
-     *
-     * @see cStringPool, setUnit(), convertTo()
-     */
-    static const char *getPooled(const char *s);
     //@}
 
     /** @name Setter functions. Note that overloaded assignment operators also exist. */
@@ -241,7 +220,7 @@ class SIM_API cValue
      * The unit string pointer is expected to stay valid during the entire
      * duration of the simulation (see related class comment).
      */
-    void setUnit(const char* unit);
+    void setUnit(const char *unit);
 
     /**
      * Permanently converts this value to the given unit. The value must
@@ -338,7 +317,7 @@ class SIM_API cValue
      * Returns the unit ("s", "mW", "Hz", "bps", etc), or nullptr if there was no
      * unit was specified. Unit is only valid for the DOUBLE and INT types.
      */
-    const char *getUnit() const {return (type==DOUBLE || type==INT) ? unit : nullptr;}
+    const char *getUnit() const {return (type==DOUBLE || type==INT) ? unit.c_str() : nullptr;}
 
     /**
      * Returns value as const char *. The type must be STRING.
