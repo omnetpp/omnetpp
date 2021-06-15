@@ -178,7 +178,7 @@ class SCAVE_API JoinedDataTable : public DataTable
         virtual BigDecimal getBigDecimalValue(int row, int col) const override;
         virtual std::string getStringValue(int row, int col) const override;
     private:
-        void addColumn(const Column& column, int tableIndex, int colIndex);
+        inline void addColumn(const Column& column, int tableIndex, int colIndex);
         void mapTableCell(int row, int column, DataTable *&table, int& tableRow, int& tableCol) const;
 };
 

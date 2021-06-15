@@ -57,9 +57,9 @@ class SCAVE_API ResultItemField
         explicit ResultItemField(const std::string& fieldName);
         int getID() const { return id; }
         const std::string& getName() const { return name; };
-        const std::string& getFieldValue(const ResultItem& d) const ;
-        bool equal(const ResultItem& d1, const ResultItem& d2) const;
-        int compare(const ResultItem& d1, const ResultItem& d2) const;
+        inline const std::string& getFieldValue(const ResultItem& d) const ;
+        inline bool equal(const ResultItem& d1, const ResultItem& d2) const;
+        inline int compare(const ResultItem& d1, const ResultItem& d2) const;
 };
 
 class SCAVE_API ResultItemAttribute

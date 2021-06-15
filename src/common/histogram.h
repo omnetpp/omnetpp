@@ -39,18 +39,18 @@ class COMMON_API Histogram {
         void clear() {bins.clear();}
 
         void reserveBins(int expectedNumberOfBins) {bins.reserve(expectedNumberOfBins);}
-        void addBin(double lowerBound, double count = 0);
-        void collect(double value, double weight = 1);
-        void collectIntoBin(int k, double weight = 1);
+        inline void addBin(double lowerBound, double count = 0);
+        inline void collect(double value, double weight = 1);
+        inline void collectIntoBin(int k, double weight = 1);
 
         const std::vector<Bin>& getBins() const {return bins;}
-        std::vector<double> getBinLowerBounds() const;
-        std::vector<double> getBinValues() const;
+        inline std::vector<double> getBinLowerBounds() const;
+        inline std::vector<double> getBinValues() const;
 
         int getNumBins() const {return bins.size();}
-        double getBinLowerBound(int k) const;
-        double getBinUpperBound(int k) const;
-        double getBinValue(int k) const;
+        inline double getBinLowerBound(int k) const;
+        inline double getBinUpperBound(int k) const;
+        inline double getBinValue(int k) const;
 };
 
 inline void Histogram::addBin(double lowerBound, double count)

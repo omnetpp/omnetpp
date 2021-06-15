@@ -403,7 +403,7 @@ class SCAVE_API ResultFileManager
     int addHistogram(FileRun *fileRunRef, const char *moduleName, const char *histogramName, const Statistics& stat, const Histogram& bins, const StringMap& attrs);
     void addStatisticsFieldsAsScalars(FileRun *fileRunRef, const char *moduleName, const char *statisticsName, const Statistics& stat);
 
-    ResultFile *getFileForID(ID id) const; // checks for nullptr
+    inline ResultFile *getFileForID(ID id) const; // checks for nullptr
 
     void addNumericIterationVariableAsScalar(FileRun *fileRunRef, const char *name, const char *value);
 
@@ -411,11 +411,11 @@ class SCAVE_API ResultFileManager
     void collectIDs(IDList& result, std::vector<T> ResultFile::* vec, int type, bool includeComputed, bool includeFields, bool includeItervars) const;
 
     // unchecked getters are only for internal use by CmpBase in idlist.cc
-    const ResultItem& uncheckedGetItem(ID id) const;
-    const ScalarResult& uncheckedGetScalar(ID id) const;
-    const VectorResult& uncheckedGetVector(ID id) const;
-    const StatisticsResult& uncheckedGetStatistics(ID id) const;
-    const HistogramResult& uncheckedGetHistogram(ID id) const;
+    inline const ResultItem& uncheckedGetItem(ID id) const;
+    inline const ScalarResult& uncheckedGetScalar(ID id) const;
+    inline const VectorResult& uncheckedGetVector(ID id) const;
+    inline const StatisticsResult& uncheckedGetStatistics(ID id) const;
+    inline const HistogramResult& uncheckedGetHistogram(ID id) const;
 
   public:
     ResultFileManager();
@@ -444,7 +444,7 @@ class SCAVE_API ResultFileManager
     const HistogramResult& getHistogram(ID id) const;
     static int getTypeOf(ID id) {return _type(id);} // SCALAR/VECTOR/STATISTICS/HISTOGRAM
 
-    bool isStaleID(ID id) const;
+    inline bool isStaleID(ID id) const;
     bool hasStaleID(const IDList& ids) const;
 
     // the following are needed for filter combos
