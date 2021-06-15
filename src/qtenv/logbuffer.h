@@ -61,7 +61,10 @@ class QTENV_API LogBuffer : public QObject
         std::vector<Line> lines;
         std::vector<MessageSend> msgs;
 
-        bool isEvent();
+        Entry(eventnumber_t e, simtime_t t, cModule *mod, const char *banner);
+
+        bool isEvent() { return componentId > 0; }
+
         ~Entry();
     };
 
@@ -71,7 +74,6 @@ class QTENV_API LogBuffer : public QObject
     int entriesDiscarded = 0;
 
     void discardEventsIfLimitExceeded();
-    void fillEntry(Entry *entry, eventnumber_t e, simtime_t t, cModule *mod, const char *banner);
 
     // Makes our privateDups of the logged messages easily accessible.
     // Every message is duplicated once each time it is sent.

@@ -28,9 +28,10 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace qtenv {
 
-bool LogBuffer::Entry::isEvent()
+LogBuffer::Entry::Entry(eventnumber_t e, simtime_t t, cModule *mod, const char *banner)
+    : eventNumber(e), simtime(t), componentId(mod ? (mod->getId()) : 0), banner(banner)
 {
-    return componentId > 0;
+
 }
 
 LogBuffer::Entry::~Entry()
@@ -47,19 +48,10 @@ LogBuffer::Entry::~Entry()
 
 //----
 
-void LogBuffer::fillEntry(Entry *entry, eventnumber_t e, simtime_t t, cModule *mod, const char *banner)
-{
-    entry->eventNumber = e;
-    entry->simtime = t;
-    entry->banner = banner;
-    entry->componentId = mod ? mod->getId() : 0;
-}
-
 void LogBuffer::addEvent(eventnumber_t e, simtime_t t, cModule *mod, const char *banner)
 {
-    Entry *entry = new Entry();
+    Entry *entry = new Entry(e, t, mod, opp_strdup(banner));
     entries.push_back(entry);
-    fillEntry(entry, e, t, mod, opp_strdup(banner));
     discardEventsIfLimitExceeded();
 
     emit logEntryAdded();
@@ -68,9 +60,8 @@ void LogBuffer::addEvent(eventnumber_t e, simtime_t t, cModule *mod, const char 
 void LogBuffer::addInitialize(cComponent *component, const char *banner)
 {
     if (entries.empty()) {
-        Entry *entry = new Entry();
+        Entry *entry = new Entry(0, simTime(), getSimulation()->getSystemModule(), opp_strdup("** Initializing network\n"));
         entries.push_back(entry);
-        fillEntry(entry, 0, simTime(), getSimulation()->getSystemModule(), opp_strdup("** Initializing network\n"));
     }
 
     Entry *entry = entries.back();
@@ -86,9 +77,8 @@ void LogBuffer::addInitialize(cComponent *component, const char *banner)
 void LogBuffer::addLogLine(LogLevel logLevel, const char *prefix, const char *text, int len)
 {
     if (entries.empty()) {
-        Entry *entry = new Entry();
+        Entry *entry = new Entry(0, simTime(), nullptr, nullptr);
         entries.push_back(entry);
-        fillEntry(entry, 0, simTime(), nullptr, nullptr);
     }
 
     // FIXME if last line is "info" then we cannot append to it! create new entry with empty banner?
@@ -104,9 +94,8 @@ void LogBuffer::addLogLine(LogLevel logLevel, const char *prefix, const char *te
 void LogBuffer::addInfo(const char *text, int len)
 {
     // TODO ha inline info (contextmodule!=nullptr), sima logline-kent adjuk hozza!!!!
-    Entry *entry = new Entry();
+    Entry *entry = new Entry(0, simTime(), nullptr, opp_strndup(text, len));
     entries.push_back(entry);
-    fillEntry(entry, 0, simTime(), nullptr, opp_strndup(text, len));
     discardEventsIfLimitExceeded();
 
     emit logEntryAdded();
