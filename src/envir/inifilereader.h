@@ -25,9 +25,12 @@
 #include <functional>
 #include "omnetpp/cconfigreader.h"
 #include "envirdefs.h"
+#include "common/stringpool.h"
 
 namespace omnetpp {
 namespace envir {
+
+using common::opp_staticpooledstring;
 
 /**
  * Low-level inifile reading, including the resolution of includes.
@@ -39,28 +42,24 @@ class ENVIR_API InifileReader : public cConfigurationReader
   protected:
     class IniKeyValue : public KeyValue {
       private:
-        const std::string *basedir;  // points into basedirs[]
+        opp_staticpooledstring baseDir;
         FileLine loc;
         std::string key;
         std::string value;
 
       public:
-        IniKeyValue(const std::string *baseDir, const std::string *fileName, int line, const char *key, const char *value) :
-            basedir(baseDir), loc(fileName->c_str(),line), key(key), value(value) {}
+        IniKeyValue(const char *baseDir, const char *fileName, int line, const char *key, const char *value) :
+            baseDir(baseDir), loc(fileName,line), key(key), value(value) {}
 
         // virtual functions implementing the KeyValue interface
         virtual const char *getKey() const override   {return key.c_str();}
         virtual const char *getValue() const override {return value.c_str();}
-        virtual const char *getBaseDirectory() const override  {return basedir->c_str();}
+        virtual const char *getBaseDirectory() const override  {return baseDir.c_str();}
         virtual FileLine getSourceLocation() const override {return loc;}
     };
 
     std::string rootFilename;  // name of "root" ini file read
     std::string defaultBasedir; // the default base directory
-
-    typedef std::set<std::string> StringSet;
-    StringSet filenames; // stores ini file names (absolute paths) --TODO not really needed
-    StringSet basedirs;  // stores base directory names (absolute paths)  --TODO not really needed
 
     struct Section {
         std::string name;

@@ -113,18 +113,10 @@ void InifileReader::doReadFile(const char *filename, int currentSectionIndex, st
 {
     // create an entry for this file, checking against circular inclusion
     std::string absoluteFilename = tidyFilename(toAbsolutePath(filename).c_str(), true);
+    std::string baseDir = directoryOf(absoluteFilename.c_str());
+
     if (contains(includedFiles, absoluteFilename))
         throw cRuntimeError("Ini file '%s' includes itself, directly or indirectly", filename);
-    filenames.insert(absoluteFilename);
-
-    // base dir
-    std::string absoluteFileDir = directoryOf(absoluteFilename.c_str());
-    if (basedirs.find(absoluteFileDir) == basedirs.end())
-        basedirs.insert(absoluteFileDir);
-
-    // get a reference to the string instance in filenames[], we'll refer to it in KeyValue
-    const std::string *filenameRef = &(*filenames.find(absoluteFilename));
-    const std::string *basedirRef = &(*basedirs.find(absoluteFileDir));
 
     // open and read this file
     std::ifstream in(filename, std::ios::in);
@@ -215,7 +207,7 @@ void InifileReader::doReadFile(const char *filename, int currentSectionIndex, st
             if (key.empty())
                 throw cRuntimeError("Line must be in the form key=value, '%s' line %d", filename, lineNumber);
 
-            sections[currentSectionIndex].entries.push_back(IniKeyValue(basedirRef, filenameRef, lineNumber, key.c_str(), value.c_str()));
+            sections[currentSectionIndex].entries.push_back(IniKeyValue(baseDir.c_str(), absoluteFilename.c_str(), lineNumber, key.c_str(), value.c_str()));
         }
     });
 
