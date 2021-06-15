@@ -169,22 +169,6 @@ public:
     static SimTime getReferenceTime() { return referenceTime; }
 };
 
-
-class QTENV_API AbstractEventEntryFilter {
-public:
-    virtual bool matches(LogBuffer::Entry *entry) = 0;
-};
-
-class QTENV_API ModulePathsEventEntryFilter : public AbstractEventEntryFilter {
-    QStringList moduleFullPaths;
-    ComponentHistory *componentHistory;
-
-public:
-    ModulePathsEventEntryFilter(const QStringList &moduleFullPaths, ComponentHistory *componentHistory);
-
-    bool matches(LogBuffer::Entry *entry) override;
-};
-
 class QTENV_API ModuleOutputContentProvider: public TextViewerContentProvider {
     Q_OBJECT
 
@@ -193,7 +177,6 @@ class QTENV_API ModuleOutputContentProvider: public TextViewerContentProvider {
 
     ComponentHistory *componentHistory;
     cComponent *inspectedComponent;
-    AbstractEventEntryFilter *filter = nullptr; // currently not used
     AbstractEventEntryLinesProvider *linesProvider;
 
     std::set<int> excludedModuleIds;
@@ -213,9 +196,6 @@ public:
     ComponentHistory *getComponentHistory() { return componentHistory; }
     cComponent *getInspectedComponent() { return inspectedComponent; }
     AbstractEventEntryLinesProvider *getLinesProvider() { return linesProvider; }
-
-    void setFilter(AbstractEventEntryFilter *filter);
-    AbstractEventEntryFilter *getFilter() { return filter; }
 
     void setExcludedModuleIds(std::set<int> excludedModuleIds);
 

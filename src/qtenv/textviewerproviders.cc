@@ -77,15 +77,6 @@ ModuleOutputContentProvider::ModuleOutputContentProvider(Qtenv *qtenv, cComponen
     connect(logBuffer, SIGNAL(entryDiscarded(LogBuffer::Entry *)), this, SLOT(onEntryDiscarded(LogBuffer::Entry *)));
 }
 
-void ModuleOutputContentProvider::setFilter(AbstractEventEntryFilter *filter)
-{
-    if (filter != this->filter) {  // TODO: equality by content?
-        this->filter = filter;
-        invalidateIndex();
-        emit textChanged();
-    }
-}
-
 void ModuleOutputContentProvider::setExcludedModuleIds(std::set<int> excludedModuleIds)
 {
     this->excludedModuleIds = excludedModuleIds;
@@ -140,7 +131,6 @@ QString ModuleOutputContentProvider::getLineText(int lineIndex)
 
     int entryIndex = getIndexOfEntryAt(lineIndex);
     LogBuffer::Entry *eventEntry = logBuffer->getEntries()[entryIndex];
-    Q_ASSERT(!filter || filter->matches(eventEntry));
 
     auto lineText = linesProvider->getLineText(eventEntry, lineIndex - entryStartLineNumbers[entryIndex]);
     while (lineText.endsWith('\n'))
@@ -192,8 +182,6 @@ void *ModuleOutputContentProvider::getUserData(int lineIndex)
 
     int entryIndex = getIndexOfEntryAt(lineIndex);
     LogBuffer::Entry *eventEntry = logBuffer->getEntries()[entryIndex];
-    Q_ASSERT(!filter || filter->matches(eventEntry));
-
     return linesProvider->getMessageForLine(eventEntry, lineIndex - entryStartLineNumbers[entryIndex]);
 }
 
@@ -203,7 +191,6 @@ eventnumber_t ModuleOutputContentProvider::getEventNumberAtLine(int lineIndex)
     if (entryIndex < 0 || entryIndex >= logBuffer->getNumEntries())
         return -1;
     LogBuffer::Entry *eventEntry = logBuffer->getEntries()[entryIndex];
-    Q_ASSERT(!filter || filter->matches(eventEntry));
     return eventEntry->eventNumber;
 };
 
@@ -230,7 +217,7 @@ int ModuleOutputContentProvider::getIndexOfEntryAt(int lineIndex)
                 lineIndex) - entryStartLineNumbers.begin() - 1;
 
     // entryStartLineNumber[] contains one slot for ALL event entries, even those that
-    // don't match the filter; so we have to find the LAST slot with the same line number,
+    // contribute zero lines, so we have to find the LAST slot with the same line number,
     // and that will be the matching entry
     int baseLineNumber = entryStartLineNumbers[entryIndex];
     while (entryIndex+1 < (int)entryStartLineNumbers.size() && entryStartLineNumbers[entryIndex+1] == baseLineNumber)
@@ -246,19 +233,14 @@ void ModuleOutputContentProvider::rebuildIndex()
     }*/
 
     // recompute line numbers. note: entryStartLineNumber[] contains one slot
-    // for ALL event entries, even those that don't match the filter!
+    // for ALL event entries, even those that contribute zero lines!
     int n = logBuffer->getNumEntries();
     entryStartLineNumbers.resize(n);
 
     int currentLineNumber = 0;
     for (int i = 0; i < n; i++) {
         entryStartLineNumbers[i] = currentLineNumber;
-
         LogBuffer::Entry *entry = logBuffer->getEntries()[i];
-
-        if (filter && !filter->matches(entry)) // currently not even necessary, filter is always null
-            continue;
-
         currentLineNumber += linesProvider->getNumLines(entry);
     }
 
@@ -669,31 +651,6 @@ void EventEntryMessageLinesProvider::setReferenceTime(SimTime rt)
 {
     referenceTime = rt;
     getQtenv()->refreshInspectors();
-}
-
-
-ModulePathsEventEntryFilter::ModulePathsEventEntryFilter(const QStringList& moduleFullPaths, ComponentHistory *componentHistory)
-    : moduleFullPaths(moduleFullPaths), componentHistory(componentHistory)
-{
-}
-
-bool ModulePathsEventEntryFilter::matches(LogBuffer::Entry *entry)
-{
-    QString moduleFullPath = componentHistory->getComponentFullPath(entry->componentId).c_str();
-
-    // check if moduleFullPath is the same (or prefix of) one of the filter module paths
-    for (QString& filterModule : moduleFullPaths) {
-        // try to avoid calling String.startsWith(), so first check last-but-one char, as that is
-        // likely to differ (it's the last digit of the index if filter ends in a vector submodule)
-        int filterModuleLength = filterModule.length();
-        if (moduleFullPath.length() >= filterModuleLength)
-            if (filterModuleLength < 2 || moduleFullPath.at(filterModuleLength-2) == filterModule.at(filterModuleLength-2))
-                if (moduleFullPath.startsWith(filterModule))  // this is the most expensive operation
-                    if (moduleFullPath.length() == filterModuleLength || moduleFullPath.at(filterModuleLength) == '.')
-                        return true;
-
-    }
-    return false;
 }
 
 }  // namespace qtenv
