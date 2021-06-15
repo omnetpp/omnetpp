@@ -5,7 +5,7 @@ Tests stringutil.h functions
 #include <common/stringutil.h>
 
 %global:
-using namespace omnetpp::common;
+using omnetpp::common::opp_strdictcmp;
 
 static int sgn(int i)
 {

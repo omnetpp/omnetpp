@@ -5,7 +5,8 @@ Tests stringutil.h functions
 #include <common/stringutil.h>
 
 %global:
-using namespace omnetpp::common;
+using omnetpp::common::opp_trim;
+using omnetpp::common::opp_quotestr;
 
 %activity:
 #define P(x) EV << #x << " = " << opp_quotestr(x) << endl;
