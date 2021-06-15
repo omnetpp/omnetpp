@@ -138,7 +138,7 @@ inline void ExprNode::ensureNumericArg(const ExprValue& actual)
 
 inline void ExprNode::ensureNoLogarithmicUnit(const ExprValue& value)
 {
-    if (!opp_isempty(value.unit) && !UnitConversion::isLinearUnit(value.unit))
+    if (!value.unit.empty() && !UnitConversion::isLinearUnit(value.unit.c_str()))
         throw opp_runtime_error("Refusing to perform computations involving quantities with nonlinear units (%s)", value.str().c_str());
 }
 
@@ -146,14 +146,14 @@ inline void ExprNode::ensureNumericNoLogarithmicUnit(const ExprValue& value)
 {
     if (value.type != ExprValue::INT && value.type != ExprValue::DOUBLE)
         errorNumericArgExpected(value);
-    if (!opp_isempty(value.unit) && !UnitConversion::isLinearUnit(value.unit))
+    if (!value.unit.empty() && !UnitConversion::isLinearUnit(value.unit.c_str()))
         throw opp_runtime_error("Refusing to perform computations involving quantities with nonlinear units (%s)", value.str().c_str());
 }
 
 inline void ExprNode::ensureDimlessDoubleArg(ExprValue& value)
 {
     value.convertToDouble();
-    if (!opp_isempty(value.unit))
+    if (!value.unit.empty())
         errorDimlessArgExpected(value);
 }
 

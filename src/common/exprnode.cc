@@ -78,7 +78,7 @@ void ExprNode::bringToCommonTypeAndUnit(ExprValue& a, ExprValue& b)
     // do it in double, or fail due to incompatible units
     a.convertToDouble();
     b.convertToDouble();
-    a.dbl = UnitConversion::convertUnit(a.dbl, a.unit, b.unit);
+    a.dbl = UnitConversion::convertUnit(a.dbl, a.unit.c_str(), b.unit.c_str());
     a.unit = b.unit;
 }
 

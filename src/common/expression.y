@@ -397,14 +397,13 @@ numliteral
                 { $<node>$ = newConstant(1/0.0); }
         | quantity
                 {
-                  std::string unitstr;
-                  double d = parseQuantity($<str>1, unitstr);
-                  const char *unit = ExprValue::getPooled(unitstr.c_str());
+                  std::string unit;
+                  double d = parseQuantity($<str>1, unit);
                   intval_t l = (intval_t)d;
                   if (d == l)
-                      $<node>$ = newConstant(ExprValue(l, unit));
+                      $<node>$ = newConstant(ExprValue(l, unit.c_str()));
                   else
-                      $<node>$ = newConstant(ExprValue(d, unit));
+                      $<node>$ = newConstant(ExprValue(d, unit.c_str()));
                   delete [] $<str>1;
                 }
         ;

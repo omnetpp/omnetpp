@@ -128,9 +128,9 @@ double ExprValue::doubleValue() const
 double ExprValue::doubleValueInUnit(const char *targetUnit) const
 {
     if (type == DOUBLE)
-        return UnitConversion::convertUnit(dbl, unit, targetUnit);
+        return UnitConversion::convertUnit(dbl, unit.c_str(), targetUnit);
     else if (type == INT)
-        return UnitConversion::convertUnit(safeCastToDouble(intv), unit, targetUnit);
+        return UnitConversion::convertUnit(safeCastToDouble(intv), unit.c_str(), targetUnit);
     else
         cannotCastError(DOUBLE);
     return 0;
@@ -139,7 +139,7 @@ double ExprValue::doubleValueInUnit(const char *targetUnit) const
 void ExprValue::convertTo(const char *targetUnit)
 {
     ensureType(DOUBLE);
-    dbl = UnitConversion::convertUnit(dbl, unit, targetUnit);
+    dbl = UnitConversion::convertUnit(dbl, unit.c_str(), targetUnit);
     unit = targetUnit;
 }
 
@@ -148,12 +148,6 @@ void ExprValue::setUnit(const char *unit)
     if (type != DOUBLE && type != INT)
         throw opp_runtime_error("Cannot set measurement unit on a value of type '%s'", getTypeName(type));
     this->unit = unit;
-}
-
-const char *ExprValue::getPooled(const char *s)
-{
-    static StaticStringPool stringPool;  // non-refcounted
-    return stringPool.get(s);
 }
 
 std::string ExprValue::str() const
@@ -165,14 +159,14 @@ std::string ExprValue::str() const
         case BOOL:
             return bl ? "true" : "false";
         case INT:
-            sprintf(buf, "%" PRId64 "%s", (int64_t)intv, opp_nulltoempty(unit));
+            sprintf(buf, "%" PRId64 "%s", (int64_t)intv, opp_nulltoempty(unit.c_str()));
             return buf;
         case DOUBLE:
             opp_dtoa(buf, "%g", dbl);
-            if (!opp_isempty(unit)) {
+            if (!unit.empty()) {
                 if (!std::isfinite(dbl))
                     strcat(buf, " ");
-                strcat(buf, unit);
+                strcat(buf, unit.c_str());
             }
             return buf;
         case STRING:

@@ -353,24 +353,24 @@ ExprValue MulNode::evaluate(Context *context) const
         return ExprValue();
 
     if (leftValue.type == ExprValue::INT && rightValue.type == ExprValue::INT) {  // both are integers -> integer multiplication
-        if (!opp_isempty(rightValue.unit) && !opp_isempty(leftValue.unit))
+        if (!rightValue.unit.empty() && !leftValue.unit.empty())
             throw opp_runtime_error("Multiplying two quantities with units is not supported");
         ensureNoLogarithmicUnit(rightValue);
         ensureNoLogarithmicUnit(leftValue);
         leftValue.intv = safeMul(leftValue.intv, rightValue.intv);
-        if (opp_isempty(leftValue.unit))
+        if (leftValue.unit.empty())
             leftValue.unit = rightValue.unit;
         return leftValue;
     }
     else if (leftValue.type == ExprValue::DOUBLE || rightValue.type == ExprValue::DOUBLE) { // at least one is double -> double multiplication
-        if (!opp_isempty(rightValue.unit) && !opp_isempty(leftValue.unit))
+        if (!rightValue.unit.empty() && !leftValue.unit.empty())
             throw opp_runtime_error("Multiplying two quantities with units is not supported");
         ensureNoLogarithmicUnit(rightValue);
         ensureNoLogarithmicUnit(leftValue);
         leftValue.convertToDouble();
         rightValue.convertToDouble();
         leftValue.dbl = leftValue.dbl * rightValue.dbl;
-        if (opp_isempty(leftValue.unit))
+        if (leftValue.unit.empty())
             leftValue.unit = rightValue.unit;
         return leftValue;
     }
@@ -392,10 +392,10 @@ ExprValue DivNode::evaluate(Context *context) const
     ensureNoLogarithmicUnit(rightValue);
     if (rightValue.dbl != 0)  // allow "0dB/0" as nan for compatibility with INET 3.x
         ensureNoLogarithmicUnit(leftValue);
-    if (!opp_isempty(rightValue.unit))
-        rightValue.dbl = UnitConversion::convertUnit(rightValue.dbl, rightValue.unit, leftValue.unit);
+    if (!rightValue.unit.empty())
+        rightValue.dbl = UnitConversion::convertUnit(rightValue.dbl, rightValue.unit.c_str(), leftValue.unit.c_str());
     leftValue.dbl = leftValue.dbl / rightValue.dbl;
-    if (!opp_isempty(rightValue.unit))
+    if (!rightValue.unit.empty())
         leftValue.unit = nullptr;
     return leftValue;
 }
@@ -410,7 +410,7 @@ ExprValue ModNode::evaluate(Context *context) const
     if (leftValue.type == ExprValue::INT && rightValue.type == ExprValue::INT) {  // both ints -> integer modulo
         ensureNoLogarithmicUnit(rightValue);
         ensureNoLogarithmicUnit(leftValue);
-        if (!opp_isempty(rightValue.unit) || !opp_isempty(leftValue.unit))
+        if (!rightValue.unit.empty() || !leftValue.unit.empty())
             bringToCommonTypeAndUnit(leftValue, rightValue);
         leftValue.intv = leftValue.intv % rightValue.intv;
         return leftValue;
@@ -427,7 +427,7 @@ ExprValue PowNode::evaluate(Context *context) const
         return ExprValue();
 
     if (leftValue.type == ExprValue::INT && rightValue.type == ExprValue::INT) { // both ints -> integer exponentiation
-        if (!opp_isempty(rightValue.unit) || !opp_isempty(leftValue.unit))
+        if (!rightValue.unit.empty() || !leftValue.unit.empty())
             errorDimlessArgsExpected(leftValue, rightValue);
         if (rightValue.intv < 0)
             throw opp_runtime_error("Negative exponent in integer exponentiation, cast operands to double to allow it");
@@ -436,7 +436,7 @@ ExprValue PowNode::evaluate(Context *context) const
     else {
         leftValue.convertToDouble();
         rightValue.convertToDouble();
-        if (!opp_isempty(rightValue.unit) || !opp_isempty(leftValue.unit))
+        if (!rightValue.unit.empty() || !leftValue.unit.empty())
             errorDimlessArgsExpected(leftValue, rightValue);
         return pow(leftValue.dbl, rightValue.dbl);
     }
@@ -461,7 +461,7 @@ double CompareNode::compare(ExprValue& leftValue, ExprValue& rightValue) const
     else if (leftValue.type==ExprValue::DOUBLE || rightValue.type==ExprValue::DOUBLE) {
         leftValue.convertToDouble();
         rightValue.convertToDouble();
-        rightValue.dbl = UnitConversion::convertUnit(rightValue.dbl, rightValue.unit, leftValue.unit);
+        rightValue.dbl = UnitConversion::convertUnit(rightValue.dbl, rightValue.unit.c_str(), leftValue.unit.c_str());
         // Notes:
         // 1. diff type is double so we can return nan if either is nan
         // 2.leftVal==rightVal part is to make inf==inf return 0 (=equals)
@@ -568,7 +568,7 @@ ExprValue BitwiseNotNode::evaluate(Context *context) const
         return value;
     if (value.type != ExprValue::INT)
         errorIntegerArgExpected(value);
-    if (!opp_isempty(value.unit))
+    if (!value.unit.empty())
         errorDimlessArgExpected(value);
     value.intv = ~value.intv;
     return value;
@@ -582,7 +582,7 @@ ExprValue BitwiseInfixOperatorNode::evaluate(Context *context) const
         return ExprValue();
     if (rightValue.type != ExprValue::INT || leftValue.type != ExprValue::INT)
         errorIntegerArgsExpected(leftValue, rightValue);
-    if (!opp_isempty(rightValue.unit) || !opp_isempty(leftValue.unit))
+    if (!rightValue.unit.empty() || !leftValue.unit.empty())
         errorDimlessArgsExpected(leftValue, rightValue);
     return compute(leftValue.intv, rightValue.intv);
 }
@@ -607,7 +607,7 @@ ExprValue IntCastNode::evaluate(Context *context) const
         case ExprValue::STRING: {
             std::string unit;
             double d = UnitConversion::parseQuantity(value.stringValue(), unit);
-            return ExprValue(checked_int_cast<intval_t>(floor(d)), ExprValue::getPooled(unit.c_str()));
+            return ExprValue(checked_int_cast<intval_t>(floor(d)), unit.c_str());
         }
         default:
             throw opp_runtime_error("Cannot cast %s to int", ExprValue::getTypeName(value.getType()));
@@ -635,7 +635,7 @@ ExprValue DoubleCastNode::evaluate(Context *context) const
         case ExprValue::STRING: {
             std::string unit;
             double d = UnitConversion::parseQuantity(value.stringValue(), unit);
-            return ExprValue(d, ExprValue::getPooled(unit.c_str()));
+            return ExprValue(d, unit.c_str());
         }
         default:
             throw opp_runtime_error("Cannot cast %s to double", ExprValue::getTypeName(value.getType()));

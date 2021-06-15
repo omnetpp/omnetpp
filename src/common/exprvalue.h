@@ -20,6 +20,7 @@
 #include "commondefs.h"
 #include "intutil.h"
 #include "stringutil.h"
+#include "stringpool.h"
 
 namespace omnetpp { class cObject; }
 
@@ -35,17 +36,6 @@ namespace expression {
  *
  * See notes below.
  *
- * <b>Measurement unit strings:</b>
- *
- * For performance reasons, the functions that store a measurement unit
- * will only store the <tt>const char *</tt> pointer and not copy the
- * string itself. Consequently, the passed unit pointers must stay valid
- * at least during the lifetime of the ExprValue object, or even longer
- * if the same pointer propagates to other ExprValue objects. It is recommended
- * that you only pass pointers that stay valid during the entire simulation.
- * It is safe to use: (1) string constants from the code; (2) units strings
- * from other ExprValue's; and (3) stringpooled strings, e.g. from the
- * getPooled() method or from StringPool.
  */
 class COMMON_API ExprValue
 {
@@ -85,7 +75,7 @@ class COMMON_API ExprValue
         cObject *obj;
         const char *s; // non-nullptr, dynamically allocated
     };
-    const char *unit=nullptr; // for INT/DOUBLE; must point to string constant or pooled string; may be nullptr
+    opp_staticpooledstring unit=nullptr; // for INT/DOUBLE; may be nullptr
     static std::string (*objectToString)(cObject *); // method to print info about cObjects
 
   private:
@@ -140,16 +130,6 @@ class COMMON_API ExprValue
     std::string str() const;
 
     /**
-     * Returns a copy of the string that is guaranteed to stay valid
-     * until the program exits. Multiple calls with identical strings as
-     * parameter will return the same copy. Useful for getting measurement
-     * unit strings suitable for ExprValue; see related class comment.
-     *
-     * @see StringPool, setUnit(), convertTo()
-     */
-    static const char *getPooled(const char *s);
-
-    /**
      * Sets method to print info about cObjects. This needs to be called
      * once on startup from the simulation library which defines cObject.
      */
@@ -194,15 +174,11 @@ class COMMON_API ExprValue
 
     /**
      * Sets the value to the given integer value and measurement unit.
-     * The unit string pointer is expected to stay valid during the entire
-     * duration of the simulation (see related class comment).
      */
     void setQuantity(intval_t d, const char *unit) {deleteOld(); type=INT; intv=d; this->unit=unit;}
 
     /**
      * Sets the value to the given double value and measurement unit.
-     * The unit string pointer is expected to stay valid during the entire
-     * duration of the simulation (see related class comment).
      */
     void setQuantity(double d, const char *unit) {deleteOld(); type=DOUBLE; dbl=d; this->unit=unit;}
 
@@ -221,17 +197,13 @@ class COMMON_API ExprValue
     /**
      * Sets the measurement unit to the given value, leaving the numeric part
      * of the quantity unchanged. The object must already have the DOUBLE type.
-     * The unit string pointer is expected to stay valid during the entire
-     * duration of the simulation (see related class comment).
      */
     void setUnit(const char *unit);
 
     /**
      * Permanently converts this value to the given unit. The value must
      * already have the type DOUBLE. If the current unit cannot be converted
-     * to the given one, an error will be thrown. The unit string pointer
-     * is expected to stay valid during the entire simulation (see related
-     * class comment).
+     * to the given one, an error will be thrown.
      *
      * @see doubleValueInUnit()
      */
@@ -280,7 +252,7 @@ class COMMON_API ExprValue
      * Returns the unit ("s", "mW", "Hz", "bps", etc), or nullptr if there was no
      * unit was specified. Unit is only valid for the DOUBLE and INT types.
      */
-    const char *getUnit() const {return (type==DOUBLE || type==INT) ? unit : nullptr;}
+    const char *getUnit() const {return (type==DOUBLE || type==INT) ? unit.c_str() : nullptr;}
 
     /**
      * Returns value as const char *. The type must be STRING.
