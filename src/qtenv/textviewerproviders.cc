@@ -321,14 +321,25 @@ bool EventEntryLinesProvider::isMatchingComponent(int componentId)
 
 int EventEntryLinesProvider::getNumLines(LogBuffer::Entry *entry)
 {
-    if (entry->isEvent() && (
-                !isMatchingComponent(entry->componentId)
-                || excludedComponents.count(entry->componentId) > 0))
-        return 0;
+    int count = 0;
 
-    int count = entry->banner ? 1  /* the banner line */ : 0;
-    count += entry->lines.size();
+    for (size_t i = 0; i < entry->lines.size(); ++i)
+        if (shouldShowLine(entry, i))
+            count++;
+
+    if (count > 0 && entry->banner != nullptr)
+        count++; // the banner line
+
     return count;
+}
+
+ bool EventEntryLinesProvider::shouldShowLine(LogBuffer::Entry *entry, size_t lineIndex)
+ {
+    LogBuffer::Line &line = entry->lines[lineIndex];
+    return !contains(excludedComponents, line.contextComponentId)
+        && (entry->componentId <= 0 || line.contextComponentId <= 0 ||
+            isAncestorModule(line.contextComponentId, inspectedComponentId)
+            || isAncestorModule(entry->componentId, inspectedComponentId));
 }
 
 QString EventEntryLinesProvider::getLineText(LogBuffer::Entry *entry, int lineIndex)
@@ -340,33 +351,43 @@ QString EventEntryLinesProvider::getLineText(LogBuffer::Entry *entry, int lineIn
             lineIndex--;
     }
 
-    if (lineIndex < (int)entry->lines.size()) {
-        LogBuffer::Line& line = entry->lines[lineIndex];
+    size_t entryLineIndex = 0;
 
-        QString text;
-        if (line.prefix) {
-            switch (entry->lines[lineIndex].logLevel) {
-                case LOGLEVEL_WARN: text += SGR(FG_YELLOW); break;
-                case LOGLEVEL_ERROR: text += SGR(FG_RED); break;
-                case LOGLEVEL_FATAL: text += SGR(FG_BRIGHT_RED); break;
-                default: text += SGR(FG_WHITE); break;
-            }
-
-            text += line.prefix;
-            text += SGR(RESET);
+    for (; entryLineIndex < entry->lines.size(); ++entryLineIndex)
+        if (shouldShowLine(entry, entryLineIndex)) {
+            if (lineIndex == 0)
+                break;
+            --lineIndex;
         }
 
-        // TODO: This still prints the context component path twice for some reason,
-        // like in the initialization phaseof samples/routing. There is a mismatch
-        // between the stored [context]Component IDs and the stored/formatted texts.
+    if (entryLineIndex >= entry->lines.size())
+        throw std::runtime_error("Log entry line index out of bounds");
 
-        if (entry->lines[lineIndex].line)
-            text += entry->lines[lineIndex].line;
+    LogBuffer::Line& line = entry->lines[entryLineIndex];
 
-        return text;
+    QString text;
+    if (line.prefix) {
+        switch (entry->lines[entryLineIndex].logLevel) {
+            case LOGLEVEL_WARN: text += SGR(FG_YELLOW); break;
+            case LOGLEVEL_ERROR: text += SGR(FG_RED); break;
+            case LOGLEVEL_FATAL: text += SGR(FG_BRIGHT_RED); break;
+            default: text += SGR(FG_WHITE); break;
+        }
+
+        text += line.prefix;
+        text += SGR(RESET);
     }
 
-    throw std::runtime_error("Log entry line index out of bounds");
+    // TODO: This still prints the context component path twice for some reason,
+    // like in the initialization phaseof samples/routing. There is a mismatch
+    // between the stored [context]Component IDs and the stored/formatted texts.
+
+    if (entry->lines[entryLineIndex].line)
+        text += entry->lines[entryLineIndex].line;
+
+    return text;
+
+
 }
 
 cMessagePrinter *EventEntryMessageLinesProvider::chooseMessagePrinter(cMessage *msg)
