@@ -39,7 +39,6 @@ using namespace omnetpp::common;
 
 long cParImpl::totalParimplObjs;
 long cParImpl::liveParimplObjs;
-cStringPool cParImpl::stringPool("cParImpl::stringPool");
 
 cParImpl::cParImpl()
 {
@@ -49,8 +48,6 @@ cParImpl::cParImpl()
 
 cParImpl::~cParImpl()
 {
-    stringPool.release(unitp);
-    stringPool.release(baseDirectory);
     liveParimplObjs--;
 }
 
@@ -84,23 +81,6 @@ cParImpl *cParImpl::dup() const
     throw cRuntimeError(this, E_CANTDUP);  // cannot instantiate an abstract class
 }
 
-const char *cParImpl::getUnit() const
-{
-    return unitp;
-}
-
-void cParImpl::setUnit(const char *s)
-{
-    stringPool.release(unitp);
-    unitp = stringPool.get(s);
-}
-
-void cParImpl::setBaseDirectory(const char *s)
-{
-    stringPool.release(baseDirectory);
-    baseDirectory = stringPool.get(s);
-}
-
 cValue cParImpl::evaluate(cExpression *expr, cComponent *contextComponent) const
 {
     static int depth;
@@ -108,7 +88,7 @@ cValue cParImpl::evaluate(cExpression *expr, cComponent *contextComponent) const
         depth++;
         if (depth >= 5)
             throw cRuntimeError("Evaluation nesting too deep (circular parameter references?)");
-        cExpression::Context context(contextComponent, baseDirectory, getName());
+        cExpression::Context context(contextComponent, baseDirectory.c_str(), getName());
         cValue ret = expr->evaluate(&context);
         depth--;
         return ret;
@@ -133,7 +113,7 @@ int cParImpl::compare(const cParImpl *other) const
     if (getType() != other->getType())
         return getType() < other->getType() ? -1 : 1;
 
-    return opp_strcmp(unitp, other->unitp);
+    return opp_strcmp(unit.c_str(), other->unit.c_str());
 }
 
 cParImpl *cParImpl::createWithType(Type type)

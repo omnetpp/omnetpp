@@ -41,7 +41,7 @@ class SIM_API cObjectParImpl : public cParImpl
     // selector: flags & FL_ISEXPR
     cExpression *expr = nullptr;
     mutable cObject *obj = nullptr; // stores the result of the last evaluation
-    const char *expectedType = nullptr; // value of the @class property or nullptr; stringpooled
+    opp_staticpooledstring expectedType; // value of the @class property or ""
 
   private:
     void copy(const cObjectParImpl& other);

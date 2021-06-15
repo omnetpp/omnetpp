@@ -258,10 +258,11 @@ void cObjectParImpl::doSetObject(cObject *object)
 
 void cObjectParImpl::checkType(cObject *object) const
 {
-    if (!expectedType)
+    if (expectedType.empty())
         return;
 
-    bool optional = expectedType[strlen(expectedType)-1] == '?';
+    const char *typeSpec = expectedType.c_str();
+    bool optional = typeSpec[strlen(typeSpec)-1] == '?';
     if (!object) {
         if (optional)
             return;
@@ -269,7 +270,7 @@ void cObjectParImpl::checkType(cObject *object) const
             throw cRuntimeError("nullptr is not an allowed value (append '?' to the name in @class() to allow it)");
     }
 
-    std::string typeName = optional ? std::string(expectedType, strlen(expectedType)-1) : expectedType; // remove trailing '?'
+    std::string typeName = optional ? std::string(typeSpec, strlen(typeSpec)-1) : typeSpec; // remove trailing '?'
     cObjectFactory *factory = cObjectFactory::find(typeName.c_str());
     if (!factory)
         throw cRuntimeError("'%s' is not a registered class (missing Register_Class() or Register_Abstract_Class() macro?)", typeName.c_str());
@@ -291,8 +292,7 @@ bool cObjectParImpl::isNumeric() const
 
 void cObjectParImpl::setExpectedType(const char *s)
 {
-    stringPool.release(expectedType);
-    expectedType = stringPool.get(s);
+    expectedType = s;
 }
 
 void cObjectParImpl::convertToConst(cComponent *context)

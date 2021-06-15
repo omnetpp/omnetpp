@@ -21,6 +21,7 @@
 #include "cstringpool.h"
 #include "cexception.h"
 #include "fileline.h"
+#include "opp_pooledstring.h"
 
 namespace omnetpp {
 
@@ -56,17 +57,14 @@ class SIM_API cParImpl : public cNamedObject
 
   private:
     // unit (s, mW, GHz, baud, etc); optional
-    const char *unitp = nullptr; // stringpooled
+    opp_staticpooledstring unit = nullptr;
 
     // base directory for interpreting relative path names in the expression (e.g. xmldoc())
-    const char *baseDirectory = nullptr; // stringpooled
+    opp_staticpooledstring baseDirectory = nullptr;
 
     // global variables for statistics
     static long totalParimplObjs;
     static long liveParimplObjs;
-
-  protected:
-    static cStringPool stringPool;
 
   private:
     void copy(const cParImpl& other);
@@ -89,7 +87,7 @@ class SIM_API cParImpl : public cNamedObject
     /**
      * Copy constructor.
      */
-    cParImpl(const cParImpl& other) : cNamedObject(other) {unitp = nullptr; baseDirectory = nullptr; copy(other);}
+    cParImpl(const cParImpl& other) : cNamedObject(other) {copy(other);}
 
     /**
      * Destructor.
@@ -183,24 +181,24 @@ class SIM_API cParImpl : public cNamedObject
      * as declared in the @unit property of the parameter in NED.
      * Unit is only meaningful with numeric parameters.
      */
-    virtual const char *getUnit() const;
+    virtual const char *getUnit() const {return unit.c_str();}
 
     /**
      * Initialize the parameter's unit (normally from the @unit property).
      */
-    virtual void setUnit(const char *s);
+    virtual void setUnit(const char *s) {unit = s;}
 
     /**
      * Returns the base directory for interpreting relative path names
      * in the expression.
      */
-    virtual const char *getBaseDirectory() const {return baseDirectory;}
+    virtual const char *getBaseDirectory() const {return baseDirectory.c_str();}
 
     /**
      * Sets the base directory for interpreting relative path names in the
      * expression (e.g. in xmldoc()).
      */
-    virtual void setBaseDirectory(const char *baseDirectory);
+    virtual void setBaseDirectory(const char *s) {baseDirectory = s;}
     //@}
 
     /** @name Setter functions. Note that overloaded assignment operators also exist. */
