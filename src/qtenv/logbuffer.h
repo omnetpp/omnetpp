@@ -44,8 +44,8 @@ class QTENV_API LogBuffer : public QObject
         LogLevel logLevel;
         const char *prefix;
         const char *line;  // including newline
-        Line(int contextComponentId, LogLevel logLevel, const char *prefix, const char *line) :
-            contextComponentId(contextComponentId), logLevel(logLevel), prefix(prefix), line(line) {}
+        Line(int contextComponentId, LogLevel logLevel, const char *prefix, const char *line); // line is null-terminated
+        Line(int contextComponentId, LogLevel logLevel, const char *prefix, const char *line, int lineLength);
     };
     struct MessageSend {
         cMessage *msg;

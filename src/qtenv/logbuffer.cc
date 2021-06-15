@@ -28,6 +28,20 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace qtenv {
 
+LogBuffer::Line::Line(int contextComponentId, LogLevel logLevel, const char *prefix, const char *line)
+    : contextComponentId(contextComponentId), logLevel(logLevel), prefix(prefix), line(opp_strdup(line))
+{
+
+}
+
+
+LogBuffer::Line::Line(int contextComponentId, LogLevel logLevel, const char *prefix, const char *line, int lineLength)
+    : contextComponentId(contextComponentId), logLevel(logLevel), prefix(prefix), line(opp_strndup(line, lineLength))
+{
+
+}
+
+
 LogBuffer::Entry::Entry(eventnumber_t e, simtime_t t, cModule *mod, const char *banner)
     : eventNumber(e), simtime(t), componentId(mod ? (mod->getId()) : 0), banner(opp_strdup(banner))
 {
@@ -73,7 +87,7 @@ void LogBuffer::addInitialize(cComponent *component, const char *banner)
     Entry *entry = entries.back();
     cComponent *contextComponent = getSimulation()->getContext();
     int contextComponentId = contextComponent ? contextComponent->getId() : 0;
-    entry->lines.push_back(Line(contextComponentId, LogLevel::LOGLEVEL_INFO, nullptr, opp_strdup(banner)));
+    entry->lines.push_back(Line(contextComponentId, LogLevel::LOGLEVEL_INFO, nullptr, banner));
 
     emit logLineAdded();
 }
@@ -90,7 +104,7 @@ void LogBuffer::addLogLine(LogLevel logLevel, const char *prefix, const char *te
     Entry *entry = entries.back();
     cComponent *contextComponent = getSimulation()->getContext();
     int contextComponentId = contextComponent ? contextComponent->getId() : 0;
-    entry->lines.push_back(Line(contextComponentId, logLevel, opp_strdup(prefix), opp_strndup(text, len)));
+    entry->lines.push_back(Line(contextComponentId, logLevel, opp_strdup(prefix), text, len));
 
     emit logLineAdded();
 }
