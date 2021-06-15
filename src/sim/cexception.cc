@@ -37,45 +37,39 @@ using namespace omnetpp::common;
 
 namespace omnetpp {
 
-#define BUFLEN 1024
-static char buffer[BUFLEN];
-static char buffer2[BUFLEN];
+#define VA_PRINTF_INTO(variable, lastArg, format) \
+    va_list va; \
+    va_start(va, lastArg); \
+    std::string variable = opp_vstringf(format,va); \
+    va_end(va);
 
 cException::cException() : std::exception(), errorCode(E_CUSTOM), msg("n/a")
 {
     storeContext();
 }
 
-cException::cException(ErrorCodeInt errorcode...) : std::exception()
+cException::cException(ErrorCodeInt errorCode...) : std::exception()
 {
-    va_list va;
-    va_start(va, errorcode);
-    init(nullptr, (ErrorCode)errorcode, cErrorMessages::get((ErrorCode)errorcode), va);
-    va_end(va);
+    VA_PRINTF_INTO(msg, errorCode, cErrorMessages::get((ErrorCode)errorCode));
+    init(nullptr, (ErrorCode)errorCode, msg);
 }
 
-cException::cException(const char *msgformat...) : std::exception()
+cException::cException(const char *msgFormat...) : std::exception()
 {
-    va_list va;
-    va_start(va, msgformat);
-    init(nullptr, E_CUSTOM, msgformat, va);
-    va_end(va);
+    VA_PRINTF_INTO(msg, msgFormat, msgFormat);
+    init(nullptr, E_CUSTOM, msg);
 }
 
-cException::cException(const cObject *where, ErrorCodeInt errorcode...) : std::exception()
+cException::cException(const cObject *where, ErrorCodeInt errorCode...) : std::exception()
 {
-    va_list va;
-    va_start(va, errorcode);
-    init(where, (ErrorCode)errorcode, cErrorMessages::get((ErrorCode)errorcode), va);
-    va_end(va);
+    VA_PRINTF_INTO(msg, errorCode, cErrorMessages::get((ErrorCode)errorCode));
+    init(where, (ErrorCode)errorCode, msg);
 }
 
-cException::cException(const cObject *where, const char *msgformat...) : std::exception()
+cException::cException(const cObject *where, const char *msgFormat...) : std::exception()
 {
-    va_list va;
-    va_start(va, msgformat);
-    init(where, E_CUSTOM, msgformat, va);
-    va_end(va);
+    VA_PRINTF_INTO(msg, msgFormat, msgFormat);
+    init(where, E_CUSTOM, msg);
 }
 
 void cException::storeContext()
@@ -115,7 +109,7 @@ void cException::exitIfStartupError()
     }
 }
 
-void cException::init(const cObject *where, ErrorCode errorcode, const char *fmt, va_list va)
+void cException::init(const cObject *where, ErrorCode errorcode, const std::string& text)
 {
     // store error code
     this->errorCode = errorcode;
@@ -124,19 +118,20 @@ void cException::init(const cObject *where, ErrorCode errorcode, const char *fmt
     //  - if object is the module itself: skip
     //  - if object is local in module: use getFullName()
     //  - if object is somewhere else: use getFullPath()
-    buffer[0] = '\0';
+    //
     cSimulation *sim = cSimulation::getActiveSimulation();
     cComponent *context = sim ? sim->getContext() : nullptr;
+    std::string prefix;
     if (where && where != context) {
-        // try: if context's fullpath is same as module fullpath + object fullname, no need to print path
-        sprintf(buffer2, "%s.%s", (context ? context->getFullPath().c_str() : ""), where->getFullName());
-        bool needpath = strcmp(buffer2, where->getFullPath().c_str()) != 0;
-        sprintf(buffer, "(%s)%s: ", where->getClassName(), needpath ? where->getFullPath().c_str() : where->getFullName());
+        // if object is in the child of the context component, no need to print path
+        std::string contextComponentFullPath = context ? context->getFullPath().c_str() : "";
+        bool needPath = where->getFullPath() != (contextComponentFullPath + "." + where->getFullName());
+        prefix = needPath ? where->getClassAndFullPath() : where->getClassAndFullName();
+        prefix += ": ";
     }
 
-    vsnprintf(buffer + strlen(buffer), BUFLEN - strlen(buffer), fmt, va);
-    buffer[BUFLEN-1] = '\0';
-    msg = buffer;
+    // the full exception message
+    msg = prefix + text;
 
     // store context
     storeContext();
@@ -181,58 +176,45 @@ std::string cException::getFormattedMessage() const
 
 //---
 
-cTerminationException::cTerminationException(ErrorCodeInt errorcode...)
+cTerminationException::cTerminationException(ErrorCodeInt errorCode...)
 {
-    va_list va;
-    va_start(va, errorcode);
-    init(nullptr, (ErrorCode)errorcode, cErrorMessages::get((ErrorCode)errorcode), va);
-    va_end(va);
+    VA_PRINTF_INTO(msg, errorCode, cErrorMessages::get((ErrorCode)errorCode));
+    init(nullptr, (ErrorCode)errorCode, msg);
 }
 
-cTerminationException::cTerminationException(const char *msgformat...)
+cTerminationException::cTerminationException(const char *msgFormat...)
 {
-    va_list va;
-    va_start(va, msgformat);
-    init(nullptr, E_CUSTOM, msgformat, va);
-    va_end(va);
+    VA_PRINTF_INTO(msg, msgFormat, msgFormat);
+    init(nullptr, E_CUSTOM, msg);
 }
 
 //---
 
-cRuntimeError::cRuntimeError(ErrorCodeInt errorcode...)
+cRuntimeError::cRuntimeError(ErrorCodeInt errorCode...)
 {
-    va_list va;
-    va_start(va, errorcode);
-    init(nullptr, (ErrorCode)errorcode, cErrorMessages::get((ErrorCode)errorcode), va);
-    va_end(va);
+    VA_PRINTF_INTO(msg, errorCode, cErrorMessages::get((ErrorCode)errorCode));
+    init(nullptr, (ErrorCode)errorCode, msg);
     notifyEnvir();
 }
 
-cRuntimeError::cRuntimeError(const char *msgformat...)
+cRuntimeError::cRuntimeError(const char *msgFormat...)
 {
-    va_list va;
-    va_start(va, msgformat);
-    init(nullptr, E_CUSTOM, msgformat, va);
-    va_end(va);
+    VA_PRINTF_INTO(msg, msgFormat, msgFormat);
+    init(nullptr, E_CUSTOM, msg);
     notifyEnvir();
 }
 
-cRuntimeError::cRuntimeError(const cObject *where, ErrorCodeInt errorcode...)
+cRuntimeError::cRuntimeError(const cObject *where, ErrorCodeInt errorCode...)
 {
-    va_list va;
-    va_start(va, errorcode);
-    init(where, (ErrorCode)errorcode, cErrorMessages::get((ErrorCode)errorcode), va);
-    va_end(va);
+    VA_PRINTF_INTO(msg, errorCode, cErrorMessages::get((ErrorCode)errorCode));
+    init(where, (ErrorCode)errorCode, msg);
     notifyEnvir();
 }
 
-cRuntimeError::cRuntimeError(const cObject *where, const char *msgformat...)
+cRuntimeError::cRuntimeError(const cObject *where, const char *msgFormat...)
 {
-    va_list va;
-    va_start(va, msgformat);
-    init(where, E_CUSTOM, msgformat, va);
-    va_end(va);
-
+    VA_PRINTF_INTO(msg, msgFormat, msgFormat);
+    init(where, E_CUSTOM, msg);
     notifyEnvir();
 }
 

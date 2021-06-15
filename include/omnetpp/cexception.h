@@ -67,7 +67,7 @@ class SIM_API cException : public std::exception
      * If the first arg is non-nullptr, the message text will be prepended (if needed)
      * with the object type and name, like this: "(cArray)array: ..."
      */
-    void init(const cObject *obj, ErrorCode errorcode, const char *fmt, va_list va);
+    void init(const cObject *obj, ErrorCode errorcode, const std::string& msg);
 
     // helper for init()
     void storeContext();
