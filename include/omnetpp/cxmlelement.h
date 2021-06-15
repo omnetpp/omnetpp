@@ -21,6 +21,8 @@
 #include <vector>
 #include "simkerneldefs.h"
 #include "cenvir.h"
+#include "fileline.h"
+#include "opp_pooledstring.h"
 
 namespace omnetpp {
 
@@ -92,17 +94,16 @@ class SIM_API cXMLElement : public cObject, noncopyable
     };
 
   private:
-    const char *ename = nullptr;
-    const char *value = nullptr;
-    const char **attrs = nullptr; // name,value,name,value,...,nullptr
+    opp_pooledstring tagName;
+    opp_pooledstring value;
+    typedef std::pair<opp_pooledstring,opp_pooledstring> Attr;
+    std::vector<Attr> attrs;
     cXMLElement *parent = nullptr;
     cXMLElement *firstChild = nullptr;
     cXMLElement *lastChild = nullptr;
     cXMLElement *prevSibling = nullptr;
     cXMLElement *nextSibling = nullptr;
-    const char *filename = nullptr;
-    int lineNumber = -1;
-    int numAttrs = 0;
+    FileLine loc;
 
   private:
      void doGetElementsByTagName(const char *tagname, cXMLElementList& list) const;
@@ -151,12 +152,8 @@ class SIM_API cXMLElement : public cObject, noncopyable
 
   private:
     // internal
-    void deleteAttrs();
-    const char **findAttr(const char *attr) const;
-    const char **addAttr(const char *attr);
-    static const char *getPooledName(const char *s);
-    static const char *makeValue(const char *s);
-    static void freeValue(const char *s);
+    Attr *findAttr(const char *name) const;
+    void addAttr(const char *name, const char *value);
     virtual void print(std::ostream& os, int indentLevel) const;
 
     // internal, for inspectors only; O(n) complexity!
@@ -207,12 +204,12 @@ class SIM_API cXMLElement : public cObject, noncopyable
     /**
      * Returns the file name this element originally came from.
      */
-    virtual const char *getSourceFileName() const {return filename;}
+    virtual const char *getSourceFileName() const {return loc.getFilename();}
 
     /**
      * Returns the line number in the file this element originally came from.
      */
-    virtual int getSourceLineNumber() const {return lineNumber;}
+    virtual int getSourceLineNumber() const {return loc.getLineNumber();}
 
     /**
      * Returns a string containing a file/line position showing where this

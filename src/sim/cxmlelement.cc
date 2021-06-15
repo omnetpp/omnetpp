@@ -36,7 +36,7 @@ namespace omnetpp {
 
 using std::ostream;
 
-cXMLElement::cXMLElement(const char *tagName, cXMLElement *parent) : ename(getPooledName(tagName))
+cXMLElement::cXMLElement(const char *tagName, cXMLElement *parent) : tagName(tagName)
 {
     if (parent)
         parent->appendChild(this);
@@ -49,9 +49,6 @@ cXMLElement::~cXMLElement()
 
     while (firstChild)
         delete removeChild(firstChild);
-
-    freeValue(value);
-    deleteAttrs();
 }
 
 std::string cXMLElement::str() const
@@ -78,137 +75,78 @@ void cXMLElement::forEachChild(cVisitor *v)
             return;
 }
 
-const char *cXMLElement::getPooledName(const char *s)
-{
-    static StaticStringPool namePool;
-    return namePool.get(s);
-}
-
-static StaticStringPool valuePool;
-
-const char *cXMLElement::makeValue(const char *s)
-{
-    bool poolable = strlen(s) <= 5; // short strings are more likely occur multiple times in XML files, and there's little penalty for pooling them if they do not
-    return poolable ? valuePool.get(s) : opp_strdup(s);
-}
-
-void cXMLElement::freeValue(const char *s)
-{
-    if (!valuePool.contains(s))
-        delete [] s;
-}
-
 const char *cXMLElement::getTagName() const
 {
-    return ename;
+    return tagName.c_str();
 }
 
 void cXMLElement::setSourceLocation(const char *fname, int line)
 {
-    filename = getPooledName(fname);
-    lineNumber = line;
+    loc = FileLine(fname, line);
 }
 
-const char *cXMLElement::getSourceLocation() const
+const  char *cXMLElement::getSourceLocation() const
 {
-    if (filename == nullptr)
-        return "";
-    std::stringstream os;
-    os << filename << ":" << lineNumber;
-    return getPooledName(os.str().c_str());
+    return opp_staticpooledstring::get(loc.str().c_str());
 }
 
 const char *cXMLElement::getNodeValue() const
 {
-    return opp_nulltoempty(value);
+    return value.c_str();
 }
 
 void cXMLElement::setNodeValue(const char *s)
 {
-    freeValue(value);
-    value = makeValue(s);
+    value = opp_nulltoempty(s);
 }
 
 void cXMLElement::setNodeValue(const char *s, int len)
 {
-    std::string tmp(s, len);
-    setNodeValue(tmp.c_str());
+    setNodeValue(std::string(s, len).c_str());
 }
 
 void cXMLElement::appendNodeValue(const char *s, int len)
 {
-    std::string tmp(opp_nulltoempty(value));
-    tmp.append(s, len);
-    setNodeValue(tmp.c_str());
+    setNodeValue(value.str().append(s, len).c_str());
 }
 
-const char **cXMLElement::findAttr(const char *attr) const
+cXMLElement::Attr *cXMLElement::findAttr(const char *name) const
 {
-    if (attrs)
-        for (const char **p = attrs; *p; p += 2)
-            if (strcmp(*p, attr) == 0)
-                return p+1;
+    opp_pooledstring attrName = name;
+    for (const Attr& attr : attrs)
+        if (attr.first == attrName)
+            return const_cast<Attr*>(&attr); // khmm
     return nullptr;
 }
 
-const char **cXMLElement::addAttr(const char *attr)
+void cXMLElement::addAttr(const char *name, const char *value)
 {
-    // append new attr
-    const char **newAttrs = new const char *[2*numAttrs+2+1];
-    for (int i = 0; i < 2*numAttrs; i++)
-        newAttrs[i] = attrs[i];
-    const char **newAttr = newAttrs + 2*numAttrs;
-    newAttr[0] = getPooledName(attr);
-    newAttr[1] = nullptr; // value
-    newAttr[2] = nullptr; // end marker
-    delete [] attrs;
-    attrs = newAttrs;
-    numAttrs++;
-    return &newAttr[1];
+    attrs.push_back(Attr(name,value));
 }
 
-void cXMLElement::deleteAttrs()
+const char *cXMLElement::getAttribute(const char *name) const
 {
-    if (attrs) {
-        for (const char **p = attrs; *p; p += 2)
-            freeValue(*(p+1));
-        delete [] attrs;
-        attrs = nullptr;
-        numAttrs = 0;
-    }
+    Attr *attr = findAttr(name);
+    return attr == nullptr ? nullptr : attr->second.c_str();
 }
 
-const char *cXMLElement::getAttribute(const char *attr) const
+void cXMLElement::setAttribute(const char *name, const char *newValue)
 {
-    const char **pval = findAttr(attr);
-    return pval == nullptr ? nullptr : opp_nulltoempty(*pval);
-}
-
-void cXMLElement::setAttribute(const char *attr, const char *value)
-{
-    const char **pval = findAttr(attr);
-    if (!pval)
-        pval = addAttr(attr);
-
-    freeValue(*pval);
-    *pval = makeValue(value);
+    name = opp_nulltoempty(name);
+    newValue = opp_nulltoempty(newValue);
+    Attr *attr = findAttr(name);
+    if (attr == nullptr)
+        addAttr(name, newValue);
+    else
+        attr->second = newValue;
 }
 
 void cXMLElement::setAttributes(const char **newAttrs)
 {
-    deleteAttrs();
-
-    if (newAttrs && newAttrs[0]) {
-        numAttrs = 0;
+    attrs.clear();
+    if (newAttrs)
         for (const char **p = newAttrs; *p; p += 2)
-            numAttrs++;
-        attrs = new const char *[2*numAttrs+1];
-        for (int i = 0; i < numAttrs; i++) {
-            attrs[2*i] = getPooledName(newAttrs[2*i]);
-            attrs[2*i+1] = makeValue(newAttrs[2*i+1]);
-        }
-        attrs[2*numAttrs] = nullptr;
-    }
+            addAttr(*p, *(p+1));
 }
 
 cXMLElement *cXMLElement::getParentNode() const
@@ -285,15 +223,14 @@ bool cXMLElement::hasChildren() const
 
 bool cXMLElement::hasAttributes() const
 {
-    return attrs != nullptr;
+    return !attrs.empty();
 }
 
 cXMLAttributeMap cXMLElement::getAttributes() const
 {
     cXMLAttributeMap map;
-    if (attrs)
-        for (const char **p = attrs; *p; p += 2)
-            map[*p] = opp_nulltoempty(*(p+1));
+    for (const auto& attr : attrs)
+        map[attr.first.str()] = attr.second.str();
     return map;
 }
 
@@ -427,19 +364,17 @@ void cXMLElement::print(std::ostream& os, int indentLevel) const
 
 int cXMLElement::getNumAttrs() const
 {
-    return numAttrs;
+    return attrs.size();
 }
 
 const char *cXMLElement::getAttrName(int index) const
 {
-    ASSERT(index < numAttrs);
-    return attrs[2*index];
+    return attrs.at(index).first.c_str();
 }
 
 const char *cXMLElement::getAttrValue(int index) const
 {
-    ASSERT(index < numAttrs);
-    return opp_nulltoempty(attrs[2*index+1]);
+    return attrs.at(index).second.c_str();
 }
 
 std::string cXMLElement::getAttrDesc(int index) const
