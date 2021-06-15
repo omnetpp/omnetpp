@@ -34,6 +34,7 @@
 #include "omnetpp/platdep/platmisc.h"  // PRId64 and DEBUG_TRAP
 
 using namespace omnetpp::common;
+using namespace std::string_literals;
 
 namespace omnetpp {
 
@@ -217,6 +218,16 @@ cRuntimeError::cRuntimeError(const cObject *where, const char *msgFormat...)
     init(where, E_CUSTOM, msg);
     notifyEnvir();
 }
+
+cRuntimeError::cRuntimeError(const std::exception& e, const char *location)
+{
+    std::string msg = e.what();
+    if (!opp_isempty(location))
+        msg += " -- at "s + location;
+    init(nullptr, E_CUSTOM, msg);
+    notifyEnvir();
+}
+
 
 void cRuntimeError::notifyEnvir()
 {

@@ -325,6 +325,11 @@ class SIM_API cRuntimeError : public cException
     cRuntimeError(const cObject *where, const char *msg,...);
 
     /**
+     * Constructor for re-throwing an exception with location info.
+     */
+    cRuntimeError(const std::exception& e, const char *location);
+
+    /**
      * Copy constructor. We unfortunately need to copy exception objects when
      * handing them back from an activity() method.
      */
