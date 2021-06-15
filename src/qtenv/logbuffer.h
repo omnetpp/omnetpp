@@ -55,13 +55,14 @@ class QTENV_API LogBuffer : public QObject
     struct Entry {
         eventnumber_t eventNumber = 0; // 0 for initialization, >0 afterwards
         simtime_t simtime = 0;
-        int componentId = 0;  // 0 for info log lines
+        int componentId = 0;  // 0 for info log lines, -1 for things in initialize
         //TODO msg name, class, kind, previousEventNumber
         const char *banner = nullptr;
         std::vector<Line> lines;
         std::vector<MessageSend> msgs;
 
-        Entry(eventnumber_t e, simtime_t t, cModule *mod, const char *banner);
+        Entry(eventnumber_t e, simtime_t t, cModule *mod, const char *banner); // banner is null-terminated
+        Entry(eventnumber_t e, simtime_t t, cModule *mod, const char *banner, int bannerLength);
 
         bool isEvent() { return componentId > 0; }
 

@@ -29,7 +29,13 @@ namespace omnetpp {
 namespace qtenv {
 
 LogBuffer::Entry::Entry(eventnumber_t e, simtime_t t, cModule *mod, const char *banner)
-    : eventNumber(e), simtime(t), componentId(mod ? (mod->getId()) : 0), banner(banner)
+    : eventNumber(e), simtime(t), componentId(mod ? (mod->getId()) : 0), banner(opp_strdup(banner))
+{
+
+}
+
+LogBuffer::Entry::Entry(eventnumber_t e, simtime_t t, cModule *mod, const char *banner, int bannerLength)
+    : eventNumber(e), simtime(t), componentId(mod ? (mod->getId()) : 0), banner(opp_strndup(banner, bannerLength))
 {
 
 }
@@ -50,7 +56,7 @@ LogBuffer::Entry::~Entry()
 
 void LogBuffer::addEvent(eventnumber_t e, simtime_t t, cModule *mod, const char *banner)
 {
-    Entry *entry = new Entry(e, t, mod, opp_strdup(banner));
+    Entry *entry = new Entry(e, t, mod, banner);
     entries.push_back(entry);
     discardEventsIfLimitExceeded();
 
@@ -60,7 +66,7 @@ void LogBuffer::addEvent(eventnumber_t e, simtime_t t, cModule *mod, const char 
 void LogBuffer::addInitialize(cComponent *component, const char *banner)
 {
     if (entries.empty()) {
-        Entry *entry = new Entry(0, simTime(), getSimulation()->getSystemModule(), opp_strdup("** Initializing network\n"));
+        Entry *entry = new Entry(0, simTime(), getSimulation()->getSystemModule(), "** Initializing network\n");
         entries.push_back(entry);
     }
 
@@ -71,8 +77,6 @@ void LogBuffer::addInitialize(cComponent *component, const char *banner)
 
     emit logLineAdded();
 }
-
-
 
 void LogBuffer::addLogLine(LogLevel logLevel, const char *prefix, const char *text, int len)
 {
@@ -94,7 +98,7 @@ void LogBuffer::addLogLine(LogLevel logLevel, const char *prefix, const char *te
 void LogBuffer::addInfo(const char *text, int len)
 {
     // TODO ha inline info (contextmodule!=nullptr), sima logline-kent adjuk hozza!!!!
-    Entry *entry = new Entry(0, simTime(), nullptr, opp_strndup(text, len));
+    Entry *entry = new Entry(0, simTime(), nullptr, text, len);
     entries.push_back(entry);
     discardEventsIfLimitExceeded();
 
