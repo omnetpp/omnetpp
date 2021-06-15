@@ -415,7 +415,7 @@ void parseStringTokens(std::vector<std::string>& parameter, char *str)
     char **tokens = tokenizer.tokens();
 
     for (int j = 0; j < tokenizer.numTokens(); j++)
-        parameter.push_back((char *)eventLogStringPool.get(tokens[j]));
+        parameter.push_back(tokens[j]);
 }
 
 }  // namespace eventlog

@@ -99,8 +99,7 @@ void ExpressionFilter::process(simtime_t_cref t, cObject *details)
 
 const char *ExpressionFilter::getName() const
 {
-    static StaticStringPool stringPool;
-    return stringPool.get(expr.str().c_str());
+    return opp_staticpooledstring::get(expr.str().c_str());
 }
 
 std::string ExpressionFilter::str() const
