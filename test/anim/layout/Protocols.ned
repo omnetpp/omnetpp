@@ -13,7 +13,7 @@ network Protocols1 extends Base
         };
         gen: Node {
             parameters:
-                @display("i=gen");
+                @display("i=block/source");
             gates:
                 in[0];
                 out[1];
