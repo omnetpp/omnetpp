@@ -21,7 +21,7 @@ module BoxedMod
     submodules:
         mod: Mod {
             parameters:
-                @display("p=68,69;i=gen");
+                @display("p=68,69;i=block/source");
         };
         boxedTarget: BoxedTarget {
             parameters:
