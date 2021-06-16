@@ -40,26 +40,10 @@ using std::ostream;
 #define H     (*hOutp)
 #define CC    (*ccOutp)
 
-// compatibility mode makes output more similar to opp_msgc's
-// #define MSGC_COMPATIBILE
+#define PROGRAM    "opp_msgtool"
 
-#ifdef MSGC_COMPATIBILE
-#define PROGRAM    "opp_msgc"
-#else
-#define PROGRAM    "nedtool"
-#endif
-
-#ifdef MSGC_COMPATIBILE
-// removes ":<linenumber>" from source location string
-inline std::string SL(const std::string& s)
+inline std::string str(const char *s)
 {
-    return s.substr(0, s.find_last_of(':'));
-}
-#else
-#define SL(x)    (x)
-#endif
-
-inline std::string str(const char *s) {
     return s;
 }
 
@@ -591,11 +575,7 @@ void MsgCompilerOld::generate(MsgFileElement *fileElement)
 
     generateNamespaceEnd();
 
-#ifdef MSGC_COMPATIBILE
-    H << "#endif // " << headerGuard << "\n";
-#else
     H << "#endif // ifndef " << headerGuard << "\n\n";
-#endif
 }
 
 MsgCompilerOld::Properties MsgCompilerOld::extractPropertiesOf(ASTNode *node)
@@ -966,16 +946,6 @@ std::string MsgCompilerOld::generatePreComment(ASTNode *nedElement)
     MsgGenerator().generate(s, nedElement, "");
     std::string str = s.str();
 
-#ifdef MSGC_COMPATIBILE
-    // remove comments
-    size_t p1;
-    while ((p1 = str.find("//")) != str.npos) {
-        size_t p2 = str.find("\n", p1);
-        std::string s2 = str.substr(0, p1) + str.substr(p2);
-        str = s2;
-    }
-#endif
-
     std::ostringstream o;
     o << " * <pre>\n";
     o << opp_indentlines(opp_trim(opp_replacesubstring(opp_replacesubstring(str, "*/", "  ", true), "@", "\\@", true)), " * ");
@@ -992,7 +962,7 @@ void MsgCompilerOld::generateClass(const ClassInfo& info)
     }
 
     H << "/**\n";
-    H << " * Class generated from <tt>" << SL(info.nedElement->getSourceLocation()) << "</tt> by " PROGRAM ".\n";
+    H << " * Class generated from <tt>" << info.nedElement->getSourceLocation().str() << "</tt> by " PROGRAM ".\n";
     H << generatePreComment(info.nedElement);
 
     if (info.gap) {
@@ -1467,7 +1437,7 @@ void MsgCompilerOld::generateStruct(const ClassInfo& info)
     }
 
     H << "/**\n";
-    H << " * Struct generated from " << SL(info.nedElement->getSourceLocation()) << " by " PROGRAM ".\n";
+    H << " * Struct generated from " << info.nedElement->getSourceLocation().str() << " by " PROGRAM ".\n";
     H << " */\n";
     if (info.msgbaseclass.empty()) {
         H << "struct " << TS(opts.exportDef) << info.msgclass << "\n";
@@ -2074,7 +2044,7 @@ void MsgCompilerOld::generateEnum(const EnumInfo& enumInfo)
     }
 
     H << "/**\n";
-    H << " * Enum generated from <tt>" << SL(enumInfo.nedElement->getSourceLocation()) << "</tt> by " PROGRAM ".\n";
+    H << " * Enum generated from <tt>" << enumInfo.nedElement->getSourceLocation().str() << "</tt> by " PROGRAM ".\n";
     H << generatePreComment(enumInfo.nedElement);
     H << " */\n";
 
@@ -2286,17 +2256,10 @@ void MsgCompilerOld::generateNamespaceBegin(ASTNode *element)
 
 void MsgCompilerOld::generateNamespaceEnd()
 {
-#ifdef MSGC_COMPATIBILE
-    for (StringVector::const_iterator it = namespaceNameVector.begin(); it != namespaceNameVector.end(); ++it) {
-        H << "}; // end namespace " << *it << std::endl;
-        CC << "}; // end namespace " << *it << std::endl;
-    }
-#else
     for (StringVector::const_reverse_iterator it = namespaceNameVector.rbegin(); it != namespaceNameVector.rend(); ++it) {
         H << "}  // namespace " << *it << std::endl;
         CC << "}  // namespace " << *it << std::endl;
     }
-#endif
     H << std::endl;
     CC << std::endl;
     namespaceNameVector.clear();

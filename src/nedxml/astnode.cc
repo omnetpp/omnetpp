@@ -87,14 +87,14 @@ void ASTNode::validateEnum(int b, const char *vals[], int nums[], int n)
     throw NedException("Invalid integer value %d for enum attribute (not one of '%s'=%d etc)", b, vals[0], nums[0]);
 }
 
-ASTNode::ASTNode() 
+ASTNode::ASTNode()
 {
     id = ++lastId;
     numCreated++;
     numExisting++;
 }
 
-ASTNode::ASTNode(ASTNode *parent) 
+ASTNode::ASTNode(ASTNode *parent)
 {
     id = ++lastId;
     numCreated++;
@@ -143,15 +143,15 @@ void ASTNode::setId(long _id)
     id = _id;
 }
 
-std::string ASTNode::getSourceLocation() const
+FileLine ASTNode::getSourceLocation() const
 {
     return srcLoc;
 }
 
-void ASTNode::setSourceLocation(const char *loc)
+void ASTNode::setSourceLocation(FileLine loc)
 {
-    srcLoc = loc ? loc : "";
-    directory = directoryOf(loc);
+    srcLoc = loc;
+    directory = directoryOf(loc.getFilename());
 }
 
 const char *ASTNode::getSourceFileDirectory() const

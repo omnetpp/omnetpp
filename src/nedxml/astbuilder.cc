@@ -57,10 +57,8 @@ void ASTBuilder::startElement(const char *name, const char **atts)
         node = new UnknownElement();
         node->setAttribute("element", name);
     }
-    // "debug info"
-    char buf[200];
-    sprintf(buf, "%s:%d", sourceFilename, parser->getCurrentLineNumber());
-    node->setSourceLocation(buf);
+
+    node->setSourceLocation(FileLine(sourceFilename, parser->getCurrentLineNumber()));
 
     // set attributes
     if (!unknown) {

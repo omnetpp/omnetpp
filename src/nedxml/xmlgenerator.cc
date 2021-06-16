@@ -105,7 +105,7 @@ void XMLGenerator::doGenerate(ostream& out, ASTNode *node, int level)
     // location info
     if (printSrcLoc && !node->getSourceLocation().empty()) {
         out << " src-loc=\"";
-        printAttrValue(out, node->getSourceLocation().c_str());
+        printAttrValue(out, node->getSourceLocation().str().c_str());
         out << "\"";
 
         const SourceRegion& r = node->getSourceRegion();

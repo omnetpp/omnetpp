@@ -32,7 +32,7 @@ void ErrorStore::doAdd(ASTNode *context, const char *loc, int severity, const ch
     Entry& e = entries.back();
 
     e.context = context;
-    e.location = loc ? loc : context ? context->getSourceLocation() : "";
+    e.location = loc ? loc : context ? context->getSourceLocation().str() : "";
     e.severity = severity;
     e.message = message;
 
@@ -161,7 +161,7 @@ void NedInternalError(const char *file, int line, ASTNode *context, const char *
     char message[BUFLEN];
     VSNPRINTF(message, BUFLEN, messagefmt);
 
-    std::string loc = context ? context->getSourceLocation() : "";
+    std::string loc = context ? context->getSourceLocation().str() : "";
     if (!loc.empty())
         fprintf(stderr, "INTERNAL ERROR: %s:%d: %s: %s\n", file, line, loc.c_str(), message);
     else if (context)

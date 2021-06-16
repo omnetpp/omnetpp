@@ -27,10 +27,12 @@
 
 #include <string>
 #include "nedxmldefs.h"
+#include "common/stringpool.h"
 
 namespace omnetpp {
 namespace nedxml {
 
+using omnetpp::common::opp_staticpooledstring;
 
 /**
  * @brief Subclass from this if you want to attach extra data to ASTNode objects.
@@ -56,11 +58,24 @@ class NEDXML_API UserData
  */
 struct SourceRegion
 {
-    SourceRegion() {startLine=startColumn=endLine=endColumn=0;}
-    int startLine;
-    int startColumn;
-    int endLine;
-    int endColumn;
+    int startLine = 0;
+    int startColumn = 0;
+    int endLine = 0;
+    int endColumn = 0;
+};
+
+class NEDXML_API FileLine
+{
+  private:
+    opp_staticpooledstring file;
+    int line = -1;
+  public:
+    FileLine() {}
+    FileLine(const char *file, int line=-1) : file(file), line(line) {}
+    bool empty() const {return file.empty();}
+    const char *getFilename() const {return file.c_str();}
+    int getLineNumber() const {return line;}
+    std::string str() const {return empty() ? "" : line == -1 ? file.str() : file.str() + ":" + std::to_string(line);}
 };
 
 /**
@@ -76,8 +91,8 @@ class NEDXML_API ASTNode
 {
   private:
     long id;
-    std::string srcLoc;
-    std::string directory;
+    FileLine srcLoc;
+    opp_staticpooledstring directory;
     SourceRegion srcRegion;
     ASTNode *parent = nullptr;
     ASTNode *firstChild = nullptr;
@@ -154,16 +169,14 @@ class NEDXML_API ASTNode
     virtual void setId(long id);
 
     /**
-     * Returns a string containing a file/line position showing where this
-     * element originally came from.
+     * Returns the file:line line position where this element originally came from.
      */
-    virtual std::string getSourceLocation() const;
+    virtual FileLine getSourceLocation() const;
 
     /**
-     * Sets location string (a string containing a file/line position showing
-     * where this element originally came from). Called by the (NED/XML) parser.
+     * Sets the file:line position indicating where this element originally came from.
      */
-    virtual void setSourceLocation(const char *loc);
+    virtual void setSourceLocation(FileLine loc);
 
     /**
      * Returns the directory this element was loaded from.

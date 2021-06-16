@@ -42,9 +42,8 @@ using std::ostream;
 
 #define PROGRAM    "nedtool"
 
-#define SL(x)    (x)
-
-inline std::string str(const char *s) {
+inline std::string str(const char *s)
+{
     return s;
 }
 
@@ -363,7 +362,7 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
 void MsgCodeGenerator::generateClassDecl(const ClassInfo& classInfo, const std::string& exportDef)
 {
     H << "/**\n";
-    H << " * Class generated from <tt>" << SL(classInfo.astNode->getSourceLocation()) << "</tt> by " PROGRAM ".\n";
+    H << " * Class generated from <tt>" << classInfo.astNode->getSourceLocation().str() << "</tt> by " PROGRAM ".\n";
     H << generatePreComment(classInfo.astNode);
 
     if (classInfo.customize) {
@@ -983,7 +982,7 @@ void MsgCodeGenerator::generateStruct(const ClassInfo& classInfo, const std::str
 void MsgCodeGenerator::generateStructDecl(const ClassInfo& classInfo, const std::string& exportDef)
 {
     H << "/**\n";
-    H << " * Struct generated from " << SL(classInfo.astNode->getSourceLocation()) << " by " PROGRAM ".\n";
+    H << " * Struct generated from " << classInfo.astNode->getSourceLocation().str() << " by " PROGRAM ".\n";
     H << " */\n";
     if (classInfo.baseClass.empty()) {
         H << "struct " << TS(exportDef) << classInfo.className << "\n";
@@ -1589,7 +1588,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
 void MsgCodeGenerator::generateEnum(const EnumInfo& enumInfo)
 {
     H << "/**\n";
-    H << " * Enum generated from <tt>" << SL(enumInfo.astNode->getSourceLocation()) << "</tt> by " PROGRAM ".\n";
+    H << " * Enum generated from <tt>" << enumInfo.astNode->getSourceLocation().str() << "</tt> by " PROGRAM ".\n";
     H << generatePreComment(enumInfo.astNode);
     H << " */\n";
 
