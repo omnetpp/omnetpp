@@ -47,6 +47,7 @@
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/cenvir.h"
+#include "omnetpp/fileline.h"
 #include "../nedsupport.h"
 #include "cnednetworkbuilder.h"
 #include "cnedloader.h"
@@ -55,6 +56,8 @@ using namespace omnetpp::common;
 using namespace omnetpp::nedsupport;
 
 namespace omnetpp {
+
+using omnetpp::FileLine;
 
 Register_PerRunConfigOption(CFGID_MAX_MODULE_NESTING, "max-module-nesting", CFG_INT, "50", "The maximum allowed depth of submodule nesting. This is used to catch accidental infinite recursions in NED.");
 Register_PerObjectConfigOption(CFGID_TYPENAME, "typename", KIND_UNSPECIFIED_TYPE, CFG_STRING, nullptr, "Specifies type for submodules and channels declared with 'like <>'.");
@@ -71,7 +74,7 @@ static void dump(NedElement *node)
 // utility function for exception handling: adds NED file+line to the exception text
 static void updateOrRethrowException(std::exception& e, NedElement *context)
 {
-    std::string loc = context ? context->getSourceLocation() : "";
+    std::string loc = context ? context->getSourceLocation().str() : "";
     if (!loc.empty()) {
         std::string msg = std::string(e.what()) + ", at " + loc;
         cException *ce = dynamic_cast<cException *>(&e);
@@ -248,6 +251,10 @@ void cNedNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
                 impl->setExpression(expr);
                 if (expr->isAConstant())
                     impl->convertToConst(nullptr);
+                else {
+                    auto loc = paramNode->getSourceLocation();
+                    expr->setSourceLocation(omnetpp::FileLine(loc.getFilename(), loc.getLineNumber())); // note: if we do it earlier, file:line may show up TWICE in the error message: one added inside convertToConst(), the other in the 'catch' block at the bottom of this function
+                }
                 impl->setIsSet(!paramNode->getIsDefault());
             }
             catch (std::exception& e) {
@@ -375,6 +382,10 @@ void cNedNetworkBuilder::doAssignParameterFromPattern(cPar& par, ParamElement *p
             impl->setExpression(expr);
             if (expr->isAConstant())
                 impl->convertToConst(nullptr);
+            else {
+                auto loc = patternNode->getSourceLocation();
+                expr->setSourceLocation(omnetpp::FileLine(loc.getFilename(), loc.getLineNumber())); // note: if we do it earlier, file:line may show up TWICE in the error message: one added inside convertToConst(), the other in the 'catch' block at the bottom of this function
+            }
             par.setEvaluationContext(evalContext);
             impl->setIsSet(!patternNode->getIsDefault());
         }

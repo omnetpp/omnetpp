@@ -1,0 +1,23 @@
+%description:
+Verify that when an error occurs evaluating a volatile parameter that
+was assigned from NED, the error message contains the location
+of the assignment in the NED file.
+
+%file: test.ned
+
+simple Node
+{
+    parameters:
+        @class(::testlib::ReadParams);
+        volatile string foo = default(readFile("no-such-file.txt"));
+}
+network Test
+{
+    submodules:
+        node: Node;
+}
+
+%exitcode: 1
+
+%contains-regex: stderr
+Cannot evaluate expression for parameter 'foo': readFile\(\): Cannot open .* for read -- at .*test\.ned:6
