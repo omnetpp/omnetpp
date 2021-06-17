@@ -72,9 +72,9 @@
 /samples/histograms/,                ./histograms -f omnetpp.ini -c IntUniform -r 0,          1000s,         efec-76d8/rsz,PASS,
 /samples/histograms/,                ./histograms -f omnetpp.ini -c Normal -r 0,              1000s,         da51-ad89/rsz,PASS,
 /samples/histograms/,                ./histograms -f omnetpp.ini -c Exponential -r 0,         1000s,         7dba-9e38/rsz,PASS,
-/samples/histograms/,                ./histograms -f omnetpp.ini -c Bimodal -r 0,             1000s,         8f4c-6361/rsz,PASS,
+/samples/histograms/,                ./histograms -f omnetpp.ini -c Bimodal -r 0,             1000s,         2a38-95eb/rsz,PASS,
 /samples/histograms/,                ./histograms -f omnetpp.ini -c ConstantWeightedUniform -r 0, 1000s,     e5d1-c5a8/rsz,PASS,
-/samples/histograms/,                ./histograms -f omnetpp.ini -c SineWeightedUniform -r 0, 1000s,         d4ef-f13b/rsz,PASS,
+/samples/histograms/,                ./histograms -f omnetpp.ini -c SineWeightedUniform -r 0, 1000s,         d4ef-e93b/rsz,PASS,
 
 /samples/hypercube/,                 ./hypercube -f omnetpp.ini -c Hypercube1 -r 0,            5000s,         1dbc-daaa/tplx,PASS,
 

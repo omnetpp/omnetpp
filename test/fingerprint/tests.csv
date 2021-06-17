@@ -1,9 +1,9 @@
 # workingdir,                        cmdLine,                                          simtimelimit, fingerprint,expected value,tags
-/test/models/histograms/,                ./histograms -f omnetpp.ini -c Bimodal -r 0,                100s,         8c89-0d43/rsz,PASS,
+/test/models/histograms/,                ./histograms -f omnetpp.ini -c Bimodal -r 0,                100s,         58fb-4a7d/rsz,PASS,
 /test/models/histograms/,                ./histograms -f omnetpp.ini -c DriftingNormal -r 0,         100s,         c1c0-4631/rsz,PASS,
-/test/models/histograms/,                ./histograms -f omnetpp.ini -c RareExtremeValues -r 0,      100s,         9281-c5e3/rsz,PASS,
-/test/models/histograms/,                ./histograms -f omnetpp.ini -c UnexpectedExtremeValue1 -r 0,100s,         a519-75d4/rsz,PASS,
-/test/models/histograms/,                ./histograms -f omnetpp.ini -c UnexpectedExtremeValue2 -r 0,100s,         f8f7-34da/rsz,PASS,
+/test/models/histograms/,                ./histograms -f omnetpp.ini -c RareExtremeValues -r 0,      100s,         ea60-793c/rsz,PASS,
+/test/models/histograms/,                ./histograms -f omnetpp.ini -c UnexpectedExtremeValue1 -r 0,100s,         0332-6963/rsz,PASS,
+/test/models/histograms/,                ./histograms -f omnetpp.ini -c UnexpectedExtremeValue2 -r 0,100s,         c80c-cdf3/rsz,PASS,
 /test/models/histograms/,                ./histograms -f omnetpp.ini -c Empty -r 0,                  100s,         9f10-b921/rsz 3f9a-91a1/rsz,PASS,
 /test/models/histograms/,                ./histograms -f omnetpp.ini -c OneObservation -r 0,         100s,         f1b5-f531/rsz,PASS,
 /test/models/histograms/,                ./histograms -f omnetpp.ini -c TwoObservations -r 0,        100s,         51da-3561/rsz,PASS,
@@ -20,5 +20,5 @@
 /test/models/histograms/,                ./histograms -f omnetpp.ini -c SineWeightedUniform -r 0,    100s,         d847-a1db/rsz,PASS,
 # most likely sin() works a little differently on some systems, so we have to accept two different fingerprints here (there is only
 # noise in the bottom few bits of the numbers anyways), but the result files will be identical (they are printed with limited precision)
-/test/models/histograms/,                ./histograms -f omnetpp.ini -c SineWeightedLinear -r 0,     100s,         d135-00d1/rsz 510d-02d0/rsz,PASS,
+/test/models/histograms/,                ./histograms -f omnetpp.ini -c SineWeightedLinear -r 0,     100s,         d135-0051/rsz 510d-02d0/rsz,PASS,
 
