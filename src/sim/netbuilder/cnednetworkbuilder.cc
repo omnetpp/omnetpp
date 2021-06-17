@@ -583,7 +583,7 @@ cModuleType *cNedNetworkBuilder::findAndCheckModuleTypeLike(const char *modTypeN
 
     // handle @omittedTypename
     if (opp_isempty(modTypeName)) {
-        cProperties *properties = currentDecl->getSubmoduleProperties(submodName, likeType);
+        cProperties *properties = currentDecl->getSubmoduleProperties(submodName, interfaceQName.c_str());
         cProperty *omittedTypeNameProperty = properties->get("omittedTypename");
         if (omittedTypeNameProperty) {
             const char *omittedTypeName = omittedTypeNameProperty->getValue();
@@ -1269,7 +1269,7 @@ cChannelType *cNedNetworkBuilder::findAndCheckChannelTypeLike(const char *channe
 
     // handle @omittedTypename
     if (opp_isempty(channelTypeName)) {
-        cProperties *properties = currentDecl->getConnectionProperties(connectionId, likeType);
+        cProperties *properties = currentDecl->getConnectionProperties(connectionId, interfaceQName.c_str());
         cProperty *omittedTypeNameProperty = properties->get("omittedTypename");
         if (omittedTypeNameProperty) {
             const char *omittedTypeName = omittedTypeNameProperty->getValue();

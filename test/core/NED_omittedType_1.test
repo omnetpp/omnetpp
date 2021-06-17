@@ -1,26 +1,32 @@
 %description:
 Tests @omittedTypename.
 
-%file: test.ned
-
-import testlib.Dump;
+%file: interfaces/misc.ned
+package interfaces;
 
 moduleinterface IFoo { @omittedTypename(OmittedFoo); }
 moduleinterface IBar { @omittedTypename(); }
 moduleinterface IBaz { }
 
-module OmittedFoo like IFoo {}
-module OmittedBar like IBar {}
-
-module Node { gates: input in[]; output out[]; connections allowunconnected: }
-
 channelinterface IFooCh { @omittedTypename(OmittedFooCh); }
 channelinterface IBarCh { @omittedTypename(); }
 channelinterface IBazCh { }
 
+%file: impl/misc.ned
+package impl;
+import interfaces.*;
+
+module OmittedFoo like IFoo {}
+module OmittedBar like IBar {}
+
 channel OmittedFooCh extends ned.IdealChannel like IFooCh {}
 channel OmittedBarCh extends ned.IdealChannel like IBarCh {}
 
+%file: test.ned
+import interfaces.*;
+import testlib.Dump;
+
+module Node { gates: input in[]; output out[]; connections allowunconnected: }
 
 network Test
 {
@@ -49,24 +55,24 @@ module Test: Test {
     parameters:
         @isNetwork
     submodules:
-        module Test.foo: OmittedFoo {
+        module Test.foo: impl.OmittedFoo {
         }
-        module Test.bar2: OmittedBar {
+        module Test.bar2: impl.OmittedBar {
             parameters:
                 @omittedTypename(OmittedBar)
         }
         module Test.a: Node {
             gates:
-                out[0]: --> b.in[0], (OmittedFooCh)channel
+                out[0]: --> b.in[0], (impl.OmittedFooCh)channel
                 out[1]: --> b.in[1]
                 out[2]: --> b.in[2]
-                out[3]: --> b.in[3], (OmittedBarCh)channel
+                out[3]: --> b.in[3], (impl.OmittedBarCh)channel
         }
         module Test.b: Node {
             gates:
-                in[0]: <-- a.out[0], (OmittedFooCh)channel
+                in[0]: <-- a.out[0], (impl.OmittedFooCh)channel
                 in[1]: <-- a.out[1]
                 in[2]: <-- a.out[2]
-                in[3]: <-- a.out[3], (OmittedBarCh)channel
+                in[3]: <-- a.out[3], (impl.OmittedBarCh)channel
         }
 }
