@@ -113,7 +113,7 @@ class SIM_API cMatchExpression
      * Returns true if the line matches the pattern with the given settings.
      * See setPattern().
      */
-    bool matches(const Matchable *object);
+    bool matches(const Matchable *object) const;
 };
 
 

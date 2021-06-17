@@ -104,7 +104,7 @@ class SIM_API cPatternMatcher
      * Returns true if the line matches the pattern with the given settings.
      * See setPattern().
      */
-    bool matches(const char *line);
+    bool matches(const char *line) const;
 
     /**
      * Similar to matches(): it returns non-nullptr iif (1) the pattern ends in
@@ -126,19 +126,19 @@ class SIM_API cPatternMatcher
      *
      * See matches().
      */
-    const char *patternPrefixMatches(const char *line, int suffixoffset);
+    const char *patternPrefixMatches(const char *line, int suffixoffset) const;
 
     /**
      * Returns the internal representation of the pattern as a string.
      * May be useful for debugging purposes.
      */
-    std::string debugStr();
+    std::string debugStr() const;
 
     /**
      * Prints the internal representation of the pattern on the standard output.
      * May be useful for debugging purposes.
      */
-    void dump();
+    void dump() const;
 
     /**
      * Utility function to determine whether a given string contains wildcards.

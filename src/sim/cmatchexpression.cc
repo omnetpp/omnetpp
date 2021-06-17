@@ -61,7 +61,7 @@ class Wrapper : public MatchExpression::Matchable
     virtual const char *getAsString(const char *attribute) const override { return impl->getAsString(attribute); }
 };
 
-bool cMatchExpression::matches(const Matchable *object)
+bool cMatchExpression::matches(const Matchable *object) const
 {
     Wrapper wrapper(object);
     TRY(return impl->matches(&wrapper));

@@ -338,19 +338,18 @@ void cTopology::unlinkFromDestNode(Link *link)
     destInLinks.erase(it);
 }
 
-cTopology::Node *cTopology::getNode(int i)
+cTopology::Node *cTopology::getNode(int i) const
 {
     if (i < 0 || i >= (int)nodes.size())
         throw cRuntimeError(this, "Invalid node index %d", i);
     return nodes[i];
 }
 
-cTopology::Node *cTopology::getNodeFor(cModule *mod)
+cTopology::Node *cTopology::getNodeFor(cModule *mod) const
 {
     // binary search because nodes[] is ordered by module ID
     Node tmpNode(mod->getId());
-    std::vector<Node *>::iterator it = std::lower_bound(nodes.begin(), nodes.end(), &tmpNode, lessByModuleId);
-//TODO: this does not compile with VC9 (VC10 is OK): std::vector<Node*>::iterator it = std::lower_bound(nodes.begin(), nodes.end(), mod->getId(), isModuleIdLess);
+    auto it = std::lower_bound(nodes.begin(), nodes.end(), &tmpNode, lessByModuleId);
     return it == nodes.end() || (*it)->moduleId != mod->getId() ? nullptr : *it;
 }
 

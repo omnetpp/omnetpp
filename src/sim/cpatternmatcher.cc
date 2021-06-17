@@ -46,22 +46,22 @@ void cPatternMatcher::setPattern(const char *pattern, bool dottedpath, bool full
     }
 }
 
-bool cPatternMatcher::matches(const char *line)
+bool cPatternMatcher::matches(const char *line) const
 {
     return impl->matches(line);
 }
 
-const char *cPatternMatcher::patternPrefixMatches(const char *line, int suffixoffset)
+const char *cPatternMatcher::patternPrefixMatches(const char *line, int suffixoffset) const
 {
     return impl->patternPrefixMatches(line, suffixoffset);
 }
 
-std::string cPatternMatcher::debugStr()
+std::string cPatternMatcher::debugStr() const
 {
     return impl->debugStr();
 }
 
-void cPatternMatcher::dump()
+void cPatternMatcher::dump() const
 {
     impl->dump();
 }

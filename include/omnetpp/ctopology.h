@@ -533,7 +533,7 @@ class SIM_API cTopology : public cOwnedObject
      * Returns pointer to the ith node in the graph. Node's methods
      * can be used to further examine the node's connectivity, etc.
      */
-    virtual Node *getNode(int i);
+    virtual Node *getNode(int i) const;
 
     /**
      * Returns the graph node which corresponds to the given module in the
@@ -542,7 +542,7 @@ class SIM_API cTopology : public cOwnedObject
      * network, that is, it was probably created with one of the
      * extract...() functions.
      */
-    virtual Node *getNodeFor(cModule *mod);
+    virtual Node *getNodeFor(cModule *mod) const;
     //@}
 
     /** @name Algorithms to find shortest paths. */
