@@ -344,16 +344,16 @@ void cModule::setNameAndIndex(const char *name, int index)
     if (parent == nullptr && index != -1)
         throw cRuntimeError(this, "Cannot set module index to %d: toplevel module cannot be part of a module vector", index);
 
-    bool reinsertNeeded = parent && !(vectorIndex == -1 && index == -1);  // renaming of a scalar submodule doesn't need re-insertion
-
-    if (reinsertNeeded)
+    // Note: Re-inserting moves module to new submodule vector or vector index,
+    // and also ensures new name doesn't collide with existing module names.
+    if (parent)
         parent->removeSubmodule(this);
 
     cOwnedObject::setName(name);
     vectorIndex = index;
     updateFullName();
 
-    if (reinsertNeeded)
+    if (parent)
         parent->insertSubmodule(this);
 }
 
