@@ -61,8 +61,8 @@
 # /samples/database/example2/,         -./f net60mysql.ini -c Net60mysql -r 0,         5000s,         0000-0000           # not a simulation,PASS,
 
 # /samples/dyna/,                      ./dyna -f omnetpp.ini -c User -r 0,                  5000s,         0000-0000           # interactive,PASS,
-/samples/dyna/,                      ./dyna -f omnetpp.ini -c Small -r 0,                 5000s,         7f58-8a5c/tplx,PASS,
-/samples/dyna/,                      ./dyna -f omnetpp.ini -c Medium -r 0,                5000s,         9501-6ac1/tplx,PASS,
+/samples/dyna/,                      ./dyna -f omnetpp.ini -c Small -r 0,                 5000s,         7eb0-1519/tplx,PASS,
+/samples/dyna/,                      ./dyna -f omnetpp.ini -c Medium -r 0,                5000s,         07e8-fccf/tplx,PASS,
 # /samples/dyna/,                      ./dyna -f realtime.ini -c General -r 0,              5000s,         0000-0000           # real-time scheduler,PASS,
 
 /samples/fifo/,                      ./fifo -f omnetpp.ini -c Fifo1 -r 0,                  5000s,         9fb9-7a5a/tplx,PASS,

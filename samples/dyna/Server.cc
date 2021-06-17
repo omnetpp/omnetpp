@@ -18,6 +18,7 @@ class Server : public cSimpleModule
 {
   private:
     cModuleType *srvProcType;
+    int counter = 0;
 
   protected:
     virtual void initialize() override;
@@ -36,7 +37,8 @@ void Server::handleMessage(cMessage *msg)
     DynaPacket *pk = check_and_cast<DynaPacket *>(msg);
 
     if (pk->getKind() == DYNA_CONN_REQ) {
-        cModule *mod = srvProcType->createScheduleInit("serverproc", this);
+        std::string name = opp_stringf("conn-%d", ++counter);
+        cModule *mod = srvProcType->createScheduleInit(name.c_str(), this);
         EV << "DYNA_CONN_REQ: Created process ID=" << mod->getId() << endl;
         sendDirect(pk, mod, "in");
     }

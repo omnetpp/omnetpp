@@ -41,14 +41,9 @@ void ServerProcess::activity()
 
     // receive the CONN_REQ we were created to handle
     EV << "Started, waiting for DYNA_CONN_REQ\n";
-    pk = (DynaPacket *)receive();
+    pk = check_and_cast<DynaPacket *>(receive());
     clientAddr = pk->getSrcAddress();
     ownAddr = pk->getDestAddress();
-
-    // set the module name to something informative
-    char buf[30];
-    sprintf(buf, "serverproc%d-clientaddr%d", getId(), clientAddr);
-    setName(buf);
 
     // respond to CONN_REQ by CONN_ACK
     EV << "client is addr=" << clientAddr << ", sending DYNA_CONN_ACK\n";
@@ -62,7 +57,7 @@ void ServerProcess::activity()
     // process data packets until DISC_REQ comes
     for ( ; ; ) {
         EV << "waiting for DATA(query) (or DYNA_DISC_REQ)\n";
-        pk = (DynaPacket *)receive();
+        pk = check_and_cast<DynaPacket *>(receive());
         int type = pk->getKind();
 
         if (type == DYNA_DISC_REQ)
