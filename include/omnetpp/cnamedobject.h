@@ -49,10 +49,6 @@ class SIM_API cNamedObject : public cObject
     void setFlag(int flag, bool value) {if (value) flags|=flag; else flags&=~flag;}
     int getFlag(int flag) {return flags & flag;}
 
-  private:
-    // pool for shared storage of object names
-    static cStringPool nameStringPool;
-
   public:
     /** @name Constructors, destructor, assignment. */
     //@{

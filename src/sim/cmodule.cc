@@ -50,7 +50,6 @@ Register_Class(cModule);
 
 Register_PerObjectConfigOption(CFGID_DISPLAY_NAME, "display-name", KIND_MODULE, CFG_STRING, nullptr, "Specifies a display name for the module, which is shown e.g. in Qtenv's graphical module view.");
 
-cStringPool cModule::nameStringPool;
 cModule::GateNamePool cModule::gateNamePool;
 
 
@@ -96,8 +95,6 @@ cModule::~cModule()
     delete canvas;
     delete osgCanvas;
 
-    nameStringPool.release(displayName);
-    nameStringPool.release(fullName);
     delete[] fullPath;
 }
 
@@ -373,13 +370,11 @@ void cModule::setNameAndIndex(const char *name, int index)
 
 void cModule::updateFullName()
 {
-    nameStringPool.release(fullName);
-    fullName = nullptr;
-
-    if (isVector()) {
-        static char buf[128];
-        opp_indexedname(buf, sizeof(buf), getName(), getIndex());
-        fullName = nameStringPool.get(buf);
+    if (!isVector())
+        fullName = nullptr;
+    else {
+        char buf[128];
+        fullName = opp_indexedname(buf, sizeof(buf), getName(), getIndex());
     }
 
     invalidateFullPathRec();
@@ -422,7 +417,7 @@ void cModule::invalidateFullPathRec()
 const char *cModule::getFullName() const
 {
     // if not in a vector, normal getName() will do
-    return isVector() ? fullName : getName();
+    return isVector() ? fullName.c_str() : getName();
 }
 
 inline char *strdup2(const char *s) // note: opp_strdup() is not suitable because it turns "" into nullptr which std::string doesn't like
@@ -446,8 +441,7 @@ bool cModule::isSimple() const
 
 void cModule::setDisplayName(const char *name)
 {
-    nameStringPool.release(displayName);
-    displayName = nameStringPool.get(name);
+    displayName = name;
 }
 
 std::vector<cModule*>& cModule::getSubmoduleArray(const char *name) const

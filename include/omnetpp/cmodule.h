@@ -280,9 +280,8 @@ class SIM_API cModule : public cComponent //implies noncopyable
 
   private:
     mutable const char *fullPath = nullptr; // module full path string (computed lazily)
-    mutable const char *fullName = nullptr; // buffer to store full name of object; stringpooled
-    const char *displayName = nullptr;  // optional display name; stringpooled
-    static cStringPool nameStringPool;  // pool for shared storage of full names and display names
+    mutable opp_pooledstring fullName = nullptr; // buffer to store full name of object
+    opp_pooledstring displayName = nullptr;  // optional display name
 
     cModule *parentModule = nullptr;
     struct SubmoduleVector {
@@ -612,7 +611,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * displayed on graphical user interfaces like Qtenv or the Sequence Chart.
      * Returns nullptr if a display name is not set.
      */
-    virtual const char *getDisplayName() const {return displayName;}
+    virtual const char *getDisplayName() const {return displayName.c_str();}
 
     /**
      * Returns true if this module is in a module vector.

@@ -23,6 +23,7 @@
 #include "omnetpp/globals.h"
 #include "omnetpp/opp_string.h"
 #include "common/stringutil.h"
+#include "common/stringpool.h"
 
 #ifdef WITH_PARSIM
 #include "omnetpp/ccommbuffer.h"
@@ -35,8 +36,7 @@ using namespace omnetpp::common;
 
 Register_Class(cNamedObject);
 
-// static class members
-cStringPool cNamedObject::nameStringPool("cNamedObject::stringPool");
+static StringPool nameStringPool;
 
 cNamedObject::cNamedObject(const char *s, bool namepooling) :
     flags(namepooling ? FL_NAMEPOOLING : 0)
@@ -44,7 +44,7 @@ cNamedObject::cNamedObject(const char *s, bool namepooling) :
     if (!s)
         name = nullptr;
     else if (namepooling)
-        name = nameStringPool.get(s);
+        name = nameStringPool.obtain(s);
     else
         name = opp_strdup(s);
 }
@@ -98,7 +98,7 @@ void cNamedObject::setName(const char *s)
     if (!s)
         name = nullptr;
     else if (flags & FL_NAMEPOOLING)
-        name = nameStringPool.get(s);
+        name = nameStringPool.obtain(s);
     else
         name = opp_strdup(s);
 }
@@ -112,7 +112,7 @@ void cNamedObject::setNamePooling(bool pooling)
         flags |= FL_NAMEPOOLING;
         if (name) {
             const char *oldname = name;
-            name = nameStringPool.get(oldname);
+            name = nameStringPool.obtain(oldname);
             delete[] oldname;
         }
     }

@@ -572,7 +572,7 @@ Qtenv::Qtenv() : opt((QtenvOptions *&)EnvirBase::opt), icons(out)
     runUntil.msg = nullptr;  // deactivate corresponding checks in eventCancelled()/objectDeleted()
     runUntil.stopOnMsgCancel = true;
 
-    // set the name here, to prevent warning from cStringPool on shutdown when Cmdenv runs
+    // set the name here, to prevent warning from StringPool on shutdown when Cmdenv runs
     inspectorfactories.getInstance()->setName("inspectorfactories");
 }
 

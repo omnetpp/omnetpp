@@ -45,7 +45,7 @@ Register_Class(cGeometric);
 Register_Class(cNegBinomial);
 Register_Class(cPoisson);
 
-cRandom::cRandom(cRNG *rng) : cOwnedObject(nullptr), rng(rng)
+cRandom::cRandom(cRNG *rng) : cOwnedObject(), rng(rng)
 {
     if (!this->rng)
         this->rng = cSimulation::getActiveSimulation()->getContext()->getRNG(0);
