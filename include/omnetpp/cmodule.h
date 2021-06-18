@@ -272,10 +272,6 @@ class SIM_API cModule : public cComponent //implies noncopyable
     };
 
   private:
-    static std::string lastModuleFullPath; // cached result of last getFullPath() call
-    static const cModule *lastModuleFullPathModule; // module of lastModuleFullPath
-
-  private:
     enum {
         FL_BUILDINSIDE_CALLED = 1 << 11, // whether buildInside() has been called
         FL_RECORD_EVENTS      = 1 << 12, // enables recording events in this module
@@ -283,9 +279,8 @@ class SIM_API cModule : public cComponent //implies noncopyable
     };
 
   private:
-    mutable const char *fullPath = nullptr; // cached fullPath string (caching is optional, so it may be nullptr)
+    mutable const char *fullPath = nullptr; // module full path string (computed lazily)
     mutable const char *fullName = nullptr; // buffer to store full name of object; stringpooled
-    static bool cacheFullPath; // whether to cache the fullPath string or not
     const char *displayName = nullptr;  // optional display name; stringpooled
     static cStringPool nameStringPool;  // pool for shared storage of full names and display names
 
@@ -340,7 +335,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
     void updateFullName();
 
     // internal: called from setName(), setIndex(), and changeParentTo()
-    void updateFullPathRec();
+    void invalidateFullPathRec();
 
     // internal: used by changeParentTo()
     void reassignModuleIdRec();

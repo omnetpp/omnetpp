@@ -50,19 +50,9 @@ Register_Class(cModule);
 
 Register_PerObjectConfigOption(CFGID_DISPLAY_NAME, "display-name", KIND_MODULE, CFG_STRING, nullptr, "Specifies a display name for the module, which is shown e.g. in Qtenv's graphical module view.");
 
-// static members:
-std::string cModule::lastModuleFullPath;
-const cModule *cModule::lastModuleFullPathModule = nullptr;
-
 cStringPool cModule::nameStringPool;
 cModule::GateNamePool cModule::gateNamePool;
 
-
-#ifdef NDEBUG
-bool cModule::cacheFullPath = false; // in release mode keep memory usage low
-#else
-bool cModule::cacheFullPath = true;  // fullpath is useful during debugging
-#endif
 
 cModule::cModule()
 {
@@ -290,23 +280,17 @@ void cModule::insertSubmodule(cModule *mod)
 
     subcomponentData->submoduleChangeCount++;
 
-    if (cacheFullPath)
-        mod->updateFullPathRec();
-
-    // cached module getFullPath() possibly became invalid
-    lastModuleFullPathModule = nullptr;
+    mod->invalidateFullPathRec();
 }
 
 void cModule::removeSubmodule(cModule *mod)
 {
     mod->parentModule = nullptr;
+    mod->invalidateFullPathRec();
 
     // NOTE: no drop(mod): anyone can take ownership anyway (because we're soft owners)
     // and otherwise it'd cause trouble if mod itself is in context (it'd get inserted
     // on its own DefaultList)
-
-    // cached module getFullPath() possibly became invalid
-    lastModuleFullPathModule = nullptr;
 
     int index = mod->vectorIndex;
     if (index == -1) {
@@ -384,8 +368,7 @@ void cModule::updateFullName()
         fullName = nameStringPool.get(buf);
     }
 
-    if (lastModuleFullPathModule == this)
-        lastModuleFullPathModule = nullptr;  // invalidate
+    invalidateFullPathRec();
 
 #ifdef SIMFRONTEND_SUPPORT
     updateLastChangeSerial();
@@ -413,14 +396,13 @@ void cModule::reassignModuleIdRec()
         (*it)->reassignModuleIdRec();
 }
 
-void cModule::updateFullPathRec()
+void cModule::invalidateFullPathRec()
 {
     delete[] fullPath;
-    fullPath = nullptr;  // for the next getFullPath() call
-    fullPath = opp_strdup(getFullPath().c_str());
+    fullPath = nullptr;
 
     for (SubmoduleIterator it(this); !it.end(); ++it)
-        (*it)->updateFullPathRec();
+        (*it)->invalidateFullPathRec();
 }
 
 const char *cModule::getFullName() const
@@ -429,22 +411,18 @@ const char *cModule::getFullName() const
     return isVector() ? fullName : getName();
 }
 
+inline char *strdup2(const char *s) // note: opp_strdup() is not suitable because it turns "" into nullptr which std::string doesn't like
+{
+    char *p = new char[strlen(s)+1];
+    strcpy(p,s);
+    return p;
+}
+
 std::string cModule::getFullPath() const
 {
-    // use cached value if filled in
-    if (fullPath)
-        return fullPath;
-
-    if (lastModuleFullPathModule != this) {
-        // stop at the toplevel module (don't go up to cSimulation);
-        // plus, cache the result, expecting more hits from this module
-        if (getParentModule() == nullptr)
-            lastModuleFullPath = getFullName();
-        else
-            lastModuleFullPath = getParentModule()->getFullPath() + "." + getFullName();
-        lastModuleFullPathModule = this;
-    }
-    return lastModuleFullPath;
+    if (!fullPath)
+        fullPath = getParentModule() == nullptr ? strdup2(getFullName()) : strdup2((getParentModule()->getFullPath() + "." + getFullName()).c_str());
+    return fullPath;
 }
 
 bool cModule::isSimple() const
@@ -1551,8 +1529,7 @@ void cModule::changeParentTo(cModule *module)
     module->insertSubmodule(this);
     int oldId = getId();
     reassignModuleIdRec();
-    if (cacheFullPath)
-        updateFullPathRec();
+    invalidateFullPathRec();
 
     // notify environment
     EVCB.moduleReparented(this, oldparent, oldId);
