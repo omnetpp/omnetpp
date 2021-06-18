@@ -1,0 +1,99 @@
+%description:
+Tests that cModule::getFullPath() returns correct results, esp. after renaming/reparenting
+the submodule or a module above it.
+
+%file: test.ned
+
+import testlib.*;
+
+module Element {
+}
+
+module Node {
+    submodules:
+        foo: Element;
+        bar[3]: Element;
+}
+
+module Subnet {
+}
+
+simple Tester {
+}
+
+network Test
+{
+    submodules:
+        node: Node;
+        subnet: Subnet;
+        tester: Tester;
+}
+
+%file: test.cc
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class Tester : public cSimpleModule
+{
+  public:
+    Tester() : cSimpleModule(32768) { }
+    void check(cModule *module);
+    virtual void activity() override;
+};
+
+Define_Module(Tester);
+
+void Tester::check(cModule *module)
+{
+    std::string computedFullPath = module->getParentModule() ? (module->getParentModule()->getFullPath() + "." + module->getFullName()) : module->getFullName();
+    if (module->getFullPath() != computedFullPath)
+        throw cRuntimeError("Incorrect fullPath '%s' for '%s'", module->getFullPath().c_str(), computedFullPath.c_str());
+    for (cModule::SubmoduleIterator it(module); !it.end(); it++)
+        check(*it);
+}
+
+#define DO(code) \
+    EV << #code << " --> "; \
+    code; \
+    EV << node->getFullPath() << endl; \
+    check(top);
+
+void Tester::activity()
+{
+    cModule *top = getSystemModule();
+    cModule *node = top->getModuleByPath("node");
+    cModule *subnet = top->getModuleByPath("subnet");
+    top->addSubmoduleVector("nodes",5);
+    subnet->addSubmoduleVector("nodes",5);
+
+    DO((void)0);
+    DO(node->setName("hello"))
+    DO(node->setNameAndIndex("nodes", 2));
+    DO(node->changeParentTo(top->getModuleByPath("subnet")));
+    DO(node->setIndex(0));
+    DO(node->setNameAndIndex("hello", -1));
+    DO(node->changeParentTo(top));
+
+    EV << ".\n";
+}
+
+};
+
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+
+%contains: stdout
+(void)0 --> Test.node
+node->setName("hello") --> Test.hello
+node->setNameAndIndex("nodes", 2) --> Test.nodes[2]
+node->changeParentTo(top->getModuleByPath("subnet")) --> Test.subnet.nodes[2]
+node->setIndex(0) --> Test.subnet.nodes[0]
+node->setNameAndIndex("hello", -1) --> Test.subnet.hello
+node->changeParentTo(top) --> Test.hello
+.
