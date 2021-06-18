@@ -70,9 +70,11 @@ opp_pooledstring& opp_pooledstring::operator=(const opp_pooledstring& ps)
 
 opp_pooledstring& opp_pooledstring::operator=(opp_pooledstring&& ps)
 {
-    pool.release(p);
-    p = ps.p;
-    ps.p = nullptr;
+    if (ps.p != p) {
+        pool.release(p);
+        p = ps.p;
+        ps.p = nullptr;
+    }
     return *this;
 }
 

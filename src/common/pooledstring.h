@@ -77,7 +77,7 @@ class COMMON_API opp_pooledstring
     opp_pooledstring(opp_pooledstring&& ps) {p = ps.p; ps.p = nullptr;}
     ~opp_pooledstring() {if (p) pool.release(p);}
     opp_pooledstring& operator=(const opp_pooledstring& ps) {if (p != ps.p) {pool.release(p); p = pool.obtain(ps.p);} return *this;}
-    opp_pooledstring& operator=(opp_pooledstring&& ps) {pool.release(p); p = ps.p; ps.p = nullptr; return *this;}
+    opp_pooledstring& operator=(opp_pooledstring&& ps) {if (p != ps.p) {pool.release(p); p = ps.p; ps.p = nullptr;} return *this;}
     bool empty() const {return !p || !*p;}
     std::string str() const {return p;}
     const char *c_str() const {return p;}
