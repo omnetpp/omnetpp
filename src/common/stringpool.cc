@@ -14,7 +14,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "stringpool.h"
+#include "pooledstring.h"
 #include "stringutil.h"
 
 namespace omnetpp {
@@ -150,12 +150,6 @@ void StringPool::dump() const
     for (const auto & it : pool)
         printf("  \"%s\" %p, %d ref(s)\n", it.first, it.first, it.second);
 }
-
-
-//---
-
-COMMON_API StaticStringPool opp_staticpooledstring::pool;
-COMMON_API StringPool opp_pooledstring::pool;
 
 
 }  // namespace common

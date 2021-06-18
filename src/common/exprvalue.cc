@@ -17,7 +17,7 @@
 
 #include <cmath>
 #include <cinttypes>  // PRId64
-#include "stringpool.h"
+#include "pooledstring.h"
 #include "unitconversion.h"
 #include "exception.h"
 #include "exprvalue.h"

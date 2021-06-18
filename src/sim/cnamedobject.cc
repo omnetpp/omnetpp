@@ -23,7 +23,7 @@
 #include "omnetpp/globals.h"
 #include "omnetpp/opp_string.h"
 #include "common/stringutil.h"
-#include "common/stringpool.h"
+#include "common/pooledstring.h"
 
 #ifdef WITH_PARSIM
 #include "omnetpp/ccommbuffer.h"

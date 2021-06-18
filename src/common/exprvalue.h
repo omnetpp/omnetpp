@@ -20,7 +20,7 @@
 #include "commondefs.h"
 #include "intutil.h"
 #include "stringutil.h"
-#include "stringpool.h"
+#include "pooledstring.h"
 
 namespace omnetpp { class cObject; }
 

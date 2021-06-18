@@ -25,7 +25,7 @@
 #include <functional>
 #include "omnetpp/cconfigreader.h"
 #include "envirdefs.h"
-#include "common/stringpool.h"
+#include "common/pooledstring.h"
 
 namespace omnetpp {
 namespace envir {

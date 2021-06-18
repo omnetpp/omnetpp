@@ -27,7 +27,7 @@
 
 #include <string>
 #include "nedxmldefs.h"
-#include "common/stringpool.h"
+#include "common/pooledstring.h"
 
 namespace omnetpp {
 namespace nedxml {

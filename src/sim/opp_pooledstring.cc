@@ -16,7 +16,7 @@
 *--------------------------------------------------------------*/
 
 #include "omnetpp/opp_pooledstring.h"
-#include "common/stringpool.h"
+#include "common/pooledstring.h"
 
 using namespace omnetpp::common;
 

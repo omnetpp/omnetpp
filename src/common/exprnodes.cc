@@ -21,7 +21,7 @@
 #include "unitconversion.h"
 #include "stlutil.h"
 #include "stringutil.h"
-#include "stringpool.h"
+#include "pooledstring.h"
 #include "exprnodes.h"
 #include "patternmatcher.h"
 

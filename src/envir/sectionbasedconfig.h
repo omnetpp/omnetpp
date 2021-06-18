@@ -22,7 +22,7 @@
 #include <vector>
 #include <set>
 #include <string>
-#include "common/stringpool.h"
+#include "common/pooledstring.h"
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/cconfigreader.h"
 #include "omnetpp/fileline.h"

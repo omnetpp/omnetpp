@@ -22,7 +22,7 @@
 #include <string>
 #include "common/opp_ctype.h"
 #include "common/stringutil.h"
-#include "common/stringpool.h"
+#include "common/pooledstring.h"
 #include "omnetpp/cxmlelement.h"
 #include "omnetpp/cexception.h"
 #include "omnetpp/cenvir.h"

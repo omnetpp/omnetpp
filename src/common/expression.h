@@ -19,7 +19,7 @@
 #include "commondefs.h"
 #include "exprvalue.h"
 #include "exprnode.h"
-#include "stringpool.h"
+#include "pooledstring.h"
 
 namespace omnetpp {
 namespace common {

@@ -17,7 +17,7 @@
 
 #include <cinttypes>  // PRId64
 #include "common/stringutil.h"
-#include "common/stringpool.h"
+#include "common/pooledstring.h"
 #include "common/unitconversion.h"
 #include "common/intutil.h"
 #include "omnetpp/cvalue.h"

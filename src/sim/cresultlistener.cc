@@ -16,7 +16,7 @@
 *--------------------------------------------------------------*/
 
 #include "common/exception.h"
-#include "common/stringpool.h"
+#include "common/pooledstring.h"
 #include "omnetpp/cresultlistener.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/ccomponent.h"
