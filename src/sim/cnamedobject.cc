@@ -86,6 +86,8 @@ void cNamedObject::setName(const char *s)
 {
     // release name string
     if (name) {
+        if (name == s)
+            return;
         if (flags & FL_NAMEPOOLING)
             nameStringPool.release(name);
         else
