@@ -15,6 +15,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <cstring>
 #include "common/fileutil.h"
 #include "omnetpp/onstartup.h"
 #include "omnetpp/cexception.h"

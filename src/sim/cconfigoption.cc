@@ -16,6 +16,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <cstring>
 #include <sstream>
 #include "common/exception.h"
 #include "omnetpp/cconfigoption.h"

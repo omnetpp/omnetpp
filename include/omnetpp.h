@@ -104,7 +104,6 @@
 #include "omnetpp/cstddev.h"
 #include "omnetpp/cstlwatch.h"
 #include "omnetpp/cstringparimpl.h"
-#include "omnetpp/cstringpool.h"
 #include "omnetpp/cstringtokenizer.h"
 #include "omnetpp/ctimestampedvalue.h"
 #include "omnetpp/ctopology.h"

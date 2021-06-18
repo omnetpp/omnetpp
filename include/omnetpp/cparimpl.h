@@ -18,7 +18,6 @@
 
 #include "cpar.h"
 #include "cexpression.h"
-#include "cstringpool.h"
 #include "cexception.h"
 #include "fileline.h"
 #include "opp_pooledstring.h"

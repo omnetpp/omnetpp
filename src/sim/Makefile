@@ -46,7 +46,7 @@ OBJS_STD=\
     $O/cresultfilter.o $O/cresultlistener.o $O/cresultrecorder.o $O/clifecyclelistener.o \
     $O/cprecolldensityest.o $O/cpsquare.o $O/cqueue.o $O/cpacketqueue.o $O/cscheduler.o $O/csimplemodule.o \
     $O/csimulation.o $O/cstatistic.o $O/cstddev.o $O/cstlwatch.o $O/cstringparimpl.o \
-    $O/cstringpool.o $O/cstringtokenizer.o $O/cclassdescriptor.o $O/ctemporaryowner.o $O/ctopology.o \
+    $O/cstringtokenizer.o $O/cclassdescriptor.o $O/ctemporaryowner.o $O/ctopology.o \
     $O/cvisitor.o $O/cwatch.o $O/cxmlelement.o $O/cxmlparimpl.o $O/distrib.o $O/nedfunctions.o \
     $O/errmsg.o $O/globals.o $O/cregistrationlist.o $O/minixpath.o $O/onstartup.o $O/opp_pooledstring.o \
     $O/simtime.o $O/simtimemath.o $O/task.o $O/util.o $O/gettime.o $O/nedsupport.o $O/sim_std_m.o \

@@ -21,7 +21,6 @@
 #include "simkerneldefs.h"
 #include "cobject.h"
 #include "cexception.h"
-#include "cstringpool.h"
 
 namespace omnetpp {
 

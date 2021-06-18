@@ -17,6 +17,7 @@
 *--------------------------------------------------------------*/
 
 
+#include <cstring>
 #include "omnetpp/onstartup.h"
 
 namespace omnetpp {

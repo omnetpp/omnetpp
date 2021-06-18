@@ -19,7 +19,6 @@
 #include <map>
 #include "cvalue.h"
 #include "cexpression.h"
-#include "cstringpool.h"
 #include "fileline.h"
 
 namespace omnetpp {
