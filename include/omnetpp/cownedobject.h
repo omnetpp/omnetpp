@@ -268,15 +268,12 @@ class SIM_API cNoncopyableOwnedObject : public cOwnedObject, noncopyable
 //
 class SIM_API cStaticFlag
 {
-  private:
-    static bool staticFlag;  // set to true while in main()
-    static bool exitingFlag; // set on getting a TERM or INT signal (Windows)
   public:
-    cStaticFlag()  {staticFlag = true;}
-    ~cStaticFlag() {staticFlag = false;}
-    static bool insideMain() {return staticFlag;}
-    static bool isExiting() {return exitingFlag;}
-    static void setExiting() {exitingFlag = true;}
+    cStaticFlag();
+    ~cStaticFlag();
+    static bool insideMain();
+    static bool isExiting();
+    static void setExiting();
 };
 
 }  // namespace omnetpp

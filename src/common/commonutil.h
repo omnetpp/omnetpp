@@ -82,6 +82,21 @@ COMMON_API const char *opp_gethostname();
  */
 COMMON_API const char *opp_typename(const std::type_info& t);
 
+// internal for opp_insidemain() and opp_exiting()
+COMMON_API extern bool __insidemain;
+COMMON_API extern bool __exiting;
+
+/**
+ * Returns true if main() is on the stack, i.e. we are not during static
+ * initialization or deinitialization.
+ */
+inline bool opp_insidemain() {return __insidemain;}
+
+/**
+ * Returns true after getting a TERM or INT signal (Windows)
+ */
+inline bool opp_exiting() {return __exiting;}
+
 /**
  * Debugging aid: prints a message on entering/leaving methods; message
  * gets indented according to call depth. See TRACE_CALL macro.

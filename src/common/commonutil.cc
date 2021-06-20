@@ -38,6 +38,9 @@ double const NaN = zero / zero;
 double const POSITIVE_INFINITY = 1.0 / zero;
 double const NEGATIVE_INFINITY = -1.0 / zero;
 
+bool __insidemain = false;
+bool __exiting = false;
+
 //----
 
 void setPosixLocale()

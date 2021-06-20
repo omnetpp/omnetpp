@@ -16,11 +16,10 @@
 
 #include "pooledstring.h"
 #include "stringutil.h"
+#include "commonutil.h"
 
 namespace omnetpp {
 namespace common {
-
-bool opp_insidemain() {return true;} //TODO
 
 const char * const StaticStringPool::EMPTY_STRING = "";
 

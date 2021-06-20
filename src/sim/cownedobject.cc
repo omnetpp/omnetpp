@@ -26,6 +26,7 @@
 #include "omnetpp/simutil.h"
 #include "omnetpp/csoftowner.h"
 #include "omnetpp/cclassdescriptor.h"
+#include "common/commonutil.h"
 
 #ifdef WITH_PARSIM
 #include "omnetpp/ccommbuffer.h"
@@ -34,9 +35,6 @@
 namespace omnetpp {
 
 using std::ostream;
-
-bool cStaticFlag::staticFlag;
-bool cStaticFlag::exitingFlag;
 
 Register_Class(cOwnedObject);
 
@@ -184,13 +182,38 @@ void cNoncopyableOwnedObject::parsimUnpack(cCommBuffer *buffer)
                               "does not support pack/unpack operations", getClassName());
 }
 
-//-----
+//----
 
-/* Debug code:
-static struct X {
-    ~X() {if (cStaticFlag::isSet()) printf("<!> Warning: cStaticFlag flag still set while shutting down! Make sure it always gets cleared at latest when exiting main().\n");}
-} x;
-*/
+static bool staticFlag;  // set to true while in main()
+static bool exitingFlag; // set on getting a TERM or INT signal (Windows)
+
+cStaticFlag::cStaticFlag()
+{
+    common::__insidemain = true;
+    staticFlag = true;
+}
+
+cStaticFlag::~cStaticFlag()
+{
+    common::__insidemain = false;
+    staticFlag = false;
+}
+
+bool cStaticFlag::insideMain()
+{
+    return staticFlag;
+}
+
+bool cStaticFlag::isExiting()
+{
+    return exitingFlag;
+}
+
+void cStaticFlag::setExiting()
+{
+    common::__exiting = true;
+    exitingFlag = true;
+}
 
 }  // namespace omnetpp
 
