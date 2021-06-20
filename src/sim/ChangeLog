@@ -1,3 +1,400 @@
+2021-06-18  Andras Varga
+
+	* cStringPool removed
+
+2021-06-20  Andras Varga
+
+	* cStaticFlag refactoring
+
+2021-06-16  Andras Varga
+
+	* cNedNetworkBuilder: report location for evaluation errors in
+	parameter values set from NED files
+
+2021-06-17  Andras Varga
+
+	* Follow changes in 'include/': Use opp_pooledstring/opp_staticpooledstring
+	throughout the library.
+
+2021-06-12  Andras Varga
+
+	* Follow changes in 'include/': added opp_pooledstring, opp_staticpooledstring
+
+2021-06-13  Andras Varga
+
+	* cParImpl::parse() to store the expression's origin (file:line) in
+	cDynamicExpression so  we can report it on evaluation errors.
+
+2021-06-15  Andras Varga
+
+	* cRuntimeError: Implemented ctor for helping chaining exceptions
+
+2021-06-15  Andras Varga
+
+	* cException modernized
+
+2021-06-09  Andras Varga
+
+	* Implemented cConfiguration::KeyValue::getSourceLocation(),
+	so we can report location for parse errors in values coming
+	from ini files.
+
+2021-06-18  Andras Varga
+
+	* cModule: simplify storing fullPath.
+
+2021-06-18  Andras Varga
+
+	* cNamedObject: fix setName(getName())
+
+2021-06-13  Andras Varga
+
+	* nedfunctions: get() NED function refined
+
+2021-06-17  Andras Varga
+
+	* Follow header change: more methods made const in cPatternMatcher,
+	cMatchExpression and cTopology
+
+2021-06-17  Andras Varga
+
+	* Fix: @omittedTypename didn't work if interface was not in the
+	default (=toplevel) package
+
+2021-06-11  Andras Varga
+
+	* cValueArray, cValueMap: dup() to make an "even deeper" copy (clone
+	ALL objects). This is necessary for the following NED to work:
+
+	   object a = {};
+	   object b = dup([a]);
+
+2021-06-09  Andras Varga
+
+	* nedfunctions: added get(), size(), dup() NED functions
+
+2021-06-10  Andras Varga
+
+	* nedsupport: search for function/methods by the number of args
+
+	On one hand, this allows overloads by the number of args.
+
+	On the other hand, we cannot be as specific with error messages as
+	before. Instead of
+
+	   "NED function '%s' expects %d arguments",
+
+	we'll report
+
+	   "A '%s' function accepting %d argument(s) was not found",
+
+	regardless of whether a function with that name but accepting a different
+	number of args exists or not.
+
+2021-06-10  Andras Varga
+
+	* cNedFunction: added search by name AND accepted number of args
+
+	New functions:
+	- bool acceptsArgCount(int argCount)
+	- static cNedFunction *find(const char *name, int argCount)
+	- static cNedFunction *get(const char *name, int argCount)
+
+2021-06-10  Andras Varga
+
+	* NED: implemented Universal Function Call Syntax
+
+	f(x,..) and x.f(...) are now equivalent. All NED functions that have at
+	least one argument can be used with the method syntax as well.
+
+	See https://en.wikipedia.org/wiki/Uniform_Function_Call_Syntax
+
+2021-06-08  Andras Varga
+
+	* Allow 'object' as NED function arg type and return type
+
+	Disallow objects shared among parameters, because we don't know their
+	lifetimes.
+
+	Example:
+	  object a = [1,2,3];
+	  object b = a;
+
+	then set 'a' to nullptr --> accessing 'b' would crash!
+
+2021-06-09  Andras Varga
+
+	* NED builder: allow the body of a parametric submodule to assign
+	apparently nonexistent parameters.
+
+	Example:
+
+	        app: <default("FooApp")> like IApp {
+	           parameters:
+	               address = parent.address;
+	               sleepTime = 1s;
+	       }
+
+	If FooApp has a sleepTime parameter but IApp does not, then running with
+	the defaults is fine, but changing to another IApp type that does NOT
+	have a sleepTime parameter will stop the simulation with an error.
+
+	Solution: inside a parameteric submodule type, we simply ignore parameter
+	assignments that assign nonexistent parameters.
+
+2021-06-09  Andras Varga
+
+	* NED builder: fix parametric channel type with type given as default
+	expression. The expression text was mistakenly interpreted as parameter name.
+
+	Example:
+	   a.out++ --> <default(channelType+"")> like IFooChannel --> b.in++;
+
+	It would give the following error:
+
+	    Error: Unknown parameter '"bubu"+channelType+""'
+
+2021-06-09  Andras Varga
+
+	* nedsupport: give name strings to cValueArray and cValueMap objects
+	created for JSON arrays and maps: "array%d", "map%d". This can help
+	identify them in error messages, etc.
+
+2021-06-11  Andras Varga
+
+	* cValueMap: fix copy ctor and dup()
+
+2021-06-09  Andras Varga
+
+	* cValue: operator==() added
+
+2021-06-08  Andras Varga
+
+	* cDynamicExpression: fix an ownership issue during evaluation
+
+2021-06-09  Andras Varga
+
+	* cComponentType: delete shared cParImpl instances at the end of the
+	simulation. Previously they were only deleted on program exit.
+
+2021-06-07  Andras Varga
+
+	* nedsupport: exists() NED operator to accept more forms.
+
+	Esp. testing for submodule vector elements. This is necessary because
+	submodule vectors may now contain holes (due to @omittedTypename)
+
+2021-06-04  Andras Varga
+
+	* Actually fire cPreModuleAddNotification before *adding* the module,
+	not before creating it. Contents also changed accordingly.
+
+2021-06-04  Attila Torok
+
+	* Fix crash of cModule::changeParentTo(). Inside reassignModuleIdRec(),
+	deregisterComponent() resets the stored simulation pointer to nullptr,
+	causing simulation->registerComponent() to crash.
+
+2021-05-31  Andras Varga
+
+	* NED: implemented @omittedTypename property + test
+
+	@omittedTypename allows one to specify a NED type to use when typename=""
+	is specified for a parametric submodule or channel, or to remove (skip
+	creating) that submodule, submodule vector element, or channel
+	altogether.
+
+	@omittedTypename can be specified on a module interface or channel
+	interface, or on a submodule or connection. It should contain a single
+	(optional) value. The value names the type to use. If it is absent, the
+	submodule or channel will not be created. (The connection will be created
+	without a channel object.)
+
+2021-06-03  Andras Varga
+
+	* cNedNetworkBuilder: remove unused parameter 'isSubcomponent'
+
+2021-06-01  Andras Varga
+
+	* Error message wording refined:
+
+	"Cannot evaluate parameter %s" --> "Cannot evaluate expression for
+	parameter %s"
+	"Wrong value '%s' for parameter '%s'" --> "Error in expression '%s' for
+	parameter '%s'"
+
+2021-05-26  Andras Varga
+
+	* nedsupport: changed the meaning of unqualified parameter, gate and
+	submodule accesses; exists(), index and sizeof() reimplemented accordingly.
+
+	Within a submodule's or channel's curly brace block, a plain identifier
+	('foo') no longer refers to the compound module's parameter, but to the
+	local parameter. Similarly, another submodule must now be referenced with
+	the 'parent' qualifier.
+
+	Also, the 'index' and 'typename' operators now accept more variants.
+
+2021-05-05  Andras Varga
+
+	* Delete "inComponentScope", rudimentary support for "parent.something" syntax
+
+2021-05-26  Andras Varga
+
+	* cGate, cModule: use opp_indexedname() for producing module/gate full names
+
+2021-05-30  Andras Varga
+
+	* cComponent/cModule: keep lastCompletedInitStage; fix initialization
+	w/ dynamic module creation.
+
+	Initialization works again if submodules are created/deleted during
+	iteration. SubmoduleIterator is restarted if creation/deletion is
+	detected during iteration; modules already initialized in the previous
+	round are recognized and skipped with the help of lastCompletedInitStage.
+
+2021-05-28  Andras Varga
+
+	* SubmoduleIterator: keep NED order of modules; detect modifications
+	during iteration.
+
+	Solution: We use two cursors: one on scalars plus one on vectors, and
+	always take the one created earlier (smaller module ID); exploiting the
+	fact that scalars are stored in creation order, and vectors are created
+	(and filled) by NED as they occur in NED files.
+
+	This breaks models where submodules are created/deleted during
+	initialization: exception will be thrown (submodule list changed during
+	iteration). This is fixed in a later commit.
+
+2021-05-27  Andras Varga
+
+	* cModule: ensure unique submodule names.
+
+2021-05-27  Andras Varga
+
+	* cModule: added setIndex() and setNameAndIndex(); added ASSERTs to
+	cSimulation
+
+2021-05-25  Andras Varga
+
+	* NED: exists(): answer true for zero-size submodule vectors
+
+2021-05-19  Andras Varga
+
+	* sizeof(): error if there's no such submodule or gate vector
+
+2021-05-21  Andras Varga
+
+	* cModule, cGate: getIndex(), getVectorSize(), gateSize() etc to throw
+	for non-vector submodules/gates.
+
+2021-05-25  Andras Varga
+
+	* cModule: added hasSubmodule(), getSubmoduleNames(), hasGateVector(),
+	hasGates()
+
+	Reason:
+	- hasSubmodule() because hasGate() also exists
+	- getSubmoduleNames() because getGateNames() also exists
+	- hasGateVector() because hasSubmoduleVector() also exists
+	- hasGates() because hasSubmodules() also exists
+	- ALSO: getGateNames(): return type changed from std::string<const char*>
+	 to std::vector<std::string>, for consistency with getSubmoduleNames()
+
+2021-05-19  Andras Varga
+
+	* cModule: keep track of submodule vectors; store submodules in
+	pointer arrays. See include/omnetpp/ChangeLog for details.
+
+2021-05-25  Andras Varga
+
+	* cComponent: added getNedTypeAndFullName() and getNedTypeAndFullPath()
+
+	They are especially useful in constructing error messages in NED
+	functions (e.g. nedsupport.cc).
+
+2021-05-21  Andras Varga
+
+	* cXMLElement etc: do not call getIndex() and getVectorSize() on
+	non-vector module
+
+	cXMLElement change: resolve $MODULE_INDEX, $PARENTMODULE_NAME and similar
+	variables to empty string if they are not applicable. Make resolve()
+	return 'true' for them, otherwise the mini XPath interpreter will report
+	them as unknown variables. Especially, DO NOT THROW exception.
+
+	Also: use std::to_string(int) instead of local function my_itostr().
+
+2021-05-11  Andras Varga
+
+	* NED: Added CSV/JSON parsing/reading NED functions:
+
+	- parseCSV(), readCSV()
+	- parseExtendedCSV(), readExtendedCSV()
+	- parseJSON(), readJSON()
+	- parseExtendedJSON(), readExtendedJSON()
+	- parseXML(), readXML() -- they are aliases to the existing
+	   xml()/xmldoc() functions (or rather, the other way round)
+
+2021-05-12  Andras Varga
+
+	* Implemented functions in newly created stringutil.h; most functions
+	just delegate to common/stringutil.h
+
+2021-05-11  Andras Varga
+
+	* cStringTokenizer rewritten as a wrapper around common::StringTokenizer.
+
+2021-05-13  Andras Varga
+
+	* Cosmetics on '// namespace' comments
+
+2021-05-03  Andras Varga
+
+	* New NED functions: readFile(), eval(), plus filesystem related ones:
+	workingDir(), baseDir(), concatDirAndFile(), absFilePath()
+
+2021-05-04  Andras Varga
+
+	* cDynamicExpression: parseNedExpr(): eliminate unused legacy inInifile
+	argument
+
+2021-05-04  Andras Varga
+
+	* cNedFunction: modernizing: use proper enum instead of chars for arg types
+
+2021-05-04  Andras Varga
+
+	* cNedFunction: fix bogus error message
+
+2021-05-07  Andras Varga
+
+	* Follow change: contextType changed from int to enum
+
+2021-04-29  Andras Varga
+
+	* Move lifecycle-related methods into cEnvir; they were independently
+	implemented in EnvirBase, cNullEnvir, StaticEnv. Added
+	getLifecycleListeners().
+
+2021-04-15  Attila Torok
+
+	* Fix a couple format-string related bugs when constructing cRuntimeError
+
+2021-04-16  Andras Varga
+
+	* cValue: print double quantities in the "best" unit if outside the
+	"easy-to-read" range
+
+2021-04-15  Andras Varga
+
+	* cValueArray: fix type specifier in format string
+
+2021-04-15  Andras Varga
+
+	* Resolve compile-time warning about throwing from destructor
+
 2021-04-09  Andras Varga
 
 	* cStringPool: use std::unordered_map instead of std::map, for better performance.

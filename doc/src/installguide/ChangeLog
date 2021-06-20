@@ -1,3 +1,12 @@
+2021-06-01  Rudolf Hornig
+
+	* Updated instructions on how to source setenv from .profile
+
+2021-06-01  Rudolf Hornig
+
+	* Ubuntu 21.04 or later does not come with qt5-default, update
+	list of required packages
+
 2021-03-25  Andras Varga
 
 	* ChangeLog added

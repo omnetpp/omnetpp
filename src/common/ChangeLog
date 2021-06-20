@@ -1,3 +1,185 @@
+2021-06-20  Andras Varga
+
+	* Added opp_insidemain() and opp_exiting(), needed by StringPool.
+
+2021-06-15  Andras Varga
+
+	* ExprValue: use opp_staticpooledstring for unit strings
+
+2021-06-12  Andras Varga
+
+	* StringPool -> StaticStringPool
+	* Added StringPool (refcounted)
+	* Added opp_pooledstring, opp_staticpooledstring
+
+2021-06-10  Andras Varga
+
+	* Expression: more precise error message when a function or method
+	cannot be translated
+
+2021-06-09  Andras Varga
+
+	* exprnodes.h: implemented '==' and '!=' for type==OBJECT
+
+2021-06-09  Andras Varga
+
+	* exprnodes.h: factor out CompareNode::compare()
+
+2021-06-07  Attila Torok
+
+	* BigDecimal::parse(): fix bug in parsing of "inf"
+
+2021-06-04  Attila Torok
+
+	* Update the bundled sqlite3 amalgamation sources.
+
+2021-05-26  Andras Varga
+
+	* stringutil.h: added opp_indexedname()
+
+2021-06-02  Andras Varga
+
+	* Added AstNode::unparse()
+
+2021-06-01  Andras Varga
+
+	* ExprNode: added asPrinted() utility function; AstNode::str() fix
+
+2021-05-25  Andras Varga
+
+	* ExprNode: on errors, always prepend message with the name of the
+	node.
+
+	Added str() which is a description of the node, primarily for error
+	messages. E.g. for operators, str() returns "operator '<name>'", and
+	functions, "<name>()".
+
+	If prepending with str() is not needed, override makeErrorMessage().
+
+2021-05-11  Andras Varga
+
+	* AstNode::str(): format change in the output.
+
+2021-05-17  Andras Varga
+
+	* stringutil.h: various changes for a cleaner API:
+
+	- opp_split_and_trim() -> opp_splitandtrim() (for consistency
+	  with the rest of the public stringutil.h methods)
+	- opp_split: disallow empty separator
+	- opp_join(): added skipEmpty flag
+	- opp_format() -> opp_formati64()
+	- opp_strupr() / opp_strlwr() removed
+	- opp_removestart()/opp_removeend(): use std::string
+	- eliminate opp_concat() (uses static buffer)
+	- opp_findmatchingquote(): removed, it was duplicate
+	- added opp_strndup()
+
+2021-05-13  Andras Varga
+
+	* Cosmetics on '// namespace' comments
+
+2021-05-05  Andras Varga
+
+	* StringTokenizer rewritten to support honoring quotes/parens,
+	trimming, and skipping of empty tokens.
+
+	Essentially, StringTokenizer2's functionality was merged into
+	StringTokenizer.
+
+	Incompatible change:
+
+	When using non-whitespace separator (e.g. comman), StringTokenizer now
+	TRIMS the items, while the old one did not. This can be turned off with
+	the NO_TRIM option.
+
+	Change of functionality from StringTokenizer2:
+
+	The possibility to escape paren and quote characters outside string
+	constants using backslash, i.e. the use of \(, \), etc was dropped.
+
+	Rationale:
+
+	1. That would have required copying the token's chars (as opposed to
+	   modifying in-place by overwriting separators with NULs), and pose
+	   additional complexity.
+
+	2. Such escaping functionality is NOT supported by either NED/MSG
+	   @properties, or the C preprocessor (i.e. you can't pass a value
+	   that contains unbalanced parens into a macro, \( or \) results
+	   in parse errors in the macro call), so perhaps the ini ${} syntax
+	   can do without it too (that's the only place where this feature was
+	   used).
+
+	Details:
+	- StringTokenizer's existing functionality remained unchanged
+	- StringTokenizer2 is now redundant, removed
+
+2021-05-11  Andras Varga
+
+	* More consistent naming for stringutil.h functions
+
+2021-05-11  Andras Varga
+
+	* stringutil.h: add new string splitter methods, and use them instead of
+	StringTokenizer(...).asVector()
+
+2021-05-03  Andras Varga
+
+	* concatDirAndFile(): Return path unchanged if baseDir=""
+
+2021-05-04  Andras Varga
+
+	* expression.y: eliminate shift/reduce conflicts
+
+2021-05-04  Andras Varga
+
+	* expression.y: JSON: accept extra comma at the end of lists
+
+2020-01-13  Andras Varga
+
+	* expression.y: JSON: accept bare numbers, true/false/nan/inf/null as map keys.
+
+2021-04-29  Andras Varga
+
+	* More modernizing (NULL->nullptr, use auto for iterator)
+
+2021-04-23  Attila Torok
+
+	include,common: Turn some macros into proper variadic ones
+	(Enter_Method[_Silent], TRACE_CALL, and TPRINTF)
+
+2021-04-16  Attila Torok
+
+	* Fix printf format string bugs, add format(printf) attributes
+
+2021-04-16  Andras Varga
+
+	* UnitConversion: getBestUnit(): explicitly list "best" unit
+	candidates for each unit.
+
+2021-04-15  Andras Varga
+
+	* UnitConversion: added getBestUnit()
+
+2021-04-15  Andras Varga
+
+	* UnitConversion: cache baseUnitDesc for each unit, to reduce number of lookups.
+
+2021-04-15  Andras Varga
+
+	* UnitConversion: added micrometer and nanometer as units
+
+2021-04-15  Andras Varga
+
+	*  checked_int_cast(double): resolve compile-time warning.
+	Also, the refactored code better expresses the function's intention. Note
+	that casting double to int *truncates* (rounds towards zero).
+
+2021-04-14  Andras Varga
+
+	* Fix recently introduced bug in cStringPool and StringPool; plus test
+
 2021-04-09  Andras Varga
 
 	* StringPool: change from std::set to std::unordered_set for performance.

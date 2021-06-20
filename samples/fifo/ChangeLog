@@ -1,3 +1,7 @@
+2021-04-19  Andras Varga
+
+	* "Config " prefix in section headers is now optional, removed
+
 2021-02-09  Rudolf Hornig
 
 	* Follow icon change: block/queue -> block/activeq

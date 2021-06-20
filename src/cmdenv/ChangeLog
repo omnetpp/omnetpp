@@ -1,3 +1,11 @@
+2021-05-13  Andras Varga
+
+	* Cosmetics on '// namespace' comments
+
+2021-05-12  Attila Torok
+
+	* Added cmdenv-fake-gui-seed config option
+
 2021-03-21  Andras Varga
 
 	* Refactoring: factor out some repeated code.

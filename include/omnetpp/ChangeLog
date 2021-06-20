@@ -1,3 +1,290 @@
+2021-06-18  Andras Varga
+
+	* cStringPool removed (see below for replacements).
+
+	Use the following instead:
+
+	- opp_pooledstring  (backed by a hashtable-based reference-counting stringpool)
+	- opp_staticpooledstring   (backed by a hashtable-based insert-only stringpool)
+	- opp_staticpooledstring::get(const char *)  (returns a string from the backing stringpool)
+
+2021-06-20  Andras Varga
+
+	* cStaticFlag: methods moved out-of-line
+
+2021-06-17  Andras Varga
+
+	* Replace uses of cStringPool with opp_pooledstring or opp_staticpooledstring.
+	Affected classes: cModule, cNamedObject, cXMLElement, cValue, cParImpl,
+	cProperty, cFigure, cResultListener, etc.
+
+2021-06-12  Andras Varga
+
+	* Added opp_pooledstring, opp_staticpooledstring
+
+2021-06-13  Andras Varga
+
+	* Store origin (file:line) in cPar parameters (more precisely, in
+	cDynamicExpression), so we can report it on evaluation errors.
+
+	Most visible change: cPar::parse() gained an extra FileLine argument.
+	Also, cDynamicExpression now has get/setSourceLocation()
+
+2021-06-15  Andras Varga
+
+	* cRuntimeError: Added ctor for helping chaining exceptions
+
+2021-06-15  Andras Varga
+
+	* cException modernized
+
+2021-06-09  Andras Varga
+
+	* Added FileLine class
+
+2021-06-18  Andras Varga
+
+	* cModule: simplify storing fullPath
+
+2021-06-17  Andras Varga
+
+	* More methods made const in cPatternMatcher, cMatchExpression, cTopology
+
+2021-06-11  Andras Varga
+
+	* cValueArray, cValueMap: dup() to make an "even deeper" copy (clone
+	ALL objects). This is necessary for the following NED to work:
+
+	    object a = {};
+	   object b = dup([a]);
+
+2021-06-10  Andras Varga
+
+	* cNedFunction: added search by name AND accepted number of args
+
+	New functions:
+	- bool acceptsArgCount(int argCount)
+	- static cNedFunction *find(const char *name, int argCount)
+	- static cNedFunction *get(const char *name, int argCount)
+
+2021-06-08  Andras Varga
+
+	* Allow 'object' as NED function arg type and return type
+
+	Disallow objects shared among parameters, because we don't know their
+	lifetimes.
+
+	Example:
+	  object a = [1,2,3];
+	  object b = a;
+
+	then set 'a' to nullptr --> accessing 'b' would crash!
+
+2021-06-09  Andras Varga
+
+	* cValue: operator==() added
+
+2021-06-09  Andras Varga
+
+	* cComponentType: delete shared cParImpl instances at the end of the
+	simulation. Previously they were only deleted on program exit.
+
+2021-06-04  Andras Varga
+
+	* cPreModuleAddNotification changed
+
+2021-05-26  Andras Varga
+
+	* Added paramName to cExpression::Context.
+
+2021-05-30  Andras Varga
+
+	* cComponent/cModule/cChannel: flags shifted down to fill hole
+
+2021-05-30  Andras Varga
+
+	* cComponent/cModule: keep lastCompletedInitStage; fix initialization
+	w/ dynamic module creation.
+
+	Initialization works again if submodules are created/deleted during
+	iteration. SubmoduleIterator is restarted if creation/deletion is
+	detected during iteration; modules already initialized in the previous
+	round are recognized and skipped with the help of lastCompletedInitStage.
+
+2021-05-28  Andras Varga
+
+	* SubmoduleIterator: keep NED order of modules; detect modifications
+	during iteration.
+
+	Solution: We use two cursors: one on scalars plus one on vectors, and
+	always take the one created earlier (smaller module ID); exploiting the
+	fact that scalars are stored in creation order, and vectors are created
+	(and filled) by NED as they occur in NED files.
+
+	This breaks models where submodules are created/deleted during
+	initialization: exception will be thrown (submodule list changed during
+	iteration). This is fixed in a later commit.
+
+2021-05-28  Zoltan Bojthe
+
+	* cContextSwitcher: added getCallerContext()
+
+2021-05-27  Andras Varga
+
+	* cModule: added setIndex() and setNameAndIndex().
+
+2021-05-21  Andras Varga
+
+	* cModule,cGate: getIndex(), getVectorSize(), gateSize() etc to throw
+	for non-vector submodules/gates.
+
+2021-05-25  Andras Varga
+
+	* cModule: added hasSubmodule(), getSubmoduleNames(), hasGateVector(),
+	hasGates()
+
+	Reason:
+	- hasSubmodule() because hasGate() also exists
+	- getSubmoduleNames() because getGateNames() also exists
+	- hasGateVector() because hasSubmoduleVector() also exists
+	- hasGates() because hasSubmodules() also exists
+	- ALSO: getGateNames(): return type changed from std::string<const char*>
+	 to std::vector<std::string>, for consistency with getSubmoduleNames()
+
+2021-05-19  Andras Varga
+
+	* cModule: keep track of submodule vectors; store submodules in
+	pointer arrays.	New methods: hasSubmoduleVector(), getSubmoduleVectorSize(),
+	addSubmoduleVector(), deleteSubmoduleVector(), setSubmoduleVectorSize(),
+	getSubmoduleVectorNames()
+
+	API changes:
+	- cPreModuleAddNotification: vectorSize field removed (it could be provided,
+	  but no reason: listener can also query it)
+	- cModule *create(): vectorSize parameter removed
+	- cChannelIterator, SubmoduleIterator:remove operator--, init(m) ->
+	reset()
+
+	* cModule: use explicit parentModule member instead of casting its owner
+
+2021-05-25  Andras Varga
+
+	* cComponent: added getNedTypeAndFullName() and getNedTypeAndFullPath().
+	They are especially useful in constructing error messages in NED functions.
+
+2021-05-21  Andras Varga
+
+	* cPostModuleDeleteNotification: Changed interpretation of index field:
+	If the deleted module was not part of a module vector, index is now set
+	to -1 instead of 0.
+
+	* cXMLElement change: resolve $MODULE_INDEX, $PARENTMODULE_NAME and similar
+	variables to empty string if they are not applicable.
+
+2021-05-12  Andras Varga
+
+	* Added stringutil.h to make string functions available for models.
+	Most functions delegate to common/stringutil. Some of the functions
+	from simutil.h were moved over to the new header.
+
+	List of the functions:
+
+	- bool opp_isempty(const char *s)  {return !s || !s[0];}
+	- bool opp_isblank(const char *txt);
+	- const char *opp_nulltoempty(const char *s)  {return s ? s : "";}
+	- const char *opp_emptytodefault(const char *s, const char *defaultString)  {return opp_isempty(s) ? defaultString : s;}
+	- int opp_strlen(const char *s)
+	- char *opp_strdup(const char *s)
+	- char *opp_strcpy(char *s1, const char *s2)
+	- int opp_strcmp(const char *s1, const char *s2)
+	- std::string opp_trim(const std::string& text);
+	- char *opp_strprettytrunc(char *dest, const char *src, unsigned maxlen);
+	- std::string opp_stringf(const char *fmt, ...);
+	- std::string opp_vstringf(const char *fmt, va_list& args);
+	- std::string opp_replacesubstring(const std::string& text, const std::string& substring, const std::string& replacement, bool replaceAll);
+	- std::vector<std::string> opp_split(const std::string& text, const std::string& separator);
+	- std::vector<std::string> opp_splitandtrim(const std::string& text);
+	- std::vector<std::string> opp_splitandtrim(const std::string& text, const std::string& separator);
+	- bool opp_stringbeginswith(const char *s, const char *prefix);
+	- bool opp_stringendswith(const char *s, const char *ending);
+	- std::string opp_substringbefore(const std::string& str, const std::string& substr);
+	- std::string opp_substringafter(const std::string& str, const std::string& substr);
+	- std::string opp_substringbeforelast(const std::string& str, const std::string& substr);
+	- std::string opp_substringafterlast(const std::string& str, const std::string& substr);
+	- std::string opp_removestart(const std::string& str, const std::string& prefix);
+	- std::string opp_removeend(const std::string& str, const std::string& end);
+	- std::string opp_strlower(const char *s);
+	- std::string opp_strupper(const char *s);
+	- const char *opp_strnistr(const char *haystack, const char *needle, int n, bool caseSensitive);
+	- int opp_strdictcmp(const char *s1, const char *s2);
+	- std::string opp_join(const char *separator, const char *s1, const char *s2);
+	- std::string opp_join(const char *separator, const std::string& s1, const std::string& s2);
+	- std::string opp_join(const char **strings, const char *separator, bool skipEmpty=false, char quoteChar=0);
+	- std::string opp_join(const char **strings, int n, const char *separator, bool skipEmpty=false, char quoteChar=0);
+	- std::string opp_join(const std::vector<std::string>& strings, const char *separator, bool skipEmpty=false, char quoteChar=0);
+	- char *opp_itoa(char *buf, int d);
+	- char *opp_ltoa(char *buf, long d);
+	- char *opp_i64toa(char *buf, int64_t d);
+	- char *opp_dtoa(char *buf, const char *format, double d);
+	- long opp_strtol(const char *s, char **endptr);
+	- long opp_atol(const char *s);
+	- unsigned long opp_strtoul(const char *s, char **endptr);
+	- unsigned long opp_atoul(const char *s);
+	- long long opp_strtoll(const char *s, char **endptr);
+	- long long opp_atoll(const char *s);
+	- unsigned long long opp_strtoull(const char *s, char **endptr);
+	- unsigned long long opp_atoull(const char *s);
+	- double opp_strtod(const char *s, char **endptr);
+	- double opp_atof(const char *s);
+
+2021-05-11  Andras Varga
+
+	* cStringTokenizer rewritten to be a wrapper around common::StringTokenizer.
+	It now supports features like optional skipping of empty tokens,
+	optional trimming of tokens, optional honoring of quotes, optional
+	honoring of parens/brackets/brackets (i.e. the input string is not broken
+	into tokens in the middle of a parenthesized expression).
+
+2021-05-13  Andras Varga
+
+	* Cosmetics on '// namespace' comments
+
+2021-05-04  Andras Varga
+
+	* cDynamicExpression: parseNedExpr(): eliminate unused legacy inInifile argument
+
+2021-05-04  Andras Varga
+
+	* cNedFunction: modernizing: use proper enum for arg types instead of chars
+
+2021-05-07  Andras Varga
+
+	* Modernizing: contextType changed from int to enum (ContextType)
+
+2021-04-29  Andras Varga
+
+	* cEnvir: Added implementations for lifecycle-related method implementations;
+	added getLifecycleListeners(). Methods were independently implemented in
+	EnvirBase, cNullEnvir, StaticEnv.
+
+2021-04-23  TÖRÖK Attila
+
+	* Enter_Method(), Enter_Method_Silent()]: Turned into variadic macros
+
+2021-04-15  TÖRÖK Attila
+
+	* cException, etc: Add format(printf) attribute to printf-like methods,
+	using an updated _OPP_GNU_ATTRIBUTE
+
+2021-04-15  Andras Varga
+
+	* checked_int_cast(double): Resolve compile-time warning by choosing a
+	different implementation
+
+2021-04-14  Andras Varga
+
+	* Fix recently introduced bug in cStringPool
+
 2021-04-09  Andras Varga
 
 	* cStringPool: use std::unordered_map instead of std::map, for better performance.
@@ -105,7 +392,7 @@
 
 2020-12-02  Rudolf Hornig
 
-	* Added some missing SIM_API macros for proper exporting/visibility of symbols.
+	* Added some missing 	- macros for proper exporting/visibility of symbols.
 
 2020-12-15  Andras Varga
 
@@ -608,7 +895,7 @@
 
 2019-08-01  Attila Torok
 
-	* ccanvas.h: Initialize class members inline using an
+	* ccanvas.h: Initialize class members 	- using an
 	assignment instead of in the constructor.
 
 2019-08-31  Andras Varga
@@ -2758,7 +3045,7 @@
 
 2011-10-14  Levente Meszaros
 
-	* Refactored operator= and copy constructor in all SIM_API classes.
+	* Refactored operator= and copy constructor in all 	- classes.
 	Motivation: it is a common C++ recommendation that they delegate to
 	the same utility function. Until now, copy constructor was implemented
 	in terms of operator=, which had some drawbacks.
@@ -3836,7 +4123,7 @@
 
 2005-02-24  Andras Varga
 
-	* added missing SIM_API declarations to several classes and functions
+	* added missing 	- declarations to several classes and functions
 
 2005-01-10  Andras Varga
 

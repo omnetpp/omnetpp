@@ -1,3 +1,59 @@
+2021-06-16  Andras Varga
+
+	* Report location for evaluation errors in parameter values set from NED files
+
+2021-06-09  Andras Varga
+
+	* NED: Allow the body of a parametric submodule to assign apparently nonexistent
+	parameters.
+
+	Example:
+
+	        app: <default("FooApp")> like IApp {
+	           parameters:
+	               address = parent.address;
+	               sleepTime = 1s;
+	       }
+
+	If FooApp has a sleepTime parameter but IApp does not, then running with
+	the defaults is fine, but changing to another IApp type that does NOT
+	have a sleepTime parameter will stop the simulation with an error.
+
+	Solution: inside a parametric submodule type, we simply ignore parameter
+	assignments that assign nonexistent parameters.
+
+2021-06-09  Andras Varga
+
+	* NED: fix parametric channel type with type given as default expression
+
+	The expression text was mistakenly interpreted as parameter name.
+
+	Example:
+	   a.out++ --> <default(channelType+"")> like IFooChannel --> b.in++;
+
+	It would give the following error:
+
+	    Error: Unknown parameter '"bubu"+channelType+""'
+
+2021-05-31  Andras Varga
+
+	* NED: Implemented @omittedTypename property
+
+	@omittedTypename allows one to specify a NED type to use when typename=""
+	is specified for a parametric submodule or channel, or to remove (skip
+	creating) that submodule, submodule vector element, or channel
+	altogether.
+
+	@omittedTypename can be specified on a module interface or channel
+	interface, or on a submodule or connection. It should contain a single
+	(optional) value. The value names the type to use. If it is absent, the
+	submodule or channel will not be created. (The connection will be created
+	without a channel object.)
+
+2021-05-05  Andras Varga
+
+	* Rudimentary support for the new "parent.something" syntax
+
 2021-03-31  Andras Varga
 
 	* More helpful error message for the "no gate left for '++' operator"
@@ -64,30 +120,17 @@
 
 2019-05-15  ------ omnetpp-5.5 released ------
 
-2019-03-18  Andras Varga
-
-	* netbuilder: removed unused members
-	* Code uses nedsupport::LoopVar instead
-
 2018-06-25  ------ omnetpp-5.4.1 released ------
 
 2018-06-11  ------ omnetpp-5.4 released ------
 
-2018-06-04  Andras Varga
-
-	ChangeLogs tagged for 5.3
-
-	Better late than never.
-
 2018-05-23  Andras Varga
 
-	ned, sim: added "exists" operator
-
-	exists(<submodulename>)
+	* NED: Added "exists" operator. Syntax: exists(<submodulename>)
 
 2018-05-18  Andras Varga
 
-	sim: implement "typename" in submodule "if" and other expressions
+	* NED: implement "typename" in submodule "if" and other expressions
 
 	Note: typename is not allowed in a submodule VECTOR's condition, because
 	type is elementwise, and we want the condition to apply to the vector as
@@ -95,18 +138,13 @@
 
 2018-05-18  Andras Varga
 
-	sim: cNedNetworkBuilder: fix: allow empty typename value to be used
-
+	* cNedNetworkBuilder: fix: allow empty typename value to be used.
 	Before, empty string meant "no value specified here", and search went on.
 
 2018-05-17  Andras Varga
 
-	sim: cNedNetworkBuilder: use cDynamicExpression not cParImpl for
-	build-time expression evaluation
-
-2018-05-18  Andras Varga
-
-	sim: renamed namespace NedSupport to all-lowercase
+	* cNedNetworkBuilder: use cDynamicExpression not cParImpl for
+	build-time expression evaluation.
 
 2018-04-11  ------ omnetpp-5.3 released ------
 

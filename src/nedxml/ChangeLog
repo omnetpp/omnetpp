@@ -1,3 +1,49 @@
+2021-06-16  Andras Varga
+
+	* NEDElement: Store src location in a FileLine struct not as strings; this
+	allows stringpooling file names.
+
+	* MsgCompilerOld: Remove obsolete MSGC_COMPATIBILE mode.
+
+2021-06-10  Andras Varga
+
+	* NED grammar: Added method call syntax, to be used by the UFCS (Universal
+	Function Call Syntax) support.
+
+2021-06-09  Andras Varga
+
+	* More modernizing: dtdclassgen: use nullptr for pointers in the generated code
+
+2021-05-07  Andras Varga
+
+	* NED grammar: Introduced "parent" keyword.
+
+	The accepted syntax for parameters, sizeof(), exists(), index and
+	typename has become significantly broader; it is the task of
+	nedsupport.cc to reject forms that aren't meaningful or unsupported.
+
+	Removed syntax: index()
+
+2021-05-13  Andras Varga
+
+	* Cosmetics on '// namespace' comments
+
+2021-05-11  Andras Varga
+
+	* Use opp_splitandtrim() instead of StringTokenizer.
+
+2021-05-04  Andras Varga
+
+	* NED grammar: JSON values to accept extra comma at the end of lists
+
+2020-01-13  Andras Varga
+
+	* NED grammar: JSON values to accept bare numbers, true/false/nan/inf/null as map keys
+
+2021-04-16  Attila Torok
+
+	* Fix printf format string bugs, add format(printf) attributes
+
 2021-03-18  Andras Varga
 
 	* Msg compiler: fix: generated fallback operator<<() for non-cObject

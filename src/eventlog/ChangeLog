@@ -1,3 +1,19 @@
+2021-06-15  Andras Varga
+
+	* Follow StringPool -> StaticStringPool rename
+
+2021-05-13  Andras Varga
+
+	* Cosmetics on '// namespace' comments
+
+2021-04-29  Andras Varga
+
+	* More modernizing (NULL->nullptr, use auto for iterator)
+
+2021-04-16  Attila Torok
+
+	* Fix printf format string bugs
+
 2021-03-26  Levente Meszaros
 
 	* Deleted unused facade classes.

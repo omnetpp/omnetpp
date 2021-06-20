@@ -1,3 +1,104 @@
+2021-06-15  Andras Varga
+
+	* InifileReader ported to opp_staticpooledstring
+	* SectionBasedConfig ported to opp_staticpooledstring.
+
+2021-06-13  Andras Varga
+
+	* EnvirBase: readParameter(): pass inifile entry location to cPar as well.
+
+2021-06-13  Andras Varga
+
+	* InifileReader: minor refactoring
+
+2021-06-09  Andras Varga
+
+	* Report location for parse errors in values coming from ini files
+
+2021-05-17  Andras Varga
+
+	* Follow changes in common/stringutil.h
+
+2021-05-13  Andras Varga
+
+	* Cosmetics on '// namespace' comments
+
+2021-05-05  Andras Varga
+
+	* Switched to the new StringTokenizer class.
+
+2021-05-11  Andras Varga
+
+	* SectionBasedConfiguration: cosmetics: camelize variables
+
+2021-05-11  Andras Varga
+
+	* Follow changes in common/stringutil.h functions
+
+2021-05-11  Andras Varga
+
+	* Use opp_split()/opp_splitandtrim() instead of StringTokenizer.
+
+2021-05-03  Zoltan Bojthe
+
+	* InifileReader: bugfix: type mismatch: char vs char*
+
+2021-04-30  Andras Varga
+
+	* InifileReader: Improve support of indented continuation lines
+
+2021-04-29  Andras Varga
+
+	* SectionBasedConfiguration: better solution for per-object options
+	specified w/o object path.
+
+2021-04-29  Andras Varga
+
+	* SectionBasedConfiguration: leave validation of command-line options
+	to the validate() function.
+
+2021-04-29  Andras Varga
+
+	* Fix: lifecycle listeners added on startup (using EXECUTE_ON_STARTUP())
+	didn't take effect.
+
+	Cause: listeners were added the the boot-time envir, not the permanent
+	one. Solution: Take over lifecycle listeners from the boot-time envir.
+
+2021-04-29  Andras Varga
+
+	* EnvirBase: remove lifecycle-related methods (addLifecycleListener(),
+	removeLifecycleListener(), notifyLifecycleListeners()), as they were
+	moved to its base class cEnvir.
+
+2021-04-29  Andras Varga
+
+	* More modernizing (NULL -> nullptr, use auto for iterator)
+
+2021-04-24  Andras Varga
+
+	* InifileReader: disallow indentation of entries (indentation means
+	continuation line).
+
+2021-04-21  Andras Varga
+
+	* InifileReader: rewritten to support indented lines being continuation
+	of the previous one.
+
+2021-04-21  Andras Varga
+
+	* InifileReader: refactoring
+
+2021-04-19  Andras Varga
+
+	* Make the "Config " prefix in inifile section headers optional.
+	That is, [Config PureAlohaExperiment] may now be also written as
+	[PureAlohaExperiment], the two are equivalent.
+
+2021-04-15  Attila Torok
+
+	* Fix a couple of format-string related bugs when constructing cRuntimeError
+
 2021-04-08  Andras Varga
 
 	* Follow cVisitor change: use retval=false in visit(cObject *obj) instead of

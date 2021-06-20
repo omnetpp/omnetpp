@@ -1,3 +1,52 @@
+2021-06-15  TÖRÖK Attila
+
+	* Filter log messages on a line-by-line basis, instead of on the "Entry" level
+	Also: don't spam empty event banners, but always show "system" messages.
+
+2021-05-19  Rudolf Hornig
+
+	* Require at least Qt 5.9, but exclude 6.0 or later.
+
+2021-06-01  Attila Torok
+
+	* Generic Object Inspector: Silence runtime error dialogs when computing
+	data for object inspector.
+
+2021-05-19  Attila Torok
+
+	* Add a new icon for the "Show/Hide Canvas Layers" action, put it on
+	the floating ModuleInspector toolbar.
+
+2021-04-23  Attila Torok
+
+	* Make the "Run" and "Fast" buttons "pop out" (and stop simulation)
+	if triggered again. This adds a radiobutton-like behavior to these actions,
+	which is handy for running the simulation for a very short time, with a
+	single button.
+
+2021-05-18  Attila Torok
+
+	* Log widget: Perform "find" on stripped (of formatting escape sequences)
+	content.
+
+2021-05-18  Attila Torok
+
+	* Log widget: After a search, scroll the found text into the middle
+	of the viewport instead of just to the edge. Leave a bigger margin
+	to the right and bottom, as that is the way we usually read.
+
+2021-05-18  Attila Torok
+
+	* Log Inspector:  Select the entire searched text when opening the find dialog
+
+2021-05-17  Andras Varga
+
+	* Follow common/stringutil.h changes
+
+2021-05-13  Andras Varga
+
+	* Cosmetics on '// namespace' comments
+
 2021-04-08  Andras Varga
 
 	* Follow cVisitor change: use retval=false in visit(cObject *obj) instead of

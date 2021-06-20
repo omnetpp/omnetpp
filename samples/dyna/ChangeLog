@@ -1,3 +1,16 @@
+2021-06-17  Andras Varga
+
+	* Server: create modules using unique names
+
+2021-05-05  Andras Varga
+
+	* NED files updated for changed parameter reference semantics: Added "parent."
+	qualifier to parameter/gate/submodule references where needed.
+
+2021-04-19  Andras Varga
+
+	* "Config " prefix in section headers is now optional, removed
+
 2021-03-26  Andras Varga
 
 	* omnetpp.ini: display string tweak to demonstrate layout groups

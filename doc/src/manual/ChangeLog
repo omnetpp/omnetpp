@@ -1,3 +1,8 @@
+2021-04-11  Andras Varga
+
+	* appendix-display-strings: updated, add "g" tag
+	* appendix-config-options updated
+
 2021-03-03  Andras Varga
 
 	* Document object parameters and JSON data

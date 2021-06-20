@@ -1,3 +1,257 @@
+2021-06-10  Attila Torok
+
+	* Analysis Tool: Preserve legend item enablement state on refresh (to some
+	degree)
+
+2021-06-21  Attila Torok
+
+	* Analysis Tool: Disable sorting chart templates in context menu by last usage
+	timestamp
+
+2021-06-21  Attila Torok
+
+	* Analysis Tool: Relayout native plots on view and zoom property changes,
+	so axis tick labels don't get cut off when their number of digits changes
+
+2021-06-10  Attila Torok
+
+	* Analysis Tool: Add digit grouping to tick labels of native chart axes
+
+2021-06-14  Levente Meszaros
+
+	* SequenceChart: Added an optional module parameter to the defaultStatistic
+	property.
+
+2021-05-27  Rudolf Hornig
+
+	* Eclipse and private JRE update
+
+	- update to Eclipse 4.20 and pydev 8.3
+	- added justj repo and justj feature to the product definition
+	- JRE is no longer added manually to the distro. It's coming from justj.
+	- special VM options are no longer needed on macOS
+
+2021-05-27  Rudolf Hornig
+
+	* Prod: update to Tycho 2.3
+
+2021-06-01  Rudolf Hornig
+
+	* C++ Build: no longer use the OMNETPP_ROOT *environment* variable in the
+	generated Makefiles.
+
+2021-05-31  Rudolf Hornig
+
+	* NED Documentation Generator: fixed wrong file name (double extension)
+	and page title when using @page directive
+
+2021-05-12  Attila Torok
+
+	* Inifile Editor: Added support for cmdenv-fake-gui-seed config option
+
+2021-04-29  Andras Varga
+
+	* Inifile Editor: detect duplicate sections in file
+
+2021-04-29  Andras Varga
+
+	* Inifile Editor: Change "Missing section heading" from error to warning.
+
+	Reason: Simulation kernel (envir/inifilereader) has always accepted it,
+	and also, many test/core tests exploit it.
+
+2021-04-26  Andras Varga
+
+	* Inifile Editor: FieldEditor: fix background color
+
+2021-04-23  Andras Varga
+
+	* NED Source Editor: fix syntax highlight of string constants containing "//"
+
+	After "//", the rest of the string (and till the end of the line) was
+	colored as comment.
+
+2021-04-22  Andras Varga
+
+	* Inifile Editor: fix syntax highlight bug: '#' inside string constants also
+	triggered the comment rule
+
+2021-04-22  Andras Varga
+
+	* Inifile Editor: fix syntax highlight of string constants broken onto
+	multiple lines using backslash continuation. The coloring of the 2nd line
+	was flaky, i.e. colors were lost after editing that line.
+
+	Example:
+
+	 "hello\
+	world"  <---- coloring lost after editing this line
+
+2021-04-22  Andras Varga
+
+	* Inifile Editor: fix syntax highlight of backslash-continued comment lines
+
+	The continuation line was not colored as part of the comment.
+
+	Example:
+
+	 # some comment \
+	    continued on this line <---- text in this line was not grayed out
+
+2021-04-22  Andras Varga
+
+	* Inifile Editor: Added syntax highlight for section headings
+
+2021-04-20  Andras Varga
+
+	* Inifile Editor: Line parsing adapted for multi-line entries.
+
+	Main issue is how to handle value+comment separation with multi-line
+	values. There doesn't seem to be meaningful to edit the "pure" value and
+	the comments separately, because the comments may contain commented-out
+	lines, comments specific to some part of the value etc, which may become
+	misaligned when editing separately.
+
+	The only feasible solution for multi-line values is to leave the comments
+	as part of the value, and let the user them as one string. (For
+	consistency, the 'comment' part of the entry is then set to "".)
+
+	For validation etc, the net value is needed (ie stripped of comments).
+
+2021-04-19  Andras Varga
+
+	* Inifile Editor: Added support for indented continuation lines.
+
+	In the inifile, if a line is indented, it is taken as a continuation of
+	the previous line. You may not break a line inside a string constant that
+	way.
+
+	The trailing-backslash way still works (and can also be used to break
+	string constants).
+
+2021-04-19  Andras Varga
+
+	* Inifile Editor: The "Config " prefix in section headers is now optional.
+
+	That is, [Config PureAlohaExperiment] may now be also written as
+	[PureAlohaExperiment], the two are equivalent.
+
+2021-04-28  Attila Torok
+
+	* Analysis Tool: Handle errors in @vector_operation better
+
+2021-03-25  Attila Torok
+
+	* Analysis Tool: Wire in the vector operation list into content assist
+
+2021-04-20  Attila Torok
+
+	* Analysis Tool: Wire in the vector operation list into the context menu
+
+2021-04-20  Attila Torok
+
+	* Analysis Tool: Register vector operations in Python using a decorator
+
+2021-04-20  Attila Torok
+
+	* Analysis Tool: Fix evaluate() in PythonEntryPoint.py
+
+2021-03-22  Attila Torok
+
+	* Analysis Tool: Add chart templates to plot histograms computed from vector
+	results
+
+2021-03-22  Attila Torok
+
+	* Analysis Tool: Copy-paste fix in histogram chart template script.
+
+2021-04-23  Rudolf Hornig
+
+	* IDE: Fix null reference crashes on Windows because of non-existent
+	default display during class initialization.
+
+2021-04-23  Rudolf Hornig
+
+	* IDE: Do not force the classic theme in IDE. Let Eclipse decide the theme
+	automatically.
+
+2021-04-19  Andras Varga
+
+	* Inifile Editor: fix "widget already disposed" exception
+
+2021-04-19  Andras Varga
+
+	* Inifile Editor: Form editor: more concise display of section names in tables
+
+	Show just "PureAloha" instead of "[Config PureAloha]", there's no chance
+	of misunderstanding.
+
+2021-04-18  Andras Varga
+
+	* Inifile Editor: Auto-hide Reset and Expand buttons when mouse is outside the
+	field editor
+
+2021-04-17  Andras Varga
+
+	* Inifile Editor: Display notes in smaller font
+
+2021-04-16  Andras Varga
+
+	* Inifile Editor: Form-based editor: align controls by converting to
+	2-column grid layout.
+
+2021-04-18  Andras Varga
+
+	* Analysis Tool: fix ClassCastException in editor contributor.
+	Got "InifileEditor cannot be cast to ScaveEditor" after an InifileEditor
+	was closed and next editor was a ScaveEditor.
+
+2021-04-16  Rudolf Hornig
+
+	* IDE: Dark theme fixes for event log and sequence chart.
+
+2021-04-15  Rudolf Hornig
+
+	* IDE: Added support for dark themes in MSG, NED and INI file editors.
+
+2021-04-15  Rudolf Hornig
+
+	* IDE: Updated syntax-highlight rules for NED, MSG and INI editors
+
+	- added missing NED functions
+	- removed obsolete keywords (xmldoc, readonly, noncobject)
+	- added new keywords: import
+	- added simtime_t as a highlighted type in MSG files as it is very common
+	- highlighting of bool constants and NED expression keywords in INI files
+	 are now consistent with NED and MSG files
+
+2021-04-13  Rudolf Hornig
+
+	* IDE: Updated welcome screen theme (circle -> solstice) due to problem
+	with dark theme with the old 'circle' theme
+
+2021-04-13  Rudolf Hornig
+
+	* IDE: Fix the download issues in the Simulation Model dialog.
+
+2021-04-11  Andras Varga
+
+	* NED Source Editor: Add support for the "g" tag in display string. (The
+	graphical doesn't know about it yet.)
+
+2021-04-10  Andras Varga
+
+	* Inifile Editor: Form-based editor: added display-name and display-string
+	options
+
+2021-04-10  Andras Varga
+
+	* Inifile Editor: Tweak layout on "Filterprints" page
+
+2021-04-09  Andras Varga
+
+	* Inifile Editor: Refreshed the list of supported config options.
+
 2021-03-29  Attila Torok
 
 	* Analysis Tool: Fix bug in transferring data between the IDE and the chart
@@ -716,11 +970,11 @@
 
 	* Increased heap size for IDE.
 
-2020-03-20  Levente Mészáros
+2020-03-20  Levente Meszaros
 
 	* SequenceChart: Fixed resultFileManager.loadFile call after rebase.
 
-2020-03-20  Levente Mészáros
+2020-03-20  Levente Meszaros
 
 	* SequenceChart: Reworked the whole implementation including several major
 	changes.
@@ -731,29 +985,29 @@
 	sends. Added the ability to measure time between selected objects.
 	Several other unlisted changes.
 
-2020-03-20  Levente Mészáros
+2020-03-20  Levente Meszaros
 
 	* SequenceChart: Added new filter parameters.
 
-2020-03-20  Levente Mészáros
+2020-03-20  Levente Meszaros
 
 	* CachingCanvas: Fixed incorrect clipping handling.
 
-2020-03-20  Levente Mészáros
+2020-03-20  Levente Meszaros
 
 	* SequenceChart: Added a lot of icons for the new actions.
 
-2020-01-06  Levente Mészáros
+2020-01-06  Levente Meszaros
 
 	* SequenceChart: Started adding support for horizontally finite sized events.
 	This allows separating message sends and method calls from each other
 	horizontally.
 
-2020-03-20  Levente Mészáros
+2020-03-20  Levente Meszaros
 
 	* SequenceChart: Factored out a separate style provider.
 
-2020-01-10  Levente Mészáros
+2020-01-10  Levente Meszaros
 
 	* Fixed translation in CachingCanvas by moving it from GC to
 	SWTGraphics. The SWTGraphics will set the transform on GC when
@@ -1230,7 +1484,7 @@
 	       b1.g <--> b2.g; // ERROR (bogus): gate 'g' not found in 'B'
 	}
 
-2018-06-13  Levente Mészáros
+2018-06-13  Levente Meszaros
 
 	* NED editor: Solved unused deep parameter assignment in NED file
 	analysis.
@@ -1258,7 +1512,7 @@
 	the base module's gates and parameters were reported as errors ("unknown
 	gate", etc.)
 
-2018-06-13  Levente Mészáros
+2018-06-13  Levente Meszaros
 
 	* NED editor: Solved unused deep parameter assignment in NED file analysis
 

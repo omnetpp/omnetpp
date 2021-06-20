@@ -1,3 +1,12 @@
+2021-05-05  Andras Varga
+
+	* NED files updated for changed parameter reference semantics: Added "parent."
+	qualifier to parameter/gate/submodule references where needed.
+
+2021-04-19  Andras Varga
+
+	* "Config " prefix in section headers is now optional, removed
+
 2020-11-19  Attila Torok
 
 	* Move initializers inline, remove empty constructors and destructors

@@ -1,3 +1,16 @@
+2021-06-01  Rudolf Hornig
+
+	* build: no longer use the OMNETPP_ROOT *environment* variable in Makefiles
+
+2021-05-30  Andras Varga
+
+	* opp_test: on error, print the command used to start the simulation.
+
+2021-04-20  Andras Varga
+
+	opp_makemake: only overwrite Makefile if it has different contents
+	(preserve old timestamp if there is no change).
+
 2021-03-19  Andras Varga
 
 	* opp_makemake: Raise limit on maximum number of directories to traverse

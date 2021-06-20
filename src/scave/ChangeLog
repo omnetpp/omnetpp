@@ -1,3 +1,35 @@
+2021-06-07  Attila Torok
+
+	* Add a READER_MUTEX on the RFM to IDList::filterByRun()
+
+2021-06-03  Attila Torok
+
+	* JsonExporter: fix: properly filter results by run when exporting,
+	to avoid one result incorrectly showing up for multiple runs [reported
+	by Daniel Stolpmann]
+
+2021-06-03  Attila Torok
+
+	* Add IDList::filterByRun()
+
+2021-06-03  Attila Torok
+
+	* Add missing #include <algorithm>
+
+2021-06-03  Attila Torok
+
+	* Run::getProperty(): fix: compare run properties to prefixes using strncmp,
+	instead of requiring the prefix to be the entire compared string.
+
+2021-05-13  Andras Varga
+
+	* Cosmetics on '// namespace' comments
+
+2021-05-11  Andras Varga
+
+	* Use opp_splitandtrim() instead of StringTokenizer; follow other changes
+	in common/stringutil.h.
+
 2021-03-08  Attila Torok
 
 	* Fix grammar in the XSWT config form of the JSON exporter
@@ -318,7 +350,7 @@
 
 2020-03-17  Andras Varga
 
-	ide/scave: ResultFileManagerEx: some cleanup
+	ide/* ResultFileManagerEx: some cleanup
 
 2020-03-14  Andras Varga
 
