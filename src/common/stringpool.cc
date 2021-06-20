@@ -75,10 +75,12 @@ StringPool::~StringPool()
 
 const char *StringPool::obtain(const char *s)
 {
+#ifndef NDEBUG
     if (!opp_insidemain()) {
         fprintf(stderr, "ERROR: StringPool::get(\"%s\") invoked outside main() -- please do not use StringPool from global objects", s);
         return opp_strdup(s);
     }
+#endif
 
     if (!s)
         return nullptr;
@@ -102,10 +104,13 @@ const char *StringPool::obtain(const char *s)
 
 const char *StringPool::peek(const char *s) const
 {
+#ifndef NDEBUG
     if (!opp_insidemain()) {
         fprintf(stderr, "ERROR: StringPool::peek(\"%s\") invoked outside main() -- please do not use StringPool from global objects", s);
         return nullptr;
     }
+#endif
+
     if (!s)
         return nullptr;
     if (!*s)
@@ -117,10 +122,13 @@ const char *StringPool::peek(const char *s) const
 
 void StringPool::release(const char *s)
 {
+#ifndef NDEBUG
     if (!opp_insidemain()) {
         fprintf(stderr, "Warning: StringPool::release(): string \"%s\" released too late, after main() already exited\n", s);
         return;
     }
+#endif
+
     if (!s || !*s)
         return;
     if (!alive)
