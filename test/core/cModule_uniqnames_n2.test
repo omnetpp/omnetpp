@@ -1,0 +1,59 @@
+%description:
+Tests that unique submodule names are enforced even with dynamic module creation,
+and errors result in clean exit.
+
+%file: test.ned
+
+module Node {
+}
+
+simple Tester {
+}
+
+network Test
+{
+    submodules:
+        node: Node;
+        node2: Node;
+        tester: Tester;
+}
+
+%file: test.cc
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class Tester : public cSimpleModule
+{
+  public:
+    virtual void initialize() override;
+};
+
+Define_Module(Tester);
+
+void Tester::initialize()
+{
+    cModuleType *type = cModuleType::get("Node");
+    type->create("node", getSystemModule());
+}
+
+};
+
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+
+%exitcode: 1
+
+%contains: stderr
+Error: Cannot insert module (omnetpp::cModule)node into parent (Test)Test: a submodule of the same name already exists
+
+%not-contains: stderr
+ASSERT
+
+%not-contains: stdout
+undisposed object

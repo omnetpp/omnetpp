@@ -214,7 +214,6 @@ void cModule::forEachChild(cVisitor *v)
     cComponent::forEachChild(v);
 }
 
-// a two-in-one function, so that we don't end up calling updateFullPath() twice
 void cModule::setInitialNameAndIndex(const char *name, int index)
 {
     ASSERT(parentModule == nullptr);
@@ -250,8 +249,6 @@ typename std::vector<T>::const_iterator findByName(const std::vector<T>& v, cons
 void cModule::insertSubmodule(cModule *mod)
 {
     ASSERT(mod->parentModule == nullptr);
-    mod->parentModule = this;
-    take(mod);
 
     if (!subcomponentData)
         subcomponentData = new SubcomponentData;
@@ -279,6 +276,9 @@ void cModule::insertSubmodule(cModule *mod)
     }
 
     subcomponentData->submoduleChangeCount++;
+
+    mod->parentModule = this;
+    take(mod);
 
     mod->invalidateFullPathRec();
 }
@@ -349,12 +349,26 @@ void cModule::setNameAndIndex(const char *name, int index)
     if (parent)
         parent->removeSubmodule(this);
 
+    std::string origName = getName();
+    int origIndex = vectorIndex;
+
     cOwnedObject::setName(name);
     vectorIndex = index;
     updateFullName();
 
-    if (parent)
-        parent->insertSubmodule(this);
+    if (parent) {
+        try {
+            parent->insertSubmodule(this);
+        }
+        catch (std::exception& e) {
+            // restore consistent state to prevent failed assertions later
+            cOwnedObject::setName(origName.c_str());
+            vectorIndex = origIndex;
+            updateFullName();
+            parent->insertSubmodule(this);
+            throw;
+        }
+    }
 }
 
 void cModule::updateFullName()

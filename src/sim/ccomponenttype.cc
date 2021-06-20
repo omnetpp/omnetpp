@@ -315,10 +315,16 @@ cModule *cModuleType::create(const char *moduleName, cModule *parentModule, int 
     }
 
     // insert into network
-    if (parentModule)
-        parentModule->insertSubmodule(module);
-    else
-        getSimulation()->setSystemModule(module);
+    try {
+        if (parentModule)
+            parentModule->insertSubmodule(module);
+        else
+            getSimulation()->setSystemModule(module);
+    }
+    catch (std::exception&) {
+        delete module;
+        throw;
+    }
 
     // register with cSimulation
     getSimulation()->registerComponent(module);
