@@ -131,6 +131,14 @@ public abstract class PlotBase extends ZoomableCachingCanvas implements IPlotVie
                 layoutChart();
             }
         });
+
+        addPropertyChangeListener((e) -> {
+            String prop = e.getProperty();
+            if (prop.equals(PROP_ZOOM_X) || prop.equals(PROP_ZOOM_Y)
+                    || prop.equals(PROP_VIEW_X) || prop.equals(PROP_VIEW_Y)) {
+                layoutChart();
+            }
+        });
     }
 
     /**
