@@ -18,6 +18,7 @@
 #define __OMNETPP_COMMON_STRINGPOOL_H
 
 #include <cstring>
+#include <string>
 #include <unordered_set>
 #include <unordered_map>
 #include "commondefs.h"
