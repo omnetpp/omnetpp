@@ -257,12 +257,16 @@ public abstract class LargeScrollableCanvas extends Canvas {
     }
 
     protected void horizontalScrollBarChanged(SelectionEvent e) {
+        long oldViewX = viewX;
         viewX = clipX(((long)getHorizontalBar().getSelection()) << hShift);
+        firePropertyChangeEvent(PROP_VIEW_X, oldViewX, this.viewX);
         redraw();
     }
 
     protected void verticalScrollBarChanged(SelectionEvent e) {
+        long oldViewY = viewY;
         viewY = clipY(((long)getVerticalBar().getSelection()) << vShift);
+        firePropertyChangeEvent(PROP_VIEW_Y, oldViewY, this.viewY);
         redraw();
     }
 
