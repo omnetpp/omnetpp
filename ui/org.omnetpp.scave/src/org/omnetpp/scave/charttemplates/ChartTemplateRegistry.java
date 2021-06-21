@@ -49,6 +49,7 @@ public class ChartTemplateRegistry {
     private static final String CHARTTEMPLATES_FOLDER = "charttemplates";
 
     private static boolean debug = false;
+    private static boolean sortByLastUsageTimestamps = false;
 
     private IProject project = null;
     private ArrayList<ChartTemplate> templates = null;
@@ -217,9 +218,13 @@ public class ChartTemplateRegistry {
         result.sort(new Comparator<ChartTemplate>() {
             @Override
             public int compare(ChartTemplate a, ChartTemplate b) {
-                long ta = templatesLastUsageTimestamps.getOrDefault(a.getId(), 0l);
-                long tb = templatesLastUsageTimestamps.getOrDefault(b.getId(), 0l);
-                int result = -Long.compare(ta, tb); // decreasing order of last usage timestamp
+                int result = 0;
+
+                if (sortByLastUsageTimestamps) {
+                    long ta = templatesLastUsageTimestamps.getOrDefault(a.getId(), 0l);
+                    long tb = templatesLastUsageTimestamps.getOrDefault(b.getId(), 0l);
+                    result = -Long.compare(ta, tb); // decreasing order of last usage timestamp
+                }
 
                 if (result == 0) // most likely neither of them have been used yet, sort decreasing by score
                     result = -Long.compare(a.getScore(), b.getScore());
