@@ -151,7 +151,17 @@ FileLine ASTNode::getSourceLocation() const
 void ASTNode::setSourceLocation(FileLine loc)
 {
     srcLoc = loc;
-    directory = directoryOf(loc.getFilename());
+    directory = directoryOf(loc.file.c_str());
+}
+
+const char *ASTNode::getSourceFileName() const
+{
+    return srcLoc.file.c_str();
+}
+
+int ASTNode::getSourceLineNumber() const
+{
+    return srcLoc.line;
 }
 
 const char *ASTNode::getSourceFileDirectory() const

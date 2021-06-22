@@ -278,7 +278,7 @@ public class NedTreeUtil {
             pojoNode.setAttribute(i, swigNode.getAttribute(i));
 
         // copy source line number info
-        pojoNode.setSourceLocation(swigNode.getSourceLocation());
+        pojoNode.setSourceLocation(swigNode.getSourceFileName(), swigNode.getSourceLineNumber());
         SourceRegion swigRegion = swigNode.getSourceRegion();
         if (swigRegion.getStartLine() != 0)
             pojoNode.setSourceRegion(new org.omnetpp.ned.model.NedSourceRegion(
@@ -350,7 +350,7 @@ public class NedTreeUtil {
             value = value == null ? "" : value;
             swigNode.setAttribute(i, value);
         }
-        swigNode.setSourceLocation(pojoNode.getSourceLocation());
+        swigNode.setSourceLocation(pojoNode.getSourceFileName(), pojoNode.getSourceLineNumber());
 
         // create child nodes
         for (INedElement child = pojoNode.getFirstChild(); child != null; child = child.getNextSibling()) {

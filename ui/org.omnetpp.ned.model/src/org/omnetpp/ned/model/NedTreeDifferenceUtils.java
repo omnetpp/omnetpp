@@ -34,7 +34,7 @@ public class NedTreeDifferenceUtils {
      * Applies changes identified by the tree diff algorithm to the tree.
      */
     public interface IApplier {
-        public void replaceNonAttributeData(INedElement element, String sourceLocation, NedSourceRegion sourceRegion,
+        public void replaceNonAttributeData(INedElement element, String sourceFileName, int sourceFileNumber, NedSourceRegion sourceRegion,
                 int syntaxProblemMaxLocalSeverity, int consistencyProblemMaxLocalSeverity);
 
         public void replaceElements(INedElement parent, int start, int end, int offset, INedElement[] replacement);
@@ -43,7 +43,7 @@ public class NedTreeDifferenceUtils {
     }
 
     public static void applyTreeDifferences(INedElement original, INedElement target, IApplier applier) {
-        applier.replaceNonAttributeData(original, target.getSourceLocation(), target.getSourceRegion(),
+        applier.replaceNonAttributeData(original, target.getSourceFileName(), target.getSourceLineNumber(), target.getSourceRegion(),
                 target.getSyntaxProblemMaxLocalSeverity(), target.getConsistencyProblemMaxLocalSeverity());
 
         applyAttributeDifferences(original, target, applier);
@@ -101,15 +101,18 @@ public class NedTreeDifferenceUtils {
         private int numAttributeChanges = 0;
         private int numElementReplacements = 0;
 
-        public void replaceNonAttributeData(final INedElement element, final String sourceLocation, final NedSourceRegion sourceRegion,
+        public void replaceNonAttributeData(final INedElement element, final String sourceFileName, int sourceLineNumber, final NedSourceRegion sourceRegion,
                 final int syntaxProblemMaxLocalSeverity, final int consistencyProblemMaxLocalSeverity) {
-            if (!ObjectUtils.equals(element.getSourceLocation(), sourceLocation) || !ObjectUtils.equals(element.getSourceRegion(), sourceRegion) ||
-                element.getSyntaxProblemMaxLocalSeverity() != syntaxProblemMaxLocalSeverity || element.getConsistencyProblemMaxLocalSeverity() != consistencyProblemMaxLocalSeverity)
+            if (!ObjectUtils.equals(element.getSourceFileName(), sourceFileName) ||
+                    element.getSourceLineNumber() != sourceLineNumber ||
+                    !ObjectUtils.equals(element.getSourceRegion(), sourceRegion) ||
+                    element.getSyntaxProblemMaxLocalSeverity() != syntaxProblemMaxLocalSeverity ||
+                    element.getConsistencyProblemMaxLocalSeverity() != consistencyProblemMaxLocalSeverity)
             {
                 numNonAttributeDataChanges++;
                 runnables.add(new Runnable() {
                     public void run() {
-                        element.setSourceLocation(sourceLocation);
+                        element.setSourceLocation(sourceFileName, sourceLineNumber);
                         element.setSourceRegion(sourceRegion);
                         element.setSyntaxProblemMaxLocalSeverity(syntaxProblemMaxLocalSeverity);
                         element.setConsistencyProblemMaxLocalSeverity(consistencyProblemMaxLocalSeverity);

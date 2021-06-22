@@ -69,7 +69,17 @@ public interface INedElement extends Iterable<INedElement>, NedElementTags, NedE
      * Sets location string (a string containing a file/line position showing
      * where this element originally came from). Called by the (NED/XML) parser.
      */
-    public void setSourceLocation(String loc);
+    public void setSourceLocation(String fileName, int lineNumber);
+
+    /**
+     * Returns the name of the NED file this element originally came from.
+     */
+    public String getSourceFileName();
+
+    /**
+     * Returns the line number in the NED file this element originally came from.
+     */
+    public int getSourceLineNumber();
 
     /**
      * Returns the source region, containing a line:col region in the source file

@@ -51,7 +51,8 @@ public abstract class NedElement extends PlatformObject implements INedElement, 
     private static final int SEVERITY_INVALID = Integer.MIN_VALUE;
 
     private long id;
-    private String srcloc;
+    private String sourceFileName;
+    private int sourceLineNumber;
     private NedSourceRegion srcregion;
     private NedElement parent;
     private NedElement firstchild;
@@ -228,11 +229,20 @@ public abstract class NedElement extends PlatformObject implements INedElement, 
     }
 
     public String getSourceLocation() {
-        return srcloc;
+        return sourceFileName + ":" + sourceLineNumber;
     }
 
-    public void setSourceLocation(String loc) {
-        srcloc = loc;
+    public void setSourceLocation(String fileName, int lineNumber) {
+        sourceFileName = fileName;
+        sourceLineNumber = lineNumber;
+    }
+
+    public String getSourceFileName() {
+        return sourceFileName;
+    }
+
+    public int getSourceLineNumber() {
+        return sourceLineNumber;
     }
 
     public NedSourceRegion getSourceRegion() {
@@ -494,7 +504,7 @@ public abstract class NedElement extends PlatformObject implements INedElement, 
         for (int i = 0; i < getNumAttributes(); ++i)
             clone.setAttribute(i, getAttribute(i));
 
-        clone.setSourceLocation(getSourceLocation());
+        clone.setSourceLocation(getSourceFileName(), getSourceLineNumber());
         clone.setSourceRegion(getSourceRegion());
         clone.setSyntaxProblemMaxLocalSeverity(getSyntaxProblemMaxLocalSeverity());
         clone.setConsistencyProblemMaxLocalSeverity(getConsistencyProblemMaxLocalSeverity());

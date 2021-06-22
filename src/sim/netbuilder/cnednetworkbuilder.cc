@@ -253,7 +253,7 @@ void cNedNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
                     impl->convertToConst(nullptr);
                 else {
                     auto loc = paramNode->getSourceLocation();
-                    expr->setSourceLocation(omnetpp::FileLine(loc.getFilename(), loc.getLineNumber())); // note: if we do it earlier, file:line may show up TWICE in the error message: one added inside convertToConst(), the other in the 'catch' block at the bottom of this function
+                    expr->setSourceLocation(omnetpp::FileLine(loc.file.c_str(), loc.line)); // note: if we do it earlier, file:line may show up TWICE in the error message: one added inside convertToConst(), the other in the 'catch' block at the bottom of this function
                 }
                 impl->setIsSet(!paramNode->getIsDefault());
             }
@@ -384,7 +384,7 @@ void cNedNetworkBuilder::doAssignParameterFromPattern(cPar& par, ParamElement *p
                 impl->convertToConst(nullptr);
             else {
                 auto loc = patternNode->getSourceLocation();
-                expr->setSourceLocation(omnetpp::FileLine(loc.getFilename(), loc.getLineNumber())); // note: if we do it earlier, file:line may show up TWICE in the error message: one added inside convertToConst(), the other in the 'catch' block at the bottom of this function
+                expr->setSourceLocation(omnetpp::FileLine(loc.file.c_str(), loc.line)); // note: if we do it earlier, file:line may show up TWICE in the error message: one added inside convertToConst(), the other in the 'catch' block at the bottom of this function
             }
             par.setEvaluationContext(evalContext);
             impl->setIsSet(!patternNode->getIsDefault());

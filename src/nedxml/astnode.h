@@ -64,17 +64,14 @@ struct SourceRegion
     int endColumn = 0;
 };
 
-class NEDXML_API FileLine
+struct NEDXML_API FileLine
 {
-  private:
     opp_staticpooledstring file;
     int line = -1;
-  public:
+
     FileLine() {}
     FileLine(const char *file, int line=-1) : file(file), line(line) {}
     bool empty() const {return file.empty();}
-    const char *getFilename() const {return file.c_str();}
-    int getLineNumber() const {return line;}
     std::string str() const {return empty() ? "" : line == -1 ? file.str() : file.str() + ":" + std::to_string(line);}
 };
 
@@ -177,6 +174,21 @@ class NEDXML_API ASTNode
      * Sets the file:line position indicating where this element originally came from.
      */
     virtual void setSourceLocation(FileLine loc);
+
+    /**
+     * Utility function based on setSourceLocation(). Needed by the IDE.
+     */
+    void setSourceLocation(const char *fileName, int lineNumber) {setSourceLocation(FileLine(fileName,lineNumber));}
+
+    /**
+     * Utility function based on getSourceLocation(). Needed by the IDE.
+     */
+    virtual const char *getSourceFileName() const;
+
+    /**
+     * Utility function based on getSourceLocation(). Needed by the IDE.
+     */
+    virtual int getSourceLineNumber() const;
 
     /**
      * Returns the directory this element was loaded from.
