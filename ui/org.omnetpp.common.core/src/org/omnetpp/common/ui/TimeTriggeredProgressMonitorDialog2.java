@@ -112,7 +112,7 @@ public class TimeTriggeredProgressMonitorDialog2 extends ProgressMonitorDialog {
     public void run(boolean fork, final boolean cancelable, final IRunnableWithProgress runnable) throws InvocationTargetException, InterruptedException {
         if (activeInstance != null) {
             Debug.println("Note: Nested invocation of TimeTriggeredProgressMonitorDialog2 detected. Nested runnable will be run without progressmonitor but will be interruptible");
-            runnable.run(null);
+            runnable.run(new NullProgressMonitor());
             return;
         }
 
