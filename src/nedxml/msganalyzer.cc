@@ -311,16 +311,11 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
 
     classInfo.customize = getPropertyAsBool(classInfo.props, PROP_CUSTOMIZE, false);
 
-    if (classInfo.customize) {
-        classInfo.className = classInfo.name + "_Base";
-        classInfo.realClass = classInfo.name;
-        classInfo.descriptorClass = makeIdentifier(classInfo.realClass) + "Descriptor";
-    }
-    else {
-        classInfo.className = classInfo.name;
-        classInfo.realClass = classInfo.name;
-        classInfo.descriptorClass = makeIdentifier(classInfo.className) + "Descriptor";
-    }
+    classInfo.realClass = classInfo.className = classInfo.name;
+    if (classInfo.customize)
+        classInfo.className += "_Base";
+    classInfo.descriptorClass = makeIdentifier(classInfo.realClass) + "Descriptor";
+    classInfo.classQName = prefixWithNamespace(classInfo.className, namespaceName);
 
     classInfo.baseClass = classInfo.extendsQName;
 
@@ -340,8 +335,48 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
 
     // additional base classes (interfaces)
     const Property *implementsProperty = classInfo.props.get(PROP_IMPLEMENTS);
-    if (implementsProperty)
-        classInfo.implements = implementsProperty->getValue("");
+    if (implementsProperty) {
+        StringVector list  = implementsProperty->getValue("");
+        for (std::string& name : list) {
+            std::string qname = lookupExistingClassName(name, namespaceName);
+            if (qname.empty()) {
+                errors->addError(classInfo.astNode, "'%s': unknown class '%s' in @implements", classInfo.name.c_str(), name.c_str());
+                continue;
+            }
+            auto baseClassInfo = typeTable->getClassInfo(qname);
+            ensureAnalyzed(baseClassInfo);
+            if (!baseClassInfo.subclassable)
+                errors->addError(classInfo.astNode, "'%s': type '%s' in @implements list cannot be used as base class", classInfo.name.c_str(), qname.c_str());
+            classInfo.implementsQNames.push_back(qname);
+        }
+    }
+
+    // isPolymorphic
+    bool isPolymorphic = getPropertyAsBool(classInfo.props, PROP_POLYMORPHIC, classInfo.isClass);
+    if (baseClassInfo && baseClassInfo->isPolymorphic)
+        isPolymorphic = true;
+    for (std::string qname : classInfo.implementsQNames) {
+        auto baseClassInfo = typeTable->getClassInfo(qname);
+        ensureAnalyzed(baseClassInfo);
+        if (baseClassInfo.isPolymorphic)
+            isPolymorphic = true;
+    }
+    classInfo.isPolymorphic = isPolymorphic;
+
+    // root classes
+    if (baseClassInfo == nullptr)
+        classInfo.rootClasses = { classInfo.classQName };
+    else
+        classInfo.rootClasses = baseClassInfo->rootClasses;
+    for (std::string qname : classInfo.implementsQNames) {
+        auto baseClassInfo = typeTable->getClassInfo(qname);
+        ensureAnalyzed(baseClassInfo);
+        for (auto rootClass : baseClassInfo.rootClasses)
+            if (!contains(classInfo.rootClasses, rootClass))
+                classInfo.rootClasses.push_back(rootClass);
+    }
+
+    classInfo.generateCastFunction = getPropertyAsBool(classInfo.props, PROP_CASTFUNCTION, true);
 }
 
 void MsgAnalyzer::analyzeFields(ClassInfo& classInfo, const std::string& namespaceName)

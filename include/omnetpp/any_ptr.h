@@ -102,6 +102,16 @@ class SIM_API any_ptr
     std::string str() const;
 };
 
+class cObject;
+
+template<typename T>
+T *fromAnyPtr(any_ptr object) = delete; // =delete prevents undeclared specializations
+
+template<>
+inline omnetpp::cObject *fromAnyPtr(any_ptr ptr) { return ptr.get<omnetpp::cObject>(); }
+
+inline any_ptr toAnyPtr(const cObject *obj) { return any_ptr(const_cast<cObject*>(obj)); }
+
 }  // namespace omnetpp
 
 #endif

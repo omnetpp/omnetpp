@@ -360,6 +360,8 @@ class SIM_API cObject
     //@}
 };
 
+// operator<<
+
 template<typename T>
 typename std::enable_if<std::is_base_of<cObject, T>::value, std::ostream&>::type
 operator<<(std::ostream& os, const T *p) {
@@ -374,6 +376,24 @@ typename std::enable_if<std::is_base_of<cObject, T>::value, std::ostream&>::type
 operator<<(std::ostream& os, const T& o) {
     return o.printOn(os);
 }
+
+// as_cObject
+
+template <typename T>
+typename std::enable_if<std::is_polymorphic<T>::value, cObject*>::type
+as_cObject(T *p) { return dynamic_cast<cObject*>(p); }
+
+template <typename T>
+typename std::enable_if<!std::is_polymorphic<T>::value, cObject*>::type
+as_cObject(T *p) { return nullptr; }
+
+template <typename T>
+typename std::enable_if<std::is_polymorphic<T>::value, const cObject*>::type
+as_cObject(const T *p) { return dynamic_cast<const cObject*>(p); }
+
+template <typename T>
+typename std::enable_if<!std::is_polymorphic<T>::value, const cObject*>::type
+as_cObject(const T *p) { return nullptr; }
 
 /**
  * @brief Utility class, to make it impossible to call the operator= and copy

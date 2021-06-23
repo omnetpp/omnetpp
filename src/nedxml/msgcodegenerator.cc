@@ -214,32 +214,6 @@ static const char *PARSIMPACK_BOILERPLATE =
     "}  // namespace omnetpp\n"
     "\n";
 
-const char *DESCRIPTOR_BOILERPLATE =
-        "namespace {\n"
-        "template <class T> inline\n"
-        "typename std::enable_if<std::is_polymorphic<T>::value && std::is_base_of<omnetpp::cObject,T>::value, void *>::type\n"
-        "toVoidPtr(T* t)\n"
-        "{\n"
-        "    return (void *)(static_cast<const omnetpp::cObject *>(t));\n"
-        "}\n"
-        "\n"
-        "template <class T> inline\n"
-        "typename std::enable_if<std::is_polymorphic<T>::value && !std::is_base_of<omnetpp::cObject,T>::value, void *>::type\n"
-        "toVoidPtr(T* t)\n"
-        "{\n"
-        "    return (void *)dynamic_cast<const void *>(t);\n"
-        "}\n"
-        "\n"
-        "template <class T> inline\n"
-        "typename std::enable_if<!std::is_polymorphic<T>::value, void *>::type\n"
-        "toVoidPtr(T* t)\n"
-        "{\n"
-        "    return (void *)static_cast<const void *>(t);\n"
-        "}\n"
-        "\n"
-        "}\n"
-        "\n";
-
 void MsgCodeGenerator::generateProlog(const std::string& msgFileName, const std::string& firstNamespace, const std::string& exportDef)
 {
     // make header guard using the file name
@@ -322,8 +296,6 @@ void MsgCodeGenerator::generateProlog(const std::string& msgFileName, const std:
     CC << "#include \"" << hfilenamewithoutdir << "\"\n\n";
 
     CC << PARSIMPACK_BOILERPLATE;
-
-    CC << DESCRIPTOR_BOILERPLATE;
 
     if (firstNamespace.empty()) {
         H << "\n\n";
@@ -410,7 +382,7 @@ void MsgCodeGenerator::generateClassDecl(const ClassInfo& classInfo, const std::
         baseclassSepar = ", ";
     }
 
-    for (const auto& impl : classInfo.implements) {
+    for (const auto& impl : classInfo.implementsQNames) {
         H << baseclassSepar << "public " << impl;
         baseclassSepar = ", ";
     }
@@ -525,7 +497,6 @@ void MsgCodeGenerator::generateClassDecl(const ClassInfo& classInfo, const std::
         H << "inline void doParsimPacking(omnetpp::cCommBuffer *b, const " << classInfo.realClass << "& obj) {obj.parsimPack(b);}\n";
         H << "inline void doParsimUnpacking(omnetpp::cCommBuffer *b, " << classInfo.realClass << "& obj) {obj.parsimUnpack(b);}\n\n";
     }
-
 }
 
 inline std::string var(const MsgTypeTable::FieldInfo& field)
@@ -1076,12 +1047,49 @@ void MsgCodeGenerator::generateStructImpl(const ClassInfo& classInfo)
     reportUnusedMethodCplusplusBlocks(classInfo);
 }
 
-std::string MsgCodeGenerator::makeCast(const ClassInfo& classInfo, const std::string& var)
+void MsgCodeGenerator::generateToAnyPtr(const ClassInfo& classInfo)
 {
-    if (classInfo.iscObject)
-        return "static_cast<" + classInfo.className + "*>(reinterpret_cast<cObject*>(" + var + "))";
-    else
-        return "reinterpret_cast<" + classInfo.className + "*>(" + var + ")";
+    // only for root classes! and for classes with multiple inheritance, to prevent compiler errors due to ambiguity
+    if ((classInfo.extendsName.empty() && classInfo.implementsQNames.empty()) || !classInfo.implementsQNames.empty()) {
+        std::string classQName = classInfo.classQName;
+        H << "inline any_ptr toAnyPtr(const " << classQName << " *p) {";
+        if (!classInfo.isPolymorphic) {
+            H << "return any_ptr(p);";
+        }
+        else {
+            // must try casting to cObject as it may an object which subclasses both this type and cObject (think cIListener!)
+            H << "if (auto obj = as_cObject(p)) return any_ptr(obj); else return any_ptr(p);";
+        }
+        H << "}\n";
+    }
+}
+
+void MsgCodeGenerator::generateFromAnyPtr(const ClassInfo& classInfo, const std::string& exportDef)
+{
+    // in theory, we should try and look it up by EACH polymorphic base class
+    // that exists in the world; however, since we obviously can't do that,
+    // we just try via cObject which is sufficient in practice.
+    std::string classQName = classInfo.classQName;
+    if (classInfo.iscObject) {
+        H << "template<> inline " << classQName << " *fromAnyPtr(any_ptr ptr) ";
+        H << "{ return check_and_cast<" << classQName << "*>(ptr.get<cObject>()); }\n";
+    }
+    else if (classInfo.rootClasses.size() < 2) {
+        H << "template<> inline " << classQName << " *fromAnyPtr(any_ptr ptr) ";
+        std::string rootClass = classInfo.rootClasses.at(0);
+        if (rootClass == classQName)
+            H << "{ return ptr.get<" << rootClass << ">(); }\n";
+        else
+            H << "{ return static_cast<" << classQName << "*>(ptr.get<" << rootClass << ">()); }\n";
+    }
+    else { // multiple roots; needs to try via each
+        H << "template<> " << classQName << " *fromAnyPtr(any_ptr ptr);\n";
+        CC << "template<> " << classQName << " *fromAnyPtr(any_ptr ptr) {\n";
+        for (std::string rootClass : classInfo.rootClasses)
+            CC << "    if (ptr.contains<" << rootClass << ">()) return static_cast<" << classQName << "*>(ptr.get<" << rootClass << ">());\n";
+        CC << "    throw cRuntimeError(\"Unable to obtain " << classQName << "* pointer from any_ptr(%s)\", ptr.pointerTypeName());\n";
+        CC << "}\n";
+    }
 }
 
 void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
@@ -1364,7 +1372,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "            return basedesc->getFieldArraySize(object, field);\n";
     CC << "        field -= basedesc->getFieldCount();\n";
     CC << "    }\n";
-    CC << "    " << classInfo.className << " *pp = " << makeCast(classInfo, "object") << "; (void)pp;\n";
+    CC << "    " << classInfo.className << " *pp = omnetpp::fromAnyPtr<" << classInfo.className << ">(object); (void)pp;\n";
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < numFields; i++) {
         const FieldInfo& field = classInfo.fieldList[i];
@@ -1397,7 +1405,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "        }\n";
     CC << "        field -= basedesc->getFieldCount();\n";
     CC << "    }\n";
-    CC << "    " << classInfo.className << " *pp = " << makeCast(classInfo, "object") << "; (void)pp;\n";
+    CC << "    " << classInfo.className << " *pp = omnetpp::fromAnyPtr<" << classInfo.className << ">(object); (void)pp;\n";
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < numFields; i++) {
         const FieldInfo& field = classInfo.fieldList[i];
@@ -1421,7 +1429,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "            return basedesc->getFieldDynamicTypeString(object,field,i);\n";
     CC << "        field -= basedesc->getFieldCount();\n";
     CC << "    }\n";
-    CC << "    " << classInfo.className << " *pp = " << makeCast(classInfo, "object") << "; (void)pp;\n";
+    CC << "    " << classInfo.className << " *pp = omnetpp::fromAnyPtr<" << classInfo.className << ">(object); (void)pp;\n";
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < numFields; i++) {
         const FieldInfo& field = classInfo.fieldList[i];
@@ -1448,7 +1456,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "            return basedesc->getFieldValueAsString(object,field,i);\n";
     CC << "        field -= basedesc->getFieldCount();\n";
     CC << "    }\n";
-    CC << "    " << classInfo.className << " *pp = " << makeCast(classInfo, "object") << "; (void)pp;\n";
+    CC << "    " << classInfo.className << " *pp = omnetpp::fromAnyPtr<" << classInfo.className << ">(object); (void)pp;\n";
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < numFields; i++) {
         const FieldInfo& field = classInfo.fieldList[i];
@@ -1481,7 +1489,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "        }\n";
     CC << "        field -= basedesc->getFieldCount();\n";
     CC << "    }\n";
-    CC << "    " << classInfo.className << " *pp = " << makeCast(classInfo, "object") << "; (void)pp;\n";
+    CC << "    " << classInfo.className << " *pp = omnetpp::fromAnyPtr<" << classInfo.className << ">(object); (void)pp;\n";
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < numFields; i++) {
         const FieldInfo& field = classInfo.fieldList[i];
@@ -1541,7 +1549,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "            return basedesc->getFieldStructValuePointer(object, field, i);\n";
     CC << "        field -= basedesc->getFieldCount();\n";
     CC << "    }\n";
-    CC << "    " << classInfo.className << " *pp = " << makeCast(classInfo, "object") << "; (void)pp;\n";
+    CC << "    " << classInfo.className << " *pp = omnetpp::fromAnyPtr<" << classInfo.className << ">(object); (void)pp;\n";
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < numFields; i++) {
         const FieldInfo& field = classInfo.fieldList[i];
@@ -1552,10 +1560,10 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
             else
                 value = makeFuncall("pp", field.getter, field.isArray);
             std::string maybeAddressOf = field.isPointer ? "" : "&";
-            CC << "        case " << field.symbolicConstant << ": return toVoidPtr(" << maybeAddressOf << value << "); break;\n";
+            CC << "        case " << field.symbolicConstant << ": return omnetpp::toAnyPtr(" << maybeAddressOf << value << "); break;\n";
         }
     }
-    CC << "        default: return nullptr;\n";
+    CC << "        default: return omnetpp::any_ptr(nullptr);\n";
     CC << "    }\n";
     CC << "}\n";
     CC << "\n";
@@ -1571,14 +1579,15 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "        }\n";
     CC << "        field -= basedesc->getFieldCount();\n";
     CC << "    }\n";
-    CC << "    " << classInfo.className << " *pp = " << makeCast(classInfo, "object") << "; (void)pp;\n";
+    CC << "    " << classInfo.className << " *pp = omnetpp::fromAnyPtr<" << classInfo.className << ">(object); (void)pp;\n";
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < numFields; i++) {
         const FieldInfo& field = classInfo.fieldList[i];
         if (field.isPointer && field.isReplaceable) { //TODO !field.byValue ?
             CC << "        case " << field.symbolicConstant << ": ";
             std::string maybeDereference = field.isPointer ? "" : "*";
-            std::string castPtr = std::string("(") + field.argType + ")ptr"; //TODO cast how?
+            std::string castToType = field.argType.substr(0, field.argType.size()-1); //FIXME: this is a hack to remove last "*"!!!
+            std::string castPtr = std::string("omnetpp::fromAnyPtr<") + castToType + ">(ptr)";
             if (!classInfo.isClass)
                 CC <<  str("pp->") << field.var << (field.isArray ? "[i]" : "") << " = " << maybeDereference << castPtr << ";";
             else
@@ -1658,7 +1667,7 @@ void MsgCodeGenerator::generateTemplates()
     CC << "// Template rule which fires if a struct or class doesn't have operator<<\n";
     CC << "template<typename T>\n";
     CC << "inline typename std::enable_if<!std::is_base_of<omnetpp::cObject, T>::value, std::ostream&>::type\n";
-    CC << "operator<<(std::ostream& out,const T&) {const char *s = omnetpp::opp_typename(typeid(T)); out.put('<'); out.write(s, strlen(s)); out.put('>'); return out;}\n\n"; // Note: DON'T USE out.operator<<(...)! It would print the pointer, because std::ostream has no operator<< overload for const char *, only for any_ptr !
+    CC << "operator<<(std::ostream& out,const T&) {const char *s = omnetpp::opp_typename(typeid(T)); out.put('<'); out.write(s, strlen(s)); out.put('>'); return out;}\n\n"; // Note: DON'T USE out.operator<<(...)! It would print the pointer, because std::ostream has no operator<< overload for const char *, only for omnetpp::any_ptr !
 
     CC << "// operator<< for std::vector<T>\n";
     CC << "template<typename T, typename A>\n";
@@ -1701,9 +1710,6 @@ void MsgCodeGenerator::generateNamespaceBegin(const std::string& namespaceName, 
     H << std::endl;
     if (intoCcFile)
         CC << std::endl;
-
-    if (intoCcFile)
-        generateTemplates();
 }
 
 void MsgCodeGenerator::generateNamespaceEnd(const std::string& namespaceName, bool intoCcFile)

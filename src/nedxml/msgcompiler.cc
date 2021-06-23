@@ -42,6 +42,7 @@ const char *MsgCompiler::BUILTIN_DEFINITIONS =
         @property[byValue](type=bool; usage=field,class; desc="If true: Causes the value to be passed by value (instead of by reference) in setters/getters. When specified on a class, it determines the default for fields of that type.");
         @property[supportsPtr](type=bool; usage=field,class; desc="Specifies whether this type supports creating a pointer (or pointer array) from it.");
         @property[subclassable](type=bool; usage=class; desc="Specifies whether this type can be subclassed (e.g. C++ primitive types and final classes cannot).");
+        @property[polymorphic](type=bool; usage=class; desc="Specifies whether this type is polymorphic, i.e. has any virtual member function.");
         @property[defaultValue](type=string; usage=class; desc="Default value for fields of this type.");
         @property[cppType](type=string; usage=field,class; desc="Member C++ datatype. When specified on a class, it determines the default for fields of that type.");
         @property[argType](type=string; usage=field,class; desc="Field setter C++ argument type. When specified on a class, it determines the default for fields of that type.");
@@ -52,6 +53,7 @@ const char *MsgCompiler::BUILTIN_DEFINITIONS =
         @property[clone](type=string; usage=field,class; desc="For owned pointer fields: Code to duplicate (one array element of) the field value. When specified on a class, it determines the default for fields of that type.");
         @property[existingClass](type=bool; usage=class; desc="If true: This is a type is already defined in C++, i.e. it does not need to be generated.");
         @property[descriptor](type=string; usage=class; desc="A 'true'/'false' value specifies whether to generate descriptor class; special value 'readonly' requests generating a read-only descriptor.");
+        @property[castFunction](type=bool; usage=class; desc="If false: Do not specialize the fromAnyPtr<T>(any_ptr) function for this class. Useful for preventing compile errors if the function already exists, e.g. in hand-written form, or generated for another type (think aliased typedefs).");
         @property[omitGetVerb](type=bool; usage=class; desc="If true: Drop the 'get' verb from the names of getter methods.");
         @property[fieldNameSuffix](type=string; usage=class; desc="Suffix to append to the names of data members.");
         @property[beforeChange](type=string; usage=class; desc="Method to be called before mutator code (in setters, non-const getters, operator=, etc.).");
@@ -357,6 +359,7 @@ void MsgCompiler::generateCode(MsgFileElement *fileElement)
     }
 
     // generate classes, C++ blocks, etc.
+    std::vector<ClassInfo*> types;
     for (ASTNode *child = fileElement->getFirstChild(); child; child = child->getNextSibling()) {
         switch (child->getTagCode()) {
             case MSG_NAMESPACE: {
@@ -366,6 +369,7 @@ void MsgCompiler::generateCode(MsgFileElement *fileElement)
                 NamespaceElement *nsElem = check_and_cast<NamespaceElement *>(child);
                 currentNamespace = nsElem->getName();
                 codegen.generateNamespaceBegin(currentNamespace);
+                codegen.generateTemplates();
                 break;
             }
 
@@ -402,6 +406,7 @@ void MsgCompiler::generateCode(MsgFileElement *fileElement)
             case MSG_PACKET: {
                 std::string qname = prefixWithNamespace(child->getAttribute(ATT_NAME), currentNamespace);
                 ClassInfo& classInfo = typeTable.getClassInfo(qname);
+                types.push_back(&classInfo);
                 analyzer.ensureAnalyzed(classInfo);
                 analyzer.ensureFieldsAnalyzed(classInfo);
                 if (errors->containsError())
@@ -423,6 +428,19 @@ void MsgCompiler::generateCode(MsgFileElement *fileElement)
 
     if (!currentNamespace.empty())
         codegen.generateNamespaceEnd(currentNamespace);
+
+    // generate cast functions from/to any_ptr
+    codegen.generateNamespaceBegin("omnetpp");
+    for (ClassInfo *classInfo: types) {
+        if (classInfo->generateCastFunction) {
+            int numBases = (classInfo->baseClass.empty() ? 0 : 1) + classInfo->implementsQNames.size();
+            if (numBases != 1)  // for numBases >= 2, we must generate one to avoid ambiguity among toAnytPtr() functions for its base classes
+                codegen.generateToAnyPtr(*classInfo);
+            codegen.generateFromAnyPtr(*classInfo, opts.exportDef);
+        }
+    }
+    codegen.generateNamespaceEnd("omnetpp");
+
     codegen.generateEpilog();
 }
 

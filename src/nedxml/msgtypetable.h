@@ -163,6 +163,7 @@ class NEDXML_API MsgTypeTable
         bool customize;                // from @customize
         bool omitGetVerb;              // from @omitGetVerb
         bool isClass;                  // true=class, false=struct
+        bool isPolymorphic;            // whether the type is polymorphic (has virtual member functions)
         bool iscObject;                // whether type is subclassed from cObject
         bool iscNamedObject;           // whether type is subclassed from cNamedObject
         bool iscOwnedObject;           // whether type is subclassed from cOwnedObject
@@ -172,6 +173,7 @@ class NEDXML_API MsgTypeTable
         bool supportsPtr;              // whether type supports creating a pointer (or pointer array) from it
         std::string namespaceName;
         std::string className;         // name of actual C++ class or struct generated (<name>_Base when @customize is present)
+        std::string classQName;        // className, but fully qualified
         std::string realClass;         // name of intended C++ class, usually the same as <name>
         std::string baseClass;         // C++ base class
         std::string descriptorClass;   // name of C++ descriptor class to be generated
@@ -183,8 +185,10 @@ class NEDXML_API MsgTypeTable
         bool generateClass = true;
         bool generateDescriptor = true;
         bool generateSettersInDescriptor = true;
+        bool generateCastFunction = false;
 
-        StringVector implements;       // values from @implements
+        std::vector<std::string> rootClasses; // root(s) of its C++ class hierarchy
+        StringVector implementsQNames;       // qnames of additional base classes, from @implements property
         std::string beforeChange;      // @beforeChange; method to be called before mutator methods
         std::string str;               // @str; expression to be returned from str() method
 

@@ -101,6 +101,7 @@ class NEDXML_API MsgAnalyzer
     static constexpr const char* PROP_BYVALUE = "byValue";
     static constexpr const char* PROP_SUPPORTSPTR = "supportsPtr";
     static constexpr const char* PROP_SUBCLASSABLE = "subclassable";
+    static constexpr const char* PROP_POLYMORPHIC = "polymorphic";
     static constexpr const char* PROP_DEFAULTVALUE = "defaultValue";
     static constexpr const char* PROP_CPPTYPE = "cppType";
     static constexpr const char* PROP_ARGTYPE = "argType";
@@ -111,6 +112,7 @@ class NEDXML_API MsgAnalyzer
     static constexpr const char* PROP_CLONE = "clone";
     static constexpr const char* PROP_EXISTINGCLASS = "existingClass";
     static constexpr const char* PROP_DESCRIPTOR = "descriptor";
+    static constexpr const char* PROP_CASTFUNCTION = "castFunction";
     static constexpr const char* PROP_OMITGETVERB = "omitGetVerb";
     static constexpr const char* PROP_FIELDNAMESUFFIX = "fieldNameSuffix";
     static constexpr const char* PROP_BEFORECHANGE = "beforeChange";
