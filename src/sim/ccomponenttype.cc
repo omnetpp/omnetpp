@@ -369,12 +369,12 @@ cModule *cModuleType::instantiateModuleClass(const char *className)
     return module;
 }
 
-cModule *cModuleType::createScheduleInit(const char *moduleName, cModule *parentModule)
+cModule *cModuleType::createScheduleInit(const char *name, cModule *parentModule, int index)
 {
     if (!parentModule)
         throw cRuntimeError("createScheduleInit(): Parent module pointer cannot be nullptr "
-                            "when creating module named '%s' of type %s", moduleName, getFullName());
-    cModule *module = create(moduleName, parentModule);
+                            "when creating module named '%s' of type %s", name, getFullName());
+    cModule *module = create(name, parentModule, index);
     module->finalizeParameters();
     module->buildInside();
     module->scheduleStart(getSimulation()->getSimTime());
