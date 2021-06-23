@@ -720,7 +720,7 @@ cGate *cModule::gate(int id)
 
 #undef ENSURE
 
-cGate *cModule::addGate(const char *gatename, cGate::Type type, bool isVector)
+cGate *cModule::addGate(const char *gatename, cGate::Type type)
 {
     char suffix;
     if (findGateDesc(gatename, suffix) >= 0)
@@ -734,31 +734,28 @@ cGate *cModule::addGate(const char *gatename, cGate::Type type, bool isVector)
         tmp.module = this;
         tmp.gateName = gatename;
         tmp.gateType = type;
-        tmp.isVector = isVector;
+        tmp.isVector = false;
         emit(PRE_MODEL_CHANGE, &tmp);
     }
 
     // create desc for new gate (or gate vector)
-    cGate::Desc *desc = addGateDesc(gatename, type, isVector);
+    cGate::Desc *desc = addGateDesc(gatename, type, false);
     desc->owner = this;
 
     // if scalar gate, create gate object(s); gate vectors are created with size 0.
-    cGate *result = nullptr;
-    if (!isVector) {
-        cGate *newGate;
-        if (type != cGate::OUTPUT) {  // that is, INPUT or INOUT
-            newGate = createGateObject(cGate::INPUT);
-            desc->setInputGate(newGate);
-            EVCB.gateCreated(newGate);
-        }
-        if (type != cGate::INPUT) {  // that is, OUTPUT or INOUT
-            newGate = createGateObject(cGate::OUTPUT);
-            desc->setOutputGate(newGate);
-            EVCB.gateCreated(newGate);
-        }
-        if (type != cGate::INOUT)
-            result = newGate;
+    cGate *newGate;
+    if (type != cGate::OUTPUT) {  // that is, INPUT or INOUT
+        newGate = createGateObject(cGate::INPUT);
+        desc->setInputGate(newGate);
+        EVCB.gateCreated(newGate);
     }
+    if (type != cGate::INPUT) {  // that is, OUTPUT or INOUT
+        newGate = createGateObject(cGate::OUTPUT);
+        desc->setOutputGate(newGate);
+        EVCB.gateCreated(newGate);
+    }
+    if (type == cGate::INOUT)
+        newGate = nullptr;
 
 #ifdef SIMFRONTEND_SUPPORT
     updateLastChangeSerial();
@@ -772,7 +769,62 @@ cGate *cModule::addGate(const char *gatename, cGate::Type type, bool isVector)
         emit(POST_MODEL_CHANGE, &tmp);
     }
 
-    return result;
+    return newGate;
+}
+
+void cModule::addGateVector(const char *gatename, cGate::Type type, int size)
+{
+    char suffix;
+    if (findGateDesc(gatename, suffix) >= 0)
+        throw cRuntimeError(this, "addGateVector(): Gate '%s' already present", gatename);
+    if (suffix)
+        throw cRuntimeError(this, "addGateVector(): Wrong gate name '%s', must not contain the '$i' or '$o' suffix", gatename);
+    if (size < 0)
+        throw cRuntimeError(this, "addGateVector(): Negative vector size (%d) requested for gate %s[]", size, gatename);
+    if (size > MAX_VECTORGATESIZE)
+        throw cRuntimeError(this, "addGateVector(): Vector size for gate %s[] too large (%d), limit is %d", gatename, size, MAX_VECTORGATESIZE);
+
+    // notify pre-change listeners
+    if (hasListeners(PRE_MODEL_CHANGE)) {
+        cPreGateAddNotification tmp;
+        tmp.module = this;
+        tmp.gateName = gatename;
+        tmp.gateType = type;
+        tmp.isVector = true;
+        tmp.size = size;
+        emit(PRE_MODEL_CHANGE, &tmp);
+    }
+
+    // create desc for new gate (or gate vector)
+    cGate::Desc *desc = addGateDesc(gatename, type, true);
+    desc->owner = this;
+    desc->vectorSize = size;
+
+    // create gates
+    if (type != cGate::OUTPUT) {
+        desc->input.gatev = new cGate*[size];
+        for (int i = 0; i < size; i++) {
+            cGate *newGate = createGateObject(cGate::INPUT);
+            desc->setInputGate(newGate, i);
+            EVCB.gateCreated(newGate);
+        }
+    }
+    if (type != cGate::INPUT) {
+        desc->output.gatev = new cGate*[size];
+        for (int i = 0; i < size; i++) {
+            cGate *newGate = createGateObject(cGate::OUTPUT);
+            desc->setOutputGate(newGate, i);
+            EVCB.gateCreated(newGate);
+        }
+    }
+
+    // notify post-change listeners
+    if (hasListeners(POST_MODEL_CHANGE)) {
+        cPostGateAddNotification tmp;
+        tmp.module = this;
+        tmp.gateName = gatename;
+        emit(POST_MODEL_CHANGE, &tmp);
+    }
 }
 
 static void reallocGatev(cGate **& v, int oldSize, int newSize)

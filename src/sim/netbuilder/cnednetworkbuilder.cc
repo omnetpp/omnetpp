@@ -290,9 +290,14 @@ void cNedNetworkBuilder::doGates(cModule *module, GatesElement *gatesNode)
 void cNedNetworkBuilder::doGate(cModule *module, GateElement *gateNode)
 {
     try {
-        // add gate if it's declared here
-        if (gateNode->getType() != GATETYPE_NONE)
-            module->addGate(gateNode->getName(), translateGateType(gateNode->getType()), gateNode->getIsVector());
+        if (gateNode->getType() != GATETYPE_NONE) {  // type=GATETYPE_NONE -> element refers to existing gate
+            const char *name = gateNode->getName();
+            cGate::Type type = translateGateType(gateNode->getType());
+            if (!gateNode->getIsVector())
+                module->addGate(name, type);
+            else
+                module->addGateVector(name, type, 0); // create with zero size initially, resize later
+        }
     }
     catch (std::exception& e) {
         updateOrRethrowException(e, gateNode);

@@ -21,16 +21,13 @@ static void printGates(cModule *mod, const char *gatename)
 }
 
 %activity:
-addGate("out", cGate::OUTPUT, true);
-setGateSize("out", 5);
+addGateVector("out", cGate::OUTPUT, 5);
 printGates(this, "out");
 
-addGate("in", cGate::INPUT, true);
-setGateSize("in", 1);
+addGateVector("in", cGate::INPUT, 1);
 printGates(this, "in");
 
-addGate("g", cGate::INOUT, true);
-setGateSize("g", 8);
+addGateVector("g", cGate::INOUT, 8);
 printGates(this, "g$i");
 printGates(this, "g$o");
 

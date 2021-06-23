@@ -63,7 +63,10 @@ void Node::createTestGate(const char *gatename, cGate::Type type, bool isVector)
 {
     EV << "creating " << gatename << (isVector?"[]":"") << "\n";
 
-    addGate(gatename, type, isVector);
+    if (!isVector)
+        addGate(gatename, type);
+    else
+        addGateVector(gatename, type, 0);
 
     if (!isVector)
         numGates += (type==cGate::INOUT) ? 2 : 1;

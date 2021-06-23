@@ -276,6 +276,7 @@ class SIM_API cPreGateAddNotification : public cModelChangeNotification
     const char *gateName;     ///< Name of the new gate or gate vector
     cGate::Type gateType;     ///< Type of the new gate or gate vector (INPUT, OUTPUT or INOUT)
     bool isVector;            ///< Whether a new gate or a gate vector will be added
+    int size;                 ///< If isVector=true: The gate vector size
 };
 
 /**

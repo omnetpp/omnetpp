@@ -484,16 +484,21 @@ class SIM_API cModule : public cComponent //implies noncopyable
     virtual void setNameAndIndex(const char *name, int index=-1);
 
     /**
-     * Adds a gate or gate vector to the module. Gate vectors are created with
-     * zero size. When the creation of a (non-vector) gate of type cGate::INOUT
-     * is requested, actually two gate objects will be created, "gatename$i"
-     * and "gatename$o". The specified gatename must not contain a "$i" or "$o"
-     * suffix itself.
+     * Adds a scalar gate of the given type to the module. If type is INOUT,
+     * two gate objects will be created, "gatename$i" and "gatename$o" (the
+     * specified gatename must not contain a "$i" or "$o" suffix itself).
      *
-     * CAUTION: The return value is only valid when a non-vector INPUT or OUTPUT
-     * gate was requested. nullptr gets returned for INOUT gates and gate vectors.
+     * Returns a pointer to the new gate if type is INPUT or OUTPUT, and nullptr
+     * if type is INOUT.
      */
-    virtual cGate *addGate(const char *gatename, cGate::Type type, bool isvector=false);
+    virtual cGate *addGate(const char *gatename, cGate::Type type);
+
+    /**
+     * Adds a gate vector of the given type and size to the module. If type is
+     * INOUT, two gate vectors will be created, "gatename$i[]" and "gatename$o[]"
+     * (the specified gatename must not contain a "$i" or "$o" suffix itself).
+     */
+    virtual void addGateVector(const char *gatename, cGate::Type type, int size);
 
     /**
      * Sets gate vector size. The specified gatename must not contain
