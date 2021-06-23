@@ -252,19 +252,37 @@ class SIM_API cModuleType : public cComponentType
     //@{
 
     /**
-     * Creates a module which is not element of a module vector.
-     * In addition to creating an object of the correct type,
-     * this function inserts the module into the simulation's data structure,
-     * and adds the parameters and gates specified in the NED declaration.
+     * Creates a submodule under the given parent module. If index is given,
+     * the module creates an element in a module vector; the module vector of
+     * the given name must already exist and must be sufficiently large (size>index).
+     *
+     * In addition to creating an object of the correct type, this function
+     * inserts the module into the simulation's data structure, and adds the
+     * parameters and gates specified in the NED declaration.
+     *
+     * After creation, the module still needs to go through a setup of several
+     * steps before it is ready to use. The full process is the following:
+     *
+     * <pre>
+     * cModule *module = create("foo", parentModule);
+     * [set parameters]
+     * module->finalizeParameters();
+     * [connect gates]
+     * module->buildInside();
+     * module->scheduleStart(simTime());
+     * module->callInitialize();
+     * </pre>
+     *
+     * As callInitialize() and some of the other functions perform the preceding
+     * steps if they are not yet done, the above code can be abbreviated to:
+     *
+     * <pre>
+     * cModule *module = create("foo", parentModule);
+     * [set parameters]
+     * module->callInitialize();
+     * </pre>
      */
-    virtual cModule *create(const char *name, cModule *parentmod);
-
-    /**
-     * Creates a module to be an element of a module vector.
-     * The last two arguments specify the vector size and the index
-     * of the new module within the vector.
-     */
-    virtual cModule *create(const char *name, cModule *parentmod, int index);
+    virtual cModule *create(const char *name, cModule *parentmod, int index=-1);
 
     /**
      * This is a convenience function to get a module up and running in one step.

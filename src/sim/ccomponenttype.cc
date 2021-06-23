@@ -280,11 +280,6 @@ cModuleType::cModuleType(const char *qname) : cComponentType(qname)
 {
 }
 
-cModule *cModuleType::create(const char *moduleName, cModule *parentModule)
-{
-    return create(moduleName, parentModule, -1);
-}
-
 cModule *cModuleType::create(const char *moduleName, cModule *parentModule, int index)
 {
     // set context type to "BUILD"
