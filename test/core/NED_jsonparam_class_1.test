@@ -12,7 +12,7 @@ network Test {
 
 %exitcode: 1
 %contains: stderr
-<!> Error: Cannot evaluate expression for parameter 'msg4': Cannot cast object (omnetpp::cQueue)obj3 to 'omnetpp::cMessage', the C++ type declared for the parameter
+<!> Error: Cannot assign parameter 'msg4': Cannot cast object (omnetpp::cQueue)obj3 to 'omnetpp::cMessage', the C++ type declared for the parameter
 
 %not-contains: stdout
 undisposed object

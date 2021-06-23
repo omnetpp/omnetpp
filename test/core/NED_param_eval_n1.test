@@ -22,4 +22,4 @@ network Test
 %exitcode: 1
 
 %contains-regex: stderr
-Cannot evaluate expression for parameter 'foo': readFile\(\): Cannot open .* for read -- at .*test\.ned:12
+Cannot assign parameter 'foo': readFile\(\): Cannot open .* for read -- at .*test\.ned:12

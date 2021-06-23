@@ -12,5 +12,5 @@ network Test
 %exitcode: 1
 
 %contains: stderr
-Cannot evaluate expression for parameter 'a': (Test)Test has no parameter named 'foo'
+Cannot assign parameter 'a': (Test)Test has no parameter named 'foo'
 

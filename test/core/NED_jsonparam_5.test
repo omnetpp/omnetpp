@@ -16,7 +16,7 @@ network Test {
 
 %exitcode: 1
 %contains: stderr
-<!> Error: Cannot evaluate expression for parameter 'bar': Object parameters may only hold objects they fully own, but object (omnetpp::cValueMap)map1 is already owned by a parameter named 'foo'
+<!> Error: Cannot assign parameter 'bar': Object parameters may only hold objects they fully own, but object (omnetpp::cValueMap)map1 is already owned by a parameter named 'foo'
 
 %not-contains: stdout
 undisposed object

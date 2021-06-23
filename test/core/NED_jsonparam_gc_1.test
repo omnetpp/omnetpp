@@ -35,53 +35,53 @@ for (auto p : { "b", "i", "d", "s", "x", "o" }) {
 
 
 %contains: stdout
-b = string([]) --> ERROR: Cannot evaluate expression for parameter 'b': Cannot cast from type string to bool
-b = string({}) --> ERROR: Cannot evaluate expression for parameter 'b': Cannot cast from type string to bool
-b = [] --> ERROR: Cannot evaluate expression for parameter 'b': Cannot cast from type object to bool
-b = [{},{},{}] --> ERROR: Cannot evaluate expression for parameter 'b': Cannot cast from type object to bool
-b = 3+cos([]) --> ERROR: Cannot evaluate expression for parameter 'b': cos(): Cannot cast '(omnetpp::cValueArray)array4' from type 'object' to 'double'
-b = 1+[] --> ERROR: Cannot evaluate expression for parameter 'b': operator '+': Numeric arguments expected, got integer and object
-b = {}+[] --> ERROR: Cannot evaluate expression for parameter 'b': operator '+': Numeric arguments expected, got object and object
+b = string([]) --> ERROR: Cannot assign parameter 'b': Cannot cast from type string to bool
+b = string({}) --> ERROR: Cannot assign parameter 'b': Cannot cast from type string to bool
+b = [] --> ERROR: Cannot assign parameter 'b': Cannot cast from type object to bool
+b = [{},{},{}] --> ERROR: Cannot assign parameter 'b': Cannot cast from type object to bool
+b = 3+cos([]) --> ERROR: Cannot assign parameter 'b': cos(): Cannot cast '(omnetpp::cValueArray)array4' from type 'object' to 'double'
+b = 1+[] --> ERROR: Cannot assign parameter 'b': operator '+': Numeric arguments expected, got integer and object
+b = {}+[] --> ERROR: Cannot assign parameter 'b': operator '+': Numeric arguments expected, got object and object
 
-i = string([]) --> ERROR: Cannot evaluate expression for parameter 'i': Cannot cast "[]" from type string to integer
-i = string({}) --> ERROR: Cannot evaluate expression for parameter 'i': Cannot cast "{}" from type string to integer
-i = [] --> ERROR: Cannot evaluate expression for parameter 'i': Cannot cast [] from type object to integer
-i = [{},{},{}] --> ERROR: Cannot evaluate expression for parameter 'i': Cannot cast [{}, {}, {}] from type object to integer
-i = 3+cos([]) --> ERROR: Cannot evaluate expression for parameter 'i': cos(): Cannot cast '(omnetpp::cValueArray)array10' from type 'object' to 'double'
-i = 1+[] --> ERROR: Cannot evaluate expression for parameter 'i': operator '+': Numeric arguments expected, got integer and object
-i = {}+[] --> ERROR: Cannot evaluate expression for parameter 'i': operator '+': Numeric arguments expected, got object and object
+i = string([]) --> ERROR: Cannot assign parameter 'i': Cannot cast "[]" from type string to integer
+i = string({}) --> ERROR: Cannot assign parameter 'i': Cannot cast "{}" from type string to integer
+i = [] --> ERROR: Cannot assign parameter 'i': Cannot cast [] from type object to integer
+i = [{},{},{}] --> ERROR: Cannot assign parameter 'i': Cannot cast [{}, {}, {}] from type object to integer
+i = 3+cos([]) --> ERROR: Cannot assign parameter 'i': cos(): Cannot cast '(omnetpp::cValueArray)array10' from type 'object' to 'double'
+i = 1+[] --> ERROR: Cannot assign parameter 'i': operator '+': Numeric arguments expected, got integer and object
+i = {}+[] --> ERROR: Cannot assign parameter 'i': operator '+': Numeric arguments expected, got object and object
 
-d = string([]) --> ERROR: Cannot evaluate expression for parameter 'd': Cannot cast "[]" from type string to double
-d = string({}) --> ERROR: Cannot evaluate expression for parameter 'd': Cannot cast "{}" from type string to double
-d = [] --> ERROR: Cannot evaluate expression for parameter 'd': Cannot cast [] from type object to double
-d = [{},{},{}] --> ERROR: Cannot evaluate expression for parameter 'd': Cannot cast [{}, {}, {}] from type object to double
-d = 3+cos([]) --> ERROR: Cannot evaluate expression for parameter 'd': cos(): Cannot cast '(omnetpp::cValueArray)array16' from type 'object' to 'double'
-d = 1+[] --> ERROR: Cannot evaluate expression for parameter 'd': operator '+': Numeric arguments expected, got integer and object
-d = {}+[] --> ERROR: Cannot evaluate expression for parameter 'd': operator '+': Numeric arguments expected, got object and object
+d = string([]) --> ERROR: Cannot assign parameter 'd': Cannot cast "[]" from type string to double
+d = string({}) --> ERROR: Cannot assign parameter 'd': Cannot cast "{}" from type string to double
+d = [] --> ERROR: Cannot assign parameter 'd': Cannot cast [] from type object to double
+d = [{},{},{}] --> ERROR: Cannot assign parameter 'd': Cannot cast [{}, {}, {}] from type object to double
+d = 3+cos([]) --> ERROR: Cannot assign parameter 'd': cos(): Cannot cast '(omnetpp::cValueArray)array16' from type 'object' to 'double'
+d = 1+[] --> ERROR: Cannot assign parameter 'd': operator '+': Numeric arguments expected, got integer and object
+d = {}+[] --> ERROR: Cannot assign parameter 'd': operator '+': Numeric arguments expected, got object and object
 
 s = string([]) --> "[]"
 s = string({}) --> "{}"
-s = [] --> ERROR: Cannot evaluate expression for parameter 's': Cannot cast from type object to string
-s = [{},{},{}] --> ERROR: Cannot evaluate expression for parameter 's': Cannot cast from type object to string
-s = 3+cos([]) --> ERROR: Cannot evaluate expression for parameter 's': cos(): Cannot cast '(omnetpp::cValueArray)array22' from type 'object' to 'double'
-s = 1+[] --> ERROR: Cannot evaluate expression for parameter 's': operator '+': Numeric arguments expected, got integer and object
-s = {}+[] --> ERROR: Cannot evaluate expression for parameter 's': operator '+': Numeric arguments expected, got object and object
+s = [] --> ERROR: Cannot assign parameter 's': Cannot cast from type object to string
+s = [{},{},{}] --> ERROR: Cannot assign parameter 's': Cannot cast from type object to string
+s = 3+cos([]) --> ERROR: Cannot assign parameter 's': cos(): Cannot cast '(omnetpp::cValueArray)array22' from type 'object' to 'double'
+s = 1+[] --> ERROR: Cannot assign parameter 's': operator '+': Numeric arguments expected, got integer and object
+s = {}+[] --> ERROR: Cannot assign parameter 's': operator '+': Numeric arguments expected, got object and object
 
-x = string([]) --> ERROR: Cannot evaluate expression for parameter 'x': Cannot cast from type string to XML
-x = string({}) --> ERROR: Cannot evaluate expression for parameter 'x': Cannot cast from type string to XML
-x = [] --> ERROR: Cannot evaluate expression for parameter 'x': check_and_cast(): Cannot cast (omnetpp::cValueArray*)Test..array26 to type 'omnetpp::cXMLElement *'
-x = [{},{},{}] --> ERROR: Cannot evaluate expression for parameter 'x': check_and_cast(): Cannot cast (omnetpp::cValueArray*)Test..array27 to type 'omnetpp::cXMLElement *'
-x = 3+cos([]) --> ERROR: Cannot evaluate expression for parameter 'x': cos(): Cannot cast '(omnetpp::cValueArray)array28' from type 'object' to 'double'
-x = 1+[] --> ERROR: Cannot evaluate expression for parameter 'x': operator '+': Numeric arguments expected, got integer and object
-x = {}+[] --> ERROR: Cannot evaluate expression for parameter 'x': operator '+': Numeric arguments expected, got object and object
+x = string([]) --> ERROR: Cannot assign parameter 'x': Cannot cast from type string to XML
+x = string({}) --> ERROR: Cannot assign parameter 'x': Cannot cast from type string to XML
+x = [] --> ERROR: Cannot assign parameter 'x': check_and_cast(): Cannot cast (omnetpp::cValueArray*)Test..array26 to type 'omnetpp::cXMLElement *'
+x = [{},{},{}] --> ERROR: Cannot assign parameter 'x': check_and_cast(): Cannot cast (omnetpp::cValueArray*)Test..array27 to type 'omnetpp::cXMLElement *'
+x = 3+cos([]) --> ERROR: Cannot assign parameter 'x': cos(): Cannot cast '(omnetpp::cValueArray)array28' from type 'object' to 'double'
+x = 1+[] --> ERROR: Cannot assign parameter 'x': operator '+': Numeric arguments expected, got integer and object
+x = {}+[] --> ERROR: Cannot assign parameter 'x': operator '+': Numeric arguments expected, got object and object
 
-o = string([]) --> ERROR: Cannot evaluate expression for parameter 'o': Cannot cast from type string to object
-o = string({}) --> ERROR: Cannot evaluate expression for parameter 'o': Cannot cast from type string to object
+o = string([]) --> ERROR: Cannot assign parameter 'o': Cannot cast from type string to object
+o = string({}) --> ERROR: Cannot assign parameter 'o': Cannot cast from type string to object
 o = [] --> (omnetpp::cValueArray)array32: []
 o = [{},{},{}] --> (omnetpp::cValueArray)array33: [{}, {}, {}]
-o = 3+cos([]) --> ERROR: Cannot evaluate expression for parameter 'o': cos(): Cannot cast '(omnetpp::cValueArray)array34' from type 'object' to 'double'
-o = 1+[] --> ERROR: Cannot evaluate expression for parameter 'o': operator '+': Numeric arguments expected, got integer and object
-o = {}+[] --> ERROR: Cannot evaluate expression for parameter 'o': operator '+': Numeric arguments expected, got object and object
+o = 3+cos([]) --> ERROR: Cannot assign parameter 'o': cos(): Cannot cast '(omnetpp::cValueArray)array34' from type 'object' to 'double'
+o = 1+[] --> ERROR: Cannot assign parameter 'o': operator '+': Numeric arguments expected, got integer and object
+o = {}+[] --> ERROR: Cannot assign parameter 'o': operator '+': Numeric arguments expected, got object and object
 
 %not-contains: stdout
 undisposed object

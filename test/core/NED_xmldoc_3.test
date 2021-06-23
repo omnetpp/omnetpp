@@ -61,5 +61,5 @@ void Simple::activity()
 %exitcode: 1
 
 %contains-regex: stderr
-Cannot evaluate expression for parameter 'xmlconfig': xmldoc\(\): Element "foo/nothing" in file ".*/test.xml" not found
+Cannot assign parameter 'xmlconfig': xmldoc\(\): Element "foo/nothing" in file ".*/test.xml" not found
 

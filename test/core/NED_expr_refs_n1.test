@@ -123,239 +123,239 @@ network = Test
 cmdenv-express-mode = false
 
 %contains: stdout
- ==> ERROR: Error in expression '' for parameter 'Test.tester.i': syntax error, unexpected $end
-foo ==> ERROR: Cannot evaluate expression for parameter 'i': (Tester)Test.tester has no parameter named 'foo'
+ ==> ERROR: Cannot assign '' to parameter 'Test.tester.i': syntax error, unexpected $end
+foo ==> ERROR: Cannot assign parameter 'i': (Tester)Test.tester has no parameter named 'foo'
 param ==> 1
-barm ==> ERROR: Cannot evaluate expression for parameter 'i': (Tester)Test.tester has no parameter named 'barm'
-barm.foo ==> ERROR: Cannot evaluate expression for parameter 'i': 'barm.foo': Submodule 'barm' not found in module (Tester)Test.tester
-barm.param ==> ERROR: Cannot evaluate expression for parameter 'i': 'barm.param': Submodule 'barm' not found in module (Tester)Test.tester
-barm[0] ==> ERROR: Error in expression 'barm[0]' for parameter 'Test.tester.i': Invalid parameter reference 'barm[0]'
-barm[0].foo ==> ERROR: Cannot evaluate expression for parameter 'i': 'barm[0].foo': Submodule 'barm[0]' not found in module (Tester)Test.tester
-barm[0].param ==> ERROR: Cannot evaluate expression for parameter 'i': 'barm[0].param': Submodule 'barm[0]' not found in module (Tester)Test.tester
-node ==> ERROR: Cannot evaluate expression for parameter 'i': (Tester)Test.tester has no parameter named 'node'
-node.foo ==> ERROR: Cannot evaluate expression for parameter 'i': 'node.foo': Submodule 'node' not found in module (Tester)Test.tester (did you mean 'parent.node'?)
-node.param ==> ERROR: Cannot evaluate expression for parameter 'i': 'node.param': Submodule 'node' not found in module (Tester)Test.tester (did you mean 'parent.node'?)
-nodes[0] ==> ERROR: Error in expression 'nodes[0]' for parameter 'Test.tester.i': Invalid parameter reference 'nodes[0]'
-nodes[0].foo ==> ERROR: Cannot evaluate expression for parameter 'i': 'nodes[0].foo': Submodule 'nodes[0]' not found in module (Tester)Test.tester (did you mean 'parent.nodes[0]'?)
-nodes[0].param ==> ERROR: Cannot evaluate expression for parameter 'i': 'nodes[0].param': Submodule 'nodes[0]' not found in module (Tester)Test.tester (did you mean 'parent.nodes[0]'?)
-this ==> ERROR: Error in expression 'this' for parameter 'Test.tester.i': Invalid parameter reference 'this'
-this.foo ==> ERROR: Cannot evaluate expression for parameter 'i': (Tester)Test.tester has no parameter named 'foo'
+barm ==> ERROR: Cannot assign parameter 'i': (Tester)Test.tester has no parameter named 'barm'
+barm.foo ==> ERROR: Cannot assign parameter 'i': 'barm.foo': Submodule 'barm' not found in module (Tester)Test.tester
+barm.param ==> ERROR: Cannot assign parameter 'i': 'barm.param': Submodule 'barm' not found in module (Tester)Test.tester
+barm[0] ==> ERROR: Cannot assign 'barm[0]' to parameter 'Test.tester.i': Invalid parameter reference 'barm[0]'
+barm[0].foo ==> ERROR: Cannot assign parameter 'i': 'barm[0].foo': Submodule 'barm[0]' not found in module (Tester)Test.tester
+barm[0].param ==> ERROR: Cannot assign parameter 'i': 'barm[0].param': Submodule 'barm[0]' not found in module (Tester)Test.tester
+node ==> ERROR: Cannot assign parameter 'i': (Tester)Test.tester has no parameter named 'node'
+node.foo ==> ERROR: Cannot assign parameter 'i': 'node.foo': Submodule 'node' not found in module (Tester)Test.tester (did you mean 'parent.node'?)
+node.param ==> ERROR: Cannot assign parameter 'i': 'node.param': Submodule 'node' not found in module (Tester)Test.tester (did you mean 'parent.node'?)
+nodes[0] ==> ERROR: Cannot assign 'nodes[0]' to parameter 'Test.tester.i': Invalid parameter reference 'nodes[0]'
+nodes[0].foo ==> ERROR: Cannot assign parameter 'i': 'nodes[0].foo': Submodule 'nodes[0]' not found in module (Tester)Test.tester (did you mean 'parent.nodes[0]'?)
+nodes[0].param ==> ERROR: Cannot assign parameter 'i': 'nodes[0].param': Submodule 'nodes[0]' not found in module (Tester)Test.tester (did you mean 'parent.nodes[0]'?)
+this ==> ERROR: Cannot assign 'this' to parameter 'Test.tester.i': Invalid parameter reference 'this'
+this.foo ==> ERROR: Cannot assign parameter 'i': (Tester)Test.tester has no parameter named 'foo'
 this.param ==> 1
-this.barm ==> ERROR: Cannot evaluate expression for parameter 'i': (Tester)Test.tester has no parameter named 'barm'
-this.barm.foo ==> ERROR: Cannot evaluate expression for parameter 'i': 'this.barm.foo': Submodule 'barm' not found in module (Tester)Test.tester
-this.barm.param ==> ERROR: Cannot evaluate expression for parameter 'i': 'this.barm.param': Submodule 'barm' not found in module (Tester)Test.tester
-this.barm[0] ==> ERROR: Error in expression 'this.barm[0]' for parameter 'Test.tester.i': Invalid parameter reference 'this.barm[0]'
-this.barm[0].foo ==> ERROR: Cannot evaluate expression for parameter 'i': 'this.barm[0].foo': Submodule 'barm[0]' not found in module (Tester)Test.tester
-this.barm[0].param ==> ERROR: Cannot evaluate expression for parameter 'i': 'this.barm[0].param': Submodule 'barm[0]' not found in module (Tester)Test.tester
-this.node ==> ERROR: Cannot evaluate expression for parameter 'i': (Tester)Test.tester has no parameter named 'node'
-this.node.foo ==> ERROR: Cannot evaluate expression for parameter 'i': 'this.node.foo': Submodule 'node' not found in module (Tester)Test.tester
-this.node.param ==> ERROR: Cannot evaluate expression for parameter 'i': 'this.node.param': Submodule 'node' not found in module (Tester)Test.tester
-this.nodes[0] ==> ERROR: Error in expression 'this.nodes[0]' for parameter 'Test.tester.i': Invalid parameter reference 'this.nodes[0]'
-this.nodes[0].foo ==> ERROR: Cannot evaluate expression for parameter 'i': 'this.nodes[0].foo': Submodule 'nodes[0]' not found in module (Tester)Test.tester
-this.nodes[0].param ==> ERROR: Cannot evaluate expression for parameter 'i': 'this.nodes[0].param': Submodule 'nodes[0]' not found in module (Tester)Test.tester
-parent ==> ERROR: Error in expression 'parent' for parameter 'Test.tester.i': Invalid parameter reference 'parent'
-parent.foo ==> ERROR: Cannot evaluate expression for parameter 'i': (Test)Test has no parameter named 'foo'
+this.barm ==> ERROR: Cannot assign parameter 'i': (Tester)Test.tester has no parameter named 'barm'
+this.barm.foo ==> ERROR: Cannot assign parameter 'i': 'this.barm.foo': Submodule 'barm' not found in module (Tester)Test.tester
+this.barm.param ==> ERROR: Cannot assign parameter 'i': 'this.barm.param': Submodule 'barm' not found in module (Tester)Test.tester
+this.barm[0] ==> ERROR: Cannot assign 'this.barm[0]' to parameter 'Test.tester.i': Invalid parameter reference 'this.barm[0]'
+this.barm[0].foo ==> ERROR: Cannot assign parameter 'i': 'this.barm[0].foo': Submodule 'barm[0]' not found in module (Tester)Test.tester
+this.barm[0].param ==> ERROR: Cannot assign parameter 'i': 'this.barm[0].param': Submodule 'barm[0]' not found in module (Tester)Test.tester
+this.node ==> ERROR: Cannot assign parameter 'i': (Tester)Test.tester has no parameter named 'node'
+this.node.foo ==> ERROR: Cannot assign parameter 'i': 'this.node.foo': Submodule 'node' not found in module (Tester)Test.tester
+this.node.param ==> ERROR: Cannot assign parameter 'i': 'this.node.param': Submodule 'node' not found in module (Tester)Test.tester
+this.nodes[0] ==> ERROR: Cannot assign 'this.nodes[0]' to parameter 'Test.tester.i': Invalid parameter reference 'this.nodes[0]'
+this.nodes[0].foo ==> ERROR: Cannot assign parameter 'i': 'this.nodes[0].foo': Submodule 'nodes[0]' not found in module (Tester)Test.tester
+this.nodes[0].param ==> ERROR: Cannot assign parameter 'i': 'this.nodes[0].param': Submodule 'nodes[0]' not found in module (Tester)Test.tester
+parent ==> ERROR: Cannot assign 'parent' to parameter 'Test.tester.i': Invalid parameter reference 'parent'
+parent.foo ==> ERROR: Cannot assign parameter 'i': (Test)Test has no parameter named 'foo'
 parent.param ==> 0
-parent.barm ==> ERROR: Cannot evaluate expression for parameter 'i': (Test)Test has no parameter named 'barm'
-parent.barm.foo ==> ERROR: Cannot evaluate expression for parameter 'i': 'parent.barm.foo': Submodule 'barm' not found in module (Test)Test
-parent.barm.param ==> ERROR: Cannot evaluate expression for parameter 'i': 'parent.barm.param': Submodule 'barm' not found in module (Test)Test
-parent.barm[0] ==> ERROR: Error in expression 'parent.barm[0]' for parameter 'Test.tester.i': Invalid parameter reference 'parent.barm[0]'
-parent.barm[0].foo ==> ERROR: Cannot evaluate expression for parameter 'i': 'parent.barm[0].foo': Submodule 'barm[0]' not found in module (Test)Test
-parent.barm[0].param ==> ERROR: Cannot evaluate expression for parameter 'i': 'parent.barm[0].param': Submodule 'barm[0]' not found in module (Test)Test
-parent.node ==> ERROR: Cannot evaluate expression for parameter 'i': (Test)Test has no parameter named 'node'
-parent.node.foo ==> ERROR: Cannot evaluate expression for parameter 'i': 'parent.node.foo': (omnetpp::cModule)Test.node: Unknown parameter 'foo'
+parent.barm ==> ERROR: Cannot assign parameter 'i': (Test)Test has no parameter named 'barm'
+parent.barm.foo ==> ERROR: Cannot assign parameter 'i': 'parent.barm.foo': Submodule 'barm' not found in module (Test)Test
+parent.barm.param ==> ERROR: Cannot assign parameter 'i': 'parent.barm.param': Submodule 'barm' not found in module (Test)Test
+parent.barm[0] ==> ERROR: Cannot assign 'parent.barm[0]' to parameter 'Test.tester.i': Invalid parameter reference 'parent.barm[0]'
+parent.barm[0].foo ==> ERROR: Cannot assign parameter 'i': 'parent.barm[0].foo': Submodule 'barm[0]' not found in module (Test)Test
+parent.barm[0].param ==> ERROR: Cannot assign parameter 'i': 'parent.barm[0].param': Submodule 'barm[0]' not found in module (Test)Test
+parent.node ==> ERROR: Cannot assign parameter 'i': (Test)Test has no parameter named 'node'
+parent.node.foo ==> ERROR: Cannot assign parameter 'i': 'parent.node.foo': (omnetpp::cModule)Test.node: Unknown parameter 'foo'
 parent.node.param ==> 2
-parent.nodes[0] ==> ERROR: Error in expression 'parent.nodes[0]' for parameter 'Test.tester.i': Invalid parameter reference 'parent.nodes[0]'
-parent.nodes[0].foo ==> ERROR: Cannot evaluate expression for parameter 'i': 'parent.nodes[0].foo': (omnetpp::cModule)Test.nodes[0]: Unknown parameter 'foo'
+parent.nodes[0] ==> ERROR: Cannot assign 'parent.nodes[0]' to parameter 'Test.tester.i': Invalid parameter reference 'parent.nodes[0]'
+parent.nodes[0].foo ==> ERROR: Cannot assign parameter 'i': 'parent.nodes[0].foo': (omnetpp::cModule)Test.nodes[0]: Unknown parameter 'foo'
 parent.nodes[0].param ==> 3
-foo.foo.foo ==> ERROR: Error in expression 'foo.foo.foo' for parameter 'Test.tester.i': Invalid parameter reference 'foo.foo.foo'
-parent.foo.foo.foo ==> ERROR: Error in expression 'parent.foo.foo.foo' for parameter 'Test.tester.i': Invalid parameter reference 'parent.foo.foo.foo'
+foo.foo.foo ==> ERROR: Cannot assign 'foo.foo.foo' to parameter 'Test.tester.i': Invalid parameter reference 'foo.foo.foo'
+parent.foo.foo.foo ==> ERROR: Cannot assign 'parent.foo.foo.foo' to parameter 'Test.tester.i': Invalid parameter reference 'parent.foo.foo.foo'
 
-index ==> ERROR: Cannot evaluate expression for parameter 'i': 'index': getIndex(): Module is not member of a submodule vector
-barm.index ==> ERROR: Error in expression 'barm.index' for parameter 'Test.tester.i': Invalid use of 'index' in 'barm.index'
-barm[0].index ==> ERROR: Error in expression 'barm[0].index' for parameter 'Test.tester.i': Invalid use of 'index' in 'barm[0].index'
-node.index ==> ERROR: Error in expression 'node.index' for parameter 'Test.tester.i': Invalid use of 'index' in 'node.index'
-nodes[0].index ==> ERROR: Error in expression 'nodes[0].index' for parameter 'Test.tester.i': Invalid use of 'index' in 'nodes[0].index'
-this.index ==> ERROR: Cannot evaluate expression for parameter 'i': 'this.index': getIndex(): Module is not member of a submodule vector
-this.barm.index ==> ERROR: Error in expression 'this.barm.index' for parameter 'Test.tester.i': Invalid use of 'index' in 'this.barm.index'
-this.barm[0].index ==> ERROR: Error in expression 'this.barm[0].index' for parameter 'Test.tester.i': Invalid use of 'index' in 'this.barm[0].index'
-this.node.index ==> ERROR: Error in expression 'this.node.index' for parameter 'Test.tester.i': Invalid use of 'index' in 'this.node.index'
-this.nodes[0].index ==> ERROR: Error in expression 'this.nodes[0].index' for parameter 'Test.tester.i': Invalid use of 'index' in 'this.nodes[0].index'
-parent.index ==> ERROR: Cannot evaluate expression for parameter 'i': 'parent.index': (omnetpp::cModule)Test: getIndex(): Module is not member of a submodule vector
-parent.barm.index ==> ERROR: Error in expression 'parent.barm.index' for parameter 'Test.tester.i': Invalid use of 'index' in 'parent.barm.index'
-parent.barm[0].index ==> ERROR: Error in expression 'parent.barm[0].index' for parameter 'Test.tester.i': Invalid use of 'index' in 'parent.barm[0].index'
-parent.node.index ==> ERROR: Error in expression 'parent.node.index' for parameter 'Test.tester.i': Invalid use of 'index' in 'parent.node.index'
-parent.nodes[0].index ==> ERROR: Error in expression 'parent.nodes[0].index' for parameter 'Test.tester.i': Invalid use of 'index' in 'parent.nodes[0].index'
+index ==> ERROR: Cannot assign parameter 'i': 'index': getIndex(): Module is not member of a submodule vector
+barm.index ==> ERROR: Cannot assign 'barm.index' to parameter 'Test.tester.i': Invalid use of 'index' in 'barm.index'
+barm[0].index ==> ERROR: Cannot assign 'barm[0].index' to parameter 'Test.tester.i': Invalid use of 'index' in 'barm[0].index'
+node.index ==> ERROR: Cannot assign 'node.index' to parameter 'Test.tester.i': Invalid use of 'index' in 'node.index'
+nodes[0].index ==> ERROR: Cannot assign 'nodes[0].index' to parameter 'Test.tester.i': Invalid use of 'index' in 'nodes[0].index'
+this.index ==> ERROR: Cannot assign parameter 'i': 'this.index': getIndex(): Module is not member of a submodule vector
+this.barm.index ==> ERROR: Cannot assign 'this.barm.index' to parameter 'Test.tester.i': Invalid use of 'index' in 'this.barm.index'
+this.barm[0].index ==> ERROR: Cannot assign 'this.barm[0].index' to parameter 'Test.tester.i': Invalid use of 'index' in 'this.barm[0].index'
+this.node.index ==> ERROR: Cannot assign 'this.node.index' to parameter 'Test.tester.i': Invalid use of 'index' in 'this.node.index'
+this.nodes[0].index ==> ERROR: Cannot assign 'this.nodes[0].index' to parameter 'Test.tester.i': Invalid use of 'index' in 'this.nodes[0].index'
+parent.index ==> ERROR: Cannot assign parameter 'i': 'parent.index': (omnetpp::cModule)Test: getIndex(): Module is not member of a submodule vector
+parent.barm.index ==> ERROR: Cannot assign 'parent.barm.index' to parameter 'Test.tester.i': Invalid use of 'index' in 'parent.barm.index'
+parent.barm[0].index ==> ERROR: Cannot assign 'parent.barm[0].index' to parameter 'Test.tester.i': Invalid use of 'index' in 'parent.barm[0].index'
+parent.node.index ==> ERROR: Cannot assign 'parent.node.index' to parameter 'Test.tester.i': Invalid use of 'index' in 'parent.node.index'
+parent.nodes[0].index ==> ERROR: Cannot assign 'parent.nodes[0].index' to parameter 'Test.tester.i': Invalid use of 'index' in 'parent.nodes[0].index'
 
 typename ==> "Tester"
-barm.typename ==> ERROR: Error in expression 'barm.typename' for parameter 'Test.tester.s': Invalid use of 'typename' in 'barm.typename'
-barm[0].typename ==> ERROR: Error in expression 'barm[0].typename' for parameter 'Test.tester.s': Invalid use of 'typename' in 'barm[0].typename'
-node.typename ==> ERROR: Error in expression 'node.typename' for parameter 'Test.tester.s': Invalid use of 'typename' in 'node.typename'
-nodes[0].typename ==> ERROR: Error in expression 'nodes[0].typename' for parameter 'Test.tester.s': Invalid use of 'typename' in 'nodes[0].typename'
+barm.typename ==> ERROR: Cannot assign 'barm.typename' to parameter 'Test.tester.s': Invalid use of 'typename' in 'barm.typename'
+barm[0].typename ==> ERROR: Cannot assign 'barm[0].typename' to parameter 'Test.tester.s': Invalid use of 'typename' in 'barm[0].typename'
+node.typename ==> ERROR: Cannot assign 'node.typename' to parameter 'Test.tester.s': Invalid use of 'typename' in 'node.typename'
+nodes[0].typename ==> ERROR: Cannot assign 'nodes[0].typename' to parameter 'Test.tester.s': Invalid use of 'typename' in 'nodes[0].typename'
 this.typename ==> "Tester"
-this.barm.typename ==> ERROR: Error in expression 'this.barm.typename' for parameter 'Test.tester.s': Invalid use of 'typename' in 'this.barm.typename'
-this.barm[0].typename ==> ERROR: Error in expression 'this.barm[0].typename' for parameter 'Test.tester.s': Invalid use of 'typename' in 'this.barm[0].typename'
-this.node.typename ==> ERROR: Error in expression 'this.node.typename' for parameter 'Test.tester.s': Invalid use of 'typename' in 'this.node.typename'
-this.nodes[0].typename ==> ERROR: Error in expression 'this.nodes[0].typename' for parameter 'Test.tester.s': Invalid use of 'typename' in 'this.nodes[0].typename'
+this.barm.typename ==> ERROR: Cannot assign 'this.barm.typename' to parameter 'Test.tester.s': Invalid use of 'typename' in 'this.barm.typename'
+this.barm[0].typename ==> ERROR: Cannot assign 'this.barm[0].typename' to parameter 'Test.tester.s': Invalid use of 'typename' in 'this.barm[0].typename'
+this.node.typename ==> ERROR: Cannot assign 'this.node.typename' to parameter 'Test.tester.s': Invalid use of 'typename' in 'this.node.typename'
+this.nodes[0].typename ==> ERROR: Cannot assign 'this.nodes[0].typename' to parameter 'Test.tester.s': Invalid use of 'typename' in 'this.nodes[0].typename'
 parent.typename ==> "Test"
-parent.barm.typename ==> ERROR: Error in expression 'parent.barm.typename' for parameter 'Test.tester.s': Invalid use of 'typename' in 'parent.barm.typename'
-parent.barm[0].typename ==> ERROR: Error in expression 'parent.barm[0].typename' for parameter 'Test.tester.s': Invalid use of 'typename' in 'parent.barm[0].typename'
-parent.node.typename ==> ERROR: Error in expression 'parent.node.typename' for parameter 'Test.tester.s': Invalid use of 'typename' in 'parent.node.typename'
-parent.nodes[0].typename ==> ERROR: Error in expression 'parent.nodes[0].typename' for parameter 'Test.tester.s': Invalid use of 'typename' in 'parent.nodes[0].typename'
+parent.barm.typename ==> ERROR: Cannot assign 'parent.barm.typename' to parameter 'Test.tester.s': Invalid use of 'typename' in 'parent.barm.typename'
+parent.barm[0].typename ==> ERROR: Cannot assign 'parent.barm[0].typename' to parameter 'Test.tester.s': Invalid use of 'typename' in 'parent.barm[0].typename'
+parent.node.typename ==> ERROR: Cannot assign 'parent.node.typename' to parameter 'Test.tester.s': Invalid use of 'typename' in 'parent.node.typename'
+parent.nodes[0].typename ==> ERROR: Cannot assign 'parent.nodes[0].typename' to parameter 'Test.tester.s': Invalid use of 'typename' in 'parent.nodes[0].typename'
 
-sizeof() ==> ERROR: Error in expression 'sizeof()' for parameter 'Test.tester.i': sizeof() expects one argument
-sizeof(foo) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(foo)': Module (Tester)Test.tester has no gate vector or submodule vector named 'foo'
-sizeof(g) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(g)': Module (Tester)Test.tester has no gate vector or submodule vector named 'g'
-sizeof(gg) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(gg)': Module (Tester)Test.tester has no gate vector or submodule vector named 'gg'
-sizeof(barm) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(barm)': Module (Tester)Test.tester has no gate vector or submodule vector named 'barm'
-sizeof(barm.foo) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(barm.foo)': Submodule 'barm' not found in module (Tester)Test.tester
-sizeof(barm.g) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(barm.g)': Submodule 'barm' not found in module (Tester)Test.tester
-sizeof(barm.gg) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(barm.gg)': Submodule 'barm' not found in module (Tester)Test.tester
-sizeof(barm[0]) ==> ERROR: Error in expression 'sizeof(barm[0])' for parameter 'Test.tester.i': Illegal argument for sizeof() in 'sizeof(barm[0])'
-sizeof(barm[0].foo) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(barm[0].foo)': Submodule 'barm[0]' not found in module (Tester)Test.tester
-sizeof(barm[0].g) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(barm[0].g)': Submodule 'barm[0]' not found in module (Tester)Test.tester
-sizeof(barm[0].gg) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(barm[0].gg)': Submodule 'barm[0]' not found in module (Tester)Test.tester
-sizeof(node) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(node)': Module (Tester)Test.tester has no gate vector or submodule vector named 'node'
-sizeof(node.foo) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(node.foo)': Submodule 'node' not found in module (Tester)Test.tester (did you mean 'parent.node'?)
-sizeof(node.g) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(node.g)': Submodule 'node' not found in module (Tester)Test.tester (did you mean 'parent.node'?)
-sizeof(node.gg) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(node.gg)': Submodule 'node' not found in module (Tester)Test.tester (did you mean 'parent.node'?)
-sizeof(nodes[0]) ==> ERROR: Error in expression 'sizeof(nodes[0])' for parameter 'Test.tester.i': Illegal argument for sizeof() in 'sizeof(nodes[0])'
-sizeof(nodes[0].foo) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(nodes[0].foo)': Submodule 'nodes[0]' not found in module (Tester)Test.tester (did you mean 'parent.nodes[0]'?)
-sizeof(nodes[0].g) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(nodes[0].g)': Submodule 'nodes[0]' not found in module (Tester)Test.tester (did you mean 'parent.nodes[0]'?)
-sizeof(nodes[0].gg) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(nodes[0].gg)': Submodule 'nodes[0]' not found in module (Tester)Test.tester (did you mean 'parent.nodes[0]'?)
-sizeof(nodes) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(nodes)': Module (Tester)Test.tester has no gate vector or submodule vector named 'nodes'
-sizeof(nodes.foo) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(nodes.foo)': Submodule 'nodes' not found in module (Tester)Test.tester (did you mean 'parent.nodes'?)
-sizeof(nodes.g) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(nodes.g)': Submodule 'nodes' not found in module (Tester)Test.tester (did you mean 'parent.nodes'?)
-sizeof(nodes.gg) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(nodes.gg)': Submodule 'nodes' not found in module (Tester)Test.tester (did you mean 'parent.nodes'?)
-sizeof(node[0]) ==> ERROR: Error in expression 'sizeof(node[0])' for parameter 'Test.tester.i': Illegal argument for sizeof() in 'sizeof(node[0])'
-sizeof(node[0].foo) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(node[0].foo)': Submodule 'node[0]' not found in module (Tester)Test.tester (did you mean 'parent.node[0]'?)
-sizeof(node[0].g) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(node[0].g)': Submodule 'node[0]' not found in module (Tester)Test.tester (did you mean 'parent.node[0]'?)
-sizeof(node[0].gg) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(node[0].gg)': Submodule 'node[0]' not found in module (Tester)Test.tester (did you mean 'parent.node[0]'?)
-sizeof(this) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(this.)': Module (Tester)Test.tester is not part of a submodule vector
-sizeof(this.foo) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(this.foo)': Module (Tester)Test.tester has no gate vector or submodule vector named 'foo'
-sizeof(this.g) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(this.g)': Module (Tester)Test.tester has no gate vector or submodule vector named 'g'
-sizeof(this.gg) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(this.gg)': Module (Tester)Test.tester has no gate vector or submodule vector named 'gg'
-sizeof(this.barm) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(this.barm)': Module (Tester)Test.tester has no gate vector or submodule vector named 'barm'
-sizeof(this.barm.foo) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(this.barm.foo)': Submodule 'barm' not found in module (Tester)Test.tester
-sizeof(this.barm.g) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(this.barm.g)': Submodule 'barm' not found in module (Tester)Test.tester
-sizeof(this.barm.gg) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(this.barm.gg)': Submodule 'barm' not found in module (Tester)Test.tester
-sizeof(this.barm[0]) ==> ERROR: Error in expression 'sizeof(this.barm[0])' for parameter 'Test.tester.i': Illegal argument for sizeof() in 'sizeof(this.barm[0])'
-sizeof(this.barm[0].foo) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(this.barm[0].foo)': Submodule 'barm[0]' not found in module (Tester)Test.tester
-sizeof(this.barm[0].g) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(this.barm[0].g)': Submodule 'barm[0]' not found in module (Tester)Test.tester
-sizeof(this.barm[0].gg) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(this.barm[0].gg)': Submodule 'barm[0]' not found in module (Tester)Test.tester
-sizeof(this.node) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(this.node)': Module (Tester)Test.tester has no gate vector or submodule vector named 'node'
-sizeof(this.node.foo) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(this.node.foo)': Submodule 'node' not found in module (Tester)Test.tester
-sizeof(this.node.g) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(this.node.g)': Submodule 'node' not found in module (Tester)Test.tester
-sizeof(this.node.gg) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(this.node.gg)': Submodule 'node' not found in module (Tester)Test.tester
-sizeof(this.nodes[0]) ==> ERROR: Error in expression 'sizeof(this.nodes[0])' for parameter 'Test.tester.i': Illegal argument for sizeof() in 'sizeof(this.nodes[0])'
-sizeof(this.nodes[0].foo) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(this.nodes[0].foo)': Submodule 'nodes[0]' not found in module (Tester)Test.tester
-sizeof(this.nodes[0].g) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(this.nodes[0].g)': Submodule 'nodes[0]' not found in module (Tester)Test.tester
-sizeof(this.nodes[0].gg) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(this.nodes[0].gg)': Submodule 'nodes[0]' not found in module (Tester)Test.tester
-sizeof(this.nodes) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(this.nodes)': Module (Tester)Test.tester has no gate vector or submodule vector named 'nodes'
-sizeof(this.nodes.foo) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(this.nodes.foo)': Submodule 'nodes' not found in module (Tester)Test.tester
-sizeof(this.nodes.g) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(this.nodes.g)': Submodule 'nodes' not found in module (Tester)Test.tester
-sizeof(this.nodes.gg) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(this.nodes.gg)': Submodule 'nodes' not found in module (Tester)Test.tester
-sizeof(this.node[0]) ==> ERROR: Error in expression 'sizeof(this.node[0])' for parameter 'Test.tester.i': Illegal argument for sizeof() in 'sizeof(this.node[0])'
-sizeof(this.node[0].foo) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(this.node[0].foo)': Submodule 'node[0]' not found in module (Tester)Test.tester
-sizeof(this.node[0].g) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(this.node[0].g)': Submodule 'node[0]' not found in module (Tester)Test.tester
-sizeof(this.node[0].gg) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(this.node[0].gg)': Submodule 'node[0]' not found in module (Tester)Test.tester
-sizeof(parent) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(parent.)': Module (Test)Test is not part of a submodule vector
-sizeof(parent.foo) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(parent.foo)': Module (Test)Test has no gate vector or submodule vector named 'foo'
-sizeof(parent.g) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(parent.g)': Module (Test)Test has no gate vector or submodule vector named 'g'
-sizeof(parent.gg) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(parent.gg)': Module (Test)Test has no gate vector or submodule vector named 'gg'
-sizeof(parent.barm) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(parent.barm)': Module (Test)Test has no gate vector or submodule vector named 'barm'
-sizeof(parent.barm.foo) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(parent.barm.foo)': Submodule 'barm' not found in module (Test)Test
-sizeof(parent.barm.g) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(parent.barm.g)': Submodule 'barm' not found in module (Test)Test
-sizeof(parent.barm.gg) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(parent.barm.gg)': Submodule 'barm' not found in module (Test)Test
-sizeof(parent.barm[0]) ==> ERROR: Error in expression 'sizeof(parent.barm[0])' for parameter 'Test.tester.i': Illegal argument for sizeof() in 'sizeof(parent.barm[0])'
-sizeof(parent.barm[0].foo) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(parent.barm[0].foo)': Submodule 'barm[0]' not found in module (Test)Test
-sizeof(parent.barm[0].g) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(parent.barm[0].g)': Submodule 'barm[0]' not found in module (Test)Test
-sizeof(parent.barm[0].gg) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(parent.barm[0].gg)': Submodule 'barm[0]' not found in module (Test)Test
-sizeof(parent.node) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(parent.node)': Module (Test)Test has no gate vector or submodule vector named 'node'
-sizeof(parent.node.foo) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(parent.node.foo)': Module (Node)Test.node has no gate vector or submodule vector named 'foo'
-sizeof(parent.node.g) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(parent.node.g)': Module (Node)Test.node has no gate vector or submodule vector named 'g'
+sizeof() ==> ERROR: Cannot assign 'sizeof()' to parameter 'Test.tester.i': sizeof() expects one argument
+sizeof(foo) ==> ERROR: Cannot assign parameter 'i': 'sizeof(foo)': Module (Tester)Test.tester has no gate vector or submodule vector named 'foo'
+sizeof(g) ==> ERROR: Cannot assign parameter 'i': 'sizeof(g)': Module (Tester)Test.tester has no gate vector or submodule vector named 'g'
+sizeof(gg) ==> ERROR: Cannot assign parameter 'i': 'sizeof(gg)': Module (Tester)Test.tester has no gate vector or submodule vector named 'gg'
+sizeof(barm) ==> ERROR: Cannot assign parameter 'i': 'sizeof(barm)': Module (Tester)Test.tester has no gate vector or submodule vector named 'barm'
+sizeof(barm.foo) ==> ERROR: Cannot assign parameter 'i': 'sizeof(barm.foo)': Submodule 'barm' not found in module (Tester)Test.tester
+sizeof(barm.g) ==> ERROR: Cannot assign parameter 'i': 'sizeof(barm.g)': Submodule 'barm' not found in module (Tester)Test.tester
+sizeof(barm.gg) ==> ERROR: Cannot assign parameter 'i': 'sizeof(barm.gg)': Submodule 'barm' not found in module (Tester)Test.tester
+sizeof(barm[0]) ==> ERROR: Cannot assign 'sizeof(barm[0])' to parameter 'Test.tester.i': Illegal argument for sizeof() in 'sizeof(barm[0])'
+sizeof(barm[0].foo) ==> ERROR: Cannot assign parameter 'i': 'sizeof(barm[0].foo)': Submodule 'barm[0]' not found in module (Tester)Test.tester
+sizeof(barm[0].g) ==> ERROR: Cannot assign parameter 'i': 'sizeof(barm[0].g)': Submodule 'barm[0]' not found in module (Tester)Test.tester
+sizeof(barm[0].gg) ==> ERROR: Cannot assign parameter 'i': 'sizeof(barm[0].gg)': Submodule 'barm[0]' not found in module (Tester)Test.tester
+sizeof(node) ==> ERROR: Cannot assign parameter 'i': 'sizeof(node)': Module (Tester)Test.tester has no gate vector or submodule vector named 'node'
+sizeof(node.foo) ==> ERROR: Cannot assign parameter 'i': 'sizeof(node.foo)': Submodule 'node' not found in module (Tester)Test.tester (did you mean 'parent.node'?)
+sizeof(node.g) ==> ERROR: Cannot assign parameter 'i': 'sizeof(node.g)': Submodule 'node' not found in module (Tester)Test.tester (did you mean 'parent.node'?)
+sizeof(node.gg) ==> ERROR: Cannot assign parameter 'i': 'sizeof(node.gg)': Submodule 'node' not found in module (Tester)Test.tester (did you mean 'parent.node'?)
+sizeof(nodes[0]) ==> ERROR: Cannot assign 'sizeof(nodes[0])' to parameter 'Test.tester.i': Illegal argument for sizeof() in 'sizeof(nodes[0])'
+sizeof(nodes[0].foo) ==> ERROR: Cannot assign parameter 'i': 'sizeof(nodes[0].foo)': Submodule 'nodes[0]' not found in module (Tester)Test.tester (did you mean 'parent.nodes[0]'?)
+sizeof(nodes[0].g) ==> ERROR: Cannot assign parameter 'i': 'sizeof(nodes[0].g)': Submodule 'nodes[0]' not found in module (Tester)Test.tester (did you mean 'parent.nodes[0]'?)
+sizeof(nodes[0].gg) ==> ERROR: Cannot assign parameter 'i': 'sizeof(nodes[0].gg)': Submodule 'nodes[0]' not found in module (Tester)Test.tester (did you mean 'parent.nodes[0]'?)
+sizeof(nodes) ==> ERROR: Cannot assign parameter 'i': 'sizeof(nodes)': Module (Tester)Test.tester has no gate vector or submodule vector named 'nodes'
+sizeof(nodes.foo) ==> ERROR: Cannot assign parameter 'i': 'sizeof(nodes.foo)': Submodule 'nodes' not found in module (Tester)Test.tester (did you mean 'parent.nodes'?)
+sizeof(nodes.g) ==> ERROR: Cannot assign parameter 'i': 'sizeof(nodes.g)': Submodule 'nodes' not found in module (Tester)Test.tester (did you mean 'parent.nodes'?)
+sizeof(nodes.gg) ==> ERROR: Cannot assign parameter 'i': 'sizeof(nodes.gg)': Submodule 'nodes' not found in module (Tester)Test.tester (did you mean 'parent.nodes'?)
+sizeof(node[0]) ==> ERROR: Cannot assign 'sizeof(node[0])' to parameter 'Test.tester.i': Illegal argument for sizeof() in 'sizeof(node[0])'
+sizeof(node[0].foo) ==> ERROR: Cannot assign parameter 'i': 'sizeof(node[0].foo)': Submodule 'node[0]' not found in module (Tester)Test.tester (did you mean 'parent.node[0]'?)
+sizeof(node[0].g) ==> ERROR: Cannot assign parameter 'i': 'sizeof(node[0].g)': Submodule 'node[0]' not found in module (Tester)Test.tester (did you mean 'parent.node[0]'?)
+sizeof(node[0].gg) ==> ERROR: Cannot assign parameter 'i': 'sizeof(node[0].gg)': Submodule 'node[0]' not found in module (Tester)Test.tester (did you mean 'parent.node[0]'?)
+sizeof(this) ==> ERROR: Cannot assign parameter 'i': 'sizeof(this.)': Module (Tester)Test.tester is not part of a submodule vector
+sizeof(this.foo) ==> ERROR: Cannot assign parameter 'i': 'sizeof(this.foo)': Module (Tester)Test.tester has no gate vector or submodule vector named 'foo'
+sizeof(this.g) ==> ERROR: Cannot assign parameter 'i': 'sizeof(this.g)': Module (Tester)Test.tester has no gate vector or submodule vector named 'g'
+sizeof(this.gg) ==> ERROR: Cannot assign parameter 'i': 'sizeof(this.gg)': Module (Tester)Test.tester has no gate vector or submodule vector named 'gg'
+sizeof(this.barm) ==> ERROR: Cannot assign parameter 'i': 'sizeof(this.barm)': Module (Tester)Test.tester has no gate vector or submodule vector named 'barm'
+sizeof(this.barm.foo) ==> ERROR: Cannot assign parameter 'i': 'sizeof(this.barm.foo)': Submodule 'barm' not found in module (Tester)Test.tester
+sizeof(this.barm.g) ==> ERROR: Cannot assign parameter 'i': 'sizeof(this.barm.g)': Submodule 'barm' not found in module (Tester)Test.tester
+sizeof(this.barm.gg) ==> ERROR: Cannot assign parameter 'i': 'sizeof(this.barm.gg)': Submodule 'barm' not found in module (Tester)Test.tester
+sizeof(this.barm[0]) ==> ERROR: Cannot assign 'sizeof(this.barm[0])' to parameter 'Test.tester.i': Illegal argument for sizeof() in 'sizeof(this.barm[0])'
+sizeof(this.barm[0].foo) ==> ERROR: Cannot assign parameter 'i': 'sizeof(this.barm[0].foo)': Submodule 'barm[0]' not found in module (Tester)Test.tester
+sizeof(this.barm[0].g) ==> ERROR: Cannot assign parameter 'i': 'sizeof(this.barm[0].g)': Submodule 'barm[0]' not found in module (Tester)Test.tester
+sizeof(this.barm[0].gg) ==> ERROR: Cannot assign parameter 'i': 'sizeof(this.barm[0].gg)': Submodule 'barm[0]' not found in module (Tester)Test.tester
+sizeof(this.node) ==> ERROR: Cannot assign parameter 'i': 'sizeof(this.node)': Module (Tester)Test.tester has no gate vector or submodule vector named 'node'
+sizeof(this.node.foo) ==> ERROR: Cannot assign parameter 'i': 'sizeof(this.node.foo)': Submodule 'node' not found in module (Tester)Test.tester
+sizeof(this.node.g) ==> ERROR: Cannot assign parameter 'i': 'sizeof(this.node.g)': Submodule 'node' not found in module (Tester)Test.tester
+sizeof(this.node.gg) ==> ERROR: Cannot assign parameter 'i': 'sizeof(this.node.gg)': Submodule 'node' not found in module (Tester)Test.tester
+sizeof(this.nodes[0]) ==> ERROR: Cannot assign 'sizeof(this.nodes[0])' to parameter 'Test.tester.i': Illegal argument for sizeof() in 'sizeof(this.nodes[0])'
+sizeof(this.nodes[0].foo) ==> ERROR: Cannot assign parameter 'i': 'sizeof(this.nodes[0].foo)': Submodule 'nodes[0]' not found in module (Tester)Test.tester
+sizeof(this.nodes[0].g) ==> ERROR: Cannot assign parameter 'i': 'sizeof(this.nodes[0].g)': Submodule 'nodes[0]' not found in module (Tester)Test.tester
+sizeof(this.nodes[0].gg) ==> ERROR: Cannot assign parameter 'i': 'sizeof(this.nodes[0].gg)': Submodule 'nodes[0]' not found in module (Tester)Test.tester
+sizeof(this.nodes) ==> ERROR: Cannot assign parameter 'i': 'sizeof(this.nodes)': Module (Tester)Test.tester has no gate vector or submodule vector named 'nodes'
+sizeof(this.nodes.foo) ==> ERROR: Cannot assign parameter 'i': 'sizeof(this.nodes.foo)': Submodule 'nodes' not found in module (Tester)Test.tester
+sizeof(this.nodes.g) ==> ERROR: Cannot assign parameter 'i': 'sizeof(this.nodes.g)': Submodule 'nodes' not found in module (Tester)Test.tester
+sizeof(this.nodes.gg) ==> ERROR: Cannot assign parameter 'i': 'sizeof(this.nodes.gg)': Submodule 'nodes' not found in module (Tester)Test.tester
+sizeof(this.node[0]) ==> ERROR: Cannot assign 'sizeof(this.node[0])' to parameter 'Test.tester.i': Illegal argument for sizeof() in 'sizeof(this.node[0])'
+sizeof(this.node[0].foo) ==> ERROR: Cannot assign parameter 'i': 'sizeof(this.node[0].foo)': Submodule 'node[0]' not found in module (Tester)Test.tester
+sizeof(this.node[0].g) ==> ERROR: Cannot assign parameter 'i': 'sizeof(this.node[0].g)': Submodule 'node[0]' not found in module (Tester)Test.tester
+sizeof(this.node[0].gg) ==> ERROR: Cannot assign parameter 'i': 'sizeof(this.node[0].gg)': Submodule 'node[0]' not found in module (Tester)Test.tester
+sizeof(parent) ==> ERROR: Cannot assign parameter 'i': 'sizeof(parent.)': Module (Test)Test is not part of a submodule vector
+sizeof(parent.foo) ==> ERROR: Cannot assign parameter 'i': 'sizeof(parent.foo)': Module (Test)Test has no gate vector or submodule vector named 'foo'
+sizeof(parent.g) ==> ERROR: Cannot assign parameter 'i': 'sizeof(parent.g)': Module (Test)Test has no gate vector or submodule vector named 'g'
+sizeof(parent.gg) ==> ERROR: Cannot assign parameter 'i': 'sizeof(parent.gg)': Module (Test)Test has no gate vector or submodule vector named 'gg'
+sizeof(parent.barm) ==> ERROR: Cannot assign parameter 'i': 'sizeof(parent.barm)': Module (Test)Test has no gate vector or submodule vector named 'barm'
+sizeof(parent.barm.foo) ==> ERROR: Cannot assign parameter 'i': 'sizeof(parent.barm.foo)': Submodule 'barm' not found in module (Test)Test
+sizeof(parent.barm.g) ==> ERROR: Cannot assign parameter 'i': 'sizeof(parent.barm.g)': Submodule 'barm' not found in module (Test)Test
+sizeof(parent.barm.gg) ==> ERROR: Cannot assign parameter 'i': 'sizeof(parent.barm.gg)': Submodule 'barm' not found in module (Test)Test
+sizeof(parent.barm[0]) ==> ERROR: Cannot assign 'sizeof(parent.barm[0])' to parameter 'Test.tester.i': Illegal argument for sizeof() in 'sizeof(parent.barm[0])'
+sizeof(parent.barm[0].foo) ==> ERROR: Cannot assign parameter 'i': 'sizeof(parent.barm[0].foo)': Submodule 'barm[0]' not found in module (Test)Test
+sizeof(parent.barm[0].g) ==> ERROR: Cannot assign parameter 'i': 'sizeof(parent.barm[0].g)': Submodule 'barm[0]' not found in module (Test)Test
+sizeof(parent.barm[0].gg) ==> ERROR: Cannot assign parameter 'i': 'sizeof(parent.barm[0].gg)': Submodule 'barm[0]' not found in module (Test)Test
+sizeof(parent.node) ==> ERROR: Cannot assign parameter 'i': 'sizeof(parent.node)': Module (Test)Test has no gate vector or submodule vector named 'node'
+sizeof(parent.node.foo) ==> ERROR: Cannot assign parameter 'i': 'sizeof(parent.node.foo)': Module (Node)Test.node has no gate vector or submodule vector named 'foo'
+sizeof(parent.node.g) ==> ERROR: Cannot assign parameter 'i': 'sizeof(parent.node.g)': Module (Node)Test.node has no gate vector or submodule vector named 'g'
 sizeof(parent.node.gg) ==> 3
-sizeof(parent.nodes[0]) ==> ERROR: Error in expression 'sizeof(parent.nodes[0])' for parameter 'Test.tester.i': Illegal argument for sizeof() in 'sizeof(parent.nodes[0])'
-sizeof(parent.nodes[0].foo) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(parent.nodes[0].foo)': (omnetpp::cModule)Test.nodes[0]: No such gate or gate vector: 'foo'
-sizeof(parent.nodes[0].g) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(parent.nodes[0].g)': (omnetpp::cModule)Test.nodes[0]: Gate 'g' is not a gate vector
+sizeof(parent.nodes[0]) ==> ERROR: Cannot assign 'sizeof(parent.nodes[0])' to parameter 'Test.tester.i': Illegal argument for sizeof() in 'sizeof(parent.nodes[0])'
+sizeof(parent.nodes[0].foo) ==> ERROR: Cannot assign parameter 'i': 'sizeof(parent.nodes[0].foo)': (omnetpp::cModule)Test.nodes[0]: No such gate or gate vector: 'foo'
+sizeof(parent.nodes[0].g) ==> ERROR: Cannot assign parameter 'i': 'sizeof(parent.nodes[0].g)': (omnetpp::cModule)Test.nodes[0]: Gate 'g' is not a gate vector
 sizeof(parent.nodes[0].gg) ==> 3
 sizeof(parent.nodes) ==> 5
-sizeof(parent.nodes.foo) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(parent.nodes.foo)': Submodule 'nodes' not found in module (Test)Test (possibly missing index, as 'nodes' is a submodule vector)
-sizeof(parent.nodes.g) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(parent.nodes.g)': Submodule 'nodes' not found in module (Test)Test (possibly missing index, as 'nodes' is a submodule vector)
-sizeof(parent.nodes.gg) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(parent.nodes.gg)': Submodule 'nodes' not found in module (Test)Test (possibly missing index, as 'nodes' is a submodule vector)
-sizeof(parent.node[0]) ==> ERROR: Error in expression 'sizeof(parent.node[0])' for parameter 'Test.tester.i': Illegal argument for sizeof() in 'sizeof(parent.node[0])'
-sizeof(parent.node[0].foo) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(parent.node[0].foo)': Submodule 'node[0]' not found in module (Test)Test (possibly superfluous index, as 'node' is a scalar submodule)
-sizeof(parent.node[0].g) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(parent.node[0].g)': Submodule 'node[0]' not found in module (Test)Test (possibly superfluous index, as 'node' is a scalar submodule)
-sizeof(parent.node[0].gg) ==> ERROR: Cannot evaluate expression for parameter 'i': 'sizeof(parent.node[0].gg)': Submodule 'node[0]' not found in module (Test)Test (possibly superfluous index, as 'node' is a scalar submodule)
+sizeof(parent.nodes.foo) ==> ERROR: Cannot assign parameter 'i': 'sizeof(parent.nodes.foo)': Submodule 'nodes' not found in module (Test)Test (possibly missing index, as 'nodes' is a submodule vector)
+sizeof(parent.nodes.g) ==> ERROR: Cannot assign parameter 'i': 'sizeof(parent.nodes.g)': Submodule 'nodes' not found in module (Test)Test (possibly missing index, as 'nodes' is a submodule vector)
+sizeof(parent.nodes.gg) ==> ERROR: Cannot assign parameter 'i': 'sizeof(parent.nodes.gg)': Submodule 'nodes' not found in module (Test)Test (possibly missing index, as 'nodes' is a submodule vector)
+sizeof(parent.node[0]) ==> ERROR: Cannot assign 'sizeof(parent.node[0])' to parameter 'Test.tester.i': Illegal argument for sizeof() in 'sizeof(parent.node[0])'
+sizeof(parent.node[0].foo) ==> ERROR: Cannot assign parameter 'i': 'sizeof(parent.node[0].foo)': Submodule 'node[0]' not found in module (Test)Test (possibly superfluous index, as 'node' is a scalar submodule)
+sizeof(parent.node[0].g) ==> ERROR: Cannot assign parameter 'i': 'sizeof(parent.node[0].g)': Submodule 'node[0]' not found in module (Test)Test (possibly superfluous index, as 'node' is a scalar submodule)
+sizeof(parent.node[0].gg) ==> ERROR: Cannot assign parameter 'i': 'sizeof(parent.node[0].gg)': Submodule 'node[0]' not found in module (Test)Test (possibly superfluous index, as 'node' is a scalar submodule)
 
-exists() ==> ERROR: Error in expression 'exists()' for parameter 'Test.tester.b': exists() expects one argument
+exists() ==> ERROR: Cannot assign 'exists()' to parameter 'Test.tester.b': exists() expects one argument
 exists(foo) ==> false
 exists(g) ==> false
 exists(gg) ==> false
 exists(barm) ==> false
-exists(barm.foo) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(barm.foo)': Submodule 'barm' not found in module (Tester)Test.tester
-exists(barm.g) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(barm.g)': Submodule 'barm' not found in module (Tester)Test.tester
-exists(barm.gg) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(barm.gg)': Submodule 'barm' not found in module (Tester)Test.tester
-exists(barm[0]) ==> ERROR: Error in expression 'exists(barm[0])' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(barm[0])'
-exists(barm[0].foo) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(barm[0].foo)': Submodule 'barm[0]' not found in module (Tester)Test.tester
-exists(barm[0].g) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(barm[0].g)': Submodule 'barm[0]' not found in module (Tester)Test.tester
-exists(barm[0].gg) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(barm[0].gg)': Submodule 'barm[0]' not found in module (Tester)Test.tester
+exists(barm.foo) ==> ERROR: Cannot assign parameter 'b': 'exists(barm.foo)': Submodule 'barm' not found in module (Tester)Test.tester
+exists(barm.g) ==> ERROR: Cannot assign parameter 'b': 'exists(barm.g)': Submodule 'barm' not found in module (Tester)Test.tester
+exists(barm.gg) ==> ERROR: Cannot assign parameter 'b': 'exists(barm.gg)': Submodule 'barm' not found in module (Tester)Test.tester
+exists(barm[0]) ==> ERROR: Cannot assign 'exists(barm[0])' to parameter 'Test.tester.b': Illegal argument for exists() in 'exists(barm[0])'
+exists(barm[0].foo) ==> ERROR: Cannot assign parameter 'b': 'exists(barm[0].foo)': Submodule 'barm[0]' not found in module (Tester)Test.tester
+exists(barm[0].g) ==> ERROR: Cannot assign parameter 'b': 'exists(barm[0].g)': Submodule 'barm[0]' not found in module (Tester)Test.tester
+exists(barm[0].gg) ==> ERROR: Cannot assign parameter 'b': 'exists(barm[0].gg)': Submodule 'barm[0]' not found in module (Tester)Test.tester
 exists(node) ==> false
-exists(node.foo) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(node.foo)': Submodule 'node' not found in module (Tester)Test.tester (did you mean 'parent.node'?)
-exists(node.g) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(node.g)': Submodule 'node' not found in module (Tester)Test.tester (did you mean 'parent.node'?)
-exists(node.gg) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(node.gg)': Submodule 'node' not found in module (Tester)Test.tester (did you mean 'parent.node'?)
-exists(nodes[0]) ==> ERROR: Error in expression 'exists(nodes[0])' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(nodes[0])'
-exists(nodes[0].foo) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(nodes[0].foo)': Submodule 'nodes[0]' not found in module (Tester)Test.tester (did you mean 'parent.nodes[0]'?)
-exists(nodes[0].g) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(nodes[0].g)': Submodule 'nodes[0]' not found in module (Tester)Test.tester (did you mean 'parent.nodes[0]'?)
-exists(nodes[0].gg) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(nodes[0].gg)': Submodule 'nodes[0]' not found in module (Tester)Test.tester (did you mean 'parent.nodes[0]'?)
+exists(node.foo) ==> ERROR: Cannot assign parameter 'b': 'exists(node.foo)': Submodule 'node' not found in module (Tester)Test.tester (did you mean 'parent.node'?)
+exists(node.g) ==> ERROR: Cannot assign parameter 'b': 'exists(node.g)': Submodule 'node' not found in module (Tester)Test.tester (did you mean 'parent.node'?)
+exists(node.gg) ==> ERROR: Cannot assign parameter 'b': 'exists(node.gg)': Submodule 'node' not found in module (Tester)Test.tester (did you mean 'parent.node'?)
+exists(nodes[0]) ==> ERROR: Cannot assign 'exists(nodes[0])' to parameter 'Test.tester.b': Illegal argument for exists() in 'exists(nodes[0])'
+exists(nodes[0].foo) ==> ERROR: Cannot assign parameter 'b': 'exists(nodes[0].foo)': Submodule 'nodes[0]' not found in module (Tester)Test.tester (did you mean 'parent.nodes[0]'?)
+exists(nodes[0].g) ==> ERROR: Cannot assign parameter 'b': 'exists(nodes[0].g)': Submodule 'nodes[0]' not found in module (Tester)Test.tester (did you mean 'parent.nodes[0]'?)
+exists(nodes[0].gg) ==> ERROR: Cannot assign parameter 'b': 'exists(nodes[0].gg)': Submodule 'nodes[0]' not found in module (Tester)Test.tester (did you mean 'parent.nodes[0]'?)
 exists(nodes) ==> false
-exists(nodes.foo) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(nodes.foo)': Submodule 'nodes' not found in module (Tester)Test.tester (did you mean 'parent.nodes'?)
-exists(nodes.g) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(nodes.g)': Submodule 'nodes' not found in module (Tester)Test.tester (did you mean 'parent.nodes'?)
-exists(nodes.gg) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(nodes.gg)': Submodule 'nodes' not found in module (Tester)Test.tester (did you mean 'parent.nodes'?)
-exists(node[0]) ==> ERROR: Error in expression 'exists(node[0])' for parameter 'Test.tester.b': Illegal argument for exists() in 'exists(node[0])'
-exists(node[0].foo) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(node[0].foo)': Submodule 'node[0]' not found in module (Tester)Test.tester (did you mean 'parent.node[0]'?)
-exists(node[0].g) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(node[0].g)': Submodule 'node[0]' not found in module (Tester)Test.tester (did you mean 'parent.node[0]'?)
-exists(node[0].gg) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(node[0].gg)': Submodule 'node[0]' not found in module (Tester)Test.tester (did you mean 'parent.node[0]'?)
+exists(nodes.foo) ==> ERROR: Cannot assign parameter 'b': 'exists(nodes.foo)': Submodule 'nodes' not found in module (Tester)Test.tester (did you mean 'parent.nodes'?)
+exists(nodes.g) ==> ERROR: Cannot assign parameter 'b': 'exists(nodes.g)': Submodule 'nodes' not found in module (Tester)Test.tester (did you mean 'parent.nodes'?)
+exists(nodes.gg) ==> ERROR: Cannot assign parameter 'b': 'exists(nodes.gg)': Submodule 'nodes' not found in module (Tester)Test.tester (did you mean 'parent.nodes'?)
+exists(node[0]) ==> ERROR: Cannot assign 'exists(node[0])' to parameter 'Test.tester.b': Illegal argument for exists() in 'exists(node[0])'
+exists(node[0].foo) ==> ERROR: Cannot assign parameter 'b': 'exists(node[0].foo)': Submodule 'node[0]' not found in module (Tester)Test.tester (did you mean 'parent.node[0]'?)
+exists(node[0].g) ==> ERROR: Cannot assign parameter 'b': 'exists(node[0].g)': Submodule 'node[0]' not found in module (Tester)Test.tester (did you mean 'parent.node[0]'?)
+exists(node[0].gg) ==> ERROR: Cannot assign parameter 'b': 'exists(node[0].gg)': Submodule 'node[0]' not found in module (Tester)Test.tester (did you mean 'parent.node[0]'?)
 exists(this) ==> true
 exists(this.foo) ==> false
 exists(this.g) ==> false
 exists(this.gg) ==> false
 exists(this.barm) ==> false
-exists(this.barm.foo) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(this.barm.foo)': Submodule 'barm' not found in module (Tester)Test.tester
-exists(this.barm.g) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(this.barm.g)': Submodule 'barm' not found in module (Tester)Test.tester
-exists(this.barm.gg) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(this.barm.gg)': Submodule 'barm' not found in module (Tester)Test.tester
+exists(this.barm.foo) ==> ERROR: Cannot assign parameter 'b': 'exists(this.barm.foo)': Submodule 'barm' not found in module (Tester)Test.tester
+exists(this.barm.g) ==> ERROR: Cannot assign parameter 'b': 'exists(this.barm.g)': Submodule 'barm' not found in module (Tester)Test.tester
+exists(this.barm.gg) ==> ERROR: Cannot assign parameter 'b': 'exists(this.barm.gg)': Submodule 'barm' not found in module (Tester)Test.tester
 exists(this.barm[0]) ==> false
-exists(this.barm[0].foo) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(this.barm[0].foo)': Submodule 'barm[0]' not found in module (Tester)Test.tester
-exists(this.barm[0].g) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(this.barm[0].g)': Submodule 'barm[0]' not found in module (Tester)Test.tester
-exists(this.barm[0].gg) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(this.barm[0].gg)': Submodule 'barm[0]' not found in module (Tester)Test.tester
+exists(this.barm[0].foo) ==> ERROR: Cannot assign parameter 'b': 'exists(this.barm[0].foo)': Submodule 'barm[0]' not found in module (Tester)Test.tester
+exists(this.barm[0].g) ==> ERROR: Cannot assign parameter 'b': 'exists(this.barm[0].g)': Submodule 'barm[0]' not found in module (Tester)Test.tester
+exists(this.barm[0].gg) ==> ERROR: Cannot assign parameter 'b': 'exists(this.barm[0].gg)': Submodule 'barm[0]' not found in module (Tester)Test.tester
 exists(this.node) ==> false
-exists(this.node.foo) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(this.node.foo)': Submodule 'node' not found in module (Tester)Test.tester
-exists(this.node.g) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(this.node.g)': Submodule 'node' not found in module (Tester)Test.tester
-exists(this.node.gg) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(this.node.gg)': Submodule 'node' not found in module (Tester)Test.tester
+exists(this.node.foo) ==> ERROR: Cannot assign parameter 'b': 'exists(this.node.foo)': Submodule 'node' not found in module (Tester)Test.tester
+exists(this.node.g) ==> ERROR: Cannot assign parameter 'b': 'exists(this.node.g)': Submodule 'node' not found in module (Tester)Test.tester
+exists(this.node.gg) ==> ERROR: Cannot assign parameter 'b': 'exists(this.node.gg)': Submodule 'node' not found in module (Tester)Test.tester
 exists(this.nodes[0]) ==> false
-exists(this.nodes[0].foo) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(this.nodes[0].foo)': Submodule 'nodes[0]' not found in module (Tester)Test.tester
-exists(this.nodes[0].g) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(this.nodes[0].g)': Submodule 'nodes[0]' not found in module (Tester)Test.tester
-exists(this.nodes[0].gg) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(this.nodes[0].gg)': Submodule 'nodes[0]' not found in module (Tester)Test.tester
+exists(this.nodes[0].foo) ==> ERROR: Cannot assign parameter 'b': 'exists(this.nodes[0].foo)': Submodule 'nodes[0]' not found in module (Tester)Test.tester
+exists(this.nodes[0].g) ==> ERROR: Cannot assign parameter 'b': 'exists(this.nodes[0].g)': Submodule 'nodes[0]' not found in module (Tester)Test.tester
+exists(this.nodes[0].gg) ==> ERROR: Cannot assign parameter 'b': 'exists(this.nodes[0].gg)': Submodule 'nodes[0]' not found in module (Tester)Test.tester
 exists(this.nodes) ==> false
-exists(this.nodes.foo) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(this.nodes.foo)': Submodule 'nodes' not found in module (Tester)Test.tester
-exists(this.nodes.g) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(this.nodes.g)': Submodule 'nodes' not found in module (Tester)Test.tester
-exists(this.nodes.gg) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(this.nodes.gg)': Submodule 'nodes' not found in module (Tester)Test.tester
+exists(this.nodes.foo) ==> ERROR: Cannot assign parameter 'b': 'exists(this.nodes.foo)': Submodule 'nodes' not found in module (Tester)Test.tester
+exists(this.nodes.g) ==> ERROR: Cannot assign parameter 'b': 'exists(this.nodes.g)': Submodule 'nodes' not found in module (Tester)Test.tester
+exists(this.nodes.gg) ==> ERROR: Cannot assign parameter 'b': 'exists(this.nodes.gg)': Submodule 'nodes' not found in module (Tester)Test.tester
 exists(this.node[0]) ==> false
-exists(this.node[0].foo) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(this.node[0].foo)': Submodule 'node[0]' not found in module (Tester)Test.tester
-exists(this.node[0].g) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(this.node[0].g)': Submodule 'node[0]' not found in module (Tester)Test.tester
-exists(this.node[0].gg) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(this.node[0].gg)': Submodule 'node[0]' not found in module (Tester)Test.tester
+exists(this.node[0].foo) ==> ERROR: Cannot assign parameter 'b': 'exists(this.node[0].foo)': Submodule 'node[0]' not found in module (Tester)Test.tester
+exists(this.node[0].g) ==> ERROR: Cannot assign parameter 'b': 'exists(this.node[0].g)': Submodule 'node[0]' not found in module (Tester)Test.tester
+exists(this.node[0].gg) ==> ERROR: Cannot assign parameter 'b': 'exists(this.node[0].gg)': Submodule 'node[0]' not found in module (Tester)Test.tester
 exists(parent) ==> true
 exists(parent.foo) ==> false
 exists(parent.g) ==> false
 exists(parent.gg) ==> false
 exists(parent.barm) ==> false
-exists(parent.barm.foo) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(parent.barm.foo)': Submodule 'barm' not found in module (Test)Test
-exists(parent.barm.g) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(parent.barm.g)': Submodule 'barm' not found in module (Test)Test
-exists(parent.barm.gg) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(parent.barm.gg)': Submodule 'barm' not found in module (Test)Test
+exists(parent.barm.foo) ==> ERROR: Cannot assign parameter 'b': 'exists(parent.barm.foo)': Submodule 'barm' not found in module (Test)Test
+exists(parent.barm.g) ==> ERROR: Cannot assign parameter 'b': 'exists(parent.barm.g)': Submodule 'barm' not found in module (Test)Test
+exists(parent.barm.gg) ==> ERROR: Cannot assign parameter 'b': 'exists(parent.barm.gg)': Submodule 'barm' not found in module (Test)Test
 exists(parent.barm[0]) ==> false
-exists(parent.barm[0].foo) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(parent.barm[0].foo)': Submodule 'barm[0]' not found in module (Test)Test
-exists(parent.barm[0].g) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(parent.barm[0].g)': Submodule 'barm[0]' not found in module (Test)Test
-exists(parent.barm[0].gg) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(parent.barm[0].gg)': Submodule 'barm[0]' not found in module (Test)Test
+exists(parent.barm[0].foo) ==> ERROR: Cannot assign parameter 'b': 'exists(parent.barm[0].foo)': Submodule 'barm[0]' not found in module (Test)Test
+exists(parent.barm[0].g) ==> ERROR: Cannot assign parameter 'b': 'exists(parent.barm[0].g)': Submodule 'barm[0]' not found in module (Test)Test
+exists(parent.barm[0].gg) ==> ERROR: Cannot assign parameter 'b': 'exists(parent.barm[0].gg)': Submodule 'barm[0]' not found in module (Test)Test
 exists(parent.node) ==> true
 exists(parent.node.foo) ==> false
 exists(parent.node.g) ==> true
@@ -365,12 +365,12 @@ exists(parent.nodes[0].foo) ==> false
 exists(parent.nodes[0].g) ==> true
 exists(parent.nodes[0].gg) ==> true
 exists(parent.nodes) ==> true
-exists(parent.nodes.foo) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(parent.nodes.foo)': Submodule 'nodes' not found in module (Test)Test (possibly missing index, as 'nodes' is a submodule vector)
-exists(parent.nodes.g) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(parent.nodes.g)': Submodule 'nodes' not found in module (Test)Test (possibly missing index, as 'nodes' is a submodule vector)
-exists(parent.nodes.gg) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(parent.nodes.gg)': Submodule 'nodes' not found in module (Test)Test (possibly missing index, as 'nodes' is a submodule vector)
+exists(parent.nodes.foo) ==> ERROR: Cannot assign parameter 'b': 'exists(parent.nodes.foo)': Submodule 'nodes' not found in module (Test)Test (possibly missing index, as 'nodes' is a submodule vector)
+exists(parent.nodes.g) ==> ERROR: Cannot assign parameter 'b': 'exists(parent.nodes.g)': Submodule 'nodes' not found in module (Test)Test (possibly missing index, as 'nodes' is a submodule vector)
+exists(parent.nodes.gg) ==> ERROR: Cannot assign parameter 'b': 'exists(parent.nodes.gg)': Submodule 'nodes' not found in module (Test)Test (possibly missing index, as 'nodes' is a submodule vector)
 exists(parent.node[0]) ==> false
-exists(parent.node[0].foo) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(parent.node[0].foo)': Submodule 'node[0]' not found in module (Test)Test (possibly superfluous index, as 'node' is a scalar submodule)
-exists(parent.node[0].g) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(parent.node[0].g)': Submodule 'node[0]' not found in module (Test)Test (possibly superfluous index, as 'node' is a scalar submodule)
-exists(parent.node[0].gg) ==> ERROR: Cannot evaluate expression for parameter 'b': 'exists(parent.node[0].gg)': Submodule 'node[0]' not found in module (Test)Test (possibly superfluous index, as 'node' is a scalar submodule)
+exists(parent.node[0].foo) ==> ERROR: Cannot assign parameter 'b': 'exists(parent.node[0].foo)': Submodule 'node[0]' not found in module (Test)Test (possibly superfluous index, as 'node' is a scalar submodule)
+exists(parent.node[0].g) ==> ERROR: Cannot assign parameter 'b': 'exists(parent.node[0].g)': Submodule 'node[0]' not found in module (Test)Test (possibly superfluous index, as 'node' is a scalar submodule)
+exists(parent.node[0].gg) ==> ERROR: Cannot assign parameter 'b': 'exists(parent.node[0].gg)': Submodule 'node[0]' not found in module (Test)Test (possibly superfluous index, as 'node' is a scalar submodule)
 .
 

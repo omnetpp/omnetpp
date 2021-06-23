@@ -241,7 +241,7 @@ bool Expression::isFoldableNode(ExprNode *node) const
 void Expression::errorCouldNotTranslate(AstNode *astNode)
 {
     if (astNode->type == AstNode::FUNCTION)
-        throw opp_runtime_error("A '%s' function accepting %d argument(s) was not found", astNode->name.c_str(), (int)astNode->children.size());
+        throw opp_runtime_error("A '%s' function that accepts %d argument(s) was not found", astNode->name.c_str(), (int)astNode->children.size());
     else if (astNode->type == AstNode::METHOD)
         throw opp_runtime_error("A '%s' method accepting %d argument(s) was not found", astNode->name.c_str(), (int)astNode->children.size() - 1);
     else

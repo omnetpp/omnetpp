@@ -86,7 +86,7 @@
 
 	we'll report
 
-	   "A '%s' function accepting %d argument(s) was not found",
+	   "A '%s' function that accepts %d argument(s) was not found",
 
 	regardless of whether a function with that name but accepting a different
 	number of args exists or not.

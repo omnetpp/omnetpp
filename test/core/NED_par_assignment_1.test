@@ -34,52 +34,52 @@ for (auto p : { "b", "i", "d", "s", "x", "o" }) {
 
 %contains: stdout
 b = true --> true
-b = 12 --> ERROR: Error in expression '12' for parameter 'Test.b': Cannot cast from type integer to bool
-b = 3.14 --> ERROR: Error in expression '3.14' for parameter 'Test.b': Cannot cast from type double to bool
-b = "hello" --> ERROR: Error in expression '"hello"' for parameter 'Test.b': Cannot cast from type string to bool
-b = [] --> ERROR: Cannot evaluate expression for parameter 'b': Cannot cast from type object to bool
-b = nullptr --> ERROR: Error in expression 'nullptr' for parameter 'Test.b': Cannot cast from type object to bool
-b = undefined --> ERROR: Error in expression 'undefined' for parameter 'Test.b': Cannot cast from type undefined to bool
+b = 12 --> ERROR: Cannot assign '12' to parameter 'Test.b': Cannot cast from type integer to bool
+b = 3.14 --> ERROR: Cannot assign '3.14' to parameter 'Test.b': Cannot cast from type double to bool
+b = "hello" --> ERROR: Cannot assign '"hello"' to parameter 'Test.b': Cannot cast from type string to bool
+b = [] --> ERROR: Cannot assign parameter 'b': Cannot cast from type object to bool
+b = nullptr --> ERROR: Cannot assign 'nullptr' to parameter 'Test.b': Cannot cast from type object to bool
+b = undefined --> ERROR: Cannot assign 'undefined' to parameter 'Test.b': Cannot cast from type undefined to bool
 
-i = true --> ERROR: Error in expression 'true' for parameter 'Test.i': Cannot cast true from type bool to integer
+i = true --> ERROR: Cannot assign 'true' to parameter 'Test.i': Cannot cast true from type bool to integer
 i = 12 --> 12
-i = 3.14 --> ERROR: Error in expression '3.14' for parameter 'Test.i': Cannot cast 3.14 from type double to integer (note: no implicit conversion from double to int)
-i = "hello" --> ERROR: Error in expression '"hello"' for parameter 'Test.i': Cannot cast "hello" from type string to integer
-i = [] --> ERROR: Cannot evaluate expression for parameter 'i': Cannot cast [] from type object to integer
-i = nullptr --> ERROR: Error in expression 'nullptr' for parameter 'Test.i': Cannot cast nullptr from type object to integer
-i = undefined --> ERROR: Error in expression 'undefined' for parameter 'Test.i': Cannot cast undefined from type undefined to integer
+i = 3.14 --> ERROR: Cannot assign '3.14' to parameter 'Test.i': Cannot cast 3.14 from type double to integer (note: no implicit conversion from double to int)
+i = "hello" --> ERROR: Cannot assign '"hello"' to parameter 'Test.i': Cannot cast "hello" from type string to integer
+i = [] --> ERROR: Cannot assign parameter 'i': Cannot cast [] from type object to integer
+i = nullptr --> ERROR: Cannot assign 'nullptr' to parameter 'Test.i': Cannot cast nullptr from type object to integer
+i = undefined --> ERROR: Cannot assign 'undefined' to parameter 'Test.i': Cannot cast undefined from type undefined to integer
 
-d = true --> ERROR: Error in expression 'true' for parameter 'Test.d': Cannot cast true from type bool to double
+d = true --> ERROR: Cannot assign 'true' to parameter 'Test.d': Cannot cast true from type bool to double
 d = 12 --> 12
 d = 3.14 --> 3.14
-d = "hello" --> ERROR: Error in expression '"hello"' for parameter 'Test.d': Cannot cast "hello" from type string to double
-d = [] --> ERROR: Cannot evaluate expression for parameter 'd': Cannot cast [] from type object to double
-d = nullptr --> ERROR: Error in expression 'nullptr' for parameter 'Test.d': Cannot cast nullptr from type object to double
-d = undefined --> ERROR: Error in expression 'undefined' for parameter 'Test.d': Cannot cast undefined from type undefined to double
+d = "hello" --> ERROR: Cannot assign '"hello"' to parameter 'Test.d': Cannot cast "hello" from type string to double
+d = [] --> ERROR: Cannot assign parameter 'd': Cannot cast [] from type object to double
+d = nullptr --> ERROR: Cannot assign 'nullptr' to parameter 'Test.d': Cannot cast nullptr from type object to double
+d = undefined --> ERROR: Cannot assign 'undefined' to parameter 'Test.d': Cannot cast undefined from type undefined to double
 
-s = true --> ERROR: Error in expression 'true' for parameter 'Test.s': Cannot cast from type bool to string
-s = 12 --> ERROR: Error in expression '12' for parameter 'Test.s': Cannot cast from type integer to string
-s = 3.14 --> ERROR: Error in expression '3.14' for parameter 'Test.s': Cannot cast from type double to string
+s = true --> ERROR: Cannot assign 'true' to parameter 'Test.s': Cannot cast from type bool to string
+s = 12 --> ERROR: Cannot assign '12' to parameter 'Test.s': Cannot cast from type integer to string
+s = 3.14 --> ERROR: Cannot assign '3.14' to parameter 'Test.s': Cannot cast from type double to string
 s = "hello" --> "hello"
-s = [] --> ERROR: Cannot evaluate expression for parameter 's': Cannot cast from type object to string
-s = nullptr --> ERROR: Error in expression 'nullptr' for parameter 'Test.s': Cannot cast from type object to string
-s = undefined --> ERROR: Error in expression 'undefined' for parameter 'Test.s': Cannot cast from type undefined to string
+s = [] --> ERROR: Cannot assign parameter 's': Cannot cast from type object to string
+s = nullptr --> ERROR: Cannot assign 'nullptr' to parameter 'Test.s': Cannot cast from type object to string
+s = undefined --> ERROR: Cannot assign 'undefined' to parameter 'Test.s': Cannot cast from type undefined to string
 
-x = true --> ERROR: Error in expression 'true' for parameter 'Test.x': Cannot cast from type bool to XML
-x = 12 --> ERROR: Error in expression '12' for parameter 'Test.x': Cannot cast from type integer to XML
-x = 3.14 --> ERROR: Error in expression '3.14' for parameter 'Test.x': Cannot cast from type double to XML
-x = "hello" --> ERROR: Error in expression '"hello"' for parameter 'Test.x': Cannot cast from type string to XML
-x = [] --> ERROR: Cannot evaluate expression for parameter 'x': check_and_cast(): Cannot cast (omnetpp::cValueArray*)Test..array5 to type 'omnetpp::cXMLElement *'
+x = true --> ERROR: Cannot assign 'true' to parameter 'Test.x': Cannot cast from type bool to XML
+x = 12 --> ERROR: Cannot assign '12' to parameter 'Test.x': Cannot cast from type integer to XML
+x = 3.14 --> ERROR: Cannot assign '3.14' to parameter 'Test.x': Cannot cast from type double to XML
+x = "hello" --> ERROR: Cannot assign '"hello"' to parameter 'Test.x': Cannot cast from type string to XML
+x = [] --> ERROR: Cannot assign parameter 'x': check_and_cast(): Cannot cast (omnetpp::cValueArray*)Test..array5 to type 'omnetpp::cXMLElement *'
 x = nullptr --> nullptr
-x = undefined --> ERROR: Error in expression 'undefined' for parameter 'Test.x': Cannot cast from type undefined to XML
+x = undefined --> ERROR: Cannot assign 'undefined' to parameter 'Test.x': Cannot cast from type undefined to XML
 
-o = true --> ERROR: Error in expression 'true' for parameter 'Test.o': Cannot cast from type bool to object
-o = 12 --> ERROR: Error in expression '12' for parameter 'Test.o': Cannot cast from type integer to object
-o = 3.14 --> ERROR: Error in expression '3.14' for parameter 'Test.o': Cannot cast from type double to object
-o = "hello" --> ERROR: Error in expression '"hello"' for parameter 'Test.o': Cannot cast from type string to object
+o = true --> ERROR: Cannot assign 'true' to parameter 'Test.o': Cannot cast from type bool to object
+o = 12 --> ERROR: Cannot assign '12' to parameter 'Test.o': Cannot cast from type integer to object
+o = 3.14 --> ERROR: Cannot assign '3.14' to parameter 'Test.o': Cannot cast from type double to object
+o = "hello" --> ERROR: Cannot assign '"hello"' to parameter 'Test.o': Cannot cast from type string to object
 o = [] --> (omnetpp::cValueArray)array6: []
 o = nullptr --> nullptr
-o = undefined --> ERROR: Error in expression 'undefined' for parameter 'Test.o': Cannot cast from type undefined to object
+o = undefined --> ERROR: Cannot assign 'undefined' to parameter 'Test.o': Cannot cast from type undefined to object
 
 %not-contains: stdout
 undisposed object
