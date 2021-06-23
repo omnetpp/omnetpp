@@ -95,6 +95,7 @@ public class Legend implements ILegend {
         }
     }
 
+    PlotBase parent;
     private boolean visible;
     private boolean drawBorder;
     private Font font;
@@ -113,6 +114,7 @@ public class Legend implements ILegend {
     private int highlightedItem = -1;
 
     public Legend(PlotBase parent) {
+        this.parent = parent;
 
         // KeyUp and KeyDown events don't have x and y...
         int[] lastXY = new int[2];
@@ -194,6 +196,7 @@ public class Legend implements ILegend {
 
     public void setItemEnabled(int index, boolean enabled) {
         items.get(index).enabled = enabled;
+        parent.legendItemEnablementChanged();
     }
 
     public String getItemText(int index) {
