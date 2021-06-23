@@ -663,10 +663,12 @@ class SIM_API cModule : public cComponent //implies noncopyable
     virtual int getSubmoduleVectorSize(const char *name) const;
 
     /**
-     * Adds a submodule vector with the given name and size. Throws an error
-     * if a submodule vector with the given name already exists. This operation
-     * does not create modules. The slots in the vector will be empty, i.e.
-     * getSubmodule(name,index) will return nullptr for all indices.
+     * Adds a blank submodule vector with the given name and size. Throws an error
+     * if a submodule vector with the given name already exists.
+     *
+     * Important: This operation does NOT actually create any submodules.
+     * The slots in the vector will be nullptr, i.e. getSubmodule(name,index)
+     * returns nullptr for all indices.
      *
      * Modules can be added one by one by using cModuleType::create(name,
      * parentModule, index). Deleting a module (via cModule::deleteModule())
@@ -683,14 +685,30 @@ class SIM_API cModule : public cComponent //implies noncopyable
     virtual void deleteSubmoduleVector(const char *name);
 
     /**
-     * Resizes the given submodule vector. A submodule vector can be extended
-     * any time; it can be shrunk only if it contains no submodules in the
-     * index range which is going to be removed. Throws an error if there
-     * is no such submodule vector, or the removed range contains submodules.
-     * Modules can be removed from the submodule vector by calling their
-     * deleteModule() method.
+     * Resizes the given submodule vector, filling new elements with nullptr.
+     * A submodule vector can be extended any time; it can be shrunk only if it
+     * contains no submodules in the index range which is going to be removed.
+     * Throws an error if there is no such submodule vector, or the removed
+     * range contains submodules. Modules can be removed from the submodule
+     * vector by calling their deleteModule() method.
      */
     virtual void setSubmoduleVectorSize(const char *name, int size);
+
+    /**
+     * Creates and initializes a submodule. If index is present, then the
+     * submodule becomes an element in a submodule vector; the submodule
+     * vector of the given name must already exist, have a sufficient size
+     * (size>index), and the indexth position must be empty.
+     *
+     * Note: This method just delegates to cModuleType::createScheduleInit().
+     * If parameters need to be set or gates need to be connected before
+     * building the internal structure (in case type is a compound module)
+     * and initializing the module, use cModuleType::create() instead of
+     * this method.
+     *
+     * @see cModuleType::createScheduleInit(), cModuleType::create()
+     */
+    virtual cModule *addSubmodule(cModuleType *type, const char *name, int index=-1);
 
     /**
      * Returns true if a submodule with the given name (and index) exists,

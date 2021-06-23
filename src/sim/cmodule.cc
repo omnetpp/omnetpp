@@ -1377,6 +1377,11 @@ void cModule::setSubmoduleVectorSize(const char *name, int newSize)
     array.resize(newSize, nullptr);
 }
 
+cModule *cModule::addSubmodule(cModuleType *type, const char *name, int index)
+{
+    return type->createScheduleInit(name, this, index);
+}
+
 bool cModule::hasSubmodule(const char *name, int index) const
 {
     return getSubmodule(name, index) != nullptr;
