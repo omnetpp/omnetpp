@@ -1078,7 +1078,10 @@ void MsgCodeGenerator::generateStructImpl(const ClassInfo& classInfo)
 
 std::string MsgCodeGenerator::makeCast(const ClassInfo& classInfo, const std::string& var)
 {
-    return "(" + classInfo.className + " *)" + var;
+    if (classInfo.iscObject)
+        return "static_cast<" + classInfo.className + "*>(reinterpret_cast<cObject*>(" + var + "))";
+    else
+        return "reinterpret_cast<" + classInfo.className + "*>(" + var + ")";
 }
 
 void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
