@@ -115,13 +115,13 @@ inline bool containsKey(const std::unordered_map<K,V,H,P>& m, const K& a) {
 
 template<typename T>
 void insert(std::vector<T>& v, int pos, const T& a) {
-    Assert(pos >= 0 && pos <= (int)v.size());
+    Assert(pos >= 0 && (size_t)pos <= v.size());
     v.insert(v.begin() + pos, a);
 }
 
 template<typename T>
 void erase(std::vector<T>& v, int pos) {
-    Assert(pos >= 0 && pos < (int)v.size());
+    Assert(pos >= 0 && (size_t)pos < v.size());
     v.erase(v.begin() + pos);
 }
 
