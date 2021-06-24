@@ -1076,6 +1076,11 @@ void MsgCodeGenerator::generateStructImpl(const ClassInfo& classInfo)
     reportUnusedMethodCplusplusBlocks(classInfo);
 }
 
+std::string MsgCodeGenerator::makeCast(const ClassInfo& classInfo, const std::string& var)
+{
+    return "(" + classInfo.className + " *)" + var;
+}
+
 void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
 {
     CC << "class " << classInfo.descriptorClass << " : public omnetpp::cClassDescriptor\n";
@@ -1356,7 +1361,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "            return basedesc->getFieldArraySize(object, field);\n";
     CC << "        field -= basedesc->getFieldCount();\n";
     CC << "    }\n";
-    CC << "    " << classInfo.className << " *pp = (" << classInfo.className << " *)object; (void)pp;\n";
+    CC << "    " << classInfo.className << " *pp = " << makeCast(classInfo, "object") << "; (void)pp;\n";
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < numFields; i++) {
         const FieldInfo& field = classInfo.fieldList[i];
@@ -1389,7 +1394,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "        }\n";
     CC << "        field -= basedesc->getFieldCount();\n";
     CC << "    }\n";
-    CC << "    " << classInfo.className << " *pp = (" << classInfo.className << " *)object; (void)pp;\n";
+    CC << "    " << classInfo.className << " *pp = " << makeCast(classInfo, "object") << "; (void)pp;\n";
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < numFields; i++) {
         const FieldInfo& field = classInfo.fieldList[i];
@@ -1413,7 +1418,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "            return basedesc->getFieldDynamicTypeString(object,field,i);\n";
     CC << "        field -= basedesc->getFieldCount();\n";
     CC << "    }\n";
-    CC << "    " << classInfo.className << " *pp = (" << classInfo.className << " *)object; (void)pp;\n";
+    CC << "    " << classInfo.className << " *pp = " << makeCast(classInfo, "object") << "; (void)pp;\n";
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < numFields; i++) {
         const FieldInfo& field = classInfo.fieldList[i];
@@ -1440,7 +1445,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "            return basedesc->getFieldValueAsString(object,field,i);\n";
     CC << "        field -= basedesc->getFieldCount();\n";
     CC << "    }\n";
-    CC << "    " << classInfo.className << " *pp = (" << classInfo.className << " *)object; (void)pp;\n";
+    CC << "    " << classInfo.className << " *pp = " << makeCast(classInfo, "object") << "; (void)pp;\n";
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < numFields; i++) {
         const FieldInfo& field = classInfo.fieldList[i];
@@ -1473,7 +1478,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "        }\n";
     CC << "        field -= basedesc->getFieldCount();\n";
     CC << "    }\n";
-    CC << "    " << classInfo.className << " *pp = (" << classInfo.className << " *)object; (void)pp;\n";
+    CC << "    " << classInfo.className << " *pp = " << makeCast(classInfo, "object") << "; (void)pp;\n";
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < numFields; i++) {
         const FieldInfo& field = classInfo.fieldList[i];
@@ -1533,7 +1538,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "            return basedesc->getFieldStructValuePointer(object, field, i);\n";
     CC << "        field -= basedesc->getFieldCount();\n";
     CC << "    }\n";
-    CC << "    " << classInfo.className << " *pp = (" << classInfo.className << " *)object; (void)pp;\n";
+    CC << "    " << classInfo.className << " *pp = " << makeCast(classInfo, "object") << "; (void)pp;\n";
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < numFields; i++) {
         const FieldInfo& field = classInfo.fieldList[i];
@@ -1563,7 +1568,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "        }\n";
     CC << "        field -= basedesc->getFieldCount();\n";
     CC << "    }\n";
-    CC << "    " << classInfo.className << " *pp = (" << classInfo.className << " *)object; (void)pp;\n";
+    CC << "    " << classInfo.className << " *pp = " << makeCast(classInfo, "object") << "; (void)pp;\n";
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < numFields; i++) {
         const FieldInfo& field = classInfo.fieldList[i];
