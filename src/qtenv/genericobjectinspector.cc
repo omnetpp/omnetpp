@@ -249,7 +249,7 @@ void GenericObjectInspector::closeEvent(QCloseEvent *event)
 
 void GenericObjectInspector::onTreeViewActivated(const QModelIndex &index)
 {
-    auto object = sourceModel->getCObjectPointer(proxyModel->mapToSource(index));
+    auto object = sourceModel->getCObjectPointerToInspect(proxyModel->mapToSource(index));
     if (!object)
         return;
 
@@ -290,10 +290,13 @@ void GenericObjectInspector::createContextMenu(QPoint pos)
     if (node) {
         QMenu *menu;
 
-        cObject *object = node->getCObjectPointer();
+        cObject *object = sourceModel->getCObjectPointer(sourceIndex);
         if (object) {
             QVector<cObject *> objects;
             objects.push_back(object);
+            cObject *objectToInspect = sourceModel->getCObjectPointerToInspect(sourceIndex);
+            if (objectToInspect != nullptr && objectToInspect != object)
+                objects.push_back(objectToInspect);
             menu = InspectorUtil::createInspectorContextMenu(objects, this);
             menu->addSeparator();
         }

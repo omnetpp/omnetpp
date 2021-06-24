@@ -126,7 +126,13 @@ void ObjectTreeInspector::createContextMenu(QPoint pos)
     QModelIndex index = view->indexAt(pos);
     if (index.isValid()) {
         QVector<cObject *> objects;
-        objects.push_back(model->getCObjectPointer(index));
+        cObject *obj = model->getCObjectPointer(index);
+        objects.push_back(obj);
+
+        cObject *objToInspect = model->getCObjectPointerToInspect(index);
+        if (objToInspect != nullptr && objToInspect != obj)
+            objects.push_back(objToInspect);
+
         QMenu *menu = InspectorUtil::createInspectorContextMenu(objects, this);
         menu->exec(mapToGlobal(pos));
         delete menu;
@@ -191,7 +197,7 @@ void ObjectTreeInspector::onClick(QModelIndex index)
 void ObjectTreeInspector::onDoubleClick(QModelIndex index)
 {
     if (index.isValid())
-        emit objectDoubleClicked(model->getCObjectPointer(index));
+        emit objectDoubleClicked(model->getCObjectPointerToInspect(index));
 }
 
 }  // namespace qtenv

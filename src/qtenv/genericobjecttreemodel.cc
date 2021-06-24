@@ -24,6 +24,7 @@
 #include "qtenv.h"
 #include "common/stringutil.h"
 #include "common/stlutil.h"
+#include "omnetpp/cwatch.h"
 #include "genericobjecttreenodes.h"
 
 #define emit
@@ -264,6 +265,16 @@ cObject *GenericObjectTreeModel::getCObjectPointer(const QModelIndex &index)
 {
     auto node = static_cast<TreeNode *>(index.internalPointer());
     return node ? node->getCObjectPointer() : nullptr;
+}
+
+cObject *GenericObjectTreeModel::getCObjectPointerToInspect(const QModelIndex &index)
+{
+    cObject *object = getCObjectPointer(index);
+    if (auto w = dynamic_cast<cWatch_cObject *>(object))
+        return w->getObjectPtr();
+    if (auto w = dynamic_cast<cWatch_cObjectPtr *>(object))
+        return w->getObjectPtr();
+    return object;
 }
 
 GenericObjectTreeModel::~GenericObjectTreeModel()

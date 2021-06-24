@@ -22,8 +22,6 @@
 
 #include "common/stringutil.h"
 #include "omnetpp/cwatch.h"
-#include "omnetpp/globals.h"
-#include "omnetpp/cclassdescriptor.h"
 
 using namespace omnetpp::common;
 
@@ -36,92 +34,130 @@ namespace omnetpp {
  * the actually watched object.
  */
 class cWatchProxyDescriptor : public cClassDescriptor {
-    cClassDescriptor *watchedDescriptor; // most methods delegate to this
+    cWatchBase *watchToDescribe;
 
   protected:
-
     // The inspectors will inspect a cWatchBase (or subclass) instance, but the
     // descriptor of the watched object expects a pointer to its own (described) type.
     // This is a helper that turns the former into the latter.
-    static cObject *castToWatchAndGetWatchedObject(any_ptr object) {
-        cObject *cObj = fromAnyPtr<cObject>(object);
-        if (auto watch_obj = dynamic_cast<cWatch_cObject*>(cObj))
-            return &watch_obj->r;
-        if (auto watch_ptr = dynamic_cast<cWatch_cObjectPtr*>(cObj))
-            return watch_ptr->rp;
-        return nullptr;
+    cObject *getWatchedObject() const {
+        cObject *watched = nullptr;
+        if (auto watch_obj = dynamic_cast<cWatch_cObject*>(watchToDescribe))
+            watched = &watch_obj->r;
+        else if (auto watch_ptr = dynamic_cast<cWatch_cObjectPtr*>(watchToDescribe))
+            watched = watch_ptr->rp;
+        return watched;
+    }
+
+    cClassDescriptor *getWatchedDescriptor() const {
+        cObject *watched = getWatchedObject();
+        return watched ? watched->getDescriptor() : cClassDescriptor::getDescriptorFor("omnetpp::cObject");
     }
 
   public:
-    cWatchProxyDescriptor(cClassDescriptor *watchedDescriptor)
-      : cClassDescriptor(watchedDescriptor->getClassName()), watchedDescriptor(watchedDescriptor)
-    { }
+    cWatchProxyDescriptor(cWatchBase *watchToDescribe) : cClassDescriptor("cWatchBase"), watchToDescribe(watchToDescribe) { }
+    virtual const char **getPropertyNames() const override { return getWatchedDescriptor()->getPropertyNames(); }
+    virtual const char *getProperty(const char *propertyname) const override { return getWatchedDescriptor()->getProperty(propertyname); }
 
-    virtual const char **getPropertyNames() const override { return watchedDescriptor->getPropertyNames(); }
-    virtual const char *getProperty(const char *propertyname) const override { return watchedDescriptor->getProperty(propertyname); }
+    virtual int getFieldCount() const override { return getWatchedObject() == nullptr ? 0 : getWatchedDescriptor()->getFieldCount(); }
+    virtual const char *getFieldName(int field) const override { return getWatchedDescriptor()->getFieldName(field); }
+    virtual unsigned int getFieldTypeFlags(int field) const override { return getWatchedDescriptor()->getFieldTypeFlags(field); }
+    virtual const char *getFieldTypeString(int field) const override { return getWatchedDescriptor()->getFieldTypeString(field); }
+    virtual const char *getFieldStructName(int field) const override { return getWatchedDescriptor()->getFieldStructName(field); }
 
-    virtual int getFieldCount() const override { return watchedDescriptor->getFieldCount(); }
-    virtual const char *getFieldName(int field) const override { return watchedDescriptor->getFieldName(field); }
-    virtual unsigned int getFieldTypeFlags(int field) const override { return watchedDescriptor->getFieldTypeFlags(field); }
-    virtual const char *getFieldTypeString(int field) const override { return watchedDescriptor->getFieldTypeString(field); }
-    virtual const char *getFieldStructName(int field) const override { return watchedDescriptor->getFieldStructName(field); }
+    virtual const char **getFieldPropertyNames(int field) const override { return getWatchedDescriptor()->getFieldPropertyNames(field); }
+    virtual const char *getFieldProperty(int field, const char *propertyname) const override { return getWatchedDescriptor()->getFieldProperty(field, propertyname); }
 
-    virtual const char **getFieldPropertyNames(int field) const override { return watchedDescriptor->getFieldPropertyNames(field); }
-    virtual const char *getFieldProperty(int field, const char *propertyname) const override { return watchedDescriptor->getFieldProperty(field, propertyname); }
-
+    // Each cObject[Ptr]Watch instance has its own descriptor instance, which must only describe that watch
+    // instance only, because the type to act as (masquerade) depends on the concrete type pointed to by the
+    // watched cObject pointer (captured by reference) at any given moment. And we have no access to any
+    // (external) object pointers in the class-level query methods above.
     virtual std::string getFieldValueAsString(any_ptr object, int field, int i) const override {
-        cObject *watched = castToWatchAndGetWatchedObject(object);
-        return watchedDescriptor->getFieldValueAsString(toAnyPtr(watched), field, i);
+        ASSERT(fromAnyPtr<cObject>(object) == watchToDescribe);
+        cObject *watched = getWatchedObject();
+        return watched ? watched->getDescriptor()->getFieldValueAsString(any_ptr(watched), field, i) : "n/a";
     }
 
     virtual void setFieldValueAsString(any_ptr object, int field, int i, const char *value) const override {
-        cObject *watched = castToWatchAndGetWatchedObject(object);
-        watchedDescriptor->setFieldValueAsString(toAnyPtr(watched), field, i, value);
+        ASSERT(fromAnyPtr<cObject>(object) == watchToDescribe);
+        cObject *watched = getWatchedObject();
+        if (watched)
+            getWatchedDescriptor()->setFieldValueAsString(any_ptr(watched), field, i, value);
     }
 
     virtual any_ptr getFieldStructValuePointer(any_ptr object, int field, int i) const override {
-        cObject *watched = castToWatchAndGetWatchedObject(object);
-        return watchedDescriptor->getFieldStructValuePointer(toAnyPtr(watched), field, i);
+        ASSERT(fromAnyPtr<cObject>(object) == watchToDescribe);
+        cObject *watched = getWatchedObject();
+        return watched != nullptr ? getWatchedDescriptor()->getFieldStructValuePointer(any_ptr(watched), field, i) : any_ptr(nullptr);
     }
 
     virtual void setFieldStructValuePointer(any_ptr object, int field, int i, any_ptr ptr) const override {
-        cObject *watched = castToWatchAndGetWatchedObject(object);
-        watchedDescriptor->setFieldStructValuePointer(toAnyPtr(watched), field, i, ptr);
+        ASSERT(fromAnyPtr<cObject>(object) == watchToDescribe);
+        cObject *watched = getWatchedObject();
+        if (watched)
+            getWatchedDescriptor()->setFieldStructValuePointer(any_ptr(watched), field, i, ptr);
     }
 
     virtual int getFieldArraySize(any_ptr object, int field) const override {
-        cObject *watched = castToWatchAndGetWatchedObject(object);
-        return watchedDescriptor->getFieldArraySize(toAnyPtr(watched), field);
+        ASSERT(fromAnyPtr<cObject>(object) == static_cast<cObject *>(watchToDescribe));
+        cObject *watched = getWatchedObject();
+        return watched ? getWatchedDescriptor()->getFieldArraySize(any_ptr(watched), field) : 0;
     }
 
     virtual void setFieldArraySize(any_ptr object, int field, int size) const override {
-        cObject *watched = castToWatchAndGetWatchedObject(object);
-        watchedDescriptor->setFieldArraySize(toAnyPtr(watched), field, size);
+        ASSERT(fromAnyPtr<cObject>(object) == static_cast<cObject *>(watchToDescribe));
+        cObject *watched = getWatchedObject();
+        if (watched)
+            getWatchedDescriptor()->setFieldArraySize(any_ptr(watched), field, size);
     }
 };
 
 // ----
 
-cWatch_cObject::cWatch_cObject(const char *name, cObject& ref)
-    : cWatchBase(name), r(ref)
+/**
+ * Internal. Wraps a cVisitor, in such a way that it prevents a single
+ * cObject from being visited. Used to break reference loops when a
+ * cWatch is pointed to its parent.
+ */
+class LoopCuttingVisitor : public cVisitor
 {
-    // lookup the proxy descriptor, or create and register it if it wasn't yet
-    desc = (cClassDescriptor *)classDescriptors.getInstance()->lookup("cWatch_cObject");
-    if (!desc) {
-        desc = new cWatchProxyDescriptor(r.getDescriptor());
-        classDescriptors.getInstance()->add(desc);
+  private:
+    cVisitor *wrapped;
+    cObject *skip;
+  public:
+    LoopCuttingVisitor(cVisitor *wrapped, cObject *skip)
+      : wrapped(wrapped), skip(skip) { }
+
+    virtual bool visit(cObject *obj) override {
+        return obj == skip ? true : wrapped->visit(obj);
     }
+};
+
+// ----
+
+cWatch_cObject::cWatch_cObject(const char *name, const char *typeName, cObject& ref)
+    : cWatchBase(name), r(ref), desc(new cWatchProxyDescriptor(this)), typeName(typeName)
+{
+    take(desc);
 }
 
-cWatch_cObjectPtr::cWatch_cObjectPtr(const char *name, cObject *&ptr)
-    : cWatchBase(name), rp(ptr)
+void cWatch_cObject::forEachChild(cVisitor *visitor)
 {
-    // lookup the proxy descriptor, or create and register it if it wasn't yet
-    desc = (cClassDescriptor *)classDescriptors.getInstance()->lookup("cWatch_cObjectPtr");
-    if (!desc) {
-        desc = new cWatchProxyDescriptor(rp->getDescriptor());
-        classDescriptors.getInstance()->add(desc);
-    }
+    LoopCuttingVisitor lcv(visitor, this);
+    r.forEachChild(&lcv);
+}
+
+cWatch_cObjectPtr::cWatch_cObjectPtr(const char *name, const char *typeName, cObject *&ptr)
+    : cWatchBase(name), rp(ptr), desc(new cWatchProxyDescriptor(this)), typeName(typeName)
+{
+    take(desc);
+}
+
+void cWatch_cObjectPtr::forEachChild(cVisitor *visitor)
+{
+    LoopCuttingVisitor lcv(visitor, this);
+    if (rp)
+        rp->forEachChild(&lcv);
 }
 
 // ----

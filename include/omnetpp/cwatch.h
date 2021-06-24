@@ -19,6 +19,7 @@
 #include <iostream>
 #include <sstream>
 #include "cownedobject.h"
+#include "cclassdescriptor.h"
 
 namespace omnetpp {
 
@@ -208,12 +209,16 @@ class SIM_API cWatch_cObject : public cWatchBase
   private:
     cObject& r;
     cClassDescriptor *desc; // for this watch object, not the one being watched
+    std::string typeName;
   public:
-    cWatch_cObject(const char *name, cObject& ref);
-    virtual const char *getClassName() const override {return r.getClassName();}
-    virtual std::string str() const override {return r.str();}
+    cWatch_cObject(const char *name, const char *typeName, cObject& ref);
+    ~cWatch_cObject() { dropAndDelete(desc); }
+    virtual const char *getClassName() const override {return typeName.c_str();}
+    virtual std::string str() const override {return std::string("-> ") + r.getClassName() + ")" + r.getFullName() + " " + r.str();}
     virtual bool supportsAssignment() const override {return false;}
     virtual cClassDescriptor *getDescriptor() const override {return desc;}
+    virtual void forEachChild(cVisitor *visitor) override;
+    cObject *getObjectPtr() const {return &r;}
 };
 
 /**
@@ -226,12 +231,16 @@ class SIM_API cWatch_cObjectPtr : public cWatchBase
   private:
     cObject *&rp;
     cClassDescriptor *desc; // for this watch object, not the one being watched
+    std::string typeName;
   public:
-    cWatch_cObjectPtr(const char *name, cObject *&ptr);
-    virtual const char *getClassName() const override {return rp ? rp->getClassName() : "n/a";}
-    virtual std::string str() const override {return rp ? rp->str() : "<null>";}
+    cWatch_cObjectPtr(const char *name, const char* typeName, cObject *&ptr);
+    ~cWatch_cObjectPtr() { dropAndDelete(desc); }
+    virtual const char *getClassName() const override {return typeName.c_str();}
+    virtual std::string str() const override {return rp ? ( std::string("-> (") + rp->getClassName() + ")" + rp->getFullName() + " " + rp->str()) : "<null>";}
     virtual bool supportsAssignment() const override {return false;}
     virtual cClassDescriptor *getDescriptor() const override {return desc;}
+    virtual void forEachChild(cVisitor *visitor) override;
+    cObject *getObjectPtr() const {return rp;}
 };
 
 
@@ -300,8 +309,8 @@ inline cWatchBase *createWatch_genericAssignable(const char *varname, T& d) {
 }
 
 // for objects
-inline cWatchBase *createWatch_cObject(const char *varname, cObject& obj) {
-    return new cWatch_cObject(varname, obj);
+inline cWatchBase *createWatch_cObject(const char *varname, const char *typeName, cObject& obj) {
+    return new cWatch_cObject(varname, typeName, obj);
 }
 
 // for pointers to objects.
@@ -311,9 +320,9 @@ inline cWatchBase *createWatch_cObject(const char *varname, cObject& obj) {
 // of type cObject*: the compiler has to be able to cast that
 // implicitly from SomeDerivedType* -- this way we do not accept pointers
 // that are REALLY unrelated.
-inline cWatchBase *createWatch_cObjectPtr(const char *varname, cObject *&refp, cObject *p) {
+inline cWatchBase *createWatch_cObjectPtr(const char *varname, const char *typeName, cObject *&refp, cObject *p) {
     ASSERT(refp==p);
-    return new cWatch_cObjectPtr(varname, refp);
+    return new cWatch_cObjectPtr(varname, typeName, refp);
 }
 
 
@@ -343,7 +352,7 @@ inline cWatchBase *createWatch_cObjectPtr(const char *varname, cObject *&refp, c
  *
  * @hideinitializer
  */
-#define WATCH_OBJ(variable)  omnetpp::createWatch_cObject(#variable,(variable))
+#define WATCH_OBJ(variable)  omnetpp::createWatch_cObject(#variable, opp_typename(typeid(variable)), (variable))
 
 /**
  * @brief Makes pointers to objects derived from cObject inspectable in Qtenv.
@@ -351,7 +360,7 @@ inline cWatchBase *createWatch_cObjectPtr(const char *varname, cObject *&refp, c
  *
  * @hideinitializer
  */
-#define WATCH_PTR(variable)  omnetpp::createWatch_cObjectPtr(#variable,(cObject*&)(variable),(variable))
+#define WATCH_PTR(variable)  omnetpp::createWatch_cObjectPtr(#variable, opp_typename(typeid(variable)), (cObject*&)(variable),(variable))
 //@}
 
 }  // namespace omnetpp

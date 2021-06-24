@@ -112,13 +112,27 @@ void WatchTest::activity()
 
     GeneratedClass gc;
     GeneratedMessage gm("gm-obj");
+    GeneratedPacket gp("gp-obj");
     WATCH_OBJ(gc);
     WATCH_OBJ(gm);
+    WATCH_OBJ(gp);
 
     GeneratedClass *gcp = new GeneratedClass;
-    GeneratedMessage *gmp = new GeneratedMessage("gmp-obj");
+    cMessage *gmp = new GeneratedMessage("gmp-obj");
+    cPacket *gpp = new GeneratedPacket("gpp-obj");
     WATCH_PTR(gcp);
     WATCH_PTR(gmp);
+    WATCH_PTR(gpp);
+
+    cObject *no = nullptr;
+    WATCH_PTR(no);
+
+    cObject *dis = this;
+    WATCH_PTR(dis);
+
+    // pointer is captured by reference, and descriptor is not supposed to be cached
+    cObject *changing = nullptr;
+    WATCH_PTR(changing);
 
     // int *wrongp = (int *)gcp;
     // WATCH_PTR(wrongp); -- this has to give a compile error
@@ -157,8 +171,18 @@ void WatchTest::activity()
     WATCH_SET(ss);
 
     // TBD: PTRVECTOR, PTRMAP etc.
-    for ( ; ; )
+    for ( ; ; ) {
         wait(1);
+        changing = new cPacket("Packet");
+        wait(1);
+        delete changing;
+        changing = nullptr;
+        wait(1);
+        changing = new cMessage("Message");
+        wait(1);
+        delete changing;
+        changing = nullptr;
+    }
 }
 
 void WatchTest::handleParameterChange(const char *parname)
@@ -167,3 +191,21 @@ void WatchTest::handleParameterChange(const char *parname)
     new cMessage("dummymsg");  // test that this module will be the owner
 }
 
+
+// Testing that watching an indirect ancestor isn't causing any trouble.
+class Sub : public cSimpleModule
+{
+  public:
+    Sub() : cSimpleModule(16384) {}
+    virtual void activity() override {
+        cObject *subdis = this;
+        WATCH_PTR(subdis);
+        cObject *parent = getParentModule();
+        WATCH_PTR(parent);
+
+        for ( ; ; )
+            wait(10);
+    }
+};
+
+Define_Module(Sub);

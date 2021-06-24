@@ -18,3 +18,10 @@ message GeneratedMessage
     double kaksi;
     string kolme;
 }
+
+packet GeneratedPacket
+{
+    int eins;
+    double zwei;
+    string drei;
+}

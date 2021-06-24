@@ -91,6 +91,9 @@ public:
     void refreshChildList(const QModelIndex &index);
 
     cObject *getCObjectPointer(const QModelIndex &index);
+    // same as above, but translates cWatchObj pointers to their watched cObject pointers
+    cObject *getCObjectPointerToInspect(const QModelIndex &index);
+
     ~GenericObjectTreeModel();
 
 signals:
