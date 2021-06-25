@@ -2,7 +2,7 @@
 <bookmarks>
    <site url="https://download.eclipse.org/releases/2021-06" selected="true" name="Eclipse release 2021-06"/>
    <site url="https://pydev.org/update_sites/8.3.0" selected="true" name="PyDev"/> <!-- from: https://www.pydev.org/update_sites/ -->
-   <site url="https://download.eclipse.org/tools/cdt/releases/10.2" selected="false" name="CDT SDK"/>
+   <site url="https://download.eclipse.org/tools/cdt/releases/10.3" selected="false" name="CDT SDK"/>
    <site url="https://download.eclipse.org/tools/gef/updates/legacy/releases/" selected="false" name="GEF3 Legacy SDK"/>
    <site url="https://download.eclipse.org/eclipse/updates/4.20" selected="false" name="Eclipse 4.20 SDK"/>
 </bookmarks>
