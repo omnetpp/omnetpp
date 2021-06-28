@@ -1110,16 +1110,16 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "    virtual const char *getFieldTypeString(int field) const override;\n";
     CC << "    virtual const char **getFieldPropertyNames(int field) const override;\n";
     CC << "    virtual const char *getFieldProperty(int field, const char *propertyname) const override;\n";
-    CC << "    virtual int getFieldArraySize(void *object, int field) const override;\n";
-    CC << "    virtual void setFieldArraySize(void *object, int field, int size) const override;\n";
+    CC << "    virtual int getFieldArraySize(omnetpp::any_ptr object, int field) const override;\n";
+    CC << "    virtual void setFieldArraySize(omnetpp::any_ptr object, int field, int size) const override;\n";
     CC << "\n";
-    CC << "    virtual const char *getFieldDynamicTypeString(void *object, int field, int i) const override;\n";
-    CC << "    virtual std::string getFieldValueAsString(void *object, int field, int i) const override;\n";
-    CC << "    virtual void setFieldValueAsString(void *object, int field, int i, const char *value) const override;\n";
+    CC << "    virtual const char *getFieldDynamicTypeString(omnetpp::any_ptr object, int field, int i) const override;\n";
+    CC << "    virtual std::string getFieldValueAsString(omnetpp::any_ptr object, int field, int i) const override;\n";
+    CC << "    virtual void setFieldValueAsString(omnetpp::any_ptr object, int field, int i, const char *value) const override;\n";
     CC << "\n";
     CC << "    virtual const char *getFieldStructName(int field) const override;\n";
-    CC << "    virtual void *getFieldStructValuePointer(void *object, int field, int i) const override;\n";
-    CC << "    virtual void setFieldStructValuePointer(void *object, int field, int i, void *ptr) const override;\n";
+    CC << "    virtual omnetpp::any_ptr getFieldStructValuePointer(omnetpp::any_ptr object, int field, int i) const override;\n";
+    CC << "    virtual void setFieldStructValuePointer(omnetpp::any_ptr object, int field, int i, omnetpp::any_ptr ptr) const override;\n";
     CC << "};\n\n";
 
     // register class
@@ -1356,7 +1356,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "\n";
 
     // getFieldArraySize()
-    CC << "int " << classInfo.descriptorClass << "::getFieldArraySize(void *object, int field) const\n";
+    CC << "int " << classInfo.descriptorClass << "::getFieldArraySize(omnetpp::any_ptr object, int field) const\n";
     CC << "{\n";
     CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    if (basedesc) {\n";
@@ -1387,7 +1387,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "\n";
 
     // setFieldArraySize()
-    CC << "void " << classInfo.descriptorClass << "::setFieldArraySize(void *object, int field, int size) const\n";
+    CC << "void " << classInfo.descriptorClass << "::setFieldArraySize(omnetpp::any_ptr object, int field, int size) const\n";
     CC << "{\n";
     CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    if (basedesc) {\n";
@@ -1413,7 +1413,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "\n";
 
     // getFieldDynamicTypeString()
-    CC << "const char *" << classInfo.descriptorClass << "::getFieldDynamicTypeString(void *object, int field, int i) const\n";
+    CC << "const char *" << classInfo.descriptorClass << "::getFieldDynamicTypeString(omnetpp::any_ptr object, int field, int i) const\n";
     CC << "{\n";
     CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    if (basedesc) {\n";
@@ -1440,7 +1440,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "\n";
 
     // getFieldValueAsString()
-    CC << "std::string " << classInfo.descriptorClass << "::getFieldValueAsString(void *object, int field, int i) const\n";
+    CC << "std::string " << classInfo.descriptorClass << "::getFieldValueAsString(omnetpp::any_ptr object, int field, int i) const\n";
     CC << "{\n";
     CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    if (basedesc) {\n";
@@ -1471,7 +1471,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "\n";
 
     // setFieldValueAsString()
-    CC << "void " << classInfo.descriptorClass << "::setFieldValueAsString(void *object, int field, int i, const char *value) const\n";
+    CC << "void " << classInfo.descriptorClass << "::setFieldValueAsString(omnetpp::any_ptr object, int field, int i, const char *value) const\n";
     CC << "{\n";
     CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    if (basedesc) {\n";
@@ -1533,7 +1533,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "\n";
 
     // getFieldStructValuePointer()
-    CC << "void *" << classInfo.descriptorClass << "::getFieldStructValuePointer(void *object, int field, int i) const\n";
+    CC << "omnetpp::any_ptr " << classInfo.descriptorClass << "::getFieldStructValuePointer(omnetpp::any_ptr object, int field, int i) const\n";
     CC << "{\n";
     CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    if (basedesc) {\n";
@@ -1561,7 +1561,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "\n";
 
     // setFieldStructValuePointer()
-    CC << "void " << classInfo.descriptorClass << "::setFieldStructValuePointer(void *object, int field, int i, void *ptr) const\n";
+    CC << "void " << classInfo.descriptorClass << "::setFieldStructValuePointer(omnetpp::any_ptr object, int field, int i, omnetpp::any_ptr ptr) const\n";
     CC << "{\n";
     CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    if (basedesc) {\n";
@@ -1658,7 +1658,7 @@ void MsgCodeGenerator::generateTemplates()
     CC << "// Template rule which fires if a struct or class doesn't have operator<<\n";
     CC << "template<typename T>\n";
     CC << "inline typename std::enable_if<!std::is_base_of<omnetpp::cObject, T>::value, std::ostream&>::type\n";
-    CC << "operator<<(std::ostream& out,const T&) {const char *s = omnetpp::opp_typename(typeid(T)); out.put('<'); out.write(s, strlen(s)); out.put('>'); return out;}\n\n"; // Note: DON'T USE out.operator<<(...)! It would print the pointer, because std::ostream has no operator<< overload for const char *, only for void *!
+    CC << "operator<<(std::ostream& out,const T&) {const char *s = omnetpp::opp_typename(typeid(T)); out.put('<'); out.write(s, strlen(s)); out.put('>'); return out;}\n\n"; // Note: DON'T USE out.operator<<(...)! It would print the pointer, because std::ostream has no operator<< overload for const char *, only for any_ptr !
 
     CC << "// operator<< for std::vector<T>\n";
     CC << "template<typename T, typename A>\n";

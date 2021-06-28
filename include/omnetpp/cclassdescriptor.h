@@ -20,9 +20,9 @@
 #include "cownedobject.h"
 #include "simtime.h"
 #include "opp_string.h"
+#include "any_ptr.h"
 
 namespace omnetpp {
-
 
 /**
  * @brief Abstract base class for structure description classes.
@@ -228,7 +228,7 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
      * Returns the array size of a field in the given object. If the field is
      * not an array, it returns 0.
      */
-    virtual int getFieldArraySize(void *object, int field) const = 0;
+    virtual int getFieldArraySize(any_ptr object, int field) const = 0;
 
     /**
      * Sets the array size of a field in the given object.
@@ -238,7 +238,7 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
      * The i argument must be in the 0..getFieldArraySize()-1 range, or
      * 0 if the field is not an array.
      */
-    virtual void setFieldArraySize(void *object, int field, int size) const = 0;
+    virtual void setFieldArraySize(any_ptr object, int field, int size) const = 0;
 
     /**
      * Returns the runtime type of the given field as a string if it can be
@@ -251,7 +251,7 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
      * The i argument must be in the 0..getFieldArraySize()-1 range, or
      * 0 if the field is not an array.
      */
-    virtual const char *getFieldDynamicTypeString(void *object, int field, int i) const {return nullptr;}
+    virtual const char *getFieldDynamicTypeString(any_ptr object, int field, int i) const {return nullptr;}
 
     /**
      * Returns the value of the given field in the given object as a string.
@@ -261,7 +261,7 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
      * The i argument must be in the 0..getFieldArraySize()-1 range, or
      * 0 if the field is not an array.
      */
-    virtual std::string getFieldValueAsString(void *object, int field, int i) const = 0;
+    virtual std::string getFieldValueAsString(any_ptr object, int field, int i) const = 0;
 
     /**
      * Sets the value of a field in the given object by parsing the given value string.
@@ -271,7 +271,7 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
      * The i argument must be in the 0..getFieldArraySize()-1 range, or
      * 0 if the field is not an array.
      */
-    virtual void setFieldValueAsString(void *object, int field, int i, const char *value) const = 0;
+    virtual void setFieldValueAsString(any_ptr object, int field, int i, const char *value) const = 0;
 
     /**
      * Returns the declared type name of a compound field in the described class.
@@ -286,7 +286,7 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
      * The i argument must be in the 0..getFieldArraySize()-1 range, or
      * 0 if the field is not an array.
      */
-    virtual void *getFieldStructValuePointer(void *object, int field, int i) const = 0;
+    virtual any_ptr getFieldStructValuePointer(any_ptr object, int field, int i) const = 0;
 
     /**
      * Sets a pointer field in the given object.
@@ -296,7 +296,7 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
      * The i argument must be in the 0..getFieldArraySize()-1 range, or
      * 0 if the field is not an array.
      */
-    virtual void setFieldStructValuePointer(void *object, int field, int i, void *ptr) const = 0;
+    virtual void setFieldStructValuePointer(any_ptr object, int field, int i, any_ptr ptr) const = 0;
     //@}
 };
 

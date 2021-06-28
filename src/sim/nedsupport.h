@@ -18,6 +18,7 @@
 
 #include "omnetpp/simkerneldefs.h"
 #include "omnetpp/cnedmathfunction.h"
+#include "omnetpp/any_ptr.h"
 #include "common/expression.h"
 #include "common/exprnodes.h"
 
@@ -249,9 +250,9 @@ class NedObjectNode : public ObjectNode
   protected:
     virtual ExprValue evaluate(Context *context) const override;
     // helpers for evaluate():
-    virtual void setField(cClassDescriptor *desc, void *object, const char *fieldName, const cValue& value) const;
-    virtual void setFieldElement(cClassDescriptor *desc, void *object, const char *fieldName, int fieldIndex, int arrayIndex, const cValue& value) const;
-    virtual void fillObject(cClassDescriptor *desc, void *object, const cValueMap *map) const;
+    virtual void setField(cClassDescriptor *desc, any_ptr object, const char *fieldName, const cValue& value) const;
+    virtual void setFieldElement(cClassDescriptor *desc, any_ptr object, const char *fieldName, int fieldIndex, int arrayIndex, const cValue& value) const;
+    virtual void fillObject(cClassDescriptor *desc, any_ptr object, const cValueMap *map) const;
   public:
     NedObjectNode(const char *typeName, const std::vector<std::string>& fieldNames) : ObjectNode(typeName, fieldNames) {}
     NedObjectNode *dup() const override {return new NedObjectNode(typeName.c_str(), fieldNames);}

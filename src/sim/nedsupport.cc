@@ -457,7 +457,7 @@ ExprValue NedObjectNode::evaluate(Context *context_) const
     }
 }
 
-void NedObjectNode::setField(cClassDescriptor *desc, void *object, const char *fieldName, const cValue& value) const
+void NedObjectNode::setField(cClassDescriptor *desc, any_ptr object, const char *fieldName, const cValue& value) const
 {
     int fieldIndex = desc->findField(fieldName);
     if (fieldIndex == -1)
@@ -479,7 +479,7 @@ void NedObjectNode::setField(cClassDescriptor *desc, void *object, const char *f
     }
 }
 
-void NedObjectNode::setFieldElement(cClassDescriptor *desc, void *object, const char *fieldName, int fieldIndex, int arrayIndex, const cValue& value) const
+void NedObjectNode::setFieldElement(cClassDescriptor *desc, any_ptr object, const char *fieldName, int fieldIndex, int arrayIndex, const cValue& value) const
 {
     bool isCompoundField = desc->getFieldIsCompound(fieldIndex);
     bool isPointerField = desc->getFieldIsPointer(fieldIndex);
@@ -502,7 +502,7 @@ void NedObjectNode::setFieldElement(cClassDescriptor *desc, void *object, const 
     }
     else {
         // non-pointer: set individual fields
-        void *fieldPtr = desc->getFieldStructValuePointer(object, fieldIndex, arrayIndex);
+        any_ptr fieldPtr = desc->getFieldStructValuePointer(object, fieldIndex, arrayIndex);
 
         cClassDescriptor *fieldDesc = isCObjectField ?
                 static_cast<cObject *>(fieldPtr)->getDescriptor() :
@@ -517,7 +517,7 @@ void NedObjectNode::setFieldElement(cClassDescriptor *desc, void *object, const 
     }
 }
 
-void NedObjectNode::fillObject(cClassDescriptor *desc, void *object, const cValueMap *valueMap) const
+void NedObjectNode::fillObject(cClassDescriptor *desc, any_ptr object, const cValueMap *valueMap) const
 {
     for (auto it : valueMap->getFields()) {
         const char *fieldName = it.first.c_str();

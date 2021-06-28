@@ -70,7 +70,7 @@ bool TreeNode::isSameAs(TreeNode *other)
 // the ArrayElementNode contains the children of the element itself
 // but the object pointer in those nodes point to the object that
 // contains the array itself, so we need this parameter
-int TreeNode::computeObjectChildCount(void *obj, cClassDescriptor *desc, Mode mode, bool excludeInherited)
+int TreeNode::computeObjectChildCount(any_ptr obj, cClassDescriptor *desc, Mode mode, bool excludeInherited)
 {
     if (!obj || !desc)
         return 0;
@@ -123,7 +123,7 @@ int TreeNode::computeObjectChildCount(void *obj, cClassDescriptor *desc, Mode mo
 // the ArrayElementNode contains the children of the element itself
 // but the object pointer in those nodes point to the object that
 // contains the array itself, so we need this parameter
-std::vector<TreeNode *> TreeNode::makeObjectChildNodes(void *obj, cClassDescriptor *desc, bool excludeInherited)
+std::vector<TreeNode *> TreeNode::makeObjectChildNodes(any_ptr obj, cClassDescriptor *desc, bool excludeInherited)
 {
     if (!obj || !desc)
         return {};
@@ -186,9 +186,9 @@ std::vector<TreeNode *> TreeNode::makeObjectChildNodes(void *obj, cClassDescript
     return result;
 }
 
-cClassDescriptor *TreeNode::getDescriptorForField(void *obj, cClassDescriptor *desc, int fieldIndex, int arrayIndex)
+cClassDescriptor *TreeNode::getDescriptorForField(any_ptr obj, cClassDescriptor *desc, int fieldIndex, int arrayIndex)
 {
-    void *fieldPtr = desc->getFieldStructValuePointer(obj, fieldIndex, arrayIndex);
+    any_ptr fieldPtr = desc->getFieldStructValuePointer(obj, fieldIndex, arrayIndex);
     if (!fieldPtr)
         return nullptr;
 
@@ -235,7 +235,7 @@ QString TreeNode::getObjectFullNameOrPath(cObject *object)
               : object->getFullPath().c_str();
 }
 
-TreeNode::TreeNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, Mode mode)
+TreeNode::TreeNode(TreeNode *parent, int indexInParent, any_ptr contObject, cClassDescriptor *contDesc, Mode mode)
     : mode(mode), parent(parent), indexInParent(indexInParent),
     containingObject(contObject), containingDesc(contDesc)
 {
@@ -345,7 +345,7 @@ TreeNode::~TreeNode()
         delete c;
 }
 
-SuperClassNode::SuperClassNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, int superClassIndex, Mode mode)
+SuperClassNode::SuperClassNode(TreeNode *parent, int indexInParent, any_ptr contObject, cClassDescriptor *contDesc, int superClassIndex, Mode mode)
     : TreeNode(parent, indexInParent, contObject, contDesc, mode)
 {
     superDesc = containingDesc;
@@ -396,7 +396,7 @@ bool SuperClassNode::matchesPropertyFilter(const QString &property)
     return false;
 }
 
-ChildObjectNode::ChildObjectNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, cObject *object, Mode mode)
+ChildObjectNode::ChildObjectNode(TreeNode *parent, int indexInParent, any_ptr contObject, cClassDescriptor *contDesc, cObject *object, Mode mode)
     : TreeNode(parent, indexInParent, contObject, contDesc, mode), object(object)
 {
 }
@@ -474,7 +474,7 @@ bool TextNode::isSameAs(TreeNode *other)
 }
 
 
-FieldNode::FieldNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, int fieldIndex, Mode mode)
+FieldNode::FieldNode(TreeNode *parent, int indexInParent, any_ptr contObject, cClassDescriptor *contDesc, int fieldIndex, Mode mode)
     : TreeNode(parent, indexInParent, contObject, contDesc, mode), fieldIndex(fieldIndex)
 {
     if (!contDesc->getFieldIsArray(fieldIndex) && contDesc->getFieldIsCompound(fieldIndex)) {
@@ -543,7 +543,7 @@ QVariant FieldNode::computeData(int role)
     QString equals = " = ";
     QString editable = isEditable() ? " [...] " : "";
     QString fieldType = containingDesc->getFieldTypeString(fieldIndex);
-    void *valuePointer = isCompound && !isCObject && !isArray ? containingDesc->getFieldStructValuePointer(containingObject, fieldIndex, 0) : nullptr;
+    any_ptr valuePointer = isCompound && !isCObject && !isArray ? containingDesc->getFieldStructValuePointer(containingObject, fieldIndex, 0) : nullptr;
 
     if (isCompound && !isCObject && !isArray && valuePointer) {
         // Even if it's not a CObject, it can have a different dynamic type
@@ -698,7 +698,7 @@ cObject *RootNode::getCObjectPointer()
     return object;
 }
 
-FieldGroupNode::FieldGroupNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, const std::string& groupName, Mode mode)
+FieldGroupNode::FieldGroupNode(TreeNode *parent, int indexInParent, any_ptr contObject, cClassDescriptor *contDesc, const std::string& groupName, Mode mode)
     : TreeNode(parent, indexInParent, contObject, contDesc, mode), groupName(groupName)
 {
 }
@@ -785,7 +785,7 @@ bool ArrayElementNode::isSameAs(TreeNode *other)
     return fieldIndex == o->fieldIndex && arrayIndex == o->arrayIndex;
 }
 
-ArrayElementNode::ArrayElementNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, int fieldIndex, int arrayIndex, Mode mode)
+ArrayElementNode::ArrayElementNode(TreeNode *parent, int indexInParent, any_ptr contObject, cClassDescriptor *contDesc, int fieldIndex, int arrayIndex, Mode mode)
     : TreeNode(parent, indexInParent, contObject, contDesc, mode), fieldIndex(fieldIndex), arrayIndex(arrayIndex)
 {
 }
