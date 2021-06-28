@@ -64,11 +64,11 @@ unset _ps1_symbol
 ##############################################################
 # OMNeT++ specific changes
 
-export OMNETPP_ROOT=$HOME
+export __omnetpp_root_dir=$(cd $HOME && pwd)
 export TERM=xterm-256color
 
-export PATH=".:${OMNETPP_ROOT}/bin:/opt/mingw64/bin:${PATH}"
-export PYTHONPATH=${OMNETPP_ROOT}/python
+export PATH=".:${__omnetpp_root_dir}/bin:/opt/mingw64/bin:${PATH}"
+export PYTHONPATH=${__omnetpp_root_dir}/python
 export QT_LOGGING_RULES='*.debug=false;qt.qpa.*=false' # disable some qt logging
 
 # source the git completion script if exsist
@@ -81,7 +81,7 @@ fi
 
 PS1='\[\e]0;\w\a\]\n\[\e[32m\]\[\e[33m\]$(__git_ps1 "(%s) ")\w\[\e[0m\]\$ '
 
-PRODUCT=`cat ${OMNETPP_ROOT}/Version | sed 's/omnetpp-/OMNeT++ /' | sed 's/omnest-/OMNEST /'`
+PRODUCT=`cat ${__omnetpp_root_dir}/Version | sed 's/omnetpp-/OMNeT++ /' | sed 's/omnest-/OMNEST /'`
 echo "Welcome to $PRODUCT!"
 
 if [ ! -f Makefile.inc ]; then
