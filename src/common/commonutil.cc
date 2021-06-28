@@ -104,7 +104,8 @@ static std::string demangle(const char *mangledName)
     //   - omnetpp::inner::Foo -> "N7omnetpp5inner3FooE"
     //   - std::runtime_error -> "St13runtime_error"
     //   - Foo* -> "P3Foo" (P prefix means pointer)
-    // see libiberty/cp_demangle.c
+    //   - Dn -> decltype(nullptr)
+    // see libiberty/cp_demangle.c, or run c++filt -t <name> on any mangled type name
     //
     if (opp_isdigit(*s)) {
         // no namespace: just skip the leading number
@@ -190,6 +191,8 @@ static std::string demangle(const char *mangledName)
                     s++;
                 result = s;
             }
+            else if (strcmp(s, "Dn") == 0)
+                result = "nullptr_t";
             else {
                 // dunno how to interpret it, just return it unchanged
                 result = s;
