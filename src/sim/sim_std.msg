@@ -872,7 +872,7 @@ class cFingerprintCalculator extends cObject
     @descriptor(readonly);
 }
 
-class cSimulation extends cNoncopyableOwnedObject
+class cSimulation extends cNamedObject
 {
     @existingClass;
     @overwritePreviousDefinition;
@@ -1331,7 +1331,7 @@ class cNumericResultFilter extends cResultFilter
     @descriptor(readonly);
 }
 
-class IdentityFilter extends cNumericResultFilter
+class IdentityFilter extends cResultFilter
 {
     @existingClass;
     @overwritePreviousDefinition;
@@ -1386,7 +1386,7 @@ class RemoveRepeatsFilter extends cNumericResultFilter
     double lastValue;
 }
 
-class ExpressionFilter extends cNumericResultFilter
+class ExpressionFilter extends cResultFilter
 {
     @existingClass;
     @overwritePreviousDefinition;
