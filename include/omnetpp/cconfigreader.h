@@ -34,13 +34,13 @@ class cConfiguration;
  *
  * @ingroup ExtensionPoints
  */
-class cConfigurationReader
+class /* NOT SIM_API */ cConfigurationReader
 {
   public:
     /**
      * @brief Abstract base class for representing a key-value pair in the configuration.
      */
-    class KeyValue {
+    class /* NOT SIM_API */ KeyValue {
       public:
         virtual ~KeyValue() {}
         virtual const char *getKey() const = 0;

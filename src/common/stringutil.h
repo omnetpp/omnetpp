@@ -363,7 +363,7 @@ COMMON_API std::string opp_indexedname(const char *name, int index=-1);
 /**
  * Prints "name[index]" into the buffer in an efficient way, and returns its pointer.
  */
-char *opp_indexedname(char *buf, size_t bufsize, const char *name, int index);
+COMMON_API char *opp_indexedname(char *buf, size_t bufsize, const char *name, int index);
 
 /**
  * Prints the d integer into the given buffer, then returns the buffer pointer.

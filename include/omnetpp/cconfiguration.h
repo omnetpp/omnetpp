@@ -76,7 +76,7 @@ class SIM_API cConfiguration : public cObject
     /**
      * @brief Describes a configuration entry.
      */
-    class KeyValue {
+    class SIM_API KeyValue {
       public:
         virtual ~KeyValue() {}
         virtual const char *getKey() const = 0;
