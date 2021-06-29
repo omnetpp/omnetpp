@@ -110,14 +110,6 @@ class simtime_t
     @defaultValue(SIMTIME_ZERO);
 }
 
-class StringVector
-{
-    @existingClass;
-    @overwritePreviousDefinition;
-    @descriptor(false);
-    @opaque;
-}
-
 class cObject
 {
     @existingClass;
