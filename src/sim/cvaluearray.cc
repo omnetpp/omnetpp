@@ -208,7 +208,7 @@ std::vector<double> cValueArray::asDoubleVector() const
     std::vector<double> result;
     result.resize(array.size());
     for (int i = 0; i < array.size(); i++)
-        result[i] = array[i].intValue();
+        result[i] = array[i].doubleValue();
     return result;
 }
 
