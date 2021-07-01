@@ -2748,7 +2748,7 @@ void cPathFigure::setPath(const char *pathString)
         }
     }
     catch (std::exception& e) {
-        throw cRuntimeError("%s in path near column %ld", e.what(), s - pathString);
+        throw cRuntimeError("%s in path near column %" PRId64, e.what(), s - pathString);
     }
 }
 

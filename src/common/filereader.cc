@@ -20,6 +20,7 @@
 #include <cstdio>
 #include <cstdarg>
 #include <cstring>
+#include <cinttypes>
 #include <algorithm>
 #include "omnetpp/platdep/platmisc.h"
 #include "commonutil.h"
@@ -402,7 +403,7 @@ char *FileReader::findNextLineStart(char *start, bool bufferFilled)
         else if (getDataEndFileOffset() == getFileSize()) // searching reached to the end of the file without CR/LF
             return nullptr;
         else // line too long
-            throw opp_runtime_error("Line too long, should be below %ld in file '%s'", maxLineSize, fileName.c_str());
+            throw opp_runtime_error("Line too long, should be below %zu in file '%s'", maxLineSize, fileName.c_str());
     }
 
 #ifdef TRACE_FILEREADER
@@ -457,7 +458,7 @@ char *FileReader::findPreviousLineStart(char *start, bool bufferFilled)
         else if (getDataBeginFileOffset() == 0)  // searching reached to the beginning of the file without CR/LF
             return dataBegin;
         else // line too long
-            throw opp_runtime_error("Line too long, should be below %ld in file '%s'", maxLineSize, fileName.c_str());
+            throw opp_runtime_error("Line too long, should be below %zu in file '%s'", maxLineSize, fileName.c_str());
     }
 
 #ifdef TRACE_FILEREADER
