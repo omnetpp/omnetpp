@@ -43,8 +43,7 @@ OBJS= $O/astnode.o $O/sourcedocument.o $O/errorstore.o $O/exception.o \
       $O/xmlastparser.o $O/astbuilder.o \
       $O/msg2.tab.o $O/lex.msg2yy.o \
       $O/msgcompiler.o $O/msgtypetable.o $O/msganalyzer.o $O/msgcodegenerator.o \
-      $O/msgcompilerold.o $O/sim_std_msg.o \
-      $O/nedresourcecache.o $O/nedtypeinfo.o
+      $O/sim_std_msg.o $O/nedresourcecache.o $O/nedtypeinfo.o
 
 GENERATED_SOURCES=nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h \
                   neddtdvalidator.h neddtdvalidator.cc \

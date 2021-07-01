@@ -39,7 +39,7 @@ class MsgTool
     std::vector<std::string> expandMsgFolder(const char *fname);
     std::vector<std::string> expandFileArg(const char *arg);
     bool fileLooksLikeXml(const char *filename);
-    MsgFileElement *parseMsgFile(const char *fname, bool opt_unparsedexpr, bool opt_storesrc);
+    MsgFileElement *parseMsgFile(const char *fname, bool opt_storesrc);
     ASTNode *parseXmlFile(const char *filename);
     FilesElement *wrapIntoFilesElement(ASTNode *tree);
     void moveChildren(ASTNode *source, ASTNode *target);

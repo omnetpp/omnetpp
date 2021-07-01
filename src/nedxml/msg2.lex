@@ -64,9 +64,6 @@ void countChars();
 void extendCount();
 int debugPrint(int c);
 
-static bool recognizeObsoleteKeywords = false;
-static bool recognizeNewKeywords = true;
-
 static int parenDepth = 0;
 
 #define P(x)  (x)
@@ -82,9 +79,9 @@ using namespace omnetpp::nedxml;
 "//"                     { comment(); }
 
 "namespace"              { countChars(); return NAMESPACE; }
-"using"                  { countChars(); return recognizeNewKeywords ? USING : NAME; /*reserved for future use*/ }
+"using"                  { countChars(); return USING; /*reserved for future use*/ }
 "cplusplus"              { countChars(); return CPLUSPLUS; }
-"import"                 { countChars(); return recognizeNewKeywords ? IMPORT : NAME; }
+"import"                 { countChars(); return IMPORT; }
 "struct"                 { countChars(); return STRUCT; }
 "message"                { countChars(); return MESSAGE; }
 "packet"                 { countChars(); return PACKET; }
@@ -101,7 +98,7 @@ using namespace omnetpp::nedxml;
 "long"                   { countChars(); return LONG_; }
 "double"                 { countChars(); return DOUBLE_; }
 "unsigned"               { countChars(); return UNSIGNED_; }
-"const"                  { countChars(); return recognizeNewKeywords ? CONST_ : NAME; /*reserved for future use*/ }
+"const"                  { countChars(); return CONST_; /*reserved for future use*/ }
 "string"                 { countChars(); return STRING_; }
 "true"                   { countChars(); return TRUE_; }
 "false"                  { countChars(); return FALSE_; }
@@ -209,22 +206,6 @@ using namespace omnetpp::nedxml;
 .                        { countChars(); return INVALID_CHAR; }
 
 %%
-
-namespace omnetpp {
-namespace nedxml {
-
-void msgLexerSetRecognizeNewKeywords(bool opt)
-{
-    recognizeNewKeywords = opt;
-}
-
-void msgLexerSetRecognizeObsoleteKeywords(bool opt)
-{
-    recognizeObsoleteKeywords = opt;
-}
-
-} // namespace
-} // namespace
 
 int yywrap()
 {

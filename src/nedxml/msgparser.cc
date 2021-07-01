@@ -109,8 +109,6 @@ bool MsgParser::loadText(const char *text, const char *fname)
 ASTNode *MsgParser::parseMsg()
 {
     np.errors->clear();
-    msgLexerSetRecognizeNewKeywords(np.msgNewSyntax);
-    msgLexerSetRecognizeObsoleteKeywords(!np.msgNewSyntax);
     return ::doParseMsg(&np, np.source->getFullText());
 }
 

@@ -78,9 +78,6 @@ class NEDXML_API MsgParser
      */
     bool getStoreSourceFlag() {return np.storesrc;}
 
-    void setMsgNewSyntaxFlag(bool b) {np.msgNewSyntax = b;}
-    bool getMsgNewSyntaxFlag() {return np.msgNewSyntax;}
-
     /**
      * Parse the given MSG (.msg) file and return the result tree.
      * Returns nullptr or partial tree if there was an error.

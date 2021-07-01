@@ -46,7 +46,6 @@ struct YYLoc {
 
 //TODO cleanup
 struct ParseContext {
-    bool msgNewSyntax = true;
     bool storesrc = false;               // whether to fill in sourceCode attributes
     const char *filename = nullptr;      // name of file being parsed
     ErrorStore *errors = nullptr;        // accumulates error messages
@@ -61,9 +60,6 @@ struct ParseContext {
 
 typedef struct {int li; int co;} LineColumn;
 extern LineColumn pos, prevpos;  //FIXME into context!
-
-void msgLexerSetRecognizeNewKeywords(bool opt);
-void msgLexerSetRecognizeObsoleteKeywords(bool opt);
 
 }  // namespace nedxml
 }  // namespace omnetpp
