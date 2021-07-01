@@ -203,12 +203,30 @@ std::vector<intval_t> cValueArray::asIntVector() const
     return result;
 }
 
+std::vector<intval_t> cValueArray::asIntVectorInUnit(const char *targetUnit) const
+{
+    std::vector<intval_t> result;
+    result.resize(array.size());
+    for (int i = 0; i < array.size(); i++)
+        result[i] = array[i].intValueInUnit(targetUnit);
+    return result;
+}
+
 std::vector<double> cValueArray::asDoubleVector() const
 {
     std::vector<double> result;
     result.resize(array.size());
     for (int i = 0; i < array.size(); i++)
         result[i] = array[i].doubleValue();
+    return result;
+}
+
+std::vector<double> cValueArray::asDoubleVectorInUnit(const char *targetUnit) const
+{
+    std::vector<double> result;
+    result.resize(array.size());
+    for (int i = 0; i < array.size(); i++)
+        result[i] = array[i].doubleValueInUnit(targetUnit);
     return result;
 }
 

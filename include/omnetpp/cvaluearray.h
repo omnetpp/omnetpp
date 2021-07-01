@@ -205,10 +205,22 @@ class SIM_API cValueArray : public cOwnedObject
     std::vector<intval_t> asIntVector() const;
 
     /**
+     * Converts each element to integer, and returns the result.
+     * If an element cannot be converted (see cValue API), an exception is thrown.
+     */
+    std::vector<intval_t> asIntVectorInUnit(const char *targetUnit) const;
+
+    /**
      * Converts each element to double, and returns the result.
      * If an element cannot be converted (see cValue API), an exception is thrown.
      */
     std::vector<double> asDoubleVector() const;
+
+    /**
+     * Converts each element to double, and returns the result.
+     * If an element cannot be converted (see cValue API), an exception is thrown.
+     */
+    std::vector<double> asDoubleVectorInUnit(const char *targetUnit) const;
 
     /**
      * Converts each element to string, and returns the result.
