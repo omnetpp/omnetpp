@@ -89,7 +89,7 @@ pre.src {
 
 /************************ styles for navigation tree **********************/
 
-.drawer { background-color: white; overflow: hidden; }
+.drawer { background-color: white; overflow: hidden; resize: horizontal; }
 
 .arrow {
     color: #9CAFD4;
@@ -121,7 +121,7 @@ pre.src {
     height: 100%;
 }
 
-#nav-tree::-webkit-scrollbar, pre.src::-webkit-scrollbar { width: 4px; height: 4px; }
+#nav-tree::-webkit-scrollbar, pre.src::-webkit-scrollbar { width: 6px; height: 12px; }
 #nav-tree::-webkit-scrollbar-track, pre.src::-webkit-scrollbar-track { background:#00000020; }
 #nav-tree::-webkit-scrollbar-thumb, pre.src::-webkit-scrollbar-thumb { background: #00000040; }
 
