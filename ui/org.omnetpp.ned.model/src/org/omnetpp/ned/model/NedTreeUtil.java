@@ -192,7 +192,6 @@ public class NedTreeUtil {
             // parse
             ErrorStore swigErrors = new ErrorStore();
             MsgParser np = new MsgParser(swigErrors);
-            np.setMsgNewSyntaxFlag(true); //TODO configurable?
             swigTree = source!=null ? np.parseMsgText(source, filename) : np.parseMsgFile(filename);
             if (swigTree == null) {
                 // return an empty MsgFileElement if parsing totally failed
