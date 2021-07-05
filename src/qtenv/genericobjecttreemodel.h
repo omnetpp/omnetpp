@@ -28,7 +28,7 @@
 namespace omnetpp {
 namespace qtenv {
 
-class TreeNode;
+class RootNode;
 
 // this is wrapped in a QVariant to be returned by the model
 // when the UserRole data is requested, so the itemdelegate
@@ -57,7 +57,7 @@ class QTENV_API GenericObjectTreeModel : public QAbstractItemModel
 {
     Q_OBJECT
 
-    TreeNode *rootNode;
+    std::vector<RootNode *> rootNodes;
 
 public:
     // enum class so we can typedef it in TreeNode and the Inspector
@@ -70,6 +70,9 @@ public:
     };
 
     GenericObjectTreeModel(cObject *object, Mode mode, QObject *parent = nullptr);
+    GenericObjectTreeModel(std::vector<cObject *> roots, Mode mode, QObject *parent = nullptr);
+
+    std::vector<cObject *> getRootObjects();
 
     QModelIndex index(int row, int column, const QModelIndex &parent) const override;
     QModelIndex parent(const QModelIndex &child) const override;

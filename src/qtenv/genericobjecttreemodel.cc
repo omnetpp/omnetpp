@@ -46,7 +46,7 @@ void PropertyFilteredGenericObjectTreeModel::setRelevantProperty(const QString &
 bool PropertyFilteredGenericObjectTreeModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
     if (relevantProperty.isEmpty() || !sourceParent.isValid())
-        return true; // empty filter is pass-through, and always including the tree root
+        return true; // empty filter is pass-through, and always including the tree roots
 
     QModelIndex sourceIndex = sourceModel()->index(sourceRow, 0, sourceParent);
 
@@ -57,19 +57,41 @@ bool PropertyFilteredGenericObjectTreeModel::filterAcceptsRow(int sourceRow, con
 
 
 GenericObjectTreeModel::GenericObjectTreeModel(cObject *object, Mode mode, QObject *parent)
-    : QAbstractItemModel(parent), rootNode(new RootNode(object, mode))
+    : GenericObjectTreeModel(std::vector<cObject*>{object}, mode, parent)
 {
-    rootNode->init();
-    // Since the root node is always going to be expanded right at the beginning,
-    // let's just go ahead and fill it with children and data to reduce flickering.
-    rootNode->fill();
-    rootNode->gatherDataIfMissing();
+    // nothing, delegating to other ctor
+}
+
+GenericObjectTreeModel::GenericObjectTreeModel(std::vector<cObject *> roots, Mode mode, QObject *parent)
+    : QAbstractItemModel(parent)
+{
+    for (int i = 0; i < (int)roots.size(); ++i) {
+        cObject *root = roots[i];
+        RootNode *rootNode = new RootNode(root, i, mode);
+
+        rootNode->init();
+        // Since the root node is always going to be expanded right at the beginning,
+        // let's just go ahead and fill it with children and data to reduce flickering.
+        rootNode->fill();
+        rootNode->gatherDataIfMissing();
+
+        rootNodes.push_back(rootNode);
+    }
+}
+
+std::vector<cObject *> GenericObjectTreeModel::getRootObjects()
+{
+    std::vector<cObject *> result;
+    for (RootNode *rootNode : rootNodes)
+        result.push_back(rootNode->getCObjectPointer());
+    return result;
 }
 
 QModelIndex GenericObjectTreeModel::index(int row, int column, const QModelIndex& parent) const
 {
     if (!parent.isValid()) {
-        return createIndex(0, 0, rootNode);
+        ASSERT(row < rootNodes.size());
+        return createIndex(row, column, rootNodes[row]);
     }
     else {
         TreeNode *parentNode = static_cast<TreeNode *>(parent.internalPointer());
@@ -83,7 +105,7 @@ QModelIndex GenericObjectTreeModel::index(int row, int column, const QModelIndex
 QModelIndex GenericObjectTreeModel::parent(const QModelIndex& child) const
 {
     TreeNode *node = static_cast<TreeNode *>(child.internalPointer());
-    // the "row" of the parent ModelIndex is it's own index in it's parent,
+    // the "row" of the parent ModelIndex is its own index in its parent,
     // and not the index of this child in the parent ModelIndex
     return node->getParent()
             ? createIndex(node->getParent()->getIndexInParent(), 0, node->getParent())
@@ -93,8 +115,8 @@ QModelIndex GenericObjectTreeModel::parent(const QModelIndex& child) const
 bool GenericObjectTreeModel::hasChildren(const QModelIndex& parent) const
 {
     if (!parent.isValid()) {
-        // it is the root, and we have one of it
-        return rootNode;
+        // it is the root
+        return !rootNodes.empty();
     }
     else {
         TreeNode *parentNode = static_cast<TreeNode *>(parent.internalPointer());
@@ -105,8 +127,8 @@ bool GenericObjectTreeModel::hasChildren(const QModelIndex& parent) const
 int GenericObjectTreeModel::rowCount(const QModelIndex& parent) const
 {
     if (!parent.isValid()) {
-        // it is the root, and we have one of it
-        return 1;
+        // it is the root
+        return rootNodes.size();
     }
     else {
         TreeNode *parentNode = static_cast<TreeNode *>(parent.internalPointer());
@@ -172,13 +194,14 @@ void GenericObjectTreeModel::refreshTreeStructure()
 {
     emit layoutAboutToBeChanged();
 
-    // the single tree root, not the "invalid index"
-    refreshNodeChildrenRec(index(0, 0, QModelIndex()));
+    for (int i = 0; i < rootNodes.size(); ++i)
+        refreshNodeChildrenRec(index(i, 0, QModelIndex()));
 
-    // It's important to restore the data into the root node so it can give an
+    // It's important to restore the data into the root nodes so they can give an
     // accurate sizeHint. Since we have uniform item heights enabled, the height
-    // of the first item (the root) determines the height of all items.
-    rootNode->gatherDataIfMissing();
+    // of the first item (the first root) determines the height of all items.
+    for (auto rootNode : rootNodes)
+        rootNode->gatherDataIfMissing();
 
     // also, this will make Qt realize that some nodes have gained or lost children,
     // and the triangle to expand the item will be shown/hidden accordingly
@@ -245,7 +268,8 @@ cObject *GenericObjectTreeModel::getCObjectPointer(const QModelIndex &index)
 
 GenericObjectTreeModel::~GenericObjectTreeModel()
 {
-    delete rootNode;
+    for (auto rootNode : rootNodes)
+        delete rootNode;
 }
 
 }  // namespace qtenv

@@ -215,7 +215,7 @@ class QTENV_API RootNode : public TreeNode
     bool isSameAs(TreeNode *other) override;
 
   public:
-    RootNode(cObject *object, Mode mode);
+    RootNode(cObject *object, int indexInParent, Mode mode);
     int computeChildCount() override;
     QVariant computeData(int role) override;
     QString computeNodeIdentifier() override;

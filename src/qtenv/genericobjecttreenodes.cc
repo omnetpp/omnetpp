@@ -658,8 +658,8 @@ bool RootNode::isSameAs(TreeNode *other)
     return object == o->object;
 }
 
-RootNode::RootNode(cObject *object, Mode mode)
-    : TreeNode(nullptr, 0, any_ptr(nullptr), nullptr, mode), object(object)
+RootNode::RootNode(cObject *object, int indexInParent, Mode mode)
+    : TreeNode(nullptr, indexInParent, any_ptr(nullptr), nullptr, mode), object(object)
 {
 }
 
