@@ -5,17 +5,18 @@ Check units usage
 
 cplusplus {{
 #include "../lib/Units.h"
-using namespace inet::units::values;
 }}
 
-namespace @TESTNAME@;
+namespace inet::units::values;
 
 class m {@existingClass;@descriptor(false);}
 class W {@existingClass;@descriptor(false);}
 
+namespace @TESTNAME@;
+
 message Foo {
-    m distance;
-    W power;
+    inet::units::values::m distance;
+    inet::units::values::W power;
 }
 
 %includes:

@@ -1,0 +1,24 @@
+%description:
+If two types are typedefs of the same underlying type unbeknown to the message
+compiler, compilation of the castTo() methods fail because of redefinition.
+
+%file: test.msg
+cplusplus {{
+class A {};
+typedef A Foo;
+typedef A Bar;
+}}
+
+class Foo {
+    @existingClass;
+    @opaque;
+}
+
+class Bar {
+    @existingClass;
+    @opaque;
+    @castFunction(false);  // <-- if you remove this, "error: redefinition of 'fromAnyPtr'" occurs
+}
+
+%file: test.ned
+network Test {}

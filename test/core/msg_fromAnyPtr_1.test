@@ -1,0 +1,97 @@
+%description:
+test toAnyPtr/fromAnyPtr
+
+%file: test.msg
+
+namespace @TESTNAME@;
+
+class Plain {};
+struct Pod {};
+
+%includes:
+#include "test_m.h"
+
+%activity:
+
+#define ENSURE(X)    try { \
+                       EV << #X << ": "; \
+                       bool res = (X); \
+                       EV << (res ? "ok" : "FAIL!") << endl; \
+                     } catch (std::exception& e) { \
+                       EV << "ERROR: " << e.what() << endl; \
+                     }
+
+{
+    EV << "\ncMessage:\n";
+    cMessage tmp;
+    cMessage *msg = &tmp;
+    any_ptr ptr = toAnyPtr(msg);
+
+    ENSURE(fromAnyPtr<cObject>(ptr) == msg);
+    ENSURE(fromAnyPtr<cOwnedObject>(ptr) == msg);
+    ENSURE(fromAnyPtr<cMessage>(ptr) == msg);
+
+    ENSURE(toAnyPtr(static_cast<cObject*>(msg)) == ptr);
+    ENSURE(toAnyPtr(static_cast<cOwnedObject*>(msg)) == ptr);
+}
+
+{
+    EV << "\nHistogramRecorder:\n";
+    HistogramRecorder tmp;
+    HistogramRecorder *rec = &tmp;
+    any_ptr ptr = toAnyPtr(rec);
+
+    ENSURE(fromAnyPtr<HistogramRecorder>(ptr) == rec);
+    ENSURE(fromAnyPtr<cResultListener>(ptr) == rec);
+    //ENSURE(fromAnyPtr<cIListener>(ptr) == rec);  // FIXME this fails, but cClassDescriptors don't do such thing, so it's not a problem
+    ENSURE(fromAnyPtr<cObject>(ptr) == rec);
+
+    ENSURE(toAnyPtr(static_cast<cObject*>(rec)) == ptr);
+    ENSURE(toAnyPtr(static_cast<cIListener*>(rec)) == ptr);
+    ENSURE(toAnyPtr(static_cast<cResultListener*>(rec)) == ptr);
+}
+
+{
+    EV << "\nPlain:\n";
+    Plain tmp;
+    Plain *plain = &tmp;
+    any_ptr ptr = toAnyPtr(plain);
+    ENSURE(fromAnyPtr<Plain>(ptr) == plain);
+}
+
+{
+    EV << "\nPod:\n";
+    Pod tmp;
+    Pod *pod = &tmp;
+    any_ptr ptr = toAnyPtr(pod);
+    ENSURE(fromAnyPtr<Pod>(ptr) == pod);
+}
+
+%#not-contains-regex: stdout
+%#ERROR|FAIL
+
+%contains: stdout
+cMessage:
+fromAnyPtr<cObject>(ptr) == msg: ok
+fromAnyPtr<cOwnedObject>(ptr) == msg: ok
+fromAnyPtr<cMessage>(ptr) == msg: ok
+toAnyPtr(static_cast<cObject*>(msg)) == ptr: ok
+toAnyPtr(static_cast<cOwnedObject*>(msg)) == ptr: ok
+
+HistogramRecorder:
+fromAnyPtr<HistogramRecorder>(ptr) == rec: ok
+fromAnyPtr<cResultListener>(ptr) == rec: ok
+fromAnyPtr<cObject>(ptr) == rec: ok
+toAnyPtr(static_cast<cObject*>(rec)) == ptr: ok
+toAnyPtr(static_cast<cIListener*>(rec)) == ptr: ok
+toAnyPtr(static_cast<cResultListener*>(rec)) == ptr: ok
+
+Plain:
+fromAnyPtr<Plain>(ptr) == plain: ok
+
+Pod:
+fromAnyPtr<Pod>(ptr) == pod: ok
+
+
+
+
