@@ -27,6 +27,7 @@ namespace omnetpp {
 
 class cClassDescriptor;
 class cObject;
+class any_ptr;
 
 namespace envir {
 
@@ -47,7 +48,7 @@ enum ObjectPrinterRecursionControl {
  * Parameters: object that has the field, object's class descriptor, field index, field value,
  * parent objects collected during recursion, recursion level.
  */
-typedef ObjectPrinterRecursionControl (*ObjectPrinterRecursionPredicate)(void *, cClassDescriptor *, int, void *, void **, int);
+typedef ObjectPrinterRecursionControl (*ObjectPrinterRecursionPredicate)(any_ptr, cClassDescriptor *, int, any_ptr, any_ptr*, int);
 
 /**
  * A utility class to serialize an object in text form. It is currently used
@@ -108,7 +109,7 @@ class ENVIR_API ObjectPrinter
 
     protected:
         void printIndent(std::ostream& ostream, int level);
-        void printObjectToStream(std::ostream& ostream, void *object, cClassDescriptor *descriptor, void **objects, int level);
+        void printObjectToStream(std::ostream& ostream, any_ptr object, cClassDescriptor *descriptor, any_ptr *objects, int level);
         bool matchesObjectField(cObject *object, int fieldIndex);
 };
 

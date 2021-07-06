@@ -452,7 +452,7 @@ ExprValue NedObjectNode::evaluate(Context *context_) const
         cTemporaryOwner tmp(cTemporaryOwner::DestructorMode::DISPOSE); // dispose temp objects created during evaluation
         cClassDescriptor *desc = object->getDescriptor();
         for (int i = 0; i < fieldNames.size(); i++)
-            setField(desc, object, fieldNames[i].c_str(), makeNedValue(children[i]->tryEvaluate(context_))); // SHOULD include taking added cOwnedObjects
+            setField(desc, toAnyPtr(object), fieldNames[i].c_str(), makeNedValue(children[i]->tryEvaluate(context_))); // SHOULD include taking added cOwnedObjects
         return object;
     }
 }
@@ -498,14 +498,14 @@ void NedObjectNode::setFieldElement(cClassDescriptor *desc, any_ptr object, cons
         if (value.getType() != cValue::OBJECT)
             throw cRuntimeError("Cannot put %s value into object field '%s%s' inside a '%s'",
                     cValue::getTypeName(value.getType()), fieldName, (fieldIndex==-1 ? "" : "[]"), desc->getFullName());
-        desc->setFieldStructValuePointer(object, fieldIndex, arrayIndex, value.objectValue());
+        desc->setFieldStructValuePointer(object, fieldIndex, arrayIndex, toAnyPtr(value.objectValue()));
     }
     else {
         // non-pointer: set individual fields
         any_ptr fieldPtr = desc->getFieldStructValuePointer(object, fieldIndex, arrayIndex);
 
         cClassDescriptor *fieldDesc = isCObjectField ?
-                static_cast<cObject *>(fieldPtr)->getDescriptor() :
+                fromAnyPtr<cObject>(fieldPtr)->getDescriptor() :
                 cClassDescriptor::getDescriptorFor(desc->getFieldStructName(fieldIndex));
 
         cValueMap *valueMap = value.getType()==cValue::OBJECT ? dynamic_cast<cValueMap *>(value.objectValue()) : nullptr;

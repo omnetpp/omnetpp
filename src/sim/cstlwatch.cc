@@ -20,6 +20,7 @@
 #include "omnetpp/cstlwatch.h"
 #include "omnetpp/cclassdescriptor.h"
 #include "omnetpp/globals.h"
+#include "omnetpp/checkandcast.h"
 
 namespace omnetpp {
 
@@ -106,7 +107,7 @@ const char *cStdVectorWatcherDescriptor::getFieldProperty(int field, const char 
 
 int cStdVectorWatcherDescriptor::getFieldArraySize(any_ptr object, int field) const
 {
-    cStdVectorWatcherBase *pp = (cStdVectorWatcherBase *)object;
+    cStdVectorWatcherBase *pp = check_and_cast<cStdVectorWatcherBase*>(fromAnyPtr<cObject>(object));
     return pp->size();
 }
 
@@ -117,7 +118,7 @@ void cStdVectorWatcherDescriptor::setFieldArraySize(any_ptr object, int field, i
 
 std::string cStdVectorWatcherDescriptor::getFieldValueAsString(any_ptr object, int field, int i) const
 {
-    cStdVectorWatcherBase *pp = (cStdVectorWatcherBase *)object;
+    cStdVectorWatcherBase *pp = check_and_cast<cStdVectorWatcherBase*>(fromAnyPtr<cObject>(object));
     return pp->at(i);
 }
 
@@ -133,7 +134,7 @@ const char *cStdVectorWatcherDescriptor::getFieldStructName(int field) const
 
 any_ptr cStdVectorWatcherDescriptor::getFieldStructValuePointer(any_ptr object, int field, int i) const
 {
-    return nullptr;  //TODO we could return a pointer to the given array element (if element is a compound type)
+    return any_ptr(nullptr);  //TODO we could return a pointer to the given array element (if element is a compound type)
 }
 
 void cStdVectorWatcherDescriptor::setFieldStructValuePointer(any_ptr object, int field, int i, any_ptr ptr) const

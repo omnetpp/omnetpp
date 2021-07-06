@@ -34,7 +34,7 @@ namespace envir {
 
 #define MAXIMUM_OBJECT_PRINTER_LEVEL    20
 
-static ObjectPrinterRecursionControl defaultRecurseIntoMessageFields(void *object, cClassDescriptor *descriptor, int fieldIndex, void *fieldValue, void **parents, int level)
+static ObjectPrinterRecursionControl defaultRecurseIntoMessageFields(any_ptr object, cClassDescriptor *descriptor, int fieldIndex, any_ptr fieldValue, any_ptr *parents, int level)
 {
     const char *fieldName = descriptor->getFieldName(fieldIndex);
     return strcmp(fieldName, "owner") ? RECURSE : SKIP;
@@ -101,10 +101,10 @@ ObjectPrinter::~ObjectPrinter()
 
 void ObjectPrinter::printObjectToStream(std::ostream& ostream, cObject *object)
 {
-    void *parents[MAXIMUM_OBJECT_PRINTER_LEVEL];
+    any_ptr parents[MAXIMUM_OBJECT_PRINTER_LEVEL];
     cClassDescriptor *descriptor = object->getDescriptor();
     ostream << "class " << descriptor->getName() << " {\n";
-    printObjectToStream(ostream, object, descriptor, parents, 0);
+    printObjectToStream(ostream, toAnyPtr(object), descriptor, parents, 0);
     ostream << "}\n";
 }
 
@@ -115,7 +115,7 @@ std::string ObjectPrinter::printObjectToString(cObject *object)
     return out.str();
 }
 
-void ObjectPrinter::printObjectToStream(std::ostream& ostream, void *object, cClassDescriptor *descriptor, void **parents, int level)
+void ObjectPrinter::printObjectToStream(std::ostream& ostream, any_ptr object, cClassDescriptor *descriptor, any_ptr *parents, int level)
 {
     if (level == MAXIMUM_OBJECT_PRINTER_LEVEL) {
         printIndent(ostream, level);
@@ -150,12 +150,12 @@ void ObjectPrinter::printObjectToStream(std::ostream& ostream, void *object, cCl
 
             int size = isArray ? descriptor->getFieldArraySize(object, fieldIndex) : 1;
             for (int elementIndex = 0; elementIndex < size; elementIndex++) {
-                void *fieldValue = isCompound ? descriptor->getFieldStructValuePointer(object, fieldIndex, elementIndex) : nullptr;
+                any_ptr fieldValue = isCompound ? descriptor->getFieldStructValuePointer(object, fieldIndex, elementIndex) : any_ptr(nullptr);
 
                 ObjectPrinterRecursionControl result = RECURSE;
                 if (recursionPredicate)
                     result = recursionPredicate(object, descriptor, fieldIndex, fieldValue, parents, level);
-                if (result == SKIP || (descriptor->extendsCObject() && !matchesObjectField((cObject *)object, fieldIndex)))
+                if (result == SKIP || (descriptor->extendsCObject() && !matchesObjectField(fromAnyPtr<cObject>(object), fieldIndex)))
                     continue;
 
                 printIndent(ostream, level + 1);
@@ -170,17 +170,17 @@ void ObjectPrinter::printObjectToStream(std::ostream& ostream, void *object, cCl
                 ostream << " = ";
 
                 if (isCompound) {
-                    if (fieldValue) {
-                        cClassDescriptor *fieldDescriptor = isCObject ? ((cObject *)fieldValue)->getDescriptor() :
+                    if (fieldValue != nullptr) {
+                        cClassDescriptor *fieldDescriptor = isCObject ? fromAnyPtr<cObject>(fieldValue)->getDescriptor() :
                             cClassDescriptor::getDescriptorFor(descriptor->getFieldStructName(fieldIndex));
 
                         if (isCObject && result == FULL_NAME)
-                            ostream << ((cObject *)fieldValue)->getFullName() << "\n";
+                            ostream << fromAnyPtr<cObject>(fieldValue)->getFullName() << "\n";
                         else if (isCObject && result == FULL_PATH)
-                            ostream << ((cObject *)fieldValue)->getFullPath() << "\n";
+                            ostream << fromAnyPtr<cObject>(fieldValue)->getFullPath() << "\n";
                         else if (fieldDescriptor) {
                             if (isCObject)
-                                ostream << "class " << ((cObject *)fieldValue)->getClassName() << " ";
+                                ostream << "class " << fromAnyPtr<cObject>(fieldValue)->getClassName() << " ";
                             else
                                 ostream << "struct " << descriptor->getFieldStructName(fieldIndex) << " ";
 

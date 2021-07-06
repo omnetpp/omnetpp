@@ -86,7 +86,8 @@ class SIM_API cComponent : public cSoftOwner //implies noncopyable
 
     mutable cDisplayString *displayString; // created on demand
 
-    struct SignalListenerList {
+  public:
+    struct SignalListenerList {  // public for inspectors
         simsignal_t signalID;
         cIListener **listeners; // nullptr-terminated array
 
@@ -103,6 +104,7 @@ class SIM_API cComponent : public cSoftOwner //implies noncopyable
         static bool gt(const SignalListenerList& e1, const SignalListenerList& e2) {return e1.signalID > e2.signalID;}
     };
 
+  private:
     typedef std::vector<SignalListenerList> SignalTable;
     SignalTable *signalTable; // ordered by signalID so we can do binary search
 

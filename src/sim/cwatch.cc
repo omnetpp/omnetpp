@@ -44,7 +44,7 @@ class cWatchProxyDescriptor : public cClassDescriptor {
     // descriptor of the watched object expects a pointer to its own (described) type.
     // This is a helper that turns the former into the latter.
     static cObject *castToWatchAndGetWatchedObject(any_ptr object) {
-        cObject *cObj = (cObject *)object;
+        cObject *cObj = fromAnyPtr<cObject>(object);
         if (auto watch_obj = dynamic_cast<cWatch_cObject*>(cObj))
             return &watch_obj->r;
         if (auto watch_ptr = dynamic_cast<cWatch_cObjectPtr*>(cObj))
@@ -71,32 +71,32 @@ class cWatchProxyDescriptor : public cClassDescriptor {
 
     virtual std::string getFieldValueAsString(any_ptr object, int field, int i) const override {
         cObject *watched = castToWatchAndGetWatchedObject(object);
-        return watchedDescriptor->getFieldValueAsString(watched, field, i);
+        return watchedDescriptor->getFieldValueAsString(toAnyPtr(watched), field, i);
     }
 
     virtual void setFieldValueAsString(any_ptr object, int field, int i, const char *value) const override {
         cObject *watched = castToWatchAndGetWatchedObject(object);
-        watchedDescriptor->setFieldValueAsString(watched, field, i, value);
+        watchedDescriptor->setFieldValueAsString(toAnyPtr(watched), field, i, value);
     }
 
     virtual any_ptr getFieldStructValuePointer(any_ptr object, int field, int i) const override {
         cObject *watched = castToWatchAndGetWatchedObject(object);
-        return watchedDescriptor->getFieldStructValuePointer(watched, field, i);
+        return watchedDescriptor->getFieldStructValuePointer(toAnyPtr(watched), field, i);
     }
 
     virtual void setFieldStructValuePointer(any_ptr object, int field, int i, any_ptr ptr) const override {
         cObject *watched = castToWatchAndGetWatchedObject(object);
-        watchedDescriptor->setFieldStructValuePointer(watched, field, i, ptr);
+        watchedDescriptor->setFieldStructValuePointer(toAnyPtr(watched), field, i, ptr);
     }
 
     virtual int getFieldArraySize(any_ptr object, int field) const override {
         cObject *watched = castToWatchAndGetWatchedObject(object);
-        return watchedDescriptor->getFieldArraySize(watched, field);
+        return watchedDescriptor->getFieldArraySize(toAnyPtr(watched), field);
     }
 
     virtual void setFieldArraySize(any_ptr object, int field, int size) const override {
         cObject *watched = castToWatchAndGetWatchedObject(object);
-        watchedDescriptor->setFieldArraySize(watched, field, size);
+        watchedDescriptor->setFieldArraySize(toAnyPtr(watched), field, size);
     }
 };
 

@@ -34,6 +34,7 @@
 #include "omnetpp/cfutureeventset.h"
 #include "omnetpp/cfingerprint.h"
 #include "omnetpp/cenvir.h"
+#include "omnetpp/checkandcast.h"
 #include "eventlogfilemgr.h"
 #include "eventlogwriter.h"
 #include "envirbase.h"
@@ -79,7 +80,7 @@ static bool compareMessageEventNumbers(cMessage *message1, cMessage *message2)
     return message1->getPreviousEventNumber() < message2->getPreviousEventNumber();
 }
 
-static ObjectPrinterRecursionControl recurseIntoMessageFields(void *object, cClassDescriptor *descriptor, int fieldIndex, void *fieldValue, void **parents, int level)
+static ObjectPrinterRecursionControl recurseIntoMessageFields(any_ptr object, cClassDescriptor *descriptor, int fieldIndex, any_ptr fieldValue, any_ptr *parents, int level)
 {
     const char *propertyValue = descriptor->getFieldProperty(fieldIndex, "eventlog");
 
@@ -96,10 +97,10 @@ static ObjectPrinterRecursionControl recurseIntoMessageFields(void *object, cCla
     if (!isCObject)
         return RECURSE;
     else {
-        if (!fieldValue)
+        if (fieldValue != nullptr)
             return RECURSE;
         else {
-            cArray *array = dynamic_cast<cArray *>((cObject *)fieldValue);
+            cArray *array = check_and_cast<cArray*>(fromAnyPtr<cObject>(fieldValue));
             return !array || array->size() != 0 ? RECURSE : SKIP;
         }
     }

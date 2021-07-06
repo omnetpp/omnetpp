@@ -99,7 +99,7 @@ const char *MatchableObjectAdapter::getAsString(const char *attribute) const
     if (!found)
         return nullptr;
 
-    tmp = desc->getFieldValueAsString(obj, fieldId, index);
+    tmp = desc->getFieldValueAsString(toAnyPtr(obj), fieldId, index);
     return tmp.c_str();
 }
 

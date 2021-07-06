@@ -47,7 +47,7 @@ class QTENV_API TreeNode
     QString nodeIdentifier;
 
     // these are nullptrs only in the root node
-    any_ptr containingObject = nullptr;  // may or may not be a cObject, so we need the descriptor for it
+    any_ptr containingObject = any_ptr(nullptr);  // may or may not be a cObject, so we need the descriptor for it
     cClassDescriptor *containingDesc = nullptr;
 
     // helpers
@@ -187,7 +187,7 @@ class QTENV_API FieldNode : public TreeNode
   protected:
     int fieldIndex = 0;
 
-    any_ptr object = nullptr;
+    any_ptr object = any_ptr(nullptr);
     cClassDescriptor *desc = nullptr;
 
     std::vector<TreeNode *> makeChildren() override;

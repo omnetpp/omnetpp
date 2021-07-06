@@ -72,7 +72,7 @@ bool TreeNode::isSameAs(TreeNode *other)
 // contains the array itself, so we need this parameter
 int TreeNode::computeObjectChildCount(any_ptr obj, cClassDescriptor *desc, Mode mode, bool excludeInherited)
 {
-    if (!obj || !desc)
+    if (obj == nullptr || desc == nullptr)
         return 0;
 
     switch (mode) {
@@ -93,10 +93,10 @@ int TreeNode::computeObjectChildCount(any_ptr obj, cClassDescriptor *desc, Mode 
         }
 
         case Mode::CHILDREN: {
-            envir::cCountChildrenVisitor visitor((cObject *)obj);
+            envir::cCountChildrenVisitor visitor(fromAnyPtr<cObject>(obj));
 
             try {
-                visitor.process((cObject *)obj);
+                visitor.process(fromAnyPtr<cObject>(obj));
             }
             catch (std::exception &e) {
                 return 1; // the error marker
@@ -125,16 +125,16 @@ int TreeNode::computeObjectChildCount(any_ptr obj, cClassDescriptor *desc, Mode 
 // contains the array itself, so we need this parameter
 std::vector<TreeNode *> TreeNode::makeObjectChildNodes(any_ptr obj, cClassDescriptor *desc, bool excludeInherited)
 {
-    if (!obj || !desc)
+    if (obj == nullptr || desc == nullptr)
         return {};
 
     std::vector<TreeNode *> result;
 
     switch (mode) {
         case Mode::CHILDREN: {
-            envir::cCollectChildrenVisitor visitor((cObject *)obj);
+            envir::cCollectChildrenVisitor visitor(fromAnyPtr<cObject>(obj));
             try {
-                visitor.process((cObject *)obj);
+                visitor.process(fromAnyPtr<cObject>(obj));
 
                 cObject **objs = visitor.getArray();
                 for (int i = 0; i < visitor.getArraySize(); ++i)
@@ -189,11 +189,11 @@ std::vector<TreeNode *> TreeNode::makeObjectChildNodes(any_ptr obj, cClassDescri
 cClassDescriptor *TreeNode::getDescriptorForField(any_ptr obj, cClassDescriptor *desc, int fieldIndex, int arrayIndex)
 {
     any_ptr fieldPtr = desc->getFieldStructValuePointer(obj, fieldIndex, arrayIndex);
-    if (!fieldPtr)
+    if (fieldPtr == nullptr)
         return nullptr;
 
     if (desc->getFieldIsCObject(fieldIndex)) {
-        cObject *object = static_cast<cObject *>(fieldPtr);
+        cObject *object = fromAnyPtr<cObject>(fieldPtr);
         return object->getDescriptor();
     }
 
@@ -403,7 +403,7 @@ ChildObjectNode::ChildObjectNode(TreeNode *parent, int indexInParent, any_ptr co
 
 int ChildObjectNode::computeChildCount()
 {
-    return computeObjectChildCount(object, object ? object->getDescriptor() : nullptr, mode);
+    return computeObjectChildCount(toAnyPtr(object), object ? object->getDescriptor() : nullptr, mode);
 }
 
 QVariant ChildObjectNode::computeData(int role)
@@ -432,7 +432,7 @@ cObject *ChildObjectNode::getCObjectPointer()
 
 std::vector<TreeNode *> ChildObjectNode::makeChildren()
 {
-    return makeObjectChildNodes(object, object ? object->getDescriptor() : nullptr);
+    return makeObjectChildNodes(toAnyPtr(object), object ? object->getDescriptor() : nullptr);
 }
 
 bool ChildObjectNode::isSameAs(TreeNode *other)
@@ -446,7 +446,7 @@ bool ChildObjectNode::isSameAs(TreeNode *other)
 
 
 TextNode::TextNode(TreeNode *parent, int indexInParent, const QString &message, Mode mode)
-    : TreeNode(parent, indexInParent, nullptr, nullptr, mode), message(message)
+    : TreeNode(parent, indexInParent, any_ptr(nullptr), nullptr, mode), message(message)
 {
 }
 
@@ -485,7 +485,7 @@ FieldNode::FieldNode(TreeNode *parent, int indexInParent, any_ptr contObject, cC
 
 int FieldNode::computeChildCount()
 {
-    if (containingObject && containingDesc && containingDesc->getFieldIsArray(fieldIndex))
+    if (containingObject != nullptr && containingDesc != nullptr && containingDesc->getFieldIsArray(fieldIndex))
         return containingDesc->getFieldArraySize(containingObject, fieldIndex);
     else
         return computeObjectChildCount(object, desc, mode);
@@ -493,7 +493,7 @@ int FieldNode::computeChildCount()
 
 std::vector<TreeNode *> FieldNode::makeChildren()
 {
-    if (containingObject && containingDesc && containingDesc->getFieldIsArray(fieldIndex)) {
+    if (containingObject != nullptr && containingDesc != nullptr && containingDesc->getFieldIsArray(fieldIndex)) {
         std::vector<TreeNode *> result;
         int size = containingDesc->getFieldArraySize(containingObject, fieldIndex);
         for (int i = 0; i < size; ++i)
@@ -520,12 +520,11 @@ QVariant FieldNode::computeData(int role)
 
     cObject *objectCasted =
               (containingDesc && containingDesc->getFieldIsCObject(fieldIndex))
-                ? static_cast<cObject *>(object)
+                ? fromAnyPtr<cObject>(object)
                 : nullptr;
 
-    if ((role == Qt::DecorationRole) && objectCasted) {
-        return object ? getObjectIcon(objectCasted) : QVariant();
-    }
+    if ((role == Qt::DecorationRole) && objectCasted)
+        return object != nullptr ? getObjectIcon(objectCasted) : QVariant();
 
     // the rest is for the regular, non-root nodes
 
@@ -543,9 +542,9 @@ QVariant FieldNode::computeData(int role)
     QString equals = " = ";
     QString editable = isEditable() ? " [...] " : "";
     QString fieldType = containingDesc->getFieldTypeString(fieldIndex);
-    any_ptr valuePointer = isCompound && !isCObject && !isArray ? containingDesc->getFieldStructValuePointer(containingObject, fieldIndex, 0) : nullptr;
+    any_ptr valuePointer = isCompound && !isCObject && !isArray ? containingDesc->getFieldStructValuePointer(containingObject, fieldIndex, 0) : any_ptr(nullptr);
 
-    if (isCompound && !isCObject && !isArray && valuePointer) {
+    if (isCompound && !isCObject && !isArray && valuePointer != nullptr) {
         // Even if it's not a CObject, it can have a different dynamic type
         // than the declared static type, which we can get this way.
         const char *dynamicType = containingDesc->getFieldDynamicTypeString(containingObject, fieldIndex, 0);
@@ -573,7 +572,7 @@ QVariant FieldNode::computeData(int role)
             if (objectInfo.length() > 0)
                 objectInfo = QString(": ") + objectInfo;
         }
-        else if (!valuePointer)
+        else if (valuePointer == nullptr)
             fieldValue = "nullptr";
     }
 
@@ -631,7 +630,7 @@ cObject *FieldNode::getCObjectPointer()
            || (containingDesc  // or it is a node representing a single cObject
                && containingDesc->getFieldIsCObject(fieldIndex)
                && !containingDesc->getFieldIsArray(fieldIndex))
-           ? (cObject *)object
+           ? fromAnyPtr<cObject>(object)
            : nullptr;
 }
 
@@ -647,7 +646,7 @@ bool FieldNode::matchesPropertyFilter(const QString &property)
 
 std::vector<TreeNode *> RootNode::makeChildren()
 {
-    return makeObjectChildNodes(object, object ? object->getDescriptor() : nullptr, false);
+    return makeObjectChildNodes(toAnyPtr(object), object ? object->getDescriptor() : nullptr, false);
 }
 
 bool RootNode::isSameAs(TreeNode *other)
@@ -660,13 +659,13 @@ bool RootNode::isSameAs(TreeNode *other)
 }
 
 RootNode::RootNode(cObject *object, Mode mode)
-    : TreeNode(nullptr, 0, nullptr, nullptr, mode), object(object)
+    : TreeNode(nullptr, 0, any_ptr(nullptr), nullptr, mode), object(object)
 {
 }
 
 int RootNode::computeChildCount()
 {
-    return computeObjectChildCount(object, object ? object->getDescriptor() : nullptr, mode);
+    return computeObjectChildCount(toAnyPtr(object), object ? object->getDescriptor() : nullptr, mode);
 }
 
 QVariant RootNode::computeData(int role)
@@ -705,7 +704,7 @@ FieldGroupNode::FieldGroupNode(TreeNode *parent, int indexInParent, any_ptr cont
 
 int FieldGroupNode::computeChildCount()
 {
-    if (!containingObject || !containingDesc)
+    if (containingObject == nullptr || containingDesc == nullptr)
         return 0;
 
     int count = 0;
@@ -721,7 +720,7 @@ std::vector<TreeNode *> FieldGroupNode::makeChildren()
 {
     std::vector<TreeNode *> result;
 
-    if (!containingObject || !containingDesc)
+    if (containingObject == nullptr || containingDesc == nullptr)
         return result;
 
     for (int i = 0; i < containingDesc->getFieldCount(); ++i) {
@@ -809,7 +808,7 @@ QVariant ArrayElementNode::computeData(int role)
     cObject *fieldObjectPointer = nullptr;
 
     if (containingDesc->getFieldIsCObject(fieldIndex)) {
-        fieldObjectPointer = static_cast<cObject *>(containingDesc->getFieldStructValuePointer(containingObject, fieldIndex, arrayIndex));
+        fieldObjectPointer = fromAnyPtr<cObject>(containingDesc->getFieldStructValuePointer(containingObject, fieldIndex, arrayIndex));
 
         info += (fieldObjectPointer
                         ? QString("(%1) %2")
@@ -892,7 +891,7 @@ QString ArrayElementNode::computeNodeIdentifier()
 cObject *ArrayElementNode::getCObjectPointer()
 {
     return containingDesc->getFieldIsCObject(fieldIndex)
-            ? static_cast<cObject *>(containingDesc->getFieldStructValuePointer(containingObject, fieldIndex, arrayIndex))
+            ? fromAnyPtr<cObject>(containingDesc->getFieldStructValuePointer(containingObject, fieldIndex, arrayIndex))
             : nullptr;
 }
 

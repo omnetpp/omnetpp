@@ -58,7 +58,7 @@ const char *cSingleFingerprintCalculator::MatchableObject::getAsString(const cha
     if (fieldId == -1)
         return nullptr;
     else {
-        attributeValue = descriptor->getFieldValueAsString(const_cast<cObject *>(object), fieldId, 0);
+        attributeValue = descriptor->getFieldValueAsString(toAnyPtr(object), fieldId, 0);
         return attributeValue.c_str();
     }
 }
