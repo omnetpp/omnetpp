@@ -18,8 +18,14 @@
 // Property descriptors for the simkernel classes.
 //
 
+cplusplus(h) {{
+namespace omnetpp {
+extern void std_sim_descriptor_dummy();
+}
+}}
 
-cplusplus
+
+cplusplus(cc)
 {{
 #ifdef _MSC_VER
 #  pragma warning(disable:4996)  // deprecation
@@ -70,6 +76,9 @@ using namespace canvas_stream_ops;
 //
 void std_sim_descriptor_dummy() {}
 
+// This cannot go into the header, because ExpressionFilter is not available via <omnetpp.h>
+template<> inline omnetpp::ExpressionFilter *fromAnyPtr(any_ptr ptr) {return static_cast<omnetpp::ExpressionFilter *>(ptr.get<omnetpp::cObject>());}
+
 }  // namespace omnetpp
 
 }}
@@ -105,6 +114,7 @@ class simtime_t
     @descriptor(false);
     @opaque;
     @byValue;
+    @polymorphic(false);
     @cppType(omnetpp::simtime_t);
     @fromString(string2simtime($)); @toString(simtime2string($));
     @defaultValue(SIMTIME_ZERO);
@@ -115,6 +125,7 @@ class cObject
     @existingClass;
     @overwritePreviousDefinition;
     @descriptor(readonly);
+    @castFunction(false); // defined in the omnetpp headers
     @icon(cogwheel);
     string className @group(base) @hint("C++ class name") @eventlog(skip);
     string fullName @group(base) @hint("If object is part of a module/gate vector: name with index");
@@ -157,6 +168,7 @@ class cDisplayString
 {
     @existingClass;
     @overwritePreviousDefinition;
+    @polymorphic(false);
     @descriptor(readonly);
     string value @getter(str) @setter(parse) @editable @hint("The editable display string itself");
 }
@@ -182,6 +194,7 @@ class cComponent::SignalListenerList
 {
     @existingClass;
     @overwritePreviousDefinition;
+    @polymorphic(false);
     @descriptor(readonly);
     string signalName @hint("Name of signal listened on");
     cIListener *listeners[] @getter(getListener) @sizeGetter(countListeners); //TODO @toString(->str()) for cResultListeners
@@ -625,6 +638,7 @@ class cAbstractHistogram::Bin
     @existingClass;
     @overwritePreviousDefinition;
     @opaque;
+    @polymorphic(false);
     @descriptor(false);
 }
 
@@ -719,6 +733,7 @@ class cValue
     @existingClass;
     @overwritePreviousDefinition;
     @descriptor(readonly);
+    @polymorphic(false);
     @toString(.str());
     int type @enum(cValue::Type) @hint("Value type");
     cObject *containedObject @getter(cValue::getContainedObject($)) @hint("Only of type==OBJECT");
@@ -862,6 +877,7 @@ class cHasher
     @existingClass;
     @overwritePreviousDefinition;
     @descriptor(readonly);
+    @polymorphic(false);
     string hash @getter(str) @hint("The current hash value");
 }
 
@@ -913,6 +929,7 @@ class cTopology::Node
     @existingClass;
     @overwritePreviousDefinition;
     @descriptor(readonly);
+    @polymorphic(false);
     int moduleId @hint("ID of the module this node corresponds to");
     cModule *module @hint("The module this node corresponds to");
     double weight @hint("Node weight -- affects graph algorithms such as shortest path");
@@ -930,6 +947,7 @@ class cTopology::Link
     @existingClass;
     @overwritePreviousDefinition;
     @descriptor(readonly);
+    @polymorphic(false);
     double weight @hint("Link weight -- affects graph algorithms such as shortest path");
     bool enabled @getter(isEnabled) @hint("Link state -- affects graph algorithms such as shortest path");
 }
@@ -939,6 +957,7 @@ class cTopology::LinkIn extends cTopology::Link
     @existingClass;
     @overwritePreviousDefinition;
     @descriptor(readonly);
+    @polymorphic(false);
     cTopology::Node *remoteNode @hint("The node at the remote end of this connection");
     cGate *remoteGate @hint("The gate at the remote end of this connection");
     cGate *localGate @hint("The gate at the local end of this connection");
@@ -949,6 +968,7 @@ class cTopology::LinkOut extends cTopology::Link
     @existingClass;
     @overwritePreviousDefinition;
     @descriptor(readonly);
+    @polymorphic(false);
     cTopology::Node *remoteNode @hint("The node at the remote end of this connection");
     cGate *remoteGate @hint("The gate at the remote end of this connection");
     cGate *localGate @hint("The gate at the local end of this connection");
@@ -982,6 +1002,7 @@ class cFigure::Point
     @overwritePreviousDefinition;
     @descriptor(false);
     @opaque;
+    @polymorphic(false);
     @toString(.str());
     @fromString(cFigure::parsePoint($));
 }
@@ -992,6 +1013,7 @@ class cFigure::Rectangle
     @overwritePreviousDefinition;
     @descriptor(false);
     @opaque;
+    @polymorphic(false);
     @toString(.str());
     @fromString(cFigure::parseRectangle($));
 }
@@ -1002,6 +1024,7 @@ class cFigure::Transform
     @overwritePreviousDefinition;
     @descriptor(false);
     @opaque;
+    @polymorphic(false);
     @toString(.str());
     @fromString(cFigure::parseTransform($));
 }
@@ -1012,6 +1035,7 @@ class cFigure::Color
     @overwritePreviousDefinition;
     @descriptor(false);
     @opaque;
+    @polymorphic(false);
     @toString(.str());
     @fromString(cFigure::parseColor($));
 }
@@ -1022,6 +1046,7 @@ class cFigure::Font
     @overwritePreviousDefinition;
     @descriptor(false);
     @opaque;
+    @polymorphic(false);
     @toString(.str());
     @fromString(cFigure::parseFont($));
 }
@@ -1032,6 +1057,7 @@ class cFigure::Pixmap
     @overwritePreviousDefinition;
     @descriptor(false);
     @opaque;
+    @polymorphic(false);
 }
 
 class cFigure extends cOwnedObject
@@ -1269,13 +1295,15 @@ class cOsgCanvas extends cOwnedObject
     @existingClass;
     @overwritePreviousDefinition;
     @descriptor(false);  // descriptor will come from osg.msg in qtenv
+    @castFunction(false); // it will come from osg.msg in qtenv
 }
 
-class cResultListener extends cIListener
+class cResultListener extends cObject
 {
     @existingClass;
     @overwritePreviousDefinition;
     @descriptor(readonly);
+    @implements(cIListener);
 }
 
 class cResultFilter extends cResultListener
@@ -1391,6 +1419,7 @@ class ExpressionFilter extends cResultFilter
     @existingClass;
     @overwritePreviousDefinition;
     @descriptor(readonly);
+    @castFunction(false);
     string expression @toString(.str());
     string lastValue @toString(.str());
     simtime_t lastTimestamp;
