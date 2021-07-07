@@ -811,8 +811,9 @@ public class DocumentationGenerator {
     protected void generateProjectIndexReferences(String title, final IProject[] projects) throws Exception {
         if (projects.length != 0)
             generateNavigationMenuItem(1, title, null, () -> {
-                    for (IProject referencedProject : projects)
-                        generateProjectIndexReference(referencedProject);
+                    for (IProject project : projects)
+                        if (project.isAccessible()) // generate only for accessible (existing, open) projects
+                            generateProjectIndexReference(project);
                 }
             );
     }
