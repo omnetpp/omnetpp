@@ -27,11 +27,10 @@
 #include "errorstore.h"
 #include "msgelements.h"
 #include "msgtypetable.h"
+#include "msgcompileroptions.h"
 
 namespace omnetpp {
 namespace nedxml {
-
-struct MsgCompilerOptions;
 
 /**
  * @brief Part of the message compiler. Produces ClassInfo/EnumInfo objects from the ASTNode tree.

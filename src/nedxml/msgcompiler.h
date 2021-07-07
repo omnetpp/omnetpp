@@ -29,23 +29,10 @@
 #include "msgtypetable.h"
 #include "msganalyzer.h"
 #include "msgcodegenerator.h"
+#include "msgcompileroptions.h"
 
 namespace omnetpp {
 namespace nedxml {
-
-/**
- * @brief Options for MsgCompiler.
- *
- * @ingroup CppGenerator
- */
-struct MsgCompilerOptions
-{
-    std::vector<std::string> importPath;
-    std::string exportDef;
-    bool generateClasses = true;
-    bool generateDescriptors = true;
-    bool generateSettersInDescriptors = true;
-};
 
 /**
  * @brief Generates C++ code from a MSG file object tree.

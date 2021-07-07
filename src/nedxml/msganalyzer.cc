@@ -24,7 +24,6 @@
 #include "common/stringutil.h"
 #include "common/stlutil.h"
 #include "common/opp_ctype.h"
-#include "msgcompiler.h"
 #include "msganalyzer.h"
 #include "exception.h"
 
