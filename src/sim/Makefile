@@ -72,7 +72,7 @@ OBJS_PARSIM=\
 
 OBJS= $(OBJS_STD)
 
-GENERATED_SOURCES= sim_std_m.cc sim_std_m.h
+GENERATED_SOURCES= sim_std_m.cc $(OMNETPP_INCL_DIR)/omnetpp/sim_std_m.h
 
 ifeq ($(WITH_NETBUILDER),yes)
   OBJS += $(OBJS_NETBUILDER)
@@ -105,7 +105,12 @@ endif
 #
 .SUFFIXES : .cc
 
-$O/%.o: %.cc $(GENERATED_SOURCES) $(CONFIGFILE) $(COPTS_FILE)
+# compile *_m.cc files generated from *.msg files
+$O/%_m.o: $(GENERATED_SOURCES) $(CONFIGFILE) $(COPTS_FILE)
+	$(qecho) "$<"
+	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) -I"$(OMNETPP_INCL_DIR)/omnetpp" $(EXPORT_DEFINES) $(IMPORT_DEFINES) -o $@ $<
+
+$O/%.o: %.cc $(CONFIGFILE) $(COPTS_FILE)
 	@mkdir -p $O $O/netbuilder $O/parsim
 	$(qecho) "$<"
 	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) $(EXPORT_DEFINES) $(IMPORT_DEFINES) -o $@ $<
@@ -149,10 +154,11 @@ clean:
 	$(qecho) Cleaning sim
 	$(Q)rm -rf $O $(GENERATED_SOURCES) $(TARGET_LIB_FILES)
 
-# NOTE: This is a trick: creating a muti-target pattern rule that prevents executing this target multiple times when running make in parallel
-%im_std_m.h %im_std_m.cc : sim_std.msg ../nedxml/*
+# NOTE: This is a trick: creating a multi-target pattern rule that prevents executing this target multiple times when running parallel make
+$(OMNETPP_INCL_DIR)/omnetpp/%im_std_m.h %im_std_m.cc : sim_std.msg ../nedxml/*
 	$(qecho) MSGC: $<
 	$(Q)$(MSGC) --msg6 sim_std.msg
+	$(Q)mv sim_std_m.h $(OMNETPP_INCL_DIR)/omnetpp/sim_std_m.h
 
 -include $(OBJS:%=%.d)
 
