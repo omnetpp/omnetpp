@@ -1248,12 +1248,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     // getFieldName()
     CC << "const char *" << classInfo.descriptorClass << "::getFieldName(int field) const\n";
     CC << "{\n";
-    CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
-    CC << "    if (basedesc) {\n";
-    CC << "        if (field < basedesc->getFieldCount())\n";
-    CC << "            return basedesc->getFieldName(field);\n";
-    CC << "        field -= basedesc->getFieldCount();\n";
-    CC << "    }\n";
+    generateDelegationForBaseClassFields("return basedesc->getFieldName(field);");
     if (numFields == 0) {
         CC << "    return nullptr;\n";
     }
@@ -1287,12 +1282,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     // getFieldTypeString()
     CC << "const char *" << classInfo.descriptorClass << "::getFieldTypeString(int field) const\n";
     CC << "{\n";
-    CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
-    CC << "    if (basedesc) {\n";
-    CC << "        if (field < basedesc->getFieldCount())\n";
-    CC << "            return basedesc->getFieldTypeString(field);\n";
-    CC << "        field -= basedesc->getFieldCount();\n";
-    CC << "    }\n";
+    generateDelegationForBaseClassFields("return basedesc->getFieldTypeString(field);");
     if (numFields == 0) {
         CC << "    return nullptr;\n";
     }
@@ -1310,12 +1300,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     // getFieldPropertyNames()
     CC << "const char **" << classInfo.descriptorClass << "::getFieldPropertyNames(int field) const\n";
     CC << "{\n";
-    CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
-    CC << "    if (basedesc) {\n";
-    CC << "        if (field < basedesc->getFieldCount())\n";
-    CC << "            return basedesc->getFieldPropertyNames(field);\n";
-    CC << "        field -= basedesc->getFieldCount();\n";
-    CC << "    }\n";
+    generateDelegationForBaseClassFields("return basedesc->getFieldPropertyNames(field);");
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < numFields; ++i) {
         const FieldInfo& field = classInfo.fieldList[i];
@@ -1338,12 +1323,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     // getFieldProperty()
     CC << "const char *" << classInfo.descriptorClass << "::getFieldProperty(int field, const char *propertyname) const\n";
     CC << "{\n";
-    CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
-    CC << "    if (basedesc) {\n";
-    CC << "        if (field < basedesc->getFieldCount())\n";
-    CC << "            return basedesc->getFieldProperty(field, propertyname);\n";
-    CC << "        field -= basedesc->getFieldCount();\n";
-    CC << "    }\n";
+    generateDelegationForBaseClassFields("return basedesc->getFieldProperty(field, propertyname);");
     CC << "    switch (field) {\n";
 
     for (size_t i = 0; i < numFields; ++i) {
@@ -1366,12 +1346,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     // getFieldArraySize()
     CC << "int " << classInfo.descriptorClass << "::getFieldArraySize(omnetpp::any_ptr object, int field) const\n";
     CC << "{\n";
-    CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
-    CC << "    if (basedesc) {\n";
-    CC << "        if (field < basedesc->getFieldCount())\n";
-    CC << "            return basedesc->getFieldArraySize(object, field);\n";
-    CC << "        field -= basedesc->getFieldCount();\n";
-    CC << "    }\n";
+    generateDelegationForBaseClassFields("return basedesc->getFieldArraySize(object, field);");
     CC << "    " << classInfo.className << " *pp = omnetpp::fromAnyPtr<" << classInfo.className << ">(object); (void)pp;\n";
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < numFields; i++) {
@@ -1397,14 +1372,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     // setFieldArraySize()
     CC << "void " << classInfo.descriptorClass << "::setFieldArraySize(omnetpp::any_ptr object, int field, int size) const\n";
     CC << "{\n";
-    CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
-    CC << "    if (basedesc) {\n";
-    CC << "        if (field < basedesc->getFieldCount()) {\n";
-    CC << "            basedesc->setFieldArraySize(object, field, size);\n";
-    CC << "            return;\n";
-    CC << "        }\n";
-    CC << "        field -= basedesc->getFieldCount();\n";
-    CC << "    }\n";
+    generateDelegationForBaseClassFields("basedesc->setFieldArraySize(object, field, size);");
     CC << "    " << classInfo.className << " *pp = omnetpp::fromAnyPtr<" << classInfo.className << ">(object); (void)pp;\n";
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < numFields; i++) {
@@ -1423,12 +1391,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     // getFieldDynamicTypeString()
     CC << "const char *" << classInfo.descriptorClass << "::getFieldDynamicTypeString(omnetpp::any_ptr object, int field, int i) const\n";
     CC << "{\n";
-    CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
-    CC << "    if (basedesc) {\n";
-    CC << "        if (field < basedesc->getFieldCount())\n";
-    CC << "            return basedesc->getFieldDynamicTypeString(object,field,i);\n";
-    CC << "        field -= basedesc->getFieldCount();\n";
-    CC << "    }\n";
+    generateDelegationForBaseClassFields("return basedesc->getFieldDynamicTypeString(object,field,i);");
     CC << "    " << classInfo.className << " *pp = omnetpp::fromAnyPtr<" << classInfo.className << ">(object); (void)pp;\n";
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < numFields; i++) {
@@ -1450,12 +1413,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     // getFieldValueAsString()
     CC << "std::string " << classInfo.descriptorClass << "::getFieldValueAsString(omnetpp::any_ptr object, int field, int i) const\n";
     CC << "{\n";
-    CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
-    CC << "    if (basedesc) {\n";
-    CC << "        if (field < basedesc->getFieldCount())\n";
-    CC << "            return basedesc->getFieldValueAsString(object,field,i);\n";
-    CC << "        field -= basedesc->getFieldCount();\n";
-    CC << "    }\n";
+    generateDelegationForBaseClassFields("return basedesc->getFieldValueAsString(object,field,i);");
     CC << "    " << classInfo.className << " *pp = omnetpp::fromAnyPtr<" << classInfo.className << ">(object); (void)pp;\n";
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < numFields; i++) {
@@ -1481,14 +1439,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     // setFieldValueAsString()
     CC << "void " << classInfo.descriptorClass << "::setFieldValueAsString(omnetpp::any_ptr object, int field, int i, const char *value) const\n";
     CC << "{\n";
-    CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
-    CC << "    if (basedesc) {\n";
-    CC << "        if (field < basedesc->getFieldCount()) {\n";
-    CC << "            basedesc->setFieldValueAsString(object, field, i, value);\n";
-    CC << "            return;\n";
-    CC << "        }\n";
-    CC << "        field -= basedesc->getFieldCount();\n";
-    CC << "    }\n";
+    generateDelegationForBaseClassFields("basedesc->setFieldValueAsString(object, field, i, value);");
     CC << "    " << classInfo.className << " *pp = omnetpp::fromAnyPtr<" << classInfo.className << ">(object); (void)pp;\n";
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < numFields; i++) {
@@ -1517,12 +1468,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     // getFieldStructName()
     CC << "const char *" << classInfo.descriptorClass << "::getFieldStructName(int field) const\n";
     CC << "{\n";
-    CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
-    CC << "    if (basedesc) {\n";
-    CC << "        if (field < basedesc->getFieldCount())\n";
-    CC << "            return basedesc->getFieldStructName(field);\n";
-    CC << "        field -= basedesc->getFieldCount();\n";
-    CC << "    }\n";
+    generateDelegationForBaseClassFields("return basedesc->getFieldStructName(field);");
     if (numFields == 0) {
         CC << "    return nullptr;\n";
     }
@@ -1543,12 +1489,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     // getFieldStructValuePointer()
     CC << "omnetpp::any_ptr " << classInfo.descriptorClass << "::getFieldStructValuePointer(omnetpp::any_ptr object, int field, int i) const\n";
     CC << "{\n";
-    CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
-    CC << "    if (basedesc) {\n";
-    CC << "        if (field < basedesc->getFieldCount())\n";
-    CC << "            return basedesc->getFieldStructValuePointer(object, field, i);\n";
-    CC << "        field -= basedesc->getFieldCount();\n";
-    CC << "    }\n";
+    generateDelegationForBaseClassFields("return basedesc->getFieldStructValuePointer(object, field, i);");
     CC << "    " << classInfo.className << " *pp = omnetpp::fromAnyPtr<" << classInfo.className << ">(object); (void)pp;\n";
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < numFields; i++) {
@@ -1571,14 +1512,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     // setFieldStructValuePointer()
     CC << "void " << classInfo.descriptorClass << "::setFieldStructValuePointer(omnetpp::any_ptr object, int field, int i, omnetpp::any_ptr ptr) const\n";
     CC << "{\n";
-    CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
-    CC << "    if (basedesc) {\n";
-    CC << "        if (field < basedesc->getFieldCount()) {\n";
-    CC << "            basedesc->setFieldStructValuePointer(object, field, i, ptr);\n";
-    CC << "            return;\n";
-    CC << "        }\n";
-    CC << "        field -= basedesc->getFieldCount();\n";
-    CC << "    }\n";
+    generateDelegationForBaseClassFields("basedesc->setFieldStructValuePointer(object, field, i, ptr);");
     CC << "    " << classInfo.className << " *pp = omnetpp::fromAnyPtr<" << classInfo.className << ">(object); (void)pp;\n";
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < numFields; i++) {
@@ -1600,6 +1534,26 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "}\n";
     CC << "\n";
 
+}
+
+void MsgCodeGenerator::generateDelegationForBaseClassFields(const std::string& code)
+{
+    bool containsReturn = code.find("return") != std::string::npos;
+    auto semicolonPos = code.find(";");
+    Assert(semicolonPos != std::string::npos);
+    bool multiStatement = semicolonPos < code.size()-1;  // contains a semicolon in the middle
+    bool needsBraces = !containsReturn || multiStatement;
+
+    CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
+    CC << "    if (basedesc) {\n";
+    CC << "        if (field < basedesc->getFieldCount())" << (needsBraces ? "{" : "") << "\n";
+    CC << "            " << code << "\n";
+    if (!containsReturn)
+        CC << "            return;\n";
+    if (needsBraces)
+        CC << "        }\n";
+    CC << "        field -= basedesc->getFieldCount();\n";
+    CC << "    }\n";
 }
 
 void MsgCodeGenerator::generateEnum(const EnumInfo& enumInfo)

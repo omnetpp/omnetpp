@@ -66,6 +66,7 @@ class NEDXML_API MsgCodeGenerator
     void generateCplusplusBlock(std::ofstream& out, const std::string& body);
     void generateMethodCplusplusBlock(const ClassInfo& classInfo, const std::string& method);
     void reportUnusedMethodCplusplusBlocks(const ClassInfo& classInfo);
+    void generateDelegationForBaseClassFields(const std::string& code);
 
   public:
     MsgCodeGenerator(ErrorStore *errors) : errors(errors) {}
