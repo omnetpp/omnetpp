@@ -21,10 +21,12 @@
 #include "intutil.h"
 #include "stringutil.h"
 #include "pooledstring.h"
-
-namespace omnetpp { class cObject; }
+#include "any_ptr.h"
 
 namespace omnetpp {
+
+class cObject;
+
 namespace common {
 
 class MatchExpression;
@@ -72,11 +74,10 @@ class COMMON_API ExprValue
         bool bl;
         intval_t intv;
         double dbl;
-        cObject *obj;
         const char *s; // non-nullptr, dynamically allocated
     };
+    any_ptr ptr; // for POINTER; cannot be part of the union because it has ctor
     opp_staticpooledstring unit=nullptr; // for INT/DOUBLE; may be nullptr
-    static std::string (*objectToString)(cObject *); // method to print info about cObjects
 
   private:
     void ensureType(Type t) const {if (type!=t) cannotCastError(t);}
@@ -97,7 +98,9 @@ class COMMON_API ExprValue
     ExprValue(double d, const char *unit)  {setQuantity(d,unit);}
     ExprValue(const char *s)  {operator=(s);}
     ExprValue(const std::string& s)  {operator=(s);}
-    ExprValue(cObject *x)  {operator=(x);}
+    ExprValue(any_ptr ptr)  {operator=(ptr);}
+    ExprValue(cObject *obj)  {operator=(obj);}
+    ExprValue(const void *) = delete; // prevent non-cObject pointers from silently being converted to bool
     ~ExprValue()  {if (type==STRING) delete[] s;}
     //@}
 
@@ -128,12 +131,6 @@ class COMMON_API ExprValue
      * Returns the value in text form.
      */
     std::string str() const;
-
-    /**
-     * Sets method to print info about cObjects. This needs to be called
-     * once on startup from the simulation library which defines cObject.
-     */
-    static void setObjectStrFunction(std::string (*f)(cObject *)) {objectToString = f;}
     //@}
 
     /** @name Setting the value. */
@@ -168,9 +165,14 @@ class COMMON_API ExprValue
     ExprValue& operator=(const std::string& s)  {deleteOld(); type=STRING; this->s=strdup(s.c_str()); return *this;}
 
     /**
+     * Sets the value to the given pointer.
+     */
+    ExprValue& operator=(any_ptr p)  {deleteOld(); type=POINTER; ptr=p; return *this;}
+
+    /**
      * Sets the value to the given cObject.
      */
-    ExprValue& operator=(cObject *x)  {deleteOld(); type=POINTER; obj=x; return *this;}
+    ExprValue& operator=(cObject *obj)  {return operator=(any_ptr(obj));}
 
     /**
      * Sets the value to the given integer value and measurement unit.
@@ -265,9 +267,9 @@ class COMMON_API ExprValue
     std::string stdstringValue() const {ensureType(STRING); return s;}
 
     /**
-     * Returns value as pointer to cObject. The type must be OBJECT.
+     * Returns value as a generic type-safe pointer. The type must be POINTER.
      */
-    cObject *objectValue() const {ensureType(POINTER); return obj;}
+    any_ptr pointerValue() const {ensureType(POINTER); return ptr;}
 
     /**
      * Equivalent to boolValue().
@@ -292,9 +294,9 @@ class COMMON_API ExprValue
     operator const char *() const  {return stringValue();}
 
     /**
-     * Equivalent to objectValue().
+     * Equivalent to pointerValue().
      */
-    operator cObject *() const  {return objectValue();}
+    operator any_ptr() const  {return pointerValue();}
     //@}
 };
 

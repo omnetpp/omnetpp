@@ -412,9 +412,9 @@ otherliteral
         : UNDEFINED_
                 { $<node>$ = newConstant(ExprValue()); }
         | NULL_
-                { $<node>$ = newConstant((cObject*)nullptr); }
+                { $<node>$ = newConstant(any_ptr(nullptr)); }
         | NULLPTR_
-                { $<node>$ = newConstant((cObject*)nullptr); }
+                { $<node>$ = newConstant(any_ptr(nullptr)); }
         ;
 
 quantity

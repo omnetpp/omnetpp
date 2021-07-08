@@ -25,6 +25,7 @@
 #include "intutil.h"
 #include "unitconversion.h"
 
+namespace omnetpp { class cObject; };
 
 namespace omnetpp {
 namespace common {

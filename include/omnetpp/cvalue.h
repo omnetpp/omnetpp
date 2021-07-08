@@ -20,6 +20,7 @@
 #include "simkerneldefs.h"
 #include "cexception.h"
 #include "opp_pooledstring.h"
+#include "any_ptr.h"
 #include "simutil.h"
 
 namespace omnetpp {
@@ -33,11 +34,11 @@ class cDynamicExpression;
  *
  * See notes below.
  *
- * <b>Object values</b>
+ * <b>Pointer values</b>
  *
- * With type==OBJECT, cValue only remembers the object's pointer, and does
- * nothing extra on top of that. The object's ownership is unaffected,
- * and cValue will never delete or clone the object.
+ * With type==POINTER, cValue only stored the pointer, and does nothing extra
+ * on top of that. If the pointer points to an object, the object's ownership
+ * is unaffected, and the object is never deleted or cloned by cValue.
  *
  * @see cDynamicExpression, cNedFunction, Define_NED_Function()
  * @ingroup SimSupport
@@ -57,7 +58,8 @@ class SIM_API cValue
         DOUBLE = 'D',
         STRING = 'S',
         POINTER = 'O',
-        XML OPP_DEPRECATED_ENUMERATOR("and use check_and_cast<cXmlElement*>() on value") = POINTER,
+        OBJECT OPP_DEPRECATED_ENUMERATOR("and use cValue::containsObject()") = POINTER,
+        XML OPP_DEPRECATED_ENUMERATOR("and use cValue::containsXml()") = POINTER,
         DBL OPP_DEPRECATED_ENUMERATOR("renamed to DOUBLE") = DOUBLE,
         STR OPP_DEPRECATED_ENUMERATOR("renamed to STRING") = STRING
     };
@@ -69,7 +71,7 @@ class SIM_API cValue
     double dbl;
     opp_staticpooledstring unit = nullptr; // for INT/DOUBLE; may be nullptr
     std::string s;
-    cObject *obj;
+    any_ptr ptr;
     static const char *OVERFLOW_MSG;
 
   private:
@@ -81,7 +83,7 @@ class SIM_API cValue
     [[noreturn]] void cannotCastError(Type t) const;
   public:
     // internal, for inspectors only:
-    static cObject *getContainedObject(const cValue *p) {return p->type==cValue::POINTER ? p->obj : nullptr;}
+    static cObject *getContainedObject(const cValue *p);
 
   public:
     /** @name Constructors */
@@ -96,8 +98,10 @@ class SIM_API cValue
     cValue(double d, const char *unit)  {set(d,unit);}
     cValue(const char *s)  {set(s);}
     cValue(const std::string& s)  {set(s);}
+    cValue(any_ptr ptr)  {set(ptr);}
     cValue(cObject *obj)  {set(obj);}
-    cValue(const cPar& par) {set(par);}
+    cValue(const void *) = delete; // prevent non-cObject pointers from silently being converted to bool
+    cValue(const cValue&) = default;
     //@}
 
     /**
@@ -251,16 +255,24 @@ class SIM_API cValue
     void set(const std::string& s) {type=STRING; this->s=s;}
 
     /**
-     * Sets the value to the given object. Note that cValue solely stores
-     * the object's pointer, and does nothing extra. The object's ownership is
-     * unaffected, and cValue will never delete or clone the object.
- *     */
-    void set(cObject *obj) {type=POINTER; this->obj=obj;}
+     * Sets the value to the given pointer. The pointer is treated by
+     * as an opaque value: If it points to an object, the object's ownership
+     * is unaffected, and cValue will never delete or clone the object.
+     */
+    void set(any_ptr ptr) {type=POINTER; this->ptr=ptr;}
 
     /**
-     * Copies the value from a cPar.
+     * Sets the value to the given object, via set(any_ptr). Note that
+     * cValue solely stores the object's pointer, and does nothing extra.
+     * The object's ownership is unaffected, and cValue will never
+     * delete or clone the object.
      */
-    void set(const cPar& par);
+    void set(cObject *obj) {set(toAnyPtr(obj));}
+
+    /**
+     * Deleted function to prevent non-cObject pointers from silently being converted to bool.
+     */
+    void set(const void *) = delete;
     //@}
 
     /** @name Getter functions. Note that overloaded conversion operators also exist. */
@@ -330,13 +342,29 @@ class SIM_API cValue
     const std::string& stdstringValue() const {assertType(STRING); return s;}
 
     /**
-     * Returns value as pointer to cObject. The type must be OBJECT.
+     * Returns value as any_ptr. The type must be POINTER.
      */
-    cObject *objectValue() const {assertType(POINTER); return obj;}
+    any_ptr pointerValue() const {assertType(POINTER); return ptr;}
 
     /**
-     * Returns value as pointer to cXMLElement. The type must be OBJECT, and the
-     * stored object must be an instance of cXMLElement or nullptr.
+     * Returns true if the value contains a (non-null) pointer to a cObject.
+     */
+    bool containsObject() const;
+
+    /**
+     * Returns true if the value contains a (non-null) pointer to a cXMLElement.
+     */
+    bool containsXML() const;
+
+    /**
+     * Returns value as pointer to cObject. The type must be POINTER, and
+     * the pointer must point to an instance of cObject or be nullptr.
+     */
+    cObject *objectValue() const;
+
+    /**
+     * Returns value as pointer to cXMLElement. The type must be POINTER, and
+     * the pointer must point to an instance of cXMLElement or be nullptr.
      */
     cXMLElement *xmlValue() const;
     //@}
@@ -420,14 +448,14 @@ class SIM_API cValue
     cValue& operator=(const std::string& s)  {set(s); return *this;}
 
     /**
+     * Equivalent to set(any_ptr).
+     */
+    cValue& operator=(any_ptr ptr)  {set(ptr); return *this;}
+
+    /**
      * Equivalent to set(cObject *).
      */
     cValue& operator=(cObject *obj)  {set(obj); return *this;}
-
-    /**
-     * Equivalent to set(const cPar&).
-     */
-    cValue& operator=(const cPar& par)  {set(par); return *this;}
 
     /**
      * Equivalent to boolValue().
@@ -514,6 +542,11 @@ class SIM_API cValue
      * Equivalent to stdstringValue().
      */
     operator std::string() const  {return stdstringValue();}
+
+    /**
+     * Equivalent to pointerValue().
+     */
+    operator any_ptr() const  {return pointerValue();}
 
     /**
      * Equivalent to objectValue().

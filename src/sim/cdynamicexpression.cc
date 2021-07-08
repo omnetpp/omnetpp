@@ -37,9 +37,6 @@ using namespace omnetpp::common::expression;
 
 namespace omnetpp {
 
-static std::string objectInfo(cObject *obj) {return obj ? obj->getClassAndFullName() : "nullptr";}
-EXECUTE_ON_STARTUP(ExprValue::setObjectStrFunction(&objectInfo));
-
 cValue cDynamicExpression::ResolverBase::readVariable(Context *context, const char *name)
 {
     throw cRuntimeError("Cannot resolve variable '%s'", name);

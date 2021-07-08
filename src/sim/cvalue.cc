@@ -41,7 +41,7 @@ void cValue::operator=(const cValue& other)
         case INT: intv = other.intv; unit = other.unit; break;
         case DOUBLE: dbl = other.dbl; unit = other.unit; break;
         case STRING: s = other.s; break;
-        case POINTER: obj = other.obj; break;
+        case POINTER: ptr = other.ptr; break;
     }
 }
 
@@ -64,19 +64,6 @@ void cValue::cannotCastError(Type targetType) const
             " (note: no implicit conversion from double to int)" : "";
     throw cRuntimeError("Cannot cast %s from type %s to %s%s",
             str().c_str(), getTypeName(type), getTypeName(targetType), note);
-}
-
-void cValue::set(const cPar& par)
-{
-    switch (par.getType()) {
-        case cPar::BOOL: *this = par.boolValue(); break;
-        case cPar::INT: *this = par.intValue(); unit = par.getUnit(); break;
-        case cPar::DOUBLE: *this = par.doubleValue(); unit = par.getUnit(); break;
-        case cPar::STRING: *this = par.stdstringValue(); break;
-        case cPar::OBJECT: throw cRuntimeError("Using NED parameters of type 'object' in expressions is currently not supported"); // reason: ownership issues (use obj->dup() or not? delete object in destructor or not?)
-        case cPar::XML: *this = par.xmlValue(); break;
-        default: throw cRuntimeError("Internal error: Invalid cPar type: %s", par.getFullPath().c_str());
-    }
 }
 
 intval_t cValue::intValue() const
@@ -176,10 +163,30 @@ void cValue::setUnit(const char* unit)
     this->unit = unit;
 }
 
-cXMLElement *cValue::xmlValue() const
+bool cValue::containsObject() const
+{
+    return getContainedObject(this) != nullptr;
+}
+
+bool cValue::containsXML() const
+{
+    return dynamic_cast<cXMLElement*>(getContainedObject(this)) != nullptr;
+}
+
+cObject *cValue::objectValue() const
 {
     assertType(POINTER);
-    return check_and_cast_nullable<cXMLElement*>(obj);
+    return fromAnyPtr<cObject>(ptr);
+}
+
+cXMLElement *cValue::xmlValue() const
+{
+    return check_and_cast_nullable<cXMLElement*>(objectValue());
+}
+
+cObject *cValue::getContainedObject(const cValue *p)
+{
+    return p->type==cValue::POINTER && p->ptr.contains<cObject>() ? fromAnyPtr<cObject>(p->ptr) : nullptr; //TODO ptr.contains<cObject> is not entirely correct
 }
 
 double cValue::convertUnit(double d, const char *unit, const char *targetUnit)
@@ -224,7 +231,7 @@ std::string cValue::str() const
             return buf;
         }
         case STRING: return opp_quotestr(s);
-        case POINTER: return obj ? obj->str() : "nullptr";
+        case POINTER: return ptr.str();
         default: throw cRuntimeError("Internal error: Invalid cValue type");
     }
 }
@@ -240,7 +247,7 @@ bool cValue::operator==(const cValue& other)
         case INT: return intv == other.intv && opp_strcmp(unit.c_str(), other.unit.c_str()) == 0;
         case DOUBLE: return dbl == other.dbl && opp_strcmp(unit.c_str(), other.unit.c_str()) == 0;
         case STRING: return s == other.s;
-        case POINTER: return obj == other.obj; // same object
+        case POINTER: return ptr == other.ptr; // same object
         default: throw cRuntimeError("Internal error: Invalid cValue type");
     }
 }

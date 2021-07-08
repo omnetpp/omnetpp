@@ -36,6 +36,9 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace nedsupport {
 
+inline omnetpp::any_ptr convert(omnetpp::common::any_ptr p) { return omnetpp::any_ptr(p.raw(), p.pointerType()); }
+inline omnetpp::common::any_ptr convert(omnetpp::any_ptr p) { return omnetpp::common::any_ptr(p.raw(), p.pointerType()); }
+
 cValue makeNedValue(const ExprValue& value)
 {
     switch (value.getType()) {
@@ -44,7 +47,7 @@ cValue makeNedValue(const ExprValue& value)
     case ExprValue::INT: return cValue(value.intValue(), value.getUnit());
     case ExprValue::DOUBLE: return cValue(value.doubleValue(), value.getUnit());
     case ExprValue::STRING: return cValue(value.stringValue());
-    case ExprValue::POINTER: return cValue(value.objectValue());
+    case ExprValue::POINTER: return cValue(convert(value.pointerValue()));
     }
     Assert(false);
 }
@@ -57,7 +60,7 @@ ExprValue makeExprValue(const cValue& value)
     case cValue::INT: return ExprValue(value.intValueRaw(), value.getUnit());
     case cValue::DOUBLE: return ExprValue(value.doubleValueRaw(), value.getUnit());
     case cValue::STRING: return ExprValue(value.stringValue());
-    case cValue::POINTER: return ExprValue(value.objectValue());
+    case cValue::POINTER: return ExprValue(convert(value.pointerValue()));
     }
     Assert(false);
 }

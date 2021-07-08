@@ -26,8 +26,6 @@ namespace omnetpp {
 namespace common {
 namespace expression {
 
-std::string (*ExprValue::objectToString)(cObject *);
-
 void ExprValue::operator=(const ExprValue& other)
 {
     deleteOld();
@@ -38,7 +36,7 @@ void ExprValue::operator=(const ExprValue& other)
         case INT: intv = other.intv; unit = other.unit; break;
         case DOUBLE: dbl = other.dbl; unit = other.unit; break;
         case STRING: s = strdup(other.s); break;
-        case POINTER: obj = other.obj; break;
+        case POINTER: ptr = other.ptr; break;
     }
 }
 
@@ -52,7 +50,7 @@ void ExprValue::operator=(ExprValue&& other)
         case INT: intv = other.intv; unit = other.unit; break;
         case DOUBLE: dbl = other.dbl; unit = other.unit; break;
         case STRING: s = other.s; other.type = UNDEF; other.s = nullptr; break;
-        case POINTER: obj = other.obj; break;
+        case POINTER: ptr = other.ptr; break;
     }
 }
 
@@ -64,7 +62,7 @@ const char *ExprValue::getTypeName(Type t)
         case INT:    return "integer";
         case DOUBLE: return "double";
         case STRING: return "string";
-        case POINTER: return "object";
+        case POINTER: return "pointer";
         default:     return "<unknown>";
     }
 }
@@ -172,14 +170,7 @@ std::string ExprValue::str() const
         case STRING:
             return opp_quotestr(s);
         case POINTER:
-            if (!obj)
-                return "nullptr";
-            else if (objectToString)
-                return objectToString(obj);
-            else {
-                sprintf(buf, "(cObject*)%p", obj);
-                return buf;
-            }
+            return ptr.str();
         default:
             throw opp_runtime_error("Internal error: Invalid ExprValue type");
     }

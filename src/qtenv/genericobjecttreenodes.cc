@@ -25,8 +25,11 @@
 #include "envir/visitor.h"
 
 namespace omnetpp {
-using namespace common;
 namespace qtenv {
+
+using common::opp_nulltoempty;
+using common::contains;
+using common::containsKey;
 
 const std::vector<int> TreeNode::supportedDataRoles
     = { Qt::DisplayRole, Qt::DecorationRole, Qt::EditRole, Qt::ToolTipRole, Qt::UserRole };

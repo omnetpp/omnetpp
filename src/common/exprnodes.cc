@@ -474,7 +474,7 @@ double CompareNode::compare(ExprValue& leftValue, ExprValue& rightValue) const
     else if (leftValue.type==ExprValue::POINTER && rightValue.type==ExprValue::POINTER) {
         if (!dynamic_cast<const EqualNode*>(this) && !dynamic_cast<const NotEqualNode*>(this))
             throw opp_runtime_error("Arguments of type 'object' may only be compared for equality");
-        return leftValue.obj == rightValue.obj ? 0 : std::nan("");
+        return leftValue.ptr == rightValue.ptr ? 0 : std::nan("");
     }
     else
         throw opp_runtime_error("Mismatching argument types '%s' vs '%s'",

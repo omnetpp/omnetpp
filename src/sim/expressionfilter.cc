@@ -16,12 +16,17 @@
 #include <climits>
 #include "omnetpp/csimulation.h"
 #include "omnetpp/ccomponent.h"
+#include "omnetpp/any_ptr.h"
 #include "expressionfilter.h"
 #include "common/pooledstring.h"
 
 using namespace omnetpp::common;
 
 namespace omnetpp {
+
+inline omnetpp::any_ptr convert(omnetpp::common::any_ptr p) { return omnetpp::any_ptr(p.raw(), p.pointerType()); }
+inline omnetpp::common::any_ptr convert(omnetpp::any_ptr p) { return omnetpp::common::any_ptr(p.raw(), p.pointerType()); }
+
 
 SignalSource::SignalSource(cComponent *component, const char *signalName) :
         component(component), signalID(cComponent::registerSignal(signalName)) {}
@@ -93,7 +98,7 @@ void ExpressionFilter::process(simtime_t_cref t, cObject *details)
         case ExprValue::INT: fire(this, t, lastOutput.intValue(), details); break;
         case ExprValue::DOUBLE: fire(this, t, lastOutput.doubleValue(), details); break;
         case ExprValue::STRING: fire(this, t, lastOutput.stringValue(), details); break;
-        case ExprValue::POINTER: fire(this, t, lastOutput.objectValue(), details); break;
+        case ExprValue::POINTER: fire(this, t, fromAnyPtr<cObject>(convert(lastOutput.pointerValue())), details); break;
     }
 }
 
