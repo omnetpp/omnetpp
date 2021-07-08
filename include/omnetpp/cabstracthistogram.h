@@ -37,6 +37,7 @@ class SIM_API cAbstractHistogram : public cStdDev
         double value;  // count or sum of weights (or its estimate)
         double relativeFreq;  // value / total
         Bin() {lower=upper=value=relativeFreq=0;}
+        std::string str() const;
     };
 
   private:

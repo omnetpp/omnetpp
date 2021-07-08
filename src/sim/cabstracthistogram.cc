@@ -34,6 +34,13 @@ using namespace std;
 
 namespace omnetpp {
 
+std::string cAbstractHistogram::Bin::str() const
+{
+    std::stringstream os;
+    os << "[" << lower << ", " << upper << ")  ==>  " << value << " (" << relativeFreq << ")";
+    return os.str();
+}
+
 std::vector<double> cAbstractHistogram::getBinEdges() const
 {
     int n = getNumBins()+1;

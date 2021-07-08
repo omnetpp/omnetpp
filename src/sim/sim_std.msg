@@ -64,10 +64,6 @@ inline std::ostream& operator<<(std::ostream& os, const cDisplayString& d) {
     return os << "\"" << d.str() << "\"";
 }
 
-inline std::ostream& operator<<(std::ostream& os, const cAbstractHistogram::Bin& bin) {
-    return os << "[" << bin.lower << ", " << bin.upper << ")  ==>  " << bin.value << " (" << bin.relativeFreq << ")";
-}
-
 using namespace canvas_stream_ops;
 
 //
@@ -639,6 +635,7 @@ class cAbstractHistogram::Bin
     @overwritePreviousDefinition;
     @opaque;
     @polymorphic(false);
+    @toString(.str());
     @descriptor(false);
 }
 
