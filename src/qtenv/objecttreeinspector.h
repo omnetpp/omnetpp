@@ -25,18 +25,23 @@ class QTreeView;
 namespace omnetpp {
 namespace qtenv {
 
-class TreeItemModel;
+class GenericObjectTreeModel;
 
 class QTENV_API ObjectTreeInspector : public Inspector
 {
     Q_OBJECT
 private:
-    TreeItemModel *model;
-    QTreeView *view;
+    GenericObjectTreeModel *model = nullptr;
+    QTreeView *view = nullptr;
+
+    void resizeEvent(QResizeEvent *event) override;
 
 private slots:
     void onClick(QModelIndex index);
     void onDoubleClick(QModelIndex index);
+
+    bool gatherVisibleData();
+    bool gatherVisibleDataIfSafe();
 
 public slots:
     void createContextMenu(QPoint pos);
@@ -44,7 +49,8 @@ public slots:
 public:
     ObjectTreeInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);
 
-    virtual void refresh();
+    virtual void doSetObject(cObject *obj) override;
+    virtual void refresh() override;
 };
 
 }  // namespace qtenv

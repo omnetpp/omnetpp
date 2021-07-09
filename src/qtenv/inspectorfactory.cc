@@ -30,7 +30,7 @@ EXECUTE_ON_SHUTDOWN(inspectorfactories.clear());
 InspectorFactory *findInspectorFactoryFor(cObject *obj, InspectorType type)
 {
     InspectorFactory *best = nullptr;
-    double bestweight = 0;
+    double bestweight = NEGATIVE_INFINITY;
     cRegistrationList *a = inspectorfactories.getInstance();
     for (int i = 0; i < a->size(); i++) {
         InspectorFactory *ifc = static_cast<InspectorFactory *>(a->get(i));

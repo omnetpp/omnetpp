@@ -40,7 +40,6 @@
 #include "common/ver.h"
 
 #include "runselectiondialog.h"
-#include "treeitemmodel.h"
 #include "inspector.h"
 #include "stopdialog.h"
 #include "inspectorutil.h"

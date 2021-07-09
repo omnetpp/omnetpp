@@ -68,7 +68,6 @@
 #include "figurerenderers.h"
 #include "watchinspector.h"
 #include "mainwindow.h"
-#include "treeitemmodel.h"
 #include "timelineinspector.h"
 #include "objecttreeinspector.h"
 #include "canvasinspector.h"
@@ -682,6 +681,7 @@ void Qtenv::doRun()
         mainLogView = static_cast<LogInspector *>(addEmbeddedInspector(InspectorFactory::get("LogInspectorFactory"), mainWindow->getLogInspectorArea()));
         mainTimeLine = static_cast<TimeLineInspector *>(addEmbeddedInspector(InspectorFactory::get("TimeLineInspectorFactory"), mainWindow->getTimeLineArea()));
         mainObjectTree = static_cast<ObjectTreeInspector *>(addEmbeddedInspector(InspectorFactory::get("ObjectTreeInspectorFactory"), mainWindow->getObjectTreeArea()));
+        mainObjectTree->setObject(getSimulation());
 
         connect(mainNetworkView, SIGNAL(inspectedObjectChanged(cObject *,cObject *)), mainLogView, SLOT(setObject(cObject *)));
         connect(mainNetworkView, SIGNAL(inspectedObjectChanged(cObject *,cObject *)), mainInspector, SLOT(setObject(cObject *)));
