@@ -30,7 +30,7 @@ namespace omnetpp {
  * any_ptr accepts a pointer of any type, and keeps the memory address
  * along with the pointer's type. The pointer can be extracted from
  * any_ptr with the exact same type it was used to store it. This was
- * achieved with the use of templates methods, typeid() and std::type_info.
+ * achieved with the use of template methods, typeid() and std::type_info.
  *
  * The primary use of any_ptr is with cClassDescriptor.
  *

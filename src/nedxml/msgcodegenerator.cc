@@ -1057,7 +1057,7 @@ void MsgCodeGenerator::generateToAnyPtr(const ClassInfo& classInfo)
             H << "return any_ptr(p);";
         }
         else {
-            // must try casting to cObject as it may an object which subclasses both this type and cObject (think cIListener!)
+            // must try casting to cObject as it may be an object which subclasses both this type and cObject (think cIListener!)
             H << "if (auto obj = as_cObject(p)) return any_ptr(obj); else return any_ptr(p);";
         }
         H << "}\n";
@@ -1076,6 +1076,7 @@ void MsgCodeGenerator::generateFromAnyPtr(const ClassInfo& classInfo, const std:
     }
     else if (classInfo.rootClasses.size() < 2) {
         H << "template<> inline " << classQName << " *fromAnyPtr(any_ptr ptr) ";
+        // there should always be at least one rootClass
         std::string rootClass = classInfo.rootClasses.at(0);
         if (rootClass == classQName)
             H << "{ return ptr.get<" << rootClass << ">(); }\n";
