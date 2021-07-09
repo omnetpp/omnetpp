@@ -107,8 +107,14 @@ Inspector::Inspector(QWidget *parent, bool isTopLevel, InspectorFactory *f)
     object = nullptr;
     type = f->getInspectorType();
 
-    if (isTopLevel)
+    if (isTopLevel) {
         setAttribute(Qt::WA_DeleteOnClose);
+
+        QAction *closeAction = new QAction("Close Inspector", this);
+        closeAction->setShortcut(Qt::CTRL + Qt::Key_W);
+        connect(closeAction, &QAction::triggered, this, &QWidget::close);
+        addAction(closeAction);
+    }
     else {
         auto layout = new QGridLayout(parent);
         parent->setLayout(layout);
