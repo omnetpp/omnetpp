@@ -26,6 +26,7 @@
 using namespace omnetpp::common;
 
 namespace omnetpp {
+namespace internal {
 
 MiniXPath::MiniXPath(cXMLElement::ParamResolver *resolver) : resolver(resolver)
 {
@@ -320,5 +321,6 @@ cXMLElement *MiniXPath::matchPathExpression(cXMLElement *contextNode, const char
     }
 }
 
+}  // namespace internal
 }  // namespace omnetpp
 

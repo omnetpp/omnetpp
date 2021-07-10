@@ -23,7 +23,7 @@
 #include "omnetpp/cxmlelement.h"
 
 namespace omnetpp {
-
+namespace internal {
 
 /**
  * @brief A minimalistic XPath interpreter.
@@ -59,6 +59,7 @@ class MiniXPath
     cXMLElement *matchPathExpression(cXMLElement *contextNode, const char *pathexpr, cXMLElement *documentNode);
 };
 
+}  // namespace internal
 }  // namespace omnetpp
 
 
