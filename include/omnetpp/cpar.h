@@ -23,12 +23,13 @@
 
 namespace omnetpp {
 
-class cParImpl;
 class cExpression;
 class cXMLElement;
 class cProperties;
 class cComponent;
 class cValue;
+
+namespace internal { class cParImpl; }
 
 /**
  * @brief Represents a module or channel parameter.
@@ -81,6 +82,7 @@ class SIM_API cPar : public cObject
     };
 
   private:
+    typedef internal::cParImpl cParImpl;
     cComponent *ownerComponent;
     cParImpl *p;
     cComponent *evalContext;

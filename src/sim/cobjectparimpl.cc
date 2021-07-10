@@ -26,9 +26,10 @@
 #include "ctemporaryowner.h"
 #include "common/stringutil.h"
 
-namespace omnetpp {
+using namespace omnetpp::common;
 
-using namespace common;
+namespace omnetpp {
+namespace internal {
 
 cObjectParImpl::~cObjectParImpl()
 {
@@ -374,5 +375,6 @@ int cObjectParImpl::compare(const cParImpl *other) const
         return (obj == other2->obj) ? 0 : (obj < other2->obj) ? -1 : 1;
 }
 
+}  // namespace internal
 }  // namespace omnetpp
 

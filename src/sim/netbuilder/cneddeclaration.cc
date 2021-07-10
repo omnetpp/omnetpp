@@ -333,7 +333,7 @@ void cNedDeclaration::updateDisplayProperty(PropertyElement *propNode, cProperty
     prop->setValue(cProperty::DEFAULTKEY, 0, d.str());
 }
 
-cParImpl *cNedDeclaration::getSharedParImplFor(NedElement *node)
+internal::cParImpl *cNedDeclaration::getSharedParImplFor(NedElement *node)
 {
     auto it = parimplMap.find(node->getId());
     return it == parimplMap.end() ? nullptr : it->second;

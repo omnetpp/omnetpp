@@ -71,6 +71,8 @@ class SIM_API cComponent : public cSoftOwner //implies noncopyable
     };
 
   private:
+    typedef internal::cParImpl cParImpl;
+
     cComponentType *componentType;  // component type object
     cSimulation *simulation; // the simulation it belongs to
     int componentId;   // id in cSimulation

@@ -82,7 +82,7 @@ std::string cPar::str() const
     return p->str();
 }
 
-cParImpl *cPar::copyIfShared()
+internal::cParImpl *cPar::copyIfShared()
 {
     if (p->isShared()) {
         p = p->dup();

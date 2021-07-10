@@ -29,6 +29,7 @@ class cXMLElement;
 class cProperties;
 class cComponent;
 
+namespace internal {
 
 /**
  * @brief Internal class that stores values for cPar objects.
@@ -364,6 +365,7 @@ class SIM_API cParImpl : public cNamedObject
     //@}
 };
 
+}  // namespace internal
 }  // namespace omnetpp
 
 

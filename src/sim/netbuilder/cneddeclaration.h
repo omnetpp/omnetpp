@@ -57,7 +57,8 @@ using namespace omnetpp::nedxml;
 class SIM_API cNedDeclaration : public NedTypeInfo
 {
   public:
-    typedef omnetpp::common::PatternMatcher PatternMatcher;
+    typedef common::PatternMatcher PatternMatcher;
+    typedef internal::cParImpl cParImpl;
     struct PatternData {PatternMatcher *matcher; ParamElement *patternNode;};
   protected:
     // properties

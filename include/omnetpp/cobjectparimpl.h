@@ -22,6 +22,8 @@ namespace omnetpp {
 
 class cTemporaryOwner;
 
+namespace internal {
+
 /**
  * @brief A cParImpl subclass that stores a module/channel parameter of type object.
  *
@@ -220,8 +222,8 @@ class SIM_API cObjectParImpl : public cParImpl
     //@}
 };
 
+}  // namespace internal
 }  // namespace omnetpp
-
 
 #endif
 

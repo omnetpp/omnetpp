@@ -26,6 +26,7 @@
 using namespace omnetpp::common;
 
 namespace omnetpp {
+namespace internal {
 
 cDoubleParImpl::cDoubleParImpl()
 {
@@ -218,5 +219,6 @@ int cDoubleParImpl::compare(const cParImpl *other) const
         return (val == other2->val) ? 0 : (val < other2->val) ? -1 : 1;
 }
 
+}  // namespace internal
 }  // namespace omnetpp
 

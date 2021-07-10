@@ -54,6 +54,7 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
     bool availabilityTested = false;
     bool available = false;
 
+    typedef internal::cParImpl cParImpl;
     typedef std::map<std::string, cParImpl *> StringToParMap;
     StringToParMap sharedParMap;
 

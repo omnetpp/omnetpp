@@ -23,6 +23,7 @@
 #include "ctemporaryowner.h"
 
 namespace omnetpp {
+namespace internal {
 
 cXMLParImpl::~cXMLParImpl()
 {
@@ -213,5 +214,6 @@ int cXMLParImpl::compare(const cParImpl *other) const
         return (val == other2->val) ? 0 : (val < other2->val) ? -1 : 1;
 }
 
+}  // namespace internal
 }  // namespace omnetpp
 

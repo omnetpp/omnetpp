@@ -35,6 +35,8 @@ class cModule;
 class cGate;
 class cChannel;
 
+namespace internal { class cParImpl; class cObjectParImpl; class cIntParImpl; };
+
 #define MAX_LOOP_NESTING 32
 
 
@@ -56,6 +58,10 @@ class SIM_API cNedNetworkBuilder
     typedef cNedDeclaration::PatternData PatternData;  // abbreviation
 
   protected:
+    typedef internal::cParImpl cParImpl;
+    typedef internal::cIntParImpl cIntParImpl;
+    typedef internal::cObjectParImpl cObjectParImpl;
+
     // the current NED declaration we're working with. Stored here to
     // avoid having to pass it around as a parameter.
     cNedDeclaration *currentDecl = nullptr;

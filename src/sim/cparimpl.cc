@@ -33,9 +33,10 @@
 #include "omnetpp/ccommbuffer.h"
 #endif
 
-namespace omnetpp {
-
 using namespace omnetpp::common;
+
+namespace omnetpp {
+namespace internal {
 
 long cParImpl::totalParimplObjs;
 long cParImpl::liveParimplObjs;
@@ -129,5 +130,6 @@ cParImpl *cParImpl::createWithType(Type type)
     }
 }
 
+}  // namespace internal
 }  // namespace omnetpp
 

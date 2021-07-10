@@ -113,7 +113,7 @@ void cComponentType::clearSharedParImpls()
     sharedParSet.clear();
 }
 
-cParImpl *cComponentType::getSharedParImpl(const char *key) const
+internal::cParImpl *cComponentType::getSharedParImpl(const char *key) const
 {
     StringToParMap::const_iterator it = sharedParMap.find(key);
     return it == sharedParMap.end() ? nullptr : it->second;
@@ -132,7 +132,7 @@ bool cComponentType::Less::operator()(cParImpl *a, cParImpl *b) const
     return a->compare(b) < 0;
 }
 
-cParImpl *cComponentType::getSharedParImpl(cParImpl *value) const
+internal::cParImpl *cComponentType::getSharedParImpl(cParImpl *value) const
 {
     ParImplSet::const_iterator it = sharedParSet.find(value);
     return it == sharedParSet.end() ? nullptr : *it;
