@@ -410,19 +410,6 @@ void cNedNetworkBuilder::doAssignParameterFromPattern(cPar& par, ParamElement *p
     }
 }
 
-cModule *cNedNetworkBuilder::_submodule(cModule *, const char *submodName, int idx)
-{
-    SubmodMap::iterator i = submodMap.find(std::string(submodName));
-    if (i == submodMap.end())
-        return nullptr;
-
-    ModulePtrVector& v = i->second;
-    if (idx < 0)
-        return (v.size() != 1 || v[0]->isVector()) ? nullptr : v[0];
-    else
-        return ((unsigned)idx >= v.size()) ? nullptr : v[idx];
-}
-
 void cNedNetworkBuilder::doGateSizes(cModule *module, GatesElement *gatesNode)
 {
     ASSERT(gatesNode != nullptr);
@@ -500,7 +487,6 @@ void cNedNetworkBuilder::buildInside(cModule *modp, cNedDeclaration *decl)
     // add submodules and connections. Submodules and connections are inherited:
     // we need to start start with the the base classes, and do this compound
     // module last.
-    submodMap.clear();
     buildRecursively(modp, decl);
 
     // check if there are unconnected gates left -- unless unconnected gates were already permitted in the super type
@@ -827,10 +813,8 @@ void cNedNetworkBuilder::addSubmodule(cModule *compoundModule, SubmoduleElement 
             updateOrRethrowException(e, submoduleNode);
             throw;
         }
-        cModule *submodp = submodType->create(submodName, compoundModule);
-        ModulePtrVector& v = submodMap[submodName];
-        v.push_back(submodp);
 
+        cModule *submodp = submodType->create(submodName, compoundModule);
         cContextSwitcher __ctx(submodp);  // params need to be evaluated in the module's context
         submodp->finalizeParameters();  // also sets up gate sizes declared inside the type
         setupSubmoduleGateVectors(submodp, submoduleNode);
@@ -851,7 +835,6 @@ void cNedNetworkBuilder::addSubmodule(cModule *compoundModule, SubmoduleElement 
         // note: we don't try to resolve moduleType if vector size is zero
         int vectorSize = (int)evaluateAsLong(vectorSizeExpr, compoundModule);
         compoundModule->addSubmoduleVector(submodName, vectorSize);
-        ModulePtrVector& v = submodMap[submodName];
         cModuleType *submodType = nullptr;
         for (int index = 0; index < vectorSize; index++) {
             if (!submodType || usesLike) {
@@ -868,8 +851,6 @@ void cNedNetworkBuilder::addSubmodule(cModule *compoundModule, SubmoduleElement 
             }
             if (submodType != nullptr) {  // note: this way we can create "holey" arrays!
                 cModule *submodp = submodType->create(submodName, compoundModule, index);
-                v.push_back(submodp);
-
                 cContextSwitcher __ctx(submodp);  // params need to be evaluated in the module's context
                 submodp->finalizeParameters();  // also sets up gate sizes declared inside the type
                 setupSubmoduleGateVectors(submodp, submoduleNode);
@@ -1152,8 +1133,8 @@ cModule *cNedNetworkBuilder::resolveModuleForConnection(cModule *compoundModule,
         return compoundModule;
     }
     else {
-        int moduleIndex = moduleIndexExpr.empty() ? 0 : (int)evaluateAsLong(moduleIndexExpr, compoundModule);
-        cModule *module = _submodule(compoundModule, moduleName, moduleIndex);
+        int moduleIndex = moduleIndexExpr.empty() ? -1 : (int)evaluateAsLong(moduleIndexExpr, compoundModule);
+        cModule *module = compoundModule->getSubmodule(moduleName, moduleIndex);
         if (!module) {
             if (moduleIndexExpr.empty())
                 throw cRuntimeError(module, "No submodule '%s' to be connected", moduleName);

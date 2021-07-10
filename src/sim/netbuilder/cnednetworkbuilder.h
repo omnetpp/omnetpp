@@ -60,14 +60,7 @@ class SIM_API cNedNetworkBuilder
     // avoid having to pass it around as a parameter.
     cNedDeclaration *currentDecl = nullptr;
 
-    // submodule pointers. This is an optimization because cModule::getSubmodule()
-    // is slow if there are very large submodule vectors.
-    typedef std::vector<cModule*> ModulePtrVector;
-    typedef std::map<std::string,ModulePtrVector> SubmodMap;
-    SubmodMap submodMap;
-
   protected:
-    cModule *_submodule(cModule *parentmodp, const char *submodName, int idx=-1);
     void addSubmodulesAndConnections(cModule *modp);
     bool superTypeAllowsUnconnected(cNedDeclaration *decl) const;
     void buildRecursively(cModule *modp, cNedDeclaration *decl);
