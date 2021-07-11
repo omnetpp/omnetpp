@@ -39,7 +39,7 @@ class cProperty;
  * @hideinitializer
  */
 #define Register_ResultFilter(NAME, CLASSNAME) \
-  __REGISTER_CLASS_X(CLASSNAME, omnetpp::cResultFilter, "result filter", omnetpp::resultFilters.getInstance()->add(new omnetpp::cResultFilterType(NAME,omnetpp::opp_typename(typeid(CLASSNAME)))) )
+  __REGISTER_CLASS_X(CLASSNAME, omnetpp::cResultFilter, "result filter", omnetpp::internal::resultFilters.getInstance()->add(new omnetpp::cResultFilterType(NAME,omnetpp::opp_typename(typeid(CLASSNAME)))) )
 
 
 /**
@@ -54,7 +54,7 @@ class cProperty;
  * @hideinitializer
  */
 #define Register_ResultFilter2(NAME, CLASSNAME, DESCRIPTION) \
-  __REGISTER_CLASS_X(CLASSNAME, omnetpp::cResultFilter, "result filter", omnetpp::resultFilters.getInstance()->add(new omnetpp::cResultFilterType(NAME,omnetpp::opp_typename(typeid(CLASSNAME)),DESCRIPTION)) )
+  __REGISTER_CLASS_X(CLASSNAME, omnetpp::cResultFilter, "result filter", omnetpp::internal::resultFilters.getInstance()->add(new omnetpp::cResultFilterType(NAME,omnetpp::opp_typename(typeid(CLASSNAME)),DESCRIPTION)) )
 
 /**
  * @brief Base class for result filters.

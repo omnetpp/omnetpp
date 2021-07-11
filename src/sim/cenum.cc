@@ -28,6 +28,8 @@
 #include "omnetpp/cexception.h"
 #include "omnetpp/cstringtokenizer.h"
 
+using namespace omnetpp::internal;
+
 namespace omnetpp {
 
 Register_Class(cEnum);

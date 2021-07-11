@@ -56,6 +56,7 @@
 #endif
 
 using namespace omnetpp::common;
+using namespace omnetpp::internal;
 
 namespace omnetpp {
 

@@ -23,6 +23,7 @@
 #include "cobjectfactory.h"
 
 namespace omnetpp {
+namespace internal {
 
 // Global registration lists
 SIM_API extern cGlobalRegistrationList componentTypes;  ///< List of all component types (cComponentType)
@@ -52,6 +53,7 @@ struct EmbeddedNedFile
 
 SIM_API extern std::vector<EmbeddedNedFile> embeddedNedFiles;
 
+}  // namespace internal
 }  // namespace omnetpp
 
 

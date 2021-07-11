@@ -34,6 +34,7 @@
 #include "scenario.h"
 
 using namespace omnetpp::common;
+using namespace omnetpp::internal;
 
 namespace omnetpp {
 namespace envir {

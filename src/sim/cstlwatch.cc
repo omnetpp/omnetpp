@@ -22,6 +22,8 @@
 #include "omnetpp/globals.h"
 #include "omnetpp/checkandcast.h"
 
+using namespace omnetpp::internal;
+
 namespace omnetpp {
 
 //

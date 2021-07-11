@@ -22,6 +22,7 @@
 #include <QtCore/QDebug>
 
 using namespace omnetpp::common;
+using namespace omnetpp::internal;
 
 namespace omnetpp {
 namespace qtenv {

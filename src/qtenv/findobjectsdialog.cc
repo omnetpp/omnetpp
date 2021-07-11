@@ -31,10 +31,10 @@
 
 #include <QtCore/QDebug>
 
+using namespace omnetpp::common;
+using namespace omnetpp::internal;
+
 namespace omnetpp {
-
-using namespace common;
-
 namespace qtenv {
 
 QString FindObjectsDialog::classNamePatternHelp =

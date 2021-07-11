@@ -36,6 +36,7 @@
 
 using namespace omnetpp::common;
 using namespace omnetpp::nedxml;
+using namespace omnetpp::internal;
 
 namespace omnetpp {
 namespace envir {

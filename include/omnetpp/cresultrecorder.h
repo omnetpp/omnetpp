@@ -40,7 +40,7 @@ class cProperty;
  * @hideinitializer
  */
 #define Register_ResultRecorder(NAME, CLASSNAME) \
-  __REGISTER_CLASS_X(CLASSNAME, omnetpp::cResultRecorder, "result recorder", omnetpp::resultRecorders.getInstance()->add(new omnetpp::cResultRecorderType(NAME,omnetpp::opp_typename(typeid(CLASSNAME)))) )
+  __REGISTER_CLASS_X(CLASSNAME, omnetpp::cResultRecorder, "result recorder", omnetpp::internal::resultRecorders.getInstance()->add(new omnetpp::cResultRecorderType(NAME,omnetpp::opp_typename(typeid(CLASSNAME)))) )
 
 /**
  * @brief Registers a result recorder class with a description string.
@@ -55,7 +55,7 @@ class cProperty;
  * @hideinitializer
  */
 #define Register_ResultRecorder2(NAME, CLASSNAME, DESCRIPTION) \
-  __REGISTER_CLASS_X(CLASSNAME, omnetpp::cResultRecorder, "result recorder", omnetpp::resultRecorders.getInstance()->add(new omnetpp::cResultRecorderType(NAME,omnetpp::opp_typename(typeid(CLASSNAME)),DESCRIPTION)) )
+  __REGISTER_CLASS_X(CLASSNAME, omnetpp::cResultRecorder, "result recorder", omnetpp::internal::resultRecorders.getInstance()->add(new omnetpp::cResultRecorderType(NAME,omnetpp::opp_typename(typeid(CLASSNAME)),DESCRIPTION)) )
 
 
 /**

@@ -38,7 +38,7 @@ namespace omnetpp {
  * @hideinitializer
  */
 #define Define_NED_Math_Function(NAME,ARGCOUNT) \
-  EXECUTE_ON_STARTUP(omnetpp::nedFunctions.getInstance()->add(new omnetpp::cNedMathFunction(#NAME,NAME,ARGCOUNT));)
+  EXECUTE_ON_STARTUP(omnetpp::internal::nedFunctions.getInstance()->add(new omnetpp::cNedMathFunction(#NAME,NAME,ARGCOUNT));)
 
 /**
  * @brief Like Define_NED_Math_Function(), but takes three arguments, the second one being the
@@ -48,7 +48,7 @@ namespace omnetpp {
  * @hideinitializer
  */
 #define Define_NED_Math_Function2(NAME,FUNCTION,ARGCOUNT) \
-  EXECUTE_ON_STARTUP(omnetpp::nedFunctions.getInstance()->add(new omnetpp::cNedMathFunction(#NAME,FUNCTION,ARGCOUNT));)
+  EXECUTE_ON_STARTUP(omnetpp::internal::nedFunctions.getInstance()->add(new omnetpp::cNedMathFunction(#NAME,FUNCTION,ARGCOUNT));)
 
 /**
  * @brief Like Define_NED_Math_Function(), but takes category and description strings as well.
@@ -56,7 +56,7 @@ namespace omnetpp {
  * @hideinitializer
  */
 #define Define_NED_Math_Function3(NAME,ARGCOUNT,CATEGORY,DESCRIPTION) \
-  EXECUTE_ON_STARTUP(omnetpp::nedFunctions.getInstance()->add(new omnetpp::cNedMathFunction(#NAME,NAME,ARGCOUNT,CATEGORY,DESCRIPTION));)
+  EXECUTE_ON_STARTUP(omnetpp::internal::nedFunctions.getInstance()->add(new omnetpp::cNedMathFunction(#NAME,NAME,ARGCOUNT,CATEGORY,DESCRIPTION));)
 
 /**
  * @brief Like Define_NED_Math_Function2(), but takes category and description strings as well.
@@ -64,7 +64,7 @@ namespace omnetpp {
  * @hideinitializer
  */
 #define Define_NED_Math_Function4(NAME,FUNCTION,ARGCOUNT,CATEGORY,DESCRIPTION) \
-  EXECUTE_ON_STARTUP(omnetpp::nedFunctions.getInstance()->add(new omnetpp::cNedMathFunction(#NAME,FUNCTION,ARGCOUNT,CATEGORY,DESCRIPTION));)
+  EXECUTE_ON_STARTUP(omnetpp::internal::nedFunctions.getInstance()->add(new omnetpp::cNedMathFunction(#NAME,FUNCTION,ARGCOUNT,CATEGORY,DESCRIPTION));)
 
 /**
  * @brief Registers a C/C++ function for use in NED and ini files; see cNedFunction.
@@ -92,7 +92,7 @@ namespace omnetpp {
  * @hideinitializer
  */
 #define Define_NED_Function(FUNCTION,SIGNATURE) \
-  EXECUTE_ON_STARTUP(omnetpp::nedFunctions.getInstance()->add(new omnetpp::cNedFunction(FUNCTION,SIGNATURE));)
+  EXECUTE_ON_STARTUP(omnetpp::internal::nedFunctions.getInstance()->add(new omnetpp::cNedFunction(FUNCTION,SIGNATURE));)
 
 /**
  * @brief Like Define_NED_Function(), but allows one to specify a category string
@@ -101,7 +101,7 @@ namespace omnetpp {
  * @hideinitializer
  */
 #define Define_NED_Function2(FUNCTION,SIGNATURE,CATEGORY,DESCRIPTION) \
-  EXECUTE_ON_STARTUP(omnetpp::nedFunctions.getInstance()->add(new omnetpp::cNedFunction(FUNCTION,SIGNATURE,CATEGORY,DESCRIPTION));)
+  EXECUTE_ON_STARTUP(omnetpp::internal::nedFunctions.getInstance()->add(new omnetpp::cNedFunction(FUNCTION,SIGNATURE,CATEGORY,DESCRIPTION));)
 
 /**
  * @brief Register class. This defines a factory object which makes it possible
@@ -149,12 +149,12 @@ namespace omnetpp {
 #define __REGISTER_CLASS_X(CLASSNAME, BASECLASS, DESC, EXTRACODE) \
   static omnetpp::cObject *MAKE_UNIQUE_WITHIN_FILE(__factoryfunc_)() {BASECLASS *ret = new CLASSNAME; return ret; } \
   static void *MAKE_UNIQUE_WITHIN_FILE(__castfunc_)(omnetpp::cObject *obj) {return (void*)dynamic_cast<CLASSNAME*>(obj);} \
-  EXECUTE_ON_STARTUP(omnetpp::classes.getInstance()->add(new omnetpp::cObjectFactory(omnetpp::opp_typename(typeid(CLASSNAME)), MAKE_UNIQUE_WITHIN_FILE(__factoryfunc_), MAKE_UNIQUE_WITHIN_FILE(__castfunc_), DESC)); EXTRACODE; )
+  EXECUTE_ON_STARTUP(omnetpp::internal::classes.getInstance()->add(new omnetpp::cObjectFactory(omnetpp::opp_typename(typeid(CLASSNAME)), MAKE_UNIQUE_WITHIN_FILE(__factoryfunc_), MAKE_UNIQUE_WITHIN_FILE(__castfunc_), DESC)); EXTRACODE; )
 
 // internal
 #define __REGISTER_ABSTRACT_CLASS(CLASSNAME, BASECLASS /*unused*/, DESC) \
   static void *MAKE_UNIQUE_WITHIN_FILE(__castfunc_)(omnetpp::cObject *obj) {return (void*)dynamic_cast<CLASSNAME*>(obj);} \
-  EXECUTE_ON_STARTUP(omnetpp::classes.getInstance()->add(new omnetpp::cObjectFactory(omnetpp::opp_typename(typeid(CLASSNAME)), nullptr, MAKE_UNIQUE_WITHIN_FILE(__castfunc_), DESC));)
+  EXECUTE_ON_STARTUP(omnetpp::internal::classes.getInstance()->add(new omnetpp::cObjectFactory(omnetpp::opp_typename(typeid(CLASSNAME)), nullptr, MAKE_UNIQUE_WITHIN_FILE(__castfunc_), DESC));)
 
 /**
  * @brief Internal. Registers a class descriptor which provides reflection information.
@@ -162,12 +162,12 @@ namespace omnetpp {
  * @hideinitializer
  */
 #define Register_ClassDescriptor(DESCRIPTORCLASS) \
-  EXECUTE_ON_STARTUP(omnetpp::classDescriptors.getInstance()->add(new DESCRIPTORCLASS());)
+  EXECUTE_ON_STARTUP(omnetpp::internal::classDescriptors.getInstance()->add(new DESCRIPTORCLASS());)
 
 // internal
 #define __REGISTER_CONFIGOPTION(ID, ARGLIST) \
   omnetpp::cConfigOption *ID; \
-  EXECUTE_ON_STARTUP(omnetpp::configOptions.getInstance()->add(ID = new omnetpp::cConfigOption ARGLIST);)
+  EXECUTE_ON_STARTUP(omnetpp::internal::configOptions.getInstance()->add(ID = new omnetpp::cConfigOption ARGLIST);)
 
 /**
  * @brief Registers a global configuration option.
@@ -226,7 +226,7 @@ namespace omnetpp {
  * @hideinitializer
  */
 #define Register_MessagePrinter(CLASSNAME) \
-  EXECUTE_ON_STARTUP(omnetpp::messagePrinters.getInstance()->add(new CLASSNAME());)
+  EXECUTE_ON_STARTUP(omnetpp::internal::messagePrinters.getInstance()->add(new CLASSNAME());)
 
 /**
  * @brief Registers an enum.
@@ -244,7 +244,7 @@ namespace omnetpp {
  * @hideinitializer
  */
 #define Register_Enum(NAME, VALUES)  \
-  EXECUTE_ON_STARTUP(omnetpp::enums.getInstance()->add((new omnetpp::cEnum(omnetpp::opp_typename(typeid(NAME))))->registerNames(#VALUES)->registerValues VALUES))
+  EXECUTE_ON_STARTUP(omnetpp::internal::enums.getInstance()->add((new omnetpp::cEnum(omnetpp::opp_typename(typeid(NAME))))->registerNames(#VALUES)->registerValues VALUES))
 
 /**
  * @brief Registers an enum, and makes it accessible via a global cEnum* pointer,
@@ -270,7 +270,7 @@ namespace omnetpp {
  */
 #define Register_Enum2(VAR, NAME, VALUES)  \
   static omnetpp::cEnum *VAR; \
-  EXECUTE_ON_STARTUP(VAR = new omnetpp::cEnum(NAME); VAR->bulkInsert VALUES; omnetpp::enums.getInstance()->add(VAR))
+  EXECUTE_ON_STARTUP(VAR = new omnetpp::cEnum(NAME); VAR->bulkInsert VALUES; omnetpp::internal::enums.getInstance()->add(VAR))
 
 /**
  * @brief Registers a new figure type. The macro expects a type name string

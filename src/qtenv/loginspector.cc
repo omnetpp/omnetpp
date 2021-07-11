@@ -42,6 +42,7 @@
 #include "textviewerproviders.h"
 
 using namespace omnetpp::common;
+using namespace omnetpp::internal;
 
 namespace omnetpp {
 namespace qtenv {

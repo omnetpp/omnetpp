@@ -21,7 +21,6 @@
 
 namespace omnetpp {
 
-
 /**
  * @brief Describes a configuration option.
  *

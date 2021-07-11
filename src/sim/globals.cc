@@ -20,6 +20,7 @@
 #include "omnetpp/ccomponenttype.h"
 
 namespace omnetpp {
+namespace internal {
 
 cGlobalRegistrationList componentTypes("component types");
 cGlobalRegistrationList nedFunctions("NED functions");
@@ -44,6 +45,8 @@ EXECUTE_ON_SHUTDOWN(
         resultRecorders.clear();
         messagePrinters.clear();
         figureTypes.clear();
+        embeddedNedFiles.clear();
 );
 
+}  // namespace internal
 }  // namespace omnetpp
