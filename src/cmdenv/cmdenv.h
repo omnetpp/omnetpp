@@ -54,7 +54,7 @@ struct CMDENV_API CmdenvOptions : public EnvirOptions
  */
 class CMDENV_API Cmdenv : public EnvirBase
 {
-    protected:
+   protected:
      CmdenvOptions *&opt;         // alias to EnvirBase::opt
 
      // set to true on SIGINT/SIGTERM signals

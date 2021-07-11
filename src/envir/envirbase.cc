@@ -124,6 +124,7 @@
 #define DEFAULT_VECTOR_BUFFER              "1MiB"
 
 using namespace omnetpp::common;
+using namespace omnetpp::internal;
 
 namespace omnetpp {
 namespace envir {

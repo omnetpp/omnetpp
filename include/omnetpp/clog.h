@@ -204,7 +204,7 @@ class SIM_API cLog
 #define OPP_LOGPROXY(object, logLevel, category) \
     ((void)0, !(COMPILETIME_LOG_PREDICATE(object, logLevel, category) && \
     omnetpp::cLog::runtimeLogPredicate(object, logLevel, category))) ? \
-    omnetpp::cLogProxy::dummyStream : omnetpp::cLogProxy(object, logLevel, category, __FILE__, __LINE__, __FUNCTION__)
+    omnetpp::internal::cLogProxy::dummyStream : omnetpp::internal::cLogProxy(object, logLevel, category, __FILE__, __LINE__, __FUNCTION__)
 
 // Returns nullptr. Helper function for the logging macros.
 inline void *getThisPtr() {return nullptr;}
@@ -389,6 +389,7 @@ class SIM_API cLogEntry
     int textLength;
 };
 
+ namespace internal {
 
 //
 // This class captures the context where the log statement appears.
@@ -435,6 +436,8 @@ class SIM_API cLogProxy
     std::ostream& getStream() { return stream; }
     static void flushLastLine();
 };
+
+}  // namespace internal
 
 }  // namespace omnetpp
 

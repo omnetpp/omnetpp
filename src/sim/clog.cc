@@ -27,12 +27,16 @@ LogLevel cLog::logLevel = LOGLEVEL_TRACE;
 cLog::NoncomponentLogPredicate cLog::noncomponentLogPredicate = &cLog::defaultNoncomponentLogPredicate;
 cLog::ComponentLogPredicate cLog::componentLogPredicate = &cLog::defaultComponentLogPredicate;
 
+namespace internal {
+
 cLogProxy::LogBuffer cLogProxy::buffer;
 std::ostream cLogProxy::stream(&cLogProxy::buffer);
 cLogEntry cLogProxy::currentEntry;
 LogLevel cLogProxy::previousLogLevel = (LogLevel)-1;
 const char *cLogProxy::previousCategory = nullptr;
 cLogProxy::nullstream cLogProxy::dummyStream;
+
+}
 
 //----
 
@@ -91,6 +95,8 @@ bool cLog::defaultComponentLogPredicate(const cComponent *sourceComponent, LogLe
 }
 
 //----
+
+namespace internal {
 
 int cLogProxy::LogBuffer::sync()
 {
@@ -163,6 +169,8 @@ void cLogProxy::flushLastLine()
         stream.flush();
     }
 }
+
+}  // namespace internal
 
 }  // namespace omnetpp
 

@@ -84,6 +84,10 @@
 
 #define emit
 
+using namespace omnetpp::common;
+using namespace omnetpp::envir;
+using namespace omnetpp::internal;
+
 
 // The icons and icons_dark resources contain the exact same resource aliases, with slightly different content.
 //  - In a static library build, resources are not initialized automatically, so one of them has to be initialized manually.
@@ -108,9 +112,6 @@ void initFontsResource()
 }
 
 namespace omnetpp {
-
-using namespace common;
-using namespace envir;
 
 namespace qtenv {
 
