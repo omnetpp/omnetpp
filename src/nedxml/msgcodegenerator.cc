@@ -1575,16 +1575,11 @@ void MsgCodeGenerator::generateEnum(const EnumInfo& enumInfo)
     H << "inline void doParsimPacking(omnetpp::cCommBuffer *b, const " << enumInfo.enumName << "& e) { b->pack(static_cast<int>(e)); }\n";
     H << "inline void doParsimUnpacking(omnetpp::cCommBuffer *b, " << enumInfo.enumName << "& e) { int n; b->unpack(n); e = static_cast<" << enumInfo.enumName << ">(n); }\n\n";
 
-    // TODO generate a Register_Enum() macro call instead
-    // TODO why generating the enum and registering its descriptor (cEnum) aren't separate, independently usable operations as with classes?
-    CC << "EXECUTE_ON_STARTUP(\n";
-    CC << "    omnetpp::cEnum *e = omnetpp::cEnum::find(\"" << enumInfo.enumQName << "\");\n";
-    CC << "    if (!e) omnetpp::enums.getInstance()->add(e = new omnetpp::cEnum(\"" << enumInfo.enumQName << "\"));\n";
-    // enum inheritance: we should add fields from base enum as well, but that could only be done when importing is in place
-    for (const auto& enumItem : enumInfo.fieldList) {
-        CC << "    e->insert(" << enumItem.name << ", \"" << enumItem.name << "\");\n";
-    }
-    CC << ")\n\n";
+    CC << "Register_Enum(" << enumInfo.enumQName << ", (";
+    bool first = true;
+    for (const auto& enumItem : enumInfo.fieldList)
+        CC << (first ? (first=false,"") : ", ") << enumInfo.enumQName << "::" << enumItem.name;
+    CC << "));\n\n";
 }
 
 std::string MsgCodeGenerator::prefixWithNamespace(const std::string& name, const std::string& namespaceName)
