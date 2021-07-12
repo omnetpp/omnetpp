@@ -134,8 +134,8 @@ cEnum *cEnum::registerNames(const char *nameList)
     cStringTokenizer tokenizer(nameList, "(), ");
     while (tokenizer.hasMoreTokens()) {
         const char *token = tokenizer.nextToken();
-        if (strstr(token, "::"))
-            token = strstr(token, "::") + 2;
+        while (const char *sep = strstr(token, "::"))
+            token = sep + 2;
         tmpNames.push_back(token);
     }
     return this;
