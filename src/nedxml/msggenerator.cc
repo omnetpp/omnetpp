@@ -329,8 +329,6 @@ void MsgGenerator::doEnum(EnumElement *node, const char *indent, bool islast, co
 {
     OUT << getBannerComment(node, indent);
     OUT << indent << "enum " << node->getName();
-    if (!opp_isempty(node->getExtendsName()))
-        OUT << " extends " << node->getExtendsName();
     OUT << getRightComment(node);
     OUT << indent << "{\n";
     generateChildren(node, increaseIndent(indent));

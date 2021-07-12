@@ -114,7 +114,7 @@ MsgAnalyzer::ClassInfo MsgAnalyzer::extractClassInfo(ASTNode *node, const std::s
     classInfo.name = actually != "" ? actually : node->getAttribute(ATT_NAME);
     classInfo.namespaceName = namespaceName;
     classInfo.qname = prefixWithNamespace(classInfo.name, namespaceName);
-    classInfo.extendsName = node->getAttribute(ATT_EXTENDS_NAME);
+    classInfo.extendsName = opp_nulltoempty(node->getAttribute(ATT_EXTENDS_NAME));
     classInfo.isClass = (classInfo.keyword != "struct");
     classInfo.isEnum = false;
     classInfo.isImported = isImported;
