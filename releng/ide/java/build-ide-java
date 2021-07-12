@@ -7,7 +7,7 @@ fi
 
 if [ "$BUILDID"x = "x" ]; then
   # generate our own build identifier
-  export BUILDID=`date +%y%m%d`-`git describe --tags | awk -F '-g' '{print $2;}'`
+  export BUILDID=$(date +%y%m%d)-$(git describe --tags | awk -F '-g' '{print $2;}')
 fi
 if [ "$VERSION"x = "x" ]; then
   # undefined version number
@@ -46,36 +46,49 @@ cd releng/org.omnetpp.ide.$what.product/target/products/org.omnetpp.ide.$what.pr
 echo Post processing IDE installation files...
 rm -rf ide
 mkdir -p ide
+mkdir -p ide/plugins
+mkdir -p ide/features
 
-# Linux
+# Linux x86_64
 cp -rl linux/gtk/x86_64 ide
-mv ide/x86_64 ide/linux64
-cp -rlf ide/linux64/plugins ide
-cp -rlf ide/linux64/features ide
-rm -rf ide/linux64/plugins
-rm -rf ide/linux64/features
+mv ide/x86_64 ide/linux-x86_64
+rm -rf ide/features/* ide/plugins/*
+mv -f ide/linux-x86_64/features/* ide/features
+mv -f ide/linux-x86_64/plugins/* ide/plugins
+mv -f ide/plugins/*.linux_* ide/plugins/*.linux.x86_64_* ide/linux-x86_64/plugins # move back the platform specific plugins to the platform spec directory
 # we have to adjust the config.ini manually, bacause tycho is not properly updating it form the .product file
-echo org.eclipse.update.reconcile=false >>ide/linux64/configuration/config.ini
-echo osgi.instance.area.default=../samples >>ide/linux64/configuration/config.ini
+echo org.eclipse.update.reconcile=false >>ide/linux-x86_64/configuration/config.ini
+echo osgi.instance.area.default=../samples >>ide/linux-x86_64/configuration/config.ini
 
-# Windows
+# Linux aarch64
+cp -rl linux/gtk/aarch64 ide
+mv ide/aarch64 ide/linux-aarch64
+rm -rf ide/features/* ide/plugins/*
+mv -f ide/linux-aarch64/features/* ide/features
+mv -f ide/linux-aarch64/plugins/* ide/plugins
+mv -f ide/plugins/*.linux_* ide/plugins/*.linux.aarch64_* ide/linux-aarch64/plugins # move back the platform specific plugins to the platform spec directory
+# we have to adjust the config.ini manually, bacause tycho is not properly updating it form the .product file
+echo org.eclipse.update.reconcile=false >>ide/linux-aarch64/configuration/config.ini
+echo osgi.instance.area.default=../samples >>ide/linux-aarch64/configuration/config.ini
+
+# Windows x86_64
 cp -rl win32/win32/x86_64 ide
-mv ide/x86_64 ide/win64
-cp -rlf ide/win64/plugins ide
-cp -rlf ide/win64/features ide
-rm -rf ide/win64/plugins
-rm -rf ide/win64/features
+mv ide/x86_64 ide/win32-x86_64
+rm -rf ide/features/* ide/plugins/*
+mv -f ide/win32-x86_64/features/* ide/features
+mv -f ide/win32-x86_64/plugins/* ide/plugins
+mv -f ide/plugins/*.win32_* ide/plugins/*.win32.x86_64_* ide/win32-x86_64/plugins # move back the platform specific plugins to the platform spec directory
 # we have to adjust the config.ini manually, bacause tycho is not properly updating it form the .product file
-echo org.eclipse.update.reconcile=false >>ide/win64/configuration/config.ini
-echo osgi.instance.area.default=../samples >>ide/win64/configuration/config.ini
+echo org.eclipse.update.reconcile=false >>ide/win32-x86_64/configuration/config.ini
+echo osgi.instance.area.default=../samples >>ide/win32-x86_64/configuration/config.ini
 
-# macOS
+# macOS x86_64
 cp -rl macosx/cocoa/x86_64 ide
-mv ide/x86_64 ide/macosx
-cp -rlf ide/macosx/Eclipse.app/Contents/Eclipse/plugins ide
-cp -rlf ide/macosx/Eclipse.app/Contents/Eclipse/features ide
-rm -rf ide/macosx/Eclipse.app/Contents/Eclipse/plugins
-rm -rf ide/macosx/Eclipse.app/Contents/Eclipse/features
+mv ide/x86_64 ide/macosx-x86_64
+rm -rf ide/features/* ide/plugins/*
+mv -f ide/macosx-x86_64/Eclipse.app/Contents/Eclipse/features/* ide/features
+mv -f ide/macosx-x86_64/Eclipse.app/Contents/Eclipse/plugins/* ide/plugins
+mv -f ide/plugins/*.macosx_* ide/plugins/*.macosx.x86_64_* ide/macosx-x86_64/Eclipse.app/Contents/Eclipse/plugins # move back the platform specific plugins to the platform spec directory
 # we have to adjust the config.ini manually, bacause tycho is not properly updating it form the .product file
-echo org.eclipse.update.reconcile=false >>ide/macosx/Eclipse.app/Contents/Eclipse/configuration/config.ini
-echo osgi.instance.area.default=../../../../../samples >>ide/macosx//Eclipse.app/Contents/Eclipse/configuration/config.ini
+echo org.eclipse.update.reconcile=false >>ide/macosx-x86_64/Eclipse.app/Contents/Eclipse/configuration/config.ini
+echo osgi.instance.area.default=../../../../../samples >>ide/macosx-x86_64/Eclipse.app/Contents/Eclipse/configuration/config.ini

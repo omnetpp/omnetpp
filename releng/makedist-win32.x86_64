@@ -30,8 +30,8 @@ if [ "$what" != "omnest" ]; then
     what="omnetpp"
 fi
 
-cd `dirname $0`/..
-OMNETPP_ROOT=`pwd`
+cd $(dirname $0)/..
+OMNETPP_ROOT=$(pwd)
 
 # the directory where the distribution file will created
 DISTDIR=$OMNETPP_ROOT/out/dist
@@ -49,17 +49,17 @@ tar xfz $SOURCE_DISTRIBUTION_BASE_NAME.tgz || { echo --- error extracting source
 if [ "$3" != "" ]; then
    VERSION=$3
 else
-   VERSION=`cat $OMNETPP_ROOT/Version | sed 's/^.*-//'`
+   VERSION=$(cat $OMNETPP_ROOT/Version | sed 's/^.*-//')
 fi
 
 # cd into the extracted source achive dir
 cd $what-$VERSION || exit 1
 
-echo "Preparing to create distribution package: $what, version: $VERSION platform: windows..."
+echo "Preparing to create distribution package: $what, version: $VERSION platform: windows x86_64..."
 
 # Prepare IDE
-cp -r ide/win64/* ide
-rm -rf ide/win32 ide/win64 ide/linux ide/linux64 ide/macosx
+cp -rlf ide/win32-x86_64/* ide
+rm -rf ide/win32-x86_64 ide/linux-x86_64 ide/linux-aarch64 ide/macosx-x86_64
 
 # copy the self extracting toolchain file into the distro
 mkdir -p tools

@@ -6,7 +6,7 @@
       provider-name="OpenSim Ltd."
       os="linux,macosx,win32"
       ws="cocoa,gtk,win32"
-      arch="x86,x86_64">
+      arch="x86_64,aarch64">
 
    <requires>
       <import feature="org.eclipse.platform"/>
@@ -55,6 +55,15 @@
          id="org.omnetpp.ide.nativelibs.linux.x86_64"
          os="linux"
          arch="x86_64"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"/>
+
+   <plugin
+         id="org.omnetpp.ide.nativelibs.linux.aarch64"
+         os="linux"
+         arch="aarch64"
          download-size="0"
          install-size="0"
          version="0.0.0"

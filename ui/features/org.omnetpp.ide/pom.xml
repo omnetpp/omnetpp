@@ -22,6 +22,7 @@
         <configuration>
           <excludes>
             <plugin id="org.omnetpp.ide.nativelibs.linux.x86_64"/>
+            <plugin id="org.omnetpp.ide.nativelibs.linux.aarch64"/>
             <plugin id="org.omnetpp.ide.nativelibs.win32.x86_64"/>
             <plugin id="org.omnetpp.ide.nativelibs.macosx"/>
             <plugin id="org.omnetpp.doc"/>

@@ -44,18 +44,18 @@ tar xfz $SOURCE_DISTRIBUTION_BASE_NAME.tgz || { echo --- error extracting source
 # cd into the extracted source achive dir
 cd $what-$VERSION || exit 1
 
-echo "Preparing to create distribution package: $what, version: $VERSION platform: linux x86_64..."
+echo "Preparing to create distribution package: $what, version: $VERSION platform: linux aarch64..."
 
 # Prepare IDE
-cp -rlf ide/linux-x86_64/* ide
+cp -rlf ide/linux-aarch64/* ide
 rm -rf ide/win32-x86_64 ide/linux-x86_64 ide/linux-aarch64 ide/macosx-x86_64
 
 # pack the distro
 cd ..
 # create linux version - tgz archive
-export SOURCE_DISTRIBUTION_NAME_LINUX=$SOURCE_DISTRIBUTION_BASE_NAME-linux-x86_64.tgz
+export SOURCE_DISTRIBUTION_NAME_LINUX=$SOURCE_DISTRIBUTION_BASE_NAME-linux-aarch64.tgz
 echo Creating $DISTDIR/$SOURCE_DISTRIBUTION_NAME_LINUX
-tar cfz $SOURCE_DISTRIBUTION_NAME_LINUX $what-$VERSION || { echo --- error creating src-linux-x86_64.tgz ---; exit 1;}
+tar cfz $SOURCE_DISTRIBUTION_NAME_LINUX $what-$VERSION || { echo --- error creating src-linux-aarch64.tgz ---; exit 1;}
 
 # delete the source stuff
 rm -rf $what-$VERSION

@@ -30,8 +30,8 @@ if [ "$what" != "omnest" ]; then
     what="omnetpp"
 fi
 
-cd `dirname $0`/..
-OMNETPP_ROOT=`pwd`
+cd $(dirname $0)/..
+OMNETPP_ROOT=$(pwd)
 
 # the directory where the distribution file will created
 DISTDIR=$OMNETPP_ROOT/out/dist
@@ -49,19 +49,19 @@ tar xfz $SOURCE_DISTRIBUTION_BASE_NAME.tgz || { echo --- error extracting source
 # cd into the extracted source achive dir
 cd $what-$VERSION || exit 1
 
-echo "Preparing to create distribution package: $what, version: $VERSION platform: macosx..."
+echo "Preparing to create distribution package: $what, version: $VERSION platform: macOS x86_64..."
 
 # Prepare IDE
-cp -r ide/macosx/* ide
-mv ide/features ide/Eclipse.app/Contents/Eclipse
-mv ide/plugins ide/Eclipse.app/Contents/Eclipse
+cp -rlf ide/macosx-x86_64/* ide
+cp -rlf ide/features ide/Eclipse.app/Contents/Eclipse && rm -rf ide/features
+cp -rlf ide/plugins ide/Eclipse.app/Contents/Eclipse && rm -rf ide/plugins
 mv ide/Eclipse.app ide/opp_ide.app
-rm -rf ide/win32 ide/win64 ide/linux ide/linux64 ide/macosx
+rm -rf ide/win32-x86_64 ide/linux-x86_64 ide/linux-aarch64 ide/macosx-x86_64
 
 # copy the self extracting toolchain file into the distro
 mkdir -p tools/macosx
 echo "Extracting tools archive..."
-tar xfz $TOOLS_DIR/$TOOLS_VERSION/macosx/opp-tools-macosx.tar.gz --keep-old-files --directory tools/macosx || { echo --- error extracting opp-tools-macosx.tar.gz ---; exit 1;}
+tar xfz $TOOLS_DIR/$TOOLS_VERSION/macosx/opp-tools-macosx.tar.gz --keep-old-files --directory tools/macosx || { echo --- error extracting opp-tools-macos-x86_64.tar.gz ---; exit 1;}
 
 # customized files for macosx
 PATCH_DIR=$OMNETPP_ROOT/releng/overlay/macosx
@@ -71,9 +71,9 @@ cp -R $PATCH_DIR/* .
 # pack the distro
 cd ..
 # create macOS version - tgz with macOS tools added
-export SOURCE_DISTRIBUTION_NAME_MACOSX=$SOURCE_DISTRIBUTION_BASE_NAME-macosx.tgz
+export SOURCE_DISTRIBUTION_NAME_MACOSX=$SOURCE_DISTRIBUTION_BASE_NAME-macos-x86_64.tgz
 echo Creating $DISTDIR/$SOURCE_DISTRIBUTION_NAME_MACOSX
-tar cfz $SOURCE_DISTRIBUTION_NAME_MACOSX $what-$VERSION || { echo --- error creating src-macosx.tgz ---; exit 1;}
+tar cfz $SOURCE_DISTRIBUTION_NAME_MACOSX $what-$VERSION || { echo --- error creating src-macos-x86_64.tgz ---; exit 1;}
 
 # delete the source stuff
 rm -rf $what-$VERSION
