@@ -35,12 +35,7 @@ public class EnumElementEx extends EnumElement implements IMsgTypeElement {
     }
 
     public String getFirstExtends() {
-        String name = getExtendsName();
-
-        if (name != null && !name.equals(""))
-            return name;
-        else
-            return null;
+        return null; // "enum Foo extends Bar" is not an accepted syntax
     }
 
     public ITypeElement getSuperType() {

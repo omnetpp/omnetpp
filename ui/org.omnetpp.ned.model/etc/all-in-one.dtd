@@ -218,7 +218,6 @@
 <!ELEMENT enum (comment*, enum-field*)>
 <!ATTLIST enum
      name                CDATA     #REQUIRED
-     extends-name        CDATA     #IMPLIED
      source-code         CDATA     #IMPLIED>
 
 <!ELEMENT enum-field (comment*)>
