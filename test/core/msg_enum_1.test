@@ -5,6 +5,8 @@ Check enums
 
 namespace @TESTNAME@;
 
+enum EmptyEnum { }  // this should work too
+
 enum MyEnum
 {
     ECC = 1;

@@ -44,6 +44,7 @@ class SIM_API cEnum : public cOwnedObject
     cEnum *registerNames(const char *nameList);
     // internal: helper for the Register_Enum() macro
     cEnum *registerValues(int first, ...);
+    cEnum *registerValues() {return this;}  // for empty enum
 
   public:
     /** @name Constructors, destructor, assignment. */
