@@ -1,3 +1,49 @@
+2021-07-11  Andras Varga
+
+	* Message compiler: for enums, generate Register_Enum() calls instead of
+	ad-hoc code.
+
+2021-07-08  Andras Varga
+
+	* Message compiler: cosmetics: camelization in generated class descriptor source.
+
+2021-07-08  Andras Varga
+
+	* Message compiler: some refactoring.
+
+2021-06-23  Andras Varga
+
+	* Message compiler: Adapt to the introduction of any_ptr in class descriptors
+	(see include/omnetpp/ChangeLog); generate and use toAnyPtr/fromAnyPtr functions
+	for converting pointers from/to any_ptr. For any class, the generation of
+	toAnyPtr/fromAnyPtr can be disabled by specifying @castFunction(false) in
+	the class.
+
+	Details:
+	- main point: generateFromAnyPtr() and generateToAnyPtr() methods in
+	  MsgCodeGenerator
+	- the generated toAnyPtr/fromAnyPtr methods are needed from other
+	  generated files as well, so sim_std_m.h is now part of <omnetpp.h>
+	- new properties: @castFunction(<bool>), @polymorphic(<bool>)
+	- properly resolve classes listed in @implements (this may cause errors
+	  to be reported for msg files that previously compiled OK.)
+	- added classQName utility field to ClassInfo
+	- refactoring: generateTemplates() call moved from MsgCodeGenerator::
+	  generateNamespaceBegin() to MsgCompiler::generateCode()
+
+2021-07-01  Andras Varga
+
+	* Message compiler: remove opp_msgtool --msg4 option and the MsgCompilerOld
+	class; also remove -u and -e which didn't work.
+
+2021-06-28  Andras Varga
+
+	* Message compiler: @implements property: read as list instead of single
+	string which is split along commas. That is, @implements("foo,bar") now needs
+	to be written as @implements(foo,bar).
+
+----------- lines above this marker have been added from git log -----------
+
 2021-06-16  Andras Varga
 
 	* NEDElement: Store src location in a FileLine struct not as strings; this

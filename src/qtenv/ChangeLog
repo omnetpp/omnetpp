@@ -1,4 +1,19 @@
-2021-06-15  TÖRÖK Attila
+2021-07-09  Attila Torok
+
+	* Module tree view (top-left part) ported to use the same underlying
+	tree model as the generic object inspector (bottom-left part).
+
+2021-07-06  Andras Varga
+
+	* Follow change: port classdescriptor-related to code to any_ptr, and
+	toAnyPtr/fromAnyPtr.
+
+2021-06-08  Attila Torok
+
+	* Use object->getDescriptor() instead of cClassDescriptor::
+	getDescriptorFor(object) wherever possible.
+
+2021-06-15  Attila Torok
 
 	* Filter log messages on a line-by-line basis, instead of on the "Entry" level
 	Also: don't spam empty event banners, but always show "system" messages.

@@ -1,3 +1,55 @@
+2021-06-23  Andras Varga
+
+	* cClassDescriptor: methods changed to use any_ptr instead of void*
+	for passing the object. Pointers need to be put into and extracted from
+	any_ptr using the new toAnyPtr() / fromAnyPtr() functions. They have
+	specialized versions for each type (via templates and overloading).
+
+	For new types, the message compiler generates toAnyPtr()/fromAnyPtr()
+	in the header file. For the simulation library classes, these methods
+	come from "sim_std_m.h" (generated from sim_std.msg); "sim_std_m.h"
+	is now part of <omnetpp.h>.
+
+2021-06-23  Andras Varga
+
+	* Added any_ptr, a type-safe void* equivalent
+
+2021-07-01  Zoltan Bojthe
+
+	* cValueArray: added asIntVectorInUnit(), asDoubleVectorInUnit() functions
+
+2021-06-07  Attila Torok:
+
+	* cWatch_cObject and cWatch_cObjectPtr internal changes
+
+2021-06-23  Andras Varga
+
+	* cModule: added addSubmodule() method which flows more naturally than
+	cModuleType::create(). Signature:
+
+	cModule *addSubmodule(cModuleType *type, const char *name, int index=-1);
+
+2021-06-23  Andras Varga
+
+	* cModuleType::createScheduleInit(): added index argument to allow creating
+	vector elements
+
+2021-06-23  Andras Varga
+
+	* cModuleType: merge two create() overloads using arg default value (no
+	visible API change)
+
+2021-06-23  Andras Varga
+
+	* cModule: add separate addGateVector() method instead misusing addGate()
+	for creating gate vectors, also for consistency with addSubmoduleVector():
+
+	- addGate(const char *gatename, cGate::Type type, bool isvector=false):
+	  removed "isvector" argument
+	- added addGateVector(const char *gatename, cGate::Type type, int size);
+
+----------- lines above this marker have been added from git log -----------
+
 2021-06-18  Andras Varga
 
 	* cStringPool removed (see below for replacements).

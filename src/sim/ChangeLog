@@ -1,3 +1,103 @@
+021-07-08  Andras Varga
+
+	* cHistogram: added str() to Bin, and use it in sim_std.msg
+
+2021-07-07  Rudolf Hornig
+
+	* build: copy sim_std_m.h to the include/omnetpp directory as it is
+	now #included into <omnetpp.h>
+
+2021-07-06  Andras Varga
+
+	* sim_std.msg adjustments (over multiple commits
+
+	- cplusplus(cc) part: move stuff from .h to .cc because it's only needed
+	  by the class descriptors
+
+	- mark non-polymorphic classes with @polymorphic(false); this results in
+	  simpler toAnyPtr() code (i.e. without the dynamic_cast part)
+
+	- cResultListener inheritance fixed to match reality
+
+	- use @castFunction(false) to turn off generating fromAnyPtr/toAnyPtr
+	  functions for some classes that have it defined elsewhere
+
+	- wrong base class was given for a few classes
+
+	- StringVector was unused, removed
+
+2021-07-06  Andras Varga
+
+	* Port the codebase to any_ptr:
+
+	- "if (p)" changed to "if (p != nullptr)" everywhere, because any_ptr
+	  intentionally has no bool conversion, but can be directly compared
+	  against nullpr.
+
+	- use fromAnyPtr()/toAnyPtr() everywhere for conversion from/to any_ptr
+
+2021-06-28  Andras Varga
+
+	* Follow change: cClassDescriptor now uses any_ptr instead of void*.
+
+2021-06-23  Andras Varga
+
+	* Added implementation of any_ptr.
+
+2021-07-01  Zoltan Bojthe
+
+	* cValueArray: add asIntVectorInUnit(), asDoubleVectorInUnit()
+	functions
+
+2021-07-01  Zoltan Bojthe
+
+	* cValueArray: fixed copy-paste bug (type mismatch)
+
+2021-06-23  Andras Varga
+
+	* Error messages reworded to be more precise:
+	"Cannot evaluate expression for parameter '%s'" --> "Cannot assign
+	parameter '%s'"
+
+	The old message was misleading, because often the expression itself evaluates
+	just fine, only the result is of the wrong type and cannot be assigned to
+	the parameter.
+
+2021-06-07  Attila Torok
+
+	* Add proxy class descriptor for WATCH_[OBJ|PTR] to avoid crashes
+
+	The original solution involving:
+	virtual cClassDescriptor *cWatch_cObject::getDescriptor() const override
+	{return r.getDescriptor();} didn't work because the cWatch subclasses
+	lied that they themselves can be described by the descriptors of the
+	watched objects, which is not true.
+
+	And since there is often a cast through a void* in the descriptor APIs,
+	this mismatch went unnoticed, and operated essentially as a
+	reinterpret_cast, so mostly garbage was shown on the GUI as field values,
+	until eventually a crash occurred.
+
+	See test/anim/watch for an example.
+
+2021-06-23  Andras Varga
+
+	* cModule: implemented addSubmodule() method
+
+2021-06-23  Andras Varga
+
+	* cModuleType: createScheduleInit() adjusted to allow creating
+	vector elements
+
+2021-06-23  Andras Varga
+
+	* cModuleType: create() merge two overloads
+
+2021-06-23  Andras Varga
+
+	* cModule: addGate(): creation of gate vectors moved out to
+	addGateVector()
+
 2021-06-18  Andras Varga
 
 	* cStringPool removed

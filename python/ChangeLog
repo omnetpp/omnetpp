@@ -1,6 +1,10 @@
+2021-06-14  Levente Meszaros, Attila Torok
+
+	* omnetpp.scave: added timewinthruput vector operation
+
 2021-04-20  Attila Torok
 
-	* omnetpp.scave: Vector operations are now registered using the 
+	* omnetpp.scave: Vector operations are now registered using the
 	@vector_operation decorator
 
 2021-03-25  Andras Varga

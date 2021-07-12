@@ -1,3 +1,15 @@
+2021-06-29  Rudolf Hornig
+
+	* Added missing COMMON_API
+
+2021-06-28  Andras Varga
+
+	* opp_typename(): support nullptr_t ("Dn")
+
+2021-06-18  Zoltan Bojthe
+
+	* stlutil.h: Added missing template parameters
+
 2021-06-20  Andras Varga
 
 	* Added opp_insidemain() and opp_exiting(), needed by StringPool.

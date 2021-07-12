@@ -1,3 +1,7 @@
+2021-07-12  Andras Varga
+
+	* msg2.dtd: remove unused "extends-name" attribute from "enum".
+
 2019-10-24  Andras Varga
 
 	* ned2.dtd: "type" attribute of "param" element: added "object"

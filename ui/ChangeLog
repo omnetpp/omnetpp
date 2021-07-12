@@ -1,3 +1,25 @@
+2021-07-07  Rudolf Hornig
+
+	* Documentation Generator: Fix: A missing or closed referenced project caused
+	documentation generation to fail.
+
+2021-07-02  Rudolf Hornig
+
+	* Documentation Generator: Made the navigation drawer resizeable and its
+	scrollbar bigger in the generated NED documentation.
+
+2021-06-25  Rudolf Hornig
+
+	* Updated to use CDT 10.3 and the latest final version of Eclipse 4.20
+
+2021-06-23  Attila Torok
+
+	* Analysis Tool: Fix result tables not refreshing on file changes (keeping
+	stale IDs), by passing a NullProgressMonitor instead of null to Runnable.run().
+	This fixes a NPE in BrowseDataPage.doRefreshPage, which caused the tables in
+	it to keep stale result IDs in their IDLists, causing further errors
+	while plotting, and sometimes blank table rows.
+
 2021-06-10  Attila Torok
 
 	* Analysis Tool: Preserve legend item enablement state on refresh (to some

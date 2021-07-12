@@ -1,3 +1,12 @@
+2021-07-10  Andras Varga
+
+	* cNedNetworkBuilder: eliminate submodMap variable
+
+2021-06-23  Andras Varga
+
+	* cNedNetworkBuilder::doGate(): adjusted to recent cModule changes
+	(use addGateVector() instead of addGate() for gate vector creation).
+
 2021-06-16  Andras Varga
 
 	* Report location for evaluation errors in parameter values set from NED files

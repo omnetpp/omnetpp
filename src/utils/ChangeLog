@@ -1,3 +1,15 @@
+2021-06-10  Rudolf Hornig
+
+	* opp_configfilepath now returns absolute canonized file path to Makefile.inc
+	This makes it easier to identify which Makefile.inc is actually in use.
+
+2021-06-09  Rudolf Hornig
+
+	* Removed unused files:
+	- removed .cmd files as they are no longer used even on Windows
+	- opp_onfigfilepath is generated directly in the bin dir
+	- fixed missing files in the clean target
+
 2021-06-01  Rudolf Hornig
 
 	* build: no longer use the OMNETPP_ROOT *environment* variable in Makefiles
