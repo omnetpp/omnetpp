@@ -306,6 +306,9 @@ void JsonExporter::saveResults(const std::string& fileName, ResultFileManager *m
             for (ID id : scalars) {
                 ScalarResult buffer;
                 const ScalarResult *scalar = manager->getScalar(id, buffer);
+                if (scalar->getRun() != run)
+                    continue;
+
                 writer.openObject();
                 writer.writeString("module", scalar->getModuleName());
                 writer.writeString("name", scalar->getName());
@@ -323,6 +326,9 @@ void JsonExporter::saveResults(const std::string& fileName, ResultFileManager *m
             writer.openArray("parameters");
             for (ID id : parameters) {
                 const ParameterResult *scalar = manager->getParameter(id);
+                if (scalar->getRun() != run)
+                    continue;
+
                 writer.openObject();
                 writer.writeString("module", scalar->getModuleName());
                 writer.writeString("name", scalar->getName());
@@ -340,6 +346,9 @@ void JsonExporter::saveResults(const std::string& fileName, ResultFileManager *m
             writer.openArray("statistics");
             for (ID id : statistics) {
                 const StatisticsResult *stats = manager->getStatistics(id);
+                if (stats->getRun() != run)
+                    continue;
+
                 writer.openObject();
                 writer.writeString("module", stats->getModuleName());
                 writer.writeString("name", stats->getName());
@@ -357,6 +366,9 @@ void JsonExporter::saveResults(const std::string& fileName, ResultFileManager *m
             writer.openArray("histograms");
             for (ID id : histograms) {
                 const HistogramResult *histogram = manager->getHistogram(id);
+                if (histogram->getRun() != run)
+                    continue;
+
                 writer.openObject();
                 writer.writeString("module", histogram->getModuleName());
                 writer.writeString("name", histogram->getName());
@@ -386,6 +398,9 @@ void JsonExporter::saveResults(const std::string& fileName, ResultFileManager *m
             for (int i = 0; i < (int)vectors.size(); i++) {
                 ID id = vectors.get(i);
                 const VectorResult *vector = manager->getVector(id);
+                if (vector->getRun() != run)
+                    continue;
+
                 writer.openObject();
                 writer.writeString("module", vector->getModuleName());
                 writer.writeString("name", vector->getName());
