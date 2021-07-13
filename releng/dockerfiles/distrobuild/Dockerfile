@@ -1,10 +1,10 @@
-FROM omnetpp/distrobuild-base:ubuntu18.04-macos11-210602
+FROM omnetpp/distrobuild-base:ubuntu20.04-macos11.3-210713
 LABEL maintainer="Rudolf Hornig <rudi@omnetpp.org>"
 
 # during docker image builds, the 'tools' directory in the context dir should contain the Windows and macOS toolchains (i.e. ./tools/170717/...)
 SHELL ["/bin/bash", "-c"]
 ENV TOOLS_DIR /root/tools
-ENV TOOLS_VERSION 201218
+ENV TOOLS_VERSION 210713
 ENV OMNETPP_DIR /root/omnetpp
 
 # clone the directory
@@ -18,8 +18,8 @@ COPY omnetpp-repo/ $OMNETPP_DIR
 
 # copy the windows/macOS tools into the build image
 COPY tools/$TOOLS_VERSION $TOOLS_DIR/$TOOLS_VERSION
-# copy the windows platform JDK header files to a known location as they are needed for the cross compiler build on Windows
-COPY tools/$TOOLS_VERSION/win64/jdk-include $TOOLS_DIR/jdk-include
+# copy the JDK header files to a known location as they are needed for the cross compiler build
+COPY tools/$TOOLS_VERSION/jdk-include $TOOLS_DIR/jdk-include
 
 # update the eclipse build's MAVEN cache for faster builds
 WORKDIR $OMNETPP_DIR
