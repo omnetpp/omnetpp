@@ -127,14 +127,14 @@ DEFINES = -DTHREADED
 SANITIZE_FLAGS =  -fsanitize=leak,address,undefined
 CFLAGS_DEBUG =  -O0 -Wall -glldb -fstandalone-debug
 CFLAGS_RELEASE =  -O3 -DNDEBUG=1
-CFLAGS += $(CFLAGS_EXTRA)  -MMD -MP -Wno-deprecated-register -arch x86_64 $(DEFINES)
+CFLAGS += $(CFLAGS_EXTRA)  -MMD -MP -Wno-deprecated-register -arch x86_64 -arch arm64 $(DEFINES)
 CXXFLAGS =
 LDFLAG_LIBPATH = -L
 LDFLAG_INCLUDE = -Wl,-u,
 LDFLAG_LIB = -l
 LDFLAG_IMPLIB = -Wl,--out-implib,
 LDFLAG_IMPDEF = -Wl,--output-def,
-LDFLAGS += $(LDFLAGS_EXTRA) -arch x86_64 $(LDFLAG_LIBPATH)$(OMNETPP_LIB_DIR)
+LDFLAGS += $(LDFLAGS_EXTRA) -arch x86_64 -arch arm64 $(LDFLAG_LIBPATH)$(OMNETPP_LIB_DIR)
 WHOLE_ARCHIVE_ON = -Wl,-all_load
 WHOLE_ARCHIVE_OFF =
 AS_NEEDED_ON =
