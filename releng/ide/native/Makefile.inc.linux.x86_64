@@ -15,18 +15,43 @@ WITH_QTENV = no
 WITH_OSG = no
 WITH_OSGEARTH = no
 WITH_NETBUILDER = yes
+WITH_LIBXML = no
 WITH_PARSIM = yes
 WITH_SYSTEMC = no
-WITH_TKENV = no
-EMBED_TCL_CODE = yes
+PREFER_SQLITE_RESULT_FILES = no
 
 #
 # SHARED_LIBS determines whether omnetpp is built as shared or static libs
 # By default we use shared libs
 #
-ifeq ("$(SHARED_LIBS)","")
-  SHARED_LIBS = no
+SHARED_LIBS = no
+
+#
+# Configure MODE specific flags/suffixes. You can add new modes at will.
+# Do not forget to run ./configure after editing this file.
+#
+# Each mode will have a different subdirectory in the output folder (out/).
+# $D is a suffix which will be appended to the names of the binaries.
+#
+
+# add custom modes
+ALL_MODES = release debug sanitize
+# this is the default mode
+MODE = release
+ifeq ($(MODE),release)
+  CFLAGS = $(CFLAGS_RELEASE)
+  D=
+else ifeq ($(MODE),debug)
+  CFLAGS = $(CFLAGS_DEBUG)
+  D=_dbg
+else ifeq ($(MODE),sanitize)
+  CFLAGS = $(CFLAGS_DEBUG) $(SANITIZE_FLAGS)
+  LDFLAGS = $(SANITIZE_FLAGS)
+  D=_sanitize
+else
+  $(error Unknown mode: '$(MODE)'. Accepted modes: $(ALL_MODES); or define your own mode in 'Makefile.inc.in')
 endif
+CLEANALL_COMMAND=$(foreach m, $(ALL_MODES), $(MAKE) -s clean MODE=$m; )
 
 #
 # Directories
@@ -34,14 +59,13 @@ endif
 
 # NOTE: it is important to evaluate the current path immediately in this file using :=
 OMNETPP_ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
-OMNETPP_IMAGE_PATH := ./bitmaps:./images:$(OMNETPP_ROOT)/images
+OMNETPP_IMAGE_PATH := $(OMNETPP_ROOT)/images
 OMNETPP_BIN_DIR = $(OMNETPP_ROOT)/bin
 OMNETPP_INCL_DIR = $(OMNETPP_ROOT)/include
 OMNETPP_LIB_DIR = $(OMNETPP_ROOT)/lib$(OUTPUT_PREFIX)
 OMNETPP_OUT_DIR = $(OMNETPP_ROOT)/out$(OUTPUT_PREFIX)
 OMNETPP_SRC_DIR = $(OMNETPP_ROOT)/src
 OMNETPP_UTILS_DIR = $(OMNETPP_SRC_DIR)/utils
-OMNETPP_TKENV_DIR = $(OMNETPP_SRC_DIR)/tkenv
 OMNETPP_UI_DIR = $(OMNETPP_ROOT)/ui
 OMNETPP_DOC_DIR = $(OMNETPP_ROOT)/doc
 OMNETPP_SAMPLES_DIR = $(OMNETPP_ROOT)/samples
@@ -52,26 +76,10 @@ PLATFORM = linux.x86_64
 ifeq ($(PLATFORM),win32.x86_64)
   OMNETPP_TOOLS_DIR = $(OMNETPP_ROOT)/tools/win64
   OMNETPP_IMAGE_PATH := $(shell cygpath -p -m '$(OMNETPP_IMAGE_PATH)')
-else ifeq ($(PLATFORM),win32.x86)
-  OMNETPP_TOOLS_DIR = $(OMNETPP_ROOT)/tools/win32
-  OMNETPP_IMAGE_PATH := $(shell cygpath -p -m '$(OMNETPP_IMAGE_PATH)')
 else ifeq ($(PLATFORM),macosx)
   OMNETPP_TOOLS_DIR = $(OMNETPP_ROOT)/tools/macosx
 else
   # Linux and other platforms do not have a tools directory
-endif
-
-#
-# Configure MODE specific flags/suffixes
-#
-ifeq ($(MODE),release)
-  CFLAGS=$(CFLAGS_RELEASE)
-  D=
-else
-  # by default assume debug mode
-  MODE=debug
-  CFLAGS=$(CFLAGS_DEBUG)
-  D=d
 endif
 
 # use statically built omnetpp if we are building the IDE native helper library
@@ -85,9 +93,7 @@ endif
 # makemake-generated makefiles create object files and other
 # build artifacts.
 #
-ifndef CONFIGNAME
-  CONFIGNAME = $(TOOLCHAIN_NAME)-$(MODE)
-endif
+CONFIGNAME = $(TOOLCHAIN_NAME)-$(MODE)
 
 #
 # Control verbosity. Specifiying V=1 will make the build output verbose. You can use:
@@ -105,25 +111,30 @@ else
   qecho = @echo
 endif
 
+# Recursive wildcard function. Call like: $(call opp_rwildcard, src/, *.c *.h)
+opp_rwildcard=$(foreach d,$(wildcard $1*),$(call opp_rwildcard,$d/,$2) $(filter $(subst *,%,$2),$d))
+
 #
 # tools, libraries and compiler flags detected by ./configure
 #
 PERL = perl
-YACC = bison -y
+YACC = bison -y -Wno-yacc
 LEX = flex
-CC = gcc
-CXX = g++
-TOOLCHAIN_NAME = gcc
-DEFINES = -DHAVE_SWAPCONTEXT -DWITH_MPI
-CFLAGS_DEBUG = -g -Wall
-CFLAGS_RELEASE = -O3 -DNDEBUG=1
-CFLAGS += -m64 -MMD -MP -fPIC -include $(OMNETPP_ROOT)/releng/ide/native/force_link_glibc_2.12.2.h $(DEFINES)
-CXXFLAGS =
+CC = clang
+CXX = clang++
+TOOLCHAIN_NAME = clang
+DEFINES = -DHAVE_SWAPCONTEXT
+SANITIZE_FLAGS =  -fsanitize=leak,address,undefined
+CFLAGS_DEBUG =  -O0 -Wall -glldb -fstandalone-debug
+CFLAGS_RELEASE =  -O3 -DNDEBUG=1
+CFLAGS += $(CFLAGS_EXTRA)  -MMD -MP -MF $@.d  -fPIC  -Wno-deprecated-register -Wno-unused-function -fno-omit-frame-pointer -include $(OMNETPP_ROOT)/releng/ide/native/force_link_glibc_2.12.2.h $(DEFINES)
+CXXFLAGS = 
 LDFLAG_LIBPATH = -L
 LDFLAG_INCLUDE = -Wl,-u,
 LDFLAG_LIB = -l
 LDFLAG_IMPLIB = -Wl,--out-implib,
-LDFLAGS = -static-libgcc -static-libstdc++ -Wl,-rpath,$(OMNETPP_LIB_DIR) -Wl,-rpath,$(OMNETPP_TOOLS_DIR)/lib -Wl,-rpath,.  $(LDFLAG_LIBPATH)$(OMNETPP_LIB_DIR)
+LDFLAG_IMPDEF = -Wl,--output-def,
+LDFLAGS += $(LDFLAGS_EXTRA) -static-libgcc -static-libstdc++ -Wl,-rpath,$(OMNETPP_LIB_DIR) -Wl,-rpath,$(OMNETPP_TOOLS_DIR)/lib -Wl,-rpath,.  -Wl,--export-dynamic $(LDFLAG_LIBPATH)$(OMNETPP_LIB_DIR)
 WHOLE_ARCHIVE_ON = -Wl,--whole-archive
 WHOLE_ARCHIVE_OFF = -Wl,--no-whole-archive
 AS_NEEDED_ON = -Wl,--as-needed
@@ -131,47 +142,41 @@ AS_NEEDED_OFF = -Wl,--no-as-needed
 PIC_FLAGS = -fPIC
 MSGC = opp_msgc
 SMC = opp_smc
-NEDTOOL = nedtool
+NEDTOOL = opp_nedtool
 AS = as
 AR = ar cr
-ARFLAG_OUT =
+ARFLAG_OUT = 
 RANLIB = ranlib
-SHLIB_LD = g++ -shared -fPIC
+SHLIB_LD = clang++ -shared -fPIC
 DLLTOOL = dlltool
 STRIP = strip
-WISH = wish
-MAKEDEPEND = opp_makedep -Y --objdirtree
-LN = ln -sf
+LN = ln -f
 MKPATH = mkdir -p
 SHLIB_POSTPROCESS = opp_shlib_postprocess
 SWIG = swig
-QMAKE = /usr/bin/qmake
-MOC=/usr/bin/moc
-UIC=/usr/bin/uic
-RCC=/usr/bin/rcc
+QMAKE = 
+MOC=
+UIC=
+RCC=
 
 HAVE_DLOPEN = 1
 SYS_LIBS = -ldl
-TK_CFLAGS = -I/usr/include/tcl8.6
-TK_LIBS = -ltk8.6 -ltcl8.6
-QT_CFLAGS = -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtOpenGL -isystem /usr/include/x86_64-linux-gnu/qt5/QtPrintSupport
-QT_LIBS = -lQt5Gui -lQt5Core -lQt5Widgets -lQt5PrintSupport -lQt5OpenGL -L/usr/lib/x86_64-linux-gnu -Wl,-rpath=/usr/lib/x86_64-linux-gnu
-OSG_CFLAGS =
-OSG_LIBS = -losg -losgDB -losgGA -losgViewer -losgUtil -lOpenThreads
-OSGEARTH_CFLAGS =
-OSGEARTH_LIBS = -losgEarth -losgEarthUtil
-ZLIB_CFLAGS =
-ZLIB_LIBS = -lz
-MPI_CFLAGS = -I/usr/lib/openmpi/include/openmpi/opal/mca/event/libevent2021/libevent -I/usr/lib/openmpi/include/openmpi/opal/mca/event/libevent2021/libevent/include -I/usr/lib/openmpi/include -I/usr/lib/openmpi/include/openmpi -pthread
-MPI_LIBS = -pthread -Wl,-rpath -Wl,/usr/lib/openmpi/lib -Wl,--enable-new-dtags -L/usr/lib/openmpi/lib -lmpi_cxx -lmpi
-PCAP_CFLAGS =
-PCAP_LIBS = -lpcap
-PTHREAD_CFLAGS =
+QT_CFLAGS = 
+QT_LIBS = 
+QTENV_LDFLAGS = 
+OSG_CFLAGS = 
+OSG_LIBS = 
+OSGEARTH_CFLAGS = 
+OSGEARTH_LIBS = 
+ZLIB_CFLAGS = 
+ZLIB_LIBS = 
+OPENMP_FLAGS = 
+MPI_CFLAGS = 
+MPI_LIBS = 
+PTHREAD_CFLAGS = 
 PTHREAD_LIBS = -lpthread
-XMLPARSER = libxml
-XML_CFLAGS = -I/usr/include/libxml2
-XML_LIBS = -lxml2
-DEFINES += -DXMLPARSER=$(XMLPARSER)
+LIBXML_CFLAGS = 
+LIBXML_LIBS = 
 AKAROA_CFLAGS = -I/usr/local/akaroa/include
 AKAROA_LIBS = -L/usr/local/akaroa/lib -lakaroa -lfl
 JNILIBS_IF_POSSIBLE = jnilibs
@@ -184,16 +189,17 @@ JAVA_LIBS = -L/usr/lib/jvm/default-java/jre/lib/i386/client -Wl,-rpath,/usr/lib/
 A_LIB_SUFFIX = .a
 SO_LIB_SUFFIX = .so
 DLL_LIB_SUFFIX = .dll
+IMPLIB_SUFFIX = .dll.a
+IMPDEF_SUFFIX = .def
 JNI_LIB_SUFFIX = $(SO_LIB_SUFFIX)
-EXE_SUFFIX =
+EXE_SUFFIX = 
 LIB_PREFIX = lib
 SHARED_LIB_SUFFIX = $(SO_LIB_SUFFIX)
 
 #
 # omnetpp and system libraries linked with the simulations
 #
-TKENV_LIBS = $(LDFLAG_INCLUDE)_tkenv_lib $(AS_NEEDED_OFF) -lopptkenv$D -loppenvir$D -lopplayout$D
-QTENV_LIBS = $(LDFLAG_INCLUDE)_qtenv_lib $(AS_NEEDED_OFF) -loppqtenv$D -loppenvir$D -lopplayout$D
+QTENV_LIBS = $(LDFLAG_INCLUDE)_qtenv_lib $(AS_NEEDED_OFF) $(QTENV_LDFLAGS) -loppqtenv$D -loppenvir$D -lopplayout$D
 CMDENV_LIBS = $(LDFLAG_INCLUDE)_cmdenv_lib $(AS_NEEDED_OFF) -loppcmdenv$D -loppenvir$D
 ALL_ENV_LIBS = $(CMDENV_LIBS)
 KERNEL_LIBS = -loppsim$D
@@ -204,12 +210,6 @@ OPPMAIN_LIB = $(LDFLAG_LIB)oppmain$D
 #
 ifeq ($(WITH_QTENV),yes)
   DEFINES += -DWITH_QTENV
-  ifeq ($(WITH_OSG),yes)
-    DEFINES += -DWITH_OSG
-  endif
-  ifeq ($(WITH_OSGEARTH),yes)
-    DEFINES += -DWITH_OSGEARTH
-  endif
   # libraries required for static linking
   ifneq ($(SHARED_LIBS),yes)
     QTENV_LIBS += $(QT_LIBS)
@@ -229,20 +229,8 @@ ifeq ($(WITH_QTENV),yes)
 endif
 
 #
-# flags and libraries required for Ttenv
+# Other defines
 #
-ifeq ($(WITH_TKENV),yes)
-  DEFINES += -DWITH_TKENV
-  # libraries required for static linking
-  ifneq ($(SHARED_LIBS),yes)
-    TKENV_LIBS += $(TK_LIBS) $(ZLIB_LIBS)
-    ifeq ($(PLATFORM),macosx)
-      TKENV_LIBS += -framework Carbon
-    endif
-  endif
-  ALL_ENV_LIBS += $(TKENV_LIBS)
-endif
-
 ifeq ($(WITH_PARSIM),yes)
   DEFINES += -DWITH_PARSIM
   # extra libs needed during static building
@@ -255,15 +243,24 @@ ifeq ($(WITH_NETBUILDER),yes)
   DEFINES += -DWITH_NETBUILDER
 endif
 
-#
-# toolchain specific flags and options
-#
-ifeq ($(TOOLCHAIN_NAME),clang-msabi)
-  # this macro can be used to pass EXPORT macros to the compiler if omnet is built as shared library
-  ifeq ($(SHARED_LIBS),yes)
-    IMPORT_DEFINES = -DOMNETPPLIBS_IMPORT
-    EXPORT_DEFINES = $(EXPORT_MACRO)
-  endif
+ifeq ($(WITH_LIBXML),yes)
+  DEFINES += -DWITH_LIBXML
+endif
+
+# note: defines for OSG and osgEarth must be available even if WITH_QTENV=no
+ifeq ($(WITH_OSG),yes)
+  DEFINES += -DWITH_OSG
+endif
+
+ifeq ($(WITH_OSGEARTH),yes)
+  DEFINES += -DWITH_OSGEARTH
+endif
+
+
+# this macro can be used to pass EXPORT macros to the compiler if omnet is built as shared library
+ifeq ($(SHARED_LIBS),yes)
+  IMPORT_DEFINES = -DOMNETPPLIBS_IMPORT
+  EXPORT_DEFINES = $(EXPORT_MACRO)
 endif
 
 #
@@ -274,5 +271,5 @@ ifeq ($(SHARED_LIBS),yes)
 else
   LIB_SUFFIX = $(A_LIB_SUFFIX)
   # extra libraries needed when statically linking (because of indirect dependencies)
-  KERNEL_LIBS += -loppnedxml$D -loppcommon$D $(XML_LIBS)
+  KERNEL_LIBS += -loppnedxml$D -loppcommon$D $(LIBXML_LIBS)
 endif
