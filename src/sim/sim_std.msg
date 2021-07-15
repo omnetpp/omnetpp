@@ -254,8 +254,8 @@ class cModule extends cComponent
     int id @group(fields) @hint("Unique module ID -- IDs of deleted modules are not issued again");
     bool isSimple @getter(isSimple) @group(fields) @hint("Whether this is a simple module");
     bool isVector @getter(isVector) @group(fields) @hint("Whether this module is part of a module vector");
-    int index @group(fields) @hint("If vector: index of this module in its module vector");
-    int vectorSize @group(fields) @hint("If vector: size of module vector this module belongs to");
+    int index @group(fields) @toString(pp->isVector() ? long2string($) : "<not a vector>") @hint("If vector: index of this module in its module vector");
+    int vectorSize @group(fields) @toString(pp->isVector() ? long2string($) : "<not a vector>") @hint("If vector: size of module vector this module belongs to");
     bool builtinAnimationsAllowed @editable @group(fields) @hint("Whether built-in animations are enabled on this module's graphical inspector");
     cDisplayString displayString @group(fields) @hint("Controls appearance of this module in the GUI") @editable @setter(setDisplayString) @fromString($) @toString(.str()) @getter(getDisplayString);
     cGate *gate[] @sizeGetter(gateCount) @getter(gateByOrdinal) @group(parameters, gates) @label(gates) @hint("Module gates");
