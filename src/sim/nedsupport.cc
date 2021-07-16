@@ -44,7 +44,7 @@ cValue makeNedValue(const ExprValue& value)
     case ExprValue::INT: return cValue(value.intValue(), value.getUnit());
     case ExprValue::DOUBLE: return cValue(value.doubleValue(), value.getUnit());
     case ExprValue::STRING: return cValue(value.stringValue());
-    case ExprValue::OBJECT: return cValue(value.objectValue());
+    case ExprValue::POINTER: return cValue(value.objectValue());
     }
     Assert(false);
 }
@@ -57,7 +57,7 @@ ExprValue makeExprValue(const cValue& value)
     case cValue::INT: return ExprValue(value.intValueRaw(), value.getUnit());
     case cValue::DOUBLE: return ExprValue(value.doubleValueRaw(), value.getUnit());
     case cValue::STRING: return ExprValue(value.stringValue());
-    case cValue::OBJECT: return ExprValue(value.objectValue());
+    case cValue::POINTER: return ExprValue(value.objectValue());
     }
     Assert(false);
 }
@@ -487,7 +487,7 @@ void NedObjectNode::setFieldElement(cClassDescriptor *desc, any_ptr object, cons
 
     // scalar field
     if (!isCompoundField) { // atomic
-        if (value.getType() == cValue::OBJECT)
+        if (value.getType() == cValue::POINTER)
             throw cRuntimeError("Cannot put object value into non-object field '%s%s' inside a '%s'",
                     fieldName, (fieldIndex==-1 ? "" : "[]"), desc->getFullName());
         desc->setFieldValueAsString(object, fieldIndex, arrayIndex, value.getType()==cValue::STRING ? value.stringValue() : value.str().c_str());
@@ -495,7 +495,7 @@ void NedObjectNode::setFieldElement(cClassDescriptor *desc, any_ptr object, cons
     else if (isPointerField) {
         if (!isCObjectField)
             throw cRuntimeError("Non-cObject pointer fields are currently not supported (field '%s' in class '%s')", fieldName, desc->getFullName());
-        if (value.getType() != cValue::OBJECT)
+        if (value.getType() != cValue::POINTER)
             throw cRuntimeError("Cannot put %s value into object field '%s%s' inside a '%s'",
                     cValue::getTypeName(value.getType()), fieldName, (fieldIndex==-1 ? "" : "[]"), desc->getFullName());
         desc->setFieldStructValuePointer(object, fieldIndex, arrayIndex, toAnyPtr(value.objectValue()));
@@ -508,7 +508,7 @@ void NedObjectNode::setFieldElement(cClassDescriptor *desc, any_ptr object, cons
                 fromAnyPtr<cObject>(fieldPtr)->getDescriptor() :
                 cClassDescriptor::getDescriptorFor(desc->getFieldStructName(fieldIndex));
 
-        cValueMap *valueMap = value.getType()==cValue::OBJECT ? dynamic_cast<cValueMap *>(value.objectValue()) : nullptr;
+        cValueMap *valueMap = value.getType()==cValue::POINTER ? dynamic_cast<cValueMap *>(value.objectValue()) : nullptr;
         if (valueMap == nullptr)
             throw cRuntimeError("Map value expected for object field '%s%s' inside a '%s'",
                     fieldName, (fieldIndex==-1 ? "" : "[]"), desc->getFullName());

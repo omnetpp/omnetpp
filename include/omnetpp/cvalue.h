@@ -56,8 +56,8 @@ class SIM_API cValue
         INT = 'L',
         DOUBLE = 'D',
         STRING = 'S',
-        OBJECT = 'O',
-        XML OPP_DEPRECATED_ENUMERATOR("and use check_and_cast<cXmlElement*>() on value") = OBJECT,
+        POINTER = 'O',
+        XML OPP_DEPRECATED_ENUMERATOR("and use check_and_cast<cXmlElement*>() on value") = POINTER,
         DBL OPP_DEPRECATED_ENUMERATOR("renamed to DOUBLE") = DOUBLE,
         STR OPP_DEPRECATED_ENUMERATOR("renamed to STRING") = STRING
     };
@@ -81,7 +81,7 @@ class SIM_API cValue
     [[noreturn]] void cannotCastError(Type t) const;
   public:
     // internal, for inspectors only:
-    static cObject *getContainedObject(const cValue *p) {return p->type==cValue::OBJECT ? p->obj : nullptr;}
+    static cObject *getContainedObject(const cValue *p) {return p->type==cValue::POINTER ? p->obj : nullptr;}
 
   public:
     /** @name Constructors */
@@ -255,7 +255,7 @@ class SIM_API cValue
      * the object's pointer, and does nothing extra. The object's ownership is
      * unaffected, and cValue will never delete or clone the object.
  *     */
-    void set(cObject *obj) {type=OBJECT; this->obj=obj;}
+    void set(cObject *obj) {type=POINTER; this->obj=obj;}
 
     /**
      * Copies the value from a cPar.
@@ -332,7 +332,7 @@ class SIM_API cValue
     /**
      * Returns value as pointer to cObject. The type must be OBJECT.
      */
-    cObject *objectValue() const {assertType(OBJECT); return obj;}
+    cObject *objectValue() const {assertType(POINTER); return obj;}
 
     /**
      * Returns value as pointer to cXMLElement. The type must be OBJECT, and the

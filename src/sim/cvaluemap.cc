@@ -35,7 +35,7 @@ void cValueMap::copy(const cValueMap& other)
     // duplicate ALL contained objects, not only those owned by the cloned container
     for (auto& entry : fields) {
         cValue& value = entry.second;
-        if (value.getType() == cValue::OBJECT) {
+        if (value.getType() == cValue::POINTER) {
             cObject *obj = value.objectValue();
             cObject *clone = obj->dup();
             value.set(clone);
@@ -47,7 +47,7 @@ void cValueMap::copy(const cValueMap& other)
 
 void cValueMap::takeValue(const cValue& value)
 {
-    if (value.getType() == cValue::OBJECT) {
+    if (value.getType() == cValue::POINTER) {
         cObject *obj = value.objectValue();
         if (obj && obj->isOwnedObject() && obj->getOwner()->isSoftOwner())
             take(static_cast<cOwnedObject*>(obj));
@@ -56,7 +56,7 @@ void cValueMap::takeValue(const cValue& value)
 
 void cValueMap::dropAndDeleteValue(const cValue& value)
 {
-    if (value.getType() == cValue::OBJECT) {
+    if (value.getType() == cValue::POINTER) {
         cObject *obj = value.objectValue();
         if (!obj)
             ; // nop
@@ -99,7 +99,7 @@ std::string cValueMap::str() const
 void cValueMap::forEachChild(cVisitor* v)
 {
     for (auto entry : fields)
-        if (entry.second.getType() == cValue::OBJECT)
+        if (entry.second.getType() == cValue::POINTER)
             if (cObject *child = entry.second.objectValue())
                 if (!v->visit(child))
                     return;

@@ -175,7 +175,7 @@ static cValue::Type toValueType(cNedFunction::Type t)
     case Type::INT: return cValue::INT;
     case Type::DOUBLE: return cValue::DOUBLE;
     case Type::STRING: return cValue::STRING;
-    case Type::OBJECT: return cValue::OBJECT;
+    case Type::OBJECT: return cValue::POINTER;
     case Type::XML: return cValue::XML;
     case Type::DOUBLEQ: case Type::INTQ: case Type::ANY: throw cRuntimeError("No equivalent cValue type for type=%d", (int)t);
     default: throw cRuntimeError("Illegal argument type=%d", (int)t);

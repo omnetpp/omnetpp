@@ -38,7 +38,7 @@ void ExprValue::operator=(const ExprValue& other)
         case INT: intv = other.intv; unit = other.unit; break;
         case DOUBLE: dbl = other.dbl; unit = other.unit; break;
         case STRING: s = strdup(other.s); break;
-        case OBJECT: obj = other.obj; break;
+        case POINTER: obj = other.obj; break;
     }
 }
 
@@ -52,7 +52,7 @@ void ExprValue::operator=(ExprValue&& other)
         case INT: intv = other.intv; unit = other.unit; break;
         case DOUBLE: dbl = other.dbl; unit = other.unit; break;
         case STRING: s = other.s; other.type = UNDEF; other.s = nullptr; break;
-        case OBJECT: obj = other.obj; break;
+        case POINTER: obj = other.obj; break;
     }
 }
 
@@ -64,7 +64,7 @@ const char *ExprValue::getTypeName(Type t)
         case INT:    return "integer";
         case DOUBLE: return "double";
         case STRING: return "string";
-        case OBJECT: return "object";
+        case POINTER: return "object";
         default:     return "<unknown>";
     }
 }
@@ -171,7 +171,7 @@ std::string ExprValue::str() const
             return buf;
         case STRING:
             return opp_quotestr(s);
-        case OBJECT:
+        case POINTER:
             if (!obj)
                 return "nullptr";
             else if (objectToString)

@@ -34,7 +34,7 @@ void cValueArray::copy(const cValueArray& other)
 
     // duplicate ALL contained objects, not only those owned by the cloned container
     for (cValue& value : array) {
-        if (value.getType() == cValue::OBJECT) {
+        if (value.getType() == cValue::POINTER) {
             cObject *obj = value.objectValue();
             cObject *clone = obj->dup();
             value.set(clone);
@@ -51,7 +51,7 @@ void cValueArray::cannotCast(cObject *obj, const char *toClass) const
 
 void cValueArray::takeValue(const cValue& value)
 {
-    if (value.getType() == cValue::OBJECT) {
+    if (value.getType() == cValue::POINTER) {
         cObject *obj = value.objectValue();
         if (obj && obj->isOwnedObject() && obj->getOwner()->isSoftOwner())
             take(static_cast<cOwnedObject*>(obj));
@@ -60,7 +60,7 @@ void cValueArray::takeValue(const cValue& value)
 
 void cValueArray::dropAndDeleteValue(const cValue& value)
 {
-    if (value.getType() == cValue::OBJECT) {
+    if (value.getType() == cValue::POINTER) {
         cObject *obj = value.objectValue();
         if (!obj)
             ; // nop
@@ -101,7 +101,7 @@ std::string cValueArray::str() const
 void cValueArray::forEachChild(cVisitor* v)
 {
     for (const cValue& value : array)
-        if (value.getType() == cValue::OBJECT)
+        if (value.getType() == cValue::POINTER)
             if (cObject *child = value.objectValue())
                 if (!v->visit(child))
                     return;
@@ -175,7 +175,7 @@ cValue cValueArray::remove(int k)
 {
     if (k < 0 || k >= (int)array.size())
         throw cRuntimeError(this, "remove(): index %d is out of bounds", k);
-    if (array[k].getType() == cValue::OBJECT) {
+    if (array[k].getType() == cValue::POINTER) {
         cObject *obj = array[k].objectValue();
         if (obj && obj->getOwner() == this)
             drop(static_cast<cOwnedObject*>(obj));

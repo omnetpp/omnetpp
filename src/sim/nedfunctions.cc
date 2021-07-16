@@ -439,7 +439,7 @@ cValue nedf_bool(cComponent *contextComponent, cValue argv[], int argc)
             return !std::isnan(argv[0].doubleValue()) && argv[0].doubleValue() != 0;
         case cValue::STRING:
             return argv[0].stdstringValue() == "true";
-        case cValue::OBJECT:
+        case cValue::POINTER:
             throw cRuntimeError("Cannot convert object to bool");
         case cValue::UNDEF:
             throw cRuntimeError("Cannot convert 'undefined' to bool");
@@ -467,7 +467,7 @@ cValue nedf_int(cComponent *contextComponent, cValue argv[], int argc)
             double d = UnitConversion::parseQuantity(argv[0].stringValue(), unit);
             return cValue(checked_int_cast<intval_t>(floor(d)), unit.c_str());
         }
-        case cValue::OBJECT:
+        case cValue::POINTER:
             throw cRuntimeError("Cannot convert object to int");
         case cValue::UNDEF:
             throw cRuntimeError("Cannot convert 'undefined' to int");
@@ -495,7 +495,7 @@ cValue nedf_double(cComponent *contextComponent, cValue argv[], int argc)
             double d = UnitConversion::parseQuantity(argv[0].stringValue(), unit);
             return cValue(d, unit.c_str());
         }
-        case cValue::OBJECT:
+        case cValue::POINTER:
             throw cRuntimeError("Cannot convert object to double");
         case cValue::UNDEF:
             throw cRuntimeError("Cannot convert 'undefined' to double");

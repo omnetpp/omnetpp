@@ -64,7 +64,7 @@ class COMMON_API ExprValue
     friend class omnetpp::common::MatchExpression;
 
   public:
-    enum Type {UNDEF=0, BOOL='B', INT='L', DOUBLE='D', STRING='S', OBJECT='O'};
+    enum Type {UNDEF=0, BOOL='B', INT='L', DOUBLE='D', STRING='S', POINTER='O'};
 
   private:
     Type type = UNDEF;
@@ -170,7 +170,7 @@ class COMMON_API ExprValue
     /**
      * Sets the value to the given cObject.
      */
-    ExprValue& operator=(cObject *x)  {deleteOld(); type=OBJECT; obj=x; return *this;}
+    ExprValue& operator=(cObject *x)  {deleteOld(); type=POINTER; obj=x; return *this;}
 
     /**
      * Sets the value to the given integer value and measurement unit.
@@ -267,7 +267,7 @@ class COMMON_API ExprValue
     /**
      * Returns value as pointer to cObject. The type must be OBJECT.
      */
-    cObject *objectValue() const {ensureType(OBJECT); return obj;}
+    cObject *objectValue() const {ensureType(POINTER); return obj;}
 
     /**
      * Equivalent to boolValue().

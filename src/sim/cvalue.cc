@@ -41,7 +41,7 @@ void cValue::operator=(const cValue& other)
         case INT: intv = other.intv; unit = other.unit; break;
         case DOUBLE: dbl = other.dbl; unit = other.unit; break;
         case STRING: s = other.s; break;
-        case OBJECT: obj = other.obj; break;
+        case POINTER: obj = other.obj; break;
     }
 }
 
@@ -53,7 +53,7 @@ const char *cValue::getTypeName(Type t)
         case INT:    return "integer";
         case DOUBLE: return "double";
         case STRING: return "string";
-        case OBJECT: return "object";
+        case POINTER: return "object";
         default:     return "???";
     }
 }
@@ -178,7 +178,7 @@ void cValue::setUnit(const char* unit)
 
 cXMLElement *cValue::xmlValue() const
 {
-    assertType(OBJECT);
+    assertType(POINTER);
     return check_and_cast_nullable<cXMLElement*>(obj);
 }
 
@@ -224,7 +224,7 @@ std::string cValue::str() const
             return buf;
         }
         case STRING: return opp_quotestr(s);
-        case OBJECT: return obj ? obj->str() : "nullptr";
+        case POINTER: return obj ? obj->str() : "nullptr";
         default: throw cRuntimeError("Internal error: Invalid cValue type");
     }
 }
@@ -240,7 +240,7 @@ bool cValue::operator==(const cValue& other)
         case INT: return intv == other.intv && opp_strcmp(unit.c_str(), other.unit.c_str()) == 0;
         case DOUBLE: return dbl == other.dbl && opp_strcmp(unit.c_str(), other.unit.c_str()) == 0;
         case STRING: return s == other.s;
-        case OBJECT: return obj == other.obj; // same object
+        case POINTER: return obj == other.obj; // same object
         default: throw cRuntimeError("Internal error: Invalid cValue type");
     }
 }

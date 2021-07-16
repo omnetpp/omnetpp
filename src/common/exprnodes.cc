@@ -471,7 +471,7 @@ double CompareNode::compare(ExprValue& leftValue, ExprValue& rightValue) const
         return strcmp(leftValue.s, rightValue.s);
     else if (leftValue.type==ExprValue::BOOL && rightValue.type==ExprValue::BOOL)
         return (int)leftValue.bl - (int)rightValue.bl;
-    else if (leftValue.type==ExprValue::OBJECT && rightValue.type==ExprValue::OBJECT) {
+    else if (leftValue.type==ExprValue::POINTER && rightValue.type==ExprValue::POINTER) {
         if (!dynamic_cast<const EqualNode*>(this) && !dynamic_cast<const NotEqualNode*>(this))
             throw opp_runtime_error("Arguments of type 'object' may only be compared for equality");
         return leftValue.obj == rightValue.obj ? 0 : std::nan("");

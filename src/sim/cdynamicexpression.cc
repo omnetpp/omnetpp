@@ -231,7 +231,7 @@ std::string cDynamicExpression::str() const
 
 inline cOwnedObject *ownedObjectIn(cValue& value)
 {
-    if (value.getType() == cValue::OBJECT) {
+    if (value.getType() == cValue::POINTER) {
         cObject *obj = value.objectValue();
         if (obj && obj->isOwnedObject())
             return (cOwnedObject*)obj;

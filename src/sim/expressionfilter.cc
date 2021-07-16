@@ -93,7 +93,7 @@ void ExpressionFilter::process(simtime_t_cref t, cObject *details)
         case ExprValue::INT: fire(this, t, lastOutput.intValue(), details); break;
         case ExprValue::DOUBLE: fire(this, t, lastOutput.doubleValue(), details); break;
         case ExprValue::STRING: fire(this, t, lastOutput.stringValue(), details); break;
-        case ExprValue::OBJECT: fire(this, t, lastOutput.objectValue(), details); break;
+        case ExprValue::POINTER: fire(this, t, lastOutput.objectValue(), details); break;
     }
 }
 

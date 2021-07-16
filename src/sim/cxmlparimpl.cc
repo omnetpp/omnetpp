@@ -134,7 +134,7 @@ cXMLElement *cXMLParImpl::xmlValue(cComponent *context) const
         try {
             cTemporaryOwner tmp(cTemporaryOwner::DestructorMode::DISPOSE); // eventually dispose of potential object result
             cValue v = evaluate(expr, context);
-            if (v.type != cValue::OBJECT)
+            if (v.type != cValue::POINTER)
                 throw cRuntimeError(E_BADCAST, v.getTypeName(), "XML");
             return v.xmlValue();
         }

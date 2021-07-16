@@ -200,7 +200,7 @@ cObject *cObjectParImpl::objectValue(cComponent *context) const
         try {
             cTemporaryOwner tmp(cTemporaryOwner::DestructorMode::DISPOSE);
             cValue v = evaluate(expr, context);
-            if (v.type != cValue::OBJECT)
+            if (v.type != cValue::POINTER)
                 throw cRuntimeError(E_BADCAST, v.getTypeName(), "object");
 
             cObject *obj = v.objectValue();

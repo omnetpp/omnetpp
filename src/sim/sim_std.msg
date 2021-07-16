@@ -54,7 +54,7 @@ Register_Enum(cFigure::Arrowhead, (cF::ARROW_NONE, cF::ARROW_SIMPLE, cF::ARROW_T
 Register_Enum(cFigure::Anchor,    (cF::ANCHOR_CENTER, cF::ANCHOR_N, cF::ANCHOR_E, cF::ANCHOR_S, cF::ANCHOR_W, cF::ANCHOR_NW, cF::ANCHOR_NE, cF::ANCHOR_SE, cF::ANCHOR_SW, cF::ANCHOR_BASELINE_START, cF::ANCHOR_BASELINE_MIDDLE, cF::ANCHOR_BASELINE_END));
 Register_Enum(cFigure::Alignment, (cF::ALIGN_LEFT, cF::ALIGN_RIGHT, cF::ALIGN_CENTER));
 Register_Enum(cFigure::Interpolation, (cF::INTERPOLATION_NONE, cF::INTERPOLATION_FAST, cF::INTERPOLATION_BEST));
-Register_Enum(cValue::Type,       (cValue::UNDEF, cValue::BOOL, cValue::INT, cValue::DOUBLE, cValue::STRING, cValue::OBJECT));
+Register_Enum(cValue::Type,       (cValue::UNDEF, cValue::BOOL, cValue::INT, cValue::DOUBLE, cValue::STRING, cValue::POINTER));
 #undef cF
 
 //
