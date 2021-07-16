@@ -65,7 +65,7 @@ protected:
     void resizeEvent(QResizeEvent *event) override;
     void closeEvent(QCloseEvent *event) override; // DELETES THIS INSPECTOR
 
-    void recreateModel();
+    void recreateModel(bool keepNodeModeOverrides = true);
 
     Mode mode = Mode::GROUPED;
     QAction *toGroupedModeAction;

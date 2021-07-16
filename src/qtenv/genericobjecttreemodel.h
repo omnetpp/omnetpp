@@ -17,6 +17,7 @@
 #ifndef __OMNETPP_QTENV_GENERICOBJECTTREEMODEL_H
 #define __OMNETPP_QTENV_GENERICOBJECTTREEMODEL_H
 
+#include <unordered_map>
 #include <QtCore/QAbstractItemModel>
 #include <QtWidgets/QMenu>
 #include <QtCore/QSortFilterProxyModel>
@@ -57,10 +58,8 @@ class QTENV_API GenericObjectTreeModel : public QAbstractItemModel
 {
     Q_OBJECT
 
-    std::vector<RootNode *> rootNodes;
-
 public:
-    // enum class so we can typedef it in TreeNode and the Inspector
+    // enum classes, so we can typedef them in TreeNode and the Inspector
     enum class Mode {
         GROUPED,
         FLAT,
@@ -69,10 +68,31 @@ public:
         PACKET   // this is never seen by this (source) model or the Nodes, only sets filtering in the proxy model, and FLAT mode in this one
     };
 
-    GenericObjectTreeModel(cObject *object, Mode mode, QObject *parent = nullptr);
-    GenericObjectTreeModel(std::vector<cObject *> roots, Mode mode, QObject *parent = nullptr);
+    enum class DataRole : int {
+        HIGHLIGHT_RANGE = Qt::UserRole,
+        NODE_MODE_OVERRIDE,  // corresponding value is -1 if no override, otherwise maps to Mode
+    };
+
+    typedef std::unordered_map<std::string, Mode> NodeModeOverrideMap;
+
+private:
+    // this is the "global" mode set on the inspector
+    Mode inspectorMode;
+    std::vector<RootNode *> rootNodes;
+    // maps nodeIdentifier to overridden Mode, for nodes whose mode was overridden by the user
+    NodeModeOverrideMap nodeModeOverrides;
+
+    // these can be accessed through setData(), using DataRole::NODE_MODE_OVERRIDE
+    void setNodeMode(const QModelIndex &index, Mode mode);
+    void unsetNodeMode(const QModelIndex &index);
+
+public:
+    GenericObjectTreeModel(cObject *object, Mode mode, const NodeModeOverrideMap& modeOverrides, QObject *parent = nullptr);
+    GenericObjectTreeModel(std::vector<cObject *> roots, Mode mode, const NodeModeOverrideMap& modeOverrides, QObject *parent = nullptr);
 
     std::vector<cObject *> getRootObjects();
+
+    const NodeModeOverrideMap& getNodeModeOverrides() const { return nodeModeOverrides;}
 
     QModelIndex index(int row, int column, const QModelIndex &parent) const override;
     QModelIndex parent(const QModelIndex &child) const override;

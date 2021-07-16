@@ -21,6 +21,8 @@
 #include "omnetpp/cobject.h"
 #include "omnetpp/cclassdescriptor.h"
 #include "genericobjecttreemodel.h"
+#include "common/commonutil.h"
+#include "common/stlutil.h"
 
 namespace omnetpp {
 namespace qtenv {
@@ -32,7 +34,10 @@ class QTENV_API TreeNode
 {
   protected:
     using Mode = GenericObjectTreeModel::Mode;
-    Mode mode; // this is stored in every node for convenience, but should be the same in the model and every node
+    using DataRole = GenericObjectTreeModel::DataRole;
+    using NodeModeOverrideMap = GenericObjectTreeModel::NodeModeOverrideMap;
+
+    Mode mode; // this might be different for each node
 
     // these make up the tree structure of the model
     TreeNode *parent = nullptr;
@@ -59,6 +64,9 @@ class QTENV_API TreeNode
     // more helpers, not static only to check if "parent in model tree is parent in ownership tree"
     QVariant getDefaultObjectData(cObject *object, int role);
     QString getObjectFullNameOrPath(cObject *object);
+
+    RootNode *getRootNode();
+    virtual const NodeModeOverrideMap& getNodeModeOverrides();
 
     // Creates the data for one of the following roles:
     //  - DisplayRole: a string to be displayed on the item
@@ -115,6 +123,12 @@ class QTENV_API TreeNode
 
     virtual bool isEditable() { return false; } // subclasses will override as needed
     virtual bool setData(const QVariant& value, int role) { return false; }
+
+    virtual Mode getMode() { return mode; }
+    // direct field accessor, only call from GenericObjectTreeModel, which does everything that has to be done before and after!
+    virtual void doSetMode(Mode mode) { this->mode = mode; }
+    // this will always have to be called after the ctor, when the vtable is already set up properly
+    void restoreModeFromOverrides();
 
     QString getNodeIdentifier() { ASSERT(!nodeIdentifier.isEmpty()); return nodeIdentifier; }
 
@@ -210,16 +224,20 @@ class QTENV_API RootNode : public TreeNode
 {
     cObject *object;
 
+    const NodeModeOverrideMap &nodeModeOverrides;
+
   protected:
     std::vector<TreeNode *> makeChildren() override;
     bool isSameAs(TreeNode *other) override;
 
   public:
-    RootNode(cObject *object, int indexInParent, Mode mode);
+    RootNode(cObject *object, int indexInParent, Mode mode, const NodeModeOverrideMap& nodeModeOverrides);
     int computeChildCount() override;
     QVariant computeData(int role) override;
     QString computeNodeIdentifier() override;
     cObject *getCObjectPointer() override;
+
+    const NodeModeOverrideMap &getNodeModeOverrides() override { return nodeModeOverrides; }
 };
 
 class QTENV_API FieldGroupNode : public TreeNode

@@ -56,7 +56,7 @@ ObjectTreeInspector::ObjectTreeInspector(QWidget *parent, bool isTopLevel, Inspe
     view = new QTreeView();
     layout->addWidget(view, 0, 0);
     layout->setMargin(0);
-    model = new GenericObjectTreeModel(nullptr, GenericObjectTreeModel::Mode::CHILDREN, this);
+    model = new GenericObjectTreeModel(nullptr, GenericObjectTreeModel::Mode::CHILDREN, {}, this);
 
     view->setModel(model);
     view->setUniformRowHeights(true);
@@ -108,7 +108,7 @@ void ObjectTreeInspector::refresh()
     if (roots != model->getRootObjects()) {
         // the FES and Network are recreated on run restart or config change
         delete model;
-        model = new GenericObjectTreeModel(roots, GenericObjectTreeModel::Mode::CHILDREN, this);
+        model = new GenericObjectTreeModel(roots, GenericObjectTreeModel::Mode::CHILDREN, {}, this);
         view->setModel(model);
     }
 

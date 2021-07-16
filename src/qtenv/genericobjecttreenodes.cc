@@ -44,8 +44,10 @@ void TreeNode::fill()
 
     ASSERT((int)children.size() == potentialChildCount);
 
-    for (auto c : children)
+    for (auto c : children) {
+        c->restoreModeFromOverrides();
         c->init();
+    }
 
     filled = true;
 }
@@ -96,6 +98,9 @@ int TreeNode::computeObjectChildCount(any_ptr obj, cClassDescriptor *desc, Mode 
         }
 
         case Mode::CHILDREN: {
+            if (!obj.contains<cObject>())
+                return 0;
+
             envir::cCountChildrenVisitor visitor(fromAnyPtr<cObject>(obj));
 
             try {
@@ -135,6 +140,9 @@ std::vector<TreeNode *> TreeNode::makeObjectChildNodes(any_ptr obj, cClassDescri
 
     switch (mode) {
         case Mode::CHILDREN: {
+            if (!obj.contains<cObject>())
+                break;
+
             envir::cCollectChildrenVisitor visitor(fromAnyPtr<cObject>(obj));
             try {
                 visitor.process(fromAnyPtr<cObject>(obj));
@@ -238,6 +246,26 @@ QString TreeNode::getObjectFullNameOrPath(cObject *object)
               : object->getFullPath().c_str();
 }
 
+
+const TreeNode::NodeModeOverrideMap& TreeNode::getNodeModeOverrides()
+{
+    return getRootNode()->getNodeModeOverrides();
+}
+
+RootNode *TreeNode::getRootNode()
+{
+    TreeNode *iter = this;
+    while (true) {
+        TreeNode *parent = iter->getParent();
+        if (parent == nullptr)
+            break;
+        iter = parent;
+    }
+    RootNode *result = dynamic_cast<RootNode *>(iter);
+    ASSERT(result != nullptr);
+    return result;
+}
+
 TreeNode::TreeNode(TreeNode *parent, int indexInParent, any_ptr contObject, cClassDescriptor *contDesc, Mode mode)
     : mode(mode), parent(parent), indexInParent(indexInParent),
     containingObject(contObject), containingDesc(contDesc)
@@ -259,6 +287,10 @@ TreeNode *TreeNode::getChild(int index)
 
 QVariant TreeNode::getData(int role)
 {
+    if (role == (int)DataRole::NODE_MODE_OVERRIDE)
+        // note: for root items, this is handled on the model level
+        return (parent == nullptr || mode == parent->mode) ? -1 : (int)mode;
+
     bool roleSupported = contains(supportedDataRoles, role);
     if (!roleSupported || data.empty())
         return QVariant();
@@ -299,6 +331,17 @@ bool TreeNode::updateData()
 void TreeNode::updatePotentialChildCount()
 {
     potentialChildCount = computeChildCount();
+}
+
+void TreeNode::restoreModeFromOverrides()
+{
+    nodeIdentifier = computeNodeIdentifier();
+    const NodeModeOverrideMap& overrides = getNodeModeOverrides();
+
+    auto i = overrides.find(nodeIdentifier.toStdString());
+
+    if (i != overrides.end())
+        mode = i->second;
 }
 
 cObject *TreeNode::getContainingCObjectPointer()
@@ -379,7 +422,7 @@ QVariant SuperClassNode::computeData(int role)
 {
     switch (role) {
         case Qt::DisplayRole: return stripNamespace(superDesc->getName());
-        case Qt::UserRole: return QVariant::fromValue(HighlightRange {0, stripNamespace(superDesc->getName()).length()});
+        case (int)DataRole::HIGHLIGHT_RANGE: return QVariant::fromValue(HighlightRange {0, stripNamespace(superDesc->getName()).length()});
         default: return QVariant();
     };
 }
@@ -418,7 +461,7 @@ QVariant ChildObjectNode::computeData(int role)
 
     switch (role) {
         case Qt::DisplayRole: return defaultText + (infoText.isEmpty() ? "" : (QString(" ") + infoText));
-        case Qt::UserRole: return QVariant::fromValue(HighlightRange{defaultText.length(), infoText.isEmpty() ? 0 : infoText.length() + 1});
+        case (int)DataRole::HIGHLIGHT_RANGE: return QVariant::fromValue(HighlightRange{defaultText.length(), infoText.isEmpty() ? 0 : infoText.length() + 1});
         default: return getDefaultObjectData(object, role);
     }
 }
@@ -457,14 +500,14 @@ QVariant TextNode::computeData(int role)
 {
     switch (role) {
         case Qt::DisplayRole: return message;
-        case Qt::UserRole: return QVariant::fromValue(HighlightRange{0, message.length()});
+        case (int)DataRole::HIGHLIGHT_RANGE: return QVariant::fromValue(HighlightRange{0, message.length()});
         default: return getDefaultObjectData(nullptr, role);
     }
 }
 
 QString TextNode::computeNodeIdentifier()
 {
-    return "<" + message + ">";
+    return (parent ? parent->getNodeIdentifier() + "|" : "") + "<" + message + ">";
 }
 
 bool TextNode::isSameAs(TreeNode *other)
@@ -661,8 +704,8 @@ bool RootNode::isSameAs(TreeNode *other)
     return object == o->object;
 }
 
-RootNode::RootNode(cObject *object, int indexInParent, Mode mode)
-    : TreeNode(nullptr, indexInParent, any_ptr(nullptr), nullptr, mode), object(object)
+RootNode::RootNode(cObject *object, int indexInParent, Mode mode, const NodeModeOverrideMap& nodeModeOverrides)
+    : TreeNode(nullptr, indexInParent, any_ptr(nullptr), nullptr, mode), object(object), nodeModeOverrides(nodeModeOverrides)
 {
 }
 
@@ -685,14 +728,14 @@ QVariant RootNode::computeData(int role)
 
     switch (role) {
         case Qt::DisplayRole: return pathAndType + infoText;
-        case Qt::UserRole: return QVariant::fromValue(HighlightRange { pathAndType.length(), infoText.length() });
+        case (int)DataRole::HIGHLIGHT_RANGE: return QVariant::fromValue(HighlightRange { pathAndType.length(), infoText.length() });
         default: return getDefaultObjectData(object, role);
     }
 }
 
 QString RootNode::computeNodeIdentifier()
 {
-    return "<root>";
+    return "<root-" + QString::number(getIndexInParent()) + ">";
 }
 
 cObject *RootNode::getCObjectPointer()

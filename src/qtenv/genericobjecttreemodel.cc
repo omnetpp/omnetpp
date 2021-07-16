@@ -57,19 +57,18 @@ bool PropertyFilteredGenericObjectTreeModel::filterAcceptsRow(int sourceRow, con
 }
 
 
-GenericObjectTreeModel::GenericObjectTreeModel(cObject *object, Mode mode, QObject *parent)
-    : GenericObjectTreeModel(std::vector<cObject*>{object}, mode, parent)
+GenericObjectTreeModel::GenericObjectTreeModel(cObject *object, Mode mode, const NodeModeOverrideMap& modeOverrides, QObject *parent)
+    : GenericObjectTreeModel(std::vector<cObject*>{object}, mode, modeOverrides, parent)
 {
     // nothing, delegating to other ctor
 }
 
-GenericObjectTreeModel::GenericObjectTreeModel(std::vector<cObject *> roots, Mode mode, QObject *parent)
-    : QAbstractItemModel(parent)
+GenericObjectTreeModel::GenericObjectTreeModel(std::vector<cObject *> roots, Mode mode, const NodeModeOverrideMap& modeOverrides, QObject *parent)
+    : QAbstractItemModel(parent), inspectorMode(mode), nodeModeOverrides(modeOverrides)
 {
     for (int i = 0; i < (int)roots.size(); ++i) {
         cObject *root = roots[i];
-        RootNode *rootNode = new RootNode(root, i, mode);
-
+        RootNode *rootNode = new RootNode(root, i, mode, nodeModeOverrides);
         rootNode->init();
         // Since the root node is always going to be expanded right at the beginning,
         // let's just go ahead and fill it with children and data to reduce flickering.
@@ -146,6 +145,10 @@ int GenericObjectTreeModel::columnCount(const QModelIndex& parent) const
 QVariant GenericObjectTreeModel::data(const QModelIndex& index, int role) const
 {
     auto node = static_cast<TreeNode *>(index.internalPointer());
+
+    if (!index.parent().isValid() && role == (int)DataRole::NODE_MODE_OVERRIDE)
+        return inspectorMode == node->getMode() ? -1 : (int)node->getMode();
+
     // just delegating to the node pointed by the index
     QVariant data = node->getData(role);
     if (role == Qt::DisplayRole) {
@@ -156,7 +159,21 @@ QVariant GenericObjectTreeModel::data(const QModelIndex& index, int role) const
 
 bool GenericObjectTreeModel::setData(const QModelIndex& index, const QVariant& value, int role)
 {
-    bool success = static_cast<TreeNode *>(index.internalPointer())->setData(value, role);
+    TreeNode *node = static_cast<TreeNode *>(index.internalPointer());
+    ASSERT(node != nullptr);
+
+    bool success;
+
+    if (role == (int)DataRole::NODE_MODE_OVERRIDE) {
+        if (value.toInt() == -1)
+            unsetNodeMode(index);
+        else
+            setNodeMode(index, (Mode)value.toInt());
+        success = true;
+    }
+    else
+        success = node->setData(value, role);
+
     emit dataChanged(index, index); // it is acceptable here, as this doesn't happen often
     emit dataEdited(index);
     return success;
@@ -232,6 +249,8 @@ void GenericObjectTreeModel::refreshChildList(const QModelIndex &index)
 
     auto oldChildren = node->getExistingChildren(); // we just borrow the list of pointers
     auto newChildren = node->makeChildren(); // we get ownership of some newly created nodes
+    for (auto nc : newChildren)
+        nc->restoreModeFromOverrides();
     // no need to call init on newChildren, because we don't use anything in them, just isSameAs
 
     bool same = oldChildren.size() == newChildren.size();
@@ -260,6 +279,51 @@ void GenericObjectTreeModel::refreshChildList(const QModelIndex &index)
     for (auto c : newChildren)
         delete c;
 }
+
+void GenericObjectTreeModel::setNodeMode(const QModelIndex &index, Mode mode)
+{
+    TreeNode *node = static_cast<TreeNode *>(index.internalPointer());
+
+    emit layoutAboutToBeChanged();
+
+    ASSERT(mode != Mode::PACKET);
+    node->doSetMode(mode);
+
+    refreshChildList(index);
+
+    refreshNodeChildrenRec(index);
+
+    node->gatherDataIfMissing();
+
+    nodeModeOverrides[node->getNodeIdentifier().toStdString()] = mode;
+    // also, this will make Qt realize that some nodes have gained or lost children,
+    // and the triangle to expand the item will be shown/hidden accordingly
+    emit layoutChanged();
+}
+
+void GenericObjectTreeModel::unsetNodeMode(const QModelIndex &index)
+{
+    TreeNode *node = static_cast<TreeNode *>(index.internalPointer());
+
+    emit layoutAboutToBeChanged();
+
+    Mode parentMode = node->getParent() != nullptr ? node->getParent()->getMode() : inspectorMode;
+    ASSERT(parentMode != Mode::PACKET);
+    node->doSetMode(parentMode);
+
+    refreshChildList(index);
+
+    refreshNodeChildrenRec(index);
+
+    node->gatherDataIfMissing();
+
+    nodeModeOverrides.erase(node->getNodeIdentifier().toStdString());
+
+    // also, this will make Qt realize that some nodes have gained or lost children,
+    // and the triangle to expand the item will be shown/hidden accordingly
+    emit layoutChanged();
+}
+
 
 cObject *GenericObjectTreeModel::getCObjectPointer(const QModelIndex &index)
 {

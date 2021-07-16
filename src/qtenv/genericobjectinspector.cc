@@ -180,7 +180,7 @@ GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel,
     connect(treeView->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(gatherVisibleDataIfSafe()));
 }
 
-void GenericObjectInspector::recreateModel()
+void GenericObjectInspector::recreateModel(bool keepNodeModeOverrides)
 {
     GenericObjectTreeModel *newSourceModel;
 
@@ -190,11 +190,14 @@ void GenericObjectInspector::recreateModel()
     delete proxyModel;
     proxyModel = new PropertyFilteredGenericObjectTreeModel(this);
 
+    GenericObjectTreeModel::NodeModeOverrideMap newNodeModeOverrides = sourceModel != nullptr && keepNodeModeOverrides
+        ? sourceModel->getNodeModeOverrides() : GenericObjectTreeModel::NodeModeOverrideMap{};
+
     if (mode == Mode::PACKET) {
-        newSourceModel = new GenericObjectTreeModel(object, Mode::FLAT, this);
+        newSourceModel = new GenericObjectTreeModel(object, Mode::FLAT, newNodeModeOverrides, this);
         proxyModel->setRelevantProperty("packetData");
     } else {
-        newSourceModel = new GenericObjectTreeModel(object, mode, this);
+        newSourceModel = new GenericObjectTreeModel(object, mode, newNodeModeOverrides, this);
         proxyModel->setRelevantProperty("");
     }
 
