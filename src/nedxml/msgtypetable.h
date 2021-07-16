@@ -128,6 +128,8 @@ class NEDXML_API MsgTypeTable
                                 // const char * <datatype>::<function>(...);     // @toString(.function(...))
         std::string fromString; // function to convert string to data member, defined in property @fromString
                                 // <datatype> <function>(const char *);          // @fromString(function)
+        std::string toValue;    // function to convert data to cValue, defined in property @toValue; syntax is similar to toString
+        std::string fromValue;  // function to convert data from cValue, defined in property @fromValue; syntax is similar to fromString
         std::string getterConversion;  // currently only with strings: ".c_str()"
         std::string enumName;   // from @enum
         std::string enumQName;  // fully qualified type name of enum
@@ -206,6 +208,8 @@ class NEDXML_API MsgTypeTable
         std::string returnTypeBase;    // getter C++ return type
         std::string toString;          // function to convert data to string, defined in property @toString
         std::string fromString;        // @fromString; function to convert string to data member, defined in property @fromString
+        std::string toValue;           // function to convert data to cValue, defined in property @toValue
+        std::string fromValue;         // @fromString; function to convert cValue to data member, defined in property @fromValue
         std::string clone;             // @clone; code to clone a dynamically allocated object of this type (for owned pointer fields)
         std::string getterConversion;  // @getterConversion; conversion from storage type to return type in getters
     };

@@ -1093,6 +1093,12 @@ void MsgCodeGenerator::generateFromAnyPtr(const ClassInfo& classInfo, const std:
     }
 }
 
+inline std::string removePointer(const std::string& type)
+{
+    Assert(opp_stringendswith(type.c_str(), "*"));
+    return opp_trim(type.substr(0, type.size()-1));
+}
+
 void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
 {
     CC << "class " << classInfo.descriptorClass << " : public omnetpp::cClassDescriptor\n";
@@ -1125,6 +1131,8 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "    virtual const char *getFieldDynamicTypeString(omnetpp::any_ptr object, int field, int i) const override;\n";
     CC << "    virtual std::string getFieldValueAsString(omnetpp::any_ptr object, int field, int i) const override;\n";
     CC << "    virtual void setFieldValueAsString(omnetpp::any_ptr object, int field, int i, const char *value) const override;\n";
+    CC << "    virtual omnetpp::cValue getFieldValue(omnetpp::any_ptr object, int field, int i) const override;\n";
+    CC << "    virtual void setFieldValue(omnetpp::any_ptr object, int field, int i, const omnetpp::cValue& value) const override;\n";
     CC << "\n";
     CC << "    virtual const char *getFieldStructName(int field) const override;\n";
     CC << "    virtual omnetpp::any_ptr getFieldStructValuePointer(omnetpp::any_ptr object, int field, int i) const override;\n";
@@ -1453,11 +1461,103 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
                 CC << "if (i < 0 || i >= " << field.arraySize << ") throw omnetpp::cRuntimeError(\"Array index %d out of bounds for field %d of class '" << classInfo.className << "'\", i, field);\n";
                 CC << "                ";
             }
-            std::string fromstringCall = makeFuncall("value", field.fromString); //TODO use op>> if there's no fromstring?
+            std::string fromstringCall = makeFuncall("value", field.fromString);
             if (!classInfo.isClass)
                 CC << "pp->" << field.var << (field.isArray ? "[i]" : "") << " = " << fromstringCall << "; break;\n";
             else
                 CC << makeFuncall("pp", field.setter, field.isArray, fromstringCall) << "; break;\n";
+        }
+    }
+    CC << "        default: throw omnetpp::cRuntimeError(\"Cannot set field %d of class '" << classInfo.className << "'\", field);\n";
+    CC << "    }\n";
+    CC << "}\n";
+    CC << "\n";
+
+    // getFieldValue()
+    CC << "omnetpp::cValue " << classInfo.descriptorClass << "::getFieldValue(omnetpp::any_ptr object, int field, int i) const\n";
+    CC << "{\n";
+    generateDelegationForBaseClassFields("return base->getFieldValue(object,field,i);");
+    CC << "    " << classInfo.className << " *pp = omnetpp::fromAnyPtr<" << classInfo.className << ">(object); (void)pp;\n";
+    CC << "    switch (field) {\n";
+    for (size_t i = 0; i < numFields; i++) {
+        const FieldInfo& field = classInfo.fieldList[i];
+        CC << "        case " << field.symbolicConstant << ": ";
+        if (!classInfo.isClass && field.isArray) {
+            Assert(field.isFixedArray); // struct may not contain dynamic arrays; checked by analyzer
+            CC << "if (i >= " << field.arraySize << ") return omnetpp::cValue();\n                ";
+        }
+
+        if (!field.toValue.empty()) {
+            // via @toValue
+            std::string value = classInfo.isClass ?
+                    makeFuncall("pp", field.getter, field.isArray) :
+                    (str("pp->") + field.var + (field.isArray ? "[i]" : ""));
+            std::string maybeAsterisk = field.isPointer ? "*" : "";
+            CC << "return " << makeFuncall(maybeAsterisk + value, field.toValue) << ";\n";
+        }
+        else if (!field.byValue) {
+            // return pointer
+            std::string value;
+            if (!classInfo.isClass)
+                value = str("pp->") + field.var + (field.isArray ? "[i]" : "");
+            else
+                value = makeFuncall("pp", field.getter, field.isArray);
+            std::string maybeAddressOf = field.isPointer ? "" : "&";
+            CC << "return omnetpp::toAnyPtr(" << maybeAddressOf << value << "); break;\n";
+        }
+        else {
+            errors->addWarning(field.astNode, "Cannot generate code to return field '%s' as cValue, because no @toValue() is specified on the field or its type '%s' (and also cannot return a pointer due to @byValue)", field.name.c_str(), field.typeQName.c_str());
+            CC << "throw omnetpp::cRuntimeError(\"Cannot return field '" << classInfo.qname << "::" << field.name << "' (type '" << field.type << "') as cValue, please provide @toValue in the msg file\");\n";
+        }
+    }
+    CC << "        default: throw omnetpp::cRuntimeError(\"Cannot return field %d of class '" << classInfo.className << "' as cValue -- field index out of range?\", field);\n";
+    CC << "    }\n";
+    CC << "}\n";
+    CC << "\n";
+
+    // setFieldValue()
+    CC << "void " << classInfo.descriptorClass << "::setFieldValue(omnetpp::any_ptr object, int field, int i, const omnetpp::cValue& value) const\n";
+    CC << "{\n";
+    generateDelegationForBaseClassFields("base->setFieldValue(object, field, i, value);");
+    CC << "    " << classInfo.className << " *pp = omnetpp::fromAnyPtr<" << classInfo.className << ">(object); (void)pp;\n";
+    CC << "    switch (field) {\n";
+    for (size_t i = 0; i < numFields; i++) {
+        const FieldInfo& field = classInfo.fieldList[i];
+        if (field.isEditable || field.isReplaceable) {
+            CC << "        case " << field.symbolicConstant << ": ";
+            if (!classInfo.isClass && field.isArray) {
+                Assert(field.isFixedArray); // struct may not contain dynamic arrays; checked by analyzer
+                CC << "if (i < 0 || i >= " << field.arraySize << ") throw omnetpp::cRuntimeError(\"Array index %d out of bounds for field %d of class '" << classInfo.className << "'\", i, field);\n";
+                CC << "                ";
+            }
+            if (field.isEditable) {
+                if (!field.fromValue.empty()) {
+                    // @fromValue
+                    //TODO for enums, set fromValue beforehand instead of hardwiring it here!
+                    std::string valueToSet = !field.enumName.empty() ? "(" + field.enumQName + ")value.intValue()" : makeFuncall("value", field.fromValue);
+                    if (!classInfo.isClass)
+                        CC << "pp->" << field.var << (field.isArray ? "[i]" : "") << " = " << valueToSet << "; break;\n";
+                    else
+                        CC << makeFuncall("pp", field.setter, field.isArray, valueToSet) << "; break;\n";
+                }
+                else {
+                    errors->addWarning(field.astNode, "Field '%s' is marked @editable but cannot generate code to set it from cValue, as @fromValue() is not specified on the field or its type '%s'", field.name.c_str(), field.typeQName.c_str());
+                    CC << "throw omnetpp::cRuntimeError(\"Cannot set field '" << classInfo.qname << "::" << field.name << "' (type '" << field.type << "') from cValue, please provide @fromValue in the msg file\");\n";
+                }
+            }
+            else if (field.isReplaceable) {
+                // via pointer
+                std::string maybeDereference = field.isPointer ? "" : "*";
+                std::string valuePtr = "omnetpp::fromAnyPtr<" + removePointer(field.argType) + ">(value.pointerValue())";
+                if (!classInfo.isClass)
+                    CC <<  "pp->" << field.var << (field.isArray ? "[i]" : "") << " = " << maybeDereference << valuePtr << ";";
+                else
+                    CC << makeFuncall("pp", field.setter, field.isArray, maybeDereference + valuePtr) << ";";
+                CC << " break;\n";
+            }
+            else {
+                Assert(false); // we are within an "if (field.isEditable || field.isReplaceable)" block
+            }
         }
     }
     CC << "        default: throw omnetpp::cRuntimeError(\"Cannot set field %d of class '" << classInfo.className << "'\", field);\n";
@@ -1494,7 +1594,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < numFields; i++) {
         const FieldInfo& field = classInfo.fieldList[i];
-        if (!field.byValue) { //TODO ?
+        if (!field.byValue) {
             std::string value;
             if (!classInfo.isClass)
                 value = str("pp->") + field.var + (field.isArray ? "[i]" : "");
@@ -1520,8 +1620,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
         if (field.isReplaceable) {
             CC << "        case " << field.symbolicConstant << ": ";
             std::string maybeDereference = field.isPointer ? "" : "*";
-            std::string castToType = field.argType.substr(0, field.argType.size()-1); //FIXME: this is a hack to remove last "*"!!!
-            std::string castPtr = std::string("omnetpp::fromAnyPtr<") + castToType + ">(ptr)";
+            std::string castPtr = "omnetpp::fromAnyPtr<" + removePointer(field.argType) + ">(ptr)";
             if (!classInfo.isClass)
                 CC <<  str("pp->") << field.var << (field.isArray ? "[i]" : "") << " = " << maybeDereference << castPtr << ";";
             else
@@ -1589,7 +1688,10 @@ std::string MsgCodeGenerator::prefixWithNamespace(const std::string& name, const
 
 std::string MsgCodeGenerator::makeFuncall(const std::string& var, const std::string& funcTemplate, bool withIndex, const std::string& value)
 {
-    if (funcTemplate[0] == '.' || funcTemplate[0] == '-') {
+    if (funcTemplate.empty()) {
+        return var;
+    }
+    else if (funcTemplate[0] == '.' || funcTemplate[0] == '-') {
         // ".foo()" becomes "var.foo()", "->foo()" becomes "var->foo()"
         return var + funcTemplate;
     }
@@ -1597,9 +1699,12 @@ std::string MsgCodeGenerator::makeFuncall(const std::string& var, const std::str
         // "tostring($)" becomes "tostring(var)", "getchild($,i)" becomes "getchild(var,i)"
         return opp_replacesubstring(funcTemplate, "$", var, true);
     }
-    else {
+    else if (funcTemplate.find('(') == std::string::npos) {
         // "foo" is a shorthand for "var->foo()" or "var->foo(i)", depending on flag
         return var + "->" + funcTemplate + "(" + (withIndex ? "i" : "") + ((withIndex && value!="") ? "," : "") + value + ")";
+    }
+    else {
+        return funcTemplate;
     }
 }
 

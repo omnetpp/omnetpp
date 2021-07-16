@@ -66,6 +66,7 @@ struct cOsgCanvas::Vec3d
     @descriptor(false);
     @opaque;
     @toString(.str());
+    @toValue(.str());
     // TODO fromstr for Vec3d
 }
 
@@ -101,8 +102,8 @@ class cOsgCanvas extends cOwnedObject
     double fieldOfViewAngle @editable @group(viewer hints);
     double zNear @editable @group(viewer hints);
     double zFar @editable @group(viewer hints);
-    cOsgCanvas::Viewpoint genericViewpoint;
-    cOsgCanvas::EarthViewpoint earthViewpoint;
+    cOsgCanvas::Viewpoint genericViewpoint @toValue(omnetpp::toAnyPtr(&$));
+    cOsgCanvas::EarthViewpoint earthViewpoint @toValue(omnetpp::toAnyPtr(&$));
 }
 
 class cObjectOsgNode extends osg::Group

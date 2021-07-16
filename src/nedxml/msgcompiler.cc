@@ -49,18 +49,20 @@ const char *MsgCompiler::BUILTIN_DEFINITIONS =
         @property[returnType](type=string; usage=field,class; desc="Field getter C++ return type. When specified on a class, it determines the default for fields of that type.");
         @property[fromString](type=string; usage=field,class; desc="Affects descriptor class: Code to convert string to field value. When specified on a class, it determines the default for fields of that type.");
         @property[toString](type=string; usage=field,class; desc="Affects descriptor class: Code to convert field value to string. When specified on a class, it determines the default for fields of that type.");
+        @property[fromValue](type=string; usage=field,class; desc="Affects descriptor class: Code to convert cValue to field value. When specified on a class, it determines the default for fields of that type.");
+        @property[toValue](type=string; usage=field,class; desc="Affects descriptor class: Code to convert field value to cValue. When specified on a class, it determines the default for fields of that type.");
         @property[getterConversion](type=string; usage=field,class; desc="Code to convert field data type to return type in getters. When specified on a class, it determines the default for fields of that type.");
         @property[clone](type=string; usage=field,class; desc="For owned pointer fields: Code to duplicate (one array element of) the field value. When specified on a class, it determines the default for fields of that type.");
         @property[existingClass](type=bool; usage=class; desc="If true: This is a type is already defined in C++, i.e. it does not need to be generated.");
-        @property[descriptor](type=string; usage=class; desc="A 'true'/'false' value specifies whether to generate descriptor class; special value 'readonly' requests generating a read-only descriptor.");
+        @property[descriptor](type=string; usage=class; desc="A 'true'/'false' value specifies whether to generate descriptor class; special value 'readonly' requests generating a read-only descriptor (but specifying @editable/@replaceable/@resizable on individual fields overrides that).");
         @property[castFunction](type=bool; usage=class; desc="If false: Do not specialize the fromAnyPtr<T>(any_ptr) function for this class. Useful for preventing compile errors if the function already exists, e.g. in hand-written form, or generated for another type (think aliased typedefs).");
         @property[omitGetVerb](type=bool; usage=class; desc="If true: Drop the 'get' verb from the names of getter methods.");
         @property[fieldNameSuffix](type=string; usage=class; desc="Suffix to append to the names of data members.");
         @property[beforeChange](type=string; usage=class; desc="Method to be called before mutator code (in setters, non-const getters, operator=, etc.).");
         @property[implements](type=stringlist; usage=class; desc="Names of additional base classes.");
         @property[nopack](type=bool; usage=field; desc="If true: Ignore this field in parsimPack/parsimUnpack methods.");
-        @property[editable](type=bool; usage=field,class; desc="Specifies whether field value (or value of fields that are instances of this type) can be set via the class descriptor's setFieldValueFromString() method.");
-        @property[replaceable](type=bool; usage=field; desc="If true: Field is a pointer whose value can be set via the class descriptor's setFieldStructValuePointer() method.");
+        @property[editable](type=bool; usage=field,class; desc="Specifies whether field value (or value of fields that are instances of this type) can be set via the class descriptor's setFieldValueFromString() and setFieldValue() methods.");
+        @property[replaceable](type=bool; usage=field; desc="If true: Field is a pointer whose value can be set via the class descriptor's setFieldStructValuePointer() and setFieldValue() methods.");
         @property[resizable](type=bool; usage=field; desc="If true: Field is a variable-size array whose size can be set via the class descriptor's setFieldArraySize() method.");
         @property[overrideGetter](type=bool; usage=field; desc="If true: Add the 'override' keyword to the declaration of the getter method.");
         @property[overrideSetter](type=bool; usage=field; desc="If true: Add the 'override' keyword to the declaration of the setter method.");
@@ -79,34 +81,34 @@ const char *MsgCompiler::BUILTIN_DEFINITIONS =
         @property[owned](type=bool; usage=field; desc="For pointers and pointer arrays: Whether allocated memory is owned by the object (needs to be duplicated in dup(), and deleted in destructor). If field type is also a cOwnedObject, take()/drop() calls are also generated.");
         @property[custom](type=bool; usage=field; desc="If true: Do not generate any data or code for the field, only add it to the descriptor. Indicates that the field's implementation will be added to the class via targeted cplusplus blocks.");
 
-        class __bool { @actually(bool); @primitive; @fromString(string2bool($)); @toString(bool2string($)); @defaultValue(false); }
-        class __float { @actually(float); @primitive; @fromString(string2double($)); @toString(double2string($)); @defaultValue(0); }
-        class __double { @actually(double); @primitive; @fromString(string2double($)); @toString(double2string($)); @defaultValue(0); }
-        class __string { @actually(string); @primitive; @cppType(omnetpp::opp_string); @argType(const char *); @returnType(const char *); @getterConversion(.c_str()); @fromString(($)); @toString(oppstring2string($)); }
-        class __char { @actually(char); @primitive; @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); }
-        class __short { @actually(short); @primitive; @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); }
-        class __int { @actually(int); @primitive; @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); }
-        class __long { @actually(long); @primitive; @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); }
-        class __uchar { @actually(unsigned char); @primitive; @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); }
-        class __ushort { @actually(unsigned short); @primitive; @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); }
-        class __uint { @actually(unsigned int); @primitive; @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); }
-        class __ulong { @actually(unsigned long); @primitive; @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); }
-        class int8_t { @primitive; @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); }
-        class int16_t { @primitive; @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); }
-        class int32_t { @primitive; @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); }
-        class int64_t { @primitive; @fromString(string2int64($)); @toString(int642string($)); @defaultValue(0); }
-        class uint8_t { @primitive; @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); }
-        class uint16_t { @primitive; @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); }
-        class uint32_t { @primitive; @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); }
-        class uint64_t { @primitive; @fromString(string2uint64($)); @toString(uint642string($)); @defaultValue(0); }
-        class int8 { @primitive; @cppType(int8_t); @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); }
-        class int16 { @primitive; @cppType(int16_t); @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); }
-        class int32 { @primitive; @cppType(int32_t); @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); }
-        class int64 { @primitive; @cppType(int64_t); @fromString(string2int64($)); @toString(int642string($)); @defaultValue(0); }
-        class uint8 { @primitive; @cppType(uint8_t); @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); }
-        class uint16 { @primitive; @cppType(uint16_t); @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); }
-        class uint32 { @primitive; @cppType(uint32_t); @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); }
-        class uint64 { @primitive; @cppType(uint64_t); @fromString(string2uint64($)); @toString(uint642string($)); @defaultValue(0); }
+        class __bool { @actually(bool); @primitive; @fromString(string2bool($)); @toString(bool2string($)); @defaultValue(false); @toValue($); @fromValue($.boolValue()); }
+        class __float { @actually(float); @primitive; @fromString(string2double($)); @toString(double2string($)); @defaultValue(0); @toValue((double)($)); @fromValue(static_cast<float>($.doubleValue())); }
+        class __double { @actually(double); @primitive; @fromString(string2double($)); @toString(double2string($)); @defaultValue(0); @toValue($); @fromValue($.doubleValue()); }
+        class __string { @actually(string); @primitive; @cppType(omnetpp::opp_string); @argType(const char *); @returnType(const char *); @getterConversion(.c_str()); @fromString(($)); @toString(oppstring2string($)); @toValue($); @fromValue($.stringValue()); }
+        class __char { @actually(char); @primitive; @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); @toValue($); @fromValue(omnetpp::checked_int_cast<char>($.intValue())); }
+        class __short { @actually(short); @primitive; @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); @toValue($); @fromValue(omnetpp::checked_int_cast<short>($.intValue())); }
+        class __int { @actually(int); @primitive; @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); @toValue($); @fromValue(omnetpp::checked_int_cast<int>($.intValue())); }
+        class __long { @actually(long); @primitive; @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); @toValue($); @fromValue(omnetpp::checked_int_cast<long>($.intValue())); }
+        class __uchar { @actually(unsigned char); @primitive; @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); @toValue((omnetpp::intval_t)($)); @fromValue(omnetpp::checked_int_cast<unsigned char>($.intValue())); }
+        class __ushort { @actually(unsigned short); @primitive; @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); @toValue((omnetpp::intval_t)($)); @fromValue(omnetpp::checked_int_cast<unsigned short>($.intValue())); }
+        class __uint { @actually(unsigned int); @primitive; @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); @toValue((omnetpp::intval_t)($)); @fromValue(omnetpp::checked_int_cast<unsigned int>($.intValue())); }
+        class __ulong { @actually(unsigned long); @primitive; @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); @toValue(omnetpp::checked_int_cast<omnetpp::intval_t>($)); @fromValue(omnetpp::checked_int_cast<unsigned long>($.intValue())); }
+        class int8_t { @primitive; @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); @toValue($); @fromValue(omnetpp::checked_int_cast<int8_t>($.intValue())); }
+        class int16_t { @primitive; @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); @toValue($); @fromValue(omnetpp::checked_int_cast<int16_t>($.intValue())); }
+        class int32_t { @primitive; @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); @toValue($); @fromValue(omnetpp::checked_int_cast<int32_t>($.intValue())); }
+        class int64_t { @primitive; @fromString(string2int64($)); @toString(int642string($)); @defaultValue(0); @toValue($); @fromValue(omnetpp::checked_int_cast<int64_t>($.intValue())); }
+        class uint8_t { @primitive; @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); @toValue((omnetpp::intval_t)($)); @fromValue(omnetpp::checked_int_cast<uint8_t>($.intValue())); }
+        class uint16_t { @primitive; @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); @toValue((omnetpp::intval_t)($)); @fromValue(omnetpp::checked_int_cast<uint16_t>($.intValue())); }
+        class uint32_t { @primitive; @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); @toValue((omnetpp::intval_t)($)); @fromValue(omnetpp::checked_int_cast<uint32_t>($.intValue())); }
+        class uint64_t { @primitive; @fromString(string2uint64($)); @toString(uint642string($)); @defaultValue(0); @toValue((omnetpp::intval_t)($)); @fromValue(omnetpp::checked_int_cast<uint64_t>($.intValue())); }
+        class int8 { @primitive; @cppType(int8_t); @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); @toValue($); @fromValue(omnetpp::checked_int_cast<int8_t>($.intValue())); }
+        class int16 { @primitive; @cppType(int16_t); @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); @toValue($); @fromValue(omnetpp::checked_int_cast<int16_t>($.intValue())); }
+        class int32 { @primitive; @cppType(int32_t); @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); @toValue($); @fromValue(omnetpp::checked_int_cast<int32_t>($.intValue())); }
+        class int64 { @primitive; @cppType(int64_t); @fromString(string2int64($)); @toString(int642string($)); @defaultValue(0); @toValue((omnetpp::intval_t)($)); @fromValue(omnetpp::checked_int_cast<int64_t>($.intValue())); }
+        class uint8 { @primitive; @cppType(uint8_t); @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); @toValue((omnetpp::intval_t)($)); @fromValue(omnetpp::checked_int_cast<uint8_t>($.intValue())); }
+        class uint16 { @primitive; @cppType(uint16_t); @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); @toValue((omnetpp::intval_t)($)); @fromValue(omnetpp::checked_int_cast<uint16_t>($.intValue())); }
+        class uint32 { @primitive; @cppType(uint32_t); @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); @toValue((omnetpp::intval_t)($)); @fromValue(omnetpp::checked_int_cast<uint32_t>($.intValue())); }
+        class uint64 { @primitive; @cppType(uint64_t); @fromString(string2uint64($)); @toString(uint642string($)); @defaultValue(0); @toValue(omnetpp::checked_int_cast<omnetpp::intval_t>($)); @fromValue(omnetpp::checked_int_cast<uint64_t>($.intValue())); }
         )ENDMARK";
 
 extern const char *SIM_STD_DEFINITIONS;  // contents of sim/sim_std.msg, stringified into sim_std_msg.cc

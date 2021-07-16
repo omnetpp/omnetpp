@@ -295,6 +295,9 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
 
     classInfo.toString = getProperty(classInfo.props, PROP_TOSTRING, "");
     classInfo.fromString = getProperty(classInfo.props, PROP_FROMSTRING, "");
+    classInfo.toValue = getProperty(classInfo.props, PROP_TOVALUE, "");
+    classInfo.fromValue = getProperty(classInfo.props, PROP_FROMVALUE, "");
+
     classInfo.getterConversion = getProperty(classInfo.props, PROP_GETTERCONVERSION, "$");
     classInfo.clone = getProperty(classInfo.props, PROP_CLONE, "");
     classInfo.str = getProperty(classInfo.props, PROP_STR, "");
@@ -488,6 +491,10 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
     }
     field->fromString = getProperty(field->props, PROP_FROMSTRING, field->fromString);
     field->toString = getProperty(field->props, PROP_TOSTRING, field->toString);
+
+    // fromvalue/tovalue
+    field->fromValue = getProperty(field->props, PROP_FROMVALUE, fieldClassInfo.fromValue);
+    field->toValue = getProperty(field->props, PROP_TOVALUE, fieldClassInfo.toValue);
 
     // default method names
     if (classInfo.isClass) {
@@ -684,6 +691,8 @@ MsgAnalyzer::ClassInfo MsgAnalyzer::extractClassInfoFromEnum(EnumElement *enumEl
     classInfo.fromString = str("(") + classInfo.qname + ")string2enum($, \"" + classInfo.qname + "\")";
     classInfo.toString = str("enum2string($, \"") + classInfo.qname + "\")";
     classInfo.defaultValue = str("static_cast<") + classInfo.qname + ">(-1)";
+    classInfo.toValue = "static_cast<int>($)";
+    classInfo.fromValue = str("static_cast<") + classInfo.qname + ">($.intValue())";
 
     // determine base class
     if (classInfo.extendsName != "")

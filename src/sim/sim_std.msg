@@ -36,6 +36,7 @@ cplusplus(cc)
 #endif
 
 #include "expressionfilter.h"
+#include "nedsupport.h" // makeNedValue()
 
 namespace omnetpp {
 
@@ -73,7 +74,7 @@ using namespace canvas_stream_ops;
 void std_sim_descriptor_dummy() {}
 
 // This cannot go into the header, because ExpressionFilter is not available via <omnetpp.h>
-template<> inline omnetpp::ExpressionFilter *fromAnyPtr(any_ptr ptr) {return static_cast<omnetpp::ExpressionFilter *>(ptr.get<omnetpp::cObject>());}
+template<> inline ExpressionFilter *fromAnyPtr(any_ptr ptr) {return static_cast<ExpressionFilter *>(ptr.get<cObject>());}
 
 }  // namespace omnetpp
 
@@ -113,6 +114,8 @@ class simtime_t
     @polymorphic(false);
     @cppType(omnetpp::simtime_t);
     @fromString(string2simtime($)); @toString(simtime2string($));
+    @toValue($.dbl()); // note: precision loss
+    @fromValue($.doubleValue());
     @defaultValue(SIMTIME_ZERO);
 }
 
@@ -167,6 +170,7 @@ class cDisplayString
     @polymorphic(false);
     @descriptor(readonly);
     string value @getter(str) @setter(parse) @editable @hint("The editable display string itself");
+    @toValue(.str());
 }
 
 class cProperty extends cObject
@@ -203,9 +207,9 @@ class cComponent extends cSoftOwner
     @descriptor(readonly);
     bool isModule @getter(isModule) @group(fields) @hint("Whether this component is a module or a channel");
     cComponentType *componentType @group(fields) @hint("The object that represents the type declaration for this component");
-    cPar par[] @getter(par) @sizeGetter(getNumParams) @label(parameters) @group(parameters, gates) @hint("NED parameters");
+    cPar par[] @getter(par) @sizeGetter(getNumParams) @toValue(toAnyPtr(&$)) @label(parameters) @group(parameters, gates) @hint("NED parameters");
     cProperty *properties_[] @label(properties) @getter(->getProperties()->get(i)) @sizeGetter(->getProperties()->getNumProperties()) @group(parameters, gates) @hint("NED properties");
-    cComponent::SignalListenerList listenedSignals[] @getter(getListenerList) @sizeGetter(getSignalTableSize) @toString(.str()) @group(signals, statistics) @hint("Signal listener lists");
+    cComponent::SignalListenerList listenedSignals[] @getter(getListenerList) @sizeGetter(getSignalTableSize) @toString(.str()) @toValue(toAnyPtr(&($))) @group(signals, statistics) @hint("Signal listener lists");
     cResultRecorder *results[] @getter(->getResultRecorders()[i]) @sizeGetter(->getResultRecorders().size()) @toString(->str()) @group(signals, statistics) @hint("Statistical results collected in this component");
 }
 
@@ -215,7 +219,7 @@ class cChannel extends cComponent
     @overwritePreviousDefinition;
     @descriptor(readonly);
     @icon(channel);
-    cDisplayString displayString @group(fields) @hint("Controls appearance of this channel in the GUI") @editable @setter(setDisplayString) @fromString($) @toString(.str()) @getter(getDisplayString);
+    cDisplayString displayString @group(fields) @hint("Controls appearance of this channel in the GUI") @editable @setter(setDisplayString) @fromString($) @toString(.str()) @getter(getDisplayString) @fromValue($.stringValue());
 }
 
 class cIdealChannel extends cChannel
@@ -257,7 +261,7 @@ class cModule extends cComponent
     int index @group(fields) @toString(pp->isVector() ? long2string($) : "<not a vector>") @hint("If vector: index of this module in its module vector");
     int vectorSize @group(fields) @toString(pp->isVector() ? long2string($) : "<not a vector>") @hint("If vector: size of module vector this module belongs to");
     bool builtinAnimationsAllowed @editable @group(fields) @hint("Whether built-in animations are enabled on this module's graphical inspector");
-    cDisplayString displayString @group(fields) @hint("Controls appearance of this module in the GUI") @editable @setter(setDisplayString) @fromString($) @toString(.str()) @getter(getDisplayString);
+    cDisplayString displayString @group(fields) @hint("Controls appearance of this module in the GUI") @editable @setter(setDisplayString) @fromString($) @toString(.str()) @getter(getDisplayString) @fromValue($.stringValue());
     cGate *gate[] @sizeGetter(gateCount) @getter(gateByOrdinal) @group(parameters, gates) @label(gates) @hint("Module gates");
     cCanvas *canvas @getter(getCanvasIfExists) @group(fields) @hint("Built-in canvas instance");
     cOsgCanvas *osgCanvas @getter(getOsgCanvasIfExists) @group(fields) @hint("Built-in 3D (OpenSceneGraph) canvas instance");
@@ -636,6 +640,7 @@ class cAbstractHistogram::Bin
     @opaque;
     @polymorphic(false);
     @toString(.str());
+    @toValue(.str());
     @descriptor(false);
 }
 
@@ -759,7 +764,7 @@ class cValueMap extends cOwnedObject
     @existingClass;
     @overwritePreviousDefinition;
     @descriptor(readonly);
-    cValueMap::Entry entries[] @sizeGetter(size) @getter(getEntry);
+    cValueMap::Entry entries[] @sizeGetter(size) @getter(getEntry) @toValue(toAnyPtr(&($)));
 }
 
 class cFSM extends cOwnedObject
@@ -1002,6 +1007,8 @@ class cFigure::Point
     @polymorphic(false);
     @toString(.str());
     @fromString(cFigure::parsePoint($));
+    @toValue(.str());
+    @fromValue(cFigure::parsePoint($));
 }
 
 class cFigure::Rectangle
@@ -1013,6 +1020,8 @@ class cFigure::Rectangle
     @polymorphic(false);
     @toString(.str());
     @fromString(cFigure::parseRectangle($));
+    @toValue(.str());
+    @fromValue(cFigure::parseRectangle($));
 }
 
 class cFigure::Transform
@@ -1024,6 +1033,8 @@ class cFigure::Transform
     @polymorphic(false);
     @toString(.str());
     @fromString(cFigure::parseTransform($));
+    @toValue(.str());
+    @fromValue(cFigure::parseTransform($));
 }
 
 class cFigure::Color
@@ -1035,6 +1046,8 @@ class cFigure::Color
     @polymorphic(false);
     @toString(.str());
     @fromString(cFigure::parseColor($));
+    @toValue(.str());
+    @fromValue(cFigure::parseColor($));
 }
 
 class cFigure::Font
@@ -1046,6 +1059,8 @@ class cFigure::Font
     @polymorphic(false);
     @toString(.str());
     @fromString(cFigure::parseFont($));
+    @toValue(.str());
+    @fromValue(cFigure::parseFont($));
 }
 
 class cFigure::Pixmap
@@ -1055,6 +1070,7 @@ class cFigure::Pixmap
     @descriptor(false);
     @opaque;
     @polymorphic(false);
+    @toValue(.str());
 }
 
 class cFigure extends cOwnedObject
@@ -1417,8 +1433,8 @@ class ExpressionFilter extends cResultFilter
     @overwritePreviousDefinition;
     @descriptor(readonly);
     @castFunction(false);
-    string expression @toString(.str());
-    string lastValue @toString(.str());
+    string expression @toString(.str()) @toValue(.str());
+    string lastValue @toString(.str()) @toValue(nedsupport::makeNedValue($));
     simtime_t lastTimestamp;
 }
 

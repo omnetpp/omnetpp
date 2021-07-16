@@ -107,6 +107,8 @@ class NEDXML_API MsgAnalyzer
     static constexpr const char* PROP_RETURNTYPE = "returnType";
     static constexpr const char* PROP_TOSTRING = "toString";
     static constexpr const char* PROP_FROMSTRING = "fromString";
+    static constexpr const char* PROP_TOVALUE = "toValue";
+    static constexpr const char* PROP_FROMVALUE = "fromValue";
     static constexpr const char* PROP_GETTERCONVERSION = "getterConversion";
     static constexpr const char* PROP_CLONE = "clone";
     static constexpr const char* PROP_EXISTINGCLASS = "existingClass";
