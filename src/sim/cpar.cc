@@ -27,7 +27,10 @@
 #include "omnetpp/ccontextswitcher.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/csimulation.h"
+#include "omnetpp/cvalue.h"
 #include "omnetpp/cenvir.h"
+#include "omnetpp/cxmlelement.h"
+#include "omnetpp/any_ptr.h"
 #include "omnetpp/cmodelchange.h"
 #include "common/unitconversion.h"
 
@@ -232,6 +235,20 @@ cXMLElement *cPar::xmlValue() const
     TRY(return p->xmlValue(evalContext));
 }
 
+cValue cPar::getValue() const
+{
+    switch (getType()) {
+        case BOOL:   return cValue(boolValue());
+        case INT:    return cValue(intValue(), getUnit());
+        case DOUBLE: return cValue(doubleValue(), getUnit());
+        case STRING: return cValue(stdstringValue());
+        case OBJECT: return cValue(objectValue());
+        case XML:    return cValue(xmlValue());
+        default:     ASSERT(false);
+    }
+}
+
+
 cExpression *cPar::getExpression() const
 {
     return p->getExpression();
@@ -294,6 +311,20 @@ cPar& cPar::setXMLValue(cXMLElement *node)
     p->setXMLValue(node);
     evalContext = nullptr;
     afterChange();
+    return *this;
+}
+
+cPar& cPar::setValue(const cValue& value)
+{
+    switch (getType()) {
+        case BOOL:   setBoolValue(value.boolValue()); break;
+        case INT:    setIntValue(value.intValueInUnit(getUnit())); break;
+        case DOUBLE: setDoubleValue(value.doubleValueInUnit(getUnit()));
+        case STRING: setStringValue(value.stringValue()); break;
+        case OBJECT: setObjectValue(value.objectValue()); break;
+        case XML:    setXMLValue(value.xmlValue()); break;
+        default:     ASSERT(false);
+    }
     return *this;
 }
 

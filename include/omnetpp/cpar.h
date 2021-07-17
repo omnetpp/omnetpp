@@ -28,6 +28,7 @@ class cExpression;
 class cXMLElement;
 class cProperties;
 class cComponent;
+class cValue;
 
 /**
  * @brief Represents a module or channel parameter.
@@ -247,6 +248,14 @@ class SIM_API cPar : public cObject
     cPar& setXMLValue(cXMLElement *node);
 
     /**
+     * Sets the parameter's value. This method invokes the value setter method
+     * (setBoolValue(), setIntValue(), etc.) that corresponds to the parameter's
+     * type with the value in the cValue object. If the value's type doesn't
+     * match the parameter's type, an error is raised.
+     */
+    cPar& setValue(const cValue& value);
+
+    /**
      * Sets the value to the given expression. This object will assume
      * the responsibility to delete the expression object.
      *
@@ -372,6 +381,13 @@ class SIM_API cPar : public cObject
      * called again).
      */
     cXMLElement *xmlValue() const;
+
+    /**
+     * Generic access to the parameter's value. This method delegates to the
+     * value accessor method (boolValue(), intValue(), etc.) that corresponds
+     * to the parameter's type, and returns the result.
+     */
+    cValue getValue() const;
 
     /**
      * Returns pointer to the expression stored by the object, or nullptr.
