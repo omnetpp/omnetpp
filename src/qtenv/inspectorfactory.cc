@@ -20,6 +20,8 @@
 #include "inspector.h"
 #include "inspectorfactory.h"
 
+using namespace omnetpp::common;
+
 namespace omnetpp {
 namespace qtenv {
 

@@ -21,6 +21,8 @@
 #include "qtenv.h"
 #include <QtCore/QDebug>
 
+using namespace omnetpp::common;
+
 namespace omnetpp {
 namespace qtenv {
 

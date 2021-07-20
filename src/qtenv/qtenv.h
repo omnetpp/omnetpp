@@ -56,8 +56,9 @@ class ObjectTreeInspector;
 class DisplayUpdateController;
 class MessageAnimator;
 
+using common::MatchExpression;
+
 using namespace envir;
-using namespace common;
 
 #define MAX_CLASSNAME  100
 

@@ -27,10 +27,12 @@
 #include "mainwindow.h"
 #include "submoduleitem.h"  // for DEFAULT_ICON
 
+using namespace omnetpp::common;
+using namespace omnetpp::layout;
+
 #define emit
 
 namespace omnetpp {
-using namespace layout;
 namespace qtenv {
 
 class InteractiveTimeoutBasicGraphLayouterEnvironment : public BasicGraphLayouterEnvironment {

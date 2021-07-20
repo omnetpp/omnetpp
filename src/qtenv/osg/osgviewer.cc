@@ -45,6 +45,8 @@
 
 #define emit
 
+using namespace omnetpp::common;
+
 namespace omnetpp {
 namespace qtenv {
 

@@ -51,6 +51,7 @@
 
 #define emit
 
+using namespace omnetpp::common;
 using namespace omnetpp::layout;
 
 namespace omnetpp {
