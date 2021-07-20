@@ -6,6 +6,132 @@ simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
 
+OMNeT++ 6.0pre12 (Jul 2021)
+---------------------------
+
+Simulation kernel:
+
+  - NED functions that take or return values of type 'object' are now allowed.
+    One caveat is that module parameters of type 'object' only accept objects
+    they fully own. A potential solution is to use the dup() NED function as
+    if necessary. An example:
+
+      object a = [1,2,3];
+      object b = dup(a);  // without dup() it is an error: value is owned by parameter 'a'
+
+  - cModule now keeps track of submodule vectors as entities, and not just as
+    a collection of submodules with vector indices, meaning that we can now
+    distinguish between nonexistent and zero-size submodule vectors. Random
+    access of vector elements has also became more efficient (constant-time
+    operation). Several new methods have been added as part of this change:
+    hasSubmoduleVector(), getSubmoduleVectorSize(), addSubmoduleVector(),
+    deleteSubmoduleVector(), setSubmoduleVectorSize(), getSubmoduleVectorNames().
+
+  - As part of the above change, several cModule and cModuleType methods have been
+    added or updated. A partial list:
+
+    - In cModule, the hasSubmodule(), getSubmoduleNames(), hasGateVector(),
+      hasGates() methods have been added for consistency between submodule and
+      gate APIs.
+    - The return type of the getGateNames() method has been changed from
+      std::string<const char*> to std::vector<std::string>, for consistency
+      with getSubmoduleNames().
+    - cModule: added setIndex() and setNameAndIndex().
+    - cModule, cGate: getIndex(), getVectorSize(), gateSize() and similar methods
+      now throw for non-vector submodules/gates.
+    - cModule: add separate addGateVector() method instead misusing addGate()
+      for creating gate vectors, also for consistency with addSubmoduleVector().
+    - In cModuleType::create(), the vectorSize parameter of create() has been removed
+    - In cModuleType::createScheduleInit(), an index argument was added to allow
+      creating submodule vector elements.
+    - cModule: added addSubmodule() method which flows more naturally than
+      cModuleType::create().
+
+  - There have been changes in submodule and channel iterators. SubmoduleIterator
+    has been rewritten due to the change in how submodule vectors are represented,
+    which may affect the iteration order in some cases. Iterators now throw an
+    exception if a change occurs in the list of submodules/channels during
+    iteration. Their APIs have also changed a little: operator-- was removed,
+    and init(m) renamed to reset().
+
+  - Improvements in the multi-stage initialization protocol with regard to
+    dynamic module creation. Modules now keep track of the last init stage
+    they completed (lastCompletedInitStage). During an init stage, iteration
+    of modules is restarted if creation/deletion is detected during iteration;
+    modules already initialized in the previous round are recognized and skipped
+    with the help of lastCompletedInitStage.
+
+  - cComponent: added getNedTypeAndFullName() and getNedTypeAndFullPath().
+    They are especially useful in constructing error messages in NED functions.
+
+  - Minor changes in the model change notification classes. In
+    cPreModuleAddNotification, the vectorSize field was removed (as it was
+    redundant), and in cPostModuleDeleteNotification, the interpretation of
+    the index field has changed a little: if the deleted module was not part
+    of a module vector, index is now set to -1 instead of 0.
+
+  - New classes: opp_pooledstring, opp_staticpooledstring. They provide pool-
+    backed string storage (reference counted and non reference counted,
+    respectively). In turn, the cStringPool class was removed; use either
+    of the pooled string classes or or opp_staticpooledstring::get(const char *)
+    instead.
+
+  - cValueArray: added asIntVectorInUnit(), asDoubleVectorInUnit() functions
+
+  - Store origin (file:line) in cPar parameters (more precisely, in
+    cDynamicExpression), so we can report it on evaluation errors.
+    Most visible change: cPar::parse() gained an extra FileLine argument.
+    Also, cDynamicExpression now has get/setSourceLocation()
+
+  - cNedFunction: added search by name AND accepted number of args.
+
+  - cXMLElement change: resolve $MODULE_INDEX, $PARENTMODULE_NAME and similar
+    variables to empty string if they are not applicable.
+
+  - Several string functions have been made available for models. A
+    representative partial list: opp_isempty(), opp_isblank(),
+    opp_nulltoempty(), opp_trim(), opp_split(), opp_splitandtrim(),
+    opp_join(), opp_stringendswith(), opp_substringbefore(), etc.
+
+  - cStringTokenizer has been rewritten. It now supports features like
+    optional skipping of empty tokens, optional trimming of tokens, optional
+    honoring of quotes, optional honoring of parens/brackets/brackets
+    (i.e. the input string is not broken into tokens in the middle of a
+    parenthesized expression).
+
+  - cClassDescriptor: methods changed to use any_ptr instead of void*
+    for passing the object. (any_ptr is smart pointer class that provides
+    type safety for void* pointers.) Pointers need to be put into and extracted
+    from any_ptr using the new toAnyPtr() / fromAnyPtr() functions. They have
+    specialized versions for each type (via templates and overloading).
+    For new types, the message compiler generates toAnyPtr()/fromAnyPtr()
+    in the header file. For the simulation library classes, these methods
+    come from "sim_std_m.h" (generated from sim_std.msg); "sim_std_m.h"
+    is now part of <omnetpp.h>.
+
+  - Various other improvements in the simulation library.
+
+Ini files:
+
+  - It is now possible to break long lines without using a trailing backslash.
+    Continuation lines are marked as such by indenting them, i.e. an indented
+    line is now interpreted as a continuation of the previous line. (It is not
+    possible to break a line inside a string constant that way.) Breaking lines
+    using a trailing backslash way still works (and it can also be used
+    to break string constants, too).
+
+  - The "Config " prefix in section headers is now optional. That is,
+    [Config PureAloha] may now be also written as [PureAloha], the two
+    are equivalent.
+
+IDE:
+
+  - Several improvements in various editors.
+
+  - Update to Eclipse 4.20, CDT 10.3 and PyDev 8.3. Another change is that
+    the JRE in the IDE is now provided by Eclipse JustJ project.
+
+
 OMNeT++ 6.0pre11 (Apr 2021)
 ---------------------------
 
@@ -27,9 +153,9 @@ Core:
     set using the **.display-name per-module configuration option, or
     programmatically by calling setDisplayName().
 
-  - Added the "g" (layout group) display string tag, which makes it possible
-    to apply predefined arrangements like row, column, matrix or ring to
-    a group of unrelated submodules. This layouting feature was previously
+  - Added the "g=<group>" (layout group) display string tag, which makes it
+    possible to apply predefined arrangements like row, column, matrix or ring
+    to a group of unrelated submodules. This layouting feature was previously
     only available for submodule vectors. When "g" tags are used, submodules
     in the same group are now regarded for layouting purposes as if they
     were part of the same submodule vector.
@@ -37,7 +163,7 @@ Core:
   - Made it possible to specify display strings in the configuration. The
     value given in the **.display-string per-component configuration option
     is merged into the component's display string in the same way inheritance
-    or submodule display strings are: it may add, overwrite or remove items
+    or submodule display strings work: it may add, overwrite or remove items
     from it.
 
   - Change in the parameter change notification mechanism: Calls to the
@@ -48,12 +174,12 @@ Core:
     handleParameterChange() methods need to be implemented more carefully,
     because they may be called at a time when the module may not have
     completed all initialization stages. Also, if an existing model relied on
-    handleParameter(nullptr) being called, it needs to be changed.
+    handleParameter(nullptr) being called, it needs to be updated.
 
   - Module name and full name (i.e. name[index]) are now stringpooled, which
     reduces memory usage in exchange for a small build-time extra cost.
     In addition, string pools now use std::unordered_map instead of std::map,
-    which results in a performance improvement.
+    which results in improved performance.
 
   - Signature change of the cVisitor::visit(cObject *obj) virtual method: it
     can now request end of iteration via returning false (hence, return type
@@ -98,7 +224,7 @@ Eventlog:
 
   - The eventlog file format has been changed substantially. You won't be able
     to open older eventlog files with this version of the IDE, nor new files in
-    previous IDE versions. 
+    previous IDE versions.
 
   - The most prominent change is the introduction of snapshot and index chunks in
     addition to the already recorded event chunks. The former contains a complete
@@ -282,7 +408,7 @@ Qtenv:
 
   - Turn off animating method calls by default. The rationale is that method
     call animations usually expose low-level (C++ implementation level)
-    details on the GUI, which is rarely of interest to a casual user.
+    details on the GUI, which are rarely of interest to a casual user.
 
   - Added the possibility to disable method calls locally (per module type)
     via the context menu, even when the global switch in the Preferences dialog
