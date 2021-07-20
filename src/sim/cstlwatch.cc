@@ -50,6 +50,8 @@ class SIM_API cStdVectorWatcherDescriptor : public cClassDescriptor  // noncopya
 
     virtual std::string getFieldValueAsString(any_ptr object, int field, int i) const override;
     virtual void setFieldValueAsString(any_ptr object, int field, int i, const char *value) const override;
+    virtual cValue getFieldValue(any_ptr object, int field, int i) const override;
+    virtual void setFieldValue(any_ptr object, int field, int i, const cValue& value) const override;
 
     virtual const char *getFieldStructName(int field) const override;
     virtual any_ptr getFieldStructValuePointer(any_ptr object, int field, int i) const override;
@@ -123,6 +125,16 @@ std::string cStdVectorWatcherDescriptor::getFieldValueAsString(any_ptr object, i
 }
 
 void cStdVectorWatcherDescriptor::setFieldValueAsString(any_ptr object, int field, int i, const char *value) const
+{
+    throw cRuntimeError("Cannot set field value");  // not supported
+}
+
+cValue cStdVectorWatcherDescriptor::getFieldValue(any_ptr object, int field, int i) const
+{
+    throw cRuntimeError("Cannot return field value as cValue");  // not supported
+}
+
+void cStdVectorWatcherDescriptor::setFieldValue(any_ptr object, int field, int i, const cValue& value) const
 {
     throw cRuntimeError("Cannot set field value");  // not supported
 }

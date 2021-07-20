@@ -22,6 +22,9 @@
 
 #include "common/stringutil.h"
 #include "omnetpp/cwatch.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/cclassdescriptor.h"
+#include "omnetpp/cvalue.h"
 
 using namespace omnetpp::common;
 
@@ -83,6 +86,19 @@ class cWatchProxyDescriptor : public cClassDescriptor {
         cObject *watched = getWatchedObject();
         if (watched)
             getWatchedDescriptor()->setFieldValueAsString(any_ptr(watched), field, i, value);
+    }
+
+    virtual cValue getFieldValue(any_ptr object, int field, int i) const override {
+        ASSERT(fromAnyPtr<cObject>(object) == watchToDescribe);
+        cObject *watched = getWatchedObject();
+        return watched ? watched->getDescriptor()->getFieldValue(any_ptr(watched), field, i) : cValue();
+    }
+
+    virtual void setFieldValue(any_ptr object, int field, int i, const cValue& value) const override {
+        ASSERT(fromAnyPtr<cObject>(object) == watchToDescribe);
+        cObject *watched = getWatchedObject();
+        if (watched)
+            getWatchedDescriptor()->setFieldValue(any_ptr(watched), field, i, value);
     }
 
     virtual any_ptr getFieldStructValuePointer(any_ptr object, int field, int i) const override {

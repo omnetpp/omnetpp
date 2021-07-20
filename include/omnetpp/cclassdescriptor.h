@@ -24,6 +24,8 @@
 
 namespace omnetpp {
 
+class cValue;
+
 /**
  * @brief Abstract base class for structure description classes.
  *
@@ -272,6 +274,25 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
      * 0 if the field is not an array.
      */
     virtual void setFieldValueAsString(any_ptr object, int field, int i, const char *value) const = 0;
+
+    /**
+     * Returns the value of the given field in the given object.
+     *
+     * The field argument must be in the 0..getFieldCount()-1 range.
+     * The i argument must be in the 0..getFieldArraySize()-1 range, or
+     * 0 if the field is not an array.
+     */
+    virtual cValue getFieldValue(any_ptr object, int field, int i) const = 0;
+
+    /**
+     * Sets the value of a field in the given object. If the operation is not
+     * successful, an exception is thrown.
+     *
+     * The field argument must be in the 0..getFieldCount()-1 range.
+     * The i argument must be in the 0..getFieldArraySize()-1 range, or
+     * 0 if the field is not an array.
+     */
+    virtual void setFieldValue(any_ptr object, int field, int i, const cValue& value) const = 0;
 
     /**
      * Returns the declared type name of a compound field in the described class.
