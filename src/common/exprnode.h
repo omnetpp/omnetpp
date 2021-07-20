@@ -29,13 +29,17 @@ namespace omnetpp { class cObject; };
 
 namespace omnetpp {
 namespace common {
+
+class Expression;
+
 namespace expression {
 
 /**
  * Subclass to pass more information into the evaluator.
  */
 struct Context {
-    cObject *simContext;
+    const Expression *expression = nullptr;
+    cObject *simContext = nullptr; //TODO any_ptr?
     virtual ~Context() {}
 };
 

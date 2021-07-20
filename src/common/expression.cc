@@ -260,6 +260,10 @@ ExprValue Expression::evaluate(Context *context) const
 {
     if (!tree)
         throw opp_runtime_error("Cannot evaluate empty expression");
+    Context tmp;
+    if (!context)
+        context = &tmp;
+    context->expression = this;
     return tree->tryEvaluate(context);
 }
 
@@ -421,6 +425,16 @@ class UnitConversionAstTranslator : public Expression::BasicAstTranslator
     virtual ExprNode *createFunctionNode(const char *functionName, int argCount) override;
 };
 
+class UnresolvedNameAstTranslator : public Expression::BasicAstTranslator
+{
+  public:
+    UnresolvedNameAstTranslator() {}
+    virtual ExprNode *createIdentNode(const char *varName, bool withIndex) override {return withIndex ? (ExprNode *)new DynamicallyResolvedIndexedVariableNode(varName) : (ExprNode *)new DynamicallyResolvedVariableNode(varName);}
+    virtual ExprNode *createMemberNode(const char *varName, bool withIndex) override {return withIndex ? (ExprNode *)new DynamicallyResolvedIndexedMemberNode(varName) : (ExprNode *)new DynamicallyResolvedMemberNode(varName);}
+    virtual ExprNode *createFunctionNode(const char *functionName, int argCount) override {return new DynamicallyResolvedFunctionNode(functionName);}
+    virtual ExprNode *createMethodNode(const char *functionName, int argCount) override {return new DynamicallyResolvedMethodNode(functionName);}
+};
+
 ExprNode *OperatorAstTranslator::createOperatorNode(const char *opName, int argCount)
 {
     switch (argCount) {
@@ -468,11 +482,13 @@ ExprNode *UnitConversionAstTranslator::createFunctionNode(const char *functionNa
 static OperatorAstTranslator operatorAstTranslator;
 static StdMathAstTranslator stdMathAstTranslator;
 static UnitConversionAstTranslator unitConversionAstTranslator;
+static UnresolvedNameAstTranslator unresolvedNameAstTranslator;
 
 Expression::MultiAstTranslator Expression::defaultTranslator({
     &operatorAstTranslator,
     &stdMathAstTranslator,
-    &unitConversionAstTranslator
+    &unitConversionAstTranslator,
+    &unresolvedNameAstTranslator
 });
 
 }  // namespace common

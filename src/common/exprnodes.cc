@@ -23,6 +23,7 @@
 #include "stringutil.h"
 #include "pooledstring.h"
 #include "exprnodes.h"
+#include "expression.h"
 #include "patternmatcher.h"
 
 namespace omnetpp {
@@ -780,6 +781,72 @@ ExprValue MethodNode::evaluate(Context *context) const
         i++;
     }
     return compute(context, values[0], values+1, n-1);
+}
+
+ExprValue DynamicallyResolvedVariableNode::getValue(Context *context) const
+{
+    for (auto resolver : context->expression->getDynamicResolvers()) {
+        ExprValue result = resolver->readVariable(context, name.c_str());
+        if (result.getType() != ExprValue::UNDEF)
+            return result;
+    }
+    throw opp_runtime_error("No such variable: '%s'", name.c_str());
+}
+
+ExprValue DynamicallyResolvedIndexedVariableNode::getValue(Context *context, intval_t index) const
+{
+    for (auto resolver : context->expression->getDynamicResolvers()) {
+        ExprValue result = resolver->readVariable(context, name.c_str(), index);
+        if (result.getType() != ExprValue::UNDEF)
+            return result;
+    }
+    throw opp_runtime_error("No such variable: '%s[]'", name.c_str());
+}
+
+ExprValue DynamicallyResolvedMemberNode::getValue(Context *context, const ExprValue& object) const
+{
+    for (auto resolver : context->expression->getDynamicResolvers()) {
+        ExprValue result = resolver->readMember(context, object, name.c_str());
+        if (result.getType() != ExprValue::UNDEF)
+            return result;
+    }
+    throw opp_runtime_error("%s %s has no member named '%s'",
+            (object.getType() == ExprValue::POINTER ? "Object" : "Value"),
+            object.str().c_str(), name.c_str());
+}
+
+ExprValue DynamicallyResolvedIndexedMemberNode::getValue(Context *context, const ExprValue& object, intval_t index) const
+{
+    for (auto resolver : context->expression->getDynamicResolvers()) {
+        ExprValue result = resolver->readMember(context, object, name.c_str(), index);
+        if (result.getType() != ExprValue::UNDEF)
+            return result;
+    }
+    throw opp_runtime_error("%s %s has no member named '%s[]'",
+            (object.getType() == ExprValue::POINTER ? "Object" : "Value"),
+            object.str().c_str(), name.c_str());
+}
+
+ExprValue DynamicallyResolvedFunctionNode::compute(Context *context, ExprValue argv[], int argc) const
+{
+    for (auto resolver : context->expression->getDynamicResolvers()) {
+        ExprValue result = resolver->callFunction(context, name.c_str(), argv, argc);
+        if (result.getType() != ExprValue::UNDEF)
+            return result;
+    }
+    throw opp_runtime_error("No function named '%s' with %d argument(s)", name.c_str(), argc);
+}
+
+ExprValue DynamicallyResolvedMethodNode::compute(Context *context, ExprValue& object, ExprValue argv[], int argc) const
+{
+    for (auto resolver : context->expression->getDynamicResolvers()) {
+        ExprValue result = resolver->callMethod(context, object, name.c_str(), argv, argc);
+        if (result.getType() != ExprValue::UNDEF)
+            return result;
+    }
+    throw opp_runtime_error("%s %s has no method named '%s' with %d argument(s)",
+            (object.getType() == ExprValue::POINTER ? "Object" : "Value"),
+            object.str().c_str(), name.c_str(), argc);
 }
 
 

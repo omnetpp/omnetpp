@@ -25,6 +25,9 @@
 
 namespace omnetpp {
 namespace common {
+
+class Expression;
+
 namespace expression {
 
 class COMMON_API ValueNode : public LeafNode {
@@ -89,7 +92,7 @@ public:
     virtual Precedence getPrecedence() const override {return ELEM;}
 };
 
-class COMMON_API ObjectNode : public NaryNode
+class COMMON_API ObjectNode : public NaryNode // as in JSON object, a.k.a. dictionary
 {
   protected:
     std::string typeName;
@@ -633,11 +636,63 @@ public:
     virtual ExprNode *dup() const override {return new LambdaMethodNode(name.c_str(),function);}
 };
 
-}  // namespace common
+class DynamicallyResolvedVariableNode : public VariableNode {
+protected:
+    virtual ExprValue getValue(Context *context) const override;
+    virtual std::string makeErrorMessage(std::exception& e) const override {return e.what();} // don't prepend variable name, as msg already contains it
+public:
+    DynamicallyResolvedVariableNode(const char *name) : VariableNode(name) {}
+    virtual ExprNode *dup() const override {return new DynamicallyResolvedVariableNode(name.c_str());}
+};
+
+class DynamicallyResolvedIndexedVariableNode : public IndexedVariableNode {
+protected:
+    virtual ExprValue getValue(Context *context, intval_t index) const override;
+    virtual std::string makeErrorMessage(std::exception& e) const override {return e.what();} // don't prepend variable name, as msg already contains it
+public:
+    DynamicallyResolvedIndexedVariableNode(const char *name) : IndexedVariableNode(name) {}
+    virtual ExprNode *dup() const override {return new DynamicallyResolvedIndexedVariableNode(name.c_str());}
+};
+
+class DynamicallyResolvedMemberNode : public MemberNode {
+protected:
+    virtual ExprValue getValue(Context *context, const ExprValue& object) const override;
+    virtual std::string makeErrorMessage(std::exception& e) const override {return e.what();} // don't prepend variable name, as msg already contains it
+public:
+    DynamicallyResolvedMemberNode(const char *name) : MemberNode(name) {}
+    virtual ExprNode *dup() const override {return new DynamicallyResolvedMemberNode(name.c_str());}
+};
+
+class DynamicallyResolvedIndexedMemberNode : public IndexedMemberNode {
+protected:
+    virtual ExprValue getValue(Context *context, const ExprValue& object, intval_t index) const override;
+    virtual std::string makeErrorMessage(std::exception& e) const override {return e.what();} // don't prepend variable name, as msg already contains it
+public:
+    DynamicallyResolvedIndexedMemberNode(const char *name) : IndexedMemberNode(name) {}
+    virtual ExprNode *dup() const override {return new DynamicallyResolvedIndexedMemberNode(name.c_str());}
+};
+
+class DynamicallyResolvedFunctionNode : public FunctionNode {
+protected:
+    virtual ExprValue compute(Context *context, ExprValue argv[], int argc) const override;
+    virtual std::string makeErrorMessage(std::exception& e) const override {return e.what();} // don't prepend variable name, as msg already contains it
+public:
+    DynamicallyResolvedFunctionNode(const char *name) : FunctionNode(name) {}
+    virtual ExprNode *dup() const override {return new DynamicallyResolvedFunctionNode(name.c_str());}
+};
+
+class DynamicallyResolvedMethodNode : public MethodNode {
+protected:
+    virtual ExprValue compute(Context *context, ExprValue& object, ExprValue argv[], int argc) const override;
+    virtual std::string makeErrorMessage(std::exception& e) const override {return e.what();} // don't prepend variable name, as msg already contains it
+public:
+    DynamicallyResolvedMethodNode(const char *name) : MethodNode(name) {}
+    virtual ExprNode *dup() const override {return new DynamicallyResolvedMethodNode(name.c_str());}
+};
+
+}  // namespace expression
 }  // namespace common
 }  // namespace omnetpp
 
 
 #endif
-
-

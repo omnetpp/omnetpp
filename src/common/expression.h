@@ -116,9 +116,24 @@ public:
         SPACIOUSNESS_MAX = ExprNode::SPACIOUSNESS_MAX
     };
 
+    /**
+     * Allows evaluation-time resolution of variables, members, functions and methods.
+     */
+    class DynamicResolver {
+    public:
+        virtual ExprValue readVariable(Context *context, const char *name) {return ExprValue();}
+        virtual ExprValue readVariable(Context *context, const char *name, intval_t index) {return ExprValue();}
+        virtual ExprValue callFunction(Context *context, const char *name, ExprValue argv[], int argc) {return ExprValue();}
+        virtual ExprValue readMember(Context *context, const ExprValue& object, const char *name) {return ExprValue();}
+        virtual ExprValue readMember(Context *context, const ExprValue& object, const char *name, intval_t index) {return ExprValue();}
+        virtual ExprValue callMethod(Context *context, const ExprValue& object, const char *name, ExprValue argv[], int argc) {return ExprValue();}
+        virtual ~DynamicResolver() {}
+    };
+
   protected:
     ExprNode *tree = nullptr;
     static MultiAstTranslator defaultTranslator;
+    std::vector<DynamicResolver*> dynamicResolvers;
 
   protected:
     void copy(const Expression& other);
@@ -214,6 +229,11 @@ public:
     virtual ExprNode *performConstantFolding(ExprNode *tree) const;
     virtual ExprNode *parseAndTranslate(const char *text, AstTranslator *translator=nullptr) const;
 
+    // support for dynamically (i.e. evaluation-time) resolved variables and functions
+    const std::vector<DynamicResolver*>& getDynamicResolvers() const {return dynamicResolvers;}
+    void setDynamicResolvers(const std::vector<DynamicResolver*>& r) {dynamicResolvers = r;}
+    void addDynamicResolver(DynamicResolver *r) {dynamicResolvers.push_back(r);}
+    void clearDynamicResolvers() {dynamicResolvers.clear();}
 
     // print expression tree and AST as tree
     virtual void dumpTree(std::ostream& out=std::cout) const;
