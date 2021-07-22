@@ -6,7 +6,7 @@ Check use of const wrt getter, setter, mutablegetter, pointers, byvalue/byref et
 namespace @TESTNAME@;
 
 class Foo {}
-class Bar { @byValue; }
+class Bar { @byValue; @toValue(omnetpp::cValue()); }
 
 class TestClass
 {

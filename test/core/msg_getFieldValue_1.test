@@ -1,0 +1,309 @@
+%description:
+Verify cClassDescriptor::getFieldValue() with library classes
+
+%file: test.msg
+namespace @TESTNAME@;
+
+struct Pt {
+    double x;
+    double y;
+}
+
+class Foo {
+    int id;
+    string label;
+    Pt position @toValue(omnetpp::toAnyPtr(&$));
+}
+
+%file: test.ned
+
+simple Tester
+{
+    parameters:
+        double bitrate @unit(bps) = 1 Gbps;
+        @signal[foo]();
+        @statistic[foo](record=vector);
+    gates:
+        input in @loose;
+}
+
+network Test
+{
+    submodules:
+        tester: Tester;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+#include "test_m.h"
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class Tester : public cSimpleModule
+{
+  public:
+    Tester() : cSimpleModule(32768) { }
+    virtual void activity() override;
+};
+
+Define_Module(Tester);
+
+static void dump(any_ptr object)
+{
+    EV << object.str() << ":\n";
+    cClassDescriptor *desc = object.contains<cObject>() ? object.get<cObject>()->getDescriptor() : cClassDescriptor::getDescriptorFor(object.typeName());
+    if (!desc) {
+        EV << "No class descriptor for '" << object.typeName() << "'\n\n";
+        return;
+    }
+    for (int field = 0; field < desc->getFieldCount(); field++) {
+        if (!desc->getFieldIsArray(field)) {
+            EV << desc->getFieldName(field) << " : " << desc->getFieldTypeString(field) << " = ";
+            try {
+                cValue value = desc->getFieldValue(object, field, 0);
+                EV << value.str() << endl;
+            }
+            catch (std::exception& e) {
+                EV << "EXCEPTION" << endl;
+            }
+        }
+        else {
+            int size = desc->getFieldArraySize(object, field);
+            EV << desc->getFieldName(field) << "[" << size << "] : " << desc->getFieldTypeString(field) << " = [";
+            for (int i = 0; i < size; i++) {
+                cValue value = desc->getFieldValue(object, field, i);
+                EV << (i==0 ? "" : ", ") << value.str();
+            }
+            EV << "]\n";
+        }
+    }
+    EV << endl;
+}
+
+static void dump(cObject *obj)
+{
+    dump(toAnyPtr(obj));
+}
+
+void Tester::activity()
+{
+    cPacket pk("pk");
+    cFigure *figure = new cRectangleFigure("rect");
+    getCanvas()->addFigure(figure);
+    cResultRecorder *resultRecorder = getResultRecorders()[0];
+    Pt pt;
+    Foo foo;
+
+    dump(this);
+    dump(&par("bitrate"));
+    dump(gate("in"));
+    dump(&pk);
+    dump(getCanvas());
+    dump(figure);
+    dump(getSimulation());
+    dump(getSimulation()->getFES());
+    dump(resultRecorder);
+    dump(toAnyPtr(&pt));
+    dump(toAnyPtr(&foo));
+
+    EV << ".\n";
+}
+
+} // namespace
+
+%subst: /0x[0-9a-fA-F]+/0x.../
+
+%contains: stdout
+(msg_getFieldValue_1::Tester)Test.tester:
+className : string = "msg_getFieldValue_1::Tester"
+fullName : string = "tester"
+fullPath : string = "Test.tester"
+info : string = "id=2"
+name : string = "tester"
+owner : omnetpp::cObject = (omnetpp::cModule)Test
+ownedObjects[3] : omnetpp::cOwnedObject = [(omnetpp::cMessage)Test.tester.timeout-2, (omnetpp::cPacket)Test.tester.pk, (omnetpp::cCanvas)Test.tester.canvas]
+isModule : bool = true
+componentType : omnetpp::cComponentType = (omnetpp::cDynamicModuleType)component types.Tester
+par[1] : omnetpp::cPar = [(omnetpp::cPar)Test.tester.bitrate]
+properties_[2] : omnetpp::cProperty = [(omnetpp::cProperty)signal[foo], (omnetpp::cProperty)statistic[foo]]
+listenedSignals[1] : omnetpp::cComponent::SignalListenerList = [(omnetpp::cComponent::SignalListenerList *)0x...]
+results[1] : omnetpp::cResultRecorder = [(omnetpp::VectorRecorder)Test.tester.foo:vector]
+displayName : string = ""
+id : int = 2
+isSimple : bool = true
+isVector : bool = false
+index : int = EXCEPTION
+vectorSize : int = EXCEPTION
+builtinAnimationsAllowed : bool = true
+displayString : omnetpp::cDisplayString = ""
+gate[1] : omnetpp::cGate = [(omnetpp::cGate)Test.tester.in]
+canvas : omnetpp::cCanvas = (omnetpp::cCanvas)Test.tester.canvas
+osgCanvas : omnetpp::cOsgCanvas = nullptr
+isTerminated : bool = false
+usesActivity : bool = true
+stackSize : unsigned int = 40960
+stackUsage : unsigned int = 0
+
+(omnetpp::cPar)Test.tester.bitrate:
+className : string = "omnetpp::cPar"
+fullName : string = "bitrate"
+fullPath : string = "Test.tester.bitrate"
+info : string = "1e+09bps"
+value : string = "1e+09bps"
+type : char = 68
+unit : string = "bps"
+isNumeric : bool = true
+isVolatile : bool = false
+isExpression : bool = false
+isShared : bool = true
+
+(omnetpp::cGate)Test.tester.in:
+className : string = "omnetpp::cGate"
+fullName : string = "in"
+fullPath : string = "Test.tester.in"
+info : string = "not connected"
+type : char = 73
+id : int = 0
+isVector : bool = false
+index : int = EXCEPTION
+deliverImmediately : bool = false
+channel : omnetpp::cChannel = nullptr
+previousGate : omnetpp::cGate = nullptr
+nextGate : omnetpp::cGate = nullptr
+pathStartGate : omnetpp::cGate = (omnetpp::cGate)Test.tester.in
+pathEndGate : omnetpp::cGate = (omnetpp::cGate)Test.tester.in
+isConnectedOutside : bool = false
+isConnectedInside : bool = false
+isConnected : bool = false
+isPathOK : bool = true
+
+(omnetpp::cPacket)Test.tester.pk:
+className : string = "omnetpp::cPacket"
+fullName : string = "pk"
+fullPath : string = "Test.tester.pk"
+info : string = "len=0B; (new msg)"
+name : string = "pk"
+owner : omnetpp::cObject = (msg_getFieldValue_1::Tester)Test.tester
+schedulingPriority : short = 0
+targetObject : omnetpp::cObject = nullptr
+isScheduled : bool = false
+arrivalTime : omnetpp::simtime_t = 0
+id : long = 1
+treeId : long = 1
+kind : short = 0
+displayString : string = ""
+controlInfo : omnetpp::cObject = nullptr
+parList : omnetpp::cArray = nullptr
+isSelfMessage : bool = true
+creationTime : omnetpp::simtime_t = 0
+sendingTime : omnetpp::simtime_t = 0
+timestamp : omnetpp::simtime_t = 0
+senderModuleId : int = -1
+senderGateId : int = -1
+senderModule : omnetpp::cModule = nullptr
+senderGate : omnetpp::cGate = nullptr
+arrivalModuleId : int = -1
+arrivalGateId : int = -1
+arrivalModule : omnetpp::cModule = nullptr
+arrivalGate : omnetpp::cGate = nullptr
+bitLength : int64_t = 0
+byteLength : int64_t = 0
+hasBitError : bool = false
+encapsulatedPacket : omnetpp::cPacket = nullptr
+txChannelEncountered : bool = false
+isUpdate : bool = false
+transmissionId : long = -1
+duration : omnetpp::simtime_t = 0
+remainingDuration : omnetpp::simtime_t = 0
+isReceptionStart : bool = true
+isReceptionEnd : bool = true
+
+(omnetpp::cCanvas)Test.tester.canvas:
+className : string = "omnetpp::cCanvas"
+fullName : string = "canvas"
+fullPath : string = "Test.tester.canvas"
+info : string = "2 toplevel figure(s)"
+name : string = "canvas"
+owner : omnetpp::cObject = (msg_getFieldValue_1::Tester)Test.tester
+rootFigure : omnetpp::cFigure = (omnetpp::cGroupFigure)Test.tester.canvas.rootFigure
+allTags : string = ""
+backgroundColor : omnetpp::cFigure::Color = "#a0e0a0"
+
+(omnetpp::cRectangleFigure)Test.tester.canvas.rootFigure.rect:
+className : string = "omnetpp::cRectangleFigure"
+fullName : string = "rect"
+fullPath : string = "Test.tester.canvas.rootFigure.rect"
+info : string = "(0, 0, w=0, h=0)"
+name : string = "rect"
+owner : omnetpp::cObject = (omnetpp::cGroupFigure)Test.tester.canvas.rootFigure
+id : int = 1
+visible : bool = true
+zIndex : double = 0
+tooltip : string = ""
+associatedObject : omnetpp::cObject = nullptr
+tags : string = ""
+transform : omnetpp::cFigure::Transform = "((1 0) (0 1) (0 0))"
+children[0] : omnetpp::cFigure = []
+outlined : bool = true
+filled : bool = false
+lineColor : omnetpp::cFigure::Color = "#000000"
+fillColor : omnetpp::cFigure::Color = "#0000ff"
+lineStyle : int = 0
+lineWidth : double = 1
+lineOpacity : double = 1
+fillOpacity : double = 1
+zoomLineWidth : bool = false
+bounds : omnetpp::cFigure::Rectangle = "(0, 0, w=0, h=0)"
+cornerRx : double = 0
+cornerRy : double = 0
+
+(omnetpp::cSimulation)simulation:
+className : string = "omnetpp::cSimulation"
+fullName : string = "simulation"
+fullPath : string = "simulation"
+info : string = ""
+name : string = "simulation"
+simTime : omnetpp::simtime_t = 0
+eventNumber : int64_t = 1
+fes : omnetpp::cFutureEventSet = (omnetpp::cEventHeap)simulation.scheduled-events
+lastComponentId : int = 2
+systemModule : omnetpp::cModule = (omnetpp::cModule)Test
+component[2] : omnetpp::cComponent = [nullptr, (omnetpp::cModule)Test]
+fingerprintCalculator : omnetpp::cFingerprintCalculator = nullptr
+
+(omnetpp::cEventHeap)simulation.scheduled-events:
+className : string = "omnetpp::cEventHeap"
+fullName : string = "scheduled-events"
+fullPath : string = "simulation.scheduled-events"
+info : string = "empty"
+name : string = "scheduled-events"
+owner : omnetpp::cObject = (omnetpp::cSimulation)simulation
+length : int = 0
+events[0] : omnetpp::cEvent = []
+
+(omnetpp::VectorRecorder)Test.tester.foo:vector:
+className : string = "omnetpp::VectorRecorder"
+fullName : string = "foo"
+fullPath : string = "Test.tester.foo:vector"
+info : string = "foo:vector: (empty)"
+component : omnetpp::cComponent = (msg_getFieldValue_1::Tester)Test.tester
+resultName : string = "foo:vector"
+statisticName : string = "foo"
+recordingMode : string = "vector"
+lastWriteTime : omnetpp::simtime_t = 0
+lastValue : double = nan
+
+(msg_getFieldValue_1::Pt *)0x...:
+x : double = 0
+y : double = 0
+
+(msg_getFieldValue_1::Foo *)0x...:
+id : int = 0
+label : string = ""
+position : msg_getFieldValue_1::Pt = (msg_getFieldValue_1::Pt *)0x...
+
+.
+

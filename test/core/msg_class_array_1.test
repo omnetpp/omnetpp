@@ -6,7 +6,7 @@ Check arrays
 namespace @TESTNAME@;
 
 class Foo {}
-class Bar { @byValue; }
+class Bar { @byValue; @toValue(omnetpp::cValue()); }
 
 class TestClass
 {
