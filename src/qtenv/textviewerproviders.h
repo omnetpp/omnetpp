@@ -134,7 +134,9 @@ class QTENV_API EventEntryLinesProvider : public AbstractEventEntryLinesProvider
     bool isAncestorModule(int componentId, int potentialAncestorModuleId);
     bool isMatchingComponent(int componentId);
 
+    bool shouldShowBanner(LogBuffer::Entry *entry, bool shouldShowAnyLine);
     bool shouldShowLine(LogBuffer::Entry *entry, size_t lineIndex);
+    bool shouldShowAnyLine(LogBuffer::Entry *entry);
 
 public:
     using AbstractEventEntryLinesProvider::AbstractEventEntryLinesProvider;

@@ -327,10 +327,28 @@ int EventEntryLinesProvider::getNumLines(LogBuffer::Entry *entry)
         if (shouldShowLine(entry, i))
             count++;
 
-    if (count > 0 && entry->banner != nullptr)
+    bool shouldShowAnyLine = count > 0;
+
+    // the line below might iterate on the lines again, but can break early
+    if (shouldShowBanner(entry, shouldShowAnyLine))
         count++; // the banner line
 
     return count;
+}
+
+bool EventEntryLinesProvider::shouldShowBanner(LogBuffer::Entry *entry, bool shouldShowAnyLine)
+{
+    if (entry->banner == nullptr)
+        return false;
+
+    // a green "info" line
+    if (entry->componentId <= 0)
+        return true;
+
+    if (isAncestorModule(entry->componentId, inspectedComponentId))
+        return true;
+
+    return shouldShowAnyLine;
 }
 
  bool EventEntryLinesProvider::shouldShowLine(LogBuffer::Entry *entry, size_t lineIndex)
@@ -342,17 +360,27 @@ int EventEntryLinesProvider::getNumLines(LogBuffer::Entry *entry)
             || isAncestorModule(entry->componentId, inspectedComponentId));
 }
 
+bool EventEntryLinesProvider::shouldShowAnyLine(LogBuffer::Entry *entry)
+{
+    for (int i = 0; i < entry->lines.size(); i++)
+        if (shouldShowLine(entry, i))
+            return true;
+    return false;
+}
+
 QString EventEntryLinesProvider::getLineText(LogBuffer::Entry *entry, int lineIndex)
 {
-    if (entry->banner) {
+    if (shouldShowBanner(entry, shouldShowAnyLine(entry))) {
         if (lineIndex == 0) // it's an event banner, or if no component, an info line
             return (entry->componentId <= 0 ? SGR(FG_GREEN) : SGR(FG_BRIGHT_BLUE)) + QString(entry->banner) + SGR(RESET);
         else
-            lineIndex--;
+            lineIndex--; // skipping the banner
     }
 
     size_t entryLineIndex = 0;
 
+    // looking up which actually stored line is the one that should be shown as the given lineIndex,
+    // according to the line-level filtering
     for (; entryLineIndex < entry->lines.size(); ++entryLineIndex)
         if (shouldShowLine(entry, entryLineIndex)) {
             if (lineIndex == 0)
@@ -386,8 +414,6 @@ QString EventEntryLinesProvider::getLineText(LogBuffer::Entry *entry, int lineIn
         text += entry->lines[entryLineIndex].line;
 
     return text;
-
-
 }
 
 cMessagePrinter *EventEntryMessageLinesProvider::chooseMessagePrinter(cMessage *msg)
