@@ -62,7 +62,7 @@ class SIM_API any_ptr
 {
   private:
     void *ptr;
-    const std::type_info *type;
+    const std::type_info *type; // ptrType
   private:
     void checkType(const std::type_info& asType) const;
   public:
@@ -94,6 +94,7 @@ class SIM_API any_ptr
     void *raw() const {return ptr;}
     const std::type_info& pointerType() const {return *type;}
     const char *pointerTypeName() const {return opp_typename(*type);}
+    const char *typeName() const;
 
     template<typename T>
     T *get() { checkType(typeid(T*)); return reinterpret_cast<T*>(ptr); }

@@ -86,6 +86,10 @@ class COMMON_API ExprValue
     [[noreturn]] void cannotCastError(Type t) const;
 
   public:
+    // internal
+    static std::string (*printerFunction)(any_ptr ptr);
+
+  public:
     /** @name Constructors */
     //@{
     ExprValue() {}

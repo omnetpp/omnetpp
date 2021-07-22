@@ -25,6 +25,9 @@
 #include "omnetpp/cexception.h"
 #include "omnetpp/cpar.h"
 #include "omnetpp/checkandcast.h"
+#include "omnetpp/cvaluearray.h"
+#include "omnetpp/cvaluemap.h"
+#include "omnetpp/checkandcast.h"
 
 using namespace omnetpp::common;
 
@@ -53,7 +56,7 @@ const char *cValue::getTypeName(Type t)
         case INT:    return "integer";
         case DOUBLE: return "double";
         case STRING: return "string";
-        case POINTER: return "object";
+        case POINTER: return "object"; // kinda confusing, I know -- but it needs to be consistent with NED param type, NED function arg type etc.
         default:     return "???";
     }
 }
@@ -205,6 +208,12 @@ double cValue::parseQuantity(const char *str, std::string& outActualUnit)
     return UnitConversion::parseQuantity(str, outActualUnit);
 }
 
+static std::string objectInfo(const cObject *obj)
+{
+    bool valueLike = dynamic_cast<const cValueMap *>(obj) || dynamic_cast<const cValueArray *>(obj);
+    return obj==nullptr ? "nullptr" : valueLike ? obj->str() : obj->getClassAndFullPath();
+}
+
 std::string cValue::str() const
 {
     char buf[32];
@@ -231,7 +240,7 @@ std::string cValue::str() const
             return buf;
         }
         case STRING: return opp_quotestr(s);
-        case POINTER: return ptr.str();
+        case POINTER: return ptr.contains<cObject>() ? objectInfo(ptr.get<cObject>()) : ptr.str();
         default: throw cRuntimeError("Internal error: Invalid cValue type");
     }
 }
@@ -251,6 +260,15 @@ bool cValue::operator==(const cValue& other)
         default: throw cRuntimeError("Internal error: Invalid cValue type");
     }
 }
+
+}  // namespace omnetpp
+
+#include "common/exprvalue.h"
+
+namespace omnetpp {
+
+static std::string printerFunction(common::any_ptr ptr) { return ptr.contains<cObject>() ? objectInfo(ptr.get<cObject>()) : ptr.str(); }
+EXECUTE_ON_STARTUP(common::expression::ExprValue::printerFunction = printerFunction);
 
 }  // namespace omnetpp
 

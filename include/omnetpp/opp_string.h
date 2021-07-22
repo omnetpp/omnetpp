@@ -82,6 +82,11 @@ class SIM_API opp_string
     opp_string(const opp_string& s)  {buf = opp_strdup(s.buf);}
 
     /**
+     * Move constructor.
+     */
+    opp_string(opp_string&& s)  {buf = s.buf; s.buf = nullptr;}
+
+    /**
      * Destructor.
      */
     ~opp_string()  {delete [] buf;}

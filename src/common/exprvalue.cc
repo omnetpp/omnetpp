@@ -26,6 +26,8 @@ namespace omnetpp {
 namespace common {
 namespace expression {
 
+std::string (*ExprValue::printerFunction)(any_ptr ptr);
+
 void ExprValue::operator=(const ExprValue& other)
 {
     deleteOld();
@@ -62,7 +64,7 @@ const char *ExprValue::getTypeName(Type t)
         case INT:    return "integer";
         case DOUBLE: return "double";
         case STRING: return "string";
-        case POINTER: return "pointer";
+        case POINTER: return "object"; // kinda confusing, I know -- but it needs to be consistent with NED param type, NED function arg type etc.
         default:     return "<unknown>";
     }
 }
@@ -170,7 +172,7 @@ std::string ExprValue::str() const
         case STRING:
             return opp_quotestr(s);
         case POINTER:
-            return ptr.str();
+            return printerFunction ? printerFunction(ptr) : ptr.str();
         default:
             throw opp_runtime_error("Internal error: Invalid ExprValue type");
     }

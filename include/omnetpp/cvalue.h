@@ -19,6 +19,7 @@
 #include <string>
 #include "simkerneldefs.h"
 #include "cexception.h"
+#include "opp_string.h"
 #include "opp_pooledstring.h"
 #include "any_ptr.h"
 #include "simutil.h"
@@ -98,6 +99,7 @@ class SIM_API cValue
     cValue(double d, const char *unit)  {set(d,unit);}
     cValue(const char *s)  {set(s);}
     cValue(const std::string& s)  {set(s);}
+    cValue(const opp_string& s)  {set(s);}
     cValue(any_ptr ptr)  {set(ptr);}
     cValue(cObject *obj)  {set(obj);}
     cValue(const void *) = delete; // prevent non-cObject pointers from silently being converted to bool
@@ -253,6 +255,11 @@ class SIM_API cValue
      * Sets the value to the given string value.
      */
     void set(const std::string& s) {type=STRING; this->s=s;}
+
+    /**
+     * Sets the value to the given string value.
+     */
+    void set(const opp_string& s) {type=STRING; this->s=s.c_str();}
 
     /**
      * Sets the value to the given pointer. The pointer is treated by

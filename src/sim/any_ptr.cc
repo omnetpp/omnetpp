@@ -20,6 +20,7 @@
 #include "omnetpp/onstartup.h"
 #include "common/stringutil.h"
 #include "common/any_ptr.h"
+#include "common/pooledstring.h"
 
 namespace omnetpp {
 
@@ -34,10 +35,19 @@ void any_ptr::checkType(const std::type_info& asType) const
     }
 }
 
+const char *any_ptr::typeName() const
+{
+    std::string s = pointerTypeName();
+    s = common::opp_trim(s.substr(0, s.size()-1));
+    return common::opp_staticpooledstring::get(s.c_str());
+}
+
 std::string any_ptr::str() const
 {
-    if (ptr != nullptr && contains<cObject>())
-        return common::opp_stringf("(%s)%p=%s", opp_typename(*type), ptr, get<cObject>()->getClassAndFullPath().c_str());
+    if (ptr == nullptr)
+        return "nullptr";
+    else if (contains<cObject>())
+        return get<cObject>()->getClassAndFullPath();
     else
         return common::opp_stringf("(%s)%p", opp_typename(*type), ptr);
 }

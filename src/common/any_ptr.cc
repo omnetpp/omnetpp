@@ -39,6 +39,8 @@ std::string any_ptr::str() const
 {
     if (printerFunction)
         return printerFunction(*this);
+    else if (ptr == nullptr)
+        return "nullptr";
     else
         return opp_stringf("(%s)%p", opp_typename(*type), ptr);
 }
