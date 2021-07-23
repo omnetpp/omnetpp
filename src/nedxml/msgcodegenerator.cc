@@ -1517,7 +1517,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < numFields; i++) {
         const FieldInfo& field = classInfo.fieldList[i];
-        if (field.isPointer && field.isReplaceable) { //TODO !field.byValue ?
+        if (field.isReplaceable) {
             CC << "        case " << field.symbolicConstant << ": ";
             std::string maybeDereference = field.isPointer ? "" : "*";
             std::string castToType = field.argType.substr(0, field.argType.size()-1); //FIXME: this is a hack to remove last "*"!!!
