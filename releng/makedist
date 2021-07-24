@@ -315,7 +315,7 @@ cd ..
 # sleep/sync hack to avoid tar errors about changed files: http://www.mail-archive.com/bug-tar@gnu.org/msg01456.html
 sleep 5
 sync
-export SOURCE_DISTRIBUTION_BASE_NAME=${BUILDID}-$what-${VERSION}-src
+export SOURCE_DISTRIBUTION_BASE_NAME=${BUILDID}-$what-${VERSION}
 export SOURCE_DISTRIBUTION_NAME=$SOURCE_DISTRIBUTION_BASE_NAME.tgz
 echo Creating $DISTDIR/$SOURCE_DISTRIBUTION_NAME
 tar cfz $SOURCE_DISTRIBUTION_NAME $what-$VERSION || { echo --- error creating ...src.tgz ---; exit 1;}
