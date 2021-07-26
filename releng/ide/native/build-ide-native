@@ -21,7 +21,7 @@ if [ "$BUILD_WIN64_DISTRO" = "true" ]; then
 fi
 
 if [ "$BUILD_MACOSX_DISTRO" = "true" ]; then
- if which x86_64-apple-darwin15-clang++-libc++ ; then
+ if which x86_64-apple-darwin20.4-clang++-libc++ ; then
   echo Building 64-bit macOS binaries using a cross compiler
   cp releng/ide/native/Makefile.inc.macosx Makefile.inc
   export MACOSX_DEPLOYMENT_TARGET=10.10 
