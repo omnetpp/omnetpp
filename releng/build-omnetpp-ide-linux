@@ -6,8 +6,8 @@
 # variables used by the build script
 export what=omnetpp
 export BUILD_CORE_DISTRO=false
-export BUILD_LINUX_DISTRO=true
-export BUILD_WIN64_DISTRO=false
+export BUILD_LINUX_X86_64_DISTRO=true
+export BUILD_WIN32_X86_64_DISTRO=false
 export BUILD_MACOSX_DISTRO=false
 export BUILD_DOC=false
 export GIT_VERSION=$(git rev-parse HEAD)

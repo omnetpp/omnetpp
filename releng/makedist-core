@@ -25,8 +25,8 @@ if [ "$what" != "omnest" ]; then
     what="omnetpp"
 fi
 
-cd `dirname $0`/..
-OMNETPP_ROOT=`pwd`
+cd $(dirname $0)/..
+OMNETPP_ROOT=$(pwd)
 
 # the directory where the distribution file will created
 DISTDIR=$OMNETPP_ROOT/out/dist
@@ -59,4 +59,3 @@ tar cfz $SOURCE_DISTRIBUTION_NAME_CORE $what-$VERSION || { echo --- error creati
 
 # delete the source stuff
 rm -rf $what-$VERSION
-

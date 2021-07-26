@@ -95,9 +95,9 @@ todos configure.user
 # zip the distro
 cd ..
 # create windows version - zip archive with msys and mingw added
-export SOURCE_DISTRIBUTION_NAME_WINDOWS=$SOURCE_DISTRIBUTION_BASE_NAME-windows.zip
+export SOURCE_DISTRIBUTION_NAME_WINDOWS=$SOURCE_DISTRIBUTION_BASE_NAME-windows-x86_64.zip
 echo Creating $DISTDIR/$SOURCE_DISTRIBUTION_NAME_WINDOWS
-zip -r -X -9 -q $SOURCE_DISTRIBUTION_NAME_WINDOWS $what-$VERSION || { echo --- error creating src-windows.zip ---; exit 1;}
+zip -r -X -9 -q $SOURCE_DISTRIBUTION_NAME_WINDOWS $what-$VERSION || { echo --- error creating src-windows-x86_64.zip ---; exit 1;}
 
 # delete the source stuff
 rm -rf $what-$VERSION

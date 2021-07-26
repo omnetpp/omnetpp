@@ -3,7 +3,7 @@
 # create an OMNeT++ source distribution package
 #
 # in: what - whether to build "omnetpp" (default) or "omnest"
-# in: BUILD_CORE_DISTRO, BUILD_LINUX_DISTRO, BUILD_WIN64_DISTRO, BUILD_MACOSX_DISTRO
+# in: BUILD_CORE_DISTRO, BUILD_LINUX_X86_64_DISTRO, BUILD_WIN32_X86_64_DISTRO, BUILD_MACOSX_DISTRO
 #     if "true", the repsective platform distro will be built
 # in: Build identifier can be passed as BUILDID variable (optional)
 # in: If BUILD_IDE=true (default) - it tries to build the native and java part of the IDE
@@ -14,12 +14,12 @@
 TWEAKCONFIG="perl releng/tweakconfigfile.pl"
 REGEXPREPLACE="perl -i -pe"
 
-cd `dirname $0`/..
-OMNETPP_ROOT=`pwd`
+cd $(dirname $0)/..
+OMNETPP_ROOT=$(pwd)
 
 cp configure.user.dist configure.user
 
-source ./setenv -f
+source ./setenv
 
 if test -z "$what"; then
     export what="omnetpp"
@@ -38,8 +38,8 @@ if test -z "$BUILD_IDE_NATIVE"; then
 fi
 
 export BUILD_CORE_DISTRO
-export BUILD_LINUX_DISTRO
-export BUILD_WIN64_DISTRO
+export BUILD_LINUX_X86_64_DISTRO
+export BUILD_WIN32_X86_64_DISTRO
 export BUILD_MACOSX_DISTRO
 
 if test -z "$TOOLS_DIR"; then
@@ -48,7 +48,7 @@ fi
 
 # set the version number of the tools directory that is used in the Windows/macOS distros
 if test -z "$TOOLS_VERSION"; then
-  export TOOLS_VERSION=190729
+  export TOOLS_VERSION=210713
 fi
 
 # use the default language in perl (supresses a lot of warnings in perl calls)
@@ -112,8 +112,8 @@ $TWEAKCONFIG set doc/src/manual/Makefile VERSION $VERSION || exit 1
 
 echo "Preparing to build $WHAT, version: $VERSION, build: $BUILDID, edition: $EDITION..."
 echo "Core build: $BUILD_CORE_DISTRO"
-echo "Linux build: $BUILD_LINUX_DISTRO"
-echo "WIN64 build: $BUILD_WIN64_DISTRO"
+echo "Linux x86_64 build: $BUILD_LINUX_X86_64_DISTRO"
+echo "Windows x86_64 build: $BUILD_WIN32_X86_64_DISTRO"
 echo "macOS build: $BUILD_MACOSX_DISTRO"
 
 if [ -d $DISTDIR/$what-$VERSION ]; then
@@ -123,9 +123,6 @@ fi
 
 grep 'OMNETPP_VERSION' include/omnetpp/simkerneldefs.h
 echo
-
-# add omnetpp/bin to PATH
-export PATH=$OMNETPP_ROOT/bin:$PATH
 
 # create Makefile.inc
 ./configure || { echo --- error during running configure ---; exit 1;}
@@ -216,15 +213,15 @@ if [ -d $IDE_BUILDDIR/../update ]; then
 fi
 
 ###############################
-if [ "$BUILD_WIN64_DISTRO" = "true" ]; then
-  echo "Checking Win64 version..."
+if [ "$BUILD_WIN32_X86_64_DISTRO" = "true" ]; then
+  echo "Checking Win32 X86_64 version..."
   # check if the opplibs native lib is in place and correctly built
   OPPLIBSFILE=`echo $DISTDIR/$what-$VERSION/ide/plugins/org.omnetpp.ide.nativelibs.win32.x86_64_?.?.?.*/opplibs.dll`
   if [ ! -f "$OPPLIBSFILE" ]; then
     echo $OPPLIBSFILE does not exsist
     exit 1
   fi
-  #checkfile $OPPLIBSFILE 'opplibs.dll for win64 must be present'
+  #checkfile $OPPLIBSFILE 'opplibs.dll for win32 x86_64 must be present'
   OPPLIBSCONTENT=`strings $OPPLIBSFILE | grep common..dll`
   if [ "$OPPLIBSCONTENT" != "" ]; then
     echo "opplibs.dll must be built statically. Run 'make MODE=release SHARED_LIBS=no ui'"
@@ -233,8 +230,8 @@ if [ "$BUILD_WIN64_DISTRO" = "true" ]; then
 fi
 
 #########################################
-if [ "$BUILD_LINUX_DISTRO" = "true" ]; then
-  echo "Checking Linux GTK 64bit version..."
+if [ "$BUILD_LINUX_X86_64_DISTRO" = "true" ]; then
+  echo "Checking Linux X86_64 version..."
   # check if the opplibs native lib is in place and correctly built
   OPPLIBSFILE=`echo $DISTDIR/$what-$VERSION/ide/plugins/org.omnetpp.ide.nativelibs.linux.x86_64_?.?.?.*/libopplibs.so`
   if [ ! -f "$OPPLIBSFILE" ]; then
@@ -252,7 +249,7 @@ fi
 
 #########################################
 if [ "$BUILD_MACOSX_DISTRO" = "true" ]; then
-  echo "Checking MacOS X version..."
+  echo "Checking macOS version..."
   # check if the opplibs native lib is in place and correctly built
   OPPLIBSFILE=`echo $DISTDIR/$what-$VERSION/ide/plugins/org.omnetpp.ide.nativelibs.macosx_?.?.?.*/libopplibs.jnilib`
   if [ ! -f "$OPPLIBSFILE" ]; then
@@ -310,14 +307,14 @@ if [ "$BUILD_CORE_DISTRO" = "true" ]; then
   $OMNETPP_ROOT/releng/makedist-core
 fi
 
-if [ "$BUILD_LINUX_DISTRO" = "true" ]; then
-  echo "Creating Linux distro..."
-  $OMNETPP_ROOT/releng/makedist-linux
+if [ "$BUILD_LINUX_X86_64_DISTRO" = "true" ]; then
+  echo "Creating Linux x86_64 distro..."
+  $OMNETPP_ROOT/releng/makedist-linux.x86_64
 fi
 
-if [ "$BUILD_WIN64_DISTRO" = "true" ]; then
-  echo "Creating Win64 distro..."
-  $OMNETPP_ROOT/releng/makedist-win64
+if [ "$BUILD_WIN32_X86_64_DISTRO" = "true" ]; then
+  echo "Creating Windows x86_64 distro..."
+  $OMNETPP_ROOT/releng/makedist-win32.x86_64
 fi
 
 if [ "$BUILD_MACOSX_DISTRO" = "true" ]; then

@@ -4,27 +4,27 @@
 cd $(dirname $0)/../../..
 export PATH=$HOME/omnetpp/bin:$PATH
 
-if [ "$BUILD_LINUX_DISTRO" = "true" ]; then
+if [ "$BUILD_LINUX_X86_64_DISTRO" = "true" ]; then
   # build Linux 64-bit
-  echo Building 64-bit Linux binaries
+  echo Building Linux x86_64 binaries
   cp releng/ide/native/Makefile.inc.linux.x86_64 Makefile.inc
-  make cleanall || { echo --- error during cleaning native Linux64 IDE parts ---; exit 1;}
-  make SHARED_LIBS=no MODE=release ui -j$(nproc) || { echo --- error during compiling native Linux64 IDE parts ---; exit 1;}
+  make cleanall || { echo --- error during cleaning native Linux X86_64 IDE parts ---; exit 1;}
+  make SHARED_LIBS=no MODE=release ui -j$(nproc) || { echo --- error during compiling native Linux X86_64 IDE parts ---; exit 1;}
 fi
 
-if [ "$BUILD_WIN64_DISTRO" = "true" ]; then
+if [ "$BUILD_WIN32_X86_64_DISTRO" = "true" ]; then
   # Build MS Windows
-  echo Building 64-bit Windows binaries
+  echo Building Windows X86_64 binaries
   cp releng/ide/native/Makefile.inc.win32.x86_64 Makefile.inc
-  make cleanall || { echo --- error during cleaning native Win64 IDE parts ---; exit 1;}
-  make SHARED_LIBS=no MODE=release ui -j$(nproc) || { echo --- error during compiling native Win64 IDE parts ---; exit 1;}
+  make cleanall || { echo --- error during cleaning native Windows X86_64 IDE parts ---; exit 1;}
+  make SHARED_LIBS=no MODE=release ui -j$(nproc) || { echo --- error during compiling native Windows X86_64 IDE parts ---; exit 1;}
 fi
 
 if [ "$BUILD_MACOSX_DISTRO" = "true" ]; then
  if which x86_64-apple-darwin20.4-clang++-libc++ ; then
   echo Building 64-bit macOS binaries using a cross compiler
   cp releng/ide/native/Makefile.inc.macosx Makefile.inc
-  export MACOSX_DEPLOYMENT_TARGET=10.10 
+  export MACOSX_DEPLOYMENT_TARGET=10.10
   make cleanall || { echo --- error during cleaning native macOS IDE parts ---; exit 1;}
   make SHARED_LIBS=no MODE=release ui -j$(nproc) || { echo --- error during compiling native macOS IDE parts ---; exit 1;}
  else
