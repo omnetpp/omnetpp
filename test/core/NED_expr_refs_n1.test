@@ -122,8 +122,9 @@ void Tester::activity()
 network = Test
 cmdenv-express-mode = false
 
+%subst: /, unexpected \$end//
 %contains: stdout
- ==> ERROR: Cannot assign '' to parameter 'Test.tester.i': syntax error, unexpected $end
+ ==> ERROR: Cannot assign '' to parameter 'Test.tester.i': syntax error
 foo ==> ERROR: Cannot assign parameter 'i': (Tester)Test.tester has no parameter named 'foo'
 param ==> 1
 barm ==> ERROR: Cannot assign parameter 'i': (Tester)Test.tester has no parameter named 'barm'
