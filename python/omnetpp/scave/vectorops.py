@@ -371,10 +371,11 @@ def compare(r, threshold, less=None, equal=None, greater=None):
     return r
 
 
-@vector_operation("Crop in time", "crop(t1=10, t2=100) The time values are in seconds")
+@vector_operation("Crop in time", "crop(t1=10, t2=100)")
 def crop(r, t1, t2):
     """
-    Discards values outside the [t1, t2] interval
+    Discards values outside the [t1, t2] interval.
+    The time values are in seconds.
     """
     t = r['vectime']
     v = r['vecvalue']
@@ -571,7 +572,7 @@ def movingavg(r, alpha):
     the given smoothing coefficient in range (0.0, 1.0]:
     yout[k] = yout[k-1] + alpha * (y[k]-yout[k-1])
     """
-    v = r['vecvalue']
+    v = r['vecvalue'].copy() # modification in-place is not allowed
     s = pd.Series(v, dtype=np.dtype('f8'))
     r['vecvalue'] = s.ewm(alpha=alpha).mean().values
     if "title" in r:
