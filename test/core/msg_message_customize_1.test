@@ -46,10 +46,10 @@ delete msg;
 %contains: stdout
 class @TESTNAME@::SomePacket {
     string className = @TESTNAME@::SomePacket
-    string name = some
     string fullName = some
     string fullPath = Test.some
     string info = "(new msg)"
+    string name = some
     short schedulingPriority = 0
     cObject *targetObject = nullptr
     bool isScheduled = false

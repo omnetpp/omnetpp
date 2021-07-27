@@ -57,10 +57,10 @@ x.getB():5
 x.getI():11
 class @TESTNAME@::MyClass {
     string className = @TESTNAME@::MyClass
-    string name = myclass
     string fullName = myclass
     string fullPath = Test.myclass
     string info = ""
+    string name = myclass
     int b = 5
     int i = 11
 }
