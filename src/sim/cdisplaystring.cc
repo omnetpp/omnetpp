@@ -414,6 +414,19 @@ void cDisplayString::doParse()
                 arg = nullptr;
             insideTagName = true;
         }
+        else if (*s == '$' && *(s+1) == '$' && !insideTagName) {
+            *d++ = *s++;
+            *d = *s;
+        }
+        else if (*s == '$' && *(s+1) == '{' && !insideTagName) {
+            // skip expression
+            const char *end = opp_findmatchingparen(s+1);
+            if (!end)
+                throw cRuntimeError("Unmatched '{' in '%s'", assembledString);
+            while (s != end)
+                *d++ = *s++;
+            *d = *s;
+        }
         else if (*s == '=' && insideTagName) {
             // first argument of new tag begins
             *d = '\0';
@@ -489,10 +502,26 @@ void cDisplayString::strcatescaped(char *d, const char *s)
 
     d += strlen(d);
     while (*s) {
-        // quoting \t, \n etc is the job of opp_quotestr()
-        if (*s == ';' || *s == ',' || *s == '=')
-            *d++ = '\\';
-        *d++ = *s++;
+        // skipping param refs
+        if (*s == '$' && *(s+1) == '$') {
+            *d++ = *s++;
+            *d++ = *s++;
+        }
+        else if (*s == '$' && *(s+1) == '{') {
+            const char *end = opp_findmatchingparen(s+1);
+            if (!end)
+                throw cRuntimeError("Unmatched '{' in '%s'", s);
+
+            while (s != end)
+                *d++ = *s++;
+            *d++ = *s++; // the }
+        }
+        else {
+            // quoting \t, \n etc is the job of opp_quotestr()
+            if (*s == ';' || *s == ',' || *s == '=')
+                *d++ = '\\';
+            *d++ = *s++;
+        }
     }
     *d = '\0';
 }
