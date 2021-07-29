@@ -52,22 +52,19 @@ class SIM_API cProperty : public cNamedObject
     opp_staticpooledstring indexString = nullptr;
     mutable opp_staticpooledstring fullName = nullptr;
 
-    typedef std::vector<opp_staticpooledstring> Values;
+    typedef std::vector<opp_staticpooledstring> ValueList;
     std::vector<opp_staticpooledstring> keyv;
-    std::vector<Values> valuesv;
+    std::vector<ValueList> valuesv;
 
   private:
     void copy(const cProperty& other);
 
   protected:
     int findKey(const char *key) const;
-    Values& getValuesVector(const char *key);
-    const Values& getValuesVector(const char *key) const;
+    ValueList& getValuesVector(const char *key);
+    const ValueList& getValuesVector(const char *key) const;
 
   public:
-    // internal: merge a property onto this one
-    virtual void updateWith(const cProperty *property);
-
     // internal: locks the object against modifications. It cannot be unlocked
     // -- one must copy contents to an unlocked object, or call dup()
     // (new objects are created in unlocked state).
@@ -189,6 +186,11 @@ class SIM_API cProperty : public cNamedObject
     virtual void addKey(const char *key);
 
     /**
+     * Returns the number of keys in the property.
+     */
+    virtual int getNumKeys() const {return keyv.size();}
+
+    /**
      * Returns the number of values for the given key in the property.
      * Specify "" or DEFAULTKEY for the default key.
      *
@@ -228,6 +230,15 @@ class SIM_API cProperty : public cNamedObject
      * Erases the given key and all its values.
      */
     virtual void erase(const char *key);
+
+    /**
+     * Update with the contents of another property. Corresponding elements
+     * from the other property will overwrite existing values. If the other
+     * property contains values which contain just a single hyphen "-", they
+     * are considered antivalues and will erase corresponding values from
+     * this property.
+     */
+    virtual void updateWith(const cProperty *other);
     //@}
 };
 

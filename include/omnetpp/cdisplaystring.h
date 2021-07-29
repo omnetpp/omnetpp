@@ -104,7 +104,7 @@ class SIM_API cDisplayString
   public:
     // internal:
     void setHostObject(cComponent *o) {ownerComponent=o;}
-    void dump() const;
+    void dump(std::ostream& out) const;
 
   public:
     /** @name Constructors, destructor. */

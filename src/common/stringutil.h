@@ -113,6 +113,14 @@ inline int opp_strcmp(const char *s1, const char *s2)
 }
 
 /**
+ * Aren't you sick and tired of having to write strcmp()==0 or !strcmp() for the millionth time?
+ */
+inline bool opp_streq(const char *s1, const char *s2)
+{
+    return opp_strcmp(s1, s2) == 0;
+}
+
+/**
  * Removes any leading and trailing whitespace.
  */
 COMMON_API std::string opp_trim(const std::string& text);
@@ -492,10 +500,11 @@ COMMON_API std::string opp_formatdouble(double value, int numSignificantDigits);
 COMMON_API std::string opp_makedatetimestring();
 
 /**
- * s should point to an open parenthesis. The function returns the matching
- * paren, or nullptr if not found. It does not search inside string constants
- * delimited by double quotes ('"'); it uses opp_findmatchingquote() to
- * parse them. Note: a nullptr return value (unmatched left paren) may also
+ * s should point to an open parenthesis, curly brace or square bracket.
+ * The function returns the pointer to the matching close paren/brace/bracket,
+ * or nullptr if not found. It does not search inside string constants
+ * delimited by double quotes (") or single quotes ('); it uses opp_findmatchingquote()
+ * to parse them. Note: a nullptr return value (unmatched left paren) may also
  * be caused by an unterminated string constant.
  */
 COMMON_API const char *opp_findmatchingparen(const char *s);

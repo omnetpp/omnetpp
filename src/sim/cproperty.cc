@@ -122,7 +122,7 @@ void cProperty::setIndex(const char *newIndex)
     if (isLocked())
         throw cRuntimeError(this, E_LOCKED);
 
-    indexString = newIndex;
+    indexString = opp_isempty(newIndex) ? nullptr : newIndex;
     fullName = nullptr;
 }
 
@@ -168,16 +168,16 @@ void cProperty::addKey(const char *key)
     int k = findKey(key);
     if (k == -1) {
         keyv.push_back(key);
-        valuesv.push_back(Values());
+        valuesv.push_back(ValueList());
     }
 }
 
-const cProperty::Values& cProperty::getValuesVector(const char *key) const
+const cProperty::ValueList& cProperty::getValuesVector(const char *key) const
 {
     return const_cast<cProperty*>(this)->getValuesVector(key);
 }
 
-cProperty::Values& cProperty::getValuesVector(const char *key)
+cProperty::ValueList& cProperty::getValuesVector(const char *key)
 {
     key = opp_nulltoempty(key);
     int k = findKey(key);
@@ -208,7 +208,7 @@ const char *cProperty::getValue(const char *key, int index) const
     int k = findKey(key);
     if (k == -1)
         return nullptr;
-    const Values& v = valuesv[k];
+    const ValueList& v = valuesv[k];
     if (index < 0 || index >= (int)v.size())
         return nullptr;
     return v[index].c_str();
@@ -220,7 +220,7 @@ void cProperty::setValue(const char *key, int index, const char *value)
         throw cRuntimeError(this, E_LOCKED);
     if (!value)
         value = "";
-    Values& v = getValuesVector(key);
+    ValueList& v = getValuesVector(key);
     if (index < 0)
         throw cRuntimeError(this, "Negative property value index %d for key '%s'", index, key);
     if (index >= (int)v.size())
@@ -241,15 +241,15 @@ void cProperty::erase(const char *key)
     }
 }
 
-void cProperty::updateWith(const cProperty *property)
+void cProperty::updateWith(const cProperty *other)
 {
-    const std::vector<const char *>& keys = property->getKeys();
+    const std::vector<const char *>& keys = other->getKeys();
     for (auto key : keys) {
         if (!containsKey(key))
             addKey(key);
-        int n = property->getNumValues(key);
+        int n = other->getNumValues(key);
         for (int index = 0; index < n; index++) {
-            const char *value = property->getValue(key, index);
+            const char *value = other->getValue(key, index);
             if (value && value[0]) {  // is set
                 bool isAntivalue = strcmp(value, "-")==0;
                 setValue(key, index, isAntivalue ? "" : value);

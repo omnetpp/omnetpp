@@ -497,19 +497,14 @@ void cDisplayString::strcatescaped(char *d, const char *s)
     *d = '\0';
 }
 
-void cDisplayString::dump() const
+void cDisplayString::dump(std::ostream& out) const
 {
+    out << "`" << str() << "`" << endl;
     for (int t = 0; t < numTags; t++) {
-        if (t != 0)
-            printf("; ");
-        printf("tags[%d]:\"%s\"=", t, tags[t].name);
-        for (int i = 0; i < tags[t].numArgs; i++) {
-            if (i != 0)
-                printf(",");
-            printf("\"%s\"", tags[t].args[i]);
-        }
+        out << "  `" << tags[t].name << "` =" << endl;
+        for (int i = 0; i < tags[t].numArgs; i++)
+            out << "    [" << i << "] `" << tags[t].args[i] << "`" << endl;
     }
-    printf(" ==> \"%s\"\n", str());
 }
 
 }  // namespace omnetpp

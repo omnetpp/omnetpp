@@ -962,25 +962,31 @@ std::string opp_makedatetimestring()
 
 const char *opp_findmatchingparen(const char *s)
 {
-    while (opp_isspace(*s))
-        s++;
-    if (*s++ != '(')
-        throw opp_runtime_error("Missing left parenthesis");
+    char openParen = *s;
+    char closeParen;
+    switch (*s) {
+    case '(': closeParen = ')'; break;
+    case '{': closeParen = '}'; break;
+    case '[': closeParen = ']'; break;
+    default: throw opp_runtime_error("String does not start with a left parenthesis, curly brace or square bracket");
+    }
+
+    s++;
 
     int parens = 1;
     while (*s && parens > 0) {
-        if (*s == '(')
+        if (*s == openParen)
             parens++;
-        else if (*s == ')')
+        else if (*s == closeParen)
             parens--;
-        else if (*s == '"') {
+        else if (*s == '"' || *s == '\'') {
             s = opp_findclosequote(s);
             if (!s)
                 return nullptr;
         }
         s++;
     }
-    return parens > 0 ? nullptr : s;
+    return parens > 0 ? nullptr : s-1;
 }
 
 static bool isInvalidChar(char c)  // illegal or trouble-causing
