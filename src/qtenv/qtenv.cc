@@ -503,6 +503,9 @@ void Qtenv::restoreInspectors()
                 if (!findFirstInspector(visitor.getArray()[i], type, true)) {
                     Inspector *insp = inspect(visitor.getArray()[i], type, true);
 
+                    if (!insp)
+                        continue;
+
                     if (fullscreen)
                         insp->setWindowState(insp->windowState() | Qt::WindowFullScreen);
                     else {
@@ -1206,16 +1209,18 @@ void Qtenv::newNetwork(const char *networkname)
 
         simulationState = SIM_NEW;
         callRefreshDisplay(); // the one without exception handling!
+
+        // update GUI
+        auto module = getSimulation()->getSystemModule();
+        mainNetworkView->setObject(module);
+        mainInspector->setObject(module);
+
     }
     catch (std::exception& e) {
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
         displayException(e);
         simulationState = SIM_ERROR;
     }
-    // update GUI
-    auto module = getSimulation()->getSystemModule();
-    mainNetworkView->setObject(module);
-    mainInspector->setObject(module);
 
     animating = true;  // affects how network graphics is drawn!
     messageAnimator->redrawMessages();
@@ -1263,16 +1268,17 @@ void Qtenv::newRun(const char *configname, int runnumber)
 
         simulationState = SIM_NEW;
         callRefreshDisplay(); // the one without exception handling!
-    }
+
+        // update GUI
+        auto module = getSimulation()->getSystemModule();
+        mainNetworkView->setObject(module);
+        mainInspector->setObject(module);
+     }
     catch (std::exception& e) {
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
         displayException(e);
         simulationState = SIM_ERROR;
     }
-    // update GUI
-    auto module = getSimulation()->getSystemModule();
-    mainNetworkView->setObject(module);
-    mainInspector->setObject(module);
 
     animating = true;  // affects how network graphics is drawn!
     messageAnimator->redrawMessages();
@@ -1332,10 +1338,13 @@ Inspector *Qtenv::inspect(cObject *obj, InspectorType type, bool ignoreEmbedded)
 
     // everything ok, finish inspector
     inspectors.push_back(inspector);
-    // TODO geometry
-    // insp->createWindow(Inspector::makeWindowName().c_str(), geometry);
-    inspector->setObject(obj);
 
+    try {
+        inspector->setObject(obj);
+    }
+    catch (std::exception& e) {
+        displayException(e);
+    }
     return inspector;
 }
 
