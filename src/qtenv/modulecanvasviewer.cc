@@ -532,7 +532,12 @@ void ModuleCanvasViewer::drawSubmodule(cModule *submod)
     ASSERT(!containsKey(submoduleGraphicsItems, submod));
 
     auto item = new SubmoduleItem(submod, rangeLayer);
-    SubmoduleItemUtil::setupFromDisplayString(item, submod);
+    try {
+        SubmoduleItemUtil::setupFromDisplayString(item, submod);
+    }
+    catch (std::exception& e) {
+        throw cRuntimeError("Error drawing submodule %s: %s", submod->getNedTypeAndFullPath().c_str(), e.what());
+    }
     item->setData(ITEMDATA_COBJECT, QVariant::fromValue(dynamic_cast<cObject *>(submod)));
     item->setZoomFactor(zoomFactor);
     item->setImageSizeFactor(imageSizeFactor);
@@ -550,7 +555,12 @@ void ModuleCanvasViewer::redrawEnclosingModule()
     compoundModuleItem = new CompoundModuleItem();
     backgroundLayer->addItem(compoundModuleItem);
 
-    CompoundModuleItemUtil::setupFromDisplayString(compoundModuleItem, object, zoomFactor, getSubmodulesRect());
+    try {
+        CompoundModuleItemUtil::setupFromDisplayString(compoundModuleItem, object, zoomFactor, getSubmodulesRect());
+    }
+    catch (std::exception& e) {
+        throw cRuntimeError("Error redrawing module %s: %s", object->getNedTypeAndFullPath().c_str(), e.what());
+    }
 
     compoundModuleChanged = false;
     recalcSceneRect();
@@ -615,8 +625,14 @@ void ModuleCanvasViewer::drawConnection(cGate *gate)
     ASSERT(!containsKey(connectionGraphicsItems, gate));
 
     auto item = new ConnectionItem(submoduleLayer);
-    item->setLine(getConnectionLine(gate));
-    ConnectionItemUtil::setupFromDisplayString(item, gate, showArrowHeads);
+    try {
+        item->setLine(getConnectionLine(gate));
+        ConnectionItemUtil::setupFromDisplayString(item, gate, showArrowHeads);
+    }
+    catch (std::exception& e) {
+        throw cRuntimeError("Error drawing connection originating in gate %s: %s", gate->getFullPath().c_str() , e.what());
+    }
+
     connectionGraphicsItems[gate] = item;
     item->setZValue(-1);
 }
@@ -784,7 +800,13 @@ void ModuleCanvasViewer::refreshSubmodule(cModule *submod)
     ASSERT(containsKey(submoduleGraphicsItems, submod));
 
     auto item = submoduleGraphicsItems[submod];
-    SubmoduleItemUtil::setupFromDisplayString(item, submod);
+    try {
+        SubmoduleItemUtil::setupFromDisplayString(item, submod);
+    }
+    catch (std::exception& e) {
+        throw cRuntimeError("Error redrawing submodule %s: %s", submod->getNedTypeAndFullPath().c_str(), e.what());
+    }
+
     // Do not forget to make the layouter reread the "p" tag if needed
     // by doing a "forgetPosition" or "refreshLayout(parent)" before this.
     item->setPos(getSubmodCoords(submod));
@@ -812,7 +834,13 @@ void ModuleCanvasViewer::refreshConnection(cGate *gate)
     ASSERT(containsKey(connectionGraphicsItems, gate));
 
     ConnectionItem *item = connectionGraphicsItems[gate];
-    ConnectionItemUtil::setupFromDisplayString(item, gate, showArrowHeads);
+    try {
+        ConnectionItemUtil::setupFromDisplayString(item, gate, showArrowHeads);
+    }
+    catch (std::exception& e) {
+        throw cRuntimeError("Error refreshing connection originating in gate %s: %s", gate->getFullPath().c_str(), e.what());
+    }
+
     item->setLine(getConnectionLine(gate));
 }
 
@@ -857,12 +885,16 @@ void ModuleCanvasViewer::redraw()
     zoomLabel->setFont(getQtenv()->getCanvasFont());
     updateZoomLabelPos();
 
-    refreshLayout();
-    redrawModules();
-    redrawFigures();
-    refreshSubmodules();
-    refreshConnections();
-
+    try {
+        refreshLayout();
+        redrawModules();
+        redrawFigures();
+        refreshSubmodules();
+        refreshConnections();
+    }
+    catch (std::exception& e) {
+        getQtenv()->showException(e);
+    }
     recalcSceneRect();
 }
 

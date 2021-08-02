@@ -75,6 +75,7 @@ class QTENV_API Inspector : public QWidget
       virtual void refreshTitle();
 
       virtual void doSetObject(cObject *obj);
+      virtual void doSetObjectSafe(cObject *obj);
       virtual void removeFromToHistory(cObject *obj);
 
       virtual void loadInitialGeometry();

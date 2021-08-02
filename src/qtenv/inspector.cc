@@ -202,6 +202,16 @@ void Inspector::doSetObject(cObject *obj)
     emit inspectedObjectChanged(object, oldObject);
 }
 
+void Inspector::doSetObjectSafe(cObject *obj)
+{
+    try {
+        doSetObject(obj);
+    }
+    catch (std::exception &e) {
+        getQtenv()->showException(e);
+    }
+}
+
 void Inspector::showWindow()
 {
     ASSERT(isToplevelInspector());
@@ -291,7 +301,7 @@ void Inspector::refreshTitle()
 void Inspector::objectDeleted(cObject *obj)
 {
     if (obj == object) {
-        doSetObject(nullptr);
+        doSetObjectSafe(nullptr);
         refresh();
     }
     removeFromToHistory(obj);
@@ -300,7 +310,7 @@ void Inspector::objectDeleted(cObject *obj)
 void Inspector::setObject(cObject *obj)
 {
     if (isNew) {
-        doSetObject(obj);
+        doSetObjectSafe(obj);
         if (isToplevelInspector()) {
             loadInitialGeometry();
             showWindow();
@@ -313,7 +323,7 @@ void Inspector::setObject(cObject *obj)
             historyBack.push_back(object);
             historyForward.clear();
         }
-        doSetObject(obj);
+        doSetObjectSafe(obj);
         refresh();
     }
 }
@@ -357,7 +367,7 @@ void Inspector::goForward()
         historyForward.pop_back();
         if (object != nullptr)
             historyBack.push_back(object);
-        doSetObject(newObj);
+        doSetObjectSafe(newObj);
         refresh();
     }
 }
@@ -369,7 +379,7 @@ void Inspector::goBack()
         historyBack.pop_back();
         if (object != nullptr)
             historyForward.push_back(object);
-        doSetObject(newObj);
+        doSetObjectSafe(newObj);
         refresh();
     }
 }
