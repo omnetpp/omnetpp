@@ -246,8 +246,10 @@ void ModuleInspector::doSetObject(cObject *obj)
 
     cModule *module = dynamic_cast<cModule *>(obj);
 
-    canvasViewer->setObject(module);
-    canvasViewer->clear();
+    // TODO: there are too many redraws (also multiple dialogs on errors), see notes below.
+
+    canvasViewer->setObject(module); // this already calls redraw()
+    canvasViewer->clear(); // then we clear it
     bubblesToShow.clear();
 
     setOsgCanvas(nullptr);
@@ -257,8 +259,8 @@ void ModuleInspector::doSetObject(cObject *obj)
     if (object) {
         canvasViewer->refreshLayout();
         try {
-            canvasViewer->redraw();
-            canvasViewer->setZoomFactor(getPref(PREF_ZOOMFACTOR, 1).toDouble());
+            canvasViewer->redraw(); // and then redraw again
+            canvasViewer->setZoomFactor(getPref(PREF_ZOOMFACTOR, 1).toDouble()); // this also redraws a couple things
             canvasViewer->setImageSizeFactor(getPref(PREF_ICONSCALE, 1).toDouble());
             showMethodCalls(getPref(PREF_SHOWMETHODCALLS, true).toBool());
             showLabels(getPref(PREF_SHOWLABELS, true).toBool());
