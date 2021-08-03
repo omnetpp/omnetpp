@@ -1,0 +1,396 @@
+%description:
+Test parameter accesses, etc.
+
+%file: test.ned
+
+import testlib.Dump;
+
+module Node {
+    parameters:
+        int param;
+    gates:
+        inout g @loose;
+        inout gg[3] @loose;
+    connections allowunconnected:
+}
+
+module Tester
+{
+    parameters:
+        @class(Tester);
+        int param = 1;
+        bool b = default(false);
+        int i = default(-1);
+        string s = default("");
+}
+
+network Test
+{
+    parameters:
+        int param = 0;
+    submodules:
+        node: Node { param = 2; }
+        nodes[5]: Node { param = 3; }
+        tester : Tester;
+}
+
+%file: test.cc
+
+#include <string.h>
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class Tester : public cSimpleModule
+{
+  public:
+    Tester() : cSimpleModule(16384) { }
+    void test(const std::string& expr);
+    virtual void activity() override;
+};
+
+Define_Module(Tester);
+
+static std::string opp_join(const std::vector<std::string>& strings, const char *separator, bool skipEmpty)
+{
+    bool first = true;
+    std::stringstream os;
+    for (auto item : strings) {
+        if (skipEmpty && item.empty())
+            continue;
+        if (!first)
+            os << separator;
+        os << item;
+        first = false;
+    }
+    return os.str();
+}
+
+void Tester::test(const std::string& expr)
+{
+    try {
+        EV << expr << " ==> ";
+        const char *parName = strstr(expr.c_str(), "exists") ? "b" : strstr(expr.c_str(), "typename") ? "s" : "i";
+        cPar& p = par(parName);
+        p.parse(expr.c_str());
+        std::string unparsed = p.str();
+        if (unparsed != expr)
+            throw cRuntimeError("MISMATCH IN UNPARSED EXPR: %s", unparsed.c_str());
+        p.finalize();
+        EV << p.str() << endl;
+    }
+    catch (std::exception& e) {
+        EV << "ERROR: " << e.what() << endl;
+    }
+}
+
+void Tester::activity()
+{
+    auto params = { "", "foo", "param" };
+    auto gates = { "", "foo", "g", "gg" };
+    auto submods = { "", "barm", "barm[0]", "node", "nodes[0]" };
+    auto submods2 = { "", "barm", "barm[0]", "node", "nodes[0]", "nodes", "node[0]" };
+    auto qualifs = { "", "this", "parent" };
+
+    // parameter references
+    for (auto q : qualifs)
+        for (auto sm : submods)
+            for (auto p : params)
+                test(opp_join({q, sm, p}, ".", true));
+
+    test("foo.foo.foo");
+    test("parent.foo.foo.foo");
+
+    EV << endl;
+
+    // index
+    for (auto q : qualifs)
+        for (auto sm : submods)
+            test(opp_join({q, sm, "index"}, ".", true));
+
+    EV << endl;
+
+    // typename
+    for (auto q : qualifs)
+        for (auto sm : submods)
+            test(opp_join({q, sm, "typename"}, ".", true));
+
+    EV << endl;
+
+    // sizeof
+    for (auto q : qualifs)
+        for (auto sm : submods2)
+            for (auto g : gates)
+                test("sizeof(" + opp_join({q, sm, g}, ".", true) + ")");
+
+    EV << endl;
+
+    // exists
+    for (auto q : qualifs)
+        for (auto sm : submods2)
+            for (auto g : gates)
+                test("exists(" + opp_join({q, sm, g}, ".", true) + ")");
+
+    EV << ".\n";
+}
+
+}; //namespace
+
+%inifile: omnetpp.ini
+network = Test
+cmdenv-express-mode = false
+
+%subst: /syntax error.*/syntax error/
+%contains: stdout
+ ==> ERROR: Wrong value '' for parameter 'Test.tester.i': syntax error
+foo ==> ERROR: Cannot evaluate parameter 'i': (omnetpp::cModule)Test: Unknown parameter 'foo'
+param ==> 0
+barm ==> ERROR: Cannot evaluate parameter 'i': (omnetpp::cModule)Test: Unknown parameter 'barm'
+barm.foo ==> ERROR: Cannot evaluate parameter 'i': Cannot find submodule for parameter 'barm.foo'
+barm.param ==> ERROR: Cannot evaluate parameter 'i': Cannot find submodule for parameter 'barm.param'
+barm[0] ==> ERROR: Wrong value 'barm[0]' for parameter 'Test.tester.i': syntax error
+barm[0].foo ==> ERROR: Cannot evaluate parameter 'i': Cannot find submodule for parameter 'barm[0].foo'
+barm[0].param ==> ERROR: Cannot evaluate parameter 'i': Cannot find submodule for parameter 'barm[0].param'
+node ==> ERROR: Cannot evaluate parameter 'i': (omnetpp::cModule)Test: Unknown parameter 'node'
+node.foo ==> ERROR: Cannot evaluate parameter 'i': (omnetpp::cModule)Test.node: Unknown parameter 'foo'
+node.param ==> 2
+nodes[0] ==> ERROR: Wrong value 'nodes[0]' for parameter 'Test.tester.i': syntax error
+nodes[0].foo ==> ERROR: Cannot evaluate parameter 'i': (omnetpp::cModule)Test.nodes[0]: Unknown parameter 'foo'
+nodes[0].param ==> 3
+this ==> ERROR: Wrong value 'this' for parameter 'Test.tester.i': syntax error
+this.foo ==> ERROR: Cannot evaluate parameter 'i': Unknown parameter 'foo'
+this.param ==> 1
+this.barm ==> ERROR: Cannot evaluate parameter 'i': Unknown parameter 'barm'
+this.barm.foo ==> ERROR: Wrong value 'this.barm.foo' for parameter 'Test.tester.i': syntax error
+this.barm.param ==> ERROR: Wrong value 'this.barm.param' for parameter 'Test.tester.i': syntax error
+this.barm[0] ==> ERROR: Wrong value 'this.barm[0]' for parameter 'Test.tester.i': syntax error
+this.barm[0].foo ==> ERROR: Wrong value 'this.barm[0].foo' for parameter 'Test.tester.i': syntax error
+this.barm[0].param ==> ERROR: Wrong value 'this.barm[0].param' for parameter 'Test.tester.i': syntax error
+this.node ==> ERROR: Cannot evaluate parameter 'i': Unknown parameter 'node'
+this.node.foo ==> ERROR: Wrong value 'this.node.foo' for parameter 'Test.tester.i': syntax error
+this.node.param ==> ERROR: Wrong value 'this.node.param' for parameter 'Test.tester.i': syntax error
+this.nodes[0] ==> ERROR: Wrong value 'this.nodes[0]' for parameter 'Test.tester.i': syntax error
+this.nodes[0].foo ==> ERROR: Wrong value 'this.nodes[0].foo' for parameter 'Test.tester.i': syntax error
+this.nodes[0].param ==> ERROR: Wrong value 'this.nodes[0].param' for parameter 'Test.tester.i': syntax error
+parent ==> ERROR: Wrong value 'parent' for parameter 'Test.tester.i': syntax error
+parent.foo ==> ERROR: Cannot evaluate parameter 'i': (omnetpp::cModule)Test: Unknown parameter 'foo'
+parent.param ==> 0
+parent.barm ==> ERROR: Cannot evaluate parameter 'i': (omnetpp::cModule)Test: Unknown parameter 'barm'
+parent.barm.foo ==> ERROR: MISMATCH IN UNPARSED EXPR: barm.foo
+parent.barm.param ==> ERROR: MISMATCH IN UNPARSED EXPR: barm.param
+parent.barm[0] ==> ERROR: Wrong value 'parent.barm[0]' for parameter 'Test.tester.i': syntax error
+parent.barm[0].foo ==> ERROR: MISMATCH IN UNPARSED EXPR: barm[0].foo
+parent.barm[0].param ==> ERROR: MISMATCH IN UNPARSED EXPR: barm[0].param
+parent.node ==> ERROR: Cannot evaluate parameter 'i': (omnetpp::cModule)Test: Unknown parameter 'node'
+parent.node.foo ==> ERROR: MISMATCH IN UNPARSED EXPR: node.foo
+parent.node.param ==> ERROR: MISMATCH IN UNPARSED EXPR: node.param
+parent.nodes[0] ==> ERROR: Wrong value 'parent.nodes[0]' for parameter 'Test.tester.i': syntax error
+parent.nodes[0].foo ==> ERROR: MISMATCH IN UNPARSED EXPR: nodes[0].foo
+parent.nodes[0].param ==> ERROR: MISMATCH IN UNPARSED EXPR: nodes[0].param
+foo.foo.foo ==> ERROR: Wrong value 'foo.foo.foo' for parameter 'Test.tester.i': syntax error
+parent.foo.foo.foo ==> ERROR: Wrong value 'parent.foo.foo.foo' for parameter 'Test.tester.i': syntax error
+
+index ==> 0
+barm.index ==> ERROR: Wrong value 'barm.index' for parameter 'Test.tester.i': syntax error
+barm[0].index ==> ERROR: Wrong value 'barm[0].index' for parameter 'Test.tester.i': syntax error
+node.index ==> ERROR: Wrong value 'node.index' for parameter 'Test.tester.i': syntax error
+nodes[0].index ==> ERROR: Wrong value 'nodes[0].index' for parameter 'Test.tester.i': syntax error
+this.index ==> ERROR: Wrong value 'this.index' for parameter 'Test.tester.i': syntax error
+this.barm.index ==> ERROR: Wrong value 'this.barm.index' for parameter 'Test.tester.i': syntax error
+this.barm[0].index ==> ERROR: Wrong value 'this.barm[0].index' for parameter 'Test.tester.i': syntax error
+this.node.index ==> ERROR: Wrong value 'this.node.index' for parameter 'Test.tester.i': syntax error
+this.nodes[0].index ==> ERROR: Wrong value 'this.nodes[0].index' for parameter 'Test.tester.i': syntax error
+parent.index ==> ERROR: Wrong value 'parent.index' for parameter 'Test.tester.i': syntax error
+parent.barm.index ==> ERROR: Wrong value 'parent.barm.index' for parameter 'Test.tester.i': syntax error
+parent.barm[0].index ==> ERROR: Wrong value 'parent.barm[0].index' for parameter 'Test.tester.i': syntax error
+parent.node.index ==> ERROR: Wrong value 'parent.node.index' for parameter 'Test.tester.i': syntax error
+parent.nodes[0].index ==> ERROR: Wrong value 'parent.nodes[0].index' for parameter 'Test.tester.i': syntax error
+
+typename ==> "Tester"
+barm.typename ==> ERROR: Wrong value 'barm.typename' for parameter 'Test.tester.s': syntax error
+barm[0].typename ==> ERROR: Wrong value 'barm[0].typename' for parameter 'Test.tester.s': syntax error
+node.typename ==> ERROR: Wrong value 'node.typename' for parameter 'Test.tester.s': syntax error
+nodes[0].typename ==> ERROR: Wrong value 'nodes[0].typename' for parameter 'Test.tester.s': syntax error
+this.typename ==> ERROR: Wrong value 'this.typename' for parameter 'Test.tester.s': syntax error
+this.barm.typename ==> ERROR: Wrong value 'this.barm.typename' for parameter 'Test.tester.s': syntax error
+this.barm[0].typename ==> ERROR: Wrong value 'this.barm[0].typename' for parameter 'Test.tester.s': syntax error
+this.node.typename ==> ERROR: Wrong value 'this.node.typename' for parameter 'Test.tester.s': syntax error
+this.nodes[0].typename ==> ERROR: Wrong value 'this.nodes[0].typename' for parameter 'Test.tester.s': syntax error
+parent.typename ==> ERROR: Wrong value 'parent.typename' for parameter 'Test.tester.s': syntax error
+parent.barm.typename ==> ERROR: Wrong value 'parent.barm.typename' for parameter 'Test.tester.s': syntax error
+parent.barm[0].typename ==> ERROR: Wrong value 'parent.barm[0].typename' for parameter 'Test.tester.s': syntax error
+parent.node.typename ==> ERROR: Wrong value 'parent.node.typename' for parameter 'Test.tester.s': syntax error
+parent.nodes[0].typename ==> ERROR: Wrong value 'parent.nodes[0].typename' for parameter 'Test.tester.s': syntax error
+
+sizeof() ==> ERROR: Wrong value 'sizeof()' for parameter 'Test.tester.i': syntax error
+sizeof(foo) ==> 0
+sizeof(g) ==> 0
+sizeof(gg) ==> 0
+sizeof(barm) ==> 0
+sizeof(barm.foo) ==> ERROR: Wrong value 'sizeof(barm.foo)' for parameter 'Test.tester.i': sizeof(submodule.gate) form not supported here
+sizeof(barm.g) ==> ERROR: Wrong value 'sizeof(barm.g)' for parameter 'Test.tester.i': sizeof(submodule.gate) form not supported here
+sizeof(barm.gg) ==> ERROR: Wrong value 'sizeof(barm.gg)' for parameter 'Test.tester.i': sizeof(submodule.gate) form not supported here
+sizeof(barm[0]) ==> ERROR: Wrong value 'sizeof(barm[0])' for parameter 'Test.tester.i': syntax error
+sizeof(barm[0].foo) ==> ERROR: Wrong value 'sizeof(barm[0].foo)' for parameter 'Test.tester.i': sizeof(submodule[index].gate) form not supported here
+sizeof(barm[0].g) ==> ERROR: Wrong value 'sizeof(barm[0].g)' for parameter 'Test.tester.i': sizeof(submodule[index].gate) form not supported here
+sizeof(barm[0].gg) ==> ERROR: Wrong value 'sizeof(barm[0].gg)' for parameter 'Test.tester.i': sizeof(submodule[index].gate) form not supported here
+sizeof(node) ==> 1
+sizeof(node.foo) ==> ERROR: Wrong value 'sizeof(node.foo)' for parameter 'Test.tester.i': sizeof(submodule.gate) form not supported here
+sizeof(node.g) ==> ERROR: Wrong value 'sizeof(node.g)' for parameter 'Test.tester.i': sizeof(submodule.gate) form not supported here
+sizeof(node.gg) ==> ERROR: Wrong value 'sizeof(node.gg)' for parameter 'Test.tester.i': sizeof(submodule.gate) form not supported here
+sizeof(nodes[0]) ==> ERROR: Wrong value 'sizeof(nodes[0])' for parameter 'Test.tester.i': syntax error
+sizeof(nodes[0].foo) ==> ERROR: Wrong value 'sizeof(nodes[0].foo)' for parameter 'Test.tester.i': sizeof(submodule[index].gate) form not supported here
+sizeof(nodes[0].g) ==> ERROR: Wrong value 'sizeof(nodes[0].g)' for parameter 'Test.tester.i': sizeof(submodule[index].gate) form not supported here
+sizeof(nodes[0].gg) ==> ERROR: Wrong value 'sizeof(nodes[0].gg)' for parameter 'Test.tester.i': sizeof(submodule[index].gate) form not supported here
+sizeof(nodes) ==> 5
+sizeof(nodes.foo) ==> ERROR: Wrong value 'sizeof(nodes.foo)' for parameter 'Test.tester.i': sizeof(submodule.gate) form not supported here
+sizeof(nodes.g) ==> ERROR: Wrong value 'sizeof(nodes.g)' for parameter 'Test.tester.i': sizeof(submodule.gate) form not supported here
+sizeof(nodes.gg) ==> ERROR: Wrong value 'sizeof(nodes.gg)' for parameter 'Test.tester.i': sizeof(submodule.gate) form not supported here
+sizeof(node[0]) ==> ERROR: Wrong value 'sizeof(node[0])' for parameter 'Test.tester.i': syntax error
+sizeof(node[0].foo) ==> ERROR: Wrong value 'sizeof(node[0].foo)' for parameter 'Test.tester.i': sizeof(submodule[index].gate) form not supported here
+sizeof(node[0].g) ==> ERROR: Wrong value 'sizeof(node[0].g)' for parameter 'Test.tester.i': sizeof(submodule[index].gate) form not supported here
+sizeof(node[0].gg) ==> ERROR: Wrong value 'sizeof(node[0].gg)' for parameter 'Test.tester.i': sizeof(submodule[index].gate) form not supported here
+sizeof(this) ==> ERROR: Wrong value 'sizeof(this)' for parameter 'Test.tester.i': sizeof(this) form not supported here
+sizeof(this.foo) ==> 0
+sizeof(this.g) ==> 0
+sizeof(this.gg) ==> 0
+sizeof(this.barm) ==> 0
+sizeof(this.barm.foo) ==> ERROR: Wrong value 'sizeof(this.barm.foo)' for parameter 'Test.tester.i': sizeof(this.submodule.gate) form not supported here
+sizeof(this.barm.g) ==> ERROR: Wrong value 'sizeof(this.barm.g)' for parameter 'Test.tester.i': sizeof(this.submodule.gate) form not supported here
+sizeof(this.barm.gg) ==> ERROR: Wrong value 'sizeof(this.barm.gg)' for parameter 'Test.tester.i': sizeof(this.submodule.gate) form not supported here
+sizeof(this.barm[0]) ==> ERROR: Wrong value 'sizeof(this.barm[0])' for parameter 'Test.tester.i': syntax error
+sizeof(this.barm[0].foo) ==> ERROR: Wrong value 'sizeof(this.barm[0].foo)' for parameter 'Test.tester.i': sizeof(this.submodule[index].gate) form not supported here
+sizeof(this.barm[0].g) ==> ERROR: Wrong value 'sizeof(this.barm[0].g)' for parameter 'Test.tester.i': sizeof(this.submodule[index].gate) form not supported here
+sizeof(this.barm[0].gg) ==> ERROR: Wrong value 'sizeof(this.barm[0].gg)' for parameter 'Test.tester.i': sizeof(this.submodule[index].gate) form not supported here
+sizeof(this.node) ==> 0
+sizeof(this.node.foo) ==> ERROR: Wrong value 'sizeof(this.node.foo)' for parameter 'Test.tester.i': sizeof(this.submodule.gate) form not supported here
+sizeof(this.node.g) ==> ERROR: Wrong value 'sizeof(this.node.g)' for parameter 'Test.tester.i': sizeof(this.submodule.gate) form not supported here
+sizeof(this.node.gg) ==> ERROR: Wrong value 'sizeof(this.node.gg)' for parameter 'Test.tester.i': sizeof(this.submodule.gate) form not supported here
+sizeof(this.nodes[0]) ==> ERROR: Wrong value 'sizeof(this.nodes[0])' for parameter 'Test.tester.i': syntax error
+sizeof(this.nodes[0].foo) ==> ERROR: Wrong value 'sizeof(this.nodes[0].foo)' for parameter 'Test.tester.i': sizeof(this.submodule[index].gate) form not supported here
+sizeof(this.nodes[0].g) ==> ERROR: Wrong value 'sizeof(this.nodes[0].g)' for parameter 'Test.tester.i': sizeof(this.submodule[index].gate) form not supported here
+sizeof(this.nodes[0].gg) ==> ERROR: Wrong value 'sizeof(this.nodes[0].gg)' for parameter 'Test.tester.i': sizeof(this.submodule[index].gate) form not supported here
+sizeof(this.nodes) ==> 0
+sizeof(this.nodes.foo) ==> ERROR: Wrong value 'sizeof(this.nodes.foo)' for parameter 'Test.tester.i': sizeof(this.submodule.gate) form not supported here
+sizeof(this.nodes.g) ==> ERROR: Wrong value 'sizeof(this.nodes.g)' for parameter 'Test.tester.i': sizeof(this.submodule.gate) form not supported here
+sizeof(this.nodes.gg) ==> ERROR: Wrong value 'sizeof(this.nodes.gg)' for parameter 'Test.tester.i': sizeof(this.submodule.gate) form not supported here
+sizeof(this.node[0]) ==> ERROR: Wrong value 'sizeof(this.node[0])' for parameter 'Test.tester.i': syntax error
+sizeof(this.node[0].foo) ==> ERROR: Wrong value 'sizeof(this.node[0].foo)' for parameter 'Test.tester.i': sizeof(this.submodule[index].gate) form not supported here
+sizeof(this.node[0].g) ==> ERROR: Wrong value 'sizeof(this.node[0].g)' for parameter 'Test.tester.i': sizeof(this.submodule[index].gate) form not supported here
+sizeof(this.node[0].gg) ==> ERROR: Wrong value 'sizeof(this.node[0].gg)' for parameter 'Test.tester.i': sizeof(this.submodule[index].gate) form not supported here
+sizeof(parent) ==> ERROR: Wrong value 'sizeof(parent)' for parameter 'Test.tester.i': sizeof(parent) form not supported here
+sizeof(parent.foo) ==> 0
+sizeof(parent.g) ==> 0
+sizeof(parent.gg) ==> 0
+sizeof(parent.barm) ==> 0
+sizeof(parent.barm.foo) ==> ERROR: Wrong value 'sizeof(parent.barm.foo)' for parameter 'Test.tester.i': sizeof(parent.submodule.gate) form not supported here
+sizeof(parent.barm.g) ==> ERROR: Wrong value 'sizeof(parent.barm.g)' for parameter 'Test.tester.i': sizeof(parent.submodule.gate) form not supported here
+sizeof(parent.barm.gg) ==> ERROR: Wrong value 'sizeof(parent.barm.gg)' for parameter 'Test.tester.i': sizeof(parent.submodule.gate) form not supported here
+sizeof(parent.barm[0]) ==> ERROR: Wrong value 'sizeof(parent.barm[0])' for parameter 'Test.tester.i': syntax error
+sizeof(parent.barm[0].foo) ==> ERROR: Wrong value 'sizeof(parent.barm[0].foo)' for parameter 'Test.tester.i': sizeof(parent.submodule[index].gate) form not supported here
+sizeof(parent.barm[0].g) ==> ERROR: Wrong value 'sizeof(parent.barm[0].g)' for parameter 'Test.tester.i': sizeof(parent.submodule[index].gate) form not supported here
+sizeof(parent.barm[0].gg) ==> ERROR: Wrong value 'sizeof(parent.barm[0].gg)' for parameter 'Test.tester.i': sizeof(parent.submodule[index].gate) form not supported here
+sizeof(parent.node) ==> 1
+sizeof(parent.node.foo) ==> ERROR: Wrong value 'sizeof(parent.node.foo)' for parameter 'Test.tester.i': sizeof(parent.submodule.gate) form not supported here
+sizeof(parent.node.g) ==> ERROR: Wrong value 'sizeof(parent.node.g)' for parameter 'Test.tester.i': sizeof(parent.submodule.gate) form not supported here
+sizeof(parent.node.gg) ==> ERROR: Wrong value 'sizeof(parent.node.gg)' for parameter 'Test.tester.i': sizeof(parent.submodule.gate) form not supported here
+sizeof(parent.nodes[0]) ==> ERROR: Wrong value 'sizeof(parent.nodes[0])' for parameter 'Test.tester.i': syntax error
+sizeof(parent.nodes[0].foo) ==> ERROR: Wrong value 'sizeof(parent.nodes[0].foo)' for parameter 'Test.tester.i': sizeof(parent.submodule[index].gate) form not supported here
+sizeof(parent.nodes[0].g) ==> ERROR: Wrong value 'sizeof(parent.nodes[0].g)' for parameter 'Test.tester.i': sizeof(parent.submodule[index].gate) form not supported here
+sizeof(parent.nodes[0].gg) ==> ERROR: Wrong value 'sizeof(parent.nodes[0].gg)' for parameter 'Test.tester.i': sizeof(parent.submodule[index].gate) form not supported here
+sizeof(parent.nodes) ==> 5
+sizeof(parent.nodes.foo) ==> ERROR: Wrong value 'sizeof(parent.nodes.foo)' for parameter 'Test.tester.i': sizeof(parent.submodule.gate) form not supported here
+sizeof(parent.nodes.g) ==> ERROR: Wrong value 'sizeof(parent.nodes.g)' for parameter 'Test.tester.i': sizeof(parent.submodule.gate) form not supported here
+sizeof(parent.nodes.gg) ==> ERROR: Wrong value 'sizeof(parent.nodes.gg)' for parameter 'Test.tester.i': sizeof(parent.submodule.gate) form not supported here
+sizeof(parent.node[0]) ==> ERROR: Wrong value 'sizeof(parent.node[0])' for parameter 'Test.tester.i': syntax error
+sizeof(parent.node[0].foo) ==> ERROR: Wrong value 'sizeof(parent.node[0].foo)' for parameter 'Test.tester.i': sizeof(parent.submodule[index].gate) form not supported here
+sizeof(parent.node[0].g) ==> ERROR: Wrong value 'sizeof(parent.node[0].g)' for parameter 'Test.tester.i': sizeof(parent.submodule[index].gate) form not supported here
+sizeof(parent.node[0].gg) ==> ERROR: Wrong value 'sizeof(parent.node[0].gg)' for parameter 'Test.tester.i': sizeof(parent.submodule[index].gate) form not supported here
+
+exists() ==> ERROR: Wrong value 'exists()' for parameter 'Test.tester.b': syntax error
+exists(foo) ==> false
+exists(g) ==> false
+exists(gg) ==> false
+exists(barm) ==> false
+exists(barm.foo) ==> ERROR: Wrong value 'exists(barm.foo)' for parameter 'Test.tester.b': exists(submodule.gate) form not supported here
+exists(barm.g) ==> ERROR: Wrong value 'exists(barm.g)' for parameter 'Test.tester.b': exists(submodule.gate) form not supported here
+exists(barm.gg) ==> ERROR: Wrong value 'exists(barm.gg)' for parameter 'Test.tester.b': exists(submodule.gate) form not supported here
+exists(barm[0]) ==> ERROR: Wrong value 'exists(barm[0])' for parameter 'Test.tester.b': syntax error
+exists(barm[0].foo) ==> ERROR: Wrong value 'exists(barm[0].foo)' for parameter 'Test.tester.b': exists(submodule[index].gate) form not supported here
+exists(barm[0].g) ==> ERROR: Wrong value 'exists(barm[0].g)' for parameter 'Test.tester.b': exists(submodule[index].gate) form not supported here
+exists(barm[0].gg) ==> ERROR: Wrong value 'exists(barm[0].gg)' for parameter 'Test.tester.b': exists(submodule[index].gate) form not supported here
+exists(node) ==> true
+exists(node.foo) ==> ERROR: Wrong value 'exists(node.foo)' for parameter 'Test.tester.b': exists(submodule.gate) form not supported here
+exists(node.g) ==> ERROR: Wrong value 'exists(node.g)' for parameter 'Test.tester.b': exists(submodule.gate) form not supported here
+exists(node.gg) ==> ERROR: Wrong value 'exists(node.gg)' for parameter 'Test.tester.b': exists(submodule.gate) form not supported here
+exists(nodes[0]) ==> ERROR: Wrong value 'exists(nodes[0])' for parameter 'Test.tester.b': syntax error
+exists(nodes[0].foo) ==> ERROR: Wrong value 'exists(nodes[0].foo)' for parameter 'Test.tester.b': exists(submodule[index].gate) form not supported here
+exists(nodes[0].g) ==> ERROR: Wrong value 'exists(nodes[0].g)' for parameter 'Test.tester.b': exists(submodule[index].gate) form not supported here
+exists(nodes[0].gg) ==> ERROR: Wrong value 'exists(nodes[0].gg)' for parameter 'Test.tester.b': exists(submodule[index].gate) form not supported here
+exists(nodes) ==> true
+exists(nodes.foo) ==> ERROR: Wrong value 'exists(nodes.foo)' for parameter 'Test.tester.b': exists(submodule.gate) form not supported here
+exists(nodes.g) ==> ERROR: Wrong value 'exists(nodes.g)' for parameter 'Test.tester.b': exists(submodule.gate) form not supported here
+exists(nodes.gg) ==> ERROR: Wrong value 'exists(nodes.gg)' for parameter 'Test.tester.b': exists(submodule.gate) form not supported here
+exists(node[0]) ==> ERROR: Wrong value 'exists(node[0])' for parameter 'Test.tester.b': syntax error
+exists(node[0].foo) ==> ERROR: Wrong value 'exists(node[0].foo)' for parameter 'Test.tester.b': exists(submodule[index].gate) form not supported here
+exists(node[0].g) ==> ERROR: Wrong value 'exists(node[0].g)' for parameter 'Test.tester.b': exists(submodule[index].gate) form not supported here
+exists(node[0].gg) ==> ERROR: Wrong value 'exists(node[0].gg)' for parameter 'Test.tester.b': exists(submodule[index].gate) form not supported here
+exists(this) ==> ERROR: Wrong value 'exists(this)' for parameter 'Test.tester.b': exists(this) form not supported here
+exists(this.foo) ==> false
+exists(this.g) ==> false
+exists(this.gg) ==> false
+exists(this.barm) ==> false
+exists(this.barm.foo) ==> ERROR: Wrong value 'exists(this.barm.foo)' for parameter 'Test.tester.b': exists(this.submodule.gate) form not supported here
+exists(this.barm.g) ==> ERROR: Wrong value 'exists(this.barm.g)' for parameter 'Test.tester.b': exists(this.submodule.gate) form not supported here
+exists(this.barm.gg) ==> ERROR: Wrong value 'exists(this.barm.gg)' for parameter 'Test.tester.b': exists(this.submodule.gate) form not supported here
+exists(this.barm[0]) ==> ERROR: Wrong value 'exists(this.barm[0])' for parameter 'Test.tester.b': exists(this.name[index]) form not supported here
+exists(this.barm[0].foo) ==> ERROR: Wrong value 'exists(this.barm[0].foo)' for parameter 'Test.tester.b': exists(this.submodule[index].gate) form not supported here
+exists(this.barm[0].g) ==> ERROR: Wrong value 'exists(this.barm[0].g)' for parameter 'Test.tester.b': exists(this.submodule[index].gate) form not supported here
+exists(this.barm[0].gg) ==> ERROR: Wrong value 'exists(this.barm[0].gg)' for parameter 'Test.tester.b': exists(this.submodule[index].gate) form not supported here
+exists(this.node) ==> false
+exists(this.node.foo) ==> ERROR: Wrong value 'exists(this.node.foo)' for parameter 'Test.tester.b': exists(this.submodule.gate) form not supported here
+exists(this.node.g) ==> ERROR: Wrong value 'exists(this.node.g)' for parameter 'Test.tester.b': exists(this.submodule.gate) form not supported here
+exists(this.node.gg) ==> ERROR: Wrong value 'exists(this.node.gg)' for parameter 'Test.tester.b': exists(this.submodule.gate) form not supported here
+exists(this.nodes[0]) ==> ERROR: Wrong value 'exists(this.nodes[0])' for parameter 'Test.tester.b': exists(this.name[index]) form not supported here
+exists(this.nodes[0].foo) ==> ERROR: Wrong value 'exists(this.nodes[0].foo)' for parameter 'Test.tester.b': exists(this.submodule[index].gate) form not supported here
+exists(this.nodes[0].g) ==> ERROR: Wrong value 'exists(this.nodes[0].g)' for parameter 'Test.tester.b': exists(this.submodule[index].gate) form not supported here
+exists(this.nodes[0].gg) ==> ERROR: Wrong value 'exists(this.nodes[0].gg)' for parameter 'Test.tester.b': exists(this.submodule[index].gate) form not supported here
+exists(this.nodes) ==> false
+exists(this.nodes.foo) ==> ERROR: Wrong value 'exists(this.nodes.foo)' for parameter 'Test.tester.b': exists(this.submodule.gate) form not supported here
+exists(this.nodes.g) ==> ERROR: Wrong value 'exists(this.nodes.g)' for parameter 'Test.tester.b': exists(this.submodule.gate) form not supported here
+exists(this.nodes.gg) ==> ERROR: Wrong value 'exists(this.nodes.gg)' for parameter 'Test.tester.b': exists(this.submodule.gate) form not supported here
+exists(this.node[0]) ==> ERROR: Wrong value 'exists(this.node[0])' for parameter 'Test.tester.b': exists(this.name[index]) form not supported here
+exists(this.node[0].foo) ==> ERROR: Wrong value 'exists(this.node[0].foo)' for parameter 'Test.tester.b': exists(this.submodule[index].gate) form not supported here
+exists(this.node[0].g) ==> ERROR: Wrong value 'exists(this.node[0].g)' for parameter 'Test.tester.b': exists(this.submodule[index].gate) form not supported here
+exists(this.node[0].gg) ==> ERROR: Wrong value 'exists(this.node[0].gg)' for parameter 'Test.tester.b': exists(this.submodule[index].gate) form not supported here
+exists(parent) ==> ERROR: Wrong value 'exists(parent)' for parameter 'Test.tester.b': exists(parent) form not supported here
+exists(parent.foo) ==> false
+exists(parent.g) ==> false
+exists(parent.gg) ==> false
+exists(parent.barm) ==> false
+exists(parent.barm.foo) ==> ERROR: Wrong value 'exists(parent.barm.foo)' for parameter 'Test.tester.b': exists(parent.submodule.gate) form not supported here
+exists(parent.barm.g) ==> ERROR: Wrong value 'exists(parent.barm.g)' for parameter 'Test.tester.b': exists(parent.submodule.gate) form not supported here
+exists(parent.barm.gg) ==> ERROR: Wrong value 'exists(parent.barm.gg)' for parameter 'Test.tester.b': exists(parent.submodule.gate) form not supported here
+exists(parent.barm[0]) ==> ERROR: Wrong value 'exists(parent.barm[0])' for parameter 'Test.tester.b': exists(parent.name[index]) form not supported here
+exists(parent.barm[0].foo) ==> ERROR: Wrong value 'exists(parent.barm[0].foo)' for parameter 'Test.tester.b': exists(parent.submodule[index].gate) form not supported here
+exists(parent.barm[0].g) ==> ERROR: Wrong value 'exists(parent.barm[0].g)' for parameter 'Test.tester.b': exists(parent.submodule[index].gate) form not supported here
+exists(parent.barm[0].gg) ==> ERROR: Wrong value 'exists(parent.barm[0].gg)' for parameter 'Test.tester.b': exists(parent.submodule[index].gate) form not supported here
+exists(parent.node) ==> true
+exists(parent.node.foo) ==> ERROR: Wrong value 'exists(parent.node.foo)' for parameter 'Test.tester.b': exists(parent.submodule.gate) form not supported here
+exists(parent.node.g) ==> ERROR: Wrong value 'exists(parent.node.g)' for parameter 'Test.tester.b': exists(parent.submodule.gate) form not supported here
+exists(parent.node.gg) ==> ERROR: Wrong value 'exists(parent.node.gg)' for parameter 'Test.tester.b': exists(parent.submodule.gate) form not supported here
+exists(parent.nodes[0]) ==> ERROR: Wrong value 'exists(parent.nodes[0])' for parameter 'Test.tester.b': exists(parent.name[index]) form not supported here
+exists(parent.nodes[0].foo) ==> ERROR: Wrong value 'exists(parent.nodes[0].foo)' for parameter 'Test.tester.b': exists(parent.submodule[index].gate) form not supported here
+exists(parent.nodes[0].g) ==> ERROR: Wrong value 'exists(parent.nodes[0].g)' for parameter 'Test.tester.b': exists(parent.submodule[index].gate) form not supported here
+exists(parent.nodes[0].gg) ==> ERROR: Wrong value 'exists(parent.nodes[0].gg)' for parameter 'Test.tester.b': exists(parent.submodule[index].gate) form not supported here
+exists(parent.nodes) ==> true
+exists(parent.nodes.foo) ==> ERROR: Wrong value 'exists(parent.nodes.foo)' for parameter 'Test.tester.b': exists(parent.submodule.gate) form not supported here
+exists(parent.nodes.g) ==> ERROR: Wrong value 'exists(parent.nodes.g)' for parameter 'Test.tester.b': exists(parent.submodule.gate) form not supported here
+exists(parent.nodes.gg) ==> ERROR: Wrong value 'exists(parent.nodes.gg)' for parameter 'Test.tester.b': exists(parent.submodule.gate) form not supported here
+exists(parent.node[0]) ==> ERROR: Wrong value 'exists(parent.node[0])' for parameter 'Test.tester.b': exists(parent.name[index]) form not supported here
+exists(parent.node[0].foo) ==> ERROR: Wrong value 'exists(parent.node[0].foo)' for parameter 'Test.tester.b': exists(parent.submodule[index].gate) form not supported here
+exists(parent.node[0].g) ==> ERROR: Wrong value 'exists(parent.node[0].g)' for parameter 'Test.tester.b': exists(parent.submodule[index].gate) form not supported here
+exists(parent.node[0].gg) ==> ERROR: Wrong value 'exists(parent.node[0].gg)' for parameter 'Test.tester.b': exists(parent.submodule[index].gate) form not supported here
+.

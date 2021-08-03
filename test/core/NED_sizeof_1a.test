@@ -1,0 +1,145 @@
+%description:
+Test NED sizeof() operators (for zero/nonzero module/gate sizes) in:
+submodule parameters and module vector sizes
+
+%file: test.ned
+
+module Foo
+{
+}
+
+simple Simple
+{
+    parameters:
+        double p1;
+        double p2;
+        double p3;
+        double p4;
+        double p5;
+        double p6;
+        double p7;
+        double p8;
+    gates:
+        input g1[];
+        input g2[];
+        input g3[];
+        input g4[];
+        input g5[];
+        input g6[];
+        input g7[];
+        input g8[];
+}
+
+module Compound
+{
+    parameters:
+        int a;
+    gates:
+        input in0[];
+        input in1[];
+    submodules:
+        foo0[0]: Foo;
+        foo1[5]: Foo;
+        dum1[sizeof(this.foo0)]: Foo;
+        dum2[sizeof(this.foo1)]: Foo;
+        dum3[sizeof(this.in0)]: Foo;
+        dum4[sizeof(this.in1)]: Foo;
+        dum5[a + sizeof(this.foo0)]: Foo;
+        dum6[a + sizeof(this.foo1)]: Foo;
+        dum7[a + sizeof(this.in0)]: Foo;
+        dum8[a + sizeof(this.in1)]: Foo;
+        sub: Simple {
+            parameters:
+                p1 = sizeof(parent.foo0);
+                p2 = sizeof(parent.foo1);
+                p3 = sizeof(parent.in0);
+                p4 = sizeof(parent.in1);
+                p5 = parent.a + sizeof(parent.foo0);
+                p6 = parent.a + sizeof(parent.foo1);
+                p7 = parent.a + sizeof(parent.in0);
+                p8 = parent.a + sizeof(parent.in1);
+            gates:
+                g1[sizeof(parent.foo0)];
+                g2[sizeof(parent.foo1)];
+                g3[sizeof(parent.in0)];
+                g4[sizeof(parent.in1)];
+                g5[parent.a + sizeof(parent.foo0)];
+                g6[parent.a + sizeof(parent.foo1)];
+                g7[parent.a + sizeof(parent.in0)];
+                g8[parent.a + sizeof(parent.in1)];
+        }
+    connections allowunconnected:
+}
+
+// we need this only because the top-level module cannot
+// have gates, and we want to test sizeof(gatevector) as well
+network Test
+{
+    submodules:
+        c: Compound {
+            parameters:
+                a = 100;
+            gates:
+                in0[0];
+                in1[8];
+        }
+    connections allowunconnected:
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class Simple : public cSimpleModule
+{
+  public:
+    Simple() : cSimpleModule(16384) { }
+    virtual void activity() override;
+};
+
+Define_Module(Simple);
+
+void Simple::activity()
+{
+    for (int i=0; i<getNumParams(); i++)
+        EV << getFullName() << "." << par(i).getName() << "=" << (double)par(i) << endl;
+    for (cModule::GateIterator it(this); !it.end(); it++)
+        if ((*it)->getIndex()==0)
+            EV << (*it)->getName() << " size=" << (*it)->getVectorSize() << endl;
+    for (cModule::SubmoduleIterator it(getParentModule()); !it.end(); it++)
+        if ((*it)->isVector() && (*it)->getIndex()==0)
+            EV << (*it)->getName() << " size=" << (*it)->getVectorSize() << endl;
+    EV << ".\n";
+}
+
+
+}; //namespace
+
+%contains: stdout
+sub.p1=0
+sub.p2=5
+sub.p3=0
+sub.p4=8
+sub.p5=100
+sub.p6=105
+sub.p7=100
+sub.p8=108
+g2 size=5
+g4 size=8
+g5 size=100
+g6 size=105
+g7 size=100
+g8 size=108
+foo1 size=5
+dum2 size=5
+dum4 size=8
+dum5 size=100
+dum6 size=105
+dum7 size=100
+dum8 size=108
+.
+

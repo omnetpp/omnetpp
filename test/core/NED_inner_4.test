@@ -21,10 +21,12 @@ network Test
         module Node {
           parameters:
             int local = foo;    // parent foo
+            int local2 = parent.foo; // explicit parent foo (must be equivalent to previous one)
             int bar = bar;      // parent bar
+            int bar2 = parent.bar;   // explicit parent bar (must be equivalent to previous one)
             int third = local;  // local param
             int foobar = 99;    // the local foobar
-            int foobar2 = this.foobar; // the local foobar
+            int foobar2 = this.foobar; // the local foobar (must be equivalent to previous one)
           gates:
             output out;
             input in;
@@ -33,10 +35,12 @@ network Test
         channel X extends ned.DelayChannel {
           parameters:
             int local = foo;    // parent foo
+            int local2 = parent.foo; // explicit parent foo (must be equivalent to previous one)
             int bar = bar;      // parent bar
+            int bar2 = parent.bar;   // explicit parent bar (must be equivalent to previous one)
             int third = local;  // local param
             int foobar = 99;    // the local foobar
-            int foobar2 = this.foobar; // the local foobar
+            int foobar2 = this.foobar; // the local foobar (must be equivalent to previous one)
         }
     submodules:
         node: Node;
@@ -61,13 +65,15 @@ module Test: Test {
         module Test.node: Test.Node {
             parameters:
                 local = 1
+                local2 = 1
                 bar = 2
+                bar2 = 2
                 third = 1
                 foobar = 99
                 foobar2 = 99
             gates:
-                out: --> node.in, (Test.X)channel disabled=false delay=0s local=1 bar=2 third=1 foobar=99 foobar2=99
-                in: <-- node.out, (Test.X)channel disabled=false delay=0s local=1 bar=2 third=1 foobar=99 foobar2=99
+                out: --> node.in, (Test.X)channel disabled=false delay=0s local=1 local2=1 bar=2 bar2=2 third=1 foobar=99 foobar2=99 
+                in: <-- node.out, (Test.X)channel disabled=false delay=0s local=1 local2=1 bar=2 bar2=2 third=1 foobar=99 foobar2=99 
         }
 }
 

@@ -19,10 +19,12 @@ module Node
         int a = default(111);
         int b = default(222);
         int c = default(333);
+        int d = default(444);
     gates:
         input ga[];
         input gb[];
         input gc[];
+        input gd[];
     connections allowunconnected:
 }
 
@@ -46,11 +48,13 @@ network Test
                 a = p;      // parent module's parameter
                 b = this.p; // local submodule's parameter
                 c = n.p;    // other submodule's parameter
+                d = parent.p; // parent module's parameter
             gates:
                 // from gate vector size:
                 ga[p];      // parent module's parameter
                 gb[this.p]; // local submodule's parameter
                 gc[n.p];    // other submodule's parameter
+                gd[parent.p]; // parent module's parameter
         };
 
         // from module vector size:
@@ -76,6 +80,7 @@ cmdenv-event-banners = false
 *.ini.a = p      # parent module's parameter
 *.ini.b = this.p # local submodule's parameter
 *.ini.c = n.p    # other submodule's parameter
+*.ini.d = parent.p # parent module's parameter
 
 #Note: default params will be assigned automatically
 
@@ -91,6 +96,7 @@ module Test: Test {
                 a = 111
                 b = 222
                 c = 333
+                d = 444
         }
         module Test.m: Node {
             parameters:
@@ -98,6 +104,7 @@ module Test: Test {
                 a = 1
                 b = 3
                 c = 2
+                d = 1
             gates:
                 ga[0]: not connected
                 gb[0]: not connected
@@ -105,6 +112,7 @@ module Test: Test {
                 gb[2]: not connected
                 gc[0]: not connected
                 gc[1]: not connected
+                gd[0]: not connected
         }
         module Test.ma[0]: Nil {
         }
@@ -120,6 +128,7 @@ module Test: Test {
                 a = 1
                 b = 4
                 c = 2
+                d = 1
         }
 }
 
