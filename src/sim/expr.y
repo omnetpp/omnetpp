@@ -322,9 +322,9 @@ numliteral
                 {
                   std::string unit;
                   double d = parseQuantity($1, unit);
-                  bool isInteger = (d == floor(d)) && d >= std::numeric_limits<intpar_t>::min() && d <= std::numeric_limits<intpar_t>::max(); // note: it would be slightly better to try parsing it in integer in the first place
-                  if (isInteger)
-                      *e++ = (intpar_t)d;
+                  intpar_t l = (intpar_t)d; 
+                  if (d == l)
+                      *e++ = l;
                   else
                       *e++ = d;
                   if (!unit.empty())

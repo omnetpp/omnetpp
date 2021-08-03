@@ -254,9 +254,9 @@ void cExpressionBuilder::doLiteral(LiteralElement *node)
         case LIT_QUANTITY: {
             std::string unit;
             double d = UnitConversion::parseQuantity(node->getValue(), unit);
-            bool isInteger = (d == floor(d)) && d >= std::numeric_limits<intpar_t>::min() && d <= std::numeric_limits<intpar_t>::max(); // note: it would be slightly better to try parsing it in integer in the first place
-            if (isInteger)
-                elems[pos++] = (intpar_t)d;
+            intpar_t l = (intpar_t)d;
+            if (d == l)
+                elems[pos++] = l;
             else
                 elems[pos++] = d;
             elems[pos-1].setUnit(unit.c_str());
