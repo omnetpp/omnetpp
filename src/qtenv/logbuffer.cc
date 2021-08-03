@@ -42,14 +42,14 @@ LogBuffer::Line::Line(int contextComponentId, LogLevel logLevel, const char *pre
 }
 
 
-LogBuffer::Entry::Entry(eventnumber_t e, simtime_t t, cModule *mod, const char *banner)
-    : eventNumber(e), simtime(t), componentId(mod ? (mod->getId()) : 0), banner(opp_strdup(banner))
+LogBuffer::Entry::Entry(Kind kind, eventnumber_t e, simtime_t t, cComponent *comp, const char *banner)
+    : kind(kind), eventNumber(e), simtime(t), componentId(comp ? (comp->getId()) : 0), banner(opp_strdup(banner))
 {
 
 }
 
-LogBuffer::Entry::Entry(eventnumber_t e, simtime_t t, cModule *mod, const char *banner, int bannerLength)
-    : eventNumber(e), simtime(t), componentId(mod ? (mod->getId()) : 0), banner(opp_strndup(banner, bannerLength))
+LogBuffer::Entry::Entry(Kind kind, eventnumber_t e, simtime_t t, cComponent *comp, const char *banner, int bannerLength)
+    : kind(kind), eventNumber(e), simtime(t), componentId(comp ? (comp->getId()) : 0), banner(opp_strndup(banner, bannerLength))
 {
 
 }
@@ -70,7 +70,7 @@ LogBuffer::Entry::~Entry()
 
 void LogBuffer::addEvent(eventnumber_t e, simtime_t t, cModule *mod, const char *banner)
 {
-    Entry *entry = new Entry(e, t, mod, banner);
+    Entry *entry = new Entry(Entry::Kind::PROCESSED_EVENT, e, t, mod, banner);
     entries.push_back(entry);
     discardEventsIfLimitExceeded();
 
@@ -79,25 +79,14 @@ void LogBuffer::addEvent(eventnumber_t e, simtime_t t, cModule *mod, const char 
 
 void LogBuffer::addInitialize(cComponent *component, const char *banner)
 {
-    if (entries.empty()) {
-        Entry *entry = new Entry(0, simTime(), getSimulation()->getSystemModule(), "** Initializing network\n");
-        entries.push_back(entry);
-    }
-
-    Entry *entry = entries.back();
-    cComponent *contextComponent = getSimulation()->getContext();
-    int contextComponentId = contextComponent ? contextComponent->getId() : 0;
-    entry->lines.push_back(Line(contextComponentId, LogLevel::LOGLEVEL_INFO, nullptr, banner));
-
-    emit logLineAdded();
+    Entry *entry = new Entry(Entry::Kind::COMPONENT_INIT_STAGE, 0, simTime(), component, banner);
+    entries.push_back(entry);
+    emit logEntryAdded();
 }
 
 void LogBuffer::addLogLine(LogLevel logLevel, const char *prefix, const char *text, int len)
 {
-    if (entries.empty()) {
-        Entry *entry = new Entry(0, simTime(), nullptr, nullptr);
-        entries.push_back(entry);
-    }
+    ASSERT(!entries.empty());
 
     // FIXME if last line is "info" then we cannot append to it! create new entry with empty banner?
 
@@ -112,7 +101,7 @@ void LogBuffer::addLogLine(LogLevel logLevel, const char *prefix, const char *te
 void LogBuffer::addInfo(const char *text, int len)
 {
     // TODO ha inline info (contextmodule!=nullptr), sima logline-kent adjuk hozza!!!!
-    Entry *entry = new Entry(0, simTime(), nullptr, text, len);
+    Entry *entry = new Entry(Entry::Kind::SYSTEM_MESSAGE, 0, simTime(), nullptr, text, len);
     entries.push_back(entry);
     discardEventsIfLimitExceeded();
 
@@ -121,19 +110,14 @@ void LogBuffer::addInfo(const char *text, int len)
 
 void LogBuffer::beginSend(cMessage *msg, const SendOptions& options)
 {
-    if (entries.empty()) {
-        // this is likely the initialize() phase -- hence no banner
-        addEvent(0, SIMTIME_ZERO, nullptr, nullptr);
-        Entry *entry = entries.back();
-        entry->componentId = -1;
-    }
+    ASSERT(!entries.empty());
 
     // FIXME if last line is "info" then we cannot append to it! create new entry with empty banner?
 
     Entry *entry = entries.back();
     entry->msgs.push_back(MessageSend());
     MessageSend& msgsend = entry->msgs.back();
-    msgsend.msg = nullptr;
+    msgsend.msg = nullptr; // will be populated in endSend() or when it is discarded
     msgsend.hopModuleIds.push_back(msg->getSenderModuleId());
 }
 

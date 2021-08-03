@@ -334,22 +334,32 @@ int EventEntryLinesProvider::getNumLines(LogBuffer::Entry *entry)
     // the line below might iterate on the lines again, but can break early
     if (shouldShowBanner(entry, shouldShowAnyLine))
         count++; // the banner line
+    else
+        count = 0; // must not show anything without a banner
 
     return count;
 }
 
 bool EventEntryLinesProvider::shouldShowBanner(LogBuffer::Entry *entry, bool shouldShowAnyLine)
 {
+    // if there is no banner, we can't show it
     if (entry->banner == nullptr)
         return false;
 
-    // a green "info" line
-    if (entry->componentId <= 0)
+    // a green "info" line should always be shown
+    if (entry->isSystemMessage())
         return true;
 
-    if (isAncestorModule(entry->componentId, inspectedComponentId))
+    // shouldn't spam banners for "empty" initialization stages
+    if (entry->isInitializationStage() && entry->lines.empty())
+        return false;
+
+    // if the inspected component is an ancestor of the component of the event, the banner should be shown
+    if (!entry->isInitializationStage() && isAncestorModule(entry->componentId, inspectedComponentId))
         return true;
 
+    // otherwise, if any line in this (unrelated) entry should be shown regardless, make sure the banner is there too
+    // (for example, when the log was eimtted in a methodcall into the inspected component from an event processed somewhere else)
     return shouldShowAnyLine;
 }
 
@@ -357,7 +367,7 @@ bool EventEntryLinesProvider::shouldShowBanner(LogBuffer::Entry *entry, bool sho
  {
     LogBuffer::Line &line = entry->lines[lineIndex];
     return !contains(excludedComponents, line.contextComponentId)
-        && (entry->componentId <= 0 || line.contextComponentId <= 0 ||
+        && (entry->isSystemMessage() || line.contextComponentId <= 0 ||
             isAncestorModule(line.contextComponentId, inspectedComponentId)
             || isAncestorModule(entry->componentId, inspectedComponentId));
 }
@@ -374,7 +384,7 @@ QString EventEntryLinesProvider::getLineText(LogBuffer::Entry *entry, int lineIn
 {
     if (shouldShowBanner(entry, shouldShowAnyLine(entry))) {
         if (lineIndex == 0) // it's an event banner, or if no component, an info line
-            return (entry->componentId <= 0 ? SGR(FG_GREEN) : SGR(FG_BRIGHT_BLUE)) + QString(entry->banner) + SGR(RESET);
+            return (entry->isSystemMessage() ? SGR(FG_GREEN) : SGR(FG_BRIGHT_BLUE)) + QString(entry->banner) + SGR(RESET);
         else
             lineIndex--; // skipping the banner
     }

@@ -40,7 +40,7 @@ class QTENV_API LogBuffer : public QObject
 
   public:
     struct Line {
-        int contextComponentId;
+        int contextComponentId; // this is also set correctly in initialization stages, and if applies, for "info log" lines too
         LogLevel logLevel;
         const char *prefix;
         const char *line;  // including newline
@@ -52,19 +52,41 @@ class QTENV_API LogBuffer : public QObject
         std::vector<int> hopModuleIds; //TODO also: txStartTime, propagationDelay, duration for each hop
         bool discarded = false;
     };
+
+    // Stores information about either:
+    //   - a processed event
+    //   - an initialization stage of a given component
+    //   - a "system message" ("info log line")
+    //
+    // Each entry contains, on top of some basic info (like a timestamp):
+    // any number of sent messages and printed log lines, independently.
     struct Entry {
+        enum class Kind {
+            PROCESSED_EVENT,
+            COMPONENT_INIT_STAGE,
+            SYSTEM_MESSAGE,       // an "info log line"
+            INTERNAL_WARNING,     // invalid DisplayString for example
+        };
+
+        Kind kind;
+
         eventnumber_t eventNumber = 0; // 0 for initialization, >0 afterwards
         simtime_t simtime = 0;
-        int componentId = 0;  // 0 for info log lines, -1 for things in initialize
-        //TODO msg name, class, kind, previousEventNumber
+
+        // the component that PROCESSED the EVENT, or of which the INIT_STAGE was (or 0 if not available)
+        int componentId = 0;
+
+        //TODO add processed event (msg) name, class, kind, previousEventNumber
         const char *banner = nullptr;
         std::vector<Line> lines;
         std::vector<MessageSend> msgs;
 
-        Entry(eventnumber_t e, simtime_t t, cModule *mod, const char *banner); // banner is null-terminated
-        Entry(eventnumber_t e, simtime_t t, cModule *mod, const char *banner, int bannerLength);
+        Entry(Kind kind, eventnumber_t e, simtime_t t, cComponent *comp, const char *banner); // banner is null-terminated
+        Entry(Kind kind, eventnumber_t e, simtime_t t, cComponent *comp, const char *banner, int bannerLength);
 
-        bool isEvent() { return componentId > 0; }
+        bool isInitializationStage() { return kind == Kind::COMPONENT_INIT_STAGE; }
+        bool isSystemMessage() { return kind == Kind::SYSTEM_MESSAGE; }
+        bool isEvent() { return kind == Kind::PROCESSED_EVENT; }
 
         ~Entry();
     };
