@@ -1,5 +1,5 @@
 %description:
-Tests autoWarmupFilter=false in @statistic().
+Tests autoWarmupFilter=false in @statistic(). Test backported from OMNeT++ 6.0.
 
 %file: test.ned
 
@@ -10,12 +10,19 @@ module Node
     @statistic[a1](record=mean);
     @statistic[a2](record=mean;autoWarmupFilter=true); // no-op
     @statistic[a3](record=mean;autoWarmupFilter=false);
-    @statistic[a4](record=warmup(mean);autoWarmupFilter=false);
+    //@statistic[a4](record=warmup(mean);autoWarmupFilter=false); ==> ERROR: Result recorder "warmup" not found
+    @statistic[a4](record=last(warmup(mean));autoWarmupFilter=false);
 
-    @statistic[b1](record=min+max);
-    @statistic[b2](record=min+max;autoWarmupFilter=false);
-    @statistic[b3](record=min+warmup(max);autoWarmupFilter=false);
-    @statistic[b4](record=warmup(min+max);autoWarmupFilter=false);
+    //@statistic[b1](record=min+max); ==> ERROR: Bad recording mode 'min+max': Expression may only refer to one signal  (note: it thinks "min" and "max" are signals)
+    //@statistic[b2](record=min+max;autoWarmupFilter=false); ==> ditto
+    //@statistic[b3](record=min+warmup(max);autoWarmupFilter=false); ==> ditto
+    //@statistic[b4](record=warmup(min+max);autoWarmupFilter=false); ==> ditto
+
+    //@statistic[b1](record=min(b1)+max(b1)); ==> ERROR: Result filter "b1" not found  (solution: move expression into "source=" part, and add "record=last")
+    @statistic[b1](source=min(b1)+max(b1);record=last);
+    //@statistic[b2](source=min(b2)+max(b2);record=last;autoWarmupFilter=false); ==> ERROR: Cannot use a signal more than once in a statistics source expression
+    //@statistic[b3](source=min(b3)+warmup(max(b3));record=last;autoWarmupFilter=false); ==> ditto
+    //@statistic[b4](source=warmup(min(b4)+max(b4));record=last;autoWarmupFilter=false); ==> ditto
 }
 
 network Test
@@ -35,42 +42,19 @@ warmup-period = 10s
 
 %contains: stdout
 Test.node (Node):
-    "b4" (signalID=_):
-        MinFilter
-            $0 + $1 (ExpressionFilter)
-                WarmupPeriodFilter
-                    LastValueRecorder ==> b4:warmup(min+max)
-        MaxFilter
-            $0 + $1 (ExpressionFilter)
-                WarmupPeriodFilter
-                    LastValueRecorder ==> b4:warmup(min+max)
-    "b3" (signalID=_):
-        MinFilter
-            $0 + $1 (ExpressionFilter)
-                LastValueRecorder ==> b3:min+warmup(max)
-        MaxFilter
-            WarmupPeriodFilter
-                $0 + $1 (ExpressionFilter)
-                    LastValueRecorder ==> b3:min+warmup(max)
-    "b2" (signalID=_):
-        MinFilter
-            $0 + $1 (ExpressionFilter)
-                LastValueRecorder ==> b2:min+max
-        MaxFilter
-            $0 + $1 (ExpressionFilter)
-                LastValueRecorder ==> b2:min+max
     "b1" (signalID=_):
         WarmupPeriodFilter
             MinFilter
-                $0 + $1 (ExpressionFilter)
-                    LastValueRecorder ==> b1:min+max
+                <signalvalue> + <signalvalue> (NaryExpressionFilter)
+                    LastValueRecorder ==> b1:last
+        WarmupPeriodFilter
             MaxFilter
-                $0 + $1 (ExpressionFilter)
-                    LastValueRecorder ==> b1:min+max
+                <signalvalue> + <signalvalue> (NaryExpressionFilter)
+                    LastValueRecorder ==> b1:last
     "a4" (signalID=_):
         MeanFilter
             WarmupPeriodFilter
-                LastValueRecorder ==> a4:warmup(mean)
+                LastValueRecorder ==> a4:last(warmup(mean))
     "a3" (signalID=_):
         MeanRecorder ==> a3:mean
     "a2" (signalID=_):
