@@ -12,7 +12,7 @@ Installation Guide
 
    ch-intro
    ch-windows-|omnetpp|
-   ch-macosx
+   ch-macos
    ch-supported-linux
    ch-ubuntu
    ch-fedora
