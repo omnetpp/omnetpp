@@ -19,7 +19,7 @@ platforms, without the IDE.
 
 The following packages are required for @OMNETPP@ to work:
 
-build-essential, GNU make, gcc, g\++, bison (2.4+), flex, perl::
+build-essential, GNU make, gcc, g\++, bison (3.0+), flex, perl::
   These packages are needed for compiling @OMNETPP@ and simulation models,
   and also for certain @OMNETPP@ tools to work. C++ compilers other than
   g++, will also be accepted.
@@ -41,11 +41,6 @@ LibXML2 or Expat::
   Either one of these XML parsers are needed for @OMNETPP@ to be able
   to read XML files. The 'devel' packages (that include the header files)
   are needed. LibXML2 is the preferred one.
-OpenJDK, version 8.0 or later::
-  The Java runtime is required to run the Eclipse-based Simulation IDE.
-  Other implementations, for example Kaffe, have been found to have problems
-  running the IDE. You do not need this package if you do not plan
-  to use the Simulation IDE.
 Qt 5.4 or later::
   Required by the Qtenv simulation runtime environment.
   You need the 'devel' packages that include header files as well.
@@ -67,12 +62,6 @@ MPI::
 Akaroa::
   Implements Multiple Replications In Parallel (MRIP). Akaroa can be downloaded
   from the project's website.
-
-Pcap::
-  The optional Pcap library allows simulation models to capture and
-  transmit network packets bypassing the operating system's protocol stack.
-  It is not used directly by @OMNETPP@, but models may need it to support
-  network emulation.
 
 The exact names of these packages may differ across distributions.
 
@@ -121,16 +110,6 @@ contains `init.tcl`. That is, you probably want to put a line like
 
 into your `~/.bashrc`.
 
-
-==== The Java Runtime
-
-You need to install the Oracle JRE or OpenJDK.
-The IDE is not supported on Unix platforms other than Linux, so JRE is not required
-either. We have tested various other Java runtimes ('gcj', 'kaffe', etc.), and
-the IDE does not work well with them.
-
-Java version 1.8 (i.e. JRE 1.8) or later is required.
-
 ==== MPI
 
 @OMNETPP@ is not sensitive to the particular MPI implementation. You may use
@@ -139,13 +118,13 @@ OpenMPI, or any other standards-compliant MPI package.
 === Downloading and Unpacking
 
 Download @OMNETPP@ from {DOWNLOADSITE}. Make sure you select to download
-the generic archive, `@omnetpp@-@version@-src.tgz`.
+the generic archive, `@omnetpp@-@version@-core.tgz`.
 
 Copy the archive to the directory where you want to install it. This is usually
 your home directory, `/home/<you>`. Open a terminal, and extract the archive
 using the following command:
 
-  $ tar xvfz @omnetpp@-@version@-src.tgz
+  $ tar xvfz @omnetpp@-@version@-core.tgz
 
 This will create an `@omnetpp@-@version@` subdirectory with the @OMNETPP@ files in it.
 
@@ -243,7 +222,7 @@ If you only want to build one set of the libraries, specify
 === Verifying the Installation
 
 You can now verify that the sample simulations run correctly. For example,
-the dyna simulation is started by entering the following commands:
+the aloha simulation is started by entering the following commands:
 
     $ cd samples/aloha
     $ ./aloha
@@ -311,13 +290,6 @@ Configure, build and install the Akaroa library. By default, it will be installe
 
 Go to the @OMNETPP@ directory, and (re-)run the `configure` script. Akaroa will be
 automatically detected if you installed it to the default location.
-
-==== PCAP
-
-The optional Pcap library allows simulation models to capture and
-transmit network packets bypassing the operating system's protocol stack.
-It is not used directly by @OMNETPP@, but @OMNETPP@ detects the necessary
-compiler and linker options for models in case they need it.
 
 ifdef::OMNEST[]
 

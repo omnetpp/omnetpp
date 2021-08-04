@@ -2,7 +2,7 @@
 
 === Supported Windows Versions
 
-@OMNETPP@ supports 64-bit versions of Windows 7 and 10.
+@OMNETPP@ supports 64-bit versions of Windows.
 
 [NOTE]
 ===============================================================
@@ -14,7 +14,7 @@ builds on Windows, we recommend using @OMNETPP@ 5.0
 
 Download the @OMNETPP@ source code from http://omnetpp.org. Make sure
 you select the Windows-specific archive, named
-`@omnetpp@-@version@-src-windows.zip`.
+`@omnetpp@-@version@-windows-x86_64.zip`.
 
 The package is self-contained: in addition to @OMNETPP@ files
 it includes a C++ compiler, a command-line build environment, and all
@@ -144,12 +144,6 @@ to the `lib/` and `bin/` subdirs.
 
 @OMNETPP@ has been tested with both the gcc and the clang compiler from
 the MinGW-w64 package.
-
-NOTE: MinGW/Clang 3.8 generates incorrect code when you use multiple inheritance
-in your code. Because of this, we do not recommend using MinGW/clang at the moment.
-Later versions of clang my fix this issue.
-
-Microsoft Visual C++/ClangC2 is not supported in the Academic Edition.
 
 
 === Additional Packages

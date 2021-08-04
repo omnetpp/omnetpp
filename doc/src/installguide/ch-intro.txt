@@ -9,24 +9,24 @@ One chapter is dedicated to each operating system.
 
 @OMNETPP@ has been tested and is supported on the following operating systems:
 
-* Windows 7 and 10 / 64-bit
-* MacOS 10.12
+* Windows x86_64
+* MacOS 10.12 or later
 * Linux distributions covered in this Installation Guide
 
 ifdef::OMNEST[]
 64-bit precompiled binaries are provided for the following platforms:
 
-* Windows 7, 10 with Microsoft Visual C++ 2017 / ClangC2
-* Windows 7, 10 with the bundled MinGW-w64 gcc compiler
+* Windows with Microsoft Visual C++ 2017 / ClangC2
+* Windows with the bundled MinGW-w64 gcc compiler
 
 On other platforms, @OMNETPP@ needs to be compiled from source.
 endif::OMNEST[]
 
 The Simulation IDE is supported on the following platforms:
 
-* Linux x86; 64-bit
-* Windows 7, 10; 64-bit
-* MacOS 10.12
+* Linux x86_64
+* Windows x86_64
+* MacOS x86_64
 
 [NOTE]
 =====================================================================

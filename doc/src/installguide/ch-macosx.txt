@@ -7,78 +7,68 @@ macOS.
 
 The following releases are covered:
 
-* macOS 10.12
+* macOS 11.x
+
 
 === Installing the Prerequisite Packages
 
- * Install the Java Runtime from http://support.apple.com/kb/DL1572 , because
-   masOS does not provide it by default. Additionally you must install the latest
-   version of Java Runtime Environment from http://java.com (version 8 or later.)
- * Install the command line developer tools for macOS from
-   http://developer.apple.com/downloads/index.action?=Command%20Line%20Tools
-   (you will need a free Apple Developer Account for the download.)
+Install the command line developer tools for macOS (compiler, debugger, etc.)
+
+  $ xcode-select --install
 
 Installing additional packages will enable more functionality in @OMNETPP@; see
 the 'Additional packages' section at the end of this chapter.
 
-=== Additional Steps Required on macOS to Use GDB as the Debugger.
 
-The Command Line Tools package on macOS no longer contains gcc and gdb;
-instead it contains the Clang compiler and lldb. (The `gcc` and `g++` commands
-actually run `clang`.) @OMNETPP@ will use Clang automatically. However, the
-@OMNETPP@ IDE can only use gdb as the underlying debugger, but not lldb.
+=== Enabling Development Mode in Terminal
 
-To be able to debug from the IDE, you have to install gdb from Homebrew.
-Alternatively, you can use XCode for debugging.
+MacOS has a strict default security policy preventing the execution of unsigned code. This behavior often
+interferes with the development process so you must explicitly allow running unsigned code from a Terminal.
+On the *System Preferences / Security and Privacy / Privacy* tab, select *Development Tools* on the left side,
+unlock the panel with the lock icon on the bottom left and select the Terminal app on the right side to
+override the default security policy for the Terminal app.
 
-To do the former, first install the Homebrew package manager at http://brew.sh.
-Follow the instrunctions on the website.
+image::pictures/macos-security.png[title="Enable Running Unsigned Code in Terminal",align="center",scaledwidth="75%"]
 
-Then you can install gdb:
 
-    $ brew install gdb
+=== Running @OMNETPP@ on Apple Silicon
 
-macOS 10.10 and later requires that you sign the `gdb` executable with a self-signed
-certificate (or with your own certificate, if you have one.)
+@OMNETPP@ does not currently support the Apple M1 processor natively, but you can run the x86_64 version using
+the Rosetta 2 emulator. To run @OMNETPP@ under emulation, open a terminal window, then execute:
 
-Start the 'Keychain Access' application. Choose 'Keychain Access > Certificate
-Assistant > Create a Certificate...' from the menu.
+  $ arch -x86_64 /bin/zsh --login
 
-Choose a name (e.g. `gdb-cert`), set 'Identity Type' to 'Self Signed Root', set
-'Certificate Type' to 'Code Signing' and select the 'Let me override defaults'.
-Click several times on 'Continue' until you get to the 'Specify a
-Location For The Certificate' screen, then set 'Keychain' to 'System'.
-
-If you can't store the certificate in the 'System' keychain, create it in the
-'Login' keychain, then export it. You can then import it into the 'System' keychain.
-
-Finally, using the context menu for the certificate, select 'Get Info', open
-the 'Trust' item, and set 'Code Signing' to 'Always Trust'.
-
-You must quit the 'Keychain Access' application in order to use the certificate and
-restart the system.
-
-Now sign the executable:
-
-    $ sudo codesign -s gdb-cert /usr/local/bin/gdb
+After this, follow the normal installation instructions and be sure to execute all commands in this terminal.
 
 [NOTE]
-==============================================================
-The signing procedure has changed on later versions of macOS.
-Please consult the following URL for details:
-https://sourceware.org/gdb/wiki/PermissionsDarwin
-==============================================================
+=====================================================================
+The above command may graphically prompt you to allow the installation of the emulator component.
+You can also manually trigger the installation from the command line using the following command:
+`softwareupdate --install-rosetta --agree-to-license`.   
+=====================================================================
+
+
+=== Additional Steps Required on macOS to Use the Debugger
+
+The Command Line Developer Tools package contains the `lldb` debugger. @OMNETPP@ 5.7 and later contains the necessary
+driver binary (`lldbmi2`) that allows `lldb` to be used in the @OMNETPP@ IDE. If you are upgrading from an earlier
+version of @OMNETPP@, be sure to delete and recreate all Launch Configurations in the IDE. This is required because
+older Launch Configurations were using `gdb` as the debugger, but the new IDE uses `lldbmi2` as the debugger
+executable.
+
+On the first debug session the OS may prompt you to allow debugging with the `lldb` executable.
+
 
 === Downloading and Unpacking @OMNETPP@
 
 Download @OMNETPP@ from {DOWNLOADSITE}. Make sure you select to download
-the generic archive, `@omnetpp@-@version@-src-macosx.tgz`.
+the macOS specific archive, `@omnetpp@-@version@-macos-x86_64.tgz`.
 
 Copy the archive to the directory where you want to install it. This is usually
 your home directory, `/Users/<you>`. Open a terminal, and extract the archive
 using the following command:
 
-    $ tar zxvf @omnetpp@-@version@-src-macosx.tgz
+  $ tar zxvf @omnetpp@-@version@-macos-x86_64.tgz
 
 A subdirectory called `@omnetpp@-@version@` will be created, containing the simulator
 files.
@@ -100,37 +90,13 @@ To add them to `PATH` temporarily (in the current shell only), change into the @
 directory and source the `setenv` script:
 
   $ cd @omnetpp@-@version@
-  $ . setenv
+  $ source setenv
 
-To set the environment variables permanently, edit `.bashrc` in your home
-directory. Use your favourite text editor to edit `.bashrc`, for example TextEdit:
-
-  $ touch ~/.bashrc
-  $ open -e ~/.bashrc
-
-[NOTE]
-===============================================================
-`touch` is needed because `open -e` only opens existing files. Alternatively,
-you can use the terminal-based 'pico' editor (`pico ~/.bashrc`)
-===============================================================
-
-Add the following line at the end of the file, then save it:
-
-  export PATH=$HOME/@omnetpp@-@version@/bin:$HOME/@omnetpp@-@version@/tools/macosx/bin:$PATH
-  export QT_PLUGIN_PATH=$HOME/@omnetpp@-@version@/tools/macosx/plugins
-
-You need to close and re-open the terminal for the changes to take effect.
-
-Alternatively, you can put the above line into `~/.bash_profile`, but then
-you need to log out and log in again for the changes to take effect.
-
-[NOTE]
-===============================================================
-If you use a shell other than the default one, 'bash', consult the man page
-of that shell to find out which startup file to edit, and how to set and
-export variables.
-===============================================================
-
+To set the environment variables permanently, edit `.profile`, `.zprofile` or `.zshenv` in your home directory and
+add a line something like this:
+  
+  [ -f "$HOME/@omnetpp@-@version@/setenv" ] && source "$HOME/@omnetpp@-@version@/setenv"
+  
 
 === Configuring and Building @OMNETPP@
 
@@ -197,10 +163,10 @@ If you only want to build one set of the libraries, specify
 === Verifying the Installation
 
 You can now verify that the sample simulations run correctly. For example,
-the dyna simulation is started by entering the following commands:
+the aloha simulation is started by entering the following commands:
 
-    $ cd samples/aloha
-    $ ./aloha
+  $ cd samples/aloha
+  $ ./aloha
 
 By default, the samples will run using the Qtenv environment. You should see
 nice gui windows and dialogs.
@@ -208,11 +174,9 @@ nice gui windows and dialogs.
 
 === Starting the IDE
 
-@OMNETPP@ comes with an Eclipse-based Simulation IDE. On macOS 10.10 (Lion) or later,
-the Java Runtime must be installed (see prerequisites) before you can use the IDE.
-Start the IDE by typing:
+@OMNETPP@ comes with an Eclipse-based Simulation IDE. Start the IDE by typing:
 
-    $ @omnetpp@
+  $ @omnetpp@
 
 If you would like to be able to launch the IDE via Applications,
 the Dock or a desktop shortcut, do the following: open the `@omnetpp@-@version@`
@@ -250,9 +214,9 @@ If you need to recompile the @OMNETPP@ components with different flags (e.g.
 different optimization), then change the top-level @OMNETPP@ directory, edit
 `configure.user` accordingly, then type:
 
-    $ ./configure
-    $ make clean
-    $ make
+  $ ./configure
+  $ make clean
+  $ make
 
 TIP: To take advantage of multiple processor cores, add the `-j4` option to the
 `make` command line.
@@ -260,17 +224,17 @@ TIP: To take advantage of multiple processor cores, add the `-j4` option to the
 If you want to recompile just a single library, then change to the directory
 of the library (e.g. `cd src/sim`) and type:
 
-    $ make clean
-    $ make
+  $ make clean
+  $ make
 
 By default, libraries are compiled in both debug and release mode. If you want
 to make release or debug builds only, use:
 
-    $ make MODE=release
+  $ make MODE=release
 
 or
 
-    $ make MODE=debug
+  $ make MODE=debug
 
 By default, shared libraries will be created. If you want to build static
 libraries, set `SHARED_LIBS=no` in `configure.user` and re-configure your

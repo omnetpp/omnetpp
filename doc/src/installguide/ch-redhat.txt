@@ -33,9 +33,9 @@ The 'Desktop Client' version does not contain development tools.
 
 To install the required packages, type in the terminal:
 
-  $ su -c 'yum install make gcc gcc-c++ bison flex perl \
+  $ su -c 'yum install make clang lld bison flex perl \
       tcl-devel tk-devel qt-devel libxml2-devel zlib-devel \
-      java doxygen graphviz openmpi-devel libpcap-devel'
+      doxygen graphviz openmpi-devel libpcap-devel'
 
 To use 3D visualization support in Qtenv  (recommended), you should
 install the OpenSceneGraph-devel (3.2 or later) and osgEarth-devel (2.7 or later) packages.
@@ -44,7 +44,7 @@ may need to get them from different sources (e.g. rpmfind.net).
 
 [NOTE]
 =====================================================
-You may opt to use clang and clang++ instead of the gcc and g++ compilers.
+You may opt to use gcc and g++ instead of the clang and clang++ compilers.
 =====================================================
 
 To install additional (optional) packages for parallel simulation and
@@ -63,13 +63,6 @@ modules. If you need MPI in every session, you may add the `module load`
 command to your startup script (`.bashrc`).`
 
 
-==== PCAP
-
-The optional Pcap library allows simulation models to capture and
-transmit network packets bypassing the operating system's protocol stack.
-It is not used directly by @OMNETPP@, but models may need it to support
-network emulation.
-
 ==== Graphical Installation
 
 The graphical installer can be launched by choosing
@@ -80,9 +73,8 @@ in front of the names, and pick the latest version of each package.
 
 The packages:
 
-* make gcc, gcc-c++, bison, flex, perl, tcl-devel, tk-devel, qt-devel,
-libxml2-devel, zlib-devel, make, java, doxygen, graphviz, openmpi-devel,
-libpcap-devel
+* make, clang, lld, bison, flex, perl, tcl-devel, tk-devel, qt-devel,
+libxml2-devel, zlib-devel, make, doxygen, graphviz, openmpi-devel
 
 Click 'Apply', then follow the instructions.
 

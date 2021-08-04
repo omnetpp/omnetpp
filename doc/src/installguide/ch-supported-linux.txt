@@ -5,10 +5,10 @@
 This chapter provides instructions for installing @OMNETPP@ on selected Linux
 distributions:
 
-* Ubuntu 16.04 LTS
-* Fedora Core 25
-* Red Hat Enterprise Linux Desktop Workstation 7.x
-* OpenSUSE 42
+* Ubuntu 18.04LTS, 20.04LTS
+* Fedora Core 34
+* RHEL 8.x
+* OpenSUSE Leap 15.x
 
 This chapter describes the overall process.
 Distro-specific information, such as how to install the prerequisite
@@ -57,13 +57,13 @@ chapter.
 === Downloading and Unpacking
 
 Download @OMNETPP@ from {DOWNLOADSITE}. Make sure you select to download
-the generic archive, `@omnetpp@-@version@-src.tgz`.
+the linux specific archive, `@omnetpp@-@version@-linux-x86_64.tgz`.
 
 Copy the archive to the directory where you want to install it. This is usually
 your home directory, `/home/<you>`. Open a terminal, and extract the archive
 using the following command:
 
-  $ tar xvfz @omnetpp@-@version@-src.tgz
+  $ tar xvfz @omnetpp@-@version@-linux-x86_64.tgz
 
 This will create an `@omnetpp@-@version@` subdirectory with the @OMNETPP@ files in it.
 
@@ -81,7 +81,7 @@ specific to your Linux distribution.
 directory and source the `setenv` script:
 
   $ cd @omnetpp@-@version@
-  $ . setenv
+  $ source setenv
 
 The script also adds the `lib/` subdirectory to `LD_LIBRARY_PATH`, which may be
 necessary on systems that don't support the rpath mechanism.
@@ -176,12 +176,12 @@ If you only want to build one set of the libraries, specify
 === Verifying the Installation
 
 You can now verify that the sample simulations run correctly. For example,
-the dyna simulation is started by entering the following commands:
+the aloha simulation is started by entering the following commands:
 
-    $ cd samples/dyna
-    $ ./dyna
+    $ cd samples/aloha
+    $ ./aloha
 
-By default, the samples will run using the Tcl/Tk environment. You should see
+By default, the samples will run using the Qtenv environment. You should see
 nice gui windows and dialogs.
 
 
@@ -292,13 +292,6 @@ Configure, build and install the Akaroa library. By default, it will be installe
 
 Go to the @OMNETPP@ directory, and (re-)run the `configure` script. Akaroa will be
 automatically detected if you installed it to the default location.
-
-==== PCAP
-
-The optional Pcap library allows simulation models to capture and
-transmit network packets bypassing the operating system's protocol stack.
-It is not used directly by @OMNETPP@, but models may need it to support
-network emulation.
 
 ifdef::OMNEST[]
 
