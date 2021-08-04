@@ -1,3 +1,17 @@
+2021-08-03  Andras Varga
+
+	* NED: support for "parent.foo" syntax of parameter references in
+	expressions. "parent" is only allowed within submodule and connection
+	(channel) blocks, but not on compound module level. This change is necessary
+	for being able to write NED files which are compatible with both OMNeT++
+	5.7+ and 6.x. (The interpretation of parameter references in expressions
+	have changed in 6.0. In 6.0, a "foo" parameter reference in a submodule
+	means the parameter of the same submodule ["this.foo"], while in 5.x it
+	means the parameter of the enclosing compound module [which would be
+	expressed in 6.0 as "parent.foo"]. The way to write NED files compatible
+	with both is to always explicitly qualify the parameter with "this" or
+	"parent".)
+
 2020-01-06  ------ omnetpp-5.6 released ------
 
 2019-10-22  Andras Varga
@@ -16,21 +30,13 @@
 
 2018-06-11  ------ omnetpp-5.4 released ------
 
-2018-06-04  Andras Varga
-
-	ChangeLogs tagged for 5.3
-
-	Better late than never.
-
 2018-05-23  Andras Varga
 
-	ned, sim: added "exists" operator
-
-	exists(<submodulename>)
+	* Added "exists" operator: exists(<submodulename>)
 
 2018-05-18  Andras Varga
 
-	sim: implement "typename" in submodule "if" and other expressions
+	* Implement "typename" in submodule "if" and other expressions.
 
 	Note: typename is not allowed in a submodule VECTOR's condition, because
 	type is elementwise, and we want the condition to apply to the vector as
@@ -38,20 +44,17 @@
 
 2018-05-18  Andras Varga
 
-	sim: cNedNetworkBuilder: fix: allow empty typename value to be used
-
+	* cNedNetworkBuilder: fix: allow empty typename value to be used.
 	Before, empty string meant "no value specified here", and search went on.
 
 2018-05-17  Andras Varga
 
-	sim: cNedNetworkBuilder: use cDynamicExpression not cParImpl for
+	* cNedNetworkBuilder: use cDynamicExpression not cParImpl for
 	build-time expression evaluation
 
 2018-05-18  Andras Varga
 
-	sim: renamed namespace NedSupport to all-lowercase
-
------------ lines above this marker have been added from git log -----------
+	* Renamed namespace NedSupport to all-lowercase
 
 2018-04-11  ------ omnetpp-5.3 released ------
 

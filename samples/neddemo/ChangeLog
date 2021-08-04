@@ -1,3 +1,8 @@
+2021-05-05  Andras Varga
+
+	* Adjustment: "parent" is now a reserved keyword in NED, so the gate with
+	that name has to be renamed
+
 2020-01-06  ------ omnetpp-5.6 released ------
 
 2019-11-11  Rudolf Hornig

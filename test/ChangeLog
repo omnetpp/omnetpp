@@ -1,3 +1,57 @@
+2020-11-11  Andras Varga
+
+	sim: cHasher: fix #846 "cHasher::add - correction & optimisation"
+
+	Since chars were signed, converting p[i] to uint32_t does sign extension
+	which is bad because we "or" such values together.
+
+2021-08-03  Andras Varga
+
+	* Adjusted backported test "statistic_autoWarmupFilter_1.test" to 5.x
+
+	Due to the limitations of the @statistic parser/builder in OMNeT++ 5.x,
+	the test can only be made to work partially. See comment in the test's
+	code.
+
+	Especially, when autoWarmupFilter=false is given, it seems to be
+	necessary to add the filter "last" explicitly.
+
+2021-08-03  Andras Varga
+
+	* Added test for "parent.foo" syntax of parameter references in expressions
+
+2021-06-16  Attila Torok
+
+	* anim: update some old icon names in layout and methodcall
+
+2021-05-18  Attila Torok
+
+	* anim/logformatting: Fix exception due to uninitialized member
+
+2021-02-04  Edward Longman
+
+	* core: Add numeric_limits test for AutoRange histogram strategy
+
+2021-02-04  Edward Longman
+
+	* core: Fix missing number in test for Default histogram strategy
+
+2021-02-03  Edward Longman
+
+	* core: Add failing cDefaultHistogramStrategy Test
+
+2020-10-10  Attila Torok
+
+	* Add tests for checked_int_cast in core/simutil.
+
+2021-03-11  Attila Torok
+
+	* Added test for consecutive bin edges when loading histograms
+
+2020-07-16  Andras Varga
+
+	* Added test for option to disable auto-adding the warmup filter
+
 2020-01-06  ------ omnetpp-5.6 released ------
 
 2020-01-03  Andras Varga

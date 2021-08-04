@@ -1,3 +1,73 @@
+2021-08-03  Andras Varga
+
+	* NED: Added support for the "parent.foo" syntax in parameter references,
+	sizeof() and exists(). This was introduced to make it possible to write
+	NED files that work both with OMNeT++ 5.7 and with 6.0 (where the
+	interpretation of unqualified references has changed).
+
+	To clarify, writing an unqualified identifier 'foo' in submodule scope in
+	version 5.x references the said parameter of the enclosing compound module,
+	and in 6.0, a parameter of the SAME submodule. (Note that this is also true
+	when the expression occurs in ini files!) The portability problem can be
+	resolved by using explicit qualifiers, i.e. writing 'this.foo' or
+	'parent.foo' means the same thing in both versions.
+
+2020-11-11  Andras Varga
+
+	* cHasher: fix #846 "cHasher::add - correction & optimisation". In add(const
+	char *), since chars were signed, converting p[i] to uint32_t does sign
+	extension which is bad because we "or" such values together.
+
+2021-02-11  Andras Varga
+
+	* cPathFigure: path parsing refined: If op char is missing, assume
+	previous one, in accordance with the SVG spec.
+
+2021-03-03  Andras Varga
+
+	* cBoolParImpl: fix bug in "Cannot cast" error message
+
+2021-02-04  Edward Longman
+
+	* cAutoRangeHistogramStrategy: Work around double limits of precision.
+
+2021-02-03  Edward Longman
+
+	* cDefaultHistogramStrategy: Fix for very small values of rangeMax.
+
+2021-04-15  Andras Varga
+
+	* cComponent: Resolve compile-time warning about throwing from destructor.
+	Essentially, just print a warning message instead of throwing...
+
+2021-04-15  TÖRÖK Attila
+
+	* Fix a couple format-string related bugs when constructing
+	cRuntimeError.
+
+	Backport of 9878bbe
+
+2020-07-16  Andras Varga
+
+	* cStatisticBuilder: Added a way to disable auto-adding the warmup filter.
+	One needs to specify "autoWarmupFilter=false" in the @statistic for that.
+	This opens the possibility for the user to add warmup filters to a custom
+	place, not just before all other filters. E.g. consider "min(warmup(foo))"
+	(the default) and "warmup(min(foo))" which might occasionally be
+	what the user wants instead.
+
+2020-07-16  Andras Varga
+
+	* cSimulation: Fix assertion failure in deleteNetwork() which happened if
+	there was an error during channel creation. Solution is to make
+	deleteNetwork() remove stray channel objects.
+
+2020-04-30  Attila Torok
+
+	* cBoolParImpl: fix checking the FL_ISEXPR flag in getExpression().
+
+----------- lines above this marker have been added from git log -----------
+
 2020-01-06  ------ omnetpp-5.6 released ------
 
 2019-12-03  Attila Torok

@@ -1,3 +1,13 @@
+2021-06-03  Attila Torok
+
+	* JsonExporter: Fix: In the exported file, result items appeared under
+	multiple runs due to missing filtering.
+
+2021-06-04  Attila Torok
+
+	* ResultFileManager: Minor fix in recognizing the "itervar:" result name
+	prefix in filter expressions
+
 2020-01-06  ------ omnetpp-5.6 released ------
 
 2019-10-03  Andras Varga
@@ -203,8 +213,6 @@
 	- generated files are created only once, even when using parallel build
 	- binaries are copied to their final destination using proper makefile
 	  targets
-
------------ lines above this marker have been added from git log -----------
 
 2017-05-08  ------ omnetpp-5.1.1 released ------
 

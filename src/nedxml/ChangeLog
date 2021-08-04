@@ -1,3 +1,8 @@
+2021-08-03  Andras Varga
+
+	* NED: Support for the "parent.<name>" (and "parent.<name>.<name>") nsyntax of
+	parameter references in expressions
+
 2020-01-06  ------ omnetpp-5.6 released ------
 
 2019-05-15  ------ omnetpp-5.5 released ------

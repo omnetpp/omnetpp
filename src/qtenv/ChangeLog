@@ -1,3 +1,46 @@
+2021-07-09  Attila Torok
+
+	* Add Ctrl+W as shortcut for closing toplevel inspector windows
+
+2021-04-23  Attila Torok
+
+	* Make the "Run" and "Fast" buttons "pop out" (and stop simulation) if
+	triggered again. This adds a radiobutton-like behavior to these actions,
+	which is handy for running the simulation for a very short time, with a
+	single button.
+
+2021-05-18  Attila Torok
+
+	* LogInspector: Perform "find" on stripped (of formatting escape sequences)
+	content
+
+2021-05-18  Attila Torok
+
+	* LogInspector: After a search, scroll the found text into the middle of the
+	viewport instead of just to the edge. Leave a bigger margin to the right and
+	bottom, as that is the way we usually read.
+
+2021-05-18  Attila Torok
+
+	* Find dialog: Select the entire searched text when opening the find dialog,
+	to allow easier and quicker typing of a different query.
+
+2021-01-26  Attila Torok
+
+	* LogInspector: Don't try to save the event/line index if there is no
+	inspected object. This can't succeed anyways, and can result in a crash on
+	network rebuild.
+
+2021-04-27  Attila Torok
+
+	* Don't crash if the appearance of a message line is set up before its
+	geometry. This crash was introduced by a Qt update to 5.15.2 (or slightly
+	before).
+
+2020-11-20  Fin Christensen
+
+	* OSG View: Fix osgEarth viewpoints ignoring SRS (PR #851)
+
 2020-01-06  ------ omnetpp-5.6 released ------
 
 2019-11-07  Attila Torok

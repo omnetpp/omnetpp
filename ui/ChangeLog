@@ -1,3 +1,54 @@
+2021-08-04  Andras Varga
+
+	* NED, Ini editor: Syntax highlight for the NED "parent" keyword
+
+2021-01-19  Rudolf Hornig
+
+	* The Download Simulation Models dialog now supports specifying a custom
+	project name and location. Also, the default project name is now coming from
+	the downloaded descriptor file (not from the .project file in the archive.)
+
+2021-04-13  Rudolf Hornig
+
+	* Welcome screen theme changed (circle -> solstice) due to problem
+	with dark theme with the old 'circle' theme.
+
+2021-06-08  Rudolf Hornig
+
+	* Makefile generation brought in sync with omnetpp-6pre11
+
+2020-12-12  Attila Torok
+
+	* Print working directory and command line to console when debugging
+	simulations, similar to the simple "run" mode launch.
+
+2020-12-12  Attila Torok
+
+	* Launch: Fix printing to the console of processes right after their
+	launch.
+
+2019-07-24  Rudolf Hornig
+
+	* Debug launch config to use lldbmi2 by default on macOS
+
+2021-06-07  Rudolf Hornig
+
+	* Use Eclipse 4.20, and JustJ as the private JRE
+
+2021-04-13  Rudolf Hornig
+
+	* IDE: Fix the download issues in the Simulation Models dialog
+
+2020-12-17  Andras Varga
+
+	* Ini Editor: group fingerprint and fakegui-related fields on a separate new
+	form page.
+
+2021-03-29  Attila Torok
+
+	* NED editor: Use a custom cursor for the creation tool of the Palette,
+	due to rendering issues.
+
 2020-01-06  ------ omnetpp-5.6 released ------
 
 2020-01-06  Rudolf Hornig
