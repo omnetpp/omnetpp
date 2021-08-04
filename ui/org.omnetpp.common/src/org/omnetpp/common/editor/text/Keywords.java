@@ -45,7 +45,7 @@ public class Keywords {
 
     public final static String[] NED_NONEXPR_KEYWORDS = concat(NED_COMPONENTTYPE_KEYWORDS, NED_SECTION_KEYWORDS, NED_OTHER_KEYWORDS);
 
-    public final static String[] NED_EXPR_KEYWORDS = { "sizeof", "const", "default", "ask", "this", "index", "typename", "xmldoc" };
+    public final static String[] NED_EXPR_KEYWORDS = { "sizeof", "const", "default", "ask", "this", "parent", "index", "typename", "xmldoc" };
 
     public final static String[] BOOL_CONSTANTS = { "false", "true" };
 
