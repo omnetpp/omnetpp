@@ -30,7 +30,7 @@ Command-Line Installation
 
 To install the required packages, type in the terminal:
 
-::
+.. code::
 
    $ sudo dnf install make gcc gcc-c++ clang lld bison flex perl \
        python3 python3-pip qt5-devel libxml2-devel \
@@ -41,7 +41,7 @@ To install the required packages, type in the terminal:
 To use 3D visualization support in Qtenv, you should install OpenSceneGraph 3.2 or later and osgEarth 2.7 or later
 (recommended):
 
-::
+.. code::
 
    $ sudo dnf install OpenSceneGraph-devel osgearth-devel
 
@@ -54,13 +54,13 @@ To use 3D visualization support in Qtenv, you should install OpenSceneGraph 3.2 
 
 To enable the optional parallel simulation support you will need to install the MPI package:
 
-::
+.. code::
 
    $ sudo dnf install openmpi-devel
 
 Note that *openmpi* will not be available by default, it needs to be activated in every session with the
 
-::
+.. code::
 
    $ module load mpi/openmpi-x86_64
 
@@ -84,7 +84,6 @@ Click *Apply*, then follow the instructions.
 
 Open a terminal and enter the following command to install the required Python packages:
 
-::
+.. code::
 
-   $ python3 -m pip install --user --upgrade numpy pandas \
-       matplotlib scipy seaborn posix_ipc
+   $ python3 -m pip install --user --upgrade numpy pandas matplotlib scipy seaborn posix_ipc

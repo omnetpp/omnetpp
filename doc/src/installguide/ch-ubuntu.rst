@@ -21,7 +21,7 @@ environment or shell, you may need to adjust the instructions accordingly.
 Opening a Terminal
 ------------------
 
-Type *terminal* in Dash and click on the Terminal icon.
+Type *terminal* in your program launcher and click on the Terminal icon.
 
 Installing the Prerequisite Packages
 ------------------------------------
@@ -33,13 +33,13 @@ Command-Line Installation
 
 Before starting the installation, refresh the database of available packages. Type in the terminal:
 
-::
+.. code::
 
    $ sudo apt-get update
 
 To install the required packages, type in the terminal:
 
-::
+.. code::
 
    $ sudo apt-get install build-essential clang lld gdb bison flex perl \
         python3 python3-pip qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools \
@@ -49,7 +49,7 @@ To install the required packages, type in the terminal:
 To use Qtenv with 3D visualization support, install the development packages for OpenSceneGraph (3.4 or later) and the
 osgEarth (2.9 or later) packages. (You may need to enable the *Universe* software repository in Software Sources.
 
-::
+.. code::
 
    $ sudo apt-get install openscenegraph-plugin-osgearth libosgearth-dev
 
@@ -62,7 +62,7 @@ osgEarth (2.9 or later) packages. (You may need to enable the *Universe* softwar
 
 To enable the optional parallel simulation support you will need to install the MPI packages:
 
-::
+.. code::
 
    $ sudo apt-get install openmpi-bin libopenmpi-dev
 
@@ -88,8 +88,7 @@ If the *Mark additional required changes?* dialog comes up, choose the *Mark* bu
 The packages:
 
 -  required: build-essential, gcc, g++, bison, flex, perl, qtbase5-dev, qtchooser, qt5-qmake, qtbase5-dev-tools,
--  python3, libxml2-dev, zlib1g-dev, doxygen, graphviz, libwebkit2gtk-4.0-37
-
+   python3, libxml2-dev, zlib1g-dev, doxygen, graphviz, libwebkit2gtk-4.0-37
 -  recommended: libopenscenegraph-dev, openscenegraph-plugin-osgearth, libosgearth-dev, openmpi-bin, libopenmpi-dev
 
 .. figure:: pictures/ubuntu-synaptic.png
@@ -102,43 +101,12 @@ click *Close*.
 
 After this, you still have to install some required Python packages from command line:
 
-::
+.. code::
 
    $ python3 -m pip install --user --upgrade numpy pandas matplotlib scipy seaborn posix_ipc
 
 Post-Installation Steps
 ~~~~~~~~~~~~~~~~~~~~~~~
-
-Fixing Tooltip Colors
-^^^^^^^^^^^^^^^^^^^^^
-
-The default tooltip background color in Ubuntu is black, which causes certain tooltips in the |omnet++| IDE to become
-unreadable (black-on-black). This annoyance can be resolved by changing the tooltip colors in Ubuntu.
-
-.. figure:: pictures/ubuntu-black-tooltips.png
-   :width: 75.0%
-
-   Black-on-black text in tooltips
-
-Install *gnome-color-chooser*:
-
-::
-
-   $ sudo apt-get install gnome-color-chooser
-
-Run it:
-
-::
-
-   $ gnome-color-chooser
-
-Find the *Tooltips* group on the *Specific* tab, and change the settings to black foreground over pale yellow
-background. Click Apply.
-
-.. figure:: pictures/ubuntu-gnome-color-chooser.png
-   :width: 50.0%
-
-   Fixing the tooltip color issue
 
 Setting Up Debugging
 ^^^^^^^^^^^^^^^^^^^^
@@ -150,24 +118,24 @@ to explicitly enable them.
 
 To temporarily allow ptracing non-child processes, enter the following command:
 
-::
+.. code::
 
    $ echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope
 
 To permanently allow it, edit ``/etc/sysctl.d/10-ptrace.conf`` and change the line:
 
-::
+.. code::
 
    kernel.yama.ptrace_scope = 1
 
 to read
 
-::
+.. code::
 
    kernel.yama.ptrace_scope = 0
 
 Note that the default debugger for |omnet++| just-in-time debugging is *Nemiver*, so it also needs to be installed:
 
-::
+.. code::
 
    $ sudo apt-get install nemiver

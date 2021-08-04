@@ -35,7 +35,7 @@ Command-Line Installation
 
 To install the required packages, type in the terminal:
 
-::
+.. code::
 
    $ su -c 'yum install make gcc gcc-c++ clang lld bison flex perl \
        python3 python3-pip qt-devel libxml2-devel zlib-devel doxygen graphviz'
@@ -54,13 +54,13 @@ need to get them from different sources (e.g. rpmfind.net).
 
 To install additional (optional) packages for parallel simulation, type:
 
-::
+.. code::
 
    $ su -c 'yum install openmpi-devel'
 
 Note that *openmpi* will not be available by default, it needs to be activated in every session with the
 
-::
+.. code::
 
    $ module load openmpi_<arch>
 

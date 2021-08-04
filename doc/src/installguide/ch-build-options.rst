@@ -8,13 +8,13 @@ The ``configure.user`` file contains several options that can be used to fine-tu
 
 You always need to re-run the ``configure`` script in the installation root after changing the ``configure.user`` file.
 
-::
+.. code::
 
    $ ./configure
 
 After this step, you have to remove all previous libraries and recompile |omnet++|:
 
-::
+.. code::
 
    $ make cleanall
    $ make
@@ -115,15 +115,10 @@ Using Different Compilers
 By default, the configure script detects the following compilers automatically in the path:
 
 -  Intel compiler (icc, icpc)
-
 -  GNU C/C++ (gcc, g++)
-
 -  Clang (clang, clang++)
-
 -  Clang/C2 (from Microsoft Visual Studio)
-
 -  Sun Studio (cc, cxx)
-
 -  IBM compiler (xlc, xlC)
 
 If you want to use compilers other than the above ones, you should specify the compiler name in the ``CC`` and ``CXX``

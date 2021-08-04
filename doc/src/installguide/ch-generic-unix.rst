@@ -10,7 +10,7 @@ chapters.
 
 .. note::
 
-   In addition to Windows 10 and macOS, the Simulation IDE will only work on Linux x86 64-bit platforms. Other operating
+   In addition to Windows and macOS, the Simulation IDE will only work on Linux x86/arm 64-bit platforms. Other operating
    systems (FreeBSD, Solaris, etc.) and architectures may still be used as simulation platforms, without the IDE.
 
 Dependencies
@@ -20,7 +20,7 @@ The following packages are required for |omnet++| to work:
 
 build-essential, GNU make, gcc, g++, bison (3.0+), flex, perl, python3
    These packages are needed for compiling |omnet++| and simulation models, and also for certain |omnet++| tools to
-   work. The *clang* compiler and the '
+   work.
 
 It is also recommended to install the *clang* and *lld* package as they provide faster compilation and linking.
 
@@ -31,11 +31,6 @@ It is also recommended to install the *clang* and *lld* package as they provide 
    visualization capabilities, you can disable them in the *configure.user* file, too.
 
 The following packages are strongly recommended, because their absence results in severe feature loss:
-
-OpenJDK, version 11.0 or later
-   The Java runtime is required to run the Eclipse-based Simulation IDE. Other implementations, for example Kaffe, have
-   been found to have problems running the IDE. You do not need this package if you do not plan to use the Simulation
-   IDE.
 
 Qt 5.9 or later
    Required by the Qtenv simulation runtime environment. You need the *devel* packages that include header files as
@@ -75,21 +70,12 @@ Qt
 If your platform does not have suitable Qt packages, you may still use |omnet++| to run simulations from the command
 line. To disable the Qtenv runtime environment, use:
 
-::
+.. code::
 
    $ ./configure WITH_QTENV=no
 
 This will prevent the build system to link with Qt libraries. It is also recommended if you are installing |omnet++|
 from a remote terminal session.
-
-The Java Runtime
-~~~~~~~~~~~~~~~~
-
-You need to install the Oracle JRE or OpenJDK. The IDE is not supported on Unix platforms other than Linux, so JRE is
-not required either. We have tested various other Java runtimes (*gcj*, *kaffe*, etc.), and the IDE does not work well
-with them.
-
-Java version 1.11 (i.e. JRE 1.11) or later is required.
 
 MPI
 ~~~
@@ -101,14 +87,14 @@ Downloading and Unpacking
 -------------------------
 
 Download |omnet++| from |downloadsite|. Make sure you select to download
-the generic archive, ``|omnetpp|-|version|-src.tgz``.
+the generic archive, ``|omnetpp|-|version|-core.tgz``.
 
 Copy the archive to the directory where you want to install it. This is usually your home directory, ``/home/<you>``.
 Open a terminal, and extract the archive using the following command:
 
-::
+.. code::
 
-   $ tar xvfz |omnetpp|-|version|-src.tgz
+   $ tar xvfz |omnetpp|-|version|-core.tgz
 
 This will create an ``|omnetpp|-|version|`` subdirectory with the |omnet++| files in it.
 
@@ -116,10 +102,10 @@ Environment Variables
 ---------------------
 
 In general |omnet++| requires that certain environment variables are set and the
-`|omnetpp|-|version|/bin` directory is in the PATH. Source the `setenv`
+``|omnetpp|-|version|/bin`` directory is in the PATH. Source the ``setenv``
 script to set up all these variables.
 
-::
+.. code::
 
   $ cd |omnetpp|-|version|
   $ source setenv
@@ -127,7 +113,7 @@ script to set up all these variables.
 To set the environment variables permanently, edit ``.profile`` or ``.zprofile`` in your home directory and
 add a line something like this:
 
-::
+.. code::
 
    [ -f "$HOME/|omnetpp|-|version|/setenv" ] && source "$HOME/|omnetpp|-|version|/setenv"
 
@@ -141,7 +127,7 @@ Configuring and Building |omnet++|
 
 In the top-level |omnet++| directory, type:
 
-::
+.. code::
 
    $ ./configure
 
@@ -169,7 +155,7 @@ The ``configure`` script detects installed software and configuration of your sy
 
 When ``./configure`` has finished, you can compile |omnet++|. Type in the terminal:
 
-::
+.. code::
 
    $ make
 
@@ -191,17 +177,13 @@ When ``./configure`` has finished, you can compile |omnet++|. Type in the termin
    The make command will seemingly compile everything twice. This is because both debug and optimized versions of the
    libraries are built. If you only want to build one set of the libraries, specify ``MODE=debug`` or ``MODE=release``:
 
-   ::
-
-      $ make MODE=release
-
 Verifying the Installation
 --------------------------
 
-You can now verify that the sample simulations run correctly. For example, the dyna simulation is started by entering
+You can now verify that the sample simulations run correctly. For example, the aloha simulation is started by entering
 the following commands:
 
-::
+.. code::
 
    $ cd samples/aloha
    $ ./aloha
@@ -217,7 +199,7 @@ Starting the IDE
 
 You can run the IDE by typing the following command in the terminal:
 
-::
+.. code::
 
    $ |omnetpp|
 
@@ -229,7 +211,7 @@ You can run the IDE by typing the following command in the terminal:
 If you would like to be able to access the IDE from the application launcher or via a desktop shortcut, run one or both
 of the commands below:
 
-::
+.. code::
 
    $ make install-menu-item
    $ make install-desktop-icon
@@ -254,14 +236,14 @@ Download Akaroa 2.7.9 from: http://www.cosc.canterbury.ac.nz/research/RG/net_sim
 
 Extract it into a temporary directory:
 
-::
+.. code::
 
    $ tar xfz akaroa-2.7.9.tar.gz
 
 Configure, build and install the Akaroa library. By default, it will be installed into the ``/usr/local/akaroa``
 directory.
 
-::
+.. code::
 
    $ ./configure
    $ make

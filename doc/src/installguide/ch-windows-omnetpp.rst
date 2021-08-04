@@ -1,12 +1,12 @@
 :orphan:
 
-Windows 10 - Using the MinGW64 Compiler Toolchain
-=================================================
+Windows - Using the MinGW64 Compiler Toolchain
+==============================================
 
 Supported Windows Versions
 --------------------------
 
-|omnet++| is supported only on 64-bit versions of Windows 10.
+|omnet++| is supported only on 64-bit versions of Windows.
 
 .. note::
 
@@ -17,7 +17,7 @@ Installing |omnet++|
 --------------------
 
 Download the |omnet++| source code from https://omnetpp.org. Make sure you select the Windows-specific archive, named
-``|omnetpp|-|version|-src-windows.zip``.
+``|omnetpp|-|version|-windows-x86_64.zip``.
 
 The package is self-contained: in addition to |omnet++| files it includes a C++ compiler, a command-line build
 environment, and all libraries and programs required by |omnet++|.
@@ -47,13 +47,13 @@ directory. On the first start of the shell, you may need to wait for the extract
 First, check the contents of the ``configure.user`` file to make sure it contains the settings you need. In most cases
 you don’t need to change anything.
 
-::
+.. code::
 
    notepad configure.user
 
 Then enter the following commands:
 
-::
+.. code::
 
    $ ./configure
    $ make
@@ -66,7 +66,7 @@ Verifying the Installation
 You should now test all samples and check they run correctly. As an example, the *aloha* example is started by entering
 the following commands:
 
-::
+.. code::
 
    $ cd samples/aloha
    $ ./aloha
@@ -78,7 +78,7 @@ Starting the IDE
 
 |omnet++| comes with an Eclipse-based Simulation IDE. You should be able to start the IDE by typing:
 
-::
+.. code::
 
    $ |omnetpp|
 
@@ -99,7 +99,7 @@ Reconfiguring the Libraries
 If you need to recompile the |omnet++| components with different flags (e.g. different optimization), then change the
 top-level |omnet++| directory, edit ``configure.user`` accordingly, then type:
 
-::
+.. code::
 
    $ ./configure
    $ make clean
@@ -108,7 +108,7 @@ top-level |omnet++| directory, edit ``configure.user`` accordingly, then type:
 If you want to recompile just a single library, then change to the directory of the library (e.g. ``cd src/sim``) and
 type:
 
-::
+.. code::
 
    $ make clean
    $ make
@@ -116,13 +116,13 @@ type:
 By default, libraries are compiled in both debug and release mode. If you want to make release or debug builds only,
 use:
 
-::
+.. code::
 
    $ make MODE=release
 
 or
 
-::
+.. code::
 
    $ make MODE=debug
 
@@ -154,7 +154,7 @@ DeinoMPI, which can be downloaded from http://mpi.deino.net.
 After installing DeinoMPI, adjust the ``MPI_DIR`` setting in |omnet++|'s ``configure.user``, and reconfigure and
 recompile |omnet++|:
 
-::
+.. code::
 
    $ ./configure
    $ make cleanall
@@ -171,8 +171,8 @@ Akaroa
 Akaroa 2.7.9, which is the latest version at the time of writing, does not support Windows. You may try to port it using
 the porting guide from the Akaroa distribution.
 
-Windows 10 - Using Windows Subsystem for Linux (WSL) version 2
-==============================================================
+Windows - Using Windows Subsystem for Linux (WSL) version 2
+===========================================================
 
 WSL 2 supports running a full Linux distribution on a Windows machine. Running |omnet++| in WSL 2 has certain advantages
 and disadvantages compared to running |omnet++| natively on Windows:
@@ -196,8 +196,9 @@ Disadvantages:
    use the |omnet++| OpenSceneGraph and osgEarth integration in this setup and it is recommended to explicitly disable
    these features when you build |omnet++|.
 
-Supported Windows Versions
---------------------------
+
+WSL 2 Requirements
+------------------
 
 Installing |omnet++| on WSL 2 is supported on Windows 10 version 1903 (build 18362.1049) or later. Note especially the
 minor build number. Your Windows version must have at least 1049 as a minor build number.
@@ -208,13 +209,13 @@ Enabling WSL 2 on Windows
 Open a PowerShell with Administrator privileges. On newer versions of Windows, you can install the WSL subsystem by
 typing:
 
-::
+.. code::
 
    wsl --install
 
 Alternatively, if your system does not have a ``wsl`` command, use the following commands:
 
-::
+.. code::
 
    dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
    dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
@@ -222,7 +223,7 @@ Alternatively, if your system does not have a ``wsl`` command, use the following
 After a successful installation, reboot your computer and open an Administrator PowerShell again to set the default WSL
 version to 2.
 
-::
+.. code::
 
    wsl.exe --set-default-version 2
 
@@ -243,28 +244,31 @@ this point, you could install |omnet++|, but GUI programs would not work.
 Install VcXserver
 -----------------
 
+.. note::
+
+   There is ongoing work (called WSLg https://github.com/microsoft/wslg) to make Linux GUI applications work on 
+   Windows by default. On later versions of Windows (21H2+) you may be able to skip the whole X Server installation step.
+
 To use GUI programs from Linux, you must install an X Server application from: https://sourceforge.net/projects/vcxsrv/
 
 Start the installation and make sure that you:
 
 -  select "Disable access control"
-
 -  set display number to 0
-
 -  check "Private networks, such as my home or work network" and click "Allow access" when the Windows Defender Firewall
    asks for permission.
 
 Open the Windows Terminal and launch the Ubuntu distribution from the dropdown menu. Add the following line to the
 ``/etc/bash.bashrc`` or ``~/.bashrc`` file.
 
-::
+.. code::
 
    export DISPLAY=$(grep -m 1 nameserver /etc/resolv.conf | awk '{print $2}'):0.0
 
 This will ensure that Linux programs will always find the X Server process running on Windows. Exit from the Ubuntu
 shell, and restart it to make sure that the change was applied correctly. Check if
 
-::
+.. code::
 
    $ echo $DISPLAY
 
@@ -272,11 +276,6 @@ displays the correct IP address of the Windows machine.
 
 In the future, make sure that the X Server is always running when you want to run Linux GUI programs by either making
 the X Server automatically start or launching it manually.
-
-.. note::
-
-   There is ongoing work to make Linux GUI applications work on Windows by default. On later versions of Windows you may
-   be able to skip the whole X Server installation step.
 
 Install |omnet++| Linux
 -----------------------

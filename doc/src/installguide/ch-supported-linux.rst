@@ -7,11 +7,8 @@ Supported Linux Distributions
 This chapter provides instructions for installing |omnet++| on selected Linux distributions:
 
 -  Ubuntu 18.04 and 20.4 LTS
-
 -  Fedora Workstation 31
-
 -  Red Hat Enterprise Linux Desktop Workstation 8.x
-
 -  OpenSUSE Leap 15
 
 This chapter describes the overall process. Distro-specific information, such as how to install the prerequisite
@@ -25,26 +22,23 @@ packages, are covered by distro-specific chapters.
    Ubuntu derivatives (Ubuntu instructions may apply):
 
    -  Kubuntu, Xubuntu, Edubuntu, …
-
    -  Linux Mint
 
    Some Debian-based distros (Ubuntu instructions may apply, as Ubuntu itself is based on Debian):
 
    -  Knoppix and derivatives
-
    -  Mepis
 
    Some Fedora-based distros (Fedora instructions may apply):
 
    -  Simplis
-
    -  Eeedora
 
 Installing the Prerequisite Packages
 ------------------------------------
 
 |omnet++| requires several packages to be installed on the computer. These packages include the C++ compiler (gcc or
-clang), the Java runtime, and several other libraries and programs. These packages can be installed from the software
+clang) and several other libraries and programs. These packages can be installed from the software
 repositories of your Linux distribution.
 
 **See the chapter specific to your Linux distribution for instructions on installing the packages needed by |omnet++|.**
@@ -58,14 +52,14 @@ Downloading and Unpacking
 -------------------------
 
 Download |omnet++| from |downloadsite|. Make sure you select to download
-the generic archive, ``|omnetpp|-|version|-src-linux.tgz``.
+the Linux specific archive, ``|omnetpp|-|version|-linux-x86_64.tgz``.
 
 Copy the archive to the directory where you want to install it. This is usually your home directory, ``/home/<you>``.
 Open a terminal, and extract the archive using the following command:
 
-::
+.. code::
 
-   $ tar xvfz |omnetpp|-|version|-src-linux.tgz
+   $ tar xvfz |omnetpp|-|version|-linux-x86_64.tgz
 
 This will create an ``|omnetpp|-|version|`` subdirectory with the |omnet++| files in it.
 
@@ -80,19 +74,19 @@ In general |omnet++| requires that certain environment variables are set and the
 `|omnetpp|-|version|/bin` directory is in the PATH. Source the `setenv` 
 script to set up all these variables. 
 
-::
+.. code::
 
   $ cd |omnetpp|-|version|
   $ source setenv
 
-  To set the environment variables permanently, edit ``.profile`` or ``.zprofile`` in your home directory and
-  add a line something like this:
+To set the environment variables permanently, edit ``.profile`` or ``.zprofile`` in your home directory and
+add a line something like this:
   
-  ::
+.. code::
   
      [ -f "$HOME/|omnetpp|-|version|/setenv" ] && source "$HOME/|omnetpp|-|version|/setenv"
   
-  .. note::
+.. note::
   
      If you use a shell other than bash, consult the man page of that shell to find out which startup file to edit, and
      how to set and export variables.
@@ -110,7 +104,7 @@ Configuring and Building |omnet++|
 
 In the top-level |omnet++| directory, type:
 
-::
+.. code::
 
    $ ./configure
 
@@ -132,7 +126,7 @@ The ``configure`` script detects installed software and configuration of your sy
 
 When ``./configure`` has finished, you can compile |omnet++|. Type in the terminal:
 
-::
+.. code::
 
    $ make
 
@@ -154,17 +148,13 @@ When ``./configure`` has finished, you can compile |omnet++|. Type in the termin
    The make command will seemingly compile everything twice. This is because both debug and optimized versions of the
    libraries are built. If you only want to build one set of the libraries, specify ``MODE=debug`` or ``MODE=release``:
 
-   ::
-
-      $ make MODE=release
-
 Verifying the Installation
 --------------------------
 
-You can now verify that the sample simulations run correctly. For example, the dyna simulation is started by entering
+You can now verify that the sample simulations run correctly. For example, the aloha simulation is started by entering
 the following commands:
 
-::
+.. code::
 
    $ cd samples/aloha
    $ ./aloha
@@ -176,7 +166,7 @@ Starting the IDE
 
 You can launch the |omnet++| Simulation IDE by typing the following command in the terminal:
 
-::
+.. code::
 
    $ |omnetpp|
 
@@ -188,7 +178,7 @@ You can launch the |omnet++| Simulation IDE by typing the following command in t
 If you would like to be able to access the IDE from the application launcher or via a desktop shortcut, run one or both
 of the commands below:
 
-::
+.. code::
 
    $ make install-menu-item
    $ make install-desktop-icon
@@ -216,7 +206,7 @@ Reconfiguring the Libraries
 If you need to recompile the |omnet++| components with different flags (e.g. different optimization), then change the
 top-level |omnet++| directory, edit ``configure.user`` accordingly, then type:
 
-::
+.. code::
 
    $ ./configure
    $ make cleanall
@@ -225,7 +215,7 @@ top-level |omnet++| directory, edit ``configure.user`` accordingly, then type:
 If you want to recompile just a single library, then change to the directory of the library (e.g. ``cd src/sim``) and
 type:
 
-::
+.. code::
 
    $ make clean
    $ make
@@ -233,13 +223,13 @@ type:
 By default, libraries are compiled in both debug and release mode. If you want to make release or debug builds only,
 use:
 
-::
+.. code::
 
    $ make MODE=release
 
 or
 
-::
+.. code::
 
    $ make MODE=debug
 
@@ -275,14 +265,14 @@ Download Akaroa 2.7.9 from: http://www.cosc.canterbury.ac.nz/research/RG/net_sim
 
 Extract it into a temporary directory:
 
-::
+.. code::
 
    $ tar xfz akaroa-2.7.9.tar.gz
 
 Configure, build and install the Akaroa library. By default, it will be installed into the ``/usr/local/akaroa``
 directory.
 
-::
+.. code::
 
    $ ./configure
    $ make
@@ -307,6 +297,6 @@ Nemiver is the default debugger for the |omnet++| just-in-time debugging facilit
 package manager in most Linux distros. For example, on Ubuntu and other Debian-based distros you can install it by the
 following command:
 
-::
+.. code::
 
    $ sudo apt-get install nemiver

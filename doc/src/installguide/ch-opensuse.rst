@@ -30,7 +30,7 @@ Command-Line Installation
 
 To install the required packages, type in the terminal:
 
-::
+.. code::
 
    $ sudo zypper install make gcc gcc-c++ clang lld bison flex perl \
        python3 python3-pip libqt5-qtbase-devel libxml2-devel zlib-devel \
@@ -50,14 +50,14 @@ need to get them from different sources (e.g. rpmfind.net).
 
 To enable the optional parallel simulation support you will need to install the MPI package:
 
-::
+.. code::
 
    $ sudo zypper install openmpi-devel
 
 Note that *openmpi* will not be available by default, first you need to log out and log in again, or source your
 ``.profile`` script:
 
-::
+.. code::
 
    $ . ~/.profile
 

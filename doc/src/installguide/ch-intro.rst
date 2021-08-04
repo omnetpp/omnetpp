@@ -12,24 +12,24 @@ Supported Platforms
 
 |omnet++| has been tested and is supported on the following operating systems:
 
--  Windows 10 / 64-bit
--  MacOS 10.15
+-  Windows on x86_64 architecture
+-  MacOS 10.15 and 11.x on x86_64 architecture
 -  Linux distributions covered in this Installation Guide
 
 .. ifconfig:: what=='omnest'
 
    64-bit precompiled binaries are provided for the following platforms:
 
-   -  Windows 10 with Microsoft Visual C++ 2017 / ClangC2
-   -  Windows 10 with the bundled MinGW-w64 gcc compiler
+   -  Windows with Microsoft Visual C++ 2017 / ClangC2
+   -  Windows with the bundled MinGW-w64 gcc/clang compiler
 
    On other platforms, |omnet++| needs to be compiled from source.
 
 The Simulation IDE is supported on the following platforms:
 
--  Linux x86 64-bit
--  Windows 10 / 64-bit
--  MacOS 10.15
+-  Linux x86_64/aarch64
+-  Windows x86_64
+-  MacOS 10.15 and 11.x (x86_64)
 
 .. note::
 

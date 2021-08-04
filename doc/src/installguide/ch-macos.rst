@@ -8,22 +8,55 @@ This chapter provides additional information for installing |omnet++| on macOS.
 
 The following releases are covered:
 
--  macOS 10.15 and 11.1
+-  macOS 11.x
 
 Installing the Prerequisite Packages
 ------------------------------------
 
--  Install the command line developer tools for macOS (compiler, debugger, etc.)
+Install the command line developer tools for macOS (compiler, debugger, etc.)
 
-   ::
+.. code::
 
-      $ xcode-select --install
+   $ xcode-select --install
 
 Installing additional packages will enable more functionality in |omnet++|; see the *Additional packages* section at the
 end of this chapter.
 
-Additional Steps Required on macOS to Use the Debugger.
--------------------------------------------------------
+Enabling Development Mode in Terminal
+-------------------------------------
+
+MacOS has a strict default security policy preventing the execution of unsigned code. This behavior often
+interferes with the development process so you must explicitly allow running unsigned code from a Terminal.
+On the *System Preferences / Security and Privacy / Privacy* tab, select *Development Tools* on the left side,
+unlock the panel with the lock icon on the bottom left and select the Terminal app on the right side to
+override the default security policy for the Terminal app.
+
+.. figure:: pictures/macos-security.png
+   :width: 75.0%
+
+   Enable Running Unsigned Code in Terminal
+
+Running |omnet++| on Apple Silicon
+----------------------------------
+
+|omnet++| does not currently support the Apple M1 processor natively, but you can run the x86_64 version using
+the Rosetta 2 emulator. To run |omnet++| under emulation, open a terminal window, then execute:
+
+.. code::
+
+   $ arch -x86_64 /bin/zsh --login
+
+
+After this, follow the normal installation instructions and be sure to execute all commands in this terminal.
+
+.. note::
+   
+   The above command may graphically prompt you to allow the installation of the emulator component.
+   You can also manually trigger the installation from the command line using the following command:
+   `softwareupdate --install-rosetta --agree-to-license`.   
+   
+Additional Steps Required on macOS to Use the Debugger
+------------------------------------------------------
 
 The Command Line Developer Tools package contains the ``lldb`` debugger. |omnet++| 6.0 and later contains the necessary
 driver binary (``lldbmi2``) that allows ``lldb`` to be used in the |omnet++| IDE. If you are upgrading from an earlier
@@ -37,14 +70,14 @@ Downloading and Unpacking |omnet++|
 -----------------------------------
 
 Download |omnet++| from |downloadsite|. Make sure you select to download
-the macOS specific archive, ``|omnetpp|-|version|-src-macosx.tgz``.
+the macOS specific archive, ``|omnetpp|-|version|-macos-x86_64.tgz``.
 
 Copy the archive to the directory where you want to install it. This is usually your home directory, ``/Users/<you>``.
 Open a terminal, and extract the archive using the following command:
 
-::
+.. code::
 
-   $ tar zxvf |omnetpp|-|version|-src-macosx.tgz
+   $ tar zxvf |omnetpp|-|version|-macos-x86_64.tgz
 
 A subdirectory called ``|omnetpp|-|version|`` will be created, containing the simulator files.
 
@@ -54,33 +87,24 @@ Alternatively, you can also unpack the archive using Finder.
 
    The Terminal can be found in the Applications / Utilities folder.
 
-.. note::
-
-   On machines using the Apple M1 chip you may receive error messages during the configuration phase. To avoid this, the
-   Rosetta emulator must be installed and enabled for the Terminal app.
-
-   Open Finder and navigate to the Applications / Utilities folder. Right click on the Terminal application and click
-   Get Info. Select *Open using Rosetta* on the dialog and allow the system to download and install Rosetta. Close all
-   Terminal windows and restart them. This will allow you to run Intel x64 based programs in the terminal window.
-
 Environment Variables
 ---------------------
 
 In general |omnet++| requires that certain environment variables are set and the
-`|omnetpp|-|version|/bin` directory is in the PATH. Source the `setenv` 
+``|omnetpp|-|version|/bin`` directory is in the PATH. Source the ``setenv`` 
 script to set up all these variables. 
 
-::
+.. code::
 
   $ cd |omnetpp|-|version|
   $ source setenv
 
-  To set the environment variables permanently, edit ``.profile``, ``.zprofile`` or ``.zshenv`` in your home directory and
-  add a line something like this:
+To set the environment variables permanently, edit ``.profile``, ``.zprofile`` or ``.zshenv`` in your home directory and
+add a line something like this:
   
-  ::
+.. code::
   
-     [ -f "$HOME/|omnetpp|-|version|/setenv" ] && source "$HOME/|omnetpp|-|version|/setenv"
+   [ -f "$HOME/|omnetpp|-|version|/setenv" ] && source "$HOME/|omnetpp|-|version|/setenv"
   
 
 Configuring and Building |omnet++|
@@ -91,7 +115,7 @@ in it.
 
 In the top-level |omnet++| directory, type:
 
-::
+.. code::
 
    $ ./configure
 
@@ -108,22 +132,13 @@ The ``configure`` script detects installed software and configuration of your sy
 
 When ``./configure`` has finished, you can compile |omnet++|. Type in the terminal:
 
-::
+.. code::
 
    $ make
 
 .. tip::
 
    To take advantage of multiple processor cores, add the ``-j4`` option to the ``make`` command line.
-
-.. note::
-
-   Depending on your computer’s security configuration, Gatekeeper may complain about unsigned executables and kill the
-   command-line utilities that are used to build the simulator. In this case, you should manually enable every command
-   Gatekeepr complains about by opening *System Preferences / Security and Privacy* and clicking on the *Allow* button
-   near the bottom of the dialog. You may have to repeat the above procedure several times before all command-line
-   utilities are enabled. Alternatively you can disable this security check globally (not recommended) by entering
-   ``sudo spctl --master-disable`` on the terminal and then restarting the terminal application.
 
 .. note::
 
@@ -134,17 +149,13 @@ When ``./configure`` has finished, you can compile |omnet++|. Type in the termin
    The make command will seemingly compile everything twice. This is because both debug and optimized versions of the
    libraries are built. If you only want to build one set of the libraries, specify ``MODE=debug`` or ``MODE=release``:
 
-   ::
-
-      $ make MODE=release
-
 Verifying the Installation
 --------------------------
 
-You can now verify that the sample simulations run correctly. For example, the dyna simulation is started by entering
+You can now verify that the sample simulations run correctly. For example, the aloha simulation is started by entering
 the following commands:
 
-::
+.. code::
 
    $ cd samples/aloha
    $ ./aloha
@@ -158,7 +169,7 @@ Starting the IDE
 
 Start the IDE by typing:
 
-::
+.. code::
 
    $ |omnetpp|
 
@@ -169,7 +180,7 @@ desktop.
 
 Alternatively, run one or both of the commands below:
 
-::
+.. code::
 
    $ make install-menu-item
    $ make install-desktop-icon
@@ -196,7 +207,7 @@ Reconfiguring the Libraries
 If you need to recompile the |omnet++| components with different flags (e.g. different optimization), then change the
 top-level |omnet++| directory, edit ``configure.user`` accordingly, then type:
 
-::
+.. code::
 
    $ ./configure
    $ make clean
@@ -209,7 +220,7 @@ top-level |omnet++| directory, edit ``configure.user`` accordingly, then type:
 If you want to recompile just a single library, then change to the directory of the library (e.g. ``cd src/sim``) and
 type:
 
-::
+.. code::
 
    $ make clean
    $ make
@@ -217,13 +228,13 @@ type:
 By default, libraries are compiled in both debug and release mode. If you want to make release or debug builds only,
 use:
 
-::
+.. code::
 
    $ make MODE=release
 
 or
 
-::
+.. code::
 
    $ make MODE=debug
 
