@@ -16,6 +16,8 @@
 
 #include <cstring>
 #include <cmath>
+#include <utility>
+#include <vector>
 #include "omnetpp/cpacket.h"
 #include "omnetpp/cregistrationlist.h"
 #include "common/stringutil.h"
@@ -307,7 +309,47 @@ void GenericObjectInspector::createContextMenu(QPoint pos)
             menu = new QMenu(this);
         }
 
-        QString text = node->getData(Qt::DisplayRole).toString();
+        // finding the first separator, so we can insert the submenu where we want it
+        auto actions = menu->actions();
+        QAction *firstSep = nullptr;
+        for (auto action : actions) {
+            if (action->isSeparator()) {
+                firstSep = action;
+                break;
+            }
+        }
+
+        QMenu *subtreeModeSubmenu = menu->addMenu("Switch Subtree Mode...");
+
+        if (firstSep)
+            menu->insertMenu(firstSep, subtreeModeSubmenu);
+        else
+            menu->addSeparator(); // this one will be _after_ the submenu
+
+        menu->insertSeparator(subtreeModeSubmenu->menuAction()); // this one will be _before_ the submenu
+
+        std::string nodeId = node->getNodeIdentifier().toStdString();
+        const auto& overrides = sourceModel->getNodeModeOverrides();
+        int nodeModeOverride = containsKey(overrides, nodeId) ? (int)overrides.at(nodeId) : -1;
+        for (auto p : std::vector<std::pair<const char *, Mode>>{
+            {"Grouped", Mode::GROUPED}, {"Flat", Mode::FLAT},
+            {"Inheritance", Mode::INHERITANCE}, {"Children", Mode::CHILDREN}
+            // PACKET can't be put here because it is never set on the sourceModel
+        }) {
+            QAction *action = subtreeModeSubmenu->addAction(p.first, [this, sourceIndex, p](bool checked) {
+                sourceModel->setData(sourceIndex, checked ? (int)p.second : -1, (int)GenericObjectTreeModel::DataRole::NODE_MODE_OVERRIDE);
+                gatherVisibleDataIfSafe();
+            });
+            action->setCheckable(true);
+            action->setChecked(nodeModeOverride == (int)p.second);
+        }
+
+        subtreeModeSubmenu->addSeparator();
+        subtreeModeSubmenu->addAction("Reset All", [this]{
+            QSet<QString> expanded = getExpandedNodes();
+            recreateModel(false);
+            expandNodes(expanded);
+        });
 
         menu->addAction(copyLineAction);
         menu->addAction(copyLineHighlightedAction);

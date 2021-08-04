@@ -81,9 +81,11 @@ void InspectorUtil::fillInspectorContextMenu(QMenu *menu, cObject *object, Inspe
         if (insp != getQtenv()->getMainObjectInspector())
             menu->addAction("View '" + name + "' in Object Inspector", getQtenv()->getMainObjectInspector(), SLOT(goUpInto()))
                 ->setData(QVariant::fromValue(object));
-
-        menu->addSeparator();
     }
+
+    // the GenericObjectInspector relies on this always being here, so it's unconditional
+    // but separators at the ends are skipped when rendering, and multiple separators are merged, so it's fine
+    menu->addSeparator();
 
     // add inspector types supported by the object
     for (InspectorType type : supportedInspTypes(object)) {
