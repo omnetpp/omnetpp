@@ -104,6 +104,7 @@ QModelIndex GenericObjectTreeModel::index(int row, int column, const QModelIndex
 
 QModelIndex GenericObjectTreeModel::parent(const QModelIndex& child) const
 {
+    ASSERT(child.model() == this);
     TreeNode *node = static_cast<TreeNode *>(child.internalPointer());
     // the "row" of the parent ModelIndex is its own index in its parent,
     // and not the index of this child in the parent ModelIndex
@@ -119,6 +120,7 @@ bool GenericObjectTreeModel::hasChildren(const QModelIndex& parent) const
         return !rootNodes.empty();
     }
     else {
+        ASSERT(parent.model() == this);
         TreeNode *parentNode = static_cast<TreeNode *>(parent.internalPointer());
         return parentNode ? parentNode->getHasChildren() : false;
     }
@@ -131,6 +133,7 @@ int GenericObjectTreeModel::rowCount(const QModelIndex& parent) const
         return rootNodes.size();
     }
     else {
+        ASSERT(parent.model() == this);
         TreeNode *parentNode = static_cast<TreeNode *>(parent.internalPointer());
         int childCount = parentNode ? parentNode->getCurrentChildCount() : 0;
         return childCount;
@@ -144,6 +147,7 @@ int GenericObjectTreeModel::columnCount(const QModelIndex& parent) const
 
 QVariant GenericObjectTreeModel::data(const QModelIndex& index, int role) const
 {
+    ASSERT(index.model() == this);
     auto node = static_cast<TreeNode *>(index.internalPointer());
 
     if (!index.parent().isValid() && role == (int)DataRole::NODE_MODE_OVERRIDE)
@@ -159,6 +163,7 @@ QVariant GenericObjectTreeModel::data(const QModelIndex& index, int role) const
 
 bool GenericObjectTreeModel::setData(const QModelIndex& index, const QVariant& value, int role)
 {
+    ASSERT(index.model() == this);
     TreeNode *node = static_cast<TreeNode *>(index.internalPointer());
     ASSERT(node != nullptr);
 
@@ -183,7 +188,15 @@ Qt::ItemFlags GenericObjectTreeModel::flags(const QModelIndex& index) const
 {
     Qt::ItemFlags flags = QAbstractItemModel::flags(index);
     flags &= ~Qt::ItemIsEditable;
-    if (static_cast<TreeNode *>(index.internalPointer())->isEditable()) {
+
+    if (!index.isValid())
+        return flags;
+
+    ASSERT(index.model() == this);
+    TreeNode *node = static_cast<TreeNode *>(index.internalPointer());
+
+    ASSERT(node != nullptr);
+    if (node->isEditable()) {
         flags |= Qt::ItemIsEditable;
     }
     return flags;
@@ -199,6 +212,7 @@ bool GenericObjectTreeModel::canFetchMore(const QModelIndex &parent) const
 
 void GenericObjectTreeModel::fetchMore(const QModelIndex &parent)
 {
+    ASSERT(parent.model() == this);
     if (parent.isValid()) {
         TreeNode *node = static_cast<TreeNode *>(parent.internalPointer());
         int n = node->getPotentialChildCount();
@@ -243,6 +257,7 @@ void GenericObjectTreeModel::refreshNodeChildrenRec(const QModelIndex &index)
 // to just pass in the child list we have to create here?
 void GenericObjectTreeModel::refreshChildList(const QModelIndex &index)
 {
+    ASSERT(index.model() == this);
     TreeNode *node = static_cast<TreeNode *>(index.internalPointer());
 
     node->updatePotentialChildCount();
@@ -282,6 +297,7 @@ void GenericObjectTreeModel::refreshChildList(const QModelIndex &index)
 
 void GenericObjectTreeModel::setNodeMode(const QModelIndex &index, Mode mode)
 {
+    ASSERT(index.model() == this);
     TreeNode *node = static_cast<TreeNode *>(index.internalPointer());
 
     emit layoutAboutToBeChanged();
@@ -303,6 +319,7 @@ void GenericObjectTreeModel::setNodeMode(const QModelIndex &index, Mode mode)
 
 void GenericObjectTreeModel::unsetNodeMode(const QModelIndex &index)
 {
+    ASSERT(index.model() == this);
     TreeNode *node = static_cast<TreeNode *>(index.internalPointer());
 
     emit layoutAboutToBeChanged();
@@ -327,12 +344,14 @@ void GenericObjectTreeModel::unsetNodeMode(const QModelIndex &index)
 
 cObject *GenericObjectTreeModel::getCObjectPointer(const QModelIndex &index)
 {
+    ASSERT(index.model() == this);
     auto node = static_cast<TreeNode *>(index.internalPointer());
     return node ? node->getCObjectPointer() : nullptr;
 }
 
 cObject *GenericObjectTreeModel::getCObjectPointerToInspect(const QModelIndex &index)
 {
+    ASSERT(index.model() == this);
     cObject *object = getCObjectPointer(index);
     if (auto w = dynamic_cast<cWatch_cObject *>(object))
         return w->getObjectPtr();

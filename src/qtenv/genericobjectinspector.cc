@@ -348,11 +348,16 @@ bool GenericObjectInspector::updateData()
     bool changed = false;
     QModelIndexList indices = getVisibleNodes();
     for (auto i : indices) {
-        TreeNode *node = static_cast<TreeNode *>(proxyModel->mapToSource(i).internalPointer());
-        if (node->updateData()) {
-            changed = true;
-            // we should do this here, but we don't because it is super slow
-            //emit dataChanged(i, i);
+        if (i.isValid()) {
+            QModelIndex sourceIndex = proxyModel->mapToSource(i);
+            if (sourceIndex.isValid()) {
+                TreeNode *node = static_cast<TreeNode *>(sourceIndex.internalPointer());
+                if (node->updateData()) {
+                    changed = true;
+                    // we should do this here, but we don't because it is super slow
+                    //emit dataChanged(i, i);
+                }
+            }
         }
     }
     return changed;
