@@ -83,6 +83,8 @@ protected slots:
     void createContextMenu(QPoint pos);
     void copySelectedLineToClipboard(bool onlyHighlightedPart);
 
+    void cycleSelectedSubtreeMode();
+
     void setMode(Mode mode);
 
     void toGroupedMode()     { setMode(Mode::GROUPED);     }

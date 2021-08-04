@@ -164,6 +164,12 @@ GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel,
     connect(copyLineHighlightedAction, &QAction::triggered, [this]() { copySelectedLineToClipboard(true); });
     addAction(copyLineHighlightedAction);
 
+    QAction *cycleSubtreeModeAction = new QAction("Cycle Subtree Mode", this);
+    cycleSubtreeModeAction->setShortcut(Qt::CTRL + Qt::Key_B);
+    cycleSubtreeModeAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    connect(cycleSubtreeModeAction, &QAction::triggered, this, &GenericObjectInspector::cycleSelectedSubtreeMode);
+    addAction(cycleSubtreeModeAction);
+
     proxyModel = new PropertyFilteredGenericObjectTreeModel(this);
 
     mode = (Mode)getPref(PREF_MODE, QVariant::fromValue(0), false).toInt();
@@ -374,6 +380,32 @@ void GenericObjectInspector::copySelectedLineToClipboard(bool onlyHighlightedPar
         }
 
         QApplication::clipboard()->setText(text, QClipboard::Clipboard);
+    }
+}
+
+void GenericObjectInspector::cycleSelectedSubtreeMode()
+{
+    QModelIndexList selection = treeView->selectionModel()->selectedIndexes();
+    if (!selection.isEmpty()) {
+        QModelIndex sourceIndex = proxyModel->mapToSource(selection.first());
+        TreeNode *node = static_cast<TreeNode*>(sourceIndex.internalPointer());
+
+        Mode currMode = node->getMode();
+        Mode nextMode;
+
+        switch (currMode) {
+            case Mode::GROUPED:     nextMode = Mode::FLAT;        break;
+            case Mode::FLAT:        nextMode = Mode::INHERITANCE; break;
+            case Mode::INHERITANCE: nextMode = Mode::CHILDREN;    break;
+            case Mode::CHILDREN:    nextMode = Mode::GROUPED;     break;
+            case Mode::PACKET:      ASSERT(false);                break;   // this is never seen by the source model or the nodes
+        };
+
+        sourceModel->setData(sourceIndex, (int)nextMode, (int)GenericObjectTreeModel::DataRole::NODE_MODE_OVERRIDE);
+
+        // have to get the selection again, it was invalidated
+        treeView->expand(treeView->selectionModel()->selectedIndexes().first());
+        gatherVisibleDataIfSafe();
     }
 }
 
