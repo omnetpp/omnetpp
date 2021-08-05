@@ -522,6 +522,8 @@ void Cmdenv::displayException(std::exception& ex)
 
 void Cmdenv::componentInitBegin(cComponent *component, int stage)
 {
+    EnvirBase::componentInitBegin(component, stage);
+
     // TODO: make this an EV_INFO in the component?
     if (!opt->expressMode && opt->printEventBanners && component->getLogLevel() != LOGLEVEL_OFF)
         out << "Initializing " << (component->isModule() ? "module" : "channel") << " " << component->getFullPath() << ", stage " << stage << endl;

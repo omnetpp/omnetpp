@@ -1090,6 +1090,15 @@ void EnvirBase::simulationEvent(cEvent *event)
         eventlogManager->simulationEvent(event);
 }
 
+void componentInitBegin(cComponent *component, int stage)
+{
+    // To make initialization similar to processed events in this regard.
+    // Unfortunately, for modules created (initialized) dynamically,
+    // this moduleId will be stuck like this for the rest of the event,
+    // processed by a different module.
+    currentModuleId = (component && component->isModule()) ? component->getId() : -1;
+}
+
 void EnvirBase::beginSend(cMessage *msg, const SendOptions& options)
 {
     if (recordEventlog)

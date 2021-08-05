@@ -208,6 +208,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     // eventlog callback interface
     virtual void objectDeleted(cObject *object) override;
     virtual void simulationEvent(cEvent *event) override;
+    virtual void componentInitBegin(cComponent *component, int stage) override;
     virtual void messageScheduled(cMessage *msg) override;
     virtual void messageCancelled(cMessage *msg) override;
     virtual void beginSend(cMessage *msg, const SendOptions& options) override;

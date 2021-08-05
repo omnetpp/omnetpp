@@ -1579,6 +1579,8 @@ void Qtenv::displayException(std::exception& ex)
 
 void Qtenv::componentInitBegin(cComponent *component, int stage)
 {
+    EnvirBase::componentInitBegin(component, stage);
+
     auto logLevel = getPref(QString("ComponentLogLevels/") + component->getFullPath().c_str());
     if (logLevel.isValid() && logLevel.canConvert(QVariant::Int))
         setComponentLogLevel(component, (LogLevel)logLevel.toInt());
