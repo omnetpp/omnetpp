@@ -1,0 +1,3 @@
+Build with:
+
+$ docker build -t omnetpp/distrobuild-base:ubuntu20.04-macos11.3-210713 .

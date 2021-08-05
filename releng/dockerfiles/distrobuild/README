@@ -1,0 +1,5 @@
+Copy here
+
+ - the tools directory containing the Windows and macOS toolchains (i.e. in ./tools/170717/...)
+
+NOTE: you need to rebuild this image whenever the Windows/macOS toolchain or Eclipse is updated
