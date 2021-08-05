@@ -109,10 +109,10 @@ endif
 # tools, libraries and compiler flags detected by ./configure
 #
 PERL = perl
-YACC = bison -y
+YACC = bison -y -Wno-yacc
 LEX = flex
-CC = x86_64-apple-darwin15-clang
-CXX = x86_64-apple-darwin15-clang++-libc++
+CC = x86_64-apple-darwin20.4-clang
+CXX = x86_64-apple-darwin20.4-clang++-libc++
 TOOLCHAIN_NAME = clang
 DEFINES = -DTHREADED
 CFLAGS_DEBUG = -g -Wall
@@ -133,13 +133,13 @@ PIC_FLAGS =
 MSGC = opp_msgc
 SMC = opp_smc
 NEDTOOL = nedtool
-AS = x86_64-apple-darwin15-as
-AR = x86_64-apple-darwin15-ar cr
+AS = x86_64-apple-darwin20.4-as
+AR = x86_64-apple-darwin20.4-ar cr
 ARFLAG_OUT =
-RANLIB = x86_64-apple-darwin15-ranlib
-SHLIB_LD = x86_64-apple-darwin15-clang++-libc++ -shared
+RANLIB = x86_64-apple-darwin20.4-ranlib
+SHLIB_LD = x86_64-apple-darwin20.4-clang++-libc++ -shared
 DLLTOOL = dlltool
-STRIP = x86_64-apple-darwin15-strip
+STRIP = x86_64-apple-darwin20.4-strip
 WISH =
 MAKEDEPEND = opp_makedep -Y --objdirtree
 LN = ln -sf
@@ -170,13 +170,13 @@ PCAP_LIBS = -lpcap
 PTHREAD_CFLAGS =
 PTHREAD_LIBS = -lpthread
 XMLPARSER = libxml
-XML_CFLAGS = -I/opt/osxcross/target/SDK/MacOSX10.11.sdk/usr/include/libxml2
+XML_CFLAGS = -I/opt/osxcross/target/SDK/MacOSX11.3.sdk/usr/include/libxml2
 XML_LIBS = -lxml2
 DEFINES += -DXMLPARSER=$(XMLPARSER)
 AKAROA_CFLAGS = -I/usr/local/akaroa/include
 AKAROA_LIBS = -L/usr/local/akaroa/lib -lakaroa -lfl
 JNILIBS_IF_POSSIBLE = jnilibs
-JAVA_CFLAGS =  -I/opt/osxcross/target/SDK/MacOSX10.11.sdk/System/Library/Frameworks/JavaVM.framework/Headers
+JAVA_CFLAGS = -I$(OMNETPP_ROOT)/../tools/jdk-include  -I$(OMNETPP_ROOT)/../tools/jdk-include/darwin
 JAVA_LIBS =
 
 #

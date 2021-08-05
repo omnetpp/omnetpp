@@ -3,7 +3,8 @@
 # create an OMNeT++ source distribution package
 #
 # in: what - whether to build "omnetpp" (default) or "omnest"
-# in: BUILD_CORE_DISTRO, BUILD_LINUX_DISTRO, BUILD_WIN64_DISTRO, BUILD_MACOSX_DISTRO
+# in: BUILD_CORE_DISTRO, BUILD_LINUX_X86_64_DISTRO,
+#     BUILD_WIN32_X86_64_DISTRO, BUILD_MACOSX_DISTRO
 #     if "true", the repsective platform distro will be built
 # in: Build identifier can be passed as BUILDID variable (optional)
 # in: If BUILD_IDE=true (default) - it tries to build the native and java part of the IDE
@@ -14,12 +15,12 @@
 TWEAKCONFIG="perl releng/tweakconfigfile.pl"
 REGEXPREPLACE="perl -i -pe"
 
-cd `dirname $0`/..
-OMNETPP_ROOT=`pwd`
+cd $(dirname $0)/..
+OMNETPP_ROOT=$(pwd)
 
 cp configure.user.dist configure.user
 
-source ./setenv -f
+source ./setenv
 
 if test -z "$what"; then
     export what="omnetpp"
@@ -38,8 +39,8 @@ if test -z "$BUILD_IDE_NATIVE"; then
 fi
 
 export BUILD_CORE_DISTRO
-export BUILD_LINUX_DISTRO
-export BUILD_WIN64_DISTRO
+export BUILD_LINUX_X86_64_DISTRO
+export BUILD_WIN32_X86_64_DISTRO
 export BUILD_MACOSX_DISTRO
 
 if test -z "$TOOLS_DIR"; then
@@ -48,7 +49,7 @@ fi
 
 # set the version number of the tools directory that is used in the Windows/macOS distros
 if test -z "$TOOLS_VERSION"; then
-  export TOOLS_VERSION=190729
+  export TOOLS_VERSION=210713
 fi
 
 # use the default language in perl (supresses a lot of warnings in perl calls)
@@ -75,10 +76,10 @@ if mount | grep textmode >/dev/null; then
 fi
 
 # Get version string and BUILD identifier
-export VERSION=`cat Version | sed 's/^.*-//'`
+export VERSION=$(cat Version | sed 's/^.*-//')
 if [ "$BUILDID" = "" ]; then
   # generate our own build identifier
-  export BUILDID=`date +%y%m%d`-`git describe --tags | awk -F '-g' '{print $2;}'`
+  export BUILDID=$(date +%y%m%d)-$(git describe --tags | awk -F '-g' '{print $2;}')
 fi
 
 RELEASE="$what-$VERSION"
@@ -112,8 +113,8 @@ $TWEAKCONFIG set doc/src/manual/Makefile VERSION $VERSION || exit 1
 
 echo "Preparing to build $WHAT, version: $VERSION, build: $BUILDID, edition: $EDITION..."
 echo "Core build: $BUILD_CORE_DISTRO"
-echo "Linux build: $BUILD_LINUX_DISTRO"
-echo "WIN64 build: $BUILD_WIN64_DISTRO"
+echo "Linux x86_64 build: $BUILD_LINUX_X86_64_DISTRO"
+echo "Windows x86_64 build: $BUILD_WIN32_X86_64_DISTRO"
 echo "macOS build: $BUILD_MACOSX_DISTRO"
 
 if [ -d $DISTDIR/$what-$VERSION ]; then
@@ -123,9 +124,6 @@ fi
 
 grep 'OMNETPP_VERSION' include/omnetpp/simkerneldefs.h
 echo
-
-# add omnetpp/bin to PATH
-export PATH=$OMNETPP_ROOT/bin:$PATH
 
 # create Makefile.inc
 ./configure || { echo --- error during running configure ---; exit 1;}
@@ -186,7 +184,10 @@ if [ "$BUILD_DOC" = "true" ]; then
   cp -r doc/parsim-api $DISTDIR/$what-$VERSION/doc/parsim-api
   cp -r doc/nedxml-api $DISTDIR/$what-$VERSION/doc/nedxml-api
   cp -r doc/manual $DISTDIR/$what-$VERSION/doc/manual
-  cp -r doc/guides $DISTDIR/$what-$VERSION/doc/guides
+  cp -r doc/installguide $DISTDIR/$what-$VERSION/doc/guide
+  cp -r doc/userguide $DISTDIR/$what-$VERSION/doc/userguide
+  cp -r doc/ide-developersguide $DISTDIR/$what-$VERSION/doc/ide-developersguide
+  cp -r doc/ide-customization-guide $DISTDIR/$what-$VERSION/doc/ide-customization-guide
   cp doc/SimulationManual.pdf $DISTDIR/$what-$VERSION/doc
   cp doc/InstallGuide.pdf $DISTDIR/$what-$VERSION/doc
   cp doc/UserGuide.pdf $DISTDIR/$what-$VERSION/doc
@@ -198,34 +199,37 @@ fi
 
 ###############################
 # copy the "ide" directory
-if [ ! -d $IDE_BUILDDIR/plugins ]; then
-    echo The IDE component must be built and present in $IDE_BUILDDIR before creating a distribution.
-    exit 1
-fi
+if [ "$BUILD_IDE" = "true" ]; then
 
-echo "Copying multiplatform IDE"
-cp -a $IDE_BUILDDIR $DISTDIR/$what-$VERSION
+  if [ ! -d $IDE_BUILDDIR/plugins ]; then
+      echo The IDE component must be built and present in $IDE_BUILDDIR before creating a distribution.
+      exit 1
+  fi
 
-# copy IDE icon
-cp releng/icon.png $DISTDIR/$what-$VERSION/ide
+  echo "Copying multiplatform IDE"
+  cp -a $IDE_BUILDDIR $DISTDIR/$what-$VERSION
 
-# create update site repository archive
-export IDE_REPOSIRORY_NAME=${BUILDID}-$what-${VERSION}-ide-repository.zip
-if [ -d $IDE_BUILDDIR/../update ]; then
-  zip -r -X -9 -q $DISTDIR/$IDE_REPOSITORY_NAME $IDE_BUILDDIR/../update || { echo --- error creating src-windows.zip ---; exit 1;}
+  # copy IDE icon
+  cp releng/icon.png $DISTDIR/$what-$VERSION/ide
+
+  # create update site repository archive
+  export IDE_REPOSIRORY_NAME=${BUILDID}-$what-${VERSION}-ide-repository.zip
+  if [ -d $IDE_BUILDDIR/../update ]; then
+    zip -r -X -9 -q $DISTDIR/$IDE_REPOSITORY_NAME $IDE_BUILDDIR/../update || { echo --- error creating src-windows.zip ---; exit 1;}
+  fi
 fi
 
 ###############################
-if [ "$BUILD_WIN64_DISTRO" = "true" ]; then
-  echo "Checking Win64 version..."
+if [ "$BUILD_WIN32_X86_64_DISTRO" = "true" ]; then
+  echo "Checking Win32 x86_64 version..."
   # check if the opplibs native lib is in place and correctly built
-  OPPLIBSFILE=`echo $DISTDIR/$what-$VERSION/ide/plugins/org.omnetpp.ide.nativelibs.win32.x86_64_?.?.?.*/opplibs.dll`
+  OPPLIBSFILE=$(echo $DISTDIR/$what-$VERSION/ide/win32-x86_64/plugins/org.omnetpp.ide.nativelibs.win32.x86_64_?.?.?.*/opplibs.dll)
   if [ ! -f "$OPPLIBSFILE" ]; then
     echo $OPPLIBSFILE does not exsist
     exit 1
   fi
-  #checkfile $OPPLIBSFILE 'opplibs.dll for win64 must be present'
-  OPPLIBSCONTENT=`strings $OPPLIBSFILE | grep common..dll`
+  #checkfile $OPPLIBSFILE 'opplibs.dll for win32 x86_64 must be present'
+  OPPLIBSCONTENT=$(strings $OPPLIBSFILE | grep common..dll)
   if [ "$OPPLIBSCONTENT" != "" ]; then
     echo "opplibs.dll must be built statically. Run 'make MODE=release SHARED_LIBS=no ui'"
     exit 1
@@ -233,16 +237,16 @@ if [ "$BUILD_WIN64_DISTRO" = "true" ]; then
 fi
 
 #########################################
-if [ "$BUILD_LINUX_DISTRO" = "true" ]; then
-  echo "Checking Linux GTK 64bit version..."
+if [ "$BUILD_LINUX_X86_64_DISTRO" = "true" ]; then
+  echo "Checking Linux x86_64 version..."
   # check if the opplibs native lib is in place and correctly built
-  OPPLIBSFILE=`echo $DISTDIR/$what-$VERSION/ide/plugins/org.omnetpp.ide.nativelibs.linux.x86_64_?.?.?.*/libopplibs.so`
+  OPPLIBSFILE=$(echo $DISTDIR/$what-$VERSION/ide/linux-x86_64/plugins/org.omnetpp.ide.nativelibs.linux.x86_64_?.?.?.*/libopplibs.so)
   if [ ! -f "$OPPLIBSFILE" ]; then
     echo $OPPLIBSFILE does not exsist
     exit 1
   fi
   #checkfile $OPPLIBSFILE 'libopplibs.so for Linux_x86_64 must be present'
-  OPPLIBSCONTENT=`strings $OPPLIBSFILE | grep libcommon..so`
+  OPPLIBSCONTENT=$(strings $OPPLIBSFILE | grep libcommon..so)
   if [ "$OPPLIBSCONTENT" != "" ]; then
     echo "libopplibs.so must be built statically. Run 'make MODE=release SHARED_LIBS=no ui'"
     exit 1
@@ -252,15 +256,15 @@ fi
 
 #########################################
 if [ "$BUILD_MACOSX_DISTRO" = "true" ]; then
-  echo "Checking MacOS X version..."
+  echo "Checking macOS version..."
   # check if the opplibs native lib is in place and correctly built
-  OPPLIBSFILE=`echo $DISTDIR/$what-$VERSION/ide/plugins/org.omnetpp.ide.nativelibs.macosx_?.?.?.*/libopplibs.jnilib`
+  OPPLIBSFILE=$(echo $DISTDIR/$what-$VERSION/ide/macosx-x86_64/Eclipse.app/Contents/Eclipse/plugins/org.omnetpp.ide.nativelibs.macosx_?.?.?.*/libopplibs.jnilib)
   if [ ! -f "$OPPLIBSFILE" ]; then
     echo $OPPLIBSFILE does not exsist
     exit 1
   fi
-  #checkfile $OPPLIBSFILE 'libopplibs.so for Linux_x86 must be present'
-  OPPLIBSCONTENT=`strings $OPPLIBSFILE | grep libcommon..so`
+  #checkfile $OPPLIBSFILE 'libopplibs.jnilib for macOS must be present'
+  OPPLIBSCONTENT=$(strings $OPPLIBSFILE | grep libcommon..so)
   if [ "$OPPLIBSCONTENT" != "" ]; then
     echo "libopplibs.so must be built statically. Run 'make MODE=release SHARED_LIBS=no ui'"
     exit 1
@@ -286,7 +290,7 @@ tar xfz $TOOLS_DIR/$TOOLS_VERSION/all/osg-samples-data.tar.gz --directory sample
 echo Removing unnecessary code: IDE source, petrinet, images source, releng etc.
 rm -rf .github .vscode doc/src images/src releng ui misc/petrinets
 
-unneededfiles=`find . -name '.gitignore'`
+unneededfiles=$(find . -name '.gitignore')
 if [ "$unneededfiles" != "" ]; then
     echo "Removing files not needed in distribution: $unneededfiles"
     rm $unneededfiles
@@ -297,7 +301,7 @@ cd ..
 # sleep/sync hack to avoid tar errors about changed files: http://www.mail-archive.com/bug-tar@gnu.org/msg01456.html
 sleep 5
 sync
-export SOURCE_DISTRIBUTION_BASE_NAME=${BUILDID}-$what-${VERSION}-src
+export SOURCE_DISTRIBUTION_BASE_NAME=${BUILDID}-$what-${VERSION}
 export SOURCE_DISTRIBUTION_NAME=$SOURCE_DISTRIBUTION_BASE_NAME.tgz
 echo Creating $DISTDIR/$SOURCE_DISTRIBUTION_NAME
 tar cfz $SOURCE_DISTRIBUTION_NAME $what-$VERSION || { echo --- error creating ...src.tgz ---; exit 1;}
@@ -310,19 +314,19 @@ if [ "$BUILD_CORE_DISTRO" = "true" ]; then
   $OMNETPP_ROOT/releng/makedist-core
 fi
 
-if [ "$BUILD_LINUX_DISTRO" = "true" ]; then
-  echo "Creating Linux distro..."
-  $OMNETPP_ROOT/releng/makedist-linux
+if [ "$BUILD_LINUX_X86_64_DISTRO" = "true" ]; then
+  echo "Creating Linux x86_64 distro..."
+  $OMNETPP_ROOT/releng/makedist-linux.x86_64
 fi
 
-if [ "$BUILD_WIN64_DISTRO" = "true" ]; then
-  echo "Creating Win64 distro..."
-  $OMNETPP_ROOT/releng/makedist-win64
+if [ "$BUILD_WIN32_X86_64_DISTRO" = "true" ]; then
+  echo "Creating Windows x86_64 distro..."
+  $OMNETPP_ROOT/releng/makedist-win32.x86_64
 fi
 
 if [ "$BUILD_MACOSX_DISTRO" = "true" ]; then
   echo "Creating macOS distro..."
-  $OMNETPP_ROOT/releng/makedist-macosx
+  $OMNETPP_ROOT/releng/makedist-macos.x86_64
 fi
 
 # delete the source stuff

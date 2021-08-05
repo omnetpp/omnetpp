@@ -6,4 +6,8 @@
   o you should use the mingw cross compiler (x86_64-w64-mingw32-g++)
   o Additionally you MUST add the -mthreads option to both CFLAGS and LDFLAGS otherwise the resulting lib will CRASH.
   o you should add the include path the the JDK include files manually (they should be present somewhere in the docker
-    build image so cross compilation will work.)
+    build image so cross compilation will work.) Also the platform specific include dir should be added.
+- macOS:
+  o compiler and tools should use the 'x86_64-apple-darwin20.4-' prefix.
+  o you should add the include path the the JDK include files manually (they should be present somewhere in the docker
+    build image so cross compilation will work.) Also the platform specific include dir should be added.

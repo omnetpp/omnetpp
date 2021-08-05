@@ -25,8 +25,8 @@ if [ "$what" != "omnest" ]; then
     what="omnetpp"
 fi
 
-cd `dirname $0`/..
-OMNETPP_ROOT=`pwd`
+cd $(dirname $0)/..
+OMNETPP_ROOT=$(pwd)
 
 # the directory where the distribution file will created
 DISTDIR=$OMNETPP_ROOT/out/dist
@@ -44,18 +44,18 @@ tar xfz $SOURCE_DISTRIBUTION_BASE_NAME.tgz || { echo --- error extracting source
 # cd into the extracted source achive dir
 cd $what-$VERSION || exit 1
 
-echo "Preparing to create distribution package: $what, version: $VERSION platform: linux..."
+echo "Preparing to create distribution package: $what, version: $VERSION platform: linux x86_64..."
 
 # Prepare IDE
-cp -r ide/linux64/* ide
-rm -rf ide/win32 ide/win64 ide/linux ide/linux64 ide/macosx
+cp -rlf ide/linux-x86_64/* ide
+rm -rf ide/win32-x86_64 ide/linux-x86_64 ide/macosx-x86_64
 
 # pack the distro
 cd ..
 # create linux version - tgz archive
-export SOURCE_DISTRIBUTION_NAME_LINUX=$SOURCE_DISTRIBUTION_BASE_NAME-linux.tgz
+export SOURCE_DISTRIBUTION_NAME_LINUX=$SOURCE_DISTRIBUTION_BASE_NAME-linux-x86_64.tgz
 echo Creating $DISTDIR/$SOURCE_DISTRIBUTION_NAME_LINUX
-tar cfz $SOURCE_DISTRIBUTION_NAME_LINUX $what-$VERSION || { echo --- error creating src-linux.tgz ---; exit 1;}
+tar cfz $SOURCE_DISTRIBUTION_NAME_LINUX $what-$VERSION || { echo --- error creating src-linux-x86_64.tgz ---; exit 1;}
 
 # delete the source stuff
 rm -rf $what-$VERSION

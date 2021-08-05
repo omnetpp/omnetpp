@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# create an OMNeT++/OMNEST source distribution package for macOS
+# create an OMNeT++/OMNEST source distribution package for Windows (64-bit)
 # in: SOURCE_DISTRIBUTION_BASE_NAME (1st arg optionally) contains the source file name (minus the .tgz extension)
 #     (placed in DISTDIR) that is used as a source for the windows build
 # in: TOOLS_DIR - the directory storing the platform specific binaries (toolchain etc.) (without the version and the last platform specific segment!)
@@ -30,8 +30,8 @@ if [ "$what" != "omnest" ]; then
     what="omnetpp"
 fi
 
-cd `dirname $0`/..
-OMNETPP_ROOT=`pwd`
+cd $(dirname $0)/..
+OMNETPP_ROOT=$(pwd)
 
 # the directory where the distribution file will created
 DISTDIR=$OMNETPP_ROOT/out/dist
@@ -46,34 +46,58 @@ echo "Extracting source distribution: $SOURCE_DISTRIBUTION_BASE_NAME.tgz "
 cd $DISTDIR
 tar xfz $SOURCE_DISTRIBUTION_BASE_NAME.tgz || { echo --- error extracting source ---; exit 1;}
 
+if [ "$3" != "" ]; then
+   VERSION=$3
+else
+   VERSION=$(cat $OMNETPP_ROOT/Version | sed 's/^.*-//')
+fi
+
 # cd into the extracted source achive dir
 cd $what-$VERSION || exit 1
 
-echo "Preparing to create distribution package: $what, version: $VERSION platform: macosx..."
+echo "Preparing to create distribution package: $what, version: $VERSION platform: windows x86_64..."
 
 # Prepare IDE
-cp -r ide/macosx/* ide
-mv ide/features ide/Eclipse.app/Contents/Eclipse
-mv ide/plugins ide/Eclipse.app/Contents/Eclipse
-mv ide/Eclipse.app ide/opp_ide.app
-rm -rf ide/win32 ide/win64 ide/linux ide/linux64 ide/macosx
+cp -rlf ide/win32-x86_64/* ide
+rm -rf ide/win32-x86_64 ide/linux-x86_64 ide/macosx-x86_64
 
 # copy the self extracting toolchain file into the distro
-mkdir -p tools/macosx
-echo "Extracting tools archive..."
-tar xfz $TOOLS_DIR/$TOOLS_VERSION/macosx/opp-tools-macosx.tar.gz --keep-old-files --directory tools/macosx || { echo --- error extracting opp-tools-macosx.tar.gz ---; exit 1;}
+mkdir -p tools
+echo "Copying tools archive..."
+cp $TOOLS_DIR/$TOOLS_VERSION/win64/7za.exe tools || { echo --- error copying 7za.exe extractor ---; exit 1;}
+cp $TOOLS_DIR/$TOOLS_VERSION/win64/opp-tools-win64-*.7z tools || { echo --- error copying opp-tools-win64-XXXX.7z ---; exit 1;}
 
-# customized files for macosx
-PATCH_DIR=$OMNETPP_ROOT/releng/overlay/macosx
+# customized files for win32
+PATCH_DIR=$OMNETPP_ROOT/releng/overlay/win64
 echo "Copying overlay files from $PATCH_DIR directory..."
 cp -R $PATCH_DIR/* .
 
-# pack the distro
+# remove visual c++ related and commercial files from omnetpp
+if [ "$what" != "omnest" ]; then
+  rm vcenv.cmd
+  rm tools/opp-tools-win64-visualc.7z
+fi
+rm setenv
+
+# rename some files to have txt extensions on windows
+mv doc/Readme-IDE doc/Readme-IDE.txt
+mv doc/License doc/License.txt
+mv doc/IDE-Changes doc/IDE-Changes.txt
+mv WHATSNEW WHATSNEW.txt
+mv README README.txt
+mv INSTALL INSTALL.txt
+mv MIGRATION MIGRATION.txt
+
+# convert CR/LFs in txt files to windows format
+find . -type f -a \( -iname '*.txt' -o -iname 'readme*' \) -exec todos -f {} \;
+todos configure.user
+
+# zip the distro
 cd ..
-# create macOS version - tgz with macOS tools added
-export SOURCE_DISTRIBUTION_NAME_MACOSX=$SOURCE_DISTRIBUTION_BASE_NAME-macosx.tgz
-echo Creating $DISTDIR/$SOURCE_DISTRIBUTION_NAME_MACOSX
-tar cfz $SOURCE_DISTRIBUTION_NAME_MACOSX $what-$VERSION || { echo --- error creating src-macosx.tgz ---; exit 1;}
+# create windows version - zip archive with msys and mingw added
+export SOURCE_DISTRIBUTION_NAME_WINDOWS=$SOURCE_DISTRIBUTION_BASE_NAME-windows-x86_64.zip
+echo Creating $DISTDIR/$SOURCE_DISTRIBUTION_NAME_WINDOWS
+zip -r -X -9 -q $SOURCE_DISTRIBUTION_NAME_WINDOWS $what-$VERSION || { echo --- error creating src-windows-x86_64.zip ---; exit 1;}
 
 # delete the source stuff
 rm -rf $what-$VERSION
