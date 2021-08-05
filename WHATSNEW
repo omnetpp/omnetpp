@@ -6,6 +6,17 @@ simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
 
+OMNeT++ 5.7 (Aug 2021)
+----------------------
+
+This version is intended to be the last release of the 5.x series, as 6.0 has
+been in development for several years now. Version 5.7 contains several fixes
+backported from 6.0, and also some improvements to make it more compatible with
+6.0.
+
+TODO elaborate.
+
+
 OMNeT++ 5.6.2 (May 2020)
 ------------------------
 
