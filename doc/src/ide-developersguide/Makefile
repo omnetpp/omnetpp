@@ -63,13 +63,13 @@ eclipse: docbook
 	xmllint --noout eclipse/toc.xml
 	rm tmp.xml
 
-pdf: docbook cover
+pdf: docbook cover.pdf
 	xsltproc --nonet --xinclude --stringparam output pdf --output tmp1.xml trans.xsl ide-developersguide.xml
 	perl trans.pl <tmp1.xml >tmp.xml
 	perl -pe "s!\@DOCBOOK_STYLESHEET\@!file:///$(DOCBOOK)/fo/docbook.xsl!g" custom-fo-docbook.xsl >custom-fo-docbook-tmp.xsl
 	xsltproc --nonet --output tmp.fo custom-fo-docbook-tmp.xsl tmp.xml
 	$(FOP) -fo tmp.fo -c fop.xconf -pdf ide-developersguide.pdf
-	qpdf ide-developersguide.pdf --pages cover.pdf ../cover/copyright.pdf ide-developersguide.pdf 3-z -- ../../IDE-DevelopersGuide.pdf
+	qpdf ide-developersguide.pdf --pages cover.pdf ../cover/copyright.pdf ide-developersguide.pdf 3-z -- ../../IDE-DevelopersGuide.pdf || (RV=$$?; test $$RV -eq 3 && (exit 0) || (exit $$RV))
 	rm tmp.fo tmp.xml custom-fo-docbook-tmp.xsl
 
 clean:

@@ -42,13 +42,13 @@ eclipse:
 	xmllint --noout eclipse/toc.xml
 	rm tmp.xml
 
-pdf:  chart-properties.xml processing-operations.xml cover
+pdf:  chart-properties.xml processing-operations.xml cover.pdf
 	xsltproc --nonet --xinclude --stringparam output pdf --output tmp1.xml trans.xsl userguide.xml
 	perl trans.pl <tmp1.xml >tmp.xml
 	perl -pe "s!\@DOCBOOK_STYLESHEET\@!file:///$(DOCBOOK)/fo/docbook.xsl!g" custom-fo-docbook.xsl >custom-fo-docbook-tmp.xsl
 	xsltproc --nonet --output tmp.fo custom-fo-docbook-tmp.xsl tmp.xml
 	$(FOP) -fo tmp.fo -c fop.xconf -pdf userguide.pdf
-	qpdf userguide.pdf --pages cover.pdf ../cover/copyright.pdf userguide.pdf 3-z -- ../../UserGuide.pdf
+	qpdf userguide.pdf --pages cover.pdf ../cover/copyright.pdf userguide.pdf 3-z -- ../../UserGuide.pdf || (RV=$$?; test $$RV -eq 3 && (exit 0) || (exit $$RV))
 	rm tmp.fo tmp.xml custom-fo-docbook-tmp.xsl
 
 clean:

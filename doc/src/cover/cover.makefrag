@@ -12,9 +12,9 @@ else
   VERSION_TEXT = Version 5.x
 endif
 
-cover:
+cover.pdf: ../cover/cover-$(what).svg
 	cp ../cover/cover-$(what).svg cover.svg
 	perl -i~ -pe "s/\@product\@/$(PRODUCT)/g" cover.svg
 	perl -i~ -pe "s/\@title\@/$(TITLE)/g" cover.svg
 	perl -i~ -pe "s/\@version\@/$(VERSION_TEXT)/g" cover.svg
-	inkscape cover.svg -A cover.pdf
+	inkscape cover.svg --without-gui --export-pdf=$@

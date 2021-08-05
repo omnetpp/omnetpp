@@ -15,17 +15,17 @@ default: pdf html eclipse
 
 include ../cover/cover.makefrag
 
-pdf: $(ALLTEX) $(PDFPICS) figures/*.png cover
-	pdflatex usman.tex
-	bibtex usman
-	makeindex usman
-	pdflatex usman.tex
-	pdflatex usman.tex
-	qpdf usman.pdf --pages cover.pdf ../cover/copyright.pdf usman.pdf 3-z -- ../../SimulationManual.pdf
+pdf: $(ALLTEX) $(PDFPICS) figures/*.png cover.pdf
+	pdflatex usman.tex 1>/dev/null
+	bibtex usman 1>/dev/null
+	makeindex usman 1>/dev/null
+	pdflatex usman.tex 1>/dev/null
+	pdflatex usman.tex 1>/dev/null
+	qpdf usman.pdf --pages cover.pdf ../cover/copyright.pdf usman.pdf 3-z -- ../../SimulationManual.pdf || (RV=$$?; test $$RV -eq 3 && (exit 0) || (exit $$RV))
 	rm -f *.aux *.idx *.ilg *.ind *.log *.out *.toc *.blg
 
 %.pdf: %.svg
-	$(INKSCAPE) $< -A $@
+	$(INKSCAPE) $< --export-pdf=$@ 2>/dev/null
 
 %.svg: %.dot
 	$(DOT) -Tsvg $< >$@
@@ -38,7 +38,7 @@ pdf: $(ALLTEX) $(PDFPICS) figures/*.png cover
 #       copy usman.bbl usman-bibl.bbl
 
 %.png: %.svg
-	$(INKSCAPE) $< -e $@
+	$(INKSCAPE) $< --without-gui --export-png=$@
 
 %.png: %.dot
 	$(DOT) -Tpng $< >$@
