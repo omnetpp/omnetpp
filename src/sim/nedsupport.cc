@@ -52,10 +52,11 @@ std::string ModuleIndex::str(std::string args[], int numargs)
 
 //----
 
-Exists::Exists(const char *ident, bool ofParent)
+Exists::Exists(const char *ident, bool ofParent, bool explicitKeyword)
 {
     this->ident = ident;
     this->ofParent = ofParent;
+    this->explicitKeyword = explicitKeyword;
 }
 
 
@@ -74,7 +75,8 @@ cNedValue Exists::evaluate(Context *context, cNedValue args[], int numargs)
 
 std::string Exists::str(std::string args[], int numargs)
 {
-    return std::string("exists(") + ident + ")";
+    std::string prefix = !explicitKeyword ? "" : ofParent ? "parent." : "this.";
+    return "exists(" + prefix + ident + ")";
 }
 
 //----
@@ -132,12 +134,8 @@ cNedValue ParameterRef::evaluate(Context *context, cNedValue args[], int numargs
 
 std::string ParameterRef::str(std::string args[], int numargs)
 {
-    if (!explicitKeyword)
-        return paramName;
-    else if (ofParent)
-        return std::string("parent.") + paramName;  // not a legal NED syntax
-    else
-        return std::string("this.") + paramName;
+    std::string prefix = !explicitKeyword ? "" : ofParent ? "parent." : "this.";
+    return prefix + paramName;
 }
 
 //----
@@ -232,9 +230,6 @@ cNedValue Sizeof::evaluate(Context *context, cNedValue args[], int numargs)
     if (!module)
         throw cRuntimeError(context->component, E_ENOPARENT);
 
-//FIXME stuff already implemented at the bottom of this file????
-
-//FIXME decide it at buildtime, not now? (info is known then already!)
     // ident might be a gate vector of the *parent* module, or a sibling submodule vector
     // Note: it might NOT mean gate vector of this module
     if (module->hasGate(ident.c_str())) {
@@ -253,109 +248,10 @@ cNedValue Sizeof::evaluate(Context *context, cNedValue args[], int numargs)
 
 std::string Sizeof::str(std::string args[], int numargs)
 {
-    const char *prefix = !explicitKeyword ? "" : ofParent ? "parent." : "this.";  // "parent" is not a legal NED syntax though
-    return std::string("sizeof(") + prefix + ident + ")";
+    std::string prefix = !explicitKeyword ? "" : ofParent ? "parent." : "this.";
+    return "sizeof(" + prefix + ident + ")";
 }
 
 };
 
 }  // namespace omnetpp
-
-/*
-//TODO make error messages consistent
-
-typedef cNEDcNedValue cNedValue; // abbreviation for local use
-
-//
-// internal function to support NED: resolves a sizeof(moduleOrGateVectorName) reference
-//
-cNedValue cDynamicExpression::getSizeofIdent(Context *context, cNedValue args[], int numargs)
-{
-    ASSERT(numargs==1 && args[0].type==cNedValue::STR);
-    const char *ident = args[0].s.c_str();
-
-    // ident might be a gate vector of the *parent* module, or a sibling submodule vector
-    // Note: it might NOT mean gate vector of this module
-    cModule *parentModule = dynamic_cast<cModule *>(context->component->getParentModule()); // this works for channels too
-    if (!parentModule)
-        throw cRuntimeError(context->component, "sizeof(%s) occurs in wrong context", ident);
-    if (parentModule->hasGate(ident))
-    {
-        return (intpar_t) parentModule->gateSize(ident); // returns 1 if it's not a vector
-    }
-    else
-    {
-        // Find ident among submodules. If there's no such submodule, it may
-        // be that such submodule vector never existed, or can be that it's zero
-        // size -- we cannot tell, so we have to return 0.
-        cModule *siblingModule = parentModule->getSubmodule(ident, 0); // returns nullptr if submodule is not a vector
-        if (!siblingModule && parentModule->getSubmodule(ident))
-            return (intpar_t)1; // return 1 if submodule exists but not a vector
-        return (intpar_t) siblingModule ? siblingModule->size() : 0L;
-    }
-}
-
-//
-// internal function to support NED: resolves a sizeof(this.gateVectorName) reference
-//
-cNedValue cDynamicExpression::getSizeofGate(Context *context, cNedValue args[], int numargs)
-{
-    ASSERT(numargs==1 && args[0].type==cNedValue::STR);
-    const char *gateName = args[0].s.c_str();
-    cModule *module = dynamic_cast<cModule *>(context->component);
-    if (!module || !module->hasGate(gateName))
-        throw cRuntimeError(context->component, "Error evaluating sizeof(): No such gate: '%s'", gateName);
-    return (intpar_t) module->gateSize(gateName); // returns 1 if it's not a vector
-}
-
-//
-// internal function to support NED: resolves a sizeof(parent.gateVectorName) reference
-//
-cNedValue cDynamicExpression::getSizeofParentModuleGate(Context *context, cNedValue args[], int numargs)
-{
-    ASSERT(numargs==1 && args[0].type==cNedValue::STR);
-    const char *gateName = args[0].s.c_str();
-    cModule *parentModule = dynamic_cast<cModule *>(context->component->getParentModule()); // this works for channels too
-    if (!parentModule)
-        throw cRuntimeError(context->component, "sizeof() occurs in wrong context", gateName);
-    if (!parentModule->hasGate(gateName))
-        throw cRuntimeError(context->component, "Error evaluating sizeof(): No such gate: '%s'", gateName);
-    return (intpar_t) parentModule->gateSize(gateName); // returns 1 if it's not a vector
-}
-
-//
-// internal function to support NED: resolves a sizeof(module.gateName) reference
-//
-cNedValue cDynamicExpression::getSizeofSiblingModuleGate(Context *context, cNedValue args[], int numargs)
-{
-    ASSERT(numargs==2 && args[0].type==cNedValue::STR && args[1].type==cNedValue::STR);
-    const char *siblingModuleName = args[0].s.c_str();
-    const char *gateName = args[1].s.c_str();
-
-    cModule *parentModule = dynamic_cast<cModule *>(context->component->getParentModule()); // this works for channels too
-    if (!parentModule)
-        throw cRuntimeError(context->component, "sizeof() occurs in wrong context", gateName);
-    cModule *siblingModule = parentModule->getSubmodule(siblingModuleName); // returns nullptr if submodule is not a vector
-    if (!siblingModule->hasGate(gateName))
-        throw cRuntimeError(context->component, "Error evaluating sizeof(): No such gate: '%s'", gateName);
-    return (intpar_t) siblingModule->gateSize(gateName); // returns 1 if it's not a vector
-}
-
-//
-// internal function to support NED: resolves a sizeof(module.gateName) reference
-//
-cNedValue cDynamicExpression::getSizeofIndexedSiblingModuleGate(Context *context, cNedValue args[], int numargs)
-{
-    ASSERT(numargs==3 && args[0].type==cNedValue::STR && args[1].type==cNedValue::STR && args[2].type==cNedValue::DBL);
-    const char *gateName = args[1].s.c_str();
-    const char *siblingModuleName = args[1].s.c_str();
-    int siblingModuleIndex = (int)args[2].dbl;
-    cModule *parentModule = dynamic_cast<cModule *>(context->component->getParentModule()); // this works for channels too
-    cModule *siblingModule = parentModule ? parentModule->getSubmodule(siblingModuleName, siblingModuleIndex) : nullptr;
-    if (!siblingModule)
-        throw cRuntimeError(context->component, "sizeof(): Cannot find submodule %[%d]",
-                                siblingModuleName, siblingModuleIndex,
-                                siblingModuleName, siblingModuleIndex, gateName);
-    return (intpar_t) siblingModule->gateSize(gateName); // returns 1 if it's not a vector
-}
-*/

@@ -48,9 +48,10 @@ class Exists : public cDynamicExpression::Functor
 {
     std::string ident;
     bool ofParent;
+    bool explicitKeyword; // whether the NED file contained the explicit "this" or "parent" qualifier
   public:
-    Exists(const char *ident, bool ofParent);
-    Exists *dup() const override {return new Exists(ident.c_str(), ofParent);}
+    Exists(const char *ident, bool ofParent, bool explicitKeyword);
+    Exists *dup() const override {return new Exists(ident.c_str(), ofParent, explicitKeyword);}
     virtual const char *getFullName() const override {return "exists";}
     virtual const char *getArgTypes() const override {return "";}
     virtual char getReturnType() const override {return 'B';}
@@ -77,7 +78,7 @@ class ParameterRef : public cDynamicExpression::Functor
 {
   protected:
     bool ofParent;  // if true, return parentModule->par(paramName)
-    bool explicitKeyword; // when ofParent==false: whether the NED file contained the explicit "this" qualifier
+    bool explicitKeyword; // whether the NED file contained the explicit "this" or "parent" qualifier
     std::string paramName;
   public:
     ParameterRef(const char *paramName, bool ofParent, bool explicitKeyword);

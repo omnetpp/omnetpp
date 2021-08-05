@@ -20,7 +20,7 @@
 /* Reserved words */
 %token DOUBLETYPE INTTYPE STRINGTYPE BOOLTYPE XMLTYPE
 %token TRUE_ FALSE_ NAN_ INF_
-%token THIS_ ASK_ DEFAULT_ CONST_ SIZEOF_ INDEX_ EXISTS TYPENAME XMLDOC_
+%token THIS_ PARENT ASK_ DEFAULT_ CONST_ SIZEOF_ INDEX_ EXISTS TYPENAME XMLDOC_
 
 /* Other tokens: identifiers, numeric literals, operators etc */
 %token NAME INTCONSTANT REALCONSTANT STRINGCONSTANT
@@ -266,29 +266,77 @@ identifier
                 { *e++ = new ParameterRef($1, true, false); delete [] $1; }
         | THIS_ '.' NAME
                 { *e++ = new ParameterRef($3, false, true); delete [] $3; }
+        | PARENT '.' NAME
+                { *e++ = new ParameterRef($3, true, true); delete [] $3; }
         | NAME '.' NAME
                 { *e++ = new SiblingModuleParameterRef($1, $3, true, false); delete [] $1; delete [] $3; }
         | NAME '[' expression ']' '.' NAME
                 { *e++ = new SiblingModuleParameterRef($1, $6, true, true); delete [] $1; delete [] $6; }
+        | PARENT '.' NAME '.' NAME
+                { *e++ = new SiblingModuleParameterRef($3, $5, true, false); delete [] $3; delete [] $5; }
+        | PARENT '.' NAME '[' expression ']' '.' NAME
+                { *e++ = new SiblingModuleParameterRef($3, $8, true, true); delete [] $3; delete [] $8; }
         ;
 
-special_expr   //TODO rename like in ned2!
+special_expr 
+        /* supported forms: */
         : INDEX_
                 { *e++ = new ModuleIndex(); }
         | INDEX_ '(' ')'
                 { *e++ = new ModuleIndex(); }
         | EXISTS '(' NAME ')'
-                { *e++ = new Exists($3, true); delete [] $3; }
+                { *e++ = new Exists($3, true, false); delete [] $3; }
+        | EXISTS '(' THIS_ '.' NAME ')'
+                { *e++ = new Exists($5, false, true); delete [] $5; }
+        | EXISTS '(' PARENT '.' NAME ')'
+                { *e++ = new Exists($5, true, true); delete [] $5; }
         | SIZEOF_ '(' NAME ')'
                 { *e++ = new Sizeof($3, true, false); delete [] $3; }
         | SIZEOF_ '(' THIS_ '.' NAME ')'
-                { *e++ = new Sizeof($5, false, false); delete [] $5; }
-        | SIZEOF_ '(' NAME '.' NAME ')'
-                { delete [] $3; delete [] $5; yyerror("sizeof(submodule.gate) notation not supported here"); }
-        | SIZEOF_ '(' NAME '[' expression ']' '.' NAME ')'
-                { delete [] $3; delete [] $8; yyerror("sizeof(submodule[index].gate) notation not supported here"); }
+                { *e++ = new Sizeof($5, false, true); delete [] $5; }
+        | SIZEOF_ '(' PARENT '.' NAME ')'
+                { *e++ = new Sizeof($5, true, true); delete [] $5; }
         | TYPENAME
                 { *e++ = new Typename(); }
+
+        /* unsupported forms: */
+        | EXISTS '(' THIS_ ')'
+                { yyerror("exists(this) form not supported here"); }
+        | EXISTS '(' PARENT ')'
+                { yyerror("exists(parent) form not supported here"); }
+        | EXISTS '(' THIS_ '.'  NAME '[' expression ']' ')'
+                { delete [] $5; yyerror("exists(this.name[index]) form not supported here"); }
+        | EXISTS '(' PARENT '.'  NAME '[' expression ']' ')'
+                { delete [] $5; yyerror("exists(parent.name[index]) form not supported here"); }
+        | EXISTS '(' NAME '.' NAME ')'
+                { delete [] $3; delete [] $5; yyerror("exists(submodule.gate) form not supported here"); }
+        | EXISTS '(' NAME '[' expression ']' '.' NAME ')'
+                { delete [] $3; delete [] $8; yyerror("exists(submodule[index].gate) form not supported here"); }
+        | EXISTS '(' PARENT '.' NAME '.' NAME ')'
+                { delete [] $5; delete [] $7; yyerror("exists(parent.submodule.gate) form not supported here"); }
+        | EXISTS '(' PARENT '.' NAME '[' expression ']' '.' NAME ')'
+                { delete [] $5; delete [] $10; yyerror("exists(parent.submodule[index].gate) form not supported here"); }
+        | EXISTS '(' THIS_ '.' NAME '.' NAME ')'
+                { delete [] $5; delete [] $7; yyerror("exists(this.submodule.gate) form not supported here"); }
+        | EXISTS '(' THIS_ '.' NAME '[' expression ']' '.' NAME ')'
+                { delete [] $5; delete [] $10; yyerror("exists(this.submodule[index].gate) form not supported here"); }
+                
+        | SIZEOF_ '(' THIS_ ')'
+                { yyerror("sizeof(this) form not supported here"); }
+        | SIZEOF_ '(' PARENT ')'
+                { yyerror("sizeof(parent) form not supported here"); }
+        | SIZEOF_ '(' NAME '.' NAME ')'
+                { delete [] $3; delete [] $5; yyerror("sizeof(submodule.gate) form not supported here"); }
+        | SIZEOF_ '(' NAME '[' expression ']' '.' NAME ')'
+                { delete [] $3; delete [] $8; yyerror("sizeof(submodule[index].gate) form not supported here"); }
+        | SIZEOF_ '(' PARENT '.' NAME '.' NAME ')'
+                { delete [] $5; delete [] $7; yyerror("sizeof(parent.submodule.gate) form not supported here"); }
+        | SIZEOF_ '(' PARENT '.' NAME '[' expression ']' '.' NAME ')'
+                { delete [] $5; delete [] $10; yyerror("sizeof(parent.submodule[index].gate) form not supported here"); }
+        | SIZEOF_ '(' THIS_ '.' NAME '.' NAME ')'
+                { delete [] $5; delete [] $7; yyerror("sizeof(this.submodule.gate) form not supported here"); }
+        | SIZEOF_ '(' THIS_ '.' NAME '[' expression ']' '.' NAME ')'
+                { delete [] $5; delete [] $10; yyerror("sizeof(this.submodule[index].gate) form not supported here"); }
         ;
 
 literal

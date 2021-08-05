@@ -27,7 +27,7 @@
 %token IF FOR
 %token RIGHTARROW LEFTARROW DBLARROW TO
 %token TRUE_ FALSE_ NAN_ INF_ 
-%token THIS_ DEFAULT ASK CONST_ SIZEOF INDEX_ EXISTS TYPENAME XMLDOC
+%token THIS_ PARENT DEFAULT ASK CONST_ SIZEOF INDEX_ EXISTS TYPENAME XMLDOC
 
 /* Other tokens: identifiers, numeric literals, operators etc */
 %token NAME PROPNAME INTCONSTANT REALCONSTANT STRINGCONSTANT CHARCONSTANT
@@ -1626,10 +1626,16 @@ identifier
                 { if (np->getParseExpressionsFlag()) $$ = createIdent(np, @1); }
         | THIS_ '.' NAME
                 { if (np->getParseExpressionsFlag()) $$ = createIdent(np, @3, @1); }
+        | PARENT '.' NAME
+                { if (np->getParseExpressionsFlag()) $$ = createIdent(np, @3, @1); }
         | NAME '.' NAME
                 { if (np->getParseExpressionsFlag()) $$ = createIdent(np, @3, @1); }
         | NAME '[' expr ']' '.' NAME
                 { if (np->getParseExpressionsFlag()) $$ = createIdent(np, @6, @1, $3); }
+        | PARENT '.' NAME '.' NAME
+                { if (np->getParseExpressionsFlag()) $$ = createIdent(np, @5, @3); }
+        | PARENT '.' NAME '[' expr ']' '.' NAME
+                { if (np->getParseExpressionsFlag()) $$ = createIdent(np, @8, @3, $5); }
         ;
 
 operator

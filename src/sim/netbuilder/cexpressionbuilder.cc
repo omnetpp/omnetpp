@@ -168,7 +168,15 @@ void cExpressionBuilder::doFunction(FunctionElement *node)
         IdentElement *identnode = node->getFirstIdentChild();
         ASSERT(identnode);
         const char *ident = identnode->getName();
-        elems[pos++] = new Exists(ident, inSubcomponentScope);
+        const char *modulename = identnode->getModule();
+        if (opp_isempty(modulename))
+            elems[pos++] = new Exists(ident, inSubcomponentScope, false);
+        else if (strcmp(modulename, "this")==0)
+            elems[pos++] = new Exists(ident, false, true);
+        else if (strcmp(modulename, "parent")==0)
+            elems[pos++] = new Exists(ident, true, false);
+        else
+            throw cRuntimeError("'exists(name.name)' form is not supported");
     }
     else if (!strcmp(funcname, "typename")) {
         elems[pos++] = new Typename();
@@ -191,11 +199,13 @@ void cExpressionBuilder::doFunction(FunctionElement *node)
             elems[pos++] = new Sizeof(ident, inSubcomponentScope, false);
         else if (strcmp(modulename, "this") == 0)
             elems[pos++] = new Sizeof(ident, false, true);
+        else if (strcmp(modulename, "parent") == 0)
+            elems[pos++] = new Sizeof(ident, true, true);
         else
             throw cRuntimeError("sizeof(module.ident) is not yet supported");  // TBD
     }
     else {  // normal function
-            // push args first
+         // push args first
         for (NedElement *child = node->getFirstChild(); child; child = child->getNextSibling())
             doNode(child);
 
@@ -239,6 +249,8 @@ void cExpressionBuilder::doIdent(IdentElement *node)
         elems[pos++] = new ParameterRef(parname, inSubcomponentScope, false);
     else if (strcmp(modulename, "this") == 0)
         elems[pos++] = new ParameterRef(parname, false, true);
+    else if (strcmp(modulename, "parent") == 0)
+        elems[pos++] = new ParameterRef(parname, true, true);
     else
         elems[pos++] = new SiblingModuleParameterRef(modulename, parname, inSubcomponentScope, hasChild);
 }
