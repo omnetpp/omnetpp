@@ -2090,14 +2090,13 @@ OMNETPP_EDITION="Academic Public License -- NOT FOR COMMERCIAL USE"
 OPP_PROBLEM_PACKAGES=
 
 # check if 'setenv' was correctly sourced
-CURRENT_DIR=$(cd $(dirname "$0"); pwd)
-if test "$__omnetpp_root_dir" = "$CURRENT_DIR" -a -z "${PATH##*${CURRENT_DIR}/bin:*}"; then  # this uses magic substring matching with parameter expansion
+OMNETPP_ROOT_DIR=$(cd $(dirname "$0"); pwd)
+if test "$__omnetpp_root_dir" = "$OMNETPP_ROOT_DIR" -a -z "${PATH##*${OMNETPP_ROOT_DIR}/bin:*}"; then  # this uses magic substring matching with parameter expansion
   { $as_echo "$as_me:${as_lineno-$LINENO}: Environment variables (e.g. PATH) are correctly set." >&5
 $as_echo "$as_me: Environment variables (e.g. PATH) are correctly set." >&6;}
 else
   as_fn_error $? "Before running 'configure', please use 'source setenv' to set up your environment." "$LINENO" 5
 fi
-CURRENT_DIR=
 
 #----------------------
 # Read user settings (and allow override the above settings)
@@ -3411,7 +3410,7 @@ else
     jni_platform=$host_os
     case $host in
     x86_64-*-mingw*)
-        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT/tools/win64"
+        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT_DIR/tools/win64"
         mingw=yes
         jni_platform=win32
         PLATFORM=win32.x86_64
@@ -3454,12 +3453,12 @@ else
         fi
         ;;
     x86_64-*-linux*)
-        OMNETPP_TOOLS_DIR="\$(OMNETPP_TOOLS_DIR)/linux64"
+        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT_DIR/tools/linux64"
         jni_platform=linux
         PLATFORM=linux.x86_64
         ;;
     *darwin*)
-        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT/tools/macosx"
+        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT_DIR/tools/macosx"
         CFLAGS_ARCH="$CFLAGS_ARCH -isystem \$(OMNETPP_TOOLS_DIR)/include"
         CFLAGS_TOOLS_MACOSX="-isystem $OMNETPP_TOOLS_DIR/include"
         LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L\$(OMNETPP_TOOLS_DIR)/lib -F\$(OMNETPP_TOOLS_DIR)/lib"
