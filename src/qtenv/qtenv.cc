@@ -1180,13 +1180,6 @@ void Qtenv::loadNedFile(const char *fname, const char *expectedPackage, bool isX
 void Qtenv::newNetwork(const char *networkname)
 {
     try {
-        refreshDisplayCount = 0;
-        messageAnimator->clear();
-        displayUpdateController->reset();
-        answers.clear();
-        logBuffer.clear();
-        componentHistory.clear();
-
         // finish & cleanup previous run if we haven't done so yet
         if (simulationState != SIM_NONET) {
             storeInspectors(true);
@@ -1195,6 +1188,13 @@ void Qtenv::newNetwork(const char *networkname)
             getSimulation()->deleteNetwork();
             simulationState = SIM_NONET;
         }
+
+        refreshDisplayCount = 0;
+        messageAnimator->clear();
+        displayUpdateController->reset();
+        answers.clear();
+        logBuffer.clear();
+        componentHistory.clear();
 
         cModuleType *network = resolveNetwork(networkname);
         ASSERT(network);
@@ -1234,13 +1234,6 @@ void Qtenv::newNetwork(const char *networkname)
 void Qtenv::newRun(const char *configname, int runnumber)
 {
     try {
-        refreshDisplayCount = 0;
-        messageAnimator->clear();
-        displayUpdateController->reset();
-        answers.clear();
-        logBuffer.clear();
-        componentHistory.clear();
-
         // finish & cleanup previous run if we haven't done so yet
         if (simulationState != SIM_NONET) {
             storeInspectors(true);
@@ -1249,6 +1242,13 @@ void Qtenv::newRun(const char *configname, int runnumber)
             getSimulation()->deleteNetwork();
             simulationState = SIM_NONET;
         }
+
+        refreshDisplayCount = 0;
+        messageAnimator->clear();
+        displayUpdateController->reset();
+        answers.clear();
+        logBuffer.clear();
+        componentHistory.clear();
 
         // set up new network
         isConfigRun = true;
