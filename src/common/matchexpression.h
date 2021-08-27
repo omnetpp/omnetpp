@@ -125,6 +125,9 @@ class COMMON_API MatchExpression
      */
     MatchExpression(const char *pattern, bool dottedpath, bool fullstring, bool casesensitive);
 
+    MatchExpression(const MatchExpression&) = delete;
+    MatchExpression(MatchExpression&&) = delete;
+
     /**
      * Virtual destructor.
      */

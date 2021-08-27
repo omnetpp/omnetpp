@@ -18,6 +18,7 @@
 
 #include <string>
 #include "simkerneldefs.h"
+#include "cobject.h" // noncopyable
 
 namespace omnetpp {
 
@@ -54,7 +55,7 @@ namespace common { class MatchExpression; };
  *
  * @ingroup Utilities
  */
-class SIM_API cMatchExpression
+class SIM_API cMatchExpression : public noncopyable
 {
   public:
     /**
@@ -96,6 +97,11 @@ class SIM_API cMatchExpression
      * Constructor, accepts the same args as setPattern().
      */
     cMatchExpression(const char *pattern, bool dottedpath, bool fullstring, bool casesensitive);
+
+    /**
+     * Move constructor
+     */
+    cMatchExpression(cMatchExpression&& other) : impl(other.impl) {other.impl = nullptr;}
 
     /**
      * Destructor
