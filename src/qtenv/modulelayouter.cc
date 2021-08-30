@@ -159,11 +159,13 @@ ModuleLayouter::Constraint ModuleLayouter::getSubmoduleCoords(cModule *submod, d
     }
     else {
         groupName = ds.getTagArg("g", 0);
-        int index, groupSize;
+        int index = 0, groupSize = 1;
         if (opp_isempty(groupName)) {
             groupName = submod->getName();
-            index = submod->getIndex();
-            groupSize = submod->getVectorSize();
+            if (submod->isVector()) {
+                index = submod->getIndex();
+                groupSize = submod->getVectorSize();
+            }
         }
         else {
             auto& group = groups[submod->getParentModule()][groupName];
