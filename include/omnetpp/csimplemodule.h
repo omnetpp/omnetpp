@@ -347,6 +347,10 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      * or returning from the activity() method.
      */
     bool isTerminated() const {return flags&FL_ISTERMINATED;}
+    static bool isTerminated(cModule* mod){
+        return static_cast<cSimpleModule*>(mod)->isTerminated()
+                &&dynamic_cast<cSimpleModule*>(mod);
+    };
     //@}
 
     /** @name Debugging aids. */

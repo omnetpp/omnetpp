@@ -338,8 +338,8 @@ void cMessage::setSentFrom(cModule *module, int gateId, simtime_t_cref t)
 bool cMessage::isStale()
 {
     // check that destination module still exists and is alive
-    cSimpleModule *module = dynamic_cast<cSimpleModule *>(getSimulation()->getModule(targetModuleId));
-    return !module || module->isTerminated();
+    auto *module = getSimulation()->getModule(targetModuleId);
+    return !module || cSimpleModule::isTerminated(module);
 }
 
 #ifdef NDEBUG
