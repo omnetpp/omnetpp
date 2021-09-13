@@ -111,6 +111,7 @@ cComponent::~cComponent()
         delete selfPointers;
     }
 
+    reportUndisposed();
     removeFromOwnershipTree();
 }
 

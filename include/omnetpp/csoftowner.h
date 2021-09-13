@@ -52,6 +52,7 @@ class SIM_API cSoftOwner : public cNoncopyableOwnedObject
     virtual void ownedObjectDeleted(cOwnedObject *obj) override;
     virtual void yieldOwnership(cOwnedObject *obj, cObject *newOwner) override;
   protected:
+    void reportUndisposed();
     virtual void objectStealingOnDeletion(cOwnedObject *obj);
 
   public:

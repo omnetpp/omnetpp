@@ -84,6 +84,11 @@ void cSoftOwner::construct()
 
 cSoftOwner::~cSoftOwner()
 {
+    reportUndisposed();
+}
+
+void cSoftOwner::reportUndisposed()
+{
     // report objects as undisposed, except watches
     for (int i = 0; i < numObjs; i++) {
         if (dynamic_cast<cWatchBase *>(objs[i]))
@@ -94,6 +99,8 @@ cSoftOwner::~cSoftOwner()
         }
     }
     delete[] objs;
+    objs = nullptr;
+    numObjs = 0;
 }
 
 void cSoftOwner::doInsert(cOwnedObject *obj)

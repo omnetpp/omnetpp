@@ -1,0 +1,57 @@
+%description:
+Verify that undisposed objects are reported, incl. the full paths of the modules that own them.
+
+%file: package.ned
+
+@namespace(@TESTNAME@);
+
+%file: test.ned
+
+simple Leaky
+{
+}
+
+module Compound
+{
+    submodules:
+        leaky1: Leaky;
+        leaky2: Leaky;
+}
+
+network Test
+{
+    submodules:
+        foo: Compound;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class Leaky : public cSimpleModule
+{
+  protected:
+    void initialize() override {
+        new cMessage("leaked1");
+        new cPacket("leaked2");
+        new cQueue("leaked3");
+    }
+};
+
+Define_Module(Leaky);
+
+}; //namespace @TESTNAME@
+
+%contains: stdout
+undisposed object: (omnetpp::cMessage) Test.foo.leaky1.leaked1 -- check module destructor
+undisposed object: (omnetpp::cPacket) Test.foo.leaky1.leaked2 -- check module destructor
+undisposed object: (omnetpp::cQueue) Test.foo.leaky1.leaked3 -- check module destructor
+undisposed object: (omnetpp::cMessage) Test.foo.leaky2.leaked1 -- check module destructor
+undisposed object: (omnetpp::cPacket) Test.foo.leaky2.leaked2 -- check module destructor
+undisposed object: (omnetpp::cQueue) Test.foo.leaky2.leaked3 -- check module destructor
+
+
