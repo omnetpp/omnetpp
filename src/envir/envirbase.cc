@@ -1396,7 +1396,7 @@ void EnvirBase::readPerRunOptions()
     opt->outputVectorManagerClass = cfg->getAsString(CFGID_OUTPUTVECTORMANAGER_CLASS);
     opt->outputScalarManagerClass = cfg->getAsString(CFGID_OUTPUTSCALARMANAGER_CLASS);
     opt->snapshotmanagerClass = cfg->getAsString(CFGID_SNAPSHOTMANAGER_CLASS);
-    debugOnErrors = cfg->getAsBool(CFGID_DEBUG_ON_ERRORS);
+    debugOnErrors = cfg->getAsBool(CFGID_DEBUG_ON_ERRORS);  // note: handling overridden in Qtenv::readPerRunOptions() due to interference with GUI
     opt->printUndisposed = cfg->getAsBool(CFGID_PRINT_UNDISPOSED);
 
     // make time limits effective

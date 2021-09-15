@@ -1648,6 +1648,18 @@ void Qtenv::readOptions()
     opt->runFilter = r ? r : cfg->getAsString(CFGID_QTENV_DEFAULT_RUN);
 }
 
+void Qtenv::readPerRunOptions()
+{
+    bool origDebugOnErrors = debugOnErrors;
+
+    EnvirBase::readPerRunOptions();
+
+    // don't let the configuration turn off a debug-on-errors setting that the user (presumably) turned
+    // on manually, using the menu
+    if (origDebugOnErrors == true && debugOnErrors == false)
+        debugOnErrors = true;
+}
+
 void Qtenv::initialSetUpConfiguration()
 {
     if (checkRunning())

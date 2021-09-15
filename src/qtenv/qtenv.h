@@ -321,6 +321,7 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
 
       virtual EnvirOptions *createOptions() override {return new QtenvOptions();}
       virtual void readOptions() override;
+      virtual void readPerRunOptions() override;
 
       virtual void setupNetwork(cModuleType *network) override;
 
