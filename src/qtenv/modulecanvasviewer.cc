@@ -702,10 +702,14 @@ QLineF ModuleCanvasViewer::getConnectionLine(cGate *gate)
     int src_i = 0, src_n = 1, dest_i = 0, dest_n = 1;
 
     if (getQtenv()->opt->arrangeVectorConnections) {
-        src_i = gate->getIndex();
-        src_n = gate->getVectorSize();
-        dest_i = nextGate->getIndex();
-        dest_n = nextGate->getVectorSize();
+        if (gate->isVector()) {
+            src_i = gate->getIndex();
+            src_n = gate->getVectorSize();
+        }
+        if (nextGate->isVector()) {
+            dest_i = nextGate->getIndex();
+            dest_n = nextGate->getVectorSize();
+        }
     }
 
     return arrowcoords(getSubmodRect(gate->getOwnerModule()), getSubmodRect(nextGate->getOwnerModule()),
