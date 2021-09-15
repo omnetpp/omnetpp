@@ -908,8 +908,7 @@ fixed value in the NED files can be assigned from the configuration
 \begin{important}
     A non-default value assigned from NED cannot be overwritten later in
     NED or from ini files; it becomes ``hardcoded'' as far as ini files
-    and NED usage are concerned. In contrast, default values are possible
-    to overwrite.
+    and NED usage are concerned.
 \end{important}
 
 A parameter can be assigned in the configuration using a similar syntax as
@@ -990,9 +989,14 @@ Parameter values may be given with expressions. NED language expressions
 have a C-like syntax, with some variations on operator names: binary and
 logical XOR are \ttt{\#} and \ttt{\#\#}, while \ttt{\^} has been reassigned
 to \textit{power-of} instead. The \ttt{+} operator does string
-concatenation as well as numeric addition. Expressions can use various
-numeric, string, stochastic and other functions (\ttt{fabs()}, \ttt{toUpper()},
-\ttt{uniform()}, \ttt{erlang\_k()}, etc.).
+concatenation as well as numeric addition.
+
+Expressions may refer to module parameters, gate vector and module vector sizes
+(using the \fkeyword{sizeof} operator), existence of a submodule or submodule vector
+(\fkeyword{exists} operator), and the index of the current module in a
+submodule vector (\fkeyword{index}). They can also use various numeric, string,
+stochastic and other functions (\ttt{fabs()}, \ttt{toUpper()}, \ttt{uniform()},
+\ttt{erlang\_k()}, etc.).
 
 \begin{note}
     The list of NED functions can be found in Appendix \ref{cha:ned-functions}.
@@ -1001,20 +1005,54 @@ numeric, string, stochastic and other functions (\ttt{fabs()}, \ttt{toUpper()},
 
 %% XXX also sources of random numbers
 
-Expressions may refer to module parameters, gate vector and module vector sizes
-(using the \fkeyword{sizeof} operator) and the index of the current module
-in a submodule vector (\fkeyword{index}).
-
-%% XXX note: fullPath() etc functions!
+\subsection{Parameter References}
+\label{sec:ned-lang:parameter-references}
 
 Expressions may refer to parameters of the compound module being defined,
-of the current module (with the \ttt{this.} prefix), and to parameters
-of already defined submodules, with the syntax \ttt{submodule.parametername}
-(or \ttt{submodule[index].parametername}).
+parameters of the current module, and to parameters of already defined
+submodules, with the syntax \ttt{submodule.parametername} (or
+\ttt{submodule[index].parametername}).
 
-%% XXX example: address = address;  delay=this.distance/this.speed;
+Unqualified parameter names refer to a parameter of the compound module,
+wherever it occurs within the compound module definition. For example,
+all \ttt{foo} references in the following example refer to the network's
+\ttt{foo} parameter.
 
-%% XXX there are no parameter arrays, but... demonstrate the choose() function
+\begin{ned}
+network Network
+{
+    parameters:
+        double foo;
+        double bar = foo;
+    submodules:
+        node[10]: Node {
+            baz = foo;
+        }
+    ...
+}
+\end{ned}
+
+Use the \fkeyword{this} qualifier to refer to another parameter of the same submodule:
+
+\begin{ned}
+    submodules:
+        node: Node {
+            datarate = this.amount / this.duration;
+    }
+\end{ned}
+
+From {\opp} 5.7 onwards, there is also a \fkeyword{parent} qualifier with the obvious meaning.
+
+\begin{note}
+    The interpretation of names which are not qualified with either
+    \fkeyword{this} or \fkeyword{parent} and occur within submodule/channel
+    blocks is going to change in {\opp} 6.0: An unqualified name \ttt{foo} is
+    going to refer to the parameter of the submodule itself, i.e. will be
+    interpreted as \ttt{this.foo}. To create NED files which are compatible with
+    both versions, make those parameter references explicit by using the
+    \fkeyword{parent} qualifier: \ttt{parent.foo}. A similar rule applies to the
+    arguments of \fkeyword{sizeof} and  \fkeyword{exists}.
+\end{note}
 
 
 \subsection{volatile}
@@ -1055,10 +1093,10 @@ In practice, a volatile parameters are typically used as a configurable
 source of random numbers for modules.
 
 \begin{note}
-    This does not mean that a non-volatile parameter could not be assigned a
+    This does not mean that a non-volatile parameter cannot be assigned a
     random value like \ttt{uniform(0.5s, 1.5s)}. It can, but that would
     have a totally different effect: the simulation would use a constant
-    service time, say \ttt{1.2975367s}, chosen randomly at the beginning
+    value, say \ttt{1.2975367s}, chosen randomly at the beginning
     of the simulation.
 \end{note}
 

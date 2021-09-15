@@ -1753,8 +1753,11 @@ module.
 Expressions may also refer to parameters of submodules defined earlier
 in the NED file, using the \ttt{submoduleName.paramName} or the
 \ttt{submoduleName[index].paramName} syntax. To refer to parameters
-of the local submodule inside a submodule body, use the
-\fkeyword{this} qualifier: \ttt{this.destAddress}.
+of the local module/channel inside a submodule or channel body, use the
+\fkeyword{this} qualifier: \ttt{this.destAddress}. To make a reference
+to a parameter of the compound module from within a submodule or channel
+body explicit, use the \fkeyword{parent} qualifier: \ttt{parent.destAddress}.
+\footnote{The \fkeyword{parent} qualifier is available from {\opp} 5.7.}
 
 Exception: if an identifier occurs in a connection \fkeyword{for} loop and names
 a previously defined loop variable, then it is understood as referring to
