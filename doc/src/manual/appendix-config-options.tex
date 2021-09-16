@@ -64,6 +64,56 @@ with the \fopt{-h configdetails} option.
     \textit{Global setting (applies to all simulation runs).}\\
     Specifies the extra amount of stack that is reserved for each
     \ttt{activity()} simple module when the simulation is run under Cmdenv.
+\item[cmdenv-fake-gui] = \textit{<bool>}, default: \ttt{false}\\
+    \textit{Per-simulation-run setting.}\\
+    Causes Cmdenv to lie to simulations that is a GUI (isGui()=true), and to
+    periodically invoke refreshDisplay() during simulation execution.
+\item[cmdenv-fake-gui-after-event-probability] = \textit{<double>}, default: \ttt{1}\\
+    \textit{Per-simulation-run setting.}\\
+    When \ttt{cmdenv-{\allowbreak}fake-{\allowbreak}gui={\allowbreak}true}: The
+    probability with which \ttt{refresh\-Display()} is called after each event.
+\item[cmdenv-fake-gui-before-event-probability] = \textit{<double>}, default: \ttt{1}\\
+    \textit{Per-simulation-run setting.}\\
+    When \ttt{cmdenv-{\allowbreak}fake-{\allowbreak}gui={\allowbreak}true}: The
+    probability with which \ttt{refresh\-Display()} is called before each
+    event.
+\item[cmdenv-fake-gui-on-hold-numsteps] = \textit{<custom>}, default: \ttt{3}\\
+    \textit{Per-simulation-run setting.}\\
+    When \ttt{cmdenv-{\allowbreak}fake-{\allowbreak}gui={\allowbreak}true}: The
+    number of times \ttt{refresh\-Display()} is called during a "hold" period
+    (animation during which simulation time does not advance), provided a trial
+    with
+    \ttt{cmdenv-{\allowbreak}fake-{\allowbreak}gui-{\allowbreak}on-{\allowbreak}hold-{\allowbreak}probability}
+    yielded success. This an expression which will be evaluated each time, so
+    it can be random. Zero is also a valid value.
+\item[cmdenv-fake-gui-on-hold-probability] = \textit{<double>}, default: \ttt{0.{\allowbreak}5}\\
+    \textit{Per-simulation-run setting.}\\
+    When \ttt{cmdenv-{\allowbreak}fake-{\allowbreak}gui={\allowbreak}true}: The
+    probability with which \ttt{refresh\-Display()} is called (possibly
+    multiple times, see
+    \ttt{cmdenv-{\allowbreak}fake-{\allowbreak}gui-{\allowbreak}on-{\allowbreak}hold-{\allowbreak}numsteps})
+    during a "hold" period (animation during which simulation time does not
+    advance).
+\item[cmdenv-fake-gui-on-simtime-numsteps] = \textit{<custom>}, default: \ttt{3}\\
+    \textit{Per-simulation-run setting.}\\
+    When \ttt{cmdenv-{\allowbreak}fake-{\allowbreak}gui={\allowbreak}true}: The
+    number of times \ttt{refresh\-Display()} is called when simulation time
+    advances from one simulation event to the next, provided a trial with
+    \ttt{cmdenv-{\allowbreak}fake-{\allowbreak}gui-{\allowbreak}on-{\allowbreak}simtime-{\allowbreak}probability}
+    yielded success. This an expression which will be evaluated each time, so
+    it can be random. Zero is also a valid value.
+\item[cmdenv-fake-gui-on-simtime-probability] = \textit{<double>}, default: \ttt{0.{\allowbreak}1}\\
+    \textit{Per-simulation-run setting.}\\
+    When \ttt{cmdenv-{\allowbreak}fake-{\allowbreak}gui={\allowbreak}true}: The
+    probability with which \ttt{refresh\-Display()} is called (possibly
+    multiple times, see
+    \ttt{cmdenv-{\allowbreak}fake-{\allowbreak}gui-{\allowbreak}on-{\allowbreak}simtime-{\allowbreak}numsteps})
+    when simulation time advances from one simulation event to the next.
+\item[cmdenv-fake-gui-seed] = \textit{<int>}, default: \ttt{1}\\
+    \textit{Per-simulation-run setting.}\\
+    When \ttt{cmdenv-{\allowbreak}fake-{\allowbreak}gui={\allowbreak}true}: The
+    seed for the RNG governing the operation of the fake GUI component. This is
+    entirely independent of the RNGs used by the model.
 \item[cmdenv-interactive] = \textit{<bool>}, default: \ttt{false}\\
     \textit{Per-simulation-run setting.}\\
     Defines what Cmdenv should do when the model contains unassigned
@@ -151,26 +201,29 @@ with the \fopt{-h configdetails} option.
     \textit{Per-simulation-run setting.}\\
     Turns on the printing of debugging information related to statistics
     recording (\ttt{@{\allowbreak}statistic} properties)
-\item[debugger-attach-command] = \textit{<string>}, default: \ttt{nemiver {\allowbreak}-{\allowbreak}-{\allowbreak}attach={\allowbreak}\%u {\allowbreak}\&}\\
+\item[debugger-attach-command] = \textit{<string>}\\
     \textit{Global setting (applies to all simulation runs).}\\
     Command line to launch the debugger. It must contain exactly one percent
     sign, as \ttt{\%u}, which will be replaced by the PID of this process. The
     command must not block (i.e. it should end in \ttt{\&} on Unix-like
-    systems).
+    systems). Default on this platform: \ttt{nemiver
+    {\allowbreak}-{\allowbreak}-{\allowbreak}attach={\allowbreak}\%u
+    {\allowbreak}\&}. This default can be overridden with the
+    \ttt{OMNETPP\_DEBUGGER\_COMMAND} environment variable.
 \item[debugger-attach-on-error] = \textit{<bool>}, default: \ttt{false}\\
     \textit{Global setting (applies to all simulation runs).}\\
     When set to true, runtime errors and crashes will trigger an external
-    debugger to be launched, allowing you to perform just-in-time debugging on
-    the simulation process. The debugger command is configurable. Note that
-    debugging (i.e. attaching to) a non-child process needs to be explicitly
-    enabled on some systems, e.g. Ubuntu.
+    debugger to be launched (if not already present), allowing you to perform
+    just-in-time debugging on the simulation process. The debugger command is
+    configurable. Note that debugging (i.e. attaching to) a non-child process
+    needs to be explicitly enabled on some systems, e.g. Ubuntu.
 \item[debugger-attach-on-startup] = \textit{<bool>}, default: \ttt{false}\\
     \textit{Global setting (applies to all simulation runs).}\\
     When set to true, the simulation program will launch an external debugger
-    attached to it, allowing you to set breakpoints before proceeding. The
-    debugger command is configurable.  Note that debugging (i.e. attaching to)
-    a non-child process needs to be explicitly enabled on some systems, e.g.
-    Ubuntu.
+    attached to it (if not already present), allowing you to set breakpoints
+    before proceeding. The debugger command is configurable. Note that
+    debugging (i.e. attaching to) a non-child process needs to be explicitly
+    enabled on some systems, e.g. Ubuntu.
 \item[debugger-attach-wait-time] = \textit{<double>}, unit=\ttt{s}, default: \ttt{20s}\\
     \textit{Global setting (applies to all simulation runs).}\\
     An interval to wait after launching the external debugger, to give the
@@ -308,7 +361,7 @@ with the \fopt{-h configdetails} option.
 \item[image-path] = \textit{<path>}\\
     \textit{Global setting (applies to all simulation runs).}\\
     A semicolon-separated list of directories that contain module icons and
-    other resources. This list with be concatenated with
+    other resources. This list will be concatenated with
     \ttt{OMNETPP\_IMAGE\_PATH}.
 \item[iteration-nesting-order] = \textit{<string>}\\
     \textit{Per-simulation-run setting.}\\

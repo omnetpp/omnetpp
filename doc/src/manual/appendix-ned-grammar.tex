@@ -692,8 +692,11 @@ funcname
 identifier
         : NAME
         | THIS '.' NAME
+        | PARENT '.' NAME
         | NAME '.' NAME
         | NAME '[' expr ']' '.' NAME
+        | PARENT '.' NAME '.' NAME
+        | PARENT '.' NAME '[' expr ']' '.' NAME
         ;
 
 operator
