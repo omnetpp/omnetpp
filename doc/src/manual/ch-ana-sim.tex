@@ -291,6 +291,64 @@ Example:
 warmup-period = 20s
 \end{inifile}
 
+
+\subsubsection{Refining Warm-up Period Handling}
+\label{sec:ana-sim:refining-warmup-period-handling}
+
+Warm-up period handling works by inserting a special filter, a \textit{warm-up
+period filter} into the filter/recorder chain if a warm-up period is requested.
+This filter acts like a timed switch: it discards values during the specified warm-up
+period, and allows them to pass through afterwards.
+
+{\opp} allows you to disable the automatic adding of warm-up filters by
+specifying \ttt{autoWarmupFilter=false} in the \ttt{@statistic} as an attribute,
+and manually placing such filters (\ttt{warmup}) instead.
+
+Why is this necessary? By default, the filter is inserted at the front of the
+filter/recorder chain of every statistic. However, the front is not always the
+correct place for the warm-up period filter. Consider for example, computing the
+number of packets in a (compound) queue as the difference between the number of
+arrivals and departures from the queue. This can be achieved using
+\ttt{@statistic} as follows:
+
+\begin{ned}
+@signal[pkIn](type=cPacket);
+@signal[pkOut](type=cPacket);
+@statistic[queueLen](source=count(pkIn)-count(pkOut);record=vector);
+\end{ned}
+
+When a warm-up period is configured, the necessary warm-up period filters are
+inserted right before the \textit{count} filters. This can be expressed as the
+following expression for the statistic's \ttt{source} attribute:
+
+\begin{ned}
+count(warmup(pkIn)) - count(warmup(pkOut))
+\end{ned}
+
+which is apparently incorrect, because the \textit{count} filters only start
+counting when the warm-up period is over. Thus, the measured queue length will
+start from zero when the warm-up period is over, even though the queue might not
+be empty! In fact, if the first event after the warm-up period is a departure,
+the measured queue length will even go negative.
+
+The right solution would be put the \ttt{warmup} filter at the end, like so:
+
+\begin{ned}
+warmup(count(pkIn)-count(pkOut))
+\end{ned}
+
+Thus, the correct form of the queue length statistic is the following:
+
+\begin{ned}
+@statistic[queueLen](source=warmup(count(pkIn)-count(pkOut));
+                     autoWarmupFilter=false;
+                     record=vector);
+\end{ned}
+
+
+\subsubsection{Manual Result Recording}
+\label{sec:ana-sim:warmup-period-manual-result-recording}
+
 Results recorded via signal-based statistics automatically obey the warm-up
 period setting, but modules that compute and record scalar results
 manually (via \ffunc{recordScalar()}) need to be modified so that they take
