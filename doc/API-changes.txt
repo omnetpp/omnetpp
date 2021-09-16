@@ -375,6 +375,12 @@ OMNeT++ 6.0
         histogram strategy instead.
 
 
+OMNeT++ 5.7
+~~~~~~~~~~~
+
+No API change.
+
+
 OMNeT++ 5.6
 ~~~~~~~~~~~
 
