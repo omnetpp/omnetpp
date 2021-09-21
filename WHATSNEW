@@ -6,8 +6,8 @@ simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
 
-OMNeT++ 5.7 (Aug 2021)
-----------------------
+OMNeT++ 5.7 (Sept 2021)
+-----------------------
 
 This version is intended to be the last release of the 5.x series. The main
 purpose of this release is to make it possible to write model code, primarily
@@ -148,7 +148,7 @@ Simulation IDE:
 
 Build:
 
-  - Use Eclipse 4.20, and JustJ as the private JRE.
+  - Use Eclipse 4.21, and JustJ as the private JRE.
 
   - Use python3 as the interpreter for Python scripts.
 
