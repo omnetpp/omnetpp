@@ -92,7 +92,10 @@ ax.get_xaxis().set_label_text(df.columns.name)
 ax.set_yticks(df.index)
 ax.get_yaxis().set_label_text(df.index.name)
 
-utils.set_plot_title(scalar_name + " vs. " + xaxis_itervar + " and " + yaxis_itervar)
+title = scalar_name + " vs. " + xaxis_itervar + " and " + yaxis_itervar
+if "title" in props and props["title"]:
+    title = props["title"]
+utils.set_plot_title(title)
 
 utils.postconfigure_plot(props)
 

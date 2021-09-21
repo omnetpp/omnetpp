@@ -33,7 +33,10 @@ labels = [", ".join([getattr(r, l[1]) for l in legend])
          for r in df.itertuples(index=False) if r.count > 0]
 utils.customized_box_plot(boxes, labels)
 
-utils.set_plot_title(utils.make_chart_title(df, title, legend))
+title = utils.make_chart_title(df, title, legend)
+if "title" in props and props["title"]:
+    title = props["title"]
+utils.set_plot_title(title)
 
 plt.tight_layout()
 
