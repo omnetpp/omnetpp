@@ -96,7 +96,7 @@ charts += generate_testcases("scatterchart_itervars.py",
     {
         "filter": "name =~ channelUtilization:last",
         "xaxis_itervar": "iaMean",
-        "iso_itervar": "numHosts"
+        "group_by": "numHosts"
     },
     [
         ("filter", "type =~ scalar", None),
@@ -105,19 +105,19 @@ charts += generate_testcases("scatterchart_itervars.py",
         ("filter", "", "Error while querying results: Empty filter expression"),
 
         ("xaxis_itervar", "iaMean", None),
-        ("xaxis_itervar", "numHosts", "X axis column also in iso line columns:"),
+        ("xaxis_itervar", "numHosts", "X axis column also in grouper columns:"),
         ("xaxis_itervar", "experiment", None),
         ("xaxis_itervar", "name", None),
         ("xaxis_itervar", "aa bb", "iteration variable for the X axis could not be found"),
         ("xaxis_itervar", "", "select the iteration variable for the X axis"),
 
-        ("iso_itervar", "iaMean", "X axis column also in iso line columns:"),
-        ("iso_itervar", "numHosts", None),
-        ("iso_itervar", "numHosts, replication", None),
-        ("iso_itervar", "experiment", None),
-        ("iso_itervar", "name", None),
-        ("iso_itervar", "aa bb", "iteration variable for the iso lines could not be found"),
-        ("iso_itervar", "", None),
+        ("group_by", "iaMean", "X axis column also in grouper columns:"),
+        ("group_by", "numHosts", None),
+        ("group_by", "numHosts, replication", None),
+        ("group_by", "experiment", None),
+        ("group_by", "name", None),
+        ("group_by", "aa bb", "iteration variable for grouping could not be found"),
+        ("group_by", "", None),
     ]
 )
 

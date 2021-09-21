@@ -11,7 +11,7 @@ utils.preconfigure_plot(props)
 # collect parameters for query
 filter_expression = props["filter"]
 xaxis_itervar = props["xaxis_itervar"]
-iso_itervars = utils.split(props["iso_itervar"])
+group_by = utils.split(props["group_by"])
 
 # query data into a data frame
 try:
@@ -24,11 +24,11 @@ if df.empty:
     plot.set_warning("The result filter returned no data.")
     exit(1)
 
-if not xaxis_itervar and not iso_itervars:
-    print("The 'Itervar for X Axis' and 'Itervar for iso line' options were not set in the dialog, inferring them from the data..")
-    xaxis_itervar, iso_itervar = utils.pick_two_columns(df)
-    iso_itervars = [iso_itervar] if iso_itervar else []
-    print("X axis: " + xaxis_itervar + " iso lines: " + ",".join(iso_itervars))
+if not xaxis_itervar and not group_by:
+    print("The 'X Axis' and 'Group By' options were not set in the dialog, inferring them from the data..")
+    xaxis_itervar, group_by = utils.pick_two_columns(df)
+    group_by = [group_by] if group_by else []
+    print("X Axis: " + xaxis_itervar + ", Group By: " + ",".join(group_by))
 
 if xaxis_itervar:
     utils.assert_columns_exist(df, [xaxis_itervar], "The iteration variable for the X axis could not be found")
@@ -37,13 +37,13 @@ else:
     plot.set_warning("Please select the iteration variable for the X axis!")
     exit(1)
 
-if xaxis_itervar in iso_itervars:
-    plot.set_warning("X axis column also in iso line columns: " + xaxis_itervar)
+if xaxis_itervar in group_by:
+    plot.set_warning("X axis column also in grouper columns: " + xaxis_itervar)
     exit(1)
 
-if iso_itervars:
-    utils.assert_columns_exist(df, iso_itervars, "An iteration variable for the iso lines could not be found")
-    for iv in iso_itervars:
+if group_by:
+    utils.assert_columns_exist(df, group_by, "An iteration variable for grouping could not be found")
+    for iv in group_by:
         if iv:
             df[iv] = pd.to_numeric(df[iv], errors="ignore")
 
@@ -54,7 +54,7 @@ uninteresting = ["runID", "value", "datetime", "iterationvars",
 
 for c in df:
     ul = len(df[c].unique())
-    if ul > 1 and c != xaxis_itervar and c not in iso_itervars and c not in uninteresting:
+    if ul > 1 and c != xaxis_itervar and c not in group_by and c not in uninteresting:
         print("Points are averaged from an overall", ul, "unique", c, "values.")
 
 scalar_names = ', '.join(df["name"].unique())
@@ -62,13 +62,13 @@ scalar_names = ', '.join(df["name"].unique())
 confidence_level_str = props["confidence_level"] if "confidence_level" in props else "none"
 
 if confidence_level_str == "none":
-    df = pd.pivot_table(df, values="value", columns=iso_itervars, index=xaxis_itervar)
+    df = pd.pivot_table(df, values="value", columns=group_by, index=xaxis_itervar)
     errors_df = None
 else:
     confidence_level = float(confidence_level_str[:-1])/100
     def conf_intv(values):
         return utils.confidence_interval(confidence_level, values)
-    pivoted = pd.pivot_table(df, values="value", columns=iso_itervars, index=xaxis_itervar if xaxis_itervar else "name", aggfunc=[np.mean, conf_intv], dropna=False)
+    pivoted = pd.pivot_table(df, values="value", columns=group_by, index=xaxis_itervar if xaxis_itervar else "name", aggfunc=[np.mean, conf_intv], dropna=False)
     df = pivoted["mean"]
     errors_df = pivoted["conf_intv"]
 
@@ -88,11 +88,11 @@ for c in df.columns:
         style["marker"] = '.'
 
     ys = df[c].values
-    if iso_itervars:
+    if group_by:
         names = df[c].name
         if type(names) != tuple:
             names = [names]
-        label = ', '.join([str(a) + "=" + str(b) for a, b in zip(iso_itervars, names)])
+        label = ', '.join([str(a) + "=" + str(b) for a, b in zip(group_by, names)])
     else:
         label = scalar_names
     plot.plot(xs, ys, label=label, **style)
