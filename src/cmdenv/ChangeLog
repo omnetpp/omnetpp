@@ -1,3 +1,11 @@
+2021-06-09  Attila Torok
+
+	* Add cEnvir::pausePoint() and stubs
+
+2021-08-05  Attila Torok
+
+	* Cmdenv::componentInitBegin(): call base class method, as it is no longer empty
+
 2021-05-13  Andras Varga
 
 	* Cosmetics on '// namespace' comments

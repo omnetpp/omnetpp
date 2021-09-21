@@ -1,3 +1,58 @@
+2021-06-09  Attila Torok
+
+	* Added cEnvir::pausePoint().
+
+2021-09-13  Andras Varga
+
+	* Fix bug introduced in 6.0pre12: "undisposed object" message didn't
+	contain the full path of parent module, only its name.
+
+2021-09-06  Attila Torok
+
+	* cModule: fix bug introduced in 6.0pre12: Shift flag bits to resolve
+	conflict with cSimpleModule flags
+
+2021-08-27  Andras Varga
+
+	* cMatchExpression: fix: delete default copy/move ctor as they were
+	not suitable, and prevented e.g. pushing to an std::vector<cMatchExpression>.
+
+2021-07-29  Andras Varga
+
+	* cProperty: added getNumKeys() method; updateWith() made public
+
+2021-07-22  Andras Varga
+
+	* cValue: added cValue(const opp_string&) constructor; str() refined
+
+	* any_ptr: added typeName(), refined str()
+
+	* opp_string: added move constructor
+
+2021-07-20  Andras Varga
+
+	* cClassDescriptor: Added getFieldValue()/setFieldValue() methods
+	to allow accessing fields in a typed way, using cValue. Previously
+	existing methods getFieldValueAsString()/setFieldValueAsString()
+	only allowed string-based access.
+
+2021-07-16  Andras Varga
+
+	* cValue changed to hold any_ptr instead of cObject. Changes:
+	   - type OBJECT renamed to POINTER
+	   - cValue(any_ptr ptr) constructor added
+	   - set(cObject *obj) changed to set(any_ptr)
+	   - operator=(cObject*) changed to operator=(any_ptr)
+	   - set(const cPar& par), operator=(const cPar&) removed
+	   - pointerValue() added
+	   - containsObject(), containsXML() added
+	   - cObject *objectValue() may only be called if containsObject() returns true
+	   - cXMLElement *xmlValue() may only be called if containsXML() returns true
+
+2021-07-17  Andras Varga
+
+	* cPar: added cValue-based generic access: getValue(), setValue()
+
 2021-06-23  Andras Varga
 
 	* cClassDescriptor: methods changed to use any_ptr instead of void*
@@ -319,11 +374,11 @@
 	added getLifecycleListeners(). Methods were independently implemented in
 	EnvirBase, cNullEnvir, StaticEnv.
 
-2021-04-23  TÖRÖK Attila
+2021-04-23  Attila Torok
 
 	* Enter_Method(), Enter_Method_Silent()]: Turned into variadic macros
 
-2021-04-15  TÖRÖK Attila
+2021-04-15  Attila Torok
 
 	* cException, etc: Add format(printf) attribute to printf-like methods,
 	using an updated _OPP_GNU_ATTRIBUTE

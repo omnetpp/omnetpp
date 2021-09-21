@@ -1,3 +1,34 @@
+2021-06-09  Attila Torok
+
+	* cSimulation: Add sanity check to prevent reentrant event execution
+
+2021-09-13  Andras Varga
+
+	* Fix bug introduced in 6.0pre12: "undisposed object" message didn't
+	contain the full path of parent module, only its name.
+
+2021-07-29  Andras Varga
+
+	* cProperty: implement changes, see include/ChangeLog for details.
+
+2021-07-16  Andras Varga
+
+	* sim_std.msg: added @toValue()/@fromValue annotations
+
+2021-07-20  Andras Varga
+
+	* cClassDescriptor: added getFieldValue()/setFieldValue() to allow
+	accessing fields using cValue
+
+2021-07-08  Andras Varga
+
+	* cValue changed to hold any_ptr instead of cObject (see include/ChangeLog
+	for details).
+
+2021-07-17  Andras Varga
+
+	* cPar: added cValue-based generic access: getValue(), setValue()
+
 021-07-08  Andras Varga
 
 	* cHistogram: added str() to Bin, and use it in sim_std.msg

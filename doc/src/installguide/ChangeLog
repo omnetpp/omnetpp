@@ -1,3 +1,13 @@
+2021-08-04  Rudolf Hornig
+
+	* Updated. Among others, added two sections to the MacOS chapter:
+	    - Enabling Development Mode in Terminal
+	    - Running OMNeT++ on Apple Silicon
+
+2021-08-04  Rudolf Hornig
+
+	* Renamed macosx.rst to macos.rst and removed unused FO XSL file.
+
 2021-06-01  Rudolf Hornig
 
 	* Updated instructions on how to source setenv from .profile

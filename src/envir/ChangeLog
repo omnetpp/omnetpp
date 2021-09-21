@@ -1,3 +1,8 @@
+2021-08-05  Attila Torok
+
+	* EnvirBase::componentInitBegin(): Set currentModuleId before init stages,
+	so the log prefix is not there (we have a banner for it now)
+
 2021-07-06  Andras Varga
 
 	* Inspectors adjusted to recent cClassDescriptor change (void* -> any_ptr).

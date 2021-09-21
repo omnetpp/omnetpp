@@ -1,3 +1,60 @@
+2021-06-09  Attila Torok
+
+	* Implement pausePoint()
+
+2021-08-05  Attila Torok
+
+	* Qtenv: Set currentModuleId before init stages, so the log prefix is
+	not there (we have a banner for it now).
+
+2021-08-26  Attila Torok
+
+	* Clear logs and animations and similar state after the network was
+	deleted when restarting. This avoids an assertion failure (!entries.empty())
+	in logbuffer, in case the network logs something while it's being brought
+	down.
+
+2021-08-03  Attila Torok
+
+	* Log: Show component init stages as banners, but hide empty ones.
+
+2021-09-15  Attila Torok
+
+	* Fix: Don't call getIndex/getVectorSize on non-vector gates in
+	getConnectionLine
+
+2021-09-15  Andras Varga
+
+	* Prevent manually enabled "Debug on Errors" setting to be turned
+	off by (lack of) configuration option.
+
+2021-08-04  Attila Torok
+
+	* Object Inspector: Added ways to select per-item display mode:
+	   - Hotkey (Ctrl+B) to cycle through the modes for the selected item.
+	   - Context menu. The context menu only shows overrides, and the
+	     items are uncheckable to reset only the selected node
+
+2021-07-16  Attila Torok
+
+	* Object Inspector: Added possibility to select display mode
+	(Children/Grouped/Flat/Inheritance) per-node. If display mode override is
+	specified for a node, it will affect the whole subtree.
+
+2021-07-30  Attila Torok
+
+	* Fix: Do not abort if there is an error during refreshing inspectors
+	in certain cases (protect Inspector::setObject() calls with try-catch blocks).
+
+2021-08-02  Attila Torok
+
+	* Fix: Do not abort on errors in display strings.
+
+2021-07-22  Attila Torok
+
+	* Log Inspector: Don't omit banners of events just because no logging
+	was done in them.
+
 2021-07-09  Attila Torok
 
 	* Module tree view (top-left part) ported to use the same underlying

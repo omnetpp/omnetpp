@@ -1,3 +1,12 @@
+2021-07-12  Rudolf Hornig
+
+	* Productizing: Added linux.aarch64 IDE native library support for
+	ARM-based Linux distros
+
+2021-07-12  Rudolf Hornig
+
+	* Productizing: justj: Use stripped version of JDK 15 instead of JDK 11
+
 2021-07-07  Rudolf Hornig
 
 	* Documentation Generator: Fix: A missing or closed referenced project caused

@@ -1,3 +1,23 @@
+2021-08-27  Andras Varga
+
+	* MatchExpression: delete default copy/move ctor, as they are not suitable.
+
+2021-07-29  Andras Varga
+
+	* stringutil.h:
+	- added opp_streq()
+	- opp_findmatchingparen(): support more kinds of "parens"
+
+2021-07-22  Andras Varga
+
+	* Added omnetpp::common::any_ptr.  It is a copy of omnetpp::any_ptr from
+	include/. It needs to be duplicated because <omnetpp.h> and src/common/
+	cannot share code for technical reasons.
+
+	* ExprValue: Store any_ptr instead of cObject, and follow through
+	with changes: type OBJECT renamed to POINTER, objectValue() renamed
+	to pointerValue(), etc.
+
 2021-06-29  Rudolf Hornig
 
 	* Added missing COMMON_API

@@ -1,3 +1,14 @@
+2021-07-16  Andras Varga
+
+	Message compiler: Follow cClassDescriptor change: generate getFieldValue()
+	and setFieldValue() methods. Added new properties @toValue()/@fromValue()
+	so that user can define how to implement those.
+
+2021-07-23  Andras Varga
+
+	* Message compiler: fix: setFieldStructValuePointer() only supported
+	pointer fields, but it's also OK if the setter takes the object by reference.
+
 2021-07-11  Andras Varga
 
 	* Message compiler: for enums, generate Register_Enum() calls instead of
