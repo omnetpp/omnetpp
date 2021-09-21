@@ -598,7 +598,7 @@ bool EventLogIndex::readToEventLine(bool forward, file_offset_t readStartOffset,
     }
 
     // bad luck
-    throw opp_runtime_error("Wrong file format: No event number in 'E' line, line %ld", reader->getNumReadLines());
+    throw opp_runtime_error("Wrong file format: No event number in 'E' line, line %" PRId64, reader->getNumReadLines());
 }
 
 void EventLogIndex::cacheEntry(eventnumber_t eventNumber, simtime_t simulationTime, file_offset_t beginOffset, file_offset_t endOffset)
