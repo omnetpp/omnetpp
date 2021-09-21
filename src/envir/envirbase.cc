@@ -1090,7 +1090,7 @@ void EnvirBase::simulationEvent(cEvent *event)
         eventlogManager->simulationEvent(event);
 }
 
-void componentInitBegin(cComponent *component, int stage)
+void EnvirBase::componentInitBegin(cComponent *component, int stage)
 {
     // To make initialization similar to processed events in this regard.
     // Unfortunately, for modules created (initialized) dynamically,
