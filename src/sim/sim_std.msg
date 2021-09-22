@@ -76,6 +76,14 @@ void std_sim_descriptor_dummy() {}
 // This cannot go into the header, because ExpressionFilter is not available via <omnetpp.h>
 template<> inline ExpressionFilter *fromAnyPtr(any_ptr ptr) {return static_cast<ExpressionFilter *>(ptr.get<cObject>());}
 
+static void trySetName(cObject *obj, const char *s) 
+{
+    if (auto named = dynamic_cast<cNamedObject*>(obj))
+        named->setName(s);
+    else
+        throw cRuntimeError("Cannot set name for a %s: not a cNamedObject", obj->getClassName());
+}
+
 }  // namespace omnetpp
 
 }}
@@ -127,6 +135,7 @@ class cObject
     @castFunction(false); // defined in the omnetpp headers
     @icon(cogwheel);
     string className @group(base) @hint("C++ class name") @eventlog(skip);
+    string name @group(base) @editable @setter(trySetName($,value)) @hint("A string attribute of the object, also used for fullName and fullPath");
     string fullName @group(base) @hint("If object is part of a module/gate vector: name with index");
     string fullPath @group(base) @hint("Hierarchical name, composed of full names of this object and its owners/parents") @eventlog(skip);
     string info @getter(str) @group(base) @hint("Text provided by the object's \"str()\" method") @eventlog(skip);
@@ -137,7 +146,6 @@ class cNamedObject extends cObject
     @existingClass;
     @overwritePreviousDefinition;
     @descriptor(readonly);
-    string name @group(base) @editable @hint("An editable string attribute of the object, also used for fullName and fullPath");
 }
 
 class cOwnedObject extends cNamedObject
