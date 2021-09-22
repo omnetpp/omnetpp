@@ -58,33 +58,33 @@ Define_Module(Node);
 %contains: results/General-#0.sca
 scalar Test.node foo1:count(demux) 4
 attr source foo
-scalar Test.node foo1:count(demux):first 2
+scalar Test.node first:foo1:count(demux) 2
 attr source foo
-scalar Test.node foo1:count(demux):second 3
+scalar Test.node second:foo1:count(demux) 3
 attr source foo
-scalar Test.node foo1:count(demux):third 4
+scalar Test.node third:foo1:count(demux) 4
 attr source foo
 scalar Test.node foo1:sum(demux) 211
 attr source foo
-scalar Test.node foo1:sum(demux):first 2000
+scalar Test.node first:foo1:sum(demux) 2000
 attr source foo
-scalar Test.node foo1:sum(demux):second 30000
+scalar Test.node second:foo1:sum(demux) 30000
 attr source foo
-scalar Test.node foo1:sum(demux):third 400000
+scalar Test.node third:foo1:sum(demux) 400000
 attr source foo
 scalar Test.node foo2:count 4
 attr source demux(foo)
 scalar Test.node foo2:sum 211
 attr source demux(foo)
-scalar Test.node foo2:count:first 2
+scalar Test.node first:foo2:count 2
 attr source demux(foo)
-scalar Test.node foo2:sum:first 2000
+scalar Test.node first:foo2:sum 2000
 attr source demux(foo)
-scalar Test.node foo2:count:second 3
+scalar Test.node second:foo2:count 3
 attr source demux(foo)
-scalar Test.node foo2:sum:second 30000
+scalar Test.node second:foo2:sum 30000
 attr source demux(foo)
-scalar Test.node foo2:count:third 4
+scalar Test.node third:foo2:count 4
 attr source demux(foo)
-scalar Test.node foo2:sum:third 400000
+scalar Test.node third:foo2:sum 400000
 attr source demux(foo)

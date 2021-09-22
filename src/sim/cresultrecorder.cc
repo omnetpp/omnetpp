@@ -58,7 +58,7 @@ std::string cResultRecorder::getResultName() const
     if (getDemuxLabel() == nullptr)
         return std::string(getStatisticName()) + ":" + getRecordingMode();
     else
-        return std::string(getStatisticName()) + ":" + getRecordingMode() + ":" + getDemuxLabel();
+        return std::string(getDemuxLabel()) + ":" + getStatisticName() + ":" + getRecordingMode();
 }
 
 opp_string_map cResultRecorder::getStatisticAttributes()
