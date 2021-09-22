@@ -1,1 +1,2 @@
-OMNETPP_LIBS += -loppcommon$D
+OMNETPP_LIBS += -loppcommon$D $(QT_LIBS)
+CFLAGS += -DQT_NO_EMIT $(QT_CFLAGS)
