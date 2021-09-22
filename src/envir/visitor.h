@@ -142,13 +142,6 @@ class ENVIR_API cHasChildrenVisitor : public cVisitor
     bool getResult() {return hasChildren;}
 };
 
-//----------------------------------------------------------------
-// utilities for sorting objects:
-
-void ENVIR_API sortObjectsByName(cObject **objs, int n);
-void ENVIR_API sortObjectsByFullPath(cObject **objs, int n);
-void ENVIR_API sortObjectsByShortTypeName(cObject **objs, int n);
-
 }  // namespace envir
 }  // namespace omnetpp
 
