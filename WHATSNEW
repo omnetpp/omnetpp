@@ -6,6 +6,63 @@ simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
 
+OMNeT++ 6.0pre13 (Oct 2021)
+---------------------------
+
+Core:
+
+  - Introduced cEnvir::pausePoint()
+
+  - cValue changed to hold any_ptr instead of cObject. This change involves
+    several changes, e.g. type OBJECT renamed to POINTER, and pointerValue() added.
+
+	- cClassDescriptor: Added getFieldValue()/setFieldValue() methods
+	  to allow accessing fields in a typed way, using cValue. Previously
+	  existing methods getFieldValueAsString()/setFieldValueAsString()
+	  only allowed string-based access.
+
+  - Message compiler: Follow cClassDescriptor change: generate getFieldValue()
+    and setFieldValue() methods. Added new properties @toValue()/@fromValue()
+    so that user can define how to implement those.
+
+  - cPar: added cValue-based generic access: getValue(), setValue()
+
+  - cProperty: added getNumKeys() method; updateWith() made public
+
+  - Further bug fixes and minor improvements.
+
+Qtenv:
+
+  - Object Inspector: Added possibility to select display mode (Children/
+    Grouped/Flat/Inheritance) per-node. If display mode override is specified
+    for a node, it will affect the whole subtree. The display mode for the
+    selected tree can be changed via hotkey (Ctrl+B) or via the context menu.
+
+  - Log: Show component init stages as banners, but hide empty ones.
+
+  - Prevent manually enabled "Debug on Errors" setting to be turned
+    off by (lack of) configuration option.
+
+  - Various bug fixes.
+
+IDE:
+
+  - Analysis Tool: added "timewinthruput" vector operation
+
+  - Analysis Tool: In the Scatter Plot config dialog, the "Iso line" terminology
+    changed to "Group by".
+
+  - Added support for ARM-based Linux distros
+
+  - JustJ: Use stripped version of JDK 15 instead of JDK 11
+
+Documentation:
+
+  - Install Guide updated. New sections in the macOS chapter: "Enabling
+    Development Mode in the Terminal", "Running OMNeT++ on Apple Silicon"
+
+
+
 OMNeT++ 6.0pre12 (Jul 2021)
 ---------------------------
 
