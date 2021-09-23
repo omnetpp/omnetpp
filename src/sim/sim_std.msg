@@ -212,13 +212,12 @@ class cComponent extends cSoftOwner
 {
     @existingClass;
     @overwritePreviousDefinition;
-    @descriptor(readonly);
-    bool isModule @getter(isModule) @group(fields) @hint("Whether this component is a module or a channel");
-    cComponentType *componentType @group(fields) @hint("The object that represents the type declaration for this component");
-    cPar par[] @getter(par) @sizeGetter(getNumParams) @toValue(toAnyPtr(&$)) @label(parameters) @group(parameters, gates) @hint("NED parameters");
-    cProperty *properties_[] @label(properties) @getter(->getProperties()->get(i)) @sizeGetter(->getProperties()->getNumProperties()) @group(parameters, gates) @hint("NED properties");
-    cComponent::SignalListenerList listenedSignals[] @getter(getListenerList) @sizeGetter(getSignalTableSize) @toString(.str()) @toValue(toAnyPtr(&($))) @group(signals, statistics) @hint("Signal listener lists");
-    cResultRecorder *results[] @getter(->getResultRecorders()[i]) @sizeGetter(->getResultRecorders().size()) @toString(->str()) @group(signals, statistics) @hint("Statistical results collected in this component");
+    bool isModule @readonly @getter(isModule) @group(fields) @hint("Whether this component is a module or a channel");
+    cComponentType *componentType @readonly @group(fields) @hint("The object that represents the type declaration for this component");
+    cPar par[] @editable @resizable(false) @getter(par) @setter(pp->par(i).parse(value)) @sizeGetter(getNumParams) @toValue(toAnyPtr(&$)) @fromValue(TODO) @label(parameters) @group(parameters, gates) @hint("NED parameters");
+    cProperty *properties_[] @readonly @label(properties) @getter(->getProperties()->get(i)) @sizeGetter(->getProperties()->getNumProperties()) @group(parameters, gates) @hint("NED properties");
+    cComponent::SignalListenerList listenedSignals[] @readonly @getter(getListenerList) @sizeGetter(getSignalTableSize) @toString(.str()) @toValue(toAnyPtr(&($))) @group(signals, statistics) @hint("Signal listener lists");
+    cResultRecorder *results[] @readonly @getter(->getResultRecorders()[i]) @sizeGetter(->getResultRecorders().size()) @toString(->str()) @group(signals, statistics) @hint("Statistical results collected in this component");
 }
 
 class cChannel extends cComponent
@@ -797,6 +796,7 @@ class cPar extends cObject
     @overwritePreviousDefinition;
     @descriptor(readonly);
     @icon(param);
+    @fromString(parse);
     string value @getter(str) @setter(parse) @editable;
     char type @enum(cPar::Type) @hint("Parameter type");
     string unit @hint("For long and double types only");

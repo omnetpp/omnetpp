@@ -20,6 +20,8 @@
 #include "omnetpp/cdynamicexpression.h"
 #include "omnetpp/cobjectfactory.h"
 #include "omnetpp/ccomponent.h"
+#include "omnetpp/cvaluearray.h"
+#include "omnetpp/cvaluemap.h"
 #include "ctemporaryowner.h"
 #include "common/stringutil.h"
 
@@ -306,10 +308,12 @@ std::string cObjectParImpl::str() const
 {
     if (flags & FL_ISEXPR)
         return expr->str();
-    else if (obj)
-        return std::string("(") + obj->getClassName() + ")" + obj->getFullName() + ": " + obj->str();
-    else
+    else if (!obj)
         return "nullptr";
+    else if (dynamic_cast<cValueArray*>(obj) || dynamic_cast<cValueMap*>(obj))
+        return obj->str();
+    else
+        return std::string("(") + obj->getClassName() + ")" + obj->getFullName() + ": " + obj->str(); // non-parseable...
 }
 
 void cObjectParImpl::parse(const char *text, FileLine loc)

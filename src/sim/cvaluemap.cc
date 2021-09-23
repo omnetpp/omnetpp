@@ -81,17 +81,14 @@ std::string cValueMap::str() const
     if (fields.empty())
         return std::string("{}");
 
+    // note: do not truncate the output, because it ruins editing JSON parameters in Qtenv
     std::stringstream out;
-    int length = fields.size();
-    int printed = std::min(5, length);
     out << "{";
-    auto it = fields.begin();
-    for (int i = 0; i < printed; i++, ++it) {
-        if (i != 0) out << ", ";
-        out << it->first << ": " << it->second.str();
+    int i = 0;
+    for (auto& p : fields) {
+        if (i++ != 0) out << ", ";
+        out << p.first << ": " << p.second.str();
     }
-    if (length > printed)
-        out << ", ... and " << (length-printed) << " more";
     out << "}";
     return out.str();
 }

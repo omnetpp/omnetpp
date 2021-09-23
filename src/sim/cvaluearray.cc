@@ -84,16 +84,15 @@ std::string cValueArray::str() const
 {
     if (array.empty())
         return std::string("[]");
+
+    // note: do not truncate the output, because it ruins editing JSON parameters in Qtenv
     std::stringstream out;
     int length = array.size();
-    int printed = std::min(8, length);
     out << "[";
-    for (int i = 0; i < printed; i++) {
+    for (int i = 0; i < length; i++) {
         if (i != 0) out << ", ";
         out << array[i].str();
     }
-    if (length > printed)
-        out << ", ... and " << (length-printed) << " more";
     out << "]";
     return out.str();
 }
