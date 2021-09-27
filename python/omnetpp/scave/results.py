@@ -114,11 +114,16 @@ def get_serial():
     """
     return impl.get_serial()
 
+def set_inputs(filenames):
+    impl.set_inputs(filenames)
 
-def load_results(filenames, filter_expression="", include_fields_as_scalars=False, vector_start_time=-inf, vector_end_time=inf):
+def add_inputs(filenames):
+    impl.add_inputs(filenames)
+
+def read_result_files(filenames, filter_expression="", include_fields_as_scalars=False, vector_start_time=-inf, vector_end_time=inf):
     if not filter_expression:
         raise ValueError("Empty filter expression")
-    return impl.load_results(**locals())
+    return impl.read_result_files(**locals())
 
 @_guarded_result_query_func
 def get_results(filter_or_dataframe="", row_types=None, omit_unused_columns=True, include_fields_as_scalars=False, start_time=-inf, end_time=inf):
@@ -151,9 +156,9 @@ def get_results(filter_or_dataframe="", row_types=None, omit_unused_columns=True
     - `attrvalue` (string): Value of run and result item attributes, iteration variables, saved ini param settings (runattr, attr, itervar, param)
     - `value` (double or string): Output scalar or parameter value
     - `count`, `sumweights`, `mean`, `min`, `max`, `stddev` (double): Fields of the statistics or histogram
-    - `binedges`, `binvalues` (np.array): Histogram bin edges and bin values, as space-separated lists. `len(binedges)==len(binvalues)+1`
+    - `binedges`, `binvalues` (np.array): Histogram bin edges and bin values. `len(binedges)==len(binvalues)+1`
     - `underflows`, `overflows` (double): Sum of weights (or counts) of underflown and overflown samples of histograms
-    - `vectime`, `vecvalue` (np.array): Output vector time and value arrays, as space-separated lists
+    - `vectime`, `vecvalue` (np.array): Output vector time and value arrays
     """
     if type(filter_or_dataframe) is str:
         filter_expression = filter_or_dataframe
@@ -169,8 +174,6 @@ def get_results(filter_or_dataframe="", row_types=None, omit_unused_columns=True
 
         df.reset_index(inplace=True, drop=True)
         return df
-
-
 
 
 @_guarded_result_query_func
@@ -223,7 +226,7 @@ def get_runattrs(filter_or_dataframe="", include_runattrs=False, include_itervar
     if type(filter_or_dataframe) is str:
         filter_expression = filter_or_dataframe
         del filter_or_dataframe
-        return impl.get_itervars(**locals())
+        return impl.get_runattrs(**locals())
     else:
         df = filter_or_dataframe
         df = df[df["type"] == "runattr"]
@@ -389,7 +392,6 @@ def get_vectors(filter_or_dataframe="", include_attrs=False, include_runattrs=Fa
         return df
 
 
-
 @_guarded_result_query_func
 def get_statistics(filter_or_dataframe="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False):
     """
@@ -491,7 +493,7 @@ def get_config_entries(filter_or_dataframe, include_runattrs=False, include_iter
     if type(filter_or_dataframe) is str:
         filter_expression = filter_or_dataframe
         del filter_or_dataframe
-        return impl.get_itervars(**locals())
+        return impl.get_config_entries(**locals())
     else:
         df = filter_or_dataframe
         df = df[df["type"] == "config"]
@@ -526,12 +528,12 @@ def get_param_assignments(filter_or_dataframe, include_runattrs=False, include_i
     if type(filter_or_dataframe) is str:
         filter_expression = filter_or_dataframe
         del filter_or_dataframe
-        return impl.get_itervars(**locals())
+        return impl.get_param_assignments(**locals())
     else:
         df = filter_or_dataframe
         df = df[df["type"] == "config"]
         df = df[["runID", "attrname", "attrvalue"]]
-        df = _select_param_assignments(df)
+        df = _select_param_assignments
         df.rename(columns={"attrname": "name", "attrvalue": "value"}, inplace=True)
         df.reset_index(inplace=True, drop=True)
         print(df)

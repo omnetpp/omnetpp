@@ -122,8 +122,14 @@ def _get_array_from_shm(name_and_size : str):
     return arr
 
 
-def load_results(**whatever):
+def read_result_files(**_):
     raise RuntimeError("This is not available inside the IDE. Use the get_* functions with filter expressions.")
+
+def set_inputs(**_):
+    raise RuntimeError("This is not available inside the IDE. The inputs are configured on the Inputs tab.")
+
+def add_inputs(**_):
+    raise RuntimeError("This is not available inside the IDE. The inputs are configured on the Inputs tab.")
 
 
 def get_results(filter_expression, row_types, omit_unused_columns, include_fields_as_scalars, start_time, end_time):
