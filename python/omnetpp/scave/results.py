@@ -9,7 +9,7 @@ or `opp_charttool` before the chart script is run.
 
 **Filter expressions**
 
-The `filter_expression` parameters in all functions have the same syntax. It is
+The `filter_or_dataframe` parameters in all functions have the same syntax. It is
 always evaluated independently on every loaded result item or metadata entry,
 and its value determines whether the given item or piece of metadata is included
 in the returned `DataFrame`.
@@ -85,13 +85,72 @@ else:
 from math import inf
 from functools import wraps
 
+import pandas as pd
+
+def _split_by_types(df, types):
+    result = list()
+    for t in types:
+        mask = df['type'] == t
+        result.append(df[mask])
+        df = df[~mask]
+    result.append(df)
+    return result
+
+def _append_metadata_columns(df, meta, suffix):
+    meta = pd.pivot_table(meta, index="runID", columns="attrname", values="attrvalue", aggfunc="first")
+
+    if not meta.empty:
+        df = df.join(meta, on="runID", rsuffix=suffix)
+
+    return df
+
+def _select_param_assignments(config_entries_df):
+    names = config_entries_df["attrname"]
+
+    is_typename = names.str.endswith(".typename")
+    is_param = ~is_typename & names.str.match(r"^.*\.[^.-]+$")
+
+    result = config_entries_df.loc[is_param]
+
+    return result
+
+def _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name):
+    itervars, runattrs, configs, attrs, df = _split_by_types(df, ["itervar", "runattr", "config", "attr"])
+    params = _select_param_assignments(configs)
+
+    if include_attrs and attrs is not None and not attrs.empty:
+        attrs = pd.pivot_table(attrs, columns="attrname", aggfunc='first', index=["runID", "module", "name"], values="attrvalue")
+        # this column is no longer needed, and it collided with the commonly used "type" result attribute in `merge`
+        df.drop(["type"], axis=1, inplace=True, errors="ignore")
+        df = df.merge(attrs, left_on=["runID", "module", "name"], right_index=True, how='left', suffixes=(None, "_attr"))
+
+    if include_itervars:
+        df = _append_metadata_columns(df, itervars, "_itervar")
+    if include_runattrs:
+        df = _append_metadata_columns(df, runattrs, "_runattr")
+    if include_config_entries:
+        df = _append_metadata_columns(df, configs, "_config")
+    if include_param_assignments and not include_config_entries:
+        df = _append_metadata_columns(df, params, "_param")
+
+    df.drop(['type', 'attrname', 'attrvalue'], axis=1, inplace=True, errors="ignore")
+
+    if merge_module_and_name:
+        df["name"] = df["module"] + "." + df["name"]
+
+    df.reset_index(inplace=True, drop=True)
+
+    return df
+
+
 def _guarded_result_query_func(func):
     @wraps(func)
-    def inner(filter_expression, **rest):
-        if not filter_expression:
+    def inner(filter_or_dataframe, **rest):
+        if type(filter_or_dataframe) is str and not filter_or_dataframe:
             raise ValueError("Empty filter expression")
+        # TODO: add else: assert on dataframe columns
         try:
-            return func(filter_expression, **rest)
+            return func(filter_or_dataframe, **rest)
         except Exception as e:
             if "Parse error in match expression: syntax error" in str(e):
                 raise ValueError("Syntax error in result filter expression")
@@ -110,17 +169,24 @@ def get_serial():
     return impl.get_serial()
 
 
+def load_results(filenames, filter_expression="", include_fields_as_scalars=False, vector_start_time=-inf, vector_end_time=inf):
+    if not filter_expression:
+        raise ValueError("Empty filter expression")
+    return impl.load_results(**locals())
+
 @_guarded_result_query_func
-def get_results(filter_expression="", row_types=['runattr', 'itervar', 'config', 'scalar', 'vector', 'statistic', 'histogram', 'param', 'attr'], omit_unused_columns=True, include_fields_as_scalars=False, start_time=-inf, end_time=inf):
+def get_results(filter_or_dataframe="", row_types=None, omit_unused_columns=True, include_fields_as_scalars=False, start_time=-inf, end_time=inf):
+    # row_types = ['runattr', 'itervar', 'config', 'scalar', 'vector', 'statistic', 'histogram', 'param', 'attr']
+
     """
     Returns a filtered set of results and metadata in CSV-like format.
     The items can be any type, even mixed together in a single `DataFrame`.
     They are selected from the complete set of data referenced by the analysis file (`.anf`),
-    including only those for which the given `filter_expression` evaluates to `True`.
+    including only those for which the given `filter_or_dataframe` evaluates to `True`.
 
     Parameters:
 
-    - `filter_expression` (string): The filter expression to select the desired items. Example: `module =~ "*host*" AND name =~ "numPacket*"`
+    - `filter_or_dataframe` (string): The filter expression to select the desired items. Example: `module =~ "*host*" AND name =~ "numPacket*"`
     - `row_types`: Optional. When given, filters the returned rows by type. Should be a unique list, containing any number of these strings:
       `"runattr"`, `"itervar"`, `"config"`, `"scalar"`, `"vector"`, `"statistic"`, `"histogram"`, `"param"`, `"attr"`
     - `omit_unused_columns` (bool): Optional. If `True`, all columns that would only contain `None` are removed from the returned DataFrame
@@ -143,17 +209,32 @@ def get_results(filter_expression="", row_types=['runattr', 'itervar', 'config',
     - `underflows`, `overflows` (double): Sum of weights (or counts) of underflown and overflown samples of histograms
     - `vectime`, `vecvalue` (np.array): Output vector time and value arrays, as space-separated lists
     """
-    return impl.get_results(**locals())
+    if type(filter_or_dataframe) is str:
+        filter_expression = filter_or_dataframe
+        del filter_or_dataframe
+        return impl.get_results(**locals())
+    else:
+        df = filter_or_dataframe
+        if row_types is not None:
+            df = df[df["type"].isin(row_types)]
+
+        if omit_unused_columns:
+            df.dropna(axis='columns', how='all', inplace=True)
+
+        df.reset_index(inplace=True, drop=True)
+        return df
+
+
 
 
 @_guarded_result_query_func
-def get_runs(filter_expression="", include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
+def get_runs(filter_or_dataframe="", include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
     """
     Returns a filtered list of runs, identified by their run ID.
 
     Parameters:
 
-    - `filter_expression`: The filter expression to select the desired runs.
+    - `filter_or_dataframe`: The filter expression to select the desired runs.
       Example: `runattr:network =~ "Aloha" AND config:Aloha.slotTime =~ 0`
     - `include_runattrs`, `include_itervars`, `include_param_assignments`, `include_config_entries` (bool):
       Optional. When set to `True`, additional pieces of metadata about the run is appended to the result, pivoted into columns.
@@ -164,11 +245,13 @@ def get_runs(filter_expression="", include_runattrs=False, include_itervars=Fals
     - `runID` (string): Identifies the simulation run
     - Additional metadata items (run attributes, iteration variables, etc.), as requested
     """
+    filter_expression = filter_or_dataframe
+    del filter_or_dataframe
     return impl.get_runs(**locals())
 
 
 @_guarded_result_query_func
-def get_runattrs(filter_expression="", include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
+def get_runattrs(filter_or_dataframe="", include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
     """
     Returns a filtered list of run attributes.
 
@@ -178,7 +261,7 @@ def get_runattrs(filter_expression="", include_runattrs=False, include_itervars=
 
     Parameters:
 
-    - `filter_expression`: The filter expression to select the desired run attributes.
+    - `filter_or_dataframe`: The filter expression to select the desired run attributes.
       Example: `name =~ *date* AND config:Aloha.slotTime =~ 0`
     - `include_runattrs`, `include_itervars`, `include_param_assignments`, `include_config_entries` (bool):
       Optional. When set to `True`, additional pieces of metadata about the run is appended to the result, pivoted into columns.
@@ -191,17 +274,19 @@ def get_runattrs(filter_expression="", include_runattrs=False, include_itervars=
     - `value` (string): The value of the run attribute
     - Additional metadata items (run attributes, iteration variables, etc.)
     """
+    filter_expression = filter_or_dataframe
+    del filter_or_dataframe
     return impl.get_runattrs(**locals())
 
 
 @_guarded_result_query_func
-def get_itervars(filter_expression="", include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
+def get_itervars(filter_or_dataframe="", include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
     """
     Returns a filtered list of iteration variables.
 
     Parameters:
 
-    - `filter_expression` (string): The filter expression to select the desired iteration variables.
+    - `filter_or_dataframe` (string): The filter expression to select the desired iteration variables.
       Example: `name =~ iaMean AND config:Aloha.slotTime =~ 0`
     - `include_runattrs`, `include_itervars`, `include_param_assignments`, `include_config_entries` (bool):
       Optional. When set to `True`, additional pieces of metadata about the run is appended to the result, pivoted into columns.
@@ -214,17 +299,19 @@ def get_itervars(filter_expression="", include_runattrs=False, include_itervars=
     - `value` (string): The value of the iteration variable.
     - Additional metadata items (run attributes, iteration variables, etc.), as requested
     """
+    filter_expression = filter_or_dataframe
+    del filter_or_dataframe
     return impl.get_itervars(**locals())
 
 
 @_guarded_result_query_func
-def get_scalars(filter_expression="", include_attrs=False, include_fields=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False):
+def get_scalars(filter_or_dataframe="", include_attrs=False, include_fields=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False):
     """
     Returns a filtered list of scalar results.
 
     Parameters:
 
-    - `filter_expression` (string): The filter expression to select the desired scalars.
+    - `filter_or_dataframe` (string): The filter expression to select the desired scalars.
       Example: `name =~ "channelUtilization*" AND runattr:replication =~ "#0"`
     - `include_attrs` (bool): Optional. When set to `True`, result attributes (like `unit`
       or `source` for example) are appended to the DataFrame, pivoted into columns.
@@ -244,11 +331,17 @@ def get_scalars(filter_expression="", include_attrs=False, include_fields=False,
     - `value` (double): The value of the scalar
     - Additional metadata items (result attributes, run attributes, iteration variables, etc.), as requested
     """
-    return impl.get_scalars(**locals())
+    if type(filter_or_dataframe) is str:
+        filter_expression = filter_or_dataframe
+        del filter_or_dataframe
+        return impl.get_scalars(**locals())
+    else:
+        df = filter_or_dataframe
+        return _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
 
 
 @_guarded_result_query_func
-def get_parameters(filter_expression="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False):
+def get_parameters(filter_or_dataframe="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False):
     """
     Returns a filtered list of parameters - actually computed values of individual `cPar` instances in the fully built network.
 
@@ -259,7 +352,7 @@ def get_parameters(filter_expression="", include_attrs=False, include_runattrs=F
 
     Parameters:
 
-    - `filter_expression` (string): The filter expression to select the desired parameters.
+    - `filter_or_dataframe` (string): The filter expression to select the desired parameters.
       Example: `name =~ "x" AND module =~ Aloha.server`
     - `include_attrs` (bool): Optional. When set to `True`, result attributes (like `unit` for
       example) are appended to the DataFrame, pivoted into columns.
@@ -277,17 +370,23 @@ def get_parameters(filter_expression="", include_attrs=False, include_runattrs=F
     - `value` (string): The value of the parameter.
     - Additional metadata items (result attributes, run attributes, iteration variables, etc.), as requested
     """
-    return impl.get_parameters(**locals())
+    if type(filter_or_dataframe) is str:
+        filter_expression = filter_or_dataframe
+        del filter_or_dataframe
+        return impl.get_parameters(**locals())
+    else:
+        df = filter_or_dataframe
+        return _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
 
 
 @_guarded_result_query_func
-def get_vectors(filter_expression="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False, start_time=-inf, end_time=inf):
+def get_vectors(filter_or_dataframe="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False, start_time=-inf, end_time=inf):
     """
     Returns a filtered list of vector results.
 
     Parameters:
 
-    - `filter_expression` (string): The filter expression to select the desired vectors.
+    - `filter_or_dataframe` (string): The filter expression to select the desired vectors.
       Example: `name =~ "radioState*" AND runattr:replication =~ "#0"`
     - `include_attrs` (bool): Optional. When set to `True`, result attributes (like `unit`
       or `source` for example) are appended to the DataFrame, pivoted into columns.
@@ -307,17 +406,24 @@ def get_vectors(filter_expression="", include_attrs=False, include_runattrs=Fals
     - `vectime`, `vecvalue` (np.array): The simulation times and the corresponding values in the vector
     - Additional metadata items (result attributes, run attributes, iteration variables, etc.), as requested
     """
-    return impl.get_vectors(**locals())
+    if type(filter_or_dataframe) is str:
+        filter_expression = filter_or_dataframe
+        del filter_or_dataframe
+        return impl.get_vectors(**locals())
+    else:
+        df = filter_or_dataframe
+        return _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
+
 
 
 @_guarded_result_query_func
-def get_statistics(filter_expression="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False):
+def get_statistics(filter_or_dataframe="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False):
     """
     Returns a filtered list of statistics results.
 
     Parameters:
 
-    - `filter_expression` (string): The filter expression to select the desired statistics.
+    - `filter_or_dataframe` (string): The filter expression to select the desired statistics.
       Example: `name =~ "collisionLength:stat" AND itervar:iaMean =~ "5"`
     - `include_attrs` (bool): Optional. When set to `True`, result attributes (like `unit`
       or `source` for example) are appended to the DataFrame, pivoted into columns.
@@ -335,17 +441,24 @@ def get_statistics(filter_expression="", include_attrs=False, include_runattrs=F
     - `count`, `sumweights`, `mean`, `stddev`, `min`, `max` (double): The characteristic mathematical properties of the statistics result
     - Additional metadata items (result attributes, run attributes, iteration variables, etc.), as requested
     """
-    return impl.get_statistics(**locals())
+    if type(filter_or_dataframe) is str:
+        filter_expression = filter_or_dataframe
+        del filter_or_dataframe
+        return impl.get_statistics(**locals())
+    else:
+        df = filter_or_dataframe
+        return _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
+
 
 
 @_guarded_result_query_func
-def get_histograms(filter_expression="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False):
+def get_histograms(filter_or_dataframe="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False):
     """
     Returns a filtered list of histogram results.
 
     Parameters:
 
-    - `filter_expression` (string): The filter expression to select the desired histogram.
+    - `filter_or_dataframe` (string): The filter expression to select the desired histogram.
       Example: `name =~ "collisionMultiplicity:histogram" AND itervar:iaMean =~ "2"`
     - `include_attrs` (bool): Optional. When set to `True`, result attributes (like `unit`
       or `source` for example) are appended to the DataFrame, pivoted into columns.
@@ -365,17 +478,24 @@ def get_histograms(filter_expression="", include_attrs=False, include_runattrs=F
     - `underflows`, `overflows` (double): The weighted sum of the samples that fell outside of the histogram bin range in the two directions
     - Additional metadata items (result attributes, run attributes, iteration variables, etc.), as requested
     """
-    return impl.get_histograms(**locals())
+    if type(filter_or_dataframe) is str:
+        filter_expression = filter_or_dataframe
+        del filter_or_dataframe
+        return impl.get_histograms(**locals())
+    else:
+        df = filter_or_dataframe
+        return _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
+
 
 
 @_guarded_result_query_func
-def get_config_entries(filter_expression, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
+def get_config_entries(filter_or_dataframe, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
     """
     Returns a filtered list of config entries. That is: parameter assignment patterns; and global and per-object config options.
 
     Parameters:
 
-    - `filter_expression` (string): The filter expression to select the desired config entries.
+    - `filter_or_dataframe` (string): The filter expression to select the desired config entries.
       Example: `name =~ sim-time-limit AND itervar:numHosts =~ 10`
     - `include_runattrs`, `include_itervars`, `include_param_assignments`, `include_config_entries` (bool):
       Optional. When set to `True`, additional pieces of metadata about the run is appended to the result, pivoted into columns.
@@ -388,18 +508,21 @@ def get_config_entries(filter_expression, include_runattrs=False, include_iterva
     - `value` (string): The value of the config entry
     - Additional metadata items (run attributes, iteration variables, etc.), as requested
     """
+
+    filter_expression = filter_or_dataframe
+    del filter_or_dataframe
     return impl.get_config_entries(**locals())
 
 
 @_guarded_result_query_func
-def get_param_assignments(filter_expression, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
+def get_param_assignments(filter_or_dataframe, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
     """
     Returns a filtered list of parameter assignment patterns. The result is a subset of what `get_config_entries`
     would return with the same arguments.
 
     Parameters:
 
-    - `filter_expression` (string): The filter expression to select the desired parameter assignments.
+    - `filter_or_dataframe` (string): The filter expression to select the desired parameter assignments.
       Example: `name =~ **.flowID AND itervar:numHosts =~ 10`
     - `include_runattrs`, `include_itervars`, `include_param_assignments`, `include_config_entries` (bool):
       Optional. When set to `True`, additional pieces of metadata about the run is appended to the result, pivoted into columns.
@@ -412,5 +535,7 @@ def get_param_assignments(filter_expression, include_runattrs=False, include_ite
     - `value` (string): The assigned value
     - Additional metadata items (run attributes, iteration variables, etc.), as requested
     """
+    filter_expression = filter_or_dataframe
+    del filter_or_dataframe
     return impl.get_param_assignments(**locals())
 

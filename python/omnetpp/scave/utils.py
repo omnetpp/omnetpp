@@ -1396,3 +1396,59 @@ def split(s, sep=','):
     if parts == ['']:
         parts = []
     return parts
+
+
+def _split_by_types(df, types):
+    result = list()
+    for t in types:
+        mask = df['type'] == t
+        result.append(df[mask])
+        df = df[~mask]
+    result.append(df)
+    return result
+
+def _append_metadata_columns(df, meta, suffix):
+    meta = pd.pivot_table(meta, index="runID", columns="attrname", values="attrvalue", aggfunc="first")
+
+    if not meta.empty:
+        df = df.join(meta, on="runID", rsuffix=suffix)
+
+    return df
+
+def _select_param_assignments(config_entries_df):
+    names = config_entries_df["attrname"]
+
+    is_typename = names.str.endswith(".typename")
+    is_param = ~is_typename & names.str.match(r"^.*\.[^.-]+$")
+
+    result = config_entries_df.loc[is_param]
+
+    return result
+
+def _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name):
+    itervars, runattrs, configs, attrs, df = _split_by_types(df, ["itervar", "runattr", "config", "attr"])
+    params = _select_param_assignments(configs)
+
+    if include_attrs and attrs is not None and not attrs.empty:
+        attrs = pd.pivot_table(attrs, columns="attrname", aggfunc='first', index=["runID", "module", "name"], values="attrvalue")
+        # this column is no longer needed, and it collided with the commonly used "type" result attribute in `merge`
+        df.drop(["type"], axis=1, inplace=True, errors="ignore")
+        df = df.merge(attrs, left_on=["runID", "module", "name"], right_index=True, how='left', suffixes=(None, "_attr"))
+
+    if include_itervars:
+        df = _append_metadata_columns(df, itervars, "_itervar")
+    if include_runattrs:
+        df = _append_metadata_columns(df, runattrs, "_runattr")
+    if include_config_entries:
+        df = _append_metadata_columns(df, configs, "_config")
+    if include_param_assignments and not include_config_entries:
+        df = _append_metadata_columns(df, params, "_param")
+
+    df.drop(['type', 'attrname', 'attrvalue'], axis=1, inplace=True, errors="ignore")
+
+    if merge_module_and_name:
+        df["name"] = df["module"] + "." + df["name"]
+
+    df.reset_index(inplace=True, drop=True)
+
+    return df

@@ -43,22 +43,8 @@ def get_serial():
     # return an (arbitrary) constant, as the set of loaded results doesn't change during a run of opp_charttool.
     return 1
 
-def _get_results(filter_expression, file_extensions, result_type, *additional_args):
-
-    filelist = [i for i in inputfiles if any([i.endswith(e) for e in file_extensions])]
-    type_filter = ['-T', result_type] if result_type else []
-    filter_expr_args = ['-f', filter_expression]
-    command = ["opp_scavetool", "x", *filelist, *type_filter, *filter_expr_args,
-                "-F", "CSV-R", "-o", "-", *additional_args]
-
-    proc = subprocess.run(command, stderr=subprocess.PIPE, stdout=subprocess.PIPE, universal_newlines=False)
-    output_bytes = proc.stdout
-
-    if proc.returncode != 0:
-        raise RuntimeError(proc.stderr.decode("utf-8").strip() + " (exit code " + str(proc.returncode) + ")")
-
-    # TODO: stream the output through subprocess.PIPE ?
-    df = pd.read_csv(io.BytesIO(output_bytes), converters = {
+def _read_csv(reader):
+    df = pd.read_csv(reader, converters = {
         'count': _parse_int,
         'min': _parse_float,
         'max': _parse_float,
@@ -79,10 +65,7 @@ def _get_results(filter_expression, file_extensions, result_type, *additional_ar
         return row
 
     if not df.empty:
-        if result_type == "s":
-            # all rows are scalars
-            df["value"] = pd.to_numeric(df["value"], errors="raise")
-        elif "type" in df and "value" in df:
+        if "type" in df and "value" in df:
             # CSV-style results
             df = df.transform(_transform, axis=1)
 
@@ -91,58 +74,51 @@ def _get_results(filter_expression, file_extensions, result_type, *additional_ar
     # TODO: convert column dtype as well?
     return df
 
-def _split_by_types(df, types):
-    result = list()
-    for t in types:
-        mask = df['type'] == t
-        result.append(df[mask])
-        df = df[~mask]
-    result.append(df)
-    return result
 
-def _append_metadata_columns(df, meta, suffix):
-    meta = pd.pivot_table(meta, index="runID", columns="attrname", values="attrvalue", aggfunc="first")
+def _load_results(filter_expression, file_extensions, result_type, *additional_args):
 
-    if not meta.empty:
-        df = df.join(meta, on="runID", rsuffix=suffix)
+    filelist = [i for i in inputfiles if any([i.endswith(e) for e in file_extensions])]
+    type_filter = ['-T', result_type] if result_type else []
+    filter_expr_args = ['-f', filter_expression]
+    command = ["opp_scavetool", "x", *filelist, *type_filter, *filter_expr_args,
+                "-F", "CSV-R", "-o", "-", *additional_args]
 
-    return df
+    proc = subprocess.run(command, stderr=subprocess.PIPE, stdout=subprocess.PIPE, universal_newlines=False)
+    output_bytes = proc.stdout
 
-def _select_param_assignments(config_entries_df):
-    names = config_entries_df["attrname"]
+    if proc.returncode != 0:
+        raise RuntimeError(proc.stderr.decode("utf-8").strip() + " (exit code " + str(proc.returncode) + ")")
 
-    is_typename = names.str.endswith(".typename")
-    is_param = ~is_typename & names.str.match(r"^.*\.[^.-]+$")
+    # TODO: stream the output through subprocess.PIPE ?
+    return _read_csv(io.BytesIO(output_bytes))
 
-    result = config_entries_df.loc[is_param]
 
-    return result
+def load_results(filenames, filter_expression, include_fields_as_scalars, vector_start_time, vector_end_time):
+    #type_filter = ['-T', result_type] if result_type else []
+    type_filter = []
 
-def _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name):
-    itervars, runattrs, configs, attrs, df = _split_by_types(df, ["itervar", "runattr", "config", "attr"])
-    params = _select_param_assignments(configs)
+    args = []
+    if include_fields_as_scalars:
+        args.append("--add-fields-as-scalars")
+    if vector_start_time is not None and not np.isnan(vector_start_time):
+        args.append("--start-time")
+        args.append(str(vector_start_time))
+    if vector_end_time is not None and not np.isnan(vector_end_time):
+        args.append("--end-time")
+        args.append(str(vector_end_time))
 
-    if include_attrs and attrs is not None and not attrs.empty:
-        attrs = pd.pivot_table(attrs, columns="attrname", aggfunc='first', index=["runID", "module", "name"], values="attrvalue")
-        # this column is no longer needed, and it collided with the commonly used "type" result attribute in `merge`
-        df.drop(["type"], axis=1, inplace=True, errors="ignore")
-        df = df.merge(attrs, left_on=["runID", "module", "name"], right_index=True, how='left', suffixes=(None, "_attr"))
+    filter_expr_args = ['-f', filter_expression]
+    command = ["opp_scavetool", "x", *filenames, *type_filter, *filter_expr_args,
+                "-F", "CSV-R", "-o", "-", *args]
 
-    if include_itervars:
-        df = _append_metadata_columns(df, itervars, "_itervar")
-    if include_runattrs:
-        df = _append_metadata_columns(df, runattrs, "_runattr")
-    if include_config_entries:
-        df = _append_metadata_columns(df, configs, "_config")
-    if include_param_assignments and not include_config_entries:
-        df = _append_metadata_columns(df, params, "_param")
+    proc = subprocess.run(command, stderr=subprocess.PIPE, stdout=subprocess.PIPE, universal_newlines=False)
+    output_bytes = proc.stdout
 
-    df.drop(['type', 'attrname', 'attrvalue'], axis=1, inplace=True, errors="ignore")
+    if proc.returncode != 0:
+        raise RuntimeError(proc.stderr.decode("utf-8").strip() + " (exit code " + str(proc.returncode) + ")")
 
-    if merge_module_and_name:
-        df["name"] = df["module"] + "." + df["name"]
-
-    return df
+    # TODO: stream the output through subprocess.PIPE ?
+    return _read_csv(io.BytesIO(output_bytes))
 
 def get_results(filter_expression, row_types, omit_unused_columns, include_fields_as_scalars, start_time, end_time):
     args = []
@@ -154,8 +130,10 @@ def get_results(filter_expression, row_types, omit_unused_columns, include_field
     if end_time is not None and not np.isnan(end_time):
         args.append("--end-time")
         args.append(str(end_time))
-    df = _get_results(filter_expression, ['.sca', '.vec'], None, *args)
-    df = df[df["type"].isin(row_types)]
+    df = _load_results(filter_expression, ['.sca', '.vec'], None, *args)
+
+    if row_types is not None:
+        df = df[df["type"].isin(row_types)]
 
     if omit_unused_columns:
         df.dropna(axis='columns', how='all', inplace=True)
@@ -168,33 +146,28 @@ def get_scalars(filter_expression, include_attrs, include_fields, include_runatt
     if include_fields:
         args.append("--add-fields-as-scalars")
     # TODO filter row types based on include_ args, as optimization
-    df = _get_results(filter_expression, ['.sca'], 's', *args)
+    df = _load_results(filter_expression, ['.sca'], 's', *args)
     df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
-    df.reset_index(inplace=True, drop=True)
     return df
 
 def get_vectors(filter_expression, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name, start_time, end_time):
-    df = _get_results(filter_expression, ['.vec'], 'v', '--start-time', str(start_time), '--end-time', str(end_time))
+    df = _load_results(filter_expression, ['.vec'], 'v', '--start-time', str(start_time), '--end-time', str(end_time))
     df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
-    df.reset_index(inplace=True, drop=True)
     return df
 
 def get_statistics(filter_expression, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name):
-    df = _get_results(filter_expression, ['.sca'], 't')
+    df = _load_results(filter_expression, ['.sca'], 't')
     df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
-    df.reset_index(inplace=True, drop=True)
     return df
 
 def get_histograms(filter_expression, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name):
-    df = _get_results(filter_expression, ['.sca'], 'h')
+    df = _load_results(filter_expression, ['.sca'], 'h')
     df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
-    df.reset_index(inplace=True, drop=True)
     return df
 
 def get_parameters(filter_expression, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name):
-    df = _get_results(filter_expression, ['.sca'], 'p')
+    df = _load_results(filter_expression, ['.sca'], 'p')
     df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
-    df.reset_index(inplace=True, drop=True)
     return df
 
 

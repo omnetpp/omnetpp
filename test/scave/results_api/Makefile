@@ -48,11 +48,7 @@ SMFILES =
 ifneq ("$(OMNETPP_CONFIGFILE)","")
 CONFIGFILE = $(OMNETPP_CONFIGFILE)
 else
-ifneq ("$(OMNETPP_ROOT)","")
-CONFIGFILE = $(OMNETPP_ROOT)/Makefile.inc
-else
 CONFIGFILE = $(shell opp_configfilepath)
-endif
 endif
 
 ifeq ("$(wildcard $(CONFIGFILE))","")
