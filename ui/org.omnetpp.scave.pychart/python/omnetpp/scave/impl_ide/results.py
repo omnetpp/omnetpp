@@ -122,6 +122,10 @@ def _get_array_from_shm(name_and_size : str):
     return arr
 
 
+def load_results(**whatever):
+    raise RuntimeError("This is not available inside the IDE. Use the get_* functions with filter expressions.")
+
+
 def get_results(filter_expression, row_types, omit_unused_columns, include_fields_as_scalars, start_time, end_time):
     shmnames = Gateway.results_provider.getResultsPickle(filter_expression, list(row_types), False, bool(include_fields_as_scalars), float(start_time), float(end_time))
 

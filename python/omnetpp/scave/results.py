@@ -87,7 +87,7 @@ from functools import wraps
 
 import pandas as pd
 
-from omnetpp.scave.utils import _pivot_results
+from omnetpp.scave.utils import _pivot_results, _select_param_assignments
 
 def _guarded_result_query_func(func):
     @wraps(func)
@@ -220,9 +220,17 @@ def get_runattrs(filter_or_dataframe="", include_runattrs=False, include_itervar
     - `value` (string): The value of the run attribute
     - Additional metadata items (run attributes, iteration variables, etc.)
     """
-    filter_expression = filter_or_dataframe
-    del filter_or_dataframe
-    return impl.get_runattrs(**locals())
+    if type(filter_or_dataframe) is str:
+        filter_expression = filter_or_dataframe
+        del filter_or_dataframe
+        return impl.get_itervars(**locals())
+    else:
+        df = filter_or_dataframe
+        df = df[df["type"] == "runattr"]
+        df = df[["runID", "attrname", "attrvalue"]]
+        df.rename(columns={"attrname": "name", "attrvalue": "value"}, inplace=True)
+        df.reset_index(inplace=True, drop=True)
+        print(df)
 
 
 @_guarded_result_query_func
@@ -245,9 +253,17 @@ def get_itervars(filter_or_dataframe="", include_runattrs=False, include_itervar
     - `value` (string): The value of the iteration variable.
     - Additional metadata items (run attributes, iteration variables, etc.), as requested
     """
-    filter_expression = filter_or_dataframe
-    del filter_or_dataframe
-    return impl.get_itervars(**locals())
+    if type(filter_or_dataframe) is str:
+        filter_expression = filter_or_dataframe
+        del filter_or_dataframe
+        return impl.get_itervars(**locals())
+    else:
+        df = filter_or_dataframe
+        df = df[df["type"] == "itervar"]
+        df = df[["runID", "attrname", "attrvalue"]]
+        df.rename(columns={"attrname": "name", "attrvalue": "value"}, inplace=True)
+        df.reset_index(inplace=True, drop=True)
+        print(df)
 
 
 @_guarded_result_query_func
@@ -283,7 +299,11 @@ def get_scalars(filter_or_dataframe="", include_attrs=False, include_fields=Fals
         return impl.get_scalars(**locals())
     else:
         df = filter_or_dataframe
-        return _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
+        row_types = ["scalar", "itervar", "runattr", "config", "attr"]
+        df = df[df["type"].isin(row_types)]
+        df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
+        df.dropna(axis='columns', how='all', inplace=True)
+        return df
 
 
 @_guarded_result_query_func
@@ -322,7 +342,11 @@ def get_parameters(filter_or_dataframe="", include_attrs=False, include_runattrs
         return impl.get_parameters(**locals())
     else:
         df = filter_or_dataframe
-        return _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
+        row_types = ["param", "itervar", "runattr", "config", "attr"]
+        df = df[df["type"].isin(row_types)]
+        df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
+        df.dropna(axis='columns', how='all', inplace=True)
+        return df
 
 
 @_guarded_result_query_func
@@ -358,7 +382,11 @@ def get_vectors(filter_or_dataframe="", include_attrs=False, include_runattrs=Fa
         return impl.get_vectors(**locals())
     else:
         df = filter_or_dataframe
-        return _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
+        row_types = ["vector", "itervar", "runattr", "config", "attr"]
+        df = df[df["type"].isin(row_types)]
+        df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
+        df.dropna(axis='columns', how='all', inplace=True)
+        return df
 
 
 
@@ -393,8 +421,11 @@ def get_statistics(filter_or_dataframe="", include_attrs=False, include_runattrs
         return impl.get_statistics(**locals())
     else:
         df = filter_or_dataframe
-        return _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
-
+        row_types = ["statistic", "itervar", "runattr", "config", "attr"]
+        df = df[df["type"].isin(row_types)]
+        df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
+        df.dropna(axis='columns', how='all', inplace=True)
+        return df
 
 
 @_guarded_result_query_func
@@ -430,8 +461,11 @@ def get_histograms(filter_or_dataframe="", include_attrs=False, include_runattrs
         return impl.get_histograms(**locals())
     else:
         df = filter_or_dataframe
-        return _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
-
+        row_types = ["histogram", "itervar", "runattr", "config", "attr"]
+        df = df[df["type"].isin(row_types)]
+        df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
+        df.dropna(axis='columns', how='all', inplace=True)
+        return df
 
 
 @_guarded_result_query_func
@@ -454,10 +488,18 @@ def get_config_entries(filter_or_dataframe, include_runattrs=False, include_iter
     - `value` (string): The value of the config entry
     - Additional metadata items (run attributes, iteration variables, etc.), as requested
     """
+    if type(filter_or_dataframe) is str:
+        filter_expression = filter_or_dataframe
+        del filter_or_dataframe
+        return impl.get_itervars(**locals())
+    else:
+        df = filter_or_dataframe
+        df = df[df["type"] == "config"]
 
-    filter_expression = filter_or_dataframe
-    del filter_or_dataframe
-    return impl.get_config_entries(**locals())
+        df = df[["runID", "attrname", "attrvalue"]]
+        df.rename(columns={"attrname": "name", "attrvalue": "value"}, inplace=True)
+        df.reset_index(inplace=True, drop=True)
+        print(df)
 
 
 @_guarded_result_query_func
@@ -481,7 +523,16 @@ def get_param_assignments(filter_or_dataframe, include_runattrs=False, include_i
     - `value` (string): The assigned value
     - Additional metadata items (run attributes, iteration variables, etc.), as requested
     """
-    filter_expression = filter_or_dataframe
-    del filter_or_dataframe
-    return impl.get_param_assignments(**locals())
+    if type(filter_or_dataframe) is str:
+        filter_expression = filter_or_dataframe
+        del filter_or_dataframe
+        return impl.get_itervars(**locals())
+    else:
+        df = filter_or_dataframe
+        df = df[df["type"] == "config"]
+        df = df[["runID", "attrname", "attrvalue"]]
+        df = _select_param_assignments(df)
+        df.rename(columns={"attrname": "name", "attrvalue": "value"}, inplace=True)
+        df.reset_index(inplace=True, drop=True)
+        print(df)
 
