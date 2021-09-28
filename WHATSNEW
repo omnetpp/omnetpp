@@ -16,10 +16,10 @@ Core:
   - cValue changed to hold any_ptr instead of cObject. This change involves
     several changes, e.g. type OBJECT renamed to POINTER, and pointerValue() added.
 
-	- cClassDescriptor: Added getFieldValue()/setFieldValue() methods
-	  to allow accessing fields in a typed way, using cValue. Previously
-	  existing methods getFieldValueAsString()/setFieldValueAsString()
-	  only allowed string-based access.
+  - cClassDescriptor: Added getFieldValue()/setFieldValue() methods
+    to allow accessing fields in a typed way, using cValue. Previously
+    existing methods getFieldValueAsString()/setFieldValueAsString()
+    only allowed string-based access.
 
   - Message compiler: Follow cClassDescriptor change: generate getFieldValue()
     and setFieldValue() methods. Added new properties @toValue()/@fromValue()
@@ -956,12 +956,387 @@ Samples:
   - Added a new sample (pythoncharts) that contains the documentation,
     and some sample analysis files for the new Python-based plotting,
     using the data from the resultfiles sample.
+
   - Added a new sample (openstreetmap) that displays a city map, with
     some animated car traffic on it. Map data comes from an OSM file
     exported from openstreetmap.org.
+
   - A new sample (petrinets) demonstrating how to implement stochastic
     Petri nets, a well-known formalism for the description of distributed
     systems.
+
+The following is a more complete list of changes done in the 6.0 development
+branch up to 6.0pre7. Note that this section was not part of the 6.0pre7
+release notes, it was added retroactively around 6.0pre13.
+
+Core:
+
+  - Removed obsolete/deprecated classes and methods. A partial list:
+    cVarHistogram, cLegacyHistogram, cLongHistogram, cDoubleHistogram,
+    cWeightedStdDev, cDensityEstBase;  detailedInfo() method; timeval_*()
+    functions; cHistogram methods setRangeAuto(), setRangeAutoLower(),
+    setRangeAutoUpper(), setNumCells(), setCellSize(); operator() of iterator
+    classes in cArray/cModule/cQueue; cFigure/cCanvas deprecated methods
+    addFigureAbove() and addFigureBelow(); many cAbstractHistogram
+    (ex-cDensityEstBase) methods, etc. See doc/API-changes.txt for more info.
+
+  - Instead of the removed timeval_*() methods, use opp_get_monotonic_clock_usecs()
+    or opp_get_monotonic_clock_nsecs(), and perform the arithmetic in int64_t.
+
+  - cMatchExpression: Syntax now accepts the 'field=~pattern' syntax too, as
+    alternative to 'field(pattern)'.
+
+  - Folders can now be excluded when loading NED files. Exclusions can now be
+    specified programmatically as an extra argument to cSimulation::loadNedSourceFolder().
+    Exclusions can be specified to simulation programs using the -x option or in
+    the OMNETPP_NED_EXCLUSION_PATH environment variable (which is renamed to
+    OMNETPP_NED_PACKAGE_EXCLUSIONS in a later 6.0 prerelease).
+
+  - intpar_t was renamed to intval_t, and uintval_t was added. Both are
+    guaranteed to be at least 64 bits wide.
+
+  - Signal listeners changed to use intval_t/uintval_t instead of long/unsigned
+    long. This change was necessary because long is only 32 bits wide on Windows.
+    This affects methods of cListener and subclasses like cResultFilter and
+    cResultRecorder.
+
+  - WITH_OMNETPP4x_LISTENER_SUPPORT was removed.
+
+  - Emitting nullptr as a string (const char* overload of emit()) is disallowed.
+    The reason is that nullptr cannot be represented in std::string, which
+    causes problems e.g. in result filters and recorders.
+
+  - cDynamicExpression has been reimplemented using the new internal Expression
+    class, and support for user-defined variables, members, methods, and
+    functions was added. As a consequence, the public interface of the class
+    has significantly changed as well.
+
+  - cClassDescriptor: Use exception instead of returning false for
+    indicating error. The return type of the following method changed
+    from void to bool: setFieldValueAsString(), setFieldArraySize(),
+    setFieldStructValuePointer().
+
+  - cClassDescriptor: Added support for setting pointer members and array
+    sizes via class descriptors. New methods: setFieldArraySize(),
+    setFieldStructValuePointer().
+
+  - Optimized cModule::ChannelIterator by letting cModule maintain a linked
+    list of channels (cChannel), so that ChannelIterator doesn't have to search
+    through the whole compound module to find them.
+
+  - New inifile variables: ${iterationvarsd}, ${datetimef}
+
+  - cDefaultList was renamed to cDefaultOwner (later it will be further
+    renamed to cSoftOwner).
+
+  - Added two new model change notifications: cPostModuleBuildNotification,
+    cPostComponentInitializeNotification.
+
+  - cNedValue renamed to cValue (compatibility typedef added), because it is
+    now used as generic value by cExpression, i.e. is not specific to NED.
+
+  - NED functions can now be defined with the alternative signature:
+
+        cValue f(cExpression::Context *context, cValue argv[], int argc)
+
+    in addition to the existing signature
+
+        cValue f(cComponent *contextComponent, cValue argv[], int argc)
+
+    The cExpression::Context argument allows one to access the context
+    component, and also the directory where the ini file entry or the
+    NED file containing the expression occurred (baseDirectory).
+    Define_NED_Function() accepts both signatures. The base directory
+    is useful for functions like xmldoc() that want to access files
+    relative to the location of the NED expression.
+
+  - cPar: added support for object parameters. New type constant: OBJECT;
+    New methods: setObjectValue(), objectValue(), operator=(cObject*),
+    operator cObject*.
+
+  - Added cValueArray and cValueMap classes for representing JSON data in
+    NED expressions.
+
+  - Many other smaller-scale changes.
+
+NED:
+
+  - NED grammar: Added 'object' as parameter type.
+
+  - NED grammar: Added JSON-like constructs into the expression language:
+    arrays (comma-separated list of expressions in square brackets), maps
+    (comma-separated list of <key>:<value> pairs in curly braces, where <value>
+    is an expression; JSON calls it "objects"), 'null' and 'nullptr' as
+    constants. Tagged maps (a map with an identifier in front) are an extension
+    to JSON which is going to be useful. The implementation of JSON values and
+    object parameters is sketchy in this release, it refined in later
+    prereleases.
+
+  - NED grammar: Made operator precedence more similar to C/C++.
+    Relational operators (==, !=, <, <=, >, >=) used to be on the same
+    precedence level; now == and != have lower precedence than the rest.
+
+  - NED grammar: Added the '=~' (match) and '<=>' (comparison, a.k.a.
+    "spaceship") operators, the 'undefined' keyword, and bool() as
+    conversion function.
+
+  - xmldoc() now interprets the file name as relative to the directory the
+    expression comes from. When xmldoc() occurs in an included ini file,
+    the file name is now interpreted as relative to the directory containing
+    the included ini file (as opposed to being relative to the main ini file
+    or the working directory.) If xmldoc() occurs in a NED file, the file name
+    is relative to the directory where that NED file was loaded from.
+
+  - Added support for embedding NED files into a binary (an executable or
+    library). opp_nedtool's "cpp" command allows you to generate C++ code that
+    contains the content of NED files as string constants, which can
+    then be compiled into the simulation binary. When the simulation program is
+    started, these embedded NED files will be loaded automatically, and the
+    original NED files will no longer be needed for running simulations.
+    Optional garbling, which prevents NED source code from being directly
+    readable inside the compiled binaries, is also available. A makefrag file
+    can be used to integrate the NED-to-C++ translation into the build process.
+    To see an example makefrag file, view the 'makefrag' help topic in opp_nedtool.
+
+  - Changed how NED loading works with regard to package.ned files.
+    package.ned files were looked up in the ancestor *folders*, not in
+    ancestor *packages* as in the NED spec. This also fixes issues with NED
+    embedding when it's mixed with dynamic NED loading (such as class lookup
+    errors in inet/test/fingerprint/ethernet-*.csv when INET is build with
+    embedding the NED files under src/). As part of this change, we only allow
+    one package.ned per package (even if that package occurs over several distinct
+    source trees).
+
+MSG:
+
+  - Added @custom field property. It causes the field to only appear in
+    descriptors, but no code is generated for it at all. One can inject the
+    code that implements the field (data member, getter, setter, etc.) via
+    targeted cplusplus blocks.
+
+  - Allow injecting code into almost any of the generated methods, via
+    targeted cplusplus blocks. Specify <classname>::<methodname> as target for
+    the cplusplus block. Supported methods include the constructor, copy
+    constructor (use "Foo&" as name), destructor, operator=, copy(),
+    parsimPack(), parsimUnpack(), etc., and the per-field generated methods
+    (setter, getter, etc.).
+
+  - Added the syntax and infrastructure for method-targeted cplusplus
+    blocks. Syntax: cplusplus <target> {{ <body> }}.
+
+  - Use the "=delete" syntax of C++11 in the generated code.
+
+  - Struct fields are now initialized inline, not via a constructor.
+
+  - Added support for setting pointer members and array sizes via class
+    descriptors. (cClassDescriptor had no facility for that.)
+    This involves adding two methods to cClassDescriptor (setFieldArraySize()
+    and setFieldStructValuePointer()), and support for the @resizable() and
+    @replaceable field attributes that tell the message compiler to generate
+    the respective code in the class.
+
+Runtime:
+
+  - Added support for result directory subdivision: the resultdir-subdivision=
+    <bool> configuration option and the ${iterationvarsd} variable. The
+    motivation is that the performance of various file managers (including
+    Eclipse's Project Explorer) tends to be degrade severely if there more than
+    a few thousand files in single directory. In OMNeT++, this problem may occur
+    when a parameter study produces a large number many result files. The common
+    workaround is to "hash" the files into a subdirectory tree. (For example,
+    git also uses this technique to store the contents of .git/objects dir).
+
+    In OMNeT++, such feature can be turned on by setting resultdir-subdivision=
+    true in the configuration. Since it is natural to use the iteration
+    variables to define the directory hierarchy, directory subdivision makes
+    used of a new ${iterationvarsd} configuration variable. This variable is
+    similar to ${iterationvarsf} but it contains slashes instead of commas,
+    which makes it suitable for creating a directory tree. Enabling directory
+    subdivision will cause "/${configname}/${iterationvarsd}" to be appended to
+    the name of the results directory (see result-dir config option), causing
+    result files to be created in a subdirectory tree under the results
+    directory.
+
+    If you want to set up the directory hierarchy in a different way, you can
+    do so by setting the results-dir config option and appending stuff to the
+    value. E.g.: results-dir = "results/${repetition}"
+
+  - NED path handling improvements:
+      - The NEDPATH environment variable has been renamed to OMNETPP_NED_PATH,
+        but the old one is still recognized for backward compatibility.
+      - Multiple -n options are now accepted. Also, the NEDPATH environment
+        variable used to be ignored when a -n option was present, no longer so.
+      - Excluding directories from NED file loading has been implemented. NED
+        exclusions can be specified in multiple ways: -x <nedexclusionpath>
+        command-line option, OMNETPP_NED_EXCLUSION_PATH environment variable,
+        ned-exclusion-path= config option.
+
+  - Image path handling improvements:
+      - The -i <imgpath> option command-line option has been added. It may
+        occur multiple times. The image path is now defined jointly by the
+        OMNETPP_IMAGE_PATH environment variable, -i <imgpath> command-line
+        options, and the image-path config option.
+      - "./bitmaps" was removed from default image path (it was virtually
+        unused).
+      - The default value, "./images" has been moved into the image-path
+        config option.
+
+  - Several global config options change to be per-run: scheduler-class,
+    debug-on-errors, print-undisposed, fingerprintcalculator-class.
+
+  - Accept expressions as value for (most) config options. For options that
+    accept values both with and without quotes (types STRING, FILENAME,
+    FILENAMES, PATH), a heuristic decides whether a string is to be taken
+    literally or to be evaluated as an expression.
+
+  - Allow parameter values to be specified on the command line. For example,
+    --**.mss=512 is equivalent to inserting the **.mss=512 line near the
+    top of the configuration in omnetpp.ini.
+
+  - Do not complain about missing omnetpp.ini if a --network option is
+    present.
+
+  - Added check to refuse to generate fingerprint that contains 'f' or 'y' as
+    ingredient, because cmdenv-fake-gui and computing fingerprint from figures
+    and display strings are currently experimental features.
+
+  - Implemented "${datetimef}"
+
+  - Added the "config-recording" configuration option, which controls
+    the amount of configuration options to save into result files.
+
+  - Allow recording actual module/channel parameter values into the output
+    scalar file, via a new config option: **.param-recording=true/false. Note
+    that parameters will be recorded as "parameter" result items, not as
+    scalars. For volatile parameters, the expression itself will be recorded
+    (e.g. "exponential(0.5)"), not any particular value drawn from it.
+
+  - Updated documentation of the eventlog-message-pattern option: change
+    "field(pattern)" syntax to "field=~pattern".
+
+  - Added "%<" (trim preceding whitespace) for the list of accepted directives
+    for log prefixes.
+
+  - "-h resultfilters" and "-h resultrecorders" now print the descriptions of
+    result filters and recorders as well.
+
+  - The obsolete command-line options -x, -X, -g, and -G were removed.
+
+Tkenv:
+
+  - Removed, as Qtenv has completely matured, and offers a much more complete
+    feature set.
+
+Tools:
+
+  - Added opp_neddoc, a tool that makes it possible to generate HTML
+    documentation from NED files from the command line. opp_neddoc works by
+    launching the IDE in headless mode.
+
+  - opp_nedtool was rewritten for convenience and features. The main points
+    are the following:
+      - Removed msgc-related functionality, now it is really just about NED.
+      - Command-line interface redesigned for better usability (subcommands,
+        better help, etc.)
+      - Added support for generating C++ source ("cpp" subcommand), for
+        embedding NED files into an executable or library.
+      - Added support for processing NED folders.
+      - More convenient output (no *_n.ned, *_n.xml).
+      - Removed obsolete @listfile and @@listfile support.
+      - Fixed bugs in splitting NED files to one NED type per file.
+
+  - opp_msgtool was rewritten in the style of opp_nedtool. Details:
+      - Made --msg6 the default mode. (Note that --msg4 will be removed for the
+        6.0 release.)
+      - The command-line interface now uses subcommands. It is still compatible
+        with earlier versions (if the subcommand is missing, it defaults to
+        C++ code generation), only the rarely useful -T (type of next file)
+        and -h (here) options have been removed.
+      - Better help. A "builtindefs" help page has also been added, which
+        prints the built-in declarations.
+
+  - opp_scavetool had several improvements. A brief summary:
+      - The tool now accepts directories as command-line arguments, too, and
+        recursively loads scalar and vector files from them.
+      - Command-line arguments may now contain double asterisk wildcards (**)
+        in addition to normal wildcards (*,?). Double asterisks can match any
+        number of directory levels. Example: results/**.vec matches all .vec
+        files anywhere under the results/ directory. (When specifying wilcard
+        arguments on the command line, be sure to quote them so that the shell
+        does not expand them before opp_scavetool gets invoked.)
+      - Added options to limit vector data by simulation time: --start-time
+        <time>, --end-time <time>.
+      - Accepts exporter options in the --<key>=<value> notation as well, not
+        only with -x.
+      - In filter expressions, run attributes now have to be referred to with
+        the "runattr:" prefix. The "attr:" prefix now only matches result attributes.
+      - In exporters, the way of representing histograms has slightly changed:
+        underflow/overflow values are now saved separately instead of as
+        underflow/overflow "bins". Thus, there's now one more bin edges than bin
+        values.
+      - The possibility to apply vector operations to vector results was removed
+        from opp_scavetool and exporters. The recommended way of processing output
+        vectors is with Python and NumPy.
+      - The help subcommand was refined.
+
+  - Added opp_charttool, a tool for "running" ANF files on the command line,
+    e.g. for chart or data export.
+
+  - opp_featuretool: Extensive refactoring as well as refinement of its
+    operation and command-line options. In general, the tool has become more
+    forgiving: a missing ".featurestates" file and extra/missing entries in it
+    don't cause an error or even a message. Missing file and file entries are
+    initialized with the default enablement state; extra entries are preserved
+    (in the hope they'll be useful, e.g. after switching to a different topic
+    branch. The content of the ".nedexclusions" file is now also automatically
+    adjusted without stopping with an error. User-visible changes are the following:
+      - Removed the "validate" and "repair" commands (all commands implicitly
+        validate and repair now).
+      - Better validation of the ".oppfeatures" file: Report detect duplicate
+        feature IDs and unresolved feature dependencies.
+      - Check for the existence of the C++ source root and NED folders.
+      - Preserve unknown features in the ".featurestate" file instead of fail/warn
+        about them. Reason: they often occur when switching between branches.
+      - "isenabled -v" prints list of disabled features to stdout, not to stderr
+      - Complain less about fixable problems.
+      - Non-verbose operation by default.
+      - Improved error/warning messages.
+
+  - opp_makemake: The "makefrag" file is now included instead of copied
+    into the generated makefile. Also, a "help" target has been added to the
+    generated makefiles: typing "make help" now prints the list of accepted
+    targets ("all", "clean", etc.) and user-settable makefile variables ("MODE",
+    "V", "CFLAGS", etc.), complete with helpful descriptions and usage examples.
+
+  - opp_test now prints PASS/FAIL/UNRESOLVED in color. The diagnostic output
+    for failed tests was also improved: the tool now displays a colorized diff
+    instead of simply printing the expected and the actual contents.
+
+  - Use python3 in all scripts.
+
+Result file format changes:
+
+  - There were a number of changes in the format of result files (.sca and
+    .vec files), so the file format version has been bumped from 2 to 3. (The
+    file format is recorded at the top of each result file in a "version" line.)
+    The set of changes is relatively small; see details below.
+
+  - Iteration variables are no longer saved as run attributes but in separate
+    "itervar" lines, in order to be able to tell them apart with certainty.
+
+  - "param" lines (which recorded parameter assignment entries in the
+    configuration) have been replaced with the more general "config" lines.
+    "config" lines record all configuration entries, not just parameter assignments.
+
+  - In version 2, concrete parameter values (if requested) were recorded as
+    scalars, whereas in version 3 they are recorded as a separate result item
+    type, in "par" lines. This allows for recording of volatile parameters (as
+    expressions) and non-numeric values as well.
+
+  - Component NED type names are now recorded, as "typename" pseudo parameters.
+
+  - The "sum" and "srqsum" fields of weighted statistics are no longer recorded,
+    as they are irrelevant.
 
 
 OMNeT++ 5.6 (January 2020)
@@ -2972,14 +3347,14 @@ Sim:
    in the module's or channel's NED description; undeclared signals will result
    in a runtime error. Signal declarations are of the form
 
-	@signal[<signalName>](type=<dataType>).
+       @signal[<signalName>](type=<dataType>).
 
    <signalName> may contain wildcards (?,*). Type is optional; if present,
    data type can be long, unsigned long, double, simtime_t, string, or a
    registered class name. To allow NULL pointers, append a question mark to
    the class name. Example:
 
-	@signal[receivedPk](type=cPacket?);
+       @signal[receivedPk](type=cPacket?);
 
    This feature is controlled by the check-signals=<bool> configuration
    option, and it is turned off by default for now.
@@ -3469,9 +3844,9 @@ NED:
    patterns that end in the new "typename" keyword. An example:
 
      network Net {
-	 parameters:
-	     host[*].tcp.typename = "TCP_lwIP";
-	 ...
+         parameters:
+             host[*].tcp.typename = "TCP_lwIP";
+             ...
      }
 
 Ini files:
@@ -3636,9 +4011,9 @@ Simulation runtime:
    an inifile-like pattern is used to name the parameter(s) to be set, as in:
 
       network Inet {
-	  parameters:
-	      host[*].tcp.nagleEnabled = true;
-	  ...
+          parameters:
+              host[*].tcp.nagleEnabled = true;
+          ...
       }
 
  - Resolved spurious errors: 'Class "..." not found -- perhaps its code
