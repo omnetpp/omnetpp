@@ -46,7 +46,7 @@ inline std::string canonicalize(const char *pathname)
 NedResourceCache::~NedResourceCache()
 {
     for (auto & file : nedFiles)
-        delete file;
+        delete file.second;
     for (auto & nedType : nedTypes)
         delete nedType.second;
 }
@@ -133,11 +133,16 @@ inline bool isPackageNedFile(const char *fname)
 
 void NedResourceCache::doLoadNedFileOrText(const char *nedFilename, const char *nedText, const char *expectedPackage, bool isXML)
 {
-    // parse file
+    // checks
     Assert(nedFilename);
     std::string canonicalFilename = nedText ? nedFilename : canonicalize(nedFilename);  // so that NedFileElement stores absolute file name
+    if (containsKey(nedFiles, canonicalFilename))
+        return; // already loaded
+
     if (doneLoadingNedFilesCalled && isPackageNedFile(canonicalFilename.c_str()))
         throw NedException("Cannot load %s: 'package.ned' files can no longer be loaded at this point", canonicalFilename.c_str()); // as it could contain e.g. @namespace
+
+    // parse file
     NedFileElement *tree = parseAndValidateNedFileOrText(canonicalFilename.c_str(), nedText, isXML);
     Assert(tree);
 
@@ -241,7 +246,9 @@ void NedResourceCache::loadNedText(const char *name, const char *nedText, const 
 
 void NedResourceCache::addFile(const char *nedFilename, NedFileElement *node)
 {
-    nedFiles.push_back(node);
+    Assert(!containsKey(nedFiles, std::string(nedFilename)));
+    //Assert(opp_streq(nedFilename, node->getFilename())); // would fail for "[built-in-declarations]"
+    nedFiles[nedFilename] = node;
 }
 
 void NedResourceCache::collectNedTypesFrom(ASTNode *node, const std::string& packagePrefix, bool areInnerTypes)
@@ -289,7 +296,8 @@ void NedResourceCache::doneLoadingNedFiles()
     doneLoadingNedFilesCalled = true;
 
     // collect package.ned files
-    for (NedFileElement *nedFile : nedFiles) {
+    for (auto& entry : nedFiles) {
+        NedFileElement *nedFile = entry.second;
         const char *fileName = nedFile->getFilename();
         if (isPackageNedFile(fileName)) {
             std::string packageName;
@@ -304,11 +312,12 @@ void NedResourceCache::doneLoadingNedFiles()
     }
 
     // collect types from loaded NED files
-    for (ASTNode *node : nedFiles) {
+    for (auto& entry : nedFiles) {
+        NedFileElement *nedFile = entry.second;
         std::string packagePrefix;
-        if (PackageElement *packageDecl = (PackageElement *)node->getFirstChildWithTag(NED_PACKAGE))
+        if (PackageElement *packageDecl = nedFile->getFirstPackageChild())
             packagePrefix = std::string(packageDecl->getName()) + ".";
-        collectNedTypesFrom(node, packagePrefix, false);
+        collectNedTypesFrom(nedFile, packagePrefix, false);
     }
 
     // register NED types from all the files we've loaded

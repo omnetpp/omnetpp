@@ -78,8 +78,8 @@ class NEDXML_API NedResourceCache
       };
 
   protected:
-    // table of loaded NED files
-    std::vector<NedFileElement*> nedFiles;
+    // table of loaded NED files (by NED file name as absolute path, canonical representation)
+    std::map<std::string,NedFileElement*> nedFiles;
 
     // "package.ned" files by package name (only one per package accepted)
     std::map<std::string, NedFileElement*> packageDotNedFiles;
