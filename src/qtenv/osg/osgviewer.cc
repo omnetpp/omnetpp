@@ -85,10 +85,6 @@ static QSurfaceFormat traitsToSurfaceFormat(const osg::GraphicsContext::Traits *
     format.setStencilBufferSize(traits->stencil);
     format.setSamples(traits->samples);
 
-    format.setSwapBehavior(traits->doubleBuffer
-                           ? QSurfaceFormat::DoubleBuffer
-                           : QSurfaceFormat::SingleBuffer);
-
     format.setSwapInterval(traits->vsync ? 1 : 0);
     format.setStereo(traits->quadBufferStereo);
 
