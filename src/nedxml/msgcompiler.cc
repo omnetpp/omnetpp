@@ -48,6 +48,8 @@ static const char *BUILTIN_DEFINITIONS =
         @property[returnType](type=string; usage=field,class; desc="Field getter C++ return type. When specified on a class, it determines the default for fields of that type.");
         @property[fromString](type=string; usage=field,class; desc="Affects descriptor class: Code to convert string to field value. When specified on a class, it determines the default for fields of that type.");
         @property[toString](type=string; usage=field,class; desc="Affects descriptor class: Code to convert field value to string. When specified on a class, it determines the default for fields of that type.");
+        @property[fromValue](type=string; usage=field,class; desc="Reserved for use in OMNeT++ 6.0 and later.");
+        @property[toValue](type=string; usage=field,class; desc="Reserved for use in OMNeT++ 6.0 and later.");
         @property[getterConversion](type=string; usage=field,class; desc="Code to convert field data type to return type in getters. When specified on a class, it determines the default for fields of that type.");
         @property[clone](type=string; usage=field,class; desc="For owned pointer fields: code to duplicate (one array element of) the field value. When specified on a class, it determines the default for fields of that type.");
         @property[existingClass](type=bool; usage=class; desc="Whether class is already defined in C++, i.e. does not need to be generated");
