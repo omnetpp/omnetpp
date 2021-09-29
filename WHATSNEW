@@ -157,7 +157,7 @@ Simulation kernel:
     parenthesized expression).
 
   - cClassDescriptor: methods changed to use any_ptr instead of void*
-    for passing the object. (any_ptr is smart pointer class that provides
+    for passing the object. (any_ptr is a smart pointer class that provides
     type safety for void* pointers.) Pointers need to be put into and extracted
     from any_ptr using the new toAnyPtr() / fromAnyPtr() functions. They have
     specialized versions for each type (via templates and overloading).
@@ -723,6 +723,9 @@ Simulation kernel, other changes:
     will produce three scalars: "foo:count(demux):first",
     "foo:count(demux):second", and "foo:count(demux):third".
 
+    Note: in the 6.0pre13, the demux label was moved to the front of the name:
+    "first:foo:count(demux)", etc.
+
     The labels are taken from the (full) name of the details object
     specified in the emit() call.
 
@@ -1057,19 +1060,45 @@ Core:
   - Added cValueArray and cValueMap classes for representing JSON data in
     NED expressions.
 
+  - Under the hood, all expression parsing and evaluation tasks now use
+    a new generic extensible expression evaluator framework. It is used for NED
+    expressions, object matching, scenario constraint, statistics recording,
+    result selection in the Simulation IDE and in opp_scavetool, in
+    cDynamicExpression and cMatchExpression, etc. In the new framework,
+    expression parsing and the translation of the AST to an evaluator tree are
+    done in separate steps, which makes the library very versatile. Evaluators
+    include support for shortcutting logical and conditional operators, constant
+    folding, and an 'undefined' value (anything involving 'undefined' will evaluate
+    to 'undefined').
+
+    NOTE: The fact that logical operators and inline-if are now shortcutting may
+    change the fingerprint of some simulations, due to consuming fewer random
+    numbers during expression evaluation.
+
+  - cConfiguration: Removed getParameterKeyValuePairs(). Instead,
+    getKeyValuePairs() made smarter with an extra flags parameter
+    to be able to handle the various use cases.
+
+  - Added cFigure::hashGeometry().
+
+  - Added a few new cEnvir methods: recordComponentType(), recordParameter(),
+    getConnectionLine().
+
   - Many other smaller-scale changes.
 
 NED:
 
   - NED grammar: Added 'object' as parameter type.
 
-  - NED grammar: Added JSON-like constructs into the expression language:
-    arrays (comma-separated list of expressions in square brackets), maps
-    (comma-separated list of <key>:<value> pairs in curly braces, where <value>
-    is an expression; JSON calls it "objects"), 'null' and 'nullptr' as
-    constants. Tagged maps (a map with an identifier in front) are an extension
-    to JSON which is going to be useful. The implementation of JSON values and
-    object parameters is sketchy in this release, it refined in later
+  - NED grammar: Extended to accept JSON-line expressions. Added
+    support for JSON object and array notation, and the nullptr keyword.
+
+    Array syntax: [ expr, expr, ... ]
+    Object syntax: optional_name { key1: value1, key2: value2, ... }
+
+    Tagged maps (object syntax a map with an in front) are an extension to JSON
+    which is going to be useful later. The implementation of JSON values and
+    object parameters is sketchy in this release, they are refined in later
     prereleases.
 
   - NED grammar: Made operator precedence more similar to C/C++.
@@ -1079,6 +1108,21 @@ NED:
   - NED grammar: Added the '=~' (match) and '<=>' (comparison, a.k.a.
     "spaceship") operators, the 'undefined' keyword, and bool() as
     conversion function.
+
+  - String constants are now accepted with apostrophes too. This makes it
+    possible to write quotation marks in strings without the need to escape
+    them.
+
+  - For quantities (numbers with measurement units), the rules have changed
+    slightly. When specifying quantities with multiple terms, a minus sign is
+    only accepted at the front, to reduce the chance of confusion in arithmetic
+    expressions. I.e. "-5s100ms" is valid as a quantity string (and means
+    -5.1s), but "5s-100ms" is no longer.
+
+    Also, the plain "0" constant is no longer accepted at places where a
+    quantity with a measurement unit is expected. Reason: it was confusing when
+    the expected unit was dB or dBm. E.g. in omnetpp.ini, should "**.power = 0"
+    be interpreted as 0W or 0dBm?
 
   - xmldoc() now interprets the file name as relative to the directory the
     expression comes from. When xmldoc() occurs in an included ini file,
@@ -1134,6 +1178,10 @@ MSG:
     and setFieldStructValuePointer()), and support for the @resizable() and
     @replaceable field attributes that tell the message compiler to generate
     the respective code in the class.
+
+  - cMatchExpression: The  'field =~ pattern' syntax replaces 'field(pattern)'.
+    Also removed the implicit OR syntax. The old syntaxes looked confusing, and
+    made it different to tell apart concise notation from expression-style notation.
 
 Runtime:
 
@@ -1196,10 +1244,6 @@ Runtime:
   - Do not complain about missing omnetpp.ini if a --network option is
     present.
 
-  - Added check to refuse to generate fingerprint that contains 'f' or 'y' as
-    ingredient, because cmdenv-fake-gui and computing fingerprint from figures
-    and display strings are currently experimental features.
-
   - Implemented "${datetimef}"
 
   - Added the "config-recording" configuration option, which controls
@@ -1222,10 +1266,38 @@ Runtime:
 
   - The obsolete command-line options -x, -X, -g, and -G were removed.
 
+  - In order to reduce OMNeT++'s external dependencies, we now use an embedded
+    copy of Yxml as the default XML parser. Yxml (https://dev.yorhel.nl/yxml)
+    is a small and fast SAX-style XML parser  with a liberal license.
+
+    Support for using LibXML2 remained in place, but very few users will
+    actually need it. Expat support has been removed. Note that no significant
+    functionality is lost when Yxml is used instead of LibXML2. LibXML2 is only
+    needed for Schema or DTD-based validation (and possibly, default value
+    completion), which virtually no simulation models require. Also note that
+    Yxml-based parsing scales much better than LibXML, both performance-wise and
+    regarding memory usage.
+
+  - The bundled SQLite sources were upgraded to version 3.30.1 (2019-10-10).
+
+Cmdenv:
+
+  - Added the cmdenv-fake-gui=true/false option. Fake GUI means that
+    refreshDisplay() is called periodically during simulation, in order to mimic
+    the behavior of a graphical user interface like Qtenv. It is useful for
+    testing simulation models with visualization using Cmdenv, e.g. in smoke or
+    fingerprint tests.
+
+Qtenv:
+
+  - Use space as digit separator by default in the main simulation time and
+    event number displays.
+
+  - Fix: Image loading did not obey the '-s' (silent) command-line option.
+
 Tkenv:
 
-  - Removed, as Qtenv has completely matured, and offers a much more complete
-    feature set.
+  - Tkenv has been removed. Use Qtenv for all simulations.
 
 Tools:
 
@@ -1337,6 +1409,56 @@ Result file format changes:
 
   - The "sum" and "srqsum" fields of weighted statistics are no longer recorded,
     as they are irrelevant.
+
+  - SQLite result files underwent a similar change in the database schema. Files
+    in the old format are not understood. A brief summary of changes:
+
+      - The "runParam" table was renamed to "runConfig", and its columns were
+        also similarly renamed: "paramKey", "paramValue" and "paramOrder"
+        became "configKey", "configValue" and "configOrder".
+
+      - Iteration variables are in a new table "runItervar", with columns
+        "runId", "itervarName" and "itervarValue".
+
+      - Two new tables were added for representing the new result items type:
+        "parameter" (with the columns "paramId", "runId", "moduleName",
+        "paramName" and "paramValue"), and "paramAttr" (with the columns
+        "paramId", "attrName" and "attrValue"). Note that the value is written
+        in the syntax it would have to be written in a NED file or in
+        omnetpp.ini, i.e. string constants include the quotation marks.
+
+Simulation IDE:
+
+  - Analysis Tool rewrite in progress, see above.
+
+  - Allow SVG export in the NED Editor and in the Sequence Chart Tool.
+
+  - The NED documentation generator has been updated. Details:
+
+      - Modern look for the generated pages (Material design).
+
+      - Navigation tree revised.
+
+      - It is now possible to specify excluded directories during documentation
+        generation, in order to be able to exclude samples, showcases etc. that
+        are not integral part of the documentation.
+
+      - Now generates nedtags.xml/msgtags.xml file which is compatible with
+        the doxytags.xml file generated by doxygen. This allows crosslinking to
+        the ned documentation from a sphinx based documentation (using the
+        doxy-link plugin)
+
+      - Generate usage and inheritance diagrams ONLY if they are meaningful.
+
+      - Use SVG files as the usage/inheritance diagram image. Removed map
+        files as SVG already contains proper links.
+
+      - Generate "Implementors" table for interfaces. The Implementors table
+        includes indirect implementors as well.
+
+      - Fix: Inheritance diagrams were missing in module interface pages,
+        even if they had implementors. This bug made INET documentation much less
+        useful.
 
 
 OMNeT++ 5.6 (January 2020)
