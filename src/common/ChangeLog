@@ -297,7 +297,7 @@
 2020-04-16  Andras Varga
 
 	* MatchExpressionLexer: Fix: Match expressions containing empty strings
-	did not work. Eample: runattr:measurement =~ ""
+	did not work. Example: runattr:measurement =~ ""
 
 2020-03-05  Andras Varga
 

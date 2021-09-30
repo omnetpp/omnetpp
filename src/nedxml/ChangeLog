@@ -53,8 +53,6 @@
 	string which is split along commas. That is, @implements("foo,bar") now needs
 	to be written as @implements(foo,bar).
 
------------ lines above this marker have been added from git log -----------
-
 2021-06-16  Andras Varga
 
 	* NEDElement: Store src location in a FileLine struct not as strings; this

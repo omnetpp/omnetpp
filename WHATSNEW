@@ -69,12 +69,6 @@ OMNeT++ 6.0pre12 (Jul 2021)
 Simulation kernel:
 
   - NED functions that take or return values of type 'object' are now allowed.
-    One caveat is that module parameters of type 'object' only accept objects
-    they fully own. A potential solution is to use the dup() NED function as
-    if necessary. An example:
-
-      object a = [1,2,3];
-      object b = dup(a);  // without dup() it is an error: value is owned by parameter 'a'
 
   - cModule now keeps track of submodule vectors as entities, and not just as
     a collection of submodules with vector indices, meaning that we can now
@@ -167,6 +161,92 @@ Simulation kernel:
     is now part of <omnetpp.h>.
 
   - Various other improvements in the simulation library.
+
+NED:
+
+  - Semantics change: Within a submodule's or connection's curly brace block,
+    the interpretation of parameter/gate/submodule references that don't use an
+    explicit "parent" or "this" qualifier has changed. They no longer refer to
+    the enclosing compound module's item, but to the item of (or within) the
+    local submodule or channel object. The interpretation of item references
+    outside subcomponent blocks has remained unchanged. An example:
+
+        network Network {
+          parameters:
+              int foo;
+          submodules:
+            node1: { ... }
+            node2: Node {
+              foo = foo; // ERROR: self-reference! Change to 'foo=parent.foo'.
+              bar = this.foo;  // OK
+              baz = node1.foo;  // ERROR: refers to yet-uncreated submodule node2.node1!
+              bax = parent.node1.foo;  // OK
+            }
+        }
+
+    The set of forms accepted by exists() and sizeof() has been expanded.
+    Notably, exists() can now be used to check the existence of an item in a
+    submodule vector (as submodule vectors may now contain holes, due to
+    @omittedTypename). However, the index() syntax has been removed, index is
+    only accepted without parens.
+
+    Note that referencing a submodule's submodule from NED (i.e. the a.b or
+    this.a.b syntax within a submodule block) is generally wrong, because
+    submodules are only created after parameters have already been set up. (An
+    exception is volatile parameters, as they are only evaluated when the
+    parameter value is actually read.)
+
+    Error messages have been revised and expanded to be more helpful and
+    facilitate porting NED code from 5.x.
+
+    To write NED which is compatible with both OMNeT++ version 5.x and 6.0,
+    qualify all references within subcomponent blocks with explicit "parent"
+    or "this", and require OMNeT++ 5.7 which is the first and only 5.x version
+    that understands the "parent" keyword.
+
+  - Added support for Universal Function Call Syntax (UFCS) to NED, which means
+    that now any function call may also be written as if the function was a
+    method of its first argument (provided it has one). That is, f(x,..) can now
+    be also written in the alternative form x.f(...). This results in improved
+    readability in certain cases, and allows chaining function calls.
+
+  - New NED functions: get(), size(), dup(). dup() is useful because
+    module parameters of type 'object' only accept objects they fully own,
+    which can be worked around using dup(). An example:
+
+      object a = [1,2,3];
+      object b = dup(a);  // without dup() it is an error: value is owned by parameter 'a'
+
+  - Allow the body of a parametric submodule to assign apparently nonexistent
+    parameters. Example:
+
+            app: <default("FooApp")> like IApp {
+                parameters:
+                    address = parent.address;
+                    sleepTime = 1s;
+            }
+
+    If FooApp has a sleepTime parameter but IApp does not, then running with
+    the defaults is fine, but changing to another IApp type that does NOT
+    have a sleepTime parameter will stop the simulation with an error.
+
+    Solution: inside a parametric submodule type, we simply ignore parameter
+    assignments that assign seemingly nonexistent parameters.
+
+  - Implemented @omittedTypename property. @omittedTypename allows one to
+    specify a NED type to use when typename="" is specified for a parametric
+    submodule or channel, or to remove (skip creating) that submodule, submodule
+    vector element, or channel altogether.
+
+    @omittedTypename can be specified on a module interface or channel
+    interface, or on a submodule or connection. It should contain a single
+    (optional) value. The value names the type to use. If it is absent, the
+    submodule or channel will not be created. (The connection will be created
+    without a channel object.)
+
+  - Improved error reporting during network building: when an error occurs
+    during assigning a parameter from a NED file, the error message now includes
+    the location of the assignment (file:line in NED file).
 
 Ini files:
 
@@ -1088,7 +1168,16 @@ Core:
 
 NED:
 
-  - NED grammar: Added 'object' as parameter type.
+  - NED grammar: Added "object" as parameter type. Parameters of this type may
+    hold objects subclassed from cOwnedObject that they can take ownership of.
+
+  - Support @class() property on NED parameters of type "object". Syntax:
+    @class(classname) or @class(classname?). The property specifies that the
+    parameter should only accept objects of the given type and its subclasses.
+    The referenced class must be registered via Register_Class() or
+    Register_Abstract_Class(). Parameters declared without the question mark in
+    @class() don't accept nullptr as value, while the ones with question mark
+    do.
 
   - NED grammar: Extended to accept JSON-line expressions. Added
     support for JSON object and array notation, and the nullptr keyword.
