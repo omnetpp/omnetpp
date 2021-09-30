@@ -1,122 +1,159 @@
 <pre>
-What's New
-==========
-
-OMNeT++ 5.6.1 (February 2020)
------------------------------
-
-This release contains minor stability fixes.
-
-
-OMNeT++ 5.6 (January 2020)
---------------------------
-
-This is primarily a bugfix release, with a small but practically quite useful
-NED feature (@reconnect) and minor additions to the simulation library.
-Regarding bugfixes, Qtenv has received quite a lot of attention.
-
-NED:
-
-  - The new @reconnect property allows reconnecting already connected gates
-    by specifying it in the new connection's body. This is especially
-    useful in INET Framework, e.g. because it eliminates the need for "hook"
-    modules in compound modules that represent network interfaces.
-
-Simulation library:
-
-  - SimTime: Added the fromRaw() method.
-
-  - cGate: Added the isGateHalf() and getOtherHalf() methods.
-
-  - The deleteModule() method was moved from cSimpleModule to cModule, revised,
-    and its functionality extended: it is now allowed for a running module
-    to delete itself, also as part of a module tree. (Note: direct deletion
-    of a module or channel object, i.e. via the "delete" operator, is still
-    not allowed.)
-
-  - cLabelFigure: Added rotation support (setAngle() method).
-
-  - cAbstractHistogram: Fixed the getCDF() method which was broken.
-
-  - cFigure: Fixed a bug that caused adding figures to be O(n) or slower,
-    causing a huge performance penalty with 10000 or more figures.
-
-  - Several further smaller improvements.
-
-Qtenv:
-
-  - Added a "Debug Now" option to the Simulate menu.
-
-  - Allow dragging submodules around by holding Shift. (This works by changing
-    the coordinates in the display string.)
-
-  - Added option to export module graphics to an image, and a dialog to
-    select the exported area.
-
-  - Start the animation at t=0, not right before the first event.
-
-  - Add some sideways offset to methodcall animation lines and text, to
-    reduce overlap with connection arrows.
-
-  - Connection arrows: Make the "m=[nesw]" display string tag work better
-    with border-to-border connections.
-
-  - Align the lines of info text ("t" display string tag) of submodules and
-    connections appropriately in the left/top/right positions.
-
-  - Performance: cache min(animSpeed) in cCanvas, so that Qtenv doesn't
-    have to compute it every time.
-
-  - Set a busy indicator (spinny cursor) during more potentially long
-    operations.
-
-  - When the layouting process takes a long time (more than five seconds),
-    ask the user what to do (wait or finish).
-
-  - Added an option to disable logging from refreshDisplay().
-
-  - Default log prefix format changed to use %K instead of %C. (%K only prints
-    the context component if it is different from the event's module; %C always
-    prints it.)
-
-  - Log prefix format: Added the %< (trim preceding whitespace) directive.
-
-  - Keep caret (cursor) near the same event when switching Log Inspector modes.
-
-  - Removed the unused scrollback limit option. Updated the Preferences
-    dialog accordingly.
-
-  - Dozens of further bug fixes and improvements.
-
-IDE:
-
-  - Updated to use Eclipse 4.14, CDT 9.10.
-
-  - IDE: Made the "Project Features" menu item more creative in finding
-    the project. (It said "Select a project first" much too often.)
-
-  - Analysis Tool: Fix weighted histogram PDF/CDF computation (use sum of
-    weights instead of observation count).
-
-  - NED editor: added manual connection routing using the "m" tag.
-
-  - SequenceChart: Avoid out of bounds error when selecting manual axis
-    ordering, or switching between "Manual" and "Minimize crossings" modes.
-
-  - EventlogTable, SequenceChart: Strip ANSI escape sequences from log
-    message lines.
-
-  - Let the user permanently turn off the "OMNeT++ libraries not yet
-    compiled" dialog.
-
-  - Some further fixes and improvements.
-
-Other:
-
-  - scavetool: Fixed vector file indexing bug that caused certain blocks
-    to be left out from the index. This also affects the Analysis Tool in
-    the IDE, which uses the same code for result file access.
-
-  - opp_test, opp_featuretool: Various small fixes.
-
+  What's New
+  ==========
+  
+  OMNeT++ 5.7 (Sept 2021)
+  -----------------------
+  
+  This version is intended to be the last release of the 5.x series. The main
+  purpose of this release is to make it possible to write model code, primarily
+  NED, which is also compatible with the upcoming OMNeT++ 6.0. It also contains
+  several bug fixes backported from the 6.0 branch.
+  
+  For compatibility with 6.0:
+  
+    - NED: support for "parent.foo" syntax of parameter references (and other
+      references too, see below) in expressions. Using the "parent" qualifier is
+      only allowed inside submodule and connection blocks (within the curly
+      braces), but not on compound module level. This change is necessary for
+      being able to write NED files which are compatible with both OMNeT++ 5.7+
+      and 6.x. The interpretation of parameter references in expressions have
+      changed in 6.0. In 6.0, a "foo" parameter reference in a submodule means the
+      parameter of the same submodule ("this.foo"), while in 5.x it means the
+      parameter of the enclosing compound module (which would be expressed in 6.0
+      as "parent.foo").
+  
+      The way to write NED files compatible with both is to always explicitly
+      qualify the parameter with "this" or "parent". In a NED file written for
+      5.x, prefix plain parameter references inside subcomponent curly brace blocks
+      with "parent." to ensure that their meaning doesn't change in version 6.0.
+  
+      The same change applies to submodule and gate references as well, e.g. in
+      the argument of exists() and sizeof().
+  
+      The change also affects the interpretation of references in expressions that
+      occur in ini files.
+  
+      Example:
+  
+      network Network {
+         node: Node {
+           foo = foo; // CAVEAT: means "parent.foo" in 5.x, "this.foo" in 6.x!
+           bar = this.foo;  // OK: unambiguous, recognized by all versions
+           faa = parent.foo;  // OK: unambiguous, recognized in 5.7 and 6.x
+           baz = node2.foo;  // CAVEAT: means "parent.node2.foo" in 5.x, "this.node2.foo" in 6.x!
+           bax = parent.node2.foo;  // OK: unambiguous, recognized in 5.7 and 6.x
+         }
+      }
+  
+    - MatchExpression: added 'field =~ pattern' syntax as alternative to 'field(pattern)'
+  
+    - Added Ws, Wh, kWh, MWh to the list of recognized measurement units
+  
+  Core:
+  
+    - Statistic recording: Added a way to disable auto-adding of the warmup filter.
+      One needs to specify "autoWarmupFilter=false" in the @statistic for that.
+      This opens the possibility for the user to add warmup filters to a custom
+      place, not just before all other filters. E.g. consider "min(warmup(foo))"
+      (which is produced by auto-adding of the warmup filter), and "warmup(min(foo))"
+      which might be what the user wants instead.
+  
+    - Fingerprints: Fixed a bug in cHasher::add(const char *) which caused some bits
+      in the input not affect the fingerprint. This bugfix does not affect the
+      fingerprint of most simulations, because very few fingerprints use strings
+      as input.
+  
+    - Canvas: In cPathFigure, path parsing was refined: If an op char is missing,
+      assume previous one, in accordance with the SVG specification.
+  
+    - cHistogram and histogram strategy classes: work around several problems
+      caused by the finite precision of 'double'.
+  
+    - Miscellaneous other bug fixes.
+  
+  Cmdenv:
+  
+    - Added Fake GUI mode. Fake GUI means that refreshDisplay() is called
+      periodically during simulation, in order to mimic the behavior of a
+      graphical user interface like Qtenv. It is useful for testing simulation
+      models with visualization using Cmdenv, e.g. in smoke or fingerprint tests.
+      Fake GUI can be enabled with the cmdenv-fake-gui=true configuration option.
+  
+      The set of currently supported options for Fake GUI:
+      cmdenv-fake-gui-before-event-probability,
+      cmdenv-fake-gui-after-event-probability,
+      cmdenv-fake-gui-on-hold-probability,
+      cmdenv-fake-gui-on-hold-numsteps,
+      cmdenv-fake-gui-on-simtime-probability,
+      cmdenv-fake-gui-on-simtime-numsteps,
+      cmdenv-fake-gui-seed.
+  
+  Qtenv:
+  
+    - Added Ctrl+W as shortcut for closing toplevel inspector windows.
+  
+    - Made the "Run" and "Fast" buttons "pop out" (and stop simulation) if
+      triggered again. This adds a radiobutton-like behavior to these actions,
+      which is handy for running the simulation for a very short time, with a
+      single button.
+  
+    - Log Inspector: Perform "find" on plain text comment, i.e. ignore formatting
+      escape sequences.
+  
+    - Log Inspector: After a search, scroll the found text into the middle of the
+      viewport instead of just to the edge.
+  
+    - Find dialog: Select the entire searched text when opening the find dialog,
+      to allow easier and quicker typing of a different query.
+  
+    - Further bug fixes.
+  
+  Tools:
+  
+    - JsonExporter: Fix: In the exported file, result items appeared under
+      multiple runs due to missing filtering. Applies to both the IDE and opp_scavetool.
+  
+    - In the Simulation Manual, the section about opp_scavetool was out of date.
+  
+  Simulation IDE:
+  
+    - Welcome screen theme changed (circle -> solstice) due to problems
+      with dark theme with the old 'circle' theme.
+  
+    - The Download Simulation Models dialog now supports specifying a custom
+      project name and location. Also, the default project name is now coming from
+      the downloaded descriptor file (not from the .project file in the archive.)
+  
+    - Fixed the download issues in the Download Simulation Models dialog.
+  
+    - NED, Ini Editor: Syntax highlight for the NED "parent" keyword
+  
+    - Ini Editor: group fingerprint and fakegui-related fields on a separate new
+      form page.
+  
+    - NED Editor: Fix rendering issue with the mouse cursor for the creation tool
+      in the palette.
+  
+    - Launcher: Print working directory and command line to console when
+      debugging simulations, similar to the simple "run" mode launch.
+  
+    - Launcher: On macOS, use lldbmi2 for debug launches by default.
+  
+    - Makefile generation brought in sync with omnetpp-6pre11.
+  
+  Build:
+  
+    - Use Eclipse 4.21, and JustJ as the private JRE.
+  
+    - Use python3 as the interpreter for Python scripts.
+  
+    - opp_makemake: Makefile generation brought in sync with omnetpp-6pre11.
+  
+    - Got rid of a few bison warnings and properly test for Bison 3.
+  
+    - Fixes for the Windows build.
+  
+    - Updated bundled sqlite3 amalgamation sources.
+    
 </pre>
