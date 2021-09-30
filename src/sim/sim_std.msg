@@ -426,14 +426,12 @@ class cRNG extends cObject
 {
     @existingClass;
     @overwritePreviousDefinition;
-    @descriptor(readonly);
 }
 
 class cRandom extends cOwnedObject
 {
     @existingClass;
     @overwritePreviousDefinition;
-    @descriptor(readonly);
     @icon(cogwheel); //TODO
     cRNG *rng @getter(getRNG) @setter(setRNG);
 }
@@ -442,7 +440,6 @@ class cUniform extends cRandom
 {
     @existingClass;
     @overwritePreviousDefinition;
-    @descriptor(readonly);
     double a;
     double b;
 }
@@ -451,7 +448,6 @@ class cExponential extends cRandom
 {
     @existingClass;
     @overwritePreviousDefinition;
-    @descriptor(readonly);
     double mean;
 }
 
@@ -459,7 +455,6 @@ class cNormal extends cRandom
 {
     @existingClass;
     @overwritePreviousDefinition;
-    @descriptor(readonly);
     double mean;
     double stddev;
 }
@@ -468,7 +463,6 @@ class cTruncNormal extends cRandom
 {
     @existingClass;
     @overwritePreviousDefinition;
-    @descriptor(readonly);
     double mean;
     double stddev;
 }
@@ -477,7 +471,6 @@ class cGamma extends cRandom
 {
     @existingClass;
     @overwritePreviousDefinition;
-    @descriptor(readonly);
     double alpha;
     double theta;
 }
@@ -486,7 +479,6 @@ class cBeta extends cRandom
 {
     @existingClass;
     @overwritePreviousDefinition;
-    @descriptor(readonly);
     double alpha1;
     double alpha2;
 }
@@ -495,7 +487,6 @@ class cErlang extends cRandom
 {
     @existingClass;
     @overwritePreviousDefinition;
-    @descriptor(readonly);
     unsigned int k;
     double mean;
 }
@@ -504,7 +495,6 @@ class cChiSquare extends cRandom
 {
     @existingClass;
     @overwritePreviousDefinition;
-    @descriptor(readonly);
     unsigned int k;
 }
 
@@ -512,7 +502,6 @@ class cStudentT extends cRandom
 {
     @existingClass;
     @overwritePreviousDefinition;
-    @descriptor(readonly);
     unsigned int i;
 }
 
@@ -520,7 +509,6 @@ class cCauchy extends cRandom
 {
     @existingClass;
     @overwritePreviousDefinition;
-    @descriptor(readonly);
     double a;
     double b;
 }
@@ -529,7 +517,6 @@ class cTriang extends cRandom
 {
     @existingClass;
     @overwritePreviousDefinition;
-    @descriptor(readonly);
     double a;
     double b;
     double c;
@@ -539,7 +526,6 @@ class cWeibull extends cRandom
 {
     @existingClass;
     @overwritePreviousDefinition;
-    @descriptor(readonly);
     double a;
     double b;
 }
@@ -548,7 +534,6 @@ class cParetoShifted extends cRandom
 {
     @existingClass;
     @overwritePreviousDefinition;
-    @descriptor(readonly);
     double a;
     double b;
     double c;
@@ -558,7 +543,6 @@ class cIntUniform extends cRandom
 {
     @existingClass;
     @overwritePreviousDefinition;
-    @descriptor(readonly);
     int a;
     int b;
 }
@@ -567,7 +551,6 @@ class cBernoulli extends cRandom
 {
     @existingClass;
     @overwritePreviousDefinition;
-    @descriptor(readonly);
     double p;
 }
 
@@ -575,7 +558,6 @@ class cBinomial extends cRandom
 {
     @existingClass;
     @overwritePreviousDefinition;
-    @descriptor(readonly);
     int n;
     double p;
 }
@@ -584,7 +566,6 @@ class cGeometric extends cRandom
 {
     @existingClass;
     @overwritePreviousDefinition;
-    @descriptor(readonly);
     double p;
 }
 
@@ -592,7 +573,6 @@ class cNegBinomial extends cRandom
 {
     @existingClass;
     @overwritePreviousDefinition;
-    @descriptor(readonly);
     int n;
     double p;
 }
@@ -601,7 +581,6 @@ class cPoisson extends cRandom
 {
     @existingClass;
     @overwritePreviousDefinition;
-    @descriptor(readonly);
     double lambda;
 }
 
@@ -611,22 +590,20 @@ class cStatistic extends cOwnedObject
 {
     @existingClass;
     @overwritePreviousDefinition;
-    @descriptor(readonly);
     @icon(statistic);
-    long count @group(statistical summary) @hint("Number of observations collected, regardless of their weights");
-    double sumWeights @group(statistical summary) @hint("Sum of weights, which equals the number of observations in the unweighted case");
-    double min @group(statistical summary) @hint("Minimum of the observations");
-    double max @group(statistical summary) @hint("Maximum of the observations");
-    double mean @group(statistical summary) @hint("Mean of the observations");
-    double stddev @group(statistical summary) @hint("Standard deviation of the observations");
-    double variance @group(statistical summary) @hint("Variance of the observations");
+    long count @readonly @group(statistical summary) @hint("Number of observations collected, regardless of their weights");
+    double sumWeights @readonly @group(statistical summary) @hint("Sum of weights, which equals the number of observations in the unweighted case");
+    double min @readonly @group(statistical summary) @hint("Minimum of the observations");
+    double max @readonly @group(statistical summary) @hint("Maximum of the observations");
+    double mean @readonly @group(statistical summary) @hint("Mean of the observations");
+    double stddev @readonly @group(statistical summary) @hint("Standard deviation of the observations");
+    double variance @readonly @group(statistical summary) @hint("Variance of the observations");
 }
 
 class cStdDev extends cStatistic
 {
     @existingClass;
     @overwritePreviousDefinition;
-    @descriptor(readonly);
 }
 
 class cAbstractHistogram extends cStdDev
@@ -634,11 +611,11 @@ class cAbstractHistogram extends cStdDev
     @existingClass;
     @overwritePreviousDefinition;
     @descriptor(readonly);
-    bool binsAlreadySetUp @getter(binsAlreadySetUp) @group(histogram) @hint("If false, the object is still collecting initial observations to gather information for laying out histogram bins");
-    double underflowSumWeights  @group(histogram) @hint("Total weight of observations above the last histogram bin");
-    double overflowSumWeights @group(histogram) @hint("Total weight of observations above the last histogram bin");
-    int numBins @group(histogram) @hint("Number of bins in the histogram");
-    cAbstractHistogram::Bin binInfo[] @getter(internalGetBinInfo) @sizeGetter(getNumBins) @group(histogram) @hint("Histogram bin bounds, observation count in the bin, and density estimate in the bin");
+    bool binsAlreadySetUp @readonly @getter(binsAlreadySetUp) @group(histogram) @hint("If false, the object is still collecting initial observations to gather information for laying out histogram bins");
+    double underflowSumWeights @readonly @group(histogram) @hint("Total weight of observations above the last histogram bin");
+    double overflowSumWeights @readonly @group(histogram) @hint("Total weight of observations above the last histogram bin");
+    int numBins @readonly @group(histogram) @hint("Number of bins in the histogram");
+    cAbstractHistogram::Bin binInfo[] @readonly @getter(internalGetBinInfo) @sizeGetter(getNumBins) @group(histogram) @hint("Histogram bin bounds, observation count in the bin, and density estimate in the bin");
 }
 
 class cAbstractHistogram::Bin
@@ -711,21 +688,18 @@ class cPrecollectionBasedDensityEst extends cAbstractHistogram
 {
     @existingClass;
     @overwritePreviousDefinition;
-    @descriptor(readonly);
 }
 
 class cKSplit extends cPrecollectionBasedDensityEst
 {
     @existingClass;
     @overwritePreviousDefinition;
-    @descriptor(readonly);
 }
 
 class cPSquare extends cAbstractHistogram
 {
     @existingClass;
     @overwritePreviousDefinition;
-    @descriptor(readonly);
 }
 
 //----
@@ -734,8 +708,7 @@ class cExpression extends cObject
 {
     @existingClass;
     @overwritePreviousDefinition;
-    @descriptor(readonly);
-    string str @getter(str);
+    string str @readonly @getter(str);
 }
 
 class cValue
@@ -743,10 +716,9 @@ class cValue
     @existingClass;
     @overwritePreviousDefinition;
     @descriptor(readonly);
-    @polymorphic(false);
     @toString(.str());
-    int type @enum(cValue::Type) @hint("Value type");
-    cObject *containedObject @getter(cValue::getContainedObject($)) @hint("Only of type==OBJECT");
+    int type @readonly @enum(cValue::Type) @hint("Value type");
+    cObject *containedObject @readonly @getter(cValue::getContainedObject($)) @hint("Only of type==OBJECT");
 }
 
 class cValueArray extends cOwnedObject
