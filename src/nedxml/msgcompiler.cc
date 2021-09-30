@@ -64,6 +64,7 @@ const char *MsgCompiler::BUILTIN_DEFINITIONS =
         @property[editable](type=bool; usage=field,class; desc="Specifies whether field value (or value of fields that are instances of this type) can be set via the class descriptor's setFieldValueFromString() and setFieldValue() methods.");
         @property[replaceable](type=bool; usage=field; desc="If true: Field is a pointer whose value can be set via the class descriptor's setFieldStructValuePointer() and setFieldValue() methods.");
         @property[resizable](type=bool; usage=field; desc="If true: Field is a variable-size array whose size can be set via the class descriptor's setFieldArraySize() method.");
+        @property[readonly](type=bool; usage=field; desc="If true: Equivalent to @editable(false) @replaceable(false) @resizable(false).");
         @property[overrideGetter](type=bool; usage=field; desc="If true: Add the 'override' keyword to the declaration of the getter method.");
         @property[overrideSetter](type=bool; usage=field; desc="If true: Add the 'override' keyword to the declaration of the setter method.");
         @property[enum](type=string; usage=field; desc="For integer fields: Values are from the given enum.");

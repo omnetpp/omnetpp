@@ -123,6 +123,7 @@ class NEDXML_API MsgAnalyzer
     static constexpr const char* PROP_EDITABLE = "editable";
     static constexpr const char* PROP_REPLACEABLE = "replaceable";
     static constexpr const char* PROP_RESIZABLE = "resizable";
+    static constexpr const char* PROP_READONLY = "readonly";
     static constexpr const char* PROP_OVERRIDEGETTER = "overrideGetter";
     static constexpr const char* PROP_OVERRIDESETTER = "overrideSetter";
     static constexpr const char* PROP_ENUM = "enum";
