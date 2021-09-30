@@ -43,13 +43,13 @@ fi
 
 if [ $(uname) = "Darwin" ]; then
   if [ ! -d $dir/tools/macosx ]; then
-      echo "Error: We are running on macOS, but you seem to have downloaded the Linux version of the installation package!"
+      echo "Error: We are running on macOS, but you seem to have downloaded the Linux or Windows version of the installation package!"
       return 1
   else
       if [ $(arch) = "arm64" ]; then
-        echo "Error: We are running on an Apple Mx processor which is not supported natively."
-        echo "Start a new shell with 'arch -x86_64 /bin/zsh --login' to turn on x86 emulation"
-        echo "and then execute 'source setenv' again from that shell."
+        echo "NOTE: We are running on an Apple M processor which is not supported natively."
+        echo "Turning on x86_64 emulation by starting a new shell with 'arch -x86_64 /bin/zsh -i' ..."
+        export dir; arch -x86_64 /bin/zsh -c 'source $dir/setenv; zsh -i'
         return 1
       else
         cd $dir/tools/macosx && source setenv ; cd - >/dev/null
