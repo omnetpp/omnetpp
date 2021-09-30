@@ -117,11 +117,11 @@ class simtime_t
     @existingClass;
     @overwritePreviousDefinition;
     @descriptor(false);
-    @opaque;
-    @byValue;
+    @primitive;
     @polymorphic(false);
     @cppType(omnetpp::simtime_t);
-    @fromString(string2simtime($)); @toString(simtime2string($));
+    @toString(simtime2string($));
+    @fromString(string2simtime($));
     @toValue($.dbl()); // note: precision loss
     @fromValue($.doubleValue());
     @defaultValue(SIMTIME_ZERO);
@@ -1012,6 +1012,7 @@ class cFigure::Point
     @overwritePreviousDefinition;
     @descriptor(false);
     @opaque;
+    @editable;
     @polymorphic(false);
     @toString(.str());
     @fromString(cFigure::parsePoint($));
@@ -1025,6 +1026,7 @@ class cFigure::Rectangle
     @overwritePreviousDefinition;
     @descriptor(false);
     @opaque;
+    @editable;
     @polymorphic(false);
     @toString(.str());
     @fromString(cFigure::parseRectangle($));
@@ -1038,6 +1040,7 @@ class cFigure::Transform
     @overwritePreviousDefinition;
     @descriptor(false);
     @opaque;
+    @editable;
     @polymorphic(false);
     @toString(.str());
     @fromString(cFigure::parseTransform($));
@@ -1051,6 +1054,7 @@ class cFigure::Color
     @overwritePreviousDefinition;
     @descriptor(false);
     @opaque;
+    @editable;
     @polymorphic(false);
     @toString(.str());
     @fromString(cFigure::parseColor($));
@@ -1064,6 +1068,7 @@ class cFigure::Font
     @overwritePreviousDefinition;
     @descriptor(false);
     @opaque;
+    @editable;
     @polymorphic(false);
     @toString(.str());
     @fromString(cFigure::parseFont($));
