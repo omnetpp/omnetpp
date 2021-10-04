@@ -25,10 +25,10 @@ def add_inputs(input_patterns):
     inputfiles = list(set(inputfiles + input_patterns))  # make unique
 
 def _parse_int(s):
-    return int(s) if s else None
+    return int(s) if s else np.nan
 
 def _parse_float(s):
-    return float(s) if s else None
+    return float(s) if s else np.nan
 
 def _parse_ndarray(s):
     return np.fromstring(s, sep=' ') if s else None
@@ -52,7 +52,8 @@ def _read_csv(reader):
         'binvalues': _parse_ndarray,
         'vectime': _parse_ndarray,
         'vecvalue': _parse_ndarray
-    })
+    },
+    low_memory=False) # This is here just to silence a DtypeWarning, should not have any other effect.
 
     def _transform(row):
         if row["type"] == "scalar":
