@@ -39,7 +39,7 @@ def is_native_plot():
 if is_native_plot():
     from omnetpp.scave.impl_ide import plot as impl
 else:
-    from .impl_charttool import plot as impl
+    from .impl import plot_matplotlib as impl
 
 
 

@@ -4,7 +4,6 @@ from omnetpp.scave import utils # for small misc. methods
 
 
 
-
 def set_properties(*vargs, **kwargs):
     pass
 

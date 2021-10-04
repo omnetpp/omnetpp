@@ -16,7 +16,7 @@ import pandas as pd
 import xml.etree.ElementTree as ET
 import matplotlib.pyplot as plt
 from omnetpp.scave.analysis import *
-from omnetpp.scave.impl_charttool import results, chart
+from omnetpp.scave.impl import results_standalone as results, chart_charttool as chart
 
 
 def error(message):

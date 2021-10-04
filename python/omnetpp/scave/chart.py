@@ -14,7 +14,7 @@ import os
 if os.getenv("WITHIN_OMNETPP_IDE") == "yes":
     from omnetpp.scave.impl_ide import chart as impl
 else:
-    from .impl_charttool import chart as impl
+    from .impl import chart_charttool as impl
 
 
 def get_properties():

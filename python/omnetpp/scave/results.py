@@ -158,7 +158,7 @@ import os
 if os.getenv("WITHIN_OMNETPP_IDE") == "yes":
     from omnetpp.scave.impl_ide import results as impl
 else:
-    from .impl_charttool import results as impl
+    from .impl import results_standalone as impl
 
 from math import inf
 from functools import wraps

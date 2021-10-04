@@ -12,8 +12,8 @@ import subprocess
 import xml.etree.ElementTree as ET
 import xml.dom.minidom as minidom # because ET cannot pretty-print
 import matplotlib.pyplot as plt
-import omnetpp.scave.impl_charttool.results as results_module
-import omnetpp.scave.impl_charttool.chart as chart_module
+import omnetpp.scave.impl.results_standalone as results_module
+import omnetpp.scave.impl.chart_charttool as chart_module
 import omnetpp.scave.utils as utils
 
 
