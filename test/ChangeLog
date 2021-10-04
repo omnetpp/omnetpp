@@ -1,3 +1,5 @@
+2021-10-04  ------ omnetpp-5.7 released ------
+
 2020-11-11  Andras Varga
 
 	sim: cHasher: fix #846 "cHasher::add - correction & optimisation"

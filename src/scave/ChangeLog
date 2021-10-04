@@ -1,3 +1,5 @@
+2021-10-04  ------ omnetpp-5.7 released ------
+
 2021-06-03  Attila Torok
 
 	* JsonExporter: Fix: In the exported file, result items appeared under

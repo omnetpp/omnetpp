@@ -1,3 +1,5 @@
+2021-10-04  ------ omnetpp-5.7 released ------
+
 2021-08-03  Andras Varga
 
 	* NED: Support for the "parent.<name>" (and "parent.<name>.<name>") nsyntax of

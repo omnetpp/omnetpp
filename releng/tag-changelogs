@@ -1,0 +1,30 @@
+#!/bin/sh
+
+if [ ! -f Version ]; then
+    echo 'Must be called in top-level omnetpp dir!'
+    exit
+fi
+
+# cvstag and release names...
+relname=`cat Version`
+escaped_relname=`cat Version | sed 's/\./\\\\./g'`
+
+# check tag format
+echo "About to add --- $relname released --- line to ChangeLogs"
+echo "Enter to continue..."
+read tmp
+
+# update ChangeLog files. (remove earlier marker line if exists, plus blank line below it)
+today=`date '+20%y-%m-%d'`
+line="$today  ------ $relname released ------"
+pattern="^[0-9-]\+  ------ $escaped_relname released ------"
+echo "Finding ChangeLogs..."
+changelogs=`find . -name ChangeLog`
+echo "Updating ChangeLogs..."
+for i in $changelogs; do
+    echo "$line" > $i.b
+    echo "" >> $i.b
+    sed "/$pattern/{N;d;}" $i >> $i.b || exit 1
+    mv $i.b $i || exit 1
+done
+echo "Done"

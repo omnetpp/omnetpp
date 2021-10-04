@@ -1,3 +1,5 @@
+2021-10-04  ------ omnetpp-5.7 released ------
+
 2017-04-27  Andras Varga
 
 	* MatchExpression: added 'field =~ pattern' syntax as alternative to 'field(pattern)'
