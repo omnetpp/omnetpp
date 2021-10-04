@@ -20,6 +20,8 @@ def set_inputs(input_patterns):
 
 def add_inputs(input_patterns):
     global inputfiles
+    if type(input_patterns) == str:
+        input_patterns = [ input_patterns ]
     inputfiles = list(set(inputfiles + input_patterns))  # make unique
 
 def _parse_int(s):
@@ -68,12 +70,10 @@ def _read_csv(reader):
     return df
 
 
-def _read_result_files(filter_expression, file_extensions, result_type, *additional_args):
-
-    filelist = [i for i in inputfiles if any([i.endswith(e) for e in file_extensions])]
+def _read_result_files(filter_expression, result_type, *additional_args):
     type_filter = ['-T', result_type] if result_type else []
     filter_expr_args = ['-f', filter_expression]
-    command = ["opp_scavetool", "x", *filelist, *type_filter, *filter_expr_args,
+    command = ["opp_scavetool", "x", *inputfiles, *type_filter, *filter_expr_args,
                 "-F", "CSV-R", "-o", "-", *additional_args]
 
     proc = subprocess.run(command, stderr=subprocess.PIPE, stdout=subprocess.PIPE, universal_newlines=False)
@@ -87,6 +87,11 @@ def _read_result_files(filter_expression, file_extensions, result_type, *additio
 
 
 def read_result_files(filenames, filter_expression, include_fields_as_scalars, vector_start_time, vector_end_time):
+    if type(filenames) == str:
+        filenames = [ filenames ]
+    if filter_expression is not None and not filter_expression:
+        raise ValueError("Empty filter expression")
+
     #type_filter = ['-T', result_type] if result_type else []
     type_filter = []
 
@@ -100,7 +105,7 @@ def read_result_files(filenames, filter_expression, include_fields_as_scalars, v
         args.append("--end-time")
         args.append(str(vector_end_time))
 
-    filter_expr_args = ['-f', filter_expression]
+    filter_expr_args = [] if filter_expression is None else ['-f', filter_expression]
     command = ["opp_scavetool", "x", *filenames, *type_filter, *filter_expr_args,
                 "-F", "CSV-R", "-o", "-", *args]
 
@@ -123,7 +128,7 @@ def get_results(filter_expression, row_types, omit_unused_columns, include_field
     if end_time is not None and not np.isnan(end_time):
         args.append("--end-time")
         args.append(str(end_time))
-    df = _read_result_files(filter_expression, ['.sca', '.vec'], None, *args)
+    df = _read_result_files(filter_expression, None, *args)
 
     if row_types is not None:
         df = df[df["type"].isin(row_types)]
@@ -139,27 +144,27 @@ def get_scalars(filter_expression, include_attrs, include_fields, include_runatt
     if include_fields:
         args.append("--add-fields-as-scalars")
     # TODO filter row types based on include_ args, as optimization
-    df = _read_result_files(filter_expression, ['.sca'], 's', *args)
+    df = _read_result_files(filter_expression, 's', *args)
     df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
     return df
 
 def get_vectors(filter_expression, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name, start_time, end_time):
-    df = _read_result_files(filter_expression, ['.vec'], 'v', '--start-time', str(start_time), '--end-time', str(end_time))
+    df = _read_result_files(filter_expression, 'v', '--start-time', str(start_time), '--end-time', str(end_time))
     df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
     return df
 
 def get_statistics(filter_expression, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name):
-    df = _read_result_files(filter_expression, ['.sca'], 't')
+    df = _read_result_files(filter_expression, 't')
     df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
     return df
 
 def get_histograms(filter_expression, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name):
-    df = _read_result_files(filter_expression, ['.sca'], 'h')
+    df = _read_result_files(filter_expression, 'h')
     df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
     return df
 
 def get_parameters(filter_expression, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name):
-    df = _read_result_files(filter_expression, ['.sca'], 'p')
+    df = _read_result_files(filter_expression, 'p')
     df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
     return df
 

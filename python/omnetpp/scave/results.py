@@ -85,9 +85,10 @@ else:
 from math import inf
 from functools import wraps
 
+import numpy as np
 import pandas as pd
 
-from omnetpp.scave.utils import _pivot_results, _select_param_assignments
+from omnetpp.scave.utils import _pivot_results, _pivot_metadata, _select_param_assignments
 
 def _guarded_result_query_func(func):
     @wraps(func)
@@ -121,8 +122,6 @@ def add_inputs(filenames):
     impl.add_inputs(filenames)
 
 def read_result_files(filenames, filter_expression="", include_fields_as_scalars=False, vector_start_time=-inf, vector_end_time=inf):
-    if not filter_expression:
-        raise ValueError("Empty filter expression")
     return impl.read_result_files(**locals())
 
 @_guarded_result_query_func
@@ -165,14 +164,32 @@ def get_results(filter_or_dataframe="", row_types=None, omit_unused_columns=True
         del filter_or_dataframe
         return impl.get_results(**locals())
     else:
+        if include_fields_as_scalars:
+            raise ValueError("include_fields_as_scalars is not supported when filter_or_dataframe is a dataframe")
+
         df = filter_or_dataframe
         if row_types is not None:
             df = df[df["type"].isin(row_types)]
 
         if omit_unused_columns:
-            df.dropna(axis='columns', how='all', inplace=True)
+            df = df.dropna(axis='columns', how='all')
 
         df.reset_index(inplace=True, drop=True)
+
+        if start_time != -inf or end_time != inf:
+            def crop(row):
+                t = row['vectime']
+                v = row['vecvalue']
+
+                from_index = np.searchsorted(t, start_time, 'left')
+                to_index = np.searchsorted(t, end_time, 'left')
+
+                row['vectime'] = t[from_index:to_index]
+                row['vecvalue'] = v[from_index:to_index]
+
+                return row
+            df = df.transform(crop, axis='columns')
+
         return df
 
 
@@ -194,9 +211,20 @@ def get_runs(filter_or_dataframe="", include_runattrs=False, include_itervars=Fa
     - `runID` (string): Identifies the simulation run
     - Additional metadata items (run attributes, iteration variables, etc.), as requested
     """
-    filter_expression = filter_or_dataframe
-    del filter_or_dataframe
-    return impl.get_runs(**locals())
+    if type(filter_or_dataframe) is str:
+        filter_expression = filter_or_dataframe
+        del filter_or_dataframe
+        return impl.get_runs(**locals())
+    else:
+        df = filter_or_dataframe
+        runs = df[["runID"]].drop_duplicates()
+        row_types = ["itervar", "runattr", "config"]
+        metadf = df[df["type"].isin(row_types)]
+        df = _pivot_metadata(runs, metadf, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
+        df.dropna(axis='columns', how='all', inplace=True)
+        return df
+
+
 
 
 @_guarded_result_query_func
@@ -229,11 +257,19 @@ def get_runattrs(filter_or_dataframe="", include_runattrs=False, include_itervar
         return impl.get_runattrs(**locals())
     else:
         df = filter_or_dataframe
-        df = df[df["type"] == "runattr"]
-        df = df[["runID", "attrname", "attrvalue"]]
-        df.rename(columns={"attrname": "name", "attrvalue": "value"}, inplace=True)
-        df.reset_index(inplace=True, drop=True)
-        print(df)
+
+        runattrs = df[df["type"] == "runattr"]
+        runattrs = runattrs[["runID", "attrname", "attrvalue"]]
+        runattrs.rename(columns={"attrname": "name", "attrvalue": "value"}, inplace=True)
+        runattrs.reset_index(inplace=True, drop=True)
+
+        row_types = ["itervar", "runattr", "config"]
+        metadf = df[df["type"].isin(row_types)]
+
+        df = _pivot_metadata(runattrs, metadf, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
+        df.dropna(axis='columns', how='all', inplace=True)
+
+        return df
 
 
 @_guarded_result_query_func
@@ -262,11 +298,19 @@ def get_itervars(filter_or_dataframe="", include_runattrs=False, include_itervar
         return impl.get_itervars(**locals())
     else:
         df = filter_or_dataframe
-        df = df[df["type"] == "itervar"]
-        df = df[["runID", "attrname", "attrvalue"]]
-        df.rename(columns={"attrname": "name", "attrvalue": "value"}, inplace=True)
-        df.reset_index(inplace=True, drop=True)
-        print(df)
+
+        itervars = df[df["type"] == "itervar"]
+        itervars = itervars[["runID", "attrname", "attrvalue"]]
+        itervars.rename(columns={"attrname": "name", "attrvalue": "value"}, inplace=True)
+        itervars.reset_index(inplace=True, drop=True)
+
+        row_types = ["itervar", "runattr", "config"]
+        metadf = df[df["type"].isin(row_types)]
+
+        df = _pivot_metadata(itervars, metadf, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
+        df.dropna(axis='columns', how='all', inplace=True)
+
+        return df
 
 
 @_guarded_result_query_func
@@ -301,6 +345,11 @@ def get_scalars(filter_or_dataframe="", include_attrs=False, include_fields=Fals
         del filter_or_dataframe
         return impl.get_scalars(**locals())
     else:
+        if include_fields:
+            raise ValueError("include_fields is not supported when filter_or_dataframe is a dataframe")
+        if merge_module_and_name:
+            raise ValueError("merge_module_and_name is not supported when filter_or_dataframe is a dataframe")
+
         df = filter_or_dataframe
         row_types = ["scalar", "itervar", "runattr", "config", "attr"]
         df = df[df["type"].isin(row_types)]
@@ -344,6 +393,9 @@ def get_parameters(filter_or_dataframe="", include_attrs=False, include_runattrs
         del filter_or_dataframe
         return impl.get_parameters(**locals())
     else:
+        if merge_module_and_name:
+            raise ValueError("merge_module_and_name is not supported when filter_or_dataframe is a dataframe")
+
         df = filter_or_dataframe
         row_types = ["param", "itervar", "runattr", "config", "attr"]
         df = df[df["type"].isin(row_types)]
@@ -384,11 +436,29 @@ def get_vectors(filter_or_dataframe="", include_attrs=False, include_runattrs=Fa
         del filter_or_dataframe
         return impl.get_vectors(**locals())
     else:
+        if merge_module_and_name:
+            raise ValueError("merge_module_and_name is not supported when filter_or_dataframe is a dataframe")
+
         df = filter_or_dataframe
         row_types = ["vector", "itervar", "runattr", "config", "attr"]
         df = df[df["type"].isin(row_types)]
         df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
         df.dropna(axis='columns', how='all', inplace=True)
+
+        if start_time != -inf or end_time != inf:
+            def crop(row):
+                t = row['vectime']
+                v = row['vecvalue']
+
+                from_index = np.searchsorted(t, start_time, 'left')
+                to_index = np.searchsorted(t, end_time, 'left')
+
+                row['vectime'] = t[from_index:to_index]
+                row['vecvalue'] = v[from_index:to_index]
+
+                return row
+            df = df.transform(crop, axis='columns')
+
         return df
 
 
@@ -422,6 +492,9 @@ def get_statistics(filter_or_dataframe="", include_attrs=False, include_runattrs
         del filter_or_dataframe
         return impl.get_statistics(**locals())
     else:
+        if merge_module_and_name:
+            raise ValueError("merge_module_and_name is not supported when filter_or_dataframe is a dataframe")
+
         df = filter_or_dataframe
         row_types = ["statistic", "itervar", "runattr", "config", "attr"]
         df = df[df["type"].isin(row_types)]
@@ -462,6 +535,9 @@ def get_histograms(filter_or_dataframe="", include_attrs=False, include_runattrs
         del filter_or_dataframe
         return impl.get_histograms(**locals())
     else:
+        if merge_module_and_name:
+            raise ValueError("merge_module_and_name is not supported when filter_or_dataframe is a dataframe")
+
         df = filter_or_dataframe
         row_types = ["histogram", "itervar", "runattr", "config", "attr"]
         df = df[df["type"].isin(row_types)]
@@ -496,12 +572,19 @@ def get_config_entries(filter_or_dataframe, include_runattrs=False, include_iter
         return impl.get_config_entries(**locals())
     else:
         df = filter_or_dataframe
-        df = df[df["type"] == "config"]
 
-        df = df[["runID", "attrname", "attrvalue"]]
-        df.rename(columns={"attrname": "name", "attrvalue": "value"}, inplace=True)
-        df.reset_index(inplace=True, drop=True)
-        print(df)
+        configentries = df[df["type"] == "config"]
+        configentries = configentries[["runID", "attrname", "attrvalue"]]
+        configentries.rename(columns={"attrname": "name", "attrvalue": "value"}, inplace=True)
+        configentries.reset_index(inplace=True, drop=True)
+
+        row_types = ["itervar", "runattr", "config"]
+        metadf = df[df["type"].isin(row_types)]
+
+        df = _pivot_metadata(configentries, metadf, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
+        df.dropna(axis='columns', how='all', inplace=True)
+
+        return df
 
 
 @_guarded_result_query_func
@@ -531,10 +614,17 @@ def get_param_assignments(filter_or_dataframe, include_runattrs=False, include_i
         return impl.get_param_assignments(**locals())
     else:
         df = filter_or_dataframe
-        df = df[df["type"] == "config"]
-        df = df[["runID", "attrname", "attrvalue"]]
-        df = _select_param_assignments
-        df.rename(columns={"attrname": "name", "attrvalue": "value"}, inplace=True)
-        df.reset_index(inplace=True, drop=True)
-        print(df)
+
+        paramassignments = _select_param_assignments(df[df["type"] == "config"])
+        paramassignments = paramassignments[["runID", "attrname", "attrvalue"]]
+        paramassignments.rename(columns={"attrname": "name", "attrvalue": "value"}, inplace=True)
+        paramassignments.reset_index(inplace=True, drop=True)
+
+        row_types = ["itervar", "runattr", "config"]
+        metadf = df[df["type"].isin(row_types)]
+
+        df = _pivot_metadata(paramassignments, metadf, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
+        df.dropna(axis='columns', how='all', inplace=True)
+
+        return df
 

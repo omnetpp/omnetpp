@@ -1452,3 +1452,25 @@ def _pivot_results(df, include_attrs, include_runattrs, include_itervars, includ
     df.reset_index(inplace=True, drop=True)
 
     return df
+
+
+def _pivot_metadata(df, metadf, include_runattrs, include_itervars, include_param_assignments, include_config_entries):
+    itervars, runattrs, configs, remainder = _split_by_types(metadf, ["itervar", "runattr", "config"])
+    params = _select_param_assignments(configs)
+
+    assert(remainder.empty)
+
+    if include_itervars:
+        df = _append_metadata_columns(df, itervars, "_itervar")
+    if include_runattrs:
+        df = _append_metadata_columns(df, runattrs, "_runattr")
+    if include_config_entries:
+        df = _append_metadata_columns(df, configs, "_config")
+    if include_param_assignments and not include_config_entries:
+        df = _append_metadata_columns(df, params, "_param")
+
+    df = df.drop(['type', 'attrname', 'attrvalue'], axis=1, errors="ignore")
+
+    df.reset_index(inplace=True, drop=True)
+
+    return df
