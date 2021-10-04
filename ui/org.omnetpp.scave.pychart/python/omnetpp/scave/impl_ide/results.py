@@ -239,29 +239,25 @@ def get_param_assignments(filter_expression, include_runattrs, include_itervars,
     return _append_additional_data(df, None, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
 
 
-def get_scalars(filter_expression, include_attrs, include_fields, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name):
+def get_scalars(filter_expression, include_attrs, include_fields, include_runattrs, include_itervars, include_param_assignments, include_config_entries):
     shmname = Gateway.results_provider.getScalarsPickle(filter_expression, include_attrs, include_fields)
     scalars, attrs = _load_pickle_from_shm(shmname)
     df = pd.DataFrame(scalars, columns=["runID", "module", "name", "value"])
 
     df =_append_additional_data(df, attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
-    if merge_module_and_name:
-        df.name = df.module + "." + df.name
     return df
 
 
-def get_parameters(filter_expression, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name):
+def get_parameters(filter_expression, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries):
     shmname = Gateway.results_provider.getParamValuesPickle(filter_expression, include_attrs)
     parameters, attrs = _load_pickle_from_shm(shmname)
     df = pd.DataFrame(parameters, columns=["runID", "module", "name", "value"])
 
     df = _append_additional_data(df, attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
-    if merge_module_and_name:
-        df.name = df.module + "." + df.name
     return df
 
 
-def get_vectors(filter_expression, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name, start_time, end_time):
+def get_vectors(filter_expression, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, start_time, end_time):
     shmnames = Gateway.results_provider.getVectorsPickle(filter_expression, include_attrs, float(start_time), float(end_time))
     vectors, attrs = _load_pickle_from_shm(shmnames[0])
     df = pd.DataFrame(vectors, columns=["runID", "module", "name", "vectime", "vecvalue"])
@@ -273,23 +269,19 @@ def get_vectors(filter_expression, include_attrs, include_runattrs, include_iter
     df["vecvalue"] = df["vecvalue"].map(getter)
 
     df = _append_additional_data(df, attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
-    if merge_module_and_name:
-        df.name = df.module + "." + df.name
     return df
 
 
-def get_statistics(filter_expression, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name):
+def get_statistics(filter_expression, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries):
     shmname = Gateway.results_provider.getStatisticsPickle(filter_expression, include_attrs)
     statistics, attrs = _load_pickle_from_shm(shmname)
     df = pd.DataFrame(statistics, columns=["runID", "module", "name", "count", "sumweights", "mean", "stddev", "min", "max"])
 
     df = _append_additional_data(df, attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
-    if merge_module_and_name:
-        df.name = df.module + "." + df.name
     return df
 
 
-def get_histograms(filter_expression, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name):
+def get_histograms(filter_expression, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries):
     shmname = Gateway.results_provider.getHistogramsPickle(filter_expression, include_attrs)
     histograms, attrs = _load_pickle_from_shm(shmname)
     df = pd.DataFrame(histograms, columns=["runID", "module", "name", "count", "sumweights", "mean", "stddev", "min", "max", "underflows", "overflows", "binedges", "binvalues"])
@@ -298,6 +290,4 @@ def get_histograms(filter_expression, include_attrs, include_runattrs, include_i
     df["binvalues"] = df["binvalues"].map(lambda v: np.frombuffer(v, dtype=np.double), na_action='ignore')
 
     df = _append_additional_data(df, attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
-    if merge_module_and_name:
-        df.name = df.module + "." + df.name
     return df

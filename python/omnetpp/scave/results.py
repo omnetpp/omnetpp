@@ -314,7 +314,7 @@ def get_itervars(filter_or_dataframe="", include_runattrs=False, include_itervar
 
 
 @_guarded_result_query_func
-def get_scalars(filter_or_dataframe="", include_attrs=False, include_fields=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False):
+def get_scalars(filter_or_dataframe="", include_attrs=False, include_fields=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
     """
     Returns a filtered list of scalar results.
 
@@ -329,8 +329,6 @@ def get_scalars(filter_or_dataframe="", include_attrs=False, include_fields=Fals
     - `include_runattrs`, `include_itervars`, `include_param_assignments`, `include_config_entries` (bool):
       Optional. When set to `True`, additional pieces of metadata about the run is appended to the DataFrame, pivoted into columns.
       See the "Metadata columns" section of the module documentation for details.
-    - `merge_module_and_name` (bool): Optional. When set to `True`, the value in the `module` column
-      is prepended to the value in the `name` column, joined by a period, in every row.
 
     Columns of the returned DataFrame:
 
@@ -347,19 +345,17 @@ def get_scalars(filter_or_dataframe="", include_attrs=False, include_fields=Fals
     else:
         if include_fields:
             raise ValueError("include_fields is not supported when filter_or_dataframe is a dataframe")
-        if merge_module_and_name:
-            raise ValueError("merge_module_and_name is not supported when filter_or_dataframe is a dataframe")
 
         df = filter_or_dataframe
         row_types = ["scalar", "itervar", "runattr", "config", "attr"]
         df = df[df["type"].isin(row_types)]
-        df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
+        df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
         df.dropna(axis='columns', how='all', inplace=True)
         return df
 
 
 @_guarded_result_query_func
-def get_parameters(filter_or_dataframe="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False):
+def get_parameters(filter_or_dataframe="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
     """
     Returns a filtered list of parameters - actually computed values of individual `cPar` instances in the fully built network.
 
@@ -377,8 +373,6 @@ def get_parameters(filter_or_dataframe="", include_attrs=False, include_runattrs
     - `include_runattrs`, `include_itervars`, `include_param_assignments`, `include_config_entries` (bool):
       Optional. When set to `True`, additional pieces of metadata about the run is appended to the DataFrame, pivoted into columns.
       See the "Metadata columns" section of the module documentation for details.
-    - `merge_module_and_name` (bool): Optional. When set to `True`, the value in the `module` column
-      is prepended to the value in the `name` column, joined by a period, in every row.
 
     Columns of the returned DataFrame:
 
@@ -393,19 +387,16 @@ def get_parameters(filter_or_dataframe="", include_attrs=False, include_runattrs
         del filter_or_dataframe
         return impl.get_parameters(**locals())
     else:
-        if merge_module_and_name:
-            raise ValueError("merge_module_and_name is not supported when filter_or_dataframe is a dataframe")
-
         df = filter_or_dataframe
         row_types = ["param", "itervar", "runattr", "config", "attr"]
         df = df[df["type"].isin(row_types)]
-        df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
+        df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
         df.dropna(axis='columns', how='all', inplace=True)
         return df
 
 
 @_guarded_result_query_func
-def get_vectors(filter_or_dataframe="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False, start_time=-inf, end_time=inf):
+def get_vectors(filter_or_dataframe="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, start_time=-inf, end_time=inf):
     """
     Returns a filtered list of vector results.
 
@@ -418,8 +409,6 @@ def get_vectors(filter_or_dataframe="", include_attrs=False, include_runattrs=Fa
     - `include_runattrs`, `include_itervars`, `include_param_assignments`, `include_config_entries` (bool):
       Optional. When set to `True`, additional pieces of metadata about the run is appended to the DataFrame, pivoted into columns.
       See the "Metadata columns" section of the module documentation for details.
-    - `merge_module_and_name` (bool): Optional. When set to `True`, the value in the `module` column
-      is prepended to the value in the `name` column, joined by a period, in every row.
     - `start_time`, `end_time` (double): Optional time limits to trim the data of vector type results.
       The unit is seconds, both the `vectime` and `vecvalue` arrays will be affected, the interval is left-closed, right-open.
 
@@ -436,13 +425,10 @@ def get_vectors(filter_or_dataframe="", include_attrs=False, include_runattrs=Fa
         del filter_or_dataframe
         return impl.get_vectors(**locals())
     else:
-        if merge_module_and_name:
-            raise ValueError("merge_module_and_name is not supported when filter_or_dataframe is a dataframe")
-
         df = filter_or_dataframe
         row_types = ["vector", "itervar", "runattr", "config", "attr"]
         df = df[df["type"].isin(row_types)]
-        df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
+        df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
         df.dropna(axis='columns', how='all', inplace=True)
 
         if start_time != -inf or end_time != inf:
@@ -463,7 +449,7 @@ def get_vectors(filter_or_dataframe="", include_attrs=False, include_runattrs=Fa
 
 
 @_guarded_result_query_func
-def get_statistics(filter_or_dataframe="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False):
+def get_statistics(filter_or_dataframe="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
     """
     Returns a filtered list of statistics results.
 
@@ -476,8 +462,6 @@ def get_statistics(filter_or_dataframe="", include_attrs=False, include_runattrs
     - `include_runattrs`, `include_itervars`, `include_param_assignments`, `include_config_entries` (bool):
       Optional. When set to `True`, additional pieces of metadata about the run is appended to the DataFrame, pivoted into columns.
       See the "Metadata columns" section of the module documentation for details.
-    - `merge_module_and_name` (bool): Optional. When set to `True`, the value in the `module` column
-      is prepended to the value in the `name` column, joined by a period, in every row.
 
     Columns of the returned DataFrame:
 
@@ -492,19 +476,16 @@ def get_statistics(filter_or_dataframe="", include_attrs=False, include_runattrs
         del filter_or_dataframe
         return impl.get_statistics(**locals())
     else:
-        if merge_module_and_name:
-            raise ValueError("merge_module_and_name is not supported when filter_or_dataframe is a dataframe")
-
         df = filter_or_dataframe
         row_types = ["statistic", "itervar", "runattr", "config", "attr"]
         df = df[df["type"].isin(row_types)]
-        df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
+        df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
         df.dropna(axis='columns', how='all', inplace=True)
         return df
 
 
 @_guarded_result_query_func
-def get_histograms(filter_or_dataframe="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False):
+def get_histograms(filter_or_dataframe="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
     """
     Returns a filtered list of histogram results.
 
@@ -517,8 +498,6 @@ def get_histograms(filter_or_dataframe="", include_attrs=False, include_runattrs
     - `include_runattrs`, `include_itervars`, `include_param_assignments`, `include_config_entries` (bool):
       Optional. When set to `True`, additional pieces of metadata about the run is appended to the DataFrame, pivoted into columns.
       See the "Metadata columns" section of the module documentation for details.
-    - `merge_module_and_name` (bool): Optional. When set to `True`, the value in the `module` column
-      is prepended to the value in the `name` column, joined by a period, in every row.
 
     Columns of the returned DataFrame:
 
@@ -535,13 +514,10 @@ def get_histograms(filter_or_dataframe="", include_attrs=False, include_runattrs
         del filter_or_dataframe
         return impl.get_histograms(**locals())
     else:
-        if merge_module_and_name:
-            raise ValueError("merge_module_and_name is not supported when filter_or_dataframe is a dataframe")
-
         df = filter_or_dataframe
         row_types = ["histogram", "itervar", "runattr", "config", "attr"]
         df = df[df["type"].isin(row_types)]
-        df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
+        df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
         df.dropna(axis='columns', how='all', inplace=True)
         return df
 

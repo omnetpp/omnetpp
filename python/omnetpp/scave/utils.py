@@ -1425,7 +1425,7 @@ def _select_param_assignments(config_entries_df):
 
     return result
 
-def _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name):
+def _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries):
     itervars, runattrs, configs, attrs, df = _split_by_types(df, ["itervar", "runattr", "config", "attr"])
     params = _select_param_assignments(configs)
 
@@ -1445,9 +1445,6 @@ def _pivot_results(df, include_attrs, include_runattrs, include_itervars, includ
         df = _append_metadata_columns(df, params, "_param")
 
     df.drop(['type', 'attrname', 'attrvalue'], axis=1, inplace=True, errors="ignore")
-
-    if merge_module_and_name:
-        df["name"] = df["module"] + "." + df["name"]
 
     df.reset_index(inplace=True, drop=True)
 

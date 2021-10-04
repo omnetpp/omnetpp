@@ -220,11 +220,6 @@ def test_scalars():
     _assert_sequential_index(df)
     _assert(sanitize_and_compare_csv(df, "scalars.csv"), "content mismatch")
 
-def test_scalars_merge_module_and_name():
-    df = results.get_scalars(r, merge_module_and_name=True)
-    _assert_sequential_index(df)
-    _assert(sanitize_and_compare_csv(df, "scalars_merge_module_and_name.csv"), "content mismatch")
-
 def test_scalars_with_attrs():
     df = results.get_scalars(r, include_attrs=True)
     _assert_sequential_index(df)
@@ -332,11 +327,6 @@ def test_parameters():
     df = results.get_parameters(r)
     _assert_sequential_index(df)
     _assert(sanitize_and_compare_csv(df, "parameters.csv"), "content mismatch")
-
-def test_parameters_merge_module_and_name():
-    df = results.get_parameters(r, merge_module_and_name=True)
-    _assert_sequential_index(df)
-    _assert(sanitize_and_compare_csv(df, "parameters_merge_module_and_name.csv"), "content mismatch")
 
 def test_parameters_with_attrs():
     df = results.get_parameters(r, include_attrs=True)
