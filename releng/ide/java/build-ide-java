@@ -28,7 +28,7 @@ mkdir -p out
 cp -r ui out
 
 echo Copying 'python/omnetpp/scave' to 'out/ui'
-cp python/omnetpp/scave/*.py out/ui/org.omnetpp.scave.pychart/python/omnetpp/scave/
+cp -r python/omnetpp/scave/ out/ui/org.omnetpp.scave.pychart/python/omnetpp/
 
 touch out/ui/org.omnetpp.ide.nativelibs.linux.x86_64/libopplibs.so
 touch out/ui/org.omnetpp.ide.nativelibs.linux.aarch64/libopplibs.so
