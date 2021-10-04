@@ -218,7 +218,7 @@ def add_inputs(filenames):
     """
     impl.add_inputs(filenames)
 
-def read_result_files(filenames, filter_expression="", include_fields_as_scalars=False, vector_start_time=-inf, vector_end_time=inf):
+def read_result_files(filenames, filter_expression=None, include_fields_as_scalars=False, vector_start_time=-inf, vector_end_time=inf):
     """
     Loads the simulation result files specified in the first argument
     `filenames`, and returns the filtered set of results and metadata as a
