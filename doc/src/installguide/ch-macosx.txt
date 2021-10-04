@@ -30,6 +30,11 @@ override the default security policy for the Terminal app.
 
 image::pictures/macos-security.png[title="Enable Running Unsigned Code in Terminal",align="center",scaledwidth="75%"]
 
+[IMPORTANT]
+=====================================================================
+Make sure that executing developer signed code is allowed at the bottom
+of the *System Preferences / Security and Privacy / General* tab.
+=====================================================================
 
 === Running @OMNETPP@ on Apple Silicon
 
@@ -38,7 +43,7 @@ the Rosetta 2 emulator. To run @OMNETPP@ under emulation, open a terminal window
 
   $ arch -x86_64 /bin/zsh --login
 
-After this, follow the normal installation instructions and be sure to execute all commands in this terminal.
+After this, follow the normal installation instructions and be sure to execute all commands in this terminal. Executing `source setenv` will automatically do this for you if it detects that it is running on Apple silicon.
 
 [NOTE]
 =====================================================================
