@@ -27,7 +27,7 @@ namespace scave {
 class ScaveTool
 {
 protected:
-    void loadFiles(ResultFileManager& manager, const std::vector<std::string>& fileNames, bool indexingAllowed, bool verbose);
+    void loadFiles(ResultFileManager& manager, const std::vector<std::string>& fileNames, bool indexingAllowed, bool allowNonmatching, bool verbose);
     std::string rebuildCommandLine(int argc, char **argv);
     int resolveResultTypeFilter(const std::string& filter);
 

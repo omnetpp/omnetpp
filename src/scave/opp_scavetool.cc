@@ -106,6 +106,7 @@ void ScaveTool::printHelpPage(const std::string& page)
                     "  'itervars'    Displays ${configname} ${iterationvars} ${repetition}\n"
                     "  'experiment'  Displays ${experiment} ${measurement} ${replication}\n");
         help.option("-k, --no-indexing", "Disallow automatic indexing of vector files");
+        help.option("--allow-nonmatching", "Allow non-matching glob patterns on the command line");
         help.option("-v, --verbose", "Print info about progress (verbose)");
         help.line();
         help.para("The <files> argument accepts directories and glob/globstar patterns as well, in addition to file names. See main help page for details.");
@@ -125,6 +126,7 @@ void ScaveTool::printHelpPage(const std::string& page)
         help.option("-x <key>=<value>", "Option for the exporter. This option may occur multiple times.");
         help.option("--<key>=<value>", "Same as -x <key>=<value>.");
         help.option("-k, --no-indexing", "Disallow automatic indexing of vector files");
+        help.option("--allow-nonmatching", "Allow non-matching glob patterns on the command line");
         help.option("-v, --verbose", "Print info about progress (verbose)");
         help.line();
         help.para("Supported export formats: " + opp_join(ExporterFactory::getSupportedFormats(), ", ", '\''));
@@ -203,7 +205,7 @@ void ScaveTool::printHelpPage(const std::string& page)
     }
 }
 
-void ScaveTool::loadFiles(ResultFileManager& manager, const vector<string>& fileNames, bool indexingAllowed, bool verbose)
+void ScaveTool::loadFiles(ResultFileManager& manager, const vector<string>& fileNames, bool indexingAllowed, bool allowNonmatching, bool verbose)
 {
     if (fileNames.empty()) {
         cerr << "opp_scavetool: Warning: No input files\n";
@@ -224,7 +226,7 @@ void ScaveTool::loadFiles(ResultFileManager& manager, const vector<string>& file
         }
         else if (strchr(fileArg, '*') != nullptr || strchr(fileArg, '?') != nullptr) {
             filesToLoad = collectMatchingFiles(fileArg);
-            if (filesToLoad.empty())
+            if (filesToLoad.empty() && !allowNonmatching)
                 filesToLoad.push_back(fileArg); // like "bash" does; allows reporting errors in the pattern ("**/foo*.vec: no such file")
         }
         else {
@@ -362,6 +364,7 @@ void ScaveTool::queryCommand(int argc, char **argv)
     bool opt_useTabs = false;
     bool opt_verbose = false;
     bool opt_indexingAllowed = true;
+    bool opt_allowNonmatching = false;
 
     // parse options
     bool endOpts = false;
@@ -415,6 +418,8 @@ void ScaveTool::queryCommand(int argc, char **argv)
             opt_useTabs = true;
         else if (opt == "-k" || opt == "--no-indexing")
             opt_indexingAllowed = false;
+        else if (opt == "--allow-nonmatching")
+            opt_allowNonmatching = true;
         else if (opt == "-v" || opt == "--verbose")
             opt_verbose = true;
         else if (opt[0] != '-')
@@ -439,7 +444,7 @@ void ScaveTool::queryCommand(int argc, char **argv)
 
     // load files
     ResultFileManager resultFileManager;
-    loadFiles(resultFileManager, opt_fileNames, opt_indexingAllowed, opt_verbose);
+    loadFiles(resultFileManager, opt_fileNames, opt_indexingAllowed, opt_allowNonmatching, opt_verbose);
 
     // filter statistics
     IDList results = resultFileManager.getAllItems(opt_includeFields);
@@ -668,6 +673,7 @@ void ScaveTool::exportCommand(int argc, char **argv)
     int opt_resultTypeFilter = ResultFileManager::SCALAR | ResultFileManager::VECTOR | ResultFileManager::STATISTICS | ResultFileManager::HISTOGRAM | ResultFileManager::PARAMETER;
     bool opt_verbose = false;
     bool opt_indexingAllowed = true;
+    bool opt_allowNonmatching = false;
     bool opt_includeFields = false;
     double opt_vectorStartTime = -INFINITY;
     double opt_vectorEndTime = INFINITY;
@@ -705,6 +711,8 @@ void ScaveTool::exportCommand(int argc, char **argv)
             opt_exporterOptions.push_back(opt.substr(2));
         else if (opt == "-k" || opt == "--no-indexing")
             opt_indexingAllowed = false;
+        else if (opt == "--allow-nonmatching")
+            opt_allowNonmatching = true;
         else if (opt == "-v" || opt == "--verbose")
             opt_verbose = true;
         else if (opt[0] == '-' && opt[1]== '-' && opt[2])
@@ -742,7 +750,7 @@ void ScaveTool::exportCommand(int argc, char **argv)
 
     // load files
     ResultFileManager resultFileManager;
-    loadFiles(resultFileManager, opt_fileNames, opt_indexingAllowed, opt_verbose);
+    loadFiles(resultFileManager, opt_fileNames, opt_indexingAllowed, opt_allowNonmatching, opt_verbose);
 
     // filter results
     IDList results = resultFileManager.getAllItems(opt_includeFields);
