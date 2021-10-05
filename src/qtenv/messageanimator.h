@@ -110,7 +110,7 @@ class QTENV_API MessageAnimator
 
     // to identify the transmissions so we can find them when they need to be updated by another send
     struct MessageSendKey {
-        long messageId = 0; // TODO: long -> msgid_t when present
+        int64_t messageId = 0;
 
         int senderModuleId = 0;
         int senderGateId = 0; // this will be -1 when sendDirect() is called
@@ -119,8 +119,8 @@ class QTENV_API MessageAnimator
 
         static MessageSendKey fromMessage(cMessage *msg);
 
-        // to make implemementing operator < easier
-        std::tuple<long, int, int, int, int> asTuple() const {
+        // to make implementing operator < easier
+        std::tuple<int64_t, int, int, int, int> asTuple() const {
             return { messageId, senderModuleId, senderGateId, arrivalModuleId, arrivalGateId };
         }
 

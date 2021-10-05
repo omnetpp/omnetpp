@@ -82,7 +82,7 @@ class EVENTLOG_API IEvent : public IChunk
 
         // some of the data found in the 'E' entry (line), to get additional data query the entries
         virtual int getModuleId() = 0;
-        virtual long getMessageId() = 0;
+        virtual int64_t getMessageId() = 0;
         virtual eventnumber_t getCauseEventNumber() = 0;
 
         /**

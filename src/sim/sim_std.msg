@@ -375,8 +375,8 @@ class cMessage extends cEvent
     @overwritePreviousDefinition;
     @descriptor(readonly);
     @icon("message");
-    long id @group("message") @hint("Automatically assigned unique identifier");
-    long treeId @group("message") @hint("Identifier shared between the message and its copies");
+    int64_t id @group("message") @hint("Automatically assigned unique identifier");
+    int64_t treeId @group("message") @hint("Identifier shared between the message and its copies");
     short kind @group("message") @editable @hint("Generic user-settable attribute, usually carries \"type\" or \"role\" or \"category\" of message");
     string displayString @group("message") @hint("Controls appearance of the message in GUI");
     cObject *controlInfo @hint("Used with protocol stacks: carries extra information when a packet is sent between protocol layers");

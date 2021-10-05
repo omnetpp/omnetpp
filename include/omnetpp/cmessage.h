@@ -113,9 +113,9 @@ class SIM_API cMessage : public cEvent
     simtime_t sendTime = 0;    // time of sending -- set internally
     simtime_t timestamp = 0;   // time stamp -- user-defined meaning
 
-    long messageId;            // a unique message identifier assigned upon message creation
-    long messageTreeId;        // a message identifier that is inherited by dup, if non dupped it is msgid
-    static long nextMessageId; // the next unique message identifier to be assigned upon message creation
+    int64_t messageId;        // a unique message identifier assigned upon message creation
+    int64_t messageTreeId;    // a message identifier that is inherited by dup, if non dupped it is msgid
+    static int64_t nextMessageId; // the next unique message identifier to be assigned upon message creation
 
     // global variables for statistics
     static uint64_t totalMsgCount;
@@ -128,7 +128,7 @@ class SIM_API cMessage : public cEvent
     void copy(const cMessage& msg);
 
     // internal: used by LogBuffer for creating an *exact* copy of a message
-    void setId(long id) {messageId = id;}
+    void setId(int64_t id) {messageId = id;}
 
   public:
     // internal: create an exact clone (including msgid) that doesn't show up in the statistics
@@ -580,13 +580,13 @@ class SIM_API cMessage : public cEvent
     /**
      * Returns a unique message identifier assigned upon message creation.
      */
-    long getId() const {return messageId;}
+    int64_t getId() const {return messageId;}
 
     /**
      * Returns an identifier which is shared among a message object and all messages
      * created by copying it (i.e. by dup() or the copy constructor).
      */
-    long getTreeId() const {return messageTreeId;}
+    int64_t getTreeId() const {return messageTreeId;}
     //@}
 
     /** @name Miscellaneous. */

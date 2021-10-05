@@ -98,7 +98,7 @@ class EVENTLOG_API Event : public IEvent
         virtual eventnumber_t getEventNumber() override { return eventEntry->eventNumber; }
         virtual simtime_t getSimulationTime() override { return eventEntry->simulationTime; }
         virtual int getModuleId() override { return eventEntry->moduleId; }
-        virtual long getMessageId() override { return eventEntry->messageId; }
+        virtual int64_t getMessageId() override { return eventEntry->messageId; }
         virtual eventnumber_t getCauseEventNumber() override { return eventEntry->causeEventNumber; }
 
         virtual bool isSelfMessage(BeginSendEntry *beginSendEntry) override;

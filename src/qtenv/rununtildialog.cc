@@ -33,7 +33,7 @@ RunUntilDialog::RunUntilDialog(QWidget *parent) :
     setFont(getQtenv()->getBoldFont());
 
     // collect FES messages for combo
-    long lastMsgId = getQtenv()->getPref("rununtil-msg", -1).value<long long>();
+    int64_t lastMsgId = getQtenv()->getPref("rununtil-msg", -1).value<long long>();
     QList<cObject *> msgPtrs = fesEvents(1000, 0, 1, 1, 1);  // exclude non-message events
     ui->msgCombo->addItem("");
     for (cObject *ptr : msgPtrs) {

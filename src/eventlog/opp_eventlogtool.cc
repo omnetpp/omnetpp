@@ -60,10 +60,10 @@ class Options
         const char *messageExpression = nullptr;
         std::vector<std::string> messageNames;
         std::vector<std::string> messageClassNames;
-        std::vector<long> messageIds;
-        std::vector<long> messageTreeIds;
-        std::vector<long> messageEncapsulationIds;
-        std::vector<long> messageEncapsulationTreeIds;
+        std::vector<int64_t> messageIds;
+        std::vector<int64_t> messageTreeIds;
+        std::vector<int64_t> messageEncapsulationIds;
+        std::vector<int64_t> messageEncapsulationTreeIds;
 
         bool verbose = false;
 
@@ -376,14 +376,15 @@ void parseIntTokens(std::vector<int>& parameter, char *str)
         parameter.push_back(atoi(tokens[j]));
 }
 
-void parseLongTokens(std::vector<long>& parameter, char *str)
+void parseLongTokens(std::vector<int64_t>& parameter, char *str)
 {
+    char *e;
     LineTokenizer tokenizer;
     tokenizer.tokenize(str, strlen(str));
     char **tokens = tokenizer.tokens();
 
     for (int j = 0; j < tokenizer.numTokens(); j++)
-        parameter.push_back(atol(tokens[j]));
+        parameter.push_back(strtoll(tokens[j], &e, 10));
 }
 
 void parseEventNumberTokens(std::vector<eventnumber_t>& parameter, char *str)

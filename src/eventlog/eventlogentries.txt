@@ -26,7 +26,7 @@ E EventEntry // an event that is processing a message, terminated by an empty li
    t simtime_t simulationTime        // simulation time when the event occurred
    m int moduleId                    // id of the processing module
    ce eventnumber_t causeEventNumber // event number from which the message being processed was sent, or -1 if the message was sent from initialize
-   msg long messageId                // id of the message being processed
+   msg int64_t messageId             // id of the message being processed
    f string fingerprints NULL        // current simulation fingerprints
 }
 
@@ -36,7 +36,7 @@ E EventEntry // an event that is processing a message, terminated by an empty li
 
 S SnapshotEntry // a snapshot of the current simulation state, followed by state entries, and terminated by an emtpy line
 {
-   f int64_t fileOffset          // file offset of this entry
+   f int64_t fileOffset        // file offset of this entry
    # eventnumber_t eventNumber // event number of the last processed event
    t simtime_t simulationTime  // simulation time of the last processed event
 }
@@ -50,8 +50,8 @@ I IndexEntry // incremental snapshot specifying additional and removed entries w
    f int64_t fileOffset                 // file offset of this entry
    i int64_t previousIndexFileOffset    // file offset of the previous index entry
    s int64_t previousSnapshotFileOffset // file offset of the previous snapshot entry
-   # eventnumber_t eventNumber        // event number of the last processed event
-   t simtime_t simulationTime         // simulation time of the last processed event
+   # eventnumber_t eventNumber          // event number of the last processed event
+   t simtime_t simulationTime           // simulation time of the last processed event
 }
 
 /////////////////////////////////////
@@ -100,7 +100,7 @@ abstract ConnectionReferenceEntry // base class for entries referring to a conne
 
 abstract MessageReferenceEntry // base class for entries referring to a message
 {
-   id long messageId // id of the message
+   id int64_t messageId // id of the message
 }
 
 ///////////////////////////////////////////////////////////////////
@@ -132,9 +132,9 @@ abstract ConnectionDescriptionEntry : ConnectionReferenceEntry // base class for
 
 abstract MessageDescriptionEntry : MessageReferenceEntry // base class for entries describing a message
 {
-   tid long messageTreeId                     // id of the message inherited by dup
-   eid long messageEncapsulationId            // id of the message inherited by encapsulation
-   etid long messageEncapsulationTreeId       // id of the message inherited by both dup and encapsulation
+   tid int64_t messageTreeId                  // id of the message inherited by dup
+   eid int64_t messageEncapsulationId         // id of the message inherited by encapsulation
+   etid int64_t messageEncapsulationTreeId    // id of the message inherited by both dup and encapsulation
    c string messageClassName                  // C++ class name of the message
    n string messageName                       // message name
    k short messageKind                  0     // message kind
@@ -250,7 +250,7 @@ CM CreateMessageEntry : MessageDescriptionEntry // creating a message
 
 CL CloneMessageEntry : MessageDescriptionEntry // cloning a message either via the copy constructor or by dup
 {
-   cid long cloneId // id of the original message that is cloned
+   cid int64_t cloneId // id of the original message that is cloned
 }
 
 DM DeleteMessageEntry : MessageDescriptionEntry // deleting a message
@@ -263,12 +263,12 @@ DM DeleteMessageEntry : MessageDescriptionEntry // deleting a message
 
 EN EncapsulatePacketEntry : MessageReferenceEntry // encapsulating a packet
 {
-   cid long encapsulatedPacketId // id of the encapsulated packet
+   cid int64_t encapsulatedPacketId // id of the encapsulated packet
 }
 
 DE DecapsulatePacketEntry : MessageReferenceEntry // decapsulating a packet
 {
-   cid long encapsulatedPacketId // id of the encapsulated packet
+   cid int64_t encapsulatedPacketId // id of the encapsulated packet
 }
 
 //////////////////////////
@@ -279,7 +279,7 @@ BS BeginSendEntry : MessageDescriptionEntry // beginning to send a message
 {
    sd simtime_t sendDelay         0 // send after this delay
    up bool isUpdate           false // whether this is a transmission update
-   tx long transmissionId        -1 // for pairing transmission updates with the original transmission
+   tx int64_t transmissionId    -1  // for pairing transmission updates with the original transmission
 }
 
 ES EndSendEntry : MessageDescriptionEntry // prediction of the arrival of a message, only a message reference because can't be alone

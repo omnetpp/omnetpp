@@ -285,7 +285,7 @@ bool cPacket::hasEncapsulatedPacket() const
     return encapsulatedPacket != nullptr;
 }
 
-long cPacket::getEncapsulationId() const
+int64_t cPacket::getEncapsulationId() const
 {
     // find innermost msg. Note: don't use getEncapsulatedPacket() because it does copy-on-touch of shared msgs
     const cPacket *msg = this;
@@ -294,7 +294,7 @@ long cPacket::getEncapsulationId() const
     return msg->getId();
 }
 
-long cPacket::getEncapsulationTreeId() const
+int64_t cPacket::getEncapsulationTreeId() const
 {
     // find innermost msg. Note: don't use getEncapsulatedPacket() because it does copy-on-touch of shared msgs
     const cPacket *msg = this;

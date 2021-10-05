@@ -63,10 +63,10 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         MatchExpression messageExpression;
         std::vector<PatternMatcher> messageNames;
         std::vector<PatternMatcher> messageClassNames;
-        std::vector<long> messageIds;
-        std::vector<long> messageTreeIds;
-        std::vector<long> messageEncapsulationIds;
-        std::vector<long> messageEncapsulationTreeIds;
+        std::vector<int64_t> messageIds;
+        std::vector<int64_t> messageTreeIds;
+        std::vector<int64_t> messageEncapsulationIds;
+        std::vector<int64_t> messageEncapsulationTreeIds;
 
         // trace filter
         eventnumber_t tracedEventNumber = -1; // the event number from which causes and consequences are followed or -1
@@ -123,10 +123,10 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         void setMessageExpression(const char *messageExpression) { if (messageExpression) this->messageExpression.setPattern(messageExpression, false, true, false); }
         void setMessageNames(std::vector<std::string> &messageNames) { setPatternMatchers(this->messageNames, messageNames); }
         void setMessageClassNames(std::vector<std::string> &messageClassNames) { setPatternMatchers(this->messageClassNames, messageClassNames); }
-        void setMessageIds(std::vector<long> &messageIds) { this->messageIds = messageIds; }
-        void setMessageTreeIds(std::vector<long> &messageTreeIds) { this->messageTreeIds = messageTreeIds; }
-        void setMessageEncapsulationIds(std::vector<long> &messageEncapsulationIds) { this->messageEncapsulationIds = messageEncapsulationIds; }
-        void setMessageEncapsulationTreeIds(std::vector<long> &messageEncapsulationTreeIds) { this->messageEncapsulationTreeIds = messageEncapsulationTreeIds; }
+        void setMessageIds(std::vector<int64_t> &messageIds) { this->messageIds = messageIds; }
+        void setMessageTreeIds(std::vector<int64_t> &messageTreeIds) { this->messageTreeIds = messageTreeIds; }
+        void setMessageEncapsulationIds(std::vector<int64_t> &messageEncapsulationIds) { this->messageEncapsulationIds = messageEncapsulationIds; }
+        void setMessageEncapsulationTreeIds(std::vector<int64_t> &messageEncapsulationTreeIds) { this->messageEncapsulationTreeIds = messageEncapsulationTreeIds; }
 
         void setTracedEventNumber(eventnumber_t tracedEventNumber);
         void setTraceCauses(bool traceCauses) { this->traceCauses = traceCauses; }

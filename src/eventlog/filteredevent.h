@@ -86,7 +86,7 @@ class EVENTLOG_API FilteredEvent : public IEvent
         virtual eventnumber_t getEventNumber() override { return eventNumber; }
         virtual simtime_t getSimulationTime() override { return getEvent()->getSimulationTime(); }
         virtual int getModuleId() override { return getEvent()->getModuleId(); }
-        virtual long getMessageId() override { return getEvent()->getMessageId(); }
+        virtual int64_t getMessageId() override { return getEvent()->getMessageId(); }
         virtual eventnumber_t getCauseEventNumber() override { return getEvent()->getCauseEventNumber(); }
 
         virtual bool isSelfMessage(BeginSendEntry *beginSendEntry) override { return getEvent()->isSelfMessage(beginSendEntry); }

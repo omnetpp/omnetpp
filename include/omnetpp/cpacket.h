@@ -87,11 +87,11 @@ class SIM_API cPacket : public cMessage
 
     // internal convenience method: returns the getId() of the innermost encapsulated message,
     // or itself if there is no encapsulated message
-    long getEncapsulationId() const;
+    int64_t getEncapsulationId() const;
 
     // internal convenience method: returns getTreeId() of the innermost encapsulated message,
     // or itself if there is no encapsulated message
-    long getEncapsulationTreeId() const;
+    int64_t getEncapsulationTreeId() const;
 
     cPacket *_getEncapMsg() { return encapsulatedPacket; }
 
