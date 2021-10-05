@@ -1,8 +1,8 @@
 """
 A collection of utility function for data manipulation and plotting, built
-on top of Pandas data frames and the `chart` and `plot` packages from `omnetpp.scave`.
-Functions in this module have been written largely to the needs of the
-chart templates that ship with the IDE.
+on top of Pandas data frames and the `chart` and `ideplot` packages from
+`omnetpp.scave`. Functions in this module have been written largely to the
+needs of the chart templates that ship with the IDE.
 
 There are some functions which are (almost) mandatory elements in a chart script.
 These are the following.
@@ -23,7 +23,7 @@ import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from itertools import cycle
-from omnetpp.scave import chart, plot, vectorops
+from omnetpp.scave import chart, ideplot, vectorops
 
 
 def _check_version(module, required):
@@ -118,7 +118,7 @@ def plot_bars(df, props, variable_name=None, errors_df=None):
     - `title`: Plot title (autocomputed if missing).
     - `cycle_seed`: Alters the sequence in which colors are assigned to series.
     """
-    p = plot if chart.is_native_chart() else plt
+    p = ideplot if chart.is_native_chart() else plt
 
     def get_prop(k):
         return props[k] if k in props else None
@@ -136,7 +136,7 @@ def plot_bars(df, props, variable_name=None, errors_df=None):
     baseline = get_prop("baseline")
     if baseline:
         if chart.is_native_chart(): # is this how this should be done?
-            plot.set_property("Bars.Baseline", baseline)
+            ideplot.set_property("Bars.Baseline", baseline)
         else:
             bottoms += float(baseline)
 
@@ -145,7 +145,7 @@ def plot_bars(df, props, variable_name=None, errors_df=None):
     placement = get_prop("bar_placement")
     if placement:
         if chart.is_native_chart(): # is this how this should be done?
-            plot.set_property("Bar.Placement", placement)
+            ideplot.set_property("Bar.Placement", placement)
         else:
             extra_args["bottom"] = bottoms
             if placement == "InFront":
@@ -239,7 +239,7 @@ def plot_vectors(df, props, legend_func=make_legend_label):
     - `linestyle`, `linecolor`, `linewidth`, `marker`, `markersize`: styling
     - `cycle_seed`: Alters the sequence in which colors and markers are assigned to series.
     """
-    p = plot if chart.is_native_chart() else plt
+    p = ideplot if chart.is_native_chart() else plt
 
     def get_prop(k):
         return props[k] if k in props else None
@@ -301,7 +301,7 @@ def plot_histograms(df, props, legend_func=make_legend_label):
     - `linestyle`, `linecolor`, `linewidth`: Styling.
     - `cycle_seed`: Alters the sequence in which colors and markers are assigned to series.
     """
-    p = plot if chart.is_native_chart() else plt
+    p = ideplot if chart.is_native_chart() else plt
 
     has_overflow_columns = "min" in df and "max" in df and "underflows" in df and "overflows" in df
 
@@ -344,7 +344,7 @@ def plot_histograms(df, props, legend_func=make_legend_label):
 
     show_overflows = get_prop("show_overflows")
     if show_overflows and chart.is_native_chart():
-        plot.set_property("Hist.ShowOverflowCell", str(_parse_optional_bool(show_overflows)).lower())
+        ideplot.set_property("Hist.ShowOverflowCell", str(_parse_optional_bool(show_overflows)).lower())
 
     title = get_prop("title") or make_chart_title(df, title_col, legend_cols)
     set_plot_title(title)
@@ -478,7 +478,7 @@ def preconfigure_plot(props):
     part of chart scripts.
 
     A partial list of properties taken into account for native plots:
-    - property keys understood by the plot widget, see `plot.get_supported_property_keys()`
+    - property keys understood by the plot widget, see `ideplot.get_supported_property_keys()`
 
     And for Matplotlib plots:
     - `plt.style`
@@ -492,8 +492,8 @@ def preconfigure_plot(props):
         return props[k] if k in props else None
 
     if chart.is_native_chart():
-        supported_keys = plot.get_supported_property_keys()
-        plot.set_properties({ k: v for k, v in props.items() if k in supported_keys})
+        supported_keys = ideplot.get_supported_property_keys()
+        ideplot.set_properties({ k: v for k, v in props.items() if k in supported_keys})
     else:
         if get_prop("plt.style"):
             plt.style.use(get_prop("plt.style"))
@@ -520,7 +520,7 @@ def postconfigure_plot(props):
     Parameters:
     - `props` (dict): the properties
     """
-    p = plot if chart.is_native_chart() else plt
+    p = ideplot if chart.is_native_chart() else plt
 
     def get_prop(k):
         return props[k] if k in props else None
@@ -544,17 +544,17 @@ def postconfigure_plot(props):
     if get_prop("yaxis_log"):
         p.yscale("log" if _parse_optional_bool(get_prop("yaxis_log")) else "linear")
 
-    plot.legend(show=_parse_optional_bool(get_prop("legend_show")),
-           frameon=_parse_optional_bool(get_prop("legend_border")),
-           loc=get_prop("legend_placement"))
-
     p.grid(_parse_optional_bool(get_prop("grid_show")),
              "major" if (get_prop("grid_density") or "").lower() == "major" else "both") # grid_density is "Major" or "All"
 
     if chart.is_native_chart():
-        plot.set_properties(parse_rcparams(get_prop("plot.properties") or ""))
+        ideplot.legend(show=_parse_optional_bool(get_prop("legend_show")),
+           frameon=_parse_optional_bool(get_prop("legend_border")),
+           loc=get_prop("legend_placement"))
 
-    if not chart.is_native_chart():
+        ideplot.set_properties(parse_rcparams(get_prop("plot.properties") or ""))
+    else:
+        # TODO: plt.legend(...)
         plt.tight_layout()
 
 
@@ -951,7 +951,7 @@ def set_plot_title(title, suggested_chart_name=None):
     Sets the plot title. It also sets the suggested chart name (the name that
     the IDE offers when adding a temporary chart to the Analysis file.)
     """
-    plot.title(title)
+    ideplot.title(title)
     chart.set_suggested_chart_name(suggested_chart_name if suggested_chart_name is not None else title)
 
 
@@ -1086,7 +1086,7 @@ def assert_columns_exist(df, cols, message="Expected column missing from DataFra
     """
     for c in cols:
         if c not in df:
-            plot.set_warning(message + ": " + c)
+            ideplot.set_warning(message + ": " + c)
             exit(1)
 
 

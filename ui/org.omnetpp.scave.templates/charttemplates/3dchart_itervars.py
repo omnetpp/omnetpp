@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-from omnetpp.scave import results, chart, utils, plot
+from omnetpp.scave import results, chart, utils, ideplot
 
 # get chart properties
 props = chart.get_properties()
@@ -18,25 +18,25 @@ yaxis_itervar = props["yaxis_itervar"]
 try:
     df = results.get_scalars(filter_expression, include_attrs=True, include_itervars=True)
 except ValueError as e:
-    plot.set_warning("Error while querying results: " + str(e))
+    ideplot.set_warning("Error while querying results: " + str(e))
     exit(1)
 
 if df.empty:
-    plot.set_warning("The result filter returned no data.")
+    ideplot.set_warning("The result filter returned no data.")
     exit(1)
 
 if not xaxis_itervar and not yaxis_itervar:
     print("The X Axis and Y Axis options were not set in the dialog, inferring them from the data..")
     xaxis_itervar, yaxis_itervar = utils.pick_two_columns(df)
 if not xaxis_itervar or not yaxis_itervar:
-    plot.set_warning("Please set both the X Axis and Y Axis options in the dialog - or neither, for automatic selection!")
+    ideplot.set_warning("Please set both the X Axis and Y Axis options in the dialog - or neither, for automatic selection!")
     exit(1)
 
 utils.assert_columns_exist(df, [xaxis_itervar], "The iteration variable for the X axis could not be found")
 utils.assert_columns_exist(df, [yaxis_itervar], "The iteration variable for the Y axis could not be found")
 
 if xaxis_itervar == yaxis_itervar:
-    plot.set_warning("The itervar for the X and Y axes are the same: " + xaxis_itervar)
+    ideplot.set_warning("The itervar for the X and Y axes are the same: " + xaxis_itervar)
     exit(1)
 
 df[xaxis_itervar] = pd.to_numeric(df[xaxis_itervar], errors="ignore")
@@ -49,7 +49,7 @@ title = str(list(df[title_col])[0]) if title_col else None
 unique_names = df["name"].unique()
 
 if len(unique_names) != 1:
-    plot.set_warning("Selected scalars must share the same name.")
+    ideplot.set_warning("Selected scalars must share the same name.")
     exit(1)
 
 scalar_name = unique_names[0]

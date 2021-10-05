@@ -37,9 +37,9 @@ def is_native_plot():
 # Import one of the two implementations, based on whether we are running
 # in the context of a native plotting widget or not.
 if is_native_plot():
-    from omnetpp.scave.impl_ide import plot as impl
+    from omnetpp.scave.impl_ide import ideplot as impl
 else:
-    from .impl import plot_matplotlib as impl
+    from .impl import ideplot_matplotlib as impl
 
 
 

@@ -1,4 +1,4 @@
-from omnetpp.scave import plot, utils, chart
+from omnetpp.scave import ideplot, utils, chart
 
 messages = []
 
@@ -6,7 +6,7 @@ def warn(warning):
     global messages
     messages.append(warning)
 
-plot.set_warning = warn
+ideplot.set_warning = warn
 
 def expect_message(expected):
     actual = "; ".join(messages)

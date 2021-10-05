@@ -2,8 +2,8 @@
 The sole purpose of this module is to keep references to the
 Py4J Gateway (connecting the Python process to the IDE);
 and also to some Java *Provider objects to be used by the
-omnetpp.scave.{chart,results,plot} modules, and by our custom
-matplotlib backend.
+omnetpp.scave.{chart,results,ideplot} modules, and by our
+custom matplotlib backend.
 This way they can be easily accessed by all the modules that
 need them, without having to worry too much about which
 modules import which ones, and in which order.

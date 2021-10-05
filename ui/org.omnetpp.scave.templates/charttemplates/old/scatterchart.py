@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from omnetpp.scave import results, chart, utils, plot
+from omnetpp.scave import results, chart, utils, ideplot
 
 props = chart.get_properties()
 
@@ -21,7 +21,7 @@ def get_data(filter):
         iv = results.get_itervars(filter)
         ra = results.get_runattrs(filter)
     except ValueError as e:
-        plot.set_warning("Error while querying results: " + str(e))
+        ideplot.set_warning("Error while querying results: " + str(e))
         exit(1)
 
     df = pd.concat([sc, iv, ra])
@@ -72,10 +72,10 @@ df = pd.pivot_table(values, columns=iso_column, index=xaxis_column, values=yaxis
 df.reset_index(inplace=True)
 df.rename({xaxis_column: "time"}, axis="columns", inplace=True)
 
-plot.plot_vectors(df)
+ideplot.plot_vectors(df)
 
 title = props["title"] or ', '.join(titles[yaxis_column].unique())
 utils.set_plot_title(title)
 
 if units is not None:
-    plot.set_property("Y.Axis.Title", "[" + ', '.join(units[yaxis_column].unique()) + "]")
+    ideplot.set_property("Y.Axis.Title", "[" + ', '.join(units[yaxis_column].unique()) + "]")

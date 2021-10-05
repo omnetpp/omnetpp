@@ -1,7 +1,7 @@
 import math
 import numpy as np
 import pandas as pd
-from omnetpp.scave import results, chart, plot, utils
+from omnetpp.scave import results, chart, ideplot, utils
 
 # get chart properties
 props = chart.get_properties()
@@ -14,11 +14,11 @@ filter_expression = props["filter"]
 try:
     df = results.get_scalars(filter_expression, include_attrs=True, include_itervars=True, include_runattrs=True)
 except ValueError as e:
-    plot.set_warning("Error while querying results: " + str(e))
+    ideplot.set_warning("Error while querying results: " + str(e))
     exit(1)
 
 if df.empty:
-    plot.set_warning("The result filter returned no data.")
+    ideplot.set_warning("The result filter returned no data.")
     exit(1)
 
 # determine "groups" and "series" for pivoting, and check them
@@ -31,12 +31,12 @@ if not groups and not series:
     groups, series = [g], [s]
 
 if not groups or not groups[0] or not series or not series[0]:
-    plot.set_warning("Please set both the Groups and Series properties in the dialog - or neither, for automatic setup.")
+    ideplot.set_warning("Please set both the Groups and Series properties in the dialog - or neither, for automatic setup.")
     exit(1)
 
 common = list(set(groups) & set(series))
 if common:
-    plot.set_warning("Overlap between Group and Series columns: " + ", ".join(common))
+    ideplot.set_warning("Overlap between Group and Series columns: " + ", ".join(common))
     exit(1)
 
 utils.assert_columns_exist(df, groups + series, "No such iteration variable or run attribute")

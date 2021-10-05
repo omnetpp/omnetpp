@@ -1,4 +1,4 @@
-from omnetpp.scave import results, chart, utils, plot
+from omnetpp.scave import results, chart, utils, ideplot
 
 # get chart properties
 props = chart.get_properties()
@@ -11,11 +11,11 @@ filter_expression = props["filter"]
 try:
     df = results.get_histograms(filter_expression, include_attrs=True, include_runattrs=True, include_itervars=True)
 except ValueError as e:
-    plot.set_warning("Error while querying results: " + str(e))
+    ideplot.set_warning("Error while querying results: " + str(e))
     exit(1)
 
 if df.empty:
-    plot.set_warning("The result filter returned no data.")
+    ideplot.set_warning("The result filter returned no data.")
     exit(1)
 
 # plot

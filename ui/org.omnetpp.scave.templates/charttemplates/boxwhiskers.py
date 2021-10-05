@@ -1,4 +1,4 @@
-from omnetpp.scave import results, chart, utils, plot
+from omnetpp.scave import results, chart, utils, ideplot
 import matplotlib.pyplot as plt
 import pandas as pd
 
@@ -9,13 +9,13 @@ try:
     stats = results.get_statistics(props["filter"], include_attrs=True, include_runattrs=True, include_itervars=True)
     hists = results.get_histograms(props["filter"], include_attrs=True, include_runattrs=True, include_itervars=True)
 except ValueError as e:
-    plot.set_warning("Error while querying results: " + str(e))
+    ideplot.set_warning("Error while querying results: " + str(e))
     exit(1)
 
 df = pd.concat([stats, hists], sort=False)
 
 if df.empty:
-    plot.set_warning("The result filter returned no data.")
+    ideplot.set_warning("The result filter returned no data.")
     exit(1)
 
 title, legend = utils.extract_label_columns(df)

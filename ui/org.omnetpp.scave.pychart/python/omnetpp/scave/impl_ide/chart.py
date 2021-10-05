@@ -4,7 +4,6 @@ import functools
 
 print = functools.partial(print, flush=True)
 
-from omnetpp.scave import results, plot
 from omnetpp.internal import Gateway
 
 # this is a copy of the property map queried from Java, since

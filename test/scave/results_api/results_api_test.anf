@@ -7,7 +7,7 @@
     <charts>
         <chart icon="icons/full/obj/barchart.png" id="180" name="get_runs" template="barchart_legacy" type="BAR">
             <script>
-<![CDATA[from omnetpp.scave import results, chart, utils, plot
+<![CDATA[from omnetpp.scave import results, chart, utils
 import pandas as pd
 import tester
 tester.print = print
@@ -73,7 +73,7 @@ run_tests(locals())
         </chart>
         <chart icon="icons/full/obj/barchart.png" id="191" name="get_runattrs" template="barchart_legacy" type="BAR">
             <script>
-<![CDATA[from omnetpp.scave import results, chart, utils, plot
+<![CDATA[from omnetpp.scave import results, chart, utils
 import pandas as pd
 import tester
 tester.print = print
@@ -97,7 +97,7 @@ run_tests(locals())
         </chart>
         <chart icon="icons/full/obj/barchart.png" id="195" name="get_itervars" template="barchart_legacy" type="BAR">
             <script>
-<![CDATA[from omnetpp.scave import results, chart, utils, plot
+<![CDATA[from omnetpp.scave import results, chart, utils
 import numpy as np
 import pandas as pd
 import tester
@@ -122,7 +122,7 @@ run_tests(locals())
         </chart>
         <chart icon="icons/full/obj/barchart.png" id="196" name="get_config_entries" template="barchart_legacy" type="BAR">
             <script>
-<![CDATA[from omnetpp.scave import results, chart, utils, plot
+<![CDATA[from omnetpp.scave import results, chart, utils
 import pandas as pd
 import tester
 tester.print = print
@@ -146,7 +146,7 @@ run_tests(locals())
         </chart>
         <chart icon="icons/full/obj/barchart.png" id="446" name="get_param_assignments" template="barchart_legacy" type="BAR">
             <script>
-<![CDATA[from omnetpp.scave import results, chart, utils, plot
+<![CDATA[from omnetpp.scave import results, chart, utils
 import pandas as pd
 import tester
 tester.print = print
@@ -170,7 +170,7 @@ run_tests(locals())
         </chart>
         <chart icon="icons/full/obj/barchart.png" id="38" name="get_results" template="barchart" type="BAR">
             <script>
-<![CDATA[from omnetpp.scave import results, chart, utils, plot
+<![CDATA[from omnetpp.scave import results, chart, utils
 import pandas as pd
 import tester
 tester.print = print
@@ -255,7 +255,7 @@ run_tests(locals())
         </chart>
         <chart icon="icons/full/obj/barchart.png" id="89" name="get_scalars" template="barchart_legacy" type="BAR">
             <script>
-<![CDATA[from omnetpp.scave import results, chart, utils, plot
+<![CDATA[from omnetpp.scave import results, chart, utils
 import numpy as np
 import pandas as pd
 import tester
@@ -295,7 +295,7 @@ run_tests(locals())
         </chart>
         <chart icon="icons/full/obj/barchart.png" id="247" name="get_vectors" template="barchart_legacy" type="BAR">
             <script>
-<![CDATA[from omnetpp.scave import results, chart, utils, plot
+<![CDATA[from omnetpp.scave import results, chart, utils
 import numpy as np
 import pandas as pd
 import tester
@@ -335,7 +335,7 @@ run_tests(locals())
         </chart>
         <chart icon="icons/full/obj/barchart.png" id="419" name="get_histograms" template="barchart_legacy" type="BAR">
             <script>
-<![CDATA[from omnetpp.scave import results, chart, utils, plot
+<![CDATA[from omnetpp.scave import results, chart, utils
 import numpy as np
 import pandas as pd
 import tester
@@ -364,7 +364,7 @@ run_tests(locals())
         </chart>
         <chart icon="icons/full/obj/barchart.png" id="420" name="get_statistics" template="barchart_legacy" type="BAR">
             <script>
-<![CDATA[from omnetpp.scave import results, chart, utils, plot
+<![CDATA[from omnetpp.scave import results, chart, utils
 import numpy as np
 import pandas as pd
 import tester
@@ -394,7 +394,7 @@ run_tests(locals())
         </chart>
         <chart icon="icons/full/obj/barchart.png" id="146" name="get_parameters" template="barchart_legacy" type="BAR">
             <script>
-<![CDATA[from omnetpp.scave import results, chart, utils, plot
+<![CDATA[from omnetpp.scave import results, chart, utils
 import numpy as np
 import pandas as pd
 import tester

@@ -1,4 +1,4 @@
-from omnetpp.scave import results, chart, utils, plot
+from omnetpp.scave import results, chart, utils, ideplot
 import numpy as np
 import pandas as pd
 import re
@@ -54,14 +54,14 @@ try:
     sc = results.get_scalars(filter_expression, include_itervars=True, include_runattrs=True)
     iv = results.get_itervars("(" + filter_expression + ") AND NOT name =~ " + x_runattr, include_itervars=True, include_runattrs=True)
 except ValueError as e:
-    plot.set_warning("Error while querying results: " + str(e))
+    ideplot.set_warning("Error while querying results: " + str(e))
     exit(1)
 iv['module'] = ""
 
 df = pd.concat([sc]) # , iv ?
 
 if df.empty:
-    plot.set_warning("The result filter returned no data.")
+    ideplot.set_warning("The result filter returned no data.")
     exit(1)
 
 utils.assert_columns_exist(df, ["value"])
@@ -91,7 +91,7 @@ for i, c in enumerate(df.columns):
     if c != x_column:
         label = ", ".join([ "=".join(t) for t in zip(df.columns.names, c)])
         style = utils._make_line_args(props, c, df)
-        plot.plot(df[x_column], df[c].values, label=label, **style)
+        ideplot.plot(df[x_column], df[c].values, label=label, **style)
 
 # utils.set_plot_title(scalar_name + " vs. " + xaxis_itervar)
 

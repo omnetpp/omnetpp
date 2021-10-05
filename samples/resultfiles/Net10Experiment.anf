@@ -9,7 +9,7 @@
             <script>
                 <![CDATA[import pandas as pd
 import matplotlib.pyplot as plt
-from omnetpp.scave import results, chart, utils, plot, vectorops as ops
+from omnetpp.scave import results, chart, utils, ideplot, vectorops as ops
 
 # get chart properties
 props = chart.get_properties()
@@ -27,20 +27,20 @@ if not xaxis_itervar and not iso_itervar:
     print("The X Axis and Iso Line options were not set in the dialog, inferring them from the data..")
     xaxis_itervar, iso_itervar = utils.pick_two_columns(df)
     if not iso_itervar or not iso_itervar:
-        plot.set_warning("Please set the X Axis and Iso Lines options in the dialog!")
+        ideplot.set_warning("Please set the X Axis and Iso Lines options in the dialog!")
         exit(1)
 
 df[xaxis_itervar] = pd.to_numeric(df[xaxis_itervar], errors="ignore")
 df[iso_itervar] = pd.to_numeric(df[iso_itervar], errors="ignore")
 
 if df.empty:
-    plot.set_warning("Select scalars for the Y axis in the Properties dialog")
+    ideplot.set_warning("Select scalars for the Y axis in the Properties dialog")
     exit(1)
 
 unique_names = df["name"].unique()
 
 if len(unique_names) != 1:
-    plot.set_warning("Scalar names should be unique")
+    ideplot.set_warning("Scalar names should be unique")
     exit(1)
 
 scalar_name = unique_names[0]
@@ -49,7 +49,7 @@ df = pd.pivot_table(df, values="value", columns=iso_itervar, index=xaxis_itervar
 print(df)
 legend_cols, _ = utils.extract_label_columns(df)
 
-p = plot if chart.is_native_chart() else plt
+p = ideplot if chart.is_native_chart() else plt
 
 
 p.xlabel(xaxis_itervar)
@@ -58,7 +58,7 @@ p.ylabel(scalar_name)
 try:
     xs = pd.to_numeric(df.index.values)
 except:
-    plot.set_warning("The X axis itervar is not purely numeric, this is not supported yet.")
+    ideplot.set_warning("The X axis itervar is not purely numeric, this is not supported yet.")
     exit(1)
 
 for i, c in enumerate(df.columns):

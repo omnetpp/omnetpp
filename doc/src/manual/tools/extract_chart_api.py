@@ -4,7 +4,7 @@ import sys
 import os
 import re
 
-from omnetpp.scave import results, chart, utils, plot, vectorops, analysis
+from omnetpp.scave import results, chart, utils, ideplot, vectorops, analysis
 
 import mistune
 import inspect
@@ -186,7 +186,7 @@ print("""
 
 annotate_module(results)
 annotate_module(chart)
-annotate_module(plot)
+annotate_module(ideplot)
 annotate_module(utils)
 annotate_module(vectorops)
 annotate_module(analysis)

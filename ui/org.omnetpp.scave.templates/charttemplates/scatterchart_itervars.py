@@ -2,7 +2,7 @@ import math
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from omnetpp.scave import results, chart, utils, plot, vectorops as ops
+from omnetpp.scave import results, chart, utils, ideplot
 
 # get chart properties
 props = chart.get_properties()
@@ -17,11 +17,11 @@ group_by = utils.split(props["group_by"])
 try:
     df = results.get_scalars(filter_expression, include_runattrs=True, include_attrs=True, include_itervars=True)
 except ValueError as e:
-    plot.set_warning("Error while querying results: " + str(e))
+    ideplot.set_warning("Error while querying results: " + str(e))
     exit(1)
 
 if df.empty:
-    plot.set_warning("The result filter returned no data.")
+    ideplot.set_warning("The result filter returned no data.")
     exit(1)
 
 if not xaxis_itervar and not group_by:
@@ -34,11 +34,11 @@ if xaxis_itervar:
     utils.assert_columns_exist(df, [xaxis_itervar], "The iteration variable for the X axis could not be found")
     df[xaxis_itervar] = pd.to_numeric(df[xaxis_itervar], errors="ignore")
 else:
-    plot.set_warning("Please select the iteration variable for the X axis!")
+    ideplot.set_warning("Please select the iteration variable for the X axis!")
     exit(1)
 
 if xaxis_itervar in group_by:
-    plot.set_warning("X axis column also in grouper columns: " + xaxis_itervar)
+    ideplot.set_warning("X axis column also in grouper columns: " + xaxis_itervar)
     exit(1)
 
 if group_by:
@@ -76,11 +76,11 @@ legend_cols, _ = utils.extract_label_columns(df)
 
 try:
     xs = pd.to_numeric(df.index.values)
-    plot.xlabel(xaxis_itervar)
+    ideplot.xlabel(xaxis_itervar)
 except:
     xs = np.zeros_like(df.index.values)
 
-plot.ylabel(scalar_names)
+ideplot.ylabel(scalar_names)
 
 for c in df.columns:
     style = utils._make_line_args(props, c, df)
@@ -95,9 +95,9 @@ for c in df.columns:
         label = ', '.join([str(a) + "=" + str(b) for a, b in zip(group_by, names)])
     else:
         label = scalar_names
-    plot.plot(xs, ys, label=label, **style)
+    ideplot.plot(xs, ys, label=label, **style)
 
-    if errors_df is not None and not plot.is_native_plot():
+    if errors_df is not None and not ideplot.is_native_plot():
         style["linewidth"] = float(style["linewidth"])
         style["linestyle"] = "none"
         yerr = errors_df[c].values

@@ -1,4 +1,4 @@
-from omnetpp.scave import chart, plot
+from omnetpp.scave import chart, ideplot
 import os
 import sys
 from csv import QUOTE_NONNUMERIC
@@ -129,7 +129,7 @@ def run_tests(locals):
             print(cf.green("PASS") if passed else cf.red("FAIL"))
             add_outcome(l, passed)
 
-    plot.set_property("Plot.Title", "See console for test results.")
+    ideplot.set_property("Plot.Title", "See console for test results.")
 
     failed_names = [n for n, s in outcomes.items() if not s]
     faileds = ", ".join(failed_names)
