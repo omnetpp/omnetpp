@@ -118,8 +118,8 @@ class SIM_API cMessage : public cEvent
     static long nextMessageId; // the next unique message identifier to be assigned upon message creation
 
     // global variables for statistics
-    static long totalMsgCount;
-    static long liveMsgCount;
+    static uint64_t totalMsgCount;
+    static uint64_t liveMsgCount;
 
   private:
     // internal: create parlist
@@ -619,11 +619,9 @@ class SIM_API cMessage : public cEvent
      * Returns the total number of messages created since the last
      * reset (reset is usually called by user interfaces at the beginning
      * of each simulation run). The counter is incremented by cMessage constructor.
-     * Counter is <tt>signed</tt> to make it easier to detect if it overflows
-     * during very long simulation runs.
      * May be useful for profiling or debugging memory leaks.
      */
-    static long getTotalMessageCount() {return totalMsgCount;}
+    static uint64_t getTotalMessageCount() {return totalMsgCount;}
 
     /**
      * Returns the number of message objects that currently exist in the
@@ -632,7 +630,7 @@ class SIM_API cMessage : public cEvent
      * May be useful for profiling or debugging memory leaks caused by forgetting
      * to delete messages.
      */
-    static long getLiveMessageCount() {return liveMsgCount;}
+    static uint64_t getLiveMessageCount() {return liveMsgCount;}
 
     /**
      * Reset counters used by getTotalMessageCount() and getLiveMessageCount().
