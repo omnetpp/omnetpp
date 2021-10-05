@@ -72,6 +72,13 @@ namespace omnetpp {
 typedef int64_t eventnumber_t;
 
 /**
+ * @brief Message ID. See cMessage::getId().
+ *
+ * @ingroup SimSupport
+ */
+typedef int64_t msgid_t;
+
+/**
  * @brief Signed integer type which is guaranteed to be at least 64 bits wide.
  * It is used throughout the library as a "large enough" general integer type,
  * for example in NED parameters, during expression evaluation, and as signal value.

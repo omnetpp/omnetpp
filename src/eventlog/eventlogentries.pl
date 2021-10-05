@@ -102,6 +102,12 @@ while (<FILE>)
          $fieldCDefault = "-1";
          $fieldJavaDefault = "-1";
       }
+      elsif ($fieldType eq "msgid_t")
+      {
+         $fieldPrintfType = "%\" MSGID_PRINTF_FORMAT \"";
+         $fieldCDefault = "-1";
+         $fieldJavaDefault = "-1";
+      }
       elsif ($fieldType eq "simtime_t")
       {
          $fieldPrintfType = "%s";
@@ -133,6 +139,7 @@ while (<FILE>)
       $fieldJavaType =~ s/bool/boolean/;
       $fieldJavaType =~ s/int64_t/long/;
       $fieldJavaType =~ s/eventnumber_t/long/;
+      $fieldJavaType =~ s/msgid_t/long/;
       $fieldJavaType =~ s/simtime_t/BigDecimal/;
 
       $field = {
@@ -346,6 +353,10 @@ foreach $class (@classes)
       elsif ($field->{TYPE} eq "eventnumber_t")
       {
         $parserFunction = "getEventNumberToken";
+      }
+      elsif ($field->{TYPE} eq "msgid_t")
+      {
+        $parserFunction = "getInt64Token";  # khmm
       }
       elsif ($field->{TYPE} eq "simtime_t")
       {
@@ -564,6 +575,10 @@ foreach $class (@classes)
       {
          print ENTRIES_CSV_FILE "$field->{CODE}\tevent number\t$field->{COMMENT}\n";
       }
+      elsif ($field->{TYPE} eq "msgid_t")
+      {
+         print ENTRIES_CSV_FILE "$field->{CODE}\tmsg id\t$field->{COMMENT}\n";
+      }
       elsif ($field->{TYPE} eq "simtime_t")
       {
          print ENTRIES_CSV_FILE "$field->{CODE}\tsimulation time\t$field->{COMMENT}\n";
@@ -708,6 +723,10 @@ import org.omnetpp.eventlog.IChunk;
       elsif ($field->{TYPE} eq "eventnumber_t")
       {
         $parserFunction = "getEventNumberToken";
+      }
+      elsif ($field->{TYPE} eq "msgid_t")
+      {
+        $parserFunction = "getInt64Token"; # khmm
       }
       elsif ($field->{TYPE} eq "simtime_t")
       {

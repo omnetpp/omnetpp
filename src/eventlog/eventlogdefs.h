@@ -55,6 +55,10 @@ typedef uintptr_t ptr_t;
 
 typedef int64_t eventnumber_t;
 #define EVENTNUMBER_PRINTF_FORMAT PRId64
+
+typedef int64_t msgid_t;
+#define MSGID_PRINTF_FORMAT PRId64
+
 inline int64_t abs64(int64_t a)
 {
    return a < 0 ? -a : a;

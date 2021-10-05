@@ -34,7 +34,7 @@ using std::ostream;
 Register_Class(cMessage);
 
 // static members of cMessage
-int64_t cMessage::nextMessageId = 0;
+msgid_t cMessage::nextMessageId = 0;
 uint64_t cMessage::totalMsgCount = 0;
 uint64_t cMessage::liveMsgCount = 0;
 

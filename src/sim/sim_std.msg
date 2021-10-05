@@ -127,6 +127,19 @@ class simtime_t
     @defaultValue(SIMTIME_ZERO);
 }
 
+class msgid_t 
+{
+    @existingClass;
+    @overwritePreviousDefinition;
+    @descriptor(false);
+    @primitive;
+    @fromString(string2int64($));
+    @toString(int642string($));
+    @defaultValue(0);
+    @toValue((omnetpp::intval_t)($));
+    @fromValue(omnetpp::checked_int_cast<int64_t>($.intValue()));
+}
+
 class cObject
 {
     @existingClass;
@@ -375,8 +388,8 @@ class cMessage extends cEvent
     @overwritePreviousDefinition;
     @descriptor(readonly);
     @icon("message");
-    int64_t id @group("message") @hint("Automatically assigned unique identifier");
-    int64_t treeId @group("message") @hint("Identifier shared between the message and its copies");
+    msgid_t id @group("message") @hint("Automatically assigned unique identifier");
+    msgid_t treeId @group("message") @hint("Identifier shared between the message and its copies");
     short kind @group("message") @editable @hint("Generic user-settable attribute, usually carries \"type\" or \"role\" or \"category\" of message");
     string displayString @group("message") @hint("Controls appearance of the message in GUI");
     cObject *controlInfo @hint("Used with protocol stacks: carries extra information when a packet is sent between protocol layers");

@@ -81,6 +81,10 @@ while (<FILE>)
       {
          $fieldPrintfType = '%" PRId64 "';
       }
+      elsif ($fieldType eq "msgid_t")
+      {
+         $fieldPrintfType = '%" PRId64 "';
+      }
       elsif ($fieldType eq "simtime_t")
       {
          $fieldPrintfType = "%s";
