@@ -56,13 +56,13 @@ class SIM_API cMersenneTwister : public cRNG
     virtual void selfTest() override;
 
     /** Random integer in the range [0,intRandMax()] */
-    virtual unsigned long intRand() override;
+    virtual uint32_t intRand() override;
 
     /** Maximum value that can be returned by intRand() */
-    virtual unsigned long intRandMax() override;
+    virtual uint32_t intRandMax() override;
 
     /** Random integer in [0,n), n < intRandMax() */
-    virtual unsigned long intRand(unsigned long n) override;
+    virtual uint32_t intRand(uint32_t n) override;
 
     /** Random double on the [0,1) interval */
     virtual double doubleRand() override;

@@ -49,10 +49,10 @@ class cConfiguration;
 class SIM_API cRNG : public cObject
 {
   protected:
-    unsigned long numDrawn;
+    uint64_t numDrawn = 0;
 
   public:
-    cRNG() {numDrawn=0;}
+    cRNG() {}
     virtual ~cRNG() {}
 
     /**
@@ -75,22 +75,22 @@ class SIM_API cRNG : public cObject
      * Returns how many random numbers have been drawn from this RNG.
      * Subclasses should increment numDrawn in the intRand(), etc. methods.
      */
-    virtual unsigned long getNumbersDrawn() const  {return numDrawn;}
+    virtual uint64_t getNumbersDrawn() const  {return numDrawn;}
 
     /**
      * Random integer in the range [0,intRandMax()]
      */
-    virtual unsigned long intRand() = 0;
+    virtual uint32_t intRand() = 0;
 
     /**
      * Maximum value that can be returned by intRand(), e.g. 2^31-2 with LCG32.
      */
-    virtual unsigned long intRandMax() = 0;
+    virtual uint32_t intRandMax() = 0;
 
     /**
      * Random integer in [0,n), n < intRandMax()
      */
-    virtual unsigned long intRand(unsigned long n) = 0;
+    virtual uint32_t intRand(uint32_t n) = 0;
 
     /**
      * Random double on the [0,1) interval

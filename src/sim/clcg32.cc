@@ -67,7 +67,7 @@ void cLCG32::selfTest()
         throw cRuntimeError("cLCG32: selfTest() failed, please report this problem!");
 }
 
-unsigned long cLCG32::intRand()
+uint32_t cLCG32::intRand()
 {
     numDrawn++;
     const long int a = 16807, q = 127773, r = 2836;
@@ -77,19 +77,19 @@ unsigned long cLCG32::intRand()
     return seed - 1;  // shift range [1..2^31-2] to [0..2^31-3]
 }
 
-unsigned long cLCG32::intRandMax()
+uint32_t cLCG32::intRandMax()
 {
     return LCG32_MAX - 1;  // 2^31-3
 }
 
-unsigned long cLCG32::intRand(unsigned long n)
+uint32_t cLCG32::intRand(uint32_t n)
 {
     if (n > LCG32_MAX)
-        throw cRuntimeError("cLCG32: intRand(%lu): Argument out of range 1..2^31-2", n);
+        throw cRuntimeError("cLCG32: intRand(%u): Argument out of range 1..2^31-2", (unsigned)n);
 
     // code from MersenneTwister.h, Richard J. Wagner rjwagner@writeme.com
     // Find which bits are used in n
-    unsigned long used = n - 1;
+    uint32_t used = n - 1;
     used |= used >> 1;
     used |= used >> 2;
     used |= used >> 4;
@@ -97,7 +97,7 @@ unsigned long cLCG32::intRand(unsigned long n)
     used |= used >> 16;
 
     // Draw numbers until one is found in [0,n]
-    unsigned long i;
+    uint32_t i;
     do
         i = intRand() & used;  // toss unused bits to shorten search
     while (i >= n);
@@ -119,7 +119,7 @@ double cLCG32::doubleRandIncl1()
     return (double)intRand() * (1.0 / (LCG32_MAX - 1));
 }
 
-long cLCG32::autoSeeds[] = {
+uint32_t cLCG32::autoSeeds[] = {
     1L, 1331238991L, 1550655590L, 930627303L, 766698560L, 372156336L,
     1645116277L, 1635860990L, 1154667137L, 692982627L, 1961833381L,
     713190994L, 460575272L, 1298018763L, 1497719440L, 2030952567L,

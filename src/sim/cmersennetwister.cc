@@ -39,7 +39,7 @@ void cMersenneTwister::initialize(int seedSet, int rngId, int numRngs,
     sprintf(key, "seed-%d-mt", rngId);
     sprintf(key2, "seed-%d-mt-p%d", rngId, parsimProcId);
 
-    unsigned long seed;
+    uint32_t seed;
     if (parsimNumPartitions > 1) {
         // with parallel simulation, every partition should get distinct streams
         const char *value = cfg->getConfigValue(key2);
@@ -77,18 +77,18 @@ void cMersenneTwister::selfTest()
         throw cRuntimeError("cMersenneTwister: selfTest() failed, please report this problem!");
 }
 
-unsigned long cMersenneTwister::intRand()
+uint32_t cMersenneTwister::intRand()
 {
     numDrawn++;
     return rng.randInt();
 }
 
-unsigned long cMersenneTwister::intRandMax()
+uint32_t cMersenneTwister::intRandMax()
 {
     return 0xffffffffUL;  // 2^32-1
 }
 
-unsigned long cMersenneTwister::intRand(unsigned long n)
+uint32_t cMersenneTwister::intRand(uint32_t n)
 {
     numDrawn++;
     return rng.randInt(n-1);

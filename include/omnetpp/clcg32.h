@@ -42,13 +42,13 @@ namespace omnetpp {
 class SIM_API cLCG32 : public cRNG
 {
   protected:
-    long seed;
+    uint32_t seed;
 
     // 256 pre-generated seeds, spaced 8,388,608 values in the sequence.
     // This covers the whole RNG period. Enough for 128 runs with 2 RNGs
     // each, or 64 runs with 4 RNGs each -- assuming one run never uses
     // more than 8 million random numbers per RNG.
-    static long autoSeeds[256];
+    static uint32_t autoSeeds[256];
 
   public:
     cLCG32() {}
@@ -63,13 +63,13 @@ class SIM_API cLCG32 : public cRNG
     virtual void selfTest() override;
 
     /** Random integer in the range [0,intRandMax()] */
-    virtual unsigned long intRand() override;
+    virtual uint32_t intRand() override;
 
     /** Maximum value that can be returned by intRand() */
-    virtual unsigned long intRandMax() override;
+    virtual uint32_t intRandMax() override;
 
     /** Random integer in [0,n), n < intRandMax() */
-    virtual unsigned long intRand(unsigned long n) override;
+    virtual uint32_t intRand(uint32_t n) override;
 
     /** Random double on the [0,1) interval */
     virtual double doubleRand() override;
