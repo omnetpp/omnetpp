@@ -22,6 +22,7 @@
 #include "expressionfilter.h"
 #include "statisticsourceparser.h"
 #include "common/exprnodes.h"
+#include "common/exprutil.h"
 #include "common/stringutil.h"
 #include "common/stlutil.h"
 
@@ -180,12 +181,12 @@ cModule *StatisticSourceAstTranslator::resolveSubscriptionModule(const char *mod
 
 ExprNode *StatisticSourceAstTranslator::translateToExpressionTree(AstNode *astNode, AstTranslator *translatorForChildren)
 {
-    if (astNode->type == AstNode::IDENT) {
+    if (isIdent(astNode)) {
         // must be a signal name
         const char *signalName = astNode->name.c_str();
         return subscribeToSignal(component, signalName);
     }
-    else if (astNode->type == AstNode::MEMBER) {
+    else if (isMember(astNode)) {
         // likely submodulepath.signalname
         ASSERT(astNode->children.size() == 1);
         std::string modulePath = collectDottedPath(astNode->children[0]);

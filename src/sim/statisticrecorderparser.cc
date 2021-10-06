@@ -18,6 +18,7 @@
 #include "omnetpp/resultrecorders.h"  // LastValueRecorder
 #include "expressionfilter.h"
 #include "statisticrecorderparser.h"
+#include "common/exprutil.h"
 
 namespace omnetpp {
 

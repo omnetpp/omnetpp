@@ -16,6 +16,7 @@
 *--------------------------------------------------------------*/
 
 #include "common/stringutil.h"
+#include "common/exprutil.h"
 #include "omnetpp/cdynamicexpression.h"
 #include "omnetpp/cxmlelement.h"
 #include "omnetpp/cnedmathfunction.h"
@@ -543,43 +544,8 @@ ExprValue NedArrayNode::evaluate(Context *context_) const
 
 //---
 
-typedef Expression::AstNode AstNode;
-
-inline bool isFunction(AstNode *astNode) {
-    return astNode->type == AstNode::FUNCTION;
-}
-inline bool isFunction(AstNode *astNode, const std::string& name) {
-    return astNode->type == AstNode::FUNCTION && astNode->name == name;
-}
-inline bool isIdentOrMember(AstNode *astNode) {
-    return astNode->type == AstNode::IDENT || astNode->type == AstNode::MEMBER;
-}
-inline bool isIndexed(AstNode *astNode) {
-    return astNode->type == AstNode::IDENT_W_INDEX || astNode->type == AstNode::MEMBER_W_INDEX;
-}
-inline AstNode *getIndexChild(AstNode *astNode) {
-    return astNode->type == AstNode::IDENT_W_INDEX ? astNode->children.at(0) :
-            astNode->type == AstNode::MEMBER_W_INDEX ? astNode->children.at(1) : nullptr;
-}
-inline bool isIdentOrIndexedIdent(AstNode *astNode) {
-    return astNode->type == AstNode::IDENT || astNode->type == AstNode::IDENT_W_INDEX;
-}
-inline bool isMemberOrIndexedMember(AstNode *astNode) {
-    return astNode->type == AstNode::MEMBER || astNode->type == AstNode::MEMBER_W_INDEX;
-}
-inline bool isIdent(AstNode *astNode) {
-    return astNode->type == AstNode::IDENT;
-}
-inline bool isIdent(AstNode *astNode, const std::string& name) {
-    return astNode->type == AstNode::IDENT && astNode->name == name;
-}
-inline bool isMember(AstNode *astNode) {
-    return astNode->type == AstNode::MEMBER;
-}
-inline bool isMember(AstNode *astNode, const std::string& name) {
-    return astNode->type == AstNode::MEMBER && astNode->name == name;
-}
-inline AstNode *getSingleChild(AstNode *astNode) {
+inline AstNode *getSingleChild(AstNode *astNode)
+{
     if (astNode->children.size() != 1)
         throw cRuntimeError("%s() expects one argument", astNode->name.c_str());
     return astNode->children.at(0);
@@ -605,7 +571,7 @@ IdentSyntax NedOperatorTranslator::matchSyntax(AstNode *astNode, IdentQualifier&
                 return UNKNOWN;  // chain too long -- not supported
         }
     }
-    else if (isIndexed(ident1)) {
+    else if (hasIndex(ident1)) {
         return UNKNOWN;  // ident1[] -- not supported
     }
 
@@ -626,7 +592,7 @@ IdentSyntax NedOperatorTranslator::matchSyntax(AstNode *astNode, IdentQualifier&
         if (ident2->name == "this" || ident2->name == "parent")
             return UNKNOWN; // may not be "this" or "parent"
         name2 = ident2->name;
-        if (isIndexed(ident2))
+        if (hasIndex(ident2))
             indexNode = getIndexChild(ident2);
     }
 
@@ -636,8 +602,8 @@ IdentSyntax NedOperatorTranslator::matchSyntax(AstNode *astNode, IdentQualifier&
         if (ident1->name == "this" || ident1->name == "parent")
             return UNKNOWN; // may not be "this" or "parent"
         name1 = ident1->name;
-        if (isIndexed(ident1)) {
-            if (ident2 && isIndexed(ident2))
+        if (hasIndex(ident1)) {
+            if (ident2 && hasIndex(ident2))
                 return UNKNOWN; // ident1[...].ident2[...] is not a supported syntax
             indexNode = getIndexChild(ident1);
         }
