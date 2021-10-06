@@ -147,6 +147,7 @@ def get_scalars(filter_expression, include_attrs, include_fields, include_runatt
     # TODO filter row types based on include_ args, as optimization
     df = _read_result_files(filter_expression, 's', *args)
     df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
+    df["value"] = pd.to_numeric(df["value"], errors="raise")
     return df
 
 def get_vectors(filter_expression, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, start_time, end_time):

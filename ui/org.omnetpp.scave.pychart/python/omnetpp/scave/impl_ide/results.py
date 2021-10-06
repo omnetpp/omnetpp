@@ -245,6 +245,8 @@ def get_scalars(filter_expression, include_attrs, include_fields, include_runatt
     df = pd.DataFrame(scalars, columns=["runID", "module", "name", "value"])
 
     df =_append_additional_data(df, attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
+    df["value"] = pd.to_numeric(df["value"], errors="raise")
+
     return df
 
 

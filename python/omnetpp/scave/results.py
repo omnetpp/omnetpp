@@ -489,6 +489,7 @@ def get_scalars(filter_or_dataframe="", include_attrs=False, include_fields=Fals
         df = df[df["type"].isin(row_types)]
         df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
         df.dropna(axis='columns', how='all', inplace=True)
+        df["value"] = pd.to_numeric(df["value"], errors="raise")
         return df
 
 
