@@ -84,7 +84,7 @@ struct SIM_API SendOptions {
     simtime_t propagationDelay_ = SIMTIME_ZERO; // for sendDirect()
     simtime_t duration_ = DURATION_UNSPEC; // for packets not using channel datarate
     bool isUpdate = false;
-    long transmissionId_ = -1; // if not -1, specifies the transmission id
+    txid_t transmissionId_ = -1; // if not -1, specifies the transmission id
     simtime_t remainingDuration = DURATION_UNSPEC; // when updating an earlier transmission
 
     static const simtime_t DURATION_UNSPEC;
@@ -130,7 +130,7 @@ struct SIM_API SendOptions {
      *
      * @see cMessage::getId(), cPacket::isUpdate()
      */
-    SendOptions& transmissionId(long transmissionId) {this->transmissionId_ = transmissionId; return *this;}
+    SendOptions& transmissionId(txid_t transmissionId) {this->transmissionId_ = transmissionId; return *this;}
 
     /**
      * Specifies that this is a transmission update, where the remaining duration
@@ -139,7 +139,7 @@ struct SIM_API SendOptions {
      *
      * @see cPacket::isUpdate(), cPacket::getRemainingDuration()
      */
-    SendOptions& finishTx(long transmissionId) {this->isUpdate = true; this->transmissionId_ = transmissionId; remainingDuration = SIMTIME_ZERO; return *this;}
+    SendOptions& finishTx(txid_t transmissionId) {this->isUpdate = true; this->transmissionId_ = transmissionId; remainingDuration = SIMTIME_ZERO; return *this;}
 
     /**
      * Specifies that this is a transmission update, where the remaining duration should be
@@ -148,14 +148,14 @@ struct SIM_API SendOptions {
      *
      * @see cPacket::isUpdate(), cPacket::getRemainingDuration()
      */
-    SendOptions& updateTx(long transmissionId) {this->isUpdate = true; this->transmissionId_ = transmissionId; remainingDuration = DURATION_UNSPEC; return *this;}
+    SendOptions& updateTx(txid_t transmissionId) {this->isUpdate = true; this->transmissionId_ = transmissionId; remainingDuration = DURATION_UNSPEC; return *this;}
 
     /**
      * Specifies that this is a transmission update, with the given remaining duration.
      * See the comment of this class for an explanation of transmission
      * updates.@see cPacket::isUpdate(), cPacket::getRemainingDuration()
      */
-    SendOptions& updateTx(long transmissionId, simtime_t remainingDuration) {this->isUpdate = true; this->transmissionId_ = transmissionId; this->remainingDuration = remainingDuration; return *this;}
+    SendOptions& updateTx(txid_t transmissionId, simtime_t remainingDuration) {this->isUpdate = true; this->transmissionId_ = transmissionId; this->remainingDuration = remainingDuration; return *this;}
 
     /**
      * Returns the options in a string form.
@@ -228,7 +228,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
     cGate *resolveSendDirectGate(cModule *mod, int gateId);
     cGate *resolveSendDirectGate(cModule *mod, const char *gateName, int gateIndex);
     static SendOptions resolveSendDirectOptions(simtime_t propagationDelay, simtime_t duration);
-    void deleteObsoletedTransmissionFromFES(long transmissionId, cPacket *updatePkt);
+    void deleteObsoletedTransmissionFromFES(txid_t transmissionId, cPacket *updatePkt);
     void throwNotOwnerOfMessage(const char *sendOp, cMessage *msg);
 
   protected:

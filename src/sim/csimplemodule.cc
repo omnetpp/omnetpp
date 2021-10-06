@@ -641,7 +641,7 @@ void cSimpleModule::arrived(cMessage *msg, cGate *ongate, const SendOptions& opt
     getSimulation()->insertEvent(msg);
 }
 
-void cSimpleModule::deleteObsoletedTransmissionFromFES(long transmissionId, cPacket *updatePkt)
+void cSimpleModule::deleteObsoletedTransmissionFromFES(txid_t transmissionId, cPacket *updatePkt)
 {
     // Linear search might seem like a poor choice, but alternatives (like maintaining
     // an index) would also affect (slow down) simulations which don't use the updateTx
@@ -661,7 +661,7 @@ void cSimpleModule::deleteObsoletedTransmissionFromFES(long transmissionId, cPac
         }
     }
     if (!obsoletedPacket)
-        throw cRuntimeError("Cannot send transmission update packet (%s)%s with transmissionId=%ld "
+        throw cRuntimeError("Cannot send transmission update packet (%s)%s with transmissionId=%" PRId64 " "
                             "to a gate with the default (=false) deliverImmediately setting: "
                             "The original packet (or obsoleted update) identified by transmissionId "
                             "was not found in the FES, so it is not possible to replace it with the "

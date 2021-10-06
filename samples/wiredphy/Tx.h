@@ -30,7 +30,7 @@ class Tx : public cSimpleModule
     bool queueingEnabled = false;
     cPacketQueue txQueue;
     cMessage *txEndTimer = nullptr;
-    long transmissionId = -1;
+    txid_t transmissionId = -1;
     cPacket *txPacket = nullptr; // actually, a clone of it
     bool cutthroughInProgress = false;
 

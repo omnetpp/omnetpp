@@ -127,12 +127,27 @@ class simtime_t
     @defaultValue(SIMTIME_ZERO);
 }
 
-class msgid_t 
+class msgid_t
 {
     @existingClass;
     @overwritePreviousDefinition;
     @descriptor(false);
     @primitive;
+    @castFunction(false);
+    @fromString(string2int64($));
+    @toString(int642string($));
+    @defaultValue(0);
+    @toValue((omnetpp::intval_t)($));
+    @fromValue(omnetpp::checked_int_cast<int64_t>($.intValue()));
+}
+
+class txid_t
+{
+    @existingClass;
+    @overwritePreviousDefinition;
+    @descriptor(false);
+    @primitive;
+    @castFunction(false);
     @fromString(string2int64($));
     @toString(int642string($));
     @defaultValue(0);
@@ -425,7 +440,7 @@ class cPacket extends cMessage
     cPacket *encapsulatedPacket @packetData @hint("Used with protocol stacks: stores an encapsulated higher-layer packet");
     bool txChannelEncountered @group(sending) @hint("If true, the packet has encountered a transmission channel during its last send");
     bool isUpdate @group(sending) @hint("If true, this is not a separate packet but a modification to a previous packet transmission (see remainingDuration too)");
-    long transmissionId @group(sending) @editable @hint("When isUpdate=true: identifies the original packet transmission");
+    txid_t transmissionId @group(sending) @editable @hint("When isUpdate=true: identifies the original packet transmission");
     simtime_t duration @group(sending) @hint("Transmission time over a channel with datarate");
     simtime_t remainingDuration @group(sending) @hint("Remaining transmission time over a channel with datarate (see isUpdate=true)");
     bool isReceptionStart @getter(isReceptionStart) @group(sending) @hint("True if duration==remainingDuration");

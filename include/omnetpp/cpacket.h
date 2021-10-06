@@ -66,7 +66,7 @@ class SIM_API cPacket : public cMessage
                                    // 1: shared once (shared among two messages);
                                    // 2: shared twice (shared among three messages); etc.
                                    // on reaching max sharecount a new packet gets created
-    long transmissionId = -1;  // for pairing transmission updates with the original transmission
+    txid_t transmissionId = -1;  // for pairing transmission updates with the original transmission
     simtime_t remainingDuration; // if transmission update: remaining duration (otherwise it must be equal to the duration)
 
   private:
@@ -76,7 +76,7 @@ class SIM_API cPacket : public cMessage
     // internal: setters used from within send()/sendDirect() and channel code
     void setDuration(simtime_t d) {duration = d;}
     void setRemainingDuration(simtime_t d) {remainingDuration = d;}
-    void setTransmissionId(long id) {transmissionId = id;}
+    void setTransmissionId(txid_t id) {transmissionId = id;}
     void setIsUpdate(bool b) {setFlag(FL_ISUPDATE, b);}
     void setTxChannelEncountered(bool b) {setFlag(FL_TXCHANNELSEEN, b);}
     void clearTxChannelEncountered() {flags &= ~FL_TXCHANNELSEEN;}
@@ -303,7 +303,7 @@ class SIM_API cPacket : public cMessage
      *
      * @see cSimpleModule::send(), cSimpleModule::sendDirect(), SendOptions
      */
-    long getTransmissionId() const {return transmissionId;}
+    txid_t getTransmissionId() const {return transmissionId;}
 
     /**
      * Returns the transmission duration of the whole packet after the packet

@@ -279,7 +279,7 @@ BS BeginSendEntry : MessageDescriptionEntry // beginning to send a message
 {
    sd simtime_t sendDelay         0 // send after this delay
    up bool isUpdate           false // whether this is a transmission update
-   tx msgid_t transmissionId    -1  // for pairing transmission updates with the original transmission
+   tx txid_t transmissionId     -1  // for pairing transmission updates with the original transmission
 }
 
 ES EndSendEntry : MessageDescriptionEntry // prediction of the arrival of a message, only a message reference because can't be alone

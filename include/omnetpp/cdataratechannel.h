@@ -119,7 +119,7 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
     struct Tx {
         simtime_t startTime;
         simtime_t finishTime;
-        long transmissionId = -1;
+        txid_t transmissionId = -1;
     };
     Tx singleTx; // for SINGLE
     std::vector<Tx> txList; // for MULTI

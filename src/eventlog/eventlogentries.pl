@@ -108,6 +108,12 @@ while (<FILE>)
          $fieldCDefault = "-1";
          $fieldJavaDefault = "-1";
       }
+      elsif ($fieldType eq "txid_t")
+      {
+         $fieldPrintfType = "%\" TXID_PRINTF_FORMAT \"";
+         $fieldCDefault = "-1";
+         $fieldJavaDefault = "-1";
+      }
       elsif ($fieldType eq "simtime_t")
       {
          $fieldPrintfType = "%s";
@@ -140,6 +146,7 @@ while (<FILE>)
       $fieldJavaType =~ s/int64_t/long/;
       $fieldJavaType =~ s/eventnumber_t/long/;
       $fieldJavaType =~ s/msgid_t/long/;
+      $fieldJavaType =~ s/txid_t/long/;
       $fieldJavaType =~ s/simtime_t/BigDecimal/;
 
       $field = {
@@ -355,6 +362,10 @@ foreach $class (@classes)
         $parserFunction = "getEventNumberToken";
       }
       elsif ($field->{TYPE} eq "msgid_t")
+      {
+        $parserFunction = "getInt64Token";  # khmm
+      }
+      elsif ($field->{TYPE} eq "txid_t")
       {
         $parserFunction = "getInt64Token";  # khmm
       }
@@ -579,6 +590,10 @@ foreach $class (@classes)
       {
          print ENTRIES_CSV_FILE "$field->{CODE}\tmsg id\t$field->{COMMENT}\n";
       }
+      elsif ($field->{TYPE} eq "txid_t")
+      {
+         print ENTRIES_CSV_FILE "$field->{CODE}\ttx id\t$field->{COMMENT}\n";
+      }
       elsif ($field->{TYPE} eq "simtime_t")
       {
          print ENTRIES_CSV_FILE "$field->{CODE}\tsimulation time\t$field->{COMMENT}\n";
@@ -725,6 +740,10 @@ import org.omnetpp.eventlog.IChunk;
         $parserFunction = "getEventNumberToken";
       }
       elsif ($field->{TYPE} eq "msgid_t")
+      {
+        $parserFunction = "getInt64Token"; # khmm
+      }
+      elsif ($field->{TYPE} eq "txid_t")
       {
         $parserFunction = "getInt64Token"; # khmm
       }

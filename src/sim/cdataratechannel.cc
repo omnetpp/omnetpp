@@ -196,7 +196,7 @@ void cDatarateChannel::processPacket(cPacket *pkt, const SendOptions& options, s
         else {
             ASSERT(pkt->getTransmissionId() != -1); // assured in send()
             if (pkt->getTransmissionId() != tx->transmissionId)
-                throw cRuntimeError("Cannot send transmission update packet (%s)%s: transmissionId=%ld does not match that of the last transmission on the channel", pkt->getClassName(), pkt->getFullName(), pkt->getTransmissionId());
+                throw cRuntimeError("Cannot send transmission update packet (%s)%s: transmissionId=%" PRId64 " does not match that of the last transmission on the channel", pkt->getClassName(), pkt->getFullName(), pkt->getTransmissionId());
             if (t > tx->finishTime) // note: if they are equal and it's a problem, we'll catch that in cSimpleModule::deleteObsoletedTransmissionFromFES()
                 throw cRuntimeError("Cannot send transmission update packet (%s)%s: It has missed the end of the transmission to be updated", pkt->getClassName(), pkt->getFullName());
         }
@@ -222,7 +222,7 @@ void cDatarateChannel::processPacket(cPacket *pkt, const SendOptions& options, s
                     txIndex = i;
             }
             if (txIndex == -1)
-                throw cRuntimeError("Cannot send transmission update packet (%s)%s: The transmission transmissionId=%ld references was not found (either nonexistent or already finished)", pkt->getClassName(), pkt->getFullName(), pkt->getTransmissionId());
+                throw cRuntimeError("Cannot send transmission update packet (%s)%s: The transmission transmissionId=%" PRId64 " references was not found (either nonexistent or already finished)", pkt->getClassName(), pkt->getFullName(), pkt->getTransmissionId());
             tx = &txList[txIndex];
         }
     }
