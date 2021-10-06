@@ -74,7 +74,7 @@ def _read_csv(reader):
 def _read_result_files(filter_expression, result_type, *additional_args):
     type_filter = ['-T', result_type] if result_type else []
     filter_expr_args = ['-f', filter_expression]
-    command = ["opp_scavetool", "x", *inputfiles, *type_filter, *filter_expr_args,
+    command = ["opp_scavetool", "x", "--allow-nonmatching", *inputfiles, *type_filter, *filter_expr_args,
                 "-F", "CSV-R", "-o", "-", *additional_args]
 
     proc = subprocess.run(command, stderr=subprocess.PIPE, stdout=subprocess.PIPE, universal_newlines=False)
@@ -107,7 +107,7 @@ def read_result_files(filenames, filter_expression, include_fields_as_scalars, v
         args.append(str(vector_end_time))
 
     filter_expr_args = [] if filter_expression is None else ['-f', filter_expression]
-    command = ["opp_scavetool", "x", *filenames, *type_filter, *filter_expr_args,
+    command = ["opp_scavetool", "x", "--allow-nonmatching", *filenames, *type_filter, *filter_expr_args,
                 "-F", "CSV-R", "-o", "-", *args]
 
     proc = subprocess.run(command, stderr=subprocess.PIPE, stdout=subprocess.PIPE, universal_newlines=False)
@@ -175,7 +175,7 @@ def _get_metadata(filter_expression, query_flag, include_runattrs, include_iterv
     Internal. See `opp_scavetool q -h`.
     - `query_flag`: Sets the type of metadata to query. One of: "-l", "-a", "-i", "-j", "-t"
     """
-    command = ["opp_scavetool", "q", *inputfiles, "-f", filter_expression, query_flag, "-g", "--tabs"]
+    command = ["opp_scavetool", "q", "--allow-nonmatching", *inputfiles, "-f", filter_expression, query_flag, "-g", "--tabs"]
 
     output = subprocess.check_output(command).strip()
 
