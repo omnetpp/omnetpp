@@ -554,7 +554,12 @@ def postconfigure_plot(props):
 
         ideplot.set_properties(parse_rcparams(get_prop("plot.properties") or ""))
     else:
-        # TODO: plt.legend(...)
+        if _parse_optional_bool(get_prop("legend_show")):
+            loc = get_prop("legend_placement")
+            if loc.startswith("outside "):
+                # TODO: apply same translation logic as in ideplot_matplotlib.py
+                loc = "best"
+            plt.legend(loc=loc, frameon=_parse_optional_bool(get_prop("legend_border")))
         plt.tight_layout()
 
 
