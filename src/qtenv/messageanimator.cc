@@ -38,7 +38,7 @@ using namespace common;
 
 namespace qtenv {
 
-const MessageAnimator::MessageSendKey MessageAnimator::METHODCALL = {-1, -1, -1, -1, -1};
+const MessageAnimator::MessageSendKey MessageAnimator::METHODCALL = {-1, -1, -1, -1, -1, -1};
 
 // --------  MessageAnimator::MessageSendPath::Hop  --------
 
@@ -91,8 +91,10 @@ void MessageAnimator::MessageSendPath::removeMessagePointer(cMessage *msg)
 
 MessageAnimator::MessageSendKey MessageAnimator::MessageSendKey::fromMessage(cMessage *msg)
 {
+    txid_t txid = msg->isPacket() ? static_cast<cPacket*>(msg)->getTransmissionId() : -1;
     return MessageAnimator::MessageSendKey {
-                msg->isPacket() ? static_cast<cPacket*>(msg)->getTransmissionId() : msg->getId(),
+                (txid == -1) ? msg->getId() : -1,
+                txid,
                 msg->getSenderModuleId(), msg->getSenderGateId(),
                 msg->getArrivalModuleId(), msg->getArrivalGateId()
             };
@@ -100,8 +102,8 @@ MessageAnimator::MessageSendKey MessageAnimator::MessageSendKey::fromMessage(cMe
 
 std::string MessageAnimator::MessageSendKey::str() const
 {
-    return "{" + std::to_string(messageId)
-        + ", "   + std::to_string(senderModuleId)  + "(" + getSimulation()->getComponent(senderModuleId)->getFullPath()  + ")." + std::to_string(senderGateId)
+    return "{" + std::to_string(messageId) + ", "   + std::to_string(transmissionId)
+        + ": "   + std::to_string(senderModuleId)  + "(" + getSimulation()->getComponent(senderModuleId)->getFullPath()  + ")." + std::to_string(senderGateId)
         + " -> " + std::to_string(arrivalModuleId) + "(" + getSimulation()->getComponent(arrivalModuleId)->getFullPath() + ")." + std::to_string(arrivalGateId)
         + "}";
 }
@@ -343,8 +345,6 @@ void MessageAnimator::endSend(cMessage *msg)
         // otherwise after the method.
         // XXX maybe split it in two, so if the first few parts are instantaneous, play them, and continue later?
         MessageSendKey key = MessageSendKey::fromMessage(msg);
-        if (isUpdatePacket)
-            key.messageId = transmissionId;
         animations.putMulti(key, sendAnim);
     }
 
@@ -564,8 +564,6 @@ void MessageAnimator::cutUpdatedPacketAnimation(cPacket *updatePacket)
 {
     // the original animation was supposed to take the same path
     MessageSendKey key = MessageSendKey::fromMessage(updatePacket);
-    // but had a different ID
-    key.messageId = updatePacket->getTransmissionId();
 
     if (animations.containsKey(key)) {
         // This getLast() will make sure that always the last (of the previous ones) animation
