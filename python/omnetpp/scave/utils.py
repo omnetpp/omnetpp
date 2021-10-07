@@ -163,6 +163,16 @@ def plot_bars(df, props, variable_name=None, errors_df=None):
                 extra_parts = (1.0 / overlap_visible_fraction - 1)
                 xs += width / extra_parts - (len(df.columns) + extra_parts) * width * overlap_visible_fraction / 2
 
+    df.sort_index(axis="index", inplace=True)
+    df.sort_index(axis="columns", inplace=True)
+
+    if errors_df is not None:
+        errors_df.sort_index(axis="index", inplace=True)
+        errors_df.sort_index(axis="columns", inplace=True)
+
+        assert(df.index.equals(errors_df.index))
+        assert(df.columns.equals(errors_df.columns))
+
     for i, column in enumerate(df):
         style = _make_bar_args(props, df)
 
@@ -247,6 +257,7 @@ def plot_vectors(df, props, legend_func=make_legend_label):
     column = "name" if get_prop("legend_labels") == "result names" else "title"
     title_col, legend_cols = extract_label_columns(df, column)
 
+    df.sort_values(by=[l for (_, l) in legend_cols], inplace=True)
     for t in df.itertuples(index=False):
         style = _make_line_args(props, t, df)
         p.plot(t.vectime, t.vecvalue, label=legend_func(legend_cols, t), **style)
@@ -314,6 +325,7 @@ def plot_histograms(df, props, legend_func=make_legend_label):
 
     title_col, legend_cols = extract_label_columns(df)
 
+    df.sort_values(by=[l for (_, l) in legend_cols], inplace=True)
     for t in df.itertuples(index=False):
         style = _make_histline_args(props, t, df)
 
