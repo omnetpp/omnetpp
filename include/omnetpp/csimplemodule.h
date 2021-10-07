@@ -44,7 +44,7 @@ class cCoroutine;
  * to be aborted or preempted, extended, or modified in other unforeseen ways
  * while the transmission is in progress.
  *
- * Transmission updates are normal packets (cPacket) sent with with the
+ * Transmission updates are normal packets (cPacket) sent with the
  * updateTx() or finishTx() options. These methods expect a transmission ID
  * which should be determined when sending the original packet, and specified
  * using the transmissionId() method. A transmission can be updated several
