@@ -70,3 +70,8 @@ dir=
 if [ "$1" != "-q" ]; then
   echo "Environment for '$OMNETPP_RELEASE' in directory '$__omnetpp_root_dir' is ready."
 fi
+
+# source user specific script if present
+if [ -f "$__omnetpp_root_dir/setenv_local" ] ; then
+  source $__omnetpp_root_dir/setenv_local
+fi

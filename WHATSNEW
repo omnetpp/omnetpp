@@ -56,11 +56,19 @@ IDE:
 
   - JustJ: Use stripped version of JDK 15 instead of JDK 11
 
+Build:
+
+  - `setenv` is used now on Windows to set up the build environment.
+    It is automatically sourced when mingwenv.cmd or vcenv.cmd is started.
+
+  - If `setenv_local` file is present in the installation root, it is
+    automatically sourced from the `setenv` script. This can be used to
+    set up user specific environment variables.
+
 Documentation:
 
   - Install Guide updated. New sections in the macOS chapter: "Enabling
     Development Mode in the Terminal", "Running OMNeT++ on Apple Silicon"
-
 
 
 OMNeT++ 6.0pre12 (Jul 2021)
