@@ -41,6 +41,7 @@ if [ "$1" = "-r" ]; then
     return 0
 fi
 
+# macOS specific settings
 if [ $(uname) = "Darwin" ]; then
   if [ ! -d $dir/tools/macosx ]; then
       echo "Error: We are running on macOS, but you seem to have downloaded the Linux or Windows version of the installation package!"
@@ -57,18 +58,36 @@ if [ $(uname) = "Darwin" ]; then
   fi
 fi
 
-export __omnetpp_root_dir=$dir
-export OMNETPP_RELEASE=$(cat $__omnetpp_root_dir/Version)
-export PATH=$__omnetpp_root_dir/bin:$PATH
-export PYTHONPATH=$__omnetpp_root_dir/python:$PYTHONPATH
+# Windows/MinGW specifiy settings
+if [ "$MSYSTEM" = "MINGW64" ] ; then
+  if [ "$VCToolsInstallDir" = "" ] ; then
+    export PATH="/opt/mingw64/bin:$PATH"
+  else
+    export PATH="/opt/visualc/bin:$(cygpath "$VCToolsInstallDir/bin/HostX64/x64"):$PATH"
+  fi
+fi
+
+export PATH=$dir/bin:$PATH
+export PYTHONPATH=$dir/python:$PYTHONPATH
 export HOSTNAME
 export HOST
 export QT_SELECT=5 # on systems with qtchooser, switch to Qt5
-export QT_LOGGING_RULES='*.debug=false;qt.qpa.*=false' # disable some annoying qt logging
+export QT_LOGGING_RULES='*.debug=false;qt.qpa.*=false' # disable some qt logging
+
+export OMNETPP_RELEASE=$(cat $dir/Version)
+export __omnetpp_root_dir=$dir
 dir=
 
 if [ "$1" != "-q" ]; then
   echo "Environment for '$OMNETPP_RELEASE' in directory '$__omnetpp_root_dir' is ready."
+
+  if [ ! -f $__omnetpp_root_dir/Makefile.inc ]; then
+  cat <<__END__
+
+Type "./configure" and "make" to build the simulation libraries.
+When done, type "omnetpp" to start the IDE.
+__END__
+  fi
 fi
 
 # source user specific script if present
