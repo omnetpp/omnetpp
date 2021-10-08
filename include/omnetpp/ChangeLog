@@ -1,3 +1,19 @@
+2021-10-06  Andras Varga
+
+	* Introduce txid_t for transmission IDs, and msgid_t for message IDs. The
+	"long" type was for both purposes, which was not good because width of long
+	is platform-dependent (32 bits on Windows). Both txid_t and msgid_t are now
+	int64_t.
+
+2021-10-05  Andras Varga
+
+	* cRNG methods: use uint32_t instead of (unsigned) long.
+	Note: width of long is platform-specific, namely it is 32 bits on Windows.
+
+2021-10-05  Andras Varga
+
+	* cMessage: totalMsgCount/liveMsgCount changed to uint64_t
+
 2021-06-09  Attila Torok
 
 	* Added cEnvir::pausePoint().

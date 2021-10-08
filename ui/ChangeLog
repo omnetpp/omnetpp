@@ -1,3 +1,21 @@
+2021-10-05 Attila Torok
+
+	* Analysis Tool: Follow recent changes in the Python API (plot -> ideplot, etc.)
+
+2021-09-27  Rudolf Hornig
+
+	* Productizing: Updated dependencies to Eclipse 4.21, Pydev 9.0.1
+
+2021-09-21  Attila Torok
+
+	*  Analysis Tool: Avoid using the phrase "iso lines" in scatter plots
+	[per suggestion of Edwards Longman]
+
+2021-09-21  Attila Torok
+
+	* Analysis Tool: Don't ignore the title set by the user on 3D and box-whiskers
+	charts
+
 2021-07-12  Rudolf Hornig
 
 	* Productizing: Added linux.aarch64 IDE native library support for

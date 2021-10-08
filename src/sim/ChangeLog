@@ -1,3 +1,30 @@
+2021-10-06  Andras Varga
+
+	* Follow changes: Introduction of txid_t and msgid_t; changes in the cRNG
+	interface.
+
+2021-09-23  Andras Varga
+
+	* Component parameters (specially JSON values) made more editable
+
+2021-09-30  Andras Varga
+
+	* sim_std.msg: removed some @descriptor(readonly) annotations
+
+2021-09-30  Andras Varga
+
+	* sim_std.msg: fix: simtime_t fields were not editable.
+	Also made other @opaque classes editable: cFigure::Point,
+	cFigure::Rectangle, cFigure::Transform, cFigure::Color, cFigure::Font
+
+2021-09-22  Andras Varga
+
+	* DemuxFilter: move demux label to the front of the result name string
+
+2021-09-22  Andras Varga
+
+	* Fix: according to its descriptor, cObject didn't have a "name" field
+
 2021-06-09  Attila Torok
 
 	* cSimulation: Add sanity check to prevent reentrant event execution

@@ -1,3 +1,12 @@
+2021-09-16  Andras Varga
+
+	* Document autoWarmupFilter=false and warmup filter; nits
+
+2021-09-15  Andras Varga
+
+	* NED parts: take over parameter references, "this" and
+	"parent" qualifiers text from omnetpp-5.7
+
 2021-04-11  Andras Varga
 
 	* appendix-display-strings: updated, add "g" tag

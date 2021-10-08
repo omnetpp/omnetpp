@@ -1,3 +1,8 @@
+2021-09-28  Attila Torok
+
+	* OSG: Don't setSwapBehavior on QSurfaceFormat. This fixes the black window
+	issue on Nvidia graphics cards on Linux when a 3D view is shown.
+
 2021-06-09  Attila Torok
 
 	* Implement pausePoint()

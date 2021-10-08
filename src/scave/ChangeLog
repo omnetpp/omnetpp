@@ -1,3 +1,8 @@
+2021-10-05  Andras Varga
+
+	* opp_scavetool: add "--allow-nonmatching" option, for the benefit of our
+	omnetpp.scave.results Python package.
+
 2021-06-07  Attila Torok
 
 	* Add a READER_MUTEX on the RFM to IDList::filterByRun()

@@ -1,3 +1,33 @@
+2021-10-07  Attila Torok
+
+	* omnetpp.scave.utils: plot_bars(), plot_vectors(), plot_histograms(): Sort
+	results by legend label (or indices, for bar charts) before plotting.
+
+2021-10-07  Attila Torok
+
+	* omnetpp.scave.utils: Fix: Make legend options work again with non-native charts
+
+2021-10-05  Attila Torok
+
+	* omnetpp.scave: Rename omnetpp.scave.plot module to omnetpp.scave.ideplot,
+	because it better describes its functionality (accessing native plots in the
+	IDE).
+
+2021-10-04  Attila Torok
+
+	* omnetpp.scave: Refactoring: Rename internal package impl_charttool to
+	impl, and all modules in it appropriately
+
+2021-10-04  Attila Torok
+
+	* omnetpp.scave.results: Remove the `merge_module_and_name` parameter
+
+2021-09-27  Attila Torok
+
+	* omnetpp.scave.results: added support for direct loading of result files
+	into a dataframe (read_result_files()), and extended query functions so they
+	accept that dataframe as input.
+
 2021-07-27  Attila Torok
 
 	* omnetpp.scave.vectorops: Fix example code and docs for crop(), don't try

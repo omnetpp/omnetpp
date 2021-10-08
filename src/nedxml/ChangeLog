@@ -1,3 +1,17 @@
+2021-09-30  Andras Varga
+
+	* Message compiler: implement @readonly
+
+2021-09-29  Andras Varga
+
+	* Message compiler: fix "ambiguous conversion from 'long' to 'omnetpp::cValue'" on
+	macOS.
+
+2021-09-28  Andras Varga
+
+	* NED: Prevent NED files to be loaded more than once. Occurs if NED path
+	contains duplicate entries. Caused error with package.ned files.
+
 2021-07-16  Andras Varga
 
 	Message compiler: Follow cClassDescriptor change: generate getFieldValue()
