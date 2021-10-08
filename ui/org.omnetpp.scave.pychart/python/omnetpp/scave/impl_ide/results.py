@@ -133,6 +133,9 @@ def add_inputs(**_):
 
 
 def get_results(filter_expression, row_types, omit_unused_columns, include_fields_as_scalars, start_time, end_time):
+    if row_types is None:
+        row_types = ["config", "runattr", "itervar", "scalar", "vector", "statistic", "histogram", "param", "attr"]
+
     shmnames = Gateway.results_provider.getResultsPickle(filter_expression, list(row_types), False, bool(include_fields_as_scalars), float(start_time), float(end_time))
 
     df = _load_df_from_shm(shmnames[0])
