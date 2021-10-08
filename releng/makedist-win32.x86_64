@@ -77,7 +77,6 @@ if [ "$what" != "omnest" ]; then
   rm vcenv.cmd
   rm tools/opp-tools-win64-visualc.7z
 fi
-rm setenv
 
 # rename some files to have txt extensions on windows
 mv doc/Readme-IDE doc/Readme-IDE.txt
