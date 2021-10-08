@@ -69,6 +69,14 @@ class cProperty;
  */
 class SIM_API cResultFilter : public cResultListener
 {
+    public:
+        /**
+         * Context information for initialization.
+         */
+        struct Context {
+            cComponent *component; // The module/channel for which the statistic is being recorded; usually the module on which the @statistic property is defined.
+            cProperty *attrsProperty; // An optional property from which extra attributes can be taken; usually the @statistic property.
+        };
     private:
         cComponent *component = nullptr;
         cProperty *attrsProperty = nullptr;
@@ -87,7 +95,8 @@ class SIM_API cResultFilter : public cResultListener
     public:
         cResultFilter();
         ~cResultFilter();
-        virtual void init(cComponent *component, cProperty *attrsProperty);
+        virtual void init(Context *ctx);
+        [[deprecated]] virtual void init(cComponent *component, cProperty *attrsProperty) {} // deprecated, left for backward compatibility
         virtual cResultFilter *clone() const override;
         virtual double getInitialDoubleValue() const {return NAN;}
         virtual void addDelegate(cResultListener *delegate);

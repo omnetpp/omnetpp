@@ -30,16 +30,20 @@ cResultFilter::cResultFilter()
     delegates[0] = nullptr;
 }
 
-void cResultFilter::init(cComponent *comp, cProperty *attrs)
+void cResultFilter::init(Context *ctx)
 {
-    component = comp;
-    attrsProperty = attrs;
+    component = ctx->component;
+    attrsProperty = ctx->attrsProperty;
+
+    // call legacy init() method in case the user redefined it
+    init(ctx->component, ctx->attrsProperty);
 }
 
 cResultFilter *cResultFilter::clone() const
 {
     cResultFilter *copy = (cResultFilter *) createOne(getClassName());
-    copy->init(component, attrsProperty);
+    Context ctx { component, attrsProperty };
+    copy->init(&ctx);
     return copy;
 }
 

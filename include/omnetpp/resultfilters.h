@@ -259,7 +259,7 @@ class SIM_API MeanFilter : public cNumericResultFilter
         virtual bool process(simtime_t& t, double& value, cObject *details) override;
     public:
         MeanFilter() {}
-        virtual void init(cComponent *component, cProperty *attrsProperty) override;
+        virtual void init(Context *ctx) override;
         double getMean() const;
         virtual std::string str() const override;
 };

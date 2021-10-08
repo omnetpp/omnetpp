@@ -116,13 +116,15 @@ ExprNode *StatisticRecorderAstTranslator::translateToExpressionTree(AstNode *ast
             return new WrappedSignalSource(source);
         else if (recorderFactory && astNode==astRoot) { // only do recorder if we are the root
             cResultRecorder *recorder = recorderFactory->create();
-            recorder->init(component, statisticName, recordingMode, attrsProperty);
+            cResultRecorder::Context ctx {component, statisticName, recordingMode, attrsProperty};
+            recorder->init(&ctx);
             source.subscribe(recorder);
             return new WrappedSignalSource(SignalSource()); // blank
         }
         else if (filterFactory) {
             cResultFilter *filter = filterFactory->create();
-            filter->init(component, attrsProperty);
+            cResultFilter::Context ctx {component, attrsProperty};
+            filter->init(&ctx);
             source.subscribe(filter);
             return new WrappedSignalSource(SignalSource(filter));
         }
@@ -136,13 +138,15 @@ ExprNode *StatisticRecorderAstTranslator::translateToExpressionTree(AstNode *ast
 
         if (recorderFactory && astNode==astRoot) {
             cResultRecorder *recorder = recorderFactory->create();
-            recorder->init(component, statisticName, recordingMode, attrsProperty);
+            cResultRecorder::Context ctx {component, statisticName, recordingMode, attrsProperty};
+            recorder->init(&ctx);
             prev.subscribe(recorder);
             return new WrappedSignalSource(SignalSource()); // blank
         }
         else if (filterFactory) {
             cResultFilter *filter = filterFactory->create();
-            filter->init(component, attrsProperty);
+            cResultFilter::Context ctx {component, attrsProperty};
+            filter->init(&ctx);
             prev.subscribe(filter);
             return new WrappedSignalSource(SignalSource(filter));
         }
@@ -163,7 +167,8 @@ void StatisticRecorderParser::parse(const SignalSource& source, const char *reco
 
     if (!output.isEmpty()) {
         LastValueRecorder *lastValueRecorder = new LastValueRecorder();
-        lastValueRecorder->init(component, statisticName, recordingMode, attrsProperty);
+        cResultRecorder::Context ctx {component, statisticName, recordingMode, attrsProperty};
+        lastValueRecorder->init(&ctx);
         output.subscribe(lastValueRecorder);
     }
 }

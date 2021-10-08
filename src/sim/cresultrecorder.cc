@@ -26,22 +26,26 @@ using namespace omnetpp::common;
 
 namespace omnetpp {
 
-void cResultRecorder::init(cComponent *comp, const char *statsName, const char *recMode, cProperty *property, opp_string_map *attrs)
+void cResultRecorder::init(Context *ctx)
 {
-    component = comp;
-    statisticName = statsName;
-    recordingMode = recMode;
-    attrsProperty = property;
-    manualAttrs = attrs;
+    component = ctx->component;
+    statisticName = ctx->statisticName;
+    recordingMode = ctx->recordingMode;
+    attrsProperty = ctx->attrsProperty;
+    manualAttrs = ctx->manualAttrs;
     if ((!attrsProperty) == (!manualAttrs))
         throw cRuntimeError("cResultRecorder::init(): Exactly one of attrsProperty and manualAttrs must be specified");
+
+    // call legacy init() method in case the user redefined it
+    init(ctx->component, ctx->statisticName, ctx->recordingMode, ctx->attrsProperty, ctx->manualAttrs);
 }
 
 cResultRecorder *cResultRecorder::clone() const
 {
     ASSERT(!finishCalled);
     cResultRecorder *copy = (cResultRecorder *)createOne(getClassName());
-    copy->init(component, statisticName.c_str(), recordingMode.c_str(), attrsProperty, manualAttrs ? new opp_string_map(*manualAttrs) : nullptr);
+    Context ctx { component, statisticName.c_str(), recordingMode.c_str(), attrsProperty, manualAttrs ? new opp_string_map(*manualAttrs) : nullptr };
+    copy->init(&ctx);
     return copy;
 }
 

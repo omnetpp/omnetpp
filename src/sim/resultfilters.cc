@@ -352,10 +352,10 @@ std::string SumFilter::str() const
 
 //---
 
-void MeanFilter::init(cComponent *component, cProperty *attrsProperty)
+void MeanFilter::init(Context *ctx)
 {
-    cNumericResultFilter::init(component, attrsProperty);
-    const char *attr = attrsProperty->getValue("timeWeighted", 0);
+    cNumericResultFilter::init(ctx);
+    const char *attr = ctx->attrsProperty->getValue("timeWeighted", 0);
     timeWeighted = attr && (std::string)attr != "0" && (std::string)attr != "false";
 }
 

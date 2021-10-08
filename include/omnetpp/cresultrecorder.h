@@ -67,6 +67,23 @@ class cProperty;
  */
 class SIM_API cResultRecorder : public cResultListener
 {
+    public:
+        /**
+         * Context information for initialization. The result recorded should record a
+         * result (scalar, vector, etc) for the given component, with a name composed
+         * of (at least) statisticName and recordingMode. Result attributes should be
+         * taken either from the keys and values of the attrsProperty NED property,
+         * or from the manualAttrs string map (exactly one of the two must be non-nullptr).
+         * manualAttrs, when specified, will be owned (i.e. deleted) by the result recorder
+         * object.
+         */
+        struct Context {
+            cComponent *component; // The statistic should be recorded for this module/channel; usually the module on which the @statistic property is defined.
+            const char *statisticName; // The base name for the statistic; usually the index of the @statistic[] property (the name in brackets).
+            const char *recordingMode; // The recording mode; usually an element the the record=... list in the @statistic property.
+            cProperty *attrsProperty; // An optional property from which extra attributes can be taken; usually the @statistic property.
+            opp_string_map *manualAttrs = nullptr;  // If attrsProperty==nullptr, specifies an alternative source of attributes; the ownership is passed into the  result recorder object.
+        };
     private:
         cComponent *component = nullptr;
         opp_pooledstring statisticName = nullptr;
@@ -85,14 +102,8 @@ class SIM_API cResultRecorder : public cResultListener
     public:
         cResultRecorder() {}
         virtual ~cResultRecorder() {delete manualAttrs;}
-        /**
-         * Sets contextual information on the result recorder: it will record a (scalar, vector, etc)
-         * result for the given component, with a name composed of statisticName and recordingMode,
-         * result attributes taken either from the keys and values of the attrsProperty NED property,
-         * or from the manualAttrs string map (exactly one of the two must be non-nullptr). manualAttrs,
-         * when specified, will be owned (i.e. deleted) by the result recorder object.
-         */
-        virtual void init(cComponent *component, const char *statisticName, const char *recordingMode, cProperty *attrsProperty, opp_string_map *manualAttrs=nullptr);
+        virtual void init(Context *ctx);
+        [[deprecated]] virtual void init(cComponent *component, const char *statisticName, const char *recordingMode, cProperty *attrsProperty, opp_string_map *manualAttrs=nullptr) {} // deprecated, left for backward compatibility
         virtual cResultRecorder *clone() const override;
         virtual const char *getName() const override {return getStatisticName();}
         virtual std::string getFullPath() const override {return getComponent()->getFullPath() + "." + getResultName();}

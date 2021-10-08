@@ -232,9 +232,9 @@ std::string SumRecorder::str() const
 
 //---
 
-void MeanRecorder::init(cComponent *component, const char *statsName, const char *recordingMode, cProperty *attrsProperty, opp_string_map *manualAttrs)
+void MeanRecorder::init(Context *ctx)
 {
-    cNumericResultRecorder::init(component, statsName, recordingMode, attrsProperty, manualAttrs);
+    cNumericResultRecorder::init(ctx);
 
     omnetpp::opp_string_map attrs = getStatisticAttributes();
     auto it = attrs.find("timeWeighted");
@@ -460,16 +460,16 @@ inline int getIntAttr(const opp_string_map& attrs, const char *name, int default
     return it == attrs.end() ? defaultValue : opp_atol(it->second.c_str());
 }
 
-void StatsRecorder::init(cComponent *component, const char *statsName, const char *recordingMode, cProperty *attrsProperty, opp_string_map *manualAttrs)
+void StatsRecorder::init(Context *ctx)
 {
-    StatisticsRecorder::init(component, statsName, recordingMode, attrsProperty, manualAttrs);
+    StatisticsRecorder::init(ctx);
     bool weighted = getBoolAttr(getStatisticAttributes(), "timeWeighted", false);
     setStatistic(new cStdDev("statistic", weighted));
 }
 
-void HistogramRecorder::init(cComponent *component, const char *statsName, const char *recordingMode, cProperty *attrsProperty, opp_string_map *manualAttrs)
+void HistogramRecorder::init(Context *ctx)
 {
-    StatisticsRecorder::init(component, statsName, recordingMode, attrsProperty, manualAttrs);
+    StatisticsRecorder::init(ctx);
 
     omnetpp::opp_string_map attrs = getStatisticAttributes();
     bool weighted = getBoolAttr(getStatisticAttributes(), "timeWeighted", false);
@@ -480,9 +480,9 @@ void HistogramRecorder::init(cComponent *component, const char *statsName, const
         setStatistic(new cHistogram("histogram", numBins, weighted));
 }
 
-void TimeWeightedHistogramRecorder::init(cComponent *component, const char *statsName, const char *recordingMode, cProperty *attrsProperty, opp_string_map *manualAttrs)
+void TimeWeightedHistogramRecorder::init(Context *ctx)
 {
-    StatisticsRecorder::init(component, statsName, recordingMode, attrsProperty, manualAttrs);
+    StatisticsRecorder::init(ctx);
 
     omnetpp::opp_string_map attrs = getStatisticAttributes();
     int numBins = getIntAttr(getStatisticAttributes(), "numBins", -1);
@@ -492,9 +492,9 @@ void TimeWeightedHistogramRecorder::init(cComponent *component, const char *stat
         setStatistic(new cHistogram("histogram", numBins, true));
 }
 
-void PSquareRecorder::init(cComponent *component, const char *statsName, const char *recordingMode, cProperty *attrsProperty, opp_string_map *manualAttrs)
+void PSquareRecorder::init(Context *ctx)
 {
-    StatisticsRecorder::init(component, statsName, recordingMode, attrsProperty, manualAttrs);
+    StatisticsRecorder::init(ctx);
     bool weighted = getBoolAttr(getStatisticAttributes(), "timeWeighted", false);
     if (weighted)
         throw cRuntimeError("%s: cPSquare does not support weighted statistics", getClassName());
@@ -505,9 +505,9 @@ void PSquareRecorder::init(cComponent *component, const char *statsName, const c
         setStatistic(new cPSquare("psquare", numBins));
 }
 
-void KSplitRecorder::init(cComponent *component, const char *statsName, const char *recordingMode, cProperty *attrsProperty, opp_string_map *manualAttrs)
+void KSplitRecorder::init(Context *ctx)
 {
-    StatisticsRecorder::init(component, statsName, recordingMode, attrsProperty, manualAttrs);
+    StatisticsRecorder::init(ctx);
     bool weighted = getBoolAttr(getStatisticAttributes(), "timeWeighted", false);
     if (weighted)
         throw cRuntimeError("%s: cKSplit does not support weighted statistics", getClassName());

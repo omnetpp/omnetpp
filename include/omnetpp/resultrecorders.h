@@ -141,7 +141,7 @@ class SIM_API MeanRecorder : public cNumericResultRecorder
         double weightedSum = 0;
         simtime_t totalTime = SIMTIME_ZERO;
     protected:
-        virtual void init(cComponent *component, const char *statsName, const char *recordingMode, cProperty *attrsProperty, opp_string_map *manualAttrs) override;
+        virtual void init(Context *ctx) override;
         virtual void finish(cResultFilter *prev) override;
     public:
         MeanRecorder() {}
@@ -248,31 +248,31 @@ class SIM_API StatisticsRecorder : public cNumericResultRecorder
 class SIM_API StatsRecorder : public StatisticsRecorder
 {
     public:
-        virtual void init(cComponent *component, const char *statisticName, const char *recordingMode, cProperty *attrsProperty, opp_string_map *manualAttrs) override;
+        virtual void init(Context *ctx) override;
 };
 
 class SIM_API HistogramRecorder : public StatisticsRecorder
 {
     public:
-        virtual void init(cComponent *component, const char *statisticName, const char *recordingMode, cProperty *attrsProperty, opp_string_map *manualAttrs) override;
+        virtual void init(Context *ctx) override;
 };
 
 class SIM_API TimeWeightedHistogramRecorder : public StatisticsRecorder
 {
     public:
-        virtual void init(cComponent *component, const char *statisticName, const char *recordingMode, cProperty *attrsProperty, opp_string_map *manualAttrs) override;
+        virtual void init(Context *ctx) override;
 };
 
 class SIM_API PSquareRecorder : public StatisticsRecorder
 {
     public:
-        virtual void init(cComponent *component, const char *statisticName, const char *recordingMode, cProperty *attrsProperty, opp_string_map *manualAttrs) override;
+        virtual void init(Context *ctx) override;
 };
 
 class SIM_API KSplitRecorder : public StatisticsRecorder
 {
     public:
-        virtual void init(cComponent *component, const char *statisticName, const char *recordingMode, cProperty *attrsProperty, opp_string_map *manualAttrs) override;
+        virtual void init(Context *ctx) override;
 };
 
 }  // namespace omnetpp
