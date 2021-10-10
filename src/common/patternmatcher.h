@@ -77,12 +77,12 @@ class COMMON_API PatternMatcher
     enum ElemType {
       LITERALSTRING = 0,
       ANYCHAR,
-      COMMONCHAR, // any char except "."
+      NONDOTCHAR,
       SET,
       NEGSET,
       NUMRANGE,
       ANYSEQ,     // "**": sequence of any chars
-      COMMONSEQ,  // "*": seq of any chars except "."
+      NONDOTSEQ,  // "*": seq of any chars except "."
       END
     };
 

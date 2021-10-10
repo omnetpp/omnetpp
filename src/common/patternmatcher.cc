@@ -43,7 +43,7 @@ void PatternMatcher::setPattern(const char *patt, bool dottedpath, bool fullstri
         Elem e;
         switch (*s) {
             case '?':
-                e.type = dottedpath ? COMMONCHAR : ANYCHAR;
+                e.type = dottedpath ? NONDOTCHAR : ANYCHAR;
                 s++;
                 break;
 
@@ -69,7 +69,7 @@ void PatternMatcher::setPattern(const char *patt, bool dottedpath, bool fullstri
                     s += 2;
                 }
                 else {
-                    e.type = dottedpath ? COMMONSEQ : ANYSEQ;
+                    e.type = dottedpath ? NONDOTSEQ : ANYSEQ;
                     s++;
                 }
                 break;
@@ -191,9 +191,9 @@ std::string PatternMatcher::str() const
         switch (e.type) {
             case LITERALSTRING: out << e.literalString; break;
             case ANYCHAR: out << "?"; break;
-            case COMMONCHAR: out << "?"; break;
+            case NONDOTCHAR: out << "?"; break;
             case ANYSEQ: out << "**"; break;
-            case COMMONSEQ: out << "*"; break;
+            case NONDOTSEQ: out << "*"; break;
             case SET: out << "["; printSetRanges(out, e.setOfChars.c_str()); out << "]"; break;
             case NEGSET: out << "[^"; printSetRanges(out, e.setOfChars.c_str()); out << "]"; break;
             case NUMRANGE: {
@@ -223,11 +223,11 @@ std::string PatternMatcher::debugStrFrom(int from) const
                 break;
 
             case ANYCHAR:
-                result += "?!";
+                result += "ANYCHAR";
                 break;
 
-            case COMMONCHAR:
-                result += "?";
+            case NONDOTCHAR:
+                result += "NONDOTCHAR";
                 break;
 
             case SET:
@@ -239,15 +239,15 @@ std::string PatternMatcher::debugStrFrom(int from) const
                 break;
 
             case NUMRANGE:
-                result += opp_stringf("%ld..%ld", e.numStart, e.numEnd);
+                result += opp_stringf("NUMRANGE(%ld..%ld)", e.numStart, e.numEnd);
                 break;
 
             case ANYSEQ:
-                result += "**";
+                result += "ANYSEQ";
                 break;
 
-            case COMMONSEQ:
-                result += "*";
+            case NONDOTSEQ:
+                result += "NONDOTSEQ";
                 break;
 
             case END:
@@ -301,7 +301,7 @@ bool PatternMatcher::doMatch(const char *s, int k, int suffixlen) const
                 s++;
                 break;
 
-            case COMMONCHAR:
+            case NONDOTCHAR:
                 if (!*s || *s == '.')
                     return false;
                 s++;
@@ -352,7 +352,7 @@ bool PatternMatcher::doMatch(const char *s, int k, int suffixlen) const
                 }
                 break;  // at EOS
 
-            case COMMONSEQ:
+            case NONDOTSEQ:
                 while (true) {
                     if (doMatch(s, k+1, suffixlen))
                         return true;
