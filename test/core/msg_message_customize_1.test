@@ -54,8 +54,8 @@ class @TESTNAME@::SomePacket {
     cObject *targetObject = nullptr
     bool isScheduled = false
     simtime_t arrivalTime = 0s
-    long id = 1
-    long treeId = 1
+    msgid_t id = 1
+    msgid_t treeId = 1
     short kind = 99
     string displayString = ""
     cObject *controlInfo = nullptr
