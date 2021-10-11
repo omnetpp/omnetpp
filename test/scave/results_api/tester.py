@@ -124,6 +124,8 @@ def run_tests(locals):
                 o = f()
             except Exception as e:
                 print("EXCEPTION: " + str(e))
+                import traceback
+                traceback.print_exc()
                 o = False
             passed = (o is None) or o # "void" methods are successful if they don't raise an Exception
             print(cf.green("PASS") if passed else cf.red("FAIL"))
