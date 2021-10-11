@@ -2162,7 +2162,7 @@ and XSWT content (which describes the UI controls on the page).
 \label{cha:chart-api:omnetpp.scave.analysis:DialogPage:--init--}
 
 \begin{flushleft}
-\ttt{\small{DialogPage.}\_\_init\_\_(self, id: str = None, label: str = "", content: str = "")}
+\ttt{DialogPage(self, id: str = None, label: str = "", content: str = "")}
 \end{flushleft}
 
 
@@ -2178,7 +2178,7 @@ and properties (which are what the \textit{Chart Properties} dialog in the IDE e
 \label{cha:chart-api:omnetpp.scave.analysis:Chart:--init--}
 
 \begin{flushleft}
-\ttt{\small{Chart.}\_\_init\_\_(self, type: str, name: str = "", id: str = None, template: str = None, icon: str = None, script: str = "", dialog\_pages=[], properties=\{\})}
+\ttt{Chart(self, type: str, name: str = "", id: str = None, template: str = None, icon: str = None, script: str = "", dialog\_pages=[], properties=\{\})}
 \end{flushleft}
 
 
@@ -2193,7 +2193,7 @@ in the \ttt{Analysis} are workspace paths.
 \label{cha:chart-api:omnetpp.scave.analysis:Workspace:--init--}
 
 \begin{flushleft}
-\ttt{\small{Workspace.}\_\_init\_\_(self, workspace\_dir, project\_paths=None)}
+\ttt{Workspace(self, workspace\_dir, project\_paths=None)}
 \end{flushleft}
 
 \par Accepts the workspace location, plus a dict that contains the (absolute,
@@ -2237,7 +2237,7 @@ display, image/data export or other side effects.
 \label{cha:chart-api:omnetpp.scave.analysis:Analysis:--init--}
 
 \begin{flushleft}
-\ttt{\small{Analysis.}\_\_init\_\_(self, inputs=[], charts=[])}
+\ttt{Analysis(self, inputs=[], charts=[])}
 \end{flushleft}
 
 

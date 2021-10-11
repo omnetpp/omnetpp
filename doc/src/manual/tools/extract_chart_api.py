@@ -139,7 +139,7 @@ def preformat(docstring):
 def signature_to_latex(o):
     signature = str(inspect.signature(o))
     signature = re.sub("=<function ([^ ]+) at [^>]+>", "=\\1", signature)
-    return finalize_latex(o.__name__ + str(signature).replace("'", '"'))
+    return finalize_latex(str(signature).replace("'", '"'))
 
 def quote(str):
     return str.replace("_", "\\_")
@@ -161,7 +161,7 @@ def annotate_module(mod):
         elif inspect.isfunction(o) and k != "print" and k != "wraps":
             print("\\subsubsection{" + quote(k) + "()}")
             print("\\label{cha:chart-api:" + modname + ":" + tolabel(k) + "}\n")
-            print("\\begin{flushleft}\n\\ttt{" + signature_to_latex(o) + "}\n\\end{flushleft}\n")
+            print("\\begin{flushleft}\n\\ttt{" + finalize_latex(o.__name__) + signature_to_latex(o) + "}\n\\end{flushleft}\n")
             print(docstring_to_latex(o).strip() + "\n")
         elif inspect.isclass(o):
             classname,clazz = k,o
@@ -174,7 +174,12 @@ def annotate_module(mod):
                 elif inspect.isfunction(member):
                     #print("\\subsubsection{" + quote(classname) + "." + quote(membername) + "()}")
                     print("\\label{cha:chart-api:" + modname + ":" + tolabel(classname) + ":" + tolabel(membername) + "}\n")
-                    print("\\begin{flushleft}\n\\ttt{\small{" + quote(classname) + ".}" + signature_to_latex(member) + "}\n\\end{flushleft}\n")
+
+                    if membername == "__init__":
+                        print("\\begin{flushleft}\n\\ttt{" + quote(classname) + signature_to_latex(member) + "}\n\\end{flushleft}\n")
+                    else:
+                        print("\\begin{flushleft}\n\\ttt{\small{" + quote(classname) + ".}" + finalize_latex(membername) + signature_to_latex(member) + "}\n\\end{flushleft}\n")
+
                     print(docstring_to_latex(member).strip() + "\n")
 
 
