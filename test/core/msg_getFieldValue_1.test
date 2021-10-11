@@ -119,10 +119,10 @@ void Tester::activity()
 %contains: stdout
 (msg_getFieldValue_1::Tester)Test.tester:
 className : string = "msg_getFieldValue_1::Tester"
+name : string = "tester"
 fullName : string = "tester"
 fullPath : string = "Test.tester"
 info : string = "id=2"
-name : string = "tester"
 owner : omnetpp::cObject = (omnetpp::cModule)Test
 ownedObjects[3] : omnetpp::cOwnedObject = [(omnetpp::cMessage)Test.tester.timeout-2, (omnetpp::cPacket)Test.tester.pk, (omnetpp::cCanvas)Test.tester.canvas]
 isModule : bool = true
@@ -149,6 +149,7 @@ stackUsage : unsigned int = 0
 
 (omnetpp::cPar)Test.tester.bitrate:
 className : string = "omnetpp::cPar"
+name : string = "bitrate"
 fullName : string = "bitrate"
 fullPath : string = "Test.tester.bitrate"
 info : string = "1e+09bps"
@@ -162,6 +163,7 @@ isShared : bool = true
 
 (omnetpp::cGate)Test.tester.in:
 className : string = "omnetpp::cGate"
+name : string = "in"
 fullName : string = "in"
 fullPath : string = "Test.tester.in"
 info : string = "not connected"
@@ -182,10 +184,10 @@ isPathOK : bool = true
 
 (omnetpp::cPacket)Test.tester.pk:
 className : string = "omnetpp::cPacket"
+name : string = "pk"
 fullName : string = "pk"
 fullPath : string = "Test.tester.pk"
 info : string = "len=0B; (new msg)"
-name : string = "pk"
 owner : omnetpp::cObject = (msg_getFieldValue_1::Tester)Test.tester
 schedulingPriority : short = 0
 targetObject : omnetpp::cObject = nullptr
@@ -223,10 +225,10 @@ isReceptionEnd : bool = true
 
 (omnetpp::cCanvas)Test.tester.canvas:
 className : string = "omnetpp::cCanvas"
+name : string = "canvas"
 fullName : string = "canvas"
 fullPath : string = "Test.tester.canvas"
 info : string = "2 toplevel figure(s)"
-name : string = "canvas"
 owner : omnetpp::cObject = (msg_getFieldValue_1::Tester)Test.tester
 rootFigure : omnetpp::cFigure = (omnetpp::cGroupFigure)Test.tester.canvas.rootFigure
 allTags : string = ""
@@ -234,10 +236,10 @@ backgroundColor : omnetpp::cFigure::Color = "#a0e0a0"
 
 (omnetpp::cRectangleFigure)Test.tester.canvas.rootFigure.rect:
 className : string = "omnetpp::cRectangleFigure"
+name : string = "rect"
 fullName : string = "rect"
 fullPath : string = "Test.tester.canvas.rootFigure.rect"
 info : string = "(0, 0, w=0, h=0)"
-name : string = "rect"
 owner : omnetpp::cObject = (omnetpp::cGroupFigure)Test.tester.canvas.rootFigure
 id : int = 1
 visible : bool = true
@@ -262,10 +264,10 @@ cornerRy : double = 0
 
 (omnetpp::cSimulation)simulation:
 className : string = "omnetpp::cSimulation"
+name : string = "simulation"
 fullName : string = "simulation"
 fullPath : string = "simulation"
 info : string = ""
-name : string = "simulation"
 simTime : omnetpp::simtime_t = 0
 eventNumber : int64_t = 1
 fes : omnetpp::cFutureEventSet = (omnetpp::cEventHeap)simulation.scheduled-events
@@ -276,16 +278,17 @@ fingerprintCalculator : omnetpp::cFingerprintCalculator = nullptr
 
 (omnetpp::cEventHeap)simulation.scheduled-events:
 className : string = "omnetpp::cEventHeap"
+name : string = "scheduled-events"
 fullName : string = "scheduled-events"
 fullPath : string = "simulation.scheduled-events"
 info : string = "empty"
-name : string = "scheduled-events"
 owner : omnetpp::cObject = (omnetpp::cSimulation)simulation
 length : int = 0
 events[0] : omnetpp::cEvent = []
 
 (omnetpp::VectorRecorder)Test.tester.foo:vector:
 className : string = "omnetpp::VectorRecorder"
+name : string = "foo"
 fullName : string = "foo"
 fullPath : string = "Test.tester.foo:vector"
 info : string = "foo:vector: (empty)"

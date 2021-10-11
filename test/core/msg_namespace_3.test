@@ -62,6 +62,7 @@ EV << ".\n";
 %contains: stdout
 class @TESTNAME@::Msg1 {
     string className = @TESTNAME@::Msg1
+    string name = ""
     string fullName = ""
     string fullPath = ""
     string info = ""
@@ -69,6 +70,7 @@ class @TESTNAME@::Msg1 {
     int e = "20 (SECOND)"
     @TESTNAME@_other::Base member = class @TESTNAME@_other::Base {
         string className = @TESTNAME@_other::Base
+        string name = ""
         string fullName = ""
         string fullPath = ""
         string info = ""
@@ -79,6 +81,7 @@ class @TESTNAME@::Msg1 {
 }
 class @TESTNAME@::Msg2 {
     string className = @TESTNAME@::Msg2
+    string name = ""
     string fullName = ""
     string fullPath = ""
     string info = ""
@@ -86,6 +89,7 @@ class @TESTNAME@::Msg2 {
     int e = "1 (FIRST)"
     @TESTNAME@_Base member = class @TESTNAME@_Base {
         string className = @TESTNAME@_Base
+        string name = ""
         string fullName = ""
         string fullPath = ""
         string info = ""
@@ -96,6 +100,7 @@ class @TESTNAME@::Msg2 {
 }
 class @TESTNAME@::Msg3 {
     string className = @TESTNAME@::Msg3
+    string name = ""
     string fullName = ""
     string fullPath = ""
     string info = ""
@@ -103,6 +108,7 @@ class @TESTNAME@::Msg3 {
     int e = "300 (THIRD)"
     @TESTNAME@::Base member = class @TESTNAME@::Base {
         string className = @TESTNAME@::Base
+        string name = ""
         string fullName = ""
         string fullPath = ""
         string info = ""
