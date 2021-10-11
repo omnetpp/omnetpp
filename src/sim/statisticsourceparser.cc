@@ -196,6 +196,16 @@ ExprNode *StatisticSourceAstTranslator::translateToExpressionTree(AstNode *astNo
             return subscribeToSignal(sourceModule, signalName);
         }
     }
+    else if (isFunction(astNode, "merge")) {
+        // merge several inputs into one
+        MergeFilter *filter = new MergeFilter();
+        for (AstNode *astChild : astNode->children) {
+            ExprNode *subtree = translateChild(astChild, translatorForChildren);
+            SignalSource signalSource = makeSignalSource(subtree);
+            signalSource.subscribe(filter);
+        }
+        return new WrappedSignalSource(SignalSource(filter));
+    }
     else if (astNode->type == AstNode::FUNCTION && astNode->children.size() == 1 && cResultFilterType::find(astNode->name.c_str()) != nullptr) {
         // looks like a result filter
         const char *filterName = astNode->name.c_str();

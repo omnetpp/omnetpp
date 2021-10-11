@@ -44,6 +44,13 @@ Register_ResultFilter2("warmup", WarmupPeriodFilter,
         "is specified in the configuration."
 );
 
+Register_ResultFilter2("merge", MergeFilter,
+        "Merges (multiplexes) several inputs into one output. It does no buffering, "
+        "so if there are timestamped values in the input and the output is recorded "
+        "into a vector, it is possible to run into an error during simulation, "
+        "saying that the values are not in an increasing timestamp order."
+);
+
 Register_ResultFilter2("demux", DemuxFilter,
         "Demultiplexes its input to several outputs. The selector (a.ka. demux label) "
         "is the name string of the details object emitted with the value. "

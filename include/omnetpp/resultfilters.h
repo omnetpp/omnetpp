@@ -192,6 +192,18 @@ class SIM_API IdentityFilter : public cResultFilter
 };
 
 /**
+ * @brief Filter that merges several inputs into one output.
+ */
+class SIM_API MergeFilter : public IdentityFilter
+{
+    protected:
+        virtual void subscribedTo(cResultFilter *prev) override {} // to allow subscription to multiple signals
+    public:
+        MergeFilter() {}
+};
+
+
+/**
  * @brief Filter that removes (filters out) NaNs, and lets through all other values.
  */
 class SIM_API SkipNanFilter : public cNumericResultFilter

@@ -39,8 +39,6 @@ class StatisticRecorderAstTranslator : public Expression::AstTranslator
     AstNode *astRoot = nullptr;
 
   protected:
-    bool isFunction(AstNode *astNode, int argc) {return astNode->type == AstNode::FUNCTION && astNode->children.size() == argc;}
-    bool isIdent(AstNode *astNode) {return astNode->type == AstNode::IDENT;}
     virtual void subscribeExpressionFilterToSources(ExprNode *exprNode, ExpressionFilter *expressionFilter);
 
   public:
@@ -110,6 +108,9 @@ ExprNode *StatisticRecorderAstTranslator::translateToExpressionTree(AstNode *ast
         filterFactory = cResultFilterType::find(name.c_str());
     }
 
+    if (isFunction(astNode, "merge")) {
+        throw cRuntimeError("merge() may only appear in the source= part of a @statistic");
+    }
     if (isIdent(astNode) || isFunction(astNode, 0)) {
         // "$input" to mean the input of the expression; "timeavg" to mean "timeavg($input)"; "$source" is the old name
         if (isIdent(astNode) && (name == "$input" || name == "$source"))
