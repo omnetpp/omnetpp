@@ -13,7 +13,7 @@ test_exceptions.messages.clear()
 try:
 {}
     raise RuntimeError("Expected error did not occur")
-except SystemExit as e: # only scripts that exit via exit(1) are accepted, let all other exceptions through
+except (ValueError, SystemExit) as e:
     test_exceptions.expect_message({})
 """
 
