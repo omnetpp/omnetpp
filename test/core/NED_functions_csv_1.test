@@ -46,12 +46,12 @@ module Test: Test {
         @isNetwork
         foo = 20
         hello = "Hello world"
-        readCSV = (omnetpp::cValueArray): [[true, false], [42, -32, 3, 123.44, -1.33e-06], [nan, inf, -inf, inf], ["Las Vegas", "Los Angeles", "a,b,c,d", "'\"\t\f\n"], ["99 something else", "foo", "mz/x!%^(*&^%$#@!)", "(x", "y)"], ["spaces:", "", "trailing comma", ""], ["trailing backslash \\"], ["trailing comma", ""]]
-        parseCSV1 = (omnetpp::cValueArray): [[true, false], [42, -32, 3, 123.44, -1.33e-06], [nan, inf, -inf, inf], ["Las Vegas", "Los Angeles", "a,b,c,d", "'\"\t\f\n"], ["99 something else", "foo", "mz/x!%^(*&^%$#@!)", "(x", "y)"], ["spaces:", "", "trailing comma", ""], ["trailing backslash \\"], ["trailing comma", ""]]
-        parseCSV2 = (omnetpp::cValueArray): [[true, false], [42, -32, -1.33e-06], ["Las Vegas", "Los Angeles"]]
-        readExtendedCSV = (omnetpp::cValueArray): [[2, inf, nan, true], [42, "Hello world!", 11], [4, 5, 0]]
-        parseExtendedCSV1 = (omnetpp::cValueArray): [[2, inf, nan, true], [42, "Hello world!", 11], [3, 3, 3]]
-        parseExtendedCSV2 = (omnetpp::cValueArray): [[2, inf], [42, "Hello world!"]]
+        readCSV = [[true, false], [42, -32, 3, 123.44, -1.33e-06], [nan, inf, -inf, inf], ["Las Vegas", "Los Angeles", "a,b,c,d", "'\"\t\f\n"], ["99 something else", "foo", "mz/x!%^(*&^%$#@!)", "(x", "y)"], ["spaces:", "", "trailing comma", ""], ["trailing backslash \\"], ["trailing comma", ""]]
+        parseCSV1 = [[true, false], [42, -32, 3, 123.44, -1.33e-06], [nan, inf, -inf, inf], ["Las Vegas", "Los Angeles", "a,b,c,d", "'\"\t\f\n"], ["99 something else", "foo", "mz/x!%^(*&^%$#@!)", "(x", "y)"], ["spaces:", "", "trailing comma", ""], ["trailing backslash \\"], ["trailing comma", ""]]
+        parseCSV2 = [[true, false], [42, -32, -1.33e-06], ["Las Vegas", "Los Angeles"]]
+        readExtendedCSV = [[2, inf, nan, true], [42, "Hello world!", 11], [4, 5, 0]]
+        parseExtendedCSV1 = [[2, inf, nan, true], [42, "Hello world!", 11], [3, 3, 3]]
+        parseExtendedCSV2 = [[2, inf], [42, "Hello world!"]]
     submodules:
 }
 

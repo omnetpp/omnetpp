@@ -77,8 +77,8 @@ x = {}+[] --> ERROR: Cannot assign parameter 'x': operator '+': Numeric argument
 
 o = string([]) --> ERROR: Cannot assign parameter 'o': Cannot cast from type string to object
 o = string({}) --> ERROR: Cannot assign parameter 'o': Cannot cast from type string to object
-o = [] --> (omnetpp::cValueArray)array32: []
-o = [{},{},{}] --> (omnetpp::cValueArray)array33: [{}, {}, {}]
+o = [] --> []
+o = [{},{},{}] --> [{}, {}, {}]
 o = 3+cos([]) --> ERROR: Cannot assign parameter 'o': cos(): Cannot cast '[]' from type 'object' to 'double'
 o = 1+[] --> ERROR: Cannot assign parameter 'o': operator '+': Numeric arguments expected, got integer and object
 o = {}+[] --> ERROR: Cannot assign parameter 'o': operator '+': Numeric arguments expected, got object and object

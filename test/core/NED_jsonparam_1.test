@@ -37,23 +37,23 @@ module Test: Test {
         @isNetwork
         nullptr1 = nullptr
         nullptr2 = nullptr
-        array1 = (omnetpp::cValueArray)array1: []
-        array2 = (omnetpp::cValueArray)array2: [1s, 2, 3.14157m, true, false, "Hello", "World"]
-        array3 = (omnetpp::cValueArray)array3: [nan, inf, inf s, nullptr, nullptr]
-        array4 = (omnetpp::cValueArray)array4: [[1, 2, 3], [4, 5, 6]]
-        array5 = (omnetpp::cValueArray)array7: [{bar: 2, foo: 1}, {BAR: 20, FOO: 10}]
-        object1 = (omnetpp::cValueMap)map3: {}
-        object2 = (omnetpp::cValueMap)map4: {f1: 100, f2: 200, f3: "hello", f4: "hello!", f5: nullptr, ... and 1 more}
-        object3 = (omnetpp::cValueMap)map5: {f1: 100, f2: 200, f3: "hello", f4: nullptr}
-        object4 = (omnetpp::cValueMap)map6: {arr1: [1, 2, 3], arr2: [4, 5, 6]}
-        object5 = (omnetpp::cValueMap)map7: {obj1: {bar: 2, foo: 1}, obj2: {BAR: 20, FOO: 10}}
-        objkeys1 = (omnetpp::cValueMap)map10: {1e6: 2, 3.14: 1, 42: 3, 5.1 GHz: 4}
-        objkeys2 = (omnetpp::cValueMap)map11: {-1e6: 2, -3.14: 1, -42: 3, -5.1 GHz: 4}
-        objkeys3 = (omnetpp::cValueMap)map12: {false: 5, inf: 2, nan: 1, true: 4}
-        objkeys4 = (omnetpp::cValueMap)map13: {-inf: 3}
-        objkeys5 = (omnetpp::cValueMap)map14: {null: 5, nullptr: 6}
-        extracomma1 = (omnetpp::cValueArray)array10: [1, 2]
-        extracomma2 = (omnetpp::cValueMap)map15: {a: 1, b: 2}
+        array1 = []
+        array2 = [1s, 2, 3.14157m, true, false, "Hello", "World"]
+        array3 = [nan, inf, inf s, nullptr, nullptr]
+        array4 = [[1, 2, 3], [4, 5, 6]]
+        array5 = [{bar: 2, foo: 1}, {BAR: 20, FOO: 10}]
+        object1 = {}
+        object2 = {f1: 100, f2: 200, f3: "hello", f4: "hello!", f5: nullptr, f6: nullptr}
+        object3 = {f1: 100, f2: 200, f3: "hello", f4: nullptr}
+        object4 = {arr1: [1, 2, 3], arr2: [4, 5, 6]}
+        object5 = {obj1: {bar: 2, foo: 1}, obj2: {BAR: 20, FOO: 10}}
+        objkeys1 = {1e6: 2, 3.14: 1, 42: 3, 5.1 GHz: 4}
+        objkeys2 = {-1e6: 2, -3.14: 1, -42: 3, -5.1 GHz: 4}
+        objkeys3 = {false: 5, inf: 2, nan: 1, true: 4}
+        objkeys4 = {-inf: 3}
+        objkeys5 = {null: 5, nullptr: 6}
+        extracomma1 = [1, 2]
+        extracomma2 = {a: 1, b: 2}
     submodules:
 }
 

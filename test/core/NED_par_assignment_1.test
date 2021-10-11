@@ -77,7 +77,7 @@ o = true --> ERROR: Cannot assign 'true' to parameter 'Test.o': Cannot cast from
 o = 12 --> ERROR: Cannot assign '12' to parameter 'Test.o': Cannot cast from type integer to object
 o = 3.14 --> ERROR: Cannot assign '3.14' to parameter 'Test.o': Cannot cast from type double to object
 o = "hello" --> ERROR: Cannot assign '"hello"' to parameter 'Test.o': Cannot cast from type string to object
-o = [] --> (omnetpp::cValueArray)array6: []
+o = [] --> []
 o = nullptr --> nullptr
 o = undefined --> ERROR: Cannot assign 'undefined' to parameter 'Test.o': Cannot cast from type undefined to object
 

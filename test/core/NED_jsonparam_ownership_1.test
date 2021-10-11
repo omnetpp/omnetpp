@@ -78,15 +78,15 @@ NED_jsonparam_ownership_1::Nonowned{} ==> ERROR: Cannot assign parameter 'b': Ob
 { a: 5, b: NED_jsonparam_ownership_1::Nonowned{} } ==> ERROR: Cannot assign parameter 'b': Object parameters may only hold objects they fully own, but object (NED_jsonparam_ownership_1::Nonowned) (which is indirectly contained in the result object, its parent being (omnetpp::cValueMap)map3) is not a cOwnedObject and does not keep track of its owner
 
 a ==> ERROR: Cannot assign parameter 'b': Object parameters may only hold objects they fully own, but object (omnetpp::cValueMap)map1 is already owned by a parameter named 'a'
-dup(a) ==> (omnetpp::cValueMap)map1: {a: 1, b: [2, 3, {c: 4, d: 5}]}
+dup(a) ==> {a: 1, b: [2, 3, {c: 4, d: 5}]}
 
 [a,a] ==> ERROR: Cannot assign parameter 'b': Object parameters may only hold objects they fully own, but object (omnetpp::cValueMap)map1 (which is indirectly contained in the result object, its parent being (omnetpp::cValueArray)array4) is already owned by a parameter named 'a'
-[ dup(a), dup(a) ] ==> (omnetpp::cValueArray)array5: [{a: 1, b: [2, 3, {c: 4, d: 5}]}, {a: 1, b: [2, 3, {c: 4, d: 5}]}]
-dup([a,a]) ==> (omnetpp::cValueArray)array6: [{a: 1, b: [2, 3, {c: 4, d: 5}]}, {a: 1, b: [2, 3, {c: 4, d: 5}]}]
+[ dup(a), dup(a) ] ==> [{a: 1, b: [2, 3, {c: 4, d: 5}]}, {a: 1, b: [2, 3, {c: 4, d: 5}]}]
+dup([a,a]) ==> [{a: 1, b: [2, 3, {c: 4, d: 5}]}, {a: 1, b: [2, 3, {c: 4, d: 5}]}]
 
 {x: a, y: a} ==> ERROR: Cannot assign parameter 'b': Object parameters may only hold objects they fully own, but object (omnetpp::cValueMap)map1 (which is indirectly contained in the result object, its parent being (omnetpp::cValueMap)map4) is already owned by a parameter named 'a'
-{x: dup(a), y: dup(a)} ==> (omnetpp::cValueMap)map5: {x: {a: 1, b: [2, 3, {c: 4, d: 5}]}, y: {a: 1, b: [2, 3, {c: 4, d: 5}]}}
-dup( {x: a, y: a} ) ==> (omnetpp::cValueMap)map6: {x: {a: 1, b: [2, 3, {c: 4, d: 5}]}, y: {a: 1, b: [2, 3, {c: 4, d: 5}]}}
+{x: dup(a), y: dup(a)} ==> {x: {a: 1, b: [2, 3, {c: 4, d: 5}]}, y: {a: 1, b: [2, 3, {c: 4, d: 5}]}}
+dup( {x: a, y: a} ) ==> {x: {a: 1, b: [2, 3, {c: 4, d: 5}]}, y: {a: 1, b: [2, 3, {c: 4, d: 5}]}}
 .
 
 %not-contains: stdout
