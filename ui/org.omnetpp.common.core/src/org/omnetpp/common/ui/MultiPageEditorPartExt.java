@@ -10,6 +10,8 @@ package org.omnetpp.common.ui;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabFolder2Adapter;
+import org.eclipse.swt.custom.CTabFolderEvent;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -27,8 +29,6 @@ import org.eclipse.ui.part.MultiPageEditorPart;
  *
  * @author Andras
  */
-// TODO: make middle-clicking on tabs close them.
-// also, maybe a context menu to close all other tabs, all abs to the left/right
 public abstract class MultiPageEditorPartExt extends MultiPageEditorPart {
 
 
@@ -41,7 +41,8 @@ public abstract class MultiPageEditorPartExt extends MultiPageEditorPart {
                 case 2: { // middle click
                     CTabItem item = folder.getItem(new Point(event.x, event.y));
                     if (item != null && isClosablePage(item.getControl()))
-                        item.dispose();
+                        if (pageCloseEvent(item.getControl()))
+                            item.dispose();
                 }
                 case 3: { // right click
                     // TODO: show context menu to close tabs other/left/right to the clicked item
@@ -50,6 +51,15 @@ public abstract class MultiPageEditorPartExt extends MultiPageEditorPart {
                     // no-op
             }
         });
+
+        folder.addCTabFolder2Listener(new CTabFolder2Adapter() {
+            @Override
+            public void close(CTabFolderEvent event) {
+                CTabItem item = (CTabItem)event.item;
+                event.doit = pageCloseEvent(item.getControl());
+            }
+        });
+
     }
     /**
      * Adds a closable page to the multi-page editor. This is
@@ -164,6 +174,17 @@ public abstract class MultiPageEditorPartExt extends MultiPageEditorPart {
 
     protected CTabFolder getTabFolder() {
         return (CTabFolder) getContainer();
+    }
+
+    /**
+     * Subclasses can override this to listen for requests by the user to close
+     * a page. add a check before a page is closed.
+     *
+     * @param control  the page control (typically some composite)
+     * @return True if the page is allowed to be closed, false to prevent closing.
+     */
+    protected boolean pageCloseEvent(Control control) {
+        return true;
     }
 
     /**

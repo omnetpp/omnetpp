@@ -53,8 +53,6 @@ import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
-import org.eclipse.swt.custom.CTabFolder2Adapter;
-import org.eclipse.swt.custom.CTabFolderEvent;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.Transfer;
@@ -529,18 +527,6 @@ public class ScaveEditor extends MultiPageEditorPartExt
             }
         });
 
-        tabfolder.addCTabFolder2Listener(new CTabFolder2Adapter() {
-            @Override
-            public void close(CTabFolderEvent event) {
-                saveState();
-                ChartScriptEditor editor = (ChartScriptEditor)event.item.getData();
-                boolean allowClose = askToKeepEditedTemporaryChart(editor);
-                event.doit = allowClose;
-                if (allowClose)
-                    applyChartEdits(editor);
-            }
-        });
-
         // We use asyncExec here so that if there's an ANF file open at startup,
         // the workbench window appears before the "Loading result files" progress
         // dialog does
@@ -866,6 +852,21 @@ public class ScaveEditor extends MultiPageEditorPartExt
             }
         else
             throw new IllegalArgumentException("Cannot create editor page for " + item);
+    }
+
+    @Override
+    protected boolean pageCloseEvent(Control control) {
+        saveState();
+
+        ChartPage chartPage = (ChartPage)getEditorPage(findPage(control));
+        ChartScriptEditor editor = chartPage.getChartScriptEditor();
+
+        boolean allowClose = askToKeepEditedTemporaryChart(editor);
+
+        if (allowClose)
+            applyChartEdits(editor);
+
+        return allowClose;
     }
 
     @Override
