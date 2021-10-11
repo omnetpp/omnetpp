@@ -51,7 +51,8 @@ class PythonEntryPoint(object):
     def __init__(self):
         """ The execution context of the scripts submitted to execute() """
         self.execContext = {
-            "print": print
+            "print": print,
+            "exit": sys.exit
         }
 
     def check(self):
