@@ -116,6 +116,7 @@ public class ChartEditForm {
             for (TabItem tabItem : tabfolder.getItems())
                 if (tabItem.getText().equals(defaultPage)) {
                     tabfolder.setSelection(tabItem);
+                    tabItem.getControl().setFocus();
                     break;
                 }
 
@@ -124,8 +125,11 @@ public class ChartEditForm {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 TabItem[] selectedTabs = tabfolder.getSelection();
-                if (selectedTabs.length > 0)
+                if (selectedTabs.length > 0) {
                     getDialogSettings().put(PROP_ACTIVE_TAB, selectedTabs[0].getText());
+                    selectedTabs[0].getControl().setFocus();
+                }
+
             }
         });
     }
