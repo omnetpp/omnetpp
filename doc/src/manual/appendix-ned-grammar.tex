@@ -636,6 +636,7 @@ expression
 expr
         : simple\_expr
         | functioncall
+        | expr '.' functioncall
         | object
         | array
         | '(' expr ')'
@@ -675,7 +676,9 @@ functioncall
         ;
 
 array
-        : '[' opt\_exprlist ']'
+        : '[' ']'
+        | '[' exprlist ']'
+        | '[' exprlist ',' ']'
         ;
 
 object
@@ -698,6 +701,7 @@ exprlist
 
 opt\_keyvaluelist
         : keyvaluelist
+        | keyvaluelist ','
         | %empty
         ;
 
@@ -707,12 +711,29 @@ keyvaluelist
         ;
 
 keyvalue
-        : NAME ':' expr
-        | STRINGCONSTANT ':' expr
+        : key ':' expr
+        ;
+
+key
+        : STRINGCONSTANT
+        | NAME
+        | INTCONSTANT
+        | REALCONSTANT
+        | quantity
+        | '-' INTCONSTANT
+        | '-' REALCONSTANT
+        | '-' quantity
+        | NAN
+        | INF
+        | '-' INF
+        | TRUE
+        | FALSE
+        | NULL
+        | NULLPTR
         ;
 
 simple\_expr
-        : identifier
+        : qname
         | operator
         | literal
         ;
@@ -728,19 +749,25 @@ funcname
         | XMLDOC
         ;
 
-identifier
+qname\_elem
         : NAME
-        | THIS '.' NAME
-        | NAME '.' NAME
-        | NAME '[' expr ']' '.' NAME
+        | NAME '[' expr ']'
+        | THIS
+        | PARENT
+        ;
+
+qname
+        : qname '.' qname\_elem
+        | qname\_elem
         ;
 
 operator
         : INDEX
-        | INDEX '(' ')'
-        | EXISTS '(' identifier ')'
-        | SIZEOF '(' identifier ')'
         | TYPENAME
+        | qname '.' INDEX
+        | qname '.' TYPENAME
+        | EXISTS '(' qname ')'
+        | SIZEOF '(' qname ')'
         ;
 
 literal

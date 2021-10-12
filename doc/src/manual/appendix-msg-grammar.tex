@@ -63,12 +63,12 @@ namespace\_decl
         : NAMESPACE qname0 ';'
 
 qname0
-        : qname0 DOUBLECOLON NAME
+        : qname0 '::' NAME
         | NAME
         ;
 
 qname
-        : DOUBLECOLON qname0
+        : '::' qname0
         | qname0
         ;
 
@@ -88,7 +88,7 @@ targetspec
         ;
 
 targetitem
-        : NAME | DOUBLECOLON | INTCONSTANT | ':' | '.' | ',' | '~' | '=' | '&'
+        : NAME | '::' | INTCONSTANT | ':' | '.' | ',' | '~' | '=' | '&'
         ;
 
 import
@@ -257,7 +257,7 @@ fieldvalueitem
         | TRUE
         | FALSE
         | NAME
-        | DOUBLECOLON
+        | '::'
         | '?' | ':' | '&&' | '||' | '##' | '==' | '!=' | '>' | '>=' | '<' | '<='
         | '&' | '|' | '#' | '<<' | '>>'
         | '+' | '-' | '*' | '/' | '%' | '^' | UMIN | '!' | '~'
@@ -320,9 +320,9 @@ property\_value
         ;
 
 property\_literal
-        : property\_literal COMMONCHAR
+        : property\_literal CHAR
         | property\_literal STRINGCONSTANT
-        | COMMONCHAR
+        | CHAR
         | STRINGCONSTANT
         ;
 

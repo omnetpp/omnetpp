@@ -66,15 +66,16 @@ The following entries and attributes are supported in the eventlog file:
 %% generated with tools/stripeventlog.pl from src/eventlog/eventlogentries.txt
 %%
 
-\tbf{SB} \textit{(SimulationBegin)}: mandatory first line of an eventlog file
+
+\tbf{SB} \textit{(SimulationBegin)}: mandatory first line of the eventlog file, followed by an empty line
 
 \begin{itemize}
-  \item \tbf{v} (\textit{version}, int): OMNeT++ version, e.g. 0x401 (=1025) is release 4.1
+  \item \tbf{ov} (\textit{omnetppVersion}, int): OMNeT++ version, e.g. 0x0401 (=1025) is release 4.1
+  \item \tbf{ev} (\textit{eventlogVersion}, int): eventlog version number
   \item \tbf{rid} (\textit{runId}, string): identifies the simulation run
-  \item \tbf{b} (\textit{keyframeBlockSize}, int): the distance between keyframes in event numbers
 \end{itemize}
 
-\tbf{SE} \textit{(SimulationEnd)}: optional last line of an eventlog file
+\tbf{SE} \textit{(SimulationEnd)}: optional last non-empty line of the eventlog file, followed by an empty line
 
 \begin{itemize}
   \item \tbf{e} (\textit{isError}, bool): specifies if the simulation terminated due to an error
@@ -82,22 +83,168 @@ The following entries and attributes are supported in the eventlog file:
   \item \tbf{m} (\textit{message}, string): human readable description
 \end{itemize}
 
-\tbf{BU} \textit{(Bubble)}: display a bubble message
+\tbf{E} \textit{(Event)}: an event that is processing a message, terminated by an empty line
 
 \begin{itemize}
-  \item \tbf{id} (\textit{moduleId}, int): id of the module which printed the bubble message
-  \item \tbf{txt} (\textit{text}, string): displayed message text
+  \item \tbf{\#} (\textit{eventNumber}, eventnumber\_t): unique event number
+  \item \tbf{t} (\textit{simulationTime}, simtime\_t): simulation time when the event occurred
+  \item \tbf{m} (\textit{moduleId}, int): id of the processing module
+  \item \tbf{ce} (\textit{causeEventNumber}, eventnumber\_t): event number from which the message being processed was sent, or -1 if the message was sent from initialize
+  \item \tbf{msg} (\textit{messageId}, msgid\_t): id of the message being processed
+  \item \tbf{f} (\textit{fingerprints}, string): current simulation fingerprints
 \end{itemize}
 
-\tbf{MB} \textit{(ModuleMethodBegin)}: beginning of a call to another module
+\tbf{S} \textit{(Snapshot)}: a snapshot of the current simulation state, followed by state entries, and terminated by an emtpy line
 
 \begin{itemize}
-  \item \tbf{sm} (\textit{fromModuleId}, int): id of the caller module
-  \item \tbf{tm} (\textit{toModuleId}, int): id of the module being called
-  \item \tbf{m} (\textit{method}, string): C++ method name
+  \item \tbf{f} (\textit{fileOffset}, int64\_t): file offset of this entry
+  \item \tbf{\#} (\textit{eventNumber}, eventnumber\_t): event number of the last processed event
+  \item \tbf{t} (\textit{simulationTime}, simtime\_t): simulation time of the last processed event
 \end{itemize}
 
-\tbf{ME} \textit{(ModuleMethodEnd)}: end of a call to another module
+\tbf{I} \textit{(Index)}: incremental snapshot specifying additional and removed entries with an event number and a line index, followed by an empty line
+
+\begin{itemize}
+  \item \tbf{f} (\textit{fileOffset}, int64\_t): file offset of this entry
+  \item \tbf{i} (\textit{previousIndexFileOffset}, int64\_t): file offset of the previous index entry
+  \item \tbf{s} (\textit{previousSnapshotFileOffset}, int64\_t): file offset of the previous snapshot entry
+  \item \tbf{\#} (\textit{eventNumber}, eventnumber\_t): event number of the last processed event
+  \item \tbf{t} (\textit{simulationTime}, simtime\_t): simulation time of the last processed event
+\end{itemize}
+
+\tbf{abstract} \textit{(Reference)}: base class for index entry references
+
+\begin{itemize}
+  \item \tbf{\#} (\textit{eventNumber}, eventnumber\_t): event number of the last referred event
+  \item \tbf{b} (\textit{beginEntryIndex}, int): begin index of the referred entry within the event
+  \item \tbf{e} (\textit{endEntryIndex}, int): end index of the referred entry within the event
+\end{itemize}
+
+\tbf{RF} \textit{(ReferenceFound)}: specifies an eventlog entry found in the snapshot
+
+\begin{itemize}
+  \item no parameters
+\end{itemize}
+
+\tbf{RA} \textit{(ReferenceAdded)}: specifies an eventlog entry added to the index
+
+\begin{itemize}
+  \item no parameters
+\end{itemize}
+
+\tbf{RR} \textit{(ReferenceRemoved)}: specifies an eventlog entry removed from the index
+
+\begin{itemize}
+  \item no parameters
+\end{itemize}
+
+\tbf{abstract} \textit{(ModuleReference)}: base class for entries referring to a module
+
+\begin{itemize}
+  \item \tbf{id} (\textit{moduleId}, int): id of the module
+\end{itemize}
+
+\tbf{abstract} \textit{(GateReference)}: base class for entries referring to a gate
+
+\begin{itemize}
+  \item \tbf{m} (\textit{moduleId}, int): id of module where the gate is
+  \item \tbf{g} (\textit{gateId}, int): id of the gate
+\end{itemize}
+
+\tbf{abstract} \textit{(ConnectionReference)}: base class for entries referring to a connection
+
+\begin{itemize}
+  \item \tbf{sm} (\textit{sourceModuleId}, int): id of the source module identifying the connection
+  \item \tbf{sg} (\textit{sourceGateId}, int): id of the gate at the source module identifying the connection
+\end{itemize}
+
+\tbf{abstract} \textit{(MessageReference)}: base class for entries referring to a message
+
+\begin{itemize}
+  \item \tbf{id} (\textit{messageId}, msgid\_t): id of the message
+\end{itemize}
+
+\tbf{abstract} \textit{(ModuleDescription)}: base class for entries describing a module
+
+\begin{itemize}
+  \item \tbf{c} (\textit{moduleClassName}, string): C++ class name of the module
+  \item \tbf{t} (\textit{nedTypeName}, string): fully qualified NED type name
+  \item \tbf{pid} (\textit{parentModuleId}, int): id of the parent module
+  \item \tbf{n} (\textit{fullName}, string): full dotted hierarchical module name
+  \item \tbf{cm} (\textit{compoundModule}, bool): whether module is a simple or compound module
+\end{itemize}
+
+\tbf{abstract} \textit{(GateDescription)}: base class for entries describing a gate
+
+\begin{itemize}
+  \item \tbf{n} (\textit{name}, string): gate name
+  \item \tbf{i} (\textit{index}, int): gate index if vector, -1 otherwise
+  \item \tbf{o} (\textit{isOutput}, bool): whether the gate is input or output
+\end{itemize}
+
+\tbf{abstract} \textit{(ConnectionDescription)}: base class for entries describing a connection
+
+\begin{itemize}
+  \item \tbf{dm} (\textit{destModuleId}, int): id of the destination module
+  \item \tbf{dg} (\textit{destGateId}, int): id of the gate at the destination module
+\end{itemize}
+
+\tbf{abstract} \textit{(MessageDescription)}: base class for entries describing a message
+
+\begin{itemize}
+  \item \tbf{tid} (\textit{messageTreeId}, msgid\_t): id of the message inherited by dup
+  \item \tbf{eid} (\textit{messageEncapsulationId}, msgid\_t): id of the message inherited by encapsulation
+  \item \tbf{etid} (\textit{messageEncapsulationTreeId}, msgid\_t): id of the message inherited by both dup and encapsulation
+  \item \tbf{c} (\textit{messageClassName}, string): C++ class name of the message
+  \item \tbf{n} (\textit{messageName}, string): message name
+  \item \tbf{k} (\textit{messageKind}, short): message kind
+  \item \tbf{p} (\textit{messagePriority}, short): message priority
+  \item \tbf{l} (\textit{messageLength}, int64\_t): message length in bits
+  \item \tbf{er} (\textit{hasBitError}, bool): true indicates that the message has bit errors
+  \item \tbf{m} (\textit{ownerModuleId}, int): id of the owner module where the message was found or -1 (FES)
+  \item \tbf{sm} (\textit{senderModuleId}, int): id of the source module where the message was sent from
+  \item \tbf{sg} (\textit{senderGateId}, int): id of the gate at the source module from which the message is being sent
+  \item \tbf{st} (\textit{sendingTime}, simtime\_t): simulation time when the message was sent
+  \item \tbf{am} (\textit{arrivalModuleId}, int): id of the destination module where the message was sent to
+  \item \tbf{ag} (\textit{arrivalGateId}, int): id of the gate at the source module from which the message is being sent
+  \item \tbf{at} (\textit{arrivalTime}, simtime\_t): simulation time when the message will arrive
+  \item \tbf{d} (\textit{detail}, string): detailed information of message content when recording message data is turned on
+  \item \tbf{pe} (\textit{previousEventNumber}, eventnumber\_t): event number from which the message being cloned was sent, or -1 if the message was sent from initialize
+\end{itemize}
+
+\tbf{abstract} \textit{(ModuleDisplayString)}: base class for entries describing a module display string
+
+\begin{itemize}
+  \item \tbf{d} (\textit{displayString}, string): the new display string
+\end{itemize}
+
+\tbf{abstract} \textit{(GateDisplayString)}: base class for entries describing a gate display string
+
+\begin{itemize}
+  \item \tbf{d} (\textit{displayString}, string): the new display string
+\end{itemize}
+
+\tbf{abstract} \textit{(ConnectionDisplayString)}: base class for entries describing a connection display string
+
+\begin{itemize}
+  \item \tbf{d} (\textit{displayString}, string): the new display string
+\end{itemize}
+
+\tbf{abstract} \textit{(MessageDisplayString)}: base class for entries describing a message display string
+
+\begin{itemize}
+  \item \tbf{d} (\textit{displayString}, string): the new display string
+\end{itemize}
+
+\tbf{CMB} \textit{(ComponentMethodBegin)}: beginning of a call to another module
+
+\begin{itemize}
+  \item \tbf{sm} (\textit{sourceComponentId}, int): id of the caller component
+  \item \tbf{tm} (\textit{targetComponentId}, int): id of the component being called
+  \item \tbf{m} (\textit{methodName}, string): C++ method name
+\end{itemize}
+
+\tbf{CME} \textit{(ComponentMethodEnd)}: end of a call to another component
 
 \begin{itemize}
   \item no parameters
@@ -106,121 +253,105 @@ The following entries and attributes are supported in the eventlog file:
 \tbf{MC} \textit{(ModuleCreated)}: creating a module
 
 \begin{itemize}
-  \item \tbf{id} (\textit{moduleId}, int): id of the new module
-  \item \tbf{c} (\textit{moduleClassName}, string): C++ class name of the module
-  \item \tbf{t} (\textit{nedTypeName}, string): fully qualified NED type name
-  \item \tbf{pid} (\textit{parentModuleId}, int): id of the parent module
-  \item \tbf{n} (\textit{fullName}, string): full dotted hierarchical module name
-  \item \tbf{cm} (\textit{compoundModule}, bool): whether module is a simple or compound module
+  \item no parameters
 \end{itemize}
 
 \tbf{MD} \textit{(ModuleDeleted)}: deleting a module
 
 \begin{itemize}
-  \item \tbf{id} (\textit{moduleId}, int): id of the module being deleted
+  \item no parameters
 \end{itemize}
 
-\tbf{GC} \textit{(GateCreated)}: gate created
+\tbf{GC} \textit{(GateCreated)}: creating a gate
 
 \begin{itemize}
-  \item \tbf{m} (\textit{moduleId}, int): module in which the gate was created
-  \item \tbf{g} (\textit{gateId}, int): id of the new gate
-  \item \tbf{n} (\textit{name}, string): gate name
-  \item \tbf{i} (\textit{index}, int): gate index if vector, -1 otherwise
-  \item \tbf{o} (\textit{isOutput}, bool): whether the gate is input or output
+  \item no parameters
 \end{itemize}
 
-\tbf{GD} \textit{(GateDeleted)}: gate deleted
+\tbf{GD} \textit{(GateDeleted)}: deleting a gate
 
 \begin{itemize}
-  \item \tbf{m} (\textit{moduleId}, int): module in which the gate was created
-  \item \tbf{g} (\textit{gateId}, int): id of the deleted gate
+  \item no parameters
 \end{itemize}
 
 \tbf{CC} \textit{(ConnectionCreated)}: creating a connection
 
 \begin{itemize}
-  \item \tbf{sm} (\textit{sourceModuleId}, int): id of the source module identifying the connection
-  \item \tbf{sg} (\textit{sourceGateId}, int): id of the gate at the source module identifying the connection
-  \item \tbf{dm} (\textit{destModuleId}, int): id of the destination module
-  \item \tbf{dg} (\textit{destGateId}, int): id of the gate at the destination module
+  \item no parameters
 \end{itemize}
 
 \tbf{CD} \textit{(ConnectionDeleted)}: deleting a connection
 
 \begin{itemize}
-  \item \tbf{sm} (\textit{sourceModuleId}, int): id of the source module identifying the connection
-  \item \tbf{sg} (\textit{sourceGateId}, int): id of the gate at the source module identifying the connection
+  \item no parameters
 \end{itemize}
 
-\tbf{CS} \textit{(ConnectionDisplayStringChanged)}: a connection display string change
-
-\begin{itemize}
-  \item \tbf{sm} (\textit{sourceModuleId}, int): id of the source module identifying the connection
-  \item \tbf{sg} (\textit{sourceGateId}, int): id of the gate at the source module identifying the connection
-  \item \tbf{d} (\textit{displayString}, string): the new display string
-\end{itemize}
-
-\tbf{MS} \textit{(ModuleDisplayStringChanged)}: a module display string change
-
-\begin{itemize}
-  \item \tbf{id} (\textit{moduleId}, int): id of the module
-  \item \tbf{d} (\textit{displayString}, string): the new display string
-\end{itemize}
-
-\tbf{E} \textit{(Event)}: an event that is processing a message
-
-\begin{itemize}
-  \item \tbf{\#} (\textit{eventNumber}, eventnumber\_t): unique event number
-  \item \tbf{t} (\textit{simulationTime}, simtime\_t): simulation time when the event occurred
-  \item \tbf{m} (\textit{moduleId}, int): id of the processing module
-  \item \tbf{ce} (\textit{causeEventNumber}, eventnumber\_t): event number from which the message being processed was sent, or -1 if the message was sent from initialize
-  \item \tbf{msg} (\textit{messageId}, long): lifetime-unique id of the message being processed
-  \item \tbf{f} (\textit{fingerprints}, string): current simulation fingerprints
-\end{itemize}
-
-\tbf{KF} \textit{(Keyframe)}: 
-
-\begin{itemize}
-  \item \tbf{p} (\textit{previousKeyframeFileOffset}, int64\_t): file offset of the previous keyframe entry
-  \item \tbf{c} (\textit{consequenceLookaheadLimits}, string): consequence lookahead data
-  \item \tbf{s} (\textit{simulationStateEntries}, string): simulation state data
-\end{itemize}
-
-\tbf{abstract} \textit{(Message)}: base class for entries referring to a message
-
-\begin{itemize}
-  \item \tbf{id} (\textit{messageId}, long): lifetime-unique id of the message
-  \item \tbf{tid} (\textit{messageTreeId}, long): id of the message inherited by dup
-  \item \tbf{eid} (\textit{messageEncapsulationId}, long): id of the message inherited by encapsulation
-  \item \tbf{etid} (\textit{messageEncapsulationTreeId}, long): id of the message inherited by both dup and encapsulation
-  \item \tbf{c} (\textit{messageClassName}, string): C++ class name of the message
-  \item \tbf{n} (\textit{messageName}, string): message name
-  \item \tbf{k} (\textit{messageKind}, short): message kind
-  \item \tbf{p} (\textit{messagePriority}, short): message priority
-  \item \tbf{l} (\textit{messageLength}, int64\_t): message length in bits
-  \item \tbf{er} (\textit{hasBitError}, bool): true indicates that the message has bit errors
-  \item \tbf{d} (\textit{detail}, string): detailed information of message content when recording message data is turned on
-  \item \tbf{pe} (\textit{previousEventNumber}, eventnumber\_t): event number from which the message being cloned was sent, or -1 if the message was sent from initialize
-\end{itemize}
-
-\tbf{CE} \textit{(CancelEvent)}: canceling an event caused by a self message
+\tbf{MDC} \textit{(ModuleDisplayStringChanged)}: a module display string change
 
 \begin{itemize}
   \item no parameters
+\end{itemize}
+
+\tbf{GDC} \textit{(GateDisplayStringChanged)}: a gate display string change
+
+\begin{itemize}
+  \item no parameters
+\end{itemize}
+
+\tbf{CDC} \textit{(ConnectionDisplayStringChanged)}: a connection display string change
+
+\begin{itemize}
+  \item no parameters
+\end{itemize}
+
+\tbf{EDC} \textit{(MessageDisplayStringChanged)}: a message display string change
+
+\begin{itemize}
+  \item no parameters
+\end{itemize}
+
+\tbf{CM} \textit{(CreateMessage)}: creating a message
+
+\begin{itemize}
+  \item no parameters
+\end{itemize}
+
+\tbf{CL} \textit{(CloneMessage)}: cloning a message either via the copy constructor or by dup
+
+\begin{itemize}
+  \item \tbf{cid} (\textit{cloneId}, msgid\_t): id of the original message that is cloned
+\end{itemize}
+
+\tbf{DM} \textit{(DeleteMessage)}: deleting a message
+
+\begin{itemize}
+  \item no parameters
+\end{itemize}
+
+\tbf{EN} \textit{(EncapsulatePacket)}: encapsulating a packet
+
+\begin{itemize}
+  \item \tbf{cid} (\textit{encapsulatedPacketId}, msgid\_t): id of the encapsulated packet
+\end{itemize}
+
+\tbf{DE} \textit{(DecapsulatePacket)}: decapsulating a packet
+
+\begin{itemize}
+  \item \tbf{cid} (\textit{encapsulatedPacketId}, msgid\_t): id of the encapsulated packet
 \end{itemize}
 
 \tbf{BS} \textit{(BeginSend)}: beginning to send a message
 
 \begin{itemize}
-  \item no parameters
+  \item \tbf{sd} (\textit{sendDelay}, simtime\_t): send after this delay
+  \item \tbf{up} (\textit{isUpdate}, bool): whether this is a transmission update
+  \item \tbf{tx} (\textit{transmissionId}, txid\_t): for pairing transmission updates with the original transmission
 \end{itemize}
 
-\tbf{ES} \textit{(EndSend)}: prediction of the arrival of a message
+\tbf{ES} \textit{(EndSend)}: prediction of the arrival of a message, only a message reference because can't be alone
 
 \begin{itemize}
-  \item \tbf{t} (\textit{arrivalTime}, simtime\_t): when the message will arrive to its destination module
-  \item \tbf{is} (\textit{isReceptionStart}, bool): true indicates the message arrives with the first bit
+  \item \tbf{i} (\textit{isDeliveredImmediately}, bool): true indicates the message is delivered
 \end{itemize}
 
 \tbf{SD} \textit{(SendDirect)}: sending a message directly to a destination gate
@@ -231,6 +362,7 @@ The following entries and attributes are supported in the eventlog file:
   \item \tbf{dg} (\textit{destGateId}, int): id of the gate at the destination module to which the message is being sent
   \item \tbf{pd} (\textit{propagationDelay}, simtime\_t): propagation delay as the message is propagated through the connection
   \item \tbf{td} (\textit{transmissionDelay}, simtime\_t): transmission duration as the whole message is sent from the source gate
+  \item \tbf{rd} (\textit{remainingDuration}, simtime\_t): remaining transmission time (if packet is a tx update)
 \end{itemize}
 
 \tbf{SH} \textit{(SendHop)}: sending a message through a connection identified by its source module and gate id
@@ -240,22 +372,117 @@ The following entries and attributes are supported in the eventlog file:
   \item \tbf{sg} (\textit{senderGateId}, int): id of the gate at the source module from which the message is being sent
   \item \tbf{pd} (\textit{propagationDelay}, simtime\_t): propagation delay as the message is propagated through the connection
   \item \tbf{td} (\textit{transmissionDelay}, simtime\_t): transmission duration as the whole message is sent from the source gate
-  \item \tbf{del} (\textit{discard}, bool): whether the channel has discarded the message
+  \item \tbf{rd} (\textit{remainingDuration}, simtime\_t): remaining transmission time (if packet is a tx update)
+  \item \tbf{d} (\textit{discard}, bool): whether the channel has discarded the message
 \end{itemize}
 
-\tbf{CM} \textit{(CreateMessage)}: creating a message
+\tbf{CE} \textit{(CancelEvent)}: canceling an event caused by sending a self message
 
 \begin{itemize}
   \item no parameters
 \end{itemize}
 
-\tbf{CL} \textit{(CloneMessage)}: cloning a message either via the copy constructor or dup
+\tbf{MF} \textit{(ModuleFound)}: a module found in the simulation while traversing the modules (used in snapshots)
 
 \begin{itemize}
-  \item \tbf{cid} (\textit{cloneId}, long): lifetime-unique id of the clone
+  \item \tbf{\#} (\textit{lastSeenEventNumber}, eventnumber\_t): event number of the module created entry
+  \item \tbf{ei} (\textit{lastSeenEntryIndex}, int): index of the module created entry
 \end{itemize}
 
-\tbf{DM} \textit{(DeleteMessage)}: deleting a message
+\tbf{GF} \textit{(GateFound)}: a gate found in the simulation while traversing the modules (used in snapshots)
+
+\begin{itemize}
+  \item \tbf{\#} (\textit{lastSeenEventNumber}, eventnumber\_t): event number of the gate created entry
+  \item \tbf{ei} (\textit{lastSeenEntryIndex}, int): index of the gate created entry
+\end{itemize}
+
+\tbf{CF} \textit{(ConnectionFound)}: a connection found in the simulation while traversing the modules (used in snapshots)
+
+\begin{itemize}
+  \item \tbf{\#} (\textit{lastSeenEventNumber}, eventnumber\_t): event number of the connection created entry
+  \item \tbf{ei} (\textit{lastSeenEntryIndex}, int): index of the connection created entry
+\end{itemize}
+
+\tbf{EF} \textit{(MessageFound)}: a message found in the future event queue (FES) or while traversing the modules (used in snapshots)
+
+\begin{itemize}
+  \item no parameters
+\end{itemize}
+
+\tbf{MDF} \textit{(ModuleDisplayStringFound)}: a module display string found (used in snapshots)
+
+\begin{itemize}
+  \item \tbf{\#} (\textit{lastSeenEventNumber}, eventnumber\_t): event number of the module display string changed entry
+  \item \tbf{ei} (\textit{lastSeenEntryIndex}, int): index of the module display string changed entry
+\end{itemize}
+
+\tbf{GDF} \textit{(GateDisplayStringFound)}: a gate display string found (used in snapshots)
+
+\begin{itemize}
+  \item \tbf{\#} (\textit{lastSeenEventNumber}, eventnumber\_t): event number of the gate display string changed entry
+  \item \tbf{ei} (\textit{lastSeenEntryIndex}, int): index of the gate display string changed entry
+\end{itemize}
+
+\tbf{CDF} \textit{(ConnectionDisplayStringFound)}: a connection display string found (used in snapshots)
+
+\begin{itemize}
+  \item \tbf{\#} (\textit{lastSeenEventNumber}, eventnumber\_t): event number of the connection display string changed entry
+  \item \tbf{ei} (\textit{lastSeenEntryIndex}, int): index of the connection display string changed entry
+\end{itemize}
+
+\tbf{EDF} \textit{(MessageDisplayStringFound)}: a message display string found (used in snapshots)
+
+\begin{itemize}
+  \item \tbf{\#} (\textit{lastSeenEventNumber}, eventnumber\_t): event number of the message display string changed entry
+  \item \tbf{ei} (\textit{lastSeenEntryIndex}, int): index of the message display string changed entry
+\end{itemize}
+
+\tbf{BU} \textit{(Bubble)}: display a bubble message
+
+\begin{itemize}
+  \item \tbf{id} (\textit{moduleId}, int): id of the module which printed the bubble message
+  \item \tbf{txt} (\textit{text}, string): displayed message text
+\end{itemize}
+
+\tbf{abstract} \textit{(CustomReference)}: custom data reference provided by OMNeT users
+
+\begin{itemize}
+  \item \tbf{t} (\textit{type}, string): user specified unique type
+  \item \tbf{k} (\textit{key}, long): unique key that links custom entries together
+\end{itemize}
+
+\tbf{abstract} \textit{(CustomDescription)}: custom data provided by OMNeT users
+
+\begin{itemize}
+  \item \tbf{c} (\textit{content}, string): user specified content (text, CSV, XML, JSON, etc.)
+\end{itemize}
+
+\tbf{CUC} \textit{(CustomCreated)}: created a custom data object
+
+\begin{itemize}
+  \item no parameters
+\end{itemize}
+
+\tbf{CUD} \textit{(CustomDeleted)}: deleted a custom data object
+
+\begin{itemize}
+  \item no parameters
+\end{itemize}
+
+\tbf{CUM} \textit{(CustomChanged)}: changed a custom data object
+
+\begin{itemize}
+  \item no parameters
+\end{itemize}
+
+\tbf{CUF} \textit{(CustomFound)}: found a custom data object (used in snapshots)
+
+\begin{itemize}
+  \item \tbf{\#} (\textit{lastSeenEventNumber}, eventnumber\_t): event number of the corresponding created entry
+  \item \tbf{ei} (\textit{lastSeenEntryIndex}, int): index of the corresponding created begin entry
+\end{itemize}
+
+\tbf{CU} \textit{(Custom)}: custom data provided by OMNeT users
 
 \begin{itemize}
   \item no parameters

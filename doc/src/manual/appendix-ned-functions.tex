@@ -12,12 +12,128 @@ following. The question mark (as in ``\ttt{rng?}'') marks optional arguments.
 \label{sec:ned-functions:category-conversion}
 
 \begin{description}
+\item[bool]: \ttt{bool bool(any x)} \\
+    Converts x to bool, and returns the result. For numeric values, 0 and nan
+    become false and other values become true; for strings, "true" becomes true
+    and everything else becomes false.
+
 \item[double]: \ttt{quantity double(any x)} \\
-    Converts x to double, and returns the result. A boolean argument becomes 0 or 1; a string is interpreted as number; an XML argument causes an error. Units are preserved.
+    Converts x to double, and returns the result. A boolean argument becomes 0
+    or 1; a string is interpreted as number; an object argument causes an
+    error. Units are preserved.
+
 \item[int]: \ttt{intquantity int(any x)} \\
-    Converts x to int, and returns the result. A boolean argument becomes 0 or 1; a double is converted using floor(); a string is interpreted as number; an XML argument causes an error. Units are preserved.
+    Converts x to int, and returns the result. A boolean argument becomes 0 or
+    1; a double is converted using floor(); a string is interpreted as number;
+    an object argument causes an error. Units are preserved.
+
 \item[string]: \ttt{string string(any x)} \\
     Converts x to string, and returns the result.
+
+
+\end{description}
+
+\section{Category "i/o":}
+\label{sec:ned-functions:category-io}
+
+\begin{description}
+\item[absFilePath]: \ttt{string absFilePath(string filename)} \\
+    Converts filename to an absolute filesystem path. Absolute paths are
+    returned unchanged; relative paths are understood as relative to the
+    location of the ini or NED file where the call occurs (see baseDir()).
+
+\item[baseDir]: \ttt{string baseDir()} \\
+    Returns the absolute filesystem path to the directory of the ini or NED
+    file where the baseDir() call occurs.
+
+\item[parseCSV]: \ttt{any parseCSV(string str)} \\
+    Parses the given string as a comma-separated CSV, and returns it as an
+    array of arrays. Elements can be boolean (true/false), numeric (integer or
+    double, with or without measurement unit), quoted string, or unquoted
+    string. Items that cannot be parsed as any of the more specific types are
+    interpreted as unquoted strings. See readCSV() for details of the the
+    accepted CSV flavor.
+
+\item[parseExtendedCSV]: \ttt{any parseExtendedCSV(string str)} \\
+    Parses the given string as a comma-separated CSV, and returns it as an
+    array of arrays. Elements are parsed as NED expressions, and are evaluated
+    in the caller's context. See readCSV() for details of the the accepted CSV
+    flavor.
+
+\item[parseExtendedJSON]: \ttt{any parseExtendedJSON(string str)} \\
+    Parses the given string as Extended JSON, and returns its contents.
+    Extended JSON allows any value to be a valid NED expression (instead of
+    just constants allowed by strict JSON), and some extensions to the object
+    syntax. Actually, as the NED expression syntax includes JSON-like arrays
+    and objects, "parsing" is done simply by evaluating the string as a NED
+    expression in the caller's context.
+
+\item[parseJSON]: \ttt{any parseJSON(string str)} \\
+    Parses the given string as JSON, and returns its contents. The syntax is
+    more permissive than standard JSON: it additionally allows the special
+    numeric values `nan`, `inf` and `-inf`, the use of measurement units, and
+    object keys are also accepted without quotation marks if it doesn't
+    interfere with parsing.
+
+\item[parseXML]: \ttt{xml parseXML(string xmlstring, string xpath?)} \\
+    Parses the given XML string into a cXMLElement tree, and returns the root
+    element. When called with two arguments, it returns the first element from
+    the tree that matches the expression given in simplified XPath syntax.
+
+\item[readCSV]: \ttt{any readCSV(string filename)} \\
+    Parses the content of the given text file as comma-separated CSV, and
+    returns it as an array of arrays. Elements can be boolean (`true` or
+    `false`), numeric (integer or double, with or without measurement unit),
+    quoted string, or unquoted string. Items that cannot be parsed as any of
+    the more specific types are interpreted as unquoted strings. CSV parsing
+    rules: separator is comma; blank (whitespace-only) lines are ignored; lines
+    that contain hash mark `\#` on column 1 are considered comments and are
+    ignored; items are trimmed of leading and trailing whitespace before
+    processing; no line continuation with backslash; quoted strings may be
+    delimited with single or double quotes; quoted strings may contain C-like
+    backslash escapes; no support for splitting strings over multiple lines; no
+    special treatment for the first (possibly header) line.
+
+\item[readExtendedCSV]: \ttt{any readExtendedCSV(string filename)} \\
+    Parses the content of the given text file as comma-separated CSV, and
+    returns it as an array of arrays. Elements are parsed as NED expressions,
+    and are evaluated in the caller's context. See readCSV() for details of the
+    the accepted CSV flavor.
+
+\item[readExtendedJSON]: \ttt{any readExtendedJSON(string filename)} \\
+    Parses the given text file as Extended JSON, and returns its contents.
+    Extended JSON allows any value to be a valid NED expression (instead of
+    just constants allowed by strict JSON), and some extensions to the object
+    syntax. Actually, as the NED expression syntax includes JSON-like arrays
+    and objects, "parsing" is done simply by evaluating the content as a NED
+    expression in the caller's context.
+
+\item[readFile]: \ttt{string readFile(string filename)} \\
+    Opens the specified text file, and returns its content as a string. If
+    filename is a relative path, it is understood as relative to the location
+    of the ini or NED file where the readFile() call occurs.
+
+\item[readJSON]: \ttt{any readJSON(string filename)} \\
+    Parses the given text file as JSON, and returns its contents. The syntax is
+    more permissive than standard JSON: it additionally allows the special
+    numeric values `nan`, `inf` and `-inf`, the use of measurement units, and
+    object keys are also accepted without quotation marks if it doesn't
+    interfere with parsing.
+
+\item[readXML]: \ttt{xml readXML(string filename, string xpath?)} \\
+    Parses the given XML file into a cXMLElement tree, and returns the root
+    element. When called with two arguments, it returns the first element from
+    the tree that matches the expression given in simplified XPath syntax.
+
+\item[resolveFile]: \ttt{string resolveFile(string directory, string filename)} \\
+    Joins its arguments as file paths, except that when the second argument is
+    an absolute filesystem path, it is returned unchanged. This is purely a
+    string operation; neither directory nor filename needs to exist in the file
+    system.
+
+\item[workingDir]: \ttt{string workingDir()} \\
+    Returns the current working directory.
+
 
 \end{description}
 
@@ -27,42 +143,64 @@ following. The question mark (as in ``\ttt{rng?}'') marks optional arguments.
 \begin{description}
 \item[acos]: \ttt{double acos(double)} \\
     Trigonometric function; see standard C function of the same name
+
 \item[asin]: \ttt{double asin(double)} \\
     Trigonometric function; see standard C function of the same name
+
 \item[atan]: \ttt{double atan(double)} \\
     Trigonometric function; see standard C function of the same name
+
 \item[atan2]: \ttt{double atan2(double, double)} \\
     Trigonometric function; see standard C function of the same name
+
 \item[ceil]: \ttt{double ceil(double)} \\
-    Rounds down; see standard C function of the same name
+    Rounds up; see standard C function of the same name
+
 \item[cos]: \ttt{double cos(double)} \\
     Trigonometric function; see standard C function of the same name
+
 \item[exp]: \ttt{double exp(double)} \\
     Exponential; see standard C function of the same name
+
 \item[fabs]: \ttt{quantity fabs(quantity x)} \\
     Returns the absolute value of the quantity.
+
 \item[floor]: \ttt{double floor(double)} \\
-    Rounds up; see standard C function of the same name
+    Rounds down; see standard C function of the same name
+
 \item[fmod]: \ttt{quantity fmod(quantity x, quantity y)} \\
-    Returns the floating-point remainder of x/y; unit conversion takes place if needed.
+    Returns the floating-point remainder of x/y; unit conversion takes place if
+    needed.
+
 \item[hypot]: \ttt{double hypot(double, double)} \\
     Length of the hypotenuse; see standard C function of the same name
+
 \item[log]: \ttt{double log(double)} \\
     Natural logarithm; see standard C function of the same name
+
 \item[log10]: \ttt{double log10(double)} \\
     Base-10 logarithm; see standard C function of the same name
+
 \item[max]: \ttt{quantity max(quantity a, quantity b)} \\
-    Returns the greater one of the two quantities; unit conversion takes place if needed.
+    Returns the greater one of the two quantities; unit conversion takes place
+    if needed.
+
 \item[min]: \ttt{quantity min(quantity a, quantity b)} \\
-    Returns the smaller one of the two quantities; unit conversion takes place if needed.
+    Returns the smaller one of the two quantities; unit conversion takes place
+    if needed.
+
 \item[pow]: \ttt{double pow(double, double)} \\
     Power; see standard C function of the same name
+
 \item[sin]: \ttt{double sin(double)} \\
     Trigonometric function; see standard C function of the same name
+
 \item[sqrt]: \ttt{double sqrt(double)} \\
     Square root; see standard C function of the same name
+
 \item[tan]: \ttt{double tan(double)} \\
     Trigonometric function; see standard C function of the same name
+
 
 \end{description}
 
@@ -70,12 +208,34 @@ following. The question mark (as in ``\ttt{rng?}'') marks optional arguments.
 \label{sec:ned-functions:category-misc}
 
 \begin{description}
+\item[dup]: \ttt{object dup(object obj)} \\
+    Clones the given object by calling its dup() C++ method.
+
+\item[eval]: \ttt{any eval(string expr)} \\
+    Evaluates the NED expression in the call site's context.
+
 \item[firstAvailable]: \ttt{string firstAvailable(...)} \\
-    Accepts any number of strings, interprets them as NED type names (qualified or unqualified), and returns the first one that exists and its C++ implementation class is also available. Throws an error if none of the types are available.
+    Accepts any number of strings, interprets them as NED type names (qualified
+    or unqualified), and returns the first one that exists and its C++
+    implementation class is also available. Throws an error if none of the
+    types are available.
+
+\item[get]: \ttt{any get(object arrayOrMap, any keyOrIndex)} \\
+    Obtain a value from a NED map or array. Examples: get([10,20,30], 1)
+    returns 20; get({foo:10,bar:20}, 'foo') returns 10. Note that get(x,i) may
+    also be written as x.get(i), with the two being completely equivalent.
+
 \item[select]: \ttt{any select(int index, ...)} \\
-    Returns the <index>th item from the rest of the argument list; numbering starts from 0.
+    Returns the <index>th item from the rest of the argument list; numbering
+    starts from 0.
+
 \item[simTime]: \ttt{quantity simTime()} \\
     Returns the current simulation time.
+
+\item[size]: \ttt{int size(object arrayOrMap)} \\
+    Returns the length of an array, or the number of elements in a map.
+
+
 \end{description}
 
 \section{Category "ned":}
@@ -83,13 +243,19 @@ following. The question mark (as in ``\ttt{rng?}'') marks optional arguments.
 
 \begin{description}
 \item[ancestorIndex]: \ttt{int ancestorIndex(int numLevels)} \\
-    Returns the index of the ancestor module numLevels levels above the module or channel in context.
+    Returns the index of the ancestor module numLevels levels above the module
+    or channel in context.
+
 \item[fullName]: \ttt{string fullName()} \\
     Returns the full name of the module or channel in context.
+
 \item[fullPath]: \ttt{string fullPath()} \\
     Returns the full path of the module or channel in context.
+
 \item[parentIndex]: \ttt{int parentIndex()} \\
-    Returns the index of the parent module, which has to be part of module vector.
+    Returns the index of the parent module, which has to be part of module
+    vector.
+
 
 \end{description}
 
@@ -99,32 +265,46 @@ following. The question mark (as in ``\ttt{rng?}'') marks optional arguments.
 \begin{description}
 \item[beta]: \ttt{double beta(double alpha1, double alpha2, int rng?)} \\
     Returns a random number from the Beta distribution
+
 \item[cauchy]: \ttt{quantity cauchy(quantity a, quantity b, int rng?)} \\
     Returns a random number from the Cauchy distribution
+
 \item[chi\_square]: \ttt{double chi\_square(int k, int rng?)} \\
     Returns a random number from the Chi-square distribution
+
 \item[erlang\_k]: \ttt{quantity erlang\_k(int k, quantity mean, int rng?)} \\
     Returns a random number from the Erlang distribution
+
 \item[exponential]: \ttt{quantity exponential(quantity mean, int rng?)} \\
     Returns a random number from the Exponential distribution
+
 \item[gamma\_d]: \ttt{quantity gamma\_d(double alpha, quantity theta, int rng?)} \\
     Returns a random number from the Gamma distribution
+
 \item[lognormal]: \ttt{double lognormal(double m, double w, int rng?)} \\
     Returns a random number from the Lognormal distribution
+
 \item[normal]: \ttt{quantity normal(quantity mean, quantity stddev, int rng?)} \\
     Returns a random number from the Normal distribution
+
 \item[pareto\_shifted]: \ttt{quantity pareto\_shifted(double a, quantity b, quantity c, int rng?)} \\
     Returns a random number from the Pareto-shifted distribution
+
 \item[student\_t]: \ttt{double student\_t(int i, int rng?)} \\
     Returns a random number from the Student-t distribution
+
 \item[triang]: \ttt{quantity triang(quantity a, quantity b, quantity c, int rng?)} \\
     Returns a random number from the Triangular distribution
+
 \item[truncnormal]: \ttt{quantity truncnormal(quantity mean, quantity stddev, int rng?)} \\
     Returns a random number from the truncated Normal distribution
+
 \item[uniform]: \ttt{quantity uniform(quantity a, quantity b, int rng?)} \\
     Returns a random number from the Uniform distribution
+
 \item[weibull]: \ttt{quantity weibull(quantity a, quantity b, int rng?)} \\
     Returns a random number from the Weibull distribution
+
 
 \end{description}
 
@@ -134,16 +314,25 @@ following. The question mark (as in ``\ttt{rng?}'') marks optional arguments.
 \begin{description}
 \item[bernoulli]: \ttt{int bernoulli(double p, int rng?)} \\
     Returns a random number from the Bernoulli distribution
+
 \item[binomial]: \ttt{int binomial(int n, double p, int rng?)} \\
     Returns a random number from the Binomial distribution
+
 \item[geometric]: \ttt{int geometric(double p, int rng?)} \\
     Returns a random number from the Geometric distribution
+
 \item[intuniform]: \ttt{int intuniform(intquantity a, intquantity b, int rng?)} \\
-    Returns a random integer uniformly distributed over [a, b]
+    Returns a random integer uniformly distributed over [a,b]
+
+\item[intuniformexcl]: \ttt{int intuniformexcl(intquantity a, intquantity b, int rng?)} \\
+    Returns a random integer uniformly distributed over [a,b), that is, [a,b-1]
+
 \item[negbinomial]: \ttt{int negbinomial(int n, double p, int rng?)} \\
     Returns a random number from the Negbinomial distribution
+
 \item[poisson]: \ttt{int poisson(double lambda, int rng?)} \\
     Returns a random number from the Poisson distribution
+
 
 \end{description}
 
@@ -152,41 +341,70 @@ following. The question mark (as in ``\ttt{rng?}'') marks optional arguments.
 
 \begin{description}
 \item[choose]: \ttt{string choose(int index, string list)} \\
-    Interprets list as a space-separated list, and returns the item at the given index. Negative and out-of-bounds indices cause an error.
+    Interprets list as a space-separated list, and returns the item at the
+    given index. Negative and out-of-bounds indices cause an error.
+
 \item[contains]: \ttt{bool contains(string s, string substr)} \\
     Returns true if string s contains substr as substring
+
 \item[endsWith]: \ttt{bool endsWith(string s, string substr)} \\
     Returns true if s ends with the substring substr.
+
 \item[expand]: \ttt{string expand(string s)} \\
-    Expands \${} variables (\${configname}, \${runnumber}, etc.) in the given string, and returns the result.
+    Expands \${} variables (\${configname}, \${runnumber}, etc.) in the given
+    string, and returns the result.
+
 \item[indexOf]: \ttt{int indexOf(string s, string substr)} \\
-    Returns the position of the first occurrence of substring substr in s, or -1 if s does not contain substr.
+    Returns the position of the first occurrence of substring substr in s, or
+    -1 if s does not contain substr.
+
 \item[length]: \ttt{int length(string s)} \\
     Returns the length of the string
+
 \item[replace]: \ttt{string replace(string s, string substr, string repl, int startPos?)} \\
-    Replaces all occurrences of substr in s with the string repl. If startPos is given, search begins from position startPos in s.
+    Replaces all occurrences of substr in s with the string repl. If startPos
+    is given, search begins from position startPos in s.
+
 \item[replaceFirst]: \ttt{string replaceFirst(string s, string substr, string repl, int startPos?)} \\
-    Replaces the first occurrence of substr in s with the string repl. If startPos is given, search begins from position startPos in s.
+    Replaces the first occurrence of substr in s with the string repl. If
+    startPos is given, search begins from position startPos in s.
+
 \item[startsWith]: \ttt{bool startsWith(string s, string substr)} \\
     Returns true if s begins with the substring substr.
+
 \item[substring]: \ttt{string substring(string s, int pos, int len?)} \\
-    Return the substring of s starting at the given position, either to the end of the string or maximum len characters
+    Return the substring of s starting at the given position, either to the end
+    of the string or maximum len characters
+
 \item[substringAfter]: \ttt{string substringAfter(string s, string substr)} \\
-    Returns the substring of s after the first occurrence of substr, or the empty string if s does not contain substr.
+    Returns the substring of s after the first occurrence of substr, or the
+    empty string if s does not contain substr.
+
 \item[substringAfterLast]: \ttt{string substringAfterLast(string s, string substr)} \\
-    Returns the substring of s after the last occurrence of substr, or the empty string if s does not contain substr.
+    Returns the substring of s after the last occurrence of substr, or the
+    empty string if s does not contain substr.
+
 \item[substringBefore]: \ttt{string substringBefore(string s, string substr)} \\
-    Returns the substring of s before the first occurrence of substr, or the empty string if s does not contain substr.
+    Returns the substring of s before the first occurrence of substr, or the
+    empty string if s does not contain substr.
+
 \item[substringBeforeLast]: \ttt{string substringBeforeLast(string s, string substr)} \\
-    Returns the substring of s before the last occurrence of substr, or the empty string if s does not contain substr.
+    Returns the substring of s before the last occurrence of substr, or the
+    empty string if s does not contain substr.
+
 \item[tail]: \ttt{string tail(string s, int len)} \\
-    Returns the last len character of s, or the full s if it is shorter than len characters.
+    Returns the last len character of s, or the full s if it is shorter than
+    len characters.
+
 \item[toLower]: \ttt{string toLower(string s)} \\
     Converts s to all lowercase, and returns the result.
+
 \item[toUpper]: \ttt{string toUpper(string s)} \\
     Converts s to all uppercase, and returns the result.
+
 \item[trim]: \ttt{string trim(string s)} \\
     Discards whitespace from the start and end of s, and returns the result.
+
 
 \end{description}
 
@@ -196,12 +414,35 @@ following. The question mark (as in ``\ttt{rng?}'') marks optional arguments.
 \begin{description}
 \item[convertUnit]: \ttt{quantity convertUnit(quantity x, string unit)} \\
     Converts x to the given unit.
+
 \item[dropUnit]: \ttt{double dropUnit(quantity x)} \\
     Removes the unit of measurement from quantity x.
+
 \item[replaceUnit]: \ttt{quantity replaceUnit(quantity x, string unit)} \\
     Replaces the unit of x with the given unit.
+
 \item[unitOf]: \ttt{string unitOf(quantity x)} \\
     Returns the unit of the given quantity.
+
+
+\end{description}
+
+\section{Category "xml":}
+\label{sec:ned-functions:category-xml}
+
+\begin{description}
+\item[xml]: \ttt{xml xml(string xmlstring, string xpath?)} \\
+    Parses the given XML string into a cXMLElement tree, and returns the root
+    element. When called with two arguments, it returns the first element from
+    the tree that matches the expression given in simplified XPath syntax.
+    Note: This is an alias to the parseXML() function.
+
+\item[xmldoc]: \ttt{xml xmldoc(string filename, string xpath?)} \\
+    Parses the given XML file into a cXMLElement tree, and returns the root
+    element. When called with two arguments, it returns the first element from
+    the tree that matches the expression given in simplified XPath syntax.
+    Note: This is an alias to the readXML() function.
+
 
 \end{description}
 
@@ -209,35 +450,38 @@ following. The question mark (as in ``\ttt{rng?}'') marks optional arguments.
 \label{sec:ned-functions:category-units-conversion}
 
 \begin{description}
-\item[A]: \ttt{quantity A(quantity x)} \\
-    Converts to A (ampere) from a compatible unit or a dimensionless number.
-\item[Ah]: \ttt{quantity Ah(quantity x)} \\
-    Converts to Ah (ampere-hour) from a compatible unit or a dimensionless number.
-\item[As]: \ttt{quantity As(quantity x)} \\
-    Converts to As (ampere-second) from a compatible unit or a dimensionless number.
-\item[B]: \ttt{quantity B(quantity x)} \\
-    Converts to B (byte) from a compatible unit or a dimensionless number.
-\item[C]: \ttt{quantity C(quantity x)} \\
-    Converts to C (coulomb) from a compatible unit or a dimensionless number.
-\item[GB]: \ttt{quantity GB(quantity x)} \\
-    Converts to GB (gigabyte) from a compatible unit or a dimensionless number.
-\item[GHz]: \ttt{quantity GHz(quantity x)} \\
-    Converts to GHz (gigahertz) from a compatible unit or a dimensionless number.
-\item[etc.]
-\end{description}
-
-A similar NED function exists for all registered measurement units.
-Units are listed in section \ref{sec:ned-ref:units}.
-
-
-\section{Category "xml":}
-\label{sec:ned-functions:category-xml}
-
-\begin{description}
-\item[xml]: \ttt{xml xml(string xmlstring, string xpath?)} \\
-    Parses the given XML string into a cXMLElement tree, and returns the root element. When called with two arguments, it returns the first element from the tree that matches the expression given in simplified XPath syntax.
-\item[xmldoc]: \ttt{xml xmldoc(string filename, string xpath?)} \\
-    Parses the given XML file into a cXMLElement tree, and returns the root element. When called with two arguments, it returns the first element from the tree that matches the expression given in simplified XPath syntax.
+\item[<unit\_name>]: \ttt{quantity <unit\_name>(quantity x)} \\
+    All measurement unit names can be used as one-argument functions that
+    convert from a compatible unit or a dimensionless number. Substitute
+    underscore for any hyphen in the name, and '\_per\_' for any slash:
+    milliampere-hour --> milliampere\_hour(), meter/sec --> meter\_per\_sec().
+    
+    d(), day(), h(), hour(), min(), minute(), s(), second(), ms(),
+    millisecond(), us(), microsecond(), ns(), nanosecond(), ps(), picosecond(),
+    fs(), femtosecond(), as(), attosecond(), bps(), bit\_per\_sec(), kbps(),
+    kilobit\_per\_sec(), Mbps(), megabit\_per\_sec(), Gbps(), gigabit\_per\_sec(),
+    Tbps(), terabit\_per\_sec(), B(), byte(), KiB(), kibibyte(), MiB(),
+    mebibyte(), GiB(), gibibyte(), TiB(), tebibyte(), kB(), kilobyte(), MB(),
+    megabyte(), GB(), gigabyte(), TB(), terabyte(), b(), bit(), Kib(),
+    kibibit(), Mib(), mebibit(), Gib(), gibibit(), Tib(), tebibit(), kb(),
+    kilobit(), Mb(), megabit(), Gb(), gigabit(), Tb(), terabit(), rad(),
+    radian(), deg(), degree(), m(), meter(), cm(), centimeter(), mm(),
+    millimeter(), um(), micrometer(), nm(), nanometer(), km(), kilometer(),
+    W(), watt(), mW(), milliwatt(), uW(), microwatt(), nW(), nanowatt(), pW(),
+    picowatt(), fW(), femtowatt(), kW(), kilowatt(), MW(), megawatt(), GW(),
+    gigawatt(), Hz(), hertz(), kHz(), kilohertz(), MHz(), megahertz(), GHz(),
+    gigahertz(), THz(), terahertz(), kg(), kilogram(), g(), gram(), K(),
+    kelvin(), J(), joule(), kJ(), kilojoule(), MJ(), megajoule(), Ws(),
+    watt\_second(), Wh(), watt\_hour(), kWh(), kilowatt\_hour(), MWh(),
+    megawatt\_hour(), V(), volt(), kV(), kilovolt(), mV(), millivolt(), A(),
+    ampere(), mA(), milliampere(), uA(), microampere(), Ohm(), ohm(), mOhm(),
+    milliohm(), kOhm(), kiloohm(), MOhm(), megaohm(), mps(), meter\_per\_sec(),
+    kmps(), kilometer\_per\_sec(), kmph(), kilometer\_per\_hour(), C(), coulomb(),
+    As(), ampere\_second(), mAs(), milliampere\_second(), Ah(), ampere\_hour(),
+    mAh(), milliampere\_hour(), ratio(), ratio(), pct(), percent(), dBW(),
+    decibel\_watt(), dBm(), decibel\_milliwatt(), dBmW(), decibel\_milliwatt(),
+    dBV(), decibel\_volt(), dBmV(), decibel\_millivolt(), dBA(),
+    decibel\_ampere(), dBmA(), decibel\_milliampere(), dB(), decibel(), etc.
 \end{description}
 
 %%% Local Variables:

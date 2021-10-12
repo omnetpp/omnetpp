@@ -26,6 +26,12 @@ generated from message descriptions.
     setters/getters. When specified on a class, it determines the default for
     fields of that type.
 
+\item[castFunction] \textit{(type: bool, use: class)} \\
+    If false: Do not specialize the fromAnyPtr<T>(any\_ptr) function for this
+    class. Useful for preventing compile errors if the function already exists,
+    e.g. in hand-written form, or generated for another type (think aliased
+    typedefs).
+
 \item[clone] \textit{(type: string, use: field, class)} \\
     For owned pointer fields: Code to duplicate (one array element of) the field
     value. When specified on a class, it determines the default for fields of
@@ -49,12 +55,14 @@ generated from message descriptions.
 
 \item[descriptor] \textit{(type: string, use: class)} \\
     A 'true'/'false' value specifies whether to generate descriptor class;
-    special value 'readonly' requests generating a read-only descriptor.
+    special value 'readonly' requests generating a read-only descriptor (but
+    specifying @editable/@replaceable/@resizable on individual fields overrides
+    that).
 
 \item[editable] \textit{(type: bool, use: field, class)} \\
     Specifies whether field value (or value of fields that are instances of this
-    type) can be set via the class descriptor's setFieldValueFromString()
-    method.
+    type) can be set via the class descriptor's setFieldValueFromString() and
+    setFieldValue() methods.
 
 \item[enum] \textit{(type: string, use: field)} \\
     For integer fields: Values are from the given enum.
@@ -76,6 +84,10 @@ generated from message descriptions.
 
 \item[fromString] \textit{(type: string, use: field, class)} \\
     Affects descriptor class: Code to convert string to field value. When
+    specified on a class, it determines the default for fields of that type.
+
+\item[fromValue] \textit{(type: string, use: field, class)} \\
+    Affects descriptor class: Code to convert cValue to field value. When
     specified on a class, it determines the default for fields of that type.
 
 \item[getter] \textit{(type: string, use: field)} \\
@@ -133,6 +145,10 @@ generated from message descriptions.
 \item[packetData] \textit{(type: string, use: class, field)} \\
     Denotes packet data in frameworks such as INET; used in Qtenv inspectors
 
+\item[polymorphic] \textit{(type: bool, use: class)} \\
+    Specifies whether this type is polymorphic, i.e. has any virtual member
+    function.
+
 \item[primitive] \textit{(type: bool, use: field, class)} \\
     Shortcut for @opaque @byValue @editable @subclassable(false)
     @supportsPtr(false).
@@ -140,9 +156,13 @@ generated from message descriptions.
 \item[property] \textit{(type: any, use: file)} \\
     Property for declaring properties.
 
+\item[readonly] \textit{(type: bool, use: field)} \\
+    If true: Equivalent to @editable(false) @replaceable(false)
+    @resizable(false).
+
 \item[replaceable] \textit{(type: bool, use: field)} \\
     If true: Field is a pointer whose value can be set via the class
-    descriptor's setFieldStructValuePointer() method.
+    descriptor's setFieldStructValuePointer() and setFieldValue() methods.
 
 \item[resizable] \textit{(type: bool, use: field)} \\
     If true: Field is a variable-size array whose size can be set via the class
@@ -179,8 +199,11 @@ generated from message descriptions.
     Affects descriptor class: Code to convert field value to string. When
     specified on a class, it determines the default for fields of that type.
 
-\end{description}
+\item[toValue] \textit{(type: string, use: field, class)} \\
+    Affects descriptor class: Code to convert field value to cValue. When
+    specified on a class, it determines the default for fields of that type.
 
+\end{description}
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "usman"

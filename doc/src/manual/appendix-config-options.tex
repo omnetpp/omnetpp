@@ -118,6 +118,11 @@ with the \fopt{-h configdetails} option.
     multiple times, see
     \ttt{cmdenv-{\allowbreak}fake-{\allowbreak}gui-{\allowbreak}on-{\allowbreak}simtime-{\allowbreak}numsteps})
     when simulation time advances from one simulation event to the next.
+\item[cmdenv-fake-gui-seed] = \textit{<int>}, default: \ttt{1}\\
+    \textit{Per-simulation-run setting.}\\
+    When \ttt{cmdenv-{\allowbreak}fake-{\allowbreak}gui={\allowbreak}true}: The
+    seed for the RNG governing the operation of the fake GUI component. This is
+    entirely independent of the RNGs used by the model.
 \item[cmdenv-interactive] = \textit{<bool>}, default: \ttt{false}\\
     \textit{Per-simulation-run setting.}\\
     Defines what Cmdenv should do when the model contains unassigned
@@ -273,35 +278,35 @@ with the \fopt{-h configdetails} option.
     and/or/not/* and various field match expressions can be used. The object
     pattern matches to class name, the field pattern matches to field name by
     default.\\
-
+     
     \ttt{EVENTLOG-{\allowbreak}MESSAGE-{\allowbreak}DETAIL-{\allowbreak}PATTERN
     {\allowbreak}:{\allowbreak}={\allowbreak} {\allowbreak}(
     {\allowbreak}DETAIL-{\allowbreak}PATTERN {\allowbreak}'|' {\allowbreak})*
     {\allowbreak}DETAIL\_PATTERN}\\
-        \ttt{DETAIL-{\allowbreak}PATTERN
+      \ttt{DETAIL-{\allowbreak}PATTERN
     {\allowbreak}:{\allowbreak}={\allowbreak}
     {\allowbreak}OBJECT-{\allowbreak}PATTERN {\allowbreak}[
     {\allowbreak}':{\allowbreak}' {\allowbreak}FIELD-{\allowbreak}PATTERNS
     {\allowbreak}]}\\
-        \ttt{OBJECT-{\allowbreak}PATTERN
+      \ttt{OBJECT-{\allowbreak}PATTERN
     {\allowbreak}:{\allowbreak}={\allowbreak}
     {\allowbreak}MATCH-{\allowbreak}EXPRESSION}\\
-        \ttt{FIELD-{\allowbreak}PATTERNS
+      \ttt{FIELD-{\allowbreak}PATTERNS
     {\allowbreak}:{\allowbreak}={\allowbreak} {\allowbreak}(
     {\allowbreak}FIELD-{\allowbreak}PATTERN {\allowbreak}',{\allowbreak}'
     {\allowbreak})* {\allowbreak}FIELD\_PATTERN}\\
-        \ttt{FIELD-{\allowbreak}PATTERN {\allowbreak}:{\allowbreak}={\allowbreak}
+      \ttt{FIELD-{\allowbreak}PATTERN {\allowbreak}:{\allowbreak}={\allowbreak}
     {\allowbreak}MATCH-{\allowbreak}EXPRESSION}\\
     Examples:\\
-        \ttt{*}: captures all fields of all messages\\
-        \ttt{*Frame:{\allowbreak}*Address,{\allowbreak}*Id}: captures all fields
+      \ttt{*}: captures all fields of all messages\\
+      \ttt{*Frame:{\allowbreak}*Address,{\allowbreak}*Id}: captures all fields
     named somethingAddress and somethingId from messages of any class named
     somethingFrame\\
-
+     
     \ttt{My\-Message:{\allowbreak}declared\-On={\allowbreak}{\textasciitilde}My\-Message}:
     captures instances of MyMessage recording the fields declared on the
     MyMessage class\\
-        \ttt{*:{\allowbreak}(not
+      \ttt{*:{\allowbreak}(not
     {\allowbreak}declared\-On={\allowbreak}{\textasciitilde}cMessage
     {\allowbreak}and {\allowbreak}not
     {\allowbreak}declared\-On={\allowbreak}{\textasciitilde}cNamed\-Object
