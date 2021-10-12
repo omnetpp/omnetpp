@@ -198,13 +198,18 @@ void OmnetppResultFileLoader::processLine(char **vec, int numTokens, ParseContex
         CHECK(ctx.currentItemType == ParseContext::HISTOGRAM, "stray 'bin' line, must be under a 'statistic'");
         CHECK(numTokens == 3, "incorrect 'bin' line -- bin <lowerBound> <value> expected");
 
-        double lowerBound, value;
-        CHECK(parseDouble(vec[1], lowerBound), "invalid lower bound");
+        double binLowerEdge, value;
+        CHECK(parseDouble(vec[1], binLowerEdge), "invalid bin edge");
         CHECK(parseDouble(vec[2], value), "invalid bin value");
-        if (!ctx.binEdges.empty() && lowerBound <= ctx.binEdges.back())
-            CHECK(false, "bin edges must be strictly increasing");
-        ctx.binEdges.push_back(lowerBound);
-        ctx.binValues.push_back(value);
+
+        if (ctx.binEdges.empty() || binLowerEdge > ctx.binEdges.back()) {
+            ctx.binEdges.push_back(binLowerEdge);
+            ctx.binValues.push_back(value);
+        }
+        else if (binLowerEdge == ctx.binEdges.back())  // this can happen if nearly-equal bin edges are printed with insufficient precision, generating the same character sequence in the file
+            ctx.binValues.back() += value; // solution: merge those bins
+        else
+            CHECK(false, "bin edges must be increasing");
     }
     else if (vec[0][0] == 'a' && !strcmp(vec[0], "attr")) {
         // syntax: "attr <name> <value>"
