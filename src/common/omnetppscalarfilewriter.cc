@@ -140,7 +140,23 @@ void OmnetppScalarFileWriter::recordStatistic(const std::string& componentFullPa
     writeAttributes(attributes);
 }
 
-void OmnetppScalarFileWriter::writeBin(double lowerEdge, double value)
+bool OmnetppScalarFileWriter::isEnoughPrecision(const Histogram& bins, int prec)
+{
+    // check if the given precision is enough to make adjacent bin edges differ in the output
+    int n = bins.getNumBins();
+    char prevEdge[32];
+    sprintf(prevEdge, "%.*g", prec, bins.getBinEdge(0));
+    for (int i = 1; i <= n; i++) {
+        char edge[32];
+        sprintf(edge, "%.*g", prec, bins.getBinEdge(i));
+        if (opp_streq(edge, prevEdge))
+            return false;
+        strcpy(prevEdge, edge);
+    }
+    return true;
+}
+
+void OmnetppScalarFileWriter::writeBin(double lowerEdge, double value, int prec)
 {
     check(fprintf(f, "bin\t%.*g\t%.*g\n", prec, lowerEdge, prec, value));
 }
@@ -152,11 +168,14 @@ void OmnetppScalarFileWriter::recordHistogram(const std::string& componentFullPa
     writeStatisticFields(statistic);
     writeAttributes(attributes);
 
+    const int MAX_MEANINGFUL_PRECISION = 16; // additional digits are usually just noise
+    int localPrec = isEnoughPrecision(bins, prec) ? prec : MAX_MEANINGFUL_PRECISION;
+
     int n = bins.getNumBins();
-    writeBin(-INFINITY, bins.getUnderflows());
+    writeBin(-INFINITY, bins.getUnderflows(), localPrec);
     for (int i = 0; i < n; i++)
-        writeBin(bins.getBinEdge(i), bins.getBinValue(i));
-    writeBin(bins.getBinEdge(n), bins.getOverflows());
+        writeBin(bins.getBinEdge(i), bins.getBinValue(i), localPrec);
+    writeBin(bins.getBinEdge(n), bins.getOverflows(), localPrec);
 }
 
 void OmnetppScalarFileWriter::recordParameter(const std::string& componentFullPath, const std::string& name, const std::string& value, const StringMap& attributes)
