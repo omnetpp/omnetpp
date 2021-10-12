@@ -305,8 +305,10 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category, bool
             tmp << unit << "(), " << longName << "(), ";
         }
         tmp << "etc.";
-        if (printDescriptions)
+        if (printDescriptions) {
+            out << "  <unit_name> : quantity <unit_name>(quantity x)" << "\n";
             out << opp_indentlines(opp_breaklines(tmp.str().c_str(), 75), "    ") << "\n";
+        }
         out << "\n";
     }
     if (wantAll || !strcmp(category, "neddecls")) {
