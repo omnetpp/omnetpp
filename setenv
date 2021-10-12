@@ -29,7 +29,7 @@ if [ -n "$__omnetpp_root_dir" ]; then
     echo "Warning: overwriting previous environment for '$__omnetpp_root_dir'."
   fi
   export PATH=${PATH#$__omnetpp_root_dir/bin:}
-  export PYTHONPATH=${PYTHONPATH#$__omnetpp_root_dir/python:}
+  export PYTHONPATH=${PYTHONPATH#$__omnetpp_root_dir/python}
   export __omnetpp_root_dir=
   export OMNETPP_RELEASE=
   export QT_SELECT=
@@ -68,7 +68,7 @@ if [ "$MSYSTEM" = "MINGW64" ] ; then
 fi
 
 export PATH=$dir/bin:$PATH
-export PYTHONPATH=$dir/python:$PYTHONPATH
+export PYTHONPATH=$dir/python:$PYTHONPATH && PYTHONPATH=${PYTHONPATH%:}  # required because colon at the end causes issues on Windows
 export HOSTNAME
 export HOST
 export QT_SELECT=5 # on systems with qtchooser, switch to Qt5
