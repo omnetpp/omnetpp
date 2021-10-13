@@ -103,7 +103,7 @@ void Server::handleMessage(cMessage *msg)
             // update network graphics
             if (hasGUI()) {
                 char buf[32];
-                sprintf(buf, "Collision! (%ld frames)", currentCollisionNumFrames);
+                sprintf(buf, "Collision! (%" PRId64 " frames)", currentCollisionNumFrames);
                 bubble(buf);
                 getParentModule()->getCanvas()->holdSimulationFor(par("animationHoldTimeOnCollision"));
             }

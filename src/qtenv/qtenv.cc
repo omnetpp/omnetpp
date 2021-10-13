@@ -1568,7 +1568,7 @@ void Qtenv::addEventToLog(cEvent *event)
                             target->getFullPath().c_str(),
                             target->getClassName());
             if (msg)
-                p += sprintf(p, " on %s%s (%s, id=%ld)",
+                p += sprintf(p, " on %s%s (%s, id=%" PRId64 ")",
                             msg->isSelfMessage() ? "selfmsg " : "",
                             msg->getFullName(),
                             msg->getClassName(),
