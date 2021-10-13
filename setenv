@@ -53,7 +53,14 @@ if [ $(uname) = "Darwin" ]; then
         export dir; arch -x86_64 /bin/zsh -c 'source $dir/setenv; zsh -i'
         return 1
       else
-        cd $dir/tools/macosx && source setenv ; cd - >/dev/null
+        # setup macOS specific variables
+        TOOLS_DIR=$dir/tools/macosx
+        export PATH=$TOOLS_DIR/bin:$PATH
+        export PIP_PREFIX=$TOOLS_DIR/lib/Python.framework/Versions/Current
+        export PYTHONNOUSERSITE=1
+        export BISON_PKGDATADIR=$TOOLS_DIR/share/bison
+        export QT_PLUGIN_PATH=$TOOLS_DIR/plugins
+        TOOLS_DIR=
       fi
   fi
 fi
