@@ -64,13 +64,7 @@ void PatternMatcher::setPattern(const char *patt, bool dottedpath, bool fullstri
                 break;
 
             case '*':
-                if (s > patt && s[-1] == '.' && s[1] == '*' && s[2] == '.') {
-                    pattern.back().literalString.pop_back(); // discard "." from previous string literal
-                    e.type = SEGMENTS;
-                    s += 3;
-                    break;
-                }
-                else if (s[1] == '*') {
+                if (*(s+1) == '*') {
                     e.type = ANYSEQ;
                     s += 2;
                 }
@@ -200,7 +194,6 @@ std::string PatternMatcher::str() const
             case NONDOTCHAR: out << "?"; break;
             case ANYSEQ: out << "**"; break;
             case NONDOTSEQ: out << "*"; break;
-            case SEGMENTS: out << ".**."; break;
             case SET: out << "["; printSetRanges(out, e.setOfChars.c_str()); out << "]"; break;
             case NEGSET: out << "[^"; printSetRanges(out, e.setOfChars.c_str()); out << "]"; break;
             case NUMRANGE: {
@@ -255,10 +248,6 @@ std::string PatternMatcher::debugStrFrom(int from) const
 
             case NONDOTSEQ:
                 result += "NONDOTSEQ";
-                break;
-
-            case SEGMENTS:
-                result += "SEGMENTS";
                 break;
 
             case END:
@@ -361,7 +350,7 @@ bool PatternMatcher::doMatch(const char *s, int k, int suffixlen) const
                         return false;
                     s++;
                 }
-                break;
+                break;  // at EOS
 
             case NONDOTSEQ:
                 while (true) {
@@ -372,21 +361,6 @@ bool PatternMatcher::doMatch(const char *s, int k, int suffixlen) const
                     s++;
                 }
                 break;
-
-            case SEGMENTS:
-                if (*s++ != '.')
-                    return false;
-                while (true) {
-                    if (doMatch(s, k+1, suffixlen))
-                        return true;
-                    if (!*s)
-                        return false;
-                    s = strchr(s, '.'); // skip segment
-                    if (s == nullptr)
-                        return false;
-                    s++;
-                }
-                break;  // at EOS
 
             case END:
                 return !*s;

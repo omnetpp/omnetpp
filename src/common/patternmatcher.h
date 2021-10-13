@@ -30,10 +30,9 @@ namespace common {
  * One instance represents a pattern to match.
  *
  * Pattern syntax:
- *   - ? : matches any character (or any except '.' if in dottedpath mode, see later)
- *   - * : matches zero or more characters (any except '.' if in dottedpath mode)
- *   - ** : matches zero or more characters, including '.'; there is also a special
- *     rule ("dot collapsion") that ensures "foo.**.bar" also matches "foo.bar".
+ *   - ? : matches any character except '.'
+ *   - * : matches zero or more characters except '.'
+ *   - ** : matches zero or more character (any character)
  *   - {a-z} : matches a character in range a-z
  *   - {^a-z} : matches a character NOT in range a-z
  *   - {32..255} : any number (ie. sequence of digits) in range 32..255  (e.g. "99")
@@ -57,15 +56,6 @@ namespace common {
  *   - case sensitive: selects between case sensitive and case insensitive mode.
  *
  * Rule details:
- *
- *   - Dot collapsion rule for '**': When '**' is substituted to the empty string
- *     and there is a '.' character on both sides of '**' in the pattern, the two
- *     dots may be collapsed to a single dot before matching against the input string.
- *     Reason: in omnetpp.ini, it is a common need to be able to select a submodule
- *     under another module, permitting the submodule to be a direct child and
- *     also to be several levels deeper. By including this rule, '**' accommodates
- *     this need in a natural way: the pattern "foo.**.bar" will match not only
- *     "foo.baz.bar" but also "foo.bar".
  *
  *   - Sets, negated sets: They can contain several character ranges and also
  *     enumeration of characters. For example: "{_a-zA-Z0-9}","{xyzc-f}". To
@@ -97,7 +87,6 @@ class COMMON_API PatternMatcher
       NUMRANGE,
       ANYSEQ,     // "**": sequence of any chars
       NONDOTSEQ,  // "*": seq of any chars except "."
-      SEGMENTS,   // ".**." but it also matches "." (i.e. zero or more path segments)
       END
     };
 

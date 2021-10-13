@@ -217,7 +217,6 @@ match("al**m*a", "alma", true);
 
 //
 // '**'
-// NOTE THAT ".**." matches "." TOO, BY SPECIAL RULE. TEST MARKED BY *
 //
 match("**", "Net.host.tcp.mss", true);
 match("**.mss", "Net.host.tcp.mss", true);
@@ -225,8 +224,6 @@ match("Net.**", "Net.host.tcp.mss", true);
 match("**.tcp.**", "Net.host.tcp.mss", true);
 match("**.host.tcp.**", "Net.host.tcp.mss", true);
 match("**.host.**.mss", "Net.host.tcp.mss", true);
-match("**.host.**.tcp.**", "Net.host.tcp.mss", true);  // ".**.* =~ "." test
-match("**.tcp.**.mss", "Net.host.tcp.mss", true);  // ".**.* =~ "." test
 match("**.foo", "Net.host.tcp.mss", false);
 match("**.foo.**", "Net.host.tcp.mss", false);
 match("**.host.**.foo", "Net.host.tcp.mss", false);
