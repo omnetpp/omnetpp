@@ -79,8 +79,7 @@ public class PasteAction extends AbstractScaveAction {
 
     @Override
     protected boolean isApplicable(ScaveEditor editor, ISelection selection) {
-//        BrowseDataPage browseDataPage = editor.getBrowseDataPage();
-//        return browseDataPage != null && browseDataPage.getActivePanel() != null;
-        return true;
+        FormEditorPage activePage = editor.getActiveEditorPage();
+        return activePage instanceof ChartsPage;
     }
 }
