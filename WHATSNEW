@@ -252,12 +252,22 @@ NED:
     be also written in the alternative form x.f(...). This results in improved
     readability in certain cases, and allows chaining function calls.
 
-  - New NED functions: get(), size(), dup(). dup() is useful because
-    module parameters of type 'object' only accept objects they fully own,
-    which can be worked around using dup(). An example:
+  - New NED functions: get(), size(), eval(), dup(). eval() evaluates a NED
+    expression given as string. dup() simply calls an object's C++ dup() method;
+    it is useful because module parameters of type 'object' only accept objects
+    they fully own, which can be worked around using dup(). An example:
 
       object a = [1,2,3];
       object b = dup(a);  // without dup() it is an error: value is owned by parameter 'a'
+
+  - NED functions for reading (from file) and parsing (from string) of CSV,
+    JSON and XML files: parseCSV(), readCSV(), parseExtendedCSV(),
+    readExtendedCSV(), parseJSON(), readJSON(), parseExtendedJSON(),
+    readExtendedJSON(), parseXML(), readXML(). The "extended" variants support
+    expressions in the file, which will be evaluated during parsing. The XML
+    functions are aliases to the existing xml()/xmldoc() functions. Bonus
+    file-related functions: readFile(), workingDir(), baseDir(), resolveFile(),
+    absFilePath().
 
   - Allow the body of a parametric submodule to assign apparently nonexistent
     parameters. Example:
