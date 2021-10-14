@@ -29,6 +29,23 @@ Core:
 
   - cProperty: added getNumKeys() method; updateWith() made public
 
+  - cResultFilter, cResultRecorder: grouped init() args into a Context struct,
+    The old init() methods have been preserved as deprecated (and invoked from
+    the new init()) in case an existing filter/recorder overrides them. Note
+    that potential external calls to the old init() method won't work any more
+    (they will have no effect), and need to be changed to the new version.
+
+  - Added MergeFilter, a result filter that allows multiple inputs,
+    and multiplexes them onto its singe output. It is available (as the
+    merge() function) in the source= part of @statistic.
+
+  - Fixed histogram loading issue in the output scalar file (.sca). Bin edges
+    that are very close could become equal in the file if insufficient printing
+    precision was set, rendering the file unreadable. The issue is now handled
+    both during result file writing (if such condition is detected, bin edges
+    are written with full [16-digit] precision) and reading (zero-width bins are
+    merged into adjacent nonzero-width bin).
+
   - Further bug fixes and minor improvements.
 
 Qtenv:
@@ -47,10 +64,27 @@ Qtenv:
 
 IDE:
 
-  - Analysis Tool: added "timewinthruput" vector operation
+  - Analysis Tool: Multiple UI improvements:
 
-  - Analysis Tool: In the Scatter Plot config dialog, the "Iso line" terminology
-    changed to "Group by".
+      - When plotting results from the Browse Data page, prefer native plotting
+        to Matplotlib. Native plots are both more scalable and also arguably
+        more convenient to use.
+
+      - In the Scatter Plot config dialog, the "Iso line" terminology changed to
+        "Group by" (suggested by Edward Longman).
+
+      - When setting the name of a chart, also set its title, if it was empty before.
+
+      - Improve focus handling on tab switching in the Chart Properties dialog.
+
+      - Fix the bug where middle-click closing a chart tab would discard changes silently.
+
+      - Added "timewinthruput" vector operation
+
+      - Python API: The "plot" module (omnetpp.scave.plot) was renamed to "ideplot".
+        Charts in existing ANF files need to be either recreated, or the import
+        line and usages of the plot module in the chart script need to be changed
+        accordingly.
 
   - Added support for ARM-based Linux distros
 
