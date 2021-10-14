@@ -1,3 +1,16 @@
+2021-10-11  Andras Varga
+
+	* Added MergeFilter, a cResultFilter that allows multiple inputs.
+
+2021-10-08  Andras Varga
+
+	* cResultFilter, cResultRecorder: group init() args into a Context struct,
+	so that adding something won't necessitate interface change. The old init()
+	methods have been preserved as deprecated (and invoked from the new init())
+	in case an existing filter/recorder overrides them. Note that potential
+	external calls to the old init() method won't work any more (they will
+	have no effect), and need to be changed to the new version.
+
 2021-10-06  Andras Varga
 
 	* Introduce txid_t for transmission IDs, and msgid_t for message IDs. The

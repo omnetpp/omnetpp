@@ -1,3 +1,8 @@
+2021-10-13  Andras Varga
+
+	* Update section that shows how manually created result filters/recorders
+	should be initialized, see init() method signature change.
+
 2021-09-16  Andras Varga
 
 	* Document autoWarmupFilter=false and warmup filter; nits

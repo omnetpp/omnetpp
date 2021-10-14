@@ -1,3 +1,15 @@
+2021-10-11  Andras Varga
+
+	* Added MergeFilter, a cResultFilter that allows multiple inputs,
+	and multiplexes them onto its singe output. It is available (as the
+	merge() function) in the source= part of @statistic, but not in the
+	record= part.
+
+2021-10-08  Andras Varga
+
+	* Follow change: cResultFilter, cResultRecorder init() args merged
+	into a Context struct.
+
 2021-10-06  Andras Varga
 
 	* Follow changes: Introduction of txid_t and msgid_t; changes in the cRNG

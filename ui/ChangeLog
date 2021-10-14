@@ -1,3 +1,31 @@
+2021-10-12  Attila Torok
+
+	* Analysis Tool: Improve focus handling on tab switching in the Chart
+	Properties dialog.
+
+2021-10-11  Attila Torok
+
+	* Analysis Tool: Fix the bug where middle-click closing a chart tab would
+	discard changes silently.
+
+2021-10-11  Attila Torok
+
+	* Analysis Tool: When setting the name of a chart, also set its title, if it
+	was empty before.
+
+2021-10-11  Attila Torok
+
+	* Analysis Toolscave/charttemplates: Tweak chart template scores so that the
+	editor prefers native plotting to Matplotlib. Native plots are both more
+	scalable and also arguably more convenient to use.
+
+2021-10-11  Attila Torok
+
+	* Analysis Tool: When running chart scripts, override exit() to be
+	sys.exit(). Being able to use exit() is a matter of convenience and brevity,
+	but we want the behavior of sys.exit() -- raising a SystemExit, and nothing
+	more.
+
 2021-10-05 Attila Torok
 
 	* Analysis Tool: Follow recent changes in the Python API (plot -> ideplot, etc.)

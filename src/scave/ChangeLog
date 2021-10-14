@@ -1,3 +1,10 @@
+2021-10-12  Andras Varga
+
+	* OmnetppResultFileLoader: Allow loading histograms with equal bin edges.
+	Such thing can happen if nearly-equal bin edges are printed with
+	insufficient precision, generating the same character sequence in the
+	file. The workaround is to merge such bins.
+
 2021-10-05  Andras Varga
 
 	* opp_scavetool: add "--allow-nonmatching" option, for the benefit of our

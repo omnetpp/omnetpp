@@ -1,3 +1,8 @@
+2021-10-08  Rudolf Hornig
+
+	* opp_makemake: Do not generate generate .def files on MS-ABI builds, as .def
+	file generation is not supported by Microsoft's LINK.EXE.
+
 2021-06-10  Rudolf Hornig
 
 	* opp_configfilepath now returns absolute canonized file path to Makefile.inc
