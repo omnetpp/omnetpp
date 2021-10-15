@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
@@ -28,6 +29,7 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -196,6 +198,21 @@ public class DataTable extends LargeTable implements IDataControl {
             @Override
             public String getText(int rowIndex, int columnIndex) {
                 return getCellValue(rowIndex, columnIndex);
+            }
+
+            @Override
+            public StyledString getStyledText(int rowIndex, int columnIndex, GC gc, int alignment) {
+                String value = "";
+                // the last, blank column is not included in visibleColumns
+                if (columnIndex < visibleColumns.size()) {
+                    Column column = visibleColumns.get(columnIndex);
+                    value = getCellValue(rowIndex, column);
+
+                    if (column.maskTooLongValues
+                            && gc.textExtent(value).x > (getColumn(columnIndex).getWidth() - CELL_HORIZONTAL_MARGIN*2))
+                        value = "#".repeat(value.length());
+                }
+                return new StyledString(value);
             }
 
             @Override
