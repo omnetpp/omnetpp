@@ -729,7 +729,7 @@ Hover over them to see a tooltip describing the error. The errors are also
 entered into the :guilabel:`Problems` view. Double clicking these problem
 entries will reveal the line in the code editor where the error came from.
 Errors marked this way include Python syntax errors, and runtime errors which
-manifest themselves in the form on Python exceptions. For exceptions, the
+manifest themselves in the form of Python exceptions. For exceptions, the
 stack trace is printed in the :guilabel:`Console` view.
 
 .. figure:: pictures/ANF-ChartScriptError.png
@@ -813,7 +813,7 @@ Python Modules
 
 The chart scripts can access some functionality of the IDE through a couple of
 modules under the ``omnetpp.scave`` package.
-These include: ``chart``, ``results``, ``plot``, ``vectorops``, and ``utils``.
+These include: ``chart``, ``results``, ``ideplot``, ``vectorops``, and ``utils``.
 The complete API of these modules is described in the Simulation Manual.
 
 The ``chart`` module exposes information about the chart object (as
@@ -826,8 +826,12 @@ corresponding metadata) currently loaded in the analysis in the IDE.
 This data is accessible through a set of query functions, each taking
 a filter expression, and returning a Pandas DataFrame.
 
-The ``plot`` module provides a common, Pyplot-like API for the native plotting
-widgets and Matplotlib.
+The ``ideplot`` module is the interface for displaying plots using the IDE's
+native (non-Matplotlib) plotting widgets from chart scripts. The API is
+intentionally very close to ``matplotlib.pyplot``. When ``ideplot`` is used
+outside the context of a native plotting widget (such as during the run of
+``opp_charttool``, or in IDE during image export), the functions are emulated
+with Matplotlib.
 
 The ``vectorops`` module contains the implementations of the built-in vector
 operations.
@@ -976,10 +980,13 @@ Per-Item Styling on Native Plots
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 For native plots, properties affecting individual data items can be specified
-with the following additional syntax: ``<propertyname>/<itemkey>``. For example
-(on the Advanced tab in the property editor dialog of a line chart):
-``Line.Color/2 : #FF0000`` Unless overridden manually, the ``key`` of data items
-are sequentially increasing integers, starting with ``1``.
+with the following additional syntax: ``<propertyname>/<itemkey>``. Unless
+overridden manually, the data item keys are sequentially increasing integers,
+starting with ``1``. For example, adding the following line on the Advanced tab
+in the property editor dialog of a line chart will set the color of second line
+(or of the line identified with the key ``2``) to red.
+
+``Line.Color/2 : #FF0000``
 
 
 Custom Chart Templates
