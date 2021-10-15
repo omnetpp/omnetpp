@@ -41,16 +41,36 @@ and \ttt{[Config Fifo2]}, each one containing several \textit{entries}.
 \subsection{File Syntax}
 \label{sec:config-sim:inifile-syntax}
 
-An {\opp} configuration file is an ASCII text file, but non-ASCII
-characters are permitted in comments and string literals. This allows for
-using encodings that are a superset of ASCII, for example ISO 8859-1 and
-UTF-8. There is no limit on the file size or on the line length.
+
+An {\opp} configuration file is a line-oriented text file. The encoding is
+primarily ASCII, but non-ASCII characters are permitted in comments
+and string literals. This allows for using encodings that are a superset of
+ASCII, for example ISO 8859-1 and UTF-8. There is no limit on the file size or
+on the line length.
 
 Comments may be placed at the end of any line after a hash mark, ``\#''.
 Comments extend to the end of the line, and are ignored during processing.
 Blank lines are also allowed and ignored.
 
-The file is line oriented, and consists of \textit{section heading lines},
+Long lines can be broken to multiple lines in two ways: using the traditional
+\textit{trailing backslash} notation also found in C/C++, or alternatively, by
+\textit{indenting} the continuation lines.
+
+When using the former method, the rule is that if the last character of a line
+is ``\textbackslash'', it will be joined with the next line after removing the
+backslash and the newline. (Potential leading whitespace on the second line is
+preserved.) Note that this allows breaking the line even in the middle of a
+name, number or string constant.
+
+When using latter method, a line can be broken between any two tokens by inserting
+a newline and indenting the next line. An indented line is interpreted as a
+continuation of the previous line. The first line and indented lines that follow
+it are then parsed as a single multi-line unit. Consequently, this method does
+not allow breaking a line in the middle of a word or inside string constants.
+
+The two ways of breaking lines can be freely combined.
+
+There are three types of lines: \textit{section heading lines},
 \textit{key-value lines}, and \textit{directive lines}:
 
 \begin{enumerate}
@@ -77,10 +97,6 @@ Keys may be further classified based on syntax alone:
 \item Otherwise, the key represents a \textit{parameter assignment}. Thus, parameter
       assignment keys contain a dot, and no hyphen after the last dot.
 \end{enumerate}
-
-Long lines can be broken up using the backslash notation: if the last
-character of a line is ``\textbackslash'', it will be merged with the next
-line.
 
 An example:
 
@@ -159,8 +175,13 @@ errors/warnings disappear when the file is viewed as part of its main file.
 \section{Sections}
 \label{sec:config-sim:sections}
 
-An ini file may contain a \ttt{[General]} section and several \ttt{[Config <configname>]}
-sections. The order of the sections doesn't matter.
+An ini file may contain a \ttt{[General]} section, and several
+\ttt{[<configname>]} or \ttt{[Config <configname>]} sections. The use of the
+\ttt{Config} prefix is optional, i.e. \ttt{[Foo]} and \ttt{[Config Foo]} are
+equivalent.
+
+The order of the sections is not significant.
+
 
 \subsection{The [General] Section}
 \label{sec:config-sim:general-section}
@@ -183,8 +204,9 @@ option.
 \subsection{Named Configurations}
 \label{sec:config-sim:named-configurations}
 
-Named configurations are sections of the form \ttt{[Config <configname>]}, where
-\textit{<configname>} is by convention a camel-case string that starts with a capital letter:
+Named configurations are in sections of the form \ttt{[Config <configname>]} or
+\ttt{[<configname>]} (the \ttt{Config} word is optional), where \textit{<configname>}
+is by convention a camel-case string that starts with a capital letter:
 \ttt{Config1}, \ttt{WirelessPing}, \ttt{OverloadedFifo}, etc. For example,
 \ffilename{omnetpp.ini} for an Aloha simulation might have the following skeleton:
 
@@ -1388,7 +1410,7 @@ Escaping the \% character:
 
 In Cmdenv, logging can be configured using \ffilename{omnetpp.ini} configuration
 options. The configured settings remain in effect during the whole simulation run
-unless overridden programatically.
+unless overridden programmatically.
 
 \begin{itemize}
   \item \fconfig{cmdenv-output-file} redirects standard output to a file
