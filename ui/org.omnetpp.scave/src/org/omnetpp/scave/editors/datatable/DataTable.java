@@ -85,18 +85,20 @@ public class DataTable extends LargeTable implements IDataControl {
         private int defaultWidth;
         private boolean defaultVisible;
         private boolean rightAligned;
+        private boolean maskTooLongValues;
 
-        public Column(String text, String fieldName, int defaultWidth, boolean defaultVisible, boolean rightAligned) {
+        public Column(String text, String fieldName, int defaultWidth, boolean defaultVisible, boolean rightAligned, boolean maskTooLongValues) {
             this.text = text;
             this.fieldName = fieldName;
             this.defaultWidth = defaultWidth;
             this.defaultVisible = defaultVisible;
             this.rightAligned = rightAligned;
+            this.maskTooLongValues = maskTooLongValues;
         }
 
         @Override
         public Column clone() {
-            return new Column(this.text, this.fieldName, this.defaultWidth, this.defaultVisible, this.rightAligned);
+            return new Column(this.text, this.fieldName, this.defaultWidth, this.defaultVisible, this.rightAligned, this.maskTooLongValues);
         }
 
         @Override
@@ -111,30 +113,30 @@ public class DataTable extends LargeTable implements IDataControl {
     }
 
     private static final Column
-        COL_DIRECTORY = new Column("Folder", null, 60, false, false),
-        COL_FILE = new Column("File", Scave.FILE, 120, false, false),
-        COL_CONFIG = new Column("Config", Scave.RUNATTR_PREFIX + Scave.CONFIGNAME, 120, false, false),
-        COL_RUNNUMBER = new Column("Run number", Scave.RUNATTR_PREFIX + Scave.RUNNUMBER, 60, false, false),
-        COL_RUN_ID = new Column("RunId", Scave.RUN, 100, false, false),
-        COL_EXPERIMENT = new Column("Experiment", Scave.RUNATTR_PREFIX + Scave.EXPERIMENT, 120, true, false),
-        COL_MEASUREMENT = new Column("Measurement", Scave.RUNATTR_PREFIX + Scave.MEASUREMENT, 160, true, false),
-        COL_REPLICATION = new Column("Replication", Scave.RUNATTR_PREFIX + Scave.REPLICATION, 60, true, false),
-        COL_MODULE = new Column("Module", Scave.MODULE, 160, true, false),
-        COL_NAME = new Column("Name", Scave.NAME, 120, true, false),
-        COL_VALUE = new Column("Value", null, 120, true, true),
-        COL_KIND = new Column("Kind", null, 40, true, false),
-        COL_COUNT = new Column("Count", null, 80, true, true),
-        COL_SUMWEIGHTS = new Column("SumWeights", null, 120, true, true),
-        COL_MEAN = new Column("Mean", null, 120, true, true),
-        COL_STDDEV = new Column("StdDev", null, 120, true, true),
-        COL_VARIANCE = new Column("Variance", null, 120, true, true),
-        COL_MIN = new Column("Min", null, 120, false, true),
-        COL_MAX = new Column("Max", null, 120, false, true),
-        COL_NUMBINS = new Column("#Bins", null, 40, true, true),
-        COL_HISTOGRAMRANGE = new Column("Hist. Range", null, 120, true, true),
-        COL_VECTOR_ID = new Column("Vector id", null, 40, false, true),
-        COL_MIN_TIME = new Column("Min time", null, 120, false, true),
-        COL_MAX_TIME = new Column("Max time", null, 120, false, true);
+        COL_DIRECTORY = new Column("Folder", null, 60, false, false, false),
+        COL_FILE = new Column("File", Scave.FILE, 120, false, false, false),
+        COL_CONFIG = new Column("Config", Scave.RUNATTR_PREFIX + Scave.CONFIGNAME, 120, false, false, false),
+        COL_RUNNUMBER = new Column("Run number", Scave.RUNATTR_PREFIX + Scave.RUNNUMBER, 60, false, false, false),
+        COL_RUN_ID = new Column("RunId", Scave.RUN, 100, false, false, false),
+        COL_EXPERIMENT = new Column("Experiment", Scave.RUNATTR_PREFIX + Scave.EXPERIMENT, 120, true, false, false),
+        COL_MEASUREMENT = new Column("Measurement", Scave.RUNATTR_PREFIX + Scave.MEASUREMENT, 160, true, false, false),
+        COL_REPLICATION = new Column("Replication", Scave.RUNATTR_PREFIX + Scave.REPLICATION, 60, true, false, false),
+        COL_MODULE = new Column("Module", Scave.MODULE, 160, true, false, false),
+        COL_NAME = new Column("Name", Scave.NAME, 120, true, false, false),
+        COL_VALUE = new Column("Value", null, 120, true, true, true),
+        COL_KIND = new Column("Kind", null, 40, true, false, false),
+        COL_COUNT = new Column("Count", null, 80, true, true, true),
+        COL_SUMWEIGHTS = new Column("SumWeights", null, 120, true, true, true),
+        COL_MEAN = new Column("Mean", null, 120, true, true, true),
+        COL_STDDEV = new Column("StdDev", null, 120, true, true, true),
+        COL_VARIANCE = new Column("Variance", null, 120, true, true, true),
+        COL_MIN = new Column("Min", null, 120, false, true, true),
+        COL_MAX = new Column("Max", null, 120, false, true, true),
+        COL_NUMBINS = new Column("#Bins", null, 40, true, true, true),
+        COL_HISTOGRAMRANGE = new Column("Hist. Range", null, 120, true, true, true),
+        COL_VECTOR_ID = new Column("Vector id", null, 40, false, true, true),
+        COL_MIN_TIME = new Column("Min time", null, 120, false, true, true),
+        COL_MAX_TIME = new Column("Max time", null, 120, false, true, true);
 
     private static final Column[] allScalarColumns = new Column[] {
         COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID,
