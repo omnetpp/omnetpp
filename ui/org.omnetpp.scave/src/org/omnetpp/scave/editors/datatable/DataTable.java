@@ -171,11 +171,11 @@ public class DataTable extends LargeTable implements IDataControl {
     };
 
     private static final Column[] allParameterColumns = new Column[] {
-            COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID,
-            COL_EXPERIMENT, COL_MEASUREMENT, COL_REPLICATION,
-            COL_MODULE, COL_NAME,
-            COL_PARAM_VALUE
-        };
+        COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID,
+        COL_EXPERIMENT, COL_MEASUREMENT, COL_REPLICATION,
+        COL_MODULE, COL_NAME,
+        COL_PARAM_VALUE
+    };
 
     private static final Column[] allVectorColumns = new Column[] {
         COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID,
