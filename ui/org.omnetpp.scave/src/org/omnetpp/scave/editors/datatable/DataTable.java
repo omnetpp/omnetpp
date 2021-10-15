@@ -12,6 +12,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.ListenerList;
@@ -105,12 +107,32 @@ public class DataTable extends LargeTable implements IDataControl {
 
         @Override
         public boolean equals(Object other) {
-            return other instanceof Column && this.text.equals(((Column)other).text);
+            if (other == this)
+                return true;
+            if (!(other instanceof Column))
+                return false;
+            Column o = (Column)other;
+
+            return StringUtils.equals(text, o.text)
+                && StringUtils.equals(fieldName, o.fieldName)
+                //&& defaultWidth == o.defaultWidth
+                //&& defaultVisible == o.defaultVisible
+                && rightAligned == o.rightAligned
+                && maskTooLongValues == o.maskTooLongValues;
         }
 
         @Override
         public int hashCode() {
-            return text.hashCode();
+            HashCodeBuilder hashBuilder = new HashCodeBuilder();
+
+            hashBuilder.append(text);
+            hashBuilder.append(fieldName);
+            //hashBuilder.append(defaultWidth);
+            //hashBuilder.append(defaultVisible);
+            hashBuilder.append(rightAligned);
+            hashBuilder.append(maskTooLongValues);
+
+            return hashBuilder.toHashCode();
         }
     }
 
