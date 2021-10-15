@@ -123,7 +123,8 @@ public class DataTable extends LargeTable implements IDataControl {
         COL_REPLICATION = new Column("Replication", Scave.RUNATTR_PREFIX + Scave.REPLICATION, 60, true, false, false),
         COL_MODULE = new Column("Module", Scave.MODULE, 160, true, false, false),
         COL_NAME = new Column("Name", Scave.NAME, 120, true, false, false),
-        COL_VALUE = new Column("Value", null, 120, true, true, true),
+        COL_PARAM_VALUE = new Column("Value", null, 120, true, true, false),
+        COL_SCALAR_VALUE = new Column("Value", null, 120, true, true, true),
         COL_KIND = new Column("Kind", null, 40, true, false, false),
         COL_COUNT = new Column("Count", null, 80, true, true, true),
         COL_SUMWEIGHTS = new Column("SumWeights", null, 120, true, true, true),
@@ -142,14 +143,14 @@ public class DataTable extends LargeTable implements IDataControl {
         COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID,
         COL_EXPERIMENT, COL_MEASUREMENT, COL_REPLICATION,
         COL_MODULE, COL_NAME,
-        COL_VALUE
+        COL_SCALAR_VALUE
     };
 
     private static final Column[] allParameterColumns = new Column[] {
             COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID,
             COL_EXPERIMENT, COL_MEASUREMENT, COL_REPLICATION,
             COL_MODULE, COL_NAME,
-            COL_VALUE
+            COL_PARAM_VALUE
         };
 
     private static final Column[] allVectorColumns = new Column[] {
@@ -487,12 +488,10 @@ public class DataTable extends LargeTable implements IDataControl {
             idList.sortByModule(manager, ascending, selectionIndices, interrupted);
         else if (COL_NAME.equals(column))
             idList.sortByName(manager, ascending, selectionIndices, interrupted);
-        else if (COL_VALUE.equals(column)) {
-            if (idList.areAllScalars())
-                idList.sortScalarsByValue(manager, ascending, selectionIndices, interrupted);
-            else if (idList.areAllParameters())
-                idList.sortParametersByValue(manager, ascending, selectionIndices, interrupted);
-        }
+        else if (COL_PARAM_VALUE.equals(column))
+            idList.sortParametersByValue(manager, ascending, selectionIndices, interrupted);
+        else if (COL_SCALAR_VALUE.equals(column))
+            idList.sortScalarsByValue(manager, ascending, selectionIndices, interrupted);
         else if (COL_VECTOR_ID.equals(column))
             idList.sortVectorsByVectorId(manager, ascending, selectionIndices, interrupted);
         else if (COL_KIND.equals(column))
@@ -609,15 +608,13 @@ public class DataTable extends LargeTable implements IDataControl {
                 String replication = result.getFileRun().getRun().getAttribute(Scave.REPLICATION);
                 return replication != null ? replication : NA;
             }
-            else if (type == PanelType.SCALARS) {
-                ScalarResult scalar = (ScalarResult)result;
-                if (COL_VALUE.equals(column))
-                    return formatNumber(scalar.getValue(), unit);
-            }
-            else if (type == PanelType.PARAMETERS) {
+            else if (COL_PARAM_VALUE.equals(column)) {
                 ParameterResult parameter = (ParameterResult)result;
-                if (COL_VALUE.equals(column))
-                    return parameter.getValue();
+                return parameter.getValue();
+            }
+            else if (COL_SCALAR_VALUE.equals(column)) {
+                ScalarResult scalar = (ScalarResult)result;
+                return formatNumber(scalar.getValue(), unit);
             }
             else if (type == PanelType.VECTORS) {
                 VectorResult vector = (VectorResult)result;
