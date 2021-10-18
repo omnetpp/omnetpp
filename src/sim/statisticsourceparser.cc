@@ -210,7 +210,8 @@ ExprNode *StatisticSourceAstTranslator::translateToExpressionTree(AstNode *astNo
         // looks like a result filter
         const char *filterName = astNode->name.c_str();
         cResultFilter *filter = cResultFilterType::get(filterName)->create();
-        filter->init(component, statisticProperty);
+        cResultFilter::Context ctx { component, statisticProperty };
+        filter->init(&ctx);
 
         AstNode *astChild = astNode->children[0];
         ExprNode *subtree = translateChild(astChild, translatorForChildren);
