@@ -122,6 +122,8 @@ $(TARGET_DIR)/% :: $O/%
 	$(Q)$(LN) $< $@
 ifeq ($(TOOLCHAIN_NAME),clang-msabi)
 	-$(Q)-$(LN) $(<:%.dll=%.lib) $(@:%.dll=%.lib) 2>/dev/null
+
+$O/$(TARGET_NAME).pdb: $O/$(TARGET)
 endif
 
 {exe:}$O/$(TARGET): {sourcedirs?$(OBJS)} {submakedirs?submakedirs} $(wildcard $(EXTRA_OBJS)) {makefile} $(CONFIGFILE)
