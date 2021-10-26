@@ -625,6 +625,42 @@ def export_image_if_needed(props):
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
 
         plt.gcf().set_size_inches(width, height)
+
+        # in case of Matplotlib-emulated native widgets, make it look more similar to the IDE
+        if chart.is_native_chart():
+            ax = plt.gca()
+
+            # only use scientific notation for negative exponents
+            ax.ticklabel_format(scilimits=(0, 1000), useOffset=False, useLocale=False)
+
+            # start with a tight value bounding box
+            ax.margins(0)
+            ax.autoscale(True)
+
+            # apply the same auto-range logic as in the native widgets of the IDE
+            min_x, max_x = ax.get_xlim()
+            width = max_x - min_x # not computing twice, would cause asymmetry
+            min_x = 0 if min_x >= 0 else min_x - width/80
+            max_x = 0 if max_x <= 0 else max_x + width/80
+            if get_prop("xaxis_min"):
+                min_x = float(get_prop("xaxis_min"))
+            if get_prop("xaxis_max"):
+                max_x = float(get_prop("xaxis_max"))
+            ax.set_xlim(left=min_x, right=max_x)
+
+            min_y, max_y = ax.get_ylim()
+            height = max_y - min_y # not computing twice, would cause asymmetry
+            min_y = 0 if min_y >= 0 else min_y - height/3
+            max_y = 0 if max_y <= 0 else max_y + height/3
+            if get_prop("yaxis_min"):
+                min_y = float(get_prop("yaxis_min"))
+            if get_prop("yaxis_max"):
+                max_y = float(get_prop("yaxis_max"))
+            ax.set_ylim(bottom=min_y, top=max_y)
+
+            # reducing margins all around
+            plt.tight_layout()
+
         plt.savefig(filepath, format=format, dpi=int(dpi))
 
 def get_image_export_filepath(props):
