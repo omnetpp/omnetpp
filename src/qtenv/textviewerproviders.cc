@@ -520,24 +520,36 @@ QString EventEntryMessageLinesProvider::getRelevantHopsString(const LogBuffer::M
                         ? (hops.front() > hops.back())
                         : false;
 
-    QString result;
+    if (reversed)
+        std::reverse(hops.begin(), hops.end());
 
+    QString result;
     if (hops.size() == 2 && incoming && outgoing)
-        result = "---->"; // simple passthrough
+        // simple passthrough
+        result = QString("^.") + componentHistory->getComponentFullName(hops[0])
+            + (reversed ? " <-- " : " --> ")
+            + QString("^.") + componentHistory->getComponentFullName(hops[1]);
     else {
-        if (reversed)
-            std::reverse(hops.begin(), hops.end());
+
+        int parentId = componentHistory->getParentModuleId(inspectedComponentId);
 
         bool first = true;
         for (size_t i = 0; i < hops.size(); ++i) {
             QString hopName = componentHistory->getComponentFullName(hops[i]);
+            int hopParentId = componentHistory->getParentModuleId(hops[i]);
+
+            if (hopParentId != inspectedComponentId) {
+                // if not a submodule, must be the parent, or a sibling
+                ASSERT(hops[i] == parentId || hopParentId == parentId);
+                hopName = (hops[i] == parentId) ? "^" : "^." + hopName;
+            }
 
             if (hops[i] == inspectedComponentId) {
                 if (i == 0) {
-                    result += reversed ? "<--- " : "---> ";
+                    result += reversed ? ". <-- " : ". --> ";
                     continue;
                 } else if (i == hops.size() - 1) {
-                    result += reversed ? " <---" : " --->";
+                    result += reversed ? " <-- ." : " --> .";
                     continue;
                 }
             }
@@ -552,13 +564,11 @@ QString EventEntryMessageLinesProvider::getRelevantHopsString(const LogBuffer::M
     if (lastIsDiscard) {
         if (reversed) {
             int firstIndex = result.indexOf("<-");
-            bool isLongArrow = firstIndex < (result.length() - 3) && result[firstIndex+3] == '-';
-            result.replace(firstIndex, 2, isLongArrow ? "<--X" : "<-X");
+            result.replace(firstIndex, 2, "<-X");
         }
         else {
             int lastIndex = result.lastIndexOf("->");
-            bool isLongArrow = lastIndex >= 2 && result[lastIndex-2] == '-';
-            result.replace(lastIndex, 2, isLongArrow ? "X-->" : "X->");
+            result.replace(lastIndex, 2, "X->");
         }
     }
 
