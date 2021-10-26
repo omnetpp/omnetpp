@@ -245,6 +245,23 @@ class LoopVar : public LeafNode
     virtual std::string str() const override {return asPrinted(true);}
 };
 
+/**
+ * @brief The expr() function
+ */
+class DynExpr : public LeafNode
+{
+  protected:
+    std::string exprText;
+  protected:
+    virtual ExprValue evaluate(Context *context) const override;
+    virtual void print(std::ostream& out, int spaciousness) const override;
+  public:
+    DynExpr(const char *exprText) : exprText(exprText) {}
+    DynExpr *dup() const override {return new DynExpr(exprText.c_str());}
+    virtual std::string getName() const override {return "expr(...)";}
+    virtual std::string str() const override {return "expr(" + exprText + ")";}
+};
+
 class NedObjectNode : public ObjectNode
 {
   protected:
@@ -276,6 +293,7 @@ class NedOperatorTranslator : public Expression::AstTranslator
     ExprNode *translateIndex(AstNode *astNode, AstTranslator *translatorForChildren);
     ExprNode *translateTypename(AstNode *astNode, AstTranslator *translatorForChildren);
     ExprNode *translateParameter(AstNode *astNode, AstTranslator *translatorForChildren);
+    ExprNode *translateExpr(AstNode *astNode, AstTranslator *translatorForChildren);
     IdentSyntax matchSyntax(AstNode *astNode, IdentQualifier& qualifier, std::string& name1, AstNode *& index, std::string& name2);
   public:
     NedOperatorTranslator() {}

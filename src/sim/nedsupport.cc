@@ -29,10 +29,12 @@
 #include "omnetpp/cclassdescriptor.h"
 #include "omnetpp/cvaluearray.h"
 #include "omnetpp/cvaluemap.h"
+#include "omnetpp/cvalueholder.h"
 #include "nedsupport.h"
 #include "ctemporaryowner.h"
 
 using namespace omnetpp::common;
+using namespace omnetpp::common::expression;
 
 namespace omnetpp {
 namespace nedsupport {
@@ -436,6 +438,20 @@ void LoopVar::print(std::ostream& out, int spaciousness) const
 
 //---
 
+ExprValue DynExpr::evaluate(Context *context) const
+{
+    cDynamicExpression *exprObj = new cDynamicExpression();
+    exprObj->parse(exprText.c_str());
+    return ExprValue(new cValueHolder("holder", cValue(exprObj)));
+}
+
+void DynExpr::print(std::ostream& out, int spaciousness) const
+{
+    out << "expr(" + exprText + ")";
+}
+
+//---
+
 ExprValue NedObjectNode::evaluate(Context *context_) const
 {
     ASSERT(children.size() == fieldNames.size());
@@ -630,6 +646,8 @@ ExprNode *NedOperatorTranslator::translateToExpressionTree(AstNode *astNode, Ast
         return translateTypename(astNode, translatorForChildren);
     else if (isIdentOrIndexedIdent(astNode) || isMemberOrIndexedMember(astNode))
         return translateParameter(astNode, translatorForChildren);
+    else if (isFunction(astNode, "expr"))
+        return translateExpr(astNode, translatorForChildren);
     else
         return nullptr; // not recognized here
 }
@@ -749,8 +767,17 @@ ExprNode *NedOperatorTranslator::translateParameter(AstNode *paramNode, AstTrans
     throw cRuntimeError("internal error");
 }
 
-//---
+ExprNode *NedOperatorTranslator::translateExpr(AstNode *exprFunctionNode, AstTranslator *translatorForChildren)
+{
+    if (exprFunctionNode->children.size() != 1)
+        throw cRuntimeError("'expr' expects exactly one argument, got %d", (int)exprFunctionNode->children.size());
 
+    AstNode *exprAst = exprFunctionNode->children[0];
+    std::string exprText = exprAst->unparse();  // TODO eliminate unparse+reparse step
+    return new DynExpr(exprText.c_str());
+}
+
+//---
 
 ExprNode *NedFunctionTranslator::createFunctionNode(const char *functionName, int argCount)
 {

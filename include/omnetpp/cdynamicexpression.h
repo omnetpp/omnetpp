@@ -54,48 +54,39 @@ class SIM_API cDynamicExpression : public cExpression
         /** @name Evaluator methods. */
         //@{
         /** Return the value of a variable with the given name. */
-        virtual cValue readVariable(Context *context, const char *name) = 0;
+        virtual cValue readVariable(Context *context, const char *name) {return cValue();}
 
         /** Return the value of an element of an array variable with the given name. Expression syntax: name[index] */
-        virtual cValue readVariable(Context *context, const char *name, intval_t index) = 0;
+        virtual cValue readVariable(Context *context, const char *name, intval_t index) {return cValue();}
 
         /** Return the value of a member of the given object. Expression syntax: object.name */
-        virtual cValue readMember(Context *context, const cValue& object, const char *name) = 0;
+        virtual cValue readMember(Context *context, const cValue& object, const char *name) {return cValue();}
 
         /** Return the value of an element of an array member of the given object. Expression syntax: object.name[index] */
-        virtual cValue readMember(Context *context, const cValue& object, const char *name, intval_t index) = 0;
+        virtual cValue readMember(Context *context, const cValue& object, const char *name, intval_t index) {return cValue();}
 
         /** Evaluate a function call with the given arguments. Expression syntax: name(argv0, argv1,...) */
-        virtual cValue callFunction(Context *context, const char *name, cValue argv[], int argc) = 0;
+        virtual cValue callFunction(Context *context, const char *name, cValue argv[], int argc) {return cValue();}
 
         /** Evaluate a method call on the given object with the given arguments. Expression syntax: object.name(argv0, argv1,...) */
-        virtual cValue callMethod(Context *context, const cValue& object, const char *name, cValue argv[], int argc) = 0;
+        virtual cValue callMethod(Context *context, const cValue& object, const char *name, cValue argv[], int argc) {return cValue();}
         //@}
-    };
-
-    /**
-     * A base resolver implementation where all methods throws an "unknown variable/member/function/method" exception.
-     */
-    class SIM_API ResolverBase : public IResolver {
-      public:
-        virtual cValue readVariable(Context *context, const char *name) override;
-        virtual cValue readVariable(Context *context, const char *name, intval_t index) override;
-        virtual cValue readMember(Context *context, const cValue& object, const char *name) override;
-        virtual cValue readMember(Context *context, const cValue& object, const char *name, intval_t index) override;
-        virtual cValue callFunction(Context *context, const char *name, cValue argv[], int argc) override;
-        virtual cValue callMethod(Context *context, const cValue& object, const char *name, cValue argv[], int argc) override;
     };
 
     /**
      * A resolver that serves variables from an std::map-based symbol table
      */
-    class SIM_API SymbolTable : public ResolverBase {
+    class SIM_API SymbolTable : public IResolver {
       private:
-        std::map<std::string, cValue> symbolTable;
+        std::map<std::string, cValue> variables;
+        std::map<std::string, std::vector<cValue>> arrays;
       public:
-        SymbolTable(const std::map<std::string, cValue>& symbolTable) : symbolTable(symbolTable) {}
-        virtual SymbolTable *dup() const override {return new SymbolTable(symbolTable);}
+        SymbolTable() {}
+        SymbolTable(const std::map<std::string, cValue>& variables) : variables(variables) {}
+        SymbolTable(const std::map<std::string, cValue>& variables, const std::map<std::string, std::vector<cValue>>& arrays) : variables(variables), arrays(arrays) {}
+        virtual SymbolTable *dup() const override {return new SymbolTable(variables, arrays);}
         virtual cValue readVariable(Context *context, const char *name) override;
+        virtual cValue readVariable(Context *context, const char *name, intval_t index) override;
     };
 
   protected:
@@ -153,7 +144,7 @@ class SIM_API cDynamicExpression : public cExpression
     /**
      * Interprets the string as a generic expression, and stores it.
      */
-    virtual void parse(const char *text) override {parse(text, nullptr);}
+    virtual void parse(const char *text) override;
 
     /**
      * Interprets the string as a generic expression, and stores it.
@@ -161,7 +152,7 @@ class SIM_API cDynamicExpression : public cExpression
      * function calls and method calls to be handled in a custom way.
      * The expression object will take ownership of the resolver object.
      */
-    virtual void parse(const char *text, IResolver *resolver);
+    virtual void parse(const char *text, IResolver *resolver) {parse(text); setResolver(resolver);}
 
     /**
      * Interprets the string as a generic expression, and stores it.
@@ -170,7 +161,17 @@ class SIM_API cDynamicExpression : public cExpression
      * parse(const char *text, IResolver *resolver) while using
      * cDynamicExpression::SymbolTable as resolver.
      */
-    virtual void parse(const char *text, const std::map<std::string,cValue>& symbolTable) {parse(text, new SymbolTable(symbolTable));}
+    virtual void parse(const char *text, const std::map<std::string,cValue>& symbolTable) {parse(text); setResolver(new SymbolTable(symbolTable));}
+
+    /**
+     * Allows changing the resolver after a parse() call.
+     */
+    virtual void setResolver(IResolver *resolver);
+
+    /**
+     * Returns the resolver.
+     */
+    virtual IResolver *getResolver() const {return resolver;}
 
     /**
      * Interprets the string as a NED expression, and stores it.
@@ -255,7 +256,6 @@ class SIM_API cDynamicExpression : public cExpression
 
     //@}
 };
-
 
 }  // namespace omnetpp
 

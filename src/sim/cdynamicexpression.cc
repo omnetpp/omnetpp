@@ -37,139 +37,26 @@ using namespace omnetpp::common::expression;
 
 namespace omnetpp {
 
-cValue cDynamicExpression::ResolverBase::readVariable(Context *context, const char *name)
-{
-    throw cRuntimeError("Cannot resolve variable '%s'", name);
-}
-
-cValue cDynamicExpression::ResolverBase::readVariable(Context *context, const char *name, intval_t index)
-{
-    throw cRuntimeError("Cannot resolve variable '%s[%lld]'", name, (long long)index);
-}
-
-cValue cDynamicExpression::ResolverBase::readMember(Context *context, const cValue& object, const char *name)
-{
-    throw cRuntimeError("Cannot resolve member '%s' of object %s", name, object.str().c_str());
-}
-
-cValue cDynamicExpression::ResolverBase::readMember(Context *context, const cValue& object, const char *name, intval_t index)
-{
-    throw cRuntimeError("Cannot resolve member '%s[%lld]' of object %s", name, (long long)index, object.str().c_str());
-}
-
-cValue cDynamicExpression::ResolverBase::callFunction(Context *context, const char *name, cValue argv[], int argc)
-{
-    throw cRuntimeError("Cannot resolve function '%s()' with %d arguments", name, argc);
-}
-
-cValue cDynamicExpression::ResolverBase::callMethod(Context *context, const cValue& object, const char *name, cValue argv[], int argc)
-{
-    throw cRuntimeError("Cannot resolve method '%s()' with %d arguments of object %s", name, argc, object.str().c_str());
-}
-
-//----
-
 inline cExpression::Context *ctx(Context *context) {return dynamic_cast<cExpression::Context*>(context->simContext);}
 
 
-class DynVariableNode : public VariableNode {
-protected:
-    cDynamicExpression::IResolver *resolver = nullptr;
-protected:
-    virtual ExprValue getValue(Context *context) const override
-        {return makeExprValue(resolver->readVariable(ctx(context), getName().c_str()));}
-    virtual std::string makeErrorMessage(std::exception& e) const override {return e.what();} // don't prepend variable name, as msg already contains it
-public:
-    DynVariableNode(const char *name, cDynamicExpression::IResolver *resolver) : VariableNode(name), resolver(resolver) {}
-    virtual ExprNode *dup() const override {return new DynVariableNode(getName().c_str(), resolver);}
-};
-
-class DynIndexedVariableNode : public IndexedVariableNode {
-protected:
-    cDynamicExpression::IResolver *resolver = nullptr;
-protected:
-    virtual ExprValue getValue(Context *context, intval_t index) const override
-        {return makeExprValue(resolver->readVariable(ctx(context), getName().c_str(), index));}
-    virtual std::string makeErrorMessage(std::exception& e) const override {return e.what();} // don't prepend variable name, as msg already contains it
-public:
-    DynIndexedVariableNode(const char *name, cDynamicExpression::IResolver *resolver) : IndexedVariableNode(name), resolver(resolver) {}
-    virtual ExprNode *dup() const override {return new DynIndexedVariableNode(getName().c_str(), resolver);}
-};
-
-class DynMemberNode : public MemberNode {
-protected:
-    cDynamicExpression::IResolver *resolver = nullptr;
-protected:
-    virtual ExprValue getValue(Context *context, const ExprValue& object) const override
-        {return makeExprValue(resolver->readMember(ctx(context), makeNedValue(object), getName().c_str()));}
-    virtual std::string makeErrorMessage(std::exception& e) const override {return e.what();} // don't prepend variable name, as msg already contains it
-public:
-    DynMemberNode(const char *name, cDynamicExpression::IResolver *resolver) : MemberNode(name), resolver(resolver) {}
-    virtual ExprNode *dup() const override {return new DynMemberNode(getName().c_str(), resolver);}
-};
-
-class DynIndexedMemberNode : public IndexedMemberNode {
-protected:
-    cDynamicExpression::IResolver *resolver = nullptr;
-protected:
-    virtual ExprValue getValue(Context *context, const ExprValue& object, intval_t index) const override
-        {return makeExprValue(resolver->readMember(ctx(context), makeNedValue(object), getName().c_str(), index));}
-    virtual std::string makeErrorMessage(std::exception& e) const override {return e.what();} // don't prepend variable name, as msg already contains it
-public:
-    DynIndexedMemberNode(const char *name, cDynamicExpression::IResolver *resolver) : IndexedMemberNode(name), resolver(resolver) {}
-    virtual ExprNode *dup() const override {return new DynIndexedMemberNode(getName().c_str(), resolver);}
-};
-
-class DynFunctionCallNode : public FunctionNode
-{
-  protected:
-    cDynamicExpression::IResolver *resolver = nullptr;
-    mutable cValue *buf = nullptr;
-  protected:
-    virtual ExprValue compute(Context *context, ExprValue argv[], int argc) const override
-        {makeNedValues(buf, argv, argc); return makeExprValue(resolver->callFunction(ctx(context), getName().c_str(), buf, argc));}
-  public:
-    DynFunctionCallNode(const char *name, cDynamicExpression::IResolver *resolver) : FunctionNode(name), resolver(resolver) {}
-    virtual ~DynFunctionCallNode() {delete [] buf;}
-    virtual DynFunctionCallNode *dup() const override {return new DynFunctionCallNode(getName().c_str(), resolver);}
-};
-
-class DynMethodCallNode : public MethodNode
-{
-  protected:
-    cDynamicExpression::IResolver *resolver = nullptr;
-    mutable cValue *buf = nullptr;
-  protected:
-    virtual ExprValue compute(Context *context, ExprValue& object, ExprValue argv[], int argc) const override
-        {makeNedValues(buf, argv, argc); return makeExprValue(resolver->callMethod(ctx(context), makeNedValue(object), getName().c_str(), buf, argc));}
-  public:
-    DynMethodCallNode(const char *name, cDynamicExpression::IResolver *resolver) : MethodNode(name), resolver(resolver) {}
-    virtual ~DynMethodCallNode() {delete [] buf;}
-    virtual DynMethodCallNode *dup() const override {return new DynMethodCallNode(getName().c_str(), resolver);}
-};
-
-class DynTranslator : public Expression::BasicAstTranslator
-{
-  protected:
-    cDynamicExpression::IResolver *resolver = nullptr;
-  public:
-    DynTranslator(cDynamicExpression::IResolver *resolver) : resolver(resolver) {}
-    virtual ExprNode *createIdentNode(const char *varName, bool withIndex) override
-        {return !resolver ? nullptr : withIndex ? (ExprNode *)new DynIndexedVariableNode(varName, resolver) : (ExprNode *)new DynVariableNode(varName, resolver);}
-    virtual ExprNode *createMemberNode(const char *varName, bool withIndex) override
-        {return !resolver ? nullptr : withIndex ? (ExprNode *)new DynIndexedMemberNode(varName, resolver) : (ExprNode *)new DynMemberNode(varName, resolver);}
-    virtual ExprNode *createFunctionNode(const char *functionName, int argCount) override
-        {return !resolver ? nullptr : new DynFunctionCallNode(functionName, resolver);}
-    virtual ExprNode *createMethodNode(const char *functionName, int argCount) override
-        {return !resolver ? nullptr : new DynMethodCallNode(functionName, resolver);}
-};
-
 cValue cDynamicExpression::SymbolTable::readVariable(Context *context, const char *name)
 {
-    const auto it = symbolTable.find(name);
-    if (it == symbolTable.end())
-        return ResolverBase::readVariable(context, name); // which throws exception
+    const auto it = variables.find(name);
+    if (it == variables.end())
+        return IResolver::readVariable(context, name);
     return it->second;
+}
+
+cValue cDynamicExpression::SymbolTable::readVariable(Context *context, const char *name, intval_t index)
+{
+    const auto it = arrays.find(name);
+    if (it == arrays.end())
+        return IResolver::readVariable(context, name, index);
+    auto array = it->second;
+    if (index < 0 || index >= array.size())
+        throw cRuntimeError("Index %ld out of bounds for array %s[%ld]", (long)index, name, (long)array.size());
+    return array[index];
 }
 
 //----
@@ -202,15 +89,42 @@ cDynamicExpression& cDynamicExpression::operator=(const cDynamicExpression& othe
     return *this;
 }
 
-void cDynamicExpression::parse(const char *text, IResolver *res)
+void cDynamicExpression::parse(const char *text)
 {
-    if (resolver != res)
-        delete resolver;
-    resolver = res;
     NedFunctionTranslator nedFunctionTranslator;
-    DynTranslator dynTranslator(resolver);
-    Expression::MultiAstTranslator translator({ &nedFunctionTranslator, Expression::getDefaultAstTranslator(), &dynTranslator }); // dynTranslator needs to be the last one, because it is typically too eager to eat function calls
+    Expression::MultiAstTranslator translator({ &nedFunctionTranslator, Expression::getDefaultAstTranslator()});
     expression->parse(text, &translator);
+}
+
+// Adapts cDynamicExpression::IResolver to Expression::DynamicResolver
+class DynamicResolver : public Expression::DynamicResolver {
+private:
+    cDynamicExpression::IResolver *resolver;
+    cDynamicExpression::Context *c(Expression::Context *ctx) {return dynamic_cast<cDynamicExpression::Context*>(ctx->simContext);}
+    std::unique_ptr<cValue[]> cvtArgs(ExprValue argv[], int argc) {std::unique_ptr<cValue[]> a(new cValue[argc]); for (int i=0; i<argc; i++) a[i] = makeNedValue(argv[i]); return a;}
+public:
+    DynamicResolver(cDynamicExpression::IResolver *resolver) : resolver(resolver) {}
+    virtual ~DynamicResolver() {}
+    virtual ExprValue readVariable(Expression::Context *context, const char *name) {return makeExprValue(resolver->readVariable(c(context), name));}
+    virtual ExprValue readVariable(Expression::Context *context, const char *name, intval_t index) {return makeExprValue(resolver->readVariable(c(context), name, index));}
+    virtual ExprValue callFunction(Expression::Context *context, const char *name, ExprValue argv[], int argc)  {return makeExprValue(resolver->callFunction(c(context), name, cvtArgs(argv,argc).get(), argc));}
+    virtual ExprValue readMember(Expression::Context *context, const ExprValue& object, const char *name) {return makeExprValue(resolver->readMember(c(context), makeNedValue(object), name));}
+    virtual ExprValue readMember(Expression::Context *context, const ExprValue& object, const char *name, intval_t index) {return makeExprValue(resolver->readMember(c(context), makeNedValue(object), name, index));}
+    virtual ExprValue callMethod(Expression::Context *context, const ExprValue& object, const char *name, ExprValue argv[], int argc) {return makeExprValue(resolver->callMethod(c(context), makeNedValue(object), name, cvtArgs(argv,argc).get(), argc));}
+};
+
+void cDynamicExpression::setResolver(IResolver *res)
+{
+    if (resolver == res)
+        return;
+
+    auto resolvers = expression->getDynamicResolvers();
+    expression->clearDynamicResolvers();
+    for (auto resolver: resolvers)
+        delete resolver;
+
+    resolver = res;
+    expression->addDynamicResolver(new DynamicResolver(res));
 }
 
 void cDynamicExpression::parseNedExpr(const char *text)
@@ -306,7 +220,6 @@ cXMLElement *cDynamicExpression::xmlValue(Context *context) const
     return v.xmlValue();
 }
 
-//----
 
 }  // namespace omnetpp
 

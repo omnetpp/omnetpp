@@ -110,6 +110,7 @@
 #include "omnetpp/cvalue.h"
 #include "omnetpp/cvaluearray.h"
 #include "omnetpp/cvaluemap.h"
+#include "omnetpp/cvalueholder.h"
 #include "omnetpp/cvisitor.h"
 #include "omnetpp/cwatch.h"
 #include "omnetpp/cxmlelement.h"

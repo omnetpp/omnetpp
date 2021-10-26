@@ -22,6 +22,7 @@
 #include "omnetpp/ccomponent.h"
 #include "omnetpp/cvaluearray.h"
 #include "omnetpp/cvaluemap.h"
+#include "omnetpp/cvalueholder.h"
 #include "ctemporaryowner.h"
 #include "common/stringutil.h"
 
@@ -201,14 +202,10 @@ cObject *cObjectParImpl::objectValue(cComponent *context) const
     else {
         try {
             cTemporaryOwner tmp(cTemporaryOwner::DestructorMode::DISPOSE);
-            cValue v = evaluate(expr, context);
-            if (v.type != cValue::POINTER)
-                throw cRuntimeError(E_BADCAST, v.getTypeName(), "object");
-
-            cObject *obj = v.objectValue();
+            cValue value = evaluate(expr, context);
+            cObject *obj = (value.containsObject() || value.isNullptr()) ? value.objectValue() : new cValueHolder("holder", value);
             if (obj)
                 checkOwnership(obj, tmp);
-
             cObjectParImpl *mutableThis = const_cast<cObjectParImpl*>(this);
             mutableThis->doSetObject(obj);
             checkType(obj);

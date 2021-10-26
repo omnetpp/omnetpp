@@ -354,6 +354,11 @@ class SIM_API cValue
     any_ptr pointerValue() const {assertType(POINTER); return ptr;}
 
     /**
+     * Returns true if the value is nullptr.
+     */
+    bool isNullptr() const {return type==cValue::POINTER && ptr == nullptr;}
+
+    /**
      * Returns true if the value contains a (non-null) pointer to a cObject.
      */
     bool containsObject() const;
