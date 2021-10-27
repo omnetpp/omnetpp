@@ -15,6 +15,7 @@ import java.util.Set;
 
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.scave.charting.PlotBase;
+import org.omnetpp.scave.charting.properties.PlotProperty;
 import org.omnetpp.scave.pychart.INativeChartPlotter;
 
 /**
@@ -160,6 +161,9 @@ class NativeChartPlotter implements INativeChartPlotter {
         scalarDataset = new GroupsSeriesDataset();
         xyDataset = new XYDataset();
         histogramDataset = new HistogramDataset();
+
+        for (PlotProperty p : plot.getProperties())
+            setProperty(p.getName(), p.getDefaultValueAsString());
     }
 
     public void dispose() {

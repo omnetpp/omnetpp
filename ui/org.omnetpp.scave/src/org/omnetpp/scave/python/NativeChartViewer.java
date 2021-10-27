@@ -103,6 +103,8 @@ public class NativeChartViewer extends ChartViewerBase {
         // This will simply replace the references of the internal Datasets
         // with freshly allocated, empty ones, but WILL NOT dispose the old
         // ones - that will be done a bit later, in the setDataset() calls below.
+        // It will also add the default value for all supported properties as
+        // a pending change.
         chartPlotter.reset();
 
         Runnable ownRunAfterDone = () -> {
