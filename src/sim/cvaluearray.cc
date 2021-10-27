@@ -34,7 +34,7 @@ void cValueArray::copy(const cValueArray& other)
 
     // duplicate ALL contained objects, not only those owned by the cloned container
     for (cValue& value : array) {
-        if (value.getType() == cValue::POINTER) {
+        if (value.containsObject()) {
             cObject *obj = value.objectValue();
             cObject *clone = obj->dup();
             value.set(clone);
@@ -51,20 +51,18 @@ void cValueArray::cannotCast(cObject *obj, const char *toClass) const
 
 void cValueArray::takeValue(const cValue& value)
 {
-    if (value.getType() == cValue::POINTER) {
+    if (value.containsObject()) {
         cObject *obj = value.objectValue();
-        if (obj && obj->isOwnedObject() && obj->getOwner()->isSoftOwner())
+        if (obj->isOwnedObject() && obj->getOwner()->isSoftOwner())
             take(static_cast<cOwnedObject*>(obj));
     }
 }
 
 void cValueArray::dropAndDeleteValue(const cValue& value)
 {
-    if (value.getType() == cValue::POINTER) {
+    if (value.containsObject()) {
         cObject *obj = value.objectValue();
-        if (!obj)
-            ; // nop
-        else if (!obj->isOwnedObject())
+        if (!obj->isOwnedObject())
             delete obj;
         else if (obj->getOwner() == this)
             dropAndDelete(static_cast<cOwnedObject*>(obj));
@@ -100,7 +98,7 @@ std::string cValueArray::str() const
 void cValueArray::forEachChild(cVisitor* v)
 {
     for (const cValue& value : array)
-        if (value.getType() == cValue::POINTER)
+        if (value.containsObject())
             if (cObject *child = value.objectValue())
                 if (!v->visit(child))
                     return;
@@ -174,9 +172,9 @@ cValue cValueArray::remove(int k)
 {
     if (k < 0 || k >= (int)array.size())
         throw cRuntimeError(this, "remove(): index %d is out of bounds", k);
-    if (array[k].getType() == cValue::POINTER) {
+    if (array[k].containsObject()) {
         cObject *obj = array[k].objectValue();
-        if (obj && obj->getOwner() == this)
+        if (obj->isOwnedObject() && obj->getOwner() == this)
             drop(static_cast<cOwnedObject*>(obj));
     }
     cValue result = std::move(array[k]);
