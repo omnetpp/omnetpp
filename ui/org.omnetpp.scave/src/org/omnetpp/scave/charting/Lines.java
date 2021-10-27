@@ -138,10 +138,13 @@ class Lines implements ILinePlot {
             area.maxY = 1.0;
         }
 
-        area.minX = (area.minX>=0 ? 0 : area.minX-area.width()/80);
-        area.maxX = (area.maxX<=0 ? 0 : area.maxX+area.width()/80);
-        area.minY = (area.minY>=0 ? 0 : area.minY-area.height()/3);
-        area.maxY = (area.maxY<=0 ? 0 : area.maxY+area.height()/3);
+        double w = area.width();
+        double h = area.height();
+
+        area.minX = (area.minX>=0 ? 0 : area.minX-w/80);
+        area.maxX = (area.maxX<=0 ? 0 : area.maxX+w/80);
+        area.minY = (area.minY>=0 ? 0 : area.minY-h/3);
+        area.maxY = (area.maxY<=0 ? 0 : area.maxY+h/3);
 
         return area;
     }
