@@ -680,7 +680,7 @@ public abstract class PlotBase extends ZoomableCachingCanvas implements IPlotVie
 
         chartChanged();
         chartArea = calculatePlotArea();
-        setArea(chartArea);
+        updateArea();
 
         if (shouldZoomOutX)
             zoomToFitX();
