@@ -18,6 +18,7 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.OBSOLETE_OPTIONS;
 import static org.omnetpp.ned.model.NedElementConstants.NED_PARTYPE_BOOL;
 import static org.omnetpp.ned.model.NedElementConstants.NED_PARTYPE_DOUBLE;
 import static org.omnetpp.ned.model.NedElementConstants.NED_PARTYPE_INT;
+import static org.omnetpp.ned.model.NedElementConstants.NED_PARTYPE_OBJECT;
 import static org.omnetpp.ned.model.NedElementConstants.NED_PARTYPE_STRING;
 import static org.omnetpp.ned.model.NedElementConstants.NED_PARTYPE_XML;
 
@@ -829,7 +830,7 @@ public final class InifileAnalyzer {
 
             // provided we could figure out the value's data type, check it's the same as parameter's data type
             int tmpParamType = paramType==NED_PARTYPE_INT ? NED_PARTYPE_DOUBLE : paramType; // replace "int" with "double"
-            if (valueType != -1 && valueType != tmpParamType) {
+            if (valueType != -1 && valueType != tmpParamType && tmpParamType != NED_PARTYPE_OBJECT) { // OBJECT accept all types
                 String typeName = resList.get(0).paramDeclaration.getAttribute(ParamElement.ATT_TYPE);
                 markers.addError(section, key, "Wrong data type: "+typeName+" expected");
             }

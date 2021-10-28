@@ -7,6 +7,8 @@
 
 package org.omnetpp.ned.core;
 
+import static org.omnetpp.ned.model.NedElementConstants.NED_PARTYPE_OBJECT;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
@@ -484,7 +486,7 @@ public class NedValidator extends AbstractNedValidatorEx {
         int declarationType = paramDeclaration.getType();
         int tmpType = declarationType == NED_PARTYPE_INT ? NED_PARTYPE_DOUBLE : declarationType; // replace "int" with "double"
 
-        if (assignmentType != -1 && assignmentType != tmpType) {
+        if (assignmentType != -1 && assignmentType != tmpType && tmpType != NED_PARTYPE_OBJECT) {
             String typeName = paramDeclaration.getAttribute(ParamElement.ATT_TYPE);
             errors.addError(paramAssignment, "Wrong data type: " + typeName + " expected");
         }
