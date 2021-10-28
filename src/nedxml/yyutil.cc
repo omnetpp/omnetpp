@@ -82,7 +82,7 @@ const char *currentLocation(ParseContext *np)
 ASTNode *createElementWithTag(ParseContext *np, ASTNodeFactory *factory, int tagcode, ASTNode *parent)
 {
     ASTNode *e = factory->createElementWithTag(tagcode);
-    e->setSourceLocation(currentLocation(np));
+    e->setSourceLocation(np->getFileName(), pos.li);
     if (parent)
         parent->appendChild(e);
     return e;
