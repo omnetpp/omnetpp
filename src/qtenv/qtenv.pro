@@ -216,4 +216,5 @@ FORMS += mainwindow.ui \
     videorecordingdialog.ui
 
 RESOURCES += \
+    fonts.qrc \
     icons.qrc

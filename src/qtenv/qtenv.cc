@@ -102,6 +102,10 @@ void selectDarkThemeIcons()
     Q_INIT_RESOURCE(icons_dark);
 }
 
+void initFontsResource()
+{
+    Q_INIT_RESOURCE(fonts);
+}
 
 namespace omnetpp {
 
@@ -643,6 +647,11 @@ void Qtenv::doRun()
             selectDarkThemeIcons();
         else
             selectLightThemeIcons();
+
+        initFontsResource();
+
+        QFontDatabase::addApplicationFont(":/fonts/FiraCode-Regular");
+        QFontDatabase::addApplicationFont(":/fonts/FiraCode-Bold");
 
         app->setStyle(new QtenvProxyStyle());
 
@@ -2664,7 +2673,7 @@ void Qtenv::initFonts()
     defaultFonts.boldFont = getFirstAvailableFontFamily({ "Segoe UI", "MS Sans Serif", "Arial" }, 9);
     defaultFonts.canvasFont = defaultFonts.boldFont;
     defaultFonts.timelineFont = getFirstAvailableFontFamily({ "Segoe Condensed", "Gill Sans MT Condensed", "Liberation Sans Narrow" }, defaultFonts.boldFont.pointSize(), defaultFonts.boldFont);
-    defaultFonts.logFont = getFirstAvailableFontFamily({ "DejaVu Sans Mono", "Courier New", "Consolas", "Terminal" }, 9);
+    defaultFonts.logFont = getFirstAvailableFontFamily({ "Fira Code", "DejaVu Sans Mono", "Courier New", "Consolas", "Terminal" }, 9);
     defaultFonts.timeFont = defaultFonts.boldFont;
     defaultFonts.timeFont.setPointSize(12);
 #elif defined(Q_OS_MAC)
@@ -2672,7 +2681,7 @@ void Qtenv::initFonts()
     defaultFonts.boldFont = getFirstAvailableFontFamily({ "Lucida Grande", "Helvetica" }, 13);
     defaultFonts.canvasFont = defaultFonts.boldFont;
     defaultFonts.timelineFont = getFirstAvailableFontFamily({ "Arial Narrow" }, defaultFonts.boldFont.pointSize(), defaultFonts.boldFont);
-    defaultFonts.logFont = getFirstAvailableFontFamily({ "Monaco", "Courier" }, 13);
+    defaultFonts.logFont = getFirstAvailableFontFamily({ "Fira Code", "Monaco", "Courier" }, 13);
     defaultFonts.timeFont = defaultFonts.boldFont;
     defaultFonts.timeFont.setPointSize(16);
 #else
@@ -2680,7 +2689,7 @@ void Qtenv::initFonts()
     defaultFonts.boldFont = getFirstAvailableFontFamily({ "Ubuntu", "Arial", "Verdana", "Helvetica", "Tahoma", "DejaVu Sans", "Nimbus Sans L", "FreeSans", "Sans" }, 9);
     defaultFonts.canvasFont = defaultFonts.boldFont;
     defaultFonts.timelineFont = getFirstAvailableFontFamily({ "Ubuntu Condensed", "Arial Narrow", "DejaVu Sans Condensed" }, defaultFonts.boldFont.pointSize(), defaultFonts.boldFont);
-    defaultFonts.logFont = getFirstAvailableFontFamily({ "Ubuntu Mono", "DejaVu Sans Mono", "Courier New", "FreeMono", "Courier" }, 9);
+    defaultFonts.logFont = getFirstAvailableFontFamily({ "Fira Code", "Ubuntu Mono", "DejaVu Sans Mono", "Courier New", "FreeMono", "Courier" }, 9);
     defaultFonts.timeFont = defaultFonts.boldFont;
     defaultFonts.timeFont.setPointSize(12);
 #endif
@@ -2709,8 +2718,8 @@ void Qtenv::initFonts()
 // available on the system. If none are available, returns defaultValue.
 QFont Qtenv::getFirstAvailableFontFamily(std::initializer_list<QString> preferenceList, int pointSize, QFont defaultValue)
 {
+    QFontDatabase fontDb;
     for (QString str : preferenceList) {
-        QFontDatabase fontDb;
         QFont font = fontDb.font(str, "Normal", pointSize);
         if (font != QFont())
             return font;

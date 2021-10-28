@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/fonts">
+        <file alias="FiraCode-Bold">fonts/FiraCode-Bold.ttf</file>
+        <file alias="FiraCode-Regular">fonts/FiraCode-Regular.ttf</file>
+    </qresource>
+</RCC>
