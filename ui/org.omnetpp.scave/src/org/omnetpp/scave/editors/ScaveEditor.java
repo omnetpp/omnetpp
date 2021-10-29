@@ -1503,10 +1503,23 @@ public class ScaveEditor extends MultiPageEditorPartExt
 
     /**
      * This is for implementing {@link IEditorPart} and simply tests the command
-     * stack.
+     * stack. Since some refactoring operations call this from a background
+     * thread, the actual implementation is syncExec'd here by the Display.
      */
+    @Override
     public boolean isDirty() {
+        boolean[] result = new boolean[1];
+        Display.getDefault().syncExec(() -> {
+            result[0] = isDirtyImpl();
+        });
+        return result[0];
+    }
 
+    /**
+     * Provides the implementation for `isDirty`. This should only be
+     * called from the UI thread, as it calls into some widgets.
+     */
+    protected boolean isDirtyImpl() {
         for (int i = 0; i < getPageCount(); ++i) {
             FormEditorPage editorPage = getEditorPage(i);
             if (editorPage instanceof InputsPage) {
