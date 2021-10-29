@@ -59,6 +59,45 @@ _check_version(mpl, "3.0.0")  # Sep 19, 2018
 _marker_cycle = cycle(list("osv^<>pDd"))
 _color_cycle = cycle(["C" + str(i) for i in range(10)])
 
+
+# There are many potential ways to add digit grouping to numbers.
+# None of them were good enough:
+#  - They all can only use "," or "_" as group separators
+#  - And none of them added grouping to the fractional part
+#  - Or they printed numbers with silly precision,
+#    either fixed, or too low, or too high.
+# So, instead, take the built-in tick labels, and add digit grouping
+# to them manually, after the fact, using good ol' regices.
+class DigitGroupingFormatter(mpl.ticker.ScalarFormatter):
+    def __call__(self, x, pos=None):
+        SEP = '\u2009' # Unicode "Thin Space"
+        result = super().__call__(x, pos)
+        if "." in result:
+            # For numbers with decimal separators in them:
+            # First replace any digit followed by any number of three-digit-groups,
+            # and a period (so, the whole part); with itself followed by a space.
+            result = re.sub(r'(\d)(?=(\d{3})+\.)', r'\1' + SEP, result)
+            # Then replace any remaining three-digit-groups (in the fractional part)
+            # with itself followed by a space.
+            result = re.sub(r'(\d{3})(?=\d)', r'\1' + SEP, result)
+        else:
+            # For integers, do the same thing as with the whole part of fractions,
+            # but don't require the period at the end.
+            result = re.sub(r'(\d)(?=(\d{3})+(?!\d))', r'\1' + SEP, result)
+
+        # Add back the exponent to every value manually, as we don't want to see it
+        # extracted into a common order of magnitude, which is disabled by `get_offset()`.
+        if self.orderOfMagnitude != 0:
+            result += "e" + str(self.orderOfMagnitude)
+
+        return result
+
+    # The axis-common order of magnitude (if scientific notation is used) is also returned
+    # in this, but we append it to each individual tick label instead.
+    def get_offset(self):
+        return ""
+
+
 # Note: must be at the top, because it appears in other functions' arg list as default
 def make_legend_label(legend_cols, row):
     """
@@ -629,6 +668,12 @@ def export_image_if_needed(props):
         # in case of Matplotlib-emulated native widgets, make it look more similar to the IDE
         if chart.is_native_chart():
             ax = plt.gca()
+
+            # add digit grouping to the axis tick labels
+            ax.xaxis.set_minor_formatter(DigitGroupingFormatter())
+            ax.xaxis.set_major_formatter(DigitGroupingFormatter())
+            ax.yaxis.set_minor_formatter(DigitGroupingFormatter())
+            ax.yaxis.set_major_formatter(DigitGroupingFormatter())
 
             # only use scientific notation for negative exponents
             ax.ticklabel_format(scilimits=(0, 1000), useOffset=False, useLocale=False)
