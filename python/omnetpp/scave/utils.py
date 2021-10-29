@@ -70,8 +70,12 @@ _color_cycle = cycle(["C" + str(i) for i in range(10)])
 # to them manually, after the fact, using good ol' regices.
 class DigitGroupingFormatter(mpl.ticker.ScalarFormatter):
     def __call__(self, x, pos=None):
+
         SEP = '\u2009' # Unicode "Thin Space"
+
         result = super().__call__(x, pos)
+        originalresult = result
+
         if "." in result:
             # For numbers with decimal separators in them:
             # First replace any digit followed by any number of three-digit-groups,
@@ -85,9 +89,12 @@ class DigitGroupingFormatter(mpl.ticker.ScalarFormatter):
             # but don't require the period at the end.
             result = re.sub(r'(\d)(?=(\d{3})+(?!\d))', r'\1' + SEP, result)
 
+        assert(result.replace(SEP, "") == originalresult)
+
         # Add back the exponent to every value manually, as we don't want to see it
         # extracted into a common order of magnitude, which is disabled by `get_offset()`.
-        if self.orderOfMagnitude != 0:
+        # (except if it has no digits in it other than 0)
+        if self.orderOfMagnitude != 0 and re.search(r'[1-9]', result):
             result += "e" + str(self.orderOfMagnitude)
 
         return result
