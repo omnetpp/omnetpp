@@ -7,8 +7,6 @@ module is `opp_charttool`.
 
 import os
 import sys
-import traceback
-import subprocess
 import xml.etree.ElementTree as ET
 import xml.dom.minidom as minidom # because ET cannot pretty-print
 import matplotlib.pyplot as plt

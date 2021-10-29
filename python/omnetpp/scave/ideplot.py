@@ -15,9 +15,7 @@ Note that this module is stateful. It is set up appropriately by the OMNeT++ IDE
 or `opp_charttool` before the chart script is run.
 """
 
-
 import math
-import numpy as np
 
 def is_native_plot():
     """

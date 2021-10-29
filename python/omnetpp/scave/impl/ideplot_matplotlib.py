@@ -1,7 +1,4 @@
 import matplotlib.pyplot as plt
-import math
-from omnetpp.scave import utils # for small misc. methods
-
 
 
 def set_properties(*vargs, **kwargs):

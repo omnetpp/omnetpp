@@ -1,7 +1,5 @@
-import os
 import io
 import subprocess
-from math import inf
 import numpy as np
 import pandas as pd
 from omnetpp.scave.utils import _pivot_results, _append_metadata_columns
