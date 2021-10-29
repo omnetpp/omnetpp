@@ -6,6 +6,10 @@ IDEDIR=`dirname $0`/../ide
 PLATFORM=`uname -sm`
 LAUNCHER=opp_ide
 
+if [ -z "$__omnetpp_root_dir" ]; then
+  source $IDEDIR/../setenv
+fi
+
 echo Starting the OMNEST IDE...
 
 if test ! -d $IDEDIR/configuration -a ! -d $IDEDIR/$LAUNCHER.app/Contents/Eclipse/configuration; then

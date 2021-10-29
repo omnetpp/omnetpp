@@ -20,7 +20,7 @@ cd "%HOME%"
 rem Open the MinGW command shell (you may add -full-path to force the MSYS shell to inherit the current system path)
 if "%1" == "ide" (
 rem if the first paramter is "ide" we start the IDE instead of the shell. This can be used to start the IDE from a shortcut
-call "%HOME%\bin\omnetpp.cmd" %*
+call "%HOME%\tools\win64\msys2_shell.cmd" -mingw64 -c "nohup >/dev/null 2>/dev/null $HOME/bin/omnetpp"
 ) else (
 call "%HOME%\tools\win64\msys2_shell.cmd" -mingw64 %*
 )
