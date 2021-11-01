@@ -68,9 +68,8 @@ cValueHolder& cValueHolder::operator=(const cValueHolder& other)
 
 void cValueHolder::forEachChild(cVisitor* v)
 {
-//TODO: putting this line back will break it: cPars may not contain non-cOwnedObject objects!
-//    if (value.containsObject())
-//        v->visit(value.objectValue());
+    if (value.containsObject())
+        v->visit(value.objectValue());
 }
 
 void cValueHolder::parsimPack(cCommBuffer* buffer) const

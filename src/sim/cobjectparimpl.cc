@@ -166,9 +166,34 @@ class OwnershipCheckerVisitor : public cVisitor
     cObject *parent;
   public:
     OwnershipCheckerVisitor(cObject *parent) : parent(parent) {}
-    virtual bool visit(cObject *obj) override {
+
+    void checkValue(cObject *obj, const cValue& value) {
+        if (value.getType() == cValue::POINTER && !value.pointerValue().contains<cObject>())
+            throw cRuntimeError("Object parameters may only hold objects they fully own, but a value in %s contains a non-cObject pointer (%s)",
+                    obj->getClassAndFullName().c_str(), value.pointerValue().str().c_str());
+    }
+
+    void checkObject(cObject *obj) {
+        // allow fully owned objects (safe) and modules/channels (relatively safe)
         if (obj->getOwner() != parent)
             throwNotOwned(obj, parent);
+
+        // disallow non-cObject pointers in cValues
+        if (cValueArray *array = dynamic_cast<cValueArray*>(obj)) {
+            for (const auto& value : array->getArray())
+                checkValue(array, value);
+        }
+        else if (cValueMap *map = dynamic_cast<cValueMap*>(obj)) {
+            for (const auto& entry: map->getFields())
+                checkValue(map, entry.second);
+        }
+        else if (cValueHolder *holder = dynamic_cast<cValueHolder*>(obj)) {
+            checkValue(holder, holder->get());
+        }
+    }
+
+    virtual bool visit(cObject *obj) override {
+        checkObject(obj);
         cObject *oldParent = parent;
         parent = obj;
         obj->forEachChild(this);
