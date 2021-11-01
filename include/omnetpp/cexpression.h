@@ -30,7 +30,7 @@ class cXMLElement;
  * @see cPar
  * @ingroup SimSupport
  */
-class SIM_API cExpression : public cObject
+class SIM_API cExpression
 {
   public:
     /**
@@ -58,7 +58,7 @@ class SIM_API cExpression : public cObject
     /**
      * Copy constructor.
      */
-    cExpression(const cExpression& other)  = default;
+    cExpression(const cExpression& other) = default;
 
     /**
      * Destructor.
@@ -69,29 +69,16 @@ class SIM_API cExpression : public cObject
      * Assignment operator.
      */
     cExpression& operator=(const cExpression& other) {return *this;}
-    //@}
 
-    /** @name Redefined cObject functions */
-    //@{
     /**
-     * Duplication not supported, this method is redefined to throw an error.
+     * Duplication.
      */
-    virtual cExpression *dup() const override {copyNotSupported(); return nullptr;}
+    virtual cExpression *dup() const = 0;
 
     /**
      * Converts the expression to string.
      */
-    virtual std::string str() const override {return "";}
-
-    /**
-     * Redefined to "de-inherit" it.
-     */
-    virtual void parsimPack(cCommBuffer *buffer) const override  {throw cRuntimeError(this, E_CANTPACK);}
-
-    /**
-     * Redefined to "de-inherit" it.
-     */
-    virtual void parsimUnpack(cCommBuffer *buffer) override  {throw cRuntimeError(this, E_CANTPACK);}
+    virtual std::string str() const {return "";}
     //@}
 
     /** @name Evaluator methods. */

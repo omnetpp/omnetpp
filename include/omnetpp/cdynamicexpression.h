@@ -19,6 +19,7 @@
 #include <map>
 #include "cvalue.h"
 #include "cexpression.h"
+#include "cownedobject.h"
 #include "fileline.h"
 
 namespace omnetpp {
@@ -120,10 +121,6 @@ class SIM_API cDynamicExpression : public cExpression
      * Assignment operator.
      */
     cDynamicExpression& operator=(const cDynamicExpression& other);
-    //@}
-
-    /** @name Redefined cObject functions */
-    //@{
 
     /**
      * Creates and returns an exact copy of this object.
@@ -135,8 +132,6 @@ class SIM_API cDynamicExpression : public cExpression
      * See cObject for more details.
      */
     virtual std::string str() const override;
-
-    // Note: parsimPack()/parsimUnpack() de-inherited in cExpression.
     //@}
 
     /** @name Setter and evaluator methods. */
@@ -253,8 +248,67 @@ class SIM_API cDynamicExpression : public cExpression
      * Throws an exception if conversion is not possible (unknown/unrelated units).
      */
     static double convertUnit(double d, const char *unit, const char *targetUnit);
-
     //@}
+};
+
+/**
+ * @brief An "owned" version cDynamicExpression to allow it to be assigned to module
+ * parameters of the type "object".
+ *
+ * @ingroup SimSupport
+ */
+class cOwnedDynamicExpression : public cOwnedObject, public cDynamicExpression
+{
+  public:
+    /** @name Constructors, destructor, assignment. */
+    //@{
+
+    /**
+     * Constructor.
+     */
+    explicit cOwnedDynamicExpression(const char *name=nullptr) : cOwnedObject(name) {}
+
+    /**
+     * Copy constructor.
+     */
+    explicit cOwnedDynamicExpression(const cOwnedDynamicExpression& other) : cOwnedObject(other), cDynamicExpression(other) {}
+
+    /**
+     * Assignment operator. The name member is not copied;
+     * see cNamedObject::operator=() for details.
+     * Contained objects that are owned by cOwnedDynamicExpression will be duplicated
+     * so that the new cOwnedDynamicExpression will have its own copy of them.
+     */
+    cOwnedDynamicExpression& operator=(const cOwnedDynamicExpression& other) = default;
+    //@}
+
+    /** @name Redefined cObject member functions */
+    //@{
+
+    /**
+     * Creates and returns an exact copy of this object.
+     */
+    virtual cOwnedDynamicExpression *dup() const override  {return new cOwnedDynamicExpression(*this);}
+
+    /**
+     * Converts the expression to string.
+     * See cObject for more details.
+     */
+    virtual std::string str() const override { return cDynamicExpression::str(); }
+
+    /**
+     * Serializes the object into an MPI send buffer.
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
+     */
+    virtual void parsimPack(cCommBuffer* buffer) const override;
+
+    /**
+     * Deserializes the object from an MPI receive buffer
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
+     */
+    virtual void parsimUnpack(cCommBuffer* buffer) override;
 };
 
 }  // namespace omnetpp

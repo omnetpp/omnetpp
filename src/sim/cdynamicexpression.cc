@@ -220,6 +220,26 @@ cXMLElement *cDynamicExpression::xmlValue(Context *context) const
     return v.xmlValue();
 }
 
+//------------
+
+void cOwnedDynamicExpression::parsimPack(cCommBuffer* buffer) const
+{
+#ifndef WITH_PARSIM
+    throw cRuntimeError(this, E_NOPARSIM);
+#else
+    throw cRuntimeError(this, "parsimPack() not implemented");
+#endif
+}
+
+void cOwnedDynamicExpression::parsimUnpack(cCommBuffer* buffer)
+{
+#ifndef WITH_PARSIM
+    throw cRuntimeError(this, E_NOPARSIM);
+#else
+    throw cRuntimeError(this, "parsimUnpack() not implemented");
+#endif
+}
+
 
 }  // namespace omnetpp
 

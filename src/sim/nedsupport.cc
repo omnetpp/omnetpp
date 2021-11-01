@@ -440,9 +440,9 @@ void LoopVar::print(std::ostream& out, int spaciousness) const
 
 ExprValue DynExpr::evaluate(Context *context) const
 {
-    cDynamicExpression *exprObj = new cDynamicExpression();
+    cOwnedDynamicExpression *exprObj = new cOwnedDynamicExpression();
     exprObj->parse(exprText.c_str());
-    return ExprValue(new cValueHolder("holder", cValue(exprObj)));
+    return ExprValue(exprObj);
 }
 
 void DynExpr::print(std::ostream& out, int spaciousness) const

@@ -309,8 +309,10 @@ std::string cObjectParImpl::str() const
         return "nullptr";
     else if (dynamic_cast<cValueArray*>(obj) || dynamic_cast<cValueMap*>(obj))
         return obj->str();
+    else if (dynamic_cast<cOwnedDynamicExpression*>(obj))
+        return "expr(" + obj->str() + ")";
     else
-        return std::string("(") + obj->getClassName() + ")" + obj->getFullName() + ": " + obj->str(); // non-parseable...
+        return obj->getClassAndFullName() + ": " + obj->str(); // non-parseable...
 }
 
 void cObjectParImpl::parse(const char *text, FileLine loc)
