@@ -54,7 +54,7 @@ class LocalLifecycleListener : public cISimulationLifecycleListener {
 EXECUTE_ON_STARTUP(cSimulation::getActiveEnvir()->addLifecycleListener(&listener));
 
 
-cSoftOwner::cSoftOwner(const char *name) : cNoncopyableOwnedObject(name)
+cSoftOwner::cSoftOwner(const char *name, bool namepooling) : cNoncopyableOwnedObject(name, namepooling)
 {
     // careful: if we are a global variable (ctor called before main()),
     // then insert() may get called before constructor and it invoked

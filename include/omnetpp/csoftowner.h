@@ -82,7 +82,7 @@ class SIM_API cSoftOwner : public cNoncopyableOwnedObject
     /**
      * Constructor.
      */
-    explicit cSoftOwner(const char *name=nullptr);
+    explicit cSoftOwner(const char *name=nullptr, bool namepooling=true);
 
     /**
      * Destructor. The contained objects will be reported as undisposed.

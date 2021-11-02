@@ -56,7 +56,7 @@ cSoftOwner *cOwnedObject::owningContext = &globalOwningContext;
 long cOwnedObject::totalObjectCount = 0;
 long cOwnedObject::liveObjectCount = 0;
 
-cSoftOwner globalOwningContext;
+cSoftOwner globalOwningContext("globalOwningContext", false);
 
 cOwnedObject::cOwnedObject()
 {

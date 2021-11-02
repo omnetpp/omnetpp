@@ -64,8 +64,11 @@ bool cObject::hasChangedSince(int64_t lastRefreshSerial)
 
 std::string cObject::getFullPath() const
 {
-    if (getOwner() == nullptr)
+    cObject *owner = getOwner();
+    if (owner == nullptr)
         return getFullName();
+    else if (owner == this)  // occurs with globalOwningContext during startup
+        return std::string("<self-owned>.") + getFullName();
     else
         return getOwner()->getFullPath() + "." + getFullName();
 }
@@ -114,12 +117,13 @@ void cObject::ownedObjectDeleted(cOwnedObject *obj)
             getClassName());
 }
 
-void cObject::yieldOwnership(cOwnedObject *obj, cObject *newowner)
+void cObject::yieldOwnership(cOwnedObject *obj, cObject *newOwner)
 {
-    throw cRuntimeError("(%s)%s is currently in (%s)%s, it cannot be inserted into (%s)%s",
-            obj->getClassName(), obj->getFullName(),
-            getClassName(), getFullPath().c_str(),
-            newowner->getClassName(), newowner->getFullPath().c_str());
+    throw cRuntimeError("%s is currently in %s, it cannot be inserted into %s",
+            obj->getClassAndFullName().c_str(),
+            getClassAndFullPath().c_str(),
+            newOwner ? newOwner->getClassAndFullPath().c_str() : "nullptr");
+
 }
 
 void cObject::take(cOwnedObject *obj)
