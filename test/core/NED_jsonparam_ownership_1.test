@@ -57,16 +57,16 @@ void Tester::activity()
     test("[ 1, 2, @TESTNAME@::Nonowned{} ]");
     test("{ a: 5, b: @TESTNAME@::Nonowned{} }");
     EV << endl;
-    test("a");
+    test("a");  // ERROR: object belongs to parameter 'a'
     test("dup(a)");
     EV << endl;
-    test("[a,a]");
+    test("[a,a]"); // ERROR: objects belong to parameter 'a'
     test("[ dup(a), dup(a) ]");
-    test("dup([a,a])");
+    test("dup([a,a])"); // ERROR: dup() must be called on the VERY object that is owned by someone else, not on its wrapper array/map!
     EV << endl;
-    test("{x: a, y: a}");
+    test("{x: a, y: a}");  // ERROR: objects belong to parameter 'a'
     test("{x: dup(a), y: dup(a)}");
-    test("dup( {x: a, y: a} )");
+    test("dup( {x: a, y: a} )"); // ERROR: fails for same reason, see above
     EV << ".\n";
 }
 
@@ -82,11 +82,11 @@ dup(a) ==> {a: 1, b: [2, 3, {c: 4, d: 5}]}
 
 [a,a] ==> ERROR: Cannot assign parameter 'b': Object parameters may only hold objects they fully own, but object (omnetpp::cValueMap)map1 inside the result object (parent: (omnetpp::cValueArray)array4) is already owned by a parameter named 'a' (Hint: Try cloning it using the dup() function!)
 [ dup(a), dup(a) ] ==> [{a: 1, b: [2, 3, {c: 4, d: 5}]}, {a: 1, b: [2, 3, {c: 4, d: 5}]}]
-dup([a,a]) ==> [{a: 1, b: [2, 3, {c: 4, d: 5}]}, {a: 1, b: [2, 3, {c: 4, d: 5}]}]
+dup([a,a]) ==> ERROR: Cannot assign parameter 'b': Object parameters may only hold objects they fully own, but object (omnetpp::cValueMap)map1 inside the result object (parent: (omnetpp::cValueArray)array6) is already owned by a parameter named 'a' (Hint: Try cloning it using the dup() function!)
 
 {x: a, y: a} ==> ERROR: Cannot assign parameter 'b': Object parameters may only hold objects they fully own, but object (omnetpp::cValueMap)map1 inside the result object (parent: (omnetpp::cValueMap)map4) is already owned by a parameter named 'a' (Hint: Try cloning it using the dup() function!)
 {x: dup(a), y: dup(a)} ==> {x: {a: 1, b: [2, 3, {c: 4, d: 5}]}, y: {a: 1, b: [2, 3, {c: 4, d: 5}]}}
-dup( {x: a, y: a} ) ==> {x: {a: 1, b: [2, 3, {c: 4, d: 5}]}, y: {a: 1, b: [2, 3, {c: 4, d: 5}]}}
+dup( {x: a, y: a} ) ==> ERROR: Cannot assign parameter 'b': Object parameters may only hold objects they fully own, but object (omnetpp::cValueMap)map1 inside the result object (parent: (omnetpp::cValueMap)map6) is already owned by a parameter named 'a' (Hint: Try cloning it using the dup() function!)
 .
 
 %not-contains: stdout

@@ -32,14 +32,16 @@ void cValueArray::copy(const cValueArray& other)
 {
     array = other.array;
 
-    // duplicate ALL contained objects, not only those owned by the cloned container
     for (cValue& value : array) {
         if (value.containsObject()) {
             cObject *obj = value.objectValue();
-            cObject *clone = obj->dup();
-            value.set(clone);
-            if (obj->isOwnedObject())
-                take(static_cast<cOwnedObject*>(clone));
+            if (!obj->isOwnedObject())
+                value.set(obj->dup());
+            else if (obj->getOwner() == const_cast<cValueArray *>(&other)) {
+                cObject *obj2 = obj->dup();
+                value.set(obj2);
+                take(static_cast<cOwnedObject *>(obj2));
+            }
         }
     }
 }
@@ -53,7 +55,7 @@ void cValueArray::takeValue(const cValue& value)
 {
     if (value.containsObject()) {
         cObject *obj = value.objectValue();
-        if (obj->isOwnedObject() && obj->getOwner()->isSoftOwner())
+        if (obj->isOwnedObject() && obj->getOwner() == cOwnedObject::getOwningContext() && dynamic_cast<cComponent*>(obj) == nullptr)
             take(static_cast<cOwnedObject*>(obj));
     }
 }
@@ -65,7 +67,7 @@ void cValueArray::dropAndDeleteValue(const cValue& value)
         if (!obj->isOwnedObject())
             delete obj;
         else if (obj->getOwner() == this)
-            dropAndDelete(static_cast<cOwnedObject*>(obj));
+            dropAndDelete(static_cast<cOwnedObject *>(obj));
     }
 }
 

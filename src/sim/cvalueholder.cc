@@ -22,18 +22,21 @@ namespace omnetpp {
 
 Register_Class(cValueHolder);
 
+//TODO takeValue(), dropAndDeleteValue() and part of copy() are the same in cValueHolder, cValueArray, cValueMap, maybe also in cQueue/cArray. Factor them out?
 
 void cValueHolder::copy(const cValueHolder& other)
 {
     value = other.value;
 
-    // duplicate ALL contained objects, not only those owned by the cloned container
     if (value.containsObject()) {
         cObject *obj = value.objectValue();
-        cObject *clone = obj->dup();
-        value.set(clone);
-        if (obj->isOwnedObject())
-            take(static_cast<cOwnedObject*>(clone));
+        if (!obj->isOwnedObject())
+            value.set(obj->dup());
+        else if (obj->getOwner() == const_cast<cValueHolder*>(&other)) {
+            cObject *obj2 = obj->dup();
+            value.set(obj2);
+            take(static_cast<cOwnedObject *>(obj2));
+        }
     }
 }
 
@@ -41,7 +44,7 @@ void cValueHolder::takeValue()
 {
     if (value.containsObject()) {
         cObject *obj = value.objectValue();
-        if (obj->isOwnedObject() && obj->getOwner()->isSoftOwner())
+        if (obj->isOwnedObject() && obj->getOwner() == cOwnedObject::getOwningContext() && dynamic_cast<cComponent*>(obj) == nullptr)
             take(static_cast<cOwnedObject*>(obj));
     }
 }
