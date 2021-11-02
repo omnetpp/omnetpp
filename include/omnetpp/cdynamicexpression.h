@@ -42,7 +42,8 @@ class SIM_API cDynamicExpression : public cExpression
   public:
     /**
      * Interface for extending cDynamicExpression with support for variables, member access,
-     * (extra) function calls, and method calls.
+     * (extra) function calls, and method calls. If a variable/member/etc was not found,
+     * the corresponding method should return cValue(), i.e. the "undefined" value.
      */
     class SIM_API IResolver {
       public:
@@ -73,6 +74,8 @@ class SIM_API cDynamicExpression : public cExpression
         virtual cValue callMethod(Context *context, const cValue& object, const char *name, cValue argv[], int argc) {return cValue();}
         //@}
     };
+
+    typedef IResolver ResolverBase;
 
     /**
      * A resolver that serves variables from an std::map-based symbol table

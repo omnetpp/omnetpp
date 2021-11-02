@@ -32,7 +32,7 @@ EV << ".\n";
 %contains: stdout
 3*a+b ==> 7
 3*double(a) + cos(b-1) ==> 7
-3*a+b+c ==> Cannot resolve variable 'c'
+3*a+b+c ==> No such variable: 'c'
 .
 
 

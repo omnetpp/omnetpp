@@ -16,4 +16,4 @@ network = TestNet
 %exitcode: 1
 
 %contains-regex: stderr
-Error: Cannot assign 'foo\(3\)' to parameter 'TestNet\.p': A 'foo' function that accepts 1 argument\(s\) was not found -- at .*test.ini:3
+Error: Cannot assign parameter 'p': No 'foo' function accepting 1 argument\(s\) was found -- at .*test.ini:3

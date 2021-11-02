@@ -834,7 +834,7 @@ ExprValue DynamicallyResolvedFunctionNode::compute(Context *context, ExprValue a
         if (result.getType() != ExprValue::UNDEF)
             return result;
     }
-    throw opp_runtime_error("No function named '%s' with %d argument(s)", name.c_str(), argc);
+    throw opp_runtime_error("No '%s' function accepting %d argument(s) was found", name.c_str(), argc);
 }
 
 ExprValue DynamicallyResolvedMethodNode::compute(Context *context, ExprValue& object, ExprValue argv[], int argc) const
@@ -844,7 +844,7 @@ ExprValue DynamicallyResolvedMethodNode::compute(Context *context, ExprValue& ob
         if (result.getType() != ExprValue::UNDEF)
             return result;
     }
-    throw opp_runtime_error("%s %s has no method named '%s' with %d argument(s)",
+    throw opp_runtime_error("%s %s has no '%s' method that accepts %d argument(s)",
             (object.getType() == ExprValue::POINTER ? "Object" : "Value"),
             object.str().c_str(), name.c_str(), argc);
 }

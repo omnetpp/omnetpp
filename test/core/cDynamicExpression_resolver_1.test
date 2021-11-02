@@ -9,7 +9,7 @@ std::string str(intval_t x) {return std::to_string(x);}
 static cExpression::Context gContext(nullptr, nullptr);
 
 
-class TestResolver : public cDynamicExpression::ResolverBase {
+class TestResolver : public cDynamicExpression::IResolver {
 public:
     typedef cExpression::Context Context;
 

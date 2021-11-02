@@ -75,8 +75,8 @@ x = 3+cos([]) --> ERROR: Cannot assign parameter 'x': cos(): Cannot cast '[]' fr
 x = 1+[] --> ERROR: Cannot assign parameter 'x': operator '+': Numeric arguments expected, got integer and object
 x = {}+[] --> ERROR: Cannot assign parameter 'x': operator '+': Numeric arguments expected, got object and object
 
-o = string([]) --> ERROR: Cannot assign parameter 'o': Cannot cast from type string to object
-o = string({}) --> ERROR: Cannot assign parameter 'o': Cannot cast from type string to object
+o = string([]) --> (omnetpp::cValueHolder)holder: "[]"
+o = string({}) --> (omnetpp::cValueHolder)holder: "{}"
 o = [] --> []
 o = [{},{},{}] --> [{}, {}, {}]
 o = 3+cos([]) --> ERROR: Cannot assign parameter 'o': cos(): Cannot cast '[]' from type 'object' to 'double'
