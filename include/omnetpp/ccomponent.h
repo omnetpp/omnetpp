@@ -151,6 +151,9 @@ class SIM_API cComponent : public cSoftOwner //implies noncopyable
     virtual void doEmit(simsignal_t signalID, intval_t i, cObject *details);
     virtual void doEmit(simsignal_t signalID, uintval_t i, cObject *details);
 
+  protected:
+    virtual cModule *doFindModuleByPath(const char *s) const = 0;
+
   public:
     // internal: used by log mechanism
     LogLevel getLogLevel() const { return (LogLevel)((flags >> FL_LOGLEVEL_SHIFT) & 0x7); }
@@ -465,6 +468,42 @@ class SIM_API cComponent : public cSoftOwner //implies noncopyable
      * This is a shortcut to getSimulation()->getSystemModule().
      */
     virtual cModule *getSystemModule() const;
+
+    /**
+     * Finds a module in the module tree, given by its absolute or relative path.
+     * The path is a string of module names separated by dots; the special
+     * module name ^ (caret) stands for the parent module. If the path starts
+     * with a dot or caret, it is understood as relative to this module/channel,
+     * otherwise it is taken to mean an absolute path. For absolute paths,
+     * inclusion of the toplevel module's name in the path is optional.
+     * The toplevel module may also be referred to as "<root>".
+     *
+     * This method never returns nullptr. If the module was not found,
+     * an exception is thrown.
+     *
+     * Examples:
+     *   "." means this module;
+     *   "<root>" means the toplevel module;
+     *   ".sink" means the sink submodule of this module;
+     *   ".queue[2].srv" means the srv submodule of the queue[2] submodule;
+     *   "^.host2" or ".^.host2" means the host2 sibling module;
+     *   "src" or "<root>.src" means the src submodule of the toplevel module;
+     *   "Net.src" also means the src submodule of the toplevel module, provided
+     *   it is called Net.
+     *
+     * @see findModuleByPath(), cSimulation::getModuleByPath()
+     */
+    virtual cModule *getModuleByPath(const char *path) const;
+
+    /**
+     * Finds a module in the module tree, given by its absolute or relative path.
+     * This method is similar to getModuleByPath(); the only difference is that
+     * while getModuleByPath() throws an exception if the module was not found,
+     * this method returns nullptr in that case.
+     *
+     * @see getModuleByPath(), cSimulation::findModuleByPath()
+     */
+    virtual cModule *findModuleByPath(const char *path) const;
     //@}
 
     /** @name Interface for calling initialize()/finish().

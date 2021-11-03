@@ -204,6 +204,19 @@ cModule *cComponent::getSystemModule() const
     return simulation->getSystemModule();
 }
 
+cModule *cComponent::getModuleByPath(const char *path) const
+{
+    cModule *module = findModuleByPath(path);
+    if (!module)
+        throw cRuntimeError(this, "getModuleByPath(): Module '%s' not found (Note: Operation of getModuleByPath() has changed in OMNeT++ version 6.0, use findModuleByPath() if you want the original behavior)", path);
+    return module;
+}
+
+cModule *cComponent::findModuleByPath(const char *path) const
+{
+    return doFindModuleByPath(path);
+}
+
 cRNG *cComponent::getRNG(int k) const
 {
     return getEnvir()->getRNG(k < rngMapSize ? rngMap[k] : k);

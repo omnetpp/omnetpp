@@ -71,6 +71,9 @@ class SIM_API cChannel : public cComponent //implies noncopyable
     // internal: calls preDelete() recursively
     virtual void callPreDelete(cComponent *root) override;
 
+  protected:
+    virtual cModule *doFindModuleByPath(const char *s) const override;
+
   public:
     typedef ChannelResult Result;
 

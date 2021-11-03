@@ -218,6 +218,17 @@ cModule *cChannel::getParentModule() const
     }
 }
 
+cModule *cChannel::doFindModuleByPath(const char *path) const
+{
+    bool isRelative = (path[0] == '.' || path[0] == '^');
+    if (isRelative) {
+        if (path[0] != '^' || path[1] != '.')
+            return nullptr;
+        path += 2;
+    }
+    return getParentModule()->findModuleByPath(path);
+}
+
 cProperties *cChannel::getProperties() const
 {
     cModule *parent = getParentModule();

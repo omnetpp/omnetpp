@@ -1428,17 +1428,9 @@ inline char *nextToken(char *& rest)
     return token;
 }
 
-cModule *cModule::getModuleByPath(const char *path) const
-{
-    cModule *module = findModuleByPath(path);
-    if (!module)
-        throw cRuntimeError(this, "getModuleByPath(): Module '%s' not found (Note: Operation of getModuleByPath() has changed in OMNeT++ version 6.0, use findModuleByPath() if you want the original behavior)", path);
-    return module;
-}
-
 #define ROOTNAME "<root>"
 
-cModule *cModule::findModuleByPath(const char *path) const
+cModule *cModule::doFindModuleByPath(const char *path) const
 {
     if (!path || !path[0])
         return nullptr;

@@ -386,6 +386,9 @@ class SIM_API cModule : public cComponent //implies noncopyable
     // internal: helper for deleteModule()
     virtual void doDeleteModule();
 
+    // helper for findModuleByPath()
+    virtual cModule *doFindModuleByPath(const char *s) const override;
+
   public:
     // internal: may only be called between simulations, when no modules exist
     static void clearNamePools();
@@ -736,42 +739,6 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * including zero-size submodule vectors.
      */
     virtual std::vector<std::string> getSubmoduleNames() const;
-
-    /**
-     * Finds a module in the module tree, given by its absolute or relative path.
-     * The path is a string of module names separated by dots; the special
-     * module name ^ (caret) stands for the parent module. If the path starts
-     * with a dot or caret, it is understood as relative to this module,
-     * otherwise it is taken to mean an absolute path. For absolute paths,
-     * inclusion of the toplevel module's name in the path is optional.
-     * The toplevel module may also be referred to as "<root>".
-     *
-     * This method never returns nullptr. If the module was not found,
-     * an exception is thrown.
-     *
-     * Examples:
-     *   "." means this module;
-     *   "<root>" means the toplevel module;
-     *   ".sink" means the sink submodule of this module;
-     *   ".queue[2].srv" means the srv submodule of the queue[2] submodule;
-     *   "^.host2" or ".^.host2" means the host2 sibling module;
-     *   "src" or "<root>.src" means the src submodule of the toplevel module;
-     *   "Net.src" also means the src submodule of the toplevel module, provided
-     *   it is called Net.
-     *
-     * @see findModuleByPath(), cSimulation::getModuleByPath()
-     */
-    virtual cModule *getModuleByPath(const char *path) const;
-
-    /**
-     * Finds a module in the module tree, given by its absolute or relative path.
-     * This method is similar to getModuleByPath(); the only difference is that
-     * while getModuleByPath() throws an exception if the module was not found,
-     * this method returns nullptr in that case.
-     *
-     * @see getModuleByPath(), cSimulation::findModuleByPath()
-     */
-    virtual cModule *findModuleByPath(const char *path) const;
 
     /**
      * Returns true of the given module has this module as an ancestor, and
