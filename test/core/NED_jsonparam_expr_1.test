@@ -1,0 +1,45 @@
+%description:
+Test the expr() operator
+
+%file: test.ned
+
+simple Test
+{
+    parameters:
+        @isNetwork(true);
+        object e1 = expr(10*x+y);
+        object e2 = dup(e1);
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class Test : public cSimpleModule
+{
+  public:
+    Test() : cSimpleModule(16384) { }
+    virtual void activity() override;
+};
+
+Define_Module(Test);
+
+void Test::activity()
+{
+    cOwnedDynamicExpression *expr = check_and_cast<cOwnedDynamicExpression*>(par("e2").objectValue());
+    std::map<std::string, cValue> map;
+    map["x"] = 5;
+    map["y"] = 3;
+    expr->setResolver(new cDynamicExpression::SymbolTable(map));
+    cValue result = expr->evaluate();
+    EV << "The result: " << expr->str() << " = " << result.str() << endl;
+}
+
+}; //namespace
+
+%contains: stdout
+The result: 10*x+y = 53
