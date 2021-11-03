@@ -36,8 +36,17 @@ void cResultRecorder::init(Context *ctx)
     if ((!attrsProperty) == (!manualAttrs))
         throw cRuntimeError("cResultRecorder::init(): Exactly one of attrsProperty and manualAttrs must be specified");
 
+#ifdef __GNUC__ /* also affects clang */
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
     // call legacy init() method in case the user redefined it
     init(ctx->component, ctx->statisticName, ctx->recordingMode, ctx->attrsProperty, ctx->manualAttrs);
+
+#ifdef __GNUC__
+#  pragma GCC diagnostic pop
+#endif
 }
 
 cResultRecorder *cResultRecorder::clone() const

@@ -35,8 +35,18 @@ void cResultFilter::init(Context *ctx)
     component = ctx->component;
     attrsProperty = ctx->attrsProperty;
 
+#ifdef __GNUC__ /* also affects clang */
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
     // call legacy init() method in case the user redefined it
     init(ctx->component, ctx->attrsProperty);
+
+#ifdef __GNUC__
+#  pragma GCC diagnostic pop
+#endif
+
 }
 
 cResultFilter *cResultFilter::clone() const
