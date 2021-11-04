@@ -179,6 +179,11 @@ bool cPar::isVolatile() const
     return p->isVolatile();
 }
 
+bool cPar::isMutable() const
+{
+    return p->isMutable();
+}
+
 bool cPar::isExpression() const
 {
     return p->isExpression();
@@ -335,13 +340,17 @@ cPar& cPar::setExpression(cExpression *e, cComponent *ctx)
     p->setExpression(e);
     evalContext = ctx ? ctx : ownerComponent;
     if (ownerComponent->parametersFinalized() && !p->isVolatile()) // note: conversion to const for non-volatile parameters in the setup phase is delayed to parameter finalization, see comment in parse()
-        convertToConst();
+        doConvertToConst();
     afterChange();
     return *this;
 }
 
-void cPar::beforeChange()
+void cPar::beforeChange(bool isInternalChange)
 {
+    // throw if not mutable
+    if (p->isSet() && !p->isMutable() && !isInternalChange && getSimulation()->getParameterMutabilityCheck())
+        throw cRuntimeError(this, "Setting the parameter is not allowed at runtime (it is not marked as mutable)");
+
     // notify pre-change listeners
     if (ownerComponent->hasListeners(PRE_MODEL_CHANGE)) {
         cPreParameterChangeNotification tmp;
@@ -393,7 +402,7 @@ void cPar::finalize()
 {
     // convert non-volatile expressions to constant
     if (p->isExpression() && !p->isVolatile())
-        convertToConst();
+        doConvertToConst();
 }
 
 void cPar::acceptDefault()
@@ -426,10 +435,10 @@ void cPar::acceptDefault()
     afterChange();
 }
 
-void cPar::convertToConst()
+void cPar::doConvertToConst(bool isInternalChange)
 {
-    beforeChange();
     copyIfShared();
+    beforeChange(isInternalChange);
     try {
         p->convertToConst(evalContext);
     }
@@ -492,7 +501,7 @@ void cPar::parse(const char *text, const char *baseDirectory, FileLine loc)
     // makes sense. In the latter case, evaluation takes place in finalize() (after which
     // the parametersFinalized flag will be set).
     if (ownerComponent->parametersFinalized() && p->isExpression() && !p->isVolatile())
-        convertToConst();
+        doConvertToConst();
 
     afterChange();
 }

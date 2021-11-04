@@ -96,9 +96,12 @@ class SIM_API cPar : public cObject
     // internal
     void moveto(cPar& other);
     // internal: called each time before the value of this object changes.
-    void beforeChange();
+    void beforeChange(bool isInternalChange=false);
     // internal: called each time after the value of this object changes.
     void afterChange();
+    // internal: replace expression with the value it evaluates to
+    void doConvertToConst(bool isInternalChange=true);
+
 
   public:
     // internal, used by cComponent::finalizeParameters()
@@ -173,6 +176,12 @@ class SIM_API cPar : public cObject
      * This flag affects the operation of setExpression().
      */
     bool isVolatile() const;
+
+    /**
+     * Returns true if this parameter is marked in the NED file as mutable.
+     * A non-mutable parameter cannot have its value changed.
+     */
+    bool isMutable() const;
 
     /**
      * Returns false if the stored value is a constant, and true if it is
@@ -415,7 +424,7 @@ class SIM_API cPar : public cObject
      * For non-const values, replaces the stored expression with its
      * evaluation.
      */
-    void convertToConst();
+    void convertToConst() {doConvertToConst(false);}
 
     /**
      * Converts the value from string, and stores the result.

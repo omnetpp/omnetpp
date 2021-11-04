@@ -52,7 +52,8 @@ class SIM_API cParImpl : public cNamedObject
       FL_ISEXPR = 8,      // whether it stores a constant or an expression
       FL_ISSHARED = 16,   // used by cPar only: whether this object is shared among multiple cPars
       FL_CONTAINSVALUE = 32, // whether it has a value
-      FL_ISSET = 64       // whether the contained value is just a default value (false) or the set value (true)
+      FL_ISSET = 64,      // whether the contained value is just a default value (false) or the set value (true)
+      FL_ISMUTABLE = 128  // whether it was declared as "mutable" in NED
     };
 
   private:
@@ -136,6 +137,11 @@ class SIM_API cParImpl : public cNamedObject
     virtual bool isVolatile() const {return flags & FL_ISVOLATILE;}
 
     /**
+     * Returns true if this parameter is marked in the NED file as mutable.
+     */
+    virtual bool isMutable() const {return flags & FL_ISMUTABLE;}
+
+    /**
      * Returns false if the stored value is a constant, and true if it is
      * an expression. (It is not examined whether the expression yields
      * a constant value.)
@@ -165,6 +171,11 @@ class SIM_API cParImpl : public cNamedObject
      * convertToConst(cComponent *context) as well.
      */
     virtual void setIsVolatile(bool f) {setFlag(FL_ISVOLATILE,f);}
+
+    /**
+     * Sets the isMutable flag.
+     */
+    virtual void setIsMutable(bool f) {setFlag(FL_ISMUTABLE,f);}
 
     /**
      * Sets the isShared flag.

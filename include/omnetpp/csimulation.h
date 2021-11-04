@@ -93,11 +93,18 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     cException *exception;    // helper variable to get exceptions back from activity()
     bool trapOnNextEvent = false;  // when set, next handleMessage or activity() will execute debugger interrupt
 
+    bool parameterMutabilityCheck = true;  // when disabled, module parameters can be set without them being declared @mutable
+
     cFingerprintCalculator *fingerprint = nullptr; // used for fingerprint calculation
 
   private:
     // internal
     void checkActive()  {if (getActiveSimulation()!=this) throw cRuntimeError(this, E_WRONGSIM);}
+
+  public:
+    // internal
+    void setParameterMutabilityCheck(bool b) {parameterMutabilityCheck = b;}
+    bool getParameterMutabilityCheck() const {return parameterMutabilityCheck;}
 
   public:
     /** @name Constructor, destructor. */

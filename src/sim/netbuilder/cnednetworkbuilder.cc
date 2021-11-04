@@ -219,6 +219,12 @@ void cNedNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
             component->addPar(impl);
 
             cProperties *paramProps = component->par(paramName).getProperties();
+
+            bool isMutable = false;
+            if (cProperty *mutableProp = paramProps->get("mutable"))
+                isMutable = opp_strcmp(mutableProp->getValue(cProperty::DEFAULTKEY), "false") != 0;
+            impl->setIsMutable(isMutable);
+
             cProperty *unitProp = paramProps->get("unit");
             const char *declUnit = unitProp ? unitProp->getValue(cProperty::DEFAULTKEY) : nullptr;
             impl->setUnit(declUnit);
