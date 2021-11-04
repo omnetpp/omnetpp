@@ -73,18 +73,18 @@ void Tester::activity()
 }; //namespace
 
 %contains: stdout
-NED_jsonparam_ownership_1::Nonowned{} ==> ERROR: Cannot assign parameter 'b': Object parameters may only hold objects they fully own, but object (NED_jsonparam_ownership_1::Nonowned) is not a cOwnedObject and does not keep track of its owner
-[ 1, 2, NED_jsonparam_ownership_1::Nonowned{} ] ==> ERROR: Cannot assign parameter 'b': Object parameters may only hold objects they fully own, but object (NED_jsonparam_ownership_1::Nonowned) (which is indirectly contained in the result object, its parent being (omnetpp::cValueArray)array3) is not a cOwnedObject and does not keep track of its owner
-{ a: 5, b: NED_jsonparam_ownership_1::Nonowned{} } ==> ERROR: Cannot assign parameter 'b': Object parameters may only hold objects they fully own, but object (NED_jsonparam_ownership_1::Nonowned) (which is indirectly contained in the result object, its parent being (omnetpp::cValueMap)map3) is not a cOwnedObject and does not keep track of its owner
+NED_jsonparam_ownership_1::Nonowned{} ==> ERROR: Cannot assign parameter 'b': Object parameters may only hold objects they fully own, but object (NED_jsonparam_ownership_1::Nonowned) is not a cOwnedObject and does not keep track of its owner (Hint: Try cloning it using the dup() function!)
+[ 1, 2, NED_jsonparam_ownership_1::Nonowned{} ] ==> ERROR: Cannot assign parameter 'b': Object parameters may only hold objects they fully own, but object (NED_jsonparam_ownership_1::Nonowned) inside the result object (parent: (omnetpp::cValueArray)array3) is not a cOwnedObject and does not keep track of its owner (Hint: Try cloning it using the dup() function!)
+{ a: 5, b: NED_jsonparam_ownership_1::Nonowned{} } ==> ERROR: Cannot assign parameter 'b': Object parameters may only hold objects they fully own, but object (NED_jsonparam_ownership_1::Nonowned) inside the result object (parent: (omnetpp::cValueMap)map3) is not a cOwnedObject and does not keep track of its owner (Hint: Try cloning it using the dup() function!)
 
-a ==> ERROR: Cannot assign parameter 'b': Object parameters may only hold objects they fully own, but object (omnetpp::cValueMap)map1 is already owned by a parameter named 'a'
+a ==> ERROR: Cannot assign parameter 'b': Object parameters may only hold objects they fully own, but object (omnetpp::cValueMap)map1 is already owned by a parameter named 'a' (Hint: Try cloning it using the dup() function!)
 dup(a) ==> {a: 1, b: [2, 3, {c: 4, d: 5}]}
 
-[a,a] ==> ERROR: Cannot assign parameter 'b': Object parameters may only hold objects they fully own, but object (omnetpp::cValueMap)map1 (which is indirectly contained in the result object, its parent being (omnetpp::cValueArray)array4) is already owned by a parameter named 'a'
+[a,a] ==> ERROR: Cannot assign parameter 'b': Object parameters may only hold objects they fully own, but object (omnetpp::cValueMap)map1 inside the result object (parent: (omnetpp::cValueArray)array4) is already owned by a parameter named 'a' (Hint: Try cloning it using the dup() function!)
 [ dup(a), dup(a) ] ==> [{a: 1, b: [2, 3, {c: 4, d: 5}]}, {a: 1, b: [2, 3, {c: 4, d: 5}]}]
 dup([a,a]) ==> [{a: 1, b: [2, 3, {c: 4, d: 5}]}, {a: 1, b: [2, 3, {c: 4, d: 5}]}]
 
-{x: a, y: a} ==> ERROR: Cannot assign parameter 'b': Object parameters may only hold objects they fully own, but object (omnetpp::cValueMap)map1 (which is indirectly contained in the result object, its parent being (omnetpp::cValueMap)map4) is already owned by a parameter named 'a'
+{x: a, y: a} ==> ERROR: Cannot assign parameter 'b': Object parameters may only hold objects they fully own, but object (omnetpp::cValueMap)map1 inside the result object (parent: (omnetpp::cValueMap)map4) is already owned by a parameter named 'a' (Hint: Try cloning it using the dup() function!)
 {x: dup(a), y: dup(a)} ==> {x: {a: 1, b: [2, 3, {c: 4, d: 5}]}, y: {a: 1, b: [2, 3, {c: 4, d: 5}]}}
 dup( {x: a, y: a} ) ==> {x: {a: 1, b: [2, 3, {c: 4, d: 5}]}, y: {a: 1, b: [2, 3, {c: 4, d: 5}]}}
 .

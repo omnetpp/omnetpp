@@ -143,19 +143,21 @@ static void throwNotOwned(cObject *obj, cObject *parent=nullptr)
 
     std::string note;
     if (parent != nullptr)
-        note = opp_stringf(" (which is indirectly contained in the result object, its parent being %s)", parent->getClassAndFullName().c_str());
+        note = opp_stringf(" inside the result object (parent: %s)", parent->getClassAndFullName().c_str());
 
     std::string reason;
     if (!obj->isOwnedObject())
-        reason = "is not a cOwnedObject and does not keep track of its owner";
+        reason = " is not a cOwnedObject and does not keep track of its owner";
     else if (obj->getOwner() == nullptr)
-        reason = "has been removed from the ownership hierarchy (owner=nullptr)";
+        reason = " has been removed from the ownership hierarchy (owner=nullptr)";
     else if (dynamic_cast<cParImpl*>(obj->getOwner()) != nullptr)
-        reason = opp_stringf("is already owned by a parameter named '%s'", obj->getOwner()->getName());
+        reason = opp_stringf(" is already owned by a parameter named '%s'", obj->getOwner()->getName());
     else
-        reason = opp_stringf("is already owned by %s", obj->getOwner()->getClassAndFullPath().c_str());
+        reason = opp_stringf(" is already owned by %s", obj->getOwner()->getClassAndFullPath().c_str());
 
-    throw cRuntimeError("%s%s %s", msg.c_str(), note.c_str(), reason.c_str());
+    std::string hint = " (Hint: Try cloning it using the dup() function!)";
+
+    throw cRuntimeError("%s", (msg + note + reason + hint).c_str());
 }
 
 namespace {
