@@ -19,7 +19,7 @@
 #include <string>
 #include <vector>
 #include "cvalue.h"
-#include "cownedobject.h"
+#include "cvaluecontainer.h"
 
 
 namespace omnetpp {
@@ -34,15 +34,13 @@ namespace omnetpp {
  *
  * @ingroup SimSupport
  */
-class SIM_API cValueHolder : public cOwnedObject
+class SIM_API cValueHolder : public cValueContainer
 {
   private:
     cValue value;
 
   private:
     void copy(const cValueHolder& other);
-    void takeValue();
-    void dropAndDeleteValue();
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -56,23 +54,23 @@ class SIM_API cValueHolder : public cOwnedObject
      * in the simulation library like cQueue, which only duplicate the objects
      * they own, and leave externally owned objects alone.
      */
-    cValueHolder(const cValueHolder& other) : cOwnedObject(other) {copy(other);}
+    cValueHolder(const cValueHolder& other) : cValueContainer(other) {copy(other);}
 
     /**
      * Constructor.
      */
-    explicit cValueHolder(const char *name=nullptr) : cOwnedObject(name) {}
+    explicit cValueHolder(const char *name=nullptr) : cValueContainer(name) {}
 
     /**
      * Constructor.
      */
-    explicit cValueHolder(const char *name, const cValue& value) : cOwnedObject(name), value(value) {takeValue();}
+    explicit cValueHolder(const char *name, const cValue& value) : cValueContainer(name), value(value) {takeValue(this->value);}
 
     /**
      * Destructor. The contained objects that were owned by the container
      * will be deleted.
      */
-    virtual ~cValueHolder() {dropAndDeleteValue();}
+    virtual ~cValueHolder() {dropAndDeleteValue(value);}
 
     /**
      * Assignment operator. The name member is not copied;
@@ -108,20 +106,6 @@ class SIM_API cValueHolder : public cOwnedObject
      * See cObject for more details.
      */
     virtual void forEachChild(cVisitor* v) override;
-
-    /**
-     * Serializes the object into an MPI send buffer.
-     * Used by the simulation kernel for parallel execution.
-     * See cObject for more details.
-     */
-    virtual void parsimPack(cCommBuffer* buffer) const override;
-
-    /**
-     * Deserializes the object from an MPI receive buffer
-     * Used by the simulation kernel for parallel execution.
-     * See cObject for more details.
-     */
-    virtual void parsimUnpack(cCommBuffer* buffer) override;
     //@}
 
     /** @name Container functions. */
@@ -134,7 +118,7 @@ class SIM_API cValueHolder : public cOwnedObject
     /**
      * Replaces the stored value.
      */
-    void set(const cValue& v) {dropAndDeleteValue(); value = v; takeValue();}
+    void set(const cValue& v) {dropAndDeleteValue(value); value = v; takeValue(value);}
     //@}
 
 };

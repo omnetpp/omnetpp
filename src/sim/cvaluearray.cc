@@ -32,43 +32,13 @@ void cValueArray::copy(const cValueArray& other)
 {
     array = other.array;
 
-    for (cValue& value : array) {
-        if (value.containsObject()) {
-            cObject *obj = value.objectValue();
-            if (!obj->isOwnedObject())
-                value.set(obj->dup());
-            else if (obj->getOwner() == const_cast<cValueArray *>(&other)) {
-                cObject *obj2 = obj->dup();
-                value.set(obj2);
-                take(static_cast<cOwnedObject *>(obj2));
-            }
-        }
-    }
+    for (cValue& value : array)
+        valueCloned(value, other);
 }
 
 void cValueArray::cannotCast(cObject *obj, const char *toClass) const
 {
     throw cRuntimeError("Cannot cast '%s*' to '%s*')", obj->getClassName(), toClass);
-}
-
-void cValueArray::takeValue(const cValue& value)
-{
-    if (value.containsObject()) {
-        cObject *obj = value.objectValue();
-        if (obj->isOwnedObject() && obj->getOwner() == cOwnedObject::getOwningContext() && dynamic_cast<cComponent*>(obj) == nullptr)
-            take(static_cast<cOwnedObject*>(obj));
-    }
-}
-
-void cValueArray::dropAndDeleteValue(const cValue& value)
-{
-    if (value.containsObject()) {
-        cObject *obj = value.objectValue();
-        if (!obj->isOwnedObject())
-            delete obj;
-        else if (obj->getOwner() == this)
-            dropAndDelete(static_cast<cOwnedObject *>(obj));
-    }
 }
 
 cValueArray& cValueArray::operator=(const cValueArray& other)
@@ -106,35 +76,17 @@ void cValueArray::forEachChild(cVisitor* v)
                     return;
 }
 
-void cValueArray::parsimPack(cCommBuffer* buffer) const
-{
-#ifndef WITH_PARSIM
-    throw cRuntimeError(this, E_NOPARSIM);
-#else
-    throw cRuntimeError(this, "parsimPack() not implemented");
-#endif
-}
-
-void cValueArray::parsimUnpack(cCommBuffer* buffer)
-{
-#ifndef WITH_PARSIM
-    throw cRuntimeError(this, E_NOPARSIM);
-#else
-    throw cRuntimeError(this, "parsimUnpack() not implemented");
-#endif
-}
-
 void cValueArray::clear()
 {
-    for (const cValue& value : array)
+    for (cValue& value : array)
         dropAndDeleteValue(value);
     array.clear();
 }
 
-void cValueArray::add(const cValue& value)
+void cValueArray::add(const cValue& v)
 {
-    array.push_back(value);
-    takeValue(value);
+    array.push_back(v);
+    takeValue(array.back());
 }
 
 void cValueArray::insert(int k, const cValue& value)
@@ -143,7 +95,7 @@ void cValueArray::insert(int k, const cValue& value)
         throw cRuntimeError(this, "insert(): index %d is out of bounds", k);
 
     array.insert(array.begin() + k, value);
-    takeValue(value);
+    takeValue(array[k]);
 }
 
 const cValue& cValueArray::get(int k) const
@@ -159,7 +111,7 @@ void cValueArray::set(int k, const cValue& value)
         throw cRuntimeError(this, "set(): index %d is out of bounds", k);
     dropAndDeleteValue(array[k]);
     array[k] = value;
-    takeValue(value);
+    takeValue(array[k]);
 }
 
 void cValueArray::erase(int k)

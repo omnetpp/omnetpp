@@ -19,7 +19,7 @@
 #include <string>
 #include <map>
 #include "cvalue.h"
-#include "cownedobject.h"
+#include "cvaluecontainer.h"
 
 namespace omnetpp {
 
@@ -33,15 +33,13 @@ namespace omnetpp {
  *
  * @ingroup SimSupport
  */
-class SIM_API cValueMap : public cOwnedObject
+class SIM_API cValueMap : public cValueContainer
 {
   private:
     std::map<std::string,cValue> fields;
 
   private:
     void copy(const cValueMap& other);
-    void takeValue(const cValue& value);
-    void dropAndDeleteValue(const cValue& value);
 
   public:
     // internal, for inspectors only:
@@ -61,12 +59,12 @@ class SIM_API cValueMap : public cOwnedObject
      * in the simulation library like cQueue, which only duplicate the objects
      * they own, and leave externally owned objects alone.
      */
-    cValueMap(const cValueMap& other) : cOwnedObject(other) {copy(other);}
+    cValueMap(const cValueMap& other) : cValueContainer(other) {copy(other);}
 
     /**
      * Constructor.
      */
-    explicit cValueMap(const char *name=nullptr) : cOwnedObject(name) {}
+    explicit cValueMap(const char *name=nullptr) : cValueContainer(name) {}
 
     /**
      * Destructor. The contained objects that were owned by the container
@@ -108,20 +106,6 @@ class SIM_API cValueMap : public cOwnedObject
      * See cObject for more details.
      */
     virtual void forEachChild(cVisitor *v) override;
-
-    /**
-     * Serializes the object into an MPI send buffer.
-     * Used by the simulation kernel for parallel execution.
-     * See cObject for more details.
-     */
-    virtual void parsimPack(cCommBuffer *buffer) const override;
-
-    /**
-     * Deserializes the object from an MPI receive buffer
-     * Used by the simulation kernel for parallel execution.
-     * See cObject for more details.
-     */
-    virtual void parsimUnpack(cCommBuffer *buffer) override;
     //@}
 
     /** @name Container functions. */

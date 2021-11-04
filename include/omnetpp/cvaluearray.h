@@ -19,7 +19,7 @@
 #include <string>
 #include <vector>
 #include "cvalue.h"
-#include "cownedobject.h"
+#include "cvaluecontainer.h"
 
 
 namespace omnetpp {
@@ -34,7 +34,7 @@ namespace omnetpp {
  *
  * @ingroup SimSupport
  */
-class SIM_API cValueArray : public cOwnedObject
+class SIM_API cValueArray : public cValueContainer
 {
   private:
     std::vector<cValue> array;
@@ -42,8 +42,6 @@ class SIM_API cValueArray : public cOwnedObject
   private:
     void cannotCast(cObject *obj, const char *toClass) const;
     void copy(const cValueArray& other);
-    void takeValue(const cValue& value);
-    void dropAndDeleteValue(const cValue& value);
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -57,13 +55,13 @@ class SIM_API cValueArray : public cOwnedObject
      * in the simulation library like cQueue, which only duplicate the objects
      * they own, and leave externally owned objects alone.
      */
-    cValueArray(const cValueArray& other) : cOwnedObject(other) {copy(other);}
+    cValueArray(const cValueArray& other) : cValueContainer(other) {copy(other);}
 
     /**
      * Constructor. The initial capacity of the container and the delta
      * (by which the capacity will grow if it gets full) can be specified.
      */
-    explicit cValueArray(const char *name=nullptr, int capacity=0) : cOwnedObject(name), array(capacity) {}
+    explicit cValueArray(const char *name=nullptr, int capacity=0) : cValueContainer(name), array(capacity) {}
 
     /**
      * Destructor. The contained objects that were owned by the container
@@ -105,20 +103,6 @@ class SIM_API cValueArray : public cOwnedObject
      * See cObject for more details.
      */
     virtual void forEachChild(cVisitor* v) override;
-
-    /**
-     * Serializes the object into an MPI send buffer.
-     * Used by the simulation kernel for parallel execution.
-     * See cObject for more details.
-     */
-    virtual void parsimPack(cCommBuffer* buffer) const override;
-
-    /**
-     * Deserializes the object from an MPI receive buffer
-     * Used by the simulation kernel for parallel execution.
-     * See cObject for more details.
-     */
-    virtual void parsimUnpack(cCommBuffer* buffer) override;
     //@}
 
     /** @name Container functions. */

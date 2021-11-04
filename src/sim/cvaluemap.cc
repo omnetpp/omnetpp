@@ -47,26 +47,6 @@ void cValueMap::copy(const cValueMap& other)
     }
 }
 
-void cValueMap::takeValue(const cValue& value)
-{
-    if (value.containsObject()) {
-        cObject *obj = value.objectValue();
-        if (obj->isOwnedObject() && obj->getOwner() == cOwnedObject::getOwningContext() && dynamic_cast<cComponent*>(obj) == nullptr)
-            take(static_cast<cOwnedObject*>(obj));
-    }
-}
-
-void cValueMap::dropAndDeleteValue(const cValue& value)
-{
-    if (value.containsObject()) {
-        cObject *obj = value.objectValue();
-        if (!obj->isOwnedObject())
-            delete obj;
-        else if (obj->getOwner() == this)
-            dropAndDelete(static_cast<cOwnedObject*>(obj));
-    }
-}
-
 cValueMap& cValueMap::operator=(const cValueMap& other)
 {
     if (this != &other) {
@@ -102,24 +82,6 @@ void cValueMap::forEachChild(cVisitor* v)
                     return;
 }
 
-void cValueMap::parsimPack(cCommBuffer* buffer) const
-{
-#ifndef WITH_PARSIM
-    throw cRuntimeError(this, E_NOPARSIM);
-#else
-    throw cRuntimeError(this, "parsimPack() not implemented");
-#endif
-}
-
-void cValueMap::parsimUnpack(cCommBuffer* buffer)
-{
-#ifndef WITH_PARSIM
-    throw cRuntimeError(this, E_NOPARSIM);
-#else
-    throw cRuntimeError(this, "parsimUnpack() not implemented");
-#endif
-}
-
 void cValueMap::clear()
 {
     for (auto entry : fields)
@@ -132,12 +94,13 @@ void cValueMap::set(const char *key, const cValue& value)
     auto it = fields.find(key);
     if (it == fields.end()) {
         fields[key] = value;
+        it = fields.find(key);
     }
     else {
         dropAndDeleteValue(it->second);
         it->second = value;
     }
-    takeValue(value);
+    takeValue(it->second);
 }
 
 bool cValueMap::containsKey(const char *key) const
