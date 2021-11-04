@@ -70,16 +70,6 @@ std::string cChannel::str() const
     return out.str();
 }
 
-void cChannel::parsimPack(cCommBuffer *buffer) const
-{
-    throw cRuntimeError(this, "parsimPack() not implemented");
-}
-
-void cChannel::parsimUnpack(cCommBuffer *buffer)
-{
-    throw cRuntimeError(this, "parsimUnpack() not implemented");
-}
-
 void cChannel::finalizeParameters()
 {
     if (!srcGate)

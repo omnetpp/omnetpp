@@ -344,6 +344,10 @@ class SIM_API cTopology : public cOwnedObject
     void unlinkFromSourceNode(Link *link);
     void unlinkFromDestNode(Link *link);
 
+  private:
+    virtual void parsimPack(cCommBuffer *) const override {throw cRuntimeError(this, E_CANTPACK);}
+    virtual void parsimUnpack(cCommBuffer *) override {throw cRuntimeError(this, E_CANTPACK);}
+
   public:
     /** @name Constructors, destructor, assignment */
     //@{
@@ -383,20 +387,6 @@ class SIM_API cTopology : public cOwnedObject
      * See cObject for more details.
      */
     virtual std::string str() const override;
-
-    /**
-     * Serializes the object into an MPI send buffer.
-     * Used by the simulation kernel for parallel execution.
-     * See cObject for more details.
-     */
-    virtual void parsimPack(cCommBuffer *buffer) const override;
-
-    /**
-     * Deserializes the object from an MPI receive buffer
-     * Used by the simulation kernel for parallel execution.
-     * See cObject for more details.
-     */
-    virtual void parsimUnpack(cCommBuffer *buffer) override;
     //@}
 
     /** @name Extracting the topology from a network.

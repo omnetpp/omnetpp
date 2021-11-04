@@ -143,16 +143,6 @@ class SIM_API cChannel : public cComponent //implies noncopyable
      * See cObject for more details.
      */
     virtual std::string str() const override;
-
-    /**
-     * Serializes the object into a buffer.
-     */
-    virtual void parsimPack(cCommBuffer *buffer) const override;
-
-    /**
-     * Deserializes the object from a buffer.
-     */
-    virtual void parsimUnpack(cCommBuffer *buffer) override;
     //@}
 
     /** @name Public methods for invoking initialize()/finish(), redefined from cComponent.

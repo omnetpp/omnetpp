@@ -239,6 +239,10 @@ class SIM_API cOwnedObject : public cNamedObject
  */
 class SIM_API cNoncopyableOwnedObject : public cOwnedObject, noncopyable
 {
+  private:
+    virtual void parsimPack(cCommBuffer *) const override {throw cRuntimeError(this, E_CANTPACK);}
+    virtual void parsimUnpack(cCommBuffer *) override {throw cRuntimeError(this, E_CANTPACK);}
+
   public:
     /**
      * Constructor
@@ -250,16 +254,6 @@ class SIM_API cNoncopyableOwnedObject : public cOwnedObject, noncopyable
      * Duplication not supported, this method is redefined to throw an error.
      */
     virtual cNoncopyableOwnedObject *dup() const override;
-
-    /**
-     * Redefined to throw an error.
-     */
-    virtual void parsimPack(cCommBuffer *buffer) const override;
-
-    /**
-     * Redefined to throw an error.
-     */
-    virtual void parsimUnpack(cCommBuffer *buffer) override;
 };
 
 

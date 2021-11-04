@@ -82,16 +82,6 @@ std::string cTopology::str() const
     return out.str();
 }
 
-void cTopology::parsimPack(cCommBuffer *buffer) const
-{
-    throw cRuntimeError(this, "parsimPack() not implemented");
-}
-
-void cTopology::parsimUnpack(cCommBuffer *buffer)
-{
-    throw cRuntimeError(this, "parsimUnpack() not implemented");
-}
-
 cTopology& cTopology::operator=(const cTopology&)
 {
     throw cRuntimeError(this, "operator= not implemented yet");

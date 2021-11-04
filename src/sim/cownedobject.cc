@@ -166,20 +166,7 @@ void cOwnedObject::parsimUnpack(cCommBuffer *buffer)
 
 cNoncopyableOwnedObject *cNoncopyableOwnedObject::dup() const
 {
-    throw cRuntimeError(this, "dup(): %s subclasses from cNoncopyableOwnedObject, "
-                              "and does not support dup()", getClassName());
-}
-
-void cNoncopyableOwnedObject::parsimPack(cCommBuffer *buffer) const
-{
-    throw cRuntimeError(this, "parsimPack(): %s subclasses from cNoncopyableOwnedObject, and "
-                              "does not support pack/unpack operations", getClassName());
-}
-
-void cNoncopyableOwnedObject::parsimUnpack(cCommBuffer *buffer)
-{
-    throw cRuntimeError(this, "parsimUnpack(): %s subclasses from cNoncopyableOwnedObject, and "
-                              "does not support pack/unpack operations", getClassName());
+    throw cRuntimeError(this, E_CANTDUP);
 }
 
 //----

@@ -108,18 +108,6 @@ class SIM_API cSoftOwner : public cNoncopyableOwnedObject
      * See cObject for more details.
      */
     virtual void forEachChild(cVisitor *v) override;
-
-    /**
-     * Packing and unpacking cannot be supported with this class.
-     * This method raises an error.
-     */
-    virtual void parsimPack(cCommBuffer *buffer) const override;
-
-    /**
-     * Packing and unpacking cannot be supported with this class.
-     * This method raises an error.
-     */
-    virtual void parsimUnpack(cCommBuffer *buffer) override;
     //@}
 
     /** @name Container functions. */

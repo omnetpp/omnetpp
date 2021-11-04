@@ -52,7 +52,7 @@ const char *cErrorMessages::get(ErrorCode e)
         case E_MODINI:    return "Module initialization error";
         case E_NEGTIME:   return "wait(): negative delay";
         case E_NEGTOUT:   return "receive()/receiveNew(): negative timeout";
-        case E_NOPARSIM:  return "Simulation kernel was compiled without parallel simulation support (WITH_PARSIM=no)";
+        case E_NOPARSIM:  return "parsimPack()/parsimUnpack() not supported: Simulation kernel was compiled without parallel simulation support (WITH_PARSIM=no)";
         case E_NORECV:    return "Cannot use receive..() or wait() with handleMessage()";
         case E_NUMARGS:   return "Bad number of arguments, %d expected";
         case E_PARAM:     return "Cannot assign parameter '%s': %s";

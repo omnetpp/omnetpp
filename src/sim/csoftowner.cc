@@ -186,29 +186,6 @@ void cSoftOwner::forEachChild(cVisitor *v)
             return;
 }
 
-void cSoftOwner::parsimPack(cCommBuffer *buffer) const
-{
-#ifndef WITH_PARSIM
-    throw cRuntimeError(this, E_NOPARSIM);
-#else
-    cOwnedObject::parsimPack(buffer);
-
-    if (numObjs > 0)
-        throw cRuntimeError(this, "parsimPack() not supported (makes no sense)");
-#endif
-}
-
-void cSoftOwner::parsimUnpack(cCommBuffer *buffer)
-{
-#ifndef WITH_PARSIM
-    throw cRuntimeError(this, E_NOPARSIM);
-#else
-    cOwnedObject::parsimUnpack(buffer);
-    if (numObjs > 0)
-        throw cRuntimeError(this, "parsimUnpack(): Can only unpack into empty object");
-#endif
-}
-
 void cSoftOwner::take(cOwnedObject *obj)
 {
     // ask current owner to release it -- if it's a cSoftOwner, it will.

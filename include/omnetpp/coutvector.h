@@ -94,18 +94,6 @@ class SIM_API cOutVector : public cNoncopyableOwnedObject
      * See cObject for more details.
      */
     virtual std::string str() const override;
-
-    /**
-     * Packing and unpacking cannot be supported with this class.
-     * This methods raises an error.
-     */
-    virtual void parsimPack(cCommBuffer *buffer) const override;
-
-    /**
-     * Packing and unpacking cannot be supported with this class.
-     * This methods raises an error.
-     */
-    virtual void parsimUnpack(cCommBuffer *buffer) override;
     //@}
 
     /** @name Metadata annotations. */

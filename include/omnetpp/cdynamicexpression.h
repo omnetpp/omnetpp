@@ -262,6 +262,10 @@ class SIM_API cDynamicExpression : public cExpression
  */
 class cOwnedDynamicExpression : public cOwnedObject, public cDynamicExpression
 {
+  private:
+    virtual void parsimPack(cCommBuffer *) const override {throw cRuntimeError(this, E_CANTPACK);}
+    virtual void parsimUnpack(cCommBuffer *) override {throw cRuntimeError(this, E_CANTPACK);}
+
   public:
     /** @name Constructors, destructor, assignment. */
     //@{
@@ -298,20 +302,6 @@ class cOwnedDynamicExpression : public cOwnedObject, public cDynamicExpression
      * See cObject for more details.
      */
     virtual std::string str() const override { return cDynamicExpression::str(); }
-
-    /**
-     * Serializes the object into an MPI send buffer.
-     * Used by the simulation kernel for parallel execution.
-     * See cObject for more details.
-     */
-    virtual void parsimPack(cCommBuffer* buffer) const override;
-
-    /**
-     * Deserializes the object from an MPI receive buffer
-     * Used by the simulation kernel for parallel execution.
-     * See cObject for more details.
-     */
-    virtual void parsimUnpack(cCommBuffer* buffer) override;
 };
 
 }  // namespace omnetpp

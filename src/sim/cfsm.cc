@@ -61,15 +61,5 @@ std::string cFSM::str() const
     return out.str();
 }
 
-void cFSM::parsimPack(cCommBuffer *buffer) const
-{
-    throw cRuntimeError(this, "parsimPack() not implemented");
-}
-
-void cFSM::parsimUnpack(cCommBuffer *buffer)
-{
-    throw cRuntimeError(this, "parsimUnpack() not implemented");
-}
-
 }  // namespace omnetpp
 

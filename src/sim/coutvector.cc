@@ -79,16 +79,6 @@ std::string cOutVector::str() const
     return out.str();
 }
 
-void cOutVector::parsimPack(cCommBuffer *buffer) const
-{
-    throw cRuntimeError(this, "parsimPack() not supported");
-}
-
-void cOutVector::parsimUnpack(cCommBuffer *buffer)
-{
-    throw cRuntimeError(this, "parsimUnpack(): Not supported");
-}
-
 void cOutVector::setUnit(const char *unit)
 {
     if (!handle)
