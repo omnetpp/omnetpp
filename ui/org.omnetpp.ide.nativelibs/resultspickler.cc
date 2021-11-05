@@ -27,28 +27,6 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace scave {
 
-
-// This is a little utility class we're using to keep track of the names of
-// the "extra" SHM objects (on top of the pickle SHM itself, i.e. the ones
-// for passing vector data), so we can be sure that they are all cleaned
-// up whenever an exception happens during pickling.
-class ShmCleaner {
-    std::vector<ShmSendBuffer*> shmBuffers;
-
-  public:
-    void add(ShmSendBuffer *buf) { shmBuffers.push_back(buf); }
-    void add(const std::pair<ShmSendBuffer*,ShmSendBuffer*> p) { add(p.first); add(p.second); }
-
-    // This should be called if everything went right, and we are actually
-    // passing all the SHM objects to the Python side, leaving the cleanup to that.
-    void releaseAll() { shmBuffers.clear(); }
-
-    ~ShmCleaner() {
-        for (auto buf : shmBuffers)
-            delete buf;
-    }
-};
-
 std::pair<ShmSendBuffer*, ShmSendBuffer*> ResultsPickler::readVectorIntoShm(const ID& id, double simTimeStart, double simTimeEnd)
 {
     size_t memoryLimitBytes = getSizeLimit();
@@ -147,7 +125,6 @@ std::vector<ShmSendBuffer *> ResultsPickler::getCsvResultsPickle(const IDList& r
     std::vector<ShmSendBuffer *> buffers; // to store the vector data buffers
     buffers.push_back(nullptr); // to be overwritten by the pickle itself
     ShmPickler p(shmManager->create("results", 0, true), getSizeLimit());
-    ShmCleaner shmCleaner;
 
     p.protocol();
 
@@ -275,8 +252,6 @@ std::vector<ShmSendBuffer *> ResultsPickler::getCsvResultsPickle(const IDList& r
 
                     auto shmBuffers = readVectorIntoShm(id, simTimeStart, simTimeEnd);
 
-                    shmCleaner.add(shmBuffers);
-
                     p.pushInt(buffers.size());
                     buffers.push_back(shmBuffers.first); // vectime
                     p.pushInt(buffers.size());
@@ -352,7 +327,6 @@ std::vector<ShmSendBuffer *> ResultsPickler::getCsvResultsPickle(const IDList& r
 
     p.stop();
 
-    shmCleaner.releaseAll();
     buffers[0] = p.get();
     return buffers;
 }
@@ -459,7 +433,6 @@ std::vector<ShmSendBuffer *> ResultsPickler::getVectorsPickle(const IDList& vect
 
     std::vector<ShmSendBuffer *> buffers; // to store the vector data buffers
     buffers.push_back(nullptr); // to be overwritten by the pickle itself
-    ShmCleaner shmCleaner;
 
     p.protocol();
 
@@ -474,8 +447,6 @@ std::vector<ShmSendBuffer *> ResultsPickler::getVectorsPickle(const IDList& vect
         p.pushString(result->getName());
 
         auto shmBuffers = readVectorIntoShm(vectors.get(i), simTimeStart, simTimeEnd);
-
-        shmCleaner.add(shmBuffers);
 
         p.pushInt(buffers.size());
         buffers.push_back(shmBuffers.first); // vectime
@@ -499,7 +470,6 @@ std::vector<ShmSendBuffer *> ResultsPickler::getVectorsPickle(const IDList& vect
 
     p.stop();
 
-    shmCleaner.releaseAll();
     buffers[0] = p.get();
     return buffers;
 }
