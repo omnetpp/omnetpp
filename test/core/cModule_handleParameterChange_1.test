@@ -10,7 +10,7 @@ simple Node1
 simple Node2
 {
     parameters:
-        int i = default(1);
+        int i @mutable = default(1);
 }
 
 network Test

@@ -158,6 +158,7 @@ type : char = 68
 unit : string = "bps"
 isNumeric : bool = true
 isVolatile : bool = false
+isMutable : bool = false
 isExpression : bool = false
 isShared : bool = true
 
