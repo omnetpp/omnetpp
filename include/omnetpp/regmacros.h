@@ -287,7 +287,7 @@ namespace omnetpp {
  * @hideinitializer
  */
 #define Register_Figure(NAME, CLASSNAME)  \
-  __REGISTER_CLASS_X(CLASSNAME, omnetpp::cFigure, "figure", figureTypes[NAME] = omnetpp::opp_typename(typeid(CLASSNAME)))
+  __REGISTER_CLASS_X(CLASSNAME, omnetpp::cFigure, "figure", omnetpp::internal::figureTypes[NAME] = omnetpp::opp_typename(typeid(CLASSNAME)))
 
 //@}
 
