@@ -11,6 +11,8 @@ void test(const char *expr)
     try {
         cValue v = e.evaluate();
         result = v.str();
+        if (v.getType() == cValue::POINTER && v.objectValue() != nullptr)
+            delete v.objectValue();
     } catch (std::exception& e) {
         result = e.what();
     }
@@ -198,6 +200,9 @@ P( milliseconds(0.5s));
 P( kilowatt_hour(1500Wh));
 P( kilometer_per_hour(10mps));
 EV << ".\n";
+
+%not-contains: stdout
+undisposed object
 
 %contains: stdout
 W(150mW) ==> 0.15W
