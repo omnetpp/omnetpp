@@ -209,7 +209,7 @@ class ShmPickler : public Pickler
   public:
     ShmPickler(std::shared_ptr<ShmSendBuffer> sendBuffer, size_t sizeLimit);
 
-    std::shared_ptr<ShmSendBuffer> get() { return sendBuffer; }
+    std::shared_ptr<ShmSendBuffer> getBuffer() { return sendBuffer; }
 };
 
 }  // namespace scave

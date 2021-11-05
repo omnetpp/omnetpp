@@ -327,7 +327,7 @@ std::vector<std::shared_ptr<ShmSendBuffer>> ResultsPickler::getCsvResultsPickle(
 
     p.stop();
 
-    buffers[0] = p.get();
+    buffers[0] = p.getBuffer();
     return buffers;
 }
 
@@ -422,7 +422,7 @@ std::shared_ptr<ShmSendBuffer> ResultsPickler::getScalarsPickle(const IDList& sc
 
     p.stop();
 
-    return p.get();
+    return p.getBuffer();
 }
 
 
@@ -470,7 +470,7 @@ std::vector<std::shared_ptr<ShmSendBuffer>> ResultsPickler::getVectorsPickle(con
 
     p.stop();
 
-    buffers[0] = p.get();
+    buffers[0] = p.getBuffer();
     return buffers;
 }
 
@@ -510,7 +510,7 @@ std::shared_ptr<ShmSendBuffer> ResultsPickler::getParamValuesPickle(const IDList
 
     p.stop();
 
-    return p.get();
+    return p.getBuffer();
 }
 
 
@@ -559,7 +559,7 @@ std::shared_ptr<ShmSendBuffer> ResultsPickler::getStatisticsPickle(const IDList&
 
     p.stop();
 
-    return p.get();
+    return p.getBuffer();
 }
 
 
@@ -614,7 +614,7 @@ std::shared_ptr<ShmSendBuffer> ResultsPickler::getHistogramsPickle(const IDList&
 
     p.stop();
 
-    return p.get();
+    return p.getBuffer();
 }
 
 std::shared_ptr<ShmSendBuffer> ResultsPickler::getRunsPickle(const char *filterExpression)
@@ -663,7 +663,7 @@ std::shared_ptr<ShmSendBuffer> ResultsPickler::getRunsPickle(const RunList& runs
 
     p.stop();
 
-    return p.get();
+    return p.getBuffer();
 }
 
 
@@ -693,7 +693,7 @@ std::shared_ptr<ShmSendBuffer> ResultsPickler::getRunattrsPickle(const RunAndVal
 
     p.stop();
 
-    return p.get();
+    return p.getBuffer();
 }
 
 
@@ -723,7 +723,7 @@ std::shared_ptr<ShmSendBuffer> ResultsPickler::getItervarsPickle(const RunAndVal
 
     p.stop();
 
-    return p.get();
+    return p.getBuffer();
 }
 
 
@@ -753,7 +753,7 @@ std::shared_ptr<ShmSendBuffer> ResultsPickler::getConfigEntriesPickle(const RunA
 
     p.stop();
 
-    return p.get();
+    return p.getBuffer();
 }
 
 
@@ -783,7 +783,7 @@ std::shared_ptr<ShmSendBuffer> ResultsPickler::getParamAssignmentsPickle(const R
 
     p.stop();
 
-    return p.get();
+    return p.getBuffer();
 }
 
 
@@ -815,7 +815,7 @@ std::shared_ptr<ShmSendBuffer> ResultsPickler::getRunattrsForRunsPickle(const st
 
     p.stop();
 
-    return p.get();
+    return p.getBuffer();
 }
 
 
@@ -847,7 +847,7 @@ std::shared_ptr<ShmSendBuffer> ResultsPickler::getItervarsForRunsPickle(const st
 
     p.stop();
 
-    return p.get();
+    return p.getBuffer();
 }
 
 
@@ -879,7 +879,7 @@ std::shared_ptr<ShmSendBuffer> ResultsPickler::getConfigEntriesForRunsPickle(con
 
     p.stop();
 
-    return p.get();
+    return p.getBuffer();
 }
 
 
@@ -911,7 +911,7 @@ std::shared_ptr<ShmSendBuffer> ResultsPickler::getParamAssignmentsForRunsPickle(
 
     p.stop();
 
-    return p.get();
+    return p.getBuffer();
 }
 
 }  // namespace scave
