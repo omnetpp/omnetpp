@@ -60,7 +60,7 @@ ExprValue ContextObjectMatchesConstPattern::evaluate(Context *context) const
     MatchExpression::Matchable *matchableObject = dynamic_cast<MatchExpression::Matchable*>(context);
     Assert(matchableObject);
     const char *text = matchableObject->getAsString();
-    return matcher.matches(text);
+    return text == nullptr ? false : matcher.matches(text);
 }
 
 void ContextObjectFieldMatchesConstPattern::print(std::ostream& out, int spaciousness) const
@@ -73,7 +73,7 @@ ExprValue ContextObjectFieldMatchesConstPattern::evaluate(Context *context) cons
     MatchExpression::Matchable *matchableObject = dynamic_cast<MatchExpression::Matchable*>(context);
     Assert(matchableObject);
     const char *text = matchableObject->getAsString(fieldToMatch.c_str());
-    return matcher.matches(text);
+    return text == nullptr ? false : matcher.matches(text);
 }
 
 MatchExpression::MatchExpression(const char *pattern, bool dottedpath, bool fullstring, bool casesensitive)
