@@ -60,7 +60,7 @@ class COMMON_API any_ptr
 
     const any_ptr& operator=(const any_ptr& other) {ptr=other.ptr; type=other.type; return *this;}
 
-    bool operator==(const any_ptr& other) const {return ptr==other.ptr && type==other.type;}
+    bool operator==(const any_ptr& other) const {return ptr==other.ptr && (ptr==nullptr || type==other.type);}
     bool operator!=(const any_ptr& other) const {return !operator==(other);}
 
     bool operator==(std::nullptr_t) const {return ptr==nullptr;}
