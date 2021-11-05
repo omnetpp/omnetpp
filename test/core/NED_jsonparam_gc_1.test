@@ -69,8 +69,8 @@ s = {}+[] --> ERROR: Cannot assign parameter 's': operator '+': Numeric argument
 
 x = string([]) --> ERROR: Cannot assign parameter 'x': Cannot cast from type string to XML
 x = string({}) --> ERROR: Cannot assign parameter 'x': Cannot cast from type string to XML
-x = [] --> ERROR: Cannot assign parameter 'x': check_and_cast(): Cannot cast (omnetpp::cValueArray*)Test..array26 to type 'omnetpp::cXMLElement *'
-x = [{},{},{}] --> ERROR: Cannot assign parameter 'x': check_and_cast(): Cannot cast (omnetpp::cValueArray*)Test..array27 to type 'omnetpp::cXMLElement *'
+x = [] --> ERROR: Cannot assign parameter 'x': check_and_cast(): Cannot cast (omnetpp::cValueArray*)Test.tmp.array26 to type 'omnetpp::cXMLElement *'
+x = [{},{},{}] --> ERROR: Cannot assign parameter 'x': check_and_cast(): Cannot cast (omnetpp::cValueArray*)Test.tmp.array27 to type 'omnetpp::cXMLElement *'
 x = 3+cos([]) --> ERROR: Cannot assign parameter 'x': cos(): Cannot cast '[]' from type 'object' to 'double'
 x = 1+[] --> ERROR: Cannot assign parameter 'x': operator '+': Numeric arguments expected, got integer and object
 x = {}+[] --> ERROR: Cannot assign parameter 'x': operator '+': Numeric arguments expected, got object and object

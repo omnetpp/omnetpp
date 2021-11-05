@@ -69,7 +69,7 @@ x = true --> ERROR: Cannot assign 'true' to parameter 'Test.x': Cannot cast from
 x = 12 --> ERROR: Cannot assign '12' to parameter 'Test.x': Cannot cast from type integer to XML
 x = 3.14 --> ERROR: Cannot assign '3.14' to parameter 'Test.x': Cannot cast from type double to XML
 x = "hello" --> ERROR: Cannot assign '"hello"' to parameter 'Test.x': Cannot cast from type string to XML
-x = [] --> ERROR: Cannot assign parameter 'x': check_and_cast(): Cannot cast (omnetpp::cValueArray*)Test..array5 to type 'omnetpp::cXMLElement *'
+x = [] --> ERROR: Cannot assign parameter 'x': check_and_cast(): Cannot cast (omnetpp::cValueArray*)Test.tmp.array5 to type 'omnetpp::cXMLElement *'
 x = nullptr --> nullptr
 x = undefined --> ERROR: Cannot assign 'undefined' to parameter 'Test.x': Cannot cast from type undefined to XML
 
