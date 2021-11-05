@@ -24,6 +24,9 @@
 #include "common/rwlock.h"
 #include "sharedmemory.h"
 
+// Uncomment this to turn on ShmSendBuffer instance count tracking and additional debug output.
+//#define SHMSENDBUFFER_DEBUG 1
+
 namespace omnetpp {
 namespace scave {
 
@@ -54,6 +57,9 @@ class ShmSendBuffer
 {
     friend class ShmSendBufferManager;
 private:
+#ifdef SHMSENDBUFFER_DEBUG
+    static int numInstances;
+#endif
     std::string name;
     void *mappedStart; // points to the header
     size_t reservedSize; // excluding header

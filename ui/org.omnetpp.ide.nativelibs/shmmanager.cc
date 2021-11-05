@@ -25,6 +25,10 @@ namespace scave {
 #define HEADERSIZE 8
 #define RESERVESIZE ((1ull<<31)-1-HEADERSIZE)  // 2G (on macOS, size is int32_t)
 
+#ifdef SHMSENDBUFFER_DEBUG
+    int ShmSendBuffer::numInstances = 0;
+#endif
+
 ShmSendBuffer::ShmSendBuffer(const std::string& fullName, size_t commitSize, bool extendable) :
     name(fullName), committedSize(commitSize)
 {
@@ -33,6 +37,11 @@ ShmSendBuffer::ShmSendBuffer(const std::string& fullName, size_t commitSize, boo
     mappedStart = mapSharedMemory(name.c_str(), reservedSize + HEADERSIZE);
     commitSharedMemory(mappedStart, committedSize + HEADERSIZE);
     memset(mappedStart, 0, HEADERSIZE);
+
+#ifdef SHMSENDBUFFER_DEBUG
+    numInstances++;
+    std::cout << "ShmSendBuffer ctor, numInstances: " << numInstances << std::endl;
+#endif
 }
 
 ShmSendBuffer::~ShmSendBuffer()
@@ -40,6 +49,11 @@ ShmSendBuffer::~ShmSendBuffer()
     unmapSharedMemory(mappedStart, reservedSize + HEADERSIZE);
     closeSharedMemory(handle);
     removeSharedMemory(name.c_str());
+
+#ifdef SHMSENDBUFFER_DEBUG
+    numInstances--;
+    std::cout << "ShmSendBuffer dtor, numInstances: " << numInstances << std::endl;
+#endif
 }
 
 void *ShmSendBuffer::getAddress() const
@@ -82,6 +96,10 @@ ShmSendBufferManager::~ShmSendBufferManager()
     for (std::shared_ptr<ShmSendBuffer> &p : buffers) {
         if (p && !p->isConsumed())
             std::cerr << "ShmSendBufferManager: unconsumed send buffer found in destructor! call clear() explicitly if this is normal\n";
+#ifdef SHMSENDBUFFER_DEBUG
+        if (p)
+            std::cout << "ShmSendBufferManager dtor: Dropping reference to " << (void*)p.get() << std::endl;
+#endif
         p = nullptr;
     }
 }
@@ -112,16 +130,25 @@ std::shared_ptr<ShmSendBuffer> ShmSendBufferManager::create(const char *label, c
 void ShmSendBufferManager::clear()
 {
     Mutex mutex(lock.writeLock());
-    for (std::shared_ptr<ShmSendBuffer> &p : buffers)
+    for (std::shared_ptr<ShmSendBuffer> &p : buffers) {
+#ifdef SHMSENDBUFFER_DEBUG
+        if (p)
+            std::cout << "ShmSendBufferManager clear(): dropping reference to " << (void*)p.get() << std::endl;
+#endif
         p = nullptr;
+    }
 }
 
 void ShmSendBufferManager::garbageCollect()
 {
     Mutex mutex(lock.writeLock());
     for (std::shared_ptr<ShmSendBuffer> &p : buffers)
-        if (p && p->isConsumed())
+        if (p && p->isConsumed()) {
+#ifdef SHMSENDBUFFER_DEBUG
+            std::cout << "ShmSendBufferManager garbageCollect(): dropping reference to " << (void*)p.get() << std::endl;
+#endif
             p = nullptr;
+        }
 }
 
 }  // namespace scave
