@@ -830,6 +830,7 @@ class cPar extends cObject
     string unit @hint("For long and double types only");
     bool isNumeric @getter(isNumeric) @group(flags) @hint("Whether parameter type is numeric, i.e. double or long");
     bool isVolatile @getter(isVolatile) @group(flags) @hint("Whether parameter was declared volatile in the NED file");
+    bool isMutable @getter(isMutable) @group(flags) @hint("Whether parameter setting the parameter value at runtime is supported");
     bool isExpression @getter(isExpression)@group(flags) @hint("Whether parameter value is a constant or an expression");
     bool isShared @getter(isShared) @group(flags) @hint("Whether storage could be optimized by several modules sharing the same parameter value object");
 }
