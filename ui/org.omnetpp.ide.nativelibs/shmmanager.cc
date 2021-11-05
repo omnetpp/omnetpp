@@ -139,16 +139,22 @@ void ShmSendBufferManager::clear()
     }
 }
 
-void ShmSendBufferManager::garbageCollect()
+bool ShmSendBufferManager::garbageCollect()
 {
     Mutex mutex(lock.writeLock());
+    bool result = false;
     for (std::shared_ptr<ShmSendBuffer> &p : buffers)
         if (p && p->isConsumed()) {
 #ifdef SHMSENDBUFFER_DEBUG
             std::cout << "ShmSendBufferManager garbageCollect(): dropping reference to " << (void*)p.get() << std::endl;
 #endif
             p = nullptr;
+            result = true;
         }
+
+    common::remove(buffers, std::shared_ptr<ShmSendBuffer>(nullptr));
+
+    return result;
 }
 
 }  // namespace scave

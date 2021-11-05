@@ -108,7 +108,7 @@ public:
     void clear();
 
     // release send buffers consumed by the target process
-    void garbageCollect();
+    bool garbageCollect();
 };
 
 }  // namespace scave

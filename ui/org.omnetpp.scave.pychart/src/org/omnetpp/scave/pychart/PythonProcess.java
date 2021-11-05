@@ -60,7 +60,11 @@ public class PythonProcess {
         Thread collectorThread = new Thread(() -> {
             while (isAlive()) {
                 try { Thread.sleep(1000); } catch (InterruptedException e) {}
-                shmSendBufferManager.garbageCollect();
+                boolean collectedGarbage = shmSendBufferManager.garbageCollect();
+                if (collectedGarbage)
+                    // So the ShmSendBuffer instances still held via std::shared_ptr holders
+                    // in SWIG wrapper objects are released and deleted immediately.
+                    System.gc();
             }
         }, "ShmSendBufferManager garbage collector");
         collectorThread.setDaemon(true);
@@ -68,6 +72,9 @@ public class PythonProcess {
 
         process.onExit().thenRun(() -> {
             shmSendBufferManager.clear();
+            // So the ShmSendBuffer instances still held via std::shared_ptr holders
+            // in SWIG wrapper objects are released and deleted immediately.
+            System.gc();
             pythonCallerThread.interrupt();
         });
     }
