@@ -27,7 +27,7 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace scave {
 
-std::pair<ShmSendBuffer*, ShmSendBuffer*> ResultsPickler::readVectorIntoShm(const ID& id, double simTimeStart, double simTimeEnd)
+std::pair<std::shared_ptr<ShmSendBuffer>, std::shared_ptr<ShmSendBuffer>> ResultsPickler::readVectorIntoShm(const ID& id, double simTimeStart, double simTimeEnd)
 {
     size_t memoryLimitBytes = getSizeLimit();
 
@@ -41,8 +41,8 @@ std::pair<ShmSendBuffer*, ShmSendBuffer*> ResultsPickler::readVectorIntoShm(cons
     auto array = std::unique_ptr<XYArray>(vectorData[0]);
     size_t size = array->length() * sizeof(double);
 
-    ShmSendBuffer *xBuffer = shmManager->create("vecx", size, false);
-    ShmSendBuffer *yBuffer = shmManager->create("vecy", size, false);
+    std::shared_ptr<ShmSendBuffer> xBuffer = shmManager->create("vecx", size, false);
+    std::shared_ptr<ShmSendBuffer> yBuffer = shmManager->create("vecy", size, false);
 
     memcpy(xBuffer->getAddress(), array->xs.data(), size);
     memcpy(yBuffer->getAddress(), array->ys.data(), size);
@@ -86,7 +86,7 @@ void ResultsPickler::pickleResultAttrs(Pickler& p, const IDList& resultIDs)
     p.endList();
 }
 
-std::vector<ShmSendBuffer *> ResultsPickler::getCsvResultsPickle(const char *filterExpression, std::vector<std::string> rowTypes, bool omitUnusedColumns, bool includeFieldsAsScalars, double simTimeStart, double simTimeEnd)
+std::vector<std::shared_ptr<ShmSendBuffer>> ResultsPickler::getCsvResultsPickle(const char *filterExpression, std::vector<std::string> rowTypes, bool omitUnusedColumns, bool includeFieldsAsScalars, double simTimeStart, double simTimeEnd)
 {
     if (opp_isempty(filterExpression))
         return getCsvResultsPickle(IDList(), rowTypes, omitUnusedColumns, simTimeStart, simTimeEnd);
@@ -98,7 +98,7 @@ std::vector<ShmSendBuffer *> ResultsPickler::getCsvResultsPickle(const char *fil
 }
 
 
-std::vector<ShmSendBuffer *> ResultsPickler::getCsvResultsPickle(const IDList& results, std::vector<std::string> rowTypes, bool omitUnusedColumns, double simTimeStart, double simTimeEnd)
+std::vector<std::shared_ptr<ShmSendBuffer>> ResultsPickler::getCsvResultsPickle(const IDList& results, std::vector<std::string> rowTypes, bool omitUnusedColumns, double simTimeStart, double simTimeEnd)
 {
     bool addRunAttrs, addIterVars, addConfigEntries, addScalars, addVectors, addStatistics, addHistograms, addParams, addAttrs;
 
@@ -122,7 +122,7 @@ std::vector<ShmSendBuffer *> ResultsPickler::getCsvResultsPickle(const IDList& r
         (addParams     ? ResultFileManager::PARAMETER  : 0);
 
 
-    std::vector<ShmSendBuffer *> buffers; // to store the vector data buffers
+    std::vector<std::shared_ptr<ShmSendBuffer>> buffers; // to store the vector data buffers
     buffers.push_back(nullptr); // to be overwritten by the pickle itself
     ShmPickler p(shmManager->create("results", 0, true), getSizeLimit());
 
@@ -331,7 +331,7 @@ std::vector<ShmSendBuffer *> ResultsPickler::getCsvResultsPickle(const IDList& r
     return buffers;
 }
 
-ShmSendBuffer *ResultsPickler::getScalarsPickle(const char *filterExpression, bool includeAttrs, bool includeFields)
+std::shared_ptr<ShmSendBuffer> ResultsPickler::getScalarsPickle(const char *filterExpression, bool includeAttrs, bool includeFields)
 {
     if (opp_isempty(filterExpression))
         return getScalarsPickle(IDList(), includeAttrs);
@@ -342,7 +342,7 @@ ShmSendBuffer *ResultsPickler::getScalarsPickle(const char *filterExpression, bo
     }
 }
 
-std::vector<ShmSendBuffer *> ResultsPickler::getVectorsPickle(const char *filterExpression, bool includeAttrs, double simTimeStart, double simTimeEnd)
+std::vector<std::shared_ptr<ShmSendBuffer>> ResultsPickler::getVectorsPickle(const char *filterExpression, bool includeAttrs, double simTimeStart, double simTimeEnd)
 {
     if (opp_isempty(filterExpression))
         return getVectorsPickle(IDList(), includeAttrs, simTimeStart, simTimeEnd);
@@ -353,7 +353,7 @@ std::vector<ShmSendBuffer *> ResultsPickler::getVectorsPickle(const char *filter
     }
 }
 
-ShmSendBuffer *ResultsPickler::getStatisticsPickle(const char *filterExpression, bool includeAttrs)
+std::shared_ptr<ShmSendBuffer> ResultsPickler::getStatisticsPickle(const char *filterExpression, bool includeAttrs)
 {
     if (opp_isempty(filterExpression))
         return getStatisticsPickle(IDList(), includeAttrs);
@@ -364,7 +364,7 @@ ShmSendBuffer *ResultsPickler::getStatisticsPickle(const char *filterExpression,
     }
 }
 
-ShmSendBuffer *ResultsPickler::getHistogramsPickle(const char *filterExpression, bool includeAttrs)
+std::shared_ptr<ShmSendBuffer> ResultsPickler::getHistogramsPickle(const char *filterExpression, bool includeAttrs)
 {
     if (opp_isempty(filterExpression))
         return getHistogramsPickle(IDList(), includeAttrs);
@@ -375,7 +375,7 @@ ShmSendBuffer *ResultsPickler::getHistogramsPickle(const char *filterExpression,
     }
 }
 
-ShmSendBuffer *ResultsPickler::getParamValuesPickle(const char *filterExpression, bool includeAttrs)
+std::shared_ptr<ShmSendBuffer> ResultsPickler::getParamValuesPickle(const char *filterExpression, bool includeAttrs)
 {
     if (opp_isempty(filterExpression))
         return getParamValuesPickle(IDList(), includeAttrs);
@@ -386,7 +386,7 @@ ShmSendBuffer *ResultsPickler::getParamValuesPickle(const char *filterExpression
     }
 }
 
-ShmSendBuffer *ResultsPickler::getScalarsPickle(const IDList& scalars, bool includeAttrs)
+std::shared_ptr<ShmSendBuffer> ResultsPickler::getScalarsPickle(const IDList& scalars, bool includeAttrs)
 {
     size_t sizeLimit = getSizeLimit();
     ShmPickler p(shmManager->create("scalars", 0, true), sizeLimit);
@@ -426,12 +426,12 @@ ShmSendBuffer *ResultsPickler::getScalarsPickle(const IDList& scalars, bool incl
 }
 
 
-std::vector<ShmSendBuffer *> ResultsPickler::getVectorsPickle(const IDList& vectors, bool includeAttrs, double simTimeStart, double simTimeEnd)
+std::vector<std::shared_ptr<ShmSendBuffer>> ResultsPickler::getVectorsPickle(const IDList& vectors, bool includeAttrs, double simTimeStart, double simTimeEnd)
 {
     size_t sizeLimit = getSizeLimit();
     ShmPickler p(shmManager->create("vectors", 0, true), sizeLimit);
 
-    std::vector<ShmSendBuffer *> buffers; // to store the vector data buffers
+    std::vector<std::shared_ptr<ShmSendBuffer>> buffers; // to store the vector data buffers
     buffers.push_back(nullptr); // to be overwritten by the pickle itself
 
     p.protocol();
@@ -475,7 +475,7 @@ std::vector<ShmSendBuffer *> ResultsPickler::getVectorsPickle(const IDList& vect
 }
 
 
-ShmSendBuffer *ResultsPickler::getParamValuesPickle(const IDList& params, bool includeAttrs)
+std::shared_ptr<ShmSendBuffer> ResultsPickler::getParamValuesPickle(const IDList& params, bool includeAttrs)
 {
     size_t sizeLimit = getSizeLimit();
     ShmPickler p(shmManager->create("paramvalues", 0, true), sizeLimit);
@@ -514,7 +514,7 @@ ShmSendBuffer *ResultsPickler::getParamValuesPickle(const IDList& params, bool i
 }
 
 
-ShmSendBuffer *ResultsPickler::getStatisticsPickle(const IDList& statistics, bool includeAttrs)
+std::shared_ptr<ShmSendBuffer> ResultsPickler::getStatisticsPickle(const IDList& statistics, bool includeAttrs)
 {
     size_t sizeLimit = getSizeLimit();
 
@@ -563,7 +563,7 @@ ShmSendBuffer *ResultsPickler::getStatisticsPickle(const IDList& statistics, boo
 }
 
 
-ShmSendBuffer *ResultsPickler::getHistogramsPickle(const IDList& histograms, bool includeAttrs)
+std::shared_ptr<ShmSendBuffer> ResultsPickler::getHistogramsPickle(const IDList& histograms, bool includeAttrs)
 {
     size_t sizeLimit = getSizeLimit();
     ShmPickler p(shmManager->create("histograms", 0, true), sizeLimit);
@@ -617,37 +617,37 @@ ShmSendBuffer *ResultsPickler::getHistogramsPickle(const IDList& histograms, boo
     return p.get();
 }
 
-ShmSendBuffer *ResultsPickler::getRunsPickle(const char *filterExpression)
+std::shared_ptr<ShmSendBuffer> ResultsPickler::getRunsPickle(const char *filterExpression)
 {
     RunList runs = opp_isempty(filterExpression) ? RunList() : rfm->filterRunList(rfm->getRuns(), filterExpression);
     return getRunsPickle(runs);
 }
 
-ShmSendBuffer *ResultsPickler::getRunattrsPickle(const char *filterExpression)
+std::shared_ptr<ShmSendBuffer> ResultsPickler::getRunattrsPickle(const char *filterExpression)
 {
     RunAndValueList runAttrs = opp_isempty(filterExpression) ? RunAndValueList() : rfm->getMatchingRunattrs(rfm->getRuns(), filterExpression);
     return getRunattrsPickle(runAttrs);
 }
 
-ShmSendBuffer *ResultsPickler::getItervarsPickle(const char *filterExpression)
+std::shared_ptr<ShmSendBuffer> ResultsPickler::getItervarsPickle(const char *filterExpression)
 {
     RunAndValueList itervars = opp_isempty(filterExpression) ? RunAndValueList() : rfm->getMatchingItervars(rfm->getRuns(), filterExpression);
     return getItervarsPickle(itervars);
 }
 
-ShmSendBuffer *ResultsPickler::getConfigEntriesPickle(const char *filterExpression)
+std::shared_ptr<ShmSendBuffer> ResultsPickler::getConfigEntriesPickle(const char *filterExpression)
 {
     RunAndValueList configEntries = opp_isempty(filterExpression) ? RunAndValueList() : rfm->getMatchingConfigEntries(rfm->getRuns(), filterExpression);
     return getConfigEntriesPickle(configEntries);
 }
 
-ShmSendBuffer *ResultsPickler::getParamAssignmentsPickle(const char *filterExpression)
+std::shared_ptr<ShmSendBuffer> ResultsPickler::getParamAssignmentsPickle(const char *filterExpression)
 {
     RunAndValueList paramAssignments = opp_isempty(filterExpression) ? RunAndValueList() : rfm->getMatchingParamAssignmentConfigEntries(rfm->getRuns(), filterExpression);
     return getParamAssignmentsPickle(paramAssignments);
 }
 
-ShmSendBuffer *ResultsPickler::getRunsPickle(const RunList& runs)
+std::shared_ptr<ShmSendBuffer> ResultsPickler::getRunsPickle(const RunList& runs)
 {
     size_t sizeLimit = getSizeLimit();
     ShmPickler p(shmManager->create("runs", 0, true), sizeLimit);
@@ -667,7 +667,7 @@ ShmSendBuffer *ResultsPickler::getRunsPickle(const RunList& runs)
 }
 
 
-ShmSendBuffer *ResultsPickler::getRunattrsPickle(const RunAndValueList& runAttrs)
+std::shared_ptr<ShmSendBuffer> ResultsPickler::getRunattrsPickle(const RunAndValueList& runAttrs)
 {
     size_t sizeLimit = getSizeLimit();
     ShmPickler p(shmManager->create("runattrs", 0, true), sizeLimit);
@@ -697,7 +697,7 @@ ShmSendBuffer *ResultsPickler::getRunattrsPickle(const RunAndValueList& runAttrs
 }
 
 
-ShmSendBuffer *ResultsPickler::getItervarsPickle(const RunAndValueList& itervars)
+std::shared_ptr<ShmSendBuffer> ResultsPickler::getItervarsPickle(const RunAndValueList& itervars)
 {
     size_t sizeLimit = getSizeLimit();
     ShmPickler p(shmManager->create("itervars", 0, true), sizeLimit);
@@ -727,7 +727,7 @@ ShmSendBuffer *ResultsPickler::getItervarsPickle(const RunAndValueList& itervars
 }
 
 
-ShmSendBuffer *ResultsPickler::getConfigEntriesPickle(const RunAndValueList& configEntries)
+std::shared_ptr<ShmSendBuffer> ResultsPickler::getConfigEntriesPickle(const RunAndValueList& configEntries)
 {
     size_t sizeLimit = getSizeLimit();
     ShmPickler p(shmManager->create("configentries", 0, true), sizeLimit);
@@ -757,7 +757,7 @@ ShmSendBuffer *ResultsPickler::getConfigEntriesPickle(const RunAndValueList& con
 }
 
 
-ShmSendBuffer *ResultsPickler::getParamAssignmentsPickle(const RunAndValueList& paramAssignments)
+std::shared_ptr<ShmSendBuffer> ResultsPickler::getParamAssignmentsPickle(const RunAndValueList& paramAssignments)
 {
     size_t sizeLimit = getSizeLimit();
     ShmPickler p(shmManager->create("paramassignments", 0, true), sizeLimit);
@@ -787,7 +787,7 @@ ShmSendBuffer *ResultsPickler::getParamAssignmentsPickle(const RunAndValueList& 
 }
 
 
-ShmSendBuffer *ResultsPickler::getRunattrsForRunsPickle(const std::vector<std::string>& runIds)
+std::shared_ptr<ShmSendBuffer> ResultsPickler::getRunattrsForRunsPickle(const std::vector<std::string>& runIds)
 {
     size_t sizeLimit = getSizeLimit();
     ShmPickler p(shmManager->create("runattrs4r", 0, true), sizeLimit);
@@ -819,7 +819,7 @@ ShmSendBuffer *ResultsPickler::getRunattrsForRunsPickle(const std::vector<std::s
 }
 
 
-ShmSendBuffer *ResultsPickler::getItervarsForRunsPickle(const std::vector<std::string>& runIds)
+std::shared_ptr<ShmSendBuffer> ResultsPickler::getItervarsForRunsPickle(const std::vector<std::string>& runIds)
 {
     size_t sizeLimit = getSizeLimit();
     ShmPickler p(shmManager->create("itervars4r", 0, true), sizeLimit);
@@ -851,7 +851,7 @@ ShmSendBuffer *ResultsPickler::getItervarsForRunsPickle(const std::vector<std::s
 }
 
 
-ShmSendBuffer *ResultsPickler::getConfigEntriesForRunsPickle(const std::vector<std::string>& runIds)
+std::shared_ptr<ShmSendBuffer> ResultsPickler::getConfigEntriesForRunsPickle(const std::vector<std::string>& runIds)
 {
     size_t sizeLimit = getSizeLimit();
     ShmPickler p(shmManager->create("configentries4r", 0, true), sizeLimit);
@@ -883,7 +883,7 @@ ShmSendBuffer *ResultsPickler::getConfigEntriesForRunsPickle(const std::vector<s
 }
 
 
-ShmSendBuffer *ResultsPickler::getParamAssignmentsForRunsPickle(const std::vector<std::string>& runIds)
+std::shared_ptr<ShmSendBuffer> ResultsPickler::getParamAssignmentsForRunsPickle(const std::vector<std::string>& runIds)
 {
     size_t sizeLimit = getSizeLimit();
     ShmPickler p(shmManager->create("paramassignments4r", 0, true), sizeLimit);

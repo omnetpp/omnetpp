@@ -200,16 +200,16 @@ class Pickler
 class ShmPickler : public Pickler
 {
   private:
-    ShmSendBuffer *sendBuffer;
+    std::shared_ptr<ShmSendBuffer> sendBuffer;
     size_t sizeLimit;
 
   protected:
     virtual void makeRoom(size_t bytesNeeded);
 
   public:
-    ShmPickler(ShmSendBuffer *sendBuffer, size_t sizeLimit);
-    ~ShmPickler();
-    ShmSendBuffer *get() {ShmSendBuffer *ret = sendBuffer; sendBuffer = nullptr; return ret;}
+    ShmPickler(std::shared_ptr<ShmSendBuffer> sendBuffer, size_t sizeLimit);
+
+    std::shared_ptr<ShmSendBuffer> get() { return sendBuffer; }
 };
 
 }  // namespace scave

@@ -20,6 +20,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 #include "common/rwlock.h"
 #include "sharedmemory.h"
 
@@ -53,14 +54,15 @@ class ShmSendBuffer
 {
     friend class ShmSendBufferManager;
 private:
-    ShmSendBufferManager *owner;
     std::string name;
     void *mappedStart; // points to the header
     size_t reservedSize; // excluding header
     size_t committedSize; // excluding header
     shmhandle_t handle;
 protected:
-    ShmSendBuffer(ShmSendBufferManager *owner, const std::string& fullName, size_t commitSize, bool extendable);
+    ShmSendBuffer(const std::string& fullName, size_t commitSize, bool extendable);
+    ShmSendBuffer(const ShmSendBuffer&) = delete;
+    ShmSendBuffer(ShmSendBuffer&&) = delete;
     void operator=(const ShmSendBuffer&) = delete;
     void operator=(ShmSendBuffer&&) = delete;
 public:
@@ -83,20 +85,18 @@ class ShmSendBufferManager
 
 protected:
     int targetPid;  // TODO unused for now
-    std::vector<ShmSendBuffer*> buffers;  // disposed elements are nullptr
+    std::vector<std::shared_ptr<ShmSendBuffer>> buffers;  // disposed elements are nullptr
     common::ReentrantReadWriteLock lock;
-
-    void deleted(ShmSendBuffer *p);
 
 public:
     ShmSendBufferManager(int targetPid) : targetPid(targetPid) {}
     ~ShmSendBufferManager();
 
     // create and map send buffer
-    ShmSendBuffer *create(const char *label, size_t commitSize, bool extendable);
+    std::shared_ptr<ShmSendBuffer> create(const char *label, size_t commitSize, bool extendable);
 
     // create with preexisting content
-    ShmSendBuffer *create(const char *label, const std::vector<int8_t>& content);
+    std::shared_ptr<ShmSendBuffer> create(const char *label, const std::vector<int8_t>& content);
 
     // unmaps and releases all send buffers
     void clear();

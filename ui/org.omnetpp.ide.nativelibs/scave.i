@@ -78,6 +78,7 @@ USE_COMMON_ENGINE_ILOCK();
 %include "std_vector.i"
 %include "std_map.i"
 %include "std_pair.i"
+%include "std_shared_ptr.i"
 
 %include "map_oldapi.i" // needed for SWIG >=4.0 so we still have the 3.x functions
 
@@ -205,8 +206,10 @@ namespace std {
    %template(StringPair) pair<string,string>;
    %template(OrderedKeyValueList) vector< pair<string,string> >;
    %template(RunAndValueList) vector< pair<omnetpp::scave::Run*,string> >;
-   %template(ShmSendBufferVector) vector<omnetpp::scave::ShmSendBuffer*>;
 };
+
+%shared_ptr(omnetpp::scave::ShmSendBuffer);
+%template(ShmSendBufferVector) std::vector<std::shared_ptr<omnetpp::scave::ShmSendBuffer>>;
 
 //
 // enumtype.h
