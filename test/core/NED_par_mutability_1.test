@@ -1,0 +1,33 @@
+%description:
+Make sure parameters NOT marked with @mutable cannot be changed.
+
+%file: test.ned
+
+simple Test
+{
+    parameters:
+        @isNetwork(true);
+        string mut @mutable = "";
+        string immut = "";
+}
+
+%activity:
+
+for (auto p : { "mut", "immut" }) {
+    try {
+        const char *value = "'hello'";
+        EV << p << " = " << value << " --> ";
+        par(p).parse(value);
+        EV << par(p).str() << "\n";
+    }
+    catch(std::exception& e) {
+        EV << "ERROR: " << e.what() << "\n";
+    }
+}
+
+%contains: stdout
+mut = 'hello' --> "hello"
+immut = 'hello' --> ERROR: (omnetpp::cPar)immut: Setting the parameter is not allowed at runtime (it is not marked as mutable)
+
+%not-contains: stdout
+undisposed object

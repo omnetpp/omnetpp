@@ -7,12 +7,12 @@ simple Test
 {
     parameters:
         @isNetwork(true);
-        bool b = false;
-        int i = 0;
-        double d = 0;
-        string s = "";
-        xml x = xml("<root/>");
-        object o = nullptr;
+        bool b @mutable = false;
+        int i @mutable = 0;
+        double d @mutable = 0;
+        string s @mutable = "";
+        xml x @mutable = xml("<root/>");
+        object o @mutable = nullptr;
 }
 
 %activity:

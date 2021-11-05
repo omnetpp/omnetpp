@@ -19,9 +19,9 @@ module Tester
     parameters:
         @class(Tester);
         int param = 1;
-        bool b = default(false);
-        int i = default(-1);
-        string s = default("");
+        bool b @mutable = default(false);
+        int i @mutable = default(-1);
+        string s @mutable = default("");
 }
 
 network Test

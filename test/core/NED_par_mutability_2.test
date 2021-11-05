@@ -1,0 +1,36 @@
+%description:
+Make sure parameter-mutability-check=false takes effect
+
+%file: test.ned
+
+simple Test
+{
+    parameters:
+        @isNetwork(true);
+        string mut @mutable = "";
+        string immut = "";
+}
+
+%activity:
+
+for (auto p : { "mut", "immut" }) {
+    try {
+        const char *value = "'hello'";
+        EV << p << " = " << value << " --> ";
+        par(p).parse(value);
+        EV << par(p).str() << "\n";
+    }
+    catch(std::exception& e) {
+        EV << "ERROR: " << e.what() << "\n";
+    }
+}
+
+%inifile: omnetpp.ini
+parameter-mutability-check = false
+
+%contains: stdout
+mut = 'hello' --> "hello"
+immut = 'hello' --> "hello"
+
+%not-contains: stdout
+undisposed object
