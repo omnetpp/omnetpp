@@ -222,6 +222,7 @@ std::string PatternMatcher::str() const
                 out << "}";
                 break;
             }
+            case END: break;
             default: assert(0);
         }
     }
