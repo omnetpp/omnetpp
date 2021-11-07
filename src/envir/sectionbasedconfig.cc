@@ -99,6 +99,13 @@ SectionBasedConfiguration::MatchableEntry::~MatchableEntry()
     delete fullPathPattern;
 }
 
+std::string SectionBasedConfiguration::MatchableEntry::str() const
+{
+    return std::string("ownerPattern=") + (ownerPattern ? ownerPattern->str() : "nullptr") +
+           " suffixPattern=" + (suffixPattern ? suffixPattern->str() : "nullptr") +
+           " fullPathPattern=" + (fullPathPattern ? fullPathPattern->str() : "nullptr");
+}
+
 //----
 
 SectionBasedConfiguration::~SectionBasedConfiguration()

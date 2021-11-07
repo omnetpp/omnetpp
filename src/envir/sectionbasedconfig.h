@@ -71,13 +71,14 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
 
     class MatchableEntry : public Entry {
       public:
-        PatternMatcher *ownerPattern; // key without the suffix
-        PatternMatcher *suffixPattern; // only filled in when this is a wildcard bin
-        PatternMatcher *fullPathPattern; // when present, match against this instead of ownerPattern & suffixPattern
+        PatternMatcher *ownerPattern = nullptr; // key without the suffix
+        PatternMatcher *suffixPattern = nullptr; // only filled in when this is a wildcard bin
+        PatternMatcher *fullPathPattern = nullptr; // when present, match against this instead of ownerPattern & suffixPattern
 
-        MatchableEntry(const Entry& e) : Entry(e) {ownerPattern = suffixPattern = fullPathPattern = nullptr;}
+        MatchableEntry(const Entry& e) : Entry(e) {}
         MatchableEntry(const MatchableEntry& e);   // apparently only used for std::vector storage
         ~MatchableEntry();
+        std::string str() const;
     };
 
     //
