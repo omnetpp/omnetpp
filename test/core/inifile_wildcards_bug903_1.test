@@ -1,0 +1,12 @@
+%description:
+Test for https://github.com/omnetpp/omnetpp/issues/903.
+Simulation crashes when inifile contains the following 2 lines.
+
+%file: test.ned
+network Test {}
+
+%inifile: test.ini
+[General]
+network = Test
+seed-1-mt* = 1  # note trailing "*"!
+**.routing.rng-0 = 1
