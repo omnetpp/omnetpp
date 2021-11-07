@@ -484,18 +484,12 @@ class SIM_API cConfigurationEx : public cConfiguration
     virtual std::vector<const char *> getKeyValuePairs(int flags=FILT_ALL) const = 0;
 
     /**
-     * Returns the list of config keys that match the wildcard pattern
+     * Returns the list of suffixes from keys that match the wildcard pattern
      * objectFullPath + dot + keySuffixPattern. objectFullPath may either be
      * a concrete string without wildcards, or "**" to match anything.
      * The returned keys may be used with getPerObjectConfigValue() to obtain
-     * the corresponding values.
-     */
-    virtual std::vector<const char *> getMatchingPerObjectConfigKeys(const char *objectFullPath, const char *keySuffixPattern) const = 0;
-
-    /**
-     * Like getMatchingPerObjectConfigKeys(), but returns the suffixes instead
-     * of the keys. Note: the result may contain duplicates. The returned suffixes
-     * may be used with getPerObjectConfigValue() to obtain the corresponding values.
+     * the corresponding values. The returned suffixes may be used with
+     * getPerObjectConfigValue() to obtain the corresponding values.
      */
     virtual std::vector<const char *> getMatchingPerObjectConfigKeySuffixes(const char *objectFullPath, const char *keySuffixPattern) const = 0;
     //@}

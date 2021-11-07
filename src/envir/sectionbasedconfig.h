@@ -179,6 +179,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     static bool isIgnorableConfigKey(const char *ignoredKeyPatterns, const char *key);
     static cConfigOption *lookupConfigOption(const char *key);
     virtual bool isEssentialOption(const char *key) const;
+    virtual std::vector<const char *> getMatchingPerObjectConfigKeys(const char *objectFullPath, const char *keySuffixPattern) const;
 
   public:
     SectionBasedConfiguration() {}
@@ -228,7 +229,6 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     virtual std::vector<const char *> getKeyValuePairs(int flags) const override;
     virtual const char *getPerObjectConfigValue(const char *objectFullPath, const char *keySuffix) const override;
     virtual const KeyValue& getPerObjectConfigEntry(const char *objectFullPath, const char *keySuffix) const override;
-    virtual std::vector<const char *> getMatchingPerObjectConfigKeys(const char *objectFullPath, const char *keySuffixPattern) const override;
     virtual std::vector<const char *> getMatchingPerObjectConfigKeySuffixes(const char *objectFullPath, const char *keySuffixPattern) const override;
     virtual const char *getVariable(const char *varname) const override;
     virtual std::vector<const char *> getIterationVariableNames() const override;
