@@ -1316,15 +1316,15 @@ static const char *partAfterLastDot(const char *s)
     return lastDotPos == nullptr ? nullptr : lastDotPos+1;
 }
 
-std::vector<const char *> SectionBasedConfiguration::getMatchingPerObjectConfigKeys(const char *objectFullPathPattern, const char *keySuffixPattern) const
+std::vector<const char *> SectionBasedConfiguration::getMatchingPerObjectConfigKeySuffixes(const char *objectFullPath, const char *keySuffixPattern) const
 {
     std::vector<const char *> result;
 
     // only concrete objects or "**" is accepted, because we are not prepared
     // to handle the "pattern matches pattern" case (see below as well).
-    bool anyObject = strcmp(objectFullPathPattern, "**") == 0;
-    if (!anyObject && PatternMatcher::containsWildcards(objectFullPathPattern))
-        throw cRuntimeError("getMatchingPerObjectConfigKeys: Invalid objectFullPath parameter: The only wildcard pattern accepted is '**'");
+    bool anyObject = strcmp(objectFullPath, "**") == 0;
+    if (!anyObject && PatternMatcher::containsWildcards(objectFullPath))
+        throw cRuntimeError("getMatchingPerObjectConfigKeySuffixes: Unsupported objectFullPath parameter: The only wildcard pattern accepted is '**'");
 
     // check all suffix bins whose name matches the pattern
     PatternMatcher suffixMatcher(keySuffixPattern, true, true, true);
@@ -1338,27 +1338,20 @@ std::vector<const char *> SectionBasedConfiguration::getMatchingPerObjectConfigK
             const SuffixBin& bin = suffixBin.second;
             for (const auto & entry : bin.entries) {
                 if (entry.fullPathPattern) {
-                    if (PatternMatcher((std::string(objectFullPathPattern)+"."+keySuffixPattern).c_str(), true, true, true).matches(entry.key.c_str()))
-                        result.push_back(entry.key.c_str());
+                    if (PatternMatcher((std::string(objectFullPath)+"."+keySuffixPattern).c_str(), true, true, true).matches(entry.key.c_str()))
+                        result.push_back(partAfterLastDot(entry.key.c_str()));
                 }
-                else if ((anyObject || entry.ownerPattern->matches(objectFullPathPattern))
+                else if ((anyObject || entry.ownerPattern->matches(objectFullPath))
                     &&
                     (entry.suffixPattern == nullptr ||
                      suffixMatcher.matches(partAfterLastDot(entry.key.c_str())) ||
                      entry.suffixPattern->matches(keySuffixPattern)))
-                    result.push_back(entry.key.c_str());
+                    result.push_back(partAfterLastDot(entry.key.c_str()));
             }
         }
     }
+    //TODO remove duplicates
     return result;
-}
-
-std::vector<const char *> SectionBasedConfiguration::getMatchingPerObjectConfigKeySuffixes(const char *objectFullPath, const char *keySuffixPattern) const
-{
-    std::vector<const char *> keys = getMatchingPerObjectConfigKeys(objectFullPath, keySuffixPattern);
-    for (auto & key : keys)
-        key = partAfterLastDot(key);
-    return keys;
 }
 
 void SectionBasedConfiguration::dump() const

@@ -179,7 +179,6 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     static bool isIgnorableConfigKey(const char *ignoredKeyPatterns, const char *key);
     static cConfigOption *lookupConfigOption(const char *key);
     virtual bool isEssentialOption(const char *key) const;
-    virtual std::vector<const char *> getMatchingPerObjectConfigKeys(const char *objectFullPath, const char *keySuffixPattern) const;
 
   public:
     SectionBasedConfiguration() {}
