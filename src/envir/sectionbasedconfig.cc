@@ -1337,7 +1337,11 @@ std::vector<const char *> SectionBasedConfiguration::getMatchingPerObjectConfigK
             // by checking whether one pattern matches the other one as string, and vice versa.
             const SuffixBin& bin = suffixBin.second;
             for (const auto & entry : bin.entries) {
-                if ((anyObject || entry.ownerPattern->matches(objectFullPathPattern))
+                if (entry.fullPathPattern) {
+                    if (PatternMatcher((std::string(objectFullPathPattern)+"."+keySuffixPattern).c_str(), true, true, true).matches(entry.key.c_str()))
+                        result.push_back(entry.key.c_str());
+                }
+                else if ((anyObject || entry.ownerPattern->matches(objectFullPathPattern))
                     &&
                     (entry.suffixPattern == nullptr ||
                      suffixMatcher.matches(partAfterLastDot(entry.key.c_str())) ||
