@@ -1,11 +1,21 @@
+2021-11-05  Andras Varga
+
+	* NED: Built-in channels (DelayChannel, DatarateChannel): parameters made
+	@mutable.
+
+2021-10-28  Andras Varga
+
+	* NED/MSG parser: Fix storing of file/line info into AST nodes. This bug
+	caused NED errors to appear without location info in the IDE.
+
 2021-09-30  Andras Varga
 
 	* Message compiler: implement @readonly
 
 2021-09-29  Andras Varga
 
-	* Message compiler: fix "ambiguous conversion from 'long' to 'omnetpp::cValue'" on
-	macOS.
+	* Message compiler: fix "ambiguous conversion from 'long' to 'omnetpp::cValue'"
+	on macOS.
 
 2021-09-28  Andras Varga
 

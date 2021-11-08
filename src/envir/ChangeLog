@@ -1,3 +1,13 @@
+2021-11-07  Andras Varga
+
+	* SectionBasedConfiguration: fix for issue #903 ("crash during initialization
+	when mapping module local rng and setting gobal rng by seed-N-mt* instead of
+	seed-N-mt")
+
+2021-11-07  Andras Varga
+
+	* SectionBasedConfiguration: added MatchableEntry::str() (for debug	purposes)
+
 2021-08-05  Attila Torok
 
 	* EnvirBase::componentInitBegin(): Set currentModuleId before init stages,

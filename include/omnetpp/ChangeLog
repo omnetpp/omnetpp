@@ -1,3 +1,43 @@
+2021-11-05  Andras Varga
+
+	* any_ptr: let two nullptrs of different types be equal.
+
+2021-11-04  Andras Varga
+
+	* cPar: added isMutable(); see src/sim/ChangeLog for details.
+
+2021-11-05  Andras Varga
+
+	* Internal classes, global variables, etc moved into the omnetpp::internal
+	namespace.
+
+2021-11-04  Andras Varga
+
+	* Introduced cValueContainer as common base class for cValueHolder,
+	cValueArray, cValueMap.
+
+2021-11-03  Andras Varga
+
+	* getModuleByPath() / findModuleByPath() moved to cComponent, so that
+	they can be called on cChannels too.
+
+2021-11-01  Andras Varga
+
+	* Added cOwnedDynamicExpression class which is both cOwnedObject and
+	cDynamicExpression (multiple inheritance). To make this possible, the
+	cObject base class was removed from cExpression.
+
+2021-10-26  Andras Varga
+
+	* Added cValueHolder class. It instantiated as wrapper object around cValue
+	when a non-object value (double, string, etc) is assigned to a NED parameter
+	of the type "object".
+
+	* cDynamicExpression: added setResolver()/getResolver(); added back
+   ResolverBase as alias for IResolver.
+
+   * cValue: added isNullptr()
+
 2021-10-11  Andras Varga
 
 	* Added MergeFilter, a cResultFilter that allows multiple inputs.

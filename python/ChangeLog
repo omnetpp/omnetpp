@@ -1,3 +1,19 @@
+2021-10-29  Attila Torok
+
+	* omnetpp.scave.utils: Add digit grouping to tick labels in MPL-emulated
+	native charts.
+
+2021-10-26  Attila Torok
+
+	* omnetpp.scave.utils: Make MPL-emulated native widgets more similar
+	to the IDE (axis limits, number format for ticks, etc.)
+
+2021-10-15  Attila Torok
+
+	* omnetpp.scave.plot: Restore the omnetpp.scave.plot module for
+	compatibility. It falls back to the new omnetpp.scave.ideplot package
+	after issuing a warning.
+
 2021-10-11  Attila Torok
 
 	* omnetpp.scave.utils: assert_columns_exist() to raise ValueError from

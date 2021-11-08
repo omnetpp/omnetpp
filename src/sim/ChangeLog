@@ -1,3 +1,92 @@
+2021-11-04  Andras Varga
+
+	* cPar: Implemented isMutable() and the mechanism behind the new @mutable
+	property. @mutable may annotate module/channel parameters in NED, and has
+	the effect that non-mutable parameters (those without @mutable) cannot be
+	changed at runtime. It is recommended to only mark those parameters with
+	@mutable whose change actually takes effect during simulation, e.g. are
+	handled in handleParameterChange() methods in simple modules. The presence
+	of @mutable conveys the info which parameters can be tweaked to users of the
+	module.
+
+	Add parameter-mutability-check=false to omnetpp.ini to disable the check
+	for models that don't have the necessary @mutable annotations added.
+
+2021-07-11  Andras Varga
+
+	* Follow change: moved internal classes to the omnetpp::internal namespace.
+
+2021-11-02  Andras Varga
+
+	* Nits related to ownership handling:
+	  - cObject::yieldOwnership() shouldn't crash in the "throw" statement
+	    when newOwner==nullptr
+	  - Set name of cTemporaryOwner objects to "tmp"
+	  - Set name of globalOwningContext object to "globalOwningContext"
+	  - etc.
+
+2021-11-04  Andras Varga
+
+	* Introduced cValueContainer as common base class for cValueHolder,
+	cValueArray, cValueMap.
+
+2021-11-02  Andras Varga
+
+	* cValueMap/cValueArray: revert dup() to behave the same way
+	cArray/cQueue does, i.e. only duplicate those objects that are
+	owned by the cloned container. This doesn't make much of a difference,
+	but some NED expressions that have been accepted now cause an error.
+	You need to dup the VERY object that belongs to some other owner --
+	dupping its container is NOT good any more. For example:
+
+	    foo = {};
+	    bar = dup([foo,foo]);  // error
+	    bar = [dup(foo), dup(foo)]  // OK
+
+2021-11-04  Andras Varga
+
+	* cObjectParImpl: added hint to "not owner" error message: "Try cloning it
+	using the dup() function!"
+
+2021-11-04  Andras Varga
+
+	* Make unused parsimPack()/parsimUnpack() to be less of a noise
+
+2021-11-03  Andras Varga
+
+	* getModuleByPath() / findModuleByPath() moved to cComponent
+
+2021-11-03  Andras Varga
+
+	* cResultFilter/cResultRecorder: suppress expected warnings
+
+2021-11-01  Andras Varga
+
+	* cObjectParImpl: More thorough check of the assigned content
+	wrt object ownership. Only fully owned cOwnedObjects are allowed.
+
+2021-11-01  Andras Varga
+
+	* Added the expr() operator to NED. expr() can be used to specify
+	an expression with free variables. For example, assigning expr(x+y)
+	to a module parameter of type object allows the module implementation
+	to query the expression (it will be a cOwnedDynamicExpression object),
+	bind the free variables (e.g. x=3,y=2), and evaluate it. The expr()
+	operator is useful for e.g. implementing arbitrary packet filters.
+
+	* Added the new cOwnedDynamicExpression class, needed for expr().
+
+2021-10-27  Andras Varga
+
+	* Added cValueHolder.
+
+	* cValueArray, cValueMap: Fix: errors for stored non-cObject pointers
+
+2021-10-18  Andras Varga
+
+	* Fix call to wrong (deprecated) cResultFilter::init() method in
+	StatisticSourceAstTranslator.
+
 2021-10-11  Andras Varga
 
 	* Added MergeFilter, a cResultFilter that allows multiple inputs,

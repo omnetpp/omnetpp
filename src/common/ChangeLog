@@ -1,3 +1,20 @@
+2021-11-06  Andras Varga
+
+	* PatternMacher: bugfix in str()
+
+2021-11-05  Andras Varga
+
+	* MatchExpression: fix crash on matchableObject->getAsString() returning
+	nullptr.
+
+2021-11-05  Andras Varga
+
+	* any_ptr: let two nullptrs of different types be equal.
+
+2021-07-20  Andras Varga
+
+	* Expression: added dynamically resolved variables/members/funcs/methods.
+
 2021-10-12  Andras Varga
 
 	* OmnetppScalarFileWriter: make sure bin edges don't alias in the

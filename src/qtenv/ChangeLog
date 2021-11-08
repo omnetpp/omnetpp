@@ -1,3 +1,13 @@
+2021-10-28  Attila Torok
+
+	* Log: Embed the Fira Code font as a resource, and use it by default.
+	Reason: it provides nice --> arrow ligatures in the Messages view.
+
+2021-10-26  Attila Torok
+
+	* Log: Add . and ^ instead of implicit <this> and <parent> in the Messages
+	view. Also, only use arrows of uniform lengths everywhere.
+
 2021-09-28  Attila Torok
 
 	* OSG: Don't setSwapBehavior on QSurfaceFormat. This fixes the black window

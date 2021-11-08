@@ -1,3 +1,7 @@
+2021-10-29  Rudolf Hornig
+
+	* Several small fixes for Windows to be able to start the IDE using shortcuts.
+
 2021-10-08  Rudolf Hornig
 
 	* opp_makemake: Do not generate generate .def files on MS-ABI builds, as .def
