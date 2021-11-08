@@ -177,8 +177,8 @@ void SubmoduleItem::updateNameItem()
     const char *displayName = module->getDisplayName();
     switch (nameFormat) {
         case FMT_FULLNAME: nameLabel = fullName; break;
-        case FMT_QDISPLAYNAME: nameLabel = opp_isempty(displayName) ? QString(fullName) : QString("\"%1\"").arg(displayName); break;
-        case FMT_FULLNAME_AND_QDISPLAYNAME: nameLabel = opp_isempty(displayName) ? QString(fullName) : QString("%1 \"%2\"").arg(fullName).arg(displayName); break;
+        case FMT_QDISPLAYNAME: nameLabel = displayName == nullptr ? QString(fullName) : QString("\"%1\"").arg(displayName); break;
+        case FMT_FULLNAME_AND_QDISPLAYNAME: nameLabel = displayName == nullptr ? QString(fullName) : QString("%1 \"%2\"").arg(fullName).arg(displayName); break;
     };
 
     nameItem->setText(nameLabel);

@@ -1505,7 +1505,7 @@ void cModule::finalizeParameters()
 
     cConfiguration *config = getSimulation()->getEnvir()->getConfig();
     std::string displayName = config->getAsString(getFullPath().c_str(), CFGID_DISPLAY_NAME);
-    setDisplayName(displayName.c_str());
+    setDisplayName(displayName.empty() ? nullptr : displayName.c_str());
 
     cComponent::finalizeParameters();  // this will read input parameters
 
