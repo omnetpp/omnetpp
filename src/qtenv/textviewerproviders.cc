@@ -303,7 +303,7 @@ bool EventEntryLinesProvider::isAncestorModule(int componentId, int potentialAnc
         }
     }
     else {
-        while (componentId != -1) {
+        while (componentId != -1 && componentId != 0) {
             if (componentId == potentialAncestorModuleId)
                 return true;
             componentId = componentHistory->getParentModuleId(componentId);
@@ -336,7 +336,8 @@ int EventEntryLinesProvider::getNumLines(LogBuffer::Entry *entry)
     if (shouldShowBanner(entry, shouldShowAnyLine))
         count++; // the banner line
     else
-        count = 0; // must not show anything without a banner
+        if (!entry->isGenesis())
+            count = 0; // must not show anything without a banner - except for the genesis entry
 
     return count;
 }
@@ -351,7 +352,7 @@ bool EventEntryLinesProvider::shouldShowBanner(LogBuffer::Entry *entry, bool sho
     if (entry->isSystemMessage())
         return true;
 
-    // shouldn't spam banners for "empty" initialization stages
+    // shouldn't spam banners for "empty" initialization stages (or the genesis entry)
     if (entry->isInitializationStage() && entry->lines.empty())
         return false;
 

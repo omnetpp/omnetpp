@@ -214,6 +214,9 @@ void LogBuffer::clear()
     entries.clear();
     entriesDiscarded = 0;
     messageDups.clear();
+
+    // just so log lines can be put somewhere even before initialization
+    entries.push_back(new Entry(Entry::Kind::GENESIS, 0, SimTime::ZERO, nullptr, nullptr));
 }
 
 int LogBuffer::findEntryByEventNumber(eventnumber_t eventNumber)

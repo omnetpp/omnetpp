@@ -62,6 +62,7 @@ class QTENV_API LogBuffer : public QObject
     // any number of sent messages and printed log lines, independently.
     struct Entry {
         enum class Kind {
+            GENESIS,              // for things printed in module constructors, etc.
             PROCESSED_EVENT,
             COMPONENT_INIT_STAGE,
             SYSTEM_MESSAGE,       // an "info log line"
@@ -84,6 +85,7 @@ class QTENV_API LogBuffer : public QObject
         Entry(Kind kind, eventnumber_t e, simtime_t t, cComponent *comp, const char *banner); // banner is null-terminated
         Entry(Kind kind, eventnumber_t e, simtime_t t, cComponent *comp, const char *banner, int bannerLength);
 
+        bool isGenesis() { return kind == Kind::GENESIS; }
         bool isInitializationStage() { return kind == Kind::COMPONENT_INIT_STAGE; }
         bool isSystemMessage() { return kind == Kind::SYSTEM_MESSAGE; }
         bool isEvent() { return kind == Kind::PROCESSED_EVENT; }
@@ -92,7 +94,7 @@ class QTENV_API LogBuffer : public QObject
     };
 
   protected:
-    circular_buffer<Entry*> entries;
+    circular_buffer<Entry*> entries; // this should NEVER be completely empty - at least a GENESIS Entry should be present
     int maxNumEntries = 100000;
     int entriesDiscarded = 0;
 
