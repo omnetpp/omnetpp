@@ -51,7 +51,7 @@ class ShmSendBufferManager;
  *  - When a new ShmSendBuffer is allocated, we also run garbageCollect().
  *
  *  - When the receiver Python process dies, we clean up all ShmSendBuffers
- *    by calling clean on ShmSendBufferManager.
+ *    by calling clear() on ShmSendBufferManager.
  */
 class ShmSendBuffer
 {
