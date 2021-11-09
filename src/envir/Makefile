@@ -109,7 +109,7 @@ else
 $O/%$(A_LIB_SUFFIX) : $(OBJS)
 	@mkdir -p $O
 	@echo Creating static library: $@
-	$(Q)$(AR) $(ARFLAG_OUT)$O/$(LIBNAME)$(A_LIB_SUFFIX) $(OBJS)
+	$(Q)$(AR_CR) $(ARFLAG_OUT)$O/$(LIBNAME)$(A_LIB_SUFFIX) $(OBJS)
 	$(Q)$(RANLIB) $O/$(LIBNAME)$(A_LIB_SUFFIX)
 endif
 
@@ -117,7 +117,7 @@ endif
 $O/$(MAINLIBNAME)$(A_LIB_SUFFIX) : $O/main.o
 	@mkdir -p $O
 	@echo Creating static library: $@
-	$(Q)$(AR) $(ARFLAG_OUT)$O/$(MAINLIBNAME)$(A_LIB_SUFFIX) $O/main.o
+	$(Q)$(AR_CR) $(ARFLAG_OUT)$O/$(MAINLIBNAME)$(A_LIB_SUFFIX) $O/main.o
 	$(Q)$(RANLIB) $O/$(MAINLIBNAME)$(A_LIB_SUFFIX)
 
 # build opp_run executable

@@ -235,7 +235,7 @@ else
     if test "$PREFER_CLANG" = "yes"; then
       # if we prefer clang over gcc put it at the beginning so it will be detected first
       cc_candidates="clang $cc_candidates"
-      cxx_candidates="clang++ clang $cxx_candidates"
+      cxx_candidates="clang++ $cxx_candidates"
     fi
 fi
 
@@ -272,7 +272,7 @@ AC_COMPILE_IFELSE(
 
 if test "$TOOLCHAIN" = "mingw"; then
     AS=${AS:-i586-mingw32msvc-as}
-    AR=${AR:-i586-mingw32msvc-ar cr}
+    AR_CR="${AR:-i586-mingw32msvc-ar} cr"
     SHLIB_LD=${SHLIB_LD:-$CXX -shared}
     DLLTOOL=${DLLTOOL:-i586-mingw32msvc-dlltool}
     STRIP=${STRIP:-i586-mingw32msvc-strip}
@@ -302,7 +302,7 @@ else
         CFLAGS_ARCH="$CFLAGS_ARCH -w1 -wd654 -wd177"
     fi
     AS=${AS:-${ac_tool_prefix}as}
-    AR=${AR:-${ac_tool_prefix}ar cr}
+    AR_CR="${AR:-ar} cr"
     if test "$PLATFORM" = "macosx"; then
         SHLIB_LD=${SHLIB_LD:-$CXX -dynamiclib}
     else
@@ -349,7 +349,7 @@ else
             LDFLAG_INCLUDE="-Wl,-include:"
             LDFLAG_IMPLIB="-Wl,-implib:"
             LDFLAGS_ARCH="$LDFLAGS_ARCH -Wl,-DEBUG -Wl,-libpath:/opt/visualc/lib -Wl,-nodefaultlib:libcmt -lmsvcrt -loldnames -lmsvcprt"
-            AR="lib -nologo"
+            AR_CR="lib -nologo"
             ARFLAG_OUT="-out:"
             RANLIB="test"
             A_LIB_SUFFIX=".lib"
@@ -1177,7 +1177,7 @@ AC_SUBST(MSGC)
 AC_SUBST(SMC)
 AC_SUBST(NEDTOOL)
 AC_SUBST(AS)
-AC_SUBST(AR)
+AC_SUBST(AR_CR)
 AC_SUBST(ARFLAG_OUT)
 AC_SUBST(RANLIB)
 AC_SUBST(SHLIB_LD)
