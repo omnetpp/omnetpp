@@ -37,8 +37,6 @@
 	* Analysis Tool: fix: Pasting into the combo boxes on the Browse Data page
 	didn't work.
 
------------ lines above this marker have been added from git log -----------
-
 2021-10-12  Attila Torok
 
 	* Analysis Tool: Improve focus handling on tab switching in the Chart
