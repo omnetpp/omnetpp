@@ -173,9 +173,19 @@ public class ChartExport {
         return map;
     }
 
-    public static void exportCharts(List<Chart> charts, Map<String, String> extraProperties, File chartsDir, ResultFileManager manager, MemoizationCache memoizationCache, FilterCache filterCache, boolean stopOnError, int numConcurrentProcesses) {
+    // NOTE: The list `charts` may be modified, but the objects in it are not
+    public static void exportCharts(List<Chart> charts, Map<Chart, String> editedChartScripts, Map<String, String> extraProperties, File chartsDir, ResultFileManager manager, MemoizationCache memoizationCache, FilterCache filterCache, boolean stopOnError, int numConcurrentProcesses) {
         clearPreviousConsoles();
         Context context = new Context(extraProperties, chartsDir, manager, memoizationCache, filterCache, stopOnError, numConcurrentProcesses);
+
+        for (int i = 0; i < charts.size(); ++i) {
+            Chart chart = charts.get(i);
+            Chart chartClone = (Chart)chart.dup();
+            if (editedChartScripts.containsKey(chart))
+                chartClone.setScript(editedChartScripts.get(chart));
+            charts.set(i, chartClone);
+        }
+
         if (charts.size() == 1)
             startExportJob(charts.get(0), context);
         else if (charts.size() >= 2)
@@ -183,10 +193,13 @@ public class ChartExport {
         //TODO folder.refreshLocal(IResource.DEPTH_INFINITE, monitor); // because we're creating the file behind Eclipse's back
     }
 
-    public static void exportChart(Chart chart, Map<String, String> extraProperties, File chartsDir, ResultFileManager manager, MemoizationCache memoizationCache, FilterCache filterCache) {
+    public static void exportChart(Chart chart, Map<Chart, String> editedChartScripts, Map<String, String> extraProperties, File chartsDir, ResultFileManager manager, MemoizationCache memoizationCache, FilterCache filterCache) {
         clearPreviousConsoles();
+        Chart chartClone = (Chart)chart.dup();
+        if (editedChartScripts.containsKey(chart))
+            chartClone.setScript(editedChartScripts.get(chart));
         Context context = new Context(extraProperties, chartsDir, manager, memoizationCache, filterCache, false, 1);
-        startExportJob(chart, context);
+        startExportJob(chartClone, context);
         //TODO folder.refreshLocal(IResource.DEPTH_INFINITE, monitor); // because we're creating the file behind Eclipse's back
     }
 
