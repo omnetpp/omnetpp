@@ -129,7 +129,7 @@ public class ChartTemplateRegistry {
         // dialog pages
         List<Chart.DialogPage> pages = new ArrayList<Chart.DialogPage>();
         for (int i = 0; true; ++i) {
-            String pageId = props.getProperty("dialogPage." + i + ".label");
+            String pageId = props.getProperty("dialogPage." + i + ".id");
 
             if (pageId == null)
                 break;
