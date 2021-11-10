@@ -76,7 +76,6 @@ public class ChartsPage extends FormEditorPage {
 
         Label label = new Label(getContent(), SWT.WRAP);
         label.setText("Here you can edit chart definitions.");
-        label.setBackground(this.getBackground());
         label.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
 
         viewer = new IconGridViewer(getContent());
