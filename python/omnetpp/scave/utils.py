@@ -1234,7 +1234,7 @@ def parse_rcparams(rc_content):
             continue
         tup = strippedline.split(':', 1)
         if len(tup) != 2:
-            raise RuntimeError("Illegal rc line #" + str(line_no)) + ": " + line
+            raise RuntimeError("Illegal rc line #" + str(line_no) + ": " + line)
         key, val = tup
         key = key.strip()
         val = val.strip()
