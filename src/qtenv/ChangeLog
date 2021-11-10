@@ -1,3 +1,11 @@
+2021-11-08  Attila Torok
+
+	* Log: Add a "genesis" Entry::Kind, make sure that at least one Entry of
+	that kind always exists. Fixes the issue where writing anything into the
+	EV_* log in a module constructor triggers an assertion failure, the
+	resulting exception then sets the badbit on the ostream, which in turn
+	silences any further log output.
+
 2021-10-28  Attila Torok
 
 	* Log: Embed the Fira Code font as a resource, and use it by default.

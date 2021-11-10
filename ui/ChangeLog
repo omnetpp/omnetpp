@@ -1,3 +1,48 @@
+2021-11-11  Attila Torok
+
+	* Native Libraries: Introduce ShmSendBufferPtr and ShmSendBufferPtrVector
+	type definitions for brevity.
+
+2021-11-10  Attila Torok
+
+	* Analysis Tool: Don't set label backgrounds explicitly, they looked bad
+	with certain themes.
+
+2021-11-09  Attila Torok
+
+	* Analysis Tool: Don't use stale scripts when exporting opened charts.
+
+2021-11-09  Attila Torok
+
+	* Analysis Tool: Extract ScaveEditor.getScriptsOfOpenCharts() from doSave().
+
+2021-11-08  Attila Torok
+
+	* Analysis Tool: Tiny consistency fix in ShmSendBuffer doc comment.
+
+2021-11-05  Attila Torok
+
+	* Analysis Tool: Call System.gc() after ShmSendBufferManager::garbageCollect()
+	if it did something, to make sure the unneeded ShmSendBuffers are freed.
+
+2021-11-05  Attila Torok
+
+	* Analysis Tool: Add optional ShmSendBuffer instance number tracking
+	and additional debug output.
+
+2021-11-05  Attila Torok
+
+	* Analysis Tool: Rename ShmPickler::get() to getBuffer() to avoid confusion
+	with std::shared_ptr<*>::get().
+
+2021-11-05  Attila Torok
+
+	* Analysis Tool: Fix #900 - Always use ShmSendBuffer through std::shared_ptr
+	instead of raw pointers, drop the ShmCleaner helper class.
+
+	This guarantees that there are no double-deletes even if an exception is
+	thrown. Also makes `owner` and the `deleted()` callback unnecessary.
+
 2021-10-29  Attila Torok
 
 	* Analysis Tool: Fix #902 (Invalid thread access when using Implement Method
@@ -5,12 +50,12 @@
 
 2021-06-23  Attila Torok
 
-	* Analysis Tool: fix:  "Zoom to Fit" action did not ignore disabled
+	* Analysis Tool: fix: "Zoom to Fit" action did not ignore disabled
 	series after the chart was refreshed.
 
 2021-10-27  Attila Torok
 
-	* Analysis Tool: fix:  Compute native plot data margins symmetrically
+	* Analysis Tool: fix: Compute native plot data margins symmetrically
 
 2021-10-27  Attila Torok
 

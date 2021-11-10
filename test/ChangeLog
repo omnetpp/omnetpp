@@ -1,3 +1,8 @@
+2021-11-11  Attila Torok
+
+	Log a message in a module constructor (in anim/logformatting) to verify
+	that it doesn't break anything.
+
 2021-11-08  Andras Varga
 
 	* Numerous tests were added, updated, etc. during the development of

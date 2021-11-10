@@ -1,3 +1,7 @@
+2021-11-10  Attila Torok
+
+	* omnetpp.scave.analysis: Minor chart execution fixes.
+
 2021-10-29  Attila Torok
 
 	* omnetpp.scave.utils: Add digit grouping to tick labels in MPL-emulated
