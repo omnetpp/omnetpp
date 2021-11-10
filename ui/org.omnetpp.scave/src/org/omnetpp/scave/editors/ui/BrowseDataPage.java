@@ -133,7 +133,6 @@ public class BrowseDataPage extends FormEditorPage {
         getContent().setLayout(new GridLayout());
         label = new Label(getContent(), SWT.WRAP);
         label.setText("Here you can see all data that come from the files specified in the Inputs page.");
-        label.setBackground(this.getBackground());
 
         tabFolder = new FilteredDataTabFolder(getContent(), SWT.NONE);
         tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));

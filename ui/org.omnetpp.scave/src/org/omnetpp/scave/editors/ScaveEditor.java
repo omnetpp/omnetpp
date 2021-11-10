@@ -1479,7 +1479,6 @@ public class ScaveEditor extends MultiPageEditorPartExt
 
                     Label label = new Label(getContent(), SWT.WRAP);
                     label.setText("Analysis could not be opened.");
-                    label.setBackground(this.getBackground());
                     label.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false));
                 }
             });
