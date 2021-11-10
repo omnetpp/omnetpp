@@ -58,7 +58,7 @@ NED:
 
 MSG:
 
-     - The @readonly property was added.
+  - The @readonly property was added.
 
 Core:
 
@@ -105,6 +105,9 @@ Qtenv:
     default for the log window. The reason is that it provides nice --> arrow
     ligatures in the Messages view.
 
+  - Fixed a bug where all further EV_* logging output was discarded after any
+    module printed something into the log in its constructor.
+
 Analysis Tool:
 
   - On the Browse Data page, mask values that don't fit into their columns using
@@ -120,7 +123,7 @@ Analysis Tool:
     Importing it will delegate to ideplot after issuing a "this is deprecated"
     warning.
 
-  - Numerous bug fixes
+  - Numerous bugs were fixed, including a complete IDE crash in rare cases.
 
 
 OMNeT++ 6.0pre13 (Oct 2021)
