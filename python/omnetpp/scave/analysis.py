@@ -60,7 +60,7 @@ class Workspace:
     workspace paths to filesystem paths. This is necessary because the inputs
     in the `Analysis` are workspace paths.
     """
-    def __init__(self, workspace_dir, project_paths=None):
+    def __init__(self, workspace_dir, project_paths={}):
         """
         Accepts the workspace location, plus a dict that contains the (absolute,
         or workspace-relative) location of projects by name, for projects that
@@ -195,12 +195,15 @@ class Analysis:
         global _show_called
         _show_called = False
 
+        od = os.getcwd()
         try:
             os.chdir(wd)
-            exec(chart.script, {})
+            exec(chart.script, { "exit": sys.exit })
         except SystemExit as se:
             if se.code != 0:
                 raise RuntimeError("Chart script exited with code " + str(se.code))
+        finally:
+            os.chdir(od)
 
         if show and not _show_called:
             plt.show()
@@ -213,6 +216,7 @@ class Analysis:
         or implements equivalent functionality).
         """
         props = dict()
+        props.update(chart.properties)
         props.update(extra_props)
 
         props['export_image'] = "true"
