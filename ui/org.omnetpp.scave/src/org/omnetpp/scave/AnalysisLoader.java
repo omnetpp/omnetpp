@@ -165,8 +165,8 @@ public class AnalysisLoader {
 
                             List<Element> pageNodes = XmlUtils.getChildElementsWithTag(chartNode, "dialogPage");
                             for (Element pageNode : pageNodes) {
-                                String id = pageNode.getAttributes().getNamedItem("id").getNodeValue();
-                                String label = pageNode.getAttributes().getNamedItem("label").getNodeValue();
+                                String id = pageNode.getAttribute("id");
+                                String label = pageNode.getAttribute("label");
                                 String xswtForm = extractCdataOrTextContent(pageNode);
                                 Chart.DialogPage page = new Chart.DialogPage(id, label, xswtForm);
                                 pages.add(page);
@@ -174,15 +174,12 @@ public class AnalysisLoader {
                             chart.setDialogPages(pages);
                         }
 
-                        NodeList props = chartNode.getChildNodes();
-                        for (int k = 0; k < props.getLength(); ++k) {
-                            Node propNode = props.item(k);
-                            if ("property".equals(propNode.getNodeName())) {
-                                String name = propNode.getAttributes().getNamedItem("name").getNodeValue();
-                                String value = propNode.getAttributes().getNamedItem("value").getNodeValue();
-                                Property prop = new Property(name, value);
-                                chart.addProperty(prop);
-                            }
+                        List<Element> propNodes = XmlUtils.getChildElementsWithTag(chartNode, "property");
+                        for (Element propNode : propNodes) {
+                            String name = propNode.getAttribute("name");
+                            String value = propNode.getAttribute("value");
+                            Property prop = new Property(name, value);
+                            chart.addProperty(prop);
                         }
 
                         analysis.getCharts().addChart(chart);
