@@ -25,6 +25,9 @@ class Tester : public cSimpleModule
     cMessage *msg;
     int i = 0;
 
+  public:
+    Tester() { EV_INFO << "Message from the Tester constructor." << std::endl; }
+
   protected:
     virtual void initialize();
 
