@@ -143,7 +143,7 @@ public class AnalysisLoader {
                         }
 
                         Node scriptAttrNode = chartNode.getAttributes().getNamedItem("script");
-                        Element scriptElement = XmlUtils.getFirstElementWithTag(chartNode, "script");
+                        Element scriptElement = XmlUtils.getFirstChildElementWithTag(chartNode, "script");
 
                         if (scriptAttrNode != null)
                             chart.setScript(scriptAttrNode.getNodeValue());
@@ -154,7 +154,7 @@ public class AnalysisLoader {
                                 chart.setScript(StringUtils.stripEnd(chartNode.getTextContent(), " "));
                         }
 
-                        Element formElement = XmlUtils.getFirstElementWithTag(chartNode, "form");
+                        Element formElement = XmlUtils.getFirstChildElementWithTag(chartNode, "form");
                         if (formElement != null) {
                             List<Chart.DialogPage> pages = Arrays.asList(new Chart.DialogPage[] {
                                     new Chart.DialogPage("PROPERTIES", "Properties", formElement.getTextContent()) });
@@ -163,7 +163,7 @@ public class AnalysisLoader {
                         else {
                             ArrayList<Chart.DialogPage> pages = new ArrayList<>();
 
-                            List<Element> pageNodes = XmlUtils.getElementsWithTag(chartNode, "dialogPage");
+                            List<Element> pageNodes = XmlUtils.getChildElementsWithTag(chartNode, "dialogPage");
                             for (Element pageNode : pageNodes) {
                                 String id = pageNode.getAttributes().getNamedItem("id").getNodeValue();
                                 String label = pageNode.getAttributes().getNamedItem("label").getNodeValue();

@@ -47,7 +47,7 @@ public class XmlUtils  {
         return result;
     }
 
-    public static Element getFirstElementWithTag(Node parent, String tag) {
+    public static Element getFirstChildElementWithTag(Node parent, String tag) {
         NodeList children = parent.getChildNodes();
 
         for (int k = 0; k < children.getLength(); ++k) {
@@ -59,7 +59,7 @@ public class XmlUtils  {
         return null;
     }
 
-    public static ArrayList<Element> getElementsWithTag(Node parent, String tag) {
+    public static ArrayList<Element> getChildElementsWithTag(Node parent, String tag) {
         ArrayList<Element> result = new ArrayList<>();
 
         NodeList children = parent.getChildNodes();

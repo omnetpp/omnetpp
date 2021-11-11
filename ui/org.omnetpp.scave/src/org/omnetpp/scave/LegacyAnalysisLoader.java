@@ -399,7 +399,7 @@ public class LegacyAnalysisLoader {
                 }
             }
             else if ("chartSheets".equals(node.getNodeName())) {
-                int n = XmlUtils.getElementsWithTag(node, "chartSheets").size();
+                int n = XmlUtils.getChildElementsWithTag(node, "chartSheets").size();
                 if (n > 0)
                     errors.add("Chart sheets not supported, " + n + " chart sheet(s) were discarded.");
             }
