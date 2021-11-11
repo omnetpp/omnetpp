@@ -82,6 +82,9 @@ public:
     std::vector<int8_t> getContentCopy() const;
 };
 
+using ShmSendBufferPtr = std::shared_ptr<ShmSendBuffer>;
+using ShmSendBufferPtrVector = std::vector<ShmSendBufferPtr>;
+
 /**
  * This class acts as a factory for, and keeps track of, ShmSendBuffer objects.
  */
@@ -91,7 +94,7 @@ class ShmSendBufferManager
 
 protected:
     int targetPid;  // TODO unused for now
-    std::vector<std::shared_ptr<ShmSendBuffer>> buffers;  // disposed elements are nullptr
+    ShmSendBufferPtrVector buffers;  // disposed elements are nullptr
     common::ReentrantReadWriteLock lock;
 
 public:
@@ -99,10 +102,10 @@ public:
     ~ShmSendBufferManager();
 
     // create and map send buffer
-    std::shared_ptr<ShmSendBuffer> create(const char *label, size_t commitSize, bool extendable);
+    ShmSendBufferPtr create(const char *label, size_t commitSize, bool extendable);
 
     // create with preexisting content
-    std::shared_ptr<ShmSendBuffer> create(const char *label, const std::vector<int8_t>& content);
+    ShmSendBufferPtr create(const char *label, const std::vector<int8_t>& content);
 
     // unmaps and releases all send buffers
     void clear();

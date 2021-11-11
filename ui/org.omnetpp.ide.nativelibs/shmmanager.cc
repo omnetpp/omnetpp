@@ -93,7 +93,7 @@ std::vector<int8_t> ShmSendBuffer::getContentCopy() const
 ShmSendBufferManager::~ShmSendBufferManager()
 {
     Mutex mutex(lock.writeLock());
-    for (std::shared_ptr<ShmSendBuffer> &p : buffers) {
+    for (ShmSendBufferPtr &p : buffers) {
         if (p && !p->isConsumed())
             std::cerr << "ShmSendBufferManager: unconsumed send buffer found in destructor! call clear() explicitly if this is normal\n";
 #ifdef SHMSENDBUFFER_DEBUG
@@ -104,7 +104,7 @@ ShmSendBufferManager::~ShmSendBufferManager()
     }
 }
 
-std::shared_ptr<ShmSendBuffer> ShmSendBufferManager::create(const char *label, size_t commitSize, bool extendable)
+ShmSendBufferPtr ShmSendBufferManager::create(const char *label, size_t commitSize, bool extendable)
 {
     garbageCollect(); // when a new Python->IDE call occurs, there's a high chance that buffers from earlier calls are not longer needed -> GC them
 
@@ -115,14 +115,14 @@ std::shared_ptr<ShmSendBuffer> ShmSendBufferManager::create(const char *label, s
     snprintf(name, OPP_SHM_NAME_MAX, "opp-%ld-%d-%s", getpid()%1000000L, ++counter, label);
     // It would be more idiomatic to use std::make_shared here, but I'drather keep the
     // constructor of ShmSendBuffer private, and make ShmSendBufferManager a friend of it.
-    std::shared_ptr<ShmSendBuffer> result(new ShmSendBuffer(name, commitSize, extendable));
+    ShmSendBufferPtr result(new ShmSendBuffer(name, commitSize, extendable));
     buffers.push_back(result);
     return result;
 }
 
-std::shared_ptr<ShmSendBuffer> ShmSendBufferManager::create(const char *label, const std::vector<int8_t>& content)
+ShmSendBufferPtr ShmSendBufferManager::create(const char *label, const std::vector<int8_t>& content)
 {
-    std::shared_ptr<ShmSendBuffer> buffer = create(label, content.size(), false);
+    ShmSendBufferPtr buffer = create(label, content.size(), false);
     memcpy(buffer->getAddress(), content.data(), content.size());
     return buffer;
 }
@@ -130,7 +130,7 @@ std::shared_ptr<ShmSendBuffer> ShmSendBufferManager::create(const char *label, c
 void ShmSendBufferManager::clear()
 {
     Mutex mutex(lock.writeLock());
-    for (std::shared_ptr<ShmSendBuffer> &p : buffers) {
+    for (ShmSendBufferPtr &p : buffers) {
 #ifdef SHMSENDBUFFER_DEBUG
         if (p)
             std::cout << "ShmSendBufferManager clear(): dropping reference to " << (void*)p.get() << std::endl;
@@ -143,7 +143,7 @@ bool ShmSendBufferManager::garbageCollect()
 {
     Mutex mutex(lock.writeLock());
     bool result = false;
-    for (std::shared_ptr<ShmSendBuffer> &p : buffers)
+    for (ShmSendBufferPtr &p : buffers)
         if (p && p->isConsumed()) {
 #ifdef SHMSENDBUFFER_DEBUG
             std::cout << "ShmSendBufferManager garbageCollect(): dropping reference to " << (void*)p.get() << std::endl;
@@ -152,7 +152,7 @@ bool ShmSendBufferManager::garbageCollect()
             result = true;
         }
 
-    common::remove(buffers, std::shared_ptr<ShmSendBuffer>(nullptr));
+    common::remove(buffers, ShmSendBufferPtr(nullptr));
 
     return result;
 }

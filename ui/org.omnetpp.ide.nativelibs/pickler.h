@@ -31,11 +31,10 @@
 #include <limits>
 
 #include "scave/scavedefs.h"
+#include "shmmanager.h"
 
 namespace omnetpp {
 namespace scave {
-
-class ShmSendBuffer;
 
 // See Python's pickletools.py for a detailed description of each of these codes
 enum class PickleOpCode : char {
@@ -200,16 +199,16 @@ class Pickler
 class ShmPickler : public Pickler
 {
   private:
-    std::shared_ptr<ShmSendBuffer> sendBuffer;
+    ShmSendBufferPtr sendBuffer;
     size_t sizeLimit;
 
   protected:
     virtual void makeRoom(size_t bytesNeeded);
 
   public:
-    ShmPickler(std::shared_ptr<ShmSendBuffer> sendBuffer, size_t sizeLimit);
+    ShmPickler(ShmSendBufferPtr sendBuffer, size_t sizeLimit);
 
-    std::shared_ptr<ShmSendBuffer> getBuffer() { return sendBuffer; }
+    ShmSendBufferPtr getBuffer() { return sendBuffer; }
 };
 
 }  // namespace scave

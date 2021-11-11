@@ -524,6 +524,9 @@ namespace omnetpp { namespace scave {
 /* ------------------ memoryutils.h ----------------------- */
 %include "scave/memoryutils.h"
 
+/* ------------------ shmmanager.h ----------------------- */
+%include "shmmanager.h"
+
 /* ------------------ resultspickler.h ----------------------- */
 %include "resultspickler.h"
 
@@ -540,6 +543,3 @@ namespace omnetpp { namespace scave {
 %native(unmapSharedMemory) void unmapSharedMemory(jobject buf);
 
 %native(removeSharedMemory) void removeSharedMemory(jstring name);
-
-/* ------------------ shmmanager.h ----------------------- */
-%include "shmmanager.h"

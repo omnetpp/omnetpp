@@ -18,7 +18,6 @@
 // This file was "inspired by" torch/csrc/jit/serialization/pickler.cpp in PyTorch
 
 #include "pickler.h"
-#include "shmmanager.h"
 
 #include <string>
 #include "scave/memoryutils.h" // getAvailableMemoryBytes()
@@ -217,7 +216,7 @@ void Pickler::makeRoom(size_t bytesNeeded)
 
 // ---------------- ShmPickler ----------------
 
-ShmPickler::ShmPickler(std::shared_ptr<ShmSendBuffer> sendBuffer, size_t sizeLimit) :
+ShmPickler::ShmPickler(ShmSendBufferPtr sendBuffer, size_t sizeLimit) :
         Pickler(sendBuffer->getAddress(), sendBuffer->getDataSize()),
         sendBuffer(sendBuffer), sizeLimit(sizeLimit)
 {
