@@ -174,14 +174,18 @@ public class NativeChartViewer extends ChartViewerBase {
         ExceptionHandler ownRunAfterError = (proc, e) -> {
             runAfterError.handle(proc, e);
             Display.getDefault().syncExec(() -> {
-                plot.clear();
-                chartPlotter.applyPendingPropertyChanges();
+                if (!plot.isDisposed()) {
+                    plot.clear();
+                    chartPlotter.applyPendingPropertyChanges();
+                }
             });
             if (!proc.isKilledByUs()) {
                 Display.getDefault().syncExec(() -> {
-                    plot.setStatusText(null);
-                    plot.setWarningText("An exception occurred during Python execution.");
-                    plot.update();
+                    if (!plot.isDisposed()) {
+                        plot.setStatusText(null);
+                        plot.setWarningText("An exception occurred during Python execution.");
+                        plot.update();
+                    }
                 });
             }
         };
