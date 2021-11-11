@@ -9,6 +9,7 @@ package org.omnetpp.scave.charting.properties;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.Graphics;
@@ -17,6 +18,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Display;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.scave.ScaveImages;
@@ -121,17 +123,34 @@ public enum PlotProperty {
     }
 
     public static PlotProperty lookup(String propertyName) {
-        if (map == null) {
-            map = new HashMap<>();
-            for (PlotProperty p : PlotProperty.values())
-               map.put(p.getName(), p);
-        }
+        if (map == null)
+            initialize();
         String baseName = getBasePropertyName(propertyName);
         return map.get(baseName);
-
     }
 
-     public static String getBasePropertyName(String propertyName) {
+    protected static void initialize() {
+        map = new HashMap<>();
+        for (PlotProperty p : PlotProperty.values())
+           map.put(p.getName(), p);
+        dump();
+    }
+
+    public static void dump() {
+        if (map == null)
+            initialize();
+        Debug.println("-----");
+        Debug.println("# The omnetpp.scave Python package needs plot property defaults for chart template instantiation.");
+        Debug.println("# After changes (or before release), please copy/paste the following code to the appropriate place in the Python source under omnetpp/python/");
+        Debug.println("_plot_property_defaults = {");
+        var sortedProps = map.values().stream().sorted((object1, object2) -> object1.getName().compareTo(object2.getName())).collect(Collectors.toList());
+        for (PlotProperty p : sortedProps)
+            Debug.println("    '" + p.getName()+ "' : '" + p.getDefaultValueAsString() + "',");
+        Debug.println("}");
+        Debug.println("-----");
+    }
+
+    public static String getBasePropertyName(String propertyName) {
         int index = propertyName.indexOf('/');
         return index < 0 ? propertyName : propertyName.substring(0, index);
     }
