@@ -74,6 +74,16 @@ public class SyntaxHighlightHelper {
         }
     }
 
+    public static void init() {
+        // Since this class does Display thread synchronization in getColor(),
+        // which is called from the static {} block above, it might cause a
+        // deadlock if it happens to run at the wrong time. This surfaced
+        // when enabling the "Source on NED and MSG type pages" in the dialog,
+        // but only when running from the IDE (and not if from opp_neddoc).
+        // So this empty method is here just so user classes can make sure
+        // the static {} block runs early enough, where/when it should.
+    }
+
     /**
      * Convenience method, to return a system default color. Color constants come from SWT class e.g. SWT.COLOR_RED
      */

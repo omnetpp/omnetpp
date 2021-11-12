@@ -65,6 +65,7 @@ import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.common.editor.text.Keywords;
 import org.omnetpp.common.editor.text.NedCommentFormatter;
+import org.omnetpp.common.editor.text.SyntaxHighlightHelper;
 import org.omnetpp.common.editor.text.NedCommentFormatter.INeddocProcessor;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.common.util.FileUtils;
@@ -234,6 +235,10 @@ public class DocumentationGenerator {
         IPreferenceStore store = CommonPlugin.getConfigurationPreferenceStore();
         dotExecutablePath = ProcessUtils.lookupExecutable(store.getString(IConstants.PREF_GRAPHVIZ_DOT_EXECUTABLE));
         doxyExecutablePath = ProcessUtils.lookupExecutable(store.getString(IConstants.PREF_DOXYGEN_EXECUTABLE));
+
+        // Making sure it will be initialized by the time the documentation
+        // generator workspace job is launched, so it doesn't deadlock.
+        SyntaxHighlightHelper.init();
     }
 
     // specify an extension file using a full file system path to the XML doc-extension fragment file
