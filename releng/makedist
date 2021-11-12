@@ -80,7 +80,7 @@ fi
 export VERSION=$(cat Version | sed 's/^.*-//')
 if [ "$BUILDID" = "" ]; then
   # generate our own build identifier
-  export BUILDID=$(date +%y%m%d)-$(git describe --tags | awk -F '-g' '{print $2;}')
+  export BUILDID=$(date +%y%m%d)-$(git rev-parse --short HEAD)
 fi
 
 RELEASE="$what-$VERSION"
