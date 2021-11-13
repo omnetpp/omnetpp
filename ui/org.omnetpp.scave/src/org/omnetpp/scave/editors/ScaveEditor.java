@@ -118,7 +118,7 @@ import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.AnalysisItem;
 import org.omnetpp.scave.model.Chart;
-import org.omnetpp.scave.model.Charts;
+import org.omnetpp.scave.model.Folder;
 import org.omnetpp.scave.model.IModelChangeListener;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
@@ -541,7 +541,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
     }
 
     protected void showPythonExecutionWarningDialogIfNeeded() {
-        if (analysis.getCharts().getCharts().isEmpty())
+        if (analysis.getRootFolder().getItems().isEmpty())
             return; // empty analysis -- not applicable
 
         IPreferenceStore preferences = ScavePlugin.getDefault().getPreferenceStore();
@@ -972,11 +972,11 @@ public class ScaveEditor extends MultiPageEditorPartExt
                 @Override
                 public Object[] getChildren(Object element) {
                     if (element instanceof Analysis)
-                        return new Object[] { ((Analysis)element).getInputs(), ((Analysis)element).getCharts() };
+                        return new Object[] { ((Analysis)element).getInputs(), ((Analysis)element).getRootFolder() };
                     else if (element instanceof Inputs)
                         return ((Inputs) element).getInputs().toArray();
-                    else if (element instanceof Charts)
-                        return ((Charts) element).getCharts().toArray();
+                    else if (element instanceof Folder)
+                        return ((Folder) element).getItems().toArray();
                     else
                         return new Object[0];
                 }
@@ -988,7 +988,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
                         return "Analysis";
                     else if (element instanceof Inputs)
                         return "Inputs";
-                    else if (element instanceof Charts)
+                    else if (element instanceof Folder)
                         return "Charts";
                     else if (element instanceof InputFile)
                         return ((InputFile) element).getName();
@@ -1004,7 +1004,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
                         return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_FOLDER);
                     else if (element instanceof Inputs)
                         return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_FOLDER);
-                    else if (element instanceof Charts)
+                    else if (element instanceof Folder)
                         return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_FOLDER);
                     else if (element instanceof InputFile)
                         return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_INPUTFILE);
@@ -1135,7 +1135,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
         // close pages whose content was deleted, except temporary charts
         for (AnalysisItem item : closablePages.keySet().toArray(new AnalysisItem[0])) { // toArray() is for preventing ConcurrentModificationException
             // TODO: when folders are introduced, revise this
-            if (!analysis.getCharts().getCharts().contains(item) && !(item instanceof Chart && ((Chart)item).isTemporary()))
+            if (!analysis.getRootFolder().getItems().contains(item) && !(item instanceof Chart && ((Chart)item).isTemporary()))
                 removePage(closablePages.get(item));
         }
 
@@ -1204,7 +1204,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
     }
 
     private String getPageId(ChartScriptEditor chartScriptEditor) {
-        return Integer.toString(analysis.getCharts().getCharts().indexOf(chartScriptEditor.getChart()));
+        return Integer.toString(analysis.getRootFolder().getItems().indexOf(chartScriptEditor.getChart()));
     }
 
     // TODO merge the one below into this one?
@@ -1231,19 +1231,19 @@ public class ScaveEditor extends MultiPageEditorPartExt
         if (pageId == null || pageId.equals("Inputs") || pageId.equals("BrowseData") || pageId.equals("Charts"))
             return null;
 
-        int id = Integer.parseInt(pageId);
-        List<AnalysisItem> charts = analysis.getCharts().getCharts();
+        int itemId = Integer.parseInt(pageId);
+        List<AnalysisItem> items = analysis.getRootFolder().getItems();
 
-        AnalysisItem item = null;
-        for (AnalysisItem chart : charts)
-            if (chart.getId() == id) {
-                item = chart;
+        AnalysisItem foundItem = null;
+        for (AnalysisItem item : items)
+            if (item.getId() == itemId) {
+                foundItem = item;
                 break;
             }
 
-        if (item != null) {
-            createClosablePage(item);
-            Control p = closablePages.get(item);
+        if (foundItem != null) {
+            createClosablePage(foundItem);
+            Control p = closablePages.get(foundItem);
             int pageIndex = findPage(p);
             IEditorPart editor = getEditor(pageIndex);
             if (editor instanceof ChartScriptEditor) {
@@ -1404,7 +1404,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
                 int chartId = Integer.parseInt(sourceId);
 
                 Chart chart = null;
-                for (AnalysisItem i : analysis.getCharts().getCharts()) {
+                for (AnalysisItem i : analysis.getRootFolder().getItems()) {
                     if (!(i instanceof Chart))
                         continue;
                     Chart c = (Chart)i;

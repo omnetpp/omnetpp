@@ -11,30 +11,30 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.omnetpp.scave.model.AnalysisItem;
-import org.omnetpp.scave.model.Charts;
+import org.omnetpp.scave.model.Folder;
 import org.omnetpp.scave.model.ModelObject;
 
 public class RemoveChartCommand implements ICommand {
 
     private int index;
     private ModelObject parent;
-    private AnalysisItem chart;
+    private AnalysisItem item;
 
-    public RemoveChartCommand(AnalysisItem chart) {
-        this.chart = chart;
-        this.parent = chart.getParent();
+    public RemoveChartCommand(AnalysisItem item) {
+        this.item = item;
+        this.parent = item.getParent();
     }
 
     @Override
     public void execute() {
-        ModelObject parent = chart.getParent();
+        ModelObject parent = item.getParent();
 
-        if (parent instanceof Charts) {
-            index = ((Charts)parent).getCharts().indexOf(chart);
+        if (parent instanceof Folder) {
+            index = ((Folder)parent).getItems().indexOf(item);
         }
 
-        if (parent instanceof Charts)
-            ((Charts)parent).removeChart(chart);
+        if (parent instanceof Folder)
+            ((Folder)parent).remove(item);
         else {
             // TODO
         }
@@ -42,8 +42,8 @@ public class RemoveChartCommand implements ICommand {
 
     @Override
     public void undo() {
-        if (parent instanceof Charts)
-            ((Charts)parent).addChart(chart, index);
+        if (parent instanceof Folder)
+            ((Folder)parent).add(item, index);
 
     }
 
@@ -59,7 +59,7 @@ public class RemoveChartCommand implements ICommand {
 
     @Override
     public Collection<ModelObject> getAffectedObjects() {
-        return Arrays.asList(parent, chart);
+        return Arrays.asList(parent, item);
     }
 
 }

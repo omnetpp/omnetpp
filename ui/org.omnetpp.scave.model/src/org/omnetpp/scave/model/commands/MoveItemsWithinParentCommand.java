@@ -14,19 +14,19 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.scave.model.AnalysisItem;
-import org.omnetpp.scave.model.Charts;
+import org.omnetpp.scave.model.Folder;
 import org.omnetpp.scave.model.ModelObject;
 
-public class MoveChartCommand implements ICommand { // TODO AnalysisItem ?
+public class MoveItemsWithinParentCommand implements ICommand {
 
-    Charts charts;
-    AnalysisItem chart;
+    Folder container;
+    AnalysisItem item;
     int oldIndex;
     int newIndex;
 
-    public MoveChartCommand(Charts charts, AnalysisItem chart, int newIndex) {
-        this.charts = charts;
-        this.chart = chart;
+    public MoveItemsWithinParentCommand(Folder container, AnalysisItem item, int newIndex) {
+        this.container = container;
+        this.item = item;
         this.newIndex = newIndex;
 
         Assert.isTrue(oldIndex >= 0);
@@ -34,24 +34,24 @@ public class MoveChartCommand implements ICommand { // TODO AnalysisItem ?
 
     @Override
     public void execute() {
-        this.oldIndex = charts.getCharts().indexOf(chart);
+        this.oldIndex = container.getItems().indexOf(item);
 
-        List<AnalysisItem> items = new ArrayList<AnalysisItem>(charts.getCharts());
+        List<AnalysisItem> items = new ArrayList<AnalysisItem>(container.getItems());
 
         items.remove(oldIndex);
-        items.add(newIndex, chart);
+        items.add(newIndex, item);
 
-        charts.setCharts(items);
+        container.setItems(items);
     }
 
     @Override
     public void undo() {
-        List<AnalysisItem> items = new ArrayList<AnalysisItem>(charts.getCharts());
+        List<AnalysisItem> items = new ArrayList<AnalysisItem>(container.getItems());
 
         items.remove(newIndex);
-        items.add(oldIndex, chart);
+        items.add(oldIndex, item);
 
-        charts.setCharts(items);
+        container.setItems(items);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class MoveChartCommand implements ICommand { // TODO AnalysisItem ?
 
     @Override
     public Collection<ModelObject> getAffectedObjects() {
-        return Arrays.asList(charts, chart);
+        return Arrays.asList(container, item);
     }
 
 }

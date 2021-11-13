@@ -31,7 +31,7 @@ import org.omnetpp.scave.model.AnalysisItem;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Chart.DialogPage;
 import org.omnetpp.scave.model.ChartTemplate;
-import org.omnetpp.scave.model.Charts;
+import org.omnetpp.scave.model.Folder;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model.ModelChangeEvent;
@@ -42,7 +42,7 @@ import org.omnetpp.scave.model.commands.AddInputFileCommand;
 import org.omnetpp.scave.model.commands.CommandStack;
 import org.omnetpp.scave.model.commands.CompoundCommand;
 import org.omnetpp.scave.model.commands.ICommand;
-import org.omnetpp.scave.model.commands.MoveChartCommand;
+import org.omnetpp.scave.model.commands.MoveItemsWithinParentCommand;
 import org.omnetpp.scave.model.commands.SetChartIsTemporaryCommand;
 import org.omnetpp.scave.model.commands.SetChartNameCommand;
 
@@ -122,19 +122,19 @@ public class ScaveModelUtil {
         commandStack.execute(command);
     }
 
-    public static void moveElements(CommandStack commandStack, Charts charts, Object[] elements, int index) {
+    public static void moveElements(CommandStack commandStack, Folder container, Object[] elements, int index) {
         // the elements[] array contains the elements in no particular order. We need to keep
         // the order they are in the model (Charts object). Plus, we need reverse order due to
         // the order we insert them back.
         List<AnalysisItem> itemsToMove = new ArrayList<>();
-        for (AnalysisItem item : charts.getCharts())
+        for (AnalysisItem item : container.getItems())
             if (ArrayUtils.contains(elements, item))
                 itemsToMove.add(0, item); // reverse order
 
         // do a series of "Move" commands
         CompoundCommand command = new CompoundCommand("Move analysis items");
         for (AnalysisItem item : itemsToMove)
-            command.append(new MoveChartCommand(charts, item, index));
+            command.append(new MoveItemsWithinParentCommand(container, item, index));
         commandStack.execute(command);
     }
 

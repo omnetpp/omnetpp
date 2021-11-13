@@ -49,15 +49,15 @@ public class PasteAction extends AbstractScaveAction {
 
                 CompoundCommand command = new CompoundCommand("Paste objects");
 
-                List<AnalysisItem> charts = editor.getAnalysis().getCharts().getCharts();
+                List<AnalysisItem> items = editor.getAnalysis().getRootFolder().getItems();
                 int pasteIndex = -1;
 
                 for (Object o : asStructuredOrEmpty(selection).toArray())
                     if (o instanceof AnalysisItem)
-                        pasteIndex = charts.indexOf(o) + 1;
+                        pasteIndex = items.indexOf(o) + 1;
 
                 if (pasteIndex < 0)
-                    pasteIndex = charts.size();
+                    pasteIndex = items.size();
 
                 List<Object> toSelect = new ArrayList<Object>();
                 for (Object o : objects) {

@@ -57,44 +57,44 @@ public class AnalysisSaver {
         try {
             db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 
-            Document d = db.newDocument();
+            Document document = db.newDocument();
 
-            Element anal = d.createElement("analysis");
+            Element anal = document.createElement("analysis");
             anal.setAttribute("version", "2");
-            d.appendChild(anal);
+            document.appendChild(anal);
 
-            Element inputs = d.createElement("inputs");
+            Element inputs = document.createElement("inputs");
             anal.appendChild(inputs);
 
-            Element charts = d.createElement("charts");
+            Element charts = document.createElement("charts");
             anal.appendChild(charts);
 
             for (InputFile i : analysis.getInputs().getInputs()) {
-                Element elem = d.createElement("input");
+                Element elem = document.createElement("input");
                 inputs.appendChild(elem);
                 elem.setAttribute("pattern", i.getName());
             }
 
-            for (AnalysisItem a : analysis.getCharts().getCharts()) {
+            for (AnalysisItem a : analysis.getRootFolder().getItems()) {
                 if (a instanceof Chart) {
                     Chart chart = (Chart) a;
-                    Element chartElem = d.createElement("chart");
+                    Element chartElem = document.createElement("chart");
                     charts.appendChild(chartElem);
 
                     chartElem.setAttribute("id", Integer.toString(chart.getId()));
                     chartElem.setAttribute("name", chart.getName());
                     chartElem.setAttribute("template", chart.getTemplateID());
 
-                    Element scriptElem = d.createElement("script");
+                    Element scriptElem = document.createElement("script");
                     String script = editedChartScripts.containsKey(chart) ? editedChartScripts.get(chart) : chart.getScript();
-                    scriptElem.appendChild(d.createCDATASection(script));
+                    scriptElem.appendChild(document.createCDATASection(script));
                     chartElem.appendChild(scriptElem);
 
                     for (DialogPage page : chart.getDialogPages()) {
-                        Element pg = d.createElement("dialogPage");
+                        Element pg = document.createElement("dialogPage");
                         pg.setAttribute("id", page.id);
                         pg.setAttribute("label", page.label);
-                        pg.appendChild(d.createCDATASection(page.xswtForm));
+                        pg.appendChild(document.createCDATASection(page.xswtForm));
                         chartElem.appendChild(pg);
                     }
 
@@ -102,7 +102,7 @@ public class AnalysisSaver {
                     chartElem.setAttribute("icon", chart.getIconPath());
 
                     for (Property p : chart.getProperties()) {
-                        Element e = d.createElement("property");
+                        Element e = document.createElement("property");
                         e.setAttribute("name", p.getName());
                         e.setAttribute("value", p.getValue());
                         chartElem.appendChild(e);
@@ -114,7 +114,7 @@ public class AnalysisSaver {
                 }
             }
 
-            String content = XmlUtils.serialize(d);
+            String content = XmlUtils.serialize(document);
             if (!file.exists())
                 file.create(new ByteArrayInputStream(content.getBytes()), IFile.FORCE, null);
             else

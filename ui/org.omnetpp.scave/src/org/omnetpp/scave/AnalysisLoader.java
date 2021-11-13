@@ -182,7 +182,7 @@ public class AnalysisLoader {
                             chart.addProperty(prop);
                         }
 
-                        analysis.getCharts().addChart(chart);
+                        analysis.getRootFolder().add(chart);
                     }
                     else if ("#text".equals(chartNode.getNodeName())) {
                         if (!chartNode.getNodeValue().trim().isEmpty())

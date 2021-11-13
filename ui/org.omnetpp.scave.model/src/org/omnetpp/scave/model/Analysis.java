@@ -9,11 +9,11 @@ package org.omnetpp.scave.model;
 
 public class Analysis extends ModelObject {
     protected Inputs inputs = new Inputs();
-    protected Charts charts = new Charts(); // TODO rename to items
+    protected Folder rootFolder = new Folder();
 
     public Analysis() {
         inputs.parent = this;
-        charts.parent = this;
+        rootFolder.parent = this;
     }
 
     public Inputs getInputs() {
@@ -28,14 +28,14 @@ public class Analysis extends ModelObject {
         notifyListeners();
     }
 
-    public Charts getCharts() {
-        return charts;
+    public Folder getRootFolder() {
+        return rootFolder;
     }
 
-    public void setCharts(Charts charts) {
-        this.charts.parent = null;
-        this.charts = charts;
-        this.charts.parent = this;
+    public void setRootFolder(Folder folder) {
+        this.rootFolder.parent = null;
+        this.rootFolder = folder;
+        this.rootFolder.parent = this;
         notifyListeners();
     }
 
@@ -43,7 +43,7 @@ public class Analysis extends ModelObject {
     public Analysis clone() throws CloneNotSupportedException {
         Analysis clone = (Analysis)super.clone();
         clone.inputs = inputs.clone();
-        clone.charts = charts.clone();
+        clone.rootFolder = rootFolder.clone();
         return clone;
     }
 }

@@ -21,18 +21,18 @@ import org.omnetpp.scave.model.ModelObject;
 public class AddChartCommand implements ICommand {
 
     private Analysis analysis;
-    private AnalysisItem chart;
+    private AnalysisItem item;
     private String originalName;
     private int index;
 
-    public AddChartCommand(Analysis analysis, AnalysisItem chart) {
-        this(analysis, chart, analysis.getCharts().getCharts().size());
+    public AddChartCommand(Analysis analysis, AnalysisItem item) {
+        this(analysis, item, analysis.getRootFolder().getItems().size());
     }
 
     private static List<String> getAllChartNames(Analysis analysis) {
         List<String> names = new ArrayList<String>();
 
-        for (AnalysisItem i : analysis.getCharts().getCharts())
+        for (AnalysisItem i : analysis.getRootFolder().getItems())
             names.add(i.getName());
 
         return names;
@@ -60,23 +60,23 @@ public class AddChartCommand implements ICommand {
         return nameWithoutNumber + (maxNum == -1 ? "" : maxNum == 0 ? " (2)" : (" (" + (maxNum + 1) + ")"));
     }
 
-    public AddChartCommand(Analysis analysis, AnalysisItem chart, int index) {
+    public AddChartCommand(Analysis analysis, AnalysisItem item, int index) {
         this.analysis = analysis;
-        this.chart = chart;
+        this.item = item;
         this.index = index;
-        this.originalName = chart.getName();
+        this.originalName = item.getName();
     }
 
     @Override
     public void execute() {
-        chart.setName(makeNameUnique(getAllChartNames(analysis), chart.getName()));
-        analysis.getCharts().addChart(chart, index);
+        item.setName(makeNameUnique(getAllChartNames(analysis), item.getName()));
+        analysis.getRootFolder().add(item, index);
     }
 
     @Override
     public void undo() {
-        chart.setName(originalName);
-        analysis.getCharts().removeChart(chart);
+        item.setName(originalName);
+        analysis.getRootFolder().remove(item);
     }
 
     @Override
@@ -91,7 +91,7 @@ public class AddChartCommand implements ICommand {
 
     @Override
     public Collection<ModelObject> getAffectedObjects() {
-        return Arrays.asList(analysis.getCharts(), chart);
+        return Arrays.asList(analysis.getRootFolder(), item);
     }
 
 }

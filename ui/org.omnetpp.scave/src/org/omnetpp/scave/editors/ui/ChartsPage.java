@@ -41,7 +41,7 @@ import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.AnalysisItem;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartTemplate;
-import org.omnetpp.scave.model.Charts;
+import org.omnetpp.scave.model.Folder;
 import org.omnetpp.scave.model.Folder;
 import org.omnetpp.scave.model.ModelChangeEvent;
 import org.omnetpp.scave.model.ModelObject;
@@ -107,7 +107,7 @@ public class ChartsPage extends FormEditorPage {
 
         // set contents
         Analysis analysis = scaveEditor.getAnalysis();
-        getViewer().setInput(analysis.getCharts());
+        getViewer().setInput(analysis.getRootFolder());
 
         // ensure that focus gets restored correctly after user goes somewhere else and then comes back
         setFocusManager(new FocusManager(this));
@@ -146,7 +146,7 @@ public class ChartsPage extends FormEditorPage {
     public boolean gotoObject(Object object) {
         if (object instanceof ModelObject) {
             ModelObject modelObject = (ModelObject)object;
-            if (ScaveModelUtil.findEnclosingOrSelf(modelObject, Charts.class) != null) {
+            if (ScaveModelUtil.findEnclosingOrSelf(modelObject, Folder.class) != null) {
                 getViewer().setSelection(new StructuredSelection(modelObject), true);
                 return true;
             }
@@ -186,9 +186,9 @@ public class ChartsPage extends FormEditorPage {
         viewer.setContentProvider(new IStructuredContentProvider() {
             @Override
             public Object[] getElements(Object inputElement) {
-                if (inputElement instanceof Charts) {
-                    Charts charts = (Charts)inputElement;
-                    return charts.getCharts().toArray();
+                if (inputElement instanceof Folder) {
+                    Folder charts = (Folder)inputElement;
+                    return charts.getItems().toArray();
                 }
                 return new Object[0];
             }
@@ -200,9 +200,9 @@ public class ChartsPage extends FormEditorPage {
             public void drop(Object[] draggedElements, Point p) {
                 Object insertionPoint = viewer.getElementAtOrAfter(p.x, p.y);
                 if (insertionPoint == null ||!ArrayUtils.contains(draggedElements, insertionPoint)) {
-                    List<AnalysisItem> charts = scaveEditor.getAnalysis().getCharts().getCharts();
+                    List<AnalysisItem> charts = scaveEditor.getAnalysis().getRootFolder().getItems();
                     int index = insertionPoint == null ? charts.size() - 1 : charts.indexOf(insertionPoint);
-                    ScaveModelUtil.moveElements(commandStack, scaveEditor.getAnalysis().getCharts(), draggedElements, index);
+                    ScaveModelUtil.moveElements(commandStack, scaveEditor.getAnalysis().getRootFolder(), draggedElements, index);
                     viewer.refresh();
                 }
 

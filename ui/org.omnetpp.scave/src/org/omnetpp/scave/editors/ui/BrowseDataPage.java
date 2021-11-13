@@ -239,7 +239,7 @@ public class BrowseDataPage extends FormEditorPage {
         if (panel != getAllPanel())
             contextMenuManager.add(new SetFilterBySelectedCellAction());
         MenuManager setFilterSubmenu = new MenuManager("Set Filter of Chart", ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_SETFILTER), null);
-        for (AnalysisItem i : scaveEditor.getAnalysis().getCharts().getCharts())
+        for (AnalysisItem i : scaveEditor.getAnalysis().getRootFolder().getItems())
             if (i instanceof Chart && ((Chart)i).getProperty("filter") != null)
                 setFilterSubmenu.add(new SetChartFilterAction((Chart)i));
         contextMenuManager.add(setFilterSubmenu);

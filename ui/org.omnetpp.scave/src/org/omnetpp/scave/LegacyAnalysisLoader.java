@@ -332,7 +332,7 @@ public class LegacyAnalysisLoader {
                     vecOps.add(new DataVecOp("scave:Apply".equals(itemType) ? "apply" : "compute", operationNode.getNodeValue(), extractVectorOpParams(itemNode)));
                 }
                 else if ("scave:BarChart".equals(itemType) || "scave:HistogramChart".equals(itemType) || "scave:ScatterChart".equals(itemType) || "scave:LineChart".equals(itemType))
-                    analysis.getCharts().addChart(makeLegacyChart(ops, vecOps, itemNode, itemType));
+                    analysis.getRootFolder().add(makeLegacyChart(ops, vecOps, itemNode, itemType));
                 else if ("scave:Group".equals(itemType)) {
                     loadItems(itemNode, analysis, ops, vecOps);
                 }
