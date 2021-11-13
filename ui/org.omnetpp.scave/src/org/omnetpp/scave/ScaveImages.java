@@ -50,6 +50,7 @@ public class ScaveImages {
     public static final String IMG_ETOOL16_NEWBARCHART = "icons/full/etool16/newbarchart.png";
     public static final String IMG_ETOOL16_NEWCHARTSHEET = "icons/full/etool16/newchartsheet.png";
     public static final String IMG_ETOOL16_NEWDATASET = "icons/full/etool16/newdataset.png";
+    public static final String IMG_ETOOL16_NEWFOLDER = "icons/full/etool16/newfolder.png";
     public static final String IMG_ETOOL16_NEWHISTOGRAMCHART = "icons/full/etool16/newhistogramchart.png";
     public static final String IMG_ETOOL16_NEWINPUTFILE = "icons/full/etool16/newinputfile.png";
     public static final String IMG_ETOOL16_NEWLINECHART = "icons/full/etool16/newlinechart.png";

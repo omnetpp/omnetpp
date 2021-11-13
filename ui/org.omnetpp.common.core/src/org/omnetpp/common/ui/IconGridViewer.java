@@ -582,6 +582,14 @@ public class IconGridViewer extends ContentViewer {
         dropListeners.remove(listener);
     }
 
+    public void addKeyListener(KeyListener listener) {
+        canvas.addKeyListener(listener);
+    }
+
+    public void removeKeyListener(KeyListener listener) {
+        canvas.removeKeyListener(listener);
+    }
+
     public void setRenameAdapter(IRenameAdapter renameAdapter) {
         this.renameAdapter = renameAdapter;
     }
@@ -794,6 +802,7 @@ public class IconGridViewer extends ContentViewer {
         Object[] elements = contentProvider.getElements(getInput());
 
         boolean elementListChanged = false;
+        boolean selectionChanged = false;
         if (!ArrayUtils.isEquals(elements, this.elements)) {
             Object[] oldElements = this.elements;
             this.elements = elements;
@@ -801,8 +810,10 @@ public class IconGridViewer extends ContentViewer {
 
             // remove deleted elements from selection
             for (Object element : selectedElements.toArray())
-                if (!ArrayUtils.contains(elements, element))
+                if (!ArrayUtils.contains(elements, element)) {
                     selectedElements.remove(element);
+                    selectionChanged = true;
+                }
 
             // clear focus if element no longer exists
             if (focusElement != null && !ArrayUtils.contains(elements, focusElement)) {
@@ -846,6 +857,9 @@ public class IconGridViewer extends ContentViewer {
 
         if (elementListChanged)
             refreshLayout();
+
+        if (selectionChanged)
+            fireSelectionChanged();
     }
 
     protected int getEffectiveItemWidth() {

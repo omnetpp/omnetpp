@@ -52,6 +52,7 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
  * Export Charts dialog
@@ -167,7 +168,7 @@ public class ExportChartsDialog extends TitleAreaDialog {
         chartsTree.setLayoutData(gridData);
         for (Chart chart : charts) {
             TreeItem item = new TreeItem(chartsTree, SWT.NONE);
-            item.setText(defaultIfEmpty(chart.getName(), "<unnamed>"));
+            item.setText(ScaveModelUtil.getDisplayFullPath(chart, " / "));
             //item.setImage(ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_CHART)); -- looks ugly
         }
 

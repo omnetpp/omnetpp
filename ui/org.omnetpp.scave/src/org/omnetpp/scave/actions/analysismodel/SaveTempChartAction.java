@@ -44,7 +44,7 @@ public class SaveTempChartAction extends AbstractScaveAction {
             InputDialog dialog = new InputDialog(Display.getCurrent().getActiveShell(), "Create Chart", "Enter chart name", suggestedName, null);
 
             if (dialog.open() == InputDialog.OK) {
-                ScaveModelUtil.saveChart(scaveEditor.getChartsPage().getCommandStack(), chart, dialog.getValue(), scaveEditor.getAnalysis());
+                ScaveModelUtil.saveChart(scaveEditor.getChartsPage().getCommandStack(), chart, dialog.getValue(), scaveEditor.getCurrentFolder());
                 activeChartScriptEditor.updateActions();
                 scaveEditor.showAnalysisItem(chart);
             }

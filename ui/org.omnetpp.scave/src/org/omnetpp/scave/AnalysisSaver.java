@@ -24,6 +24,7 @@ import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.AnalysisItem;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Chart.DialogPage;
+import org.omnetpp.scave.model.Folder;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Property;
 import org.w3c.dom.Document;
@@ -75,52 +76,65 @@ public class AnalysisSaver {
                 elem.setAttribute("pattern", i.getName());
             }
 
-            for (AnalysisItem a : analysis.getRootFolder().getItems()) {
-                if (a instanceof Chart) {
-                    Chart chart = (Chart) a;
-                    Element chartElem = document.createElement("chart");
-                    charts.appendChild(chartElem);
-
-                    chartElem.setAttribute("id", Integer.toString(chart.getId()));
-                    chartElem.setAttribute("name", chart.getName());
-                    chartElem.setAttribute("template", chart.getTemplateID());
-
-                    Element scriptElem = document.createElement("script");
-                    String script = editedChartScripts.containsKey(chart) ? editedChartScripts.get(chart) : chart.getScript();
-                    scriptElem.appendChild(document.createCDATASection(script));
-                    chartElem.appendChild(scriptElem);
-
-                    for (DialogPage page : chart.getDialogPages()) {
-                        Element pg = document.createElement("dialogPage");
-                        pg.setAttribute("id", page.id);
-                        pg.setAttribute("label", page.label);
-                        pg.appendChild(document.createCDATASection(page.xswtForm));
-                        chartElem.appendChild(pg);
-                    }
-
-                    chartElem.setAttribute("type", chart.getType().toString());
-                    chartElem.setAttribute("icon", chart.getIconPath());
-
-                    for (Property p : chart.getProperties()) {
-                        Element e = document.createElement("property");
-                        e.setAttribute("name", p.getName());
-                        e.setAttribute("value", p.getValue());
-                        chartElem.appendChild(e);
-                    }
-                } else {
-                    // TODO: handle better
-                    Debug.println("Analysis item '" + a.getName()
-                            + "' is not a chart, ignored (dropped) upon saving");
-                }
-            }
+            for (AnalysisItem item : analysis.getRootFolder().getItems())
+                saveAnalysisItem(item, document, charts, editedChartScripts);
 
             String content = XmlUtils.serialize(document);
             if (!file.exists())
                 file.create(new ByteArrayInputStream(content.getBytes()), IFile.FORCE, null);
             else
                 file.setContents(new ByteArrayInputStream(content.getBytes()), IFile.FORCE, null);
-        } catch (ParserConfigurationException | TransformerException e) {
+        }
+        catch (ParserConfigurationException | TransformerException e) {
             throw ScavePlugin.wrapIntoCoreException(e);
         }
+    }
+
+    protected static void saveAnalysisItem(AnalysisItem item, Document document, Element parent, Map<Chart, String> editedChartScripts) {
+            if (item instanceof Chart) {
+                Chart chart = (Chart) item;
+                Element chartElem = document.createElement("chart");
+                parent.appendChild(chartElem);
+
+                chartElem.setAttribute("id", Integer.toString(chart.getId()));
+                chartElem.setAttribute("name", chart.getName());
+                chartElem.setAttribute("template", chart.getTemplateID());
+
+                Element scriptElem = document.createElement("script");
+                String script = editedChartScripts.containsKey(chart) ? editedChartScripts.get(chart) : chart.getScript();
+                scriptElem.appendChild(document.createCDATASection(script));
+                chartElem.appendChild(scriptElem);
+
+                for (DialogPage page : chart.getDialogPages()) {
+                    Element pg = document.createElement("dialogPage");
+                    pg.setAttribute("id", page.id);
+                    pg.setAttribute("label", page.label);
+                    pg.appendChild(document.createCDATASection(page.xswtForm));
+                    chartElem.appendChild(pg);
+                }
+
+                chartElem.setAttribute("type", chart.getType().toString());
+                chartElem.setAttribute("icon", chart.getIconPath());
+
+                for (Property p : chart.getProperties()) {
+                    Element e = document.createElement("property");
+                    e.setAttribute("name", p.getName());
+                    e.setAttribute("value", p.getValue());
+                    chartElem.appendChild(e);
+                }
+            }
+            else if (item instanceof Folder) {
+                Folder folder = (Folder) item;
+                Element folderElem = document.createElement("folder");
+                parent.appendChild(folderElem);
+                folderElem.setAttribute("id", Integer.toString(folder.getId()));
+                folderElem.setAttribute("name", folder.getName());
+
+                for (AnalysisItem child : folder.getItems())
+                    saveAnalysisItem(child, document, folderElem, editedChartScripts);
+            }
+            else {
+                Debug.println("Unsupported analysis item type '" + item.getClass().getSimpleName() + "', not saved");
+            }
     }
 }

@@ -56,6 +56,7 @@ import org.omnetpp.scave.engineext.ResultFileManagerChangeEvent;
 import org.omnetpp.scave.model.AnalysisItem;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartTemplate;
+import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
  * This is the "Browse Data" page of Scave Editor
@@ -239,9 +240,9 @@ public class BrowseDataPage extends FormEditorPage {
         if (panel != getAllPanel())
             contextMenuManager.add(new SetFilterBySelectedCellAction());
         MenuManager setFilterSubmenu = new MenuManager("Set Filter of Chart", ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_SETFILTER), null);
-        for (AnalysisItem i : scaveEditor.getAnalysis().getRootFolder().getItems())
-            if (i instanceof Chart && ((Chart)i).getProperty("filter") != null)
-                setFilterSubmenu.add(new SetChartFilterAction((Chart)i));
+        List<Chart> chartsThatHaveFilter = ScaveModelUtil.collectCharts(scaveEditor.getAnalysis().getRootFolder(), chart -> chart.getProperty("filter") != null);
+        for (Chart chart : chartsThatHaveFilter)
+            setFilterSubmenu.add(new SetChartFilterAction(chart));
         contextMenuManager.add(setFilterSubmenu);
         contextMenuManager.add(new Separator());
 

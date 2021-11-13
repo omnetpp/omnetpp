@@ -7,7 +7,6 @@
 
 package org.omnetpp.scave.editors.ui;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -17,16 +16,19 @@ import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.omnetpp.common.ui.FocusManager;
 import org.omnetpp.common.ui.IconGridViewer;
 import org.omnetpp.common.ui.IconGridViewer.ViewMode;
@@ -34,14 +36,10 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.actions.analysismodel.NewChartFromTemplateAction;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ScaveEditorActions;
-import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.AnalysisItem;
 import org.omnetpp.scave.model.Chart;
-import org.omnetpp.scave.model.ChartTemplate;
-import org.omnetpp.scave.model.Folder;
 import org.omnetpp.scave.model.Folder;
 import org.omnetpp.scave.model.ModelChangeEvent;
 import org.omnetpp.scave.model.ModelObject;
@@ -50,13 +48,12 @@ import org.omnetpp.scave.model.commands.SetChartNameCommand;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
- * Scave page which displays datasets and charts
+ * Scave page which displays charts
  * @author Andras
  */
-//TODO ChartDefinitionsPage? ChartListPage?
-//TODO add "Rename" to context menu
 public class ChartsPage extends FormEditorPage {
     private IconGridViewer viewer;
+    private Link pathLabel;
     protected CommandStack commandStack = new CommandStack("ChartsPage");
 
 
@@ -74,9 +71,15 @@ public class ChartsPage extends FormEditorPage {
         setFormTitle("Charts");
         getContent().setLayout(new GridLayout(2, false));
 
-        Label label = new Label(getContent(), SWT.WRAP);
-        label.setText("Here you can edit chart definitions.");
-        label.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
+        pathLabel = new Link(getContent(), SWT.WRAP);
+        pathLabel.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, false, 2, 1));
+
+        pathLabel.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+            int i = Integer.parseInt(e.text); // e.text is the link in <a href>, contains in index into the path
+            Folder folder = getCurrentFolder().getPathSegments().get(i);
+            setCurrentFolder(folder);
+        }));
+
 
         viewer = new IconGridViewer(getContent());
         viewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -85,6 +88,7 @@ public class ChartsPage extends FormEditorPage {
 
         ScaveEditorActions actions = scaveEditor.getActions();
 
+        addToToolbar(actions.newFolderAction);
         addToToolbar(actions.newChartFromTemplateGalleryAction);
         addToToolbar(actions.editAction);
         addToToolbar(actions.removeAction);
@@ -106,8 +110,10 @@ public class ChartsPage extends FormEditorPage {
         configureViewer();
 
         // set contents
-        Analysis analysis = scaveEditor.getAnalysis();
-        getViewer().setInput(analysis.getRootFolder());
+        setCurrentFolder(scaveEditor.getAnalysis().getRootFolder());
+
+        // temporarily overwrite displayed path with a help text -- this will go away (be overwritten) once user starts to navigate across folders
+        pathLabel.setText("Here you can edit chart definitions.");
 
         // ensure that focus gets restored correctly after user goes somewhere else and then comes back
         setFocusManager(new FocusManager(this));
@@ -115,6 +121,25 @@ public class ChartsPage extends FormEditorPage {
 
     public IconGridViewer getViewer() {
         return viewer;
+    }
+
+    public Folder getCurrentFolder() {
+        return (Folder)viewer.getInput();
+    }
+
+    public void setCurrentFolder(Folder folder) {
+        if (folder != getCurrentFolder()) {
+            viewer.setInput(folder);
+
+            // display folder path, hyperlinking each folder
+            String pathWithLinks = "";
+            List<Folder> pathSegments = folder.getPathSegments();
+            for (int i = 0; i < pathSegments.size(); i++) {
+                Folder f = pathSegments.get(i);
+                pathWithLinks += "<a href=\"" + i + "\">" + (i == 0 ? "Charts" : f.getName()) + "</a>" + " / ";
+            }
+            pathLabel.setText(pathWithLinks);
+        }
     }
 
     public void setViewMode(ViewMode viewMode) {
@@ -200,9 +225,10 @@ public class ChartsPage extends FormEditorPage {
             public void drop(Object[] draggedElements, Point p) {
                 Object insertionPoint = viewer.getElementAtOrAfter(p.x, p.y);
                 if (insertionPoint == null ||!ArrayUtils.contains(draggedElements, insertionPoint)) {
-                    List<AnalysisItem> charts = scaveEditor.getAnalysis().getRootFolder().getItems();
+                    Folder container = getCurrentFolder();
+                    List<AnalysisItem> charts = container.getItems();
                     int index = insertionPoint == null ? charts.size() - 1 : charts.indexOf(insertionPoint);
-                    ScaveModelUtil.moveElements(commandStack, scaveEditor.getAnalysis().getRootFolder(), draggedElements, index);
+                    ScaveModelUtil.moveElements(commandStack, container, draggedElements, index);
                     viewer.refresh();
                 }
 
@@ -243,18 +269,30 @@ public class ChartsPage extends FormEditorPage {
 
         UIUtils.createContextMenuFor(viewer.getCanvas(), true, menuListener);
 
-        // on double-click, open (the dataset or chart), or bring up the Properties dialog
         viewer.addDoubleClickListener(new IDoubleClickListener() {
             @Override
             public void doubleClick(DoubleClickEvent event) {
                 ScaveEditorActions actions = scaveEditor.getActions();
 
-                if (actions.openAction.isEnabled())
+                IStructuredSelection sel = viewer.getSelection();
+                if (sel.getFirstElement() instanceof Folder)
+                    setCurrentFolder((Folder)sel.getFirstElement());
+                else if (actions.openAction.isEnabled())
                     actions.openAction.run();
                 else if (actions.editAction.isEnabled())
                     actions.editAction.run();
             }
         });
+
+        viewer.addKeyListener(KeyListener.keyPressedAdapter( ke -> {
+            final int BACKSPACE = 8;
+            if (ke.keyCode == BACKSPACE) {
+                Folder parentFolder = getCurrentFolder().getParentFolder();
+                if (parentFolder != null)
+                    setCurrentFolder(parentFolder);
+            }
+        }));
+
     }
 
     @Override

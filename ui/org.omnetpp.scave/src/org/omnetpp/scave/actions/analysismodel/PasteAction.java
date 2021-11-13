@@ -23,8 +23,10 @@ import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ui.ChartsPage;
 import org.omnetpp.scave.editors.ui.FormEditorPage;
 import org.omnetpp.scave.model.AnalysisItem;
+import org.omnetpp.scave.model.Folder;
 import org.omnetpp.scave.model.commands.AddChartCommand;
 import org.omnetpp.scave.model.commands.CompoundCommand;
+import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
  * Copy model objects to the clipboard.
@@ -49,7 +51,9 @@ public class PasteAction extends AbstractScaveAction {
 
                 CompoundCommand command = new CompoundCommand("Paste objects");
 
-                List<AnalysisItem> items = editor.getAnalysis().getRootFolder().getItems();
+                Folder targetFolder = editor.getCurrentFolder();
+
+                List<AnalysisItem> items = targetFolder.getItems();
                 int pasteIndex = -1;
 
                 for (Object o : asStructuredOrEmpty(selection).toArray())
@@ -63,8 +67,8 @@ public class PasteAction extends AbstractScaveAction {
                 for (Object o : objects) {
                     if (o instanceof AnalysisItem) {
                         AnalysisItem itemToPaste = (AnalysisItem)((AnalysisItem)o).dup();
-                        itemToPaste.assignNewId();
-                        command.append(new AddChartCommand(editor.getAnalysis(), itemToPaste, pasteIndex));
+                        ScaveModelUtil.assignNewIdRec(itemToPaste);
+                        command.append(new AddChartCommand(targetFolder, itemToPaste, pasteIndex));
                         toSelect.add(itemToPaste);
                         pasteIndex += 1;
                     }

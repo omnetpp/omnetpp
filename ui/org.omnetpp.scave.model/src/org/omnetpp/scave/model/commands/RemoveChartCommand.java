@@ -10,41 +10,32 @@ package org.omnetpp.scave.model.commands;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.eclipse.core.runtime.Assert;
 import org.omnetpp.scave.model.AnalysisItem;
 import org.omnetpp.scave.model.Folder;
 import org.omnetpp.scave.model.ModelObject;
 
 public class RemoveChartCommand implements ICommand {
-
     private int index;
-    private ModelObject parent;
+    private Folder container;
     private AnalysisItem item;
 
     public RemoveChartCommand(AnalysisItem item) {
         this.item = item;
-        this.parent = item.getParent();
+        this.container = item.getParentFolder();
+        Assert.isNotNull(this.container, "root folder cannot be removed (or: item is not in a folder)");
     }
 
     @Override
     public void execute() {
-        ModelObject parent = item.getParent();
-
-        if (parent instanceof Folder) {
-            index = ((Folder)parent).getItems().indexOf(item);
-        }
-
-        if (parent instanceof Folder)
-            ((Folder)parent).remove(item);
-        else {
-            // TODO
-        }
+        container = item.getParentFolder();
+        index = container.getItems().indexOf(item);
+        container.remove(item);
     }
 
     @Override
     public void undo() {
-        if (parent instanceof Folder)
-            ((Folder)parent).add(item, index);
-
+        container.add(item, index);
     }
 
     @Override
@@ -59,7 +50,7 @@ public class RemoveChartCommand implements ICommand {
 
     @Override
     public Collection<ModelObject> getAffectedObjects() {
-        return Arrays.asList(parent, item);
+        return Arrays.asList(container, item);
     }
 
 }

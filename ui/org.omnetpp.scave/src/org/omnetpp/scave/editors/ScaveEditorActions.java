@@ -27,9 +27,9 @@ import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
 import org.omnetpp.common.ui.IconGridViewer;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.actions.ConfigureChartAction;
 import org.omnetpp.scave.actions.CopyImageToClipboardAction;
 import org.omnetpp.scave.actions.CopyRowsToClipboardAction;
-import org.omnetpp.scave.actions.ConfigureChartAction;
 import org.omnetpp.scave.actions.ExportChartsAction;
 import org.omnetpp.scave.actions.ExportDataAction;
 import org.omnetpp.scave.actions.IScaveAction;
@@ -47,6 +47,7 @@ import org.omnetpp.scave.actions.analysismodel.CutAction;
 import org.omnetpp.scave.actions.analysismodel.EditInputFileAction;
 import org.omnetpp.scave.actions.analysismodel.NewChartFromTemplateAction;
 import org.omnetpp.scave.actions.analysismodel.NewChartFromTemplateGalleryAction;
+import org.omnetpp.scave.actions.analysismodel.NewFolderAction;
 import org.omnetpp.scave.actions.analysismodel.PasteAction;
 import org.omnetpp.scave.actions.analysismodel.RedoAction;
 import org.omnetpp.scave.actions.analysismodel.RemoveAction;
@@ -68,7 +69,6 @@ public class ScaveEditorActions {
     protected ScaveEditor editor;
 
     protected List<IScaveAction> actions = new ArrayList<>();
-
 
     public final ConfigureChartAction editAction = registerAction(new ConfigureChartAction());
     public final EditInputFileAction editInputFileAction = registerAction(new EditInputFileAction());
@@ -104,6 +104,8 @@ public class ScaveEditorActions {
     public final PasteAction pasteAction = registerAction(new PasteAction());
     public final UndoAction undoAction = registerAction(new UndoAction());
     public final RedoAction redoAction = registerAction(new RedoAction());
+
+    public final NewFolderAction newFolderAction = registerAction(new NewFolderAction());
 
     // generic actions
     public final OpenChartAction openAction = registerAction(new OpenChartAction());
@@ -202,6 +204,8 @@ public class ScaveEditorActions {
             for (ChartTemplate t : editor.getChartTemplateRegistry().getAllTemplates())
                 submenuManager.add(new NewChartFromTemplateAction(t, false));
             menuManager.insertBefore("edit", submenuManager);
+
+            menuManager.insertBefore("edit", newFolderAction);
         }
 
         menuManager.insertBefore("edit", openAction);

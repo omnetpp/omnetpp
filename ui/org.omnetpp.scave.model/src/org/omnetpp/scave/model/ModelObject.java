@@ -7,6 +7,7 @@
 
 package org.omnetpp.scave.model;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.ListenerList;
 
 public abstract class ModelObject implements Cloneable {
@@ -45,9 +46,18 @@ public abstract class ModelObject implements Cloneable {
         }
     }
 
+    protected void detectCycles() {
+        ModelObject o = this;
+        while (o.parent != null) {
+            o = o.parent;
+            Assert.isTrue(o != this, "cycle detected");
+        }
+    }
+
     @Override
     protected ModelObject clone() throws CloneNotSupportedException {
         ModelObject clone = (ModelObject)super.clone();
+        clone.parent = null;
         clone.listeners = new ListenerList<IModelChangeListener>();
         return clone;
     }

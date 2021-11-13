@@ -14,31 +14,40 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.AnalysisItem;
+import org.omnetpp.scave.model.Folder;
 import org.omnetpp.scave.model.ModelObject;
 
 public class AddChartCommand implements ICommand {
 
-    private Analysis analysis;
+    private Folder container;
     private AnalysisItem item;
     private String originalName;
     private int index;
 
-    public AddChartCommand(Analysis analysis, AnalysisItem item) {
-        this(analysis, item, analysis.getRootFolder().getItems().size());
+    public AddChartCommand(Folder container, AnalysisItem item) {
+        this(container, item, container.getItems().size());
     }
 
-    private static List<String> getAllChartNames(Analysis analysis) {
+    public AddChartCommand(Folder container, AnalysisItem item, int index) {
+        this.container = container;
+        this.item = item;
+        this.index = index;
+        this.originalName = item.getName();
+    }
+
+    private static List<String> getAllChartNames(Folder container) {
         List<String> names = new ArrayList<String>();
 
-        for (AnalysisItem i : analysis.getRootFolder().getItems())
+        for (AnalysisItem i : container.getItems())
             names.add(i.getName());
 
         return names;
     }
 
     private static String makeNameUnique(List<String> existingNames, String name) {
+        if (!existingNames.contains(name))
+            return name;
         String nameWithoutNumber = name.replaceAll(" \\(\\d+\\)$", "");
         String pattern = "^" + Pattern.quote(nameWithoutNumber) + " \\((\\d+)\\)$";
 
@@ -60,23 +69,16 @@ public class AddChartCommand implements ICommand {
         return nameWithoutNumber + (maxNum == -1 ? "" : maxNum == 0 ? " (2)" : (" (" + (maxNum + 1) + ")"));
     }
 
-    public AddChartCommand(Analysis analysis, AnalysisItem item, int index) {
-        this.analysis = analysis;
-        this.item = item;
-        this.index = index;
-        this.originalName = item.getName();
-    }
-
     @Override
     public void execute() {
-        item.setName(makeNameUnique(getAllChartNames(analysis), item.getName()));
-        analysis.getRootFolder().add(item, index);
+        item.setName(makeNameUnique(getAllChartNames(container), item.getName()));
+        container.add(item, index);
     }
 
     @Override
     public void undo() {
         item.setName(originalName);
-        analysis.getRootFolder().remove(item);
+        container.remove(item);
     }
 
     @Override
@@ -91,7 +93,7 @@ public class AddChartCommand implements ICommand {
 
     @Override
     public Collection<ModelObject> getAffectedObjects() {
-        return Arrays.asList(analysis.getRootFolder(), item);
+        return Arrays.asList((ModelObject)container, item);
     }
 
 }

@@ -24,7 +24,6 @@ public class Analysis extends ModelObject {
         this.inputs.parent = null;
         this.inputs = inputs;
         this.inputs.parent = this;
-
         notifyListeners();
     }
 
@@ -37,6 +36,10 @@ public class Analysis extends ModelObject {
         this.rootFolder = folder;
         this.rootFolder.parent = this;
         notifyListeners();
+    }
+
+    public boolean contains(AnalysisItem item) {
+        return rootFolder.contains(item);
     }
 
     @Override

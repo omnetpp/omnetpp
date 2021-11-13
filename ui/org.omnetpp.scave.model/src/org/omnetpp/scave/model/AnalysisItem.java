@@ -33,6 +33,10 @@ public abstract class AnalysisItem extends ModelObject {
         notifyListeners();
     }
 
+    public Folder getParentFolder() {
+        return parent instanceof Folder ? (Folder)parent : null;
+
+    }
     public void assignNewId() {
         setId(nextId++);
     }
@@ -41,7 +45,6 @@ public abstract class AnalysisItem extends ModelObject {
     protected AnalysisItem clone() throws CloneNotSupportedException {
         return (AnalysisItem)super.clone();
     }
-
 
     @Override
     public boolean equals(Object obj) {
@@ -60,6 +63,11 @@ public abstract class AnalysisItem extends ModelObject {
         } else if (!name.equals(other.name))
             return false;
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "'" + getName() + "'";
     }
 
 }

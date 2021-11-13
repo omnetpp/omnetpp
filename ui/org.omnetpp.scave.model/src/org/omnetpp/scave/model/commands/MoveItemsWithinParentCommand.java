@@ -17,12 +17,15 @@ import org.omnetpp.scave.model.AnalysisItem;
 import org.omnetpp.scave.model.Folder;
 import org.omnetpp.scave.model.ModelObject;
 
+/**
+ * Change the order of child items within a folder.
+ * @author andras
+ */
 public class MoveItemsWithinParentCommand implements ICommand {
-
-    Folder container;
-    AnalysisItem item;
-    int oldIndex;
-    int newIndex;
+    private Folder container;
+    private AnalysisItem item;
+    private int oldIndex;
+    private int newIndex;
 
     public MoveItemsWithinParentCommand(Folder container, AnalysisItem item, int newIndex) {
         this.container = container;
@@ -61,7 +64,7 @@ public class MoveItemsWithinParentCommand implements ICommand {
 
     @Override
     public String getLabel() {
-        return "Move charts";
+        return "Move items";
     }
 
     @Override

@@ -27,14 +27,11 @@ public class NewAnalysisItemAction extends AbstractScaveAction {
 
     @Override
     protected void doRun(ScaveEditor editor, ISelection selection) throws CoreException {
-        AnalysisItem element = elementPrototype;
-
         AnalysisItem newItem = (AnalysisItem)elementPrototype.dup();
         newItem.assignNewId();
-        ICommand command = new AddChartCommand(editor.getAnalysis(), newItem);
-
+        ICommand command = new AddChartCommand(editor.getCurrentFolder(), newItem);
         editor.getChartsPage().getCommandStack().execute(command);
-        editor.showAnalysisItem(element);
+        editor.showAnalysisItem(newItem);
     }
 
     @Override

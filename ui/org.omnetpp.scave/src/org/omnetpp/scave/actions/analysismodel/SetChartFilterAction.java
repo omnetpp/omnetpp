@@ -17,21 +17,23 @@ import org.omnetpp.scave.actions.AbstractScaveAction;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.Folder;
 import org.omnetpp.scave.model.commands.SetChartPropertyCommand;
 import org.omnetpp.scave.model2.ResultSelectionFilterGenerator;
+import org.omnetpp.scave.model2.ScaveModelUtil;
 
 public class SetChartFilterAction extends AbstractScaveAction {
     private Chart chart;
 
-    public SetChartFilterAction(Chart c) {
-        this.chart = c;
+    public SetChartFilterAction(Chart chart) {
+        this.chart = chart;
 
-        setText(StringUtils.defaultIfEmpty(c.getName(), "<Unnamed>"));
+        setText(ScaveModelUtil.getDisplayFullPath(chart, " / "));
 
-        String iconPath = c.getIconPath();
+        String iconPath = chart.getIconPath();
 
         if (iconPath == null || iconPath.isEmpty())
-            switch (c.getType()) {
+            switch (chart.getType()) {
                 case BAR:        iconPath = ScaveImages.IMG_OBJ_BARCHART;        break;
                 case HISTOGRAM:  iconPath = ScaveImages.IMG_OBJ_HISTOGRAMCHART;  break;
                 case LINE:       iconPath = ScaveImages.IMG_OBJ_LINECHART;       break;

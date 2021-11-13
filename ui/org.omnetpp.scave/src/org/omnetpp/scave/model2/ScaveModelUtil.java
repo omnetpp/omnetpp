@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -138,14 +137,22 @@ public class ScaveModelUtil {
         commandStack.execute(command);
     }
 
-    public static void saveChart(CommandStack commandStack, Chart chart, String name, Analysis analysis) {
+    public static void saveChart(CommandStack commandStack, Chart chart, String name, Folder folder) {
         CompoundCommand command = new CompoundCommand("Save chart");
 
         command.append(new SetChartIsTemporaryCommand(chart, false));
         command.append(new SetChartNameCommand(chart, name));
-        command.append(new AddChartCommand(analysis, chart));
+        command.append(new AddChartCommand(folder, chart));
 
         commandStack.execute(command);
+    }
+
+    public static String getDisplayFullPath(AnalysisItem item, String separator) {
+        String chartName = StringUtils.defaultIfEmpty(item.getName(), "<Unnamed>");
+        Folder folder = item.getParentFolder();
+        if (folder.getParentFolder() != null)  // not the root
+            chartName = folder.getPathAsString(separator) + separator + chartName;
+        return chartName;
     }
 
     /**
@@ -159,14 +166,26 @@ public class ScaveModelUtil {
         return (T)object;
     }
 
-    /**
-     * Collect charts from the given collection.
-     */
-    public static List<Chart> collectCharts(Collection<?> items) {
+    public static void assignNewIdRec(AnalysisItem item) {
+        item.assignNewId();
+        if (item instanceof Folder)
+            for (AnalysisItem child : ((Folder)item).getItems())
+                assignNewIdRec(child);
+    }
+
+    public interface IChartFilter { boolean matches(Chart chart); }
+
+    public static List<Chart> collectCharts(Folder folder) {
+        return collectCharts(folder, null);
+    }
+
+    public static List<Chart> collectCharts(Folder folder, IChartFilter filter) {
         List<Chart> charts = new ArrayList<>();
-        for (Object item : items)
-            if (item instanceof Chart)
+        for (AnalysisItem item : folder.getItems())
+            if (item instanceof Chart && (filter == null || filter.matches((Chart)item)))
                 charts.add((Chart)item);
+            else if (item instanceof Folder)
+                charts.addAll(collectCharts((Folder)item, filter));
         return charts;
     }
 
@@ -175,6 +194,8 @@ public class ScaveModelUtil {
         for (Object obj : selection.toArray())
             if (obj instanceof Chart)
                 result.add((Chart)obj);
+            else if (obj instanceof Folder)
+                result.addAll(collectCharts((Folder)obj));
         return result;
     }
 
