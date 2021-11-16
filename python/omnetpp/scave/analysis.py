@@ -298,7 +298,7 @@ class Analysis:
         if show and not _show_called:
             plt.show()
 
-    def export_image(self, chart, wd, workspace, format="svg", target_folder=None, filename=None, width=6, height=4, dpi=96, enforce=True, extra_props=dict()):
+    def export_image(self, chart, wd, workspace, format="svg", target_folder=None, filename=None, width=None, height=None, dpi=96, enforce=True, extra_props=dict()):
         """
         Runs a chart script for image export. This method just calls `run_chart()`
         with extra properties that instruct the chart script to perform image export.
