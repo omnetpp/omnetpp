@@ -24,6 +24,23 @@ def _fake_show(*args, **kwargs):
 
 plt.show = _fake_show
 
+_next_id = 0
+
+def _make_id(id_attr:str):
+    global _next_id
+    try:
+        id = None if id_attr is None else int(id_attr)
+    except:
+        raise RuntimeError("Wrong Chart or Folder id '{}': IDs are expected to be numeric strings".format(id_attr))
+
+    if id is None:
+        id = _next_id
+        _next_id += 1
+    else:
+        if _next_id <= id:
+            _next_id = id + 1
+    return str(id)
+
 class DialogPage:
     """
     Represents a dialog page in a `Chart`. Dialog pages have an ID, a label
@@ -42,17 +59,38 @@ class Chart:
     dialog pages (which make up the contents of the Chart Properties dialog in the IDE),
     and properties (which are what the *Chart Properties* dialog in the IDE edits).
     """
-    def __init__(self, type:str, name:str="", id:str=None, template:str=None, icon:str=None, script:str="", dialog_pages=list(), properties=dict()):
+    def __init__(self, id:str=None, name:str="", type:str="MATPLOTLIB", template:str=None, icon:str=None, script:str="", dialog_pages=list(), properties=dict()):
         assert type in ["MATPLOTLIB", "BAR", "LINE", "HISTOGRAM"]
-        self.type = type
+        self.id = _make_id(id)
         self.name = name
-        self.id = id
+        self.type = type
 
         self.template = template
         self.icon = icon
         self.script = script
         self.dialog_pages = dialog_pages.copy()
         self.properties = properties.copy()
+
+    def __repr__(self):
+        return "Chart(type='{}',name='{}',id={})".format(self.type, self.name, self.id)
+
+class Folder:
+    """
+    Represents a folder in an `Analysis`. Folders may contain charts and further folders.
+    """
+    def __init__(self, id:str=None, name:str="", items=list()):
+        self.id = _make_id(id)
+        self.name = name
+        self.items = items
+
+    def __iter__(self):
+        return iter(self.items)
+
+    def __len__(self):
+        return len(self.items)
+
+    def __repr__(self):
+        return "Folder(name='{}', {} items)".format(self.name, len(self.items))
 
 class Workspace:
     """
@@ -112,15 +150,18 @@ class Workspace:
         else:
             return wspath # part is relative to current working directory
 
+    def __repr__(self):
+        return "Workspace(workspace_dir='{}', project_paths={})".format(self.workspace_dir, self.project_paths)
+
 class Analysis:
     """
     Represents an OMNeT++ Analysis, i.e. the contents of an  `anf` file. Methods
     allow reading/writing `anf` files, and running the charts in them for interactive
     display, image/data export or other side effects.
     """
-    def __init__(self, inputs=list(), charts=list()):
+    def __init__(self, inputs=list(), items=list()):
         self.inputs = inputs
-        self.charts = charts
+        self.root_folder = Folder(items=items)
 
     @staticmethod
     def from_anf_file(anf_file_name):
@@ -132,38 +173,102 @@ class Analysis:
         if version != "2":
             raise RuntimeError("Unsupported analysis file version: \"{}\" (only \"2\" is supported).".format(version))
 
+        def make_folder(folder_elem):
+            items = list()
+            for child_elem in folder_elem:
+                if child_elem.tag == 'folder':
+                    items.append(make_folder(child_elem))
+                elif child_elem.tag == 'chart':
+                    items.append(make_chart(child_elem))
+                else:
+                    pass
+            return Folder(
+                id = folder_elem.get('id'),
+                name = folder_elem.get('name'),
+                items = items)
+
+        def make_chart(chart_elem):
+            def content(element):
+                if element is not None and element.text is not None:
+                    return element.text.strip()+"\n" # should get the CDATA contents instead, but shouldn't matter much
+                return ""
+
+            script = content(chart_elem.find('script'))
+            dialog_pages = [ DialogPage(id = dp.get('id'), label = dp.get('label'), content = content(dp)) for dp in chart_elem.findall('dialogPage') ]
+            props = { p.get('name') : p.get('value') for p in chart_elem.findall('property') }
+
+            return Chart(
+                id = chart_elem.get('id'),
+                type = chart_elem.get('type'),
+                name = chart_elem.get('name'),
+                template = chart_elem.get('template'),
+                icon = chart_elem.get('icon'),
+                script = script,
+                dialog_pages = dialog_pages,
+                properties = props)
+
         inputs = [input_elem.get('pattern') for input_elem in analysis.findall("inputs/input")]
-        charts = [Analysis._make_chart(chart_elem) for chart_elem in analysis.findall("charts/chart")]
-        return Analysis(inputs, charts)
+        items = make_folder(analysis.find('charts')).items
+        return Analysis(inputs, items)
 
-    @staticmethod
-    def _make_chart(chart_elem):
-        def content(element):
-            if element is not None and element.text is not None:
-                return element.text.strip()+"\n" # should get the CDATA contents instead, but shouldn't matter much
-            return ""
+    def collect_charts(self, folder=None):
+        """
+        Collects and returns a list of all charts in the specified folder, or
+        in this Analysis if no folder is given.
+        """
+        if folder is None:
+            folder = self.root_folder
+        charts = list()
+        for item in folder:
+            if type(item) == Chart:
+                charts.append(item)
+            elif type(item) == Folder:
+                charts += self.collect_charts(item)
+        return charts
 
-        script = content(chart_elem.find('script'))
-        dialog_pages = [ DialogPage(id = dp.get('id'), label = dp.get('label'), content = content(dp)) for dp in chart_elem.findall('dialogPage') ]
-        props = { p.get('name') : p.get('value') for p in chart_elem.findall('property') }
+    def get_item_path(self, item):
+        """
+        Returns the path of the item (Chart or Folder) within the Analysis
+        as list of path segments (Folder items). The returned list includes
+        both the root folder of the Analysis and the item itself. If the
+        item is not part of the Analysis, None is returned.
+        """
+        def find(item, folder):
+            for child in folder:
+                if child == item:
+                    return [ folder, item ]
+                elif type(child) == Folder:
+                    path = find(item, child)
+                    if path is not None:
+                        return [ folder ] + path
+            return None
+        # Perform a search for the item in the Analysis. If this ever becomes
+        # a performance bottleneck (doubtful), it can be fixed by introducing
+        # a cache (child->parent dictionary) which is rebuilt once an
+        # inconsistency is detected.
+        return find(item, self.root_folder)
 
-        return Chart(
-            id = chart_elem.get('id'),
-            type = chart_elem.get('type'),
-            name = chart_elem.get('name'),
-            template = chart_elem.get('template'),
-            icon = chart_elem.get('icon'),
-            script = script,
-            dialog_pages = dialog_pages,
-            properties = props)
+    def get_item_path_as_string(self, item, separator=" / "):
+        """
+        Returns the path of the item (Chart or Folder) within the Analysis as a
+        string. Segments are joined with the given separator. The returned
+        string includes the item name itself, but not the root folder (i.e. for
+        items in the root folder, the path string equals to the item name). If
+        the item is not part of the Analysis, None is returned.
+        """
+        path = self.get_item_path(item)
+        if path is None:
+            return None
+        return " / ".join([ segment.name for segment in path[1:] ])
 
     def info(self):
         """
         Produces a multi-line string description about the content of this Analysis.
         """
-        s =  '{} charts:\n\n'.format(len(self.charts))
-        for i, c in enumerate(self.charts):
-            s += '\t{}.\t"{}"\t({})\n'.format(i, c.name, c.type)
+        all_charts = self.collect_charts()
+        s = '{} charts:\n\n'.format(len(all_charts))
+        for i, chart in enumerate(all_charts):
+            s += '\t{}.\t"{}"\t({})\n'.format(i, self.get_item_path_as_string(chart), chart.type)
 
         s += "\n{} inputs:\n\n".format(len(self.inputs))
         for i, inp in enumerate(self.inputs):
@@ -289,14 +394,21 @@ class Analysis:
             element.appendChild(domTree.createCDATASection(text))
             element.appendChild(domTree.createTextNode("\n"))
 
-        # build DOM tree
-        inputsEl = appendChild(analysisEl,"inputs")
-        for input in self.inputs:
-            inputEl = appendChild(inputsEl, "input")
-            setAttr(inputEl, "pattern", input)
-        chartsEl = appendChild(analysisEl, "charts")
-        for chart in self.charts:
-            chartEl = appendChild(chartsEl, "chart")
+        def makeFolderEl(folder, tag='folder'):
+            folderEl = domTree.createElement(tag)
+            setAttr(folderEl, 'id', folder.id)
+            setAttr(folderEl, 'name', folder.name)
+            for child in folder.items:
+                if type(child) == Chart:
+                    folderEl.appendChild(makeChartEl(child))
+                elif type(child) == Folder:
+                    folderEl.appendChild(makeFolderEl(child))
+                else:
+                    pass
+            return folderEl
+
+        def makeChartEl(chart):
+            chartEl = domTree.createElement('chart')
             setAttr(chartEl, "id", chart.id)
             setAttr(chartEl, "type", chart.type)
             setAttr(chartEl, "name", chart.name)
@@ -313,6 +425,14 @@ class Analysis:
                 propertyEl = appendChild(chartEl, "property")
                 setAttr(propertyEl, "name", key)
                 setAttr(propertyEl, "value", value)
+            return chartEl
+
+        # build DOM tree
+        inputsEl = appendChild(analysisEl,"inputs")
+        for input in self.inputs:
+            inputEl = appendChild(inputsEl, "input")
+            setAttr(inputEl, "pattern", input)
+        analysisEl.appendChild(makeFolderEl(self.root_folder, 'charts'))
 
         # write to file
         with open(filename, 'wt') as f:

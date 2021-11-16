@@ -36,7 +36,7 @@ if __name__ == "__main__":
 
     common_parser = argparse.ArgumentParser()
     common_parser.add_argument('-i', metavar='chart_index', type=int, nargs=1, help='The index of the chart to select (conflicts with -n)')
-    common_parser.add_argument('-n', metavar='chart_name', type=str, nargs=1, help='The name of the chart to select (conflicts with -i, the first chart is selected when ambiguous)')
+    common_parser.add_argument('-n', metavar='chart_name', type=str, nargs=1, help='The path name of the chart to select (conflicts with -i, the first chart is selected when ambiguous)')
     common_parser.add_argument('-p', metavar='project_path', type=str, nargs='*', default=[], help='Adds a workspace path to filesystem directory mapping (format: "/project=.")')
     common_parser.add_argument('-w', metavar='workspace_directory', type=str, nargs=1, default=[None], help='The workspace directory. Acts as a fallback after -p. The input patterns are relative to this')
     common_parser.add_argument('-D', metavar='properties', dest='properties', type=str, nargs='*', default=[], help='Extra properties to pass to the chart script, format: key=value')
@@ -101,17 +101,18 @@ if __name__ == "__main__":
     if args.i and args.n:
         error("Do not use -i and -n together.")
 
+    all_charts = analysis.collect_charts()
     if args.i:
-        selected_charts = [ analysis.charts[args.i[0]] ]
+        selected_charts = [ all_charts[args.i[0]] ]
     elif args.n:
-        for c in analysis.charts:
-            if c.name == args.n[0]:
+        for c in all_charts:
+            if analysis.get_item_path_as_string(c) == args.n[0]:
                 selected_charts = [ c ]
                 break
         if not selected_charts:
             error('No chart named "{}".'.format(args.n[0]))
     else: # neither -i nor -n given
-        selected_charts = analysis.charts
+        selected_charts = all_charts
 
     props = dict([i.split("=", 1) for i in args.properties])
 
