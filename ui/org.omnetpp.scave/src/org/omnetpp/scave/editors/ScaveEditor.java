@@ -12,6 +12,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -1140,6 +1141,9 @@ public class ScaveEditor extends MultiPageEditorPartExt
 
     @Override
     public void modelChanged(ModelChangeEvent event) {
+        if (Debug.debug)
+            analysis.checkIdUniqueness();
+
         firePropertyChange(ScaveEditor.PROP_DIRTY);
 
         //TODO temp chart name changes currently do not propagate to the tabitem text, as we do not receive model change notification about their change!

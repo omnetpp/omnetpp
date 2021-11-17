@@ -7,6 +7,8 @@
 
 package org.omnetpp.scave.model;
 
+import java.util.HashSet;
+
 public class Analysis extends ModelObject {
     protected Inputs inputs = new Inputs();
     protected Folder rootFolder = new Folder();
@@ -40,6 +42,19 @@ public class Analysis extends ModelObject {
 
     public boolean contains(AnalysisItem item) {
         return rootFolder.contains(item);
+    }
+
+    public void checkIdUniqueness() {
+        checkIdUniqueness(rootFolder, new HashSet<Integer>());
+    }
+
+    private static void checkIdUniqueness(AnalysisItem item, HashSet<Integer> idsSeen) {
+        if (idsSeen.contains(item.getId()))
+            throw new RuntimeException("id=" + item.getId() + " of "  + item.toString() + " not unique");
+        idsSeen.add(item.getId());
+        if (item instanceof Folder)
+            for (AnalysisItem child : ((Folder)item).getItems())
+                checkIdUniqueness(child, idsSeen);
     }
 
     @Override
