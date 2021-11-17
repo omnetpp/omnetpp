@@ -104,6 +104,8 @@ bool cChannel::initializeChannel(int stage)
         // to make dynamic module/channel creation more robust
         if (!parametersFinalized())
             finalizeParameters();
+
+        emitStatisticInitialValues();
     }
 
     int numStages = numInitStages();

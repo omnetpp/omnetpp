@@ -234,6 +234,17 @@ void cComponent::addResultRecorders()
     cStatisticBuilder(getEnvir()->getConfig()).addResultRecorders(this);
 }
 
+void cComponent::emitStatisticInitialValues()
+{
+    if (signalTable) {
+        int n = signalTable->size();
+        for (int i = 0; i < n; i++)
+            for (cIListener **lp = (*signalTable)[i].listeners; *lp; ++lp)
+                if (auto rl = dynamic_cast<cResultListener *>(*lp))
+                    rl->callEmitInitialValue();
+    }
+}
+
 void cComponent::reallocParamv(int size)
 {
     ASSERT(size >= numPars);

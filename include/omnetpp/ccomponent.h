@@ -183,6 +183,7 @@ class SIM_API cComponent : public cSoftOwner //implies noncopyable
 
     // internal: sets up @statistic-based result recording
     virtual void addResultRecorders();
+    virtual void emitStatisticInitialValues();
 
     // internal: has initialize() been called?
     bool initialized() const {return flags&FL_INITIALIZED;}

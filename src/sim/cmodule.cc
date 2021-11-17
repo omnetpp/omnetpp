@@ -1681,6 +1681,8 @@ bool cModule::initializeModules(int stage)
         // to make dynamic module creation more robust
         if (!buildInsideCalled())
             buildInside();
+
+        emitStatisticInitialValues();
     }
 
     // call initialize(stage) for this module, provided it has not been been initialized yet

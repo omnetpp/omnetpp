@@ -50,6 +50,9 @@ class SIM_API cResultListener : public cObject, public cIListener
         virtual void callFinish(cResultFilter *prev) {finish(prev);}
         virtual void finish(cResultFilter *prev) {}
 
+        virtual void callEmitInitialValue() {emitInitialValue();}
+        virtual void emitInitialValue() {}
+
         // original listener API delegates to simplified API:
         virtual void receiveSignal(cComponent *source, simsignal_t signalID, bool b, cObject *details) override;
         virtual void receiveSignal(cComponent *source, simsignal_t signalID, intval_t l, cObject *details) override;

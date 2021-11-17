@@ -166,6 +166,25 @@ void cResultFilter::callFinish(cResultFilter *prev)
         delegates[i]->callFinish(this);
 }
 
+void cResultFilter::emitInitialValue()
+{
+    double initialValue = getInitialDoubleValue();
+    if (!std::isnan(initialValue)) {
+        // initial value must be sent for the end of the warmup period; except if that time
+        // has already passed (e.g. because this filter is part of a dynamically created module)
+        cSimulation *simulation = getSimulation();
+        simtime_t t = std::max(simulation->getSimTime(), simulation->getWarmupPeriod());
+        fire(this, t, initialValue, nullptr);
+    }
+}
+
+void cResultFilter::callEmitInitialValue()
+{
+    emitInitialValue();
+    for (int i = 0; delegates[i]; i++)
+        delegates[i]->callEmitInitialValue();
+}
+
 //---
 
 void cNumericResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details)

@@ -91,7 +91,9 @@ class SIM_API cResultFilter : public cResultListener
         void fire(cResultFilter *prev, simtime_t_cref t, const char *s, cObject *details);
         void fire(cResultFilter *prev, simtime_t_cref t, cObject *obj, cObject *details);
         virtual void callFinish(cResultFilter *prev) override;
+        virtual void callEmitInitialValue() override;
         virtual void forEachChild(cVisitor *v) override;
+        virtual void emitInitialValue() override;
     public:
         cResultFilter();
         ~cResultFilter();
