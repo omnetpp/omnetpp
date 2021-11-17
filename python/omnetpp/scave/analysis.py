@@ -261,21 +261,6 @@ class Analysis:
             return None
         return " / ".join([ segment.name for segment in path[1:] ])
 
-    def info(self):
-        """
-        Produces a multi-line string description about the content of this Analysis.
-        """
-        all_charts = self.collect_charts()
-        s = '{} charts:\n\n'.format(len(all_charts))
-        for i, chart in enumerate(all_charts):
-            s += '\t{}.\t"{}"\t({})\n'.format(i, self.get_item_path_as_string(chart), chart.type)
-
-        s += "\n{} inputs:\n\n".format(len(self.inputs))
-        for i, inp in enumerate(self.inputs):
-            s += '\t"{}"\n'.format(inp)
-
-        return s
-
     def run_chart(self, chart, wd, workspace, extra_props=dict(), show=False):
         """
         Runs a chart script with the given working directory, workspace, and extra
