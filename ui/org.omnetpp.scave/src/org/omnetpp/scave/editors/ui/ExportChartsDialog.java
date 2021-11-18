@@ -7,8 +7,6 @@
 
 package org.omnetpp.scave.editors.ui;
 
-import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -71,7 +69,7 @@ public class ExportChartsDialog extends TitleAreaDialog {
 
     // input
     private List<Chart> charts;
-    private List<Chart> initialSelection;
+    private List<Chart> initialSelection; // =null means: take it from DialogSettings
     private boolean singleChart = false;
     private IFile anfFile;
 
@@ -116,7 +114,11 @@ public class ExportChartsDialog extends TitleAreaDialog {
             "raw (Raw RGBA bitmap)",
     };
 
-    public ExportChartsDialog(Shell parentShell, List<Chart> charts, List<Chart> initialSelection, IFile anfFile) {
+    public ExportChartsDialog(Shell parentShell, List<Chart> charts, IFile anfFile) { // take initialSelection from DialogSettings
+        this(parentShell, charts, null, anfFile);
+    }
+
+    public ExportChartsDialog(Shell parentShell, List<Chart> charts, List<Chart> initialSelection, IFile anfFile) { // initialSelection: should be an IStructuralSelection?
         super(parentShell);
         this.charts = charts;
         this.initialSelection = initialSelection;
@@ -399,29 +401,24 @@ public class ExportChartsDialog extends TitleAreaDialog {
     protected void restoreDialogSettings() {
         IDialogSettings settings = getDialogSettings();
 
-        boolean checkedAny = false;
-        if (!initialSelection.isEmpty()) {
+        if (initialSelection != null) {
+            // initial selection was specified in the ctor
             for (int i = 0; i < charts.size(); ++i) {
                 boolean shouldCheck = initialSelection.contains(charts.get(i));
                 chartsTree.getItem(i).setChecked(shouldCheck);
             }
-            checkedAny = true;
         }
         else {
+            // take initial selection from DialogSettings
             String selectedChartIdsSetting = settings.get(KEY_CHARTS);
             if (selectedChartIdsSetting != null) {
                 Set<String> selectedChartIds = new HashSet<String>(Arrays.asList(selectedChartIdsSetting.split(" ")));
                 for (int i = 0; i < charts.size(); ++i) {
                     boolean shouldCheck = selectedChartIds.contains(Integer.toString(charts.get(i).getId()));
                     chartsTree.getItem(i).setChecked(shouldCheck);
-                    if (shouldCheck)
-                        checkedAny = true;
                 }
             }
         }
-        if (!checkedAny)
-            for (TreeItem item: chartsTree.getItems())
-                item.setChecked(true);
 
         for (TreeItem item: chartsTree.getItems())
             if (item.getChecked()) {

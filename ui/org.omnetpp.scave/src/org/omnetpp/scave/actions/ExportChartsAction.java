@@ -37,7 +37,7 @@ public class ExportChartsAction extends AbstractScaveAction {
     protected void doRun(ScaveEditor editor, ISelection selection) throws CoreException {
         // we'll display the list of all charts, and check the selected one(s) and those under selected ones
         final List<Chart> allCharts = ScaveModelUtil.collectCharts(editor.getAnalysis().getRootFolder());
-        List<Chart> initialSelection = ScaveModelUtil.getChartsFromSelection(asStructuredOrEmpty(selection));
+        List<Chart> initialSelection = selection.isEmpty() ? null /*reuse last setting*/ : ScaveModelUtil.getChartsFromSelection(asStructuredOrEmpty(selection));
 
         ExportChartsDialog dialog = new ExportChartsDialog(editor.getSite().getShell(), allCharts, initialSelection, editor.getAnfFile());
         if (dialog.open() == Window.OK) {
