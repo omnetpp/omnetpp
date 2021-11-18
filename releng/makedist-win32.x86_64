@@ -55,11 +55,11 @@ fi
 # cd into the extracted source achive dir
 cd $what-$VERSION || exit 1
 
-echo "Preparing to create distribution package: $what, version: $VERSION platform: windows x86_64..."
+echo "Preparing to create distribution package: $what, version: $VERSION, platform: win32.x86_64..."
 
 # Prepare IDE
 cp -rlf ide/win32-x86_64/* ide
-rm -rf ide/win32-x86_64 ide/linux-x86_64 ide/linux-aarch64 ide/macosx-x86_64
+rm -rf ide/win32-x86_64 ide/linux-x86_64 ide/linux-aarch64 ide/macosx-x86_64 ide/macosx-aarch64
 
 # copy the self extracting toolchain file into the distro
 mkdir -p tools

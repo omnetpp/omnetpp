@@ -44,7 +44,7 @@ tar xfz $SOURCE_DISTRIBUTION_BASE_NAME.tgz || { echo --- error extracting source
 # cd into the extracted source achive dir
 cd $what-$VERSION || exit 1
 
-echo "Preparing to create distribution package: $what, version: $VERSION platform: architecture independent..."
+echo "Preparing to create distribution package: $what, version: $VERSION, platform: architecture independent..."
 
 # Remove IDE
 rm -rf ide

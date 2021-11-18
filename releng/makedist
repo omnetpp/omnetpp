@@ -4,7 +4,7 @@
 #
 # in: what - whether to build "omnetpp" (default) or "omnest"
 # in: BUILD_CORE_DISTRO, BUILD_LINUX_X86_64_DISTRO, BUILD_LINUX_AARCH64_DISTRO,
-#     BUILD_WIN32_X86_64_DISTRO, BUILD_MACOSX_DISTRO
+#     BUILD_WIN32_X86_64_DISTRO, BUILD_MACOS_X86_64_DISTRO, BUILD_MACOS_AARCH64_DISTRO
 #     if "true", the repsective platform distro will be built
 # in: Build identifier can be passed as BUILDID variable (optional)
 # in: If BUILD_IDE=true (default) - it tries to build the native and java part of the IDE
@@ -42,7 +42,8 @@ export BUILD_CORE_DISTRO
 export BUILD_LINUX_X86_64_DISTRO
 export BUILD_LINUX_AARCH64_DISTRO
 export BUILD_WIN32_X86_64_DISTRO
-export BUILD_MACOSX_DISTRO
+export BUILD_MACOS_X86_64_DISTRO
+export BUILD_MACOS_AARCH64_DISTRO
 
 if test -z "$TOOLS_DIR"; then
   export TOOLS_DIR=$HOME/tools/downloads
@@ -117,7 +118,8 @@ echo "Core build: $BUILD_CORE_DISTRO"
 echo "Linux x86_64 build: $BUILD_LINUX_X86_64_DISTRO"
 echo "Linux aarch64 build: $BUILD_LINUX_AARCH64_DISTRO"
 echo "Windows x86_64 build: $BUILD_WIN32_X86_64_DISTRO"
-echo "macOS build: $BUILD_MACOSX_DISTRO"
+echo "macOS x86_64 build: $BUILD_MACOS_X86_64_DISTRO"
+echo "macOS x86_64 build: $BUILD_MACOS_AARCH64_DISTRO"
 
 if [ -d $DISTDIR/$what-$VERSION ]; then
     echo "Deleting old target directory: $DISTDIR/$what-$VERSION !"
@@ -269,10 +271,28 @@ if [ "$BUILD_LINUX_AARCH64_DISTRO" = "true" ]; then
 fi
 
 #########################################
-if [ "$BUILD_MACOSX_DISTRO" = "true" ]; then
-  echo "Checking macOS version..."
+if [ "$BUILD_MACOS_X86_64_DISTRO" = "true" ]; then
+  echo "Checking macOS x86_64 version..."
   # check if the opplibs native lib is in place and correctly built
   OPPLIBSFILE=$(echo $DISTDIR/$what-$VERSION/ide/macosx-x86_64/Eclipse.app/Contents/Eclipse/plugins/org.omnetpp.ide.nativelibs.macosx_?.?.?.*/libopplibs.jnilib)
+  if [ ! -f "$OPPLIBSFILE" ]; then
+    echo $OPPLIBSFILE does not exsist
+    exit 1
+  fi
+  #checkfile $OPPLIBSFILE 'libopplibs.jnilib for macOS must be present'
+  OPPLIBSCONTENT=$(strings $OPPLIBSFILE | grep libcommon..so)
+  if [ "$OPPLIBSCONTENT" != "" ]; then
+    echo "libopplibs.so must be built statically. Run 'make MODE=release SHARED_LIBS=no ui'"
+    exit 1
+  fi
+  # TODO check if it is a release build
+fi
+
+#########################################
+if [ "$BUILD_MACOS_AARCH64_DISTRO" = "true" ]; then
+  echo "Checking macOS aarch64 version..."
+  # check if the opplibs native lib is in place and correctly built
+  OPPLIBSFILE=$(echo $DISTDIR/$what-$VERSION/ide/macosx-aarch64/Eclipse.app/Contents/Eclipse/plugins/org.omnetpp.ide.nativelibs.macosx_?.?.?.*/libopplibs.jnilib)
   if [ ! -f "$OPPLIBSFILE" ]; then
     echo $OPPLIBSFILE does not exsist
     exit 1
@@ -343,9 +363,14 @@ if [ "$BUILD_WIN32_X86_64_DISTRO" = "true" ]; then
   $OMNETPP_ROOT/releng/makedist-win32.x86_64
 fi
 
-if [ "$BUILD_MACOSX_DISTRO" = "true" ]; then
-  echo "Creating macOS distro..."
+if [ "$BUILD_MACOS_X86_64_DISTRO" = "true" ]; then
+  echo "Creating macOS x86_64 distro..."
   $OMNETPP_ROOT/releng/makedist-macos.x86_64
+fi
+
+if [ "$BUILD_MACOS_AARCH64_DISTRO" = "true" ]; then
+  echo "Creating macOS aarch64 distro..."
+  $OMNETPP_ROOT/releng/makedist-macos.aarch64
 fi
 
 # delete the source stuff

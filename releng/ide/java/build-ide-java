@@ -92,3 +92,14 @@ mv -f ide/plugins/*.macosx_* ide/plugins/*.macosx.x86_64_* ide/macosx-x86_64/Ecl
 # we have to adjust the config.ini manually, bacause tycho is not properly updating it form the .product file
 echo org.eclipse.update.reconcile=false >>ide/macosx-x86_64/Eclipse.app/Contents/Eclipse/configuration/config.ini
 echo osgi.instance.area.default=../../../../../samples >>ide/macosx-x86_64/Eclipse.app/Contents/Eclipse/configuration/config.ini
+
+# macOS aarch64
+cp -rl macosx/cocoa/aarch64 ide
+mv ide/aarch64 ide/macosx-aarch64
+rm -rf ide/features/* ide/plugins/*
+mv -f ide/macosx-aarch64/Eclipse.app/Contents/Eclipse/features/* ide/features
+mv -f ide/macosx-aarch64/Eclipse.app/Contents/Eclipse/plugins/* ide/plugins
+mv -f ide/plugins/*.macosx_* ide/plugins/*.macosx.aarch64_* ide/macosx-aarch64/Eclipse.app/Contents/Eclipse/plugins # move back the platform specific plugins to the platform spec directory
+# we have to adjust the config.ini manually, bacause tycho is not properly updating it form the .product file
+echo org.eclipse.update.reconcile=false >>ide/macosx-aarch64/Eclipse.app/Contents/Eclipse/configuration/config.ini
+echo osgi.instance.area.default=../../../../../samples >>ide/macosx-aarch64/Eclipse.app/Contents/Eclipse/configuration/config.ini

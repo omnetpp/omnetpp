@@ -44,11 +44,11 @@ tar xfz $SOURCE_DISTRIBUTION_BASE_NAME.tgz || { echo --- error extracting source
 # cd into the extracted source achive dir
 cd $what-$VERSION || exit 1
 
-echo "Preparing to create distribution package: $what, version: $VERSION platform: linux aarch64..."
+echo "Preparing to create distribution package: $what, version: $VERSION, platform: linux.aarch64..."
 
 # Prepare IDE
 cp -rlf ide/linux-aarch64/* ide
-rm -rf ide/win32-x86_64 ide/linux-x86_64 ide/linux-aarch64 ide/macosx-x86_64
+rm -rf ide/win32-x86_64 ide/linux-x86_64 ide/linux-aarch64 ide/macosx-x86_64 ide/macosx-aarch64
 
 # pack the distro
 cd ..

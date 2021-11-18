@@ -1,9 +1,10 @@
 #!/bin/sh
 #
-# create an OMNeT++/OMNEST source distribution package for Linux
+# create an OMNeT++/OMNEST source distribution package for macOS
 # in: SOURCE_DISTRIBUTION_BASE_NAME (1st arg optionally) contains the source file name (minus the .tgz extension)
 #     (placed in DISTDIR) that is used as a source for the windows build
 # in: TOOLS_DIR - the directory storing the platform specific binaries (toolchain etc.) (without the version and the last platform specific segment!)
+# in: TOOLS_VERSION - the (timestamp) version number of the toolchain to be integrated with the distro
 # in: VERSION - the version suffix used in the build (i.e. 5.0b3)
 
 if [ "$1" != "" ]; then
@@ -15,6 +16,10 @@ fi
 
 if test -z "$TOOLS_DIR"; then
   echo "TOOLS_DIR environment variable is not specified!"; exit 1;
+fi
+
+if test -z "$TOOLS_VERSION"; then
+  echo "TOOLS_VERSION environment variable is not specified!"; exit 1;
 fi
 
 if test -z "$VERSION"; then
@@ -44,18 +49,31 @@ tar xfz $SOURCE_DISTRIBUTION_BASE_NAME.tgz || { echo --- error extracting source
 # cd into the extracted source achive dir
 cd $what-$VERSION || exit 1
 
-echo "Preparing to create distribution package: $what, version: $VERSION, platform: linux.x86_64..."
+echo "Preparing to create distribution package: $what, version: $VERSION, platform: macos.aarch64..."
 
 # Prepare IDE
-cp -rlf ide/linux-x86_64/* ide
+cp -rlf ide/macosx-aarch64/* ide
+cp -rlf ide/features ide/Eclipse.app/Contents/Eclipse && rm -rf ide/features
+cp -rlf ide/plugins ide/Eclipse.app/Contents/Eclipse && rm -rf ide/plugins
+mv ide/Eclipse.app ide/opp_ide.app
 rm -rf ide/win32-x86_64 ide/linux-x86_64 ide/linux-aarch64 ide/macosx-x86_64 ide/macosx-aarch64
+
+# copy the self extracting toolchain file into the distro
+mkdir -p tools/macosx
+echo "Extracting tools archive..."
+tar xfz $TOOLS_DIR/$TOOLS_VERSION/macosx/opp-tools-macosx.tar.gz --keep-old-files --directory tools/macosx || { echo --- error extracting opp-tools-macos-x86_64.tar.gz ---; exit 1;}
+
+# customized files for macosx
+PATCH_DIR=$OMNETPP_ROOT/releng/overlay/macosx
+echo "Copying overlay files from $PATCH_DIR directory..."
+cp -R $PATCH_DIR/* .
 
 # pack the distro
 cd ..
-# create linux version - tgz archive
-export SOURCE_DISTRIBUTION_NAME_LINUX=$SOURCE_DISTRIBUTION_BASE_NAME-linux-x86_64.tgz
-echo Creating $DISTDIR/$SOURCE_DISTRIBUTION_NAME_LINUX
-tar cfz $SOURCE_DISTRIBUTION_NAME_LINUX $what-$VERSION || { echo --- error creating src-linux-x86_64.tgz ---; exit 1;}
+# create macOS version - tgz with macOS tools added
+export SOURCE_DISTRIBUTION_NAME_MACOSX=$SOURCE_DISTRIBUTION_BASE_NAME-macos-aarch64.tgz
+echo Creating $DISTDIR/$SOURCE_DISTRIBUTION_NAME_MACOSX
+tar cfz $SOURCE_DISTRIBUTION_NAME_MACOSX $what-$VERSION || { echo --- error creating src-macos-aarch64.tgz ---; exit 1;}
 
 # delete the source stuff
 rm -rf $what-$VERSION
