@@ -23,9 +23,11 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.ui.IMemento;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.ui.DropdownAction;
 import org.omnetpp.common.ui.FocusManager;
+import org.omnetpp.common.ui.IconGridViewer;
 import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog2;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
@@ -56,6 +58,7 @@ import org.omnetpp.scave.engineext.ResultFileManagerChangeEvent;
 import org.omnetpp.scave.model.AnalysisItem;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartTemplate;
+import org.omnetpp.scave.model.Folder;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
@@ -446,4 +449,30 @@ public class BrowseDataPage extends FormEditorPage {
         getScalarsPanel().setShowFieldsAsScalars(show);
         refreshPage(scaveEditor.getResultFileManager());
     }
+
+    @Override
+    public void saveState(IMemento memento) {
+        super.saveState(memento);
+        memento.putInteger("activeTab", tabFolder.getSelectionIndex());
+        memento.putInteger("numericPrecision", getNumericPrecision());
+        memento.putBoolean("showFieldsAsScalars", getAllPanel().getShowFieldsAsScalars());
+        //TODO contents of filter combos  (note: table columns are magically saved somehow)
+    }
+
+    @Override
+    public void restoreState(IMemento memento) {
+        Integer activeTab = memento.getInteger("activeTab");
+        if (activeTab != null)
+            tabFolder.setSelection(activeTab);
+
+        Integer prec = memento.getInteger("numericPrecision");
+        if (prec != null)
+            setNumericPrecision(prec);
+
+        Boolean show = memento.getBoolean("showFieldsAsScalars");
+        if (show != null)
+            setShowFieldsAsScalars(show);
+
+    }
+
 }
