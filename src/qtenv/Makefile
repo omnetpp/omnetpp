@@ -29,8 +29,9 @@ COPTS = $(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_SRC_DIR)" $(QT_CFLAGS) -W
 DEFINES += -DUNICODE -DQT_NO_EMIT -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB
 IMPLIBS = -loppsim$D -loppenvir$D -lopplayout$D -loppcommon$D $(QT_LIBS)
 
-# Required only on Mac OS X
-ifeq ("$(PLATFORM)", "macosx")
+# Required only on macOS
+ifneq (,$(findstring macos,$(PLATFORM)))
+  # Found 'macos' as substring
   COPTS += -Wno-deprecated-declarations
   LDFLAGS += -framework ApplicationServices
 endif

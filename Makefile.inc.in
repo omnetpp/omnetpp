@@ -53,6 +53,7 @@ else
 endif
 CLEANALL_COMMAND=$(foreach m, $(ALL_MODES), $(MAKE) -s clean MODE=$m; )
 
+PLATFORM = @PLATFORM@
 #
 # Directories
 #
@@ -70,16 +71,12 @@ OMNETPP_UI_DIR = $(OMNETPP_ROOT)/ui
 OMNETPP_DOC_DIR = $(OMNETPP_ROOT)/doc
 OMNETPP_SAMPLES_DIR = $(OMNETPP_ROOT)/samples
 OMNETPP_TEST_DIR = $(OMNETPP_ROOT)/test
+OMNETPP_TOOLS_DIR = $(OMNETPP_ROOT)/tools/$(PLATFORM)
 
-PLATFORM = @PLATFORM@
 # platform specific code
 ifeq ($(PLATFORM),win32.x86_64)
   OMNETPP_TOOLS_DIR = $(OMNETPP_ROOT)/tools/win64
   OMNETPP_IMAGE_PATH := $(shell cygpath -p -m '$(OMNETPP_IMAGE_PATH)')
-else ifeq ($(PLATFORM),macosx)
-  OMNETPP_TOOLS_DIR = $(OMNETPP_ROOT)/tools/macosx
-else
-  # Linux and other platforms do not have a tools directory
 endif
 
 # use statically built omnetpp if we are building the IDE native helper library
@@ -221,7 +218,7 @@ ifeq ($(WITH_QTENV),yes)
       QTENV_LIBS += $(OSGEARTH_LIBS)
       KERNEL_LIBS += -losgEarth
     endif
-    ifeq ($(PLATFORM),macosx)
+    ifneq (,$(findstring macos,$(PLATFORM)))
       QTENV_LIBS += -framework Carbon
     endif
   endif

@@ -59,14 +59,9 @@ mv ide/Eclipse.app ide/opp_ide.app
 rm -rf ide/win32-x86_64 ide/linux-x86_64 ide/linux-aarch64 ide/macosx-x86_64 ide/macosx-aarch64
 
 # copy the self extracting toolchain file into the distro
-mkdir -p tools/macosx
+mkdir -p tools/macos.aarch64
 echo "Extracting tools archive..."
-tar xfz $TOOLS_DIR/$TOOLS_VERSION/macosx/opp-tools-macosx.tar.gz --keep-old-files --directory tools/macosx || { echo --- error extracting opp-tools-macos-x86_64.tar.gz ---; exit 1;}
-
-# customized files for macosx
-PATCH_DIR=$OMNETPP_ROOT/releng/overlay/macosx
-echo "Copying overlay files from $PATCH_DIR directory..."
-cp -R $PATCH_DIR/* .
+tar xfz $TOOLS_DIR/$TOOLS_VERSION/macosx/opp-tools-macosx.tar.gz --keep-old-files --directory tools/macos.aarch64 || { echo --- error extracting opp-tools-macos-aarch64.tar.gz ---; exit 1;}
 
 # pack the distro
 cd ..

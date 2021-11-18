@@ -3233,7 +3233,7 @@ else
     fi
     AS=${AS:-${ac_tool_prefix}as}
     AR_CR="${AR:-ar} cr"
-    if test "$PLATFORM" = "macosx"; then
+    if test "$PLATFORM" = "macos.x86_64" -o "$PLATFORM" = "macos.aarch64"; then
         SHLIB_LD=${SHLIB_LD:-$CXX -dynamiclib}
     else
         SHLIB_LD=${SHLIB_LD:-$CXX -shared}
@@ -3359,7 +3359,7 @@ else
         PLATFORM=win32.x86_64
         EXE_SUFFIX=".exe"
         SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
-        # sepcial values for MS ABI compatible build is selected and clang is used
+        # special values for MS ABI compatible build is selected and clang is used
         if test "$TOOLCHAIN_NAME" = "clang" -a "$USE_MS_ABI" = "yes"; then
             TOOLCHAIN_NAME="clang-msabi"
             echo "checking whether we are using MS ABI compatible libraries... yes"
@@ -3394,18 +3394,34 @@ else
         fi
         ;;
     x86_64-*-linux*)
-        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT_DIR/tools/linux64"
+        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT_DIR/tools/linux.x86_64"
         jni_platform=linux
         PLATFORM=linux.x86_64
         ;;
-    *darwin*)
-        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT_DIR/tools/macosx"
+    aarch64-*-linux*)
+        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT_DIR/tools/linux.aarch64"
+        jni_platform=linux
+        PLATFORM=linux.aarch64
+        ;;
+    x86_64-*-darwin*)
+        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT_DIR/tools/macos.x86_64"
         CFLAGS_ARCH="$CFLAGS_ARCH -isystem \$(OMNETPP_TOOLS_DIR)/include"
         CFLAGS_TOOLS_MACOSX="-isystem $OMNETPP_TOOLS_DIR/include"
         LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L\$(OMNETPP_TOOLS_DIR)/lib -F\$(OMNETPP_TOOLS_DIR)/lib"
         LDFLAGS_TOOLS_MACOSX="-L$OMNETPP_TOOLS_DIR/lib -F$OMNETPP_TOOLS_DIR/lib"
         jni_platform=
-        PLATFORM=macosx
+        PLATFORM=macos.x86_64
+        SO_LIB_SUFFIX=".dylib"
+        JNI_LIB_SUFFIX=".jnilib"
+        ;;
+    arm-*-darwin*)
+        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT_DIR/tools/macos.aarch64"
+        CFLAGS_ARCH="$CFLAGS_ARCH -isystem \$(OMNETPP_TOOLS_DIR)/include"
+        CFLAGS_TOOLS_MACOSX="-isystem $OMNETPP_TOOLS_DIR/include"
+        LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L\$(OMNETPP_TOOLS_DIR)/lib -F\$(OMNETPP_TOOLS_DIR)/lib"
+        LDFLAGS_TOOLS_MACOSX="-L$OMNETPP_TOOLS_DIR/lib -F$OMNETPP_TOOLS_DIR/lib"
+        jni_platform=
+        PLATFORM=macos.aarch64
         SO_LIB_SUFFIX=".dylib"
         JNI_LIB_SUFFIX=".jnilib"
         ;;
@@ -3720,7 +3736,7 @@ fi
 # is present, but it is uninmplemented (and deprecated) on OS X 10.6 and later. We use the
 # original 'portable' implementation on MAC.
 #----------------------
-if test "$PLATFORM" != "macosx"; then
+if test "$PLATFORM" != "macos.x86_64" -a "$PLATFORM" != "macos.aarch64" ; then
 for ac_func in swapcontext
 do :
   ac_fn_cxx_check_func "$LINENO" "swapcontext" "ac_cv_func_swapcontext"
@@ -5251,7 +5267,7 @@ if test "$JAVA_CFLAGS" = ""; then
       { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: JAVA_HOME variable not set." >&5
 $as_echo "$as_me: WARNING: JAVA_HOME variable not set." >&2;}
    else
-      if test "$PLATFORM" = "macosx"; then
+      if test "$PLATFORM" = "macos.x86_64" -o "$PLATFORM" = "macos.aarch64"; then
          JAVA_CFLAGS="-I/System/Library/Frameworks/JavaVM.framework/Headers"
          JAVA_LIBS=""
       else
@@ -7395,11 +7411,11 @@ echo "#define OMNETPP_EDITION \"$OMNETPP_EDITION\"" >>ver.h
 
 #if test -d src/systemc; then
 #  if test "$WITH_SYSTEMC" = "yes"; then
-#    if test "$PLATFORM" != "linux.x86" -a "$PLATFORM" != "linux.x86_64"; then
+#    if test "$PLATFORM" != "linux.x86_64"; then
 #        AC_MSG_ERROR([SystemC is enabled, but it is not supported on this platform. Set WITH_SYSTEMC=no in configure.user])
 #    fi
 #  else
-#    if test "$PLATFORM" = "linux.x86" -o "$PLATFORM" = "linux.x86_64"; then
+#    if test "$PLATFORM" = "linux.x86_64"; then
 #        AC_MSG_NOTICE([SystemC is disabled. You can enable it by setting WITH_SYSTEMC=yes in configure.user])
 #    fi
 #  fi

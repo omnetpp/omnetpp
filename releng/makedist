@@ -119,7 +119,7 @@ echo "Linux x86_64 build: $BUILD_LINUX_X86_64_DISTRO"
 echo "Linux aarch64 build: $BUILD_LINUX_AARCH64_DISTRO"
 echo "Windows x86_64 build: $BUILD_WIN32_X86_64_DISTRO"
 echo "macOS x86_64 build: $BUILD_MACOS_X86_64_DISTRO"
-echo "macOS x86_64 build: $BUILD_MACOS_AARCH64_DISTRO"
+echo "macOS aarch64 build: $BUILD_MACOS_AARCH64_DISTRO"
 
 if [ -d $DISTDIR/$what-$VERSION ]; then
     echo "Deleting old target directory: $DISTDIR/$what-$VERSION !"
@@ -219,7 +219,7 @@ fi
 
 ###############################
 if [ "$BUILD_WIN32_X86_64_DISTRO" = "true" ]; then
-  echo "Checking Win32 X86_64 version..."
+  echo "Checking Win32 x86_64 version..."
   # check if the opplibs native lib is in place and correctly built
   OPPLIBSFILE=$(echo $DISTDIR/$what-$VERSION/ide/win32-x86_64/plugins/org.omnetpp.ide.nativelibs.win32.x86_64_?.?.?.*/opplibs.dll)
   if [ ! -f "$OPPLIBSFILE" ]; then
