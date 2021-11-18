@@ -1207,7 +1207,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
         else if (page.equals(chartsPage))
             return "Charts";
         else {
-            for (Map.Entry<AnalysisItem, Control> entry : closablePages.entrySet()) {
+            for (Map.Entry<AnalysisItem, Control> entry : closablePages.entrySet()) {  //TODO why search???
                 AnalysisItem item = entry.getKey();
                 Control editorPage = entry.getValue();
                 if (page.equals(editorPage))
@@ -1307,16 +1307,16 @@ public class ScaveEditor extends MultiPageEditorPartExt
         for (IMemento pageMemento : memento.getChildren(PAGE)) {
             String pageId = pageMemento.getString(PAGE_ID);
             if (pageId != null) {
-                FormEditorPage page = restoreFixedPage(pageId);
+                FormEditorPage page = restoreFixedPage(pageId);  //TODO this calls setActivePage(), why??
                 if (page != null)
                     page.restoreState(pageMemento);
 
-                ChartScriptEditor editor = restoreEditor(pageId);
+                ChartScriptEditor editor = restoreEditor(pageId);  //TODO what is this supposed to do? or bad name?
                 if (editor != null)
-                    editor.restoreState(pageMemento);
+                    editor.restoreState(pageMemento);  //TODO why is this here??
             }
         }
-        int activePage = memento.getInteger(ACTIVE_PAGE);
+        int activePage = memento.getInteger(ACTIVE_PAGE); //TODO NPE!
         if (activePage >= 0 && activePage < getPageCount())
             setActivePage(activePage);
         String timestamps = memento.getString(TEMPLATE_TIMESTAMPS);
@@ -1735,17 +1735,8 @@ public class ScaveEditor extends MultiPageEditorPartExt
     }
 
     protected int openChartScriptEditor(Chart chart) throws PartInitException {
-
         ChartScriptEditor editor = new ChartScriptEditor(this, chart);
         ChartScriptEditorInput input = new ChartScriptEditorInput(chart);
-
-//        chart.addListener(new IModelChangeListener() {
-//            @Override
-//            public void modelChanged(ModelChangeEvent event) {
-//                if (event.getSubject() == chart && !editor.getDocument().get().equals(chart.getScript()))
-//                    editor.getDocument().set(chart.getScript());
-//            }
-//        });
 
         int index = addClosablePage(editor, input, editor.getChartDisplayName());
 
