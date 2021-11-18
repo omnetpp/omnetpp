@@ -1292,19 +1292,18 @@ public class ScaveEditor extends MultiPageEditorPartExt
     private void saveState(IMemento memento) {
         memento.putInteger(ACTIVE_PAGE, getActivePage());
         memento.putString(TEMPLATE_TIMESTAMPS, getChartTemplateRegistry().storeTimestamps());
-        for (AnalysisItem openedObject : closablePages.keySet()) {
-            Control p = closablePages.get(openedObject);
-            if (p instanceof FormEditorPage) {
-                FormEditorPage page = (FormEditorPage) p;
+
+        for (int pageIndex = 0; pageIndex < getPageCount(); pageIndex++) {
+            FormEditorPage page = getEditorPage(pageIndex);
+            if (page != null) {
                 IMemento pageMemento = memento.createChild(PAGE);
-                String pageId = getPageId(page);
-                pageMemento.putString(PAGE_ID, pageId);
+                pageMemento.putString(PAGE_ID, getPageId(page));
                 page.saveState(pageMemento);
                 if (page instanceof ChartPage) {
                     ChartPage chartPage = (ChartPage)page;
-                    chartPage.getChartScriptEditor().saveState(pageMemento);
+                    chartPage.getChartScriptEditor().saveState(pageMemento);  //TODO why isn't this part of page.saveState()?
                 }
-            }
+           }
         }
     }
 
@@ -1338,9 +1337,6 @@ public class ScaveEditor extends MultiPageEditorPartExt
                 memento.save(file);
             }
         } catch (Exception e) {
-            // MessageDialog.openError(getSite().getShell(),
-            // "Saving editor state",
-            // "Error occured while saving editor state: "+e.getMessage());
             ScavePlugin.logError(e);
         }
     }
@@ -1355,9 +1351,6 @@ public class ScaveEditor extends MultiPageEditorPartExt
         } catch (CoreException e) {
             ScavePlugin.log(e.getStatus());
         } catch (Exception e) {
-            // MessageDialog.openError(getSite().getShell(),
-            // "Restoring editor state",
-            // "Error occured while restoring editor state: "+e.getMessage());
             ScavePlugin.logError(e);
         }
     }
