@@ -12,7 +12,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -650,6 +649,12 @@ public class ScaveEditor extends MultiPageEditorPartExt
             return null;
     }
 
+    public void setActiveEditorPage(FormEditorPage page) {
+        int pageIndex = getIndexOfEditorPage(page);
+        if (pageIndex != -1)
+            setActivePage(pageIndex);
+    }
+
     public ChartScriptEditor getActiveChartScriptEditor() {
         int i = getActivePage();
         if (i >= 0) {
@@ -666,6 +671,13 @@ public class ScaveEditor extends MultiPageEditorPartExt
         if (control instanceof FormEditorPage)
             return (FormEditorPage)control;
         return null;
+    }
+
+    public int getIndexOfEditorPage(FormEditorPage page) {
+        for (int pageIndex = 0; pageIndex < getPageCount(); ++pageIndex)
+            if (getEditorPage(pageIndex) == page)
+                return pageIndex;
+        return -1;
     }
 
     public ChartViewerBase getActiveChartViewer() {
@@ -1222,41 +1234,11 @@ public class ScaveEditor extends MultiPageEditorPartExt
         return Integer.toString(chartScriptEditor.getChart().getId());
     }
 
-    // TODO merge the one below into this one?
-    public FormEditorPage restoreFixedPage(String pageId) {
-        if (pageId == null)
-            return null;
-        if (pageId.equals("Inputs")) {
-            setActivePage(findPage(inputsPage));
-            return inputsPage;
-        } else if (pageId.equals("BrowseData")) {
-            setActivePage(findPage(browseDataPage));
-            return browseDataPage;
-        } else if (pageId.equals("Charts")) {
-            setActivePage(findPage(chartsPage));
-            return chartsPage;
-        }
-
-        return null;
-    }
-
-    // TODO merge with the one above, as a last else clause?
-    private ChartScriptEditor restoreEditor(String pageId) {
-
-        if (pageId == null || pageId.equals("Inputs") || pageId.equals("BrowseData") || pageId.equals("Charts"))
-            return null;
-
-        int itemId = Integer.parseInt(pageId);
-        AnalysisItem foundItem = analysis.getRootFolder().findRecursivelyById(itemId);
-
-        if (foundItem != null) {
-            createClosablePage(foundItem);
-            Control p = closablePages.get(foundItem);
-            int pageIndex = findPage(p);
-            IEditorPart editor = getEditor(pageIndex);
-            if (editor instanceof ChartScriptEditor) {
-                return (ChartScriptEditor) editor;
-            }
+    public FormEditorPage getEditorPageByPageId(String pageId) {
+        for (int i = 0; i < getPageCount(); i++) {
+            FormEditorPage page = getEditorPage(i);
+            if (page != null && getPageId(page).equals(pageId))
+                return page;
         }
         return null;
     }
@@ -1307,18 +1289,23 @@ public class ScaveEditor extends MultiPageEditorPartExt
         for (IMemento pageMemento : memento.getChildren(PAGE)) {
             String pageId = pageMemento.getString(PAGE_ID);
             if (pageId != null) {
-                FormEditorPage page = restoreFixedPage(pageId);  //TODO this calls setActivePage(), why??
+                FormEditorPage page = getEditorPageByPageId(pageId);
                 if (page != null)
                     page.restoreState(pageMemento);
-
-                ChartScriptEditor editor = restoreEditor(pageId);  //TODO what is this supposed to do? or bad name?
-                if (editor != null)
-                    editor.restoreState(pageMemento);  //TODO why is this here??
+                else if (pageId.matches("\\d+")) {
+                    // pageId is the id of the item to be opened
+                    int itemId = Integer.parseInt(pageId);
+                    AnalysisItem item = analysis.getRootFolder().findRecursivelyById(itemId);
+                    if (item != null)
+                        createClosablePage(item); // note: this includes restoreState()
+                }
             }
         }
-        int activePage = memento.getInteger(ACTIVE_PAGE); //TODO NPE!
-        if (activePage >= 0 && activePage < getPageCount())
+
+        Integer activePage = memento.getInteger(ACTIVE_PAGE);
+        if (activePage != null && activePage >= 0 && activePage < getPageCount())
             setActivePage(activePage);
+
         String timestamps = memento.getString(TEMPLATE_TIMESTAMPS);
         if (!StringUtils.isBlank(timestamps))
             getChartTemplateRegistry().restoreTimestamps(timestamps);

@@ -45,7 +45,7 @@ public class ChartPage extends FormEditorPage {
 
     @Override
     public void restoreState(IMemento memento) {
-        //TODO getChartScriptEditor().restoreState(memento);
+        chartScriptEditor.restoreState(memento);
     }
 
 }
