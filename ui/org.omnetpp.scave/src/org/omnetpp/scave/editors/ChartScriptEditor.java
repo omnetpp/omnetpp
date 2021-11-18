@@ -1054,13 +1054,17 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
     public void restoreState(IMemento memento) {
         super.restoreState(memento);
 
-        setAutoRefreshChart(memento.getBoolean("autoupdate"));
-        setShowSource(memento.getBoolean("sourcevisible"));
+        Boolean autoUpdate = memento.getBoolean("autoupdate");
+        if (autoUpdate != null)
+            setAutoRefreshChart(autoUpdate);
+        Boolean sourceVisible = memento.getBoolean("sourcevisible");
+        if (sourceVisible != null)
+            setShowSource(sourceVisible);
 
-        int[] weights = new int[2];
-        weights[0] = memento.getInteger("sashweight_left");
-        weights[1] = memento.getInteger("sashweight_right");
-        sashForm.setWeights(weights);
+        Integer leftWeight = memento.getInteger("sashweight_left");
+        Integer rightWeight = memento.getInteger("sashweight_right");
+        if (leftWeight != null && rightWeight != null)
+            sashForm.setWeights(new int[] {leftWeight, rightWeight});
     }
 
     public void pageActivated() {

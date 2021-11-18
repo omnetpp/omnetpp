@@ -29,6 +29,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Link;
+import org.eclipse.ui.IMemento;
 import org.omnetpp.common.ui.FocusManager;
 import org.omnetpp.common.ui.IconGridViewer;
 import org.omnetpp.common.ui.IconGridViewer.ViewMode;
@@ -144,7 +145,7 @@ public class ChartsPage extends FormEditorPage {
 
     public void setViewMode(ViewMode viewMode) {
         viewer.setViewMode(viewMode);
-        switch (viewMode) {
+        switch (viewMode) { // note: it'd be prettier (and not leaky abstraction) if we turned these settings into some profile in IconGridViewer
         case ICONS:
             viewer.setIconHeight(64);
             viewer.setMargin(20);
@@ -300,6 +301,42 @@ public class ChartsPage extends FormEditorPage {
         super.pageActivated();
         scaveEditor.setSelection(viewer.getSelection());
     }
+
+    @Override
+    public void saveState(IMemento memento) {
+        super.saveState(memento);
+        memento.putInteger("currentFolderId", getCurrentFolder().getId());
+        memento.putString("viewMode", viewer.getViewMode().name());
+        memento.putInteger("numItemsPerRow", viewer.getNumItemsPerRow());
+        memento.putInteger("itemWidth", viewer.getItemWidth());
+        memento.putInteger("numColumns", viewer.getNumColumns());
+        memento.putInteger("columnWidth", viewer.getColumnWidth());
+    }
+
+    @Override
+    public void restoreState(IMemento memento) {
+        Integer folderId = memento.getInteger("currentFolderId");
+        if (folderId != null) {
+            AnalysisItem item = scaveEditor.getAnalysis().getRootFolder().findRecursivelyById(folderId);
+            if (item instanceof Folder)
+                setCurrentFolder((Folder)item);
+        }
+
+        String mode = memento.getString("viewMode");
+        if (mode != null)
+            setViewMode(IconGridViewer.ViewMode.valueOf(mode));
+
+        Integer value;
+        if ((value = memento.getInteger("numItemsPerRow")) != null)
+            viewer.setNumItemsPerRow(value);
+        if ((value = memento.getInteger("itemWidth")) != null)
+            viewer.setItemWidth(value);
+        if ((value = memento.getInteger("numColumns")) != null)
+            viewer.setNumColumns(value);
+        if ((value = memento.getInteger("columnWidth")) != null)
+            viewer.setColumnWidth(value);
+    }
+
 }
 
 
