@@ -656,14 +656,8 @@ public class ScaveEditor extends MultiPageEditorPartExt
     }
 
     public ChartScriptEditor getActiveChartScriptEditor() {
-        int i = getActivePage();
-        if (i >= 0) {
-            IEditorPart editor = getEditor(i);
-            if (editor instanceof ChartScriptEditor)
-                return (ChartScriptEditor) editor;
-        }
-
-        return null;
+        FormEditorPage page = getActiveEditorPage();
+        return page instanceof ChartPage ? ((ChartPage)page).getChartScriptEditor() : null;
     }
 
     public FormEditorPage getEditorPage(int pageIndex) {
@@ -1222,10 +1216,6 @@ public class ScaveEditor extends MultiPageEditorPartExt
             return null;
     }
 
-    private String getPageId(ChartScriptEditor chartScriptEditor) {
-        return Integer.toString(chartScriptEditor.getChart().getId());
-    }
-
     public FormEditorPage getEditorPageByPageId(String pageId) {
         for (int i = 0; i < getPageCount(); i++) {
             FormEditorPage page = getEditorPage(i);
@@ -1246,12 +1236,12 @@ public class ScaveEditor extends MultiPageEditorPartExt
             return null;
     }
 
-    private IMemento getMementoFor(ChartScriptEditor editor) {
+    private IMemento getMementoFor(FormEditorPage page) {
         IFile file = getInputFile();
         if (file != null) {
             try {
                 ScaveEditorMemento memento = new ScaveEditorMemento(file);
-                String editorPageId = getPageId(editor);
+                String editorPageId = getPageId(page);
                 for (IMemento pageMemento : memento.getChildren(PAGE)) {
                     String pageId = pageMemento.getString(PAGE_ID);
                     if (pageId != null && pageId.equals(editorPageId))
@@ -1717,13 +1707,13 @@ public class ScaveEditor extends MultiPageEditorPartExt
         ChartScriptEditor editor = new ChartScriptEditor(this, chart);
         ChartScriptEditorInput input = new ChartScriptEditorInput(chart);
 
-        int index = addClosablePage(editor, input, editor.getChartDisplayName());
+        int pageIndex = addClosablePage(editor, input, editor.getChartDisplayName());
+        FormEditorPage page = getEditorPage(pageIndex);
+        IMemento memento = getMementoFor(page);
+        if (memento != null)
+            page.restoreState(memento);
 
-        IMemento editorMemento = getMementoFor(editor);
-        if (editorMemento != null)
-            editor.restoreState(editorMemento);
-
-        return index;
+        return pageIndex;
     }
 
     public CommandStack getActiveCommandStack() {
