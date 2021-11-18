@@ -8,6 +8,7 @@
 package org.omnetpp.scave.editors.ui;
 
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IMemento;
 import org.omnetpp.scave.editors.ChartScriptEditor;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.ModelChangeEvent;
@@ -33,8 +34,18 @@ public class ChartPage extends FormEditorPage {
 
     @Override
     public void modelChanged(ModelChangeEvent event) {
-        // TODO update description
         setPageTitle(chartScriptEditor.getChartDisplayName());
         setFormTitle(chartScriptEditor.getChartDisplayName());
     }
+
+    @Override
+    public void saveState(IMemento memento) {
+        chartScriptEditor.saveState(memento);
+    }
+
+    @Override
+    public void restoreState(IMemento memento) {
+        //TODO getChartScriptEditor().restoreState(memento);
+    }
+
 }

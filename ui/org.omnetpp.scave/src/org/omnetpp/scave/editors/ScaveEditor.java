@@ -1299,11 +1299,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
                 IMemento pageMemento = memento.createChild(PAGE);
                 pageMemento.putString(PAGE_ID, getPageId(page));
                 page.saveState(pageMemento);
-                if (page instanceof ChartPage) {
-                    ChartPage chartPage = (ChartPage)page;
-                    chartPage.getChartScriptEditor().saveState(pageMemento);  //TODO why isn't this part of page.saveState()?
-                }
-           }
+            }
         }
     }
 
