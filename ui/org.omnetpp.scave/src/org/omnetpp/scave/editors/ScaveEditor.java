@@ -1210,24 +1210,16 @@ public class ScaveEditor extends MultiPageEditorPartExt
     }
 
     public String getPageId(FormEditorPage page) {
-        if (page == null)
-            return null;
-        else if (page.equals(inputsPage))
+        if (page.equals(inputsPage))
             return "Inputs";
         else if (page.equals(browseDataPage))
             return "BrowseData";
         else if (page.equals(chartsPage))
             return "Charts";
-        else {
-            for (Map.Entry<AnalysisItem, Control> entry : closablePages.entrySet()) {  //TODO why search???
-                AnalysisItem item = entry.getKey();
-                Control editorPage = entry.getValue();
-                if (page.equals(editorPage))
-                    return Integer.toString(item.getId());
-            }
-        }
-
-        return null;
+        else if (page instanceof ChartPage)
+            return Integer.toString(((ChartPage)page).getChart().getId());
+        else
+            return null;
     }
 
     private String getPageId(ChartScriptEditor chartScriptEditor) {

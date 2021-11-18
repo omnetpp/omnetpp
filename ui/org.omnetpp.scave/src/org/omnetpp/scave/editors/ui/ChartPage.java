@@ -11,6 +11,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IMemento;
 import org.omnetpp.scave.editors.ChartScriptEditor;
 import org.omnetpp.scave.editors.ScaveEditor;
+import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ModelChangeEvent;
 import org.omnetpp.scave.python.ChartViewerBase;
 
@@ -25,6 +26,10 @@ public class ChartPage extends FormEditorPage {
 
     public ChartScriptEditor getChartScriptEditor() {
         return chartScriptEditor;
+    }
+
+    public Chart getChart() {
+        return chartScriptEditor.getChart();
     }
 
     @Override
