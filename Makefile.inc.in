@@ -75,7 +75,6 @@ OMNETPP_TOOLS_DIR = $(OMNETPP_ROOT)/tools/$(PLATFORM)
 
 # platform specific code
 ifeq ($(PLATFORM),win32.x86_64)
-  OMNETPP_TOOLS_DIR = $(OMNETPP_ROOT)/tools/win64
   OMNETPP_IMAGE_PATH := $(shell cygpath -p -m '$(OMNETPP_IMAGE_PATH)')
 endif
 

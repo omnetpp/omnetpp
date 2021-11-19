@@ -332,7 +332,6 @@ else
     jni_platform=$host_os
     case $host in
     x86_64-*-mingw*)
-        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT_DIR/tools/win64"
         mingw=yes
         jni_platform=win32
         PLATFORM=win32.x86_64
@@ -373,17 +372,14 @@ else
         fi
         ;;
     x86_64-*-linux*)
-        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT_DIR/tools/linux.x86_64"
         jni_platform=linux
         PLATFORM=linux.x86_64
         ;;
     aarch64-*-linux*)
-        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT_DIR/tools/linux.aarch64"
         jni_platform=linux
         PLATFORM=linux.aarch64
         ;;
     x86_64-*-darwin*)
-        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT_DIR/tools/macos.x86_64"
         CFLAGS_ARCH="$CFLAGS_ARCH -isystem \$(OMNETPP_TOOLS_DIR)/include"
         CFLAGS_TOOLS_MACOSX="-isystem $OMNETPP_TOOLS_DIR/include"
         LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L\$(OMNETPP_TOOLS_DIR)/lib -F\$(OMNETPP_TOOLS_DIR)/lib"
@@ -394,7 +390,6 @@ else
         JNI_LIB_SUFFIX=".jnilib"
         ;;
     arm-*-darwin*)
-        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT_DIR/tools/macos.aarch64"
         CFLAGS_ARCH="$CFLAGS_ARCH -isystem \$(OMNETPP_TOOLS_DIR)/include"
         CFLAGS_TOOLS_MACOSX="-isystem $OMNETPP_TOOLS_DIR/include"
         LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L\$(OMNETPP_TOOLS_DIR)/lib -F\$(OMNETPP_TOOLS_DIR)/lib"
