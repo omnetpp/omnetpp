@@ -1,5 +1,5 @@
 
-                THIRD PARTY SOFTWARE
+THIRD PARTY SOFTWARE
 
 
 The OMNeT++/OMNEST distribution contains several open source components
@@ -36,19 +36,12 @@ alternative RNGs and designating them as default RNG is also possible.
 Mersenne Twister is part of the OMNEST/OMNeT++ source code.
 
 
-LibXML2
--------
-LibXML2 (xmlsoft.org) is an open-source XML parser, written by Daniel Veillard.
-LibXML2 and ICONV (also a needed component) are distributed under the MIT License.
-https://opensource.org/licenses/MIT
+YXML
+----
+YXML (https://dev.yorhel.nl/yxml) is a small non-validating XML parser distributed
+under the MIT License (https://opensource.org/licenses/MIT). 
 
-When a simulation model component has parameters of type XML, OMNeT++/OMNEST
-uses this library to parse XML files. If the model does not make use of
-XML parameters, this library is not needed.
-
-On Linux, the user has to install LibXML2 from the repository; on OS X,
-OMNEST/OMNeT++ uses the LibXML2 installation bundled with the OS. On Windows,
-it is bundled with OMNEST/OMNeT++.
+YXML is part of the OMNEST/OMNeT++ source code.
 
 
 SQLite
@@ -63,6 +56,21 @@ accessible format.
 SQLite is part of the OMNEST/OMNeT++ source code.
 
 
+SGR macros
+----------
+SGR macros for ANSI console color sequences, written by YOSHIOKA Takuma,
+distributed under the MIT License (https://opensource.org/licenses/MIT). 
+
+sgr_macro.h is part of the OMNEST/OMNeT++ source code.
+
+
+Fira Code font
+--------------
+The Fira Code font (https://github.com/tonsky/FiraCode) is embedded in Qtenv
+for better readability and distributed under the SIL Open Font License 
+(https://scripts.sil.org/OFL).
+
+
 Qt
 --
 The Qtenv simulation execution environment is based on Qt, a cross-platform
@@ -70,9 +78,9 @@ widget toolkit. The open-source version of Qt is distributed under LGPLv2.1
 and LGPLv3 (http://www.gnu.org/licenses/). Non-LGPL commercial Qt licenses
 are available from The Qt Company (http://www.qt.io).
 
-Qt is needed to run models under the Qtenv GUI. Alternatives to Qtenv are
-Tkenv and Cmdenv -- when you only use those, Qt is not needed. Note that 3D
-visualization is only available under Qtenv.
+Qt is needed to run models under the Qtenv GUI. Qt is not used if the
+console-based Cmdenv is used. Note that 3D visualization is only available
+under Qtenv.
 
 On Linux, the user has to install Qt from the repository; on other
 platforms it is bundled with OMNEST/OMNeT++.
@@ -107,27 +115,29 @@ platforms it is bundled with OMNEST/OMNeT++.
 SystemC
 -------
 SystemC (www.accellera.org) is a C++ library which provides event-driven
-simulation capability for system design. It is licensed under its own
-SystemC Open Source License Agreement.
+simulation capability for system design. It is licensed under the
+Apache License v2.0 (http://www.apache.org/licenses).
 
 SystemC is optional. It is only needed if one wants to run hybrid SystemC-
 OMNEST simulations.
 
-SystemC is bundled with OMNEST on all platforms. It is not bundled with
-OMNeT++.
+SystemC is bundled with OMNEST. It is not bundled with OMNeT++.
 
 
-WinPcap
+LibXML2
 -------
-Windows Packet Capture Library (www.winpcap.org) distributed under its
-own license (https://www.winpcap.org/misc/copyright.htm)
+LibXML2 (xmlsoft.org) is an open-source XML parser, written by Daniel Veillard.
+LibXML2 and ICONV (also a needed component) are distributed under the MIT License.
+https://opensource.org/licenses/MIT
 
-WinPcap may be used by simulation models for hardware-in-the-loop
-simulation (HIL). Simulation models that do not require HIL capability do
-not need WinPcap. OMNEST/OMNeT++ only detects the presence of WinPcap,
-but does not itself use it.
+When a simulation model component has parameters of type XML, OMNeT++/OMNEST
+can use this library to parse XML files that contain DTD definitions. If the model
+does not make use of XML file validation, this library is not needed and
+OMNeT++/OMNEST can use its own built-in XML parser.
 
-WinPcap is bundled with OMNEST/OMNeT++.
+On Linux, the user has to install LibXML2 from the repository; on macOS, 
+OMNEST/OMNeT++ can use the LibXML2 installation bundled with the OS.
+On Windows, it is bundled with OMNEST/OMNeT++.
 
 
 2. Packages needed by the Eclipse-based OMNeT++/OMNEST IDE
@@ -149,16 +159,30 @@ using 3rd party text editors and/or C++ IDEs as well.
 Eclipse is bundled with OMNEST/OMNeT++ on all platforms.
 
 
+PyDev
+-----
+PyDev (pydev.org) is an Eclipse plug-in for python development distributed
+under the EPL (Eclipse Public License). https://www.eclipse.org/org/documents/epl-v10.php
+
+
+Py4J
+----
+Py4J (py4j.org) is part of the IDE and distributed under the BSD license
+(https://github.com/bartdag/py4j/blob/master/LICENSE.txt)
+
+
+Pickle
+------
+Pickle is distributed under the MIT License (https://opensource.org/licenses/MIT). 
+
+
 OpenJDK
 -------
-The IDE requries a Java runtime environment (JRE) to run. By default,
-OMNEST/OMNeT++ uses OpenJDK, which is distributed under GPLv2 with the
-Classpath Exception (http://openjdk.java.net/legal/gplv2+ce.html).
+The IDE requires a Java runtime environment (JRE) to run which is
+distributed under GPLv2 with the Classpath Exception 
+(http://openjdk.java.net/legal/gplv2+ce.html).
 
-Using another JREs, for example the Oracle JRE is also possible.
-
-The JRE part of OpenJDK is bundled with OMNEST/OMNeT++ on Windows.
-On other platforms, the user has to install it manually.
+The JRE part of OpenJDK is bundled with the OMNEST/OMNeT++ IDE.
 
 
 Apache Java libraries
@@ -186,6 +210,13 @@ under the 4-clause BSD License.
 OMNEST/OMNeT++ uses Freemarker to support custom wizards within the IDE.
 
 
+Ansi Console
+------------
+Ansi Console (https://github.com/mihnita/ansi-econsole) is an Eclipse plug-in
+for displaying ANSI color sequences in Eclipse. It is distributed under the
+Apache License v2.0 (http://www.apache.org/licenses).
+
+
 3. Packages bundled with OMNEST/OMNeT++ on Windows, as part of the compiler tool-chain
 ======================================================================================
 
@@ -204,4 +235,4 @@ component.
 ___________________________________________________________________________
 Trademarks.
 Windows is a trademark of Microsoft Corporation.
-OS X is a trademark of Apple Inc.
+macOS is a trademark of Apple Inc.
