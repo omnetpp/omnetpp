@@ -171,9 +171,10 @@ public class ChartsPage extends FormEditorPage {
     @Override
     public boolean gotoObject(Object object) {
         if (object instanceof ModelObject) {
-            ModelObject modelObject = (ModelObject)object;
-            if (ScaveModelUtil.findEnclosingOrSelf(modelObject, Folder.class) != null) {
-                getViewer().setSelection(new StructuredSelection(modelObject), true);
+            Folder containingFolder = ScaveModelUtil.findEnclosing((ModelObject)object, Folder.class);
+            if (containingFolder != null) {
+                setCurrentFolder(containingFolder);
+                viewer.setSelection(new StructuredSelection(object), true);
                 return true;
             }
         }

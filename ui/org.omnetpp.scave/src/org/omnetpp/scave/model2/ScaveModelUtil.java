@@ -166,6 +166,10 @@ public class ScaveModelUtil {
         return (T)object;
     }
 
+    public static <T extends ModelObject> T findEnclosing(ModelObject object, Class<T> type) {
+        return findEnclosingOrSelf(object.getParent(), type);
+    }
+
     public static void assignNewIdRec(AnalysisItem item) {
         item.assignNewId();
         if (item instanceof Folder)

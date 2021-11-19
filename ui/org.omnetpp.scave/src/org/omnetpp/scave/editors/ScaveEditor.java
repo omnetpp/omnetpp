@@ -797,11 +797,11 @@ public class ScaveEditor extends MultiPageEditorPartExt
         getChartsPage().getViewer().reveal(item);
     }
 
-    public void gotoObject(Object object) { // XXX useful?
-
+    public void gotoObject(Object object) {
         if (getAnalysis() == null)
             return;
 
+        // if object (practically, a chart) is open, switch to that page
         if (object instanceof AnalysisItem) {
             FormEditorPage editorPage = getEditorPage((AnalysisItem)object);
             if (editorPage != null) {
@@ -810,12 +810,12 @@ public class ScaveEditor extends MultiPageEditorPartExt
             }
         }
 
+        // if active page can show it, do that
         FormEditorPage activePage = getActiveEditorPage();
-        if (activePage != null) {
-            if (activePage.gotoObject(object))
-                return;
-        }
+        if (activePage != null && activePage.gotoObject(object))
+            return;
 
+        // find first page that can show it, and switch there
         int activePageIndex = -1;
         for (int pageIndex = getPageCount() - 1; pageIndex >= 0; --pageIndex) {
             FormEditorPage page = getEditorPage(pageIndex);
