@@ -42,18 +42,21 @@ LIBS+= -lrt
 endif
 
 ifeq ($(PLATFORM),macos)
-  # on macOS we should strip only the non-public symbols
+  # - on macOS we should strip only the non-public symbols
+  # - the Eclipse (macosx) and JNI platform (darwin) names are different than the name in $PLATFORM 
   STRIP_FLAGS=-x
+  JNI_PLATFORM=darwin
   DLL_TARGET_DIR = ../org.omnetpp.ide.nativelibs.macosx
 else
+  JNI_PLATFORM=$(PLATFORM)
   DLL_TARGET_DIR = ../org.omnetpp.ide.nativelibs.$(PLATFORM).$(ARCH)
 endif
 
 #
 # Local definitions
 #
-INCLUDES=-I$(OMNETPP_INCL_DIR) -I$(OMNETPP_SRC_DIR)
-COPTS=$(CFLAGS) $(CXXFLAGS) $(JAVA_CFLAGS) $(INCLUDES) -DTHREADED $(PTHREAD_CFLAGS)
+INCLUDES=-I$(OMNETPP_INCL_DIR) -I$(OMNETPP_SRC_DIR) -Ijdk -Ijdk/$(JNI_PLATFORM)
+COPTS=$(CFLAGS) $(CXXFLAGS) $(INCLUDES) -DTHREADED $(PTHREAD_CFLAGS)
 
 #
 # Automatic rules

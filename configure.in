@@ -323,17 +323,14 @@ TOOLCHAIN_NAME=`echo $CC | sed 's!^.*/!!g' | sed 's![[ :]]!_!'g`
 if test "$TOOLCHAIN" = "mingw"; then
     # cross compiling for mingw
     mingw=yes
-    JNI_PLATFORM=win32
     PLATFORM=win32.x86
     EXE_SUFFIX=".exe"
     SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
     LDFLAGS_ARCH="$LDFLAGS_ARCH -shared-libgcc"
 else
-    JNI_PLATFORM=$host_os
     case $host in
     x86_64-*-mingw*)
         mingw=yes
-        JNI_PLATFORM=win32
         PLATFORM=win32
         ARCH=x86_64
         EXE_SUFFIX=".exe"
@@ -373,12 +370,10 @@ else
         fi
         ;;
     x86_64-*-linux*)
-        JNI_PLATFORM=linux
         PLATFORM=linux
         ARCH=x86_64
         ;;
     aarch64-*-linux*)
-        JNI_PLATFORM=linux
         PLATFORM=linux
         ARCH=aarch64
         ;;
@@ -387,7 +382,6 @@ else
         CFLAGS_TOOLS_MACOSX="-isystem $OMNETPP_TOOLS_DIR/include"
         LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L\$(OMNETPP_TOOLS_DIR)/lib -F\$(OMNETPP_TOOLS_DIR)/lib"
         LDFLAGS_TOOLS_MACOSX="-L$OMNETPP_TOOLS_DIR/lib -F$OMNETPP_TOOLS_DIR/lib"
-        JNI_PLATFORM=darwin
         PLATFORM=macos
         ARCH=x86_64
         SO_LIB_SUFFIX=".dylib"
@@ -398,7 +392,6 @@ else
         CFLAGS_TOOLS_MACOSX="-isystem $OMNETPP_TOOLS_DIR/include"
         LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L\$(OMNETPP_TOOLS_DIR)/lib -F\$(OMNETPP_TOOLS_DIR)/lib"
         LDFLAGS_TOOLS_MACOSX="-L$OMNETPP_TOOLS_DIR/lib -F$OMNETPP_TOOLS_DIR/lib"
-        JNI_PLATFORM=darwin
         PLATFORM=macos
         ARCH=aarch64
         SO_LIB_SUFFIX=".dylib"
@@ -956,41 +949,7 @@ if test "$WITH_OSG" = "yes"; then
   fi
 fi # WITH_OSG
 
-#--------------------------------------------------
-# Check for JDK - needed for building the IDE only.
-#--------------------------------------------------
-
-if test "$JAVA_CFLAGS" = ""; then
-   if test "$JDK" = ""; then
-     javahome_candidates="/usr/lib/jvm/java /usr/lib/jvm/default-java /usr/java/jdk /Library/Java/Home"
-     for dir in $javahome_candidates; do
-         if test "$JAVA_HOME" = "" -a -d "$dir"; then
-             JAVA_HOME=$dir
-         fi
-     done
-   else
-     JAVA_HOME=$JDK
-   fi
-   if test "$JAVA_HOME" = ""; then
-      AC_MSG_WARN(JAVA_HOME variable not set.)
-   else
-      if test "$PLATFORM" = "macos"; then
-         JAVA_CFLAGS="-I/System/Library/Frameworks/JavaVM.framework/Headers"
-         JAVA_LIBS=""
-      else
-         JAVA_CFLAGS="-fno-strict-aliasing -I$JAVA_HOME/include -I$JAVA_HOME/include/$JNI_PLATFORM"
-         JAVA_LIBS="-L$JAVA_HOME/jre/lib/i386/client -Wl,-rpath,$JAVA_HOME/jre/lib/i386/client:. -ljvm"
-      fi
-   fi
-fi
-
-OPP_CHECK_LIB_NOLINK(JNI, jni.h, JNI_GetCreatedJavaVMs(0,0,0), $CFLAGS $JAVA_CFLAGS, jni_ok)
-
-if test "$jni_ok" = "no" -o "$SWIG" = "not found"; then
-   JNILIBS_IF_POSSIBLE=missing-dependency
-else
-   JNILIBS_IF_POSSIBLE=jnilibs
-fi
+JNILIBS_IF_POSSIBLE=jnilibs
 
 #----------------------
 # Check for optional OpenMP compiler/linker flag.
@@ -1237,7 +1196,6 @@ AC_SUBST(AKAROA_CFLAGS)
 AC_SUBST(AKAROA_LIBS)
 
 AC_SUBST(JNILIBS_IF_POSSIBLE)
-AC_SUBST(JNI_PLATFORM)
 
 AC_SUBST(WITH_NETBUILDER)
 AC_SUBST(WITH_LIBXML)
@@ -1248,8 +1206,6 @@ AC_SUBST(WITH_OSGEARTH)
 AC_SUBST(WITH_SYSTEMC)
 AC_SUBST(PREFER_SQLITE_RESULT_FILES)
 
-AC_SUBST(JAVA_CFLAGS)
-AC_SUBST(JAVA_LIBS)
 AC_SUBST(SWIG)
 AC_SUBST(PLATFORM)
 AC_SUBST(ARCH)
