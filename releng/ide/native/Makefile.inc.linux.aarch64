@@ -53,6 +53,8 @@ else
 endif
 CLEANALL_COMMAND=$(foreach m, $(ALL_MODES), $(MAKE) -s clean MODE=$m; )
 
+PLATFORM = linux
+ARCH = aarch64
 #
 # Directories
 #
@@ -70,17 +72,13 @@ OMNETPP_UI_DIR = $(OMNETPP_ROOT)/ui
 OMNETPP_DOC_DIR = $(OMNETPP_ROOT)/doc
 OMNETPP_SAMPLES_DIR = $(OMNETPP_ROOT)/samples
 OMNETPP_TEST_DIR = $(OMNETPP_ROOT)/test
+OMNETPP_TOOLS_DIR = $(OMNETPP_ROOT)/tools/$(PLATFORM).$(ARCH)
 
-PLATFORM = linux.aarch64
 # platform specific code
-ifeq ($(PLATFORM),win32.x86_64)
-  OMNETPP_TOOLS_DIR = $(OMNETPP_ROOT)/tools/win64
+ifeq ($(PLATFORM),win32)
   OMNETPP_IMAGE_PATH := $(shell cygpath -p -m '$(OMNETPP_IMAGE_PATH)')
-else ifeq ($(PLATFORM),macosx)
-  OMNETPP_TOOLS_DIR = $(OMNETPP_ROOT)/tools/macosx
-else
-  # Linux and other platforms do not have a tools directory
 endif
+
 
 # use statically built omnetpp if we are building the IDE native helper library
 ifeq ($(BUILDING_UILIBS),yes)
@@ -182,6 +180,7 @@ AKAROA_LIBS = -L/usr/local/akaroa/lib -lakaroa -lfl
 JNILIBS_IF_POSSIBLE = jnilibs
 JAVA_CFLAGS = -fno-strict-aliasing -I/usr/lib/jvm/default-java/include -I/usr/lib/jvm/default-java/include/linux
 JAVA_LIBS = -L/usr/lib/jvm/default-java/jre/lib/i386/client -Wl,-rpath,/usr/lib/jvm/default-java/jre/lib/i386/client:. -ljvm
+JNI_PLATFORM = linux
 
 #
 # platform specific library and executable prefixes and extensions
@@ -221,7 +220,7 @@ ifeq ($(WITH_QTENV),yes)
       QTENV_LIBS += $(OSGEARTH_LIBS)
       KERNEL_LIBS += -losgEarth
     endif
-    ifeq ($(PLATFORM),macosx)
+    ifeq ($(PLATFORM),macos)
       QTENV_LIBS += -framework Carbon
     endif
   endif

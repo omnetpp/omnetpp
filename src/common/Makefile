@@ -11,7 +11,7 @@ include $(CONFIGFILE)
 LIBNAME=$(LIB_PREFIX)oppcommon$D
 TARGET_LIB_FILES=$(OMNETPP_LIB_DIR)/$(LIBNAME)$(LIB_SUFFIX)
 # On Windows, the targets are different (DLLs go into the bin dir and separate export libs are created)
-ifeq ($(PLATFORM),win32.x86_64)
+ifeq ($(PLATFORM),win32)
   ifeq ($(SHARED_LIBS),yes)
     TARGET_LIB_FILES=$(OMNETPP_BIN_DIR)/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OMNETPP_LIB_DIR)/$(LIBNAME)$(IMPLIB_SUFFIX)
     ifeq ($(TOOLCHAIN_NAME),clang-msabi)
@@ -54,7 +54,7 @@ endif
 
 # macro is used in $(EXPORT_DEFINES) with clang-msabi when building a shared lib
 EXPORT_MACRO = -DCOMMON_EXPORT
-ifeq ($(PLATFORM),win32.x86_64)
+ifeq ($(PLATFORM),win32)
     EXPORT_MACRO+= "-DSQLITE_API=__declspec(dllexport)"
 else
     EXPORT_MACRO+= "-DSQLITE_API=__attribute__ ((visibility (\"default\")))"

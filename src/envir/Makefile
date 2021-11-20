@@ -13,7 +13,7 @@ LIBNAME=$(LIB_PREFIX)oppenvir$D
 
 TARGET_LIB_FILES=$(OMNETPP_LIB_DIR)/$(LIBNAME)$(LIB_SUFFIX) $(OMNETPP_LIB_DIR)/$(MAINLIBNAME)$(A_LIB_SUFFIX)
 # On Windows, the targets are different (DLLs go into the bin dir and separate export libs are created)
-ifeq ($(PLATFORM),win32.x86_64)
+ifeq ($(PLATFORM),win32)
   ifeq ($(SHARED_LIBS),yes)
     TARGET_LIB_FILES=$(OMNETPP_BIN_DIR)/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OMNETPP_LIB_DIR)/$(LIBNAME)$(IMPLIB_SUFFIX) $(OMNETPP_LIB_DIR)/$(MAINLIBNAME)$(A_LIB_SUFFIX)
     ifeq ($(TOOLCHAIN_NAME),clang-msabi)
@@ -36,7 +36,7 @@ O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/envir
 
 INCL_FLAGS= -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_SRC_DIR)"
 
-ifeq ($(PLATFORM),win32.x86_64)
+ifeq ($(PLATFORM),win32)
   PSAPI_LIB=-lpsapi
 endif
 

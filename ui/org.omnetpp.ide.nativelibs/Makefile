@@ -41,12 +41,13 @@ ifeq ("$(JNI_LIB_SUFFIX)",".so")
 LIBS+= -lrt
 endif
 
-# on MAC OS X we should strip only the non-public symbols
-ifeq ("$(JNI_LIB_SUFFIX)",".jnilib")
-STRIP_FLAGS=-x
+ifeq ($(PLATFORM),macos)
+  # on macOS we should strip only the non-public symbols
+  STRIP_FLAGS=-x
+  DLL_TARGET_DIR = ../org.omnetpp.ide.nativelibs.macosx
+else
+  DLL_TARGET_DIR = ../org.omnetpp.ide.nativelibs.$(PLATFORM).$(ARCH)
 endif
-
-DLL_TARGET_DIR = ../org.omnetpp.ide.nativelibs.$(PLATFORM)
 
 #
 # Local definitions

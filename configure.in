@@ -303,7 +303,7 @@ else
     fi
     AS=${AS:-${ac_tool_prefix}as}
     AR_CR="${AR:-ar} cr"
-    if test "$PLATFORM" = "macos.x86_64" -o "$PLATFORM" = "macos.aarch64"; then
+    if test "$PLATFORM" = "macos"; then
         SHLIB_LD=${SHLIB_LD:-$CXX -dynamiclib}
     else
         SHLIB_LD=${SHLIB_LD:-$CXX -shared}
@@ -323,18 +323,19 @@ TOOLCHAIN_NAME=`echo $CC | sed 's!^.*/!!g' | sed 's![[ :]]!_!'g`
 if test "$TOOLCHAIN" = "mingw"; then
     # cross compiling for mingw
     mingw=yes
-    jni_platform=win32
+    JNI_PLATFORM=win32
     PLATFORM=win32.x86
     EXE_SUFFIX=".exe"
     SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
     LDFLAGS_ARCH="$LDFLAGS_ARCH -shared-libgcc"
 else
-    jni_platform=$host_os
+    JNI_PLATFORM=$host_os
     case $host in
     x86_64-*-mingw*)
         mingw=yes
-        jni_platform=win32
-        PLATFORM=win32.x86_64
+        JNI_PLATFORM=win32
+        PLATFORM=win32
+        ARCH=x86_64
         EXE_SUFFIX=".exe"
         SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
         # special values for MS ABI compatible build is selected and clang is used
@@ -372,20 +373,23 @@ else
         fi
         ;;
     x86_64-*-linux*)
-        jni_platform=linux
-        PLATFORM=linux.x86_64
+        JNI_PLATFORM=linux
+        PLATFORM=linux
+        ARCH=x86_64
         ;;
     aarch64-*-linux*)
-        jni_platform=linux
-        PLATFORM=linux.aarch64
+        JNI_PLATFORM=linux
+        PLATFORM=linux
+        ARCH=aarch64
         ;;
     x86_64-*-darwin*)
         CFLAGS_ARCH="$CFLAGS_ARCH -isystem \$(OMNETPP_TOOLS_DIR)/include"
         CFLAGS_TOOLS_MACOSX="-isystem $OMNETPP_TOOLS_DIR/include"
         LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L\$(OMNETPP_TOOLS_DIR)/lib -F\$(OMNETPP_TOOLS_DIR)/lib"
         LDFLAGS_TOOLS_MACOSX="-L$OMNETPP_TOOLS_DIR/lib -F$OMNETPP_TOOLS_DIR/lib"
-        jni_platform=
-        PLATFORM=macos.x86_64
+        JNI_PLATFORM=darwin
+        PLATFORM=macos
+        ARCH=x86_64
         SO_LIB_SUFFIX=".dylib"
         JNI_LIB_SUFFIX=".jnilib"
         ;;
@@ -394,8 +398,9 @@ else
         CFLAGS_TOOLS_MACOSX="-isystem $OMNETPP_TOOLS_DIR/include"
         LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L\$(OMNETPP_TOOLS_DIR)/lib -F\$(OMNETPP_TOOLS_DIR)/lib"
         LDFLAGS_TOOLS_MACOSX="-L$OMNETPP_TOOLS_DIR/lib -F$OMNETPP_TOOLS_DIR/lib"
-        jni_platform=
-        PLATFORM=macos.aarch64
+        JNI_PLATFORM=darwin
+        PLATFORM=macos
+        ARCH=aarch64
         SO_LIB_SUFFIX=".dylib"
         JNI_LIB_SUFFIX=".jnilib"
         ;;
@@ -464,7 +469,7 @@ fi
 # is present, but it is uninmplemented (and deprecated) on OS X 10.6 and later. We use the
 # original 'portable' implementation on MAC.
 #----------------------
-if test "$PLATFORM" != "macos.x86_64" -a "$PLATFORM" != "macos.aarch64" ; then
+if test "$PLATFORM" != "macos"; then
 AC_CHECK_FUNCS(swapcontext, [DEFINES="$DEFINES -DHAVE_SWAPCONTEXT"])
 fi
 #----------------------
@@ -969,11 +974,11 @@ if test "$JAVA_CFLAGS" = ""; then
    if test "$JAVA_HOME" = ""; then
       AC_MSG_WARN(JAVA_HOME variable not set.)
    else
-      if test "$PLATFORM" = "macos.x86_64" -o "$PLATFORM" = "macos.aarch64"; then
+      if test "$PLATFORM" = "macos"; then
          JAVA_CFLAGS="-I/System/Library/Frameworks/JavaVM.framework/Headers"
          JAVA_LIBS=""
       else
-         JAVA_CFLAGS="-fno-strict-aliasing -I$JAVA_HOME/include -I$JAVA_HOME/include/$jni_platform"
+         JAVA_CFLAGS="-fno-strict-aliasing -I$JAVA_HOME/include -I$JAVA_HOME/include/$JNI_PLATFORM"
          JAVA_LIBS="-L$JAVA_HOME/jre/lib/i386/client -Wl,-rpath,$JAVA_HOME/jre/lib/i386/client:. -ljvm"
       fi
    fi
@@ -1232,6 +1237,7 @@ AC_SUBST(AKAROA_CFLAGS)
 AC_SUBST(AKAROA_LIBS)
 
 AC_SUBST(JNILIBS_IF_POSSIBLE)
+AC_SUBST(JNI_PLATFORM)
 
 AC_SUBST(WITH_NETBUILDER)
 AC_SUBST(WITH_LIBXML)
@@ -1246,6 +1252,7 @@ AC_SUBST(JAVA_CFLAGS)
 AC_SUBST(JAVA_LIBS)
 AC_SUBST(SWIG)
 AC_SUBST(PLATFORM)
+AC_SUBST(ARCH)
 
 #
 # Generate files
@@ -1267,11 +1274,11 @@ echo "#define OMNETPP_EDITION \"$OMNETPP_EDITION\"" >>ver.h
 
 #if test -d src/systemc; then
 #  if test "$WITH_SYSTEMC" = "yes"; then
-#    if test "$PLATFORM" != "linux.x86_64"; then
+#    if test "$PLATFORM" != "linux"; then
 #        AC_MSG_ERROR([SystemC is enabled, but it is not supported on this platform. Set WITH_SYSTEMC=no in configure.user])
 #    fi
 #  else
-#    if test "$PLATFORM" = "linux.x86_64"; then
+#    if test "$PLATFORM" = "linux"; then
 #        AC_MSG_NOTICE([SystemC is disabled. You can enable it by setting WITH_SYSTEMC=yes in configure.user])
 #    fi
 #  fi

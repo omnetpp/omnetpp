@@ -73,7 +73,7 @@ include $(CONFIGFILE)
 {~nolink:}{~staticlib:}# Simulation kernel and user interface libraries
 {exe:}OMNETPP_LIBS = $(OPPMAIN_LIB) $(USERIF_LIBS) $(KERNEL_LIBS) $(SYS_LIBS)
 {sharedlib:}OMNETPP_LIBS = -loppenvir$D $(KERNEL_LIBS) $(SYS_LIBS)
-{~nolink:}{~staticlib:}{libpathdirs:}ifneq ($(PLATFORM),win32.x86_64)
+{~nolink:}{~staticlib:}{libpathdirs:}ifneq ($(PLATFORM),win32)
 {~nolink:}{~staticlib:}{libpathdirs:}LIBS +={@dir:libpathdirs} -Wl,-rpath,$(abspath {dir}){/@}
 {~nolink:}{~staticlib:}{libpathdirs:}endif
 
@@ -91,7 +91,7 @@ ifneq ("$(COPTS)","$(shell cat $(COPTS_FILE) 2>/dev/null || echo '')")
 endif
 
 {sharedlib:}# On Windows, the target has additional file(s). An import lib and an optional debug symbol file is created too.
-{sharedlib:}ifeq ($(PLATFORM),win32.x86_64)
+{sharedlib:}ifeq ($(PLATFORM),win32)
 {sharedlib:}  TARGET_FILES+= $(TARGET_DIR)/$(TARGET_IMPLIB)
 {sharedlib:}  LDFLAGS+= $(LDFLAG_IMPLIB)$O/$(TARGET_IMPLIB)
 {sharedlib:}  ifeq ($(TOOLCHAIN_NAME),clang-msabi)
@@ -137,7 +137,7 @@ endif
 {gcclongline:}{sharedlib:}	$(Q)echo >.tmp$$$$ {sourcedirs?$(OBJS)} $(EXTRA_OBJS) && $(SHLIB_LD) -o $O/$(TARGET) @.tmp$$$$ $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) $(LDFLAGS) ; rm .tmp$$$$
 {~gcclongline:}{sharedlib:}	$(Q)$(SHLIB_LD) -o $O/$(TARGET) {sourcedirs?$(OBJS)} $(EXTRA_OBJS) $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) $(LDFLAGS)
 {sharedlib:}	$(Q)$(SHLIB_POSTPROCESS) $O/$(TARGET)
-{sharedlib:}ifeq ($(PLATFORM),win32.x86_64)
+{sharedlib:}ifeq ($(PLATFORM),win32)
 {sharedlib:}	$(Q)llvm-ar d $O/$(TARGET_IMPLIB) $(TARGET) # WORKAROUND: throw away the first file from the archive to make the LLD generated import lib valid
 {sharedlib:}endif
 {staticlib:}$O/$(TARGET): {sourcedirs?$(OBJS)} {submakedirs?submakedirs} $(wildcard $(EXTRA_OBJS)) {makefile} $(CONFIGFILE)

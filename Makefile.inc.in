@@ -54,6 +54,7 @@ endif
 CLEANALL_COMMAND=$(foreach m, $(ALL_MODES), $(MAKE) -s clean MODE=$m; )
 
 PLATFORM = @PLATFORM@
+ARCH = @ARCH@
 #
 # Directories
 #
@@ -71,10 +72,10 @@ OMNETPP_UI_DIR = $(OMNETPP_ROOT)/ui
 OMNETPP_DOC_DIR = $(OMNETPP_ROOT)/doc
 OMNETPP_SAMPLES_DIR = $(OMNETPP_ROOT)/samples
 OMNETPP_TEST_DIR = $(OMNETPP_ROOT)/test
-OMNETPP_TOOLS_DIR = $(OMNETPP_ROOT)/tools/$(PLATFORM)
+OMNETPP_TOOLS_DIR = $(OMNETPP_ROOT)/tools/$(PLATFORM).$(ARCH)
 
 # platform specific code
-ifeq ($(PLATFORM),win32.x86_64)
+ifeq ($(PLATFORM),win32)
   OMNETPP_IMAGE_PATH := $(shell cygpath -p -m '$(OMNETPP_IMAGE_PATH)')
 endif
 
@@ -178,6 +179,7 @@ AKAROA_LIBS = @AKAROA_LIBS@
 JNILIBS_IF_POSSIBLE = @JNILIBS_IF_POSSIBLE@
 JAVA_CFLAGS = @JAVA_CFLAGS@
 JAVA_LIBS = @JAVA_LIBS@
+JNI_PLATFORM = @JNI_PLATFORM@
 
 #
 # platform specific library and executable prefixes and extensions
@@ -217,7 +219,7 @@ ifeq ($(WITH_QTENV),yes)
       QTENV_LIBS += $(OSGEARTH_LIBS)
       KERNEL_LIBS += -losgEarth
     endif
-    ifneq (,$(findstring macos,$(PLATFORM)))
+    ifeq ($(PLATFORM),macos)
       QTENV_LIBS += -framework Carbon
     endif
   endif
