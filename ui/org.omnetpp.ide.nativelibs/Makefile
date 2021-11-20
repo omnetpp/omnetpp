@@ -74,9 +74,7 @@ $O/%.o: %.cxx $(CONFIGFILE)
 #
 # Targets
 #
-all: $(JNILIBS_IF_POSSIBLE)
-
-jnilibs: $O/$(DLL) $(DLL_TARGET_DIR)/$(DLL) $(CONFIGFILE)
+all: $O/$(DLL) $(DLL_TARGET_DIR)/$(DLL) $(CONFIGFILE)
 
 common.cxx : common.i
 	-rm -f $(COMMON_JAVADIR)/*.java

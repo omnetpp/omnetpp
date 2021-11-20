@@ -175,7 +175,6 @@ LIBXML_CFLAGS =
 LIBXML_LIBS = 
 AKAROA_CFLAGS = -I/usr/local/akaroa/include
 AKAROA_LIBS = -L/usr/local/akaroa/lib -lakaroa -lfl
-JNILIBS_IF_POSSIBLE = jnilibs
 
 #
 # platform specific library and executable prefixes and extensions

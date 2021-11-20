@@ -949,8 +949,6 @@ if test "$WITH_OSG" = "yes"; then
   fi
 fi # WITH_OSG
 
-JNILIBS_IF_POSSIBLE=jnilibs
-
 #----------------------
 # Check for optional OpenMP compiler/linker flag.
 #----------------------
@@ -1194,8 +1192,6 @@ AC_SUBST(PTHREAD_LIBS)
 
 AC_SUBST(AKAROA_CFLAGS)
 AC_SUBST(AKAROA_LIBS)
-
-AC_SUBST(JNILIBS_IF_POSSIBLE)
 
 AC_SUBST(WITH_NETBUILDER)
 AC_SUBST(WITH_LIBXML)

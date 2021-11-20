@@ -176,7 +176,6 @@ LIBXML_CFLAGS = @LIBXML_CFLAGS@
 LIBXML_LIBS = @LIBXML_LIBS@
 AKAROA_CFLAGS = @AKAROA_CFLAGS@
 AKAROA_LIBS = @AKAROA_LIBS@
-JNILIBS_IF_POSSIBLE = @JNILIBS_IF_POSSIBLE@
 
 #
 # platform specific library and executable prefixes and extensions
