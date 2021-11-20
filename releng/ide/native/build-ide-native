@@ -31,7 +31,7 @@ fi
 if [ "$BUILD_MACOS_X86_64_DISTRO" = "true" -o "$BUILD_MACOS_AARCH64_DISTRO" = "true" ]; then
  if which x86_64-apple-darwin20.4-clang++-libc++ ; then
   echo Building 64-bit macOS binaries using a cross compiler
-  cp releng/ide/native/Makefile.inc.macosx Makefile.inc
+  cp releng/ide/native/Makefile.inc.macos Makefile.inc
   export MACOSX_DEPLOYMENT_TARGET=10.10
   make cleanall || { echo --- error during cleaning native macOS IDE parts ---; exit 1;}
   make SHARED_LIBS=no MODE=release ui -j$(nproc) || { echo --- error during compiling native macOS IDE parts ---; exit 1;}
