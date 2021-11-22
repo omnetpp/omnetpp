@@ -2,20 +2,21 @@
 #
 # Detects the platform and architecture, and starts the IDE with the right launcher
 #
-IDEDIR=`dirname $0`/../ide
-PLATFORM=`uname -sm`
+IDEDIR=$(dirname $0)/../ide
+PLATFORM=$(uname -sm)
 LAUNCHER=opp_ide
 
-if [ -z "$__omnetpp_root_dir" ]; then
-  source $IDEDIR/../setenv
+if test -z "$__omnetpp_root_dir" ; then
+  # source the setenv script if no environment is present. (MUST be sourced from the installation root)
+  cd $(dirname $0)/.. ; . ./setenv ; cd - >/dev/null
 fi
-
-echo Starting the OMNeT++ IDE...
 
 if test ! -d $IDEDIR/configuration -a ! -d $IDEDIR/$LAUNCHER.app/Contents/Eclipse/configuration; then
   echo "The OMNeT++ IDE is not installed!"
   exit 1;
 fi
+
+echo Starting the OMNeT++ IDE...
 
 #set default language so GCC will report errors in english. see bug #3
 export LANG=en_US.UTF-8
