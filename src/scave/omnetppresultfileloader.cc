@@ -103,7 +103,7 @@ void OmnetppResultFileLoader::processLine(char **vec, int numTokens, ParseContex
         CHECK(numTokens == 2, "incorrect 'run' line -- run <runID> expected");
 
         ctx.currentItemType = ParseContext::RUN;
-        ctx.runName = unquoteString(vec[1]);
+        ctx.runName = vec[1];
         LOG << ctx.runName << " " << std::flush;
         return;
     }
@@ -119,8 +119,8 @@ void OmnetppResultFileLoader::processLine(char **vec, int numTokens, ParseContex
         CHECK(parseDouble(vec[3], value), "invalid value column");
 
         ctx.currentItemType = ParseContext::SCALAR;
-        ctx.moduleName = unquoteString(vec[1]);
-        ctx.resultName = unquoteString(vec[2]);
+        ctx.moduleName = vec[1];
+        ctx.resultName = vec[2];
         ctx.scalarValue = value;
     }
     else if (vec[0][0] == 'p' && !strcmp(vec[0], "par")) {
@@ -131,9 +131,9 @@ void OmnetppResultFileLoader::processLine(char **vec, int numTokens, ParseContex
         CHECK(numTokens == 4, "incorrect 'par' line -- par <module> <paramname> <value> expected");
 
         ctx.currentItemType = ParseContext::PARAMETER;
-        ctx.moduleName = unquoteString(vec[1]);
-        ctx.resultName = unquoteString(vec[2]);
-        ctx.paramValue = unquoteString(vec[3]);
+        ctx.moduleName = vec[1];
+        ctx.resultName = vec[2];
+        ctx.paramValue = vec[3];
     }
     else if (vec[0][0] == 'v' && !strcmp(vec[0], "vector")) {
         flush(ctx);
@@ -148,8 +148,8 @@ void OmnetppResultFileLoader::processLine(char **vec, int numTokens, ParseContex
 
         ctx.currentItemType = ParseContext::VECTOR;
         ctx.vectorId = vectorId;
-        ctx.moduleName = unquoteString(vec[2]);
-        ctx.resultName = unquoteString(vec[3]);
+        ctx.moduleName = vec[2];
+        ctx.resultName = vec[3];
         ctx.vectorColumns = columns;
     }
     else if (vec[0][0] == 's' && !strcmp(vec[0], "statistic")) {
@@ -160,15 +160,15 @@ void OmnetppResultFileLoader::processLine(char **vec, int numTokens, ParseContex
         CHECK(numTokens == 3, "incorrect 'statistic' line -- statistic <module> <statisticname> expected");
 
         ctx.currentItemType = ParseContext::STATISTICS;
-        ctx.moduleName = unquoteString(vec[1]);
-        ctx.resultName = unquoteString(vec[2]);
+        ctx.moduleName = vec[1];
+        ctx.resultName = vec[2];
     }
     else if (vec[0][0] == 'f' && !strcmp(vec[0], "field")) {
         // syntax: "field <name> <value>"
         CHECK(ctx.currentItemType == ParseContext::STATISTICS, "stray 'field' line, must be under a 'statistic'");
         CHECK(numTokens == 3, "incorrect 'field' line -- field <name> <value> expected");
 
-        std::string fieldName = unquoteString(vec[1]);
+        std::string fieldName = vec[1];
         double value;
         CHECK(parseDouble(vec[2], value), "invalid scalar file: invalid field value");
 
@@ -216,8 +216,8 @@ void OmnetppResultFileLoader::processLine(char **vec, int numTokens, ParseContex
         CHECK(ctx.currentItemType != ParseContext::NONE, "stray 'attr' line");
         CHECK(numTokens == 3, "incorrect 'attr' line -- attr <name> <value> expected");
 
-        std::string attrName = unquoteString(vec[1]);
-        std::string attrValue = unquoteString(vec[2]);
+        std::string attrName = vec[1];
+        std::string attrValue = vec[2];
         ctx.attrs[attrName] = attrValue;
     }
     else if (vec[0][0] == 'i' && !strcmp(vec[0], "itervar")) {
@@ -225,8 +225,8 @@ void OmnetppResultFileLoader::processLine(char **vec, int numTokens, ParseContex
         CHECK(ctx.currentItemType == ParseContext::RUN, "stray 'itervar' line, must be under a 'run' line");
         CHECK(numTokens == 3, "incorrect 'itervar' line -- itervar <name> <value> expected");
 
-        std::string name = unquoteString(vec[1]);
-        std::string value = unquoteString(vec[2]);
+        std::string name = vec[1];
+        std::string value = vec[2];
         ctx.itervars[name] = value;
     }
     else if (vec[0][0] == 'c' && !strcmp(vec[0], "config")) {
@@ -234,8 +234,8 @@ void OmnetppResultFileLoader::processLine(char **vec, int numTokens, ParseContex
         CHECK(ctx.currentItemType == ParseContext::RUN, "stray 'config' line, must be under a 'run' line");
         CHECK(numTokens == 3, "incorrect 'config' line -- config <key> <value> expected");
 
-        std::string key = unquoteString(vec[1]);
-        std::string value = unquoteString(vec[2]);
+        std::string key = vec[1];
+        std::string value = vec[2];
         ctx.configEntries.push_back(std::make_pair(key, value));
     }
     else if (vec[0][0] == 'p' && !strcmp(vec[0], "param")) {
@@ -244,8 +244,8 @@ void OmnetppResultFileLoader::processLine(char **vec, int numTokens, ParseContex
         CHECK(ctx.currentItemType == ParseContext::RUN, "stray 'param' line, must be under a 'run' line");
         CHECK(numTokens == 3, "incorrect 'param' line -- param <namePattern> <value> expected");
 
-        std::string paramName = unquoteString(vec[1]);
-        std::string paramValue = unquoteString(vec[2]);
+        std::string paramName = vec[1];
+        std::string paramValue = vec[2];
         ctx.configEntries.push_back(std::make_pair(paramName, paramValue));
     }
     else if (opp_isdigit(vec[0][0]) && numTokens >= 3) {
