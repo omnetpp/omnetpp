@@ -547,7 +547,8 @@ bool SumPerDurationFilter::process(simtime_t& t, double& value, cObject *details
     if (std::isnan(value))
         return false;
     sum += value;
-    value = sum / (t - getSimulation()->getWarmupPeriod());
+    simtime_t interval = t - getSimulation()->getWarmupPeriod();
+    value = interval <= SIMTIME_ZERO ? NAN : sum/interval;
     return true;
 }
 
@@ -555,8 +556,9 @@ double SumPerDurationFilter::getSumPerDuration() const
 {
     cSimulation *simulation = getSimulation();
     simtime_t now = simulation->getSimTime();
-    simtime_t interval = now - simulation->getWarmupPeriod();
-    return sum / interval;
+    simtime_t warmupPeriod = simulation->getWarmupPeriod();
+    simtime_t interval = now - warmupPeriod;
+    return interval <= SIMTIME_ZERO ? NAN : sum/interval;
 }
 
 std::string SumPerDurationFilter::str() const
