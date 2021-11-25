@@ -1,0 +1,44 @@
+%description:
+Test that config value expressions accept NED constructs.
+
+%file: test.ned
+
+import testlib.Dump;
+
+module Node {
+    parameters:
+        string appName = default("");
+}
+
+network Test {
+    parameters:
+        node[0].appName = "foo";
+        node[1].appName = "bar";
+        node[2].appName = "baz";
+    submodules:
+        node[3]: Node;
+        dump: Dump;
+}
+
+%inifile: test.ini
+*.node[*].display-name = "node-" + string(index) + "/" + appName
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+    submodules:
+        module Test.node[0]: Node "node-0/foo" {
+            parameters:
+                appName = "foo"
+        }
+        module Test.node[1]: Node "node-1/bar" {
+            parameters:
+                appName = "bar"
+        }
+        module Test.node[2]: Node "node-2/baz" {
+            parameters:
+                appName = "baz"
+        }
+}
+

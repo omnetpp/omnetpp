@@ -51,6 +51,8 @@ void Dump::dump(cModule *mod, std::string currentIndent)
     const char *indent = currentIndent.c_str();
 
     printf("%smodule %s: %s", indent, mod->getFullPath().c_str(), mod->getComponentType()->getFullName());
+    if (!opp_isempty(mod->getDisplayName()))
+        printf(" \"%s\"", mod->getDisplayName());
     if (printClassNames)
         printf(" (%s)", mod->getClassName());
     printf(" {\n");
