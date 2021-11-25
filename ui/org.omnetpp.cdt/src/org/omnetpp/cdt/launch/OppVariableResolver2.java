@@ -33,14 +33,16 @@ public class OppVariableResolver2 implements IDynamicVariableResolver {
         if (argument != null)
             abort("${" + varName +"} requires no argument", null);
 
-        boolean isClangC2 = OmnetppDirs.isOppsimClangC2LibraryPresent(true) || OmnetppDirs.isOppsimClangC2LibraryPresent(false);
-        // add visualc or mingw specific binary directory depending whether we are using clang or mingw
-        String p1 = (isClangC2 ? OmnetppDirs.getToolsVisualCBinDir() : OmnetppDirs.getToolsMingwBinDir());
+        boolean isMSABI = OmnetppDirs.isOppsimMSABILibraryPresent(true) || OmnetppDirs.isOppsimMSABILibraryPresent(false);
+        // add visualc or mingw specific binary directory depending whether we are using MSABI or mingw libraries
+        String p1 = (isMSABI ? OmnetppDirs.getToolsVisualCDepsBinDir() : OmnetppDirs.getToolsMingwDepsBinDir());
         if (!p1.isEmpty()) p1 += File.pathSeparator;
         String p2 = OmnetppDirs.getToolsMsysBinDir();
         if (!p2.isEmpty()) p2 += File.pathSeparator;
+        String p3 = OmnetppDirs.getToolsMingwBinDir();
+        if (!p3.isEmpty()) p3 += File.pathSeparator;
 
-        return (p1.isEmpty() && p2.isEmpty()) ? "" : p1 + p2;
+        return p1 + p2 + p3;
     }
 
     protected void abort(String message, Throwable exception) throws CoreException {

@@ -42,15 +42,18 @@ public class OmnetppProjectEnvironmentSupplier implements IProjectEnvironmentVar
         public String getValue() {
             String oppBinDir = OmnetppDirs.getOmnetppBinDir() + getDelimiter();
 
-            boolean isClangC2 = OmnetppDirs.isOppsimClangC2LibraryPresent(true) || OmnetppDirs.isOppsimClangC2LibraryPresent(false);
+            boolean isMSABI = OmnetppDirs.isOppsimMSABILibraryPresent(true) || OmnetppDirs.isOppsimMSABILibraryPresent(false);
             // add visualc or mingw specific binary directory depending whether we are using clang or mingw
-            String toolsDir = (isClangC2 ? OmnetppDirs.getToolsVisualCBinDir() : OmnetppDirs.getToolsMingwBinDir());
-            if (!toolsDir.isEmpty()) toolsDir += getDelimiter();
+            String depsBinDir = (isMSABI ? OmnetppDirs.getToolsVisualCDepsBinDir() : OmnetppDirs.getToolsMingwDepsBinDir());
+            if (!depsBinDir.isEmpty()) depsBinDir += getDelimiter();
 
             String msysDir = OmnetppDirs.getToolsMsysBinDir();
             if (!msysDir.isEmpty()) msysDir += getDelimiter();
 
-            return (toolsDir.isEmpty() && msysDir.isEmpty()) ? oppBinDir : oppBinDir + toolsDir + msysDir;
+            String mingwDir = OmnetppDirs.getToolsMingwBinDir();
+            if (!mingwDir.isEmpty()) mingwDir += getDelimiter();
+
+            return oppBinDir + msysDir + mingwDir + depsBinDir;
         }
 
         public int getOperation() {

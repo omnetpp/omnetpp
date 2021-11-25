@@ -95,7 +95,7 @@ public class OmnetppDirs {
         String oppRoot = getOmnetppRootDir();
         if (StringUtils.isBlank(oppRoot))
             return "";
-        return new Path(oppRoot).append("tools").append("win64").append("usr").append("bin").toOSString();
+        return new Path(oppRoot).append("tools").append("win32.x86_64").append("usr").append("bin").toOSString();
     }
 
     /**
@@ -107,19 +107,31 @@ public class OmnetppDirs {
         String oppRoot = getOmnetppRootDir();
         if (StringUtils.isBlank(oppRoot))
             return "";
-        return new Path(oppRoot).append("tools").append("win64").append("mingw64").append("bin").toOSString();
+        return new Path(oppRoot).append("tools").append("win32.x86_64").append("mingw64").append("bin").toOSString();
     }
 
     /**
-     * Returns the MinGW bin directory, or the empty string "" on non-Windows OS or if it cannot be determined.
+     * Returns the MinGW dependencies' bin directory, or the empty string "" on non-Windows OS or if it cannot be determined.
      */
-    public static String getToolsVisualCBinDir() {
+    public static String getToolsMingwDepsBinDir() {
         if (!Platform.getOS().equals(Platform.OS_WIN32))
             return "";
         String oppRoot = getOmnetppRootDir();
         if (StringUtils.isBlank(oppRoot))
             return "";
-        return new Path(oppRoot).append("tools").append("win64").append("visualc").append("bin").toOSString();
+        return new Path(oppRoot).append("tools").append("win32.x86_64").append("opt").append("mingw64").append("bin").toOSString();
+    }
+
+    /**
+     * Returns the MinGW bin directory, or the empty string "" on non-Windows OS or if it cannot be determined.
+     */
+    public static String getToolsVisualCDepsBinDir() {
+        if (!Platform.getOS().equals(Platform.OS_WIN32))
+            return "";
+        String oppRoot = getOmnetppRootDir();
+        if (StringUtils.isBlank(oppRoot))
+            return "";
+        return new Path(oppRoot).append("tools").append("win32.x86_64").append("opt").append("visualc").append("bin").toOSString();
     }
 
     /**
@@ -148,7 +160,7 @@ public class OmnetppDirs {
     /**
      * checks if there exist a compiled lib usable by ClangC2 under the lib folder
      */
-    public static boolean isOppsimClangC2LibraryPresent(boolean debug) {
+    public static boolean isOppsimMSABILibraryPresent(boolean debug) {
         String fileBaseName = getOmnetppLibDir() +"/oppsim" + (debug ? "d" : "");
         File libFile = new File(fileBaseName+".lib");
         return libFile.exists();
