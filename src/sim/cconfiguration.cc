@@ -23,20 +23,29 @@
 #include "common/fileutil.h"
 #include "common/stringtokenizer.h"
 #include "common/fnamelisttokenizer.h"
-#include "common/expression.h"
 #include "common/exception.h"
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/fileline.h"
+#include "omnetpp/csimulation.h"
+#include "omnetpp/cdynamicexpression.h"
 
 using namespace omnetpp::common;
 
 namespace omnetpp {
 
- FileLine cConfiguration::KeyValue::getSourceLocation() const
- {
-     return FileLine();
- }
+FileLine cConfiguration::KeyValue::getSourceLocation() const
+{
+ return FileLine();
+}
+
+inline cValue evaluate(const char *s)
+{
+    cDynamicExpression e;
+    e.parseNedExpr(s);
+    cExpression::Context ctx(getSimulation()->getContext(), nullptr /*TODO*/);
+    return e.evaluate(&ctx);
+}
 
 bool cConfiguration::parseBool(const char *s, const char *defaultValue, bool fallbackValue)
 {
@@ -44,7 +53,7 @@ bool cConfiguration::parseBool(const char *s, const char *defaultValue, bool fal
         s = defaultValue;
     if (!s)
         return fallbackValue;
-    return Expression().parse(s).boolValue();
+    return evaluate(s).boolValue();
 }
 
 long cConfiguration::parseLong(const char *s, const char *defaultValue, long fallbackValue)
@@ -53,7 +62,7 @@ long cConfiguration::parseLong(const char *s, const char *defaultValue, long fal
         s = defaultValue;
     if (!s)
         return fallbackValue;
-    return Expression().parse(s).intValue();
+    return evaluate(s).intValue();
 }
 
 double cConfiguration::parseDouble(const char *s, const char *unit, const char *defaultValue, double fallbackValue)
@@ -62,7 +71,7 @@ double cConfiguration::parseDouble(const char *s, const char *unit, const char *
         s = defaultValue;
     if (!s)
         return fallbackValue;
-    return Expression().parse(s).doubleValue(unit);
+    return evaluate(s).doubleValueInUnit(unit);
 }
 
 std::string cConfiguration::parseString(const char *s, const char *defaultValue, const char *fallbackValue)
@@ -71,7 +80,7 @@ std::string cConfiguration::parseString(const char *s, const char *defaultValue,
         s = defaultValue;
     if (!s)
         return fallbackValue;
-    return (s[0] == '"') ? Expression().parse(s).stringValue() : s;
+    return s[0] == '"' ? evaluate(s).stringValue() : s;
 }
 
 std::string cConfiguration::parseFilename(const char *s, const char *baseDir, const char *defaultValue)
@@ -80,7 +89,7 @@ std::string cConfiguration::parseFilename(const char *s, const char *baseDir, co
         s = defaultValue;
     if (!s || !s[0])
         return "";
-    std::string str = s[0]=='"' ? Expression().parse(s).stringValue() : s;
+    std::string str = s[0]=='"' ? evaluate(s).stringValue() : s;
     return tidyFilename(concatDirAndFile(baseDir, str.c_str()).c_str());
 }
 
@@ -90,7 +99,7 @@ std::vector<std::string> cConfiguration::parseFilenames(const char *s, const cha
         s = defaultValue;
     if (!s)
         s = "";
-    std::string str = s[0]=='"' ? Expression().parse(s).stringValue() : s;
+    std::string str = s[0]=='"' ? evaluate(s).stringValue() : s;
 
     std::vector<std::string> result;
     FilenamesListTokenizer tokenizer(str.c_str()); // note: this observes quotation marks, although ignores backslashes (khmmm...)
@@ -106,7 +115,7 @@ std::string cConfiguration::adjustPath(const char *s, const char *baseDir, const
         s = defaultValue;
     if (!s)
         s = "";
-    std::string str = s[0]=='"' ? Expression().parse(s).stringValue() : s;
+    std::string str = s[0]=='"' ? evaluate(s).stringValue() : s;
 
     std::string result;
     StringTokenizer tokenizer(str.c_str(), PATH_SEPARATOR);
