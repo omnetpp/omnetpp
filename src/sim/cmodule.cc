@@ -1503,11 +1503,12 @@ void cModule::finalizeParameters()
     cContextSwitcher tmp(this);
     cContextTypeSwitcher tmp2(CTX_BUILD);
 
+    cComponent::finalizeParameters();  // this will read input parameters
+
+    // display names may use (local) parameter values
     cConfiguration *config = getSimulation()->getEnvir()->getConfig();
     std::string displayName = config->getAsString(getFullPath().c_str(), CFGID_DISPLAY_NAME);
     setDisplayName(displayName.empty() ? nullptr : displayName.c_str());
-
-    cComponent::finalizeParameters();  // this will read input parameters
 
     // set up gate vectors (their sizes may depend on the parameter settings)
     getModuleType()->setupGateVectors(this);
