@@ -3,6 +3,8 @@ Verify that random non-volatile parameters are converted to const
 at their first evaluation; that is, 'a' and 'b' must be set to the same
 value.
 
+%expected-failure: Not yet implemented.
+
 %file: test.ned
 
 import testlib.Dump;

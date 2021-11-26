@@ -288,7 +288,6 @@ test. It is recommended to invest time into well-written descriptions,
 because they make determining the original purpose of a test that has
 become broken significantly easier.
 
-
 \subsection{Test Code Generation}
 \label{sec:testing:opptest:test-code-generation}
 
@@ -469,7 +468,7 @@ These directives let one check for the presence (or absence) of certain text in
 the output. One can check a file, or the standard output or standard error of
 the test program; for the latter two, \ttt{stdout} and \ttt{stderr} needs to be
 specified as file name, respectively. If the file is not found, the test will be marked
-as \textit{unresolved}. There can be several \ftest{\%contains}-style directives
+as \textit{error}. There can be several \ftest{\%contains}-style directives
 in the test file.
 
 The text or regular expression can be multi-line. Before match is attempted,
@@ -632,7 +631,7 @@ by simple text matching, but requires statistical evaluation or other processing
 
 If the command returns a nonzero exit code, the test framework will assume that
 it is due to a technical problem (as opposed to test failure), and count the
-test as \textit{unresolved}. To make the test fail, let the command write a
+test as \textit{error}. To make the test fail, let the command write a
 file, and match the file's contents using \ftest{\%contains} \& co.
 
 If the post-processing command is a short script, it is practical
@@ -659,14 +658,33 @@ by relative path, or by referring to an environment variable that contains
 its location or full path.
 
 
-\subsection{Unresolved}
-\label{sec:testing:opptest:unresolved}
+\subsection{Error}
+\label{sec:testing:opptest:error}
 
-A test case is unresolved if the test program cannot be executed at all, the
-output cannot be read, or if the test case declares so. The latter is done
-by printing \ttt{\#UNRESOLVED} or \ttt{\#UNRESOLVED:some-explanation} on the
+A test case is considered to be in \textit{error} if the test program cannot be executed
+at all, the output cannot be read, or some other technical problem occurred.
+
+\subsection{Expected Failure}
+\label{sec:testing:opptest:expected-failure}
+
+\ftest{\%expected-failure} can be used in the test file to force a test case
+to ignore a failure. If a test case marked with \ttt{\%expected-failure} fails,
+it will be counted as \textit{expectfail} instead of \textit{fail}.
+\fprog{opp\_test} will return successfully if no test cases reported \textit{fail}
+or \textit{error} results.
+
+Syntax:
+\begin{filelisting}
+%expected-failure: <single-line-reason-for-allowing-a-failure>
+\end{filelisting}
+
+\subsection{Skipped}
+\label{sec:testing:opptest:skipped}
+
+A test case can be skipped if the current system configuration does not allow 
+its execution (e.g. certain optional features are not present). Skipping is done
+by printing \ttt{\#SKIPPED} or \ttt{\#SKIPPED:some-explanation} on the
 standard output, at the beginning of the line.
-
 
 \subsection{opp\_test Synopsys}
 \label{sec:testing:opptest:synopsys}

@@ -1,6 +1,8 @@
 %description:
 Namespace lookup of class names in @signal type attr
 
+%expected-failure: Not yet implemented.
+
 %file: test.msg
 
 namespace @TESTNAME@_ns1;

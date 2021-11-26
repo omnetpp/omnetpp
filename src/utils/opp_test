@@ -32,6 +32,10 @@ def green(txt):
     global use_colors
     return '\033[0;32m' + txt + "\033[0;0m" if use_colors else txt
 
+def blue(txt):
+    global use_colors
+    return '\033[0;34m' + txt + "\033[0;0m" if use_colors else txt
+
 def fail(msg):
     print(progname + ": Error: {}".format(msg), file=sys.stderr)
     sys.exit(1)
@@ -141,6 +145,7 @@ class OppTest:
         'extraargs'          : '1v',
         'exitcode'           : '1v',
         'ignore-exitcode'    : '1v',
+        'expected-failure'   : '1v',
 
         'prerun-command'     : 'v',
         'postrun-command'    : 'v'
@@ -561,19 +566,40 @@ Supported .test file entry types:
                 print( label+":")
             print(">>>>"+txt+"<<<<")
 
-    def testunresolved(self, testname, reason):
-        self.num_unresolved += 1
-        self.unresolved_tests.append(testname)
-        self.result[testname] = 'UNRESOLVED'
+    def testskipped(self, testname, reason):
+        self.num_skipped += 1
+        self.skipped_tests.append(testname)
+        self.result[testname] = 'SKIPPED'
         self.reason[testname] = reason
-        print("*** "+testname+": "+red("UNRESOLVED")+" ("+reason+")")
+        print("*** "+testname+": "+blue("SKIPPED")+" ("+reason+")")
+
+    def testexpectedfail(self, testname, reason):
+        self.num_expectedfail += 1
+        self.expectedfail_tests.append(testname)
+        self.result[testname] = 'EXPECTEDFAIL'
+        self.reason[testname] = reason
+        print("*** "+testname+": "+yellow("EXPECTEDFAIL")+" ("+reason+")")
+
+    def testerror(self, testname, reason):
+        self.num_error += 1
+        self.error_tests.append(testname)
+        self.result[testname] = 'ERROR'
+        self.reason[testname] = reason
+        print("*** "+testname+": "+red("ERROR")+" ("+reason+")")
 
     def testfailed(self, testname, reason):
-        self.num_fail += 1
-        self.failed_tests.append(testname)
-        self.result[testname] = 'FAIL'
-        self.reason[testname] = reason
-        print("*** "+testname+": "+yellow("FAIL")+" ("+reason+")")
+        if ('expected-failure(1)' in self.values):
+            self.num_expectedfail += 1
+            self.expectedfail_tests.append(testname)
+            self.result[testname] = 'EXPECTEDFAIL'
+            self.reason[testname] = reason
+            print("*** "+testname+": "+yellow("EXPECTEDFAIL")+" ("+reason+")")
+        else:
+            self.num_fail += 1
+            self.failed_tests.append(testname)
+            self.result[testname] = 'FAIL'
+            self.reason[testname] = reason
+            print("*** "+testname+": "+red("FAIL")+" ("+reason+")")
 
     def testpassed(self, testname):
         self.num_pass += 1
@@ -649,7 +675,7 @@ Supported .test file entry types:
                     runCommands.append(value + ">" + key + ".out 2>" + key + ".err")
                     exitcode = self.exec_program(value, testworkdir, key+".out", key+".err")
                     if (exitcode != 0):
-                        self.testunresolved(testfilename, "pre-run command \""+value+"\" returned nonzero exit code: "+str(exitcode))
+                        self.testerror(testfilename, "pre-run command \""+value+"\" returned nonzero exit code: "+str(exitcode))
                         self.lprint(1, "CMD: (cd " + testworkdir + " && " + " && ".join(runCommands) + ")")
                         return
 
@@ -680,17 +706,17 @@ Supported .test file entry types:
                 exitcode = self.exec_program(cmdline, os.path.join(self.args.workdir,self.testname), outfname, errfname)
 
             if (exitcode == 127):
-                self.testunresolved(testfilename, "could not execute test program")
+                self.testerror(testfilename, "could not execute test program")
                 self.lprint(1, "CMD: (cd " + testworkdir + " && " + " && ".join(runCommands) + ")")
                 return
 
-        # if stdout contains "#UNRESOLVED" or "#UNRESOLVED: some explanation", count this test as unresolved;
+        # if stdout contains "#SKIPPED" or "#SKIPPED: some explanation", count this test as skipped;
         # must be done BEFORE checking the exit code
         with open(os.path.join(self.args.workdir, self.testname, outfname), 'r') as f:
             for line in f:
-                m=re.match(r'^#UNRESOLVED:? *(.*)', line)
+                m=re.match(r'^#SKIPPED:? *(.*)', line)
                 if (m):
-                    self.testunresolved(testfilename, "test program says UNRESOLVED: {}".format(m.group(1)))
+                    self.testskipped(testfilename, "test program says SKIPPED: {}".format(m.group(1)))
                     return
 
         # check exitcode against expected one
@@ -729,7 +755,7 @@ Supported .test file entry types:
                     runCommands.append(value)
                     exitcode = self.exec_program(value, testworkdir, key+".out", key+".err")
                     if (exitcode != 0):
-                        self.testunresolved(testfilename, "post-run command \"{}\" returned nonzero exit code: {}".format(value, exitcode))
+                        self.testerror(testfilename, "post-run command \"{}\" returned nonzero exit code: {}".format(value, exitcode))
                         self.lprint(1, "CMD: (cd " + testworkdir + " && " + " && ".join(runCommands) + ")")
                         return
 
@@ -762,7 +788,7 @@ Supported .test file entry types:
                         txt += line.rstrip() + '\n'
                     f.close()
                 except (IOError, OSError) as e:
-                    self.testunresolved(testfilename, "cannot read test case output file `{}: {}".format(infname, e))
+                    self.testerror(testfilename, "cannot read test case output file `{}: {}".format(infname, e))
                     self.lprint(1, "CMD: (cd " + testworkdir + " && " + " && ".join(runCommands) + ")")
                     return
 
@@ -775,17 +801,17 @@ Supported .test file entry types:
                         sep = rule[0:1]  # typically "/"
                         ruleSlices = rule.split(sep)
                         if len(ruleSlices) < 3:
-                            self.testunresolved(testfilename, "wrong subst rule: syntax is /search-regex/replace-string/flags")
+                            self.testerror(testfilename, "wrong subst rule: syntax is /search-regex/replace-string/flags")
                             return
                         if len(ruleSlices) > 4:
-                            self.testunresolved(testfilename, "wrong subst rule: too many occurrences of separator character '"+sep+"', choose another separator")
+                            self.testerror(testfilename, "wrong subst rule: too many occurrences of separator character '"+sep+"', choose another separator")
 
                         searchstring = ruleSlices[1]
                         replacement = ruleSlices[2]
                         replacement = re.sub(r'\$(\d)', r'\\\1', replacement)   # perl regex compatibility: perl was accept the '$<n>', python accepts only '\<n>'
                         flags = ruleSlices[3] if len(ruleSlices) > 3 else ''
                         if (not re.match(r'^[ism]*$', flags)):
-                            self.testunresolved(testfilename, "wrong subst rule: invalid flags '"+flags+"': only 'i', 's' and 'm' supported ('g' is implicit)")
+                            self.testerror(testfilename, "wrong subst rule: invalid flags '"+flags+"': only 'i', 's' and 'm' supported ('g' is implicit)")
                             return
 
                         # do it.
@@ -798,7 +824,7 @@ Supported .test file entry types:
                         try:
                             txt = re.sub(flags+searchstring, replacement, txt)
                         except re.error as e:
-                            self.testunresolved(testfilename, "%subst: wrong pattern `{}': {}".format(value, e))
+                            self.testerror(testfilename, "%subst: wrong pattern `{}': {}".format(value, e))
                             return
                 realinfname = infname
                 if havesubst:
@@ -822,7 +848,7 @@ Supported .test file entry types:
                         match = re.search(pattern, txt, re.MULTILINE|re.DOTALL)
                         self.lprint(2, "%{} match: {}".format(key, match))
                     except re.error as e:
-                        self.testunresolved(testfilename, "%subst: wrong pattern in `{}': {}".format(key, e))
+                        self.testerror(testfilename, "%subst: wrong pattern in `{}': {}".format(key, e))
                         return
 
                     if (key.startswith('contains-regex(') and not match):
@@ -928,7 +954,9 @@ Supported .test file entry types:
 
         self.num_pass = 0
         self.num_fail = 0
-        self.num_unresolved = 0
+        self.num_expectedfail = 0
+        self.num_error = 0
+        self.num_skipped = 0
 
         #
         # run tests
@@ -941,21 +969,28 @@ Supported .test file entry types:
 
             self.reason = {}
             self.result = {}
-            self.unresolved_tests = []
             self.failed_tests = []
+            self.expectedfail_tests = []
+            self.error_tests = []
+            self.skipped_tests = []
 
             for testfilename in self.args.filenames:
                 self.testcase_run(testfilename)
 
             print("========================================")
-            print("PASS: {}   FAIL: {}   UNRESOLVED: {}\n".format(self.num_pass, self.num_fail, self.num_unresolved))
-
             if (self.num_fail > 0):
-                self.lprint(1, "FAILED tests: " + ' '.join(self.failed_tests))
-            if (self.num_unresolved > 0):
-                self.lprint(1, "UNRESOLVED tests: " + ' '.join(self.unresolved_tests))
+                self.lprint(1, red("FAILED: ") + ' '.join(self.failed_tests))
+            if (self.num_error > 0):
+                self.lprint(1, red("ERROR: ") + ' '.join(self.error_tests))
+            if (self.num_expectedfail > 0):
+                self.lprint(1, yellow("EXPECTEDFAIL: ") + ' '.join(self.expectedfail_tests))
+            if (self.num_skipped > 0):
+                self.lprint(1, blue("SKIPPED: ") + ' '.join(self.skipped_tests))
+            print("========================================")
+            print((green("PASS:")+" {}   "+red("FAIL:")+" {}   "+red("ERROR:")+" {}   "+yellow("EXPECTEDFAIL:")+" {}   "+blue("SKIPPED:")+" {}\n").format(self.num_pass, self.num_fail, self.num_error, self.num_expectedfail, self.num_skipped))
+            print("Aggregate result: {}\n".format(red("ERROR") if self.num_error > 0 else red("FAIL") if self.num_fail > 0 else green("PASS")))
 
-        return 0 if (self.num_fail == 0 and self.num_unresolved == 0) else 2
+        return 0 if (self.num_fail == 0 and self.num_error == 0) else 2
 
 
 #####################################################

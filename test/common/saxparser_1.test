@@ -56,7 +56,7 @@ static void parse2(SaxParser& yxmlParser, SaxParser& libxmlParser, const char *t
 %activity:
 
 #ifndef WITH_LIBXML
-  EV << "#UNRESOLVED: No LibXML parser.";
+  EV << "#SKIPPED: No LibXML parser.";
 #else
 
 YxmlSaxParser yxmlParser;

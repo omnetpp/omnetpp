@@ -16,7 +16,7 @@ Syntax error in DTD -- should produce an error
 
 %activity:
 #ifndef WITH_LIBXML
-EV << "#UNRESOLVED: No LibXML parser, required for DTD validation.\n";
+EV << "#SKIPPED: No LibXML parser, required for DTD validation.\n";
 return;
 #endif
 

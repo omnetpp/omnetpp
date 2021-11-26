@@ -11,7 +11,7 @@ Report error if document contains DOCTYPE and LibXML is not present
 
 %activity:
 #ifdef WITH_LIBXML
-EV << "#UNRESOLVED: LibXML present, and test is for checking its absence.\n";
+EV << "#SKIPPED: LibXML present, and test is for checking its absence.\n";
 return;
 #endif
 

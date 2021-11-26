@@ -11,7 +11,7 @@ Entities declared within the DOCTYPE are substituted.
 
 %activity:
 #ifndef WITH_LIBXML
-EV << "#UNRESOLVED: No LibXML parser, required for DTD validation.\n";
+EV << "#SKIPPED: No LibXML parser, required for DTD validation.\n";
 return;
 #endif
 
