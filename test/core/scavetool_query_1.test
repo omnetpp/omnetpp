@@ -200,8 +200,8 @@ General-0-xxxx:
 
 scalar      Test.node  foo:mean       19.84
 scalar      Test.node  foo:last       17
-parameter   Test.node  typename       Node
-parameter   Test       typename       Test
+parameter   Test.node  typename       "Node"
+parameter   Test       typename       "Test"
 vector      Test.node  foo:vector     vectorId=0  count=100   mean=19.84  min=12  max=28
 statistics  Test.node  foo:stats      count=100   mean=19.84  min=12      max=28
 histogram   Test.node  foo:histogram  count=100   mean=19.84  min=12      max=28  #bins=24
@@ -210,8 +210,8 @@ General-1-xxxx:
 
 scalar      Test.node  foo:mean       19.65
 scalar      Test.node  foo:last       19
-parameter   Test.node  typename       Node
-parameter   Test       typename       Test
+parameter   Test.node  typename       "Node"
+parameter   Test       typename       "Test"
 vector      Test.node  foo:vector     vectorId=0  count=100   mean=19.65  min=13  max=27
 statistics  Test.node  foo:stats      count=100   mean=19.65  min=13      max=27
 histogram   Test.node  foo:histogram  count=100   mean=19.65  min=13      max=27  #bins=22
@@ -293,8 +293,8 @@ General-0-xxxx:
 
 scalar      Test.node  foo:mean       19.84
 scalar      Test.node  foo:last       17
-parameter   Test.node  typename       Node
-parameter   Test       typename       Test
+parameter   Test.node  typename       "Node"
+parameter   Test       typename       "Test"
 vector      Test.node  foo:vector     vectorId=0  count=100   mean=19.84  min=12  max=28
 statistics  Test.node  foo:stats      count=100   mean=19.84  min=12      max=28
 histogram   Test.node  foo:histogram  count=100   mean=19.84  min=12      max=28  #bins=24
@@ -303,8 +303,8 @@ General-1-xxxx:
 
 scalar      Test.node  foo:mean       19.65
 scalar      Test.node  foo:last       19
-parameter   Test.node  typename       Node
-parameter   Test       typename       Test
+parameter   Test.node  typename       "Node"
+parameter   Test       typename       "Test"
 vector      Test.node  foo:vector     vectorId=0  count=100   mean=19.65  min=13  max=27
 statistics  Test.node  foo:stats      count=100   mean=19.65  min=13      max=27
 histogram   Test.node  foo:histogram  count=100   mean=19.65  min=13      max=27  #bins=22
@@ -465,8 +465,8 @@ General-0-xxxx:
 
 scalar      Test.node  foo:mean       19.84
 scalar      Test.node  foo:last       17
-parameter   Test.node  typename       Node
-parameter   Test       typename       Test
+parameter   Test.node  typename       "Node"
+parameter   Test       typename       "Test"
 vector      Test.node  foo:vector     vectorId=0  count=100   mean=19.84  min=12  max=28
 statistics  Test.node  foo:stats      count=100   mean=19.84  min=12      max=28
 histogram   Test.node  foo:histogram  count=100   mean=19.84  min=12      max=28  #bins=24
@@ -475,8 +475,8 @@ General-1-xxxx:
 
 scalar      Test.node  foo:mean       19.65
 scalar      Test.node  foo:last       19
-parameter   Test.node  typename       Node
-parameter   Test       typename       Test
+parameter   Test.node  typename       "Node"
+parameter   Test       typename       "Test"
 vector      Test.node  foo:vector     vectorId=0  count=100   mean=19.65  min=13  max=27
 statistics  Test.node  foo:stats      count=100   mean=19.65  min=13      max=27
 histogram   Test.node  foo:histogram  count=100   mean=19.65  min=13      max=27  #bins=22
@@ -588,21 +588,21 @@ General-0-xxxx:
 
 scalar      Test.node  foo:mean       19.84
 scalar      Test.node  foo:last       17
-parameter   Test.node  typename       Node
-parameter   Test       typename       Test
-vector      Test.node  foo:vector     0      100    19.84  12  28
-statistics  Test.node  foo:stats      100    19.84  12     28
-histogram   Test.node  foo:histogram  100    19.84  12     28  24
+parameter   Test.node  typename       "Node"
+parameter   Test       typename       "Test"
+vector      Test.node  foo:vector     0       100    19.84  12  28
+statistics  Test.node  foo:stats      100     19.84  12     28
+histogram   Test.node  foo:histogram  100     19.84  12     28  24
 
 General-1-xxxx:
 
 scalar      Test.node  foo:mean       19.65
 scalar      Test.node  foo:last       19
-parameter   Test.node  typename       Node
-parameter   Test       typename       Test
-vector      Test.node  foo:vector     0      100    19.65  13  27
-statistics  Test.node  foo:stats      100    19.65  13     27
-histogram   Test.node  foo:histogram  100    19.65  13     27  22
+parameter   Test.node  typename       "Node"
+parameter   Test       typename       "Test"
+vector      Test.node  foo:vector     0       100    19.65  13  27
+statistics  Test.node  foo:stats      100     19.65  13     27
+histogram   Test.node  foo:histogram  100     19.65  13     27  22
 
 ------------------------
 $ opp_scavetool -l -b <files>
@@ -610,36 +610,36 @@ General-0-xxxx:
 
 scalar      Test.node  foo:mean       19.84
 scalar      Test.node  foo:last       17
-parameter   Test.node  typename       Node
-parameter   Test       typename       Test
-vector      Test.node  foo:vector     0      100    19.84  12  28
-statistics  Test.node  foo:stats      100    19.84  12     28
-histogram   Test.node  foo:histogram  100    19.84  12     28  24
+parameter   Test.node  typename       "Node"
+parameter   Test       typename       "Test"
+vector      Test.node  foo:vector     0       100    19.84  12  28
+statistics  Test.node  foo:stats      100     19.84  12     28
+histogram   Test.node  foo:histogram  100     19.84  12     28  24
 
 General-1-xxxx:
 
 scalar      Test.node  foo:mean       19.65
 scalar      Test.node  foo:last       19
-parameter   Test.node  typename       Node
-parameter   Test       typename       Test
-vector      Test.node  foo:vector     0      100    19.65  13  27
-statistics  Test.node  foo:stats      100    19.65  13     27
-histogram   Test.node  foo:histogram  100    19.65  13     27  22
+parameter   Test.node  typename       "Node"
+parameter   Test       typename       "Test"
+vector      Test.node  foo:vector     0       100    19.65  13  27
+statistics  Test.node  foo:stats      100     19.65  13     27
+histogram   Test.node  foo:histogram  100     19.65  13     27  22
 
 ------------------------
 $ opp_scavetool -l --grep-friendly <files>
 General-0-xxxx  scalar      Test.node  foo:mean       19.84
 General-0-xxxx  scalar      Test.node  foo:last       17
-General-0-xxxx  parameter   Test.node  typename       Node
-General-0-xxxx  parameter   Test       typename       Test
+General-0-xxxx  parameter   Test.node  typename       "Node"
+General-0-xxxx  parameter   Test       typename       "Test"
 General-0-xxxx  vector      Test.node  foo:vector     vectorId=0  count=100   mean=19.84  min=12  max=28
 General-0-xxxx  statistics  Test.node  foo:stats      count=100   mean=19.84  min=12      max=28
 General-0-xxxx  histogram   Test.node  foo:histogram  count=100   mean=19.84  min=12      max=28  #bins=24
 
 General-1-xxxx  scalar      Test.node  foo:mean       19.65
 General-1-xxxx  scalar      Test.node  foo:last       19
-General-1-xxxx  parameter   Test.node  typename       Node
-General-1-xxxx  parameter   Test       typename       Test
+General-1-xxxx  parameter   Test.node  typename       "Node"
+General-1-xxxx  parameter   Test       typename       "Test"
 General-1-xxxx  vector      Test.node  foo:vector     vectorId=0  count=100   mean=19.65  min=13  max=27
 General-1-xxxx  statistics  Test.node  foo:stats      count=100   mean=19.65  min=13      max=27
 General-1-xxxx  histogram   Test.node  foo:histogram  count=100   mean=19.65  min=13      max=27  #bins=22
@@ -648,16 +648,16 @@ General-1-xxxx  histogram   Test.node  foo:histogram  count=100   mean=19.65  mi
 $ opp_scavetool -l -g <files>
 General-0-xxxx  scalar      Test.node  foo:mean       19.84
 General-0-xxxx  scalar      Test.node  foo:last       17
-General-0-xxxx  parameter   Test.node  typename       Node
-General-0-xxxx  parameter   Test       typename       Test
+General-0-xxxx  parameter   Test.node  typename       "Node"
+General-0-xxxx  parameter   Test       typename       "Test"
 General-0-xxxx  vector      Test.node  foo:vector     vectorId=0  count=100   mean=19.84  min=12  max=28
 General-0-xxxx  statistics  Test.node  foo:stats      count=100   mean=19.84  min=12      max=28
 General-0-xxxx  histogram   Test.node  foo:histogram  count=100   mean=19.84  min=12      max=28  #bins=24
 
 General-1-xxxx  scalar      Test.node  foo:mean       19.65
 General-1-xxxx  scalar      Test.node  foo:last       19
-General-1-xxxx  parameter   Test.node  typename       Node
-General-1-xxxx  parameter   Test       typename       Test
+General-1-xxxx  parameter   Test.node  typename       "Node"
+General-1-xxxx  parameter   Test       typename       "Test"
 General-1-xxxx  vector      Test.node  foo:vector     vectorId=0  count=100   mean=19.65  min=13  max=27
 General-1-xxxx  statistics  Test.node  foo:stats      count=100   mean=19.65  min=13      max=27
 General-1-xxxx  histogram   Test.node  foo:histogram  count=100   mean=19.65  min=13      max=27  #bins=22
@@ -710,8 +710,8 @@ General-0-xxxx:
 
 scalar	Test.node	foo:mean	19.84
 scalar	Test.node	foo:last	17
-parameter	Test.node	typename	Node
-parameter	Test	typename	Test
+parameter	Test.node	typename	"Node"
+parameter	Test	typename	"Test"
 vector	Test.node	foo:vector	vectorId=0	count=100	mean=19.84	min=12	max=28
 statistics	Test.node	foo:stats	count=100	mean=19.84	min=12	max=28
 histogram	Test.node	foo:histogram	count=100	mean=19.84	min=12	max=28	#bins=24
@@ -720,8 +720,8 @@ General-1-xxxx:
 
 scalar	Test.node	foo:mean	19.65
 scalar	Test.node	foo:last	19
-parameter	Test.node	typename	Node
-parameter	Test	typename	Test
+parameter	Test.node	typename	"Node"
+parameter	Test	typename	"Test"
 vector	Test.node	foo:vector	vectorId=0	count=100	mean=19.65	min=13	max=27
 statistics	Test.node	foo:stats	count=100	mean=19.65	min=13	max=27
 histogram	Test.node	foo:histogram	count=100	mean=19.65	min=13	max=27	#bins=22
@@ -730,16 +730,16 @@ histogram	Test.node	foo:histogram	count=100	mean=19.65	min=13	max=27	#bins=22
 $ opp_scavetool -l --grep-friendly --tabs <files>
 General-0-xxxx	scalar	Test.node	foo:mean	19.84
 General-0-xxxx	scalar	Test.node	foo:last	17
-General-0-xxxx	parameter	Test.node	typename	Node
-General-0-xxxx	parameter	Test	typename	Test
+General-0-xxxx	parameter	Test.node	typename	"Node"
+General-0-xxxx	parameter	Test	typename	"Test"
 General-0-xxxx	vector	Test.node	foo:vector	vectorId=0	count=100	mean=19.84	min=12	max=28
 General-0-xxxx	statistics	Test.node	foo:stats	count=100	mean=19.84	min=12	max=28
 General-0-xxxx	histogram	Test.node	foo:histogram	count=100	mean=19.84	min=12	max=28	#bins=24
 
 General-1-xxxx	scalar	Test.node	foo:mean	19.65
 General-1-xxxx	scalar	Test.node	foo:last	19
-General-1-xxxx	parameter	Test.node	typename	Node
-General-1-xxxx	parameter	Test	typename	Test
+General-1-xxxx	parameter	Test.node	typename	"Node"
+General-1-xxxx	parameter	Test	typename	"Test"
 General-1-xxxx	vector	Test.node	foo:vector	vectorId=0	count=100	mean=19.65	min=13	max=27
 General-1-xxxx	statistics	Test.node	foo:stats	count=100	mean=19.65	min=13	max=27
 General-1-xxxx	histogram	Test.node	foo:histogram	count=100	mean=19.65	min=13	max=27	#bins=22
@@ -779,8 +779,8 @@ scalar      Test.node  foo:vector:min            12
 scalar      Test.node  foo:vector:max            28
 scalar      Test.node  foo:vector:starttime      0
 scalar      Test.node  foo:vector:endtime        0
-parameter   Test.node  typename                  Node
-parameter   Test       typename                  Test
+parameter   Test.node  typename                  "Node"
+parameter   Test       typename                  "Test"
 vector      Test.node  foo:vector                vectorId=0  count=100   mean=19.84  min=12  max=28
 statistics  Test.node  foo:stats                 count=100   mean=19.84  min=12      max=28
 histogram   Test.node  foo:histogram             count=100   mean=19.84  min=12      max=28  #bins=24
@@ -818,8 +818,8 @@ scalar      Test.node  foo:vector:min            13
 scalar      Test.node  foo:vector:max            27
 scalar      Test.node  foo:vector:starttime      0
 scalar      Test.node  foo:vector:endtime        0
-parameter   Test.node  typename                  Node
-parameter   Test       typename                  Test
+parameter   Test.node  typename                  "Node"
+parameter   Test       typename                  "Test"
 vector      Test.node  foo:vector                vectorId=0  count=100   mean=19.65  min=13  max=27
 statistics  Test.node  foo:stats                 count=100   mean=19.65  min=13      max=27
 histogram   Test.node  foo:histogram             count=100   mean=19.65  min=13      max=27  #bins=22
@@ -859,8 +859,8 @@ scalar      Test.node  foo:vector:min            12
 scalar      Test.node  foo:vector:max            28
 scalar      Test.node  foo:vector:starttime      0
 scalar      Test.node  foo:vector:endtime        0
-parameter   Test.node  typename                  Node
-parameter   Test       typename                  Test
+parameter   Test.node  typename                  "Node"
+parameter   Test       typename                  "Test"
 vector      Test.node  foo:vector                vectorId=0  count=100   mean=19.84  min=12  max=28
 statistics  Test.node  foo:stats                 count=100   mean=19.84  min=12      max=28
 histogram   Test.node  foo:histogram             count=100   mean=19.84  min=12      max=28  #bins=24
@@ -898,8 +898,8 @@ scalar      Test.node  foo:vector:min            13
 scalar      Test.node  foo:vector:max            27
 scalar      Test.node  foo:vector:starttime      0
 scalar      Test.node  foo:vector:endtime        0
-parameter   Test.node  typename                  Node
-parameter   Test       typename                  Test
+parameter   Test.node  typename                  "Node"
+parameter   Test       typename                  "Test"
 vector      Test.node  foo:vector                vectorId=0  count=100   mean=19.65  min=13  max=27
 statistics  Test.node  foo:stats                 count=100   mean=19.65  min=13      max=27
 histogram   Test.node  foo:histogram             count=100   mean=19.65  min=13      max=27  #bins=22

@@ -163,8 +163,8 @@ General-0-xxxx:
 
 scalar      Test.node  foo:mean       19.84
 scalar      Test.node  foo:last       17
-parameter   Test.node  typename       Node
-parameter   Test       typename       Test
+parameter   Test.node  typename       "Node"
+parameter   Test       typename       "Test"
 vector      Test.node  foo:vector     vectorId=0  count=100   mean=19.84  min=12  max=28
 statistics  Test.node  foo:stats      count=100   mean=19.84  min=12      max=28
 histogram   Test.node  foo:histogram  count=100   mean=19.84  min=12      max=28  #bins=24
@@ -173,8 +173,8 @@ General-1-xxxx:
 
 scalar      Test.node  foo:mean       19.65
 scalar      Test.node  foo:last       19
-parameter   Test.node  typename       Node
-parameter   Test       typename       Test
+parameter   Test.node  typename       "Node"
+parameter   Test       typename       "Test"
 vector      Test.node  foo:vector     vectorId=0  count=100   mean=19.65  min=13  max=27
 statistics  Test.node  foo:stats      count=100   mean=19.65  min=13      max=27
 histogram   Test.node  foo:histogram  count=100   mean=19.65  min=13      max=27  #bins=22
