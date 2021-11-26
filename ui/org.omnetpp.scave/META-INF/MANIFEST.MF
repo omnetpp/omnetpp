@@ -4,7 +4,7 @@ Bundle-Name: OMNeT++ Analysis Tool
 Bundle-SymbolicName: org.omnetpp.scave;singleton:=true
 Bundle-Version: 6.0.0.qualifier
 Bundle-ClassPath: .,
- lib/py4j-0.10.9.jar,
+ lib/py4j-0.10.9.3.jar,
  lib/pickle-1.0.jar
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ActivationPolicy: lazy
