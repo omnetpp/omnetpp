@@ -22,6 +22,7 @@ import scipy.stats as st
 import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+from string import Template
 from itertools import cycle
 from omnetpp.scave import chart, ideplot, vectorops
 
@@ -106,28 +107,76 @@ class DigitGroupingFormatter(mpl.ticker.ScalarFormatter):
 
 
 # Note: must be at the top, because it appears in other functions' arg list as default
-def make_legend_label(legend_cols, row):
+def make_legend_label(legend_cols, row, props={}):
     """
     Produces a reasonably good label text (to be used in a chart legend) for a result row from
-    a DataFrame, given a list of selected columns as returned by `extract_label_columns()`.
+    a DataFrame. The legend label is produced as follows.
 
-    The normal behavior is to concatenate a string from selected (by `legend_cols`) elements
-    of `row`. If there is a `legend` column in `row`, that one is used and `legend_cols` is
-    ignored. If there is a `comment` column in `row`, its contents will be appended in parens.
+    First, a base version of the legend label is produced:
+
+    1. If the DataFrame contains a `legend` column, its content is used
+    2. Otherwise, if there is a `legend_format` property, it is used as a format string
+       for producing the legend label. The format string may contain references to other
+       columns of the DataFrame in the "$name" or "${name}" form.
+    3. Otherwise, the legend label is concatenated from the columns listed in `legend_cols`,
+       a list whose contents is usually produced using the `extract_label_columns()` function.
+
+    Second, if there is a `comment` column in `row`, its content will be appended in parentheses.
+
+    Third, if there is a `legend_replacements` property, the series of regular expression
+    find/replace operations described in it are performed. `legend_replacements` is expected
+    to be a multi-line string, where each line contains a replacement in the customary
+    "/findstring/replacement/" form. "findstring" should be a valid regex, and "replacement"
+    is a string that may contain match group references ("\1", "\2", etc.). If "/" is unsuitable
+    as separator, other characters may also be used; common choices are "|" and "!".
+    Similar to the format string (`legend_format`), both "findstring" and "replacement"
+    may contain column references in the "$name" or "${name}" form. (Note that "findstring"
+    may still end in "$" to match the end of the string, it won't collide with column references.)
+
+    Possible errors:
+
+    - References to nonexistent columns in `legend_format` or `legend_replacements` (`KeyError`)
+    - Malformed regex in the "findstring" parts of `legend_replacements` (`re.error`)
+    - Invalid group reference in the "replacement" parts of `legend_replacements` (`re.error`)
 
     Parameters:
 
-    - `legend_cols` (list of strings): The names of columns chosen for the legend.
     - `row` (named tuple): The row from the dataframe.
+    - `props` (dict): The properties that control how the legend is produced
+    - `legend_cols` (list of strings): The names of columns chosen for the legend.
     """
-    comment = row.comment if hasattr(row, 'comment') else None
-    comment_str = " (" + comment + ")" if type(comment) is str and comment else ""
-    if hasattr(row, 'legend'):
-        return row.legend + comment_str
 
-    if len(legend_cols) == 1:
-        return str(row[legend_cols[0][0]]) + comment_str
-    return ", ".join([col + "=" + str(row[i]) for i, col in legend_cols]) + comment_str
+    def get_prop(k):
+        return props[k] if k in props else None
+
+    legend_format = get_prop('legend_format')
+    if hasattr(row, 'legend'):
+        legend = row.legend
+    elif legend_format:
+        legend = Template(legend_format).substitute(row._asdict())
+    elif len(legend_cols) == 1:
+        legend = str(row[legend_cols[0][0]])
+    else:
+        legend = ", ".join([col + "=" + str(row[i]) for i, col in legend_cols])
+
+    if hasattr(row, 'comment'):
+        legend = legend + " (" + row.comment + ")"
+
+    legend_replacements = get_prop('legend_replacements')
+    if legend_replacements:
+        lines = [li.strip() for li in legend_replacements.split('\n') if li.strip()]
+        for line in lines:
+            m = re.search(r"^(.)(.*)\1(.*)\1$", line)
+            if not m:
+                raise ValueError("Invalid line in 'legend_replacements', '/foo/bar/' syntax expected: '" + line + "'")
+            else:
+                findstr = m.group(2)
+                findstr = re.sub(r'\$$', '$$', findstr) # if ends with "$" (regex end-of-line), make it "$$" so that string.Template won't mistake it for invalid variable reference 
+                findstr = Template(findstr).substitute(row._asdict())
+                replacement = Template(m.group(3)).substitute(row._asdict())
+                legend = re.sub(findstr, replacement, legend)
+
+    return legend
 
 
 def plot_bars(df, props, variable_name=None, errors_df=None):
@@ -306,7 +355,7 @@ def plot_vectors(df, props, legend_func=make_legend_label):
     df.sort_values(by=[l for (_, l) in legend_cols], inplace=True)
     for t in df.itertuples(index=False):
         style = _make_line_args(props, t, df)
-        p.plot(t.vectime, t.vecvalue, label=legend_func(legend_cols, t), **style)
+        p.plot(t.vectime, t.vecvalue, label=legend_func(legend_cols, t, props), **style)
 
     title = get_prop("title") or make_chart_title(df, title_col, legend_cols)
     set_plot_title(title)
@@ -383,7 +432,7 @@ def plot_histograms(df, props, legend_func=make_legend_label):
         # "normalized" or "cumulative" transforms are done (by MPL).
         if chart.is_native_chart():
             overflow = dict(minvalue=t.min, maxvalue=t.max, underflows=t.underflows, overflows=t.overflows) if has_overflow_columns else dict()
-            p.hist(t.binedges[:-1], t.binedges, weights=t.binvalues, label=legend_func(legend_cols, t), **overflow, **style)
+            p.hist(t.binedges[:-1], t.binedges, weights=t.binvalues, label=legend_func(legend_cols, t, props), **overflow, **style)
         else:
             edges = list(t.binedges)
             values = list(t.binvalues)
@@ -398,7 +447,7 @@ def plot_histograms(df, props, legend_func=make_legend_label):
                     edges = edges + [t.max]
                     values = values + [t.overflows]
 
-            p.hist(edges[:-1], edges, weights=values, label=legend_func(legend_cols, t), **style)
+            p.hist(edges[:-1], edges, weights=values, label=legend_func(legend_cols, t, props), **style)
 
     show_overflows = get_prop("show_overflows")
     if show_overflows and chart.is_native_chart():
