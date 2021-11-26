@@ -12,6 +12,7 @@ histogramchart_vectors_native.properties
 linechart_legacy.properties
 linechart_mpl.properties
 linechart_native.properties
+linechart_separate_mpl.properties
 scatterchart_itervars_mpl.properties
 scatterchart_itervars_native.properties
 scatterchart_legacy.properties

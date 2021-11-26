@@ -368,6 +368,38 @@ def plot_vectors(df, props, legend_func=make_legend_label):
     title = get_prop("title") or make_chart_title(df, title_col, legend_cols)
     set_plot_title(title)
 
+
+def plot_vectors_separate(df, props, legend_func=make_legend_label):
+    """
+    This is very similar to `plot_vectors`, with identical usage.
+    The only difference is in the end result, where each vector will
+    be plotted in its own separate set of axes (coordinate system),
+    arranged vertically, with a shared X axis during navigation.
+    """
+    def get_prop(k):
+        return props[k] if k in props else None
+
+    title_col, legend_cols = extract_label_columns(df, props)
+
+    df.sort_values(by=[l for (_, l) in legend_cols], inplace=True)
+
+    ax = None
+    for i, t in enumerate(df.itertuples(index=False)):
+        style = _make_line_args(props, t, df)
+        ax = plt.subplot(df.shape[0], 1, i+1, sharex=ax)
+
+        if i != df.shape[0]-1:
+            plt.setp(ax.get_xticklabels(), visible=False)
+            ax.xaxis.get_label().set_visible(False)
+
+        plt.plot(t.vectime, t.vecvalue, label=legend_func(legend_cols, t), **style)
+
+    plt.subplot(df.shape[0], 1, 1)
+
+    title = get_prop("title") or make_chart_title(df, title_col, legend_cols)
+    set_plot_title(title)
+
+
 def plot_histograms(df, props, legend_func=make_legend_label):
     """
     Creates a histogram plot from the dataframe, with styling and additional input
@@ -640,41 +672,48 @@ def postconfigure_plot(props):
     def get_prop(k):
         return props[k] if k in props else None
 
-    if get_prop("yaxis_title"):
-        p.xlabel(get_prop("xaxis_title"))
-    if get_prop("yaxis_title"):
-        p.ylabel(get_prop("yaxis_title"))
+    def setup():
+        if get_prop("yaxis_title"):
+            p.xlabel(get_prop("xaxis_title"))
+        if get_prop("yaxis_title"):
+            p.ylabel(get_prop("yaxis_title"))
 
-    if get_prop("xaxis_min"):
-        p.xlim(left=float(get_prop("xaxis_min")))
-    if get_prop("xaxis_max"):
-        p.xlim(right=float(get_prop("xaxis_max")))
-    if get_prop("yaxis_min"):
-        p.ylim(bottom=float(get_prop("yaxis_min")))
-    if get_prop("yaxis_max"):
-        p.ylim(top=float(get_prop("yaxis_max")))
+        if get_prop("xaxis_min"):
+            p.xlim(left=float(get_prop("xaxis_min")))
+        if get_prop("xaxis_max"):
+            p.xlim(right=float(get_prop("xaxis_max")))
+        if get_prop("yaxis_min"):
+            p.ylim(bottom=float(get_prop("yaxis_min")))
+        if get_prop("yaxis_max"):
+            p.ylim(top=float(get_prop("yaxis_max")))
 
-    if get_prop("xaxis_log"):
-        p.xscale("log" if _parse_optional_bool(get_prop("xaxis_log")) else "linear")
-    if get_prop("yaxis_log"):
-        p.yscale("log" if _parse_optional_bool(get_prop("yaxis_log")) else "linear")
+        if get_prop("xaxis_log"):
+            p.xscale("log" if _parse_optional_bool(get_prop("xaxis_log")) else "linear")
+        if get_prop("yaxis_log"):
+            p.yscale("log" if _parse_optional_bool(get_prop("yaxis_log")) else "linear")
 
-    p.grid(_parse_optional_bool(get_prop("grid_show")),
-             "major" if (get_prop("grid_density") or "").lower() == "major" else "both") # grid_density is "Major" or "All"
+        p.grid(_parse_optional_bool(get_prop("grid_show")),
+            "major" if (get_prop("grid_density") or "").lower() == "major" else "both") # grid_density is "Major" or "All"
 
     if chart.is_native_chart():
+        setup()
+
         ideplot.legend(show=_parse_optional_bool(get_prop("legend_show")),
            frameon=_parse_optional_bool(get_prop("legend_border")),
            loc=get_prop("legend_placement"))
 
         ideplot.set_properties(parse_rcparams(get_prop("plot.properties") or ""))
     else:
-        if _parse_optional_bool(get_prop("legend_show")):
-            loc = get_prop("legend_placement")
-            if loc.startswith("outside "):
-                # TODO: apply same translation logic as in ideplot_matplotlib.py
-                loc = "best"
-            plt.legend(loc=loc, frameon=_parse_optional_bool(get_prop("legend_border")))
+        for ax in p.gcf().axes:
+            plt.sca(ax)
+            setup()
+
+            if _parse_optional_bool(get_prop("legend_show")):
+                loc = get_prop("legend_placement")
+                if loc.startswith("outside "):
+                    # TODO: apply same translation logic as in ideplot_matplotlib.py
+                    loc = "best"
+                plt.legend(loc=loc, frameon=_parse_optional_bool(get_prop("legend_border")))
         plt.tight_layout()
 
 
