@@ -147,10 +147,11 @@ def make_legend_label(legend_cols, row, props={}):
     def get_prop(k):
         return props[k] if k in props else None
 
+    legend_isautomatic = get_prop('legend_automatic')
     legend_format = get_prop('legend_format')
     if hasattr(row, 'legend'):
         legend = row.legend
-    elif legend_format:
+    elif legend_format and legend_isautomatic != "true":
         legend = Template(legend_format).substitute(row._asdict())
     elif len(legend_cols) == 1:
         legend = str(row[legend_cols[0][0]])
