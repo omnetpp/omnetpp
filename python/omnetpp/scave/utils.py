@@ -144,6 +144,16 @@ def make_legend_label(legend_cols, row, props={}):
     - `legend_cols` (list of strings): The names of columns chosen for the legend.
     """
 
+    try: 
+        global _set_observed_column_names_called
+        _set_observed_column_names_called
+    except:
+        _set_observed_column_names_called = 1
+        try:
+            chart.set_observed_column_names(list(row._asdict().keys()))
+        except:
+            print("Warning: error in chart.set_observed_column_names()", file=sys.stderr)
+
     def get_prop(k):
         return props[k] if k in props else None
 

@@ -38,3 +38,6 @@ def get_chart_type():
 
 def set_suggested_chart_name(name):
     return Gateway.chart_provider.setSuggestedChartName(name)
+
+def set_observed_column_names(column_names):
+    return Gateway.chart_provider.setObservedColumnNames(column_names)

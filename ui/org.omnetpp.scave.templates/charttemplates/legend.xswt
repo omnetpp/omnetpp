@@ -17,7 +17,7 @@
               <layoutData x:class="GridData" horizontalSpan="2" />
             </button>
             <button x:id='legend_manual' text='Manual:' x:style='RADIO'/>
-            <text x:id="legend_format" x:style="BORDER" x:id.enablerButton="legend_manual">
+            <text x:id="legend_format" x:style="BORDER" x:id.enablerButton="legend_manual" x:id.contentAssist="columns">
               <layoutData x:class="GridData" widthHint="200" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="CENTER" grabExcessVerticalSpace="false" />
             </text>
             <label/>

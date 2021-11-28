@@ -42,7 +42,6 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IMemento;
@@ -971,6 +970,14 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
      */
     public String getSuggestedChartName() {
         return getChartViewer().getSuggestedChartName();
+    }
+
+    /**
+     * Observed column names of the Dataframe, set by "chart.set_observed_column_names()" in Python.
+     * May be null. Useful for content assist for the legend format string.
+     */
+    public List<String> getObservedColumnNames() {
+        return getChartViewer().getObservedColumnNames();
     }
 
     @Override

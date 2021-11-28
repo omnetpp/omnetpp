@@ -53,6 +53,7 @@ import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.common.wizard.XSWTDataBinding;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.assist.FilterExpressionProposalProvider;
+import org.omnetpp.scave.assist.LegendFormatStringContentProposalProvider;
 import org.omnetpp.scave.assist.MatplotlibrcContentProposalProvider;
 import org.omnetpp.scave.assist.NativePlotPropertiesContentProposalProvider;
 import org.omnetpp.scave.assist.VectorOperationsContentProposalProvider;
@@ -84,15 +85,18 @@ public class ChartEditForm {
     protected Map<String,Control> xswtWidgetMap = new HashMap<>();
     protected FilterHintsCache filterHintsCache = new FilterHintsCache();
     protected List<VectorOp> vectorOperations; // needed for content assist
+    protected List<String> columnNames;
     protected Composite panel;
+
 
     protected static final String USER_DATA_KEY = "ChartEditForm";
 
-    public ChartEditForm(Chart chart, ChartTemplateRegistry chartTemplateRegistry, ResultFileManager manager, List<VectorOp> vectorOperations) {
+    public ChartEditForm(Chart chart, ChartTemplateRegistry chartTemplateRegistry, ResultFileManager manager, List<VectorOp> vectorOperations, List<String> columnNames) {
         this.chart = chart;
         this.chartTemplateRegistry = chartTemplateRegistry;
         this.manager = manager;
         this.vectorOperations = vectorOperations;
+        this.columnNames = columnNames;
     }
 
     /**
@@ -309,6 +313,8 @@ public class ChartEditForm {
             return new NativePlotPropertiesContentProposalProvider();
         case "matplotlibrc":
             return new MatplotlibrcContentProposalProvider();
+        case "columns":
+            return new LegendFormatStringContentProposalProvider(columnNames);
         default:
             ScavePlugin.getDefault().getLog().warn("Invalid value for 'contentAssist' attribute in XSWT file: '" + contentAssist + "'");
             return null;

@@ -57,3 +57,9 @@ def set_suggested_chart_name(name):
     """
     return impl.set_suggested_chart_name(**locals())
 
+def set_observed_column_names(column_names):
+    """
+    Sets the DataFrame column names observed during the chart script.
+    The IDE may use it for content assist when the user edits the legend format string.
+    """
+    return impl.set_observed_column_names(**locals())

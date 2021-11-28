@@ -7,6 +7,7 @@
 
 package org.omnetpp.scave.pychart;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,4 +34,9 @@ public interface IChartProvider {
      * The method behind "chart.set_suggested_chart_name()"
      */
     void setSuggestedChartName(String name);
+
+    /**
+     * The method behind "chart.set_observed_column_names()"
+     */
+    void setObservedColumnNames(List<String> names);
 }

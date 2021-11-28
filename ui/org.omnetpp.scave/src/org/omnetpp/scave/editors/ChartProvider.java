@@ -8,8 +8,10 @@
 package org.omnetpp.scave.editors;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.pychart.IChartProvider;
@@ -30,6 +32,11 @@ public class ChartProvider implements IChartProvider {
      * Stores the last chart name suggested by the Python script.
      */
     private String suggestedChartName;
+
+    /**
+     * DataFrame column names, as observed by last run of the Python script.
+     */
+    private List<String> observedColumnNames;
 
     /**
      * This map is appended to the properties of chart. Is useful for example to
@@ -74,12 +81,25 @@ public class ChartProvider implements IChartProvider {
         suggestedChartName = name;
     }
 
+    @Override
+    public void setObservedColumnNames(List<String> names) {
+        observedColumnNames = names;
+    }
+
     /**
      * Returns the chart name suggested by the chart script.
-     * This is the only method (apart from the ctor) that is called from
-     * Java, not Python.
+     * This is method is called from Java, not Python.
      */
     public String getSuggestedChartName() {
         return suggestedChartName;
     }
+
+    /**
+     * Returns the DataFrame column names as observed by the last run of the chart script.
+     * This is method is called from Java, not Python.
+     */
+    public List<String> getObservedColumnNames() {
+        return observedColumnNames;
+    }
+
 }

@@ -54,11 +54,15 @@ public class ConfigureChartDialog extends TitleAreaDialog {
         // If the chart is open in an editor page, try to get the vector operations specific to it,
         // otherwise, fall back to the built-in ones.
         FormEditorPage editorPage = editor.getEditorPage(chart);
-        List<VectorOp> ops = (editorPage != null)
+        List<VectorOp> vectorOperations = (editorPage != null)
                 ? ((ChartPage)editorPage).getChartScriptEditor().getVectorOpData()
                 : VectorOperations.getBuiltinVectorOpData();
 
-        this.form = new ChartEditForm(chart, editor.getChartTemplateRegistry(), editor.getResultFileManager(), ops);
+        List<String> columnNames = (editorPage != null)
+                ? ((ChartPage)editorPage).getChartScriptEditor().getObservedColumnNames()
+                : null;
+
+        this.form = new ChartEditForm(chart, editor.getChartTemplateRegistry(), editor.getResultFileManager(), vectorOperations, columnNames);
     }
 
     @Override

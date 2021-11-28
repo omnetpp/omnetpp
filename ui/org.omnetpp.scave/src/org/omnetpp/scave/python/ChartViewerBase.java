@@ -124,6 +124,10 @@ public abstract class ChartViewerBase {
         return chartProvider == null ? null : chartProvider.getSuggestedChartName();
     }
 
+    public List<String> getObservedColumnNames() {
+        return chartProvider == null ? null : chartProvider.getObservedColumnNames();
+    }
+
     public abstract void runPythonScript(String script, File workingDir, Runnable runAfterDone, ExceptionHandler runAfterError);
 
     public abstract Control getWidget();
