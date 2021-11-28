@@ -21,6 +21,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.IDialogSettings;
@@ -258,19 +259,39 @@ public class ChartEditForm {
             if (control instanceof Button && isEnabler != null && isEnabler.equalsIgnoreCase("true")) {
                 Button button = (Button)control;
 
-                button.addSelectionListener(new SelectionAdapter() {
+                SelectionAdapter listener = new SelectionAdapter() {
+                    private boolean isRadio(Control control) {
+                        return control instanceof Button && (((Button)control).getStyle() & SWT.RADIO) != 0;
+                    }
                     @Override
                     public void widgetSelected(SelectionEvent e) {
-                        for (Control sibling: control.getParent().getChildren())
-                            if (sibling != control)
-                                sibling.setEnabled(button.getSelection());
+                        boolean enable = button.getSelection();
+                        for (Control sibling: button.getParent().getChildren())
+                            if (sibling != control && (!isRadio(button) || !isRadio(sibling))) // don't touch itself and (if this is a radio button) other radio buttons
+                                sibling.setEnabled(enable);
                     }
-                });
+                };
+                button.addSelectionListener(listener);
 
                 // apply initial state
-                for (Control sibling: control.getParent().getChildren())
-                    if (sibling != control)
-                        sibling.setEnabled(button.getSelection());
+                listener.widgetSelected(null);
+            }
+
+            String enablerButtonId = (String)control.getData("enablerButton");
+            if (StringUtils.isNotEmpty(enablerButtonId)) {
+                Control enabler = xswtWidgetMap.get(enablerButtonId);
+                if (!(enabler instanceof Button))
+                    ScavePlugin.getDefault().getLog().warn("'enablerButton' attribute in XSWT file is ignored: widget with id=" + enablerButtonId + " not found or not a Button");
+                else {
+                    Button enablerButton = (Button)enabler;
+                    SelectionListener listener = SelectionListener.widgetSelectedAdapter(e -> {
+                        control.setEnabled(enablerButton.getSelection());
+                    });
+                    enablerButton.addSelectionListener(listener);
+
+                    // apply initial state
+                    listener.widgetSelected(null);
+                }
             }
         }
     }
