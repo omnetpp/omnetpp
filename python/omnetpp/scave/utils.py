@@ -144,9 +144,9 @@ def make_legend_label(legend_cols, row, props={}):
     - `legend_cols` (list of strings): The names of columns chosen for the legend.
     """
 
-    try: 
+    try:
         global _set_observed_column_names_called
-        _set_observed_column_names_called
+        _set_observed_column_names_called # will fail first time (variable not defined)
     except:
         _set_observed_column_names_called = 1
         try:
@@ -157,12 +157,20 @@ def make_legend_label(legend_cols, row, props={}):
     def get_prop(k):
         return props[k] if k in props else None
 
+    def substitute_columns(format, row, where):
+        try:
+            return Template(format).substitute(row._asdict())
+        except KeyError as ex:
+            raise chart.ChartScriptError("Unknown column reference ${} {}".format(ex.args[0], where)) from ex
+        except ValueError as ex:
+            raise chart.ChartScriptError("Error {}: {}".format(where, ex.args[0])) from ex
+
     legend_isautomatic = get_prop('legend_automatic')
     legend_format = get_prop('legend_format')
     if hasattr(row, 'legend'):
         legend = row.legend
     elif legend_format and legend_isautomatic != "true":
-        legend = Template(legend_format).substitute(row._asdict())
+        legend = substitute_columns(legend_format, row, "in legend format string")
     elif len(legend_cols) == 1:
         legend = str(row[legend_cols[0][0]])
     else:
@@ -174,13 +182,16 @@ def make_legend_label(legend_cols, row, props={}):
         for line in lines:
             m = re.search(r"^(.)(.*)\1(.*)\1$", line)
             if not m:
-                raise ValueError("Invalid line in 'legend_replacements', '/foo/bar/' syntax expected: '" + line + "'")
+                raise chart.ChartScriptError("Invalid line in 'legend_replacements', '/foo/bar/' syntax expected: '" + line + "'")
             else:
                 findstr = m.group(2)
-                findstr = re.sub(r'\$$', '$$', findstr) # if ends with "$" (regex end-of-line), make it "$$" so that string.Template won't mistake it for invalid variable reference 
-                findstr = Template(findstr).substitute(row._asdict())
-                replacement = Template(m.group(3)).substitute(row._asdict())
-                legend = re.sub(findstr, replacement, legend)
+                findstr = re.sub(r'\$$', '$$', findstr) # if ends with "$" (regex end-of-line), make it "$$" so that string.Template won't mistake it for invalid variable reference
+                findstr = substitute_columns(findstr, row, "in legend label replacement "+line)
+                replacement = substitute_columns(m.group(3), row, "in legend label replacement "+line)
+                try:
+                    legend = re.sub(findstr, replacement, legend)
+                except re.error as ex:
+                    raise chart.ChartScriptError("Regex error in legend replacement '{}': {}".format(line, str(ex))) from ex
 
     return legend
 
