@@ -121,9 +121,7 @@ def make_legend_label(legend_cols, row, props={}):
     3. Otherwise, the legend label is concatenated from the columns listed in `legend_cols`,
        a list whose contents is usually produced using the `extract_label_columns()` function.
 
-    Second, if there is a `comment` column in `row`, its content will be appended in parentheses.
-
-    Third, if there is a `legend_replacements` property, the series of regular expression
+    Second, if there is a `legend_replacements` property, the series of regular expression
     find/replace operations described in it are performed. `legend_replacements` is expected
     to be a multi-line string, where each line contains a replacement in the customary
     "/findstring/replacement/" form. "findstring" should be a valid regex, and "replacement"
@@ -158,9 +156,6 @@ def make_legend_label(legend_cols, row, props={}):
         legend = str(row[legend_cols[0][0]])
     else:
         legend = ", ".join([col + "=" + str(row[i]) for i, col in legend_cols])
-
-    if hasattr(row, 'comment'):
-        legend = legend + " (" + row.comment + ")"
 
     legend_replacements = get_prop('legend_replacements')
     if legend_replacements:
@@ -317,10 +312,11 @@ def plot_vectors(df, props, legend_func=make_legend_label):
     Colors and markers are assigned automatically. The `cycle_seed` property
     allows you to select other combinations if the default one is not suitable.
 
-    The legend is normally computed automatically from columns which best
-    differentiate among the series. There are also multiple ways to influence
-    the labels: the `legend_labels` property, the `comment` and `legend` dataframe
-    columns, and also the `legend_func` argument.
+    A function to produce the legend labels can be passed in. By default,
+    `make_legend_label()` is used, which offers many ways to influence the
+    legend via datataframe columns and chart properties. In the absence of
+    more specified settings, the legend is normally computed from columns which best
+    differentiate among the vectors.
 
     Parameters:
 
@@ -334,7 +330,6 @@ def plot_vectors(df, props, legend_func=make_legend_label):
     - `interpolationmode` (str, optional): this column normally comes from a result attribute, and determines how the points will be connected
     - `legend` (optional): legend label for the series; if missing, legend labels are derived from other columns
     - `name`, `title`, `module`, etc. (optional): provide input for the legend
-    - `comment` (optional): will be appended to the legend labels
 
     Notable properties that affect the plot:
 
@@ -368,10 +363,11 @@ def plot_histograms(df, props, legend_func=make_legend_label):
     Colors are assigned automatically.  The `cycle_seed` property allows you to
     select other combinations if the default one is not suitable.
 
-    The legend is normally computed automatically from columns which best
-    differentiate among the histograms. There also are multiple ways to influence
-    the labels: the `legend_labels` property, the `comment` and `legend` dataframe
-    columns, and also the `legend_func` argument.
+    A function to produce the legend labels can be passed in. By default,
+    `make_legend_label()` is used, which offers many ways to influence the
+    legend via datataframe columns and chart properties. In the absence of
+    more specified settings, the legend is normally computed from columns which best
+    differentiate among the histograms.
 
     Parameters:
 
@@ -390,7 +386,6 @@ def plot_histograms(df, props, legend_func=make_legend_label):
     - `legend` (string, optional): Legend label for the series. If missing,
        legend labels are derived from other columns.
     - `name`, `title`, `module`, etc. (optional): Provide input for the legend.
-    - `comment` (string, optional): will be appended to the legend labels.
 
     Notable properties that affect the plot:
 
