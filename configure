@@ -3926,7 +3926,7 @@ echo 'static A a;' >> conftest_a.cc
 echo 'int main() {return 0;}' >> conftest_m.cc
 if $CXX -c conftest_a.cc >/dev/null 2>/dev/null && \
    $CXX -c conftest_m.cc >/dev/null 2>/dev/null && \
-   $AR libconftest_a.a conftest_a.o >/dev/null 2>/dev/null && \
+   $AR_CR libconftest_a.a conftest_a.o >/dev/null 2>/dev/null && \
    $RANLIB libconftest_a.a >/dev/null 2>/dev/null; \
 then
    silly_ok="no"
