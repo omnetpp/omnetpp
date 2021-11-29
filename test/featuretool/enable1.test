@@ -46,11 +46,11 @@ Warning:
 %contains: .oppfeaturestate
 <?xml version="1.0" ?>
 <featurestates>
-    <feature enabled="true" id="F_A"/>
-    <feature enabled="true" id="F_B"/>
-    <feature enabled="false" id="F_C"/>
-    <feature enabled="false" id="F_D"/>
-    <feature enabled="true" id="F_E"/>
+    <feature id="F_A" enabled="true"/>
+    <feature id="F_B" enabled="true"/>
+    <feature id="F_C" enabled="false"/>
+    <feature id="F_D" enabled="false"/>
+    <feature id="F_E" enabled="true"/>
 </featurestates>
 
 %not-contains: .nedexclusions

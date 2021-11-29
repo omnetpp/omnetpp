@@ -32,11 +32,11 @@ opp_featuretool: Warning: NED package 'org.foo.ddd' is part of the disabled feat
 %contains: .oppfeaturestate
 <?xml version="1.0" ?>
 <featurestates>
-    <feature enabled="false" id="F_A"/>
-    <feature enabled="false" id="F_B"/>
-    <feature enabled="false" id="F_C"/>
-    <feature enabled="false" id="F_D"/>
-    <feature enabled="false" id="F_E"/>
+    <feature id="F_A" enabled="false"/>
+    <feature id="F_B" enabled="false"/>
+    <feature id="F_C" enabled="false"/>
+    <feature id="F_D" enabled="false"/>
+    <feature id="F_E" enabled="false"/>
 </featurestates>
 
 %contains: .nedexclusions
