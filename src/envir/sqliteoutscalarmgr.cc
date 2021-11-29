@@ -220,7 +220,7 @@ bool SqliteOutputScalarManager::recordComponentType(cComponent *component)
         return false;
 
     const char *nedType = component->getComponentType()->getFullName();
-    writer.recordParameter(componentFullPath, name, nedType, StringMap());
+    writer.recordParameter(componentFullPath, name, opp_quotestr(nedType), StringMap());
     return true;
 }
 
