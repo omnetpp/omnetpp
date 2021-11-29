@@ -32,7 +32,7 @@ public class CopySelectionAsFilterAction extends AbstractScaveAction {
         IDListSelection idListSelection = (IDListSelection)selection;
         String filter = ResultSelectionFilterGenerator.makeFilterForIDListSelection(idListSelection);
         int types = idListSelection.getSource().getType().getItemTypes();
-        editor.getFilterCache().putFilterResult(types, filter, idListSelection.getIDList());
+        editor.getFilterCache().putFilterResult(types, filter, editor.getBrowseDataPage().getScalarsPanel().getShowFieldsAsScalars(), idListSelection.getIDList());
         new Clipboard(Display.getCurrent()).setContents(new Object[] {filter}, new Transfer[] {TextTransfer.getInstance()});
     }
 

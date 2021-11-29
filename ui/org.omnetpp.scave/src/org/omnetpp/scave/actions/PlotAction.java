@@ -49,8 +49,10 @@ public class PlotAction extends AbstractScaveAction {
 
         String filter = ResultSelectionFilterGenerator.makeFilterForIDListSelection(idListSelection);
         int type = idListSelection.getSource().getType().getItemTypes();
-        editor.getFilterCache().putFilterResult(type, filter, idList);
+        boolean includeFields = editor.getBrowseDataPage().getScalarsPanel().getShowFieldsAsScalars();
+        editor.getFilterCache().putFilterResult(type, filter, includeFields, idList);
         chart.setPropertyValue("filter", filter);
+        chart.setPropertyValue("include_fields", "" + includeFields);
         chart.setTemporary(true);
         editor.openPage(chart);
     }

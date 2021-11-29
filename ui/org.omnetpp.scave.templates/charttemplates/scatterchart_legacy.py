@@ -51,7 +51,7 @@ iso_module, iso_name, iso_runattr = module_name_runattr_from_pattern(iso_pattern
 
 avg_repls = bool(strtobool(props['average_replications']))
 try:
-    sc = results.get_scalars(filter_expression, include_itervars=True, include_runattrs=True)
+    sc = results.get_scalars(filter_expression, include_fields=True, include_itervars=True, include_runattrs=True)
     iv = results.get_itervars("(" + filter_expression + ") AND NOT name =~ " + x_runattr, include_itervars=True, include_runattrs=True)
 except ValueError as e:
     ideplot.set_warning("Error while querying results: " + str(e))
@@ -81,7 +81,7 @@ elif iso_runattr and x_module and x_name:
     # where to put iso and x? support multiple isos!
     df = pd.pivot_table(df, columns=[lbl], index=cols + [(x_module, x_name)])
 
-    x_column = module + ":" + name
+    x_column = x_module + ":" + x_name
 
     # TODO: rest is ugly
     df.reset_index(level=2 if avg_repls else 4, inplace=True)

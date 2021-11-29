@@ -53,8 +53,10 @@ public class CreateTempChartFromTemplateAction extends AbstractScaveAction {
 
         String filter = ResultSelectionFilterGenerator.makeFilterForIDListSelection(idListSelection);
         int types = idListSelection.getSource().getType().getItemTypes();
-        editor.getFilterCache().putFilterResult(types, filter, idListSelection.getIDList());
+        boolean includeFields = editor.getBrowseDataPage().getScalarsPanel().getShowFieldsAsScalars();
+        editor.getFilterCache().putFilterResult(types, filter, includeFields, idListSelection.getIDList());
         chart.setPropertyValue("filter", filter);
+        chart.setPropertyValue("include_fields", "" + includeFields);
         chart.setTemporary(true);
         editor.openPage(chart);
     }

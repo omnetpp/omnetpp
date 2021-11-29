@@ -19,15 +19,18 @@ public class FilterCache {
     private static class Key {
         private int resultTypes;
         private String filterExpression; // may include isfield and type filters, based on UI state
+        private boolean includeFields;   // is false if resultTypes doesn't include SCALAR 
 
-        public Key(int resultTypes, String filterExpression) {
+        /** includeFields is ignored if resultTypes doesn't include SCALAR. */
+        public Key(int resultTypes, String filterExpression, boolean includeFields) {
             this.resultTypes = resultTypes;
             this.filterExpression = filterExpression;
+            this.includeFields = ((resultTypes & ResultFileManager.SCALAR) != 0) && includeFields;
         }
 
         @Override
         public int hashCode() {
-            return resultTypes + 31 * filterExpression.hashCode();
+            return resultTypes + 31 * filterExpression.hashCode() + (includeFields ? 1023 : 127);
         }
 
         @Override
@@ -37,12 +40,12 @@ public class FilterCache {
             if (obj == null || getClass() != obj.getClass())
                 return false;
             Key other = (Key) obj;
-            return resultTypes == other.resultTypes && filterExpression.equals(other.filterExpression);
+            return resultTypes == other.resultTypes && filterExpression.equals(other.filterExpression) && includeFields == other.includeFields;
         }
 
         @Override
         public String toString() {
-            return "FilterKey(" + ScaveModelUtil.getResultTypesAsString(resultTypes) + ": " + filterExpression + ")";
+            return "FilterKey(" + ScaveModelUtil.getResultTypesAsString(resultTypes) + ": " + filterExpression + ", " + (includeFields ? "with" : "without") + " fields)";
         }
     }
 
@@ -60,14 +63,22 @@ public class FilterCache {
         }
     }
 
-    public IDList getFilterResult(int resultTypes, String filterExpression) {
+    public IDList getFilterResult(int resultTypes, String filterExpression, boolean includeFields) {
         checkSerial();
-        return filterCache.get(new Key(resultTypes, filterExpression));
+        return filterCache.get(new Key(resultTypes, filterExpression, includeFields));
+    }
+
+    public IDList getFilterResult(int resultTypes, String filterExpression) {
+        return getFilterResult(resultTypes, filterExpression, false);
+    }
+
+    public void putFilterResult(int resultTypes, String filterExpression, boolean includeFields, IDList result) {
+        checkSerial();
+        filterCache.put(new Key(resultTypes, filterExpression, includeFields), result);
     }
 
     public void putFilterResult(int resultTypes, String filterExpression, IDList result) {
-        checkSerial();
-        filterCache.put(new Key(resultTypes, filterExpression), result);
+        putFilterResult(resultTypes, filterExpression, false, result);
     }
 
     public void clear() {

@@ -11,12 +11,13 @@ utils.preconfigure_plot(props)
 
 # collect parameters for query
 filter_expression = props["filter"]
+include_fields = props["include_fields"] == "true"
 xaxis_itervar = props["xaxis_itervar"]
 yaxis_itervar = props["yaxis_itervar"]
 
 # query data into a data frame
 try:
-    df = results.get_scalars(filter_expression, include_attrs=True, include_itervars=True)
+    df = results.get_scalars(filter_expression, include_fields=include_fields, include_attrs=True, include_itervars=True, include_runattrs=True)
 except ValueError as e:
     ideplot.set_warning("Error while querying results: " + str(e))
     exit(1)

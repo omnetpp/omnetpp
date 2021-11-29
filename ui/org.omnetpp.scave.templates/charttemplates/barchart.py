@@ -9,10 +9,11 @@ utils.preconfigure_plot(props)
 
 # collect parameters for query
 filter_expression = props["filter"]
+include_fields = props["include_fields"] == "true"
 
 # query scalar data into dataframe
 try:
-    df = results.get_scalars(filter_expression, include_attrs=True, include_itervars=True, include_runattrs=True)
+    df = results.get_scalars(filter_expression, include_fields=include_fields, include_attrs=True, include_itervars=True, include_runattrs=True)
 except ValueError as e:
     ideplot.set_warning("Error while querying results: " + str(e))
     exit(1)
