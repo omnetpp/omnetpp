@@ -88,8 +88,8 @@
 /samples/neddemo/,                   ./neddemo -f omnetpp.ini -c Star -r 0,         5s,         0,PASS,
 /samples/neddemo/,                   ./neddemo -f omnetpp.ini -c TriangleGrid -r 0, 5s,         0,PASS,
 
-/samples/osg-earth/,                 ./osg-earth -f omnetpp.ini -c BostonPark -r 0,            5000s,         598d-fe7e/tplx,PASS,
-/samples/osg-earth/,                 ./osg-earth -f omnetpp.ini -c BostonStreets -r 0,         5000s,         d2fe-f19f/tplx,PASS,
+#/samples/osg-earth/,                 ./osg-earth -f omnetpp.ini -c BostonPark -r 0,            5000s,         598d-fe7e/tplx,PASS,
+#/samples/osg-earth/,                 ./osg-earth -f omnetpp.ini -c BostonStreets -r 0,         5000s,         d2fe-f19f/tplx,PASS,
 
 #/samples/osg-indoor/,                ./osg-indoor -f omnetpp.ini -c Office -r 0,                5000s,         0000-0000,PASS,
 
@@ -98,9 +98,9 @@
 #/samples/osg-intro/,                 ./osg-intro -f omnetpp.ini -c OpenStreetMapFlat -r 0,     5000s,         0000-0000,PASS,
 #/samples/osg-intro/,                 ./osg-intro -f omnetpp.ini -c ReadyMapWithElevation -r 0, 5000s,         0000-0000,PASS,
 
-/samples/osg-satellites/,            ./osg-satellites -f omnetpp.ini -c RandomOrbits -r 0,          5000s,         7adf-31e0/tplx,PASS,
-/samples/osg-satellites/,            ./osg-satellites -f omnetpp.ini -c Geostationary -r 0,         5000s,         7adf-31e0/tplx,PASS,
-/samples/osg-satellites/,            ./osg-satellites -f omnetpp.ini -c PolarOrbits -r 0,           5000s,         7adf-31e0/tplx,PASS,
+#/samples/osg-satellites/,            ./osg-satellites -f omnetpp.ini -c RandomOrbits -r 0,          5000s,         7adf-31e0/tplx,PASS,
+#/samples/osg-satellites/,            ./osg-satellites -f omnetpp.ini -c Geostationary -r 0,         5000s,         7adf-31e0/tplx,PASS,
+#/samples/osg-satellites/,            ./osg-satellites -f omnetpp.ini -c PolarOrbits -r 0,           5000s,         7adf-31e0/tplx,PASS,
 
 # /samples/queueinglibext/,            ./queueinglibext -f omnetpp.ini -c OneFifo -r 0,               5000s,         0000-0000           # opp_run,PASS,
 /samples/queuenet/,                  ./queuenet -f omnetpp.ini -c OneFifo -r 0,               5000s,         be44-15dd/tplx,PASS,
