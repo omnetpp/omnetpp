@@ -21,7 +21,7 @@
               <layoutData x:class="GridData" widthHint="200" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="CENTER" grabExcessVerticalSpace="false" />
             </text>
             <label/>
-            <label text="Hint: $name or ${name} inserts content of data specified data frame column, e.g. $name,$module,$&lt;itervar&gt;"/>
+            <label text="Hint: $name or ${name} inserts content of specified data frame column; use $$ to insert dollar sign"/>
           </x:children>
         </group>
         
