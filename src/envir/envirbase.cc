@@ -211,7 +211,9 @@ T *createByClassName(const char *className, const char *what) {
 #define STRINGIZE(x)     STRINGIZE0(x)
 
 static const char *compilerInfo =
-    #if defined __GNUC__
+    #if defined __clang__
+    "CLANG " __clang_version__
+    #elif defined __GNUC__
     "GCC " __VERSION__
     #elif defined _MSC_VER
     "Microsoft Visual C++ version " STRINGIZE(_MSC_VER)
@@ -225,14 +227,21 @@ static const char *compilerInfo =
 static const char *buildInfoFormat =
     "%d-bit"
 
+    #ifdef __x86_64__
+    " ARCH_X86_64"
+    #elif __i386__
+    " ARCH_I386"
+    #elif __aarch64__
+    " ARCH_AARCH64"
+    #else
+    " ARCH_UNKNOWN"
+    #endif
+
     #ifdef NDEBUG
     " RELEASE"
     #else
     " DEBUG"
     #endif
-
-    " simtime_t=%s"
-    " large-file-support=%s"
     ;
 
 static const char *buildOptions = ""
@@ -373,13 +382,9 @@ bool EnvirBase::simulationRequired()
     }
 
     if (args->optionGiven('v')) {
-        struct opp_stat_t statbuf;
         out << "Build: " OMNETPP_RELEASE " " OMNETPP_BUILDID << "" << endl;
         out << "Compiler: " << compilerInfo << "" << endl;
-        out << "Options: " << opp_stringf(buildInfoFormat,
-                8*sizeof(void *),
-                opp_typename(typeid(simtime_t)),
-                sizeof(statbuf.st_size) >= 8 ? "yes" : "no");
+        out << "Options: " << opp_stringf(buildInfoFormat, 8*sizeof(void *));
         out << buildOptions << endl;
         return false;
     }
