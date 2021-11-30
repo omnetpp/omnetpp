@@ -11,6 +11,16 @@ IDE or `opp_charttool` before the chart script is run.
 
 import os
 
+
+class ChartScriptError(Exception):
+    """
+    Raised by chart scripts when they encounter an error.
+    A message parameter can be passed to the constructor,
+    which will be displayed on the plot area in the IDE.
+    """
+    pass
+
+
 if os.getenv("WITHIN_OMNETPP_IDE") == "yes":
     from omnetpp.scave.impl_ide import chart as impl
 else:

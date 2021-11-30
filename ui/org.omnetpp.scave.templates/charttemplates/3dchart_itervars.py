@@ -19,26 +19,22 @@ yaxis_itervar = props["yaxis_itervar"]
 try:
     df = results.get_scalars(filter_expression, include_fields=include_fields, include_attrs=True, include_itervars=True, include_runattrs=True)
 except ValueError as e:
-    ideplot.set_warning("Error while querying results: " + str(e))
-    exit(1)
+    raise chart.ChartScriptError("Error while querying results: " + str(e))
 
 if df.empty:
-    ideplot.set_warning("The result filter returned no data.")
-    exit(1)
+    raise chart.ChartScriptError("The result filter returned no data.")
 
 if not xaxis_itervar and not yaxis_itervar:
     print("The X Axis and Y Axis options were not set in the dialog, inferring them from the data..")
     xaxis_itervar, yaxis_itervar = utils.pick_two_columns(df)
 if not xaxis_itervar or not yaxis_itervar:
-    ideplot.set_warning("Please set both the X Axis and Y Axis options in the dialog - or neither, for automatic selection!")
-    exit(1)
+    raise chart.ChartScriptError("Please set both the X Axis and Y Axis options in the dialog - or neither, for automatic selection!")
 
 utils.assert_columns_exist(df, [xaxis_itervar], "The iteration variable for the X axis could not be found")
 utils.assert_columns_exist(df, [yaxis_itervar], "The iteration variable for the Y axis could not be found")
 
 if xaxis_itervar == yaxis_itervar:
-    ideplot.set_warning("The itervar for the X and Y axes are the same: " + xaxis_itervar)
-    exit(1)
+    raise chart.ChartScriptError("The itervar for the X and Y axes are the same: " + xaxis_itervar)
 
 df[xaxis_itervar] = pd.to_numeric(df[xaxis_itervar], errors="ignore")
 df[yaxis_itervar] = pd.to_numeric(df[yaxis_itervar], errors="ignore")
@@ -50,8 +46,7 @@ title = str(list(df[title_col])[0]) if title_col else None
 unique_names = df["name"].unique()
 
 if len(unique_names) != 1:
-    ideplot.set_warning("Selected scalars must share the same name.")
-    exit(1)
+    raise chart.ChartScriptError("Selected scalars must share the same name.")
 
 scalar_name = unique_names[0]
 

@@ -21,8 +21,7 @@ def get_data(filter):
         iv = results.get_itervars(filter)
         ra = results.get_runattrs(filter)
     except ValueError as e:
-        ideplot.set_warning("Error while querying results: " + str(e))
-        exit(1)
+        raise chart.ChartScriptError("Error while querying results: " + str(e))
 
     df = pd.concat([sc, iv, ra])
 

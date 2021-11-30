@@ -72,7 +72,13 @@ class PythonEntryPoint(object):
 
     # @TimeAndGuard(measureTime=False)
     def execute(self, chartInput):
-        exec(chartInput, self.execContext)
+        # these imports must be lazy, to allow correct module initialization
+        from omnetpp.scave import chart, ideplot
+        try:
+            exec(chartInput, self.execContext)
+        except chart.ChartScriptError as e:
+            ideplot.set_warning(str(e))
+            sys.exit(1)
 
     # @TimeAndGuard(measureTime=False)
     def evaluate(self, expression):

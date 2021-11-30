@@ -8,12 +8,10 @@ filter_expression = props["filter"]
 try:
     df = results.get_vectors(filter_expression, include_attrs=True, include_itervars=True)
 except ValueError as e:
-    ideplot.set_warning("Error while querying results: " + str(e))
-    exit(1)
+    raise chart.ChartScriptError("Error while querying results: " + str(e))
 
 if df.empty:
-    ideplot.set_warning("The result filter returned no data.")
-    exit(1)
+    raise chart.ChartScriptError("The result filter returned no data.")
 
 df = utils.perform_vector_ops(df, props["vector_operations"])
 

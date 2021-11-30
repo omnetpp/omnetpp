@@ -9,14 +9,12 @@ try:
     stats = results.get_statistics(props["filter"], include_attrs=True, include_runattrs=True, include_itervars=True)
     hists = results.get_histograms(props["filter"], include_attrs=True, include_runattrs=True, include_itervars=True)
 except ValueError as e:
-    ideplot.set_warning("Error while querying results: " + str(e))
-    exit(1)
+    raise chart.ChartScriptError("Error while querying results: " + str(e))
 
 df = pd.concat([stats, hists], sort=False)
 
 if df.empty:
-    ideplot.set_warning("The result filter returned no data.")
-    exit(1)
+    raise chart.ChartScriptError("The result filter returned no data.")
 
 title, legend = utils.extract_label_columns(df)
 

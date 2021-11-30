@@ -54,15 +54,13 @@ try:
     sc = results.get_scalars(filter_expression, include_fields=True, include_itervars=True, include_runattrs=True)
     iv = results.get_itervars("(" + filter_expression + ") AND NOT name =~ " + x_runattr, include_itervars=True, include_runattrs=True)
 except ValueError as e:
-    ideplot.set_warning("Error while querying results: " + str(e))
-    exit(1)
+    raise chart.ChartScriptError("Error while querying results: " + str(e))
 iv['module'] = ""
 
 df = pd.concat([sc]) # , iv ?
 
 if df.empty:
-    ideplot.set_warning("The result filter returned no data.")
-    exit(1)
+    raise chart.ChartScriptError("The result filter returned no data.")
 
 utils.assert_columns_exist(df, ["value"])
 df['value'] = pd.to_numeric(df['value'])

@@ -15,12 +15,10 @@ include_fields = props["include_fields"] == "true"
 try:
     df = results.get_scalars(filter_expression, include_fields=include_fields, include_attrs=True, include_itervars=True, include_runattrs=True)
 except ValueError as e:
-    ideplot.set_warning("Error while querying results: " + str(e))
-    exit(1)
+    raise chart.ChartScriptError("Error while querying results: " + str(e))
 
 if df.empty:
-    ideplot.set_warning("The result filter returned no data.")
-    exit(1)
+    raise chart.ChartScriptError("The result filter returned no data.")
 
 # determine "groups" and "series" for pivoting, and check them
 groups = utils.split(props["groups"])
@@ -32,13 +30,11 @@ if not groups and not series:
     groups, series = [g], [s]
 
 if not groups or not groups[0] or not series or not series[0]:
-    ideplot.set_warning("Please set both the Groups and Series properties in the dialog - or neither, for automatic setup.")
-    exit(1)
+    raise chart.ChartScriptError("Please set both the Groups and Series properties in the dialog - or neither, for automatic setup.")
 
 common = list(set(groups) & set(series))
 if common:
-    ideplot.set_warning("Overlap between Group and Series columns: " + ", ".join(common))
-    exit(1)
+    raise chart.ChartScriptError("Overlap between Group and Series columns: " + ", ".join(common))
 
 utils.assert_columns_exist(df, groups + series, "No such iteration variable or run attribute")
 

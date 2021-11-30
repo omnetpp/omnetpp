@@ -18,12 +18,10 @@ group_by = utils.split(props["group_by"])
 try:
     df = results.get_scalars(filter_expression, include_fields=include_fields, include_runattrs=True, include_attrs=True, include_itervars=True)
 except ValueError as e:
-    ideplot.set_warning("Error while querying results: " + str(e))
-    exit(1)
+    raise chart.ChartScriptError("Error while querying results: " + str(e))
 
 if df.empty:
-    ideplot.set_warning("The result filter returned no data.")
-    exit(1)
+    raise chart.ChartScriptError("The result filter returned no data.")
 
 if not xaxis_itervar and not group_by:
     print("The 'X Axis' and 'Group By' options were not set in the dialog, inferring them from the data..")
@@ -35,12 +33,10 @@ if xaxis_itervar:
     utils.assert_columns_exist(df, [xaxis_itervar], "The iteration variable for the X axis could not be found")
     df[xaxis_itervar] = pd.to_numeric(df[xaxis_itervar], errors="ignore")
 else:
-    ideplot.set_warning("Please select the iteration variable for the X axis!")
-    exit(1)
+    raise chart.ChartScriptError("Please select the iteration variable for the X axis!")
 
 if xaxis_itervar in group_by:
-    ideplot.set_warning("X axis column also in grouper columns: " + xaxis_itervar)
-    exit(1)
+    raise chart.ChartScriptError("X axis column also in grouper columns: " + xaxis_itervar)
 
 if group_by:
     utils.assert_columns_exist(df, group_by, "An iteration variable for grouping could not be found")
