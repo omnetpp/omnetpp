@@ -265,6 +265,40 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     }
 
     /**
+     * Returns true if string parses to an integer.
+     */
+    public static boolean isInteger(String string) {
+        try {
+            Long.parseLong(string);
+            return true;
+        } catch (NumberFormatException ex) {
+            return false;
+        }
+    }
+
+    /**
+     * Returns true if string parses to a double.
+     */
+    public static boolean isDouble(String string) {
+        try {
+            Double.parseDouble(string);
+            return true;
+        } catch (NumberFormatException ex) {
+            return false;
+        }
+    }
+
+    private static final Pattern QUANTITY_PATTERN = Pattern.compile("-?(\\d*\\.?\\d+([eE][+-]?\\d+)?\\s*[a-zA-Z]+\\s*)+");
+
+    /**
+     * Returns true if string syntactically looks like a quantity literal
+     * (allowing unit mismatches).
+     */
+    public static boolean isQuantityLike(String string) {
+        return QUANTITY_PATTERN.matcher(string).matches();
+    }
+
+    /**
      * Interface for replaceMatches().
      */
     public static interface IRegexpReplacementProvider {
@@ -497,6 +531,18 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
      */
     public static boolean needsQuotes(String text) {
         return Common.needsQuotes(text);
+    }
+
+    /**
+     * Returns true if string is a quoted string, e.g. "\"Hello world\"".
+     */
+    public static boolean isQuotedString(String string) {
+        try {
+            Common.parseQuotedString(string);
+            return true;
+        } catch (RuntimeException ex) {
+            return false;
+        }
     }
 
     /**

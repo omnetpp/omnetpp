@@ -7,6 +7,8 @@
 
 package org.omnetpp.inifile.editor.model;
 
+import static org.eclipse.core.resources.IMarker.SEVERITY_ERROR;
+import static org.eclipse.core.resources.IMarker.SEVERITY_INFO;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SIMTIME_RESOLUTION;
@@ -48,6 +50,9 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.collections.ProductIterator;
 import org.omnetpp.common.engine.Common;
+import org.omnetpp.common.engine.ExprValue;
+import org.omnetpp.common.engine.ExprValue.Type;
+import org.omnetpp.common.engine.Expression;
 import org.omnetpp.common.engine.PatternMatcher;
 import org.omnetpp.common.engine.StringSet;
 import org.omnetpp.common.engine.UnitConversion;
@@ -610,21 +615,17 @@ public final class InifileAnalyzer {
                 return;
         }
 
-        // check if value has the right type
-        String errorMessage = validateConfigValueByType(value, e);
-        if (errorMessage != null) {
-            markers.addError(section, key, errorMessage);
-            return;
-        }
-
-        if (e.getDataType()==ConfigOption.DataType.CFG_STRING && value.startsWith("\""))
-            value = Common.parseQuotedString(value); // cannot throw exception: value got validated above
+        // evaluate value if possible
+        value = evaluateConfigValue(section, key, value, e);
 
         // check validity of some settings, like network=, preload-ned-files=, etc
-        if (e==CFGID_EXTENDS) {
+        if (value == null) {
+            // evaluation failed
+        }
+        else if (e == CFGID_EXTENDS) {
             // note: we do not validate "extends=" here -- that's all done in validateSections()!
         }
-        else if (e==CFGID_NETWORK) {
+        else if (e == CFGID_NETWORK) {
             validateNetwork(section, key, ned, value);
         }
         else if (e == CFGID_SIMTIME_RESOLUTION) {
@@ -1062,56 +1063,113 @@ public final class InifileAnalyzer {
         }
     }
 
+    @SuppressWarnings("serial")
+    protected static class ValidationResult extends Exception {
+        private int severity;
+        public ValidationResult(int severity, String reason) {
+            super(reason);
+            this.severity = severity;
+        }
+        public int getSeverity() {
+            return severity;
+        }
+    }
+
     /**
-     * Validate a configuration entry's value.
+     * Try and evaluate value of a config option. Returns null if failed. Non-string
+     * values are returned in their string representation.
      */
-    protected static String validateConfigValueByType(String value, ConfigOption e) {
+    protected String evaluateConfigValue(String section, String key, String value, ConfigOption e) {
+        try {
+            return doEvaluateConfigValue(value, e);
+        }
+        catch (ValidationResult ex) {
+            markers.addMarker(ex.getSeverity(), section, key, ex.getMessage());
+            return null;
+        }
+    }
+
+    protected String doEvaluateConfigValue(String value, ConfigOption e) throws ValidationResult {
         switch (e.getDataType()) {
-        case CFG_BOOL:
-            if (!value.equals("true") && !value.equals("false"))
-                return "Value should be a boolean constant: true or false";
-            break;
+        case CFG_BOOL: {
+            if (value.equals("true") || value.equals("false"))
+                return value;
+            if (!NedTreeUtil.isExpressionValid(value))
+                throw new ValidationResult(SEVERITY_ERROR, "Syntax error in value");
+            return evaluateAndCheckType(value, Type.BOOL).toString();
+        }
         case CFG_INT:
-            try {
-                Integer.parseInt(value);
-            } catch (NumberFormatException ex) {
-                return "Value should be an integer constant";
-            }
-            break;
+            if (StringUtils.isInteger(value))
+                return value;
+            if (!NedTreeUtil.isExpressionValid(value))
+                throw new ValidationResult(SEVERITY_ERROR, "Syntax error in value");
+            return evaluateAndCheckType(value, Type.INT).toString();
+
         case CFG_DOUBLE:
             if (e.getUnit()==null) {
-                try {
-                    Double.parseDouble(value);
-                } catch (NumberFormatException ex) {
-                    return "Value should be a numeric constant (a double)";
-                }
+                if (StringUtils.isDouble(value))
+                    return value;
             }
             else {
-                try {
-                    UnitConversion.parseQuantity(value, e.getUnit());
-                } catch (RuntimeException ex) {
-                    return StringUtils.capitalize(ex.getMessage());
+                if (StringUtils.isQuantityLike(value)) {
+                    try {
+                        UnitConversion.parseQuantity(value, e.getUnit()); // validate, plus determine if it is convertible to the expected unit
+                        return value;
+                    }
+                    catch (RuntimeException ex) {
+                        throw new ValidationResult(SEVERITY_ERROR, ex.getMessage()); // "mismatched units", "cannot convert"
+                    }
                 }
             }
-            break;
-        case CFG_STRING:
+
+            if (!NedTreeUtil.isExpressionValid(value))
+                throw new ValidationResult(SEVERITY_ERROR, "Syntax error in value");
+
+            ExprValue result = evaluateAndCheckType(value, Type.DOUBLE);
+
             try {
-                if (value.startsWith("\""))
-                    Common.parseQuotedString(value);  //XXX wrong: what if it's an expression like "foo"+"bar" ?
-            } catch (RuntimeException ex) {
-                return "Error in string constant: "+ex.getMessage();
+                result.doubleValueInUnit(e.getUnit());
+                return result.toString();
             }
-            break;
+            catch (RuntimeException ex) {
+                throw new ValidationResult(SEVERITY_ERROR, ex.getMessage());  // "cannot convert"
+            }
+
+        case CFG_STRING:
+            if (!value.startsWith("\""))
+                return value; // interpret whole value as an unquoted string literal (this is what C++ code does too)
+            if (StringUtils.isQuotedString(value))
+                return Common.parseQuotedString(value);
+            if (!NedTreeUtil.isExpressionValid(value))
+                throw new ValidationResult(SEVERITY_ERROR, "Syntax error in value");
+            return evaluateAndCheckType(value, Type.STRING).stringValue();
+
         case CFG_FILENAME:
         case CFG_FILENAMES:
         case CFG_PATH:
             //TODO
-            break;
+            return value;
+
         case CFG_CUSTOM:
             // cannot validate
-            break;
+            return value;
+        default:
+            Assert.isTrue(false);
+            return null;
         }
-        return null;
+    }
+
+    protected ExprValue evaluateAndCheckType(String value, Type expectedType) throws ValidationResult {
+        try {
+            ExprValue result = new Expression().parse(value).evaluate();
+            Type type = result.getType();
+            if (type == expectedType || (expectedType == Type.DOUBLE && type == Type.INT))
+                return result;
+            throw new ValidationResult(SEVERITY_ERROR, "'" + ExprValue.getTypeName(expectedType) + "' value expected, got '" + ExprValue.getTypeName(type) + "'");
+        }
+        catch (RuntimeException ex) {
+            throw new ValidationResult(SEVERITY_INFO, "Potential error: " + ex.getMessage()); // Note: just "info" because of danger of false positive (due to unrecognized NED operators or user-defined NED functions)
+        }
     }
 
     protected void validateParamKey(String section, String key, INedTypeResolver ned) {
@@ -1174,18 +1232,14 @@ public final class InifileAnalyzer {
                 return;
         }
 
-        // check if value has the right type
-        String errorMessage = validateConfigValueByType(value, e);
-        if (errorMessage != null) {
-            markers.addError(section, key, errorMessage);
-            return;
-        }
-
-        if (e.getDataType()==ConfigOption.DataType.CFG_STRING && value.startsWith("\""))
-            value = Common.parseQuotedString(value); // cannot throw exception: value got validated above
+        // try and evaluate value
+        value = evaluateConfigValue(section, key, value, e);
 
         // check validity of some settings, like record-interval=, etc
-        if (e==CFGID_VECTOR_RECORDING_INTERVALS) {
+        if (value == null) {
+            // validation failed
+        }
+        else if (e == CFGID_VECTOR_RECORDING_INTERVALS) {
             // validate syntax
             StringTokenizer tokenizer = new StringTokenizer(value, ",");
             while (tokenizer.hasMoreTokens()) {

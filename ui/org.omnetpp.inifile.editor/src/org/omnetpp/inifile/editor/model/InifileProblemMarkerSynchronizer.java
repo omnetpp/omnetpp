@@ -29,48 +29,56 @@ class InifileProblemMarkerSynchronizer extends ProblemMarkerSynchronizer {
     }
 
     public void addError(String section, String message) {
-        LineInfo line = doc.getSectionLineDetails(section);
-        addMarker(line, IMarker.SEVERITY_ERROR, message);
+        addMarker(IMarker.SEVERITY_ERROR, section, message);
     }
 
     public void addError(String section, String key, String message) {
-        LineInfo line = doc.getEntryLineDetails(section, key);
-        addMarker(line, IMarker.SEVERITY_ERROR, message);
+        addMarker(IMarker.SEVERITY_ERROR, section, key, message);
     }
 
     public void addError(IFile file, int line, String message) {
-        addMarker(file, line, IMarker.SEVERITY_ERROR, message);
+        addMarker(IMarker.SEVERITY_ERROR, file, line, message);
     }
 
     public void addWarning(String section, String message) {
-        LineInfo line = doc.getSectionLineDetails(section);
-        addMarker(line, IMarker.SEVERITY_WARNING, message);
+        addMarker(IMarker.SEVERITY_WARNING, section, message);
     }
 
     public void addWarning(String section, String key, String message) {
-        LineInfo line = doc.getEntryLineDetails(section, key);
-        addMarker(line, IMarker.SEVERITY_WARNING, message);
+        addMarker(IMarker.SEVERITY_WARNING, section, key, message);
     }
 
     public void addWarning(IFile file, int line, String message) {
-        addMarker(file, line, IMarker.SEVERITY_WARNING, message);
+        addMarker(IMarker.SEVERITY_WARNING, file, line, message);
     }
 
     public void addInfo(String section, String message) {
-        LineInfo line = doc.getSectionLineDetails(section);
-        addMarker(line, IMarker.SEVERITY_INFO, message);
+        addMarker(IMarker.SEVERITY_INFO, section, message);
     }
 
     public void addInfo(String section, String key, String message) {
+        addMarker(IMarker.SEVERITY_INFO, section, key, message);
+    }
+
+    public void addInfo(IFile file, int line, String message) {
+        addMarker(IMarker.SEVERITY_INFO, file, line, message);
+    }
+
+    public void addMarker(int severity, String section, String message) {
+        LineInfo line = doc.getSectionLineDetails(section);
+        addMarker(severity, line, message);
+    }
+
+    public void addMarker(int severity, String section, String key, String message) {
         LineInfo line = doc.getEntryLineDetails(section, key);
-        addMarker(line, IMarker.SEVERITY_INFO, message);
+        addMarker(severity, line, message);
     }
 
-    public void addMarker(LineInfo line, int severity, String message) {
-        addMarker(line.getFile(), line.getLineNumber(), severity, message);
+    public void addMarker(int severity, LineInfo lineInfo, String message) {
+        addMarker(severity, lineInfo.getFile(), lineInfo.getLineNumber(), message);
     }
 
-    public void addMarker(IFile file, int line, int severity, String message) {
+    public void addMarker(int severity, IFile file, int line, String message) {
         if (!file.equals(doc.getDocumentFile()))
             message += " (when included from "+getMainIniFile()+")";
         Map<String, Object> map = new HashMap<String, Object>();
