@@ -7,11 +7,11 @@
 #
 
 
-cd `dirname $0`
-TEST_DIR=`pwd`
+cd $(dirname $0)
+TEST_DIR=$(pwd)
 LOG_DIR=$TEST_DIR/_buildlog
 cd $TEST_DIR/../..
-OMNETPP_ROOT=`pwd`
+OMNETPP_ROOT=$(pwd)
 
 # storing PID so we can exit from this shell in case of failure even if we are running inside a subshell
 trap "exit 1" TERM
@@ -22,13 +22,13 @@ export WITH_NETBUILDER=yes
 export WITH_PARSIM=yes
 export SHARED_LIBS=yes
 export WITH_QTENV=yes
+export WITH_LIBXML=no
 export WITH_OSG=yes
 export WITH_OSGEARTH=yes
 export WITH_SYSTEMC=no
 export PREFER_CLANG=yes
+export PREFER_LLD=yes
 export MPI_LIBS=
-export LIBXML_LIBS=
-export EXPAT_LIBS=
 export CFLAGS_DEBUG=
 export CFLAGS_RELEASE=
 
@@ -36,10 +36,10 @@ export TWEAKCONFIG="perl $TEST_DIR/tweakconfigfile.pl"
 
 # opsystem detection (assume windows by default)
 export PLATFORM=windows
-if [ `uname -s` = Linux ]; then
+if [ $(uname -s) = Linux ]; then
     export PLATFORM=linux
 fi
-if [ `uname -s` = Darwin ]; then
+if [ $(uname -s) = Darwin ]; then
     export PLATFORM=macosx
 fi
 
@@ -93,33 +93,34 @@ compile() {
 
     # tweak
     $TWEAKCONFIG setoradd configure.user PREFER_CLANG "$PREFER_CLANG" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user PREFER_LLD "$PREFER_LLD" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user SHARED_LIBS  "$SHARED_LIBS" || failure $CFG
     $TWEAKCONFIG setoradd configure.user WITH_NETBUILDER  "$WITH_NETBUILDER" || failure $CFG
     $TWEAKCONFIG setoradd configure.user WITH_PARSIM  "$WITH_PARSIM" || failure $CFG
     $TWEAKCONFIG setoradd configure.user WITH_QTENV  "$WITH_QTENV" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user WITH_LIBXML  "$WITH_LIBXML" || failure $CFG
     $TWEAKCONFIG setoradd configure.user WITH_OSG  "$WITH_OSG" || failure $CFG
     $TWEAKCONFIG setoradd configure.user WITH_OSGEARTH  "$WITH_OSGEARTH" || failure $CFG
-    $TWEAKCONFIG setoradd configure.user SHARED_LIBS  "$SHARED_LIBS" || failure $CFG
-    $TWEAKCONFIG setoradd configure.user MPI_LIBS  "$MPI_LIBS" || failure $CFG
-    $TWEAKCONFIG setoradd configure.user LIBXML_LIBS  "$LIBXML_LIBS" || failure $CFG
-    $TWEAKCONFIG setoradd configure.user EXPAT_LIBS  "$EXPAT_LIBS" || failure $CFG
     $TWEAKCONFIG setoradd configure.user WITH_SYSTEMC  "$WITH_SYSTEMC" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user MPI_LIBS  "$MPI_LIBS" || failure $CFG
 
     echo "    Configuring..."
     cp configure.user "$LOG_DIR/$CFG-configure.user"
     ./configure >"$LOG_DIR/$CFG-configure.out" 2>"$LOG_DIR/$CFG-configure.err"
     cp Makefile.inc "$LOG_DIR/$CFG-Makefile.inc"
 
+    $TWEAKCONFIG assert Makefile.inc SHARED_LIBS  "$SHARED_LIBS" || failure $CFG
     $TWEAKCONFIG assert Makefile.inc WITH_NETBUILDER  "$WITH_NETBUILDER" || failure $CFG
     $TWEAKCONFIG assert Makefile.inc WITH_PARSIM  "$WITH_PARSIM" || failure $CFG
-    $TWEAKCONFIG assert Makefile.inc SHARED_LIBS  "$SHARED_LIBS" || failure $CFG
     $TWEAKCONFIG assert Makefile.inc WITH_QTENV  "$WITH_QTENV" || failure $CFG
+    $TWEAKCONFIG assert Makefile.inc WITH_LIBXML  "$WITH_LIBXML" || failure $CFG
     $TWEAKCONFIG assert Makefile.inc WITH_OSG  "$WITH_OSG" || failure $CFG
     $TWEAKCONFIG assert Makefile.inc WITH_OSGEARTH  "$WITH_OSGEARTH" || failure $CFG
     $TWEAKCONFIG assert Makefile.inc WITH_SYSTEMC  "$WITH_SYSTEMC" || failure $CFG
 
     echo "    Building..."
     $MAKE_PROG cleanall >"$LOG_DIR/$CFG-makeclean.out" 2>"$LOG_DIR/$CFG-makeclean.err" || failure "make cleanall failed - $CFG"
-    $MAKE_PROG -j8 >"$LOG_DIR/$CFG-make.out" 2>"$LOG_DIR/$CFG-make.err" || failure "make failed - $CFG"
+    $MAKE_PROG -j16 >"$LOG_DIR/$CFG-make.out" 2>"$LOG_DIR/$CFG-make.err" || failure "make failed - $CFG"
     samples/aloha/aloha -v >"$LOG_DIR/$CFG-buildinfo.out" 2>"$LOG_DIR/$CFG-buildinfo.err"
 }
 
@@ -130,12 +131,9 @@ compile() {
 #
 
 runtest() {
-    maxfailures=$2
     outputfile="$LOG_DIR/$CFG-$1-test.out"
     echo "    Running $1 tests..."
     cd test && $MAKE_PROG test_$1 >$outputfile 2>"$LOG_DIR/$CFG-$1-test.err"
-    grep -E "PASS:|FAILED" $outputfile
-    awk '/FAIL:/ {if($4>'$maxfailures') {exit 1;} }' $outputfile || failure "test_$1 failed (too many failed tests) - $CFG"
 }
 
 ################################################
@@ -149,35 +147,16 @@ mkdir -p $LOG_DIR
 if [ "$PLATFORM" = "windows" -a -f bin/opp_run.exe ]; then
 
   CFG=precompiled-binaries
-  (runtest core 2)
-  (runtest common 0)
-  (runtest envir 0)
-  (runtest makemake 0)
+  (runtest core)
+  (runtest common)
+  (runtest envir)
+  (runtest makemake)
 fi
 
 ########################################
 #
 # Compile tests
 #
-
-# check building with gcc
-CFG=default-gcc
-(TOOLCHAIN=gcc compile)
-contains cParsimPartition yes
-contains "Cmdenv : command-line user interface" yes
-contains "Qtenv : Qt-based graphical user interface" yes
-
-(TEST_PROG="opp_run -v" contains "GCC" yes)
-
-(TEST_PROG="opp_run -v" contains "XMLPARSER=libxml" yes)
-(TEST_PROG="opp_run -v" contains "WITH_NETBUILDER" yes)
-(TEST_PROG="opp_run -v" contains "large-file-support=yes" yes)
-(TEST_PROG="opp_run -v" contains "WITH_OSG" yes)
-(TEST_PROG="opp_run -v" contains "WITH_OSGEARTH" yes)
-(runtest core 2)
-(runtest common 0)
-(runtest envir 0)
-(runtest makemake 0)
 
 ###########################################
 CFG=default
@@ -187,17 +166,50 @@ contains cParsimPartition yes
 contains "Cmdenv : command-line user interface" yes
 contains "Qtenv : Qt-based graphical user interface" yes
 
-(TEST_PROG="opp_run -v" contains "Clang" yes)
-
-(TEST_PROG="opp_run -v" contains "XMLPARSER=libxml" yes)
+(TEST_PROG="opp_run -v" contains "CLANG" yes)
 (TEST_PROG="opp_run -v" contains "WITH_NETBUILDER" yes)
-(TEST_PROG="opp_run -v" contains "large-file-support=yes" yes)
+(TEST_PROG="opp_run -v" contains "WITH_PARSIM" yes)
 (TEST_PROG="opp_run -v" contains "WITH_OSG" yes)
 (TEST_PROG="opp_run -v" contains "WITH_OSGEARTH" yes)
-(runtest core 2)
-(runtest common 0)
-(runtest envir 0)
-(runtest makemake 0)
+(runtest core)
+(runtest common)
+(runtest envir)
+(runtest makemake)
+
+###########################################
+CFG=with_libxml
+(WITH_LIBXML=yes compile)
+
+contains cParsimPartition yes
+contains "Cmdenv : command-line user interface" yes
+contains "Qtenv : Qt-based graphical user interface" yes
+
+(TEST_PROG="opp_run -v" contains "WITH_LIBXML" yes)
+(TEST_PROG="opp_run -v" contains "WITH_NETBUILDER" yes)
+(TEST_PROG="opp_run -v" contains "WITH_PARSIM" yes)
+(TEST_PROG="opp_run -v" contains "WITH_OSG" yes)
+(TEST_PROG="opp_run -v" contains "WITH_OSGEARTH" yes)
+(runtest core)
+(runtest common)
+(runtest envir)
+(runtest makemake)
+
+# check building with gcc
+CFG=default-gcc
+(TOOLCHAIN=gcc compile)
+contains cParsimPartition yes
+contains "Cmdenv : command-line user interface" yes
+contains "Qtenv : Qt-based graphical user interface" yes
+
+(TEST_PROG="opp_run -v" contains "GCC" yes)
+(TEST_PROG="opp_run -v" contains "WITH_NETBUILDER" yes)
+(TEST_PROG="opp_run -v" contains "WITH_PARSIM" yes)
+(TEST_PROG="opp_run -v" contains "WITH_OSG" yes)
+(TEST_PROG="opp_run -v" contains "WITH_OSGEARTH" yes)
+(runtest core)
+(runtest common)
+(runtest envir)
+(runtest makemake)
 
 #########################################
 # check building without OSGEARTH
@@ -205,7 +217,7 @@ CFG=without_osgearth
 (WITH_OSG=yes WITH_OSGEARTH=no compile)
 (TEST_PROG="opp_run -v" contains "WITH_OSG" yes)
 (TEST_PROG="opp_run -v" contains "WITH_OSGEARTH" no)
-(runtest makemake 0)
+(runtest makemake)
 
 #########################################
 # check building without OSG and OSGEARTH
@@ -213,7 +225,7 @@ CFG=without_osg
 (WITH_OSG=no WITH_OSGEARTH=no compile)
 (TEST_PROG="opp_run -v" contains "WITH_OSG" no)
 (TEST_PROG="opp_run -v" contains "WITH_OSGEARTH" no)
-(runtest makemake 0)
+(runtest makemake)
 
 ########################################
 # Run SystemC compile tests on Linux
@@ -233,8 +245,8 @@ CFG=default_static
 # the static build does not contain opp_run so we must use the aloha sample
 (TEST_PROG="samples/aloha/aloha -h all" contains "Qtenv : Qt-based graphical user interface" yes)
 (TEST_PROG="samples/aloha/aloha -h all" contains "Cmdenv : command-line user interface" yes)
-(TEST_PROG="samples/aloha/aloha -v" contains "XMLPARSER=libxml" yes)
 (TEST_PROG="samples/aloha/aloha -v" contains "WITH_NETBUILDER" yes)
+(TEST_PROG="samples/aloha/aloha -v" contains "WITH_PARSIM" yes)
 (TEST_PROG="samples/aloha/aloha -v" contains "WITH_OSG" yes)
 (TEST_PROG="samples/aloha/aloha -v" contains "WITH_OSGEARTH" yes)
 
@@ -243,19 +255,19 @@ CFG=default_static
 # On Mac and Windows the user must install MPI libs manually.
 if [ "$PLATFORM" = "linux" ]; then
   ########################################
-  CFG=parsim
+  CFG=parsim_with_mpi
   (compile)
   contains cParsimPartition yes
   contains cMPICommunications yes
-  (runtest makemake 0)
+  (runtest makemake)
 
   ########################################
   # test if disabling MPI is working
   CFG=no_mpi
-  (WITH_PARSIM=yes MPI_LIBS=-lbubu compile)
+  (MPI_LIBS=-lbubu compile)
   contains cParsimPartition yes
   contains cMPICommunications no
-  (runtest makemake 0)
+  (runtest makemake)
 
   ########################################
   # test if disabling both parsim works
@@ -263,17 +275,5 @@ if [ "$PLATFORM" = "linux" ]; then
   (WITH_PARSIM=no compile)
   contains cParsimPartition no
   contains cMPICommunications no
-  (runtest makemake 0)
+  (runtest makemake)
 fi
-
-########################################
-CFG=no_libxml
-(LIBXML_LIBS=-lbubu compile)
-(TEST_PROG="opp_run -v" contains "XMLPARSER=expat" yes)
-(runtest makemake 0)
-
-########################################
-CFG=no_xmlparser
-(LIBXML_LIBS=-lbubu EXPAT_LIBS=-lbubu compile)
-(TEST_PROG="opp_run -v" contains "XMLPARSER=none" yes)
-(runtest makemake 0)
