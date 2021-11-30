@@ -5392,8 +5392,10 @@ fi
 
 
       if test "$MPICPP" != "not found"; then
-          MPI_CFLAGS=`mpic++ -showme:compile`
-          MPI_LIBS=`mpic++ -showme:link`
+          MPI_CFLAGS=$(mpic++ -showme:compile)
+          MPI_LIBS=$(mpic++ -showme:link)
+          # see bug: https://bugs.launchpad.net/ubuntu/+source/openmpi/+bug/1941786
+          MPI_LIBS="$MPI_LIBS -lopen-pal"
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS

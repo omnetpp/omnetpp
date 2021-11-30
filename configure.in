@@ -967,8 +967,10 @@ if test "$WITH_PARSIM" = "yes"; then
       # NOTE: on some systems (e.g. RHEL and Fedora), "module load openmpi_i386" or similar command may be additionally needed to make MPI accessible
       AC_CHECK_PROG(MPICPP, mpic++, mpic++, not found)
       if test "$MPICPP" != "not found"; then
-          MPI_CFLAGS=`mpic++ -showme:compile`
-          MPI_LIBS=`mpic++ -showme:link`
+          MPI_CFLAGS=$(mpic++ -showme:compile)
+          MPI_LIBS=$(mpic++ -showme:link)
+          # see bug: https://bugs.launchpad.net/ubuntu/+source/openmpi/+bug/1941786
+          MPI_LIBS="$MPI_LIBS -lopen-pal"
           OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $CFLAGS $MPI_CFLAGS, $LDFLAGS $MPI_LIBS, mpi_ok)
       fi
 
