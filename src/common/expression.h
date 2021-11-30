@@ -190,6 +190,13 @@ public:
     virtual ExprValue evaluate(Context* context = nullptr) const;
 
     /**
+     * Evaluate the expression, and return the type of the result.
+     * Throws an exception if there is an error during evaluation.
+     * (This method is mainly for use from Java.)
+     */
+    ExprValue::Type evaluateForType(Context* context = nullptr) const;
+
+    /**
      * Evaluate the expression and convert the result to bool if possible;
      * throw an error if conversion from that type is not supported.
      */

@@ -13,6 +13,7 @@
 #include "common/bigdecimal.h"
 #include "common/rwlock.h"
 #include "common/expression.h"
+#include "common/exprvalue.h"
 #include "common/fileutil.h"
 #include "common/linetokenizer.h"
 
@@ -187,6 +188,32 @@ SWIG_JAVABODY_METHODS(public, public, ILock)
 
 %include "common/rwlock.h"
 
+/* -------------------- exprvalue.h -------------------------- */
+
+namespace omnetpp { namespace common { namespace expression {
+
+class ExprValue 
+{
+  public:
+    enum Type {UNDEF=0, BOOL='B', INT='L', DOUBLE='D', STRING='S', POINTER='O'};
+
+  public:
+    Type getType() const;
+    static const char *getTypeName(Type t);
+    bool isNumeric() const;
+    std::string str() const;
+    bool boolValue() const;
+    intval_t intValue() const;
+    intval_t intValueInUnit(const char *targetUnit) const;
+    double doubleValue() const;
+    double doubleValueInUnit(const char *targetUnit) const;
+    const char *getUnit() const;
+    const char *stringValue() const;
+};
+
+} } } // namespaces
+
+
 /* -------------------- expression.h -------------------------- */
 
 namespace omnetpp { namespace common {
@@ -201,7 +228,6 @@ namespace omnetpp { namespace common {
 %ignore Expression::setExpressionTree;
 %ignore Expression::getExpressionTree;
 %ignore Expression::removeExpressionTree;
-%ignore Expression::evaluate;
 %ignore Expression::parseToAst;
 %ignore Expression::translateToExpressionTree;
 %ignore Expression::performConstantFolding;
@@ -210,9 +236,6 @@ namespace omnetpp { namespace common {
 %ignore Expression::dumpAst;
 %ignore Expression::dumpAst;
 %ignore Expression::dumpExprTree;
-
-
-
 
 } } // namespaces
 

@@ -265,6 +265,12 @@ ExprValue Expression::evaluate(Context *context) const
     return tree->tryEvaluate(context);
 }
 
+ExprValue::Type Expression::evaluateForType(Context* context) const
+{
+    ExprValue v = evaluate(context);  // note: if result is a dynamically allocated object (i.e. with type=POINTER), it is leaked here!
+    return v.getType();
+}
+
 bool Expression::boolValue(Context *context) const
 {
     ExprValue v = evaluate(context);
