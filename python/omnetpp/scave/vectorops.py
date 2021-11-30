@@ -689,6 +689,20 @@ def timeshift(r, dt):
     return r
 
 
+@vector_operation("Time dilation", "timedilation(c=1)")
+def timedilation(r, c):
+    """
+    Dilates the input series in time by a constant factor: tout[k] = t[k] * c
+    """
+    t = r['vectime']
+
+    r['vectime'] = t * c
+
+    if "title" in r:
+        r['title'] = r['title'] + " dilated by " + str(c)
+    return r
+
+
 @vector_operation("Time to serial")
 def timetoserial(r):
     """
