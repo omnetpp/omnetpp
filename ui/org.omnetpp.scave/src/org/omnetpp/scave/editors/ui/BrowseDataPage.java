@@ -448,6 +448,7 @@ public class BrowseDataPage extends FormEditorPage {
         getAllPanel().setShowFieldsAsScalars(show);
         getScalarsPanel().setShowFieldsAsScalars(show);
         refreshPage(scaveEditor.getResultFileManager());
+        scaveEditor.getActions().showFieldsAsScalarsAction.setChecked(show);
     }
 
     @Override
