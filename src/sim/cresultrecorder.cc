@@ -80,6 +80,29 @@ opp_string_map cResultRecorder::getStatisticAttributes()
     return getStatisticAttributesFrom(attrsProperty);
 }
 
+static bool hasDisplayNameInPath(cComponent *component)
+{
+    cComponent *comp = component;
+    for (; comp != nullptr; comp = comp->getParentModule())
+        if (!opp_isempty(comp->getDisplayName()))
+            return true;
+    return false;
+}
+
+static const char *getDisplayNameOrName(cComponent *component)
+{
+    const char *displayName = component->getDisplayName();
+    return opp_isempty(displayName) ? component->getFullName() : displayName;
+}
+
+static std::string getComponentDisplayPath(cComponent *component)
+{
+    std::string result = getDisplayNameOrName(component);
+    for (cModule *m = component->getParentModule(); m != nullptr; m = m->getParentModule())
+        result = std::string(getDisplayNameOrName(m)) + "." + result;
+    return result;
+}
+
 opp_string_map cResultRecorder::getStatisticAttributesFrom(cProperty *property)
 {
     opp_string_map result;
@@ -107,6 +130,14 @@ opp_string_map cResultRecorder::getStatisticAttributesFrom(cProperty *property)
         if (strcmp(key, "title") == 0)
             tweakTitle(result[key]);
     }
+
+    result["recordingmode"] = getRecordingMode();
+
+    // add display name of owner module/channel
+    cComponent *component = getComponent();
+    if (hasDisplayNameInPath(component))
+        result["moduledisplaypath"] = getComponentDisplayPath(component); // "module" is technically not correct, but probably more intuitive/useful than "component"
+
     return result;
 }
 
