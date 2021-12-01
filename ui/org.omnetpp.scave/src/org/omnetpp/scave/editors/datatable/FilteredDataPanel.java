@@ -280,6 +280,10 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
         runFilter();
     }
 
+    public boolean isInAdvancedFilterMode() {
+        return filterBar.isShowingFilterExpression();
+    }
+
     /**
      * Shows/hides the filter panel.
      */

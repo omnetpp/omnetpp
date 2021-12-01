@@ -406,8 +406,13 @@ public class ResultSelectionFilterGenerator {
                 filter += " AND isfield =~ false";
 
             String panelFilter = dataPanel.getFilter();
-            if (!panelFilter.equals("*"))
-                filter += " AND " + dataPanel.getFilter();
+            if (!panelFilter.equals("*")) {
+                if (dataPanel.isInAdvancedFilterMode() && panelFilter.contains("OR")) {
+                    // to avoid messing up operator precedences after concatenation
+                    panelFilter = "(" + panelFilter + ")";
+                }
+                filter += " AND " + panelFilter;
+            }
 
             if (selection.size() < shown.size()) {
                 IDList unselected = shown.subtract(selection);
