@@ -1,25 +1,18 @@
 //=========================================================================
 //  CNAMEDPIPECOMM.H - part of
 //
-//                  OMNeT++/OMNEST
-//           Discrete System Simulation in C++
-//
-//  Author: Andras Varga, 2003
-//          Dept. of Electrical and Computer Systems Engineering,
-//          Monash University, Melbourne, Australia
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
 //
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 2003-2017 Andras Varga
+  Copyright (C) 1992-2017 Andras Varga
   Copyright (C) 2006-2017 OpenSim Ltd.
-  Monash University, Dept. of Electrical and Computer Systems Eng.
-  Melbourne, Australia
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
-
 
 #ifndef __OMNETPP_CNAMEDPIPECOMM_H
 #define __OMNETPP_CNAMEDPIPECOMM_H

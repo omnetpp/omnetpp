@@ -1,23 +1,18 @@
 //=========================================================================
 //  PLATDEP/TIME.H - part of
 //
-//                  OMNeT++/OMNEST
-//           Discrete System Simulation in C++
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
 //
-//  Author: Andras Varga, 2005
-//          Dept. of Electrical and Computer Systems Engineering,
-//          Monash University, Melbourne, Australia
-//
-//=========================================================================
+//==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 2005-2017 Andras Varga
+  Copyright (C) 1992-2017 Andras Varga
   Copyright (C) 2006-2017 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
-
 #ifndef __OMNETPP_PLATDEP_TIMEUTIL_H
 #define __OMNETPP_PLATDEP_TIMEUTIL_H
 

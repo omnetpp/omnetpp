@@ -1,14 +1,10 @@
 //==========================================================================
 //   CPLACEHOLDERMOD.CC  -  header for
 //
-//                    OMNeT++/OMNEST
-//           Discrete System Simulation in C++
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
 //
-//  Author: Andras Varga, 2003
-//          Dept. of Electrical and Computer Systems Engineering,
-//          Monash University, Melbourne, Australia
-//
-//==========================================================================
+//=========================================================================
 
 /*--------------------------------------------------------------*
   Copyright (C) 1992-2017 Andras Varga
@@ -17,6 +13,7 @@
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
+
 
 #include "cplaceholdermod.h"
 #include "cproxygate.h"
