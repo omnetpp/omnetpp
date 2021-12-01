@@ -64,7 +64,7 @@ To enable the optional parallel simulation support you will need to install the 
 
 .. code::
 
-   $ sudo apt-get install openmpi-bin libopenmpi-dev
+   $ sudo apt-get install mpi-default-dev
 
 At the confirmation questions (*Do you want to continue? [Y/N]*), answer *Y*.
 
@@ -89,7 +89,7 @@ The packages:
 
 -  required: build-essential, gcc, g++, bison, flex, perl, qtbase5-dev, qtchooser, qt5-qmake, qtbase5-dev-tools,
    python3, libxml2-dev, zlib1g-dev, doxygen, graphviz, libwebkit2gtk-4.0-37
--  recommended: libopenscenegraph-dev, openscenegraph-plugin-osgearth, libosgearth-dev, openmpi-bin, libopenmpi-dev
+-  recommended: libopenscenegraph-dev, openscenegraph-plugin-osgearth, libosgearth-dev, mpi-default-dev
 
 .. figure:: pictures/ubuntu-synaptic.png
    :width: 75.0%
