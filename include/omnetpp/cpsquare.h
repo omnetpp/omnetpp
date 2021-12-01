@@ -13,7 +13,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-//  Author: Babak Fakhamzadeh, TU Delft, Dec 1996
+//  Author: Andras Varga, based on code of Babak Fakhamzadeh, TU Delft, Mar-Jun 1996;
 
 #ifndef __OMNETPP_CPSQUARE_H
 #define __OMNETPP_CPSQUARE_H

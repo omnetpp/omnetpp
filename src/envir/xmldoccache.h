@@ -6,8 +6,6 @@
 //  Declaration of the following classes:
 //    cXMLDocCache : reads and caches XML config files
 //
-//  Author: Andras Varga
-//
 //==========================================================================
 
 /*--------------------------------------------------------------*

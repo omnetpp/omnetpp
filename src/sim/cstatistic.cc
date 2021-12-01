@@ -9,8 +9,6 @@
 //   Member functions of
 //     cStatistic: base class of different statistic collecting classes
 //
-//  Author: Andras Varga
-//
 //=========================================================================
 
 /*--------------------------------------------------------------*

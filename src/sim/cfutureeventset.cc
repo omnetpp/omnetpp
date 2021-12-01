@@ -7,9 +7,6 @@
 //   Member functions of
 //    cFutureEventSet : future event set, implemented as heap
 //
-//  Author: Andras Varga, based on the code from Gabor Lencse
-//          (the original is taken from G. H. Gonnet's book pp. 273-274)
-//
 //=========================================================================
 
 /*--------------------------------------------------------------*
@@ -19,6 +16,9 @@
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
+
+//  Author: Andras Varga, based on the code from Gabor Lencse
+//          (the original is taken from G. H. Gonnet's book pp. 273-274)
 
 #include <sstream>
 #include "omnetpp/cfutureeventset.h"

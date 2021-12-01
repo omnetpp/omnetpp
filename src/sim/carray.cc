@@ -7,8 +7,6 @@
 //   Member functions of
 //    cArray : flexible array to store cObject objects
 //
-//  Author: Andras Varga
-//
 //=========================================================================
 
 /*--------------------------------------------------------------*

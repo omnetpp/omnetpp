@@ -13,8 +13,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-//  Author: Babak Fakhamzadeh, TU Delft, Mar-Jun 1996;
-//  Rewritten by Andras Varga
+//  Author: Andras Varga, based on code of Babak Fakhamzadeh, TU Delft, Mar-Jun 1996;
 
 #ifndef __OMNETPP_CKSPLIT_H
 #define __OMNETPP_CKSPLIT_H

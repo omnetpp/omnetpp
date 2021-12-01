@@ -10,8 +10,6 @@
 //   Member functions of
 //    cSimulation  : holds modules and manages the simulation
 //
-//  Author: Andras Varga
-//
 //=========================================================================
 
 /*--------------------------------------------------------------*

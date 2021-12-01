@@ -6,8 +6,6 @@
 //  Declaration of the following classes:
 //    Registration of user interface classes
 //
-//  Author: Andras Varga
-//
 //==========================================================================
 
 /*--------------------------------------------------------------*

@@ -9,8 +9,6 @@
 //   Member functions of
 //    cStdDev: basic statistics (mean, stddev, min, max, etc)
 //
-//  Author: Andras Varga
-//
 //=========================================================================
 
 /*--------------------------------------------------------------*

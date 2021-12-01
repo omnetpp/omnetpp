@@ -7,8 +7,6 @@
 //   Member functions of
 //    cSimpleModule   : base for simple module objects
 //
-//  Author: Andras Varga
-//
 //======================================================================
 
 /*--------------------------------------------------------------*

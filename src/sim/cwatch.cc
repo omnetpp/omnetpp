@@ -8,8 +8,6 @@
 //   Member functions of
 //    cWatchBase etc: make primitive types, structs etc inspectable
 //
-//  Author: Andras Varga
-//
 //=========================================================================
 
 /*--------------------------------------------------------------*

@@ -7,8 +7,6 @@
 //   Member functions of
 //    cVisitor:  enables traversing the object tree
 //
-//  Author: Andras Varga
-//
 //=========================================================================
 
 /*--------------------------------------------------------------*

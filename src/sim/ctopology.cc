@@ -7,8 +7,6 @@
 //   Member functions of
 //     cTopology : network topology to find shortest paths etc.
 //
-//  Author: Andras Varga
-//
 //=========================================================================
 
 /*--------------------------------------------------------------*

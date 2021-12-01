@@ -4,8 +4,6 @@
 //                 OMNeT++/OMNEST
 //              Discrete System Simulation in C++
 //
-//  Author: Andras Varga
-//          based on Stig Kofoed's portable coroutines, see the Manual
 //========================================================================
 
 /*--------------------------------------------------------------*
@@ -15,6 +13,8 @@
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
+
+//  Author: Andras Varga, based on Stig Kofoed's portable coroutines, see the Manual
 
 #include <cstring>
 #include "task.h"

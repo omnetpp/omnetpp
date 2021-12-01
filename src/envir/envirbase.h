@@ -7,8 +7,6 @@
 //  Declaration of the following classes:
 //    EnvirBase:  abstract base class for simulation applications
 //
-//  Author: Andras Varga
-//
 //==========================================================================
 
 /*--------------------------------------------------------------*

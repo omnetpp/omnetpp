@@ -7,8 +7,6 @@
 //  Declaration of the following classes:
 //    StringTokenizer  : string tokenizer utility class
 //
-//  Author: Andras Varga
-//
 //==========================================================================
 
 /*--------------------------------------------------------------*
