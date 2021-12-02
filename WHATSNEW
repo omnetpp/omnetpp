@@ -6,6 +6,37 @@ simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
 
+OMNeT++ 6.0pre15 (Dec 2021)
+---------------------------
+This prerelase contains minor fixes and cleanups in preparation to the final
+6.0 release.
+
+Build:
+
+  - The content of the `$PLATFORM` makefile variable has changed. Until know,
+    it contained the `platform.architecture` pair (e.g. `win32.x86_64`) which was
+    misleading. From now on, `Makefile.inc` provides `$PLATFORM` (e.g. `win32`)
+    and `$ARCH` (e.g. `x86_64`) in separate variables. `makefrag` files must be
+    updated if `$PLATFORM` variable was used in them.
+
+  - To build with AKAROA support, `WITH_AKAROA=yes` must be specified in the
+    `configure.user` file. The configuration script no longer tries to autodetect
+    it without explicitly requesting it.
+
+IDE:
+
+  - Update to Eclipse 4.22, CDT 10.5 and PyDev 9.2. The private JRE bundled with
+    the IDE has been updated to Java 17 LTS.
+
+Tools:
+
+  - `opp_run -v` now outputs the system architecture OMNeT++ was built for
+    (e.g. ARCH_X86_64 or ARCH_AARCH64).
+
+  - On Windows and macOS, the directory names in the `tools` directory have changed
+    to `win32.x86_64` and `macos.x86_64` respectively.
+
+
 OMNeT++ 6.0pre14 (Nov 2021)
 ---------------------------
 
