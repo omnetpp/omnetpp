@@ -1,8 +1,8 @@
 #
-# Customize Makefile to link with winsoc on windows
-# but without the user interface libs (oppenvir, oppcmdenv, opptkenv)
+# Customize Makefile to link with winsock on Windows
+# but without the user interface libs (envir, cmdenv, qtenv)
 #
 
-ifeq ($(PLATFORM),win32.x86_64)
+ifeq ($(PLATFORM),win32)
 OMNETPP_LIBS += -lwsock32
 endif
