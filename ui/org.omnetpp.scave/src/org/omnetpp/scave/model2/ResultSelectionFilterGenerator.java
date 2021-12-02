@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.StringUtils;
@@ -27,7 +28,7 @@ import org.omnetpp.scave.engine.Scave;
  */
 public class ResultSelectionFilterGenerator {
 
-    protected static boolean debug = false; // TODO initialize from OMNETPP_DEBUG envvar, like elsewhere
+    protected static boolean debug = Debug.isChannelEnabled("resultfiltergenerator");
 
     static class AttributeValueCounts {
         int targetCount;
@@ -51,7 +52,14 @@ public class ResultSelectionFilterGenerator {
             if (!target.isSubsetOf(all))
                 throw new IllegalArgumentException("IDs to be selected must be a subset of all IDs");
 
-            return doGetFilter(target, all, manager, monitor, interrupted);
+            String filter = doGetFilter(target, all, manager, monitor, interrupted);
+
+            if (debug) {
+                Debug.println("filter expression: " + filter);
+                Assert.isTrue(manager.filterIDList(all, filter).equals(target), "Filter created from IDList does not reproduce the given IDs");
+            }
+
+            return filter;
         });
     }
 
@@ -387,9 +395,10 @@ public class ResultSelectionFilterGenerator {
         IDList shown = dataPanel.getDataControl().getIDList();
         IDList selection = dataPanel.getDataControl().getSelectedIDs();
 
+        String result;
         if (selection.size() < shown.size() / 2) {
             // user has manually selected a few items
-            return makeQuickFilter(selection, manager);
+            result = makeQuickFilter(selection, manager);
         }
         else {
             // user hit Ctrl+A, then manually unselected a few items
@@ -418,8 +427,16 @@ public class ResultSelectionFilterGenerator {
                 IDList unselected = shown.subtract(selection);
                 filter += "\nAND NOT (" + makeQuickFilter(unselected, manager) + ")";
             }
-            return filter;
+            result = filter;
         }
+
+        if (debug) {
+            Debug.println("filter expression: " + result);
+            IDList filtered = manager.filterIDList(manager.getAllItems(dataPanel.getShowFieldsAsScalars()), result);
+            Assert.isTrue(filtered.equals(selection), "Filter created from IDList does not reproduce the given IDs");
+        }
+
+        return result;
     }
 
     /**
