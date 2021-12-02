@@ -40,6 +40,8 @@ public class Debug {
     }
 
     public static boolean isChannelEnabled(String channel) {
+        if (!debug)
+            return false;
         String[] channels = StringUtils.nullToEmpty(System.getenv(DEBUG_ENVVAR)).split(",");
         boolean result = (ArrayUtils.contains(channels, channel) || ArrayUtils.contains(channels, "all"))
                 && !ArrayUtils.contains(channels, "-" + channel);
