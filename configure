@@ -588,6 +588,7 @@ ARCH
 PLATFORM
 PREFER_SQLITE_RESULT_FILES
 WITH_SYSTEMC
+WITH_AKAROA
 WITH_OSGEARTH
 WITH_OSG
 WITH_QTENV
@@ -2219,6 +2220,9 @@ SHARED_LIBS=${SHARED_LIBS:-yes}
 
 # No SystemC support by default
 WITH_SYSTEMC=${WITH_SYSTEMC:-no}
+
+# No Akaroa support by default
+WITH_AKAROA=${WITH_AKAROA:-no}
 
 LDFLAG_LIBPATH=${LDFLAG_LIBPATH:--L}
 LDFLAG_INCLUDE=${LDFLAG_INCLUDE:--Wl,-u,}
@@ -6008,8 +6012,9 @@ fi
 #----------------------
 # Check for Akaroa header and lib
 #----------------------
-AKAROA_CFLAGS=${AKAROA_CFLAGS:-"-I/usr/local/akaroa/include"}
-AKAROA_LIBS=${AKAROA_LIBS:-"-L/usr/local/akaroa/lib -lakaroa -lfl"}
+if test "$WITH_AKAROA" = "yes"; then
+  AKAROA_CFLAGS=${AKAROA_CFLAGS:-"-I/usr/local/akaroa/include"}
+  AKAROA_LIBS=${AKAROA_LIBS:-"-L/usr/local/akaroa/lib -lakaroa -lfl"}
 
 
    save_CXXFLAGS=$CXXFLAGS
@@ -6045,14 +6050,13 @@ rm -f core conftest.err conftest.$ac_objext \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
-if test $akaroa_ok = yes; then
-   CFLAGS="$CFLAGS $AKAROA_CFLAGS"
-   DEFINES="$DEFINES -DWITH_AKAROA"
-   SYS_LIBS="$SYS_LIBS $AKAROA_LIBS"
-else
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  Akaroa (optional)"
-   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Optional package Akaroa not found" >&5
-$as_echo "$as_me: WARNING: Optional package Akaroa not found" >&2;}
+  if test $akaroa_ok = yes; then
+    CFLAGS="$CFLAGS $AKAROA_CFLAGS"
+    DEFINES="$DEFINES -DWITH_AKAROA"
+    SYS_LIBS="$SYS_LIBS $AKAROA_LIBS"
+  else
+    as_fn_error $? "Cannot find Akaroa. Set WITH_AKAROA=no in configure.user to disable this feature or install an up to date version of Akaroa and specify AKAROA_CFLAGS and AKAROA_LIBS." "$LINENO" 5
+  fi
 fi
 
 #----------------------
@@ -7404,3 +7408,8 @@ and re-run configure.
 EOT
   fi
 fi
+
+cat << EOT
+
+Configuration phase finished. Use 'make' to build $OMNETPP_PRODUCT.
+EOT

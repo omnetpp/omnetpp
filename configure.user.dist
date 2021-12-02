@@ -180,6 +180,11 @@ SHARED_LIBS=yes
 #
 
 #
+# Set to "yes" to enable AKAROA support.
+#
+WITH_AKAROA=no
+
+#
 # Compiler and linker options for Akaroa (optional component)
 #
 # With MinGW I use the following:

@@ -212,6 +212,9 @@ SHARED_LIBS=${SHARED_LIBS:-yes}
 # No SystemC support by default
 WITH_SYSTEMC=${WITH_SYSTEMC:-no}
 
+# No Akaroa support by default
+WITH_AKAROA=${WITH_AKAROA:-no}
+
 LDFLAG_LIBPATH=${LDFLAG_LIBPATH:--L}
 LDFLAG_INCLUDE=${LDFLAG_INCLUDE:--Wl,-u,}
 LDFLAG_LIB=${LDFLAG_LIB:--l}
@@ -1087,17 +1090,18 @@ fi
 #----------------------
 # Check for Akaroa header and lib
 #----------------------
-AKAROA_CFLAGS=${AKAROA_CFLAGS:-"-I/usr/local/akaroa/include"}
-AKAROA_LIBS=${AKAROA_LIBS:-"-L/usr/local/akaroa/lib -lakaroa -lfl"}
+if test "$WITH_AKAROA" = "yes"; then
+  AKAROA_CFLAGS=${AKAROA_CFLAGS:-"-I/usr/local/akaroa/include"}
+  AKAROA_LIBS=${AKAROA_LIBS:-"-L/usr/local/akaroa/lib -lakaroa -lfl"}
 
-OPP_CHECK_LIB(Akaroa, akaroa.H, AkObservation(0.0), $CFLAGS $AKAROA_CFLAGS, $AKAROA_LIBS, akaroa_ok)
-if test $akaroa_ok = yes; then
-   CFLAGS="$CFLAGS $AKAROA_CFLAGS"
-   DEFINES="$DEFINES -DWITH_AKAROA"
-   SYS_LIBS="$SYS_LIBS $AKAROA_LIBS"
-else
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  Akaroa (optional)"
-   AC_MSG_WARN([Optional package Akaroa not found])
+  OPP_CHECK_LIB(Akaroa, akaroa.H, AkObservation(0.0), $CFLAGS $AKAROA_CFLAGS, $AKAROA_LIBS, akaroa_ok)
+  if test $akaroa_ok = yes; then
+    CFLAGS="$CFLAGS $AKAROA_CFLAGS"
+    DEFINES="$DEFINES -DWITH_AKAROA"
+    SYS_LIBS="$SYS_LIBS $AKAROA_LIBS"
+  else
+    AC_MSG_ERROR([Cannot find Akaroa. Set WITH_AKAROA=no in configure.user to disable this feature or install an up to date version of Akaroa and specify AKAROA_CFLAGS and AKAROA_LIBS.])
+  fi
 fi
 
 #----------------------
@@ -1191,7 +1195,6 @@ AC_SUBST(MPI_LIBS)
 AC_SUBST(SYS_LIBS)
 AC_SUBST(PTHREAD_CFLAGS)
 AC_SUBST(PTHREAD_LIBS)
-
 AC_SUBST(AKAROA_CFLAGS)
 AC_SUBST(AKAROA_LIBS)
 
@@ -1201,6 +1204,7 @@ AC_SUBST(WITH_PARSIM)
 AC_SUBST(WITH_QTENV)
 AC_SUBST(WITH_OSG)
 AC_SUBST(WITH_OSGEARTH)
+AC_SUBST(WITH_AKAROA)
 AC_SUBST(WITH_SYSTEMC)
 AC_SUBST(PREFER_SQLITE_RESULT_FILES)
 
@@ -1296,3 +1300,8 @@ and re-run configure.
 EOT
   fi
 fi
+
+cat << EOT
+
+Configuration phase finished. Use 'make' to build $OMNETPP_PRODUCT.
+EOT
