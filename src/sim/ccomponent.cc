@@ -173,6 +173,11 @@ void cComponent::preDelete(cComponent *root)
 {
 }
 
+void cComponent::setDisplayName(const char *name)
+{
+    displayName = name;
+}
+
 cComponentType *cComponent::getComponentType() const
 {
     if (!componentType)

@@ -87,6 +87,7 @@ class SIM_API cComponent : public cSoftOwner //implies noncopyable
     cPar *parArray;  // array of cPar objects
 
     mutable cDisplayString *displayString; // created on demand
+    opp_pooledstring displayName = nullptr;  // optional display name
 
   public:
     struct SignalListenerList {  // public for inspectors
@@ -397,6 +398,20 @@ class SIM_API cComponent : public cSoftOwner //implies noncopyable
      * at runtime.
      */
     virtual cProperties *getProperties() const = 0;
+
+    /**
+     * Sets the display name of the component, an alternative name that may be
+     * displayed on graphical user interfaces like Qtenv or the Sequence Chart.
+     * Pass nullptr to clear the display name.
+     */
+    virtual void setDisplayName(const char *name);
+
+    /**
+     * Returns the display name of the module, an alternative name that may be
+     * displayed on graphical user interfaces like Qtenv or the Sequence Chart.
+     * Returns nullptr if a display name is not set.
+     */
+    virtual const char *getDisplayName() const {return displayName.c_str();}
 
     /**
      * Returns the associated component type. Guaranteed to be non-nullptr.

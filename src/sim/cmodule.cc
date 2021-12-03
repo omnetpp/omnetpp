@@ -437,11 +437,6 @@ bool cModule::isSimple() const
     return dynamic_cast<const cSimpleModule *>(this) != nullptr;
 }
 
-void cModule::setDisplayName(const char *name)
-{
-    displayName = name;
-}
-
 std::vector<cModule*>& cModule::getSubmoduleArray(const char *name) const
 {
     if (subcomponentData != nullptr) {

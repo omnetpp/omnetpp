@@ -240,6 +240,7 @@ class cComponent extends cSoftOwner
 {
     @existingClass;
     @overwritePreviousDefinition;
+    string displayName @group(base) @editable @hint("Display name");
     bool isModule @readonly @getter(isModule) @group(fields) @hint("Whether this component is a module or a channel");
     cComponentType *componentType @readonly @group(fields) @hint("The object that represents the type declaration for this component");
     cPar par[] @editable @resizable(false) @getter(par) @setter(pp->par(i).parse(value)) @sizeGetter(getNumParams) @toValue(toAnyPtr(&$)) @fromValue(TODO) @label(parameters) @group(parameters, gates) @hint("NED parameters");
@@ -289,7 +290,6 @@ class cModule extends cComponent
     @overwritePreviousDefinition;
     @descriptor(readonly);
     @icon(compound);
-    string displayName @group(base) @editable @hint("Display name");
     int id @group(fields) @hint("Unique module ID -- IDs of deleted modules are not issued again");
     bool isSimple @getter(isSimple) @group(fields) @hint("Whether this is a simple module");
     bool isVector @getter(isVector) @group(fields) @hint("Whether this module is part of a module vector");
