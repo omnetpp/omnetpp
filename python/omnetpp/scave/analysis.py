@@ -7,6 +7,7 @@ module is `opp_charttool`.
 
 import os
 import sys
+import site
 import xml.etree.ElementTree as ET
 import xml.dom.minidom as minidom # because ET cannot pretty-print
 import matplotlib.pyplot as plt
@@ -288,6 +289,7 @@ class Analysis:
         od = os.getcwd()
         try:
             os.chdir(wd)
+            site.addsitedir(wd)
             exec(chart.script, { "exit": sys.exit })
         except SystemExit as se:
             if se.code != 0:

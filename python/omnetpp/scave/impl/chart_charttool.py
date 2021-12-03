@@ -20,5 +20,5 @@ def get_chart_type():
 def set_suggested_chart_name(name):
     pass
 
-def set_suggested_chart_name(names):
+def set_observed_column_names(names):
     pass
