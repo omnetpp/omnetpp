@@ -170,6 +170,8 @@ def make_legend_label(legend_cols, row, props={}):
     if legend_replacements:
         lines = [li.strip() for li in legend_replacements.split('\n') if li.strip()]
         for line in lines:
+            if line.startswith("#"):
+                continue
             m = re.search(r"^(.)(.*)\1(.*)\1$", line)
             if not m:
                 raise chart.ChartScriptError("Invalid line in 'legend_replacements', '/foo/bar/' syntax expected: '" + line + "'")
