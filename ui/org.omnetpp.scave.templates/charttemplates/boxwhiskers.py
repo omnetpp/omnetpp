@@ -16,7 +16,7 @@ df = pd.concat([stats, hists], sort=False)
 if df.empty:
     raise chart.ChartScriptError("The result filter returned no data.")
 
-title, legend = utils.extract_label_columns(df)
+title, legend = utils.extract_label_columns(df, props)
 
 df.sort_values(by=[l for i, l in legend], axis='index', inplace=True)
 

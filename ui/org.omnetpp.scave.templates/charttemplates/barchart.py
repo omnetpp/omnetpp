@@ -26,7 +26,7 @@ series = utils.split(props["series"])
 
 if not groups and not series:
     print("The Groups and Series options were not set in the dialog, inferring them from the data.")
-    g, s = ("module", "name") if len(df) == 1 else utils.pick_two_columns(df)
+    g, s = ("module", "name") if len(df) == 1 else utils.pick_two_columns(df,props)
     groups, series = [g], [s]
 
 if not groups or not groups[0] or not series or not series[0]:

@@ -366,8 +366,7 @@ def plot_vectors(df, props, legend_func=make_legend_label):
     def get_prop(k):
         return props[k] if k in props else None
 
-    column = "name" if get_prop("legend_labels") == "result names" else "title"
-    title_col, legend_cols = extract_label_columns(df, column)
+    title_col, legend_cols = extract_label_columns(df, props)
 
     df.sort_values(by=[l for (_, l) in legend_cols], inplace=True)
     for t in df.itertuples(index=False):
@@ -435,7 +434,7 @@ def plot_histograms(df, props, legend_func=make_legend_label):
     def get_prop(k):
         return props[k] if k in props else None
 
-    title_col, legend_cols = extract_label_columns(df)
+    title_col, legend_cols = extract_label_columns(df, props)
 
     df.sort_values(by=[l for (_, l) in legend_cols], inplace=True)
     for t in df.itertuples(index=False):
@@ -1125,16 +1124,28 @@ def set_plot_title(title, suggested_chart_name=None):
     ideplot.title(title)
     chart.set_suggested_chart_name(suggested_chart_name if suggested_chart_name is not None else title)
 
+def add_derived_columns(df):
+    """
+    Utility function to add the `title_or_name` and `module_displaypath_or_path`
+    columns to the DataFrame, based on the contents of the `name`, `title`, `module`
+    and `moduledisplaypath` columns. (Note that `title` and `moduledisplaypath` normally 
+    come from result attributes of the same name.)
+    """
+    if "title" in df and "name" in df:
+        df["title_or_name"] = df["title"].fillna(df["name"])
+    if "moduledisplaypath" in df and "module" in df:
+        df["module_displaypath_or_path"] = df["moduledisplaypath"].fillna(df["module"])
 
-def extract_label_columns(df, preferred_legend_column="title"):
+
+def extract_label_columns(df, props):
     """
     Utility function to make a reasonable guess as to which column of
     the given DataFrame is most suitable to act as a chart title and
     which ones can be used as legend labels.
 
     Ideally a "title column" should be one in which all lines have the same
-    value, and can be reasonably used as a title. Some often used candidates
-    are: `title`, `name`, and `module`.
+    value, and can be reasonably used as a title. This is often the `title`
+    or `name` column.
 
     Label columns should be a minimal set of columns whose corresponding
     value tuples uniquely identify every line in the DataFrame. These will
@@ -1149,10 +1160,18 @@ def extract_label_columns(df, preferred_legend_column="title"):
     Example: `('title', [(8, 'numHosts'), (7, 'iaMean')])`
     """
 
-    titles = ["title", "name", "module", "experiment", "measurement", "replication"]
-    titles.remove(preferred_legend_column)
-    titles = [preferred_legend_column] + titles
+    def get_prop(k):
+        return props[k] if k in props else None
 
+    add_derived_columns(df)
+
+    prefer_titles = get_prop('legend_prefer_result_titles') == 'true'
+    prefer_displaypaths = get_prop('legend_prefer_module_display_paths') == 'true'
+
+    name_column = "title_or_name" if (prefer_titles and "title_or_name" in df) else "name"
+    module_column = "module_displaypath_or_path" if (prefer_displaypaths and "module_displaypath_or_path" in df) else "module"
+
+    titles = [name_column, module_column, "experiment", "measurement", "replication"]
     legends = titles
 
     blacklist = ["runID", "value", "attrvalue", "vectime", "vecvalue",
@@ -1183,11 +1202,18 @@ def extract_label_columns(df, preferred_legend_column="title"):
     if legend_cols:
         return title_col, legend_cols
 
+    candidate_columns = list(df.columns.values)
+
+    # use name_column and module_column instead of "name", "module", etc.
+    candidate_columns = [col for col in candidate_columns if col not in ["name", "title", "module", "moduledisplaypath", "title_or_name", "module_displaypath_or_path"]]
+    candidate_columns = [name_column, module_column] + candidate_columns
+
     last_len = None
-    for i, col in list(enumerate(df)):
-        if col not in blacklist and col != title_col:
+    for col in candidate_columns:
+        if col in df and col not in blacklist and col != title_col:
             new_len = len(df.groupby([i2 for i1, i2 in legend_cols] + [col]))
             if new_len == len(df) or not last_len or new_len > last_len:
+                i = list(df.columns.values).index(col)
                 legend_cols.append((i, col))
                 last_len = new_len
             if new_len == len(df):
@@ -1227,13 +1253,16 @@ def make_chart_title(df, title_col, legend_cols):
     return what + by_what
 
 
-def pick_two_columns(df):
+def pick_two_columns(df, props=None):  #TODO remove default for props in final release
     """
     Choose two columns from the dataframe which best partitions the rows
     of the dataframe, and returns their names as a pair. Returns (`None`, `None`)
     if no such pair was found. This method is useful for creating e.g. a bar plot.
     """
-    title_col, label_cols = extract_label_columns(df)
+    if props is None:
+        print("pick_two_columns(): Missing props argument! Update chart script, or code will break on next release!", file=sys.stderr)
+        props = {}
+    title_col, label_cols = extract_label_columns(df, props)
     label_cols = [l[1] for l in label_cols]
     if len(label_cols) == 0:
         return None, None
@@ -1530,7 +1559,7 @@ def get_names_for_title(df, props):
     def get_prop(k):
         return props[k] if k in props else None
 
-    if get_prop("legend_labels") == "result titles" and "title" in df:
+    if get_prop("legend_prefer_result_titles") == "true" and "title" in df:
         series = df["title"].fillna(df["name"])
     else:
         series = df["name"]

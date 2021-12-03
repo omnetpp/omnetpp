@@ -26,7 +26,7 @@ if df.empty:
 
 if not xaxis_itervar and not yaxis_itervar:
     print("The X Axis and Y Axis options were not set in the dialog, inferring them from the data..")
-    xaxis_itervar, yaxis_itervar = utils.pick_two_columns(df)
+    xaxis_itervar, yaxis_itervar = utils.pick_two_columns(df, props)
 if not xaxis_itervar or not yaxis_itervar:
     raise chart.ChartScriptError("Please set both the X Axis and Y Axis options in the dialog - or neither, for automatic selection!")
 
@@ -39,7 +39,7 @@ if xaxis_itervar == yaxis_itervar:
 df[xaxis_itervar] = pd.to_numeric(df[xaxis_itervar], errors="ignore")
 df[yaxis_itervar] = pd.to_numeric(df[yaxis_itervar], errors="ignore")
 
-title_col, legend_cols = utils.extract_label_columns(df)
+title_col, legend_cols = utils.extract_label_columns(df, props)
 
 title = str(list(df[title_col])[0]) if title_col else None
 

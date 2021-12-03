@@ -25,7 +25,7 @@ if df.empty:
 
 if not xaxis_itervar and not group_by:
     print("The 'X Axis' and 'Group By' options were not set in the dialog, inferring them from the data..")
-    xaxis_itervar, group_by = utils.pick_two_columns(df)
+    xaxis_itervar, group_by = utils.pick_two_columns(df, props)
     group_by = [group_by] if group_by else []
     print("X Axis: " + xaxis_itervar + ", Group By: " + ",".join(group_by))
 
@@ -69,7 +69,7 @@ else:
     df = pivoted["mean"]
     errors_df = pivoted["conf_intv"]
 
-legend_cols, _ = utils.extract_label_columns(df)
+legend_cols, _ = utils.extract_label_columns(df, props)
 
 try:
     xs = pd.to_numeric(df.index.values)
