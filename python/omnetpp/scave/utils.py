@@ -1168,45 +1168,43 @@ def extract_label_columns(df, props):
     name_column = "title" if (prefer_titles and "title" in df) else "name"
     module_column = "moduledisplaypath" if (prefer_displaypaths and "moduledisplaypath" in df) else "module"
 
-    titles = [name_column, module_column, "experiment", "measurement", "replication"]
-    legends = titles
+    title_col_candidates = [name_column, module_column, "experiment", "measurement", "replication"]
 
     blacklist = ["runID", "value", "attrvalue", "vectime", "vecvalue",
                  "binedges", "binvalues", "underflows", "overflows",
                  "count", "sumweights", "mean", "stddev", "min", "max",
                  "processid", "datetime", "datetimef", "runnumber", "seedset",
                  "iterationvars", "iterationvarsf", "iterationvarsd",
-                 "source", "interpolationmode", "enum", "title", "unit",
-                 "legend", "comment"]
+                 "source", "recordingmode", "interpolationmode", "enum", "unit"]
 
+    # for title, choose the first column that has has identical values in all rows
     title_col = None
-
-    for title in titles:
-        if title in df and len(df[title].unique()) == 1:
-            title_col = title
+    for col in title_col_candidates:
+        if col in df and len(df[col].unique()) == 1:
+            title_col = col
             break
     if title_col == None:
-        if "name" in titles:
-            title_col = "name"
+        title_col = name_column
 
+    # for legend, first try to find a column that have distinct values in all rows  
+    legend_col_candidates = title_col_candidates
     legend_cols = []
-
-    for legend in legends:
-        if legend in df and len(df[legend].unique()) == len(df):
-            legend_cols = [(list(df.columns.values).index(legend), legend)]
+    for col in legend_col_candidates:
+        if col in df and len(df[col].unique()) == len(df):
+            legend_cols = [(list(df.columns.values).index(col), col)]
             break
 
     if legend_cols:
         return title_col, legend_cols
 
-    candidate_columns = list(df.columns.values)
+    # if unsuccessful, try to pick from all columns (starting with name_column and module_column)
+    legend_col_candidates = list(df.columns.values)
+    legend_col_candidates = [col for col in legend_col_candidates if col not in ["name", "title", "module", "moduledisplaypath"]] # remove those
+    legend_col_candidates = [name_column, module_column] + legend_col_candidates
 
-    # use name_column and module_column instead of "name", "module", etc.
-    candidate_columns = [col for col in candidate_columns if col not in ["name", "title", "module", "moduledisplaypath"]]
-    candidate_columns = [name_column, module_column] + candidate_columns
-
+    # pick columns that improve the partitioning of rows, until each row can be identified with them
     last_len = None
-    for col in candidate_columns:
+    for col in legend_col_candidates:
         if col in df and col not in blacklist and col != title_col:
             new_len = len(df.groupby([i2 for i1, i2 in legend_cols] + [col]))
             if new_len == len(df) or not last_len or new_len > last_len:
