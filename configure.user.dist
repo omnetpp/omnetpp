@@ -211,7 +211,6 @@ WITH_AKAROA=no
 # makefiles will use. (They get default values if commented out.)
 #
 #MSGC="$OMNETPP_BIN_DIR/opp_msgc"
-#SMC="$OMNETPP_BIN_DIR/opp_smc"
 
 #
 #
