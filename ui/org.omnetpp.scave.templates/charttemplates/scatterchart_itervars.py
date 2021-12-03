@@ -16,7 +16,7 @@ group_by = utils.split(props["group_by"])
 
 # query data into a data frame
 try:
-    df = results.get_scalars(filter_expression, include_fields=include_fields, include_runattrs=True, include_attrs=True, include_itervars=True)
+    df = results.get_scalars(filter_expression, include_fields=include_fields, include_attrs=True, include_runattrs=True, include_itervars=True)
 except ValueError as e:
     raise chart.ChartScriptError("Error while querying results: " + str(e))
 

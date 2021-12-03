@@ -13,7 +13,7 @@ include_fields = props["include_fields"] == "true"
 
 # query scalar data into dataframe
 try:
-    df = results.get_scalars(filter_expression, include_fields=include_fields, include_attrs=True, include_itervars=True, include_runattrs=True)
+    df = results.get_scalars(filter_expression, include_fields=include_fields, include_attrs=True, include_runattrs=True, include_itervars=True)
 except ValueError as e:
     raise chart.ChartScriptError("Error while querying results: " + str(e))
 
