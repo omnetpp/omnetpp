@@ -19,7 +19,7 @@ export MY_PID=$$
 
 export TEST_PROG="opp_run -h all"
 export WITH_NETBUILDER=yes
-export WITH_PARSIM=yes
+export WITH_PARSIM=no
 export SHARED_LIBS=yes
 export WITH_QTENV=yes
 export WITH_LIBXML=no
@@ -162,13 +162,11 @@ fi
 CFG=default
 (compile)
 
-contains cParsimPartition yes
 contains "Cmdenv : command-line user interface" yes
 contains "Qtenv : Qt-based graphical user interface" yes
 
 (TEST_PROG="opp_run -v" contains "CLANG" yes)
 (TEST_PROG="opp_run -v" contains "WITH_NETBUILDER" yes)
-(TEST_PROG="opp_run -v" contains "WITH_PARSIM" yes)
 (TEST_PROG="opp_run -v" contains "WITH_OSG" yes)
 (TEST_PROG="opp_run -v" contains "WITH_OSGEARTH" yes)
 (runtest core)
@@ -180,13 +178,11 @@ contains "Qtenv : Qt-based graphical user interface" yes
 CFG=with_libxml
 (WITH_LIBXML=yes compile)
 
-contains cParsimPartition yes
 contains "Cmdenv : command-line user interface" yes
 contains "Qtenv : Qt-based graphical user interface" yes
 
 (TEST_PROG="opp_run -v" contains "WITH_LIBXML" yes)
 (TEST_PROG="opp_run -v" contains "WITH_NETBUILDER" yes)
-(TEST_PROG="opp_run -v" contains "WITH_PARSIM" yes)
 (TEST_PROG="opp_run -v" contains "WITH_OSG" yes)
 (TEST_PROG="opp_run -v" contains "WITH_OSGEARTH" yes)
 (runtest core)
@@ -197,13 +193,11 @@ contains "Qtenv : Qt-based graphical user interface" yes
 # check building with gcc
 CFG=default-gcc
 (TOOLCHAIN=gcc compile)
-contains cParsimPartition yes
 contains "Cmdenv : command-line user interface" yes
 contains "Qtenv : Qt-based graphical user interface" yes
 
 (TEST_PROG="opp_run -v" contains "GCC" yes)
 (TEST_PROG="opp_run -v" contains "WITH_NETBUILDER" yes)
-(TEST_PROG="opp_run -v" contains "WITH_PARSIM" yes)
 (TEST_PROG="opp_run -v" contains "WITH_OSG" yes)
 (TEST_PROG="opp_run -v" contains "WITH_OSGEARTH" yes)
 (runtest core)
@@ -246,7 +240,6 @@ CFG=default_static
 (TEST_PROG="samples/aloha/aloha -h all" contains "Qtenv : Qt-based graphical user interface" yes)
 (TEST_PROG="samples/aloha/aloha -h all" contains "Cmdenv : command-line user interface" yes)
 (TEST_PROG="samples/aloha/aloha -v" contains "WITH_NETBUILDER" yes)
-(TEST_PROG="samples/aloha/aloha -v" contains "WITH_PARSIM" yes)
 (TEST_PROG="samples/aloha/aloha -v" contains "WITH_OSG" yes)
 (TEST_PROG="samples/aloha/aloha -v" contains "WITH_OSGEARTH" yes)
 
@@ -256,7 +249,8 @@ CFG=default_static
 if [ "$PLATFORM" = "linux" ]; then
   ########################################
   CFG=parsim_with_mpi
-  (compile)
+  (WITH_PARSIM=yes compile)
+  (TEST_PROG="opp_run -v" contains "WITH_PARSIM" yes)
   contains cParsimPartition yes
   contains cMPICommunications yes
   (runtest makemake)
@@ -264,16 +258,10 @@ if [ "$PLATFORM" = "linux" ]; then
   ########################################
   # test if disabling MPI is working
   CFG=no_mpi
-  (MPI_LIBS=-lbubu compile)
+  (WITH_PARSIM=yes MPI_LIBS=-lbubu compile)
+  (TEST_PROG="opp_run -v" contains "WITH_PARSIM" yes)
   contains cParsimPartition yes
   contains cMPICommunications no
   (runtest makemake)
 
-  ########################################
-  # test if disabling both parsim works
-  CFG=no_parsim
-  (WITH_PARSIM=no compile)
-  contains cParsimPartition no
-  contains cMPICommunications no
-  (runtest makemake)
 fi

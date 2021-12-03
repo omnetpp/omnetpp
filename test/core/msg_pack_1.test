@@ -18,12 +18,18 @@ message TestMessage {
 
 %includes:
 #include <string.h>
-#include <sim/parsim/cfilecommbuffer.h> // from src/sim/parsim
+#ifdef WITH_PARSIM
+  #include <sim/parsim/cfilecommbuffer.h> // from src/sim/parsim
+#endif
 #include <envir/objectprinter.h>   // from src/envir
 #include "test_m.h"
 using omnetpp::envir::ObjectPrinter;
 
 %activity:
+#ifndef WITH_PARSIM
+  EV << "#SKIPPED: No parallel simulation support (WITH_PARSIM=no).\n";
+  return;
+#else
 
 // create and pack
 TestMessage msg("msg");
@@ -47,6 +53,7 @@ msg2.parsimUnpack(buffer);
 EV << "isBufferEmpty:" << buffer->isBufferEmpty() << endl;
 
 EV << ObjectPrinter(nullptr, "*:declaredOn=~@TESTNAME@::TestMessage").printObjectToString(&msg2);
+#endif
 
 %contains: stdout
 isBufferEmpty:1

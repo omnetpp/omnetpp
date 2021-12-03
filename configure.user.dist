@@ -84,7 +84,7 @@ WITH_LIBXML=no
 #
 # Set to "yes" to enable the parallel distributed simulation feature.
 #
-WITH_PARSIM=yes
+WITH_PARSIM=no
 
 #
 # Set to "yes" to use SQLite as default file format for output vector and

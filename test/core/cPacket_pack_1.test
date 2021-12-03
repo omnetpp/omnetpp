@@ -3,11 +3,17 @@ Tests cPacket.parsimPack/parsimUnpack.
 
 %includes:
 #include <string.h>
+#ifdef WITH_PARSIM
 #include <sim/parsim/cfilecommbuffer.h>
+#endif
 
 %activity:
 
 #define PRINT(X)  EV << #X << ":" << (X) << endl
+#ifndef WITH_PARSIM
+  EV << "#SKIPPED: No parallel simulation support (WITH_PARSIM=no).\n";
+  return;
+#else
 
 cFileCommBuffer *buffer = new cFileCommBuffer();
 
@@ -29,6 +35,7 @@ PRINT(msg2.getBitLength());
 PRINT(msg2.hasBitError());
 PRINT(msg2.getTimestamp());
 PRINT(msg2.getEncapsulatedPacket()==nullptr);
+#endif
 
 %contains: stdout
 isBufferEmpty:1

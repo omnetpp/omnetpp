@@ -3,9 +3,15 @@ Tests cMemCommBuffer.
 
 %includes:
 #include <string.h>
+#ifdef WITH_PARSIM
 #include <sim/parsim/cmemcommbuffer.h>
+#endif
 
 %activity:
+#ifndef WITH_PARSIM
+  EV << "#SKIPPED: No parallel simulation support (WITH_PARSIM=no).\n";
+  return;
+#else
 
 #define PRINT_AND_PACK(VAR)     {EV << #VAR ":" << VAR << endl; b->pack(VAR);}
 #define UNPACK_AND_PRINT(VAR)   {VAR=0; b->unpack(VAR); EV << #VAR ":" << VAR << endl;}
@@ -60,6 +66,7 @@ UNPACK_AND_PRINT(t13);
 UNPACK_AND_PRINT(t14);
 
 EV << "isBufferEmpty:" << b->isBufferEmpty() << endl;
+#endif
 
 %contains: stdout
 Packing:

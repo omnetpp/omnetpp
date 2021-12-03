@@ -3,9 +3,15 @@ Tests cPacket.parsimPack/parsimUnpack and msg encapsulation.
 
 %includes:
 #include <string.h>
+#ifdef WITH_PARSIM
 #include <sim/parsim/cfilecommbuffer.h>
+#endif
 
 %activity:
+#ifndef WITH_PARSIM
+  EV << "#SKIPPED: No parallel simulation support (WITH_PARSIM=no).\n";
+  return;
+#else
 
 #define PRINT(X)  EV << #X << ":" << (X) << endl
 
@@ -30,6 +36,7 @@ PRINT(msg2.getEncapsulatedPacket()==nullptr);
 cPacket *payload2 = msg2.decapsulate();
 PRINT(payload2->getName());
 PRINT(payload2->getBitLength());
+#endif
 
 %contains: stdout
 isBufferEmpty:1

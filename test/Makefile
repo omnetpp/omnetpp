@@ -2,13 +2,14 @@
 # This Makefiles contains the list of official regression tests that
 # are REQUIRED to pass before each release.
 #
+MAKEFLAGS=-j1
+
+# a (relatively) fast test which runs all tests that can finish in reasonable time. (i.e. full builds excluded)
+test_quick: | test_common test_envir test_core test_anim test_models test_makemake test_featuretool test_sqliteresultfiles test_fingerprint
 
 # Test everything. Note, that test_core, test_common, test_envir and test_makemake is not included, because those
 # test are implicitly executed by the 'test_build' target
-all: test_anim test_models test_featuretool test_fingerprint test_sqliteresultfiles test_build test_toolchain
-
-# a (relatively) fast test which runs all tests that can finish in reasonable time. (i.e. full builds excluded)
-test_quick: test_anim test_models test_core test_common test_envir test_makemake test_featuretool test_sqliteresultfiles test_fingerprint
+all: | test_anim test_models test_featuretool test_fingerprint test_sqliteresultfiles test_build test_toolchain
 
 test_anim:
 	cd anim && make
