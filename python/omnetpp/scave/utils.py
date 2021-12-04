@@ -1122,17 +1122,16 @@ def set_plot_title(title, suggested_chart_name=None):
     ideplot.title(title)
     chart.set_suggested_chart_name(suggested_chart_name if suggested_chart_name is not None else title)
 
-def add_derived_columns(df):
+def fill_missing_titles(df):
     """
-    Utility function to add the `title_or_name` and `module_displaypath_or_path`
-    columns to the DataFrame, based on the contents of the `name`, `title`, `module`
-    and `moduledisplaypath` columns. (Note that `title` and `moduledisplaypath` normally 
-    come from result attributes of the same name.)
+    Utility function to fill missing values in the `title` and `moduledisplaypath`
+    columns from the `name` and `module` columns. (Note that `title` and `moduledisplaypath` 
+    normally come from result attributes of the same name.)
     """
     if "title" in df and "name" in df:
-        df["title_or_name"] = df["title"].fillna(df["name"])
+        df["title"].fillna(df["name"], inplace=True)
     if "moduledisplaypath" in df and "module" in df:
-        df["module_displaypath_or_path"] = df["moduledisplaypath"].fillna(df["module"])
+        df["moduledisplaypath"].fillna(df["module"], inplace=True)
 
 
 def extract_label_columns(df, props):
@@ -1161,13 +1160,13 @@ def extract_label_columns(df, props):
     def get_prop(k):
         return props[k] if k in props else None
 
-    add_derived_columns(df)
+    fill_missing_titles(df)
 
     prefer_titles = get_prop('legend_prefer_result_titles') == 'true'
     prefer_displaypaths = get_prop('legend_prefer_module_display_paths') == 'true'
 
-    name_column = "title_or_name" if (prefer_titles and "title_or_name" in df) else "name"
-    module_column = "module_displaypath_or_path" if (prefer_displaypaths and "module_displaypath_or_path" in df) else "module"
+    name_column = "title" if (prefer_titles and "title" in df) else "name"
+    module_column = "moduledisplaypath" if (prefer_displaypaths and "moduledisplaypath" in df) else "module"
 
     titles = [name_column, module_column, "experiment", "measurement", "replication"]
     legends = titles
@@ -1203,7 +1202,7 @@ def extract_label_columns(df, props):
     candidate_columns = list(df.columns.values)
 
     # use name_column and module_column instead of "name", "module", etc.
-    candidate_columns = [col for col in candidate_columns if col not in ["name", "title", "module", "moduledisplaypath", "title_or_name", "module_displaypath_or_path"]]
+    candidate_columns = [col for col in candidate_columns if col not in ["name", "title", "module", "moduledisplaypath"]]
     candidate_columns = [name_column, module_column] + candidate_columns
 
     last_len = None
