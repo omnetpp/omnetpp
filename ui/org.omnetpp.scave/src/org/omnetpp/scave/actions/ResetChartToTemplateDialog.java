@@ -7,6 +7,8 @@
 
 package org.omnetpp.scave.actions;
 
+import java.util.List;
+
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
@@ -19,6 +21,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.common.ui.SWTFactory;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.model.Chart;
 
 /**
  * Dialog to choose which chart elements to reset to the chart template.
@@ -30,6 +33,7 @@ public class ResetChartToTemplateDialog extends TitleAreaDialog {
     private Button resetPropertiesCheckbox;
     private Button resetDialogPagesCheckbox;
     private Button resetChartScriptCheckbox;
+    private int numCharts;
 
     public static class Options {
         public boolean resetProperties;
@@ -39,9 +43,10 @@ public class ResetChartToTemplateDialog extends TitleAreaDialog {
 
     private Options result;
 
-    public ResetChartToTemplateDialog(Shell parentShell, String title) {
+    public ResetChartToTemplateDialog(Shell parentShell, String title, List<Chart> charts) {
         super(parentShell);
         this.title = title;
+        this.numCharts = charts.size();
     }
 
     @Override
@@ -75,12 +80,12 @@ public class ResetChartToTemplateDialog extends TitleAreaDialog {
 
     @Override
     protected Control createDialogArea(Composite parent) {
-        setTitle("Reset chart to the chart template from which it was created");
+        setTitle(numCharts == 1 ? "Reset chart to the template it was created from" : "Reset " + numCharts + " charts to the templates they were created from");
         Composite composite = SWTFactory.createComposite(parent, 1, 1, GridData.FILL_BOTH);
         ((GridLayout)composite.getLayout()).marginTop = 10;
         ((GridLayout)composite.getLayout()).marginLeft = 10;
 
-        SWTFactory.createLabel(composite, "Choose which elements of the chart to reset:", 1);
+        SWTFactory.createLabel(composite, "Choose which elements of the chart(s) to reset:", 1);
         resetChartScriptCheckbox = SWTFactory.createCheckButton(composite, "Python script", null, true, 1);
         resetDialogPagesCheckbox = SWTFactory.createCheckButton(composite, "Dialog pages", null, true, 1);
         resetPropertiesCheckbox = SWTFactory.createCheckButton(composite, "Properties  (i.e. settings in the Edit Chart dialog)", null, false, 1);
