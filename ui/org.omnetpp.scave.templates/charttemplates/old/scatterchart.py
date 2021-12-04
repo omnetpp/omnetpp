@@ -41,17 +41,17 @@ iso = get_data(filter_for("iso_filter"))
 
 cols = xa["value"].columns.values
 if len(cols) != 1:
-    raise Exception("X axis filter must result in exactly one value column, instead of " + str(cols))
+    raise chart.ChartScriptError("X axis filter must result in exactly one value column, instead of " + str(cols))
 xaxis_column = cols[0]
 
 cols = ya["value"].columns.values
 if len(cols) != 1:
-    raise Exception("Y axis filter must result in exactly one variable, instead of: " + ", ".join(cols) + "\nTry narrowing down the filter expression to one of these by name!")
+    raise chart.ChartScriptError("Y axis filter must result in exactly one variable, instead of: " + ", ".join(cols) + "\nTry narrowing down the filter expression to one of these by name!")
 yaxis_column = cols[0]
 
 cols = iso["value"].columns.values
 if len(cols) != 1:
-    raise Exception("Iso line filter must result in exactly one value column, instead of " + str(cols))
+    raise chart.ChartScriptError("Iso line filter must result in exactly one value column, instead of " + str(cols))
 iso_column = cols[0]
 
 try:
