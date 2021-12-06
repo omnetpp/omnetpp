@@ -773,7 +773,7 @@ public final class InifileAnalyzer {
         KeyData data = (KeyData) doc.getKeyData(section,key);
         boolean isUnused = data!=null && data.paramResolutions!=null && data.paramResolutions.isEmpty();
         if (isUnused)
-            markers.addWarning(section, key, "Unused entry (does not match any parameters)");
+            markers.addInfo(section, key, "Entry potentially does not match any parameter"); // TODO we aren't sure because analysis is imperfect
 
         String value = doc.getValue(section, key).trim();
         if (value.equals("") || InifileAnalyzer.DOLLAR_BRACES_PATTERN.matcher(value).find() ||
