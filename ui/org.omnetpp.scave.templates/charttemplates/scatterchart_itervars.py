@@ -44,10 +44,10 @@ if group_by:
         if iv:
             df[iv] = pd.to_numeric(df[iv], errors="ignore")
 
-uninteresting = ["runID", "value", "datetime", "iterationvars",
-                "iterationvarsf", "measurement", "processid",
-                "replication", "runnumber", "seedset", "title",
-                "source", "interpolationmode"]
+uninteresting = ["runID", "value", "datetime", "datetimef", "processid",
+                "iterationvars", "iterationvarsf", "iterationvarsd",
+                "measurement", "replication", "runnumber", "seedset",
+                "title", "source", "interpolationmode"]
 
 for c in df:
     ul = len(df[c].unique())
