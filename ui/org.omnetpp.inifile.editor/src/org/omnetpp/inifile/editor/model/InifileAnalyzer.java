@@ -115,6 +115,8 @@ public final class InifileAnalyzer {
     // to speed up validating of values. Matches boolean, number+unit, string literal
     public static final Pattern SIMPLE_EXPRESSION_REGEX = Pattern.compile("true|false|(-?\\d+(\\.\\d+)?\\s*[a-zA-Z]*)|\"[^\"]*\"");
 
+    private static final int SEVERITY_NONE = -1;
+
     // parameters of the analyzer
     final private IInifileDocument doc;
     private boolean paramResolutionEnabled = true; // enables the slow part of the analysis, can be disabled from the GUI
@@ -1084,7 +1086,8 @@ public final class InifileAnalyzer {
             return doEvaluateConfigValue(value, e);
         }
         catch (ValidationResult ex) {
-            markers.addMarker(ex.getSeverity(), section, key, ex.getMessage());
+            if (ex.getSeverity() != SEVERITY_NONE)
+                markers.addMarker(ex.getSeverity(), section, key, ex.getMessage());
             return null;
         }
     }
@@ -1168,7 +1171,7 @@ public final class InifileAnalyzer {
             throw new ValidationResult(SEVERITY_ERROR, "'" + ExprValue.getTypeName(expectedType) + "' value expected, got '" + ExprValue.getTypeName(type) + "'");
         }
         catch (RuntimeException ex) {
-            throw new ValidationResult(SEVERITY_INFO, "Potential error: " + ex.getMessage()); // Note: just "info" because of danger of false positive (due to unrecognized NED operators or user-defined NED functions)
+            throw new ValidationResult(SEVERITY_NONE /*SEVERITY_INFO?*/, "Potential error: " + ex.getMessage()); // Note: just "info" because of danger of false positive (due to unrecognized NED operators or user-defined NED functions)
         }
     }
 
