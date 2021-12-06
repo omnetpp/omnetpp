@@ -1164,7 +1164,7 @@ def set_plot_title(title, suggested_chart_name=None):
 def fill_missing_titles(df):
     """
     Utility function to fill missing values in the `title` and `moduledisplaypath`
-    columns from the `name` and `module` columns. (Note that `title` and `moduledisplaypath` 
+    columns from the `name` and `module` columns. (Note that `title` and `moduledisplaypath`
     normally come from result attributes of the same name.)
     """
     if "title" in df and "name" in df:
@@ -1225,7 +1225,7 @@ def extract_label_columns(df, props):
     if title_col == None:
         title_col = name_column
 
-    # for legend, first try to find a column that have distinct values in all rows  
+    # for legend, first try to find a column that have distinct values in all rows
     legend_col_candidates = title_col_candidates
     legend_cols = []
     for col in legend_col_candidates:
