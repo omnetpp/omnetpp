@@ -55,7 +55,10 @@ else:
     def conf_intv(values):
         return utils.confidence_interval(confidence_level, values)
     df = pd.pivot_table(df, index=groups, columns=series, values='value', aggfunc=[np.mean, conf_intv], dropna=False)
-    utils.plot_bars(df["mean"], props, names, df["conf_intv"])
+    errors_df = df["conf_intv"]
+    if errors_df.isna().values.all():
+        errors_df = None
+    utils.plot_bars(df["mean"], props, names, errors_df)
 
 utils.postconfigure_plot(props)
 

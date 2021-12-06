@@ -1020,7 +1020,7 @@ def confidence_interval(alpha, data):
     - `alpha` (float): Confidence level, must be in the [0..1] range.
     - `data` (array-like): An array containing the values.
     """
-    return st.norm.interval(alpha, loc=0, scale=st.sem(data))[1]
+    return math.nan if len(data) <= 1 else st.norm.interval(alpha, loc=0, scale=st.sem(data))[1]
 
 
 def perform_vector_ops(df, operations: str):

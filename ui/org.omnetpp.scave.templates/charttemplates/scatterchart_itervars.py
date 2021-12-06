@@ -68,6 +68,8 @@ else:
     pivoted = pd.pivot_table(df, values="value", columns=group_by, index=xaxis_itervar if xaxis_itervar else "name", aggfunc=[np.mean, conf_intv], dropna=False)
     df = pivoted["mean"]
     errors_df = pivoted["conf_intv"]
+    if errors_df.isna().values.all():
+        errors_df = None
 
 legend_cols, _ = utils.extract_label_columns(df, props)
 
