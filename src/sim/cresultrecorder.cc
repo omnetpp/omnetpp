@@ -186,7 +186,14 @@ void cResultRecorder::tweakTitle(opp_string& title)
     }
     else {
         // if title didn't make use of any $ macro, just add recording mode after a comma as default
-        title = title + ", " + getRecordingMode();
+        // but suppress "vector", "histogram" and "stats", as they are obvious
+        std::string suffix = getRecordingMode();
+        if (suffix == "vector" || suffix == "histogram" || suffix == "stats")
+            suffix = "";
+        else if (opp_stringbeginswith(suffix.c_str(), "vector(") || opp_stringbeginswith(suffix.c_str(), "histogram(") || opp_stringbeginswith(suffix.c_str(), "stats("))
+            suffix = opp_substringbeforelast(opp_substringafter(suffix, "("), ")");
+        if (suffix != "")
+            title = title + ", " + suffix;
     }
 }
 
