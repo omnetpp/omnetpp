@@ -71,8 +71,6 @@ else:
     if errors_df.isna().values.all():
         errors_df = None
 
-legend_cols, _ = utils.extract_label_columns(df, props)
-
 try:
     xs = pd.to_numeric(df.index.values)
     ideplot.xlabel(xaxis_itervar)

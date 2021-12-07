@@ -157,14 +157,21 @@ def make_legend_label(legend_cols, row, props={}):
 
     legend_isautomatic = get_prop('legend_automatic')
     legend_format = get_prop('legend_format')
+
     if hasattr(row, 'legend'):
         legend = row.legend
     elif legend_format and legend_isautomatic != "true":
         legend = substitute_columns(legend_format, row, "in legend format string")
-    elif len(legend_cols) == 1:
-        legend = str(row[legend_cols[0][0]])
     else:
-        legend = ", ".join([col + "=" + str(row[i]) for i, col in legend_cols])
+        def fmt(col):
+            if col in ["name", "title"]:
+                prefix = ""
+            elif col in ["module", "moduledisplaypath"]:
+                prefix = " in "
+            else:
+                prefix = ", " + col + "="
+            return prefix + str(getattr(row, col))
+        legend = "".join([fmt(col) for col in legend_cols]).removeprefix(", ").removeprefix(" in ")
 
     legend_replacements = get_prop('legend_replacements')
     if legend_replacements:
@@ -358,14 +365,14 @@ def plot_vectors(df, props, legend_func=make_legend_label):
     def get_prop(k):
         return props[k] if k in props else None
 
-    title_col, legend_cols = extract_label_columns(df, props)
+    title_cols, legend_cols = extract_label_columns(df, props)
 
-    df.sort_values(by=[l for (_, l) in legend_cols], inplace=True)
+    df.sort_values(by=legend_cols, inplace=True)
     for t in df.itertuples(index=False):
         style = _make_line_args(props, t, df)
         p.plot(t.vectime, t.vecvalue, label=legend_func(legend_cols, t, props), **style)
 
-    title = get_prop("title") or make_chart_title(df, title_col, legend_cols)
+    title = get_prop("title") or make_chart_title(df, title_cols)
     set_plot_title(title)
 
 
@@ -379,9 +386,9 @@ def plot_vectors_separate(df, props, legend_func=make_legend_label):
     def get_prop(k):
         return props[k] if k in props else None
 
-    title_col, legend_cols = extract_label_columns(df, props)
+    title_cols, legend_cols = extract_label_columns(df, props)
 
-    df.sort_values(by=[l for (_, l) in legend_cols], inplace=True)
+    df.sort_values(by=legend_cols, inplace=True)
 
     ax = None
     for i, t in enumerate(df.itertuples(index=False)):
@@ -396,7 +403,7 @@ def plot_vectors_separate(df, props, legend_func=make_legend_label):
 
     plt.subplot(df.shape[0], 1, 1)
 
-    title = get_prop("title") or make_chart_title(df, title_col, legend_cols)
+    title = get_prop("title") or make_chart_title(df, title_cols)
     set_plot_title(title)
 
 
@@ -458,9 +465,9 @@ def plot_histograms(df, props, legend_func=make_legend_label):
     def get_prop(k):
         return props[k] if k in props else None
 
-    title_col, legend_cols = extract_label_columns(df, props)
+    title_cols, legend_cols = extract_label_columns(df, props)
 
-    df.sort_values(by=[l for (_, l) in legend_cols], inplace=True)
+    df.sort_values(by=legend_cols, inplace=True)
     for t in df.itertuples(index=False):
         style = _make_histline_args(props, t, df)
 
@@ -493,7 +500,7 @@ def plot_histograms(df, props, legend_func=make_legend_label):
     if show_overflows and chart.is_native_chart():
         ideplot.set_property("Hist.ShowOverflowCell", str(_parse_optional_bool(show_overflows)).lower())
 
-    title = get_prop("title") or make_chart_title(df, title_col, legend_cols)
+    title = get_prop("title") or make_chart_title(df, title_cols)
     set_plot_title(title)
 
 
@@ -1204,87 +1211,96 @@ def extract_label_columns(df, props):
     prefer_titles = get_prop('legend_prefer_result_titles') == 'true'
     prefer_displaypaths = get_prop('legend_prefer_module_display_paths') == 'true'
 
-    name_column = "title" if (prefer_titles and "title" in df) else "name"
-    module_column = "moduledisplaypath" if (prefer_displaypaths and "moduledisplaypath" in df) else "module"
+    name_column = "title" if ((prefer_titles or "name" not in df) and "title" in df) else "name"
+    module_column = "moduledisplaypath" if ((prefer_displaypaths or "module" not in df) and "moduledisplaypath" in df) else "module"
 
-    title_col_candidates = [name_column, module_column, "experiment", "measurement", "replication"]
+    title_cols = []
+    legend_cols = []
 
-    blacklist = ["runID", "value", "attrvalue", "vectime", "vecvalue",
+    if name_column in df:
+        if df[name_column].nunique() == 1:
+            title_cols.append(name_column)
+        else:
+            legend_cols.append(name_column)
+
+    if module_column in df:
+        if df[module_column].nunique() == 1:
+            title_cols.append(module_column)
+        else:
+            legend_cols.append(module_column)
+
+    if not title_cols:
+        title_col_candidates = ["experiment", "measurement", "replication"]
+
+        # for title, choose the first column that has has identical values in all rows
+        for col in title_col_candidates:
+            if col in df and col not in title_cols and df[col].nunique() == 1 and df[col].values[0]:
+                title_cols.append(col)
+                break
+        if not title_cols:
+            title_cols = [name_column]
+
+    blacklist = set(["name", "title", "module", "moduledisplaypath", # these will be used anyway
+                 "runID", "value", "attrvalue", "vectime", "vecvalue",
                  "binedges", "binvalues", "underflows", "overflows",
                  "count", "sumweights", "mean", "stddev", "min", "max",
                  "processid", "datetime", "datetimef", "runnumber", "seedset",
                  "iterationvars", "iterationvarsf", "iterationvarsd",
-                 "source", "recordingmode", "interpolationmode", "enum", "unit"]
+                 "source", "recordingmode", "interpolationmode", "enum", "unit"])
 
-    # for title, choose the first column that has has identical values in all rows
-    title_col = None
-    for col in title_col_candidates:
-        if col in df and len(df[col].unique()) == 1:
-            title_col = col
-            break
-    if title_col == None:
-        title_col = name_column
+    # if unsuccessful, try to pick from all columns, except a few that we don't like
+    legend_col_candidates = [col for col in list(df.columns.values) if col not in blacklist and col not in title_cols]
 
-    # for legend, first try to find a column that have distinct values in all rows
-    legend_col_candidates = title_col_candidates
-    legend_cols = []
-    for col in legend_col_candidates:
-        if col in df and len(df[col].unique()) == len(df):
-            legend_cols = [(list(df.columns.values).index(col), col)]
-            break
-
-    if legend_cols:
-        return title_col, legend_cols
-
-    # if unsuccessful, try to pick from all columns (starting with name_column and module_column)
-    legend_col_candidates = list(df.columns.values)
-    legend_col_candidates = [col for col in legend_col_candidates if col not in ["name", "title", "module", "moduledisplaypath"]] # remove those
-    legend_col_candidates = [name_column, module_column] + legend_col_candidates
+    # last resort columns
+    if "datetime" in df:
+        legend_col_candidates.append("datetime")
+    if "runID" in df:
+        legend_col_candidates.append("runID")
 
     # pick columns that improve the partitioning of rows, until each row can be identified with them
     last_len = None
     for col in legend_col_candidates:
-        if col in df and col not in blacklist and col != title_col:
-            new_len = len(df.groupby([i2 for i1, i2 in legend_cols] + [col]))
-            if new_len == len(df) or not last_len or new_len > last_len:
-                i = list(df.columns.values).index(col)
-                legend_cols.append((i, col))
-                last_len = new_len
-            if new_len == len(df):
-                break
+        new_len = len(df.groupby(legend_cols + [col]))
+        if new_len == len(df) or not last_len or new_len > last_len:
+            legend_cols.append(col)
+            last_len = new_len
+        if new_len == len(df):
+            break
 
-    # filter out columns which only have a single value in them (this can happen in the loop above, with the first considered column)
-    legend_cols = list(filter(lambda icol: len(df[icol[1]].unique()) > 1, legend_cols))
+    # filter out columns that only have a single value in them
+    # (this can happen in the loop above, with the first considered column)
+    legend_cols = list(filter(lambda icol: df[icol].nunique() > 1, legend_cols))
 
+    # at this point, ideally this should hold: len(df.groupby(legend_cols)) == len(df)
+    return title_cols, legend_cols
+
+
+def make_chart_title(df, title_cols):
     """
-    if not legend_cols:
-        last_len = None
-        for i, col in reversed(list(enumerate(df))):
-            if col not in blacklist and col != title_col:
-                new_len = len(df.groupby([i2 for i1, i2 in legend_cols] + [col]))
-                if new_len > 1:
-                    legend_cols.append((i, col))
+    Produces a reasonably good chart title text from a result DataFrame,
+    given a selected list of "title" columns.
     """
-
-    # TODO: use runID (or iterationvars?) as last resort (if present)
-
-    # at this point, ideally this should hold: len(df.groupby([i2 for i1, i2 in legend_cols])) == len(df)
-    return title_col, legend_cols
-
-
-def make_chart_title(df, title_col, legend_cols):
-    """
-    Produces a reasonably good chart title text from a result DataFrame, given a selected "title"
-    column, and a list of selected "legend" columns as returned by `extract_label_columns()`.
-    """
-    if df is None or df.empty or title_col not in df:
+    if df is None or df.empty:
         return "None"
 
-    what = str(list(df[title_col])[0]) if title_col else "Data"
-    if title_col and len(df[title_col].unique()) > 1:
-        what += " and other variables"
-    by_what = (" (by " + ", ".join([id[1] for id in legend_cols]) + ")") if legend_cols else ""
-    return what + by_what
+    def fmt(col):
+        if col in ["name", "title"]:
+            prefix = ""
+        elif col in ["module", "moduledisplaypath"]:
+            prefix = " in "
+        else:
+            prefix = ", " + col + "="
+
+        val = str(df[col][0])
+        if df[col].nunique() > 1:
+            val += ", etc."
+
+        return prefix + val
+
+    title = "".join([fmt(col) for col in title_cols if col in df])
+    title = title.removeprefix(", ").removeprefix(" in ")
+
+    return title
 
 
 def pick_two_columns(df, props=None):  #TODO remove default for props in final release
