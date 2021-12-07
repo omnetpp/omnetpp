@@ -139,7 +139,7 @@ fi
 
 # Check if configure.user exists. If not, copy the default one there.
 if test ! -f ./configure.user ; then
-  AC_MSG_WARN(['configure.user' in not present in the installation root. Creating a default version.])
+  AC_MSG_WARN(['configure.user' is not present in the installation root. Creating a default version.])
   cp ./configure.user.dist ./configure.user
 fi
 

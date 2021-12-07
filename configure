@@ -2043,8 +2043,8 @@ fi
 
 # Check if configure.user exists. If not, copy the default one there.
 if test ! -f ./configure.user ; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: 'configure.user' in not present in the installation root. Creating a default version." >&5
-$as_echo "$as_me: WARNING: 'configure.user' in not present in the installation root. Creating a default version." >&2;}
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: 'configure.user' is not present in the installation root. Creating a default version." >&5
+$as_echo "$as_me: WARNING: 'configure.user' is not present in the installation root. Creating a default version." >&2;}
   cp ./configure.user.dist ./configure.user
 fi
 
