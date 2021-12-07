@@ -64,18 +64,25 @@ Define_Module(Node);
 
 %contains: results/General-#0.sca
 scalar Test.node rec:count 6
+attr recordingmode count
 attr source tenToFifteen
 scalar Test.node rec:sum 75
+attr recordingmode sum
 attr source tenToFifteen
 scalar Test.node rec:mean 12.5
+attr recordingmode mean
 attr source tenToFifteen
 scalar Test.node rec:min 10
+attr recordingmode min
 attr source tenToFifteen
 scalar Test.node rec:max 15
+attr recordingmode max
 attr source tenToFifteen
 scalar Test.node rec:last 15
+attr recordingmode last
 attr source tenToFifteen
 scalar Test.node rec:timeavg 12
+attr recordingmode timeavg
 attr source tenToFifteen
 statistic Test.node rec:histogram
 field count 6
@@ -85,6 +92,7 @@ field min 10
 field max 15
 field sum 75
 field sqrsum 955
+attr recordingmode histogram
 attr source tenToFifteen
 bin	-inf	0
 bin	8	0
@@ -98,19 +106,27 @@ bin	15	1
 bin	16	0
 bin	17	0
 scalar Test.node rec:2*mean 25
+attr recordingmode 2*mean
 attr source tenToFifteen
 scalar Test.node flt:count+100 106
+attr recordingmode count+100
 attr source tenToFifteen
 scalar Test.node flt:sum+100 175
+attr recordingmode sum+100
 attr source tenToFifteen
 scalar Test.node flt:mean+100 112.5
+attr recordingmode mean+100
 attr source tenToFifteen
 scalar Test.node flt:min+100 110
+attr recordingmode min+100
 attr source tenToFifteen
 scalar Test.node flt:max+100 115
+attr recordingmode max+100
 attr source tenToFifteen
 scalar Test.node flt:last+100 115
+attr recordingmode last+100
 attr source tenToFifteen
 scalar Test.node flt:timeavg+100 112
+attr recordingmode timeavg+100
 attr source tenToFifteen
 

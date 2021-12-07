@@ -37,9 +37,12 @@ Test.node (Node):
 
 %contains: results/General-#0.sca
 scalar Test.node dorecord:last 17
+attr recordingmode last
 attr source foo
 scalar Test.node dorecord:max 28
+attr recordingmode max
 attr source foo
 scalar Test.node dummy:last 17
+attr recordingmode last
 attr source foo
 

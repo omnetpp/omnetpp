@@ -57,34 +57,50 @@ Define_Module(Node);
 
 %contains: results/General-#0.sca
 scalar Test.node foo1:count(demux) 4
+attr recordingmode count(demux)
 attr source foo
 scalar Test.node first:foo1:count(demux) 2
+attr recordingmode count(demux)
 attr source foo
 scalar Test.node second:foo1:count(demux) 3
+attr recordingmode count(demux)
 attr source foo
 scalar Test.node third:foo1:count(demux) 4
+attr recordingmode count(demux)
 attr source foo
 scalar Test.node foo1:sum(demux) 211
+attr recordingmode sum(demux)
 attr source foo
 scalar Test.node first:foo1:sum(demux) 2000
+attr recordingmode sum(demux)
 attr source foo
 scalar Test.node second:foo1:sum(demux) 30000
+attr recordingmode sum(demux)
 attr source foo
 scalar Test.node third:foo1:sum(demux) 400000
+attr recordingmode sum(demux)
 attr source foo
 scalar Test.node foo2:count 4
+attr recordingmode count
 attr source demux(foo)
 scalar Test.node foo2:sum 211
+attr recordingmode sum
 attr source demux(foo)
 scalar Test.node first:foo2:count 2
+attr recordingmode count
 attr source demux(foo)
 scalar Test.node first:foo2:sum 2000
+attr recordingmode sum
 attr source demux(foo)
 scalar Test.node second:foo2:count 3
+attr recordingmode count
 attr source demux(foo)
 scalar Test.node second:foo2:sum 30000
+attr recordingmode sum
 attr source demux(foo)
 scalar Test.node third:foo2:count 4
+attr recordingmode count
 attr source demux(foo)
 scalar Test.node third:foo2:sum 400000
+attr recordingmode sum
 attr source demux(foo)

@@ -74,14 +74,18 @@ debug-statistics-recording = true
 
 %contains: results/General-#0.sca
 scalar Test.node aplusb:min -11
+attr recordingmode min
 attr source a+b
 scalar Test.node aplusb:max 11
+attr recordingmode max
 attr source a+b
 scalar Test.node aplusb:last -9
+attr recordingmode last
 attr source a+b
 
 %contains: results/General-#0.vec
 vector 0 Test.node aplusb:vector ETV
+attr recordingmode vector
 attr source a+b
 0	2	0.2	-9
 0	3	0.3	11

@@ -60,36 +60,47 @@ Define_Module(Node);
 
 %contains: results/General-#0.sca
 scalar Test.node queueLength2:count+10 12
+attr recordingmode count+10
 attr title "Queue Length, count+10"
 attr unit packets
 scalar Test.node queueLength2:mean 3
+attr recordingmode mean
 attr title "Queue Length, mean"
 attr unit packets
 scalar Test.node queueLength2:timeavg 2
+attr recordingmode timeavg
 attr title "Queue Length, timeavg"
 attr unit packets
 scalar Test.node queueLength1:count+10 16
+attr recordingmode count+10
 attr title "Queue Length, count+10"
 attr unit packets
 scalar Test.node queueLength1:mean 12.5
+attr recordingmode mean
 attr title "Queue Length, mean"
 attr unit packets
 scalar Test.node queueLength1:timeavg 12
+attr recordingmode timeavg
 attr title "Queue Length, timeavg"
 attr unit packets
+par Test typename "\"Test\""
 
 %contains: results/General-#0.vec
 vector 0 Test.node queueLength1:vector ETV
-attr title "Queue Length, vector"
+attr recordingmode vector
+attr title "Queue Length"
 attr unit packets
 vector 1 Test.node queueLength1:vector(mean) ETV
-attr title "Queue Length, vector(mean)"
+attr recordingmode vector(mean)
+attr title "Queue Length, mean"
 attr unit packets
 vector 2 Test.node queueLength2:vector ETV
-attr title "Queue Length, vector"
+attr recordingmode vector
+attr title "Queue Length"
 attr unit packets
 vector 3 Test.node queueLength2:vector(mean) ETV
-attr title "Queue Length, vector(mean)"
+attr recordingmode vector(mean)
+attr title "Queue Length, mean"
 attr unit packets
 0	0	0	10
 0	0	0	11

@@ -39,6 +39,7 @@ field min 12
 field max 28
 field sum 1984
 field sqrsum 40348
+attr recordingmode histogram
 attr source foo
 bin	-inf	0
 bin	8	0
@@ -74,7 +75,9 @@ field min 12
 field max 28
 field sum 1984
 field sqrsum 40348
+attr recordingmode histogram
 attr source foo
 scalar Test.node dummy:last 17
+attr recordingmode last
 attr source foo
 

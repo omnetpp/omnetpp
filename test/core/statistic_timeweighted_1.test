@@ -60,10 +60,13 @@ sim-time-limit = 30s  # 10s after emitting the last value, 6.0
 
 %contains: results/General-#0.sca
 scalar Test.node unweighted:mean 3.5
+attr recordingmode mean
 attr source foo
 scalar Test.node unweighted:mean+100 103.5
+attr recordingmode mean+100
 attr source foo
 scalar Test.node unweighted:avg 3.5
+attr recordingmode avg
 attr source foo
 statistic Test.node unweighted:stats
 field count 4
@@ -73,14 +76,18 @@ field min 1
 field max 6
 field sum 14
 field sqrsum 66
+attr recordingmode stats
 attr source foo
 scalar Test.node timeweighted:mean 4
+attr recordingmode mean
 attr source foo
 attr timeWeighted 1
 scalar Test.node timeweighted:mean+100 102
+attr recordingmode mean+100
 attr source foo
 attr timeWeighted 1
 scalar Test.node timeweighted:timeavg 4
+attr recordingmode timeavg
 attr source foo
 attr timeWeighted 1
 statistic Test.node timeweighted:stats
@@ -93,6 +100,7 @@ field weights 20
 field weightedSum 80
 field sqrSumWeights 200
 field weightedSqrSum 400
+attr recordingmode stats
 attr source foo
 attr timeWeighted 1
 

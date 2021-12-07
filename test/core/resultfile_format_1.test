@@ -68,6 +68,7 @@ par Test.node hello "\"Hello\""
 par Test.node startTime 0.1s
 attr unit s
 scalar Test.node foo:last 17
+attr recordingmode last
 attr source foo
 par Test typename "\"Test\""
 
@@ -105,6 +106,7 @@ par Test.node hello "\"Hello\""
 par Test.node startTime 0.1s
 attr unit s
 scalar Test.node foo:last 19
+attr recordingmode last
 attr source foo
 par Test typename "\"Test\""
 
@@ -142,6 +144,7 @@ par Test.node hello "\"Hello\""
 par Test.node startTime 0.1s
 attr unit s
 scalar Test.node foo:last 18
+attr recordingmode last
 attr source foo
 par Test typename "\"Test\""
 
@@ -179,6 +182,7 @@ par Test.node hello "\"Hello\""
 par Test.node startTime 0.1s
 attr unit s
 scalar Test.node foo:last 18
+attr recordingmode last
 attr source foo
 par Test typename "\"Test\""
 
@@ -216,6 +220,7 @@ par Test.node hello "\"Hello\""
 par Test.node startTime 0.1s
 attr unit s
 scalar Test.node foo:last 19
+attr recordingmode last
 attr source foo
 par Test typename "\"Test\""
 
@@ -253,6 +258,7 @@ par Test.node hello "\"Hello\""
 par Test.node startTime 0.1s
 attr unit s
 scalar Test.node foo:last 18
+attr recordingmode last
 attr source foo
 par Test typename "\"Test\""
 
@@ -290,6 +296,7 @@ par Test.node hello "\"Hello\""
 par Test.node startTime 0.1s
 attr unit s
 scalar Test.node foo:last 18
+attr recordingmode last
 attr source foo
 par Test typename "\"Test\""
 
@@ -327,6 +334,7 @@ par Test.node hello "\"Hello\""
 par Test.node startTime 0.1s
 attr unit s
 scalar Test.node foo:last 21
+attr recordingmode last
 attr source foo
 par Test typename "\"Test\""
 

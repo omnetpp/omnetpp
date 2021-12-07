@@ -41,5 +41,6 @@ output-scalar-file = test.sca
 
 %contains: test.sca
 scalar Test host1Sent:count 3
+attr recordingmode count
 attr source host1.udp.sentPk
 

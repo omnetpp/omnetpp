@@ -44,8 +44,10 @@ sim-time-limit = 2s
 
 %contains: results/General-#0.vec
 vector 0 Test foo:vector(count) ETV
+attr recordingmode vector(count)
 attr source foo
 vector 1 Test foo:vector(sum) ETV
+attr recordingmode vector(sum)
 attr source foo
 0	0	0.8	0
 0	9	0.8	1
