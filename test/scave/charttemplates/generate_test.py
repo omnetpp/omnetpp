@@ -26,6 +26,7 @@ except chart.ChartScriptError as e:
     test_exceptions.warn(str(e))
     test_exceptions.expect_message(expected_exception)
 except (ValueError, SystemExit) as e:
+    print("Unexpected exception:", e)
     test_exceptions.expect_message(expected_exception)
 
 print(test_exceptions.green("PASS"))
