@@ -1336,8 +1336,7 @@ def assert_columns_exist(df, cols, message="Expected column missing from DataFra
     """
     for c in cols:
         if c not in df:
-            ideplot.set_warning(message + ": " + c)
-            raise ValueError(message + ": " + c)
+            raise chart.ChartScriptError(message + ": " + c)
 
 
 def to_numeric(df, columns=None, errors="ignore", downcast=None):
