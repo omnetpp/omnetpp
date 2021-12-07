@@ -907,8 +907,8 @@ def export_data_if_needed(df, props, **kwargs):
 
     try:
         chart.set_observed_column_names(list(df.columns.values))
-    except:
-        print("Warning: error in chart.set_observed_column_names()", file=sys.stderr)
+    except Exception as e:
+        print("Warning: error in chart.set_observed_column_names():", e, file=sys.stderr)
 
     def get_prop(k):
         return props[k] if k in props else None
