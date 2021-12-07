@@ -1,8 +1,8 @@
 version 3
-run Fifo1-0-20210216-15:06:15-478432
+run Fifo1-0-20211207-20:10:56-304103
 attr configname Fifo1
-attr datetime 20210216-15:06:15
-attr datetimef 20210216-150615
+attr datetime 20211207-20:10:56
+attr datetimef 20211207-201056
 attr experiment Fifo1
 attr inifile omnetpp.ini
 attr iterationvars ""
@@ -10,7 +10,7 @@ attr iterationvarsd ""
 attr iterationvarsf ""
 attr measurement ""
 attr network FifoNet
-attr processid 478432
+attr processid 304103
 attr repetition 0
 attr replication #0
 attr resultdir results
@@ -27,14 +27,17 @@ config cpu-time-limit 300s
 
 vector 0 FifoNet.fifo qlen:vector ETV
 attr interpolationmode sample-hold
-attr title "queue length, vector"
+attr recordingmode vector
+attr title "queue length"
 vector 1 FifoNet.fifo queueingTime:vector ETV
 attr interpolationmode none
-attr title "queueing time at dequeue, vector"
+attr recordingmode vector
+attr title "queueing time at dequeue"
 attr unit s
 vector 2 FifoNet.sink lifetime:vector ETV
 attr interpolationmode none
-attr title "lifetime of arrived jobs, vector"
+attr recordingmode vector
+attr title "lifetime of arrived jobs"
 attr unit s
 0	0	0	0
 0	132	6.682640977671	1

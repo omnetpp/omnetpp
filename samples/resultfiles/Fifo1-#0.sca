@@ -1,8 +1,8 @@
 version 3
-run Fifo1-0-20210216-15:06:15-478432
+run Fifo1-0-20211207-20:10:56-304103
 attr configname Fifo1
-attr datetime 20210216-15:06:15
-attr datetimef 20210216-150615
+attr datetime 20211207-20:10:56
+attr datetimef 20211207-201056
 attr experiment Fifo1
 attr inifile omnetpp.ini
 attr iterationvars ""
@@ -10,7 +10,7 @@ attr iterationvarsd ""
 attr iterationvarsf ""
 attr measurement ""
 attr network FifoNet
-attr processid 478432
+attr processid 304103
 attr repetition 0
 attr replication #0
 attr resultdir results
@@ -33,28 +33,35 @@ par FifoNet.fifo serviceTime 0.01s
 attr unit s
 scalar FifoNet.fifo queueingTime:mean 0.00027679782182665
 attr interpolationmode none
+attr recordingmode mean
 attr title "queueing time at dequeue, mean"
 attr unit s
 scalar FifoNet.fifo queueingTime:max 0.015324913529
 attr interpolationmode none
+attr recordingmode max
 attr title "queueing time at dequeue, max"
 attr unit s
 scalar FifoNet.fifo busy:timeavg 0.048859999999999
 attr interpolationmode sample-hold
+attr recordingmode timeavg
 attr title "server busy state, timeavg"
 scalar FifoNet.fifo qlen:timeavg 0.001352434157445
 attr interpolationmode sample-hold
+attr recordingmode timeavg
 attr title "queue length, timeavg"
 scalar FifoNet.fifo qlen:max 2
 attr interpolationmode sample-hold
+attr recordingmode max
 attr title "queue length, max"
 par FifoNet.sink typename "\"Sink\""
 scalar FifoNet.sink lifetime:mean 0.010276797821826
 attr interpolationmode none
+attr recordingmode mean
 attr title "lifetime of arrived jobs, mean"
 attr unit s
 scalar FifoNet.sink lifetime:max 0.025324913529
 attr interpolationmode none
+attr recordingmode max
 attr title "lifetime of arrived jobs, max"
 attr unit s
 par FifoNet typename "\"FifoNet\""

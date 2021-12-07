@@ -1,8 +1,8 @@
 version 3
-run PureAlohaExperiment-41-20210216-15:06:00-478297
+run PureAlohaExperiment-41-20211207-20:09:58-304008
 attr configname PureAlohaExperiment
-attr datetime 20210216-15:06:00
-attr datetimef 20210216-150600
+attr datetime 20211207-20:09:58
+attr datetimef 20211207-200958
 attr experiment PureAlohaExperiment
 attr inifile omnetpp.ini
 attr iterationvars "$numHosts=20, $iaMean=9"
@@ -10,7 +10,7 @@ attr iterationvarsd numHosts=20/iaMean=9
 attr iterationvarsf numHosts=20,iaMean=9-
 attr measurement "$numHosts=20, $iaMean=9"
 attr network Aloha
-attr processid 478297
+attr processid 304008
 attr repetition 1
 attr replication #1
 attr resultdir results
@@ -52,7 +52,8 @@ field min 0.099237131096
 field max 0.413195432597
 field sum 291.17649342492
 field sqrsum 49.011453911148
-attr title "collision length, histogram"
+attr recordingmode histogram
+attr title "collision length"
 bin	-inf	0
 bin	0.05	0
 bin	0.055	0
@@ -129,10 +130,13 @@ bin	0.405	0
 bin	0.41	1
 bin	0.415	0
 scalar Aloha.server collisionLength:mean 0.15807627221765
+attr recordingmode mean
 attr title "collision length, mean"
 scalar Aloha.server collisionLength:sum 291.17649342492
+attr recordingmode sum
 attr title "collision length, sum"
 scalar Aloha.server collisionLength:max 0.413195432597
+attr recordingmode max
 attr title "collision length, max"
 statistic Aloha.server collisionMultiplicity:histogram
 field count 1842
@@ -142,8 +146,9 @@ field min 2
 field max 9
 field sum 4108
 field sqrsum 9724
+attr recordingmode histogram
 attr source collision
-attr title "collision multiplicity, histogram"
+attr title "collision multiplicity"
 bin	-inf	0
 bin	1	0
 bin	2	1502
@@ -156,13 +161,16 @@ bin	8	0
 bin	9	1
 bin	10	0
 scalar Aloha.server collidedFrames:last 4108
+attr recordingmode last
 attr source sum(collision)
 attr title "collided frames, last"
 scalar Aloha.server channelUtilization:last 0.14270035320333
 attr interpolationmode linear
+attr recordingmode last
 attr source timeavg(receive)
 attr title "channel utilization, last"
 scalar Aloha.server receivedFrames:last 7770
+attr recordingmode last
 attr source sum(receive)
 attr title "received frames, last"
 par Aloha.host[0] typename "\"Host\""
