@@ -673,7 +673,7 @@ def postconfigure_plot(props):
         return props[k] if k in props else None
 
     def setup():
-        if get_prop("yaxis_title"):
+        if get_prop("xaxis_title"):
             p.xlabel(get_prop("xaxis_title"))
         if get_prop("yaxis_title"):
             p.ylabel(get_prop("yaxis_title"))
