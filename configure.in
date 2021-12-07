@@ -137,10 +137,16 @@ else
   AC_MSG_ERROR([Before running 'configure', please use 'source setenv' to set up your environment.])
 fi
 
+# Check if configure.user exists. If not, copy the default one there.
+if test ! -f ./configure.user ; then
+  AC_MSG_WARN(['configure.user' in not present in the installation root. Creating a default version.])
+  cp ./configure.user.dist ./configure.user
+fi
+
 #----------------------
 # Read user settings (and allow override the above settings)
 #----------------------
-AC_MSG_NOTICE(reading configure.user for your custom settings)
+AC_MSG_NOTICE(Reading configure.user for your custom settings.)
 . ./configure.user
 
 # force MS-ABI / x64 compatible target if requested by the user

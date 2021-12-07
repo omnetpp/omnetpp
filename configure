@@ -2041,11 +2041,18 @@ else
   as_fn_error $? "Before running 'configure', please use 'source setenv' to set up your environment." "$LINENO" 5
 fi
 
+# Check if configure.user exists. If not, copy the default one there.
+if test ! -f ./configure.user ; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: 'configure.user' in not present in the installation root. Creating a default version." >&5
+$as_echo "$as_me: WARNING: 'configure.user' in not present in the installation root. Creating a default version." >&2;}
+  cp ./configure.user.dist ./configure.user
+fi
+
 #----------------------
 # Read user settings (and allow override the above settings)
 #----------------------
-{ $as_echo "$as_me:${as_lineno-$LINENO}: reading configure.user for your custom settings" >&5
-$as_echo "$as_me: reading configure.user for your custom settings" >&6;}
+{ $as_echo "$as_me:${as_lineno-$LINENO}: Reading configure.user for your custom settings." >&5
+$as_echo "$as_me: Reading configure.user for your custom settings." >&6;}
 . ./configure.user
 
 # force MS-ABI / x64 compatible target if requested by the user
