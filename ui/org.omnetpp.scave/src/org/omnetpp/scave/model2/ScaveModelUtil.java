@@ -150,7 +150,7 @@ public class ScaveModelUtil {
     public static String getDisplayFullPath(AnalysisItem item, String separator) {
         String chartName = StringUtils.defaultIfEmpty(item.getName(), "<Unnamed>");
         Folder folder = item.getParentFolder();
-        if (folder.getParentFolder() != null)  // not the root
+        if (folder != null && folder.getParentFolder() != null)  // not parentless temp chart, and not in the root folder
             chartName = folder.getPathAsString(separator) + separator + chartName;
         return chartName;
     }
