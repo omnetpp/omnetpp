@@ -125,13 +125,13 @@ fullPath : string = "Test.tester"
 info : string = "id=2"
 owner : omnetpp::cObject = (omnetpp::cModule)Test
 ownedObjects[3] : omnetpp::cOwnedObject = [(omnetpp::cMessage)Test.tester.timeout-2, (omnetpp::cPacket)Test.tester.pk, (omnetpp::cCanvas)Test.tester.canvas]
+displayName : string = ""
 isModule : bool = true
 componentType : omnetpp::cComponentType = (omnetpp::cDynamicModuleType)component types.Tester
 par[1] : omnetpp::cPar = [(omnetpp::cPar)Test.tester.bitrate]
 properties_[2] : omnetpp::cProperty = [(omnetpp::cProperty)signal[foo], (omnetpp::cProperty)statistic[foo]]
 listenedSignals[1] : omnetpp::cComponent::SignalListenerList = [(omnetpp::cComponent::SignalListenerList *)0x...]
 results[1] : omnetpp::cResultRecorder = [(omnetpp::VectorRecorder)Test.tester.foo:vector]
-displayName : string = ""
 id : int = 2
 isSimple : bool = true
 isVector : bool = false
