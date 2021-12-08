@@ -39,9 +39,9 @@ if xaxis_itervar == yaxis_itervar:
 df[xaxis_itervar] = pd.to_numeric(df[xaxis_itervar], errors="ignore")
 df[yaxis_itervar] = pd.to_numeric(df[yaxis_itervar], errors="ignore")
 
-title_col, legend_cols = utils.extract_label_columns(df, props)
+title_cols, legend_cols = utils.extract_label_columns(df, props)
 
-title = str(list(df[title_col])[0]) if title_col else None
+title = utils.make_chart_title(df, title_cols)
 
 unique_names = df["name"].unique()
 
