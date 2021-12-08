@@ -1,0 +1,2 @@
+#! /bin/sh
+python3 anf_from_templates.py

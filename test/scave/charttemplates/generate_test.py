@@ -4,6 +4,7 @@ import os
 import sys
 
 from omnetpp.scave.analysis import *
+from omnetpp.scave.charttemplate import *
 
 TEMPLATE_DIR = "../../../ui/org.omnetpp.scave.templates/charttemplates/"
 
@@ -35,29 +36,28 @@ print(test_exceptions.green("PASS"))
 def indent(s):
     return "\n".join(["    " + l for l in s.splitlines()])
 
-def generate_testcases(scriptname, base_props, tests):
-    with open(TEMPLATE_DIR + "/" + scriptname, "rt") as f:
-        origscript = str(f.read())
-
+def generate_testcases(template_ids, base_props, tests):
+    global templates
     charts = []
+    for template_id in template_ids:
+        template = templates[template_id]
+        i = 0
+        for propname, propvalue, errmsg in tests:
+            name = template_id + str(i)
+            i += 1
+            props = base_props.copy()
+            props.update({propname: propvalue})
 
-    i = 0
-    for propname, propvalue, errmsg in tests:
-        name = scriptname.replace(".py", "_" + str(i))
-        i = i + 1
-        props = base_props.copy()
-        props.update({propname: propvalue})
-        script = skeleton.format(repr(name), repr(errmsg), indent(origscript))
-
-        chart = Chart(type="MATPLOTLIB", name=name, script=script, properties=props)
-        charts.append(chart)
-
+            chart = template.create_chart(name=name, custom_props=props)
+            chart.script = skeleton.format(repr(name), repr(errmsg), indent(chart.script))
+            charts.append(chart)
     return charts
 
-
+templates = load_chart_templates()
 charts = []
 
-charts += generate_testcases("barchart.py",
+charts += generate_testcases(
+    ["barchart_native", "barchart_mpl"],
     {
         "filter": "name =~ channelUtilization:last",
         "include_fields": "true",
@@ -85,12 +85,10 @@ charts += generate_testcases("barchart.py",
     ]
 )
 
-charts += generate_testcases("linechart.py",
+charts += generate_testcases(
+    ["linechart_native", "linechart_mpl", "linechart_separate_mpl"],
     {
         "filter": "name =~ radioState:vector",
-        "vector_start_time": "",
-        "vector_end_time": "",
-        "vector_operations": ""
     },
     [
         ("filter", "type =~ vector", None),
@@ -108,7 +106,8 @@ charts += generate_testcases("linechart.py",
     ]
 )
 
-charts += generate_testcases("scatterchart_itervars.py",
+charts += generate_testcases(
+    ["scatterchart_itervars_native", "scatterchart_itervars_mpl"],
     {
         "filter": "name =~ channelUtilization:last",
         "include_fields": "true",
@@ -138,7 +137,8 @@ charts += generate_testcases("scatterchart_itervars.py",
     ]
 )
 
-charts += generate_testcases("histogramchart.py",
+charts += generate_testcases(
+    ["histogramchart_native", "histogramchart_mpl"], #TODO "histogramchart_vectors_native", "histogramchart_vectors_mpl"
     {
         "filter": "name =~ channelUtilization:last",
     },
@@ -150,7 +150,8 @@ charts += generate_testcases("histogramchart.py",
     ]
 )
 
-charts += generate_testcases("generic_mpl.py",
+charts += generate_testcases(
+    ["generic_mpl"],
     {
         "input": "Hello",
     },
@@ -160,7 +161,8 @@ charts += generate_testcases("generic_mpl.py",
     ]
 )
 
-charts += generate_testcases("generic_xyplot.py",
+charts += generate_testcases(
+    ["generic_xyplot_native", "generic_xyplot_mpl"],
     {
     },
     [
@@ -168,7 +170,8 @@ charts += generate_testcases("generic_xyplot.py",
     ]
 )
 
-charts += generate_testcases("3dchart_itervars.py",
+charts += generate_testcases(
+    ["3dchart_itervars_mpl"],
     {
         "filter": "name =~ channelUtilization:last",
         "include_fields": "true",
@@ -200,7 +203,8 @@ charts += generate_testcases("3dchart_itervars.py",
     ]
 )
 
-charts += generate_testcases("boxwhiskers.py",
+charts += generate_testcases(
+    ["boxwhiskers"],
     {
         "filter": "*:histogram"
     },
@@ -215,3 +219,9 @@ inputs = [ "/resultfiles/aloha/*.sca", "/resultfiles/aloha/*.vec" ]
 analysis = Analysis(inputs=inputs, items=charts)
 
 analysis.to_anf_file("all_the_tests.anf")
+
+# print which chart templates are not covered here
+tested = set([chart.template for chart in charts])
+all = set(templates.keys())
+untested = all.difference(tested)
+print("Untested chart templates (not covered by this test):", untested)
