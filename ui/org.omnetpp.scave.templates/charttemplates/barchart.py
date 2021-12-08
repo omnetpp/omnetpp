@@ -42,23 +42,45 @@ for c in groups + series:
     df[c] = pd.to_numeric(df[c], errors="ignore")
 
 # names for title, confidence level
-names = ", ".join(utils.get_names_for_title(df, props))
+title_names = utils.get_names_for_title(df, props)
+names = title_names[0] if len(title_names) == 1 else None
 confidence_level_str = props["confidence_level"] if "confidence_level" in props else "none"
 
 # pivoting and plotting
 df.sort_values(by=groups+series, axis='index', inplace=True)
+
+
+def aggfunc(values):
+    if values.empty:
+        return None
+    if values.dtype == np.float64 or values.dtype == np.int64:
+        return values.mean()
+    if values.dtype == object:
+        uniq = values.unique()
+        if len(uniq) == 1:
+            return uniq[0]
+        else:
+            return uniq[0] + ", etc."
+    return "<?>"
+
+metadf = pd.pivot_table(df, index=series, aggfunc=aggfunc, dropna=False)
+del metadf["value"]
+
 if confidence_level_str == "none":
-    df = pd.pivot_table(df, index=groups, columns=series, values='value')
-    utils.plot_bars(df, props, names)
+    df = pd.pivot_table(df, index=series, columns=groups, values='value', dropna=False)
+    utils.plot_bars(df, props, names, None, metadf)
 else:
     confidence_level = float(confidence_level_str[:-1])/100
     def conf_intv(values):
         return utils.confidence_interval(confidence_level, values)
-    df = pd.pivot_table(df, index=groups, columns=series, values='value', aggfunc=[np.mean, conf_intv], dropna=False)
-    errors_df = df["conf_intv"]
-    if errors_df.isna().values.all():
-        errors_df = None
-    utils.plot_bars(df["mean"], props, names, errors_df)
+
+    pivoted = pd.pivot_table(df, index=series, columns=groups, values="value", aggfunc=[np.mean, conf_intv], dropna=False)
+    valuedf = pivoted["mean"]
+    errorsdf = pivoted["conf_intv"]
+    if errorsdf.isna().values.all():
+        errorsdf = None
+
+    utils.plot_bars(valuedf, props, names, errorsdf, metadf)
 
 utils.postconfigure_plot(props)
 

@@ -199,15 +199,13 @@ def make_legend_label(legend_cols, row, props={}):
     return legend
 
 
-def plot_bars(df, props, variable_name=None, errors_df=None):
+def plot_bars(df, props, variable_name=None, errors_df=None, meta_df=None):
     """
     Creates a bar plot from the dataframe, with styling and additional input
-    coming from the properties. Each column in the dataframe defines a series.
+    coming from the properties. Each row in the dataframe defines a series.
 
-    Column names serve as labels for the legend. Group names (displayed on the
-    x axis) are taken from the row index. The names of the two indices also appear
-    in the legend and as x axis label. (This is useful if column and group names
-    are values of a variable, and the index name contains the name of the variable.)
+    Group names (displayed on thex axis) are taken from the column index.
+
     The name of the variable represented by the values can be passed in as
     the `variable_name` argument (as it is not present in the dataframe); if so,
     it will become the y axis label.
@@ -215,6 +213,9 @@ def plot_bars(df, props, variable_name=None, errors_df=None):
     Error bars can be drawn by providing an extra dataframe of identical
     dimensions as the main one. Error bars will protrude by the values in the
     errors dataframe both up and down (i.e. range is 2x error).
+
+    To make the legend labels customizable, an extra dataframe can be provided,
+    which contains any columns of metadata for each series.
 
     Colors are assigned automatically. The `cycle_seed` property allows you
     to select other combinations if the default one is not suitable.
@@ -225,6 +226,7 @@ def plot_bars(df, props, variable_name=None, errors_df=None):
     - `props` (dict): the properties
     - `variable_name` (string): The name of the variable represented by the values.
     - `errors_df`: dataframe with the errors (in y axis units)
+    - `meta_df`: dataframe with the metadata about each series
 
     Notable properties that affect the plot:
     - `baseline`: The y value at which the x axis is drawn.
@@ -243,90 +245,90 @@ def plot_bars(df, props, variable_name=None, errors_df=None):
     overlap_visible_fraction = 1 / 3
 
     # used only by the mpl charts
-    xs = np.arange(len(df.index), dtype=np.float64)  # the x locations for the groups
-    width = group_fill_ratio / len(df.columns)  # the width of the bars
+    xs = np.arange(len(df.columns), dtype=np.float64)  # the x locations for the groups
+    width = group_fill_ratio / len(df.index)  # the width of the bars
     bottoms = np.zeros_like(xs)
+    stacks = np.zeros_like(xs)
     group_increment = 0.0
 
     baseline = get_prop("baseline")
     if baseline:
-        if chart.is_native_chart(): # is this how this should be done?
+        if ideplot.is_native_plot(): # is this how this should be done?
             ideplot.set_property("Bars.Baseline", baseline)
         else:
             bottoms += float(baseline)
 
     extra_args = dict()
 
-    placement = get_prop("bar_placement")
+    placement = get_prop("bar_placement") or "Aligned"
     if placement:
         if ideplot.is_native_plot(): # is this how this should be done?
             ideplot.set_property("Bar.Placement", placement)
         else:
-            extra_args["bottom"] = bottoms
             if placement == "InFront":
                 width = group_fill_ratio
             elif placement == "Stacked":
                 width = group_fill_ratio
+                bottoms *= 0 # doesn't make sense
             elif placement == "Aligned":
-                width = group_fill_ratio / len(df.columns)
+                width = group_fill_ratio / len(df.index)
                 group_increment = width
-                xs -= width * (len(df.columns)-1)/2
+                xs -= width * (len(df.index)-1)/2
                 width *= aligned_bar_fill_ratio
             elif placement == "Overlap":
-                width = group_fill_ratio / (1 + len(df.columns) * overlap_visible_fraction)
+                width = group_fill_ratio / (1 + len(df.index) * overlap_visible_fraction)
                 group_increment = width * overlap_visible_fraction
                 extra_parts = (1.0 / overlap_visible_fraction - 1)
-                xs += width / extra_parts - (len(df.columns) + extra_parts) * width * overlap_visible_fraction / 2
+                xs += width / extra_parts - (len(df.index) + extra_parts) * width * overlap_visible_fraction / 2
 
-    df.sort_index(axis="index", inplace=True)
     df.sort_index(axis="columns", inplace=True)
+    df.sort_index(axis="index", inplace=True)
 
     if errors_df is not None:
-        errors_df.sort_index(axis="index", inplace=True)
         errors_df.sort_index(axis="columns", inplace=True)
+        errors_df.sort_index(axis="index", inplace=True)
 
-        assert(df.index.equals(errors_df.index))
         assert(df.columns.equals(errors_df.columns))
+        assert(df.index.equals(errors_df.index))
 
-    for i, column in enumerate(df):
+    title_cols, legend_cols = extract_label_columns(meta_df.reset_index(), props)
+
+    for i, ((index, row), meta_row) in enumerate(zip(df.iterrows(), meta_df.reset_index().itertuples(index=False))):
         style = _make_bar_args(props, df)
 
-        if not chart.is_native_chart(): # FIXME: noot pretty...
-            extra_args['zorder'] = 1 - (i / len(df.columns) / 10)
+        if not ideplot.is_native_plot(): # FIXME: noot pretty...
+            extra_args['zorder'] = 1 - (i / len(df.index) / 10)
+            extra_args['bottom'] = bottoms + stacks
 
-        label = df.columns.name + "=" + _to_label(column) if df.columns.name else _to_label(column)
-        ys = df[column].values
-        p.bar(xs, ys, width, label=label, **extra_args, **style)
+        label = make_legend_label(legend_cols, meta_row, props)
+        ys = row.values
+        p.bar(xs, ys-bottoms, width, label=label, **extra_args, **style)
 
-        if not chart.is_native_chart() and errors_df is not None:
-            plt.errorbar(xs, ys + bottoms, yerr=errors_df[column], capsize=float(get_prop("cap_size") or 4), **style, linestyle="none", ecolor=mpl.rcParams["axes.edgecolor"])
+        if not ideplot.is_native_plot() and errors_df is not None:
+            plt.errorbar(xs, ys + stacks, yerr=errors_df.iloc[i], capsize=float(get_prop("cap_size") or 4), **style, linestyle="none", ecolor=mpl.rcParams["axes.edgecolor"])
 
         xs += group_increment
         if placement == "Stacked":
-            bottoms += df[column].values
+            stacks += row.values
 
     rotation = get_prop("xlabel_rotation")
     if rotation:
         rotation = float(rotation)
     else:
         rotation = 0
-    p.xticks(list(range(len(df.index))), list([_to_label(i) for i in df.index.values]), rotation=rotation)
+    p.xticks(list(range(len(df.columns))), list([_to_label(i) for i in df.columns.values]), rotation=rotation)
 
     # Add some text for labels, title and custom x-axis tick labels, etc.
-    groups = df.index.names
-    series = df.columns.names
+    groups = df.columns.names
 
     p.xlabel(_to_label(groups))
 
-    title = ""
     if variable_name:
         p.ylabel(variable_name)
-        title = variable_name
-        groups_series_str = [str(gs) for gs in groups+series]
-        if groups_series_str and groups_series_str[0]:
-            title += " by " + ", ".join(groups_series_str)
 
+    title = make_chart_title(meta_df.reset_index(), title_cols)
     set_plot_title(get_prop("title") or title)
+
 
 
 def plot_vectors(df, props, legend_func=make_legend_label):
@@ -1331,7 +1333,7 @@ def pick_two_columns(df, props=None):  #TODO remove default for props in final r
         else:
             return title_cols[0], label_cols[0]
     if len(label_cols) >= 2:
-        return label_cols[0], label_cols[1]
+        return label_cols[1], label_cols[0]
 
 
 def assert_columns_exist(df, cols, message="Expected column missing from DataFrame"):
