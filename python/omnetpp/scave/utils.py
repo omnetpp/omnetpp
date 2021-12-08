@@ -155,6 +155,9 @@ def make_legend_label(legend_cols, row, props={}):
         except ValueError as ex:
             raise chart.ChartScriptError("Error {}: {}".format(where, ex.args[0])) from ex
 
+    def _removeprefix(str, prefix):
+        return str[len(prefix):] if str.startswith(prefix) else str
+
     legend_isautomatic = get_prop('legend_automatic')
     legend_format = get_prop('legend_format')
 
@@ -171,7 +174,8 @@ def make_legend_label(legend_cols, row, props={}):
             else:
                 prefix = ", " + col + "="
             return prefix + str(getattr(row, col))
-        legend = "".join([fmt(col) for col in legend_cols]).removeprefix(", ").removeprefix(" in ")
+        legend = "".join([fmt(col) for col in legend_cols])
+        legend = _removeprefix(_removeprefix(legend, ", "), " in ")
 
     legend_replacements = get_prop('legend_replacements')
     if legend_replacements:
@@ -1274,6 +1278,8 @@ def extract_label_columns(df, props):
     # at this point, ideally this should hold: len(df.groupby(legend_cols)) == len(df)
     return title_cols, legend_cols
 
+def _removeprefix(str, prefix):
+    return str[len(prefix):] if str.startswith(prefix) else str
 
 def make_chart_title(df, title_cols):
     """
@@ -1298,7 +1304,7 @@ def make_chart_title(df, title_cols):
         return prefix + val
 
     title = "".join([fmt(col) for col in title_cols if col in df])
-    title = title.removeprefix(", ").removeprefix(" in ")
+    title = _removeprefix(_removeprefix(title, ", "), " in ")
 
     return title
 
