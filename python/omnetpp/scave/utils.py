@@ -1318,15 +1318,16 @@ def pick_two_columns(df, props=None):  #TODO remove default for props in final r
     if props is None:
         print("pick_two_columns(): Missing props argument! Update chart script, or code will break on next release!", file=sys.stderr)
         props = {}
-    title_col, label_cols = extract_label_columns(df, props)
-    label_cols = [l[1] for l in label_cols]
+    title_cols, label_cols = extract_label_columns(df, props)
     if len(label_cols) == 0:
         return None, None
     if len(label_cols) == 1:
-        if label_cols[0] == title_col:
+        if len(title_cols) == 0:
+            return None, None
+        elif label_cols[0] == title_cols[0]:
             return None, None
         else:
-            return title_col, label_cols[0]
+            return title_cols[0], label_cols[0]
     if len(label_cols) >= 2:
         return label_cols[0], label_cols[1]
 
