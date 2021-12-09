@@ -1,10 +1,6 @@
 #! /bin/sh
-
-# exit on first error
-set -e
-
 rm -rf export
-
-python3 generate_test.py
+python3 generate_test.py || exit 1
 opp_charttool imageexport all_the_tests.anf -f png -d export -p resultfiles=../../../samples/resultfiles
+rm $(find export -size 0)
 
