@@ -60,7 +60,7 @@ class ChartTemplate:
         if props:
             unknown_keys = [key for key in props.keys() if key not in self.properties.keys()]
             if unknown_keys:
-                raise KeyError("Refusing to set chart properties not defined in the chart template: " + str(unknown_keys))
+                raise KeyError("Refusing to set chart properties not defined in the chart template {}: {}".format(repr(self.id), str(unknown_keys)))
             all_props.update(props)
         return analysis.Chart(type=self.type, name=name, template=self.id, icon=self.icon, script=self.script, dialog_pages=self.dialog_pages.copy(), properties=all_props)
 
