@@ -9,22 +9,22 @@ rem *** Do not change anything below this line ***
 set HOME=%~dp0
 
 cd "%HOME%\tools"
-IF EXIST "opp-tools-win64-mingw64-toolchain.7z" (
+IF EXIST "opp-tools-win32-x86_64-mingw64-toolchain.7z" (
 cls
 echo.
 echo We need to unpack the MinGW toolchain before continuing.
 echo This can take a while, please be patient.
 echo.
-7za x -aos -y -owin32.x86_64 opp-tools-win64-mingw64-toolchain.7z && del opp-tools-win64-mingw64-toolchain.7z
+7za x -aos -y -owin32.x86_64 opp-tools-win32-x86_64-mingw64-toolchain.7z && del opp-tools-win32-x86_64-mingw64-toolchain.7z
 )
 
-IF EXIST "opp-tools-win64-visualc-dependencies.7z" (
+IF EXIST "opp-tools-win32-x86_64-visualc-dependencies.7z" (
 cls
 echo.
 echo We need to unpack the libraries required by the ms-clang toolchain before continuing.
 echo This can take a while, please be patient.
 echo.
-7za x -aos -y -owin32.x86_64\opt\visualc opp-tools-win64-visualc-dependencies.7z && del opp-tools-win64-visualc-dependencies.7z && win32.x86_64\opt\visualc\bin\qtbinpatcher.exe --qt-dir=win32.x86_64\opt\visualc
+7za x -aos -y -owin32.x86_64\opt\visualc opp-tools-win32-x86_64-visualc-dependencies.7z && del opp-tools-win32-x86_64-visualc-dependencies.7z && win32.x86_64\opt\visualc\bin\qtbinpatcher.exe --qt-dir=win32.x86_64\opt\visualc
 echo *** Files for Microsoft ABI compatible toolchain extracted. ***
 )
 

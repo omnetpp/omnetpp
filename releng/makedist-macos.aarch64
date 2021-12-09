@@ -61,14 +61,14 @@ rm -rf ide/win32-x86_64 ide/linux-x86_64 ide/linux-aarch64 ide/macosx-x86_64 ide
 # copy the self extracting toolchain file into the distro
 mkdir -p tools/macos.aarch64
 echo "Extracting tools archive..."
-tar xfz $TOOLS_DIR/$TOOLS_VERSION/macosx/opp-tools-macosx.tar.gz --keep-old-files --directory tools/macos.aarch64 || { echo --- error extracting opp-tools-macos-aarch64.tar.gz ---; exit 1;}
+#tar xfz $TOOLS_DIR/$TOOLS_VERSION/macos.aarch64/opp-tools-macos-aarch64.tar.gz --keep-old-files --directory tools/macos.aarch64 || { echo --- error extracting opp-tools-macos-aarch64.tar.gz ---; exit 1;}
 
 # pack the distro
 cd ..
 # create macOS version - tgz with macOS tools added
-export SOURCE_DISTRIBUTION_NAME_MACOSX=$SOURCE_DISTRIBUTION_BASE_NAME-macos-aarch64.tgz
-echo Creating $DISTDIR/$SOURCE_DISTRIBUTION_NAME_MACOSX
-tar cfz $SOURCE_DISTRIBUTION_NAME_MACOSX $what-$VERSION || { echo --- error creating src-macos-aarch64.tgz ---; exit 1;}
+export SOURCE_DISTRIBUTION_NAME_MACOS=$SOURCE_DISTRIBUTION_BASE_NAME-macos-aarch64.tgz
+echo Creating $DISTDIR/$SOURCE_DISTRIBUTION_NAME_MACOS
+tar cfz $SOURCE_DISTRIBUTION_NAME_MACOS $what-$VERSION || { echo --- error creating src-macos-aarch64.tgz ---; exit 1;}
 
 # delete the source stuff
 rm -rf $what-$VERSION

@@ -64,8 +64,8 @@ rm -rf ide/win32-x86_64 ide/linux-x86_64 ide/linux-aarch64 ide/macosx-x86_64 ide
 # copy the self extracting toolchain file into the distro
 mkdir -p tools
 echo "Copying tools archive..."
-cp $TOOLS_DIR/$TOOLS_VERSION/win64/7za.exe tools || { echo --- error copying 7za.exe extractor ---; exit 1;}
-cp $TOOLS_DIR/$TOOLS_VERSION/win64/opp-tools-win64-*.7z tools || { echo --- error copying opp-tools-win64-XXXX.7z ---; exit 1;}
+cp $TOOLS_DIR/$TOOLS_VERSION/win32.x86_64/7za.exe tools || { echo --- error copying 7za.exe extractor ---; exit 1;}
+cp $TOOLS_DIR/$TOOLS_VERSION/win32.x86_64/opp-tools-win32-x86_64-*.7z tools || { echo --- error copying opp-tools-win32-x86_64-XXXX.7z ---; exit 1;}
 
 # customized files for win32
 PATCH_DIR=$OMNETPP_ROOT/releng/overlay/win32.x86_64
@@ -75,7 +75,7 @@ cp -R $PATCH_DIR/* .
 # remove visual c++ related and commercial files from omnetpp
 if [ "$what" != "omnest" ]; then
   rm vcenv.cmd
-  rm tools/opp-tools-win64-visualc-dependencies.7z
+  rm tools/opp-tools-win32-x86_64-visualc-dependencies.7z
 fi
 
 # rename some files to have txt extensions on windows
