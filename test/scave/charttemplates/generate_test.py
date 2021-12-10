@@ -59,14 +59,14 @@ charts = []
 charts += generate_testcases(
     ["barchart_native", "barchart_mpl"],
     {
-        "filter": "name =~ channelUtilization:last",
+        "filter": "runattr:experiment =~ PureAlohaExperiment AND name =~ channelUtilization:last",
         "include_fields": "true",
         "groups": "iaMean",
         "series": "numHosts"
     },
     [
-        ("filter", "type =~ scalar", None),
-        ("filter", "name =~ channel*", None),
+        ("filter", "runattr:experiment =~ PureAlohaExperiment AND type =~ scalar", None),
+        ("filter", "runattr:experiment =~ PureAlohaExperiment AND name =~ channel*", None),
         ("filter", "aa bb", "Syntax error"),
         ("filter", "", "Error while querying results: Empty filter expression"),
 
@@ -88,11 +88,11 @@ charts += generate_testcases(
 charts += generate_testcases(
     ["linechart_native", "linechart_mpl", "linechart_separate_mpl"],
     {
-        "filter": "name =~ radioState:vector",
+        "filter": "runattr:experiment =~ Fifo*",
     },
     [
-        ("filter", "type =~ vector", None),
-        ("filter", "name =~ *State:vector", None),
+        ("filter", "runattr:experiment =~ Fifo* AND type =~ vector", None),
+        ("filter", "runattr:experiment =~ Fifo* AND name =~ qlen:vector", None),
         ("filter", "aa bb", "Syntax error"),
         ("filter", "", "Error while querying results: Empty filter expression"),
 
@@ -109,14 +109,14 @@ charts += generate_testcases(
 charts += generate_testcases(
     ["scatterchart_itervars_native", "scatterchart_itervars_mpl"],
     {
-        "filter": "name =~ channelUtilization:last",
+        "filter": "runattr:experiment =~ PureAlohaExperiment AND name =~ channelUtilization:last",
         "include_fields": "true",
         "xaxis_itervar": "iaMean",
         "group_by": "numHosts"
     },
     [
-        ("filter", "type =~ scalar", None),
-        ("filter", "name =~ channel*", None),
+        ("filter", "runattr:experiment =~ PureAlohaExperiment AND type =~ scalar", None),
+        ("filter", "runattr:experiment =~ PureAlohaExperiment AND name =~ channel*", None),
         ("filter", "aa bb", "Syntax error"),
         ("filter", "", "Error while querying results: Empty filter expression"),
 
@@ -140,11 +140,11 @@ charts += generate_testcases(
 charts += generate_testcases(
     ["histogramchart_native", "histogramchart_mpl"], #TODO "histogramchart_vectors_native", "histogramchart_vectors_mpl"
     {
-        "filter": "name =~ channelUtilization:last",
+        "filter": "runattr:experiment =~ PureAlohaExperiment",
     },
     [
-        ("filter", "type =~ histogram", None),
-        ("filter", "nonexistent", "returned no data"),
+        ("filter", "runattr:experiment =~ PureAlohaExperiment AND type =~ histogram AND itervar:numHosts =~ 15 AND (itervar:iaMean =~ 1 OR itervar:iaMean =~ 2)", None),
+        ("filter", "runattr:experiment =~ PureAlohaExperiment AND nonexistent", "returned no data"),
         ("filter", "aa bb", "Syntax error"),
         ("filter", "", "Error while querying results: Empty filter expression"),
     ]
@@ -173,7 +173,7 @@ charts += generate_testcases(
 charts += generate_testcases(
     ["3dchart_itervars_mpl"],
     {
-        "filter": "name =~ channelUtilization:last",
+        "filter": "runattr:experiment =~ PureAlohaExperiment AND name =~ channelUtilization:last",
         "include_fields": "true",
         "xaxis_itervar": "iaMean",
         "yaxis_itervar": "numHosts",
@@ -182,8 +182,8 @@ charts += generate_testcases(
         "chart_type": "bar"
     },
     [
-        ("filter", "type =~ scalar", "scalars must share the same name"),
-        ("filter", "name =~ channel*", None),
+        ("filter", "runattr:experiment =~ PureAlohaExperiment AND type =~ scalar", "scalars must share the same name"),
+        ("filter", "runattr:experiment =~ PureAlohaExperiment AND name =~ channel*", None),
         ("filter", "aa bb", "Syntax error"),
         ("filter", "", "Error while querying results: Empty filter expression"),
 
@@ -206,16 +206,16 @@ charts += generate_testcases(
 charts += generate_testcases(
     ["boxwhiskers"],
     {
-        "filter": "*:histogram"
+        "filter": "runattr:experiment =~ PureAlohaExperiment AND *:histogram"
     },
     [
-        ("filter", "type =~ histogram", None),
+        ("filter", "runattr:experiment =~ PureAlohaExperiment AND type =~ histogram", None),
         ("filter", "aa bb", "Syntax error"),
         ("filter", "", "Error while querying results: Empty filter expression"),
     ]
 )
 
-inputs = [ "/resultfiles/aloha/*.sca", "/resultfiles/aloha/*.vec" ]
+inputs = [ "/resultfiles/aloha", "/resultfiles/fifo" ]
 analysis = Analysis(inputs=inputs, items=charts)
 
 analysis.to_anf_file("all_the_tests.anf")
