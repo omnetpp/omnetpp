@@ -447,12 +447,6 @@ std::vector<std::string> collectMatchingFiles(const char *pattern)
     if (s != segstart)
         segments.push_back(std::string(segstart, s-segstart)); // last segment
 
-    // print segments for debugging
-    //std::cout << pattern << " ==> ";
-    //for (std::string segment: segments)
-    //    std::cout << "'" << segment << "'  ";
-    //std::cout << std::endl;
-
     // recurse
     doCollectMatchingFiles(segments, 0, "", result);
     return result;
@@ -466,9 +460,9 @@ PushDir::PushDir(const char *changetodir)
         return;
     char buf[1024];
     if (!getcwd(buf, 1024))
-        throw opp_runtime_error("Cannot get the name of current directory");
+        throw opp_runtime_error("Cannot get the name of current directory: %s", strerror(errno));
     if (chdir(changetodir))
-        throw opp_runtime_error("Cannot temporarily change to directory '%s'", changetodir);
+        throw opp_runtime_error("Cannot temporarily change to directory '%s': %s", changetodir, strerror(errno));
     olddir = buf;
 }
 
@@ -476,7 +470,7 @@ PushDir::~PushDir() noexcept(false)
 {
     if (!olddir.empty()) {
         if (chdir(olddir.c_str()))
-            throw opp_runtime_error("Cannot change back to directory '%s'", olddir.c_str());
+            throw opp_runtime_error("Cannot change back to directory '%s': %s", olddir.c_str(), strerror(errno));
     }
 }
 
