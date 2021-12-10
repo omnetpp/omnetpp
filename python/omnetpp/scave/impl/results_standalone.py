@@ -54,12 +54,23 @@ def _read_csv(reader):
     low_memory=False) # This is here just to silence a DtypeWarning, should not have any other effect.
 
     def _transform(row):
-        if row["type"] == "scalar":
+        if row["type"] == "scalar" and "value" in row:
             row["value"] = _parse_float(row["value"])
+        if row["type"] == "vector":
+            if "vectime" in row and row["vectime"] is None:
+                row["vectime"] = np.array([])
+            if "vecvalue" in row and row["vecvalue"] is None:
+                row["vecvalue"] = np.array([])
+        if row["type"] == "histogram":
+            if "binedges" in row and row["binedges"] is None:
+                row["binedges"] = np.array([])
+            if "binvalues" in row and row["binvalues"] is None:
+                row["binvalues"] = np.array([])
+
         return row
 
     if not df.empty:
-        if "type" in df and "value" in df:
+        if "type" in df:
             # CSV-style results
             df = df.transform(_transform, axis=1)
 
