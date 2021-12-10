@@ -73,7 +73,7 @@ public class ChartProvider implements IChartProvider {
 
     @Override
     public String getChartType() {
-        return chart.getType().toString().toLowerCase();
+        return chart.getType().toString();
     }
 
     @Override
