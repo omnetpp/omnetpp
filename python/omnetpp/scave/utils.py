@@ -60,6 +60,9 @@ _check_version(mpl, "3.0.0")  # Sep 19, 2018
 _marker_cycle = cycle(list("osv^<>pDd"))
 _color_cycle = cycle(["C" + str(i) for i in range(10)])
 
+# Because str.removeprefix was only added in Python 3.9
+def _removeprefix(str, prefix):
+    return str[len(prefix):] if str.startswith(prefix) else str
 
 # There are many potential ways to add digit grouping to numbers.
 # None of them were good enough:
@@ -154,9 +157,6 @@ def make_legend_label(legend_cols, row, props={}):
             raise chart.ChartScriptError("Unknown column reference ${} {}".format(ex.args[0], where)) from ex
         except ValueError as ex:
             raise chart.ChartScriptError("Error {}: {}".format(where, ex.args[0])) from ex
-
-    def _removeprefix(str, prefix):
-        return str[len(prefix):] if str.startswith(prefix) else str
 
     legend_isautomatic = get_prop('legend_automatic')
     legend_format = get_prop('legend_format')
@@ -1282,9 +1282,6 @@ def extract_label_columns(df, props):
 
     # at this point, ideally this should hold: len(df.groupby(legend_cols)) == len(df)
     return title_cols, legend_cols
-
-def _removeprefix(str, prefix):
-    return str[len(prefix):] if str.startswith(prefix) else str
 
 def make_chart_title(df, title_cols):
     """
