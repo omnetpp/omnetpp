@@ -403,7 +403,7 @@ def plot_vectors_separate(df, props, legend_func=make_legend_label):
             plt.setp(ax.get_xticklabels(), visible=False)
             ax.xaxis.get_label().set_visible(False)
 
-        plt.plot(t.vectime, t.vecvalue, label=legend_func(legend_cols, t), **style)
+        plt.plot(t.vectime, t.vecvalue, label=legend_func(legend_cols, t, props), **style)
 
     plt.subplot(df.shape[0], 1, 1)
 
