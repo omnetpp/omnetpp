@@ -1233,6 +1233,11 @@ def extract_label_columns(df, props):
         else:
             legend_cols.append(module_column)
 
+    if len(df) == 1:
+        title_cols = [name_column, module_column]
+        legend_cols = title_cols
+        return title_cols, legend_cols
+
     if not title_cols:
         title_col_candidates = ["experiment", "measurement", "replication"]
 
@@ -1249,7 +1254,7 @@ def extract_label_columns(df, props):
                  "binedges", "binvalues", "underflows", "overflows",
                  "count", "sumweights", "mean", "stddev", "min", "max",
                  "processid", "datetime", "datetimef", "runnumber", "seedset",
-                 "iterationvars", "iterationvarsf", "iterationvarsd",
+                 "iterationvars", "iterationvarsf", "iterationvarsd", "repetition",
                  "source", "recordingmode", "interpolationmode", "enum", "unit"])
 
     # if unsuccessful, try to pick from all columns, except a few that we don't like
