@@ -37,7 +37,7 @@ class ChartTemplate:
     def __repr__(self):
         return self.id
 
-    def make_chart(self, id:int=None, name:str=None, custom_props=None):
+    def create_chart(self, id:int=None, name:str=None, custom_props=None):
         """
         Creates and returns a chart object (org.omnetpp.scave.Chart) from this chart template.
         """
