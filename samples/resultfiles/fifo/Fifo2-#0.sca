@@ -1,65 +1,65 @@
 version 3
-run Fifo1-0-20211207-20:10:56-304103
-attr configname Fifo1
-attr datetime 20211207-20:10:56
-attr datetimef 20211207-201056
-attr experiment Fifo1
+run Fifo2-0-20211210-15:04:47-479480
+attr configname Fifo2
+attr datetime 20211210-15:04:47
+attr datetimef 20211210-150447
+attr experiment Fifo2
 attr inifile omnetpp.ini
 attr iterationvars ""
 attr iterationvarsd ""
 attr iterationvarsf ""
 attr measurement ""
 attr network FifoNet
-attr processid 304103
+attr processid 479480
 attr repetition 0
 attr replication #0
 attr resultdir results
 attr runnumber 0
 attr seedset 0
 config cmdenv-redirect-output true
-config sim-time-limit 1000s
-config description "low job arrival rate"
-config **.gen.sendIaTime exponential(0.2s)
+config sim-time-limit 10s
+config description "high job arrival rate"
+config **.gen.sendIaTime exponential(0.01s)
 config **.fifo.serviceTime 0.01s
 config network FifoNet
 config sim-time-limit 100h
 config cpu-time-limit 300s
 
 par FifoNet.gen typename "\"Source\""
-par FifoNet.gen sendIaTime exponential(0.2s)
+par FifoNet.gen sendIaTime exponential(0.01s)
 attr unit s
 par FifoNet.fifo typename "\"Fifo\""
 par FifoNet.fifo serviceTime 0.01s
 attr unit s
-scalar FifoNet.fifo queueingTime:mean 0.00027679782182665
+scalar FifoNet.fifo queueingTime:mean 0.099894594438873
 attr interpolationmode none
 attr recordingmode mean
 attr title "queueing time at dequeue, mean"
 attr unit s
-scalar FifoNet.fifo queueingTime:max 0.015324913529
+scalar FifoNet.fifo queueingTime:max 0.323834771665
 attr interpolationmode none
 attr recordingmode max
 attr title "queueing time at dequeue, max"
 attr unit s
-scalar FifoNet.fifo busy:timeavg 0.048859999999999
+scalar FifoNet.fifo busy:timeavg 0.9787467415239
 attr interpolationmode sample-hold
 attr recordingmode timeavg
 attr title "server busy state, timeavg"
-scalar FifoNet.fifo qlen:timeavg 0.001352434157445
+scalar FifoNet.fifo qlen:timeavg 9.8631544588523
 attr interpolationmode sample-hold
 attr recordingmode timeavg
 attr title "queue length, timeavg"
-scalar FifoNet.fifo qlen:max 2
+scalar FifoNet.fifo qlen:max 33
 attr interpolationmode sample-hold
 attr recordingmode max
 attr title "queue length, max"
 par FifoNet.sink typename "\"Sink\""
-scalar FifoNet.sink lifetime:mean 0.010276797821826
+scalar FifoNet.sink lifetime:mean 0.10985585653893
 attr interpolationmode none
 attr recordingmode mean
 attr title "lifetime of arrived jobs, mean"
 attr unit s
-scalar FifoNet.sink lifetime:max 0.025324913529
+scalar FifoNet.sink lifetime:max 0.333834771665
 attr interpolationmode none
 attr recordingmode max
 attr title "lifetime of arrived jobs, max"

@@ -1,0 +1,68 @@
+version 3
+run Fifo1-0-20211210-15:04:47-479469
+attr configname Fifo1
+attr datetime 20211210-15:04:47
+attr datetimef 20211210-150447
+attr experiment Fifo1
+attr inifile omnetpp.ini
+attr iterationvars ""
+attr iterationvarsd ""
+attr iterationvarsf ""
+attr measurement ""
+attr network FifoNet
+attr processid 479469
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 0
+attr seedset 0
+config cmdenv-redirect-output true
+config sim-time-limit 200s
+config description "low job arrival rate"
+config **.gen.sendIaTime exponential(0.2s)
+config **.fifo.serviceTime 0.01s
+config network FifoNet
+config sim-time-limit 100h
+config cpu-time-limit 300s
+
+par FifoNet.gen typename "\"Source\""
+par FifoNet.gen sendIaTime exponential(0.2s)
+attr unit s
+par FifoNet.fifo typename "\"Fifo\""
+par FifoNet.fifo serviceTime 0.01s
+attr unit s
+scalar FifoNet.fifo queueingTime:mean 0.00025125050673838
+attr interpolationmode none
+attr recordingmode mean
+attr title "queueing time at dequeue, mean"
+attr unit s
+scalar FifoNet.fifo queueingTime:max 0.01489203171
+attr interpolationmode none
+attr recordingmode max
+attr title "queueing time at dequeue, max"
+attr unit s
+scalar FifoNet.fifo busy:timeavg 0.049499999999999
+attr interpolationmode sample-hold
+attr recordingmode timeavg
+attr title "server busy state, timeavg"
+scalar FifoNet.fifo qlen:timeavg 0.001243690008355
+attr interpolationmode sample-hold
+attr recordingmode timeavg
+attr title "queue length, timeavg"
+scalar FifoNet.fifo qlen:max 2
+attr interpolationmode sample-hold
+attr recordingmode max
+attr title "queue length, max"
+par FifoNet.sink typename "\"Sink\""
+scalar FifoNet.sink lifetime:mean 0.010251250506738
+attr interpolationmode none
+attr recordingmode mean
+attr title "lifetime of arrived jobs, mean"
+attr unit s
+scalar FifoNet.sink lifetime:max 0.02489203171
+attr interpolationmode none
+attr recordingmode max
+attr title "lifetime of arrived jobs, max"
+attr unit s
+par FifoNet typename "\"FifoNet\""
+
