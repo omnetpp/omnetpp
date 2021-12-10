@@ -233,7 +233,7 @@ def plot_bars(df, props, variable_name=None, errors_df=None):
     - `title`: Plot title (autocomputed if missing).
     - `cycle_seed`: Alters the sequence in which colors are assigned to series.
     """
-    p = ideplot if chart.is_native_chart() else plt
+    p = ideplot if ideplot.is_native_plot() else plt
 
     def get_prop(k):
         return props[k] if k in props else None
@@ -259,7 +259,7 @@ def plot_bars(df, props, variable_name=None, errors_df=None):
 
     placement = get_prop("bar_placement")
     if placement:
-        if chart.is_native_chart(): # is this how this should be done?
+        if ideplot.is_native_plot(): # is this how this should be done?
             ideplot.set_property("Bar.Placement", placement)
         else:
             extra_args["bottom"] = bottoms
