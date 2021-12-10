@@ -58,7 +58,7 @@ def is_native_chart():
     """
     Returns True if this chart uses the IDE's built-in plotting widgets.
     """
-    return get_chart_type() != "matplotlib"
+    return get_chart_type() != "MATPLOTLIB"
 
 def set_suggested_chart_name(name):
     """
