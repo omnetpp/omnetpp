@@ -284,9 +284,4 @@ public class Chart extends AnalysisItem {
 
         return properties.equals(other.properties); // TODO refine, allow different ordering
     }
-
-    @Override
-    public String toString() {
-        return "'" + getName() + "' (id=" + getId() + ")";
-    }
 }

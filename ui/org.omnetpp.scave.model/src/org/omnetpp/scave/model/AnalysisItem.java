@@ -7,6 +7,8 @@
 
 package org.omnetpp.scave.model;
 
+import org.omnetpp.common.util.StringUtils;
+
 public abstract class AnalysisItem extends ModelObject {
     protected static int nextId = 1;
 
@@ -67,7 +69,7 @@ public abstract class AnalysisItem extends ModelObject {
 
     @Override
     public String toString() {
-        return "'" + getName() + "'";
+        return getClass().getSimpleName() + " '" + StringUtils.nullToEmpty(getName()) + "' (id=" + getId() + ")";
     }
 
 }

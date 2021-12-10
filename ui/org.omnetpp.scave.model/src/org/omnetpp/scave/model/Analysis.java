@@ -7,7 +7,10 @@
 
 package org.omnetpp.scave.model;
 
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.eclipse.core.runtime.Assert;
 
 public class Analysis extends ModelObject {
     protected Inputs inputs = new Inputs();
@@ -45,13 +48,17 @@ public class Analysis extends ModelObject {
     }
 
     public void checkIdUniqueness() {
-        checkIdUniqueness(rootFolder, new HashSet<Integer>());
+        checkIdUniqueness(rootFolder, new HashMap<Integer,AnalysisItem>());
     }
 
-    private static void checkIdUniqueness(AnalysisItem item, HashSet<Integer> idsSeen) {
-        if (idsSeen.contains(item.getId()))
-            throw new RuntimeException("id=" + item.getId() + " of "  + item.toString() + " not unique");
-        idsSeen.add(item.getId());
+    private static void checkIdUniqueness(AnalysisItem item, Map<Integer,AnalysisItem> idsSeen) {
+        int id = item.getId();
+        if (idsSeen.containsKey(id)) {
+            AnalysisItem other = idsSeen.get(id);
+            Assert.isTrue(other.getId() == id);
+            throw new RuntimeException("id=" + id + " of " + item.toString() + " conflicts with id of " + other.toString());
+        }
+        idsSeen.put(id, item);
         if (item instanceof Folder)
             for (AnalysisItem child : ((Folder)item).getItems())
                 checkIdUniqueness(child, idsSeen);

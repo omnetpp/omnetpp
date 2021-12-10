@@ -1147,8 +1147,15 @@ public class ScaveEditor extends MultiPageEditorPartExt
 
     @Override
     public void modelChanged(ModelChangeEvent event) {
-        if (Debug.debug)
-            analysis.checkIdUniqueness();
+        if (Debug.debug) {
+            try {
+                analysis.checkIdUniqueness();
+            }
+            catch (Exception ex) {
+                ScavePlugin.logError(ex);
+                MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", ex.getMessage());
+            }
+        }
 
         firePropertyChange(ScaveEditor.PROP_DIRTY);
 
