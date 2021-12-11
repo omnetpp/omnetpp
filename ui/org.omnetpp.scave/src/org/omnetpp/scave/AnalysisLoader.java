@@ -156,7 +156,7 @@ public class AnalysisLoader {
 
         String idAttr = chartNode.getAttribute("id");
         if (!idAttr.isEmpty())
-            chart.setId(Integer.parseInt(idAttr));
+            chart.setIdIfUnique(Integer.parseInt(idAttr));
         chart.setName(chartNode.getAttribute("name"));
 
         String templateAttr = chartNode.getAttribute("template");
@@ -218,7 +218,7 @@ public class AnalysisLoader {
         Folder folder = new Folder();
         String idAttr = folderNode.getAttribute("id");
         if (!idAttr.isEmpty())
-            folder.setId(Integer.parseInt(idAttr));
+            folder.setIdIfUnique(Integer.parseInt(idAttr));
         folder.setName(folderNode.getAttribute("name"));
 
         loadAnalysisItems(folderNode, folder, chartTemplateRegistry);

@@ -7,23 +7,34 @@
 
 package org.omnetpp.scave.model;
 
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
+
 import org.omnetpp.common.util.StringUtils;
 
 public abstract class AnalysisItem extends ModelObject {
-    protected static int nextId = 1;
+    protected static Random idSource = new Random(System.nanoTime());
+    protected static Set<Integer> usedIds = new HashSet<>();
 
-    protected int id = (nextId++);
+    protected int id;
     protected String name;
+
+    public AnalysisItem() {
+        assignNewId();
+    }
 
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public boolean setIdIfUnique(int id) {
+        if (usedIds.contains(id))
+            return false; // retain original, guaranteed unique ID
         this.id = id;
-        if (id >= nextId)
-            nextId = id + 1;
+        usedIds.add(id);
         notifyListeners();
+        return true;
     }
 
     public String getName() {
@@ -37,10 +48,11 @@ public abstract class AnalysisItem extends ModelObject {
 
     public Folder getParentFolder() {
         return parent instanceof Folder ? (Folder)parent : null;
-
     }
+
     public void assignNewId() {
-        setId(nextId++);
+        do { id = idSource.nextInt(0, Integer.MAX_VALUE); } while (usedIds.contains(id));
+        usedIds.add(id);
     }
 
     @Override

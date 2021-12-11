@@ -1680,10 +1680,9 @@ public class ScaveEditor extends MultiPageEditorPartExt
                     statusLineManager.setMessage("No item selected");
                 } else if (collection.size() == 1) {
                     Object object = collection.iterator().next();
-                    // XXX unify label providers
-                    // String text = new InputsViewLabelProvider().getText(object);
-                    // if (text == null)
-                    String text = object.toString(); // TODO refine
+                    String text = (object instanceof AnalysisItem) ?
+                            object.getClass().getSimpleName() + " '" + ((AnalysisItem)object).getName() + "'" :
+                            object.toString();
                     statusLineManager.setMessage("Selected: " + text);
                 } else {
                     statusLineManager.setMessage("" + collection.size() + " items selected");
