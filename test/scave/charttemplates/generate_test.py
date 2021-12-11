@@ -46,9 +46,10 @@ def generate_testcases(template_ids, base_props, tests):
             name = template_id + str(i)
             i += 1
             props = base_props.copy()
-            props.update({propname: propvalue})
+            if propname:
+                props.update({propname: propvalue})
 
-            chart = template.create_chart(name=name, custom_props=props)
+            chart = template.create_chart(name=name, props=props)
             chart.script = skeleton.format(repr(name), repr(errmsg), indent(chart.script))
             charts.append(chart)
     return charts
@@ -60,7 +61,6 @@ charts += generate_testcases(
     ["barchart_native", "barchart_mpl"],
     {
         "filter": "runattr:experiment =~ PureAlohaExperiment AND name =~ channelUtilization:last",
-        "include_fields": "true",
         "groups": "iaMean",
         "series": "numHosts"
     },
@@ -110,7 +110,6 @@ charts += generate_testcases(
     ["scatterchart_itervars_native", "scatterchart_itervars_mpl"],
     {
         "filter": "runattr:experiment =~ PureAlohaExperiment AND name =~ channelUtilization:last",
-        "include_fields": "true",
         "xaxis_itervar": "iaMean",
         "group_by": "numHosts"
     },
@@ -166,7 +165,7 @@ charts += generate_testcases(
     {
     },
     [
-        ("dummy", "", None),
+        (None, None, None),
     ]
 )
 
@@ -174,7 +173,6 @@ charts += generate_testcases(
     ["3dchart_itervars_mpl"],
     {
         "filter": "runattr:experiment =~ PureAlohaExperiment AND name =~ channelUtilization:last",
-        "include_fields": "true",
         "xaxis_itervar": "iaMean",
         "yaxis_itervar": "numHosts",
         "colormap": "viridis",
