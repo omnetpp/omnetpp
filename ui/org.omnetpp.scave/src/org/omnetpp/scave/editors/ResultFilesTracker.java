@@ -125,9 +125,9 @@ public class ResultFilesTracker implements IModelChangeListener {
 
             if (!filesThatFailedToLoad.isEmpty()) {
                 MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error",
-                        "There were files that could not be loaded. Check the Problems view for details.");
+                        "There were files that could not be loaded. Check the Error Log View for details.");
                 try {
-                    PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(IPageLayout.ID_PROBLEM_VIEW);
+                    PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView("org.eclipse.pde.runtime.LogView");
                 } catch (PartInitException e) {
                     // ignore
                 }
