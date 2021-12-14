@@ -13,7 +13,7 @@ for id in sorted(templates.keys()):
 
 print("Creating anf file with one example chart for each template")
 
-charts = [t.create_chart(name="Example "+t.name, props={ 'filter': '*'}) for t in templates.values()]
+charts = [t.create_chart(name="Example "+t.name, props={'filter': '*'} if 'filter' in t.properties else {}) for t in templates.values()]
 analysis = analysis.Analysis(inputs=['fifo'], items=charts)
 analysis.to_anf_file("out.anf")
 
