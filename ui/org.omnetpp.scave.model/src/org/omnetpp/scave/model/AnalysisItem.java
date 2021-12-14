@@ -51,7 +51,7 @@ public abstract class AnalysisItem extends ModelObject {
     }
 
     public void assignNewId() {
-        do { id = idSource.nextInt(0, Integer.MAX_VALUE); } while (usedIds.contains(id));
+        do { id = idSource.nextInt(Integer.MAX_VALUE); } while (usedIds.contains(id));
         usedIds.add(id);
     }
 
