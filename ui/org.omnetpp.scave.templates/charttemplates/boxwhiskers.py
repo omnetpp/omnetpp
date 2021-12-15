@@ -1,4 +1,4 @@
-from omnetpp.scave import results, chart, utils, ideplot
+from omnetpp.scave import results, chart, utils
 import matplotlib.pyplot as plt
 import pandas as pd
 

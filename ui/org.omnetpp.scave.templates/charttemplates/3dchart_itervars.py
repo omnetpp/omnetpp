@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-from omnetpp.scave import results, chart, utils, ideplot
+from omnetpp.scave import results, chart, utils
 
 # get chart properties
 props = chart.get_properties()

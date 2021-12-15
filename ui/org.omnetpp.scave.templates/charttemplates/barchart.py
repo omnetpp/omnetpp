@@ -1,7 +1,7 @@
 import math
 import numpy as np
 import pandas as pd
-from omnetpp.scave import results, chart, ideplot, utils
+from omnetpp.scave import results, chart, utils
 
 # get chart properties
 props = chart.get_properties()

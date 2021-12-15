@@ -1,5 +1,5 @@
 import math
-from omnetpp.scave import results, chart, utils, ideplot
+from omnetpp.scave import results, chart, utils
 
 # get chart properties
 props = chart.get_properties()
