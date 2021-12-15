@@ -664,6 +664,27 @@ def preconfigure_plot(props):
     _initialize_cycles(props)
 
 
+def _legend_loc_outside_args(loc):
+    mapping = {
+        "outside top left": ("lower left", (0,1.05)),
+        "outside top center": ("lower center", (0.5,1.05)),
+        "outside top right": ("lower right", (1,1.05)),
+        "outside bottom left": ("upper left", (0,-0.05)),
+        "outside bottom center": ("upper center", (0.5,-0.05)),
+        "outside bottom right": ("upper right", (1,-0.05)),
+        "outside left top": ("upper right", (-0.03, 1)),
+        "outside left center": ("center right", (-0.03,0.5)),
+        "outside left bottom": ("lower right", (-0.03,0)),
+        "outside right top": ("upper left", (1.03,1)),
+        "outside right center": ("center left", (1.03,0.5)),
+        "outside right bottom": ("lower left", (1.03,0)),
+    }
+    if loc not in mapping:
+        raise ValueError("loc='{}' is not recognized/supported".format(loc))
+    (anchorloc, relpos) = mapping[loc]
+    return {"loc" : anchorloc, "bbox_to_anchor" : relpos}
+
+
 def postconfigure_plot(props):
     """
     Configures the plot according to the given properties, which normally
@@ -722,11 +743,13 @@ def postconfigure_plot(props):
             setup()
 
             if _parse_optional_bool(get_prop("legend_show")):
+
                 loc = get_prop("legend_placement")
-                if loc.startswith("outside "):
-                    # TODO: apply same translation logic as in ideplot_matplotlib.py
-                    loc = "best"
-                plt.legend(loc=loc, frameon=_parse_optional_bool(get_prop("legend_border")))
+                args = { "loc": loc}
+                if loc and loc.startswith("outside"):
+                    args.update(_legend_loc_outside_args(loc))
+                args["frameon"] =_parse_optional_bool(get_prop("legend_border"))
+                plt.legend(**args)
         plt.tight_layout()
 
 
