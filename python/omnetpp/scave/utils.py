@@ -680,7 +680,7 @@ def postconfigure_plot(props):
     Parameters:
     - `props` (dict): the properties
     """
-    p = ideplot if chart.is_native_chart() else plt
+    p = ideplot if ideplot.is_native_plot() else plt
 
     def get_prop(k):
         return props[k] if k in props else None
@@ -708,7 +708,7 @@ def postconfigure_plot(props):
         p.grid(_parse_optional_bool(get_prop("grid_show")),
             "major" if (get_prop("grid_density") or "").lower() == "major" else "both") # grid_density is "Major" or "All"
 
-    if chart.is_native_chart():
+    if ideplot.is_native_plot():
         setup()
 
         ideplot.legend(show=_parse_optional_bool(get_prop("legend_show")),
