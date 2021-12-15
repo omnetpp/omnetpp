@@ -199,12 +199,12 @@ def make_legend_label(legend_cols, row, props={}):
     return legend
 
 
-def plot_bars(df, props, variable_name=None, errors_df=None, meta_df=None):
+def plot_bars(df, errors_df=None, meta_df=None, props={}):
     """
     Creates a bar plot from the dataframe, with styling and additional input
     coming from the properties. Each row in the dataframe defines a series.
 
-    Group names (displayed on thex axis) are taken from the column index.
+    Group names (displayed on the x axis) are taken from the column index.
 
     The name of the variable represented by the values can be passed in as
     the `variable_name` argument (as it is not present in the dataframe); if so,
@@ -304,7 +304,7 @@ def plot_bars(df, props, variable_name=None, errors_df=None, meta_df=None):
         ys = row.values
         p.bar(xs, ys-bottoms, width, label=label, **extra_args, **style)
 
-        if not ideplot.is_native_plot() and errors_df is not None:
+        if not ideplot.is_native_plot() and errors_df is not None and not errors_df.iloc[i].isna().all():
             plt.errorbar(xs, ys + stacks, yerr=errors_df.iloc[i], capsize=float(get_prop("cap_size") or 4), **style, linestyle="none", ecolor=mpl.rcParams["axes.edgecolor"])
 
         xs += group_increment
@@ -323,8 +323,17 @@ def plot_bars(df, props, variable_name=None, errors_df=None, meta_df=None):
 
     p.xlabel(_to_label(groups))
 
-    if variable_name:
-        p.ylabel(variable_name)
+    if meta_df is not None:
+        if get_prop("legend_prefer_result_titles") == "true" and "title" in meta_df:
+            series = meta_df["title"]
+        else:
+            series = meta_df["name"]
+
+        title_names = series.unique()
+        ylabel = title_names[0]
+        if len(title_names) > 1:
+            ylabel += ", etc."
+        p.ylabel(ylabel)
 
     title = make_chart_title(meta_df.reset_index(), title_cols)
     set_plot_title(get_prop("title") or title)
@@ -380,6 +389,8 @@ def plot_vectors(df, props, legend_func=make_legend_label):
 
     title = get_prop("title") or make_chart_title(df, title_cols)
     set_plot_title(title)
+
+    p.ylabel(make_chart_title(df, ["title"]))
 
 
 def plot_vectors_separate(df, props, legend_func=make_legend_label):
@@ -507,6 +518,57 @@ def plot_histograms(df, props, legend_func=make_legend_label):
         ideplot.set_property("Hist.ShowOverflowCell", str(_parse_optional_bool(show_overflows)).lower())
 
     title = get_prop("title") or make_chart_title(df, title_cols)
+    set_plot_title(title)
+
+
+def plot_lines(df, props, legend_func=make_legend_label):
+    p = ideplot if chart.is_native_chart() else plt
+
+    def get_prop(k):
+        return props[k] if k in props else None
+
+    title_cols, legend_cols = extract_label_columns(df, props)
+
+    df.sort_values(by=legend_cols, inplace=True)
+    for t in df.itertuples(index=False):
+        style = _make_line_args(props, t, df)
+
+        if len(t.x) < 2 and style["marker"] == ' ':
+            style["marker"] = '.'
+
+        p.plot(t.x, t.y, label=legend_func(legend_cols, t, props), **style)
+
+        if hasattr(t, "error") and not ideplot.is_native_plot():
+            style["linewidth"] = float(style["linewidth"])
+            style["linestyle"] = "none"
+
+            if props["error_style"] == "Error bars":
+                plt.errorbar(t.x, t.y, yerr=t.error, capsize=float(props["cap_size"]), **style)
+            elif props["error_style"] == "Error band":
+                plt.fill_between(t.x, t.y-t.error, t.y+t.error, alpha=float(props["band_alpha"]))
+
+    title = get_prop("title") or make_chart_title(df, title_cols)
+    set_plot_title(title)
+
+
+def plot_boxwhiskers(df, props):
+    title, legend = extract_label_columns(df, props)
+    df.sort_values(by=legend, axis='index', inplace=True)
+
+    # This is how much of the standard deviation will give the 25th and 75th
+    # percentiles, assuming normal distribution.
+    # >>> math.sqrt(2) * scipy.special.erfinv(0.5)
+    coeff = 0.6744897501960817
+
+    boxes = [(r.min, r.mean - r.stddev * coeff, r.mean, r.mean + r.stddev * coeff, r.max)
+            for r in df.itertuples(index=False) if r.count > 0]
+    labels = [", ".join([getattr(r, l) for l in legend])
+            for r in df.itertuples(index=False) if r.count > 0]
+    customized_box_plot(boxes, labels)
+
+    title = make_chart_title(df, title)
+    if "title" in props and props["title"]:
+        title = props["title"]
     set_plot_title(title)
 
 
@@ -1056,7 +1118,91 @@ def confidence_interval(alpha, data):
     - `alpha` (float): Confidence level, must be in the [0..1] range.
     - `data` (array-like): An array containing the values.
     """
-    return math.nan if len(data) <= 1 else st.norm.interval(alpha, loc=0, scale=st.sem(data))[1]
+    return math.nan if len(data) <= 1 else 0 if len(set(data)) <= 1 else st.norm.interval(alpha, loc=0, scale=st.sem(data))[1]
+
+
+def pivot_for_barchart(df, groups, series, confidence_level):
+    for c in groups + series:
+        df[c] = pd.to_numeric(df[c], errors="ignore")
+
+    df.sort_values(by=groups+series, axis='index', inplace=True)
+
+    def aggfunc(values):
+        if values.empty:
+            return None
+        elif np.issubdtype(values.dtype, np.number):
+            return values.mean()
+        else:
+            uniq = values.unique()
+            if len(uniq) == 1:
+                return uniq[0]
+            else:
+                return str(uniq[0]) + ", etc."
+
+    metadf = pd.pivot_table(df, index=series, aggfunc=aggfunc, dropna=False)
+    del metadf["value"]
+
+    if confidence_level is None:
+        df = pd.pivot_table(df, index=series, columns=groups, values='value', dropna=False)
+        return (df, None, metadf)
+    else:
+        def conf_intv(values):
+            return confidence_interval(confidence_level, values)
+
+        pivoted = pd.pivot_table(df, index=series, columns=groups, values="value", aggfunc=[np.mean, conf_intv], dropna=False)
+        valuedf = pivoted["mean"]
+        errorsdf = pivoted["conf_intv"]
+        if errorsdf.isna().values.all():
+            errorsdf = None
+        return (valuedf, errorsdf, metadf)
+
+
+def pivot_for_scatterchart(df, xaxis_itervar, group_by, confidence_level):
+    for gb in group_by:
+        df[gb] = pd.to_numeric(df[gb], errors="ignore")
+
+    df[xaxis_itervar] = pd.to_numeric(df[xaxis_itervar], errors="ignore")
+
+    newdf = pd.DataFrame()
+    if confidence_level is None:
+        df = pd.pivot_table(df, values="value", columns=group_by, index=xaxis_itervar)
+        errors_df = None
+    else:
+        def conf_intv(values):
+            return confidence_interval(confidence_level, values)
+        pivoted = pd.pivot_table(df, values="value", columns=group_by, index=xaxis_itervar if xaxis_itervar else "name", aggfunc=[np.mean, conf_intv], dropna=False)
+
+        df = pivoted["mean"]
+        errors_df = pivoted["conf_intv"]
+
+        if errors_df.isna().values.all():
+            errors_df = None
+
+    try:
+        xs = pd.to_numeric(df.index.values)
+        ideplot.xlabel(xaxis_itervar)
+    except:
+        xs = np.zeros_like(df.index.values)
+
+    for c in df:
+        t = c if type(c) == tuple else (c,)
+        name = ", ".join([str(a) + "=" + str(b) for a, b in zip(df.columns.names, t) if a is not None])
+
+        to_append = pd.DataFrame.from_dict({"name": [name], "x": [np.array(xs)], "y": [np.array(df[c].values)]})
+        if errors_df is not None:
+            to_append["error"] = [np.array(errors_df[c].values)]
+        newdf = newdf.append(to_append)
+
+    return newdf
+
+
+def get_confidence_level(props):
+    if "confidence_level" not in props:
+        return None
+    s = props["confidence_level"]
+    if s == "none":
+        return None
+    return float(s[:-1])/100 if s.endswith("%") else float(s)
 
 
 def perform_vector_ops(df, operations: str):
@@ -1259,7 +1405,7 @@ def extract_label_columns(df, props):
             legend_cols.append(module_column)
 
     if len(df) == 1:
-        title_cols = [name_column, module_column]
+        title_cols = [c for c in [name_column, module_column] if c in df]
         legend_cols = title_cols
         return title_cols, legend_cols
 
@@ -1271,7 +1417,7 @@ def extract_label_columns(df, props):
             if col in df and col not in title_cols and df[col].nunique() == 1 and df[col].values[0]:
                 title_cols.append(col)
                 break
-        if not title_cols:
+        if not title_cols and name_column in df:
             title_cols = [name_column]
 
     blacklist = set(["name", "title", "module", "moduledisplaypath", # these will be used anyway
@@ -1294,12 +1440,15 @@ def extract_label_columns(df, props):
     # pick columns that improve the partitioning of rows, until each row can be identified with them
     last_len = None
     for col in legend_col_candidates:
-        new_len = len(df.groupby(legend_cols + [col]))
-        if new_len == len(df) or not last_len or new_len > last_len:
-            legend_cols.append(col)
-            last_len = new_len
-        if new_len == len(df):
-            break
+        try:
+            new_len = len(df.groupby(legend_cols + [col]))
+            if new_len == len(df) or not last_len or new_len > last_len:
+                legend_cols.append(col)
+                last_len = new_len
+            if new_len == len(df):
+                break
+        except Exception:
+            pass
 
     # filter out columns that only have a single value in them
     # (this can happen in the loop above, with the first considered column)
@@ -1357,6 +1506,63 @@ def pick_two_columns(df, props=None):  #TODO remove default for props in final r
             return title_cols[0], label_cols[0]
     if len(label_cols) >= 2:
         return label_cols[1], label_cols[0]
+
+
+def select_groups_series(df, props):
+    groups = split(props["groups"])
+    series = split(props["series"])
+
+    if not groups and not series:
+        print("The Groups and Series options were not set in the dialog, inferring them from the data.")
+        g, s = ("module", "name") if len(df) == 1 else pick_two_columns(df, props)
+        groups, series = [g], [s]
+
+    if not groups or not groups[0] or not series or not series[0]:
+        raise chart.ChartScriptError("Please set both the Groups and Series properties in the dialog - or neither, for automatic setup.")
+
+    common = list(set(groups) & set(series))
+    if common:
+        raise chart.ChartScriptError("Overlap between Group and Series columns: " + ", ".join(common))
+
+    assert_columns_exist(df, groups + series, "No such iteration variable or run attribute")
+
+    return groups, series
+
+
+def select_xaxis_and_groupby(df, props):
+    xaxis_itervar = props["xaxis_itervar"]
+    group_by = split(props["group_by"])
+
+    if not xaxis_itervar and not group_by:
+        print("The 'X Axis' and 'Group By' options were not set in the dialog, inferring them from the data..")
+        xaxis_itervar, group_by = pick_two_columns(df, props)
+        group_by = [group_by] if group_by else []
+        print("X Axis: " + xaxis_itervar + ", Group By: " + ",".join(group_by))
+
+    if xaxis_itervar:
+        assert_columns_exist(df, [xaxis_itervar], "The iteration variable for the X axis could not be found")
+    else:
+        raise chart.ChartScriptError("Please select the iteration variable for the X axis!")
+
+    if xaxis_itervar in group_by:
+        raise chart.ChartScriptError("X axis column also in grouper columns: " + xaxis_itervar)
+
+    if group_by:
+        assert_columns_exist(df, group_by, "An iteration variable for grouping could not be found")
+
+
+    # report averaging
+    uninteresting = ["runID", "value", "datetime", "datetimef", "processid",
+                    "iterationvars", "iterationvarsf", "iterationvarsd",
+                    "measurement", "replication", "runnumber", "seedset",
+                    "title", "source", "interpolationmode"]
+
+    for c in df:
+        ul = len(df[c].unique())
+        if ul > 1 and c != xaxis_itervar and c not in group_by and c not in uninteresting:
+            print("Points are averaged from an overall", ul, "unique", c, "values.")
+
+    return xaxis_itervar, group_by
 
 
 def assert_columns_exist(df, cols, message="Expected column missing from DataFrame"):
@@ -1631,23 +1837,6 @@ def _make_bar_args(props, df): # ??? is df needed at all? should we also get the
         style["color"] = next(_color_cycle)
 
     return style
-
-
-def get_names_for_title(df, props):
-    """
-    Returns unique values from the `title` or `name` column, depending on the
-    value of the `legend_labels` property in `props`. This function is useful
-    for producing input for the plot title.
-    """
-    def get_prop(k):
-        return props[k] if k in props else None
-
-    if get_prop("legend_prefer_result_titles") == "true" and "title" in df:
-        series = df["title"].fillna(df["name"])
-    else:
-        series = df["name"]
-
-    return series.unique()
 
 
 def _to_label(x):
