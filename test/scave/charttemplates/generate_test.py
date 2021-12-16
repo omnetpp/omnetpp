@@ -25,7 +25,7 @@ else:
 # Command-line args are interpreted as as words to filter for. We try to match whole numbers, i.e. "foo1", "2bar" should not match "foo10", "foo123", "42bar", etc.
 test_filter = [re.compile((r"(^|[^\d])" if re.match(r"^\d",arg) else "") + arg + (r"($|[^\d])" if re.match(r"\d$",arg) else "")) for arg in sys.argv[1:]]
 
-def make_charts(template_ids, base_props, tests):
+def make_charts(template_ids, group, base_props, tests):
     def indent(s):
         return "\n".join(["    " + l for l in s.splitlines()])
 
@@ -48,7 +48,7 @@ def make_charts(template_ids, base_props, tests):
             if type(propvalues) != list:
                 propvalues = [ propvalues ]
             for propvalue in propvalues:
-                name = template_id + "_" + str(i)
+                name = template_id + "_" + group + "_" + str(i)
                 desc = "{}={}".format(propname, repr(propvalue)) if propname else "base"
                 if extra_props:
                     desc += ", when " + ", ".join(["{}={}".format(k, repr(v)) for k,v in extra_props.items()])
@@ -80,10 +80,9 @@ legend_placement_outside = ["outside top left", "outside top center", "outside t
 
 charts += make_charts(
     ["barchart_native", "barchart_mpl"],
+    "data",
     {
         "filter": "runattr:experiment =~ PureAlohaExperiment AND name =~ channelUtilization:last",
-        "groups": "iaMean",
-        "series": "numHosts",
     },
     [
         case("filter", "runattr:experiment =~ PureAlohaExperiment AND type =~ scalar"),
@@ -91,21 +90,32 @@ charts += make_charts(
         case("filter", "aa bb", errmsg="Syntax error"),
         case("filter", "", errmsg="Error while querying results: Empty filter expression"),
 
-        case("groups", "iaMean"),
-        case("groups", "numHosts", errmsg="Overlap between Group and Series columns"),
-        case("groups", "experiment"),
-        case("groups", "name"),
-        case("groups", "aa bb", errmsg="No such iteration variable"),
-        case("groups", "", errmsg="set both the Groups and Series properties"),
+        case("groups", "iaMean", props={"series": "numHosts"}),
+        case("groups", "numHosts", props={"series": "numHosts"}, errmsg="Overlap between Group and Series columns"),
+        case("groups", "experiment", props={"series": "numHosts"}),
+        case("groups", "name", props={"series": "numHosts"}),
+        case("groups", "aa bb", props={"series": "numHosts"}, errmsg="No such iteration variable"),
+        case("groups", "", props={"series": "numHosts"}, errmsg="set both the Groups and Series properties"),
 
-        case("series", "iaMean", errmsg="Overlap between Group and Series columns"),
-        case("series", "numHosts"),
-        case("series", "experiment"),
-        case("series", "name"),
-        case("series", "", errmsg="set both the Groups and Series properties"),
+        case("series", "iaMean", props={"groups": "iaMean"}, errmsg="Overlap between Group and Series columns"),
+        case("series", "numHosts", props={"groups": "iaMean"}),
+        case("series", "experiment", props={"groups": "iaMean"}),
+        case("series", "name", props={"groups": "iaMean"}),
+        case("series", "", props={"groups": "iaMean"}, errmsg="set both the Groups and Series properties"),
+    ]
+)
 
+charts += make_charts(
+    ["barchart_native", "barchart_mpl"],
+    "styling",
+    {
+        "filter": "runattr:experiment =~ PureAlohaExperiment AND name =~ channelUtilization:last",
+        "groups": "iaMean",
+        "series": "numHosts",
+    },
+    [
         # bars
-        case("baseline", "10"),  # TODO WRONG RESULT! offset simply added to ticks, with bars staying the same
+        case("baseline", "10"),
         case("bar_placement", ["Aligned", "Overlap", "InFront", "Stacked"]),
 
         # grid
@@ -118,7 +128,11 @@ charts += make_charts(
         case("legend_placement", legend_placement_inside + legend_placement_outside, only_for="barchart_native"),
 
         # legend labels
-        # TODO label format, replacements, etc.
+        case("legend_prefer_result_titles", "false", props={"legend_automatic":"true"}),
+        case("legend_prefer_module_display_paths", "false", props={"legend_automatic":"true"}),
+        case("legend_format", "$name in $module", props={"legend_automatic":"false"}),
+        case("legend_replacements", "/ /_/\n/:/->/\n/=/==/", props={"legend_automatic":"true"}),
+        case("legend_replacements", "/ /_/\n/:/->/\n/=/==/", props={"legend_automatic":"false", "legend_format":"$name in $module"}),
 
         # axes
         case("xaxis_title", "Manual X Axis Title"),
@@ -142,6 +156,7 @@ charts += make_charts(
 
 charts += make_charts(
     ["linechart_native", "linechart_mpl", "linechart_separate_mpl"],
+    "all",
     {
         "filter": "runattr:experiment =~ Fifo* AND name =~ qlen:vector",
         "vector_start_time": "1",
@@ -202,6 +217,7 @@ charts += make_charts(
 
 charts += make_charts(
     ["scatterchart_itervars_native", "scatterchart_itervars_mpl"],
+    "all",
     {
         "filter": "runattr:experiment =~ PureAlohaExperiment AND name =~ channelUtilization:last",
         "xaxis_itervar": "iaMean",
@@ -272,6 +288,7 @@ charts += make_charts(
 
 charts += make_charts(
     ["histogramchart_native", "histogramchart_mpl"], #TODO "histogramchart_vectors_native", "histogramchart_vectors_mpl"
+    "all",
     {
         "filter": "runattr:experiment =~ PureAlohaExperiment",
     },
@@ -324,6 +341,7 @@ charts += make_charts(
 
 charts += make_charts(
     ["generic_mpl"],
+    "all",
     {
         "input": "Hello",
     },
@@ -335,6 +353,7 @@ charts += make_charts(
 
 charts += make_charts(
     ["generic_xyplot_native", "generic_xyplot_mpl"],
+    "all",
     {
     },
     [
@@ -344,6 +363,7 @@ charts += make_charts(
 
 charts += make_charts(
     ["3dchart_itervars_mpl"],
+    "all",
     {
         "filter": "runattr:experiment =~ PureAlohaExperiment AND name =~ channelUtilization:last",
         "xaxis_itervar": "iaMean",
@@ -374,6 +394,7 @@ charts += make_charts(
 
 charts += make_charts(
     ["boxwhiskers"],
+    "all",
     {
         "filter": "runattr:experiment =~ PureAlohaExperiment AND *:histogram"
     },
