@@ -2,6 +2,7 @@
 
 import os
 import sys
+import re
 
 from omnetpp.scave.analysis import *
 from omnetpp.scave.charttemplate import *
@@ -21,8 +22,8 @@ else:
     print('testlib not available, running chart script without it')
     chart_script()
 """
-
-test_filter = sys.argv[1] if len(sys.argv)>1 else None
+# Command-line args are interpreted as as words to filter for. We try to match whole numbers, i.e. "foo1", "2bar" should not match "foo10", "foo123", "42bar", etc.
+test_filter = [re.compile((r"(^|[^\d])" if re.match(r"^\d",arg) else "") + arg + (r"($|[^\d])" if re.match(r"\d$",arg) else "")) for arg in sys.argv[1:]]
 
 def make_charts(template_ids, base_props, tests):
     def indent(s):
@@ -43,6 +44,7 @@ def make_charts(template_ids, base_props, tests):
                 template_filter = [ template_filter ]
             if template_filter and template_id not in template_filter:
                 continue
+
             if type(propvalues) != list:
                 propvalues = [ propvalues ]
             for propvalue in propvalues:
@@ -58,7 +60,8 @@ def make_charts(template_ids, base_props, tests):
                 if propname:
                     props.update({propname: propvalue})
 
-                if test_filter and test_filter not in template_id+" "+desc:
+                #print([regex.search(name+" "+desc) for regex in test_filter])
+                if test_filter and not all(regex.search(name+" "+desc) for regex in test_filter):
                     continue
 
                 chart = template.create_chart(name=name, props=props)
