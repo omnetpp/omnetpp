@@ -85,22 +85,32 @@ charts += make_charts(
         "filter": "runattr:experiment =~ PureAlohaExperiment AND name =~ channelUtilization:last",
     },
     [
-        case("filter", "runattr:experiment =~ PureAlohaExperiment AND type =~ scalar"),
-        case("filter", "runattr:experiment =~ PureAlohaExperiment AND name =~ channel*"),
+        # everything is default
+        case(None, None),
+
+        # different filters
+        case("filter", "runattr:experiment =~ PureAlohaExperiment AND type =~ scalar", props={"groups": "iaMean", "series": "numHosts"}),
+        case("filter", "runattr:experiment =~ PureAlohaExperiment AND name =~ channel*", props={"groups": "iaMean", "series": "numHosts"}),
         case("filter", "aa bb", errmsg="Syntax error"),
         case("filter", "", errmsg="Error while querying results: Empty filter expression"),
+
+        # automatic groups and series inference
+        case("filter", "runattr:experiment =~ PureAlohaExperiment AND type =~ scalar"),
+        case("filter", "runattr:experiment =~ PureAlohaExperiment AND name =~ channel*"),
 
         case("groups", "iaMean", props={"series": "numHosts"}),
         case("groups", "numHosts", props={"series": "numHosts"}, errmsg="Overlap between Group and Series columns"),
         case("groups", "experiment", props={"series": "numHosts"}),
+        case("groups", "measurement", props={"series": "name", "xlabel_rotation": "-30"}),
         case("groups", "name", props={"series": "numHosts"}),
         case("groups", "aa bb", props={"series": "numHosts"}, errmsg="No such iteration variable"),
         case("groups", "", props={"series": "numHosts"}, errmsg="set both the Groups and Series properties"),
 
         case("series", "iaMean", props={"groups": "iaMean"}, errmsg="Overlap between Group and Series columns"),
-        case("series", "numHosts", props={"groups": "iaMean"}),
         case("series", "experiment", props={"groups": "iaMean"}),
+        case("series", "measurement", props={"groups": "name"}),
         case("series", "name", props={"groups": "iaMean"}),
+        case("series", "aa bb", props={"groups": "iaMean"}, errmsg="No such iteration variable"),
         case("series", "", props={"groups": "iaMean"}, errmsg="set both the Groups and Series properties"),
     ]
 )
