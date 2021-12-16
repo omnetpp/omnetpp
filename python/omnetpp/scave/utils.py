@@ -1324,7 +1324,7 @@ def make_chart_title(df, title_cols):
         else:
             prefix = ", " + col + "="
 
-        val = str(df[col][0])
+        val = str(df[col].values[0])
         if df[col].nunique() > 1:
             val += ", etc."
 
