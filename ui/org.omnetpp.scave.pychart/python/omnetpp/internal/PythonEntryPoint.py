@@ -79,6 +79,11 @@ class PythonEntryPoint(object):
         except chart.ChartScriptError as e:
             ideplot.set_warning(str(e))
             sys.exit(1)
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            ideplot.set_warning(str(e))
+            sys.exit(1)
 
     # @TimeAndGuard(measureTime=False)
     def evaluate(self, expression):

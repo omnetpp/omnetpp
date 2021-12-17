@@ -1237,7 +1237,7 @@ def perform_vector_ops(df, operations: str):
             df = _perform_vector_op(df, line)
         except Exception as e:
             context = " in Vector Operations line " + str(line_num) + " \"" + line.strip() + "\""
-            raise type(e)(str(e) + context).with_traceback(sys.exc_info()[2]) # re-throw with context
+            raise chart.ChartScriptError(str(e) + context) from e # re-throw with context
     return df
 
 
@@ -1315,7 +1315,7 @@ def _apply_vector_op(df, op_str, operation, *args, **kwargs):
         return vectorops.merge(df)
     else:
         condition = kwargs.pop('condition', None)
-        clone = df.copy()
+
         def process(row):
             row["vectime"].flags.writeable = False
             row["vecvalue"].flags.writeable = False
@@ -1324,7 +1324,13 @@ def _apply_vector_op(df, op_str, operation, *args, **kwargs):
             row["vectime"].flags.writeable = True
             row["vecvalue"].flags.writeable = True
             return row
-        clone = clone.transform(lambda row: process(row.copy()) if not condition or condition(row) else row, axis='columns')
+
+        # Using iteration instead of df.transform because that catches the ChartScriptErrors
+        # raised from the vector operation functions internally, which we don't want.
+        clone = pd.DataFrame()
+        for _, row in df.iterrows():
+            if condition is None or condition(row):
+                clone = clone.append(process(row), ignore_index=True)
         return clone
 
 
