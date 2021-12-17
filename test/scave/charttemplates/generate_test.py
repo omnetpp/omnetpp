@@ -269,10 +269,10 @@ charts += make_charts(
         # axes
         case("xaxis_title", "Manual X Axis Title"),
         case("yaxis_title", "Manual Y Axis Title"),
-        case("xaxis_min", "0.8"),
-        case("xaxis_max", "0.8"),
-        case("yaxis_min", "0.8"),
-        case("yaxis_max", "0.8"),
+        case("xaxis_min", "3"),
+        case("xaxis_max", "5"),
+        case("yaxis_min", "0.1"),
+        case("yaxis_max", "0.15"),
         case("xaxis_log", "true"),
         case("yaxis_log", "true"),
 
