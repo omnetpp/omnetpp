@@ -166,7 +166,7 @@ charts += make_charts(
 
 charts += make_charts(
     ["linechart_native", "linechart_mpl", "linechart_separate_mpl"],
-    "all",
+    "base",
     {
         "filter": "runattr:experiment =~ Fifo* AND name =~ qlen:vector",
         "vector_start_time": "1",
@@ -182,14 +182,25 @@ charts += make_charts(
 
         case("vector_operations", ["apply:mean","compute:sum"]),
         case("vector_operations", "apply:sum\ncompute:divtime\napply:timewinavg(window_size=200) # comment"),
+    ]
+)
 
+charts += make_charts(
+    ["linechart_native", "linechart_mpl", "linechart_separate_mpl"],
+    "styling",
+    {
+        "filter": "runattr:experiment =~ TandemFifoExperiment AND name =~ queueLength:vector AND module =~ *.queue1 AND runattr:replication =~ #0",
+        "vector_end_time": "50",
+        "vector_operations": "compute:timeavg(interpolation='sample-hold')",
+    },
+    [
         # axes
         case("xaxis_title", "Manual X Axis Title"),
         case("yaxis_title", "Manual Y Axis Title"),
-        case("xaxis_min", "0.8"),
-        case("xaxis_max", "0.8"),
-        case("yaxis_min", "0.8"),
-        case("yaxis_max", "0.8"),
+        case("xaxis_min", "20"),
+        case("xaxis_max", "20"),
+        case("yaxis_min", "1.5"),
+        case("yaxis_max", "1.5"),
         case("xaxis_log", "true"),
         case("yaxis_log", "true"),
 
@@ -211,13 +222,14 @@ charts += make_charts(
 
         # lines
         case("drawstyle", ["auto", "none", "linear", "steps-pre", "steps-mid", "steps-post"]),
+        case("drawstyle", ["none"], props={"marker":"."}),
         case("linecolor", ["", "green", "#808080"]),
         case("linestyle", ["none", "solid", "dotted", "dashed", "dashdot"]),
         case("linewidth", ["0", "0.5", "1", "5"]),
 
         # markers
-        case("marker", ["auto", "none", ". (dot)", *list(".,^v")]),  # more: ".,v^<>1234|_8osp*xDd"
-        case("markersize", ["3","10"], props={"marker":"."}),
+        case("marker", ["auto", "none", ". (dot)", *list(".,^v")], props={"drawstyle":"none"}),  # more: ".,v^<>1234|_8osp*xDd"
+        case("markersize", ["3","10"], props={"marker":".", "drawstyle":"none"}),
 
         # misc
         case("plt.style", ["default", "ggplot", "grayscale", "seaborn"], only_for=["linechart_mpl", "linechart_separate_mpl"]),
@@ -416,7 +428,7 @@ charts += make_charts(
 )
 
 # generate analysis file
-inputs = [ "/resultfiles/aloha", "/resultfiles/fifo" ]
+inputs = [ "/resultfiles/aloha", "/resultfiles/fifo", "/resultfiles/tandemfifos" ]
 analysis = Analysis(inputs=inputs, items=charts)
 analysis.to_anf_file("all_the_tests.anf")
 
