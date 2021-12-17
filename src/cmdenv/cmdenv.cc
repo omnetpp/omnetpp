@@ -613,7 +613,7 @@ void Cmdenv::log(cLogEntry *entry)
 std::string Cmdenv::gets(const char *prompt, const char *defaultReply)
 {
     if (!opt->interactive)
-        throw cRuntimeError("The simulation wanted to ask a question, set cmdenv-interactive=true to allow it: \"%s\"", prompt);
+        throw cRuntimeError("The simulation attempted to prompt for user input, set cmdenv-interactive=true to allow it: \"%s\"", prompt);
 
     out << prompt;
     if (!opp_isempty(defaultReply))
