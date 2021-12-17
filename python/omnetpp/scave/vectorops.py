@@ -517,10 +517,9 @@ def _integrate_helper(t, v, interpolation):
     elif interpolation == 'linear':
         increments = dt * (v + vprev) / 2
     else:
-        raise Exception("unknown interpolation: " + interpolation)
+        raise ValueError("unknown interpolation '{}', available ones are: 'linear', 'sample-hold', 'backward-sample-hold'", format(interpolation))
 
     return np.cumsum(increments)
-
 
 @vector_operation(example="integrate(interpolation='linear')")
 def integrate(r, interpolation='sample-hold'):
