@@ -1,3 +1,244 @@
+2021-12-15  Attila Torok
+
+	* Analysis Tool: Overhaul the barchart, scatterchart, and boxwhiskers
+	template scripts.
+
+	- Instead of taking `variable_name` as parameter, integrate and delete
+	  `get_names_for_title` to make it internally.
+	- Don't try to plot all-NaN error bars, return 0 as error for multiple
+	  identical values.
+	- barchart: Fix the warning about dropping invalid columns in .agg()
+	- Factor scatterchart_itervars chart template script apart into a few
+	  functions, in utils.py
+	- Extract plot_boxwhiskers() to utils.py
+
+2021-12-08  Attila Torok
+
+	* Analysis Tool: Improve the barchart template considerably:
+	  - Legend labels made are customizable
+	  - Axis and plot titles are more reasonable
+	  - Baseline property fixed
+
+2021-12-08  Attila Torok
+
+	* Analysis Tool: Fix title generation in the 3dchart_itervars template
+
+2021-12-11  Andras Varga
+
+	* Analysis Tool: chart templates: added missing "include_fields" checkboxes
+
+2021-12-11  Andras Varga
+
+	* Analysis Tool: Changed how IDs are generated for charts, in order to fix
+	occasional ID collisions.
+
+2021-12-10  Attila Torok
+
+	* Analysis Tool: Fix chart.is_native_chart() operation from within the IDE.
+
+2021-12-07  Andras Varga
+
+	* Analysis Tool: fix Export Image NPE for temporary charts
+
+2021-12-07  Attila Torok
+
+	* Analysis Tool: Improvements in utils.extract_label_columns(),
+	make_legend_label() and make_chart_title().
+
+2021-12-06  Attila Torok
+
+	* Analysis Tool: Improve the "scatterchart_itervars" chart template script:
+	ignore "datetimef", "iterationvarsd", etc run attributes, to avoid
+	nonsensical "points are averaged from ... unique ... values" notes.
+
+2021-12-06  Attila Torok
+
+	* Analysis Tool: Fix warnings from Matplotlib when computing confidence
+	intervals (for bar- and scatterplots)
+
+2021-11-26  Attila Torok
+
+	* Analysis Tool: Add initial linechart_separate_mpl template
+
+2021-12-06  Andras Varga
+
+	* Inifile Editor: Demote "Unused entry (does not match any parameters)" message
+	from WARNING to INFO, and added "maybe" to the wording.
+
+	Reason: There were a lot of false positives, because the analyzer only understands
+	"*" as module index in module path patterns, and gets confused if numbers
+	or ranges were there, e.g. "**.app[2].pklen". With this change, those false
+	warnings are a lot milder.
+
+2021-11-30  Andras Varga
+
+	* Inifile Editor: Allow config option values to contain expressions (i.e. do
+	not falsely flag them as errors).
+
+2021-12-04  Andras Varga
+
+	* Analysis Tool: Reset Chart to Template: Allow multi-selection.
+
+2021-12-03  Andras Varga
+
+	* Analysis Tool: linechart fix: with samples/fifo, only "name" was displayed
+	in legend, despite configname being necessary to distinguish them
+
+2021-12-03  Andras Varga
+
+	* Analysis Tool: automatic legend: added "prefer module display path to module
+	path" option; dialog and code refactoring
+
+2021-11-29  Andras Varga
+
+	* Analysis Tool: legend.xswt: fix wording
+
+2021-11-30  Attila Torok
+
+	* Analysis Tool: Introduce ChartScriptError, raise it from chart scripts
+	where needed instead of manually setting the plot warning text and calling
+	(an alias to) sys.exit(1).
+
+2021-12-02  Attila Torok
+
+	* Analysis Tool: Add debug assertion to ResultSelectionFilterGenerator
+
+2021-12-01  Attila Torok
+
+	* Analysis Tool: Make sure a DataPanel view filter with an OR operator doesn't
+	break selection filter generation
+
+2021-11-30  Attila Torok
+
+	* Analysis Tool: Fix mismatch between "show fields" toolbar button and table
+	contents.
+
+2021-11-29  Attila Torok
+
+	* Analysis Tool: Add include_fields chart property to templates.
+
+2021-11-25  Rudolf Hornig
+
+	* IDE: update environment resolvers to provide correct tool directory names
+	on Windows
+
+2021-11-18  Rudolf Hornig
+
+	* IDE: Dependencies updated: Eclipse 4.22, JRE 17.0.1, PyDev 9.2;
+	Added macos/aarch64 environment for Eclipse.
+
+2021-11-26  Attila Torok
+
+	* Analysis Tool: Patch the included Py4J JAR to make it work with Java 17
+
+2021-11-12  Attila Torok
+
+	* Documentation Generator: Avoid a deadlock when generating NED documentation
+
+2021-11-28  Andras Varga
+
+	* Analysis Tool: Added content assist for column names in the legend format
+	string.
+
+	How it works: when the chart script runs, the legend function looks at
+	the DataFrame and lets the IDE know the column names by calling
+	chart.set_observed_column_names(). When the user opens the chart config
+	dialog, content assistance uses this info to provide suggestions.
+
+2021-11-27  Andras Varga
+
+	* Analysis Tool: Added Legend pages to chart templates that support it.
+	Others e.g. bar chart bypass the make_legend_label() functions.
+
+2021-11-28  Andras Varga
+
+	* Analysis Tool: Add support for x:id.enablerButton attribute in XSWT files
+
+	If control is something (e.g. a Text) that should be enabled
+	conditionally (e.g. when a radiobutton or checkbox is selected),
+	specify the ID of the controlling button in the x:id.enablerButton
+	attribute of the control.
+
+	Also fix: for x:id.isEnabler=true, if the button is a radio button, it
+	should not disable its sibling radio buttons.
+
+2021-11-19  Andras Varga
+
+	* Analysis Tool: Fix Outline selection behavior. When selecting a
+	chart in a folder in the Outline view, Charts page could not show
+	the chart because it did not switch to the chart's folder.
+
+2021-11-18  Andras Varga
+
+	* Analysis Tool: ExportChartsDialog: improve initial selection.
+	Distinguish "nothing is selected" from "selected folder(s) contain no
+	chart"
+
+2021-11-18  Andras Varga
+
+	* Analysis Tool: BrowseDataPage: added saveState()/restoreState()
+
+2021-11-18  Andras Varga
+
+	* Analysis Tool: Improved state saving.
+
+2021-11-17  Andras Varga
+
+	* Analysis Tool: assert item IDs are unique
+
+2021-11-13  Andras Varga
+
+	* Analysis Tool: Added the possibility to organize charts into folders
+	in Analyses. Note: anf files with folders are not understood by previous
+	versions.
+
+2021-11-15  Rudolf Hornig
+
+	* IDE: Updated Eclipse update URLs for Eclipse 4.21 and CDT 10.4.
+
+2021-11-10  Attila Torok
+
+	* Analysis Tool: Remove more label backgrounds
+
+2021-11-11  Andras Varga
+
+	* Analysis Tool: NativeChartViewer: avoid "widget already disposed" error
+
+2021-11-11  Andras Varga
+
+	* Analysis Tool: AnalysisLoader: simplify code; avoid NPE when "value" attr
+	doesn't exist
+
+2021-11-10  Andras Varga
+
+	* Analysis Tool: minor fix in chart template loading
+
+2021-11-10  Attila Torok
+
+	* Analysis Tool: Don't paint FormEditorPage label background
+
+2021-11-09  Attila Torok
+
+	* Analysis Tool: Don't run stale scripts when exporting opened charts
+
+2021-11-05  Attila Torok
+
+	* Analysis Tool: Call System.gc() after ShmSendBufferManager::garbageCollect()
+	if it did something
+
+2021-11-05  Attila Torok
+
+	* Analysis Tool: Add optional ShmSendBuffer instance number tracking and debug
+	output
+
+2021-11-05  Attila Torok
+
+	* Analysis Tool: Always use ShmSendBuffer through std::shared_ptr instead of
+	raw pointers.
+
+	This fixes #900 by guaranteeing that there are no double-deletes even if
+	an exception is thrown. This makes `owner` and `deleted()` unnecessary.
+
 2021-11-11  Attila Torok
 
 	* Native Libraries: Introduce ShmSendBufferPtr and ShmSendBufferPtrVector

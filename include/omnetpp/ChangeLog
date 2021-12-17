@@ -1,3 +1,20 @@
+2021-12-03  Andras Varga
+
+	* Move displayName field from cModule to cComponent. Reason:
+	it is quite useful for channels too, maybe more than for modules,
+	because the default channel names or full paths are not very helpful.
+	("Which network node does ...rte3.ethg$o[3].channel go to?")
+
+2021-11-17  Andras Varga
+
+	* cResultListener: added emitInitialValue() and callEmitInitialValue()
+	to allow recording of initial value (e.g. for the count and sum filters.)
+
+2021-11-07  Andras Varga
+
+	* cConfiguration: remove unused public method getMatchingPerObjectConfigKeys()
+	to facilitate correct implementation.
+
 2021-11-05  Andras Varga
 
 	* any_ptr: let two nullptrs of different types be equal.
@@ -171,8 +188,6 @@
 	- addGate(const char *gatename, cGate::Type type, bool isvector=false):
 	  removed "isvector" argument
 	- added addGateVector(const char *gatename, cGate::Type type, int size);
-
------------ lines above this marker have been added from git log -----------
 
 2021-06-18  Andras Varga
 

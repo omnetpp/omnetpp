@@ -1,3 +1,8 @@
+2021-11-26  Rudolf Hornig
+
+	* Updated section on opp_test wrt possible new test case outcomes (PASS,
+	FAIL, ERROR, SKIP and EXPECTEDFAIL)
+
 2021-10-13  Andras Varga
 
 	* Update section that shows how manually created result filters/recorders

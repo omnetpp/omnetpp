@@ -1,3 +1,12 @@
+2021-12-10  Andras Varga
+
+	* PushDir: improve error reporting
+
+2021-11-30  Andras Varga
+
+	* Expression: Add evaluateForType(), which is potentially useful for
+	validating expressions in ini/ned files.
+
 2021-11-06  Andras Varga
 
 	* PatternMacher: bugfix in str()

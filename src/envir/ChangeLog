@@ -1,3 +1,18 @@
+2021-11-30  Rudolf Hornig
+
+	* Improved the output of "opp_run -v".
+
+	- correctly detects the CLANG compiler (along with its version)
+	- type of simtime_t type no longer displayed (using double as simtime_t
+	  is no longer supported, so it was always omnetpp::simtime_t)
+	- large-file-support=yes removed, as 64-bit systems always support long files.
+	- added architecture display with ARCH_X86_64, ARCH_AARCH64 labels.
+
+2021-11-29  Andras Varga
+
+	* SqliteOutputScalarManager: fix typename quoting. It needs to be quoted
+	as if it was a cPar string expression.
+
 2021-11-07  Andras Varga
 
 	* SectionBasedConfiguration: fix for issue #903 ("crash during initialization

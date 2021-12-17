@@ -1,3 +1,20 @@
+2021-12-15  Andras Varga
+
+	* opp_charttool: Added "templates" command.
+
+2021-11-26  Rudolf Hornig
+
+	* opp_test: Test case outcomes are now one of PASS, FAIL, ERROR, SKIP and
+	EXPECTEDFAIL.
+
+2021-11-17  Andras Varga
+
+	* opp_charttool: improved filtering (-i, -n options) to allow multiple
+	charts to be selected:
+
+	- changed -i option to accept index lists and ranges too
+	- changed -n from exact match to substring match
+
 2021-10-29  Rudolf Hornig
 
 	* Several small fixes for Windows to be able to start the IDE using shortcuts.

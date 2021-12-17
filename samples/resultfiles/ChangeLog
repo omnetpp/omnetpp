@@ -1,3 +1,16 @@
+2021-12-17  Andras Varga
+
+	* Added result files from TandemQueueExperiment into tandemfifos/
+
+2021-12-10  Andras Varga
+
+	* Added result files from Fifo1 and Fifo2; removed result files from
+	project root
+
+2021-12-07  Andras Varga
+
+	* Result files regenerated
+
 2021-04-09  Rudolf Hornig
 
 	* Re-created eventlog examples for the new Sequence Chart tool

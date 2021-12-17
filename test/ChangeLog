@@ -1,52 +1,9 @@
-2021-11-11  Attila Torok
-
-	Log a message in a module constructor (in anim/logformatting) to verify
-	that it doesn't break anything.
-
 2021-11-08  Andras Varga
 
 	* Numerous tests were added, updated, etc. during the development of
 	OMNeT++ 6.0 in the years 2018-2021. To see the detailed log of changes,
 	see the public git repository. Hint: use the "gitk ." command after cloning
 	the repo and changing into this directory.
-
-2020-01-03  Andras Varga
-
-	* Added cHistogram_getCDF_1.test
-
-2020-12-10  Andras Varga
-
-	* Added cGate_getters_1.test
-
-2019-12-07  Andras Varga
-
-	* Added test to verify that the eventlogrecorder crash if network is not found
-	is fixed.
-
-2019-10-22  Andras Varga
-
-	* Added test for the @reconnect property in the connection.
-
-2019-02-06  Andras Varga
-
-	* Fingerprint tests: Histograms' Empty config produces different fingerprints
-	on different machines, added all.
-
-2019-02-05  Andras Varga
-
-	* Revised and added more tests for deleteModule()
-
-2018-12-20  Attila Torok
-
-	* Tests updated for collecting infinite values in histograms
-
-2018-08-30  Rudolf Hornig
-
-	* Added extra build tests:
-	  - default toolchain is now clang
-	  - test building with OSG but without OSGEARTH
-	  - test building without PARSIM
-	  - test building without libxml and expat
 
 2019-05-15  ------ omnetpp-5.5 released ------
 

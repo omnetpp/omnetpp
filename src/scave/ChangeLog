@@ -1,3 +1,10 @@
+2021-11-24  Andras Varga
+
+	* OmnetppResultFileLoader: fix double-unquoting of tokens. As LineTokenizer
+	already strips one layer of quotes, an additional unquoteString() is not
+	needed (and in fact it causes an error if token itself starts with
+	quotation mark).
+
 2021-10-12  Andras Varga
 
 	* OmnetppResultFileLoader: Allow loading histograms with equal bin edges.

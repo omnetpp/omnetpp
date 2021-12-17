@@ -1,3 +1,7 @@
+2021-12-18  Andras Varga
+
+	* TandemQueues: cosmetics, 3 -> 2 queues
+
 2021-05-05  Andras Varga
 
 	* NED files updated for changed parameter reference semantics: Added "parent."

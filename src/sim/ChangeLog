@@ -1,3 +1,49 @@
+2021-12-07  Andras Varga
+
+	* Result recorders: suppressed the ", vector" suffix from titles of
+	vector results. Also "histogram" and "stats". They don't need to be added,
+	as they are obvious, they simply echo the result item type.
+
+2021-11-30  Andras Varga
+
+	* cResultRecorder: save display names and recording mode as result
+	attributes and "recordingmode", "moduledisplaypath".
+
+2021-12-03  Andras Varga
+
+	* Move displayName field from cModule to cComponent
+
+2021-11-25  Andras Varga
+
+	* cModule: fix: allow accessing module parameters from the "display-name"
+	config options.
+
+2021-11-25  Andras Varga
+
+	* cConfiguration: Allow expressions in config option values to use
+	NED operators, module parameters and other NED expression features.
+	Immediate motivation: to be able use e.g. index in display-name:
+	**.app[0..3].display-name = "cbr-" + string(index)
+
+2021-11-17  Andras Varga
+
+	* Result filters: Let the "count" and "sum" filter to record an
+	initial zero value.
+
+	- reuse cResultFilter::getInitialDoubleValue() for that
+	- timestamp must be the end of the warmup period, otherwise plot will lie
+	- emit after network building is done
+	- dynamically created modules must be taken into account
+
+2021-11-24  Andras Varga
+
+	* SumPerDurationFilter: fix getSumPerDuration() behavior when invoked
+	during warmup period.
+
+2021-11-08  Andras Varga
+
+	* cModule: displayName fix: getDisplayName() docu promises nullptr if unset
+
 2021-11-04  Andras Varga
 
 	* cPar: Implemented isMutable() and the mechanism behind the new @mutable

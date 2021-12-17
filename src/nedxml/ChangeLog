@@ -1,3 +1,15 @@
+2021-11-20  Rudolf Hornig
+
+	* PLATFORM makefile var was split into PLATFORM and ARCH
+
+	- This allows easier testing for platform only (independent of
+	  architecture). At several places the PLATFORM.ARCH pair was tested
+	  incorrectly (i.e. win32.x86_64) while the code was strictly only platform
+	  dependent but not architecture dependent.
+
+	- Introduced also the JNI_PLATFORM variable which is compatible with the
+	  JNI naming (i.e. instead of macos, it uses darwin)
+
 2021-11-05  Andras Varga
 
 	* NED: Built-in channels (DelayChannel, DatarateChannel): parameters made
