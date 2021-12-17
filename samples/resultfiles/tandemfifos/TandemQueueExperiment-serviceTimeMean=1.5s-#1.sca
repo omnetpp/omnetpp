@@ -1,0 +1,94 @@
+version 3
+run TandemQueueExperiment-1-20211218-16:50:49-61922
+attr configname TandemQueueExperiment
+attr datetime 20211218-16:50:49
+attr datetimef 20211218-165049
+attr experiment TandemQueueExperiment
+attr inifile omnetpp.ini
+attr iterationvars $serviceTimeMean=1.5s
+attr iterationvarsd serviceTimeMean=1.5s
+attr iterationvarsf serviceTimeMean=1.5s-
+attr measurement $serviceTimeMean=1.5s
+attr network TandemQueues
+attr processid 61922
+attr repetition 1
+attr replication #1
+attr resultdir results
+attr runnumber 1
+attr seedset 1
+itervar serviceTimeMean 1.5s
+config cmdenv-redirect-output true
+config network TandemQueues
+config **.interarrivalTime exponential(2s)
+config **.serviceTime truncnormal(1.5s,1s)
+config repeat 2
+config sim-time-limit 200s
+config sim-time-limit 100h
+config cpu-time-limit 300s
+
+par TandemQueues.source typename "\"Source\""
+par TandemQueues.source interarrivalTime exponential(2s)
+attr unit s
+par TandemQueues.fifo1 typename "\"Fifo\""
+par TandemQueues.fifo1 serviceTime "truncnormal(1.5s, 1s)"
+attr unit s
+scalar TandemQueues.fifo1 queueingTime:mean 4.7611187200418
+attr interpolationmode none
+attr recordingmode mean
+attr title "queueing time, mean"
+attr unit s
+scalar TandemQueues.fifo1 queueingTime:max 13.602220594184
+attr interpolationmode none
+attr recordingmode max
+attr title "queueing time, max"
+attr unit s
+scalar TandemQueues.fifo1 busy:timeavg 0.92754595785157
+attr interpolationmode sample-hold
+attr recordingmode timeavg
+attr title "server busy state, timeavg"
+scalar TandemQueues.fifo1 qlen:timeavg 2.5209532883327
+attr interpolationmode sample-hold
+attr recordingmode timeavg
+attr title "queue length, timeavg"
+scalar TandemQueues.fifo1 qlen:max 7
+attr interpolationmode sample-hold
+attr recordingmode max
+attr title "queue length, max"
+par TandemQueues.fifo2 typename "\"Fifo\""
+par TandemQueues.fifo2 serviceTime "truncnormal(1.5s, 1s)"
+attr unit s
+scalar TandemQueues.fifo2 queueingTime:mean 2.1899088731351
+attr interpolationmode none
+attr recordingmode mean
+attr title "queueing time, mean"
+attr unit s
+scalar TandemQueues.fifo2 queueingTime:max 7.392759093355
+attr interpolationmode none
+attr recordingmode max
+attr title "queueing time, max"
+attr unit s
+scalar TandemQueues.fifo2 busy:timeavg 0.85699010218339
+attr interpolationmode sample-hold
+attr recordingmode timeavg
+attr title "server busy state, timeavg"
+scalar TandemQueues.fifo2 qlen:timeavg 1.1200952444928
+attr interpolationmode sample-hold
+attr recordingmode timeavg
+attr title "queue length, timeavg"
+scalar TandemQueues.fifo2 qlen:max 5
+attr interpolationmode sample-hold
+attr recordingmode max
+attr title "queue length, max"
+par TandemQueues.sink typename "\"Sink\""
+scalar TandemQueues.sink lifetime:mean 10.240433530858
+attr interpolationmode none
+attr recordingmode mean
+attr title "lifetime of arrived jobs, mean"
+attr unit s
+scalar TandemQueues.sink lifetime:max 19.691675836792
+attr interpolationmode none
+attr recordingmode max
+attr title "lifetime of arrived jobs, max"
+attr unit s
+par TandemQueues typename "\"TandemQueues\""
+
