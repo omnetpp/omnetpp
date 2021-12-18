@@ -189,7 +189,7 @@ charts += make_charts(
     ["linechart_native", "linechart_mpl", "linechart_separate_mpl"],
     "styling",
     {
-        "filter": "runattr:experiment =~ TandemFifoExperiment AND name =~ queueLength:vector AND module =~ *.queue1 AND runattr:replication =~ #0",
+        "filter": "runattr:experiment =~ TandemQueueExperiment AND name =~ qlen:vector AND module =~ *.fifo1 AND runattr:replication =~ #0",
         "vector_end_time": "50",
         "vector_operations": "compute:timeavg(interpolation='sample-hold')",
     },
@@ -221,7 +221,7 @@ charts += make_charts(
         case("legend_replacements", "/ /_/\n/:/->/\n/=/==/", props={"legend_automatic":"false", "legend_format":"$name in $module"}),
 
         # lines
-        case("drawstyle", ["auto", "none", "linear", "steps-pre", "steps-mid", "steps-post"]),
+        case("drawstyle", ["auto", "none", "linear", "steps-pre", "steps-mid", "steps-post"], props={"marker":"."}),
         case("drawstyle", ["none"], props={"marker":"."}),
         case("linecolor", ["", "green", "#808080"]),
         case("linestyle", ["none", "solid", "dotted", "dashed", "dashdot"]),

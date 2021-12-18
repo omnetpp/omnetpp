@@ -65,8 +65,8 @@
 /samples/dyna/,                      ./dyna -f omnetpp.ini -c Medium -r 0,                5000s,         07e8-fccf/tplx,PASS,
 # /samples/dyna/,                      ./dyna -f realtime.ini -c General -r 0,              5000s,         0000-0000           # real-time scheduler,PASS,
 
-/samples/fifo/,                      ./fifo -f omnetpp.ini -c Fifo1 -r 0,                  5000s,         9fb9-7a5a/tplx,PASS,
-/samples/fifo/,                      ./fifo -f omnetpp.ini -c Fifo2 -r 0,                  5000s,         c900-86d1/tplx,PASS,
+/samples/fifo/,                      ./fifo -f omnetpp.ini -c Fifo1 -r 0,                  5000s,         8e49-f77e/tplx,PASS,
+/samples/fifo/,                      ./fifo -f omnetpp.ini -c Fifo2 -r 0,                  5000s,         b626-a872/tplx,PASS,
 
 /samples/histograms/,                ./histograms -f omnetpp.ini -c Uniform -r 0,             1000s,         eca8-8cb4/rsz,PASS,
 /samples/histograms/,                ./histograms -f omnetpp.ini -c IntUniform -r 0,          1000s,         efec-76d8/rsz,PASS,
@@ -104,7 +104,7 @@
 
 # /samples/queueinglibext/,            ./queueinglibext -f omnetpp.ini -c OneFifo -r 0,               5000s,         0000-0000           # opp_run,PASS,
 /samples/queuenet/,                  ./queuenet -f omnetpp.ini -c OneFifo -r 0,               5000s,         be44-15dd/tplx,PASS,
-/samples/queuenet/,                  ./queuenet -f omnetpp.ini -c TandemFifos -r 0,           5000s,         4447-f11b/tplx,PASS,
+/samples/queuenet/,                  ./queuenet -f omnetpp.ini -c TandemFifos -r 0,           5000s,         8734-deee/tplx,PASS,
 /samples/queuenet/,                  ./queuenet -f omnetpp.ini -c SmallCQN -r 0,              5000s,         41e6-7c0f/tplx,PASS,
 /samples/queuenet/,                  ./queuenet -f omnetpp.ini -c Ring -r 0,                  5000s,         df1b-cd8c/tplx,PASS,
 /samples/queuenet/,                  ./queuenet -f omnetpp.ini -c Terminal -r 0,              5000s,         4e97-d494/tplx,PASS,
