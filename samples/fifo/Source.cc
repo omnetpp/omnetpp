@@ -49,7 +49,7 @@ void Source::handleMessage(cMessage *msg)
     cMessage *job = new cMessage("job");
     send(job, "out");
 
-    scheduleAt(simTime()+par("sendIaTime").doubleValue(), sendMessageEvent);
+    scheduleAt(simTime()+par("interarrivalTime").doubleValue(), sendMessageEvent);
 }
 
 }; //namespace

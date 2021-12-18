@@ -9,7 +9,7 @@
 
 
 //
-// Destroys the packets and collects statistics
+// Discards the received jobs (messages) and collects statistics
 //
 simple Sink
 {

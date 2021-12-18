@@ -15,7 +15,7 @@
 simple Source
 {
     parameters:
-        volatile double sendIaTime @unit(s);
+        volatile double interarrivalTime @unit(s);
         @display("i=block/source");
     gates:
         output out;

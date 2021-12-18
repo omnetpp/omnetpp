@@ -7,34 +7,28 @@
 // `license' for details on this and other legal matters.
 //
 
-import org.omnetpp.queueing.Queue;
-import org.omnetpp.queueing.Sink;
-import org.omnetpp.queueing.Source;
-
-
 //
 // This is queueing network consists of several queues, connected in tandem.
-// Based on the idea from Nicky van Foreest (vanforeest@gmail.com)
 //
-network TandemQueue
+network TandemQueues
 {
     parameters:
         @display("i=block/network");
     submodules:
         source: Source {
-            @display("p=40,80");
+            @display("p=100,100");
         }
-        queue1: Queue {
-            @display("p=140,80");
+        fifo1: Fifo {
+            @display("p=200,100");
         }
-        queue2: Queue {
-            @display("p=240,80");
+        fifo2: Fifo {
+            @display("p=300,100");
         }
         sink: Sink {
-            @display("p=340,80");
+            @display("p=400,100");
         }
     connections:
-        source.out --> queue1.in++;
-        queue1.out --> queue2.in++;
-        queue2.out --> sink.in++;
+        source.out --> fifo1.in;
+        fifo1.out --> fifo2.in;
+        fifo2.out --> sink.in;
 }

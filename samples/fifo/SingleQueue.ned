@@ -10,23 +10,20 @@
 //
 // Simple queueing network: generator + FIFO + sink.
 //
-network FifoNet
+network SingleQueue
 {
     submodules:
-        gen: Source {
-            parameters:
-                @display("p=89,100");
+        source: Source {
+            @display("p=100,100");
         }
         fifo: Fifo {
-            parameters:
-                @display("p=209,100");
+            @display("p=200,100");
         }
         sink: Sink {
-            parameters:
-                @display("p=329,100");
+            @display("p=300,100");
         }
     connections:
-        gen.out --> fifo.in;
+        source.out --> fifo.in;
         fifo.out --> sink.in;
 }
 
