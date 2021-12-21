@@ -310,7 +310,7 @@ fi
 cd $DISTDIR/$what-$VERSION || exit 1
 
 # create the initial version of configure.user files from the *.dist templates
-mv configure.user.dist configure.user
+cp configure.user.dist configure.user
 
 # create an empty bin and lib directory because git does not store empty dirs
 mkdir bin
