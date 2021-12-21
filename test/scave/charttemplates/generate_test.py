@@ -79,6 +79,19 @@ legend_placement_inside = ["best", "upper right", "upper left", "lower left", "l
 legend_placement_outside = ["outside top left", "outside top center", "outside top right", "outside bottom left", "outside bottom center", "outside bottom right", "outside left top", "outside left center", "outside left bottom", "outside right top", "outside right center", "outside right bottom"]
 
 charts += make_charts(
+    ["barchart_native", "barchart_mpl", "linechart_native", "linechart_mpl", "linechart_separate_mpl",
+    "scatterchart_itervars_native", "scatterchart_itervars_mpl", "histogramchart_native", "histogramchart_mpl",
+    "histogramchart_vectors_native", "histogramchart_vectors_mpl", "3dchart_itervars_mpl", "boxwhiskers"],
+    "wrongfilter",
+    {},
+    [
+        case("filter", "", errmsg="Error while querying results: Empty filter expression"),
+        case("filter", "aa bb", errmsg="Syntax error"),
+        case("filter", "nonexistent OR whatever", errmsg="returned no data"),
+    ]
+)
+
+charts += make_charts(
     ["barchart_native", "barchart_mpl"],
     "data",
     {
@@ -91,8 +104,6 @@ charts += make_charts(
         # different filters
         case("filter", "runattr:experiment =~ PureAlohaExperiment AND type =~ scalar", props={"groups": "iaMean", "series": "numHosts"}),
         case("filter", "runattr:experiment =~ PureAlohaExperiment AND name =~ channel*", props={"groups": "iaMean", "series": "numHosts"}),
-        case("filter", "aa bb", errmsg="Syntax error"),
-        case("filter", "", errmsg="Error while querying results: Empty filter expression"),
 
         # automatic groups and series inference
         case("filter", "runattr:experiment =~ PureAlohaExperiment AND type =~ scalar"),
@@ -170,18 +181,22 @@ charts += make_charts(
     {
         "filter": "runattr:experiment =~ Fifo* AND name =~ qlen:vector",
         "vector_start_time": "1",
-        "vector_end_time": "1.5",
+        "vector_end_time": "4",
     },
     [
-        case("filter", "runattr:experiment =~ Fifo* AND type =~ vector"),
-        case("filter", "aa bb", errmsg="Syntax error"),
-        case("filter", "", errmsg="Error while querying results: Empty filter expression"),
-
+        case(None, None),
+        case(None, None, props={"vector_start_time": "", "vector_end_time": ""}),
+        case(None, None, props={"vector_start_time": "5", "vector_end_time": ""}),
+        case(None, None, props={"vector_start_time": "", "vector_end_time": "10"}),
         case("vector_start_time", ["","1e6"]),
         case("vector_end_time", ["", "0"]),
 
         case("vector_operations", ["apply:mean","compute:sum"]),
-        case("vector_operations", "apply:sum\ncompute:divtime\napply:timewinavg(window_size=200) # comment"),
+        case("vector_operations", "apply:sum #comment\napply:timeshift(100) # comment"),
+
+        # TODO: uncomment when there is better error reporting
+        case("vector_operations", "apply:nonexistent", errmsg="Vector filter function 'nonexistent' not found"),
+        case("vector_operations", "apply:timeshift(invalidparam=6.5)", errmsg="timeshift() got an unexpected keyword argument 'invalidparam'"),
     ]
 )
 
@@ -246,10 +261,9 @@ charts += make_charts(
         "group_by": "numHosts"
     },
     [
+        case(None, None),
         case("filter", "runattr:experiment =~ PureAlohaExperiment AND type =~ scalar"),
         case("filter", "runattr:experiment =~ PureAlohaExperiment AND name =~ channel*"),
-        case("filter", "aa bb", errmsg="Syntax error"),
-        case("filter", "", errmsg="Error while querying results: Empty filter expression"),
 
         case("xaxis_itervar", "iaMean"),
         case("xaxis_itervar", "numHosts", errmsg="X axis column also in grouper columns:"),
@@ -309,43 +323,55 @@ charts += make_charts(
 )
 
 charts += make_charts(
-    ["histogramchart_native", "histogramchart_mpl"], #TODO "histogramchart_vectors_native", "histogramchart_vectors_mpl"
+    ["histogramchart_native", "histogramchart_mpl"],
     "all",
     {
-        "filter": "runattr:experiment =~ PureAlohaExperiment",
+        "filter": "runattr:experiment =~ PureAlohaExperiment AND type =~ histogram AND itervar:numHosts =~ 15 AND (itervar:iaMean =~ 1 OR itervar:iaMean =~ 2)",
+        "drawstyle": "Outline",
     },
     [
-        case("filter", "runattr:experiment =~ PureAlohaExperiment AND type =~ histogram AND itervar:numHosts =~ 15 AND (itervar:iaMean =~ 1 OR itervar:iaMean =~ 2)"),
-        case("filter", "runattr:experiment =~ PureAlohaExperiment AND nonexistent", errmsg="returned no data"),
-        case("filter", "aa bb", errmsg="Syntax error"),
-        case("filter", "", errmsg="Error while querying results: Empty filter expression"),
+        case(None, None),
 
-    #TODO
-    #     baseline = '0'
-    #     drawstyle = 'Solid'
-    #     normalize = 'false'
-    #     cumulative = 'false'
-    #     show_overflows = 'true'
-    #     title = ''
-    #     xaxis_title = ''
-    #     xaxis_min = ''
-    #     xaxis_max = ''
-    #     yaxis_title = ''
-    #     yaxis_min = ''
-    #     yaxis_max = ''
-    #     yaxis_log = 'false'
-    #     grid_show = 'true'
-    #     grid_density = 'Major'
-    #     legend_show = 'true'
-    #     legend_placement = 'upper right'
-    #     legend_automatic = 'true'
-    #     legend_prefer_result_titles = 'true'
-    #     legend_prefer_module_display_paths = 'true'
-    #     legend_manual = ''
-    #     legend_format = ''
-    #     legend_replacements = ''
-    #     plt.style = 'default'
-    #     cycle_seed = '0'
+        # axes
+        case("xaxis_title", "Manual X Axis Title"),
+        case("yaxis_title", "Manual Y Axis Title"),
+        case("xaxis_min", "5"),
+        case("xaxis_max", "10"),
+        case("yaxis_min", "1000"),
+        case("yaxis_max", "2000"),
+        case("yaxis_log", "true"),
+
+        # grid
+        case("grid_show", "false"),
+        case("grid_density", ["Major", "All"]),
+
+        # legend
+        case("legend_show", "false"),
+        case("legend_placement", legend_placement_inside, only_for=["linechart_mpl", "linechart_separate_mpl"]),
+        case("legend_placement", legend_placement_inside + legend_placement_outside, only_for="linechart_native"),
+
+        # legend labels
+        case("legend_prefer_result_titles", "false", props={"legend_automatic":"true"}),
+        case("legend_prefer_module_display_paths", "false", props={"legend_automatic":"true"}),
+        case("legend_format", "$name in $module", props={"legend_automatic":"false"}),
+        case("legend_replacements", "/ /_/\n/:/->/\n/=/==/", props={"legend_automatic":"true"}),
+        case("legend_replacements", "/ /_/\n/:/->/\n/=/==/", props={"legend_automatic":"false", "legend_format":"$name in $module"}),
+
+        # histogram
+        case("drawstyle", ["Solid", "Outline"]),
+        # case("linewidth", ["0", "0.5", "1", "5"]), # TODO
+        # case("color", ["", "green", "#808080"]), # TODO
+        # case("baseline", ["-1000", "0", "1000"]),  # TODO - doesn't work
+        # case("density", ["true", "false"]), # TODO
+        case("cumulative", ["false", "true"], props={"normalize":"false"}),
+        case("cumulative", ["false", "true"], props={"normalize":"true"}),
+        case("show_overflows", ["false", "true"]),
+
+        # misc
+        case("plt.style", ["default", "ggplot", "grayscale", "seaborn"], only_for=["linechart_mpl", "linechart_separate_mpl"]),
+        case("cycle_seed", ["0", "1"], None)
+
+
     #     matplotlibrc.figure.facecolor = ''
     #     matplotlibrc.axes.facecolor = ''
     #     matplotlibrc.legend.frameon = 'true'
@@ -356,8 +382,57 @@ charts += make_charts(
     #     image_export_width = '6'
     #     image_export_height = '4'
     #     data_export_filename = ''
+    ]
+)
 
+charts += make_charts(
+    ["histogramchart_vectors_native", "histogramchart_vectors_mpl"],
+    "all",
+    {
+        "filter": "runattr:experiment =~ TandemQueueExperiment AND name =~ queueingTime:vector AND runattr:replication =~ #0",
+        "drawstyle": "Outline",
+    },
+    [
+        case(None, None),
 
+        # axes
+        case("xaxis_title", "Manual X Axis Title"),
+        case("yaxis_title", "Manual Y Axis Title"),
+        case("xaxis_min", "5"),
+        case("xaxis_max", "10"),
+        case("yaxis_min", "10"),
+        case("yaxis_max", "20"),
+        case("yaxis_log", "true"),
+
+        # grid
+        case("grid_show", "false"),
+        case("grid_density", ["Major", "All"]),
+
+        # legend
+        case("legend_show", "false"),
+        case("legend_placement", legend_placement_inside, only_for=["linechart_mpl", "linechart_separate_mpl"]),
+        case("legend_placement", legend_placement_inside + legend_placement_outside, only_for="linechart_native"),
+
+        # legend labels
+        case("legend_prefer_result_titles", "false", props={"legend_automatic":"true"}),
+        case("legend_prefer_module_display_paths", "false", props={"legend_automatic":"true"}),
+        case("legend_format", "$name in $module", props={"legend_automatic":"false"}),
+        case("legend_replacements", "/ /_/\n/:/->/\n/=/==/", props={"legend_automatic":"true"}),
+        case("legend_replacements", "/ /_/\n/:/->/\n/=/==/", props={"legend_automatic":"false", "legend_format":"$name in $module"}),
+
+        # histogram
+        case("drawstyle", ["Solid", "Outline"]),
+        # case("linewidth", ["0", "0.5", "1", "5"]), # TODO
+        # case("color", ["", "green", "#808080"]), # TODO
+        # case("baseline", ["-10", "0", "10"]), # TODO - doesn't work
+        # case("density", ["true", "false"]), # TODO
+        case("cumulative", ["false", "true"], props={"normalize":"false"}),
+        case("cumulative", ["false", "true"], props={"normalize":"true"}),
+        case("show_overflows", ["false", "true"]),
+
+        # misc
+        case("plt.style", ["default", "ggplot", "grayscale", "seaborn"], only_for=["linechart_mpl", "linechart_separate_mpl"]),
+        case("cycle_seed", ["0", "1"], None)
     ]
 )
 
@@ -365,11 +440,10 @@ charts += make_charts(
     ["generic_mpl"],
     "all",
     {
-        "input": "Hello",
     },
     [
+        case("input", "Hello"),
         case("input", ""),
-        case("input", "FooBar"),
     ]
 )
 
@@ -395,10 +469,9 @@ charts += make_charts(
         "chart_type": "bar"
     },
     [
+        case(None, None),
         case("filter", "runattr:experiment =~ PureAlohaExperiment AND type =~ scalar", errmsg="scalars must share the same name"),
         case("filter", "runattr:experiment =~ PureAlohaExperiment AND name =~ channel*"),
-        case("filter", "aa bb", errmsg="Syntax error"),
-        case("filter", "", errmsg="Error while querying results: Empty filter expression"),
 
         case("xaxis_itervar", "iaMean"),
         case("xaxis_itervar", "numHosts", errmsg="The itervar for the X and Y axes are the same"),
@@ -418,12 +491,33 @@ charts += make_charts(
     ["boxwhiskers"],
     "all",
     {
-        "filter": "runattr:experiment =~ PureAlohaExperiment AND *:histogram"
+        "filter": "runattr:experiment =~ PureAlohaExperiment AND itervar:numHosts =~ 15 AND (itervar:iaMean =~ 1 OR itervar:iaMean =~ 2)",
     },
     [
-        case("filter", "runattr:experiment =~ PureAlohaExperiment AND type =~ histogram"),
-        case("filter", "aa bb", errmsg="Syntax error"),
-        case("filter", "", errmsg="Error while querying results: Empty filter expression"),
+        case(None, None),
+
+
+        # axes
+        case("xaxis_title", "Manual X Axis Title"),
+        case("yaxis_title", "Manual Y Axis Title"),
+        # case("xaxis_min", "5"), # TODO: remove
+        # case("xaxis_max", "10"), # TODO: remove
+        case("yaxis_min", "10"),
+        case("yaxis_max", "20"),
+        # case("yaxis_log", "true"), # TODO: remove
+
+        # grid
+        case("grid_show", "false"),
+        case("grid_density", ["Major", "All"]),
+
+        # legend
+        case("legend_show", "false"),
+        case("legend_placement", legend_placement_inside, only_for=["linechart_mpl", "linechart_separate_mpl"]),
+        case("legend_placement", legend_placement_inside + legend_placement_outside, only_for="linechart_native"),
+
+        # misc
+        case("plt.style", ["default", "ggplot", "grayscale", "seaborn"], only_for=["linechart_mpl", "linechart_separate_mpl"]),
+        case("cycle_seed", ["0", "1"], None)
     ]
 )
 
