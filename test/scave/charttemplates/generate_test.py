@@ -64,7 +64,7 @@ def make_charts(template_ids, group, base_props, tests):
                 if test_filter and not all(regex.search(name+" "+desc) for regex in test_filter):
                     continue
 
-                chart = template.create_chart(name=name, props=props)
+                chart = template.create_chart(name=name + " " + desc, props=props)
                 chart.script = skeleton.format(tester=__file__, script=indent(chart.script), name=repr(name), desc=repr(desc), errmsg=repr(errmsg))
                 charts.append(chart)
     return charts
