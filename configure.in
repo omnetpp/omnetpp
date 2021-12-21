@@ -389,7 +389,7 @@ else
     x86_64-*-darwin*)
         PLATFORM=macos
         ARCH=x86_64
-        OMNETPP_TOOLS_DIR=$OMNETPP_ROOT_DIR/$PLATFORM.$ARCH
+        OMNETPP_TOOLS_DIR=$OMNETPP_ROOT_DIR/tools/$PLATFORM.$ARCH
         CFLAGS_ARCH="$CFLAGS_ARCH -isystem \$(OMNETPP_TOOLS_DIR)/include"
         CFLAGS_TOOLS_MACOSX="-isystem $OMNETPP_TOOLS_DIR/include"
         LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L\$(OMNETPP_TOOLS_DIR)/lib -F\$(OMNETPP_TOOLS_DIR)/lib"
@@ -400,7 +400,7 @@ else
     arm-*-darwin*)
         PLATFORM=macos
         ARCH=aarch64
-        OMNETPP_TOOLS_DIR=$OMNETPP_ROOT_DIR/$PLATFORM.$ARCH
+        OMNETPP_TOOLS_DIR=$OMNETPP_ROOT_DIR/tools/$PLATFORM.$ARCH
         CFLAGS_ARCH="$CFLAGS_ARCH -isystem \$(OMNETPP_TOOLS_DIR)/include"
         CFLAGS_TOOLS_MACOSX="-isystem $OMNETPP_TOOLS_DIR/include"
         LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L\$(OMNETPP_TOOLS_DIR)/lib -F\$(OMNETPP_TOOLS_DIR)/lib"
