@@ -19,11 +19,11 @@ Core:
     was to be able use e.g. index in the `display-name` option, e.g.:
     `**.app[0..3].display-name = "cbr-" + string(index)`
 
-  - The displayName field was moved from cModule to cComponent.
+  - The `displayName` field was moved from `cModule` to `cComponent`.
 
-  - Result filters: The "count" and "sum" filter now record the initial zero
-    value. This necessitated adding two methods to the cResultListener interface:
-    added emitInitialValue() and callEmitInitialValue().
+  - Result filters: The `count` and `sum` filter now record the initial zero
+    value. This necessitated adding two methods to the `cResultListener` interface:
+    added `emitInitialValue()` and `callEmitInitialValue()`.
 
   - Result files now include two new result attributes for each item: recording
     mode (the item in the `@statistic(record=...)` list that produced the given
@@ -36,7 +36,7 @@ Core:
     recording mode is automatically appended to result titles `@statistic(title=...)`
     after a comma; it is now suppressed for the mentioned recording modes.)
 
-  - SumPerDurationFilter: fix getSumPerDuration() behavior when invoked
+  - SumPerDurationFilter: fix `getSumPerDuration()` behavior when invoked
     during warmup period.
 
 Analysis Tool:
@@ -44,7 +44,7 @@ Analysis Tool:
   - Added the possibility to organize charts into a hierarchical folder
     structure. This can be very useful if the number of charts in the analysis
     exceeds a certain number. Charts can be moved between folders using
-    copy/paste. Note that .anf files that contain folders are not understood by
+    copy/paste. Note that `.anf` files that contain folders are not understood by
     previous versions.
 
   - The "Reset Chart to Template" operation now allows multiple charts to be
@@ -65,8 +65,8 @@ Analysis Tool:
     find/replace operations in the automatic or manual legend labels for fine
     tuning.
 
-    Note that since charts in .anf files contain copies of their chart templates
-    and not references to them, charts in existing .anf files need to be reset
+    Note that since charts in `.anf` files contain copies of their chart templates
+    and not references to them, charts in existing `.anf` files need to be reset
     to their templates in order to gain the new Legend page (see context menu
     in the Charts page).
 
@@ -132,7 +132,12 @@ Tools:
   - `opp_test`: The set of possible test outcomes has been refined. Possible
     outcomes are now PASS, FAIL, ERROR, SKIP and EXPECTEDFAIL. SKIP means
     that the test was not performed, because e.g. it would test an optional
-    feature which is currently disabled; ERROR means that the test
+    feature which is currently disabled; ERROR means that the test was
+    not performed, because of an unrecoverable error (i.e. crash or exception).
+    It is possible to designate a test case as an "expected failure", by specifying
+    `%expected-failure: Description of reason` in the test file. This is useful
+    if we know that a certain test-case is correct, but it is not possible to fix
+    it for certain reasons.
 
   - `opp_run -v` now outputs the system architecture OMNeT++ was built for
     (e.g. ARCH_X86_64 or ARCH_AARCH64).
