@@ -1037,7 +1037,7 @@ def get_data_export_filepath(props):
 
 
 def _sanitize_filename(filename):
-    valid_chars = "-_.() %s%s" % (string.ascii_letters, string.digits) # TODO may be too strict, e.g. '#' or accented letters should be allowed
+    valid_chars = "-_=.() %s%s" % (string.ascii_letters, string.digits) # TODO may be too strict, e.g. '#' or accented letters should be allowed
     return ''.join(c for c in filename if c in valid_chars)
 
 
