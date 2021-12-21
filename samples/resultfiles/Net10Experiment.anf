@@ -5,11 +5,8 @@
         <input pattern="/resultfiles/routing2/Net10Experiment-*.sca"/>
     </inputs>
     <charts>
-        <chart icon="icons/full/obj/scatterchart.png" id="467" name="CutThrough vs Store and Forward" template="scatterchart_itervars_native" type="LINE">
-            <script>
-                <![CDATA[import pandas as pd
-import matplotlib.pyplot as plt
-from omnetpp.scave import results, chart, utils, ideplot, vectorops as ops
+        <chart icon="icons/full/obj/scatterchart.png" id="1267735282" name="CutThrough vs Store and Forward" template="scatterchart_itervars_native" type="LINE">
+            <script><![CDATA[from omnetpp.scave import results, chart, utils, ideplot
 
 # get chart properties
 props = chart.get_properties()
@@ -17,64 +14,37 @@ utils.preconfigure_plot(props)
 
 # collect parameters for query
 filter_expression = props["filter"]
-xaxis_itervar = props["xaxis_itervar"]
-iso_itervar = props["iso_itervar"]
+include_fields = props["include_fields"] == "true"
 
 # query data into a data frame
-df = results.get_scalars(filter_expression, include_attrs=True, include_itervars=True)
-
-if not xaxis_itervar and not iso_itervar:
-    print("The X Axis and Iso Line options were not set in the dialog, inferring them from the data..")
-    xaxis_itervar, iso_itervar = utils.pick_two_columns(df)
-    if not iso_itervar or not iso_itervar:
-        ideplot.set_warning("Please set the X Axis and Iso Lines options in the dialog!")
-        exit(1)
-
-df[xaxis_itervar] = pd.to_numeric(df[xaxis_itervar], errors="ignore")
-df[iso_itervar] = pd.to_numeric(df[iso_itervar], errors="ignore")
+try:
+    df = results.get_scalars(filter_expression, include_fields=include_fields, include_attrs=True, include_runattrs=True, include_itervars=True)
+except ValueError as e:
+    raise chart.ChartScriptError("Error while querying results: " + str(e))
 
 if df.empty:
-    ideplot.set_warning("Select scalars for the Y axis in the Properties dialog")
-    exit(1)
+    raise chart.ChartScriptError("The result filter returned no data.")
 
-unique_names = df["name"].unique()
+xaxis_itervar, group_by = utils.select_xaxis_and_groupby(df, props)
+confidence_level = utils.get_confidence_level(props)
+newdf = utils.pivot_for_scatterchart(df, xaxis_itervar, group_by, confidence_level)
+utils.plot_lines(newdf, props)
 
-if len(unique_names) != 1:
-    ideplot.set_warning("Scalar names should be unique")
-    exit(1)
+names = df["name"].unique()
+scalar_names = names[0] + ", etc." if len(names) > 1 else names[0]
+ideplot.ylabel(scalar_names) # TODO: shouldn't call into ideplot directly
 
-scalar_name = unique_names[0]
-
-df = pd.pivot_table(df, values="value", columns=iso_itervar, index=xaxis_itervar)
-print(df)
-legend_cols, _ = utils.extract_label_columns(df)
-
-p = ideplot if chart.is_native_chart() else plt
-
-
-p.xlabel(xaxis_itervar)
-p.ylabel(scalar_name)
-
-try:
-    xs = pd.to_numeric(df.index.values)
-except:
-    ideplot.set_warning("The X axis itervar is not purely numeric, this is not supported yet.")
-    exit(1)
-
-for i, c in enumerate(df.columns):
-    style = utils._make_line_args(props, c, df)
-    p.plot(xs, df[c].values, label=iso_itervar + "=" + str(df[c].name), **style)
-
-utils.set_plot_title(scalar_name + " vs. " + xaxis_itervar)
+title = (scalar_names + " vs. " + xaxis_itervar) if xaxis_itervar else scalar_names
+if "title" in props and props["title"]:
+    title = props["title"]
+utils.set_plot_title(title)
 
 utils.postconfigure_plot(props)
 
 utils.export_image_if_needed(props)
 utils.export_data_if_needed(df, props)
-]]>
-            </script>
-            <dialogPage id="Input" label="Input">
-                <![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+]]></script>
+            <dialogPage id="INPUT" label="Input"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <xswt xmlns:x="http://sweet_swt.sf.net/xswt">
   <import xmlns="http://sweet_swt.sf.net/xswt">
     <package name="java.lang" />
@@ -83,35 +53,48 @@ utils.export_data_if_needed(df, props)
     <package name="org.eclipse.swt.layout" />
     <package name="org.eclipse.swt.custom" />
   </import>
-  <layout x:class="GridLayout" numColumns="1" />
+  <layout x:class="GridLayout" numColumns="2" />
   <x:children>
-    <label text="Filter expression for scalars as Y value:" />
-    <styledText x:id="filter" x:style="BORDER|WRAP|V_SCROLL|H_SCROLL" x:id.contentAssist="filter">
-      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true" />
+    <label text="Filter expression for scalars as Y value:">
+        <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </label>
+
+    <styledText x:id="filter" x:style="BORDER|V_SCROLL|H_SCROLL" x:id.contentAssist="filter" x:id.resultType="scalar">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true" />
     </styledText>
+
+    <button x:id="include_fields" x:style="CHECK" text="Include fields">
+      <layoutData x:class="GridData" horizontalAlignment="END" />
+    </button>
+
+    <button x:id="simplify" x:style="PUSH" text="Simplify" x:id.role="simplify" x:id.targetControl="filter">
+      <layoutData x:class="GridData" horizontalAlignment="END" />
+    </button>
+
     <composite>
-      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" />
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" />
       <layout x:class="GridLayout" numColumns="2" />
       <x:children>
 
-        <label text="Itervar for X axis:"/>
+        <label text="X Axis:"/>
         <combo x:id="xaxis_itervar" x:id.content="$itervarnames" x:style="BORDER">
             <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
         </combo>
 
-        <label text="Itervar for iso lines:"/>
-        <combo x:id="iso_itervar" x:id.content="$itervarnames" x:style="BORDER">
+        <label text="Group By:*"/>
+        <combo x:id="group_by" x:id.content="$itervarnames,replication,module,name" x:style="BORDER">
             <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
         </combo>
+        <label text="* This is a comma-separated list of iteration variable, run attribute, or result attribute names.">
+            <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" horizontalSpan="2" />
+        </label>
 
       </x:children>
     </composite>
   </x:children>
 </xswt>
-]]>
-            </dialogPage>
-            <dialogPage id="Lines" label="Lines">
-                <![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+]]></dialogPage>
+            <dialogPage id="LINES" label="Lines"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <xswt xmlns:x="http://sweet_swt.sf.net/xswt">
 
   <import xmlns="http://sweet_swt.sf.net/xswt">
@@ -169,7 +152,7 @@ utils.export_data_if_needed(df, props)
       <x:children>
 
     <label text="Marker:"/>
-    <combo x:id="marker" x:id.default="auto" x:style="BORDER">
+    <combo x:id="marker" x:id.default="none" x:style="BORDER">
       <add x:p0="auto"/>
       <add x:p0="none"/>
       <add x:p0=". (dot)"/>
@@ -204,10 +187,8 @@ utils.export_data_if_needed(df, props)
 
   </x:children>
 </xswt>
-]]>
-            </dialogPage>
-            <dialogPage id="Plot" label="Plot">
-                <![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+]]></dialogPage>
+            <dialogPage id="PLOT" label="Plot"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <xswt xmlns:x="http://sweet_swt.sf.net/xswt">
 
   <import xmlns="http://sweet_swt.sf.net/xswt">
@@ -330,13 +311,6 @@ utils.export_data_if_needed(df, props)
       <layoutData x:class="GridData" horizontalSpan="2"/>
     </button>
 
-    <!-- Display titles or names? -->
-    <label text="Label source:"/>
-    <combo x:id="legend_labels" x:id.default="result titles" x:style="BORDER|READ_ONLY">
-      <add x:p0="result names"/>
-      <add x:p0="result titles"/>
-    </combo>
-
     <!-- Placement -->
     <label text="Placement:"/>
     <combo x:id="legend_placement" x:id.default="upper right" x:style="BORDER|READ_ONLY">
@@ -371,10 +345,8 @@ utils.export_data_if_needed(df, props)
 
   </x:children>
 </xswt>
-]]>
-            </dialogPage>
-            <dialogPage id="Styling" label="Styling">
-                <![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+]]></dialogPage>
+            <dialogPage id="STYLING" label="Styling"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <xswt xmlns:x="http://sweet_swt.sf.net/xswt">
 
   <import xmlns="http://sweet_swt.sf.net/xswt">
@@ -484,10 +456,8 @@ utils.export_data_if_needed(df, props)
 
   </x:children>
 </xswt>
-]]>
-            </dialogPage>
-            <dialogPage id="Advanced" label="Advanced">
-                <![CDATA[<?xml version='1.0' encoding='UTF-8'?>
+]]></dialogPage>
+            <dialogPage id="ADVANCED" label="Advanced"><![CDATA[<?xml version='1.0' encoding='UTF-8'?>
 <xswt xmlns:x='http://sweet_swt.sf.net/xswt'>
   <import xmlns='http://sweet_swt.sf.net/xswt'>
     <package name='java.lang'/>
@@ -506,10 +476,8 @@ utils.export_data_if_needed(df, props)
     </styledText>
   </x:children>
 </xswt>
-]]>
-            </dialogPage>
-            <dialogPage id="Export" label="Export">
-                <![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+]]></dialogPage>
+            <dialogPage id="EXPORT" label="Export"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <xswt xmlns:x="http://sweet_swt.sf.net/xswt">
 
   <import xmlns="http://sweet_swt.sf.net/xswt">
@@ -564,11 +532,9 @@ utils.export_data_if_needed(df, props)
 
   </x:children>
 </xswt>
-]]>
-            </dialogPage>
+]]></dialogPage>
             <property name="grid_show" value="true"/>
             <property name="linecolor" value=""/>
-            <property name="legend_labels" value="result titles"/>
             <property name="Plot.Caching" value="true"/>
             <property name="yaxis_title" value=""/>
             <property name="Legend.Border" value="false"/>
@@ -599,11 +565,13 @@ utils.export_data_if_needed(df, props)
             <property name="drawstyle" value="auto"/>
             <property name="marker" value="auto"/>
             <property name="legend_show" value="true"/>
-            <property name="iso_itervar" value="cutThrough"/>
             <property name="yaxis_max" value=""/>
             <property name="Plot.Antialias" value="true"/>
             <property name="xaxis_max" value=""/>
             <property name="image_export_width" value="6"/>
+            <property name="group_by" value=""/>
+            <property name="include_fields" value=""/>
+            <property name="simplify" value=""/>
         </chart>
     </charts>
 </analysis>
