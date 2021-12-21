@@ -31,6 +31,16 @@ def _parse_float(s):
 def _parse_ndarray(s):
     return np.fromstring(s, sep=' ') if s else None
 
+_SCALAR_COLUMN_NAMES = ["value"]
+_STATISTIC_COLUMN_NAMES = ["count", "sumweights", "mean", "stddev", "min", "max"]
+_HISTOGRAM_COLUMN_NAMES = ["underflows", "overflows", "binedges", "binvalues"]
+_VECTOR_COLUMN_NAMES = ["vectime", "vecvalue"]
+_PARAMETER_COLUMN_NAMES = ["value"]
+
+def _ensure_columns_exist(df, columns):
+    for col in columns:
+        if col not in df:
+            df[col] = []
 
 def get_serial():
     # return an (arbitrary) constant, as the set of loaded results doesn't change during a run of opp_charttool.
@@ -156,27 +166,32 @@ def get_scalars(filter_expression, include_attrs, include_fields, include_runatt
     # TODO filter row types based on include_ args, as optimization
     df = _read_result_files(filter_expression, 's', *args)
     df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
+    _ensure_columns_exist(df, _SCALAR_COLUMN_NAMES)
     df["value"] = pd.to_numeric(df["value"], errors="raise")
     return df
 
 def get_vectors(filter_expression, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, start_time, end_time):
     df = _read_result_files(filter_expression, 'v', '--start-time', str(start_time), '--end-time', str(end_time))
     df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
+    _ensure_columns_exist(df, _VECTOR_COLUMN_NAMES)
     return df
 
 def get_statistics(filter_expression, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries):
     df = _read_result_files(filter_expression, 't')
     df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
+    _ensure_columns_exist(df, _STATISTIC_COLUMN_NAMES)
     return df
 
 def get_histograms(filter_expression, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries):
     df = _read_result_files(filter_expression, 'h')
     df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
+    _ensure_columns_exist(df, _STATISTIC_COLUMN_NAMES + _HISTOGRAM_COLUMN_NAMES)
     return df
 
 def get_parameters(filter_expression, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries):
     df = _read_result_files(filter_expression, 'p')
     df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
+    _ensure_columns_exist(df, _PARAMETER_COLUMN_NAMES)
     return df
 
 
