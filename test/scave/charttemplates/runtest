@@ -3,5 +3,4 @@ mkdir -p export
 rm -f export/*
 python3 generate_test.py "$@" || exit 1
 opp_charttool imageexport all_the_tests.anf --width=10 --height=6 -f png -d export -p resultfiles=../../../samples/resultfiles
-rm -f $(find export -size 0)
-
+find export -size 0 -exec rm {} +
