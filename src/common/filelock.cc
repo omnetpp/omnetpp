@@ -43,7 +43,7 @@ void FileLock::lock(FileLockType fileLockType)
         overlapped.Offset = overlapped.OffsetHigh = 0;
         overlapped.Internal = overlapped.InternalHigh = 0;
         if (LockFileEx(handle, fileLockType == FILE_LOCK_EXCLUSIVE ? LOCKFILE_EXCLUSIVE_LOCK : 0, 0, 0xFFFFFFFF, 0xFFFFFFFF, &overlapped) == 0)
-            throw opp_runtime_error("Cannot lock file '%s', error code %" PRIu32, fileName ? fileName : "", GetLastError());
+            throw opp_runtime_error("Cannot lock file '%s', error code %lu", fileName ? fileName : "", GetLastError());
 #else
         struct flock flock;
         flock.l_type = fileLockType == FILE_LOCK_EXCLUSIVE ? F_WRLCK : F_RDLCK;
@@ -68,7 +68,7 @@ void FileLock::unlock(FileLockType fileLockType)
         overlapped.Offset = overlapped.OffsetHigh = 0;
         overlapped.Internal = overlapped.InternalHigh = 0;
         if (UnlockFileEx(handle, 0, 0xFFFFFFFF, 0xFFFFFFFF, &overlapped) == 0)
-            throw opp_runtime_error("Cannot unlock file '%s', error code %" PRIu32, fileName ? fileName : "", GetLastError());
+            throw opp_runtime_error("Cannot unlock file '%s', error code %lu", fileName ? fileName : "", GetLastError());
 #else
         struct flock flock;
         flock.l_type = F_UNLCK;
