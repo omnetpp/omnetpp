@@ -42,7 +42,7 @@ if "%1" == "ide" (
 rem if the first paramter is "ide" we start the IDE instead of the shell. This can be used to start the IDE from a shortcut
 call "%HOME%\tools\win32.x86_64\msys2_shell.cmd" -mingw64 -c "nohup >/dev/null 2>/dev/null $HOME/bin/omnetpp"
 ) else (
-call "%HOME%\tools\win32.x86_64\msys2_shell.cmd" -mingw64 %*
+call "%HOME%\tools\win32.x86_64\msys2_shell.cmd" -mingw64 -defterm %*
 )
 
 goto EOF
