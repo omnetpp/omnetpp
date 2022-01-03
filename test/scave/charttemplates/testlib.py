@@ -52,9 +52,5 @@ def run_test(chartscript_function, name, description, expected_error):
         set_warning(str(e))
         expect_message(expected_error)
         create_blank_image_file()
-    except (ValueError, SystemExit) as e:
-        print("Unexpected exception:", e)
-        expect_message(expected_error)
-        create_blank_image_file()
 
     print(green("PASS"))
