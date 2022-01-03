@@ -588,9 +588,43 @@ def plot_lines(df, props, legend_func=make_legend_label):
     set_plot_title(title)
 
 
-def plot_boxwhiskers(df, props):
-    title, legend = extract_label_columns(df, props)
-    df.sort_values(by=legend, axis='index', inplace=True)
+def plot_boxwhiskers(df, props, legend_func=make_legend_label):
+    """
+    Creates a box and whiskers plot from the dataframe, with styling and additional
+    input coming from the properties. Each row in the dataframe defines one set
+    of a box and two whiskers.
+
+    Colors are assigned automatically.  The `cycle_seed` property allows you to
+    select other combinations if the default one is not suitable.
+
+    A function to produce the legend labels can be passed in. By default,
+    `make_legend_label()` is used, which offers many ways to influence the
+    legend via dataframe columns and chart properties. In the absence of
+    more specified settings, the legend is normally computed from columns which best
+    differentiate among the boxes.
+
+    Parameters:
+
+    - `df`: The dataframe.
+    - `props` (dict): The properties.
+    - `legend_func` (function): The function to produce custom legend labels.
+       See `utils.make_legend_label()` for prototype and semantics.
+
+    Columns of the dataframe:
+
+    - `min`, `max`, `mean`, `stddev`, `count` (float): The minimum/maximum
+       values, mean, standard deviation, and sample count of the data.
+    - `legend` (string, optional): Legend label for the series. If missing,
+       legend labels are derived from other columns.
+    - `name`, `title`, `module`, etc. (optional): Provide input for the legend.
+
+    Notable properties that affect the plot:
+
+    - `title`: Plot title (autocomputed if missing).
+    - `cycle_seed`: Alters the sequence in which colors and markers are assigned to series.
+    """
+    title_cols, legend_cols = extract_label_columns(df, props)
+    df.sort_values(by=legend_cols, axis='index', inplace=True)
 
     # This is how much of the standard deviation will give the 25th and 75th
     # percentiles, assuming normal distribution.
@@ -599,11 +633,10 @@ def plot_boxwhiskers(df, props):
 
     boxes = [(r.min, r.mean - r.stddev * coeff, r.mean, r.mean + r.stddev * coeff, r.max)
             for r in df.itertuples(index=False) if r.count > 0]
-    labels = [", ".join([getattr(r, l) for l in legend])
-            for r in df.itertuples(index=False) if r.count > 0]
+    labels = [legend_func(legend_cols, r, props) for r in df.itertuples(index=False) if r.count > 0]
     customized_box_plot(boxes, labels)
 
-    title = make_chart_title(df, title)
+    title = make_chart_title(df, title_cols)
     if "title" in props and props["title"]:
         title = props["title"]
     set_plot_title(title)
