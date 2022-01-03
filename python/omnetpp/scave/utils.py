@@ -350,7 +350,7 @@ def plot_vectors(df, props, legend_func=make_legend_label):
 
     A function to produce the legend labels can be passed in. By default,
     `make_legend_label()` is used, which offers many ways to influence the
-    legend via datataframe columns and chart properties. In the absence of
+    legend via dataframe columns and chart properties. In the absence of
     more specified settings, the legend is normally computed from columns which best
     differentiate among the vectors.
 
@@ -370,7 +370,6 @@ def plot_vectors(df, props, legend_func=make_legend_label):
     Notable properties that affect the plot:
 
     - `title`: plot title (autocomputed if missing)
-    - `legend_labels`: selects whether to prefer the `name` or the `title` column for the legend
     - `drawstyle`: Matplotlib draw style; if present, it overrides the draw style derived from `interpolationmode`.
     - `linestyle`, `linecolor`, `linewidth`, `marker`, `markersize`: styling
     - `cycle_seed`: Alters the sequence in which colors and markers are assigned to series.
@@ -434,7 +433,7 @@ def plot_histograms(df, props, legend_func=make_legend_label):
 
     A function to produce the legend labels can be passed in. By default,
     `make_legend_label()` is used, which offers many ways to influence the
-    legend via datataframe columns and chart properties. In the absence of
+    legend via dataframe columns and chart properties. In the absence of
     more specified settings, the legend is normally computed from columns which best
     differentiate among the histograms.
 
@@ -466,7 +465,6 @@ def plot_histograms(df, props, legend_func=make_legend_label):
        results in the cumulative density function (CDF) being displayed.
     - `show_overflows` (bool): If true, show the underflow/overflow bins.
     - `title`: Plot title (autocomputed if missing).
-    - `legend_labels`: Selects whether to prefer the `name` or the `title` column for the legend.
     - `drawstyle`: Selects whether to fill the area below the histogram line.
     - `linestyle`, `linecolor`, `linewidth`: Styling.
     - `cycle_seed`: Alters the sequence in which colors and markers are assigned to series.
@@ -522,6 +520,45 @@ def plot_histograms(df, props, legend_func=make_legend_label):
 
 
 def plot_lines(df, props, legend_func=make_legend_label):
+    """
+    Creates a line plot from the dataframe, with styling and additional input
+    coming from the properties. Each row in the dataframe defines a line.
+
+    Colors are assigned automatically.  The `cycle_seed` property allows you to
+    select other combinations if the default one is not suitable.
+
+    A function to produce the legend labels can be passed in. By default,
+    `make_legend_label()` is used, which offers many ways to influence the
+    legend via dataframe columns and chart properties. In the absence of
+    more specified settings, the legend is normally computed from columns which best
+    differentiate among the lines.
+
+    Parameters:
+
+    - `df`: The dataframe.
+    - `props` (dict): The properties.
+    - `legend_func` (function): The function to produce custom legend labels.
+       See `utils.make_legend_label()` for prototype and semantics.
+
+    Columns of the dataframe:
+
+    - `x`, `y` (array-like, `len(x)==len(y)`): The X and Y coordinates of the points.
+    - `error` (array-like, `len(x)==len(y)`, optional):
+       The half lengths of the error bars for each point.
+    - `legend` (string, optional): Legend label for the series. If missing,
+       legend labels are derived from other columns.
+    - `name`, `title`, `module`, etc. (optional): Provide input for the legend.
+
+    Notable properties that affect the plot:
+
+    - `title`: Plot title (autocomputed if missing).
+    - `linewidth`: Line width.
+    - `marker`: Marker style.
+    - `linestyle`, `linecolor`, `linewidth`: Styling.
+    - `error_style`: If `error` is present, controls how the error is shown.
+       Accepted values: "Error bars", "Error band"
+    - `cycle_seed`: Alters the sequence in which colors and markers are assigned to series.
+    """
     p = ideplot if chart.is_native_chart() else plt
 
     def get_prop(k):
@@ -910,6 +947,11 @@ def export_image_if_needed(props):
         plt.savefig(filepath, format=format, dpi=int(dpi))
 
 def get_image_export_filepath(props):
+    """
+    Returns the file path for the image to export based on the
+    `image_export_format`, `image_export_folder` and
+    `image_export_filename` properties given in `props`.
+    """
     def get_prop(k):
         return props[k] if k in props else None
     format = get_prop("image_export_format") or "svg"
@@ -1025,6 +1067,11 @@ def export_data_if_needed(df, props, **kwargs):
         np.set_printoptions(**old_opts)
 
 def get_data_export_filepath(props):
+    """
+    Returns the file path for the data to export based on the
+    `data_export_format`, `data_export_folder` and
+    `data_export_filename` properties given in `props`.
+    """
     def get_prop(k):
         return props[k] if k in props else None
     format = get_prop("data_export_format") or "csv"
@@ -1121,7 +1168,27 @@ def confidence_interval(alpha, data):
     return math.nan if len(data) <= 1 else 0 if len(set(data)) <= 1 else st.norm.interval(alpha, loc=0, scale=st.sem(data))[1]
 
 
-def pivot_for_barchart(df, groups, series, confidence_level):
+def pivot_for_barchart(df, groups, series, confidence_level=None):
+    """
+    Turns a DataFrame containing scalar results (in the format returned
+    by `results.get_scalars()`) into a 3-tuple of a value, an error, and
+    a metadata DataFrame, which can then be passed to `utils.plot_bars()`.
+    The error dataframe is None if no confidence level is given.
+
+    Parameters:
+
+    - `df` (pandas.DataFrame): The dataframe to pivot.
+    - `groups` (list): A list of column names, the values in which will
+       be used as names for the bar groups.
+    - `series` (list): A list of column names, the values in which will
+       be used as names for the bar series.
+    - `confidence_level` (float, optional):
+       The confidence level to use when computing the sizes of the error bars.
+
+    Returns:
+
+    -  A triplet of DataFrames containing the pivoted data: (values, errors, metadata)
+    """
     for c in groups + series:
         df[c] = pd.to_numeric(df[c], errors="ignore")
 
@@ -1157,7 +1224,28 @@ def pivot_for_barchart(df, groups, series, confidence_level):
         return (valuedf, errorsdf, metadf)
 
 
-def pivot_for_scatterchart(df, xaxis_itervar, group_by, confidence_level):
+def pivot_for_scatterchart(df, xaxis_itervar, group_by, confidence_level=None):
+    """
+    Turns a DataFrame containing scalar results (in the format returned
+    by `results.get_scalars()`) into a DataFrame which can then be
+    passed to `utils.plot_lines()`.
+
+    Parameters:
+
+    - `df` (pandas.DataFrame): The dataframe to pivot.
+    - `xaxis_itervar` (string): The name of the iteration variable whose
+       values are to be used as X coordinates.
+    - `group_by` (list): A list of column names, the values in which will
+       be used to group the scalars into lines.
+    - `confidence_level` (float, optional):
+       The confidence level to use when computing the sizes of the error bars.
+
+    Returns:
+
+    -  A DataFrame containing the pivoted data, with these columns:
+       `name`, `x`, `y`, and optionally `error` - if `confidence_level` is given.
+    """
+
     for gb in group_by:
         df[gb] = pd.to_numeric(df[gb], errors="ignore")
 
@@ -1197,6 +1285,11 @@ def pivot_for_scatterchart(df, xaxis_itervar, group_by, confidence_level):
 
 
 def get_confidence_level(props):
+    """
+    Returns the confidence level from the `confidence_level` property,
+    converted to a `float`. Also accepts "none" (returns `None` in this case),
+    and percentage values (e.g. "95%").
+    """
     if "confidence_level" not in props:
         return None
     s = props["confidence_level"]
@@ -1348,6 +1441,7 @@ def set_plot_title(title, suggested_chart_name=None):
     """
     ideplot.title(title)
     chart.set_suggested_chart_name(suggested_chart_name if suggested_chart_name is not None else title)
+
 
 def fill_missing_titles(df):
     """
@@ -1515,6 +1609,25 @@ def pick_two_columns(df, props=None):  #TODO remove default for props in final r
 
 
 def select_groups_series(df, props):
+    """
+    Extracts the column names to be used for groups and series from the `df` DataFrame,
+    for pivoting. The columns whose names are to be used as group names are given in
+    the "groups" property in `props`, as a comma-separated list.
+    The names for the series are selected similarly, based on the "series" property.
+    There should be no overlap between these two lists.
+
+    If both "groups" and "series" are given (non-empty), they are simply returned
+    as lists after some sanity checks.
+    If both of them are empty, a reasonable guess is made for which columns should
+    be used, and (["module"], ["name"]) is used as a fallback.
+
+    The data in `df` should be in the format as returned by `result.get_scalars()`,
+    and the result can be used directly by `utils.pivot_for_barchart()`.
+
+    Returns:
+        - (group_names, series_names): A pair of lists of strings containing the
+          selected names for the groups and the series, respectively.
+    """
     groups = split(props["groups"])
     series = split(props["series"])
 
@@ -1536,6 +1649,24 @@ def select_groups_series(df, props):
 
 
 def select_xaxis_and_groupby(df, props):
+    """
+    Extracts an iteration variable name and the column names to be used for grouping from
+    the `df` DataFrame, for pivoting. The columns whose names are to be used as group
+    names are given in the "group_by" property in `props`, as a comma-separated list.
+    The name of the iteration variable is selected similarly, from the "xaxis_itervar" property.
+    The "group_by" list should not contain the given "xaxis_itervar" name.
+
+    If both "xaxis_itervar" and "group_by" are given (non-empty), they are simply returned
+    after some sanity checks, with "group_by" split into a list.
+    If both of them are empty, a reasonable guess is made for which columns should be used.
+
+    The data in `df` should be in the format as returned by `result.get_scalars()`,
+    and the result can be used directly by `utils.pivot_for_scatterchart()`.
+
+    Returns:
+        - (xaxis_itervar, group_by): An iteration variable name, and a list of strings
+          containing the selected column names to be used as groups.
+    """
     xaxis_itervar = props["xaxis_itervar"]
     group_by = split(props["group_by"])
 
