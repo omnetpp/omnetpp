@@ -107,6 +107,11 @@ def preformat(docstring):
     if not docstring:
         return docstring
 
+    # This is a HACK to allow putting stuff like "\1" in docstrings, and make them both look right in the code, and also
+    # end up looking the same in the output (even though the string itself contains the ASCII control characters 1, 2, etc.)
+    docstring = docstring.replace("\1", "\\1").replace("\2", "\\2").replace("\3", "\\3").replace("\4", "\\4").replace("\5", "\\5") \
+        .replace("\6", "\\6").replace("\7", "\\7").replace("\8", "\\8").replace("\9", "\\9")
+
     # make type string italic in places like this:
     # " - `x`, `y` (float): The coordinates"
     pattern = re.compile(r"""
