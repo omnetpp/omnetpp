@@ -94,13 +94,7 @@
 
 #endif
 
-#if defined _WIN32
-#define DEFAULT_DEBUGGER_COMMAND    "start gdb --pid=%u"
-#elif defined __APPLE__
-#define DEFAULT_DEBUGGER_COMMAND    "xterm -e 'lldb --attach-pid %u' &"  // looks like we cannot launch XCode like that
-#else /* Linux, *BSD and other: assume Nemiver is available and installed */
-#define DEFAULT_DEBUGGER_COMMAND    "nemiver --attach=%u &"
-#endif
+#define DEFAULT_DEBUGGER_COMMAND    "opp_ide omnetpp://cdt/debugger/attach?pid=%u"
 
 #ifdef NDEBUG
 #define CHECKSIGNALS_DEFAULT        "false"

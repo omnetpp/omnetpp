@@ -176,6 +176,14 @@
       </super>
    </extension>
    <extension
+         point="org.eclipse.urischeme.uriSchemeHandlers">
+      <uriSchemeHandler
+            class="org.omnetpp.cdt.handlers.CDTUriSchemeHandler"
+            uriScheme="omnetpp"
+            uriSchemeDescription="OMNeT++ CDT specific URI handler">
+      </uriSchemeHandler>
+   </extension>
+   <extension
          point="org.eclipse.debug.core.launchDelegates">
       <launchDelegate
             delegate="org.omnetpp.cdt.launch.SimulationDebugLaunchDelegate"
