@@ -39,8 +39,8 @@ def finalize_latex(s):
 
 
 sssnum = 0
-class LaTeXRenderer(mistune.Renderer):
-    def block_code(self, code, lang=None):
+class LaTeXRenderer(mistune.renderers.HTMLRenderer):
+    def block_code(self, code, info=None):
         # "\\begin{sloppypar}\n\\begin{flushleft}\n\\ttt{  ???
         return "\n∇begin☾filelisting☽\n" + code + "\n∇end☾filelisting☽\n"
 
@@ -50,49 +50,31 @@ class LaTeXRenderer(mistune.Renderer):
     def block_html(self, html):
         return html # strip tags?
 
-    def header(self, text, level, raw=None):
+    def heading(self, text, level):
         global sssnum
         sssnum = sssnum + 1
         return "\n\n∇subsubsection☾" + text + "☽\n∇label☾sssec:num" + str(sssnum) + "☽\n\n"
 
-    def hrule(self):
-        return "\n∇noindent∇hrulefill\n\n"
-
-    def list(self, body, ordered=True):
+    def list(self, text, ordered, level, start=None):
         if ordered:
-            return "\n\n∇begin☾enumerate☽\n" + body + "\n∇end☾enumerate☽\n"
+            return "\n\n∇begin☾enumerate☽\n" + text + "\n∇end☾enumerate☽\n"
         else:
-            return "\n\n∇begin☾itemize☽\n" + body + "\n∇end☾itemize☽\n"
+            return "\n\n∇begin☾itemize☽\n" + text + "\n∇end☾itemize☽\n"
 
-    def list_item(self, text):
+    def list_item(self, text, level):
         return "  ∇item " + text + "\n"
 
     def paragraph(self, text):
         return "\n\n∇par " + text
 
-    def table(self, header, body):
-        return header + body
-
-    def table_row(self, content):
-        return content
-
-    def table_cell(self, content, **flags):
-        return content
-
-    def autolink(self, link, is_email=False):
-        return link # add \url
-
-    def codespan(self, text):
-        return "∇ttt☾" + text + "☽"
-
-    def double_emphasis(self, text):
-        return "∇textbf☾" + text + "☽"
-
     def emphasis(self, text):
         return "∇textit☾" + text + "☽"
 
-    def image(self, src, title, alt_text):
-        return "Image: " + title + " (" + alt_text + ")"
+    def strong(self, text):
+        return "∇textbf☾" + text + "☽"
+
+    def codespan(self, text):
+        return "∇ttt☾" + text + "☽"
 
     def linebreak(self):
         return "\n"
@@ -100,7 +82,7 @@ class LaTeXRenderer(mistune.Renderer):
     def newline(self):
         return "∇newline\n"
 
-    def link(self, link, title, content):
+    def link(self, link, text=None, title=None):
         return link # add \href
 
     def strikethrough(self, text):
@@ -114,12 +96,12 @@ class LaTeXRenderer(mistune.Renderer):
 
 
 renderer = LaTeXRenderer()
-markdown = mistune.Markdown(renderer=renderer)
+markdown = mistune.create_markdown(renderer=renderer)
 
 def docstring_to_latex(o):
     d = o.__doc__
     d = preformat(d)
-    return finalize_latex(markdown.render(inspect.cleandoc(d))) if d else ""
+    return finalize_latex(markdown(inspect.cleandoc(d))) if d else ""
 
 def preformat(docstring):
     if not docstring:
