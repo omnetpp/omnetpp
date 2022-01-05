@@ -17,6 +17,7 @@ with the \fopt{-h configdetails} option.
 %% Change tolerance to give more freedom to the hyphenation/word wrapping algorithm
 %% \tolerance 5000
 
+% @BEGINFILE tools/config.txt
 \begin{description}
 \item[allow-object-stealing-on-deletion] = \textit{<bool>}, default: \ttt{false}\\
     \textit{Per-simulation-run setting.}\\
@@ -875,12 +876,14 @@ with the \fopt{-h configdetails} option.
     Per-object setting for vector results.\\
     Whether the output vector should be under Akaroa control.
 \end{description}
+% @ENDFILE
 
 \section{Predefined Variables}
 \label{sec:config-options:predefined-variables}
 
 Predefined variables that can be used in config values:
 
+% @BEGINFILE tools/configvars.txt
 \begin{description}
 \item[\$\{runid\}] : \\
     A reasonably globally unique identifier for the run, produced by
@@ -922,6 +925,7 @@ Predefined variables that can be used in config values:
     Like \$\{iterationvars\}, but for use as hierarchical folder name (it
     contains slashes where \$\{iterationvarsf\} has commas)
 \end{description}
+% @ENDFILE
 
 %%% Local Variables:
 %%% mode: latex

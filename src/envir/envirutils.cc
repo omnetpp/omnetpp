@@ -16,6 +16,7 @@
 #include "common/stringutil.h"
 #include "common/unitconversion.h"
 #include "common/opp_ctype.h"
+#include "common/sqliteresultfileschema.h"
 #include "nedxml/nedparser.h"  // NedParser::getBuiltInDeclarations()
 #include "omnetpp/ccanvas.h"
 #include "omnetpp/cconfigoption.h"
@@ -141,8 +142,9 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category, bool
             out << opp_indentlines(opp_breaklines(opp_markup2latex(opp_latexquote(obj->getDescription())), 75), "    ") << "\n";
         }
         out << "\\end{description}\n\n";
-
-        out << "Predefined variables that can be used in config values:\n\n";
+    }
+    if (!strcmp(category, "latexconfigvars")) {  // internal undocumented option, for maintenance purposes
+        processed = true;
         std::vector<const char *> varNames = config->getPredefinedVariableNames();
         out << "\\begin{description}\n";
         for (auto & varName : varNames) {
@@ -410,6 +412,18 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category, bool
             delete figure;
         }
         out << "\n";
+    }
+
+    if (wantAll || !strcmp(category, "sqliteschema")) {
+        processed = true;
+        if (verbose) {
+            out << "Database schema for the SQLite result files:\n";
+            out << "---START---\n";
+        }
+        out << opp_trim(opp_replacesubstring(SQL_CREATE_TABLES, "\n    ", "\n", true)) << "\n";
+        if (verbose) {
+            out << "---END---\n";
+        }
     }
 
     if (!processed)

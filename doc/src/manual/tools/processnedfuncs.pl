@@ -6,7 +6,7 @@ $txt = "";
 while (<>) { chomp; s/\r$//; $txt .= $_ . "\n"; }
 
 $txt =~ s/([_\$])/\\$1/sg;
-$txt =~ s/^ (Category.*)/\\end{description}\n\n\\section{$1}\n\n\\begin{description}/mg;
+$txt =~ s/^ (Category "(.*)":)/\\end{description}\n\n\\section{$1}\n\\label{sec:ned-functions:category-$2}\n\n\\begin{description}/mg;
 $txt =~ s/^  ([^ :]+) *: *(.*)/\\item[$1]: \\ttt{$2} \\\\/mg;
 
 $txt =~ s/`#`/`\\\\#`/s;
