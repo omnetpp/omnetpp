@@ -722,7 +722,7 @@ def timewinavg(r, window_size=1):
     Calculates time average: Replaces the input values with one every 'window_size'
     interval (in seconds), that is the mean of the original values in that interval.
     tout[k] = k * winSize,
-    yout[k] = average of y values in the [(k-1)*winSize, k*winSize) interval
+    yout[k] = average of y values in the [(k-1) * winSize, k * winSize) interval
     """
     t = r['vectime']
     v = r['vecvalue']
@@ -743,9 +743,9 @@ def timewinavg(r, window_size=1):
 @vector_operation("Time window thruput")
 def timewinthruput(r, window_size=1):
     """
-    Calculates time windowed throughput: .
+    Calculates time windowed throughput:
     tout[k] = k * winSize,
-    yout[k] = sum of y values in the [(k-1)*winSize, k*winSize) interval divided by window_size
+    yout[k] = sum of y values in the [(k-1) * winSize, k * winSize) interval divided by window_size
     """
     t = r['vectime']
     v = r['vecvalue']
