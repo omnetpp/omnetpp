@@ -23,6 +23,13 @@
 *.pyc
 *.out
 *.aux
+*.desktop
+*.lex.cc
+*.lex.h
+*.tab.h
+.project
+.cproject
+.pydevproject
 .ccls-cache
 .clangd
 .vscode
@@ -32,6 +39,7 @@
 *.cmdenv-log
 .qtenvrc
 lex.*yy.cc
+compile_commands.json
 /tools
 /msys
 /mingw
@@ -54,6 +62,7 @@ backups
 /include/sysc
 /include/tlm_utils
 /include/tlm_core
+/include/omnetpp/platdep/config.h
 /src/common/ver.h
 /src/utils/opp_configfilepath
 /src/envir/eventlogwriter.cc
@@ -73,7 +82,10 @@ backups
 /ui/org.omnetpp.ide.nativelibs/*.cxx
 /ui/org.omnetpp.ide.nativelibs/src/org/omnetpp/*/engine/
 /ui/org.omnetpp.ned.model/src/org/omnetpp/ned/model/pojo/*
+/ui/org.omnetpp.ide.nativelibs/common.h
 /ui/*/bin
+/ui/releng/org.omnetpp.ide.omnetpp.product/.polyglot.omnetpp.product
+/python/**/*.pyi
 /samples/.metadata
 /samples/*/Makefile
 /samples/*/*.mkv
@@ -81,6 +93,7 @@ backups
 /samples/*/frames/
 /samples/*/results.*/
 /samples/*/results/
+/samples/*/*_sanitize
 /samples/aloha/aloha
 /samples/aloha/aloha_dbg
 /samples/canvas/canvas
@@ -131,6 +144,7 @@ backups
 /tmp/
 /ui/org.omnetpp.test.gui/test-workspace/.metadata
 /ui/_*/
+/ui/*/.polyglot.META-INF
 /test/*/work/
 /test/nedtool/nedc-negtests/*.out
 /test/eventlog/result/
@@ -152,3 +166,4 @@ backups
 /doc/src/manual/usman.idx
 /doc/src/manual/usman.ilg
 /doc/src/manual/usman.log
+/doc/src/python-api/_autosummary
