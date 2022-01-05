@@ -20,10 +20,9 @@ import random, sys, os, string, re, math, importlib
 import numpy as np
 import scipy.stats as st
 import pandas as pd
+import itertools as it
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-from string import Template
-from itertools import cycle
 from omnetpp.scave import chart, ideplot, vectorops
 
 
@@ -57,8 +56,8 @@ _check_version(mpl, "3.0.0")  # Sep 19, 2018
 
 
 # color and marker cycles, with defaults in case _initialize_cycles() is not called
-_marker_cycle = cycle(list("osv^<>pDd"))
-_color_cycle = cycle(["C" + str(i) for i in range(10)])
+_marker_cycle = it.cycle(list("osv^<>pDd"))
+_color_cycle = it.cycle(["C" + str(i) for i in range(10)])
 
 # Because str.removeprefix was only added in Python 3.9
 def _removeprefix(str, prefix):
@@ -72,7 +71,7 @@ def _removeprefix(str, prefix):
 #    either fixed, or too low, or too high.
 # So, instead, take the built-in tick labels, and add digit grouping
 # to them manually, after the fact, using good ol' regices.
-class DigitGroupingFormatter(mpl.ticker.ScalarFormatter):
+class _DigitGroupingFormatter(mpl.ticker.ScalarFormatter):
     def __call__(self, x, pos=None):
 
         SEP = '\u2009' # Unicode "Thin Space"
@@ -152,7 +151,7 @@ def make_legend_label(legend_cols, row, props={}):
 
     def substitute_columns(format, row, where):
         try:
-            return Template(format).substitute(row._asdict())
+            return string.Template(format).substitute(row._asdict())
         except KeyError as ex:
             raise chart.ChartScriptError("Unknown column reference ${} {}".format(ex.args[0], where)) from ex
         except ValueError as ex:
@@ -941,10 +940,10 @@ def export_image_if_needed(props):
             ax = plt.gca()
 
             # add digit grouping to the axis tick labels
-            ax.xaxis.set_minor_formatter(DigitGroupingFormatter())
-            ax.xaxis.set_major_formatter(DigitGroupingFormatter())
-            ax.yaxis.set_minor_formatter(DigitGroupingFormatter())
-            ax.yaxis.set_major_formatter(DigitGroupingFormatter())
+            ax.xaxis.set_minor_formatter(_DigitGroupingFormatter())
+            ax.xaxis.set_major_formatter(_DigitGroupingFormatter())
+            ax.yaxis.set_minor_formatter(_DigitGroupingFormatter())
+            ax.yaxis.set_major_formatter(_DigitGroupingFormatter())
 
             # only use scientific notation for negative exponents
             ax.ticklabel_format(scilimits=(0, 1000), useOffset=False, useLocale=False)
@@ -1138,7 +1137,7 @@ def _initialize_cycles(props):
     ml = list("osv^<>pDd")
     if seed != 0:
         random.shuffle(ml, r.random)
-    _marker_cycle = cycle(ml)
+    _marker_cycle = it.cycle(ml)
 
     prop_cycler = plt.rcParams['axes.prop_cycle']
 
@@ -1150,7 +1149,7 @@ def _initialize_cycles(props):
     cl = ["C" + str(i) for i in range(num_colors)]
     if seed != 0:
         random.shuffle(cl, r.random)
-    _color_cycle = cycle(cl)
+    _color_cycle = it.cycle(cl)
 
 
 def histogram_bin_edges(values, bins=None, range=None, weights=None):
