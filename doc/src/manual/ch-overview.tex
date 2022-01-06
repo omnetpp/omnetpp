@@ -450,13 +450,18 @@ The simulation system itself:
       \tbf{envir/}       common code for user interfaces
       \tbf{cmdenv/}      command-line user interface
       \tbf{qtenv/}       Qt-based user interface
-      \tbf{nedxml/}      NEDXML library, nedtool, opp_msgc
-      \tbf{scave/}       result analysis library
+      \tbf{nedxml/}      NEDXML library, opp_nedtool, opp_msgtool
+      \tbf{scave/}       result analysis library, opp_scavetool
       \tbf{eventlog/}    eventlog processing library
       \tbf{layout/}      graph layouter for network graphics
       \tbf{common/}      common library
       \tbf{utils/}       opp_makemake, opp_test, etc.
-    \tbf{test/}          regression test suite
+    \tbf{ide/}           Simulation IDE
+    \tbf{python/}        Python libraries for {\opp}
+      \tbf{omnetpp/}     Python package name
+        \tbf{scave/}     Python API for result analysis
+	...
+    \tbf{test/}          Regression test suite
       \tbf{core/}        tests for the simulation library
       \tbf{anim/}        tests for graphics and animation
       \tbf{dist/}        tests for the built-in distributions
