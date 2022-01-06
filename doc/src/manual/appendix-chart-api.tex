@@ -33,7 +33,7 @@ in, and on whether the set of result files to query are specified in a stateful
 or a stateless way:
 
 \begin{enumerate}
-  \item
+  \item 
 
 \par Inside a chart script in the Analysis Tool in the Simulation IDE. In that
 mode, the set of result files to take as input are defined on the "Inputs"
@@ -41,21 +41,20 @@ page of the editor. The \ttt{get\_results()}, \ttt{get\_scalars()} and similar m
 are invoked with a filter string as first argument to select the appropriate
 subset of results from the result files. Note that this mode of operation is
 stateful: The state is set up appropriately by the IDE before the chart
-script is run.\newline
-
+script is run.
 
 \par A similar thing happens when charts in an analysis (.anf) file are run from
 within \ttt{opp\_charttool}: the tool sets up the module state before running the
 chart script, so that the getter methods invoked with a filter string will
 return result from the set of result files saved as "inputs" in the anf file.
-  \item
+  \item 
 
 \par Standalone stateful mode. In order to use \ttt{get\_results()}, \ttt{get\_scalars()}
 and similar methods with a filter string, the module needs to be configured
 via the \ttt{set\_inputs()}/\ttt{add\_inputs()} functions to tell it the set of result
 files to use as input for the queries. (Doing so is analogous to filling in
 the "Inputs" page in the IDE).
-  \item
+  \item 
 
 \par Stateless mode. It is possible to load the result files (in whole or a subset
 of results in them) into memory as a "raw" \ttt{DataFrame} using
@@ -223,8 +222,7 @@ for the query functions. The argument may be a single string, or a list of
 strings. Each string is interpreted as a file or directory path, and may
 also contain wildcards. In addition to \ttt{?} and \ttt{*}, \ttt{**} (which is able to
 match several directory levels) is also accepted as wildcard. If a path
-corresponds to a directory, it is interpreted as \ttt{[ "<dir>/**/*.sca",
-"<dir>/**/*.vec" ]}, that is, all result files will be loaded from that
+corresponds to a directory, it is interpreted as \ttt{[ "<dir>/**/*.sca", "<dir>/**/*.vec" ]}, that is, all result files will be loaded from that
 directory and recursively all its subdirectories.
 
 \par Examples: \ttt{set\_inputs("results/")}, \ttt{set\_inputs("results/**.sca")},
@@ -335,8 +333,7 @@ the module documentation for details).
 \begin{itemize}
   \item \ttt{filter\_or\_dataframe} \textit{(string or dataframe)}: The filter expression to
 select the desired run from the inputs, or a dataframe in the "raw" format
-(e.g. one returned by \ttt{read\_result\_files()}). Example: \ttt{runattr:network ={\textasciitilde}
-"Aloha" AND config:Aloha.slotTime ={\textasciitilde} 0}
+(e.g. one returned by \ttt{read\_result\_files()}). Example: \ttt{runattr:network ={\textasciitilde} "Aloha" AND config:Aloha.slotTime ={\textasciitilde} 0}
   \item \ttt{include\_runattrs}, \ttt{include\_itervars}, \ttt{include\_param\_assignments},
 \ttt{include\_config\_entries} \textit{(bool)}: Optional. When set to \ttt{True}, additional
 pieces of metadata about the run is appended to the result, pivoted into
@@ -442,8 +439,7 @@ requested
 
 \begin{itemize}
   \item \ttt{filter\_or\_dataframe} \textit{(string)}: The filter expression to select the
-desired scalars, or a dataframe in the "raw" format. Example: \ttt{name ={\textasciitilde}
-"channelUtilization*" AND runattr:replication ={\textasciitilde} "\#0"}
+desired scalars, or a dataframe in the "raw" format. Example: \ttt{name ={\textasciitilde} "channelUtilization*" AND runattr:replication ={\textasciitilde} "\#0"}
   \item \ttt{include\_attrs} \textit{(bool)}: Optional. When set to \ttt{True}, result attributes
 (like \ttt{unit} or \ttt{source} for example) are appended to the DataFrame,
 pivoted into columns.
@@ -485,16 +481,14 @@ individual \ttt{cPar} instances in the fully built network.
 their values are strings. Even though they act mostly as input to the actual
 simulation run, the actually assigned value of individual \ttt{cPar} instances
 is valuable information, as it is the result of the network setup process.
-For example, even if a parameter is set up as an expression like \ttt{normal(3,
-0.4)} from \ttt{omnetpp.ini}, the returned DataFrame will contain the single
+For example, even if a parameter is set up as an expression like \ttt{normal(3, 0.4)} from \ttt{omnetpp.ini}, the returned DataFrame will contain the single
 concrete value picked for every instance of the parameter.
 
 \par Parameters:
 
 \begin{itemize}
   \item \ttt{filter\_or\_dataframe} \textit{(string)}: The filter expression to select the
-desired parameters, or a dataframe in the "raw" format. Example: \ttt{name ={\textasciitilde}
-"x" AND module ={\textasciitilde} Aloha.server}
+desired parameters, or a dataframe in the "raw" format. Example: \ttt{name ={\textasciitilde} "x" AND module ={\textasciitilde} Aloha.server}
   \item \ttt{include\_attrs} \textit{(bool)}: Optional. When set to \ttt{True}, result attributes
 (like \ttt{unit} for example) are appended to the DataFrame, pivoted into
 columns.
@@ -533,8 +527,7 @@ variables, etc.), as requested
 
 \begin{itemize}
   \item \ttt{filter\_or\_dataframe} \textit{(string)}: The filter expression to select the
-desired vectors, or a dataframe in the "raw" format. Example: \ttt{name ={\textasciitilde}
-"radioState*" AND runattr:replication ={\textasciitilde} "\#0"}
+desired vectors, or a dataframe in the "raw" format. Example: \ttt{name ={\textasciitilde} "radioState*" AND runattr:replication ={\textasciitilde} "\#0"}
   \item \ttt{include\_attrs} \textit{(bool)}: Optional. When set to \ttt{True}, result attributes
 (like \ttt{unit} or \ttt{source} for example) are appended to the DataFrame,
 pivoted into columns.
@@ -578,8 +571,7 @@ variables, etc.), as requested
 
 \begin{itemize}
   \item \ttt{filter\_or\_dataframe} \textit{(string)}: The filter expression to select the
-desired statistics, or a dataframe in the "raw" format. Example: \ttt{name ={\textasciitilde}
-"collisionLength:stat" AND itervar:iaMean ={\textasciitilde} "5"}
+desired statistics, or a dataframe in the "raw" format. Example: \ttt{name ={\textasciitilde} "collisionLength:stat" AND itervar:iaMean ={\textasciitilde} "5"}
   \item \ttt{include\_attrs} \textit{(bool)}: Optional. When set to \ttt{True}, result attributes
 (like \ttt{unit} or \ttt{source} for example) are appended to the DataFrame,
 pivoted into columns.
@@ -619,8 +611,7 @@ variables, etc.), as requested
 
 \begin{itemize}
   \item \ttt{filter\_or\_dataframe} \textit{(string)}: The filter expression to select the
-desired histograms, or a dataframe in the "raw" format. Example: \ttt{name ={\textasciitilde}
-"collisionMultiplicity:histogram" AND itervar:iaMean ={\textasciitilde} "2"}
+desired histograms, or a dataframe in the "raw" format. Example: \ttt{name ={\textasciitilde} "collisionMultiplicity:histogram" AND itervar:iaMean ={\textasciitilde} "2"}
   \item \ttt{include\_attrs} \textit{(bool)}: Optional. When set to \ttt{True}, result attributes
 (like \ttt{unit} or \ttt{source} for example) are appended to the DataFrame,
 pivoted into columns.
@@ -643,8 +634,7 @@ recorded the result item
   \item \ttt{count}, \ttt{sumweights}, \ttt{mean}, \ttt{stddev}, \ttt{min}, \ttt{max} \textit{(double)}: The
 characteristic mathematical properties of the histogram
   \item \ttt{binedges}, \ttt{binvalues} \textit{(np.array)}: The histogram edge locations and the
-weighted sum of the collected samples in each bin. \ttt{len(binedges) ==
-len(binvalues) + 1}
+weighted sum of the collected samples in each bin. \ttt{len(binedges) == len(binvalues) + 1}
   \item \ttt{underflows}, \ttt{overflows} \textit{(double)}: The weighted sum of the samples that
 fell outside of the histogram bin range in the two directions
   \item Additional metadata items (result attributes, run attributes, iteration
@@ -666,8 +656,7 @@ patterns; and global and per-object config options.
 
 \begin{itemize}
   \item \ttt{filter\_or\_dataframe} \textit{(string)}: The filter expression to select the
-desired config entries, or a dataframe in the "raw" format. Example: \ttt{name
-={\textasciitilde} sim-time-limit AND itervar:numHosts ={\textasciitilde} 10}
+desired config entries, or a dataframe in the "raw" format. Example: \ttt{name ={\textasciitilde} sim-time-limit AND itervar:numHosts ={\textasciitilde} 10}
   \item \ttt{include\_runattrs}, \ttt{include\_itervars}, \ttt{include\_param\_assignments},
 \ttt{include\_config\_entries} \textit{(bool)}: Optional. When set to \ttt{True}, additional
 pieces of metadata about the run is appended to the result, pivoted into
@@ -732,6 +721,13 @@ requested
 \par Note that this module is stateful. It is set up appropriately by the OMNeT++
 IDE or \ttt{opp\_charttool} before the chart script is run.
 
+\subsubsection{Class ChartScriptError}
+\label{cha:chart-api:omnetpp.scave.chart:ChartScriptError}
+
+\par Raised by chart scripts when they encounter an error.
+A message parameter can be passed to the constructor,
+which will be displayed on the plot area in the IDE.
+
 \subsubsection{get\_properties()}
 \label{cha:chart-api:omnetpp.scave.chart:get-properties}
 
@@ -788,6 +784,16 @@ no property with the given name (key) set on the chart.
 
 \par Sets a proposed name for the chart. The IDE may offer this name to the user
 when saving the chart.
+
+\subsubsection{set\_observed\_column\_names()}
+\label{cha:chart-api:omnetpp.scave.chart:set-observed-column-names}
+
+\begin{flushleft}
+\ttt{set\_observed\_column\_names(column\_names)}
+\end{flushleft}
+
+\par Sets the DataFrame column names observed during the chart script.
+The IDE may use it for content assist when the user edits the legend format string.
 
 \subsection{Module omnetpp.scave.ideplot}
 \label{cha:chart-api:omnetpp.scave.ideplot}
@@ -1149,30 +1155,55 @@ These are the following.
 
 \end{itemize}
 
-\subsubsection{Class cycle}
-\label{cha:chart-api:omnetpp.scave.utils:cycle}
-
-\par Return elements from the iterable until it is exhausted. Then repeat the sequence indefinitely.
-
 \subsubsection{make\_legend\_label()}
 \label{cha:chart-api:omnetpp.scave.utils:make-legend-label}
 
 \begin{flushleft}
-\ttt{make\_legend\_label(legend\_cols, row)}
+\ttt{make\_legend\_label(legend\_cols, row, props=\{\})}
 \end{flushleft}
 
 \par Produces a reasonably good label text (to be used in a chart legend) for a result row from
-a DataFrame, given a list of selected columns as returned by \ttt{extract\_label\_columns()}.
+a DataFrame. The legend label is produced as follows.
 
-\par The normal behavior is to concatenate a string from selected (by \ttt{legend\_cols}) elements
-of \ttt{row}. If there is a \ttt{legend} column in \ttt{row}, that one is used and \ttt{legend\_cols} is
-ignored. If there is a \ttt{comment} column in \ttt{row}, its contents will be appended in parens.
+\par First, a base version of the legend label is produced:
+
+\begin{enumerate}
+  \item If the DataFrame contains a \ttt{legend} column, its content is used
+  \item Otherwise, if there is a \ttt{legend\_format} property, it is used as a format string
+for producing the legend label. The format string may contain references to other
+columns of the DataFrame in the "\$name" or "\$\{name\}" form.
+  \item Otherwise, the legend label is concatenated from the columns listed in \ttt{legend\_cols},
+a list whose contents is usually produced using the \ttt{extract\_label\_columns()} function.
+
+\end{enumerate}
+
+
+\par Second, if there is a \ttt{legend\_replacements} property, the series of regular expression
+find/replace operations described in it are performed. \ttt{legend\_replacements} is expected
+to be a multi-line string, where each line contains a replacement in the customary
+"/findstring/replacement/" form. "findstring" should be a valid regex, and "replacement"
+is a string that may contain match group references ("{\textbackslash}1", "{\textbackslash}2", etc.). If "/" is unsuitable
+as separator, other characters may also be used; common choices are "|" and "!".
+Similar to the format string (\ttt{legend\_format}), both "findstring" and "replacement"
+may contain column references in the "\$name" or "\$\{name\}" form. (Note that "findstring"
+may still end in "\$" to match the end of the string, it won't collide with column references.)
+
+\par Possible errors:
+
+\begin{itemize}
+  \item References to nonexistent columns in \ttt{legend\_format} or \ttt{legend\_replacements} (\ttt{KeyError})
+  \item Malformed regex in the "findstring" parts of \ttt{legend\_replacements} (\ttt{re.error})
+  \item Invalid group reference in the "replacement" parts of \ttt{legend\_replacements} (\ttt{re.error})
+
+\end{itemize}
+
 
 \par Parameters:
 
 \begin{itemize}
-  \item \ttt{legend\_cols} \textit{(list of strings)}: The names of columns chosen for the legend.
   \item \ttt{row} \textit{(named tuple)}: The row from the dataframe.
+  \item \ttt{props} \textit{(dict)}: The properties that control how the legend is produced
+  \item \ttt{legend\_cols} \textit{(list of strings)}: The names of columns chosen for the legend.
 
 \end{itemize}
 
@@ -1180,23 +1211,24 @@ ignored. If there is a \ttt{comment} column in \ttt{row}, its contents will be a
 \label{cha:chart-api:omnetpp.scave.utils:plot-bars}
 
 \begin{flushleft}
-\ttt{plot\_bars(df, props, variable\_name=None, errors\_df=None)}
+\ttt{plot\_bars(df, errors\_df=None, meta\_df=None, props=\{\})}
 \end{flushleft}
 
 \par Creates a bar plot from the dataframe, with styling and additional input
-coming from the properties. Each column in the dataframe defines a series.
+coming from the properties. Each row in the dataframe defines a series.
 
-\par Column names serve as labels for the legend. Group names (displayed on the
-x axis) are taken from the row index. The names of the two indices also appear
-in the legend and as x axis label. (This is useful if column and group names
-are values of a variable, and the index name contains the name of the variable.)
-The name of the variable represented by the values can be passed in as
+\par Group names (displayed on the x axis) are taken from the column index.
+
+\par The name of the variable represented by the values can be passed in as
 the \ttt{variable\_name} argument (as it is not present in the dataframe); if so,
 it will become the y axis label.
 
 \par Error bars can be drawn by providing an extra dataframe of identical
 dimensions as the main one. Error bars will protrude by the values in the
 errors dataframe both up and down (i.e. range is 2x error).
+
+\par To make the legend labels customizable, an extra dataframe can be provided,
+which contains any columns of metadata for each series.
 
 \par Colors are assigned automatically. The \ttt{cycle\_seed} property allows you
 to select other combinations if the default one is not suitable.
@@ -1208,6 +1240,7 @@ to select other combinations if the default one is not suitable.
   \item \ttt{props} \textit{(dict)}: the properties
   \item \ttt{variable\_name} \textit{(string)}: The name of the variable represented by the values.
   \item \ttt{errors\_df}: dataframe with the errors (in y axis units)
+  \item \ttt{meta\_df}: dataframe with the metadata about each series
 
 \end{itemize}
 
@@ -1236,10 +1269,11 @@ coming from the properties. Each row in the dataframe defines a series.
 \par Colors and markers are assigned automatically. The \ttt{cycle\_seed} property
 allows you to select other combinations if the default one is not suitable.
 
-\par The legend is normally computed automatically from columns which best
-differentiate among the series. There are also multiple ways to influence
-the labels: the \ttt{legend\_labels} property, the \ttt{comment} and \ttt{legend} dataframe
-columns, and also the \ttt{legend\_func} argument.
+\par A function to produce the legend labels can be passed in. By default,
+\ttt{make\_legend\_label()} is used, which offers many ways to influence the
+legend via dataframe columns and chart properties. In the absence of
+more specified settings, the legend is normally computed from columns which best
+differentiate among the vectors.
 
 \par Parameters:
 
@@ -1258,7 +1292,6 @@ columns, and also the \ttt{legend\_func} argument.
   \item \ttt{interpolationmode} \textit{(str, optional)}: this column normally comes from a result attribute, and determines how the points will be connected
   \item \ttt{legend} \textit{(optional)}: legend label for the series; if missing, legend labels are derived from other columns
   \item \ttt{name}, \ttt{title}, \ttt{module}, etc. \textit{(optional)}: provide input for the legend
-  \item \ttt{comment} \textit{(optional)}: will be appended to the legend labels
 
 \end{itemize}
 
@@ -1267,12 +1300,23 @@ columns, and also the \ttt{legend\_func} argument.
 
 \begin{itemize}
   \item \ttt{title}: plot title (autocomputed if missing)
-  \item \ttt{legend\_labels}: selects whether to prefer the \ttt{name} or the \ttt{title} column for the legend
   \item \ttt{drawstyle}: Matplotlib draw style; if present, it overrides the draw style derived from \ttt{interpolationmode}.
   \item \ttt{linestyle}, \ttt{linecolor}, \ttt{linewidth}, \ttt{marker}, \ttt{markersize}: styling
   \item \ttt{cycle\_seed}: Alters the sequence in which colors and markers are assigned to series.
 
 \end{itemize}
+
+\subsubsection{plot\_vectors\_separate()}
+\label{cha:chart-api:omnetpp.scave.utils:plot-vectors-separate}
+
+\begin{flushleft}
+\ttt{plot\_vectors\_separate(df, props, legend\_func=make\_legend\_label)}
+\end{flushleft}
+
+\par This is very similar to \ttt{plot\_vectors}, with identical usage.
+The only difference is in the end result, where each vector will
+be plotted in its own separate set of axes (coordinate system),
+arranged vertically, with a shared X axis during navigation.
 
 \subsubsection{plot\_histograms()}
 \label{cha:chart-api:omnetpp.scave.utils:plot-histograms}
@@ -1287,10 +1331,11 @@ coming from the properties. Each row in the dataframe defines a histogram.
 \par Colors are assigned automatically.  The \ttt{cycle\_seed} property allows you to
 select other combinations if the default one is not suitable.
 
-\par The legend is normally computed automatically from columns which best
-differentiate among the histograms. There also are multiple ways to influence
-the labels: the \ttt{legend\_labels} property, the \ttt{comment} and \ttt{legend} dataframe
-columns, and also the \ttt{legend\_func} argument.
+\par A function to produce the legend labels can be passed in. By default,
+\ttt{make\_legend\_label()} is used, which offers many ways to influence the
+legend via dataframe columns and chart properties. In the absence of
+more specified settings, the legend is normally computed from columns which best
+differentiate among the histograms.
 
 \par Parameters:
 
@@ -1314,7 +1359,6 @@ columns, and also the \ttt{legend\_func} argument.
   \item \ttt{legend} \textit{(string, optional)}: Legend label for the series. If missing,
  legend labels are derived from other columns.
   \item \ttt{name}, \ttt{title}, \ttt{module}, etc. \textit{(optional)}: Provide input for the legend.
-  \item \ttt{comment} \textit{(string, optional)}: will be appended to the legend labels.
 
 \end{itemize}
 
@@ -1330,9 +1374,115 @@ columns, and also the \ttt{legend\_func} argument.
  results in the cumulative density function (CDF) being displayed.
   \item \ttt{show\_overflows} \textit{(bool)}: If true, show the underflow/overflow bins.
   \item \ttt{title}: Plot title (autocomputed if missing).
-  \item \ttt{legend\_labels}: Selects whether to prefer the \ttt{name} or the \ttt{title} column for the legend.
   \item \ttt{drawstyle}: Selects whether to fill the area below the histogram line.
   \item \ttt{linestyle}, \ttt{linecolor}, \ttt{linewidth}: Styling.
+  \item \ttt{cycle\_seed}: Alters the sequence in which colors and markers are assigned to series.
+
+\end{itemize}
+
+\subsubsection{plot\_lines()}
+\label{cha:chart-api:omnetpp.scave.utils:plot-lines}
+
+\begin{flushleft}
+\ttt{plot\_lines(df, props, legend\_func=make\_legend\_label)}
+\end{flushleft}
+
+\par Creates a line plot from the dataframe, with styling and additional input
+coming from the properties. Each row in the dataframe defines a line.
+
+\par Colors are assigned automatically.  The \ttt{cycle\_seed} property allows you to
+select other combinations if the default one is not suitable.
+
+\par A function to produce the legend labels can be passed in. By default,
+\ttt{make\_legend\_label()} is used, which offers many ways to influence the
+legend via dataframe columns and chart properties. In the absence of
+more specified settings, the legend is normally computed from columns which best
+differentiate among the lines.
+
+\par Parameters:
+
+\begin{itemize}
+  \item \ttt{df}: The dataframe.
+  \item \ttt{props} \textit{(dict)}: The properties.
+  \item \ttt{legend\_func} \textit{(function)}: The function to produce custom legend labels.
+ See \ttt{utils.make\_legend\_label()} for prototype and semantics.
+
+\end{itemize}
+
+
+\par Columns of the dataframe:
+
+\begin{itemize}
+  \item \ttt{x}, \ttt{y} \textit{(array-like, \ttt{len(x)==len(y)})}: The X and Y coordinates of the points.
+  \item \ttt{error} \textit{(array-like, \ttt{len(x)==len(y)}, optional)}:
+ The half lengths of the error bars for each point.
+  \item \ttt{legend} \textit{(string, optional)}: Legend label for the series. If missing,
+ legend labels are derived from other columns.
+  \item \ttt{name}, \ttt{title}, \ttt{module}, etc. \textit{(optional)}: Provide input for the legend.
+
+\end{itemize}
+
+
+\par Notable properties that affect the plot:
+
+\begin{itemize}
+  \item \ttt{title}: Plot title (autocomputed if missing).
+  \item \ttt{linewidth}: Line width.
+  \item \ttt{marker}: Marker style.
+  \item \ttt{linestyle}, \ttt{linecolor}, \ttt{linewidth}: Styling.
+  \item \ttt{error\_style}: If \ttt{error} is present, controls how the error is shown.
+ Accepted values: "Error bars", "Error band"
+  \item \ttt{cycle\_seed}: Alters the sequence in which colors and markers are assigned to series.
+
+\end{itemize}
+
+\subsubsection{plot\_boxwhiskers()}
+\label{cha:chart-api:omnetpp.scave.utils:plot-boxwhiskers}
+
+\begin{flushleft}
+\ttt{plot\_boxwhiskers(df, props, legend\_func=make\_legend\_label)}
+\end{flushleft}
+
+\par Creates a box and whiskers plot from the dataframe, with styling and additional
+input coming from the properties. Each row in the dataframe defines one set
+of a box and two whiskers.
+
+\par Colors are assigned automatically.  The \ttt{cycle\_seed} property allows you to
+select other combinations if the default one is not suitable.
+
+\par A function to produce the legend labels can be passed in. By default,
+\ttt{make\_legend\_label()} is used, which offers many ways to influence the
+legend via dataframe columns and chart properties. In the absence of
+more specified settings, the legend is normally computed from columns which best
+differentiate among the boxes.
+
+\par Parameters:
+
+\begin{itemize}
+  \item \ttt{df}: The dataframe.
+  \item \ttt{props} \textit{(dict)}: The properties.
+  \item \ttt{legend\_func} \textit{(function)}: The function to produce custom legend labels.
+ See \ttt{utils.make\_legend\_label()} for prototype and semantics.
+
+\end{itemize}
+
+
+\par Columns of the dataframe:
+
+\begin{itemize}
+  \item \ttt{min}, \ttt{max}, \ttt{mean}, \ttt{stddev}, \ttt{count} \textit{(float)}: The minimum/maximum
+ values, mean, standard deviation, and sample count of the data.
+  \item \ttt{legend} \textit{(string, optional)}: Legend label for the series. If missing,
+ legend labels are derived from other columns.
+  \item \ttt{name}, \ttt{title}, \ttt{module}, etc. \textit{(optional)}: Provide input for the legend.
+
+\end{itemize}
+
+
+\par Notable properties that affect the plot:
+
+\begin{itemize}
+  \item \ttt{title}: Plot title (autocomputed if missing).
   \item \ttt{cycle\_seed}: Alters the sequence in which colors and markers are assigned to series.
 
 \end{itemize}
@@ -1504,7 +1654,9 @@ their own aspect ratio and relative sizes.
 \ttt{get\_image\_export\_filepath(props)}
 \end{flushleft}
 
-
+\par Returns the file path for the image to export based on the
+\ttt{image\_export\_format}, \ttt{image\_export\_folder} and
+\ttt{image\_export\_filename} properties given in \ttt{props}.
 
 \subsubsection{export\_data\_if\_needed()}
 \label{cha:chart-api:omnetpp.scave.utils:export-data-if-needed}
@@ -1550,7 +1702,9 @@ from the chart properties because it is specific to each chart.
 \ttt{get\_data\_export\_filepath(props)}
 \end{flushleft}
 
-
+\par Returns the file path for the data to export based on the
+\ttt{data\_export\_format}, \ttt{data\_export\_folder} and
+\ttt{data\_export\_filename} properties given in \ttt{props}.
 
 \subsubsection{histogram\_bin\_edges()}
 \label{cha:chart-api:omnetpp.scave.utils:histogram-bin-edges}
@@ -1582,6 +1736,83 @@ normal distribution, for the given confidence level \ttt{alpha}.
   \item \ttt{data} \textit{(array-like)}: An array containing the values.
 
 \end{itemize}
+
+\subsubsection{pivot\_for\_barchart()}
+\label{cha:chart-api:omnetpp.scave.utils:pivot-for-barchart}
+
+\begin{flushleft}
+\ttt{pivot\_for\_barchart(df, groups, series, confidence\_level=None)}
+\end{flushleft}
+
+\par Turns a DataFrame containing scalar results (in the format returned
+by \ttt{results.get\_scalars()}) into a 3-tuple of a value, an error, and
+a metadata DataFrame, which can then be passed to \ttt{utils.plot\_bars()}.
+The error dataframe is None if no confidence level is given.
+
+\par Parameters:
+
+\begin{itemize}
+  \item \ttt{df} \textit{(pandas.DataFrame)}: The dataframe to pivot.
+  \item \ttt{groups} \textit{(list)}: A list of column names, the values in which will
+ be used as names for the bar groups.
+  \item \ttt{series} \textit{(list)}: A list of column names, the values in which will
+ be used as names for the bar series.
+  \item \ttt{confidence\_level} \textit{(float, optional)}:
+ The confidence level to use when computing the sizes of the error bars.
+
+\end{itemize}
+
+
+\par Returns:
+
+\begin{itemize}
+  \item A triplet of DataFrames containing the pivoted data: (values, errors, metadata)
+
+\end{itemize}
+
+\subsubsection{pivot\_for\_scatterchart()}
+\label{cha:chart-api:omnetpp.scave.utils:pivot-for-scatterchart}
+
+\begin{flushleft}
+\ttt{pivot\_for\_scatterchart(df, xaxis\_itervar, group\_by, confidence\_level=None)}
+\end{flushleft}
+
+\par Turns a DataFrame containing scalar results (in the format returned
+by \ttt{results.get\_scalars()}) into a DataFrame which can then be
+passed to \ttt{utils.plot\_lines()}.
+
+\par Parameters:
+
+\begin{itemize}
+  \item \ttt{df} \textit{(pandas.DataFrame)}: The dataframe to pivot.
+  \item \ttt{xaxis\_itervar} \textit{(string)}: The name of the iteration variable whose
+ values are to be used as X coordinates.
+  \item \ttt{group\_by} \textit{(list)}: A list of column names, the values in which will
+ be used to group the scalars into lines.
+  \item \ttt{confidence\_level} \textit{(float, optional)}:
+ The confidence level to use when computing the sizes of the error bars.
+
+\end{itemize}
+
+
+\par Returns:
+
+\begin{itemize}
+  \item A DataFrame containing the pivoted data, with these columns:
+\ttt{name}, \ttt{x}, \ttt{y}, and optionally \ttt{error} - if \ttt{confidence\_level} is given.
+
+\end{itemize}
+
+\subsubsection{get\_confidence\_level()}
+\label{cha:chart-api:omnetpp.scave.utils:get-confidence-level}
+
+\begin{flushleft}
+\ttt{get\_confidence\_level(props)}
+\end{flushleft}
+
+\par Returns the confidence level from the \ttt{confidence\_level} property,
+converted to a \ttt{float}. Also accepts "none" (returns \ttt{None} in this case),
+and percentage values (e.g. "95\%").
 
 \subsubsection{perform\_vector\_ops()}
 \label{cha:chart-api:omnetpp.scave.utils:perform-vector-ops}
@@ -1621,11 +1852,22 @@ The default is \textit{apply}.
 \par Sets the plot title. It also sets the suggested chart name (the name that
 the IDE offers when adding a temporary chart to the Analysis file.)
 
+\subsubsection{fill\_missing\_titles()}
+\label{cha:chart-api:omnetpp.scave.utils:fill-missing-titles}
+
+\begin{flushleft}
+\ttt{fill\_missing\_titles(df)}
+\end{flushleft}
+
+\par Utility function to fill missing values in the \ttt{title} and \ttt{moduledisplaypath}
+columns from the \ttt{name} and \ttt{module} columns. (Note that \ttt{title} and \ttt{moduledisplaypath}
+normally come from result attributes of the same name.)
+
 \subsubsection{extract\_label\_columns()}
 \label{cha:chart-api:omnetpp.scave.utils:extract-label-columns}
 
 \begin{flushleft}
-\ttt{extract\_label\_columns(df, preferred\_legend\_column="title")}
+\ttt{extract\_label\_columns(df, props)}
 \end{flushleft}
 
 \par Utility function to make a reasonable guess as to which column of
@@ -1633,8 +1875,8 @@ the given DataFrame is most suitable to act as a chart title and
 which ones can be used as legend labels.
 
 \par Ideally a "title column" should be one in which all lines have the same
-value, and can be reasonably used as a title. Some often used candidates
-are: \ttt{title}, \ttt{name}, and \ttt{module}.
+value, and can be reasonably used as a title. This is often the \ttt{title}
+or \ttt{name} column.
 
 \par Label columns should be a minimal set of columns whose corresponding
 value tuples uniquely identify every line in the DataFrame. These will
@@ -1652,22 +1894,71 @@ containing the index and the name of a "label" column.
 \label{cha:chart-api:omnetpp.scave.utils:make-chart-title}
 
 \begin{flushleft}
-\ttt{make\_chart\_title(df, title\_col, legend\_cols)}
+\ttt{make\_chart\_title(df, title\_cols)}
 \end{flushleft}
 
-\par Produces a reasonably good chart title text from a result DataFrame, given a selected "title"
-column, and a list of selected "legend" columns as returned by \ttt{extract\_label\_columns()}.
+\par Produces a reasonably good chart title text from a result DataFrame,
+given a selected list of "title" columns.
 
 \subsubsection{pick\_two\_columns()}
 \label{cha:chart-api:omnetpp.scave.utils:pick-two-columns}
 
 \begin{flushleft}
-\ttt{pick\_two\_columns(df)}
+\ttt{pick\_two\_columns(df, props=None)}
 \end{flushleft}
 
 \par Choose two columns from the dataframe which best partitions the rows
 of the dataframe, and returns their names as a pair. Returns (\ttt{None}, \ttt{None})
 if no such pair was found. This method is useful for creating e.g. a bar plot.
+
+\subsubsection{select\_groups\_series()}
+\label{cha:chart-api:omnetpp.scave.utils:select-groups-series}
+
+\begin{flushleft}
+\ttt{select\_groups\_series(df, props)}
+\end{flushleft}
+
+\par Extracts the column names to be used for groups and series from the \ttt{df} DataFrame,
+for pivoting. The columns whose names are to be used as group names are given in
+the "groups" property in \ttt{props}, as a comma-separated list.
+The names for the series are selected similarly, based on the "series" property.
+There should be no overlap between these two lists.
+
+\par If both "groups" and "series" are given (non-empty), they are simply returned
+as lists after some sanity checks.
+If both of them are empty, a reasonable guess is made for which columns should
+be used, and (["module"], ["name"]) is used as a fallback.
+
+\par The data in \ttt{df} should be in the format as returned by \ttt{result.get\_scalars()},
+and the result can be used directly by \ttt{utils.pivot\_for\_barchart()}.
+
+\par Returns:
+    - (group\_names, series\_names): A pair of lists of strings containing the
+      selected names for the groups and the series, respectively.
+
+\subsubsection{select\_xaxis\_and\_groupby()}
+\label{cha:chart-api:omnetpp.scave.utils:select-xaxis-and-groupby}
+
+\begin{flushleft}
+\ttt{select\_xaxis\_and\_groupby(df, props)}
+\end{flushleft}
+
+\par Extracts an iteration variable name and the column names to be used for grouping from
+the \ttt{df} DataFrame, for pivoting. The columns whose names are to be used as group
+names are given in the "group\_by" property in \ttt{props}, as a comma-separated list.
+The name of the iteration variable is selected similarly, from the "xaxis\_itervar" property.
+The "group\_by" list should not contain the given "xaxis\_itervar" name.
+
+\par If both "xaxis\_itervar" and "group\_by" are given (non-empty), they are simply returned
+after some sanity checks, with "group\_by" split into a list.
+If both of them are empty, a reasonable guess is made for which columns should be used.
+
+\par The data in \ttt{df} should be in the format as returned by \ttt{result.get\_scalars()},
+and the result can be used directly by \ttt{utils.pivot\_for\_scatterchart()}.
+
+\par Returns:
+    - (xaxis\_itervar, group\_by): An iteration variable name, and a list of strings
+      containing the selected column names to be used as groups.
 
 \subsubsection{assert\_columns\_exist()}
 \label{cha:chart-api:omnetpp.scave.utils:assert-columns-exist}
@@ -1728,17 +2019,6 @@ and duplicate keys are reported via exceptions.
 \par Only useful for Matplotlib plots. It causes the x tick labels to be rotated
 by the minimum amount necessary so that they don't overlap. Note that the
 necessary amount of rotation typically depends on the horizontal zoom level.
-
-\subsubsection{get\_names\_for\_title()}
-\label{cha:chart-api:omnetpp.scave.utils:get-names-for-title}
-
-\begin{flushleft}
-\ttt{get\_names\_for\_title(df, props)}
-\end{flushleft}
-
-\par Returns unique values from the \ttt{title} or \ttt{name} column, depending on the
-value of the \ttt{legend\_labels} property in \ttt{props}. This function is useful
-for producing input for the plot title.
 
 \subsubsection{split()}
 \label{cha:chart-api:omnetpp.scave.utils:split}
@@ -1823,6 +2103,7 @@ def foo(r, arg1, arg2=5):
     if "title" in r:
         r.title = r.title + ", but fooized" \# this is also okay
     return r
+
 \end{filelisting}
 
 \subsubsection{perform\_vector\_ops()}
@@ -1847,9 +2128,11 @@ Parameters:
 \begin{itemize}
   \item \ttt{label}: will be shown on the GUI for the user
   \item \ttt{example}: should be string, containing a valid invocation of the function
-Alternatively, this can also be used directly as decorator (without calling it first).
 
 \end{itemize}
+
+
+\par Alternatively, this can also be used directly as decorator (without calling it first).
 
 \subsubsection{lookup\_operation()}
 \label{cha:chart-api:omnetpp.scave.vectorops:lookup-operation}
@@ -2103,6 +2386,15 @@ tout[k] = t[k] - t[k-1]
 
 \par Shifts the input series in time by a constant (in seconds): tout[k] = t[k] + dt
 
+\subsubsection{timedilation()}
+\label{cha:chart-api:omnetpp.scave.vectorops:timedilation}
+
+\begin{flushleft}
+\ttt{timedilation(r, c)}
+\end{flushleft}
+
+\par Dilates the input series in time by a constant factor: tout[k] = t[k] * c
+
 \subsubsection{timetoserial()}
 \label{cha:chart-api:omnetpp.scave.vectorops:timetoserial}
 
@@ -2121,8 +2413,8 @@ tout[k] = t[k] - t[k-1]
 
 \par Calculates time average: Replaces the input values with one every 'window\_size'
 interval (in seconds), that is the mean of the original values in that interval.
-tout[k] = k \textit{ winSize,
-yout[k] = average of y values in the [(k-1)}winSize, k*winSize) interval
+tout[k] = k * winSize,
+yout[k] = average of y values in the [(k-1) * winSize, k * winSize) interval
 
 \subsubsection{timewinthruput()}
 \label{cha:chart-api:omnetpp.scave.vectorops:timewinthruput}
@@ -2131,9 +2423,9 @@ yout[k] = average of y values in the [(k-1)}winSize, k*winSize) interval
 \ttt{timewinthruput(r, window\_size=1)}
 \end{flushleft}
 
-\par Calculates time windowed throughput: .
-tout[k] = k \textit{ winSize,
-yout[k] = sum of y values in the [(k-1)}winSize, k*winSize) interval divided by window\_size
+\par Calculates time windowed throughput:
+tout[k] = k * winSize,
+yout[k] = sum of y values in the [(k-1) * winSize, k * winSize) interval divided by window\_size
 
 \subsubsection{winavg()}
 \label{cha:chart-api:omnetpp.scave.vectorops:winavg}
@@ -2179,7 +2471,20 @@ and properties (which are what the \textit{Chart Properties} dialog in the IDE e
 \label{cha:chart-api:omnetpp.scave.analysis:Chart:--init--}
 
 \begin{flushleft}
-\ttt{Chart(self, type: str, name: str = "", id: str = None, template: str = None, icon: str = None, script: str = "", dialog\_pages=[], properties=\{\})}
+\ttt{Chart(self, id: str = None, name: str = "", type: str = "MATPLOTLIB", template: str = None, icon: str = None, script: str = "", dialog\_pages=[], properties=\{\})}
+\end{flushleft}
+
+
+
+\subsubsection{Class Folder}
+\label{cha:chart-api:omnetpp.scave.analysis:Folder}
+
+\par Represents a folder in an \ttt{Analysis}. Folders may contain charts and further folders.
+
+\label{cha:chart-api:omnetpp.scave.analysis:Folder:--init--}
+
+\begin{flushleft}
+\ttt{Folder(self, id: str = None, name: str = "", items=[])}
 \end{flushleft}
 
 
@@ -2194,7 +2499,7 @@ in the \ttt{Analysis} are workspace paths.
 \label{cha:chart-api:omnetpp.scave.analysis:Workspace:--init--}
 
 \begin{flushleft}
-\ttt{Workspace(self, workspace\_dir, project\_paths=None)}
+\ttt{Workspace(self, workspace\_dir, project\_paths=\{\})}
 \end{flushleft}
 
 \par Accepts the workspace location, plus a dict that contains the (absolute,
@@ -2238,10 +2543,19 @@ display, image/data export or other side effects.
 \label{cha:chart-api:omnetpp.scave.analysis:Analysis:--init--}
 
 \begin{flushleft}
-\ttt{Analysis(self, inputs=[], charts=[])}
+\ttt{Analysis(self, inputs=[], items=[])}
 \end{flushleft}
 
 
+
+\label{cha:chart-api:omnetpp.scave.analysis:Analysis:collect-charts}
+
+\begin{flushleft}
+\ttt{\small{Analysis.}collect\_charts(self, folder=None)}
+\end{flushleft}
+
+\par Collects and returns a list of all charts in the specified folder, or
+in this Analysis if no folder is given.
 
 \label{cha:chart-api:omnetpp.scave.analysis:Analysis:export-data}
 
@@ -2257,7 +2571,7 @@ or implements equivalent functionality).
 \label{cha:chart-api:omnetpp.scave.analysis:Analysis:export-image}
 
 \begin{flushleft}
-\ttt{\small{Analysis.}export\_image(self, chart, wd, workspace, format="svg", target\_folder=None, filename=None, width=6, height=4, dpi=96, enforce=True, extra\_props=\{\})}
+\ttt{\small{Analysis.}export\_image(self, chart, wd, workspace, format="svg", target\_folder=None, filename=None, width=None, height=None, dpi=96, enforce=True, extra\_props=\{\})}
 \end{flushleft}
 
 \par Runs a chart script for image export. This method just calls \ttt{run\_chart()}
@@ -2273,13 +2587,28 @@ or implements equivalent functionality).
 
 \par Reads the given anf file and returns its content as an \ttt{Analysis} object.
 
-\label{cha:chart-api:omnetpp.scave.analysis:Analysis:info}
+\label{cha:chart-api:omnetpp.scave.analysis:Analysis:get-item-path}
 
 \begin{flushleft}
-\ttt{\small{Analysis.}info(self)}
+\ttt{\small{Analysis.}get\_item\_path(self, item)}
 \end{flushleft}
 
-\par Produces a multi-line string description about the content of this Analysis.
+\par Returns the path of the item (Chart or Folder) within the Analysis
+as list of path segments (Folder items). The returned list includes
+both the root folder of the Analysis and the item itself. If the
+item is not part of the Analysis, None is returned.
+
+\label{cha:chart-api:omnetpp.scave.analysis:Analysis:get-item-path-as-string}
+
+\begin{flushleft}
+\ttt{\small{Analysis.}get\_item\_path\_as\_string(self, item, separator=" / ")}
+\end{flushleft}
+
+\par Returns the path of the item (Chart or Folder) within the Analysis as a
+string. Segments are joined with the given separator. The returned
+string includes the item name itself, but not the root folder (i.e. for
+items in the root folder, the path string equals to the item name). If
+the item is not part of the Analysis, None is returned.
 
 \label{cha:chart-api:omnetpp.scave.analysis:Analysis:run-chart}
 

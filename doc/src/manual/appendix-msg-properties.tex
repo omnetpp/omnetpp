@@ -12,198 +12,198 @@ generated from message descriptions.
 % @BEGINFILE tools/msgproperties.txt
 \begin{description}
 \item[allowReplace] \textit{(type: bool, use: field)} \\
-    Specifies whether the setter method of an owned pointer field is allowed to
-    delete the previously set object.
+  Specifies whether the setter method of an owned pointer field is allowed to
+  delete the previously set object.
 
 \item[argType] \textit{(type: string, use: field, class)} \\
-    Field setter C++ argument type. When specified on a class, it determines the
-    default for fields of that type.
+  Field setter C++ argument type. When specified on a class, it determines the
+  default for fields of that type.
 
 \item[beforeChange] \textit{(type: string, use: class)} \\
-    Method to be called before mutator code (in setters, non-const getters,
-    operator=, etc.).
+  Method to be called before mutator code (in setters, non-const getters,
+  operator=, etc.).
 
 \item[byValue] \textit{(type: bool, use: field, class)} \\
-    If true: Causes the value to be passed by value (instead of by reference) in
-    setters/getters. When specified on a class, it determines the default for
-    fields of that type.
+  If true: Causes the value to be passed by value (instead of by reference) in
+  setters/getters. When specified on a class, it determines the default for
+  fields of that type.
 
 \item[castFunction] \textit{(type: bool, use: class)} \\
-    If false: Do not specialize the fromAnyPtr<T>(any\_ptr) function for this
-    class. Useful for preventing compile errors if the function already exists,
-    e.g. in hand-written form, or generated for another type (think aliased
-    typedefs).
+  If false: Do not specialize the fromAnyPtr<T>(any\_ptr) function for this
+  class. Useful for preventing compile errors if the function already exists,
+  e.g. in hand-written form, or generated for another type (think aliased
+  typedefs).
 
 \item[clone] \textit{(type: string, use: field, class)} \\
-    For owned pointer fields: Code to duplicate (one array element of) the field
-    value. When specified on a class, it determines the default for fields of
-    that type.
+  For owned pointer fields: Code to duplicate (one array element of) the field
+  value. When specified on a class, it determines the default for fields of
+  that type.
 
 \item[cppType] \textit{(type: string, use: field, class)} \\
-    Member C++ datatype. When specified on a class, it determines the default
-    for fields of that type.
+  Member C++ datatype. When specified on a class, it determines the default
+  for fields of that type.
 
 \item[custom] \textit{(type: bool, use: field)} \\
-    If true: Do not generate any data or code for the field, only add it to the
-    descriptor. Indicates that the field's implementation will be added to the
-    class via targeted cplusplus blocks.
+  If true: Do not generate any data or code for the field, only add it to the
+  descriptor. Indicates that the field's implementation will be added to the
+  class via targeted cplusplus blocks.
 
 \item[customize] \textit{(type: bool, use: class)} \\
-    If true: Customize the class via inheritance. Generates base class
-    <name>\_Base.
+  If true: Customize the class via inheritance. Generates base class
+  <name>\_Base.
 
 \item[defaultValue] \textit{(type: string, use: class)} \\
-    Default value for fields of this type.
+  Default value for fields of this type.
 
 \item[descriptor] \textit{(type: string, use: class)} \\
-    A 'true'/'false' value specifies whether to generate descriptor class;
-    special value 'readonly' requests generating a read-only descriptor (but
-    specifying @editable/@replaceable/@resizable on individual fields overrides
-    that).
+  A 'true'/'false' value specifies whether to generate descriptor class;
+  special value 'readonly' requests generating a read-only descriptor (but
+  specifying @editable/@replaceable/@resizable on individual fields overrides
+  that).
 
 \item[editable] \textit{(type: bool, use: field, class)} \\
-    Specifies whether field value (or value of fields that are instances of this
-    type) can be set via the class descriptor's setFieldValueFromString() and
-    setFieldValue() methods.
+  Specifies whether field value (or value of fields that are instances of this
+  type) can be set via the class descriptor's setFieldValueFromString() and
+  setFieldValue() methods.
 
 \item[enum] \textit{(type: string, use: field)} \\
-    For integer fields: Values are from the given enum.
+  For integer fields: Values are from the given enum.
 
 \item[eraser] \textit{(type: string, use: field)} \\
-    Name of the eraser method. (This method erases element from a dynamic
-    array.)
+  Name of the eraser method. (This method erases element from a dynamic
+  array.)
 
 \item[eventlog] \textit{(type: string, use: field)} \\
-    When @eventlog(skip) is given, eventlog recording will skip this field when
-    serializing objects
+  When @eventlog(skip) is given, eventlog recording will skip this field when
+  serializing objects
 
 \item[existingClass] \textit{(type: bool, use: class)} \\
-    If true: This is a type is already defined in C++, i.e. it does not need to
-    be generated.
+  If true: This is a type is already defined in C++, i.e. it does not need to
+  be generated.
 
 \item[fieldNameSuffix] \textit{(type: string, use: class)} \\
-    Suffix to append to the names of data members.
+  Suffix to append to the names of data members.
 
 \item[fromString] \textit{(type: string, use: field, class)} \\
-    Affects descriptor class: Code to convert string to field value. When
-    specified on a class, it determines the default for fields of that type.
+  Affects descriptor class: Code to convert string to field value. When
+  specified on a class, it determines the default for fields of that type.
 
 \item[fromValue] \textit{(type: string, use: field, class)} \\
-    Affects descriptor class: Code to convert cValue to field value. When
-    specified on a class, it determines the default for fields of that type.
+  Affects descriptor class: Code to convert cValue to field value. When
+  specified on a class, it determines the default for fields of that type.
 
 \item[getter] \textit{(type: string, use: field)} \\
-    Name of the (const) getter method.
+  Name of the (const) getter method.
 
 \item[getterConversion] \textit{(type: string, use: field, class)} \\
-    Code to convert field data type to return type in getters. When specified on
-    a class, it determines the default for fields of that type.
+  Code to convert field data type to return type in getters. When specified on
+  a class, it determines the default for fields of that type.
 
 \item[getterForUpdate] \textit{(type: string, use: field)} \\
-    Name of the non-const getter method.
+  Name of the non-const getter method.
 
 \item[group] \textit{(type: string, use: field)} \\
-    Used for grouping of fields in Qtenv inspectors
+  Used for grouping of fields in Qtenv inspectors
 
 \item[hint] \textit{(type: string, use: field)} \\
-    Short description of the field, displayed in Qtenv inspectors as tooltip
+  Short description of the field, displayed in Qtenv inspectors as tooltip
 
 \item[icon] \textit{(type: string, use: class)} \\
-    Icon for objects of this class in Qtenv inspectors
+  Icon for objects of this class in Qtenv inspectors
 
 \item[implements] \textit{(type: stringlist, use: class)} \\
-    Names of additional base classes.
+  Names of additional base classes.
 
 \item[inserter] \textit{(type: string, use: field)} \\
-    Name of the inserter method. (This method inserts element into a dynamic
-    array.)
+  Name of the inserter method. (This method inserts element into a dynamic
+  array.)
 
 \item[label] \textit{(type: string, use: field)} \\
-    When specified, this string will be displayed as field name in Qtenv
-    inspectors
+  When specified, this string will be displayed as field name in Qtenv
+  inspectors
 
 \item[nopack] \textit{(type: bool, use: field)} \\
-    If true: Ignore this field in parsimPack/parsimUnpack methods.
+  If true: Ignore this field in parsimPack/parsimUnpack methods.
 
 \item[omitGetVerb] \textit{(type: bool, use: class)} \\
-    If true: Drop the 'get' verb from the names of getter methods.
+  If true: Drop the 'get' verb from the names of getter methods.
 
 \item[opaque] \textit{(type: bool, use: field, class)} \\
-    If true: Treat the field as atomic (non-compound) type, i.e. having no
-    descriptor class. When specified on a class, it determines the default for
-    fields of that type.
+  If true: Treat the field as atomic (non-compound) type, i.e. having no
+  descriptor class. When specified on a class, it determines the default for
+  fields of that type.
 
 \item[overrideGetter] \textit{(type: bool, use: field)} \\
-    If true: Add the 'override' keyword to the declaration of the getter method.
+  If true: Add the 'override' keyword to the declaration of the getter method.
 
 \item[overrideSetter] \textit{(type: bool, use: field)} \\
-    If true: Add the 'override' keyword to the declaration of the setter method.
+  If true: Add the 'override' keyword to the declaration of the setter method.
 
 \item[owned] \textit{(type: bool, use: field)} \\
-    For pointers and pointer arrays: Whether allocated memory is owned by the
-    object (needs to be duplicated in dup(), and deleted in destructor). If
-    field type is also a cOwnedObject, take()/drop() calls are also generated.
+  For pointers and pointer arrays: Whether allocated memory is owned by the
+  object (needs to be duplicated in dup(), and deleted in destructor). If
+  field type is also a cOwnedObject, take()/drop() calls are also generated.
 
 \item[packetData] \textit{(type: string, use: class, field)} \\
-    Denotes packet data in frameworks such as INET; used in Qtenv inspectors
+  Denotes packet data in frameworks such as INET; used in Qtenv inspectors
 
 \item[polymorphic] \textit{(type: bool, use: class)} \\
-    Specifies whether this type is polymorphic, i.e. has any virtual member
-    function.
+  Specifies whether this type is polymorphic, i.e. has any virtual member
+  function.
 
 \item[primitive] \textit{(type: bool, use: field, class)} \\
-    Shortcut for @opaque @byValue @editable @subclassable(false)
-    @supportsPtr(false).
+  Shortcut for @opaque @byValue @editable @subclassable(false)
+  @supportsPtr(false).
 
 \item[property] \textit{(type: any, use: file)} \\
-    Property for declaring properties.
+  Property for declaring properties.
 
 \item[readonly] \textit{(type: bool, use: field)} \\
-    If true: Equivalent to @editable(false) @replaceable(false)
-    @resizable(false).
+  If true: Equivalent to @editable(false) @replaceable(false)
+  @resizable(false).
 
 \item[replaceable] \textit{(type: bool, use: field)} \\
-    If true: Field is a pointer whose value can be set via the class
-    descriptor's setFieldStructValuePointer() and setFieldValue() methods.
+  If true: Field is a pointer whose value can be set via the class
+  descriptor's setFieldStructValuePointer() and setFieldValue() methods.
 
 \item[resizable] \textit{(type: bool, use: field)} \\
-    If true: Field is a variable-size array whose size can be set via the class
-    descriptor's setFieldArraySize() method.
+  If true: Field is a variable-size array whose size can be set via the class
+  descriptor's setFieldArraySize() method.
 
 \item[returnType] \textit{(type: string, use: field, class)} \\
-    Field getter C++ return type. When specified on a class, it determines the
-    default for fields of that type.
+  Field getter C++ return type. When specified on a class, it determines the
+  default for fields of that type.
 
 \item[setter] \textit{(type: string, use: field)} \\
-    Name of the setter method.
+  Name of the setter method.
 
 \item[sizeGetter] \textit{(type: string, use: field)} \\
-    Name of the method that returns the array size.
+  Name of the method that returns the array size.
 
 \item[sizeSetter] \textit{(type: string, use: field)} \\
-    Name of the method that sets size of dynamic array.
+  Name of the method that sets size of dynamic array.
 
 \item[sizeType] \textit{(type: string, use: field)} \\
-    C++ type to use for array sizes and indices.
+  C++ type to use for array sizes and indices.
 
 \item[str] \textit{(type: string, use: class)} \\
-    Expression to be returned from the generated str() method.
+  Expression to be returned from the generated str() method.
 
 \item[subclassable] \textit{(type: bool, use: class)} \\
-    Specifies whether this type can be subclassed (e.g. C++ primitive types and
-    final classes cannot).
+  Specifies whether this type can be subclassed (e.g. C++ primitive types and
+  final classes cannot).
 
 \item[supportsPtr] \textit{(type: bool, use: field, class)} \\
-    Specifies whether this type supports creating a pointer (or pointer array)
-    from it.
+  Specifies whether this type supports creating a pointer (or pointer array)
+  from it.
 
 \item[toString] \textit{(type: string, use: field, class)} \\
-    Affects descriptor class: Code to convert field value to string. When
-    specified on a class, it determines the default for fields of that type.
+  Affects descriptor class: Code to convert field value to string. When
+  specified on a class, it determines the default for fields of that type.
 
 \item[toValue] \textit{(type: string, use: field, class)} \\
-    Affects descriptor class: Code to convert field value to cValue. When
-    specified on a class, it determines the default for fields of that type.
+  Affects descriptor class: Code to convert field value to cValue. When
+  specified on a class, it determines the default for fields of that type.
 
 \end{description}
 % @ENDFILE

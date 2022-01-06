@@ -150,31 +150,31 @@ channel IdealChannel
 channel DelayChannel
 {
     @class(cDelayChannel);
-    @signal[messageSent](type=cMessage);
-    @signal[messageDiscarded](type=cMessage);
-    @statistic[messages](...);
-    @statistic[messagesDiscarded](...);
-    bool disabled = default(false);
-    double delay = default(0s) @unit(s); // propagation delay
+    @signal[messageSent](type=omnetpp::cMessage);
+    @signal[messageDiscarded](type=omnetpp::cMessage);
+    @statistic[messages](source="constant1(messageSent)";record=count?;interpolationmode=none);
+    @statistic[messagesDiscarded](source="constant1(messageDiscarded)";record=count?;interpolationmode=none);
+    bool disabled @mutable = default(false);
+    double delay @mutable = default(0s) @unit(s); // propagation delay
 }
 
 channel DatarateChannel
 {
     @class(cDatarateChannel);
     @signal[channelBusy](type=long);
-    @signal[messageSent](type=cMessage);
-    @signal[messageDiscarded](type=cMessage);
-    @statistic[busy](...);
-    @statistic[utilization](...);
-    @statistic[packets](...);
-    @statistic[packetBytes](...);
-    @statistic[packetsDiscarded](...);
-    @statistic[throughput](...);
-    bool disabled = default(false);
-    double delay = default(0s) @unit(s); // propagation delay
-    double datarate = default(0bps) @unit(bps); // bits per second; 0=infinite
-    double ber = default(0); // bit error rate (BER)
-    double per = default(0); // packet error rate (PER)
+    @signal[messageSent](type=omnetpp::cMessage);
+    @signal[messageDiscarded](type=omnetpp::cMessage);
+    @statistic[busy](source=channelBusy;record=vector?;interpolationmode=sample-hold);
+    @statistic[utilization](source="timeavg(channelBusy)";record=last?);
+    @statistic[packets](source="constant1(messageSent)";record=count?;interpolationmode=none);
+    @statistic[packetBytes](source="packetBytes(messageSent)";record=sum?;unit=B;interpolationmode=none);
+    @statistic[packetsDiscarded](source="constant1(messageDiscarded)";record=count?;interpolationmode=none);
+    @statistic[throughput](source="sumPerDuration(packetBits(messageSent))";record=last?;unit=bps);
+    bool disabled @mutable = default(false);
+    double delay @mutable = default(0s) @unit(s); // propagation delay
+    double datarate @mutable = default(0bps) @unit(bps); // bits per second; 0=infinite
+    double ber @mutable = default(0); // bit error rate (BER)
+    double per @mutable = default(0); // packet error rate (PER)
 }
 
 moduleinterface IBidirectionalChannel
@@ -1971,10 +1971,10 @@ units.)
   \tabheadcol
   \tbf{Unit} & \tbf{Name} & \tbf{Value} \\\hline
 % @BEGINFILE tools/units.txt
-  s & second & \\\hline
-  d & day & 86400s \\\hline
+d & day & 86400s \\\hline
   h & hour & 3600s \\\hline
   min & minute & 60s \\\hline
+  s & second & \\\hline
   ms & millisecond & 0.001s \\\hline
   us & microsecond & 1e-6s \\\hline
   ns & nanosecond & 1e-9s \\\hline
@@ -2007,8 +2007,10 @@ units.)
   rad & radian & \\\hline
   deg & degree & 0.0174533rad \\\hline
   m & meter & \\\hline
-  mm & millimeter & 0.001m \\\hline
   cm & centimeter & 0.01m \\\hline
+  mm & millimeter & 0.001m \\\hline
+  um & micrometer & 1e-6m \\\hline
+  nm & nanometer & 1e-9m \\\hline
   km & kilometer & 1000m \\\hline
   W & watt & \\\hline
   mW & milliwatt & 0.001W \\\hline
@@ -2047,11 +2049,11 @@ units.)
   mps & meter/sec & \\\hline
   kmps & kilometer/sec & 1000mps \\\hline
   kmph & kilometer/hour & (1/3.6)mps \\\hline
-  C & coulomb & \\\hline
-  As & ampere-second & 1C \\\hline
-  mAs & milliampere-second & 0.001C \\\hline
-  Ah & ampere-hour & 3600C \\\hline
-  mAh & milliampere-hour & 3.6C \\\hline
+  C & coulomb & 1As \\\hline
+  As & ampere-second & \\\hline
+  mAs & milliampere-second & 0.001As \\\hline
+  Ah & ampere-hour & 3600As \\\hline
+  mAh & milliampere-hour & 3.6As \\\hline
   ratio & ratio & \\\hline
   pct & percent & 0.01ratio \\\hline
   dBW & decibel-watt & 10*log10(W) \\\hline

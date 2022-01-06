@@ -548,6 +548,12 @@ with the \fopt{-h configdetails} option.
     \ttt{<module-{\allowbreak}full-{\allowbreak}path>.{\allowbreak}<parameter-{\allowbreak}name>.{\allowbreak}param-{\allowbreak}recording={\allowbreak}true/{\allowbreak}false}.\\
     Example:
     \ttt{**.{\allowbreak}app.{\allowbreak}pk\-Len.{\allowbreak}param-{\allowbreak}recording={\allowbreak}true}
+\item[parameter-mutability-check] = \textit{<bool>}, default: \ttt{true}\\
+    \textit{Per-simulation-run setting.}\\
+    Setting to false will disable errors raised when trying to change the
+    values of module/channel parameters not marked as @mutable. This is
+    primarily a compatibility setting intended to facilitate running simulation
+    models that were not yet annotated with @mutable.
 \item[parsim-communications-class] = \textit{<string>}, default: \ttt{omnetpp::{\allowbreak}cFile\-Communications}\\
     \textit{Global setting (applies to all simulation runs).}\\
     If \ttt{parallel-{\allowbreak}simulation={\allowbreak}true}, it selects the
@@ -872,9 +878,6 @@ with the \fopt{-h configdetails} option.
 \item[warnings] = \textit{<bool>}, default: \ttt{true}\\
     \textit{Per-simulation-run setting.}\\
     Enables warnings.
-\item[**.with-akaroa] = \textit{<bool>}, default: \ttt{false}\\
-    Per-object setting for vector results.\\
-    Whether the output vector should be under Akaroa control.
 \end{description}
 % @ENDFILE
 
