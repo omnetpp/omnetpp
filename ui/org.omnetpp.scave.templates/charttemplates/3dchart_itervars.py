@@ -26,7 +26,7 @@ if df.empty:
 
 if not xaxis_itervar and not yaxis_itervar:
     print("The X Axis and Y Axis options were not set in the dialog, inferring them from the data..")
-    xaxis_itervar, yaxis_itervar = utils.pick_two_columns(df, props)
+    xaxis_itervar, yaxis_itervar = utils.select_best_partitioning_column_pair(df, props)
 if not xaxis_itervar or not yaxis_itervar:
     raise chart.ChartScriptError("Please set both the X Axis and Y Axis options in the dialog - or neither, for automatic selection!")
 

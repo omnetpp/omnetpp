@@ -1617,14 +1617,14 @@ def make_chart_title(df, title_cols):
     return title
 
 
-def pick_two_columns(df, props=None):  #TODO remove default for props in final release
+def select_best_partitioning_column_pair(df, props=None):  #TODO remove default for props in final release
     """
     Choose two columns from the dataframe which best partitions the rows
     of the dataframe, and returns their names as a pair. Returns (`None`, `None`)
     if no such pair was found. This method is useful for creating e.g. a bar plot.
     """
     if props is None:
-        print("pick_two_columns(): Missing props argument! Update chart script, or code will break on next release!", file=sys.stderr)
+        print("select_best_partitioning_column_pair(): Missing props argument! Update chart script, or code will break on next release!", file=sys.stderr)
         props = {}
     title_cols, label_cols = extract_label_columns(df, props)
     if len(label_cols) == 0:
@@ -1665,7 +1665,7 @@ def select_groups_series(df, props):
 
     if not groups and not series:
         print("The Groups and Series options were not set in the dialog, inferring them from the data.")
-        g, s = ("module", "name") if len(df) == 1 else pick_two_columns(df, props)
+        g, s = ("module", "name") if len(df) == 1 else select_best_partitioning_column_pair(df, props)
         groups, series = [g], [s]
 
     if not groups or not groups[0] or not series or not series[0]:
@@ -1704,7 +1704,7 @@ def select_xaxis_and_groupby(df, props):
 
     if not xaxis_itervar and not group_by:
         print("The 'X Axis' and 'Group By' options were not set in the dialog, inferring them from the data..")
-        xaxis_itervar, group_by = pick_two_columns(df, props)
+        xaxis_itervar, group_by = select_best_partitioning_column_pair(df, props)
         group_by = [group_by] if group_by else []
         print("X Axis: " + xaxis_itervar + ", Group By: " + ",".join(group_by))
 
