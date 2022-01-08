@@ -1506,7 +1506,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
             CC << "return omnetpp::toAnyPtr(" << maybeAddressOf << value << "); break;\n";
         }
         else {
-            errors->addWarning(field.astNode, "Cannot generate code to return field '%s' as cValue, because no @toValue() is specified on the field or its type '%s' (and also cannot return a pointer due to @byValue)", field.name.c_str(), field.typeQName.c_str());
+            errors->addWarning(field.astNode, "Cannot generate code in the descriptor class to return field '%s' as cValue, because no @toValue() is specified on the field or its type '%s' (and also cannot return a pointer due to @byValue)", field.name.c_str(), field.typeQName.c_str());
             CC << "throw omnetpp::cRuntimeError(\"Cannot return field '" << classInfo.qname << "::" << field.name << "' (type '" << field.type << "') as cValue, please provide @toValue in the msg file\");\n";
         }
     }
@@ -1541,7 +1541,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
                         CC << makeFuncall("pp", field.setter, field.isArray, valueToSet) << "; break;\n";
                 }
                 else {
-                    errors->addWarning(field.astNode, "Field '%s' is marked @editable but cannot generate code to set it from cValue, as @fromValue() is not specified on the field or its type '%s'", field.name.c_str(), field.typeQName.c_str());
+                    errors->addWarning(field.astNode, "Field '%s' is marked @editable but cannot generate code in the descriptor class to set it from cValue, as @fromValue() is not specified on the field or its type '%s'", field.name.c_str(), field.typeQName.c_str());
                     CC << "throw omnetpp::cRuntimeError(\"Cannot set field '" << classInfo.qname << "::" << field.name << "' (type '" << field.type << "') from cValue, please provide @fromValue in the msg file\");\n";
                 }
             }
