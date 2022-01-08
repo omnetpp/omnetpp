@@ -791,7 +791,7 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
         CC << field.returnType << " " << classInfo.className << "::" << field.getter << "(" << idxarg << ")" << " const\n";
         CC << "{\n";
         if (field.isArray)
-            CC << "    if (k >= " << field.sizeVar << ") throw omnetpp::cRuntimeError(\"Array of size " << field.sizeVar << " indexed by %lu\", (unsigned long)k);\n";
+            CC << "    if (k >= " << field.sizeVar << ") throw omnetpp::cRuntimeError(\"Array of size %lu indexed by %lu\", (unsigned long)" << field.sizeVar << ", (unsigned long)k);\n";
         generateMethodCplusplusBlock(classInfo, field.getter);
         CC << "    return " << makeFuncall(indexedVar, field.getterConversion) + ";\n";
         CC << "}\n\n";
@@ -831,9 +831,8 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
         if (field.isPointer || !field.isConst) {
             CC << "void " << classInfo.className << "::" << field.setter << "(" << idxarg2 << field.argType << " " << field.argName << ")\n";
             CC << "{\n";
-            if (field.isArray) {
-                CC << "    if (k >= " << field.sizeVar << ") throw omnetpp::cRuntimeError(\"Array of size " << field.arraySize << " indexed by %lu\", (unsigned long)k);\n";
-            }
+            if (field.isArray)
+                CC << "    if (k >= " << field.sizeVar << ") throw omnetpp::cRuntimeError(\"Array of size %lu indexed by %lu\", (unsigned long)" << field.sizeVar << ", (unsigned long)k);\n";
             CC << maybe_handleChange_line;
             generateMethodCplusplusBlock(classInfo, field.setter);
             if (field.isOwnedPointer) {
@@ -857,7 +856,7 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
             CC << field.mutableReturnType << " " << classInfo.className << "::" << field.dropper << "(" << idxarg << ")\n";
             CC << "{\n";
             if (field.isArray)
-                CC << "    if (k >= " << field.sizeVar << ") throw omnetpp::cRuntimeError(\"Array of size " << field.arraySize << " indexed by %lu\", (unsigned long)k);\n";
+                CC << "    if (k >= " << field.sizeVar << ") throw omnetpp::cRuntimeError(\"Array of size %lu indexed by %lu\", (unsigned long)" << field.sizeVar << ", (unsigned long)k);\n";
             CC << maybe_handleChange_line;
             generateMethodCplusplusBlock(classInfo, field.dropper);
             CC << "    " << field.mutableReturnType << " retval = ";
@@ -878,7 +877,7 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
         if (field.isDynamicArray) {
             CC << "void " << classInfo.className << "::" << field.inserter << "(" << idxarg2 << field.argType << " " << field.argName << ")\n";
             CC << "{\n";
-            CC << "    if (k > " << field.sizeVar << ") throw omnetpp::cRuntimeError(\"Array of size " << field.arraySize << " indexed by %lu\", (unsigned long)k);\n";
+            CC << "    if (k > " << field.sizeVar << ") throw omnetpp::cRuntimeError(\"Array of size %lu indexed by %lu\", (unsigned long)" << field.sizeVar << ", (unsigned long)k);\n";
             CC << maybe_handleChange_line;
             generateMethodCplusplusBlock(classInfo, field.inserter);
             CC << "    " << field.sizeType << " newSize = " << field.sizeVar << " + 1;\n";
@@ -912,7 +911,7 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
         if (field.isDynamicArray) {
             CC << "void " << classInfo.className << "::" << field.eraser << "(" << idxarg << ")\n";
             CC << "{\n";
-            CC << "    if (k >= " << field.sizeVar << ") throw omnetpp::cRuntimeError(\"Array of size " << field.arraySize << " indexed by %lu\", (unsigned long)k);\n";
+            CC << "    if (k >= " << field.sizeVar << ") throw omnetpp::cRuntimeError(\"Array of size %lu indexed by %lu\", (unsigned long)" << field.sizeVar << ", (unsigned long)k);\n";
             CC << maybe_handleChange_line;
             generateMethodCplusplusBlock(classInfo, field.eraser);
             CC << "    " << field.sizeType << " newSize = " << field.sizeVar << " - 1;\n";
