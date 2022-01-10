@@ -473,7 +473,7 @@ void MsgCompiler::printPropertiesLatexDocu(std::ostream& out)
     out << "\\begin{description}\n";
     for (auto pair : sortedPropertyDecls) {
         const Property *p = pair.second;
-        out << "\\item[" << p->getIndex() << "] ";
+        out << "\\item[@" << p->getIndex() << "] ";
         out << "\\textit{(type: " << opp_join(p->getValue("type"), "") << ", ";
         out << "use: " << opp_join(p->getValue("usage"), ", ") << ")} \\\\\n";
         out << opp_indentlines(opp_breaklines(opp_latexquote(opp_join(p->getValue("desc"), "")), 76), "  ") << "\n\n";
