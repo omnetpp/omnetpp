@@ -116,9 +116,17 @@ def connect_to_IDE():
     entry_point = PythonEntryPoint()
 
     gateway = ClientServer(
-        java_parameters=JavaParameters(port=java_port, auto_field=True, auto_convert=True, auto_close=True),
-        python_parameters=PythonParameters(port=0, daemonize=True, daemonize_connections=True),
+        java_parameters=JavaParameters(
+            address="127.0.0.1", port=java_port,
+            auto_field=True, auto_convert=True, auto_close=True,
+            auth_token=os.environ["PY4J_AUTH_TOKEN"]),
+        python_parameters=PythonParameters(
+             address="127.0.0.1", port=0,
+             daemonize=True, daemonize_connections=True),
         python_server_entry_point=entry_point)
+    # Even though this won't erase it from the environment of the process itself at
+    # the system level, at least it will be more difficult to access from Python.
+    del os.environ["PY4J_AUTH_TOKEN"]
 
     Gateway.gateway = gateway
 

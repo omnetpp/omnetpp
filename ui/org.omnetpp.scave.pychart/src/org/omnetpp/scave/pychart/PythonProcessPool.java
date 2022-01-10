@@ -9,7 +9,9 @@ package org.omnetpp.scave.pychart;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.URISyntaxException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -70,9 +72,16 @@ public class PythonProcessPool {
         if (PythonProcess.debug)
             Debug.println("connecting...");
 
+        // this provides at least a "better than nothing" security
+        String authToken = String.format("%016X", new SecureRandom().nextLong());
+
         // readTimeout must be >1 sec, because the default FinalizerWorker sleep duration is 1 sec (on the Python side),
         // and in some cases that delays a reply, and we must not time out until the next iteration of that thread.
-        ClientServer clientServer = new ClientServer.ClientServerBuilder().javaPort(0).pythonPort(0).readTimeout(1500).build();
+        ClientServer clientServer = new ClientServer.ClientServerBuilder()
+                .javaAddress(InetAddress.getLoopbackAddress()).javaPort(0)
+                .pythonAddress(InetAddress.getLoopbackAddress()).pythonPort(0)
+                .readTimeout(1500).authToken(authToken)
+                .build();
 
         int javaPort = clientServer.getJavaServer().getListeningPort();
         if (PythonProcess.debug)
@@ -85,6 +94,8 @@ public class PythonProcessPool {
 
         Map<String, String> env = pb.environment();
         env.put("WITHIN_OMNETPP_IDE", "yes");
+        // Assuming the environment of the process to be secure enough, not readable by other users
+        env.put("PY4J_AUTH_TOKEN", authToken);
         env.put("PYTHONPATH", extendPythonPath(env.get("PYTHONPATH")));
         // Selecting agg to avoid initializing any GUI framework (Tk, Qt, GTK, ...) in chart export
         // jobs, which would likely fail, because we are doing it from a thread other than the main
