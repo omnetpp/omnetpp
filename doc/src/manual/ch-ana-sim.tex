@@ -438,7 +438,7 @@ effect.)
 \label{sec:ana-sim:saving-parameters-as-scalars}
 
 When you are running several simulations with different parameter
-settings, you'll usually want to refer to selected
+settings, you will usually want to refer to selected
 input parameters in the result analysis as well -- for example when
 drawing a throughput (or response time) versus load (or network
 background traffic) plot. Average throughput or response time numbers
@@ -881,7 +881,7 @@ Chart scripts heavily build on the following, fairly standard Python packages:
     \ttt{DataFrame}s of various formats.
   \item \textit{omnetpp.scave.chart}: Provides access to the properties of the
     current chart for the chart script.
-  \item \textit{omnetpp.scave.plot}: This module is the interface for displaying
+  \item \textit{omnetpp.scave.ideplot}: This module is the interface for displaying
     plots with the IDE's native plotting widgets. The API is intentionally very
     close to \ttt{matplotlib.pyplot}, which facilitates porting scripts across
     the two APIs. When a chart script runs outside the context of a native
@@ -916,37 +916,40 @@ order to see how it looks in practice.
 
 The chosen chart script is that of the bar chart. It is quite representative, so
 it will prepare you to understand other chart scripts, modify them for custom
-needs, or write your own. We are going to list the source, and pause for
-explanations after every few lines.
+needs, or write your own; yet it is short and simple, so it is easy to follow.
+We are going to list the source, and pause for explanations after every few lines.
 
 \begin{python}
-import math
-import numpy as np
-import pandas as pd
-from omnetpp.scave import results, chart, plot, utils
+from omnetpp.scave import results, chart, utils
 \end{python}
 
-The first few lines are for importing the packages we are going to use. This is
+The first lines is for importing the packages we are going to use. This is
 necessary because nothing is imported by default when the chart script starts.
+
+Notice how all imported modules are under the \ttt{omnetpp.scave} module, and not
+directly from \ttt{numpy} or \ttt{pandas} or \ttt{matplotlib} packages. This is
+because almost all necessary functionality is already encompassed in convenience
+methods in (mostly) the \ttt{utils} and \ttt{plot} modules.
 
 \begin{python}
 # get chart properties
 props = chart.get_properties()
 \end{python}
 
-First, we obtain the properties of the bar chart from the \ttt{chart} module.
-The \ttt{props} object we get is a Python \ttt{dict} whose entries serve as
-parameters for the chart script and for the resulting plot.
+Then, we obtain the properties of the bar chart from the \ttt{chart} module.
+The \ttt{props} object we get is a Python \ttt{dict} whose entries can be
+influnced by the chart properties dialog, and they serve as parameters for
+the chart script and the resulting plot.
 
 Try adding \ttt{print(props)} to the code, or \ttt{for k,v in props.items():
-print(repr(k), "=", repr(v))} for fancier output. When the chart script runs,
+print(repr(k), "=", repr(v))} for fancier output. After the chart script ran,
 you should see an output similar to the following:
 
 \begin{commandline}
-'confidence_level' = 'none'
+'confidence_level' = '95\%'
 'filter' = 'type =~ scalar AND name =~ channelUtilization:last'
 'grid_show' = 'true'
-'legend_labels' = 'result titles'
+'legend_prefer_result_titles' = 'true'
 'title' = ''
 'legend_show' = 'true'
 'matplotlibrc' = ''
@@ -963,12 +966,13 @@ utils.preconfigure_plot(props)
 
 The \ttt{preconfigure\_plot()} call is a mandatory part of a chart script, and
 its job is to ensure that visual properties take effect in the plot. Note that
-we'll also have a \texttt{postconfigure\_plot()} call, because some properties
+we will also have a \texttt{postconfigure\_plot()} call, because some properties
 must be set before, and others after the plotting.
 
 \begin{python}
-# obtain the result query
+# collect parameters for query
 filter_expression = props["filter"]
+include_fields = props["include_fields"] == "true"
 \end{python}
 
 Here we obtain the result query string from the properties. The query string
@@ -976,14 +980,18 @@ selects the subset of the results that serve as input to the chart from the set 
 all results loaded from the result files. The \ttt{"filter"} property is
 common to almost all chart types.
 
+Since bar charts work with scalars, we provide the user an opportunity to select
+whether the fields (such as \ttt{:mean}, \ttt{:count}, \ttt{:sum}, etc.) of vector,
+statistics, and histogram results should also be included in the source dataset,
+as scalars.
+
 \begin{python}
 # query scalar data into dataframe
 try:
-    df = results.get_scalars(filter_expression, include_attrs=True,
-                         include_itervars=True, include_runattrs=True)
+    df = results.get_scalars(filter_expression, include_fields=include_fields,
+             include_attrs=True, include_runattrs=True, include_itervars=True)
 except ValueError as e:
-    plot.set_warning("Error while querying results: " + str(e))
-    exit(1)
+    raise chart.ChartScriptError("Error while querying results: " + str(e))
 \end{python}
 
 Here, \ttt{results.get\_scalars()} is the most important part. It uses the
@@ -994,7 +1002,7 @@ Here, \ttt{results.get\_scalars()} is the most important part. It uses the
 that represent metadata such as result attributes, iteration variables and run
 attributes: \ttt{iaMean}, \ttt{numHosts}, \ttt{configname}, \ttt{datetime}, etc.
 
-Try \ttt{print(df)} to print the dataframe contents. You'll get something like
+Try \ttt{print(df)} to print the dataframe contents. You will get something like
 this (for brevity, we dropped the less important columns from the output, and
 abbreviated the name of the last colum from \ttt{repetition}):
 
@@ -1015,104 +1023,53 @@ abbreviated the name of the last colum from \ttt{repetition}):
 Also note in the snippet above that \ttt{try...except} was used to catch
 exceptions (usually syntax errors in the query), and gracefully report them back
 to the user instead of letting a stack trace appear in the console.
-(\ttt{plot.set\_warning()} displays the message in the plot area).
+Raising a \ttt{chart.ChartScriptError} displays the passed message in the plot area.
 
 \begin{python}
 if df.empty:
-    plot.set_warning("The result filter returned no data.")
-    exit(1)
+    raise chart.ChartScriptError("The result filter returned no data.")
 \end{python}
 
-If the query matched nothing, let the user know instead of letting them figure
-out from the empty plot they get.
+If the query matched nothing, let the user know instead of letting them figure out
+from the empty plot they get, again, by raising an exception of the appropriate type.
 
 \begin{python}
-groups = utils.split(props["groups"])
-series = utils.split(props["series"])
+groups, series = utils.select_groups_series(df, props)
 \end{python}
+
 
 The user may fill in the \textit{Groups} and \textit{Series} fields of the
-\textit{Chart Properties} dialog to control how to organize the bar chart. As
-each field may contain multiple variables (separated by comma), we split the
-values to convert them to lists.
+\textit{Chart Properties} dialog to control how to organize the bar chart.
+As each field may contain multiple variables (separated by comma), we split
+the values to convert them to lists.
+
+If these fields (properties) are left empty, the script tries to find
+reasonable values for them. It also detects various misconfiguration cases
+(such as nonexisting column names given in, or overlap between, the "groups"
+and "series" columns), and report them back to the user. Leaving out these
+checks would, in most cases, cause those errors to manifest themselves in
+later steps as spurious Pandas exceptions, whose wording often provides
+little guidance to the user about what actually went wrong.
 
 \begin{python}
-if not groups and not series:
-    print("The Groups and Series options were not set, inferring from data.")
-    g, s = ("module", "name") if len(df) == 1 else utils.pick_two_columns(df)
-    groups, series = [g], [s]
-\end{python}
-
-\raggedright
-If the user left those fields empty, the script tries to find suitable values
-for them. This is done with \ttt{utils.pick\_two\_columns(df)}.
-
-\begin{python}
-if not groups or not groups[0] or not series or not series[0]:
-    plot.set_warning("Please set both the Groups and Series properties in \
-                      the dialog - or neither, for automatic setup.")
-    exit(1)
-
-common = list(set(groups) & set(series))
-if common:
-    plot.set_warning("Overlap between Groups and Series: " + ", ".join(common))
-    exit(1)
-
-utils.assert_columns_exist(df, groups + series, "No such itervar or runattr")
-\end{python}
-
-These lines detect various misconfiguration cases, and report them back to the
-user. Leaving out these checks would, in most cases, cause those errors to
-manifest themselves in later steps as spurious Pandas exceptions, whose wording
-often provides little guidance to the user about what actually went wrong.
-
-\begin{python}
-for c in groups + series:
-    df[c] = pd.to_numeric(df[c], errors="ignore")
-df.sort_values(by=groups+series, axis='index', inplace=True)
-\end{python}
-
-For the bar chart, we want values to appear on the horizontal axis and in the
-legend in ascending order, so we sort the rows on the dataframe before pivoting
-(\ttt{df.sort\_values()}).
-
-The previous two lines have relatively minor importance. Since iteration
-variables and other metadata appear in the dataframe as strings, the
-lexicographical sorting done by \ttt{df.sort\_values()} is not the best
-([1,2,10,20] becomes [1,10,2,20]). To get proper ordering, we convert what we
-can to numbers.
-
-\begin{python}
-names = ", ".join(utils.get_names_for_title(df, props))
-confidence_level_str = props["confidence_level"] \
-                       if "confidence_level" in props else "none"
+confidence_level = utils.get_confidence_level(props)
 \end{python}
 
 Extract the confidence level requested by the user from the properties.
 (\ttt{"none"} is the string that the user can select from the combo box in the
-dialog to turn off confidence level computation.)
+dialog to turn off confidence interval computation.)
 
 \begin{python}
-if confidence_level_str == "none":
-    df = pd.pivot_table(df, index=groups, columns=series, values='value')
-    utils.plot_bars(df, props, names)
-else:
-    confidence_level = float(confidence_level_str[:-1])/100
-    def conf_intv(values):
-        return utils.confidence_interval(confidence_level, values)
-    df = pd.pivot_table(df, index=groups, columns=series, values='value',
-                        aggfunc=[np.mean, conf_intv], dropna=False)
-    utils.plot_bars(df["mean"], props, names, df["conf_intv"])
+valuedf, errorsdf, metadf =
+    utils.pivot_for_barchart(df, groups, series, confidence_level)
+utils.plot_bars(valuedf, errorsdf, metadf, props)
 \end{python}
 
 At last, we arrive at the important part of the script, which is pivoting and
-plotting the data. The Pandas \ttt{pd.pivot\_table()} function is used for
+plotting the data. The \ttt{utils.pivot\_for\_barchart()} function is used for
 pivoting, and \ttt{utils.plot\_bars()} for plotting.
 
-The code branches on the condition of whether the user requested confidence
-intervals or not. Let's see the first, simpler case first.
-
-If you add a \ttt{print(df)} statement, you can see the result of pivoting:
+If you add a \ttt{print(valuedf)} statement, you can see the result of pivoting:
 
 \begin{commandline}
 numHosts        10        15        20
@@ -1126,46 +1083,59 @@ iaMean
 9         0.089658  0.120800  0.142568
 \end{commandline}
 
-The resulting plot is shown in Figure \ref{fig:ana-barplot}:
+If the user requested no confidence interval (error bars), \ttt{errorsdf} will be \ttt{None}.
+
+In this case, the default 95\% is used, so \ttt{print(errorsdf)} shows this:
+
+\begin{commandline}
+numHosts        10        15        20
+iaMean
+1         0.000117  0.001616  0.001968
+2         0.003065  0.000619  0.002162
+3         0.000364  0.001426  0.001704
+4         0.002152  0.000918  0.002120
+5         0.002391  0.000411  0.000625
+7         0.000568  0.001729  0.002221
+9         0.001621  0.002385  0.000259
+\end{commandline}
+
+This dataframe has the exact same structure (column and row headers) as \ttt{valuedf},
+only the values are different - they are the half-length of the confidence interval
+corresponding to the selected confidence level, so it can be interpreted as a "+/-" range.
+
+The third dataframe, \ttt{metadf} contains various pieces of metadata about the results,
+
+Here are just a few columns from it:
+
+\begin{commandline}
+                        measurement        module                      title
+iaMean
+1      $numHosts=10, $iaMean=1, etc.  Aloha.server  channel utilization, last
+2      $numHosts=10, $iaMean=2, etc.  Aloha.server  channel utilization, last
+3      $numHosts=10, $iaMean=3, etc.  Aloha.server  channel utilization, last
+4      $numHosts=10, $iaMean=4, etc.  Aloha.server  channel utilization, last
+5      $numHosts=10, $iaMean=5, etc.  Aloha.server  channel utilization, last
+7      $numHosts=10, $iaMean=7, etc.  Aloha.server  channel utilization, last
+9      $numHosts=10, $iaMean=9, etc.  Aloha.server  channel utilization, last
+\end{commandline}
+
+This dataframe is used to assemble the legend labels for the series of bars on the plot.
+It has the same row headers as \ttt{valuedf}, but the column headers are the names of run
+and result attributes, and iteration variables. Where multiple different values would have
+had to be put into the same cell, only the first one is present, and an "etc." is appended.
+
+Note that in some other types of charts (line charts, histogram charts, etc.), separating
+the results into separate dataframes like this is not necessary, as those charts do not do
+pivot operations on their results, and the corresponding plots accept data in formats
+that can hold the metadata in the same dataframe as the main values to be plotted.
+
+The drawn plot is shown in Figure \ref{fig:ana-barplot}:
 
 \begin{figure}[htbp]
   \begin{center}
     \includesvg[scale=0.7]{figures/ana-barplot}
-    \caption{The resulting bar plot}
-    \label{fig:ana-barplot}
-  \end{center}
-\end{figure}
-
-The second case is more complicated because the user requested confidence
-intervals too. It creates a dataframe with 2x3 columns and a hierarchical column
-index:
-
-\begin{commandline}
-              mean                      conf_intv
-numHosts        10        15        20        10        15        20
-iaMean
-1         0.156116  0.089539  0.046586  0.000117  0.001616  0.001968
-2         0.194817  0.178159  0.147564  0.003065  0.000619  0.002162
-3         0.176321  0.191571  0.183976  0.000364  0.001426  0.001704
-4         0.153569  0.182324  0.190452  0.002152  0.000918  0.002120
-5         0.136997  0.168780  0.183742  0.002391  0.000411  0.000625
-7         0.109281  0.141556  0.164038  0.000568  0.001729  0.002221
-9         0.089658  0.120800  0.142568  0.001621  0.002385  0.000259
-\end{commandline}
-
-The first three data columns are the bar heights, and the second three are the
-confidence intervals. Due to the column index being hierarchical, the two column
-groups can be accessed as \ttt{df["mean"]} and \ttt{df["conf\_intv"]} as separate
-dataframes. This is how they are passed into \ttt{utils.plot\_bars()}, which
-expects the bar heights and the errors as two separate dataframes.
-
-The result is shown in Figure \ref{fig:ana-barplot-errorbars}:
-
-\begin{figure}[htbp]
-  \begin{center}
-    \includesvg[scale=0.7]{figures/ana-barplot-errorbars}
     \caption{The resulting bar plot, showing confidence interval as error bars}
-    \label{fig:ana-barplot-errorbars}
+    \label{fig:ana-barplot}
   \end{center}
 \end{figure}
 
@@ -1180,30 +1150,12 @@ utils.export_image_if_needed(props)
 utils.export_data_if_needed(df, props)
 \end{python}
 
-Handle image and data export. Exporting is done by running chart scripts where
+These lines perform image and data export. Exporting is done by running chart scripts with
 certain properties set in order to indicate to the chart script that exporting is requested.
 
 The \ttt{utils.export\_image\_if\_needed()} and \ttt{utils.export\_data\_if\_needed()} functions
 take those flag properties and a lot of other properties related to exporting.
 The latter saves the dataframe given to it as argument.
-
-% Summary:
-
-% \begin{python}
-% import math
-% import numpy as np
-% import pandas as pd
-% from omnetpp.scave import results, chart, plot, utils
-% props = chart.get_properties()
-% utils.preconfigure_plot(props)
-% filter_expression = props["filter"]
-% df = results.get_...(filter_expression, ...)
-% ...
-% utils.plot_...(...)
-% utils.postconfigure_plot(props)
-% utils.export_image_if_needed(props)
-% utils.export_data_if_needed(df, props)
-% \end{python}
 
 
 \section{Alternatives}
