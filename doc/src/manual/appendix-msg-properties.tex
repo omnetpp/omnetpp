@@ -11,13 +11,26 @@ generated from message descriptions.
 
 % @BEGINFILE tools/msgproperties.txt
 \begin{description}
+\item[@abstract] \textit{(type: bool, use: field, class)} \\
+  If true: For a class, it indicates that it is an abstract class in the C++
+  sense (one which cannot be instantiated). For a field, it requests that the
+  accessor methods for the field be made pure virtual and no data member be
+  generated; it also makes the class that contains the field abstract (unless
+  the class has @customize whereas it is assumed that the custom code
+  implements the pure virtual member functions).
+
 \item[@allowReplace] \textit{(type: bool, use: field)} \\
   Specifies whether the setter method of an owned pointer field is allowed to
   delete the previously set object.
 
+\item[@appender] \textit{(type: string, use: field)} \\
+  Name of the appender method. (This method appends an element to a dynamic
+  array.)
+
 \item[@argType] \textit{(type: string, use: field, class)} \\
-  Field setter C++ argument type. When specified on a class, it determines the
-  default for fields of that type.
+  Field setter argument C++ base type. This type may be decorated with 'const'
+  and '*'/'\&' to produce the actual argument type. When specified on a class,
+  it determines the default for fields of that type.
 
 \item[@beforeChange] \textit{(type: string, use: class)} \\
   Method to be called before mutator code (in setters, non-const getters,
@@ -40,17 +53,28 @@ generated from message descriptions.
   that type.
 
 \item[@cppType] \textit{(type: string, use: field, class)} \\
-  Member C++ datatype. When specified on a class, it determines the default
-  for fields of that type.
+  C++ datatype. Provides a common default for @datamemberType, @argType and
+  @returnType. When specified on a class, it determines the default for fields
+  of that type.
 
 \item[@custom] \textit{(type: bool, use: field)} \\
   If true: Do not generate any data or code for the field, only add it to the
   descriptor. Indicates that the field's implementation will be added to the
   class via targeted cplusplus blocks.
 
+\item[@customImpl] \textit{(type: bool, use: field)} \\
+  If true: Do not generate implementations for the field's accessor methods,
+  to allow custom implementations to be supplied by the user via cplusplus
+  blocks or in separate .cc files.
+
 \item[@customize] \textit{(type: bool, use: class)} \\
   If true: Customize the class via inheritance. Generates base class
   <name>\_Base.
+
+\item[@datamemberType] \textit{(type: string, use: field, class)} \\
+  Data member C++ base data type. This type is decorated with '*' if the field
+  is a pointer. When specified on a class, it determines the default for
+  fields of that type.
 
 \item[@defaultValue] \textit{(type: string, use: class)} \\
   Default value for fields of this type.
@@ -62,16 +86,16 @@ generated from message descriptions.
   that).
 
 \item[@editable] \textit{(type: bool, use: field, class)} \\
-  Specifies whether field value (or value of fields that are instances of this
-  type) can be set via the class descriptor's setFieldValueFromString() and
-  setFieldValue() methods.
+  Affects descriptor class only. If true: Value of the field (or value of
+  fields that are instances of this type) can be set via the class
+  descriptor's setFieldValueFromString() and setFieldValue() methods.
 
 \item[@enum] \textit{(type: string, use: field)} \\
   For integer fields: Values are from the given enum.
 
 \item[@eraser] \textit{(type: string, use: field)} \\
-  Name of the eraser method. (This method erases element from a dynamic
-  array.)
+  Name of the eraser method. (This method erases an element from a dynamic
+  array. Indices above the specified one are shifted down.)
 
 \item[@eventlog] \textit{(type: string, use: field)} \\
   When @eventlog(skip) is given, eventlog recording will skip this field when
@@ -85,11 +109,11 @@ generated from message descriptions.
   Suffix to append to the names of data members.
 
 \item[@fromString] \textit{(type: string, use: field, class)} \\
-  Affects descriptor class: Code to convert string to field value. When
+  Affects descriptor class only. Code to convert string to field value. When
   specified on a class, it determines the default for fields of that type.
 
 \item[@fromValue] \textit{(type: string, use: field, class)} \\
-  Affects descriptor class: Code to convert cValue to field value. When
+  Affects descriptor class only. Code to convert cValue to field value. When
   specified on a class, it determines the default for fields of that type.
 
 \item[@getter] \textit{(type: string, use: field)} \\
@@ -115,7 +139,7 @@ generated from message descriptions.
   Names of additional base classes.
 
 \item[@inserter] \textit{(type: string, use: field)} \\
-  Name of the inserter method. (This method inserts element into a dynamic
+  Name of the inserter method. (This method inserts an element into a dynamic
   array.)
 
 \item[@label] \textit{(type: string, use: field)} \\
@@ -129,9 +153,9 @@ generated from message descriptions.
   If true: Drop the 'get' verb from the names of getter methods.
 
 \item[@opaque] \textit{(type: bool, use: field, class)} \\
-  If true: Treat the field as atomic (non-compound) type, i.e. having no
-  descriptor class. When specified on a class, it determines the default for
-  fields of that type.
+  Affects descriptor class only. If true: Treat the field as atomic
+  (non-compound) type, i.e. having no descriptor class. When specified on a
+  class, it determines the default for fields of that type.
 
 \item[@overrideGetter] \textit{(type: bool, use: field)} \\
   If true: Add the 'override' keyword to the declaration of the getter method.
@@ -159,20 +183,27 @@ generated from message descriptions.
   Property for declaring properties.
 
 \item[@readonly] \textit{(type: bool, use: field)} \\
-  If true: Equivalent to @editable(false) @replaceable(false)
-  @resizable(false).
+  Affects descriptor class only. Equivalent to @editable(false)
+  @replaceable(false) @resizable(false).
+
+\item[@remover] \textit{(type: string, use: field)} \\
+  Name of the remover method. (This method is generated for owned pointer
+  fields. It releases the ownership of the stored object, sets the field to
+  nullptr, then returns the object.)
 
 \item[@replaceable] \textit{(type: bool, use: field)} \\
-  If true: Field is a pointer whose value can be set via the class
-  descriptor's setFieldStructValuePointer() and setFieldValue() methods.
+  Affects descriptor class only. If true: Field is a pointer whose value can
+  be set via the class descriptor's setFieldStructValuePointer() and
+  setFieldValue() methods.
 
 \item[@resizable] \textit{(type: bool, use: field)} \\
-  If true: Field is a variable-size array whose size can be set via the class
-  descriptor's setFieldArraySize() method.
+  Affects descriptor class only. If true: Field is a variable-size array whose
+  size can be set via the class descriptor's setFieldArraySize() method.
 
 \item[@returnType] \textit{(type: string, use: field, class)} \\
-  Field getter C++ return type. When specified on a class, it determines the
-  default for fields of that type.
+  Field getter C++ base return type. This type may be decorated with 'const'
+  and '*'/'\&' to produce the actual return type. When specified on a class,
+  it determines the default for fields of that type.
 
 \item[@setter] \textit{(type: string, use: field)} \\
   Name of the setter method.
@@ -198,11 +229,11 @@ generated from message descriptions.
   from it.
 
 \item[@toString] \textit{(type: string, use: field, class)} \\
-  Affects descriptor class: Code to convert field value to string. When
+  Affects descriptor class only. Code to convert field value to string. When
   specified on a class, it determines the default for fields of that type.
 
 \item[@toValue] \textit{(type: string, use: field, class)} \\
-  Affects descriptor class: Code to convert field value to cValue. When
+  Affects descriptor class only. Code to convert field value to cValue. When
   specified on a class, it determines the default for fields of that type.
 
 \end{description}

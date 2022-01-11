@@ -222,10 +222,10 @@ with the \fopt{-h configdetails} option.
     Command line to launch the debugger. It must contain exactly one percent
     sign, as \ttt{\%u}, which will be replaced by the PID of this process. The
     command must not block (i.e. it should end in \ttt{\&} on Unix-like
-    systems). Default on this platform: \ttt{nemiver
-    {\allowbreak}-{\allowbreak}-{\allowbreak}attach={\allowbreak}\%u
-    {\allowbreak}\&}. This default can be overridden with the
-    \ttt{OMNETPP\_DEBUGGER\_COMMAND} environment variable.
+    systems). Default on this platform: \ttt{opp\_ide
+    {\allowbreak}omnetpp:{\allowbreak}/{\allowbreak}/{\allowbreak}cdt/{\allowbreak}debugger/{\allowbreak}attach?pid={\allowbreak}\%u}.
+    This default can be overridden with the \ttt{OMNETPP\_DEBUGGER\_COMMAND}
+    environment variable.
 \item[debugger-attach-on-error] = \textit{<bool>}, default: \ttt{false}\\
     \textit{Global setting (applies to all simulation runs).}\\
     When set to true, runtime errors and crashes will trigger an external
