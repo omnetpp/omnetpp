@@ -21,7 +21,8 @@ with some Doxygen features turned on (such as \textit{inline-sources} and
 \textit{extract-private} and \textit{extract-static}), the result is an
 easily browsable and very informative presentation of the source code.
 
-NED documentation generation is available as part of the OMNeT++ IDE.
+NED documentation generation is available as part of the {\opp} IDE, and
+also as a command-line tool (\fprog{opp\_neddoc}).
 
 
 \section{Documentation Comments}
@@ -378,8 +379,8 @@ Both will prevent hyperlinking the word \textit{IP} in case there is an
 
 
 
-\section{Customizing and Adding Pages}
-\label{sec:neddoc:customizing-and-adding-pages}
+\section{Incorporating Extra Content}
+\label{sec:neddoc:incorporating-extra-content}
 
 \subsection{Adding a Custom Title Page}
 \label{sec:neddoc:adding-custom-title-page}
@@ -489,7 +490,7 @@ External pages can be linked to from other pages using the \ttt{<a
 href="...">...</a>} tag.
 
 
-\section{File Inclusion}
+\subsection{File Inclusion}
 \label{sec:neddoc:file-inclusion}
 
 The \ttt{@include} directive allows one to include the content of a file
@@ -508,4 +509,58 @@ includes are not allowed.
 // @include ../copyright.txt
 // ...
 \end{ned}
+
+\subsection{Extending Type Pages with Extra Content}
+\label{sec:neddoc:extending-type-pages}
+
+Sometimes it is useful to customize the generated documentation pages that describe
+NED and MSG types by adding extra content. It is possible to provide a documentation
+fragment file in XML format which can be used by the documentation tool to add it to 
+the generated documentation. 
+
+The fragment file may contain multiple top-level \ttt{<docfragment>} 
+elements in the XML file's root element. Each \ttt{<docfragment>} element must
+have one of the \ttt{nedtype}, \ttt{msgtype} or \ttt{filename} attributes
+depending on which page it extends. Additionally, it must provide an
+\ttt{anchor} attribute to define a point in the page where the fragment's
+content should be inserted. The content of the fragment must be provided in
+a \ttt{<![CDATA[]]>} section.
+
+\begin{xml}
+<docfragments>
+    <docfragment nedtype="fully.qualified.NEDTypeName" anchor="after-signals">
+    <![CDATA[
+        <h3 class="subtitle">Doc fragment after the signals section</h3>
+        ...
+    ]]>
+    </docfragment>
+    <docfragment msgtype="fully.qualified.MSGType" anchor="top">
+    <![CDATA[
+        <h3 class="subtitle">Doc fragment at the top of MSG type page</h3>
+        ...
+    ]]>
+    </docfragment>
+    <docfragment filename="project_relative_path/somefile.msg" anchor="bottom">
+    <![CDATA[
+        <h3 class="subtitle">Doc fragment at the end of the file listing page</h3>
+        ...
+    ]]>
+    </docfragment>
+</docfragments>
+\end{xml}
+    
+Possible attribute values:
+\begin{itemize}
+    \item \texttt{nedtype}: Fully qualified NED type name. 
+    \item \texttt{msgtype}: Fully qualified MSG type name.
+    \item \texttt{filename}: Project relative file path of a NED or MSG source file. 
+    The fragment will be inserted in the file's source listing page. 
+    \item \texttt{anchor}: Specifies the place where the content should inserted.
+    Possible values for NED type: \texttt{top, after-types, after-description,
+    after-image, after-diagrams, after-usage, after-inheritance, after-parameters,
+    after-properties, after-gates, after-signals, after-statistics, 
+    after-unassigned-parameters, bottom}; for MSG type: \texttt{top, after-description,
+    after-diagrams, after-inheritance, after-fields, after-properties, bottom};
+    for file listing: \texttt{top, after-types, bottom}
+\end{itemize}        
 

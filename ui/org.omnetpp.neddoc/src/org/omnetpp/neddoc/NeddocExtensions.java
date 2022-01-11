@@ -23,24 +23,40 @@ import org.xml.sax.SAXException;
 
 /**
  * Gathers extension fragments that can be inserted into the generated documentation.
- * The extension file may contain the following XML elements (without a single root element):
- * <nedfragment>, <msgfragment>, <filefragment>. Each element must have a 'location' and an 'anchor'
- * attribute. 
+ * The extension file may contain several <docfragment> elements (in the root element).
+ * Each <docfragment> must have an `anchor` attribute and one of the following
+ * attributes: `nedtype`, `msgtype` or `filename` depending on what it wants to extend.
  *   
- *   location - The name of the FILE or NED, MSG type to be extended
- *   anchor - Internal anchor name where extension must be inserted in the document.
- *            Possible anchor values:
- *            - FILE: top, after-types, bottom
- *            - NED:  top, after-types, after-description, after-image, after-diagrams, after-usage, 
- *                    after-inheritance, after-parameters, after-properties, after-gates, after-signals,
- *                    after-statistics, after-unassigned-parameters, bottom 
- *            - MSG:  top, after-description, after-diagrams, after-inheritance, after-fields,
- *                    after-properties, bottom
+ *   nedtype: the fully qualified name of the NED type we want to extend.
+ *   Possible anchor names are: top, after-types, after-description, after-image,
+ *   after-diagrams, after-usage, after-inheritance, after-parameters, after-properties,
+ *   after-gates, after-signals, after-statistics, after-unassigned-parameters, bottom
+ *   
+ *   msgtype: the fully qualified name of the MSG type we want to extend.
+ *   Possible anchor names are: top, after-description, after-diagrams,
+ *   after-inheritance, after-fields, after-properties, bottom
+ *   
+ *   filename: The project relative file path and name of the file listing we want to extend.
+ *   Possible anchor values: top, after-types, bottom
  *   
  *  e.g.:
- *  <nedfragment> location="my.package.MyModule" anchor="after-properties"><![CDATA[
- *    Extra Server docs after properties.
- *  ]]></nedfragment>                   
+ <docfragments>
+    <docfragment nedtype="fully.qualified.NEDTypeName" anchor="after-signals">
+    <![CDATA[
+       after-signals
+    ]]>
+    </docfragment>
+    <docfragment msgtype="fully.qualified.MSGType" anchor="after-diagrams">
+    <![CDATA[
+       after-diagrams
+    ]]>
+    </docfragment>
+    <docfragment filename="src/inet/common/INETDefs.msg" anchor="after-types">
+    <![CDATA[
+       after-types
+    ]]>
+    </docfragment>
+ </docfragments>
  *
  */
 public class NeddocExtensions {    
@@ -52,26 +68,40 @@ public class NeddocExtensions {
     
     public NeddocExtensions(IFile neddocExtensionsFile) {
         try {
-            // just wrap a root element around the multiple fragments so it's a valid XML document.            
-            List<InputStream> streams = Arrays.asList(
-                    new ByteArrayInputStream("<root>".getBytes()),
-                    neddocExtensionsFile.getContents(),
-                    new ByteArrayInputStream("</root>".getBytes())
-                    );
-            SequenceInputStream is = new SequenceInputStream(Collections.enumeration(streams));
-            Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(is);
+            Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(neddocExtensionsFile.getContents());
             NodeList fragmentList = doc.getDocumentElement().getChildNodes();
             for(int i=0; i<fragmentList.getLength(); i++){
                 Node element = fragmentList.item(i);
                 if(element.getNodeType() == Node.ELEMENT_NODE) {
-                    String location = element.getAttributes().getNamedItem("location").getNodeValue();
-                    String anchor = element.getAttributes().getNamedItem("anchor").getNodeValue();
+                	var nedTypeAttribute = element.getAttributes().getNamedItem("nedtype");
+                    String nedtype = nedTypeAttribute != null ? nedTypeAttribute.getNodeValue() : null;
+                    
+                    var msgTypeAttribute = element.getAttributes().getNamedItem("msgtype");
+					String msgtype = msgTypeAttribute != null ? msgTypeAttribute.getNodeValue() : null;
+					
+                    var filenameAttribute = element.getAttributes().getNamedItem("filename");
+					String filename = filenameAttribute != null ? filenameAttribute.getNodeValue() : null;
+					
+                    var anchorAttribute = element.getAttributes().getNamedItem("anchor");
+					String anchor = anchorAttribute != null ? anchorAttribute.getNodeValue() : null;
+					
                     String text = element.getTextContent();
 
-                    Map<String, Map<String, String>> extensions =
-                            "nedfragment".equals(element.getNodeName()) ? nedExtensions :
-                            "msgfragment".equals(element.getNodeName()) ? msgExtensions :
-                            "filefragment".equals(element.getNodeName()) ? fileExtensions : nedExtensions;                    
+                    Map<String, Map<String, String>> extensions = null;
+                    String location = null;
+                    if (nedtype != null) {
+                    	extensions = nedExtensions;
+                    	location = nedtype;
+                    } else if (msgtype != null) {
+                    	extensions = msgExtensions;
+                    	location = msgtype;
+                    } else if (filename != null) {
+                    	extensions = fileExtensions;
+                    	location = filename;
+                    }
+                    // skip the element if neither of the nedtype, msgtype, filename attributes are present 
+                    if (extensions == null || location == null)
+                    	continue;
 
                     Map<String, String> ext4location = extensions.getOrDefault(location, new HashMap<>());
                     extensions.put(location, ext4location);  // put extLocation back in case it was not yet present and was just crated
