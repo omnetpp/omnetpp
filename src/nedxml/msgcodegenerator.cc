@@ -450,8 +450,6 @@ void MsgCodeGenerator::generateClassDecl(const ClassInfo& classInfo, const std::
         H << "    virtual std::string str() const" << maybe_override << ";\n";
     H << "    virtual void parsimPack(omnetpp::cCommBuffer *b) const" << maybe_override << ";\n";
     H << "    virtual void parsimUnpack(omnetpp::cCommBuffer *b)" << maybe_override << ";\n";
-    H << "\n";
-    H << "    // field getter/setter methods\n";
     for (const auto& field : classInfo.fieldList) {
         if (field.isCustom)
             continue;
@@ -463,6 +461,7 @@ void MsgCodeGenerator::generateClassDecl(const ClassInfo& classInfo, const std::
         std::string getterIndexVar("");
         std::string getterIndexArg("");
         std::string setterIndexArg("");
+        H << "\n";
 
         // size setter, size getter
         if (field.isArray) {
@@ -490,7 +489,8 @@ void MsgCodeGenerator::generateClassDecl(const ClassInfo& classInfo, const std::
             H << "    virtual void " << field.eraser << "(" << getterIndexArg << ")" << overrideSetter /*TODO*/ << pure << ";\n";
         }
     }
-    H << classInfo.classExtraCode;
+    if (!classInfo.classExtraCode.empty())
+        H << "\n" << classInfo.classExtraCode;
     H << "};\n\n";
 
     if (!classInfo.customize && classInfo.iscObject) {

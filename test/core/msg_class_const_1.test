@@ -46,36 +46,50 @@ class TestClass
 TestClass x;
 
 %contains: test_m.h
-    // field getter/setter methods
     virtual const Foo& getFoo() const;
     virtual Foo& getFooForUpdate() { return const_cast<Foo&>(const_cast<TestClass*>(this)->getFoo());}
     virtual void setFoo(const Foo& foo);
+
     virtual const Foo& getConstFoo() const;
+
     virtual const Foo * getFooPtr() const;
     virtual Foo * getFooPtrForUpdate() { return const_cast<Foo *>(const_cast<TestClass*>(this)->getFooPtr());}
     virtual void setFooPtr(Foo * fooPtr);
+
     virtual const Foo * getConstFooPtr() const;
     virtual void setConstFooPtr(const Foo * constFooPtr);
+
     virtual Bar getBar() const;
     virtual void setBar(Bar bar);
+
     virtual Bar getConstBar() const;
+
     virtual const Bar * getBarPtr() const;
     virtual Bar * getBarPtrForUpdate() { return const_cast<Bar *>(const_cast<TestClass*>(this)->getBarPtr());}
     virtual void setBarPtr(Bar * barPtr);
+
     virtual const Bar * getConstBarPtr() const;
     virtual Bar * getConstBarPtrForUpdate() { return const_cast<Bar *>(const_cast<TestClass*>(this)->getConstBarPtr());}
     virtual void setConstBarPtr(Bar * constBarPtr);
+
     virtual int getInt() const;
     virtual void setInt(int Int);
+
     virtual int getConstInt() const;
+
     virtual const char * getString() const;
     virtual void setString(const char * String);
+
     virtual const char * getConstString() const;
+
     virtual int32_t getInt32t() const;
     virtual void setInt32t(int32_t Int32t);
+
     virtual int32_t getConstInt32t() const;
+
     virtual int32_t getInt32() const;
     virtual void setInt32(int32_t Int32);
+
     virtual int32_t getConstInt32() const;
 };
 
