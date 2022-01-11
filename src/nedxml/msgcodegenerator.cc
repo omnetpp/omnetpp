@@ -484,8 +484,9 @@ void MsgCodeGenerator::generateClassDecl(const ClassInfo& classInfo, const std::
         if (field.isPointer || !field.isConst)
             H << "    virtual void " << field.setter << "(" << setterIndexArg << field.argType << " " << field.argName << ")" << overrideSetter << pure << ";\n";
         if (field.isDynamicArray) {
-            H << "    virtual void " << field.inserter << "(" << field.argType << " " << field.argName << ")" << overrideSetter /*TODO*/ << pure << ";\n";
             H << "    virtual void " << field.inserter << "(" << setterIndexArg << field.argType << " " << field.argName << ")" << overrideSetter /*TODO*/ << pure << ";\n";
+            H << "    [[deprecated]] void " << field.inserter << "(" << field.argType << " " << field.argName << ")" << overrideSetter /*TODO*/ << " {" << field.appender << "(" << field.argName << ");}\n";
+            H << "    virtual void " << field.appender << "(" << field.argType << " " << field.argName << ")" << overrideSetter /*TODO*/ << pure << ";\n";
             H << "    virtual void " << field.eraser << "(" << getterIndexArg << ")" << overrideSetter /*TODO*/ << pure << ";\n";
         }
     }
@@ -901,7 +902,7 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
                 CC << forEachIndex(field) << "\n" << "        take(&" << varElem(field) << ");\n";
             CC << "}\n\n";
 
-            CC << "void " << classInfo.className << "::" << field.inserter << "(" << field.argType << " " << field.argName << ")\n";
+            CC << "void " << classInfo.className << "::" << field.appender << "(" << field.argType << " " << field.argName << ")\n";
             CC << "{\n";
             CC << "    " << field.inserter << "(" << field.sizeVar << ", " << field.argName << ");\n";
             CC << "}\n\n";

@@ -37,8 +37,9 @@ TestClass x;
     virtual const Foo& getFooVec(size_t k) const;
     virtual Foo& getFooVecForUpdate(size_t k) { return const_cast<Foo&>(const_cast<TestClass*>(this)->getFooVec(k));}
     virtual void setFooVec(size_t k, const Foo& fooVec);
-    virtual void insertFooVec(const Foo& fooVec);
     virtual void insertFooVec(size_t k, const Foo& fooVec);
+    [[deprecated]] void insertFooVec(const Foo& fooVec) {appendFooVec(fooVec);}
+    virtual void appendFooVec(const Foo& fooVec);
     virtual void eraseFooVec(size_t k);
 
     virtual size_t getFooVec10ArraySize() const;
@@ -50,8 +51,9 @@ TestClass x;
     virtual size_t getBarVecArraySize() const;
     virtual Bar getBarVec(size_t k) const;
     virtual void setBarVec(size_t k, Bar barVec);
-    virtual void insertBarVec(Bar barVec);
     virtual void insertBarVec(size_t k, Bar barVec);
+    [[deprecated]] void insertBarVec(Bar barVec) {appendBarVec(barVec);}
+    virtual void appendBarVec(Bar barVec);
     virtual void eraseBarVec(size_t k);
 
     virtual size_t getBarVec10ArraySize() const;
@@ -62,8 +64,9 @@ TestClass x;
     virtual size_t getIntVecArraySize() const;
     virtual int getIntVec(size_t k) const;
     virtual void setIntVec(size_t k, int IntVec);
-    virtual void insertIntVec(int IntVec);
     virtual void insertIntVec(size_t k, int IntVec);
+    [[deprecated]] void insertIntVec(int IntVec) {appendIntVec(IntVec);}
+    virtual void appendIntVec(int IntVec);
     virtual void eraseIntVec(size_t k);
 
     virtual size_t getIntVec10ArraySize() const;
@@ -75,16 +78,18 @@ TestClass x;
     virtual const Foo * getFooPtrVec(size_t k) const;
     virtual Foo * getFooPtrVecForUpdate(size_t k) { return const_cast<Foo *>(const_cast<TestClass*>(this)->getFooPtrVec(k));}
     virtual void setFooPtrVec(size_t k, Foo * fooPtrVec);
-    virtual void insertFooPtrVec(Foo * fooPtrVec);
     virtual void insertFooPtrVec(size_t k, Foo * fooPtrVec);
+    [[deprecated]] void insertFooPtrVec(Foo * fooPtrVec) {appendFooPtrVec(fooPtrVec);}
+    virtual void appendFooPtrVec(Foo * fooPtrVec);
     virtual void eraseFooPtrVec(size_t k);
 
     virtual void setConstFooPtrVecArraySize(size_t size);
     virtual size_t getConstFooPtrVecArraySize() const;
     virtual const Foo * getConstFooPtrVec(size_t k) const;
     virtual void setConstFooPtrVec(size_t k, const Foo * constFooPtrVec);
-    virtual void insertConstFooPtrVec(const Foo * constFooPtrVec);
     virtual void insertConstFooPtrVec(size_t k, const Foo * constFooPtrVec);
+    [[deprecated]] void insertConstFooPtrVec(const Foo * constFooPtrVec) {appendConstFooPtrVec(constFooPtrVec);}
+    virtual void appendConstFooPtrVec(const Foo * constFooPtrVec);
     virtual void eraseConstFooPtrVec(size_t k);
 
     virtual size_t getFooPtrVec10ArraySize() const;

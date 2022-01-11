@@ -75,8 +75,9 @@ const char *MsgCompiler::BUILTIN_DEFINITIONS =
         @property[getterForUpdate](type=string; usage=field; desc="Name of the non-const getter method.");
         @property[sizeSetter](type=string; usage=field; desc="Name of the method that sets size of dynamic array.");
         @property[sizeGetter](type=string; usage=field; desc="Name of the method that returns the array size.");
-        @property[inserter](type=string; usage=field; desc="Name of the inserter method. (This method inserts element into a dynamic array.)");
-        @property[eraser](type=string; usage=field; desc="Name of the eraser method. (This method erases element from a dynamic array.)");
+        @property[inserter](type=string; usage=field; desc="Name of the inserter method. (This method inserts an element into a dynamic array.)");
+        @property[appender](type=string; usage=field; desc="Name of the appender method. (This method appends an element to a dynamic array.)");
+        @property[eraser](type=string; usage=field; desc="Name of the eraser method. (This method erases an element from a dynamic array. Indices above the specified one are shifted down.)");
         @property[allowReplace](type=bool; usage=field; desc="Specifies whether the setter method of an owned pointer field is allowed to delete the previously set object.");
         @property[actually](type=string; usage=class; internal=true; desc="Internal use.");
         @property[overwritePreviousDefinition](type=bool; usage=class; internal=true; desc="Internal use.");

@@ -115,6 +115,7 @@ class NEDXML_API MsgTypeTable
         std::string clone;      // @clone; code to duplicate (one array element of) the field (for owned pointers)
         std::string setter;     // @setter; setter function name
         std::string inserter;   // @inserter; inserter function name (insert element to dynamic array)
+        std::string appender;   // @appender; appender function name (append element to dynamic array)
         std::string eraser;     // @eraser; eraser function name (erase element from dynamic array)
         std::string sizeSetter; // setArraySize() function name
         std::string sizeGetter; // array size getter function name

@@ -510,6 +510,7 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
         field->setter = str("set") + capfieldname;
         field->dropper = str("drop") + capfieldname;
         field->inserter = str("insert") + capfieldname;
+        field->appender = str("append") + capfieldname;
         field->eraser = str("erase") + capfieldname;
         field->sizeSetter = str("set") + capfieldname + "ArraySize";
         if (classInfo.omitGetVerb) {
@@ -540,6 +541,8 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
             field->sizeGetter = getProperty(field->props, PROP_SIZEGETTER);
         if (getProperty(field->props, PROP_INSERTER) != "")
             field->inserter = getProperty(field->props, PROP_INSERTER);
+        if (getProperty(field->props, PROP_APPENDER) != "")
+            field->appender = getProperty(field->props, PROP_APPENDER);
         if (getProperty(field->props, PROP_ERASER) != "")
             field->eraser = getProperty(field->props, PROP_ERASER);
 
