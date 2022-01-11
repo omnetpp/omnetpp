@@ -38,7 +38,7 @@ const char *MsgCompiler::BUILTIN_DEFINITIONS =
         @property[customize](type=bool; usage=class; desc="If true: Customize the class via inheritance. Generates base class <name>_Base.");
         @property[str](type=string; usage=class; desc="Expression to be returned from the generated str() method.");
         @property[primitive](type=bool; usage=field,class; desc="Shortcut for @opaque @byValue @editable @subclassable(false) @supportsPtr(false).");
-        @property[opaque](type=bool; usage=field,class; desc="If true: Treat the field as atomic (non-compound) type, i.e. having no descriptor class. When specified on a class, it determines the default for fields of that type.");
+        @property[opaque](type=bool; usage=field,class; desc="Affects descriptor class only. If true: Treat the field as atomic (non-compound) type, i.e. having no descriptor class. When specified on a class, it determines the default for fields of that type.");
         @property[byValue](type=bool; usage=field,class; desc="If true: Causes the value to be passed by value (instead of by reference) in setters/getters. When specified on a class, it determines the default for fields of that type.");
         @property[supportsPtr](type=bool; usage=field,class; desc="Specifies whether this type supports creating a pointer (or pointer array) from it.");
         @property[subclassable](type=bool; usage=class; desc="Specifies whether this type can be subclassed (e.g. C++ primitive types and final classes cannot).");
@@ -47,10 +47,10 @@ const char *MsgCompiler::BUILTIN_DEFINITIONS =
         @property[cppType](type=string; usage=field,class; desc="Member C++ datatype. When specified on a class, it determines the default for fields of that type.");
         @property[argType](type=string; usage=field,class; desc="Field setter C++ argument type. When specified on a class, it determines the default for fields of that type.");
         @property[returnType](type=string; usage=field,class; desc="Field getter C++ return type. When specified on a class, it determines the default for fields of that type.");
-        @property[fromString](type=string; usage=field,class; desc="Affects descriptor class: Code to convert string to field value. When specified on a class, it determines the default for fields of that type.");
-        @property[toString](type=string; usage=field,class; desc="Affects descriptor class: Code to convert field value to string. When specified on a class, it determines the default for fields of that type.");
-        @property[fromValue](type=string; usage=field,class; desc="Affects descriptor class: Code to convert cValue to field value. When specified on a class, it determines the default for fields of that type.");
-        @property[toValue](type=string; usage=field,class; desc="Affects descriptor class: Code to convert field value to cValue. When specified on a class, it determines the default for fields of that type.");
+        @property[fromString](type=string; usage=field,class; desc="Affects descriptor class only. Code to convert string to field value. When specified on a class, it determines the default for fields of that type.");
+        @property[toString](type=string; usage=field,class; desc="Affects descriptor class only. Code to convert field value to string. When specified on a class, it determines the default for fields of that type.");
+        @property[fromValue](type=string; usage=field,class; desc="Affects descriptor class only. Code to convert cValue to field value. When specified on a class, it determines the default for fields of that type.");
+        @property[toValue](type=string; usage=field,class; desc="Affects descriptor class only. Code to convert field value to cValue. When specified on a class, it determines the default for fields of that type.");
         @property[getterConversion](type=string; usage=field,class; desc="Code to convert field data type to return type in getters. When specified on a class, it determines the default for fields of that type.");
         @property[clone](type=string; usage=field,class; desc="For owned pointer fields: Code to duplicate (one array element of) the field value. When specified on a class, it determines the default for fields of that type.");
         @property[existingClass](type=bool; usage=class; desc="If true: This is a type is already defined in C++, i.e. it does not need to be generated.");
@@ -61,10 +61,10 @@ const char *MsgCompiler::BUILTIN_DEFINITIONS =
         @property[beforeChange](type=string; usage=class; desc="Method to be called before mutator code (in setters, non-const getters, operator=, etc.).");
         @property[implements](type=stringlist; usage=class; desc="Names of additional base classes.");
         @property[nopack](type=bool; usage=field; desc="If true: Ignore this field in parsimPack/parsimUnpack methods.");
-        @property[editable](type=bool; usage=field,class; desc="Specifies whether field value (or value of fields that are instances of this type) can be set via the class descriptor's setFieldValueFromString() and setFieldValue() methods.");
-        @property[replaceable](type=bool; usage=field; desc="If true: Field is a pointer whose value can be set via the class descriptor's setFieldStructValuePointer() and setFieldValue() methods.");
-        @property[resizable](type=bool; usage=field; desc="If true: Field is a variable-size array whose size can be set via the class descriptor's setFieldArraySize() method.");
-        @property[readonly](type=bool; usage=field; desc="If true: Equivalent to @editable(false) @replaceable(false) @resizable(false).");
+        @property[editable](type=bool; usage=field,class; desc="Affects descriptor class only. If true: Value of the field (or value of fields that are instances of this type) can be set via the class descriptor's setFieldValueFromString() and setFieldValue() methods.");
+        @property[replaceable](type=bool; usage=field; desc="Affects descriptor class only. If true: Field is a pointer whose value can be set via the class descriptor's setFieldStructValuePointer() and setFieldValue() methods.");
+        @property[resizable](type=bool; usage=field; desc="Affects descriptor class only. If true: Field is a variable-size array whose size can be set via the class descriptor's setFieldArraySize() method.");
+        @property[readonly](type=bool; usage=field; desc="Affects descriptor class only. Equivalent to @editable(false) @replaceable(false) @resizable(false).");
         @property[overrideGetter](type=bool; usage=field; desc="If true: Add the 'override' keyword to the declaration of the getter method.");
         @property[overrideSetter](type=bool; usage=field; desc="If true: Add the 'override' keyword to the declaration of the setter method.");
         @property[enum](type=string; usage=field; desc="For integer fields: Values are from the given enum.");
