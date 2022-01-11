@@ -508,6 +508,7 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
         std::string capfieldname = field->name;
         capfieldname[0] = toupper(capfieldname[0]);
         field->setter = str("set") + capfieldname;
+        field->remover = str("remove") + capfieldname;
         field->dropper = str("drop") + capfieldname;
         field->inserter = str("insert") + capfieldname;
         field->appender = str("append") + capfieldname;
@@ -545,6 +546,8 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
             field->appender = getProperty(field->props, PROP_APPENDER);
         if (getProperty(field->props, PROP_ERASER) != "")
             field->eraser = getProperty(field->props, PROP_ERASER);
+        if (getProperty(field->props, PROP_REMOVER) != "")
+            field->remover = getProperty(field->props, PROP_REMOVER);
 
         field->getterConversion = getProperty(field->props, PROP_GETTERCONVERSION, fieldClassInfo.getterConversion);
         field->clone = getProperty(field->props, PROP_CLONE, fieldClassInfo.clone);

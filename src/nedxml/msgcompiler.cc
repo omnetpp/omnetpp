@@ -78,6 +78,7 @@ const char *MsgCompiler::BUILTIN_DEFINITIONS =
         @property[inserter](type=string; usage=field; desc="Name of the inserter method. (This method inserts an element into a dynamic array.)");
         @property[appender](type=string; usage=field; desc="Name of the appender method. (This method appends an element to a dynamic array.)");
         @property[eraser](type=string; usage=field; desc="Name of the eraser method. (This method erases an element from a dynamic array. Indices above the specified one are shifted down.)");
+        @property[remover](type=string; usage=field; desc="Name of the remover method. (This method is generated for owned pointer fields. It releases the ownership of the stored object, sets the field to nullptr, then returns the object.)");
         @property[allowReplace](type=bool; usage=field; desc="Specifies whether the setter method of an owned pointer field is allowed to delete the previously set object.");
         @property[actually](type=string; usage=class; internal=true; desc="Internal use.");
         @property[overwritePreviousDefinition](type=bool; usage=class; internal=true; desc="Internal use.");

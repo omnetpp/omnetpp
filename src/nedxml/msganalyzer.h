@@ -137,6 +137,7 @@ class NEDXML_API MsgAnalyzer
     static constexpr const char* PROP_INSERTER = "inserter";
     static constexpr const char* PROP_APPENDER = "appender";
     static constexpr const char* PROP_ERASER = "eraser";
+    static constexpr const char* PROP_REMOVER = "remover";
     static constexpr const char* PROP_ALLOWREPLACE = "allowReplace";
     static constexpr const char* PROP_STR = "str";
     static constexpr const char* PROP_CUSTOMIZE = "customize";

@@ -479,10 +479,12 @@ void MsgCodeGenerator::generateClassDecl(const ClassInfo& classInfo, const std::
             H << "    virtual " << field.mutableReturnType << " " << field.getterForUpdate << "(" << getterIndexArg << ")" << overrideGetter;
             H << " { " << maybe_handleChange << "return const_cast<" << field.mutableReturnType << ">(const_cast<" << classInfo.className << "*>(this)->" << field.getter << "(" << getterIndexVar << "));}\n";
         }
-        if (field.isOwnedPointer)
-            H << "    virtual " << field.mutableReturnType << " " << field.dropper << "(" << getterIndexArg << ")" << overrideGetter << pure << ";\n";
         if (field.isPointer || !field.isConst)
             H << "    virtual void " << field.setter << "(" << setterIndexArg << field.argType << " " << field.argName << ")" << overrideSetter << pure << ";\n";
+        if (field.isOwnedPointer) {
+            H << "    virtual " << field.mutableReturnType << " " << field.remover << "(" << getterIndexArg << ")" << overrideSetter /*TODO*/ << pure << ";\n";
+            H << "    [[deprecated]] " << field.mutableReturnType << " " << field.dropper << "(" << getterIndexArg << ")" << overrideSetter << " {return " << field.remover << "(" << getterIndexVar << ");}\n";
+        }
         if (field.isDynamicArray) {
             H << "    virtual void " << field.inserter << "(" << setterIndexArg << field.argType << " " << field.argName << ")" << overrideSetter /*TODO*/ << pure << ";\n";
             H << "    [[deprecated]] void " << field.inserter << "(" << field.argType << " " << field.argName << ")" << overrideSetter /*TODO*/ << " {" << field.appender << "(" << field.argName << ");}\n";
@@ -838,7 +840,7 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
             generateMethodCplusplusBlock(classInfo, field.setter);
             if (field.isOwnedPointer) {
                 if (!field.allowReplace)
-                    CC << "    if (" << indexedVar << " != nullptr) throw omnetpp::cRuntimeError(\"" << field.setter << "(): a value is already set, remove it first with " << field.dropper << "()\");\n";
+                    CC << "    if (" << indexedVar << " != nullptr) throw omnetpp::cRuntimeError(\"" << field.setter << "(): a value is already set, remove it first with " << field.remover << "()\");\n";
                 else if (field.iscOwnedObject)
                     CC << "    dropAndDelete(" << indexedVar << ");\n";
                 else
@@ -852,14 +854,14 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
             CC << "}\n\n";
         }
 
-        // dropper:
+        // remover:
         if (field.isOwnedPointer) {
-            CC << field.mutableReturnType << " " << classInfo.className << "::" << field.dropper << "(" << idxarg << ")\n";
+            CC << field.mutableReturnType << " " << classInfo.className << "::" << field.remover << "(" << idxarg << ")\n";
             CC << "{\n";
             if (field.isArray)
                 CC << "    if (k >= " << field.sizeVar << ") throw omnetpp::cRuntimeError(\"Array of size %lu indexed by %lu\", (unsigned long)" << field.sizeVar << ", (unsigned long)k);\n";
             CC << maybe_handleChange_line;
-            generateMethodCplusplusBlock(classInfo, field.dropper);
+            generateMethodCplusplusBlock(classInfo, field.remover);
             CC << "    " << field.mutableReturnType << " retval = ";
             if (field.isConst)
                 CC << "const_cast<" << field.mutableReturnType << ">(" << indexedVar << ");\n";

@@ -111,7 +111,8 @@ class NEDXML_API MsgTypeTable
         std::string getterForUpdate; // mutable getter function name:  "T& getterForUpdate();" default value is getFooForUpdate
         bool hasGetterForUpdate; // whether a getterForUpdate method needs to be generated
         bool allowReplace;      // @allowReplace; whether setter of an owned pointer field is allowed to delete an already-set object
-        std::string dropper;    // dropper function name (for owned pointers: drop pointer from class and return to caller)
+        std::string remover;    // remover function name (for pointers: drop object if owned, set pointer to nullptr, return object)
+        std::string dropper;    // deprecated alias for remover
         std::string clone;      // @clone; code to duplicate (one array element of) the field (for owned pointers)
         std::string setter;     // @setter; setter function name
         std::string inserter;   // @inserter; inserter function name (insert element to dynamic array)
