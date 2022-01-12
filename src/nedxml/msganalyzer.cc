@@ -39,6 +39,11 @@ inline std::string str(const char *s)
     return s ? s : "";
 }
 
+inline std::string& firstNonempty(std::string& s1, std::string& s2, std::string& s3)
+{
+    return !s1.empty() ? s1 : !s2.empty() ? s2 : s3;
+}
+
 static char charToNameFilter(char ch)
 {
     return isalnum(ch) ? ch : '_';
@@ -289,9 +294,10 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
 
     classInfo.defaultValue = getProperty(classInfo.props, PROP_DEFAULTVALUE, "");
 
-    classInfo.dataTypeBase = getProperty(classInfo.props, PROP_CPPTYPE, "");
-    classInfo.argTypeBase = getProperty(classInfo.props, PROP_ARGTYPE, "");
-    classInfo.returnTypeBase = getProperty(classInfo.props, PROP_RETURNTYPE, "");
+    std::string cppTypeBase = getProperty(classInfo.props, PROP_CPPTYPE, "");
+    classInfo.dataTypeBase = getProperty(classInfo.props, PROP_DATAMEMBERTYPE, cppTypeBase);
+    classInfo.argTypeBase = getProperty(classInfo.props, PROP_ARGTYPE, cppTypeBase);
+    classInfo.returnTypeBase = getProperty(classInfo.props, PROP_RETURNTYPE, cppTypeBase);
 
     classInfo.toString = getProperty(classInfo.props, PROP_TOSTRING, "");
     classInfo.fromString = getProperty(classInfo.props, PROP_FROMSTRING, "");
@@ -565,13 +571,10 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
     field->sizeType = !sizetypeprop.empty() ? sizetypeprop : "size_t";
 
     // data type, argument type, conversion to/from string...
-    std::string datatypeBase = getProperty(field->props, PROP_CPPTYPE, fieldClassInfo.dataTypeBase);
-    std::string argtypeBase = getProperty(field->props, PROP_ARGTYPE, fieldClassInfo.argTypeBase);
-    std::string returntypeBase = getProperty(field->props, PROP_RETURNTYPE, fieldClassInfo.returnTypeBase);
-
-    if (datatypeBase.empty()) datatypeBase = field->type;
-    if (argtypeBase.empty()) argtypeBase = datatypeBase;
-    if (returntypeBase.empty()) returntypeBase = datatypeBase;
+    std::string cpptypeBase = getProperty(field->props, PROP_CPPTYPE, "");
+    std::string datatypeBase = getProperty(field->props, PROP_DATAMEMBERTYPE, firstNonempty(cpptypeBase, fieldClassInfo.dataTypeBase, field->type));
+    std::string argtypeBase = getProperty(field->props, PROP_ARGTYPE, firstNonempty(cpptypeBase, fieldClassInfo.argTypeBase, field->type));
+    std::string returntypeBase = getProperty(field->props, PROP_RETURNTYPE, firstNonempty(cpptypeBase, fieldClassInfo.returnTypeBase, field->type));
 
     //
     // Intended const usage for various isPointer/isConst/byValue combinations:

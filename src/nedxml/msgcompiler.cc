@@ -44,9 +44,10 @@ const char *MsgCompiler::BUILTIN_DEFINITIONS =
         @property[subclassable](type=bool; usage=class; desc="Specifies whether this type can be subclassed (e.g. C++ primitive types and final classes cannot).");
         @property[polymorphic](type=bool; usage=class; desc="Specifies whether this type is polymorphic, i.e. has any virtual member function.");
         @property[defaultValue](type=string; usage=class; desc="Default value for fields of this type.");
-        @property[cppType](type=string; usage=field,class; desc="Member C++ datatype. When specified on a class, it determines the default for fields of that type.");
-        @property[argType](type=string; usage=field,class; desc="Field setter C++ argument type. When specified on a class, it determines the default for fields of that type.");
-        @property[returnType](type=string; usage=field,class; desc="Field getter C++ return type. When specified on a class, it determines the default for fields of that type.");
+        @property[cppType](type=string; usage=field,class; desc="C++ datatype. Provides a common default for @datamemberType, @argType and @returnType. When specified on a class, it determines the default for fields of that type.");
+        @property[datamemberType](type=string; usage=field,class; desc="Data member C++ base data type. This type is decorated with '*' if the field is a pointer. When specified on a class, it determines the default for fields of that type.");
+        @property[argType](type=string; usage=field,class; desc="Field setter argument C++ base type. This type may be decorated with 'const' and '*'/'&' to produce the actual argument type. When specified on a class, it determines the default for fields of that type.");
+        @property[returnType](type=string; usage=field,class; desc="Field getter C++ base return type. This type may be decorated with 'const' and '*'/'&' to produce the actual return type. When specified on a class, it determines the default for fields of that type.");
         @property[fromString](type=string; usage=field,class; desc="Affects descriptor class only. Code to convert string to field value. When specified on a class, it determines the default for fields of that type.");
         @property[toString](type=string; usage=field,class; desc="Affects descriptor class only. Code to convert field value to string. When specified on a class, it determines the default for fields of that type.");
         @property[fromValue](type=string; usage=field,class; desc="Affects descriptor class only. Code to convert cValue to field value. When specified on a class, it determines the default for fields of that type.");

@@ -103,6 +103,7 @@ class NEDXML_API MsgAnalyzer
     static constexpr const char* PROP_POLYMORPHIC = "polymorphic";
     static constexpr const char* PROP_DEFAULTVALUE = "defaultValue";
     static constexpr const char* PROP_CPPTYPE = "cppType";
+    static constexpr const char* PROP_DATAMEMBERTYPE = "datamemberType";
     static constexpr const char* PROP_ARGTYPE = "argType";
     static constexpr const char* PROP_RETURNTYPE = "returnType";
     static constexpr const char* PROP_TOSTRING = "toString";
