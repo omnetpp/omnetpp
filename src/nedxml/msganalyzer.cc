@@ -284,7 +284,8 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
         errors->addError(classInfo.astNode, "%s: base class is not a %s (must be derived from %s)", classInfo.name.c_str(), classInfo.keyword.c_str(), requiredSuperClass.c_str());
 
     // isAbstract
-    classInfo.isAbstract = (baseClassInfo == nullptr) ? false : baseClassInfo->isAbstract;
+    bool hasAbstractBase = baseClassInfo != nullptr && baseClassInfo->isAbstract; //TODO this does not fully work: the fields of the base class are not yet analyzed, so having an abstract field is not yet reflected in its isAbstract flag. This is not a big deal, however, as it will fall out during C++ compilation
+    classInfo.isAbstract = getPropertyAsBool(classInfo.props, PROP_ABSTRACT, hasAbstractBase);
 
     // isOpaque, byValue, data types, etc.
     bool isPrimitive = getPropertyAsBool(classInfo.props, PROP_PRIMITIVE, false); // @primitive is a shortcut for @opaque @byValue @editable @subclassable(false) @supportsPtr(false)
@@ -400,6 +401,9 @@ void MsgAnalyzer::analyzeFields(ClassInfo& classInfo, const std::string& namespa
 void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std::string& namespaceName)
 {
     Assert(!field->type.empty());
+
+    if (getPropertyAsBool(field->props, PROP_ABSTRACT, false)) // let @abstract take effect in addition to the "abstract" keyword
+        field->isAbstract = true;
 
     if (!classInfo.isClass && field->isAbstract)
         errors->addError(field->astNode, "A struct cannot have abstract fields");

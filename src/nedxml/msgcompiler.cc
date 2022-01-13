@@ -36,6 +36,7 @@ const char *MsgCompiler::BUILTIN_DEFINITIONS =
         R"ENDMARK(
         @property[property](type=any; usage=file; desc="Property for declaring properties.");
         @property[customize](type=bool; usage=class; desc="If true: Customize the class via inheritance. Generates base class <name>_Base.");
+        @property[abstract](type=bool; usage=field,class; desc="If true: For a class, it indicates that it is an abstract class in the C++ sense (one which cannot be instantiated). For a field, it requests that the accessor methods for the field be made pure virtual and no data member be generated; it also makes the class that contains the field abstract (unless the class has @customize whereas it is assumed that the custom code implements the pure virtual member functions).");
         @property[str](type=string; usage=class; desc="Expression to be returned from the generated str() method.");
         @property[primitive](type=bool; usage=field,class; desc="Shortcut for @opaque @byValue @editable @subclassable(false) @supportsPtr(false).");
         @property[opaque](type=bool; usage=field,class; desc="Affects descriptor class only. If true: Treat the field as atomic (non-compound) type, i.e. having no descriptor class. When specified on a class, it determines the default for fields of that type.");

@@ -94,6 +94,7 @@ class NEDXML_API MsgAnalyzer
     static constexpr const char* ATT_EXTENDS_NAME = "extends-name";
 
     static constexpr const char* PROP_PROPERTY = "property";
+    static constexpr const char* PROP_ABSTRACT = "abstract";
     static constexpr const char* PROP_ACTUALLY = "actually";
     static constexpr const char* PROP_PRIMITIVE = "primitive";
     static constexpr const char* PROP_OPAQUE = "opaque";
