@@ -774,7 +774,7 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
     CC << "}\n\n";
 
     for (const auto& field : classInfo.fieldList) {
-        if (field.isAbstract || field.isCustom)
+        if (field.isAbstract || field.isCustom || field.isCustomImpl)
             continue;
 
         std::string idx = (field.isArray) ? "[k]" : "";

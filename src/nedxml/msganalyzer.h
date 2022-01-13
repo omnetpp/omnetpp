@@ -143,6 +143,7 @@ class NEDXML_API MsgAnalyzer
     static constexpr const char* PROP_CUSTOMIZE = "customize";
     static constexpr const char* PROP_OVERWRITEPREVIOUSDEFINITION = "overwritePreviousDefinition";
     static constexpr const char* PROP_CUSTOM = "custom";
+    static constexpr const char* PROP_CUSTOMIMPL = "customImpl";
 };
 
 }  // namespace nedxml

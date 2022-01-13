@@ -140,6 +140,7 @@ class NEDXML_API MsgTypeTable
         bool overrideGetter;    // @overrideGetter|@override, used when field getter function overrides a function in base class
         bool overrideSetter;    // @overrideSetter|@override, used when field setter function overrides a function in base class
         bool isCustom;          // @custom; if true, do not generate any data member or code for the field.
+        bool isCustomImpl;      // @customImpl: if true: do not generate implementation for the field's accessor methods
 
         // The following members only affect the generated class descriptor, not the class itself
         bool isEditable;        // @editable(true): field value is editable via the descriptor's setFieldValueFromString() method
