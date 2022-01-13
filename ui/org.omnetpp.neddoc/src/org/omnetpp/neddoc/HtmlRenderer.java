@@ -24,7 +24,7 @@ public class HtmlRenderer implements DocumentationGenerator.IRenderer {
     }
 
     public String defaultOverviewString() {
-        return  "<center><h1 class=\"mdl-color-text--primary\">OMNeT++ Model Documentation</h1></center>\n" +
+        return  "<center><h1>OMNeT++ Model Documentation</h1></center>\n" +
                 "<center><i>Generated from NED and MSG files</i></center>\n" +
                 "<p>This documentation has been generated from NED and MSG files.</p>\n" +
                 "<p>Use the links in the left frame to navigate around.</p>\n" +
@@ -63,14 +63,14 @@ public class HtmlRenderer implements DocumentationGenerator.IRenderer {
 
     public String titleTag(String text, String clazz) {
         String result = "<h1";
-        clazz = (clazz == null) ? "" : " "+clazz;
-        result += " class=\"mdl-color-text--primary"+clazz+"\"";
+        clazz = (clazz == null) ? "" : clazz;
+        result += " class=\""+clazz+"\"";
         result += ">" + text + "</h1>\n";
         return result;
     }
 
     public String typeSectionTag(ITypeElement typeElement) {
-        String result = "<h2 class=\"mdl-color-text--primary comptitle\" style=\"float: left;\">" + typeElement.getName() + "</h2>\n";
+        String result = "<h2 class=\"comptitle\" style=\"float: left;\">" + typeElement.getName() + "</h2>\n";
 
         // show a colored type label
         String typeLabel = typeElement.getReadableTagName();
@@ -94,16 +94,16 @@ public class HtmlRenderer implements DocumentationGenerator.IRenderer {
 
     public String sectionTag(String text, String clazz) {
         String result = "<h2";
-        clazz = (clazz == null) ? "" : " "+clazz;
-        result += " class=\"mdl-color-text--primary"+clazz+"\"";
+        clazz = (clazz == null) ? "" : clazz;
+        result += " class=\""+clazz+"\"";
         result += ">" + text + "</h2>\n";
         return result;
     }
 
     public String subSectionTag(String text, String clazz) {
         String result = "<h3";
-        clazz = (clazz == null) ? "" : " "+clazz;
-        result += " class=\"mdl-color-text--primary"+clazz+"\"";
+        clazz = (clazz == null) ? "" : clazz;
+        result += " class=\""+clazz+"\"";
         result += ">" + text + "</h3>\n";
         return result;
     }

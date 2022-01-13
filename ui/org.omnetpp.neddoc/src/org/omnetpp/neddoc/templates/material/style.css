@@ -23,6 +23,7 @@ a:hover { text-decoration: underline; }
 
 img { border:none }
 
+h1, h2, h3, h4, h5 { color: rgb(33,150,243); }
 .comptitle  { font-size: 2rem; margin: 0px 0px 10px 0px; }
 .subtitle   { font-size: 1.3rem; margin: 8px 0px 0px 0px; }
 .footer     { font-size:8pt; margin-top:0px; text-align:center; color:#303030; }
