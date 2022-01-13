@@ -841,16 +841,12 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
             if (field.isOwnedPointer) {
                 if (!field.allowReplace)
                     CC << "    if (" << indexedVar << " != nullptr) throw omnetpp::cRuntimeError(\"" << field.setter << "(): a value is already set, remove it first with " << field.remover << "()\");\n";
-                else if (field.iscOwnedObject)
-                    CC << "    dropAndDelete(" << indexedVar << ");\n";
                 else
-                    CC << "    delete " << indexedVar << ";\n";
+                    generateOwnershipOp(field, indexedVar, "delete");
             }
             CC << "    " << indexedVar << " = " << field.argName << ";\n";
-            if (field.isOwnedPointer && field.iscOwnedObject) {
-                CC << "    if (" << indexedVar << " != nullptr)\n";
-                CC << "        take(" << indexedVar << ");\n";
-            }
+            if (field.isOwnedPointer)
+                generateOwnershipOp(field, indexedVar, "take");
             CC << "}\n\n";
         }
 
@@ -867,10 +863,7 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
                 CC << "const_cast<" << field.mutableReturnType << ">(" << indexedVar << ");\n";
             else
                 CC << indexedVar << ";\n";
-            if (field.iscOwnedObject) {
-                CC << "    if (retval != nullptr)\n";
-                CC << "        drop(retval);\n";
-            }
+            generateOwnershipOp(field, "retval", "drop");
             CC << "    " << indexedVar << " = nullptr;\n";
             CC << "    return retval;\n";
             CC << "}\n\n";
@@ -889,10 +882,8 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
             CC << "    for (i = 0; i < k; i++)\n";
             CC << "        " << field.var << "2[i] = " << var(field) << "[i];\n";
             CC << "    " << field.var << "2[k] = " << field.argName << ";\n";
-            if (field.isOwnedPointer && field.iscOwnedObject) {
-                CC << "    if (" << field.var << "2[k]" << " != nullptr)\n";
-                CC << "        take(" << field.var << "2[k]" << ");\n";
-            }
+            if (field.isOwnedPointer)
+                generateOwnershipOp(field, field.var + "2[k]", "take");
             CC << "    for (i = k + 1; i < newSize; i++)\n";
             CC << "        " << field.var << "2[i] = " << var(field) << "[i-1];\n";
             if (!field.isPointer && field.iscOwnedObject)
@@ -926,14 +917,8 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
             CC << "        " << field.var << "2[i] = " << var(field) << "[i+1];\n";
             if (!field.isPointer && field.iscOwnedObject)
                 CC << forEachIndex(field) << "\n" << "        drop(&" << varElem(field) << ");\n";
-
-            if (field.isOwnedPointer) {
-                if (field.iscOwnedObject)
-                    CC << "    dropAndDelete(" << var(field) << "[k]);\n";
-                else
-                    CC << "    delete " << var(field) << "[k];\n";
-            }
-
+            if (field.isOwnedPointer)
+                generateOwnershipOp(field, var(field) + "[k]", "delete");
             CC << "    delete [] " << var(field) << ";\n";
             CC << "    " << var(field) << " = " << field.var << "2;\n";
             CC << "    " << field.sizeVar << " = newSize;\n";
@@ -1708,6 +1693,31 @@ std::string MsgCodeGenerator::makeFuncall(const std::string& var, const std::str
     else {
         return funcTemplate;
     }
+}
+
+void MsgCodeGenerator::generateOwnershipOp(const FieldInfo& field, const std::string& var, const std::string& op)
+{
+    Assert(field.isOwnedPointer);
+    std::string code;
+    if (op == "delete") {
+        if (!field.iscObject)
+            code = "delete " + var + ";";
+        else if (field.iscOwnedObject)
+            code = "if (" + var + " != nullptr) dropAndDelete(" + var +");";
+        else // plain cObject*
+            code = "if (" + var + " != nullptr && " + var + "->isOwnedObject()) dropAndDelete((cOwnedObject*)" + var +"); else delete " + var + ";";
+    }
+    else {
+        Assert(op == "take" || op == "drop");
+        if (!field.iscObject)
+            code = "";
+        else if (field.iscOwnedObject)
+            code = "if (" + var + " != nullptr) " + op + "(" + var + ");";
+        else // plain cObject*
+            code = "if (" + var + " != nullptr && " + var +"->isOwnedObject()) " + op + "((cOwnedObject*)" + var +");";
+    }
+    if (!code.empty())
+        CC << "    " + code + "\n";
 }
 
 void MsgCodeGenerator::generateTemplates()
