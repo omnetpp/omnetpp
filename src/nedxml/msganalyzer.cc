@@ -283,6 +283,8 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
     if (!requiredSuperClass.empty() && !hasSuperclass(classInfo, requiredSuperClass))
         errors->addError(classInfo.astNode, "%s: base class is not a %s (must be derived from %s)", classInfo.name.c_str(), classInfo.keyword.c_str(), requiredSuperClass.c_str());
 
+    // isAbstract
+    classInfo.isAbstract = (baseClassInfo == nullptr) ? false : baseClassInfo->isAbstract;
 
     // isOpaque, byValue, data types, etc.
     bool isPrimitive = getPropertyAsBool(classInfo.props, PROP_PRIMITIVE, false); // @primitive is a shortcut for @opaque @byValue @editable @subclassable(false) @supportsPtr(false)
@@ -408,8 +410,8 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
     if (!classInfo.isClass && field->isArray && field->arraySize.empty())
         errors->addError(field->astNode, "A struct cannot have dynamic array fields");
 
-    if (field->isAbstract && !classInfo.customize)
-        errors->addError(field->astNode, "abstract fields need '@customize(true)' property in '%s'", classInfo.name.c_str());
+    if (field->isAbstract && !classInfo.customize)  // assume that customization implements pure (=0) methods
+        classInfo.isAbstract = true;
 
     if (field->isArray && field->isConst && !field->isPointer)
         errors->addError(field->astNode, "Arrays of const values/objects are not supported");

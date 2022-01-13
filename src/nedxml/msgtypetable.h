@@ -172,6 +172,7 @@ class NEDXML_API MsgTypeTable
         bool iscObject;                // whether type is subclassed from cObject
         bool iscNamedObject;           // whether type is subclassed from cNamedObject
         bool iscOwnedObject;           // whether type is subclassed from cOwnedObject
+        bool isAbstract;               // whether class can be instantiated (base class not abstract, and has no abstract fields)
         bool isEnum = false;
         bool isImported;               // whether this type imported from an another msg file
         bool subclassable;             // whether this type can be subclasses (e.g. "int" or final classes cannot)

@@ -441,6 +441,8 @@ void MsgCodeGenerator::generateClassDecl(const ClassInfo& classInfo, const std::
         H << "    virtual " << classInfo.className << " *dup() const override ";
         if (classInfo.customize)
             H << "{throw omnetpp::cRuntimeError(\"You forgot to manually add a dup() function to class " << classInfo.realClass << "\");}\n";
+        else if (classInfo.isAbstract)
+            H << "{throw omnetpp::cRuntimeError(\"Abstract class '%s' does not support dup()\", getClassName());}\n";
         else
             H << "{return new " << classInfo.className << "(*this);}\n";
     }
