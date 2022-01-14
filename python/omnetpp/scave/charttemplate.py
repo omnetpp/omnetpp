@@ -39,7 +39,7 @@ class ChartTemplate:
 
     def create_chart(self, id:int=None, name:str=None, props=None):
         """
-        Creates and returns a chart object (org.omnetpp.scave.Chart) from
+        Creates and returns a chart object (`org.omnetpp.scave.Chart`) from
         this chart template. Chart properties will be set to the default
         values defined by the chart template. If a `props` argument is present,
         property values in it will overwrite the defaults.

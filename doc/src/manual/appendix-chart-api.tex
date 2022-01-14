@@ -1900,11 +1900,11 @@ containing the index and the name of a "label" column.
 \par Produces a reasonably good chart title text from a result DataFrame,
 given a selected list of "title" columns.
 
-\subsubsection{pick\_two\_columns()}
-\label{cha:chart-api:omnetpp.scave.utils:pick-two-columns}
+\subsubsection{select\_best\_partitioning\_column\_pair()}
+\label{cha:chart-api:omnetpp.scave.utils:select-best-partitioning-column-pair}
 
 \begin{flushleft}
-\ttt{pick\_two\_columns(df, props=None)}
+\ttt{select\_best\_partitioning\_column\_pair(df, props=None)}
 \end{flushleft}
 
 \par Choose two columns from the dataframe which best partitions the rows
@@ -2634,5 +2634,110 @@ properties in addition to the chart's properties. If \ttt{show=True}, it calls
 \begin{flushleft}
 \ttt{load\_anf\_file(anf\_file\_name)}
 \end{flushleft}
+
+
+
+\subsection{Module omnetpp.scave.charttemplate}
+\label{cha:chart-api:omnetpp.scave.charttemplate}
+
+\par Loading and instantiating chart templates.
+
+\subsubsection{Class ChartTemplate}
+\label{cha:chart-api:omnetpp.scave.charttemplate:ChartTemplate}
+
+\par Represents a chart template.
+
+\label{cha:chart-api:omnetpp.scave.charttemplate:ChartTemplate:--init--}
+
+\begin{flushleft}
+\ttt{ChartTemplate(self, id: str, name: str, type: str, icon: str, script: str, dialog\_pages, properties)}
+\end{flushleft}
+
+\par Creates a chart template from the given data elements.
+
+\par Parameters:
+
+\begin{itemize}
+  \item \ttt{id} \textit{(string)}: A short string that uniquely identifies the chart template.
+  \item \ttt{name} \textit{(string)}: Name of the chart template.
+  \item \ttt{type} \textit{(string)}: Chart type, one of: "bar"/"histogram"/"line"/"matplotlib".
+  \item \ttt{icon} \textit{(string)}: Name of the icon to be used for charts of this type.
+  \item \ttt{script} \textit{(string)}: The Python chart script.
+  \item \ttt{dialog\_pages} \textit{(list of \ttt{DialogPage})}: Pages of the "Configure Chart" dialog.
+  \item \ttt{properties} \textit{(string->string dictionary)}: Initial values for chart properties.
+
+\end{itemize}
+
+\label{cha:chart-api:omnetpp.scave.charttemplate:ChartTemplate:create-chart}
+
+\begin{flushleft}
+\ttt{\small{ChartTemplate.}create\_chart(self, id: int = None, name: str = None, props=None)}
+\end{flushleft}
+
+\par Creates and returns a chart object (\ttt{org.omnetpp.scave.Chart}) from
+this chart template. Chart properties will be set to the default
+values defined by the chart template. If a \ttt{props} argument is present,
+property values in it will overwrite the defaults.
+
+\par Parameters:
+
+\begin{itemize}
+  \item \ttt{id} \textit{(string)}: A numeric string that identifies the chart within the
+ Analysis. Auto-assigned if missing.
+  \item \ttt{name} \textit{(string)}: Name for the chart. If missing, the chart template name
+ will be used.
+  \item \ttt{props} \textit{(string->string dictionary)}: Chart properties to set. It may not
+ introduce new properties, i.e. the keys must be subset of the property
+ keys defined in the chart template.
+
+\end{itemize}
+
+\subsubsection{get\_chart\_template\_locations()}
+\label{cha:chart-api:omnetpp.scave.charttemplate:get-chart-template-locations}
+
+\begin{flushleft}
+\ttt{get\_chart\_template\_locations()}
+\end{flushleft}
+
+\par Returns a list of locations (directories) where the chart templates that
+come with the IDE can be found.
+
+\subsubsection{load\_chart\_templates()}
+\label{cha:chart-api:omnetpp.scave.charttemplate:load-chart-templates}
+
+\begin{flushleft}
+\ttt{load\_chart\_templates(dirs=[], add\_default\_locations=True)}
+\end{flushleft}
+
+\par Loads chart templates from the given list of directories, and returns them
+in a dictionary. Chart templates are loaded from files with the \ttt{.properties}
+extension.
+
+\par Parameters:
+
+\begin{itemize}
+  \item \ttt{dirs} \textit{(string list)}: A short string that uniquely identifies the chart template.
+  \item \ttt{add\_default\_locations} \textit{(bool)}: Whether the directories returned by \ttt{get\_chart\_template\_locations()}
+should also be searched in addition to the specified directory list.
+
+\end{itemize}
+
+
+\par Returns:
+
+\begin{itemize}
+  \item A string->ChartTemplate dictionary, with chart template IDs used as keys.
+
+\end{itemize}
+
+\subsubsection{load\_chart\_template()}
+\label{cha:chart-api:omnetpp.scave.charttemplate:load-chart-template}
+
+\begin{flushleft}
+\ttt{load\_chart\_template(properties\_file)}
+\end{flushleft}
+
+\par Loads the chart template from the specified \ttt{.properties} file, and
+returns it as a \ttt{ChartTemplate} object.
 % @ENDFILE
 
