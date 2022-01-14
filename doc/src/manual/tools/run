@@ -1,6 +1,8 @@
 #! /bin/sh
 OPP_RUN=opp_run_dbg
 
+set -e
+
 # extract files
 $OPP_RUN -s -h latexconfig > config.txt
 $OPP_RUN -s -h latexconfigvars > configvars.txt
