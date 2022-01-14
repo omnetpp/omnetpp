@@ -4,7 +4,7 @@ import sys
 import os
 import re
 
-from omnetpp.scave import results, chart, utils, ideplot, vectorops, analysis
+from omnetpp.scave import results, chart, utils, ideplot, vectorops, analysis, charttemplate
 
 import mistune
 import inspect
@@ -182,3 +182,4 @@ annotate_module(ideplot)
 annotate_module(utils)
 annotate_module(vectorops)
 annotate_module(analysis)
+annotate_module(charttemplate)
