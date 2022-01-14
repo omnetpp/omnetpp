@@ -46,6 +46,17 @@ def legend(show, frameon, loc):
         args.update(utils._legend_loc_outside_args(loc))
     plt.legend(**args)
 
+
+def grid(b=True, which="major"):
+    # This is consistent with `ideplot.grid`, not with `matplotlib.pyplot.grid`.
+    if which in ["minor", "both"]:
+        if b:
+            plt.minorticks_on()
+        else:
+            plt.minorticks_off()
+    plt.grid(b, which)
+
+
 title = plt.title
 xlabel = plt.xlabel
 ylabel = plt.ylabel
@@ -55,4 +66,4 @@ xscale = plt.xscale
 yscale = plt.yscale
 xticks = plt.xticks
 yticks = plt.yticks
-grid = plt.grid
+

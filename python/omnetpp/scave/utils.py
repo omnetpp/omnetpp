@@ -857,7 +857,7 @@ def postconfigure_plot(props):
         if get_prop("yaxis_log"):
             p.yscale("log" if _parse_optional_bool(get_prop("yaxis_log")) else "linear")
 
-        p.grid(_parse_optional_bool(get_prop("grid_show")),
+        ideplot.grid(_parse_optional_bool(get_prop("grid_show")),
             "major" if (get_prop("grid_density") or "").lower() == "major" else "both") # grid_density is "Major" or "All"
 
     if ideplot.is_native_plot():

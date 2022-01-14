@@ -233,6 +233,9 @@ def xticks(ticks, labels, rotation):
     set_property("X.Label.RotateBy", str(-int(rotation))) # matplotlib and our native widgets have different ideas about label rotation
 
 def grid(b, which):
+    # This does not work exactly like `matplotlib.pyplot.grid`.
+    # There, `which` selects a target set of grid lines to turn on or off,
+    # while here, it acts as a modifier if `b` is `True`.
     if which not in ["major", "both"]:
         raise ValueError("which='{}' is not supported, only 'major', and 'both'".format(which))
     if not b:
