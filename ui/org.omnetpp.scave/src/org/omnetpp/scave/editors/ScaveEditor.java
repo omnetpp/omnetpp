@@ -10,6 +10,7 @@ package org.omnetpp.scave.editors;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -35,6 +36,7 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
@@ -77,12 +79,14 @@ import org.eclipse.ui.IMemento;
 import org.eclipse.ui.INavigationLocation;
 import org.eclipse.ui.INavigationLocationProvider;
 import org.eclipse.ui.IPartListener;
+import org.eclipse.ui.ISaveablePart2;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ListDialog;
+import org.eclipse.ui.dialogs.ListSelectionDialog;
 import org.eclipse.ui.dialogs.SaveAsDialog;
 import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.FileEditorInput;
@@ -143,7 +147,7 @@ import org.xml.sax.SAXException;
  * @author andras, tomi
  */
 public class ScaveEditor extends MultiPageEditorPartExt
-        implements ISelectionProvider, IGotoMarker, INavigationLocationProvider, IModelChangeListener {
+        implements ISelectionProvider, IGotoMarker, INavigationLocationProvider, IModelChangeListener, ISaveablePart2 {
     public static final String ACTIVE_PAGE = "ActivePage", PAGE = "Page",
             PAGE_ID = "PageId", TEMPLATE_TIMESTAMPS = "TemplateTimestamps";
 
@@ -895,6 +899,9 @@ public class ScaveEditor extends MultiPageEditorPartExt
             if (control.equals(entry.getValue()))
                 entries.remove();
         }
+
+        // NOTE: Open temporary charts should make the analysis dirty - if all are closed, that should be cleared.
+        firePropertyChange(IEditorPart.PROP_DIRTY);
     }
 
     /**
@@ -1157,7 +1164,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
             }
         }
 
-        firePropertyChange(ScaveEditor.PROP_DIRTY);
+        firePropertyChange(ISaveablePart2.PROP_DIRTY);
 
         //TODO temp chart name changes currently do not propagate to the tabitem text, as we do not receive model change notification about their change!
 
@@ -1504,15 +1511,21 @@ public class ScaveEditor extends MultiPageEditorPartExt
                 ChartPage chartPage = (ChartPage)editorPage;
 
                 ChartScriptEditor chartScriptEditor = chartPage.getChartScriptEditor();
-
-                if (chartScriptEditor.isDirty())
-                    return true;
-
                 Chart chart = chartScriptEditor.getChart();
 
-                CommandStack commandStack = chartScriptEditor.getCommandStack();
-                if ((commandStack.isSaveNeeded()) || (chart.isTemporary() && commandStack.wasObjectAffected(chart)))
+                // We must report dirty if there is any temporary chart to force Eclipse
+                // to call promptToSaveOnClose(), bringing up the save dialog.
+                if (chart.isTemporary())
                     return true;
+
+                if (!chart.isTemporary()) {
+                    if (chartScriptEditor.isDirty())
+                        return true;
+
+                    CommandStack commandStack = chartScriptEditor.getCommandStack();
+                    if (commandStack.isSaveNeeded())
+                        return true;
+                }
             }
         }
 
@@ -1549,8 +1562,10 @@ public class ScaveEditor extends MultiPageEditorPartExt
                 }
                 else if (editorPage instanceof ChartPage) {
                     ChartPage chartPage = (ChartPage)editorPage;
-                    ChartScriptEditor chartScriptEditor = chartPage.getChartScriptEditor();
-                    chartScriptEditor.saved();
+                    if (!chartPage.getChart().isTemporary()) {
+                        ChartScriptEditor chartScriptEditor = chartPage.getChartScriptEditor();
+                        chartScriptEditor.saved();
+                    }
                 }
             }
 
@@ -1576,7 +1591,6 @@ public class ScaveEditor extends MultiPageEditorPartExt
             if (editorPage instanceof ChartPage) {
                 ChartPage chartPage = (ChartPage)editorPage;
                 ChartScriptEditor chartScriptEditor = chartPage.getChartScriptEditor();
-                askToKeepEditedTemporaryChart(chartScriptEditor);
                 editedScripts.put(chartScriptEditor.getChart(), chartScriptEditor.getDocument().get());
             }
         }
@@ -1719,6 +1733,9 @@ public class ScaveEditor extends MultiPageEditorPartExt
         if (memento != null)
             page.restoreState(memento);
 
+        // NOTE: Open temporary charts should make the analysis dirty.
+        firePropertyChange(IEditorPart.PROP_DIRTY);
+
         return pageIndex;
     }
 
@@ -1739,6 +1756,74 @@ public class ScaveEditor extends MultiPageEditorPartExt
 
     public void refreshResultFiles() {
         tracker.refreshResultFiles();
+    }
+
+    @Override
+    public int promptToSaveOnClose() {
+        List<ChartPage> temporaryChartPages = new ArrayList<ChartPage>();
+        for (int i = 0; i < getPageCount(); ++i) {
+            FormEditorPage editorPage = getEditorPage(i);
+            if (editorPage instanceof ChartPage) {
+                ChartPage chartPage = (ChartPage)editorPage;
+                if (chartPage.getChart().isTemporary())
+                    temporaryChartPages.add(chartPage);
+            }
+        }
+
+        if (temporaryChartPages.isEmpty())
+            return DEFAULT;
+
+        @SuppressWarnings("deprecation")
+        ListSelectionDialog dialog = new ListSelectionDialog
+                (Display.getCurrent().getActiveShell(),
+                temporaryChartPages,
+                new ArrayContentProvider(),
+                new LabelProvider() {
+                    @Override
+                    public String getText(Object element) {
+                        ChartPage chartPage = (ChartPage)element;
+                        String suggestedName = chartPage.getChartScriptEditor().getSuggestedChartName();
+                        String text = chartPage.getChart().getName();
+                        if (suggestedName != null)
+                            text += " -> " + suggestedName;
+                        return text;
+                    }
+                },
+                "Do you want to save '" + getInputFile().getName() + "'?\n\nAlso, keep the following temporary charts as part of the analysis:")
+                {
+                    @Override
+                    protected void createButtonsForButtonBar(Composite parent) {
+                        createButton(parent, IDialogConstants.NO_ID, "Don't Save", false);
+                        createButton(parent, IDialogConstants.CANCEL_ID, "Cancel", false);
+                        createButton(parent, IDialogConstants.YES_ID, "Save", true);
+                    }
+
+                    protected void buttonPressed(int buttonId) {
+                        setReturnCode(buttonId);
+                        if (buttonId == IDialogConstants.YES_ID) {
+                            // to set the selected result list
+                            super.okPressed();
+                        }
+                        close();
+                    }
+                };
+        dialog.setTitle("Save Changes");
+        dialog.open();
+
+        if (dialog.getReturnCode() == IDialogConstants.CANCEL_ID)
+            return CANCEL;
+        if (dialog.getReturnCode() == IDialogConstants.NO_ID)
+            return NO;
+
+        List<Object> selectedObjects = Arrays.asList(dialog.getResult());
+
+        for (Object obj : selectedObjects) {
+            ChartPage chartPage = (ChartPage)obj;
+            String name = StringUtils.defaultString(chartPage.getChartScriptEditor().getSuggestedChartName(), chartPage.getChart().getName());
+            ScaveModelUtil.saveChart(chartsPage.getCommandStack(), chartPage.getChart(), name, getCurrentFolder());
+        }
+
+        return YES;
     }
 
 }

@@ -45,6 +45,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IMemento;
+import org.eclipse.ui.ISaveablePart2;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.PartInitException;
@@ -464,7 +465,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         @Override
         public void documentChanged(DocumentEvent event) {
             scriptChangedFlag = true;
-            firePropertyChange(ScaveEditor.PROP_DIRTY);
+            firePropertyChange(ISaveablePart2.PROP_DIRTY);
             if (autoRefreshChart)
                 rerunChartScriptJob.restartTimer();
         }
@@ -961,7 +962,10 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
     }
 
     public String getChartDisplayName() {
-        return StringUtils.defaultIfEmpty(chart.getName(), "<unnamed>");
+        String name = chart.getName();
+        if (chart.isTemporary())
+            name = "[" + name + "]";
+        return StringUtils.defaultIfEmpty(name, "<unnamed>");
     }
 
     /**
