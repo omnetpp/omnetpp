@@ -314,8 +314,12 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
     // generation gap
     bool existingClass = getPropertyAsBool(classInfo.props, PROP_EXISTINGCLASS, false);
     classInfo.generateClass = opts.generateClasses && !existingClass;
-    classInfo.generateDescriptor = opts.generateDescriptors && !classInfo.isOpaque && getPropertyAsBool(classInfo.props, PROP_DESCRIPTOR, true); // opaque also means no descriptor
-    classInfo.generateSettersInDescriptor = opts.generateSettersInDescriptors && (getProperty(classInfo.props, PROP_DESCRIPTOR) != "readonly");
+
+    std::string descProp = getProperty(classInfo.props, PROP_DESCRIPTOR, "true");
+    if (descProp != "true" && descProp != "false" && descProp != "readonly")
+        errors->addError(classInfo.astNode, "invalid value '%s' for @descriptor, should be 'true', 'false' or 'readonly'", descProp.c_str());
+    classInfo.generateDescriptor = opts.generateDescriptors && !classInfo.isOpaque && descProp != "false"; // opaque also means no descriptor
+    classInfo.generateSettersInDescriptor = opts.generateSettersInDescriptors && descProp != "readonly";
 
     if (!existingClass && isQualified(classInfo.name))
         errors->addError(classInfo.astNode, "class name may only contain '::' when generating descriptor for an existing class");
@@ -335,7 +339,7 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
     classInfo.fieldNameSuffix = getProperty(classInfo.props, PROP_FIELDNAMESUFFIX, "");
     if (classInfo.omitGetVerb && classInfo.fieldNameSuffix.empty()) {
         errors->addWarning(classInfo.astNode, "@omitGetVerb(true) and (implicit) @fieldNameSuffix(\"\") collide: "
-                                                 "adding '_var' suffix to data members to prevent name conflict between them and getter methods");
+                                              "adding '_var' suffix to data members to prevent name conflict between them and getter methods");
         classInfo.fieldNameSuffix = "_var";
     }
 
@@ -780,15 +784,14 @@ bool MsgAnalyzer::getPropertyAsBool(const Properties& props, const char *name, b
     if (values.empty())
         return true;
     else  if (values.size() == 1) {
-        if (values[0] == "false")
-            return false;
-        if (values[0] == "true")
+        if (values[0].empty() || values[0] == "true")
             return true;
-        //FIXME @descriptor(readonly) vs getPropertyAsBool("descriptor")
-//      errors->addError(it->second.getASTNode(), "invalid value in boolean property '%s':'%s'", name, values[0].c_str());
+        else if (values[0] == "false")
+            return false;
+        errors->addError(p->getASTNode(), "invalid value for boolean property @%s: '%s'", name, values[0].c_str());
         return defval;
     }
-    errors->addError(p->getASTNode(), "property '%s' does not contain a single value", name);
+    errors->addError(p->getASTNode(), "property @%s does not contain a single value", name);
     return defval;
 }
 
@@ -802,7 +805,7 @@ std::string MsgAnalyzer::getProperty(const Properties& props, const char *name, 
         return "";
     else if (values.size() == 1)
         return values[0];
-    errors->addError(p->getASTNode(), "property '%s' does not contain a single value", name);
+    errors->addError(p->getASTNode(), "property @%s does not contain a single value", name);
     return "";
 }
 
