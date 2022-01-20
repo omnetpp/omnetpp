@@ -82,7 +82,7 @@ Starting the IDE
 
    $ |omnetpp|
 
-We recommend that you start the IDE from the command-line. Yo can also create a shortcut for starting the IDE. To do so,
+We recommend that you start the IDE from the command-line. You can also create a shortcut for starting the IDE. To do so,
 locate the ``opp_ide.exe`` program in the ``|omnetpp|-|version|/ide`` directory in Windows Explorer, right-click it, and
 choose *Send To > Desktop (create shortcut)* from the menu. You can right-click the taskbar icon while the IDE is
 running, and select *Pin this program to taskbar* from the context menu.
