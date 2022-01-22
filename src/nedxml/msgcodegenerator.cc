@@ -1773,6 +1773,8 @@ void MsgCodeGenerator::generateNamespaceBegin(const std::string& namespaceName, 
     H << std::endl;
     auto tokens = opp_split(namespaceName, "::");
     for (auto token : tokens) {
+        if (token.empty())
+            continue; // leading "::"
         H << "namespace " << token << " {\n";
         if (intoCcFile)
             CC << "namespace " << token << " {\n";
@@ -1787,6 +1789,8 @@ void MsgCodeGenerator::generateNamespaceEnd(const std::string& namespaceName, bo
     auto tokens = opp_split(namespaceName, "::");
     std::reverse(tokens.begin(), tokens.end());
     for (auto token : tokens) {
+        if (token.empty())
+            continue; // leading "::"
         H << "}  // namespace " << token << std::endl;
         if (intoCcFile)
             CC << "}  // namespace " << token << std::endl;

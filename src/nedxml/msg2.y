@@ -179,21 +179,21 @@ definition
  * namespace declaration
  */
 namespace_decl
-        : NAMESPACE qname0 ';'
+        : NAMESPACE qname ';'
                 {
                   ps.namespacedecl = (NamespaceElement *)createMsgElementWithTag(np, MSG_NAMESPACE, ps.msgfile );
                   ps.namespacedecl->setName(removeSpaces(np, @2).c_str());
                   storeBannerAndRightComments(np, ps.namespacedecl,@1,@2);
                 }
 
-qname0
-        : qname0 DOUBLECOLON NAME
-        | NAME
+qname
+        : DOUBLECOLON qname1
+        | qname1
         ;
 
-qname
-        : DOUBLECOLON qname0
-        | qname0
+qname1
+        : qname1 DOUBLECOLON NAME
+        | NAME
         ;
 
 /*
