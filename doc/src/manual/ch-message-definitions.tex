@@ -120,9 +120,9 @@ Message files contain the following ingredients:
     and a large subset of them deal with the details of what C++ code to
     generate for the item they occur with. For example, \ttt{@getter(getFoo)}
     on a field requests that the generated getter function have the name \ttt{getFoo}.
-  \item \textit{C++ blocks} are defined with the keyword \ttt{cplusplus}, and
-    are used for directly injecting C++ code into the generated source files.
-    The target (the place where to insert the code) can be specified.
+  \item \textit{C++ blocks} are used for injecting literal C++ code fragments
+    into the generated source files. The target (the place where to insert the
+    code) can be specified.
 \end{itemize}
 
 The following sections describe all of the above elements in detail.
@@ -328,10 +328,10 @@ to the numeric value.
 \section{Imports}
 \label{sec:msg-defs:imports}
 
-\textit{Imports} are used to make definitions in one message file available to
-another one. Importing an MSG file makes the definitions in that file available
-to the file that imports it, but has no further side effect (and in particular,
-it will generate no C++ code).
+Imports are used to make definitions in one message file available to another
+one. Importing an MSG file makes the definitions in that file available to the
+file that imports it, but has no further side effect (and in particular, it will
+generate no C++ code).
 
 To import a message file, use the \fkeyword{import} keyword followed by a name
 that identifies the message file within its project:
@@ -354,7 +354,7 @@ of \fopt{-I} command-line options.
 \label{sec:msg-defs:namespaces}
 \label{sec:msg-defs:declaring-a-namespace} % legacy
 
-To place the generated types into a namespace, a \ttt{namespace} directive
+To place the generated types into a namespace, a \fkeyword{namespace} directive
 near the top of the message file:
 
 \begin{msg}
@@ -363,7 +363,7 @@ namespace inet;
 
 Hierarchical (nested) namespaces can be declared one with a straightforward
 syntax, using double colons in the namespace declaration. There is no need for
-multiple nested \ttt{namespace} declarations as in C++:
+multiple nested \fkeyword{namespace} declarations as in C++:
 
 \begin{msg}
 namespace inet::ieee80211;
@@ -377,10 +377,10 @@ namespace inet { namespace ieee80211 {
 }}
 \end{cpp}
 
-There can be multiple \ttt{namespace} directives in a message file.
+There can be multiple \fkeyword{namespace} directives in a message file.
 
-The effect of the \ttt{namespace} directive extends from the place of the
-directive until the next \ttt{namespace} directive or the end of the message
+The effect of the \fkeyword{namespace} directive extends from the place of the
+directive until the next \fkeyword{namespace} directive or the end of the message
 file.
 
 When the announced types are used later (as field type, base class, etc.),
@@ -432,8 +432,8 @@ brackets, and it is rarely used. The parameter list is enclosed in parentheses,
 and in theory it may contain a value list and key-valuelist pairs, but
 almost all properties expect to find just a single value there.
 
-For boolean properties, the value may be \ttt{true} or \ttt{false}; it the value
-is missing, \ttt{true} is assumed. Thus, \ttt{@customize} is equivalent to
+For boolean properties, the value may be \fkeyword{true} or \fkeyword{false}; it the value
+is missing, \fkeyword{true} is assumed. Thus, \ttt{@customize} is equivalent to
 \ttt{@customize(true)}.
 
 As a guard against mistyping property names, properties need to be declared
@@ -501,8 +501,8 @@ The following data types can be used for fields:
     \fkeyword{short}, \fkeyword{int}, \fkeyword{long}, \fkeyword{unsigned char},
     \fkeyword{unsigned short}, \fkeyword{unsigned int}, \fkeyword{unsigned
     long}, \fkeyword{float}, \fkeyword{double}.
-  \item \fkeyword{string}. Getters and setters use the \ttt{const char*} data
-    type; \ttt{nullptr} is not allowed. Setters store a copy of the string, not
+  \item \fkeyword{string}. Getters and setters use the \fkeyword{const char*} data
+    type; \fkeyword{nullptr} is not allowed. Setters store a copy of the string, not
     just the pointer.
   \item C99-style fixed-size integer types: \fkeyword{int8\_t},
     \fkeyword{int16\_t}, \fkeyword{int32\_t}, \fkeyword{int64\_t},
@@ -517,7 +517,7 @@ The following data types can be used for fields:
     name.
 \end{itemize}
 
-Numeric fields are initialized to zero, booleans to \ttt{false}, and string
+Numeric fields are initialized to zero, booleans to \fkeyword{false}, and string
 fields to the empty string.
 
 
@@ -884,11 +884,11 @@ void setPayload(cPacket *payload);
 cPacket *removePayload();
 \end{cpp}
 
-The getter and mutable getter return the stored pointer (or \ttt{nullptr} if
+The getter and mutable getter return the stored pointer (or \fkeyword{nullptr} if
 there is none).
 
 The remover method releases the ownership of the stored object, sets the field
-to \ttt{nullptr}, and returns the object.
+to \fkeyword{nullptr}, and returns the object.
 
 The setter method behavior depends on the presence of the \fprop{@allowReplace}
 property. By default (when \fprop{@allowReplace} is absent), the setter does not
@@ -1093,7 +1093,7 @@ packet IPPacket {
 The generated class would have the following methods (note the differences
 from the default names \ttt{getTtl()}, \ttt{setTtl()}, \ttt{getOptions()},
 \ttt{setOptions()}, \ttt{getOptionsArraySize()}, \ttt{getOptionsArraySize()};
-also note that indices and array sizes are now \ttt{short}):
+also note that indices and array sizes are now \fkeyword{short}):
 
 \begin{cpp}
 virtual int getTTL() const;
@@ -1418,7 +1418,7 @@ To be able to generate the descriptor's \ffunc{getFieldAsString()} member
 function, the message compiler needs to know how to convert the return type of
 the getter to \ttt{std::string}. Similarly, for \ffunc{setFieldAsString()} it
 needs to know how to convert (or parse) a string to obtain the setter's argument
-type. For the built-in types (\ttt{int}, \ttt{double}, etc.) this information is
+type. For the built-in types (\fkeyword{int}, \fkeyword{double}, etc.) this information is
 pre-configured, but for other types the user needs to supply it via two
 properties:
 
