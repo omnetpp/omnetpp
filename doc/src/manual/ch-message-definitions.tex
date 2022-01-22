@@ -144,6 +144,7 @@ similar: they all generate C++ classes, and only differ on the choice of the
 default base class (and related details such as the argument list of the
 constructor). The fourth one generates a plain (C-style) struct.
 
+
 \subsection{Classes, Messages, Packets}
 \label{sec:msg-defs:classes-messages-packets}
 \label{sec:msg-defs:defining-classes} % legacy
@@ -173,7 +174,7 @@ definitions lacking an "extends" clause.}
 The base class is specified with the \fkeyword{extends} keyword. For example:
 
 \begin{msg}
-packet Ieee80211DataFrame extends Ieee80211Frame
+packet FooPacket extends PacketBase
 {
     ...
 };
@@ -182,11 +183,10 @@ packet Ieee80211DataFrame extends Ieee80211Frame
 The generated C++ class will look like this:
 
 \begin{cpp}
-class Ieee80211DataFrame : public Ieee80211Frame {
+class FooPacket : public PacketBase {
     ...
 };
 \end{cpp}
-
 
 The generated class will have a constructor and also a copy constructor. An
 assignment operator (\ffunc{operator=()}) and cloning method (\ffunc{dup()})
@@ -198,7 +198,7 @@ message kind. For classes derived from \cclass{cNamedObject}, it will accept an
 object name. The arguments are optional (they have default values).
 
 \begin{cpp}
-class FooPacket : public cPacket
+class FooPacket : public PacketBase
 {
   public:
     FooPacket(const char *name=nullptr, int kind=0);
@@ -208,7 +208,7 @@ class FooPacket : public cPacket
     ...
 \end{cpp}
 
-Additional base classes can be added by listing them in the \fprop{@interfaces}
+Additional base classes can be added by listing them in the \fprop{@implements}
 class property.
 
 
@@ -238,17 +238,17 @@ methods. The following code is generated from the above definition:
 struct Place
 {
     int type;
-    opp_string description; // minimal string class that wraps a const char*
+    omnetpp::opp_string description;
     double coords[3];
 };
 \end{cpp}
 
-Note that \fkeyword{string} fields are generated with the \ttt{opp\_string}
-C++ type, which is a minimalistic string class that wraps \ttt{const char*}
-and takes care of allocation/deallocation. It was chosen instead of
-\ttt{std::string} because of its significantly smaller memory footprint
-(the sizeof of \ttt{opp\_string} is the same as that of a \ttt{const char*}
-pointer).
+Note that \fkeyword{string} fields are generated with the \ttt{opp\_string} C++
+type, which is a minimalistic string class that wraps \ttt{const char*} and
+takes care of allocation/deallocation. It was chosen instead of
+\ttt{std::string} because of its significantly smaller memory footprint.
+(\ttt{std::string} is significantly larger than a \ttt{const char*} pointer
+because it also needs to store length and capacity information in some form.)
 
 Inheritance is supported for structs:
 
@@ -328,7 +328,7 @@ to the numeric value.
 \section{Imports}
 \label{sec:msg-defs:imports}
 
-Imports are used to make definitions in one message file available to another
+Import directives are used to make definitions in one message file available to another
 one. Importing an MSG file makes the definitions in that file available to the
 file that imports it, but has no further side effect (and in particular, it will
 generate no C++ code).
@@ -354,22 +354,22 @@ of \fopt{-I} command-line options.
 \label{sec:msg-defs:namespaces}
 \label{sec:msg-defs:declaring-a-namespace} % legacy
 
-To place the generated types into a namespace, a \fkeyword{namespace} directive
-near the top of the message file:
+To place generated types into a namespace, add a \fkeyword{namespace} directive
+above the types in question:
 
 \begin{msg}
 namespace inet;
 \end{msg}
 
-Hierarchical (nested) namespaces can be declared one with a straightforward
-syntax, using double colons in the namespace declaration. There is no need for
-multiple nested \fkeyword{namespace} declarations as in C++:
+Hierarchical (nested) namespaces are declared using double colons in the
+namespace definition, much like nested namespace definitions introduced into
+C++ in version C++17.
 
 \begin{msg}
 namespace inet::ieee80211;
 \end{msg}
 
-The above code will be translated into nested namespaces in the C++ code:
+The above code will be translated into multiple nested namespaces in the C++ code:
 
 \begin{cpp}
 namespace inet { namespace ieee80211 {
@@ -377,30 +377,24 @@ namespace inet { namespace ieee80211 {
 }}
 \end{cpp}
 
-There can be multiple \fkeyword{namespace} directives in a message file.
+There can be multiple \fkeyword{namespace} directives in a message file. The
+effect of the \fkeyword{namespace} directive extends from the place of the
+directive until the next \fkeyword{namespace} directive or the end of the
+message file. Each \fkeyword{namespace} directive opens a completely new
+namespace, i.e. \textit{not} a namespace within the previous one. An empty
+namespace directive (\ttt{namespace;}) returns to the global namespace. For
+example:
 
-The effect of the \fkeyword{namespace} directive extends from the place of the
-directive until the next \fkeyword{namespace} directive or the end of the message
-file.
+\begin{msg}
+namespace foo::bar;
+class A {}  // defines foo::bar::A
 
-When the announced types are used later (as field type, base class, etc.),
-they can be referred to just with their simple names (without namespace);
-or alternatively with their fully qualified names. When a message compiler
-encounters type name as field type or base class, it interprets the type
-name in the following way:
+namespace baz;
+class B {}  // defines baz::B
 
-%TODO verify
-
-\begin{enumerate}
-\item If the type name contains a double colon (\ttt{::}), it is interpreted
-      as being fully qualified with an absolute namespace.
-\item If the name is just an identifier (no double colon), and the message
-      file's namespace contains that name, it is chosen; otherwise:
-\item It is looked up among all announced types in all namespaces (including
-      the global namespace), and there must be exactly one match. That is,
-      if the same name exists in multiple namespaces, it may only be
-      referenced with fully qualified name.
-\end{enumerate}
+namespace;
+class C {}  // defines ::C
+\end{msg}
 
 
 \section{Properties}
@@ -432,9 +426,9 @@ brackets, and it is rarely used. The parameter list is enclosed in parentheses,
 and in theory it may contain a value list and key-valuelist pairs, but
 almost all properties expect to find just a single value there.
 
-For boolean properties, the value may be \fkeyword{true} or \fkeyword{false}; it the value
-is missing, \fkeyword{true} is assumed. Thus, \ttt{@customize} is equivalent to
-\ttt{@customize(true)}.
+For boolean properties, the value may be \fkeyword{true} or \fkeyword{false}; if
+the value is missing, \fkeyword{true} is assumed. Thus, \ttt{@customize} is
+equivalent to \ttt{@customize(true)}.
 
 As a guard against mistyping property names, properties need to be declared
 before they can be used. Properties are declared using the \fprop{@property}
@@ -447,6 +441,36 @@ by listing the built-in definitions of the message compiler
 The full list of properties understood by the message compiler and other {\opp}
 tools can be found in Appendix \ref{cha:msg-properties}.
 
+
+\subsection{Data Types}
+\label{sec:msg-defs:field-data-types}
+
+The following data types can be used for fields:
+
+\begin{itemize}
+  \item C/C++ primitive data types: \fkeyword{bool}, \fkeyword{char},
+    \fkeyword{short}, \fkeyword{int}, \fkeyword{long}, \fkeyword{unsigned char},
+    \fkeyword{unsigned short}, \fkeyword{unsigned int}, \fkeyword{unsigned
+    long}, \fkeyword{float}, \fkeyword{double}.
+  \item \fkeyword{string}. Getters and setters use the \fkeyword{const char*} data
+    type; \fkeyword{nullptr} is not allowed. Setters store a copy of the string, not
+    just the pointer.
+  \item C99-style fixed-size integer types: \fkeyword{int8\_t},
+    \fkeyword{int16\_t}, \fkeyword{int32\_t}, \fkeyword{int64\_t},
+    \fkeyword{uint8\_t}, \fkeyword{uint16\_t}, \fkeyword{uint32\_t},
+    \fkeyword{uint64\_t}.\footnote{These type names are accepted without the
+    \ttt{\_t} suffix as well, but you are responsible to ensure that the
+    generated code compiles, i.e. the shortened type names must be defined in a
+    header file you include.}
+\end{itemize}
+
+In addition, {\opp} class names such as \cclass{simtime\_t} and \cclass{cMessage} are
+also made available without the need to import anything. These names are
+accepted both with and without spelling out the \ttt{omnetpp} namespace
+name.
+
+Numeric fields are initialized to zero, booleans to \fkeyword{false}, and string
+fields to the empty string.
 
 
 \section{Fields}
@@ -489,36 +513,6 @@ The choice of C++ type used for the data member and the getter/setter methods
 can be overridden with the help of the \fprop{@cppType} property (and on a more
 fine-grained level, with \fprop{@datamemberType}, \fprop{@argType} and
 \fprop{@returnType}), although this it is rarely useful.
-
-
-\subsection{Built-in Data Types}
-\label{sec:msg-defs:field-data-types}
-
-The following data types can be used for fields:
-
-\begin{itemize}
-  \item C/C++ primitive data types: \fkeyword{bool}, \fkeyword{char},
-    \fkeyword{short}, \fkeyword{int}, \fkeyword{long}, \fkeyword{unsigned char},
-    \fkeyword{unsigned short}, \fkeyword{unsigned int}, \fkeyword{unsigned
-    long}, \fkeyword{float}, \fkeyword{double}.
-  \item \fkeyword{string}. Getters and setters use the \fkeyword{const char*} data
-    type; \fkeyword{nullptr} is not allowed. Setters store a copy of the string, not
-    just the pointer.
-  \item C99-style fixed-size integer types: \fkeyword{int8\_t},
-    \fkeyword{int16\_t}, \fkeyword{int32\_t}, \fkeyword{int64\_t},
-    \fkeyword{uint8\_t}, \fkeyword{uint16\_t}, \fkeyword{uint32\_t},
-    \fkeyword{uint64\_t}.\footnote{These type names are accepted without the
-    \ttt{\_t} suffix as well, but you are responsible to ensure that the
-    generated code compiles, i.e. the shortened type names must be defined in a
-    header file you include.}
-  \item {\opp} class names such as \cclass{simtime\_t} and \cclass{cMessage} are
-    also made available without the need to import anything. These names are
-    accepted both with and without spelling out the \ttt{omnetpp} namespace
-    name.
-\end{itemize}
-
-Numeric fields are initialized to zero, booleans to \fkeyword{false}, and string
-fields to the empty string.
 
 
 \subsection{Initial Values}
@@ -671,20 +665,22 @@ array size in square brackets after the field name:
 int route[4];
 \end{msg}
 
-The generated getter and setter methods will have an extra \ttt{k} argument,
-the array index:
+The generated getter and setter methods will have an extra \ttt{k} argument (the
+array index), and a third method that returns the array size is also generated:
 
 \begin{cpp}
 int getRoute(size_t k) const;
 void setRoute(size_t k, int route);
+size_t getRouteArraySize() const;
 \end{cpp}
 
-When these methods are called with an index that is out of bounds, an exception
-will be thrown.
+When the getter or setter method is called with an index that is out of bounds,
+an exception is thrown.
 
-The method names can be overridden with the \fprop{@getter} and \fprop{@setter}
-properties. To use another C++ type for array size and indices instead of the
-default \fprop{size\_t}, specify the \fprop{@sizeType} property.
+The method names can be overridden with the \fprop{@getter}, \fprop{@setter} and
+\fprop{@sizeGetter} properties. To use another C++ type for array size and
+indices instead of the default \fprop{size\_t}, specify the \fprop{@sizeType}
+property.
 
 \begin{note}
   Use a singular noun for field name instead of plural (\ttt{route[]} instead of
@@ -692,8 +688,8 @@ default \fprop{size\_t}, specify the \fprop{@sizeType} property.
   \ttt{appendRoutes()}, etc, for methods that deal with a single route).
 \end{note}
 
-When a default value is given, it specifies the value for one array element.
-(There is no syntax for initializing an array with a list of values.)
+When a default value is given, it is interpreted as a scalar for filling the
+array with. There is no syntax for initializing an array with a list of values.
 
 \begin{msg}
 int route[4] = -1; // all elements set to -1
@@ -1052,14 +1048,14 @@ packet EthernetFrame {
 There are several possibilities for customizing a generated class:
 
 \begin{itemize}
-  \item using custom method names and custom field types
-  \item using custom field types
-  \item custom fields
-  \item fields with custom-implementation methods
-  \item abstract field
-  \item injecting code into existing member functions
-  \item generation gap (@customize)
-  \item special customizations, e.g. @str, @nopack, etc.
+  \item Using custom method names and custom field types
+  \item Using custom field types
+  \item Injecting code into existing member functions
+  \item Custom fields
+  \item Fields with custom-implementation methods
+  \item The Generation Gap pattern
+  \item Abstract fields
+  \item Special customizations, e.g. \fprop{@str}, \fprop{@nopack}, etc.
 \end{itemize}
 
 The following sections explore the above possibilities.
@@ -1071,13 +1067,17 @@ The following sections explore the above possibilities.
 The names and some other properties of generated methods can be influenced
 with metadata annotations (properties).
 
-The names of the getter and setter methods can be changed with the
-\fprop{@getter} and \fprop{@setter} properties. For variable-size array
-fields, the names of array size getter and setter methods can be changed
-with \fprop{@sizeGetter} and \fprop{@sizeSetter}.
+The following field properties exist for overriding method names:
+\fprop{@getter}, \fprop{@setter}, \fprop{@getterForUpdate}, \fprop{@remover},
+\fprop{@sizeGetter}, \fprop{@sizeSetter}, \fprop{@inserter}, \fprop{@appender}
+and \fprop{@eraser}.
 
-In addition, the data type for the array size (by default \ttt{unsigned
-int}) can be changed with \fprop{@sizetype} property.
+To override data types used by the data member and its accessor methods, use
+\fprop{@cppType}, \fprop{@datamemberType}, \fprop{@argType}, or
+\fprop{@returnType}.
+
+To override the default \ttt{size\_t} type used for array size and indices, use
+\fprop{@sizeType}.
 
 Consider the following example:
 
@@ -1113,6 +1113,25 @@ use \ttt{@omitGetVerb} in new models, because it is inconsistent with the
 accepted naming convention.
 
 %% TODO \fprop{nopack}  (also a field property)
+
+
+\subsection{Injecting Code into Methods}
+\label{sec:msg-defs:injecting-code-into-methods}
+
+Generally, literal C++ blocks (the \fkeyword{cplusplus} keyword) are the way to
+inject code into the body of individual methods, as described in
+\ref{sec:msg-defs:cplusplus-blocks}.
+
+The \fprop{@beforeChange} class property can be used to designate a member function
+which is to be called before any mutator code (in setters, non-const getters,
+assignment operator, etc.) executes. This can be used to implement e.g. a dirty
+flag or some form of immutability (i.e. freeze the state of the object).
+
+The \fprop{@str} class property aims to simplify the implementation of an
+\ffunc{str()} method in the generated class. When \fprop{@str} is present, an
+\ttt{std::string str() const} method is generated with a single \ttt{return}
+statement in its body. The statement returns the C++ expression specified as the
+value of the \fprop{@str} property.
 
 
 \subsection{Custom-implementation Methods}
@@ -1223,67 +1242,50 @@ Consider the following example:
 packet FooPacket
 {
    @customize(true);
-   int payloadLength;
+   ...
 };
 \end{msg}
 
-If you process the above code with the message compiler, the generated code will
-contain a \ttt{FooPacket\_Base} class instead of \ttt{FooPacket}. Then you would
-subclass \ttt{FooPacket\_Base} to produce \ttt{FooPacket}, while doing your
-customizations by redefining the necessary methods.
-
-\begin{cpp}
-class FooPacket_Base : public cPacket
-{
-  protected:
-    int payloadLength;
-    // make constructors protected to avoid instantiation
-    FooPacket_Base(const char *name=nullptr);
-    FooPacket_Base(const FooPacket_Base& other);
-  public:
-    ...
-    virtual int getPayloadLength() const;
-    virtual void setPayloadLength(int src);
-};
-\end{cpp}
+The message compiler will generate a \ttt{FooPacket\_Base} class instead of
+\ttt{FooPacket}. It is then the user's task to subclass \ttt{FooPacket\_Base} to
+derive \ttt{FooPacket}, while adding extra data members and adding/overriding
+methods to achieve the goals that motivated the customization.
 
 There is a minimum amount of code you have to write for \ttt{FooPacket}, because
-not everything can be pre-generated as part of \ttt{FooPacket\_Base}, e.g.
-constructors cannot be inherited. This minimum code is the following (you will
-find it the generated C++ header too, as a comment):
+not everything can be pre-generated as part of \ttt{FooPacket\_Base} (e.g.
+constructors cannot be inherited). This minimum code, which usually goes into a
+header file, is the following:
 
 \begin{cpp}
 class FooPacket : public FooPacket_Base
 {
+  private:
+    void copy(const FooPacket& other) { ... }
   public:
-    FooPacket(const char *name=nullptr) : FooPacket_Base(name) {}
-    FooPacket(const FooPacket& other) : FooPacket_Base(other) {}
-    FooPacket& operator=(const FooPacket& other)
-        {FooPacket_Base::operator=(other); return *this;}
-    virtual FooPacket *dup() const {return new FooPacket(*this);}
+    FooPacket(const char *s=nullptr, short kind=0) : FooPacket_Base(s,kind) {}
+    FooPacket(const FooPacket& other) : FooPacket_Base(other) {copy(other);}
+    FooPacket& operator=(const FooPacket& other) {if (this==&other) return *this;
+        FooPacket_Base::operator=(other); copy(other); return *this;}
+    virtual FooPacket *dup() const override {return new FooPacket(*this);}
 };
-
-Register_Class(FooPacket);
 \end{cpp}
 
-Note that it is important that you redefine \ffunc{dup()} and
-provide an assignment operator (\ffunc{operator=()}).
+\begin{note}
+  The above boilerplate code can be copied out of the generated C++ header, which
+  contains it as a comment.
+\end{note}
 
-Assuming that the motivation is to provide a new implementation for the
-\ttt{setPayloadLength()} method, the code you'd write is the following:
+The generated constructor, copy constructor, \ttt{operator=}, \ttt{dup()} can be
+usually be copied verbatim. The only method that needs to be custom code is
+\ffunc{copy()}. It is shared by the copy constructor and \ttt{operator=}, and
+should take care of copying the new data members you added as part of
+\ttt{FooPacket}.
+
+In addition to the above, the implementation (\ttt{.cc}) file should contain the
+registration of the new class:
 
 \begin{cpp}
-class FooPacket : public FooPacket_Base
-{
-    ... (mandatory methods, see above)
-    virtual void setPayloadLength(int length);
-}
-
-void FooPacket::setPayloadLength(int length)
-{
-    addByteLength(length - getPayloadLength()); // adjust cPacket length
-    FooPacket_Base::setPayloadLength(length);
-}
+Register_Class(FooPacket);
 \end{cpp}
 
 
