@@ -185,6 +185,11 @@ namespace_decl
                   ps.namespacedecl->setName(removeSpaces(np, @2).c_str());
                   storeBannerAndRightComments(np, ps.namespacedecl,@1,@2);
                 }
+        | NAMESPACE ';'
+                {
+                  ps.namespacedecl = (NamespaceElement *)createMsgElementWithTag(np, MSG_NAMESPACE, ps.msgfile );
+                  storeBannerAndRightComments(np, ps.namespacedecl,@1,@1);
+                }
 
 qname
         : DOUBLECOLON qname1

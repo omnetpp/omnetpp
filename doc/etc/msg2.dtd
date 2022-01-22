@@ -49,7 +49,7 @@
 
 <!ELEMENT namespace (comment*)>
 <!ATTLIST namespace
-     name                CDATA     #REQUIRED>  <!-- note: not NMTOKEN because it may contain "::" -->
+     name                CDATA     #IMPLIED>
 
 <!ELEMENT cplusplus (comment*)>
 <!ATTLIST cplusplus

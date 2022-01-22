@@ -454,8 +454,7 @@ void MsgCompiler::generateCode(MsgFileElement *fileElement)
 
 void MsgCompiler::validateNamespaceName(const std::string& namespaceName, ASTNode *element)
 {
-    if (namespaceName.empty())
-        errors->addError(element, "namespace name is empty");
+    // note: namespaceName may be empty (for returning to the global namespace)
     for (auto token : opp_split(namespaceName, "::"))
         if (contains(MsgAnalyzer::RESERVED_WORDS, token))
             errors->addError(element, "namespace name '%s' is a reserved word", token.c_str());

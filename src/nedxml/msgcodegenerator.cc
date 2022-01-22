@@ -1788,6 +1788,7 @@ void MsgCodeGenerator::generateNamespaceEnd(const std::string& namespaceName, bo
 {
     auto tokens = opp_split(namespaceName, "::");
     std::reverse(tokens.begin(), tokens.end());
+    H << std::endl;
     for (auto token : tokens) {
         if (token.empty())
             continue; // leading "::"
