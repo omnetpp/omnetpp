@@ -182,7 +182,7 @@ namespace_decl
         : NAMESPACE qname0 ';'
                 {
                   ps.namespacedecl = (NamespaceElement *)createMsgElementWithTag(np, MSG_NAMESPACE, ps.msgfile );
-                  ps.namespacedecl->setName(toString(np, @2));
+                  ps.namespacedecl->setName(removeSpaces(np, @2).c_str());
                   storeBannerAndRightComments(np, ps.namespacedecl,@1,@2);
                 }
 
@@ -266,7 +266,7 @@ struct_decl
         : STRUCT qname ';'
                 {
                   ps.structdecl = (StructDeclElement *)createMsgElementWithTag(np, MSG_STRUCT_DECL, ps.msgfile );
-                  ps.structdecl->setName(toString(np, @2));
+                  ps.structdecl->setName(removeSpaces(np, @2).c_str());
                   storeBannerAndRightComments(np, ps.structdecl,@1,@2);
                 }
         ;
@@ -275,7 +275,7 @@ class_decl
         : CLASS qname ';'
                 {
                   ps.classdecl = (ClassDeclElement *)createMsgElementWithTag(np, MSG_CLASS_DECL, ps.msgfile );
-                  ps.classdecl->setName(toString(np, @2));
+                  ps.classdecl->setName(removeSpaces(np, @2).c_str());
                   ps.classdecl->setIsCobject(true);
                   storeBannerAndRightComments(np, ps.classdecl,@1,@2);
                 }
@@ -290,7 +290,7 @@ class_decl
                 {
                   ps.classdecl = (ClassDeclElement *)createMsgElementWithTag(np, MSG_CLASS_DECL, ps.msgfile );
                   ps.classdecl->setIsCobject(true);
-                  ps.classdecl->setName(toString(np, @2));
+                  ps.classdecl->setName(removeSpaces(np, @2).c_str());
                   ps.classdecl->setExtendsName(toString(np, @4));
                   storeBannerAndRightComments(np, ps.classdecl,@1,@4);
                 }
@@ -300,7 +300,7 @@ message_decl
         : MESSAGE qname ';'
                 {
                   ps.messagedecl = (MessageDeclElement *)createMsgElementWithTag(np, MSG_MESSAGE_DECL, ps.msgfile );
-                  ps.messagedecl->setName(toString(np, @2));
+                  ps.messagedecl->setName(removeSpaces(np, @2).c_str());
                   storeBannerAndRightComments(np, ps.messagedecl,@1,@2);
                 }
         ;
@@ -309,7 +309,7 @@ packet_decl
         : PACKET qname ';'
                 {
                   ps.packetdecl = (PacketDeclElement *)createMsgElementWithTag(np, MSG_PACKET_DECL, ps.msgfile );
-                  ps.packetdecl->setName(toString(np, @2));
+                  ps.packetdecl->setName(removeSpaces(np, @2).c_str());
                   storeBannerAndRightComments(np, ps.packetdecl,@1,@2);
                 }
         ;
@@ -318,7 +318,7 @@ enum_decl
         : ENUM qname ';'
                 {
                   ps.enumdecl = (EnumDeclElement *)createMsgElementWithTag(np, MSG_ENUM_DECL, ps.msgfile );
-                  ps.enumdecl->setName(toString(np, @2));
+                  ps.enumdecl->setName(removeSpaces(np, @2).c_str());
                   storeBannerAndRightComments(np, ps.enumdecl,@1,@2);
                 }
         ;
@@ -330,7 +330,7 @@ enum
         : ENUM qname '{'
                 {
                   ps.enump = (EnumElement *)createMsgElementWithTag(np, MSG_ENUM, ps.msgfile );
-                  ps.enump->setName(toString(np, @2));
+                  ps.enump->setName(removeSpaces(np, @2).c_str());
                   storeBannerAndRightComments(np, ps.enump,@1,@2);
                 }
           opt_enumfields '}' opt_semicolon
@@ -390,14 +390,14 @@ message_header
         : MESSAGE qname '{'
                 {
                   ps.msgclassorstruct = ps.messagep = (MessageElement *)createMsgElementWithTag(np, MSG_MESSAGE, ps.msgfile );
-                  ps.messagep->setName(toString(np, @2));
+                  ps.messagep->setName(removeSpaces(np, @2).c_str());
                   storeBannerAndRightComments(np, ps.messagep,@1,@2);
                 }
         | MESSAGE qname EXTENDS qname '{'
                 {
                   ps.msgclassorstruct = ps.messagep = (MessageElement *)createMsgElementWithTag(np, MSG_MESSAGE, ps.msgfile );
-                  ps.messagep->setName(toString(np, @2));
-                  ps.messagep->setExtendsName(toString(np, @4));
+                  ps.messagep->setName(removeSpaces(np, @2).c_str());
+                  ps.messagep->setExtendsName(removeSpaces(np, @4).c_str());
                   storeBannerAndRightComments(np, ps.messagep,@1,@4);
                 }
         ;
@@ -406,14 +406,14 @@ packet_header
         : PACKET qname '{'
                 {
                   ps.msgclassorstruct = ps.packetp = (PacketElement *)createMsgElementWithTag(np, MSG_PACKET, ps.msgfile );
-                  ps.packetp->setName(toString(np, @2));
+                  ps.packetp->setName(removeSpaces(np, @2).c_str());
                   storeBannerAndRightComments(np, ps.packetp,@1,@2);
                 }
         | PACKET qname EXTENDS qname '{'
                 {
                   ps.msgclassorstruct = ps.packetp = (PacketElement *)createMsgElementWithTag(np, MSG_PACKET, ps.msgfile );
-                  ps.packetp->setName(toString(np, @2));
-                  ps.packetp->setExtendsName(toString(np, @4));
+                  ps.packetp->setName(removeSpaces(np, @2).c_str());
+                  ps.packetp->setExtendsName(removeSpaces(np, @4).c_str());
                   storeBannerAndRightComments(np, ps.packetp,@1,@4);
                 }
         ;
@@ -422,14 +422,14 @@ class_header
         : CLASS qname '{'
                 {
                   ps.msgclassorstruct = ps.classp = (ClassElement *)createMsgElementWithTag(np, MSG_CLASS, ps.msgfile );
-                  ps.classp->setName(toString(np, @2));
+                  ps.classp->setName(removeSpaces(np, @2).c_str());
                   storeBannerAndRightComments(np, ps.classp,@1,@2);
                 }
         | CLASS qname EXTENDS qname '{'
                 {
                   ps.msgclassorstruct = ps.classp = (ClassElement *)createMsgElementWithTag(np, MSG_CLASS, ps.msgfile );
-                  ps.classp->setName(toString(np, @2));
-                  ps.classp->setExtendsName(toString(np, @4));
+                  ps.classp->setName(removeSpaces(np, @2).c_str());
+                  ps.classp->setExtendsName(removeSpaces(np, @4).c_str());
                   storeBannerAndRightComments(np, ps.classp,@1,@4);
                 }
         ;
@@ -438,14 +438,14 @@ struct_header
         : STRUCT qname '{'
                 {
                   ps.msgclassorstruct = ps.structp = (StructElement *)createMsgElementWithTag(np, MSG_STRUCT, ps.msgfile );
-                  ps.structp->setName(toString(np, @2));
+                  ps.structp->setName(removeSpaces(np, @2).c_str());
                   storeBannerAndRightComments(np, ps.structp,@1,@2);
                 }
         | STRUCT qname EXTENDS qname '{'
                 {
                   ps.msgclassorstruct = ps.structp = (StructElement *)createMsgElementWithTag(np, MSG_STRUCT, ps.msgfile );
-                  ps.structp->setName(toString(np, @2));
-                  ps.structp->setExtendsName(toString(np, @4));
+                  ps.structp->setName(removeSpaces(np, @2).c_str());
+                  ps.structp->setExtendsName(removeSpaces(np, @4).c_str());
                   storeBannerAndRightComments(np, ps.structp,@1,@4);
                 }
         ;
