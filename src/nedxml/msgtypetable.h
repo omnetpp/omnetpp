@@ -120,6 +120,7 @@ class NEDXML_API MsgTypeTable
         std::string eraser;     // @eraser; eraser function name (erase element from dynamic array)
         std::string sizeSetter; // setArraySize() function name
         std::string sizeGetter; // array size getter function name
+        bool hasStrMethod;      // the field's type has an str() method
         std::string toString;   // function to convert data to string, defined in property @toString
                                 // if tostring begins with a dot, then it is taken as member function call, parentheses needed in property; otherwise toString is understood as name of a normal function, do not use parentheses
                                 // std::string <function>(<datatype>);           // @toString(function)

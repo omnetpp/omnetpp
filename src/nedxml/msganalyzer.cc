@@ -499,6 +499,8 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
     if (hasProperty(field->props, PROP_OWNED) && !field->isPointer)
         errors->addWarning(field->astNode, "ignoring @owned property for non-pointer field '%s'", field->name.c_str());
 
+    field->hasStrMethod = fieldClassInfo.iscObject || !fieldClassInfo.str.empty();
+
     // fromstring/tostring
     field->fromString = fieldClassInfo.fromString;
     field->toString = fieldClassInfo.toString;

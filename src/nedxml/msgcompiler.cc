@@ -377,7 +377,6 @@ void MsgCompiler::generateCode(MsgFileElement *fileElement)
                 NamespaceElement *nsElem = check_and_cast<NamespaceElement *>(child);
                 currentNamespace = nsElem->getName();
                 codegen.generateNamespaceBegin(currentNamespace);
-                codegen.generateTemplates();
                 break;
             }
 

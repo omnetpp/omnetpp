@@ -297,11 +297,6 @@ void MsgCodeGenerator::generateProlog(const std::string& msgFileName, const std:
 
     CC << PARSIMPACK_BOILERPLATE;
 
-    if (firstNamespace.empty()) {
-        H << "\n\n";
-        CC << "\n";
-        generateTemplates();
-    }
 }
 
 void MsgCodeGenerator::generateEpilog()
@@ -1427,8 +1422,10 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
                 (str("pp->") + field.var + (field.isArray ? "[i]" : ""));
         if (!field.toString.empty())
             CC << "return " << makeFuncall(value, field.toString) << ";\n";
+        else if (field.hasStrMethod)
+            CC << "return " << value << (field.isPointer ? "->" : ".") << "str();\n";
         else
-            CC << "{std::stringstream out; out << " << value << "; return out.str();}\n";
+            CC << "return \"\";\n";
     }
     CC << "        default: return \"\";\n";
     CC << "    }\n";
@@ -1722,43 +1719,6 @@ void MsgCodeGenerator::generateOwnershipOp(const FieldInfo& field, const std::st
     }
     if (!code.empty())
         CC << "    " + code + "\n";
-}
-
-void MsgCodeGenerator::generateTemplates()
-{
-    CC << "// forward\n";
-    CC << "template<typename T, typename A>\n";
-    CC << "std::ostream& operator<<(std::ostream& out, const std::vector<T,A>& vec);\n\n";
-
-    CC << "// Template rule to generate operator<< for shared_ptr<T>\n";
-    CC << "template<typename T>\n";
-    CC << "inline std::ostream& operator<<(std::ostream& out,const std::shared_ptr<T>& t) { return out << t.get(); }\n\n";
-
-    CC << "// Template rule which fires if a struct or class doesn't have operator<<\n";
-    CC << "template<typename T>\n";
-    CC << "inline typename std::enable_if<!std::is_base_of<omnetpp::cObject, T>::value, std::ostream&>::type\n";
-    CC << "operator<<(std::ostream& out,const T&) {const char *s = omnetpp::opp_typename(typeid(T)); out.put('<'); out.write(s, strlen(s)); out.put('>'); return out;}\n\n"; // Note: DON'T USE out.operator<<(...)! It would print the pointer, because std::ostream has no operator<< overload for const char *, only for omnetpp::any_ptr !
-
-    CC << "// operator<< for std::vector<T>\n";
-    CC << "template<typename T, typename A>\n";
-    CC << "inline std::ostream& operator<<(std::ostream& out, const std::vector<T,A>& vec)\n";
-    CC << "{\n";
-    CC << "    out.put('{');\n";
-    CC << "    for(typename std::vector<T,A>::const_iterator it = vec.begin(); it != vec.end(); ++it)\n";
-    CC << "    {\n";
-    CC << "        if (it != vec.begin()) {\n";
-    CC << "            out.put(','); out.put(' ');\n";
-    CC << "        }\n";
-    CC << "        out << *it;\n";
-    CC << "    }\n";
-    CC << "    out.put('}');\n";
-    CC << "\n";
-    CC << "    char buf[32];\n";
-    CC << "    sprintf(buf, \" (size=%u)\", (unsigned int)vec.size());\n";
-    CC << "    out.write(buf, strlen(buf));\n";
-    CC << "    return out;\n";
-    CC << "}\n";
-    CC << "\n";
 }
 
 void MsgCodeGenerator::generateImport(const std::string& importName)
