@@ -1,0 +1,20 @@
+%description:
+Test that omnetpp types can be referenced with/without the
+"omnetpp::" type prefix, and the generated code compiles.
+
+%file: test.msg
+
+namespace @TESTNAME@;
+
+class A extends omnetpp::cObject {
+  cMessage msg;
+  cMessage *pmsg;
+  omnetpp::cMessage qmsg;
+  omnetpp::cMessage *pqmsg;
+}
+
+%includes:
+#include "test_m.h"
+
+%activity:
+EV << "OK\n";

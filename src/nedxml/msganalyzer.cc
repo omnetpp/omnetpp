@@ -39,11 +39,6 @@ inline std::string str(const char *s)
     return s ? s : "";
 }
 
-inline std::string& firstNonempty(std::string& s1, std::string& s2, std::string& s3)
-{
-    return !s1.empty() ? s1 : !s2.empty() ? s2 : s3;
-}
-
 static char charToNameFilter(char ch)
 {
     return isalnum(ch) ? ch : '_';
@@ -160,7 +155,6 @@ void MsgAnalyzer::extractFields(ClassInfo& classInfo)
         FieldInfo field;
         field.astNode = fieldElem;
         field.name = fieldElem->getName();
-        field.dataType = fieldElem->getDataType();
         field.type = fieldElem->getDataType();
         field.value = fieldElem->getDefaultValue();
         field.isAbstract = fieldElem->getIsAbstract();
@@ -297,7 +291,7 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
 
     classInfo.defaultValue = getProperty(classInfo.props, PROP_DEFAULTVALUE, "");
 
-    std::string cppTypeBase = getProperty(classInfo.props, PROP_CPPTYPE, "");
+    std::string cppTypeBase = getProperty(classInfo.props, PROP_CPPTYPE, classInfo.qname);
     classInfo.dataTypeBase = getProperty(classInfo.props, PROP_DATAMEMBERTYPE, cppTypeBase);
     classInfo.argTypeBase = getProperty(classInfo.props, PROP_ARGTYPE, cppTypeBase);
     classInfo.returnTypeBase = getProperty(classInfo.props, PROP_RETURNTYPE, cppTypeBase);
@@ -534,7 +528,7 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
             std::string fname = field->name;
             bool is = fname.length() >= 3 && fname[0] == 'i' && fname[1] == 's' && opp_isupper(fname[2]);
             bool has = fname.length() >= 4 && fname[0] == 'h' && fname[1] == 'a' && fname[1] == 's' && opp_isupper(fname[3]);
-            bool omitGet = (field->dataType == "bool") && (is || has);
+            bool omitGet = (field->type == "bool") && (is || has);
             field->getter = omitGet ? fname : (str("get") + capfieldname);
             field->sizeGetter = str("get") + capfieldname + "ArraySize";
         }
@@ -562,13 +556,6 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
             field->remover = getProperty(field->props, PROP_REMOVER);
 
         field->getterConversion = getProperty(field->props, PROP_GETTERCONVERSION, fieldClassInfo.getterConversion);
-        field->clone = getProperty(field->props, PROP_CLONE, fieldClassInfo.clone);
-        if (field->clone.empty()) {
-            if (field->iscObject)
-                field->clone = "->dup()";
-            else
-                field->clone = str("new ") + field->dataType + "(*$)";
-        }
     }
 
     //TODO warn for non-applicable properties like @allowReplace for non-ownedpointer fields
@@ -590,9 +577,16 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
 
     // data type, argument type, conversion to/from string...
     std::string cpptypeBase = getProperty(field->props, PROP_CPPTYPE, "");
-    std::string datatypeBase = getProperty(field->props, PROP_DATAMEMBERTYPE, firstNonempty(cpptypeBase, fieldClassInfo.dataTypeBase, field->type));
-    std::string argtypeBase = getProperty(field->props, PROP_ARGTYPE, firstNonempty(cpptypeBase, fieldClassInfo.argTypeBase, field->type));
-    std::string returntypeBase = getProperty(field->props, PROP_RETURNTYPE, firstNonempty(cpptypeBase, fieldClassInfo.returnTypeBase, field->type));
+    std::string datatypeBase = getProperty(field->props, PROP_DATAMEMBERTYPE, cpptypeBase);
+    std::string argtypeBase = getProperty(field->props, PROP_ARGTYPE, cpptypeBase);
+    std::string returntypeBase = getProperty(field->props, PROP_RETURNTYPE, cpptypeBase);
+
+    if (datatypeBase.empty())
+        datatypeBase = makeRelative(fieldClassInfo.dataTypeBase, classInfo.namespaceName);
+    if (argtypeBase.empty())
+        argtypeBase = makeRelative(fieldClassInfo.argTypeBase, classInfo.namespaceName);
+    if (returntypeBase.empty())
+        returntypeBase = makeRelative(fieldClassInfo.returnTypeBase, classInfo.namespaceName);
 
     //
     // Intended const usage for various isPointer/isConst/byValue combinations:
@@ -608,6 +602,7 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
 
     bool byRef = !field->isPointer && !field->byValue;
 
+    field->baseDataType = datatypeBase;
     field->dataType = decorateType(datatypeBase, field->isConst, field->isPointer, false);
     field->argType = decorateType(argtypeBase, field->isConst || byRef, field->isPointer, byRef);  //TODO check  "|| byRef" part -- removing it makes tests fail
     if (!field->isPointer && field->byValue) {
@@ -626,6 +621,16 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
 
     field->isCustom = getPropertyAsBool(field->props, PROP_CUSTOM, false);
     field->isCustomImpl = getPropertyAsBool(field->props, PROP_CUSTOMIMPL, false);
+
+    if (classInfo.isClass && field->isOwnedPointer) {
+        field->clone = getProperty(field->props, PROP_CLONE, fieldClassInfo.clone);
+        if (field->clone.empty()) {
+            if (field->iscObject)
+                field->clone = "->dup()";
+            else
+                field->clone = str("new ") + datatypeBase + "(*$)";
+        }
+    }
 }
 
 MsgAnalyzer::FieldInfo *MsgAnalyzer::findField(ClassInfo& classInfo, const std::string& name)
@@ -775,6 +780,31 @@ std::string MsgAnalyzer::decorateType(const std::string& typeName, bool isConst,
 {
     bool alreadyConst = opp_stringbeginswith(typeName.c_str(), "const ");  // use with "const char *"
     return ((isConst && !alreadyConst) ? "const " : "") + typeName + (isPointer ? " *" : "") + (isRef ? "&" : "");
+}
+
+static bool isBuiltinType(const std::string& s)
+{
+    static std::set<std::string> types {
+        "bool", "char", "short", "int", "long", "float", "double", "const char *",
+        "unsigned char", "unsigned short", "unsigned int", "unsigned long",
+        "int8_t", "int16_t", "int32_t", "int64_t", "uint8_t", "uint16_t", "uint32_t", "uint64_t",
+        "int8", "int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64",
+    };
+
+    return s.find(':') == std::string::npos && types.find(s) != types.end();
+}
+
+std::string MsgAnalyzer::makeRelative(const std::string& qname, const std::string& contextNamespace)
+{
+    if (contextNamespace.empty())
+        return qname;
+    if (isBuiltinType(qname)) // doesn't allow being prefixed with "::"
+        return qname;
+    std::string nsPrefix = contextNamespace + "::";
+    if (opp_stringbeginswith(qname.c_str(), nsPrefix.c_str()))
+        return qname.substr(nsPrefix.length());  // inside the namespace: make relative
+    else
+        return "::" + qname; // outside the namespace: make absolute
 }
 
 bool MsgAnalyzer::getPropertyAsBool(const Properties& props, const char *name, bool defval)

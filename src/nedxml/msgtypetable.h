@@ -99,6 +99,7 @@ class NEDXML_API MsgTypeTable
         bool iscObject;         // field type is derived from cObject
         bool iscNamedObject;    // field type is derived from cNamedObject
         bool iscOwnedObject;    // field type is derived from cOwnedObject
+        std::string baseDataType;// dataType without modifiers like '*' or 'const'
         std::string dataType;   // member C++ datatype
         std::string argType;    // setter C++ argument type
         std::string returnType; // getter C++ return type

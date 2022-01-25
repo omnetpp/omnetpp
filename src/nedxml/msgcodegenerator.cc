@@ -1565,7 +1565,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
         for (size_t i = 0; i < numFields; i++) {
             const FieldInfo& field = classInfo.fieldList[i];
             if (!field.isOpaque && !field.byValue) {
-                CC << "        case " << field.symbolicConstant << ": return omnetpp::opp_typename(typeid(" << field.type << "));\n";
+                CC << "        case " << field.symbolicConstant << ": return omnetpp::opp_typename(typeid(" << field.baseDataType << "));\n";
             }
         }
         CC << "        default: return nullptr;\n";
