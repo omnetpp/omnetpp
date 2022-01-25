@@ -2,6 +2,10 @@
 We used to have weird compilation errors when adding the "inet" namespace
 to the INET Framework, caused by the generic templated operator<<.
 
+TEST BECAME DISFUNCTIONAL IN 6.0, BECAUSE WE NO LONGER USE operator<< 
+TO GET AN OBJECT'S STRING REPRESENTATION INSIDE getFieldValueAsString().
+
+
 %file: types.h
 #include <vector>
 
@@ -149,19 +153,19 @@ fullName=""
 fullPath=""
 info=""
 s="Hello"
-address="<IPAddress>"
-opaque="<Opaque>"
-intvec="{13} (size=1)"
-addrvec="{<IPAddress>} (size=1)"
-options="<Options>"
-inetAddress="<inet::IPAddress>"
-inetOpaque="<inet::Opaque>"
-inetIntvec="{42} (size=1)"
-inetAddrvec="{<inet::IPAddress>} (size=1)"
-inetOptions="<inet::Options>"
-foreignAddress="<foreign::IPAddress>"
-foreignOpaque="<foreign::Opaque>"
-foreignIntvec="{60} (size=1)"
-foreignAddrvec="{<foreign::IPAddress>} (size=1)"
-foreignOptions="<foreign::Options>"
+address=""
+opaque=""
+intvec=""
+addrvec=""
+options=""
+inetAddress=""
+inetOpaque=""
+inetIntvec=""
+inetAddrvec=""
+inetOptions=""
+foreignAddress=""
+foreignOpaque=""
+foreignIntvec=""
+foreignAddrvec=""
+foreignOptions=""
 
