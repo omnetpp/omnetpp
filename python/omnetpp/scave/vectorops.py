@@ -71,6 +71,8 @@ import numpy as np
 import pandas as pd
 import inspect
 
+from ._version import __version__
+
 def perform_vector_ops(df, operations : str):
     """ See: utils.perform_vector_ops """
     import omnetpp.scave.utils as utils

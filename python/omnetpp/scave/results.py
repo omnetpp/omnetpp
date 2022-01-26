@@ -166,6 +166,8 @@ from functools import wraps
 import numpy as np
 import pandas as pd
 
+from ._version import __version__
+
 from omnetpp.scave.utils import _pivot_results, _pivot_metadata, _select_param_assignments
 
 def _guarded_result_query_func(func):

@@ -11,6 +11,7 @@ IDE or `opp_charttool` before the chart script is run.
 
 import os
 
+from ._version import __version__
 
 class ChartScriptError(Exception):
     """

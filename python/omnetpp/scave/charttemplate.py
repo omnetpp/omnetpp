@@ -6,6 +6,8 @@ import os, sys, glob, time
 import omnetpp.scave.analysis as analysis
 import xml.etree.ElementTree as ET
 
+from ._version import __version__
+
 class ChartTemplate:
     """
     Represents a chart template.

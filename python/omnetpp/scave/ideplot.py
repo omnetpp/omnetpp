@@ -17,6 +17,8 @@ or `opp_charttool` before the chart script is run.
 
 import math
 
+from ._version import __version__
+
 def is_native_plot():
     """
     Returns True if the script is running in the context of a native plotting

@@ -25,6 +25,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from omnetpp.scave import chart, ideplot, vectorops
 
+from ._version import __version__
 
 def _check_version(module, required):
     def parse_version(v: str):

@@ -15,6 +15,7 @@ import omnetpp.scave.impl.results_standalone as results_module
 import omnetpp.scave.impl.chart_charttool as chart_module
 import omnetpp.scave.utils as utils
 
+from ._version import __version__
 
 _real_show = plt.show
 
