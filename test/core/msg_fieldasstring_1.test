@@ -3,29 +3,76 @@ Test that the generated getFieldValueAsString() makes use of @toString, @str,
 cObject::str(), etc.
 
 %file: test.msg
-class None {
+class NoStr {
     int x = 13;
 }
 
-class FooStr {
+class WithStr {
     int x = 42;
     @str("Foo{x="+std::to_string(getX())+"}");
 }
 
-class FooToString {
-    int x = 68;
+class WithToString1 {
+    int x = 66;
+    @toString(info);
+}
+
+class WithToString2 {
+    int x = 67;
     @toString(.info());
 }
 
-cplusplus(FooToString) {{
+class WithToString3 {
+    int x = 68;
+    @toString(->info());
+}
+
+class WithToString4 {
+    int x = 69;
+    @toString(to_string($));
+}
+
+cplusplus(WithToString1) {{
     std::string info() const {return "Foo{x=" + std::to_string(getX()) + "}";}
 }}
 
+cplusplus(WithToString2) {{
+    std::string info() const {return "Foo{x=" + std::to_string(getX()) + "}";}
+}}
+
+cplusplus(WithToString3) {{
+    std::string info() const {return "Foo{x=" + std::to_string(getX()) + "}";}
+}}
+
+cplusplus(h) {{
+inline std::string to_string(const WithToString4& foo)  {return "Foo{x=" + std::to_string(foo.getX()) + "}";}
+inline std::string to_string(const WithToString4 *foo)  {return to_string(*foo);}
+}}
+
 class Dummy extends cObject {
-    None none;
-    FooStr fooStr;
-    FooToString fooToString;
+    NoStr noStr;
+    WithStr withStr;
+    WithToString1 withToString1;
+    WithToString2 withToString2;
+    WithToString3 withToString3;
+    WithToString4 withToString4;
     omnetpp::cMessage msg;
+
+    NoStr *noStrPtr @owned = new NoStr();
+    WithStr *withStrPtr @owned = new WithStr();
+    WithToString1 *withToString1Ptr @owned = new WithToString1();
+    WithToString2 *withToString2Ptr @owned = new WithToString2();
+    WithToString3 *withToString3Ptr @owned = new WithToString3();
+    WithToString4 *withToString4Ptr @owned = new WithToString4();
+    omnetpp::cMessage *msgPtr @owned = new omnetpp::cMessage("hello");
+
+    NoStr *noStrNullptr @owned;
+    WithStr *withStrNullptr @owned;
+    WithToString1 *withToString1Nullptr @owned;
+    WithToString2 *withToString2Nullptr @owned;
+    WithToString3 *withToString3Nullptr @owned;
+    WithToString4 *withToString4Nullptr @owned;
+    omnetpp::cMessage *msgNullptr @owned;
 }
 
 %includes:
@@ -45,7 +92,25 @@ name=""
 fullName=""
 fullPath=""
 info=""
-none=""
-fooStr="Foo{x=42}"
-fooToString="Foo{x=68}"
+noStr=""
+withStr="Foo{x=42}"
+withToString1="Foo{x=66}"
+withToString2="Foo{x=67}"
+withToString3="Foo{x=68}"
+withToString4="Foo{x=69}"
 msg="(new msg)"
+noStrPtr=""
+withStrPtr="Foo{x=42}"
+withToString1Ptr="Foo{x=66}"
+withToString2Ptr="Foo{x=67}"
+withToString3Ptr="Foo{x=68}"
+withToString4Ptr="Foo{x=69}"
+msgPtr="(new msg)"
+noStrNullptr=""
+withStrNullptr=""
+withToString1Nullptr=""
+withToString2Nullptr=""
+withToString3Nullptr=""
+withToString4Nullptr=""
+msgNullptr=""
+

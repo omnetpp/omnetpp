@@ -57,7 +57,7 @@ class NEDXML_API MsgCodeGenerator
 
   protected:
     std::string prefixWithNamespace(const std::string& name, const std::string& namespaceName);
-    std::string makeFuncall(const std::string& var, const std::string& funcTemplate, bool withIndex=false, const std::string& value="");
+    std::string makeFuncall(const std::string& var, bool isPointer, const std::string& funcTemplate, bool withIndex=false, const std::string& value="");
     void generateOwnershipOp(const FieldInfo& field, const std::string& var, const std::string& op);
 
     void generateClassDecl(const ClassInfo& classInfo, const std::string& exportDef);

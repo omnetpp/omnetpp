@@ -654,7 +654,7 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
             copyElem << "    " << thisVarElem << " = " << otherVarElem << ";\n";
             if (field.isOwnedPointer) {
                 copyElem << "    if (" << thisVarElem << " != nullptr) {\n";
-                copyElem << "        " << thisVarElem << " = " << makeFuncall(thisVarElem, field.clone) << ";\n";
+                copyElem << "        " << thisVarElem << " = " << makeFuncall(thisVarElem, true, field.clone) << ";\n";
                 if (field.iscOwnedObject)
                     copyElem << "        take(" << thisVarElem << ");\n";
                 if (field.iscNamedObject)
@@ -793,7 +793,7 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
         if (field.isArray)
             CC << "    if (k >= " << field.sizeVar << ") throw omnetpp::cRuntimeError(\"Array of size %lu indexed by %lu\", (unsigned long)" << field.sizeVar << ", (unsigned long)k);\n";
         generateMethodCplusplusBlock(classInfo, field.getter);
-        CC << "    return " << makeFuncall(indexedVar, field.getterConversion) + ";\n";
+        CC << "    return " << makeFuncall(indexedVar, field.isPointer, field.getterConversion) + ";\n";
         CC << "}\n\n";
 
         // resizer:
@@ -1354,7 +1354,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
                 CC << "return pp->" << field.sizeVar << ";\n";
             }
             else {
-                CC << "return " << makeFuncall("pp", field.sizeGetter) << ";\n";
+                CC << "return " << makeFuncall("pp", true, field.sizeGetter) << ";\n";
             }
         }
     }
@@ -1374,7 +1374,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
         if (field.isArray && field.isResizable) {
             Assert(classInfo.isClass); // we don't support variable-length arrays in structs
             CC << "        case " << field.symbolicConstant << ": ";
-            CC << makeFuncall("pp", field.sizeSetter, false, "size") << "; break;\n";
+            CC << makeFuncall("pp", true, field.sizeSetter, false, "size") << "; break;\n";
         }
     }
     CC << "        default: throw omnetpp::cRuntimeError(\"Cannot set array size of field %d of class '" << classInfo.className << "'\", field);\n";
@@ -1392,7 +1392,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
         const FieldInfo& field = classInfo.fieldList[i];
         if (field.isPointer) {
             CC << "        case " << field.symbolicConstant << ": ";
-            CC << "{ " << field.returnType << " value = " << makeFuncall("pp", field.getter, field.isArray) << "; ";
+            CC << "{ " << field.returnType << " value = " << makeFuncall("pp", true, field.getter, field.isArray) << "; ";
             if (field.isConst)
                 CC << "return omnetpp::opp_typename(typeid(*const_cast<" << field.mutableReturnType << ">(value))); }\n";
             else
@@ -1418,14 +1418,26 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
             CC << "if (i >= " << field.arraySize << ") return \"\";\n                ";
         }
         std::string value = classInfo.isClass ?
-                makeFuncall("pp", field.getter, field.isArray) :
+                makeFuncall("pp", true, field.getter, field.isArray) :
                 (str("pp->") + field.var + (field.isArray ? "[i]" : ""));
-        if (!field.toString.empty())
-            CC << "return " << makeFuncall(value, field.toString) << ";\n";
-        else if (field.hasStrMethod)
-            CC << "return " << value << (field.isPointer ? "->" : ".") << "str();\n";
-        else
-            CC << "return \"\";\n";
+        if (!field.isPointer) {
+            if (!field.toString.empty())
+                CC << "return " << makeFuncall(value, false, field.toString) << ";\n";
+            else if (field.hasStrMethod)
+                CC << "return " << value << ".str();\n";
+            else
+                CC << "return \"\";\n";
+        }
+        else {
+            if (!field.toString.empty())
+                CC << "{ auto obj = " << value << "; return obj == nullptr ? \"\" : " << makeFuncall("obj", true, field.toString) << "; }\n";
+            else if (field.hasStrMethod)
+                CC << "{ auto obj = " << value << "; return obj == nullptr ? \"\" : obj->str(); }\n";
+            else
+                CC << "return \"\";\n";
+        }
+
+
     }
     CC << "        default: return \"\";\n";
     CC << "    }\n";
@@ -1449,11 +1461,11 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
                 CC << "if (i < 0 || i >= " << field.arraySize << ") throw omnetpp::cRuntimeError(\"Array index %d out of bounds for field %d of class '" << classInfo.className << "'\", i, field);\n";
                 CC << "                ";
             }
-            std::string fromstringCall = makeFuncall("value", field.fromString);
+            std::string fromstringCall = makeFuncall("value", field.isPointer, field.fromString);
             if (!classInfo.isClass)
                 CC << "pp->" << field.var << (field.isArray ? "[i]" : "") << " = " << fromstringCall << "; break;\n";
             else
-                CC << makeFuncall("pp", field.setter, field.isArray, fromstringCall) << "; break;\n";
+                CC << makeFuncall("pp", true, field.setter, field.isArray, fromstringCall) << "; break;\n";
         }
     }
     CC << "        default: throw omnetpp::cRuntimeError(\"Cannot set field %d of class '" << classInfo.className << "'\", field);\n";
@@ -1478,10 +1490,9 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
         if (!field.toValue.empty()) {
             // via @toValue
             std::string value = classInfo.isClass ?
-                    makeFuncall("pp", field.getter, field.isArray) :
+                    makeFuncall("pp", true, field.getter, field.isArray) :
                     (str("pp->") + field.var + (field.isArray ? "[i]" : ""));
-            std::string maybeAsterisk = field.isPointer ? "*" : "";
-            CC << "return " << makeFuncall(maybeAsterisk + value, field.toValue) << ";\n";
+            CC << "return " << makeFuncall(value, field.isPointer, field.toValue) << ";\n";
         }
         else if (!field.byValue) {
             // return pointer
@@ -1489,7 +1500,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
             if (!classInfo.isClass)
                 value = str("pp->") + field.var + (field.isArray ? "[i]" : "");
             else
-                value = makeFuncall("pp", field.getter, field.isArray);
+                value = makeFuncall("pp", true, field.getter, field.isArray);
             std::string maybeAddressOf = field.isPointer ? "" : "&";
             CC << "return omnetpp::toAnyPtr(" << maybeAddressOf << value << "); break;\n";
         }
@@ -1522,11 +1533,11 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
                 if (!field.fromValue.empty()) {
                     // @fromValue
                     //TODO for enums, set fromValue beforehand instead of hardwiring it here!
-                    std::string valueToSet = !field.enumName.empty() ? "(" + field.enumQName + ")value.intValue()" : makeFuncall("value", field.fromValue);
+                    std::string valueToSet = !field.enumName.empty() ? "(" + field.enumQName + ")value.intValue()" : makeFuncall("value", field.isPointer, field.fromValue);
                     if (!classInfo.isClass)
                         CC << "pp->" << field.var << (field.isArray ? "[i]" : "") << " = " << valueToSet << "; break;\n";
                     else
-                        CC << makeFuncall("pp", field.setter, field.isArray, valueToSet) << "; break;\n";
+                        CC << makeFuncall("pp", true, field.setter, field.isArray, valueToSet) << "; break;\n";
                 }
                 else {
                     errors->addWarning(field.astNode, "Field '%s' is marked @editable but cannot generate code in the descriptor class to set it from cValue, as @fromValue() is not specified on the field or its type '%s'", field.name.c_str(), field.typeQName.c_str());
@@ -1540,7 +1551,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
                 if (!classInfo.isClass)
                     CC <<  "pp->" << field.var << (field.isArray ? "[i]" : "") << " = " << maybeDereference << valuePtr << ";";
                 else
-                    CC << makeFuncall("pp", field.setter, field.isArray, maybeDereference + valuePtr) << ";";
+                    CC << makeFuncall("pp", true, field.setter, field.isArray, maybeDereference + valuePtr) << ";";
                 CC << " break;\n";
             }
             else {
@@ -1587,7 +1598,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
             if (!classInfo.isClass)
                 value = str("pp->") + field.var + (field.isArray ? "[i]" : "");
             else
-                value = makeFuncall("pp", field.getter, field.isArray);
+                value = makeFuncall("pp", true, field.getter, field.isArray);
             std::string maybeAddressOf = field.isPointer ? "" : "&";
             CC << "        case " << field.symbolicConstant << ": return omnetpp::toAnyPtr(" << maybeAddressOf << value << "); break;\n";
         }
@@ -1612,7 +1623,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
             if (!classInfo.isClass)
                 CC <<  str("pp->") << field.var << (field.isArray ? "[i]" : "") << " = " << maybeDereference << castPtr << ";";
             else
-                CC << makeFuncall("pp", field.setter, field.isArray, maybeDereference + castPtr) << ";";
+                CC << makeFuncall("pp", true, field.setter, field.isArray, maybeDereference + castPtr) << ";";
             CC << " break;\n";
         }
     }
@@ -1674,22 +1685,25 @@ std::string MsgCodeGenerator::prefixWithNamespace(const std::string& name, const
     return !namespaceName.empty() ? namespaceName + "::" + name : name;  // prefer name from local namespace
 }
 
-std::string MsgCodeGenerator::makeFuncall(const std::string& var, const std::string& funcTemplate, bool withIndex, const std::string& value)
+inline bool containsChar(const std::string& s, char c) { return s.find(c) != std::string::npos; }
+
+std::string MsgCodeGenerator::makeFuncall(const std::string& var, bool isPointer, const std::string& funcTemplate, bool withIndex, const std::string& value)
 {
     if (funcTemplate.empty()) {
         return var;
     }
-    else if (funcTemplate[0] == '.' || funcTemplate[0] == '-') {
+    else if (funcTemplate[0] == '.' || opp_stringbeginswith(funcTemplate.c_str(), "->")) {
         // ".foo()" becomes "var.foo()", "->foo()" becomes "var->foo()"
-        return var + funcTemplate;
+        int off = (funcTemplate[0] == '.') ? 1 : 2;
+        return var + (isPointer ? "->" : ".") + funcTemplate.substr(off);
     }
-    else if (funcTemplate.find('$') != std::string::npos) {
+    else if (containsChar(funcTemplate, '$')) {
         // "tostring($)" becomes "tostring(var)", "getchild($,i)" becomes "getchild(var,i)"
         return opp_replacesubstring(funcTemplate, "$", var, true);
     }
-    else if (funcTemplate.find('(') == std::string::npos) {
+    else if (!containsChar(funcTemplate, '(')) {
         // "foo" is a shorthand for "var->foo()" or "var->foo(i)", depending on flag
-        return var + "->" + funcTemplate + "(" + (withIndex ? "i" : "") + ((withIndex && value!="") ? "," : "") + value + ")";
+        return var + (isPointer ? "->" : ".") + funcTemplate + "(" + (withIndex ? "i" : "") + ((withIndex && value!="") ? "," : "") + value + ")";
     }
     else {
         return funcTemplate;

@@ -21,7 +21,7 @@ namespace inet5;
 class TestMsg extends cObject {
     ::IPAddress5 addr;
 
-    IPAddress5 inetAddr1; // Note: this means inet5::IPAddress5! 
+    IPAddress5 inetAddr1; // Note: this means inet5::IPAddress5!
     inet5::IPAddress5 inetAddr2;
     ::inet5::IPAddress5 inetAddr3;
 
@@ -48,7 +48,14 @@ ASSERT(desc);
 for (int i = 0; i < desc->getFieldCount(); i++)
     EV << desc->getFieldName(i) << ": " << desc->getFieldTypeString(i) << "\n";
 
-%subst: /omnetpp:://
+%contains: test_m.h
+    ::IPAddress5 addr;
+    IPAddress5 inetAddr1;
+    IPAddress5 inetAddr2;
+    IPAddress5 inetAddr3;
+    ::foreign5::IPAddress5 foreignAddr1;
+    ::foreign5::IPAddress5 foreignAddr2;
+
 %contains: stdout
 className: string
 name: string
