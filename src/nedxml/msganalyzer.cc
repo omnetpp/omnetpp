@@ -536,24 +536,25 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
         field->allowReplace = getPropertyAsBool(field->props, PROP_ALLOWREPLACE, false);
 
         // allow customization of names
+        bool existingClass = !classInfo.generateClass;
         if (getProperty(field->props, PROP_SETTER) != "")
-            field->setter = getProperty(field->props, PROP_SETTER);
+            field->setter = getMethodProperty(field->props, PROP_SETTER, existingClass);
         if (getProperty(field->props, PROP_GETTER) != "")
-            field->getter = getProperty(field->props, PROP_GETTER);
+            field->getter = getMethodProperty(field->props, PROP_GETTER, existingClass);
         if (getProperty(field->props, PROP_GETTERFORUPDATE) != "")
-            field->getterForUpdate = getProperty(field->props, PROP_GETTERFORUPDATE);
+            field->getterForUpdate = getMethodProperty(field->props, PROP_GETTERFORUPDATE, existingClass);
         if (getProperty(field->props, PROP_SIZESETTER) != "")
-            field->sizeSetter = getProperty(field->props, PROP_SIZESETTER);
+            field->sizeSetter = getMethodProperty(field->props, PROP_SIZESETTER, existingClass);
         if (getProperty(field->props, PROP_SIZEGETTER) != "")
-            field->sizeGetter = getProperty(field->props, PROP_SIZEGETTER);
+            field->sizeGetter = getMethodProperty(field->props, PROP_SIZEGETTER, existingClass);
         if (getProperty(field->props, PROP_INSERTER) != "")
-            field->inserter = getProperty(field->props, PROP_INSERTER);
+            field->inserter = getMethodProperty(field->props, PROP_INSERTER, existingClass);
         if (getProperty(field->props, PROP_APPENDER) != "")
-            field->appender = getProperty(field->props, PROP_APPENDER);
+            field->appender = getMethodProperty(field->props, PROP_APPENDER, existingClass);
         if (getProperty(field->props, PROP_ERASER) != "")
-            field->eraser = getProperty(field->props, PROP_ERASER);
+            field->eraser = getMethodProperty(field->props, PROP_ERASER, existingClass);
         if (getProperty(field->props, PROP_REMOVER) != "")
-            field->remover = getProperty(field->props, PROP_REMOVER);
+            field->remover = getMethodProperty(field->props, PROP_REMOVER, existingClass);
 
         field->getterConversion = getProperty(field->props, PROP_GETTERCONVERSION, fieldClassInfo.getterConversion);
     }
@@ -839,6 +840,19 @@ std::string MsgAnalyzer::getProperty(const Properties& props, const char *name, 
         return values[0];
     errors->addError(p->getASTNode(), "property @%s does not contain a single value", name);
     return "";
+}
+
+std::string MsgAnalyzer::getMethodProperty(const Properties& props, const char *propName, bool existingClass)
+{
+    std::string methodName = getProperty(props, propName);
+    if (!existingClass) {
+        // property value must be a valid identifier that can be used as method name
+        if (!opp_isvalididentifier(methodName.c_str())) {
+            const Property *p = props.get(propName);
+            errors->addError(p->getASTNode(), "'%s' is an invalid name for a method; field property @%s must contain a valid identifier unless class is marked @existingClass", methodName.c_str(), propName);
+        }
+    }
+    return methodName;
 }
 
 std::string MsgAnalyzer::lookupExistingClassName(const std::string& name, const std::string& contextNamespace,  ClassInfo *contextClass)

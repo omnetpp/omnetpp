@@ -72,6 +72,7 @@ class NEDXML_API MsgAnalyzer
     bool hasProperty(const Properties& p, const char *name)  {return p.get(name) != nullptr;}
     bool getPropertyAsBool(const Properties& p, const char *name, bool defval);
     std::string getProperty(const Properties& p, const char *name, const std::string& defval = std::string());
+    std::string getMethodProperty(const Properties& props, const char *propName, bool existingClass);
     std::string decorateType(const std::string& typeName, bool isConst, bool isPointer, bool isRef);
     std::string makeRelative(const std::string& qname, const std::string& namespaceName);
     std::string lookupExistingClassName(const std::string& name, const std::string& contextNamespace,  ClassInfo *contextClass=nullptr);
