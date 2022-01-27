@@ -188,7 +188,7 @@ public class SimulationLauncherJob extends Job {
     }
 
     protected void dumpPostMortemInfo(IProcess iprocess, String commandLine, IPath workingDir) throws CoreException {
-        String errorMsg = "\nSimulation terminated with exit code: " + iprocess.getExitValue() + "\n";
+        String errorMsg = "\nSimulation terminated with exit code: " + Integer.toHexString(iprocess.getExitValue()) + "\n";
         errorMsg += "Working directory: " + workingDir + "\n";
         errorMsg += "Command line: " + commandLine + "\n";
 
