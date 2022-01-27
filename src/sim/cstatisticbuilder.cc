@@ -57,16 +57,6 @@ inline void addIfNotContains_(std::vector<std::string>& v, const std::string& s)
         v.push_back(s);
 }
 
-static bool isIdentifier(const char *s)
-{
-    if (!opp_isalphaext(s[0]) && s[0] != '_')
-        return false;
-    while (*++s)
-        if (!opp_isalnumext(*s) && s[0] != '_')
-            return false;
-    return true;
-}
-
 TristateBool cStatisticBuilder::parseTristateBool(const char *s, const char *what)
 {
     if (opp_isempty(s))
@@ -195,7 +185,7 @@ std::vector<std::string> cStatisticBuilder::extractRecorderList(const char *mode
 SignalSource cStatisticBuilder::doStatisticSource(cComponent *component, cProperty *statisticProperty, const char *statisticName, const char *sourceSpec, TristateBool checkSignalDecl, bool needWarmupFilter)
 {
     try {
-        if (isIdentifier(sourceSpec)) {
+        if (opp_isvalididentifier(sourceSpec)) {
             // simple case: just a signal name
             StatisticSourceParser::checkSignalDeclaration(component, sourceSpec, checkSignalDecl);
             simsignal_t signalID = cComponent::registerSignal(sourceSpec);
@@ -221,7 +211,7 @@ SignalSource cStatisticBuilder::doStatisticSource(cComponent *component, cProper
 void cStatisticBuilder::doResultRecorder(const SignalSource& source, const char *recordingMode, cComponent *component, const char *statisticName, cProperty *attrsProperty)
 {
     try {
-        if (isIdentifier(recordingMode)) {
+        if (opp_isvalididentifier(recordingMode)) {
             // simple case: just a plain recorder
             //TODO if disabled, don't add
             cResultRecorder *recorder = cResultRecorderType::get(recordingMode)->create();

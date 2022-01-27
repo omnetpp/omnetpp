@@ -124,6 +124,12 @@ inline bool opp_streq(const char *s1, const char *s2)
 COMMON_API std::string opp_trim(const std::string& text);
 
 /**
+ * Checks whether a string looks like a valid identifier (starts with underscore
+ * or alpha, continues with underscore, alpha or digit characters).
+ */
+COMMON_API bool opp_isvalididentifier(const char *s);
+
+/**
  * Find the end of a quoted string constant, obeying backslashed escapes.
  * The first character of the string specifies which character is used as
  * quotation mark. Returns a pointer to the matching quote character, or

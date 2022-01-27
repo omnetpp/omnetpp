@@ -51,6 +51,16 @@ std::string opp_trim(const std::string& text)
     return text.substr(pos, endpos-pos);
 }
 
+bool opp_isvalididentifier(const char *s)
+{
+    if (!opp_isalphaext(s[0]) && s[0] != '_')
+        return false;
+    while (*++s)
+        if (!opp_isalnumext(*s) && s[0] != '_')
+            return false;
+    return true;
+}
+
 const char *opp_findclosequote(const char *txt)
 {
     char quot = txt[0];
