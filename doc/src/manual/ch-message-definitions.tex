@@ -1127,11 +1127,39 @@ which is to be called before any mutator code (in setters, non-const getters,
 assignment operator, etc.) executes. This can be used to implement e.g. a dirty
 flag or some form of immutability (i.e. freeze the state of the object).
 
-The \fprop{@str} class property aims to simplify the implementation of an
-\ffunc{str()} method in the generated class. When \fprop{@str} is present, an
-\ttt{std::string str() const} method is generated with a single \ttt{return}
-statement in its body. The statement returns the C++ expression specified as the
-value of the \fprop{@str} property.
+
+\subsection{Generating str()}
+\label{sec:msg-defs:generating-str-method}
+
+The \fprop{@str} class property aims at simplifying adding an \ffunc{str()}
+method in the generated class. Having an \ffunc{str()} method is often useful
+for debugging, and it also has a special role in class descriptors (see
+\ref{sec:msg-defs:descriptor-tostring}).
+
+When \fprop{@str} is present, an \ttt{std::string str() const} method is
+generated for the class. The method's implementation will contain a single
+\ttt{return} keyword, with the value of the \fprop{@str} property copied
+after it.
+
+Example:
+
+\begin{msg}
+class Location {
+    double lat;
+    double lon;
+    @str("(" + std::to_string(getLat()) + "," + std::to_string(getLon()) + ")");
+}
+\end{msg}
+
+It will result in the following \ttt{str()} method to be generated as part of
+the \ttt{Location} class:
+
+\begin{cpp}
+std::string Location::str() const
+{
+    return "(" + std::to_string(getLat()) + "," + std::to_string(getLon()) + ")";
+}
+\end{cpp}
 
 
 \subsection{Custom-implementation Methods}
@@ -1395,7 +1423,7 @@ classes, it is possible to obtain the descriptor using
 Several properties control the creation and details of the class descriptor.
 
 
-\subsection{Generating a Descriptor}
+\subsection{Controlling Descriptor Generation}
 \label{sec:msg-defs:descriptor-property}
 
 The \fprop{@descriptor} class property can be used to control the generation
@@ -1404,29 +1432,63 @@ compiler not to generate field setters for the descriptor, and
 \ttt{@descriptor(false)} instructs it not to generate a description class
 for the class at all.
 
+
+\subsection{Generating Descriptors For Existing Classes}
+\label{sec:msg-defs:descriptor-existingclass-property}
+
 It is also possible to use (or abuse) the message compiler for generating a
 descriptor class for an existing class. To do that, write a message definition
 for your existing class (for example, if it has \ttt{int getFoo()} and
 \ttt{setFoo(int)} methods, add an \ttt{int foo} field to the message
-definition), and mark it with \ttt{@existingClass(true)}. This will tell the
+definition), and mark it with \fprop{@existingClass}. This will tell the
 message compiler that it should not generate an actual class (as it already
 exists), only a descriptor class.
+
+
+\subsection{Field Metadata}
+\label{sec:msg-defs:descriptor-field-meadata}
+
+When an object is shown in Qtenv's Object Inspector pane, Qtenv obtains all
+information it displays from the object's descriptor. There are several
+properties that can be used to customize how a field appears in the Object
+Inspector:
+
+\begin{itemize}
+  \item \fprop{@icon} associates an icon with the field;
+  \item \fprop{@label} overrides the text displayed as field name;
+  \item \fprop{@group} is used for grouping related fields;
+  \item \fprop{@hint} can be used to provide a short description of the field,
+    which Qtenv displays in a tooltip
+\end{itemize}
+
+
+\subsection{Method Name Properties}
+\label{sec:msg-defs:descriptor-method-name-properties}
+
+Several of the properties which are for overriding field accessor method names
+(\fprop{@getter}, \fprop{@setter}, \fprop{@sizeGetter}, \fprop{@sizeSetter},
+etc., see \ref{sec:msg-defs:customizing-method-names}) have a secondary purpose.
+When generating a descriptor for an \textit{existing} class (see
+\fprop{@existingClass}), those properties specify how the descriptor can access
+the field, i.e. what code to generate in the implementation of the descriptor's
+various methods. In that use case, such properties may contain code fragments or
+a function call template instead of a method name.
 
 
 \subsection{toString/fromString}
 \label{sec:msg-defs:descriptor-tostring}
 
-To be able to generate the descriptor's \ffunc{getFieldAsString()} member
+To be able to generate the descriptor's \ffunc{getFieldValueAsString()} member
 function, the message compiler needs to know how to convert the return type of
-the getter to \ttt{std::string}. Similarly, for \ffunc{setFieldAsString()} it
+the getter to \ttt{std::string}. Similarly, for \ffunc{setFieldValueAsString()} it
 needs to know how to convert (or parse) a string to obtain the setter's argument
 type. For the built-in types (\fkeyword{int}, \fkeyword{double}, etc.) this information is
 pre-configured, but for other types the user needs to supply it via two
 properties:
 
 \begin{itemize}
-  \item \fprop{@toString} specifies the code to convert field value to string;
-  \item \fprop{@fromString} specifies the to convert string to field value.
+  \item \fprop{@toString} specifies the code to convert the return type of the setter to a string;
+  \item \fprop{@fromString} specifies the code to convert a string to the setter's argument type.
 \end{itemize}
 
 These properties can be specified on the class (where it will be applied to
@@ -1446,9 +1508,17 @@ class IPAddress
     @existingClass;
     @opaque;
     @toString(.str());  // use IPAddress::str() to produce a string
-    @fromString(IPAddress($));  // use constructor taking string argument
+    @fromString(IPAddress($));  // use constructor; '$' will be replaced by the string
 }
 \end{msg}
+
+If the \fprop{@toString} property is missing, the message compiler generates
+code which calls the \ffunc{str()} member function on the value returned by the
+getter, provided that it knows for certain that the corresponding type has such
+method (the type is derived from \cclass{cObject}, or has the \fprop{@str} property).
+
+If there is no \fprop{@toString} property and no (known) \ffunc{str()} method,
+the descriptor will return the empty string.
 
 
 \subsection{toValue/fromValue}
