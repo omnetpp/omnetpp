@@ -25,7 +25,9 @@ generated from message descriptions.
 
 \item[@appender] \textit{(type: string, use: field)} \\
   Name of the appender method. (This method appends an element to a dynamic
-  array.)
+  array.) When generating a descriptor for an existing class (see
+  @existingClass), a code fragment or funcall template for the equivalent
+  functionality is also accepted.
 
 \item[@argType] \textit{(type: string, use: field, class)} \\
   Field setter argument C++ base type. This type may be decorated with 'const'
@@ -95,7 +97,9 @@ generated from message descriptions.
 
 \item[@eraser] \textit{(type: string, use: field)} \\
   Name of the eraser method. (This method erases an element from a dynamic
-  array. Indices above the specified one are shifted down.)
+  array. Indices above the specified one are shifted down.) When generating a
+  descriptor for an existing class (see @existingClass), a code fragment or
+  funcall template for the equivalent functionality is also accepted.
 
 \item[@eventlog] \textit{(type: string, use: field)} \\
   When @eventlog(skip) is given, eventlog recording will skip this field when
@@ -109,22 +113,29 @@ generated from message descriptions.
   Suffix to append to the names of data members.
 
 \item[@fromString] \textit{(type: string, use: field, class)} \\
-  Affects descriptor class only. Code to convert string to field value. When
-  specified on a class, it determines the default for fields of that type.
+  Affects descriptor class only. Method name, code fragment or funcall
+  template to convert string to field value. When specified on a class, it
+  determines the default for fields of that type.
 
 \item[@fromValue] \textit{(type: string, use: field, class)} \\
-  Affects descriptor class only. Code to convert cValue to field value. When
-  specified on a class, it determines the default for fields of that type.
+  Affects descriptor class only. Method name, code fragment or funcall
+  template to convert cValue to field value. When specified on a class, it
+  determines the default for fields of that type.
 
 \item[@getter] \textit{(type: string, use: field)} \\
-  Name of the (const) getter method.
+  Name of the (const) getter method. When generating a descriptor for an
+  existing class (see @existingClass), a code fragment or funcall template for
+  the equivalent functionality is also accepted.
 
 \item[@getterConversion] \textit{(type: string, use: field, class)} \\
-  Code to convert field data type to return type in getters. When specified on
-  a class, it determines the default for fields of that type.
+  Method name, code fragment or funcall template to convert field data type to
+  the return type in getters. When specified on a class, it determines the
+  default for fields of that type.
 
 \item[@getterForUpdate] \textit{(type: string, use: field)} \\
-  Name of the non-const getter method.
+  Name of the non-const getter method. When generating a descriptor for an
+  existing class (see @existingClass), a code fragment or funcall template for
+  the equivalent functionality is also accepted.
 
 \item[@group] \textit{(type: string, use: field)} \\
   Used for grouping of fields in Qtenv inspectors
@@ -140,7 +151,9 @@ generated from message descriptions.
 
 \item[@inserter] \textit{(type: string, use: field)} \\
   Name of the inserter method. (This method inserts an element into a dynamic
-  array.)
+  array.) When generating a descriptor for an existing class (see
+  @existingClass), a code fragment or funcall template for the equivalent
+  functionality is also accepted.
 
 \item[@label] \textit{(type: string, use: field)} \\
   When specified, this string will be displayed as field name in Qtenv
@@ -189,7 +202,9 @@ generated from message descriptions.
 \item[@remover] \textit{(type: string, use: field)} \\
   Name of the remover method. (This method is generated for owned pointer
   fields. It releases the ownership of the stored object, sets the field to
-  nullptr, then returns the object.)
+  nullptr, then returns the object.) When generating a descriptor for an
+  existing class (see @existingClass), a code fragment or funcall template for
+  the equivalent functionality is also accepted.
 
 \item[@replaceable] \textit{(type: bool, use: field)} \\
   Affects descriptor class only. If true: Field is a pointer whose value can
@@ -206,13 +221,19 @@ generated from message descriptions.
   it determines the default for fields of that type.
 
 \item[@setter] \textit{(type: string, use: field)} \\
-  Name of the setter method.
+  Name of the setter method. When generating a descriptor for an existing
+  class (see @existingClass), a code fragment or funcall template for the
+  equivalent functionality is also accepted.
 
 \item[@sizeGetter] \textit{(type: string, use: field)} \\
-  Name of the method that returns the array size.
+  Name of the method that returns the array size. When generating a descriptor
+  for an existing class (see @existingClass), a code fragment or funcall
+  template for the equivalent functionality is also accepted.
 
 \item[@sizeSetter] \textit{(type: string, use: field)} \\
-  Name of the method that sets size of dynamic array.
+  Name of the method that sets size of dynamic array. When generating a
+  descriptor for an existing class (see @existingClass), a code fragment or
+  funcall template for the equivalent functionality is also accepted.
 
 \item[@sizeType] \textit{(type: string, use: field)} \\
   C++ type to use for array sizes and indices.
@@ -229,12 +250,14 @@ generated from message descriptions.
   from it.
 
 \item[@toString] \textit{(type: string, use: field, class)} \\
-  Affects descriptor class only. Code to convert field value to string. When
-  specified on a class, it determines the default for fields of that type.
+  Affects descriptor class only. Method name, code fragment or funcall
+  template to convert field value to string. When specified on a class, it
+  determines the default for fields of that type.
 
 \item[@toValue] \textit{(type: string, use: field, class)} \\
-  Affects descriptor class only. Code to convert field value to cValue. When
-  specified on a class, it determines the default for fields of that type.
+  Affects descriptor class only. Method name, code fragment or funcall
+  template to convert field value to cValue. When specified on a class, it
+  determines the default for fields of that type.
 
 \end{description}
 % @ENDFILE

@@ -61,16 +61,17 @@ definition
         ;
 
 namespace\_decl
-        : NAMESPACE qname0 ';'
-
-qname0
-        : qname0 '::' NAME
-        | NAME
-        ;
+        : NAMESPACE qname ';'
+        | NAMESPACE ';'
 
 qname
-        : '::' qname0
-        | qname0
+        : '::' qname1
+        | qname1
+        ;
+
+qname1
+        : qname1 '::' NAME
+        | NAME
         ;
 
 fileproperty
