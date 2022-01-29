@@ -1,3 +1,32 @@
-2021-03-25  Andras Varga
+2021-10-15  Andras Varga
 
-	* ChangeLog added
+	* "Result Analysis" chapter: follow rename of Python module (plot -> ideplot)
+
+2021-03-17  Rudolf Hornig
+
+	Nits, including:
+
+	* All icons forced to 150 ppi for consistent rendering in latex
+	* Space -> SPACE for consistency
+	* No ellipsis (...) in guilabels and menuselections according to style guide
+
+2021-02-17 to 03-11  Attila Torok, Andras Varga
+
+	* "Result Analysis" chapter rewritten almost from scratch, to reflect the
+	new Analysis Tool.
+
+2021-02-24  Rudolf Hornig
+
+	* Converted from docbook to rst / sphinx.
+
+2020-04-14  Rudolf Hornig
+
+	* Updated dialog screenshot for NED Documentation Generator
+
+2018-06-27  Andras Varga
+
+	* Remove Tkenv sections, as Tkenv itself has been removed from OMNeT++
+
+2018-06-27  Andras Varga
+
+	* ChangeLog starts with first change in the 6.0 branch
