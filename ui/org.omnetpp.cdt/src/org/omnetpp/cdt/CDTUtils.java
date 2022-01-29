@@ -204,49 +204,49 @@ public class CDTUtils {
             for (IConfiguration config : buildInfo.getManagedProject().getConfigurations())
                 CfgDiscoveredPathManager.getInstance().removeDiscoveredInfo(project, new CfgInfoContext(config));
     }
-    
+
     /**
      * Attach the CDT debugger to the provided PID
      * @param pid
      */
-	public static void attach(String pid) {
+    public static void attach(String pid) {
 
-		try {
-			var config = createAttachedConfigurationForPid(pid);
-			if (config != null)
-				Display.getDefault().syncExec(() -> DebugUITools.launch(config, ILaunchManager.DEBUG_MODE));
-			
-		} catch (Exception e) {
-			Activator.logError(e);
-		} finally {
-		}
-	}
-	
-	private static ILaunchManager getLaunchManager() {
-		return DebugPlugin.getDefault().getLaunchManager();
-	}
+        try {
+            var config = createAttachedConfigurationForPid(pid);
+            if (config != null)
+                Display.getDefault().syncExec(() -> DebugUITools.launch(config, ILaunchManager.DEBUG_MODE));
 
-	private static ILaunchConfigurationType getLaunchAttachConfigType() {
-		return getLaunchManager().getLaunchConfigurationType(ICDTLaunchConfigurationConstants.ID_LAUNCH_C_ATTACH);
-	}
+        } catch (Exception e) {
+            Activator.logError(e);
+        } finally {
+        }
+    }
 
-	private static ILaunchConfiguration createAttachedConfigurationForPid(String pid) {
-		ILaunchConfiguration config = null;
-		try {
-			ILaunchConfigurationType configType = getLaunchAttachConfigType();
-			ILaunchConfigurationWorkingCopy wc = 
-					configType.newInstance(null, getLaunchManager().generateLaunchConfigurationName("attached"));
+    private static ILaunchManager getLaunchManager() {
+        return DebugPlugin.getDefault().getLaunchManager();
+    }
 
-			wc.setAttribute(ICDTLaunchConfigurationConstants.ATTR_DEBUGGER_START_MODE, ICDTLaunchConfigurationConstants.DEBUGGER_MODE_ATTACH);
-			wc.setAttribute(ICDTLaunchConfigurationConstants.ATTR_PROJECT_NAME, "attached");
-			wc.setAttribute(ICDTLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, (String) null);
-			if (pid != null)
-				wc.setAttribute(ICDTLaunchConfigurationConstants.ATTR_ATTACH_PROCESS_ID, Integer.valueOf(pid));
-			
-			config = wc;
-		} catch (CoreException e) {
-			Activator.logError(e);
-		}
-		return config;
-	}    
+    private static ILaunchConfigurationType getLaunchAttachConfigType() {
+        return getLaunchManager().getLaunchConfigurationType(ICDTLaunchConfigurationConstants.ID_LAUNCH_C_ATTACH);
+    }
+
+    private static ILaunchConfiguration createAttachedConfigurationForPid(String pid) {
+        ILaunchConfiguration config = null;
+        try {
+            ILaunchConfigurationType configType = getLaunchAttachConfigType();
+            ILaunchConfigurationWorkingCopy wc =
+                    configType.newInstance(null, getLaunchManager().generateLaunchConfigurationName("attached"));
+
+            wc.setAttribute(ICDTLaunchConfigurationConstants.ATTR_DEBUGGER_START_MODE, ICDTLaunchConfigurationConstants.DEBUGGER_MODE_ATTACH);
+            wc.setAttribute(ICDTLaunchConfigurationConstants.ATTR_PROJECT_NAME, "attached");
+            wc.setAttribute(ICDTLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, (String) null);
+            if (pid != null)
+                wc.setAttribute(ICDTLaunchConfigurationConstants.ATTR_ATTACH_PROCESS_ID, Integer.valueOf(pid));
+
+            config = wc;
+        } catch (CoreException e) {
+            Activator.logError(e);
+        }
+        return config;
+    }
 }

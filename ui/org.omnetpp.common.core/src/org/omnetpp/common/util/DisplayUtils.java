@@ -55,20 +55,20 @@ public class DisplayUtils {
         }
     }
 
-	public static boolean isDarkTheme() {
-		Display display= Display.getCurrent();
-		if (display == null) 
-			return false; 
-		Color bgColor = display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND);
-		double brightness = bgColor.getRed()*0.299 + bgColor.getGreen()*0.587 + bgColor.getBlue()*0.114;
-		return brightness < 128.0;
-	}
+    public static boolean isDarkTheme() {
+        Display display= Display.getCurrent();
+        if (display == null)
+            return false;
+        Color bgColor = display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND);
+        double brightness = bgColor.getRed()*0.299 + bgColor.getGreen()*0.587 + bgColor.getBlue()*0.114;
+        return brightness < 128.0;
+    }
 
-	public static Color getForegroundColor() {
-		var display = Display.getCurrent();
-		if (display == null)
-			return ColorFactory.BLACK;
+    public static Color getForegroundColor() {
+        var display = Display.getCurrent();
+        if (display == null)
+            return ColorFactory.BLACK;
 
-		return display.getSystemColor(SWT.COLOR_WIDGET_FOREGROUND); 
-	}
+        return display.getSystemColor(SWT.COLOR_WIDGET_FOREGROUND);
+    }
 }

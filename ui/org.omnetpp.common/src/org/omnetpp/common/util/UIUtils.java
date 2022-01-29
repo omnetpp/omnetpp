@@ -136,5 +136,5 @@ public class UIUtils {
         for (int i=0; i<listeners.length; i++)
             if (listeners[i] != null)
                 widget.removeListener(types[i], listeners[i]);
-    }    	
+    }
 }

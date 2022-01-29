@@ -48,11 +48,11 @@ public class Keywords {
     public final static String[] NED_EXPR_KEYWORDS = { "sizeof", "const", "default", "ask", "this", "index", "typename" };
 
     public final static String[] BOOL_CONSTANTS = { "false", "true", "undefined", "nan", "inf", "null", "nullptr" };
-    
+
     public final static String[] MSG_TYPE_KEYWORDS = { // types recognized by the message compiler
-    		"abstract", "bool", "char", "short", "int", "long", "float", "double", "unsigned", "string", "simtime_t", 
-    		"int8_t", "int16_t", "int32_t", "int64_t", "uint8_t", "uint16_t", "uint32_t", "uint64_t",
-    		"int8", "int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64" };  
+            "abstract", "bool", "char", "short", "int", "long", "float", "double", "unsigned", "string", "simtime_t",
+            "int8_t", "int16_t", "int32_t", "int64_t", "uint8_t", "uint16_t", "uint32_t", "uint64_t",
+            "int8", "int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64" };
 
     public final static String[] MSG_KEYWORDS = {"cplusplus", "namespace", "struct", "message", "packet", "class", "enum", "extends", "import" };
 

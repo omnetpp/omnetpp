@@ -114,7 +114,7 @@ public class FileUtils {
     }
 
     public static byte[] readBinaryFile(InputStream stream) throws IOException {
-    	return IOUtils.toByteArray(stream);
+        return IOUtils.toByteArray(stream);
     }
 
     public static String readTextFile(File file, String charset) throws IOException {
