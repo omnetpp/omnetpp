@@ -1,3 +1,8 @@
+2022-01-22  Andras Varga
+
+	* msg2.dtd: namespace/@name made optional to allow "namespace;" syntax in
+	msg file. (It returns to the toplevel namespace.)
+
 2021-07-12  Andras Varga
 
 	* msg2.dtd: remove unused "extends-name" attribute from "enum".

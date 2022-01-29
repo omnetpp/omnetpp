@@ -1,3 +1,44 @@
+2022-01-19  Attila Torok
+
+	* Analysis Tool: Fix: Restore error marker functionality in the chart
+	script editor.
+
+2022-01-17  Attila Torok
+
+	* Analysis Tool: Ask whether to keep temporary charts upon editor close,
+	and only then.
+
+2022-01-14  Attila Torok
+
+	* Analysis Tool: Fix the "All" option (minor lines) for grid in ideplot.
+
+2022-01-11  Rudolf Hornig
+
+	* Documentation Generator: changed the XML format in which extra content
+	for the generated NED documentation can be provided.
+
+2022-01-10  Attila Torok
+
+	* Analysis Tool: Use an authentication token for the Py4J connections,
+	and explicit loopback addresses everywhere.
+
+2022-01-05  Rudolf Hornig
+
+	* CDT Integration: Added support for URL where the IDE (CDT) can be
+	instructed to attach to a process and start debugging. The URL:
+
+	omnetpp://cdt/debuger/attach?pid=<pid>
+
+	The URL can be submitted by running the following command:
+
+	omnetpp omnetpp://cdt/debugger/attach?pid=<pid>
+
+	Qtenv now uses the above command on all platforms to invoke the debugger.
+
+2021-12-21  Attila Torok
+
+	* Remove the Histograms page from boxwhiskers chart template dialog pages.
+
 2021-12-15  Attila Torok
 
 	* Analysis Tool: Overhaul the barchart, scatterchart, and boxwhiskers

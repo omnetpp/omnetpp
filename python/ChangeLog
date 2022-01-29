@@ -1,3 +1,49 @@
+2022-01-26  Attila Torok
+
+	* Add __version__=6.0.0 into all scave submodules.
+
+2022-01-26  Attila Torok
+
+	* Delete the now-defunct pure-Python resultloader module for now.
+	It wasn't updated to newer scave file format versions.
+
+2022-01-14  Attila Torok
+
+	* Fix the "All" option (minor lines) for grid in ideplot
+
+2022-01-07  Attila Torok
+
+	* utils.py: Rename pick_two_columns() to select_best_partitioning_column_pair()
+
+2022-01-05  Attila Torok
+
+	* Hide internal and imported members of utils.py from generated docs
+
+2022-01-05  Attila Torok
+
+	* Minor tweaks to docstrings in vectorops.py.
+
+2022-01-03  Attila Torok
+
+	* Add legend customization and docstring to the box-and-whiskers plot
+
+2022-01-03  Attila Torok
+
+	* utils.py docstring updates
+
+2021-12-17  Attila Torok
+
+	* Better error reporting from vector operations
+
+2021-12-21  Attila Torok
+
+	* utils.py: export: Also allow "=" in sanitized filenames
+
+2021-12-21  Attila Torok
+
+	* results_standalone.py: Ensure result-type-specific columns
+	exist in returned df
+
 2021-12-15  Andras Varga
 
 	* omnetpp.scave: utils.py improvements:

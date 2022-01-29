@@ -1,3 +1,7 @@
+2022-01-27  Andras Varga
+
+	* stringutil.h: added opp_isvalididentifier()
+
 2021-12-10  Andras Varga
 
 	* PushDir: improve error reporting

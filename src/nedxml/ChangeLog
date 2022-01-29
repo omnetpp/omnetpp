@@ -1,3 +1,125 @@
+2022-01-27  Andras Varga
+
+	* Message compiler: Improved the documentation to reflect that @getter,
+	@setter, and other "method name" properties may contain funcall templates
+	instead of method names when @existingClass is given.
+
+2022-01-27  Andras Varga
+
+	* Message compiler: Validate the method names the user provides in the
+	@getter, @setter, @sizeGetter, and other "method name" properties.
+
+2022-01-26  Andras Varga
+
+	* Message compiler: Improve the handling of "funcall templates" (used
+	primarily by the @toString/@fromString properties) that specify a method
+	call (start with "." or "->"). Since it is not always possible to know at
+	the place of the @toString/@fromString property whether the field will
+	contain an object or a pointer, the message compiler will now automatically
+	replace "." by "->" or vica versa, to ensure that the generated C++ code
+	will compile.
+
+	* Fix: getFieldValueAsString() could crash when invoked on a pointer
+	field whose value is nullptr.
+
+2022-01-25  Andras Varga
+
+	* Message compiler: Fix C++ compilation error if msg contains cMessage
+	instead omnetpp::cMessage. The C++ code also contained plain cMessage
+	instead of omnetpp::cMessage. The reason was that field type name lookup was
+	messed up, and the unqualified type name from the msg file was used as C++
+	type name. This has been rectified.
+
+2022-01-22  Andras Varga
+
+	* Message compiler: No longer use operator<< for converting fields to string
+	in getFieldValueAsString(), see commit message for rationale. Instead, use
+	@toString code if the class has one; or str() if the class has one; otherwise
+	just return the empty string.
+
+2022-01-22  Andras Varga
+
+	* Message compiler: Allow "namespace;" syntax. It returns to the toplevel
+	C++ namespace.
+
+2022-01-22  Andras Varga
+
+	* Message compiler: msg2.y: Simplify the rules for qualified names.
+	The namespace directive now allows leading "::" (and ignores it).
+
+2022-01-22  Andras Varga
+
+	* Message compiler: Use removeSpaces() in msg2.y for qualified names. This
+	fixes the issue that the lexer/parser allows whitespace within qualified
+	names, but the rest of the code assumes they don't contain any.
+
+2022-01-18  Andras Varga
+
+	* Message compiler: Added error checking for boolean properties; any
+	value other than "true" and 'false" will now be reported as error.
+
+2022-01-13  Andras Varga
+
+	* Message compiler: Implemented @abstract.
+
+2022-01-13  Andras Varga
+
+	* Message compiler: Changed abstract fields not to require @customize(true)
+
+2022-01-13  Andras Varga
+
+	* Message compiler: Added the @customImpl property. When specified on a
+	field, opp_msgc will not generate implementation for the field's accessor
+	methods, allowing custom implementations to be supplied by the user.
+
+2022-01-13  Andras Varga
+
+	* Message compiler: Fix: Setter for owned pointer field crashed when invoked
+	with the current value.
+
+2022-01-13  Andras Varga
+
+	* Message compiler: Fix: For owned cObject* fields: Added runtime checks if
+	object is actually a cOwnedObject so we can property drop()/take() it.
+
+2022-01-11  Andras Varga
+
+	* Message compiler: Rename "drop" method to "remove" for pointer fields.
+
+2022-01-11  Andras Varga
+
+	* Message compiler: Introduce "append" method for array fields instead of
+	single-arg "insert" method.
+
+2022-01-12  Andras Varga
+
+	* Message compiler: Introduced @datamemberType, adjust descriptions of @cppType,
+	@argType, @returnType.
+
+2022-01-08  Andras Varga
+
+	* Message compiler: Fix error message raised by generated code when index into
+	array field is out of range.
+
+2022-01-11  Andras Varga
+
+	* Message compiler: Property declarations: Clarify which properties affect the
+	class descriptor ONLY (but not the generated class).
+
+2022-01-11  Andras Varga
+
+	* Message compiler: Separate groups of methods generated for different fields by
+	newline.
+
+2022-01-08  Andras Varga
+
+	* Message compiler: Warning made more helpful.
+
+2022-01-10  Andras Varga
+
+	* Message compiler: When generating the Message Properties appendix for the
+	manual, write out the '@' prefix of properties.
+
 2021-11-20  Rudolf Hornig
 
 	* PLATFORM makefile var was split into PLATFORM and ARCH

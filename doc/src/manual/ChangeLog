@@ -1,3 +1,42 @@
+2021-04-11  Andras Varga
+
+	* Refresh info on display string tags; document new "g" tag (layout group)
+
+2022-01-11  Andras Varga
+
+	* "Message Descriptions" chapter completely rewritten, due to
+	reimplementation and massive feature changes of the message compiler in
+	version 6.0.
+
+2022-01-11  Andras Varga
+
+	* Appendices refreshed
+
+2022-01-06  Andras Varga
+
+	* "Intro" chapter: Update omnetpp directory structure
+
+2022-01-10  Attila Torok
+
+	* "Result Analysis": Actualize the "An Example Chart Script" section
+
+2022-01-11  Rudolf Hornig
+
+	* Neddoc: added info about how to extend generated NED documentation with
+	externally generated info
+
+2020-12-01  Andras Varga
+
+	* Document preDelete() and opp_component_ptr<T>
+
+2021-10-15  Andras Varga
+
+	* Document inifile syntax changes: indentation, "Config" prefix made optional
+
+2022-01-06  Andras Varga
+
+	* Refreshed generated content in Appendices
+
 2021-11-26  Rudolf Hornig
 
 	* Updated section on opp_test wrt possible new test case outcomes (PASS,

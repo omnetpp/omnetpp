@@ -1,3 +1,7 @@
+2021-12-17  Andras Varga
+
+	* Wording of an error message refined
+
 2021-06-09  Attila Torok
 
 	* Add cEnvir::pausePoint() and stubs

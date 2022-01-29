@@ -1,3 +1,14 @@
+2022-01-05  Rudolf Hornig
+
+	* Changed the default debugger command to one that invokes the Simulation
+	IDE and makes the CDT debugger attach to the simulation process. The command
+	line is: `opp_ide omnetpp://cdt/debugger/attach?pid=%u`
+
+2022-01-05  Andras Varga
+
+	* New `-h` topics: `latexconfigvars`, `sqliteschema`. They are mainly
+	used for producing info for the Appendices in the manual.
+
 2021-11-30  Rudolf Hornig
 
 	* Improved the output of "opp_run -v".
