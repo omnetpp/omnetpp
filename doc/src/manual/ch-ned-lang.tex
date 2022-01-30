@@ -1050,19 +1050,33 @@ From {\opp} 5.7 onwards, there is also a \fkeyword{parent} qualifier with the ob
 \end{note}
 
 
-\subsection{volatile}
+\subsection{Volatile Parameters}
 \label{sec:ned-lang:volatile}
 
-The \fkeyword{volatile} modifier causes the parameter's value expression to
-be evaluated every time the parameter is read. This has significance if the
-expression is not constant, for example it involves numbers drawn from a
-random number generator. In contrast, non-volatile parameters are evaluated
-only once. (This practically means that they are evaluated and replaced
-with the resulting constant at the start of the simulation.)
+Volatile parameters are those marked with the \fkeyword{volatile} modifier
+keyword. Normally, expressions assigned to parameters are evaluated once, and
+the resulting values are stored in the parameters. In contrast, a volatile
+parameter holds the expression itself, and it is evaluated every time the
+parameter is read. Therefore, if the expression contains a stochastic or
+changing component, such as \ttt{normal(0,1)} (a random value from the unit
+normal distribution) or \ttt{simTime()} (the current simulation time), reading
+the parameter may yield a different value every time.
 
-To better understand \fkeyword{volatile}, let's suppose we have a
-\ttt{Queue} simple module that has a \ttt{volatile double} parameter
-named \ttt{serviceTime}.
+\begin{note}
+  Technically, non-volatile parameters may also contain stochastic values.
+  However, the result of that would be that the simulation use a constant value
+  throughout, chosen randomly at the beginning of the simulation. This is akin
+  to running a randomly selected simulation rather than performing a Monte-Carlo
+  simulation, hence, it is rarely desirable.
+\end{note}
+
+If a parameter is marked \fkeyword{volatile}, the C++ code that implements the
+corresponding module is expected to re-read the parameter every time a new value
+is needed, as opposed to reading it once and caching the value in a variable.
+
+To demonstrate the use of \fkeyword{volatile}, suppose we have a \ttt{Queue}
+simple module that has a \ttt{volatile double} parameter named
+\ttt{serviceTime}.
 
 \begin{ned}
 simple Queue
@@ -1072,33 +1086,84 @@ simple Queue
 }
 \end{ned}
 
-Because of the \fkeyword{volatile} modifier, the queue module's C++
-implementation is expected to re-read the \ttt{serviceTime} parameter
-whenever a value is needed; that is, for every job serviced. Thus, if
-\ttt{serviceTime} is assigned an expression like \ttt{uniform(0.5s, 1.5s)},
-every job will have a different, random service time. To highlight this
-effect, here's how one can have a time-varying parameter by exploiting
-the \ttt{simTime()} NED function that returns the current simulation time:
+Because of the \fkeyword{volatile} modifier, the C++ code underlying the queue
+module is supposed read the \ttt{serviceTime} parameter for every job serviced.
+Thus, if a stochastic value like \ttt{uniform(0.5s, 1.5s)} is assigned the
+parameter, the expression will be evaluated every time, and every job will
+likely have a different, random service time.
+
+As another example, here's how one can have a time-varying parameter by
+exploiting the \ttt{simTime()} NED function:
 
 \begin{inifile}
 **.serviceTime = simTime()<1000s ? 1s : 2s  # queue that slows down after 1000s
 \end{inifile}
 
-In practice, a volatile parameters are typically used as a configurable
-source of random numbers for modules.
+
+\subsection{Mutable Parameters}
+\label{sec:ned-lang:mutable}
+
+A parameter is marked as mutable by adding the \fprop{@mutable} property to it.
+Mutable parameters can be set to a different value during runtime, whereas
+normal, i.e. non-mutable parameters cannot be changed after their initial
+assignment (attempts to do so will result in an error being raised).
+
+Parameter mutability addresses the fact that although it would be technically
+possible to allow changing the value of any parameter to a different value
+during runtime, it only really makes sense to do so if the change actually takes
+effect. Otherwise, users doing the change could be mislead.
+
+For example, if a module is implemented in C++ in a way that it only reads a
+parameter once and then uses the cached value throughout, it would be misleading
+to allow changing the parameter's value during simulation. For a parameter to
+rightfully be marked as \fprop{@mutable}, module's implementation has to be
+explicitly prepared to handle runtime parameter changes (see section
+\ref{sec:simple-modules:handleparameterchange}).
+
+As a practical example, a drop-tail queue module could have a \ttt{maxLength}
+parameter which controls the maximum number of elements the queue can hold. If
+it was allowed to set the \ttt{maxLength} parameter to a different value at
+runtime but the module would continue to operate according to the initially
+configured value throughout the entire simulation, that could falsify simulation
+results.
+
+\begin{ned}
+simple Queue
+{
+    parameters:
+        int maxLength @mutable; // @mutable indicates that Queue's
+                                // implementation is prepared for handling
+                                // runtime changes in the value of the
+                                // maximum queue length.
+        ...
+}
+\end{ned}
+
+In a model framework that contains a large number of modules with many
+parameters, the presence or absence of \fprop{@mutable} allows the user to know
+which are the parameters whose runtime changes are properly handled by their
+modules. This is an important input for determining what kinds of experiments
+can be done with the model.
+
+\begin{hint}
+    Note that although \fkeyword{volatile} and \fprop{@mutable} are two different
+    things, parameters marked \fkeyword{volatile} may often be marked
+    \fprop{@mutable} as well.
+\end{hint}
 
 \begin{note}
-    This does not mean that a non-volatile parameter cannot be assigned a
-    random value like \ttt{uniform(0.5s, 1.5s)}. It can, but that would
-    have a totally different effect: the simulation would use a constant
-    value, say \ttt{1.2975367s}, chosen randomly at the beginning
-    of the simulation.
+    \fprop{@mutable} affects backward compatibility. As it was introduced in
+    {\opp} version 6.0, models written before that do not contain \fprop{@mutable}
+    annotations. Such simulations models, if they rely on runtime parameter changes,
+    may be run under {\opp} 6.0 by setting the \fconfig{parameter-mutability-check}
+    configuration option to \ttt{false}.
 \end{note}
+
 
 \subsection{Units}
 \label{sec:ned-lang:units}
 
-One can declare a parameter to have an associated unit of measurement,
+One can declare a parameter to have an associated unit of measurement
 by adding the \fprop{@unit} property. An example:
 
 \begin{ned}
