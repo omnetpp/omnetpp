@@ -184,5 +184,6 @@ htmlfile_spec := $BASE.html
 :b/e	:\begin{filelisting}(\[.*?\])?:<pre class="filelisting">:</pre>:
 :b/e	:\begin{commandline}(\[.*?\])?:<pre class="commandline">:</pre>:
 :b/e	:\begin{Verbatim}(\[.*?\])?:<pre class="verbatim">:</pre>:
+:b/e	:\begin{xml}(\[.*?\])?:<pre class="xml">:</pre>:
 :b/e	:\begin{center}:<center>:</center>:
 

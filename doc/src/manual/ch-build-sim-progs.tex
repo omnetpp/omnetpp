@@ -624,7 +624,7 @@ extraSourceFolders, compileFlags} and \ttt{linkerFlags}. Items within attributes
 that represent lists (\ttt{requires}, \ttt{labels}, etc.) are separated by spaces.
 
 Here is an example feature from the INET Framework:
-\begin{filelisting}
+\begin{xml}
 <feature
   id="TCP_common"
   name="TCP Common"
@@ -639,7 +639,7 @@ Here is an example feature from the INET Framework:
   compileFlags = "-DWITH_TCP_COMMON"
   linkerFlags = ""
   />
-\end{filelisting}
+\end{xml}
 
 Project feature enablements are stored in the \ffilename{.featurestate} file.
 

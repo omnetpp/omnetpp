@@ -3615,18 +3615,18 @@ The following example .earth file will set up a spherical rendering of Earth
 with textures from openstreetmap.org:
 
 % XXX no xml environment?
-\begin{filelisting}
+\begin{xml}
 <map name="OpenStreetMap" type="geocentric" version="2" >
     <image name="osm_mapnik" driver="xyz" >
         <url>http://[abc].tile.openstreetmap.org/{z}/{x}/{y}.png</url>
     </image>
 </map>
-\end{filelisting}
+\end{xml}
 
 Elevation data can also be acquired in a similarly simple fashion using the
 \ttt{elevation} tag. The next snippet demonstrates this:
 
-\begin{filelisting}
+\begin{xml}
 <map name="readymap.org" type="geocentric" version="2" >
     <image name="readymap_imagery" driver="tms" >
         <url>http://readymap.org/readymap/tiles/1.0.0/7/</url>
@@ -3635,7 +3635,7 @@ Elevation data can also be acquired in a similarly simple fashion using the
         <url>http://readymap.org/readymap/tiles/1.0.0/9/</url>
     </elevation>
 </map>
-\end{filelisting}
+\end{xml}
 
 For a detailed description of the available image and elevation source drivers,
 refer to the online references of osgEarth, or use one of the sample .earth
@@ -3644,7 +3644,7 @@ files shipped with it.
 The following partial .earth file places a label over Los Angeles, an extruded
 ellipse (a hollow cylinder) next to it, and a big red flag nearby.
 
-\begin{filelisting}
+\begin{xml}
 <map ... >
     ...
     <external>
@@ -3671,7 +3671,7 @@ ellipse (a hollow cylinder) next to it, and a big red flag nearby.
         </annotations>
     </external>
 </map>
-\end{filelisting}
+\end{xml}
 
 
 \subsubsection{Creating Offline Tile Packages}
