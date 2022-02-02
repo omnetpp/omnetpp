@@ -1592,32 +1592,13 @@ while (tokenizer.hasMoreTokens())
 \subsection{handleParameterChange()}
 \label{sec:simple-modules:handleparameterchange}
 
-It is possible for modules to be notified when the value of a
-parameter changes at runtime, possibly due to another module
-dynamically changing it. A typical use is to re-read the changed
-parameter, and update the module's state if needed.
+It is possible for modules to be notified when the value of a parameter changes
+at runtime, possibly due to another module dynamically changing it. The typical
+action is to re-read the parameter, and update the module's state if needed.
 
-To enable notification, redefine the \ffunc{handleParameterChange()} method
-of the module class. This method will be called back by the
-simulation kernel when a module parameter changes, \textit{except during
-initialization of the given module}.
-
-\begin{note}
-  Notifications are disabled during the initialization of the component,
-  because they would make it very difficult to write components
-  that work reliably under all conditions.
-  \ffunc{handleParameterChange()} is usually triggered from another
-  module (it does not make much sense for a module to change
-  its own parameters), so the relative order of
-  \ffunc{initialize()} and \ffunc{handleParameterChange()}
-  would be effectively determined by the initialization order
-  of modules, which generally cannot be relied upon. After the last
-  stage of the initialization of the component is finished,
-  \ffunc{handleParameterChange()} is called by the simulation kernel
-  with \ttt{nullptr} as a parameter name. This allows the component
-  to react to parameter changes that occurred during the initialization phase.
-\end{note}
-
+To enable notification, redefine the \ffunc{handleParameterChange()} method of
+the module class. This method will be called back by the simulation kernel with
+the parameter name as argument every time a new value is assigned to a parameter.
 The method signature is the following:
 
 \begin{cpp}
@@ -1628,28 +1609,33 @@ The following example shows a module that re-reads
 its \ttt{serviceTime} parameter when its value changes:
 
 \begin{cpp}
-void Queue::handleParameterChange(const char *parname)
+void Queue::handleParameterChange(const char *parameterName)
 {
-    if (strcmp(parname, "serviceTime")==0)
+    if (strcmp(parameterName, "serviceTime") == 0)
         serviceTime = par("serviceTime"); // refresh data member
 }
 \end{cpp}
 
-If your code heavily depends on notifications and you would like to
-receive notifications during initialization or finalization as well, one
-workaround is to explicitly call \ffunc{handleParameterChange()}
-from the \ffunc{initialize()} or \ffunc{finish()} function:
-
-\begin{cpp}
-for (int i = 0; i < getNumParams(); i++)
-    handleParameterChange(par(i).getName());
-\end{cpp}
-
 \begin{note}
-  Be extremely careful when changing parameters from inside
-  \ffunc{handleParameterChange()}, because it is easy to accidentally
-  create an infinite notification loop.
+  As a rule of thumb, \ffunc{handleParameterChange()} should handle
+  all parameters that are marked as \fprop{@mutable} in the NED file.
 \end{note}
+
+Notifications are suppressed while the network (or module) is being set
+up.\footnote{ Prior to {\opp} 6.0, notifications were also disabled during the
+initialization phase (see \ref{sec:simple-modules:initialize-and-finish}), and
+additionally, a \ttt{handleParameterChange(nullptr)} call was made by the
+simulation kernel after the last stage of initialization. They are no longer
+done, and simulation models exploiting the previous behavior need to be
+updated.}
+
+\ffunc{handleParameterChange()} methods need to be implemented carefully,
+because they may be called at a time when the module has not yet completed all
+initialization stages.
+
+Also, be extremely careful when changing parameters from inside
+\ffunc{handleParameterChange()}, because it is easy to accidentally
+create an infinite notification loop.
 
 
 \section{Accessing Gates and Connections}
