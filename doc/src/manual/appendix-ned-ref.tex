@@ -37,8 +37,9 @@ The following words are reserved, and cannot be used for identifiers:
 
 \ttt{allowunconnected bool channel channelinterface connections const
 default double extends false for gates if import index inf inout input int like
-module moduleinterface nan network null nullptr object output package parameters property simple
-sizeof string submodules this true typename types undefined volatile xml xmldoc}
+module moduleinterface nan network null nullptr object output package parameters
+parent property simple sizeof string submodules this true typename types
+undefined volatile xml xmldoc}
 
 
 \subsection{Identifiers}
@@ -481,9 +482,9 @@ The following example shows a property without index, one with the index \ttt{in
 and a third with the index \ttt{index2}.
 
 \begin{ned}
-@prop1();
-@prop2[index1]();
-@prop3[index2]();
+@prop();
+@prop[index1]();
+@prop[index2]();
 \end{ned}
 
 
@@ -611,7 +612,7 @@ are evaluated only once.
 \end{note}
 
 The following properties are recognized for parameters: \fprop{@unit},
-\fprop{@prompt}.
+\fprop{@prompt}, \fprop{@mutable}.
 
 
 \subsubsection{The @prompt Property}
@@ -664,6 +665,13 @@ simple B extends A {
 \end{ned}
 
 
+\subsubsection{The @mutable Property}
+\label{sec:ned-ref:mutable-property}
+
+When a parameter is annotated with \fprop{@mutable}, the parameter's value is
+allowed to be changed at runtime, i.e. after its module has been set up.
+Parameters without the \fprop{@mutable} property cannot be changed at runtime.
+
 
 \subsection{Pattern Assignments}
 \label{sec:ned-ref:pattern-assignments}
@@ -676,7 +684,7 @@ section of component types, submodules and connections.
 The syntax of a pattern assignment is \textit{<pattern> = <value>}.
 
 A pattern consists of two or more pattern elements, separated by dots.
-The pattern element syntax is defined so that it can accomodate names of
+The pattern element syntax is defined so that it can accommodate names of
 parameters, submodules (optionally with index), gates (optionally with the
 \ttt{\$i}/\ttt{\$o} suffix and/or index) and connections, and their
 wildcard forms. (The default name of connection channel objects is
@@ -1738,13 +1746,16 @@ The spaceship operator is defined as follows. The result of \ttt{a <=> b} is neg
 if \ttt{a<b}, zero if \ttt{a==b}, and positive if \ttt{a>b}. If either \ttt{a} or \ttt{b} is
 \ttt{nan} (not-a-number), the result is \ttt{nan} as well.
 
-The string match operator works the following way. \ttt{x =\ensuremath{\sim} pattern} returns \ttt{true}
-if the string \ttt{x} matches \ttt{pattern}, and \ttt{false} otherwise. Pattern syntax
-and rules are similar to those used in \ffilename{omnetpp.ini} files: case sensitive,
-full-string match, where an asterisk \ttt{*} matches zero or more of any character
-except dot, a double asterisk \ttt{**} matches zero or more characters (including dot),
-and notations also exist to express embedded numbers and square-bracketed
-numeric indices within a numeric range.
+The string match operator works the following way. \ttt{x =\ensuremath{\sim}
+pattern} returns \ttt{true} if the string \ttt{x} matches the string
+\ttt{pattern}, and \ttt{false} otherwise. Pattern syntax and rules: case
+sensitive, full-string match, where an asterisk \ttt{*} matches zero or more of
+any character except dot; a double asterisk \ttt{**} matches zero or more
+characters (including dot); a pair of curly braces containing a numeric range
+matches an embedded whole number in that range; a pair of square brackets
+containing a numeric range matches a number in that range enclosed in square
+brackets. A numeric range has the syntax of \textit{<start>..<end>}, where both
+\textit{<start>} and \textit{<end>} are integers, and are optional.
 
 The interpretation of other operators is similar to that in C/C++.
 
@@ -1886,6 +1897,19 @@ can be referred to with the \fkeyword{this} qualifier: \ttt{sizeof(this.out)}.
 To refer to the size of a submodule's gate vector defined earlier in the
 NED file, use the \ttt{sizeof(submoduleName.gateVectorName)} or
 \ttt{sizeof(submoduleName[index].gate\-Vector\-Name)} syntax.
+
+
+\subsection{The \fkeyword{expr()} Operator}
+\label{sec:ned-ref:expr-operator}
+
+The \fkeyword{expr()} operator allows a mathematical formula or other expression
+to be passed to a component as an object. \fkeyword{expr()} expects an
+expression as argument, and returns an object which encapsulates the expression
+in a parsed form. In the intended use case, the returned \textit{expression
+object} is assigned to a module parameter, and is later utilized by user code (a
+component implementation) by binding its free variables and evaluating it.
+Identifiers in the expression are \textit{not} interpreted as parameter references
+as in NED, but as free variables.
 
 
 \subsection{Functions}
