@@ -42,6 +42,7 @@ namespace envir {
 Register_GlobalConfigOption(CFGID_SECTIONBASEDCONFIG_CONFIGREADER_CLASS, "sectionbasedconfig-configreader-class", CFG_STRING, "", "When `configuration-class=SectionBasedConfiguration`: selects the configuration reader C++ class, which must subclass from `cConfigurationReader`.");
 Register_PerRunConfigOption(CFGID_DESCRIPTION, "description", CFG_STRING, nullptr, "Descriptive name for the given simulation configuration. Descriptions get displayed in the run selection dialog.");
 Register_PerRunConfigOption(CFGID_EXTENDS, "extends", CFG_STRING, nullptr, "Name of the configuration this section is based on. Entries from that section will be inherited and can be overridden. In other words, configuration lookups will fall back to the base section.");
+Register_PerRunConfigOption(CFGID_ABSTRACT, "abstract", CFG_BOOL, "false", "Declares whether this configuration is an abstract one. Abstract configurations serve as a base for other configurations, and are not meant to be run directly.");
 Register_PerRunConfigOption(CFGID_CONSTRAINT, "constraint", CFG_STRING, nullptr, "For scenarios. Contains an expression that iteration variables (`${}` syntax) must satisfy for that simulation to run. Example: `$i < $j+1`.");
 Register_PerRunConfigOption(CFGID_ITERATION_NESTING_ORDER, "iteration-nesting-order", CFG_STRING, nullptr, "Specifies the loop nesting order for iteration variables (`${}` syntax). The value is a comma-separated list of iteration variables; the list may also contain at most one asterisk. Variables that are not explicitly listed will be inserted at the position of the asterisk, or appended to the list if there is no asterisk. The first variable will become the outermost loop, and the last one the innermost loop. Example: `repetition,numHosts,*,iaTime`.");
 Register_PerRunConfigOption(CFGID_REPEAT, "repeat", CFG_INT, "1", "For scenarios. Specifies how many replications should be done with the same parameters (iteration variables). This is typically used to perform multiple runs with different random number seeds. The loop variable is available as `${repetition}`. See also: `seed-set` key.");
@@ -324,6 +325,8 @@ void SectionBasedConfiguration::activateConfig(const char *configName, int runNu
         for (int entryId = 0; entryId < ini->getNumEntries(sectionId); entryId++) {
             // add entry to our tables
             const auto& e = ini->getEntry(sectionId, entryId);
+            if (opp_streq(e.getKey(), CFGID_ABSTRACT->getName()) && sectionId != sectionChain.front())
+                continue; // "abstract-config = true" is not inherited, skip adding but for the first section
             std::string key = addWildcardIfNeeded(e.getKey());
             std::string value = substituteVariables(e.getValue(), sectionId, entryId, variables, locationToVarName);
             addEntry(Entry(e.getBaseDirectory(), key.c_str(), value.c_str(), e.getSourceLocation()));
