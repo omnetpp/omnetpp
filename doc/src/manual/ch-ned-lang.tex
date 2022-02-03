@@ -1447,19 +1447,19 @@ object trail = Trail {
   };
 \end{ned}
 
-Values for object parameters may also be place in ini files, just like values
-for other parameter types. When doing so, pay attention that the ini file
-syntax, unlike NED, requires trailing backslashes when breaking up long lines.
-Hence, the above trail example is to be written in the following way:
+Values for object parameters may also be placed in ini files, just like values
+for other parameter types. In ini files, indented lines are treated as
+continuations of the previous line, so the above example doesn't need trailing
+backslashes when moved to \fname{omnetpp.ini}:
 
 \begin{inifile}
-**.trail = Trail { \
-        waypoints: [ \
-            { x: 1, y : 5 }, \
-            { x: 4, y : 6 }, \
-            { x: 3, y : 8 }, \
-            { x: 5, y : 3 } \
-        ] \
+**.trail = Trail {
+        waypoints: [
+            { x: 1, y : 5 },
+            { x: 4, y : 6 },
+            { x: 3, y : 8 },
+            { x: 5, y : 3 }
+        ]
       }
 \end{inifile}
 
