@@ -980,11 +980,48 @@ this will result in an error):
 \subsection{Expressions}
 \label{sec:ned-lang:expressions}
 
-Parameter values may be given with expressions. NED language expressions
-have a C-like syntax, with some variations on operator names: binary and
-logical XOR are \ttt{\#} and \ttt{\#\#}, while \ttt{\^} has been reassigned
-to \textit{power-of} instead. The \ttt{+} operator does string
-concatenation as well as numeric addition.
+Parameter values may be given with expressions. NED language expressions have a
+C-like syntax, with additions like quantities (numbers with measurement units,
+e.g. \ttt{100Gbps}) and JSON constructs. Compared to C, there are some
+variations on operator names: binary and logical XOR are \ttt{\#} and
+\ttt{\#\#}, while \ttt{\^} has been reassigned to \textit{power-of} instead. The
+\ttt{+} operator does string concatenation as well as numeric addition. There
+are two extra operators: \ttt{<=>} (``spaceship'') and \ttt{=\ensuremath{\sim}}
+(string match). The JSON constructs are the \textit{array} and the
+\textit{object} syntaxes, which will be covered in section
+\ref{sec:ned-lang:object-parameters}. Keyword constants include \fkeyword{true},
+\fkeyword{false}, \fkeyword{nan} (floating point Not-a-Number), \fkeyword{inf}
+(infinity), \fkeyword{null} and its synonym \fkeyword{nullptr}, and also
+\fkeyword{undefined} which represents the missing value.
+
+The spaceship operator \ttt{<=>} compares its two arguments and returns the
+result (``less'', ``equal'', ``greater'' and ``not applicable'') in the form of
+a negative, zero, positive or \ttt{nan} double number, respectively.
+
+\begin{ned}
+    2 <=> 2  // --> 0
+    10 <=> 5  // --> 1
+    2 <=> nan // --> nan
+\end{ned}
+
+The string match operator \ttt{=\ensuremath{\sim}} is used as \textit{string
+\ttt{=\ensuremath{\sim}} pattern}, and returns a boolean that indicates whether
+if the second argument (the pattern) matches the first one (the string). Pattern
+syntax and rules are similar to those used in \ffilename{omnetpp.ini} files:
+case sensitive, full-string match, where an asterisk \ttt{*} matches zero or
+more of any character except dot, a double asterisk \ttt{**} matches zero or
+more characters (including dot), and notations also exist to express embedded
+numbers and square-bracketed numeric indices within a numeric range.
+
+\begin{ned}
+    "foo" =~ "f*" // --> true
+    "foo" =~ "b*" // --> false
+    "foo" =~ "F*" // --> false
+    "foo.bar.baz" =~ "*.baz" // --> false
+    "foo.bar.baz" =~ "**.baz" // --> true
+    "foo[15]" =~ "foo[5..20]" // --> true
+    "foo15" =~ "foo{5..20}" // --> true
+\end{ned}
 
 Expressions may refer to module parameters, gate vector and module vector sizes
 (using the \fkeyword{sizeof} operator), existence of a submodule or submodule vector
@@ -1314,8 +1351,7 @@ data structures, with a JSON-like notation.
 The notation is only JSON-\textit{like}, as the syntax rules are more relaxed
 than in JSON. All valid JSON is accepted, but also some more. The main difference
 is that in JSON, values in arrays and objects may only be constants or \ttt{null},
-while {\opp} allows any NED expression as value: quantities (e.g. \ttt{100Gbps}),
-\fkeyword{nan}, \fkeyword{inf}, \fkeyword{nullptr} (synonym of \fkeyword{null}),
+while {\opp} allows NED expressions as values: quantities, \fkeyword{nan}/\fkeyword{inf},
 parameter references, functions, arithmetic operations, etc., are all accepted.
 
 An extra relaxation and convenience compared to strict JSON is that quotation
@@ -1450,7 +1486,7 @@ object trail = Trail {
 Values for object parameters may also be placed in ini files, just like values
 for other parameter types. In ini files, indented lines are treated as
 continuations of the previous line, so the above example doesn't need trailing
-backslashes when moved to \fname{omnetpp.ini}:
+backslashes when moved to \ffilename{omnetpp.ini}:
 
 \begin{inifile}
 **.trail = Trail {
@@ -2302,7 +2338,7 @@ b.g$o[0].channel.typename = "Ethernet1000";  // B -> A channel
 
 NED properties are metadata annotations that can be added to modules, parameters,
 gates, connections, NED files, packages, and virtually anything in NED.
-\ttt{@display}, \ttt{@class}, \ttt{@namespace}, \ttt{@unit}, \ttt{@prompt},
+\ttt{@display}, \ttt{@class}, \ttt{@namespace}, \ttt{@mutable}, \ttt{@unit}, \ttt{@prompt},
 \ttt{@loose}, \ttt{@directIn} are all properties that have been mentioned in
 previous sections, but those examples only scratch the surface of what
 properties are used for.
