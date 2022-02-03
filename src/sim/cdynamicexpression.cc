@@ -35,8 +35,9 @@ using namespace omnetpp::common::expression;
 
 namespace omnetpp {
 
-inline cExpression::Context *ctx(Context *context) {return dynamic_cast<cExpression::Context*>(context->simContext);}
+Register_Class(cOwnedDynamicExpression);
 
+inline cExpression::Context *ctx(Context *context) {return dynamic_cast<cExpression::Context*>(context->simContext);}
 
 cValue cDynamicExpression::SymbolTable::readVariable(Context *context, const char *name)
 {
