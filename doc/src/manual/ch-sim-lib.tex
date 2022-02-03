@@ -1548,6 +1548,22 @@ EV << expr.matches(&cMatchableString("something else")) << endl; // -> false
 \end{cpp}
 
 
+\section{Dynamic Expression Evaluation}
+\label{sec:sim-lib:dynamic-expressions}
+
+The NED \fkeyword{expr()} operator encapsulates a formula in an object form.
+On the C++ side, the object is an instance of \cclass{cOwnedDynamicExpression}.
+
+The expression can be evaluated using the \ffunc{evalute()} method that returns
+a \cclass{cValue}, or one of typed methods: \ffunc{boolValue()},
+\ffunc{intValue()}, \ffunc{doubleValue()}, \ffunc{stringValue()},
+\ffunc{xmlValue()}. But before that, a custom resolver needs to be implemented, and
+installed using the \ffunc{setResolver()}. The resolver subclasses from
+\cclass{cDynamicExpression::IResolver}, and its methods \ffunc{readVariable()},
+\ffunc{readMember()}, \ffunc{callFunction()}, \ffunc{callMethod()} determine
+how to evaluate various constructs in the expression.
+
+
 \section{Collecting Summary Statistics and Histograms}
 \label{sec:sim-lib:statistics}
 

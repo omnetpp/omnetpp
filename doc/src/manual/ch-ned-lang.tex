@@ -1026,9 +1026,14 @@ numbers and square-bracketed numeric indices within a numeric range.
 Expressions may refer to module parameters, gate vector and module vector sizes
 (using the \fkeyword{sizeof} operator), existence of a submodule or submodule vector
 (\fkeyword{exists} operator), and the index of the current module in a
-submodule vector (\fkeyword{index}). They can also use various numeric, string,
-stochastic and other functions (\ttt{fabs()}, \ttt{toUpper()}, \ttt{uniform()},
-\ttt{erlang\_k()}, etc.).
+submodule vector (\fkeyword{index}).
+
+The special operator \fkeyword{expr()} can be used to pass a formula into a
+module as a parameter (\ref{sec:ned-lang:expr-operator}).
+
+Expressions may also utilize various numeric, string, stochastic and
+miscellaneous other functions (\ttt{fabs()}, \ttt{uniform()}, \ttt{lognormal()},
+\ttt{substring()}, \ttt{readFile()}, etc.).
 
 \begin{note}
     The list of NED functions can be found in Appendix \ref{cha:ned-functions}.
@@ -1498,6 +1503,77 @@ backslashes when moved to \ffilename{omnetpp.ini}:
         ]
       }
 \end{inifile}
+
+
+\subsection{Passing a Formula as Parameter}
+\label{sec:ned-lang:expr-operator}
+
+The special operator \fkeyword{expr()} allows one to pass a formula into a
+module as a parameter. \fkeyword{expr()} takes an expression as argument, which
+\textit{syntactically} must correspond to the general syntax of NED expressions.
+However, it is not a normal NED expression: it will \textit{not} be interpreted
+and evaluated as one. Instead, it will be encapsulated into, and returned as, an
+object, and typically assigned to a module parameter.
+
+The module may access the object via the parameter, and may evaluate the
+expression encapsulated in it any number of times during simulation. While doing
+so, the module's code can freely determine how various identifiers and other
+syntactical elements in the expression are to be interpreted.
+
+Let us see a practical example. In the model of a wireless network, one of the
+tasks is to compute the path loss suffered by each wirelessly transmitted frame,
+as part of the procedure to determine whether the frame could be successfully
+received by the receiver node. There are several formulas for computing the path
+loss (free space, two-ray ground reflection, etc), and it depends on multiple
+factors which one to use. If the model author wants to leave it open for their
+users to specify the formula they want to use, they might define the model like
+so:
+
+\begin{ned}
+simple RadioMedium {
+    parameters:
+        object pathLoss; // =expr(...): formula to compute path loss
+    ...
+}
+\end{ned}
+
+The \ttt{pathLoss} parameter expects the formula to be given with
+\fkeyword{expr()}. The formula is expected to contain two variables,
+\ttt{distance} and \ttt{frequency}, which stand for the distance between the
+transmitter and the receiver and the packet transmission frequency,
+respectively. The module would evaluate the expression for each frame, binding
+values that correspond to the current frame to those variables.
+
+Given the above, free space path loss would be specified to the module with the
+following formula (assuming isotropic antennas with the same polarization,
+etc.):
+
+\begin{inifile}
+**.pathLoss = expr((4 * 3.14159 * distance * frequency / c) ^ 2)
+\end{inifile}
+
+The next example is borrowed from the INET Framework, which extensively uses
+\fkeyword{expr()} for specifying packet filter conditions. A few examples:
+
+\begin{ned}
+expr(hasBitError)
+expr(name == 'P1')
+expr(name =~ 'P*')
+expr(totalLength == 128B)
+expr(ipv4.destAddress.str() == '10.0.0.1' && udp.destPort == 42)
+\end{ned}
+
+The interesting part is that the packet itself does not appear explicitly in the
+expressions. Instead, identifiers like \ttt{hasBitError} and \ttt{name} are
+interpreted as attributes of the packet, as if the user had written e.g.
+\ttt{pk.hasBitError} and \ttt{pk.name}. Similarly, \ttt{ipv4} and \ttt{udp}
+stand for the IPv4 and UDP headers of the packet. The last line also shows that
+the interpretation of member accesses and method calls is also in the hands of
+the module's code.
+
+The details of implementing \fkeyword{expr()} support in modules will be
+described as part of the simulation library, in section
+\ref{sec:sim-lib:dynamic-expressions}.
 
 
 \section{Gates}
