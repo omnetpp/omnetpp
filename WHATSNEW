@@ -6,8 +6,8 @@ simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
 
-OMNeT++ 6.0pre16 (Feb 2022)
----------------------------
+OMNeT++ 6.0 (Feb 2022)
+----------------------
 
 This prerelease contains several features, changes, improvements and bug fixes
 for the message compiler, improvements in C++ debugging support, an update of
