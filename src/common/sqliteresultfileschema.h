@@ -12,10 +12,12 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include "commondefs.h"
+
 namespace omnetpp {
 namespace common {
 
-extern const char SQL_CREATE_TABLES[];
+extern const char COMMON_API SQL_CREATE_TABLES[];
 
 }  // namespace common
 }  // namespace omnetpp
