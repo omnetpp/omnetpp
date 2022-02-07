@@ -374,33 +374,27 @@ public class BrowseDataPage extends FormEditorPage {
         monitor.beginTask("Refreshing content", 7);
 
         monitor.subTask("Refreshing All panel");
-        while (Display.getCurrent().readAndDispatch());
         IDList items = manager.getAllItems(tabFolder.getAllPanel().getShowFieldsAsScalars());
         tabFolder.getAllPanel().setIDList(items);
 
         monitor.subTask("Refreshing Scalars panel");
-        while (Display.getCurrent().readAndDispatch());
         IDList scalars = manager.getAllScalars(tabFolder.getScalarsPanel().getShowFieldsAsScalars());
         tabFolder.getScalarsPanel().setIDList(scalars);
 
         monitor.subTask("Refreshing Parameters panel");
-        while (Display.getCurrent().readAndDispatch());
         IDList parameters = manager.getAllParameters();
         tabFolder.getParametersPanel().setIDList(parameters);
 
         monitor.subTask("Refreshing Vectors panel");
-        while (Display.getCurrent().readAndDispatch());
         IDList vectors = manager.getAllVectors();
         tabFolder.getVectorsPanel().setIDList(vectors);
 
         monitor.subTask("Refreshing Histograms panel");
-        while (Display.getCurrent().readAndDispatch());
         IDList statisticsAndHistograms = manager.getAllStatistics().unionWith(manager.getAllHistograms());
         tabFolder.getHistogramsPanel().setIDList(statisticsAndHistograms);
 
         monitor.subTask("Refreshing tab titles");
         tabFolder.refreshPanelTitles();
-        while (Display.getCurrent().readAndDispatch());
 
         monitor.done();
     }
