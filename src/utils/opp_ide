@@ -9,8 +9,9 @@ if [ -z "${PRODUCT}" ]; then
   PRODUCT='OMNeT++'
 fi
 
-if test -z "$__omnetpp_root_dir" ; then
-  # source the setenv script if no environment is present. (MUST be sourced from the installation root)
+if [ "$(cd $(dirname $0)/.. && pwd)" != "$__omnetpp_root_dir" ]; then
+  # source the setenv script if no environment is present or a the current environment is not pointing
+  # to the directory we are present. (MUST be sourced from the installation root)
   cd $(dirname $0)/.. ; . ./setenv ; cd - >/dev/null
 fi
 

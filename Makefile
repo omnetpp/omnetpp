@@ -35,9 +35,15 @@ allmodes:
 	$(Q)$(MAKE) MODE=release
 	$(Q)$(MAKE) MODE=debug
 	@echo
-	@echo "Now you can type \"`echo $(OMNETPP_RELEASE) | sed 's/-.*//'`\" to start the IDE"
+	@echo "Now you can type '`echo $(OMNETPP_RELEASE) | sed 's/-.*//'`' or 'opp_ide' to start the IDE."
 
 components: base
+
+# Test if the ide directory exists and create application shortcuts in the omnetpp root dir and add them to the global app menu
+ifneq ($(wildcard ide),)
+all: install-shortcuts
+cleanall: delete-shortcuts uninstall-shortcuts
+endif
 
 # Test if the samples directory exists and add dependencies to build it, too
 ifneq ($(wildcard samples),)
@@ -85,7 +91,8 @@ endif
 
 .PHONY: check-env cleanall cleanall-samples makefiles clean apis doc tests all allmodes \
         components base ui uilibs samples common layout eventlog scave nedxml sim \
-        envir cmdenv qtenv utils systemc help
+        envir cmdenv qtenv utils systemc help install uninstall \
+		create-shortcuts delete-shortcuts install-shortcuts uninstall-shortcuts
 #
 # Group targets.
 #
@@ -250,37 +257,40 @@ copy-ui-doc:
 	$(Q)perl -i -pe 's!<head>!<head><link rel="STYLESHEET" href="book.css"  type="text/css"/>!gi' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/WhatsNew.html
 	$(Q)perl -i -pe 's!href="!href="content/manual/!gi' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/manual/toc.xml
 
-ifeq ($(findstring linux,$(PLATFORM)),linux)
-
-generate-desktop-file:
-	@echo "[Desktop Entry]\nEncoding=UTF-8\nType=Application\nExec=$(OMNETPP_BIN_DIR)/omnetpp\nIcon=$(OMNETPP_ROOT)/ide/icon.png\nName=$(OMNETPP_PRODUCT) $(OMNETPP_VERSION) IDE\nCategories=Development;IDE;Debugger\n" >opensim-ide.desktop
-
-install-menu-item: generate-desktop-file
-	@xdg-desktop-menu uninstall opensim-ide.desktop
-	@xdg-desktop-menu install opensim-ide.desktop
-	@rm opensim-ide.desktop
-
-install-desktop-icon: generate-desktop-file
-	@xdg-desktop-icon uninstall opensim-ide.desktop
-	@xdg-desktop-icon install opensim-ide.desktop
-	@rm opensim-ide.desktop
-
-else ifeq ($(findstring macosx,$(PLATFORM)),macosx)
-
-install-menu-item:
-ifeq ($(OMNETPP_PRODUCT),OMNEST)
-	-ln -s -f $(OMNETPP_ROOT)/ide/omnest.app /Applications/'$(OMNETPP_PRODUCT) $(OMNETPP_VERSION) IDE'
-else
-	-ln -s -f $(OMNETPP_ROOT)/ide/omnetpp.app /Applications/'$(OMNETPP_PRODUCT) $(OMNETPP_VERSION) IDE'
+create-shortcuts:
+ifeq ($(PLATFORM),linux)
+	@echo "[Desktop Entry]\nEncoding=UTF-8\nType=Application\nExec=$(OMNETPP_BIN_DIR)/opp_ide\nIcon=$(OMNETPP_ROOT)/images/logo/logo128.png\nName=$(OMNETPP_PRODUCT) $(OMNETPP_VERSION) IDE\nCategories=Development\n" >$(OMNETPP_RELEASE)-ide.desktop && chmod +x $(OMNETPP_RELEASE)-ide.desktop
+	@echo "[Desktop Entry]\nEncoding=UTF-8\nType=Application\nExec=/bin/bash --rcfile $(OMNETPP_ROOT)/setenv\nTerminal=true\nIcon=$(OMNETPP_ROOT)/images/logo/logo128s.png\nName=$(OMNETPP_PRODUCT) $(OMNETPP_VERSION) Shell\nCategories=Development\n" >$(OMNETPP_RELEASE)-shell.desktop && chmod +x $(OMNETPP_RELEASE)-shell.desktop
+else ifeq ($(PLATFORM),win32)
+	@-shortcut.cmd -linkfile "$(OMNETPP_ROOT)/$(OMNETPP_PRODUCT) $(OMNETPP_VERSION) IDE.lnk" -target "$(OMNETPP_ROOT)/mingwenv.cmd" -linkarguments ide -iconlocation "$(OMNETPP_ROOT)/images/logo/logo128.ico" -workingdirectory "$(OMNETPP_ROOT)" -windowstyle 7
+	@-shortcut.cmd -linkfile "$(OMNETPP_ROOT)/$(OMNETPP_PRODUCT) $(OMNETPP_VERSION) Shell.lnk" -target "$(OMNETPP_ROOT)/mingwenv.cmd" -iconlocation "$(OMNETPP_ROOT)/images/logo/logo128s.ico" -workingdirectory "$(OMNETPP_ROOT)" -windowstyle 7
 endif
 
-install-desktop-icon:
-ifeq ($(OMNETPP_PRODUCT),OMNEST)
-	-ln -s -f $(OMNETPP_ROOT)/ide/omnest.app ~/Desktop/'$(OMNETPP_PRODUCT) $(OMNETPP_VERSION) IDE'
-else
-	-ln -s -f $(OMNETPP_ROOT)/ide/omnetpp.app ~/Desktop/'$(OMNETPP_PRODUCT) $(OMNETPP_VERSION) IDE'
+delete-shortcuts:
+ifeq ($(PLATFORM),linux)
+	@-rm -f $(OMNETPP_RELEASE)-ide.desktop
+	@-rm -f $(OMNETPP_RELEASE)-shell.desktop
+else ifeq ($(PLATFORM),win32)
+	@-rm -f "$(OMNETPP_ROOT)/$(OMNETPP_PRODUCT) $(OMNETPP_VERSION) IDE.lnk"
+	@-rm -f "$(OMNETPP_ROOT)/$(OMNETPP_PRODUCT) $(OMNETPP_VERSION) Shell.lnk"
 endif
 
-else ifeq ($(findstring win32,$(PLATFORM)),win32)
+install-shortcuts: create-shortcuts
+ifeq ($(PLATFORM),linux)
+	@xdg-desktop-menu uninstall $(OMNETPP_RELEASE)-ide.desktop
+	@xdg-desktop-menu install $(OMNETPP_RELEASE)-ide.desktop
+	@xdg-desktop-menu uninstall $(OMNETPP_RELEASE)-shell.desktop
+	@xdg-desktop-menu install $(OMNETPP_RELEASE)-shell.desktop
+else ifeq ($(PLATFORM),win32)
+	@cp "$(OMNETPP_ROOT)/$(OMNETPP_PRODUCT) $(OMNETPP_VERSION) IDE.lnk" "$(APPDATA)/Microsoft/Windows/Start Menu/Programs"
+	@cp "$(OMNETPP_ROOT)/$(OMNETPP_PRODUCT) $(OMNETPP_VERSION) Shell.lnk" "$(APPDATA)/Microsoft/Windows/Start Menu/Programs"
+endif
 
+uninstall-shortcuts:
+ifeq ($(PLATFORM),linux)
+	@xdg-desktop-menu uninstall $(OMNETPP_RELEASE)-ide.desktop
+	@xdg-desktop-menu uninstall $(OMNETPP_RELEASE)-shell.desktop
+else ifeq ($(PLATFORM),win32)
+	@-rm -f "$(APPDATA)/Microsoft/Windows/Start Menu/Programs/$(OMNETPP_PRODUCT) $(OMNETPP_VERSION) IDE.lnk"
+	@-rm -f "$(APPDATA)/Microsoft/Windows/Start Menu/Programs/$(OMNETPP_PRODUCT) $(OMNETPP_VERSION) Shell.lnk"
 endif
