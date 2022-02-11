@@ -1447,7 +1447,11 @@ def _apply_vector_op(df, op_str, operation, *args, **kwargs):
             row["vecvalue"].flags.writeable = False
             row = operation(row, *args, **kwargs)
             row["name"] = row["name"] + ":" + op_str
+            if not row["vectime"].flags.owndata:
+                row["vectime"] = row["vectime"].copy()
             row["vectime"].flags.writeable = True
+            if not row["vecvalue"].flags.owndata:
+                row["vecvalue"] = row["vecvalue"].copy()
             row["vecvalue"].flags.writeable = True
             return row
 
