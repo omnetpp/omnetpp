@@ -10,7 +10,6 @@ package org.omnetpp.scave.editors.ui;
 
 import java.util.List;
 
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
@@ -21,14 +20,11 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IMemento;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.ui.DropdownAction;
 import org.omnetpp.common.ui.FocusManager;
-import org.omnetpp.common.ui.IconGridViewer;
-import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog2;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.CopySelectionAsFilterAction;
@@ -55,10 +51,8 @@ import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.IResultFilesChangeListener;
 import org.omnetpp.scave.engineext.ResultFileManagerChangeEvent;
-import org.omnetpp.scave.model.AnalysisItem;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartTemplate;
-import org.omnetpp.scave.model.Folder;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
@@ -355,7 +349,8 @@ public class BrowseDataPage extends FormEditorPage {
      */
     protected void refreshPage(ResultFileManager manager) {
         if (isActivePage()) {
-            isContentValid = TimeTriggeredProgressMonitorDialog2.runWithDialogInUIThread("Refreshing page", (monitor) -> doRefreshPage(manager, monitor));
+            doRefreshPage(manager);
+            isContentValid = true;
         }
         else {
             isContentValid = false;
@@ -369,36 +364,24 @@ public class BrowseDataPage extends FormEditorPage {
         updateSelection();
     }
 
-    protected void doRefreshPage(ResultFileManager manager, IProgressMonitor monitor) {
-        monitor.setTaskName("Refreshing Browse Data Page");
-        monitor.beginTask("Refreshing content", 7);
-
-        monitor.subTask("Refreshing All panel");
+    protected void doRefreshPage(ResultFileManager manager) {
         IDList items = manager.getAllItems(tabFolder.getAllPanel().getShowFieldsAsScalars());
         tabFolder.getAllPanel().setIDList(items);
 
-        monitor.subTask("Refreshing Scalars panel");
         IDList scalars = manager.getAllScalars(tabFolder.getScalarsPanel().getShowFieldsAsScalars());
         tabFolder.getScalarsPanel().setIDList(scalars);
 
-        monitor.subTask("Refreshing Parameters panel");
         IDList parameters = manager.getAllParameters();
         tabFolder.getParametersPanel().setIDList(parameters);
 
-        monitor.subTask("Refreshing Vectors panel");
         IDList vectors = manager.getAllVectors();
         tabFolder.getVectorsPanel().setIDList(vectors);
 
-        monitor.subTask("Refreshing Histograms panel");
         IDList statisticsAndHistograms = manager.getAllStatistics().unionWith(manager.getAllHistograms());
         tabFolder.getHistogramsPanel().setIDList(statisticsAndHistograms);
 
-        monitor.subTask("Refreshing tab titles");
         tabFolder.refreshPanelTitles();
-
-        monitor.done();
     }
-
 
     /**
      * Sets the editor selection to the selection of control of the active panel.
