@@ -60,7 +60,7 @@ public abstract class AbstractLargeTableRowRenderer implements ILargeTableRowRen
         TextLayout textLayout = new TextLayout(gc.getDevice());
         textLayout.setText(styledString.getString());
         for (StyleRange styleRange : styledString.getStyleRanges())
-            textLayout.setStyle(styleRange, styleRange.start, styleRange.start + styleRange.length);
+            textLayout.setStyle(styleRange, styleRange.start, styleRange.start + styleRange.length - 1);
 
         // not using textLayout.setWidth and textLayout.setAlignment because those would
         // unconditionally wrap (and hyphenate) the text, instead of clipping (or eliding)
