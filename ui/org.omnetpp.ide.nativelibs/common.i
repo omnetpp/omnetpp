@@ -1,8 +1,11 @@
-%module Common
+%module(directors="1") Common
 %module java_pragmas
 
 // covariant return type warning disabled
 #pragma SWIG nowarn=822
+
+%include "std_function.i"
+%std_function(MeasureTextFunctor, int, const char *);
 
 %{
 #include "common/stringutil.h"
@@ -10,6 +13,7 @@
 #include "common/matchexpression.h"
 #include "common/javamatchableobject.h"
 #include "common/unitconversion.h"
+#include "common/quantityformatter.h"
 #include "common/bigdecimal.h"
 #include "common/rwlock.h"
 #include "common/expression.h"
@@ -69,6 +73,7 @@ typedef int64_t intpar_t;
 %include "common/matchexpression.h"
 %include "common/javamatchableobject.h"
 %include "common/unitconversion.h"
+%include "common/quantityformatter.h"
 
 
 /* -------------------- BigDecimal -------------------------- */
