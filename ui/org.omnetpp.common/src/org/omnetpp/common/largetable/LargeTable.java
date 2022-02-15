@@ -866,7 +866,7 @@ public class LargeTable extends Composite
                 gc.setForeground(fg);
                 gc.setBackground(bg);
 
-                rowRenderer.drawCell(gc, rowIndex, columnOrder[j], column.getWidth(), column.getAlignment());
+                rowRenderer.drawCell(gc, rowIndex, columnOrder[j], column.getWidth(), column.getAlignment(), isSelectedElement);
 
                 gc.setTransform(transform);
                 gc.setClipping(clipping);
