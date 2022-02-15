@@ -1,0 +1,52 @@
+%description:
+Test quantity formatter maxSignificantDigits parameter with watt unit.
+
+%includes:
+
+#include <random>
+#include <common/quantityformatter.h>
+
+using namespace omnetpp::common;
+
+%activity:
+
+MTRand rng;
+
+std::vector<const char *> units = {nullptr, "s", "m", "W", "b", "B"};
+
+QuantityFormatter::Options options;
+QuantityFormatter quantityFormatter(options);
+for (int i = 1; i < 1000000; i++) {
+    options.notationMode = (QuantityFormatter::NotationMode)rng.randInt(2);
+    options.scientificExponentMode = (QuantityFormatter::ScientificExponentMode)rng.randInt(2);
+    options.scientificNotationExponentLimit = 1 + rng.randInt(8);
+    options.minSignificantDigits = 1 + rng.randInt(8);
+    options.maxSignificantDigits = options.minSignificantDigits + rng.randInt(8);
+    options.outputUnitMode = (QuantityFormatter::OutputUnitMode)rng.randInt(1);
+    options.signMode = (QuantityFormatter::SignMode)rng.randInt(1);
+    options.exponentSignMode = (QuantityFormatter::SignMode)rng.randInt(1);
+    std::string text;
+    int scale = rng.randInt(18) - 9;
+    int numDigits = 1 + rng.randInt(8);
+    for (int d = 0; d < numDigits; d++)
+        text += std::to_string(d == 0 ? 1 + rng.randInt(8) : rng.randInt(9));
+    if (scale < 0) {
+        for (int d = 0; d < -scale; d++)
+            text = "0" + text;
+        text = "0." + text;
+    }
+    else if (scale > 0) {
+        int c = scale - text.length();
+        for (int d = 0; d < c; d++)
+            text = text + "0";
+        text = text.substr(0, scale) + "." + text.substr(scale);
+    }
+    else
+        text = "0." + text;
+    text = (rng.rand() < 0.5 ? "" : "-") + text;
+    if (text != "0")
+        testQuantityFormatter(quantityFormatter, text, units[rng.randInt(5)]);
+}
+
+%not-contains-regex: stdout
+(!!!|nan|inf)

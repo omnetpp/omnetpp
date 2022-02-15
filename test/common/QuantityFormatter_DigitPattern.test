@@ -1,0 +1,21 @@
+%description:
+Test quantity formatter for various digit patterns.
+
+%includes:
+
+#include <common/quantityformatter.h>
+
+using namespace omnetpp::common;
+
+%activity:
+
+QuantityFormatter quantityFormatter;
+testQuantityFormatter(quantityFormatter, 9, nullptr, {digits9etc});
+testQuantityFormatter(quantityFormatter, 9, nullptr, {digits10etc1});
+testQuantityFormatter(quantityFormatter, 9, nullptr, {digits4etc5});
+
+%contains: stdout
+0
+
+%not-contains-regex: stdout
+(!!!|nan|inf)

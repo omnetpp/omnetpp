@@ -1,0 +1,21 @@
+%description:
+Debug quantity formatter tests.
+
+%includes:
+
+#include <common/quantityformatter.h>
+
+using namespace omnetpp::common;
+
+%activity:
+
+QuantityFormatter::Options options;
+options.scientificExponentMode = QuantityFormatter::ScientificExponentMode::MOD_3;
+//options.maxSignificantDigits = 6;
+//options.numAvailableCharacters = 3;
+QuantityFormatter quantityFormatter(options);
+
+testQuantityFormatter(quantityFormatter, "0.0001", nullptr);
+
+%not-contains-regex: stdout
+(!!!|nan|inf)
