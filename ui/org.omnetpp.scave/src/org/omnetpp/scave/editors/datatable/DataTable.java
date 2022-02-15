@@ -219,7 +219,7 @@ public class DataTable extends LargeTable implements IDataControl {
         setRowRenderer(new AbstractLargeTableRowRenderer() {
             @Override
             public String getText(int rowIndex, int columnIndex) {
-                return getCellValue(rowIndex, columnIndex).getString();
+                return getCellValue(rowIndex, columnIndex, null, -1).getString();
             }
 
             @Override
@@ -228,7 +228,7 @@ public class DataTable extends LargeTable implements IDataControl {
                 // the last, blank column is not included in visibleColumns
                 if (columnIndex < visibleColumns.size()) {
                     Column column = visibleColumns.get(columnIndex);
-                    value = getCellValue(rowIndex, column).getString();
+                    value = getCellValue(rowIndex, column, null, -1).getString();
 
                     if (column.maskTooLongValues
                             && gc.textExtent(value).x > (getColumn(columnIndex).getWidth() - CELL_HORIZONTAL_MARGIN*2))
@@ -605,14 +605,14 @@ public class DataTable extends LargeTable implements IDataControl {
             idList.sortVectorsByEndTime(manager, ascending, selectionIndices, interrupted);
     }
 
-    protected StyledString getCellValue(int rowIndex, int columnIndex) {
+    protected StyledString getCellValue(int rowIndex, int columnIndex, GC gc, int width) {
         if (columnIndex >= visibleColumns.size())
             return new StyledString("");
         Column column = visibleColumns.get(columnIndex);
-        return getCellValue(rowIndex, column);
+        return getCellValue(rowIndex, column, gc, width);
     }
 
-    protected StyledString getCellValue(int row, Column column) {
+    protected StyledString getCellValue(int row, Column column, GC gc, int width) {
         if (manager == null)
             return new StyledString("");
 
@@ -801,7 +801,7 @@ public class DataTable extends LargeTable implements IDataControl {
             int count = 0;
             for (int rowIndex : selection) {
                 for (Column column : visibleColumns)
-                    writer.addField(getCellValue(rowIndex, column).getString());
+                    writer.addField(getCellValue(rowIndex, column, null, -1).getString());
                 writer.endRecord();
 
                 if (++count % batchSize == 0) {
@@ -899,7 +899,7 @@ public class DataTable extends LargeTable implements IDataControl {
         if (getItemCount() == 0 || selectedColumn == null || selectedColumn.isDisposed())
             return null;
         Column column = (Column)selectedColumn.getData(COLUMN_KEY);
-        return column == null ? null : getCellValue(getFocusIndex(), column).getString();
+        return column == null ? null : getCellValue(getFocusIndex(), column, null, -1).getString();
     }
 
     public void setSelectedID(long id) {
