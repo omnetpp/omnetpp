@@ -659,7 +659,7 @@ public class DataTable extends LargeTable implements IDataControl {
             }
             else if (COL_SCALAR_VALUE.equals(column)) {
                 ScalarResult scalar = (ScalarResult)result;
-                return formatNumber(scalar.getValue(), unit);
+                return formatNumber(scalar.getValue(), unit, gc, width);
             }
             else if (type == PanelType.VECTORS) {
                 VectorResult vector = (VectorResult)result;
@@ -672,34 +672,34 @@ public class DataTable extends LargeTable implements IDataControl {
                 }
                 else if (COL_MEAN.equals(column)) {
                     double mean = vector.getStatistics().getMean();
-                    return Double.isNaN(mean) ? NA : formatNumber(mean, unit);
+                    return Double.isNaN(mean) ? NA : formatNumber(mean, unit, gc, width);
                 }
                 else if (COL_STDDEV.equals(column)) {
                     double stddev = vector.getStatistics().getStddev();
-                    return Double.isNaN(stddev) ? NA : formatNumber(stddev, unit);
+                    return Double.isNaN(stddev) ? NA : formatNumber(stddev, unit, gc, width);
                 }
                 else if (COL_VARIANCE.equals(column)) {
                     double variance = vector.getStatistics().getVariance();
                     String unitSquared = unit;
                     if (!unit.isEmpty())
                         unitSquared = unit + "\u00B2"; // "Superscript Two"
-                    return Double.isNaN(variance) ? NA : formatNumber(variance, unitSquared);
+                    return Double.isNaN(variance) ? NA : formatNumber(variance, unitSquared, gc, width);
                 }
                 else if (COL_MIN.equals(column)) {
                     double min = vector.getStatistics().getMin();
-                    return Double.isNaN(min) ? NA : formatNumber(min, unit);
+                    return Double.isNaN(min) ? NA : formatNumber(min, unit, gc, width);
                 }
                 else if (COL_MAX.equals(column)) {
                     double max = vector.getStatistics().getMax();
-                    return Double.isNaN(max) ? NA : formatNumber(max, unit);
+                    return Double.isNaN(max) ? NA : formatNumber(max, unit, gc, width);
                 }
                 else if (COL_MIN_TIME.equals(column)) {
                     BigDecimal minTime = vector.getStartTime();
-                    return minTime == null || minTime.isNaN() ? NA : formatNumber(minTime);
+                    return minTime == null || minTime.isNaN() ? NA : formatNumber(minTime, gc, width);
                 }
                 else if (COL_MAX_TIME.equals(column)) {
                     BigDecimal maxTime = vector.getEndTime();
-                    return maxTime == null || maxTime.isNaN() ? NA : formatNumber(maxTime);
+                    return maxTime == null || maxTime.isNaN() ? NA : formatNumber(maxTime, gc, width);
                 }
             }
             else if (type == PanelType.HISTOGRAMS) {
@@ -717,30 +717,30 @@ public class DataTable extends LargeTable implements IDataControl {
                     if (!stats.getStatistics().isWeighted())
                         return NA;
                     double sumWeights = stats.getStatistics().getSumWeights();
-                    return sumWeights >= 0 ? formatNumber(sumWeights, "") : NA;
+                    return sumWeights >= 0 ? formatNumber(sumWeights, "", gc, width) : NA;
                 }
                 else if (COL_MEAN.equals(column)) {
                     double mean = stats.getStatistics().getMean();
-                    return Double.isNaN(mean) ? NA : formatNumber(mean, unit);
+                    return Double.isNaN(mean) ? NA : formatNumber(mean, unit, gc, width);
                 }
                 else if (COL_STDDEV.equals(column)) {
                     double stddev = stats.getStatistics().getStddev();
-                    return Double.isNaN(stddev) ? NA : formatNumber(stddev, unit);
+                    return Double.isNaN(stddev) ? NA : formatNumber(stddev, unit, gc, width);
                 }
                 else if (COL_VARIANCE.equals(column)) {
                     double variance = stats.getStatistics().getVariance();
                     String unitSquared = unit;
                     if (!unit.isEmpty())
                         unitSquared = unit + "\u00B2"; // "Superscript Two"
-                    return Double.isNaN(variance) ? NA : formatNumber(variance, unitSquared);
+                    return Double.isNaN(variance) ? NA : formatNumber(variance, unitSquared, gc, width);
                 }
                 else if (COL_MIN.equals(column)) {
                     double min = stats.getStatistics().getMin();
-                    return Double.isNaN(min) ? NA : formatNumber(min, unit);
+                    return Double.isNaN(min) ? NA : formatNumber(min, unit, gc, width);
                 }
                 else if (COL_MAX.equals(column)) {
                     double max = stats.getStatistics().getMax();
-                    return Double.isNaN(max) ? NA : formatNumber(max, unit);
+                    return Double.isNaN(max) ? NA : formatNumber(max, unit, gc, width);
                 }
                 else if (COL_NUMBINS.equals(column)) {
                     if (result instanceof HistogramResult)
@@ -755,7 +755,7 @@ public class DataTable extends LargeTable implements IDataControl {
                             return NA;
                         double lo = bins.getBinEdge(0);
                         double up = bins.getBinEdge(bins.getNumBins());
-                        return formatNumber(lo, "").append(" .. ").append(formatNumber(up, unit));
+                        return formatNumber(lo, "", gc, width).append(" .. ").append(formatNumber(up, unit, gc, width));
                     }
                     else
                         return NA;
@@ -770,14 +770,14 @@ public class DataTable extends LargeTable implements IDataControl {
         return new StyledString("");
     }
 
-    protected StyledString formatNumber(double d, String unit) {
+    protected StyledString formatNumber(double d, String unit, GC gc, int width) {
         String result = ScaveUtil.formatNumber(d, getNumericPrecision());
         if (!unit.isEmpty())
             result += " " + unit;
         return new StyledString(result);
     }
 
-    protected StyledString formatNumber(BigDecimal d) {
+    protected StyledString formatNumber(BigDecimal d, GC gc, int width) {
         return new StyledString(ScaveUtil.formatNumber(d, getNumericPrecision()) + " s");
     }
 
