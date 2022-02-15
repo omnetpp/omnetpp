@@ -26,19 +26,19 @@ OBJS = $O/nedxml.o $O/scave.o $O/layout.o $O/eventlog.o $O/common.o $O/jprogress
   $O/pickler.o $O/resultspickler.o $O/sharedmemory.o $O/sharedmemory_jni.o $O/shmmanager.o
 LIBS= -loppnedxml$D -loppscave$D -lopplayout$D -loppeventlog$D -loppcommon$D
 
-ifeq ("$(JNI_LIB_SUFFIX)",".dll")
-# on mingw we dont need the lib prefix for a JNI library
-DLL = opplibs$(JNI_LIB_SUFFIX)
-# the following is needed for building JNI lib with mingw (name mangling issue)
-LDFLAGS+= -Wl,--kill-at
-LIBS+= -lversion
+ifeq ($(PLATFORM),win32)
+  # on mingw we don't need the lib prefix for a JNI library
+  DLL = opplibs$(JNI_LIB_SUFFIX)
+  # the following is needed for building JNI lib with mingw (name mangling issue)
+  LDFLAGS+= -Wl,--kill-at
+  LIBS+= -lversion
 else
-DLL = $(LIB_PREFIX)opplibs$(JNI_LIB_SUFFIX)
+  DLL = $(LIB_PREFIX)opplibs$(JNI_LIB_SUFFIX)
 endif
 
 # on Linux, we need to link with this library for the POSIX shm_* functions
-ifeq ("$(JNI_LIB_SUFFIX)",".so")
-LIBS+= -lrt
+ifeq ($(PLATFORM),linux)
+  LIBS+= -lrt
 endif
 
 ifeq ($(PLATFORM),macos)

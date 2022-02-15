@@ -210,7 +210,7 @@ NEDTOOL=${NEDTOOL:-opp_nedtool}
 LN=${LN:-ln -f}
 MKPATH=${MKPATH:-mkdir -p}
 SHLIB_POSTPROCESS=${SHLIB_POSTPROCESS:-opp_shlib_postprocess}
-JNI_LIB_SUFFIX=${JNI_LIB_SUFFIX:-$SHARED_LIB_SUFFIX}
+JNI_LIB_SUFFIX=${JNI_LIB_SUFFIX:-'$(SHARED_LIB_SUFFIX)'}
 
 # Build shared library by default
 SHARED_LIBS=${SHARED_LIBS:-yes}
