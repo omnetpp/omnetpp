@@ -1,0 +1,34 @@
+%description:
+Test quantity formatter for various corner cases that came up during development.
+
+%includes:
+
+#include <common/quantityformatter.h>
+
+using namespace omnetpp::common;
+
+%activity:
+
+QuantityFormatter quantityFormatter;
+
+testQuantityFormatter(quantityFormatter, "79", "b");
+testQuantityFormatter(quantityFormatter, "0.000000001", "B");
+testQuantityFormatter(quantityFormatter, "0.000000001", "b");
+testQuantityFormatter(quantityFormatter, "0.000000009", "W");
+testQuantityFormatter(quantityFormatter, "0.0000000012345678", "W");
+testQuantityFormatter(quantityFormatter, "0.0000000012", "W");
+testQuantityFormatter(quantityFormatter, "1200", "W");
+testQuantityFormatter(quantityFormatter, "1234560", "m");
+
+%contains: stdout
+79 b                    79.000000000000000000000000 b           79 b              79                0                 0                 
+0.000000001 B           0.000000001000000000000000 B            1e-9 B            1e-09             0                 0                 
+0.000000001 b           0.000000001000000000000000 b            1.25e-10 B        1e-09             0                 0                 
+0.000000009 W           0.000000009000000000000000 W            9 nW              9e-09             -1.65436e-24      1.83818e-16       
+0.0000000012345678 W    0.000000001234567800000000 W            ~1.23 nW          1.23e-09          4.5678e-12        0.00369992        
+0.0000000012 W          0.000000001200000000000000 W            1.2 nW            1.2e-09           0                 0                 
+1200 W                  1200.000000000000000000000000 W         1.2 kW            1200              0                 0                 
+1234560 m               1234560.000000000000000000000000 m      ~1,235 km         1.235e+06         -440              0.000356402       
+
+%not-contains-regex: stdout
+(!!!|nan|inf)
