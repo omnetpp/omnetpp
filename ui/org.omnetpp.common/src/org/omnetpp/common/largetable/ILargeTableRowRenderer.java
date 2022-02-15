@@ -32,7 +32,7 @@ public interface ILargeTableRowRenderer {
      * columnWidth is passed explicitly because "gc.getClipping().width" is surprisingly
      * costly on some platforms (GTK3).
      */
-    public void drawCell(GC gc, int rowIndex, int columnIndex, int columnWidth, int alignment);
+    public void drawCell(GC gc, int rowIndex, int columnIndex, int columnWidth, int alignment, boolean selected);
 
     /**
      * Returns the text of the given cell. This will be used by the table for the

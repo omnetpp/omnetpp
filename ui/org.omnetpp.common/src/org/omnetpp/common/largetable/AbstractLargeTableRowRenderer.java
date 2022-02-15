@@ -3,9 +3,11 @@ package org.omnetpp.common.largetable;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.TextLayout;
+import org.eclipse.swt.graphics.TextStyle;
 
 /**
  * Base class for LargeTable row renderers.
@@ -43,7 +45,7 @@ public abstract class AbstractLargeTableRowRenderer implements ILargeTableRowRen
     }
 
     @Override
-    public void drawCell(GC gc, int rowIndex, int columnIndex, int columnWidth, int alignment) {
+    public void drawCell(GC gc, int rowIndex, int columnIndex, int columnWidth, int alignment, boolean selected) {
         int x = CELL_HORIZONTAL_MARGIN + getIndentation(rowIndex, columnIndex);
 
         Image image = getImage(rowIndex, columnIndex);
@@ -53,6 +55,15 @@ public abstract class AbstractLargeTableRowRenderer implements ILargeTableRowRen
         }
 
         StyledString styledString = getStyledText(rowIndex, columnIndex, gc, alignment);
+        final Color foregroundColor = gc.getForeground();
+        if (selected) {
+            styledString.setStyle(0, styledString.length(), new StyledString.Styler() {
+                @Override
+                public void applyStyles(TextStyle textStyle) {
+                    textStyle.foreground = foregroundColor;
+                }
+            });
+        }
         drawStyledString(gc, styledString, x, VERTICAL_SPACING / 2, columnWidth, alignment);
     }
 
