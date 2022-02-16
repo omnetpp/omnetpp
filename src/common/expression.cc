@@ -85,7 +85,7 @@ std::string Expression::AstNode::unparse() const
             else if (children.size()==3) return children.at(0)->unparse() + name[0] + children.at(1)->unparse() + name[1] + children.at(2)->unparse(); // ?:
             else return name + "(" + unparseList(children) + ")"; // cannot happen
         case AstNode::FUNCTION: return name + "(" + unparseList(children) + ")";
-        case AstNode::METHOD: return children.at(0)->unparse() + "(" + unparseList(children,1) + ")";
+        case AstNode::METHOD: return children.at(0)->unparse() + "." + name + "(" + unparseList(children,1) + ")";
         case AstNode::IDENT: return name;
         case AstNode::IDENT_W_INDEX: return name + "[" + children.at(0)->unparse() + "]";
         case AstNode::MEMBER: return children.at(0)->unparse() + "." + name;
