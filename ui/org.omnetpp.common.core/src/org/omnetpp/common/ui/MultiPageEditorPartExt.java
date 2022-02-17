@@ -67,12 +67,11 @@ public abstract class MultiPageEditorPartExt extends MultiPageEditorPart {
      * addPage(int index, Control control).
      */
     public void addClosablePage(int index, Control control) {
-        // hack: add it in the normal way, then replace CTabItem with one with SWT.CLOSE set
         super.addPage(index, control);
+
         CTabFolder ctabFolder = (CTabFolder) control.getParent();
-        ctabFolder.getItem(index).dispose();
-        CTabItem item = new CTabItem(ctabFolder, SWT.CLOSE, index);
-        item.setControl(control);
+        CTabItem item = ctabFolder.getItem(index);
+        item.setShowClose(true);
 
         // CTabItem does not dispose the page contents widget, only calls
         // setVisible(false) on it; so we have to do it here
@@ -84,18 +83,15 @@ public abstract class MultiPageEditorPartExt extends MultiPageEditorPart {
     }
 
     public void addClosablePage(int index, IEditorPart editorPart, IEditorInput editorInput) throws PartInitException {
-        // hack: add it in the normal way, then replace CTabItem with one with SWT.CLOSE set
         super.addPage(index, editorPart, editorInput);
 
-        // second hack: super.addPage(index, editor, input); (called above) adds a Composite we don't need, remove it
+        // hack: the super call above adds a Composite we don't need, so remove it
         removeRootCompositeFromTab(index);
 
         Control control = getControl(index);
-        CTabFolder ctabFolder = (CTabFolder) control.getParent();
-        ctabFolder.getItem(index).dispose();
-        CTabItem item = new CTabItem(ctabFolder, SWT.CLOSE, index);
-        item.setData(editorPart);
-        item.setControl(control);
+        CTabFolder ctabFolder = (CTabFolder)control.getParent();
+        CTabItem item = ctabFolder.getItem(index);
+        item.setShowClose(true);
 
         item.addDisposeListener(new DisposeListener() {
             public void widgetDisposed(DisposeEvent e) {
