@@ -67,7 +67,7 @@ static std::string unparseList(std::vector<AstNode*> children, int startIndex=0)
 {
     std::stringstream out;
     for (int i = startIndex; i < children.size(); i++) {
-        if (i != 0) out << ",";
+        if (i != startIndex) out << ",";
         out << children[i]->unparse();
     }
     return out.str();
