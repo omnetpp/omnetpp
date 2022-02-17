@@ -45,6 +45,7 @@ public:
         ExprValue constant;
         std::string name; // of operator, identifier or function
         std::vector<AstNode*> children;
+        bool parenthesized = false;
 
         AstNode() {}
         AstNode(const ExprValue& c) : type(CONSTANT), constant(c) {}

@@ -169,7 +169,7 @@ expr
         | object
         | array
         | '(' expr ')'
-                { $<node>$ = $<node>2; }
+                { $<node>2->parenthesized = true; $<node>$ = $<node>2; }
         | operation
         | expr '.' methodcall
                 { $<node>$ = $<node>3; $<node>$->children.insert($<node>$->children.begin(), $<node>1); }

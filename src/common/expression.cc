@@ -75,27 +75,33 @@ static std::string unparseList(std::vector<AstNode*> children, int startIndex=0)
 
 std::string Expression::AstNode::unparse() const
 {
+    // Note: This code is oblivious of operator precedence, it solely relies on the "parenthesized" flag
+    // in each AST node to insert parens where needed. If those flags are not set correctly (i.e. not set
+    // where needed), the unparsed expression may have a different meaning from the original!
+    std::string result;
     switch (type) {
-        case AstNode::CONSTANT: return constant.str();
+        case AstNode::CONSTANT: result = constant.str(); break;
         case AstNode::OP:
-            if (children.size()==0) return name; // cannot happen
-            else if (children.size()==1 && name == "_!") return children.at(0)->unparse() + "!";
-            else if (children.size()==1) return name + children.at(0)->unparse();
-            else if (children.size()==2) return children.at(0)->unparse() + name + children.at(1)->unparse();
-            else if (children.size()==3) return children.at(0)->unparse() + name[0] + children.at(1)->unparse() + name[1] + children.at(2)->unparse(); // ?:
-            else return name + "(" + unparseList(children) + ")"; // cannot happen
-        case AstNode::FUNCTION: return name + "(" + unparseList(children) + ")";
-        case AstNode::METHOD: return children.at(0)->unparse() + "." + name + "(" + unparseList(children,1) + ")";
-        case AstNode::IDENT: return name;
-        case AstNode::IDENT_W_INDEX: return name + "[" + children.at(0)->unparse() + "]";
-        case AstNode::MEMBER: return children.at(0)->unparse() + "." + name;
-        case AstNode::MEMBER_W_INDEX: return children.at(0)->unparse() + "." + name + "[" + children.at(1)->unparse() + "]";
-        case AstNode::OBJECT: return name + "{" + unparseList(children) + "}";
-        case AstNode::ARRAY: return "[" + unparseList(children) + "]";
-        case AstNode::KEYVALUE: return name + ": " + children.at(0)->unparse();
-        case AstNode::UNDEF: return "undefined";
+            if (children.size()==0) result = name; // cannot happen
+            else if (children.size()==1 && name == "_!") result = children.at(0)->unparse() + "!";
+            else if (children.size()==1) result = name + children.at(0)->unparse();
+            else if (children.size()==2) result = children.at(0)->unparse() + name + children.at(1)->unparse();
+            else if (children.size()==3) result = children.at(0)->unparse() + name[0] + children.at(1)->unparse() + name[1] + children.at(2)->unparse(); // ?:
+            else result = name + "(" + unparseList(children) + ")"; // cannot happen
+            break;
+        case AstNode::FUNCTION: result = name + "(" + unparseList(children) + ")"; break;
+        case AstNode::METHOD: result = children.at(0)->unparse() + "." + name + "(" + unparseList(children,1) + ")"; break;
+        case AstNode::IDENT: result = name; break;
+        case AstNode::IDENT_W_INDEX: result = name + "[" + children.at(0)->unparse() + "]"; break;
+        case AstNode::MEMBER: result = children.at(0)->unparse() + "." + name; break;
+        case AstNode::MEMBER_W_INDEX: result = children.at(0)->unparse() + "." + name + "[" + children.at(1)->unparse() + "]"; break;
+        case AstNode::OBJECT: result = name + "{" + unparseList(children) + "}"; break;
+        case AstNode::ARRAY: result = "[" + unparseList(children) + "]"; break;
+        case AstNode::KEYVALUE: result = name + ": " + children.at(0)->unparse(); break;
+        case AstNode::UNDEF: result = "undefined"; break;
         default: throw opp_runtime_error("Unrecognized enum value %d", type);
     }
+    return parenthesized ? "(" + result + ")" : result;
 }
 
 void Expression::copy(const Expression& other)
