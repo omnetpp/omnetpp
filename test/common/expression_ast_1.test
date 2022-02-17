@@ -1,0 +1,144 @@
+%description:
+Test ASTs: parsing, unparsing
+
+%includes:
+#include <common/expression.h>
+
+%global:
+using namespace omnetpp::common;
+using namespace omnetpp::common::expression;
+
+static void eval(const char *txt)
+{
+    Expression::AstNode *ast = nullptr;
+    try {
+        EV << txt << " -> ";
+        ast = Expression().parseToAst(txt);
+        std::string unparsed = ast->unparse();
+        if (unparsed == txt)
+            EV << "OK\n";
+        else {
+          EV << unparsed << " (DIFFERS)\n";
+          Expression().dumpAst(ast, EV, 2);
+        }
+    }
+    catch (std::exception& e) {
+        EV << "exception: " << e.what() << "\n";
+    }
+      delete ast;
+}
+
+%activity:
+// constants
+eval("[3,-42.5,true,false,inf,nan,-inf,nullptr,undefined]");
+eval("null");  // becomes nullptr
+eval("'hello'"); // apostropthes replaced by double quotes
+eval("\"hello\"");
+
+// operators: unary, binary, trinary
+eval("!x");
+eval("~x");
+eval("-x");
+eval("x-y");
+eval("x/y");
+eval("x<<y");
+eval("x<y ? x : y");  // note: "a?x:y" would result in syntax error, because "x:y" is a NAME (for the sake of Scave filter expressions)
+
+// parens
+eval("(a)");
+eval("(5)");
+eval("(x+y)");
+eval("(a.b)");
+eval("(a.b())");
+
+// precedence
+eval("3+2");
+eval("3+2*5");
+eval("3+(2*5)");
+eval("(3+2)*5");
+eval("2*5+3");
+eval("(2*5)+3");
+eval("2*(5+3)");
+
+// functions, members, methods
+eval("a");
+eval("a[k]");
+eval("a[b[k]]");
+eval("func()");
+eval("func(a)");
+eval("func(a,b)");
+eval("f(g(a))");
+eval("obj.member");
+eval("obj.member[1]");
+eval("obj.member1.member2");
+eval("obj.member1[1].member2[2]");
+eval("obj.member.method()");
+eval("obj.member.method(a)");
+eval("obj.member.method(a,b)");
+
+// arrays, maps
+eval("[1,2,3,x,y,[a,b,c]]");
+eval("{a: 1,b: 2}");
+eval("cMessage{a: 1,b: 2}");
+eval("omnetpp::cMessage{a: 1,b: 2}");
+
+// quantities: OK
+eval("2m");
+eval("-2m");
+eval("1m+2m");
+
+EV << ".\n";
+
+%exitcode: 0
+
+%subst: /exception: syntax error.*/exception: syntax error/
+
+%contains: stdout
+[3,-42.5,true,false,inf,nan,-inf,nullptr,undefined] -> OK
+null -> nullptr (DIFFERS)
+        constant nullptr
+'hello' -> "hello" (DIFFERS)
+        constant "hello"
+"hello" -> OK
+!x -> OK
+~x -> OK
+-x -> OK
+x-y -> OK
+x/y -> OK
+x<<y -> OK
+x<y ? x : y -> OK
+(a) -> OK
+(5) -> OK
+(x+y) -> OK
+(a.b) -> OK
+(a.b()) -> OK
+3+2 -> OK
+3+2*5 -> OK
+3+(2*5) -> OK
+(3+2)*5 -> OK
+2*5+3 -> OK
+(2*5)+3 -> OK
+2*(5+3) -> OK
+a -> OK
+a[k] -> OK
+a[b[k]] -> OK
+func() -> OK
+func(a) -> OK
+func(a,b) -> OK
+f(g(a)) -> OK
+obj.member -> OK
+obj.member[1] -> OK
+obj.member1.member2 -> OK
+obj.member1[1].member2[2] -> OK
+obj.member.method() -> OK
+obj.member.method(a) -> OK
+obj.member.method(a,b) -> OK
+[1,2,3,x,y,[a,b,c]] -> OK
+{a: 1,b: 2} -> OK
+cMessage{a: 1,b: 2} -> OK
+omnetpp::cMessage{a: 1,b: 2} -> OK
+2m -> OK
+-2m -> OK
+1m+2m -> OK
+.
+
