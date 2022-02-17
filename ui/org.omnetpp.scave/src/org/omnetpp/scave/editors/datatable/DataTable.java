@@ -683,7 +683,7 @@ public class DataTable extends LargeTable implements IDataControl {
                 }
                 else if (COL_COUNT.equals(column)) {
                     long count = vector.getStatistics().getCount();
-                    return count >= 0 ? new StyledString(String.valueOf(count)) : NA;
+                    return count >= 0 ? formatNumber(count, null, gc, width) : NA;
                 }
                 else if (COL_MEAN.equals(column)) {
                     double mean = vector.getStatistics().getMean();
@@ -726,7 +726,7 @@ public class DataTable extends LargeTable implements IDataControl {
                 }
                 else if (COL_COUNT.equals(column)) {
                     long count = stats.getStatistics().getCount();
-                    return count >= 0 ? new StyledString(String.valueOf(count)) : NA;
+                    return count >= 0 ? formatNumber(count, null, gc, width) : NA;
                 }
                 else if (COL_SUMWEIGHTS.equals(column)) {
                     if (!stats.getStatistics().isWeighted())
