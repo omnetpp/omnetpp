@@ -41,6 +41,8 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.engine.BigDecimal;
+import org.omnetpp.common.engine.MeasureTextFunctor;
+import org.omnetpp.common.engine.QuantityFormatter;
 import org.omnetpp.common.largetable.AbstractLargeTableRowRenderer;
 import org.omnetpp.common.largetable.LargeTable;
 import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog2;
@@ -80,6 +82,7 @@ public class DataTable extends LargeTable implements IDataControl {
     private static final boolean isLightTheme = !DisplayUtils.isDarkTheme();
     private static final Color SEPARATOR_COLOR = ColorFactory.GREY;
     private static final Color RESULT_TYPE_COLOR = isLightTheme ? ColorFactory.BLUE3 : ColorFactory.LIGHT_SKY_BLUE;
+    private static final Color QUANTITY_UNIT_COLOR = isLightTheme ? ColorFactory.BLUE3 : ColorFactory.LIGHT_SKY_BLUE;
 
     /**
      * Keys used in getData(),setData()
@@ -88,6 +91,9 @@ public class DataTable extends LargeTable implements IDataControl {
     public static final String ITEM_KEY = "DataTable.Item";
 
     private static final StyledString NA = new StyledString("-"); // "not applicable"
+
+    QuantityFormatter.Options quantityFormatterOptions = new QuantityFormatter.Options();
+    QuantityFormatter quantityFormatter = new QuantityFormatter(quantityFormatterOptions);
 
     static class Column {
 
@@ -231,17 +237,13 @@ public class DataTable extends LargeTable implements IDataControl {
 
             @Override
             public StyledString getStyledText(int rowIndex, int columnIndex, GC gc, int alignment) {
-                String value = "";
                 // the last, blank column is not included in visibleColumns
                 if (columnIndex < visibleColumns.size()) {
                     Column column = visibleColumns.get(columnIndex);
-                    value = getCellValue(rowIndex, column, null, -1).getString();
-
-                    if (column.maskTooLongValues
-                            && gc.textExtent(value).x > (getColumn(columnIndex).getWidth() - CELL_HORIZONTAL_MARGIN*2))
-                        value = "#".repeat(value.length());
+                    return getCellValue(rowIndex, column, gc, (getColumn(columnIndex).getWidth() - CELL_HORIZONTAL_MARGIN*2));
                 }
-                return new StyledString(value);
+                else
+                    return new StyledString("");
             }
 
             @Override
@@ -786,10 +788,33 @@ public class DataTable extends LargeTable implements IDataControl {
     }
 
     protected StyledString formatNumber(double d, String unit, GC gc, int width) {
-        String result = ScaveUtil.formatNumber(d, getNumericPrecision());
-        if (!unit.isEmpty())
-            result += " " + unit;
-        return new StyledString(result);
+        quantityFormatterOptions.setNumAvailablePixels(gc != null ? width : Integer.MAX_VALUE);
+        quantityFormatterOptions.setMeasureTextFromJava(new MeasureTextFunctor() {
+            @Override
+            public int call(String text) {
+                return gc.textExtent(text).x;
+            }
+        });
+        quantityFormatterOptions.setMaxSignificantDigits(Math.min(getNumericPrecision(), quantityFormatterOptions.getNumAccurateDigits()));
+        QuantityFormatter.Output output = quantityFormatter.formatQuantity(d, unit);
+        int numChars = output.getText().length();
+        if (!output.getFitsIntoAvailableSpace()) {
+            StyledString styledString = new StyledString("#".repeat(numChars));
+            setStyleStringColor(styledString, 0, numChars, SEPARATOR_COLOR);
+            return styledString;
+        }
+        else {
+            StyledString styledString = new StyledString(output.getText());
+            String role = output.getRole();
+            for (int i = 0; i < numChars; i++) {
+                char c = role.charAt(i);
+                Color color = c == ',' || c == '~' ? SEPARATOR_COLOR : (c == 'u' ? QUANTITY_UNIT_COLOR : null);
+                if (color != null)
+                    setStyleStringColor(styledString, i, 1, color);
+            }
+            return styledString;
+        }
+    }
 
     protected void setStyleStringColor(StyledString styledString, int index, int length, Color color) {
         styledString.setStyle(index, length, new StyledString.Styler() {
