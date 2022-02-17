@@ -193,18 +193,18 @@ public class FilterBar extends Composite {
                 return false;  // user cancelled
         }
 
-        String[] supportedFields = new String[] {EXPERIMENT.getName(), MEASUREMENT.getName(), REPLICATION.getName(), MODULE.getName(), NAME.getName()};
+        String[] supportedFields = new String[] {EXPERIMENT.getFullName(), MEASUREMENT.getFullName(), REPLICATION.getFullName(), MODULE.getFullName(), NAME.getFullName()};
         if (!filterUtil.containsOnly(supportedFields)) {
             boolean ok = MessageDialog.openConfirm(getShell(), "Filter Too Complex", "The current filter contains fields not present in Basic view. These extra fields will be discarded.");
             if (!ok)
                 return false;  // user cancelled
         }
 
-        experimentCombo.setText(asteriskToEmpty(filterUtil.getFieldValue(EXPERIMENT.getName())));
-        measurementCombo.setText(asteriskToEmpty(filterUtil.getFieldValue(MEASUREMENT.getName())));
-        replicationCombo.setText(asteriskToEmpty(filterUtil.getFieldValue(REPLICATION.getName())));
-        moduleCombo.setText(asteriskToEmpty(filterUtil.getFieldValue(MODULE.getName())));
-        nameCombo.setText(asteriskToEmpty(filterUtil.getFieldValue(NAME.getName())));
+        experimentCombo.setText(asteriskToEmpty(filterUtil.getFieldValue(EXPERIMENT.getFullName())));
+        measurementCombo.setText(asteriskToEmpty(filterUtil.getFieldValue(MEASUREMENT.getFullName())));
+        replicationCombo.setText(asteriskToEmpty(filterUtil.getFieldValue(REPLICATION.getFullName())));
+        moduleCombo.setText(asteriskToEmpty(filterUtil.getFieldValue(MODULE.getFullName())));
+        nameCombo.setText(asteriskToEmpty(filterUtil.getFieldValue(NAME.getFullName())));
 
         showSimpleFilter();
         return true;
