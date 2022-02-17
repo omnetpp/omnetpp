@@ -31,6 +31,7 @@ namespace omnetpp {
 namespace common {
 
 const double K = 1024.0;
+const double K8 = 8192.0;
 
 const UnitConversion::UnitDesc UnitConversion::unitTable[] = {  // note: imperial units (mile,foot,yard,etc.) intentionally left out
 #define _ LINEAR
@@ -50,14 +51,14 @@ const UnitConversion::UnitDesc UnitConversion::unitTable[] = {  // note: imperia
     { "Gbps",  1e9, _, "bps",  "gigabit/sec", "bps kbps Mbps Gbps Tbps" },
     { "Tbps", 1e12, _, "bps",  "terabit/sec", "bps kbps Mbps Gbps Tbps" },
     { "B",       8, _, "b",    "byte" },
-    { "KiB",     K, _, "B",    "kibibyte" },
-    { "MiB",   K*K, _, "B",    "mebibyte" },
-    { "GiB", K*K*K, _, "B",    "gibibyte" },
-    { "TiB",K*K*K*K,_, "B",    "tebibyte" },
-    { "kB",    1e3, _, "B",    "kilobyte" },
-    { "MB",    1e6, _, "B",    "megabyte" },
-    { "GB",    1e9, _, "B",    "gigabyte" },
-    { "TB",   1e12, _, "B",    "terabyte" },
+    { "KiB",    K8, _, "b",    "kibibyte" },
+    { "MiB",  K8*K, _, "b",    "mebibyte" },
+    { "GiB",K8*K*K, _, "b",    "gibibyte" },
+    { "TiB",K8*K*K*K,_,"b",    "tebibyte" },
+    { "kB",    8e3, _, "b",    "kilobyte" },
+    { "MB",    8e6, _, "b",    "megabyte" },
+    { "GB",    8e9, _, "b",    "gigabyte" },
+    { "TB",   8e12, _, "b",    "terabyte" },
     { "b",       1, _, "b",    "bit" },
     { "Kib",     K, _, "b",    "kibibit" },
     { "Mib",   K*K, _, "b",    "mebibit" },
