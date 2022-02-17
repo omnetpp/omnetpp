@@ -31,17 +31,21 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TableColumn;
 import org.omnetpp.common.Debug;
+import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.largetable.AbstractLargeTableRowRenderer;
 import org.omnetpp.common.largetable.LargeTable;
 import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog2;
 import org.omnetpp.common.util.CsvWriter;
+import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ui.ScaveUtil;
 import org.omnetpp.scave.engine.Histogram;
@@ -73,6 +77,9 @@ import org.omnetpp.scave.engineext.ResultFileManagerEx;
  */
 //TODO use s/histogram/statistics/ in the whole file
 public class DataTable extends LargeTable implements IDataControl {
+    private static final boolean isLightTheme = !DisplayUtils.isDarkTheme();
+    private static final Color SEPARATOR_COLOR = ColorFactory.GREY;
+    private static final Color RESULT_TYPE_COLOR = isLightTheme ? ColorFactory.BLUE3 : ColorFactory.LIGHT_SKY_BLUE;
 
     /**
      * Keys used in getData(),setData()
@@ -639,8 +646,16 @@ public class DataTable extends LargeTable implements IDataControl {
                 return new StyledString(result.getFileRun().getRun().getRunName());
             else if (COL_MODULE.equals(column))
                 return new StyledString(result.getModuleName());
-            else if (COL_NAME.equals(column))
-                return new StyledString(result.getName());
+            else if (COL_NAME.equals(column)) {
+                String name = result.getName();
+                int index = name.indexOf(':');
+                StyledString styledString = new StyledString(name);
+                if (index != -1) {
+                    setStyleStringColor(styledString, index, 1, SEPARATOR_COLOR);
+                    setStyleStringColor(styledString, index + 1, name.length() - index - 1, RESULT_TYPE_COLOR);
+                }
+                return styledString;
+            }
             else if (COL_EXPERIMENT.equals(column)) {
                 String experiment = result.getFileRun().getRun().getAttribute(Scave.EXPERIMENT);
                 return experiment != null ? new StyledString(experiment) : NA;
@@ -775,6 +790,14 @@ public class DataTable extends LargeTable implements IDataControl {
         if (!unit.isEmpty())
             result += " " + unit;
         return new StyledString(result);
+
+    protected void setStyleStringColor(StyledString styledString, int index, int length, Color color) {
+        styledString.setStyle(index, length, new StyledString.Styler() {
+            @Override
+            public void applyStyles(TextStyle textStyle) {
+                textStyle.foreground = color;
+            }
+        });
     }
 
     protected StyledString formatNumber(BigDecimal d, GC gc, int width) {
