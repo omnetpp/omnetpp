@@ -82,12 +82,11 @@ std::string Expression::AstNode::unparse() const
     switch (type) {
         case AstNode::CONSTANT: result = constant.str(); break;
         case AstNode::OP:
-            if (children.size()==0) result = name; // cannot happen
-            else if (children.size()==1 && name == "_!") result = children.at(0)->unparse() + "!";
+            if (children.size()==1 && name == "_!") result = children.at(0)->unparse() + "!";
             else if (children.size()==1) result = name + children.at(0)->unparse();
             else if (children.size()==2) result = children.at(0)->unparse() + name + children.at(1)->unparse();
-            else if (children.size()==3) result = children.at(0)->unparse() + name[0] + children.at(1)->unparse() + name[1] + children.at(2)->unparse(); // ?:
-            else result = name + "(" + unparseList(children) + ")"; // cannot happen
+            else if (children.size()==3 && name == "?:") result = children.at(0)->unparse() + " ? " + children.at(1)->unparse() + " : " + children.at(2)->unparse(); // note: spaces around ":" are necessary, because "foo:bar" parses as a NAME
+            else throw opp_runtime_error("Error unparsing operator %s", name.c_str());
             break;
         case AstNode::FUNCTION: result = name + "(" + unparseList(children) + ")"; break;
         case AstNode::METHOD: result = children.at(0)->unparse() + "." + name + "(" + unparseList(children,1) + ")"; break;
