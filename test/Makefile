@@ -5,11 +5,12 @@
 MAKEFLAGS=-j1
 
 # a (relatively) fast test which runs all tests that can finish in reasonable time. (i.e. full builds excluded)
-test_quick: | test_common test_envir test_core test_anim test_models test_makemake test_featuretool test_sqliteresultfiles test_fingerprint
+test_quick: | test_common test_envir test_core test_anim test_models test_makemake test_featuretool \
+              test_sqliteresultfiles test_fingerprint test_scave_results_api \
+              test_scave_charttemplates test_scave_analysis
 
-# Test everything. Note, that test_core, test_common, test_envir and test_makemake is not included, because those
-# test are implicitly executed by the 'test_build' target
-all: | test_anim test_models test_featuretool test_fingerprint test_sqliteresultfiles test_build test_toolchain
+# Test everything.
+all: | test_quick test_build test_toolchain
 
 test_anim:
 	cd anim && make
@@ -49,6 +50,9 @@ test_scave_results_api:
 
 test_scave_charttemplates:
 	cd scave/charttemplates && ./runtest.py
+
+test_scave_analysis:
+	cd scave/analysis && ./runtest
 
 cleanall: clean   # TODO
 
