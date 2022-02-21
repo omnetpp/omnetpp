@@ -12,6 +12,7 @@ __license__ = """
 import sys
 import os
 import pickle as pl
+import traceback as tb
 
 # the print function is replaced so it will flush after each line
 import functools
@@ -77,10 +78,16 @@ class PythonEntryPoint(object):
         try:
             exec(chartInput, self.execContext)
         except chart.ChartScriptError as e:
+            # ChartScriptErrors are by convention constructed with a message that
+            # is helpful and complete on its own, so just printing that is OK.
             ideplot.set_warning(str(e))
             sys.exit(1)
         except Exception as e:
-            ideplot.set_warning(str(e))
+            # Any other kind of error (especially KeyError) might need a bit of
+            # help to produce a meaningful message. Without this, str() returns
+            # _only_ the key that was not found, which doesn't say much.
+            ideplot.set_warning(tb.format_exception_only(type(e), e)[-1].strip()
+                                    + "\n(See Console for details)")
             raise e
 
 
