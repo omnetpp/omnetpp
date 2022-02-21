@@ -323,7 +323,9 @@ def plot_bars(df, errors_df=None, meta_df=None, props={}):
 
     p.xlabel(_to_label(groups))
 
+    title = get_prop("title")
     if meta_df is not None:
+        meta_df = meta_df.reset_index()
         if get_prop("legend_prefer_result_titles") == "true" and "title" in meta_df:
             series = meta_df["title"]
         else:
@@ -335,8 +337,11 @@ def plot_bars(df, errors_df=None, meta_df=None, props={}):
             ylabel += ", etc."
         p.ylabel(ylabel)
 
-    title = make_chart_title(meta_df.reset_index(), title_cols)
-    set_plot_title(get_prop("title") or title)
+        if title is None:
+            title = make_chart_title(meta_df, title_cols)
+
+    if title is not None:
+        set_plot_title(title)
 
 
 
