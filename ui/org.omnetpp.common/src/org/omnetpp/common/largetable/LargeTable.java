@@ -887,7 +887,10 @@ public class LargeTable extends Composite
                     gc.setLineStyle(SWT.LINE_SOLID);
                 }
             }
+
+            rowTransform.dispose();
         }
+        transform.dispose();
     }
 
     public void refresh() {
