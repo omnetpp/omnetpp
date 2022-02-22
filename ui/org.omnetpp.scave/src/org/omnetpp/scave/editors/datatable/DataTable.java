@@ -43,12 +43,14 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.engine.MeasureTextFunctor;
 import org.omnetpp.common.engine.QuantityFormatter;
+import org.omnetpp.common.engineext.IMatchableObject;
 import org.omnetpp.common.largetable.AbstractLargeTableRowRenderer;
 import org.omnetpp.common.largetable.LargeTable;
 import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog2;
 import org.omnetpp.common.util.CsvWriter;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.editors.ui.QuantityFormatterRegistry;
 import org.omnetpp.scave.editors.ui.ScaveUtil;
 import org.omnetpp.scave.engine.Histogram;
 import org.omnetpp.scave.engine.HistogramResult;
@@ -91,9 +93,6 @@ public class DataTable extends LargeTable implements IDataControl {
     public static final String ITEM_KEY = "DataTable.Item";
 
     private static final StyledString NA = new StyledString("-"); // "not applicable"
-
-    QuantityFormatter.Options quantityFormatterOptions = new QuantityFormatter.Options();
-    QuantityFormatter quantityFormatter = new QuantityFormatter(quantityFormatterOptions);
 
     static class Column {
 
@@ -209,6 +208,7 @@ public class DataTable extends LargeTable implements IDataControl {
     private PanelType type;
     private ResultFileManagerEx manager;
     private IDList idList = new IDList();
+    private boolean numberFormattingEnabled = true;
     private int numericPrecision = 6;
     private ListenerList<IDataListener> listeners;
     private int minColumnWidth = 5; // for usability
@@ -292,6 +292,13 @@ public class DataTable extends LargeTable implements IDataControl {
 
     public ResultFileManagerEx getResultFileManager() {
         return manager;
+    }
+
+    public void setNumberFormattingEnabled(boolean enabled) {
+        if (this.numberFormattingEnabled != enabled) {
+            this.numberFormattingEnabled = enabled;
+            refresh();
+        }
     }
 
     public void setNumericPrecision(int numericPrecision) {
@@ -631,6 +638,8 @@ public class DataTable extends LargeTable implements IDataControl {
             ResultItem result = manager.getItem(id);
 
             String unit = result.getAttribute("unit");
+            if (unit.equals(""))
+                unit = null;
 
             if (COL_DIRECTORY.equals(column))
                 return new StyledString(result.getFile().getDirectory());
@@ -676,7 +685,7 @@ public class DataTable extends LargeTable implements IDataControl {
             }
             else if (COL_SCALAR_VALUE.equals(column)) {
                 ScalarResult scalar = (ScalarResult)result;
-                return formatNumber(scalar.getValue(), unit, gc, width);
+                return formatNumber(result, column.text, scalar.getValue(), unit, gc, width);
             }
             else if (type == PanelType.VECTORS) {
                 VectorResult vector = (VectorResult)result;
@@ -685,38 +694,38 @@ public class DataTable extends LargeTable implements IDataControl {
                 }
                 else if (COL_COUNT.equals(column)) {
                     long count = vector.getStatistics().getCount();
-                    return count >= 0 ? formatNumber(count, null, gc, width) : NA;
+                    return count >= 0 ? formatNumber(result, column.text, count, null, gc, width) : NA;
                 }
                 else if (COL_MEAN.equals(column)) {
                     double mean = vector.getStatistics().getMean();
-                    return Double.isNaN(mean) ? NA : formatNumber(mean, unit, gc, width);
+                    return Double.isNaN(mean) ? NA : formatNumber(result, column.text, mean, unit, gc, width);
                 }
                 else if (COL_STDDEV.equals(column)) {
                     double stddev = vector.getStatistics().getStddev();
-                    return Double.isNaN(stddev) ? NA : formatNumber(stddev, unit, gc, width);
+                    return Double.isNaN(stddev) ? NA : formatNumber(result, column.text, stddev, unit, gc, width);
                 }
                 else if (COL_VARIANCE.equals(column)) {
                     double variance = vector.getStatistics().getVariance();
                     String unitSquared = unit;
                     if (!unit.isEmpty())
                         unitSquared = unit + "\u00B2"; // "Superscript Two"
-                    return Double.isNaN(variance) ? NA : formatNumber(variance, unitSquared, gc, width);
+                    return Double.isNaN(variance) ? NA : formatNumber(result, column.text, variance, unitSquared, gc, width);
                 }
                 else if (COL_MIN.equals(column)) {
                     double min = vector.getStatistics().getMin();
-                    return Double.isNaN(min) ? NA : formatNumber(min, unit, gc, width);
+                    return Double.isNaN(min) ? NA : formatNumber(result, column.text, min, unit, gc, width);
                 }
                 else if (COL_MAX.equals(column)) {
                     double max = vector.getStatistics().getMax();
-                    return Double.isNaN(max) ? NA : formatNumber(max, unit, gc, width);
+                    return Double.isNaN(max) ? NA : formatNumber(result, column.text, max, unit, gc, width);
                 }
                 else if (COL_MIN_TIME.equals(column)) {
                     BigDecimal minTime = vector.getStartTime();
-                    return minTime == null || minTime.isNaN() ? NA : formatNumber(minTime, gc, width);
+                    return minTime == null || minTime.isNaN() ? NA : formatNumber(result, column.text, minTime, gc, width);
                 }
                 else if (COL_MAX_TIME.equals(column)) {
                     BigDecimal maxTime = vector.getEndTime();
-                    return maxTime == null || maxTime.isNaN() ? NA : formatNumber(maxTime, gc, width);
+                    return maxTime == null || maxTime.isNaN() ? NA : formatNumber(result, column.text, maxTime, gc, width);
                 }
             }
             else if (type == PanelType.HISTOGRAMS) {
@@ -728,36 +737,36 @@ public class DataTable extends LargeTable implements IDataControl {
                 }
                 else if (COL_COUNT.equals(column)) {
                     long count = stats.getStatistics().getCount();
-                    return count >= 0 ? formatNumber(count, null, gc, width) : NA;
+                    return count >= 0 ? formatNumber(result, column.text, count, null, gc, width) : NA;
                 }
                 else if (COL_SUMWEIGHTS.equals(column)) {
                     if (!stats.getStatistics().isWeighted())
                         return NA;
                     double sumWeights = stats.getStatistics().getSumWeights();
-                    return sumWeights >= 0 ? formatNumber(sumWeights, "", gc, width) : NA;
+                    return sumWeights >= 0 ? formatNumber(result, column.text, sumWeights, "", gc, width) : NA;
                 }
                 else if (COL_MEAN.equals(column)) {
                     double mean = stats.getStatistics().getMean();
-                    return Double.isNaN(mean) ? NA : formatNumber(mean, unit, gc, width);
+                    return Double.isNaN(mean) ? NA : formatNumber(result, column.text, mean, unit, gc, width);
                 }
                 else if (COL_STDDEV.equals(column)) {
                     double stddev = stats.getStatistics().getStddev();
-                    return Double.isNaN(stddev) ? NA : formatNumber(stddev, unit, gc, width);
+                    return Double.isNaN(stddev) ? NA : formatNumber(result, column.text, stddev, unit, gc, width);
                 }
                 else if (COL_VARIANCE.equals(column)) {
                     double variance = stats.getStatistics().getVariance();
                     String unitSquared = unit;
                     if (!unit.isEmpty())
                         unitSquared = unit + "\u00B2"; // "Superscript Two"
-                    return Double.isNaN(variance) ? NA : formatNumber(variance, unitSquared, gc, width);
+                    return Double.isNaN(variance) ? NA : formatNumber(result, column.text, variance, unitSquared, gc, width);
                 }
                 else if (COL_MIN.equals(column)) {
                     double min = stats.getStatistics().getMin();
-                    return Double.isNaN(min) ? NA : formatNumber(min, unit, gc, width);
+                    return Double.isNaN(min) ? NA : formatNumber(result, column.text, min, unit, gc, width);
                 }
                 else if (COL_MAX.equals(column)) {
                     double max = stats.getStatistics().getMax();
-                    return Double.isNaN(max) ? NA : formatNumber(max, unit, gc, width);
+                    return Double.isNaN(max) ? NA : formatNumber(result, column.text, max, unit, gc, width);
                 }
                 else if (COL_NUMBINS.equals(column)) {
                     if (result instanceof HistogramResult)
@@ -772,7 +781,7 @@ public class DataTable extends LargeTable implements IDataControl {
                             return NA;
                         double lo = bins.getBinEdge(0);
                         double up = bins.getBinEdge(bins.getNumBins());
-                        return formatNumber(lo, "", gc, width).append(" .. ").append(formatNumber(up, unit, gc, width));
+                        return formatNumber(result, column.text, lo, "", gc, width).append(" .. ").append(formatNumber(result, column.text, up, unit, gc, width));
                     }
                     else
                         return NA;
@@ -780,6 +789,7 @@ public class DataTable extends LargeTable implements IDataControl {
             }
         }
         catch (RuntimeException e) {
+            e.printStackTrace();
             // stale ID?
             return new StyledString("");
         }
@@ -787,32 +797,65 @@ public class DataTable extends LargeTable implements IDataControl {
         return new StyledString("");
     }
 
-    protected StyledString formatNumber(double d, String unit, GC gc, int width) {
-        quantityFormatterOptions.setNumAvailablePixels(gc != null ? width : Integer.MAX_VALUE);
-        quantityFormatterOptions.setMeasureTextFromJava(new MeasureTextFunctor() {
-            @Override
-            public int call(String text) {
-                return gc.textExtent(text).x;
-            }
-        });
-        quantityFormatterOptions.setMaxSignificantDigits(Math.min(getNumericPrecision(), quantityFormatterOptions.getNumAccurateDigits()));
-        QuantityFormatter.Output output = quantityFormatter.formatQuantity(d, unit);
-        int numChars = output.getText().length();
-        if (!output.getFitsIntoAvailableSpace()) {
-            StyledString styledString = new StyledString("#".repeat(numChars));
-            setStyleStringColor(styledString, 0, numChars, SEPARATOR_COLOR);
-            return styledString;
+    protected StyledString formatNumber(ResultItem resultItem, String column, double d, String unit, GC gc, int width) {
+        if (!numberFormattingEnabled) {
+            String result = ScaveUtil.formatNumber(d, getNumericPrecision());
+            if (!StringUtils.isEmpty(unit))
+                result += " " + unit;
+            return new StyledString(result);
         }
         else {
-            StyledString styledString = new StyledString(output.getText());
-            String role = output.getRole();
-            for (int i = 0; i < numChars; i++) {
-                char c = role.charAt(i);
-                Color color = c == ',' || c == '~' ? SEPARATOR_COLOR : (c == 'u' ? QUANTITY_UNIT_COLOR : null);
-                if (color != null)
-                    setStyleStringColor(styledString, i, 1, color);
+            QuantityFormatter quantityFormatter = QuantityFormatterRegistry.getInstance().getQuantityFormatter(new IMatchableObject() {
+                @Override
+                public String getAsString(String name) {
+                    if ("display".equals(name))
+                        return "scave";
+                    else if ("column".equals(name))
+                        return column;
+                    else if ("unit".equals(name))
+                        return unit;
+                    else if ("module".equals(name))
+                        return resultItem.getModuleName();
+                    else if ("run".equals(name))
+                        return resultItem.getFileRun().getRun().getRunName();
+                    else if ("name".equals(name))
+                        return resultItem.getName();
+                    else
+                        return resultItem.getAttribute(name);
+                }
+
+                @Override
+                public String getAsString() {
+                    return unit;
+                }
+            });
+            QuantityFormatter.Options quantityFormatterOptions = quantityFormatter.getOptions();
+            quantityFormatterOptions.setNumAvailablePixels(gc != null ? width : Integer.MAX_VALUE);
+            quantityFormatterOptions.setMeasureTextFromJava(new MeasureTextFunctor() {
+                @Override
+                public int call(String text) {
+                    return gc.textExtent(text).x;
+                }
+            });
+            quantityFormatterOptions.setMaxSignificantDigits(Math.min(getNumericPrecision(), quantityFormatterOptions.getNumAccurateDigits()));
+            QuantityFormatter.Output output = quantityFormatter.formatQuantity(d, unit);
+            int numChars = output.getText().length();
+            if (!output.getFitsIntoAvailableSpace()) {
+                StyledString styledString = new StyledString("#".repeat(numChars));
+                setStyleStringColor(styledString, 0, numChars, SEPARATOR_COLOR);
+                return styledString;
             }
-            return styledString;
+            else {
+                StyledString styledString = new StyledString(output.getText());
+                String role = output.getRole();
+                for (int i = 0; i < numChars; i++) {
+                    char c = role.charAt(i);
+                    Color color = c == ',' || c == '~' ? SEPARATOR_COLOR : (c == 'u' ? QUANTITY_UNIT_COLOR : null);
+                    if (color != null)
+                        setStyleStringColor(styledString, i, 1, color);
+                }
+                return styledString;
+            }
         }
     }
 
@@ -825,7 +868,7 @@ public class DataTable extends LargeTable implements IDataControl {
         });
     }
 
-    protected StyledString formatNumber(BigDecimal d, GC gc, int width) {
+    protected StyledString formatNumber(ResultItem result, String column, BigDecimal d, GC gc, int width) {
         return new StyledString(ScaveUtil.formatNumber(d, getNumericPrecision()) + " s");
     }
 
