@@ -37,6 +37,8 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TableColumn;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.color.ColorFactory;
@@ -484,8 +486,46 @@ public class DataTable extends LargeTable implements IDataControl {
                 saveState();
             }
         });
+        Listener autoResizeListener = new Listener() {
+            private boolean mouseDown;
 
+            @Override
+            public void handleEvent(Event event) {
+                System.out.println(event);
+                switch (event.type) {
+                    case SWT.DragDetect:
+                        break;
+                    case SWT.MouseDown:
+                        mouseDown = true;
+                        break;
+                    case SWT.MouseUp:
+                        mouseDown = false;
+                        break;
+                    case SWT.Resize:
+                        if (!mouseDown) {
+//                            System.out.println("HERE: " + mouseDown + " " + event);
+//                            tableColumn.setWidth(getAutoColumnWidth(newColumn));
+                        }
+                        break;
+                }
+            }
+        };
+//        tableColumn.addListener(SWT.DragDetect, autoResizeListener);
+//        tableColumn.addListener(SWT.MouseDown, autoResizeListener);
+//        tableColumn.addListener(SWT.MouseUp, autoResizeListener);
+//        tableColumn.addListener(SWT.Resize, autoResizeListener);
         return tableColumn;
+    }
+
+    private int getAutoColumnWidth(Column column) {
+        int width = 0;
+        GC gc = new GC(this);
+        for (int row = getTopIndex(); row <= getBottomIndex(); row++) {
+            String text = getCellValue(row, column, null, -1).getString();
+            width = Math.max(width, gc.textExtent(text).x);
+        }
+        gc.dispose();
+        return width;
     }
 
     private void ensureMinimumColumnWidths() {
