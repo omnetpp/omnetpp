@@ -107,6 +107,10 @@ public class DataTree extends Tree implements IDataControl {
         contentProvider.setResultFileManager(newManager);
     }
 
+    public void setNumberFormattingEnabled(boolean enabled) {
+        // TODO
+    }
+
     public void setNumericPrecision(int prec) {
         if (prec != getNumericPrecision()) {
             contentProvider.setNumericPrecision(prec);
