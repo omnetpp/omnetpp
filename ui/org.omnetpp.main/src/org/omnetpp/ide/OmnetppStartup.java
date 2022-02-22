@@ -23,6 +23,8 @@ import org.eclipse.help.ui.internal.IHelpUIConstants;
 import org.eclipse.help.ui.internal.views.HelpView;
 import org.eclipse.help.ui.internal.views.ReusableHelpPart;
 import org.eclipse.jface.dialogs.IDialogSettings;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IStartup;
 import org.eclipse.ui.IWorkbench;
@@ -36,6 +38,7 @@ import org.eclipse.ui.internal.browser.WebBrowserEditorInput;
 import org.eclipse.ui.internal.help.WorkbenchHelpSystem;
 import org.omnetpp.common.util.CommandlineUtils;
 import org.omnetpp.common.util.ReflectionUtils;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ide.installer.FirstStepsDialog;
 import org.omnetpp.ide.installer.OnClosingWelcomeView;
 import org.omnetpp.scave.ScavePlugin;
@@ -56,6 +59,28 @@ public class OmnetppStartup implements IStartup {
      * Method declared on IStartup.
      */
     public void earlyStartup() {
+    	// check if the environment is properly set up
+    	// if the IDE is started by directly executing the ide/opp_ide executable
+    	// from a file manager, or by executing a pinned icon on the task bar
+    	// the required environment variables are not properly set.
+    	// We must force the IDE to exit and warn the user to execute the IDE
+    	// by either running the bin/opp_ide script from the GUI or the command line
+    	// and avoid pinning the application to the taskbar.
+    	if (StringUtils.nullToEmpty(System.getenv("__omnetpp_root_dir")).equals("")) {
+    		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+    		    public void run() {
+    		        Shell activeShell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+    		        MessageDialog.openError(activeShell, "Error Starting Simulation IDE", 
+    		        		"The IDE was not started properly, exiting.\n\n"
+                            + "Environment variables have not been set properly, preventing normal operation.\n\n"
+                            + "The IDE should be started with the 'omnetpp' command or via the provided "
+    		        		+ "launcher shortcuts in your desktop environment. "
+    		        		+ "Do not pin the IDE to the taskbar, because it bypasses the launcher script.");
+    		        PlatformUI.getWorkbench().close();
+    		    }
+    		});
+    	}
+    	
         // FIXME do version check only if the user agreed to it.
         // as we currently do not have a consent dialog, we just disable it for now
         // checkForNewVersion();
