@@ -22,6 +22,8 @@ public interface IDataControl {
 
     public void setResultFileManager(ResultFileManagerEx manager);
 
+    public void setNumberFormattingEnabled(boolean enabled);
+
     public void setNumericPrecision(int numDigitsShown);
 
     public int getNumericPrecision();

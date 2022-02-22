@@ -73,6 +73,7 @@ public class BrowseDataPage extends FormEditorPage {
     private Runnable scheduledUpdate;
     private boolean isContentValid = false;
 
+    private boolean numberFormattingEnabled = true;
     private int numericPrecision = 6;
 
     private DropdownAction treeLevelsAction;
@@ -409,6 +410,19 @@ public class BrowseDataPage extends FormEditorPage {
                 configureContextMenu(tabFolder.getHistogramsPanel());
             });
         }
+    }
+
+    public void setNumberFormattingEnabled(boolean enabled) {
+        this.numberFormattingEnabled = enabled;
+        getAllPanel().getDataControl().setNumberFormattingEnabled(enabled);
+        getScalarsPanel().getDataControl().setNumberFormattingEnabled(enabled);
+        getParametersPanel().getDataControl().setNumberFormattingEnabled(enabled);
+        getVectorsPanel().getDataControl().setNumberFormattingEnabled(enabled);
+        getHistogramsPanel().getDataControl().setNumberFormattingEnabled(enabled);
+    }
+
+    public boolean getNumberFormattingEnabled() {
+        return numberFormattingEnabled;
     }
 
     public void setNumericPrecision(int prec) {
