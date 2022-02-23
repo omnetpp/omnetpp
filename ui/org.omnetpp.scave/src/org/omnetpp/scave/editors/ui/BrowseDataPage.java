@@ -34,8 +34,10 @@ import org.omnetpp.scave.actions.CreateTempChartFromTemplateAction;
 import org.omnetpp.scave.actions.analysismodel.SetChartFilterAction;
 import org.omnetpp.scave.actions.ui.CopySelectedCellAction;
 import org.omnetpp.scave.actions.ui.DecreaseDecimalPlacesAction;
+import org.omnetpp.scave.actions.ui.EnableQuantityFormatterAction;
 import org.omnetpp.scave.actions.ui.FlatModuleTreeAction;
 import org.omnetpp.scave.actions.ui.IncreaseDecimalPlacesAction;
+import org.omnetpp.scave.actions.ui.OpenQuantityFormatterConfigurationDialogAction;
 import org.omnetpp.scave.actions.ui.SetFilterBySelectedCellAction;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
@@ -180,6 +182,8 @@ public class BrowseDataPage extends FormEditorPage {
         addToToolbar(actions.showFieldsAsScalarsAction);
         addSeparatorToToolbar();
 
+        addToToolbar(new OpenQuantityFormatterConfigurationDialogAction());
+        addToToolbar(new EnableQuantityFormatterAction());
         addToToolbar(new IncreaseDecimalPlacesAction());
         addToToolbar(new DecreaseDecimalPlacesAction());  //TODO get these refreshed when min/max precision is reached
         addSeparatorToToolbar();
