@@ -148,7 +148,7 @@ ChartTickDecimal::ChartTickDecimal(double val)
 {
     Assert(std::isfinite(val));
     int magnitude = std::ceil(std::log10(std::abs(val)));
-    const int maxMagnitude = 15; // the double type has this many digits of precision
+    const int maxMagnitude = 14; // we are limited by the poor accuracy of std::pow on Windows (double type in itself would have 15 digit accuracy)
     exponent = magnitude - maxMagnitude;
     mantissa = val * std::pow(10, -exponent);
     normalize();
