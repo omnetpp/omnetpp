@@ -114,7 +114,8 @@ void Tester::activity()
 
 } // namespace
 
-%subst: /0x[0-9a-fA-F]+/0x.../
+// NOTE: on Windows the pointer is printed as 000abf234 instead of 0x000abf234
+%subst: /\)0x?[0-9a-fA-F]+/)0x.../
 
 %contains: stdout
 (msg_getFieldValue_1::Tester)Test.tester:
