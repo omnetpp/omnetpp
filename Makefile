@@ -35,7 +35,7 @@ allmodes:
 	$(Q)$(MAKE) MODE=release
 	$(Q)$(MAKE) MODE=debug
 	@echo
-	@echo "Now you can type '`echo $(OMNETPP_RELEASE) | sed 's/-.*//'`' or 'opp_ide' to start the IDE."
+	@echo "Now you can type '`echo $(OMNETPP_RELEASE) | sed 's/-.*//'`' to start the IDE."
 
 components: base
 
