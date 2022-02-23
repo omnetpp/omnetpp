@@ -40,7 +40,7 @@ using std::ostream;
 #define H     hStream
 #define CC    ccStream
 
-#define PROGRAM    "nedtool"
+#define PROGRAM    "opp_msgtool"
 
 inline std::string str(const char *s)
 {
@@ -941,13 +941,19 @@ void MsgCodeGenerator::generateStructDecl(const ClassInfo& classInfo, const std:
     H << "/**\n";
     H << " * Struct generated from " << classInfo.astNode->getSourceLocation().str() << " by " PROGRAM ".\n";
     H << " */\n";
-    if (classInfo.baseClass.empty()) {
-        H << "struct " << TS(exportDef) << classInfo.className << "\n";
+    H << "struct " << TS(exportDef) << classInfo.className;
+    const char *baseclassSepar = " : ";
+    if (!classInfo.baseClass.empty()) {
+        H << baseclassSepar << "::" << classInfo.baseClass;  // make namespace explicit and absolute to disambiguate the way PROGRAM understood it
+        baseclassSepar = ", ";
     }
-    else {
-        H << "struct " << TS(exportDef) << classInfo.className << " : public ::" << classInfo.extendsQName << "\n";
+
+    for (const auto& impl : classInfo.implementsQNames) {
+        H << baseclassSepar << impl;
+        baseclassSepar = ", ";
     }
-    H << "{\n";
+
+    H << "\n{\n";
     H << "    " << classInfo.className << "();\n";
     for (const auto& field : classInfo.fieldList) {
         if (field.isCustom)

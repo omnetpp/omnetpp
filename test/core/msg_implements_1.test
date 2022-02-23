@@ -1,0 +1,62 @@
+%description:
+Check @implements for classes and structs.
+
+%file: test.msg
+
+namespace @TESTNAME@;
+
+cplusplus {{ using namespace omnetpp; }}
+
+cplusplus {{
+class IFoo
+{
+  public:
+    virtual void doIt() = 0;
+    virtual ~IFoo() {}
+};
+}}
+
+class IFoo {@existingClass; @descriptor(false);}
+
+class Foo1 {
+  @implements(IFoo);
+}
+
+struct Foo2 {
+  @implements(IFoo);
+}
+
+struct Foo3 {
+  @implements(cObject);
+}
+
+struct Foo4 {
+  @implements(cObject,IFoo);
+}
+
+cplusplus(Foo1) {{ virtual void doIt() override {} }}
+cplusplus(Foo2) {{ virtual void doIt() override {} }}
+cplusplus(Foo4) {{ virtual void doIt() override {} }}
+
+%includes:
+#include "test_m.h"
+using namespace @TESTNAME@;
+
+%activity:
+Foo1 foo1;
+Foo2 foo2;
+Foo3 foo3;
+Foo4 foo4;
+
+%contains: test_m.h
+class Foo1 : public @TESTNAME@::IFoo
+
+%contains: test_m.h
+struct Foo2 : @TESTNAME@::IFoo
+
+%contains: test_m.h
+struct Foo3 : omnetpp::cObject
+
+%contains: test_m.h
+struct Foo4 : omnetpp::cObject, @TESTNAME@::IFoo
+
