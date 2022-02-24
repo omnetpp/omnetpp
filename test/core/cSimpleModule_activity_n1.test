@@ -1,5 +1,5 @@
 %description:
-Test what happens if coroutine cannot be created
+Test what happens if coroutine stacks cannot be pre-allocated
 
 %file: test.ned
 
@@ -10,7 +10,7 @@ simple Simple
 network Test
 {
     submodules:
-        a[1000000]: Simple;
+        a[10]: Simple;
 }
 
 %file: test.cc
@@ -24,7 +24,7 @@ namespace @TESTNAME@ {
 class Simple : public cSimpleModule
 {
   public:
-    Simple() : cSimpleModule(16384) { }
+    Simple() : cSimpleModule(163840) { }  // allocate a 160 kByte stack
     virtual void activity() override;
 };
 
@@ -32,6 +32,11 @@ Define_Module(Simple);
 
 void Simple::activity()
 {
+#ifdef USE_WIN32_FIBERS
+    EV << "#SKIPPED: When using Windows Fiber API, no pre-allocation is needed for coroutine stacks so this test is meaningless.\n";
+    return;
+#endif
+
     EV << "hello" << endl;
 }
 
@@ -41,7 +46,7 @@ void Simple::activity()
 [General]
 network = Test
 cmdenv-express-mode = false
-total-stack = 5MiB  # ensure that we receive the error
+total-stack = 1MiB  # ensure that we receive the error (because the total stack required for 10 modules are 1.6 MBytes)
 
 %exitcode: 1
 
