@@ -49,7 +49,7 @@ test_scave_results_api:
 	cd scave/results_api && ./runtest
 
 test_scave_charttemplates:
-	cd scave/charttemplates && ./runtest.py
+	cd scave/charttemplates && ./runtest
 
 test_scave_analysis:
 	cd scave/analysis && ./runtest
