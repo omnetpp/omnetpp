@@ -116,6 +116,8 @@ void Tester::activity()
 
 // NOTE: on Windows the pointer is printed as 000abf234 instead of 0x000abf234
 %subst: /\)0x?[0-9a-fA-F]+/)0x.../
+%subst: /stackSize : unsigned int =.*/stackSize : unsigned int = X/
+%subst: /stackUsage : unsigned int =.*/stackUsage : unsigned int = X/
 
 %contains: stdout
 (msg_getFieldValue_1::Tester)Test.tester:
@@ -145,8 +147,8 @@ canvas : omnetpp::cCanvas = (omnetpp::cCanvas)Test.tester.canvas
 osgCanvas : omnetpp::cOsgCanvas = nullptr
 isTerminated : bool = false
 usesActivity : bool = true
-stackSize : unsigned int = 40960
-stackUsage : unsigned int = 0
+stackSize : unsigned int = X
+stackUsage : unsigned int = X
 
 (omnetpp::cPar)Test.tester.bitrate:
 className : string = "omnetpp::cPar"
