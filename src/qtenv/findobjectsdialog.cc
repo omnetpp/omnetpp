@@ -38,60 +38,61 @@ namespace omnetpp {
 namespace qtenv {
 
 QString FindObjectsDialog::classNamePatternHelp =
-    "Generic filter expression which matches class name by default.\n"
-    "\n"
-    "        Wildcards (\"?\", \"*\"), AND, OR, NOT and field matchers are accepted;\n"
-    "        see Object Filter help for a more complete list.\n"
-    "\n"
-    "        Examples:\n"
-    "          cQueue\n"
-    "                    matches cQueue objects\n"
-    "          TCP* or (IP* and not IPDatagram)\n"
-    "                    matches objects whose class name begins with TCP or IP,\n"
-    "                    excluding IPDatagrams\n"
-    "          cMessage and kind(3)\n"
-    "                    matches objects of class cMessage and message kind 3.";
+R"HELP(Generic filter expression which matches class name by default.
+
+Wildcards ("?", "*"), AND, OR, NOT and field matchers are accepted;
+see Object Filter help for a more complete list.
+
+NOTE: Include the namespace in class names, or prefix classnames with "*::".
+
+Examples:
+    omnetpp::cQueue
+        matches cQueue objects
+    TCP* OR (IP* AND NOT IPDatagram)
+        matches objects whose class name begins with TCP or IP,
+        excluding IPDatagrams
+    omnetpp::cMessage AND kind =~ 3
+        matches objects of class cMessage and message kind 3)HELP";
 
 QString FindObjectsDialog::namePatternHelp =
-    "Generic filter expression which matches the object full path by default.\n"
-    "\n"
-    "Wildcards (\"?\", \"*\") are allowed. \"{a-exz}\" matches any character in the\n"
-    "range \"a\"..\"e\", plus \"x\" and \"z\". You can match numbers: \"*.job{128..191}\"\n"
-    "will match objects named \"job128\", \"job129\", ..., \"job191\". \"job{128..}\"\n"
-    "and \"job{..191}\" are also understood. You can combine patterns with AND, OR\n"
-    "and NOT and parentheses (lowercase and, or, not are also OK). You can match\n"
-    "against other object fields such as queue length, message kind, etc., with\n"
-    "the syntax \"fieldname(pattern)\". Put quotation marks around a pattern if it\n"
-    "contains parentheses.\n"
-    "\n"
-    "HINT: You'll want to start the pattern with \"*.\" in most cases, to match\n"
-    "objects anywhere in the network!\n"
-    "\n"
-    "Examples:\n"
-    " *.destAddr\n"
-    "            matches all objects whose name is \"destAddr\" (likely module\n"
-    "            parameters)\n"
-    " *.subnet2.*.destAddr\n"
-    "            matches objects named \"destAddr\" inside \"subnet2\"\n"
-    " *.node[8..10].*\n"
-    "            matches anything inside module node[8], node[9] and node[10]\n"
-    " className(cQueue) and not length(0)\n"
-    "            matches non-empty queue objects\n"
-    " className(cQueue) and length({10..})\n"
-    "            matches queue objects with length>=10\n"
-    " kind(3) or kind({7..9})\n"
-    "            matches messages with message kind equal to 3, 7, 8 or 9\n"
-    "            (Only messages have a \"kind\" attribute.)\n"
-    " className(IP*) and *.data-*\n"
-    "            matches objects whose class name begins with \"IP\" and\n"
-    "            name begins with \"data-\"\n"
-    " not className(cMessage) and byteLength({1500..})\n"
-    "            matches messages whose class is not cMessage, and byteLength is\n"
-    "            at least 1500. (Only messages have a \"byteLength\" attribute.)\n"
-    " \"*(*\" or \"*.msg(ACK)\"\n"
-    "            quotation marks needed when pattern is a reserved word or contains\n"
-    "            parentheses. (Note: *.msg(ACK) without parens would be interpreted\n"
-    "            as some object having a \"*.msg\" attribute with the value \"ACK\"!)";
+R"HELP(Generic filter expression which matches the object full path by default.
+
+Wildcards ("?", "*") are allowed. "{a-exz}" matches any character in the
+range "a".."e", plus "x" and "z". You can match numbers: "*.job{128..191}"
+will match objects named "job128", "job129", ..., "job191". "job{128..}"
+and "job{..191}" are also understood. You can combine patterns with AND, OR
+and NOT and parentheses (lowercase and, or, not are also OK). You can match
+against other object fields such as queue length, message kind, etc., with
+the syntax "fieldname =~ pattern". Put quotation marks around a pattern if it
+contains special characters.
+
+HINT: You'll want to start the pattern with "*." in most cases, to match
+objects anywhere in the network!
+
+Examples:
+    *.destAddr
+        matches all objects whose name is "destAddr" (likely module
+        parameters)
+    *.subnet2.*.destAddr
+        matches objects named "destAddr" inside "subnet2"
+    *.node[8..10].*
+        matches anything inside module node[8], node[9] and node[10]
+    className =~ omnetpp::cQueue AND NOT length =~ 0
+        matches non-empty queue objects
+    className =~ omnetpp::cQueue AND length =~ {10..}
+        matches queue objects with length>=10
+    kind =~ 3 OR kind =~ {7..9}
+        matches messages with message kind equal to 3, 7, 8 or 9
+        (Objects with no "kind" field are not matched.)
+    className =~ IP* AND *.data-*
+        matches objects whose class name begins with "IP" and
+        name begins with "data-"
+    NOT className =~ omnetpp::cMessage AND byteLength =~ {1500..}
+        matches messages whose class is not cMessage, and byteLength is
+        at least 1500.
+    "*(*" OR "*.msg(ACK)"
+        quotation marks needed when pattern is a reserved word or contains
+        special characters.)HELP";
 
 FindObjectsDialog::FindObjectsDialog(cObject *ptr, QWidget *parent) :
     QDialog(parent),

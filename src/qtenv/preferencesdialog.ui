@@ -719,7 +719,7 @@ Padding with spaces:
           <item>
            <widget class="QLabel" name="details">
             <property name="text">
-             <string>One expression per line. Wildcards, AND, OR, NOT, numeric ranges ({5..10}), field matchers (className(..), kind(..), byteLength(..), etc.) are accepted.</string>
+             <string>One expression per line. Wildcards, AND, OR, NOT, numeric ranges ({5..10}), field matchers (className =~ &quot;...&quot;, kind =~ &quot;...&quot;, byteLength =~ &quot;...&quot;, etc.) are accepted.</string>
             </property>
             <property name="wordWrap">
              <bool>true</bool>
