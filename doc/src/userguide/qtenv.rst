@@ -103,7 +103,10 @@ examine its state. At any time you can restart the simulation, or set up another
 before the simulation finishes (or try to restart the simulation), Qtenv will ask you whether to finalize the
 simulation, which usually translates to saving summary statistics.
 
-Functions related to setting up a simulation are in the :guilabel:`File` menu. Some of these functions are:
+Functions related to setting up a simulation are in the :guilabel:`File` and :guilabel:`Simulate` menus,
+and the most important ones are accessible via toolbar icons and keyboard shortcuts as well.
+
+Some of these functions are:
 
 .. figure:: pictures/Qtenv-file-menu.png
    :width: 50%
@@ -119,9 +122,6 @@ Open Primary Ini File
 ^^^^^^^^^^^^^^^^^^^^^
 
 Opens the first ini file in an text window for viewing.
-
-Simulation-related functions are in the :guilabel:`Simulate` menu, and are accessible via toolbar icons and keyboard
-shortcuts as well.
 
 .. figure:: pictures/Qtenv-simulate-menu.png
    :width: 50%
@@ -167,7 +167,7 @@ Run Until
 ^^^^^^^^^
 
 You can run the simulation until a specified simulation time, event number or until a specific message has been
-delivered or canceled. This is a valuable tool during debugging sessions (select :menuselection:`Simulate --> Run until`).
+delivered or canceled. This is a valuable tool during debugging sessions.
 It is also possible to right-click on an event in the simulation timeline and choose the :guilabel:`Run until this
 event` menu item.
 
@@ -326,7 +326,7 @@ resumed. Also, Qtenv is single-theaded and runs in the same thread as the simula
 suspend the simulation's thread in the debugger, the UI will freeze.
 
 The Qtenv UI deals with ``cObject``\ s (the C++ methods that the GUI relies on are defined on ``cObject``). All other data
-such as primitive variables, non-cObject classes and structs, STL containers etc, are hidden from Qtenv. You may wrap
+such as primitive variables, non-``cObject`` classes and structs, STL containers etc, are hidden from Qtenv. You may wrap
 objects into ``cObject``\ s to make them visible for Qtenv, that's what e.g. the ``WATCH`` macros do as well.
 
 The following sections go into detail about various parts and functions of the Qtenv UI.
@@ -428,7 +428,7 @@ objects in detail. The :guilabel:`Object Inspector` always focuses on the object
 the Qtenv UI. It can be directly navigated as well, via the :guilabel:`Back`, :guilabel:`Forward`, and :guilabel:`Go to
 Parent` buttons, and also by double-clicking objects shown inside the inspector's area.
 
-.. list-table:: 
+.. list-table::
 
    * - .. figure:: pictures/Qtenv-inspector-grouped.png
           :width: 80%
@@ -483,7 +483,7 @@ in the :guilabel:`Animation` page of the :guilabel:`Preferences` dialog.
    The network display
 
 The built-in ``cCanvas`` of the inspected object is also rendered in this view together with the module contents to
-allow for overlaying custom annotations and animations. This canvas contains the figures declared by the @figure
+allow for overlaying custom annotations and animations. This canvas contains the figures declared by the ``@figure``
 properties in the NED source of the module.
 
 By choosing the :guilabel:`Show/Hide Canvas Layers` item in the context menu of the inspected module, the displayed
@@ -650,25 +650,24 @@ You can also provide a generic filter expression, which matches the object's ful
 match numbers: ``"*.job{128..191}"`` will match objects named ``"job128"``, ``"job129"``, , ``"job191"``.
 ``"job{128..}"`` and ``"job{..191}"`` are also understood. You can combine patterns with ``AND``, ``OR`` and ``NOT`` and
 parentheses (lowercase ``and``, ``or``, ``not`` are also accepted). You can match other object fields such as queue
-length, message kind, etc., with the syntax ``"fieldname(pattern)"``. If the pattern contains parentheses or space, you
-need to enclose in in quotes. (HINT: You will want to start the pattern with ``"*."`` in most cases to match objects
+length, message kind, etc., with the syntax ``fieldname =~ pattern``. If the pattern contains special characters or space,
+you need to enclose it in quotes. (HINT: You will want to start the pattern with ``"*."`` in most cases to match objects
 anywhere in the network!).
 
 Examples:
 
 -  ``*.destAddr`` : Matches all objects with the name ``"destAddr"`` (likely module parameters).
 -  ``*.node[8..10].*`` : Matches anything inside module ``node[8], node[9]`` and ``node[10]``.
--  ``className(cQueue) and not length(0)`` : Matches non-empty queue objects.
--  ``className(cQueue) and length({10..})`` : Matches queue objects with length>=10.
--  ``kind(3) or kind({7..9})`` : Matches messages with message kind equal to 3, 7, 8 or 9 (only messages have a
+-  ``className =~ omnetpp::cQueue AND NOT length =~ 0`` : Matches non-empty queue objects.
+-  ``className =~ omnetpp::cQueue AND length =~ {10..}`` : Matches queue objects with length>=10.
+-  ``kind =~ 3 OR kind =~ {7..9}`` : Matches messages with message kind equal to 3, 7, 8 or 9 (only messages have a
    ``"kind"`` attribute).
--  ``className(IP*) and \*.data-*`` : Matches objects whose class name begins with ``"IP"`` and name begins with
-   ``"data-."``
--  ``not className(omnetpp::cMessage) and byteLength({1500..})`` : Matches messages whose class is not cMessage and
+-  ``className =~ IP* AND *.data-*`` : Matches objects whose class name begins with ``"IP"`` and name begins with
+   ``"data-".``
+-  ``NOT className =~ omnetpp::cMessage AND byteLength =~ {1500..}`` : Matches messages whose class is not cMessage and
    byteLength is at least 1500 (only messages have a ``"byteLength"`` attribute).
--  `` "*(*" or "*.msg(ACK)" `` : Quotation marks needed when pattern is a reserved word or contains parentheses 
-   (note: \*.msg(ACK) without parentheses would be interpreted as some object having a "*.msg" attribute with the value
-   "ACK"!).
+-  ``"TCP packet" OR "*.packet(15)"`` : Quotation marks needed when pattern is a reserved word or
+   contains whitespace or special characters
 
 .. note::
 
@@ -774,25 +773,24 @@ given message object.
 
 For object names, wildcards (``"?"``, ``"*"``) are allowed. ``"{a-exz}"`` matches any character in the range
 ``"a".."e"`` plus ``"x"`` and ``"z"``. You can match numbers: ``"job{128..191}"`` will match ``"job128"``, ``"job129"``,
-, ``"job191"``. ``"job{128..}"`` and ``"job{..191}"`` are also understood. You can combine patterns with ``AND``,
+``"job191"``. ``"job{128..}"`` and ``"job{..191}"`` are also understood. You can combine patterns with ``AND``,
 ``OR`` and ``NOT`` and parentheses (lowercase and, or, not are also acceptable). You can match against other object
-fields such as message length, message kind, etc. with the syntax ``"fieldname(pattern)"``. Put quotation marks around a
-pattern if it contains parentheses.
+fields such as message length, message kind, etc. with the syntax ``fieldname =~ pattern``. Put quotation marks around a
+pattern if it contains special characters.
 
 Some examples:
 
 -  ``m*`` : matches any object whose name begins with "m"
--  ``m\* AND \*-{0..250}`` : matches any object whose name begins with "m" and ends with a dash and a number between 0
+-  ``m* AND *-{0..250}`` : matches any object whose name begins with "m" and ends with a dash and a number between 0
    and 250
--  ``not \*timer*`` : matches any object whose name does not contain the substring "timer"
--  ``not (*timer\* or \*timeout*)`` : matches any object whose name contains neither "timer" nor "timeout"
--  ``kind(3) or kind({7..9})`` : matches messages with message kind equal to 3, 7, 8 or 9
--  ``className(IP*) and data-*`` : matches objects whose class name begins with "IP" and name begins with "data-"
--  ``not className(cMessage) and byteLength({1500..})`` : matches objects whose class is not cMessage and whose
+-  ``NOT *timer*`` : matches any object whose name does not contain the substring "timer"
+-  ``NOT (*timer* OR *timeout*)`` : matches any object whose name contains neither "timer" nor "timeout"
+-  ``kind =~ 3 OR kind =~ {7..9}`` : matches messages with message kind equal to 3, 7, 8 or 9
+-  ``className =~ IP* AND data-*`` : matches objects whose class name begins with "IP" and name begins with "data-"
+-  ``NOT className =~ omnetpp::cMessage AND byteLength =~ {1500..}`` : matches objects whose class is not cMessage and whose
    byteLength is at least 1500
--  ``"or" or "and" or "not" or "*(*" or "msg(ACK)"`` : quotation marks needed when pattern is a reserved word or
-   contains parentheses (note: msg(ACK) without parentheses would be interpreted as an object having an "msg" attribute
-   with the value "ACK"!).
+-  ``"TCP packet" OR "*.packet(15)"`` : Quotation marks needed when pattern is a reserved word or
+   contains whitespace or special characters
 
 There is also a per-module setting the models can adjust programatically that can prevent any animations taking place
 when inspecting a given module (``setBuiltinAnimationsAllowed()``).
