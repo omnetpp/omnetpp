@@ -34,7 +34,7 @@ QModelIndex ObjectListModel::index(int row, int column, const QModelIndex&) cons
 
 QVariant ObjectListModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    static QString titles[] = {"Class", "Name", "Info"};
+    static QString titles[] = {"Class / NED Type", "Full Path", "Info"};
     return (orientation == Qt::Horizontal && role == Qt::DisplayRole)
             ? titles[section]
             : QVariant();
@@ -92,7 +92,7 @@ QVariant ObjectListModel::data(const QModelIndex& index, int role) const
         case Qt::DisplayRole:
             switch (index.column()) {
                 case 0:
-                    return getObjectShortTypeName(objects[index.row()]);
+                    return getObjectFullTypeName(objects[index.row()]);
                 case 1:
                     return objects[index.row()]->getFullPath().c_str();
                 case 2:
