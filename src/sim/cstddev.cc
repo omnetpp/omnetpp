@@ -203,6 +203,8 @@ double cStdDev::getVariance() const
     // note: no checks for division by zero, we prefer to return Inf or NaN
     if (numValues == 0)
         return NaN;
+    else if (minValue == maxValue)
+        return 0;
     else if (!weighted) {
         double var = (sumWeightedSquaredValues - sumWeightedValues*sumWeightedValues/sumWeights) / (sumWeights-1);
         return var < 0 ? 0 : var;

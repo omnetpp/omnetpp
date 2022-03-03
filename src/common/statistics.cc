@@ -110,8 +110,8 @@ void Statistics::adjoin(const Statistics& other)
     sumWeightedSquaredValues += other.sumWeightedSquaredValues;
 }
 
-double Statistics::getStddev() const 
-{ 
+double Statistics::getStddev() const
+{
     return std::sqrt(getVariance());
 }
 
@@ -120,6 +120,8 @@ double Statistics::getVariance() const
     // note: no checks for division by zero, we prefer to return Inf or NaN
     if (sumWeights == 0)
         return NaN;
+    else if (minValue == maxValue)
+        return 0;
     else if (!isWeighted()) {
         double var = (sumWeightedSquaredValues - sumWeightedValues*sumWeightedValues/sumWeights) / (sumWeights-1);
         return var < 0 ? 0 : var;
