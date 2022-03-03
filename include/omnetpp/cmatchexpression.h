@@ -32,9 +32,9 @@ namespace common { class MatchExpression; };
  * cMatchExpression::Matchable to be used with this class.
  * Fields of the object will be queried via methods of Matchable.
  *
- * By default, a pattern must match the "default field" of the object,
- * which will usually be its name. Other fields can be matched with the
- * fieldname(pattern) or fieldname=~pattern syntax (they are equivalent).
+ * Matches various fields of an object. By default, a pattern must match
+ * the "default field" of the object, which will usually be its name.
+ * Other fields can be matched with the <fieldname> =~ <pattern> syntax.
  * These elements can be combined with the AND, OR, NOT operators, accepted
  * in both lowercase and uppercase. AND has higher precedence than OR,
  * and parentheses can be used to change the evaluation order.
@@ -44,14 +44,11 @@ namespace common { class MatchExpression; };
  * numeric ranges as "[0..999]" (e.g. "*[90..100] matching "foo[95]")
  * are accepted.
  *
- * Pattern examples:
- *  - "" matches nothing
- *  - "node*"
- *  - "node* or host*"
- *  - "node* or host* or className(StandardHost*)"
- *  - "packet-* and className(PPPFrame)"
- *  - "className(TCPSegment) and not kind({0..2}) and SYN or data-*"
- *  - "className(TCPSegment) or byteLength({4096..})
+ * Field names and patterns that do not contain whitespace, a left or right
+ * parenthesis or the "=~" sequence can be written without quotation marks.
+ * When a field name or pattern is enclosed in quotation marks, it is
+ * interpreted similar to a string constant in C/C++ regarding the use
+ * of backslashes, i.e. "\t" becomes a tab, "\\" a single backslash, etc.
  *
  * @ingroup Utilities
  */
