@@ -443,6 +443,9 @@ public class BrowseDataPage extends FormEditorPage {
         if (activeTab != null)
             tabFolder.setSelection(activeTab);
 
+        // show/hide actions that are specific to tab pages
+        updateIconVisibility();
+
         Integer prec = memento.getInteger("numericPrecision");
         if (prec != null)
             setNumericPrecision(prec);
@@ -450,7 +453,6 @@ public class BrowseDataPage extends FormEditorPage {
         Boolean show = memento.getBoolean("showFieldsAsScalars");
         if (show != null)
             setShowFieldsAsScalars(show);
-
     }
 
 }
