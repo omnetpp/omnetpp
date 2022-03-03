@@ -118,7 +118,11 @@ public class LargeTable extends Composite
     protected int itemCount;
 
     /**
-     * This is an element close enough to the top of the visible area or null if there are no elements at all.
+     * The index of the row at the top of the visible area. When setting it,
+     * always use clampTopRowIndex() to ensure it stays within a valid range,
+     * for example there are no blank lines at the top or bottom if content
+     * has more lines than space in the table, or that topIndex=0 when content
+     * has less lines than space in the table.
      */
     protected int topIndex;
 
@@ -135,12 +139,13 @@ public class LargeTable extends Composite
     protected IntRangeSet selectionIndices = new IntRangeSet();
 
     /**
-     * The highlighted element. This is the highlight that can be moved with the up/down keys.
+     * The index of the highlighted element. This is the highlight that can be moved
+     * with the up/down keys. Must always stay within 0..itemCount-1.
      */
     protected int focusIndex;
 
     /**
-     * Starting point of a range selection.
+     * Start index of a range selection. Must always stay within 0..itemCount-1.
      */
     protected int anchorIndex;
 
@@ -298,9 +303,6 @@ public class LargeTable extends Composite
         });
         canvas.addPaintListener(new PaintListener() {
             public void paintControl(PaintEvent e) {
-                if (topIndex >= itemCount)
-                    scrollToBegin();
-
                 paint(e.gc);
             }
         });
@@ -504,7 +506,8 @@ public class LargeTable extends Composite
      */
     public void setItemCount(int itemCount) {
         this.itemCount = itemCount;
-        focusIndex = clamp(focusIndex);
+        focusIndex = anchorIndex = clamp(focusIndex);
+        topIndex = clampTopRowIndex(topIndex);
         clearSelection();
         configureVerticalScrollBar();
         redraw();
@@ -643,6 +646,8 @@ public class LargeTable extends Composite
     }
 
     public void gotoIndex(int rowIndex) {
+        if (rowIndex < 0 || rowIndex >= itemCount)
+            throw new IllegalArgumentException("Table row index " + rowIndex + " out of range");
         doGotoElement(rowIndex);
         reveal(rowIndex);
     }
@@ -817,7 +822,7 @@ public class LargeTable extends Composite
         gc.setBackground(getBackground());
         gc.fillRectangle(clipping);
 
-        updateVerticalBarPosition();
+        updateVerticalBarPosition();  //TODO eliminate
         boolean haveFocus = canvas.isFocusControl();
 
         int visibleElementCount = getVisibleElementCount();
