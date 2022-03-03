@@ -52,12 +52,10 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.collections.IntRangeSet;
-import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.IHoverInfoProvider;
 import org.omnetpp.common.util.CsvWriter;
-import org.omnetpp.common.util.DisplayUtils;
 
 /**
  * Custom-drawn table control that can display a virtually unlimited number of
@@ -109,8 +107,6 @@ import org.omnetpp.common.util.DisplayUtils;
 public class LargeTable extends Composite
 {
     private static final Color LINE_COLOR = Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW);
-
-    private final static boolean debug = false;
 
     /**
      * The number of rows in the table.
@@ -170,17 +166,17 @@ public class LargeTable extends Composite
     protected ScrolledComposite scrolledComposite;
 
     /**
-     * Container for real and virtual table.
+     * Container for the "header" and content area of the table.
      */
     protected Composite composite;
 
     /**
-     * Used to draw the actual content of the virtual table.
+     * Used to draw the actual content of the table.
      */
     protected Canvas canvas;
 
     /**
-     * Used to draw the header of the virtual table.
+     * Used to draw the header of the table.
      */
     protected Table table;
 
@@ -640,7 +636,7 @@ public class LargeTable extends Composite
             return false;
         }
         catch (InvocationTargetException e) {
-            Debug.println("VirtualTable.runLongOperation() failed: " + e.getTargetException().getMessage());
+            Debug.println("LargeTable.runLongOperation() failed: " + e.getTargetException().getMessage());
             return false;
         }
     }
@@ -1039,7 +1035,7 @@ class ScalableTableCompositeLayout extends Layout {
             int headerHeight = table.getHeaderHeight();
 
             if (debug)
-                Debug.println("Relayouting virtual table: " + r.height);
+                Debug.println("Relayouting table: " + r.height);
 
             canvas.setBounds(0, headerHeight, table.getSize().x, r.height - headerHeight);
 
