@@ -304,15 +304,15 @@ public class DataTable extends LargeTable implements IDataControl {
         // (1) it's likely not too useful or missed by users, and at the
         // same time (2) difficult due to listener hell
         long focusID = getFocusedID();
-        clearSelection();
+        clearSelection();  // not really needed, as setItemCount() does it too
 
         // set new input
-        setItemCount(newIdList.size());
+        setItemCount(newIdList.size()); // includes another clearSelection() & firing empty selection change
         this.idList = newIdList;
-        restoreSortOrder();
+        restoreSortOrder(); // in-place sorts the IDList
 
         // try restoring old focus
-        setFocusedID(focusID);
+        setFocusedID(focusID); // note: this indirectly fires selection change, so state should be fully updated at this point
 
         // refresh display, notify listeners
         refresh();
