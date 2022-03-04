@@ -17,7 +17,7 @@ import org.omnetpp.scave.editors.ScaveEditor;
 public class ToggleAutoRefreshAction extends AbstractScaveAction {
     public ToggleAutoRefreshAction() {
         super(AS_CHECK_BOX);
-        setText("Automatic Refresh");
+        setText("Auto-Rerun Chart Script on Edits");
         setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_AUTOREFRESH));
     }
 

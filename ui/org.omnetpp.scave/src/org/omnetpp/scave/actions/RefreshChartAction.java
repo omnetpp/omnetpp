@@ -22,7 +22,7 @@ import org.omnetpp.scave.editors.ScaveEditor;
 public class RefreshChartAction extends AbstractScaveAction {
 
     public RefreshChartAction() {
-        setText("Refresh");
+        setText("Rerun Chart Script");
         setDescription("Refresh the content of the current chart");
         setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_REFRESH));
     }

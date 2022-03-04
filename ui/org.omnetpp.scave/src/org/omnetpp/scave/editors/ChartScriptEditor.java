@@ -606,8 +606,8 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         }
 
         manager.add(toggleShowSourceAction);
-        manager.add(toggleAutoRefreshAction);
         manager.add(new RefreshChartAction());
+        manager.add(toggleAutoRefreshAction);
         manager.add(killAction);
         manager.add(new Separator());
 
