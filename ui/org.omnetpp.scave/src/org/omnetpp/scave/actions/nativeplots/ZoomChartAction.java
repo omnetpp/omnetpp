@@ -9,7 +9,10 @@ package org.omnetpp.scave.actions.nativeplots;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.AbstractScaveAction;
@@ -32,16 +35,22 @@ public class ZoomChartAction extends AbstractScaveAction {
         this.zoomFactor = zoomFactor;
 
         boolean both = horizontally && vertically;
-        String inout = (zoomFactor == 0.0 ? "To Fit" :
+        String inout = (zoomFactor == 0.0 ? "To Fit" :  // TODO "Home"?
                         zoomFactor > 1.0 ? "In" : "Out");
         String dir2 = both ? "" : (horizontally ? " Horizontally" : " Vertically");
         setText("Zoom " +  inout + dir2);
 
-        String imageId =
-            zoomFactor == 0.0 ? ScaveImages.IMG_ETOOL16_ZOOMTOFIT :
-            zoomFactor > 1.0 ? (both ? ScaveImages.IMG_ETOOL16_ZOOMIN : horizontally ? ScaveImages.IMG_ETOOL16_HZOOMIN : ScaveImages.IMG_ETOOL16_VZOOMIN) :
-                (both ? ScaveImages.IMG_ETOOL16_ZOOMOUT : horizontally ? ScaveImages.IMG_ETOOL16_HZOOMOUT : ScaveImages.IMG_ETOOL16_VZOOMOUT);
-        setImageDescriptor(ScavePlugin.getImageDescriptor(imageId));
+        ImageDescriptor imageDescriptor;
+        if (zoomFactor == 0.0)
+            imageDescriptor = PlatformUI.getWorkbench().getSharedImages()
+                    .getImageDescriptor(ISharedImages.IMG_ETOOL_HOME_NAV); // "Home" icon
+        else {
+            String imageId = zoomFactor > 1.0
+                    ? (both ? ScaveImages.IMG_ETOOL16_ZOOMIN : horizontally ? ScaveImages.IMG_ETOOL16_HZOOMIN : ScaveImages.IMG_ETOOL16_VZOOMIN)
+                    : (both ? ScaveImages.IMG_ETOOL16_ZOOMOUT : horizontally ? ScaveImages.IMG_ETOOL16_HZOOMOUT : ScaveImages.IMG_ETOOL16_VZOOMOUT);
+            imageDescriptor = ScavePlugin.getImageDescriptor(imageId);
+        }
+        setImageDescriptor(imageDescriptor);
     }
 
 
