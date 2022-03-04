@@ -298,8 +298,8 @@ public class VectorBrowserView extends ViewWithMessagePart {
                 boolean hasEventNumbers = vector.getColumns().indexOf('E') >= 0;
                 gotoEventAction.setEnabled(hasEventNumbers);
                 setEventNumberColumnVisible(hasEventNumbers);
-                setContentDescription(String.format("'%s.%s' in run %s from file %s",
-                        vector.getModuleName(), vector.getName(),
+                setContentDescription(String.format("'%s.%s' vectorID=%d in run %s from file %s",
+                        vector.getModuleName(), vector.getName(), vector.getVectorId(),
                         vector.getFileRun().getRun().getRunName(),
                         vector.getFileRun().getFile().getFilePath()));
             }
