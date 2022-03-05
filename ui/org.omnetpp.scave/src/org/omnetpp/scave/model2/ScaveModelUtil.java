@@ -255,7 +255,7 @@ public class ScaveModelUtil {
                     ResultItem r = manager.getItem(idlist.get(i));
                     Debug.println(
                             String.format("File: %s Run: %s Module: %s Name: %s",
-                                    r.getFileRun().getFile().getFilePath(),
+                                    r.getFile().getFilePath(),
                                     r.getFileRun().getRun().getRunName(),
                                     r.getModuleName(),
                                     r.getName()));

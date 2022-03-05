@@ -145,7 +145,7 @@ public class VectorResultContentProvider implements IVirtualTableContentProvider
             if (item instanceof VectorResult) {
                 VectorResult vector = (VectorResult)item;
                 vectorId = vector.getVectorId();
-                String filename = vector.getFileRun().getFile().getFileSystemFilePath();
+                String filename = vector.getFile().getFileSystemFilePath();
 
                 try {
                     if (SqliteResultFileUtils.isSqliteFile(filename))

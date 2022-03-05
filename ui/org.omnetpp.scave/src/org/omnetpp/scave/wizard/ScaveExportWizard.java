@@ -415,7 +415,7 @@ public class ScaveExportWizard extends Wizard implements IExportWizard {
             if (selectedIDs.isEmpty())
                 return "";
             String firstResultFile = ResultFileManager.callWithReadLock(resultFileManager, () -> {
-                return resultFileManager.getItem(selectedIDs.get(0)).getFileRun().getFile().getFileSystemFilePath();
+                return resultFileManager.getItem(selectedIDs.get(0)).getFile().getFileSystemFilePath();
             });
             return new Path(firstResultFile).removeLastSegments(1).toOSString(); // remove file name
         }

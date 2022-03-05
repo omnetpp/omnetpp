@@ -616,9 +616,9 @@ public class DataTable extends LargeTable implements IDataControl {
             String unit = result.getAttribute("unit");
 
             if (COL_DIRECTORY.equals(column))
-                return result.getFileRun().getFile().getDirectory();
+                return result.getFile().getDirectory();
             else if (COL_FILE.equals(column)) {
-                String fileName = result.getFileRun().getFile().getFileName();
+                String fileName = result.getFile().getFileName();
                 return fileName;
             }
             else if (COL_CONFIG.equals(column)) {

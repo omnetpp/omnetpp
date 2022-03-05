@@ -301,7 +301,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
                 setContentDescription(String.format("'%s.%s' vectorID=%d in run %s from file %s",
                         vector.getModuleName(), vector.getName(), vector.getVectorId(),
                         vector.getFileRun().getRun().getRunName(),
-                        vector.getFileRun().getFile().getFilePath()));
+                        vector.getFile().getFilePath()));
             }
             else
                 setContentDescription("");
@@ -332,7 +332,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
                 }
             }
             else {
-                String fileInWorkspace = vector.getFileRun().getFile().getFilePath();
+                String fileInWorkspace = vector.getFile().getFilePath();
                 showMessage("Vector content cannot be browsed, because the index file (.vci) " +
                                "for \""+fileInWorkspace+"\" is missing or out of date.");
             }

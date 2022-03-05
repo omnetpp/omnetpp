@@ -146,8 +146,8 @@ public class ResultItemPropertySource implements IPropertySource {
                 return value == valueFloor ? String.valueOf((long)valueFloor) : String.valueOf(value);
             }
 
-            if (propertyId.equals(PROP_DIRECTORY)) return resultItem.getFileRun().getFile().getDirectory();
-            if (propertyId.equals(PROP_FILE)) return resultItem.getFileRun().getFile().getFileName();
+            if (propertyId.equals(PROP_DIRECTORY)) return resultItem.getFile().getDirectory();
+            if (propertyId.equals(PROP_FILE)) return resultItem.getFile().getFileName();
             if (propertyId.equals(PROP_CONFIG)) return StringUtils.nullToEmpty(resultItem.getFileRun().getRun().getAttribute(Scave.CONFIGNAME));
             if (propertyId.equals(PROP_RUNNUMBER)) return StringUtils.nullToEmpty(resultItem.getFileRun().getRun().getAttribute(Scave.RUNNUMBER));
             if (propertyId.equals(PROP_RUN_ID)) return resultItem.getFileRun().getRun().getRunName();
