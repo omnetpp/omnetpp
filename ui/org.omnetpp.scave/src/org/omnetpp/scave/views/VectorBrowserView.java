@@ -10,8 +10,6 @@ package org.omnetpp.scave.views;
 import java.lang.reflect.InvocationTargetException;
 
 import org.apache.commons.lang3.ObjectUtils;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.IInputValidator;
@@ -39,7 +37,6 @@ import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog2;
 import org.omnetpp.common.ui.ViewWithMessagePart;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.common.virtualtable.VirtualTable;
-import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.common.IndexFileUtils;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
@@ -269,23 +266,13 @@ public class VectorBrowserView extends ViewWithMessagePart {
 
         DisplayUtils.runNowOrAsyncInUIThread(() -> {
             ResultFileManager.runWithReadLock(manager, () -> {
-                if (!viewer.isDisposed())
-                    setViewerInputOrMessage(finalSelectedVector, finalDataPointIndex, new Status(IStatus.OK, ScavePlugin.PLUGIN_ID, ""));
-                            });
+                if (!viewer.isDisposed()) {
+                    setViewerInput(finalSelectedVector);
+                    if (finalDataPointIndex >= 0)
+                        gotoLine(finalDataPointIndex);
+                }
+            });
         });
-    }
-
-    public void setViewerInputOrMessage(ResultItemRef input, int serial, IStatus status) {
-        final int severity = status.getSeverity();
-        if (severity == IStatus.OK) {
-            setViewerInput(input);
-            if (serial >= 0)
-                gotoLine(serial);
-        }
-        else if (severity == IStatus.CANCEL)
-            showMessage("Canceled");
-        else if (severity == IStatus.ERROR)
-            showMessage("Failed: " + status.getMessage());
     }
 
     protected void setViewerInput(ResultItemRef input) {
