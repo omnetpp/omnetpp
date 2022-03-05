@@ -258,20 +258,16 @@ public class VectorBrowserView extends ViewWithMessagePart {
             return;
         }
 
-        // recompute computed files if needed
-
         final ResultFileManager manager = selectedVector.getResultFileManager();
         final ResultItemRef finalSelectedVector = selectedVector;
         final int finalDataPointIndex = dataPointIndex;
 
-        DisplayUtils.runNowOrAsyncInUIThread(() -> {
-            ResultFileManager.runWithReadLock(manager, () -> {
-                if (!viewer.isDisposed()) {
-                    setViewerInput(finalSelectedVector);
-                    if (finalDataPointIndex >= 0)
-                        gotoLine(finalDataPointIndex);
-                }
-            });
+        ResultFileManager.runWithReadLock(manager, () -> {
+            if (!viewer.isDisposed()) {
+                setViewerInput(finalSelectedVector);
+                if (finalDataPointIndex >= 0)
+                    gotoLine(finalDataPointIndex);
+            }
         });
     }
 
