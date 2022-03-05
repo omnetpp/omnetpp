@@ -10,6 +10,7 @@ package org.omnetpp.scave.views;
 import java.lang.reflect.InvocationTargetException;
 
 import org.apache.commons.lang3.ObjectUtils;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.IInputValidator;
@@ -35,13 +36,13 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog2;
 import org.omnetpp.common.ui.ViewWithMessagePart;
-import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.common.virtualtable.VirtualTable;
 import org.omnetpp.scave.common.IndexFileUtils;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.datatable.VectorResultContentProvider;
 import org.omnetpp.scave.editors.datatable.VectorResultRowRenderer;
+import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.SqliteResultFileUtils;
 import org.omnetpp.scave.engine.VectorDatum;
@@ -157,10 +158,8 @@ public class VectorBrowserView extends ViewWithMessagePart {
         selectionChangedListener = new INullSelectionListener() {
             @Override
             public void selectionChanged(final IWorkbenchPart part, final ISelection selection) {
-                ResultFileManager.runWithReadLock(getResultFileManager(selection), () -> {
-                    if (part == activePart)
-                        setViewerInput(selection);
-                });
+                if (part == activePart)
+                    setViewerInput(selection);
             }
         };
         getSite().getPage().addPostSelectionListener(selectionChangedListener);
@@ -207,21 +206,6 @@ public class VectorBrowserView extends ViewWithMessagePart {
         viewer.setFocus();
     }
 
-    private ResultFileManager getResultFileManager(ISelection selection) {
-        if (selection instanceof IDListSelection) {
-            return ((IDListSelection)selection).getResultFileManager();
-        }
-        else if (selection instanceof IStructuredSelection) {
-            Object selectedObject = ((IStructuredSelection)selection).getFirstElement();
-            if (selectedObject instanceof ChartLine) {
-                ChartLine line = (ChartLine)selectedObject;
-                if (line.getResultItemRef() != null)
-                    return line.getResultItemRef().getResultFileManager();
-            }
-        }
-        return null;
-    }
-
     public void setViewerInput(ISelection selection) {
         ResultItemRef selectedVector = null;
         int dataPointIndex = -1;
@@ -236,7 +220,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
         }
         else if (selection instanceof IStructuredSelection) {
             Object selectedObject = ((IStructuredSelection)selection).getFirstElement();
-            if (selectedObject instanceof ChartLine) {
+            if (selectedObject instanceof ChartLine) {  // TODO this branch is dead, currently no one sends ChartLine as selection
                 ChartLine selectedLine = (ChartLine)selectedObject;
                 ResultItemRef item = selectedLine.getResultItemRef();
                 if (item != null && ResultFileManager.getTypeOf(item.getID()) == ResultFileManager.VECTOR) {
@@ -247,49 +231,44 @@ public class VectorBrowserView extends ViewWithMessagePart {
             }
         }
 
-        if (ObjectUtils.equals(selectedVector, viewer.getInput())) {
-            if (dataPointIndex >= 0)
-                gotoLine(dataPointIndex);
-            return;
-        }
-
         if (selectedVector == null) {
-            setViewerInput((ResultItemRef)null);
-            return;
+            setContentDescription("");
+            viewer.setInput(null);
+        }
+        else {
+            final ResultItemRef selectedVector_ = selectedVector;
+            final int dataPointIndex_ = dataPointIndex;
+            ResultFileManager.runWithReadLock(selectedVector.getResultFileManager(), () -> {
+                doSetViewerInput(selectedVector_, dataPointIndex_);
+            });
         }
 
-        final ResultFileManager manager = selectedVector.getResultFileManager();
-        final ResultItemRef finalSelectedVector = selectedVector;
-        final int finalDataPointIndex = dataPointIndex;
-
-        ResultFileManager.runWithReadLock(manager, () -> {
-            if (!viewer.isDisposed()) {
-                setViewerInput(finalSelectedVector);
-                if (finalDataPointIndex >= 0)
-                    gotoLine(finalDataPointIndex);
-            }
-        });
     }
 
-    protected void setViewerInput(ResultItemRef input) {
-        if (!ObjectUtils.equals(input, viewer.getInput())) {
-            viewer.setInput(input);
-            // show message instead of empty table, when no index file
-            checkInput(input);
-            if (input != null && input.resolve() instanceof VectorResult) {
-                VectorResult vector = (VectorResult)input.resolve();
+    protected void doSetViewerInput(ResultItemRef selectedVector, int dataPointIndex) {
+        Assert.isTrue(selectedVector.resolve() instanceof VectorResult);
+        selectedVector.getResultFileManager().checkReadLock();
+
+        if (!ObjectUtils.equals(selectedVector, viewer.getInput())) {
+            viewer.setInput(selectedVector);
+            VectorResult vector = (VectorResult)selectedVector.resolve();
+            boolean ok = checkInput(vector);
+            if (ok) {
+                hideMessage();
                 boolean hasEventNumbers = vector.getColumns().indexOf('E') >= 0;
+                setEventNumberColumnVisible(hasEventNumbers);
                 gotoEventAction.setEnabled(hasEventNumbers);
                 setEventNumberColumnVisible(hasEventNumbers);
                 setContentDescription(String.format("'%s.%s' vectorID=%d in run %s from file %s",
                         vector.getModuleName(), vector.getName(), vector.getVectorId(),
                         vector.getFileRun().getRun().getRunName(),
                         vector.getFile().getFilePath()));
+                viewer.redraw();
             }
-            else
-                setContentDescription("");
-            viewer.redraw();
         }
+
+        if (dataPointIndex >= 0)
+            gotoLine(dataPointIndex);
     }
 
     /**
@@ -297,28 +276,22 @@ public class VectorBrowserView extends ViewWithMessagePart {
      * If not then the content of the vector can not be displayed
      * and a message is shown.
      */
-    private void checkInput(ResultItemRef input) {
-        if (input != null && input.resolve() instanceof VectorResult) {
-            VectorResult vector = (VectorResult)input.resolve();
-            String file = vector.getFileRun().getFile().getFileSystemFilePath();
-            if (SqliteResultFileUtils.isSqliteFile(file) || (IndexFileUtils.isExistingVectorFile(file) && IndexFileUtils.isIndexFileUpToDate(file))) {
-                hideMessage();
-                if (eventNumberColumn != null && vector.getColumns().indexOf('E') < 0) {
-                    eventNumberColumn.dispose();
-                    eventNumberColumn = null;
-                }
-                else if (eventNumberColumn == null && vector.getColumns().indexOf('E') >= 0) {
-                    eventNumberColumn = viewer.createColumn();
-                    eventNumberColumn.setWidth(60);
-                    eventNumberColumn.setText("Event#");
-                    viewer.setColumnOrder(new int[] {0,3,1,2});
-                }
+    private boolean checkInput(VectorResult vector) {
+        ResultFile resultFile = vector.getFile();
+        String fileSystemFilename = resultFile.getFileSystemFilePath();
+        if (SqliteResultFileUtils.isSqliteFile(fileSystemFilename)) {
+            return true;
+        }
+        else if (IndexFileUtils.isExistingVectorFile(fileSystemFilename)) {
+            if (!IndexFileUtils.isIndexFileUpToDate(fileSystemFilename)) {
+                showMessage("Vector content cannot be browsed, because the index file (.vci) for \"" + resultFile.getFilePath() + "\" is missing or out of date.");
+                return false;
             }
-            else {
-                String fileInWorkspace = vector.getFile().getFilePath();
-                showMessage("Vector content cannot be browsed, because the index file (.vci) " +
-                               "for \""+fileInWorkspace+"\" is missing or out of date.");
-            }
+            return true;
+        }
+        else {
+            showMessage("Vector content cannot be browsed, because \"" + resultFile.getFilePath() + "\" is missing, or has an unrecognized/unsupported format.");
+            return false;
         }
     }
 

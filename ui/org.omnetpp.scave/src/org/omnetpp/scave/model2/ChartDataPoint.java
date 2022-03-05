@@ -16,6 +16,7 @@ import org.omnetpp.scave.model.Chart;
  *
  * @author tomi
  */
+//TODO this class is currently unused, delete?
 public class ChartDataPoint extends ChartLine {
 
     private int index;
