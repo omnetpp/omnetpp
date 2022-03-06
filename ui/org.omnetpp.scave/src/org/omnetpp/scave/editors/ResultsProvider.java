@@ -85,7 +85,13 @@ public class ResultsProvider implements IScaveResultsPickleProvider {
         }
         else {
             Debug.println("ResultsProvider." + key.getMethodName() + ": computing and memoizing reply");
-            ShmSendBufferVector pickles = Debug.timed("ResultsProvider." + key.getMethodName(), 100, () -> pickler.call());
+            ShmSendBufferVector pickles;
+            try {
+                pickles = Debug.timed("ResultsProvider." + key.getMethodName(), 100, () -> pickler.call());
+            }
+            catch (RuntimeException e) {
+                throw new ResultFileException(e.getMessage() + " -- try reloading result files", e);
+            }
             List<ByteVector> intoCache = new ArrayList<>();
             for (int i = 0; i < pickles.size(); ++i) {
                 ShmSendBuffer buf = pickles.get(i);

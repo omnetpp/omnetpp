@@ -187,6 +187,10 @@ def _guarded_result_query_func(func):
         except Exception as e:
             if "Parse error in match expression: syntax error" in str(e):
                 raise ResultQueryError("Syntax error in result filter expression")
+            elif "org.omnetpp.scave.editors.ResultFileException" in str(e):
+                m = re.search(r"org.omnetpp.scave.editors.ResultFileException(.*?)\n", str(e))
+                msg = m.group(1).strip(" :")
+                raise ResultQueryError(msg)
             else:
                 raise e
     return inner

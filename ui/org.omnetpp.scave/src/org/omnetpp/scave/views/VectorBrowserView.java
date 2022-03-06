@@ -37,14 +37,13 @@ import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog2;
 import org.omnetpp.common.ui.ViewWithMessagePart;
 import org.omnetpp.common.virtualtable.VirtualTable;
-import org.omnetpp.scave.common.IndexFileUtils;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.IDListSelection;
+import org.omnetpp.scave.editors.ResultFileException;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.datatable.VectorResultContentProvider;
 import org.omnetpp.scave.editors.datatable.VectorResultRowRenderer;
-import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.engine.SqliteResultFileUtils;
 import org.omnetpp.scave.engine.VectorDatum;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.model2.ChartDataPoint;
@@ -82,7 +81,12 @@ public class VectorBrowserView extends ViewWithMessagePart {
     @Override
     protected Control createViewControl(final Composite parent) {
         contentProvider = new VectorResultContentProvider();
-        viewer = new VirtualTable<VectorDatum>(parent, SWT.NONE);
+        viewer = new VirtualTable<VectorDatum>(parent, SWT.NONE) {
+            @Override
+            public void handleRuntimeException(RuntimeException e) {
+                VectorBrowserView.this.handleRuntimeException(e);
+            }
+        };
         viewer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         viewer.setContentProvider(contentProvider);
         viewer.setRowRenderer(new VectorResultRowRenderer());
@@ -250,49 +254,41 @@ public class VectorBrowserView extends ViewWithMessagePart {
         selectedVector.getResultFileManager().checkReadLock();
 
         if (!ObjectUtils.equals(selectedVector, viewer.getInput())) {
-            viewer.setInput(selectedVector);
-            VectorResult vector = (VectorResult)selectedVector.resolve();
-            boolean ok = checkInput(vector);
-            if (ok) {
-                hideMessage();
-                boolean hasEventNumbers = vector.getColumns().indexOf('E') >= 0;
-                setEventNumberColumnVisible(hasEventNumbers);
-                gotoEventAction.setEnabled(hasEventNumbers);
-                setEventNumberColumnVisible(hasEventNumbers);
-                setContentDescription(String.format("'%s.%s' vectorID=%d in run %s from file %s",
-                        vector.getModuleName(), vector.getName(), vector.getVectorId(),
-                        vector.getFileRun().getRun().getRunName(),
-                        vector.getFile().getFilePath()));
-                viewer.redraw();
+            try {
+                viewer.setInput(selectedVector); // note: all error checking regarding the underlying vec/vci files is here (in content provider's inputChanged() method)
             }
+            catch (RuntimeException ex) {
+                handleRuntimeException(ex);
+                return;
+            }
+
+            VectorResult vector = (VectorResult)selectedVector.resolve();
+            hideMessage();
+            boolean hasEventNumbers = vector.getColumns().indexOf('E') >= 0;
+            setEventNumberColumnVisible(hasEventNumbers);
+            gotoEventAction.setEnabled(hasEventNumbers);
+            setEventNumberColumnVisible(hasEventNumbers);
+            setContentDescription(String.format("'%s.%s' vectorID=%d in run %s from file %s",
+                    vector.getModuleName(), vector.getName(), vector.getVectorId(),
+                    vector.getFileRun().getRun().getRunName(),
+                    vector.getFile().getFilePath()));
+            viewer.redraw();
         }
 
         if (dataPointIndex >= 0)
             gotoLine(dataPointIndex);
     }
 
-    /**
-     * Checks if the input is a vector whose file has an index.
-     * If not then the content of the vector can not be displayed
-     * and a message is shown.
-     */
-    private boolean checkInput(VectorResult vector) {
-        ResultFile resultFile = vector.getFile();
-        String fileSystemFilename = resultFile.getFileSystemFilePath();
-        if (SqliteResultFileUtils.isSqliteFile(fileSystemFilename)) {
-            return true;
-        }
-        else if (IndexFileUtils.isExistingVectorFile(fileSystemFilename)) {
-            if (!IndexFileUtils.isIndexFileUpToDate(fileSystemFilename)) {
-                showMessage("Vector content cannot be browsed, because the index file (.vci) for \"" + resultFile.getFilePath() + "\" is missing or out of date.");
-                return false;
-            }
-            return true;
-        }
+    protected void handleRuntimeException(RuntimeException e) {
+        String message;
+        if (e instanceof ResultFileException)
+            message = e.getMessage() + " -- try reloading result files in the editor";
         else {
-            showMessage("Vector content cannot be browsed, because \"" + resultFile.getFilePath() + "\" is missing, or has an unrecognized/unsupported format.");
-            return false;
+            message = "An error occurred during refreshing.";
+            ScavePlugin.logError(e);
         }
+        setContentDescription(message);
+        viewer.setInput(null);
     }
 
     // Order: Item#, Event#, Time, Value
