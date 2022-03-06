@@ -194,7 +194,7 @@ public class ResultsProvider implements IScaveResultsPickleProvider {
             IDList idList = filterCache.getFilterResult(ResultFileManager.VECTOR, filterExpression);
             if (idList == null)
                 idList = manager.filterIDList(manager.getAllVectors(), filterExpression, -1, interrupted); // no need to cache, as result will be (likely) memoized
-            return pickler.getVectorsPickle(filterExpression, includeAttrs, simTimeStart, simTimeEnd);
+            return pickler.getVectorsPickle(idList, includeAttrs, simTimeStart, simTimeEnd);
         });
         return names;
     }
