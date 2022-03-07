@@ -7,7 +7,7 @@ filter_expression = props["filter"]
 
 try:
     df = results.get_vectors(filter_expression, include_attrs=True, include_itervars=True)
-except ValueError as e:
+except results.ResultQueryError as e:
     raise chart.ChartScriptError("Error while querying results: " + str(e))
 
 if df.empty:

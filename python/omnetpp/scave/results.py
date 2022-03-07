@@ -165,22 +165,28 @@ from functools import wraps
 
 import numpy as np
 import pandas as pd
+import re
 
 from ._version import __version__
 
 from omnetpp.scave.utils import _pivot_results, _pivot_metadata, _select_param_assignments
 
+# Nontechnical error whose text may directly be displayed to the end user.
+# Subclasses ValueError for backward compatibility.
+class ResultQueryError(ValueError):
+    pass
+
 def _guarded_result_query_func(func):
     @wraps(func)
     def inner(filter_or_dataframe, **rest):
         if type(filter_or_dataframe) is str and not filter_or_dataframe:
-            raise ValueError("Empty filter expression")
+            raise ResultQueryError("Empty filter expression")
         # TODO: add else: assert on dataframe columns
         try:
             return func(filter_or_dataframe, **rest)
         except Exception as e:
             if "Parse error in match expression: syntax error" in str(e):
-                raise ValueError("Syntax error in result filter expression")
+                raise ResultQueryError("Syntax error in result filter expression")
             else:
                 raise e
     return inner

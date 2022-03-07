@@ -53,7 +53,7 @@ avg_repls = bool(strtobool(props['average_replications']))
 try:
     sc = results.get_scalars(filter_expression, include_fields=True, include_itervars=True, include_runattrs=True)
     iv = results.get_itervars("(" + filter_expression + ") AND NOT name =~ " + x_runattr, include_itervars=True, include_runattrs=True)
-except ValueError as e:
+except results.ResultQueryError as e:
     raise chart.ChartScriptError("Error while querying results: " + str(e))
 iv['module'] = ""
 

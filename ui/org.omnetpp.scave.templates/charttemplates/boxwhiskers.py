@@ -7,7 +7,7 @@ utils.preconfigure_plot(props)
 try:
     stats = results.get_statistics(props["filter"], include_attrs=True, include_runattrs=True, include_itervars=True)
     hists = results.get_histograms(props["filter"], include_attrs=True, include_runattrs=True, include_itervars=True)
-except ValueError as e:
+except results.ResultQueryError as e:
     raise chart.ChartScriptError("Error while querying results: " + str(e))
 
 df = pd.concat([stats, hists], sort=False)

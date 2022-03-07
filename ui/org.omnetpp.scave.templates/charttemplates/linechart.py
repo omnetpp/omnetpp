@@ -13,7 +13,7 @@ end_time = float(props["vector_end_time"] or math.inf)
 # query vector data into a data frame
 try:
     df = results.get_vectors(filter_expression, include_attrs=True, include_runattrs=True, include_itervars=True, start_time=start_time, end_time=end_time)
-except ValueError as e:
+except results.ResultQueryError as e:
     raise chart.ChartScriptError("Error while querying results: " + str(e))
 
 if df.empty:
