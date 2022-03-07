@@ -34,6 +34,9 @@
 #include "vectorfileindex.h"
 #include "vectorfileindexer.h"
 
+#if defined(__MINGW32__)
+int _CRT_glob = 0;  // Turn off runtime file globbing support on MinGW. The shell already handles file globbing on the command line.
+#endif
 
 using namespace std;
 using namespace omnetpp::common;
