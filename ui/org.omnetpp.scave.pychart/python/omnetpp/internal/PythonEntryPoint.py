@@ -86,8 +86,12 @@ class PythonEntryPoint(object):
             # Any other kind of error (especially KeyError) might need a bit of
             # help to produce a meaningful message. Without this, str() returns
             # _only_ the key that was not found, which doesn't say much.
-            ideplot.set_warning(tb.format_exception_only(type(e), e)[-1].strip()
-                                    + "\n(See Console for details)")
+            msg = tb.format_exception_only(type(e), e)[-1].strip()
+            if msg.startswith("py4j.protocol.Py4JJavaError:") and "\n" in msg:
+                msg = msg.split("\n")[1].strip(" :")  # discard Py4JJavaError line (1st line) and Java stack trace (3rd and further lines); keep 2nd line only (type and msg of the Java exception)
+            elif "\n" in msg:
+                msg = msg.split("\n")[0].strip()  # only display first line
+            ideplot.set_warning(msg + "\n(See Console for details)")
             raise e
 
 
