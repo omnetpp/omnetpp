@@ -27,6 +27,7 @@ import org.omnetpp.common.ui.DropdownAction;
 import org.omnetpp.common.ui.FocusManager;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.actions.ClearCachesAction;
 import org.omnetpp.scave.actions.CopySelectionAsFilterAction;
 import org.omnetpp.scave.actions.CreateTempChartFromGalleryAction;
 import org.omnetpp.scave.actions.CreateTempChartFromTemplateAction;
@@ -241,6 +242,8 @@ public class BrowseDataPage extends FormEditorPage {
         for (Chart chart : chartsThatHaveFilter)
             setFilterSubmenu.add(new SetChartFilterAction(chart));
         contextMenuManager.add(setFilterSubmenu);
+        if (Debug.inDevelopment())
+            contextMenuManager.add(new ClearCachesAction());
         contextMenuManager.add(new Separator());
 
         contextMenuManager.add(actions.createExportDataMenu("Export Data"));
