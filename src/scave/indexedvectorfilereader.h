@@ -27,6 +27,7 @@
 #include "ivectordatareader.h"
 #include "resultfilemanager.h"
 #include "vectorfileindex.h"
+#include "filefingerprint.h"
 
 namespace omnetpp {
 namespace scave {

@@ -34,6 +34,7 @@
 #include "enumtype.h"
 #include "scaveutils.h"
 #include "enums.h"
+#include "filefingerprint.h"
 
 namespace omnetpp {
 namespace scave {

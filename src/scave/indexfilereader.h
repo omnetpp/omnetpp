@@ -23,6 +23,7 @@
 #include "omnetpp/platdep/platmisc.h"
 #include "scavedefs.h"
 #include "vectorfileindex.h"
+#include "filefingerprint.h"
 
 namespace omnetpp {
 namespace scave {
