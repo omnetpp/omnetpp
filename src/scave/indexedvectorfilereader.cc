@@ -29,12 +29,8 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace scave {
 
-#define VECTOR_FILE_VERSION 2
-
-//=========================================================================
-
-IndexedVectorFileReader::IndexedVectorFileReader(const char *filename, bool includeEventNumbers, AdapterLambdaType adapterLambda)
-    : adapterLambda(adapterLambda), fname(filename), includeEventNumbers(includeEventNumbers)
+IndexedVectorFileReader::IndexedVectorFileReader(const char *filename, bool includeEventNumbers, AdapterLambdaType adapterLambda, const FileFingerprint& fingerprint)
+    : adapterLambda(adapterLambda), fname(filename), includeEventNumbers(includeEventNumbers), expectedFingerprint(fingerprint)
 {
     std::string ifname = IndexFileUtils::getIndexFileName(filename);
     IndexFileReader indexReader(ifname.c_str());
@@ -61,6 +57,12 @@ IndexedVectorFileReader::~IndexedVectorFileReader()
 
 Entries IndexedVectorFileReader::loadBlock(const Block& block, std::function<bool(const VectorDatum&)> filter)
 {
+    FileFingerprint actualFingerprint = readFileFingerprint(fname.c_str());
+    if (!expectedFingerprint.isEmpty() && actualFingerprint != expectedFingerprint)
+        throw opp_runtime_error("Vector file \"%s\" changed on disk", fname.c_str());
+    if (actualFingerprint != index->fingerprint)
+        throw opp_runtime_error("Index file (.vci) for \"%s\" is out of date", fname.c_str());
+
     std::vector<VectorDatum> result;
 
     VectorInfo *vector = index->getVectorById(block.vectorId);
