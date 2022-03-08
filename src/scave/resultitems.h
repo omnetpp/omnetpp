@@ -279,6 +279,7 @@ class SCAVE_API ResultFile
     const std::string& getFilePath() const {return displayName;}
     const std::string& getFileSystemFilePath() const {return fileSystemFilePath;}
     const std::string& getInputName() const {return inputName;}
+    const FileFingerprint& getFingerprint() const {return fingerprint;}
     const int64_t getFileSize() const {return fingerprint.fileSize;}
     const int64_t getModificationTime() const {return fingerprint.lastModified;}
     FileType getFileType() const {return fileType;}

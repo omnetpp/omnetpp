@@ -27,6 +27,7 @@
 #include "scave/indexedvectorfilereader.h"
 #include "scave/sqlitevectordatareader.h"
 #include "scave/vectorfileindexer.h"
+#include "scave/filefingerprint.h"
 #include "scave/scaveexception.h"
 #include "scave/exporter.h"
 #include "scave/sqliteresultfileutils.h"
@@ -63,10 +64,7 @@ typedef int64_t eventnumber_t;
 
 namespace omnetpp { namespace scave {
 class IDList;
-class ResultItemField;
-class ResultItemFields;
-class DataflowManager;
-class Node;
+class FileFingerprint;
 } } // namespaces
 
 USE_COMMON_ENGINE_ILOCK();
@@ -507,6 +505,9 @@ namespace omnetpp { namespace scave {
 
 /* ------------------ sqliteresultfileutils.h ----------------------- */
 %include "scave/sqliteresultfileutils.h"
+
+/* ------------------ filefingerprint.h ----------------------- */
+%include "scave/filefingerprint.h"
 
 /* ------------------ xyarray.h ----------------------- */
 %include "scave/xyarray.h"
