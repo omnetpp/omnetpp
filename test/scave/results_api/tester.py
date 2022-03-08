@@ -4,7 +4,6 @@ import sys
 from csv import QUOTE_NONNUMERIC
 import difflib
 import numpy as np
-import colorful as cf
 
 def sanitize_row(row):
     if "attrname" in row and row["attrname"] in ["datetime", "datetimef", "processid"]:
@@ -69,6 +68,11 @@ def colorDiff(diff):
         else:
             yield line
 
+def green(text):
+    return "\033[0;32m" + text + "\033[0;0m"
+
+def red(text):
+    return "\033[1;31m" + text + "\033[0;0m"
 
 def addMissingNewLine(str):
     return str if str.endswith("\n") else str + "\n"
@@ -128,7 +132,7 @@ def run_tests(locals):
                 traceback.print_exc()
                 o = False
             passed = (o is None) or o # "void" methods are successful if they don't raise an Exception
-            print(cf.green("PASS") if passed else cf.red("FAIL"))
+            print(green("PASS") if passed else red("FAIL"))
             add_outcome(l, passed)
 
     ideplot.set_property("Plot.Title", "See console for test results.")
