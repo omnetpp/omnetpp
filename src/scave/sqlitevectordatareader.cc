@@ -52,12 +52,13 @@ static std::string makePlaceholders(int n)
     return questionmarks;
 }
 
-SqliteVectorDataReader::SqliteVectorDataReader(const char *filename, bool includeEventNumbers, AdapterLambdaType adapterLambda) :
+SqliteVectorDataReader::SqliteVectorDataReader(const char *filename, bool includeEventNumbers, AdapterLambdaType adapterLambda, const FileFingerprint& fingerprint) :
     db(nullptr),
     stmt(nullptr),
     filename(filename),
     includeEventNumbers(includeEventNumbers),
-    adapterLambda(adapterLambda)
+    adapterLambda(adapterLambda),
+    expectedFingerprint(fingerprint)
 {
     // empty
 }
@@ -170,6 +171,9 @@ void SqliteVectorDataReader::processStatementRows()
 
 void SqliteVectorDataReader::ensureDbOpen()
 {
+    if (!expectedFingerprint.isEmpty() && readFileFingerprint(filename.c_str()) != expectedFingerprint)
+        throw opp_runtime_error("Vector file \"%s\" changed on disk", filename.c_str());
+
     if (db == nullptr) {
         checkOK(sqlite3_open_v2(filename.c_str(), &db, SQLITE_OPEN_READONLY, 0));
 

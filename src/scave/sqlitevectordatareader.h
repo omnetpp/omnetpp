@@ -19,6 +19,7 @@
 #include <set>
 #include <string>
 #include "ivectordatareader.h"
+#include "filefingerprint.h"
 #include "common/sqlite3.h"
 
 namespace omnetpp {
@@ -35,6 +36,7 @@ class SCAVE_API SqliteVectorDataReader : public IVectorDataReader
         bool includeEventNumbers;
         size_t batchSize = 64;
         AdapterLambdaType adapterLambda;
+        FileFingerprint expectedFingerprint;
         std::map<int, int> simtimeExpForVectorId;
 
     protected:
@@ -53,11 +55,11 @@ class SCAVE_API SqliteVectorDataReader : public IVectorDataReader
         void processStatementRows();
 
     public:
-        explicit SqliteVectorDataReader(const char *filename, bool includeEventNumbers, Adapter *adapter) :
-            SqliteVectorDataReader(filename, includeEventNumbers, [adapter](int vectorId, const std::vector<VectorDatum>& data) { adapter->process(vectorId, data); })
+        explicit SqliteVectorDataReader(const char *filename, bool includeEventNumbers, Adapter *adapter, const FileFingerprint& fingerprint = FileFingerprint()) :
+            SqliteVectorDataReader(filename, includeEventNumbers, [adapter](int vectorId, const std::vector<VectorDatum>& data) { adapter->process(vectorId, data); }, fingerprint)
         { }
 
-        explicit SqliteVectorDataReader(const char *filename, bool includeEventNumbers, AdapterLambdaType adapter);
+        explicit SqliteVectorDataReader(const char *filename, bool includeEventNumbers, AdapterLambdaType adapter, const FileFingerprint& fingerprint = FileFingerprint());
 
         virtual ~SqliteVectorDataReader();
 
