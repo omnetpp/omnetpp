@@ -113,7 +113,7 @@ ide:
 	@echo ===== Building IDE =====
 	$(Q)-rm releng/dist/*
 	$(Q)releng/build-omnetpp-ide-linux
-	$(Q)tar xfz releng/dist/*-omnetpp-*-src-linux.tgz $$(cat Version)/ide --strip-components=1
+	$(Q)tar xfz releng/dist/*-omnetpp-*-linux-x86_64.tgz $$(cat Version)/ide --strip-components=1
 
 # dependencies (because of ver.h, opp_msgtool, etc)
 common layout eventlog scave nedxml sim envir cmdenv qtenv systemc makefiles: utils
