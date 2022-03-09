@@ -59,6 +59,13 @@ public interface IPythonEntryPoint {
     void setNativeChartPlotter(INativeChartPlotter chartPlotter);
 
     /**
+     * Sets the plot warning annotator of the associated Python process to
+     * warningAnnotator. This lets the Python process show warning text
+     * on the plot and set the error marker of the editor.
+     */
+    void setWarningAnnotator(IPlotWarningAnnotator warningAnnotator);
+
+    /**
      * Can be used to set arbitrary data in the execution context of the
      * Python scripts passed to execute(), in the form of a pickle.
      */

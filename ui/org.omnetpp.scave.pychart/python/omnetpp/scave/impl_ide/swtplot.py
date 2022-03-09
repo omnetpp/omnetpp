@@ -85,12 +85,8 @@ def set_warning(warning):
 
     - **warning** *(string)*: The warning string.
     """
-    # TODO maybe we need a common interface?
-    if Gateway.widget_provider:
-        Gateway.widget_provider.setWarning(warning)
 
-    if Gateway.chart_plotter:
-        Gateway.chart_plotter.setWarning(warning)
+    Gateway.warning_annotator.setWarning(warning)
 
 def plot_lines(df, props):
     """

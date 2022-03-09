@@ -85,10 +85,4 @@ public class SingleWidgetProvider implements IPlotWidgetProvider {
         // TODO Auto-generated method stub
 
     }
-
-    @Override
-    public void setWarning(String warning) {
-        // TODO Auto-generated method stub
-
-    }
 }

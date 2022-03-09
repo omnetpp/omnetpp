@@ -11,6 +11,7 @@ __license__ = """
 
 import sys
 import os
+import re
 import pickle as pl
 import traceback as tb
 
@@ -37,6 +38,36 @@ try:
 except ImportError as e:
     print("can't import " + e.name)
     sys.exit(1)
+
+def _extract_stacktrace(exception):
+    msg = "".join(tb.format_exception(exception))
+
+    # Tweak the exception message to only show the frame of the chart script, in a friendlier way.
+    # Also, only tweak if the message conforms to the expected pattern, otherwise leave it alone.
+    expectedFirstLine = "Traceback (most recent call last):"
+    replacementFirstLine = "An error occurred. Traceback (most recent call last):"
+    startOfFirstRelevantFrame = "  File \"<string>\", line "
+
+    pattern = "(?s)" + re.escape(expectedFirstLine) + "\\n.*?\\n" + re.escape(startOfFirstRelevantFrame)
+    return re.sub(pattern, replacementFirstLine + "\n" + startOfFirstRelevantFrame, msg, 1)
+
+def _extract_message(exception):
+    # extract line number (from the last 'File "<string", line' in the stack trace)
+    msg = "".join(tb.format_exception(exception))
+    m = re.search(r'(?s).*File "<string>", line (\d+)', msg)
+    line = int(m.group(1)) if m else None
+
+    # extract warning text
+    msg = tb.format_exception_only(type(exception), exception)[-1].strip()
+
+    if msg.startswith("py4j.protocol.Py4JJavaError:") and "\n" in msg:
+        # discard Py4JJavaError line (1st line) and Java stack trace (3rd and further lines);
+        # keep 2nd line only (type and msg of the Java exception)
+        msg = msg.split("\n")[1].strip(" :")
+    elif "\n" in msg:
+        msg = msg.split("\n")[0].strip()  # only display first line
+
+    return line, msg
 
 
 class PythonEntryPoint(object):
@@ -71,28 +102,29 @@ class PythonEntryPoint(object):
     def setNativeChartPlotter(self, chart_plotter):
         Gateway.chart_plotter = chart_plotter
 
+    def setWarningAnnotator(self, warning_annotator):
+        Gateway.warning_annotator = warning_annotator
+
     # @TimeAndGuard(measureTime=False)
     def execute(self, chartInput):
         # these imports must be lazy, to allow correct module initialization
         from omnetpp.scave import chart, ideplot
+
         try:
             exec(chartInput, self.execContext)
         except chart.ChartScriptError as e:
             # ChartScriptErrors are by convention constructed with a message that
             # is helpful and complete on its own, so just printing that is OK.
-            ideplot.set_warning(str(e))
+            Gateway.warning_annotator.setWarning(str(e))
             sys.exit(1)
         except Exception as e:
-            # Any other kind of error (especially KeyError) might need a bit of
-            # help to produce a meaningful message. Without this, str() returns
-            # _only_ the key that was not found, which doesn't say much.
-            msg = tb.format_exception_only(type(e), e)[-1].strip()
-            if msg.startswith("py4j.protocol.Py4JJavaError:") and "\n" in msg:
-                msg = msg.split("\n")[1].strip(" :")  # discard Py4JJavaError line (1st line) and Java stack trace (3rd and further lines); keep 2nd line only (type and msg of the Java exception)
-            elif "\n" in msg:
-                msg = msg.split("\n")[0].strip()  # only display first line
-            ideplot.set_warning(msg + "\n(See Console for details)")
-            raise e
+            # These errors are also printed to stderr (the Console) in more detail
+            print(_extract_stacktrace(e), file=sys.stderr)
+
+            # Add problem marker in editor
+            line, message = _extract_message(e)
+            Gateway.warning_annotator.setWarning(message + "\n(See Console for details)")
+            Gateway.warning_annotator.setErrorMarkerAnnotation(line, message)
 
 
     # @TimeAndGuard(measureTime=False)

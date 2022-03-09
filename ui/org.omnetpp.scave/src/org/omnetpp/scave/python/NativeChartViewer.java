@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.Pair;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.BarPlot;
 import org.omnetpp.scave.charting.HistogramPlot;
 import org.omnetpp.scave.charting.Legend;
@@ -27,6 +28,7 @@ import org.omnetpp.scave.editors.FilterCache;
 import org.omnetpp.scave.editors.MemoizationCache;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.pychart.IPlotWarningAnnotator;
 import org.omnetpp.scave.pychart.PythonCallerThread.ExceptionHandler;
 import org.omnetpp.scave.pychart.PythonProcessPool;
 
@@ -40,8 +42,8 @@ public class NativeChartViewer extends ChartViewerBase {
     private PlotBase plot;
     private NativeChartPlotter chartPlotter;
 
-    public NativeChartViewer(Composite parent, Chart chart, PythonProcessPool pool, ResultFileManager rfm, MemoizationCache memoizationCache, FilterCache filterCache) {
-        super(chart, pool, rfm, memoizationCache, filterCache);
+    public NativeChartViewer(Composite parent, Chart chart, PythonProcessPool pool, ResultFileManager rfm, MemoizationCache memoizationCache, FilterCache filterCache, IPlotWarningAnnotator warningAnnotator) {
+        super(chart, pool, rfm, memoizationCache, filterCache, warningAnnotator);
 
         switch (chart.getType()) {
         case BAR:
@@ -92,6 +94,7 @@ public class NativeChartViewer extends ChartViewerBase {
         try {
             acquireNewProcess();
             proc.getEntryPoint().setNativeChartPlotter(chartPlotter);
+            proc.getEntryPoint().setWarningAnnotator(warningAnnotator);
         }
         catch (RuntimeException e) {
             MessageBox mb = new MessageBox(Display.getCurrent().getActiveShell(), SWT.ICON_ERROR);
@@ -172,22 +175,19 @@ public class NativeChartViewer extends ChartViewerBase {
         };
 
         ExceptionHandler ownRunAfterError = (proc, e) -> {
-            runAfterError.handle(proc, e);
-            Display.getDefault().syncExec(() -> {
-                if (!plot.isDisposed()) {
-                    plot.clear();
-                    chartPlotter.applyPendingPropertyChanges();
-                }
-            });
-            if (!proc.isKilledByUs()) {
+            // The following check is duplicated in the outer handler as well, which is not nice...
+            if (proc == getPythonProcess() && !proc.isKilledByUs()) { // Ignore requests from previous processes
+                ScavePlugin.logError("Unhandled exception from chart script", e);
+
                 Display.getDefault().syncExec(() -> {
                     if (!plot.isDisposed()) {
-                        plot.setStatusText(null);
-                        plot.setWarningText("An exception occurred during Python execution.");
-                        plot.update();
+                        plot.clear();
+                        chartPlotter.applyPendingPropertyChanges();
+                        plot.setWarningText("Internal error. See Console for details.");
                     }
                 });
             }
+            runAfterError.handle(proc, e);
         };
 
         proc.pythonCallerThread.asyncExec(() -> {

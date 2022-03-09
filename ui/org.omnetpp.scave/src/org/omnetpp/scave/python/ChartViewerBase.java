@@ -24,6 +24,7 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.pychart.PythonCallerThread.ExceptionHandler;
 import org.omnetpp.scave.pychart.PythonOutputMonitoringThread.IOutputListener;
+import org.omnetpp.scave.pychart.IPlotWarningAnnotator;
 import org.omnetpp.scave.pychart.PythonProcess;
 import org.omnetpp.scave.pychart.PythonProcessPool;
 import org.omnetpp.scave.python.MatplotlibChartViewer.IStateChangeListener;
@@ -37,18 +38,20 @@ public abstract class ChartViewerBase {
     protected PythonProcessPool processPool;
     protected MemoizationCache memoizationCache;
     protected FilterCache filterCache;
+    protected IPlotWarningAnnotator warningAnnotator;
 
     protected List<IOutputListener> outputListeners = new ArrayList<IOutputListener>();
     protected List<IStateChangeListener> stateChangeListeners = new ArrayList<IStateChangeListener>();
 
     private ChartProvider chartProvider;
 
-    public ChartViewerBase(Chart chart, PythonProcessPool processPool, ResultFileManager rfm, MemoizationCache memoizationCache, FilterCache filterCache) {
+    public ChartViewerBase(Chart chart, PythonProcessPool processPool, ResultFileManager rfm, MemoizationCache memoizationCache, FilterCache filterCache, IPlotWarningAnnotator warningAnnotator) {
         this.processPool = processPool;
         this.chart = chart;
         this.rfm = rfm;
         this.memoizationCache = memoizationCache;
         this.filterCache = filterCache;
+        this.warningAnnotator = warningAnnotator;
     }
 
     public Chart getChart() {
@@ -128,6 +131,8 @@ public abstract class ChartViewerBase {
         return chartProvider == null ? null : chartProvider.getObservedColumnNames();
     }
 
+    // Note: runAfterError is only used for fatal (internal) errors - most Python exceptions
+    // are supposed to be caught and reported back through a IPlotWarningAnnotator.
     public abstract void runPythonScript(String script, File workingDir, Runnable runAfterDone, ExceptionHandler runAfterError);
 
     public abstract Control getWidget();

@@ -405,6 +405,8 @@ public abstract class PlotBase extends ZoomableCachingCanvas implements IPlotVie
      */
     public void clear() {
         resetProperties();
+        setStatusText(null);
+        setWarningText(null);
     }
 
     public boolean getAntialias() {
@@ -715,18 +717,15 @@ public abstract class PlotBase extends ZoomableCachingCanvas implements IPlotVie
 
     protected void drawStatusText(Graphics graphics) {
         Rectangle rect = getViewportRectangle();
-        int warningY = rect.y+10;
-
-        if (getStatusText() != null && !StringUtils.isBlank(getStatusText())) {
-            resetDrawingStylesAndColors(graphics);
-            graphics.drawText(getStatusText(), rect.x+10, rect.y+10);
-            warningY += 20;
-        }
 
         if (getWarningText() != null) {
             resetDrawingStylesAndColors(graphics);
             graphics.setForegroundColor(new Color(getDisplay(), 255, 0, 0));
-            graphics.drawText(getWarningText(), rect.x+10, warningY);
+            graphics.drawText(getWarningText(), rect.x+10, rect.y+10);
+        }
+        else if (getStatusText() != null && !StringUtils.isBlank(getStatusText())) {
+            resetDrawingStylesAndColors(graphics);
+            graphics.drawText(getStatusText(), rect.x+10, rect.y+10);
         }
     }
 

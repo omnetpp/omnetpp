@@ -148,11 +148,8 @@ class NativeChartPlotter implements INativeChartPlotter {
         return plot.getWarningText();
     }
 
-    @Override
-    public void setWarning(String warning) {
-        Display.getDefault().syncExec(() -> {
-            plot.setWarningText(warning);
-        });
+    public void setWarning(String message) {
+        plot.setWarningText(message);
     }
 
     public void reset() {

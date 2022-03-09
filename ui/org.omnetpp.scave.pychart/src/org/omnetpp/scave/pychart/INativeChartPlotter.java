@@ -30,7 +30,5 @@ public interface INativeChartPlotter {
 
     void setGroupTitles(List<String> titles);
 
-    void setWarning(String warning);
-
     Set<String> getSupportedPropertyKeys();
 }

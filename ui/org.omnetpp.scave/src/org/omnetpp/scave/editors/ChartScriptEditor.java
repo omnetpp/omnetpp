@@ -67,6 +67,7 @@ import org.omnetpp.common.canvas.LargeScrollableCanvas;
 import org.omnetpp.common.canvas.ZoomableCachingCanvas;
 import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
 import org.omnetpp.common.util.DelayedJob;
+import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
@@ -101,6 +102,7 @@ import org.omnetpp.scave.model.Chart.ChartType;
 import org.omnetpp.scave.model.IModelChangeListener;
 import org.omnetpp.scave.model.ModelChangeEvent;
 import org.omnetpp.scave.model.commands.CommandStack;
+import org.omnetpp.scave.pychart.IPlotWarningAnnotator;
 import org.omnetpp.scave.pychart.MatplotlibWidget;
 import org.omnetpp.scave.pychart.PythonCallerThread.ExceptionHandler;
 import org.omnetpp.scave.pychart.PythonOutputMonitoringThread.IOutputListener;
@@ -274,7 +276,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
                             outputStream.write(output);
                     }
                     catch (IOException e) {
-                        ScavePlugin.logError(e);
+                        ScavePlugin.logError("Unable to write to output or error stream of ChartScriptEditor", e);
                     }
                 });
             };
@@ -290,7 +292,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
                                         errorStream.write("Python process exited with: " + proc.getProcess().exitValue() + "\n");
                                     }
                                     catch (IOException e) {
-                                        e.printStackTrace();
+                                        ScavePlugin.logError("Unable to write to error stream of ChartScriptEditor", e);
                                     }
                                 }
                                 updateActions();
@@ -307,8 +309,26 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
                 }
             };
 
+
             if (chart.getType() == ChartType.MATPLOTLIB) {
-                matplotlibChartViewer = new MatplotlibChartViewer(sashForm, chart, scaveEditor.getPythonProcessPool(), scaveEditor.getResultFileManager(), scaveEditor.getMemoizationCache(), scaveEditor.getFilterCache());
+                IPlotWarningAnnotator warningAnnotator = new IPlotWarningAnnotator () {
+                    @Override
+                    public void setWarning(String warning) {
+                        DisplayUtils.runNowOrSyncInUIThread(() -> {
+                            matplotlibChartViewer.getPlotWidget().setWarning(warning);
+                        });
+                    }
+
+                    @Override
+                    public void setErrorMarkerAnnotation(int lineNumber, String message) {
+                        DisplayUtils.runNowOrSyncInUIThread(() -> {
+                            setErrorMarker(lineNumber, message);
+                            revealErrorAnnotation();
+                        });
+                    }
+                };
+
+                matplotlibChartViewer = new MatplotlibChartViewer(sashForm, chart, scaveEditor.getPythonProcessPool(), scaveEditor.getResultFileManager(), scaveEditor.getMemoizationCache(), scaveEditor.getFilterCache(), warningAnnotator);
 
                 matplotlibChartViewer.addOutputListener(outputListener);
                 matplotlibChartViewer.addStateChangeListener(stateChangeListener);
@@ -317,7 +337,25 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
                 plotWidget.setMenu(createMenuManager().createContextMenu(plotWidget));
             }
             else {
-                nativeChartViewer = new NativeChartViewer(sashForm, chart, scaveEditor.getPythonProcessPool(), scaveEditor.getResultFileManager(), scaveEditor.getMemoizationCache(), scaveEditor.getFilterCache());
+
+                IPlotWarningAnnotator warningAnnotator = new IPlotWarningAnnotator () {
+                    @Override
+                    public void setWarning(String warning) {
+                        DisplayUtils.runNowOrSyncInUIThread(() -> {
+                            nativeChartViewer.getPlot().setWarningText(warning);
+                        });
+                    }
+
+                    @Override
+                    public void setErrorMarkerAnnotation(int lineNumber, String message) {
+                        DisplayUtils.runNowOrSyncInUIThread(() -> {
+                            setErrorMarker(lineNumber, message);
+                            revealErrorAnnotation();
+                        });
+                    }
+                };
+
+                nativeChartViewer = new NativeChartViewer(sashForm, chart, scaveEditor.getPythonProcessPool(), scaveEditor.getResultFileManager(), scaveEditor.getMemoizationCache(), scaveEditor.getFilterCache(), warningAnnotator);
 
                 nativeChartViewer.addOutputListener(outputListener);
                 nativeChartViewer.addStateChangeListener(stateChangeListener);
@@ -769,20 +807,18 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
             };
 
             ExceptionHandler errorHandler = (proc, e) -> {
-                Display.getDefault().syncExec(() -> {
-                    updateActions();
-                    if (!proc.isKilledByUs()) {
+                // The following check is duplicated in the inner handlers as well, which is not nice...
+                if (getChartViewer().getPythonProcess() == proc && !proc.isKilledByUs()) {
+                    Display.getDefault().syncExec(() -> {
                         try {
-                            errorStream.write(tweakStacktrace(e.getMessage()));
+                            errorStream.write("Fatal error:\n" + e.getMessage());
                         } catch (IOException e1) {
-                            ScavePlugin.logError(e);
+                            ScavePlugin.logError(e1);
                         }
-                        annotatePythonException(e);
-                        if (!isScriptEditorFocused())
-                            revealErrorAnnotation();
-                    }
-                    proc.kill();
-                });
+                        proc.kill();
+                        updateActions();
+                    });
+                }
             };
 
             File anfFileDirectory = scaveEditor.getAnfFile().getLocation().removeLastSegments(1).toFile();
@@ -791,53 +827,18 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         });
     }
 
-    private String tweakStacktrace(String msg) {
-        // Tweak the exception message to remove stack frames related to Py4J.
-        // Only tweak if the message conforms to the expected pattern, otherwise leave it alone.
-        String expectedFirstLine = "An exception was raised by the Python Proxy. Return Message: Traceback (most recent call last):";
-        String replacementFirstLine = "An error occurred. Traceback (most recent call last):";
-        String startOfFirstRelevantFrame = "  File \"<string>\", line ";
-
-        String pattern = "(?s)" + Pattern.quote(expectedFirstLine) + "\\n.*?\\n" + Pattern.quote(startOfFirstRelevantFrame);
-        return msg.replaceFirst(pattern, replacementFirstLine + "\n" + startOfFirstRelevantFrame);
-    }
-
-    private void annotatePythonException(Exception e) {
-        String msg = e.getMessage();
-
-        String problemMessage = null;
-
+    public void setErrorMarker(int line, String message) {
         IDocument doc = getDocument();
 
         int offset = 0;
         int length = doc.getLength();
-        int line = 0;
 
-        String[] parts = msg.split(".+File \"<string>\", line ");
-
-        if (parts.length == 0)
-            problemMessage = "Unknown error.";
-        else if (parts.length == 1)
-            problemMessage = parts[0].trim();
-        else {
-            String[] parts2 = parts[parts.length-1].split("(,|\n)", 2);
-
-            line = Integer.parseInt(parts2[0]);
-
-            try {
-                offset = doc.getLineOffset(line - 1);
-                length = doc.getLineLength(line - 1);
-            }
-            catch (BadLocationException exc) {
-                // ignore
-            }
-
-            if (msg.contains("py4j.protocol.Py4JJavaError")) {
-                problemMessage = StringUtils.substringAfter(msg, "py4j.protocol.Py4JJavaError: ");
-                problemMessage = StringUtils.substringAfterLast(problemMessage, ": ");
-                problemMessage = StringUtils.substringBefore(problemMessage, "\n");
-            } else
-                problemMessage = StringUtils.substringAfterLast(msg.trim(), "\n");
+        try {
+            offset = doc.getLineOffset(line - 1);
+            length = doc.getLineLength(line - 1);
+        }
+        catch (BadLocationException exc) {
+            // ignore
         }
 
         try {
@@ -848,7 +849,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
             errorMarker = scaveEditor.getInputFile().createMarker(IMarker.PROBLEM);
             errorMarker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
             errorMarker.setAttribute(IMarker.TRANSIENT, true);
-            errorMarker.setAttribute(IMarker.MESSAGE, problemMessage);
+            errorMarker.setAttribute(IMarker.MESSAGE, message);
             errorMarker.setAttribute(IMarker.LINE_NUMBER, line);
             errorMarker.setAttribute(IMarker.SOURCE_ID, chart.getId());
             errorMarker.setAttribute(IMarker.LOCATION, chart.getName() + "; line " + line);
@@ -857,6 +858,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
             documentProvider.annotationModel.addAnnotation(errorMarkerAnnotation, new Position(offset, length));
         }
         catch (CoreException e1) {
+            ScavePlugin.logError("Error while setting ChartScriptEditor error marker or annotation", e1);
         }
     }
 

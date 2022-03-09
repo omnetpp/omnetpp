@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
 import org.omnetpp.common.image.ImageUtils;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.FilterCache;
 import org.omnetpp.scave.editors.MemoizationCache;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -32,6 +33,7 @@ import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.pychart.ActionDescription;
 import org.omnetpp.scave.pychart.IMatplotlibFigureCanvas;
 import org.omnetpp.scave.pychart.IMatplotlibWidget;
+import org.omnetpp.scave.pychart.IPlotWarningAnnotator;
 import org.omnetpp.scave.pychart.IPlotWidgetProvider;
 import org.omnetpp.scave.pychart.MatplotlibWidget;
 import org.omnetpp.scave.pychart.PythonCallerThread.ExceptionHandler;
@@ -66,12 +68,6 @@ public class MatplotlibChartViewer extends ChartViewerBase {
         }
 
         @Override
-        public void setWarning(String warning) {
-            if (plotWidget != null)
-                plotWidget.setWarning(warning);
-        }
-
-        @Override
         public IMatplotlibWidget getWidget(int figureNumber, IMatplotlibFigureCanvas canvas) {
             if (MatplotlibChartViewer.this.figureNumber >= 0 && figureNumber != MatplotlibChartViewer.this.figureNumber)
                 throw new RuntimeException("Only one figure per chart is allowed - figure number 1.");
@@ -86,8 +82,8 @@ public class MatplotlibChartViewer extends ChartViewerBase {
         }
     };
 
-    public MatplotlibChartViewer(Composite parent, Chart chart, PythonProcessPool processPool, ResultFileManager rfm, MemoizationCache memoizationCache, FilterCache filterCache) {
-        super(chart, processPool, rfm, memoizationCache, filterCache);
+    public MatplotlibChartViewer(Composite parent, Chart chart, PythonProcessPool processPool, ResultFileManager rfm, MemoizationCache memoizationCache, FilterCache filterCache, IPlotWarningAnnotator warningAnnotator) {
+        super(chart, processPool, rfm, memoizationCache, filterCache, warningAnnotator);
         plotWidget = new MatplotlibWidget(parent, SWT.DOUBLE_BUFFERED, proc, null);
     }
 
@@ -114,6 +110,7 @@ public class MatplotlibChartViewer extends ChartViewerBase {
         try {
             acquireNewProcess();
             proc.getEntryPoint().setPlotWidgetProvider(widgetProvider);
+            proc.getEntryPoint().setWarningAnnotator(warningAnnotator);
         }
         catch (RuntimeException e) {
             MessageBox mb = new MessageBox(Display.getCurrent().getActiveShell(), SWT.ICON_ERROR);
@@ -123,8 +120,12 @@ public class MatplotlibChartViewer extends ChartViewerBase {
         }
 
         ExceptionHandler ownRunAfterError = (proc, e) -> {
+            // The following check is duplicated in the outer handler as well, which is not nice...
+            if (proc == getPythonProcess() && !proc.isKilledByUs()) { // Ignore requests from previous processes
+                ScavePlugin.logError("Unhandled exception from chart script", e);
+                plotWidget.setWarning("Internal error. See Console for details.");
+            }
             runAfterError.handle(proc, e);
-            plotWidget.setWarning("An exception occurred during Python execution, see Console for details.");
         };
 
         Runnable ownRunAfterDone = () -> {

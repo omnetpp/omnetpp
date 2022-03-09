@@ -112,9 +112,4 @@ public class MultiWidgetProvider implements IPlotWidgetProvider {
 
     }
 
-    @Override
-    public void setWarning(String warning) {
-        // TODO Auto-generated method stub
-
-    }
 }

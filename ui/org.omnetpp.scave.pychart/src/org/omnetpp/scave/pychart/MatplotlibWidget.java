@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
+import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.scave.engine.ScaveEngine;
 
 /**
@@ -45,6 +46,9 @@ import org.omnetpp.scave.engine.ScaveEngine;
  * See also: https://matplotlib.org/3.2.1/api/backend_bases_api.html#matplotlib.backend_bases.FigureCanvasBase
  *
  * Implementation details:
+ * - Most methods that interact with SWT run code in the Display thread internally.
+ *   This is needed because this class is used directly from Python, so there is no
+ *   intermediate layer to switch to the Display thread. TODO: Add an adapter to do this.
  *
  * - The pixels of the image are transferred in a
  *   shared memory buffer for improved performance. This shared memory region
@@ -206,6 +210,12 @@ public class MatplotlibWidget extends Canvas implements IMatplotlibWidget {
             // draw the warning if there is one
             if (warning != null && !warning.isEmpty()) {
                 e.gc.setFont(JFaceResources.getTextFont());
+                Point textSize = e.gc.textExtent(warning);
+
+                e.gc.setBackground(ColorFactory.WHITE);
+                e.gc.setAlpha(192);
+                e.gc.fillRectangle(6, 10, textSize.x + 20, textSize.y + 8);
+
                 e.gc.setForeground(new Color(e.gc.getDevice(), 255, 31, 0));
                 e.gc.setAlpha(255);
                 e.gc.drawText(warning, 16, 14, true);
