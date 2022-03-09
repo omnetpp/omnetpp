@@ -26,8 +26,6 @@ namespace scave {
 
 class VectorResult;
 
-#define SQLITEVECTORDATAREADER_BUFSIZE  (64*1024)
-
 class SCAVE_API SqliteVectorDataReader : public IVectorDataReader
 {
     protected:
@@ -35,7 +33,7 @@ class SCAVE_API SqliteVectorDataReader : public IVectorDataReader
         sqlite3_stmt *stmt; // we only have one prepared statement active at a time
         std::string filename;
         bool includeEventNumbers;
-        size_t bufferSize;
+        size_t batchSize = 64;
         AdapterLambdaType adapterLambda;
         std::map<int, int> simtimeExpForVectorId;
 
@@ -55,13 +53,15 @@ class SCAVE_API SqliteVectorDataReader : public IVectorDataReader
         void processStatementRows();
 
     public:
-        explicit SqliteVectorDataReader(const char* filename, bool includeEventNumbers, Adapter *adapter, size_t bufferSize = SQLITEVECTORDATAREADER_BUFSIZE) :
-            SqliteVectorDataReader(filename, includeEventNumbers, [adapter](int vectorId, const std::vector<VectorDatum>& data) { adapter->process(vectorId, data); }, bufferSize)
+        explicit SqliteVectorDataReader(const char *filename, bool includeEventNumbers, Adapter *adapter) :
+            SqliteVectorDataReader(filename, includeEventNumbers, [adapter](int vectorId, const std::vector<VectorDatum>& data) { adapter->process(vectorId, data); })
         { }
 
-        explicit SqliteVectorDataReader(const char* filename, bool includeEventNumbers, AdapterLambdaType adapter, size_t bufferSize = SQLITEVECTORDATAREADER_BUFSIZE);
+        explicit SqliteVectorDataReader(const char *filename, bool includeEventNumbers, AdapterLambdaType adapter);
 
         virtual ~SqliteVectorDataReader();
+
+        void setBatchSize(int size) {batchSize = size;}
 
         virtual int getNumberOfEntries(int vectorId) override;
 

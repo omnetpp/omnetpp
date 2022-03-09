@@ -52,12 +52,11 @@ static std::string makePlaceholders(int n)
     return questionmarks;
 }
 
-SqliteVectorDataReader::SqliteVectorDataReader(const char *filename, bool includeEventNumbers, AdapterLambdaType adapterLambda, size_t bufferSize) :
+SqliteVectorDataReader::SqliteVectorDataReader(const char *filename, bool includeEventNumbers, AdapterLambdaType adapterLambda) :
     db(nullptr),
     stmt(nullptr),
     filename(filename),
     includeEventNumbers(includeEventNumbers),
-    bufferSize(bufferSize/sizeof(VectorDatum)),          // bytes --> items
     adapterLambda(adapterLambda)
 {
     // empty
@@ -137,7 +136,7 @@ void SqliteVectorDataReader::processStatementRows()
 
     int currentVectorId = -1;
     std::vector<VectorDatum> entryBuffer;
-    entryBuffer.reserve(bufferSize);
+    entryBuffer.reserve(batchSize);
 
     while (true) {
         int resultCode = sqlite3_step(stmt);
@@ -150,7 +149,7 @@ void SqliteVectorDataReader::processStatementRows()
         sqlite3_int64 simtimeRaw = sqlite3_column_int64(stmt, 2);
         double value = sqlite3ColumnDouble(stmt, 3);
 
-        if (vectorId != currentVectorId || entryBuffer.size() >= bufferSize) {
+        if (vectorId != currentVectorId || entryBuffer.size() >= batchSize) {
             if (!entryBuffer.empty())
                 adapterLambda(currentVectorId, entryBuffer);
             currentVectorId = vectorId;
