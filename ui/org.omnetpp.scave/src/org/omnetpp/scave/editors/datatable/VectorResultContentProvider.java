@@ -125,12 +125,13 @@ public class VectorResultContentProvider implements IVirtualTableContentProvider
                 VectorResult vector = (VectorResult)item;
                 vectorId = vector.getVectorId();
                 String filename = vector.getFile().getFileSystemFilePath();
+                FileFingerprint fingerprint = vector.getFile().getFingerprint();
 
                 try {
                     if (SqliteResultFileUtils.isSqliteFile(filename))
-                        reader = new SqliteVectorDataReader(filename, true, (Adapter)null);
+                        reader = new SqliteVectorDataReader(filename, true, (Adapter)null, fingerprint);
                     else
-                        reader = new IndexedVectorFileReader(filename, true, (Adapter)null);
+                        reader = new IndexedVectorFileReader(filename, true, (Adapter)null, fingerprint);
                 }
                 catch (Exception e) {
                     ScavePlugin.logError("Cannot open index file: "+filename, e);

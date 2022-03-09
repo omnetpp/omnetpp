@@ -93,9 +93,9 @@ vector<XYArray *> readVectorsIntoArrays(ResultFileManager *manager, const IDList
 
         IVectorDataReader *reader;
         if (SqliteResultFileUtils::isSqliteFile(resultFile->getFileSystemFilePath().c_str()))
-            reader = new SqliteVectorDataReader(resultFile->getFileSystemFilePath().c_str(), includeEventNumbers, adapter);
+            reader = new SqliteVectorDataReader(resultFile->getFileSystemFilePath().c_str(), includeEventNumbers, adapter, resultFile->getFingerprint());
         else
-            reader = new IndexedVectorFileReader(resultFile->getFileSystemFilePath().c_str(), includeEventNumbers, adapter);
+            reader = new IndexedVectorFileReader(resultFile->getFileSystemFilePath().c_str(), includeEventNumbers, adapter, resultFile->getFingerprint());
 
         try {
             if (simTimeStart == -INFINITY && simTimeEnd == INFINITY)
