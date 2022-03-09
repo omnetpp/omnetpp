@@ -201,7 +201,7 @@ double cStdDev::getMean() const
 double cStdDev::getVariance() const
 {
     // note: no checks for division by zero, we prefer to return Inf or NaN
-    if (numValues == 0)
+    if (numValues <= 1)
         return NaN;
     else if (minValue == maxValue)
         return 0;

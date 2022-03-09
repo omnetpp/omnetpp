@@ -118,7 +118,7 @@ double Statistics::getStddev() const
 double Statistics::getVariance() const
 {
     // note: no checks for division by zero, we prefer to return Inf or NaN
-    if (sumWeights == 0)
+    if (count <= 1)
         return NaN;
     else if (minValue == maxValue)
         return 0;
