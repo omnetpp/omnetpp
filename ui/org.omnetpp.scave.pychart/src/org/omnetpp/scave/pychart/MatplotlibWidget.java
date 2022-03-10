@@ -21,6 +21,8 @@ import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.events.MouseWheelListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
@@ -172,6 +174,8 @@ public class MatplotlibWidget extends Canvas implements IMatplotlibWidget {
      */
     private static final int EVENTSTREAM_RESIZE = 2;
 
+    private static final Font warningFont = new Font(null, new FontData("Arial", 10, SWT.NORMAL));
+
     /**
      * Creates a new MatplotlibWidget in the given parent Control, with the
      * given style. The other half of this FigureCanvas, canvas, is in the
@@ -201,7 +205,7 @@ public class MatplotlibWidget extends Canvas implements IMatplotlibWidget {
 
             // draw the message, if any, only if the mouse is over the canvas
             if ((isRefreshing || mouseIsOverMe) && message != null && !message.isEmpty()) {
-                e.gc.setFont(JFaceResources.getTextFont());
+                e.gc.setFont(JFaceResources.getDialogFont());
                 Point textSize = e.gc.textExtent(message);
                 e.gc.fillRectangle(6, getSize().y - 14 - textSize.y, textSize.x + 20, textSize.y + 8);
                 e.gc.drawText(message, 16, getSize().y - 10 - textSize.y, true);
@@ -209,14 +213,14 @@ public class MatplotlibWidget extends Canvas implements IMatplotlibWidget {
 
             // draw the warning if there is one
             if (warning != null && !warning.isEmpty()) {
-                e.gc.setFont(JFaceResources.getTextFont());
+                e.gc.setFont(warningFont);
                 Point textSize = e.gc.textExtent(warning);
 
                 e.gc.setBackground(ColorFactory.WHITE);
                 e.gc.setAlpha(192);
                 e.gc.fillRectangle(6, 10, textSize.x + 20, textSize.y + 8);
 
-                e.gc.setForeground(new Color(e.gc.getDevice(), 255, 31, 0));
+                e.gc.setForeground(ColorFactory.RED);
                 e.gc.setAlpha(255);
                 e.gc.drawText(warning, 16, 14, true);
             }
@@ -492,6 +496,7 @@ public class MatplotlibWidget extends Canvas implements IMatplotlibWidget {
         }
     }
 
+    @Override
     public void setMenu(Menu menu) {
         // not calling super.setMenu, we will show it manually
         contextMenu = menu;

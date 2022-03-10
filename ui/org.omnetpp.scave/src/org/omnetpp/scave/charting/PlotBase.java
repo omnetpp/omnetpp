@@ -35,6 +35,7 @@ import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
@@ -96,6 +97,7 @@ public abstract class PlotBase extends ZoomableCachingCanvas implements IPlotVie
 
     private String statusText = "No data available."; // displayed when there's no dataset
     private String warningText = null;
+    private static final Font warningFont = new Font(null, new FontData("Arial", 10, SWT.NORMAL));
 
     /* bounds specified by the user*/
     protected RectangularArea userDefinedArea =
@@ -418,6 +420,7 @@ public abstract class PlotBase extends ZoomableCachingCanvas implements IPlotVie
         chartChanged();
     }
 
+    @Override
     public void setCaching(boolean caching) {
         super.setCaching(caching);
         chartChanged();
@@ -720,11 +723,13 @@ public abstract class PlotBase extends ZoomableCachingCanvas implements IPlotVie
 
         if (getWarningText() != null) {
             resetDrawingStylesAndColors(graphics);
-            graphics.setForegroundColor(new Color(getDisplay(), 255, 0, 0));
+            graphics.setFont(warningFont);
+            graphics.setForegroundColor(ColorFactory.RED);
             graphics.drawText(getWarningText(), rect.x+10, rect.y+10);
         }
         else if (getStatusText() != null && !StringUtils.isBlank(getStatusText())) {
             resetDrawingStylesAndColors(graphics);
+            graphics.setFont(warningFont);
             graphics.drawText(getStatusText(), rect.x+10, rect.y+10);
         }
     }
