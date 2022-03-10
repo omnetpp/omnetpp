@@ -40,7 +40,7 @@ except ImportError as e:
     sys.exit(1)
 
 def _extract_stacktrace(exception):
-    msg = "".join(tb.format_exception(exception))
+    msg = "".join(tb.format_exception(type(exception), exception, exception.__traceback__))
 
     # Tweak the exception message to only show the frame of the chart script, in a friendlier way.
     # Also, only tweak if the message conforms to the expected pattern, otherwise leave it alone.
@@ -53,11 +53,11 @@ def _extract_stacktrace(exception):
 
 def _extract_message(exception):
     # extract line number (from the last 'File "<string", line' in the stack trace)
-    msg = "".join(tb.format_exception(exception))
+    msg = "".join(tb.format_exception(type(exception), exception, exception.__traceback__))
     m = re.search(r'(?s).*File "<string>", line (\d+)', msg)
     line = int(m.group(1)) if m else None
 
-    # extract warning text
+    # extract warning text (last line)
     msg = tb.format_exception_only(type(exception), exception)[-1].strip()
 
     if msg.startswith("py4j.protocol.Py4JJavaError:") and "\n" in msg:
@@ -124,8 +124,9 @@ class PythonEntryPoint(object):
             # Add problem marker in editor
             line, message = _extract_message(e)
             Gateway.warning_annotator.setWarning(message + "\n(See Console for details)")
-            Gateway.warning_annotator.setErrorMarkerAnnotation(line, message)
-
+            if line:
+                Gateway.warning_annotator.setErrorMarkerAnnotation(line, message)
+            sys.exit(1)
 
     # @TimeAndGuard(measureTime=False)
     def evaluate(self, expression):
