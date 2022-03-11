@@ -60,6 +60,6 @@ echo
 echo ================================================================================================================
 echo DIFF OUTPUTS SHOULD BE EMPTY:
 for f in $(cd results-omnetpp; echo *.sca *.vec); do
-    withecho diff -u1 results-omnetpp/$f.csvx results-sqlite/$f.csvx || FAIL
+    withecho diff -U 1 results-omnetpp/$f.csvx results-sqlite/$f.csvx || FAIL
 done
 echo '*** PASS ***'
