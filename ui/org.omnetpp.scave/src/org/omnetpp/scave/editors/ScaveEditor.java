@@ -900,8 +900,12 @@ public class ScaveEditor extends MultiPageEditorPartExt
                 entries.remove();
         }
 
-        // NOTE: Open temporary charts should make the analysis dirty - if all are closed, that should be cleared.
-        firePropertyChange(IEditorPart.PROP_DIRTY);
+        // Open temporary charts should make the analysis dirty. When the last temp chart is closed,
+        // the DIRTY flag should be cleared. Therefore, we now fire a property change to force Eclipse
+        // re-evaluate the dirty status (via isDirty()). Note: It must be done in asyncExec(),
+        // because isDirty() otherwise loops through this half-closed editor page too, resulting
+        // in a "Widget already disposed" SWT exception.
+        Display.getDefault().asyncExec(() -> firePropertyChange(IEditorPart.PROP_DIRTY));
     }
 
     /**
