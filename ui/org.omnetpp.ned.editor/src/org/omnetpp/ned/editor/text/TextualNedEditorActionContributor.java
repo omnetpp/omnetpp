@@ -59,6 +59,7 @@ public class TextualNedEditorActionContributor extends TextEditorActionContribut
     private static RetargetTextEditorAction createRetargetAction(String id) {
         RetargetTextEditorAction action = new RetargetTextEditorAction(NedEditorMessages.getResourceBundle(), id+".");
         action.setActionDefinitionId(NedTextEditorAction.ACTION_DEFINITION_PREFIX + id);
+        action.setEnabled(false);
         return action;
     }
 

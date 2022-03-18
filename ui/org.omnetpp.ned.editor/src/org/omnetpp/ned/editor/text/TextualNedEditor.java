@@ -12,6 +12,7 @@ import java.util.ResourceBundle;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.text.BadLocationException;
@@ -48,6 +49,7 @@ import org.omnetpp.common.editor.text.TextDifferenceUtils;
 import org.omnetpp.common.editor.text.TextEditorUtil;
 import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.common.util.DisplayUtils;
+import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.editor.NedEditor;
 import org.omnetpp.ned.editor.NedEditorPlugin;
@@ -178,6 +180,24 @@ public class TextualNedEditor extends TextEditor implements INedChangeListener, 
         viewer.doOperation(ProjectionViewer.TOGGLE);
         nedSelectionProvider = new NedSelectionProvider(this);
         getSite().setSelectionProvider(nedSelectionProvider);
+    }
+
+    @Override
+    protected void doSetInput(IEditorInput input) throws CoreException {
+        IFile newFile = ((IFileEditorInput) input).getFile();
+        if (!NedResourcesPlugin.getNedResources().isNedFile(newFile)) {
+            // File was saved outside NED folders or into an excluded folder which this editor
+            // cannot handle, so we ignore this request (skip the super.doSetInput(input) part),
+            // and instead close this editor and re-open the new input in the IDE.
+            final IEditorInput oldInput = getEditorInput();
+            IWorkbenchPage page = getSite().getPage();
+            Display.getCurrent().asyncExec(() -> {
+                UIUtils.reopenEditor(page, oldInput, (IFileEditorInput)input, false);
+            });
+            return;
+        }
+
+        super.doSetInput(input);
     }
 
     @Override
