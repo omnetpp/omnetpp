@@ -37,6 +37,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.EditorsUI;
+import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.FileEditorInput;
@@ -49,6 +50,7 @@ import org.omnetpp.common.Debug;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.common.util.DetailedPartInitException;
 import org.omnetpp.common.util.DisplayUtils;
+import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.ned.core.IGotoNedElement;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
@@ -80,6 +82,12 @@ public class NedEditor
 {
     public static final String ID = "org.omnetpp.ned.editor";
 
+    // If a NED file is outside NED folders (or is excluded), we cannot edit it as NED,
+    // so we'll just instantiate a barebones plain text editor instead.
+    private boolean usePlainTextEditor;
+    private TextEditor plainTextEditor;
+
+    // the "normal" nested editors
     private GraphicalNedEditor graphicalEditor;
     private TextualNedEditor textEditor;
     private final ResourceTracker resourceListener = new ResourceTracker();
@@ -175,20 +183,26 @@ public class NedEditor
             IStatus status = new Status(IStatus.WARNING, NedEditorPlugin.PLUGIN_ID, 0, "File "+file.getFullPath()+" does not exist", null);
             throw new PartInitException(status);
         }
-        if (NedResourcesPlugin.getNedResources().getNedSourceFolderFor(file) == null) {
-            IStatus status = new Status(IStatus.WARNING, NedEditorPlugin.PLUGIN_ID, 0, "NED File is not in a NED Source Folder of an OMNeT++ Project, and cannot be opened with this editor.", null);
-            throw new PartInitException(status);
+
+        // To properly open it, file must be inside a NED source folder, and must not be in an excluded package
+        usePlainTextEditor = !NedResourcesPlugin.getNedResources().isNedFile(file);
+
+        super.init(site, editorInput);  // note: involves setInput()
+
+        if (!usePlainTextEditor) {
+            ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceListener);
+            NedResourcesPlugin.getNedResources().addNedModelChangeListener(nedModelListener);
+            getSite().getPage().addPartListener(partListener);
         }
-
-        super.init(site, editorInput);
-
-        ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceListener);
-        NedResourcesPlugin.getNedResources().addNedModelChangeListener(nedModelListener);
-        getSite().getPage().addPartListener(partListener);
     }
 
     @Override
     public void dispose() {
+        if (usePlainTextEditor) {
+            super.dispose();
+            return;
+        }
+
         // detach the editor file from the core plugin and do not set a new file
         ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceListener);
         if (getSite() != null && getSite().getPage() != null)
@@ -207,22 +221,33 @@ public class NedEditor
     protected void setInput(IEditorInput newInput) {
         Assert.isNotNull(newInput, "input should not be null");
 
-
-        //FIXME it should be checked that the file is a valid NED file (inside an
-        // OMNeT++ project, inside a NED source folder), i.e. NEDResources knows about it.
-        // Otherwise the will be a NULL POINTER EXCEPTION pretty soon. --Andras
-
         IEditorInput oldInput = getEditorInput();
         if (ObjectUtils.equals(oldInput, newInput))
             return; // no change
 
+        if (usePlainTextEditor) {
+            if (plainTextEditor != null)
+                plainTextEditor.setInput(newInput);
+            super.setInput(newInput);
+            setPartName(getFile().getName());
+            if (NedResourcesPlugin.getNedResources().isNedFile(getFile())) {
+                // File is now part of a NED source folder, re-open editor for full NED editing capabilities.
+                IWorkbenchPage page = getSite().getPage();
+                Display.getCurrent().asyncExec(() -> {
+                    UIUtils.reopenEditor(page, newInput, (IFileEditorInput)newInput, false);
+                });
+                return;
+            }
+            return;
+        }
+
+        // new file must STILL be under a NED folder, as ensured by doSaveAs()+TextualNedEditor.doSetInput()
+        IFile newFile = ((IFileEditorInput) newInput).getFile();
+        Assert.isTrue(NedResourcesPlugin.getNedResources().isNedFile(newFile));
+
         // disconnect from the old file (if there was any)
         if (oldInput != null)
             NedResourcesPlugin.getNedResources().disconnect(getFile());
-
-        // connect() must take place *before* setInput()
-        IFile newFile = ((IFileEditorInput) newInput).getFile();
-        Assert.isTrue(NedResourcesPlugin.getNedResources().isNedFile(newFile), "Not an enabled NED file: must be inside a NED source folder, and must not be in an excluded package");
 
         // check if the given file is in sync with the filesystem. If not
         // synchronize it otherwise the text editor loads only an empty file
@@ -233,6 +258,7 @@ public class NedEditor
                 NedEditorPlugin.logError("Cannot refresh file", e);
             }
 
+        // connect() must take place *before* setInput()
         NedResourcesPlugin.getNedResources().connect(newFile);
 
         // set the new input
@@ -247,12 +273,17 @@ public class NedEditor
 
     @Override
     protected void createPages() {
-        //Debug.println("createPages()");
-
-        graphicalEditor = new GraphicalNedEditor();
-        textEditor = new TextualNedEditor();
-
         try {
+            if (usePlainTextEditor) {
+                plainTextEditor = new TextEditor();
+                addPage(plainTextEditor, getEditorInput());
+                setPageText(0, "Source");
+                return;
+            }
+
+            graphicalEditor = new GraphicalNedEditor();
+            textEditor = new TextualNedEditor();
+
             // setup graphical editor
             graphPageIndex = addPage(graphicalEditor, getEditorInput());
             graphicalEditor.markContent();
@@ -280,6 +311,7 @@ public class NedEditor
      * (Consistency errors are allowed).
      */
     protected boolean maySwitchToGraphicalEditor() {
+        Assert.isTrue(!usePlainTextEditor);
         return getModel().getSyntaxProblemMaxCumulatedSeverity() < IMarker.SEVERITY_ERROR;
     }
 
@@ -302,6 +334,8 @@ public class NedEditor
     @Override
     protected void pageChange(int newPageIndex) {
         super.pageChange(newPageIndex);
+        if (usePlainTextEditor)
+            return;
 
         mostRecentlyUsedMode = (newPageIndex == graphPageIndex) ? Mode.GRAPHICAL : Mode.TEXT;
 
@@ -378,6 +412,9 @@ public class NedEditor
 
     @Override
     public boolean isDirty() {
+        if (usePlainTextEditor)
+            return plainTextEditor.isDirty();
+
         // The default behavior is wrong when undoing changes in both editors.
         // This way at least the text editor dirtiness flag will be good.
         return textEditor.isDirty();
@@ -388,6 +425,7 @@ public class NedEditor
      * If we are in a graphical mode it generates the text version and puts it into the text editor.
      */
     private void prepareForSave() {
+        Assert.isTrue(!usePlainTextEditor);
         NedFileElementEx nedFileElement = getModel();
 
         if (getActivePage() == graphPageIndex && !nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError()) {
@@ -401,6 +439,11 @@ public class NedEditor
 
     @Override
     public void doSave(IProgressMonitor monitor) {
+        if (usePlainTextEditor) {
+            plainTextEditor.doSave(monitor);
+            return;
+        }
+
         prepareForSave();
         // delegate the save task to the TextEditor's save method
         textEditor.doSave(monitor);
@@ -409,6 +452,12 @@ public class NedEditor
 
     @Override
     public void doSaveAs() {
+        if (usePlainTextEditor) {
+            plainTextEditor.doSaveAs();
+            setInput(plainTextEditor.getEditorInput());
+            return;
+        }
+
         prepareForSave();
         textEditor.doSaveAs();
         graphicalEditor.markSaved();
@@ -470,6 +519,13 @@ public class NedEditor
     }
 
     public void gotoMarker(IMarker marker) {
+        if (usePlainTextEditor) {
+            IGotoMarker gm = (IGotoMarker)plainTextEditor.getAdapter(IGotoMarker.class);
+            if (gm != null)
+                gm.gotoMarker(marker);
+            return;
+        }
+
         // switch to text page and delegate to it
         setActivePage(textPageIndex);
         IGotoMarker gm = (IGotoMarker)textEditor.getAdapter(IGotoMarker.class);
@@ -478,6 +534,8 @@ public class NedEditor
     }
 
     public void showInEditor(INedElement model, Mode mode) {
+        Assert.isTrue(!usePlainTextEditor);
+
         Assert.isTrue(mostRecentlyUsedMode != Mode.AUTOMATIC);
 
         if (mode == Mode.AUTOMATIC) {
@@ -532,6 +590,7 @@ public class NedEditor
     }
 
     public NedFileElementEx getModel() {
+        Assert.isTrue(!usePlainTextEditor);
         return NedResourcesPlugin.getNedResources().getNedFileElement(getFile());
     }
 
@@ -539,6 +598,7 @@ public class NedEditor
     // you should not call any SWT only methods like getActiveEditor etc.
     // instead we store the current editorIndex and do the compare by hand
     public boolean isActiveEditor(IEditorPart editorPart) {
+        //Assert.isTrue(!usePlainTextEditor);
         if (editorPart == textEditor && currentPageIndex == textPageIndex)
             return true;
         if (editorPart == graphicalEditor && currentPageIndex == graphPageIndex)

@@ -13,15 +13,23 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.IDialogSettings;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Widget;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.Debug;
@@ -136,5 +144,20 @@ public class UIUtils {
         for (int i=0; i<listeners.length; i++)
             if (listeners[i] != null)
                 widget.removeListener(types[i], listeners[i]);
+    }
+
+    public static void reopenEditor(IWorkbenchPage page, IEditorInput oldInput, IFileEditorInput newInput, boolean save) {
+        IEditorPart oldEditor = page.findEditor(oldInput);
+        if (oldEditor != null)
+            page.closeEditor(oldEditor, save);
+
+        try {
+            IDE.openEditor(page, newInput.getFile());
+        }
+        catch (PartInitException e) {
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Could not reopen editor for " + newInput.toString());
+            CommonPlugin.logError("Could not reopen editor", e);
+        }
+
     }
 }
