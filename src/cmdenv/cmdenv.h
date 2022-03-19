@@ -104,6 +104,7 @@ class CMDENV_API Cmdenv : public EnvirBase
      virtual void displayException(std::exception& ex) override;
      virtual void doRun() override;
      virtual void printUISpecificHelp() override;
+     virtual void loadNEDFiles() override { EnvirBase::loadNEDFiles(); }
 
      virtual EnvirOptions *createOptions() override {return new CmdenvOptions();}
      virtual void readOptions() override;

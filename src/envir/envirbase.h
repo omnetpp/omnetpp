@@ -303,6 +303,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     virtual void run();  // does not throw; delegates to doRun()
     virtual void shutdown(); // does not throw
     virtual void doRun() = 0;
+    virtual void loadNEDFiles();
 
     virtual void setupNetwork(cModuleType *network);
     virtual void prepareForRun();
