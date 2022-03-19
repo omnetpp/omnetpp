@@ -45,11 +45,13 @@ class LocalLifecycleListener : public cISimulationLifecycleListener {
     virtual void lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details) {
         if (eventType == LF_PRE_NETWORK_SETUP)
             allowObjectStealing = cSimulation::getActiveEnvir()->getConfig()->getAsBool(CFGID_ALLOW_OBJECT_STEALING_ON_DELETION);
+        else if (eventType == LF_ON_SHUTDOWN)
+            delete this; // implies unsubscribing
     }
-} listener;
+};
 }
 
-EXECUTE_ON_STARTUP(cSimulation::getActiveEnvir()->addLifecycleListener(&listener));
+EXECUTE_ON_STARTUP(cSimulation::getActiveEnvir()->addLifecycleListener(new LocalLifecycleListener()));
 
 
 cSoftOwner::cSoftOwner(const char *name, bool namepooling) : cNoncopyableOwnedObject(name, namepooling)
