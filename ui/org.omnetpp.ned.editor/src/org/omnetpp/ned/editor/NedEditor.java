@@ -146,25 +146,24 @@ public class NedEditor
     protected INedChangeListener nedModelListener = new INedChangeListener() {
         public void modelChanged(NedModelEvent event) {
             if (event instanceof NedFileRemovedEvent && ((NedFileRemovedEvent)event).getFile().equals(getFile())) {
+                // if file was deleted, close editor; or if it was moved out of NED folders or excluded, close this editor and reopen in plain text editor
                 final boolean dirty = isDirty(); // this must be called before closeEditor
-                // FIXME IMPORTANT
+                // remember edited content -- if editor was dirty, we must put it back into the newly opened editor
                 final String oldContent = getTextEditor().getText();
                 final IFile file = getFile();
                 // the problem is that workspace changes don't happen in the UI thread
                 // so we switch to it and call close from there
-                DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
-                    public void run() {
-                        closeEditor(false);
-                        if (file.isAccessible() && dirty) {
-                            IWorkbench workbench = PlatformUI.getWorkbench();
-                            IWorkbenchWindow workbenchWindow = workbench.getActiveWorkbenchWindow();
-                            IWorkbenchPage page = workbenchWindow.getActivePage();
-                            try {
-                                ITextEditor editor = (ITextEditor)IDE.openEditor(page, file, EditorsUI.DEFAULT_TEXT_EDITOR_ID);
-                                editor.getDocumentProvider().getDocument(editor.getEditorInput()).set(oldContent);
-                            } catch (PartInitException e) {
-                                NedEditorPlugin.logError(e);
-                            }
+                DisplayUtils.runNowOrAsyncInUIThread(() -> {
+                    closeEditor(false);
+                    if (file.isAccessible() && dirty) {
+                        IWorkbench workbench = PlatformUI.getWorkbench();
+                        IWorkbenchWindow workbenchWindow = workbench.getActiveWorkbenchWindow();
+                        IWorkbenchPage page = workbenchWindow.getActivePage();
+                        try {
+                            ITextEditor editor = (ITextEditor)IDE.openEditor(page, file, EditorsUI.DEFAULT_TEXT_EDITOR_ID);  //TODO use new instance of NedEditor instead (see code in setInput())
+                            editor.getDocumentProvider().getDocument(editor.getEditorInput()).set(oldContent);
+                        } catch (PartInitException e) {
+                            NedEditorPlugin.logError(e);
                         }
                     }
                 });
