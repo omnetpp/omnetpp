@@ -596,19 +596,7 @@ bool EnvirBase::setup()
             }
         }
 
-        // load NED files from folders on the NED path
-        std::set<std::string> foldersLoaded;
-        for (std::string folder : opp_splitpath(opt->nedPath)) {
-            if (foldersLoaded.find(folder) == foldersLoaded.end()) {
-                if (opt->verbose)
-                    out << "Loading NED files from " << folder << ": ";
-                int count = getSimulation()->loadNedSourceFolder(folder.c_str(), opt->nedExcludedPackages.c_str());
-                if (opt->verbose)
-                    out << " " << count << endl;
-                foldersLoaded.insert(folder);
-            }
-        }
-        getSimulation()->doneLoadingNedFiles();
+        loadNEDFiles();
 
         // notify listeners when global setup is complete
         notifyLifecycleListeners(LF_ON_STARTUP);
@@ -619,6 +607,23 @@ bool EnvirBase::setup()
         return false;  // don't run the app
     }
     return true;
+}
+
+void EnvirBase::loadNEDFiles()
+{
+    // load NED files from folders on the NED path
+    std::set<std::string> foldersLoaded;
+    for (std::string folder : opp_splitpath(opt->nedPath)) {
+        if (foldersLoaded.find(folder) == foldersLoaded.end()) {
+            if (opt->verbose)
+                out << "Loading NED files from " << folder << ": ";
+            int count = getSimulation()->loadNedSourceFolder(folder.c_str(), opt->nedExcludedPackages.c_str());
+            if (opt->verbose)
+                out << " " << count << endl;
+            foldersLoaded.insert(folder);
+        }
+    }
+    getSimulation()->doneLoadingNedFiles();
 }
 
 void EnvirBase::printHelp()
