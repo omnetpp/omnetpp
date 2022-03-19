@@ -1,0 +1,5 @@
+#! /bin/bash
+opp_makemake -f --make-so
+make MODE=debug
+export PYTHONPATH=$PYTHONPATH:$HOME/projects/omnetpp-dev/python
+ipython3 runaloha.py
