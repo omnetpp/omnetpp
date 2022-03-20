@@ -31,6 +31,7 @@
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/cresultlistener.h"
 #include "omnetpp/cevent.h"
+#include "runnableenvir.h"
 #include "logformatter.h"
 #include "args.h"
 #include "envirdefs.h"
@@ -123,7 +124,7 @@ struct ENVIR_API EnvirOptions
  * Abstract base class for the user interface. Concrete user interface
  * implementations (Cmdenv, Qtenv) should be derived from this class.
  */
-class ENVIR_API EnvirBase : public cRunnableEnvir
+class ENVIR_API EnvirBase : public RunnableEnvir
 {
   protected:
     cConfigurationEx *cfg;
@@ -194,7 +195,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
 
     // life cycle
     virtual int run(int argc, char *argv[], cConfiguration *config) override;
-    using cRunnableEnvir::run;
+    using RunnableEnvir::run;
 
     // eventlog recording
     virtual void setEventlogRecording(bool enabled);

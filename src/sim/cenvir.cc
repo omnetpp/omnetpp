@@ -72,13 +72,5 @@ void cEnvir::notifyLifecycleListeners(SimulationLifecycleEventType eventType, cO
         listener->lifecycleEvent(eventType, details);  // let exceptions through, because errors must cause exitCode!=0
 }
 
-int cRunnableEnvir::run(const std::vector<std::string>& args, cConfiguration *cfg)
-{
-    char **argv = new char *[args.size()];
-    for (int i = 0; i < args.size(); i++)
-        argv[i] = const_cast<char*>(args[i].c_str());
-    return run(args.size(), argv, cfg);
-}
-
 }  // namespace omnetpp
 
