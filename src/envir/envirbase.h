@@ -194,6 +194,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
 
     // life cycle
     virtual int run(int argc, char *argv[], cConfiguration *config) override;
+    using cRunnableEnvir::run;
 
     // eventlog recording
     virtual void setEventlogRecording(bool enabled);

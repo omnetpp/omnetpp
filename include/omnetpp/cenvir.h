@@ -917,6 +917,12 @@ class SIM_API cRunnableEnvir : public cEnvir
      * of the simulation program.
      */
     virtual int run(int argc, char *argv[], cConfiguration *cfg) = 0;
+
+    /**
+     * Runs the user interface. The return value will become the exit code
+     * of the simulation program. Delegates to the other run() overload.
+     */
+    virtual int run(const std::vector<std::string>& args, cConfiguration *cfg) final;
 };
 
 }  // namespace omnetpp
