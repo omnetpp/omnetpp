@@ -17,7 +17,7 @@
 #define __OMNETPP_CMDENV_CMDENV_H
 
 #include <map>
-#include "envir/envirbase.h"
+#include "envir/runnableenvir.h"
 #include "envir/speedometer.h"
 #include "omnetpp/csimulation.h"
 #include "fakegui.h"
@@ -50,7 +50,7 @@ struct CMDENV_API CmdenvOptions : public EnvirOptions
 /**
  * Command line user interface.
  */
-class CMDENV_API Cmdenv : public EnvirBase
+class CMDENV_API Cmdenv : public RunnableEnvir
 {
    protected:
      CmdenvOptions *&opt;         // alias to EnvirBase::opt
@@ -104,7 +104,7 @@ class CMDENV_API Cmdenv : public EnvirBase
      virtual void displayException(std::exception& ex) override;
      virtual void doRun() override;
      virtual void printUISpecificHelp() override;
-     virtual void loadNEDFiles() override { EnvirBase::loadNEDFiles(); }
+     virtual void loadNEDFiles() override { RunnableEnvir::loadNEDFiles(); }
 
      virtual EnvirOptions *createOptions() override {return new CmdenvOptions();}
      virtual void readOptions() override;

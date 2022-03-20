@@ -19,7 +19,7 @@
 
 #include <vector>
 #include <list>
-#include "envir/envirbase.h"
+#include "envir/runnableenvir.h"
 #include "envir/speedometer.h"
 #include "omnetpp/cchannel.h"
 #include "omnetpp/cmodule.h"
@@ -104,7 +104,7 @@ struct QtenvOptions : public EnvirOptions
 /**
  * A Qt-based user interface.
  */
-class QTENV_API Qtenv : public QObject, public EnvirBase
+class QTENV_API Qtenv : public QObject, public RunnableEnvir
 {
    Q_OBJECT
 

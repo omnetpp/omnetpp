@@ -108,7 +108,7 @@ static char *timeToStr(double t, char *buf = nullptr)
     return b;
 }
 
-Cmdenv::Cmdenv() : opt((CmdenvOptions *&)EnvirBase::opt)
+Cmdenv::Cmdenv() : opt((CmdenvOptions *&)RunnableEnvir::opt)
 {
     // Note: ctor should only contain trivial initializations, because
     // the class may be instantiated only for the purpose of calling
@@ -121,7 +121,7 @@ Cmdenv::Cmdenv() : opt((CmdenvOptions *&)EnvirBase::opt)
 
 void Cmdenv::readOptions()
 {
-    EnvirBase::readOptions();
+    RunnableEnvir::readOptions();
 
     cConfiguration *cfg = getConfig();
 
@@ -134,7 +134,7 @@ void Cmdenv::readOptions()
 
 void Cmdenv::readPerRunOptions()
 {
-    EnvirBase::readPerRunOptions();
+    RunnableEnvir::readPerRunOptions();
 
     cConfiguration *cfg = getConfig();
     opt->stopBatchOnError = cfg->getAsBool(CFGID_CMDENV_STOP_BATCH_ON_ERROR);
@@ -163,7 +163,7 @@ void Cmdenv::doRun()
     {
         // '-c' and '-r' option: configuration to activate, and run numbers to run.
         // Both command-line options take precedence over inifile settings.
-        // (NOTE: inifile settings *already* got read at this point! as EnvirBase::setup()
+        // (NOTE: inifile settings *already* got read at this point! as RunnableEnvir::setup()
         // invokes readOptions()).
 
         if (args->optionGiven('c'))  // note: do not overwrite value from cmdenv-config-name option
@@ -523,12 +523,12 @@ const char *Cmdenv::progressPercentage()
 
 void Cmdenv::displayException(std::exception& ex)
 {
-    EnvirBase::displayException(ex);
+    RunnableEnvir::displayException(ex);
 }
 
 void Cmdenv::componentInitBegin(cComponent *component, int stage)
 {
-    EnvirBase::componentInitBegin(component, stage);
+    RunnableEnvir::componentInitBegin(component, stage);
 
     // TODO: make this an EV_INFO in the component?
     if (!opt->expressMode && opt->printEventBanners && component->getLogLevel() != LOGLEVEL_OFF)
@@ -537,7 +537,7 @@ void Cmdenv::componentInitBegin(cComponent *component, int stage)
 
 void Cmdenv::simulationEvent(cEvent *event)
 {
-    EnvirBase::simulationEvent(event);
+    RunnableEnvir::simulationEvent(event);
 
     // print event banner if necessary
     if (!opt->expressMode && opt->printEventBanners)
@@ -567,7 +567,7 @@ void Cmdenv::deinstallSignalHandler()
 
 void Cmdenv::configure(cComponent *component)
 {
-    EnvirBase::configure(component);
+    RunnableEnvir::configure(component);
 
     LogLevel level = cLog::resolveLogLevel(getEnvir()->getConfig()->getAsString(component->getFullPath().c_str(), CFGID_CMDENV_LOGLEVEL).c_str());
     component->setLogLevel(level);
@@ -607,7 +607,7 @@ void Cmdenv::alert(const char *msg)
 
 void Cmdenv::log(cLogEntry *entry)
 {
-    EnvirBase::log(entry);
+    RunnableEnvir::log(entry);
 
     if (!logFormatter.isBlank())
         out << logFormatter.formatPrefix(entry);

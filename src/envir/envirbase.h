@@ -31,7 +31,6 @@
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/cresultlistener.h"
 #include "omnetpp/cevent.h"
-#include "runnableenvir.h"
 #include "logformatter.h"
 #include "args.h"
 #include "envirdefs.h"
@@ -74,6 +73,25 @@ enum class DebuggerPresence {
 };
 
 #define ARGSPEC "h?f:u:l:c:r:n:x:i:p:q:e:avwsm"
+
+#ifdef USE_PORTABLE_COROUTINES  /* coroutine stacks reside in main stack area */
+
+# define TOTAL_STACK_SIZE    (2*1024*1024)
+# define MAIN_STACK_SIZE     (128*1024)
+
+#else /* nonportable coroutines, stacks are allocated on heap */
+
+# define TOTAL_STACK_SIZE    0  // dummy value
+# define MAIN_STACK_SIZE     0  // dummy value
+
+#endif
+
+#ifdef _WIN32
+#define DEFAULT_DEBUGGER_COMMAND    "bash -c \"opp_ide omnetpp://cdt/debugger/attach?pid=%u\""
+#else
+#define DEFAULT_DEBUGGER_COMMAND    "opp_ide omnetpp://cdt/debugger/attach?pid=%u"
+#endif
+
 
 struct ENVIR_API EnvirOptions
 {
@@ -124,7 +142,7 @@ struct ENVIR_API EnvirOptions
  * Abstract base class for the user interface. Concrete user interface
  * implementations (Cmdenv, Qtenv) should be derived from this class.
  */
-class ENVIR_API EnvirBase : public RunnableEnvir
+class ENVIR_API EnvirBase : public cEnvir
 {
   protected:
     cConfigurationEx *cfg;
@@ -179,23 +197,10 @@ class ENVIR_API EnvirBase : public RunnableEnvir
 
     bool attachDebuggerOnErrors = false;
 
-  protected:
-    virtual std::ostream& err();
-    virtual std::ostream& errWithoutPrefix();
-    virtual std::ostream& warn();
-    virtual std::string makeDebuggerCommand();
-    static void crashHandler(int signum);
-    virtual std::vector<int> resolveRunFilter(const char *configName, const char *runFilter);
-    virtual void printRunInfo(const char *configName, const char *runFilter, const char *query);
-    virtual void printConfigValue(const char *configName, const char *runFilter, const char *optionName);
 
   public:
     EnvirBase();
     virtual ~EnvirBase();
-
-    // life cycle
-    virtual int run(int argc, char *argv[], cConfiguration *config) override;
-    using RunnableEnvir::run;
 
     // eventlog recording
     virtual void setEventlogRecording(bool enabled);
@@ -295,69 +300,32 @@ class ENVIR_API EnvirBase : public RunnableEnvir
 
   protected:
 
-    virtual DebuggerPresence detectDebugger();
-    virtual DebuggerAttachmentPermission debuggerAttachmentPermitted();
-    virtual void attachDebugger();
-
-    // functions added locally
-    virtual bool simulationRequired();
-    virtual bool setup();  // does not throw; returns true if OK to go on
-    virtual void run();  // does not throw; delegates to doRun()
-    virtual void shutdown(); // does not throw
-    virtual void doRun() = 0;
-    virtual void loadNEDFiles();
-
-    virtual void setupNetwork(cModuleType *network);
-    virtual void prepareForRun();
-
-    ArgList *argList()  {return args;}
-    void printHelp();
-    void setupEventLog();
-    virtual void printUISpecificHelp() = 0;
-
-    virtual void startOutputRedirection(const char *fileName);
-    virtual void stopOutputRedirection();
-    virtual bool isOutputRedirected();
-
     virtual EnvirOptions *createOptions() {return new EnvirOptions();}
     virtual void readOptions();
     virtual void readPerRunOptions();
     int parseSimtimeResolution(const char *resolution);
 
-    // Utility function; never returns nullptr
-    cModuleType *resolveNetwork(const char *networkname);
-
     // Called internally from readParameter(), to interactively prompt the
     // user for a parameter value.
     virtual void askParameter(cPar *par, bool unassigned) = 0;
 
-    virtual void displayException(std::exception& e);
-    virtual std::string getFormattedMessage(std::exception& ex);
-
-    // Utility function: checks simulation fingerprint and displays a message accordingly
-    void checkFingerprint();
-
-    // Set up RNG mapping for the component
-    virtual void setupRNGMapping(cComponent *component);
-
     // Utility function for getXMLDocument() and getParsedXMLString()
     cXMLElement *resolveXMLPath(cXMLElement *documentnode, const char *path);
 
-    // Measuring elapsed time
-    void checkTimeLimits();
-    void resetClock();
-    void startClock();
-    void stopClock();
-    double getElapsedSecs(); //FIXME into cEnvir, so it can be put into exception texts
-
-    // Hook called when the simulation terminates normally.
-    // Its current use is to notify parallel simulation part.
-    void stoppedWithTerminationException(cTerminationException& e);
-
-    // Hook called when the simulation is stopped with an error.
-    // Its current use is to notify parallel simulation part.
-    void stoppedWithException(std::exception& e);
+    // Set up RNG mapping for the component
+    virtual void setupRNGMapping(cComponent *component);
 };
+
+template<class T>
+T *createByClassName(const char *className, const char *what) {
+    cObject *obj = createOneIfClassIsKnown(className);
+    if (obj == nullptr)
+        throw cRuntimeError("Cannot create %s: class \"%s\" not found", what, className);
+    T *result = dynamic_cast<T *>(obj);
+    if (result == nullptr)
+        throw cRuntimeError("Cannot create %s: class \"%s\" is not subclassed from %s", what, className, opp_typename(typeid(T)));
+    return result;
+}
 
 }  // namespace envir
 }  // namespace omnetpp
