@@ -44,10 +44,7 @@ static std::string makeLibFileName(const char *libName, const char *namePrefix, 
 
 static bool opp_loadlibrary(const char *libName)
 {
-    const char *nameSuffix = "";
-#ifndef NDEBUG
-    nameSuffix = "_dbg";
-#endif
+    const char *nameSuffix = LIBSUFFIX;
 #if HAVE_DLOPEN
     std::string libFileName = makeLibFileName(libName, "lib", nameSuffix, SHARED_LIB_SUFFIX);
     if (!dlopen(libFileName.c_str(), RTLD_NOW|RTLD_GLOBAL))
