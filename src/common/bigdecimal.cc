@@ -35,7 +35,7 @@ BigDecimal BigDecimal::PositiveInfinity(1, INT_MAX);
 BigDecimal BigDecimal::NegativeInfinity(-1, INT_MAX);
 BigDecimal BigDecimal::Nil;
 
-static int64_t powersOfTen[21];
+static int64_t powersOfTen[19];
 static double negativePowersOfTen[21];
 
 class PowersOfTenInitializer
@@ -50,8 +50,9 @@ PowersOfTenInitializer::PowersOfTenInitializer()
 {
     int64_t power = 1;
     for (unsigned int i = 0; i < sizeof(powersOfTen) / sizeof(*powersOfTen); i++) {
+        if (i != 0)
+            power *= 10;
         powersOfTen[i] = power;
-        power *= 10;
     }
 
     double negativePower = 1;
