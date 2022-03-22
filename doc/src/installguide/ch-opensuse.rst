@@ -9,7 +9,7 @@ installation procedure is described in the *Linux* chapter.
 
 The following openSUSE release is covered:
 
--  openSUSE 42.2
+-  openSUSE Leap 15.3
 
 It was tested on the following architectures:
 

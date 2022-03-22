@@ -9,7 +9,7 @@ overall installation procedure is described in the *Linux* chapter.
 
 The following Red Hat release is covered:
 
--  Red Hat Enterprise Linux Desktop Workstation 7.x
+-  Red Hat Enterprise Linux Desktop Workstation 8.x
 
 It was tested on the following architectures:
 
@@ -44,6 +44,10 @@ To install the required packages, type in the terminal:
 To use 3D visualization support in Qtenv (recommended), you should install the OpenSceneGraph-devel (3.2 or later) and
 osgEarth-devel (2.7 or later) packages. These packages are not available from the official RedHat repository so you may
 need to get them from different sources (e.g. rpmfind.net).
+
+.. warning::
+   
+   The IDE requires GLIBC 2.28 version or later, so RedHat 6 and 7 is NOT supported.
 
 .. note::
 

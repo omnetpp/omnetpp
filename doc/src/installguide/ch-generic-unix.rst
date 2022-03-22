@@ -30,6 +30,10 @@ It is also recommended to install the *clang* and *lld* package as they provide 
    the ``PREFER_CLANG`` and ``PREFER_LLD`` variables in the *configure.user* file. If you do not need the 3D
    visualization capabilities, you can disable them in the *configure.user* file, too.
 
+.. warning::
+   
+   The IDE requires GLIBC 2.28 version or later, so you will need at least Debian 10, RedHat 8 or Ubuntu 18.10 to run the IDE.
+
 The following packages are strongly recommended, because their absence results in severe feature loss:
 
 Qt 5.9 or later

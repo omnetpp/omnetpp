@@ -9,7 +9,7 @@ installation procedure is described in the *Linux* chapter.
 
 The following Ubuntu releases are covered:
 
--  Ubuntu 18.04 LTS or 20.04 LTS
+-  Ubuntu 20.04 LTS or 22.04 LTS
 
 They were tested on the following architectures:
 
@@ -53,6 +53,10 @@ osgEarth (2.9 or later) packages. (You may need to enable the *Universe* softwar
 
    $ sudo apt-get install openscenegraph-plugin-osgearth libosgearth-dev
 
+.. warning::
+   
+   The IDE requires GLIBC 2.28 version or later, so you Ubuntu 18.04 is NOT supported because it comes with GLIBC 2.27.
+
 .. note::
 
    You may opt to use gcc instead of the clang compiler and/or use the system default linker instead of *lld* by setting
@@ -88,8 +92,8 @@ If the *Mark additional required changes?* dialog comes up, choose the *Mark* bu
 The packages:
 
 -  required: build-essential, gcc, g++, bison, flex, perl, qtbase5-dev, qtchooser, qt5-qmake, qtbase5-dev-tools,
-   python3, libxml2-dev, zlib1g-dev, doxygen, graphviz, libwebkit2gtk-4.0-37
--  recommended: libopenscenegraph-dev, openscenegraph-plugin-osgearth, libosgearth-dev, mpi-default-dev
+   python3, doxygen, graphviz, libwebkit2gtk-4.0-37
+-  recommended: libopenscenegraph-dev, openscenegraph-plugin-osgearth, libosgearth-dev, mpi-default-dev, libxml2-dev, zlib1g-dev
 
 .. figure:: pictures/ubuntu-synaptic.png
    :width: 75.0%
@@ -133,9 +137,3 @@ to read
 .. code::
 
    kernel.yama.ptrace_scope = 0
-
-Note that the default debugger for |omnet++| just-in-time debugging is *Nemiver*, so it also needs to be installed:
-
-.. code::
-
-   $ sudo apt-get install nemiver
