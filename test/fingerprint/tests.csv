@@ -20,5 +20,5 @@
 /test/models/histograms/,                ./histograms -f omnetpp.ini -c SineWeightedUniform -r 0,    100s,         d847-a1db/rsz,PASS,
 # most likely sin() works a little differently on some systems, so we have to accept two different fingerprints here (there is only
 # noise in the bottom few bits of the numbers anyways), but the result files will be identical (they are printed with limited precision)
-/test/models/histograms/,                ./histograms -f omnetpp.ini -c SineWeightedLinear -r 0,     100s,         d135-0051/rsz 510d-02d0/rsz,PASS,
+/test/models/histograms/,                ./histograms -f omnetpp.ini -c SineWeightedLinear -r 0,     100s,         d135-0051/rsz d135-00d1/rsz,PASS,
 

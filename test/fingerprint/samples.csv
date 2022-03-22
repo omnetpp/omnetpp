@@ -70,11 +70,11 @@
 
 /samples/histograms/,                ./histograms -f omnetpp.ini -c Uniform -r 0,             1000s,         eca8-8cb4/rsz,PASS,
 /samples/histograms/,                ./histograms -f omnetpp.ini -c IntUniform -r 0,          1000s,         efec-76d8/rsz,PASS,
-/samples/histograms/,                ./histograms -f omnetpp.ini -c Normal -r 0,              1000s,         da51-ad89/rsz,PASS,
+/samples/histograms/,                ./histograms -f omnetpp.ini -c Normal -r 0,              1000s,         da51-ad89/rsz e3d1-47da/rsz,PASS,
 /samples/histograms/,                ./histograms -f omnetpp.ini -c Exponential -r 0,         1000s,         7dba-9e38/rsz,PASS,
 /samples/histograms/,                ./histograms -f omnetpp.ini -c Bimodal -r 0,             1000s,         2a38-95eb/rsz,PASS,
 /samples/histograms/,                ./histograms -f omnetpp.ini -c ConstantWeightedUniform -r 0, 1000s,     e5d1-c5a8/rsz,PASS,
-/samples/histograms/,                ./histograms -f omnetpp.ini -c SineWeightedUniform -r 0, 1000s,         d4ef-e93b/rsz,PASS,
+/samples/histograms/,                ./histograms -f omnetpp.ini -c SineWeightedUniform -r 0, 1000s,         d4ef-e93b/rsz d4ef-f13b/rsz,PASS,
 
 /samples/hypercube/,                 ./hypercube -f omnetpp.ini -c Hypercube1 -r 0,            5000s,         1dbc-daaa/tplx,PASS,
 
@@ -152,7 +152,7 @@
 /samples/tictoc/,                    ./tictoc -f omnetpp.ini -c Tictoc15 -r 0,              5000s,         e596-6f3b/tplx,PASS,
 /samples/tictoc/,                    ./tictoc -f omnetpp.ini -c Tictoc16 -r 0,              5000s,         1669-90c4/tplx,PASS,
 
-/samples/openstreetmap/,             ./openstreetmap -f omnetpp.ini -c General,           100000s,         18e4-ed2f/tplx,PASS,
+/samples/openstreetmap/,             ./openstreetmap -f omnetpp.ini -c General,           100000s,         18e4-ed2f/tplx 183d-bdcc/tplx,PASS,
 
 /samples/petrinets/,                 ./petrinets -f omnetpp.ini -c Counter -r 0,          100000s,         c710-cd02/tplx,PASS,
 /samples/petrinets/,                 ./petrinets -f omnetpp.ini -c VendingMachine -r 0,        1s,         078e-230e/tplx,PASS,
