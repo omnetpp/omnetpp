@@ -52,6 +52,7 @@ for f in results-*/*.vec results-*/*.sca; do
            -e 's/results-(sqlite|omnetpp)/results-xxx/' \
            -e 's/processid,[0-9]+/processid,9999/' \
            -e 's/datetime,[0-9:-]+/datetime,xxxx/' \
+           -e 's/datetimef,[0-9:-]+/datetimef,xxxx/' \
            -e 's/output(scalar|vector)manager-class,[a-zA-Z0-9_:]+/output-x-manager-class,xxxx/' \
            $f.csv > $f.csvx
 done
