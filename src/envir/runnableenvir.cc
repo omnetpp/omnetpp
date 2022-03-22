@@ -62,6 +62,7 @@
 #include "appreg.h"
 #include "valueiterator.h"
 #include "xmldoccache.h"
+#include "debuggersupport.h"
 #include "runnableenvir.h"
 
 #ifdef WITH_PARSIM
@@ -77,9 +78,7 @@ using namespace omnetpp::internal;
 namespace omnetpp {
 namespace envir {
 
-extern cConfigOption *CFGID_DEBUGGER_ATTACH_COMMAND;
 extern cConfigOption *CFGID_DEBUGGER_ATTACH_ON_STARTUP;
-extern cConfigOption *CFGID_DEBUGGER_ATTACH_WAIT_TIME;
 extern cConfigOption *CFGID_FINGERPRINT;
 
 
@@ -177,8 +176,14 @@ int RunnableEnvir::run(int argc, char *argv[], cConfiguration *configobject)
     cfg = dynamic_cast<cConfigurationEx *>(configobject);
     if (!cfg)
         throw cRuntimeError("Cannot cast configuration object %s to cConfigurationEx", configobject->getClassName());
-    if (cfg->getAsBool(CFGID_DEBUGGER_ATTACH_ON_STARTUP) && detectDebugger() != DebuggerPresence::PRESENT)
-        attachDebugger();
+
+    try {
+        if (cfg->getAsBool(CFGID_DEBUGGER_ATTACH_ON_STARTUP) && debuggerSupport->detectDebugger() != DebuggerPresence::PRESENT)
+            debuggerSupport->attachDebugger();
+    }
+    catch(opp_runtime_error& ex) {
+        alert(ex.what());
+    }
 
     if (simulationRequired()) {
         if (setup())
@@ -735,62 +740,18 @@ std::ostream& RunnableEnvir::warn()
     return err;
 }
 
-std::string RunnableEnvir::makeDebuggerCommand()
-{
-    const char *cmdDefault = opp_emptytodefault(getenv("OMNETPP_DEBUGGER_COMMAND"), DEFAULT_DEBUGGER_COMMAND);
-    std::string cmd = getConfig()->getAsString(CFGID_DEBUGGER_ATTACH_COMMAND, cmdDefault);
-
-    if (cmd == "") {
-        alert("Cannot start debugger: no debugger configured");
-        return "";
-    }
-    size_t pos = cmd.find('%');
-    if (pos == std::string::npos || cmd.rfind('%') != pos || cmd[pos+1] != 'u') {
-        alert("Cannot start debugger: debugger attach command must contain '%u' and no additional percent sign");
-        return "";
-    }
-    pid_t pid = getpid();
-    return opp_stringf(cmd.c_str(), (unsigned int)pid);
-}
-
-void RunnableEnvir::attachDebugger()
-{
-    // launch debugger
-    std::string cmd = makeDebuggerCommand();
-    if (cmd == "") {
-        alert("No suitable debugger command!");
-        return;
-    }
-
-    out << "Starting debugger: " << cmd << endl;
-    int returncode = system(cmd.c_str());
-
-    if (returncode != 0) {
-        std::string errormsg = "Debugger command '" + cmd + "' returned error.";
-        alert(errormsg.c_str());
-        return;
-    }
-
-    out << "Waiting for the debugger to start up and attach to us; note that "
-           "for the latter to work, some systems (e.g. Ubuntu) require debugging "
-           "of non-child processes to be explicitly enabled." << endl;
-
-    // hold for a while to allow debugger to start up and attach to us
-    int secondsToWait = (int)ceil(getConfig()->getAsDouble(CFGID_DEBUGGER_ATTACH_WAIT_TIME));
-    time_t startTime = time(nullptr);
-    while (time(nullptr)-startTime < secondsToWait && detectDebugger() != DebuggerPresence::PRESENT)
-        for (int i=0; i<100000000; i++); // DEBUGGER ATTACHED -- PLEASE CONTINUE EXECUTION TO REACH THE BREAKPOINT
-
-    if (detectDebugger() == DebuggerPresence::NOT_PRESENT)
-        alert("Debugger did not attach in time.");
-}
 
 bool RunnableEnvir::ensureDebugger(cRuntimeError *error)
 {
     if (error == nullptr || attachDebuggerOnErrors) {
-        if (detectDebugger() == DebuggerPresence::NOT_PRESENT)
-            attachDebugger();
-        return detectDebugger() != DebuggerPresence::NOT_PRESENT;
+        try {
+            if (debuggerSupport->detectDebugger() == DebuggerPresence::NOT_PRESENT)
+                debuggerSupport->attachDebugger();
+            return debuggerSupport->detectDebugger() != DebuggerPresence::NOT_PRESENT;
+        }
+        catch(opp_runtime_error& ex) {
+            alert(ex.what());
+        }
     }
     else {
 
@@ -828,118 +789,18 @@ bool RunnableEnvir::ensureDebugger(cRuntimeError *error)
     return false;
 }
 
-DebuggerPresence RunnableEnvir::detectDebugger()
-{
-#ifdef _WIN32
-    // https://msdn.microsoft.com/en-us/library/windows/desktop/ms680345%28v=vs.85%29.aspx
-    return IsDebuggerPresent() ? DebuggerPresence::PRESENT : DebuggerPresence::NOT_PRESENT;
-#elif defined(__APPLE__)
-    /*
-    // This is the "official" method, described here:
-    // https://developer.apple.com/library/content/qa/qa1361/_index.html
-    int                 junk;
-    int                 mib[4];
-    struct kinfo_proc   info;
-    size_t              size;
-
-    // Initialize the flags so that, if sysctl fails for some bizarre
-    // reason, we get a predictable result.
-
-    info.kp_proc.p_flag = 0;
-
-    // Initialize mib, which tells sysctl the info we want, in this case
-    // we're looking for information about a specific process ID.
-
-    mib[0] = CTL_KERN;
-    mib[1] = KERN_PROC;
-    mib[2] = KERN_PROC_PID;
-    mib[3] = getpid();
-
-    // Call sysctl.
-
-    size = sizeof(info);
-    junk = sysctl(mib, sizeof(mib) / sizeof(*mib), &info, &size, nullptr, 0);
-    if (junk != 0)
-        return DebuggerPresence::CANT_DETECT;
-
-    // We're being debugged if the P_TRACED flag is set.
-
-    return ( (info.kp_proc.p_flag & P_TRACED) != 0 ) ? DebuggerPresence::PRESENT : DebuggerPresence::NOT_PRESENT;
-    */
-
-    // This one is supposed to be better.
-    // https://zgcoder.net/ramblings/osx-debugger-detection.html
-
-    mach_msg_type_number_t count = 0;
-    exception_mask_t masks[EXC_TYPES_COUNT];
-    mach_port_t ports[EXC_TYPES_COUNT];
-    exception_behavior_t behaviors[EXC_TYPES_COUNT];
-    thread_state_flavor_t flavors[EXC_TYPES_COUNT];
-    exception_mask_t mask = EXC_MASK_ALL & ~(EXC_MASK_RESOURCE | EXC_MASK_GUARD);
-
-    kern_return_t result = task_get_exception_ports(mach_task_self(), mask, masks, &count, ports, behaviors, flavors);
-
-    if (result != KERN_SUCCESS)
-        return DebuggerPresence::CANT_DETECT;
-
-    for (mach_msg_type_number_t portIndex = 0; portIndex < count; portIndex++)
-        if (MACH_PORT_VALID(ports[portIndex]))
-            return DebuggerPresence::PRESENT;
-
-    return DebuggerPresence::NOT_PRESENT;
-
-#else
-
-    // Assume that we are on GNU/Linux, and have a procfs.
-    // If not, in the worst case, the file can't be opened, and we return CANT_DETECT.
-
-    // https://stackoverflow.com/questions/3596781/how-to-detect-if-the-current-process-is-being-run-by-gdb/24969863#24969863
-
-    std::ifstream input("/proc/self/status");
-
-    if (!input.good())
-        return DebuggerPresence::CANT_DETECT;
-
-    for (std::string line; getline(input, line); ) {
-        std::stringstream ss(line);
-        std::string info;
-        ss >> info;
-
-        if (info.substr(0, 9) == "TracerPid") {
-            int value;
-            ss >> value;
-            return value == 0 ? DebuggerPresence::NOT_PRESENT : DebuggerPresence::PRESENT;
-        }
-    }
-
-    return DebuggerPresence::CANT_DETECT;
-#endif
-}
-
-DebuggerAttachmentPermission RunnableEnvir::debuggerAttachmentPermitted()
-{
-#if defined(__APPLE__) || defined(_WIN32)
-    return DebuggerAttachmentPermission::CANT_DETECT; // we don't know of anything that would block debugger attachment on these platforms
-#else
-    // we assume we are on GNU/Linux
-    // https://askubuntu.com/questions/41629/after-upgrade-gdb-wont-attach-to-process
-    std::ifstream fs("/proc/sys/kernel/yama/ptrace_scope");
-
-    int scope;
-    fs >> scope;
-
-    if (!fs.good())
-        return DebuggerAttachmentPermission::CANT_DETECT; // can't detect
-
-    return scope == 0 // if it's not zero, non-child debugging is blocked
-            ? DebuggerAttachmentPermission::PERMITTED
-            : DebuggerAttachmentPermission::DENIED;
-#endif
-}
-
 void RunnableEnvir::crashHandler(int)
 {
-    ((RunnableEnvir*)cSimulation::getActiveEnvir())->attachDebugger();
+    RunnableEnvir *envir = dynamic_cast<RunnableEnvir*>(cSimulation::getActiveEnvir());
+    if (!envir)
+        return; // not a suitable envir
+
+    try {
+        envir->debuggerSupport->attachDebugger();
+    }
+    catch (opp_runtime_error& ex) {
+        envir->alert(ex.what());
+    }
 }
 
 std::string RunnableEnvir::getFormattedMessage(std::exception& ex)
@@ -1056,6 +917,7 @@ cModuleType *RunnableEnvir::resolveNetwork(const char *networkname)
         throw cRuntimeError("Module type '%s' is not a network", network->getFullName());
     return network;
 }
+
 
 }  // namespace envir
 }  // namespace omnetpp

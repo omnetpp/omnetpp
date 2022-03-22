@@ -60,18 +60,6 @@ class SignalSource;
 // maximum length of string passed in Enter_Method() (longer strings will be truncated)
 #define MAX_METHODCALL 1024
 
-enum class DebuggerAttachmentPermission {
-    PERMITTED,
-    DENIED,
-    CANT_DETECT
-};
-
-enum class DebuggerPresence {
-    NOT_PRESENT,
-    PRESENT,
-    CANT_DETECT
-};
-
 #define ARGSPEC "h?f:u:l:c:r:n:x:i:p:q:e:avwsm"
 
 #ifdef USE_PORTABLE_COROUTINES  /* coroutine stacks reside in main stack area */
@@ -84,12 +72,6 @@ enum class DebuggerPresence {
 # define TOTAL_STACK_SIZE    0  // dummy value
 # define MAIN_STACK_SIZE     0  // dummy value
 
-#endif
-
-#ifdef _WIN32
-#define DEFAULT_DEBUGGER_COMMAND    "bash -c \"opp_ide omnetpp://cdt/debugger/attach?pid=%u\""
-#else
-#define DEFAULT_DEBUGGER_COMMAND    "opp_ide omnetpp://cdt/debugger/attach?pid=%u"
 #endif
 
 

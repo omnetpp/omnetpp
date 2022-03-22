@@ -46,6 +46,7 @@
 #include "envir/appreg.h"
 #include "envir/speedometer.h"
 #include "envir/matchableobject.h"
+#include "envir/debuggersupport.h"
 #include "omnetpp/csimplemodule.h"
 #include "omnetpp/cmessage.h"
 #include "omnetpp/cscheduler.h"
@@ -1828,7 +1829,7 @@ void Qtenv::requestQuitFromPausePointEventLoop(RunMode continueIn)
 
 bool Qtenv::ensureDebugger(cRuntimeError *error)
 {
-    bool debuggerPresent = detectDebugger() == DebuggerPresence::PRESENT;
+    bool debuggerPresent = debuggerSupport->detectDebugger() == DebuggerPresence::PRESENT;
 
     QString title;
     QString message;
@@ -1848,7 +1849,7 @@ bool Qtenv::ensureDebugger(cRuntimeError *error)
     }
 
     if (!debuggerPresent) {
-        std::string debuggerCommand = makeDebuggerCommand();
+        std::string debuggerCommand = debuggerSupport->makeDebuggerCommand();
         if (!debuggerCommand.empty())
             message += QString("\n\nLaunch a debugger with the following command?\n\n") + debuggerCommand.c_str();
     }
@@ -1879,8 +1880,15 @@ bool Qtenv::ensureDebugger(cRuntimeError *error)
         return false; // the user doesn't want to debug now
     else if (debuggerPresent || clickedRole == QMessageBox::DestructiveRole)
         return true; // either we can safely TRAP, or the user told us to do it (even if we didn't detect a debugger)
-    else if (debuggerAttachmentPermitted() != DebuggerAttachmentPermission::DENIED)
-        attachDebugger();
+    else if (debuggerSupport->debuggerAttachmentPermitted() != DebuggerAttachmentPermission::DENIED) {
+        try {
+            debuggerSupport->attachDebugger();
+        }
+        catch (opp_runtime_error& ex) {
+            QMessageBox(QMessageBox::Icon::Critical, "Debugger Attachment Failed", ex.what(),
+                        QMessageBox::StandardButton::Close, getMainWindow()).exec();
+        }
+    }
     else { // no debugger, and can't attach either
         QMessageBox(QMessageBox::Icon::Critical, "Debugger Attachment Blocked",
                     "No attached debugger was detected, and your current system setup does not "
@@ -1893,7 +1901,7 @@ bool Qtenv::ensureDebugger(cRuntimeError *error)
         // while the dialog was up, so let's check again.
     }
 
-    return detectDebugger() != DebuggerPresence::NOT_PRESENT;
+    return debuggerSupport->detectDebugger() != DebuggerPresence::NOT_PRESENT;
 }
 
 void Qtenv::objectDeleted(cObject *object)

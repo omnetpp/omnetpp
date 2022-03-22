@@ -18,9 +18,9 @@
 
 #include "envirdefs.h"
 #include "envirbase.h"
+#include "debuggersupport.h"
 
 namespace omnetpp {
-
 namespace envir {
 
 /**
@@ -31,6 +31,9 @@ namespace envir {
  */
 class ENVIR_API RunnableEnvir : public EnvirBase
 {
+  protected:
+    DebuggerSupport *debuggerSupport = new DebuggerSupport();
+
   public:
     /**
      * Runs the user interface. The return value will become the exit code
@@ -48,16 +51,12 @@ class ENVIR_API RunnableEnvir : public EnvirBase
     virtual std::ostream& err();
     virtual std::ostream& errWithoutPrefix();
     virtual std::ostream& warn();
-    virtual std::string makeDebuggerCommand();
     static void crashHandler(int signum);
     virtual std::vector<int> resolveRunFilter(const char *configName, const char *runFilter);
     virtual void printRunInfo(const char *configName, const char *runFilter, const char *query);
     virtual void printConfigValue(const char *configName, const char *runFilter, const char *optionName);
 
     virtual bool ensureDebugger(cRuntimeError *error = nullptr) override;
-    virtual DebuggerPresence detectDebugger();
-    virtual DebuggerAttachmentPermission debuggerAttachmentPermitted();
-    virtual void attachDebugger();
 
     // functions added locally
     virtual bool simulationRequired();
