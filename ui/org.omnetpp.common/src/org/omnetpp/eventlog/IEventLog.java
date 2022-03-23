@@ -4,7 +4,7 @@ import java.io.OutputStream;
 import java.util.TreeSet;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.omnetpp.common.engine.BigDecimal;
+import org.omnetpp.common.util.BigDecimal;
 import org.omnetpp.eventlog.engine.FileReader;
 import org.omnetpp.eventlog.entry.SimulationBeginEntry;
 import org.omnetpp.eventlog.entry.SimulationEndEntry;

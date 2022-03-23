@@ -1,9 +1,9 @@
 package org.omnetpp.common.eventlog;
 
 import org.eclipse.jface.dialogs.IInputValidator;
-import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.engine.Expression;
 import org.omnetpp.common.ui.InputDialog;
+import org.omnetpp.common.util.BigDecimal;
 import org.omnetpp.eventlog.IEvent;
 import org.omnetpp.eventlog.IEventLog;
 
@@ -17,7 +17,7 @@ public class GotoSimulationTimeDialog extends InputDialog {
                 try {
                     IEvent lastEvent = eventLog == null ? null : eventLog.getLastEvent();
                     BigDecimal simulationTime = getSimulationTime(baseSimulationTime, newText);
-                    if (simulationTime.less(BigDecimal.getZero()))
+                    if (simulationTime.less(BigDecimal.ZERO))
                         return "The resulting simulation time is negative: " + simulationTime;
                     else if (lastEvent != null && simulationTime.greater(lastEvent.getSimulationTime()))
                         return "The resulting simulation time is beyond the end: " + simulationTime;

@@ -3,9 +3,9 @@ package org.omnetpp.eventlog;
 import java.util.TreeMap;
 
 import org.eclipse.core.runtime.Assert;
-import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.engine.LineTokenizer;
 import org.omnetpp.common.engine.PStringVector;
+import org.omnetpp.common.util.BigDecimal;
 import org.omnetpp.eventlog.engine.FileReader;
 
 /**
@@ -69,8 +69,8 @@ public abstract class EventLogIndex extends EventLogBase
      * Search for the file offset based on the key with the given match kind.
      * The key is either an event number or a simulation time.
      */
-    protected final <T extends Comparable<T>> long searchForOffset(TreeMap<T, CacheEntry> map, T key, MatchKind matchKind) {
-        T defaultValue = getKey(key, -1L, BigDecimal.getMinusOne());
+    protected final <T extends Comparable> long searchForOffset(TreeMap<T, CacheEntry> map, T key, MatchKind matchKind) {
+        T defaultValue = getKey(key, -1L, BigDecimal.MINUS_ONE);
         T lowerKey = defaultValue;
         T upperKey = defaultValue;
         long foundOffset = -1;
@@ -282,7 +282,7 @@ public abstract class EventLogIndex extends EventLogBase
      */
     protected final <T extends Comparable<T>> long binarySearchForOffset(T key, MatchKind matchKind, RefObject<T> lowerKey, RefObject<T> upperKey, RefObject<Long> lowerOffset, RefObject<Long> upperOffset)
     {
-        Assert.isTrue(key.compareTo(getKey(key, 0L, BigDecimal.getZero())) >= 0);
+        Assert.isTrue(key.compareTo(getKey(key, 0L, BigDecimal.ZERO)) >= 0);
         long foundOffset = -1;
         long middleEventBeginOffset = -1;
 //        long middleEventEndOffset = -1;
@@ -390,8 +390,8 @@ public abstract class EventLogIndex extends EventLogBase
         super.clearInternalState();
         firstEventNumber = EventNumberKind.EVENT_NOT_YET_CALCULATED;
         lastEventNumber = EventNumberKind.EVENT_NOT_YET_CALCULATED;
-        firstSimulationTime = BigDecimal.getMinusOne();
-        lastSimulationTime = BigDecimal.getMinusOne();
+        firstSimulationTime = BigDecimal.MINUS_ONE;
+        lastSimulationTime = BigDecimal.MINUS_ONE;
         firstEventOffset = -1;
         lastEventOffset = -1;
         eventNumberToCacheEntryMap.clear();
@@ -417,7 +417,7 @@ public abstract class EventLogIndex extends EventLogBase
                     eventNumberToCacheEntryMap.remove(lastEventNumber);
                     simulationTimeToCacheEntryMap.remove(lastSimulationTime);
                     lastEventNumber = EventNumberKind.EVENT_NOT_YET_CALCULATED;
-                    lastSimulationTime = BigDecimal.getMinusOne();
+                    lastSimulationTime = BigDecimal.MINUS_ONE;
                     lastEventOffset = -1;
                     break;
                 default:
@@ -514,7 +514,7 @@ public abstract class EventLogIndex extends EventLogBase
      * Returns the begin file offset of the requested simulation time. See MatchKind for details.
      */
     public long getOffsetForSimulationTime(BigDecimal simulationTime, MatchKind matchKind) {
-        Assert.isTrue(simulationTime.greaterOrEqual(BigDecimal.getZero()));
+        Assert.isTrue(simulationTime.greaterOrEqual(BigDecimal.ZERO));
         long offset = searchForOffset(simulationTimeToCacheEntryMap, simulationTime, matchKind);
 //        System.out.println("Found simulation time: " + simulationTime + " for match kind: " + matchKind + " at offset: " + offset);
         return offset;
@@ -534,7 +534,7 @@ public abstract class EventLogIndex extends EventLogBase
     boolean readToEventLine(boolean forward, long readStartOffset, ReadToEventLineResult result) {
         Assert.isTrue(readStartOffset >= 0);
         result.eventNumber = -1;
-        result.simulationTime = BigDecimal.getMinusOne();
+        result.simulationTime = BigDecimal.MINUS_ONE;
         reader.seekTo(readStartOffset);
 //        System.out.println("Reading to first event line from offset: " + readStartOffset + " in direction: " + (forward ? "forward" : "backward"));
         String line;
@@ -565,7 +565,7 @@ public abstract class EventLogIndex extends EventLogBase
                 result.simulationTime = EventLogEntry.parseSimulationTime(tokens.get(i + 1));
         }
         if (result.eventNumber != -1) {
-            Assert.isTrue(!result.simulationTime.equals(BigDecimal.getMinusOne()));
+            Assert.isTrue(!result.simulationTime.equals(BigDecimal.MINUS_ONE));
             cacheEntry(result.eventNumber, result.simulationTime, result.lineBeginOffset, result.lineEndOffset);
             return true;
         }

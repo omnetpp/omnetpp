@@ -8,10 +8,10 @@ import java.util.TreeSet;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.engine.JavaMatchableObject;
 import org.omnetpp.common.engine.MatchExpression;
 import org.omnetpp.common.engine.PatternMatcher;
+import org.omnetpp.common.util.BigDecimal;
 import org.omnetpp.eventlog.engine.FileReader;
 import org.omnetpp.eventlog.entry.BeginSendEntry;
 import org.omnetpp.eventlog.entry.ModuleDescriptionEntry;
@@ -444,7 +444,7 @@ public class FilteredEventLog extends EventLogBase implements IEventLog
 
     @Override
     public BigDecimal getFirstSimulationTime() {
-        return getFirstEvent() != null ? getFirstEvent().getSimulationTime() : BigDecimal.getZero();
+        return getFirstEvent() != null ? getFirstEvent().getSimulationTime() : BigDecimal.ZERO;
     }
 
     @Override
@@ -463,7 +463,7 @@ public class FilteredEventLog extends EventLogBase implements IEventLog
 
     @Override
     public BigDecimal getLastSimulationTime() {
-        return getLastEvent() != null ? getLastEvent().getSimulationTime() : BigDecimal.getZero();
+        return getLastEvent() != null ? getLastEvent().getSimulationTime() : BigDecimal.ZERO;
     }
 
     public FilteredEvent getEventForEventNumber(long eventNumber, MatchKind matchKind, boolean useCacheOnly) {

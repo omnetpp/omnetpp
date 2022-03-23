@@ -27,10 +27,10 @@ import org.eclipse.swt.graphics.TextLayout;
 import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.eventlog.EventLogEntryReference;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.common.util.BigDecimal;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.TimeUtils;
@@ -585,7 +585,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
     private String getSimulationTimeText(BigDecimal simulationTime) {
         // TODO: make this a parameter
         if (true)
-            return TimeUtils.secondsToTimeString(simulationTime.toBigDecimal());
+            return TimeUtils.secondsToTimeString(simulationTime);
         else
             return simulationTime.toString();
     }
@@ -758,7 +758,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
             BigDecimal simulationTime = endSendEntry.getEvent().getSimulationTime();
             append(getSimulationTimeText(arrivalTime), DATA_STYLE);
             append(", now + ", CONSTANT_TEXT_STYLE);
-            append(TimeUtils.secondsToTimeString(arrivalTime.toBigDecimal().subtract(simulationTime.toBigDecimal())), DATA_STYLE);
+            append(TimeUtils.secondsToTimeString(arrivalTime.subtract(simulationTime)), DATA_STYLE);
             return this;
         }
 

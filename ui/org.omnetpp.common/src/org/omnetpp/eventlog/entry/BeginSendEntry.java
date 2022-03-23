@@ -5,7 +5,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 
 import org.omnetpp.eventlog.IChunk;
-import org.omnetpp.common.engine.BigDecimal;
+import org.omnetpp.common.util.BigDecimal;
 
 public class BeginSendEntry extends MessageDescriptionEntry
 {
@@ -34,7 +34,7 @@ public class BeginSendEntry extends MessageDescriptionEntry
         super.parse(tokens, numTokens);
         sendDelay = getSimtimeToken(tokens, numTokens, "sd", false, sendDelay);
         isUpdate = getBoolToken(tokens, numTokens, "up", false, isUpdate);
-        transmissionId = getLongToken(tokens, numTokens, "tx", false, transmissionId);
+        transmissionId = getInt64Token(tokens, numTokens, "tx", false, transmissionId);
     }
 
     public void print(OutputStream stream) {

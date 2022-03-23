@@ -4,7 +4,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.INavigationLocation;
 import org.eclipse.ui.NavigationLocation;
-import org.omnetpp.common.engine.BigDecimal;
+import org.omnetpp.common.util.BigDecimal;
 
 public class SequenceChartLocation extends NavigationLocation {
     // TODO: ambiguous when restored
@@ -39,10 +39,10 @@ public class SequenceChartLocation extends NavigationLocation {
     public void restoreState(IMemento memento) {
         String value = memento.getString("startSimulationTime");
         if (value != null)
-            startSimulationTime = BigDecimal.parse(value);
+            startSimulationTime = new BigDecimal(value);
         value = memento.getString("endSimulationTime");
         if (value != null)
-            endSimulationTime = BigDecimal.parse(value);
+            endSimulationTime = new BigDecimal(value);
     }
 
     public void saveState(IMemento memento) {

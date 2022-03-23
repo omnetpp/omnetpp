@@ -10,7 +10,7 @@ package org.omnetpp.common.eventlog;
 import java.util.ArrayList;
 
 import org.eclipse.core.runtime.Assert;
-import org.omnetpp.common.engine.BigDecimal;
+import org.omnetpp.common.util.BigDecimal;
 import org.omnetpp.eventlog.IEventLog;
 
 /**

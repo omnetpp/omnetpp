@@ -10,7 +10,7 @@ package org.omnetpp.common.eventlog;
 import java.util.List;
 
 import org.eclipse.jface.viewers.ISelection;
-import org.omnetpp.common.engine.BigDecimal;
+import org.omnetpp.common.util.BigDecimal;
 import org.omnetpp.eventlog.IEventLog;
 
 /**

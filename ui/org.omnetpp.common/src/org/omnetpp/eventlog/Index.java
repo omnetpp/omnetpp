@@ -4,7 +4,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 
 import org.eclipse.core.runtime.Assert;
-import org.omnetpp.common.engine.BigDecimal;
+import org.omnetpp.common.util.BigDecimal;
 import org.omnetpp.eventlog.engine.FileReader;
 import org.omnetpp.eventlog.entry.IndexEntry;
 import org.omnetpp.eventlog.entry.ReferenceAddedEntry;

@@ -2,7 +2,7 @@ package org.omnetpp.eventlog;
 
 import java.io.OutputStream;
 
-import org.omnetpp.common.engine.BigDecimal;
+import org.omnetpp.common.util.BigDecimal;
 import org.omnetpp.eventlog.entry.MessageDescriptionEntry;
 
 public interface IMessageDependency

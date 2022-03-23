@@ -1,7 +1,7 @@
 package org.omnetpp.eventlog;
 
-import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.engineext.IMatchableObject;
+import org.omnetpp.common.util.BigDecimal;
 
 /**
  * Manages one part of the eventlog file that consists of a sequence of chunks.

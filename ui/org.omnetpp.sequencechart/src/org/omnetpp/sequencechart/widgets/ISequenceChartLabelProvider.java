@@ -1,11 +1,11 @@
 package org.omnetpp.sequencechart.widgets;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import org.eclipse.swt.graphics.Image;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
+import org.omnetpp.common.util.BigDecimal;
 import org.omnetpp.eventlog.IEvent;
 import org.omnetpp.eventlog.IMessageDependency;
 import org.omnetpp.eventlog.entry.ComponentMethodBeginEntry;

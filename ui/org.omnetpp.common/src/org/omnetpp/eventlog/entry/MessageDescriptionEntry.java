@@ -5,7 +5,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 
 import org.omnetpp.eventlog.IChunk;
-import org.omnetpp.common.engine.BigDecimal;
+import org.omnetpp.common.util.BigDecimal;
 
 public class MessageDescriptionEntry extends MessageReferenceEntry
 {
@@ -92,9 +92,9 @@ public class MessageDescriptionEntry extends MessageReferenceEntry
 
     public void parse(String[] tokens, int numTokens) {
         super.parse(tokens, numTokens);
-        messageTreeId = getLongToken(tokens, numTokens, "tid", true, messageTreeId);
-        messageEncapsulationId = getLongToken(tokens, numTokens, "eid", true, messageEncapsulationId);
-        messageEncapsulationTreeId = getLongToken(tokens, numTokens, "etid", true, messageEncapsulationTreeId);
+        messageTreeId = getInt64Token(tokens, numTokens, "tid", true, messageTreeId);
+        messageEncapsulationId = getInt64Token(tokens, numTokens, "eid", true, messageEncapsulationId);
+        messageEncapsulationTreeId = getInt64Token(tokens, numTokens, "etid", true, messageEncapsulationTreeId);
         messageClassName = getStringToken(tokens, numTokens, "c", true, messageClassName);
         messageName = getStringToken(tokens, numTokens, "n", true, messageName);
         messageKind = getShortToken(tokens, numTokens, "k", false, messageKind);

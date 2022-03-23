@@ -14,6 +14,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.util.BigDecimal;
 import org.omnetpp.eventlog.IEvent;
 import org.omnetpp.eventlog.IEventLog;
 import org.omnetpp.eventlog.SequenceChartFacade;
@@ -136,7 +137,7 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
                     x1 = (int)sequenceChart.getViewportCoordinateForTimelineCoordinate(sequenceChartFacade.getTimelineCoordinateBegin(event));
                 else {
                     event = sequenceChartFacade.getNonFilteredEventForEventNumber(eventNumber);
-                    org.omnetpp.common.engine.BigDecimal eventSimulationTime = event.getSimulationTime();
+                    BigDecimal eventSimulationTime = event.getSimulationTime();
                     double eventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinateForSimulationTime(eventSimulationTime, false);
 
                     if (eventTimelineCoordinate == sequenceChartFacade.getTimelineCoordinateForSimulationTime(eventSimulationTime, true))
@@ -147,7 +148,7 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
                     x2 = (int)sequenceChart.getViewportCoordinateForTimelineCoordinate(sequenceChartFacade.getTimelineCoordinateBegin(nextEvent));
                 else {
                     nextEvent = sequenceChartFacade.getNonFilteredEventForEventNumber(nextEventNumber);
-                    org.omnetpp.common.engine.BigDecimal nextEventSimulationTime = nextEvent.getSimulationTime();
+                    BigDecimal nextEventSimulationTime = nextEvent.getSimulationTime();
                     double nextEventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinateForSimulationTime(nextEventSimulationTime, false);
 
                     if (nextEventTimelineCoordinate == sequenceChartFacade.getTimelineCoordinateForSimulationTime(nextEventSimulationTime, true))
@@ -249,7 +250,7 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
     /**
      * Returns the index having less or greater or equal simulation time in the data array depending on the given flag.
      */
-    public int getIndex(org.omnetpp.common.engine.BigDecimal simulationTime, boolean before)
+    public int getIndex(BigDecimal simulationTime, boolean before)
     {
         int index = -1;
         int left = 0;
@@ -302,9 +303,9 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
         return data.length();
     }
 
-    public org.omnetpp.common.engine.BigDecimal getSimulationTime(int index)
+    public BigDecimal getSimulationTime(int index)
     {
-        return data.getPreciseX(index);
+        return new BigDecimal(data.getPreciseX(index).toBigDecimal());
     }
 
     public long getEventNumber(int index)

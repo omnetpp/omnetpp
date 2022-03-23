@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 import org.omnetpp.eventlog.IChunk;
 import org.omnetpp.eventlog.EventLogTokenBasedEntry;
-import org.omnetpp.common.engine.BigDecimal;
+import org.omnetpp.common.util.BigDecimal;
 
 public class SnapshotEntry extends EventLogTokenBasedEntry
 {
@@ -18,7 +18,7 @@ public class SnapshotEntry extends EventLogTokenBasedEntry
         this.chunk = null;
         fileOffset = -1;
         eventNumber = -1;
-        simulationTime = BigDecimal.getNaN();
+        simulationTime = null;
     }
 
     public SnapshotEntry(IChunk chunk, int entryIndex) {
@@ -26,7 +26,7 @@ public class SnapshotEntry extends EventLogTokenBasedEntry
         this.entryIndex = entryIndex;
         fileOffset = -1;
         eventNumber = -1;
-        simulationTime = BigDecimal.getNaN();
+        simulationTime = null;
     }
 
     public long getFileOffset() { return fileOffset; }

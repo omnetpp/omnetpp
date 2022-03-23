@@ -3,7 +3,7 @@ package org.omnetpp.eventlog;
 import java.io.OutputStream;
 
 import org.eclipse.core.runtime.Assert;
-import org.omnetpp.common.engine.BigDecimal;
+import org.omnetpp.common.util.BigDecimal;
 import org.omnetpp.eventlog.entry.BeginSendEntry;
 import org.omnetpp.eventlog.entry.EndSendEntry;
 import org.omnetpp.eventlog.entry.MessageDescriptionEntry;
@@ -49,7 +49,7 @@ public class MessageSendDependency extends MessageDependencyBase implements IMes
             // So here we have to look through all events at the arrival time,
             // and find the one "caused by" our message.
             BigDecimal consequenceTime = getConsequenceSimulationTime();
-            if (consequenceTime.equals(BigDecimal.getMinusOne()))
+            if (consequenceTime.equals(BigDecimal.MINUS_ONE))
                 consequenceEventNumber = EventNumberKind.NO_SUCH_EVENT;
             else if (consequenceTime.greater(eventLog.getLastEvent().getSimulationTime()))
                 consequenceEventNumber = EventNumberKind.EVENT_NOT_YET_REACHED;
@@ -101,7 +101,7 @@ public class MessageSendDependency extends MessageDependencyBase implements IMes
             if (endSendEntry != null)
                 return endSendEntry.arrivalTime;
             else
-                return BigDecimal.getMinusOne();
+                return BigDecimal.MINUS_ONE;
         }
     }
 

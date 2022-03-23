@@ -118,7 +118,7 @@ while (<FILE>)
       {
          $fieldPrintfType = "%s";
          $fieldCDefault = "simtime_nil";
-         $fieldJavaDefault = "BigDecimal.getNaN()";
+         $fieldJavaDefault = "null";
       }
 
       if ($5 ne "") {
@@ -649,7 +649,7 @@ import org.omnetpp.eventlog.IChunk;
    if ($hasBigDecimal eq "true")
    {
       print ENTRY_JAVA_FILE
-"import org.omnetpp.common.engine.BigDecimal;
+"import org.omnetpp.common.util.BigDecimal;
 
 ";
    }

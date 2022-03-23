@@ -1,11 +1,11 @@
 package org.omnetpp.sequencechart.widgets;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import org.eclipse.swt.graphics.Image;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
+import org.omnetpp.common.util.BigDecimal;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.TimeUtils;
 import org.omnetpp.eventlog.EventLogMessageEntry;
@@ -125,7 +125,7 @@ public final class SequenceChartLabelProvider implements ISequenceChartLabelProv
                     double timelineCoordinate = (Double)object;
                     if (result.length() != 0)
                         result += "<br/>";
-                    org.omnetpp.common.engine.BigDecimal simulationTime = sequenceChartFacade.getSimulationTimeForTimelineCoordinate(timelineCoordinate);
+                    BigDecimal simulationTime = sequenceChartFacade.getSimulationTimeForTimelineCoordinate(timelineCoordinate);
                     result += boldStart + "At" + boldEnd + " t = " + boldStart + getSimulationTimeText(simulationTime) + boldEnd;
                     IEvent event = sequenceChartFacade.getLastEventNotAfterTimelineCoordinate(timelineCoordinate);
                     if (event != null && !event.getSimulationTime().equals(simulationTime))
@@ -308,8 +308,8 @@ public final class SequenceChartLabelProvider implements ISequenceChartLabelProv
 
     @Override
     public final String getSimulationTimeDeltaText(IMessageDependency messageDependency, boolean formatted) {
-        org.omnetpp.common.engine.BigDecimal causeSimulationTime = messageDependency.getCauseSimulationTime();
-        org.omnetpp.common.engine.BigDecimal consequenceSimulationTime = messageDependency.getConsequenceSimulationTime();
+        BigDecimal causeSimulationTime = messageDependency.getCauseSimulationTime();
+        BigDecimal consequenceSimulationTime = messageDependency.getConsequenceSimulationTime();
         return " dt = " + getSimulationTimeText(consequenceSimulationTime.subtract(causeSimulationTime));
     }
 
@@ -351,10 +351,10 @@ public final class SequenceChartLabelProvider implements ISequenceChartLabelProv
         return SequenceChartPlugin.getCachedImage(TOOL_IMAGE_DIR + "close.png");
     }
 
-    private String getSimulationTimeText(org.omnetpp.common.engine.BigDecimal simulationTime) {
+    private String getSimulationTimeText(BigDecimal simulationTime) {
         // TODO: make this a parameter
         if (true)
-            return TimeUtils.secondsToTimeString(simulationTime.toBigDecimal());
+            return TimeUtils.secondsToTimeString(simulationTime);
         else
             return simulationTime.toString();
     }

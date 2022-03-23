@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 import org.omnetpp.eventlog.IChunk;
 import org.omnetpp.eventlog.EventLogTokenBasedEntry;
-import org.omnetpp.common.engine.BigDecimal;
+import org.omnetpp.common.util.BigDecimal;
 
 public class SendDirectEntry extends EventLogTokenBasedEntry
 {

@@ -22,7 +22,7 @@ public class CloneMessageEntry extends MessageDescriptionEntry
 
     public void parse(String[] tokens, int numTokens) {
         super.parse(tokens, numTokens);
-        cloneId = getLongToken(tokens, numTokens, "cid", true, cloneId);
+        cloneId = getInt64Token(tokens, numTokens, "cid", true, cloneId);
     }
 
     public void print(OutputStream stream) {

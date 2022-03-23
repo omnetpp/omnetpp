@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.TreeSet;
 
 import org.eclipse.core.runtime.Assert;
-import org.omnetpp.common.engine.BigDecimal;
+import org.omnetpp.common.util.BigDecimal;
 import org.omnetpp.eventlog.EventLogIndex.ReadToEventLineResult;
 import org.omnetpp.eventlog.engine.FileReader;
 import org.omnetpp.eventlog.entry.BeginSendEntry;
@@ -317,7 +317,7 @@ public class Event extends EventBase implements IEvent
         Assert.isTrue(beginSendEntry != null && this == beginSendEntry.getEvent());
         EndSendEntry endSendEntry = getEndSendEntry(beginSendEntry);
         int index = beginSendEntry.getEntryIndex() + 1;
-        BigDecimal transmissionDelay = BigDecimal.getZero();
+        BigDecimal transmissionDelay = BigDecimal.ZERO;
         // there is at most one entry which specifies a transmission delay
         while (index < (int)eventLogEntries.size()) {
             EventLogEntry eventLogEntry = eventLogEntries.get(index);
@@ -333,7 +333,7 @@ public class Event extends EventBase implements IEvent
                 else if (eventLogEntry == endSendEntry || (!(eventLogEntry instanceof EventLogMessageEntry) && !(eventLogEntry instanceof MessageDescriptionEntry)))
                     break;
             }
-            if (!transmissionDelay.equals(BigDecimal.getZero()))
+            if (!transmissionDelay.equals(BigDecimal.ZERO))
                 break;
             index++;
         }
@@ -344,7 +344,7 @@ public class Event extends EventBase implements IEvent
         Assert.isTrue(beginSendEntry != null && this == beginSendEntry.getEvent());
         EndSendEntry endSendEntry = getEndSendEntry(beginSendEntry);
         int index = beginSendEntry.getEntryIndex() + 1;
-        BigDecimal remainingDuration = BigDecimal.getZero();
+        BigDecimal remainingDuration = BigDecimal.ZERO;
         // there is at most one entry which specifies a transmission delay
         while (index < (int)eventLogEntries.size()) {
             EventLogEntry eventLogEntry = eventLogEntries.get(index);
@@ -360,7 +360,7 @@ public class Event extends EventBase implements IEvent
                 else if (eventLogEntry == endSendEntry || (!(eventLogEntry instanceof EventLogMessageEntry) && !(eventLogEntry instanceof MessageDescriptionEntry)))
                     break;
             }
-            if (!remainingDuration.equals(BigDecimal.getZero()))
+            if (!remainingDuration.equals(BigDecimal.ZERO))
                 break;
             index++;
         }

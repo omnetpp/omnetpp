@@ -8,12 +8,12 @@
 package org.omnetpp.common.eventlog;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.omnetpp.common.util.BigDecimal;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.eventlog.IEvent;
 import org.omnetpp.eventlog.IEventLog;
@@ -192,7 +192,7 @@ public class EventLogFilterParameters implements Serializable {
         long lowerTraceEventNumberLimit2 = -1;
         if (enableTraceFilter && tracedEventNumber != -1 && causeSimulationTimeDelta != null) {
             IEvent event = eventLog.getEventForEventNumber(tracedEventNumber);
-            event = eventLog.getLastEventNotAfterSimulationTime(new org.omnetpp.common.engine.BigDecimal(event.getSimulationTime().doubleValue() - causeSimulationTimeDelta.doubleValue()));
+            event = eventLog.getLastEventNotAfterSimulationTime(new BigDecimal(event.getSimulationTime().doubleValue() - causeSimulationTimeDelta.doubleValue()));
 
             if (event != null)
                 lowerTraceEventNumberLimit2 = event.getEventNumber();
@@ -200,7 +200,7 @@ public class EventLogFilterParameters implements Serializable {
 
         long lowerEventNumberForSimulationTimeLimit = -1;
         if (enableSimulationTimeRangeFilter && lowerSimulationTimeLimit != null) {
-            IEvent event = eventLog.getLastEventNotAfterSimulationTime(org.omnetpp.common.engine.BigDecimal.parse(lowerSimulationTimeLimit.toPlainString()));
+            IEvent event = eventLog.getLastEventNotAfterSimulationTime(new BigDecimal(lowerSimulationTimeLimit.toPlainString()));
 
             if (event != null)
                 lowerEventNumberForSimulationTimeLimit = event.getEventNumber();
@@ -224,7 +224,7 @@ public class EventLogFilterParameters implements Serializable {
         long upperTraceEventNumberLimit2 = Long.MAX_VALUE;
         if (enableTraceFilter && tracedEventNumber != -1 && consequenceSimulationTimeDelta != null) {
             IEvent event = eventLog.getEventForEventNumber(tracedEventNumber);
-            event = eventLog.getFirstEventNotBeforeSimulationTime(new org.omnetpp.common.engine.BigDecimal(event.getSimulationTime().doubleValue() + consequenceSimulationTimeDelta.doubleValue()));
+            event = eventLog.getFirstEventNotBeforeSimulationTime(new BigDecimal(event.getSimulationTime().doubleValue() + consequenceSimulationTimeDelta.doubleValue()));
 
             if (event != null)
                 upperTraceEventNumberLimit2 = event.getEventNumber();
@@ -232,7 +232,7 @@ public class EventLogFilterParameters implements Serializable {
 
         long upperEventNumberForSimulationTimeLimit = Long.MAX_VALUE;
         if (enableSimulationTimeRangeFilter && upperSimulationTimeLimit != null) {
-            IEvent event = eventLog.getFirstEventNotBeforeSimulationTime(org.omnetpp.common.engine.BigDecimal.parse(upperSimulationTimeLimit.toPlainString()));
+            IEvent event = eventLog.getFirstEventNotBeforeSimulationTime(new BigDecimal(upperSimulationTimeLimit.toPlainString()));
 
             if (event != null)
                 upperEventNumberForSimulationTimeLimit = event.getEventNumber();

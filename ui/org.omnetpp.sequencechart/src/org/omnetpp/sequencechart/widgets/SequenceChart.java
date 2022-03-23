@@ -7,7 +7,6 @@
 
 package org.omnetpp.sequencechart.widgets;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
 import java.math.RoundingMode;
@@ -91,6 +90,7 @@ import org.omnetpp.common.eventlog.ModuleTreeItem.IModuleTreeItemVisitor;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.IHoverInfoProvider;
+import org.omnetpp.common.util.BigDecimal;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.common.util.Pair;
@@ -880,7 +880,7 @@ public class SequenceChart
      * after changing the timeline coordinate system.
      */
     public void setTimelineMode(TimelineMode timelineMode) {
-        org.omnetpp.common.engine.BigDecimal[] leftRightSimulationTimes = null;
+        BigDecimal[] leftRightSimulationTimes = null;
 
         if (!eventLog.isEmpty())
             leftRightSimulationTimes = getViewportSimulationTimeRange();
@@ -927,36 +927,36 @@ public class SequenceChart
     /**
      * Returns the currently visible range of simulation times as an array of two simulation times.
      */
-    public org.omnetpp.common.engine.BigDecimal[] getViewportSimulationTimeRange()
+    public BigDecimal[] getViewportSimulationTimeRange()
     {
-        return new org.omnetpp.common.engine.BigDecimal[] {getViewportLeftSimulationTime(), getViewportRightSimulationTime()};
+        return new BigDecimal[] {getViewportLeftSimulationTime(), getViewportRightSimulationTime()};
     }
 
     /**
      * Sets the range of visible simulation times as an array of two simulation times.
      */
-    public void setViewportSimulationTimeRange(org.omnetpp.common.engine.BigDecimal[] leftRightSimulationTimes) {
+    public void setViewportSimulationTimeRange(BigDecimal[] leftRightSimulationTimes) {
         zoomToSimulationTimeRange(leftRightSimulationTimes[0], leftRightSimulationTimes[1]);
     }
 
     /**
      * Returns the smallest visible simulation time within the viewport.
      */
-    public org.omnetpp.common.engine.BigDecimal getViewportLeftSimulationTime() {
+    public BigDecimal getViewportLeftSimulationTime() {
         return getSimulationTimeForViewportCoordinate(0);
     }
 
     /**
      * Returns the simulation time visible at the viewport's center.
      */
-    public org.omnetpp.common.engine.BigDecimal getViewportCenterSimulationTime() {
+    public BigDecimal getViewportCenterSimulationTime() {
         return getSimulationTimeForViewportCoordinate(getViewportWidth() / 2);
     }
 
     /**
      * Returns the biggest visible simulation time within the viewport.
      */
-    public org.omnetpp.common.engine.BigDecimal getViewportRightSimulationTime() {
+    public BigDecimal getViewportRightSimulationTime() {
         return getSimulationTimeForViewportCoordinate(getViewportWidth());
     }
 
@@ -983,7 +983,7 @@ public class SequenceChart
             }
 
             // don't go before the very beginning
-            if (getSimulationTimeForViewportCoordinate(0).less(org.omnetpp.common.engine.BigDecimal.getZero())) {
+            if (getSimulationTimeForViewportCoordinate(0).less(BigDecimal.ZERO)) {
                 this.fixPointViewportCoordinate = 0;
                 sequenceChartFacade.relocateTimelineCoordinateSystem(getFirstVisibleEvent());
             }
@@ -1116,7 +1116,7 @@ public class SequenceChart
                 scrollToEvent(event, x);
             }
             else
-                scrollToSimulationTime(org.omnetpp.common.engine.BigDecimal.getZero(), styleProvider.getEventSelectionRadius() * 2);
+                scrollToSimulationTime(BigDecimal.ZERO, styleProvider.getEventSelectionRadius() * 2);
         }
     }
 
@@ -1222,14 +1222,14 @@ public class SequenceChart
             reveal(event);
     }
 
-    public void scrollToSimulationTime(org.omnetpp.common.engine.BigDecimal simulationTime) {
+    public void scrollToSimulationTime(BigDecimal simulationTime) {
         scrollToSimulationTime(simulationTime, getViewportWidth() / 2);
     }
 
     /**
      * Scroll the canvas making the simulation time visible at the left edge of the viewport.
      */
-    public void scrollToSimulationTime(org.omnetpp.common.engine.BigDecimal simulationTime, int x) {
+    public void scrollToSimulationTime(BigDecimal simulationTime, int x) {
         // TODO: relocate if possible
         scrollHorizontal(getViewportCoordinateForSimulationTime(simulationTime) - x);
         redraw();
@@ -1254,9 +1254,9 @@ public class SequenceChart
     }
 
     public void scrollToMessageDependency(IMessageDependency messageDependency) {
-        org.omnetpp.common.engine.BigDecimal causeSimulationTime = messageDependency.getCauseEvent().getSimulationTime();
-        org.omnetpp.common.engine.BigDecimal consequenceSimulationTime = messageDependency.getConsequenceEvent().getSimulationTime();
-        scrollToSimulationTime(new org.omnetpp.common.engine.BigDecimal(causeSimulationTime.add(consequenceSimulationTime).doubleValue() / 2));
+        BigDecimal causeSimulationTime = messageDependency.getCauseEvent().getSimulationTime();
+        BigDecimal consequenceSimulationTime = messageDependency.getConsequenceEvent().getSimulationTime();
+        scrollToSimulationTime(new BigDecimal(causeSimulationTime.add(consequenceSimulationTime).doubleValue() / 2));
     }
 
     public void scrollToComponentMethodCall(ComponentMethodBeginEntry componentMethodBeginEntry) {
@@ -1319,7 +1319,7 @@ public class SequenceChart
             gotoElement(event);
     }
 
-    public void gotoSimulationTime(org.omnetpp.common.engine.BigDecimal simulationTime) {
+    public void gotoSimulationTime(BigDecimal simulationTime) {
         setSelectedSimulationTime(simulationTime);
         scrollToSimulationTime(simulationTime);
     }
@@ -1378,7 +1378,7 @@ public class SequenceChart
     public void zoomBy(final double zoomFactor) {
         eventLogInput.runWithProgressMonitor(new Runnable() {
             public void run() {
-                org.omnetpp.common.engine.BigDecimal simulationTime = null;
+                BigDecimal simulationTime = null;
 
                 if (!eventLog.isEmpty())
                     simulationTime = getViewportCenterSimulationTime();
@@ -1409,10 +1409,10 @@ public class SequenceChart
     /**
      * Zoom and scroll to make the given start and end simulation times visible.
      */
-    public void zoomToSimulationTimeRange(final org.omnetpp.common.engine.BigDecimal startSimulationTime, final org.omnetpp.common.engine.BigDecimal endSimulationTime) {
+    public void zoomToSimulationTimeRange(final BigDecimal startSimulationTime, final BigDecimal endSimulationTime) {
         eventLogInput.runWithProgressMonitor(new Runnable() {
             public void run() {
-                if (!endSimulationTime.isNaN() && !startSimulationTime.equals(endSimulationTime)) {
+                if (endSimulationTime != null && !startSimulationTime.equals(endSimulationTime)) {
                     double timelineUnitDelta = sequenceChartFacade.getTimelineCoordinateForSimulationTime(endSimulationTime) - sequenceChartFacade.getTimelineCoordinateForSimulationTime(startSimulationTime);
 
                     if (timelineUnitDelta > 0)
@@ -1427,12 +1427,12 @@ public class SequenceChart
     /**
      * Zoom and scroll to make the given start and end simulation times visible, but leave some extra pixels on both sides.
      */
-    public void zoomToSimulationTimeRange(org.omnetpp.common.engine.BigDecimal startSimulationTime, org.omnetpp.common.engine.BigDecimal endSimulationTime, int pixelInset) {
+    public void zoomToSimulationTimeRange(BigDecimal startSimulationTime, BigDecimal endSimulationTime, int pixelInset) {
         if (pixelInset > 0) {
             // NOTE: we can't go directly there, so here is an approximation
             for (int i = 0; i < 3; i++) {
-                org.omnetpp.common.engine.BigDecimal newStartSimulationTime = getSimulationTimeForViewportCoordinate(getViewportCoordinateForSimulationTime(startSimulationTime) - pixelInset);
-                org.omnetpp.common.engine.BigDecimal newEndSimulationTime = getSimulationTimeForViewportCoordinate(getViewportCoordinateForSimulationTime(endSimulationTime) + pixelInset);
+                BigDecimal newStartSimulationTime = getSimulationTimeForViewportCoordinate(getViewportCoordinateForSimulationTime(startSimulationTime) - pixelInset);
+                BigDecimal newEndSimulationTime = getSimulationTimeForViewportCoordinate(getViewportCoordinateForSimulationTime(endSimulationTime) + pixelInset);
 
                 zoomToSimulationTimeRange(newStartSimulationTime, newEndSimulationTime);
             }
@@ -1451,7 +1451,7 @@ public class SequenceChart
     /**
      * Zoom and scroll to make the value at the given simulation time visible at once.
      */
-    public void zoomToAxisValue(ModuleTreeItem axisModule, org.omnetpp.common.engine.BigDecimal simulationTime) {
+    public void zoomToAxisValue(ModuleTreeItem axisModule, BigDecimal simulationTime) {
         for (int i = 0; i < getVisibleAxisModules().size(); i++) {
             if (getVisibleAxisModules().get(i) == axisModule) {
                 IAxisRenderer axisRenderer = getAxis(i).axisRenderer;
@@ -3462,8 +3462,8 @@ public class SequenceChart
         if (startEvent != null && endEvent != null) {
             // draw rectangle before the very beginning of the simulation
             long x = clip.x;
-            if (getSimulationTimeForViewportCoordinate(x).equals(org.omnetpp.common.engine.BigDecimal.getZero())) {
-//                long startX = getViewportCoordinateForSimulationTime(org.omnetpp.common.engine.BigDecimal.getZero(), true);
+            if (getSimulationTimeForViewportCoordinate(x).equals(BigDecimal.ZERO)) {
+//                long startX = getViewportCoordinateForSimulationTime(BigDecimal.ZERO, true);
                 long startX = getEventXViewportCoordinateEnd(startEvent);
 
                 if (x != startX)
@@ -3479,8 +3479,8 @@ public class SequenceChart
                 if (previousEvent != null) {
                     x = getEventXViewportCoordinateEnd(event);
                     long previousX = getEventXViewportCoordinateBegin(previousEvent);
-                    org.omnetpp.common.engine.BigDecimal simulationTime = event.getSimulationTime();
-                    org.omnetpp.common.engine.BigDecimal previousSimulationTime = previousEvent.getSimulationTime();
+                    BigDecimal simulationTime = event.getSimulationTime();
+                    BigDecimal previousSimulationTime = previousEvent.getSimulationTime();
 
                     if (simulationTime.equals(previousSimulationTime) && x != previousX)
                         drawZeroSimulationTimeRegion(graphics, r, clip, previousX, x - previousX);
@@ -3929,11 +3929,11 @@ public class SequenceChart
     private void drawTicks(Graphics graphics, int viewportHeigth) {
         calculateTicks(getViewportWidth());
         IEvent lastEvent = eventLog.getLastEvent();
-        org.omnetpp.common.engine.BigDecimal endSimulationTime = lastEvent == null ? org.omnetpp.common.engine.BigDecimal.getZero() : lastEvent.getSimulationTime();
+        BigDecimal endSimulationTime = lastEvent == null ? BigDecimal.ZERO : lastEvent.getSimulationTime();
         for (BigDecimal tick : ticks) {
             // BigDecimal to double conversions loose precision both in Java and C++ but we must stick to the one in C++
             // so that strange problems do not occur (think of comparing the tick's time to the last known simulation time)
-            org.omnetpp.common.engine.BigDecimal simulationTime = new org.omnetpp.common.engine.BigDecimal(tick.doubleValue());
+            BigDecimal simulationTime = new BigDecimal(tick.doubleValue());
             if (endSimulationTime.less(simulationTime))
                 simulationTime = endSimulationTime;
             drawTick(graphics, viewportHeigth, styleProvider.getTickLineColor(), styleProvider.getGutterBackgroundColor(), tick, (int)getViewportCoordinateForSimulationTime(simulationTime), false);
@@ -4083,7 +4083,7 @@ public class SequenceChart
             IMarker marker = markers[i];
             if ("Position".equals(marker.getAttribute("Kind", null))) {
                 String simulationTimeString = marker.getAttribute("SimulationTime", null);
-                org.omnetpp.common.engine.BigDecimal simulationTime = org.omnetpp.common.engine.BigDecimal.parse(simulationTimeString);
+                BigDecimal simulationTime = new BigDecimal(simulationTimeString);
                 int viewportCoordinate = (int)getViewportCoordinateForSimulationTime(simulationTime);
                 drawTimelineMark(graphics, viewportCoordinate, styleProvider.getBookmarkColor());
             }
@@ -4115,7 +4115,7 @@ public class SequenceChart
     }
 
     private void drawTimeDifferences(Graphics graphics) {
-        MultiValueMap map = MultiValueMap.decorate(new TreeMap<Double, Pair<org.omnetpp.common.engine.BigDecimal, Point>>());
+        MultiValueMap map = MultiValueMap.decorate(new TreeMap<Double, Pair<BigDecimal, Point>>());
         IEvent[] eventRange = getFirstLastEventForViewportRange(0 - styleProvider.getEventSelectionRadius(), getViewportWidth() + styleProvider.getEventSelectionRadius());
         IEvent startEvent = eventRange[0];
         IEvent endEvent = eventRange[1];
@@ -4131,23 +4131,23 @@ public class SequenceChart
                         for (long eventNumber = startEventNumber; eventNumber <= endEventNumber; eventNumber++) {
                             if (eventNumberRangeSet.contains(eventNumber)) {
                                 IEvent event = eventLog.getEventForEventNumber(eventNumber);
-                                org.omnetpp.common.engine.BigDecimal simulationTime = event.getSimulationTime();
+                                BigDecimal simulationTime = event.getSimulationTime();
                                 double timelineCoordinateBegin = sequenceChartFacade.getTimelineCoordinateBegin(event);
                                 double timelineCoordinateEnd = sequenceChartFacade.getTimelineCoordinateEnd(event);
                                 double timelineCoordinate = (timelineCoordinateEnd + timelineCoordinateBegin) / 2;
                                 int xBegin = (int)getEventXViewportCoordinateBegin(event);
                                 int xEnd = (int)getEventXViewportCoordinateEnd(event);
                                 int y = isInitializationEvent(event) ? getViewportHeight() / 2 : getEventYViewportCoordinate(event);
-                                map.put(timelineCoordinate, new Pair<org.omnetpp.common.engine.BigDecimal, Point>(simulationTime, new Point((xBegin + xEnd) / 2, y)));
+                                map.put(timelineCoordinate, new Pair<BigDecimal, Point>(simulationTime, new Point((xBegin + xEnd) / 2, y)));
                             }
                         }
                     }
                 }
                 else if (object instanceof Double) {
                     Double timelineCoordinate = (Double)object;
-                    org.omnetpp.common.engine.BigDecimal simulationTime = sequenceChartFacade.getSimulationTimeForTimelineCoordinate(timelineCoordinate);
+                    BigDecimal simulationTime = sequenceChartFacade.getSimulationTimeForTimelineCoordinate(timelineCoordinate);
                     long x = getViewportCoordinateForTimelineCoordinate(timelineCoordinate);
-                    map.put(timelineCoordinate, new Pair<org.omnetpp.common.engine.BigDecimal, Point>(simulationTime, new Point((int)x, getViewportHeight() / 2)));
+                    map.put(timelineCoordinate, new Pair<BigDecimal, Point>(simulationTime, new Point((int)x, getViewportHeight() / 2)));
                 }
             }
         }
@@ -4157,16 +4157,16 @@ public class SequenceChart
             graphics.setLineWidthFloat(1.5f);
             graphics.setLineStyle(SWT.LINE_DASH);
             graphics.setForegroundColor(styleProvider.getSelectionColor());
-            org.omnetpp.common.engine.BigDecimal previousSimulationTime = null;
+            BigDecimal previousSimulationTime = null;
             Point previousViewportCoordinate = null;
             for (Object object : map.entrySet()) {
                 @SuppressWarnings("unchecked")
-                Map.Entry<Double, ArrayList<Pair<org.omnetpp.common.engine.BigDecimal, Point>>> entry = (Map.Entry<Double, ArrayList<Pair<org.omnetpp.common.engine.BigDecimal, Point>>>)object;
-                for (Pair<org.omnetpp.common.engine.BigDecimal, Point> pair : entry.getValue()) {
-                    org.omnetpp.common.engine.BigDecimal simulationTime = pair.first;
+                Map.Entry<Double, ArrayList<Pair<BigDecimal, Point>>> entry = (Map.Entry<Double, ArrayList<Pair<BigDecimal, Point>>>)object;
+                for (Pair<BigDecimal, Point> pair : entry.getValue()) {
+                    BigDecimal simulationTime = pair.first;
                     Point viewportCoordinate = pair.second;
                     if (previousSimulationTime != null) {
-                        org.omnetpp.common.engine.BigDecimal simulationTimeDifference = simulationTime.subtract(previousSimulationTime);
+                        BigDecimal simulationTimeDifference = simulationTime.subtract(previousSimulationTime);
                         graphics.drawLine(previousViewportCoordinate.x, previousViewportCoordinate.y, viewportCoordinate.x, viewportCoordinate.y);
                         String text = TimeUtils.secondsToTimeString(new BigDecimal(simulationTimeDifference.toString()));
                         Point size = GraphicsUtils.getTextExtent(graphics, text);
@@ -4434,12 +4434,12 @@ public class SequenceChart
         boolean isFilteredMessageDependency = messageDependency instanceof FilteredMessageDependency;
         FilteredMessageDependency filteredMessageDependency = isFilteredMessageDependency ? (FilteredMessageDependency)messageDependency : null;
         FilteredMessageDependency.Kind filteredMessageDependencyKind = isFilteredMessageDependency ? filteredMessageDependency.getKind() : FilteredMessageDependency.Kind.UNDEFINED;
-        org.omnetpp.common.engine.BigDecimal transmissionDuration = null;
-        org.omnetpp.common.engine.BigDecimal remainingDuration = null;
+        BigDecimal transmissionDuration = null;
+        BigDecimal remainingDuration = null;
         if (showTransmissionDurations && !isFilteredMessageDependency && endSendEntry != null) {
             transmissionDuration = messageEntry.getEvent().getTransmissionDelay(beginSendEntry);
             remainingDuration = beginSendEntry.getEvent().getRemainingDuration(beginSendEntry);
-            if (remainingDuration.equals(org.omnetpp.common.engine.BigDecimal.getZero()))
+            if (remainingDuration.equals(BigDecimal.ZERO))
                 remainingDuration = null;
         }
         boolean isTransmissionStart = true;
@@ -4833,16 +4833,16 @@ public class SequenceChart
      * Draws a semi-transparent region to represent a transmission duration.
      * The coordinates specify the arrow that will be draw on top of the transmission duration area.
      */
-    private void drawTransmissionDuration(Graphics graphics, IEvent causeEvent, IEvent consequenceEvent, org.omnetpp.common.engine.BigDecimal transmissionDuration, org.omnetpp.common.engine.BigDecimal remainingDuration, boolean isTransmissionStart, boolean isReceptionStart, int xCause, int y1, int xConsequence, int y2, boolean splitArrow, boolean endingSplit) {
+    private void drawTransmissionDuration(Graphics graphics, IEvent causeEvent, IEvent consequenceEvent, BigDecimal transmissionDuration, BigDecimal remainingDuration, boolean isTransmissionStart, boolean isReceptionStart, int xCause, int y1, int xConsequence, int y2, boolean splitArrow, boolean endingSplit) {
         // check simulation times for being out of range
-        org.omnetpp.common.engine.BigDecimal t3 = isTransmissionStart ?
+        BigDecimal t3 = isTransmissionStart ?
             causeEvent.getSimulationTime().add(remainingDuration) :
             causeEvent.getSimulationTime();
-        org.omnetpp.common.engine.BigDecimal t4 = isReceptionStart ?
+        BigDecimal t4 = isReceptionStart ?
             consequenceEvent.getSimulationTime().add(remainingDuration) :
             consequenceEvent.getSimulationTime();
-        org.omnetpp.common.engine.BigDecimal lastEventSimulationTime = eventLog.getLastEvent().getSimulationTime();
-        if (t3.greater(lastEventSimulationTime) || t4.greater(lastEventSimulationTime) || t4.less(org.omnetpp.common.engine.BigDecimal.getZero()))
+        BigDecimal lastEventSimulationTime = eventLog.getLastEvent().getSimulationTime();
+        if (t3.greater(lastEventSimulationTime) || t4.greater(lastEventSimulationTime) || t4.less(BigDecimal.ZERO))
             return;
 
         int x1, x2, x3, x4;
@@ -5495,7 +5495,7 @@ public class SequenceChart
                     long tright = modX + viewportWidth + tickSpacing;
                     IEvent lastEvent = eventLog.getLastEvent();
                     if (lastEvent != null) {
-                        BigDecimal endSimulationTime = lastEvent.getSimulationTime().toBigDecimal();
+                        BigDecimal endSimulationTime = lastEvent.getSimulationTime();
                         for (long t = tleft; t < tright; t += tickSpacing) {
                             BigDecimal tick = calculateTick(t, tickSpacing / 2);
                             if (tick.compareTo(BigDecimal.ZERO) >= 0 && tick.compareTo(endSimulationTime) <= 0)
@@ -5518,11 +5518,11 @@ public class SequenceChart
             return BigDecimal.ZERO;
 
         // query the simulation time for the given coordinate
-        BigDecimal simulationTime = getSimulationTimeForViewportCoordinate(x).toBigDecimal();
+        BigDecimal simulationTime = getSimulationTimeForViewportCoordinate(x);
 
         // defines the range of valid simulation times for the given tick range
-        BigDecimal tMin = getSimulationTimeForViewportCoordinate(x - tickRange / 2).toBigDecimal();
-        BigDecimal tMax = getSimulationTimeForViewportCoordinate(x + tickRange / 2).toBigDecimal();
+        BigDecimal tMin = getSimulationTimeForViewportCoordinate(x - tickRange / 2);
+        BigDecimal tMax = getSimulationTimeForViewportCoordinate(x + tickRange / 2);
 
         // check some invariants
         // originally we were checking these invariants, but it is impossible to always make these hold
@@ -5629,43 +5629,43 @@ public class SequenceChart
     /**
      * Translates viewport pixel x coordinate to simulation time lower limit.
      */
-    public org.omnetpp.common.engine.BigDecimal getSimulationTimeForViewportCoordinate(long x) {
+    public BigDecimal getSimulationTimeForViewportCoordinate(long x) {
         return getSimulationTimeForViewportCoordinate(x, false);
     }
 
     /**
      * Translates viewport pixel x coordinate to simulation time.
      */
-    public org.omnetpp.common.engine.BigDecimal getSimulationTimeForViewportCoordinate(long x, boolean upperLimit) {
+    public BigDecimal getSimulationTimeForViewportCoordinate(long x, boolean upperLimit) {
         return sequenceChartFacade.getSimulationTimeForTimelineCoordinate(getTimelineCoordinateForViewportCoordinate(x), upperLimit);
     }
 
     /**
      * Translates viewport pixel x coordinate to simulation time lower limit.
      */
-    public org.omnetpp.common.engine.BigDecimal getSimulationTimeForViewportCoordinate(double x) {
+    public BigDecimal getSimulationTimeForViewportCoordinate(double x) {
         return getSimulationTimeForViewportCoordinate(x, false);
     }
 
     /**
      * Translates viewport pixel x coordinate to simulation time.
      */
-    public org.omnetpp.common.engine.BigDecimal getSimulationTimeForViewportCoordinate(double x, boolean upperLimit) {
+    public BigDecimal getSimulationTimeForViewportCoordinate(double x, boolean upperLimit) {
         return sequenceChartFacade.getSimulationTimeForTimelineCoordinate(getTimelineCoordinateForViewportCoordinate(x), upperLimit);
     }
 
     /**
      * Translates simulation time to viewport pixel x coordinate lower limit.
      */
-    public long getViewportCoordinateForSimulationTime(org.omnetpp.common.engine.BigDecimal t) {
+    public long getViewportCoordinateForSimulationTime(BigDecimal t) {
         return getViewportCoordinateForSimulationTime(t, false);
     }
 
     /**
      * Translates simulation time to viewport pixel x coordinate.
      */
-    public long getViewportCoordinateForSimulationTime(org.omnetpp.common.engine.BigDecimal t, boolean upperLimit) {
-        Assert.isTrue(t.greaterOrEqual(org.omnetpp.common.engine.BigDecimal.getZero()));
+    public long getViewportCoordinateForSimulationTime(BigDecimal t, boolean upperLimit) {
+        Assert.isTrue(t.greaterOrEqual(BigDecimal.ZERO));
         return Math.round(sequenceChartFacade.getTimelineCoordinateForSimulationTime(t, upperLimit) * getPixelPerTimelineUnit()) + fixPointViewportCoordinate;
     }
 
@@ -5709,8 +5709,8 @@ public class SequenceChart
                 else if (e.keyCode == SWT.TAB)
                     setShowTimeDifferences(!getShowTimeDifferences());
                 else if (e.keyCode == SWT.DEL) {
-                    org.omnetpp.common.engine.BigDecimal startSimulationTime = getViewportLeftSimulationTime();
-                    org.omnetpp.common.engine.BigDecimal endSimulationTime = getViewportRightSimulationTime();
+                    BigDecimal startSimulationTime = getViewportLeftSimulationTime();
+                    BigDecimal endSimulationTime = getViewportRightSimulationTime();
                     EventLogFilterParameters parameters = eventLogInput.getFilterParameters();
                     ArrayList<Long> excludedEventNumbers = new ArrayList<Long>();
                     for (Object object : selectedObjects) {
@@ -6168,7 +6168,7 @@ public class SequenceChart
             EventLogInput selectionEventLogInput = eventLogSelection.getEventLogInput();
             if (eventLogInput != selectionEventLogInput)
                 setInput(selectionEventLogInput);
-            org.omnetpp.common.engine.BigDecimal simulationTime = eventLogSelection.getFirstSimulationTime();
+            BigDecimal simulationTime = eventLogSelection.getFirstSimulationTime();
             Double newSelectedTimelineCoordinate = simulationTime != null ? sequenceChartFacade.getTimelineCoordinateForSimulationTime(simulationTime) : null;
             Object selectedTimelineCoordinate = selectedObjects.stream().filter(o -> o instanceof Double).findFirst().orElse(null);
             EventNumberRangeSet selectedEventNumberRangeSet = (EventNumberRangeSet)selectedObjects.stream().filter(o -> o instanceof EventNumberRangeSet).findFirst().orElse(null);
@@ -6235,7 +6235,7 @@ public class SequenceChart
         redraw();
     }
 
-    public org.omnetpp.common.engine.BigDecimal getSelectedSimulationTime() {
+    public BigDecimal getSelectedSimulationTime() {
         Double timelineCoordinate = (Double)selectedObjects.stream().filter(o -> o instanceof Double).findFirst().get();
         if (timelineCoordinate == null)
             return null;
@@ -6243,7 +6243,7 @@ public class SequenceChart
             return sequenceChartFacade.getSimulationTimeForTimelineCoordinate(timelineCoordinate);
     }
 
-    public void setSelectedSimulationTime(org.omnetpp.common.engine.BigDecimal simulationTime) {
+    public void setSelectedSimulationTime(BigDecimal simulationTime) {
         selectedObjects.clear();
         selectedObjects.add(sequenceChartFacade.getTimelineCoordinateForSimulationTime(simulationTime));
         fireSelectionChanged();

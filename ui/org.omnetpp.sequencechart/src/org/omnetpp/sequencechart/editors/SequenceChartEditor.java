@@ -36,10 +36,10 @@ import org.eclipse.ui.part.IShowInSource;
 import org.eclipse.ui.part.IShowInTargetList;
 import org.eclipse.ui.part.ShowInContext;
 import org.omnetpp.common.IConstants;
-import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.eventlog.EventLogEditor;
 import org.omnetpp.common.eventlog.IEventLogSelection;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
+import org.omnetpp.common.util.BigDecimal;
 import org.omnetpp.eventlog.EventLogEntry;
 import org.omnetpp.eventlog.IEvent;
 import org.omnetpp.eventlog.IEventLog;
@@ -135,7 +135,7 @@ public class SequenceChartEditor
     }
 
     public INavigationLocation createEmptyNavigationLocation() {
-        return new SequenceChartLocation(this, org.omnetpp.common.engine.BigDecimal.getZero(), org.omnetpp.common.engine.BigDecimal.getNaN());
+        return new SequenceChartLocation(this, BigDecimal.ZERO, null);
     }
 
     @Override
@@ -197,7 +197,7 @@ public class SequenceChartEditor
         }
         else if (kind.equals("Position")) {
             String simulationTimeString = marker.getAttribute("SimulationTime", null);
-            BigDecimal simulationTime = BigDecimal.parse(simulationTimeString);
+            BigDecimal simulationTime = new BigDecimal(simulationTimeString);
             sequenceChart.scrollToSimulationTime(simulationTime);
         }
     }

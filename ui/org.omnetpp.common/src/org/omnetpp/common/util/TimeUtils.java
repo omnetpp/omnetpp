@@ -7,9 +7,6 @@
 
 package org.omnetpp.common.util;
 
-import java.math.BigDecimal;
-
-
 /**
  *
  * @author levy

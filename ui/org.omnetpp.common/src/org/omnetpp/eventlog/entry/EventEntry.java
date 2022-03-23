@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 import org.omnetpp.eventlog.IChunk;
 import org.omnetpp.eventlog.EventLogTokenBasedEntry;
-import org.omnetpp.common.engine.BigDecimal;
+import org.omnetpp.common.util.BigDecimal;
 
 public class EventEntry extends EventLogTokenBasedEntry
 {
@@ -20,7 +20,7 @@ public class EventEntry extends EventLogTokenBasedEntry
     public EventEntry() {
         this.chunk = null;
         eventNumber = -1;
-        simulationTime = BigDecimal.getNaN();
+        simulationTime = null;
         moduleId = -1;
         causeEventNumber = -1;
         messageId = -1;
@@ -31,7 +31,7 @@ public class EventEntry extends EventLogTokenBasedEntry
         this.chunk = chunk;
         this.entryIndex = entryIndex;
         eventNumber = -1;
-        simulationTime = BigDecimal.getNaN();
+        simulationTime = null;
         moduleId = -1;
         causeEventNumber = -1;
         messageId = -1;
@@ -50,7 +50,7 @@ public class EventEntry extends EventLogTokenBasedEntry
         simulationTime = getSimtimeToken(tokens, numTokens, "t", true, simulationTime);
         moduleId = getIntToken(tokens, numTokens, "m", true, moduleId);
         causeEventNumber = getEventNumberToken(tokens, numTokens, "ce", true, causeEventNumber);
-        messageId = getLongToken(tokens, numTokens, "msg", true, messageId);
+        messageId = getInt64Token(tokens, numTokens, "msg", true, messageId);
         fingerprints = getStringToken(tokens, numTokens, "f", false, fingerprints);
     }
 

@@ -4,7 +4,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-import org.omnetpp.common.engine.BigDecimal;
+import org.omnetpp.common.util.BigDecimal;
 import org.omnetpp.eventlog.engine.FileReader;
 import org.omnetpp.eventlog.entry.BeginSendEntry;
 import org.omnetpp.eventlog.entry.EndSendEntry;

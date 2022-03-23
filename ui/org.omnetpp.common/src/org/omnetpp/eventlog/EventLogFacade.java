@@ -1,7 +1,7 @@
 package org.omnetpp.eventlog;
 
 import org.eclipse.core.runtime.Assert;
-import org.omnetpp.common.engine.BigDecimal;
+import org.omnetpp.common.util.BigDecimal;
 import org.omnetpp.eventlog.entry.ModuleDescriptionEntry;
 
 public class EventLogFacade
@@ -34,12 +34,12 @@ public class EventLogFacade
 
     public final BigDecimal getFirstSimulationTime() {
         IEvent event = eventLog.getFirstEvent();
-        return event != null ? event.getSimulationTime() : BigDecimal.getMinusOne();
+        return event != null ? event.getSimulationTime() : BigDecimal.MINUS_ONE;
     }
 
     public final BigDecimal getLastSimulationTime() {
         IEvent event = eventLog.getLastEvent();
-        return event != null ? event.getSimulationTime() : BigDecimal.getMinusOne();
+        return event != null ? event.getSimulationTime() : BigDecimal.MINUS_ONE;
     }
 
     public String ModuleDescriptionEntry_getModuleFullPath(ModuleDescriptionEntry moduleDescriptionEntry) {

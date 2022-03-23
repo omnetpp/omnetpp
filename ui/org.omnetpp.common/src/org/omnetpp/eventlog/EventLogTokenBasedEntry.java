@@ -1,6 +1,6 @@
 package org.omnetpp.eventlog;
 
-import org.omnetpp.common.engine.BigDecimal;
+import org.omnetpp.common.util.BigDecimal;
 
 /**
  * Base class for entries represented by key value tokens.
@@ -84,7 +84,7 @@ public abstract class EventLogTokenBasedEntry extends EventLogEntry
     public static BigDecimal getSimtimeToken(String[] tokens, int numTokens, String sign, boolean mandatory, BigDecimal defaultValue) {
         String token = getToken(tokens, numTokens, sign, mandatory);
         if (token != null)
-            return BigDecimal.parse(token);
+            return new BigDecimal(token);
         else
             return defaultValue;
     }

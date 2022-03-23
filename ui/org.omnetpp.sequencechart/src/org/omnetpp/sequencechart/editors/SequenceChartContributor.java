@@ -113,7 +113,6 @@ import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.part.EditorActionBarContributor;
 import org.eclipse.ui.texteditor.StatusLineContributionItem;
 import org.eclipse.ui.views.navigator.ResourceComparator;
-import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.eventlog.EventLogFilterParameters;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.EventNumberRangeSet;
@@ -127,6 +126,7 @@ import org.omnetpp.common.eventlog.ModuleTreeItem;
 import org.omnetpp.common.eventlog.ModuleTreeItem.IModuleTreeItemVisitor;
 import org.omnetpp.common.eventlog.ModuleTreeViewer;
 import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.common.util.BigDecimal;
 import org.omnetpp.common.util.TimeUtils;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.eventlog.FilteredEventLog;
@@ -1105,7 +1105,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
         eventLogInput.runWithProgressMonitor(new Runnable() {
             public void run() {
-                org.omnetpp.common.engine.BigDecimal centerSimulationTime = org.omnetpp.common.engine.BigDecimal.getMinusOne();
+                BigDecimal centerSimulationTime = BigDecimal.MINUS_ONE;
 
                 if (!wasCanceled)
                     centerSimulationTime = sequenceChart.getViewportCenterSimulationTime();
@@ -1131,7 +1131,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
         eventLogInput.runWithProgressMonitor(new Runnable() {
             public void run() {
-                org.omnetpp.common.engine.BigDecimal centerSimulationTime = org.omnetpp.common.engine.BigDecimal.getMinusOne();
+                BigDecimal centerSimulationTime = BigDecimal.MINUS_ONE;
 
                 if (!wasCanceled)
                     centerSimulationTime = sequenceChart.getViewportCenterSimulationTime();
@@ -2066,7 +2066,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                                 }
                             }
                             else if (kind.equals("Position")) {
-                                BigDecimal simulationTime = BigDecimal.parse(marker.getAttribute("SimulationTime", null));
+                                BigDecimal simulationTime = new BigDecimal(marker.getAttribute("SimulationTime", null));
                                 if (selectedObjects.contains(simulationTime)) {
                                     selectedObjects.remove(simulationTime);
                                     marker.delete();
@@ -2440,7 +2440,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
         private SequenceChartFacade sequenceChartFacade;
         private double oldNonLinearMinimumTimelineCoordinateDelta;
         private double oldNonLinearFocus;
-        private org.omnetpp.common.engine.BigDecimal[] oldLeftRightSimulationTimeRange;
+        private BigDecimal[] oldLeftRightSimulationTimeRange;
         private Label minimumLabel;
         private Label focusLabel;
         private Scale minimum;
@@ -2561,7 +2561,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
         }
 
         private void setNonLinearFocusText() {
-            java.math.BigDecimal value = new java.math.BigDecimal(getNonLinearFocus());
+            BigDecimal value = new BigDecimal(getNonLinearFocus());
             value = value.round(new MathContext(3));
             focusLabel.setText("Nonlinear simulation time focus: " + TimeUtils.secondsToTimeString(value));
         }

@@ -4,10 +4,10 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 
 import org.eclipse.core.runtime.Assert;
-import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.engine.LineTokenizer;
 import org.omnetpp.common.engine.PStringVector;
 import org.omnetpp.common.engineext.IMatchableObject;
+import org.omnetpp.common.util.BigDecimal;
 
 /**
  * Base class for all kind of eventlog entries.
@@ -129,6 +129,6 @@ public abstract class EventLogEntry implements IMatchableObject
     }
 
     public static BigDecimal parseSimulationTime(String str) {
-        return BigDecimal.parse(str);
+        return new BigDecimal(str);
     }
 }

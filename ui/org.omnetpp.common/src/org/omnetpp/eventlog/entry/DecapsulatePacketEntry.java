@@ -22,7 +22,7 @@ public class DecapsulatePacketEntry extends MessageReferenceEntry
 
     public void parse(String[] tokens, int numTokens) {
         super.parse(tokens, numTokens);
-        encapsulatedPacketId = getLongToken(tokens, numTokens, "cid", true, encapsulatedPacketId);
+        encapsulatedPacketId = getInt64Token(tokens, numTokens, "cid", true, encapsulatedPacketId);
     }
 
     public void print(OutputStream stream) {

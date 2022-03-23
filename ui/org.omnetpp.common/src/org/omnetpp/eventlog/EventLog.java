@@ -7,7 +7,7 @@ import java.util.TreeSet;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.omnetpp.common.engine.BigDecimal;
+import org.omnetpp.common.util.BigDecimal;
 import org.omnetpp.eventlog.engine.FileReader;
 import org.omnetpp.eventlog.entry.IndexEntry;
 import org.omnetpp.eventlog.entry.MessageDescriptionEntry;
@@ -141,7 +141,7 @@ public class EventLog extends EventLogIndex implements IEventLog
                         eventNumberToCacheEntryMap.remove(lastEvent.getEventNumber());
                         endOffsetToEventMap.remove(lastEvent.getEndOffset());
                         lastEventNumber = EventNumberKind.EVENT_NOT_YET_CALCULATED;
-                        lastSimulationTime = BigDecimal.getMinusOne();
+                        lastSimulationTime = BigDecimal.MINUS_ONE;
                         lastEventOffset = -1;
                         lastEvent = null;
                     }
@@ -267,7 +267,7 @@ public class EventLog extends EventLogIndex implements IEventLog
         if (useCacheOnly)
             return null;
         else {
-            Assert.isTrue(simulationTime.greaterOrEqual(BigDecimal.getZero()));
+            Assert.isTrue(simulationTime.greaterOrEqual(BigDecimal.ZERO));
             long offset = getOffsetForSimulationTime(simulationTime, matchKind);
             if (offset == -1)
                 return null;

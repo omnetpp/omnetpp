@@ -9,7 +9,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.eclipse.core.runtime.Assert;
-import org.omnetpp.common.engine.BigDecimal;
+import org.omnetpp.common.util.BigDecimal;
 import org.omnetpp.eventlog.engine.FileReader;
 import org.omnetpp.eventlog.entry.BeginSendEntry;
 import org.omnetpp.eventlog.entry.ComponentMethodBeginEntry;
@@ -130,7 +130,7 @@ public class SequenceChartFacade extends EventLogFacade
     public final void undefineTimelineCoordinateSystem() {
         timelineCoordinateSystemVersion++;
         timelineCoordinateSystemOriginEventNumber = timelineCoordinateRangeStartEventNumber = timelineCoordinateRangeEndEventNumber = -1;
-        timelineCoordinateSystemOriginSimulationTime = BigDecimal.getMinusOne();
+        timelineCoordinateSystemOriginSimulationTime = BigDecimal.MINUS_ONE;
     }
 
     public final void relocateTimelineCoordinateSystem(IEvent event) {
@@ -413,12 +413,12 @@ public class SequenceChartFacade extends EventLogFacade
     public final BigDecimal getSimulationTimeForTimelineCoordinate(double timelineCoordinate, boolean upperLimit) {
         Assert.isTrue(!Double.isNaN(timelineCoordinate));
         if (eventLog.isEmpty())
-            return BigDecimal.getZero();
+            return BigDecimal.ZERO;
         BigDecimal simulationTime;
         switch (timelineMode) {
             case SIMULATION_TIME: {
                 BigDecimal lastEventSimulationTime = eventLog.getLastEvent().getSimulationTime();
-                simulationTime = bigDecimalMax(BigDecimal.getZero(), bigDecimalMin(lastEventSimulationTime, new BigDecimal(timelineCoordinate).add(timelineCoordinateSystemOriginSimulationTime)));
+                simulationTime = bigDecimalMax(BigDecimal.ZERO, bigDecimalMin(lastEventSimulationTime, new BigDecimal(timelineCoordinate).add(timelineCoordinateSystemOriginSimulationTime)));
                 break;
             }
             case EVENT_NUMBER:
@@ -426,9 +426,9 @@ public class SequenceChartFacade extends EventLogFacade
             case NONLINEAR: {
                 IEvent event = getLastEventNotAfterTimelineCoordinate(timelineCoordinate);
                 IEvent nextEvent;
-                BigDecimal eventSimulationTime = BigDecimal.getMinusOne();
-                BigDecimal nextEventSimulationTime = BigDecimal.getMinusOne();
-                BigDecimal simulationTimeDelta = BigDecimal.getZero();
+                BigDecimal eventSimulationTime = BigDecimal.MINUS_ONE;
+                BigDecimal nextEventSimulationTime = BigDecimal.MINUS_ONE;
+                BigDecimal simulationTimeDelta = BigDecimal.ZERO;
                 double eventTimelineCoordinateBegin = Double.NaN;
                 double eventTimelineCoordinateEnd = Double.NaN;
                 double nextEventTimelineCoordinateBegin = Double.NaN;
@@ -476,8 +476,8 @@ public class SequenceChartFacade extends EventLogFacade
             default:
                 throw new RuntimeException("Unknown timeline mode");
         }
-        Assert.isTrue(!simulationTime.isNaN());
-        Assert.isTrue(simulationTime.greaterOrEqual(BigDecimal.getZero()));
+        Assert.isTrue(simulationTime != null);
+        Assert.isTrue(simulationTime.greaterOrEqual(BigDecimal.ZERO));
         Assert.isTrue(simulationTime.lessOrEqual(eventLog.getLastEvent().getSimulationTime()));
         return simulationTime;
     }
@@ -506,10 +506,10 @@ public class SequenceChartFacade extends EventLogFacade
     }
 
     public double getTimelineCoordinateForSimulationTime(BigDecimal simulationTime, boolean upperLimit) {
-        Assert.isTrue(!simulationTime.isNaN());
+        Assert.isTrue(simulationTime != null);
         if (eventLog.isEmpty())
             return 0;
-        Assert.isTrue(simulationTime.greaterOrEqual(BigDecimal.getZero()));
+        Assert.isTrue(simulationTime.greaterOrEqual(BigDecimal.ZERO));
      //   Assert.isTrue(simulationTime.lessOrEqual(eventLog.getLastEvent().getSimulationTime()));
         double timelineCoordinate;
         switch (timelineMode) {
@@ -520,9 +520,9 @@ public class SequenceChartFacade extends EventLogFacade
             case STEP:
             case NONLINEAR: {
                 IEvent nextEvent;
-                BigDecimal eventSimulationTime = BigDecimal.getMinusOne();
-                BigDecimal nextEventSimulationTime = BigDecimal.getMinusOne();
-                BigDecimal simulationTimeDelta = BigDecimal.getZero();
+                BigDecimal eventSimulationTime = BigDecimal.MINUS_ONE;
+                BigDecimal nextEventSimulationTime = BigDecimal.MINUS_ONE;
+                BigDecimal simulationTimeDelta = BigDecimal.ZERO;
                 double eventTimelineCoordinateBegin = Double.NaN;
                 double eventTimelineCoordinateEnd = Double.NaN;
                 double nextEventTimelineCoordinateBegin = Double.NaN;
@@ -551,7 +551,7 @@ public class SequenceChartFacade extends EventLogFacade
                 nextEvent = tempRef_nextEvent.argValue;
 
                 if (nextEvent != null) {
-                    if (simulationTimeDelta.equals(BigDecimal.getZero())) {
+                    if (simulationTimeDelta.equals(BigDecimal.ZERO)) {
                         // IMPORTANT NOTE: this is just an approximation
                         if (upperLimit)
                             timelineCoordinate = nextEventTimelineCoordinateBegin;
@@ -718,7 +718,7 @@ public class SequenceChartFacade extends EventLogFacade
             eventTimelineCoordinateEnd.argValue = getTimelineCoordinateEnd(event);
         }
         else {
-            eventSimulationTime.argValue = BigDecimal.getZero();
+            eventSimulationTime.argValue = BigDecimal.ZERO;
             IEvent firstEvent = eventLog.getFirstEvent();
             eventTimelineCoordinateBegin.argValue = getTimelineCoordinateBegin(firstEvent);
             eventTimelineCoordinateEnd.argValue = getTimelineCoordinateEnd(firstEvent);

@@ -8,7 +8,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.widgets.Display;
-import org.omnetpp.common.engine.BigDecimal;
+import org.omnetpp.common.util.BigDecimal;
 import org.omnetpp.eventlog.IEvent;
 import org.omnetpp.eventlog.TimelineMode;
 import org.omnetpp.sequencechart.SequenceChartPlugin;
@@ -101,15 +101,15 @@ public class SequenceChartSelfTestJob extends Job {
             if (lastEvent != null)
                 sequenceChart.gotoElement(lastEvent);
         });
-        addTest("Goto 0 simulation time", () -> sequenceChart.gotoSimulationTime(BigDecimal.getZero()));
+        addTest("Goto 0 simulation time", () -> sequenceChart.gotoSimulationTime(BigDecimal.ZERO));
         addTest("Goto first simulation time", () -> {
             BigDecimal simulationTime = sequenceChart.getEventLog().getFirstSimulationTime();
-            if (simulationTime.greaterOrEqual(BigDecimal.getZero()))
+            if (simulationTime.greaterOrEqual(BigDecimal.ZERO))
                 sequenceChart.gotoSimulationTime(simulationTime);
         });
         addTest("Goto last simulation time", () -> {
             BigDecimal simulationTime = sequenceChart.getEventLog().getLastSimulationTime();
-            if (simulationTime.greaterOrEqual(BigDecimal.getZero()))
+            if (simulationTime.greaterOrEqual(BigDecimal.ZERO))
                 sequenceChart.gotoSimulationTime(simulationTime);
         });
         // TODO: more

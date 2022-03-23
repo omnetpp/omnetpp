@@ -3,7 +3,7 @@ package org.omnetpp.eventlog;
 import java.io.OutputStream;
 
 import org.eclipse.core.runtime.Assert;
-import org.omnetpp.common.engine.BigDecimal;
+import org.omnetpp.common.util.BigDecimal;
 import org.omnetpp.eventlog.entry.MessageDescriptionEntry;
 
 /**
@@ -47,7 +47,7 @@ public class MessageReuseDependency extends MessageDependencyBase implements IMe
         if (causeEventNumber >= 0)
             return getCauseEvent().getSimulationTime();
         else
-            return BigDecimal.getMinusOne();
+            return BigDecimal.MINUS_ONE;
     }
 
     @Override

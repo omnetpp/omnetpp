@@ -24,7 +24,7 @@ public class MessageReferenceEntry extends EventLogTokenBasedEntry
     public long getMessageId() { return messageId; }
 
     public void parse(String[] tokens, int numTokens) {
-        messageId = getLongToken(tokens, numTokens, "id", true, messageId);
+        messageId = getInt64Token(tokens, numTokens, "id", true, messageId);
     }
 
     public void print(OutputStream stream) {
