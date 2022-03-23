@@ -23,7 +23,7 @@ network HTTPNet
             parameters:
                 @display("p=274,182");
             gates:
-                g[numClients+2];
+                g[parent.numClients+2];
         }
         extClient: ExtHTTPClient {
             parameters:
