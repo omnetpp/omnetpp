@@ -157,24 +157,6 @@ Register_PerRunConfigOptionU(CFGID_OUTPUTVECTOR_MEMORY_LIMIT, "output-vectors-me
 Register_PerObjectConfigOptionU(CFGID_VECTOR_BUFFER, "vector-buffer", KIND_VECTOR, "B", DEFAULT_VECTOR_BUFFER, "For output vectors: the maximum per-vector buffer space used for storing values before writing them out as a block into the output vector file. There is also a total limit, see `output-vectors-memory-limit`.\nUsage: `<module-full-path>.<vector-name>.vector-buffer=<amount>`.");
 
 
-EnvirOptions::EnvirOptions()
-{
-    // note: these values will be overwritten in setup()/readOptions() before taking effect
-    totalStack = 0;
-    parsim = false;
-    numRNGs = 1;
-    seedset = 0;
-    debugStatisticsRecording = false;
-    checkSignals = false;
-    fnameAppendHost = false;
-    warnings = true;
-    verbose = true;
-    useStderr = true;
-    printUndisposed = true;
-    realTimeLimit = 0;
-    cpuTimeLimit = 0;
-}
-
 EnvirBase::EnvirBase() : out(std::cout.rdbuf())
 {
     opt = nullptr;
@@ -596,15 +578,11 @@ void EnvirBase::readOptions()
 
     opt->totalStack = (size_t)cfg->getAsDouble(CFGID_TOTAL_STACK, TOTAL_STACK_SIZE);
     opt->parsim = cfg->getAsBool(CFGID_PARALLEL_SIMULATION);
-    if (opt->parsim) {
-#ifdef WITH_PARSIM
-        opt->parsimNumPartitions = cfg->getAsInt(CFGID_PARSIM_NUM_PARTITIONS);
-        opt->parsimcommClass = cfg->getAsString(CFGID_PARSIM_COMMUNICATIONS_CLASS);
-        opt->parsimsynchClass = cfg->getAsString(CFGID_PARSIM_SYNCHRONIZATION_CLASS);
-#else
+
+#ifndef WITH_PARSIM
+    if (opt->parsim)
         throw cRuntimeError("Parallel simulation is turned on in the ini file, but OMNeT++ was compiled without parallel simulation support (WITH_PARSIM=no)");
 #endif
-    }
 
     opt->fnameAppendHost = cfg->getAsBool(CFGID_FNAME_APPEND_HOST, opt->parsim);
 
@@ -669,17 +647,8 @@ void EnvirBase::readPerRunOptions()
     opt->realTimeLimit = cfg->getAsDouble(CFGID_REAL_TIME_LIMIT, -1);
     opt->cpuTimeLimit = cfg->getAsDouble(CFGID_CPU_TIME_LIMIT, -1);
     opt->warmupPeriod = cfg->getAsDouble(CFGID_WARMUP_PERIOD);
-    opt->numRNGs = cfg->getAsInt(CFGID_NUM_RNGS);
-    opt->rngClass = cfg->getAsString(CFGID_RNG_CLASS);
-    opt->seedset = cfg->getAsInt(CFGID_SEED_SET);
     opt->debugStatisticsRecording = cfg->getAsBool(CFGID_DEBUG_STATISTICS_RECORDING);
     opt->checkSignals = cfg->getAsBool(CFGID_CHECK_SIGNALS);
-    opt->schedulerClass = cfg->getAsString(CFGID_SCHEDULER_CLASS);
-    opt->futureeventsetClass = cfg->getAsString(CFGID_FUTUREEVENTSET_CLASS);
-    opt->eventlogManagerClass = cfg->getAsString(CFGID_EVENTLOGMANAGER_CLASS);
-    opt->outputVectorManagerClass = cfg->getAsString(CFGID_OUTPUTVECTORMANAGER_CLASS);
-    opt->outputScalarManagerClass = cfg->getAsString(CFGID_OUTPUTSCALARMANAGER_CLASS);
-    opt->snapshotmanagerClass = cfg->getAsString(CFGID_SNAPSHOTMANAGER_CLASS);
     debugOnErrors = cfg->getAsBool(CFGID_DEBUG_ON_ERRORS);  // note: handling overridden in Qtenv::readPerRunOptions() due to interference with GUI
     opt->printUndisposed = cfg->getAsBool(CFGID_PRINT_UNDISPOSED);
     getSimulation()->setParameterMutabilityCheck(cfg->getAsBool(CFGID_PARAMETER_MUTABILITY_CHECK));
@@ -691,30 +660,36 @@ void EnvirBase::readPerRunOptions()
 
     // install eventlog manager
     delete eventlogManager;
-    eventlogManager = createByClassName<cIEventlogManager>(opt->eventlogManagerClass.c_str(), "eventlog manager");
+    std::string eventlogManagerClass = cfg->getAsString(CFGID_EVENTLOGMANAGER_CLASS);
+    eventlogManager = createByClassName<cIEventlogManager>(eventlogManagerClass.c_str(), "eventlog manager");
 
     // install output vector manager
     delete outvectorManager;
-    outvectorManager = createByClassName<cIOutputVectorManager>(opt->outputVectorManagerClass.c_str(), "output vector manager");
+    std::string outputVectorManagerClass = cfg->getAsString(CFGID_OUTPUTVECTORMANAGER_CLASS);
+    outvectorManager = createByClassName<cIOutputVectorManager>(outputVectorManagerClass.c_str(), "output vector manager");
     addLifecycleListener(outvectorManager);
 
     // install output scalar manager
     delete outScalarManager;
-    outScalarManager = createByClassName<cIOutputScalarManager>(opt->outputScalarManagerClass.c_str(), "output scalar manager");
+    std::string outputScalarManagerClass = cfg->getAsString(CFGID_OUTPUTSCALARMANAGER_CLASS);
+    outScalarManager = createByClassName<cIOutputScalarManager>(outputScalarManagerClass.c_str(), "output scalar manager");
     addLifecycleListener(outScalarManager);
 
     // install snapshot manager
     delete snapshotManager;
-    snapshotManager = createByClassName<cISnapshotManager>(opt->snapshotmanagerClass.c_str(), "snapshot manager");
+    std::string snapshotmanagerClass = cfg->getAsString(CFGID_SNAPSHOTMANAGER_CLASS);
+    snapshotManager = createByClassName<cISnapshotManager>(snapshotmanagerClass.c_str(), "snapshot manager");
     addLifecycleListener(snapshotManager);
 
     // install FES
-    cFutureEventSet *fes = createByClassName<cFutureEventSet>(opt->futureeventsetClass.c_str(), "FES");
+    std::string futureeventsetClass = cfg->getAsString(CFGID_FUTUREEVENTSET_CLASS);
+    cFutureEventSet *fes = createByClassName<cFutureEventSet>(futureeventsetClass.c_str(), "FES");
     getSimulation()->setFES(fes);
 
     // install scheduler
     if (!opt->parsim) {
-        cScheduler *scheduler = createByClassName<cScheduler>(opt->schedulerClass.c_str(), "event scheduler");
+        std::string schedulerClass = cfg->getAsString(CFGID_SCHEDULER_CLASS);
+        cScheduler *scheduler = createByClassName<cScheduler>(schedulerClass.c_str(), "event scheduler");
         getSimulation()->setScheduler(scheduler);
     }
 
@@ -734,7 +709,8 @@ void EnvirBase::readPerRunOptions()
     cComponent::setCheckSignals(opt->checkSignals);
 
     // run RNG self-test on RNG class selected for this run
-    cRNG *testRng = createByClassName<cRNG>(opt->rngClass.c_str(), "random number generator");
+    std::string rngClass = cfg->getAsString(CFGID_RNG_CLASS);
+    cRNG *testRng = createByClassName<cRNG>(rngClass.c_str(), "random number generator");
     testRng->selfTest();
     delete testRng;
 
@@ -743,11 +719,12 @@ void EnvirBase::readPerRunOptions()
         delete rngs[i];
     delete[] rngs;
 
-    numRNGs = opt->numRNGs;
+    numRNGs = cfg->getAsInt(CFGID_NUM_RNGS);
+    int seedset = cfg->getAsInt(CFGID_SEED_SET);
     rngs = new cRNG *[numRNGs];
     for (int i = 0; i < numRNGs; i++) {
-        rngs[i] = createByClassName<cRNG>(opt->rngClass.c_str(), "random number generator");
-        rngs[i]->initialize(opt->seedset, i, numRNGs, getParsimProcId(), getParsimNumPartitions(), getConfig());
+        rngs[i] = createByClassName<cRNG>(rngClass.c_str(), "random number generator");
+        rngs[i]->initialize(seedset, i, numRNGs, getParsimProcId(), getParsimNumPartitions(), getConfig());
     }
 
     // init nextUniqueNumber -- startRun() is too late because simple module ctors have run by then

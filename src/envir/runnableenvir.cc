@@ -78,9 +78,11 @@ using namespace omnetpp::internal;
 namespace omnetpp {
 namespace envir {
 
+extern cConfigOption *CFGID_PARSIM_NUM_PARTITIONS;
+extern cConfigOption *CFGID_PARSIM_COMMUNICATIONS_CLASS;
+extern cConfigOption *CFGID_PARSIM_SYNCHRONIZATION_CLASS;
 extern cConfigOption *CFGID_DEBUGGER_ATTACH_ON_STARTUP;
 extern cConfigOption *CFGID_FINGERPRINT;
-
 
 #define STRINGIZE0(x)    #x
 #define STRINGIZE(x)     STRINGIZE0(x)
@@ -395,9 +397,13 @@ bool RunnableEnvir::setup()
         if (opt->parsim) {
 #ifdef WITH_PARSIM
             // parsim: create components
-            parsimComm = createByClassName<cParsimCommunications>(opt->parsimcommClass.c_str(), "parallel simulation communications layer");
+            int parsimNumPartitions = cfg->getAsInt(CFGID_PARSIM_NUM_PARTITIONS);
+            std::string parsimcommClass = cfg->getAsString(CFGID_PARSIM_COMMUNICATIONS_CLASS);
+            std::string parsimsynchClass = cfg->getAsString(CFGID_PARSIM_SYNCHRONIZATION_CLASS);
+
+            parsimComm = createByClassName<cParsimCommunications>(parsimcommClass.c_str(), "parallel simulation communications layer");
             parsimPartition = new cParsimPartition();
-            cParsimSynchronizer *parsimSynchronizer = createByClassName<cParsimSynchronizer>(opt->parsimsynchClass.c_str(), "parallel simulation synchronization layer");
+            cParsimSynchronizer *parsimSynchronizer = createByClassName<cParsimSynchronizer>(parsimsynchClass.c_str(), "parallel simulation synchronization layer");
             addLifecycleListener(parsimPartition);
 
             // wire them together (note: 'parsimSynchronizer' is also the scheduler for 'simulation')
@@ -406,7 +412,7 @@ bool RunnableEnvir::setup()
             getSimulation()->setScheduler(parsimSynchronizer);
 
             // initialize them
-            parsimComm->init(opt->parsimNumPartitions);
+            parsimComm->init(parsimNumPartitions);
 #else
             throw cRuntimeError("Parallel simulation is turned on in the ini file, but OMNeT++ was compiled without parallel simulation support (WITH_PARSIM=no)");
 #endif

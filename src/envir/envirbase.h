@@ -77,48 +77,32 @@ class SignalSource;
 
 struct ENVIR_API EnvirOptions
 {
-    EnvirOptions();
     virtual ~EnvirOptions() {}
 
-    size_t totalStack;
-    bool parsim;
+    size_t totalStack = 0;
+    bool parsim = false;
     std::string networkName;
     std::string inifileNetworkDir;
     std::string imagePath;
     std::string nedPath;
     std::string nedExcludedPackages;
 
-    int numRNGs;
-    std::string rngClass;
-    int seedset; // which set of seeds to use
+    bool debugStatisticsRecording = false;
+    bool checkSignals = false;
+    bool fnameAppendHost = false;
 
-    std::string schedulerClass;
-    std::string eventlogManagerClass;
-    std::string outputVectorManagerClass;
-    std::string outputScalarManagerClass;
-    std::string snapshotmanagerClass;
-    std::string futureeventsetClass;
-#ifdef WITH_PARSIM
-    int parsimNumPartitions = 0;
-    std::string parsimcommClass; // if parsim: cParsimCommunications class to use
-    std::string parsimsynchClass; // if parsim: cParsimSynchronizer class to use
-#endif
-
-    bool debugStatisticsRecording;
-    bool checkSignals;
-    bool fnameAppendHost;
-
-    bool useStderr;
-    bool verbose;
-    bool warnings;
-    bool printUndisposed;
+    bool useStderr = true;
+    bool verbose = true;
+    bool warnings = true;
+    bool printUndisposed = true;
 
     simtime_t simtimeLimit;
     simtime_t warmupPeriod;
 
-    double realTimeLimit;
-    double cpuTimeLimit;
+    double realTimeLimit = 0;
+    double cpuTimeLimit = 0;
 };
+
 
 /**
  * Abstract base class for the user interface. Concrete user interface
