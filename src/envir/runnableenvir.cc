@@ -83,6 +83,10 @@ extern cConfigOption *CFGID_PARSIM_COMMUNICATIONS_CLASS;
 extern cConfigOption *CFGID_PARSIM_SYNCHRONIZATION_CLASS;
 extern cConfigOption *CFGID_DEBUGGER_ATTACH_ON_STARTUP;
 extern cConfigOption *CFGID_FINGERPRINT;
+extern cConfigOption *CFGID_SIM_TIME_LIMIT;
+extern cConfigOption *CFGID_REAL_TIME_LIMIT;
+extern cConfigOption *CFGID_CPU_TIME_LIMIT;
+extern cConfigOption *CFGID_WARMUP_PERIOD;
 
 #define STRINGIZE0(x)    #x
 #define STRINGIZE(x)     STRINGIZE0(x)
@@ -159,6 +163,9 @@ static const char *buildOptions = ""
     #endif
     ;
 
+RunnableEnvir::RunnableEnvir() : opt((RunnableEnvirOptions *&)EnvirBase::opt)
+{
+}
 
 int RunnableEnvir::run(const std::vector<std::string>& args, cConfiguration *cfg)
 {
@@ -362,6 +369,23 @@ void RunnableEnvir::printConfigValue(const char *configName, const char *runFilt
     cConfigOption *option = cConfigOption::get(optionName);
     const char *value = cfg->getConfigValue(option, "");
     out << value << endl;
+}
+
+void RunnableEnvir::readOptions()
+{
+    EnvirBase::readOptions();
+}
+
+void RunnableEnvir::readPerRunOptions()
+{
+    EnvirBase::readPerRunOptions();
+
+    // make time limits effective
+    opt->simtimeLimit = cfg->getAsDouble(CFGID_SIM_TIME_LIMIT, -1);
+    opt->realTimeLimit = cfg->getAsDouble(CFGID_REAL_TIME_LIMIT, -1);
+    opt->cpuTimeLimit = cfg->getAsDouble(CFGID_CPU_TIME_LIMIT, -1);
+    opt->warmupPeriod = cfg->getAsDouble(CFGID_WARMUP_PERIOD);
+    getSimulation()->setWarmupPeriod(opt->warmupPeriod);
 }
 
 bool RunnableEnvir::setup()
@@ -633,6 +657,8 @@ void RunnableEnvir::prepareForRun()
     resetClock();
     if (opt->simtimeLimit >= SIMTIME_ZERO)
         getSimulation()->setSimulationTimeLimit(opt->simtimeLimit);
+    stopwatch.setCPUTimeLimit(opt->cpuTimeLimit);
+    stopwatch.setRealTimeLimit(opt->realTimeLimit);
     getSimulation()->callInitialize();
     cLogProxy::flushLastLine();
 }

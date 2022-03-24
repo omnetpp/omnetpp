@@ -23,6 +23,15 @@
 namespace omnetpp {
 namespace envir {
 
+struct RunnableEnvirOptions : public EnvirOptions
+{
+    // note: these values will be overwritten in setup()/readOptions() before taking effect
+    simtime_t simtimeLimit;
+    simtime_t warmupPeriod;
+    double realTimeLimit = 0;
+    double cpuTimeLimit = 0;
+};
+
 /**
  * @brief An Envir that can be instantiated as a user interface, like Cmdenv
  * and Qtenv.
@@ -32,9 +41,21 @@ namespace envir {
 class ENVIR_API RunnableEnvir : public EnvirBase
 {
   protected:
+    RunnableEnvirOptions *&opt;          // alias to EnvirBase::opt
+
     DebuggerSupport *debuggerSupport = new DebuggerSupport();
 
+    // CPU and real time limit checking
+    Stopwatch stopwatch;
+
+    simtime_t simulatedTime;  // sim. time after finishing simulation
+
   public:
+    /**
+     * Constructor
+     */
+    RunnableEnvir();
+
     /**
      * Runs the user interface. The return value will become the exit code
      * of the simulation program.
@@ -55,6 +76,10 @@ class ENVIR_API RunnableEnvir : public EnvirBase
     virtual std::vector<int> resolveRunFilter(const char *configName, const char *runFilter);
     virtual void printRunInfo(const char *configName, const char *runFilter, const char *query);
     virtual void printConfigValue(const char *configName, const char *runFilter, const char *optionName);
+
+    virtual RunnableEnvirOptions *createOptions() override {return new RunnableEnvirOptions();}
+    virtual void readOptions() override;
+    virtual void readPerRunOptions() override;
 
     virtual bool ensureDebugger(cRuntimeError *error = nullptr) override;
 

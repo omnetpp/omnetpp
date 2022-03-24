@@ -95,12 +95,6 @@ struct ENVIR_API EnvirOptions
     bool verbose = true;
     bool warnings = true;
     bool printUndisposed = true;
-
-    simtime_t simtimeLimit;
-    simtime_t warmupPeriod;
-
-    double realTimeLimit = 0;
-    double cpuTimeLimit = 0;
 };
 
 
@@ -154,15 +148,8 @@ class ENVIR_API EnvirBase : public cEnvir
     // lifecycle listeners
     std::vector<cISimulationLifecycleListener*> listeners;
 
-    // CPU and real time limit checking
-    Stopwatch stopwatch;
-
-    simtime_t simulatedTime;  // sim. time after finishing simulation
-
   public:
-
     bool attachDebuggerOnErrors = false;
-
 
   public:
     EnvirBase();
@@ -265,7 +252,6 @@ class ENVIR_API EnvirBase : public cEnvir
     //@}
 
   protected:
-
     virtual EnvirOptions *createOptions() {return new EnvirOptions();}
     virtual void readOptions();
     virtual void readPerRunOptions();

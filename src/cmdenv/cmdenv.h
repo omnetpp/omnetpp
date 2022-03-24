@@ -27,7 +27,7 @@ namespace cmdenv {
 
 using namespace omnetpp::envir;
 
-struct CMDENV_API CmdenvOptions : public EnvirOptions
+struct CMDENV_API CmdenvOptions : public RunnableEnvirOptions
 {
     // note: these values will be overwritten in setup()/readOptions() before taking effect
     std::string configName;
@@ -106,7 +106,7 @@ class CMDENV_API Cmdenv : public RunnableEnvir
      virtual void printUISpecificHelp() override;
      virtual void loadNEDFiles() override { RunnableEnvir::loadNEDFiles(); }
 
-     virtual EnvirOptions *createOptions() override {return new CmdenvOptions();}
+     virtual CmdenvOptions *createOptions() override {return new CmdenvOptions();}
      virtual void readOptions() override;
      virtual void readPerRunOptions() override;
      virtual void configure(cComponent *component) override;

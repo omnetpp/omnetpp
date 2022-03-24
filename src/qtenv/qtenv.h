@@ -69,7 +69,7 @@ enum LayouterChoice
     LAYOUTER_AUTO
 };
 
-struct QtenvOptions : public EnvirOptions
+struct QtenvOptions : public RunnableEnvirOptions
 {
     // note: these values will be overwritten in setup()/readOptions() before taking effect
     size_t extraStack;                     // per-module extra stack for activity() modules
@@ -326,7 +326,7 @@ class QTENV_API Qtenv : public QObject, public RunnableEnvir
       virtual void doRun() override;
       virtual void printUISpecificHelp() override;
 
-      virtual EnvirOptions *createOptions() override {return new QtenvOptions();}
+      virtual QtenvOptions *createOptions() override {return new QtenvOptions();}
       virtual void readOptions() override;
       virtual void readPerRunOptions() override;
 
