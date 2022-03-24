@@ -324,7 +324,7 @@ public class LegacyAnalysisLoader {
 
                 if ("scave:Add".equals(itemType) || "scave:Discard".equals(itemType)) {
                     Node filterNode = itemNode.getAttributes().getNamedItem("filterPattern");
-                    String filterExpr = AndFilter.translateLegacyFilterExpression(filterNode.getNodeValue());
+                    String filterExpr = filterNode != null ? AndFilter.translateLegacyFilterExpression(filterNode.getNodeValue()) : "*";
                     ops.add(new DataOp("scave:Add".equals(itemType) ? "add" : "discard", filterExpr, opType));
                 }
                 else if ("scave:Apply".equals(itemType) || "scave:Compute".equals(itemType)) {
