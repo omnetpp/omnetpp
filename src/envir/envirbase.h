@@ -79,41 +79,34 @@ struct ENVIR_API EnvirOptions
 {
     virtual ~EnvirOptions() {}
 
-    size_t totalStack = 0;
     bool parsim = false;
-    std::string networkName;
-    std::string inifileNetworkDir;
-    std::string imagePath;
-    std::string nedPath;
-    std::string nedExcludedPackages;
+    std::string imagePath;  // note: also used in resolveResourcePath()
+    std::string nedPath;  // note: also used in resolveResourcePath()
+    std::string nedExcludedPackages;  //TODO should be used in resolveResourcePath()
 
-    bool debugStatisticsRecording = false;
-    bool checkSignals = false;
-    bool fnameAppendHost = false;
-
-    bool useStderr = true;
-    bool verbose = true;
-    bool warnings = true;
+    bool checkSignals = false;  //TODO move to RunnableEnvir
+    bool fnameAppendHost = false;  //TODO EnvirUtils
     bool printUndisposed = true;
 };
 
 
 /**
- * Abstract base class for the user interface. Concrete user interface
- * implementations (Cmdenv, Qtenv) should be derived from this class.
+ * Default implementation of cEnvir. It was designed to only contain code necessary
+ * for implementing the cEnvir interface.
+ *
+ * IN PARTICULAR, IT SHOULD *NEVER* BE EXTENDED WITH CODE RELATED TO SETTING UP AND
+ * RUNNING SIMULATIONS. (Such code may go into RunnableEnvir).
  */
 class ENVIR_API EnvirBase : public cEnvir
 {
   protected:
     cConfigurationEx *cfg;
-    ArgList *args;
+    ArgList *args;  //TODO move to RunnableEnvir, modulo EnvirBase::getArgVector()/getArgCount()
     XMLDocCache *xmlCache;
-    int exitCode;
 
     EnvirOptions *opt;
 
-    std::ostream out;
-    std::string redirectionFilename;
+    std::ostream out; //TODO move to RunnableEnvir, modulo EnvirBase::undisposedObject()
 
 #ifdef WITH_PARSIM
     cParsimCommunications *parsimComm;

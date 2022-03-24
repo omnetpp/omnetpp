@@ -177,8 +177,6 @@ EnvirBase::EnvirBase() : out(std::cout.rdbuf())
     parsimComm = nullptr;
     parsimPartition = nullptr;
 #endif
-
-    exitCode = 0;
 }
 
 EnvirBase::~EnvirBase()
@@ -576,7 +574,6 @@ void EnvirBase::readOptions()
 {
     cConfiguration *cfg = getConfig();
 
-    opt->totalStack = (size_t)cfg->getAsDouble(CFGID_TOTAL_STACK, TOTAL_STACK_SIZE);
     opt->parsim = cfg->getAsBool(CFGID_PARALLEL_SIMULATION);
 
 #ifndef WITH_PARSIM
@@ -601,9 +598,6 @@ void EnvirBase::readOptions()
         printfmsg("Warning: Obsolete config option %s= found, please use the improved %s= instead "
                 "(it allows values like \"us\" or \"100ps\" in addition to base-10 scale exponents)",
                 CFGID_SIMTIME_SCALE->getName(), CFGID_SIMTIME_RESOLUTION->getName());
-
-    // note: this is read per run as well, but Qtenv needs its value on startup too
-    opt->inifileNetworkDir = cfg->getConfigEntry(CFGID_NETWORK->getName()).getBaseDirectory();
 
     // NED path. It is taken from the "-n" command-line options, the OMNETPP_NED_PATH
     // environment variable, and the "ned-path=" config option. If the result is still
@@ -640,10 +634,6 @@ void EnvirBase::readPerRunOptions()
     cConfiguration *cfg = getConfig();
 
     // get options from ini file
-    opt->networkName = cfg->getAsString(CFGID_NETWORK);
-    opt->inifileNetworkDir = cfg->getConfigEntry(CFGID_NETWORK->getName()).getBaseDirectory();
-    opt->warnings = cfg->getAsBool(CFGID_WARNINGS);
-    opt->debugStatisticsRecording = cfg->getAsBool(CFGID_DEBUG_STATISTICS_RECORDING);
     opt->checkSignals = cfg->getAsBool(CFGID_CHECK_SIGNALS);
     debugOnErrors = cfg->getAsBool(CFGID_DEBUG_ON_ERRORS);  // note: handling overridden in Qtenv::readPerRunOptions() due to interference with GUI
     opt->printUndisposed = cfg->getAsBool(CFGID_PRINT_UNDISPOSED);

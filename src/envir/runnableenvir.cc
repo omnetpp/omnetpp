@@ -87,6 +87,10 @@ extern cConfigOption *CFGID_SIM_TIME_LIMIT;
 extern cConfigOption *CFGID_REAL_TIME_LIMIT;
 extern cConfigOption *CFGID_CPU_TIME_LIMIT;
 extern cConfigOption *CFGID_WARMUP_PERIOD;
+extern cConfigOption *CFGID_TOTAL_STACK;
+extern cConfigOption *CFGID_NETWORK;
+extern cConfigOption *CFGID_WARNINGS;
+extern cConfigOption *CFGID_DEBUG_STATISTICS_RECORDING;
 
 #define STRINGIZE0(x)    #x
 #define STRINGIZE(x)     STRINGIZE0(x)
@@ -374,11 +378,19 @@ void RunnableEnvir::printConfigValue(const char *configName, const char *runFilt
 void RunnableEnvir::readOptions()
 {
     EnvirBase::readOptions();
+
+    // note: this is read per run as well, but Qtenv needs its value on startup too
+    opt->inifileNetworkDir = cfg->getConfigEntry(CFGID_NETWORK->getName()).getBaseDirectory();
 }
 
 void RunnableEnvir::readPerRunOptions()
 {
     EnvirBase::readPerRunOptions();
+
+    opt->networkName = cfg->getAsString(CFGID_NETWORK);
+
+    // note: this is read per run as well, but Qtenv needs its value on startup too
+    opt->inifileNetworkDir = cfg->getConfigEntry(CFGID_NETWORK->getName()).getBaseDirectory();
 
     // make time limits effective
     opt->simtimeLimit = cfg->getAsDouble(CFGID_SIM_TIME_LIMIT, -1);
@@ -386,6 +398,9 @@ void RunnableEnvir::readPerRunOptions()
     opt->cpuTimeLimit = cfg->getAsDouble(CFGID_CPU_TIME_LIMIT, -1);
     opt->warmupPeriod = cfg->getAsDouble(CFGID_WARMUP_PERIOD);
     getSimulation()->setWarmupPeriod(opt->warmupPeriod);
+
+    opt->debugStatisticsRecording = cfg->getAsBool(CFGID_DEBUG_STATISTICS_RECORDING);
+    opt->warnings = cfg->getAsBool(CFGID_WARNINGS);
 }
 
 bool RunnableEnvir::setup()
@@ -407,12 +422,13 @@ bool RunnableEnvir::setup()
         }
 
         // initialize coroutine library
-        if (TOTAL_STACK_SIZE != 0 && opt->totalStack <= MAIN_STACK_SIZE+4096) {
+        size_t totalStack = (size_t)cfg->getAsDouble(CFGID_TOTAL_STACK, TOTAL_STACK_SIZE);
+        if (TOTAL_STACK_SIZE != 0 && totalStack <= MAIN_STACK_SIZE+4096) {
             if (opt->verbose)
-                out << "Total stack size " << opt->totalStack << " increased to " << MAIN_STACK_SIZE << endl;
-            opt->totalStack = MAIN_STACK_SIZE+4096;
+                out << "Total stack size " << totalStack << " increased to " << MAIN_STACK_SIZE << endl;
+            totalStack = MAIN_STACK_SIZE+4096;
         }
-        cCoroutine::init(opt->totalStack, MAIN_STACK_SIZE);
+        cCoroutine::init(totalStack, MAIN_STACK_SIZE);
 
         // install XML document cache
         xmlCache = new XMLDocCache();

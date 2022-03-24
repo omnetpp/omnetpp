@@ -23,13 +23,30 @@
 namespace omnetpp {
 namespace envir {
 
+#ifdef USE_PORTABLE_COROUTINES  /* coroutine stacks reside in main stack area */
+# define TOTAL_STACK_SIZE    (2*1024*1024)
+# define MAIN_STACK_SIZE     (128*1024)
+#else /* nonportable coroutines, stacks are allocated on heap */
+# define TOTAL_STACK_SIZE    0  // dummy value
+# define MAIN_STACK_SIZE     0  // dummy value
+#endif
+
+
 struct RunnableEnvirOptions : public EnvirOptions
 {
     // note: these values will be overwritten in setup()/readOptions() before taking effect
+    std::string networkName;
+    std::string inifileNetworkDir;
+
     simtime_t simtimeLimit;
     simtime_t warmupPeriod;
     double realTimeLimit = 0;
     double cpuTimeLimit = 0;
+
+    bool useStderr = true;
+    bool verbose = true;
+    bool warnings = true;
+    bool debugStatisticsRecording = false;
 };
 
 /**
@@ -42,6 +59,9 @@ class ENVIR_API RunnableEnvir : public EnvirBase
 {
   protected:
     RunnableEnvirOptions *&opt;          // alias to EnvirBase::opt
+
+    std::string redirectionFilename;
+    int exitCode = 0;
 
     DebuggerSupport *debuggerSupport = new DebuggerSupport();
 
@@ -77,10 +97,6 @@ class ENVIR_API RunnableEnvir : public EnvirBase
     virtual void printRunInfo(const char *configName, const char *runFilter, const char *query);
     virtual void printConfigValue(const char *configName, const char *runFilter, const char *optionName);
 
-    virtual RunnableEnvirOptions *createOptions() override {return new RunnableEnvirOptions();}
-    virtual void readOptions() override;
-    virtual void readPerRunOptions() override;
-
     virtual bool ensureDebugger(cRuntimeError *error = nullptr) override;
 
     // functions added locally
@@ -103,10 +119,10 @@ class ENVIR_API RunnableEnvir : public EnvirBase
     virtual void stopOutputRedirection();
     virtual bool isOutputRedirected();
 
-//TODO
-//    virtual EnvirOptions *createOptions() {return new EnvirOptions();}
-//    virtual void readOptions();
-//    virtual void readPerRunOptions();
+    virtual RunnableEnvirOptions *createOptions() override {return new RunnableEnvirOptions();}
+    virtual void readOptions() override;
+    virtual void readPerRunOptions() override;
+
     int parseSimtimeResolution(const char *resolution);
 
     // Utility function; never returns nullptr
