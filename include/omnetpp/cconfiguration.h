@@ -97,6 +97,18 @@ class SIM_API cConfiguration : public cObject
         std::string configBrief; // config options that contain inifile variables (${foo}), expanded
     };
 
+    /**
+     * Flags for the 'flags' argument of the getKeyValuePairs() method.
+     */
+    enum FilterFlags {
+        FILT_ESSENTIAL_CONFIG = 1 << 0,
+        FILT_GLOBAL_CONFIG = 1 << 1 | FILT_ESSENTIAL_CONFIG, // both per-run and not per-run
+        FILT_PER_OBJECT_CONFIG = 1 << 2,
+        FILT_CONFIG = FILT_GLOBAL_CONFIG | FILT_PER_OBJECT_CONFIG,
+        FILT_PARAM = 1 << 3,
+        FILT_ALL = FILT_CONFIG | FILT_PARAM
+    };
+
   public:
     /** @name String-based getters for configuration options */
     //@{
@@ -285,6 +297,91 @@ class SIM_API cConfiguration : public cObject
      */
     virtual const char *substituteVariables(const char *value) const = 0;
     //@}
+
+    /** @name Configuration variables */
+    //@{
+
+    /**
+     * After activating a configuration, this method can be used to query
+     * iteration variables and predefined variables. These are the variables
+     * that can be referred to using the "${...}" syntax in the configuration.
+     * If the variable does not exist, nullptr is returned.
+     *
+     * Some of the predefined variables are: "configname", "runnumber", "network",
+     * "processid", "datetime", "runid", "repetition", "iterationvars";
+     * these names are also available as symbolic constants, see CFGVAR_CONFIGNAME
+     * and other CFGVAR_xxx names.
+     */
+    virtual const char *getVariable(const char *varname) const = 0;
+
+    /**
+     * Returns the names of all iteration variables in the activated configuration.
+     */
+    virtual std::vector<const char *> getIterationVariableNames() const = 0;
+
+    /**
+     * Returns the names of all predefined variables in the activated configuration.
+     * See getVariable().
+     */
+    virtual std::vector<const char *> getPredefinedVariableNames() const = 0;
+
+    /**
+     * Returns the description of the given variable in the activated configuration.
+     * Returns nullptr if the variable does not exist or no description is available.
+     */
+    virtual const char *getVariableDescription(const char *varname) const = 0;
+    //@}
+
+    /** @name Getting values from the currently active configuration */
+    //@{
+
+    /**
+     * Returns the list of config keys that match the given wildcard pattern.
+     * The returned keys can be passed to getConfigValue().
+     */
+    virtual std::vector<const char *> getMatchingConfigKeys(const char *pattern) const = 0;
+
+    /**
+     * Looks up the value of the given parameter in the inifile. The argument
+     * hasDefaultValue controls whether "=default" entries need to be considered.
+     * Return value is nullptr if the parameter is not specified in the inifile,
+     * otherwise returns the string after the equal sign.
+     */
+    virtual const char *getParameterValue(const char *moduleFullPath, const char *paramName, bool hasDefaultValue) const = 0;
+
+    /**
+     * Like getParameterValue(), but this one returns information about the
+     * whole inifile entry, not just the value string.
+     * If the key is not found, a special KeyValue object is returned
+     * where both key and value are nullptr.
+     *
+     * Lifetime of the returned object might be limited, so clients
+     * should not store references to it. Copying the object is not allowed
+     * either, because KeyValue is a polymorphic type (object slicing!).
+     */
+    virtual const KeyValue& getParameterEntry(const char *moduleFullPath, const char *paramName, bool hasDefaultValue) const = 0;
+
+    /**
+     * This method returns an array of the following form: (key1, value1,
+     * key2, value2,...), where keys and values correspond to (a subset of)
+     * the entries in the active configuration.
+     *
+     * The 'flags' parameter should take its value from the FilterFlags enum,
+     * or the binary OR of several such flags: FILT_PARAM, FILT_CONFIG, etc.
+     */
+    virtual std::vector<const char *> getKeyValuePairs(int flags=FILT_ALL) const = 0;
+
+    /**
+     * Returns the list of suffixes from keys that match the wildcard pattern
+     * objectFullPath + dot + keySuffixPattern. objectFullPath may either be
+     * a concrete string without wildcards, or "**" to match anything.
+     * The returned keys may be used with getPerObjectConfigValue() to obtain
+     * the corresponding values. The returned suffixes may be used with
+     * getPerObjectConfigValue() to obtain the corresponding values.
+     */
+    virtual std::vector<const char *> getMatchingPerObjectConfigKeySuffixes(const char *objectFullPath, const char *keySuffixPattern) const = 0;
+    //@}
+
 };
 
 
@@ -303,19 +400,6 @@ class SIM_API cConfiguration : public cObject
  */
 class SIM_API cConfigurationEx : public cConfiguration
 {
-  public:
-    /**
-     * Flags for the 'flags' argument of the getKeyValuePairs() method.
-     */
-    enum FilterFlags {
-        FILT_ESSENTIAL_CONFIG = 1 << 0,
-        FILT_GLOBAL_CONFIG = 1 << 1 | FILT_ESSENTIAL_CONFIG, // both per-run and not per-run
-        FILT_PER_OBJECT_CONFIG = 1 << 2,
-        FILT_CONFIG = FILT_GLOBAL_CONFIG | FILT_PER_OBJECT_CONFIG,
-        FILT_PARAM = 1 << 3,
-        FILT_ALL = FILT_CONFIG | FILT_PARAM
-    };
-
   public:
     /**
      * Initializes configuration object from "boot-time" configuration
@@ -412,89 +496,9 @@ class SIM_API cConfigurationEx : public cConfiguration
     virtual int getActiveRunNumber() const = 0;
 
     /**
-     * After activating a configuration, this method can be used to query
-     * iteration variables and predefined variables. These are the variables
-     * that can be referred to using the "${...}" syntax in the configuration.
-     * If the variable does not exist, nullptr is returned.
-     *
-     * Some of the predefined variables are: "configname", "runnumber", "network",
-     * "processid", "datetime", "runid", "repetition", "iterationvars";
-     * these names are also available as symbolic constants, see CFGVAR_CONFIGNAME
-     * and other CFGVAR_xxx names.
-     */
-    virtual const char *getVariable(const char *varname) const = 0;
-
-    /**
-     * Returns the names of all iteration variables in the activated configuration.
-     */
-    virtual std::vector<const char *> getIterationVariableNames() const = 0;
-
-    /**
-     * Returns the names of all predefined variables in the activated configuration.
-     * See getVariable().
-     */
-    virtual std::vector<const char *> getPredefinedVariableNames() const = 0;
-
-    /**
-     * Returns the description of the given variable in the activated configuration.
-     * Returns nullptr if the variable does not exist or no description is available.
-     */
-    virtual const char *getVariableDescription(const char *varname) const = 0;
-
-    /**
      * For debugging.
      */
     virtual void dump() const = 0;
-    //@}
-
-    /** @name Getting values from the currently active configuration */
-    //@{
-
-    /**
-     * Returns the list of config keys that match the given wildcard pattern.
-     * The returned keys can be passed to getConfigValue().
-     */
-    virtual std::vector<const char *> getMatchingConfigKeys(const char *pattern) const = 0;
-
-    /**
-     * Looks up the value of the given parameter in the inifile. The argument
-     * hasDefaultValue controls whether "=default" entries need to be considered.
-     * Return value is nullptr if the parameter is not specified in the inifile,
-     * otherwise returns the string after the equal sign.
-     */
-    virtual const char *getParameterValue(const char *moduleFullPath, const char *paramName, bool hasDefaultValue) const = 0;
-
-    /**
-     * Like getParameterValue(), but this one returns information about the
-     * whole inifile entry, not just the value string.
-     * If the key is not found, a special KeyValue object is returned
-     * where both key and value are nullptr.
-     *
-     * Lifetime of the returned object might be limited, so clients
-     * should not store references to it. Copying the object is not allowed
-     * either, because KeyValue is a polymorphic type (object slicing!).
-     */
-    virtual const KeyValue& getParameterEntry(const char *moduleFullPath, const char *paramName, bool hasDefaultValue) const = 0;
-
-    /**
-     * This method returns an array of the following form: (key1, value1,
-     * key2, value2,...), where keys and values correspond to (a subset of)
-     * the entries in the active configuration.
-     *
-     * The 'flags' parameter should take its value from the FilterFlags enum,
-     * or the binary OR of several such flags: FILT_PARAM, FILT_CONFIG, etc.
-     */
-    virtual std::vector<const char *> getKeyValuePairs(int flags=FILT_ALL) const = 0;
-
-    /**
-     * Returns the list of suffixes from keys that match the wildcard pattern
-     * objectFullPath + dot + keySuffixPattern. objectFullPath may either be
-     * a concrete string without wildcards, or "**" to match anything.
-     * The returned keys may be used with getPerObjectConfigValue() to obtain
-     * the corresponding values. The returned suffixes may be used with
-     * getPerObjectConfigValue() to obtain the corresponding values.
-     */
-    virtual std::vector<const char *> getMatchingPerObjectConfigKeySuffixes(const char *objectFullPath, const char *keySuffixPattern) const = 0;
     //@}
 };
 
