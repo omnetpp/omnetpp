@@ -27,6 +27,7 @@
 #include "omnetpp/cabstracthistogram.h"
 #include "omnetpp/ccomponenttype.h"
 #include "envir/envirbase.h"
+#include "resultfileutils.h"
 #include "sqliteoutscalarmgr.h"
 
 using namespace omnetpp::common;
@@ -59,7 +60,7 @@ void SqliteOutputScalarManager::startRun()
 
     // clean up file from previous runs
     fname = cfg->getAsFilename(CFGID_OUTPUT_SCALAR_FILE);
-    dynamic_cast<EnvirBase *>(getEnvir())->processFileName(fname);
+    fname = ResultFileUtils::augmentFileName(fname);
     if (cfg->getAsBool(CFGID_OUTPUT_SCALAR_FILE_APPEND) == false)
         removeFile(fname.c_str(), "old SQLite output scalar file");
 }

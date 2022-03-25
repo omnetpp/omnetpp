@@ -85,7 +85,6 @@ struct ENVIR_API EnvirOptions
     std::string nedExcludedPackages;  //TODO should be used in resolveResourcePath()
 
     bool checkSignals = false;  //TODO move to RunnableEnvir
-    bool fnameAppendHost = false;  //TODO EnvirUtils
     bool printUndisposed = true;
 };
 
@@ -153,9 +152,6 @@ class ENVIR_API EnvirBase : public cEnvir
     virtual bool getEventlogRecording() const {return recordEventlog;}
     virtual void setLogLevel(LogLevel logLevel);
     virtual void setLogFormat(const char *logFormat);
-
-    // Utility function: optionally appends host name to fname
-    virtual void processFileName(std::string& fname);
 
     // eventlog callback interface
     virtual void objectDeleted(cObject *object) override;

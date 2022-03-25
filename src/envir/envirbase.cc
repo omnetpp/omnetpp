@@ -581,8 +581,6 @@ void EnvirBase::readOptions()
         throw cRuntimeError("Parallel simulation is turned on in the ini file, but OMNeT++ was compiled without parallel simulation support (WITH_PARSIM=no)");
 #endif
 
-    opt->fnameAppendHost = cfg->getAsBool(CFGID_FNAME_APPEND_HOST, opt->parsim);
-
     attachDebuggerOnErrors = cfg->getAsBool(CFGID_DEBUGGER_ATTACH_ON_ERROR);
 
     // simtime resolution
@@ -783,30 +781,6 @@ void EnvirBase::setLogFormat(const char *logFormat)
     logFormatUsesEventName = logFormatter.usesEventName();
     logFormatUsesEventClassName = logFormatter.usesEventClassName();
 }
-
-void EnvirBase::processFileName(std::string& fname)
-{
-    // insert ".<hostname>.<pid>" if requested before file extension
-    // (note: parsimProcId cannot be appended because of initialization order)
-    if (opt->fnameAppendHost) {
-        std::string extension = "";
-        std::string::size_type index = fname.rfind('.');
-        if (index != std::string::npos) {
-            extension = std::string(fname, index);
-            fname.erase(index);
-        }
-
-        const char *hostname = opp_gethostname();
-        if (!hostname)
-            throw cRuntimeError("Cannot append hostname to file name '%s': no host name configured, and no HOST, HOSTNAME "
-                                "or COMPUTERNAME (Windows) environment variable set", fname.c_str());
-        int pid = getpid();
-
-        // append
-        fname += opp_stringf(".%s.%d%s", hostname, pid, extension.c_str());
-    }
-}
-
 
 //-------------------------------------------------------------
 

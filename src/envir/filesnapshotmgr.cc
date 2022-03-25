@@ -21,6 +21,7 @@
 #include "common/fileutil.h"
 #include "omnetpp/cconfigoption.h"
 #include "envirbase.h"
+#include "resultfileutils.h"
 #include "filesnapshotmgr.h"
 
 using namespace omnetpp::common;
@@ -40,7 +41,7 @@ void FileSnapshotManager::startRun()
 {
     // clean up file from previous runs
     fname = cfg->getAsFilename(CFGID_SNAPSHOT_FILE);
-    dynamic_cast<EnvirBase *>(getEnvir())->processFileName(fname);
+    fname = ResultFileUtils::augmentFileName(fname);
     removeFile(fname.c_str(), "old snapshot file");
 }
 

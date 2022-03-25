@@ -40,6 +40,7 @@ class ResultFileUtils {
     static OrderedKeyValueList getSelectedConfigEntries();
     static StringMap convertProperties(const cProperties *properties);
     static StringMap convertMap(const opp_string_map *m);
+    static std::string augmentFileName(const std::string& fname);
 };
 
 }  // namespace envir

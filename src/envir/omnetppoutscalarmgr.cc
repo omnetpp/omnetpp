@@ -30,6 +30,7 @@
 #include "omnetpp/cabstracthistogram.h"
 #include "omnetpp/ccomponenttype.h"
 #include "envirbase.h"
+#include "resultfileutils.h"
 #include "omnetppoutscalarmgr.h"
 
 using namespace omnetpp::common;
@@ -59,7 +60,7 @@ void OmnetppOutputScalarManager::startRun()
 
     // delete file left over from previous runs
     fname = cfg->getAsFilename(CFGID_OUTPUT_SCALAR_FILE);
-    dynamic_cast<EnvirBase *>(getEnvir())->processFileName(fname);
+    fname = ResultFileUtils::augmentFileName(fname);
 
     bool shouldAppend = cfg->getAsBool(CFGID_OUTPUT_SCALAR_FILE_APPEND);
     if (!shouldAppend)

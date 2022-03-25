@@ -29,6 +29,7 @@
 #include "envir/appreg.h"
 #include "envir/args.h"
 #include "envir/speedometer.h"
+#include "envir/resultfileutils.h"
 #include "envir/visitor.h"
 #include "omnetpp/csimplemodule.h"
 #include "omnetpp/ccomponenttype.h"
@@ -206,7 +207,7 @@ void Cmdenv::doRun()
                     out << opt->configName << " run " << runNumber << ": " << iterVars << ", $repetition=" << repetition << endl; // print before redirection; useful as progress indication from opp_runall
 
                 if (opt->redirectOutput) {
-                    processFileName(opt->outputFile);
+                    opt->outputFile = ResultFileUtils::augmentFileName(opt->outputFile);
                     if (opt->verbose)
                         out << "Redirecting output to file \"" << opt->outputFile << "\"..." << endl;
                     startOutputRedirection(opt->outputFile.c_str());
@@ -569,7 +570,7 @@ void Cmdenv::configure(cComponent *component)
 {
     RunnableEnvir::configure(component);
 
-    LogLevel level = cLog::resolveLogLevel(getEnvir()->getConfig()->getAsString(component->getFullPath().c_str(), CFGID_CMDENV_LOGLEVEL).c_str());
+    LogLevel level = cLog::resolveLogLevel(getConfig()->getAsString(component->getFullPath().c_str(), CFGID_CMDENV_LOGLEVEL).c_str());
     component->setLogLevel(level);
 }
 

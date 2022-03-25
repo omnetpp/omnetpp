@@ -25,6 +25,7 @@
 #include "omnetpp/ccomponenttype.h"
 #include "omnetpp/platdep/platmisc.h"
 #include "envirbase.h"
+#include "resultfileutils.h"
 #include "omnetppoutvectormgr.h"
 #include "resultfileutils.h"
 
@@ -61,7 +62,7 @@ void OmnetppOutputVectorManager::startRun()
         throw cRuntimeError("%s does not support append mode", getClassName());
 
     fname = cfg->getAsFilename(CFGID_OUTPUT_VECTOR_FILE).c_str();
-    dynamic_cast<EnvirBase *>(getEnvir())->processFileName(fname);
+    fname = ResultFileUtils::augmentFileName(fname);
     removeFile(fname.c_str(), "old output vector file");
 
     int prec = cfg->getAsInt(CFGID_OUTPUT_VECTOR_PRECISION);

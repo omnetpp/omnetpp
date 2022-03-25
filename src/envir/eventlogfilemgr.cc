@@ -36,6 +36,7 @@
 #include "eventlogfilemgr.h"
 #include "eventlogwriter.h"
 #include "envirbase.h"
+#include "resultfileutils.h"
 
 using namespace omnetpp::common;
 
@@ -187,7 +188,7 @@ void EventlogFileManager::configure()
 
     // setup filename
     filename = cfg->getAsFilename(CFGID_EVENTLOG_FILE);
-    dynamic_cast<EnvirBase *>(envir)->processFileName(filename);
+    filename = ResultFileUtils::augmentFileName(filename);
 
     // file limits
     maxSize = cfg->getAsDouble(CFGID_EVENTLOG_MAX_SIZE);

@@ -34,6 +34,9 @@ using namespace omnetpp::internal;
 namespace omnetpp {
 namespace envir {
 
+extern cConfigOption *CFGID_PARALLEL_SIMULATION;
+extern cConfigOption *CFGID_FNAME_APPEND_HOST;
+
 Register_PerRunConfigOption(CFGID_CONFIG_RECORDING, "config-recording", CFG_CUSTOM, "all", "Selects the set of config options to save into result files. This option can help reduce the size of result files, which is especially useful in the case of large simulation campaigns. Possible values: all, none, config, params, essentials, globalconfig");
 
 std::string ResultFileUtils::getRunId()
@@ -139,6 +142,33 @@ StringMap ResultFileUtils::convertMap(const opp_string_map *m)
             result[pair.first.c_str()] = pair.second.c_str();
     return result;
 }
+
+std::string ResultFileUtils::augmentFileName(const std::string& fname)
+{
+    bool parsim = getEnvir()->getConfig()->getAsBool(CFGID_PARALLEL_SIMULATION);
+    bool fnameAppendHost = getEnvir()->getConfig()->getAsBool(CFGID_FNAME_APPEND_HOST, parsim);
+
+    if (!fnameAppendHost)
+        return fname;
+
+    // insert ".<hostname>.<pid>" if requested before file extension
+    // (note: parsimProcId cannot be appended because of initialization order)
+    std::string result = fname;
+    std::string extension = "";
+    std::string::size_type index = fname.rfind('.');
+    if (index != std::string::npos) {
+        extension = std::string(fname, index);
+        result = fname.substr(0,index);
+    }
+
+    const char *hostname = opp_gethostname();
+    if (!hostname)
+        throw cRuntimeError("Cannot append hostname to file name '%s': no host name configured, and no HOST, HOSTNAME "
+                "or COMPUTERNAME (Windows) environment variable set", fname.c_str());
+    int pid = getpid();
+    return result + "." + hostname + "." + std::to_string(pid) + extension;
+}
+
 
 
 }  // namespace envir
