@@ -16,6 +16,7 @@
 #ifndef __OMNETPP_ENVIR_DEBUGGERSUPPORT_H
 #define __OMNETPP_ENVIR_DEBUGGERSUPPORT_H
 
+#include "omnetpp/cconfiguration.h"
 #include "envirdefs.h"
 
 namespace omnetpp {
@@ -33,8 +34,15 @@ enum class DebuggerPresence {
     CANT_DETECT
 };
 
-class DebuggerSupport {
+/**
+ * Functionality related to a attaching a debugger to the simulation process.
+ */
+class DebuggerSupport
+{
+  protected:
+    cConfiguration *cfg = nullptr;
   public:
+    void setConfiguration(cConfiguration *cfg) {this->cfg = cfg;}
     std::string makeDebuggerCommand();
     DebuggerAttachmentPermission debuggerAttachmentPermitted();
     void attachDebugger();

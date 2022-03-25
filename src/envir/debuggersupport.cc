@@ -57,7 +57,7 @@ Register_GlobalConfigOptionU(CFGID_DEBUGGER_ATTACH_WAIT_TIME, "debugger-attach-w
 std::string DebuggerSupport::makeDebuggerCommand()
 {
     const char *cmdDefault = opp_emptytodefault(getenv("OMNETPP_DEBUGGER_COMMAND"), DEFAULT_DEBUGGER_COMMAND);
-    std::string cmd = getEnvir()->getConfig()->getAsString(CFGID_DEBUGGER_ATTACH_COMMAND, cmdDefault);
+    std::string cmd = cfg->getAsString(CFGID_DEBUGGER_ATTACH_COMMAND, cmdDefault);
     cmd = opp_replacesubstring(cmd, "%u", std::to_string(getpid()), true);
     return cmd;
 }
@@ -80,7 +80,7 @@ void DebuggerSupport::attachDebugger()
                  "of non-child processes to be explicitly enabled." << endl;
 
     // hold for a while to allow debugger to start up and attach to us
-    int secondsToWait = (int)ceil(getEnvir()->getConfig()->getAsDouble(CFGID_DEBUGGER_ATTACH_WAIT_TIME));
+    int secondsToWait = (int)ceil(cfg->getAsDouble(CFGID_DEBUGGER_ATTACH_WAIT_TIME));
     time_t startTime = time(nullptr);
     while (time(nullptr)-startTime < secondsToWait && detectDebugger() != DebuggerPresence::PRESENT)
         for (int i=0; i<100000000; i++); // DEBUGGER ATTACHED -- PLEASE CONTINUE EXECUTION TO REACH THE BREAKPOINT

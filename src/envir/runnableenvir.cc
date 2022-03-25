@@ -187,6 +187,7 @@ int RunnableEnvir::run(int argc, char *argv[], cConfiguration *configobject)
     opt->useStderr = !args->optionGiven('m');
     opt->verbose = !args->optionGiven('s');
     cfg = dynamic_cast<cConfigurationEx *>(configobject);
+    debuggerSupport->setConfiguration(cfg);
     if (!cfg)
         throw cRuntimeError("Cannot cast configuration object %s to cConfigurationEx", configobject->getClassName());
 
