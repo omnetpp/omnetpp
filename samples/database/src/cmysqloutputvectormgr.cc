@@ -13,8 +13,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <cassert>
-
 #include "cmysqloutputvectormgr.h"
 #include "oppmysqlutils.h"
 
