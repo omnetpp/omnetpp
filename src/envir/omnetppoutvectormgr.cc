@@ -56,18 +56,18 @@ void OmnetppOutputVectorManager::startRun()
     state = STARTED;
 
     // read configuration
-    bool shouldAppend = getEnvir()->getConfig()->getAsBool(CFGID_OUTPUT_VECTOR_FILE_APPEND);
+    bool shouldAppend = cfg->getAsBool(CFGID_OUTPUT_VECTOR_FILE_APPEND);
     if (shouldAppend)
         throw cRuntimeError("%s does not support append mode", getClassName());
 
-    fname = getEnvir()->getConfig()->getAsFilename(CFGID_OUTPUT_VECTOR_FILE).c_str();
+    fname = cfg->getAsFilename(CFGID_OUTPUT_VECTOR_FILE).c_str();
     dynamic_cast<EnvirBase *>(getEnvir())->processFileName(fname);
     removeFile(fname.c_str(), "old output vector file");
 
-    int prec = getEnvir()->getConfig()->getAsInt(CFGID_OUTPUT_VECTOR_PRECISION);
+    int prec = cfg->getAsInt(CFGID_OUTPUT_VECTOR_PRECISION);
     writer.setPrecision(prec);
 
-    size_t memoryLimit = (size_t) getEnvir()->getConfig()->getAsDouble(CFGID_OUTPUTVECTOR_MEMORY_LIMIT);
+    size_t memoryLimit = (size_t) cfg->getAsDouble(CFGID_OUTPUTVECTOR_MEMORY_LIMIT);
     writer.setOverallMemoryLimit(memoryLimit);
 }
 
@@ -111,10 +111,10 @@ void *OmnetppOutputVectorManager::registerVector(const char *modulename, const c
     vp->vectorName = vectorname;
 
     std::string vectorfullpath = std::string(modulename) + "." + vectorname;
-    vp->enabled = getEnvir()->getConfig()->getAsBool(vectorfullpath.c_str(), CFGID_VECTOR_RECORDING);
+    vp->enabled = cfg->getAsBool(vectorfullpath.c_str(), CFGID_VECTOR_RECORDING);
 
     // get interval string
-    const char *text = getEnvir()->getConfig()->getAsCustom(vectorfullpath.c_str(), CFGID_VECTOR_RECORDING_INTERVALS);
+    const char *text = cfg->getAsCustom(vectorfullpath.c_str(), CFGID_VECTOR_RECORDING_INTERVALS);
     if (text)
         vp->intervals.parse(text);
 
@@ -163,8 +163,8 @@ bool OmnetppOutputVectorManager::record(void *vectorhandle, simtime_t t, double 
 
     if (vp->handleInWriter == nullptr) {
         std::string vectorFullPath = vp->moduleName.str() + "." + vp->vectorName.c_str();
-        size_t bufferSize = (size_t) getEnvir()->getConfig()->getAsDouble(vectorFullPath.c_str(), CFGID_VECTOR_BUFFER);
-        bool recordEventNumbers = getEnvir()->getConfig()->getAsBool(vectorFullPath.c_str(), CFGID_VECTOR_RECORD_EVENTNUMBERS);
+        size_t bufferSize = (size_t) cfg->getAsDouble(vectorFullPath.c_str(), CFGID_VECTOR_BUFFER);
+        bool recordEventNumbers = cfg->getAsBool(vectorFullPath.c_str(), CFGID_VECTOR_RECORD_EVENTNUMBERS);
         vp->handleInWriter = writer.registerVector(vp->moduleName.c_str(), vp->vectorName.c_str(), ResultFileUtils::convertMap(&vp->attributes), bufferSize, recordEventNumbers);
     }
 

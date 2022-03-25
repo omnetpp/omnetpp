@@ -68,6 +68,8 @@ using namespace omnetpp;
 class cMySQLOutputScalarManager : public cIOutputScalarManager
 {
   protected:
+    cConfiguration *cfg = nullptr;
+
     MYSQL *mysql = nullptr;
 
     // we COMMIT after every commitFreq INSERT statements
@@ -114,6 +116,10 @@ class cMySQLOutputScalarManager : public cIOutputScalarManager
 
     /** @name Controlling the beginning and end of collecting data. */
     //@{
+    /**
+     * Sets the configuration database to use for configuring this object.
+     */
+    virtual void setConfiguration(cConfiguration *cfg);
 
     /**
      * Opens collecting. Called at the beginning of a simulation run.

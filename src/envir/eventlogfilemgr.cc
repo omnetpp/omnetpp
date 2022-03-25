@@ -107,7 +107,6 @@ static ObjectPrinterRecursionControl recurseIntoMessageFields(any_ptr object, cC
 EventlogFileManager::EventlogFileManager()
 {
     envir = getEnvir();
-    envir->addLifecycleListener(this);
     clearInternalState();
 }
 
@@ -153,17 +152,17 @@ void EventlogFileManager::clearInternalState()
 
 void EventlogFileManager::configure()
 {
-    recordEventLog = envir->getConfig()->getAsBool(CFGID_RECORD_EVENTLOG);
+    recordEventLog = cfg->getAsBool(CFGID_RECORD_EVENTLOG);
 
     // setup eventlog object printer
     delete messageDetailPrinter;
     messageDetailPrinter = nullptr;
-    const char *eventLogMessageDetailPattern = envir->getConfig()->getAsCustom(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN);
+    const char *eventLogMessageDetailPattern = cfg->getAsCustom(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN);
     if (eventLogMessageDetailPattern)
         messageDetailPrinter = new ObjectPrinter(recurseIntoMessageFields, eventLogMessageDetailPattern, 3);
 
     // setup eventlog options
-    const char *eventLogOptions = envir->getConfig()->getAsCustom(CFGID_EVENTLOG_OPTIONS);
+    const char *eventLogOptions = cfg->getAsCustom(CFGID_EVENTLOG_OPTIONS);
     if (eventLogOptions) {
         isTextRecordingEnabled = isMessageRecordingEnabled = isModuleRecordingEnabled = isMethodCallRecordingEnabled = isDisplayStringRecordingEnabled = isCustomRecordingEnabled = false;
         common::StringTokenizer tokenizer(eventLogOptions, ", ");
@@ -182,19 +181,19 @@ void EventlogFileManager::configure()
     // set up recording intervals
     delete recordingIntervals;
     recordingIntervals = new Intervals();
-    const char *text = envir->getConfig()->getAsCustom(CFGID_EVENTLOG_RECORDING_INTERVALS);
+    const char *text = cfg->getAsCustom(CFGID_EVENTLOG_RECORDING_INTERVALS);
     if (text)
         recordingIntervals->parse(text);
 
     // setup filename
-    filename = envir->getConfig()->getAsFilename(CFGID_EVENTLOG_FILE);
+    filename = cfg->getAsFilename(CFGID_EVENTLOG_FILE);
     dynamic_cast<EnvirBase *>(envir)->processFileName(filename);
 
     // file limits
-    maxSize = envir->getConfig()->getAsDouble(CFGID_EVENTLOG_MAX_SIZE);
-    minTruncatedSize = envir->getConfig()->getAsDouble(CFGID_EVENTLOG_MIN_TRUNCATED_SIZE);
-    snapshotFrequency = envir->getConfig()->getAsDouble(CFGID_EVENTLOG_SNAPSHOT_FREQUENCY);
-    indexFrequency = envir->getConfig()->getAsDouble(CFGID_EVENTLOG_INDEX_FREQUENCY);
+    maxSize = cfg->getAsDouble(CFGID_EVENTLOG_MAX_SIZE);
+    minTruncatedSize = cfg->getAsDouble(CFGID_EVENTLOG_MIN_TRUNCATED_SIZE);
+    snapshotFrequency = cfg->getAsDouble(CFGID_EVENTLOG_SNAPSHOT_FREQUENCY);
+    indexFrequency = cfg->getAsDouble(CFGID_EVENTLOG_INDEX_FREQUENCY);
 }
 
 void EventlogFileManager::lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details)
@@ -643,7 +642,7 @@ void EventlogFileManager::componentMethodEnd()
 
 void EventlogFileManager::moduleCreated(cModule *module)
 {
-    bool recordModuleEvents = envir->getConfig()->getAsBool(module->getFullPath().c_str(), CFGID_MODULE_EVENTLOG_RECORDING);
+    bool recordModuleEvents = cfg->getAsBool(module->getFullPath().c_str(), CFGID_MODULE_EVENTLOG_RECORDING);
     module->setRecordEvents(recordModuleEvents);
     if (isEventRecordingEnabled && isModuleRecordingEnabled) {
         FileLockAcquirer fileLockAcquirer(fileLock, FILE_LOCK_EXCLUSIVE);
@@ -931,7 +930,7 @@ void EventlogFileManager::recordSnapshot()
 
 void EventlogFileManager::recordModules(cModule *module)
 {
-    bool recordModuleEvents = envir->getConfig()->getAsBool(module->getFullPath().c_str(), CFGID_MODULE_EVENTLOG_RECORDING);
+    bool recordModuleEvents = cfg->getAsBool(module->getFullPath().c_str(), CFGID_MODULE_EVENTLOG_RECORDING);
     module->setRecordEvents(recordModuleEvents);
     FileLockAcquirer fileLockAcquirer(fileLock, FILE_LOCK_EXCLUSIVE);
     cModule *parentModule = module->getParentModule();

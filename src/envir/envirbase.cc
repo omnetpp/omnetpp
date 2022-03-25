@@ -643,23 +643,28 @@ void EnvirBase::readPerRunOptions()
     delete eventlogManager;
     std::string eventlogManagerClass = cfg->getAsString(CFGID_EVENTLOGMANAGER_CLASS);
     eventlogManager = createByClassName<cIEventlogManager>(eventlogManagerClass.c_str(), "eventlog manager");
+    eventlogManager->setConfiguration(cfg);
+    addLifecycleListener(eventlogManager);
 
     // install output vector manager
     delete outvectorManager;
     std::string outputVectorManagerClass = cfg->getAsString(CFGID_OUTPUTVECTORMANAGER_CLASS);
     outvectorManager = createByClassName<cIOutputVectorManager>(outputVectorManagerClass.c_str(), "output vector manager");
+    outvectorManager->setConfiguration(cfg);
     addLifecycleListener(outvectorManager);
 
     // install output scalar manager
     delete outScalarManager;
     std::string outputScalarManagerClass = cfg->getAsString(CFGID_OUTPUTSCALARMANAGER_CLASS);
     outScalarManager = createByClassName<cIOutputScalarManager>(outputScalarManagerClass.c_str(), "output scalar manager");
+    outScalarManager->setConfiguration(cfg);
     addLifecycleListener(outScalarManager);
 
     // install snapshot manager
     delete snapshotManager;
     std::string snapshotmanagerClass = cfg->getAsString(CFGID_SNAPSHOTMANAGER_CLASS);
     snapshotManager = createByClassName<cISnapshotManager>(snapshotmanagerClass.c_str(), "snapshot manager");
+    snapshotManager->setConfiguration(cfg);
     addLifecycleListener(snapshotManager);
 
     // install FES

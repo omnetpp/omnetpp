@@ -59,17 +59,17 @@ void SqliteOutputVectorManager::startRun()
     state = STARTED;
 
     // delete file left over from previous runs
-    fname = getEnvir()->getConfig()->getAsFilename(CFGID_OUTPUT_VECTOR_FILE).c_str();
+    fname = cfg->getAsFilename(CFGID_OUTPUT_VECTOR_FILE).c_str();
     dynamic_cast<EnvirBase *>(getEnvir())->processFileName(fname);
-    bool shouldAppend = getEnvir()->getConfig()->getAsBool(CFGID_OUTPUT_VECTOR_FILE_APPEND);
+    bool shouldAppend = cfg->getAsBool(CFGID_OUTPUT_VECTOR_FILE_APPEND);
     if (!shouldAppend)
         removeFile(fname.c_str(), "old SQLite output vector file");
 
     // read configuration
-    size_t memoryLimit = (size_t) getEnvir()->getConfig()->getAsDouble(CFGID_OUTPUTVECTOR_MEMORY_LIMIT);
+    size_t memoryLimit = (size_t) cfg->getAsDouble(CFGID_OUTPUTVECTOR_MEMORY_LIMIT);
     writer.setOverallMemoryLimit(memoryLimit);
 
-    std::string indexModeStr = getEnvir()->getConfig()->getAsCustom(CFGID_OUTPUT_VECTOR_DB_INDEXING);
+    std::string indexModeStr = cfg->getAsCustom(CFGID_OUTPUT_VECTOR_DB_INDEXING);
     if (indexModeStr == "skip")
         indexingMode = INDEX_NONE;
     else if (indexModeStr == "ahead")
@@ -132,10 +132,10 @@ void *SqliteOutputVectorManager::registerVector(const char *modulename, const ch
     vp->vectorName = vectorname;
 
     std::string vectorfullpath = std::string(modulename) + "." + vectorname;
-    vp->enabled = getEnvir()->getConfig()->getAsBool(vectorfullpath.c_str(), CFGID_VECTOR_RECORDING);
+    vp->enabled = cfg->getAsBool(vectorfullpath.c_str(), CFGID_VECTOR_RECORDING);
 
     // get interval string
-    const char *text = getEnvir()->getConfig()->getAsCustom(vectorfullpath.c_str(), CFGID_VECTOR_RECORDING_INTERVALS);
+    const char *text = cfg->getAsCustom(vectorfullpath.c_str(), CFGID_VECTOR_RECORDING_INTERVALS);
     if (text)
         vp->intervals.parse(text);
 
@@ -182,7 +182,7 @@ bool SqliteOutputVectorManager::record(void *vectorhandle, simtime_t t, double v
 
     if (vp->handleInWriter == nullptr) {
         std::string vectorFullPath = vp->moduleName.str() + "." + vp->vectorName.c_str();
-        size_t bufferSize = (size_t) getEnvir()->getConfig()->getAsDouble(vectorFullPath.c_str(), CFGID_VECTOR_BUFFER);
+        size_t bufferSize = (size_t) cfg->getAsDouble(vectorFullPath.c_str(), CFGID_VECTOR_BUFFER);
         vp->handleInWriter = writer.registerVector(vp->moduleName.c_str(), vp->vectorName.c_str(), ResultFileUtils::convertMap(&vp->attributes), bufferSize);
     }
 

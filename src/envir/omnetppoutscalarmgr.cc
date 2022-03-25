@@ -58,15 +58,15 @@ void OmnetppOutputScalarManager::startRun()
     state = STARTED;
 
     // delete file left over from previous runs
-    fname = getEnvir()->getConfig()->getAsFilename(CFGID_OUTPUT_SCALAR_FILE);
+    fname = cfg->getAsFilename(CFGID_OUTPUT_SCALAR_FILE);
     dynamic_cast<EnvirBase *>(getEnvir())->processFileName(fname);
 
-    bool shouldAppend = getEnvir()->getConfig()->getAsBool(CFGID_OUTPUT_SCALAR_FILE_APPEND);
+    bool shouldAppend = cfg->getAsBool(CFGID_OUTPUT_SCALAR_FILE_APPEND);
     if (!shouldAppend)
         removeFile(fname.c_str(), "old output scalar file");
 
     // read configuration
-    int prec = getEnvir()->getConfig()->getAsInt(CFGID_OUTPUT_SCALAR_PRECISION);
+    int prec = cfg->getAsInt(CFGID_OUTPUT_SCALAR_PRECISION);
     writer.setPrecision(prec);
 }
 
@@ -118,7 +118,7 @@ bool OmnetppOutputScalarManager::recordScalar(cComponent *component, const char 
         name = "(unnamed)";
 
     std::string componentFullPath = component->getFullPath();
-    bool enabled = getEnvir()->getConfig()->getAsBool((componentFullPath + "." + name).c_str(), CFGID_SCALAR_RECORDING);
+    bool enabled = cfg->getAsBool((componentFullPath + "." + name).c_str(), CFGID_SCALAR_RECORDING);
     if (!enabled)
         return false;
 
@@ -147,7 +147,7 @@ bool OmnetppOutputScalarManager::recordStatistic(cComponent *component, const ch
     std::string componentFullPath = component->getFullPath();
     // check that recording this statistic is not disabled as a whole
     std::string objectFullPath = componentFullPath + "." + name;
-    bool enabled = getEnvir()->getConfig()->getAsBool(objectFullPath.c_str(), CFGID_SCALAR_RECORDING);
+    bool enabled = cfg->getAsBool(objectFullPath.c_str(), CFGID_SCALAR_RECORDING);
     if (!enabled)
         return false;
 
@@ -160,7 +160,7 @@ bool OmnetppOutputScalarManager::recordStatistic(cComponent *component, const ch
     bool savedAsHistogram = false;
     if (cAbstractHistogram *histogram = dynamic_cast<cAbstractHistogram *>(statistic)) {
         // check that recording the histogram is enabled
-        bool binsEnabled = getEnvir()->getConfig()->getAsBool(objectFullPath.c_str(), CFGID_BIN_RECORDING);
+        bool binsEnabled = cfg->getAsBool(objectFullPath.c_str(), CFGID_BIN_RECORDING);
         if (binsEnabled) {
             if (!histogram->binsAlreadySetUp())
                 histogram->setUpBins();
@@ -198,7 +198,7 @@ bool OmnetppOutputScalarManager::recordParameter(cPar *par)
 
     std::string componentFullPath = par->getOwner()->getFullPath();
     const char *name = par->getName();
-    bool enabled = getEnvir()->getConfig()->getAsBool((componentFullPath+"."+name).c_str(), CFGID_PARAM_RECORDING);
+    bool enabled = cfg->getAsBool((componentFullPath+"."+name).c_str(), CFGID_PARAM_RECORDING);
     if (!enabled)
         return false;
 
@@ -221,7 +221,7 @@ bool OmnetppOutputScalarManager::recordComponentType(cComponent *component)
 
     std::string componentFullPath = component->getFullPath();
     const char *name = "typename";
-    bool enabled = getEnvir()->getConfig()->getAsBool((componentFullPath+"."+name).c_str(), CFGID_PARAM_RECORDING);
+    bool enabled = cfg->getAsBool((componentFullPath+"."+name).c_str(), CFGID_PARAM_RECORDING);
     if (!enabled)
         return false;
 

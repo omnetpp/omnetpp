@@ -39,7 +39,7 @@ Register_Class(FileSnapshotManager);
 void FileSnapshotManager::startRun()
 {
     // clean up file from previous runs
-    fname = getEnvir()->getConfig()->getAsFilename(CFGID_SNAPSHOT_FILE);
+    fname = cfg->getAsFilename(CFGID_SNAPSHOT_FILE);
     dynamic_cast<EnvirBase *>(getEnvir())->processFileName(fname);
     removeFile(fname.c_str(), "old snapshot file");
 }

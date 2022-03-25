@@ -82,6 +82,8 @@ using namespace omnetpp;
 class cMySQLOutputVectorManager : public cIOutputVectorManager
 {
   protected:
+    cConfiguration *cfg = nullptr;
+
     struct sVectorData {
        long id;             // vector ID
        opp_string modulename; // module of cOutVector object
@@ -152,6 +154,11 @@ class cMySQLOutputVectorManager : public cIOutputVectorManager
 
     /** @name Redefined cIOutputVectorManager member functions. */
     //@{
+
+    /**
+     * Sets the configuration database to use for configuring this object.
+     */
+    virtual void setConfiguration(cConfiguration *cfg) override {this->cfg = cfg;}
 
     /**
      * Deletes output vector file if exists (left over from previous runs).

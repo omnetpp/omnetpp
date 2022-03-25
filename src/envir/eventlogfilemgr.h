@@ -42,7 +42,7 @@ namespace envir {
  * each line contains exactly one eventlog entry. Snapshots and index entries
  * are written periodically to be able to read large eventlog files efficiently.
  */
-class ENVIR_API EventlogFileManager : public cIEventlogManager, public cISimulationLifecycleListener
+class ENVIR_API EventlogFileManager : public cIEventlogManager
 {
   private:
     enum ChunkType {
@@ -96,7 +96,8 @@ class ENVIR_API EventlogFileManager : public cIEventlogManager, public cISimulat
     };
 
   private:
-    cEnvir *envir = nullptr;
+    cConfiguration *cfg = nullptr;
+    cEnvir *envir = nullptr;  //TODO eliminate?
     std::string filename;
 
     // configuration that does not change over time
@@ -178,6 +179,11 @@ class ENVIR_API EventlogFileManager : public cIEventlogManager, public cISimulat
      * Destructor.
      */
     virtual ~EventlogFileManager();
+
+    /**
+     * Sets the configuration database to use for configuring this object.
+     */
+    virtual void setConfiguration(cConfiguration *cfg) override {this->cfg = cfg;}
 
     /**
      * Returns the eventlog filename.

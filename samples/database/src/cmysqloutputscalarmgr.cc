@@ -38,14 +38,14 @@ void cMySQLOutputScalarManager::openDB()
 {
     // connect
     EV << getClassName() << " connecting to MySQL database...";
-    std::string cfgobj = getEnvir()->getConfig()->getAsString(CFGID_MYSQLOUTSCALARMGR_CONNECTIONNAME);
+    std::string cfgobj = cfg->getAsString(CFGID_MYSQLOUTSCALARMGR_CONNECTIONNAME);
     if (cfgobj.empty())
         cfgobj = "mysql";
     mysql = mysql_init(nullptr);
-    opp_mysql_connectToDB(mysql, getEnvir()->getConfig(), cfgobj.c_str());
+    opp_mysql_connectToDB(mysql, cfg, cfgobj.c_str());
     EV << " OK\n";
 
-    commitFreq = getEnvir()->getConfig()->getAsInt(CFGID_MYSQLOUTSCALARMGR_COMMIT_FREQ);
+    commitFreq = cfg->getAsInt(CFGID_MYSQLOUTSCALARMGR_COMMIT_FREQ);
     insertCount = 0;
 
     // prepare and bind INSERT INTO SCALAR...

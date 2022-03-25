@@ -27,6 +27,7 @@
 
 namespace omnetpp {
 
+class cConfiguration;
 class cModule;
 class cStatistic;
 class cEvent;
@@ -81,6 +82,11 @@ class SIM_API cIOutputVectorManager : public cObject, public cISimulationLifecyc
 
     /** @name Controlling the beginning and end of collecting data. */
     //@{
+
+    /**
+     * Sets the configuration database to use for configuring this object.
+     */
+    virtual void setConfiguration(cConfiguration *cfg) = 0;
 
     /**
      * Opens collecting. Called at the beginning of a simulation run.
@@ -188,6 +194,11 @@ class SIM_API cIOutputScalarManager : public cObject, public cISimulationLifecyc
     //@{
 
     /**
+     * Sets the configuration database to use for configuring this object.
+     */
+    virtual void setConfiguration(cConfiguration *cfg) = 0;
+
+    /**
      * Opens collecting. Called at the beginning of a simulation run.
      */
     virtual void startRun() = 0;
@@ -288,6 +299,11 @@ class SIM_API cISnapshotManager : public cObject, public cISimulationLifecycleLi
     //@{
 
     /**
+     * Sets the configuration database to use for configuring this object.
+     */
+    virtual void setConfiguration(cConfiguration *cfg) = 0;
+
+    /**
      * Called at the beginning of a simulation run.
      */
     virtual void startRun() = 0;
@@ -340,7 +356,7 @@ class SIM_API cISnapshotManager : public cObject, public cISimulationLifecycleLi
  *
  * @ingroup EnvirAndExtensions
  */
-class SIM_API cIEventlogManager : public cObject, noncopyable
+class SIM_API cIEventlogManager : public cObject, public cISimulationLifecycleListener, noncopyable
 {
   public:
     /** @name Constructor, destructor */
@@ -359,6 +375,10 @@ class SIM_API cIEventlogManager : public cObject, noncopyable
 
     /** @name Controlling the beginning and end of collecting data. */
     //@{
+    /**
+     * Sets the configuration database to use for configuring this object.
+     */
+    virtual void setConfiguration(cConfiguration *cfg) = 0;
 
     /**
      * (Re)starts eventlog recording. Whether eventlog recording is enabled by

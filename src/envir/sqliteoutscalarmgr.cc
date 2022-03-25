@@ -58,9 +58,9 @@ void SqliteOutputScalarManager::startRun()
     state = STARTED;
 
     // clean up file from previous runs
-    fname = getEnvir()->getConfig()->getAsFilename(CFGID_OUTPUT_SCALAR_FILE);
+    fname = cfg->getAsFilename(CFGID_OUTPUT_SCALAR_FILE);
     dynamic_cast<EnvirBase *>(getEnvir())->processFileName(fname);
-    if (getEnvir()->getConfig()->getAsBool(CFGID_OUTPUT_SCALAR_FILE_APPEND) == false)
+    if (cfg->getAsBool(CFGID_OUTPUT_SCALAR_FILE_APPEND) == false)
         removeFile(fname.c_str(), "old SQLite output scalar file");
 }
 
@@ -82,7 +82,7 @@ void SqliteOutputScalarManager::openFileForRun()
     mkPath(directoryOf(fname.c_str()).c_str());
     writer.open(fname.c_str());
 
-    int commitFreq = getEnvir()->getConfig()->getAsInt(CFGID_OUTPUT_SCALAR_DB_COMMIT_FREQ);
+    int commitFreq = cfg->getAsInt(CFGID_OUTPUT_SCALAR_DB_COMMIT_FREQ);
     writer.setCommitFreq(commitFreq);
 
     // write run data
@@ -111,7 +111,7 @@ bool SqliteOutputScalarManager::recordScalar(cComponent *component, const char *
         name = "(unnamed)";
 
     std::string componentFullPath = component->getFullPath();
-    bool enabled = getEnvir()->getConfig()->getAsBool((componentFullPath+"."+name).c_str(), CFGID_SCALAR_RECORDING);
+    bool enabled = cfg->getAsBool((componentFullPath+"."+name).c_str(), CFGID_SCALAR_RECORDING);
     if (!enabled)
         return false;
 
@@ -140,7 +140,7 @@ bool SqliteOutputScalarManager::recordStatistic(cComponent *component, const cha
     std::string componentFullPath = component->getFullPath();
     // check that recording this statistic is not disabled as a whole
     std::string objectFullPath = componentFullPath + "." + name;
-    bool enabled = getEnvir()->getConfig()->getAsBool(objectFullPath.c_str(), CFGID_SCALAR_RECORDING);
+    bool enabled = cfg->getAsBool(objectFullPath.c_str(), CFGID_SCALAR_RECORDING);
     if (!enabled)
         return false;
 
@@ -153,7 +153,7 @@ bool SqliteOutputScalarManager::recordStatistic(cComponent *component, const cha
     bool savedAsHistogram = false;
     if (cAbstractHistogram *histogram = dynamic_cast<cAbstractHistogram *>(statistic)) {
         // check that recording the histogram is enabled
-        bool binsEnabled = getEnvir()->getConfig()->getAsBool(objectFullPath.c_str(), CFGID_BIN_RECORDING);
+        bool binsEnabled = cfg->getAsBool(objectFullPath.c_str(), CFGID_BIN_RECORDING);
         if (binsEnabled) {
             if (!histogram->binsAlreadySetUp())
                 histogram->setUpBins();
@@ -190,7 +190,7 @@ bool SqliteOutputScalarManager::recordParameter(cPar *par)
 
     std::string componentFullPath = par->getOwner()->getFullPath();
     const char *name = par->getName();
-    bool enabled = getEnvir()->getConfig()->getAsBool((componentFullPath+"."+name).c_str(), CFGID_PARAM_RECORDING);
+    bool enabled = cfg->getAsBool((componentFullPath+"."+name).c_str(), CFGID_PARAM_RECORDING);
     if (!enabled)
         return false;
 
@@ -213,7 +213,7 @@ bool SqliteOutputScalarManager::recordComponentType(cComponent *component)
 
     std::string componentFullPath = component->getFullPath();
     const char *name = "typename";
-    bool enabled = getEnvir()->getConfig()->getAsBool((componentFullPath+"."+name).c_str(), CFGID_PARAM_RECORDING);
+    bool enabled = cfg->getAsBool((componentFullPath+"."+name).c_str(), CFGID_PARAM_RECORDING);
     if (!enabled)
         return false;
 

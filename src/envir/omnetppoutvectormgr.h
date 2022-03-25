@@ -50,6 +50,7 @@ class OmnetppOutputVectorManager : public cIOutputVectorManager
 
     typedef std::vector<VectorData*> Vectors;
 
+    cConfiguration *cfg = nullptr;
     enum State {NEW, STARTED, OPENED, ENDED} state = NEW;
     std::string fname;
     OmnetppVectorFileWriter writer;
@@ -77,6 +78,10 @@ class OmnetppOutputVectorManager : public cIOutputVectorManager
 
     /** @name Redefined cIOutputVectorManager member functions. */
     //@{
+    /**
+     * Sets the configuration database to use for configuring this object.
+     */
+    virtual void setConfiguration(cConfiguration *cfg) override {this->cfg = cfg;}
 
     /**
      * Deletes output vector file if exists (left over from previous runs).
