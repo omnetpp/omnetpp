@@ -15,9 +15,7 @@
 *--------------------------------------------------------------*/
 
 #include <cstring>
-
-#include <mysql.h>
-
+#include <mysql/mysql.h>
 #include <omnetpp.h>
 
 using namespace omnetpp;

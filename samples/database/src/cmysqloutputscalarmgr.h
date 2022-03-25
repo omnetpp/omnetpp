@@ -13,11 +13,10 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __MYSQLOUTPUTSCALARMGR_H
-#define __MYSQLOUTPUTSCALARMGR_H
+#ifndef __DATABASE_MYSQLOUTPUTSCALARMGR_H
+#define __DATABASE_MYSQLOUTPUTSCALARMGR_H
 
-#include <mysql.h>
-
+#include <mysql/mysql.h>
 #include <omnetpp.h>
 
 using namespace omnetpp;
@@ -69,7 +68,7 @@ using namespace omnetpp;
 class cMySQLOutputScalarManager : public cIOutputScalarManager
 {
   protected:
-    MYSQL *mysql;
+    MYSQL *mysql = nullptr;
 
     // we COMMIT after every commitFreq INSERT statements
     int commitFreq;
@@ -81,7 +80,7 @@ class cMySQLOutputScalarManager : public cIOutputScalarManager
     bool initialized;
 
     // prepared statements and their parameter bindings
-    MYSQL_STMT *insertScalarStmt;
+    MYSQL_STMT *insertScalarStmt = nullptr;
     MYSQL_BIND insScalarBind[4];
 
     // these variables are bound to the above bind parameters
@@ -119,12 +118,12 @@ class cMySQLOutputScalarManager : public cIOutputScalarManager
     /**
      * Opens collecting. Called at the beginning of a simulation run.
      */
-    virtual void startRun();
+    virtual void startRun() override;
 
     /**
      * Closes collecting. Called at the end of a simulation run.
      */
-    virtual void endRun();
+    virtual void endRun() override;
 
     /** @name Scalar statistics */
     //@{
@@ -132,22 +131,34 @@ class cMySQLOutputScalarManager : public cIOutputScalarManager
     /**
      * Records a double scalar result into the scalar result file.
      */
-    virtual void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=nullptr);
+    virtual bool recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=nullptr) override;
 
     /**
      * Records a histogram or statistic object into the scalar result file.
      */
-    virtual void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=nullptr);
+    virtual bool recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=nullptr) override;
+
+    /**
+     * Records a module or channel parameter, in a default configuration into the scalar result file.
+     * The return value indicates whether the recording has actually taken place (true=yes).
+     */
+    virtual bool recordParameter(cPar *par) override;
+
+    /**
+     * Records the runtime NED type of module or channel, in a default configuration into the scalar result file.
+     * The return value indicates whether the recording has actually taken place (true=yes).
+     */
+    virtual bool recordComponentType(cComponent *component) override;
 
     /**
      * Returns nullptr, because this class doesn't use a file.
      */
-    const char *getFileName() const {return nullptr;}
+    const char *getFileName() const override {return nullptr;}
 
     /**
      * Performs a database commit.
      */
-    virtual void flush();
+    virtual void flush() override;
     //@}
 };
 
