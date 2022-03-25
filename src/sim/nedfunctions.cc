@@ -585,6 +585,17 @@ cValue nedf_ancestorIndex(cComponent *contextComponent, cValue argv[], int argc)
     return (intval_t)mod->getIndex();
 }
 
+DEF(nedf_componentId,
+    "int componentId()",
+    "ned",
+    "Returns the ID of the module or channel in context.")
+
+cValue nedf_componentId(cComponent *contextComponent, cValue argv[], int argc)
+{
+    return contextComponent->getId();
+}
+
+
 
 //
 // Random variate generation.
