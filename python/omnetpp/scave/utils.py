@@ -982,7 +982,9 @@ def export_image_if_needed(props):
             # reducing margins all around
             plt.tight_layout()
 
-        plt.savefig(filepath, format=format, dpi=int(dpi))
+        import platform
+        creatorInfo = f"omnetpp.scave {__version__}; Matplotlib {mpl.__version__} w/ backend {mpl.get_backend()}; Pandas {pd.__version__}; Python {platform.python_version()}; {platform.platform()}"
+        plt.savefig(filepath, format=format, dpi=int(dpi), metadata={"Software": creatorInfo})
 
 def get_image_export_filepath(props):
     """
