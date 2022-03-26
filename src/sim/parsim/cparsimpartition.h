@@ -87,7 +87,7 @@ class SIM_API cParsimPartition : public cObject, public cISimulationLifecycleLis
     /**
      * Pass cParsimPartition the objects it has to cooperate with.
      */
-    void setContext(cSimulation *sim, cParsimCommunications *comm, cParsimSynchronizer *synch);
+    void configure(cSimulation *sim, cParsimCommunications *comm, cParsimSynchronizer *synch); //TODO should take cConfiguration* too
 
     /**
      * Called at the beginning of a simulation run. Fills in remote gate addresses

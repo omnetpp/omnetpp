@@ -79,7 +79,7 @@ cNamedPipeCommunications::~cNamedPipeCommunications()
         delete item.buffer;
 }
 
-void cNamedPipeCommunications::init(int np)
+void cNamedPipeCommunications::configure(int np)
 {
     // store parameter
     numPartitions = np;

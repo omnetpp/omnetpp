@@ -55,7 +55,7 @@ class SIM_API cLCG32 : public cRNG
     virtual ~cLCG32() {}
 
     /** Sets up the RNG. */
-    virtual void initialize(int seedSet, int rngId, int numRngs,
+    virtual void configure(int seedSet, int rngId, int numRngs,
                             int parsimProcId, int parsimNumPartitions,
                             cConfiguration *cfg) override;
 

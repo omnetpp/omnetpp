@@ -56,7 +56,7 @@ class SIM_API cNMPLookahead : public cObject
     /**
      * Pass objects it has to cooperate with.
      */
-    void setContext(cSimulation *simul, cParsimPartition *seg, cParsimCommunications *co)
+    void configure(cSimulation *simul, cParsimPartition *seg, cParsimCommunications *co)  //TODO should take cConfiguration* too; move out-of-line
        {sim = simul; partition = seg; comm = co;}
 
     /**

@@ -44,7 +44,7 @@ cParsimPartition::cParsimPartition()
     debug = getEnvir()->getConfig()->getAsBool(CFGID_PARSIM_DEBUG);
 }
 
-void cParsimPartition::setContext(cSimulation *simul, cParsimCommunications *commlayer, cParsimSynchronizer *sync)
+void cParsimPartition::configure(cSimulation *simul, cParsimCommunications *commlayer, cParsimSynchronizer *sync)
 {
     sim = simul;
     comm = commlayer;

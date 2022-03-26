@@ -448,12 +448,12 @@ bool RunnableEnvir::setup()
             addLifecycleListener(parsimPartition);
 
             // wire them together (note: 'parsimSynchronizer' is also the scheduler for 'simulation')
-            parsimPartition->setContext(getSimulation(), parsimComm, parsimSynchronizer);
-            parsimSynchronizer->setContext(getSimulation(), parsimPartition, parsimComm);
+            parsimPartition->configure(getSimulation(), parsimComm, parsimSynchronizer);
+            parsimSynchronizer->configure(getSimulation(), parsimPartition, parsimComm);
             getSimulation()->setScheduler(parsimSynchronizer);
 
             // initialize them
-            parsimComm->init(parsimNumPartitions);
+            parsimComm->configure(parsimNumPartitions);
 #else
             throw cRuntimeError("Parallel simulation is turned on in the ini file, but OMNeT++ was compiled without parallel simulation support (WITH_PARSIM=no)");
 #endif

@@ -49,7 +49,7 @@ cMPICommunications::~cMPICommunications()
     delete recycledBuffer;
 }
 
-void cMPICommunications::init(int np)
+void cMPICommunications::configure(int np)
 {
     // store parameter
     numPartitions = np;

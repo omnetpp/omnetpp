@@ -85,7 +85,7 @@ class SIM_API cNamedPipeCommunications : public cParsimCommunications
     /**
      * Init the library. Here we create and open the named pipes.
      */
-    virtual void init(int numPartitions) override;
+    virtual void configure(int numPartitions) override;
 
     /**
      * Shutdown the communications library. Closes and removes the named pipes.

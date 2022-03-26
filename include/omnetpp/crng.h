@@ -58,9 +58,9 @@ class SIM_API cRNG : public cObject
      * Called by the simulation framework to set up the RNG at the start
      * of a simulation run. Seed selection should take place here.
      */
-    virtual void initialize(int seedSet, int rngId, int numRngs,
-                            int parsimProcId, int parsimNumPartitions,
-                            cConfiguration *cfg) = 0;
+    virtual void configure(int seedSet, int rngId, int numRngs,
+                           int parsimProcId, int parsimNumPartitions,
+                           cConfiguration *cfg) = 0;
 
     /**
      * Coarse test for the correctness of the RNG algorithm. It should detect

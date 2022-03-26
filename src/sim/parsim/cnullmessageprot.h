@@ -89,7 +89,7 @@ class SIM_API cNullMessageProtocol : public cParsimProtocolBase
      * Redefined beacause we have to pass the same data to the lookahead calculator object
      * (cNMPLookahead) too.
      */
-    virtual void setContext(cSimulation *sim, cParsimPartition *seg, cParsimCommunications *co) override;
+    virtual void configure(cSimulation *sim, cParsimPartition *seg, cParsimCommunications *co) override;
 
     /**
      * Sets null message resend laziness. Value is between 0 and 1 --

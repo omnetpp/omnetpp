@@ -60,10 +60,10 @@ cNullMessageProtocol::~cNullMessageProtocol()
     delete[] segInfo;
 }
 
-void cNullMessageProtocol::setContext(cSimulation *sim, cParsimPartition *seg, cParsimCommunications *co)
+void cNullMessageProtocol::configure(cSimulation *sim, cParsimPartition *seg, cParsimCommunications *co)
 {
-    cParsimProtocolBase::setContext(sim, seg, co);
-    lookaheadcalc->setContext(sim, seg, co);
+    cParsimProtocolBase::configure(sim, seg, co);
+    lookaheadcalc->configure(sim, seg, co);
 }
 
 void cNullMessageProtocol::startRun()

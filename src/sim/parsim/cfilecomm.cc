@@ -51,7 +51,7 @@ cFileCommunications::cFileCommunications()
     preserveReadFiles = getEnvir()->getConfig()->getAsBool(CFGID_FILECOMM_PRESERVE_READ);
 }
 
-void cFileCommunications::init(int np)
+void cFileCommunications::configure(int np)
 {
     // store parameter
     numPartitions = np;

@@ -49,7 +49,7 @@ class SIM_API cParsimCommunications : public cObject
     /**
      * Initialize the communications library.
      */
-    virtual void init(int numPartitions) = 0;
+    virtual void configure(int numPartitions) = 0;  //TODO should take cConfiguration* too; separate init() or setup() method?
 
     /**
      * Shutdown the communications library.

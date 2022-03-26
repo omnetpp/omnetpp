@@ -708,7 +708,7 @@ void EnvirBase::readPerRunOptions()
     rngs = new cRNG *[numRNGs];
     for (int i = 0; i < numRNGs; i++) {
         rngs[i] = createByClassName<cRNG>(rngClass.c_str(), "random number generator");
-        rngs[i]->initialize(seedset, i, numRNGs, getParsimProcId(), getParsimNumPartitions(), getConfig());
+        rngs[i]->configure(seedset, i, numRNGs, getParsimProcId(), getParsimNumPartitions(), getConfig());
     }
 
     // init nextUniqueNumber -- startRun() is too late because simple module ctors have run by then

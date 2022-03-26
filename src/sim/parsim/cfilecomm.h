@@ -59,7 +59,7 @@ class SIM_API cFileCommunications : public cParsimCommunications
     /**
      * Init the library.
      */
-    virtual void init(int numPartitions) override;
+    virtual void configure(int numPartitions) override;
 
     /**
      * Shutdown the communications library.

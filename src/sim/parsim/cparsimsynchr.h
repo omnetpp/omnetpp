@@ -72,7 +72,7 @@ class SIM_API cParsimSynchronizer : public cScheduler
     /**
      * Pass cParsimSynchronizer the objects it has to cooperate with.
      */
-    virtual void setContext(cSimulation *sim, cParsimPartition *seg, cParsimCommunications *co)
+    virtual void configure(cSimulation *sim, cParsimPartition *seg, cParsimCommunications *co) //TODO should take cConfiguration* too; move out-of-line
        {setSimulation(sim); partition = seg; comm = co;}
 
     /**
