@@ -110,6 +110,13 @@ double simulateAloha(simtime_t limit, int numHosts, double iaMean)
     cSimulation *sim = new cSimulation("simulation", menv);
     cSimulation::setActiveSimulation(sim);
 
+    // load NED definitions from string constants (this program doesn't need external NED files!)
+    sim->loadNedText("aloha", ALOHA_NED);
+    sim->loadNedText("server", SERVER_NED);
+    sim->loadNedText("host", HOST_NED);
+    // sim->loadNedSourceFolder("./model");
+    sim->doneLoadingNedFiles();
+
     // set the simulation parameters in the environment
     std::ostringstream iaParam;
     iaParam << "exponential(" << iaMean << "s)";
@@ -167,13 +174,6 @@ int main(int argc, char *argv[])
     // initializations
     CodeFragments::executeAll(CodeFragments::STARTUP);
     SimTime::setScaleExp(-12);
-
-    // load NED definitions from string constants (this program doesn't need external NED files!)
-    cSimulation::loadNedText("aloha", ALOHA_NED);
-    cSimulation::loadNedText("server", SERVER_NED);
-    cSimulation::loadNedText("host", HOST_NED);
-    // cSimulation::loadNedSourceFolder("./model");
-    cSimulation::doneLoadingNedFiles();
 
     // run simulations until user tells us to exit
     std::string againQuestion;

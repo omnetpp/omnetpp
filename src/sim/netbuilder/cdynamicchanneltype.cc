@@ -31,7 +31,8 @@ namespace omnetpp {
 
 using namespace common;
 
-cDynamicChannelType::cDynamicChannelType(const char *name) : cChannelType(name)
+cDynamicChannelType::cDynamicChannelType(cNedLoader *nedLoader, const char *qname) :
+    cChannelType(qname), nedLoader(nedLoader)
 {
 }
 
@@ -39,7 +40,7 @@ cNedDeclaration *cDynamicChannelType::getDecl() const
 {
     // do not store the pointer, because the declaration object may have been
     // thrown out of cNedLoader to conserve memory
-    cNedDeclaration *decl = cNedLoader::getInstance()->getDecl(getFullName());
+    cNedDeclaration *decl = nedLoader->getDecl(getFullName());
     ASSERT(decl->getType() == cNedDeclaration::CHANNEL);
     return decl;
 }
@@ -75,12 +76,12 @@ cChannel *cDynamicChannelType::createChannelObject()
 void cDynamicChannelType::addParametersTo(cChannel *channel)
 {
     cNedDeclaration *decl = getDecl();
-    cNedNetworkBuilder().addParametersAndGatesTo(channel, decl);  // adds only parameters, because channels have no gates
+    cNedNetworkBuilder(nedLoader).addParametersAndGatesTo(channel, decl);  // adds only parameters, because channels have no gates
 }
 
 void cDynamicChannelType::applyPatternAssignments(cComponent *component)
 {
-    cNedNetworkBuilder().assignParametersFromPatterns(component);
+    cNedNetworkBuilder(nedLoader).assignParametersFromPatterns(component);
 }
 
 cProperties *cDynamicChannelType::getProperties() const
@@ -124,7 +125,7 @@ const char *cDynamicChannelType::getImplementationClassName() const
 
 std::string cDynamicChannelType::getCxxNamespaceForType(const char *type) const
 {
-    cNedDeclaration *decl = cNedLoader::getInstance()->getDecl(type);
+    cNedDeclaration *decl = nedLoader->getDecl(type);
     return decl->getPackageProperty("namespace");
 }
 

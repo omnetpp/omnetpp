@@ -33,7 +33,8 @@ namespace omnetpp {
 
 using namespace common;
 
-cDynamicModuleType::cDynamicModuleType(const char *name) : cModuleType(name)
+cDynamicModuleType::cDynamicModuleType(cNedLoader *nedLoader, const char *qname) :
+    cModuleType(qname), nedLoader(nedLoader)
 {
 }
 
@@ -41,7 +42,7 @@ cNedDeclaration *cDynamicModuleType::getDecl() const
 {
     // do not store the pointer, because the declaration object may have been
     // thrown out of cNedLoader to conserve memory
-    cNedDeclaration *decl = cNedLoader::getInstance()->getDecl(getFullName());
+    cNedDeclaration *decl = nedLoader->getDecl(getFullName());
     ASSERT(decl->getType() == cNedDeclaration::SIMPLE_MODULE || decl->getType() == cNedDeclaration::COMPOUND_MODULE);
     return decl;
 }
@@ -87,24 +88,24 @@ cModule *cDynamicModuleType::createModuleObject()
 void cDynamicModuleType::addParametersAndGatesTo(cModule *module)
 {
     cNedDeclaration *decl = getDecl();
-    cNedNetworkBuilder().addParametersAndGatesTo(module, decl);
+    cNedNetworkBuilder(nedLoader).addParametersAndGatesTo(module, decl);
 }
 
 void cDynamicModuleType::applyPatternAssignments(cComponent *component)
 {
-    cNedNetworkBuilder().assignParametersFromPatterns(component);
+    cNedNetworkBuilder(nedLoader).assignParametersFromPatterns(component);
 }
 
 void cDynamicModuleType::setupGateVectors(cModule *module)
 {
     cNedDeclaration *decl = getDecl();
-    cNedNetworkBuilder().setupGateVectors(module, decl);
+    cNedNetworkBuilder(nedLoader).setupGateVectors(module, decl);
 }
 
 void cDynamicModuleType::buildInside(cModule *module)
 {
     cNedDeclaration *decl = getDecl();
-    cNedNetworkBuilder().buildInside(module, decl);
+    cNedNetworkBuilder(nedLoader).buildInside(module, decl);
 }
 
 cProperties *cDynamicModuleType::getProperties() const
@@ -151,7 +152,7 @@ const char *cDynamicModuleType::getImplementationClassName() const
 
 std::string cDynamicModuleType::getCxxNamespaceForType(const char *type) const
 {
-    cNedDeclaration *decl = cNedLoader::getInstance()->getDecl(type);
+    cNedDeclaration *decl = nedLoader->getDecl(type);
     return decl->getPackageProperty("namespace");
 }
 

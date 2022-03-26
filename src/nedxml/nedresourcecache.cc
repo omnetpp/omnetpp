@@ -43,6 +43,10 @@ inline std::string canonicalize(const char *pathname)
     return tidyFilename(toAbsolutePath(pathname).c_str(), true);
 }
 
+NedResourceCache::NedResourceCache()
+{
+}
+
 NedResourceCache::~NedResourceCache()
 {
     for (auto & file : nedFiles)
@@ -181,6 +185,9 @@ void NedResourceCache::addFile(NedFileElement *tree, const char *expectedPackage
 
 NedFileElement *NedResourceCache::parseAndValidateNedFileOrText(const char *fname, const char *nedText, bool isXML)
 {
+    if (nedTypes.empty())
+        registerBuiltinDeclarations();
+
     // load file
     ASTNode *tree = nullptr;
     ErrorStore errors;
@@ -310,6 +317,9 @@ void NedResourceCache::registerNedType(const char *qname, bool isInnerType, ASTN
 
 NedTypeInfo *NedResourceCache::lookup(const char *qname) const
 {
+    if (nedTypes.empty())
+        const_cast<NedResourceCache*>(this)->registerBuiltinDeclarations();
+
     auto it = nedTypes.find(qname);
     return it != nedTypes.end() ? it->second : nullptr;
 }

@@ -70,6 +70,8 @@ class SIM_API cNedNetworkBuilder
     typedef internal::cIntParImpl cIntParImpl;
     typedef internal::cObjectParImpl cObjectParImpl;
 
+    cNedLoader *nedLoader;
+
     // the current NED declaration we're working with. Stored here to
     // avoid having to pass it around as a parameter.
     cNedDeclaration *currentDecl = nullptr;
@@ -128,7 +130,7 @@ class SIM_API cNedNetworkBuilder
 
   public:
     /** Constructor */
-    cNedNetworkBuilder() {}
+    cNedNetworkBuilder(cNedLoader *nedLoader) : nedLoader(nedLoader) {}
 
     /**
      * Adds parameters and gates from the given NED declaration. Gate vectors

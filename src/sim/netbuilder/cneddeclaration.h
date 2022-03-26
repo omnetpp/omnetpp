@@ -32,6 +32,8 @@
 
 namespace omnetpp {
 
+class cNedLoader;
+
 namespace common { class PatternMatcher; };
 
 /**
@@ -65,6 +67,8 @@ class SIM_API cNedDeclaration : public nedxml::NedTypeInfo
     struct PatternData {PatternMatcher *matcher; ParamElement *patternNode;};
 
   protected:
+    cNedLoader *nedLoader;
+
     // properties
     typedef std::map<std::string, cProperties *> StringPropsMap;
     mutable cProperties *props = nullptr;
@@ -111,7 +115,7 @@ class SIM_API cNedDeclaration : public nedxml::NedTypeInfo
     /**
      * Constructor. It takes the fully qualified name.
      */
-    cNedDeclaration(NedResourceCache *resolver, const char *qname, bool isInnerType, NedElement *tree);
+    cNedDeclaration(cNedLoader *nedLoader, const char *qname, bool isInnerType, NedElement *tree);
 
     /**
      * Destructor.

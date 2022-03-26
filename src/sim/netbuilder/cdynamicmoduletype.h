@@ -24,12 +24,16 @@
 
 namespace omnetpp {
 
+class cNedLoader;
 
 /**
  * @brief NEDXML-based cModuleType: takes all info from cNedLoader
  */
 class SIM_API cDynamicModuleType : public cModuleType
 {
+  private:
+    cNedLoader *nedLoader;
+
   protected:
     /** Redefined from cModuleType */
     virtual cModule *createModuleObject() override;
@@ -67,7 +71,7 @@ class SIM_API cDynamicModuleType : public cModuleType
     /**
      * Constructor.
      */
-    cDynamicModuleType(const char *name);
+    cDynamicModuleType(cNedLoader *nedLoader, const char *qname);
 
     /**
      * Produces a one-line description.

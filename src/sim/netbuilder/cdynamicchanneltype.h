@@ -24,12 +24,16 @@
 
 namespace omnetpp {
 
+class cNedLoader;
 
 /**
  * @brief NEDXML-based cChannelType: takes all info from cNedLoader
  */
 class SIM_API cDynamicChannelType : public cChannelType
 {
+  private:
+    cNedLoader *nedLoader;
+
   protected:
     /** Redefined from cChannelType */
     virtual cChannel *createChannelObject() override;
@@ -61,7 +65,7 @@ class SIM_API cDynamicChannelType : public cChannelType
     /**
      * Constructor.
      */
-    cDynamicChannelType(const char *name);
+    cDynamicChannelType(cNedLoader *nedLoader, const char *qname);
 
     /**
      * Produces a one-line description.

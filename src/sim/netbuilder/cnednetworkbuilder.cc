@@ -105,7 +105,7 @@ void cNedNetworkBuilder::addParametersAndGatesTo(cComponent *component, cNedDecl
     cModule *parentModule = component->getParentModule();
     if (parentModule) {
         const char *parentNedTypeName = parentModule->getNedTypeName();
-        cNedDeclaration *parentDecl = cNedLoader::getInstance()->getDecl(parentNedTypeName);
+        cNedDeclaration *parentDecl = nedLoader->getDecl(parentNedTypeName);
         if (parentDecl) {  // i.e. parent was created via NED-based componentType
             NedElement *subcomponentNode = component->isModule() ?
                 (NedElement *)parentDecl->getSubmoduleElement(component->getName()) :
@@ -125,7 +125,7 @@ void cNedNetworkBuilder::doAddParametersAndGatesTo(cComponent *component, cNedDe
     // recursively add and assign super types' parameters
     if (decl->numExtendsNames() > 0) {
         const char *superName = decl->getExtendsName(0);
-        cNedDeclaration *superDecl = cNedLoader::getInstance()->getDecl(superName);
+        cNedDeclaration *superDecl = nedLoader->getDecl(superName);
         doAddParametersAndGatesTo(component, superDecl);
     }
 
@@ -327,7 +327,7 @@ void cNedNetworkBuilder::assignParametersFromPatterns(cComponent *component)
 
         // find NED declaration. Note that decl may be nullptr (if parent was not defined via NED but created dynamically)
         const char *nedTypeName = parent->getNedTypeName();
-        cNedDeclaration *decl = cNedLoader::getInstance()->getDecl(nedTypeName);
+        cNedDeclaration *decl = nedLoader->getDecl(nedTypeName);
 
         // first, check patterns in the "submodules:" section
         if (decl && !prefix.empty()) {
@@ -464,7 +464,7 @@ void cNedNetworkBuilder::setupGateVectors(cModule *module, cNedDeclaration *decl
     // recursively add super types' gates
     if (decl->numExtendsNames() > 0) {
         const char *superName = decl->getExtendsName(0);
-        cNedDeclaration *superDecl = cNedLoader::getInstance()->getDecl(superName);
+        cNedDeclaration *superDecl = nedLoader->getDecl(superName);
         setupGateVectors(module, superDecl);
     }
 
@@ -512,7 +512,7 @@ void cNedNetworkBuilder::buildRecursively(cModule *modp, cNedDeclaration *decl)
     // recursively add super types' submodules and connections
     if (decl->numExtendsNames() > 0) {
         const char *superName = decl->getExtendsName(0);
-        cNedDeclaration *superDecl = cNedLoader::getInstance()->getDecl(superName);
+        cNedDeclaration *superDecl = nedLoader->getDecl(superName);
         buildRecursively(modp, superDecl);
     }
 
@@ -541,7 +541,7 @@ bool cNedNetworkBuilder::superTypeAllowsUnconnected(cNedDeclaration *decl) const
     // follow through the inheritance chain, and return true if we find an "allowunconnected" anywhere
     while (decl->numExtendsNames() > 0) {
         const char *superName = decl->getExtendsName(0);
-        decl = cNedLoader::getInstance()->getDecl(superName);
+        decl = nedLoader->getDecl(superName);
         ASSERT(decl);  // all super classes must be loaded before we start building
         ConnectionsElement *connectionsNode = decl->getConnectionsElement();
         if (connectionsNode && connectionsNode->getAllowUnconnected())
@@ -556,7 +556,7 @@ std::string cNedNetworkBuilder::resolveComponentType(const NedLookupContext& con
     // instance. Lookup is based on component names registered in the simkernel,
     // NOT on the NED files loaded. This allows the user to instantiate
     // cModuleTypes/cChannelTypes which are not declared in NED.
-    return cNedLoader::getInstance()->lookupNedType(context, nedTypeName, ComponentTypeNames());
+    return nedLoader->lookupNedType(context, nedTypeName, ComponentTypeNames());
 }
 
 cModuleType *cNedNetworkBuilder::findAndCheckModuleType(const char *modTypeName, cModule *modp, const char *submodName)
@@ -580,8 +580,8 @@ cModuleType *cNedNetworkBuilder::findAndCheckModuleTypeLike(const char *modTypeN
 
     // resolve the interface
     NedLookupContext context(currentDecl->getTree(), currentDecl->getFullName());
-    std::string interfaceQName = cNedLoader::getInstance()->lookupNedType(context, likeType);
-    cNedDeclaration *interfaceDecl = interfaceQName.empty() ? nullptr : (cNedDeclaration *)cNedLoader::getInstance()->lookup(interfaceQName.c_str());
+    std::string interfaceQName = nedLoader->lookupNedType(context, likeType);
+    cNedDeclaration *interfaceDecl = interfaceQName.empty() ? nullptr : (cNedDeclaration *)nedLoader->lookup(interfaceQName.c_str());
     if (!interfaceDecl)
         throw cRuntimeError(modp, "Submodule %s: Cannot resolve module interface '%s'",
                 submodName, likeType);
@@ -624,7 +624,7 @@ std::vector<std::string> cNedNetworkBuilder::findTypeWithInterface(const char *n
     // try to interpret it as a fully qualified name
     ComponentTypeNames qnames;
     if (qnames.contains(nedTypeName)) {
-        cNedDeclaration *decl = cNedLoader::getInstance()->getDecl(nedTypeName);
+        cNedDeclaration *decl = nedLoader->getDecl(nedTypeName);
         ASSERT(decl);
         if (decl->supportsInterface(interfaceQName)) {
             candidates.push_back(nedTypeName);
@@ -639,7 +639,7 @@ std::vector<std::string> cNedNetworkBuilder::findTypeWithInterface(const char *n
         for (int i = 0; i < qnames.size(); i++) {
             const char *qname = qnames.get(i);
             if (opp_stringendswith(qname, dot_nedtypename.c_str()) || strcmp(qname, nedTypeName) == 0) {
-                cNedDeclaration *decl = cNedLoader::getInstance()->getDecl(qname);
+                cNedDeclaration *decl = nedLoader->getDecl(qname);
                 ASSERT(decl);
                 if (decl->supportsInterface(interfaceQName))
                     candidates.push_back(qname);
@@ -716,7 +716,7 @@ bool cNedNetworkBuilder::getSubmoduleOrChannelTypeNameFromDeepAssignments(cModul
 
     // find NED declaration of parent module, if exists (there is no NED decl for dynamically created modules)
     const char *nedTypeName = modp->getNedTypeName();
-    cNedDeclaration *decl = cNedLoader::getInstance()->getDecl(nedTypeName);
+    cNedDeclaration *decl = nedLoader->getDecl(nedTypeName);
 
     bool found = false;
     outTypeName = "";
@@ -751,7 +751,7 @@ bool cNedNetworkBuilder::getSubmoduleOrChannelTypeNameFromDeepAssignments(cModul
 
         // it is stored in the parent type
         const char *nedTypeName = parent->getNedTypeName();
-        cNedDeclaration *parentDecl = cNedLoader::getInstance()->getDecl(nedTypeName);
+        cNedDeclaration *parentDecl = nedLoader->getDecl(nedTypeName);
         if (parentDecl) {
             const std::vector<PatternData>& submodPatterns = parentDecl->getSubmoduleParamPatterns(mod->getName());
             if (!submodPatterns.empty()) {
@@ -1263,8 +1263,8 @@ cChannelType *cNedNetworkBuilder::findAndCheckChannelTypeLike(const char *channe
 
     // resolve the interface
     NedLookupContext context(currentDecl->getTree(), currentDecl->getFullName());
-    std::string interfaceQName = cNedLoader::getInstance()->lookupNedType(context, likeType);
-    cNedDeclaration *interfaceDecl = interfaceQName.empty() ? nullptr : (cNedDeclaration *)cNedLoader::getInstance()->lookup(interfaceQName.c_str());
+    std::string interfaceQName =nedLoader->lookupNedType(context, likeType);
+    cNedDeclaration *interfaceDecl = interfaceQName.empty() ? nullptr : (cNedDeclaration *)nedLoader->lookup(interfaceQName.c_str());
     if (!interfaceDecl)
         throw cRuntimeError(modp, "Cannot resolve channel interface '%s'", likeType);
     if (interfaceDecl->getTree()->getTagCode() != NED_CHANNEL_INTERFACE)
@@ -1299,7 +1299,7 @@ cChannelType *cNedNetworkBuilder::findAndCheckChannelTypeLike(const char *channe
 
 cDynamicExpression *cNedNetworkBuilder::getOrCreateExpression(const ExprRef& exprRef)
 {
-    return cNedLoader::getInstance()->getCompiledExpression(exprRef);
+    return nedLoader->getCompiledExpression(exprRef);
 }
 
 long cNedNetworkBuilder::evaluateAsLong(const ExprRef& exprRef, cComponent *contextComponent)

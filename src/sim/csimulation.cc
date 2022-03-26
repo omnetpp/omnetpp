@@ -94,6 +94,10 @@ cSimulation::cSimulation(const char *name, cEnvir *env) : cNamedObject(name, fal
     simulationStage = CTX_NONE;
     contextType = CTX_NONE;
 
+#ifdef WITH_NETBUILDER
+    nedLoader = new cNedLoader();
+#endif
+
     // install default FES
     setFES(new cEventHeap("fes"));
 
@@ -115,6 +119,9 @@ cSimulation::~cSimulation()
     delete fingerprint;
     delete scheduler;
     dropAndDelete(fes);
+#ifdef WITH_NETBUILDER
+    delete nedLoader;
+#endif
 }
 
 void cSimulation::setActiveSimulation(cSimulation *sim)
@@ -239,7 +246,7 @@ void cSimulation::setSimulationTimeLimit(simtime_t simTimeLimit)
 int cSimulation::loadNedSourceFolder(const char *folder, const char *excludedPackages)
 {
 #ifdef WITH_NETBUILDER
-    return cNedLoader::getInstance()->loadNedSourceFolder(folder, excludedPackages);
+    return nedLoader->loadNedSourceFolder(folder, excludedPackages);
 #else
     throw cRuntimeError("Cannot load NED files from '%s': Simulation kernel was compiled without "
                         "support for dynamic loading of NED files (WITH_NETBUILDER=no)", folder);
@@ -249,7 +256,7 @@ int cSimulation::loadNedSourceFolder(const char *folder, const char *excludedPac
 void cSimulation::loadNedFile(const char *nedFilename, const char *expectedPackage, bool isXML)
 {
 #ifdef WITH_NETBUILDER
-    cNedLoader::getInstance()->loadNedFile(nedFilename, expectedPackage, isXML);
+    nedLoader->loadNedFile(nedFilename, expectedPackage, isXML);
 #else
     throw cRuntimeError("Cannot load '%s': Simulation kernel was compiled without "
                         "support for dynamic loading of NED files (WITH_NETBUILDER=no)", nedFilename);
@@ -259,7 +266,7 @@ void cSimulation::loadNedFile(const char *nedFilename, const char *expectedPacka
 void cSimulation::loadNedText(const char *name, const char *nedText, const char *expectedPackage, bool isXML)
 {
 #ifdef WITH_NETBUILDER
-    cNedLoader::getInstance()->loadNedText(name, nedText, expectedPackage, isXML);
+    nedLoader->loadNedText(name, nedText, expectedPackage, isXML);
 #else
     throw cRuntimeError("Cannot source NED text: Simulation kernel was compiled without "
                         "support for dynamic loading of NED files (WITH_NETBUILDER=no)");
@@ -269,14 +276,15 @@ void cSimulation::loadNedText(const char *name, const char *nedText, const char 
 void cSimulation::doneLoadingNedFiles()
 {
 #ifdef WITH_NETBUILDER
-    cNedLoader::getInstance()->doneLoadingNedFiles();
+    nedLoader->doneLoadingNedFiles();
 #endif
 }
 
 std::string cSimulation::getNedPackageForFolder(const char *folder)
 {
 #ifdef WITH_NETBUILDER
-    return cNedLoader::getInstance()->getNedPackageForFolder(folder);
+    return dynamic_cast<cNedLoader*>(nedLoader)->getNedPackageForFolder(folder); //TODO why check_and_cast doesn't work?
+    //return check_and_cast<cNedLoader*>(nedLoader)->getNedPackageForFolder(folder);
 #else
     return "-";
 #endif

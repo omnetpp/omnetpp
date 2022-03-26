@@ -39,29 +39,14 @@ using namespace omnetpp::internal;
 
 namespace omnetpp {
 
-cNedLoader *cNedLoader::inst;
-
-EXECUTE_ON_SHUTDOWN(cNedLoader::clear());
+cINedLoader::~cINedLoader()
+{
+}
 
 cNedLoader::~cNedLoader()
 {
     for (auto it : cachedExpresssions)
         delete it.second;
-}
-
-cNedLoader *cNedLoader::getInstance()
-{
-    if (!inst) {
-        inst = new cNedLoader();
-        inst->registerBuiltinDeclarations();
-    }
-    return inst;
-}
-
-void cNedLoader::clear()
-{
-    delete inst;
-    inst = nullptr;
 }
 
 cNedDeclaration *cNedLoader::createTypeInfo(const char *qname, bool isInnerType, ASTNode *node)
@@ -76,9 +61,9 @@ void cNedLoader::registerNedType(const char *qname, bool isInnerType, NedElement
     // if module or channel, register corresponding object which can be used to instantiate it
     cComponentType *type = nullptr;
     if (node->getTagCode() == NED_SIMPLE_MODULE || node->getTagCode() == NED_COMPOUND_MODULE)
-        type = new cDynamicModuleType(qname);
+        type = new cDynamicModuleType(this, qname);
     else if (node->getTagCode() == NED_CHANNEL)
-        type = new cDynamicChannelType(qname);
+        type = new cDynamicChannelType(this, qname);
     if (type)
         componentTypes.getInstance()->add(type);
 }

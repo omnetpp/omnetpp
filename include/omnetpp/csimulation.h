@@ -41,6 +41,7 @@ class cFingerprintCalculator;
 class cModuleType;
 class cEnvir;
 class cSoftOwner;
+class cINedLoader;
 
 SIM_API extern cSoftOwner globalOwningContext; // also in globals.h
 
@@ -76,6 +77,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     int lastComponentId = 0;            // index of last used pos. in componentv[]
 
     // simulation vars
+    cINedLoader *nedLoader = nullptr;   // NED loader/resolver
     cEnvir *envir = nullptr;            // the environment that belongs to this simulation object
     cModule *systemModule = nullptr;    // pointer to system (root) module
     cSimpleModule *currentActivityModule = nullptr; // the module currently executing activity() (nullptr if handleMessage() or in main)
@@ -273,7 +275,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * Note: doneLoadingNedFiles() must be called after the last
      * loadNedSourceFolder()/loadNedFile()/loadNedText() call.
      */
-    static int loadNedSourceFolder(const char *folderName, const char *excludedPackages="");
+    int loadNedSourceFolder(const char *folderName, const char *excludedPackages="");
 
     /**
      * Load a single NED file. If the expected package is given (non-nullptr),
@@ -282,7 +284,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * Note: doneLoadingNedFiles() must be called after the last
      * loadNedSourceFolder()/loadNedFile()/loadNedText() call.
      */
-    static void loadNedFile(const char *nedFilename, const char *expectedPackage=nullptr, bool isXML=false);
+    void loadNedFile(const char *nedFilename, const char *expectedPackage=nullptr, bool isXML=false);
 
     /**
      * Parses and loads the NED source code passed in the nedtext argument.
@@ -294,7 +296,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * Note: doneLoadingNedFiles() must be called after the last
      * loadNedSourceFolder()/loadNedFile()/loadNedText() call.
      */
-    static void loadNedText(const char *name, const char *nedText, const char *expectedPackage=nullptr, bool isXML=false);
+    void loadNedText(const char *name, const char *nedText, const char *expectedPackage=nullptr, bool isXML=false);
 
     /**
      * To be called after all NED folders / files have been loaded
@@ -302,13 +304,13 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * Issues errors for components that could not be fully resolved
      * because of missing base types or interfaces.
      */
-    static void doneLoadingNedFiles();
+    void doneLoadingNedFiles();
 
     /**
      * Returns the NED package that corresponds to the given folder. Returns ""
      * for the default package, and "-" if the folder is outside all NED folders.
      */
-    static std::string getNedPackageForFolder(const char *folder);
+    std::string getNedPackageForFolder(const char *folder);
     //@}
 
     /** @name Setting up and finishing a simulation run. */

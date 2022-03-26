@@ -32,8 +32,8 @@ namespace omnetpp {
 using namespace omnetpp::common;
 using namespace omnetpp::nedxml;
 
-cNedDeclaration::cNedDeclaration(NedResourceCache *resolver, const char *qname, bool isInnerType, NedElement *tree) :
-    NedTypeInfo(resolver, qname, isInnerType, tree)
+cNedDeclaration::cNedDeclaration(cNedLoader *nedLoader, const char *qname, bool isInnerType, NedElement *tree) :
+    NedTypeInfo(nedLoader, qname, isInnerType, tree), nedLoader(nedLoader)
 {
 }
 
@@ -205,7 +205,7 @@ cProperties *cNedDeclaration::doSubmoduleProperties(const char *submoduleName, c
     if (numExtendsNames() != 0)
         props = getSuperDecl()->doSubmoduleProperties(submoduleName, submoduleType);
     if (!props)
-        props = cNedLoader::getInstance()->getDecl(submoduleType)->getProperties();
+        props = nedLoader->getDecl(submoduleType)->getProperties();
 
     // update with local properties
     NedElement *subcomponentNode = getLocalSubmoduleElement(submoduleName);
@@ -237,7 +237,7 @@ cProperties *cNedDeclaration::doConnectionProperties(int connectionId, const cha
     if (numExtendsNames() != 0)
         props = getSuperDecl()->doConnectionProperties(connectionId, channelType);
     if (!props)
-        props = cNedLoader::getInstance()->getDecl(channelType)->getProperties();
+        props = nedLoader->getDecl(channelType)->getProperties();
 
     // update with local properties
     ConnectionElement *connectionNode = getLocalConnectionElement(connectionId);
