@@ -50,8 +50,6 @@ CodeFragments.executeAll(CodeFragments.STARTUP)
 #SimTime.setScaleExp(-12)
 static_flag = cStaticFlag()
 static_flag.__python_owns__ = False
-cSimulation.loadNedSourceFolder(omnetpp_root + "/samples/aloha")
-cSimulation.doneLoadingNedFiles()
 iniReader = InifileReader()
 iniReader.readFile("omnetpp.ini")
 configuration = SectionBasedConfiguration()
@@ -69,6 +67,8 @@ environment = PythonCmdenv()
 simulation = cSimulation("simulation", environment)
 environment.__python_owns__ = False
 cSimulation.setActiveSimulation(simulation)
+simulation.loadNedSourceFolder(omnetpp_root + "/samples/aloha")
+simulation.doneLoadingNedFiles()
 
 # run
 returncode = environment.run(args, configuration)
