@@ -29,8 +29,6 @@
 
 namespace omnetpp {
 
-using namespace omnetpp::nedxml;
-
 class cModule;
 class cGate;
 class cChannel;
@@ -47,6 +45,16 @@ namespace internal { class cParImpl; class cObjectParImpl; class cIntParImpl; };
  */
 class SIM_API cNedNetworkBuilder
 {
+    typedef nedxml::NedResourceCache NedResourceCache;
+    typedef nedxml::NedLookupContext NedLookupContext;
+    typedef nedxml::NedElement NedElement;
+    typedef nedxml::SubmoduleElement SubmoduleElement;
+    typedef nedxml::ParamElement ParamElement;
+    typedef nedxml::ParametersElement ParametersElement;
+    typedef nedxml::GatesElement GatesElement;
+    typedef nedxml::GateElement GateElement;
+    typedef nedxml::ConnectionElement ConnectionElement;
+
   protected:
     class ComponentTypeNames : public NedResourceCache::INedTypeNames {
       public:

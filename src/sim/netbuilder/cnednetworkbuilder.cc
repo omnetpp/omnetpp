@@ -51,6 +51,7 @@
 #include "cnednetworkbuilder.h"
 #include "cnedloader.h"
 
+using namespace omnetpp::nedxml;
 using namespace omnetpp::common;
 using namespace omnetpp::nedsupport;
 using namespace omnetpp::internal;

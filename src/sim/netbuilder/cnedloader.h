@@ -20,12 +20,16 @@
 
 #include <map>
 #include "nedxml/nedresourcecache.h"
+#include "nedxml/astnode.h"
 #include "omnetpp/simkerneldefs.h"
 #include "cneddeclaration.h"
 
 namespace omnetpp {
 
-class ExprRef {
+class ExprRef
+{
+  public:
+    typedef nedxml::NedElement NedElement;
   private:
     NedElement *node;
     int attrId;
@@ -49,8 +53,12 @@ class ExprRef {
  * This cNedLoader class extends nedxml's NedResourceCache, and
  * cNedDeclaration extends nexml's corresponding NedTypeInfo.
  */
-class SIM_API cNedLoader : public NedResourceCache
+class SIM_API cNedLoader : public nedxml::NedResourceCache
 {
+  public:
+    typedef nedxml::NedElement NedElement;
+    typedef nedxml::NedResourceCache NedResourceCache;
+
   protected:
     // the singleton instance
     static cNedLoader *inst;

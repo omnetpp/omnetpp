@@ -33,6 +33,7 @@
 #include "cdynamicmoduletype.h"
 #include "cdynamicchanneltype.h"
 
+using namespace omnetpp::nedxml;
 using namespace omnetpp::common;
 using namespace omnetpp::internal;
 

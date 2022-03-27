@@ -30,6 +30,7 @@
 namespace omnetpp {
 
 using namespace omnetpp::common;
+using namespace omnetpp::nedxml;
 
 cNedDeclaration::cNedDeclaration(NedResourceCache *resolver, const char *qname, bool isInnerType, NedElement *tree) :
     NedTypeInfo(resolver, qname, isInnerType, tree)

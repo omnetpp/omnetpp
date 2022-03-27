@@ -34,8 +34,6 @@ namespace omnetpp {
 
 namespace common { class PatternMatcher; };
 
-using namespace omnetpp::nedxml;
-
 /**
  * @brief Extends NedTypeInfo with property and cached expression storage,
  * suitable for the sim kernel (cDynamicModuleType/cDynamicChannelType).
@@ -54,12 +52,18 @@ using namespace omnetpp::nedxml;
  *
  * @ingroup Internals
  */
-class SIM_API cNedDeclaration : public NedTypeInfo
+class SIM_API cNedDeclaration : public nedxml::NedTypeInfo
 {
   public:
+    typedef nedxml::NedElement NedElement;
+    typedef nedxml::PropertyElement PropertyElement;
+    typedef nedxml::ParametersElement ParametersElement;
+    typedef nedxml::ParamElement ParamElement;
     typedef common::PatternMatcher PatternMatcher;
     typedef internal::cParImpl cParImpl;
+
     struct PatternData {PatternMatcher *matcher; ParamElement *patternNode;};
+
   protected:
     // properties
     typedef std::map<std::string, cProperties *> StringPropsMap;
