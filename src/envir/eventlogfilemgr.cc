@@ -151,7 +151,7 @@ void EventlogFileManager::clearInternalState()
     messageToEntryReferenceMap.clear();
 }
 
-void EventlogFileManager::configure()
+void EventlogFileManager::readOptions()
 {
     recordEventLog = cfg->getAsBool(CFGID_RECORD_EVENTLOG);
 
@@ -201,7 +201,7 @@ void EventlogFileManager::lifecycleEvent(SimulationLifecycleEventType eventType,
 {
     switch (eventType) {
         case LF_PRE_NETWORK_SETUP:
-            configure();
+            readOptions();
             if (recordEventLog) {
                 ASSERT(!isOpen());
                 open();

@@ -119,7 +119,7 @@ class cMySQLOutputScalarManager : public cIOutputScalarManager
     /**
      * Sets the configuration database to use for configuring this object.
      */
-    virtual void setConfiguration(cConfiguration *cfg);
+    virtual void configure(cConfiguration *cfg);
 
     /**
      * Opens collecting. Called at the beginning of a simulation run.

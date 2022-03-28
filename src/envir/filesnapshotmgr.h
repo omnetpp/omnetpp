@@ -55,7 +55,7 @@ class ENVIR_API FileSnapshotManager : public cISnapshotManager
     /**
      * Sets the configuration database to use for configuring this object.
      */
-    virtual void setConfiguration(cConfiguration *cfg) override {this->cfg = cfg;}
+    virtual void configure(cConfiguration *cfg) override {this->cfg = cfg;}
 
     /**
      * Called at the beginning of a simulation run.

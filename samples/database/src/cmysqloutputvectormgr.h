@@ -158,7 +158,7 @@ class cMySQLOutputVectorManager : public cIOutputVectorManager
     /**
      * Sets the configuration database to use for configuring this object.
      */
-    virtual void setConfiguration(cConfiguration *cfg) override {this->cfg = cfg;}
+    virtual void configure(cConfiguration *cfg) override {this->cfg = cfg;}
 
     /**
      * Deletes output vector file if exists (left over from previous runs).

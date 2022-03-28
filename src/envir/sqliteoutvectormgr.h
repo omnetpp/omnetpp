@@ -82,7 +82,7 @@ class SqliteOutputVectorManager : public cIOutputVectorManager, private ResultFi
     /**
      * Sets the configuration database to use for configuring this object.
      */
-    virtual void setConfiguration(cConfiguration *cfg) override {this->cfg = cfg; ResultFileUtils::setConfiguration(cfg);}
+    virtual void configure(cConfiguration *cfg) override {this->cfg = cfg; ResultFileUtils::setConfiguration(cfg);}
 
     /**
      * Deletes output vector file if exists (left over from previous runs).

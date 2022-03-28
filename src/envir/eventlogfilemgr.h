@@ -183,7 +183,7 @@ class ENVIR_API EventlogFileManager : public cIEventlogManager
     /**
      * Sets the configuration database to use for configuring this object.
      */
-    virtual void setConfiguration(cConfiguration *cfg) override {this->cfg = cfg;}
+    virtual void configure(cConfiguration *cfg) override {this->cfg = cfg;}
 
     /**
      * Returns the eventlog filename.
@@ -194,7 +194,7 @@ class ENVIR_API EventlogFileManager : public cIEventlogManager
      * Initializes the eventlog manager according to the configuration.
      * This function must be called before any other.
      */
-    virtual void configure();
+    virtual void readOptions();
 
     /**
      * Returns true if the file is open.
