@@ -73,6 +73,11 @@ class SIM_API cDynamicChannelType : public cChannelType
     virtual std::string str() const override;
 
     /**
+     * Returns the NED loader instance that created this object.
+     */
+    virtual cNedLoader *getNedLoader() const {return nedLoader;}
+
+    /**
      * Returns the NED source code of the component.
      */
     virtual std::string getNedSource() const override;

@@ -99,6 +99,11 @@ class SIM_API cRegistrationList : public cNamedObject, noncopyable
     virtual cOwnedObject *lookup(const char *qualifiedName, const char *contextNamespace, bool fallbackToOmnetpp=false);
 
     /**
+     * Remove the given object.
+     */
+    virtual cOwnedObject *remove(cOwnedObject *obj);
+
+    /**
      * Sorts the elements by qualified name (getFullName()). This affects
      * the order get() will return the elements.
      */

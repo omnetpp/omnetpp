@@ -104,6 +104,18 @@ cOwnedObject *cRegistrationList::lookup(const char *qname, const char *contextNa
     return result;
 }
 
+cOwnedObject *cRegistrationList::remove(cOwnedObject *obj)
+{
+    auto it = std::find(vec.begin(), vec.end(), obj);
+    if (it == vec.end())
+        throw cRuntimeError(this, "remove(): Object %s not found", obj->getClassAndFullName().c_str());
+    vec.erase(it);
+    nameMap.erase(obj->getName());
+    fullnameMap.erase(obj->getFullName());
+    drop(obj);
+    return obj;
+}
+
 inline bool less(cObject *a, cObject *b)
 {
     return strcmp(a->getFullName(), b->getFullName()) < 0;

@@ -47,6 +47,16 @@ cNedLoader::~cNedLoader()
 {
     for (auto it : cachedExpresssions)
         delete it.second;
+
+    std::vector<cOwnedObject*> trash;
+    for (cOwnedObject *obj : *componentTypes.getInstance())
+        if (dynamic_cast<cDynamicModuleType*>(obj) && ((cDynamicModuleType*)obj)->getNedLoader() == this)
+            trash.push_back(obj);
+        else if (dynamic_cast<cDynamicChannelType*>(obj) && ((cDynamicChannelType*)obj)->getNedLoader() == this)
+            trash.push_back(obj);
+
+    for (cOwnedObject *obj : trash)
+        delete componentTypes.getInstance()->remove(obj);
 }
 
 cNedDeclaration *cNedLoader::createTypeInfo(const char *qname, bool isInnerType, ASTNode *node)
