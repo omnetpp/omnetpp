@@ -42,6 +42,7 @@ class cModuleType;
 class cEnvir;
 class cSoftOwner;
 class cINedLoader;
+class cIRngManager;
 
 SIM_API extern cSoftOwner globalOwningContext; // also in globals.h
 
@@ -78,6 +79,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
 
     // simulation vars
     cINedLoader *nedLoader = nullptr;   // NED loader/resolver
+    cIRngManager *rngManager = nullptr; // component-rng mapping
     cEnvir *envir = nullptr;            // the environment that belongs to this simulation object
     cModule *systemModule = nullptr;    // pointer to system (root) module
     cSimpleModule *currentActivityModule = nullptr; // the module currently executing activity() (nullptr if handleMessage() or in main)
@@ -339,6 +341,12 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * Returns the future event set data structure used by the simulation.
      */
     cFutureEventSet *getFES() const  {return fes;}
+
+    /**
+     * Returns the RNG manager that manages the association between the
+     * modules/channels of the simulation, and RNGs.
+     */
+    cIRngManager *getRngManager() const {return rngManager;}
 
     /**
      * Sets the simulation stop time be scheduling an appropriate

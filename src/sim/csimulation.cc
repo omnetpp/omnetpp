@@ -44,6 +44,7 @@
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/ccoroutine.h"
 #include "omnetpp/clifecyclelistener.h"
+#include "omnetpp/crngmanager.h"
 #include "omnetpp/platdep/platmisc.h"  // for DEBUG_TRAP
 
 #ifdef WITH_PARSIM
@@ -98,6 +99,8 @@ cSimulation::cSimulation(const char *name, cEnvir *env) : cNamedObject(name, fal
     nedLoader = new cNedLoader();
 #endif
 
+    rngManager = new cRngManager();
+
     // install default FES
     setFES(new cEventHeap("fes"));
 
@@ -122,6 +125,7 @@ cSimulation::~cSimulation()
 #ifdef WITH_NETBUILDER
     delete nedLoader;
 #endif
+    delete rngManager;
 }
 
 void cSimulation::setActiveSimulation(cSimulation *sim)
@@ -804,10 +808,6 @@ class StaticEnv : public cEnvir
     virtual void bubble(cComponent *component, const char *text) override  {}
     virtual std::string gets(const char *prompt, const char *defaultreply = nullptr) override  { unsupported(); return ""; }
     virtual cEnvir& flush() { ::fflush(stdout); return *this; }
-
-    // RNGs
-    virtual int getNumRNGs() const override { return 0; }
-    virtual cRNG *getRNG(int k) override  { unsupported(); return nullptr; }
 
     // output vectors
     virtual void *registerOutputVector(const char *modulename, const char *vectorname) override  { return nullptr; }

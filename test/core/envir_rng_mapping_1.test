@@ -1,5 +1,5 @@
 %description:
-check that rng mapping in omnetpp.ini works properly
+Verify that RNG mapping using the default RNG manager (cRngManager) works properly.
 
 %file: test.ned
 
@@ -39,11 +39,11 @@ void Simple::activity()
 
 int Simple::getRngId(cRNG *rng)
 {
-    for (int i=0; i<getEnvir()->getNumRNGs(); i++)
-        if (getEnvir()->getRNG(i)==rng)
+    auto rngManager = check_and_cast<cRngManager*>(getSimulation()->getRngManager());
+    for (int i = 0; i < rngManager->getNumRNGs(); i++)
+        if (rngManager->getRNG(i) == rng)
             return i;
-    error("getRngId(): RNG not found");
-    return -1; // avoid warning
+    throw cRuntimeError("getRngId(): RNG not found");
 }
 
 }; //namespace

@@ -150,6 +150,20 @@ inline cObject *createOneIfClassIsKnown(const char *classname) {
     return cObjectFactory::createOneIfClassIsKnown(classname);
 }
 
+/**
+ * TODO
+ */
+template<class T>
+T *createByClassName(const char *className, const char *what) {
+    cObject *obj = createOneIfClassIsKnown(className);
+    if (obj == nullptr)
+        throw cRuntimeError("Cannot create %s: class \"%s\" not found", what, className);
+    T *result = dynamic_cast<T *>(obj);
+    if (result == nullptr)
+        throw cRuntimeError("Cannot create %s: class \"%s\" is not subclassed from %s", what, className, opp_typename(typeid(T)));
+    return result;
+}
+
 }  // namespace omnetpp
 
 

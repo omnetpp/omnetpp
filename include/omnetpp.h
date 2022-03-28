@@ -96,6 +96,7 @@
 #include "omnetpp/cresultlistener.h"
 #include "omnetpp/cresultrecorder.h"
 #include "omnetpp/crng.h"
+#include "omnetpp/crngmanager.h"
 #include "omnetpp/cscheduler.h"
 #include "omnetpp/csimplemodule.h"
 #include "omnetpp/csimulation.h"

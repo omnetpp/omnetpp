@@ -664,21 +664,6 @@ class SIM_API cEnvir
     virtual double getRemainingAnimationHoldTime() const = 0;
     //@}
 
-    /** @name Access to RNGs. */
-    //@{
-
-    /**
-     * Returns the number of RNGs available for the simulation
-     * ("num-rngs=" omnetpp.ini setting).
-     */
-    virtual int getNumRNGs() const = 0;
-
-    /**
-     * Returns pointer to "physical" RNG k (0 <= k < getNumRNGs()).
-     */
-    virtual cRNG *getRNG(int k) = 0;
-    //@}
-
     /** @name Methods for recording data from output vectors.
      *
      * These are functions cOutVector internally relies on.

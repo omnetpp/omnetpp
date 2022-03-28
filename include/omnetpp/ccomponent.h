@@ -36,6 +36,7 @@ class cDisplayString;
 class cRNG;
 class cStatistic;
 class cResultRecorder;
+class cRngManager;
 
 /**
  * @brief Common base for module and channel classes.
@@ -57,6 +58,7 @@ class SIM_API cComponent : public cSoftOwner //implies noncopyable
     friend class cGate;   // because of repairSignalFlags()
     friend class cSimulation; // sets componentId
     friend class cResultListener; // invalidateCachedResultRecorderLists()
+    friend class cRngManager; // rngMapSize, rngMap
   public:
     enum ComponentKind { KIND_MODULE, KIND_CHANNEL, KIND_OTHER };
 
@@ -161,7 +163,7 @@ class SIM_API cComponent : public cSoftOwner //implies noncopyable
     LogLevel getLogLevel() const { return (LogLevel)((flags >> FL_LOGLEVEL_SHIFT) & 0x7); }
     virtual void setLogLevel(LogLevel logLevel);
 
-    // internal: invoked from within cEnvir::preconfigure(component)
+    // internal: invoked from the RNG manager
     virtual void setRNGMap(short size, int *map) {rngMapSize=size; rngMap=map;}
 
     // internal: sets associated cComponentType for the component;
@@ -595,8 +597,13 @@ class SIM_API cComponent : public cSoftOwner //implies noncopyable
     //@{
 
     /**
-     * Returns the global RNG mapped to local RNG number k. For large indices
-     * (k >= map size) the global RNG k is returned, provided it exists.
+     * Returns the number of RNGs available for this component.
+     */
+    virtual int getNumRNGs() const;
+
+    /**
+     * Returns the RNG mapped to local RNG number k, where k must be between
+     * 0 and getNumRNGs()-1.
      */
     virtual cRNG *getRNG(int k) const;
 

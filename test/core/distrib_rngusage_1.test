@@ -12,31 +12,27 @@ to physical RNGs).
 %global:
 
 // store numDrawn in array
-void storeNumDrawn(unsigned long *numDrawn)
+void storeNumDrawn(cComponent *module, unsigned long *numDrawn)
 {
-    for (int rng=0; rng<getEnvir()->getNumRNGs(); rng++)
-    {
-        numDrawn[rng] = getEnvir()->getRNG(rng)->getNumbersDrawn();
-    }
+    for (int rng = 0; rng < module->getNumRNGs(); rng++)
+        numDrawn[rng] = module->getRNG(rng)->getNumbersDrawn();
 }
 
 // check that only the given RNG was used, others have remained intact
-void checkNumDrawn(unsigned long *oldnumDrawn, int usedrng, const char *label)
+void checkNumDrawn(cComponent *module, unsigned long *oldNumDrawn, int usedRng, const char *label)
 {
-    for (int rng=0; rng<getEnvir()->getNumRNGs(); rng++)
-    {
-        if (rng!=usedrng && oldnumDrawn[rng]!=getEnvir()->getRNG(rng)->getNumbersDrawn())
-            EV << "ERROR: " << label << " with rng=" << usedrng << " also changed rng=" << rng << "\n";
-    }
-    if (oldnumDrawn[usedrng]==getEnvir()->getRNG(usedrng)->getNumbersDrawn())
-        EV << "ERROR: " << label << " with rng=" << usedrng << " did NOT change rng=" << usedrng << "\n";
+    for (int rng = 0; rng < module->getNumRNGs(); rng++)
+        if (rng != usedRng && oldNumDrawn[rng] != module->getRNG(rng)->getNumbersDrawn())
+            EV << "ERROR: " << label << " with rng=" << usedRng << " also changed rng=" << rng << "\n";
+    if (oldNumDrawn[usedRng] == module->getRNG(usedRng)->getNumbersDrawn())
+        EV << "ERROR: " << label << " with rng=" << usedRng << " did NOT change rng=" << usedRng << "\n";
 }
 
 %activity:
 
-#define CHECKNUMDRAWN(f) EV << "checking " << #f << "\n"; storeNumDrawn(numDrawn); f; checkNumDrawn(numDrawn,rng,#f);
+#define CHECKNUMDRAWN(f) EV << "checking " << #f << "\n"; storeNumDrawn(this,numDrawn); f; checkNumDrawn(this,numDrawn,rng,#f);
 
-unsigned long *numDrawn = new unsigned long[getEnvir()->getNumRNGs()];
+unsigned long *numDrawn = new unsigned long[getNumRNGs()];
 
 for (int rng=0; rng<=2; rng++)
 {

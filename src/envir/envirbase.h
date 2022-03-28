@@ -112,10 +112,6 @@ class ENVIR_API EnvirBase : public cEnvir
     cParsimPartition *parsimPartition;
 #endif
 
-    // Random number generators. Module RNG's map to these RNG objects.
-    int numRNGs;
-    cRNG **rngs;
-
     // log related
     LogFormatter logFormatter;
     bool logFormatUsesEventName;
@@ -205,10 +201,6 @@ class ENVIR_API EnvirBase : public cEnvir
     // leave to subclasses: virtual std::string gets(const char *prompt, const char *defaultreply=nullptr);
     // leave to subclasses: virtual cEnvir& flush();
 
-    // RNGs
-    virtual int getNumRNGs() const override;
-    virtual cRNG *getRNG(int k) override;
-
     // output vectors
     virtual void *registerOutputVector(const char *modulename, const char *vectorname) override;
     virtual void deregisterOutputVector(void *vechandle) override;
@@ -250,21 +242,7 @@ class ENVIR_API EnvirBase : public cEnvir
 
     // Utility function for getXMLDocument() and getParsedXMLString()
     cXMLElement *resolveXMLPath(cXMLElement *documentnode, const char *path);
-
-    // Set up RNG mapping for the component
-    virtual void setupRNGMapping(cComponent *component);
 };
-
-template<class T>
-T *createByClassName(const char *className, const char *what) {
-    cObject *obj = createOneIfClassIsKnown(className);
-    if (obj == nullptr)
-        throw cRuntimeError("Cannot create %s: class \"%s\" not found", what, className);
-    T *result = dynamic_cast<T *>(obj);
-    if (result == nullptr)
-        throw cRuntimeError("Cannot create %s: class \"%s\" is not subclassed from %s", what, className, opp_typename(typeid(T)));
-    return result;
-}
 
 }  // namespace envir
 }  // namespace omnetpp

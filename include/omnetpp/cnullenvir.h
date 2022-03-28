@@ -124,10 +124,6 @@ class SIM_API cNullEnvir : public cEnvir
     virtual std::string gets(const char *prompt, const char *defaultreply=nullptr) override  {unsupported(); return "";}
     virtual cEnvir& flush()  {::fflush(stdout); return *this;}
 
-    // RNGs
-    virtual int getNumRNGs() const override {return 1;}
-    virtual cRNG *getRNG(int k) override  {return rng;}
-
     // output vectors
     virtual void *registerOutputVector(const char *modulename, const char *vectorname) override  {return (void *)1;}
     virtual void deregisterOutputVector(void *vechandle) override  {}

@@ -16,11 +16,11 @@
 
 #include <algorithm>
 #include <cstring>
+#include "ctemporaryowner.h"
 #include "common/patternmatcher.h"
 #include "common/fileutil.h"
 #include "omnetpp/ccomponenttype.h"
-
-#include "ctemporaryowner.h"
+#include "omnetpp/crngmanager.h"
 #include "omnetpp/ccontextswitcher.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/csimplemodule.h"
@@ -329,6 +329,7 @@ cModule *cModuleType::create(const char *moduleName, cModule *parentModule, int 
 
     // set up RNG mapping, etc.
     getEnvir()->preconfigure(module);
+    getSimulation()->getRngManager()->configureRNGs(module);
 
     // should be called before any gateCreated calls on this module
     EVCB.moduleCreated(module);
@@ -448,6 +449,7 @@ cChannel *cChannelType::create(const char *name)
 
     // set up RNG mapping, etc.
     getEnvir()->preconfigure(channel);
+    getSimulation()->getRngManager()->configureRNGs(channel);
 
     // add parameters to the new module
     addParametersTo(channel);

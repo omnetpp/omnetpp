@@ -38,7 +38,7 @@
 #include "omnetpp/cpar.h"
 #include "omnetpp/cproperties.h"
 #include "omnetpp/cproperty.h"
-#include "omnetpp/crng.h"
+#include "omnetpp/crngmanager.h"
 #include "omnetpp/ccanvas.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cmessage.h"
@@ -128,9 +128,6 @@ Register_PerRunConfigOptionU(CFGID_REAL_TIME_LIMIT, "real-time-limit", "s", null
 Register_PerRunConfigOptionU(CFGID_WARMUP_PERIOD, "warmup-period", "s", nullptr, "Length of the initial warm-up period. When set, results belonging to the first x seconds of the simulation will not be recorded into output vectors, and will not be counted into output scalars (see option `**.result-recording-modes`). This option is useful for steady-state simulations. The default is 0s (no warmup period). Note that models that compute and record scalar results manually (via `recordScalar()`) will not automatically obey this setting.");
 Register_PerRunConfigOption(CFGID_FINGERPRINT, "fingerprint", CFG_STRING, nullptr, "The expected fingerprints of the simulation. If you need multiple fingerprints, separate them with commas. When provided, the fingerprints will be calculated from the specified properties of simulation events, messages, and statistics during execution, and checked against the provided values. Fingerprints are suitable for crude regression tests. As fingerprints occasionally differ across platforms, more than one value can be specified for a single fingerprint, separated by spaces, and a match with any of them will be accepted. To obtain a fingerprint, enter a dummy value (such as `0000`), and run the simulation.");
 Register_PerRunConfigOption(CFGID_FINGERPRINTER_CLASS, "fingerprintcalculator-class", CFG_STRING, "omnetpp::cSingleFingerprintCalculator", "Part of the Envir plugin mechanism: selects the fingerprint calculator class to be used to calculate the simulation fingerprint. The class has to implement the `cFingerprintCalculator` interface.");
-Register_PerRunConfigOption(CFGID_NUM_RNGS, "num-rngs", CFG_INT, "1", "The number of random number generators.");
-Register_PerRunConfigOption(CFGID_RNG_CLASS, "rng-class", CFG_STRING, "omnetpp::cMersenneTwister", "The random number generator class to be used. It can be `cMersenneTwister`, `cLCG32`, `cAkaroaRNG`, or you can use your own RNG class (it must be subclassed from `cRNG`).");
-Register_PerRunConfigOption(CFGID_SEED_SET, "seed-set", CFG_INT, "${runnumber}", "Selects the kth set of automatic random number seeds for the simulation. Meaningful values include `${repetition}` which is the repeat loop counter (see `repeat` option), and `${runnumber}`.");
 Register_PerRunConfigOption(CFGID_RESULT_DIR, "result-dir", CFG_STRING, "results", "Base value for the `${resultdir}` variable, which is used as the default directory for result files (output vector file, output scalar file, eventlog file, etc.). See also the `resultdir-subdivision` config option.");
 Register_PerRunConfigOption(CFGID_RECORD_EVENTLOG, "record-eventlog", CFG_BOOL, "false", "Enables recording an eventlog file, which can be later visualized on a sequence chart. See `eventlog-file` option too.");
 Register_PerRunConfigOption(CFGID_DEBUG_STATISTICS_RECORDING, "debug-statistics-recording", CFG_BOOL, "false", "Turns on the printing of debugging information related to statistics recording (`@statistic` properties)");
@@ -171,9 +168,6 @@ EnvirBase::EnvirBase() : out(std::cout.rdbuf())
     outScalarManager = nullptr;
     snapshotManager = nullptr;
 
-    numRNGs = 0;
-    rngs = nullptr;
-
 #ifdef WITH_PARSIM
     parsimComm = nullptr;
     parsimPartition = nullptr;
@@ -197,10 +191,6 @@ EnvirBase::~EnvirBase()
     delete outScalarManager;
     delete snapshotManager;
 
-    for (int i = 0; i < numRNGs; i++)
-        delete rngs[i];
-    delete[] rngs;
-
 #ifdef WITH_PARSIM
     delete parsimComm;
     delete parsimPartition;
@@ -209,7 +199,6 @@ EnvirBase::~EnvirBase()
 
 void EnvirBase::preconfigure(cComponent *component)
 {
-    setupRNGMapping(component);
 }
 
 void EnvirBase::configure(cComponent *component)
@@ -693,24 +682,7 @@ void EnvirBase::readPerRunOptions()
 
     cComponent::setCheckSignals(opt->checkSignals);
 
-    // run RNG self-test on RNG class selected for this run
-    std::string rngClass = cfg->getAsString(CFGID_RNG_CLASS);
-    cRNG *testRng = createByClassName<cRNG>(rngClass.c_str(), "random number generator");
-    testRng->selfTest();
-    delete testRng;
-
-    // set up RNGs
-    for (int i = 0; i < numRNGs; i++)
-        delete rngs[i];
-    delete[] rngs;
-
-    numRNGs = cfg->getAsInt(CFGID_NUM_RNGS);
-    int seedset = cfg->getAsInt(CFGID_SEED_SET);
-    rngs = new cRNG *[numRNGs];
-    for (int i = 0; i < numRNGs; i++) {
-        rngs[i] = createByClassName<cRNG>(rngClass.c_str(), "random number generator");
-        rngs[i]->configure(seedset, i, numRNGs, getParsimProcId(), getParsimNumPartitions(), getConfig());
-    }
+    getSimulation()->getRngManager()->configure(cfg);
 
     // init nextUniqueNumber -- startRun() is too late because simple module ctors have run by then
     nextUniqueNumber = 0;
@@ -781,81 +753,6 @@ void EnvirBase::setLogFormat(const char *logFormat)
     logFormatter.setFormat(logFormat);
     logFormatUsesEventName = logFormatter.usesEventName();
     logFormatUsesEventClassName = logFormatter.usesEventClassName();
-}
-
-//-------------------------------------------------------------
-
-int EnvirBase::getNumRNGs() const
-{
-    return numRNGs;
-}
-
-cRNG *EnvirBase::getRNG(int k)
-{
-    if (k < 0 || k >= numRNGs)
-        throw cRuntimeError("RNG index %d is out of range (num-rngs=%d, check the configuration)", k, numRNGs);
-    return rngs[k];
-}
-
-void EnvirBase::setupRNGMapping(cComponent *component)
-{
-    cConfigurationEx *cfg = getConfigEx();
-    std::string componentFullPath = component->getFullPath();
-    std::vector<const char *> suffixes = cfg->getMatchingPerObjectConfigKeySuffixes(componentFullPath.c_str(), "rng-*");  // CFGID_RNG_K
-    if (suffixes.empty())
-        return;
-
-    // extract into tmpmap[]
-    int mapsize = 0;
-    int tmpmap[100];
-    for (auto suffix : suffixes) {
-        // contains "rng-1", "rng-4" or whichever has been found in the config for this module/channel
-        const cConfiguration::KeyValue& entry = cfg->getPerObjectConfigEntry(componentFullPath.c_str(), suffix);
-        const char *value = entry.getValue();
-        ASSERT(value != nullptr);
-        try {
-            char *endptr;
-            int modRng = strtol(suffix+strlen("rng-"), &endptr, 10);
-            if (*endptr != '\0')
-                throw opp_runtime_error("Numeric RNG index expected after 'rng-'");
-
-            int physRng = strtol(value, &endptr, 10);
-            if (*endptr != '\0') {
-                // not a numeric constant, try parsing it as an expression
-                cDynamicExpression expr;
-                expr.parse(value);
-                cExpression::Context context(component, entry.getBaseDirectory());
-                cValue tmp = expr.evaluate(&context);
-                if (!tmp.isNumeric())
-                    throw opp_runtime_error("Numeric constant or expression expected");
-                physRng = tmp;
-            }
-
-            if (physRng >= getNumRNGs())
-                throw cRuntimeError("RNG index %d out of range (num-rngs=%d)", physRng, getNumRNGs());
-            if (modRng >= mapsize) {
-                if (modRng >= 100)
-                    throw cRuntimeError("Local RNG index %d out of supported range 0..99", modRng);
-                while (mapsize <= modRng) {
-                    tmpmap[mapsize] = mapsize;
-                    mapsize++;
-                }
-            }
-            tmpmap[modRng] = physRng;
-        }
-        catch (std::exception& e) {
-            throw cRuntimeError("%s in configuration entry *.%s = %s for module/channel %s",
-                    e.what(), suffix, value, component->getFullPath().c_str());
-
-        }
-    }
-
-    // install map into the module
-    if (mapsize > 0) {
-        int *map = new int[mapsize];
-        memcpy(map, tmpmap, mapsize*sizeof(int));
-        component->setRNGMap(mapsize, map);
-    }
 }
 
 //-------------------------------------------------------------
