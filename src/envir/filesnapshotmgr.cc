@@ -41,7 +41,7 @@ void FileSnapshotManager::startRun()
 {
     // clean up file from previous runs
     fname = cfg->getAsFilename(CFGID_SNAPSHOT_FILE);
-    fname = ResultFileUtils::augmentFileName(fname);
+    fname = ResultFileUtils(cfg).augmentFileName(fname);
     removeFile(fname.c_str(), "old snapshot file");
 }
 

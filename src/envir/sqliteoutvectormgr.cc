@@ -60,7 +60,7 @@ void SqliteOutputVectorManager::startRun()
 
     // delete file left over from previous runs
     fname = cfg->getAsFilename(CFGID_OUTPUT_VECTOR_FILE).c_str();
-    fname = ResultFileUtils::augmentFileName(fname);
+    fname = augmentFileName(fname);
     bool shouldAppend = cfg->getAsBool(CFGID_OUTPUT_VECTOR_FILE_APPEND);
     if (!shouldAppend)
         removeFile(fname.c_str(), "old SQLite output vector file");
@@ -114,7 +114,7 @@ void SqliteOutputVectorManager::openFileForRun()
         writer.createVectorIndex();
 
     // write run data
-    writer.beginRecordingForRun(ResultFileUtils::getRunId().c_str(), SimTime::getScaleExp(), ResultFileUtils::getRunAttributes(), ResultFileUtils::getIterationVariables(), ResultFileUtils::getSelectedConfigEntries());
+    writer.beginRecordingForRun(getRunId().c_str(), SimTime::getScaleExp(), getRunAttributes(), getIterationVariables(), getSelectedConfigEntries());
 }
 
 void SqliteOutputVectorManager::closeFile()
@@ -183,7 +183,7 @@ bool SqliteOutputVectorManager::record(void *vectorhandle, simtime_t t, double v
     if (vp->handleInWriter == nullptr) {
         std::string vectorFullPath = vp->moduleName.str() + "." + vp->vectorName.c_str();
         size_t bufferSize = (size_t) cfg->getAsDouble(vectorFullPath.c_str(), CFGID_VECTOR_BUFFER);
-        vp->handleInWriter = writer.registerVector(vp->moduleName.c_str(), vp->vectorName.c_str(), ResultFileUtils::convertMap(&vp->attributes), bufferSize);
+        vp->handleInWriter = writer.registerVector(vp->moduleName.c_str(), vp->vectorName.c_str(), convertMap(&vp->attributes), bufferSize);
     }
 
     eventnumber_t eventNumber = getSimulation()->getEventNumber();

@@ -188,7 +188,7 @@ void EventlogFileManager::configure()
 
     // setup filename
     filename = cfg->getAsFilename(CFGID_EVENTLOG_FILE);
-    filename = ResultFileUtils::augmentFileName(filename);
+    filename = ResultFileUtils(cfg).augmentFileName(filename);
 
     // file limits
     maxSize = cfg->getAsDouble(CFGID_EVENTLOG_MAX_SIZE);

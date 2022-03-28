@@ -24,6 +24,7 @@
 
 namespace omnetpp {
 
+class cConfiguration;
 class cProperties;
 class opp_string_map;
 
@@ -32,15 +33,20 @@ namespace envir {
 typedef std::map<std::string, std::string> StringMap;
 typedef std::vector<std::pair<std::string, std::string>> OrderedKeyValueList;
 
-class ResultFileUtils {
+class ResultFileUtils
+{
+  private:
+    cConfiguration *cfg;
   public:
-    static std::string getRunId();
-    static StringMap getRunAttributes();
-    static StringMap getIterationVariables();
-    static OrderedKeyValueList getSelectedConfigEntries();
-    static StringMap convertProperties(const cProperties *properties);
-    static StringMap convertMap(const opp_string_map *m);
-    static std::string augmentFileName(const std::string& fname);
+    ResultFileUtils(cConfiguration *cfg=nullptr) : cfg(cfg) {}
+    void setConfiguration(cConfiguration *cfg) {this->cfg = cfg;}
+    std::string getRunId();
+    StringMap getRunAttributes();
+    StringMap getIterationVariables();
+    OrderedKeyValueList getSelectedConfigEntries();
+    StringMap convertProperties(const cProperties *properties);
+    StringMap convertMap(const opp_string_map *m);
+    std::string augmentFileName(const std::string& fname);
 };
 
 }  // namespace envir

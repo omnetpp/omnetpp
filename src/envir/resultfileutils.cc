@@ -41,13 +41,11 @@ Register_PerRunConfigOption(CFGID_CONFIG_RECORDING, "config-recording", CFG_CUST
 
 std::string ResultFileUtils::getRunId()
 {
-    cConfigurationEx *cfg = getEnvir()->getConfigEx();
     return cfg->getVariable(CFGVAR_RUNID);
 }
 
 StringMap ResultFileUtils::getRunAttributes()
 {
-    cConfigurationEx *cfg = getEnvir()->getConfigEx();
     std::vector<const char *> keys = cfg->getPredefinedVariableNames();
     StringMap attrs;
     for (const char *key : keys)
@@ -58,7 +56,6 @@ StringMap ResultFileUtils::getRunAttributes()
 
 StringMap ResultFileUtils::getIterationVariables()
 {
-    cConfigurationEx *cfg = getEnvir()->getConfigEx();
     StringMap itervars;
     std::vector<const char *> keys2 = cfg->getIterationVariableNames();
     for (const char *key : keys2)
@@ -89,7 +86,6 @@ static std::string removeOptionalQuotes(const char *key, const char *value)
 
 OrderedKeyValueList ResultFileUtils::getSelectedConfigEntries()
 {
-    cConfigurationEx *cfg = getEnvir()->getConfigEx();
     const char *option = cfg->getAsCustom(CFGID_CONFIG_RECORDING);
     int flags = 0;
     for (std::string e : opp_splitandtrim(option)) {
@@ -145,8 +141,8 @@ StringMap ResultFileUtils::convertMap(const opp_string_map *m)
 
 std::string ResultFileUtils::augmentFileName(const std::string& fname)
 {
-    bool parsim = getEnvir()->getConfig()->getAsBool(CFGID_PARALLEL_SIMULATION);
-    bool fnameAppendHost = getEnvir()->getConfig()->getAsBool(CFGID_FNAME_APPEND_HOST, parsim);
+    bool parsim = cfg->getAsBool(CFGID_PARALLEL_SIMULATION);
+    bool fnameAppendHost = cfg->getAsBool(CFGID_FNAME_APPEND_HOST, parsim);
 
     if (!fnameAppendHost)
         return fname;

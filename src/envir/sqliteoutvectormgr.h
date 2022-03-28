@@ -34,7 +34,7 @@ using omnetpp::common::SqliteVectorFileWriter;
  *
  * @ingroup Envir
  */
-class SqliteOutputVectorManager : public cIOutputVectorManager
+class SqliteOutputVectorManager : public cIOutputVectorManager, private ResultFileUtils
 {
   protected:
     struct VectorData {
@@ -82,7 +82,7 @@ class SqliteOutputVectorManager : public cIOutputVectorManager
     /**
      * Sets the configuration database to use for configuring this object.
      */
-    virtual void setConfiguration(cConfiguration *cfg) override {this->cfg = cfg;}
+    virtual void setConfiguration(cConfiguration *cfg) override {this->cfg = cfg; ResultFileUtils::setConfiguration(cfg);}
 
     /**
      * Deletes output vector file if exists (left over from previous runs).

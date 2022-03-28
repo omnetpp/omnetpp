@@ -36,7 +36,7 @@ using omnetpp::common::OmnetppVectorFileWriter;
  *
  * @ingroup Envir
  */
-class OmnetppOutputVectorManager : public cIOutputVectorManager
+class OmnetppOutputVectorManager : public cIOutputVectorManager, private ResultFileUtils
 {
   protected:
     struct VectorData {
@@ -81,7 +81,7 @@ class OmnetppOutputVectorManager : public cIOutputVectorManager
     /**
      * Sets the configuration database to use for configuring this object.
      */
-    virtual void setConfiguration(cConfiguration *cfg) override {this->cfg = cfg;}
+    virtual void setConfiguration(cConfiguration *cfg) override {this->cfg = cfg; ResultFileUtils::setConfiguration(cfg);}
 
     /**
      * Deletes output vector file if exists (left over from previous runs).

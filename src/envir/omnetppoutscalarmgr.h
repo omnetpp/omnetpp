@@ -33,7 +33,7 @@ using omnetpp::common::OmnetppScalarFileWriter;
  *
  * @ingroup Envir
  */
-class ENVIR_API OmnetppOutputScalarManager : public cIOutputScalarManager
+class ENVIR_API OmnetppOutputScalarManager : public cIOutputScalarManager, private ResultFileUtils
 {
   protected:
     cConfiguration *cfg = nullptr;
@@ -66,7 +66,7 @@ class ENVIR_API OmnetppOutputScalarManager : public cIOutputScalarManager
     /**
      * Sets the configuration database to use for configuring this object.
      */
-    virtual void setConfiguration(cConfiguration *cfg) override {this->cfg = cfg;}
+    virtual void setConfiguration(cConfiguration *cfg) override {this->cfg = cfg; ResultFileUtils::setConfiguration(cfg);}
 
     /**
      * Opens collecting. Called at the beginning of a simulation run.

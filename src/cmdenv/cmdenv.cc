@@ -207,7 +207,7 @@ void Cmdenv::doRun()
                     out << opt->configName << " run " << runNumber << ": " << iterVars << ", $repetition=" << repetition << endl; // print before redirection; useful as progress indication from opp_runall
 
                 if (opt->redirectOutput) {
-                    opt->outputFile = ResultFileUtils::augmentFileName(opt->outputFile);
+                    opt->outputFile = ResultFileUtils(cfg).augmentFileName(opt->outputFile);
                     if (opt->verbose)
                         out << "Redirecting output to file \"" << opt->outputFile << "\"..." << endl;
                     startOutputRedirection(opt->outputFile.c_str());

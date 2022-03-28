@@ -32,7 +32,7 @@ using omnetpp::common::SqliteScalarFileWriter;
  *
  * @ingroup Envir
  */
-class SqliteOutputScalarManager : public cIOutputScalarManager
+class SqliteOutputScalarManager : public cIOutputScalarManager, private ResultFileUtils
 {
   protected:
     cConfiguration *cfg = nullptr;
@@ -65,7 +65,7 @@ class SqliteOutputScalarManager : public cIOutputScalarManager
     /**
      * Sets the configuration database to use for configuring this object.
      */
-    virtual void setConfiguration(cConfiguration *cfg) override {this->cfg = cfg;}
+    virtual void setConfiguration(cConfiguration *cfg) override {this->cfg = cfg; ResultFileUtils::setConfiguration(cfg);}
 
     /**
      * Opens collecting. Called at the beginning of a simulation run.

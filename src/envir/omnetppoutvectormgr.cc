@@ -62,7 +62,7 @@ void OmnetppOutputVectorManager::startRun()
         throw cRuntimeError("%s does not support append mode", getClassName());
 
     fname = cfg->getAsFilename(CFGID_OUTPUT_VECTOR_FILE).c_str();
-    fname = ResultFileUtils::augmentFileName(fname);
+    fname = augmentFileName(fname);
     removeFile(fname.c_str(), "old output vector file");
 
     int prec = cfg->getAsInt(CFGID_OUTPUT_VECTOR_PRECISION);
@@ -94,7 +94,7 @@ void OmnetppOutputVectorManager::openFileForRun()
     writer.open(fname.c_str());
 
     // write run data
-    writer.beginRecordingForRun(ResultFileUtils::getRunId().c_str(), ResultFileUtils::getRunAttributes(), ResultFileUtils::getIterationVariables(), ResultFileUtils::getSelectedConfigEntries());
+    writer.beginRecordingForRun(getRunId().c_str(), getRunAttributes(), getIterationVariables(), getSelectedConfigEntries());
 }
 
 void OmnetppOutputVectorManager::closeFile()
@@ -166,7 +166,7 @@ bool OmnetppOutputVectorManager::record(void *vectorhandle, simtime_t t, double 
         std::string vectorFullPath = vp->moduleName.str() + "." + vp->vectorName.c_str();
         size_t bufferSize = (size_t) cfg->getAsDouble(vectorFullPath.c_str(), CFGID_VECTOR_BUFFER);
         bool recordEventNumbers = cfg->getAsBool(vectorFullPath.c_str(), CFGID_VECTOR_RECORD_EVENTNUMBERS);
-        vp->handleInWriter = writer.registerVector(vp->moduleName.c_str(), vp->vectorName.c_str(), ResultFileUtils::convertMap(&vp->attributes), bufferSize, recordEventNumbers);
+        vp->handleInWriter = writer.registerVector(vp->moduleName.c_str(), vp->vectorName.c_str(), convertMap(&vp->attributes), bufferSize, recordEventNumbers);
     }
 
     eventnumber_t eventNumber = getSimulation()->getEventNumber();

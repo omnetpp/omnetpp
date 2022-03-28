@@ -60,7 +60,7 @@ void OmnetppOutputScalarManager::startRun()
 
     // delete file left over from previous runs
     fname = cfg->getAsFilename(CFGID_OUTPUT_SCALAR_FILE);
-    fname = ResultFileUtils::augmentFileName(fname);
+    fname = augmentFileName(fname);
 
     bool shouldAppend = cfg->getAsBool(CFGID_OUTPUT_SCALAR_FILE_APPEND);
     if (!shouldAppend)
@@ -93,8 +93,8 @@ void OmnetppOutputScalarManager::openFileForRun()
     writer.open(fname.c_str());
 
     // write run data
-    writer.beginRecordingForRun(ResultFileUtils::getRunId().c_str(), ResultFileUtils::getRunAttributes(),
-            ResultFileUtils::getIterationVariables(), ResultFileUtils::getSelectedConfigEntries());
+    writer.beginRecordingForRun(getRunId().c_str(), getRunAttributes(),
+            getIterationVariables(), getSelectedConfigEntries());
 }
 
 void OmnetppOutputScalarManager::closeFile()
@@ -123,7 +123,7 @@ bool OmnetppOutputScalarManager::recordScalar(cComponent *component, const char 
     if (!enabled)
         return false;
 
-    writer.recordScalar(componentFullPath, name, value, ResultFileUtils::convertMap(attributes));
+    writer.recordScalar(componentFullPath, name, value, convertMap(attributes));
     return true;
 }
 
@@ -172,14 +172,14 @@ bool OmnetppOutputScalarManager::recordStatistic(cComponent *component, const ch
                 bins.setBins(histogram->getBinEdges(), histogram->getBinValues());
                 bins.setUnderflows(histogram->getUnderflowSumWeights());
                 bins.setOverflows(histogram->getOverflowSumWeights());
-                writer.recordHistogram(componentFullPath, name, stats, bins, ResultFileUtils::convertMap(attributes));
+                writer.recordHistogram(componentFullPath, name, stats, bins, convertMap(attributes));
                 savedAsHistogram = true;
             }
         }
     }
 
     if (!savedAsHistogram)
-        writer.recordStatistic(componentFullPath, name, stats, ResultFileUtils::convertMap(attributes));
+        writer.recordStatistic(componentFullPath, name, stats, convertMap(attributes));
 
     return true;
 }
@@ -203,7 +203,7 @@ bool OmnetppOutputScalarManager::recordParameter(cPar *par)
     if (!enabled)
         return false;
 
-    writer.recordParameter(componentFullPath, name, par->str(), ResultFileUtils::convertProperties(par->getProperties()));
+    writer.recordParameter(componentFullPath, name, par->str(), convertProperties(par->getProperties()));
     return true;
 }
 
