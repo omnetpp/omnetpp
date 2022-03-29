@@ -60,7 +60,7 @@ public class LinearTicks implements ITicks {
             }
 
             public boolean hasNext() {
-                return current.compareTo(end) < 0;
+                return current.compareTo(end) <= 0;
             }
 
             public BigDecimal next() {
