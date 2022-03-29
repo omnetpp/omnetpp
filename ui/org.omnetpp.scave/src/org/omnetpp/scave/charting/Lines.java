@@ -146,6 +146,31 @@ class Lines implements ILinePlot {
         area.minY = (area.minY>=0 ? 0 : area.minY-h/3);
         area.maxY = (area.maxY<=0 ? 0 : area.maxY+h/3);
 
+        // If the original area was 0 size in either dimension, add a 25% margin "away from zero"
+        // in both dimensions, so the data is not covered by the chart area border.
+        // If all data was on the 0 line in a dimension, set a fixed range for it.
+        if (h == 0) {
+            if (area.maxY > 0)
+                area.maxY *= 1.25;
+            if (area.minY < 0)
+                area.minY *= 1.25;
+            if (area.height() == 0) {
+                area.minY = -1;
+                area.maxY = 1;
+            }
+        }
+
+        if (w == 0) {
+            if (area.maxX > 0)
+                area.maxX *= 1.25;
+            if (area.minX < 0)
+                area.minX *= 1.25;
+            if (area.width() == 0) {
+                area.minX = -1;
+                area.maxX = 1;
+            }
+        }
+
         return area;
     }
 

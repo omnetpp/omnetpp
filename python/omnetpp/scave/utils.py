@@ -963,20 +963,43 @@ def export_image_if_needed(props):
             width = max_x - min_x # not computing twice, would cause asymmetry
             min_x = 0 if min_x >= 0 else min_x - width/80
             max_x = 0 if max_x <= 0 else max_x + width/80
+
+            if width == 0:
+                if max_x > 0:
+                    max_x *= 1.25
+                if min_x < 0:
+                    min_x *= 1.25
+                if min_x == max_x == 0:
+                    min_x = -1
+                    max_x = 1
+
             if get_prop("xaxis_min"):
                 min_x = float(get_prop("xaxis_min"))
             if get_prop("xaxis_max"):
                 max_x = float(get_prop("xaxis_max"))
+
             ax.set_xlim(left=min_x, right=max_x)
+
 
             min_y, max_y = ax.get_ylim()
             height = max_y - min_y # not computing twice, would cause asymmetry
             min_y = 0 if min_y >= 0 else min_y - height/3
             max_y = 0 if max_y <= 0 else max_y + height/3
+
+            if height == 0:
+                if max_y > 0:
+                    max_y *= 1.25
+                if min_y < 0:
+                    min_y *= 1.25
+                if min_y == max_y:
+                    min_y = -1
+                    max_y = 1
+
             if get_prop("yaxis_min"):
                 min_y = float(get_prop("yaxis_min"))
             if get_prop("yaxis_max"):
                 max_y = float(get_prop("yaxis_max"))
+
             ax.set_ylim(bottom=min_y, top=max_y)
 
             # reducing margins all around
