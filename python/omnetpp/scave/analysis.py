@@ -10,6 +10,7 @@ import sys
 import site
 import xml.etree.ElementTree as ET
 import xml.dom.minidom as minidom # because ET cannot pretty-print
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import omnetpp.scave.impl.results_standalone as results_module
 import omnetpp.scave.impl.chart_charttool as chart_module
@@ -288,18 +289,22 @@ class Analysis:
         _show_called = False
 
         od = os.getcwd()
+        orig_rcparams = mpl.rcParams.copy()
+
         try:
             os.chdir(wd)
             site.addsitedir(wd)
             exec(chart.script, { "exit": sys.exit })
+            if show and not _show_called:
+                plt.show()
         except SystemExit as se:
             if se.code != 0:
                 raise RuntimeError("Chart script exited with code " + str(se.code))
         finally:
             os.chdir(od)
+            mpl.rcParams.clear()
+            mpl.rcParams.update(orig_rcparams)
 
-        if show and not _show_called:
-            plt.show()
 
     def export_image(self, chart, wd, workspace, format="svg", target_folder=None, filename=None, width=None, height=None, dpi=96, enforce=True, extra_props=dict()):
         """
