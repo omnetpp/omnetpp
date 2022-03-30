@@ -982,9 +982,31 @@ def export_image_if_needed(props):
             # reducing margins all around
             plt.tight_layout()
 
-        import platform
-        creatorInfo = f"omnetpp.scave {__version__}; Matplotlib {mpl.__version__} w/ backend {mpl.get_backend()}; Pandas {pd.__version__}; Python {platform.python_version()}; {platform.platform()}"
-        plt.savefig(filepath, format=format, dpi=int(dpi), metadata={"Software": creatorInfo})
+        def _make_image_metadata():
+            # Include versions of various software components into the metadata,
+            # to facilitate resolving support reqests later. We use "Creator" as key,
+            # as it seems to be suitable with all image formats. Some formats ignore it
+            # and PNG would prefer to call it "Software", but it doesn't cause an exception
+            # to be thrown from savefig(). JPG and TIF display a DeprecationWarning though:
+            # "savefig() got unexpected argument 'metadata' which is no longer supported
+            # as of 3.3 and will become an error two minor releases later"
+            import platform
+            creatorInfo = f"omnetpp.scave {__version__}; Matplotlib {mpl.__version__} w/ backend {mpl.get_backend()}; Pandas {pd.__version__}; Python {platform.python_version()}; {platform.platform()}"
+            return { "Creator" : creatorInfo }
+
+        # save image
+        retry = True
+        try:
+            plt.savefig(filepath, format=format, dpi=int(dpi), metadata=_make_image_metadata())
+            retry = False
+        except:
+            pass
+        if retry:
+            # try again without metadata, in case that caused the error
+            # oh yes, and we cannot put this into the "except" block, because we'd get
+            # an ugly error message ("During handling of the above exception, another
+            # exception occurred") if this fails too, e.g. due to innvalid "format" parameter
+            plt.savefig(filepath, format=format, dpi=int(dpi))
 
 def get_image_export_filepath(props):
     """
