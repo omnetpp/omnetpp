@@ -1013,11 +1013,13 @@ def get_image_export_filepath(props):
     Returns the file path for the image to export based on the
     `image_export_format`, `image_export_folder` and
     `image_export_filename` properties given in `props`.
+    If a relative filename is returned, it is relative to the
+    working directory when the image export takes place.
     """
     def get_prop(k):
         return props[k] if k in props else None
     format = get_prop("image_export_format") or "svg"
-    folder = get_prop("image_export_folder") or os.getcwd()
+    folder = get_prop("image_export_folder") or "."
     filename = get_prop("image_export_filename") or _sanitize_filename(chart.get_name())
     if not re.match(string=filename, pattern=r".+\.\w{3,4}$"):
         filename = filename + "." + format
@@ -1133,12 +1135,14 @@ def get_data_export_filepath(props):
     Returns the file path for the data to export based on the
     `data_export_format`, `data_export_folder` and
     `data_export_filename` properties given in `props`.
+    If a relative filename is returned, it is relative to the
+    working directory when the data export takes place.
     """
     def get_prop(k):
         return props[k] if k in props else None
     format = get_prop("data_export_format") or "csv"
     extension = _format_to_extension(format)
-    folder = get_prop("data_export_folder") or os.getcwd()
+    folder = get_prop("data_export_folder") or "."
     filename = get_prop("data_export_filename") or _sanitize_filename(chart.get_name())
     if not re.match(string=filename, pattern=r".+\.\w{3,4}$"):
         filename = filename + "." + extension

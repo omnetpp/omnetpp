@@ -329,7 +329,8 @@ class Analysis:
         self.run_chart(chart, wd, workspace, extra_props=props, show=False)
 
         fname = utils.get_image_export_filepath(props)
-        return self._check_file_created(os.path.join(wd,fname), "image", enforce)
+        fname = os.path.join(wd, fname)
+        return self._check_file_created(fname, "image", enforce)
 
     def export_data(self, chart, wd, workspace, format="csv", target_folder=None, filename=None, enforce=True, extra_props=dict()):
         """
@@ -352,6 +353,7 @@ class Analysis:
         self.run_chart(chart, wd, workspace, extra_props=props, show=False)
 
         fname = utils.get_data_export_filepath(props)
+        fname = os.path.join(wd, fname)
         return self._check_file_created(fname, "data", enforce)
 
     def _check_file_created(self, fname, what, enforce):
