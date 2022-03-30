@@ -69,7 +69,7 @@ class cGenericReadonlyWatch : public cWatchBase
     const T& r;
   public:
     cGenericReadonlyWatch(const char *name, const T& x) : cWatchBase(name), r(x) {}
-    virtual const char *getClassName() const override {return opp_typename(typeid(T));}
+    virtual const char *getClassName() const override {return omnetpp::opp_typename(typeid(T));}
     virtual bool supportsAssignment() const override {return false;}
     virtual std::string str() const override
     {
@@ -92,7 +92,7 @@ class cGenericAssignableWatch : public cWatchBase
     T& r;
   public:
     cGenericAssignableWatch(const char *name, T& x) : cWatchBase(name), r(x) {}
-    virtual const char *getClassName() const override {return opp_typename(typeid(T));}
+    virtual const char *getClassName() const override {return omnetpp::opp_typename(typeid(T));}
     virtual bool supportsAssignment() const override {return true;}
     virtual std::string str() const override
     {
@@ -352,7 +352,7 @@ inline cWatchBase *createWatch_cObjectPtr(const char *varname, const char *typeN
  *
  * @hideinitializer
  */
-#define WATCH_OBJ(variable)  omnetpp::createWatch_cObject(#variable, opp_typename(typeid(variable)), (variable))
+#define WATCH_OBJ(variable)  omnetpp::createWatch_cObject(#variable, omnetpp::opp_typename(typeid(variable)), (variable))
 
 /**
  * @brief Makes pointers to objects derived from cObject inspectable in Qtenv.
@@ -360,7 +360,7 @@ inline cWatchBase *createWatch_cObjectPtr(const char *varname, const char *typeN
  *
  * @hideinitializer
  */
-#define WATCH_PTR(variable)  omnetpp::createWatch_cObjectPtr(#variable, opp_typename(typeid(variable)), (cObject*&)(variable),(variable))
+#define WATCH_PTR(variable)  omnetpp::createWatch_cObjectPtr(#variable, omnetpp::opp_typename(typeid(variable)), (cObject*&)(variable),(variable))
 //@}
 
 }  // namespace omnetpp
