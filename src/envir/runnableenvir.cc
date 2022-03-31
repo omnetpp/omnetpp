@@ -79,6 +79,7 @@ namespace omnetpp {
 namespace envir {
 
 extern cConfigOption *CFGID_PARSIM_NUM_PARTITIONS;
+extern cConfigOption *CFGID_PARSIM_PROCID;
 extern cConfigOption *CFGID_PARSIM_COMMUNICATIONS_CLASS;
 extern cConfigOption *CFGID_PARSIM_SYNCHRONIZATION_CLASS;
 extern cConfigOption *CFGID_DEBUGGER_ATTACH_ON_STARTUP;
@@ -438,7 +439,6 @@ bool RunnableEnvir::setup()
         if (opt->parsim) {
 #ifdef WITH_PARSIM
             // parsim: create components
-            int parsimNumPartitions = cfg->getAsInt(CFGID_PARSIM_NUM_PARTITIONS);
             std::string parsimcommClass = cfg->getAsString(CFGID_PARSIM_COMMUNICATIONS_CLASS);
             std::string parsimsynchClass = cfg->getAsString(CFGID_PARSIM_SYNCHRONIZATION_CLASS);
 
@@ -453,7 +453,9 @@ bool RunnableEnvir::setup()
             getSimulation()->setScheduler(parsimSynchronizer);
 
             // initialize them
-            parsimComm->configure(parsimNumPartitions);
+            int parsimNumPartitions = cfg->getAsInt(CFGID_PARSIM_NUM_PARTITIONS, -1);
+            int parsimProcId = cfg->getAsInt(CFGID_PARSIM_PROCID, -1);
+            parsimComm->configure(cfg, parsimNumPartitions, parsimProcId);
 #else
             throw cRuntimeError("Parallel simulation is turned on in the ini file, but OMNeT++ was compiled without parallel simulation support (WITH_PARSIM=no)");
 #endif

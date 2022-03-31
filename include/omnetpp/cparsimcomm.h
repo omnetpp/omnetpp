@@ -22,6 +22,7 @@
 namespace omnetpp {
 
 class cCommBuffer;
+class cConfiguration;
 
 #define PARSIM_ANY_TAG  -1
 
@@ -47,9 +48,11 @@ class SIM_API cParsimCommunications : public cObject
     /** @name Lifecycle of communications library */
     //@{
     /**
-     * Initialize the communications library.
+     * Initialize the communications library. The numPartitions and procId arguments
+     * may be left unspecified (pass -1 as value) for communications classes that
+     * can figure those out themselves, for example MPI.
      */
-    virtual void configure(int numPartitions) = 0;  //TODO should take cConfiguration* too; separate init() or setup() method?
+    virtual void configure(cConfiguration *cfg, int numPartitions=-1, int procId=-1) = 0;
 
     /**
      * Shutdown the communications library.

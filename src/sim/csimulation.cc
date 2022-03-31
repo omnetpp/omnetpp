@@ -828,8 +828,6 @@ class StaticEnv : public cEnvir
     virtual void releaseStreamForSnapshot(std::ostream *os) override  { unsupported(); }
 
     // misc
-    virtual int getArgCount() const override  { unsupported(); return 0; }
-    virtual char **getArgVector() const override  { unsupported(); return nullptr; }
     virtual int getParsimProcId() const override { return 0; }
     virtual int getParsimNumPartitions() const override { return 1; }
     virtual unsigned long getUniqueNumber() override  { unsupported(); return 0; }

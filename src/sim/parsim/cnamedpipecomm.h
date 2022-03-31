@@ -50,14 +50,14 @@ class cMemCommBuffer;
 class SIM_API cNamedPipeCommunications : public cParsimCommunications
 {
   protected:
-    int numPartitions;
-    int myProcId;
+    int numPartitions = -1;
+    int myProcId = -1;
 
     // pipes
     opp_string prefix;
     PIPE *rpipes = nullptr;
     PIPE *wpipes = nullptr;
-    int maxFdPlus1;
+    int maxFdPlus1 = -1;
     int rrBase = 0;
 
     // reordering buffer needed because of tag filtering support (filtTag)
@@ -85,7 +85,7 @@ class SIM_API cNamedPipeCommunications : public cParsimCommunications
     /**
      * Init the library. Here we create and open the named pipes.
      */
-    virtual void configure(int numPartitions) override;
+    virtual void configure(cConfiguration *cfg, int numPartitions, int procId) override;
 
     /**
      * Shutdown the communications library. Closes and removes the named pipes.

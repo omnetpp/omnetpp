@@ -20,8 +20,8 @@
 
 using namespace omnetpp;
 
-cNullEnvir::cNullEnvir(int ac, char **av, cConfiguration *c) :
-    argc(ac), argv(av), cfg(c), rng(new cMersenneTwister())
+cNullEnvir::cNullEnvir(cConfiguration *cfg) :
+    cfg(cfg), rng(new cMersenneTwister())
 {
 }
 

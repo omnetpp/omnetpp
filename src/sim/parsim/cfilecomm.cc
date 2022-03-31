@@ -32,7 +32,6 @@
 #include "omnetpp/platdep/platmisc.h"
 #include "cfilecomm.h"
 #include "cfilecommbuffer.h"
-#include "parsimutil.h"
 
 using namespace omnetpp::common;
 
@@ -46,18 +45,20 @@ Register_GlobalConfigOption(CFGID_FILECOMM_PRESERVE_READ, "parsim-filecommunicat
 
 cFileCommunications::cFileCommunications()
 {
-    commDirPrefix = getEnvir()->getConfig()->getAsString(CFGID_FILECOMM_PREFIX);
-    readDirPrefix = getEnvir()->getConfig()->getAsString(CFGID_FILECOMM_READ_PREFIX);
-    preserveReadFiles = getEnvir()->getConfig()->getAsBool(CFGID_FILECOMM_PRESERVE_READ);
 }
 
-void cFileCommunications::configure(int np)
+void cFileCommunications::configure(cConfiguration *cfg, int np, int procId)
 {
-    // store parameter
     numPartitions = np;
+    myProcId = procId;
+    if (numPartitions == -1 || myProcId == -1)
+        throw cRuntimeError("%s: Number of partitions or procID not specified", getClassName());
+    if (numPartitions < 1 || myProcId < 0 || myProcId >= numPartitions)
+        throw cRuntimeError("%s: Invalid value for the number of partitions (%d) or procID (%d)", getClassName(), np, procId);
 
-    // get myProcId from "-p" command-line option
-    myProcId = getProcIdFromCommandLineArgs(numPartitions, "cFileCommunications");
+    commDirPrefix = cfg->getAsString(CFGID_FILECOMM_PREFIX);
+    readDirPrefix = cfg->getAsString(CFGID_FILECOMM_READ_PREFIX);
+    preserveReadFiles = cfg->getAsBool(CFGID_FILECOMM_PRESERVE_READ);
 
     EV << "cFileCommunications: started as process " << myProcId << " out of " << numPartitions << ".\n";
 

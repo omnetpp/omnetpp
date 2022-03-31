@@ -73,7 +73,6 @@ struct PipeHeader
 
 cNamedPipeCommunications::cNamedPipeCommunications()
 {
-    prefix = getEnvir()->getConfig()->getAsString(CFGID_PARSIM_NAMEDPIPECOMM_PREFIX);
 }
 
 cNamedPipeCommunications::~cNamedPipeCommunications()
@@ -82,13 +81,11 @@ cNamedPipeCommunications::~cNamedPipeCommunications()
     delete[] wpipes;
 }
 
-void cNamedPipeCommunications::init(int np)
+void cNamedPipeCommunications::configure(cConfiguration *cfg, int np, int procId)
 {
-    // store parameter
     numPartitions = np;
-
-    // get myProcId from "-p" command-line option
-    myProcId = getProcIdFromCommandLineArgs(numPartitions, "cNamedPipeCommunications");
+    myProcId = procId;
+    prefix = cfg->getAsString(CFGID_PARSIM_NAMEDPIPECOMM_PREFIX);
 
     EV << "cNamedPipeCommunications: started as process " << myProcId << " out of " << numPartitions << ".\n";
 

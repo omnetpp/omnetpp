@@ -40,7 +40,6 @@ Register_GlobalConfigOption(CFGID_PARSIM_MPICOMMUNICATIONS_MPIBUFFER, "parsim-mp
 
 cMPICommunications::cMPICommunications()
 {
-    recycledBuffer = nullptr;
 }
 
 cMPICommunications::~cMPICommunications()
@@ -49,31 +48,22 @@ cMPICommunications::~cMPICommunications()
     delete recycledBuffer;
 }
 
-void cMPICommunications::configure(int np)
+void cMPICommunications::configure(cConfiguration *cfg, int np, int procId)
 {
-    // store parameter
-    numPartitions = np;
-
-    // sanity check
-    int argc = getEnvir()->getArgCount();
-    char **argv = getEnvir()->getArgVector();
-    for (int i = 1; i < argc; i++)
-        if (argv[i][0] == '-' && argv[i][1] == 'p')
-            EV_WARN << "cMPICommunications doesn't need -p command-line option, ignored\n";
-
-    // init MPI
-    MPI_Init(&argc, &argv);
+    // note: MPI-2 (1997) allows passing NULL for both arguments of MPI_Init()
+    MPI_Init(nullptr, nullptr);
 
     // get group size and myRank from MPI
-    int mpiGroupSize;
-    MPI_Comm_size(MPI_COMM_WORLD, &mpiGroupSize);
+    MPI_Comm_size(MPI_COMM_WORLD, &numPartitions);
     MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
 
-    EV << "cMPICommunications: started as process " << myRank << " out of " << mpiGroupSize << ".\n";
-    if (mpiGroupSize == 1)
+    EV << "cMPICommunications: started as process " << myRank << " out of " << numPartitions << ".\n";
+    if (numPartitions == 1)
         EV_WARN << "MPI thinks this process is the only one in the session (did you use mpirun to start this program?)\n";
-    if (numPartitions != mpiGroupSize)
-        throw cRuntimeError("cMPICommunications: The number of partitions configured (%d) differs from the number of instances started by MPI (%d)", numPartitions, mpiGroupSize);
+    if (np != -1 && numPartitions != np)
+        throw cRuntimeError("cMPICommunications: The number of partitions configured (%d) differs from the number of instances started by MPI (%d)", np, numPartitions);
+    if (procId != -1 && procId != myRank)
+        throw cRuntimeError("cMPICommunications: The specified procId (%d) and the one reported by MPI as rank (%d) don't agree", procId, myRank);
 
     // set up MPI send buffer (+16K prevents MPI_Buffer_attach() error if numPartitions==1)
     int defaultBufSize = MPI_SEND_BUFFER_PER_PARTITION * (numPartitions-1) + 16384;

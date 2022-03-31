@@ -35,13 +35,13 @@ namespace omnetpp {
 class SIM_API cFileCommunications : public cParsimCommunications
 {
   protected:
-    int numPartitions;
-    int myProcId;
+    int numPartitions = -1;
+    int myProcId = -1;
 
     int seqNum = 0;
     opp_string commDirPrefix;
     opp_string readDirPrefix;
-    bool preserveReadFiles;
+    bool preserveReadFiles = false;
 
   public:
     /**
@@ -59,7 +59,7 @@ class SIM_API cFileCommunications : public cParsimCommunications
     /**
      * Init the library.
      */
-    virtual void configure(int numPartitions) override;
+    virtual void configure(cConfiguration *cfg, int numPartitions, int procId) override;
 
     /**
      * Shutdown the communications library.

@@ -59,7 +59,7 @@ class MinimalEnv : public cNullEnvir
     int numHosts;
 
     // constructor
-    MinimalEnv(int ac, char **av, cConfiguration *c) : cNullEnvir(ac, av, c) {}
+    MinimalEnv(cConfiguration *cfg) : cNullEnvir(cfg) {}
 
     void setParameters(int numHosts, std::string iaTime)
     {
@@ -106,7 +106,7 @@ class MinimalEnv : public cNullEnvir
 double simulateAloha(simtime_t limit, int numHosts, double iaMean)
 {
     // set up an environment for the simulation
-    MinimalEnv *menv = new MinimalEnv(0, nullptr, new EmptyConfig());
+    MinimalEnv *menv = new MinimalEnv(new EmptyConfig());
     cSimulation *sim = new cSimulation("simulation", menv);
     cSimulation::setActiveSimulation(sim);
 

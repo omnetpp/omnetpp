@@ -35,7 +35,6 @@
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cconfiguration.h"
 #include "cmemcommbuffer.h"
-#include "parsimutil.h"
 
 namespace omnetpp {
 
@@ -67,7 +66,6 @@ struct PipeHeader
 
 cNamedPipeCommunications::cNamedPipeCommunications()
 {
-    prefix = getEnvir()->getConfig()->getAsString(CFGID_PARSIM_NAMEDPIPECOMM_PREFIX);
 }
 
 cNamedPipeCommunications::~cNamedPipeCommunications()
@@ -79,13 +77,16 @@ cNamedPipeCommunications::~cNamedPipeCommunications()
         delete item.buffer;
 }
 
-void cNamedPipeCommunications::configure(int np)
+void cNamedPipeCommunications::configure(cConfiguration *cfg, int np, int procId)
 {
-    // store parameter
     numPartitions = np;
+    myProcId = procId;
+    if (numPartitions == -1 || myProcId == -1)
+        throw cRuntimeError("%s: Number of partitions or procID not specified", getClassName());
+    if (numPartitions < 1 || myProcId < 0 || myProcId >= numPartitions)
+        throw cRuntimeError("%s: Invalid value for the number of partitions (%d) or procID (%d)", getClassName(), np, procId);
 
-    // get myProcId from "-p" command-line option
-    myProcId = getProcIdFromCommandLineArgs(numPartitions, "cNamedPipeCommunications");
+    prefix = cfg->getAsString(CFGID_PARSIM_NAMEDPIPECOMM_PREFIX);
 
     EV << "cNamedPipeCommunications: started as process " << myProcId << " out of " << numPartitions << ".\n";
 

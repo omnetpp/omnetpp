@@ -55,7 +55,7 @@ class MinimalEnv : public cNullEnvir
 {
   public:
     // constructor
-    MinimalEnv(int ac, char **av, cConfiguration *c) : cNullEnvir(ac, av, c) {}
+    MinimalEnv(cConfiguration *cfg) : cNullEnvir(cfg) {}
 
     // model parameters
     virtual void readParameter(cPar *par) override {
@@ -121,7 +121,7 @@ int main(int argc, char *argv[])
     SimTime::setScaleExp(-12);
 
     // set up an environment for the simulation
-    cEnvir *env = new MinimalEnv(argc, argv, new EmptyConfig());
+    cEnvir *env = new MinimalEnv(new EmptyConfig());
     cSimulation *sim = new cSimulation("simulation", env);
     cSimulation::setActiveSimulation(sim);
 

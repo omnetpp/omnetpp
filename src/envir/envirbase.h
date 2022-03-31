@@ -60,7 +60,7 @@ class SignalSource;
 // maximum length of string passed in Enter_Method() (longer strings will be truncated)
 #define MAX_METHODCALL 1024
 
-#define ARGSPEC "h?f:u:l:c:r:n:x:i:p:q:e:avwsm"
+#define ARGSPEC "h?f:u:l:c:r:n:x:i:q:e:avwsm"
 
 #ifdef USE_PORTABLE_COROUTINES  /* coroutine stacks reside in main stack area */
 
@@ -228,8 +228,6 @@ class ENVIR_API EnvirBase : public cEnvir
     virtual void releaseStreamForSnapshot(std::ostream *os) override;
 
     // misc
-    virtual int getArgCount() const override;
-    virtual char **getArgVector() const override;
     virtual int getParsimProcId() const override;
     virtual int getParsimNumPartitions() const override;
     virtual unsigned long getUniqueNumber() override;

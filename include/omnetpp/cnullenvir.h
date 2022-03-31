@@ -49,8 +49,6 @@ namespace omnetpp {
 class SIM_API cNullEnvir : public cEnvir
 {
   protected:
-    int argc;
-    char **argv;
     cConfiguration *cfg;
     cRNG *rng;
     unsigned long nextUniqueNumber = 0;
@@ -64,7 +62,7 @@ class SIM_API cNullEnvir : public cEnvir
 
   public:
     // constructor, destructor
-    cNullEnvir(int ac, char **av, cConfiguration *c);
+    cNullEnvir(cConfiguration *cfg);
     virtual ~cNullEnvir();
 
     // eventlog callback interface
@@ -148,8 +146,6 @@ class SIM_API cNullEnvir : public cEnvir
     virtual void releaseStreamForSnapshot(std::ostream *os) override  {unsupported();}
 
     // misc
-    virtual int getArgCount() const override  {return argc;}
-    virtual char **getArgVector() const override  {return argv;}
     virtual int getParsimProcId() const override {return 0;}
     virtual int getParsimNumPartitions() const override {return 1;}
     virtual unsigned long getUniqueNumber() override  {return nextUniqueNumber++;}

@@ -796,16 +796,6 @@ class SIM_API cEnvir
     /** @name Miscellaneous functions. */
     //@{
     /**
-     * Access to original command-line arguments.
-     */
-    virtual int getArgCount() const = 0;
-
-    /**
-     * Access to original command-line arguments.
-     */
-    virtual char **getArgVector() const = 0;
-
-    /**
      * Returns the partitionID when parallel simulation is active.
      */
     virtual int getParsimProcId() const = 0;

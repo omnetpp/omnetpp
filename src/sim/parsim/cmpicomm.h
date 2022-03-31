@@ -33,9 +33,9 @@ class cMPICommBuffer;
 class SIM_API cMPICommunications : public cParsimCommunications
 {
   protected:
-    cMPICommBuffer *recycledBuffer;
-    int numPartitions;
-    int myRank;
+    cMPICommBuffer *recycledBuffer = nullptr;
+    int numPartitions = -1;
+    int myRank = -1;
 
   protected:
     /**
@@ -57,9 +57,10 @@ class SIM_API cMPICommunications : public cParsimCommunications
     /** @name Redefined methods from cParsimCommunications */
     //@{
     /**
-     * Init the library.
+     * Initializes the library. Both numPartitions and procId may be -1 (=unspecified),
+     * as they are also provided by MPI.
      */
-    virtual void configure(int numPartitions) override;
+    virtual void configure(cConfiguration *cfg, int numPartitions=-1, int procId=-1) override;
 
     /**
      * Shutdown the communications library.
