@@ -933,13 +933,14 @@ def export_image_if_needed(props):
         format = get_prop("image_export_format") or "svg"
         width = float(get_prop("image_export_width") or 6)
         height = float(get_prop("image_export_height") or 4)
-        dpi = get_prop("image_export_dpi") or "96"
+        dpi = float(get_prop("image_export_dpi") or "96")
 
         print("exporting image to: '" + filepath + "' as " + format)
 
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
 
         plt.gcf().set_size_inches(width, height)
+        plt.gcf().set_dpi(dpi)
 
         # in case of Matplotlib-emulated native widgets, make it look more similar to the IDE
         if chart.is_native_chart():
@@ -1017,10 +1018,31 @@ def export_image_if_needed(props):
             creatorInfo = f"omnetpp.scave {__version__}; Matplotlib {mpl.__version__} w/ backend {mpl.get_backend()}; Pandas {pd.__version__}; Python {platform.python_version()}; {platform.platform()}"
             return { "Creator" : creatorInfo }
 
+        # Explicitly select a non-interactive backend appropriate for the export format,
+        # and keep auto-selection for any other formats not listed here.
+        backend = {
+            "png":  "AGG",
+            "jpg":  "AGG",
+            "jpeg": "AGG",
+            "tif":  "AGG",
+            "tiff": "AGG",
+            "raw":  "AGG",
+
+            "svg":  "SVG",
+            "svgz": "SVG",
+
+            "ps" :  "PS",
+            "eps":  "PS",
+
+            "pdf":  "PDF",
+
+            "pgf":  "PGF",
+        }.get(format.lower(), None)
+
         # save image
         retry = True
         try:
-            plt.savefig(filepath, format=format, dpi=int(dpi), metadata=_make_image_metadata())
+            plt.savefig(filepath, format=format, dpi=dpi, metadata=_make_image_metadata(), backend=backend)
             retry = False
         except:
             pass
@@ -1029,7 +1051,7 @@ def export_image_if_needed(props):
             # oh yes, and we cannot put this into the "except" block, because we'd get
             # an ugly error message ("During handling of the above exception, another
             # exception occurred") if this fails too, e.g. due to innvalid "format" parameter
-            plt.savefig(filepath, format=format, dpi=int(dpi))
+            plt.savefig(filepath, format=format, dpi=dpi, backend=backend)
 
 def get_image_export_filepath(props):
     """
