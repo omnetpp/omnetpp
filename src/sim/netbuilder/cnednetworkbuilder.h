@@ -69,6 +69,7 @@ class SIM_API cNedNetworkBuilder
     typedef internal::cParImpl cParImpl;
     typedef internal::cIntParImpl cIntParImpl;
     typedef internal::cObjectParImpl cObjectParImpl;
+    typedef cNedLoader::ExprRef ExprRef;
 
     cNedLoader *nedLoader;
 

@@ -81,24 +81,6 @@ class SIM_API cINedLoader : public cNoncopyableOwnedObject
     virtual void doneLoadingNedFiles() = 0;
 };
 
-class ExprRef
-{
-  public:
-    typedef nedxml::NedElement NedElement;
-  private:
-    NedElement *node;
-    int attrId;
-    const char *cachedExprText;
-  public:
-    ExprRef(NedElement *node, int attrId) : node(node), attrId(attrId) {
-        cachedExprText = node->getAttribute(attrId);
-    }
-    bool empty() const {return !cachedExprText[0];}
-    const char *getExprText() const {return cachedExprText;}
-    NedElement *getNode() const {return node;}
-    bool operator<(const ExprRef& other) const {return node!=other.node ? node<other.node : attrId<other.attrId;}
-};
-
 /**
  * @brief Stores dynamically loaded NED files, and one can look up NED declarations
  * of modules, channels, module interfaces and channel interfaces in them.
@@ -113,6 +95,24 @@ class SIM_API cNedLoader : public cINedLoader, public nedxml::NedResourceCache
   public:
     typedef nedxml::NedElement NedElement;
     typedef nedxml::NedResourceCache NedResourceCache;
+
+    class ExprRef
+    {
+      public:
+        typedef nedxml::NedElement NedElement;
+      private:
+        NedElement *node;
+        int attrId;
+        const char *cachedExprText;
+      public:
+        ExprRef(NedElement *node, int attrId) : node(node), attrId(attrId) {
+            cachedExprText = node->getAttribute(attrId);
+        }
+        bool empty() const {return !cachedExprText[0];}
+        const char *getExprText() const {return cachedExprText;}
+        NedElement *getNode() const {return node;}
+        bool operator<(const ExprRef& other) const {return node!=other.node ? node<other.node : attrId<other.attrId;}
+    };
 
   protected:
     // expression cache
