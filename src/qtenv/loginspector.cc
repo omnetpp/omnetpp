@@ -117,6 +117,7 @@ LogInspector::LogInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f
 
     connect(getQtenv(), SIGNAL(fontChanged()), this, SLOT(onFontChanged()));
 
+    mode = LOG;  // as setMode() *reads* it too
     setMode((Mode)getPref(PREF_MODE, QVariant::fromValue(0), false).toInt());
 }
 
