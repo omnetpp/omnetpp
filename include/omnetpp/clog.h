@@ -97,6 +97,11 @@ enum LogLevel
      * Not a real log level, it completely disables logging when set.
      */
     LOGLEVEL_OFF,
+
+    /**
+     * Not a real log level, used for indicating the absence of a log level setting.
+     */
+    LOGLEVEL_NOTSET = -1
 };
 
 /**

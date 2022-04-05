@@ -30,7 +30,7 @@ namespace internal {
 cLogProxy::LogBuffer cLogProxy::buffer;
 std::ostream cLogProxy::stream(&cLogProxy::buffer);
 cLogEntry cLogProxy::currentEntry;
-LogLevel cLogProxy::previousLogLevel = (LogLevel)-1;
+LogLevel cLogProxy::previousLogLevel = LOGLEVEL_NOTSET;
 const char *cLogProxy::previousCategory = nullptr;
 cLogProxy::nullstream cLogProxy::dummyStream;
 
