@@ -39,7 +39,7 @@ class COMMON_API UnitConversion
     static bool initCalled;
 
   protected:
-    static int hashCode(const char *unit);
+    static unsigned hashCode(const char *unit);
     static bool matches(UnitDesc *desc, const char *unit);
     static void insert(const char *key, UnitDesc *desc);
     static void init();

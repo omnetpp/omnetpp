@@ -148,11 +148,11 @@ bool UnitConversion::matches(UnitDesc *desc, const char *unit)
     return false;
 }
 
-inline char lc(char c) {return c | 0x20;} // assuming ASCII letters
+inline unsigned lc(char c) {return (unsigned)c | 0x20;} // assuming ASCII letters
 
-inline int UnitConversion::UnitConversion::hashCode(const char *unit)
+inline unsigned UnitConversion::hashCode(const char *unit)
 {
-    int result = lc(unit[0]);
+    unsigned result = lc(unit[0]);
     if (!unit[1]) return result;
     result = result*65 + lc(unit[1]);
     if (!unit[2]) return result;
@@ -172,8 +172,8 @@ UnitConversion::UnitDesc *UnitConversion::lookupUnit(const char *unit)
         return nullptr; // empty string is not a unit
 
     // hash table lookup
-    int hash = hashCode(unit);
-    for (int pos = hash & (HASHTABLESIZE-1); hashTable[pos]; pos = (pos+1) & (HASHTABLESIZE-1))
+    unsigned hash = hashCode(unit);
+    for (unsigned pos = hash & (HASHTABLESIZE-1); hashTable[pos]; pos = (pos+1) & (HASHTABLESIZE-1))
         if (matches(hashTable[pos], unit))
             return hashTable[pos];
 
@@ -188,8 +188,8 @@ UnitConversion::UnitDesc *UnitConversion::lookupUnit(const char *unit)
 void UnitConversion::insert(const char *key, UnitDesc *desc)
 {
     int localCollisions = 0;
-    int hash = hashCode(key);
-    int pos;
+    unsigned hash = hashCode(key);
+    unsigned pos;
     for (pos = hash & (HASHTABLESIZE-1); hashTable[pos]; pos = (pos+1) & (HASHTABLESIZE-1))
         localCollisions++;
     hashTable[pos] = desc;
