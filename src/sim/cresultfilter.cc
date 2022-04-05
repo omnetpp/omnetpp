@@ -13,6 +13,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <algorithm> // copy_n()
 #include "common/commonutil.h"
 #include "common/stringutil.h"
 #include "omnetpp/cresultfilter.h"
@@ -65,7 +66,7 @@ void cResultFilter::addDelegate(cResultListener *delegate)
     Assert(delegates != nullptr);
     int n = getNumDelegates();
     cResultListener **v = new cResultListener *[n + 2];
-    memcpy(v, delegates, n * sizeof(cResultListener *));
+    std::copy_n(delegates, n, v);
     v[n] = delegate;
     v[n+1] = nullptr;
     delete[] delegates;

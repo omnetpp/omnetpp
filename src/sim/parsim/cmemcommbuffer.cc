@@ -29,8 +29,8 @@ Register_Class(cMemCommBuffer);
 #define STORE(type, d)                 { *(type *)(mBuffer+mMsgSize) = d; mMsgSize += sizeof(type); }
 #define EXTRACT(type, d)               { d = *(type *)(mBuffer+mPosition); mPosition += sizeof(type); }
 
-#define STOREARRAY(type, d, size)      { memcpy(mBuffer+mMsgSize, d, size*sizeof(type)); mMsgSize += size*sizeof(type); }
-#define EXTRACTARRAY(type, d, size)    { memcpy(d, mBuffer+mPosition, size*sizeof(type)); mPosition += size*sizeof(type); }
+#define STOREARRAY(type, d, size)      { if (size > 0) { memcpy(mBuffer+mMsgSize, d, size*sizeof(type)); mMsgSize += size*sizeof(type); } }
+#define EXTRACTARRAY(type, d, size)    { if (size > 0) { memcpy(d, mBuffer+mPosition, size*sizeof(type)); mPosition += size*sizeof(type); } }
 
 void cMemCommBuffer::pack(char d)
 {

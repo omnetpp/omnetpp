@@ -17,7 +17,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <cstring>  // memcpy
+#include <algorithm> // copy_n()
 #include "omnetpp/globals.h"
 #include "omnetpp/cexception.h"
 #include "omnetpp/csoftowner.h"
@@ -114,7 +114,7 @@ void cSoftOwner::doInsert(cOwnedObject *obj)
             // must allocate bigger vector (grow 25% but at least 2)
             capacity += (capacity < 8) ? 2 : (capacity >> 2);
             cOwnedObject **v = new cOwnedObject *[capacity];
-            memcpy(v, objs, sizeof(cOwnedObject *) * numObjs);
+            std::copy_n(objs, numObjs, v);
             delete[] objs;
             objs = v;
         }

@@ -138,16 +138,15 @@ void cPrecollectionBasedDensityEst::copy(const cPrecollectionBasedDensityEst& re
     precollectedValues = nullptr;
     if (res.precollectedValues) {
         precollectedValues = new double[numPrecollected];
-        memcpy(precollectedValues, res.precollectedValues, numPrecollected * sizeof(double));
+        std::copy_n(res.precollectedValues, numPrecollected, precollectedValues);
     }
 
     delete[] precollectedWeights;
     precollectedWeights = nullptr;
     if (res.precollectedWeights) {
         precollectedWeights = new double[numPrecollected];
-        memcpy(precollectedWeights, res.precollectedWeights, numPrecollected * sizeof(double));
+        std::copy_n(res.precollectedWeights, numPrecollected, precollectedWeights);
     }
-
 }
 
 cPrecollectionBasedDensityEst& cPrecollectionBasedDensityEst::operator=(const cPrecollectionBasedDensityEst& res)

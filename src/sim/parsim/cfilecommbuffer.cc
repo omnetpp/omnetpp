@@ -33,8 +33,8 @@ Register_Class(cFileCommBuffer);
 #define EXTRACT(FMT, d)                { sread(mBuffer, mPosition, FMT, &d); }
 
 // TBD store/extract as ASCII not binary
-#define STOREARRAY(type, d, size)      { memcpy(mBuffer+mMsgSize, d, size*sizeof(type)); mMsgSize += size*sizeof(type); }
-#define EXTRACTARRAY(type, d, size)    { memcpy(d, mBuffer+mPosition, size*sizeof(type)); mPosition += size*sizeof(type); }
+#define STOREARRAY(type, d, size)      { if (size > 0) { memcpy(mBuffer+mMsgSize, d, size*sizeof(type)); mMsgSize += size*sizeof(type); } }
+#define EXTRACTARRAY(type, d, size)    { if (size > 0) { memcpy(d, mBuffer+mPosition, size*sizeof(type)); mPosition += size*sizeof(type); } }
 
 // helper: match type (i.e. "i " from "i 134")
 static void matchtype(char *buffer, int& pos, const char *& fmt)

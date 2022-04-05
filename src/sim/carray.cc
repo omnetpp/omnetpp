@@ -17,7 +17,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <cstring>  // memcmp, memcpy, memset
+#include <cstring>  // memcpy, memset
 #include <algorithm>  // min, max
 #include <sstream>
 #include "omnetpp/carray.h"
@@ -97,7 +97,7 @@ void cArray::copy(const cArray& other)
     last = other.last;
     delete[] vect;
     vect = new cObject *[capacity];
-    memcpy(vect, other.vect, capacity * sizeof(cObject *));
+    std::copy_n(other.vect, capacity, vect);
 
     for (int i = 0; i <= last; i++) {
         if (vect[i]) {
@@ -235,8 +235,8 @@ int cArray::add(cObject *obj)
     }
     else {  // must allocate bigger vector
         cObject **v = new cObject *[capacity + delta];
-        memcpy(v, vect, sizeof(cObject *) * capacity);
-        memset(v + capacity, 0, sizeof(cObject *) * delta);
+        std::copy_n(vect, capacity, v);
+        std::fill_n(v + capacity, delta, nullptr);
         delete[] vect;
         vect = v;
         vect[capacity] = obj;
@@ -268,8 +268,8 @@ int cArray::addAt(int m, cObject *obj)
     }
     else {  // must allocate bigger vector
         cObject **v = new cObject *[m + delta];
-        memcpy(v, vect, sizeof(cObject *) * capacity);
-        memset(v + capacity, 0, sizeof(cObject *) * (m + delta - capacity));
+        std::copy_n(vect, capacity, v);
+        std::fill_n(v + capacity, m + delta - capacity, nullptr);
         delete[] vect;
         vect = v;
         vect[m] = obj;

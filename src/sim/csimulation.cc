@@ -23,6 +23,7 @@
 #include <cstring>
 #include <cstdio>
 #include <climits>
+#include <algorithm> // copy_n()
 #include "common/stringutil.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/csimplemodule.h"
@@ -290,7 +291,7 @@ int cSimulation::registerComponent(cComponent *component)
     if (lastComponentId >= size) {
         // vector full, grow by delta
         cComponent **v = new cComponent *[size + delta];
-        memcpy(v, componentv, sizeof(cComponent *) * size);
+        std::copy_n(componentv, size, v);
         for (int i = size; i < size + delta; i++)
             v[i] = nullptr;
         delete[] componentv;

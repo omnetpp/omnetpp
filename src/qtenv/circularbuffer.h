@@ -43,8 +43,8 @@ class QTENV_API circular_buffer
             int newsize = 2*cbsize;
             T *newcb = new T[newsize];
 
-            memcpy(newcb, cb + cbhead, (cbsize - cbhead)*sizeof(T));
-            memcpy(newcb + (cbsize - cbhead), cb, cbtail*sizeof(T));
+            std::copy_n(cb + cbhead, cbsize - cbhead, newcb);
+            std::copy_n(cb, cbtail, newcb + (cbsize - cbhead));
 
             delete[] cb;
             cb = newcb;

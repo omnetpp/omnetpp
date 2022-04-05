@@ -18,7 +18,6 @@
 *--------------------------------------------------------------*/
 
 #include <cstdio>  // sprintf, fprintf
-#include <cstring>  // memcmp, memcpy, memset
 #include <sstream>
 #include "omnetpp/globals.h"
 #include "omnetpp/csimulation.h"

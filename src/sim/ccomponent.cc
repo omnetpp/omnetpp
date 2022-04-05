@@ -464,7 +464,7 @@ bool cComponent::SignalListenerList::addListener(cIListener *l)
     // reallocate each time (subscribe operations are rare, so we optimize for memory footprint)
     int n = countListeners();
     cIListener **v = new cIListener *[n + 2];
-    memcpy(v, listeners, n * sizeof(cIListener *));
+    std::copy_n(listeners, n, v);
     v[n] = l;
     v[n+1] = nullptr;
     delete[] listeners;

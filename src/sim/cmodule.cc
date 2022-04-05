@@ -584,7 +584,7 @@ cGate::Desc *cModule::addGateDesc(const char *gatename, cGate::Type type, bool i
 
     // allocate new array
     cGate::Desc *newv = new cGate::Desc[gateDescArraySize + 1];
-    memcpy(newv, gateDescArray, gateDescArraySize * sizeof(cGate::Desc));
+    std::copy_n(gateDescArray, gateDescArraySize, newv);
 
     // adjust desc pointers in already existing gates
     for (int i = 0; i < gateDescArraySize; i++) {
@@ -824,9 +824,9 @@ static void reallocGatev(cGate **& v, int oldSize, int newSize)
 {
     if (oldSize != newSize) {
         cGate **newv = new cGate *[newSize];
-        memcpy(newv, v, (oldSize < newSize ? oldSize : newSize) * sizeof(cGate *));
+        std::copy_n(v, std::min(oldSize, newSize), newv);
         if (newSize > oldSize)
-            memset(newv + oldSize, 0, (newSize - oldSize) * sizeof(cGate *));
+            std::fill_n(newv + oldSize, newSize - oldSize, nullptr);
         delete[] v;
         v = newv;
     }

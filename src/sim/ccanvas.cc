@@ -432,7 +432,7 @@ cFigure::Pixmap& cFigure::Pixmap::operator=(const Pixmap& other)
 {
     if (width != other.width || height != other.height)
         allocate(other.width, other.height);
-    memcpy(data, other.data, width * height * sizeof(RGBA));
+    std::copy_n(other.data, width * height, data);
     return *this;
 }
 
