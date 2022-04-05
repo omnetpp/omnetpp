@@ -46,8 +46,9 @@ static void fillPowersOfTen()
 {
     int64_t power = 1;
     for (int i = 0; i <= MAX_POWER_OF_TEN; i++) {
+        if (i != 0)
+            power *= 10;
         powersOfTen[i] = power;
-        power *= 10;
     }
 }
 
