@@ -1189,7 +1189,7 @@ const char *SectionBasedConfiguration::getConfigValue(const char *key) const
 const cConfiguration::KeyValue& SectionBasedConfiguration::getConfigEntry(const char *key) const
 {
     std::map<std::string, Entry>::const_iterator it = config.find(key);
-    return it == config.end() ? (KeyValue&)nullEntry : (KeyValue&)it->second;
+    return it == config.end() ? (const KeyValue&)nullEntry : (const KeyValue&)it->second;
 }
 
 std::vector<const char *> SectionBasedConfiguration::getMatchingConfigKeys(const char *pattern) const
@@ -1206,8 +1206,9 @@ std::vector<const char *> SectionBasedConfiguration::getMatchingConfigKeys(const
 
 const char *SectionBasedConfiguration::getParameterValue(const char *moduleFullPath, const char *paramName, bool hasDefaultValue) const
 {
-    const SectionBasedConfiguration::MatchableEntry& entry = (MatchableEntry&)getParameterEntry(moduleFullPath, paramName, hasDefaultValue);
-    return entry.getKey() == nullptr ? nullptr : entry.value.c_str();
+    // note: if there's no such entry, getParameterEntry() will return a NullEntry&, whose getValue() returns nullptr
+    const KeyValue& entry = getParameterEntry(moduleFullPath, paramName, hasDefaultValue);
+    return entry.getValue();
 }
 
 const cConfiguration::KeyValue& SectionBasedConfiguration::getParameterEntry(const char *moduleFullPath, const char *paramName, bool hasDefaultValue) const
@@ -1285,8 +1286,9 @@ bool SectionBasedConfiguration::isEssentialOption(const char *key) const
 
 const char *SectionBasedConfiguration::getPerObjectConfigValue(const char *objectFullPath, const char *keySuffix) const
 {
-    const SectionBasedConfiguration::MatchableEntry& entry = (MatchableEntry&)getPerObjectConfigEntry(objectFullPath, keySuffix);
-    return entry.getKey() == nullptr ? nullptr : entry.value.c_str();
+    // note: if there's no such entry, getPerObjectConfigEntry() will return a NullEntry&, whose getValue() returns nullptr
+    const KeyValue& entry = getPerObjectConfigEntry(objectFullPath, keySuffix);
+    return entry.getValue();
 }
 
 const cConfiguration::KeyValue& SectionBasedConfiguration::getPerObjectConfigEntry(const char *objectFullPath, const char *keySuffix) const
