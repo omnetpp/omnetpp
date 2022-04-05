@@ -105,8 +105,7 @@ class QTENV_API LogBuffer : public QObject
     std::multimap<cMessage *, cMessage *> messageDups;
 
   public:
-    ~LogBuffer() { clear(); }
-
+    ~LogBuffer();
     void addInitialize(cComponent *component, const char *banner);
     void addEvent(eventnumber_t e, simtime_t t, cModule *moduleIds, const char *banner);
     void addLogLine(LogLevel logLevel, const char *prefix, const char *text) { addLogLine(logLevel, prefix, text, strlen(text)); }

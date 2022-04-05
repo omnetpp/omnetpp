@@ -68,6 +68,13 @@ LogBuffer::Entry::~Entry()
 
 //----
 
+LogBuffer::~LogBuffer()
+{
+    // note: calling clear() is not good, because it allocates a new entry that would be leaked
+    for (int i = 0; i < entries.size(); i++)
+        delete entries[i];
+}
+
 void LogBuffer::addEvent(eventnumber_t e, simtime_t t, cModule *mod, const char *banner)
 {
     Entry *entry = new Entry(Entry::Kind::PROCESSED_EVENT, e, t, mod, banner);
