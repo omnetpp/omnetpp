@@ -572,7 +572,8 @@ void cKSplit::printGrids() const
 void cKSplit::iteratorToCell(int cell_nr) const
 {
     // create iterator or reinit if it is stale
-    iter = nullptr; //FIXME why?
+    delete iter;
+    iter = nullptr;
     if (!iter) {
         iter = new Iterator(*this);
         iterNumValues = numValues;
