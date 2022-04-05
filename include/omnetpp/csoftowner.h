@@ -37,9 +37,9 @@ class SIM_API cSoftOwner : public cNoncopyableOwnedObject
     friend class cChannelType;
 
   private:
-    cOwnedObject **objs; // array of owned objects
-    int numObjs;         // number of elements used in objects[] (0..num-1)
-    int capacity;        // allocated size of objs[]
+    cOwnedObject **objs = nullptr; // array of owned objects
+    int numObjs = 0;         // number of elements used in objects[] (0..num-1)
+    int capacity = 0;        // allocated size of objs[]
 
 #ifdef SIMFRONTEND_SUPPORT
   private:
@@ -47,7 +47,6 @@ class SIM_API cSoftOwner : public cNoncopyableOwnedObject
 #endif
 
   private:
-    void construct();
     void doInsert(cOwnedObject *obj);
     virtual void ownedObjectDeleted(cOwnedObject *obj) override;
     virtual void yieldOwnership(cOwnedObject *obj, cObject *newOwner) override;
@@ -56,6 +55,9 @@ class SIM_API cSoftOwner : public cNoncopyableOwnedObject
     virtual void objectStealingOnDeletion(cOwnedObject *obj);
 
   public:
+    // internal: constructor for the global cSoftOwner instance globalOwningContext which has no owner
+    explicit cSoftOwner(const char *name, bool namepooling, internal::Void *dummy) : cNoncopyableOwnedObject(name, namepooling, dummy) {}
+
 #ifdef SIMFRONTEND_SUPPORT
     // internal: used by the UI to optimize refreshes
     void updateLastChangeSerial()  {lastChangeSerial = changeCounter++;}

@@ -54,12 +54,11 @@ cSoftOwner *cOwnedObject::owningContext = &globalOwningContext;
 long cOwnedObject::totalObjectCount = 0;
 long cOwnedObject::liveObjectCount = 0;
 
-cSoftOwner globalOwningContext("globalOwningContext", false);
+cSoftOwner globalOwningContext("globalOwningContext", false, (internal::Void*)nullptr);
 
 cOwnedObject::cOwnedObject()
 {
-    //TODO: in DEBUG mode, assert that this is not a static member / global variable! (using cStaticFlag)
-    owningContext->doInsert(this);
+    owningContext->doInsert(this); // sets owner pointer too
 
     // statistics
     totalObjectCount++;
@@ -74,6 +73,17 @@ cOwnedObject::cOwnedObject(const char *name, bool namepooling) : cNamedObject(na
     owningContext->doInsert(this);
 
     // statistics
+    totalObjectCount++;
+    liveObjectCount++;
+#ifdef DEVELOPER_DEBUG
+    objectlist.insert(this);
+#endif
+}
+
+// for constructing the global cSoftOwner instance globalOwningContext which has no owner
+cOwnedObject::cOwnedObject(const char *name, bool namepooling, internal::Void *dummy) : cNamedObject(name, namepooling)
+{
+    owner = nullptr;
     totalObjectCount++;
     liveObjectCount++;
 #ifdef DEVELOPER_DEBUG

@@ -56,22 +56,6 @@ EXECUTE_ON_STARTUP(cSimulation::getActiveEnvir()->addLifecycleListener(new Local
 
 cSoftOwner::cSoftOwner(const char *name, bool namepooling) : cNoncopyableOwnedObject(name, namepooling)
 {
-    // careful: if we are a global variable (ctor called before main()),
-    // then insert() may get called before constructor and it invoked
-    // construct() already.
-    if (cStaticFlag::insideMain() || capacity == 0)
-        construct();
-
-    // if we're invoked before main, then we are a global variable (dynamic
-    // instances of cSoftOwner are not supposed to be created
-    // before main()) --> remove ourselves from ownership tree because
-    // we shouldn't be destroyed via operator delete
-    if (!cStaticFlag::insideMain())
-        removeFromOwnershipTree();
-}
-
-void cSoftOwner::construct()
-{
     capacity = 2;
     numObjs = 0;
     objs = new cOwnedObject *[capacity];
@@ -108,18 +92,12 @@ void cSoftOwner::doInsert(cOwnedObject *obj)
     ASSERT2(obj != this || this == &globalOwningContext, "Cannot insert object in itself");
 
     if (numObjs >= capacity) {
-        if (capacity == 0) {
-            // this is if we're invoked before main, before our ctor run
-            construct();
-        }
-        else {
-            // must allocate bigger vector (grow 25% but at least 2)
-            capacity += (capacity < 8) ? 2 : (capacity >> 2);
-            cOwnedObject **v = new cOwnedObject *[capacity];
-            std::copy_n(objs, numObjs, v);
-            delete[] objs;
-            objs = v;
-        }
+        // must allocate bigger vector (grow 25% but at least 2)
+        capacity += (capacity < 8) ? 2 : (capacity >> 2);
+        cOwnedObject **v = new cOwnedObject *[capacity];
+        std::copy_n(objs, numObjs, v);
+        delete[] objs;
+        objs = v;
     }
 
     obj->owner = this;

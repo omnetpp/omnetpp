@@ -25,14 +25,15 @@
 
 namespace omnetpp {
 
-
 class cOwnedObject;
+class cNoncopyableOwnedObject;
 class cStaticFlag;
 class cSimulation;
 class cSoftOwner;
 class cMessage;
 class cPacket;
 
+namespace internal { class Void; }
 
 /**
  * @brief A cObject that keeps track of its owner. It serves as base class
@@ -104,6 +105,7 @@ class cPacket;
 class SIM_API cOwnedObject : public cNamedObject
 {
     friend class cObject;
+    friend class cNoncopyableOwnedObject;
     friend class cSoftOwner;
     friend class cSimulation;
     friend class cMessage;  // because of refcounting business
@@ -113,7 +115,6 @@ class SIM_API cOwnedObject : public cNamedObject
     cObject *owner;    // owner pointer
     unsigned int pos;  // used only when owner is a cSoftOwner
 
-  private:
     // list in which objects are accumulated if there is no simple module in context
     // (see also setOwningContext() and cSimulation::setContextModule())
     static cSoftOwner *owningContext;
@@ -123,6 +124,7 @@ class SIM_API cOwnedObject : public cNamedObject
     static long liveObjectCount;
 
   private:
+    cOwnedObject(const char *name, bool namepooling, internal::Void *dummy);
     void copy(const cOwnedObject& obj);
 
   public:
@@ -239,7 +241,9 @@ class SIM_API cOwnedObject : public cNamedObject
  */
 class SIM_API cNoncopyableOwnedObject : public cOwnedObject, noncopyable
 {
+    friend class cSoftOwner;
   private:
+    cNoncopyableOwnedObject(const char *name, bool namepooling, internal::Void *dummy) : cOwnedObject(name, namepooling, dummy) {}
     virtual void parsimPack(cCommBuffer *) const override {throw cRuntimeError(this, E_CANTPACK);}
     virtual void parsimUnpack(cCommBuffer *) override {throw cRuntimeError(this, E_CANTPACK);}
 
