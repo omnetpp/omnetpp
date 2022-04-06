@@ -102,6 +102,9 @@ void ResultFileManager::clear()
     moduleNames.clear();
     names.clear();
     classNames.clear();
+
+    for (const StringMap *attrs : attrsPool)
+        delete attrs;
 }
 
 ResultFileList ResultFileManager::getFiles() const
