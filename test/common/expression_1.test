@@ -1,6 +1,10 @@
 %description:
 Tests the expression evaluation class
 
+Notes for MODE=sanitize:
+- false positive stack overflow; rewriting to use initialize() instead of activity() makes it go away
+- some of the "syntax error" cases leak memory (this is expected)
+
 %includes:
 #include <common/expression.h>
 #include <common/exprnodes.h>

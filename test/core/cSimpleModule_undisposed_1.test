@@ -1,6 +1,8 @@
 %description:
 Verify that undisposed objects are reported, incl. the full paths of the modules that own them.
 
+Note: This test FAILs in MODE=sanitize because of (intended) memory leaks.
+
 %file: package.ned
 
 @namespace(@TESTNAME@);
