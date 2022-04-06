@@ -82,8 +82,10 @@ void SqliteVectorFileWriter::close()
         executeSql("PRAGMA journal_mode = DELETE;");
         checkOK(sqlite3_close(db));
 
-        runId = -1;
+        clearVectors();
+
         db = nullptr;
+        runId = -1;
         fname = "";
     }
 }
@@ -101,6 +103,8 @@ void SqliteVectorFileWriter::cleanup()  // MUST NOT THROW
         sqlite3_exec(db, "COMMIT TRANSACTION;", nullptr, nullptr, nullptr);
         sqlite3_exec(db, "PRAGMA journal_mode = DELETE;", nullptr, nullptr, nullptr);
         sqlite3_close(db);
+
+        clearVectors();
 
         db = nullptr;
         runId = -1;
@@ -224,12 +228,25 @@ void SqliteVectorFileWriter::endRecordingForRun()
 {
     Assert(db != nullptr);
 
-    for (VectorData *vp : vectors)
-        finalizeVector(vp); //TODO currently these all go in separate transactions
+    try {
+        for (VectorData *vp : vectors)
+            finalizeVector(vp); //TODO currently these all go in separate transactions
+        clearVectors();
+        runId = -1;
+    }
+    catch (std::exception&) {
+        clearVectors();
+        runId = -1;
+        throw;
+    }
+}
 
-    bufferedSamples = 0;
+void SqliteVectorFileWriter::clearVectors()
+{
+    for (VectorData *vp : vectors)
+        delete vp;
     vectors.clear();
-    runId = -1;
+    bufferedSamples = 0;
 }
 
 void *SqliteVectorFileWriter::registerVector(const std::string& componentFullPath, const std::string& name, const StringMap& attributes, size_t bufferSize)

@@ -79,6 +79,7 @@ class COMMON_API SqliteVectorFileWriter
   protected:
     void prepareStatements();
     void cleanup();  // MUST NOT THROW
+    void clearVectors();  // ditto
     virtual void writeRecords();
     virtual void writeOneBlock(VectorData *vp);
     virtual void writeBlock(VectorData *vp);
