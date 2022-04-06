@@ -120,6 +120,8 @@ public:
     AbstractEventEntryLinesProvider(int inspectedComponentId, const std::set<int>& excludedComponents, ComponentHistory *componentHistory)
         : inspectedComponentId(inspectedComponentId), excludedComponents(excludedComponents), componentHistory(componentHistory) { }
 
+    virtual ~AbstractEventEntryLinesProvider() { }
+
     virtual int getNumLines(LogBuffer::Entry *entry) = 0;
     virtual QString getLineText(LogBuffer::Entry *entry, int lineIndex) = 0;
 
@@ -195,6 +197,7 @@ class QTENV_API ModuleOutputContentProvider: public TextViewerContentProvider {
 
 public:
     ModuleOutputContentProvider(Qtenv *qtenv, cComponent *inspectedComponent, LogInspector::Mode mode, const cMessagePrinter::Options *messagePrinterOptions);
+    ~ModuleOutputContentProvider();
 
     LogBuffer *getLogBuffer() { return logBuffer; }
     ComponentHistory *getComponentHistory() { return componentHistory; }

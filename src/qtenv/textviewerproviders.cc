@@ -80,6 +80,11 @@ ModuleOutputContentProvider::ModuleOutputContentProvider(Qtenv *qtenv, cComponen
     connect(logBuffer, SIGNAL(entryDiscarded(LogBuffer::Entry *)), this, SLOT(onEntryDiscarded(LogBuffer::Entry *)));
 }
 
+ModuleOutputContentProvider::~ModuleOutputContentProvider()
+{
+    delete linesProvider;
+}
+
 void ModuleOutputContentProvider::setExcludedModuleIds(std::set<int> excludedModuleIds)
 {
     this->excludedModuleIds = excludedModuleIds;
