@@ -17,6 +17,7 @@
 #ifndef __OMNETPP_QTENV_GRAPHICSITEMS_H
 #define __OMNETPP_QTENV_GRAPHICSITEMS_H
 
+#include <cmath> // for NAN
 #include <QtWidgets/QGraphicsObject>
 #include <QtWidgets/QGraphicsEffect>
 #include <QtGui/QFont>
@@ -150,7 +151,7 @@ public:
 class QTENV_API ZoomLabel : public QGraphicsSimpleTextItem
 {
 private:
-    double zoomFactor;
+    double zoomFactor = NAN;
 
 protected:
     void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget) override;
