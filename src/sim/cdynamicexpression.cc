@@ -66,6 +66,9 @@ cDynamicExpression::cDynamicExpression() : expression(new Expression())
 
 cDynamicExpression::~cDynamicExpression()
 {
+    auto resolvers = expression->getDynamicResolvers();
+    for (auto resolver: resolvers)
+        delete resolver;
     delete expression;
     delete resolver;
 }
@@ -121,6 +124,7 @@ void cDynamicExpression::setResolver(IResolver *res)
     expression->clearDynamicResolvers();
     for (auto resolver: resolvers)
         delete resolver;
+    delete resolver;
 
     resolver = res;
     expression->addDynamicResolver(new DynamicResolver(res));
