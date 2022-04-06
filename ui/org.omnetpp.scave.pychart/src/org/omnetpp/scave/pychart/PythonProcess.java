@@ -91,7 +91,7 @@ public class PythonProcess {
             Debug.println("getting entry point...");
         int tries = 0;
         boolean ok = false;
-        while (!ok && tries < 5) {
+        while (!ok && tries < 10) {
             try {
                 entryPoint = (IPythonEntryPoint) clientServer
                         .getPythonServerEntryPoint(new Class[] { IPythonEntryPoint.class });
