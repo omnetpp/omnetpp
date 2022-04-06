@@ -185,6 +185,9 @@ private:
     std::vector<Block *> blocks; // all the blocks in the vector file
 
 public:
+    VectorFileIndex() {}
+
+    ~VectorFileIndex();
 
     void addBlock(Block *block) { blocks.push_back(block); }
 

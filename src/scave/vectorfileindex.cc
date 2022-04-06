@@ -156,6 +156,13 @@ std::vector<Block>::size_type VectorInfo::getBlocksInEventnumInterval(eventnumbe
 #endif
 #define CHECK(cond,msg) if (!(cond)) throw ResultFileFormatException(msg, filename, lineNo);
 
+
+VectorFileIndex::~VectorFileIndex()
+{
+    for (Block *block : blocks)
+        delete block;
+}
+
 bool VectorFileIndex::RunData::parseLine(char **tokens, int numTokens, const char *filename, int64_t lineNo)
 {
     if (tokens[0][0] == 'a' && strcmp(tokens[0], "attr") == 0) {
