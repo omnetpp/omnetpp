@@ -448,7 +448,7 @@ void EventlogFileManager::beginSend(cMessage *msg, const SendOptions& options)
         cModule *ownerModule = dynamic_cast<cModule *>(msg->getOwner());
         bool isScheduled = msg->isScheduled();
         bool isPacket = msg->isPacket();
-        cPacket *pkt = (cPacket *)msg;
+        cPacket *pkt = isPacket ? (cPacket *)msg : nullptr; // note: simply `(cPacket *)msg` would cause sanitizer to complain about illegal cast
         EventLogWriter::recordBeginSendEntry_id_tid_eid_etid_c_n_k_p_l_er_m_sm_sg_st_am_ag_at_d_pe_sd_up_tx(feventlog,
             msg->getId(), msg->getTreeId(), isPacket ? pkt->getEncapsulationId() : msg->getId(), isPacket ? pkt->getEncapsulationTreeId() : msg->getTreeId(),
             msg->getClassName(), msg->getFullName(),
@@ -482,7 +482,7 @@ void EventlogFileManager::messageCancelled(cMessage *msg)
         cModule *ownerModule = dynamic_cast<cModule *>(msg->getOwner());
         bool isScheduled = msg->isScheduled();
         bool isPacket = msg->isPacket();
-        cPacket *pkt = (cPacket *)msg;
+        cPacket *pkt = isPacket ? (cPacket *)msg : nullptr;
         EventLogWriter::recordCancelEventEntry_id_tid_eid_etid_c_n_k_p_l_er_m_sm_sg_st_am_ag_at_d_pe(feventlog,
             msg->getId(), msg->getTreeId(), isPacket ? pkt->getEncapsulationId() : msg->getId(), isPacket ? pkt->getEncapsulationTreeId() : msg->getTreeId(),
             msg->getClassName(), msg->getFullName(),
@@ -538,7 +538,7 @@ void EventlogFileManager::endSend(cMessage *msg)
         cModule *ownerModule = dynamic_cast<cModule *>(msg->getOwner());
         bool isScheduled = msg->isScheduled();
         bool isPacket = msg->isPacket();
-        cPacket *pkt = (cPacket *)msg;
+        cPacket *pkt = isPacket ? (cPacket *)msg : nullptr;
         EventLogWriter::recordEndSendEntry_id_tid_eid_etid_c_n_k_p_l_er_m_sm_sg_st_am_ag_at_d_pe_i(feventlog,
             msg->getId(), msg->getTreeId(), isPacket ? pkt->getEncapsulationId() : msg->getId(), isPacket ? pkt->getEncapsulationTreeId() : msg->getTreeId(),
             msg->getClassName(), msg->getFullName(),
@@ -558,7 +558,7 @@ void EventlogFileManager::messageCreated(cMessage *msg)
     if (isEventRecordingEnabled && isMessageRecordingEnabled) {
         FileLockAcquirer fileLockAcquirer(fileLock, FILE_LOCK_EXCLUSIVE);
         bool isPacket = msg->isPacket();
-        cPacket *pkt = (cPacket *)msg;
+        cPacket *pkt = isPacket ? (cPacket *)msg : nullptr;
         EventLogWriter::recordCreateMessageEntry_id_tid_eid_etid_c_n_k_p_l_er_m_sm_sg_st_am_ag_at_d_pe(feventlog,
             msg->getId(), msg->getTreeId(), isPacket ? pkt->getEncapsulationId() : msg->getId(), isPacket ? pkt->getEncapsulationTreeId() : msg->getTreeId(),
             msg->getClassName(), msg->getFullName(),
@@ -578,7 +578,7 @@ void EventlogFileManager::messageCloned(cMessage *msg, cMessage *clone)
         cModule *ownerModule = dynamic_cast<cModule *>(clone->getOwner());
         bool isScheduled = clone->isScheduled();
         bool isPacket = clone->isPacket();
-        cPacket *pkt = (cPacket *)msg;
+        cPacket *pkt = isPacket ? (cPacket *)msg : nullptr;
         EventLogWriter::recordCloneMessageEntry_id_tid_eid_etid_c_n_k_p_l_er_m_sm_sg_st_am_ag_at_d_pe_cid(feventlog,
             clone->getId(), clone->getTreeId(), isPacket ? pkt->getEncapsulationId() : clone->getId(), isPacket ? pkt->getEncapsulationTreeId() : clone->getTreeId(),
             clone->getClassName(), clone->getFullName(),
@@ -601,7 +601,7 @@ void EventlogFileManager::messageDeleted(cMessage *msg)
         FileLockAcquirer fileLockAcquirer(fileLock, FILE_LOCK_EXCLUSIVE);
         cModule *ownerModule = dynamic_cast<cModule *>(msg->getOwner());
         bool isPacket = msg->isPacket();
-        cPacket *pkt = (cPacket *)msg;
+        cPacket *pkt = isPacket ? (cPacket *)msg : nullptr;
         EventLogWriter::recordDeleteMessageEntry_id_tid_eid_etid_c_n_k_p_l_er_m_sm_sg_st_am_ag_at_d_pe(feventlog,
             msg->getId(), msg->getTreeId(), isPacket ? pkt->getEncapsulationId() : msg->getId(), isPacket ? pkt->getEncapsulationTreeId() : msg->getTreeId(),
             msg->getClassName(), msg->getFullName(),
@@ -1006,7 +1006,7 @@ void EventlogFileManager::recordMessage(cMessage *msg)
     cModule *ownerModule = dynamic_cast<cModule *>(msg->getOwner());
     bool isScheduled = msg->isScheduled();
     bool isPacket = msg->isPacket();
-    cPacket *pkt = (cPacket *)msg;
+    cPacket *pkt = isPacket ? (cPacket *)msg : nullptr;
     EventLogWriter::recordMessageFoundEntry_id_tid_eid_etid_c_n_k_p_l_er_m_sm_sg_st_am_ag_at_d_pe(feventlog,
         msg->getId(), msg->getTreeId(), isPacket ? pkt->getEncapsulationId() : msg->getId(), isPacket ? pkt->getEncapsulationTreeId() : msg->getTreeId(),
         msg->getClassName(), msg->getFullName(),
