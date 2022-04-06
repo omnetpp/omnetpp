@@ -336,7 +336,7 @@ keyvalue
 
 key
         : STRINGCONSTANT
-                { $<str>$ = opp_strdup(opp_parsequotedstr($1,0).c_str()); }
+                { $<str>$ = opp_strdup(opp_parsequotedstr($1,0).c_str()); delete [] $1; }
         | NAME
         | INTCONSTANT
         | REALCONSTANT
