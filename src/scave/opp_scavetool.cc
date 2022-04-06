@@ -734,7 +734,8 @@ void ScaveTool::exportCommand(int argc, char **argv)
     }
     if (opt_exporter == "")
         throw opp_runtime_error("Exporter type could not be deduced from file name, must be specified (-F option)");
-    Exporter *exporter = ExporterFactory::createExporter(opt_exporter);
+
+    std::unique_ptr<Exporter> exporter(ExporterFactory::createExporter(opt_exporter));
     if (!exporter)
         throw opp_runtime_error("Unrecognized export format '%s' (accepted ones: %s)", opt_exporter.c_str(), opp_join(ExporterFactory::getSupportedFormats(), ", ", '\'').c_str());
 
@@ -765,7 +766,6 @@ void ScaveTool::exportCommand(int argc, char **argv)
     if (unsupportedItemTypes != 0)
         throw opp_runtime_error("Data set contains items of type not supported by the export format, use -T option to filter");
 
-
     // export
     if (opt_verbose)
         cout << "exporting to " << opt_fileName << "... " << std::flush;
@@ -784,8 +784,6 @@ void ScaveTool::exportCommand(int argc, char **argv)
         pushCountIfPositive(v, results.countByTypes(ResultFileManager::HISTOGRAM), "histogram");
         cout << "Exported " << (results.isEmpty() ? "empty data set" : opp_join(v, ", ")) << endl;
     }
-
-    delete exporter; //TODO don't leak exporter in case of exception!
 
     //TODO delete output file in case of exception?
 }
