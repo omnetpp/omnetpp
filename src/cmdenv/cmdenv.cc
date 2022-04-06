@@ -349,13 +349,18 @@ void Cmdenv::simulate()
 
     cSimulation *simulation = getSimulation();
 
-    auto finally = [&] {
-        if (opt->expressMode)
-            doStatusUpdate(speedometer);
-        loggingEnabled = true;
-        stopClock();
-        deinstallSignalHandler();
-    };
+    // The following macro was originally written as a lambda, but on macOS it caused
+    // the program to crash while writing to the `out` stream after returning from simulate(),
+    // due to some spurious compiler bug which only manifested in MODE=debug.
+    // Converting `auto finally = [&] { ... }` to a macro solved the issue.
+
+#define FINALLY() { \
+        if (opt->expressMode) \
+            doStatusUpdate(speedometer); \
+        loggingEnabled = true; \
+        stopClock(); \
+        deinstallSignalHandler(); \
+    }
 
     try {
         if (!opt->expressMode) {
@@ -420,18 +425,19 @@ void Cmdenv::simulate()
                     throw cTerminationException("SIGINT or SIGTERM received, exiting");
             }
         }
-        finally();
+        FINALLY();
     }
     catch (cTerminationException& e) {
-        finally();
+        FINALLY();
         stoppedWithTerminationException(e);
         displayException(e);
         return;
     }
     catch (std::exception& e) {
-        finally();
+        FINALLY();
         throw;
     }
+#undef FINALLY
 }
 
 void Cmdenv::printEventBanner(cEvent *event)
