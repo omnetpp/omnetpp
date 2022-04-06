@@ -147,11 +147,17 @@ ChartTickDecimal::ChartTickDecimal(int64_t man, int exp)
 ChartTickDecimal::ChartTickDecimal(double val)
 {
     Assert(std::isfinite(val));
-    int magnitude = std::ceil(std::log10(std::abs(val)));
-    const int maxMagnitude = 14; // we are limited by the poor accuracy of std::pow on Windows (double type in itself would have 15 digit accuracy)
-    exponent = magnitude - maxMagnitude;
-    mantissa = val * std::pow(10, -exponent);
-    normalize();
+    if (val == 0) {
+        mantissa = 0;
+        exponent = 0;
+    }
+    else {
+        int magnitude = std::ceil(std::log10(std::abs(val)));  // note: if val!=0, magnitude will be within -308..+309 (fits in an int)
+        const int maxMagnitude = 14; // we are limited by the poor accuracy of std::pow on Windows (double type in itself would have 15 digit accuracy)
+        exponent = magnitude - maxMagnitude;
+        mantissa = val * std::pow(10, -exponent);
+        normalize();
+    }
 }
 
 int ChartTickDecimal::magnitudeOf(int64_t x)
