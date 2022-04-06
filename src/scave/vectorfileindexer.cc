@@ -167,6 +167,7 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
                     }
                     else {
                         Assert(currentBlock->getCount() == 0);
+                        delete currentBlock;
                     }
 
                     currentBlock = new Block();
@@ -205,13 +206,18 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
         }
 
         // finish last block
-        if (currentBlock->getCount() > 0) {
+        if (currentBlock->getCount() == 0) {
+            delete currentBlock;
+            currentBlock = nullptr;
+        }
+        else {
             Assert(currentVectorRef != nullptr);
             currentBlock->size = (int64_t)(reader.getFileSize() - currentBlock->startOffset);
             if (currentBlock->size > currentVectorRef->blockSize)
                 currentVectorRef->blockSize = currentBlock->size;
             currentVectorRef->addBlock(currentBlock);
             index.addBlock(currentBlock);
+            currentBlock = nullptr;
         }
 
         if (numOfUnrecognizedLines > 0) {
@@ -219,6 +225,7 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
         }
     }
     catch (exception&) {
+        delete currentBlock;
         if (monitor)
             monitor->done();
         throw;
