@@ -153,6 +153,16 @@ static double parseQuantity(const char *text, std::string& unit)
     }
 }
 
+static bool isIntegerValued(double d)
+{
+    if (std::isnan(d) || d < (double)INT64_MIN || d > (double)INT64_MAX)  // just to avoid UndefinedBehaviorSanitizer message "<value> is outside the range of representable values of type 'long'"
+        return false;
+
+    // check that when converted to integer and back to double, it stays the same
+    intval_t l = (intval_t)d;
+    return d == l;
+}
+
 %}
 
 %%
@@ -399,9 +409,8 @@ numliteral
                 {
                   std::string unit;
                   double d = parseQuantity($<str>1, unit);
-                  intval_t l = (intval_t)d;
-                  if (d == l)
-                      $<node>$ = newConstant(ExprValue(l, unit.c_str()));
+                  if (isIntegerValued(d))
+                      $<node>$ = newConstant(ExprValue((intval_t)d, unit.c_str()));
                   else
                       $<node>$ = newConstant(ExprValue(d, unit.c_str()));
                   delete [] $<str>1;
