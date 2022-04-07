@@ -90,15 +90,16 @@ class SIM_API SimTime
 
   private:
     template<typename T> void assertInited(T d) {if (scaleexp==SCALEEXP_UNINITIALIZED) initError(d);}
-    void initError(double d);
+    [[noreturn]] void initError(double d);
 
     bool haveSameSign(int64_t a, int64_t b) { return (a^b) >= 0; }
 
     int64_t toInt64(double i64) {
          i64 = floor(i64 + 0.5);
-         if (fabs(i64) > INT64_MAX_DBL)
+         if (fabs(i64) <= INT64_MAX_DBL)
+             return (int64_t)i64;
+         else // out of range or NaN
              rangeErrorInt64(i64);
-         return (int64_t)i64;
     }
 
     void setSeconds(int64_t sec) {
@@ -124,11 +125,12 @@ class SIM_API SimTime
     }
 
     void checkedMul(int64_t x);
-    void rangeErrorInt64(double i64);
-    void rangeErrorSeconds(int64_t x);
-    void overflowAdding(const SimTime& x);
-    void overflowSubtracting(const SimTime& x);
-    void overflowNegating();
+
+    [[noreturn]] void rangeErrorInt64(double i64);
+    [[noreturn]] void rangeErrorSeconds(int64_t x);
+    [[noreturn]] void overflowAdding(const SimTime& x);
+    [[noreturn]] void overflowSubtracting(const SimTime& x);
+    [[noreturn]] void overflowNegating();
 
   public:
     // internal: Formats a time string. Use SIMTIME_MS etc constants for prec. Note: it performs TRUNCATION towards zero, not rounding!
