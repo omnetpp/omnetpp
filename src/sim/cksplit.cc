@@ -571,6 +571,16 @@ void cKSplit::printGrids() const
 
 void cKSplit::iteratorToCell(int cell_nr) const
 {
+    // Note: Ideally, we should always just use the existing iterator instance,
+    // and increment/decrement it to reach the desired cell. However, iteration
+    // will cause numeric errors to accumulate, causing bin edges to be
+    // slightly off, potentially causing the recorded histogram (or the fingerprint
+    // if it contains statistic results as ingredient) to be off.
+    // Saved results/fingerprint should not depend on the iteration history,
+    // so we always create a new iterator for now, until the issue is resolved.
+    delete iter;
+    iter = nullptr;
+
     // create iterator or reinit if it is stale
     if (!iter) {
         iter = new Iterator(*this);
