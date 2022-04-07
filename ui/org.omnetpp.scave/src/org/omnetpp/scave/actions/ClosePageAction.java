@@ -25,6 +25,7 @@ public class ClosePageAction extends AbstractScaveAction {
         setText("Close");
         setDescription("Close current page");
         setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_CLOSE));
+        setActionDefinitionId("org.omnetpp.scave.editor.CloseChart");
     }
 
     @Override

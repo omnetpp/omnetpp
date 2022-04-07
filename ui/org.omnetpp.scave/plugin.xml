@@ -36,6 +36,36 @@
    </extension>
 
    <extension
+         point="org.eclipse.ui.contexts">
+      <context
+            description="OMNeT++ Analysis Tool Editor"
+            id="org.omnetpp.context.scaveEditor"
+            name="Analysis Tool"
+            parentId="org.eclipse.ui.textEditorScope">
+      </context>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            categoryId="org.eclipse.ui.category.textEditor"
+            description="Close the current chart"
+            id="org.omnetpp.scave.editor.CloseChart"
+            name="Close Chart">
+      </command>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="org.omnetpp.scave.editor.CloseChart"
+            contextId="org.omnetpp.context.scaveEditor"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M3+W">
+      </key>
+   </extension>
+
+   <extension
          id="org.omnetpp.scave.content-types"
          name="Scave content types"
          point="org.eclipse.core.runtime.contentTypes">

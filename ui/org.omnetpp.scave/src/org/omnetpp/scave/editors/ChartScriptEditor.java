@@ -221,6 +221,8 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
     private boolean autoRefreshChart = true;
     private ToggleAutoRefreshAction toggleAutoRefreshAction;
 
+    private ClosePageAction closePageAction = new ClosePageAction();
+
     // if the document has changed since last saving (independent of the Chart object in the model)
     private boolean scriptChangedFlag = false;
 
@@ -716,7 +718,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         chartPage.addSeparatorToToolbar();
         chartPage.addToToolbar(new RefreshResultFilesAction());
         chartPage.addSeparatorToToolbar();
-        chartPage.addToToolbar(new ClosePageAction());
+        chartPage.addToToolbar(closePageAction);
     }
 
     // Overriding this is only necessary because we are replacing the SourceViewerConfiguration,
@@ -900,6 +902,18 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         sourceEditorContainer.setVisible(show);
         sashForm.layout();
         showSource = show;
+    }
+
+    @Override
+    protected void initializeKeyBindingScopes() {
+        super.initializeKeyBindingScopes();
+        setKeyBindingScopes(new String[] {"org.omnetpp.context.scaveEditor"});
+    }
+
+    @Override
+    protected void createActions() {
+        super.createActions();
+        setAction(closePageAction.getActionDefinitionId(), closePageAction);
     }
 
     public void revealErrorAnnotation() {
