@@ -604,7 +604,7 @@ class SIM_API cComponent : public cSoftOwner //implies noncopyable
     /**
      * Produces a random integer in the range [0,r) using the RNG given with its index.
      */
-    virtual unsigned long intrand(long r, int rng=0) const  {return getRNG(rng)->intRand(r);}
+    virtual uint32_t intrand(uint32_t r, int rng=0) const  {return getRNG(rng)->intRand(r);}
 
     /**
      * Produces a random double in the range [0,1) using the RNG given with its index.

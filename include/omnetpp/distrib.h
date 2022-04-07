@@ -17,16 +17,23 @@
 
 namespace omnetpp {
 
-//TODO @group etc
+/**
+ * @ingroup RandomNumbers
+ * @defgroup RandomNumbersUtil Utility functions
+ * @brief Utility functions
+ */
+//@{
+
 /**
  * @brief Produces a random integer in the range [0,r) using the RNG given with its index.
  */
-inline unsigned long intrand(cRNG *rng, long r)  {return rng->intRand(r);}
+inline uint32_t intrand(cRNG *rng, uint32_t r)  {return rng->intRand(r);}
 
 /**
  * @brief Produces a random double in the range [0,1) using the RNG given with its index.
  */
 inline double dblrand(cRNG *rng)  {return rng->doubleRand();}
+//@}
 
 /**
  * @ingroup RandomNumbers
