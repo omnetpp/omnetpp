@@ -21,8 +21,10 @@
 
 namespace omnetpp {
 
-/** @ingroup RegMacros */
-//@{
+/**
+ * @ingroup RegMacros
+ * @{
+ */
 
 /**
  * @brief Registers a C/C++ mathematical function for use in NED and ini files. The function
@@ -289,7 +291,7 @@ namespace omnetpp {
 #define Register_Figure(NAME, CLASSNAME)  \
   __REGISTER_CLASS_X(CLASSNAME, omnetpp::cFigure, "figure", omnetpp::internal::figureTypes[NAME] = omnetpp::opp_typename(typeid(CLASSNAME)))
 
-//@}
+/** @} */
 
 }  // namespace omnetpp
 

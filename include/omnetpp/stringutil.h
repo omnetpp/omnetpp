@@ -24,8 +24,10 @@
 
 namespace omnetpp {
 
-/** @addtogroup Utilities */
-//@{
+/**
+ * @addtogroup Utilities
+ * @{
+ */
 
 /**
  * @brief Returns true if the string is nullptr or has zero length.
@@ -340,7 +342,7 @@ SIM_API double opp_strtod(const char *s, char **endptr);
  */
 SIM_API double opp_atof(const char *s);
 
-//@}
+/** @} */
 
 }  // namespace omnetpp
 

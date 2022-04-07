@@ -310,8 +310,10 @@ void createStdPointerMapWatcher(const char *varname, std::map<KeyT,ValueT,CmpT>&
 }
 
 
-/** @ingroup WatchMacros */
-//@{
+/**
+ * @ingroup WatchMacros
+ * @{
+ */
 
 /**
  * @brief Makes std::vectors inspectable in Qtenv. See also WATCH_PTRVECTOR().
@@ -368,7 +370,8 @@ void createStdPointerMapWatcher(const char *varname, std::map<KeyT,ValueT,CmpT>&
  * @hideinitializer
  */
 #define WATCH_PTRMAP(m)            omnetpp::createStdPointerMapWatcher(#m,(m))
-//@}
+
+/** @} */
 
 }  // namespace omnetpp
 

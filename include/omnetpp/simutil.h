@@ -28,8 +28,10 @@ namespace omnetpp {
 class cObject;
 class cComponent;
 
-/** @addtogroup Utilities */
-//@{
+/**
+ * @addtogroup Utilities
+ * @{
+ */
 
 // helpers for checked_int_cast
 SIM_API void intCastError(const std::string& num, const char *errmsg=nullptr);
@@ -103,7 +105,7 @@ SIM_API int64_t opp_get_monotonic_clock_nsecs();  // in gettime.cc
  */
 SIM_API int64_t opp_get_monotonic_clock_usecs();  // in gettime.cc
 
-//@}
+/** @} */
 
 }  // namespace omnetpp
 

@@ -326,8 +326,10 @@ inline cWatchBase *createWatch_cObjectPtr(const char *varname, const char *typeN
 }
 
 
-/** @ingroup WatchMacros */
-//@{
+/**
+ * @ingroup WatchMacros
+ * @{
+ */
 
 /**
  * @brief Makes primitive types and types with operator<< inspectable in Qtenv.
@@ -361,7 +363,8 @@ inline cWatchBase *createWatch_cObjectPtr(const char *varname, const char *typeN
  * @hideinitializer
  */
 #define WATCH_PTR(variable)  omnetpp::createWatch_cObjectPtr(#variable, omnetpp::opp_typename(typeid(variable)), (cObject*&)(variable),(variable))
-//@}
+
+/** @} */
 
 }  // namespace omnetpp
 

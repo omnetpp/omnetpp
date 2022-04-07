@@ -20,8 +20,10 @@
 
 namespace omnetpp {
 
-/** @addtogroup FSM */
-//@{
+/**
+ * @addtogroup FSM
+ * @{
+ */
 
 /**
  * @brief After this many transitions without reaching a steady state
@@ -168,7 +170,7 @@ namespace omnetpp {
 #define FSM_Print(fsm,entering) ((void)0)
 #endif
 
-//@}
+/** @} */
 
 //-----------------------------------------------------
 

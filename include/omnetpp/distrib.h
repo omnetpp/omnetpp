@@ -39,8 +39,8 @@ inline double dblrand(cRNG *rng)  {return rng->doubleRand();}
  * @ingroup RandomNumbers
  * @defgroup RandomNumbersCont Continuous Distributions
  * @brief Random variate generators for continuous distributions
+ * @{
  */
-//@{
 
 /**
  * @brief Returns a random variate with uniform distribution in the range [a,b).
@@ -285,14 +285,14 @@ SIM_API double weibull(cRNG *rng, double a, double b);
  */
 SIM_API double pareto_shifted(cRNG *rng, double a, double b, double c);
 
-//@}
+/** @} */
 
 /**
  * @ingroup RandomNumbers
  * @defgroup RandomNumbersDiscr Discrete Distributions
  * @brief Random variate generators for discrete distributions
+ * @{
  */
-//@{
 
 /**
  * @brief Returns a random integer with uniform distribution in the range [a,b],
@@ -405,7 +405,7 @@ SIM_API int negbinomial(cRNG *rng, int n, double p);
  */
 SIM_API int poisson(cRNG *rng, double lambda);
 
-//@}
+/** @} */
 
 }  // namespace omnetpp
 

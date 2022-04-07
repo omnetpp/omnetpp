@@ -37,8 +37,9 @@
  *
  * See also "C Language Gotchas",
  * http://www.greenend.org.uk/rjk/2001/02/cfu.html#ctypechar
+ *
+ * @{
  */
-//@{
 inline bool opp_isspace(unsigned char c)  {return isspace(c);}
 inline bool opp_isalpha(unsigned char c)  {return isalpha(c);}
 inline bool opp_isdigit(unsigned char c)  {return isdigit(c);}
@@ -52,7 +53,7 @@ inline char opp_toupper(unsigned char c)  {return toupper(c);}
 inline bool opp_isext(unsigned char c)    {return c>=128;}  //new
 inline bool opp_isalphaext(unsigned char c) {return opp_isalpha(c) || opp_isext(c);}  //new
 inline bool opp_isalnumext(unsigned char c) {return opp_isalnum(c) || opp_isext(c);}  //new
-//@}
+/** @} */
 
 #endif
 
