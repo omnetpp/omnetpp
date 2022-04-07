@@ -860,7 +860,7 @@ class SIM_API cComponent : public cSoftOwner //implies noncopyable
      * Returns a random integer with uniform distribution in the range [a,b],
      * inclusive. (Note that the function can also return b.)
      *
-     * @param a, b  the interval, a<b
+     * @param a, b  the interval, a<=b
      * @param rng index of the component RNG to use, see getRNG(int)
      */
     virtual int intuniform(int a, int b, int rng=0) const  {return omnetpp::intuniform(getRNG(rng), a, b);};

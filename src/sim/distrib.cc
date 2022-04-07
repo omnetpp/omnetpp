@@ -39,6 +39,8 @@ namespace omnetpp {
 
 double uniform(cRNG *rng, double a, double b)
 {
+    if (a > b)
+        throw cRuntimeError("uniform(): Wrong parameters a=%g and b=%g: a <= b required", a, b);
     return a + rng->doubleRand() * (b-a);
 }
 
@@ -315,11 +317,15 @@ static double _factorial(cRNG *rng, int n)
 
 int intuniform(cRNG *rng, int a, int b)
 {
+    if (a > b)
+        throw cRuntimeError("intuniform(): Wrong parameters a=%d and b=%d: a <= b required", a, b);
     return a + rng->intRand(b-a+1);
 }
 
 int intuniformexcl(cRNG *rng, int a, int b)
 {
+    if (a >= b)
+        throw cRuntimeError("intuniformexcl(): Wrong parameters a=%d and b=%d: a < b required", a, b);
     return a + rng->intRand(b-a);
 }
 

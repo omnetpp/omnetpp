@@ -298,7 +298,7 @@ SIM_API double pareto_shifted(cRNG *rng, double a, double b, double c);
  * @brief Returns a random integer with uniform distribution in the range [a,b],
  * inclusive. (Note that the function can also return b.)
  *
- * @param a, b  the interval, a<b
+ * @param a, b  the interval, a<=b
  * @param rng the underlying random number generator
  */
 SIM_API int intuniform(cRNG *rng, int a, int b);
