@@ -36,25 +36,27 @@ class cConfigOption;
  * @brief Predefined configuration variables; see cConfigurationEx::getVariable().
  * Variables can be referred to using the ${...} syntax in the configuration.
  *
+ * @defgroup ConfigVars Predefined configuration variables
+ * @ingroup ExtensionPoints
  * @{
  */
-#define CFGVAR_RUNID            "runid"
-#define CFGVAR_INIFILE          "inifile"
-#define CFGVAR_CONFIGNAME       "configname"
-#define CFGVAR_RUNNUMBER        "runnumber"
-#define CFGVAR_NETWORK          "network"
-#define CFGVAR_EXPERIMENT       "experiment"
-#define CFGVAR_MEASUREMENT      "measurement"
-#define CFGVAR_REPLICATION      "replication"
-#define CFGVAR_PROCESSID        "processid"
-#define CFGVAR_DATETIME         "datetime"
-#define CFGVAR_DATETIMEF        "datetimef"
-#define CFGVAR_RESULTDIR        "resultdir"
-#define CFGVAR_REPETITION       "repetition"
-#define CFGVAR_SEEDSET          "seedset"
-#define CFGVAR_ITERATIONVARS    "iterationvars"   // without $repetition
-#define CFGVAR_ITERATIONVARSF   "iterationvarsf"  // same, sanitized for use in file names
-#define CFGVAR_ITERATIONVARSD   "iterationvarsd"  // same, but for use as hierarchical folder name (contains slashes where iterationvarsf has commas)
+#define CFGVAR_RUNID            "runid"           ///< Name of the "runid" configuration variable and run attribute
+#define CFGVAR_INIFILE          "inifile"         ///< Name of the "inifile" configuration variable and run attribute
+#define CFGVAR_CONFIGNAME       "configname"      ///< Name of the "configname" configuration variable and run attribute
+#define CFGVAR_RUNNUMBER        "runnumber"       ///< Name of the "runnumber" configuration variable and run attribute
+#define CFGVAR_NETWORK          "network"         ///< Name of the "network" configuration variable and run attribute
+#define CFGVAR_EXPERIMENT       "experiment"      ///< Name of the "experiment" configuration variable and run attribute
+#define CFGVAR_MEASUREMENT      "measurement"     ///< Name of the "measurement" configuration variable and run attribute
+#define CFGVAR_REPLICATION      "replication"     ///< Name of the "replication" configuration variable and run attribute
+#define CFGVAR_PROCESSID        "processid"       ///< Name of the "processid" configuration variable and run attribute
+#define CFGVAR_DATETIME         "datetime"        ///< Name of the "datetime" configuration variable and run attribute
+#define CFGVAR_DATETIMEF        "datetimef"       ///< Name of the "datetimef" configuration variable and run attribute
+#define CFGVAR_RESULTDIR        "resultdir"       ///< Name of the "resultdir" configuration variable and run attribute
+#define CFGVAR_REPETITION       "repetition"      ///< Name of the "repetition" configuration variable and run attribute
+#define CFGVAR_SEEDSET          "seedset"         ///< Name of the "seedset" configuration variable and run attribute
+#define CFGVAR_ITERATIONVARS    "iterationvars"   ///< Name of the "iterationvars" configuration variable and run attribute
+#define CFGVAR_ITERATIONVARSF   "iterationvarsf"  ///< Name of the "iterationvarsf" configuration variable and run attribute
+#define CFGVAR_ITERATIONVARSD   "iterationvarsd"  ///< Name of the "iterationvarsd" configuration variable and run attribute
 /** @} */
 
 /**
