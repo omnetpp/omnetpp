@@ -345,11 +345,12 @@ public class ConfigRegistry {
         "Turns on the printing of debugging information related to statistics " +
         "recording (`@statistic` properties)");
     public static final ConfigOption CFGID_DEBUGGER_ATTACH_COMMAND = addGlobalOption(
-        "debugger-attach-command", CFG_STRING, "nemiver --attach=%u &",
-        "Command line to launch the debugger. It must contain exactly one percent " +
+        "debugger-attach-command", CFG_STRING, "opp_ide omnetpp://cdt/debugger/attach?pid=%u",
+        "The command line to launch the debugger. It must contain exactly one percent " +
         "sign, as `%u`, which will be replaced by the PID of this process. The " +
         "command must not block (i.e. it should end in `&` on Unix-like systems). " +
-        "Default on this platform: `nemiver --attach=%u &`. This default can be " +
+        "It will be executed by the default system shell (on Windows, usually cmd.exe). " +
+        "Default on this platform: `opp_ide omnetpp://cdt/debugger/attach?pid=%u`. This default can be " +
         "overridden with the `OMNETPP_DEBUGGER_COMMAND` environment variable.");
     public static final ConfigOption CFGID_DEBUGGER_ATTACH_ON_ERROR = addGlobalOption(
         "debugger-attach-on-error", CFG_BOOL, "false",

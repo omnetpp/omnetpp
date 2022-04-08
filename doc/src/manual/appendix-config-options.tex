@@ -219,10 +219,11 @@ with the \fopt{-h configdetails} option.
     recording (\ttt{@{\allowbreak}statistic} properties)
 \item[debugger-attach-command] = \textit{<string>}\\
     \textit{Global setting (applies to all simulation runs).}\\
-    Command line to launch the debugger. It must contain exactly one percent
-    sign, as \ttt{\%u}, which will be replaced by the PID of this process. The
-    command must not block (i.e. it should end in \ttt{\&} on Unix-like
-    systems). Default on this platform: \ttt{opp\_ide
+    The command line to launch the debugger. It must contain exactly one
+    percent sign, as \ttt{\%u}, which will be replaced by the PID of this
+    process. The command must not block (i.e. it should end in \ttt{\&} on
+    Unix-like systems). It will be executed by the default system shell (on
+    Windows, usually cmd.exe). Default on this platform: \ttt{opp\_ide
     {\allowbreak}omnetpp:{\allowbreak}/{\allowbreak}/{\allowbreak}cdt/{\allowbreak}debugger/{\allowbreak}attach?pid={\allowbreak}\%u}.
     This default can be overridden with the \ttt{OMNETPP\_DEBUGGER\_COMMAND}
     environment variable.

@@ -198,6 +198,11 @@ represented as \ttt{None} or \ttt{nan}). The Pandas \ttt{to\_numeric()} function
 \ttt{utils.to\_numeric()} can be used to convert values to \ttt{float} or \ttt{int} where
 needed.
 
+\subsubsection{Class ResultQueryError}
+\label{cha:chart-api:omnetpp.scave.results:ResultQueryError}
+
+
+
 \subsubsection{get\_serial()}
 \label{cha:chart-api:omnetpp.scave.results:get-serial}
 
@@ -1657,6 +1662,8 @@ their own aspect ratio and relative sizes.
 \par Returns the file path for the image to export based on the
 \ttt{image\_export\_format}, \ttt{image\_export\_folder} and
 \ttt{image\_export\_filename} properties given in \ttt{props}.
+If a relative filename is returned, it is relative to the
+working directory when the image export takes place.
 
 \subsubsection{export\_data\_if\_needed()}
 \label{cha:chart-api:omnetpp.scave.utils:export-data-if-needed}
@@ -1705,6 +1712,8 @@ from the chart properties because it is specific to each chart.
 \par Returns the file path for the data to export based on the
 \ttt{data\_export\_format}, \ttt{data\_export\_folder} and
 \ttt{data\_export\_filename} properties given in \ttt{props}.
+If a relative filename is returned, it is relative to the
+working directory when the data export takes place.
 
 \subsubsection{histogram\_bin\_edges()}
 \label{cha:chart-api:omnetpp.scave.utils:histogram-bin-edges}
