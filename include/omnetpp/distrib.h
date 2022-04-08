@@ -18,11 +18,11 @@
 namespace omnetpp {
 
 /**
- * @ingroup RandomNumbers
  * @defgroup RandomNumbersUtil Utility functions
+ * @ingroup RandomNumbers
  * @brief Utility functions
+ * @{
  */
-//@{
 
 /**
  * @brief Produces a random integer in the range [0,r) using the RNG given with its index.
@@ -33,11 +33,11 @@ inline uint32_t intrand(cRNG *rng, uint32_t r)  {return rng->intRand(r);}
  * @brief Produces a random double in the range [0,1) using the RNG given with its index.
  */
 inline double dblrand(cRNG *rng)  {return rng->doubleRand();}
-//@}
+/** @} */
 
 /**
- * @ingroup RandomNumbers
  * @defgroup RandomNumbersCont Continuous Distributions
+ * @ingroup RandomNumbers
  * @brief Random variate generators for continuous distributions
  * @{
  */
@@ -288,8 +288,8 @@ SIM_API double pareto_shifted(cRNG *rng, double a, double b, double c);
 /** @} */
 
 /**
- * @ingroup RandomNumbers
  * @defgroup RandomNumbersDiscr Discrete Distributions
+ * @ingroup RandomNumbers
  * @brief Random variate generators for discrete distributions
  * @{
  */

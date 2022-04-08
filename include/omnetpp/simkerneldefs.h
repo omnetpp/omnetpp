@@ -67,21 +67,21 @@ namespace omnetpp {
  * @brief Sequence number of events during the simulation. Events are numbered from one.
  * (Event number zero is reserved for network setup and initialization.)
  *
- * @ingroup SimSupport
+ * @ingroup Misc
  */
 typedef int64_t eventnumber_t;
 
 /**
  * @brief Message ID. See cMessage::getId().
  *
- * @ingroup SimSupport
+ * @ingroup Misc
  */
 typedef int64_t msgid_t;
 
 /**
  * @brief Transmission ID. See SendOptions::transmissionId(), cMessage::getTransmissionId().
  *
- * @ingroup SimSupport
+ * @ingroup Misc
  */
 typedef int64_t txid_t;
 
@@ -90,7 +90,7 @@ typedef int64_t txid_t;
  * It is used throughout the library as a "large enough" general integer type,
  * for example in NED parameters, during expression evaluation, and as signal value.
  *
- * @ingroup SimSupport
+ * @ingroup Misc
  */
 typedef int64_t intval_t;
 
@@ -98,14 +98,14 @@ typedef int64_t intval_t;
  * @brief Unsigned integer type which is guaranteed to be at least 64 bits wide.
  * It is used throughout the library as a "large enough" general unsigned integer type.
  *
- * @ingroup SimSupport
+ * @ingroup Misc
  */
 typedef uint64_t uintval_t;
 
 /**
  * DEPRECATED. Use intval_t instead.
  *
- * @ingroup SimSupport
+ * @ingroup Misc
  */
 [[deprecated]] typedef intval_t intpar_t;
 

@@ -28,7 +28,7 @@ namespace omnetpp {
  *      Register_GlobalConfigOptionU(), Register_PerRunConfigOptionU(),
  *      Register_PerObjectConfigOption(), Register_PerObjectConfigOptionU()
  *
- * @ingroup SimSupport
+ * @ingroup Misc
  */
 class SIM_API cConfigOption : public cNoncopyableOwnedObject
 {

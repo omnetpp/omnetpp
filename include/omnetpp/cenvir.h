@@ -70,7 +70,7 @@ using std::endl;
  * cRNG, cIOutputVectorManager, cIOutputScalarManager), and selecting the
  * new classes in <tt>omnetpp.ini</tt>.
  *
- * @ingroup SimSupport
+ * @ingroup EnvirAndExtensions
  */
 class SIM_API cEnvir
 {
@@ -907,7 +907,7 @@ class SIM_API cEnvir
  * @brief A cEnvir that can be instantiated as a user interface, like Cmdenv
  * and Tkenv.
  *
- * @ingroup SimSupport
+ * @ingroup EnvirAndExtensions
  */
 class SIM_API cRunnableEnvir : public cEnvir
 {

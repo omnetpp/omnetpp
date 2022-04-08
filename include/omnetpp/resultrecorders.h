@@ -24,6 +24,11 @@ namespace omnetpp {
 class cStatistic;
 
 /**
+ * @addtogroup ResultFiltersRecorders
+ * @{
+ */
+
+/**
  * @brief Listener for recording a signal to an output vector
  */
 class SIM_API VectorRecorder : public cNumericResultRecorder
@@ -272,6 +277,8 @@ class SIM_API KSplitRecorder : public StatisticsRecorder
     public:
         virtual void init(Context *ctx) override;
 };
+
+/** @} */
 
 }  // namespace omnetpp
 

@@ -27,7 +27,7 @@ namespace omnetpp {
 /**
  * @brief Common base class for cValue-based containers.
  *
- * @ingroup SimSupport
+ * @ingroup Expressions
  */
 class SIM_API cValueContainer : public cOwnedObject
 {

@@ -23,7 +23,7 @@ namespace omnetpp {
 /**
  * @brief Event type for cISimulationLifecycleListener's lifecycleEvent() method.
  *
- * @ingroup SimSupport
+ * @ingroup Misc
  */
 enum SimulationLifecycleEventType
 {
@@ -181,7 +181,7 @@ enum SimulationLifecycleEventType
  * exits. To delete a listener on shutdown, add <tt>delete this;</tt>
  * into the listenerRemoved() method.
  *
- * @ingroup SimSupport
+ * @ingroup Misc
  */
 class SIM_API cISimulationLifecycleListener
 {

@@ -25,6 +25,11 @@
 namespace omnetpp {
 
 /**
+ * @addtogroup ResultFiltersRecorders
+ * @{
+ */
+
+/**
  * @brief Result filter that absorbs input values during the configured warm-up
  * period (see warmup-period configuration option), and lets everything through
  * once the warm-up period is over.
@@ -397,6 +402,8 @@ class SIM_API SumPerDurationFilter : public cNumericResultFilter
         virtual double getInitialDoubleValue() const override {return getSumPerDuration();}
         virtual std::string str() const override;
 };
+
+/** @} */
 
 }  // namespace omnetpp
 

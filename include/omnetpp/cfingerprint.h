@@ -29,7 +29,7 @@ namespace omnetpp {
  * @brief This class defines the interface for fingerprint calculators.
  *
  * @see cSimulation::getFingerprintCalculator()
- * @ingroup ExtensionPoints
+ * @ingroup Misc
  */
 class SIM_API cFingerprintCalculator : public cObject, noncopyable
 {
@@ -103,7 +103,7 @@ class SIM_API cFingerprintCalculator : public cObject, noncopyable
  *  - 'f' essential properties (geometry) of all figures on all module canvases, added on refreshDisplay() calls (see cmdenv-fake-gui config option)
  *  - 'x' extra data provided by modules
  *
- * @ingroup Internals
+ * @ingroup Misc
  */
 class SIM_API cSingleFingerprintCalculator : public cFingerprintCalculator
 {
@@ -206,7 +206,7 @@ class SIM_API cSingleFingerprintCalculator : public cFingerprintCalculator
  * The calculator can be configured similarly to the cSingleFingerprintCalculator
  * class, but in this case each option is a comma separated list.
  *
- * @ingroup Internals
+ * @ingroup Misc
  */
 class SIM_API cMultiFingerprintCalculator : public cFingerprintCalculator
 {

@@ -90,7 +90,7 @@ enum eMessageKind
  *
  * @see cSimpleModule, cQueue, cPacket
  *
- * @ingroup SimCore
+ * @ingroup SimProgr
  */
 class SIM_API cMessage : public cEvent
 {

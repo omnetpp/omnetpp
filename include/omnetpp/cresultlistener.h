@@ -29,7 +29,7 @@ class cComponent;
 /**
  * @brief Common abstract base class for result filters and result recorders.
  *
- * @ingroup SimSupport
+ * @ingroup ResultFiltersRecorders
  */
 class SIM_API cResultListener : public cObject, public cIListener
 {

@@ -28,7 +28,7 @@ namespace omnetpp {
  * The added value is that this class keeps track of the total queue length
  * in bits as well.
  *
- * @ingroup Containers
+ * @ingroup SimProgr
  */
 class SIM_API cPacketQueue : public cQueue
 {

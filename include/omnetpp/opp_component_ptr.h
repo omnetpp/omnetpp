@@ -50,7 +50,7 @@ namespace omnetpp {
  * mutable pointers from it. This interface is consistent with C++ smart
  * pointers like std::unique_ptr and std::shared_ptr.
  *
- * @ingroup Utilities
+ * @ingroup Misc
  */
 template <typename T>
 class SIM_API opp_component_ptr

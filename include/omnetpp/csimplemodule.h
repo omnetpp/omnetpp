@@ -77,7 +77,7 @@ class cCoroutine;
  * result in a runtime error.
  *
  * @see cSimpleModule::send(), cSimpleModule::sendDirect
- * @ingroup SimCore
+ * @ingroup Misc
  */
 struct SIM_API SendOptions {
     simtime_t sendDelay = SIMTIME_ZERO; // for after()
@@ -197,7 +197,7 @@ struct SIM_API SendOptions {
  * successfully. Typical use of finish() is recording statistics collected
  * during simulation.
  *
- * @ingroup SimCore
+ * @ingroup SimProgr
  */
 class SIM_API cSimpleModule : public cModule //implies noncopyable
 {

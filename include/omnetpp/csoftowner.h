@@ -28,7 +28,7 @@ namespace omnetpp {
  * cSoftOwner acts as a "soft owner" (see object ownership discussion
  * in cOwnedObject documentation).
  *
- * @ingroup SimSupport
+ * @ingroup Fundamentals
  */
 class SIM_API cSoftOwner : public cNoncopyableOwnedObject
 {

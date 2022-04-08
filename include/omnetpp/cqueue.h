@@ -37,7 +37,7 @@ namespace omnetpp {
  * the copy constructor and the dup() method.
  *
  * @see Iterator
- * @ingroup Containers
+ * @ingroup SimProgr
  */
 class SIM_API cQueue : public cOwnedObject
 {
@@ -71,7 +71,7 @@ class SIM_API cQueue : public cOwnedObject
      * - greater than zero if a > b
      * - zero if a == b
      *
-     * @ingroup Containers
+     * @ingroup Misc
      */
     typedef int (*CompareFunc)(cObject *a, cObject *b);
 

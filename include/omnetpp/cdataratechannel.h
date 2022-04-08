@@ -64,7 +64,7 @@ namespace omnetpp {
  * checks (e.g. duration/remainingDuration cannot be negative, duration >=
  * remainingDuration, etc.) are included.
  *
- * @ingroup SimCore
+ * @ingroup ModelComponents
  */
 class SIM_API cDatarateChannel : public cChannel //implies noncopyable
 {

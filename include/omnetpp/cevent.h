@@ -41,7 +41,7 @@ class cEventHeap;
  * cEvent, and their execute() methods automatically delivers the message/packet
  * to the target module.
  *
- * @ingroup SimSupport
+ * @ingroup SimCore
  */
 class SIM_API cEvent : public cOwnedObject
 {

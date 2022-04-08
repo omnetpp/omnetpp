@@ -65,7 +65,7 @@ namespace internal { class cParImpl; }
  * be regarded as internal data structures, and should not be
  * directly accessed from model code.
  *
- * @ingroup SimCore
+ * @ingroup ModelComponents
  */
 class SIM_API cPar : public cObject
 {

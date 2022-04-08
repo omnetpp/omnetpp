@@ -55,7 +55,7 @@ enum ContextType {CTX_NONE, CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_REFRESHDIS
  * <tt>printf()</tt>, so it is easy to include the actual parameter values.
  *
  * @see Enter_Method_Silent() macro
- * @ingroup SimSupport
+ * @ingroup Misc
  * @hideinitializer
  */
 #define Enter_Method(...)  omnetpp::cMethodCallContextSwitcher __ctx(this); __ctx.methodCall(__VA_ARGS__)
@@ -76,7 +76,7 @@ enum ContextType {CTX_NONE, CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_REFRESHDIS
  * Example: <tt>Enter_Method_Silent("getRouteFor(address=%d)",address);</tt>
  *
  * @see Enter_Method() macro
- * @ingroup SimSupport
+ * @ingroup Misc
  * @hideinitializer
  */
 #define Enter_Method_Silent(...)  omnetpp::cMethodCallContextSwitcher __ctx(this); __ctx.methodCallSilent(__VA_ARGS__)

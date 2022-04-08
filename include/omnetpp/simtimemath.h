@@ -20,6 +20,11 @@
 
 namespace omnetpp {
 
+/**
+ * @addtogroup SimTime
+ * @{
+ */
+
 // used locally; needed because sign of a%b is implementation dependent if a<0
 inline int64_t _i64mod(const int64_t& any_t, const int64_t& positive_u)
 {
@@ -127,6 +132,8 @@ inline const SimTime fmod(const SimTime& x, const SimTime& y)
  * @see div()
  */
 SIM_API int64_t preciseDiv(int64_t x, const SimTime& y, int64_t& fractionNumerator, int64_t& fractionDenominator);
+
+/** @} */
 
 }  // namespace omnetpp
 

@@ -47,7 +47,7 @@ namespace omnetpp {
  *
  * @see cSimpleModule, cDatarateChannel, cPacketQueue
  *
- * @ingroup SimCore
+ * @ingroup SimProgr
  */
 class SIM_API cPacket : public cMessage
 {

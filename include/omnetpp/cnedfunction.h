@@ -31,7 +31,7 @@ namespace omnetpp {
  * than contextComponent for the evaluation.
  *
  * @see cNedFunction, Define_NED_Function().
- * @ingroup SimSupport
+ * @ingroup Misc
  */
 typedef cValue (*NedFunction)(cComponent *context, cValue argv[], int argc);
 
@@ -41,7 +41,7 @@ typedef cValue (*NedFunction)(cComponent *context, cValue argv[], int argc);
  * argument.
  *
  * @see cNedFunction, Define_NED_Function().
- * @ingroup SimSupport
+ * @ingroup Misc
  */
 typedef cValue (*NedFunctionExt)(cExpression::Context *context, cValue argv[], int argc);
 

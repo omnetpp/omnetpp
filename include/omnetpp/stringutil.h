@@ -25,7 +25,7 @@
 namespace omnetpp {
 
 /**
- * @addtogroup Utilities
+ * @addtogroup StringFunctions
  * @{
  */
 

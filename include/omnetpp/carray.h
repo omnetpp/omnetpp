@@ -33,7 +33,7 @@ namespace omnetpp {
  * object is owned or not affects the operation of the destructor, clean(),
  * the copy constructor and the dup() method.
  *
- * @ingroup Containers
+ * @ingroup Misc
  */
 class SIM_API cArray : public cOwnedObject
 {

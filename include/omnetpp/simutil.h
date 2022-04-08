@@ -29,7 +29,7 @@ class cObject;
 class cComponent;
 
 /**
- * @addtogroup Utilities
+ * @addtogroup UtilityFunctions
  * @{
  */
 

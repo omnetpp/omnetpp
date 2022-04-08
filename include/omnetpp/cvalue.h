@@ -31,7 +31,7 @@ class cXMLElement;
 class cDynamicExpression;
 
 /**
- * @brief Value used during evaluating NED expressions.
+ * @brief A variant-like value class used during evaluating NED expressions.
  *
  * See notes below.
  *
@@ -42,7 +42,7 @@ class cDynamicExpression;
  * is unaffected, and the object is never deleted or cloned by cValue.
  *
  * @see cDynamicExpression, cNedFunction, Define_NED_Function()
- * @ingroup SimSupport
+ * @ingroup Expressions
  */
 class SIM_API cValue
 {

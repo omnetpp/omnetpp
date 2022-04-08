@@ -37,11 +37,10 @@ struct _Task;
  * @brief Prototype for functions that can be used with cCoroutine objects as
  * coroutine bodies.
 
- * @ingroup SimSupport
+ * @ingroup Misc
  */
 typedef void (*CoroutineFnp)( void * );
 
-//--------------------------------------------------------------------------
 
 /**
  * @brief Low-level coroutine library. Coroutines are used by cSimpleModule.
@@ -62,7 +61,7 @@ typedef void (*CoroutineFnp)( void * );
  * maybe several hundred megabytes), otherwise a segmentation fault
  * will occur.
  *
- * @ingroup SimSupport
+ * @ingroup Fundamentals
  */
 class SIM_API cCoroutine
 {

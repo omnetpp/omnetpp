@@ -53,7 +53,7 @@ namespace omnetpp {
  *
  * Limitation: a tag may have at most 16 arguments.
  *
- * @ingroup SimSupport
+ * @ingroup ModelComponents
  */
 class SIM_API cDisplayString
 {

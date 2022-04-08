@@ -136,7 +136,7 @@ class SIM_API cObjectFactory : public cNoncopyableOwnedObject
 
 /**
  * @brief Shortcut to cObjectFactory::createOne().
- * @ingroup SimSupport
+ * @ingroup Misc
  */
 inline cObject *createOne(const char *classname) {
     return cObjectFactory::createOne(classname);
@@ -144,7 +144,7 @@ inline cObject *createOne(const char *classname) {
 
 /**
  * @brief Shortcut to cObjectFactory::createOneIfClassIsKnown().
- * @ingroup SimSupport
+ * @ingroup Misc
  */
 inline cObject *createOneIfClassIsKnown(const char *classname) {
     return cObjectFactory::createOneIfClassIsKnown(classname);

@@ -258,8 +258,10 @@ inline void *getThisPtr() {return nullptr;}
  * Examples:
  *
  * \code
- * EV_INFO << "Connection setup complete" << endl;
- * EV_INFO_C("test") << "ESTAB" << endl;
+ * EV << "Connection setup complete" << endl;  // equivalent to EV_INFO << ...
+ * EV_DEBUG << "retryCount=" << retryCount << std::endl;
+ * EV_WARNING << "Connection timed out\n";
+ * EV_INFO_C("testing") << "ESTAB" << endl;
  * \endcode
  *
  * @see LogLevel, EV_STATICCONTEXT, EV_INFO, EV_INFO_C, COMPILETIME_LOGLEVEL, COMPILETIME_LOG_PREDICATE

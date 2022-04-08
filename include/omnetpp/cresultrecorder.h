@@ -36,6 +36,7 @@ class cProperty;
  * of <tt>@statistic</tt> properties in NED files, and with the
  * <tt>**.result-recording-modes=</tt> configuration option.
  *
+ * @see @ref ResultFiltersRecorders
  * @ingroup RegMacros
  * @hideinitializer
  */
@@ -51,6 +52,7 @@ class cProperty;
  * of <tt>@statistic</tt> properties in NED files, and with the
  * <tt>**.result-recording-modes=</tt> configuration option.
  *
+ * @see @ref ResultFiltersRecorders
  * @ingroup RegMacros
  * @hideinitializer
  */
@@ -63,7 +65,7 @@ class cProperty;
  *
  * @see Register_ResultRecorder()
  *
- * @ingroup Statistics
+ * @ingroup ResultFiltersRecorders
  */
 class SIM_API cResultRecorder : public cResultListener
 {
@@ -78,10 +80,10 @@ class SIM_API cResultRecorder : public cResultListener
          * object.
          */
         struct Context {
-            cComponent *component; // The statistic should be recorded for this module/channel; usually the module on which the @statistic property is defined.
-            const char *statisticName; // The base name for the statistic; usually the index of the @statistic[] property (the name in brackets).
-            const char *recordingMode; // The recording mode; usually an element the the record=... list in the @statistic property.
-            cProperty *attrsProperty; // An optional property from which extra attributes can be taken; usually the @statistic property.
+            cComponent *component;     ///< The statistic should be recorded for this module/channel; usually the module on which the @statistic property is defined.
+            const char *statisticName; ///< The base name for the statistic; usually the index of the @statistic[] property (the name in brackets).
+            const char *recordingMode; ///< The recording mode; usually an element the the record=... list in the @statistic property.
+            cProperty *attrsProperty;  ///< An optional property from which extra attributes can be taken; usually the @statistic property.
             opp_string_map *manualAttrs = nullptr;  // If attrsProperty==nullptr, specifies an alternative source of attributes; the ownership is passed into the  result recorder object.
         };
     private:
@@ -121,7 +123,7 @@ class SIM_API cResultRecorder : public cResultListener
  * Numeric result recorders convert all numeric data types to double,
  * and throw an error for non-numeric types (const char *, cObject *).
  *
- * @ingroup SimSupport
+ * @ingroup ResultFiltersRecorders
  */
 class SIM_API cNumericResultRecorder : public cResultRecorder
 {

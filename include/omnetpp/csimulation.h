@@ -58,7 +58,7 @@ SIM_API extern cSoftOwner globalOwningContext; // also in globals.h
  * Some methods which can be of interest when programming simple modules:
  * getUniqueNumber(), getModuleByPath(), getModule(), snapshot().
  *
- * @ingroup SimSupport
+ * @ingroup SimCore
  */
 class SIM_API cSimulation : public cNamedObject, noncopyable
 {
@@ -591,14 +591,14 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
 /**
  * @brief Returns the current simulation time.
  *
- * @ingroup SimCore
+ * @ingroup SimTime
  */
 inline simtime_t simTime() {return cSimulation::getActiveSimulation()->getSimTime();}
 
 /**
  * @brief Returns the currently active simulation, or nullptr if there is none.
  *
- * @ingroup SimSupport
+ * @ingroup Misc
  */
 inline cSimulation *getSimulation()  {return cSimulation::getActiveSimulation();}
 
@@ -606,7 +606,7 @@ inline cSimulation *getSimulation()  {return cSimulation::getActiveSimulation();
  * @brief Returns the environment object for the currently active simulation.
  * This function never returns nullptr (not even during shutdown).
  *
- * @ingroup SimSupport
+ * @ingroup Misc
  */
 inline cEnvir *getEnvir()  {return cSimulation::getActiveEnvir();}
 

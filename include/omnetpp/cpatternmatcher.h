@@ -70,7 +70,7 @@ namespace common { class PatternMatcher; };
  *     matches any number). The specification must use exactly two dots.
  *     Caveat: "*{17..19}" will match "a17","117" and "963217" as well.
  *
- * @ingroup Utilities
+ * @ingroup Misc
  */
 class SIM_API cPatternMatcher
 {

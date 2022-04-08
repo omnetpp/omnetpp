@@ -35,7 +35,7 @@ class cNedFunction;
  * @brief A stack-based expression evaluator class, for dynamically created
  * expressions.
  *
- * @ingroup SimSupport
+ * @ingroup Expressions
  */
 class SIM_API cDynamicExpression : public cExpression
 {
@@ -258,7 +258,7 @@ class SIM_API cDynamicExpression : public cExpression
  * @brief An "owned" version cDynamicExpression to allow it to be assigned to module
  * parameters of the type "object".
  *
- * @ingroup SimSupport
+ * @ingroup Expressions
  */
 class cOwnedDynamicExpression : public cOwnedObject, public cDynamicExpression
 {

@@ -75,7 +75,7 @@ class StringTokenizer;
  * std::vector<string> array = cStringTokenizer(str).asVector();
  * </pre>
  *
- * @ingroup Utilities
+ * @ingroup Misc
  */
 class SIM_API cStringTokenizer
 {

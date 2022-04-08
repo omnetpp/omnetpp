@@ -44,7 +44,7 @@ class cObjectFactory;
  * "Queue"), and getFullName() returns the qualified name (with namespace,
  * e.g. "inet.network.Queue").
  *
- * @ingroup SimSupport
+ * @ingroup Internals
  */
 class SIM_API cComponentType : public cNoncopyableOwnedObject
 {
@@ -198,7 +198,7 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
  *
  * A cModuleType object exist for each module type (simple or compound).
  *
- * @ingroup SimSupport
+ * @ingroup Internals
  */
 class SIM_API cModuleType : public cComponentType
 {
@@ -318,7 +318,7 @@ class SIM_API cModuleType : public cComponentType
 /**
  * @brief Abstract base class for creating a channel of a given type.
  *
- * @ingroup SimSupport
+ * @ingroup Internals
  */
 class SIM_API cChannelType : public cComponentType
 {

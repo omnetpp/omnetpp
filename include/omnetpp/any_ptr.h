@@ -56,7 +56,7 @@ namespace omnetpp {
  * cObject *obj = fromAnyPtr<cObject>(ptr); // works as expected
  * </pre>
  *
- * @ingroup Utilities
+ * @ingroup Misc
  */
 class SIM_API any_ptr
 {

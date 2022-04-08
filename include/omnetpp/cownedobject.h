@@ -100,7 +100,7 @@ namespace internal { class Void; }
  *      data members: your class (the enclosing object) should own them --
  *      call take() from the constructor and drop() from the destructor.
  *
- * @ingroup SimSupport
+ * @ingroup Fundamentals
  */
 class SIM_API cOwnedObject : public cNamedObject
 {
@@ -237,7 +237,7 @@ class SIM_API cOwnedObject : public cNamedObject
  * @brief Base class for cOwnedObject-based classes that do not wish to support
  * assignment and duplication.
  *
- * @ingroup SimSupport
+ * @ingroup Misc
  */
 class SIM_API cNoncopyableOwnedObject : public cOwnedObject, noncopyable
 {

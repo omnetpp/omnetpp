@@ -33,6 +33,8 @@ namespace omnetpp {
  * on a 32-bit machine and on a 64-bit machine. Longs can be either 32-bit or
  * 64-bit, so we always convert them to 64 bits. We do not try to convert
  * endianness, it would be too costly.
+ *
+ * @ingroup Misc
  */
 class SIM_API cHasher : noncopyable
 {

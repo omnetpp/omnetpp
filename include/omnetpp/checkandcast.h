@@ -55,7 +55,7 @@ void check_and_cast_failure(T *p, P ret)
  *   DHCPPacket *pk = check_and_cast\<DHCPPacket *\>(msg);
  * </pre>
  *
- * @ingroup Utilities
+ * @ingroup UtilityFunctions
  */
 template<class P, class T>
 P check_and_cast(T *p)
@@ -71,7 +71,7 @@ P check_and_cast(T *p)
 /**
  * @brief A variant of check_and_cast\<\>() that also allows nullptr as input.
  *
- * @ingroup Utilities
+ * @ingroup UtilityFunctions
  */
 template<class P, class T>
 P check_and_cast_nullable(T *p)

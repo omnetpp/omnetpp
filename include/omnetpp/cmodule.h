@@ -43,7 +43,7 @@ struct SendOptions;
  * getParentModule(), getSubmodule(), cModule::SubmoduleIterator,
  * cModule::getModuleByPath(), cSimulation::getModuleByPath().
  *
- * @ingroup SimCore
+ * @ingroup ModelComponents
  */
 class SIM_API cModule : public cComponent //implies noncopyable
 {

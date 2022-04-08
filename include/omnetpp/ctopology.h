@@ -48,7 +48,7 @@ class cPar;
  * boundaries are also represented as one graph edge. Graph edges are directed,
  * just as module gates are.
  *
- * @ingroup Utilities
+ * @ingroup SimProgr
  * @see cTopology::Node, cTopology::Link, cTopology::LinkIn, cTopology::LinkOut
  */
 class SIM_API cTopology : public cOwnedObject

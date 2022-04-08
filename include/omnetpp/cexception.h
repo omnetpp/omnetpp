@@ -44,7 +44,7 @@ typedef int ErrorCodeInt;
 /**
  * @brief Exception class.
  *
- * @ingroup SimSupport
+ * @ingroup Fundamentals
  */
 class SIM_API cException : public std::exception
 {
@@ -236,7 +236,7 @@ class SIM_API cException : public std::exception
  * to signal that the accuracy of simulation results has reached the
  * desired level.
  *
- * @ingroup SimSupport
+ * @ingroup Fundamentals
  */
 class SIM_API cTerminationException : public cException
 {
@@ -281,7 +281,7 @@ class SIM_API cTerminationException : public cException
  * the specified simulation time is in the past, or the message pointer
  * is nullptr.
  *
- * @ingroup SimSupport
+ * @ingroup Fundamentals
  */
 class SIM_API cRuntimeError : public cException
 {

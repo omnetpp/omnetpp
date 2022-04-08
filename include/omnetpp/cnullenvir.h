@@ -44,7 +44,7 @@ namespace omnetpp {
  *  - recordScalar() and other statistics recording methods to store
  *    simulation results instead of discarding them
  *
- * @ingroup SimSupport
+ * @ingroup EnvirAndExtensions
  */
 class SIM_API cNullEnvir : public cEnvir
 {

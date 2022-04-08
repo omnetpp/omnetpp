@@ -30,7 +30,7 @@ namespace omnetpp {
  * by employing an additional circular buffer specifically for storing events
  * inserted scheduled for the current simulation time.
  *
- * @ingroup SimSupport
+ * @ingroup SimCore
  */
 class SIM_API cEventHeap : public cFutureEventSet
 {

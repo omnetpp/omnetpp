@@ -28,7 +28,7 @@ namespace omnetpp {
  * @brief Prototype for mathematical functions.
  *
  * @see cNedMathFunction, Define_NED_Math_Function().
- * @ingroup SimSupport
+ * @ingroup Misc
  */
 typedef double (*MathFunc)(...);
 
@@ -36,7 +36,7 @@ typedef double (*MathFunc)(...);
  * @brief Prototype for mathematical functions taking no arguments.
  *
  * @see cNedMathFunction, Define_NED_Math_Function().
- * @ingroup SimSupport
+ * @ingroup Misc
  */
 typedef double (*MathFuncNoArg)();
 
@@ -44,7 +44,7 @@ typedef double (*MathFuncNoArg)();
  * @brief Prototype for mathematical functions taking one argument.
  *
  * @see cNedMathFunction, Define_NED_Math_Function().
- * @ingroup SimSupport
+ * @ingroup Misc
  */
 typedef double (*MathFunc1Arg)(double);
 
@@ -52,7 +52,7 @@ typedef double (*MathFunc1Arg)(double);
  * @brief Prototype for mathematical functions taking two arguments.
  *
  * @see cNedMathFunction, Define_NED_Math_Function().
- * @ingroup SimSupport
+ * @ingroup Misc
  */
 typedef double (*MathFunc2Args)(double,double);
 
@@ -60,7 +60,7 @@ typedef double (*MathFunc2Args)(double,double);
  * @brief Prototype for mathematical functions taking three arguments.
  *
  * @see cNedMathFunction, Define_NED_Math_Function().
- * @ingroup SimSupport
+ * @ingroup Misc
  */
 typedef double (*MathFunc3Args)(double,double,double);
 
@@ -68,7 +68,7 @@ typedef double (*MathFunc3Args)(double,double,double);
  * @brief Prototype for mathematical functions taking four arguments.
  *
  * @see cNedMathFunction, Define_NED_Math_Function().
- * @ingroup SimSupport
+ * @ingroup Misc
  */
 typedef double (*MathFunc4Args)(double,double,double,double);
 

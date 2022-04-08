@@ -21,25 +21,34 @@ namespace omnetpp {
 /**
  * @mainpage  \opp API Reference
  * If you are new to \opp, a good starting point for browsing
- * the documentation is cSimpleModule.
+ * the documentation is cSimpleModule. Alternatively, start
+ * browsing one of the following categories:
  *
- * Otherwise, pick one of the following categories, or choose from the
- * links at the top of this page:
- *
+ * - @ref Fundamentals
+ * - @ref ModelComponents
+ * - @ref SimProgr
  * - @ref SimCore
- * - @ref SimSupport
  * - @ref SimTime
- * - @ref Containers
  * - @ref RandomNumbers
  * - @ref Statistics
+ * - @ref ResultFiltersRecorders
+ * - @ref Expressions
  * - @ref Canvas
  * - @ref OSG
  * - @ref FSM
- * - @ref Utilities
+ * - @ref Signals
  * - @ref Logging
- * - @ref ExtensionPoints
+ * - @ref Misc
+ * - @ref WatchMacros
+ * - @ref RegMacros
+ * - @ref StringFunctions
+ * - @ref UtilityFunctions
+ * - @ref EnvirAndExtensions
  * - @ref Internals
  * - @ref ParsimBrief
+ *
+ * The full list of categories is also available in the sidebar and from the menu,
+ * under Modules.
  *
  * If you have used the \opp before:
  * - @ref APIChanges
@@ -51,48 +60,59 @@ namespace omnetpp {
  * @verbinclude API-changes.txt
  */
 
+/**
+ * @defgroup Fundamentals Fundamentals
+ *
+ * @brief Fundamental library classes. The most important ones are:
+ *
+ *    - cObject is the base class for the vast majority of classes in \opp
+ *    - cOwnedObject is the base class for objects whose ownership is tracked at runtime
+ *    - cCoroutine is a generic coroutine class that cSimpleModule uses for running its activity() method
+ *    - cRuntimeError is thrown when the simulation encounters an error
+ *    - cClassDescriptor subclasses provide reflection information about objects
+ */
+
+/**
+ * @defgroup ModelComponents Model Components
+ *
+ * @brief Classes in this group make up static components of the simulation model.
+ *
+ *    - cModule and subclasses represent modules in the simulation
+ *    - cChannel and subclasses represent channels between modules
+ *    - cPar represents parameters of modules and channels
+ *    - cGate represents module gates (attachment points of connections in modules)
+ */
+
+/**
+ * @defgroup SimProgr Simulation Programming
+ *
+ * @brief Classes in this group are essential to writing \opp simulation models.
+ *
+ *    - cSimpleModule represents active modules in the simulation.
+ *      The user implements new modules by subclassing cSimpleModule and
+ *      overriding its handleMessage() or activity() member function.
+ *    - cMessage represents events, and also messages sent among modules
+ *    - cPacket is a subclass of cMessage that represents network packets
+ *    - cQueue is a generic FIFO data structure for storing objects
+ *    - cPacketQueue is a cQueue subclass specialized for cPacket objects
+ *    - cTopology is a utility class for discovering the topology of the model
+ *      (which is often a communication network), and finding shortest paths in it
+ */
 
 /**
  * @defgroup SimCore  Simulation Core
  *
- * @brief Classes in this group, such as cSimpleModule or cMessage, are
- * essential to writing \opp simulation models.
+ * @brief Simulation infrastructure that makes DES work.
  *
- *    - cModule and cSimpleModule represent modules in the simulation.
- *      The user implements new modules by subclassing cSimpleModule and
- *      overriding its handleMessage() or activity() member function.
- *    - cChannel and subclasses encapsulate properties of connections between modules
- *    - cMessage represents events, and also messages sent among modules
- *    - cPar represents parameters of modules and channels
- *    - cGate represents module gates (attachment points of connections)
- */
-
-/**
- * @defgroup SimSupport  Simulation Support
- *
- * @brief Classes and other items in this group are important part of the
- * simulation kernel, but they are not of primary interest to simulation model
- * authors.
- *
- * Central classes are:
- *    - cObject and cOwnedObject are the base classes for most \opp classes
  *    - cSimulation stores the network with its modules and channels,
  *      the future events set, and the event scheduler.
- *    - cEnvir represents the runtime environment or user interface of the
- *      simulation kernel and simulations.
- */
-
-/**
- * @defgroup Containers  Container Classes
- *
- * @brief \opp provides container classes that are aware of the simulation
- * kernel's ownership mechanism, and also make contents inspectable in
- * runtime GUIs like Qtenv.
- *
- * In addition, one can also use standard C++ container classes like
- * std::vector or std::map. Note that these containers will not show up
- * in Qtenv inspectors unless you use the WATCH_VECTOR(), WATCH_MAP()
- * macros.
+ *    - cEvent represents a simulation event, but it is mostly intended for
+ *      internal use (models should use cMessage)
+ *    - cFutureEventSet represents the future events set (FES) of the simulation,
+ *      and cEventHeap is its default, heap-based implementation
+ *    - cScheduler is the interface for simulation event schedulers, and
+ *      cSequentialScheduler and cRealTimeScheduler are its two built-in
+ *      implementations
  */
 
 /**
@@ -152,11 +172,11 @@ namespace omnetpp {
  * To record output vectors (time series data), use the cOutVector class.
  *
  * Declarative (@statistic-based) result recording is also extensible, via the
- * cResultFilter and cResultRecorder classes.
+ * cResultFilter and cResultRecorder classes; see @ref ResultFiltersRecorders.
  *
  * All result collection methods eventually delegate to "record" methods
  * in cEnvir, i.e. the actual recording is decoupled from the result
- * collection classes and can be changed without changing model code.
+ * collection part, and can be changed without affecting the rest of the code.
  *
  * The central classes are:
  *    - cStdDev computes statistics like (unweighted and weighted) mean,
@@ -168,12 +188,44 @@ namespace omnetpp {
  *      and Chlamtac. The algorithm calculates quantiles without storing
  *      the observations.
  *    - cOutVector provides a way to record output vectors from the simulation.
- *    - cResultFilter and cResultRecorder are base classes for result
- *      filters and result recorders.
  *
  * Some other classes closely related to the above ones are not listed
  * here explicitly, but you can find them via 'See also' links from their
  * main classes.
+ */
+
+/**
+ * @defgroup ResultFiltersRecorders Result Filters and Recorders
+ *
+ * Result filters and recorders are objects that participate in declarative
+ * statistics recording via <tt>@statistic</tt> properties in NED files.
+ *
+ * Central classes:
+ *    - cResultFilter is the base class for result filters
+ *    - cResultRecorder is the base class for result recorders
+ *
+ * New result filter/recorder classes need to be registered with the
+ * Register_ResultFilter() / Register_ResultFilter2() and
+ * Register_ResultRecorder() / Register_ResultRecorder2() macros
+ * to be accessible from <tt>@statistic</tt>.
+ */
+
+/**
+ * @defgroup Expressions  Expression Evaluation
+ *
+ * @brief Classes related to evaluating generic/arithmetic expressions and match expressions.
+ *
+ *    - cExpression encapsulates an expression that can be evaluated. This is
+ *      an abstract base class.
+ *    - cDynamicExpression subclasses cExpression, and implements an expression
+ *      parsed at runtime
+ *    - cMatchExpression allows matching objects against a filter expression
+ *    - cValue is a variant-style value class for representing intermediate results
+ *      during expression evaluation
+ *    - cValueMap, cValueArray, cValueHolder are container classes that represent
+ *      elements in a JSON-style data structure that certain expressions may
+ *      produce as result
+ *    - cXmlElement represents an XML element
  */
 
 /**
@@ -217,7 +269,7 @@ namespace omnetpp {
  */
 
 /**
- * @defgroup OSG  OSG (3D Graphics)
+ * @defgroup OSG  OSG/osgEarth Support (3D Graphics)
  *
  * @brief \opp provides support for 3D visualization of simulation scenes,
  * with the help of the OpenSceneGraph and osgEarth libraries. Assemble
@@ -232,7 +284,7 @@ namespace omnetpp {
  */
 
 /**
- * @defgroup Signals  Signals
+ * @defgroup Signals  Simulation Signals
  *
  * @brief Simulation signals (or just signals) provide a way of publish-subscribe
  * communication for models. Signals are represented by the type simsignal_t,
@@ -248,19 +300,20 @@ namespace omnetpp {
  */
 
 /**
- * @defgroup Utilities  Utility Classes
- *
- * @brief This group is a collection of classes and functions that make it easier
- * to write simulation models.
- */
-
-/**
  * @defgroup Logging  Logging
  *
  * @brief \opp provides a logging mechanism for models, with support for log levels,
  * filtering, a configurable log prefix, and more.
  *
- * See EV_INFO for a starting point.
+ * See EV_LOG() for an overview.
+ *
+ * If you are encountering compile errors, see also EV_STATICCONTEXT.
+ */
+
+/**
+ * @defgroup Misc Miscellaneous
+ *
+ * @brief Miscellaneous types.
  */
 
 /**
@@ -278,11 +331,36 @@ namespace omnetpp {
  */
 
 /**
- * @defgroup ExtensionPoints  Extension Points
+ * @defgroup StringFunctions String Functions
  *
- * @brief Classes in this group provide a plugin mechanism that can be used to
- * customize the functionality of the simulation kernel or the Envir user
- * interface library.
+ * @brief Miscellaneous string-related utility functions.
+ */
+
+/**
+ * @defgroup UtilityFunctions  Utility Functions
+ *
+ * @brief This group is a collection of miscellaneous utility functions.
+ */
+
+/**
+ * @defgroup EnvirAndExtensions  Envir and Extensions
+ *
+ * @brief Simulations take input in the form of parameters and configuration
+ * settings, and produce various outputs such as statistical results, log, etc.
+ * Implementations of such input and output facilities  are not part of the
+ * simulation core (cSimulation,etc.), but instead, they are delegated to the
+ * "environment" of the simulation, represented by the cEnvir interface.
+ * The Envir library (src/envir) contains the default implementation of cEnvir.
+ *
+ * cEnvir is a facade which delegates most of its subtasks to further components:
+ * cConfiguration, cIOutputScalarManager etc, which themselves may have multiple
+ * alternative implementations.
+ *
+ *    - cEnvir represents the "environment" of the simulation
+ *    - cConfiguration provides parameter values and configuration settings
+ *    - cIOutputScalarManager is an interface for recording scalar results (.sca files)
+ *    - cIOutputVectorManager is an interface for recording vector results (.vec files)
+ *    - See list for more interfaces
  */
 
 /**
@@ -301,7 +379,7 @@ namespace omnetpp {
  *
  * @brief Classes in this group belong to the parallel simulation feature.
  * For more information, please see the separate Parallel Simulation API
- * which is generated from the source files in <tt>src/sim/parsim</tt>
+ * which is generated from the source files in the <tt>src/sim/parsim</tt>
  * directory.
  */
 

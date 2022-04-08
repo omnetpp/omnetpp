@@ -27,14 +27,14 @@ namespace omnetpp {
 class cValue;
 
 /**
- * @brief Abstract base class for structure description classes.
+ * @brief Abstract base class for class descriptors.
  *
  * Subclasses of cClassDescriptor encapsulate reflection information
  * (in the Java sense) which is needed by e.g. Qtenv to display object
  * contents. cClassDescriptor subclasses are normally generated
  * by the message compiler from MSG files.
  *
- * @ingroup Internals
+ * @ingroup Fundamentals
  */
 class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
 {

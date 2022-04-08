@@ -28,7 +28,7 @@ class cXMLElement;
  * @brief Abstract base class for expression evaluators.
  *
  * @see cPar
- * @ingroup SimSupport
+ * @ingroup Expressions
  */
 class SIM_API cExpression
 {

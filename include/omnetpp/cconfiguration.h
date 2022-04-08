@@ -37,7 +37,7 @@ class cConfigOption;
  * Variables can be referred to using the ${...} syntax in the configuration.
  *
  * @defgroup ConfigVars Predefined configuration variables
- * @ingroup ExtensionPoints
+ * @ingroup EnvirAndExtensions
  * @{
  */
 #define CFGVAR_RUNID            "runid"           ///< Name of the "runid" configuration variable and run attribute
@@ -71,7 +71,7 @@ class cConfigOption;
  * instance can be accessed with getEnvir()->getConfig().
  *
  * @see cConfigurationEx, cEnvir::getConfig()
- * @ingroup ExtensionPoints
+ * @ingroup EnvirAndExtensions
  */
 class SIM_API cConfiguration : public cObject
 {
@@ -299,7 +299,7 @@ class SIM_API cConfiguration : public cObject
  *   - Other utility functions like dump()
  *
  * @see cEnvir::getConfigEx()
- * @ingroup ExtensionPoints
+ * @ingroup EnvirAndExtensions
  */
 class SIM_API cConfigurationEx : public cConfiguration
 {

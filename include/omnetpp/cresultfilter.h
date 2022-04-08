@@ -35,6 +35,7 @@ class cProperty;
  * <tt>@statistic</tt> properties in NED files, and with the
  * <tt>**.result-recording-modes=</tt> configuration option.
  *
+ * @see @ref ResultFiltersRecorders
  * @ingroup RegMacros
  * @hideinitializer
  */
@@ -43,13 +44,14 @@ class cProperty;
 
 
 /**
- * @brief Registers a result filter with a description string.
+ * @brief Registers a result filter with a description string
  *
  * The class must be a subclass of cResultFilter. Registered result filters
  * can be used in the <tt>source=</tt> and <tt>record=</tt> attributes of
  * <tt>@statistic</tt> properties in NED files, and with the
  * <tt>**.result-recording-modes=</tt> configuration option.
  *
+ * @see @ref ResultFiltersRecorders
  * @ingroup RegMacros
  * @hideinitializer
  */
@@ -65,7 +67,7 @@ class cProperty;
  *
  * @see Register_ResultFilter()
  *
- * @ingroup Statistics
+ * @ingroup ResultFiltersRecorders
  */
 class SIM_API cResultFilter : public cResultListener
 {
@@ -74,8 +76,8 @@ class SIM_API cResultFilter : public cResultListener
          * Context information for initialization.
          */
         struct Context {
-            cComponent *component; // The module/channel for which the statistic is being recorded; usually the module on which the @statistic property is defined.
-            cProperty *attrsProperty; // An optional property from which extra attributes can be taken; usually the @statistic property.
+            cComponent *component;    ///< The module/channel for which the statistic is being recorded; usually the module on which the @statistic property is defined.
+            cProperty *attrsProperty; ///< An optional property from which extra attributes can be taken; usually the @statistic property.
         };
     private:
         cComponent *component = nullptr;
@@ -115,7 +117,7 @@ class SIM_API cResultFilter : public cResultListener
  * This class overrides all other receiveSignal() methods to throw an exception,
  * and delegates numeric types to a common (actually, two common) methods.
  *
- * @ingroup SimSupport
+ * @ingroup ResultFiltersRecorders
  */
 class SIM_API cNumericResultFilter : public cResultFilter
 {
@@ -139,7 +141,7 @@ class SIM_API cNumericResultFilter : public cResultFilter
  * This class overrides all other receiveSignal() methods
  * to throw an exception.
  *
- * @ingroup SimSupport
+ * @ingroup ResultFiltersRecorders
  */
 class SIM_API cObjectResultFilter : public cResultFilter
 {

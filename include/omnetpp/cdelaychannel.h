@@ -24,7 +24,7 @@ namespace omnetpp {
 /**
  * @brief Channel with propagation delay.
  *
- * @ingroup SimCore
+ * @ingroup ModelComponents
  */
 class SIM_API cDelayChannel : public cChannel //implies noncopyable
 {

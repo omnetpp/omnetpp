@@ -70,7 +70,7 @@ typedef std::map<std::string,std::string> cXMLAttributeMap;
  * the content of the corresponding document. The "href" and "parse"
  * attributes from the XInclude spec are supported.
  *
- * @ingroup SimSupport
+ * @ingroup Expressions
  */
 class SIM_API cXMLElement : public cObject, noncopyable
 {

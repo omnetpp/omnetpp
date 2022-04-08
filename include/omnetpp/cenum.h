@@ -27,7 +27,7 @@ namespace omnetpp {
  * string-to-integer mapping. The primary usage is to support
  * displaying symbolic names for integer enum values.
  *
- * @ingroup SimSupport
+ * @ingroup Misc
  */
 class SIM_API cEnum : public cOwnedObject
 {

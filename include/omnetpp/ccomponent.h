@@ -44,7 +44,7 @@ class cResultRecorder;
  * initialization and finalization support, simulation signals support,
  * and several other services to its subclasses.
  *
- * @ingroup SimCore
+ * @ingroup ModelComponents
  */
 class SIM_API cComponent : public cSoftOwner //implies noncopyable
 {

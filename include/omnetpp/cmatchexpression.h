@@ -50,14 +50,14 @@ namespace common { class MatchExpression; };
  * interpreted similar to a string constant in C/C++ regarding the use
  * of backslashes, i.e. "\t" becomes a tab, "\\" a single backslash, etc.
  *
- * @ingroup Utilities
+ * @ingroup Expressions
  */
 class SIM_API cMatchExpression : public noncopyable
 {
   public:
     /**
      * @brief Objects to be matched must implement this interface.
-     * @ingroup Utilities
+     * @ingroup Expressions
      */
     class SIM_API Matchable
     {
@@ -122,7 +122,7 @@ class SIM_API cMatchExpression : public noncopyable
 
 /**
  * @brief Wrapper to make a string matchable with cMatchExpression.
- * @ingroup Utilities
+ * @ingroup Expressions
  */
 class SIM_API cMatchableString : public cMatchExpression::Matchable
 {

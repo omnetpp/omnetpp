@@ -29,7 +29,7 @@ class cProperty;
 /**
  * @brief A collection of properties (cProperty).
  *
- * @ingroup SimSupport
+ * @ingroup ModelComponents
  */
 class SIM_API cProperties : public cObject
 {

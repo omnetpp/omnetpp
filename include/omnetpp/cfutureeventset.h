@@ -27,7 +27,7 @@ class cEvent;
  * for discrete event simulation. FES is also known as FEL (future event list).
  *
  * @see cSimulation::getFES()
- * @ingroup SimSupport
+ * @ingroup SimCore
  */
 class SIM_API cFutureEventSet : public cOwnedObject
 {

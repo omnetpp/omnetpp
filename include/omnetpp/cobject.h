@@ -87,7 +87,7 @@ class cSoftOwner;
  * appropriate member functions (dup(), str(), etc.) are expected to be
  * redefined.
  *
- * @ingroup SimSupport
+ * @ingroup Fundamentals
  */
 class SIM_API cObject
 {

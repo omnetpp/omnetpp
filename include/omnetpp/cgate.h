@@ -57,7 +57,7 @@ struct SendOptions;
  * they are important if a simple module algorithm needs to know about
  * its surroundings.
  *
- * @ingroup SimCore
+ * @ingroup ModelComponents
  */
 class SIM_API cGate : public cObject, noncopyable
 {

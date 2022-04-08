@@ -32,7 +32,7 @@ namespace omnetpp {
  * subclass from cOwnedObject and getOwner() returns this object, and all
  * cObjects that are non-cOwnedObject.
  *
- * @ingroup SimSupport
+ * @ingroup Expressions
  */
 class SIM_API cValueHolder : public cValueContainer
 {

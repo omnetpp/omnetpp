@@ -41,7 +41,7 @@ struct SIM_API ChannelResult
 /**
  * @brief Base class for channels.
  *
- * @ingroup SimCore
+ * @ingroup ModelComponents
  */
 class SIM_API cChannel : public cComponent //implies noncopyable
 {
@@ -319,7 +319,7 @@ class SIM_API cChannel : public cComponent //implies noncopyable
  * @brief Channel with zero propagation delay, zero transmission delay (infinite
  * datarate), and always enabled.
  *
- * @ingroup SimCore
+ * @ingroup ModelComponents
  */
 class SIM_API cIdealChannel : public cChannel //implies noncopyable
 {
