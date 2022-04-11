@@ -48,13 +48,20 @@ To install the required packages, type in the terminal:
 
 To use Qtenv with 3D visualization support, install the development packages for OpenSceneGraph (3.4 or later) and the
 osgEarth (2.9 or later) packages. (You may need to enable the *Universe* software repository in Software Sources.
+and also enable `WITH_OSGEARTH` in `configure.user`.)
 
 .. code::
 
    $ sudo apt-get install openscenegraph-plugin-osgearth libosgearth-dev
 
 .. warning::
-   
+
+   Ubuntu 22.04 no longer provides the `libosgearth` package so osgEarth must be installed
+   from sources. OpenSceneGraph can still be installed using
+   `sudo apt-get install libopenscenegraph-dev`.
+
+.. warning::
+
    The IDE requires GLIBC 2.28 version or later, so you Ubuntu 18.04 is NOT supported because it comes with GLIBC 2.27.
 
 .. note::

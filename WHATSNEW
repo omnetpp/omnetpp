@@ -1669,6 +1669,11 @@ Build environment:
     in the `configure.user` file. The configuration script no longer tries to
     autodetect Akaroa without the user explicitly requesting it.
 
+  - osgEarth support is now disabled by default. You must explicitly set
+    `WITH_OSGEARTH=yes` in the `configure.user` file. Some Linux distibutions
+    no longer include osgEarth so you may need to build it manually
+    from sources.
+
   - Debug builds are now compiled with -O0 for maximum debuggability. Release builds
     are compiled with `-O2 -ffp-contract=off` to disable fused multiply-add operations.
     This ensures that floating point operations will generate exactly the same results
