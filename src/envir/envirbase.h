@@ -84,7 +84,7 @@ struct ENVIR_API EnvirOptions
     std::string nedPath;  // note: also used in resolveResourcePath()
     std::string nedExcludedPackages;  //TODO should be used in resolveResourcePath()
 
-    bool checkSignals = false;  //TODO move to RunnableEnvir
+    bool checkSignals = false;  //TODO move to AppBase
     bool printUndisposed = true;
 };
 
@@ -94,18 +94,18 @@ struct ENVIR_API EnvirOptions
  * for implementing the cEnvir interface.
  *
  * IN PARTICULAR, IT SHOULD *NEVER* BE EXTENDED WITH CODE RELATED TO SETTING UP AND
- * RUNNING SIMULATIONS. (Such code may go into RunnableEnvir).
+ * RUNNING SIMULATIONS. (Such code may go into AppBase).
  */
 class ENVIR_API EnvirBase : public cEnvir
 {
   protected:
     cConfigurationEx *cfg;
-    ArgList *args;  //TODO move to RunnableEnvir, modulo EnvirBase::getArgVector()/getArgCount()
+    ArgList *args;  //TODO move to AppBase, modulo EnvirBase::getArgVector()/getArgCount()
     XMLDocCache *xmlCache;
 
     EnvirOptions *opt;
 
-    std::ostream out; //TODO move to RunnableEnvir, modulo EnvirBase::undisposedObject()
+    std::ostream out; //TODO move to AppBase, modulo EnvirBase::undisposedObject()
 
 #ifdef WITH_PARSIM
     cParsimCommunications *parsimComm;

@@ -19,7 +19,7 @@
 
 #include <vector>
 #include <list>
-#include "envir/runnableenvir.h"
+#include "envir/appbase.h"
 #include "envir/speedometer.h"
 #include "omnetpp/cchannel.h"
 #include "omnetpp/cmodule.h"
@@ -69,7 +69,7 @@ enum LayouterChoice
     LAYOUTER_AUTO
 };
 
-struct QtenvOptions : public RunnableEnvirOptions
+struct QtenvOptions : public AppBaseOptions
 {
     // note: these values will be overwritten in setup()/readOptions() before taking effect
     size_t extraStack;                     // per-module extra stack for activity() modules
@@ -104,7 +104,7 @@ struct QtenvOptions : public RunnableEnvirOptions
 /**
  * A Qt-based user interface.
  */
-class QTENV_API Qtenv : public QObject, public RunnableEnvir
+class QTENV_API Qtenv : public QObject, public AppBase
 {
    Q_OBJECT
 

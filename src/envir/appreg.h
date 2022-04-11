@@ -19,36 +19,36 @@
 #ifndef __OMNETPP_ENVIR_APPREG_H
 #define __OMNETPP_ENVIR_APPREG_H
 
+#include "appbase.h"
 #include "omnetpp/cenvir.h"
 #include "omnetpp/globals.h"
 #include "omnetpp/onstartup.h"
 #include "envirdefs.h"
-#include "runnableenvir.h"
 
 namespace omnetpp {
 namespace envir {
 
 #define Register_OmnetApp(UINAME,CLASSNAME,SCORE,DESCR) \
-    static RunnableEnvir *__FILEUNIQUENAME__() {return new CLASSNAME();} \
+    static AppBase *__FILEUNIQUENAME__() {return new CLASSNAME();} \
     EXECUTE_ON_STARTUP(omnetapps.getInstance()->add(new cOmnetAppRegistration(UINAME,SCORE,DESCR,__FILEUNIQUENAME__)))
 
 extern ENVIR_API cGlobalRegistrationList omnetapps;
 
 /**
- * Class for registering user interfaces as subclasses of RunnableEnvir.
+ * Class for registering user interfaces as subclasses of AppBase.
  * User interfaces have an associated score, and on startup, OMNeT++ will
  * instantiate the one with the highest score.
  */
 class ENVIR_API cOmnetAppRegistration : public cOwnedObject
 {
-    typedef RunnableEnvir *(*AppCreatorFunc)();
+    typedef AppBase *(*AppCreatorFunc)();
     AppCreatorFunc factoryFunction;
     std::string description;
     int score;
   public:
     cOmnetAppRegistration(const char *name, int score, const char *description, AppCreatorFunc f) :
       cOwnedObject(name, false), factoryFunction(f), description(description), score(score) {}
-    RunnableEnvir *createOne()  {return factoryFunction();}
+    AppBase *createOne()  {return factoryFunction();}
     std::string str() const override {return description;}
     int getScore()  {return score;}
 

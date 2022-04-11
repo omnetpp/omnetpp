@@ -17,7 +17,8 @@
 #define __OMNETPP_CMDENV_CMDENV_H
 
 #include <map>
-#include "envir/runnableenvir.h"
+
+#include "envir/appbase.h"
 #include "envir/speedometer.h"
 #include "omnetpp/csimulation.h"
 #include "fakegui.h"
@@ -27,7 +28,7 @@ namespace cmdenv {
 
 using namespace omnetpp::envir;
 
-struct CMDENV_API CmdenvOptions : public RunnableEnvirOptions
+struct CMDENV_API CmdenvOptions : public AppBaseOptions
 {
     // note: these values will be overwritten in setup()/readOptions() before taking effect
     std::string configName;
@@ -50,7 +51,7 @@ struct CMDENV_API CmdenvOptions : public RunnableEnvirOptions
 /**
  * Command line user interface.
  */
-class CMDENV_API Cmdenv : public RunnableEnvir
+class CMDENV_API Cmdenv : public AppBase
 {
    protected:
      CmdenvOptions *&opt;         // alias to EnvirBase::opt
@@ -104,7 +105,7 @@ class CMDENV_API Cmdenv : public RunnableEnvir
      virtual void displayException(std::exception& ex) override;
      virtual void doRun() override;
      virtual void printUISpecificHelp() override;
-     virtual void loadNEDFiles() override { RunnableEnvir::loadNEDFiles(); }
+     virtual void loadNEDFiles() override { AppBase::loadNEDFiles(); }
 
      virtual CmdenvOptions *createOptions() override {return new CmdenvOptions();}
      virtual void readOptions() override;

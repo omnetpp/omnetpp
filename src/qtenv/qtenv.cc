@@ -571,7 +571,7 @@ double Qtenv::computeModelHoldEndTime()
     return holdEndTime;
 }
 
-Qtenv::Qtenv() : opt((QtenvOptions *&)RunnableEnvir::opt), icons(out)
+Qtenv::Qtenv() : opt((QtenvOptions *&)AppBase::opt), icons(out)
 {
     // Note: ctor should only contain trivial initializations, because
     // the class may be instantiated only for the purpose of calling
@@ -1192,7 +1192,7 @@ bool Qtenv::checkRunning()
 
 std::vector<int> Qtenv::resolveRunFilter(const char *configName, const char *runFilter)
 {
-    return RunnableEnvir::resolveRunFilter(configName, runFilter);
+    return AppBase::resolveRunFilter(configName, runFilter);
 }
 
 void Qtenv::loadNedFile(const char *fname, const char *expectedPackage, bool isXML)
@@ -1319,7 +1319,7 @@ void Qtenv::newRun(const char *configname, int runnumber)
 
 void Qtenv::setupNetwork(cModuleType *network)
 {
-    RunnableEnvir::setupNetwork(network);
+    AppBase::setupNetwork(network);
 
     // collapsing all nodes in the object tree, because even if a new network is
     // loaded, there is a chance that some objects will be on the same place
@@ -1608,7 +1608,7 @@ void Qtenv::displayException(std::exception& ex)
 
 void Qtenv::componentInitBegin(cComponent *component, int stage)
 {
-    RunnableEnvir::componentInitBegin(component, stage);
+    AppBase::componentInitBegin(component, stage);
 
     auto logLevel = getPref(QString("ComponentLogLevels/") + component->getFullPath().c_str());
     if (logLevel.isValid() && logLevel.canConvert(QVariant::Int))
@@ -1666,7 +1666,7 @@ bool Qtenv::isSilentEvent(cMessage *msg)
 
 void Qtenv::readOptions()
 {
-    RunnableEnvir::readOptions();
+    AppBase::readOptions();
 
     cConfiguration *cfg = getConfig();
 
@@ -1683,7 +1683,7 @@ void Qtenv::readPerRunOptions()
 {
     bool origDebugOnErrors = getDebugOnErrors();
 
-    RunnableEnvir::readPerRunOptions();
+    AppBase::readPerRunOptions();
 
     // don't let the configuration turn off a debug-on-errors setting that the user (presumably) turned
     // on manually, using the menu
@@ -1933,7 +1933,7 @@ void Qtenv::objectDeleted(cObject *object)
 
 void Qtenv::simulationEvent(cEvent *event)
 {
-    RunnableEnvir::simulationEvent(event);
+    AppBase::simulationEvent(event);
 
     if (isLoggingEnabled())
         addEventToLog(event);  // must be done here, because eventnum and simtime are updated inside executeEvent()
@@ -1969,7 +1969,7 @@ void Qtenv::simulationEvent(cEvent *event)
 
 void Qtenv::messageScheduled(cMessage *msg)
 {
-    RunnableEnvir::messageScheduled(msg);
+    AppBase::messageScheduled(msg);
 }
 
 void Qtenv::messageCancelled(cMessage *msg)
@@ -1980,12 +1980,12 @@ void Qtenv::messageCancelled(cMessage *msg)
         runUntil.msg = nullptr;
         runUntil.eventNumber = getSimulation()->getEventNumber();  // stop the simulation using the event number limit
     }
-    RunnableEnvir::messageCancelled(msg);
+    AppBase::messageCancelled(msg);
 }
 
 void Qtenv::beginSend(cMessage *msg, const SendOptions& options)
 {
-    RunnableEnvir::beginSend(msg, options);
+    AppBase::beginSend(msg, options);
 
     if (isLoggingEnabled())
         logBuffer.beginSend(msg, options);
@@ -1996,7 +1996,7 @@ void Qtenv::beginSend(cMessage *msg, const SendOptions& options)
 
 void Qtenv::messageSendDirect(cMessage *msg, cGate *toGate, const ChannelResult& result)
 {
-    RunnableEnvir::messageSendDirect(msg, toGate, result);
+    AppBase::messageSendDirect(msg, toGate, result);
 
     if (isLoggingEnabled())
         logBuffer.messageSendDirect(msg, toGate, result);
@@ -2007,7 +2007,7 @@ void Qtenv::messageSendDirect(cMessage *msg, cGate *toGate, const ChannelResult&
 
 void Qtenv::messageSendHop(cMessage *msg, cGate *srcGate)
 {
-    RunnableEnvir::messageSendHop(msg, srcGate);
+    AppBase::messageSendHop(msg, srcGate);
 
     if (isLoggingEnabled())
         logBuffer.messageSendHop(msg, srcGate);
@@ -2020,7 +2020,7 @@ void Qtenv::messageSendHop(cMessage *msg, cGate *srcGate)
 
 void Qtenv::messageSendHop(cMessage *msg, cGate *srcGate, const cChannel::Result& result)
 {
-    RunnableEnvir::messageSendHop(msg, srcGate, result);
+    AppBase::messageSendHop(msg, srcGate, result);
 
     if (isLoggingEnabled())
         logBuffer.messageSendHop(msg, srcGate, result);
@@ -2033,7 +2033,7 @@ void Qtenv::messageSendHop(cMessage *msg, cGate *srcGate, const cChannel::Result
 
 void Qtenv::endSend(cMessage *msg)
 {
-    RunnableEnvir::endSend(msg);
+    AppBase::endSend(msg);
 
     if (isLoggingEnabled())
         logBuffer.endSend(msg);
@@ -2044,7 +2044,7 @@ void Qtenv::endSend(cMessage *msg)
 
 void Qtenv::messageDeleted(cMessage *msg)
 {
-    RunnableEnvir::messageDeleted(msg);
+    AppBase::messageDeleted(msg);
 
     if (messageAnimator)
         messageAnimator->removeMessagePointer(msg);
@@ -2054,7 +2054,7 @@ void Qtenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
 {
     va_list va2;
     va_copy(va2, va);  // see bug #107
-    RunnableEnvir::componentMethodBegin(fromComp, toComp, methodFmt, va2, silent);
+    AppBase::componentMethodBegin(fromComp, toComp, methodFmt, va2, silent);
     va_end(va2);
 
     if (messageAnimator->getShowAnimations() && opt->animateMethodCalls && messageAnimator) {
@@ -2068,7 +2068,7 @@ void Qtenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
 
 void Qtenv::componentMethodEnd()
 {
-    RunnableEnvir::componentMethodEnd();
+    AppBase::componentMethodEnd();
 
     if (messageAnimator->getShowAnimations() && opt->animateMethodCalls && messageAnimator)
         messageAnimator->methodcallEnd();
@@ -2076,7 +2076,7 @@ void Qtenv::componentMethodEnd()
 
 void Qtenv::moduleCreated(cModule *newmodule)
 {
-    RunnableEnvir::moduleCreated(newmodule);
+    AppBase::moduleCreated(newmodule);
 
     cModule *mod = newmodule->getParentModule();
 
@@ -2089,7 +2089,7 @@ void Qtenv::moduleCreated(cModule *newmodule)
 
 void Qtenv::moduleDeleted(cModule *module)
 {
-    RunnableEnvir::moduleDeleted(module);
+    AppBase::moduleDeleted(module);
 
     componentHistory.componentDeleted(module);
 
@@ -2107,7 +2107,7 @@ void Qtenv::moduleDeleted(cModule *module)
 
 void Qtenv::moduleReparented(cModule *module, cModule *oldParent, int oldId)
 {
-    RunnableEnvir::moduleReparented(module, oldParent, oldId);
+    AppBase::moduleReparented(module, oldParent, oldId);
 
     componentHistory.componentReparented(module, oldParent, oldId);
 
@@ -2128,7 +2128,7 @@ void Qtenv::moduleReparented(cModule *module, cModule *oldParent, int oldId)
 
 void Qtenv::connectionCreated(cGate *srcgate)
 {
-    RunnableEnvir::connectionCreated(srcgate);
+    AppBase::connectionCreated(srcgate);
 
     // notify compound module where the connection (whose source is this gate) is displayed
     cModule *notifymodule = nullptr;
@@ -2146,7 +2146,7 @@ void Qtenv::connectionCreated(cGate *srcgate)
 
 void Qtenv::connectionDeleted(cGate *srcgate)
 {
-    RunnableEnvir::connectionDeleted(srcgate);
+    AppBase::connectionDeleted(srcgate);
 
     if (srcgate->getChannel())
         componentHistory.componentDeleted(srcgate->getChannel());
@@ -2168,7 +2168,7 @@ void Qtenv::connectionDeleted(cGate *srcgate)
 
 void Qtenv::displayStringChanged(cComponent *component)
 {
-    RunnableEnvir::displayStringChanged(component);
+    AppBase::displayStringChanged(component);
 
     if (cModule *module = dynamic_cast<cModule *>(component))
         moduleDisplayStringChanged(module);
@@ -2386,7 +2386,7 @@ void Qtenv::onObjectDoubleClicked(cObject *object)
 
 void Qtenv::bubble(cComponent *component, const char *text)
 {
-    RunnableEnvir::bubble(component, text);
+    AppBase::bubble(component, text);
 
     if (!opt->showBubbles)
         return;
@@ -2424,7 +2424,7 @@ void Qtenv::alert(const char *msg)
 
 void Qtenv::log(cLogEntry *entry)
 {
-    RunnableEnvir::log(entry);
+    AppBase::log(entry);
 
     if (!isLoggingEnabled())
         return;

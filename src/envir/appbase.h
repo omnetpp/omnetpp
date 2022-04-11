@@ -1,5 +1,5 @@
 //==========================================================================
-//  RUNNABLEENVIR.H - part of
+//  APPBASE.H - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_ENVIR_RUNNABLEENVIR_H
-#define __OMNETPP_ENVIR_RUNNABLEENVIR_H
+#ifndef __OMNETPP_ENVIR_APPBASE_H
+#define __OMNETPP_ENVIR_APPBASE_H
 
 #include "envirdefs.h"
 #include "envirbase.h"
@@ -32,7 +32,7 @@ namespace envir {
 #endif
 
 
-struct RunnableEnvirOptions : public EnvirOptions
+struct AppBaseOptions : public EnvirOptions
 {
     // note: these values will be overwritten in setup()/readOptions() before taking effect
     std::string networkName;
@@ -55,10 +55,10 @@ struct RunnableEnvirOptions : public EnvirOptions
  *
  * @ingroup SimSupport
  */
-class ENVIR_API RunnableEnvir : public EnvirBase
+class ENVIR_API AppBase : public EnvirBase
 {
   protected:
-    RunnableEnvirOptions *&opt;          // alias to EnvirBase::opt
+    AppBaseOptions *&opt;          // alias to EnvirBase::opt
 
     std::string redirectionFilename;
     int exitCode = 0;
@@ -74,7 +74,7 @@ class ENVIR_API RunnableEnvir : public EnvirBase
     /**
      * Constructor
      */
-    RunnableEnvir();
+    AppBase();
 
     /**
      * Runs the user interface. The return value will become the exit code
@@ -119,11 +119,9 @@ class ENVIR_API RunnableEnvir : public EnvirBase
     virtual void stopOutputRedirection();
     virtual bool isOutputRedirected();
 
-    virtual RunnableEnvirOptions *createOptions() override {return new RunnableEnvirOptions();}
+    virtual AppBaseOptions *createOptions() override {return new AppBaseOptions();}
     virtual void readOptions() override;
     virtual void readPerRunOptions() override;
-
-    int parseSimtimeResolution(const char *resolution);
 
     // Utility function; never returns nullptr
     cModuleType *resolveNetwork(const char *networkname);

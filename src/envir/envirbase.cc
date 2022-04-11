@@ -851,7 +851,7 @@ bool EnvirBase::idle()
 
 bool EnvirBase::ensureDebugger(cRuntimeError *error)
 {
-    return false; // note: this is implemented in RunnableEnvir
+    return false; // note: this is implemented in AppBase
 }
 
 int EnvirBase::getParsimProcId() const

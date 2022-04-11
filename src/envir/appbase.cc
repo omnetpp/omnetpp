@@ -14,6 +14,8 @@
 *--------------------------------------------------------------*/
 
 //TODO clean up includes list
+#include "appbase.h"
+
 #include <cstdio>
 #include <csignal>
 #include <fstream>
@@ -63,7 +65,6 @@
 #include "valueiterator.h"
 #include "xmldoccache.h"
 #include "debuggersupport.h"
-#include "runnableenvir.h"
 
 #ifdef WITH_PARSIM
 #include "omnetpp/cparsimcomm.h"
@@ -168,11 +169,11 @@ static const char *buildOptions = ""
     #endif
     ;
 
-RunnableEnvir::RunnableEnvir() : opt((RunnableEnvirOptions *&)EnvirBase::opt)
+AppBase::AppBase() : opt((AppBaseOptions *&)EnvirBase::opt)
 {
 }
 
-int RunnableEnvir::run(const std::vector<std::string>& args, cConfiguration *cfg)
+int AppBase::run(const std::vector<std::string>& args, cConfiguration *cfg)
 {
     char **argv = new char *[args.size()];
     for (int i = 0; i < args.size(); i++)
@@ -180,7 +181,7 @@ int RunnableEnvir::run(const std::vector<std::string>& args, cConfiguration *cfg
     return run(args.size(), argv, cfg);
 }
 
-int RunnableEnvir::run(int argc, char *argv[], cConfiguration *configobject)
+int AppBase::run(int argc, char *argv[], cConfiguration *configobject)
 {
     opt = createOptions();
     args = new ArgList();
@@ -208,7 +209,7 @@ int RunnableEnvir::run(int argc, char *argv[], cConfiguration *configobject)
     return exitCode;
 }
 
-bool RunnableEnvir::simulationRequired()
+bool AppBase::simulationRequired()
 {
     // handle -h and -v command-line options
     if (args->optionGiven('h')) {
@@ -263,7 +264,7 @@ bool RunnableEnvir::simulationRequired()
     return true;
 }
 
-void RunnableEnvir::printRunInfo(const char *configName, const char *runFilter, const char *query)
+void AppBase::printRunInfo(const char *configName, const char *runFilter, const char *query)
 {
     //
     // IMPORTANT: the simulation launcher will parse the output of this
@@ -360,7 +361,7 @@ void RunnableEnvir::printRunInfo(const char *configName, const char *runFilter, 
     }
 }
 
-void RunnableEnvir::printConfigValue(const char *configName, const char *runFilter, const char *optionName)
+void AppBase::printConfigValue(const char *configName, const char *runFilter, const char *optionName)
 {
     // activate the selected configuration
     std::vector<int> runNumbers = resolveRunFilter(configName, runFilter);
@@ -377,7 +378,7 @@ void RunnableEnvir::printConfigValue(const char *configName, const char *runFilt
     out << value << endl;
 }
 
-void RunnableEnvir::readOptions()
+void AppBase::readOptions()
 {
     EnvirBase::readOptions();
 
@@ -385,7 +386,7 @@ void RunnableEnvir::readOptions()
     opt->inifileNetworkDir = cfg->getConfigEntry(CFGID_NETWORK->getName()).getBaseDirectory();
 }
 
-void RunnableEnvir::readPerRunOptions()
+void AppBase::readPerRunOptions()
 {
     EnvirBase::readPerRunOptions();
 
@@ -405,7 +406,7 @@ void RunnableEnvir::readPerRunOptions()
     opt->warnings = cfg->getAsBool(CFGID_WARNINGS);
 }
 
-bool RunnableEnvir::setup()
+bool AppBase::setup()
 {
     try {
         // ensure correct numeric format in output files
@@ -486,7 +487,7 @@ bool RunnableEnvir::setup()
     return true;
 }
 
-void RunnableEnvir::loadNEDFiles()
+void AppBase::loadNEDFiles()
 {
     // load NED files from folders on the NED path
     std::set<std::string> foldersLoaded;
@@ -503,7 +504,7 @@ void RunnableEnvir::loadNEDFiles()
     getSimulation()->doneLoadingNedFiles();
 }
 
-void RunnableEnvir::printHelp()
+void AppBase::printHelp()
 {
     out << "Command line options:\n";
     out << "  <inifile> or -f <inifile>\n";
@@ -631,13 +632,13 @@ void RunnableEnvir::printHelp()
         cOmnetAppRegistration *appreg = dynamic_cast<cOmnetAppRegistration *>(table->get(i));
         ASSERT(appreg != nullptr);
         cEnvir *app = appreg->createOne();
-        if (RunnableEnvir *envir = dynamic_cast<RunnableEnvir*>(app))
+        if (AppBase *envir = dynamic_cast<AppBase*>(app))
             envir->printUISpecificHelp();
         delete app;
     }
 }
 
-void RunnableEnvir::run()
+void AppBase::run()
 {
     try {
         doRun();
@@ -647,7 +648,7 @@ void RunnableEnvir::run()
     }
 }
 
-void RunnableEnvir::shutdown()
+void AppBase::shutdown()
 {
     try {
         getSimulation()->deleteNetwork();
@@ -658,7 +659,7 @@ void RunnableEnvir::shutdown()
     }
 }
 
-void RunnableEnvir::setupNetwork(cModuleType *network)
+void AppBase::setupNetwork(cModuleType *network)
 {
     currentEventName = "";
     currentEventClassName = nullptr;
@@ -671,7 +672,7 @@ void RunnableEnvir::setupNetwork(cModuleType *network)
         EnvirUtils::dumpResultRecorders(out, getSimulation()->getSystemModule());
 }
 
-void RunnableEnvir::prepareForRun()
+void AppBase::prepareForRun()
 {
     resetClock();
     if (opt->simtimeLimit >= SIMTIME_ZERO)
@@ -684,7 +685,7 @@ void RunnableEnvir::prepareForRun()
 
 //-------------------------------------------------------------
 
-std::vector<int> RunnableEnvir::resolveRunFilter(const char *configName, const char *runFilter)
+std::vector<int> AppBase::resolveRunFilter(const char *configName, const char *runFilter)
 {
     std::vector<int> runNumbers;
 
@@ -734,7 +735,7 @@ std::vector<int> RunnableEnvir::resolveRunFilter(const char *configName, const c
 
 //-------------------------------------------------------------
 
-void RunnableEnvir::startOutputRedirection(const char *fileName)
+void AppBase::startOutputRedirection(const char *fileName)
 {
     ASSERT(!isOutputRedirected());
 
@@ -748,7 +749,7 @@ void RunnableEnvir::startOutputRedirection(const char *fileName)
     redirectionFilename = fileName;
 }
 
-void RunnableEnvir::stopOutputRedirection()
+void AppBase::stopOutputRedirection()
 {
     if (isOutputRedirected()) {
         std::streambuf *fbuf = out.rdbuf();
@@ -759,12 +760,12 @@ void RunnableEnvir::stopOutputRedirection()
     }
 }
 
-bool RunnableEnvir::isOutputRedirected()
+bool AppBase::isOutputRedirected()
 {
     return out.rdbuf() != std::cout.rdbuf();
 }
 
-std::ostream& RunnableEnvir::err()
+std::ostream& AppBase::err()
 {
     std::ostream& err = opt->useStderr && !isOutputRedirected() ? std::cerr : out;
     if (isOutputRedirected())
@@ -773,7 +774,7 @@ std::ostream& RunnableEnvir::err()
     return err;
 }
 
-std::ostream& RunnableEnvir::errWithoutPrefix()
+std::ostream& AppBase::errWithoutPrefix()
 {
     std::ostream& err = opt->useStderr && !isOutputRedirected() ? std::cerr : out;
     if (isOutputRedirected())
@@ -782,7 +783,7 @@ std::ostream& RunnableEnvir::errWithoutPrefix()
     return err;
 }
 
-std::ostream& RunnableEnvir::warn()
+std::ostream& AppBase::warn()
 {
     std::ostream& err = opt->useStderr && !isOutputRedirected() ? std::cerr : out;
     if (isOutputRedirected())
@@ -792,7 +793,7 @@ std::ostream& RunnableEnvir::warn()
 }
 
 
-bool RunnableEnvir::ensureDebugger(cRuntimeError *error)
+bool AppBase::ensureDebugger(cRuntimeError *error)
 {
     if (error == nullptr || attachDebuggerOnErrors) {
         try {
@@ -840,9 +841,9 @@ bool RunnableEnvir::ensureDebugger(cRuntimeError *error)
     return false;
 }
 
-void RunnableEnvir::crashHandler(int)
+void AppBase::crashHandler(int)
 {
-    RunnableEnvir *envir = dynamic_cast<RunnableEnvir*>(cSimulation::getActiveEnvir());
+    AppBase *envir = dynamic_cast<AppBase*>(cSimulation::getActiveEnvir());
     if (!envir)
         return; // not a suitable envir
 
@@ -854,7 +855,7 @@ void RunnableEnvir::crashHandler(int)
     }
 }
 
-std::string RunnableEnvir::getFormattedMessage(std::exception& ex)
+std::string AppBase::getFormattedMessage(std::exception& ex)
 {
     if (cException *e = dynamic_cast<cException *>(&ex))
         return e->getFormattedMessage();
@@ -862,7 +863,7 @@ std::string RunnableEnvir::getFormattedMessage(std::exception& ex)
         return ex.what();
 }
 
-void RunnableEnvir::displayException(std::exception& ex)
+void AppBase::displayException(std::exception& ex)
 {
     std::string msg = getFormattedMessage(ex);
     if (dynamic_cast<cTerminationException*>(&ex) != nullptr)
@@ -875,28 +876,28 @@ void RunnableEnvir::displayException(std::exception& ex)
 
 //-------------------------------------------------------------
 
-void RunnableEnvir::resetClock()
+void AppBase::resetClock()
 {
     stopwatch.resetClock();
 }
 
-void RunnableEnvir::startClock()
+void AppBase::startClock()
 {
     stopwatch.startClock();
 }
 
-void RunnableEnvir::stopClock()
+void AppBase::stopClock()
 {
     stopwatch.stopClock();
     simulatedTime = getSimulation()->getSimTime();
 }
 
-double RunnableEnvir::getElapsedSecs()
+double AppBase::getElapsedSecs()
 {
     return stopwatch.getElapsedSecs();
 }
 
-void RunnableEnvir::checkTimeLimits()
+void AppBase::checkTimeLimits()
 {
     if (!stopwatch.hasTimeLimits())
         return;
@@ -905,7 +906,7 @@ void RunnableEnvir::checkTimeLimits()
     stopwatch.checkTimeLimits();
 }
 
-void RunnableEnvir::stoppedWithTerminationException(cTerminationException& e)
+void AppBase::stoppedWithTerminationException(cTerminationException& e)
 {
     // if we're running in parallel and this exception is NOT one we received
     // from other partitions, then notify other partitions
@@ -919,7 +920,7 @@ void RunnableEnvir::stoppedWithTerminationException(cTerminationException& e)
     }
 }
 
-void RunnableEnvir::stoppedWithException(std::exception& e)
+void AppBase::stoppedWithException(std::exception& e)
 {
     // if we're running in parallel and this exception is NOT one we received
     // from other partitions, then notify other partitions
@@ -933,7 +934,7 @@ void RunnableEnvir::stoppedWithException(std::exception& e)
     }
 }
 
-void RunnableEnvir::checkFingerprint()
+void AppBase::checkFingerprint()
 {
     cFingerprintCalculator *fingerprint = getSimulation()->getFingerprintCalculator();
     if (!getSimulation()->getFingerprintCalculator())
@@ -947,7 +948,7 @@ void RunnableEnvir::checkFingerprint()
                 fingerprint->str().c_str(), cfg->getAsString(CFGID_FINGERPRINT).c_str());
 }
 
-cModuleType *RunnableEnvir::resolveNetwork(const char *networkname)
+cModuleType *AppBase::resolveNetwork(const char *networkname)
 {
     cModuleType *network = nullptr;
     std::string inifilePackage = getSimulation()->getNedPackageForFolder(opt->inifileNetworkDir.c_str());
