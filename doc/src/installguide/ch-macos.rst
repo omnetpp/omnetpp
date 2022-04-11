@@ -36,6 +36,27 @@ override the default security policy for the Terminal app.
 
    Enable Running Unsigned Code in Terminal
 
+.. note::
+
+   If you do not see the *Terminal* item in the *Development Tools* section, you should execute
+   `spctl developer-mode enable-terminal` in the terminal and then restart *System Preferences*
+   applet.
+
+Debugging Unsigned Code
+-----------------------
+
+Even if you have enabled development mode in the terminal, missing code signatures will still
+cause problems during debugging, because the debugged process is started by the IDE, not the terminal.
+To be able to debug, you must disable code signature checking globally by typing:
+
+.. code::
+
+   $ sudo spctl --master-disable
+
+After issuing the above command go to *System Preferences / Security and Privacy / General* and
+select *Any* at the bottom of the dialog. After restarting your terminal application, you will be 
+able to debug your unsigned simulation models.
+
 Running |omnet++| on Apple Silicon
 ----------------------------------
 
@@ -55,6 +76,11 @@ After this, follow the normal installation instructions and be sure to execute a
    You can also manually trigger the installation from the command line using the following command:
    `softwareupdate --install-rosetta --agree-to-license`.   
    
+.. note::
+
+   Typing `source setenv` will launch the x86_64 emulator automatically for you. Make sure to execute
+   all commands from that terminal.
+
 Additional Steps Required on macOS to Use the Debugger
 ------------------------------------------------------
 
