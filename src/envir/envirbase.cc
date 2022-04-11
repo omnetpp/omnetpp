@@ -61,6 +61,7 @@
 #include "appreg.h"
 #include "valueiterator.h"
 #include "xmldoccache.h"
+#include "iallinone.h"
 
 #ifdef WITH_PARSIM
 #include "omnetpp/cparsimcomm.h"
@@ -155,10 +156,9 @@ Register_PerRunConfigOptionU(CFGID_OUTPUTVECTOR_MEMORY_LIMIT, "output-vectors-me
 Register_PerObjectConfigOptionU(CFGID_VECTOR_BUFFER, "vector-buffer", KIND_VECTOR, "B", DEFAULT_VECTOR_BUFFER, "For output vectors: the maximum per-vector buffer space used for storing values before writing them out as a block into the output vector file. There is also a total limit, see `output-vectors-memory-limit`.\nUsage: `<module-full-path>.<vector-name>.vector-buffer=<amount>`.");
 
 
-EnvirBase::EnvirBase() : out(std::cout.rdbuf())
+EnvirBase::EnvirBase(IAllInOne *app) : out(std::cout.rdbuf()), app(app)
 {
     opt = nullptr;
-    args = nullptr;
     cfg = nullptr;
     xmlCache = nullptr;
 
@@ -181,8 +181,7 @@ EnvirBase::~EnvirBase()
         listeners.pop_back();
     }
 
-    delete opt;
-    delete args;
+    //delete opt;
     delete cfg;
     delete xmlCache;
 
@@ -197,12 +196,77 @@ EnvirBase::~EnvirBase()
 #endif
 }
 
+void EnvirBase::setupAndReadOptions(cConfigurationEx *cfg, ArgList *args, EnvirOptions *opt)
+{
+    this->cfg = cfg;
+    this->args = args;
+    this->opt = opt;
+
+    // ensure correct numeric format in output files
+    setPosixLocale();
+
+    // set opt->* variables from ini file(s)
+    readOptions();
+
+    // initialize coroutine library
+    size_t totalStack = (size_t)cfg->getAsDouble(CFGID_TOTAL_STACK, TOTAL_STACK_SIZE);
+    if (TOTAL_STACK_SIZE != 0 && totalStack <= MAIN_STACK_SIZE+4096) {
+        if (opt->verbose)
+            out << "Total stack size " << totalStack << " increased to " << MAIN_STACK_SIZE << endl;
+        totalStack = MAIN_STACK_SIZE+4096;
+    }
+    cCoroutine::init(totalStack, MAIN_STACK_SIZE);
+
+    // install XML document cache
+    xmlCache = new XMLDocCache();
+
+    // parallel simulation
+    if (opt->parsim) {
+#ifdef WITH_PARSIM
+        // parsim: create components
+        std::string parsimcommClass = cfg->getAsString(CFGID_PARSIM_COMMUNICATIONS_CLASS);
+        std::string parsimsynchClass = cfg->getAsString(CFGID_PARSIM_SYNCHRONIZATION_CLASS);
+
+        parsimComm = createByClassName<cParsimCommunications>(parsimcommClass.c_str(), "parallel simulation communications layer");
+        parsimPartition = new cParsimPartition();
+        cParsimSynchronizer *parsimSynchronizer = createByClassName<cParsimSynchronizer>(parsimsynchClass.c_str(), "parallel simulation synchronization layer");
+        addLifecycleListener(parsimPartition);
+
+        // wire them together (note: 'parsimSynchronizer' is also the scheduler for 'simulation')
+        parsimPartition->configure(getSimulation(), parsimComm, parsimSynchronizer);
+        parsimSynchronizer->configure(getSimulation(), parsimPartition, parsimComm);
+        getSimulation()->setScheduler(parsimSynchronizer);
+
+        // initialize them
+        int parsimNumPartitions = cfg->getAsInt(CFGID_PARSIM_NUM_PARTITIONS, -1);
+        int parsimProcId = cfg->getAsInt(CFGID_PARSIM_PROCID, -1);
+        parsimComm->configure(cfg, parsimNumPartitions, parsimProcId);
+#else
+        throw cRuntimeError("Parallel simulation is turned on in the ini file, but OMNeT++ was compiled without parallel simulation support (WITH_PARSIM=no)");
+#endif
+    }
+
+    // load NED files embedded into the simulation program as string literals
+    if (!embeddedNedFiles.empty()) {
+        if (opt->verbose)
+            out << "Loading embedded NED files: " << embeddedNedFiles.size() << endl;
+        for (const auto& file : embeddedNedFiles) {
+            std::string nedText = file.nedText;
+            if (!file.garblephrase.empty())
+                nedText = opp_ungarble(file.nedText, file.garblephrase);
+            getSimulation()->loadNedText(file.fileName.c_str(), nedText.c_str());
+        }
+    }
+}
+
 void EnvirBase::preconfigure(cComponent *component)
 {
+    app->preconfigure(component);
 }
 
 void EnvirBase::configure(cComponent *component)
 {
+    app->configure(component);
 }
 
 void EnvirBase::addResultRecorders(cComponent *component, simsignal_t signal, const char *statisticName, cProperty *statisticTemplateProperty)
@@ -243,6 +307,11 @@ void EnvirBase::readParameter(cPar *par)
     }
 
     ASSERT(par->isSet());  // and must be set after
+}
+
+void EnvirBase::askParameter(cPar *par, bool unassigned)
+{
+    app->askParameter(par, unassigned);
 }
 
 bool EnvirBase::isModuleLocal(cModule *parentmod, const char *modname, int index)
@@ -343,6 +412,11 @@ void EnvirBase::flushXMLParsedContentCache()
     xmlCache->flushParsedContentCache();
 }
 
+unsigned EnvirBase::getExtraStackForEnvir() const
+{
+    return app->getExtraStackForEnvir();
+}
+
 cConfiguration *EnvirBase::getConfig()
 {
     return cfg;
@@ -400,10 +474,12 @@ void EnvirBase::bubble(cComponent *component, const char *text)
 {
     if (recordEventlog)
         eventlogManager->bubble(component, text);
+    app->bubble(component, text);
 }
 
 void EnvirBase::objectDeleted(cObject *object)
 {
+    app->objectDeleted(object);
 }
 
 void EnvirBase::simulationEvent(cEvent *event)
@@ -415,6 +491,8 @@ void EnvirBase::simulationEvent(cEvent *event)
     currentModuleId = event->isMessage() ? (static_cast<cMessage *>(event))->getArrivalModule()->getId() : -1;
     if (recordEventlog)
         eventlogManager->simulationEvent(event);
+
+    app->simulationEvent(event);
 }
 
 void EnvirBase::componentInitBegin(cComponent *component, int stage)
@@ -424,126 +502,147 @@ void EnvirBase::componentInitBegin(cComponent *component, int stage)
     // this moduleId will be stuck like this for the rest of the event,
     // processed by a different module.
     currentModuleId = (component && component->isModule()) ? component->getId() : -1;
+    app->componentInitBegin(component, stage);
 }
 
 void EnvirBase::beginSend(cMessage *msg, const SendOptions& options)
 {
     if (recordEventlog)
         eventlogManager->beginSend(msg, options);
+    app->beginSend(msg, options);
 }
 
 void EnvirBase::messageScheduled(cMessage *msg)
 {
     if (recordEventlog)
         eventlogManager->messageScheduled(msg);
+    app->messageScheduled(msg);
 }
 
 void EnvirBase::messageCancelled(cMessage *msg)
 {
     if (recordEventlog)
         eventlogManager->messageCancelled(msg);
+    app->messageCancelled(msg);
 }
 
 void EnvirBase::messageSendDirect(cMessage *msg, cGate *toGate, const ChannelResult& result)
 {
     if (recordEventlog)
         eventlogManager->messageSendDirect(msg, toGate, result);
+    app->messageSendDirect(msg, toGate, result);
 }
 
 void EnvirBase::messageSendHop(cMessage *msg, cGate *srcGate)
 {
     if (recordEventlog)
         eventlogManager->messageSendHop(msg, srcGate);
+    app->messageSendHop(msg, srcGate);
 }
 
 void EnvirBase::messageSendHop(cMessage *msg, cGate *srcGate, const cChannel::Result& result)
 {
     if (recordEventlog)
         eventlogManager->messageSendHop(msg, srcGate, result);
+    app->messageSendHop(msg, srcGate, result);
 }
 
 void EnvirBase::endSend(cMessage *msg)
 {
     if (recordEventlog)
         eventlogManager->endSend(msg);
+    app->endSend(msg);
 }
 
 void EnvirBase::messageCreated(cMessage *msg)
 {
     if (recordEventlog)
         eventlogManager->messageCreated(msg);
+    app->messageCreated(msg);
 }
 
 void EnvirBase::messageCloned(cMessage *msg, cMessage *clone)
 {
     if (recordEventlog)
         eventlogManager->messageCloned(msg, clone);
+    app->messageCloned(msg, clone);
 }
 
 void EnvirBase::messageDeleted(cMessage *msg)
 {
     if (recordEventlog)
         eventlogManager->messageDeleted(msg);
+    app->messageDeleted(msg);
 }
 
 void EnvirBase::componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va, bool silent)
 {
     if (recordEventlog)
         eventlogManager->componentMethodBegin(from, to, methodFmt, va);
+    app->componentMethodBegin(from, to, methodFmt, va, silent);
 }
 
 void EnvirBase::componentMethodEnd()
 {
     if (recordEventlog)
         eventlogManager->componentMethodEnd();
+    app->componentMethodEnd();
 }
 
 void EnvirBase::moduleCreated(cModule *newmodule)
 {
     if (recordEventlog)
         eventlogManager->moduleCreated(newmodule);
+    app->moduleCreated(newmodule);
 }
 
 void EnvirBase::moduleDeleted(cModule *module)
 {
     if (recordEventlog)
         eventlogManager->moduleDeleted(module);
+    app->moduleDeleted(module);
 }
 
 void EnvirBase::moduleReparented(cModule *module, cModule *oldparent, int oldId)
 {
     if (recordEventlog)
         eventlogManager->moduleReparented(module, oldparent, oldId);
+    app->moduleReparented(module, oldparent, oldId);
 }
 
 void EnvirBase::gateCreated(cGate *newgate)
 {
     if (recordEventlog)
         eventlogManager->gateCreated(newgate);
+    app->gateCreated(newgate);
 }
 
 void EnvirBase::gateDeleted(cGate *gate)
 {
     if (recordEventlog)
         eventlogManager->gateDeleted(gate);
+    app->gateDeleted(gate);
 }
 
 void EnvirBase::connectionCreated(cGate *srcgate)
 {
     if (recordEventlog)
         eventlogManager->connectionCreated(srcgate);
+    app->connectionCreated(srcgate);
 }
 
 void EnvirBase::connectionDeleted(cGate *srcgate)
 {
     if (recordEventlog)
         eventlogManager->connectionDeleted(srcgate);
+    app->connectionDeleted(srcgate);
 }
 
 void EnvirBase::displayStringChanged(cComponent *component)
 {
     if (recordEventlog)
         eventlogManager->displayStringChanged(component);
+    app->displayStringChanged(component);
 }
 
 void EnvirBase::log(cLogEntry *entry)
@@ -552,12 +651,14 @@ void EnvirBase::log(cLogEntry *entry)
         std::string prefix = logFormatter.formatPrefix(entry);
         eventlogManager->logLine(prefix.c_str(), entry->text, entry->textLength);
     }
+    app->log(entry);
 }
 
 void EnvirBase::undisposedObject(cObject *obj)
 {
     if (opt->printUndisposed)
         out << "undisposed object: (" << obj->getClassName() << ") " << obj->getFullPath() << " -- check module destructor" << endl;
+    app->undisposedObject(obj);
 }
 
 void EnvirBase::readOptions()
@@ -755,6 +856,13 @@ void EnvirBase::setLogFormat(const char *logFormat)
     logFormatUsesEventClassName = logFormatter.usesEventClassName();
 }
 
+void EnvirBase::clearCurrentEventInfo()
+{
+    currentEventName = "";
+    currentEventClassName = nullptr;
+    currentModuleId = -1;
+}
+
 //-------------------------------------------------------------
 
 void *EnvirBase::registerOutputVector(const char *modulename, const char *vectorname)
@@ -846,12 +954,12 @@ unsigned long EnvirBase::getUniqueNumber()
 
 bool EnvirBase::idle()
 {
-    return false;
+    return app->idle();
 }
 
 bool EnvirBase::ensureDebugger(cRuntimeError *error)
 {
-    return false; // note: this is implemented in AppBase
+    return app->ensureDebugger(error);
 }
 
 int EnvirBase::getParsimProcId() const
@@ -872,6 +980,87 @@ int EnvirBase::getParsimNumPartitions() const
 #endif
 }
 
+//-------------------------------------------------------------
+bool EnvirBase::isGUI() const
+{
+    return app->isGUI();
+}
+
+bool EnvirBase::isExpressMode() const
+{
+    return app->isExpressMode();
+}
+
+void EnvirBase::alert(const char *msg)
+{
+    app->alert(msg);
+}
+
+std::string EnvirBase::gets(const char *prompt, const char *defaultReply)
+{
+    return app->gets(prompt, defaultReply);
+}
+
+bool EnvirBase::askYesNo(const char *prompt)
+{
+    return app->askYesNo(prompt);
+}
+
+void EnvirBase::getImageSize(const char *imageName, double &outWidth, double &outHeight)
+{
+    app->getImageSize(imageName, outWidth, outHeight);
+}
+
+void EnvirBase::getTextExtent(const cFigure::Font &font, const char *text,
+        double &outWidth, double &outHeight, double &outAscent)
+{
+    app->getTextExtent(font, text, outWidth, outHeight, outAscent);
+}
+
+void EnvirBase::appendToImagePath(const char *directory)
+{
+    app->appendToImagePath(directory);
+}
+
+void EnvirBase::loadImage(const char *fileName, const char *imageName)
+{
+    app->loadImage(fileName, imageName);
+}
+
+cFigure::Rectangle EnvirBase::getSubmoduleBounds(const cModule *submodule)
+{
+    return app->getSubmoduleBounds(submodule);
+}
+
+std::vector<cFigure::Point> EnvirBase::getConnectionLine(const cGate *sourceGate)
+{
+    return app->getConnectionLine(sourceGate);
+}
+
+double EnvirBase::getZoomLevel(const cModule *module)
+{
+    return app->getZoomLevel(module);
+}
+
+double EnvirBase::getAnimationTime() const
+{
+    return app->getAnimationTime();
+}
+
+double EnvirBase::getAnimationSpeed() const
+{
+    return app->getAnimationSpeed();
+}
+
+double EnvirBase::getRemainingAnimationHoldTime() const
+{
+    return app->getRemainingAnimationHoldTime();
+}
+
+void EnvirBase::pausePoint()
+{
+    app->pausePoint();
+}
 
 
 }  // namespace envir

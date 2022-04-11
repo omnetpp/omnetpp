@@ -50,6 +50,8 @@ class cIEventlogManager;
 
 namespace envir {
 
+class IAllInOne;
+
 class XMLDocCache;
 class SignalSource;
 
@@ -79,6 +81,7 @@ struct ENVIR_API EnvirOptions
 {
     virtual ~EnvirOptions() {}
 
+    bool verbose = true; //TODO does this belong here?
     bool parsim = false;
     std::string imagePath;  // note: also used in resolveResourcePath()
     std::string nedPath;  // note: also used in resolveResourcePath()
@@ -100,10 +103,10 @@ class ENVIR_API EnvirBase : public cEnvir
 {
   protected:
     cConfigurationEx *cfg;
-    ArgList *args;  //TODO move to AppBase, modulo EnvirBase::getArgVector()/getArgCount()
-    XMLDocCache *xmlCache;
-
+    ArgList *args;  //TODO remove
     EnvirOptions *opt;
+
+    XMLDocCache *xmlCache;
 
     std::ostream out; //TODO move to AppBase, modulo EnvirBase::undisposedObject()
 
@@ -136,13 +139,18 @@ class ENVIR_API EnvirBase : public cEnvir
     // lifecycle listeners
     std::vector<cISimulationLifecycleListener*> listeners;
 
+    IAllInOne *app;
+
   public:
     bool attachDebuggerOnErrors = false;
 
   public:
-    EnvirBase();
+    EnvirBase(IAllInOne *app);
     virtual ~EnvirBase();
+    virtual void setupAndReadOptions(cConfigurationEx *cfg, ArgList *args, EnvirOptions *opt);
+
     // getters
+    IAllInOne *getApp() {return app;}
     virtual cConfiguration *getConfig() override;
     virtual cConfigurationEx *getConfigEx() override;
     cIEventlogManager *getEventlogManager() const {return eventlogManager;}
@@ -168,6 +176,8 @@ class ENVIR_API EnvirBase : public cEnvir
 
     void setEventlogRecording(bool enabled);
     bool getEventlogRecording() const {return recordEventlog;}
+
+    void clearCurrentEventInfo();
 
     // eventlog callback interface
     virtual void objectDeleted(cObject *object) override;
@@ -211,6 +221,7 @@ class ENVIR_API EnvirBase : public cEnvir
     virtual void forgetParsedXMLString(const char *content) override;
     virtual void flushXMLDocumentCache() override;
     virtual void flushXMLParsedContentCache() override;
+    virtual unsigned getExtraStackForEnvir() const override;
     virtual std::string resolveResourcePath(const char *fileName, cComponentType *context) override;
 
     // UI functions
@@ -247,18 +258,36 @@ class ENVIR_API EnvirBase : public cEnvir
     virtual bool ensureDebugger(cRuntimeError *error = nullptr) override;
     //@}
 
-  protected:
-    virtual EnvirOptions *createOptions() {return new EnvirOptions();}
     virtual void readOptions();
     virtual void readPerRunOptions();
+
+  protected:
     int parseSimtimeResolution(const char *resolution);
 
     // Called internally from readParameter(), to interactively prompt the
     // user for a parameter value.
-    virtual void askParameter(cPar *par, bool unassigned) = 0;
+    virtual void askParameter(cPar *par, bool unassigned);
 
     // Utility function for getXMLDocument() and getParsedXMLString()
     cXMLElement *resolveXMLPath(cXMLElement *documentnode, const char *path);
+
+    //TODO out-of-line or something
+    virtual bool isGUI() const override;
+    virtual bool isExpressMode() const override;
+    virtual void alert(const char *msg) override;
+    virtual std::string gets(const char *prompt, const char *defaultReply=nullptr) override;
+    virtual bool askYesNo(const char *prompt) override;
+    virtual void getImageSize(const char *imageName, double& outWidth, double& outHeight) override;
+    virtual void getTextExtent(const cFigure::Font& font, const char *text, double& outWidth, double& outHeight, double& outAscent) override;
+    virtual void appendToImagePath(const char *directory) override;
+    virtual void loadImage(const char *fileName, const char *imageName=nullptr) override;
+    virtual cFigure::Rectangle getSubmoduleBounds(const cModule *submodule) override;
+    virtual std::vector<cFigure::Point> getConnectionLine(const cGate *sourceGate) override;
+    virtual double getZoomLevel(const cModule *module) override;
+    virtual double getAnimationTime() const override;
+    virtual double getAnimationSpeed() const override;
+    virtual double getRemainingAnimationHoldTime() const override;
+    virtual void pausePoint() override;
 };
 
 }  // namespace envir

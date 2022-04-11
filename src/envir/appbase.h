@@ -18,6 +18,7 @@
 
 #include "envirdefs.h"
 #include "envirbase.h"
+#include "iallinone.h"
 #include "debuggersupport.h"
 
 namespace omnetpp {
@@ -32,7 +33,7 @@ namespace envir {
 #endif
 
 
-struct AppBaseOptions : public EnvirOptions
+struct AppBaseOptions : public EnvirOptions  //TODO fixme break inheritance between two opts
 {
     // note: these values will be overwritten in setup()/readOptions() before taking effect
     std::string networkName;
@@ -55,10 +56,16 @@ struct AppBaseOptions : public EnvirOptions
  *
  * @ingroup SimSupport
  */
-class ENVIR_API AppBase : public EnvirBase
+class ENVIR_API AppBase : public IAllInOne
 {
   protected:
-    AppBaseOptions *&opt;          // alias to EnvirBase::opt
+    EnvirBase *envir;
+
+    AppBaseOptions *opt;   // alias to EnvirBase::opt
+
+    ArgList *args;  //TODO init!!!
+    std::ostream& out; //TODO FIXME
+    cConfigurationEx *cfg; //TODO FIXME user EnvirBase's
 
     std::string redirectionFilename;
     int exitCode = 0;
@@ -76,6 +83,8 @@ class ENVIR_API AppBase : public EnvirBase
      */
     AppBase();
 
+    virtual ~AppBase();
+
     /**
      * Runs the user interface. The return value will become the exit code
      * of the simulation program.
@@ -88,16 +97,44 @@ class ENVIR_API AppBase : public EnvirBase
      */
     virtual int run(const std::vector<std::string>& args, cConfiguration *cfg) final;
 
+    cEnvir *getEnvir() const {return envir;}
+
+    cConfiguration *getConfig() {return envir->getConfig();}
+    cConfigurationEx *getConfigEx() {return envir->getConfigEx();}
+    cIOutputVectorManager *getOutVectorManager() const {return envir->getOutVectorManager();}
+    cIOutputScalarManager *getOutScalarManager() const {return envir->getOutScalarManager();}
+    cISnapshotManager *getSnapshotManager() const {return envir->getSnapshotManager();}
+    DebuggerSupport *getDebuggerSupport() const {return debuggerSupport;}
+
+    bool isLoggingEnabled() const {return envir->isLoggingEnabled();}
+    void setLoggingEnabled(bool enabled) {envir->setLoggingEnabled(enabled);}
+    bool getDebugOnErrors() const {return envir->getDebugOnErrors();}
+    void setDebugOnErrors(bool enable) {envir->setDebugOnErrors(enable);}
+    bool getAttachDebuggerOnErrors() const {return envir->getAttachDebuggerOnErrors();}
+    void setAttachDebuggerOnErrors(bool enable) {envir->setAttachDebuggerOnErrors(enable);}
+
+    void setLogLevel(LogLevel logLevel) {envir->setLogLevel(logLevel);};
+    void setLogFormat(const char *logFormat) {envir->setLogFormat(logFormat);}
+    LogFormatter& getLogFormatter() {return envir->getLogFormatter();}
+
+    bool getEventlogRecording() const {return envir->getEventlogRecording();}
+    void setEventlogRecording(bool enabled) {envir->setEventlogRecording(enabled);}
+
   protected:
+    void notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details=nullptr);
+
     virtual std::ostream& err();
     virtual std::ostream& errWithoutPrefix();
     virtual std::ostream& warn();
+    void printfmsg(const char *fmt, ...); // internal, TODO rename
     static void crashHandler(int signum);
     virtual std::vector<int> resolveRunFilter(const char *configName, const char *runFilter);
     virtual void printRunInfo(const char *configName, const char *runFilter, const char *query);
     virtual void printConfigValue(const char *configName, const char *runFilter, const char *optionName);
 
     virtual bool ensureDebugger(cRuntimeError *error = nullptr) override;
+
+    virtual void log(cLogEntry *entry) override {}   //TODO why needed?
 
     // functions added locally
     virtual bool simulationRequired();
@@ -119,9 +156,9 @@ class ENVIR_API AppBase : public EnvirBase
     virtual void stopOutputRedirection();
     virtual bool isOutputRedirected();
 
-    virtual AppBaseOptions *createOptions() override {return new AppBaseOptions();}
-    virtual void readOptions() override;
-    virtual void readPerRunOptions() override;
+    virtual AppBaseOptions *createOptions() {return new AppBaseOptions();}
+    virtual void readOptions();
+    virtual void readPerRunOptions();
 
     // Utility function; never returns nullptr
     cModuleType *resolveNetwork(const char *networkname);

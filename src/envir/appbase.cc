@@ -79,17 +79,12 @@ using namespace omnetpp::internal;
 namespace omnetpp {
 namespace envir {
 
-extern cConfigOption *CFGID_PARSIM_NUM_PARTITIONS;
-extern cConfigOption *CFGID_PARSIM_PROCID;
-extern cConfigOption *CFGID_PARSIM_COMMUNICATIONS_CLASS;
-extern cConfigOption *CFGID_PARSIM_SYNCHRONIZATION_CLASS;
 extern cConfigOption *CFGID_DEBUGGER_ATTACH_ON_STARTUP;
 extern cConfigOption *CFGID_FINGERPRINT;
 extern cConfigOption *CFGID_SIM_TIME_LIMIT;
 extern cConfigOption *CFGID_REAL_TIME_LIMIT;
 extern cConfigOption *CFGID_CPU_TIME_LIMIT;
 extern cConfigOption *CFGID_WARMUP_PERIOD;
-extern cConfigOption *CFGID_TOTAL_STACK;
 extern cConfigOption *CFGID_NETWORK;
 extern cConfigOption *CFGID_WARNINGS;
 extern cConfigOption *CFGID_DEBUG_STATISTICS_RECORDING;
@@ -169,8 +164,19 @@ static const char *buildOptions = ""
     #endif
     ;
 
-AppBase::AppBase() : opt((AppBaseOptions *&)EnvirBase::opt)
+IAllInOne::~IAllInOne()  //TODO move to separate file
 {
+}
+
+AppBase::AppBase() : out(std::cout) //TODO
+{
+    envir = new EnvirBase(this);
+}
+
+AppBase::~AppBase()
+{
+    delete envir;
+    delete opt;
 }
 
 int AppBase::run(const std::vector<std::string>& args, cConfiguration *cfg)
@@ -228,8 +234,6 @@ bool AppBase::simulationRequired()
         out << buildOptions << endl;
         return false;
     }
-
-    cConfigurationEx *cfg = getConfigEx();
 
     // -a option: print all config names, and number of runs in them
     if (args->optionGiven('a')) {
@@ -380,15 +384,13 @@ void AppBase::printConfigValue(const char *configName, const char *runFilter, co
 
 void AppBase::readOptions()
 {
-    EnvirBase::readOptions();
-
     // note: this is read per run as well, but Qtenv needs its value on startup too
     opt->inifileNetworkDir = cfg->getConfigEntry(CFGID_NETWORK->getName()).getBaseDirectory();
 }
 
 void AppBase::readPerRunOptions()
 {
-    EnvirBase::readPerRunOptions();
+    envir->readPerRunOptions();
 
     opt->networkName = cfg->getAsString(CFGID_NETWORK);
 
@@ -409,13 +411,10 @@ void AppBase::readPerRunOptions()
 bool AppBase::setup()
 {
     try {
-        // ensure correct numeric format in output files
-        setPosixLocale();
-
-        // set opt->* variables from ini file(s)
+        envir->setupAndReadOptions(cfg, args, opt);
         readOptions();
 
-        if (attachDebuggerOnErrors) {
+        if (getAttachDebuggerOnErrors()) {
             signal(SIGSEGV, crashHandler);
             signal(SIGILL, crashHandler);
 #ifndef _WIN32
@@ -424,60 +423,10 @@ bool AppBase::setup()
 #endif
         }
 
-        // initialize coroutine library
-        size_t totalStack = (size_t)cfg->getAsDouble(CFGID_TOTAL_STACK, TOTAL_STACK_SIZE);
-        if (TOTAL_STACK_SIZE != 0 && totalStack <= MAIN_STACK_SIZE+4096) {
-            if (opt->verbose)
-                out << "Total stack size " << totalStack << " increased to " << MAIN_STACK_SIZE << endl;
-            totalStack = MAIN_STACK_SIZE+4096;
-        }
-        cCoroutine::init(totalStack, MAIN_STACK_SIZE);
-
-        // install XML document cache
-        xmlCache = new XMLDocCache();
-
-        // parallel simulation
-        if (opt->parsim) {
-#ifdef WITH_PARSIM
-            // parsim: create components
-            std::string parsimcommClass = cfg->getAsString(CFGID_PARSIM_COMMUNICATIONS_CLASS);
-            std::string parsimsynchClass = cfg->getAsString(CFGID_PARSIM_SYNCHRONIZATION_CLASS);
-
-            parsimComm = createByClassName<cParsimCommunications>(parsimcommClass.c_str(), "parallel simulation communications layer");
-            parsimPartition = new cParsimPartition();
-            cParsimSynchronizer *parsimSynchronizer = createByClassName<cParsimSynchronizer>(parsimsynchClass.c_str(), "parallel simulation synchronization layer");
-            addLifecycleListener(parsimPartition);
-
-            // wire them together (note: 'parsimSynchronizer' is also the scheduler for 'simulation')
-            parsimPartition->configure(getSimulation(), parsimComm, parsimSynchronizer);
-            parsimSynchronizer->configure(getSimulation(), parsimPartition, parsimComm);
-            getSimulation()->setScheduler(parsimSynchronizer);
-
-            // initialize them
-            int parsimNumPartitions = cfg->getAsInt(CFGID_PARSIM_NUM_PARTITIONS, -1);
-            int parsimProcId = cfg->getAsInt(CFGID_PARSIM_PROCID, -1);
-            parsimComm->configure(cfg, parsimNumPartitions, parsimProcId);
-#else
-            throw cRuntimeError("Parallel simulation is turned on in the ini file, but OMNeT++ was compiled without parallel simulation support (WITH_PARSIM=no)");
-#endif
-        }
-
-        // load NED files embedded into the simulation program as string literals
-        if (!embeddedNedFiles.empty()) {
-            if (opt->verbose)
-                out << "Loading embedded NED files: " << embeddedNedFiles.size() << endl;
-            for (const auto& file : embeddedNedFiles) {
-                std::string nedText = file.nedText;
-                if (!file.garblephrase.empty())
-                    nedText = opp_ungarble(file.nedText, file.garblephrase);
-                getSimulation()->loadNedText(file.fileName.c_str(), nedText.c_str());
-            }
-        }
-
         loadNEDFiles();
 
         // notify listeners when global setup is complete
-        notifyLifecycleListeners(LF_ON_STARTUP);
+        envir->notifyLifecycleListeners(LF_ON_STARTUP);
     }
     catch (std::exception& e) {
         displayException(e);
@@ -631,9 +580,8 @@ void AppBase::printHelp()
         // Note: their constructors are not supposed to do anything but trivial member initialization.
         cOmnetAppRegistration *appreg = dynamic_cast<cOmnetAppRegistration *>(table->get(i));
         ASSERT(appreg != nullptr);
-        cEnvir *app = appreg->createOne();
-        if (AppBase *envir = dynamic_cast<AppBase*>(app))
-            envir->printUISpecificHelp();
+        AppBase *app = appreg->createOne();
+        app->printUISpecificHelp();
         delete app;
     }
 }
@@ -652,7 +600,7 @@ void AppBase::shutdown()
 {
     try {
         getSimulation()->deleteNetwork();
-        notifyLifecycleListeners(LF_ON_SHUTDOWN);
+        envir->notifyLifecycleListeners(LF_ON_SHUTDOWN);
     }
     catch (std::exception& e) {
         displayException(e);
@@ -661,12 +609,10 @@ void AppBase::shutdown()
 
 void AppBase::setupNetwork(cModuleType *network)
 {
-    currentEventName = "";
-    currentEventClassName = nullptr;
-    currentModuleId = -1;
+    envir->clearCurrentEventInfo();
 
     getSimulation()->setupNetwork(network);
-    eventlogManager->flush();
+    envir->getEventlogManager()->flush();
 
     if (opt->debugStatisticsRecording)
         EnvirUtils::dumpResultRecorders(out, getSimulation()->getSystemModule());
@@ -792,10 +738,20 @@ std::ostream& AppBase::warn()
     return err;
 }
 
+void AppBase::printfmsg(const char *fmt, ...)
+{
+    char buffer[1000];
+    va_list va;
+    va_start(va, fmt);
+    vsnprintf(buffer, 1000, fmt, va);
+    buffer[999] = '\0';
+    va_end(va);
+    alert(buffer);
+}
 
 bool AppBase::ensureDebugger(cRuntimeError *error)
 {
-    if (error == nullptr || attachDebuggerOnErrors) {
+    if (error == nullptr || getAttachDebuggerOnErrors()) {
         try {
             if (debuggerSupport->detectDebugger() == DebuggerPresence::NOT_PRESENT)
                 debuggerSupport->attachDebugger();
@@ -843,15 +799,16 @@ bool AppBase::ensureDebugger(cRuntimeError *error)
 
 void AppBase::crashHandler(int)
 {
-    AppBase *envir = dynamic_cast<AppBase*>(cSimulation::getActiveEnvir());
-    if (!envir)
-        return; // not a suitable envir
+    EnvirBase *envir = dynamic_cast<EnvirBase*>(cSimulation::getActiveEnvir());
+    AppBase *app = envir ? dynamic_cast<AppBase*>(envir->getApp()) : nullptr;
+    if (!app)
+        return; // not running an AppBase
 
     try {
-        envir->debuggerSupport->attachDebugger();
+        app->getDebuggerSupport()->attachDebugger();
     }
     catch (opp_runtime_error& ex) {
-        envir->alert(ex.what());
+        app->alert(ex.what());
     }
 }
 
@@ -912,11 +869,11 @@ void AppBase::stoppedWithTerminationException(cTerminationException& e)
     // from other partitions, then notify other partitions
 #ifdef WITH_PARSIM
     if (opt->parsim && !dynamic_cast<cReceivedTerminationException *>(&e))
-        parsimPartition->broadcastTerminationException(e);
+        envir->getParsimPartition()->broadcastTerminationException(e);
 #endif
-    if (recordEventlog) {
+    if (getEventlogRecording()) {
         //FIXME should not be in this function (Andras)
-        eventlogManager->endRun(e.isError(), e.getErrorCode(), e.getFormattedMessage().c_str());
+        envir->getEventlogManager()->endRun(e.isError(), e.getErrorCode(), e.getFormattedMessage().c_str());
     }
 }
 
@@ -926,11 +883,11 @@ void AppBase::stoppedWithException(std::exception& e)
     // from other partitions, then notify other partitions
 #ifdef WITH_PARSIM
     if (opt->parsim && !dynamic_cast<cReceivedException *>(&e))
-        parsimPartition->broadcastException(e);
+        envir->getParsimPartition()->broadcastException(e);
 #endif
-    if (recordEventlog) {
+    if (getEventlogRecording()) {
         // TODO: get error code from the exception?
-        eventlogManager->endRun(true, E_CUSTOM, e.what());  //FIXME this should be rather in endRun(), or? (Andras)
+        envir->getEventlogManager()->endRun(true, E_CUSTOM, e.what());  //FIXME this should be rather in endRun(), or? (Andras)
     }
 }
 
@@ -970,7 +927,11 @@ cModuleType *AppBase::resolveNetwork(const char *networkname)
     return network;
 }
 
+void AppBase::notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details)
+{
+    envir->notifyLifecycleListeners(eventType, details);
+}
+
 
 }  // namespace envir
 }  // namespace omnetpp
-
