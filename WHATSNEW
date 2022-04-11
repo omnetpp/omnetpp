@@ -6,7 +6,7 @@ simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
 
-OMNeT++ 6.0 (March 2022)
+OMNeT++ 6.0 (April 2022)
 ------------------------
 
 OMNeT++ 6.0 is the result of more than three years of work, and includes many
