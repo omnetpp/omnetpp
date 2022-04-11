@@ -1,3 +1,5 @@
+2022-04-11  ------ omnetpp-6.0 released ------
+
 2022-03-23  Rudolf Hornig
 
 	* Fixed missing `parent.` prefix causing an error in sockets example.

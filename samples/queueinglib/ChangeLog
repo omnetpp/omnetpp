@@ -1,3 +1,5 @@
+2022-04-11  ------ omnetpp-6.0 released ------
+
 2021-03-04  Andras Varga
 
 	* Follow change: PerformFinalGC(), replace with code in the module

@@ -1,3 +1,5 @@
+2022-04-11  ------ omnetpp-6.0 released ------
+
 2021-10-06  Andras Varga
 
 	* Follow changes: txid_t and msgid_t (defined to be int64_t) replace

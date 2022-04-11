@@ -1,3 +1,5 @@
+2022-04-11  ------ omnetpp-6.0 released ------
+
 2021-11-04  Andras Varga
 
 	* Mandate @mutable property for NED parameters that support being changed at

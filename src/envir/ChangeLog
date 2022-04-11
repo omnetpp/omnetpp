@@ -1,3 +1,5 @@
+2022-04-11  ------ omnetpp-6.0 released ------
+
 2022-04-08  Rudolf Hornig
 
 	* Fixed default debugger command on Windows. The system() call uses cmd.exe

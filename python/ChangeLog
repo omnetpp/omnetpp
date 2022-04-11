@@ -1,3 +1,5 @@
+2022-04-11  ------ omnetpp-6.0 released ------
+
 2022-03-31  Attila Torok
 
 	* export_image_if_needed(): Use noninteractive MPL backends when exporting

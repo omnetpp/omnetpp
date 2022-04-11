@@ -1,3 +1,5 @@
+2022-04-11  ------ omnetpp-6.0 released ------
+
 2022-04-07  Andras Varga
 
 	* intuniform(): ensure range (b-a) is supported by the RNG; and avoid

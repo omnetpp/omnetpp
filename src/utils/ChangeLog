@@ -1,3 +1,5 @@
+2022-04-11  ------ omnetpp-6.0 released ------
+
 2022-01-06  Rudolf Hornig
 
 	* Added a new command named `opp_ide` to start the IDE. omnetpp and
