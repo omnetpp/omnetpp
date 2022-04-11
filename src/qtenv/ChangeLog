@@ -1,3 +1,35 @@
+2022-04-06  Attila Torok
+
+	* Fix a valgrind report: Initialize ZoomLabel::zoomFactor
+
+2022-04-06  Attila Torok
+
+	* Plug memory leak in ModuleOutputContentProvider
+
+2022-04-06  Andras Varga
+
+	* ChartTickDecimal: fix conversion from (double)0.0
+
+2022-04-05  Andras Varga
+
+	* LogInspector: Fix use of uninitialized value when setMode() is called
+	from ctor.
+
+2022-04-05  Andras Varga
+
+	* LogBuffer: Fix a memory leak found by AddressSanitizer
+
+2022-04-05  Andras Varga
+
+	* Replace memcpy() with std::copy_n(), to avoid calling memcpy() with
+	nullptr as 2nd arg, even with size=0. memcpy() declares that its src
+	argument cannot be nullptr, and clang sanitizers warn if it's called
+	with src=nullptr, even if size=0.
+
+2022-03-29  Rudolf Hornig
+
+	* Updated copyright years in About dialog
+
 2021-11-08  Attila Torok
 
 	* Log: Add a "genesis" Entry::Kind, make sure that at least one Entry of

@@ -1,3 +1,59 @@
+2022-04-07  Attila Torok
+
+	* Analysis Tool: Add Ctrl+Alt+W as shortcut to close a chart page
+
+2022-04-06  Attila Torok
+
+	* Analysis Tool: Wait for Python to connect for 5 seconds instead of 2.5.
+	This should reduce timeouts ("Could not get entry point ..." errors) on
+	slower machines.
+
+2022-03-29  Attila Torok
+
+	* Analysis Tool: Native vector plots: Make sure that constant vector data
+	is not stuck to the chart edge.
+
+2022-03-29  Attila Torok
+
+	* Analysis Tool: Make LinearTicks iterator inclusive on both ends.
+	The most important effect is that on purely negative values, the 0 tick
+	is now shown on the top/right.
+
+2022-03-29  Rudolf Hornig
+
+	* IDE: a temporary fix for https://bugs.eclipse.org/bugs/show_bug.cgi?id=578221
+
+	This bug happens because the embedded Eclipse Java compiler in the
+	org.apache.jasper.glassfish package is way too old (from 2015) and cannot
+	handle the java.lang.System class file coming from the class path of the
+	JDK17 JRE. Adding the org.eclipse.jdt.core package brings an up to date
+	Java compiler (for JSP files) that is picked up automatically by the
+	org.apache.jasper.glassfish package.
+
+	Once the internal jasper compile is updated, we can remove this dependency.
+
+2022-03-24  Attila Torok
+
+	* Analysis Tool: LegacyAnalysisLoader: Handle Add/Discard ops without
+	filter as "all". This is how it worked in 5.7, and this prevents a NPE in
+	samples/tictoc/Tictoc18.anf
+
+2022-03-23  Levente Meszaros
+
+	* Sequence Chart: Use an improved version of java.math.BigDecimal instead
+	of a Java-wrapped home-grown C++ BigDecimal. We subclass Java's BigDecimal
+	in order to override its default brain-damaged equals() method, to return
+	true for all representations of the same number.
+
+2022-03-18  Rudolf Hornig
+
+	* Updated the WHATSNEW file in the IDE
+
+2022-03-11  Andras Varga
+
+	* Analysis Tool: fix "Widget already disposed" ex when closing an editor
+	with temp charts open.
+
 2022-01-19  Attila Torok
 
 	* Analysis Tool: Fix: Restore error marker functionality in the chart

@@ -1,3 +1,51 @@
+2022-04-07  Andras Varga
+
+	* intuniform(): ensure range (b-a) is supported by the RNG; and avoid
+	spurious signed<->unsigned conversions which are supposed to be unspecified behavior.
+
+2022-04-07  Andras Varga
+
+	* intuniform()/intuniformexcl): enforce a<=b or a<b
+
+2022-04-06  Andras Varga
+
+	* cDynamicExpression: fix memory leak
+
+2022-04-05  Andras Varga
+
+	* cKSplit: quick fix for memory leak in iteratorToCell()
+
+2022-04-05  Andras Varga
+
+	* Reworked the initialization of the global cSoftOwner instance
+	globalOwningContext, due to issues found by UndefinedBehaviorSanitizer.
+
+	The problem was that globalOwningContext sort of wanted it insert itself
+	into its own child list while being constructed. It sort of worked but
+	the sanitizer sniffed out something was off.
+
+	The reworked solution employs a separate dedicated constructor which
+	avoids the owningContext->doInsert(this) call. internal::Void is a type
+	solely made to distinguish the dedicated constructor from other
+	constructors by giving it a different signature.
+
+2022-04-05  Andras Varga
+
+	* Fix invalid value for LogLevel error from sanitizer
+
+2022-03-19  Andras Varga
+
+	* Resolve lifecycle listener crash on shutdown.
+
+2022-04-05  Andras Varga
+
+	* Replace memcpy() with std::copy_n(), to avoid calling memcpy() with
+	nullptr as 2nd arg, even with size=0.
+
+2022-04-05  Andras Varga
+
+	* SimTime: avoid overflow in fillPowersOfTen()
+
 2021-12-07  Andras Varga
 
 	* Result recorders: suppressed the ", vector" suffix from titles of

@@ -1,3 +1,29 @@
+2022-03-31  Attila Torok
+
+	* export_image_if_needed(): Use noninteractive MPL backends when exporting
+	images, set MPI.
+
+2022-03-29  Attila Torok
+
+	* export_image_if_needed(): Make sure that constant vector data is not
+	stuck to the chart edge in case of native chart
+
+2022-03-30  Attila Torok
+
+	* get_scalars(): do not fail when the result would be empty
+
+2022-03-30  Attila Torok
+
+	* Analysis: Store/restore mpl.rcParams before/after running a chart
+
+2022-03-30  Attila Torok
+
+	* Fix check of whether image and data export was unsuccessful
+
+2022-03-26  Andras Varga
+
+	* export_image_if_needed(): save sw version info as metadata
+
 2022-01-26  Attila Torok
 
 	* Add __version__=6.0.0 into all scave submodules.

@@ -1,3 +1,10 @@
+2022-04-05  Andras Varga
+
+	* Replace memcpy() with std::copy_n(), to avoid calling memcpy() with
+	nullptr as 2nd arg, even with size=0. memcpy() declares that its src
+	argument cannot be nullptr, and clang sanitizers warn if it's called
+	with src=nullptr, even if size=0.
+
 2020-11-13  Attila Torok
 
 	* Modernizing: Use in-class member initializers wherever possible;

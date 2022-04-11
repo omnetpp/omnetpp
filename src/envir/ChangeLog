@@ -1,3 +1,22 @@
+2022-04-08  Rudolf Hornig
+
+	* Fixed default debugger command on Windows. The system() call uses cmd.exe
+	on Windows, so we have to use 'bash -c' to start opp_ide's shell script.
+
+2022-04-06  Andras Varga
+
+	* EventLogFileManager: eliminate (harmless but still) illegal casts found
+	by UndefinedBehaviorSanitizer.
+
+2022-03-22  Levente Meszaros
+
+	* opp_loadlibrary(): use LIBSUFFIX instead of hardcoding "_dbg"
+
+2022-04-05  Andras Varga
+
+	* SectionBasedConfiguration: fix invalid cast of NullEntry to
+	MatchableEntry, found by UndefinedBehaviorSanitizer.
+
 2022-01-05  Rudolf Hornig
 
 	* Changed the default debugger command to one that invokes the Simulation

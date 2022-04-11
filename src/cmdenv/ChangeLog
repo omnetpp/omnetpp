@@ -1,3 +1,7 @@
+2022-04-06  Andras Varga
+
+	* Working around compiler bug on macOS.
+
 2021-12-17  Andras Varga
 
 	* Wording of an error message refined

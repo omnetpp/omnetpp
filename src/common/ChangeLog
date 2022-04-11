@@ -1,3 +1,30 @@
+2022-04-07  Attila Torok
+
+	* Fix Doxygen grouping of functions and macros
+
+2022-04-06  Andras Varga
+
+	* SqliteVectorFileWriter: fix memory leak found by AddressSanitizer
+	(VectorData were leaked).
+
+2022-04-06  Andras Varga
+
+	* expression.y: fix memory leak found by AddressSanitizer
+
+2022-04-06  Andras Varga
+
+	* expression.y: eliminate UndefinedBehaviorSanitizer warning in
+	double->int64_t conversion.
+
+2022-04-05  Andras Varga
+
+	* UnitConversion: eliminate "signed integer overflow" reported by
+	UndefinedBehaviorSanitizer
+
+2022-03-22  Levente Mészáros
+
+	* BigDecimal: avoid overflow in PowersOfTenInitializer
+
 2022-01-27  Andras Varga
 
 	* stringutil.h: added opp_isvalididentifier()

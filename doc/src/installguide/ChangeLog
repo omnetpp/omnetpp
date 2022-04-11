@@ -1,3 +1,11 @@
+2022-04-11  Rudolf Hornig
+
+	* Added notes about configuring debugging (disabling code signature checking) on macOS
+
+2022-03-22  Rudolf Hornig
+
+	* Updated Install Guide to reflect minimum GLIBC requirement for the IDE.
+
 2021-12-01  Rudolf Hornig
 
 	* Updated MPI package name in Ubuntu chapter

@@ -1,3 +1,46 @@
+2022-04-08  Andras Varga
+
+	* Doxygen: Massive reorganization of groups to create a better
+	structure for browsing.
+
+	  - Exploded the rather arbitrary SimCore and SimSupport groups into
+	    the more intuitive Fundamentals, ModelComponents,  SimProgr,
+	    SimCore groups
+
+	  - Result filters/recorders moved out to their own group
+	    ResultFiltersRecorders
+
+	  - Created the Expressions group
+
+	  - Put stringutil.h functions in their own group (StringFunctions)
+
+	  - Utilities renamed to Miscellaneous, and made to hold all classes
+	    that don't fit into other groups
+
+	  - Fix: concrete filter/recorder classes did not appear in the
+	    documentation
+
+	  - Fix: simtimemath.h functions didn't appear in the documentation
+
+	  - Fix: make CFGVAR_xxx constants appear in the documentation
+
+2022-04-07  Attila Torok
+
+	* Fix Doxygen grouping of functions and macros. Apparently @{ @} blocks
+	in regular comments no longer work at the top level.
+
+2022-04-07  Andras Varga
+
+	* Adjust intrand() signature to underlying RNGs: use int32_t instead of long long.
+
+2022-04-07  Andras Varga
+
+	* SimTime: throw exception on conversion from NaN.
+
+2022-04-05  Andras Varga
+
+	* Reworked the initialization of the global cSoftOwner instance globalOwningContext
+
 2021-12-03  Andras Varga
 
 	* Move displayName field from cModule to cComponent. Reason:

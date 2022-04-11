@@ -1,3 +1,7 @@
+2022-04-06  Andras Varga
+
+	* Fix various memory leaks found by AddressSanitizer
+
 2021-11-24  Andras Varga
 
 	* OmnetppResultFileLoader: fix double-unquoting of tokens. As LineTokenizer
