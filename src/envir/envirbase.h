@@ -126,7 +126,7 @@ class ENVIR_API EnvirBase : public cEnvir
 
     // Output file managers
     cIEventlogManager *eventlogManager;  // nullptr if no eventlog is being written, must be non nullptr if record_eventlog is true
-    cIOutputVectorManager *outvectorManager;
+    cIOutputVectorManager *outVectorManager;
     cIOutputScalarManager *outScalarManager;
     cISnapshotManager *snapshotManager;
 
@@ -142,12 +142,32 @@ class ENVIR_API EnvirBase : public cEnvir
   public:
     EnvirBase();
     virtual ~EnvirBase();
+    // getters
+    virtual cConfiguration *getConfig() override;
+    virtual cConfigurationEx *getConfigEx() override;
+    cIEventlogManager *getEventlogManager() const {return eventlogManager;}
+    cIOutputVectorManager *getOutVectorManager() const {return outVectorManager;}
+    cIOutputScalarManager *getOutScalarManager() const {return outScalarManager;}
+    cISnapshotManager *getSnapshotManager() const {return snapshotManager;}
+    XMLDocCache *getXMLDocCache() const {return xmlCache;}
+#ifdef WITH_PARSIM
+    cParsimCommunications *getParsimCommunications() const {return parsimComm;}
+    cParsimPartition *getParsimPartition() const {return parsimPartition;}
+#endif
 
-    // eventlog recording
-    virtual void setEventlogRecording(bool enabled);
-    virtual bool getEventlogRecording() const {return recordEventlog;}
-    virtual void setLogLevel(LogLevel logLevel);
-    virtual void setLogFormat(const char *logFormat);
+    bool isLoggingEnabled() const {return loggingEnabled;}
+    void setLoggingEnabled(bool enabled) {loggingEnabled = enabled;}
+    bool getDebugOnErrors() const {return debugOnErrors;}
+    void setDebugOnErrors(bool enable) {debugOnErrors = enable;}
+    bool getAttachDebuggerOnErrors() const {return attachDebuggerOnErrors;}
+    void setAttachDebuggerOnErrors(bool enabled) {attachDebuggerOnErrors = enabled;}
+
+    void setLogLevel(LogLevel logLevel);
+    void setLogFormat(const char *logFormat);
+    LogFormatter& getLogFormatter() {return logFormatter;}
+
+    void setEventlogRecording(bool enabled);
+    bool getEventlogRecording() const {return recordEventlog;}
 
     // eventlog callback interface
     virtual void objectDeleted(cObject *object) override;
@@ -191,9 +211,6 @@ class ENVIR_API EnvirBase : public cEnvir
     virtual void forgetParsedXMLString(const char *content) override;
     virtual void flushXMLDocumentCache() override;
     virtual void flushXMLParsedContentCache() override;
-    // leave to subclasses: virtual unsigned getExtraStackForEnvir();
-    virtual cConfiguration *getConfig() override;
-    virtual cConfigurationEx *getConfigEx() override;
     virtual std::string resolveResourcePath(const char *fileName, cComponentType *context) override;
 
     // UI functions

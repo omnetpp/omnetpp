@@ -417,9 +417,9 @@ class QTENV_API Qtenv : public QObject, public RunnableEnvir
 
       std::string getLocalPackage()      {return getSimulation()->getNedPackageForFolder(opt->inifileNetworkDir.c_str());}
       const char *getIniFileName()       {return getConfigEx()->getFileName();}
-      const char *getOutVectorFileName() {return outvectorManager->getFileName();}
-      const char *getOutScalarFileName() {return outScalarManager->getFileName();}
-      const char *getSnapshotFileName()  {return snapshotManager->getFileName();}
+      const char *getOutVectorFileName() {return getOutVectorManager()->getFileName();}
+      const char *getOutScalarFileName() {return getOutScalarManager()->getFileName();}
+      const char *getSnapshotFileName()  {return getSnapshotManager()->getFileName();}
       const char *getWindowTitlePrefix() {return windowTitlePrefix.c_str();}
 
       QFont getBoldFont() const {return boldFont;}

@@ -240,7 +240,7 @@ void Cmdenv::doRun()
                 if (opt->verbose)
                     out << "Initializing..." << endl;
 
-                loggingEnabled = !opt->expressMode;
+                setLoggingEnabled(!opt->expressMode);
 
                 prepareForRun();
 
@@ -252,7 +252,7 @@ void Cmdenv::doRun()
                 // finish() should not be called.
                 notifyLifecycleListeners(LF_ON_SIMULATION_START);
                 simulate();
-                loggingEnabled = true;
+                setLoggingEnabled(true);
 
                 if (opt->verbose)
                     out << "\nCalling finish() at end of Run #" << runNumber << "..." << endl;
@@ -266,7 +266,7 @@ void Cmdenv::doRun()
                 finishedOK = true;
             }
             catch (std::exception& e) {
-                loggingEnabled = true;
+                setLoggingEnabled(true);
                 stoppedWithException(e);
                 notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
                 displayException(e);
@@ -359,7 +359,7 @@ void Cmdenv::simulate()
 #define FINALLY() { \
         if (opt->expressMode) \
             doStatusUpdate(speedometer); \
-        loggingEnabled = true; \
+        setLoggingEnabled(true); \
         stopClock(); \
         deinstallSignalHandler(); \
     }
@@ -610,8 +610,8 @@ void Cmdenv::log(cLogEntry *entry)
 {
     RunnableEnvir::log(entry);
 
-    if (!logFormatter.isBlank())
-        out << logFormatter.formatPrefix(entry);
+    if (!getLogFormatter().isBlank())
+        out << getLogFormatter().formatPrefix(entry);
 
     out.write(entry->text, entry->textLength);
     if (opt->autoflush)

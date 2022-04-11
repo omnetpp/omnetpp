@@ -164,7 +164,7 @@ EnvirBase::EnvirBase() : out(std::cout.rdbuf())
 
     recordEventlog = false;
     eventlogManager = nullptr;
-    outvectorManager = nullptr;
+    outVectorManager = nullptr;
     outScalarManager = nullptr;
     snapshotManager = nullptr;
 
@@ -187,7 +187,7 @@ EnvirBase::~EnvirBase()
     delete xmlCache;
 
     delete eventlogManager;
-    delete outvectorManager;
+    delete outVectorManager;
     delete outScalarManager;
     delete snapshotManager;
 
@@ -635,11 +635,11 @@ void EnvirBase::readPerRunOptions()
     addLifecycleListener(eventlogManager);
 
     // install output vector manager
-    delete outvectorManager;
+    delete outVectorManager;
     std::string outputVectorManagerClass = cfg->getAsString(CFGID_OUTPUTVECTORMANAGER_CLASS);
-    outvectorManager = createByClassName<cIOutputVectorManager>(outputVectorManagerClass.c_str(), "output vector manager");
-    outvectorManager->configure(cfg);
-    addLifecycleListener(outvectorManager);
+    outVectorManager = createByClassName<cIOutputVectorManager>(outputVectorManagerClass.c_str(), "output vector manager");
+    outVectorManager->configure(cfg);
+    addLifecycleListener(outVectorManager);
 
     // install output scalar manager
     delete outScalarManager;
@@ -759,29 +759,29 @@ void EnvirBase::setLogFormat(const char *logFormat)
 
 void *EnvirBase::registerOutputVector(const char *modulename, const char *vectorname)
 {
-    ASSERT(outvectorManager);
-    return outvectorManager->registerVector(modulename, vectorname);
+    ASSERT(outVectorManager);
+    return outVectorManager->registerVector(modulename, vectorname);
 }
 
 void EnvirBase::deregisterOutputVector(void *vechandle)
 {
-    ASSERT(outvectorManager);
-    outvectorManager->deregisterVector(vechandle);
+    ASSERT(outVectorManager);
+    outVectorManager->deregisterVector(vechandle);
 }
 
 void EnvirBase::setVectorAttribute(void *vechandle, const char *name, const char *value)
 {
-    ASSERT(outvectorManager);
-    outvectorManager->setVectorAttribute(vechandle, name, value);
+    ASSERT(outVectorManager);
+    outVectorManager->setVectorAttribute(vechandle, name, value);
 }
 
 bool EnvirBase::recordInOutputVector(void *vechandle, simtime_t t, double value)
 {
-    ASSERT(outvectorManager);
+    ASSERT(outVectorManager);
     if (getSimulation()->getFingerprintCalculator())
         // TODO: determine component and result name if possible
         getSimulation()->getFingerprintCalculator()->addVectorResult(nullptr, "", t, value);
-    return outvectorManager->record(vechandle, t, value);
+    return outVectorManager->record(vechandle, t, value);
 }
 
 //-------------------------------------------------------------

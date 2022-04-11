@@ -375,13 +375,13 @@ QString getMessageShortInfoString(cMessage *msg)
 
 DisableDebugOnErrors::DisableDebugOnErrors()
 {
-    oldValue = getQtenv()->debugOnErrors;
-    getQtenv()->debugOnErrors = false;
+    oldValue = getQtenv()->getDebugOnErrors();
+    getQtenv()->setDebugOnErrors(false);
 }
 
 DisableDebugOnErrors::~DisableDebugOnErrors()
 {
-    getQtenv()->debugOnErrors = oldValue;
+    getQtenv()->setDebugOnErrors(oldValue);
 }
 
 cModule *findCommonAncestor(cModule *src, cModule *dest)

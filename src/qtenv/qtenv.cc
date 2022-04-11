@@ -875,7 +875,7 @@ void Qtenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t unti
     stopSimulationFlag = false;
 
     messageAnimator->setShowAnimations(true);
-    loggingEnabled = true;
+    setLoggingEnabled(true);
     runUntil.msg = nullptr;
 
     runMode = RUNMODE_NOT_RUNNING;
@@ -949,7 +949,7 @@ bool Qtenv::doRunSimulation()
     //
     cSimulation *sim = getSimulation();
     speedometer.start(sim->getSimTime());
-    loggingEnabled = true;
+    setLoggingEnabled(true);
     bool firstevent = true;
 
     while (true) {
@@ -1060,7 +1060,7 @@ bool Qtenv::doRunSimulationExpress()
 
     // OK, let's begin
     speedometer.start(getSimulation()->getSimTime());
-    loggingEnabled = false;
+    setLoggingEnabled(false);
 
     messageAnimator->setShowAnimations(false);
     messageAnimator->clear();
@@ -1681,14 +1681,14 @@ void Qtenv::readOptions()
 
 void Qtenv::readPerRunOptions()
 {
-    bool origDebugOnErrors = debugOnErrors;
+    bool origDebugOnErrors = getDebugOnErrors();
 
     RunnableEnvir::readPerRunOptions();
 
     // don't let the configuration turn off a debug-on-errors setting that the user (presumably) turned
     // on manually, using the menu
-    if (origDebugOnErrors == true && debugOnErrors == false)
-        debugOnErrors = true;
+    if (origDebugOnErrors == true && getDebugOnErrors() == false)
+        setDebugOnErrors(true);
 }
 
 void Qtenv::initialSetUpConfiguration()
@@ -1935,7 +1935,7 @@ void Qtenv::simulationEvent(cEvent *event)
 {
     RunnableEnvir::simulationEvent(event);
 
-    if (loggingEnabled)
+    if (isLoggingEnabled())
         addEventToLog(event);  // must be done here, because eventnum and simtime are updated inside executeEvent()
 
     displayUpdateController->simulationEvent();
@@ -1947,7 +1947,7 @@ void Qtenv::simulationEvent(cEvent *event)
             if (!arrivalGate)
                 return;
 
-            if (loggingEnabled)
+            if (isLoggingEnabled())
                 logBuffer.delivery(msg);
 
             if (!isSilentEvent(msg)) {
@@ -1987,7 +1987,7 @@ void Qtenv::beginSend(cMessage *msg, const SendOptions& options)
 {
     RunnableEnvir::beginSend(msg, options);
 
-    if (loggingEnabled)
+    if (isLoggingEnabled())
         logBuffer.beginSend(msg, options);
 
     if (messageAnimator->getShowAnimations() && opt->animationEnabled && !isSilentEvent(msg))
@@ -1998,7 +1998,7 @@ void Qtenv::messageSendDirect(cMessage *msg, cGate *toGate, const ChannelResult&
 {
     RunnableEnvir::messageSendDirect(msg, toGate, result);
 
-    if (loggingEnabled)
+    if (isLoggingEnabled())
         logBuffer.messageSendDirect(msg, toGate, result);
 
     if (messageAnimator->getShowAnimations() && opt->animationEnabled && !isSilentEvent(msg))
@@ -2009,7 +2009,7 @@ void Qtenv::messageSendHop(cMessage *msg, cGate *srcGate)
 {
     RunnableEnvir::messageSendHop(msg, srcGate);
 
-    if (loggingEnabled)
+    if (isLoggingEnabled())
         logBuffer.messageSendHop(msg, srcGate);
 
     if (messageAnimator->getShowAnimations() && opt->animationEnabled && !isSilentEvent(msg)) {
@@ -2022,7 +2022,7 @@ void Qtenv::messageSendHop(cMessage *msg, cGate *srcGate, const cChannel::Result
 {
     RunnableEnvir::messageSendHop(msg, srcGate, result);
 
-    if (loggingEnabled)
+    if (isLoggingEnabled())
         logBuffer.messageSendHop(msg, srcGate, result);
 
     if (messageAnimator->getShowAnimations() && opt->animationEnabled && !isSilentEvent(msg)) {
@@ -2035,7 +2035,7 @@ void Qtenv::endSend(cMessage *msg)
 {
     RunnableEnvir::endSend(msg);
 
-    if (loggingEnabled)
+    if (isLoggingEnabled())
         logBuffer.endSend(msg);
 
     if (messageAnimator->getShowAnimations() && opt->animationEnabled && !isSilentEvent(msg))
@@ -2426,10 +2426,10 @@ void Qtenv::log(cLogEntry *entry)
 {
     RunnableEnvir::log(entry);
 
-    if (!loggingEnabled)
+    if (!isLoggingEnabled())
         return;
 
-    std::string prefix = logFormatter.formatPrefix(entry);
+    std::string prefix = getLogFormatter().formatPrefix(entry);
     const char *s = entry->text;
     int n = entry->textLength;
 

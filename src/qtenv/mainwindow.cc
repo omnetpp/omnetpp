@@ -151,7 +151,7 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
 
     adjustSize();
 
-    ui->actionDebugOnErrors->setChecked(getQtenv()->debugOnErrors);
+    ui->actionDebugOnErrors->setChecked(getQtenv()->getDebugOnErrors());
 }
 
 MainWindow::~MainWindow()
@@ -1049,7 +1049,7 @@ void MainWindow::on_actionDebugNextEvent_triggered()
 
 void MainWindow::on_actionDebugOnErrors_triggered(bool checked)
 {
-    getQtenv()->debugOnErrors = checked;
+    getQtenv()->setDebugOnErrors(checked);
 }
 
 void MainWindow::on_actionDebugNow_triggered()
@@ -1066,7 +1066,7 @@ void MainWindow::on_actionEventlogRecording_triggered()
 void MainWindow::reflectConfigOnUi()
 {
     ui->actionEventlogRecording->setChecked(getQtenv()->getEventlogRecording());
-    ui->actionDebugOnErrors->setChecked(getQtenv()->debugOnErrors);
+    ui->actionDebugOnErrors->setChecked(getQtenv()->getDebugOnErrors());
 }
 
 // XXX why is this in MainWindow, and not in Qtenv?
