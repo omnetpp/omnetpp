@@ -79,15 +79,18 @@ using namespace omnetpp::internal;
 namespace omnetpp {
 namespace envir {
 
-extern cConfigOption *CFGID_DEBUGGER_ATTACH_ON_STARTUP;
+Register_GlobalConfigOption(CFGID_DEBUGGER_ATTACH_ON_STARTUP, "debugger-attach-on-startup", CFG_BOOL, "false", "When set to true, the simulation program will launch an external debugger attached to it (if not already present), allowing you to set breakpoints before proceeding. The debugger command is configurable. Note that debugging (i.e. attaching to) a non-child process needs to be explicitly enabled on some systems, e.g. Ubuntu.");
+
+// note: many of the following options are also used by SectionBasedConfiguration to initialize run attributes
+Register_PerRunConfigOption(CFGID_NETWORK, "network", CFG_STRING, nullptr, "The name of the network to be simulated.  The package name can be omitted if the ini file is in the same directory as the NED file that contains the network.");
+Register_PerRunConfigOption(CFGID_WARNINGS, "warnings", CFG_BOOL, "true", "Enables warnings.");
+Register_PerRunConfigOptionU(CFGID_SIM_TIME_LIMIT, "sim-time-limit", "s", nullptr, "Stops the simulation when simulation time reaches the given limit. The default is no limit.");
+Register_PerRunConfigOptionU(CFGID_CPU_TIME_LIMIT, "cpu-time-limit", "s", nullptr, "Stops the simulation when CPU usage has reached the given limit. The default is no limit. Note: To reduce per-event overhead, this time limit is only checked every N events (by default, N=1024).");
+Register_PerRunConfigOptionU(CFGID_REAL_TIME_LIMIT, "real-time-limit", "s", nullptr, "Stops the simulation after the specified amount of time has elapsed. The default is no limit. Note: To reduce per-event overhead, this time limit is only checked every N events (by default, N=1024).");
+Register_PerRunConfigOptionU(CFGID_WARMUP_PERIOD, "warmup-period", "s", nullptr, "Length of the initial warm-up period. When set, results belonging to the first x seconds of the simulation will not be recorded into output vectors, and will not be counted into output scalars (see option `**.result-recording-modes`). This option is useful for steady-state simulations. The default is 0s (no warmup period). Note that models that compute and record scalar results manually (via `recordScalar()`) will not automatically obey this setting.");
+Register_PerRunConfigOption(CFGID_DEBUG_STATISTICS_RECORDING, "debug-statistics-recording", CFG_BOOL, "false", "Turns on the printing of debugging information related to statistics recording (`@statistic` properties)");
+
 extern cConfigOption *CFGID_FINGERPRINT;
-extern cConfigOption *CFGID_SIM_TIME_LIMIT;
-extern cConfigOption *CFGID_REAL_TIME_LIMIT;
-extern cConfigOption *CFGID_CPU_TIME_LIMIT;
-extern cConfigOption *CFGID_WARMUP_PERIOD;
-extern cConfigOption *CFGID_NETWORK;
-extern cConfigOption *CFGID_WARNINGS;
-extern cConfigOption *CFGID_DEBUG_STATISTICS_RECORDING;
 
 #define STRINGIZE0(x)    #x
 #define STRINGIZE(x)     STRINGIZE0(x)

@@ -38,17 +38,21 @@ typedef std::map<std::string, std::string> StringMap;
 
 Register_Class(OmnetppOutputVectorManager);
 
+#define DEFAULT_OUTPUT_VECTOR_PRECISION    "14"
+#define DEFAULT_OUTPUT_VECTOR_MEMORY_LIMIT "16MiB"
+#define DEFAULT_VECTOR_BUFFER              "1MiB"
+
 // global options
-extern omnetpp::cConfigOption *CFGID_OUTPUT_VECTOR_FILE_APPEND;
-extern omnetpp::cConfigOption *CFGID_OUTPUT_VECTOR_FILE;
-extern omnetpp::cConfigOption *CFGID_OUTPUTVECTOR_MEMORY_LIMIT;
-extern omnetpp::cConfigOption *CFGID_OUTPUT_VECTOR_PRECISION;
+Register_PerRunConfigOption(CFGID_OUTPUT_VECTOR_FILE, "output-vector-file", CFG_FILENAME, "${resultdir}/${configname}-${iterationvarsf}#${repetition}.vec", "Name for the output vector file.");
+Register_PerRunConfigOption(CFGID_OUTPUT_VECTOR_FILE_APPEND, "output-vector-file-append", CFG_BOOL, "false", "What to do when the output vector file already exists: append to it, or delete it and begin a new file (default). Note: `cIndexedFileOutputVectorManager` currently does not support appending.");
+Register_PerRunConfigOption(CFGID_OUTPUT_VECTOR_PRECISION, "output-vector-precision", CFG_INT, DEFAULT_OUTPUT_VECTOR_PRECISION, "The number of significant digits for recording data into the output vector file. The maximum value is ~15 (IEEE double precision). This setting has no effect on SQLite recording (it stores values as 8-byte IEEE floating point numbers), and for the \"time\" column which is represented as fixed-point numbers and always get recorded precisely.");
+Register_PerRunConfigOptionU(CFGID_OUTPUTVECTOR_MEMORY_LIMIT, "output-vectors-memory-limit", "B", DEFAULT_OUTPUT_VECTOR_MEMORY_LIMIT, "Total memory that can be used for buffering output vectors. Larger values produce less fragmented vector files (i.e. cause vector data to be grouped into larger chunks), and therefore allow more efficient processing later. There is also a per-vector limit, see `**.vector-buffer`.");
 
 // per-vector options
-extern omnetpp::cConfigOption *CFGID_VECTOR_RECORDING;
-extern omnetpp::cConfigOption *CFGID_VECTOR_RECORDING_INTERVALS;
-extern omnetpp::cConfigOption *CFGID_VECTOR_BUFFER;
-extern omnetpp::cConfigOption *CFGID_VECTOR_RECORD_EVENTNUMBERS;
+Register_PerObjectConfigOption(CFGID_VECTOR_RECORDING, "vector-recording", KIND_VECTOR, CFG_BOOL, "true", "Whether data written into an output vector should be recorded.\nUsage: `<module-full-path>.<vector-name>.vector-recording=true/false`. To control vector recording from a `@statistic`, use `<statistic-name>:vector for <vector-name>`. Example: `**.ping.roundTripTime:vector.vector-recording=false`");
+Register_PerObjectConfigOption(CFGID_VECTOR_RECORD_EVENTNUMBERS, "vector-record-eventnumbers", KIND_VECTOR, CFG_BOOL, "true", "Whether to record event numbers for an output vector. (Values and timestamps are always recorded.) Event numbers are needed by the Sequence Chart Tool, for example.\nUsage: `<module-full-path>.<vector-name>.vector-record-eventnumbers=true/false`.\nExample: `**.ping.roundTripTime:vector.vector-record-eventnumbers=false`");
+Register_PerObjectConfigOption(CFGID_VECTOR_RECORDING_INTERVALS, "vector-recording-intervals", KIND_VECTOR, CFG_CUSTOM, nullptr, "Allows one to restrict recording of an output vector to one or more simulation time intervals. Usage: `<module-full-path>.<vector-name>.vector-recording-intervals=<intervals>`. The syntax for `<intervals>` is: `[<from>]..[<to>],...` That is, both start and end of an interval are optional, and intervals are separated by comma.\nExample: `**.roundTripTime:vector.vector-recording-intervals=..100, 200..400, 900..`");
+Register_PerObjectConfigOptionU(CFGID_VECTOR_BUFFER, "vector-buffer", KIND_VECTOR, "B", DEFAULT_VECTOR_BUFFER, "For output vectors: the maximum per-vector buffer space used for storing values before writing them out as a block into the output vector file. There is also a total limit, see `output-vectors-memory-limit`.\nUsage: `<module-full-path>.<vector-name>.vector-buffer=<amount>`.");
 
 void OmnetppOutputVectorManager::startRun()
 {

@@ -40,15 +40,17 @@ namespace envir {
 
 typedef std::map<std::string, std::string> StringMap;
 
+#define DEFAULT_OUTPUT_SCALAR_PRECISION    "14"
+
 // global options
-extern omnetpp::cConfigOption *CFGID_OUTPUT_SCALAR_FILE;
-extern omnetpp::cConfigOption *CFGID_OUTPUT_SCALAR_PRECISION;
-extern omnetpp::cConfigOption *CFGID_OUTPUT_SCALAR_FILE_APPEND;
+Register_PerRunConfigOption(CFGID_OUTPUT_SCALAR_FILE, "output-scalar-file", CFG_FILENAME, "${resultdir}/${configname}-${iterationvarsf}#${repetition}.sca", "Name for the output scalar file.");
+Register_PerRunConfigOption(CFGID_OUTPUT_SCALAR_FILE_APPEND, "output-scalar-file-append", CFG_BOOL, "false", "What to do when the output scalar file already exists: append to it (OMNeT++ 3.x behavior), or delete it and begin a new file (default).");
+Register_PerRunConfigOption(CFGID_OUTPUT_SCALAR_PRECISION, "output-scalar-precision", CFG_INT, DEFAULT_OUTPUT_SCALAR_PRECISION, "The number of significant digits for recording data into the output scalar file. The maximum value is ~15 (IEEE double precision). This has no effect on SQLite recording, as it stores values as 8-byte IEEE floating point numbers.");
 
 // per-scalar options
-extern omnetpp::cConfigOption *CFGID_SCALAR_RECORDING;
-extern omnetpp::cConfigOption *CFGID_BIN_RECORDING;
-extern omnetpp::cConfigOption *CFGID_PARAM_RECORDING;
+Register_PerObjectConfigOption(CFGID_SCALAR_RECORDING, "scalar-recording", KIND_SCALAR, CFG_BOOL, "true", "Whether the matching output scalars and statistic objects should be recorded.\nUsage: `<module-full-path>.<scalar-name>.scalar-recording=true/false`. To enable/disable individual recording modes for a @statistic (those added via the `record=...` key of `@statistic` or the `**.result-recording-modes=...` config option), use `<statistic-name>:<mode>` for `<scalar-name>`, and make sure the `@statistic` as a whole is not disabled with `**.<statistic-name>.statistic-recording=false`.\nExample: `**.ping.roundTripTime:stddev.scalar-recording=false`");
+Register_PerObjectConfigOption(CFGID_BIN_RECORDING, "bin-recording", KIND_SCALAR, CFG_BOOL, "true", "Whether the bins of the matching histogram object should be recorded, provided that recording of the histogram object itself is enabled (`**.<scalar-name>.scalar-recording=true`).\nUsage: `<module-full-path>.<scalar-name>.bin-recording=true/false`. To control histogram recording from a `@statistic`, use `<statistic-name>:histogram` for `<scalar-name>`.\nExample: `**.ping.roundTripTime:histogram.bin-recording=false`");
+Register_PerObjectConfigOption(CFGID_PARAM_RECORDING, "param-recording", KIND_PARAMETER, CFG_BOOL, "true", "Whether the matching module (and channel) parameters should be recorded.\nUsage: `<module-full-path>.<parameter-name>.param-recording=true/false`.\nExample: `**.app.pkLen.param-recording=true`");
 
 Register_Class(OmnetppOutputScalarManager);
 
