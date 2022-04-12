@@ -1669,6 +1669,12 @@ Build environment:
     in the `configure.user` file. The configuration script no longer tries to
     autodetect Akaroa without the user explicitly requesting it.
 
+  - Debug builds are now compiled with -O0 for maximum debuggability. Release builds
+    are compiled with `-O2 -ffp-contract=off` to disable fused multiply-add operations.
+    This ensures that floating point operations will generate exactly the same results
+    in DEBUG and RELEASE mode and their accuracy would not depend on unpredictable 
+    optimizations.
+
 Windows Support:
 
   - On Windows, the toolchain (compiler, libraries, etc.) can now be found in
