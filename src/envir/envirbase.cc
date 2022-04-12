@@ -165,6 +165,7 @@ void EnvirBase::setupAndReadOptions(cConfigurationEx *cfg, ArgList *args)
 {
     this->cfg = cfg;
     this->args = args;
+    this->simulation = cSimulation::getActiveSimulation(); //TODO pass in explicitly)
 
     this->opt = new EnvirOptions;
 

@@ -101,6 +101,8 @@ struct ENVIR_API EnvirOptions
 class ENVIR_API EnvirBase : public cEnvir
 {
   protected:
+    cSimulation *simulation;
+
     cConfigurationEx *cfg;
     ArgList *args;  //TODO remove
     EnvirOptions *opt;
@@ -153,6 +155,7 @@ class ENVIR_API EnvirBase : public cEnvir
 
     // getters
     IAllInOne *getApp() {return app;}
+    cSimulation *getSimulation() const {return simulation;}
     virtual cConfiguration *getConfig() override;
     virtual cConfigurationEx *getConfigEx() override;
     cIEventlogManager *getEventlogManager() const {return eventlogManager;}
