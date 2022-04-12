@@ -33,7 +33,7 @@ namespace envir {
 #endif
 
 
-struct AppBaseOptions : public EnvirOptions  //TODO fixme break inheritance between two opts
+struct AppBaseOptions
 {
     // note: these values will be overwritten in setup()/readOptions() before taking effect
     std::string networkName;

@@ -623,7 +623,7 @@ void Qtenv::doRun()
     signal(SIGTERM, signalHandler);
 
     icons.setVerbose(opt->verbose);
-    icons.loadImages(opt->imagePath.c_str());
+    icons.loadImages(envir->getImagePath());
 
     // we need to flush streams, otherwise output written from Tcl tends to overtake
     // output written from C++ so far, at least in the IDE's console view

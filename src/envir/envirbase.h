@@ -147,7 +147,7 @@ class ENVIR_API EnvirBase : public cEnvir
   public:
     EnvirBase(IAllInOne *app);
     virtual ~EnvirBase();
-    virtual void setupAndReadOptions(cConfigurationEx *cfg, ArgList *args, EnvirOptions *opt);
+    virtual void setupAndReadOptions(cConfigurationEx *cfg, ArgList *args);
 
     // getters
     IAllInOne *getApp() {return app;}
@@ -176,6 +176,21 @@ class ENVIR_API EnvirBase : public cEnvir
 
     void setEventlogRecording(bool enabled);
     bool getEventlogRecording() const {return recordEventlog;}
+
+    bool getCheckSignals() const {return opt->checkSignals;}
+    void setCheckSignals(bool checkSignals) {opt->checkSignals = checkSignals;}
+    const char *getImagePath() const {return opt->imagePath.c_str();}
+    void setImagePath(const char *imagePath) {opt->imagePath = imagePath;}
+    const char *getNedExcludedPackages() const {return opt->nedExcludedPackages.c_str();}
+    void setNedExcludedPackages(const char *nedExcludedPackages) {opt->nedExcludedPackages = nedExcludedPackages;}
+    const char *getNedPath() const {return opt->nedPath.c_str();}
+    void setNedPath(const char *nedPath) {opt->nedPath = nedPath;}
+    bool isParsim() const {return opt->parsim;}
+    void setParsim(bool parsim) {opt->parsim = parsim;}
+    bool getPrintUndisposed() const {return opt->printUndisposed;}
+    void setPrintUndisposed(bool printUndisposed) {opt->printUndisposed = printUndisposed;}
+    bool isVerbose() const {return opt->verbose;}
+    void setVerbose(bool verbose) {opt->verbose = verbose;}
 
     void clearCurrentEventInfo();
 
@@ -260,6 +275,7 @@ class ENVIR_API EnvirBase : public cEnvir
 
     virtual void readOptions();
     virtual void readPerRunOptions();
+
 
   protected:
     int parseSimtimeResolution(const char *resolution);

@@ -411,7 +411,7 @@ void AppBase::readPerRunOptions()
 bool AppBase::setup()
 {
     try {
-        envir->setupAndReadOptions(cfg, args, opt);
+        envir->setupAndReadOptions(cfg, args);
         readOptions();
 
         if (getAttachDebuggerOnErrors()) {
@@ -440,11 +440,11 @@ void AppBase::loadNEDFiles()
 {
     // load NED files from folders on the NED path
     std::set<std::string> foldersLoaded;
-    for (std::string folder : opp_splitpath(opt->nedPath)) {
+    for (std::string folder : opp_splitpath(envir->getNedPath())) {
         if (foldersLoaded.find(folder) == foldersLoaded.end()) {
             if (opt->verbose)
                 out << "Loading NED files from " << folder << ": ";
-            int count = getSimulation()->loadNedSourceFolder(folder.c_str(), opt->nedExcludedPackages.c_str());
+            int count = getSimulation()->loadNedSourceFolder(folder.c_str(), envir->getNedExcludedPackages());
             if (opt->verbose)
                 out << " " << count << endl;
             foldersLoaded.insert(folder);
@@ -868,7 +868,7 @@ void AppBase::stoppedWithTerminationException(cTerminationException& e)
     // if we're running in parallel and this exception is NOT one we received
     // from other partitions, then notify other partitions
 #ifdef WITH_PARSIM
-    if (opt->parsim && !dynamic_cast<cReceivedTerminationException *>(&e))
+    if (envir->isParsim() && !dynamic_cast<cReceivedTerminationException *>(&e))
         envir->getParsimPartition()->broadcastTerminationException(e);
 #endif
     if (getEventlogRecording()) {
@@ -882,7 +882,7 @@ void AppBase::stoppedWithException(std::exception& e)
     // if we're running in parallel and this exception is NOT one we received
     // from other partitions, then notify other partitions
 #ifdef WITH_PARSIM
-    if (opt->parsim && !dynamic_cast<cReceivedException *>(&e))
+    if (envir->isParsim() && !dynamic_cast<cReceivedException *>(&e))
         envir->getParsimPartition()->broadcastException(e);
 #endif
     if (getEventlogRecording()) {

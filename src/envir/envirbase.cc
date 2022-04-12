@@ -196,11 +196,12 @@ EnvirBase::~EnvirBase()
 #endif
 }
 
-void EnvirBase::setupAndReadOptions(cConfigurationEx *cfg, ArgList *args, EnvirOptions *opt)
+void EnvirBase::setupAndReadOptions(cConfigurationEx *cfg, ArgList *args)
 {
     this->cfg = cfg;
     this->args = args;
-    this->opt = opt;
+
+    this->opt = new EnvirOptions;
 
     // ensure correct numeric format in output files
     setPosixLocale();
