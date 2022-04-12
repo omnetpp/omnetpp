@@ -689,7 +689,6 @@ void EnvirBase::readPerRunOptions()
     cConfiguration *cfg = getConfig();
 
     // get options from ini file
-    opt->checkSignals = cfg->getAsBool(CFGID_CHECK_SIGNALS);
     debugOnErrors = cfg->getAsBool(CFGID_DEBUG_ON_ERRORS);  // note: handling overridden in Qtenv::readPerRunOptions() due to interference with GUI
     opt->printUndisposed = cfg->getAsBool(CFGID_PRINT_UNDISPOSED);
     getSimulation()->setParameterMutabilityCheck(cfg->getAsBool(CFGID_PARAMETER_MUTABILITY_CHECK));
@@ -747,7 +746,8 @@ void EnvirBase::readPerRunOptions()
     }
     getSimulation()->setFingerprintCalculator(fingerprint);
 
-    cComponent::setCheckSignals(opt->checkSignals);
+    bool checkSignals = cfg->getAsBool(CFGID_CHECK_SIGNALS);
+    cComponent::setCheckSignals(checkSignals);
 
     getSimulation()->getRngManager()->configure(cfg);
 

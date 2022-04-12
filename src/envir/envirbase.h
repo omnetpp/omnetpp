@@ -87,7 +87,6 @@ struct ENVIR_API EnvirOptions
     std::string nedPath;  // note: also used in resolveResourcePath()
     std::string nedExcludedPackages;  //TODO should be used in resolveResourcePath()
 
-    bool checkSignals = false;  //TODO move to AppBase
     bool printUndisposed = true;
 };
 
@@ -180,8 +179,8 @@ class ENVIR_API EnvirBase : public cEnvir
     void setEventlogRecording(bool enabled);
     bool getEventlogRecording() const {return recordEventlog;}
 
-    bool getCheckSignals() const {return opt->checkSignals;}
-    void setCheckSignals(bool checkSignals) {opt->checkSignals = checkSignals;}
+    bool getCheckSignals() const {return cComponent::getCheckSignals();}
+    void setCheckSignals(bool checkSignals) {cComponent::setCheckSignals(checkSignals);}
     const char *getImagePath() const {return opt->imagePath.c_str();}
     void setImagePath(const char *imagePath) {opt->imagePath = imagePath;}
     const char *getNedExcludedPackages() const {return opt->nedExcludedPackages.c_str();}
