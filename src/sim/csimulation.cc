@@ -836,6 +836,7 @@ class StaticEnv : public cEnvir
     virtual void refOsgNode(osg::Node *scene) override {}
     virtual void unrefOsgNode(osg::Node *scene) override {}
     virtual bool ensureDebugger(cRuntimeError *) override { return false; }
+    virtual bool shouldDebugNow(cRuntimeError *error) override {return false;}
 
     virtual void getImageSize(const char *imageName, double& outWidth, double& outHeight) override {unsupported();}
     virtual void getTextExtent(const cFigure::Font& font, const char *text, double& outWidth, double& outHeight, double& outAscent) override {unsupported();}

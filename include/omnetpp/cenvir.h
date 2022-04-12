@@ -87,9 +87,6 @@ class SIM_API cEnvir
     // connectionDeleted(), displayStringChanged().
     bool suppressNotifications = false; //FIXME set to true when not needed!
 
-    // Debugging. When set, cRuntimeError constructor executes a debug trap/launches debugger
-    bool debugOnErrors = false;
-
     // Lifecycle listeners
     std::vector<cISimulationLifecycleListener*> listeners;
 
@@ -848,6 +845,16 @@ class SIM_API cEnvir
      */
     virtual bool ensureDebugger(cRuntimeError *error = nullptr) = 0;
 
+    /**
+     * Should be invoked when a simulation error has occurred. It returns
+     * true if the user has requested debugging on error, and false if
+     * not. If it returns true, the caller needs to trigger a debug breakpoint
+     * (DEBUG_TRAP macro). Invocation of this method is already present
+     * in cRuntimeError's constructor.
+     *
+     * Includes a call to ensureDebugger().
+     */
+    virtual bool shouldDebugNow(cRuntimeError *error = nullptr) = 0;
     //@}
 
     /** @name Lifecycle listeners */

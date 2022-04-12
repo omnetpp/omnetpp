@@ -123,7 +123,10 @@ class ENVIR_API EnvirBase : public cEnvir
     const char *currentEventClassName;
     int currentModuleId;
 
-    // Indicates whether eventlog recording is currently enabled (note: eventlogManager contains further filters).
+    // Debugging. When set, cRuntimeError constructor executes a debug trap/launches debugger
+    bool debugOnErrors = false;
+
+    // Indicates whether eventlog recording is currently enabled (note: eventlogManager contains further filters)
     // It MUST be in sync with EventlogFileManager::isRecordingEnabled.
     bool recordEventlog;
 
@@ -271,6 +274,7 @@ class ENVIR_API EnvirBase : public cEnvir
     virtual bool idle() override;
 
     virtual bool ensureDebugger(cRuntimeError *error = nullptr) override;
+    virtual bool shouldDebugNow(cRuntimeError *error = nullptr) override;
     //@}
 
     virtual void readOptions();

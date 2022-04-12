@@ -225,10 +225,9 @@ cRuntimeError::cRuntimeError(const std::exception& e, const char *location)
     notifyEnvir();
 }
 
-
 void cRuntimeError::notifyEnvir()
 {
-    if (getEnvir()->debugOnErrors && getEnvir()->ensureDebugger(this))
+    if (getEnvir()->shouldDebugNow(this))
         DEBUG_TRAP; // YOUR CODE IS A FEW FRAMES UP ON THE CALL STACK
 }
 

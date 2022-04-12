@@ -928,6 +928,11 @@ bool EnvirBase::ensureDebugger(cRuntimeError *error)
     return app->ensureDebugger(error);
 }
 
+bool EnvirBase::shouldDebugNow(cRuntimeError *error)
+{
+    return debugOnErrors && ensureDebugger(error);
+}
+
 int EnvirBase::getParsimProcId() const
 {
 #ifdef WITH_PARSIM

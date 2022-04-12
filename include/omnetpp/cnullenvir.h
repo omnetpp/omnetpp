@@ -149,6 +149,7 @@ class SIM_API cNullEnvir : public cEnvir
     virtual void unrefOsgNode(osg::Node *scene) override {}
     virtual bool idle() override  {return false;}
     virtual bool ensureDebugger(cRuntimeError *) override { return false; }
+    virtual bool shouldDebugNow(cRuntimeError *error) override {return false;}
 };
 
 
