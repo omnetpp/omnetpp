@@ -138,7 +138,8 @@ class ENVIR_API EnvirBase : public cEnvir
     cISnapshotManager *snapshotManager;
 
     // Data for getUniqueNumber()
-    unsigned long nextUniqueNumber;
+    uint64_t nextUniqueNumber;
+    uint64_t uniqueNumbersEnd;
 
     // lifecycle listeners
     std::vector<cISimulationLifecycleListener*> listeners;
@@ -270,7 +271,7 @@ class ENVIR_API EnvirBase : public cEnvir
     // misc
     virtual int getParsimProcId() const override;
     virtual int getParsimNumPartitions() const override;
-    virtual unsigned long getUniqueNumber() override;
+    virtual uint64_t getUniqueNumber() override;
     virtual void refOsgNode(osg::Node *scene) override {}
     virtual void unrefOsgNode(osg::Node *scene) override {}
     virtual bool idle() override;

@@ -830,7 +830,7 @@ class StaticEnv : public cEnvir
     // misc
     virtual int getParsimProcId() const override { return 0; }
     virtual int getParsimNumPartitions() const override { return 1; }
-    virtual unsigned long getUniqueNumber() override  { unsupported(); return 0; }
+    virtual uint64_t getUniqueNumber() override  { unsupported(); return 0; }
     virtual bool idle() override  { return false; }
     virtual void pausePoint() override {}
     virtual void refOsgNode(osg::Node *scene) override {}

@@ -791,7 +791,7 @@ class SIM_API cEnvir
     /**
      * The function underlying cSimulation::getUniqueNumber().
      */
-    virtual unsigned long getUniqueNumber() = 0;
+    virtual uint64_t getUniqueNumber() = 0;
 
     /**
      * Used by cOsgCanvas to increase the reference count of an osg::Node.

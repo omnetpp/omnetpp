@@ -754,9 +754,14 @@ void EnvirBase::readPerRunOptions()
 
     // init nextUniqueNumber -- startRun() is too late because simple module ctors have run by then
     nextUniqueNumber = 0;
+    uniqueNumbersEnd = 0; // when wraps
 #ifdef WITH_PARSIM
-    if (opt->parsim)
-        nextUniqueNumber = (unsigned)parsimComm->getProcId() * ((~0UL) / (unsigned)parsimComm->getNumPartitions());
+    if (opt->parsim) {
+        uint64_t myRank = parsimComm->getProcId();
+        uint64_t range = UINT64_MAX / parsimComm->getNumPartitions();
+        nextUniqueNumber = myRank * range;
+        uniqueNumbersEnd = (myRank+1) * range;
+    }
 #endif
 
     recordEventlog = cfg->getAsBool(CFGID_RECORD_EVENTLOG);
@@ -903,21 +908,13 @@ void EnvirBase::releaseStreamForSnapshot(std::ostream *os)
 
 //-------------------------------------------------------------
 
-unsigned long EnvirBase::getUniqueNumber()
+uint64_t EnvirBase::getUniqueNumber()
 {
-    unsigned long ret = nextUniqueNumber++;
-    if (nextUniqueNumber == 0)
+    uint64_t ret = nextUniqueNumber++;
+    if (nextUniqueNumber == uniqueNumbersEnd)
         throw cRuntimeError("getUniqueNumber(): All values have been consumed");
-#ifdef WITH_PARSIM
-    if (opt->parsim) {
-        unsigned long limit = (unsigned)(parsimComm->getProcId()+1) * ((~0UL) / (unsigned)parsimComm->getNumPartitions());
-        if (nextUniqueNumber == limit)
-            throw cRuntimeError("getUniqueNumber(): All values have been consumed");
-    }
-#endif
     return ret;
 }
-
 
 bool EnvirBase::idle()
 {
