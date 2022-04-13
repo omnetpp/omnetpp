@@ -283,10 +283,7 @@ class ENVIR_API EnvirBase : public cEnvir
     virtual void readOptions();
     virtual void readPerRunOptions();
 
-
   protected:
-    int parseSimtimeResolution(const char *resolution);
-
     // Called internally from readParameter(), to interactively prompt the
     // user for a parameter value.
     virtual void askParameter(cPar *par, bool unassigned);

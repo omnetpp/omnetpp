@@ -108,8 +108,6 @@ Register_GlobalConfigOption(CFGID_IMAGE_PATH, "image-path", CFG_PATH, "./images"
 Register_PerRunConfigOption(CFGID_DEBUG_ON_ERRORS, "debug-on-errors", CFG_BOOL, "false", "When set to true, runtime errors will cause the simulation program to break into the C++ debugger (if the simulation is running under one, or just-in-time debugging is activated). Once in the debugger, you can view the stack trace or examine variables.");
 Register_PerRunConfigOption(CFGID_PRINT_UNDISPOSED, "print-undisposed", CFG_BOOL, "true", "Whether to report objects left (that is, not deallocated by simple module destructors) after network cleanup.");
 Register_PerRunConfigOption(CFGID_PARAMETER_MUTABILITY_CHECK, "parameter-mutability-check", CFG_BOOL, "true", "Setting to false will disable errors raised when trying to change the values of module/channel parameters not marked as @mutable. This is primarily a compatibility setting intended to facilitate running simulation models that were not yet annotated with @mutable.");
-Register_GlobalConfigOption(CFGID_SIMTIME_SCALE, "simtime-scale", CFG_INT, "-12", "DEPRECATED in favor of simtime-resolution. Sets the scale exponent, and thus the resolution of time for the 64-bit fixed-point simulation time representation. Accepted values are -18..0; for example, -6 selects microsecond resolution. -12 means picosecond resolution, with a maximum simtime of ~110 days.");
-Register_GlobalConfigOption(CFGID_SIMTIME_RESOLUTION, "simtime-resolution", CFG_CUSTOM, "ps", "Sets the resolution for the 64-bit fixed-point simulation time representation. Accepted values are: second-or-smaller time units (`s`, `ms`, `us`, `ns`, `ps`, `fs` or as), power-of-ten multiples of such units (e.g. 100ms), and base-10 scale exponents in the -18..0 range. The maximum representable simulation time depends on the resolution. The default is picosecond resolution, which offers a range of ~110 days.");
 Register_GlobalConfigOption(CFGID_NED_PATH, "ned-path", CFG_PATH, "", "A semicolon-separated list of directories. The directories will be regarded as roots of the NED package hierarchy, and all NED files will be loaded from their subdirectory trees. This option is normally left empty, as the OMNeT++ IDE sets the NED path automatically, and for simulations started outside the IDE it is more convenient to specify it via command-line option (-n) or via environment variable (OMNETPP_NED_PATH, NEDPATH).");
 Register_GlobalConfigOption(CFGID_NED_PACKAGE_EXCLUSIONS, "ned-package-exclusions", CFG_CUSTOM, "", "A semicolon-separated list of NED packages to be excluded when loading NED files. Sub-packages of excluded ones are also excluded. Additional items may be specified via the `-x` command-line option and the `OMNETPP_NED_PACKAGE_EXCLUSIONS` environment variable.");
 Register_GlobalConfigOption(CFGID_DEBUGGER_ATTACH_ON_ERROR, "debugger-attach-on-error", CFG_BOOL, "false", "When set to true, runtime errors and crashes will trigger an external debugger to be launched (if not already present), allowing you to perform just-in-time debugging on the simulation process. The debugger command is configurable. Note that debugging (i.e. attaching to) a non-child process needs to be explicitly enabled on some systems, e.g. Ubuntu.");
@@ -175,7 +173,7 @@ void EnvirBase::setupAndReadOptions(cConfigurationEx *cfg, ArgList *args)
     // set opt->* variables from ini file(s)
     readOptions();
 
-    // initialize coroutine library
+    // initialize coroutine library ..TODO move to  cCoroutine!
     size_t totalStack = (size_t)cfg->getAsDouble(CFGID_TOTAL_STACK, TOTAL_STACK_SIZE);
     if (TOTAL_STACK_SIZE != 0 && totalStack <= MAIN_STACK_SIZE+4096) {
         if (opt->verbose)
@@ -641,19 +639,7 @@ void EnvirBase::readOptions()
 
     attachDebuggerOnErrors = cfg->getAsBool(CFGID_DEBUGGER_ATTACH_ON_ERROR);
 
-    // simtime resolution
-    bool hasSimtimeResolution = cfg->getConfigValue(CFGID_SIMTIME_RESOLUTION->getName()) != nullptr;
-    bool hasSimtimeScale = cfg->getConfigValue(CFGID_SIMTIME_SCALE->getName()) != nullptr;
-    int exp;
-    if (hasSimtimeResolution || !hasSimtimeScale)
-        exp = parseSimtimeResolution(cfg->getAsCustom(CFGID_SIMTIME_RESOLUTION)); // new
-    else
-        exp = (int)cfg->getAsInt(CFGID_SIMTIME_SCALE); // legacy
-    SimTime::setScaleExp(exp);
-    if (hasSimtimeScale)
-        printfmsg("Warning: Obsolete config option %s= found, please use the improved %s= instead "
-                "(it allows values like \"us\" or \"100ps\" in addition to base-10 scale exponents)",
-                CFGID_SIMTIME_SCALE->getName(), CFGID_SIMTIME_RESOLUTION->getName());
+    SimTime::configure(cfg);
 
     // NED path. It is taken from the "-n" command-line options, the OMNETPP_NED_PATH
     // environment variable, and the "ned-path=" config option. If the result is still
@@ -692,7 +678,7 @@ void EnvirBase::readPerRunOptions()
     // get options from ini file
     debugOnErrors = cfg->getAsBool(CFGID_DEBUG_ON_ERRORS);  // note: handling overridden in Qtenv::readPerRunOptions() due to interference with GUI
     opt->printUndisposed = cfg->getAsBool(CFGID_PRINT_UNDISPOSED);
-    getSimulation()->setParameterMutabilityCheck(cfg->getAsBool(CFGID_PARAMETER_MUTABILITY_CHECK));
+    getSimulation()->setParameterMutabilityCheck(cfg->getAsBool(CFGID_PARAMETER_MUTABILITY_CHECK));  //TODO into cSimulation?
 
     // install eventlog manager
     delete eventlogManager;
@@ -725,13 +711,13 @@ void EnvirBase::readPerRunOptions()
     // install FES
     std::string futureeventsetClass = cfg->getAsString(CFGID_FUTUREEVENTSET_CLASS);
     cFutureEventSet *fes = createByClassName<cFutureEventSet>(futureeventsetClass.c_str(), "FES");
-    getSimulation()->setFES(fes);
+    getSimulation()->setFES(fes); //TODO into cSimulation?
 
     // install scheduler
     if (!opt->parsim) {
         std::string schedulerClass = cfg->getAsString(CFGID_SCHEDULER_CLASS);
         cScheduler *scheduler = createByClassName<cScheduler>(schedulerClass.c_str(), "event scheduler");
-        getSimulation()->setScheduler(scheduler);
+        getSimulation()->setScheduler(scheduler); //TODO into cSimulation?
     }
 
     // install fingerprint calculator object
@@ -745,12 +731,12 @@ void EnvirBase::readPerRunOptions()
             fingerprint = new cMultiFingerprintCalculator(fingerprint);
         fingerprint->initialize(expectedFingerprints.c_str(), cfg);
     }
-    getSimulation()->setFingerprintCalculator(fingerprint);
+    getSimulation()->setFingerprintCalculator(fingerprint);  //TODO into cSimulation?
 
     bool checkSignals = cfg->getAsBool(CFGID_CHECK_SIGNALS);
-    cComponent::setCheckSignals(checkSignals);
+    cComponent::setCheckSignals(checkSignals);  //TODO into cSimulation?
 
-    getSimulation()->getRngManager()->configure(cfg);
+    getSimulation()->getRngManager()->configure(cfg);  //TODO into cRngManager?
 
     // init nextUniqueNumber -- startRun() is too late because simple module ctors have run by then
     nextUniqueNumber = 0;
@@ -765,43 +751,6 @@ void EnvirBase::readPerRunOptions()
 #endif
 
     recordEventlog = cfg->getAsBool(CFGID_RECORD_EVENTLOG);
-}
-
-int EnvirBase::parseSimtimeResolution(const char *resolution)
-{
-    try {
-        // Three possibilities: <unit-only>, <number-with-unit>, <number-only>
-        const double INVALID_EXP = 1e100;
-        double exp = INVALID_EXP;
-        if (opp_isalpha(resolution[0])) {
-            // try as <unit-only>, e.g. "ms"
-            double f = UnitConversion::getConversionFactor(resolution, "s");
-            if (f == 0)
-                throw std::runtime_error("Wrong unit");
-            exp = log10(f);
-            ASSERT(exp == floor(exp));
-        }
-        else {
-            // try as <number-only>: this will be an exponent, e.g. -12
-            try { exp = opp_atol(resolution); } catch (std::exception& e) {}
-
-            // try as <number-with-unit>, e.g. "100ps"
-            if (exp == INVALID_EXP) {
-                double f = UnitConversion::parseQuantity(resolution, "s");
-                exp = log10(f);
-                if (exp != floor(exp))
-                    throw std::runtime_error("Not power of 10");
-            }
-        }
-        return (int)exp;
-    }
-    catch (std::exception& e) {
-        throw cRuntimeError(
-                "Invalid value \"%s\" for configuration option simtime-resolution: it must be "
-                "a valid second-or-smaller time unit (s, ms, us, ns, ps, fs or as), "
-                "a power-of-ten multiple of such unit (e.g. 100ms), or a base-10 scale "
-                "exponent in the -18..0 range. (Details: %s)", resolution, e.what());
-    }
 }
 
 void EnvirBase::setEventlogRecording(bool enabled)

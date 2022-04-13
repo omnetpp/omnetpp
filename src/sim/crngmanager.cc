@@ -42,7 +42,7 @@ cRngManager::~cRngManager()
     delete[] rngs;
 }
 
-void cRngManager::configure(cConfiguration *cfg)
+void cRngManager::configure(cConfiguration *cfg)  //TODO split to a do-one configure() and do the rest from PRE_NETWORK_SETUP lifecycle listener?
 {
     this->cfg = cfg;
     cEnvir *envir = getEnvir(); //TODO eliminate -- pass in parsimProcId and ParsimNumPartitions directly?

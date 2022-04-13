@@ -23,10 +23,19 @@
 #include "omnetpp/cexception.h"
 #include "omnetpp/cpar.h"
 #include "omnetpp/onstartup.h"
+#include "omnetpp/csimulation.h"
+#include "omnetpp/cconfiguration.h"
+#include "omnetpp/cconfigoption.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/regmacros.h"
 
 using namespace omnetpp::common;
 
 namespace omnetpp {
+
+Register_GlobalConfigOption(CFGID_SIMTIME_SCALE, "simtime-scale", CFG_INT, "-12", "DEPRECATED in favor of simtime-resolution. Sets the scale exponent, and thus the resolution of time for the 64-bit fixed-point simulation time representation. Accepted values are -18..0; for example, -6 selects microsecond resolution. -12 means picosecond resolution, with a maximum simtime of ~110 days.");
+Register_GlobalConfigOption(CFGID_SIMTIME_RESOLUTION, "simtime-resolution", CFG_CUSTOM, "ps", "Sets the resolution for the 64-bit fixed-point simulation time representation. Accepted values are: second-or-smaller time units (`s`, `ms`, `us`, `ns`, `ps`, `fs` or as), power-of-ten multiples of such units (e.g. 100ms), and base-10 scale exponents in the -18..0 range. The maximum representable simulation time depends on the resolution. The default is picosecond resolution, which offers a range of ~110 days.");
+
 
 int SimTime::scaleexp = SimTime::SCALEEXP_UNINITIALIZED;
 int64_t SimTime::dscale;
@@ -62,6 +71,62 @@ inline int64_t exp10(int exponent)
     if (exponent < 0 || exponent > MAX_POWER_OF_TEN)
         return -1;  // error
     return powersOfTen[exponent];
+}
+
+void SimTime::configure(cConfiguration *cfg)
+{
+    bool hasSimtimeResolution = cfg->getConfigValue(CFGID_SIMTIME_RESOLUTION->getName()) != nullptr;
+    bool hasSimtimeScale = cfg->getConfigValue(CFGID_SIMTIME_SCALE->getName()) != nullptr;
+    int exp;
+    if (hasSimtimeResolution || !hasSimtimeScale)
+        exp = parseSimtimeResolution(cfg->getAsCustom(CFGID_SIMTIME_RESOLUTION)); // new
+    else
+        exp = (int)cfg->getAsInt(CFGID_SIMTIME_SCALE); // legacy
+
+    SimTime::setScaleExp(exp);
+
+    if (hasSimtimeScale)
+        getEnvir()->printfmsg(
+                "Warning: Obsolete config option %s= found, please use the improved %s= instead "
+                "(it allows values like \"us\" or \"100ps\" in addition to base-10 scale exponents)",
+                CFGID_SIMTIME_SCALE->getName(), CFGID_SIMTIME_RESOLUTION->getName());
+}
+
+int SimTime::parseSimtimeResolution(const char *resolution)
+{
+    try {
+        // Three possibilities: <unit-only>, <number-with-unit>, <number-only>
+        const double INVALID_EXP = 1e100;
+        double exp = INVALID_EXP;
+        if (opp_isalpha(resolution[0])) {
+            // try as <unit-only>, e.g. "ms"
+            double f = UnitConversion::getConversionFactor(resolution, "s");
+            if (f == 0)
+                throw std::runtime_error("Wrong unit");
+            exp = log10(f);
+            ASSERT(exp == floor(exp));
+        }
+        else {
+            // try as <number-only>: this will be an exponent, e.g. -12
+            try { exp = opp_atol(resolution); } catch (std::exception& e) {}
+
+            // try as <number-with-unit>, e.g. "100ps"
+            if (exp == INVALID_EXP) {
+                double f = UnitConversion::parseQuantity(resolution, "s");
+                exp = log10(f);
+                if (exp != floor(exp))
+                    throw std::runtime_error("Not power of 10");
+            }
+        }
+        return (int)exp;
+    }
+    catch (std::exception& e) {
+        throw cRuntimeError(
+                "Invalid value \"%s\" for configuration option simtime-resolution: it must be "
+                "a valid second-or-smaller time unit (s, ms, us, ns, ps, fs or as), "
+                "a power-of-ten multiple of such unit (e.g. 100ms), or a base-10 scale "
+                "exponent in the -18..0 range. (Details: %s)", resolution, e.what());
+    }
 }
 
 void SimTime::setScaleExp(int e)

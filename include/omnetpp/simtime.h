@@ -25,6 +25,7 @@
 namespace omnetpp {
 
 class cPar;
+class cConfiguration;
 
 // the most positive int64_t value, represented as double
 #define INT64_MAX_DBL  9.22337203685e18
@@ -87,6 +88,7 @@ class SIM_API SimTime
 
   protected:
     static void resetScale() {scaleexp = SCALEEXP_UNINITIALIZED;} // for unit tests only
+    static int parseSimtimeResolution(const char *resolution);
 
   private:
     template<typename T> void assertInited(T d) {if (scaleexp==SCALEEXP_UNINITIALIZED) initError(d);}
@@ -421,6 +423,11 @@ class SIM_API SimTime
      * value of existing SimTime variables.
      */
     static void setScaleExp(int e);
+
+    /**
+     * TODO delegates to setScaleExp(); invalidates existing SimTime instances so beware of calling it later, yada yada
+     */
+    static void configure(cConfiguration *cfg);
 
     /**
      * Converts the given string to simulation time. Throws an error if
