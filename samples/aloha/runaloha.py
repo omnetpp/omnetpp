@@ -64,7 +64,7 @@ configuration.setCommandLineConfigOptions(extra_config_options, ".")
 
 environment = PythonCmdenv()
 #environment.loggingEnabled = False
-simulation = cSimulation("simulation", environment)
+simulation = cSimulation("simulation", environment.getEnvir())
 environment.__python_owns__ = False
 cSimulation.setActiveSimulation(simulation)
 simulation.loadNedSourceFolder(omnetpp_root + "/samples/aloha")
