@@ -204,6 +204,38 @@ void EnvirBase::setupAndReadOptions(cConfigurationEx *cfg, ArgList *args)
     }
 }
 
+void EnvirBase::setEventlogManager(cIEventlogManager *obj)
+{
+    delete eventlogManager;
+    eventlogManager = obj;
+    eventlogManager->configure(cfg);
+    addLifecycleListener(eventlogManager);
+}
+
+void EnvirBase::setOutVectorManager(cIOutputVectorManager *obj)
+{
+    delete outVectorManager;
+    outVectorManager = obj;
+    outVectorManager->configure(cfg);
+    addLifecycleListener(outVectorManager);
+}
+
+void EnvirBase::setOutScalarManager(cIOutputScalarManager *obj)
+{
+    delete outScalarManager;
+    outScalarManager = obj;
+    outScalarManager->configure(cfg);
+    addLifecycleListener(outScalarManager);
+}
+
+void EnvirBase::setSnapshotManager(cISnapshotManager *obj)
+{
+    delete snapshotManager;
+    snapshotManager = obj;
+    snapshotManager->configure(cfg);
+    addLifecycleListener(snapshotManager);
+}
+
 void EnvirBase::preconfigure(cComponent *component)
 {
     app->preconfigure(component);
@@ -660,44 +692,34 @@ void EnvirBase::readPerRunOptions()
     opt->printUndisposed = cfg->getAsBool(CFGID_PRINT_UNDISPOSED);
 
     // install eventlog manager
-    delete eventlogManager;
     std::string eventlogManagerClass = cfg->getAsString(CFGID_EVENTLOGMANAGER_CLASS);
-    eventlogManager = createByClassName<cIEventlogManager>(eventlogManagerClass.c_str(), "eventlog manager");
-    eventlogManager->configure(cfg);
-    addLifecycleListener(eventlogManager);
+    cIEventlogManager *eventlogManager = createByClassName<cIEventlogManager>(eventlogManagerClass.c_str(), "eventlog manager");
+    setEventlogManager(eventlogManager);
 
     // install output vector manager
-    delete outVectorManager;
     std::string outputVectorManagerClass = cfg->getAsString(CFGID_OUTPUTVECTORMANAGER_CLASS);
-    outVectorManager = createByClassName<cIOutputVectorManager>(outputVectorManagerClass.c_str(), "output vector manager");
-    outVectorManager->configure(cfg);
-    addLifecycleListener(outVectorManager);
+    cIOutputVectorManager *outVectorManager = createByClassName<cIOutputVectorManager>(outputVectorManagerClass.c_str(), "output vector manager");
+    setOutVectorManager(outVectorManager);
 
     // install output scalar manager
-    delete outScalarManager;
     std::string outputScalarManagerClass = cfg->getAsString(CFGID_OUTPUTSCALARMANAGER_CLASS);
-    outScalarManager = createByClassName<cIOutputScalarManager>(outputScalarManagerClass.c_str(), "output scalar manager");
-    outScalarManager->configure(cfg);
-    addLifecycleListener(outScalarManager);
+    cIOutputScalarManager *outScalarManager = createByClassName<cIOutputScalarManager>(outputScalarManagerClass.c_str(), "output scalar manager");
+    setOutScalarManager(outScalarManager);
 
     // install snapshot manager
-    delete snapshotManager;
     std::string snapshotmanagerClass = cfg->getAsString(CFGID_SNAPSHOTMANAGER_CLASS);
-    snapshotManager = createByClassName<cISnapshotManager>(snapshotmanagerClass.c_str(), "snapshot manager");
-    snapshotManager->configure(cfg);
-    addLifecycleListener(snapshotManager);
+    cISnapshotManager *snapshotManager = createByClassName<cISnapshotManager>(snapshotmanagerClass.c_str(), "snapshot manager");
+    setSnapshotManager(snapshotManager);
 
     getSimulation()->configure(cfg, opt->parsim);
 
     // init nextUniqueNumber -- startRun() is too late because simple module ctors have run by then
-    nextUniqueNumber = 0;
-    uniqueNumbersEnd = 0; // when wraps
+    setUniqueNumberRange(0, 0); // =until it wraps
 #ifdef WITH_PARSIM
     if (opt->parsim) {
         uint64_t myRank = parsimComm->getProcId();
         uint64_t range = UINT64_MAX / parsimComm->getNumPartitions();
-        nextUniqueNumber = myRank * range;
-        uniqueNumbersEnd = (myRank+1) * range;
+        setUniqueNumberRange(myRank * range, (myRank+1) * range);
     }
 #endif
 

@@ -159,10 +159,16 @@ class ENVIR_API EnvirBase : public cEnvir
     cSimulation *getSimulation() const {return simulation;}
     virtual cConfiguration *getConfig() override;
     virtual cConfigurationEx *getConfigEx() override;
+
     cIEventlogManager *getEventlogManager() const {return eventlogManager;}
+    void setEventlogManager(cIEventlogManager *obj);
     cIOutputVectorManager *getOutVectorManager() const {return outVectorManager;}
+    void setOutVectorManager(cIOutputVectorManager *obj);
     cIOutputScalarManager *getOutScalarManager() const {return outScalarManager;}
+    void setOutScalarManager(cIOutputScalarManager *obj);
     cISnapshotManager *getSnapshotManager() const {return snapshotManager;}
+    void setSnapshotManager(cISnapshotManager *obj);
+
     XMLDocCache *getXMLDocCache() const {return xmlCache;}
 #ifdef WITH_PARSIM
     cParsimCommunications *getParsimCommunications() const {return parsimComm;}
@@ -197,6 +203,7 @@ class ENVIR_API EnvirBase : public cEnvir
     void setPrintUndisposed(bool printUndisposed) {opt->printUndisposed = printUndisposed;}
     bool isVerbose() const {return opt->verbose;}
     void setVerbose(bool verbose) {opt->verbose = verbose;}
+    void setUniqueNumberRange(uint64_t start, uint64_t end) {nextUniqueNumber = start; uniqueNumbersEnd = end;}
 
     void clearCurrentEventInfo();
 
