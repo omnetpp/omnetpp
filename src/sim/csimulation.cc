@@ -30,6 +30,10 @@
 #include "omnetpp/cpacket.h"
 #include "omnetpp/cchannel.h"
 #include "omnetpp/csimulation.h"
+#include "omnetpp/cconfiguration.h"
+#include "omnetpp/cconfigoption.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/regmacros.h"
 
 #include "ctemporaryowner.h"
 #include "omnetpp/cscheduler.h"
@@ -61,6 +65,20 @@ using namespace omnetpp::internal;
 namespace omnetpp {
 
 using std::ostream;
+
+#ifdef NDEBUG
+#define CHECKSIGNALS_DEFAULT        "false"
+#else
+#define CHECKSIGNALS_DEFAULT        "true"
+#endif
+
+Register_PerRunConfigOption(CFGID_FUTUREEVENTSET_CLASS, "futureeventset-class", CFG_STRING, "omnetpp::cEventHeap", "Part of the Envir plugin mechanism: selects the class for storing the future events in the simulation. The class has to implement the `cFutureEventSet` interface.");
+Register_PerRunConfigOption(CFGID_SCHEDULER_CLASS, "scheduler-class", CFG_STRING, "omnetpp::cSequentialScheduler", "Part of the Envir plugin mechanism: selects the scheduler class. This plugin interface allows for implementing real-time, hardware-in-the-loop, distributed and distributed parallel simulation. The class has to implement the `cScheduler` interface.");
+Register_PerRunConfigOption(CFGID_FINGERPRINT, "fingerprint", CFG_STRING, nullptr, "The expected fingerprints of the simulation. If you need multiple fingerprints, separate them with commas. When provided, the fingerprints will be calculated from the specified properties of simulation events, messages, and statistics during execution, and checked against the provided values. Fingerprints are suitable for crude regression tests. As fingerprints occasionally differ across platforms, more than one value can be specified for a single fingerprint, separated by spaces, and a match with any of them will be accepted. To obtain a fingerprint, enter a dummy value (such as `0000`), and run the simulation.");
+Register_PerRunConfigOption(CFGID_FINGERPRINTER_CLASS, "fingerprintcalculator-class", CFG_STRING, "omnetpp::cSingleFingerprintCalculator", "Part of the Envir plugin mechanism: selects the fingerprint calculator class to be used to calculate the simulation fingerprint. The class has to implement the `cFingerprintCalculator` interface.");
+Register_PerRunConfigOption(CFGID_CHECK_SIGNALS, "check-signals", CFG_BOOL, CHECKSIGNALS_DEFAULT, "Controls whether the simulation kernel will validate signals emitted by modules and channels against signal declarations (`@signal` properties) in NED files. The default setting depends on the build type: `true` in DEBUG, and `false` in RELEASE mode.");
+Register_PerRunConfigOption(CFGID_PARAMETER_MUTABILITY_CHECK, "parameter-mutability-check", CFG_BOOL, "true", "Setting to false will disable errors raised when trying to change the values of module/channel parameters not marked as @mutable. This is primarily a compatibility setting intended to facilitate running simulation models that were not yet annotated with @mutable.");
+
 
 #ifdef DEVELOPER_DEBUG
 #include <set>
@@ -151,6 +169,42 @@ void cSimulation::forEachChild(cVisitor *v)
 std::string cSimulation::getFullPath() const
 {
     return getFullName();
+}
+
+void cSimulation::configure(cConfiguration *cfg, bool isParsim)
+{
+    // install FES
+    std::string futureeventsetClass = cfg->getAsString(CFGID_FUTUREEVENTSET_CLASS);
+    cFutureEventSet *fes = createByClassName<cFutureEventSet>(futureeventsetClass.c_str(), "FES");
+    setFES(fes);
+
+    // install scheduler
+    if (!isParsim) {
+        std::string schedulerClass = cfg->getAsString(CFGID_SCHEDULER_CLASS);
+        cScheduler *scheduler = createByClassName<cScheduler>(schedulerClass.c_str(), "event scheduler");
+        setScheduler(scheduler);
+    }
+
+    // install fingerprint calculator object
+    cFingerprintCalculator *fingerprint = nullptr;
+    std::string expectedFingerprints = cfg->getAsString(CFGID_FINGERPRINT);
+    if (!expectedFingerprints.empty()) {
+        // create calculator
+        std::string fingerprintClass = cfg->getAsString(CFGID_FINGERPRINTER_CLASS);
+        fingerprint = createByClassName<cFingerprintCalculator>(fingerprintClass.c_str(), "fingerprint calculator");
+        if (expectedFingerprints.find(',') != expectedFingerprints.npos)
+            fingerprint = new cMultiFingerprintCalculator(fingerprint);
+        fingerprint->initialize(expectedFingerprints.c_str(), cfg);
+    }
+    setFingerprintCalculator(fingerprint);
+
+    bool checkSignals = cfg->getAsBool(CFGID_CHECK_SIGNALS);
+    cComponent::setCheckSignals(checkSignals);
+
+    bool checkParamMutability = cfg->getAsBool(CFGID_PARAMETER_MUTABILITY_CHECK);
+    getSimulation()->setParameterMutabilityCheck(checkParamMutability);
+
+    getRngManager()->configure(cfg);
 }
 
 class cSnapshotWriterVisitor : public cVisitor

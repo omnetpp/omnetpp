@@ -265,6 +265,8 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      */
     //@{
 
+    //TODO tons of these methods should be virtual!!!
+
     /**
      * Load all NED files from a NED source folder. This involves visiting
      * each subdirectory, and loading all "*.ned" files from there.
@@ -317,6 +319,11 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
 
     /** @name Setting up and finishing a simulation run. */
     //@{
+
+    /**
+     * TODO
+     */
+    void configure(cConfiguration *cfg, bool isParsim);
 
     /**
      * Installs a scheduler object. This method may only be called before or

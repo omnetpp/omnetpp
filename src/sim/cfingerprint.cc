@@ -423,4 +423,12 @@ std::string cMultiFingerprintCalculator::str() const
     return stream.str().substr(2);
 }
 
+std::string cMultiFingerprintCalculator::getExpected() const
+{
+    std::stringstream stream;
+    for (auto element: elements)
+        stream << ", " << element->getExpected();
+    return stream.str().substr(2);
+}
+
 }  // namespace omnetpp

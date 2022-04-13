@@ -90,8 +90,6 @@ Register_PerRunConfigOptionU(CFGID_REAL_TIME_LIMIT, "real-time-limit", "s", null
 Register_PerRunConfigOptionU(CFGID_WARMUP_PERIOD, "warmup-period", "s", nullptr, "Length of the initial warm-up period. When set, results belonging to the first x seconds of the simulation will not be recorded into output vectors, and will not be counted into output scalars (see option `**.result-recording-modes`). This option is useful for steady-state simulations. The default is 0s (no warmup period). Note that models that compute and record scalar results manually (via `recordScalar()`) will not automatically obey this setting.");
 Register_PerRunConfigOption(CFGID_DEBUG_STATISTICS_RECORDING, "debug-statistics-recording", CFG_BOOL, "false", "Turns on the printing of debugging information related to statistics recording (`@statistic` properties)");
 
-extern cConfigOption *CFGID_FINGERPRINT;
-
 #define STRINGIZE0(x)    #x
 #define STRINGIZE(x)     STRINGIZE0(x)
 
@@ -905,7 +903,7 @@ void AppBase::checkFingerprint()
         printfmsg("Fingerprint successfully verified: %s", fingerprint->str().c_str());
     else
         printfmsg("Fingerprint mismatch! calculated: %s, expected: %s",
-                fingerprint->str().c_str(), cfg->getAsString(CFGID_FINGERPRINT).c_str());
+                fingerprint->str().c_str(), fingerprint->getExpected().c_str());
 }
 
 cModuleType *AppBase::resolveNetwork(const char *networkname)

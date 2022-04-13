@@ -68,6 +68,11 @@ class SIM_API cFingerprintCalculator : public cObject, noncopyable
     //@}
 
     /**
+     * Return the expected fingerprint in string form.
+     */
+    virtual std::string getExpected() const = 0;
+
+    /**
      * Compare computed fingerprint with the expected one, and throw
      * error if it doesn't match.
      */
@@ -196,7 +201,7 @@ class SIM_API cSingleFingerprintCalculator : public cFingerprintCalculator
     virtual void addExtraData(const char *data) override { if (addExtraData_) hasher_.add(data); }
 
     virtual bool checkFingerprint() const override;
-
+    virtual std::string getExpected() const override {return expectedFingerprints;}
 };
 
 
@@ -243,6 +248,7 @@ class SIM_API cMultiFingerprintCalculator : public cFingerprintCalculator
     virtual void addExtraData(const char *data) override { for (auto element: elements) element->addExtraData(data); }
 
     virtual bool checkFingerprint() const override;
+    virtual std::string getExpected() const override;
 };
 
 }  // namespace omnetpp
