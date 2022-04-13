@@ -204,6 +204,39 @@ void EnvirBase::setupAndReadOptions(cConfigurationEx *cfg, ArgList *args)
     }
 }
 
+std::string EnvirBase::extractNedPath(cConfiguration *cfg, ArgList *args)
+{
+    // NED path. It is taken from the "-n" command-line options, the OMNETPP_NED_PATH
+    // environment variable, and the "ned-path=" config option. If the result is still
+    // empty, we fall back to "." -- this is needed for single-directory models to work.
+    std::string nedPath = opp_join(args->optionValues('n'), ";", true);
+    nedPath = opp_join(";", nedPath, getConfig()->getAsPath(CFGID_NED_PATH));
+    nedPath = opp_join(";", nedPath, opp_nulltoempty(getenv("OMNETPP_NED_PATH")));
+    nedPath = opp_join(";", nedPath, opp_nulltoempty(getenv("NEDPATH")));
+    if (nedPath.empty())
+        nedPath = ".";
+    return nedPath;
+}
+
+std::string EnvirBase::extractNedExcludedPackages(cConfiguration *cfg, ArgList *args)
+{
+    std::string nedExcludedPackages = opp_join(args->optionValues('x'), ";", true);
+    nedExcludedPackages = opp_join(";", nedExcludedPackages, opp_nulltoempty(getConfig()->getAsCustom(CFGID_NED_PACKAGE_EXCLUSIONS)));
+    nedExcludedPackages = opp_join(";", nedExcludedPackages, opp_nulltoempty(getenv("OMNETPP_NED_PACKAGE_EXCLUSIONS")));
+    return nedExcludedPackages;
+}
+
+std::string EnvirBase::extractImagePath(cConfiguration *cfg, ArgList *args)
+{
+    std::string imagePath;
+    for (std::string opt : args->optionValues('i'))
+        imagePath = opp_join(";", imagePath, opt);
+    imagePath = opp_join(";", imagePath, getConfig()->getAsPath(CFGID_IMAGE_PATH));
+    std::string builtinImagePath = opp_removestart(OMNETPP_IMAGE_PATH, "/;"); // strip away the /; sequence from the beginning (a workaround for MinGW path conversion). See #785
+    imagePath = opp_join(";", imagePath, opp_emptytodefault(getenv("OMNETPP_IMAGE_PATH"), builtinImagePath.c_str()));
+    return imagePath;
+}
+
 void EnvirBase::setEventlogManager(cIEventlogManager *obj)
 {
     delete eventlogManager;
@@ -653,32 +686,9 @@ void EnvirBase::readOptions()
 
     SimTime::configure(cfg);
 
-    // NED path. It is taken from the "-n" command-line options, the OMNETPP_NED_PATH
-    // environment variable, and the "ned-path=" config option. If the result is still
-    // empty, we fall back to "." -- this is needed for single-directory models to work.
-    std::string nedPath = opp_join(args->optionValues('n'), ";", true);
-    nedPath = opp_join(";", nedPath, getConfig()->getAsPath(CFGID_NED_PATH));
-    nedPath = opp_join(";", nedPath, opp_nulltoempty(getenv("OMNETPP_NED_PATH")));
-    nedPath = opp_join(";", nedPath, opp_nulltoempty(getenv("NEDPATH")));
-    if (nedPath.empty())
-        nedPath = ".";
-    opt->nedPath = nedPath;
-
-    // NED packages to exclude
-    std::string nedExcludedPackages = opp_join(args->optionValues('x'), ";", true);
-    nedExcludedPackages = opp_join(";", nedExcludedPackages, opp_nulltoempty(getConfig()->getAsCustom(CFGID_NED_PACKAGE_EXCLUSIONS)));
-    nedExcludedPackages = opp_join(";", nedExcludedPackages, opp_nulltoempty(getenv("OMNETPP_NED_PACKAGE_EXCLUSIONS")));
-    opt->nedExcludedPackages = nedExcludedPackages;
-
-    // Image path similarly to NED path, except that we have compile-time default as well,
-    // in the OMNETPP_IMAGE_PATH macro.
-    std::string imagePath;
-    for (std::string opt : args->optionValues('i'))
-        imagePath = opp_join(";", imagePath, opt);
-    imagePath = opp_join(";", imagePath, getConfig()->getAsPath(CFGID_IMAGE_PATH));
-    std::string builtinImagePath = opp_removestart(OMNETPP_IMAGE_PATH, "/;"); // strip away the /; sequence from the beginning (a workaround for MinGW path conversion). See #785
-    imagePath = opp_join(";", imagePath, opp_emptytodefault(getenv("OMNETPP_IMAGE_PATH"), builtinImagePath.c_str()));
-    opt->imagePath = imagePath;
+    setNedPath(extractNedPath(cfg, args).c_str());
+    setNedExcludedPackages(extractNedExcludedPackages(cfg, args).c_str());
+    setImagePath(extractImagePath(cfg, args).c_str());
 
     // other options are read on per-run basis
 }

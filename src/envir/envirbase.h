@@ -205,6 +205,10 @@ class ENVIR_API EnvirBase : public cEnvir
     void setVerbose(bool verbose) {opt->verbose = verbose;}
     void setUniqueNumberRange(uint64_t start, uint64_t end) {nextUniqueNumber = start; uniqueNumbersEnd = end;}
 
+    virtual std::string extractNedPath(cConfiguration *cfg, ArgList *args);
+    virtual std::string extractNedExcludedPackages(cConfiguration *cfg, ArgList *args);
+    virtual std::string extractImagePath(cConfiguration *cfg, ArgList *args);
+
     void clearCurrentEventInfo();
 
     // eventlog callback interface
