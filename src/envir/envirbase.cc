@@ -86,7 +86,6 @@ namespace envir {
 using std::ostream;
 
 
-Register_GlobalConfigOptionU(CFGID_TOTAL_STACK, "total-stack", "B", nullptr, "Specifies the maximum memory for `activity()` simple module stacks. You need to increase this value if you get a \"Cannot allocate coroutine stack\" error.");
 Register_GlobalConfigOption(CFGID_PARALLEL_SIMULATION, "parallel-simulation", CFG_BOOL, "false", "Enables parallel distributed simulation.");
 Register_GlobalConfigOption(CFGID_PARSIM_NUM_PARTITIONS, "parsim-num-partitions", CFG_INT, nullptr, "If `parallel-simulation=true`, it specifies the number of parallel processes being used. This value must be in agreement with the number of simulator instances launched, e.g. with the `-n` or `-np` command-line option specified to the `mpirun` program when using MPI.");
 Register_GlobalConfigOption(CFGID_PARSIM_PROCID, "parsim-procid", CFG_INT, nullptr, "If `parallel-simulation=true`, it specifies the ordinal of the current simulation process within the list parallel processes. The value must be in the range 0...n-1, where n is the number of partitions. This option is not required when using MPI communications, because MPI has its own way of conveying this information.");
@@ -161,14 +160,7 @@ void EnvirBase::setupAndReadOptions(cConfigurationEx *cfg, ArgList *args)
     // set opt->* variables from ini file(s)
     readOptions();
 
-    // initialize coroutine library ..TODO move to  cCoroutine!
-    size_t totalStack = (size_t)cfg->getAsDouble(CFGID_TOTAL_STACK, TOTAL_STACK_SIZE);
-    if (TOTAL_STACK_SIZE != 0 && totalStack <= MAIN_STACK_SIZE+4096) {
-        if (opt->verbose)
-            out << "Total stack size " << totalStack << " increased to " << MAIN_STACK_SIZE << endl;
-        totalStack = MAIN_STACK_SIZE+4096;
-    }
-    cCoroutine::init(totalStack, MAIN_STACK_SIZE);
+    cCoroutine::configure(cfg);
 
     // install XML document cache
     xmlCache = new XMLDocCache();

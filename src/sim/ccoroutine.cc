@@ -24,12 +24,41 @@
 #include <new>  // bad::alloc
 #include "omnetpp/ccoroutine.h"
 #include "omnetpp/cexception.h"
+#include "omnetpp/cconfiguration.h"
+#include "omnetpp/cconfigoption.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/regmacros.h"
 
 #ifdef USE_PORTABLE_COROUTINES
 #include "task.h"  // Stig Kofoed's "Portable Multitasking" coroutine library
 #endif
 
 namespace omnetpp {
+
+#ifdef USE_PORTABLE_COROUTINES  /* coroutine stacks reside in main stack area */
+# define TOTAL_STACK_SIZE    (2*1024*1024)
+# define MAIN_STACK_SIZE     (128*1024)
+#else /* nonportable coroutines, stacks are allocated on heap */
+# define TOTAL_STACK_SIZE    0  // dummy value
+# define MAIN_STACK_SIZE     0  // dummy value
+#endif
+
+
+Register_GlobalConfigOptionU(CFGID_TOTAL_STACK, "total-stack", "B", nullptr, "Specifies the maximum memory for `activity()` simple module stacks. You need to increase this value if you get a \"Cannot allocate coroutine stack\" error.");
+
+
+void cCoroutine::configure(cConfiguration *cfg)
+{
+    size_t totalStack = (size_t)cfg->getAsDouble(CFGID_TOTAL_STACK, TOTAL_STACK_SIZE);
+    if (TOTAL_STACK_SIZE != 0 && totalStack <= MAIN_STACK_SIZE+4096) {
+        //TODO:
+        //if (opt->verbose)
+        //    out << "Total stack size " << totalStack << " increased to " << MAIN_STACK_SIZE << endl;
+        totalStack = MAIN_STACK_SIZE+4096;
+    }
+    init(totalStack, MAIN_STACK_SIZE);
+}
+
 
 #ifdef USE_WIN32_FIBERS
 

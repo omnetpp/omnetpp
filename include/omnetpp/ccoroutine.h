@@ -29,6 +29,8 @@
 
 namespace omnetpp {
 
+class cConfiguration;
+
 #ifdef USE_PORTABLE_COROUTINES
 struct _Task;
 #endif
@@ -87,6 +89,11 @@ class SIM_API cCoroutine
   public:
     /** @name Coroutine control */
     //@{
+
+    /**
+     * TODO
+     */
+    static void configure(cConfiguration *cfg);
 
     /**
      * Initializes the coroutine library. This function has to be called

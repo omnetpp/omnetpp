@@ -24,15 +24,6 @@
 namespace omnetpp {
 namespace envir {
 
-#ifdef USE_PORTABLE_COROUTINES  /* coroutine stacks reside in main stack area */
-# define TOTAL_STACK_SIZE    (2*1024*1024)
-# define MAIN_STACK_SIZE     (128*1024)
-#else /* nonportable coroutines, stacks are allocated on heap */
-# define TOTAL_STACK_SIZE    0  // dummy value
-# define MAIN_STACK_SIZE     0  // dummy value
-#endif
-
-
 struct AppBaseOptions
 {
     // note: these values will be overwritten in setup()/readOptions() before taking effect
