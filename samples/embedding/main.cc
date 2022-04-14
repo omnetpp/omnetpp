@@ -43,6 +43,7 @@ class EmptyConfig : public cConfiguration
     virtual const KeyValue& getParameterEntry(const char *moduleFullPath, const char *paramName, bool hasDefaultValue) const override {return nullKeyValue;}
     virtual std::vector<const char *> getKeyValuePairs(int flags=FILT_ALL) const override {return {};}
     virtual std::vector<const char *> getMatchingPerObjectConfigKeySuffixes(const char *objectFullPath, const char *keySuffixPattern) const override {return {};}
+    virtual const char *getFileName() const override {return nullptr;}
 };
 
 /**

@@ -296,6 +296,12 @@ class SIM_API cConfiguration : public cObject
      * is stored inside the configuration object.
      */
     virtual const char *substituteVariables(const char *value) const = 0;
+
+    /**
+     * Returns the name of the configuration file. Returns nullptr if this object is
+     * not using a configuration file.
+     */
+    virtual const char *getFileName() const = 0;
     //@}
 
     /** @name Configuration variables */
@@ -388,12 +394,9 @@ class SIM_API cConfiguration : public cObject
 /**
  * @brief Represents a configuration suitable for use with the Envir library.
  *
- * This class extends cConfiguration with the following functionality:
- *   - Methods for reading module parameters; cEnvir's readParameter()
- *     method delegates to them by default.
- *   - Support for multiple configurations (enumeration, activation, etc.)
- *   - Parameter Study support: run numbers, iteration variables, unrolling, etc.
- *   - Other utility functions like dump()
+ * This class extends cConfiguration with support for multiple configurations
+ * (enumeration, activation, etc.), support for parameter studies (run numbers,
+ * iteration variables, unrolling, etc.), and utility functions like dump()
  *
  * @see cEnvir::getConfigEx()
  * @ingroup EnvirAndExtensions
@@ -410,12 +413,6 @@ class SIM_API cConfigurationEx : public cConfiguration
      * activateConfig() call.
      */
     virtual void initializeFrom(cConfiguration *bootConfig) = 0;
-
-    /**
-     * Returns the name of the configuration file. Returns nullptr if this object is
-     * not using a configuration file.
-     */
-    virtual const char *getFileName() const = 0;
 
     /**
      * Validates the configuration: reports obsolete config keys,
