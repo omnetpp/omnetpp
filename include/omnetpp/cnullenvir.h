@@ -92,8 +92,8 @@ class SIM_API cNullEnvir : public cEnvir
     virtual void log(cLogEntry *entry) override {}
 
     // configuration, model parameters
-    virtual void preconfigure(cComponent *component) override  {}
-    virtual void configure(cComponent *component) override {}
+    virtual void preconfigureComponent(cComponent *component) override  {}
+    virtual void configureComponent(cComponent *component) override {}
     virtual void readParameter(cPar *par) override  {unsupported();}
     virtual bool isModuleLocal(cModule *parentmod, const char *modname, int index) override  {return true;}
     virtual cXMLElement *getXMLDocument(const char *filename, const char *xpath=nullptr) override  {unsupported(); return nullptr;}

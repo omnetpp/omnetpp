@@ -239,8 +239,8 @@ class ENVIR_API EnvirBase : public cEnvir
     virtual cModule *getCurrentEventModule() override { return currentModuleId != -1 ? getSimulation()->getModule(currentModuleId) : nullptr; }
 
     // configuration, model parameters
-    virtual void preconfigure(cComponent *component) override;
-    virtual void configure(cComponent *component) override;
+    virtual void preconfigureComponent(cComponent *component) override;
+    virtual void configureComponent(cComponent *component) override;
     virtual void readParameter(cPar *parameter) override;
     virtual bool isModuleLocal(cModule *parentmod, const char *modname, int index) override;
     virtual cXMLElement *getXMLDocument(const char *filename, const char *xpath=nullptr) override;

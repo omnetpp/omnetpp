@@ -296,7 +296,7 @@ class SIM_API cEnvir
      * It allows the environment perform extra configuration. One use is
      * to set up RNG mapping.
      */
-    virtual void preconfigure(cComponent *component) = 0;
+    virtual void preconfigureComponent(cComponent *component) = 0;
 
     /**
      * Called when a module or channel has been created and installed in the
@@ -304,7 +304,7 @@ class SIM_API cEnvir
      * and internal connections are added. This method lets the environment
      * perform extra configuration.
      */
-    virtual void configure(cComponent *component) = 0;
+    virtual void configureComponent(cComponent *component) = 0;
 
     /**
      * Assigns the module or channel parameter from the configuration, or

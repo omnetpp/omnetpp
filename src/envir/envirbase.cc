@@ -266,14 +266,14 @@ void EnvirBase::setSnapshotManager(cISnapshotManager *obj)
     addLifecycleListener(snapshotManager);
 }
 
-void EnvirBase::preconfigure(cComponent *component)
+void EnvirBase::preconfigureComponent(cComponent *component)
 {
-    app->preconfigure(component);
+    app->preconfigureComponent(component);
 }
 
-void EnvirBase::configure(cComponent *component)
+void EnvirBase::configureComponent(cComponent *component)
 {
-    app->configure(component);
+    app->configureComponent(component);
 }
 
 void EnvirBase::addResultRecorders(cComponent *component, simsignal_t signal, const char *statisticName, cProperty *statisticTemplateProperty)

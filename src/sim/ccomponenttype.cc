@@ -328,7 +328,7 @@ cModule *cModuleType::create(const char *moduleName, cModule *parentModule, int 
     getSimulation()->registerComponent(module);
 
     // set up RNG mapping, etc.
-    getEnvir()->preconfigure(module);
+    getEnvir()->preconfigureComponent(module);
     getSimulation()->getRngManager()->configureRNGs(module);
 
     // should be called before any gateCreated calls on this module
@@ -343,7 +343,7 @@ cModule *cModuleType::create(const char *moduleName, cModule *parentModule, int 
         module->getCanvas()->addFiguresFrom(module->getProperties());
 
     // let envir perform additional configuration
-    getEnvir()->configure(module);
+    getEnvir()->configureComponent(module);
 
     // notify post-change listeners
     if (module->hasListeners(POST_MODEL_CHANGE)) {
@@ -448,14 +448,14 @@ cChannel *cChannelType::create(const char *name)
     getSimulation()->registerComponent(channel);
 
     // set up RNG mapping, etc.
-    getEnvir()->preconfigure(channel);
+    getEnvir()->preconfigureComponent(channel);
     getSimulation()->getRngManager()->configureRNGs(channel);
 
     // add parameters to the new module
     addParametersTo(channel);
 
     // let envir perform additional configuration
-    getEnvir()->configure(channel);
+    getEnvir()->configureComponent(channel);
 
     return channel;
 }

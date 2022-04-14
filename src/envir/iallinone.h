@@ -83,8 +83,8 @@ class ENVIR_API IAllInOne
     virtual void displayStringChanged(cComponent *component) {}
     virtual void undisposedObject(cObject *obj) {}
 
-    virtual void preconfigure(cComponent *component) {}
-    virtual void configure(cComponent *component) {}
+    virtual void preconfigureComponent(cComponent *component) {}
+    virtual void configureComponent(cComponent *component) {}
 
     virtual unsigned getExtraStackForEnvir() const = 0;
 

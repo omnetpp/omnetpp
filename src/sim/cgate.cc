@@ -303,7 +303,7 @@ cChannel *cGate::connectTo(cGate *g, cChannel *chan, bool leaveUninitialized)
 
     // notify envir
     if (chan) {
-        getEnvir()->configure(chan);
+        getEnvir()->configureComponent(chan);
         chan->addResultRecorders();
     }
     EVCB.connectionCreated(this);

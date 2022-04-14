@@ -573,9 +573,9 @@ void Cmdenv::deinstallSignalHandler()
 
 //-----------------------------------------------------
 
-void Cmdenv::configure(cComponent *component)
+void Cmdenv::configureComponent(cComponent *component)
 {
-    AppBase::configure(component);
+    AppBase::configureComponent(component);
 
     LogLevel level = cLog::resolveLogLevel(getConfig()->getAsString(component->getFullPath().c_str(), CFGID_CMDENV_LOGLEVEL).c_str());
     component->setLogLevel(level);
