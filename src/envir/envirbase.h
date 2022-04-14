@@ -89,7 +89,7 @@ class ENVIR_API EnvirBase : public cEnvir
   protected:
     cSimulation *simulation;
 
-    cConfigurationEx *cfg;
+    cConfiguration *cfg;
     ArgList *args;  //TODO remove
 
     XMLDocCache *xmlCache;
@@ -148,7 +148,7 @@ class ENVIR_API EnvirBase : public cEnvir
   public:
     EnvirBase(IAllInOne *app);
     virtual ~EnvirBase();
-    virtual void setupAndReadOptions(cConfigurationEx *cfg, ArgList *args);
+    virtual void setupAndReadOptions(cConfiguration *cfg, ArgList *args);
 
     // getters
     IAllInOne *getApp() {return app;}

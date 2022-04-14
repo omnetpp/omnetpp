@@ -145,7 +145,7 @@ EnvirBase::~EnvirBase()
 #endif
 }
 
-void EnvirBase::setupAndReadOptions(cConfigurationEx *cfg, ArgList *args)
+void EnvirBase::setupAndReadOptions(cConfiguration *cfg, ArgList *args)
 {
     this->cfg = cfg;
     this->args = args;
@@ -287,7 +287,7 @@ void EnvirBase::readParameter(cPar *par)
 
     // get it from the ini file
     std::string moduleFullPath = par->getOwner()->getFullPath();
-    const cConfiguration::KeyValue& entry = getConfigEx()->getParameterEntry(moduleFullPath.c_str(), par->getName(), par->containsValue());
+    const cConfiguration::KeyValue& entry = getConfig()->getParameterEntry(moduleFullPath.c_str(), par->getName(), par->containsValue());
     const char *str = entry.getValue();
 
     if (opp_strcmp(str, "default") == 0) {
@@ -431,7 +431,7 @@ cConfiguration *EnvirBase::getConfig()
 
 cConfigurationEx *EnvirBase::getConfigEx()
 {
-    return cfg;
+    return dynamic_cast<cConfigurationEx *>(getConfig());
 }
 
 std::string EnvirBase::resolveResourcePath(const char *fileName, cComponentType *context)
