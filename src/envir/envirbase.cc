@@ -154,8 +154,20 @@ void EnvirBase::setupAndReadOptions(cConfigurationEx *cfg, ArgList *args)
     // ensure correct numeric format in output files
     setPosixLocale();
 
-    // set * variables from ini file(s)
-    readOptions();
+    parsim = cfg->getAsBool(CFGID_PARALLEL_SIMULATION);
+
+#ifndef WITH_PARSIM
+    if (parsim)
+        throw cRuntimeError("Parallel simulation is turned on in the ini file, but OMNeT++ was compiled without parallel simulation support (WITH_PARSIM=no)");
+#endif
+
+    attachDebuggerOnErrors = cfg->getAsBool(CFGID_DEBUGGER_ATTACH_ON_ERROR);
+
+    SimTime::configure(cfg);
+
+    setNedPath(extractNedPath(cfg, args).c_str());
+    setNedExcludedPackages(extractNedExcludedPackages(cfg, args).c_str());
+    setImagePath(extractImagePath(cfg, args).c_str());
 
     cCoroutine::configure(cfg);
 
@@ -666,28 +678,6 @@ void EnvirBase::undisposedObject(cObject *obj)
     if (printUndisposed)
         out << "undisposed object: (" << obj->getClassName() << ") " << obj->getFullPath() << " -- check module destructor" << endl;
     app->undisposedObject(obj);
-}
-
-void EnvirBase::readOptions()
-{
-    cConfiguration *cfg = getConfig();
-
-    parsim = cfg->getAsBool(CFGID_PARALLEL_SIMULATION);
-
-#ifndef WITH_PARSIM
-    if (parsim)
-        throw cRuntimeError("Parallel simulation is turned on in the ini file, but OMNeT++ was compiled without parallel simulation support (WITH_PARSIM=no)");
-#endif
-
-    attachDebuggerOnErrors = cfg->getAsBool(CFGID_DEBUGGER_ATTACH_ON_ERROR);
-
-    SimTime::configure(cfg);
-
-    setNedPath(extractNedPath(cfg, args).c_str());
-    setNedExcludedPackages(extractNedExcludedPackages(cfg, args).c_str());
-    setImagePath(extractImagePath(cfg, args).c_str());
-
-    // other options are read on per-run basis
 }
 
 void EnvirBase::readPerRunOptions()

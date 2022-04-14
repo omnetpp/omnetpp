@@ -287,7 +287,6 @@ class ENVIR_API EnvirBase : public cEnvir
     virtual bool shouldDebugNow(cRuntimeError *error = nullptr) override;
     //@}
 
-    virtual void readOptions();
     virtual void readPerRunOptions();
 
   protected:
