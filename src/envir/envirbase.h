@@ -90,7 +90,6 @@ class ENVIR_API EnvirBase : public cEnvir
     cSimulation *simulation;
 
     cConfiguration *cfg;
-    ArgList *args;  //TODO remove
 
     XMLDocCache *xmlCache;
 
@@ -148,7 +147,8 @@ class ENVIR_API EnvirBase : public cEnvir
   public:
     EnvirBase(IAllInOne *app);
     virtual ~EnvirBase();
-    virtual void setupAndReadOptions(cConfiguration *cfg, ArgList *args);
+    virtual void initialize(cConfiguration *cfg, ArgList *args);
+    virtual void configure(cConfiguration *cfg);
 
     // getters
     IAllInOne *getApp() {return app;}
@@ -286,8 +286,6 @@ class ENVIR_API EnvirBase : public cEnvir
     virtual bool ensureDebugger(cRuntimeError *error = nullptr) override;
     virtual bool shouldDebugNow(cRuntimeError *error = nullptr) override;
     //@}
-
-    virtual void readPerRunOptions();
 
   protected:
     // Called internally from readParameter(), to interactively prompt the

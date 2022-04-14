@@ -145,10 +145,9 @@ EnvirBase::~EnvirBase()
 #endif
 }
 
-void EnvirBase::setupAndReadOptions(cConfiguration *cfg, ArgList *args)
+void EnvirBase::initialize(cConfiguration *cfg, ArgList *args)
 {
     this->cfg = cfg;
-    this->args = args;
     this->simulation = cSimulation::getActiveSimulation(); //TODO pass in explicitly)
 
     // ensure correct numeric format in output files
@@ -200,6 +199,50 @@ void EnvirBase::setupAndReadOptions(cConfiguration *cfg, ArgList *args)
 #endif
     }
 }
+
+void EnvirBase::configure(cConfiguration *cfg)
+{
+    this->cfg = cfg;
+
+    // get options from ini file
+    debugOnErrors = cfg->getAsBool(CFGID_DEBUG_ON_ERRORS);  // note: handling overridden in Qtenv::readPerRunOptions() due to interference with GUI
+    printUndisposed = cfg->getAsBool(CFGID_PRINT_UNDISPOSED);
+
+    // install eventlog manager
+    std::string eventlogManagerClass = cfg->getAsString(CFGID_EVENTLOGMANAGER_CLASS);
+    cIEventlogManager *eventlogManager = createByClassName<cIEventlogManager>(eventlogManagerClass.c_str(), "eventlog manager");
+    setEventlogManager(eventlogManager);
+
+    // install output vector manager
+    std::string outputVectorManagerClass = cfg->getAsString(CFGID_OUTPUTVECTORMANAGER_CLASS);
+    cIOutputVectorManager *outVectorManager = createByClassName<cIOutputVectorManager>(outputVectorManagerClass.c_str(), "output vector manager");
+    setOutVectorManager(outVectorManager);
+
+    // install output scalar manager
+    std::string outputScalarManagerClass = cfg->getAsString(CFGID_OUTPUTSCALARMANAGER_CLASS);
+    cIOutputScalarManager *outScalarManager = createByClassName<cIOutputScalarManager>(outputScalarManagerClass.c_str(), "output scalar manager");
+    setOutScalarManager(outScalarManager);
+
+    // install snapshot manager
+    std::string snapshotmanagerClass = cfg->getAsString(CFGID_SNAPSHOTMANAGER_CLASS);
+    cISnapshotManager *snapshotManager = createByClassName<cISnapshotManager>(snapshotmanagerClass.c_str(), "snapshot manager");
+    setSnapshotManager(snapshotManager);
+
+    getSimulation()->configure(cfg, parsim);
+
+    // init nextUniqueNumber -- startRun() is too late because simple module ctors have run by then
+    setUniqueNumberRange(0, 0); // =until it wraps
+#ifdef WITH_PARSIM
+    if (parsim) {
+        uint64_t myRank = parsimComm->getProcId();
+        uint64_t range = UINT64_MAX / parsimComm->getNumPartitions();
+        setUniqueNumberRange(myRank * range, (myRank+1) * range);
+    }
+#endif
+
+    recordEventlog = cfg->getAsBool(CFGID_RECORD_EVENTLOG);
+}
+
 
 std::string EnvirBase::extractNedPath(cConfiguration *cfg, ArgList *args)
 {
@@ -666,49 +709,6 @@ void EnvirBase::undisposedObject(cObject *obj)
     if (printUndisposed)
         out << "undisposed object: (" << obj->getClassName() << ") " << obj->getFullPath() << " -- check module destructor" << endl;
     app->undisposedObject(obj);
-}
-
-void EnvirBase::readPerRunOptions()
-{
-    cConfiguration *cfg = getConfig();
-
-    // get options from ini file
-    debugOnErrors = cfg->getAsBool(CFGID_DEBUG_ON_ERRORS);  // note: handling overridden in Qtenv::readPerRunOptions() due to interference with GUI
-    printUndisposed = cfg->getAsBool(CFGID_PRINT_UNDISPOSED);
-
-    // install eventlog manager
-    std::string eventlogManagerClass = cfg->getAsString(CFGID_EVENTLOGMANAGER_CLASS);
-    cIEventlogManager *eventlogManager = createByClassName<cIEventlogManager>(eventlogManagerClass.c_str(), "eventlog manager");
-    setEventlogManager(eventlogManager);
-
-    // install output vector manager
-    std::string outputVectorManagerClass = cfg->getAsString(CFGID_OUTPUTVECTORMANAGER_CLASS);
-    cIOutputVectorManager *outVectorManager = createByClassName<cIOutputVectorManager>(outputVectorManagerClass.c_str(), "output vector manager");
-    setOutVectorManager(outVectorManager);
-
-    // install output scalar manager
-    std::string outputScalarManagerClass = cfg->getAsString(CFGID_OUTPUTSCALARMANAGER_CLASS);
-    cIOutputScalarManager *outScalarManager = createByClassName<cIOutputScalarManager>(outputScalarManagerClass.c_str(), "output scalar manager");
-    setOutScalarManager(outScalarManager);
-
-    // install snapshot manager
-    std::string snapshotmanagerClass = cfg->getAsString(CFGID_SNAPSHOTMANAGER_CLASS);
-    cISnapshotManager *snapshotManager = createByClassName<cISnapshotManager>(snapshotmanagerClass.c_str(), "snapshot manager");
-    setSnapshotManager(snapshotManager);
-
-    getSimulation()->configure(cfg, parsim);
-
-    // init nextUniqueNumber -- startRun() is too late because simple module ctors have run by then
-    setUniqueNumberRange(0, 0); // =until it wraps
-#ifdef WITH_PARSIM
-    if (parsim) {
-        uint64_t myRank = parsimComm->getProcId();
-        uint64_t range = UINT64_MAX / parsimComm->getNumPartitions();
-        setUniqueNumberRange(myRank * range, (myRank+1) * range);
-    }
-#endif
-
-    recordEventlog = cfg->getAsBool(CFGID_RECORD_EVENTLOG);
 }
 
 void EnvirBase::setEventlogRecording(bool enabled)

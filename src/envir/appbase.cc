@@ -391,7 +391,7 @@ void AppBase::readOptions()
 
 void AppBase::readPerRunOptions()
 {
-    envir->readPerRunOptions();
+    envir->configure(cfg);
 
     opt->networkName = cfg->getAsString(CFGID_NETWORK);
 
@@ -412,7 +412,7 @@ void AppBase::readPerRunOptions()
 bool AppBase::setup()
 {
     try {
-        envir->setupAndReadOptions(cfg, args);
+        envir->initialize(cfg, args);
         readOptions();
 
         if (getAttachDebuggerOnErrors()) {
