@@ -108,7 +108,6 @@ Register_PerObjectConfigOption(CFGID_PARTITION_ID, "partition-id", KIND_MODULE, 
 
 EnvirBase::EnvirBase(IAllInOne *app) : out(std::cout.rdbuf()), app(app)
 {
-    opt = nullptr;
     cfg = nullptr;
     xmlCache = nullptr;
 
@@ -152,12 +151,10 @@ void EnvirBase::setupAndReadOptions(cConfigurationEx *cfg, ArgList *args)
     this->args = args;
     this->simulation = cSimulation::getActiveSimulation(); //TODO pass in explicitly)
 
-    this->opt = new EnvirOptions;
-
     // ensure correct numeric format in output files
     setPosixLocale();
 
-    // set opt->* variables from ini file(s)
+    // set * variables from ini file(s)
     readOptions();
 
     cCoroutine::configure(cfg);
@@ -166,7 +163,7 @@ void EnvirBase::setupAndReadOptions(cConfigurationEx *cfg, ArgList *args)
     xmlCache = new XMLDocCache();
 
     // parallel simulation
-    if (opt->parsim) {
+    if (parsim) {
 #ifdef WITH_PARSIM
         // parsim: create components
         std::string parsimcommClass = cfg->getAsString(CFGID_PARSIM_COMMUNICATIONS_CLASS);
@@ -193,7 +190,7 @@ void EnvirBase::setupAndReadOptions(cConfigurationEx *cfg, ArgList *args)
 
     // load NED files embedded into the simulation program as string literals
     if (!embeddedNedFiles.empty()) {
-        if (opt->verbose)
+        if (verbose)
             out << "Loading embedded NED files: " << embeddedNedFiles.size() << endl;
         for (const auto& file : embeddedNedFiles) {
             std::string nedText = file.nedText;
@@ -327,7 +324,7 @@ void EnvirBase::askParameter(cPar *par, bool unassigned)
 bool EnvirBase::isModuleLocal(cModule *parentmod, const char *modname, int index)
 {
 #ifdef WITH_PARSIM
-    if (!opt->parsim)
+    if (!parsim)
         return true;
 
     // toplevel module is local everywhere
@@ -462,14 +459,14 @@ std::string EnvirBase::resolveResourcePath(const char *fileName, cComponentType 
     }
 
     // search the NED path
-    for (std::string dir : opp_splitpath(opt->nedPath)) {
+    for (std::string dir : opp_splitpath(nedPath)) {
         std::string path = concatDirAndFile(dir.c_str(), fileName);
         if (fileExists(path.c_str()))
             return tidyFilename(path.c_str());
     }
 
     // search the image path
-    for (std::string dir : opp_splitpath(opt->imagePath)) {
+    for (std::string dir : opp_splitpath(imagePath)) {
         std::string path = concatDirAndFile(dir.c_str(), fileName);
         if (fileExists(path.c_str()))
             return tidyFilename(path.c_str());
@@ -666,7 +663,7 @@ void EnvirBase::log(cLogEntry *entry)
 
 void EnvirBase::undisposedObject(cObject *obj)
 {
-    if (opt->printUndisposed)
+    if (printUndisposed)
         out << "undisposed object: (" << obj->getClassName() << ") " << obj->getFullPath() << " -- check module destructor" << endl;
     app->undisposedObject(obj);
 }
@@ -675,10 +672,10 @@ void EnvirBase::readOptions()
 {
     cConfiguration *cfg = getConfig();
 
-    opt->parsim = cfg->getAsBool(CFGID_PARALLEL_SIMULATION);
+    parsim = cfg->getAsBool(CFGID_PARALLEL_SIMULATION);
 
 #ifndef WITH_PARSIM
-    if (opt->parsim)
+    if (parsim)
         throw cRuntimeError("Parallel simulation is turned on in the ini file, but OMNeT++ was compiled without parallel simulation support (WITH_PARSIM=no)");
 #endif
 
@@ -699,7 +696,7 @@ void EnvirBase::readPerRunOptions()
 
     // get options from ini file
     debugOnErrors = cfg->getAsBool(CFGID_DEBUG_ON_ERRORS);  // note: handling overridden in Qtenv::readPerRunOptions() due to interference with GUI
-    opt->printUndisposed = cfg->getAsBool(CFGID_PRINT_UNDISPOSED);
+    printUndisposed = cfg->getAsBool(CFGID_PRINT_UNDISPOSED);
 
     // install eventlog manager
     std::string eventlogManagerClass = cfg->getAsString(CFGID_EVENTLOGMANAGER_CLASS);
@@ -721,12 +718,12 @@ void EnvirBase::readPerRunOptions()
     cISnapshotManager *snapshotManager = createByClassName<cISnapshotManager>(snapshotmanagerClass.c_str(), "snapshot manager");
     setSnapshotManager(snapshotManager);
 
-    getSimulation()->configure(cfg, opt->parsim);
+    getSimulation()->configure(cfg, parsim);
 
     // init nextUniqueNumber -- startRun() is too late because simple module ctors have run by then
     setUniqueNumberRange(0, 0); // =until it wraps
 #ifdef WITH_PARSIM
-    if (opt->parsim) {
+    if (parsim) {
         uint64_t myRank = parsimComm->getProcId();
         uint64_t range = UINT64_MAX / parsimComm->getNumPartitions();
         setUniqueNumberRange(myRank * range, (myRank+1) * range);

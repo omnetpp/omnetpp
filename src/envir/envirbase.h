@@ -77,20 +77,6 @@ class SignalSource;
 #endif
 
 
-struct ENVIR_API EnvirOptions
-{
-    virtual ~EnvirOptions() {}
-
-    bool verbose = true; //TODO does this belong here?
-    bool parsim = false;
-    std::string imagePath;  // note: also used in resolveResourcePath()
-    std::string nedPath;  // note: also used in resolveResourcePath()
-    std::string nedExcludedPackages;  //TODO should be used in resolveResourcePath()
-
-    bool printUndisposed = true;
-};
-
-
 /**
  * Default implementation of cEnvir. It was designed to only contain code necessary
  * for implementing the cEnvir interface.
@@ -105,7 +91,6 @@ class ENVIR_API EnvirBase : public cEnvir
 
     cConfigurationEx *cfg;
     ArgList *args;  //TODO remove
-    EnvirOptions *opt;
 
     XMLDocCache *xmlCache;
 
@@ -123,6 +108,17 @@ class ENVIR_API EnvirBase : public cEnvir
     bool logFormatUsesEventClassName;
     const char *currentEventClassName;
     int currentModuleId;
+
+    // misc
+    bool verbose = true;
+    bool parsim = false;
+
+    // paths
+    std::string nedPath;
+    std::string nedExcludedPackages;
+    std::string imagePath;
+
+    bool printUndisposed = true;
 
     // Debugging. When set, cRuntimeError constructor executes a debug trap/launches debugger
     bool debugOnErrors = false;
@@ -191,18 +187,18 @@ class ENVIR_API EnvirBase : public cEnvir
 
     bool getCheckSignals() const {return cComponent::getCheckSignals();}
     void setCheckSignals(bool checkSignals) {cComponent::setCheckSignals(checkSignals);}
-    const char *getImagePath() const {return opt->imagePath.c_str();}
-    void setImagePath(const char *imagePath) {opt->imagePath = imagePath;}
-    const char *getNedExcludedPackages() const {return opt->nedExcludedPackages.c_str();}
-    void setNedExcludedPackages(const char *nedExcludedPackages) {opt->nedExcludedPackages = nedExcludedPackages;}
-    const char *getNedPath() const {return opt->nedPath.c_str();}
-    void setNedPath(const char *nedPath) {opt->nedPath = nedPath;}
-    bool isParsim() const {return opt->parsim;}
-    void setParsim(bool parsim) {opt->parsim = parsim;}
-    bool getPrintUndisposed() const {return opt->printUndisposed;}
-    void setPrintUndisposed(bool printUndisposed) {opt->printUndisposed = printUndisposed;}
-    bool isVerbose() const {return opt->verbose;}
-    void setVerbose(bool verbose) {opt->verbose = verbose;}
+    const char *getImagePath() const {return imagePath.c_str();}
+    void setImagePath(const char *imagePath) {this->imagePath = imagePath;}
+    const char *getNedExcludedPackages() const {return nedExcludedPackages.c_str();}
+    void setNedExcludedPackages(const char *nedExcludedPackages) {this->nedExcludedPackages = nedExcludedPackages;}
+    const char *getNedPath() const {return nedPath.c_str();}
+    void setNedPath(const char *nedPath) {this->nedPath = nedPath;}
+    bool isParsim() const {return parsim;}
+    void setParsim(bool parsim) {this->parsim = parsim;}
+    bool getPrintUndisposed() const {return printUndisposed;}
+    void setPrintUndisposed(bool printUndisposed) {this->printUndisposed = printUndisposed;}
+    bool isVerbose() const {return verbose;}
+    void setVerbose(bool verbose) {this->verbose = verbose;}
     void setUniqueNumberRange(uint64_t start, uint64_t end) {nextUniqueNumber = start; uniqueNumbersEnd = end;}
 
     virtual std::string extractNedPath(cConfiguration *cfg, ArgList *args);
