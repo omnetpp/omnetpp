@@ -199,18 +199,6 @@ void EnvirBase::setupAndReadOptions(cConfigurationEx *cfg, ArgList *args)
         throw cRuntimeError("Parallel simulation is turned on in the ini file, but OMNeT++ was compiled without parallel simulation support (WITH_PARSIM=no)");
 #endif
     }
-
-    // load NED files embedded into the simulation program as string literals
-    if (!embeddedNedFiles.empty()) {
-        if (verbose)
-            out << "Loading embedded NED files: " << embeddedNedFiles.size() << endl;
-        for (const auto& file : embeddedNedFiles) {
-            std::string nedText = file.nedText;
-            if (!file.garblephrase.empty())
-                nedText = opp_ungarble(file.nedText, file.garblephrase);
-            getSimulation()->loadNedText(file.fileName.c_str(), nedText.c_str());
-        }
-    }
 }
 
 std::string EnvirBase::extractNedPath(cConfiguration *cfg, ArgList *args)

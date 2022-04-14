@@ -43,11 +43,17 @@ cINedLoader::~cINedLoader()
 {
 }
 
+cNedLoader::cNedLoader()
+{
+    loadEmbeddedNedFiles();
+}
+
 cNedLoader::~cNedLoader()
 {
     for (auto it : cachedExpresssions)
         delete it.second;
 
+    // delete module/channel types created by us
     std::vector<cOwnedObject*> trash;
     for (cOwnedObject *obj : *componentTypes.getInstance())
         if (dynamic_cast<cDynamicModuleType*>(obj) && ((cDynamicModuleType*)obj)->getNedLoader() == this)
@@ -57,6 +63,17 @@ cNedLoader::~cNedLoader()
 
     for (cOwnedObject *obj : trash)
         delete componentTypes.getInstance()->remove(obj);
+}
+
+void cNedLoader::loadEmbeddedNedFiles()
+{
+    // TODO if (verbose) out << "Loading embedded NED files: " << embeddedNedFiles.size() << endl;
+    for (const auto& file : embeddedNedFiles) {
+        std::string nedText = file.nedText;
+        if (!file.garblephrase.empty())
+            nedText = opp_ungarble(file.nedText, file.garblephrase);
+        loadNedText(file.fileName.c_str(), nedText.c_str());
+    }
 }
 
 cNedDeclaration *cNedLoader::createTypeInfo(const char *qname, bool isInnerType, ASTNode *node)

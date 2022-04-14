@@ -59,7 +59,7 @@ class SIM_API cINedLoader : public cNoncopyableOwnedObject
      * Note: doneLoadingNedFiles() must be called after the last
      * loadNedSourceFolder()/loadNedFile()/loadNedText() call.
      */
-    virtual void loadNedFile(const char *nedfname, const char *expectedPackage, bool isXML) = 0;
+    virtual void loadNedFile(const char *nedfname, const char *expectedPackage=nullptr, bool isXML=false) = 0;
 
     /**
      * Parses and loads the NED source code passed in the nedtext argument.
@@ -71,7 +71,7 @@ class SIM_API cINedLoader : public cNoncopyableOwnedObject
      * Note: doneLoadingNedFiles() must be called after the last
      * loadNedSourceFolder()/loadNedFile()/loadNedText() call.
      */
-    virtual void loadNedText(const char *name, const char *nedtext, const char *expectedPackage, bool isXML) = 0;
+    virtual void loadNedText(const char *name, const char *nedtext, const char *expectedPackage=nullptr, bool isXML=false) = 0;
 
     /**
      * To be called after all NED folders / files have been loaded. May be
@@ -124,10 +124,11 @@ class SIM_API cNedLoader : public cINedLoader, public nedxml::NedResourceCache
 
     // reimplemented so that we can add cModuleType/cChannelType
     virtual void registerNedType(const char *qname, bool isInnerType, NedElement *node) override;
+    virtual void loadEmbeddedNedFiles();
 
   public:
     /** Constructor */
-    cNedLoader() = default;
+    cNedLoader();
 
     /** Destructor */
     virtual ~cNedLoader();
@@ -135,8 +136,8 @@ class SIM_API cNedLoader : public cINedLoader, public nedxml::NedResourceCache
     /** @name NED loading methods. */
     //@{
     virtual int loadNedSourceFolder(const char *foldername, const char *excludedPackages) override {return nedxml::NedResourceCache::loadNedSourceFolder(foldername,excludedPackages);}
-    virtual void loadNedFile(const char *nedfname, const char *expectedPackage, bool isXML) override {nedxml::NedResourceCache::loadNedFile(nedfname,expectedPackage,isXML);}
-    virtual void loadNedText(const char *name, const char *nedtext, const char *expectedPackage, bool isXML) override {nedxml::NedResourceCache::loadNedText(name,nedtext,expectedPackage,isXML);}
+    virtual void loadNedFile(const char *nedfname, const char *expectedPackage=nullptr, bool isXML=false) override {nedxml::NedResourceCache::loadNedFile(nedfname,expectedPackage,isXML);}
+    virtual void loadNedText(const char *name, const char *nedtext, const char *expectedPackage=nullptr, bool isXML=false) override {nedxml::NedResourceCache::loadNedText(name,nedtext,expectedPackage,isXML);}
     virtual void doneLoadingNedFiles() override {nedxml::NedResourceCache::doneLoadingNedFiles();}
     //@}
 
