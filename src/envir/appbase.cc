@@ -190,15 +190,16 @@ int AppBase::run(const std::vector<std::string>& args, cConfiguration *cfg)
 
 int AppBase::run(int argc, char *argv[], cConfiguration *configobject)
 {
+    cfg = dynamic_cast<cConfigurationEx *>(configobject);
+    if (!cfg)
+        throw cRuntimeError("Cannot cast configuration object %s to cConfigurationEx", configobject->getClassName());
+
     opt = createOptions();
     args = new ArgList();
     args->parse(argc, argv, ARGSPEC);
     opt->useStderr = !args->optionGiven('m');
     opt->verbose = !args->optionGiven('s');
-    cfg = dynamic_cast<cConfigurationEx *>(configobject);
-    debuggerSupport->setConfiguration(cfg);
-    if (!cfg)
-        throw cRuntimeError("Cannot cast configuration object %s to cConfigurationEx", configobject->getClassName());
+    debuggerSupport->configure(cfg);
 
     try {
         if (cfg->getAsBool(CFGID_DEBUGGER_ATTACH_ON_STARTUP) && debuggerSupport->detectDebugger() != DebuggerPresence::PRESENT)
@@ -412,7 +413,8 @@ void AppBase::readPerRunOptions()
 bool AppBase::setup()
 {
     try {
-        envir->initialize(cfg, args);
+        cSimulation *simulation = cSimulation::getActiveSimulation();
+        envir->initialize(simulation, cfg, args);
         readOptions();
 
         if (getAttachDebuggerOnErrors()) {

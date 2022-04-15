@@ -42,10 +42,9 @@ cRngManager::~cRngManager()
     delete[] rngs;
 }
 
-void cRngManager::configure(cConfiguration *cfg)  //TODO split to a do-one configure() and do the rest from PRE_NETWORK_SETUP lifecycle listener?
+void cRngManager::configure(cSimulation *simulation, cConfiguration *cfg, int parsimProcId, int parsimNumPartitions)
 {
     this->cfg = cfg;
-    cEnvir *envir = getEnvir(); //TODO eliminate -- pass in parsimProcId and ParsimNumPartitions directly?
 
     // run RNG self-test on RNG class selected for this run
     std::string rngClass = cfg->getAsString(CFGID_RNG_CLASS);
@@ -63,7 +62,7 @@ void cRngManager::configure(cConfiguration *cfg)  //TODO split to a do-one confi
     rngs = new cRNG *[numRNGs];
     for (int i = 0; i < numRNGs; i++) {
         rngs[i] = createByClassName<cRNG>(rngClass.c_str(), "random number generator");
-        rngs[i]->configure(seedset, i, numRNGs, envir->getParsimProcId(), envir->getParsimNumPartitions(), cfg);
+        rngs[i]->configure(seedset, i, numRNGs, parsimProcId, parsimNumPartitions, cfg);
     }
 }
 

@@ -131,10 +131,10 @@ EnvirBase::~EnvirBase()
 #endif
 }
 
-void EnvirBase::initialize(cConfiguration *cfg, ArgList *args)
+void EnvirBase::initialize(cSimulation *simulation, cConfiguration *cfg, ArgList *args)
 {
     this->cfg = cfg;
-    this->simulation = cSimulation::getActiveSimulation(); //TODO pass in explicitly)
+    this->simulation = simulation;
 
     // ensure correct numeric format in output files
     setPosixLocale();
@@ -198,6 +198,11 @@ void EnvirBase::configure(cConfiguration *cfg)
     cISnapshotManager *snapshotManager = createByClassName<cISnapshotManager>(snapshotmanagerClass.c_str(), "snapshot manager");
     setSnapshotManager(snapshotManager);
 
+    eventlogManager->configure(simulation, cfg);
+    outVectorManager->configure(simulation, cfg);
+    outScalarManager->configure(simulation, cfg);
+    snapshotManager->configure(simulation, cfg);
+
     getSimulation()->configure(cfg, parsim);
 
     // init nextUniqueNumber -- startRun() is too late because simple module ctors have run by then
@@ -251,32 +256,24 @@ void EnvirBase::setEventlogManager(cIEventlogManager *obj)
 {
     delete eventlogManager;
     eventlogManager = obj;
-    eventlogManager->configure(cfg);
-    getSimulation()->addLifecycleListener(eventlogManager);
 }
 
 void EnvirBase::setOutVectorManager(cIOutputVectorManager *obj)
 {
     delete outVectorManager;
     outVectorManager = obj;
-    outVectorManager->configure(cfg);
-    getSimulation()->addLifecycleListener(outVectorManager);
 }
 
 void EnvirBase::setOutScalarManager(cIOutputScalarManager *obj)
 {
     delete outScalarManager;
     outScalarManager = obj;
-    outScalarManager->configure(cfg);
-    getSimulation()->addLifecycleListener(outScalarManager);
 }
 
 void EnvirBase::setSnapshotManager(cISnapshotManager *obj)
 {
     delete snapshotManager;
     snapshotManager = obj;
-    snapshotManager->configure(cfg);
-    getSimulation()->addLifecycleListener(snapshotManager);
 }
 
 void EnvirBase::preconfigureComponent(cComponent *component)

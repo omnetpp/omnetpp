@@ -54,18 +54,25 @@ namespace envir {
 Register_GlobalConfigOption(CFGID_DEBUGGER_ATTACH_COMMAND, "debugger-attach-command", CFG_STRING, nullptr, "The command line to launch the debugger. It must contain exactly one percent sign, as `%u`, which will be replaced by the PID of this process. The command must not block (i.e. it should end in `&` on Unix-like systems). It will be executed by the default system shell (on Windows, usually cmd.exe). Default on this platform: `" DEFAULT_DEBUGGER_COMMAND "`. This default can be overridden with the `OMNETPP_DEBUGGER_COMMAND` environment variable.");
 Register_GlobalConfigOptionU(CFGID_DEBUGGER_ATTACH_WAIT_TIME, "debugger-attach-wait-time", "s", "20s", "An interval to wait after launching the external debugger, to give the debugger time to start up and attach to the simulation process.");
 
-std::string DebuggerSupport::makeDebuggerCommand()
+void DebuggerSupport::configure(cConfiguration *cfg)
 {
     const char *cmdDefault = opp_emptytodefault(getenv("OMNETPP_DEBUGGER_COMMAND"), DEFAULT_DEBUGGER_COMMAND);
     std::string cmd = cfg->getAsString(CFGID_DEBUGGER_ATTACH_COMMAND, cmdDefault);
-    cmd = opp_replacesubstring(cmd, "%u", std::to_string(getpid()), true);
-    return cmd;
+    setDebuggerCommand(cmd);
+
+    int waitTime = (int) (ceil(cfg->getAsDouble(CFGID_DEBUGGER_ATTACH_WAIT_TIME)));
+    setAttachWaitTime(waitTime);
+}
+
+std::string DebuggerSupport::substitutePid(const std::string& cmd)
+{
+    return opp_replacesubstring(cmd, "%u", std::to_string(getpid()), true);
 }
 
 void DebuggerSupport::attachDebugger()
 {
     // launch debugger
-    std::string cmd = makeDebuggerCommand();
+    std::string cmd = getDebuggerCommand();
     if (cmd == "")
         throw opp_runtime_error("No suitable debugger command");
 
@@ -80,13 +87,13 @@ void DebuggerSupport::attachDebugger()
                  "of non-child processes to be explicitly enabled." << endl;
 
     // hold for a while to allow debugger to start up and attach to us
-    int secondsToWait = (int)ceil(cfg->getAsDouble(CFGID_DEBUGGER_ATTACH_WAIT_TIME));
+    int waitTime = getAttachWaitTime();
     time_t startTime = time(nullptr);
-    while (time(nullptr)-startTime < secondsToWait && detectDebugger() != DebuggerPresence::PRESENT)
+    while (time(nullptr)-startTime < waitTime && detectDebugger() != DebuggerPresence::PRESENT)
         for (int i=0; i<100000000; i++); // DEBUGGER ATTACHED -- PLEASE CONTINUE EXECUTION TO REACH THE BREAKPOINT
 
     if (detectDebugger() == DebuggerPresence::NOT_PRESENT)
-        throw opp_runtime_error("Debugger did not attach in time.");
+        throw opp_runtime_error("Debugger did not attach in time");
 }
 
 DebuggerPresence DebuggerSupport::detectDebugger()

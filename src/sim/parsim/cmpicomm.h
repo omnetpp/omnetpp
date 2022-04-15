@@ -60,7 +60,7 @@ class SIM_API cMPICommunications : public cParsimCommunications
      * Initializes the library. Both numPartitions and procId may be -1 (=unspecified),
      * as they are also provided by MPI.
      */
-    virtual void configure(cConfiguration *cfg, int numPartitions=-1, int procId=-1) override;
+    virtual void configure(cSimulation *simulation, cConfiguration *cfg, int numPartitions=-1, int procId=-1) override;
 
     /**
      * Shutdown the communications library.

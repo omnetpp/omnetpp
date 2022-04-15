@@ -43,8 +43,9 @@ Register_PerRunConfigOption(CFGID_CMDENV_FAKEGUI_ON_HOLD_NUMSTEPS, "cmdenv-fake-
 Register_PerRunConfigOption(CFGID_CMDENV_FAKEGUI_ON_SIMTIME_PROBABILITY, "cmdenv-fake-gui-on-simtime-probability", CFG_DOUBLE, "0.1", "When `cmdenv-fake-gui=true`: The probability with which `refreshDisplay()` is called (possibly multiple times, see `cmdenv-fake-gui-on-simtime-numsteps`) when simulation time advances from one simulation event to the next.");
 Register_PerRunConfigOption(CFGID_CMDENV_FAKEGUI_ON_SIMTIME_NUMSTEPS, "cmdenv-fake-gui-on-simtime-numsteps", CFG_CUSTOM, "3", "When `cmdenv-fake-gui=true`: The number of times `refreshDisplay()` is called when simulation time advances from one simulation event to the next, provided a trial with `cmdenv-fake-gui-on-simtime-probability` yielded success. This an expression which will be evaluated each time, so it can be random. Zero is also a valid value.");
 
-void FakeGUI::readConfigOptions(cConfiguration *cfg)
+void FakeGUI::configure(cSimulation *sim, cConfiguration *cfg)
 {
+    simulation = sim;
     rng.setSeed(cfg->getAsInt(CFGID_CMDENV_FAKEGUI_SEED));
 
     beforeEventProbability = cfg->getAsDouble(CFGID_CMDENV_FAKEGUI_BEFORE_EVENT_PROBABILITY);

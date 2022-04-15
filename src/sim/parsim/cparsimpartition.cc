@@ -49,7 +49,6 @@ Register_PerObjectConfigOption(CFGID_PARTITION_ID, "partition-id", KIND_MODULE, 
 
 cParsimPartition::cParsimPartition()
 {
-    debug = getEnvir()->getConfig()->getAsBool(CFGID_PARSIM_DEBUG);
 }
 
 cParsimPartition::~cParsimPartition()
@@ -57,9 +56,11 @@ cParsimPartition::~cParsimPartition()
     shutdown(); //TODO this should probably be done earlier, when things are still up and running
 }
 
-void cParsimPartition::configure(cSimulation *simul, cConfiguration *cfg)
+void cParsimPartition::configure(cSimulation *simulation, cConfiguration *cfg)
 {
-    sim = simul;
+    sim = simulation;
+
+    debug = cfg->getAsBool(CFGID_PARSIM_DEBUG);
 
     std::string parsimcommClass = cfg->getAsString(CFGID_PARSIM_COMMUNICATIONS_CLASS);
     std::string parsimsynchClass = cfg->getAsString(CFGID_PARSIM_SYNCHRONIZATION_CLASS);
@@ -69,13 +70,13 @@ void cParsimPartition::configure(cSimulation *simul, cConfiguration *cfg)
     sim->addLifecycleListener(this);
 
     // wire them together (note: 'parsimSynchronizer' is also the scheduler for 'simulation')
-    synch->configure(simul, this, comm);
-    simul->setScheduler(synch);
+    sim->setScheduler(synch);
+    synch->configure(sim, cfg, this);
 
     // initialize them
     int parsimNumPartitions = cfg->getAsInt(CFGID_PARSIM_NUM_PARTITIONS, -1);
     int parsimProcId = cfg->getAsInt(CFGID_PARSIM_PROCID, -1);
-    comm->configure(cfg, parsimNumPartitions, parsimProcId);
+    comm->configure(sim, cfg, parsimNumPartitions, parsimProcId);
 }
 
 int cParsimPartition::getNumPartitions() const

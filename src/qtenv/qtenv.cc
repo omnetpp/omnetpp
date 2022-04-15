@@ -1849,7 +1849,7 @@ bool Qtenv::ensureDebugger(cRuntimeError *error)
     }
 
     if (!debuggerPresent) {
-        std::string debuggerCommand = debuggerSupport->makeDebuggerCommand();
+        std::string debuggerCommand = debuggerSupport->getDebuggerCommand();
         if (!debuggerCommand.empty())
             message += QString("\n\nLaunch a debugger with the following command?\n\n") + debuggerCommand.c_str();
     }

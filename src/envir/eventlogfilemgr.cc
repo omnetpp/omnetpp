@@ -151,8 +151,11 @@ void EventlogFileManager::clearInternalState()
     messageToEntryReferenceMap.clear();
 }
 
-void EventlogFileManager::readOptions()
+void EventlogFileManager::configure(cSimulation *simulation, cConfiguration *cfg)
 {
+    this->cfg = cfg;
+    simulation->addLifecycleListener(this);
+
     recordEventLog = cfg->getAsBool(CFGID_RECORD_EVENTLOG);
 
     // setup eventlog object printer
@@ -175,7 +178,7 @@ void EventlogFileManager::readOptions()
             else if (!strcmp(token, "methodcall")) isMethodCallRecordingEnabled = true;
             else if (!strcmp(token, "displaystring")) isDisplayStringRecordingEnabled = true;
             else if (!strcmp(token, "custom")) isCustomRecordingEnabled = true;
-            else throw opp_runtime_error("Unknown eventlog-options parameter value `%s", token);
+            else throw opp_runtime_error("Unknown eventlog-options parameter value '%s'", token);
         }
     }
 
@@ -201,7 +204,6 @@ void EventlogFileManager::lifecycleEvent(SimulationLifecycleEventType eventType,
 {
     switch (eventType) {
         case LF_PRE_NETWORK_SETUP:
-            readOptions();
             if (recordEventLog) {
                 ASSERT(!isOpen());
                 open();

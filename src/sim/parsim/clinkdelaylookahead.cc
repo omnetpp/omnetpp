@@ -36,11 +36,19 @@ cLinkDelayLookahead::~cLinkDelayLookahead()
     delete[] segInfo;
 }
 
+void cLinkDelayLookahead::configure(cSimulation *simulation, cConfiguration *cfg, cParsimPartition *partition)
+{
+    this->simulation = simulation;
+    this->partition = partition;
+}
+
 void cLinkDelayLookahead::startRun()
 {
     EV << "starting Link Delay Lookahead...\n";
 
     delete[] segInfo;
+
+    cParsimCommunications *comm = partition->getCommunications();
 
     numSeg = comm->getNumPartitions();
     segInfo = new PartitionInfo[numSeg];
@@ -52,8 +60,8 @@ void cLinkDelayLookahead::startRun()
 
     // fill in minDelays
     EV << "  calculating minimum link delays...\n";
-    for (int modId = 0; modId <= sim->getLastComponentId(); modId++) {
-        cPlaceholderModule *mod = dynamic_cast<cPlaceholderModule *>(sim->getModule(modId));
+    for (int modId = 0; modId <= simulation->getLastComponentId(); modId++) {
+        cPlaceholderModule *mod = dynamic_cast<cPlaceholderModule *>(simulation->getModule(modId));
         if (mod) {
             for (cModule::GateIterator it(mod); !it.end(); ++it) {
                 // if this is a properly connected proxygate, process it

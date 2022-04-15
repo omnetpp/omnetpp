@@ -75,7 +75,7 @@ inline std::string getListItem(const std::string& list, int index)
     return (index >= 0 && index < (int)items.size()) ? items[index] : "";
 }
 
-void cSingleFingerprintCalculator::initialize(const char *expectedFingerprints, cConfiguration *cfg, int index)
+void cSingleFingerprintCalculator::configure(cSimulation *simulation, cConfiguration *cfg, const char *expectedFingerprints, int index)
 {
     this->expectedFingerprints = expectedFingerprints;
     hasher_.reset();
@@ -364,7 +364,7 @@ cMultiFingerprintCalculator::~cMultiFingerprintCalculator()
         delete element;
 }
 
-void cMultiFingerprintCalculator::initialize(const char *expectedFingerprintsList, cConfiguration *cfg, int index)
+void cMultiFingerprintCalculator::configure(cSimulation *simulation, cConfiguration *cfg, const char *expectedFingerprintsList, int index)
 {
     if (index != -1)
         throw cRuntimeError("cMultiFingerprintCalculator objects cannot be nested");
@@ -372,7 +372,7 @@ void cMultiFingerprintCalculator::initialize(const char *expectedFingerprintsLis
     std::vector<std::string> expectedFingerprints = cStringTokenizer(expectedFingerprintsList, ",").asVector();
     for (int i = 0; i < (int)expectedFingerprints.size(); i++) {
         cFingerprintCalculator *fingerprint = static_cast<cFingerprintCalculator*>(prototype->dup());
-        fingerprint->initialize(expectedFingerprints[i].c_str(), cfg, i);
+        fingerprint->configure(simulation, cfg, expectedFingerprints[i].c_str(), i);
         elements.push_back(fingerprint);
     }
 }

@@ -54,6 +54,21 @@ Register_PerObjectConfigOption(CFGID_PARAM_RECORDING, "param-recording", KIND_PA
 
 Register_Class(OmnetppOutputScalarManager);
 
+void OmnetppOutputScalarManager::configure(cSimulation *simulation, cConfiguration *cfg)
+{
+    this->cfg = cfg;
+    ResultFileUtils::setConfiguration(cfg);
+    simulation->addLifecycleListener(this);
+
+    fname = cfg->getAsFilename(CFGID_OUTPUT_SCALAR_FILE);
+    fname = augmentFileName(fname);
+
+    shouldAppend = cfg->getAsBool(CFGID_OUTPUT_SCALAR_FILE_APPEND);
+
+    int prec = cfg->getAsInt(CFGID_OUTPUT_SCALAR_PRECISION);
+    writer.setPrecision(prec);
+}
+
 void OmnetppOutputScalarManager::startRun()
 {
     // prevent reuse of object for multiple runs
@@ -61,16 +76,8 @@ void OmnetppOutputScalarManager::startRun()
     state = STARTED;
 
     // delete file left over from previous runs
-    fname = cfg->getAsFilename(CFGID_OUTPUT_SCALAR_FILE);
-    fname = augmentFileName(fname);
-
-    bool shouldAppend = cfg->getAsBool(CFGID_OUTPUT_SCALAR_FILE_APPEND);
     if (!shouldAppend)
         removeFile(fname.c_str(), "old output scalar file");
-
-    // read configuration
-    int prec = cfg->getAsInt(CFGID_OUTPUT_SCALAR_PRECISION);
-    writer.setPrecision(prec);
 }
 
 void OmnetppOutputScalarManager::endRun()

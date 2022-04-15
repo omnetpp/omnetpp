@@ -48,8 +48,10 @@ cMPICommunications::~cMPICommunications()
     delete recycledBuffer;
 }
 
-void cMPICommunications::configure(cConfiguration *cfg, int np, int procId)
+void cMPICommunications::configure(cSimulation *simulation, cConfiguration *cfg, int np, int procId)
 {
+    // TODO MPI initialization probably shouldn't be in here, as we may be invoked before each run
+
     // note: MPI-2 (1997) allows passing NULL for both arguments of MPI_Init()
     MPI_Init(nullptr, nullptr);
 
@@ -67,7 +69,7 @@ void cMPICommunications::configure(cConfiguration *cfg, int np, int procId)
 
     // set up MPI send buffer (+16K prevents MPI_Buffer_attach() error if numPartitions==1)
     int defaultBufSize = MPI_SEND_BUFFER_PER_PARTITION * (numPartitions-1) + 16384;
-    int bufSize = getEnvir()->getConfig()->getAsInt(CFGID_PARSIM_MPICOMMUNICATIONS_MPIBUFFER);
+    int bufSize = cfg->getAsInt(CFGID_PARSIM_MPICOMMUNICATIONS_MPIBUFFER);
     if (bufSize <= 0)
         bufSize = defaultBufSize;
     char *buf = new char[bufSize];

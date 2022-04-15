@@ -33,9 +33,10 @@ std::string cScheduler::str() const
     return "(no scheduler info provided)";
 }
 
-void cScheduler::setSimulation(cSimulation *_sim)
+void cScheduler::configure(cSimulation *simulation, cConfiguration *cfg)
 {
-    sim = _sim;
+    sim = simulation;
+    sim->addLifecycleListener(this);
 }
 
 void cScheduler::lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details)
@@ -96,13 +97,18 @@ std::string cRealTimeScheduler::str() const
     }
 }
 
-void cRealTimeScheduler::startRun()
+void cRealTimeScheduler::configure(cSimulation *simulation, cConfiguration *cfg)
 {
+    cScheduler::configure(simulation, cfg);
+
     factor = getEnvir()->getConfig()->getAsDouble(CFGID_REALTIMESCHEDULER_SCALING);
     if (factor != 0)
         factor = 1 / factor;
     doScaling = (factor != 0);
+}
 
+void cRealTimeScheduler::startRun()
+{
     baseTime = opp_get_monotonic_clock_usecs();
 }
 

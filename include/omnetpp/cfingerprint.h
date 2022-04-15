@@ -42,7 +42,7 @@ class SIM_API cFingerprintCalculator : public cObject, noncopyable
     /**
      * Initialization.
      */
-    virtual void initialize(const char *expectedFingerprints, cConfiguration *cfg, int index=-1) = 0;
+    virtual void configure(cSimulation *simulation, cConfiguration *cfg, const char *expectedFingerprints, int index=-1) = 0;
 
     /** @name Updating the fingerprint value */
     //@{
@@ -178,7 +178,7 @@ class SIM_API cSingleFingerprintCalculator : public cFingerprintCalculator
 
     virtual cSingleFingerprintCalculator *dup() const override { return new cSingleFingerprintCalculator(); }
     virtual std::string str() const override;
-    virtual void initialize(const char *expectedFingerprints, cConfiguration *cfg, int index=-1) override;
+    virtual void configure(cSimulation *simulation, cConfiguration *cfg, const char *expectedFingerprints, int index=-1) override;
 
     virtual void addEvent(cEvent *event) override;
     virtual void addScalarResult(const cComponent *component, const char *name, double value) override;
@@ -225,7 +225,7 @@ class SIM_API cMultiFingerprintCalculator : public cFingerprintCalculator
 
     virtual cMultiFingerprintCalculator *dup() const override { return new cMultiFingerprintCalculator(static_cast<cFingerprintCalculator *>(prototype->dup())); }
     virtual std::string str() const override;
-    virtual void initialize(const char *expectedFingerprints, cConfiguration *cfg, int index=-1) override;
+    virtual void configure(cSimulation *simulation, cConfiguration *cfg, const char *expectedFingerprints, int index=-1) override;
 
     virtual void addEvent(cEvent *event) override;
     virtual void addScalarResult(const cComponent *component, const char *name, double value) override;

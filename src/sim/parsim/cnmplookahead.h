@@ -36,12 +36,6 @@ class cParsimPartition;
  */
 class SIM_API cNMPLookahead : public cObject
 {
-  protected:
-    cSimulation *sim;
-    cParsimCommunications *comm; // TBD this is just to access numPartitions -- optimize out?
-    cParsimPartition *partition;
-    // cNullMessageProtocol *nullmsgprot;
-
   public:
     /**
      * Constructor.
@@ -54,10 +48,9 @@ class SIM_API cNMPLookahead : public cObject
     virtual ~cNMPLookahead() {}
 
     /**
-     * Pass objects it has to cooperate with.
+     * Configure the object.
      */
-    void configure(cSimulation *simul, cParsimPartition *seg, cParsimCommunications *co)  //TODO should take cConfiguration* too; move out-of-line
-       {sim = simul; partition = seg; comm = co;}
+    virtual void configure(cSimulation *simulation, cConfiguration *cfg, cParsimPartition *partition) = 0;
 
     /**
      * Hook called at start of simulation run.

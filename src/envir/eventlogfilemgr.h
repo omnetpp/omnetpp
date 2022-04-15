@@ -34,6 +34,7 @@ namespace omnetpp {
 class cComponent;
 class cModule;
 class cChannel;
+class cSimulation;
 
 namespace envir {
 
@@ -181,20 +182,14 @@ class ENVIR_API EventlogFileManager : public cIEventlogManager
     virtual ~EventlogFileManager();
 
     /**
-     * Sets the configuration database to use for configuring this object.
+     * Configures this object.
      */
-    virtual void configure(cConfiguration *cfg) override {this->cfg = cfg;}
+    virtual void configure(cSimulation *simulation, cConfiguration *cfg) override;
 
     /**
      * Returns the eventlog filename.
      */
     virtual const char *getFileName() const override { return filename.c_str(); }
-
-    /**
-     * Initializes the eventlog manager according to the configuration.
-     * This function must be called before any other.
-     */
-    virtual void readOptions();
 
     /**
      * Returns true if the file is open.

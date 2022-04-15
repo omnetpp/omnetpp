@@ -40,13 +40,21 @@ enum class DebuggerPresence {
 class DebuggerSupport
 {
   protected:
-    cConfiguration *cfg = nullptr;
+    std::string debuggerCommand;
+    int attachWaitTimeSecs = 5;
+
   public:
-    void setConfiguration(cConfiguration *cfg) {this->cfg = cfg;}
-    std::string makeDebuggerCommand();
-    DebuggerAttachmentPermission debuggerAttachmentPermitted();
-    void attachDebugger();
-    DebuggerPresence detectDebugger();
+    DebuggerSupport() {}
+    virtual ~DebuggerSupport() {}
+    virtual void configure(cConfiguration *cfg);
+    virtual std::string substitutePid(const std::string& debuggerCommand);
+    virtual std::string getDebuggerCommand() const {return debuggerCommand;}
+    virtual void setDebuggerCommand(const std::string& cmd) {debuggerCommand = substitutePid(cmd);}
+    virtual int getAttachWaitTime() const {return attachWaitTimeSecs;}
+    virtual void setAttachWaitTime(int secs) {attachWaitTimeSecs = secs;}
+    virtual DebuggerAttachmentPermission debuggerAttachmentPermitted();
+    virtual void attachDebugger();
+    virtual DebuggerPresence detectDebugger();
 };
 
 }  // namespace envir

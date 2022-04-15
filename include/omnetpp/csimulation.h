@@ -324,7 +324,8 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     //@{
 
     /**
-     * TODO
+     * Configures this simulation instance and the objects it relies on: the
+     * scheduler, the FES, the RNG manager, the fingerprint calculator, etc.
      */
     void configure(cConfiguration *cfg, bool isParsim);
 

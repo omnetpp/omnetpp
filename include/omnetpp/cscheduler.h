@@ -75,14 +75,14 @@ class SIM_API cScheduler : public cObject, public cISimulationLifecycleListener
     virtual std::string str() const override;
 
     /**
-     * Pass cSimulation object to scheduler.
+     * Configures the object.
      */
-    virtual void setSimulation(cSimulation *_sim);
+    virtual void configure(cSimulation *simulation, cConfiguration *cfg);
 
     /**
      * Returns the simulation the scheduler belongs to.
      */
-    cSimulation *getSimulation() const {return sim;}
+    cSimulation *getSimulation() const override {return sim;}
 
     /**
      * Called at the beginning of a simulation run.
@@ -209,11 +209,11 @@ class SIM_API cRealTimeScheduler : public cScheduler
 {
   protected:
     // configuration:
-    bool doScaling;
-    double factor;
+    bool doScaling = false;
+    double factor = 1.0;
 
     // state:
-    int64_t baseTime;  // in microseconds
+    int64_t baseTime = 0;  // in microseconds
 
   protected:
     virtual void startRun() override;
@@ -235,6 +235,11 @@ class SIM_API cRealTimeScheduler : public cScheduler
      * Returns a description that depends on the parametrization of this class.
      */
     virtual std::string str() const override;
+
+    /**
+     * Configures the object
+     */
+    virtual void configure(cSimulation *simulation, cConfiguration *cfg) override;
 
     /**
      * Recalculates "base time" from current wall clock time.

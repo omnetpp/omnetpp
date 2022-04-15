@@ -61,7 +61,7 @@ class SIM_API cParsimPartition : public cObject, public cISimulationLifecycleLis
     cSimulation *sim = nullptr;
     cParsimCommunications *comm = nullptr;
     cParsimSynchronizer *synch = nullptr;
-    bool debug;
+    bool debug = false;
 
   protected:
     // internal: fills in remote gate addresses of all cProxyGate's in the current partition
@@ -87,7 +87,22 @@ class SIM_API cParsimPartition : public cObject, public cISimulationLifecycleLis
     /**
      * Pass cParsimPartition the objects it has to cooperate with.
      */
-    void configure(cSimulation *sim, cConfiguration *cfg);
+    void configure(cSimulation *simulation, cConfiguration *cfg);
+
+    /**
+     * Returns the simulation instance associated with the object.
+     */
+    cSimulation *getSimulation() const override {return sim;}
+
+    /**
+     * Returns the parallel simulation communications layer.
+     */
+    cParsimCommunications *getCommunications() const {return comm;}
+
+    /**
+     * Returns the parallel simulation synchronizer.
+     */
+    cParsimSynchronizer *getSynchronizer() const {return synch;}
 
     /**
      * Called at the beginning of a simulation run. Fills in remote gate addresses

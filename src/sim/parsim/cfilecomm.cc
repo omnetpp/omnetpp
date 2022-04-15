@@ -47,7 +47,7 @@ cFileCommunications::cFileCommunications()
 {
 }
 
-void cFileCommunications::configure(cConfiguration *cfg, int np, int procId)
+void cFileCommunications::configure(cSimulation *sim, cConfiguration *cfg, int np, int procId)
 {
     numPartitions = np;
     myProcId = procId;

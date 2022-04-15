@@ -141,8 +141,8 @@ class ENVIR_API EnvirBase : public cEnvir
   public:
     EnvirBase(IAllInOne *app);
     virtual ~EnvirBase();
-    virtual void initialize(cConfiguration *cfg, ArgList *args);
-    virtual void configure(cConfiguration *cfg);
+    virtual void initialize(cSimulation *simulation, cConfiguration *cfg, ArgList *args); // call once, on startup
+    virtual void configure(cConfiguration *cfg); // call before each simulation run
 
     // getters
     IAllInOne *getApp() {return app;}

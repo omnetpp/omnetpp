@@ -52,6 +52,21 @@ extern omnetpp::cConfigOption *CFGID_PARAM_RECORDING;
 
 Register_Class(SqliteOutputScalarManager);
 
+void SqliteOutputScalarManager::configure(cSimulation *simulation, cConfiguration *cfg)
+{
+    this->cfg = cfg;
+    ResultFileUtils::setConfiguration(cfg);
+    simulation->addLifecycleListener(this);
+
+    fname = cfg->getAsFilename(CFGID_OUTPUT_SCALAR_FILE);
+    fname = augmentFileName(fname);
+
+    shouldAppend = cfg->getAsBool(CFGID_OUTPUT_SCALAR_FILE_APPEND);
+
+    int commitFreq = cfg->getAsInt(CFGID_OUTPUT_SCALAR_DB_COMMIT_FREQ);
+    writer.setCommitFreq(commitFreq);
+}
+
 void SqliteOutputScalarManager::startRun()
 {
     // prevent reuse of object for multiple runs
@@ -59,9 +74,7 @@ void SqliteOutputScalarManager::startRun()
     state = STARTED;
 
     // clean up file from previous runs
-    fname = cfg->getAsFilename(CFGID_OUTPUT_SCALAR_FILE);
-    fname = augmentFileName(fname);
-    if (cfg->getAsBool(CFGID_OUTPUT_SCALAR_FILE_APPEND) == false)
+    if (!shouldAppend)
         removeFile(fname.c_str(), "old SQLite output scalar file");
 }
 
@@ -82,9 +95,6 @@ void SqliteOutputScalarManager::openFileForRun()
     // open database
     mkPath(directoryOf(fname.c_str()).c_str());
     writer.open(fname.c_str());
-
-    int commitFreq = cfg->getAsInt(CFGID_OUTPUT_SCALAR_DB_COMMIT_FREQ);
-    writer.setCommitFreq(commitFreq);
 
     // write run data
     writer.beginRecordingForRun(getRunId().c_str(), SimTime::getScaleExp(), getRunAttributes(), getIterationVariables(), getSelectedConfigEntries());

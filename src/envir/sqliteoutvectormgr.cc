@@ -52,20 +52,17 @@ extern omnetpp::cConfigOption *CFGID_VECTOR_BUFFER;
 
 Register_GlobalConfigOption(CFGID_OUTPUT_VECTOR_DB_INDEXING, "output-vector-db-indexing", CFG_CUSTOM, "skip", "Whether and when to add an index to the 'vectordata' table in SQLite output vector files. Possible values: skip, ahead, after");
 
-void SqliteOutputVectorManager::startRun()
+void SqliteOutputVectorManager::configure(cSimulation *simulation, cConfiguration *cfg)
 {
-    // prevent reuse of object for multiple runs
-    Assert(state == NEW);
-    state = STARTED;
+    this->cfg = cfg;
+    ResultFileUtils::setConfiguration(cfg);
+    simulation->addLifecycleListener(this);
 
-    // delete file left over from previous runs
     fname = cfg->getAsFilename(CFGID_OUTPUT_VECTOR_FILE).c_str();
     fname = augmentFileName(fname);
-    bool shouldAppend = cfg->getAsBool(CFGID_OUTPUT_VECTOR_FILE_APPEND);
-    if (!shouldAppend)
-        removeFile(fname.c_str(), "old SQLite output vector file");
 
-    // read configuration
+    shouldAppend = cfg->getAsBool(CFGID_OUTPUT_VECTOR_FILE_APPEND);
+
     size_t memoryLimit = (size_t) cfg->getAsDouble(CFGID_OUTPUTVECTOR_MEMORY_LIMIT);
     writer.setOverallMemoryLimit(memoryLimit);
 
@@ -79,6 +76,17 @@ void SqliteOutputVectorManager::startRun()
     else
         throw cRuntimeError("Invalid value '%s' for '%s', expecting 'skip', 'ahead' or 'after'",
                 indexModeStr.c_str(), CFGID_OUTPUT_VECTOR_DB_INDEXING->getName());
+}
+
+void SqliteOutputVectorManager::startRun()
+{
+    // prevent reuse of object for multiple runs
+    Assert(state == NEW);
+    state = STARTED;
+
+    // delete file left over from previous runs
+    if (!shouldAppend)
+        removeFile(fname.c_str(), "old SQLite output vector file");
 }
 
 void SqliteOutputVectorManager::endRun()

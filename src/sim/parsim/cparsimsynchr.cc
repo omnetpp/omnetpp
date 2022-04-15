@@ -16,6 +16,7 @@
 
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cfutureeventset.h"
+#include "cparsimpartition.h"
 #include "cparsimsynchr.h"
 
 using namespace omnetpp;
@@ -23,6 +24,13 @@ using namespace omnetpp;
 std::string cParsimSynchronizer::str() const
 {
     return "parsim scheduler";
+}
+
+void cParsimSynchronizer::configure(cSimulation *sim, cConfiguration *cfg, cParsimPartition *part)
+{
+    cScheduler::configure(sim, cfg);
+    partition = part;
+    comm = part->getCommunications();
 }
 
 cEvent *cParsimSynchronizer::guessNextEvent()

@@ -64,6 +64,11 @@ class SIM_API cFutureEventSet : public cOwnedObject
     //@{
 
     /**
+     * Configures the object.
+     */
+    virtual void configure(cSimulation *simulation, cConfiguration *cfg) {}
+
+    /**
      * Insert an event into the FES.
      */
     virtual void insert(cEvent *event) = 0;

@@ -38,6 +38,7 @@ class SqliteOutputScalarManager : public cIOutputScalarManager, private ResultFi
     cConfiguration *cfg = nullptr;
     enum State {NEW, STARTED, OPENED, ENDED} state = NEW;
     std::string fname;
+    bool shouldAppend = false;
     SqliteScalarFileWriter writer;
 
   protected:
@@ -65,7 +66,7 @@ class SqliteOutputScalarManager : public cIOutputScalarManager, private ResultFi
     /**
      * Sets the configuration database to use for configuring this object.
      */
-    virtual void configure(cConfiguration *cfg) override {this->cfg = cfg; ResultFileUtils::setConfiguration(cfg);}
+    virtual void configure(cSimulation *simulation, cConfiguration *cfg) override;
 
     /**
      * Opens collecting. Called at the beginning of a simulation run.

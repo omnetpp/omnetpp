@@ -51,6 +51,7 @@ class SqliteOutputVectorManager : public cIOutputVectorManager, private ResultFi
     cConfiguration *cfg = nullptr;
     enum State {NEW, STARTED, OPENED, ENDED} state = NEW;
     std::string fname;
+    bool shouldAppend = false;
     SqliteVectorFileWriter writer;
     Vectors vectors;  // registered output vectors
 
@@ -82,7 +83,7 @@ class SqliteOutputVectorManager : public cIOutputVectorManager, private ResultFi
     /**
      * Sets the configuration database to use for configuring this object.
      */
-    virtual void configure(cConfiguration *cfg) override {this->cfg = cfg; ResultFileUtils::setConfiguration(cfg);}
+    virtual void configure(cSimulation *simulation, cConfiguration *cfg) override;
 
     /**
      * Deletes output vector file if exists (left over from previous runs).

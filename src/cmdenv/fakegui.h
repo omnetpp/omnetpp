@@ -33,6 +33,7 @@ namespace cmdenv {
 class CMDENV_API FakeGUI
 {
    private:
+    cSimulation *simulation = nullptr;
     bool debug = false;
     double beforeEventProbability;
     double afterEventProbability;
@@ -70,8 +71,9 @@ class CMDENV_API FakeGUI
      virtual double getCurrentTimeDelta() const {return isWithinHold ? animationTimeDelta : simulationTimeDelta.dbl();}
 
    public:
+     FakeGUI() {}
      virtual ~FakeGUI() {}
-     virtual void readConfigOptions(cConfiguration *cfg);
+     virtual void configure(cSimulation *simulation, cConfiguration *cfg);
      virtual void beforeEvent(cEvent *event);
      virtual void afterEvent();
      virtual void getImageSize(const char *imageName, double& outWidth, double& outHeight);

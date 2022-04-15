@@ -44,12 +44,6 @@ extern cConfigOption *CFGID_PARSIM_DEBUG;  // registered in cparsimpartition.cc
 
 cNullMessageProtocol::cNullMessageProtocol() : cParsimProtocolBase()
 {
-    debug = getEnvir()->getConfig()->getAsBool(CFGID_PARSIM_DEBUG);
-    std::string lookhClass = getEnvir()->getConfig()->getAsString(CFGID_PARSIM_NULLMESSAGEPROTOCOL_LOOKAHEAD_CLASS);
-    lookaheadcalc = dynamic_cast<cNMPLookahead *>(createOne(lookhClass.c_str()));
-    if (!lookaheadcalc) \
-        throw cRuntimeError("Class \"%s\" is not subclassed from cNMPLookahead", lookhClass.c_str());
-    laziness = getEnvir()->getConfig()->getAsDouble(CFGID_PARSIM_NULLMESSAGEPROTOCOL_LAZINESS);
 }
 
 cNullMessageProtocol::~cNullMessageProtocol()
@@ -60,10 +54,21 @@ cNullMessageProtocol::~cNullMessageProtocol()
     delete[] segInfo;
 }
 
-void cNullMessageProtocol::configure(cSimulation *sim, cParsimPartition *seg, cParsimCommunications *co)
+void cNullMessageProtocol::configure(cSimulation *simulation, cConfiguration *cfg, cParsimPartition *partition)
 {
-    cParsimProtocolBase::configure(sim, seg, co);
-    lookaheadcalc->configure(sim, seg, co);
+    cParsimProtocolBase::configure(simulation, cfg, partition);
+
+    debug = cfg->getAsBool(CFGID_PARSIM_DEBUG);
+
+    std::string lookaheadClass = cfg->getAsString(CFGID_PARSIM_NULLMESSAGEPROTOCOL_LOOKAHEAD_CLASS);
+    lookaheadcalc = dynamic_cast<cNMPLookahead *>(createOne(lookaheadClass.c_str()));
+    if (!lookaheadcalc) \
+        throw cRuntimeError("Class \"%s\" is not subclassed from cNMPLookahead", lookaheadClass.c_str());
+
+    laziness = cfg->getAsDouble(CFGID_PARSIM_NULLMESSAGEPROTOCOL_LAZINESS);
+
+    lookaheadcalc->configure(simulation, cfg, partition);
+
 }
 
 void cNullMessageProtocol::startRun()

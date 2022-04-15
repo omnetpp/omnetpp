@@ -48,7 +48,7 @@ class SIM_API cNullMessageProtocol : public cParsimProtocolBase
     PartitionInfo *segInfo = nullptr;  // partition info array, size numSeg
 
     // controls null message resend frequency, 0<=laziness<=1
-    double laziness;
+    double laziness = 0.5;
 
     // internally used message kinds
     enum
@@ -57,9 +57,9 @@ class SIM_API cNullMessageProtocol : public cParsimProtocolBase
         MK_PARSIM_RESENDEOT = MK_PARSIM_BEGIN - 2
     };
 
-    bool debug;
+    bool debug = false;
 
-    cNMPLookahead *lookaheadcalc;
+    cNMPLookahead *lookaheadcalc = nullptr;
 
   protected:
     // process buffers coming from other partitions
@@ -89,7 +89,7 @@ class SIM_API cNullMessageProtocol : public cParsimProtocolBase
      * Redefined beacause we have to pass the same data to the lookahead calculator object
      * (cNMPLookahead) too.
      */
-    virtual void configure(cSimulation *sim, cParsimPartition *seg, cParsimCommunications *co) override;
+    virtual void configure(cSimulation *simulation, cConfiguration *cfg, cParsimPartition *partition) override;
 
     /**
      * Sets null message resend laziness. Value is between 0 and 1 --

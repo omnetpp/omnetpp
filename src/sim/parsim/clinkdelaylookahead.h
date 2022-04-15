@@ -36,6 +36,9 @@ class SIM_API cLinkDelayLookahead : public cNMPLookahead
         simtime_t minDelay;  // minimum of all link delays to given partition
     };
 
+    cSimulation *simulation = nullptr;
+    cParsimPartition *partition = nullptr;
+
     // partition information
     int numSeg = 0;                    // number of partitions
     PartitionInfo *segInfo = nullptr;  // partition info array, size numSeg
@@ -53,6 +56,11 @@ class SIM_API cLinkDelayLookahead : public cNMPLookahead
      * Destructor.
      */
     virtual ~cLinkDelayLookahead();
+
+    /**
+     * Configure the object.
+     */
+    virtual void configure(cSimulation *simulation, cConfiguration *cfg, cParsimPartition *partition) override;
 
     /**
      * Sets up algorithm for new simulation run.

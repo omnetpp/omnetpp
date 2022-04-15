@@ -182,6 +182,7 @@ void cSimulation::configure(cConfiguration *cfg, bool isParsim)
     std::string futureeventsetClass = cfg->getAsString(CFGID_FUTUREEVENTSET_CLASS);
     cFutureEventSet *fes = createByClassName<cFutureEventSet>(futureeventsetClass.c_str(), "FES");
     setFES(fes);
+    fes->configure(this, cfg);
 
     // install scheduler
     if (!isParsim) {
@@ -190,29 +191,33 @@ void cSimulation::configure(cConfiguration *cfg, bool isParsim)
         setScheduler(scheduler);
     }
 
+    scheduler->configure(this, cfg);
+
     // install fingerprint calculator object
     cFingerprintCalculator *fingerprint = nullptr;
     std::string expectedFingerprints = cfg->getAsString(CFGID_FINGERPRINT);
-    if (!expectedFingerprints.empty()) {
+    if (expectedFingerprints.empty())
+        setFingerprintCalculator(nullptr);
+    else {
         // create calculator
         std::string fingerprintClass = cfg->getAsString(CFGID_FINGERPRINTER_CLASS);
         fingerprint = createByClassName<cFingerprintCalculator>(fingerprintClass.c_str(), "fingerprint calculator");
         if (expectedFingerprints.find(',') != expectedFingerprints.npos)
             fingerprint = new cMultiFingerprintCalculator(fingerprint);
-        fingerprint->initialize(expectedFingerprints.c_str(), cfg);
+        setFingerprintCalculator(fingerprint);
+        fingerprint->configure(this, cfg, expectedFingerprints.c_str());
     }
-    setFingerprintCalculator(fingerprint);
 
     bool checkSignals = cfg->getAsBool(CFGID_CHECK_SIGNALS);
     cComponent::setCheckSignals(checkSignals);
 
     bool checkParamMutability = cfg->getAsBool(CFGID_PARAMETER_MUTABILITY_CHECK);
-    getSimulation()->setParameterMutabilityCheck(checkParamMutability);
+    setParameterMutabilityCheck(checkParamMutability);
 
     bool allowObjectStealing = cfg->getAsBool(CFGID_ALLOW_OBJECT_STEALING_ON_DELETION);
     cSoftOwner::setAllowObjectStealing(allowObjectStealing);
 
-    getRngManager()->configure(cfg);
+    getRngManager()->configure(this, cfg, getEnvir()->getParsimProcId(), getEnvir()->getParsimNumPartitions());
 }
 
 class cSnapshotWriterVisitor : public cVisitor
@@ -275,14 +280,10 @@ void cSimulation::setScheduler(cScheduler *sch)
     if (!sch)
         throw cRuntimeError(this, "setScheduler(): New scheduler cannot be nullptr");
 
-    if (scheduler) {
-        getEnvir()->removeLifecycleListener(scheduler);
+    if (scheduler)
         delete scheduler;
-    }
 
     scheduler = sch;
-    scheduler->setSimulation(this);
-    addLifecycleListener(scheduler);
 }
 
 void cSimulation::setFES(cFutureEventSet *f)

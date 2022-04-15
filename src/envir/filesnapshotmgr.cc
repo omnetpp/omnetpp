@@ -37,11 +37,18 @@ Register_PerRunConfigOption(CFGID_SNAPSHOT_FILE, "snapshot-file", CFG_FILENAME, 
 
 Register_Class(FileSnapshotManager);
 
+void FileSnapshotManager::configure(cSimulation *simulation, cConfiguration *cfg)
+{
+    this->cfg = cfg;
+    simulation->addLifecycleListener(this);
+
+    fname = cfg->getAsFilename(CFGID_SNAPSHOT_FILE);
+    fname = ResultFileUtils(cfg).augmentFileName(fname);
+}
+
 void FileSnapshotManager::startRun()
 {
     // clean up file from previous runs
-    fname = cfg->getAsFilename(CFGID_SNAPSHOT_FILE);
-    fname = ResultFileUtils(cfg).augmentFileName(fname);
     removeFile(fname.c_str(), "old snapshot file");
 }
 

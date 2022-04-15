@@ -42,11 +42,19 @@ cAdvancedLinkDelayLookahead::~cAdvancedLinkDelayLookahead()
     delete[] segInfo;
 }
 
+void cAdvancedLinkDelayLookahead::configure(cSimulation *simulation, cConfiguration *cfg, cParsimPartition *partition)
+{
+    this->simulation = simulation;
+    this->partition = partition;
+}
+
 void cAdvancedLinkDelayLookahead::startRun()
 {
     EV << "starting Link Delay Lookahead...\n";
 
     delete[] segInfo;
+
+    cParsimCommunications *comm = partition->getCommunications();
 
     numSeg = comm->getNumPartitions();
     segInfo = new PartitionInfo[numSeg];
@@ -61,8 +69,8 @@ void cAdvancedLinkDelayLookahead::startRun()
     EV << "  collecting links...\n";
 
     // step 1: count gates
-    for (int modId = 0; modId <= sim->getLastComponentId(); modId++) {
-        cPlaceholderModule *mod = dynamic_cast<cPlaceholderModule *>(sim->getModule(modId));
+    for (int modId = 0; modId <= simulation->getLastComponentId(); modId++) {
+        cPlaceholderModule *mod = dynamic_cast<cPlaceholderModule *>(simulation->getModule(modId));
         if (mod) {
             for (cModule::GateIterator i(mod); !i.end(); i++) {
                 cGate *g = i();
@@ -82,8 +90,8 @@ void cAdvancedLinkDelayLookahead::startRun()
     }
 
     // step 3: fill in
-    for (int modId = 0; modId <= sim->getLastComponentId(); modId++) {
-        cPlaceholderModule *mod = dynamic_cast<cPlaceholderModule *>(sim->getModule(modId));
+    for (int modId = 0; modId <= simulation->getLastComponentId(); modId++) {
+        cPlaceholderModule *mod = dynamic_cast<cPlaceholderModule *>(simulation->getModule(modId));
         if (mod) {
             for (cModule::GateIterator i(mod); !i.end(); i++) {
                 // if this is a properly connected proxygate, process it
@@ -133,7 +141,7 @@ simtime_t cAdvancedLinkDelayLookahead::getCurrentLookahead(cMessage *msg, int pr
 
     // calculate EOT
     simtime_t eot;
-    simtime_t now = sim->getSimTime();
+    simtime_t now = simulation->getSimTime();
     simtime_t newLinkEot = now + link->lookahead;
 
     // TBD finish...

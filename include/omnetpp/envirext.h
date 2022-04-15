@@ -27,6 +27,7 @@
 
 namespace omnetpp {
 
+class cSimulation;
 class cConfiguration;
 class cModule;
 class cStatistic;
@@ -86,7 +87,7 @@ class SIM_API cIOutputVectorManager : public cObject, public cISimulationLifecyc
     /**
      * Sets the configuration database to use for configuring this object.
      */
-    virtual void configure(cConfiguration *cfg) = 0;
+    virtual void configure(cSimulation *simulation, cConfiguration *cfg) = 0;
 
     /**
      * Opens collecting. Called at the beginning of a simulation run.
@@ -196,7 +197,7 @@ class SIM_API cIOutputScalarManager : public cObject, public cISimulationLifecyc
     /**
      * Sets the configuration database to use for configuring this object.
      */
-    virtual void configure(cConfiguration *cfg) = 0;
+    virtual void configure(cSimulation *simulation, cConfiguration *cfg) = 0;
 
     /**
      * Opens collecting. Called at the beginning of a simulation run.
@@ -301,7 +302,7 @@ class SIM_API cISnapshotManager : public cObject, public cISimulationLifecycleLi
     /**
      * Sets the configuration database to use for configuring this object.
      */
-    virtual void configure(cConfiguration *cfg) = 0;
+    virtual void configure(cSimulation *simulation, cConfiguration *cfg) = 0;
 
     /**
      * Called at the beginning of a simulation run.
@@ -378,7 +379,7 @@ class SIM_API cIEventlogManager : public cObject, public cISimulationLifecycleLi
     /**
      * Sets the configuration database to use for configuring this object.
      */
-    virtual void configure(cConfiguration *cfg) = 0;
+    virtual void configure(cSimulation *simulation, cConfiguration *cfg) = 0;
 
     /**
      * (Re)starts eventlog recording. Whether eventlog recording is enabled by

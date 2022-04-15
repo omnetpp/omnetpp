@@ -70,10 +70,10 @@ class SIM_API cParsimSynchronizer : public cScheduler
     virtual std::string str() const override;
 
     /**
-     * Pass cParsimSynchronizer the objects it has to cooperate with.
+     * Configure the object.
      */
-    virtual void configure(cSimulation *sim, cParsimPartition *seg, cParsimCommunications *co) //TODO should take cConfiguration* too; move out-of-line
-       {setSimulation(sim); partition = seg; comm = co;}
+    virtual void configure(cSimulation *sim, cConfiguration *cfg, cParsimPartition *part);
+    using cScheduler::configure; //TODO override old to throw?
 
     /**
      * Called at the beginning of a simulation run.

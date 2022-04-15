@@ -54,6 +54,24 @@ Register_PerObjectConfigOption(CFGID_VECTOR_RECORD_EVENTNUMBERS, "vector-record-
 Register_PerObjectConfigOption(CFGID_VECTOR_RECORDING_INTERVALS, "vector-recording-intervals", KIND_VECTOR, CFG_CUSTOM, nullptr, "Allows one to restrict recording of an output vector to one or more simulation time intervals. Usage: `<module-full-path>.<vector-name>.vector-recording-intervals=<intervals>`. The syntax for `<intervals>` is: `[<from>]..[<to>],...` That is, both start and end of an interval are optional, and intervals are separated by comma.\nExample: `**.roundTripTime:vector.vector-recording-intervals=..100, 200..400, 900..`");
 Register_PerObjectConfigOptionU(CFGID_VECTOR_BUFFER, "vector-buffer", KIND_VECTOR, "B", DEFAULT_VECTOR_BUFFER, "For output vectors: the maximum per-vector buffer space used for storing values before writing them out as a block into the output vector file. There is also a total limit, see `output-vectors-memory-limit`.\nUsage: `<module-full-path>.<vector-name>.vector-buffer=<amount>`.");
 
+void OmnetppOutputVectorManager::configure(cSimulation *simulation, cConfiguration *cfg)
+{
+    this->cfg = cfg;
+    ResultFileUtils::setConfiguration(cfg);
+    simulation->addLifecycleListener(this);
+
+    fname = cfg->getAsFilename(CFGID_OUTPUT_VECTOR_FILE).c_str();
+    fname = augmentFileName(fname);
+
+    shouldAppend = cfg->getAsBool(CFGID_OUTPUT_VECTOR_FILE_APPEND);
+
+    int prec = cfg->getAsInt(CFGID_OUTPUT_VECTOR_PRECISION);
+    writer.setPrecision(prec);
+
+    size_t memoryLimit = (size_t) cfg->getAsDouble(CFGID_OUTPUTVECTOR_MEMORY_LIMIT);
+    writer.setOverallMemoryLimit(memoryLimit);
+}
+
 void OmnetppOutputVectorManager::startRun()
 {
     // prevent reuse of object for multiple runs
@@ -61,19 +79,11 @@ void OmnetppOutputVectorManager::startRun()
     state = STARTED;
 
     // read configuration
-    bool shouldAppend = cfg->getAsBool(CFGID_OUTPUT_VECTOR_FILE_APPEND);
     if (shouldAppend)
         throw cRuntimeError("%s does not support append mode", getClassName());
 
-    fname = cfg->getAsFilename(CFGID_OUTPUT_VECTOR_FILE).c_str();
-    fname = augmentFileName(fname);
     removeFile(fname.c_str(), "old output vector file");
 
-    int prec = cfg->getAsInt(CFGID_OUTPUT_VECTOR_PRECISION);
-    writer.setPrecision(prec);
-
-    size_t memoryLimit = (size_t) cfg->getAsDouble(CFGID_OUTPUTVECTOR_MEMORY_LIMIT);
-    writer.setOverallMemoryLimit(memoryLimit);
 }
 
 void OmnetppOutputVectorManager::endRun()

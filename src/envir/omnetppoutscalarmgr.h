@@ -39,6 +39,7 @@ class ENVIR_API OmnetppOutputScalarManager : public cIOutputScalarManager, priva
     cConfiguration *cfg = nullptr;
     enum State {NEW, STARTED, OPENED, ENDED} state = NEW;
     std::string fname;
+    bool shouldAppend = false;
     OmnetppScalarFileWriter writer;
 
   protected:
@@ -66,7 +67,7 @@ class ENVIR_API OmnetppOutputScalarManager : public cIOutputScalarManager, priva
     /**
      * Sets the configuration database to use for configuring this object.
      */
-    virtual void configure(cConfiguration *cfg) override {this->cfg = cfg; ResultFileUtils::setConfiguration(cfg);}
+    virtual void configure(cSimulation *simulation, cConfiguration *cfg) override;
 
     /**
      * Opens collecting. Called at the beginning of a simulation run.

@@ -41,6 +41,9 @@ class SIM_API cAdvancedLinkDelayLookahead : public cNMPLookahead
         simtime_t lookahead; // lookahead to partition (minimum of all link lookaheads)
     };
 
+    cSimulation *simulation = nullptr;
+    cParsimPartition *partition = nullptr;
+
     // partition information
     int numSeg;              // number of partitions
     PartitionInfo *segInfo;  // partition info array, size numSeg
@@ -55,6 +58,11 @@ class SIM_API cAdvancedLinkDelayLookahead : public cNMPLookahead
      * Destructor.
      */
     virtual ~cAdvancedLinkDelayLookahead();
+
+    /**
+     * Configure the object.
+     */
+    virtual void configure(cSimulation *simulation, cConfiguration *cfg, cParsimPartition *partition);
 
     /**
      * Sets up algorithm for new simulation run.

@@ -77,7 +77,7 @@ cNamedPipeCommunications::~cNamedPipeCommunications()
         delete item.buffer;
 }
 
-void cNamedPipeCommunications::configure(cConfiguration *cfg, int np, int procId)
+void cNamedPipeCommunications::configure(cSimulation *sim, cConfiguration *cfg, int np, int procId)
 {
     numPartitions = np;
     myProcId = procId;
