@@ -42,9 +42,7 @@ class cScheduler;
 class cModuleType;
 class cIListener;
 class cProperty;
-class cParsimCommunications;
 class cParsimPartition;
-class cParsimSynchronizer;
 class cResultRecorder;
 class cIEventlogManager;
 
@@ -96,7 +94,6 @@ class ENVIR_API EnvirBase : public cEnvir
     std::ostream out; //TODO move to AppBase, modulo EnvirBase::undisposedObject()
 
 #ifdef WITH_PARSIM
-    cParsimCommunications *parsimComm;
     cParsimPartition *parsimPartition;
 #endif
 
@@ -167,7 +164,6 @@ class ENVIR_API EnvirBase : public cEnvir
 
     XMLDocCache *getXMLDocCache() const {return xmlCache;}
 #ifdef WITH_PARSIM
-    cParsimCommunications *getParsimCommunications() const {return parsimComm;}
     cParsimPartition *getParsimPartition() const {return parsimPartition;}
 #endif
 

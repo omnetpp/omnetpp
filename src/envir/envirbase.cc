@@ -22,7 +22,6 @@
 #include "common/stringtokenizer.h"
 #include "common/fnamelisttokenizer.h"
 #include "common/stringutil.h"
-#include "common/enumstr.h"
 #include "common/opp_ctype.h"
 #include "common/stringtokenizer.h"
 #include "common/stringutil.h"
@@ -87,10 +86,6 @@ using std::ostream;
 
 
 Register_GlobalConfigOption(CFGID_PARALLEL_SIMULATION, "parallel-simulation", CFG_BOOL, "false", "Enables parallel distributed simulation.");
-Register_GlobalConfigOption(CFGID_PARSIM_NUM_PARTITIONS, "parsim-num-partitions", CFG_INT, nullptr, "If `parallel-simulation=true`, it specifies the number of parallel processes being used. This value must be in agreement with the number of simulator instances launched, e.g. with the `-n` or `-np` command-line option specified to the `mpirun` program when using MPI.");
-Register_GlobalConfigOption(CFGID_PARSIM_PROCID, "parsim-procid", CFG_INT, nullptr, "If `parallel-simulation=true`, it specifies the ordinal of the current simulation process within the list parallel processes. The value must be in the range 0...n-1, where n is the number of partitions. This option is not required when using MPI communications, because MPI has its own way of conveying this information.");
-Register_GlobalConfigOption(CFGID_PARSIM_COMMUNICATIONS_CLASS, "parsim-communications-class", CFG_STRING, "omnetpp::cFileCommunications", "If `parallel-simulation=true`, it selects the class that implements communication between partitions. The class must implement the `cParsimCommunications` interface.");
-Register_GlobalConfigOption(CFGID_PARSIM_SYNCHRONIZATION_CLASS, "parsim-synchronization-class", CFG_STRING, "omnetpp::cNullMessageProtocol", "If `parallel-simulation=true`, it selects the parallel simulation algorithm. The class must implement the `cParsimSynchronizer` interface.");
 Register_PerRunConfigOption(CFGID_EVENTLOGMANAGER_CLASS, "eventlogmanager-class", CFG_STRING, "omnetpp::envir::EventlogFileManager", "Part of the Envir plugin mechanism: selects the eventlog manager class to be used to record data. The class has to implement the `cIEventlogManager` interface.");
 Register_PerRunConfigOption(CFGID_OUTPUTVECTORMANAGER_CLASS, "outputvectormanager-class", CFG_STRING, DEFAULT_OUTPUTVECTORMANAGER_CLASS, "Part of the Envir plugin mechanism: selects the output vector manager class to be used to record data from output vectors. The class has to implement the `cIOutputVectorManager` interface.");
 Register_PerRunConfigOption(CFGID_OUTPUTSCALARMANAGER_CLASS, "outputscalarmanager-class", CFG_STRING, DEFAULT_OUTPUTSCALARMANAGER_CLASS, "Part of the Envir plugin mechanism: selects the output scalar manager class to be used to record data passed to recordScalar(). The class has to implement the `cIOutputScalarManager` interface.");
@@ -101,9 +96,7 @@ Register_PerRunConfigOption(CFGID_PRINT_UNDISPOSED, "print-undisposed", CFG_BOOL
 Register_GlobalConfigOption(CFGID_NED_PATH, "ned-path", CFG_PATH, "", "A semicolon-separated list of directories. The directories will be regarded as roots of the NED package hierarchy, and all NED files will be loaded from their subdirectory trees. This option is normally left empty, as the OMNeT++ IDE sets the NED path automatically, and for simulations started outside the IDE it is more convenient to specify it via command-line option (-n) or via environment variable (OMNETPP_NED_PATH, NEDPATH).");
 Register_GlobalConfigOption(CFGID_NED_PACKAGE_EXCLUSIONS, "ned-package-exclusions", CFG_CUSTOM, "", "A semicolon-separated list of NED packages to be excluded when loading NED files. Sub-packages of excluded ones are also excluded. Additional items may be specified via the `-x` command-line option and the `OMNETPP_NED_PACKAGE_EXCLUSIONS` environment variable.");
 Register_GlobalConfigOption(CFGID_DEBUGGER_ATTACH_ON_ERROR, "debugger-attach-on-error", CFG_BOOL, "false", "When set to true, runtime errors and crashes will trigger an external debugger to be launched (if not already present), allowing you to perform just-in-time debugging on the simulation process. The debugger command is configurable. Note that debugging (i.e. attaching to) a non-child process needs to be explicitly enabled on some systems, e.g. Ubuntu.");
-
 Register_PerRunConfigOption(CFGID_RECORD_EVENTLOG, "record-eventlog", CFG_BOOL, "false", "Enables recording an eventlog file, which can be later visualized on a sequence chart. See `eventlog-file` option too.");
-Register_PerObjectConfigOption(CFGID_PARTITION_ID, "partition-id", KIND_MODULE, CFG_STRING, nullptr, "With parallel simulation: in which partition the module should be instantiated. Specify numeric partition ID, or a comma-separated list of partition IDs for compound modules that span across multiple partitions. Ranges (`5..9`) and `*` (=all) are accepted too.");
 
 
 EnvirBase::EnvirBase(IAllInOne *app) : out(std::cout.rdbuf()), app(app)
@@ -118,7 +111,6 @@ EnvirBase::EnvirBase(IAllInOne *app) : out(std::cout.rdbuf()), app(app)
     snapshotManager = nullptr;
 
 #ifdef WITH_PARSIM
-    parsimComm = nullptr;
     parsimPartition = nullptr;
 #endif
 }
@@ -140,7 +132,6 @@ EnvirBase::~EnvirBase()
     delete snapshotManager;
 
 #ifdef WITH_PARSIM
-    delete parsimComm;
     delete parsimPartition;
 #endif
 }
@@ -176,24 +167,8 @@ void EnvirBase::initialize(cConfiguration *cfg, ArgList *args)
     // parallel simulation
     if (parsim) {
 #ifdef WITH_PARSIM
-        // parsim: create components
-        std::string parsimcommClass = cfg->getAsString(CFGID_PARSIM_COMMUNICATIONS_CLASS);
-        std::string parsimsynchClass = cfg->getAsString(CFGID_PARSIM_SYNCHRONIZATION_CLASS);
-
-        parsimComm = createByClassName<cParsimCommunications>(parsimcommClass.c_str(), "parallel simulation communications layer");
         parsimPartition = new cParsimPartition();
-        cParsimSynchronizer *parsimSynchronizer = createByClassName<cParsimSynchronizer>(parsimsynchClass.c_str(), "parallel simulation synchronization layer");
-        addLifecycleListener(parsimPartition);
-
-        // wire them together (note: 'parsimSynchronizer' is also the scheduler for 'simulation')
-        parsimPartition->configure(getSimulation(), parsimComm, parsimSynchronizer);
-        parsimSynchronizer->configure(getSimulation(), parsimPartition, parsimComm);
-        getSimulation()->setScheduler(parsimSynchronizer);
-
-        // initialize them
-        int parsimNumPartitions = cfg->getAsInt(CFGID_PARSIM_NUM_PARTITIONS, -1);
-        int parsimProcId = cfg->getAsInt(CFGID_PARSIM_PROCID, -1);
-        parsimComm->configure(cfg, parsimNumPartitions, parsimProcId);
+        parsimPartition->configure(getSimulation(), cfg);
 #else
         throw cRuntimeError("Parallel simulation is turned on in the ini file, but OMNeT++ was compiled without parallel simulation support (WITH_PARSIM=no)");
 #endif
@@ -234,8 +209,8 @@ void EnvirBase::configure(cConfiguration *cfg)
     setUniqueNumberRange(0, 0); // =until it wraps
 #ifdef WITH_PARSIM
     if (parsim) {
-        uint64_t myRank = parsimComm->getProcId();
-        uint64_t range = UINT64_MAX / parsimComm->getNumPartitions();
+        uint64_t myRank = parsimPartition->getProcId();
+        uint64_t range = UINT64_MAX / parsimPartition->getNumPartitions();
         setUniqueNumberRange(myRank * range, (myRank+1) * range);
     }
 #endif
@@ -367,51 +342,7 @@ void EnvirBase::askParameter(cPar *par, bool unassigned)
 bool EnvirBase::isModuleLocal(cModule *parentmod, const char *modname, int index)
 {
 #ifdef WITH_PARSIM
-    if (!parsim)
-        return true;
-
-    // toplevel module is local everywhere
-    if (!parentmod)
-        return true;
-
-    // find out if this module is (or has any submodules that are) on this partition
-    char parname[MAX_OBJECTFULLPATH];
-    if (index < 0)
-        sprintf(parname, "%s.%s", parentmod->getFullPath().c_str(), modname);
-    else
-        sprintf(parname, "%s.%s[%d]", parentmod->getFullPath().c_str(), modname, index);  // FIXME this is incorrectly chosen for non-vector modules too!
-    std::string procIds = getConfig()->getAsString(parname, CFGID_PARTITION_ID, "");
-    if (procIds.empty()) {
-        // modules inherit the setting from their parents, except when the parent is the system module (the network) itself
-        if (!parentmod->getParentModule())
-            throw cRuntimeError("Incomplete partitioning: Missing value for '%s'", parname);
-        // "true" means "inherit", because an ancestor which answered "false" doesn't get recursed into
-        return true;
-    }
-    else if (strcmp(procIds.c_str(), "*") == 0) {
-        // present on all partitions (provided that ancestors have "*" set as well)
-        return true;
-    }
-    else {
-        // we expect a partition Id (or partition Ids, separated by commas) where this
-        // module needs to be instantiated. So we return true if any of the numbers
-        // is the Id of the local partition, otherwise false.
-        EnumStringIterator procIdIter(procIds.c_str());
-        if (procIdIter.hasError())
-            throw cRuntimeError("Wrong partitioning: Syntax error in value '%s' for '%s' "
-                                "(allowed syntax: '', '*', '1', '0,3,5-7')",
-                    procIds.c_str(), parname);
-        int numPartitions = parsimComm->getNumPartitions();
-        int myProcId = parsimComm->getProcId();
-        for ( ; procIdIter() != -1; procIdIter++) {
-            if (procIdIter() >= numPartitions)
-                throw cRuntimeError("Wrong partitioning: Value %d too large for '%s' (total partitions=%d)",
-                        procIdIter(), parname, numPartitions);
-            if (procIdIter() == myProcId)
-                return true;
-        }
-        return false;
-    }
+    return parsim ? parsimPartition->isModuleLocal(parentmod, modname, index) : true;
 #else
     return true;
 #endif
@@ -841,7 +772,7 @@ bool EnvirBase::shouldDebugNow(cRuntimeError *error)
 int EnvirBase::getParsimProcId() const
 {
 #ifdef WITH_PARSIM
-    return parsimComm ? parsimComm->getProcId() : 0;
+    return parsimPartition? parsimPartition->getProcId() : 0;
 #else
     return 0;
 #endif
@@ -850,7 +781,7 @@ int EnvirBase::getParsimProcId() const
 int EnvirBase::getParsimNumPartitions() const
 {
 #ifdef WITH_PARSIM
-    return parsimComm ? parsimComm->getNumPartitions() : 0;
+    return parsimPartition? parsimPartition->getNumPartitions() : 0;
 #else
     return 0;
 #endif

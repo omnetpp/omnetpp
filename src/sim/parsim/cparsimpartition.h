@@ -87,7 +87,7 @@ class SIM_API cParsimPartition : public cObject, public cISimulationLifecycleLis
     /**
      * Pass cParsimPartition the objects it has to cooperate with.
      */
-    void configure(cSimulation *sim, cParsimCommunications *comm, cParsimSynchronizer *synch); //TODO should take cConfiguration* too
+    void configure(cSimulation *sim, cConfiguration *cfg);
 
     /**
      * Called at the beginning of a simulation run. Fills in remote gate addresses
@@ -104,6 +104,27 @@ class SIM_API cParsimPartition : public cObject, public cISimulationLifecycleLis
      * Shut down the parallel simulation system.
      */
     void shutdown();
+
+    /**
+     * Returns total number of partitions.
+     */
+    virtual int getNumPartitions() const;
+
+    /**
+     * Returns id of this partition, an integer in the range 0..getNumPartitions()-1.
+     */
+    virtual int getProcId() const;
+
+    /**
+     * Returns true if the named future submodule of the given parent module is,
+     * or will have any submodule, in the local partition. The submoduleIndex
+     * parameter should be -1 if the submodule is not part of a module vector.
+     *
+     * Note that for compound modules that contain simple modules in
+     * several partitions, this function will return true on all those
+     * partitions.
+     */
+    virtual bool isModuleLocal(cModule *parent, const char *submoduleName, int submoduleIndex);
 
     /**
      * A hook called from cProxyGate::deliver() when an outgoing cMessage

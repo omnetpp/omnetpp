@@ -26,6 +26,7 @@
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/regmacros.h"
 #include "omnetpp/csimplemodule.h" // SendOptions
+#include "common/enumstr.h"
 #include "cplaceholdermod.h"
 #include "cproxygate.h"
 #include "cparsimpartition.h"
@@ -33,22 +34,53 @@
 #include "creceivedexception.h"
 #include "messagetags.h"
 
+using namespace omnetpp::common;
+
 namespace omnetpp {
 
 Register_Class(cParsimPartition);
 
 Register_GlobalConfigOption(CFGID_PARSIM_DEBUG, "parsim-debug", CFG_BOOL, "true", "With `parallel-simulation=true`: turns on printing of log messages from the parallel simulation code.");
+Register_GlobalConfigOption(CFGID_PARSIM_NUM_PARTITIONS, "parsim-num-partitions", CFG_INT, nullptr, "If `parallel-simulation=true`, it specifies the number of parallel processes being used. This value must be in agreement with the number of simulator instances launched, e.g. with the `-n` or `-np` command-line option specified to the `mpirun` program when using MPI.");
+Register_GlobalConfigOption(CFGID_PARSIM_PROCID, "parsim-procid", CFG_INT, nullptr, "If `parallel-simulation=true`, it specifies the ordinal of the current simulation process within the list parallel processes. The value must be in the range 0...n-1, where n is the number of partitions. This option is not required when using MPI communications, because MPI has its own way of conveying this information.");
+Register_GlobalConfigOption(CFGID_PARSIM_COMMUNICATIONS_CLASS, "parsim-communications-class", CFG_STRING, "omnetpp::cFileCommunications", "If `parallel-simulation=true`, it selects the class that implements communication between partitions. The class must implement the `cParsimCommunications` interface.");
+Register_GlobalConfigOption(CFGID_PARSIM_SYNCHRONIZATION_CLASS, "parsim-synchronization-class", CFG_STRING, "omnetpp::cNullMessageProtocol", "If `parallel-simulation=true`, it selects the parallel simulation algorithm. The class must implement the `cParsimSynchronizer` interface.");
+Register_PerObjectConfigOption(CFGID_PARTITION_ID, "partition-id", KIND_MODULE, CFG_STRING, nullptr, "With parallel simulation: in which partition the module should be instantiated. Specify numeric partition ID, or a comma-separated list of partition IDs for compound modules that span across multiple partitions. Ranges (`5..9`) and `*` (=all) are accepted too.");
 
 cParsimPartition::cParsimPartition()
 {
     debug = getEnvir()->getConfig()->getAsBool(CFGID_PARSIM_DEBUG);
 }
 
-void cParsimPartition::configure(cSimulation *simul, cParsimCommunications *commlayer, cParsimSynchronizer *sync)
+void cParsimPartition::configure(cSimulation *simul, cConfiguration *cfg)
 {
     sim = simul;
-    comm = commlayer;
-    synch = sync;
+
+    std::string parsimcommClass = cfg->getAsString(CFGID_PARSIM_COMMUNICATIONS_CLASS);
+    std::string parsimsynchClass = cfg->getAsString(CFGID_PARSIM_SYNCHRONIZATION_CLASS);
+
+    comm = createByClassName<cParsimCommunications>(parsimcommClass.c_str(), "parallel simulation communications layer");
+    synch = createByClassName<cParsimSynchronizer>(parsimsynchClass.c_str(), "parallel simulation synchronization layer");
+    getEnvir()->addLifecycleListener(this);  //TODO eliminate getEnvir()
+
+    // wire them together (note: 'parsimSynchronizer' is also the scheduler for 'simulation')
+    synch->configure(simul, this, comm);
+    simul->setScheduler(synch);
+
+    // initialize them
+    int parsimNumPartitions = cfg->getAsInt(CFGID_PARSIM_NUM_PARTITIONS, -1);
+    int parsimProcId = cfg->getAsInt(CFGID_PARSIM_PROCID, -1);
+    comm->configure(cfg, parsimNumPartitions, parsimProcId);
+}
+
+int cParsimPartition::getNumPartitions() const
+{
+    return comm->getNumPartitions();
+}
+
+int cParsimPartition::getProcId() const
+{
+    return comm->getProcId();
 }
 
 void cParsimPartition::lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details)
@@ -186,6 +218,54 @@ void cParsimPartition::connectRemoteGates()
                             pg->getFullPath().c_str(), mod->getFullPath().c_str());
             }
         }
+    }
+}
+
+bool cParsimPartition::isModuleLocal(cModule *parentmod, const char *modname, int index)
+{
+    // toplevel module is local everywhere
+    if (!parentmod)
+        return true;
+
+    const int MAX_OBJECTFULLPATH = 1024;
+
+    // find out if this module is (or has any submodules that are) on this partition
+    char parname[MAX_OBJECTFULLPATH];
+    if (index < 0)
+        sprintf(parname, "%s.%s", parentmod->getFullPath().c_str(), modname);
+    else
+        sprintf(parname, "%s.%s[%d]", parentmod->getFullPath().c_str(), modname, index);  // FIXME this is incorrectly chosen for non-vector modules too!
+    std::string procIds = getEnvir()->getConfig()->getAsString(parname, CFGID_PARTITION_ID, ""); //TODO eliminate getEnvir()
+    if (procIds.empty()) {
+        // modules inherit the setting from their parents, except when the parent is the system module (the network) itself
+        if (!parentmod->getParentModule())
+            throw cRuntimeError("Incomplete partitioning: Missing value for '%s'", parname);
+        // "true" means "inherit", because an ancestor which answered "false" doesn't get recursed into
+        return true;
+    }
+    else if (strcmp(procIds.c_str(), "*") == 0) {
+        // present on all partitions (provided that ancestors have "*" set as well)
+        return true;
+    }
+    else {
+        // we expect a partition Id (or partition Ids, separated by commas) where this
+        // module needs to be instantiated. So we return true if any of the numbers
+        // is the Id of the local partition, otherwise false.
+        EnumStringIterator procIdIter(procIds.c_str());
+        if (procIdIter.hasError())
+            throw cRuntimeError("Wrong partitioning: Syntax error in value '%s' for '%s' "
+                                "(allowed syntax: '', '*', '1', '0,3,5-7')",
+                    procIds.c_str(), parname);
+        int numPartitions = comm->getNumPartitions();
+        int myProcId = comm->getProcId();
+        for ( ; procIdIter() != -1; procIdIter++) {
+            if (procIdIter() >= numPartitions)
+                throw cRuntimeError("Wrong partitioning: Value %d too large for '%s' (total partitions=%d)",
+                        procIdIter(), parname, numPartitions);
+            if (procIdIter() == myProcId)
+                return true;
+        }
+        return false;
     }
 }
 
