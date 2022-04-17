@@ -136,6 +136,10 @@ cSimulation::~cSimulation()
 
     deleteNetwork();
 
+    auto copy = listeners;
+    for (auto& listener : copy)
+        listener->listenerRemoved();
+
     delete envir;
     delete fingerprint;
     delete scheduler;
@@ -274,7 +278,7 @@ void cSimulation::setScheduler(cScheduler *sch)
 
     scheduler = sch;
     scheduler->setSimulation(this);
-    getEnvir()->addLifecycleListener(scheduler);
+    addLifecycleListener(scheduler);
 }
 
 void cSimulation::setFES(cFutureEventSet *f)
@@ -443,11 +447,11 @@ void cSimulation::setupNetwork(cModuleType *network)
     try {
         // set up the network by instantiating the toplevel module
         cContextTypeSwitcher tmp(CTX_BUILD);
-        getEnvir()->notifyLifecycleListeners(LF_PRE_NETWORK_SETUP);
+        notifyLifecycleListeners(LF_PRE_NETWORK_SETUP);
         cModule *module = networkType->create(networkType->getName(), nullptr);
         module->finalizeParameters();
         module->buildInside();
-        getEnvir()->notifyLifecycleListeners(LF_POST_NETWORK_SETUP);
+        notifyLifecycleListeners(LF_POST_NETWORK_SETUP);
     }
     catch (std::exception& e) {
         // Note: no deleteNetwork() call here. We could call it here, but it's
@@ -479,9 +483,9 @@ void cSimulation::callInitialize()
     if (systemModule) {
         cContextSwitcher tmp(systemModule);
         systemModule->scheduleStart(SIMTIME_ZERO);
-        getEnvir()->notifyLifecycleListeners(LF_PRE_NETWORK_INITIALIZE);
+        notifyLifecycleListeners(LF_PRE_NETWORK_INITIALIZE);
         systemModule->callInitialize();
-        getEnvir()->notifyLifecycleListeners(LF_POST_NETWORK_INITIALIZE);
+        notifyLifecycleListeners(LF_POST_NETWORK_INITIALIZE);
     }
 
     simulationStage = CTX_EVENT;
@@ -495,9 +499,9 @@ void cSimulation::callFinish()
 
     // call user-defined finish() functions for all modules recursively
     if (systemModule) {
-        getEnvir()->notifyLifecycleListeners(LF_PRE_NETWORK_FINISH);
+        notifyLifecycleListeners(LF_PRE_NETWORK_FINISH);
         systemModule->callFinish();
-        getEnvir()->notifyLifecycleListeners(LF_POST_NETWORK_FINISH);
+        notifyLifecycleListeners(LF_POST_NETWORK_FINISH);
     }
 }
 
@@ -523,7 +527,7 @@ void cSimulation::deleteNetwork()
 
     simulationStage = CTX_CLEANUP;
 
-    getEnvir()->notifyLifecycleListeners(LF_PRE_NETWORK_DELETE);
+    notifyLifecycleListeners(LF_PRE_NETWORK_DELETE);
 
     // delete all modules recursively
     systemModule->deleteModule();
@@ -549,7 +553,7 @@ void cSimulation::deleteNetwork()
         static_cast<cComponentType *>(p)->clearSharedParImpls();
     cModule::clearNamePools();
 
-    getEnvir()->notifyLifecycleListeners(LF_POST_NETWORK_DELETE);
+    notifyLifecycleListeners(LF_POST_NETWORK_DELETE);
 
     // clear remaining messages (module dtors may have cancelled & deleted some of them)
     fes->clear();
@@ -777,6 +781,37 @@ void cSimulation::insertEvent(cEvent *event)
 {
     event->setPreviousEventNumber(currentEventNumber);
     fes->insert(event);
+}
+
+void cSimulation::addLifecycleListener(cISimulationLifecycleListener *listener)
+{
+    auto it = std::find(listeners.begin(), listeners.end(), listener);
+    if (it == listeners.end()) {
+        listeners.push_back(listener);
+        listener->listenerAdded();
+    }
+}
+
+void cSimulation::removeLifecycleListener(cISimulationLifecycleListener *listener)
+{
+    auto it = std::find(listeners.begin(), listeners.end(), listener);
+    if (it != listeners.end()) {
+        listeners.erase(it);
+        listener->listenerRemoved();
+    }
+}
+
+std::vector<cISimulationLifecycleListener*> cSimulation::getLifecycleListeners() const
+{
+    return listeners;
+}
+
+void cSimulation::notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details)
+{
+    // make a copy of the listener list, to avoid problems from listeners getting added/removed during notification
+    auto copy = listeners;
+    for (auto& listener : copy)
+        listener->lifecycleEvent(eventType, details);  // let exceptions through, because errors must cause exitCode!=0
 }
 
 //----

@@ -61,7 +61,7 @@ void cParsimPartition::configure(cSimulation *simul, cConfiguration *cfg)
 
     comm = createByClassName<cParsimCommunications>(parsimcommClass.c_str(), "parallel simulation communications layer");
     synch = createByClassName<cParsimSynchronizer>(parsimsynchClass.c_str(), "parallel simulation synchronization layer");
-    getEnvir()->addLifecycleListener(this);  //TODO eliminate getEnvir()
+    sim->addLifecycleListener(this);
 
     // wire them together (note: 'parsimSynchronizer' is also the scheduler for 'simulation')
     synch->configure(simul, this, comm);

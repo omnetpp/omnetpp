@@ -16,7 +16,7 @@ class LocalLifecycleListener : public cISimulationLifecycleListener {
 
 EXECUTE_ON_STARTUP(
     if (testlib::isRunningTest("@TESTNAME@"))
-        cSimulation::getActiveEnvir()->addLifecycleListener(&listener)
+        cSimulation::getActiveSimulation()->addLifecycleListener(&listener)
 );
 
 

@@ -87,9 +87,6 @@ class SIM_API cEnvir
     // connectionDeleted(), displayStringChanged().
     bool suppressNotifications = false; //FIXME set to true when not needed!
 
-    // Lifecycle listeners
-    std::vector<cISimulationLifecycleListener*> listeners;
-
   public:
     /** @name Constructor, destructor. */
     //@{
@@ -855,32 +852,6 @@ class SIM_API cEnvir
      * Includes a call to ensureDebugger().
      */
     virtual bool shouldDebugNow(cRuntimeError *error = nullptr) = 0;
-    //@}
-
-    /** @name Lifecycle listeners */
-    //@{
-    /**
-     * Adds a listener that will be notified about simulation lifecycle events.
-     * It has no effect if the listener is already subscribed.
-     * NOTE: The listeners will NOT be deleted when the program exits.
-     */
-    virtual void addLifecycleListener(cISimulationLifecycleListener *listener);
-
-    /**
-     * Removes the given listener. This method has no effect if the listener
-     * is not currently subscribed.
-     */
-    virtual void removeLifecycleListener(cISimulationLifecycleListener *listener);
-
-    /**
-     * Returns the list of installed lifecycle listeners.
-     */
-    virtual std::vector<cISimulationLifecycleListener*> getLifecycleListeners() const;
-
-    /**
-     * Notify lifecycle listeners
-     */
-    virtual void notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details=nullptr);
     //@}
 };
 

@@ -101,6 +101,9 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
 
     cFingerprintCalculator *fingerprint = nullptr; // used for fingerprint calculation
 
+    // Lifecycle listeners
+    std::vector<cISimulationLifecycleListener*> listeners;
+
   private:
     // internal
     void checkActive()  {if (getActiveSimulation()!=this) throw cRuntimeError(this, E_WRONGSIM);}
@@ -573,6 +576,33 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * interrupt on the next event.
      */
     bool isTrapOnNextEventRequested() const {return trapOnNextEvent;}
+    //@}
+
+    /** @name Lifecycle listeners */
+    //@{
+    /**
+     * Adds a listener that will be notified about simulation lifecycle events.
+     * It has no effect if the listener is already subscribed.
+     * NOTE: The listeners will NOT be deleted when the program exits.
+     */
+    virtual void addLifecycleListener(cISimulationLifecycleListener *listener);
+
+    /**
+     * Removes the given listener. This method has no effect if the listener
+     * is not currently subscribed.
+     */
+    virtual void removeLifecycleListener(cISimulationLifecycleListener *listener);
+
+    /**
+     * Returns the list of installed lifecycle listeners.
+     */
+    virtual std::vector<cISimulationLifecycleListener*> getLifecycleListeners() const;
+
+    /**
+     * Notify lifecycle listeners. This is needed because several lifecycle events
+     * are triggered outside cSimulation, e.g. from the Envir library.
+     */
+    virtual void notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details=nullptr);
     //@}
 
     /** @name Miscellaneous. */

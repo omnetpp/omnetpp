@@ -427,7 +427,8 @@ bool AppBase::setup()
         loadNEDFiles();
 
         // notify listeners when global setup is complete
-        envir->notifyLifecycleListeners(LF_ON_STARTUP);
+        CodeFragments::executeAll(CodeFragments::STARTUP);
+        notifyLifecycleListeners(LF_ON_STARTUP);
     }
     catch (std::exception& e) {
         displayException(e);
@@ -590,7 +591,6 @@ void AppBase::printHelp()
 void AppBase::run()
 {
     try {
-        CodeFragments::executeAll(CodeFragments::STARTUP);
         doRun();
     }
     catch (std::exception& e) {
@@ -602,7 +602,7 @@ void AppBase::shutdown()
 {
     try {
         getSimulation()->deleteNetwork();
-        envir->notifyLifecycleListeners(LF_ON_SHUTDOWN);
+        notifyLifecycleListeners(LF_ON_SHUTDOWN);
     }
     catch (std::exception& e) {
         displayException(e);
@@ -931,7 +931,7 @@ cModuleType *AppBase::resolveNetwork(const char *networkname)
 
 void AppBase::notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details)
 {
-    envir->notifyLifecycleListeners(eventType, details);
+    envir->getSimulation()->notifyLifecycleListeners(eventType, details);
 }
 
 

@@ -133,9 +133,6 @@ class ENVIR_API EnvirBase : public cEnvir
     uint64_t nextUniqueNumber;
     uint64_t uniqueNumbersEnd;
 
-    // lifecycle listeners
-    std::vector<cISimulationLifecycleListener*> listeners;
-
     IAllInOne *app;
 
   public:

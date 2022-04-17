@@ -33,7 +33,6 @@
 
 namespace omnetpp {
 
-
 Register_Class(cSoftOwner);
 
 Register_PerRunConfigOption(CFGID_ALLOW_OBJECT_STEALING_ON_DELETION, "allow-object-stealing-on-deletion", CFG_BOOL, "false", "Setting it to true disables the \"Context component is deleting an object it doesn't own\" error message. This option exists primarily for backward compatibility with pre-6.0 versions that were more permissive during object deletion.");
@@ -51,7 +50,7 @@ class LocalLifecycleListener : public cISimulationLifecycleListener {
 };
 }
 
-EXECUTE_ON_STARTUP(cSimulation::getActiveEnvir()->addLifecycleListener(new LocalLifecycleListener()));
+EXECUTE_ON_STARTUP(cSimulation::getActiveSimulation()->addLifecycleListener(new LocalLifecycleListener()));
 
 
 cSoftOwner::cSoftOwner(const char *name, bool namepooling) : cNoncopyableOwnedObject(name, namepooling)

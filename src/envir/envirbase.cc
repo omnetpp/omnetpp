@@ -117,11 +117,6 @@ EnvirBase::EnvirBase(IAllInOne *app) : out(std::cout.rdbuf()), app(app)
 
 EnvirBase::~EnvirBase()
 {
-    while (!listeners.empty()) {
-        listeners.back()->listenerRemoved();
-        listeners.pop_back();
-    }
-
     //delete opt;
     delete cfg;
     delete xmlCache;
@@ -257,7 +252,7 @@ void EnvirBase::setEventlogManager(cIEventlogManager *obj)
     delete eventlogManager;
     eventlogManager = obj;
     eventlogManager->configure(cfg);
-    addLifecycleListener(eventlogManager);
+    getSimulation()->addLifecycleListener(eventlogManager);
 }
 
 void EnvirBase::setOutVectorManager(cIOutputVectorManager *obj)
@@ -265,7 +260,7 @@ void EnvirBase::setOutVectorManager(cIOutputVectorManager *obj)
     delete outVectorManager;
     outVectorManager = obj;
     outVectorManager->configure(cfg);
-    addLifecycleListener(outVectorManager);
+    getSimulation()->addLifecycleListener(outVectorManager);
 }
 
 void EnvirBase::setOutScalarManager(cIOutputScalarManager *obj)
@@ -273,7 +268,7 @@ void EnvirBase::setOutScalarManager(cIOutputScalarManager *obj)
     delete outScalarManager;
     outScalarManager = obj;
     outScalarManager->configure(cfg);
-    addLifecycleListener(outScalarManager);
+    getSimulation()->addLifecycleListener(outScalarManager);
 }
 
 void EnvirBase::setSnapshotManager(cISnapshotManager *obj)
@@ -281,7 +276,7 @@ void EnvirBase::setSnapshotManager(cISnapshotManager *obj)
     delete snapshotManager;
     snapshotManager = obj;
     snapshotManager->configure(cfg);
-    addLifecycleListener(snapshotManager);
+    getSimulation()->addLifecycleListener(snapshotManager);
 }
 
 void EnvirBase::preconfigureComponent(cComponent *component)
