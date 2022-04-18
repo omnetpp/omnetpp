@@ -20,6 +20,8 @@
 
 namespace omnetpp {
 
+class cSimulation;
+
 /**
  * @brief Event type for cISimulationLifecycleListener's lifecycleEvent() method.
  *
@@ -174,11 +176,19 @@ enum SimulationLifecycleEventType
  */
 class SIM_API cISimulationLifecycleListener
 {
+  private:
+    cSimulation *simulation = nullptr;
+
   public:
     /**
-     * The destructor removes the listener from cEnvir if it is still added.
+     * The destructor removes the listener from the simulation if it is still added.
      */
     virtual ~cISimulationLifecycleListener();
+
+    /**
+     * Returns the simulation instance the lifecycle listener is subscribed to.
+     */
+    virtual cSimulation *getSimulation() const {return simulation;}
 
     /**
      * The main listener method, called on simulation lifecycle events.
@@ -186,16 +196,16 @@ class SIM_API cISimulationLifecycleListener
     virtual void lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details) = 0;
 
     /**
-     * Fired after this listener was added to cEnvir, via addLifecycleListener().
+     * Fired after this listener was added to cSimulation, via addLifecycleListener().
      */
-    virtual void listenerAdded() {}
+    virtual void listenerAdded(cSimulation *simulation) {this->simulation = simulation;}
 
     /**
-     * Fired after this listener was removed from cEnvir, via removeLifecycleListener().
+     * Fired after this listener was removed from cSimulation, via removeLifecycleListener().
      * It is OK for the listener to delete itself in the body of this method
      * (<tt>delete this</tt>).
      */
-    virtual void listenerRemoved() {}
+    virtual void listenerRemoved() {simulation = nullptr;}
 
     /**
      * Returns the string representation of the simulation lifecycle event type.

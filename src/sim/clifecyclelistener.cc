@@ -21,7 +21,8 @@ namespace omnetpp {
 
 cISimulationLifecycleListener::~cISimulationLifecycleListener()
 {
-    getEnvir()->removeLifecycleListener(this);
+    if (simulation)
+        simulation->removeLifecycleListener(this);
 }
 
 const char *cISimulationLifecycleListener::getSimulationLifecycleEventName(SimulationLifecycleEventType eventType)

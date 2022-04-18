@@ -788,7 +788,7 @@ void cSimulation::addLifecycleListener(cISimulationLifecycleListener *listener)
     auto it = std::find(listeners.begin(), listeners.end(), listener);
     if (it == listeners.end()) {
         listeners.push_back(listener);
-        listener->listenerAdded();
+        listener->listenerAdded(this);
     }
 }
 
