@@ -691,9 +691,11 @@ inline simtime_t simTime() {return cSimulation::getActiveSimulation()->getSimTim
 /**
  * @brief Returns the currently active simulation, or nullptr if there is none.
  *
+ * Deprecated -- use cSimulation::getActiveSimulation() instead.
+ *
  * @ingroup Misc
  */
-inline cSimulation *getSimulation()  {return cSimulation::getActiveSimulation();}
+[[deprecated]] inline cSimulation *getSimulation()  {return cSimulation::getActiveSimulation();}
 
 /**
  * @brief Returns the environment object for the currently active simulation.
