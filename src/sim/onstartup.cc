@@ -22,10 +22,6 @@
 
 namespace omnetpp {
 
-#if NDEBUG
-extern "C" SIM_API const uint32_t __release_oppsim_magic_number__;
-const uint32_t __release_oppsim_magic_number__ = RELEASE_OPPSIM_MAGIC_NUMBER;
-#endif
 
 // Checks whether an other instance of the shared library has already been loaded.
 // This can happen when some parts of the simulation are linked with debug
@@ -52,7 +48,7 @@ class StartupChecker
         }
 };
 
-static StartupChecker startupChecker;
+StartupChecker startupChecker;
 
 CodeFragments *CodeFragments::head;
 
