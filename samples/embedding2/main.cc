@@ -110,6 +110,7 @@ double simulateAloha(simtime_t limit, int numHosts, double iaMean)
     MinimalEnv *menv = new MinimalEnv(new EmptyConfig());
     cSimulation *sim = new cSimulation("simulation", menv);
     cSimulation::setActiveSimulation(sim);
+    CodeFragments::executeAll(CodeFragments::STARTUP, false);
 
     // load NED definitions from string constants (this program doesn't need external NED files!)
     sim->loadNedText("aloha", ALOHA_NED);
@@ -173,7 +174,7 @@ int main(int argc, char *argv[])
     cStaticFlag dummy;
 
     // initializations
-    CodeFragments::executeAll(CodeFragments::STARTUP);
+    CodeFragments::executeAll(CodeFragments::EARLY_STARTUP);
     SimTime::setScaleExp(-12);
 
     // run simulations until user tells us to exit

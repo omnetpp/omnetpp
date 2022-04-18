@@ -266,7 +266,7 @@ bool cValue::operator==(const cValue& other)
 namespace omnetpp {
 
 static std::string printerFunction(common::any_ptr ptr) { return ptr.contains<cObject>() ? objectInfo(ptr.get<cObject>()) : ptr.str(); }
-EXECUTE_ON_STARTUP(common::expression::ExprValue::printerFunction = printerFunction);
+EXECUTE_ON_EARLY_STARTUP(common::expression::ExprValue::printerFunction = printerFunction);
 
 }  // namespace omnetpp
 

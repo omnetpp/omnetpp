@@ -30,7 +30,7 @@ namespace envir {
 
 #define Register_OmnetApp(UINAME,CLASSNAME,SCORE,DESCR) \
     static AppBase *__FILEUNIQUENAME__() {return new CLASSNAME();} \
-    EXECUTE_ON_STARTUP(omnetapps.getInstance()->add(new cOmnetAppRegistration(UINAME,SCORE,DESCR,__FILEUNIQUENAME__)))
+    EXECUTE_ON_EARLY_STARTUP(omnetapps.getInstance()->add(new cOmnetAppRegistration(UINAME,SCORE,DESCR,__FILEUNIQUENAME__)))
 
 extern ENVIR_API cGlobalRegistrationList omnetapps;
 

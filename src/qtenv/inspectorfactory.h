@@ -25,7 +25,7 @@ namespace omnetpp {
 namespace qtenv {
 
 #define Register_InspectorFactory(FACTORYNAME) \
-  EXECUTE_ON_STARTUP(inspectorfactories.getInstance()->add(new FACTORYNAME(#FACTORYNAME));)
+  EXECUTE_ON_EARLY_STARTUP(inspectorfactories.getInstance()->add(new FACTORYNAME(#FACTORYNAME));)
 
 
 /**

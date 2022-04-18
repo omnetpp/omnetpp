@@ -107,7 +107,7 @@ int setupUserInterface(int argc, char *argv[])
     int exitCode = 0;
     try {
         // construct global lists
-        CodeFragments::executeAll(CodeFragments::STARTUP);
+        CodeFragments::executeAll(CodeFragments::EARLY_STARTUP);
 
         // verify definitions of int64_t, int32_t, etc.
         verifyIntTypes();

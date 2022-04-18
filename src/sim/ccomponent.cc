@@ -61,7 +61,7 @@ EXECUTE_ON_SHUTDOWN(cComponent::clearSignalRegistrations());
 
 // Calling registerSignal in static initializers of runtime loaded dynamic
 // libraries would cause an assertion failure without this:
-EXECUTE_ON_STARTUP(cComponent::clearSignalState());
+EXECUTE_ON_EARLY_STARTUP(cComponent::clearSignalState());
 
 std::vector<cComponent::ResultRecorderList*> cComponent::cachedResultRecorderLists;
 

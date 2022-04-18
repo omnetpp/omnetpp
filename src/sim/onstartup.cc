@@ -59,13 +59,14 @@ CodeFragments::CodeFragments(void(*code)(), const char *sourceCode, Type type) :
     head = this;
 }
 
-void CodeFragments::executeAll(Type type)
+void CodeFragments::executeAll(Type type, bool removeDoneItems)
 {
     CodeFragments *p = CodeFragments::head;
     while (p) {
         if (p->type == type && p->code != nullptr) {
             p->code();
-            p->code = nullptr;  // do it only once (executeAll() may be called multiple times, e.g. after dlopen() / LoadLibrary() calls)
+            if (removeDoneItems)
+                p->code = nullptr;
         }
         p = p->next;
     }

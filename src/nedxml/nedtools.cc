@@ -176,7 +176,7 @@ void NedTools::generateCppSource(const char *cppfile, std::vector<std::string> n
         symbols[nedfile] = symbol;
     }
 
-    out << "EXECUTE_ON_STARTUP(\n";
+    out << "EXECUTE_ON_EARLY_STARTUP(\n";
     if (garblephrase)
         out << "    const char *passphrase = \"" << garblephrase << "\";\n";
     for (auto& filename : nedfiles) {

@@ -590,6 +590,7 @@ void AppBase::printHelp()
 void AppBase::run()
 {
     try {
+        CodeFragments::executeAll(CodeFragments::STARTUP);
         doRun();
     }
     catch (std::exception& e) {

@@ -5,12 +5,12 @@ Exit code must be 1 (not zero, and different from crash exit code)
 %file: test.cc
 #include <omnetpp.h>
 
-EXECUTE_ON_STARTUP( 
+EXECUTE_ON_EARLY_STARTUP(
     static char buf[1000];
     if (strstr(getcwd(buf,1000), "@TESTNAME@") != nullptr) {  // if it's this test case running (because the startup code affects ALL simulations i.e. test cases!)
         printf("throwing...\n");
         throw std::range_error("something bad happened");
-    }  
+    }
 );
 
 %exitcode: 1

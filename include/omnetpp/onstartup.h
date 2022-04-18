@@ -39,10 +39,22 @@ namespace omnetpp {
 
 /**
  * @brief Allows code fragments to be collected in global scope which will
- * then be executed from main() right after program startup. This is
- * used by in \opp for building global registration lists of
- * module types, network types, etc. Registration lists in fact
- * are a simple substitute for Java's Class.forName() method...
+ * then be executed from main() right after program startup. The main use is
+ * to contribute items to registration lists of module types, network types, etc.
+ *
+ * @hideinitializer
+ */
+#define EXECUTE_ON_EARLY_STARTUP(CODE)  \
+  namespace { \
+    void __ONSTARTUP_FUNC() {CODE;} \
+    static omnetpp::CodeFragments __ONSTARTUP_OBJ(__ONSTARTUP_FUNC, #CODE, omnetpp::CodeFragments::EARLY_STARTUP); \
+  }
+
+/**
+ * @brief Allows code fragments to be collected in global scope which will
+ * then be executed once the main infrastructure (cSimulation instance,
+ * cEnvir instance, simulation runner, etc.) have been set up. The main
+ * use is to hook lifecycle listeners on the active cSimulation instance.
  *
  * @hideinitializer
  */
@@ -75,7 +87,7 @@ namespace omnetpp {
 class SIM_API CodeFragments
 {
   public:
-    enum Type {STARTUP, SHUTDOWN};
+    enum Type {EARLY_STARTUP, STARTUP, SHUTDOWN};
     Type type;
     void (*code)();
     const char *sourceCode;
@@ -84,7 +96,7 @@ class SIM_API CodeFragments
   public:
     CodeFragments(void (*code)(), const char *sourceCode, Type type);
     ~CodeFragments() {}
-    static void executeAll(Type type);
+    static void executeAll(Type type, bool removeDoneItems=true);
 };
 
 }  // namespace omnetpp

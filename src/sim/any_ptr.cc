@@ -51,7 +51,7 @@ std::string any_ptr::str() const
 }
 
 static std::string printerFunction(common::any_ptr p) {return any_ptr(p.raw(),p.pointerType()).str();}
-EXECUTE_ON_STARTUP(common::any_ptr::printerFunction = printerFunction);
+EXECUTE_ON_EARLY_STARTUP(common::any_ptr::printerFunction = printerFunction);
 
 
 }  // namespace omnetpp

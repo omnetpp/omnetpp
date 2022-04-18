@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
     cStaticFlag dummy;
 
     // initializations
-    CodeFragments::executeAll(CodeFragments::STARTUP);
+    CodeFragments::executeAll(CodeFragments::EARLY_STARTUP);
     SimTime::setScaleExp(-12);
 
     // set up an environment for the simulation
@@ -129,6 +129,8 @@ int main(int argc, char *argv[])
     // load NED files
     sim->loadNedSourceFolder("model");
     sim->doneLoadingNedFiles();
+
+    CodeFragments::executeAll(CodeFragments::STARTUP);
 
     // set up and run a simulation model
     simulate("Net", 1000);
