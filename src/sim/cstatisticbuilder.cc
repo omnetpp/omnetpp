@@ -193,6 +193,8 @@ SignalSource cStatisticBuilder::doStatisticSource(cComponent *component, cProper
                 return SignalSource(component, signalID);
             else {
                 WarmupPeriodFilter *warmupFilter = new WarmupPeriodFilter();
+                cResultFilter::Context ctx {component, statisticProperty};
+                warmupFilter->init(&ctx);
                 component->subscribe(signalID, warmupFilter);
                 return SignalSource(warmupFilter);
             }

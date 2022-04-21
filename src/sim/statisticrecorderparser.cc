@@ -87,6 +87,8 @@ SignalSource StatisticRecorderAstTranslator::makeSignalSource(ExprNode *subtree)
         // expression node, wrap into an ExpressionFilter
         ExpressionFilter *expressionFilter = new ExpressionFilter;
         expressionFilter->getExpression().setExpressionTree(subtree);
+        cResultFilter::Context ctx {component, attrsProperty};
+        expressionFilter->init(&ctx);
         subscribeExpressionFilterToSources(subtree, expressionFilter);
         signalSource = SignalSource(expressionFilter);
     }
