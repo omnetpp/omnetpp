@@ -104,6 +104,8 @@ SignalSource StatisticSourceAstTranslator::makeSignalSource(ExprNode *subtree)
         // expression node, wrap into an ExpressionFilter
         ExpressionFilter *expressionFilter = new ExpressionFilter;
         expressionFilter->getExpression().setExpressionTree(subtree);
+        cResultFilter::Context ctx {component, statisticProperty};
+        expressionFilter->init(&ctx);
         subscribeExpressionFilterToSources(subtree, expressionFilter);
         if (expressionFilter->getNumInputs() == 0)
             throw cRuntimeError("Expression has no signal input");
