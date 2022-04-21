@@ -74,6 +74,7 @@ class CMDENV_API FakeGUI
      FakeGUI() {}
      virtual ~FakeGUI() {}
      virtual void configure(cSimulation *simulation, cConfiguration *cfg);
+     cSimulation *getSimulation() const {return simulation;}
      virtual void beforeEvent(cEvent *event);
      virtual void afterEvent();
      virtual void getImageSize(const char *imageName, double& outWidth, double& outHeight);

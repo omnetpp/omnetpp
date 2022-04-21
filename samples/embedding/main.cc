@@ -73,7 +73,7 @@ class MinimalEnv : public cNullEnvir
 
 };
 
-void simulate(const char *networkName, simtime_t limit)
+void simulate(cSimulation *simulation, const char *networkName, simtime_t limit)
 {
     // set up the network
     cModuleType *networkType = cModuleType::find(networkName);
@@ -81,20 +81,20 @@ void simulate(const char *networkName, simtime_t limit)
         printf("No such network: %s\n", networkName);
         return;
     }
-    getSimulation()->setupNetwork(networkType); //XXX may throw exception
-    getSimulation()->setSimulationTimeLimit(limit);
+    simulation->setupNetwork(networkType); //XXX may throw exception
+    simulation->setSimulationTimeLimit(limit);
 
     // prepare for running it
-    getSimulation()->callInitialize();
+    simulation->callInitialize();
 
     // run the simulation
     bool ok = true;
     try {
         while (true) {
-            cEvent *event = getSimulation()->takeNextEvent();
+            cEvent *event = simulation->takeNextEvent();
             if (!event)
                 break;  //XXX
-            getSimulation()->executeEvent(event);
+            simulation->executeEvent(event);
         }
     }
     catch (cTerminationException& e) {
@@ -106,10 +106,10 @@ void simulate(const char *networkName, simtime_t limit)
     }
 
     if (ok)
-        getSimulation()->callFinish();  //XXX may throw exception
+        simulation->callFinish();  //XXX may throw exception
 
     // finish the simulation and clean up the network
-    getSimulation()->deleteNetwork();
+    simulation->deleteNetwork();
 }
 
 int main(int argc, char *argv[])
@@ -122,22 +122,22 @@ int main(int argc, char *argv[])
     SimTime::setScaleExp(-12);
 
     // set up an environment for the simulation
-    cEnvir *env = new MinimalEnv(new EmptyConfig());
-    cSimulation *sim = new cSimulation("simulation", env);
-    cSimulation::setActiveSimulation(sim);
+    cEnvir *envir = new MinimalEnv(new EmptyConfig());
+    cSimulation *simulation = new cSimulation("simulation", envir);
+    cSimulation::setActiveSimulation(simulation);
 
     // load NED files
-    sim->loadNedSourceFolder("model");
-    sim->doneLoadingNedFiles();
+    simulation->loadNedSourceFolder("model");
+    simulation->doneLoadingNedFiles();
 
     CodeFragments::executeAll(CodeFragments::STARTUP);
 
     // set up and run a simulation model
-    simulate("Net", 1000);
+    simulate(simulation, "Net", 1000);
 
     // exit
     cSimulation::setActiveSimulation(nullptr);
-    delete sim;
+    delete simulation;
 
     // deallocate registration lists, loaded NED files, etc.
     CodeFragments::executeAll(CodeFragments::SHUTDOWN);

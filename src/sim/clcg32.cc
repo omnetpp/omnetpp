@@ -52,7 +52,7 @@ void cLCG32::configure(int seedSet, int rngId, int numRngs,
         seed = autoSeeds[autoSeedIndex];
     }
     else {
-        seed = cConfiguration::parseLong(value, nullptr);
+        seed = cfg->parseLong(value, nullptr);
         if (seed == 0)
             throw cRuntimeError("cLCG32: Zero is not allowed as seed in %s config file entry", key);
     }

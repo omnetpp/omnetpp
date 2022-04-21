@@ -156,6 +156,12 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
 
     /** @name Accessing and switching the active simulation object */
     //@{
+
+    /**
+     * Returns the very simulation instance, i.e. itself.
+     */
+    virtual cSimulation *getSimulation() const override {return const_cast<cSimulation*>(this);}
+
     /**
      * Returns the active simulation object. May be nullptr.
      */

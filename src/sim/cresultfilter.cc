@@ -17,6 +17,7 @@
 #include "common/commonutil.h"
 #include "common/stringutil.h"
 #include "omnetpp/cresultfilter.h"
+#include "omnetpp/ccomponent.h"
 #include "omnetpp/checkandcast.h"
 
 using namespace omnetpp::common;
@@ -55,6 +56,11 @@ cResultFilter *cResultFilter::clone() const
     Context ctx { component, attrsProperty };
     copy->init(&ctx);
     return copy;
+}
+
+cSimulation *cResultFilter::getSimulation() const
+{
+    return getComponent()->getSimulation();
 }
 
 void cResultFilter::addDelegate(cResultListener *delegate)
@@ -171,7 +177,7 @@ void cResultFilter::emitInitialValue()
     if (!std::isnan(initialValue)) {
         // initial value must be sent for the end of the warmup period; except if that time
         // has already passed (e.g. because this filter is part of a dynamically created module)
-        cSimulation *simulation = getSimulation();
+        cSimulation *simulation = cSimulation::getActiveSimulation();
         simtime_t t = std::max(simulation->getSimTime(), simulation->getWarmupPeriod());
         fire(this, t, initialValue, nullptr);
     }

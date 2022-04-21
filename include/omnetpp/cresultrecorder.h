@@ -17,13 +17,14 @@
 #define __OMNETPP_CRESULTRECORDER_H
 
 #include "cresultlistener.h"
-#include "ccomponent.h"
 #include "onstartup.h"
+#include "opp_string.h"
 #include "opp_pooledstring.h"
 #include "globals.h"
 
 namespace omnetpp {
 
+class cComponent;
 class cResultRecorder;
 class cProperty;
 
@@ -108,8 +109,9 @@ class SIM_API cResultRecorder : public cResultListener
         [[deprecated]] virtual void init(cComponent *component, const char *statisticName, const char *recordingMode, cProperty *attrsProperty, opp_string_map *manualAttrs=nullptr) {} // deprecated, left for backward compatibility
         virtual cResultRecorder *clone() const override;
         virtual const char *getName() const override {return getStatisticName();}
-        virtual std::string getFullPath() const override {return getComponent()->getFullPath() + "." + getResultName();}
+        virtual std::string getFullPath() const override;
         virtual cComponent *getComponent() const {return component;}
+        virtual cSimulation *getSimulation() const override;
         virtual const char *getStatisticName() const {return statisticName.c_str();}
         virtual const char *getRecordingMode() const {return recordingMode.c_str();}
         virtual const char *getDemuxLabel() const {return demuxLabel.c_str();}

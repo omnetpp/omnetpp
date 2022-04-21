@@ -49,7 +49,7 @@ void cResultListener::unsubscribedFrom(cResultFilter *prev)
 void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, bool b, cObject *details)
 {
     try {
-        receiveSignal(nullptr, getSimulation()->getSimTime(), b, details);
+        receiveSignal(nullptr, source->getSimulation()->getSimTime(), b, details);
     }
     catch (std::exception& e) {
         THROW(source, signalID, "bool", e);
@@ -59,7 +59,7 @@ void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, bo
 void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, intval_t l, cObject *details)
 {
     try {
-        receiveSignal(nullptr, getSimulation()->getSimTime(), l, details);
+        receiveSignal(nullptr, source->getSimulation()->getSimTime(), l, details);
     }
     catch (std::exception& e) {
         THROW(source, signalID, "long", e);
@@ -69,7 +69,7 @@ void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, in
 void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, uintval_t l, cObject *details)
 {
     try {
-        receiveSignal(nullptr, getSimulation()->getSimTime(), l, details);
+        receiveSignal(nullptr, source->getSimulation()->getSimTime(), l, details);
     }
     catch (std::exception& e) {
         THROW(source, signalID, "unsigned long", e);
@@ -79,7 +79,7 @@ void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, ui
 void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, double d, cObject *details)
 {
     try {
-        receiveSignal(nullptr, getSimulation()->getSimTime(), d, details);
+        receiveSignal(nullptr, source->getSimulation()->getSimTime(), d, details);
     }
     catch (std::exception& e) {
         THROW(source, signalID, "double", e);
@@ -89,7 +89,7 @@ void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, do
 void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, const SimTime& v, cObject *details)
 {
     try {
-        receiveSignal(nullptr, getSimulation()->getSimTime(), v, details);
+        receiveSignal(nullptr, source->getSimulation()->getSimTime(), v, details);
     }
     catch (std::exception& e) {
         THROW(source, signalID, "simtime_t", e);
@@ -99,7 +99,7 @@ void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, co
 void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, const char *s, cObject *details)
 {
     try {
-        receiveSignal(nullptr, getSimulation()->getSimTime(), s, details);
+        receiveSignal(nullptr, source->getSimulation()->getSimTime(), s, details);
     }
     catch (std::exception& e) {
         THROW(source, signalID, "const char *", e);
@@ -111,7 +111,7 @@ void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, cO
     try {
         cITimestampedValue *v = dynamic_cast<cITimestampedValue *>(obj);
         if (!v)
-            receiveSignal(nullptr, getSimulation()->getSimTime(), obj, details);
+            receiveSignal(nullptr, source->getSimulation()->getSimTime(), obj, details);
         else {
             // dispatch cITimestampedValue by data type
             switch (v->getValueType(signalID)) {

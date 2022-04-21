@@ -124,8 +124,8 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
     bool lastPartEmpty = true;
     std::stringstream stream;
     int adaptiveTabIndex = 0;
-    cEnvir *ev = getEnvir();
-    cSimulation *simulation = getSimulation();
+    cSimulation *simulation = cSimulation::getActiveSimulation();
+    cEnvir *ev = simulation->getEnvir();
     cComponent *contextComponent = simulation->getContext();
     for (auto & part : formatParts) {
         if (part.directive == CONSTANT_TEXT && (!part.conditional || !lastPartEmpty))

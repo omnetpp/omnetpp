@@ -44,7 +44,7 @@ void cMersenneTwister::configure(int seedSet, int rngId, int numRngs,
         // with parallel simulation, every partition should get distinct streams
         const char *value = cfg->getConfigValue(key2);
         if (value != nullptr) {
-            seed = cConfiguration::parseLong(value, nullptr);
+            seed = cfg->parseLong(value, nullptr);
         }
         else {
             if (cfg->getConfigValue(key) != nullptr)
@@ -57,7 +57,7 @@ void cMersenneTwister::configure(int seedSet, int rngId, int numRngs,
     else {
         const char *value = cfg->getConfigValue(key);
         if (value != nullptr)
-            seed = cConfiguration::parseLong(value, nullptr);
+            seed = cfg->parseLong(value, nullptr);
         else
             seed = seedSet * numRngs + rngId;
     }

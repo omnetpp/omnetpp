@@ -49,6 +49,7 @@ cFileCommunications::cFileCommunications()
 
 void cFileCommunications::configure(cSimulation *sim, cConfiguration *cfg, int np, int procId)
 {
+    simulation = sim;
     numPartitions = np;
     myProcId = procId;
     if (numPartitions == -1 || myProcId == -1)

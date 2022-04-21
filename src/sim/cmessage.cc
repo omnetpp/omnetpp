@@ -52,11 +52,11 @@ cMessage::cMessage(const cMessage& msg) : cEvent(msg)
     EVCB.messageCloned(nonConstMsg, this);
 
     // after envir notification
-    nonConstMsg->previousEventNumber = previousEventNumber = getSimulation()->getEventNumber();
+    nonConstMsg->previousEventNumber = previousEventNumber = cSimulation::getActiveSimulation()->getEventNumber();
 }
 
 cMessage::cMessage(const char *name, short k) : cEvent(name),
-    messageKind(k), creationTime(getSimulation()->getSimTime())
+    messageKind(k), creationTime(cSimulation::getActiveSimulation()->getSimTime())
 {
     // name pooling is off for messages by default, as unique names are quite common
     messageTreeId = messageId = nextMessageId++;
@@ -68,7 +68,7 @@ cMessage::cMessage(const char *name, short k) : cEvent(name),
     EVCB.messageCreated(this);
 
     // after envir notification
-    previousEventNumber = getSimulation()->getEventNumber();
+    previousEventNumber = cSimulation::getActiveSimulation()->getEventNumber();
 }
 
 cMessage::~cMessage()
@@ -100,22 +100,22 @@ std::string cMessage::str() const
 
     if (isScheduled()) {
         simtime_t t = getArrivalTime();
-        simtime_t dt = t - getSimulation()->getSimTime();
+        simtime_t dt = t - cSimulation::getActiveSimulation()->getSimTime();
         if (getKind() == MK_STARTER) {
-            cModule *tomodp = getSimulation()->getModule(targetModuleId);
+            cModule *tomodp = cSimulation::getActiveSimulation()->getModule(targetModuleId);
             out << "starter for " << MODNAME(tomodp) << " for t=" << t.ustr() << " (now+" << dt.ustr() << ")";
         }
         else if (getKind() == MK_TIMEOUT) {
-            cModule *tomodp = getSimulation()->getModule(targetModuleId);
+            cModule *tomodp = cSimulation::getActiveSimulation()->getModule(targetModuleId);
             out << "timeoutmsg for " << MODNAME(tomodp) << " for t=" << t.ustr() << " (now+" << dt.ustr() << ")";
         }
         else if (senderModuleId == targetModuleId) {
-            cModule *tomodp = getSimulation()->getModule(targetModuleId);
+            cModule *tomodp = cSimulation::getActiveSimulation()->getModule(targetModuleId);
             out << "selfmsg for " << MODNAME(tomodp) << " for t=" << t.ustr() << " (now+" << dt.ustr() << ")";
         }
         else {
-            cModule *frommodp = getSimulation()->getModule(senderModuleId);
-            cModule *tomodp = getSimulation()->getModule(targetModuleId);
+            cModule *frommodp = cSimulation::getActiveSimulation()->getModule(senderModuleId);
+            cModule *tomodp = cSimulation::getActiveSimulation()->getModule(targetModuleId);
             out << "in transit from " << MODNAME(frommodp) << " to " << MODNAME(tomodp);
             out << ", arrival at t=" << t.ustr() << " (now+" << dt.ustr() << ")";
         }
@@ -297,7 +297,7 @@ cGate *cMessage::getSenderGate() const
 {
     if (senderModuleId < 0 || senderGateId < 0)
         return nullptr;
-    cModule *mod = getSimulation()->getModule(senderModuleId);
+    cModule *mod = cSimulation::getActiveSimulation()->getModule(senderModuleId);
     return !mod ? nullptr : mod->gate(senderGateId);
 }
 
@@ -305,7 +305,7 @@ cGate *cMessage::getArrivalGate() const
 {
     if (targetModuleId < 0 || targetGateId < 0)
         return nullptr;
-    cModule *mod = getSimulation()->getModule(targetModuleId);
+    cModule *mod = cSimulation::getActiveSimulation()->getModule(targetModuleId);
     return !mod ? nullptr : mod->gate(targetGateId);
 }
 
@@ -336,7 +336,7 @@ void cMessage::setSentFrom(cModule *module, int gateId, simtime_t_cref t)
 bool cMessage::isStale()
 {
     // check that destination module still exists and is alive
-    cSimpleModule *module = dynamic_cast<cSimpleModule *>(getSimulation()->getModule(targetModuleId));
+    cSimpleModule *module = dynamic_cast<cSimpleModule *>(cSimulation::getActiveSimulation()->getModule(targetModuleId));
     return !module || module->isTerminated();
 }
 

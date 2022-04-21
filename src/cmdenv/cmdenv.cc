@@ -451,8 +451,9 @@ void Cmdenv::simulate()
 
 void Cmdenv::printEventBanner(cEvent *event)
 {
-    out << "** Event #" << getSimulation()->getEventNumber()
-        << "  t=" << getSimulation()->getSimTime()
+    cSimulation *simulation = getSimulation();
+    out << "** Event #" << simulation->getEventNumber()
+        << "  t=" << simulation->getSimTime()
         << progressPercentage() << "   ";  // note: IDE launcher uses this to track progress
 
     if (event->isMessage()) {
@@ -468,7 +469,7 @@ void Cmdenv::printEventBanner(cEvent *event)
         out << "   Elapsed: " << timeToStr(getElapsedSecs())
             << "   Messages: created: " << cMessage::getTotalMessageCount()
             << "  present: " << cMessage::getLiveMessageCount()
-            << "  in FES: " << getSimulation()->getFES()->getLength() << "\n"; // note: "\n" not endl, because we don't want auto-flush on each event
+            << "  in FES: " << simulation->getFES()->getLength() << "\n"; // note: "\n" not endl, because we don't want auto-flush on each event
     }
 }
 

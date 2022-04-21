@@ -66,21 +66,26 @@ class SIM_API cTopology : public cOwnedObject
         friend class cTopology;
 
       protected:
+        const cTopology *owner;
         int moduleId;
-        double weight;
-        bool enabled;
+        double weight = 0;
+        bool enabled = true;
         std::vector<Link*> inLinks;
         std::vector<Link*> outLinks;
 
         // variables used by the shortest-path algorithms
-        double dist;
-        Link *outPath;
+        double dist = INFINITY;
+        Link *outPath = nullptr;
 
       public:
         /**
          * Constructor
          */
-        Node(int moduleId=-1) {this->moduleId=moduleId; weight=0; enabled=true; dist=INFINITY; outPath=nullptr;}
+        Node(const cTopology *owner, int moduleId=-1) : owner(owner), moduleId(moduleId) {}
+
+        /**
+         * Destructor
+         */
         virtual ~Node() {}
 
         /** @name Node attributes: weight, enabled state, correspondence to modules. */
@@ -94,7 +99,7 @@ class SIM_API cTopology : public cOwnedObject
         /**
          * Returns the pointer to the network module to which this node corresponds.
          */
-        cModule *getModule() const  {return getSimulation()->getModule(moduleId);}
+        cModule *getModule() const  {return owner->getSimulation()->getModule(moduleId);}
 
         /**
          * Returns the weight of this node. Weight is used with the
@@ -183,18 +188,23 @@ class SIM_API cTopology : public cOwnedObject
         friend class cTopology;
 
       protected:
-        Node *srcNode;
-        int srcGateId;
-        Node *destNode;
-        int destGateId;
+        const cTopology *owner;
+        Node *srcNode = nullptr;
+        int srcGateId = -1;
+        Node *destNode = nullptr;
+        int destGateId = -1;
         double weight;
-        bool enabled;
+        bool enabled = true;
 
       public:
         /**
          * Constructor.
          */
-        Link(double weight=1) {srcNode=destNode=nullptr; srcGateId=destGateId=-1; this->weight=weight; enabled=true;}
+        Link(const cTopology *owner, double weight=1) : owner(owner), weight(weight) {}
+
+        /**
+         * Destructor.
+         */
         virtual ~Link() {}
 
         /**
@@ -240,7 +250,7 @@ class SIM_API cTopology : public cOwnedObject
     class SIM_API LinkIn : public Link
     {
       private:
-        LinkIn(double weight=1) : Link(weight) {}
+        LinkIn(const cTopology *owner, double weight=1) : Link(owner, weight) {}
 
       public:
         /**
@@ -286,7 +296,7 @@ class SIM_API cTopology : public cOwnedObject
     class SIM_API LinkOut : public Link
     {
       private:
-        LinkOut(double weight=1) : Link(weight) {}
+        LinkOut(const cTopology *owner, double weight=1) : Link(owner, weight) {}
 
       public:
         /**
@@ -567,12 +577,12 @@ class SIM_API cTopology : public cOwnedObject
     /**
      * Node factory.
      */
-    virtual Node *createNode(cModule *module) { return new Node(module->getId()); }
+    virtual Node *createNode(cModule *module) { return new Node(this, module->getId()); }
 
     /**
      * Link factory.
      */
-    virtual Link *createLink() { return new Link(); }
+    virtual Link *createLink() { return new Link(this); }
 };
 
 }  // namespace omnetpp

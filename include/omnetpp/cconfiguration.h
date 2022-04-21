@@ -109,6 +109,10 @@ class SIM_API cConfiguration : public cObject
         FILT_ALL = FILT_CONFIG | FILT_PARAM
     };
 
+  protected:
+    // internal utility method
+    cComponent *getContextComponent() const;
+
   public:
     /** @name String-based getters for configuration options */
     //@{
@@ -154,13 +158,13 @@ class SIM_API cConfiguration : public cObject
 
     /** @name Utility functions for parsing config entries */
     //@{
-    static bool parseBool(const char *s, const char *defaultValue, bool fallbackValue=false);
-    static long parseLong(const char *s, const char *defaultValue, long fallbackValue=0);
-    static double parseDouble(const char *s, const char *unit, const char *defaultValue, double fallbackValue=0);
-    static std::string parseString(const char *s, const char *defaultValue, const char *fallbackValue="");
-    static std::string parseFilename(const char *s, const char *baseDir, const char *defaultValue);
-    static std::vector<std::string> parseFilenames(const char *s, const char *baseDir, const char *defaultValue);
-    static std::string adjustPath(const char *s, const char *baseDir, const char *defaultValue);
+    bool parseBool(const char *s, const char *defaultValue, bool fallbackValue=false) const;
+    long parseLong(const char *s, const char *defaultValue, long fallbackValue=0) const;
+    double parseDouble(const char *s, const char *unit, const char *defaultValue, double fallbackValue=0) const;
+    std::string parseString(const char *s, const char *defaultValue, const char *fallbackValue="") const;
+    std::string parseFilename(const char *s, const char *baseDir, const char *defaultValue) const;
+    std::vector<std::string> parseFilenames(const char *s, const char *baseDir, const char *defaultValue) const;
+    std::string adjustPath(const char *s, const char *baseDir, const char *defaultValue) const;
     //@}
 
     /** @name Getters for configuration options */

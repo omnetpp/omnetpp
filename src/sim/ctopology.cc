@@ -336,7 +336,7 @@ cTopology::Node *cTopology::getNode(int i) const
 cTopology::Node *cTopology::getNodeFor(cModule *mod) const
 {
     // binary search because nodes[] is ordered by module ID
-    Node tmpNode(mod->getId());
+    Node tmpNode(this, mod->getId());
     auto it = std::lower_bound(nodes.begin(), nodes.end(), &tmpNode, lessByModuleId);
     return it == nodes.end() || (*it)->moduleId != mod->getId() ? nullptr : *it;
 }

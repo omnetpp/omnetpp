@@ -286,13 +286,27 @@ cModuleType::cModuleType(const char *qname) : cComponentType(qname)
 
 cModule *cModuleType::create(const char *moduleName, cModule *parentModule, int index)
 {
+    if (!parentModule)
+        throw cRuntimeError("cModuleType::create(): parentModule may not be nullptr, use other create() overload to create root module");
+    return doCreate(parentModule->getSimulation(), parentModule, moduleName, index);
+}
+
+cModule *cModuleType::create(const char *moduleName, cSimulation *simulation)
+{
+    return doCreate(simulation, nullptr, moduleName);
+}
+
+cModule *cModuleType::doCreate(cSimulation *simulation, cModule *parentModule, const char *moduleName, int index)
+{
     // set context type to "BUILD"
     cContextTypeSwitcher _(CTX_BUILD);
+
+    cEnvir *envir = simulation->getEnvir();
 
     // create the new module object
     cTemporaryOwner tmp(cTemporaryOwner::DestructorMode::ASSERTNONE); // for collecting members of the new object
 #ifdef WITH_PARSIM
-    bool isLocal = getSimulation()->isParsimEnabled() ? getSimulation()->getParsimPartition()->isModuleLocal(parentModule, moduleName, index) : true;
+    bool isLocal = simulation->isParsimEnabled() ? simulation->getParsimPartition()->isModuleLocal(parentModule, moduleName, index) : true;
     cModule *module = isLocal ? createModuleObject() : new cPlaceholderModule();
 #else
     cModule *module = createModuleObject();
@@ -318,7 +332,7 @@ cModule *cModuleType::create(const char *moduleName, cModule *parentModule, int 
         if (parentModule)
             parentModule->insertSubmodule(module);
         else
-            getSimulation()->setSystemModule(module);
+            simulation->setSystemModule(module);
     }
     catch (std::exception&) {
         delete module;
@@ -326,11 +340,11 @@ cModule *cModuleType::create(const char *moduleName, cModule *parentModule, int 
     }
 
     // register with cSimulation
-    getSimulation()->registerComponent(module);
+    simulation->registerComponent(module);
 
     // set up RNG mapping, etc.
-    getEnvir()->preconfigureComponent(module);
-    getSimulation()->getRngManager()->configureRNGs(module);
+    envir->preconfigureComponent(module);
+    simulation->getRngManager()->configureRNGs(module);
 
     // should be called before any gateCreated calls on this module
     EVCB.moduleCreated(module);
@@ -344,7 +358,7 @@ cModule *cModuleType::create(const char *moduleName, cModule *parentModule, int 
         module->getCanvas()->addFiguresFrom(module->getProperties());
 
     // let envir perform additional configuration
-    getEnvir()->configureComponent(module);
+    envir->configureComponent(module);
 
     // notify post-change listeners
     if (module->hasListeners(POST_MODEL_CHANGE)) {
@@ -379,10 +393,11 @@ cModule *cModuleType::createScheduleInit(const char *name, cModule *parentModule
     if (!parentModule)
         throw cRuntimeError("createScheduleInit(): Parent module pointer cannot be nullptr "
                             "when creating module named '%s' of type %s", name, getFullName());
+    cSimulation *simulation = parentModule->getSimulation();
     cModule *module = create(name, parentModule, index);
     module->finalizeParameters();
     module->buildInside();
-    module->scheduleStart(getSimulation()->getSimTime());
+    module->scheduleStart(simulation->getSimTime());
     module->callInitialize();
     return module;
 }
@@ -421,7 +436,7 @@ cChannel *cChannelType::instantiateChannelClass(const char *className)
     return channel;
 }
 
-cChannel *cChannelType::create(const char *name)
+cChannel *cChannelType::create(const char *name, cSimulation *simulation)
 {
     cContextTypeSwitcher _(CTX_BUILD);
 
@@ -445,18 +460,22 @@ cChannel *cChannelType::create(const char *name)
     channel->setName(name);
     channel->setComponentType(this);
 
+    if (!simulation)
+        simulation = cSimulation::getActiveSimulation();
+    cEnvir *envir = simulation->getEnvir();
+
     // register with cSimulation
-    getSimulation()->registerComponent(channel);
+    simulation->registerComponent(channel);
 
     // set up RNG mapping, etc.
-    getEnvir()->preconfigureComponent(channel);
-    getSimulation()->getRngManager()->configureRNGs(channel);
+    envir->preconfigureComponent(channel);
+    simulation->getRngManager()->configureRNGs(channel);
 
     // add parameters to the new module
     addParametersTo(channel);
 
     // let envir perform additional configuration
-    getEnvir()->configureComponent(channel);
+    envir->configureComponent(channel);
 
     return channel;
 }

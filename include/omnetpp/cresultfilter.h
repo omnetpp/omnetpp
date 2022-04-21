@@ -102,6 +102,8 @@ class SIM_API cResultFilter : public cResultListener
         virtual void init(Context *ctx);
         [[deprecated]] virtual void init(cComponent *component, cProperty *attrsProperty) {} // deprecated, left for backward compatibility
         virtual cResultFilter *clone() const override;
+        virtual cComponent *getComponent() const {return component;}
+        virtual cSimulation *getSimulation() const override;
         virtual double getInitialDoubleValue() const {return NAN;}
         virtual void addDelegate(cResultListener *delegate);
         virtual bool hasDelegate(cResultListener *delegate);

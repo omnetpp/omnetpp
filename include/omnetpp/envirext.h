@@ -90,6 +90,11 @@ class SIM_API cIOutputVectorManager : public cObject, public cISimulationLifecyc
     virtual void configure(cSimulation *simulation, cConfiguration *cfg) = 0;
 
     /**
+     * Returns the simulation instance associated with this object.
+     */
+    virtual cSimulation *getSimulation() const override {return cISimulationLifecycleListener::getSimulation();}
+
+    /**
      * Opens collecting. Called at the beginning of a simulation run.
      */
     virtual void startRun() = 0;
@@ -200,6 +205,11 @@ class SIM_API cIOutputScalarManager : public cObject, public cISimulationLifecyc
     virtual void configure(cSimulation *simulation, cConfiguration *cfg) = 0;
 
     /**
+     * Returns the simulation instance associated with this object.
+     */
+    virtual cSimulation *getSimulation() const override {return cISimulationLifecycleListener::getSimulation();}
+
+    /**
      * Opens collecting. Called at the beginning of a simulation run.
      */
     virtual void startRun() = 0;
@@ -305,6 +315,11 @@ class SIM_API cISnapshotManager : public cObject, public cISimulationLifecycleLi
     virtual void configure(cSimulation *simulation, cConfiguration *cfg) = 0;
 
     /**
+     * Returns the simulation instance associated with this object.
+     */
+    virtual cSimulation *getSimulation() const override {return cISimulationLifecycleListener::getSimulation();}
+
+    /**
      * Called at the beginning of a simulation run.
      */
     virtual void startRun() = 0;
@@ -380,6 +395,11 @@ class SIM_API cIEventlogManager : public cObject, public cISimulationLifecycleLi
      * Sets the configuration database to use for configuring this object.
      */
     virtual void configure(cSimulation *simulation, cConfiguration *cfg) = 0;
+
+    /**
+     * Returns the simulation instance associated with this object.
+     */
+    virtual cSimulation *getSimulation() const override {return cISimulationLifecycleListener::getSimulation();}
 
     /**
      * (Re)starts eventlog recording. Whether eventlog recording is enabled by

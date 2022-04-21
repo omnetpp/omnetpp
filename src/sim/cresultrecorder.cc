@@ -15,6 +15,7 @@
 
 #include "common/opp_ctype.h"
 #include "common/stringutil.h"
+#include "omnetpp/ccomponent.h"
 #include "omnetpp/cresultrecorder.h"
 #include "omnetpp/cproperty.h"
 #include "omnetpp/cstringtokenizer.h"
@@ -55,6 +56,16 @@ cResultRecorder *cResultRecorder::clone() const
     Context ctx { component, statisticName.c_str(), recordingMode.c_str(), attrsProperty, manualAttrs ? new opp_string_map(*manualAttrs) : nullptr };
     copy->init(&ctx);
     return copy;
+}
+
+std::string cResultRecorder::getFullPath() const
+{
+    return getComponent()->getFullPath() + "." + getResultName();
+}
+
+cSimulation *cResultRecorder::getSimulation() const
+{
+    return getComponent()->getSimulation();
 }
 
 void cResultRecorder::callFinish(cResultFilter *prev)

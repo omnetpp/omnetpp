@@ -422,7 +422,7 @@ class SIM_API cComponent : public cSoftOwner //implies noncopyable
     /**
      * Returns the simulation the component is part of.
      */
-    cSimulation *getSimulation() const {return simulation;}
+    cSimulation *getSimulation() const override {return simulation;}
 
     /**
      * Returns the component's ID in the simulation object (cSimulation).

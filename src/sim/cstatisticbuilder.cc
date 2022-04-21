@@ -109,7 +109,7 @@ void cStatisticBuilder::doAddResultRecorders(cComponent *component, std::string&
         SignalSource source;
         if (signal == SIMSIGNAL_NULL) {
             const char *sourceSpec = opp_emptytodefault(statisticProperty->getValue(PROPKEY_STATISTIC_SOURCE, 0), statisticName);
-            bool hasWarmupPeriod = getSimulation()->getWarmupPeriod() != SIMTIME_ZERO;
+            bool hasWarmupPeriod = component->getSimulation()->getWarmupPeriod() != SIMTIME_ZERO;
             TristateBool warmupAttr = parseTristateBool(statisticProperty->getValue(PROPKEY_STATISTIC_AUTOWARMUPFILTER), "warmup attribute");
             bool needWarmupFilter = hasWarmupPeriod && warmupAttr != TRISTATE_FALSE;
             source = doStatisticSource(component, statisticProperty, statisticName, sourceSpec, checkSignalDecl, needWarmupFilter);

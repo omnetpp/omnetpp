@@ -34,7 +34,7 @@ namespace omnetpp {
 cContextSwitcher::cContextSwitcher(const cComponent *newContext)
 {
     // save current context and switch to new
-    cSimulation *simulation = getSimulation();
+    simulation = newContext->getSimulation();
     callerContext = simulation->getContext();
     simulation->setContext(const_cast<cComponent *>(newContext));
 }
@@ -43,9 +43,9 @@ cContextSwitcher::~cContextSwitcher()
 {
     // restore old context
     if (!callerContext)
-        getSimulation()->setGlobalContext();
+        simulation->setGlobalContext();
     else
-        getSimulation()->setContext(callerContext);
+        simulation->setContext(callerContext);
 }
 
 //----
@@ -62,7 +62,7 @@ cMethodCallContextSwitcher::cMethodCallContextSwitcher(const cComponent *newCont
 
 void cMethodCallContextSwitcher::methodCall(const char *methodFmt, ...)
 {
-    cComponent *newContext = getSimulation()->getContext();
+    cComponent *newContext = simulation->getContext();
     if (newContext != callerContext) {
         va_list va;
         va_start(va, methodFmt);
@@ -73,7 +73,7 @@ void cMethodCallContextSwitcher::methodCall(const char *methodFmt, ...)
 
 void cMethodCallContextSwitcher::methodCallSilent(const char *methodFmt, ...)
 {
-    cComponent *newContext = getSimulation()->getContext();
+    cComponent *newContext = simulation->getContext();
     if (newContext != callerContext) {
         va_list va;
         va_start(va, methodFmt);
@@ -84,7 +84,7 @@ void cMethodCallContextSwitcher::methodCallSilent(const char *methodFmt, ...)
 
 void cMethodCallContextSwitcher::methodCallSilent()
 {
-    cComponent *newContext = getSimulation()->getContext();
+    cComponent *newContext = simulation->getContext();
     if (newContext != callerContext)
         EVCB.componentMethodBegin(callerContext, newContext, nullptr, dummy_va, true);
 }
@@ -92,7 +92,7 @@ void cMethodCallContextSwitcher::methodCallSilent()
 cMethodCallContextSwitcher::~cMethodCallContextSwitcher()
 {
     depth--;
-    cComponent *methodContext = getSimulation()->getContext();
+    cComponent *methodContext = simulation->getContext();
     if (methodContext != callerContext)
         EVCB.componentMethodEnd();
 }
@@ -102,14 +102,14 @@ cMethodCallContextSwitcher::~cMethodCallContextSwitcher()
 cContextTypeSwitcher::cContextTypeSwitcher(ContextType contextType)
 {
     // save current context type and switch to new one
-    cSimulation *simulation = getSimulation();
+    simulation = cSimulation::getActiveSimulation();
     savedContextType = simulation->getContextType();
     simulation->setContextType(contextType);
 }
 
 cContextTypeSwitcher::~cContextTypeSwitcher()
 {
-    getSimulation()->setContextType(savedContextType);
+    simulation->setContextType(savedContextType);
 }
 
 }  // namespace omnetpp

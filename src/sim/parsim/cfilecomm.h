@@ -35,6 +35,7 @@ namespace omnetpp {
 class SIM_API cFileCommunications : public cParsimCommunications
 {
   protected:
+    cSimulation *simulation = nullptr;
     int numPartitions = -1;
     int myProcId = -1;
 
@@ -65,6 +66,11 @@ class SIM_API cFileCommunications : public cParsimCommunications
      * Shutdown the communications library.
      */
     virtual void shutdown() override;
+
+    /**
+     * Returns the associated simulation instance.
+     */
+    cSimulation *getSimulation() const override {return simulation;}
 
     /**
      * Returns total number of partitions.

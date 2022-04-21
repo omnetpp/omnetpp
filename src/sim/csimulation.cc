@@ -509,7 +509,7 @@ void cSimulation::setupNetwork(cModuleType *network)
         // set up the network by instantiating the toplevel module
         cContextTypeSwitcher tmp(CTX_BUILD);
         notifyLifecycleListeners(LF_PRE_NETWORK_SETUP);
-        cModule *module = networkType->create(networkType->getName(), nullptr);
+        cModule *module = networkType->create(networkType->getName(), this);
         module->finalizeParameters();
         module->buildInside();
         notifyLifecycleListeners(LF_POST_NETWORK_SETUP);

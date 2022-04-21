@@ -91,6 +91,7 @@ class ENVIR_API AppBase : public IAllInOne
     virtual int run(const std::vector<std::string>& args, cConfiguration *cfg) final;
 
     cEnvir *getEnvir() const {return envir;}
+    cSimulation *getSimulation() const {return envir->getSimulation();}
 
     cConfiguration *getConfig() {return envir->getConfig();}
     cConfigurationEx *getConfigEx() {return envir->getConfigEx();}

@@ -91,6 +91,7 @@ class SIM_API cParsimPartition : public cObject, public cISimulationLifecycleLis
 
     /**
      * Returns the simulation instance associated with the object.
+     * Returns the simulation instance this object is assocated with.
      */
     cSimulation *getSimulation() const override {return sim;}
 

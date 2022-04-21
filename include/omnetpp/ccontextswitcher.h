@@ -91,7 +91,9 @@ enum ContextType {CTX_NONE, CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_REFRESHDIS
 class SIM_API cContextSwitcher
 {
   protected:
+    cSimulation *simulation;
     cComponent *callerContext;
+
   public:
     /**
      * Switches context to the given module
@@ -156,6 +158,7 @@ class SIM_API cMethodCallContextSwitcher : public cContextSwitcher
 class SIM_API cContextTypeSwitcher
 {
   private:
+    cSimulation *simulation;
     ContextType savedContextType;
 
   public:

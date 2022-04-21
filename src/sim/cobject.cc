@@ -85,6 +85,12 @@ std::string cObject::getClassAndFullPath() const
     return os.str();
 }
 
+cSimulation *cObject::getSimulation() const
+{
+    cObject *owner = getOwner();
+    return owner != nullptr ? owner->getSimulation() : nullptr;
+}
+
 std::string cObject::str() const
 {
     return std::string();

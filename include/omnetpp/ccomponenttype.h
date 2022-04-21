@@ -210,6 +210,9 @@ class SIM_API cModuleType : public cComponentType
     // internal: create the module object
     virtual cModule *createModuleObject() = 0;
 
+    // internal: the common part of create() variants
+    virtual cModule *doCreate(cSimulation *simulation, cModule *parentmod, const char *name, int index=-1);
+
     // internal: add parameters and gates to a newly created module object.
     // Gate vectors will be created with zero size, and a further call to
     // setupGateVectors() will be needed once parameter values have been finalized/
@@ -259,6 +262,7 @@ class SIM_API cModuleType : public cComponentType
      * Creates a submodule under the given parent module. If index is given,
      * the module creates an element in a module vector; the module vector of
      * the given name must already exist and must be sufficiently large (size>index).
+     * The parentModule argument may not be nullptr.
      *
      * In addition to creating an object of the correct type, this function
      * inserts the module into the simulation's data structure, and adds the
@@ -286,7 +290,12 @@ class SIM_API cModuleType : public cComponentType
      * module->callInitialize();
      * </pre>
      */
-    virtual cModule *create(const char *name, cModule *parentmod, int index=-1);
+    virtual cModule *create(const char *moduleName, cModule *parentModule, int index=-1);
+
+    /**
+     * Creates the system module in the given simulation instance.
+     */
+    virtual cModule *create(const char *moduleName, cSimulation *simulation);
 
     /**
      * This is a convenience function to get a module up and running in one step.
@@ -363,7 +372,7 @@ class SIM_API cChannelType : public cComponentType
      * this methods inserts it into the simulation's data structure,
      * and adds the parameters specified in the NED declaration.
      */
-    virtual cChannel *create(const char *name);
+    virtual cChannel *create(const char *name, cSimulation *simulation=nullptr);
     //@}
 
     /**

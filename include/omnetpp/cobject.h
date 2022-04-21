@@ -31,7 +31,7 @@ class cCommBuffer;
 class cClassDescriptor;
 class cOwnedObject;
 class cSoftOwner;
-
+class cSimulation;
 
 /**
  * @brief cObject is a lightweight class which serves as the root of the
@@ -317,6 +317,14 @@ class SIM_API cObject
      * an error if some other object tries to take() an object that they own.
      */
     virtual bool isSoftOwner() const {return false;}
+
+    /**
+     * Returns the simulation instance associated with the object, or nullptr
+     * if there is none. The default implementation delegates to the owner
+     * object if there is one (returns getOwner()->getSimulation()), and
+     * returns nullptr otherwise.
+     */
+    virtual cSimulation *getSimulation() const;
 
     /**
      * Enables traversing the object tree, performing some operation on

@@ -342,7 +342,7 @@ void EventlogFileManager::resume()
         if (hasRecordingIntervals())
             clearRecordingIntervals();
     }
-    if (lastChunk != SNAPSHOT && (eventNumber == -1 || eventNumber != cSimulation::getActiveSimulation()->getEventNumber() - 1))
+    if (lastChunk != SNAPSHOT && (eventNumber == -1 || eventNumber != getSimulation()->getEventNumber() - 1))
         recordSnapshot();
     isRecordingEnabled = true;
 }
@@ -389,11 +389,11 @@ void EventlogFileManager::simulationEvent(cEvent *event)
     cMessage *msg = dynamic_cast<cMessage*>(event);
     cModule *mod = msg ? msg->getArrivalModule() : nullptr;
     isModuleFilterRecordingEnabled = mod ? mod->isRecordEvents() : true;
-    isIntervalFilterRecordingEnabled = !recordingIntervals || recordingIntervals->contains(cSimulation::getActiveSimulation()->getSimTime());
+    isIntervalFilterRecordingEnabled = !recordingIntervals || recordingIntervals->contains(getSimulation()->getSimTime());
     isEventRecordingEnabled = isRecordingEnabled && isModuleFilterRecordingEnabled && isIntervalFilterRecordingEnabled;
     if (isEventRecordingEnabled) {
-        eventNumber = cSimulation::getActiveSimulation()->getEventNumber();
-        simulationTime = cSimulation::getActiveSimulation()->getSimTime();
+        eventNumber = getSimulation()->getEventNumber();
+        simulationTime = getSimulation()->getSimTime();
         FileLockAcquirer fileLockAcquirer(fileLock, FILE_LOCK_EXCLUSIVE);
         file_offset_t fileOffset = opp_ftell(feventlog);
         if (lastChunk != INDEX && fileOffset - toRealFileOffset(previousIndexFileOffset) > indexFrequency)
@@ -407,9 +407,9 @@ void EventlogFileManager::simulationEvent(cEvent *event)
         if (fileOffset > maxSize)
             truncate();
         fprintf(feventlog, "\n");
-        auto fingerprintCalculator = cSimulation::getActiveSimulation()->getFingerprintCalculator();
+        auto fingerprintCalculator = getSimulation()->getFingerprintCalculator();
         if (msg)
-            EventLogWriter::recordEventEntry_e_t_m_ce_msg_f(feventlog, eventNumber, cSimulation::getActiveSimulation()->getSimTime(), mod->getId(), msg->getPreviousEventNumber(), msg->getId(), (fingerprintCalculator ? fingerprintCalculator->str().c_str() : nullptr));
+            EventLogWriter::recordEventEntry_e_t_m_ce_msg_f(feventlog, eventNumber, getSimulation()->getSimTime(), mod->getId(), msg->getPreviousEventNumber(), msg->getId(), (fingerprintCalculator ? fingerprintCalculator->str().c_str() : nullptr));
         else
             ; // TODO: record non message handling events
         entryIndex = 0;
@@ -896,7 +896,7 @@ void EventlogFileManager::recordInitialize()
 {
     FileLockAcquirer fileLockAcquirer(fileLock, FILE_LOCK_EXCLUSIVE);
     fprintf(feventlog, "\n");
-    // we can't use cSimulation::getActiveSimulation()->getEventNumber() and cSimulation::getActiveSimulation()->getSimTime(), because when we start a new run
+    // we can't use getSimulation()->getEventNumber() and getSimulation()->getSimTime(), because when we start a new run
     // these numbers are still set from the previous run (i.e. not zero)
     EventLogWriter::recordEventEntry_e_t_m_ce_msg(feventlog, 0, 0, 1, -1, -1);
     eventNumber = 0;
@@ -913,14 +913,14 @@ void EventlogFileManager::recordSnapshot()
     EventLogWriter::recordSnapshotEntry_f_e_t(feventlog, toVirtualFileOffset(opp_ftell(feventlog)), eventNumber, simulationTime);
     entryIndex = 0;
     previousSnapshotFileOffset = snapshotFileOffset;
-    cModule *systemModule = cSimulation::getActiveSimulation()->getSystemModule();
+    cModule *systemModule = getSimulation()->getSystemModule();
     if (systemModule && isModuleRecordingEnabled) {
         recordModules(systemModule);
         recordConnections(systemModule);
     }
     if (isMessageRecordingEnabled) {
         recordMessages(systemModule);
-        recordMessages(cSimulation::getActiveSimulation()->getFES());
+        recordMessages(getSimulation()->getFES());
     }
     for (std::map<eventnumber_t, std::vector<EventLogEntryRange> >::iterator it = eventNumberToSnapshotEventLogEntryRanges.begin(); it != eventNumberToSnapshotEventLogEntryRanges.end(); it++) {
         std::vector<EventLogEntryRange> &ranges = it->second;

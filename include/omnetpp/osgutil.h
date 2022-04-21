@@ -80,7 +80,7 @@ inline cObjectOsgNode::cObjectOsgNode(const cObjectOsgNode& node, const osg::Cop
 
 inline const cObject *cObjectOsgNode::getObject() const
 {
-    return componentId != 0 ? getSimulation()->getComponent(componentId) : object;
+    return componentId != 0 ? cSimulation::getActiveSimulation()->getComponent(componentId) : object;
 }
 
 inline void cObjectOsgNode::setObject(const cObject *obj)
