@@ -707,9 +707,11 @@ inline simtime_t simTime() {return cSimulation::getActiveSimulation()->getSimTim
  * @brief Returns the environment object for the currently active simulation.
  * This function never returns nullptr (not even during shutdown).
  *
+ * Deprecated -- use cSimulation::getActiveEnvir() instead.
+ *
  * @ingroup Misc
  */
-inline cEnvir *getEnvir()  {return cSimulation::getActiveEnvir();}
+[[deprecated]] inline cEnvir *getEnvir()  {return cSimulation::getActiveEnvir();}
 
 }  // namespace omnetpp
 
