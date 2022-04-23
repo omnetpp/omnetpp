@@ -28,6 +28,8 @@ namespace omnetpp {
 class cObject;
 class cComponent;
 class cModule;
+class cSimulation;
+class cEnvir;
 
 /**
  * This type exists purely for technical reasons: Occurrences of this type on the code
@@ -52,6 +54,8 @@ class SIM_API cException : public std::exception
     ErrorCode errorCode;
     std::string msg;
 
+    cSimulation *simulation;
+    cEnvir *envir;
     int simulationStage;
     eventnumber_t eventNumber;
     simtime_t simtime;

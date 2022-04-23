@@ -70,7 +70,7 @@ std::string EnvirUtils::getConfigOptionType(cConfigOption *option)
 
 void EnvirUtils::dumpComponentList(std::ostream& out, const char *category, bool verbose)
 {
-    cConfigurationEx *config = getEnvir()->getConfigEx();
+    cConfiguration *config = cSimulation::getActiveEnvir()->getConfig();
     bool wantAll = !strcmp(category, "all");
     bool processed = false;
     out << "\n";

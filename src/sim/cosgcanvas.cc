@@ -39,13 +39,13 @@ Register_Class(cOsgCanvas);
 
 static double NaN = std::numeric_limits<double>::quiet_NaN();
 
-inline void ref(osg::Node *scene)
+void cOsgCanvas::ref(osg::Node *scene)
 {
     if (scene)
         getEnvir()->refOsgNode(scene);
 }
 
-inline void unref(osg::Node *scene)
+void cOsgCanvas::unref(osg::Node *scene)
 {
     if (scene)
         getEnvir()->unrefOsgNode(scene);

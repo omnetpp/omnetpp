@@ -91,6 +91,12 @@ cSimulation *cObject::getSimulation() const
     return owner != nullptr ? owner->getSimulation() : nullptr;
 }
 
+cEnvir *cObject::getEnvir() const
+{
+    cSimulation *simulation = getSimulation();
+    return simulation ? simulation->getEnvir() : cSimulation::getStaticEnvir();
+}
+
 std::string cObject::str() const
 {
     return std::string();

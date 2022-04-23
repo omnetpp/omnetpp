@@ -32,6 +32,7 @@ class cClassDescriptor;
 class cOwnedObject;
 class cSoftOwner;
 class cSimulation;
+class cEnvir;
 
 /**
  * @brief cObject is a lightweight class which serves as the root of the
@@ -325,6 +326,15 @@ class SIM_API cObject
      * returns nullptr otherwise.
      */
     virtual cSimulation *getSimulation() const;
+
+    /**
+     * Returns the environment object for the simulation instance associated with
+     * this object, i.e. getSimulation()->getEnvir(). Never returns nullptr:
+     * in the case getSimulation() returns nullptr, this method will return a
+     * pointer to a static "do-nothing" environment instance, similarly to
+     * what cSimulation::getActiveEnvir() does.
+     */
+    cEnvir *getEnvir() const;
 
     /**
      * Enables traversing the object tree, performing some operation on

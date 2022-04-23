@@ -78,10 +78,11 @@ LogLevel cLog::resolveLogLevel(const char *name)
 bool cLog::defaultNoncomponentLogPredicate(const void *object, LogLevel logLevel, const char *category)
 {
     // log called from outside cComponent methods, use context component to decide enablement
-    const cModule *contextModule = cSimulation::getActiveSimulation()->getContextModule();
+    cSimulation *simulation = cSimulation::getActiveSimulation();
+    const cModule *contextModule = simulation->getContextModule();
     return logLevel >= cLog::logLevel &&
            (!contextModule || logLevel >= contextModule->getLogLevel()) &&
-           getEnvir()->isLoggingEnabled();
+           simulation->getEnvir()->isLoggingEnabled();
 }
 
 bool cLog::defaultComponentLogPredicate(const cComponent *sourceComponent, LogLevel logLevel, const char *category)
@@ -89,7 +90,7 @@ bool cLog::defaultComponentLogPredicate(const cComponent *sourceComponent, LogLe
     // log called from a cComponent method, check whether logging for that component is enabled
     return logLevel >= cLog::logLevel &&
            logLevel >= sourceComponent->getLogLevel() &&
-           getEnvir()->isLoggingEnabled();
+           sourceComponent->getEnvir()->isLoggingEnabled();
 }
 
 //----
@@ -106,7 +107,7 @@ int cLogProxy::LogBuffer::sync()
             if (*s == '\n') {
                 cLogProxy::currentEntry.text = text;
                 cLogProxy::currentEntry.textLength = s - text + 1;
-                getEnvir()->log(&cLogProxy::currentEntry);
+                cSimulation::getActiveEnvir()->log(&cLogProxy::currentEntry);
                 text = s + 1;
             }
         }

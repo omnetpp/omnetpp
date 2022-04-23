@@ -209,11 +209,12 @@ cSimpleModule::cSimpleModule(unsigned stackSize)
     if (usesActivity()) {
        // setup coroutine, allocate stack for it
        coroutine = new cCoroutine;
-       if (!coroutine->setup(cSimpleModule::activate, this, stackSize+getEnvir()->getExtraStackForEnvir()))
+       cEnvir *envir = cSimulation::getActiveEnvir(); //TODO getEnvir() method crashes at this point
+       if (!coroutine->setup(cSimpleModule::activate, this, stackSize + envir->getExtraStackForEnvir()))
            throw cRuntimeError("Cannot create coroutine with %d+%d bytes of stack space for module '%s' -- "
                                "see Manual for hints on how to increase the number of coroutines that can be created, "
                                "or rewrite modules to use handleMessage() instead of activity()",
-                               stackSize, getEnvir()->getExtraStackForEnvir(), getFullPath().c_str());
+                               stackSize, envir->getExtraStackForEnvir(), getFullPath().c_str());
     }
 
     ASSERT(SendOptions::DEFAULT.duration_ == SendOptions::DURATION_UNSPEC); // catch errors from wrong initialization order

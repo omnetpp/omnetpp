@@ -59,11 +59,12 @@ cSoftOwner::~cSoftOwner()
 void cSoftOwner::reportUndisposed()
 {
     // report objects as undisposed, except watches
+    cEnvir *envir = cSimulation::getActiveEnvir();  // note: getEnvir() can no longer be used at this point
     for (int i = 0; i < numObjs; i++) {
         if (dynamic_cast<cWatchBase *>(objs[i]))
             delete objs[i--];  // "i--" used because delete will move last item to position i
         else {
-            getEnvir()->undisposedObject(objs[i]);
+            envir->undisposedObject(objs[i]);
             objs[i]->owner = nullptr; // as its current owner (this) is being deleted
         }
     }

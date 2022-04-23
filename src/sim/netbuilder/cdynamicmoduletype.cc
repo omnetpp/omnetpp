@@ -88,27 +88,27 @@ cModule *cDynamicModuleType::createModuleObject()
 void cDynamicModuleType::addParametersAndGatesTo(cModule *module)
 {
     cNedDeclaration *decl = getDecl();
-    cConfiguration *cfg = getEnvir()->getConfig();
+    cConfiguration *cfg = module->getEnvir()->getConfig();
     cNedNetworkBuilder(nedLoader, cfg).addParametersAndGatesTo(module, decl);
 }
 
 void cDynamicModuleType::applyPatternAssignments(cComponent *component)
 {
-    cConfiguration *cfg = getEnvir()->getConfig();
+    cConfiguration *cfg = component->getEnvir()->getConfig();
     cNedNetworkBuilder(nedLoader, cfg).assignParametersFromPatterns(component);
 }
 
 void cDynamicModuleType::setupGateVectors(cModule *module)
 {
     cNedDeclaration *decl = getDecl();
-    cConfiguration *cfg = getEnvir()->getConfig();
+    cConfiguration *cfg = module->getEnvir()->getConfig();
     cNedNetworkBuilder(nedLoader, cfg).setupGateVectors(module, decl);
 }
 
 void cDynamicModuleType::buildInside(cModule *module)
 {
     cNedDeclaration *decl = getDecl();
-    cConfiguration *cfg = getEnvir()->getConfig();
+    cConfiguration *cfg = module->getEnvir()->getConfig();
     cNedNetworkBuilder(nedLoader, cfg).buildInside(module, decl);
 }
 

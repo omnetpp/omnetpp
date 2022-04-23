@@ -86,7 +86,7 @@ void SimTime::configure(cConfiguration *cfg)
     SimTime::setScaleExp(exp);
 
     if (hasSimtimeScale)
-        getEnvir()->printfmsg(
+        cSimulation::getActiveEnvir()->printfmsg(
                 "Warning: Obsolete config option %s= found, please use the improved %s= instead "
                 "(it allows values like \"us\" or \"100ps\" in addition to base-10 scale exponents)",
                 CFGID_SIMTIME_SCALE->getName(), CFGID_SIMTIME_RESOLUTION->getName());

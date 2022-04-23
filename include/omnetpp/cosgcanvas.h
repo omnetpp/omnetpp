@@ -146,6 +146,8 @@ class SIM_API cOsgCanvas : public cOwnedObject
 
     private:
         void copy(const cOsgCanvas& other);
+        void ref(osg::Node *scene);
+        void unref(osg::Node *scene);
 
     public:
         /** @name Constructors, destructor, assignment */

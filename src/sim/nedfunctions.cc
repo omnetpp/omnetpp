@@ -420,7 +420,7 @@ DEF(nedf_expand,
 cValue nedf_expand(cComponent *contextComponent, cValue argv[], int argc)
 {
     std::string tmp = argv[0].stdstringValue();
-    tmp = getEnvir()->getConfig()->substituteVariables(tmp.c_str());
+    tmp = cSimulation::getActiveEnvir()->getConfig()->substituteVariables(tmp.c_str());
     return tmp;
 }
 
@@ -941,7 +941,7 @@ cValue nedf_readXML(cExpression::Context *context, cValue argv[], int argc)
 {
     std::string filepath = concatDirAndFile(context->baseDirectory, argv[0].stringValue());
     const char *xpath = argc == 1 ? nullptr : argv[1].stringValue();
-    cXMLElement *node = getEnvir()->getXMLDocument(filepath.c_str(), xpath);
+    cXMLElement *node = cSimulation::getActiveEnvir()->getXMLDocument(filepath.c_str(), xpath);
     if (!node) {
         if (argc == 1)
             throw cRuntimeError("File \"%s\"not found", filepath.c_str());
@@ -962,7 +962,7 @@ cValue nedf_parseXML(cExpression::Context *context, cValue argv[], int argc)
 {
     const char *xmlText = argv[0].stringValue();
     const char *xpath = argc == 1 ? nullptr : argv[1].stringValue();
-    cXMLElement *node = getEnvir()->getParsedXMLString(xmlText, xpath);
+    cXMLElement *node = cSimulation::getActiveEnvir()->getParsedXMLString(xmlText, xpath);
     if (!node) {
         if (argc == 1)
             throw cRuntimeError("Empty XML document");

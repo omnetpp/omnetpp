@@ -98,7 +98,6 @@ class ENVIR_API EventlogFileManager : public cIEventlogManager
 
   private:
     cConfiguration *cfg = nullptr;
-    cEnvir *envir = nullptr;  //TODO eliminate?
     std::string filename;
 
     // configuration that does not change over time

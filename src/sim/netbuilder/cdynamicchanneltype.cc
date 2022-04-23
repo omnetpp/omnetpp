@@ -76,13 +76,13 @@ cChannel *cDynamicChannelType::createChannelObject()
 void cDynamicChannelType::addParametersTo(cChannel *channel)
 {
     cNedDeclaration *decl = getDecl();
-    cConfiguration *cfg = getEnvir()->getConfig();
+    cConfiguration *cfg = channel->getEnvir()->getConfig();
     cNedNetworkBuilder(nedLoader, cfg).addParametersAndGatesTo(channel, decl);  // adds only parameters, because channels have no gates
 }
 
 void cDynamicChannelType::applyPatternAssignments(cComponent *component)
 {
-    cConfiguration *cfg = getEnvir()->getConfig();
+    cConfiguration *cfg = component->getEnvir()->getConfig();
     cNedNetworkBuilder(nedLoader, cfg).assignParametersFromPatterns(component);
 }
 

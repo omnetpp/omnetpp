@@ -117,8 +117,9 @@ void cException::init(const cObject *where, ErrorCode errorcode, const std::stri
     //  - if object is local in module: use getFullName()
     //  - if object is somewhere else: use getFullPath()
     //
-    cSimulation *sim = cSimulation::getActiveSimulation();
-    cComponent *context = sim ? sim->getContext() : nullptr;
+    simulation = cSimulation::getActiveSimulation();
+    envir = simulation ? simulation->getEnvir() : cSimulation::getActiveEnvir();
+    cComponent *context = simulation ? simulation->getContext() : nullptr;
     std::string prefix;
     if (where && where != context) {
         // if object is in the child of the context component, no need to print path
@@ -227,7 +228,7 @@ cRuntimeError::cRuntimeError(const std::exception& e, const char *location)
 
 void cRuntimeError::notifyEnvir()
 {
-    if (getEnvir()->shouldDebugNow(this))
+    if (envir->shouldDebugNow(this))
         DEBUG_TRAP; // YOUR CODE IS A FEW FRAMES UP ON THE CALL STACK
 }
 
