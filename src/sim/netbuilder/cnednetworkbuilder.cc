@@ -481,7 +481,7 @@ void cNedNetworkBuilder::buildInside(cModule *modp, cNedDeclaration *decl)
     if (modp->getId() % 50 == 0) {
         // half-hearted attempt to catch "recursive compound module" bug (where
         // a compound module contains itself, directly or via other compound modules)
-        int limit = getEnvir()->getConfig()->getAsInt(CFGID_MAX_MODULE_NESTING);
+        int limit = cfg->getAsInt(CFGID_MAX_MODULE_NESTING);
         if (limit > 0) {
             int depth = 0;
             for (cModule *p = modp; p; p = p->getParentModule())
@@ -680,7 +680,7 @@ std::string cNedNetworkBuilder::getSubmoduleTypeName(cModule *modp, SubmoduleEle
         if (index != -1)
             key = opp_stringf("%s[%d]", key.c_str(), index);
         const char *NOTFOUNDVALUE = "\x1";
-        std::string configTypename = getEnvir()->getConfig()->getAsString(key.c_str(), CFGID_TYPENAME, NOTFOUNDVALUE);
+        std::string configTypename = cfg->getAsString(key.c_str(), CFGID_TYPENAME, NOTFOUNDVALUE);
         if (configTypename != NOTFOUNDVALUE)
             return configTypename;
 
@@ -1198,7 +1198,7 @@ std::string cNedNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *s
         // then, use **.typename option in the configuration if exists
         std::string key = srcGate->getFullPath() + "." + channelName;
         const char *NOTFOUNDVALUE = "\x1";
-        std::string configTypename = getEnvir()->getConfig()->getAsString(key.c_str(), CFGID_TYPENAME, NOTFOUNDVALUE);
+        std::string configTypename = cfg->getAsString(key.c_str(), CFGID_TYPENAME, NOTFOUNDVALUE);
         if (configTypename != NOTFOUNDVALUE)
             return configTypename;
 

@@ -72,6 +72,7 @@ class SIM_API cNedNetworkBuilder
     typedef cNedLoader::ExprRef ExprRef;
 
     cNedLoader *nedLoader;
+    cConfiguration *cfg;
 
     // the current NED declaration we're working with. Stored here to
     // avoid having to pass it around as a parameter.
@@ -131,7 +132,7 @@ class SIM_API cNedNetworkBuilder
 
   public:
     /** Constructor */
-    cNedNetworkBuilder(cNedLoader *nedLoader) : nedLoader(nedLoader) {}
+    cNedNetworkBuilder(cNedLoader *nedLoader, cConfiguration *cfg) : nedLoader(nedLoader), cfg(cfg) {}
 
     /**
      * Adds parameters and gates from the given NED declaration. Gate vectors
