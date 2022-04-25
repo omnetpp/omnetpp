@@ -11,10 +11,11 @@ if test -z "$*" ; then
 fi
 
 # get number of partitions
-N=$($* -s -e parsim-num-partitions) || exit 1
-if test -z "$N" ; then
+N=$($* -s -e parsim-num-partitions)
+if test $? != 0 -o -z "$N" ; then
   echo "$0: No \"parsim-num-partitions\" option in the simulation configuration"
   exit 1
 fi
 
-mpiexec -n $N $* --parallel-simulation=true --parsim-communications-class=cMPICommunications
+echo "Running $N MPI processes"
+mpiexec -n $N --oversubscribe $* --parallel-simulation=true --parsim-communications-class=cMPICommunications
