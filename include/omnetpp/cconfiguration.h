@@ -33,7 +33,7 @@ class cConfigOption;
 #define CFGNAME_GENERAL "General"
 
 /**
- * @brief Predefined configuration variables; see cConfigurationEx::getVariable().
+ * @brief Predefined configuration variables; see InifileContents::getVariable().
  * Variables can be referred to using the ${...} syntax in the configuration.
  *
  * @defgroup ConfigVars Predefined configuration variables
@@ -70,7 +70,7 @@ class cConfigOption;
  * This class logically belongs to the cEnvir facade, and the configuration
  * instance can be accessed with getEnvir()->getConfig().
  *
- * @see cConfigurationEx, cEnvir::getConfig()
+ * @see InifileContents, cEnvir::getConfig()
  * @ingroup EnvirAndExtensions
  */
 class SIM_API cConfiguration : public cObject
@@ -86,15 +86,6 @@ class SIM_API cConfiguration : public cObject
         virtual const char *getValue() const = 0;
         virtual const char *getBaseDirectory() const = 0;
         virtual FileLine getSourceLocation() const;
-    };
-
-    /**
-     * @brief Struct used by unrollConfig() to return information.
-     */
-    struct RunInfo {
-        std::string info; // concatenated
-        std::map<std::string,std::string> runAttrs; // run attributes
-        std::string configBrief; // config options that contain inifile variables (${foo}), expanded
     };
 
     /**
@@ -302,44 +293,51 @@ class SIM_API cConfiguration : public cObject
     virtual const char *substituteVariables(const char *value) const = 0;
 
     /**
-     * Returns the name of the configuration file. Returns nullptr if this object is
-     * not using a configuration file.
+     * Returns the name of the primary file this configuration comes from,
+     * or nullptr if the source was not a file.
      */
     virtual const char *getFileName() const = 0;
     //@}
 
     /** @name Configuration variables */
     //@{
+    /**
+     * Returns the name of the configuration represented by this object.
+     * This is equivalent to getVariable(CFGVAR_CONFIGNAME).
+     */
+    virtual const char *getActiveConfigName();
 
     /**
-     * After activating a configuration, this method can be used to query
-     * iteration variables and predefined variables. These are the variables
-     * that can be referred to using the "${...}" syntax in the configuration.
-     * If the variable does not exist, nullptr is returned.
+     * Returns the run number this object represents in a parameter study.
+     * This is similar to getVariable(CFGVAR_RUNNUMBER).
+     */
+    virtual int getActiveRunNumber();
+
+    /**
+     * Returns a map containing the names and values of the predefined variables
+     * in this configuration.
+     */
+    virtual std::map<std::string,std::string> getPredefinedVariables() const = 0;
+
+    /**
+     * Returns a map containing the names and values of the iteration variables
+     * in this configuration.
+     */
+    virtual std::map<std::string,std::string> getIterationVariables() const = 0;
+
+    /**
+     * Returns the value of the give iteration variable or predefined variable.
+     * These are the variables that can be referred to using the "${...}" syntax
+     * in the configuration. If the variable does not exist, nullptr is returned.
      *
      * Some of the predefined variables are: "configname", "runnumber", "network",
      * "processid", "datetime", "runid", "repetition", "iterationvars";
      * these names are also available as symbolic constants, see CFGVAR_CONFIGNAME
      * and other CFGVAR_xxx names.
+     *
+     * @see getIterationVariables(), getPredefinedVariables()
      */
     virtual const char *getVariable(const char *varname) const = 0;
-
-    /**
-     * Returns the names of all iteration variables in the activated configuration.
-     */
-    virtual std::vector<const char *> getIterationVariableNames() const = 0;
-
-    /**
-     * Returns the names of all predefined variables in the activated configuration.
-     * See getVariable().
-     */
-    virtual std::vector<const char *> getPredefinedVariableNames() const = 0;
-
-    /**
-     * Returns the description of the given variable in the activated configuration.
-     * Returns nullptr if the variable does not exist or no description is available.
-     */
-    virtual const char *getVariableDescription(const char *varname) const = 0;
     //@}
 
     /** @name Getting values from the currently active configuration */
@@ -390,116 +388,6 @@ class SIM_API cConfiguration : public cObject
      * getPerObjectConfigValue() to obtain the corresponding values.
      */
     virtual std::vector<const char *> getMatchingPerObjectConfigKeySuffixes(const char *objectFullPath, const char *keySuffixPattern) const = 0;
-    //@}
-
-};
-
-
-/**
- * @brief Represents a configuration suitable for use with the Envir library.
- *
- * This class extends cConfiguration with support for multiple configurations
- * (enumeration, activation, etc.), support for parameter studies (run numbers,
- * iteration variables, unrolling, etc.), and utility functions like dump()
- *
- * @see cEnvir::getConfigEx()
- * @ingroup EnvirAndExtensions
- */
-class SIM_API cConfigurationEx : public cConfiguration
-{
-  public:
-    /**
-     * Initializes configuration object from "boot-time" configuration
-     * (omnetpp.ini). For example, if a particular cConfiguration subclass
-     * uses a database as data source, it may take the connection parameters
-     * from the "boot-time" configuration. This method makes global config
-     * immediately available, i.e. there is no need for an additional
-     * activateConfig() call.
-     */
-    virtual void initializeFrom(cConfiguration *bootConfig) = 0;
-
-    /**
-     * Validates the configuration: reports obsolete config keys,
-     * cycles in the section fallback chain, unrecognized keys, etc
-     * as exceptions.
-     *
-     * ignorableConfigKeys is the list of config keys whose presence in the
-     * configuration should not be reported as errors even if they are not
-     * declared using cConfigOptions. The list is space-separated, and items may
-     * contain wildcards. Typically, this list will contain "cmdenv-*" when
-     * Cmdenv is unavailable (not linked in), "qtenv-*" when Qtenv is unavailable,
-     * etc, so that validate() does not report those keys in omnetpp.ini as errors.
-     */
-    virtual void validate(const char *ignorableConfigKeys=nullptr) const = 0;
-
-    /** @name Activating a configuration */
-    //@{
-    /**
-     * Returns the names of the available configurations.
-     */
-    virtual std::vector<std::string> getConfigNames() = 0;
-
-    /**
-     * Activates the [Config \<name\>] section. If it does not exist, an error
-     * is thrown. [General] is treated as short for [Config General].
-     * The runNumber must be between 0 and getNumRunsInConfig(name)-1.
-     */
-    virtual void activateConfig(const char *configName, int runNumber=0) = 0;
-
-    /**
-     * Returns the description of the given configuration.
-     */
-    virtual std::string getConfigDescription(const char *configName) const = 0;
-
-    /**
-     * Returns the names of the configurations the given configuration extends directly.
-     * Only names of *existing* configurations are returned (that is,
-     * if "extends" is bogus and refers to a nonexistent configuration,
-     * this method omits that configuration name; also, "General" is only returned
-     * if such configuration actually exists.)
-     */
-    virtual std::vector<std::string> getBaseConfigs(const char *configName) const = 0;
-
-    /**
-     * Returns the names of the configurations the given configuration extends transitively.
-     * This is the search order of parameter lookups from the given configuration.
-     * Only names of *existing* configurations are returned.
-     */
-    virtual std::vector<std::string> getConfigChain(const char * configName) const = 0;
-
-    /**
-     * Generates Cartesian product of all iterations within the given config,
-     * and counts them. If the config does not exist, an error is thrown.
-     * [General] is treated as short for [Config General].
-     */
-    virtual int getNumRunsInConfig(const char *configName) const = 0;
-
-    /**
-     * Generates all runs in the given configuration, and returns a string for each.
-     * When detailed==false, each run will generate a one-line string with the
-     * iteration variables; with detailed==true, each run generates a multi-line
-     * string containing the config entries that contain iterations or iteration
-     * variable references. This method is primarily for debugging purposes.
-     *
-     * TODO update description
-     */
-    virtual std::vector<RunInfo> unrollConfig(const char *configName) const = 0;
-
-    /**
-     * Returns the name of the currently active configuration.
-     */
-    virtual const char *getActiveConfigName() const = 0;
-
-    /**
-     * Returns currently active run number. This is the number passed to
-     * activateConfig(), or 0 if activateConfig() has not been called.
-     */
-    virtual int getActiveRunNumber() const = 0;
-
-    /**
-     * For debugging.
-     */
-    virtual void dump() const = 0;
     //@}
 };
 

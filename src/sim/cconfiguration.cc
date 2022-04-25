@@ -274,5 +274,15 @@ std::string cConfiguration::getAsPath(const char *objectFullPath, cConfigOption 
     TRY(return adjustPath(keyvalue.getValue(), keyvalue.getBaseDirectory(), substituteVariables(option->getDefaultValue())));
 }
 
+const char *cConfiguration::getActiveConfigName()
+{
+    return getVariable(CFGVAR_CONFIGNAME);
+}
+
+int cConfiguration::getActiveRunNumber()
+{
+    return opp_atol(getVariable(CFGVAR_RUNNUMBER)); //TODO refine
+}
+
 }  // namespace omnetpp
 

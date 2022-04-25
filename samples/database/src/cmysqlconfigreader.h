@@ -21,7 +21,6 @@
 #include <vector>
 #include <mysql/mysql.h>
 #include <omnetpp.h>
-#include "cconfigreader.h"
 
 using namespace omnetpp;
 

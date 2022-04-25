@@ -1,5 +1,5 @@
 //==========================================================================
-//  SECTIONBASEDCONFIG.H - part of
+//  CONFIGURATION.H - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_ENVIR_SECTIONBASEDCONFIG_H
-#define __OMNETPP_ENVIR_SECTIONBASEDCONFIG_H
+#ifndef __OMNETPP_ENVIR_CONFIGURATION_H
+#define __OMNETPP_ENVIR_CONFIGURATION_H
 
 #include <map>
 #include <vector>
@@ -22,10 +22,8 @@
 #include <string>
 #include "common/pooledstring.h"
 #include "omnetpp/cconfiguration.h"
-#include "omnetpp/cconfigreader.h"
-#include "omnetpp/fileline.h"
 #include "envirdefs.h"
-#include "scenario.h"
+#include "inifilecontents.h"
 
 namespace omnetpp {
 
@@ -33,7 +31,6 @@ namespace common { class PatternMatcher; };
 
 namespace envir {
 
-class Scenario;
 
 /**
  * Wraps a cConfigurationReader (usually an InifileReader), and presents
@@ -43,29 +40,14 @@ class Scenario;
  * active section, i.e. the section fallback sequence ("extends") is
  * resolved, and sections are made invisible to the user.
  */
-class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
+class ENVIR_API Configuration : public cConfiguration  //TODO rename Configuration, cIConfiguration?
 {
   private:
     typedef omnetpp::common::opp_staticpooledstring opp_staticpooledstring;
     typedef omnetpp::common::PatternMatcher PatternMatcher;
     typedef std::set<std::string> StringSet;
     typedef std::map<std::string,std::string> StringMap;
-
-    class Entry : public cConfiguration::KeyValue {
-      public:
-        opp_staticpooledstring baseDir;
-        std::string key;
-        std::string value;
-        FileLine loc;
-        Entry() {}
-        Entry(const char *baseDir, const char *k, const char *v, FileLine loc=FileLine()) : baseDir(baseDir), key(k), value(v), loc(loc) {}
-
-        // virtual functions implementing the KeyValue interface
-        virtual const char *getKey() const override   {return key.c_str();}
-        virtual const char *getValue() const override {return value.c_str();}
-        virtual const char *getBaseDirectory() const override {return baseDir.c_str();}
-        virtual FileLine getSourceLocation() const override {return loc;}
-    };
+    typedef InifileContents::Entry Entry;
 
     class MatchableEntry : public Entry {
       public:
@@ -125,99 +107,34 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     };
 
   private:
-    // input data
-    cConfigurationReader *ini = nullptr;
-    std::vector<Entry> commandLineOptions;
-
-    // section inheritance chains, computed from the input data
-    mutable std::vector<std::vector<int> > cachedSectionChains;
-
-    // THE ACTIVE CONFIGURATION:
-
-    std::string activeConfig;
-    int activeRunNumber = 0;
-    std::string runId;
-
     std::vector<Entry> entries; // entries of the activated configuration, with itervars substituted
     std::map<std::string,Entry> config; // config entries (i.e. keys not containing a dot or wildcard)
     std::map<std::string,SuffixBin> suffixBins;  // bins for each non-wildcard suffix
     SuffixBin wildcardSuffixBin; // bin for entries that contain wildcards
 
     // predefined variables (${configname} etc) and iteration variables
-    StringMap variables;  // varName-to-value map
-    StringMap locationToVarName; // location-to-varName, for identifying unnamed variables inside substituteVariables()
+    StringMap predefinedVariables;
+    StringMap iterationVariables;
+    StringMap allVariables; // union of the two
 
     NullEntry nullEntry;
+    std::string fileName;
 
   private:
-    void clear();
-    void activateGlobalConfig();
-    int internalFindSection(const char *section) const;
-    int internalGetSectionId(const char *section) const;
-    int internalFindEntry(int sectionId, const char *key) const;
-    const char *internalGetValue(const std::vector<int>& sectionChain, const char *key, const char *fallbackValue=nullptr, int *sectionIdPtr=nullptr, int *entryIdPtr=nullptr) const;
-    intval_t internalGetValueAsInt(const std::vector<int>& sectionChain, const char *key, intval_t fallbackValue, int *sectionIdPtr=nullptr, int *entryIdPtr=nullptr) const;
-    std::string internalGetValueAsString(const std::vector<int>& sectionChain, const char *key, const char *fallbackValue=nullptr, int *sectionIdPtr=nullptr, int *entryIdPtr=nullptr) const;
-    int resolveConfigName(const char *configName) const;
-    std::vector<int> resolveSectionChain(int sectionId) const;
-    std::vector<int> resolveSectionChain(const char *configName) const;
-    std::vector<int> computeSectionChain(int sectionId) const;
-    std::vector<int> getBaseConfigIds(int sectionId) const;
     void addEntry(const Entry& entry);
+    static void parseVariable(const char *txt, std::string& outVarname, std::string& outValue, std::string& outParVar, const char *&outEndPtr);
     static void splitKey(const char *key, std::string& outOwnerName, std::string& outBinName);
     static bool entryMatches(const MatchableEntry& entry, const char *moduleFullPath, const char *paramName);
-    std::vector<Scenario::IterationVariable> collectIterationVariables(const std::vector<int>& sectionChain, StringMap& outLocationToNameMap) const;
-    static void parseVariable(const char *txt, std::string& outVarname, std::string& outValue, std::string& outParVar, const char *&outEndPtr);
-    std::string substituteVariables(const char *text, int sectionId, int entryId, const StringMap& variables, const StringMap& locationToVarName) const;
-    bool isPredefinedVariable(const char *varname) const;
-    StringMap computeVariables(const char *configName, int runNumber, std::vector<int> sectionChain, const Scenario *scenario, const StringMap& locationToVarName) const;
-    std::string internalGetConfigAsString(cConfigOption *option, const std::vector<int>& sectionChain, const StringMap& variables, const StringMap& locationToVarName) const;
-    intval_t internalGetConfigAsInt(cConfigOption *option, const std::vector<int>& sectionChain, const StringMap& variables, const StringMap& locationToVarName) const;
-    bool internalGetConfigAsBool(cConfigOption *option, const std::vector<int>& sectionChain, const StringMap& variables, const StringMap& locationToVarName) const;
-    static bool isIgnorableConfigKey(const char *ignoredKeyPatterns, const char *key);
-    static cConfigOption *lookupConfigOption(const char *key);
+    static bool isPredefinedVariable(const char *varname);
     virtual bool isEssentialOption(const char *key) const;
+    virtual std::string substituteVariables(const char *text, const StringMap& variables) const;
 
   public:
-    SectionBasedConfiguration() {}
-    virtual ~SectionBasedConfiguration();
+    Configuration() {}
+    Configuration(const std::vector<Entry>& entries, const StringMap& predefinedVariables, const StringMap& iterationVariables, const char *fileName=nullptr);
+    virtual ~Configuration();
 
-    /**
-     * This cConfiguration uses a cConfigurationReader as input; the reader
-     * should be passed with this method.
-     */
-    virtual void setConfigurationReader(cConfigurationReader *ini);
-
-    /**
-     * Returns the pointer of current cConfigurationReader.
-     */
-    virtual cConfigurationReader *getConfigurationReader() { return ini; }
-
-    /**
-     * Specifies config options passed on the command line. These options
-     * are global (effective for all configs), cannot be per-object options,
-     * and take precedence over the ones read from the ini file (i.e. from
-     * cConfigurationReader). This method immediately validates the option
-     * names, and throws an error for unrecognized/unacceptable ones.
-     * The baseDir parameter is going to be used for resolving filename
-     * options that contain relative paths.
-     */
-    virtual void setCommandLineConfigOptions(const std::map<std::string,std::string>& options, const char *baseDir);
-
-    /** @name Methods that implement the cConfiguration(Ex) interface. */
-    //@{
-    virtual void initializeFrom(cConfiguration *bootConfig) override;
     virtual const char *getFileName() const override;
-    virtual void validate(const char *ignorableConfigKeys) const override;
-    virtual std::vector<std::string> getConfigNames() override;
-    virtual void activateConfig(const char *configName, int runNumber=0) override;
-    virtual std::string getConfigDescription(const char *configName) const override;
-    virtual std::vector<std::string> getBaseConfigs(const char *configName) const override;
-    virtual std::vector<std::string> getConfigChain(const char *configName) const override;
-    virtual int getNumRunsInConfig(const char *configName) const override;
-    virtual std::vector<RunInfo> unrollConfig(const char *configName) const override;
-    virtual const char *getActiveConfigName() const override;
-    virtual int getActiveRunNumber() const override;
     virtual const char *getConfigValue(const char *key) const override;
     virtual const KeyValue& getConfigEntry(const char *key) const override;
     virtual std::vector<const char *> getMatchingConfigKeys(const char *pattern) const override;
@@ -227,13 +144,11 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     virtual const char *getPerObjectConfigValue(const char *objectFullPath, const char *keySuffix) const override;
     virtual const KeyValue& getPerObjectConfigEntry(const char *objectFullPath, const char *keySuffix) const override;
     virtual std::vector<const char *> getMatchingPerObjectConfigKeySuffixes(const char *objectFullPath, const char *keySuffixPattern) const override;
+    virtual std::map<std::string,std::string> getPredefinedVariables() const override;
+    virtual std::map<std::string,std::string> getIterationVariables() const override;
     virtual const char *getVariable(const char *varname) const override;
-    virtual std::vector<const char *> getIterationVariableNames() const override;
-    virtual std::vector<const char *> getPredefinedVariableNames() const override;
-    virtual const char *getVariableDescription(const char *varname) const override;
     virtual const char *substituteVariables(const char *value) const override;
-    virtual void dump() const override;
-    //@}
+    virtual void dump() const; //TODO override?
 };
 
 }  // namespace envir
