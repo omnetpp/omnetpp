@@ -21,6 +21,8 @@
 #include "iallinone.h"
 #include "debuggersupport.h"
 
+#define ARGSPEC "h?f:u:l:c:r:n:x:i:q:e:avwsm"
+
 namespace omnetpp {
 namespace envir {
 

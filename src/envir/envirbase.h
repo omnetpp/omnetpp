@@ -48,31 +48,7 @@ class cIEventlogManager;
 namespace envir {
 
 class IAllInOne;
-
 class XMLDocCache;
-class SignalSource;
-
-// assumed maximum length for getFullPath() string.
-// note: this maximum actually not enforced anywhere
-#define MAX_OBJECTFULLPATH  1024
-
-// maximum length of string passed in Enter_Method() (longer strings will be truncated)
-#define MAX_METHODCALL 1024
-
-#define ARGSPEC "h?f:u:l:c:r:n:x:i:q:e:avwsm"
-
-#ifdef USE_PORTABLE_COROUTINES  /* coroutine stacks reside in main stack area */
-
-# define TOTAL_STACK_SIZE    (2*1024*1024)
-# define MAIN_STACK_SIZE     (128*1024)
-
-#else /* nonportable coroutines, stacks are allocated on heap */
-
-# define TOTAL_STACK_SIZE    0  // dummy value
-# define MAIN_STACK_SIZE     0  // dummy value
-
-#endif
-
 
 /**
  * Default implementation of cEnvir. It was designed to only contain code necessary
@@ -84,21 +60,20 @@ class SignalSource;
 class ENVIR_API EnvirBase : public cEnvir
 {
   protected:
-    cSimulation *simulation;
-
-    cConfiguration *cfg;
-
-    XMLDocCache *xmlCache;
+    cSimulation *simulation = nullptr;
+    IAllInOne *app = nullptr;
+    cConfiguration *cfg = nullptr;
+    XMLDocCache *xmlCache = nullptr;
 
     std::ostream out; //TODO move to AppBase, modulo EnvirBase::undisposedObject()
 
     // log related
     LogFormatter logFormatter;
-    bool logFormatUsesEventName;
+    bool logFormatUsesEventName = false;
     std::string currentEventName;
-    bool logFormatUsesEventClassName;
-    const char *currentEventClassName;
-    int currentModuleId;
+    bool logFormatUsesEventClassName = false;
+    const char *currentEventClassName = nullptr;
+    int currentModuleId = -1;
 
     // misc
     bool verbose = true;
@@ -115,18 +90,24 @@ class ENVIR_API EnvirBase : public cEnvir
 
     // Indicates whether eventlog recording is currently enabled (note: eventlogManager contains further filters)
     // It MUST be in sync with EventlogFileManager::isRecordingEnabled.
-    bool recordEventlog;
+    bool recordEventlog = false;
 
     // Output file managers
-    cIEventlogManager *eventlogManager;  // nullptr if no eventlog is being written, must be non nullptr if record_eventlog is true
-    cIOutputVectorManager *outVectorManager;
-    cIOutputScalarManager *outScalarManager;
-    cISnapshotManager *snapshotManager;
-
-    IAllInOne *app;
+    cIEventlogManager *eventlogManager = nullptr;  // nullptr if no eventlog is being written, must be non nullptr if record_eventlog is true
+    cIOutputVectorManager *outVectorManager = nullptr;
+    cIOutputScalarManager *outScalarManager = nullptr;
+    cISnapshotManager *snapshotManager = nullptr;
 
   public:
     bool attachDebuggerOnErrors = false;
+
+  protected:
+    // Called internally from readParameter(), to interactively prompt the
+    // user for a parameter value.
+    virtual void askParameter(cPar *par, bool unassigned);
+
+    // Utility function for getXMLDocument() and getParsedXMLString()
+    cXMLElement *resolveXMLPath(cXMLElement *documentnode, const char *path);
 
   public:
     EnvirBase(IAllInOne *app);
@@ -134,7 +115,7 @@ class ENVIR_API EnvirBase : public cEnvir
     virtual void initialize(cSimulation *simulation, cConfiguration *cfg, ArgList *args); // call once, on startup
     virtual void configure(cConfiguration *cfg); // call before each simulation run
 
-    // getters
+    // getters/setters
     IAllInOne *getApp() {return app;}
     cSimulation *getSimulation() const {return simulation;}
     virtual cConfiguration *getConfig() override;
@@ -258,17 +239,7 @@ class ENVIR_API EnvirBase : public cEnvir
 
     virtual bool ensureDebugger(cRuntimeError *error = nullptr) override;
     virtual bool shouldDebugNow(cRuntimeError *error = nullptr) override;
-    //@}
 
-  protected:
-    // Called internally from readParameter(), to interactively prompt the
-    // user for a parameter value.
-    virtual void askParameter(cPar *par, bool unassigned);
-
-    // Utility function for getXMLDocument() and getParsedXMLString()
-    cXMLElement *resolveXMLPath(cXMLElement *documentnode, const char *path);
-
-    //TODO out-of-line or something
     virtual bool isGUI() const override;
     virtual bool isExpressMode() const override;
     virtual void alert(const char *msg) override;

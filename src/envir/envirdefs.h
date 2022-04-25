@@ -32,6 +32,13 @@ namespace envir {
 #  define ENVIR_API
 #endif
 
+// Assumed maximum length for getFullPath() string.
+// Note: This maximum actually not enforced anywhere.
+#define MAX_OBJECTFULLPATH  1024
+
+// Maximum length of string passed in Enter_Method() (longer strings will be truncated)
+#define MAX_METHODCALL 1024
+
 using omnetpp::common::opp_runtime_error;
 
 }  // namespace envir

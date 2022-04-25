@@ -13,8 +13,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-//TODO clean up includes list
-#include "appbase.h"
 
 #include <cstdio>
 #include <csignal>
@@ -23,53 +21,25 @@
 #include <set>
 #include <algorithm>
 #include "common/stringtokenizer.h"
-#include "common/fnamelisttokenizer.h"
 #include "common/stringutil.h"
 #include "common/enumstr.h"
-#include "common/opp_ctype.h"
-#include "common/stringtokenizer.h"
-#include "common/stringutil.h"
-#include "common/fileglobber.h"
-#include "common/unitconversion.h"
-#include "common/commonutil.h"
 #include "common/ver.h"
-#include "common/fileutil.h"  // splitFileName
-#include "omnetpp/ccoroutine.h"
+#include "common/fileutil.h"
 #include "omnetpp/csimulation.h"
-#include "omnetpp/cscheduler.h"
-#include "omnetpp/cfutureeventset.h"
-#include "omnetpp/cpar.h"
-#include "omnetpp/cproperties.h"
-#include "omnetpp/cproperty.h"
-#include "omnetpp/crng.h"
-#include "omnetpp/ccanvas.h"
 #include "omnetpp/cmodule.h"
-#include "omnetpp/cmessage.h"
-#include "omnetpp/ccomponenttype.h"
-#include "omnetpp/cxmlelement.h"
-#include "omnetpp/cobjectfactory.h"
-#include "omnetpp/checkandcast.h"
 #include "omnetpp/cfingerprint.h"
 #include "omnetpp/cconfigoption.h"
-#include "omnetpp/cnedmathfunction.h"
-#include "omnetpp/cnedfunction.h"
-#include "omnetpp/regmacros.h"
-#include "omnetpp/simtime.h"
 #include "omnetpp/platdep/platmisc.h"
-#include "omnetpp/cstatisticbuilder.h"
-#include "omnetpp/fileline.h"
+#include "appbase.h"
 #include "args.h"
 #include "envirbase.h"
 #include "envirutils.h"
 #include "appreg.h"
 #include "valueiterator.h"
-#include "xmldoccache.h"
 #include "debuggersupport.h"
 
 #ifdef WITH_PARSIM
-#include "omnetpp/cparsimcomm.h"
 #include "sim/parsim/cparsimpartition.h"
-#include "sim/parsim/cparsimsynchr.h"
 #include "sim/parsim/creceivedexception.h"
 #endif
 

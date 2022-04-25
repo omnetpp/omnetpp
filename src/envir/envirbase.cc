@@ -20,45 +20,18 @@
 #include <set>
 #include <algorithm>
 #include "common/stringtokenizer.h"
-#include "common/fnamelisttokenizer.h"
 #include "common/stringutil.h"
-#include "common/opp_ctype.h"
-#include "common/stringtokenizer.h"
-#include "common/stringutil.h"
-#include "common/fileglobber.h"
-#include "common/unitconversion.h"
-#include "common/commonutil.h"
-#include "common/ver.h"
-#include "common/fileutil.h"  // splitFileName
+#include "common/fileutil.h"
 #include "omnetpp/ccoroutine.h"
-#include "omnetpp/csimulation.h"
-#include "omnetpp/cscheduler.h"
-#include "omnetpp/cfutureeventset.h"
-#include "omnetpp/cpar.h"
-#include "omnetpp/cproperties.h"
-#include "omnetpp/cproperty.h"
-#include "omnetpp/crngmanager.h"
-#include "omnetpp/ccanvas.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cmessage.h"
-#include "omnetpp/ccomponenttype.h"
-#include "omnetpp/cxmlelement.h"
-#include "omnetpp/cobjectfactory.h"
 #include "omnetpp/checkandcast.h"
 #include "omnetpp/cfingerprint.h"
 #include "omnetpp/cconfigoption.h"
-#include "omnetpp/cnedmathfunction.h"
-#include "omnetpp/cnedfunction.h"
-#include "omnetpp/regmacros.h"
-#include "omnetpp/simtime.h"
 #include "omnetpp/platdep/platmisc.h"
 #include "omnetpp/cstatisticbuilder.h"
-#include "omnetpp/fileline.h"
 #include "args.h"
 #include "envirbase.h"
-#include "envirutils.h"
-#include "appreg.h"
-#include "valueiterator.h"
 #include "xmldoccache.h"
 #include "iallinone.h"
 
@@ -92,21 +65,12 @@ Register_GlobalConfigOption(CFGID_DEBUGGER_ATTACH_ON_ERROR, "debugger-attach-on-
 Register_PerRunConfigOption(CFGID_RECORD_EVENTLOG, "record-eventlog", CFG_BOOL, "false", "Enables recording an eventlog file, which can be later visualized on a sequence chart. See `eventlog-file` option too.");
 
 
-EnvirBase::EnvirBase(IAllInOne *app) : out(std::cout.rdbuf()), app(app)
+EnvirBase::EnvirBase(IAllInOne *app) : app(app), out(std::cout.rdbuf())
 {
-    cfg = nullptr;
-    xmlCache = nullptr;
-
-    recordEventlog = false;
-    eventlogManager = nullptr;
-    outVectorManager = nullptr;
-    outScalarManager = nullptr;
-    snapshotManager = nullptr;
 }
 
 EnvirBase::~EnvirBase()
 {
-    //delete opt;
     delete cfg;
     delete xmlCache;
 
@@ -615,8 +579,6 @@ void EnvirBase::clearCurrentEventInfo()
     currentModuleId = -1;
 }
 
-//-------------------------------------------------------------
-
 void *EnvirBase::registerOutputVector(const char *modulename, const char *vectorname)
 {
     ASSERT(outVectorManager);
@@ -643,8 +605,6 @@ bool EnvirBase::recordInOutputVector(void *vechandle, simtime_t t, double value)
         getSimulation()->getFingerprintCalculator()->addVectorResult(nullptr, "", t, value);
     return outVectorManager->record(vechandle, t, value);
 }
-
-//-------------------------------------------------------------
 
 void EnvirBase::recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes)
 {
@@ -674,8 +634,6 @@ void EnvirBase::recordComponentType(cComponent *component)
     outScalarManager->recordComponentType(component);
 }
 
-//-------------------------------------------------------------
-
 std::ostream *EnvirBase::getStreamForSnapshot()
 {
     return snapshotManager->getStreamForSnapshot();
@@ -685,8 +643,6 @@ void EnvirBase::releaseStreamForSnapshot(std::ostream *os)
 {
     snapshotManager->releaseStreamForSnapshot(os);
 }
-
-//-------------------------------------------------------------
 
 bool EnvirBase::idle()
 {
@@ -703,7 +659,6 @@ bool EnvirBase::shouldDebugNow(cRuntimeError *error)
     return debugOnErrors && ensureDebugger(error);
 }
 
-//-------------------------------------------------------------
 bool EnvirBase::isGUI() const
 {
     return app->isGUI();
