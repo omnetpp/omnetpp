@@ -53,6 +53,9 @@
 
 #ifdef WITH_PARSIM
 #include "omnetpp/ccommbuffer.h"
+#include "omnetpp/cparsimcomm.h"
+#include "sim/parsim/cparsimpartition.h"
+#include "sim/parsim/cparsimsynchr.h"
 #endif
 
 #ifdef WITH_NETBUILDER
@@ -72,6 +75,7 @@ using std::ostream;
 #define CHECKSIGNALS_DEFAULT        "true"
 #endif
 
+Register_PerRunConfigOption(CFGID_PARALLEL_SIMULATION, "parallel-simulation", CFG_BOOL, "false", "Enables parallel distributed simulation.");
 Register_PerRunConfigOption(CFGID_FUTUREEVENTSET_CLASS, "futureeventset-class", CFG_STRING, "omnetpp::cEventHeap", "Part of the Envir plugin mechanism: selects the class for storing the future events in the simulation. The class has to implement the `cFutureEventSet` interface.");
 Register_PerRunConfigOption(CFGID_SCHEDULER_CLASS, "scheduler-class", CFG_STRING, "omnetpp::cSequentialScheduler", "Part of the Envir plugin mechanism: selects the scheduler class. This plugin interface allows for implementing real-time, hardware-in-the-loop, distributed and distributed parallel simulation. The class has to implement the `cScheduler` interface.");
 Register_PerRunConfigOption(CFGID_FINGERPRINT, "fingerprint", CFG_STRING, nullptr, "The expected fingerprints of the simulation. If you need multiple fingerprints, separate them with commas. When provided, the fingerprints will be calculated from the specified properties of simulation events, messages, and statistics during execution, and checked against the provided values. Fingerprints are suitable for crude regression tests. As fingerprints occasionally differ across platforms, more than one value can be specified for a single fingerprint, separated by spaces, and a match with any of them will be accepted. To obtain a fingerprint, enter a dummy value (such as `0000`), and run the simulation.");
@@ -149,6 +153,9 @@ cSimulation::~cSimulation()
     delete nedLoader;
 #endif
     delete rngManager;
+#ifdef WITH_PARSIM
+    delete parsimPartition;
+#endif
 }
 
 void cSimulation::setActiveSimulation(cSimulation *sim)
@@ -176,8 +183,26 @@ std::string cSimulation::getFullPath() const
     return getFullName();
 }
 
-void cSimulation::configure(cConfiguration *cfg, bool isParsim)
+void cSimulation::configure(cConfiguration *cfg)
 {
+    parsim = cfg->getAsBool(CFGID_PARALLEL_SIMULATION);
+
+#ifndef WITH_PARSIM
+    if (parsim)
+        throw cRuntimeError("Parallel simulation is turned on in the ini file, but OMNeT++ was compiled without parallel simulation support (WITH_PARSIM=no)");
+#endif
+
+    // parallel simulation
+    if (parsim) {
+#ifdef WITH_PARSIM
+        delete parsimPartition;
+        parsimPartition = new cParsimPartition();
+        parsimPartition->configure(getSimulation(), cfg);
+#else
+        throw cRuntimeError("Parallel simulation is turned on in the ini file, but OMNeT++ was compiled without parallel simulation support (WITH_PARSIM=no)");
+#endif
+    }
+
     // install FES
     std::string futureeventsetClass = cfg->getAsString(CFGID_FUTUREEVENTSET_CLASS);
     cFutureEventSet *fes = createByClassName<cFutureEventSet>(futureeventsetClass.c_str(), "FES");
@@ -185,7 +210,7 @@ void cSimulation::configure(cConfiguration *cfg, bool isParsim)
     fes->configure(this, cfg);
 
     // install scheduler
-    if (!isParsim) {
+    if (!parsim) {
         std::string schedulerClass = cfg->getAsString(CFGID_SCHEDULER_CLASS);
         cScheduler *scheduler = createByClassName<cScheduler>(schedulerClass.c_str(), "event scheduler");
         setScheduler(scheduler);
@@ -208,6 +233,16 @@ void cSimulation::configure(cConfiguration *cfg, bool isParsim)
         fingerprint->configure(this, cfg, expectedFingerprints.c_str());
     }
 
+    // init nextUniqueNumber
+    setUniqueNumberRange(0, 0); // =until it wraps
+#ifdef WITH_PARSIM
+    if (parsim) {
+        uint64_t myRank = parsimPartition->getProcId();
+        uint64_t range = UINT64_MAX / parsimPartition->getNumPartitions();
+        setUniqueNumberRange(myRank * range, (myRank+1) * range);
+    }
+#endif
+
     bool checkSignals = cfg->getAsBool(CFGID_CHECK_SIGNALS);
     cComponent::setCheckSignals(checkSignals);
 
@@ -217,7 +252,7 @@ void cSimulation::configure(cConfiguration *cfg, bool isParsim)
     bool allowObjectStealing = cfg->getAsBool(CFGID_ALLOW_OBJECT_STEALING_ON_DELETION);
     cSoftOwner::setAllowObjectStealing(allowObjectStealing);
 
-    getRngManager()->configure(this, cfg, getEnvir()->getParsimProcId(), getEnvir()->getParsimNumPartitions());
+    getRngManager()->configure(this, cfg, getParsimProcId(), getParsimNumPartitions());
 }
 
 class cSnapshotWriterVisitor : public cVisitor
@@ -770,9 +805,30 @@ cSimpleModule *cSimulation::getContextSimpleModule() const
     return (cSimpleModule *)contextComponent;
 }
 
-unsigned long cSimulation::getUniqueNumber()
+uint64_t cSimulation::getUniqueNumber()
 {
-    return getEnvir()->getUniqueNumber();
+    uint64_t ret = nextUniqueNumber++;
+    if (nextUniqueNumber == uniqueNumbersEnd)
+        throw cRuntimeError("getUniqueNumber(): All values have been consumed");
+    return ret;
+}
+
+int cSimulation::getParsimProcId() const
+{
+#ifdef WITH_PARSIM
+    return parsimPartition? parsimPartition->getProcId() : 0;
+#else
+    return 0;
+#endif
+}
+
+int cSimulation::getParsimNumPartitions() const
+{
+#ifdef WITH_PARSIM
+    return parsimPartition? parsimPartition->getNumPartitions() : 0;
+#else
+    return 0;
+#endif
 }
 
 void cSimulation::setFingerprintCalculator(cFingerprintCalculator *f)
@@ -885,7 +941,6 @@ class StaticEnv : public cEnvir
     virtual void preconfigureComponent(cComponent *component) override  {}
     virtual void configureComponent(cComponent *component) override {}
     virtual void readParameter(cPar *parameter) override  { unsupported(); }
-    virtual bool isModuleLocal(cModule *parentmod, const char *modname, int index) override  { return true; }
     virtual cXMLElement *getXMLDocument(const char *filename, const char *xpath = nullptr) override  { unsupported(); return nullptr; }
     virtual cXMLElement *getParsedXMLString(const char *content, const char *xpath = nullptr) override  { unsupported(); return nullptr; }
     virtual void forgetXMLDocument(const char *filename) override {}
@@ -922,9 +977,6 @@ class StaticEnv : public cEnvir
     virtual void releaseStreamForSnapshot(std::ostream *os) override  { unsupported(); }
 
     // misc
-    virtual int getParsimProcId() const override { return 0; }
-    virtual int getParsimNumPartitions() const override { return 1; }
-    virtual uint64_t getUniqueNumber() override  { unsupported(); return 0; }
     virtual bool idle() override  { return false; }
     virtual void pausePoint() override {}
     virtual void refOsgNode(osg::Node *scene) override {}

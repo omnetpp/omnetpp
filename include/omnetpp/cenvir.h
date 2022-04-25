@@ -310,18 +310,6 @@ class SIM_API cEnvir
     virtual void readParameter(cPar *parameter) = 0;
 
     /**
-     * Used for parallel distributed simulation. Returns true if the
-     * named future submodule of parentmod is (or will have any submodule)
-     * in the local partition, and false otherwise. index should be -1
-     * if the submodule is not in a module vector.
-     *
-     * Note that for compound modules that contain simple modules in
-     * several partitions, this function will return true on all those
-     * partitions.
-     */
-    virtual bool isModuleLocal(cModule *parentmod, const char *modname, int index) = 0;
-
-    /**
      * Resolves reference to an XML model configuration file. First argument
      * is the file name of the XML document. The optional second argument
      * may contain an XPath-like expression to denote an element within
@@ -774,22 +762,6 @@ class SIM_API cEnvir
 
     /** @name Miscellaneous functions. */
     //@{
-    /**
-     * Returns the partitionID when parallel simulation is active.
-     */
-    virtual int getParsimProcId() const = 0;
-
-    /**
-     * Returns the number of partitions when parallel simulation is active;
-     * otherwise it returns 0.
-     */
-    virtual int getParsimNumPartitions() const = 0;
-
-    /**
-     * The function underlying cSimulation::getUniqueNumber().
-     */
-    virtual uint64_t getUniqueNumber() = 0;
-
     /**
      * Used by cOsgCanvas to increase the reference count of an osg::Node.
      * Should delegate to node->ref() when OSG support is available.

@@ -34,8 +34,6 @@ using namespace omnetpp::internal;
 namespace omnetpp {
 namespace envir {
 
-extern cConfigOption *CFGID_PARALLEL_SIMULATION;
-
 Register_GlobalConfigOption(CFGID_FNAME_APPEND_HOST, "fname-append-host", CFG_BOOL, nullptr, "Turning it on will cause the host name and process Id to be appended to the names of output files (e.g. omnetpp.vec, omnetpp.sca). This is especially useful with distributed simulation. The default value is true if parallel simulation is enabled, false otherwise.");
 Register_PerRunConfigOption(CFGID_CONFIG_RECORDING, "config-recording", CFG_CUSTOM, "all", "Selects the set of config options to save into result files. This option can help reduce the size of result files, which is especially useful in the case of large simulation campaigns. Possible values: all, none, config, params, essentials, globalconfig");
 
@@ -141,7 +139,7 @@ StringMap ResultFileUtils::convertMap(const opp_string_map *m)
 
 std::string ResultFileUtils::augmentFileName(const std::string& fname)
 {
-    bool parsim = cfg->getAsBool(CFGID_PARALLEL_SIMULATION);
+    bool parsim = cSimulation::getActiveSimulation()->isParsimEnabled();
     bool fnameAppendHost = cfg->getAsBool(CFGID_FNAME_APPEND_HOST, parsim);
 
     if (!fnameAppendHost)

@@ -101,6 +101,15 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
 
     cFingerprintCalculator *fingerprint = nullptr; // used for fingerprint calculation
 
+    bool parsim = false;
+#ifdef WITH_PARSIM
+    cParsimPartition *parsimPartition = nullptr;
+#endif
+
+    // Data for getUniqueNumber()
+    uint64_t nextUniqueNumber;
+    uint64_t uniqueNumbersEnd;
+
     // Lifecycle listeners
     std::vector<cISimulationLifecycleListener*> listeners;
 
@@ -112,6 +121,9 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     // internal
     void setParameterMutabilityCheck(bool b) {parameterMutabilityCheck = b;}
     bool getParameterMutabilityCheck() const {return parameterMutabilityCheck;}
+
+    // internal
+    void setUniqueNumberRange(uint64_t start, uint64_t end) {nextUniqueNumber = start; uniqueNumbersEnd = end;}
 
   public:
     /** @name Constructor, destructor. */
@@ -327,7 +339,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * Configures this simulation instance and the objects it relies on: the
      * scheduler, the FES, the RNG manager, the fingerprint calculator, etc.
      */
-    void configure(cConfiguration *cfg, bool isParsim);
+    void configure(cConfiguration *cfg);
 
     /**
      * Installs a scheduler object. This method may only be called before or
@@ -606,6 +618,34 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     virtual void notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details=nullptr);
     //@}
 
+    /** @name Parallel simulation. */
+    //@{
+
+    /**
+     * Returns true if the current simulation run uses parallel simulation.
+     */
+    bool isParsimEnabled() const {return parsim;}
+
+#ifdef WITH_PARSIM
+    /**
+     * Returns the parsim partition object, or nullptr if parallel simulation
+     * is not currently active, i.e. isParsimEnabled() = false.
+     */
+    cParsimPartition *getParsimPartition() const {return parsimPartition;}
+#endif
+
+    /**
+     * Returns the partitionID when parallel simulation is active.
+     */
+    int getParsimProcId() const;
+
+    /**
+     * Returns the number of partitions when parallel simulation is active;
+     * otherwise it returns 0.
+     */
+    int getParsimNumPartitions() const;
+    //@}
+
     /** @name Miscellaneous. */
     //@{
     /**
@@ -614,7 +654,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * simulation as well, so it is recommended over incrementing a global
      * variable. Useful for generating unique network addresses, etc.
      */
-    unsigned long getUniqueNumber();
+    uint64_t getUniqueNumber();
 
     /**
      * Writes a snapshot of the given object and its children to the

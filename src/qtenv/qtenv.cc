@@ -676,9 +676,10 @@ void Qtenv::doRun()
     displayUpdateController = new DisplayUpdateController();
 
     // create windowtitle prefix
-    if (getEnvir()->getParsimNumPartitions() > 0) {
+    cSimulation *simulation = cSimulation::getActiveSimulation();
+    if (simulation->getParsimNumPartitions() > 0) {
         char tmp[32];
-        sprintf(tmp, "Proc %d/%d - ", getEnvir()->getParsimProcId(), getEnvir()->getParsimNumPartitions());
+        sprintf(tmp, "Proc %d/%d - ", simulation->getParsimProcId(), simulation->getParsimNumPartitions());
         windowTitlePrefix = tmp;
     }
 

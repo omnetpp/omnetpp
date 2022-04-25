@@ -42,7 +42,6 @@ class cScheduler;
 class cModuleType;
 class cIListener;
 class cProperty;
-class cParsimPartition;
 class cResultRecorder;
 class cIEventlogManager;
 
@@ -93,10 +92,6 @@ class ENVIR_API EnvirBase : public cEnvir
 
     std::ostream out; //TODO move to AppBase, modulo EnvirBase::undisposedObject()
 
-#ifdef WITH_PARSIM
-    cParsimPartition *parsimPartition;
-#endif
-
     // log related
     LogFormatter logFormatter;
     bool logFormatUsesEventName;
@@ -107,7 +102,6 @@ class ENVIR_API EnvirBase : public cEnvir
 
     // misc
     bool verbose = true;
-    bool parsim = false;
 
     // paths
     std::string nedPath;
@@ -128,10 +122,6 @@ class ENVIR_API EnvirBase : public cEnvir
     cIOutputVectorManager *outVectorManager;
     cIOutputScalarManager *outScalarManager;
     cISnapshotManager *snapshotManager;
-
-    // Data for getUniqueNumber()
-    uint64_t nextUniqueNumber;
-    uint64_t uniqueNumbersEnd;
 
     IAllInOne *app;
 
@@ -160,9 +150,6 @@ class ENVIR_API EnvirBase : public cEnvir
     void setSnapshotManager(cISnapshotManager *obj);
 
     XMLDocCache *getXMLDocCache() const {return xmlCache;}
-#ifdef WITH_PARSIM
-    cParsimPartition *getParsimPartition() const {return parsimPartition;}
-#endif
 
     bool isLoggingEnabled() const {return loggingEnabled;}
     void setLoggingEnabled(bool enabled) {loggingEnabled = enabled;}
@@ -186,13 +173,10 @@ class ENVIR_API EnvirBase : public cEnvir
     void setNedExcludedPackages(const char *nedExcludedPackages) {this->nedExcludedPackages = nedExcludedPackages;}
     const char *getNedPath() const {return nedPath.c_str();}
     void setNedPath(const char *nedPath) {this->nedPath = nedPath;}
-    bool isParsim() const {return parsim;}
-    void setParsim(bool parsim) {this->parsim = parsim;}
     bool getPrintUndisposed() const {return printUndisposed;}
     void setPrintUndisposed(bool printUndisposed) {this->printUndisposed = printUndisposed;}
     bool isVerbose() const {return verbose;}
     void setVerbose(bool verbose) {this->verbose = verbose;}
-    void setUniqueNumberRange(uint64_t start, uint64_t end) {nextUniqueNumber = start; uniqueNumbersEnd = end;}
 
     virtual std::string extractNedPath(cConfiguration *cfg, ArgList *args);
     virtual std::string extractNedExcludedPackages(cConfiguration *cfg, ArgList *args);
@@ -235,7 +219,6 @@ class ENVIR_API EnvirBase : public cEnvir
     virtual void preconfigureComponent(cComponent *component) override;
     virtual void configureComponent(cComponent *component) override;
     virtual void readParameter(cPar *parameter) override;
-    virtual bool isModuleLocal(cModule *parentmod, const char *modname, int index) override;
     virtual cXMLElement *getXMLDocument(const char *filename, const char *xpath=nullptr) override;
     virtual cXMLElement *getParsedXMLString(const char *content, const char *xpath=nullptr) override;
     virtual void forgetXMLDocument(const char *filename) override;
@@ -269,9 +252,6 @@ class ENVIR_API EnvirBase : public cEnvir
     virtual void releaseStreamForSnapshot(std::ostream *os) override;
 
     // misc
-    virtual int getParsimProcId() const override;
-    virtual int getParsimNumPartitions() const override;
-    virtual uint64_t getUniqueNumber() override;
     virtual void refOsgNode(osg::Node *scene) override {}
     virtual void unrefOsgNode(osg::Node *scene) override {}
     virtual bool idle() override;

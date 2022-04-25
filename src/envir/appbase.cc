@@ -870,8 +870,9 @@ void AppBase::stoppedWithTerminationException(cTerminationException& e)
     // if we're running in parallel and this exception is NOT one we received
     // from other partitions, then notify other partitions
 #ifdef WITH_PARSIM
-    if (envir->isParsim() && !dynamic_cast<cReceivedTerminationException *>(&e))
-        envir->getParsimPartition()->broadcastTerminationException(e);
+    cSimulation *simulation = cSimulation::getActiveSimulation();
+    if (simulation->isParsimEnabled() && !dynamic_cast<cReceivedTerminationException *>(&e))
+        simulation->getParsimPartition()->broadcastTerminationException(e);
 #endif
     if (getEventlogRecording()) {
         //FIXME should not be in this function (Andras)
@@ -884,8 +885,9 @@ void AppBase::stoppedWithException(std::exception& e)
     // if we're running in parallel and this exception is NOT one we received
     // from other partitions, then notify other partitions
 #ifdef WITH_PARSIM
-    if (envir->isParsim() && !dynamic_cast<cReceivedException *>(&e))
-        envir->getParsimPartition()->broadcastException(e);
+    cSimulation *simulation = cSimulation::getActiveSimulation();
+    if (simulation->isParsimEnabled() && !dynamic_cast<cReceivedException *>(&e))
+        simulation->getParsimPartition()->broadcastException(e);
 #endif
     if (getEventlogRecording()) {
         // TODO: get error code from the exception?

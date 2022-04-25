@@ -62,12 +62,6 @@
 #include "xmldoccache.h"
 #include "iallinone.h"
 
-#ifdef WITH_PARSIM
-#include "omnetpp/cparsimcomm.h"
-#include "sim/parsim/cparsimpartition.h"
-#include "sim/parsim/cparsimsynchr.h"
-#endif
-
 #ifdef PREFER_SQLITE_RESULT_FILES
 #define DEFAULT_OUTPUTVECTORMANAGER_CLASS "omnetpp::envir::SqliteOutputVectorManager"
 #define DEFAULT_OUTPUTSCALARMANAGER_CLASS "omnetpp::envir::SqliteOutputScalarManager"
@@ -85,7 +79,6 @@ namespace envir {
 using std::ostream;
 
 
-Register_GlobalConfigOption(CFGID_PARALLEL_SIMULATION, "parallel-simulation", CFG_BOOL, "false", "Enables parallel distributed simulation.");
 Register_PerRunConfigOption(CFGID_EVENTLOGMANAGER_CLASS, "eventlogmanager-class", CFG_STRING, "omnetpp::envir::EventlogFileManager", "Part of the Envir plugin mechanism: selects the eventlog manager class to be used to record data. The class has to implement the `cIEventlogManager` interface.");
 Register_PerRunConfigOption(CFGID_OUTPUTVECTORMANAGER_CLASS, "outputvectormanager-class", CFG_STRING, DEFAULT_OUTPUTVECTORMANAGER_CLASS, "Part of the Envir plugin mechanism: selects the output vector manager class to be used to record data from output vectors. The class has to implement the `cIOutputVectorManager` interface.");
 Register_PerRunConfigOption(CFGID_OUTPUTSCALARMANAGER_CLASS, "outputscalarmanager-class", CFG_STRING, DEFAULT_OUTPUTSCALARMANAGER_CLASS, "Part of the Envir plugin mechanism: selects the output scalar manager class to be used to record data passed to recordScalar(). The class has to implement the `cIOutputScalarManager` interface.");
@@ -109,10 +102,6 @@ EnvirBase::EnvirBase(IAllInOne *app) : out(std::cout.rdbuf()), app(app)
     outVectorManager = nullptr;
     outScalarManager = nullptr;
     snapshotManager = nullptr;
-
-#ifdef WITH_PARSIM
-    parsimPartition = nullptr;
-#endif
 }
 
 EnvirBase::~EnvirBase()
@@ -125,10 +114,6 @@ EnvirBase::~EnvirBase()
     delete outVectorManager;
     delete outScalarManager;
     delete snapshotManager;
-
-#ifdef WITH_PARSIM
-    delete parsimPartition;
-#endif
 }
 
 void EnvirBase::initialize(cSimulation *simulation, cConfiguration *cfg, ArgList *args)
@@ -138,13 +123,6 @@ void EnvirBase::initialize(cSimulation *simulation, cConfiguration *cfg, ArgList
 
     // ensure correct numeric format in output files
     setPosixLocale();
-
-    parsim = cfg->getAsBool(CFGID_PARALLEL_SIMULATION);
-
-#ifndef WITH_PARSIM
-    if (parsim)
-        throw cRuntimeError("Parallel simulation is turned on in the ini file, but OMNeT++ was compiled without parallel simulation support (WITH_PARSIM=no)");
-#endif
 
     attachDebuggerOnErrors = cfg->getAsBool(CFGID_DEBUGGER_ATTACH_ON_ERROR);
 
@@ -158,21 +136,14 @@ void EnvirBase::initialize(cSimulation *simulation, cConfiguration *cfg, ArgList
 
     // install XML document cache
     xmlCache = new XMLDocCache();
-
-    // parallel simulation
-    if (parsim) {
-#ifdef WITH_PARSIM
-        parsimPartition = new cParsimPartition();
-        parsimPartition->configure(getSimulation(), cfg);
-#else
-        throw cRuntimeError("Parallel simulation is turned on in the ini file, but OMNeT++ was compiled without parallel simulation support (WITH_PARSIM=no)");
-#endif
-    }
 }
 
 void EnvirBase::configure(cConfiguration *cfg)
 {
     this->cfg = cfg;
+
+    // note: call to cSimulation::configure() must precede result manager initializations, as they call cSimulation::isParsimEnabled()
+    getSimulation()->configure(cfg);  //TODO remove this
 
     // get options from ini file
     debugOnErrors = cfg->getAsBool(CFGID_DEBUG_ON_ERRORS);  // note: handling overridden in Qtenv::readPerRunOptions() due to interference with GUI
@@ -202,18 +173,6 @@ void EnvirBase::configure(cConfiguration *cfg)
     outVectorManager->configure(simulation, cfg);
     outScalarManager->configure(simulation, cfg);
     snapshotManager->configure(simulation, cfg);
-
-    getSimulation()->configure(cfg, parsim);
-
-    // init nextUniqueNumber -- startRun() is too late because simple module ctors have run by then
-    setUniqueNumberRange(0, 0); // =until it wraps
-#ifdef WITH_PARSIM
-    if (parsim) {
-        uint64_t myRank = parsimPartition->getProcId();
-        uint64_t range = UINT64_MAX / parsimPartition->getNumPartitions();
-        setUniqueNumberRange(myRank * range, (myRank+1) * range);
-    }
-#endif
 
     recordEventlog = cfg->getAsBool(CFGID_RECORD_EVENTLOG);
 }
@@ -329,15 +288,6 @@ void EnvirBase::readParameter(cPar *par)
 void EnvirBase::askParameter(cPar *par, bool unassigned)
 {
     app->askParameter(par, unassigned);
-}
-
-bool EnvirBase::isModuleLocal(cModule *parentmod, const char *modname, int index)
-{
-#ifdef WITH_PARSIM
-    return parsim ? parsimPartition->isModuleLocal(parentmod, modname, index) : true;
-#else
-    return true;
-#endif
 }
 
 cXMLElement *EnvirBase::getXMLDocument(const char *filename, const char *path)
@@ -738,14 +688,6 @@ void EnvirBase::releaseStreamForSnapshot(std::ostream *os)
 
 //-------------------------------------------------------------
 
-uint64_t EnvirBase::getUniqueNumber()
-{
-    uint64_t ret = nextUniqueNumber++;
-    if (nextUniqueNumber == uniqueNumbersEnd)
-        throw cRuntimeError("getUniqueNumber(): All values have been consumed");
-    return ret;
-}
-
 bool EnvirBase::idle()
 {
     return app->idle();
@@ -759,24 +701,6 @@ bool EnvirBase::ensureDebugger(cRuntimeError *error)
 bool EnvirBase::shouldDebugNow(cRuntimeError *error)
 {
     return debugOnErrors && ensureDebugger(error);
-}
-
-int EnvirBase::getParsimProcId() const
-{
-#ifdef WITH_PARSIM
-    return parsimPartition? parsimPartition->getProcId() : 0;
-#else
-    return 0;
-#endif
-}
-
-int EnvirBase::getParsimNumPartitions() const
-{
-#ifdef WITH_PARSIM
-    return parsimPartition? parsimPartition->getNumPartitions() : 0;
-#else
-    return 0;
-#endif
 }
 
 //-------------------------------------------------------------

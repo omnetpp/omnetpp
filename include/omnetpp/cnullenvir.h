@@ -95,7 +95,6 @@ class SIM_API cNullEnvir : public cEnvir
     virtual void preconfigureComponent(cComponent *component) override  {}
     virtual void configureComponent(cComponent *component) override {}
     virtual void readParameter(cPar *par) override  {unsupported();}
-    virtual bool isModuleLocal(cModule *parentmod, const char *modname, int index) override  {return true;}
     virtual cXMLElement *getXMLDocument(const char *filename, const char *xpath=nullptr) override  {unsupported(); return nullptr;}
     virtual cXMLElement *getParsedXMLString(const char *content, const char *xpath=nullptr) override  {unsupported(); return nullptr;}
     virtual void forgetXMLDocument(const char *filename) override {}
@@ -142,9 +141,6 @@ class SIM_API cNullEnvir : public cEnvir
     virtual void releaseStreamForSnapshot(std::ostream *os) override  {unsupported();}
 
     // misc
-    virtual int getParsimProcId() const override {return 0;}
-    virtual int getParsimNumPartitions() const override {return 1;}
-    virtual uint64_t getUniqueNumber() override  {return nextUniqueNumber++;}
     virtual void refOsgNode(osg::Node *scene) override {}
     virtual void unrefOsgNode(osg::Node *scene) override {}
     virtual bool idle() override  {return false;}

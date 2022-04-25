@@ -41,6 +41,7 @@
 #ifdef WITH_PARSIM
 #include "omnetpp/ccommbuffer.h"
 #include "sim/parsim/cplaceholdermod.h"
+#include "sim/parsim/cparsimpartition.h"
 #endif
 
 using namespace omnetpp::common;
@@ -291,7 +292,7 @@ cModule *cModuleType::create(const char *moduleName, cModule *parentModule, int 
     // create the new module object
     cTemporaryOwner tmp(cTemporaryOwner::DestructorMode::ASSERTNONE); // for collecting members of the new object
 #ifdef WITH_PARSIM
-    bool isLocal = getEnvir()->isModuleLocal(parentModule, moduleName, index);
+    bool isLocal = getSimulation()->isParsimEnabled() ? getSimulation()->getParsimPartition()->isModuleLocal(parentModule, moduleName, index) : true;
     cModule *module = isLocal ? createModuleObject() : new cPlaceholderModule();
 #else
     cModule *module = createModuleObject();

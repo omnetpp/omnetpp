@@ -50,10 +50,12 @@ cMPICommunications::~cMPICommunications()
 
 void cMPICommunications::configure(cSimulation *simulation, cConfiguration *cfg, int np, int procId)
 {
-    // TODO MPI initialization probably shouldn't be in here, as we may be invoked before each run
+    static bool mpiInitialized = false;
+    if (mpiInitialized)
+        throw cRuntimeError("cMPICommunications: Multiple simulation runs per process are not supported");
 
-    // note: MPI-2 (1997) allows passing NULL for both arguments of MPI_Init()
-    MPI_Init(nullptr, nullptr);
+    MPI_Init(nullptr, nullptr);  // note: MPI-2 (1997) allows passing NULL for both arguments of MPI_Init()
+    mpiInitialized = true;
 
     // get group size and myRank from MPI
     MPI_Comm_size(MPI_COMM_WORLD, &numPartitions);
