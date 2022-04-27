@@ -188,10 +188,10 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     /**
      * Returns the environment object associated with this simulation object.
      */
-    cEnvir *getEnvir() const  {return envir;}
+    cEnvir *getEnvir() const  {return envir;}  // note: intentionally non-virtual
     //@}
 
-    /** @name Accessing modules. */
+    /** @name Accessing modules and channels. */
     //@{
 
     /**
@@ -200,18 +200,18 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * issued again to another component, because we want IDs to be unique during
      * the whole simulation.
      */
-    int registerComponent(cComponent *component);
+    virtual int registerComponent(cComponent *component);
 
     /**
      * Deregisters the component from cSimulation. It is called internally from
      * cComponent's destructor.
      */
-    void deregisterComponent(cComponent *component);
+    virtual void deregisterComponent(cComponent *component);
 
     /**
      * Returns the highest used component ID.
      */
-    int getLastComponentId() const    {return lastComponentId;}
+    int getLastComponentId() const {return lastComponentId;}  // note: intentionally non-virtual
 
     /**
      * Finds a module by its path. The path is a string of module names
@@ -225,7 +225,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      *
      * @see findModuleByPath(), cModule::getModuleByPath()
      */
-    cModule *getModuleByPath(const char *modulePath) const;
+    virtual cModule *getModuleByPath(const char *modulePath) const;
 
     /**
      * Finds a module by its path. The path is a string of module names
@@ -239,30 +239,30 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      *
      * @see getModuleByPath(), cModule::findModuleByPath()
      */
-    cModule *findModuleByPath(const char *modulePath) const;
+    virtual cModule *findModuleByPath(const char *modulePath) const;
 
     /**
      * Looks up a component (module or channel) by ID. If the ID does not identify
      * a component (e.g. invalid ID or component already deleted), it returns nullptr.
      */
-    cComponent *getComponent(int id) const  {return id<0 || id>=size ? nullptr : componentv[id];}
+    cComponent *getComponent(int id) const  {return id < 0 || id >= size ? nullptr : componentv[id];}  // note: intentionally non-virtual
 
     /**
      * Looks up a module by ID. If the ID does not identify a module (e.g. invalid ID,
      * module already deleted, or object is not a module), it returns nullptr.
      */
-    cModule *getModule(int id) const  {return id<0 || id>=size || !componentv[id] ? nullptr : componentv[id]->isModule() ? (cModule *)componentv[id] : nullptr;}
+    cModule *getModule(int id) const  {return id < 0 || id >= size || !componentv[id] ? nullptr : componentv[id]->isModule() ? (cModule *)componentv[id] : nullptr;}  // note: intentionally non-virtual
 
     /**
      * Looks up a channel by ID. If the ID does not identify a channel (e.g. invalid ID,
      * channel already deleted, or object is not a channel), it returns nullptr.
      */
-    cChannel *getChannel(int id) const  {return id<0 || id>=size || !componentv[id] ? nullptr : componentv[id]->isChannel() ? (cChannel *)componentv[id] : nullptr;}
+    cChannel *getChannel(int id) const  {return id < 0 || id >= size || !componentv[id] ? nullptr : componentv[id]->isChannel() ? (cChannel *)componentv[id] : nullptr;}  // note: intentionally non-virtual
 
     /**
      * Designates the system module, the top-level module in the model.
      */
-    void setSystemModule(cModule *module);
+    virtual void setSystemModule(cModule *module);
 
     /**
      * Returns pointer to the system module, the top-level module in the model.
@@ -280,8 +280,6 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      */
     //@{
 
-    //TODO tons of these methods should be virtual!!!
-
     /**
      * Load all NED files from a NED source folder. This involves visiting
      * each subdirectory, and loading all "*.ned" files from there.
@@ -294,7 +292,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * Note: doneLoadingNedFiles() must be called after the last
      * loadNedSourceFolder()/loadNedFile()/loadNedText() call.
      */
-    int loadNedSourceFolder(const char *folderName, const char *excludedPackages="");
+    virtual int loadNedSourceFolder(const char *folderName, const char *excludedPackages="");
 
     /**
      * Load a single NED file. If the expected package is given (non-nullptr),
@@ -303,7 +301,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * Note: doneLoadingNedFiles() must be called after the last
      * loadNedSourceFolder()/loadNedFile()/loadNedText() call.
      */
-    void loadNedFile(const char *nedFilename, const char *expectedPackage=nullptr, bool isXML=false);
+    virtual void loadNedFile(const char *nedFilename, const char *expectedPackage=nullptr, bool isXML=false);
 
     /**
      * Parses and loads the NED source code passed in the nedtext argument.
@@ -315,7 +313,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * Note: doneLoadingNedFiles() must be called after the last
      * loadNedSourceFolder()/loadNedFile()/loadNedText() call.
      */
-    void loadNedText(const char *name, const char *nedText, const char *expectedPackage=nullptr, bool isXML=false);
+    virtual void loadNedText(const char *name, const char *nedText, const char *expectedPackage=nullptr, bool isXML=false);
 
     /**
      * To be called after all NED folders / files have been loaded
@@ -323,13 +321,13 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * Issues errors for components that could not be fully resolved
      * because of missing base types or interfaces.
      */
-    void doneLoadingNedFiles();
+    virtual void doneLoadingNedFiles();
 
     /**
      * Returns the NED package that corresponds to the given folder. Returns ""
      * for the default package, and "-" if the folder is outside all NED folders.
      */
-    std::string getNedPackageForFolder(const char *folder);
+    virtual std::string getNedPackageForFolder(const char *folder);
     //@}
 
     /** @name Setting up and finishing a simulation run. */
@@ -339,67 +337,78 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * Configures this simulation instance and the objects it relies on: the
      * scheduler, the FES, the RNG manager, the fingerprint calculator, etc.
      */
-    void configure(cConfiguration *cfg);
+    virtual void configure(cConfiguration *cfg);
 
     /**
      * Installs a scheduler object. This method may only be called before or
      * between simulations, when there is no network set up. The cSimulation
      * object will be responsible for deallocating the scheduler object.
      */
-    void setScheduler(cScheduler *scheduler);
+    virtual void setScheduler(cScheduler *scheduler);
 
     /**
      * Returns the scheduler object.
      */
-    cScheduler *getScheduler() const  {return scheduler;}
+    cScheduler *getScheduler() const  {return scheduler;}  // note: intentionally non-virtual
 
     /**
      * Sets the future event set. This method may only be called before or
      * between simulations, when there is no network set up. The cSimulation
      * object will be responsible for deallocating the FES object.
      */
-    void setFES(cFutureEventSet *fes);
+    virtual void setFES(cFutureEventSet *fes);
 
     /**
      * Returns the future event set data structure used by the simulation.
      */
-    cFutureEventSet *getFES() const  {return fes;}
+    cFutureEventSet *getFES() const  {return fes;}  // note: intentionally non-virtual
 
     /**
      * Returns the RNG manager that manages the association between the
      * modules/channels of the simulation, and RNGs.
      */
-    cIRngManager *getRngManager() const {return rngManager;}
+    cIRngManager *getRngManager() const {return rngManager;}  // note: intentionally non-virtual
+
+    /**
+     * Installs a new fingerprint object, used for fingerprint calculation.
+     */
+    virtual void setFingerprintCalculator(cFingerprintCalculator *fingerprint);
+
+    /**
+     * Returns the object used for fingerprint calculation. It returns nullptr
+     * if no fingerprint is being calculated during this simulation run.
+     */
+    cFingerprintCalculator *getFingerprintCalculator() {return fingerprint;}  // note: intentionally non-virtual
 
     /**
      * Sets the simulation stop time be scheduling an appropriate
      * "end-simulation" event. May only be called once per run.
      */
-    void setSimulationTimeLimit(simtime_t simTimeLimit);
+    virtual void setSimulationTimeLimit(simtime_t simTimeLimit);
 
     /**
      * Builds a new network.
      */
-    void setupNetwork(cModuleType *networkType);
+    virtual void setupNetwork(cModuleType *networkType);
 
     /**
      * Should be called after setupNetwork(), but before the first
      * executeEvent() call. Includes initialization of the modules,
      * that is, invokes callInitialize() on the system module.
      */
-    void callInitialize();
+    virtual void callInitialize();
 
     /**
      * Recursively calls finish() on the modules of the network.
      * This method simply invokes callfinish() on the system module.
      */
-    void callFinish();
+    virtual void callFinish();
 
     /**
      * Cleans up the network currently set up. This involves deleting
      * all modules and deleting the messages in the scheduled-event list.
      */
-    void deleteNetwork();
+    virtual void deleteNetwork();
     //@}
 
     /** @name Information about the current simulation run. */
@@ -410,33 +419,38 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * simulation finalization (CTX_FINISH), network cleanup (CTX_CLEANUP),
      * or other (CTX_NONE).
      */
-    int getSimulationStage() const  {return simulationStage;}
+    int getSimulationStage() const  {return simulationStage;}  // note: intentionally non-virtual
 
     /**
      * Returns the cModuleType object that was instantiated to set up
      * the current simulation model.
      */
-    cModuleType *getNetworkType() const  {return networkType;}
+    cModuleType *getNetworkType() const  {return networkType;}  // note: intentionally non-virtual
 
     /**
      * INTERNAL USE ONLY. This method should NEVER be invoked from
      * simulation models, only from scheduler classes subclassed from
      * cScheduler.
      */
-    void setSimTime(simtime_t time)  {currentSimtime = time;}
+    virtual void setSimTime(simtime_t time)  {currentSimtime = time;}
 
     /**
      * Returns the current simulation time. (It is also available via the
      * global simTime() function.) Between events it returns the time of
      * the last executed event.
      */
-    simtime_t_cref getSimTime() const  {return currentSimtime;}
+    simtime_t_cref getSimTime() const  {return currentSimtime;}  // note: intentionally non-virtual
 
     /**
      * Returns the sequence number of current event. Between events it returns
      * the sequence number of the next event.
      */
-    eventnumber_t getEventNumber() const  {return currentEventNumber;}
+    eventnumber_t getEventNumber() const  {return currentEventNumber;}  // note: intentionally non-virtual
+
+    /**
+     * Sets the warm-up period.
+     */
+    virtual void setWarmupPeriod(simtime_t t)  {warmupPeriod = t;}
 
     /**
      * Returns the length of the initial warm-up period from the configuration.
@@ -447,12 +461,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * the warm-up period and need not be modified. The warm-up period is useful
      * for steady-state simulations.
      */
-    simtime_t_cref getWarmupPeriod() const  {return warmupPeriod;}
-
-    /**
-     * INTERNAL USE ONLY. Sets the warm-up period.
-     */
-    void setWarmupPeriod(simtime_t t)  {warmupPeriod = t;}
+    virtual simtime_t_cref getWarmupPeriod() const  {return warmupPeriod;}  // note: intentionally non-virtual
     //@}
 
     /** @name Scheduling and simulation execution. */
@@ -462,20 +471,20 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * from a user interface library for displaying simulation status information.
      * Delegates to cScheduler::guessNextEvent().
      */
-    cEvent *guessNextEvent();
+    virtual cEvent *guessNextEvent();
 
     /**
      * Returns the module associated with the likely next event, or nullptr if
      * there is no such module. Based on guessNextEvent(); see further
      * comments there.
      */
-    cSimpleModule *guessNextModule();
+    virtual cSimpleModule *guessNextModule();
 
     /**
      * Returns the simulation time of the likely next event, or -1 if there is
      * none. Based on guessNextEvent(); see further comments there.
      */
-    simtime_t guessNextSimtime();
+    virtual simtime_t guessNextSimtime();
 
     /**
      * The scheduler function. Returns the next event from the FES.
@@ -487,68 +496,68 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      *
      * Delegates to cScheduler::takeNextEvent().
      */
-    cEvent *takeNextEvent();
+    virtual cEvent *takeNextEvent();
 
     /**
      * Undo for takeNextEvent(); see cScheduler's similar method for details.
      */
-    void putBackEvent(cEvent *event);
+    virtual void putBackEvent(cEvent *event);
 
     /**
      * Executes an event as part of the simulation. Also increments the event
      * number (see getEventNumber()).
      */
-    void executeEvent(cEvent *event);
+    virtual void executeEvent(cEvent *event);
 
     /**
      * Invoke callRefreshDisplay() on the system module.
      */
-    void callRefreshDisplay();
+    virtual void callRefreshDisplay();
 
     /**
      * Switches to the given simple module's coroutine. This method is invoked
      * from executeEvent() for activity()-based modules.
      */
-    void transferTo(cSimpleModule *module);
+    virtual void transferTo(cSimpleModule *module);
 
     /**
      * Switches to main coroutine.
      */
-    void transferToMain();
+    virtual void transferToMain();
 
     /**
      * Inserts the given event into the future events queue while assigning
      * the current event to its scheduling event. Used internally by
      * cSimpleModule::scheduleAt() and various other cSimpleModule methods.
      */
-    void insertEvent(cEvent *event);
+    virtual void insertEvent(cEvent *event);
 
     /**
      * Sets the component (module or channel) in context. Used internally.
      */
-    void setContext(cComponent *component);
+    virtual void setContext(cComponent *component);
 
     /**
      * Sets the context type for the context module. Used internally.
      */
-    void setContextType(ContextType type)  {contextType = type;}
+    virtual void setContextType(ContextType type)  {contextType = type;}
 
     /**
      * Sets global context. Used internally.
      */
-    void setGlobalContext()  {contextComponent=nullptr; cOwnedObject::setOwningContext(&globalOwningContext);}
+    virtual void setGlobalContext()  {contextComponent=nullptr; cOwnedObject::setOwningContext(&globalOwningContext);}
 
     /**
      * Returns the module whose activity() method is currently active.
      * Returns nullptr if no module is running, or the current module uses
      * handleMessage().
      */
-    cSimpleModule *getActivityModule() const {return currentActivityModule;}
+    cSimpleModule *getActivityModule() const {return currentActivityModule;}  // note: intentionally non-virtual
 
     /**
      * Returns the component (module or channel) currently in context.
      */
-    cComponent *getContext() const {return contextComponent;}
+    cComponent *getContext() const {return contextComponent;}  // note: intentionally non-virtual
 
     /**
      * Returns one of the CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_FINISH constants,
@@ -557,38 +566,38 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * finalized during simulation), the innermost context type is returned.
      * The return value is only valid if getContextModule() != nullptr.
      */
-    ContextType getContextType() const {return contextType;}
+    ContextType getContextType() const {return contextType;}  // note: intentionally non-virtual
 
     /**
      * If the current context is a module, returns its pointer,
      * otherwise returns nullptr.
      */
-    cModule *getContextModule() const;
+    cModule *getContextModule() const;  // note: intentionally non-virtual
 
     /**
      * Returns the module currently in context as a simple module.
      * If the module in context is not a simple module, returns nullptr.
      * This is a convenience function which simply calls getContextModule().
      */
-    cSimpleModule *getContextSimpleModule() const;
+    cSimpleModule *getContextSimpleModule() const;  // note: intentionally non-virtual
 
     /**
      * Request the next handleMessage() or activity() to execute a debugger
      * interrupt. (If the program is not run under a debugger, that will
      * usually result in a crash.)
      */
-    void requestTrapOnNextEvent() {trapOnNextEvent = true;}
+    virtual void requestTrapOnNextEvent() {trapOnNextEvent = true;}
 
     /**
      * Clear the previous requestTrapOnNextEvent() call.
      */
-    void clearTrapOnNextEvent() {trapOnNextEvent = false;}
+    virtual void clearTrapOnNextEvent() {trapOnNextEvent = false;}
 
     /**
      * Returns true if there is a pending request to execute a debugger
      * interrupt on the next event.
      */
-    bool isTrapOnNextEventRequested() const {return trapOnNextEvent;}
+    bool isTrapOnNextEventRequested() const {return trapOnNextEvent;}  // note: intentionally non-virtual
     //@}
 
     /** @name Lifecycle listeners */
@@ -624,7 +633,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     /**
      * Returns true if the current simulation run uses parallel simulation.
      */
-    bool isParsimEnabled() const {return parsim;}
+    bool isParsimEnabled() const {return parsim;}  // note: intentionally non-virtual
 
 #ifdef WITH_PARSIM
     /**
@@ -637,13 +646,13 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     /**
      * Returns the partitionID when parallel simulation is active.
      */
-    int getParsimProcId() const;
+    virtual int getParsimProcId() const;
 
     /**
      * Returns the number of partitions when parallel simulation is active;
      * otherwise it returns 0.
      */
-    int getParsimNumPartitions() const;
+    virtual int getParsimNumPartitions() const;
     //@}
 
     /** @name Miscellaneous. */
@@ -654,25 +663,14 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * simulation as well, so it is recommended over incrementing a global
      * variable. Useful for generating unique network addresses, etc.
      */
-    uint64_t getUniqueNumber();
+    virtual uint64_t getUniqueNumber();
 
     /**
      * Writes a snapshot of the given object and its children to the
      * textual snapshot file.
      * This method is called internally from cSimpleModule's snapshot().
      */
-    void snapshot(cObject *obj, const char *label);
-
-    /**
-     * Returns the object used for fingerprint calculation. It returns nullptr
-     * if no fingerprint is being calculated during this simulation run.
-     */
-    cFingerprintCalculator *getFingerprintCalculator() {return fingerprint;}
-
-    /**
-     * Installs a new fingerprint object, used for fingerprint calculation.
-     */
-    void setFingerprintCalculator(cFingerprintCalculator *fingerprint);
+    virtual void snapshot(cObject *obj, const char *label);
     //@}
 };
 
