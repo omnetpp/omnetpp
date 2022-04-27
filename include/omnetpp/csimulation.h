@@ -364,6 +364,13 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     cFutureEventSet *getFES() const  {return fes;}  // note: intentionally non-virtual
 
     /**
+     * Installs an RNG manager object. This method may only be called before or
+     * between simulations, when there is no network set up. The cSimulation
+     * object will be responsible for deallocating the object.
+     */
+    virtual void setRngManager(cIRngManager *rngManager);
+
+    /**
      * Returns the RNG manager that manages the association between the
      * modules/channels of the simulation, and RNGs.
      */

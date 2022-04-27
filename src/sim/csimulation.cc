@@ -80,6 +80,7 @@ Register_PerRunConfigOption(CFGID_FUTUREEVENTSET_CLASS, "futureeventset-class", 
 Register_PerRunConfigOption(CFGID_SCHEDULER_CLASS, "scheduler-class", CFG_STRING, "omnetpp::cSequentialScheduler", "Part of the Envir plugin mechanism: selects the scheduler class. This plugin interface allows for implementing real-time, hardware-in-the-loop, distributed and distributed parallel simulation. The class has to implement the `cScheduler` interface.");
 Register_PerRunConfigOption(CFGID_FINGERPRINT, "fingerprint", CFG_STRING, nullptr, "The expected fingerprints of the simulation. If you need multiple fingerprints, separate them with commas. When provided, the fingerprints will be calculated from the specified properties of simulation events, messages, and statistics during execution, and checked against the provided values. Fingerprints are suitable for crude regression tests. As fingerprints occasionally differ across platforms, more than one value can be specified for a single fingerprint, separated by spaces, and a match with any of them will be accepted. To obtain a fingerprint, enter a dummy value (such as `0000`), and run the simulation.");
 Register_PerRunConfigOption(CFGID_FINGERPRINTER_CLASS, "fingerprintcalculator-class", CFG_STRING, "omnetpp::cSingleFingerprintCalculator", "Part of the Envir plugin mechanism: selects the fingerprint calculator class to be used to calculate the simulation fingerprint. The class has to implement the `cFingerprintCalculator` interface.");
+Register_PerRunConfigOption(CFGID_RNGMANAGER_CLASS, "rngmanager-class", CFG_STRING, "omnetpp::cRngManager", "Part of the Envir plugin mechanism: selects the RNG manager class to be used for providing RNGs to modules and channels. The class has to implement the `cIRngManager` interface.");
 Register_PerRunConfigOption(CFGID_CHECK_SIGNALS, "check-signals", CFG_BOOL, CHECKSIGNALS_DEFAULT, "Controls whether the simulation kernel will validate signals emitted by modules and channels against signal declarations (`@signal` properties) in NED files. The default setting depends on the build type: `true` in DEBUG, and `false` in RELEASE mode.");
 Register_PerRunConfigOption(CFGID_PARAMETER_MUTABILITY_CHECK, "parameter-mutability-check", CFG_BOOL, "true", "Setting to false will disable errors raised when trying to change the values of module/channel parameters not marked as @mutable. This is primarily a compatibility setting intended to facilitate running simulation models that were not yet annotated with @mutable.");
 Register_PerRunConfigOption(CFGID_ALLOW_OBJECT_STEALING_ON_DELETION, "allow-object-stealing-on-deletion", CFG_BOOL, "false", "Setting it to true disables the \"Context component is deleting an object it doesn't own\" error message. This option exists primarily for backward compatibility with pre-6.0 versions that were more permissive during object deletion.");
@@ -122,13 +123,11 @@ cSimulation::cSimulation(const char *name, cEnvir *env) : cNamedObject(name, fal
     nedLoader = new cNedLoader();
 #endif
 
-    rngManager = new cRngManager();
-
-    // install default FES
+    // install default objects
     setFES(new cEventHeap("fes"));
-
-    // install default scheduler
     setScheduler(new cSequentialScheduler());
+    setRngManager(new cRngManager());
+    setFingerprintCalculator(new cSingleFingerprintCalculator());
 }
 
 cSimulation::~cSimulation()
@@ -147,12 +146,13 @@ cSimulation::~cSimulation()
 
     delete envir;
     delete fingerprint;
+    dropAndDelete(rngManager);
     delete scheduler;
     dropAndDelete(fes);
+
 #ifdef WITH_NETBUILDER
     delete nedLoader;
 #endif
-    delete rngManager;
 #ifdef WITH_PARSIM
     delete parsimPartition;
 #endif
@@ -217,6 +217,11 @@ void cSimulation::configure(cConfiguration *cfg)
     }
 
     scheduler->configure(this, cfg);
+
+    // rng manager
+    std::string rngManagerClass = cfg->getAsString(CFGID_RNGMANAGER_CLASS);
+    cIRngManager *rngManager = createByClassName<cIRngManager>(rngManagerClass.c_str(), "RNG manager");
+    setRngManager(rngManager);
 
     // install fingerprint calculator object
     cFingerprintCalculator *fingerprint = nullptr;
@@ -338,6 +343,22 @@ void cSimulation::setFES(cFutureEventSet *f)
     fes = f;
     fes->setName("scheduled-events");
     take(fes);
+}
+
+void cSimulation::setRngManager(cIRngManager *mgr)
+{
+    if (systemModule)
+        throw cRuntimeError(this, "setRngManager(): Cannot switch RNG managers when a network is already set up");
+    if (!mgr)
+        throw cRuntimeError(this, "setRngManager(): New RNG manager cannot be nullptr");
+
+    if (rngManager) {
+        drop(rngManager);
+        delete rngManager;
+    }
+
+    rngManager = mgr;
+    take(rngManager);
 }
 
 void cSimulation::setSimulationTimeLimit(simtime_t simTimeLimit)
