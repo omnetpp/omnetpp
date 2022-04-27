@@ -46,10 +46,10 @@ class PythonCmdenv(Cmdenv):
         pass
 
 # startup
-CodeFragments.executeAll(CodeFragments.STARTUP)
 #SimTime.setScaleExp(-12)
 static_flag = cStaticFlag()
 static_flag.__python_owns__ = False
+CodeFragments.executeAll(CodeFragments.EARLY_STARTUP)
 iniReader = InifileReader()
 iniReader.readFile("omnetpp.ini")
 configuration = SectionBasedConfiguration()
@@ -57,7 +57,7 @@ configuration.setConfigurationReader(iniReader)
 iniReader.__python_owns__ = False
 
 cppyy.load_library("libaloha" + libsuffix)
-CodeFragments.executeAll(CodeFragments.STARTUP)
+CodeFragments.executeAll(CodeFragments.EARLY_STARTUP)
 args = [ "<progname>", "-c", "PureAloha1" ]
 extra_config_options = { "cpu-time-limit" : "1s" }
 configuration.setCommandLineConfigOptions(extra_config_options, ".")
