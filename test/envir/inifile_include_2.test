@@ -4,18 +4,16 @@ The configured ini file does not contain a loop, but contains
 an inifile which is included several times -- it should not cause
 an error.
 
-%extraargs: -c Test
+%includes:
+#include <envir/inifilecontents.h>
 
-%file: test.ned
-import testlib.Dump;
+%global:
+using namespace omnetpp::envir;
 
-network Test {
-    parameters:
-        int a;
-        int b;
-    submodules:
-        dump: Dump;
-}
+%activity:
+InifileContents ini;
+ini.readFile("test.ini");
+ini.dump(false);
 
 %inifile: test.ini
 network = Test
@@ -33,10 +31,12 @@ include subinclude.ini
 *.b = 2
 
 %contains: stdout
-module Test: Test {
-    parameters:
-        @isNetwork
-        a = 1
-        b = 2
-    submodules:
-}
+[General]
+network = Test
+*.b = 0
+
+[Test]
+*.a = 1
+*.b = 2
+*.b = 2
+

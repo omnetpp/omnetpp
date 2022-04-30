@@ -3,15 +3,7 @@ Check that inifile include recursion is properly detected.
 omnetpp.ini -> a.ini -> b.ini -> a.ini (ERROR)
 
 %file: test.ned
-import testlib.Dump;
-
-network Test {
-    parameters:
-        int a;
-        int b;
-    submodules:
-        dump: Dump;
-}
+network Test {}
 
 %inifile: test.ini
 network = Test

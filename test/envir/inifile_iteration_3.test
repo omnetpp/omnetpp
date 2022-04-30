@@ -2,7 +2,7 @@
 Test output file names generated from iteration variables.
 
 %activity:
-cConfigurationEx *config = getEnvir()->getConfigEx();
+cConfiguration *config = getEnvir()->getConfig();
 EV << "iterationvars: " << config->getVariable("iterationvars") << endl;
 EV << "iterationvarsf: " << config->getVariable("iterationvarsf") << endl;
 cConfigOption *scalarFileOption = cConfigOption::get("output-scalar-file");

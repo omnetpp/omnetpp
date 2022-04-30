@@ -1,5 +1,5 @@
 %description:
-Tests SectionBasedConfiguration's accelerated lookup implementation.
+Tests Configuration's accelerated lookup implementation.
 
 Strategy: generate a long inifile with random contents, and perform
 random lookups against it. Accelerated lookups should yield the same
@@ -7,8 +7,8 @@ results as naive, linear lookups.
 
 %includes:
 #include <fstream>
-#include <envir/inifilereader.h>
-#include <envir/sectionbasedconfig.h>
+#include <envir/inifilecontents.h>
+#include <envir/configuration.h>
 #include <common/lcgrandom.h>
 #include <common/patternmatcher.h>
 
@@ -56,19 +56,19 @@ static std::string generatePath(LCGRandom& rng)
     return result;
 }
 
-static const char *lookupFromInifile(InifileReader *ini, const char *module, const char *param)
+static const char *lookupFromInifile(InifileContents *ini, const char *module, const char *param)
 {
     std::string fullpath = std::string(module)+"."+param;
     int sectionId = 0;  // there's only one section
     int n = ini->getNumEntries(sectionId);
     for (int i=0; i<n; i++)
     {
-        const InifileReader::KeyValue& entry = ini->getEntry(sectionId, i);
+        const auto& entry = ini->getEntry(sectionId, i);
         PatternMatcher pattern(entry.getKey(), true, true, true);
         if (pattern.matches(fullpath.c_str()))
             return entry.getValue();
     }
-    return NULL;
+    return nullptr;
 }
 
 %activity:
@@ -83,23 +83,21 @@ for (int i=0; i<200; i++)
 f.close();
 
 // load the file
-InifileReader *ini = new InifileReader();
+InifileContents *ini = new InifileContents();
 ini->readFile(filename);
 
-SectionBasedConfiguration cfg;
-cfg.setConfigurationReader(ini);
-cfg.activateConfig("General");
+cConfiguration *cfg = ini->activateConfig("General");
 
 // test lookup with random keys
 int maxvalue = 0;
 int numerrors = 0;
-for (int i=0; i<2000; i++)
+for (int i = 0; i < 2000; i++)
 {
     std::string module = generatePath(rng);
     std::string param = generateName(rng);
 
     // look up the parameter both ways
-    const char *value1 = cfg.getParameterValue(module.c_str(), param.c_str(), false);
+    const char *value1 = cfg->getParameterValue(module.c_str(), param.c_str(), false);
     const char *value2 = lookupFromInifile(ini, module.c_str(), param.c_str());
     if (!value1) value1="";
     if (!value2) value2="";
@@ -113,13 +111,16 @@ for (int i=0; i<2000; i++)
     }
 
     int value2asnum = atoi(value2);
-    if (maxvalue<value2asnum)
+    if (maxvalue < value2asnum)
         maxvalue = value2asnum;
 }
 
 EV << "lines actually used in the inifile: " << maxvalue << "\n";
 EV << "errors found: " << numerrors << "\n";
 EV << ".\n";
+
+delete ini;
+delete cfg;
 
 %exitcode: 0
 

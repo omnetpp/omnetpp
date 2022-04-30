@@ -3,18 +3,16 @@ Test multiple inifiles with implicit sections.
 "Duplicate section" error should not be triggered when an included file
 contains a section already seen in the main file.
 
-%extraargs: -c Test
+%includes:
+#include <envir/inifilecontents.h>
 
-%file: test.ned
-import testlib.Dump;
+%global:
+using namespace omnetpp::envir;
 
-network Test {
-    parameters:
-        int a;
-        int b;
-    submodules:
-        dump: Dump;
-}
+%activity:
+InifileContents ini;
+ini.readFile("test.ini");
+ini.dump(false);
 
 %inifile: test.ini
 [General]
@@ -32,10 +30,12 @@ include include.ini
 *.b = 2
 
 %contains: stdout
-module Test: Test {
-    parameters:
-        @isNetwork
-        a = 1
-        b = 2
-    submodules:
-}
+[General]
+network = Test
+*.a = 0
+*.b = 0
+
+[Test]
+*.a = 1
+*.b = 2
+

@@ -11,7 +11,7 @@ Consequences:
 
 %activity:
 // print the raw values
-cConfigurationEx *cfg = getEnvir()->getConfigEx();
+cConfiguration *cfg = getEnvir()->getConfig();
 for (const char *name : {"mult", "stray", "str1", "str2", "space1", "space2", "comment", "extra"}) {
     const char *value = cfg->getParameterValue("X", name, false);
     EV << name << ": >>>" << (value ? value : nullptr) << "<<<\n";

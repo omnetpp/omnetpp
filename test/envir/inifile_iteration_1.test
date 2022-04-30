@@ -1,17 +1,23 @@
 %description:
 Test inifile iteration variable parsing.
 
+%includes:
+#include <envir/inifilecontents.h>
+
 %global:
+using namespace omnetpp::envir;
+
 static void printValues(const char *configName, const char *iterationVariable)
 {
-    cConfigurationEx *config = getEnvir()->getConfigEx();
-    int n = config->getNumRunsInConfig(configName);
+    InifileContents ini;
+    ini.readFile("test.ini");
+    int n = ini.getNumRunsInConfig(configName);
     EV << iterationVariable << "\n";
-    for (int i = 0; i < n; ++i)
-    {
-        config->activateConfig(configName, i);
-        const char *value = config->getVariable(iterationVariable);
+    for (int i = 0; i < n; ++i) {
+        cConfiguration *cfg = ini.activateConfig(configName, i);
+        const char *value = cfg->getVariable(iterationVariable);
         EV << "  " << value << "\n";
+        delete cfg;
     }
 }
 

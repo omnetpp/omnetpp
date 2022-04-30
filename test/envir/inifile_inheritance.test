@@ -1,10 +1,16 @@
 %description:
 test config inheritance (C3 linearization)
 
-%activity:
+%includes:
+#include <envir/inifilecontents.h>
 
-cConfigurationEx *config = getEnvir()->getConfigEx();
-std::vector<std::string> chain = config->getConfigChain("editable-scrollable-pane");
+%global:
+using namespace omnetpp::envir;
+
+%activity:
+InifileContents ini;
+ini.readFile("omnetpp.ini");
+std::vector<std::string> chain = ini.getConfigChain("editable-scrollable-pane");
 for (int i = 0; i < (int)chain.size(); ++i)
    printf("%s%s", (i == 0 ? "" : ","), chain[i].c_str());
 printf("\n");

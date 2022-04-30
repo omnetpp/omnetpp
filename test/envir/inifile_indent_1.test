@@ -9,7 +9,7 @@ Consequence:
 - It is not possible to break string constants with indentation (causes parse error)
 
 %activity:
-cConfigurationEx *cfg = getEnvir()->getConfigEx();
+cConfiguration *cfg = getEnvir()->getConfig();
 for (const char *name : {"mult", "mult2", "space", "comment"}) {
     const char *value = cfg->getParameterValue("X", name, false);
     EV << name << ": >>>" << (value ? value : "nullptr") << "<<<\n";
