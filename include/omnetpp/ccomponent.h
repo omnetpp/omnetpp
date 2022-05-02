@@ -117,11 +117,9 @@ class SIM_API cComponent : public cSoftOwner //implies noncopyable
     static struct SignalNameMapping {
         std::map<std::string,simsignal_t> signalNameToID;
         std::map<simsignal_t,std::string> signalIDToName;
+        std::vector<int> signalListenerCounts;  // index: signalID, value: number of listeners anywhere
+        int lastSignalID = -1;
     } *signalNameMapping;  // must be dynamically allocated on first access so that registerSignal() can be invoked from static initialization code
-    static int lastSignalID;
-
-    // for hasListeners()/mayHaveListeners()
-    static std::vector<int> signalListenerCounts;  // index: signalID, value: number of listeners anywhere
 
     // stack of listener lists being notified, to detect concurrent modification
     static cIListener **notificationStack[];
@@ -1051,9 +1049,9 @@ class SIM_API cComponent : public cSoftOwner //implies noncopyable
      * This method has a constant cost but may return false positive.
      */
     bool mayHaveListeners(simsignal_t signalID) const {
-        if (signalID < 0 || signalID > lastSignalID)
+        if (signalID < 0 || signalID > signalNameMapping->lastSignalID)
             throwInvalidSignalID(signalID);
-        return signalListenerCounts[signalID] > 0;
+        return signalNameMapping->signalListenerCounts[signalID] > 0;
     }
 
     /**
