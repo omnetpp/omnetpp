@@ -50,13 +50,21 @@ class PythonCmdenv(Cmdenv):
 static_flag = cStaticFlag()
 static_flag.__python_owns__ = False
 CodeFragments.executeAll(CodeFragments.EARLY_STARTUP)
-iniReader = InifileReader()
-iniReader.readFile("omnetpp.ini")
-configuration = SectionBasedConfiguration()
-configuration.setConfigurationReader(iniReader)
-iniReader.__python_owns__ = False
 
-cppyy.load_library("libaloha" + libsuffix)
+# Long version:
+# iniReader = InifileReader()
+# iniReader.readFile("omnetpp.ini")
+# configuration = SectionBasedConfiguration()
+# configuration.setConfigurationReader(iniReader)
+# iniReader.__python_owns__ = False
+
+# Shorter:
+# configuration = SectionBasedConfiguration()
+# configuration.readFile("omnetpp.ini")
+
+configuration = SectionBasedConfiguration("omnetpp.ini")
+
+cppyy.load_library("libaloha" + libsuffix)  #TODO should use omnet's own lib loaded which does EARLY_STARTUP too
 CodeFragments.executeAll(CodeFragments.EARLY_STARTUP)
 args = [ "<progname>", "-c", "PureAloha1" ]
 extra_config_options = { "cpu-time-limit" : "1s" }
@@ -66,9 +74,9 @@ environment = PythonCmdenv()
 #environment.loggingEnabled = False
 simulation = cSimulation("simulation", environment.getEnvir())
 environment.__python_owns__ = False
-cSimulation.setActiveSimulation(simulation)
+cSimulation.setActiveSimulation(simulation)  # TODO should be done inside methods like doOneEvent()
 simulation.loadNedSourceFolder(omnetpp_root + "/samples/aloha")
-simulation.doneLoadingNedFiles()
+simulation.doneLoadingNedFiles()  # TODO clumsy -- cannot this be implicit?
 
 # run
 returncode = environment.run(args, configuration)
