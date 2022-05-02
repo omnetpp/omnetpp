@@ -114,12 +114,13 @@ class SIM_API cComponent : public cSoftOwner //implies noncopyable
     std::unordered_set<void**> *selfPointers = nullptr;
 
     // string-to-simsignal_t mapping
-    static struct SignalNameMapping {
-        std::map<std::string,simsignal_t> signalNameToID;
-        std::map<simsignal_t,std::string> signalIDToName;
-        std::vector<int> signalListenerCounts;  // index: signalID, value: number of listeners anywhere
-        int lastSignalID = -1;
-    } *signalNameMapping;  // must be dynamically allocated on first access so that registerSignal() can be invoked from static initialization code
+    struct SignalRegistrations {
+        std::map<std::string,simsignal_t> nameToId;
+        std::map<simsignal_t,std::string> idToName;
+        std::vector<int> listenerCounts;  // index: signalID, value: number of listeners anywhere
+        int lastId = -1;
+    };
+    static SignalRegistrations *signals_;  // underscore in name due to clash with Qt; dynamically allocated on first access so that registerSignal() can be invoked from static initialization code
 
     // stack of listener lists being notified, to detect concurrent modification
     static cIListener **notificationStack[];
@@ -1049,9 +1050,9 @@ class SIM_API cComponent : public cSoftOwner //implies noncopyable
      * This method has a constant cost but may return false positive.
      */
     bool mayHaveListeners(simsignal_t signalID) const {
-        if (signalID < 0 || signalID > signalNameMapping->lastSignalID)
+        if (signalID < 0 || signalID > signals_->lastId)
             throwInvalidSignalID(signalID);
-        return signalNameMapping->signalListenerCounts[signalID] > 0;
+        return signals_->listenerCounts[signalID] > 0;
     }
 
     /**

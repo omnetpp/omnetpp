@@ -45,7 +45,7 @@ namespace omnetpp {
 Register_PerObjectConfigOption(CFGID_DISPLAY_STRING, "display-string", KIND_COMPONENT, CFG_STRING, nullptr, "Additional display string for the module/channel; it will be merged into the display string given via `@display` properties, and override its content.");
 Register_PerObjectConfigOption(CFGID_PARAM_RECORD_AS_SCALAR, "param-record-as-scalar", KIND_PARAMETER, CFG_BOOL, "false", "Applicable to module parameters: specifies whether the module parameter should be recorded into the output scalar file. Set it for parameters whose value you will need for result analysis.");
 
-cComponent::SignalNameMapping *cComponent::signalNameMapping = nullptr;
+cComponent::SignalRegistrations *cComponent::signals_ = nullptr;
 
 static const int NOTIFICATION_STACK_SIZE = 64;
 cIListener **cComponent::notificationStack[NOTIFICATION_STACK_SIZE];
@@ -505,17 +505,17 @@ int cComponent::SignalListenerList::findListener(cIListener *l) const
 
 simsignal_t cComponent::registerSignal(const char *name)
 {
-    if (signalNameMapping == nullptr)
-        signalNameMapping = new SignalNameMapping;
+    if (signals_ == nullptr)
+        signals_ = new SignalRegistrations;
 
-    std::map<std::string,simsignal_t>::iterator it = signalNameMapping->signalNameToID.find(name);
-    if (it == signalNameMapping->signalNameToID.end()) {
+    std::map<std::string,simsignal_t>::iterator it = signals_->nameToId.find(name);
+    if (it == signals_->nameToId.end()) {
         // assign ID, register name
-        simsignal_t signalID = ++signalNameMapping->lastSignalID;
-        signalNameMapping->signalNameToID[name] = signalID;
-        signalNameMapping->signalIDToName[signalID] = name;
-        signalNameMapping->signalListenerCounts.push_back(0);
-        ASSERT((int)signalNameMapping->signalListenerCounts.size() == signalNameMapping->lastSignalID+1);
+        simsignal_t signalID = ++signals_->lastId;
+        signals_->nameToId[name] = signalID;
+        signals_->idToName[signalID] = name;
+        signals_->listenerCounts.push_back(0);
+        ASSERT((int)signals_->listenerCounts.size() == signals_->lastId+1);
         return signalID;
     }
     else {
@@ -525,10 +525,10 @@ simsignal_t cComponent::registerSignal(const char *name)
 
 const char *cComponent::getSignalName(simsignal_t signalID)
 {
-    if (!signalNameMapping)
+    if (!signals_)
         return nullptr;
-    std::map<simsignal_t,std::string>::iterator it = signalNameMapping->signalIDToName.find(signalID);
-    return it != signalNameMapping->signalIDToName.end() ? it->second.c_str() : nullptr;
+    std::map<simsignal_t,std::string>::iterator it = signals_->idToName.find(signalID);
+    return it != signals_->idToName.end() ? it->second.c_str() : nullptr;
 }
 
 void cComponent::clearSignalState()
@@ -538,8 +538,8 @@ void cComponent::clearSignalState()
         signals_ = new SignalRegistrations;
 
     // reset listener counts
-    signalNameMapping->signalListenerCounts.resize(signalNameMapping->lastSignalID+1);
-    for (int & listenerCount : signalNameMapping->signalListenerCounts)
+    signals_->listenerCounts.resize(signals_->lastId+1);
+    for (int & listenerCount : signals_->listenerCounts)
         listenerCount = 0;
 
     // clear notification stack
@@ -548,8 +548,8 @@ void cComponent::clearSignalState()
 
 void cComponent::clearSignalRegistrations()
 {
-    delete signalNameMapping;
-    signalNameMapping = nullptr;
+    delete signals_;
+    signals_ = nullptr;
 }
 
 cComponent::SignalListenerList *cComponent::findListenerList(simsignal_t signalID) const
@@ -741,7 +741,7 @@ void cComponent::fireFinish()
 void cComponent::subscribe(simsignal_t signalID, cIListener *listener)
 {
     // check that the signal exits
-    if (signalID > signalNameMapping->lastSignalID)
+    if (signalID > signals_->lastId)
         throw cRuntimeError("subscribe(): Not a valid signal: SignalID=%d", signalID);
 
     // add to local listeners
@@ -749,7 +749,7 @@ void cComponent::subscribe(simsignal_t signalID, cIListener *listener)
     checkNotFiring(signalID, listenerList->listeners);
     if (!listenerList->addListener(listener))
         throw cRuntimeError(this, "subscribe(): Listener already subscribed at this component to signal '%s' (id=%d)", getSignalName(signalID), signalID);
-    signalNameMapping->signalListenerCounts[signalID]++;
+    signals_->listenerCounts[signalID]++;
     listener->subscriptions.push_back(std::pair<cComponent*,simsignal_t>(this,signalID));
     listener->subscribedTo(this, signalID);
 }
@@ -757,7 +757,7 @@ void cComponent::subscribe(simsignal_t signalID, cIListener *listener)
 void cComponent::unsubscribe(simsignal_t signalID, cIListener *listener)
 {
     // check that the signal exits
-    if (signalID > signalNameMapping->lastSignalID)
+    if (signalID > signals_->lastId)
         throw cRuntimeError("unsubscribe(): Not a valid signal: SignalID=%d", signalID);
 
     // remove from local listeners list
@@ -771,8 +771,8 @@ void cComponent::unsubscribe(simsignal_t signalID, cIListener *listener)
     if (!listenerList->hasListener())
         removeListenerList(signalID);
 
-    signalNameMapping->signalListenerCounts[signalID]--;
-    ASSERT(signalNameMapping->signalListenerCounts[signalID] >= 0);
+    signals_->listenerCounts[signalID]--;
+    ASSERT(signals_->listenerCounts[signalID] >= 0);
     auto subscription = std::pair<cComponent*,simsignal_t>(this,signalID);
     ASSERT(contains(listener->subscriptions, subscription));
     remove(listener->subscriptions, subscription);
