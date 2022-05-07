@@ -93,7 +93,7 @@ StringMap SqliteVectorFileExporterType::getSupportedOptions() const
 
 ExporterType *SqliteVectorFileExporter::getDescription()
 {
-    static SqliteVectorFileExporterType desc;
+    static OPP_THREAD_LOCAL SqliteVectorFileExporterType desc;
     return &desc;
 }
 

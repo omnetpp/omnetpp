@@ -35,8 +35,8 @@ using std::ostream;
 
 Register_Class(cDelayChannel);
 
-simsignal_t cDelayChannel::messageSentSignal;
-simsignal_t cDelayChannel::messageDiscardedSignal;
+OPP_THREAD_LOCAL simsignal_t cDelayChannel::messageSentSignal;
+OPP_THREAD_LOCAL simsignal_t cDelayChannel::messageDiscardedSignal;
 
 cDelayChannel *cDelayChannel::create(const char *name)
 {

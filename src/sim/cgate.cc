@@ -65,9 +65,9 @@ using std::ostream;
  */
 
 // non-refcounting pool for gate fullnames
-static StaticStringPool gateFullnamePool;
+OPP_THREAD_LOCAL StaticStringPool gateFullnamePool;
 
-int cGate::lastConnectionId = -1;
+OPP_THREAD_LOCAL int cGate::lastConnectionId = -1;
 
 cGate::Name::Name(const char *name, Type type) : name(name), type(type)
 {
@@ -144,7 +144,7 @@ const char *cGate::getFullName() const
     if (!isVector())
         return getName();
     else {
-        static char buf[128];
+        static OPP_THREAD_LOCAL char buf[128];
         opp_indexedname(buf, sizeof(buf), getName(), getIndex());
         return gateFullnamePool.get(buf);  // non-refcounted stringpool
     }

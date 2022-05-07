@@ -733,7 +733,7 @@ void cSimulation::executeEvent(cEvent *event)
 
     // Sanity check to prevent reentrant event execution - which might
     // happen for example in a faulty cEnvir::pausePoint() implementation.
-    static bool inExecuteEvent = false;
+    static OPP_THREAD_LOCAL bool inExecuteEvent = false;
     ASSERT(!inExecuteEvent);
     inExecuteEvent = true;
     struct ResetInExecEventFlag {
@@ -1025,13 +1025,11 @@ void StaticEnv::undisposedObject(cObject *obj)
     }
 }
 
-static StaticEnv staticEnv;
+OPP_THREAD_LOCAL StaticEnv staticEnv;
 
-// cSimulation's global variables
-cEnvir *cSimulation::activeEnvir = &staticEnv;
-cEnvir *cSimulation::staticEnvir = &staticEnv;
-
-cSimulation *cSimulation::activeSimulation = nullptr;
+OPP_THREAD_LOCAL cEnvir *cSimulation::activeEnvir = &staticEnv;
+OPP_THREAD_LOCAL cEnvir *cSimulation::staticEnvir = &staticEnv;
+OPP_THREAD_LOCAL cSimulation *cSimulation::activeSimulation = nullptr;
 
 }  // namespace omnetpp
 

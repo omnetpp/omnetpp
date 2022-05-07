@@ -130,7 +130,7 @@ using namespace omnetpp::nedxml::nedyyutil;
 
 %code {
 
-static struct NedParserState
+struct NedParserState
 {
     bool inTypes;
     bool inConnGroup;
@@ -174,15 +174,17 @@ static struct NedParserState
     ConnectionElement *conn;
     LoopElement *loop;
     ConditionElement *condition;
-} ps;
+};
+
+static thread_local NedParserState ps;
 
 static void resetParserState()
 {
-    static NedParserState cleanps;
+    thread_local NedParserState cleanps;
     ps = cleanps;
 }
 
-static NedParserState globalps;  // for error recovery
+thread_local NedParserState globalps;  // for error recovery
 
 static void restoreGlobalParserState()  // for error recovery
 {
@@ -1438,7 +1440,7 @@ opt_subgate
                   else if (!strcmp(s,"o"))
                       ps.subgate = SUBGATE_O;
                   else {
-                      std::string msg = opp_stringf("invalid subgate spec '%s', must be 'i' or 'o'", s); 
+                      std::string msg = opp_stringf("invalid subgate spec '%s', must be 'i' or 'o'", s);
                       np->error(msg.c_str(), @2.first_line);
                   }
                 }
@@ -1705,8 +1707,6 @@ opt_semicolon
 
 ASTNode *doParseNed(ParseContext *np)
 {
-    DETECT_PARSER_REENTRY();
-
     // create parser state and NedFileElement
     resetParserState();
     ps.nedfile = new NedFileElement();

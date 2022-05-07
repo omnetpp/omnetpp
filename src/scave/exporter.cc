@@ -54,7 +54,7 @@ void Exporter::checkItemTypes(const IDList& idlist, int supportedTypes)
 
 //----
 
-static std::vector<ExporterType*> exporters;
+OPP_THREAD_LOCAL std::vector<ExporterType*> exporters;
 
 void ExporterFactory::ensureInitialized()
 {

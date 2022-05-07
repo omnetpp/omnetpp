@@ -24,14 +24,6 @@
 namespace omnetpp {
 namespace nedxml {
 
-extern bool parseInProgress;
-
-#define DETECT_PARSER_REENTRY() \
-    struct Guard { \
-     Guard() {if (parseInProgress) throw opp_runtime_error("non-reentrant parser invoked again while parsing"); parseInProgress = true;} \
-      ~Guard() {parseInProgress = false;} \
-    } __guard;
-
 std::string slashifyFilename(const char *fname);
 ASTNode *createElementWithTag(ParseContext *np, ASTNodeFactory *factory, int tagcode, ASTNode *parent=nullptr);
 ASTNode *getOrCreateElementWithTag(ParseContext *np, ASTNodeFactory *factory, int tagcode, ASTNode *parent);

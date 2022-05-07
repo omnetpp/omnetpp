@@ -388,9 +388,9 @@ void SizeofIndexedSubmoduleGate::print(std::ostream& out, int spaciousness) cons
 
 //---
 
-const char *LoopVar::varNames[32];
-long LoopVar::vars[32];
-int LoopVar::varCount = 0;
+OPP_THREAD_LOCAL const char *LoopVar::varNames[32];
+OPP_THREAD_LOCAL long LoopVar::vars[32];
+OPP_THREAD_LOCAL int LoopVar::varCount = 0;
 
 long& LoopVar::pushVar(const char *varName)
 {
@@ -455,7 +455,7 @@ ExprValue NedObjectNode::evaluate(Context *context_) const
 {
     ASSERT(children.size() == fieldNames.size());
     if (typeName.empty()) {
-        static int counter = 0;
+        static OPP_THREAD_LOCAL int counter = 0;
         cValueMap *object = new cValueMap(opp_stringf("map%d", ++counter).c_str());
         cTemporaryOwner tmp(cTemporaryOwner::DestructorMode::DISPOSE); // dispose temp objects created during evaluation
         for (int i = 0; i < fieldNames.size(); i++)
@@ -465,7 +465,7 @@ ExprValue NedObjectNode::evaluate(Context *context_) const
     else {
         cObject *object = createOne(typeName.c_str());
         if (object->isOwnedObject()) {
-            static int counter = 0;
+            static OPP_THREAD_LOCAL int counter = 0;
             static_cast<cOwnedObject*>(object)->setName(opp_stringf("obj%d", ++counter).c_str());
         }
         cTemporaryOwner tmp(cTemporaryOwner::DestructorMode::DISPOSE); // dispose temp objects created during evaluation
@@ -549,7 +549,7 @@ void NedObjectNode::fillObject(cClassDescriptor *desc, any_ptr object, const cVa
 
 ExprValue NedArrayNode::evaluate(Context *context_) const
 {
-    static int counter = 0;
+    static OPP_THREAD_LOCAL int counter = 0;
     cValueArray *array = new cValueArray(opp_stringf("array%d", ++counter).c_str());
     cTemporaryOwner tmp(cTemporaryOwner::DestructorMode::DISPOSE); // dispose temp objects created during evaluation
     for (ExprNode *child : children)

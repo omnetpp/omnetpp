@@ -54,7 +54,7 @@ const char *opp_gethostname()
     // Windows also has gethostname(), but we don't want to pull in winsock2 just for that
     return getenv("COMPUTERNAME");
 #else
-    static char buf[128];
+    static OPP_THREAD_LOCAL char buf[128];
     if (gethostname(buf, sizeof(buf)) == 0)
         return buf;
     else if (getenv("HOST") != nullptr)
@@ -66,7 +66,7 @@ const char *opp_gethostname()
 
 //----
 
-int CallTracer::depth;
+OPP_THREAD_LOCAL int CallTracer::depth;
 
 CallTracer::CallTracer(const char *fmt, ...)
 {
@@ -222,7 +222,7 @@ struct EqualTo {
     bool operator()(TypeInfoRef lhs, TypeInfoRef rhs) const { return lhs.get() == rhs.get(); }
 };
 
-std::unordered_map<TypeInfoRef, std::string, Hasher, EqualTo> demangledNames;
+OPP_THREAD_LOCAL std::unordered_map<TypeInfoRef, std::string, Hasher, EqualTo> demangledNames;
 
 const char *opp_typename(const std::type_info& t)
 {

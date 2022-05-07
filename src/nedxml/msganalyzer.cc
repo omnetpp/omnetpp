@@ -89,7 +89,7 @@ const MsgAnalyzer::StringSet MsgAnalyzer::RESERVED_WORDS = {
         "private", "protected", "public", "register", "reinterpret_cast",
         "requires", "return", "short", "signed", "sizeof", "static",
         "static_assert", "static_cast", "struct", "switch", "synchronized",
-        "template", "this", "thread_local", "throw", "true", "try", "typedef",
+        "template", "this", "OPP_THREAD_LOCAL", "throw", "true", "try", "typedef",
         "typeid", "typename", "union", "unsigned", "using", "virtual", "void",
         "volatile", "wchar_t", "while", "xor", "xor_eq",
 

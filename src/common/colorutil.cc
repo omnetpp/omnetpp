@@ -36,7 +36,7 @@ static std::map<std::string, rgb_t> &colors() {
     // This will only get constructed once, and it is guaranteed to be before the first use.
     // This could only crash if the map is used in a destructor during exit and the map already got destructed.
     // Luckily, this could only happen if parseColor is called from a destructor, but it's very unlikely.
-    static std::map<std::string, rgb_t> colorMap;
+    static OPP_THREAD_LOCAL std::map<std::string, rgb_t> colorMap;
     return colorMap;
 }
 

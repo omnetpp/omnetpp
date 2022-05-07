@@ -1266,7 +1266,7 @@ ResultFile *ResultFileManager::loadFile(const char *displayName, const char *fil
         throw opp_runtime_error("invalid lockfile handling flags %d, must be one of: SKIP_IF_LOCKED, IGNORE_LOCK_FILE", lockfileOption);
 
     if (interrupted == nullptr) {
-        static InterruptedFlag neverInterrupted;
+        static OPP_THREAD_LOCAL InterruptedFlag neverInterrupted;
         interrupted = &neverInterrupted; // eliminate need for nullptr checks
     }
 

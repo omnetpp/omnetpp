@@ -28,7 +28,7 @@ namespace omnetpp {
 
 void cEnvir::printfmsg(const char *fmt, ...)
 {
-    static char staticbuf[BUFLEN];
+    static OPP_THREAD_LOCAL char staticbuf[BUFLEN];
     VSNPRINTF(staticbuf, BUFLEN, fmt);
     alert(staticbuf);
 }

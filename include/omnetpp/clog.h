@@ -163,21 +163,21 @@ class SIM_API cLog
      * the fastest runtime filter, it works with a simple integer comparison at the call
      * site.
      */
-    static LogLevel logLevel;
+    static OPP_THREAD_LOCAL LogLevel logLevel;
 
     /**
      * This predicate determines if a log statement is executed for log statements
      * that occur outside module or channel member functions. This is a customization
      * point for logging.
      */
-    static NoncomponentLogPredicate noncomponentLogPredicate;
+    static OPP_THREAD_LOCAL NoncomponentLogPredicate noncomponentLogPredicate;
 
     /**
      * This predicate determines if a log statement is executed for log statements
      * that occur in module or channel member functions. This is a customization
      * point for logging.
      */
-    static ComponentLogPredicate componentLogPredicate;
+    static OPP_THREAD_LOCAL ComponentLogPredicate componentLogPredicate;
 
   public:
     /**
@@ -422,14 +422,14 @@ class SIM_API cLogProxy
     };
 
   public:
-    static nullstream dummyStream; // EV evaluates to this when in express mode (getEnvir()->disabled())
+    static OPP_THREAD_LOCAL nullstream dummyStream; // EV evaluates to this when in express mode (getEnvir()->disabled())
 
   private:
-    static LogBuffer buffer;  // underlying buffer that contains the text that has been written so far
-    static std::ostream stream;  // this singleton is used to avoid allocating a new stream each time a log statement executes
-    static cLogEntry currentEntry; // context of the current (last) log statement that has been executed.
-    static LogLevel previousLogLevel; // log level of the previous log statement
-    static const char *previousCategory; // category of the previous log statement
+    static OPP_THREAD_LOCAL LogBuffer buffer;  // underlying buffer that contains the text that has been written so far
+    static OPP_THREAD_LOCAL std::ostream stream;  // this singleton is used to avoid allocating a new stream each time a log statement executes
+    static OPP_THREAD_LOCAL cLogEntry currentEntry; // context of the current (last) log statement that has been executed.
+    static OPP_THREAD_LOCAL LogLevel previousLogLevel; // log level of the previous log statement
+    static OPP_THREAD_LOCAL const char *previousCategory; // category of the previous log statement
 
   private:
     void fillEntry(LogLevel logLevel, const char *category, const char *sourceFile, int sourceLine, const char *sourceFunction);

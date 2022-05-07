@@ -50,9 +50,9 @@ cContextSwitcher::~cContextSwitcher()
 
 //----
 
-static va_list dummy_va;
+OPP_THREAD_LOCAL va_list dummy_va;
 
-int cMethodCallContextSwitcher::depth = 0;
+OPP_THREAD_LOCAL int cMethodCallContextSwitcher::depth = 0;
 
 cMethodCallContextSwitcher::cMethodCallContextSwitcher(const cComponent *newContext) :
     cContextSwitcher(newContext)

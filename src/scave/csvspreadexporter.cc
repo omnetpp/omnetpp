@@ -135,7 +135,7 @@ StringMap CsvForSpreadsheetExporterType::getSupportedOptions() const
 
 ExporterType *CsvForSpreadsheetExporter::getDescription()
 {
-    static CsvForSpreadsheetExporterType desc;
+    static OPP_THREAD_LOCAL CsvForSpreadsheetExporterType desc;
     return &desc;
 }
 

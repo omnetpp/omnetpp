@@ -143,7 +143,7 @@ double cAbstractHistogram::getCDF(double x) const
 const cAbstractHistogram::Bin& cAbstractHistogram::internalGetBinInfo(int k) const
 {
     // only for use in sim_std.msg (each call overwrites the static buffer!)
-    static Bin buf;
+    static OPP_THREAD_LOCAL Bin buf;
     buf = getBinInfo(k);
     return buf;
 }

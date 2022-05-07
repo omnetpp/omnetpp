@@ -39,7 +39,7 @@ Register_Class(cOwnedObject);
 #ifdef DEVELOPER_DEBUG
 #include <set>
 
-std::set<cOwnedObject *> objectlist;
+OPP_THREAD_LOCAL std::set<cOwnedObject *> objectlist;
 void printAllObjects()
 {
     for (std::set<cOwnedObject *>::iterator it = objectlist.begin(); it != objectlist.end(); ++it) {
@@ -49,12 +49,11 @@ void printAllObjects()
 
 #endif
 
-// static class members
-cSoftOwner *cOwnedObject::owningContext = &globalOwningContext;
-long cOwnedObject::totalObjectCount = 0;
-long cOwnedObject::liveObjectCount = 0;
+OPP_THREAD_LOCAL cSoftOwner *cOwnedObject::owningContext = &globalOwningContext;
+OPP_THREAD_LOCAL long cOwnedObject::totalObjectCount = 0;
+OPP_THREAD_LOCAL long cOwnedObject::liveObjectCount = 0;
 
-cSoftOwner globalOwningContext("globalOwningContext", false, (internal::Void*)nullptr);
+OPP_THREAD_LOCAL cSoftOwner globalOwningContext("globalOwningContext", false, (internal::Void*)nullptr);
 
 cOwnedObject::cOwnedObject()
 {

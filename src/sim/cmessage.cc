@@ -31,10 +31,9 @@ using std::ostream;
 
 Register_Class(cMessage);
 
-// static members of cMessage
-msgid_t cMessage::nextMessageId = 0;
-uint64_t cMessage::totalMsgCount = 0;
-uint64_t cMessage::liveMsgCount = 0;
+OPP_THREAD_LOCAL msgid_t cMessage::nextMessageId = 0;
+OPP_THREAD_LOCAL uint64_t cMessage::totalMsgCount = 0;
+OPP_THREAD_LOCAL uint64_t cMessage::liveMsgCount = 0;
 
 cMessage::cMessage(const cMessage& msg) : cEvent(msg)
 {

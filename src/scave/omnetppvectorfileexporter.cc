@@ -94,7 +94,7 @@ StringMap OmnetppVectorFileExporterType::getSupportedOptions() const
 
 ExporterType *OmnetppVectorFileExporter::getDescription()
 {
-    static OmnetppVectorFileExporterType desc;
+    static OPP_THREAD_LOCAL OmnetppVectorFileExporterType desc;
     return &desc;
 }
 

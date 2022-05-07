@@ -419,9 +419,9 @@ cModuleType *cModuleType::get(const char *qname)
 
 //----
 
-cChannelType *cChannelType::idealChannelType;
-cChannelType *cChannelType::delayChannelType;
-cChannelType *cChannelType::datarateChannelType;
+OPP_THREAD_LOCAL cChannelType *cChannelType::idealChannelType;
+OPP_THREAD_LOCAL cChannelType *cChannelType::delayChannelType;
+OPP_THREAD_LOCAL cChannelType *cChannelType::datarateChannelType;
 
 cChannelType::cChannelType(const char *qname) : cComponentType(qname)
 {

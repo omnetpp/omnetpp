@@ -21,18 +21,18 @@
 
 namespace omnetpp {
 
-LogLevel cLog::logLevel = LOGLEVEL_TRACE;
-cLog::NoncomponentLogPredicate cLog::noncomponentLogPredicate = &cLog::defaultNoncomponentLogPredicate;
-cLog::ComponentLogPredicate cLog::componentLogPredicate = &cLog::defaultComponentLogPredicate;
+OPP_THREAD_LOCAL LogLevel cLog::logLevel = LOGLEVEL_TRACE;
+OPP_THREAD_LOCAL cLog::NoncomponentLogPredicate cLog::noncomponentLogPredicate = &cLog::defaultNoncomponentLogPredicate;
+OPP_THREAD_LOCAL cLog::ComponentLogPredicate cLog::componentLogPredicate = &cLog::defaultComponentLogPredicate;
 
 namespace internal {
 
-cLogProxy::LogBuffer cLogProxy::buffer;
-std::ostream cLogProxy::stream(&cLogProxy::buffer);
-cLogEntry cLogProxy::currentEntry;
-LogLevel cLogProxy::previousLogLevel = LOGLEVEL_NOTSET;
-const char *cLogProxy::previousCategory = nullptr;
-cLogProxy::nullstream cLogProxy::dummyStream;
+OPP_THREAD_LOCAL cLogProxy::LogBuffer cLogProxy::buffer;
+OPP_THREAD_LOCAL std::ostream cLogProxy::stream(&cLogProxy::buffer);
+OPP_THREAD_LOCAL cLogEntry cLogProxy::currentEntry;
+OPP_THREAD_LOCAL LogLevel cLogProxy::previousLogLevel = LOGLEVEL_NOTSET;
+OPP_THREAD_LOCAL const char *cLogProxy::previousCategory = nullptr;
+OPP_THREAD_LOCAL cLogProxy::nullstream cLogProxy::dummyStream;
 
 }
 

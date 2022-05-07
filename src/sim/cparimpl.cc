@@ -36,8 +36,8 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace internal {
 
-long cParImpl::totalParimplObjs;
-long cParImpl::liveParimplObjs;
+OPP_THREAD_LOCAL long cParImpl::totalParimplObjs;
+OPP_THREAD_LOCAL long cParImpl::liveParimplObjs;
 
 cParImpl::cParImpl()
 {
@@ -82,7 +82,7 @@ cParImpl *cParImpl::dup() const
 
 cValue cParImpl::evaluate(cExpression *expr, cComponent *contextComponent) const
 {
-    static int depth;
+    static OPP_THREAD_LOCAL int depth;
     try {
         depth++;
         if (depth >= 5)

@@ -80,7 +80,7 @@ TernaryNode *ExprNodeFactory::createTernaryOperator(const char *op_)
 
 bool ExprNodeFactory::supportsStdMathFunction(const char *name)
 {
-    static std::vector<std::string> names = { "acos","asin","atan","atan2","sin","cos","tan","ceil","floor","exp","pow","sqrt","fabs","fmod","hypot","log","log10" };
+    static OPP_THREAD_LOCAL std::vector<std::string> names = { "acos","asin","atan","atan2","sin","cos","tan","ceil","floor","exp","pow","sqrt","fabs","fmod","hypot","log","log10" };
     return contains(names, std::string(name));
 }
 

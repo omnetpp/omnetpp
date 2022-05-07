@@ -86,7 +86,7 @@ static void verifyIntTypes()
     }
 }
 
-static bool useStderr = false;
+OPP_THREAD_LOCAL bool useStderr = false;
 
 static std::ostream& err()
 {

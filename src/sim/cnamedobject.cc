@@ -34,7 +34,7 @@ using namespace omnetpp::common;
 
 Register_Class(cNamedObject);
 
-static StringPool nameStringPool;
+OPP_THREAD_LOCAL StringPool nameStringPool;
 
 cNamedObject::cNamedObject(const char *s, bool namepooling) :
     flags(namepooling ? FL_NAMEPOOLING : 0)

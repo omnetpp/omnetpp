@@ -133,7 +133,7 @@ public:
 
   protected:
     ExprNode *tree = nullptr;
-    static MultiAstTranslator defaultTranslator;
+    static OPP_THREAD_LOCAL MultiAstTranslator defaultTranslator;
     std::vector<DynamicResolver*> dynamicResolvers;
 
   protected:

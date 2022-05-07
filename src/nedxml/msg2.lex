@@ -39,7 +39,7 @@ S  [ \t\v\n\r\f]
 
 using namespace omnetpp::nedxml;
 
-static int parenDepth = 0;
+static thread_local int parenDepth = 0;
 
 #define YY_USER_INIT  {parenDepth = 0; pos = {1,0}; yylloc->first_line = yylloc->last_line = 1; yylloc->first_column = yylloc->last_column = 0;}
 

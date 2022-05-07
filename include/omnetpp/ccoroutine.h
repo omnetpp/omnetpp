@@ -70,14 +70,14 @@ class SIM_API cCoroutine
   protected:
 #ifdef USE_WIN32_FIBERS
     LPVOID lpFiber = 0;
-    static LPVOID lpMainFiber;
+    static OPP_THREAD_LOCAL LPVOID lpMainFiber;
     unsigned stackSize = 0;
 #endif
 #ifdef USE_POSIX_COROUTINES
-    static ucontext_t mainContext;
-    static ucontext_t *curContextPtr;
-    static unsigned totalStackLimit;
-    static unsigned totalStackUsage;
+    static OPP_THREAD_LOCAL ucontext_t mainContext;
+    static OPP_THREAD_LOCAL ucontext_t *curContextPtr;
+    static OPP_THREAD_LOCAL unsigned totalStackLimit;
+    static OPP_THREAD_LOCAL unsigned totalStackUsage;
     unsigned stackSize = 0;
     char *stackPtr = nullptr;
     ucontext_t context;

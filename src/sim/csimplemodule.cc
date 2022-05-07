@@ -53,9 +53,9 @@ const SendOptions SendOptions::DEFAULT;
 
 auto& DURATION_UNSPEC = SendOptions::DURATION_UNSPEC; // shorthand for local use
 
-cMessage *cSimpleModule::msgForActivity;
-bool cSimpleModule::stackCleanupRequested;
-cSimpleModule *cSimpleModule::afterCleanupTransferTo;
+OPP_THREAD_LOCAL cMessage *cSimpleModule::msgForActivity;
+OPP_THREAD_LOCAL bool cSimpleModule::stackCleanupRequested;
+OPP_THREAD_LOCAL cSimpleModule *cSimpleModule::afterCleanupTransferTo;
 
 
 std::string SendOptions::str() const

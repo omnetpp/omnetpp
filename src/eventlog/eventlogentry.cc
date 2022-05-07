@@ -22,9 +22,9 @@
 namespace omnetpp {
 namespace eventlog {
 
-char EventLogEntry::buffer[128];
-const char *EventLogEntry::currentLine;
-int EventLogEntry::currentLineLength;
+OPP_THREAD_LOCAL char EventLogEntry::buffer[128];
+OPP_THREAD_LOCAL const char *EventLogEntry::currentLine;
+OPP_THREAD_LOCAL int EventLogEntry::currentLineLength;
 
 /***********************************************/
 

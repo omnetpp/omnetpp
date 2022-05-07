@@ -139,7 +139,7 @@ static const char *PKEY_RESOLUTION = "resolution";
 static const char *PKEY_INTERPOLATION = "interpolation";
 static const char *PKEY_TINT = "tint";
 
-int cFigure::lastId = 0;
+OPP_THREAD_LOCAL int cFigure::lastId = 0;
 
 std::map<std::string,cObjectFactory*> cCanvas::figureFactories;
 

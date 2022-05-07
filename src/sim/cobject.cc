@@ -29,7 +29,7 @@ namespace omnetpp {
 using namespace omnetpp::common;
 
 #ifdef SIMFRONTEND_SUPPORT
-int64_t cObject::changeCounter = 0;
+OPP_THREAD_LOCAL int64_t cObject::changeCounter = 0;
 #endif
 
 cObject::~cObject()

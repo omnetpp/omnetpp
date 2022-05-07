@@ -118,7 +118,7 @@ void IndexFileWriter::writeVectorAttributes(const VectorInfo& vector)
 
 void IndexFileWriter::writeBlock(const VectorInfo& vector, const Block *block)
 {
-    static char buff1[64], buff2[64];
+    static OPP_THREAD_LOCAL char buff1[64], buff2[64];
     char *e;
 
     if (block->getCount() > 0) {

@@ -620,7 +620,7 @@ void EventlogFileManager::componentMethodBegin(cComponent *from, cComponent *to,
             FileLockAcquirer fileLockAcquirer(fileLock, FILE_LOCK_EXCLUSIVE);
             const char *methodText = "";  // for the Enter_Method_Silent case
             if (methodFmt) {
-                static char methodTextBuf[MAX_METHODCALL];
+                static OPP_THREAD_LOCAL char methodTextBuf[MAX_METHODCALL];
                 vsnprintf(methodTextBuf, MAX_METHODCALL, methodFmt, va);
                 methodTextBuf[MAX_METHODCALL-1] = '\0';
                 methodText = methodTextBuf;

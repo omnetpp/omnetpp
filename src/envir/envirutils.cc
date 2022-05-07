@@ -206,7 +206,7 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category, bool
             }
             #undef CASE
 
-            out << "    public static final ConfigOption " << id << " = ";
+            out << "    public OPP_THREAD_LOCAL final ConfigOption " << id << " = ";
             out << method << (key->getUnit() ? "U" : "") << "(\n";
             out << "        \"" << key->getName() << "\", ";
             if (key->isPerObject())

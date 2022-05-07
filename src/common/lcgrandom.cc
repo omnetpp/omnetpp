@@ -22,7 +22,7 @@ namespace common {
 LCGRandom::LCGRandom(int32_t seed)
 {
     // do a self-test the very first time this class is used
-    static bool firstTime = true;
+    static OPP_THREAD_LOCAL bool firstTime = true;
     if (firstTime) {
         firstTime = false;
         selfTest();

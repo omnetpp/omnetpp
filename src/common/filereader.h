@@ -130,7 +130,7 @@ class COMMON_API FileReader
     char *findNextLineStart(char *s, bool bufferFilled = false);
     char *findPreviousLineStart(char *s, bool bufferFilled = false);
 
-    static std::string staticBuffer;
+    static OPP_THREAD_LOCAL std::string staticBuffer;
 
     const char *getLine(const char *line, std::string& buffer) { buffer = std::string(line, getCurrentLineLength()); return line ? buffer.c_str() : nullptr; }
 

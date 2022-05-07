@@ -29,8 +29,8 @@ namespace omnetpp {
 class SIM_API cDelayChannel : public cChannel //implies noncopyable
 {
   protected:
-    static simsignal_t messageSentSignal;
-    static simsignal_t messageDiscardedSignal;
+    static OPP_THREAD_LOCAL simsignal_t messageSentSignal;
+    static OPP_THREAD_LOCAL simsignal_t messageDiscardedSignal;
 
   private:
     enum {

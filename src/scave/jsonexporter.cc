@@ -105,7 +105,7 @@ StringMap PythonExporterType::getSupportedOptions() const
 
 ExporterType *JsonExporter::getDescription()
 {
-    static PythonExporterType desc;
+    static OPP_THREAD_LOCAL PythonExporterType desc;
     return &desc;
 }
 

@@ -323,7 +323,7 @@ class SIM_API cFigure : public cOwnedObject
         };
 
     private:
-        static int lastId;
+        static OPP_THREAD_LOCAL int lastId;
         int id;
         bool visible = true; // treated as structural change, for simpler handling
         bool hasTooltip = false;

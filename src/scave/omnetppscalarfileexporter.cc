@@ -84,7 +84,7 @@ StringMap OmnetppScalarFileExporterType::getSupportedOptions() const
 
 ExporterType *OmnetppScalarFileExporter::getDescription()
 {
-    static OmnetppScalarFileExporterType desc;
+    static OPP_THREAD_LOCAL OmnetppScalarFileExporterType desc;
     return &desc;
 }
 

@@ -335,9 +335,9 @@ class SIM_API cModuleType : public cComponentType
 class SIM_API cChannelType : public cComponentType
 {
   protected:
-    static cChannelType *idealChannelType;
-    static cChannelType *delayChannelType;
-    static cChannelType *datarateChannelType;
+    static OPP_THREAD_LOCAL cChannelType *idealChannelType;
+    static OPP_THREAD_LOCAL cChannelType *delayChannelType;
+    static OPP_THREAD_LOCAL cChannelType *datarateChannelType;
 
   protected:
     // internal: create the channel object

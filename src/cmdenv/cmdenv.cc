@@ -95,7 +95,7 @@ bool Cmdenv::sigintReceived;
 // utility function for printing elapsed time
 static char *timeToStr(double t, char *buf = nullptr)
 {
-    static char buf2[64];
+    static OPP_THREAD_LOCAL char buf2[64];
     char *b = buf ? buf : buf2;
 
     int sec = (int) floor(t);
@@ -543,7 +543,7 @@ const char *Cmdenv::progressPercentage()
         return "";
     else {
         double totalRatio = (ratio + runsTried - 1) / numRuns;
-        static char buf[32];
+        static OPP_THREAD_LOCAL char buf[32];
         // DO NOT change the "% completed" string. The IDE launcher plugin matches
         // against this string for detecting user input
         snprintf(buf, 32, "  %d%% completed  (%d%% total)", (int)(100*ratio), (int)(100*totalRatio));

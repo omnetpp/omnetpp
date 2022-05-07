@@ -216,9 +216,9 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
     cMessage *timeoutMessage;   // msg used in wait() and receive() with timeout
     cCoroutine *coroutine;
 
-    static cMessage *msgForActivity; // helper variable to pass the received message into activity()
-    static bool stackCleanupRequested; // 'true' value asks activity() to throw a cStackCleanupException
-    static cSimpleModule *afterCleanupTransferTo; // transfer back to this module (or to main)
+    static OPP_THREAD_LOCAL cMessage *msgForActivity; // helper variable to pass the received message into activity()
+    static OPP_THREAD_LOCAL bool stackCleanupRequested; // 'true' value asks activity() to throw a cStackCleanupException
+    static OPP_THREAD_LOCAL cSimpleModule *afterCleanupTransferTo; // transfer back to this module (or to main)
 
   private:
     // internal use

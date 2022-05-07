@@ -296,7 +296,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
     SubcomponentData *subcomponentData = nullptr;
 
     typedef std::set<cGate::Name> GateNamePool;
-    static GateNamePool gateNamePool;
+    static OPP_THREAD_LOCAL GateNamePool gateNamePool;
     cGate::Desc *gateDescArray = nullptr;  // array with one element per gate or gate vector
     int gateDescArraySize = 0;  // size of the descv array
 

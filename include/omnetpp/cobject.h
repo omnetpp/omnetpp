@@ -104,7 +104,7 @@ class SIM_API cObject
   protected:
 #ifdef SIMFRONTEND_SUPPORT
     // internal
-    static int64_t changeCounter;
+    static OPP_THREAD_LOCAL int64_t changeCounter;
 #endif
 
     // internal

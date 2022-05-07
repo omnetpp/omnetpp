@@ -27,10 +27,8 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace nedxml {
 
-bool parseInProgress = false;
-
 // this global var is shared by all lexers
-LineColumn pos;
+OPP_THREAD_LOCAL LineColumn pos;
 
 void ParseContext::error(const char *msg, int line)
 {

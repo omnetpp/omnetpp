@@ -104,7 +104,7 @@ template <class T> struct ToString;
 class COMMON_API CallTracer
 {
   private:
-    static int depth;
+    static OPP_THREAD_LOCAL int depth;
     std::string funcname;
     std::string result;
   public:
@@ -143,7 +143,7 @@ template <class T> struct ToString<T*>
  * in the GUI code.
  */
 #define NONREENTRANT_PARSER() \
-    static bool active = false; \
+    static OPP_THREAD_LOCAL bool active = false; \
     struct Guard { \
       Guard() {if (active) throw opp_runtime_error("non-reentrant parser invoked again while parsing"); active=true;} \
       ~Guard() {active=false;} \

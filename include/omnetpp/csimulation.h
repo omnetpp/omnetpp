@@ -44,7 +44,7 @@ class cSoftOwner;
 class cINedLoader;
 class cIRngManager;
 
-SIM_API extern cSoftOwner globalOwningContext; // also in globals.h
+SIM_API extern OPP_THREAD_LOCAL cSoftOwner globalOwningContext; // also in globals.h
 
 
 /**
@@ -67,9 +67,9 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     friend class cSimpleModule;
   private:
     // global variables
-    static cSimulation *activeSimulation;
-    static cEnvir *activeEnvir;
-    static cEnvir *staticEnvir; // the environment to activate when activeSimulation becomes nullptr
+    static OPP_THREAD_LOCAL cSimulation *activeSimulation;
+    static OPP_THREAD_LOCAL cEnvir *activeEnvir;
+    static OPP_THREAD_LOCAL cEnvir *staticEnvir; // the environment to activate when activeSimulation becomes nullptr
 
     // variables of the module vector
     int size = 0;                       // size of componentv[]

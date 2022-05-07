@@ -62,7 +62,7 @@ void cCoroutine::configure(cConfiguration *cfg)
 
 #ifdef USE_WIN32_FIBERS
 
-LPVOID cCoroutine::lpMainFiber;
+OPP_THREAD_LOCAL LPVOID cCoroutine::lpMainFiber;  //FIXME this sounds fishy!
 
 void cCoroutine::init(unsigned totalStack, unsigned mainStack)
 {
@@ -129,10 +129,10 @@ unsigned cCoroutine::getStackUsage() const
 
 #ifdef USE_POSIX_COROUTINES
 
-ucontext_t cCoroutine::mainContext;
-ucontext_t *cCoroutine::curContextPtr;
-unsigned cCoroutine::totalStackUsage;
-unsigned cCoroutine::totalStackLimit;
+OPP_THREAD_LOCAL ucontext_t cCoroutine::mainContext;
+OPP_THREAD_LOCAL ucontext_t *cCoroutine::curContextPtr;
+OPP_THREAD_LOCAL unsigned cCoroutine::totalStackUsage;
+OPP_THREAD_LOCAL unsigned cCoroutine::totalStackLimit;
 
 void cCoroutine::init(unsigned totalStack, unsigned mainStack)
 {

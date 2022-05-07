@@ -132,7 +132,7 @@ class SIM_API cGate : public cObject, noncopyable
     cGate *prevGate = nullptr;   // previous and next gate in the path
     cGate *nextGate = nullptr;
 
-    static int lastConnectionId;
+    static OPP_THREAD_LOCAL int lastConnectionId;
 
   protected:
     // internal: constructor is protected because only cModule is allowed to create instances

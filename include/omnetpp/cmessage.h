@@ -115,11 +115,11 @@ class SIM_API cMessage : public cEvent
 
     msgid_t messageId;        // a unique message identifier assigned upon message creation
     msgid_t messageTreeId;    // a message identifier that is inherited by dup, if non dupped it is msgid
-    static msgid_t nextMessageId; // the next unique message identifier to be assigned upon message creation
+    static OPP_THREAD_LOCAL msgid_t nextMessageId; // the next unique message identifier to be assigned upon message creation
 
     // global variables for statistics
-    static uint64_t totalMsgCount;
-    static uint64_t liveMsgCount;
+    static OPP_THREAD_LOCAL uint64_t totalMsgCount;
+    static OPP_THREAD_LOCAL uint64_t liveMsgCount;
 
   private:
     // internal: create parlist

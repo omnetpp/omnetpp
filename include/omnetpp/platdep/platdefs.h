@@ -74,5 +74,7 @@
 #  endif
 #endif
 
+#define OPP_THREAD_LOCAL  thread_local
+
 #endif
 

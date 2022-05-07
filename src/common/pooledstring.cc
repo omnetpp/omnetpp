@@ -17,8 +17,8 @@
 namespace omnetpp {
 namespace common {
 
-COMMON_API StaticStringPool opp_staticpooledstring::pool;
-COMMON_API StringPool opp_pooledstring::pool;
+COMMON_API OPP_THREAD_LOCAL StaticStringPool opp_staticpooledstring::pool;
+COMMON_API OPP_THREAD_LOCAL StringPool opp_pooledstring::pool;
 
 }  // namespace common
 }  // namespace omnetpp

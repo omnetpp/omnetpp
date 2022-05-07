@@ -44,9 +44,9 @@ class EVENTLOG_API EventLogEntry : public omnetpp::common::MatchExpression::Matc
         file_offset_t offset = -1;
         IChunk *chunk = nullptr; // back pointer to event/snapshot/index
         int entryIndex = -1; // index within the event
-        static char buffer[128]; // non-thread safe buffer temporarily used to parse eventlog entries
-        static const char *currentLine;
-        static int currentLineLength;
+        static OPP_THREAD_LOCAL char buffer[128]; // non-thread safe buffer temporarily used to parse eventlog entries
+        static OPP_THREAD_LOCAL const char *currentLine;
+        static OPP_THREAD_LOCAL int currentLineLength;
 
     public:
         EventLogEntry() {}

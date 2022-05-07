@@ -97,7 +97,7 @@ using namespace omnetpp::nedxml::msgyyutil;
 
 %code {
 
-static struct MSG2ParserState
+struct MSG2ParserState
 {
     /* tmp flags, used with msg fields */
     bool isAbstract;
@@ -127,11 +127,13 @@ static struct MSG2ParserState
     FieldElement *field;
     PropertyElement *property;
     PropertyKeyElement *propkey;
-} ps;
+};
+
+static thread_local MSG2ParserState ps;
 
 static void resetParserState()
 {
-    static MSG2ParserState cleanps;
+    thread_local MSG2ParserState cleanps;
     ps = cleanps;
 }
 
@@ -708,8 +710,6 @@ opt_semicolon
 
 ASTNode *doParseMsg(ParseContext *np)
 {
-    DETECT_PARSER_REENTRY();
-
     // create parser state and MsgFileElement
     resetParserState();
     ps.msgfile = new MsgFileElement();

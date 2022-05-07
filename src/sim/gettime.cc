@@ -36,7 +36,7 @@ SIM_API int64_t opp_get_monotonic_clock_nsecs()
 #ifdef _WIN32
     // use QPC API, see "Acquiring high-resolution time stamps"
     // https://msdn.microsoft.com/en-us/library/windows/desktop/dn553408(v=vs.85).aspx
-    static int64_t ticksPerSec;
+    static OPP_THREAD_LOCAL int64_t ticksPerSec;
     if (ticksPerSec == 0) {
         LARGE_INTEGER tmp;
         QueryPerformanceFrequency(&tmp);

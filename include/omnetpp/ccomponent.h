@@ -125,11 +125,11 @@ class SIM_API cComponent : public cSoftOwner //implies noncopyable
     static SignalRegistrations *signals_;  // underscore in name due to clash with Qt; dynamically allocated on first access so that registerSignal() can be invoked from static initialization code
 
     // stack of listener lists being notified, to detect concurrent modification
-    static cIListener **notificationStack[];
-    static int notificationSP;
+    static OPP_THREAD_LOCAL cIListener **notificationStack[];
+    static OPP_THREAD_LOCAL int notificationSP;
 
     // whether only signals declared in NED via @signal are allowed to be emitted
-    static bool checkSignals;
+    static OPP_THREAD_LOCAL bool checkSignals;
 
     // for caching the result of getResultRecorders()
     struct ResultRecorderList {
@@ -138,7 +138,7 @@ class SIM_API cComponent : public cSoftOwner //implies noncopyable
     };
 
     // for getResultRecorders(); static because we don't want to increase cComponent's size
-    static std::vector<ResultRecorderList*> cachedResultRecorderLists;
+    static OPP_THREAD_LOCAL std::vector<ResultRecorderList*> cachedResultRecorderLists;
 
   private:
     SignalListenerList *findListenerList(simsignal_t signalID) const;

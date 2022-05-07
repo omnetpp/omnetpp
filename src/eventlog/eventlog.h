@@ -28,7 +28,7 @@
 namespace omnetpp {
 namespace eventlog {
 
-extern EVENTLOG_API omnetpp::common::StaticStringPool eventLogStringPool;
+extern EVENTLOG_API OPP_THREAD_LOCAL omnetpp::common::StaticStringPool eventLogStringPool;
 
 class Index;
 class Event;

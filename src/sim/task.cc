@@ -21,9 +21,9 @@
 
 namespace omnetpp {
 
-_Task main_task;
-_Task *current_task = nullptr;
-JMP_BUF tmp_jmpb;
+OPP_THREAD_LOCAL _Task main_task;
+OPP_THREAD_LOCAL _Task *current_task = nullptr;
+OPP_THREAD_LOCAL JMP_BUF tmp_jmpb;
 
 unsigned dist(_Task *from, _Task *to)
 {

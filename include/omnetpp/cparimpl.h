@@ -64,8 +64,8 @@ class SIM_API cParImpl : public cNamedObject
     opp_staticpooledstring baseDirectory = nullptr;
 
     // global variables for statistics
-    static long totalParimplObjs;
-    static long liveParimplObjs;
+    static OPP_THREAD_LOCAL long totalParimplObjs;
+    static OPP_THREAD_LOCAL long liveParimplObjs;
 
   private:
     void copy(const cParImpl& other);

@@ -25,7 +25,7 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace eventlog {
 
-StaticStringPool eventLogStringPool;
+OPP_THREAD_LOCAL StaticStringPool eventLogStringPool;
 
 EventLog::EventLog(FileReader *reader) : EventLogIndex(reader)
 {

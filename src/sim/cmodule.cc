@@ -48,7 +48,7 @@ Register_Class(cModule);
 
 Register_PerObjectConfigOption(CFGID_DISPLAY_NAME, "display-name", KIND_MODULE, CFG_STRING, nullptr, "Specifies a display name for the module, which is shown e.g. in Qtenv's graphical module view.");
 
-cModule::GateNamePool cModule::gateNamePool;
+OPP_THREAD_LOCAL cModule::GateNamePool cModule::gateNamePool;
 
 
 cModule::cModule()

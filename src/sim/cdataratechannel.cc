@@ -36,9 +36,9 @@ using std::ostream;
 
 Register_Class(cDatarateChannel);
 
-simsignal_t cDatarateChannel::channelBusySignal;
-simsignal_t cDatarateChannel::messageSentSignal;
-simsignal_t cDatarateChannel::messageDiscardedSignal;
+OPP_THREAD_LOCAL simsignal_t cDatarateChannel::channelBusySignal;
+OPP_THREAD_LOCAL simsignal_t cDatarateChannel::messageSentSignal;
+OPP_THREAD_LOCAL simsignal_t cDatarateChannel::messageDiscardedSignal;
 
 cDatarateChannel::cDatarateChannel(const char *name) : cChannel(name)
 {

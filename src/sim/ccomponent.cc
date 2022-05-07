@@ -49,10 +49,10 @@ Register_PerObjectConfigOption(CFGID_PARAM_RECORD_AS_SCALAR, "param-record-as-sc
 cComponent::SignalRegistrations *cComponent::signals_ = nullptr;
 
 static const int NOTIFICATION_STACK_SIZE = 64;
-cIListener **cComponent::notificationStack[NOTIFICATION_STACK_SIZE];
-int cComponent::notificationSP = 0;
+OPP_THREAD_LOCAL cIListener **cComponent::notificationStack[NOTIFICATION_STACK_SIZE];
+OPP_THREAD_LOCAL int cComponent::notificationSP = 0;
 
-bool cComponent::checkSignals;
+OPP_THREAD_LOCAL bool cComponent::checkSignals;
 
 simsignal_t PRE_MODEL_CHANGE = cComponent::registerSignal("PRE_MODEL_CHANGE");
 simsignal_t POST_MODEL_CHANGE = cComponent::registerSignal("POST_MODEL_CHANGE");
@@ -63,7 +63,7 @@ EXECUTE_ON_SHUTDOWN(cComponent::clearSignalRegistrations());
 // libraries would cause an assertion failure without this:
 EXECUTE_ON_EARLY_STARTUP(cComponent::clearSignalState());
 
-std::vector<cComponent::ResultRecorderList*> cComponent::cachedResultRecorderLists;
+OPP_THREAD_LOCAL std::vector<cComponent::ResultRecorderList*> cComponent::cachedResultRecorderLists;
 
 EXECUTE_ON_SHUTDOWN(cComponent::invalidateCachedResultRecorderLists())
 

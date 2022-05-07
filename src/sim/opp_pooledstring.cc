@@ -20,7 +20,7 @@ using namespace omnetpp::common;
 
 namespace omnetpp {
 
-static StaticStringPool& staticPool = common::opp_staticpooledstring::pool;
+OPP_THREAD_LOCAL StaticStringPool& staticPool = common::opp_staticpooledstring::pool;
 
 opp_staticpooledstring::opp_staticpooledstring()
 {
@@ -39,7 +39,7 @@ const char *opp_staticpooledstring::get(const char *s)
 
 //---
 
-static StringPool& pool = common::opp_pooledstring::pool;
+OPP_THREAD_LOCAL StringPool& pool = common::opp_pooledstring::pool;
 
 opp_pooledstring::opp_pooledstring()
 {

@@ -222,9 +222,9 @@ class LoopVar : public LeafNode
 {
   private:
     // the loopvar stack (vars of nested loops are pushed on the stack by cNedNetworkBuilder)
-    static const char *varNames[32];
-    static long vars[32];
-    static int varCount;
+    static OPP_THREAD_LOCAL const char *varNames[32];
+    static OPP_THREAD_LOCAL long vars[32];
+    static OPP_THREAD_LOCAL int varCount;
   public:
     static long& pushVar(const char *varName);
     static void popVar();

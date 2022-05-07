@@ -489,12 +489,12 @@ ExprNode *UnitConversionAstTranslator::createFunctionNode(const char *functionNa
     return nullptr;
 }
 
-static OperatorAstTranslator operatorAstTranslator;
-static StdMathAstTranslator stdMathAstTranslator;
-static UnitConversionAstTranslator unitConversionAstTranslator;
-static UnresolvedNameAstTranslator unresolvedNameAstTranslator;
+static OPP_THREAD_LOCAL OperatorAstTranslator operatorAstTranslator;
+static OPP_THREAD_LOCAL StdMathAstTranslator stdMathAstTranslator;
+static OPP_THREAD_LOCAL UnitConversionAstTranslator unitConversionAstTranslator;
+static OPP_THREAD_LOCAL UnresolvedNameAstTranslator unresolvedNameAstTranslator;
 
-Expression::MultiAstTranslator Expression::defaultTranslator({
+OPP_THREAD_LOCAL Expression::MultiAstTranslator Expression::defaultTranslator({
     &operatorAstTranslator,
     &stdMathAstTranslator,
     &unitConversionAstTranslator,

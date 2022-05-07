@@ -98,9 +98,9 @@ class NEDXML_API ASTNode
     ASTNode *nextSibling = nullptr;
     UserData *userData = nullptr;
 
-    static long lastId;
-    static long numCreated;
-    static long numExisting;
+    static OPP_THREAD_LOCAL long lastId;
+    static OPP_THREAD_LOCAL long numCreated;
+    static OPP_THREAD_LOCAL long numExisting;
 
   protected:
     static bool stringToBool(const char *s);

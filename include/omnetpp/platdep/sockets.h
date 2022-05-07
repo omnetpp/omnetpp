@@ -40,7 +40,7 @@ inline int sock_errno()  {return WSAGetLastError();}
 typedef int socklen_t;
 
 inline int initsocketlibonce() {
-    static bool inited = false;  //FIXME "static" and "inline" conflict!
+    static OPP_THREAD_LOCAL bool inited = false;  //FIXME "static" and "inline" conflict!
     if (inited) return 0;
     inited = true;
     WSAData wsaData;

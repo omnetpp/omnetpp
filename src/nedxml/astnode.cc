@@ -32,9 +32,9 @@ namespace nedxml {
 
 using std::ostream;
 
-long ASTNode::lastId = 0;
-long ASTNode::numCreated = 0;
-long ASTNode::numExisting = 0;
+OPP_THREAD_LOCAL long ASTNode::lastId = 0;
+OPP_THREAD_LOCAL long ASTNode::numCreated = 0;
+OPP_THREAD_LOCAL long ASTNode::numExisting = 0;
 
 bool ASTNode::stringToBool(const char *s)
 {

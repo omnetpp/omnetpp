@@ -28,7 +28,7 @@ namespace common {
 class COMMON_API opp_staticpooledstring
 {
   public:
-    static StaticStringPool pool;
+    static OPP_THREAD_LOCAL StaticStringPool pool;
   private:
     const char *p;
   public:
@@ -64,7 +64,7 @@ inline bool operator!=(const std::string& s, const opp_staticpooledstring& ps) {
 class COMMON_API opp_pooledstring
 {
   public:
-    static StringPool pool;
+    static OPP_THREAD_LOCAL StringPool pool;
    private:
     const char *p;
   public:

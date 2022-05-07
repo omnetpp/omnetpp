@@ -127,7 +127,7 @@ StringMap CsvRecordsExporterType::getSupportedOptions() const
 
 ExporterType *CsvRecordsExporter::getDescription()
 {
-    static CsvRecordsExporterType desc;
+    static OPP_THREAD_LOCAL CsvRecordsExporterType desc;
     return &desc;
 }
 

@@ -44,7 +44,7 @@ using namespace omnetpp::common;
 
 typedef Expression::AstNode AstNode;
 
-static std::string extendbuf;
+static thread_local std::string extendbuf;
 
 #define P(x)  (x)
 //#define P(x) (printf("lexer: token %s '%s'\n", #x, yytext), (x))

@@ -84,7 +84,7 @@ StringMap SqliteScalarFileExporterType::getSupportedOptions() const
 
 ExporterType *SqliteScalarFileExporter::getDescription()
 {
-    static SqliteScalarFileExporterType desc;
+    static OPP_THREAD_LOCAL SqliteScalarFileExporterType desc;
     return &desc;
 }
 

@@ -27,7 +27,7 @@ namespace omnetpp {
 namespace nedxml {
 namespace msgyyutil { // for now
 
-static MsgAstNodeFactory factory;
+OPP_THREAD_LOCAL MsgAstNodeFactory factory;
 
 ASTNode *createMsgElementWithTag(ParseContext *np, int tagcode, ASTNode *parent)
 {

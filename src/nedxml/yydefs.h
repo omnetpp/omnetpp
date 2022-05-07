@@ -63,7 +63,7 @@ struct LineColumn {
     int co;
 };
 
-extern LineColumn pos;
+extern OPP_THREAD_LOCAL LineColumn pos;
 
 }  // namespace nedxml
 }  // namespace omnetpp

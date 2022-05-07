@@ -118,7 +118,7 @@ class SIM_API cContextSwitcher
 class SIM_API cMethodCallContextSwitcher : public cContextSwitcher
 {
   private:
-    static int depth;
+    static OPP_THREAD_LOCAL int depth;
 
   public:
     /**
