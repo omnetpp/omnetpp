@@ -32,7 +32,7 @@ namespace common {
 
 const double K = 1024.0;
 
-UnitConversion::UnitDesc UnitConversion::unitTable[] = {  // note: imperial units (mile,foot,yard,etc.) intentionally left out
+const UnitConversion::UnitDesc UnitConversion::unitTable[] = {  // note: imperial units (mile,foot,yard,etc.) intentionally left out
 #define _ LINEAR
     { "d",   86400, _, "s",    "day",         "s ms us ns ps fs as" },
     { "h",    3600, _, "s",    "hour",        "s ms us ns ps fs as" },
@@ -132,12 +132,12 @@ UnitConversion::UnitDesc UnitConversion::unitTable[] = {  // note: imperial unit
 #undef _
 };
 
-UnitConversion::UnitDesc *UnitConversion::hashTable[HASHTABLESIZE];
+const UnitConversion::UnitDesc *UnitConversion::hashTable[HASHTABLESIZE];
 int UnitConversion::numCollisions = 0;
 
 bool UnitConversion::initCalled = false;
 
-bool UnitConversion::matches(UnitDesc *desc, const char *unit)
+bool UnitConversion::matches(const UnitDesc *desc, const char *unit)
 {
     // short name
     if (strcmp(desc->unit, unit) == 0)
@@ -162,7 +162,7 @@ inline unsigned UnitConversion::hashCode(const char *unit)
     return result;
 }
 
-UnitConversion::UnitDesc *UnitConversion::lookupUnit(const char *unit)
+const UnitConversion::UnitDesc *UnitConversion::lookupUnit(const char *unit)
 {
     // fill hash table on first call
     if (!initCalled)
@@ -185,7 +185,7 @@ UnitConversion::UnitDesc *UnitConversion::lookupUnit(const char *unit)
     return nullptr;
 }
 
-void UnitConversion::insert(const char *key, UnitDesc *desc)
+void UnitConversion::insert(const char *key, const UnitDesc *desc)
 {
     int localCollisions = 0;
     unsigned hash = hashCode(key);
@@ -206,7 +206,7 @@ void UnitConversion::init()
 
 void UnitConversion::fillHashtable()
 {
-    for (UnitDesc *p = unitTable; p->unit; p++) {
+    for (const UnitDesc *p = unitTable; p->unit; p++) {
         insert(p->unit, p);
         insert(p->longName, p);
     }
@@ -215,10 +215,11 @@ void UnitConversion::fillHashtable()
 
 void UnitConversion::fillBaseUnitDescs()
 {
-    for (UnitDesc *p = unitTable; p->unit; p++) {
-        p->baseUnitDesc = lookupUnit(p->baseUnit);
+    for (const UnitDesc *p = unitTable; p->unit; p++) {
+        UnitDesc *pmut = const_cast<UnitDesc *>(p);
+        pmut->baseUnitDesc = lookupUnit(p->baseUnit);
         for (std::string unit : opp_splitandtrim(p->bestUnitCandidatesStr))
-            p->bestUnitCandidates.push_back(lookupUnit(unit.c_str()));
+            pmut->bestUnitCandidates.push_back(lookupUnit(unit.c_str()));
     }
 }
 
@@ -336,7 +337,7 @@ std::string UnitConversion::formatQuantity(double value, const char *unit)
 
 std::string UnitConversion::getUnitDescription(const char *unit)
 {
-    UnitDesc *desc = lookupUnit(unit);
+    const UnitDesc *desc = lookupUnit(unit);
     std::string result = std::string("'")+unit+"'";
     if (desc)
         result += std::string(" (") + desc->longName + ")";
@@ -346,7 +347,7 @@ std::string UnitConversion::getUnitDescription(const char *unit)
 std::string UnitConversion::getConversionDescription(const char *unit)
 {
     std::stringstream os;
-    UnitDesc *unitDesc = lookupUnit(unit);
+    const UnitDesc *unitDesc = lookupUnit(unit);
     switch (unitDesc->mapping) {
         case LINEAR: os << unitDesc->mult << unitDesc->baseUnit; break;
         case LOG10:  os << unitDesc->mult << "*log10(" << unitDesc->baseUnit << ")"; break;
@@ -365,15 +366,15 @@ double UnitConversion::getConversionFactor(const char *unit, const char *targetU
         return 0;  // cannot convert
 
     // look up both units
-    UnitDesc *unitDesc = lookupUnit(unit);
-    UnitDesc *targetUnitDesc = lookupUnit(targetUnit);
+    const UnitDesc *unitDesc = lookupUnit(unit);
+    const UnitDesc *targetUnitDesc = lookupUnit(targetUnit);
     if (unitDesc == nullptr || targetUnitDesc == nullptr)
         return 0;  // one of them is custom unit, cannot convert
 
     return tryGetConversionFactor(unitDesc, targetUnitDesc);
 }
 
-double UnitConversion::tryGetConversionFactor(UnitDesc *unitDesc, UnitDesc *targetUnitDesc)
+double UnitConversion::tryGetConversionFactor(const UnitDesc *unitDesc, const UnitDesc *targetUnitDesc)
 {
     // if they are the same units, or one is the base unit of the other, we're done
     if (unitDesc == targetUnitDesc)
@@ -385,20 +386,20 @@ double UnitConversion::tryGetConversionFactor(UnitDesc *unitDesc, UnitDesc *targ
 
     // convert unit to the base, and try again
     if (unitDesc != unitDesc->baseUnitDesc && unitDesc->mapping == LINEAR) {
-        UnitDesc *baseUnitDesc = lookupUnit(unitDesc->baseUnit);
+        const UnitDesc *baseUnitDesc = lookupUnit(unitDesc->baseUnit);
         return unitDesc->mult * tryGetConversionFactor(baseUnitDesc, targetUnitDesc);
     }
 
     // try converting via the target unit's base
     if (targetUnitDesc != targetUnitDesc->baseUnitDesc && targetUnitDesc->mapping == LINEAR) {
-        UnitDesc *targetBaseDesc = targetUnitDesc->baseUnitDesc;
+        const UnitDesc *targetBaseDesc = targetUnitDesc->baseUnitDesc;
         return tryGetConversionFactor(unitDesc, targetBaseDesc) / targetUnitDesc->mult;
     }
 
     return 0; // no conversion found
 }
 
-double UnitConversion::convertToBase(double value, UnitDesc *unitDesc)
+double UnitConversion::convertToBase(double value, const UnitDesc *unitDesc)
 {
     switch (unitDesc->mapping) {
         case LINEAR: return unitDesc->mult * value;
@@ -407,7 +408,7 @@ double UnitConversion::convertToBase(double value, UnitDesc *unitDesc)
     }
 }
 
-double UnitConversion::convertFromBase(double value, UnitDesc *unitDesc)
+double UnitConversion::convertFromBase(double value, const UnitDesc *unitDesc)
 {
     switch (unitDesc->mapping) {
         case LINEAR: return value / unitDesc->mult;
@@ -431,8 +432,8 @@ double UnitConversion::convertUnit(double value, const char *unit, const char *t
         cannotConvert(unit, targetUnit);
 
     // look up both units
-    UnitDesc *unitDesc = lookupUnit(unit);
-    UnitDesc *targetUnitDesc = lookupUnit(targetUnit);
+    const UnitDesc *unitDesc = lookupUnit(unit);
+    const UnitDesc *targetUnitDesc = lookupUnit(targetUnit);
     if (unitDesc == nullptr || targetUnitDesc == nullptr)
         cannotConvert(unit, targetUnit); // one of them is custom unit
 
@@ -450,7 +451,7 @@ void UnitConversion::cannotConvert(const char *unit, const char *targetUnit)
             (opp_isempty(targetUnit) ? "none" : getUnitDescription(targetUnit).c_str()));
 }
 
-double UnitConversion::tryConvert(double value, UnitDesc *unitDesc, UnitDesc *targetUnitDesc)
+double UnitConversion::tryConvert(double value, const UnitDesc *unitDesc, const UnitDesc *targetUnitDesc)
 {
     // if they are the same units, or one is the base unit of the other, we're done
     if (unitDesc == targetUnitDesc)
@@ -462,13 +463,13 @@ double UnitConversion::tryConvert(double value, UnitDesc *unitDesc, UnitDesc *ta
 
     // convert unit to the base, and try again
     if (unitDesc != unitDesc->baseUnitDesc) {
-        UnitDesc *baseUnitDesc = unitDesc->baseUnitDesc;
+        const UnitDesc *baseUnitDesc = unitDesc->baseUnitDesc;
         return tryConvert(convertToBase(value, unitDesc), baseUnitDesc, targetUnitDesc);
     }
 
     // try converting via the target unit's base
     if (targetUnitDesc->unit != targetUnitDesc->baseUnit) {
-        UnitDesc *targetBaseDesc = targetUnitDesc->baseUnitDesc;
+        const UnitDesc *targetBaseDesc = targetUnitDesc->baseUnitDesc;
         return convertFromBase(tryConvert(value, unitDesc, targetBaseDesc), targetUnitDesc);
     }
 
@@ -479,7 +480,7 @@ const char *UnitConversion::getBestUnit(double d, const char *unit)
 {
     // We do not touch the unit (return the original unit) in a number of cases:
     // if value is zero, infinite or NaN; if we don't know about the unit.
-    UnitDesc *unitDesc = lookupUnit(unit);
+    const UnitDesc *unitDesc = lookupUnit(unit);
     if (d == 0 || !std::isfinite(d) || unitDesc == nullptr)
         return unit;
 
@@ -490,7 +491,7 @@ const char *UnitConversion::getBestUnit(double d, const char *unit)
     // pick best one
     d = fabs(d);
     double valueInBaseUnit = d * unitDesc->mult;
-    auto better = [=](UnitDesc *a, UnitDesc *b) {
+    auto better = [=](const UnitDesc *a, const UnitDesc *b) {
         // take slow path if base units are different
         double valueInBaseUnitA = strcmp(a->baseUnit, unitDesc->baseUnit) ? convertUnit(d, unit, a->unit) : valueInBaseUnit / a->mult;
         double valueInBaseUnitB = strcmp(b->baseUnit, unitDesc->baseUnit) ? convertUnit(d, unit, b->unit) : valueInBaseUnit / b->mult;
@@ -505,7 +506,7 @@ const char *UnitConversion::getBestUnit(double d, const char *unit)
             return greaterThanOneInUnitA; // prefer the one that results in >= 1.0 value
     };
     auto it = std::min_element(candidates.begin(), candidates.end(), better);
-    UnitDesc *bestDesc = *it;
+    const UnitDesc *bestDesc = *it;
 
     // give the original unit a chance to win too (so we don't pointlessly convert e.g. 1cm to 10mm);
     // also, do not change the unit if it wouldn't change the value (e.g. don't change 1As to 1C)
@@ -517,19 +518,19 @@ const char *UnitConversion::getBestUnit(double d, const char *unit)
 
 const char *UnitConversion::getLongName(const char *unit)
 {
-    UnitDesc *unitDesc = lookupUnit(unit);
+    const UnitDesc *unitDesc = lookupUnit(unit);
     return unitDesc ? unitDesc->longName : nullptr;
 }
 
 const char *UnitConversion::getBaseUnit(const char *unit)
 {
-    UnitDesc *unitDesc = lookupUnit(unit);
+    const UnitDesc *unitDesc = lookupUnit(unit);
     return unitDesc ? unitDesc->baseUnit : nullptr;
 }
 
 bool UnitConversion::isLinearUnit(const char *unit)
 {
-    UnitDesc *unitDesc = lookupUnit(unit);
+    const UnitDesc *unitDesc = lookupUnit(unit);
     return unitDesc ? unitDesc->mapping == LINEAR : true;
 }
 

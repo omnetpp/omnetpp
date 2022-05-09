@@ -66,13 +66,13 @@ class COMMON_API BigDecimal
   public:
     /** @name Constants */
     //@{
-    static BigDecimal Zero;
-    static BigDecimal One;
-    static BigDecimal MinusOne;
-    static BigDecimal NaN;
-    static BigDecimal PositiveInfinity;
-    static BigDecimal NegativeInfinity;
-    static BigDecimal Nil;
+    static const BigDecimal Zero;
+    static const BigDecimal One;
+    static const BigDecimal MinusOne;
+    static const BigDecimal NaN;
+    static const BigDecimal PositiveInfinity;
+    static const BigDecimal NegativeInfinity;
+    static const BigDecimal Nil;
     //@}
 
     /** @name Constructors. */

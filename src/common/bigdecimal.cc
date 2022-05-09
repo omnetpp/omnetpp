@@ -27,13 +27,13 @@ namespace common {
 // helpers
 static inline int sgn(int64_t x) { return x > 0 ? 1 : (x < 0 ? -1 : 0); }
 
-BigDecimal BigDecimal::Zero(0, 0);
-BigDecimal BigDecimal::One(1, 0);
-BigDecimal BigDecimal::MinusOne(-1, 0);
-BigDecimal BigDecimal::NaN(0, INT_MAX);
-BigDecimal BigDecimal::PositiveInfinity(1, INT_MAX);
-BigDecimal BigDecimal::NegativeInfinity(-1, INT_MAX);
-BigDecimal BigDecimal::Nil;
+const BigDecimal BigDecimal::Zero(0, 0);
+const BigDecimal BigDecimal::One(1, 0);
+const BigDecimal BigDecimal::MinusOne(-1, 0);
+const BigDecimal BigDecimal::NaN(0, INT_MAX);
+const BigDecimal BigDecimal::PositiveInfinity(1, INT_MAX);
+const BigDecimal BigDecimal::NegativeInfinity(-1, INT_MAX);
+const BigDecimal BigDecimal::Nil;
 
 static int64_t powersOfTen[19];
 static double negativePowersOfTen[21];
@@ -44,7 +44,7 @@ class PowersOfTenInitializer
     PowersOfTenInitializer();
 };
 
-PowersOfTenInitializer initializer;
+static PowersOfTenInitializer initializer;
 
 PowersOfTenInitializer::PowersOfTenInitializer()
 {

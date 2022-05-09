@@ -75,7 +75,7 @@ P check_and_cast_nullable(T *p)
     return ret;
 }
 
-MsgAnalyzer::StringSet MsgAnalyzer::RESERVED_WORDS = {
+const MsgAnalyzer::StringSet MsgAnalyzer::RESERVED_WORDS = {
         // C++ keywords
         "alignas", "alignof", "and", "and_eq", "asm", "atomic_cancel",
         "atomic_commit", "atomic_noexcept", "auto", "bitand", "bitor", "bool",
