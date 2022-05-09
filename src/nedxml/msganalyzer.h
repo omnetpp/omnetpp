@@ -51,7 +51,7 @@ class NEDXML_API MsgAnalyzer
     typedef MsgTypeTable::EnumInfo EnumInfo;
 
   public:
-    static StringSet RESERVED_WORDS;
+    static const StringSet RESERVED_WORDS;
 
   protected:
     ErrorStore *errors;

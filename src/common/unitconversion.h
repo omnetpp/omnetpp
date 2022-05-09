@@ -30,30 +30,30 @@ class COMMON_API UnitConversion
 {
   protected:
     enum Mapping { LINEAR, LOG10 };
-    struct UnitDesc { const char *unit; double mult; Mapping mapping; const char *baseUnit; const char *longName; const char *bestUnitCandidatesStr=""; UnitDesc *baseUnitDesc; std::vector<UnitDesc*> bestUnitCandidates;};
-    static UnitDesc unitTable[];
+    struct UnitDesc { const char *unit; double mult; Mapping mapping; const char *baseUnit; const char *longName; const char *bestUnitCandidatesStr=""; const UnitDesc *baseUnitDesc; std::vector<const UnitDesc*> bestUnitCandidates;};
+    static const UnitDesc unitTable[];
 
     static const int HASHTABLESIZE = 2048; // must be power of 2
-    static UnitDesc *hashTable[HASHTABLESIZE];
+    static const UnitDesc *hashTable[HASHTABLESIZE];
     static int numCollisions;
     static bool initCalled;
 
   protected:
     static unsigned hashCode(const char *unit);
-    static bool matches(UnitDesc *desc, const char *unit);
-    static void insert(const char *key, UnitDesc *desc);
+    static bool matches(const UnitDesc *desc, const char *unit);
+    static void insert(const char *key, const UnitDesc *desc);
     static void init();
     static void fillHashtable();
     static void fillBaseUnitDescs();
 
-    static UnitDesc *lookupUnit(const char *unit);
+    static const UnitDesc *lookupUnit(const char *unit);
     static bool readNumber(const char *&s, double& number);
     static bool readUnit(const char *&s, std::string& unit);
-    static double convertToBase(double value, UnitDesc *unitDesc);
-    static double convertFromBase(double value, UnitDesc *unitDesc);
-    static double tryConvert(double d, UnitDesc *unitDesc, UnitDesc *targetUnitDesc);
+    static double convertToBase(double value, const UnitDesc *unitDesc);
+    static double convertFromBase(double value, const UnitDesc *unitDesc);
+    static double tryConvert(double d, const UnitDesc *unitDesc, const UnitDesc *targetUnitDesc);
     static void cannotConvert(const char *unit, const char *targetUnit);
-    static double tryGetConversionFactor(UnitDesc *unitDesc, UnitDesc *targetUnitDesc);
+    static double tryGetConversionFactor(const UnitDesc *unitDesc, const UnitDesc *targetUnitDesc);
 
   private:
     // all methods are static, no reason to instantiate

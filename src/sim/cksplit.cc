@@ -45,28 +45,28 @@ Register_Class(cKSplit);
 
 //TODO potential improvement: after a split, if one bin never gathers new observations, assume it's outside the distribution! (pdf=1)
 
-double critdata_default[] = {20, 10, 2};
+static const double CRITDATA_DEFAULT[] = {20, 10, 2};
 
-int critfunc_const(const cKSplit&, cKSplit::Grid& g, int i, double *c)
+int critfunc_const(const cKSplit&, cKSplit::Grid& g, int i, const double *c)
 {
     return g.cells[i] >= c[0];
 }
 
-int critfunc_depth(const cKSplit& ks, cKSplit::Grid& g, int i, double *c)
+int critfunc_depth(const cKSplit& ks, cKSplit::Grid& g, int i, const double *c)
 {
     int depth = g.reldepth - ks.getRootGrid().reldepth;
     double averageWeight = ks.isWeighted() ? ks.getSumWeights() /ks.getCount() : 1;
     return g.cells[i] >= averageWeight * c[1] * pow(c[2], depth);
 }
 
-double divdata_default[] = {0.0}; // force even distributions
+static const double DIVDATA_DEFAULT[] = {0.0}; // force even distributions
 
-double divfunc_const(const cKSplit&, cKSplit::Grid&, double, double *d)
+double divfunc_const(const cKSplit&, cKSplit::Grid&, double, const double *d)
 {
     return d[0];  // lambda=constant
 }
 
-double divfunc_babak(const cKSplit&, cKSplit::Grid& g, double mother, double *d)
+double divfunc_babak(const cKSplit&, cKSplit::Grid& g, double mother, const double *d)
 {
     int newobs = g.total - g.mother;
     double lambda = newobs / (d[1] * mother);
@@ -90,9 +90,9 @@ cKSplit::cKSplit(const char *name, bool weighted) : cPrecollectionBasedDensityEs
     numCells = 0;
 
     critFunc = critfunc_depth;
-    critData = critdata_default;
+    critData = CRITDATA_DEFAULT;
     divFunc = divfunc_const;
-    divData = divdata_default;
+    divData = DIVDATA_DEFAULT;
     rangeExtEnabled = true;
 
     gridv = nullptr;

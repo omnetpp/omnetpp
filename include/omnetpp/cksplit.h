@@ -64,13 +64,13 @@ class SIM_API cKSplit : public cPrecollectionBasedDensityEst
      * Prototype for cell split criterion functions used by cKSplit objects.
      * @ingroup Statistics
      */
-    typedef int (*CritFunc)(const cKSplit&, cKSplit::Grid&, int, double *);
+    typedef int (*CritFunc)(const cKSplit&, cKSplit::Grid&, int, const double *);
 
     /**
      * Prototype for cell division criterion functions used by cKSplit objects.
      * @ingroup Statistics
      */
-    typedef double (*DivFunc)(const cKSplit&, cKSplit::Grid&, double, double *);
+    typedef double (*DivFunc)(const cKSplit&, cKSplit::Grid&, double, const double *);
 
     /**
      * @brief Walks along cells of the distribution stored in a cKSplit object.
@@ -151,10 +151,10 @@ class SIM_API cKSplit : public cPrecollectionBasedDensityEst
     bool rangeExtEnabled;     // enable/disable range extension
 
     CritFunc critFunc;        // function that determines when to split a cell
-    double *critData;         // data array to pass to crit. function
+    const double *critData;   // data array to pass to crit. function
 
     DivFunc divFunc;          // function to calc. lambda for cell division
-    double *divData;          // data array to pass to div. function
+    const double *divData;    // data array to pass to div. function
 
     mutable Iterator *iter;   // iterator used by getBinEdge(), getBinValue() etc.
     mutable long iterNumValues; // numValues when iterator was created
@@ -360,12 +360,12 @@ class SIM_API cKSplit : public cPrecollectionBasedDensityEst
 
 
 // cell split criteria
-int critfunc_const(const cKSplit&, cKSplit::Grid&, int, double *);
-int critfunc_depth(const cKSplit&, cKSplit::Grid&, int, double *);
+int critfunc_const(const cKSplit&, cKSplit::Grid&, int, const double *);
+int critfunc_depth(const cKSplit&, cKSplit::Grid&, int, const double *);
 
 // cell division criteria
-double divfunc_const(const cKSplit&, cKSplit::Grid&, double, double *);
-double divfunc_babak(const cKSplit&, cKSplit::Grid&, double, double *);
+double divfunc_const(const cKSplit&, cKSplit::Grid&, double, const double *);
+double divfunc_babak(const cKSplit&, cKSplit::Grid&, double, const double *);
 
 
 }  // namespace omnetpp

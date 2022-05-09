@@ -48,7 +48,7 @@ class SIM_API cLCG32 : public cRNG
     // This covers the whole RNG period. Enough for 128 runs with 2 RNGs
     // each, or 64 runs with 4 RNGs each -- assuming one run never uses
     // more than 8 million random numbers per RNG.
-    static uint32_t autoSeeds[256];
+    static const uint32_t autoSeeds[256];
 
   public:
     cLCG32() {}
