@@ -56,7 +56,7 @@ StartupChecker startupChecker;
 
 CodeFragments *CodeFragments::head;
 
-CodeFragments::CodeFragments(void(*code)(), Type type) : type(type), code(code)
+CodeFragments::CodeFragments(void(*code)(), const char *sourceCode, Type type) : type(type), code(code), sourceCode(sourceCode)
 {
     // add to list
     next = head;

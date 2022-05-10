@@ -52,7 +52,7 @@ namespace omnetpp {
 #define EXECUTE_ON_STARTUP(CODE)  \
   namespace { \
     void __ONSTARTUP_FUNC() {CODE;} \
-    static omnetpp::CodeFragments __ONSTARTUP_OBJ(__ONSTARTUP_FUNC, omnetpp::CodeFragments::STARTUP); \
+    static omnetpp::CodeFragments __ONSTARTUP_OBJ(__ONSTARTUP_FUNC, #CODE, omnetpp::CodeFragments::STARTUP); \
   }
 
 /**
@@ -67,7 +67,7 @@ namespace omnetpp {
 #define EXECUTE_ON_SHUTDOWN(CODE)  \
   namespace { \
     void __ONSTARTUP_FUNC() {CODE;} \
-    static omnetpp::CodeFragments __ONSTARTUP_OBJ(__ONSTARTUP_FUNC, omnetpp::CodeFragments::SHUTDOWN); \
+    static omnetpp::CodeFragments __ONSTARTUP_OBJ(__ONSTARTUP_FUNC, #CODE, omnetpp::CodeFragments::SHUTDOWN); \
   }
 
 /**
@@ -79,13 +79,13 @@ class SIM_API CodeFragments
 {
   public:
     enum Type {STARTUP, SHUTDOWN};
-  private:
     Type type;
     void (*code)();
+    const char *sourceCode;
     CodeFragments *next;
     static CodeFragments *head;
   public:
-    CodeFragments(void (*code)(), Type type);
+    CodeFragments(void (*code)(), const char *sourceCode, Type type);
     ~CodeFragments() {}
     static void executeAll(Type type);
 };
