@@ -62,9 +62,6 @@ class SIM_API cMsgPar : public cOwnedObject
      */
     typedef void *(*VoidDupFunc)(void *);
 
-  protected:
-    static const char *possibleTypes;
-
   private:
     enum { SHORTSTR_MAXLEN = 27 };
 

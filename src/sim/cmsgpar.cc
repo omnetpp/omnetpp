@@ -47,8 +47,6 @@ using std::string;
 
 Register_Class(cMsgPar);
 
-const char *cMsgPar::possibleTypes = "SBLDFTP";
-
 static const char *getTypeName(char typechar)
 {
     switch (typechar) {
