@@ -32,7 +32,7 @@ IMPLIBS= $(LIBXML_LIBS)
 
 OBJS= $O/lcgrandom.o $O/filelock.o $O/filereader.o $O/linetokenizer.o \
       $O/stringpool.o $O/pooledstring.o $O/stringtokenizer.o $O/fnamelisttokenizer.o \
-      $O/expression.o $O/lex.expressionyy.o $O/expression.tab.o \
+      $O/expression.o $O/expression.lex.o $O/expression.tab.o \
       $O/matchexpression.o $O/matchexpressionlexer.o $O/matchexpression.tab.o \
       $O/patternmatcher.o $O/unitconversion.o $O/displaystring.o $O/fileglobber.o \
       $O/fileutil.o $O/stringutil.o $O/commonutil.o $O/exception.o $O/bigdecimal.o \
@@ -43,8 +43,8 @@ OBJS= $O/lcgrandom.o $O/filelock.o $O/filereader.o $O/linetokenizer.o \
       $O/exprnode.o $O/exprnodes.o $O/exprvalue.o $O/intutil.o $O/any_ptr.o \
       $O/saxparser_default.o $O/saxparser_libxml.o $O/saxparser_yxml.o $O/yxml.o
 
-GENERATED_SOURCES= expression.tab.hh expression.tab.cc lex.expressionyy.cc \
-                   matchexpression.tab.hh matchexpression.tab.cc
+GENERATED_SOURCES= expression.tab.h expression.tab.cc expression.lex.cc expression.lex.h \
+                   matchexpression.tab.h matchexpression.tab.cc
 
 ifeq ("$(BUILDING_UILIBS)","yes")
 OBJS+= $O/rwlock.o
@@ -134,18 +134,18 @@ clean:
 	$(Q)rm -rf $O $(GENERATED_SOURCES) $(TARGET_LIB_FILES)
 
 # generated source files
-# NOTE: This is a trick: creating a muti-target pattern rule that prevents executing this target multiple times when running make in parallel
-expressio%.tab.hh expressio%.tab.cc : expression.y
+# NOTE: This is a trick: creating a multi-target pattern rule that prevents executing this target multiple times when running make in parallel
+expressio%.tab.h expressio%.tab.cc : expression.y
 	$(qecho) YACC: $<
-	$(Q)$(YACC) -o expression.tab.cc -p expressionyy -d expression.y
+	$(Q)$(YACC) -o expression.tab.cc --defines=expression.tab.h -p expressionyy -d expression.y
 
-lex.expressionyy.cc: expression.lex
+expressio%.lex.h expressio%.lex.cc: expression.lex
 	$(qecho) LEX: $<
-	$(Q)$(LEX) -olex.expressionyy.cc -Pexpressionyy expression.lex
+	$(Q)$(LEX) -oexpression.lex.cc --header-file=expression.lex.h -Pexpressionyy expression.lex
 
-matchexpressio%.tab.hh matchexpressio%.tab.cc : matchexpression.y
+matchexpressio%.tab.h matchexpressio%.tab.cc : matchexpression.y
 	$(qecho) YACC: $<
-	$(Q)$(YACC) -o matchexpression.tab.cc --no-lines -p matchexpressionyy -d matchexpression.y
+	$(Q)$(YACC) -o matchexpression.tab.cc --no-lines --defines=matchexpression.tab.h -p matchexpressionyy -d matchexpression.y
 
 -include $(OBJS:%=%.d)
 

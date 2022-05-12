@@ -14,26 +14,29 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-%{
+%define api.pure full
+%param { yyscan_t scanner }
+%parse-param {AstNode *&resultAstTree}
 
-#include <cmath>
-#include <cstdio>
-#include <cstdlib>
+%code top {
 #include "commonutil.h"
-#include "expressionyydefs.h"
+#include "exception.h"
+#include "stringutil.h"
+#include "unitconversion.h"
 
 #define YYDEBUG 1           /* allow debugging */
 #define YYDEBUGGING_ON 0    /* turn on/off debugging */
 
 #if YYDEBUG != 0
 #define YYERROR_VERBOSE     /* more detailed error messages */
-#include <cstring>         /* YYVERBOSE needs it */
+#include <cstring>          /* YYVERBOSE needs it */
 #endif
+} // %code top
 
+%code requires {
 #include "expression.h"
-#include "exception.h"
-#include "stringutil.h"
-#include "unitconversion.h"
+
+typedef void* yyscan_t;
 
 using namespace omnetpp;
 using namespace omnetpp::common;
@@ -41,68 +44,11 @@ using namespace omnetpp::common::expression;
 
 typedef Expression::AstNode AstNode;
 typedef Expression::AstNode::Type AstNodeType;
+} // %code requires
 
-namespace omnetpp { class cObject; };
-
-%}
-
-%union {
-  const char *str;
-  AstNode *node;
-}
-
-/* Reserved words */
-%token TRUE_ FALSE_ NAN_ INF_ UNDEFINED_ NULLPTR_ NULL_
-
-/* Other tokens: identifiers, numeric literals, operators etc */
-%token <str> NAME INTCONSTANT REALCONSTANT STRINGCONSTANT
-%token EQ NE GE LE SPACESHIP
-%token AND OR XOR
-%token SHIFT_LEFT SHIFT_RIGHT
-%token DOUBLECOLON
-
-%token INVALID_CHAR   /* just to generate parse error */
-
-/* Operator precedences (low to high) and associativity */
-%right '?' ':'
-%left OR
-%left XOR
-%left AND
-%left EQ NE '='
-%left '<' '>' LE GE
-%left SPACESHIP
-%left MATCH
-%left '|'
-%left '#'
-%left '&'
-%left SHIFT_LEFT SHIFT_RIGHT
-%left '+' '-'
-%left '*' '/' '%'
-%right '^'
-%right UMIN_ NEG_ NOT_
-%left '!'
-%left '.'
-
-%start expression
-
-%parse-param {AstNode *&resultAstTree}
-
-%{
-#define yyin expressionyyin
-#define yyout expressionyyout
-#define yyrestart expressionyyrestart
-#define yy_scan_string expressionyy_scan_string
-#define yy_delete_buffer expressionyy_delete_buffer
-extern FILE *yyin;
-extern FILE *yyout;
-struct yy_buffer_state;
-struct yy_buffer_state *yy_scan_string(const char *str);
-void yy_delete_buffer(struct yy_buffer_state *);
-void yyrestart(FILE *);
-int yylex();
-void yyerror (AstNode *&dummy, const char *s);
-
-LineColumn xpos, xprevpos;
+%code {
+int yylex(YYSTYPE* yylvalp, yyscan_t scanner);
+void yyerror(yyscan_t scanner, AstNode *&resultAstTree, const char *msg);
 
 static char *join(const char *s1, const char *s2, const char *s3=nullptr)
 {
@@ -140,30 +86,58 @@ static AstNode *newOp(const char *name, AstNode *child1, AstNode *child2=nullptr
     return node;
 }
 
-static double parseQuantity(const char *text, std::string& unit)
-{
-    try {
-        // evaluate quantities like "5s 230ms"
-        return UnitConversion::parseQuantity(text, unit);
-    }
-    catch (std::exception& e) {
-        AstNode *dummy;
-        yyerror(dummy, e.what());
-        return 0;
-    }
-}
-
 static bool isIntegerValued(double d)
 {
     if (std::isnan(d) || d < (double)INT64_MIN || d > (double)INT64_MAX)  // just to avoid UndefinedBehaviorSanitizer message "<value> is outside the range of representable values of type 'long'"
-        return false;
+            return false;
 
     // check that when converted to integer and back to double, it stays the same
     intval_t l = (intval_t)d;
     return d == l;
 }
 
-%}
+}  // %code
+
+//TODO use c++ variants and std::string instead of %union, see https://www.gnu.org/software/bison/manual/html_node/C_002b_002b-Variants.html
+
+%union {
+    const char *str;
+    AstNode *node;
+}
+
+/* Reserved words */
+%token TRUE_ FALSE_ NAN_ INF_ UNDEFINED_ NULLPTR_ NULL_
+
+/* Other tokens: identifiers, numeric literals, operators etc */
+%token <str> NAME INTCONSTANT REALCONSTANT STRINGCONSTANT
+%token EQ NE GE LE SPACESHIP
+%token AND OR XOR
+%token SHIFT_LEFT SHIFT_RIGHT
+%token DOUBLECOLON
+
+%token INVALID_CHAR   /* just to generate parse error */
+
+/* Operator precedences (low to high) and associativity */
+%right '?' ':'
+%left OR
+%left XOR
+%left AND
+%left EQ NE '='
+%left '<' '>' LE GE
+%left SPACESHIP
+%left MATCH
+%left '|'
+%left '#'
+%left '&'
+%left SHIFT_LEFT SHIFT_RIGHT
+%left '+' '-'
+%left '*' '/' '%'
+%right '^'
+%right UMIN_ NEG_ NOT_
+%left '!'
+%left '.'
+
+%start expression
 
 %%
 
@@ -407,8 +381,15 @@ numliteral
                 { $<node>$ = newConstant(1/0.0); }
         | quantity
                 {
+                  double d = 0;
                   std::string unit;
-                  double d = parseQuantity($<str>1, unit);
+                  try {
+                      // evaluate quantities like "5s 230ms"
+                      d = UnitConversion::parseQuantity($<str>1, unit);
+                  }
+                  catch (std::exception& e) {
+                      yyerror(scanner, resultAstTree, e.what());
+                  }
                   if (isIntegerValued(d))
                       $<node>$ = newConstant(ExprValue((intval_t)d, unit.c_str()));
                   else
@@ -443,48 +424,38 @@ qnumber
         ;
 %%
 
-//----------------------------------------------------------------------
+#include "expression.lex.h"
+
 
 AstNode *Expression::parseToAst(const char *text) const
 {
-    NONREENTRANT_PARSER();
+    yyscan_t scanner;
+    expressionyylex_init(&scanner);
 
-    // reset the lexer
-    xpos.co = 0;
-    xpos.li = 1;
-    xprevpos = xpos;
+    yy_buffer_state *handle = expressionyy_scan_string(text, scanner);
 
-    yyin = nullptr;
-    yyout = stderr; // not used anyway
+    // optional: yyset_debug(1, scanner);
+    // optional: yydebug = 1;
 
-    // alloc buffer
-    struct yy_buffer_state *handle = yy_scan_string(text);
-    if (!handle)
-        throw std::runtime_error("Parser is unable to allocate work memory");
+    expressionyyset_lineno(1,scanner);
+    expressionyyset_column(0,scanner);
 
-    // parse
     AstNode *result;
-    try
-    {
-        yyparse(result);
+    try {
+        expressionyyparse(scanner, result);
     }
-    catch (std::exception& e)
-    {
-        yy_delete_buffer(handle);
+    catch (std::exception& e) {
+        expressionyy_delete_buffer(handle, scanner);
+        expressionyylex_destroy(scanner);
         throw;
     }
-    yy_delete_buffer(handle);
+    expressionyy_delete_buffer(handle, scanner);
+    expressionyylex_destroy(scanner);
 
     return result;
 }
 
-void yyerror(AstNode *&dummy, const char *s)
+void yyerror(yyscan_t scanner, AstNode *&resultAstTree, const char* msg)
 {
-    // chop newline
-    char buf[250];
-    strcpy(buf, s);
-    if (buf[strlen(buf)-1] == '\n')
-        buf[strlen(buf)-1] = '\0';
-
-    throw std::runtime_error(buf);
+    throw std::runtime_error(opp_removeend(msg, "\n").c_str());
 }

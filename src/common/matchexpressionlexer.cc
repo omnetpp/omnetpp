@@ -14,7 +14,7 @@
 
 #include "omnetpp/platdep/platmisc.h"  // strncasecmp
 #include "stringutil.h"
-#include "matchexpression.tab.hh"  // token values
+#include "matchexpression.tab.h"  // token values
 #include "matchexpressionlexer.h"
 
 namespace omnetpp {
