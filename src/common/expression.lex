@@ -14,6 +14,10 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+%option noyywrap 8bit reentrant
+%option bison-bridge
+%option never-interactive nounistd
+
 /*
  * Note: since the Expression class is used to parse NED expressions as well, the Expression
  * lexer (and parser) must accept everything that may occur in NED expressions. For example,
@@ -29,210 +33,112 @@ S  [ \t\v\n\r\f]
 %x stringliteral
 %x stringliteral2
 
-/* the following option keeps isatty() out */
-%option never-interactive
-%option nounistd
-
 %{
-#include <cstring>
-#include "expressionyydefs.h"
-#include "exception.h"
-#include "expression.h"
-
-typedef omnetpp::common::Expression::AstNode AstNode;
-
-#include "expression.tab.hh"
-
-#define yylval expressionyylval
-extern YYSTYPE yylval;
-
-// wrap symbols to allow several .lex files coexist
-#define comment     expressionComment
-#define countChars  expressionCount
-#define extendCount expressionExtendCount
-
-void comment();
-void countChars();
-void extendCount();
-
-#define TEXTBUF_LEN 1024
-static char textbuf[TEXTBUF_LEN];
-
-// buffer to collect characters during extendCount()
-static std::string extendbuf;
-
 #include "stringutil.h"  // opp_strdup()
-
-#pragma GCC diagnostic ignored "-Wsign-compare"  // suppress warning in bison template code
+#include "expression.h"
+#include "expression.tab.h"
+#include "exception.h"
 
 using namespace omnetpp;
 using namespace omnetpp::common;
+
+typedef Expression::AstNode AstNode;
+
+static std::string extendbuf;
+
+#define P(x)  (x)
+//#define P(x) (printf("lexer: token %s '%s'\n", #x, yytext), (x))
+
+#pragma GCC diagnostic ignored "-Wsign-compare"  // suppress warning in bison template code
+
 %}
 
 %%
-"//"                     { comment(); /* needed for NED */ }
+"//"                     {  /* needed for NED */
+                            int c;
+                            while ((c = yyinput(yyscanner))!='\n' && c!=0 && c!=EOF);
+                            if (c=='\n') unput(c);
+                         }
 
-"true"                   { countChars(); return TRUE_; }
-"false"                  { countChars(); return FALSE_; }
-"nan"                    { countChars(); return NAN_; }
-"inf"                    { countChars(); return INF_; }
-"undefined"              { countChars(); return UNDEFINED_; }
-"nullptr"                { countChars(); return NULLPTR_; }
-"null"                   { countChars(); return NULL_; /* JSON-compatible notation */ }
+"true"                   { return TRUE_; }
+"false"                  { return FALSE_; }
+"nan"                    { return NAN_; }
+"inf"                    { return INF_; }
+"undefined"              { return UNDEFINED_; }
+"nullptr"                { return NULLPTR_; }
+"null"                   { return NULL_; /* JSON-compatible notation */ }
 
-{L}({L}|{D})*(:{L}({L}|{D})*)*  { countChars(); yylval.str = opp_strdup(yytext); return NAME; }
-{D}+                     { countChars(); yylval.str = opp_strdup(yytext); return INTCONSTANT; }
-0[xX]{X}+                { countChars(); yylval.str = opp_strdup(yytext); return INTCONSTANT; }
-{D}+{E}                  { countChars(); yylval.str = opp_strdup(yytext); return REALCONSTANT; }
-{D}*"."{D}+({E})?        { countChars(); yylval.str = opp_strdup(yytext); return REALCONSTANT; }
+{L}({L}|{D})*(:{L}({L}|{D})*)*  { yylval->str = opp_strdup(yytext); return NAME; }
+{D}+                     { yylval->str = opp_strdup(yytext); return INTCONSTANT; }
+0[xX]{X}+                { yylval->str = opp_strdup(yytext); return INTCONSTANT; }
+{D}+{E}                  { yylval->str = opp_strdup(yytext); return REALCONSTANT; }
+{D}*"."{D}+({E})?        { yylval->str = opp_strdup(yytext); return REALCONSTANT; }
 
-\"                       { BEGIN(stringliteral); countChars(); }
+\"                       { BEGIN(stringliteral); extendbuf = yytext; }
 <stringliteral>{
       \n                 { BEGIN(INITIAL); throw std::runtime_error("Unterminated string literal"); /* NOTE: BEGIN(INITIAL) is important, otherwise parsing of the next file will start from the <stringliteral> state! */  }
-      \\\n               { extendCount(); /* line continuation */ }
-      \\\"               { extendCount(); /* quoted quote */ }
-      \\[^\n\"]          { extendCount(); /* quoted char */ }
-      [^\\\n\"]+         { extendCount(); /* character inside string literal */ }
-      \"                 { extendCount(); yylval.str = opp_strdup(extendbuf.c_str()); BEGIN(INITIAL); return STRINGCONSTANT; /* closing quote */ }
+      \\\n               { extendbuf += yytext; /* line continuation */ }
+      \\\"               { extendbuf += yytext; /* quoted quote */ }
+      \\[^\n\"]          { extendbuf += yytext; /* quoted char */ }
+      [^\\\n\"]+         { extendbuf += yytext; /* character inside string literal */ }
+      \"                 { extendbuf += yytext; yylval->str = opp_strdup(extendbuf.c_str()); BEGIN(INITIAL); return STRINGCONSTANT; /* closing quote */ }
 }
 
-'                        { BEGIN(stringliteral2); countChars(); }
+'                        { BEGIN(stringliteral2); extendbuf = yytext; }
 <stringliteral2>{
       \n                 { BEGIN(INITIAL); throw std::runtime_error("Unterminated string literal"); /* NOTE: BEGIN(INITIAL) is important, otherwise parsing of the next file will start from the <stringliteral2> state! */  }
-      \\\n               { extendCount(); /* line continuation */ }
-      \\\'               { extendCount(); /* quoted apostrophe */ }
-      \\[^\n\']          { extendCount(); /* quoted char */ }
-      [^\\\n\']+         { extendCount(); /* character inside string literal */ }
-      '                  { extendCount(); yylval.str = opp_strdup(extendbuf.c_str()); BEGIN(INITIAL); return STRINGCONSTANT; /* closing quote */ }
+      \\\n               { extendbuf += yytext; /* line continuation */ }
+      \\\'               { extendbuf += yytext; /* quoted apostrophe */ }
+      \\[^\n\']          { extendbuf += yytext; /* quoted char */ }
+      [^\\\n\']+         { extendbuf += yytext; /* character inside string literal */ }
+      '                  { extendbuf += yytext; yylval->str = opp_strdup(extendbuf.c_str()); BEGIN(INITIAL); return STRINGCONSTANT; /* closing quote */ }
 }
 
-","                      { countChars(); return ','; }
-":"                      { countChars(); return ':'; }
-"="                      { countChars(); return '='; }
-"("                      { countChars(); return '('; }
-")"                      { countChars(); return ')'; }
-"["                      { countChars(); return '['; }
-"]"                      { countChars(); return ']'; }
-"{"                      { countChars(); return '{'; }
-"}"                      { countChars(); return '}'; }
-"."                      { countChars(); return '.'; }
-"?"                      { countChars(); return '?'; }
+","                      { return ','; }
+":"                      { return ':'; }
+"="                      { return '='; }
+"("                      { return '('; }
+")"                      { return ')'; }
+"["                      { return '['; }
+"]"                      { return ']'; }
+"{"                      { return '{'; }
+"}"                      { return '}'; }
+"."                      { return '.'; }
+"?"                      { return '?'; }
 
-"||"                     { countChars(); return OR; }
-"&&"                     { countChars(); return AND; }
-"##"                     { countChars(); return XOR; }
-"!"                      { countChars(); return '!'; }
+"||"                     { return OR; }
+"&&"                     { return AND; }
+"##"                     { return XOR; }
+"!"                      { return '!'; }
 
-"|"                      { countChars(); return '|'; }
-"&"                      { countChars(); return '&'; }
-"#"                      { countChars(); return '#'; }
-"~"                      { countChars(); return '~'; }
-"<<"                     { countChars(); return SHIFT_LEFT; }
-">>"                     { countChars(); return SHIFT_RIGHT; }
+"|"                      { return '|'; }
+"&"                      { return '&'; }
+"#"                      { return '#'; }
+"~"                      { return '~'; }
+"<<"                     { return SHIFT_LEFT; }
+">>"                     { return SHIFT_RIGHT; }
 
-"^"                      { countChars(); return '^'; }
-"+"                      { countChars(); return '+'; }
-"-"                      { countChars(); return '-'; }
-"*"                      { countChars(); return '*'; }
-"/"                      { countChars(); return '/'; }
-"%"                      { countChars(); return '%'; }
-"<"                      { countChars(); return '<'; }
-">"                      { countChars(); return '>'; }
+"^"                      { return '^'; }
+"+"                      { return '+'; }
+"-"                      { return '-'; }
+"*"                      { return '*'; }
+"/"                      { return '/'; }
+"%"                      { return '%'; }
+"<"                      { return '<'; }
+">"                      { return '>'; }
 
-"=="                     { countChars(); return EQ; }
-"!="                     { countChars(); return NE; }
-"<="                     { countChars(); return LE; }
-">="                     { countChars(); return GE; }
-"<=>"                    { countChars(); return SPACESHIP; }
-"=~"                     { countChars(); return MATCH; }
+"=="                     { return EQ; }
+"!="                     { return NE; }
+"<="                     { return LE; }
+">="                     { return GE; }
+"<=>"                    { return SPACESHIP; }
+"=~"                     { return MATCH; }
 
-"::"                     { countChars(); return DOUBLECOLON; }
+"::"                     { return DOUBLECOLON; }
 
-"\\xEF\\xBB\\xBF"           { /* UTF-8 BOM mark, ignore */ }
-{S}                      { countChars(); }
-.                        { countChars(); return INVALID_CHAR; }
+"\\xEF\\xBB\\xBF"        { /* UTF-8 BOM mark, ignore */ }
+{S}                      { }
+.                        { return INVALID_CHAR; }
 
 %%
 
-int yywrap()
-{
-     return 1;
-}
-
-/*
- * - discards all remaining characters of a line of
- *   text from the inputstream.
- * - the characters are read with the input() and
- *   unput() functions.
- * - input() is sometimes called yyinput()...
- */
-#ifdef __cplusplus
-#define input  yyinput
-#endif
-
-/* the following #define is needed for broken flex versions */
-#define yytext_ptr yytext
-
-void comment()
-{
-    int c;
-    while ((c = input())!='\n' && c!=0 && c!=EOF);
-    if (c=='\n') unput(c);
-}
-
-/*
- * - counts the line and column number of the current token in `pos'
- * - keeps a record of the complete current line in `textbuf[]'
- * - yytext[] is the current token passed by (f)lex
- */
-static void _count(bool updateprevpos)
-{
-    static int textbuflen;
-    int i;
-
-    /* printf("DBG: countChars(): prev=%d,%d  xpos=%d,%d yytext=>>%s<<\n",
-           xprevpos.li, xprevpos.co, xpos.li, xpos.co, yytext);
-    */
-
-    /* init textbuf */
-    if (xpos.li==1 && xpos.co==0) {
-        textbuf[0]='\0'; textbuflen=0;
-    }
-
-    if (updateprevpos) {
-        extendbuf = "";
-        xprevpos = xpos;
-    }
-    extendbuf += yytext;
-    for (i = 0; yytext[i] != '\0'; i++) {
-        if (yytext[i] == '\n') {
-            xpos.co = 0;
-            xpos.li++;
-            textbuflen=0; textbuf[0]='\0';
-        } else if (yytext[i] == '\t')
-            xpos.co += 8 - (xpos.co % 8);
-        else
-            xpos.co++;
-        if (yytext[i] != '\n') {
-            if (textbuflen < TEXTBUF_LEN-5) {
-                textbuf[textbuflen++]=yytext[i]; textbuf[textbuflen]='\0';
-            }
-            else if (textbuflen == TEXTBUF_LEN-5) {
-                strcpy(textbuf+textbuflen, "...");
-                textbuflen++;
-            } else {
-                /* line too long -- ignore */
-            }
-        }
-    }
-}
-
-void countChars()
-{
-    _count(true);
-}
-
-void extendCount()
-{
-    _count(false);
-}
