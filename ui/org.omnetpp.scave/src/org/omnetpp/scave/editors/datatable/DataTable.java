@@ -80,7 +80,7 @@ public class DataTable extends LargeTable implements IDataControl {
     public static final String COLUMN_KEY = "DataTable.Column";
     public static final String ITEM_KEY = "DataTable.Item";
 
-    private static final String NA = "-"; // "not applicable"
+    private static final StyledString NA = new StyledString("-"); // "not applicable"
 
     static class Column {
 
@@ -219,7 +219,7 @@ public class DataTable extends LargeTable implements IDataControl {
         setRowRenderer(new AbstractLargeTableRowRenderer() {
             @Override
             public String getText(int rowIndex, int columnIndex) {
-                return getCellValue(rowIndex, columnIndex);
+                return getCellValue(rowIndex, columnIndex).getString();
             }
 
             @Override
@@ -228,7 +228,7 @@ public class DataTable extends LargeTable implements IDataControl {
                 // the last, blank column is not included in visibleColumns
                 if (columnIndex < visibleColumns.size()) {
                     Column column = visibleColumns.get(columnIndex);
-                    value = getCellValue(rowIndex, column);
+                    value = getCellValue(rowIndex, column).getString();
 
                     if (column.maskTooLongValues
                             && gc.textExtent(value).x > (getColumn(columnIndex).getWidth() - CELL_HORIZONTAL_MARGIN*2))
@@ -605,16 +605,16 @@ public class DataTable extends LargeTable implements IDataControl {
             idList.sortVectorsByEndTime(manager, ascending, selectionIndices, interrupted);
     }
 
-    protected String getCellValue(int rowIndex, int columnIndex) {
+    protected StyledString getCellValue(int rowIndex, int columnIndex) {
         if (columnIndex >= visibleColumns.size())
-            return "";
+            return new StyledString("");
         Column column = visibleColumns.get(columnIndex);
         return getCellValue(rowIndex, column);
     }
 
-    protected String getCellValue(int row, Column column) {
+    protected StyledString getCellValue(int row, Column column) {
         if (manager == null)
-            return "";
+            return new StyledString("");
 
         try {
             // Note: code very similar to ResultItemPropertySource -- make them common?
@@ -624,40 +624,38 @@ public class DataTable extends LargeTable implements IDataControl {
             String unit = result.getAttribute("unit");
 
             if (COL_DIRECTORY.equals(column))
-                return result.getFile().getDirectory();
-            else if (COL_FILE.equals(column)) {
-                String fileName = result.getFile().getFileName();
-                return fileName;
-            }
+                return new StyledString(result.getFile().getDirectory());
+            else if (COL_FILE.equals(column))
+                return new StyledString(result.getFile().getFileName());
             else if (COL_CONFIG.equals(column)) {
                 String config = result.getFileRun().getRun().getAttribute(Scave.CONFIGNAME);
-                return config != null ? config : NA;
+                return config != null ? new StyledString(config) : NA;
             }
             else if (COL_RUNNUMBER.equals(column)) {
                 String runNumber = result.getFileRun().getRun().getAttribute(Scave.RUNNUMBER);
-                return runNumber != null ? runNumber : NA;
+                return runNumber != null ? new StyledString(runNumber) : NA;
             }
             else if (COL_RUN_ID.equals(column))
-                return result.getFileRun().getRun().getRunName();
+                return new StyledString(result.getFileRun().getRun().getRunName());
             else if (COL_MODULE.equals(column))
-                return result.getModuleName();
+                return new StyledString(result.getModuleName());
             else if (COL_NAME.equals(column))
-                return result.getName();
+                return new StyledString(result.getName());
             else if (COL_EXPERIMENT.equals(column)) {
                 String experiment = result.getFileRun().getRun().getAttribute(Scave.EXPERIMENT);
-                return experiment != null ? experiment : NA;
+                return experiment != null ? new StyledString(experiment) : NA;
             }
             else if (COL_MEASUREMENT.equals(column)) {
                 String measurement = result.getFileRun().getRun().getAttribute(Scave.MEASUREMENT);
-                return measurement != null ? measurement : NA;
+                return measurement != null ? new StyledString(measurement) : NA;
             }
             else if (COL_REPLICATION.equals(column)) {
                 String replication = result.getFileRun().getRun().getAttribute(Scave.REPLICATION);
-                return replication != null ? replication : NA;
+                return replication != null ? new StyledString(replication) : NA;
             }
             else if (COL_PARAM_VALUE.equals(column)) {
                 ParameterResult parameter = (ParameterResult)result;
-                return parameter.getValue();
+                return new StyledString(parameter.getValue());
             }
             else if (COL_SCALAR_VALUE.equals(column)) {
                 ScalarResult scalar = (ScalarResult)result;
@@ -666,11 +664,11 @@ public class DataTable extends LargeTable implements IDataControl {
             else if (type == PanelType.VECTORS) {
                 VectorResult vector = (VectorResult)result;
                 if (COL_VECTOR_ID.equals(column)) {
-                    return String.valueOf(vector.getVectorId());
+                    return new StyledString(String.valueOf(vector.getVectorId()));
                 }
                 else if (COL_COUNT.equals(column)) {
                     long count = vector.getStatistics().getCount();
-                    return count >= 0 ? String.valueOf(count) : NA;
+                    return count >= 0 ? new StyledString(String.valueOf(count)) : NA;
                 }
                 else if (COL_MEAN.equals(column)) {
                     double mean = vector.getStatistics().getMean();
@@ -709,11 +707,11 @@ public class DataTable extends LargeTable implements IDataControl {
                 if (COL_KIND.equals(column)) {
                     boolean isHistogram = result instanceof HistogramResult;
                     boolean isWeighted = stats.getStatistics().isWeighted();
-                    return isHistogram ? (isWeighted ? "wh" : "h") : (isWeighted ? "ws" : "s");
+                    return new StyledString(isHistogram ? (isWeighted ? "wh" : "h") : (isWeighted ? "ws" : "s"));
                 }
                 else if (COL_COUNT.equals(column)) {
                     long count = stats.getStatistics().getCount();
-                    return count >= 0 ? String.valueOf(count) : NA;
+                    return count >= 0 ? new StyledString(String.valueOf(count)) : NA;
                 }
                 else if (COL_SUMWEIGHTS.equals(column)) {
                     if (!stats.getStatistics().isWeighted())
@@ -746,7 +744,7 @@ public class DataTable extends LargeTable implements IDataControl {
                 }
                 else if (COL_NUMBINS.equals(column)) {
                     if (result instanceof HistogramResult)
-                        return String.valueOf(((HistogramResult)result).getHistogram().getNumBins());
+                        return new StyledString(String.valueOf(((HistogramResult)result).getHistogram().getNumBins()));
                     else
                         return NA;
                 }
@@ -757,7 +755,7 @@ public class DataTable extends LargeTable implements IDataControl {
                             return NA;
                         double lo = bins.getBinEdge(0);
                         double up = bins.getBinEdge(bins.getNumBins());
-                        return formatNumber(lo, "") + " .. " + formatNumber(up, unit);
+                        return formatNumber(lo, "").append(" .. ").append(formatNumber(up, unit));
                     }
                     else
                         return NA;
@@ -766,21 +764,21 @@ public class DataTable extends LargeTable implements IDataControl {
         }
         catch (RuntimeException e) {
             // stale ID?
-            return "";
+            return new StyledString("");
         }
 
-        return "";
+        return new StyledString("");
     }
 
-    protected String formatNumber(double d, String unit) {
+    protected StyledString formatNumber(double d, String unit) {
         String result = ScaveUtil.formatNumber(d, getNumericPrecision());
         if (!unit.isEmpty())
             result += " " + unit;
-        return result;
+        return new StyledString(result);
     }
 
-    protected String formatNumber(BigDecimal d) {
-        return ScaveUtil.formatNumber(d, getNumericPrecision()) + " s";
+    protected StyledString formatNumber(BigDecimal d) {
+        return new StyledString(ScaveUtil.formatNumber(d, getNumericPrecision()) + " s");
     }
 
     public void copyRowsToClipboard(IProgressMonitor monitor) throws InterruptedException {
@@ -803,7 +801,7 @@ public class DataTable extends LargeTable implements IDataControl {
             int count = 0;
             for (int rowIndex : selection) {
                 for (Column column : visibleColumns)
-                    writer.addField(getCellValue(rowIndex, column));
+                    writer.addField(getCellValue(rowIndex, column).getString());
                 writer.endRecord();
 
                 if (++count % batchSize == 0) {
@@ -901,7 +899,7 @@ public class DataTable extends LargeTable implements IDataControl {
         if (getItemCount() == 0 || selectedColumn == null || selectedColumn.isDisposed())
             return null;
         Column column = (Column)selectedColumn.getData(COLUMN_KEY);
-        return column == null ? null : getCellValue(getFocusIndex(), column);
+        return column == null ? null : getCellValue(getFocusIndex(), column).getString();
     }
 
     public void setSelectedID(long id) {
