@@ -16,6 +16,7 @@
 #include <iomanip>
 #include <map>
 #include <algorithm>
+#include <memory>
 #include "common/ver.h"
 #include "common/fileutil.h"
 #include "common/linetokenizer.h"

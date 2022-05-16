@@ -18,6 +18,7 @@
 #include <stack>
 #include <typeinfo>
 #include <cinttypes>
+#include <memory>
 #include "commonutil.h"
 #include "stlutil.h"
 #include "expression.h"

@@ -13,6 +13,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <memory>
 #include "common/expression.h"
 #include "common/exception.h"
 #include "common/unitconversion.h"
