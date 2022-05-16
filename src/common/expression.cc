@@ -16,6 +16,7 @@
 #include <cmath>
 #include <limits>
 #include <stack>
+#include <memory>
 #include <typeinfo>
 #include <cinttypes>
 #include "commonutil.h"
