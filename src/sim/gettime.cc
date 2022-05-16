@@ -24,7 +24,7 @@
 # include <mach/clock.h>
 # include <mach/mach.h>
 #else
-# include <time.h>
+# include <ctime>
 #endif
 
 #include "omnetpp/simkerneldefs.h"

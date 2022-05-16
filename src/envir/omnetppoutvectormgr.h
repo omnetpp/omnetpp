@@ -16,7 +16,7 @@
 #ifndef __OMNETPP_ENVIR_OMNETPPOUTVECTORMGR_H
 #define __OMNETPP_ENVIR_OMNETPPOUTVECTORMGR_H
 
-#include <stddef.h>
+#include <cstddef>
 #include <string>
 #include <vector>
 #include "omnetpp/envirext.h"

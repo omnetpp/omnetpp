@@ -101,10 +101,10 @@ const char *FileGlobber::getNext()
 
 #elif defined __ANDROID__
 
-#include <dirent.h>
 #include <cerrno>
+#include <climits>
+#include <dirent.h>
 #include <fnmatch.h>
-#include <limits.h>
 
 namespace omnetpp {
 namespace common {

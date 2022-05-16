@@ -5,8 +5,8 @@
 
 #include <algorithm>
 #include <string>
-#include <ctype.h>
-#include <string.h>
+#include <cctype>
+#include <cstring>
 #include <omnetpp.h>
 
 using namespace omnetpp;

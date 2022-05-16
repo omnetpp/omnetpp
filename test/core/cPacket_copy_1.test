@@ -4,7 +4,7 @@ Tests copying of cPacket by op=, dup(), copy ctor().
 TODO: check copying of param array too
 
 %global:
-#include <string.h>
+#include <cstring>
 
 %activity:
 

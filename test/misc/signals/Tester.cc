@@ -1,5 +1,5 @@
-#include <stdlib.h>
-#include <stdarg.h>
+#include <cstdlib>
+#include <cstdarg>
 #include <vector>
 #include <algorithm>
 #include <omnetpp.h>

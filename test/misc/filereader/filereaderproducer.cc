@@ -12,8 +12,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <ios>
 #include <fstream>
 #include <omnetpp/platdep/platmisc.h>

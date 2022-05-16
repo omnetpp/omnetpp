@@ -16,7 +16,7 @@
 #ifndef __CFINGERPRINT_H
 #define __CFINGERPRINT_H
 
-#include <string.h>
+#include <cstring>
 #include "simkerneldefs.h"
 #include "cevent.h"
 #include "cmessage.h"

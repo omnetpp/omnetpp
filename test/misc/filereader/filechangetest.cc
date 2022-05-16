@@ -12,9 +12,9 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdio.h>
+#include <cstdio>
+#include <cstring>
 #include <fcntl.h>
-#include <string.h>
 #include "common/exception.h"
 #include "common/filereader.h"
 

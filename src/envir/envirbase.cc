@@ -64,7 +64,7 @@
 
 #ifdef __APPLE__
 // these are needed for debugger detection
-#include <stdbool.h>
+#include <cstdbool>
 
 // these are for the alternative method - using ptrace
 // #include <sys/types.h>

@@ -2,7 +2,7 @@
 SimTime: test inUnit()
 
 %includes:
-#include <math.h>
+#include <cmath>
 
 %global:
 

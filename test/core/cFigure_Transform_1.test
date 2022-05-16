@@ -2,7 +2,7 @@
 Test the cFigure::Transform class.
 
 %includes:
-#include <math.h>
+#include <cmath>
 
 %activity:
 

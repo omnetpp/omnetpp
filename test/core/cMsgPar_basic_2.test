@@ -2,7 +2,7 @@
 Tests cMsgPar's conversions to basic types (operator long(), operator double(), etc).
 
 %global:
-#include <string.h>
+#include <cstring>
 
 %activity:
 cMsgPar p;

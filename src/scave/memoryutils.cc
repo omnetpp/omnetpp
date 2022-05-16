@@ -15,7 +15,7 @@
 #include "memoryutils.h"
 
 #if defined(__linux__)
-  #include <malloc.h>
+  #include <malloc.h>    // for ::malloc_trim
   #include <sys/sysinfo.h>
 #elif defined(_WIN32)
   #define WIN32_LEAN_AND_MEAN

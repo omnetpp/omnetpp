@@ -12,10 +12,10 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdio.h>
-#include <errno.h>
-#include <fcntl.h>
+#include <cstdio>
+#include <cerrno>
 #include <cinttypes>
+#include <fcntl.h>
 #include "filelock.h"
 #include "exception.h"
 #include "commonutil.h"
