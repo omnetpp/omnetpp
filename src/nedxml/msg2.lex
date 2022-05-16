@@ -53,6 +53,8 @@ S  [ \t\v\n\r\f]
 extern YYSTYPE yylval;
 extern YYLTYPE yylloc;
 
+#define YY_USER_INIT  parenDepth = 0
+
 // wrap symbols to allow several .lex files coexist
 #define comment     msgcomment
 #define countChars  msgcount
@@ -242,9 +244,6 @@ static void _count(bool updateprevpos)
     int i;
 
     // printf("DBG: countChars(): prev=%d,%d  pos=%d,%d yytext=>>%s<<\n", prevpos.li, prevpos.co, pos.li, pos.co, yytext);
-
-    if (pos.li==1 && pos.co==0)
-        parenDepth = 0;
 
     if (updateprevpos)
         prevpos = pos;
