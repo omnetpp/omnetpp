@@ -13,6 +13,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <memory>
 #include "common/stringutil.h"
 #include "common/exprutil.h"
 #include "omnetpp/cdynamicexpression.h"

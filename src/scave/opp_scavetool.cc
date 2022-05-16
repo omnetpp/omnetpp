@@ -15,6 +15,7 @@
 #include <sstream>
 #include <iomanip>
 #include <map>
+#include <memory>
 #include <algorithm>
 #include "common/ver.h"
 #include "common/fileutil.h"
