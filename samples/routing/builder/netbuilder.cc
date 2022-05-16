@@ -16,7 +16,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <string.h>
+#include <cstring>
 #include <omnetpp.h>
 
 using namespace omnetpp;

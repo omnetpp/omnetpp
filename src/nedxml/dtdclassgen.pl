@@ -696,7 +696,7 @@ print DTDVAL_H "namespace omnetpp {\n";
 print DTDVAL_H "namespace nedxml {\n\n";
 
 print DTDVAL_CC "$copyright\n";
-print DTDVAL_CC "#include <stdio.h>\n";
+print DTDVAL_CC "#include <cstdio>\n";
 print DTDVAL_CC "#include \"errorstore.h\"\n";
 print DTDVAL_CC "#include \"$dtdvalidatorhfile\"\n\n";
 print DTDVAL_CC "namespace omnetpp {\n";

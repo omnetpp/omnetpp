@@ -2,7 +2,7 @@
 Tests cProperty name and index.
 
 %global:
-#include <string.h>
+#include <cstring>
 
 #define PRINTNAMES(p) EV << "name='" << (p)->getName() \
                          << "' index='" << ((p)->getIndex() ? (p)->getIndex() : "nullptr") \

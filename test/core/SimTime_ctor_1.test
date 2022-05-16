@@ -2,7 +2,7 @@
 SimTime: test the two-arg constructor
 
 %includes:
-#include <math.h>
+#include <cmath>
 
 %global:
 

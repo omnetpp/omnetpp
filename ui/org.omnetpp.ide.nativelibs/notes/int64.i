@@ -25,7 +25,7 @@
 %typemap(typecheck) const int64_t &  = long;
 
 %{
-#include <stdint.h>
+#include <cstdint>
 #include <vector>
 %}
 

@@ -2,7 +2,7 @@
 Tests cProperty dup() and str().
 
 %global:
-#include <string.h>
+#include <cstring>
 
 %activity:
 cProperty *prop = new cProperty("foo", "iii");

@@ -7,7 +7,7 @@
 // `license' for details on this and other legal matters.
 //
 
-#include <ctype.h>
+#include <cctype>
 #include "TelnetServer.h"
 #include "TelnetPkt_m.h"
 

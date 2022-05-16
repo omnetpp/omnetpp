@@ -2,7 +2,7 @@
 Tests cMemCommBuffer.
 
 %includes:
-#include <string.h>
+#include <cstring>
 #ifdef WITH_PARSIM
 #include <sim/parsim/cmemcommbuffer.h>
 #endif

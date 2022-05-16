@@ -17,7 +17,7 @@ message TestMessage {
 
 
 %includes:
-#include <string.h>
+#include <cstring>
 #ifdef WITH_PARSIM
   #include <sim/parsim/cfilecommbuffer.h> // from src/sim/parsim
 #endif

@@ -2,7 +2,7 @@
 Test that values in platdep/intlimits.h are correct
 
 %includes:
-// ensure we really get what's inside intlimits.h, and not the conditionally defined stuff from <stdint.h>
+// ensure we really get what's inside intlimits.h, and not the conditionally defined stuff from <cstdint>
 #undef __OMNETPP_INTLIMITS_H
 #undef INT8_MIN
 #undef INT16_MIN

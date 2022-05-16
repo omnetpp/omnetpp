@@ -2,7 +2,7 @@
 Tests cPacket.parsimPack/parsimUnpack.
 
 %includes:
-#include <string.h>
+#include <cstring>
 #ifdef WITH_PARSIM
 #include <sim/parsim/cfilecommbuffer.h>
 #endif

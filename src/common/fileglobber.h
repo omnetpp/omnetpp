@@ -19,10 +19,10 @@
 #include <io.h>
 #include <cstdlib> // _MAX_PATH
 #elif defined __ANDROID__
-#include <dirent.h>
 #include <cerrno>
+#include <climits>
+#include <dirent.h>
 #include <fnmatch.h>
-#include <limits.h>
 #else
 #include <sys/types.h>
 #include <glob.h>

@@ -7,7 +7,7 @@ The issue is really 64 vs 80-bit internal floating-point arithmetic.
 Valgrind only supports 64-bit one, while most compilers do 80 bits.
 
 %includes:
-#include <stdio.h>
+#include <cstdio>
 
 %activity:
 

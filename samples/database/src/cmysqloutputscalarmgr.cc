@@ -12,7 +12,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <assert.h>
+#include <cassert>
 
 #include "cmysqloutputscalarmgr.h"
 

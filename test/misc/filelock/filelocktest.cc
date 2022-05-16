@@ -12,12 +12,11 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <math.h>
-#include <time.h>
-#include <math.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
+#include <cmath>
+#include <ctime>
 #include "omnetpp/platdep/platmisc.h"
 #include "common/filereader.h"
 #include "common/exception.h"
