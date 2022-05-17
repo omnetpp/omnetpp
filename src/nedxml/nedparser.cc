@@ -171,7 +171,7 @@ bool NedParser::loadText(const char *nedtext, const char *fname)
 ASTNode *NedParser::parseNed()
 {
     np.errors->clear();
-    return ::doParseNed(&np, np.source->getFullText());
+    return ::doParseNed(&np);
 }
 
 bool NedParser::isValidNedExpression(const char *expr)
