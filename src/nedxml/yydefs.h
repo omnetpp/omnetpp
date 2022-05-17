@@ -64,7 +64,7 @@ extern LineColumn pos, prevpos;  //FIXME into context!
 }  // namespace nedxml
 }  // namespace omnetpp
 
-omnetpp::nedxml::ASTNode *doParseNed(omnetpp::nedxml::ParseContext *np, const char *text);
+omnetpp::nedxml::ASTNode *doParseNed(omnetpp::nedxml::ParseContext *np);
 omnetpp::nedxml::ASTNode *doParseMsg(omnetpp::nedxml::ParseContext *np, const char *text);
 
 

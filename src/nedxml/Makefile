@@ -38,7 +38,7 @@ OBJS= $O/astnode.o $O/sourcedocument.o $O/errorstore.o $O/exception.o \
       $O/msgelements.o $O/msgvalidator.o $O/msgdtdvalidator.o \
       $O/nedsyntaxvalidator.o $O/nedcrossvalidator.o \
       $O/nedparser.o $O/nedyyutil.o $O/msgparser.o $O/msgyyutil.o $O/yyutil.o\
-      $O/ned2.tab.o $O/lex.ned2yy.o $O/nedtools.o $O/nedutil.o \
+      $O/ned2.tab.o $O/ned2.lex.o $O/nedtools.o $O/nedutil.o \
       $O/nedgenerator.o $O/msggenerator.o $O/xmlgenerator.o \
       $O/xmlastparser.o $O/astbuilder.o \
       $O/msg2.tab.o $O/lex.msg2yy.o \
@@ -49,7 +49,7 @@ GENERATED_SOURCES=nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h \
                   neddtdvalidator.h neddtdvalidator.cc \
                   msgelements.cc msgelements.h msgvalidator.cc msgvalidator.h \
                   msgdtdvalidator.h msgdtdvalidator.cc \
-                  ned2.tab.hh ned2.tab.cc lex.ned2yy.cc \
+                  ned2.tab.h ned2.tab.cc ned2.lex.h ned2.lex.cc \
                   msg2.tab.hh msg2.tab.cc lex.msg2yy.cc \
                   sim_std_msg.cc
 
@@ -141,17 +141,17 @@ clean:
 %sgelements.cc %sgelements.h %sgdtdvalidator.cc %sgdtdvalidator.h %sgvalidator.cc %sgvalidator.h : dtdclassgen.pl $(OMNETPP_ROOT)/doc/etc/msg2.dtd
 	perl dtdclassgen.pl $(OMNETPP_ROOT)/doc/etc/msg2.dtd msg
 
-%ed2.tab.hh %ed2.tab.cc : ned2.y
+%ed2.tab.h %ed2.tab.cc : ned2.y
 	$(qecho) YACC: $<
-	$(Q)$(YACC) -o ned2.tab.cc -p ned2yy -d ned2.y
+	$(Q)$(YACC) -o ned2.tab.cc --defines=ned2.tab.h -p ned2yy -d ned2.y
+
+%ed2.lex.h %ed2.lex.cc: ned2.lex
+	$(qecho) LEX: $<
+	$(Q)$(LEX) -oned2.lex.cc --header-file=ned2.lex.h -Pned2yy ned2.lex
 
 %sg2.tab.hh %sg2.tab.cc : msg2.y
 	$(qecho) YACC: $<
 	$(Q)$(YACC) -o msg2.tab.cc -p msg2yy -d msg2.y
-
-lex.ned2yy.cc: ned2.lex
-	$(qecho) LEX: $<
-	$(Q)$(LEX) -olex.ned2yy.cc -Pned2yy ned2.lex
 
 lex.msg2yy.cc: msg2.lex
 	$(qecho) LEX: $<
