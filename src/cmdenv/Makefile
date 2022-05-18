@@ -46,10 +46,12 @@ endif
 .PHONY: all clean
 .SECONDARY: $(OBJS) $O/$(LIBNAME)$(LIB_SUFFIX)
 
+# disabling all implicit rules
+.SUFFIXES :
+
 #
 # Automatic rules
 #
-.SUFFIXES : .cc
 
 $O/%.o: %.cc $(CONFIGFILE) $(COPTS_FILE)
 	@mkdir -p $O

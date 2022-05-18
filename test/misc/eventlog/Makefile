@@ -14,10 +14,12 @@ IMPLIBS= -L $(OMNETPP_LIB_DIR) -loppcommon$D -loppeventlog$D
 
 EXECUTABLES = eventlogtest$(EXE_SUFFIX) eventlogindextest$(EXE_SUFFIX)
 
+# disabling all implicit rules
+.SUFFIXES :
+
 #
 # Automatic rules
 #
-.SUFFIXES : .cc
 
 %.o: %.cc
 	$(CXX) -c $(COPTS) -o $@ $<

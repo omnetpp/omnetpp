@@ -12,6 +12,9 @@ PDFPICS = $(SVGPICS:.svg=.pdf) $(DOTPICS:.dot=.pdf)
 
 .PHONY : pdf html eclipse
 
+# disabling all implicit rules
+.SUFFIXES :
+
 default: pdf html eclipse
 
 pdf: $(ALLTEX) $(PDFPICS) figures/*.png
@@ -30,8 +33,6 @@ pdf: $(ALLTEX) $(PDFPICS) figures/*.png
 	$(DOT) -Tsvg $< >$@
 
 # --- generating html ---
-
-.SUFFIXES : .bbl .svg .dot
 
 #usman-bibl.bbl : usman.bbl
 #       copy usman.bbl usman-bibl.bbl
