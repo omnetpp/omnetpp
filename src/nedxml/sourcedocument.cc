@@ -23,6 +23,7 @@
 #include "yydefs.h"
 #include "yyutil.h"
 #include "sourcedocument.h"
+#include "common/exception.h"
 
 using namespace omnetpp::common;
 
@@ -178,20 +179,19 @@ char *SourceDocument::getPosition(int line, int column)
 {
     // tolerant version: if line is out of range, return beginning or end of file
     if (line < 1)
-        return lineBeg[1];
-    if (line > numLines)
+        throw opp_runtime_error("SourceDocument: zero or negative line number %d", line);
+    if (line > numLines) {
+        if (line > numLines+1)  // allow +1 for convenience
+            throw opp_runtime_error("SourceDocument: line number %d too large, buffer has %d lines", line, numLines);
         return lineBeg[numLines]+strlen(lineBeg[numLines]);
+    }
 
     char *s = lineBeg[line];
 
     int co = 0;
     while (co < column) {
-        if (!*s)
-            return s;
-        if (*s == '\n') {
-            column -= co;
-            co = 0;
-        }
+        if (!*s || *s == '\n')
+            throw opp_runtime_error("SourceDocument: column number %d too big for line %d of the document", column, line);
         else if (*s == '\t')
             co += 8-(co%8);
         else
@@ -208,12 +208,10 @@ const char *SourceDocument::get(YYLoc pos)
         end = nullptr;
     }
 
-    // return nullptr
-    if (pos.first_line == 0 && pos.last_line == 0)
-        return nullptr;
-
-    if (isEmpty(pos))
+    if (isEmpty(pos)) {
+        //printf("%d:%d..%d.%d  --> (empty)\n", pos.first_line, pos.first_column, pos.last_line, pos.last_column);
         return "";
+    }
 
     // the meat of the whole stuff:
     end = getPosition(pos.last_line, pos.last_column);
@@ -221,6 +219,7 @@ const char *SourceDocument::get(YYLoc pos)
     *end = '\0';
 
     char *beg = getPosition(pos.first_line, pos.first_column);
+    //printf("%d:%d..%d.%d  --> `%s`\n", pos.first_line, pos.first_column, pos.last_line, pos.last_column, beg);
     return beg;
 }
 
