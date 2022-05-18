@@ -14,10 +14,12 @@ IMPLIBS= -L $(OMNETPP_LIB_DIR) -loppcommon$D
 
 EXECUTABLES = filechangetest$(EXE_SUFFIX) fileechotest$(EXE_SUFFIX) filereadertest$(EXE_SUFFIX) filereaderconsumer$(EXE_SUFFIX) filereaderproducer$(EXE_SUFFIX)
 
+# disabling all implicit rules
+.SUFFIXES :
+
 #
 # Automatic rules
 #
-.SUFFIXES : .cc
 
 %.o: %.cc
 	$(CXX) -c $(COPTS) -o $@ $<

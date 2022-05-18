@@ -75,10 +75,12 @@ endif
 .PHONY: all clean qtenv-osg
 .SECONDARY: $(OBJS) $O/$(LIBNAME)$(LIB_SUFFIX) $(GENERATED_SOURCES)
 
+# disabling all implicit rules
+.SUFFIXES :
+
 #
 # Automatic rules
 #
-.SUFFIXES : .cc .cpp .ui .qrc .h
 
 $O/%.o: %.cc $(CONFIGFILE) $(GENERATED_SOURCES) $(COPTS_FILE)
 	@mkdir -p $O

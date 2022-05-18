@@ -100,10 +100,12 @@ endif
 .PHONY: all clean
 .SECONDARY: $(OBJS) $O/$(LIBNAME)$(LIB_SUFFIX) $(GENERATED_SOURCES)
 
+# disabling all implicit rules
+.SUFFIXES :
+
 #
 # Automatic rules
 #
-.SUFFIXES : .cc
 
 # compile *_m.cc files generated from *.msg files
 $O/%_m.o: $(GENERATED_SOURCES) $(CONFIGFILE) $(COPTS_FILE)

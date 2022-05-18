@@ -43,7 +43,7 @@ endif
 
 ifeq ($(PLATFORM),macos)
   # - on macOS we should strip only the non-public symbols
-  # - the Eclipse (macosx) and JNI platform (darwin) names are different than the name in $PLATFORM 
+  # - the Eclipse (macosx) and JNI platform (darwin) names are different than the name in $PLATFORM
   STRIP_FLAGS=-x
   JNI_PLATFORM=darwin
   DLL_TARGET_DIR = ../org.omnetpp.ide.nativelibs.macosx
@@ -58,10 +58,12 @@ endif
 INCLUDES=-I$(OMNETPP_INCL_DIR) -I$(OMNETPP_SRC_DIR) -Ijdk -Ijdk/$(JNI_PLATFORM)
 COPTS=$(CFLAGS) $(CXXFLAGS) $(INCLUDES) -DTHREADED $(PTHREAD_CFLAGS)
 
+# disabling all implicit rules
+.SUFFIXES :
+
 #
 # Automatic rules
 #
-.SUFFIXES : .cc .cxx
 
 $O/%.o: %.cc $(CONFIGFILE)
 	@mkdir -p $O

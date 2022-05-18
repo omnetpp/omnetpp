@@ -33,7 +33,7 @@ IMPLIBS= -loppcommon$D
 OBJS= $O/ievent.o $O/ieventlog.o \
       $O/eventlog.o $O/eventlogindex.o $O/messagedependency.o $O/event.o $O/eventlogentry.o \
       $O/eventlogentries.o $O/filteredevent.o $O/filteredeventlog.o $O/eventlogentryfactory.o \
-      $O/eventlogentrycache.o $O/index.o $O/snapshot.o 
+      $O/eventlogentrycache.o $O/index.o $O/snapshot.o
 
 GENERATED_SOURCES= eventlogentries.csv eventlogentries.h eventlogentries.cc eventlogentryfactory.cc
 
@@ -52,10 +52,12 @@ endif
 .PHONY: all clean
 .SECONDARY: $(OBJS) $O/$(LIBNAME)$(LIB_SUFFIX) $(GENERATED_SOURCES)
 
+# disabling all implicit rules
+.SUFFIXES :
+
 #
 # Automatic rules
 #
-.SUFFIXES : .cc
 
 $O/%.o: %.cc $(GENERATED_SOURCES) $(CONFIGFILE) $(COPTS_FILE)
 	@mkdir -p $O

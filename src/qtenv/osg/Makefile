@@ -80,10 +80,12 @@ endif
 .PHONY: all clean
 .SECONDARY: $(OBJS) $O/$(LIBNAME)$(LIB_SUFFIX) $(GENERATED_SOURCES)
 
+# disabling all implicit rules
+.SUFFIXES :
+
 #
 # Automatic rules
 #
-.SUFFIXES : .cc .cpp .ui .qrc .h
 
 $O/%.o: %.cc $(CONFIGFILE) $(GENERATED_SOURCES) $(COPTS_FILE)
 	@mkdir -p $O
@@ -107,7 +109,7 @@ moc_%.cpp: %.h
 #
 # Targets
 #
-all : $(TARGET_LIB_FILES) 
+all : $(TARGET_LIB_FILES)
 
 ifeq ($(SHARED_LIBS),yes)
 # dynamically linked library (on all platforms except Windows)
