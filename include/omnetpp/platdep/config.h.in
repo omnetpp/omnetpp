@@ -1,0 +1,18 @@
+// This is a template file to generate `config.h` from.
+
+
+// Configuration coming from the user:
+#undef WITH_NETBUILDER
+#undef WITH_LIBXML
+#undef WITH_PARSIM
+#undef WITH_MPI
+#undef WITH_QTENV
+#undef WITH_OSG
+#undef WITH_OSGEARTH
+#undef WITH_AKAROA
+#undef WITH_SYSTEMC
+
+
+// Detected properties of the platform:
+#undef HAVE_DLOPEN
+#undef HAVE_SWAPCONTEXT

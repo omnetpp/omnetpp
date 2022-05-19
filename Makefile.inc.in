@@ -121,7 +121,7 @@ LEX = @LEX@
 CC = @CC@
 CXX = @CXX@
 TOOLCHAIN_NAME = @TOOLCHAIN_NAME@
-DEFINES =@DEFINES@
+DEFINES = @DEFINES@
 SANITIZE_FLAGS = @SANITIZE_FLAGS@
 CFLAGS_DEBUG = @CFLAGS_DEBUG@
 CFLAGS_RELEASE = @CFLAGS_RELEASE@
@@ -157,6 +157,7 @@ UIC=@UIC@
 RCC=@RCC@
 
 HAVE_DLOPEN = @HAVE_DLOPEN@
+HAVE_SWAPCONTEXT = @HAVE_SWAPCONTEXT@
 SYS_LIBS = @SYS_LIBS@
 QT_CFLAGS = @QT_CFLAGS@
 QT_LIBS = @QT_LIBS@
@@ -203,7 +204,6 @@ OPPMAIN_LIB = $(LDFLAG_LIB)oppmain$D
 # flags and libraries required for Qtenv
 #
 ifeq ($(WITH_QTENV),yes)
-  DEFINES += -DWITH_QTENV
   # libraries required for static linking
   ifneq ($(SHARED_LIBS),yes)
     QTENV_LIBS += $(QT_LIBS)
@@ -226,28 +226,10 @@ endif
 # Other defines
 #
 ifeq ($(WITH_PARSIM),yes)
-  DEFINES += -DWITH_PARSIM
   # extra libs needed during static building
   ifneq ($(SHARED_LIBS),yes)
     KERNEL_LIBS += $(MPI_LIBS)
   endif
-endif
-
-ifeq ($(WITH_NETBUILDER),yes)
-  DEFINES += -DWITH_NETBUILDER
-endif
-
-ifeq ($(WITH_LIBXML),yes)
-  DEFINES += -DWITH_LIBXML
-endif
-
-# note: defines for OSG and osgEarth must be available even if WITH_QTENV=no
-ifeq ($(WITH_OSG),yes)
-  DEFINES += -DWITH_OSG
-endif
-
-ifeq ($(WITH_OSGEARTH),yes)
-  DEFINES += -DWITH_OSGEARTH
 endif
 
 

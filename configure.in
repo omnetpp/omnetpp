@@ -474,7 +474,7 @@ fi
 # original 'portable' implementation on MAC.
 #----------------------
 if test "$PLATFORM" != "macos"; then
-AC_CHECK_FUNCS(swapcontext, [DEFINES="$DEFINES -DHAVE_SWAPCONTEXT"])
+AC_CHECK_FUNCS(swapcontext, [HAVE_SWAPCONTEXT="1"])
 fi
 #----------------------
 # Test if "-fPIC" is needed for shared libs (there's a performance penalty if we use it unnecessarily)
@@ -1003,12 +1003,12 @@ if test "$WITH_PARSIM" = "yes"; then
   fi
 
   if test $mpi_ok = yes; then
-     DEFINES="$DEFINES -DWITH_MPI"
+      WITH_MPI=yes
   else
-     MPI_LIBS=""
-     MPI_CFLAGS=""
-     OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  MPI (optional)"
-     AC_MSG_WARN([Optional package MPI (needed for parallel simulation) not found.])
+      MPI_LIBS=""
+      MPI_CFLAGS=""
+      OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  MPI (optional)"
+      AC_MSG_WARN([Optional package MPI (needed for parallel simulation) not found.])
   fi
 fi
 
@@ -1121,10 +1121,61 @@ LDFLAGS="$LDFLAGS $LDFLAGS_ARCH \$(LDFLAG_LIBPATH)\$(OMNETPP_LIB_DIR)"
 #----------------------
 # Files to be generated
 #----------------------
-AC_CONFIG_FILES(
-  Makefile.inc
-  src/qtenv/qtenv.pri
-)
+AC_CONFIG_FILES(Makefile.inc)
+
+if test "$WITH_NETBUILDER" = "yes"; then
+  AC_DEFINE([WITH_NETBUILDER], [], [])
+fi
+
+if test "$WITH_LIBXML" = "yes"; then
+  AC_DEFINE([WITH_LIBXML], [], [])
+fi
+
+if test "$WITH_PARSIM" = "yes"; then
+  AC_DEFINE([WITH_PARSIM], [], [])
+fi
+
+if test "$WITH_MPI" = "yes"; then
+  AC_DEFINE([WITH_MPI], [], [])
+fi
+
+if test "$WITH_QTENV" = "yes"; then
+  AC_DEFINE([WITH_QTENV], [], [])
+fi
+
+# note: defines for OSG and osgEarth must be available even if WITH_QTENV=no
+
+if test "$WITH_OSG" = "yes"; then
+  AC_DEFINE([WITH_OSG], [], [])
+fi
+
+if test "$WITH_OSGEARTH" = "yes"; then
+  AC_DEFINE([WITH_OSGEARTH], [], [])
+fi
+
+if test "$WITH_AKAROA" = "yes"; then
+  AC_DEFINE([WITH_AKAROA], [], [])
+fi
+
+if test "$WITH_SYSTEMC" = "yes"; then
+  AC_DEFINE([WITH_SYSTEMC], [], [])
+fi
+
+
+if test "$HAVE_DLOPEN" = "1"; then
+  AC_DEFINE([HAVE_DLOPEN], [1], [])
+else
+  AC_DEFINE([HAVE_DLOPEN], [0], [])
+fi
+
+if test "$HAVE_SWAPCONTEXT" = "1"; then
+  AC_DEFINE([HAVE_SWAPCONTEXT], [1], [])
+else
+  AC_DEFINE([HAVE_SWAPCONTEXT], [0], [])
+fi
+
+
+AC_CONFIG_HEADERS([include/omnetpp/platdep/config.h])
 
 #----------------------
 # Substitutions.
