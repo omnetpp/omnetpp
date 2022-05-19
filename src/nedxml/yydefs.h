@@ -59,13 +59,13 @@ struct ParseContext {
 };
 
 typedef struct {int li; int co;} LineColumn;
-extern LineColumn pos, prevpos;  //FIXME into context!
+extern LineColumn pos;  //FIXME into context!
 
 }  // namespace nedxml
 }  // namespace omnetpp
 
 omnetpp::nedxml::ASTNode *doParseNed(omnetpp::nedxml::ParseContext *np);
-omnetpp::nedxml::ASTNode *doParseMsg(omnetpp::nedxml::ParseContext *np, const char *text);
+omnetpp::nedxml::ASTNode *doParseMsg(omnetpp::nedxml::ParseContext *np);
 
 
 #endif

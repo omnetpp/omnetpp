@@ -8,11 +8,15 @@
  *=============================================================*/
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992,2005 Andras Varga
+  Copyright (C) 2006-2017 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
+
+%define api.pure true
+%locations
+%param { yyscan_t scanner }
 
 /* number of expected shift-reduce conflicts */
 %expect 0
@@ -52,20 +56,20 @@
 
 %parse-param {omnetpp::nedxml::ParseContext *np}
 
-/* requires at least bison 1.50 (tested with bison 2.1); otherwise won't parse "class B extends A;" syntax */
 %glr-parser
 
-%{
+%code top {
 
 #include <cstdio>
 #include <cstdlib>
-#include "yydefs.h"
 #include "common/commonutil.h"
 #include "common/stringutil.h"
+#include "yydefs.h"
 #include "errorstore.h"
 #include "sourcedocument.h"
 #include "exception.h"
 #include "msgelements.h"
+#include "msg2.lex.h"
 
 #define YYDEBUG 1           /* allow debugging */
 #define YYDEBUGGING_ON 0    /* turn on/off debugging */
@@ -75,20 +79,6 @@
 #include <cstring>         /* YYVERBOSE needs it */
 #endif
 
-#define yylloc msg2yylloc
-#define yyin msg2yyin
-#define yyout msg2yyout
-#define yyrestart msg2yyrestart
-#define yy_scan_string msg2yy_scan_string
-#define yy_delete_buffer msg2yy_delete_buffer
-extern FILE *yyin;
-extern FILE *yyout;
-struct yy_buffer_state;
-struct yy_buffer_state *yy_scan_string(const char *str);
-void yy_delete_buffer(struct yy_buffer_state *);
-void yyrestart(FILE *);
-int yylex();
-void yyerror (omnetpp::nedxml::ParseContext *np, const char *s);
 
 #include "msgyyutil.h"
 
@@ -97,6 +87,15 @@ using namespace omnetpp;
 using namespace omnetpp::common;
 using namespace omnetpp::nedxml;
 using namespace omnetpp::nedxml::msgyyutil;
+
+}
+
+%code requires {
+  typedef void* yyscan_t;
+  namespace omnetpp { namespace nedxml { struct ParseContext; } }
+}
+
+%code {
 
 static struct MSG2ParserState
 {
@@ -136,7 +135,9 @@ static void resetParserState()
     ps = cleanps;
 }
 
-%}
+void msg2yyerror(YYLTYPE* yyllocp, yyscan_t unused, ParseContext *np, const char* msg);
+
+}
 
 %%
 
@@ -703,40 +704,30 @@ opt_semicolon
 
 %%
 
-//----------------------------------------------------------------------
-// general bison/flex stuff:
-//
-int msg2yylex_destroy();  // from lex.XXX.cc file
+#include "msg2.lex.h"
 
-ASTNode *doParseMsg(ParseContext *np, const char *msgtext)
+ASTNode *doParseMsg(ParseContext *np)
 {
-#if YYDEBUG != 0      /* #if added --VA */
-    yydebug = YYDEBUGGING_ON;
-#endif
-
-    msg2yylex_destroy();
-
     DETECT_PARSER_REENTRY();
 
-    // reset the lexer
-    pos.co = 0;
-    pos.li = 1;
-    prevpos = pos;
-
-    yyin = nullptr;
-    yyout = stderr; // not used anyway
-
-    // alloc buffer
-    struct yy_buffer_state *handle = yy_scan_string(msgtext);
-    if (!handle)
-        {np->getErrors()->addError("", "unable to allocate work memory"); return nullptr;}
-
-    // create parser state and NedFileElement
+    // create parser state and MsgFileElement
     resetParserState();
     ps.msgfile = new MsgFileElement();
 
     // store file name with slashes always, even on Windows -- neddoc relies on that
     ps.msgfile->setFilename(slashifyFilename(np->getFileName()).c_str());
+    ps.msgfile->setVersion("2");
+
+    // storing the start and end position of the whole file for the MsgFileElement
+    // NOTE: we cannot use storePos() because it strips off the leading spaces
+    // and comments from the element.
+    YYLTYPE pos = np->getSource()->getFullTextPos();
+    SourceRegion region;
+    region.startLine = pos.first_line;
+    region.startColumn = pos.first_column;
+    region.endLine = pos.last_line;
+    region.endColumn = pos.last_column;
+    ps.msgfile->setSourceRegion(region);
 
     // store file comment
     storeFileComment(np, ps.msgfile);
@@ -744,31 +735,34 @@ ASTNode *doParseMsg(ParseContext *np, const char *msgtext)
     if (np->getStoreSourceFlag())
         storeSourceCode(np, ps.msgfile, np->getSource()->getFullTextPos());
 
+    yyscan_t scanner;
+    msg2yylex_init(&scanner);
+
+    yy_buffer_state *handle = msg2yy_scan_string(np->getSource()->getFullText(), scanner);
+
+    //msg2yyset_debug(1, scanner);
+    //msg2yydebug = 1;
+
     // parse
     try
     {
-        yyparse(np);
+        msg2yyparse(scanner,np);
     }
     catch (NedException& e)
     {
-        yyerror(np, (std::string("error during parsing: ")+e.what()).c_str());
-        yy_delete_buffer(handle);
-        return 0;
+        msg2yyerror(msg2yyget_lloc(scanner), scanner, np, (std::string("error during parsing: ")+e.what()).c_str());
+        msg2yy_delete_buffer(handle, scanner);
+        msg2yylex_destroy(scanner);
+        return nullptr;
     }
-
-    yy_delete_buffer(handle);
+    msg2yy_delete_buffer(handle, scanner);
+    msg2yylex_destroy(scanner);
 
     //FIXME TODO: fill in @documentation properties from comments
     return ps.msgfile;
 }
 
-void yyerror(ParseContext *np, const char *s)
+void yyerror(YYLTYPE *yyllocp, yyscan_t scanner, ParseContext *np, const char *msg)
 {
-    // chop newline
-    char buf[250];
-    strcpy(buf, s);
-    if (buf[strlen(buf)-1] == '\n')
-        buf[strlen(buf)-1] = '\0';
-
-    np->error(buf, pos.li);
+    np->error(opp_removeend(msg, "\n").c_str(), yyllocp->first_line);
 }
