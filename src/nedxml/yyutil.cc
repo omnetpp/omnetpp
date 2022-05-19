@@ -30,7 +30,7 @@ namespace nedxml {
 bool parseInProgress = false;
 
 // this global var is shared by all lexers
-LineColumn pos, prevpos;
+LineColumn pos;
 
 void ParseContext::error(const char *msg, int line)
 {
@@ -70,13 +70,6 @@ std::string removeSpaces(ParseContext *np, YYLoc pos)
             result += *s;
 
     return result;
-}
-
-const char *currentLocation(ParseContext *np)
-{
-    static char buf[2048];
-    sprintf(buf, "%s:%d", np->getFileName(), pos.li);
-    return buf;
 }
 
 ASTNode *createElementWithTag(ParseContext *np, ASTNodeFactory *factory, int tagcode, ASTNode *parent)

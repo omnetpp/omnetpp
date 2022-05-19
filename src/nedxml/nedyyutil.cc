@@ -267,7 +267,7 @@ LiteralElement *createStringLiteral(ParseContext *np, YYLoc textpos)
         c->setValue(value.c_str());
     }
     catch (std::exception& e) {
-        np->error(e.what(), pos.li);
+        np->error(e.what(), textpos.first_line);
     }
     return c;
 }
@@ -287,7 +287,7 @@ LiteralElement *createQuantityLiteral(ParseContext *np, YYLoc textpos)
         UnitConversion::parseQuantity(text, unit);
     }
     catch (std::exception& e) {
-        np->error(e.what(), pos.li);
+        np->error(e.what(), textpos.first_line);
     }
     return c;
 }
@@ -303,7 +303,7 @@ ASTNode *prependMinusSign(ParseContext *np, ASTNode *node)
     if (type != LIT_INT && type != LIT_DOUBLE && type != LIT_QUANTITY) {
         char msg[140];
         sprintf(msg, "unary minus not accepted before '%.100s'", literalNode->getValue());
-        np->error(msg, pos.li);
+        np->error(msg, node->getSourceLineNumber());
         return node;
     }
 

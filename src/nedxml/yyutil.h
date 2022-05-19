@@ -33,8 +33,6 @@ extern bool parseInProgress;
     } __guard;
 
 std::string slashifyFilename(const char *fname);
-const char *currentLocation(ParseContext *np);
-
 ASTNode *createElementWithTag(ParseContext *np, ASTNodeFactory *factory, int tagcode, ASTNode *parent=nullptr);
 ASTNode *getOrCreateElementWithTag(ParseContext *np, ASTNodeFactory *factory, int tagcode, ASTNode *parent);
 

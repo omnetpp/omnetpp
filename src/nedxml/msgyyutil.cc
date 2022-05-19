@@ -64,7 +64,7 @@ static LiteralElement *createStringLiteral(ParseContext *np, YYLoc textpos)
         c->setValue(value.c_str());
     }
     catch (std::exception& e) {
-        np->error(e.what(), pos.li);
+        np->error(e.what(), textpos.first_line);
     }
     return c;
 }

@@ -37,6 +37,8 @@ S  [ \t\v\n\r\f]
 #include "ned2.tab.h"
 #include "exception.h"
 
+using namespace omnetpp::nedxml;
+
 static int parenDepth = 0;
 
 #define YY_USER_INIT  {parenDepth = 0; pos = {1,0}; yylloc->first_line = yylloc->last_line = 1; yylloc->first_column = yylloc->last_column = 0;}
@@ -50,8 +52,6 @@ static void ned2count(const char *text, YYLTYPE *loc, bool extend);
 //#define P(x) (printf("lexer: token %s '%s' at %d:%d..%d.%d, parenDepth=%d\n", #x, yytext, yylloc->first_line, yylloc->first_column, yylloc->last_line, yylloc->last_column, parenDepth), (x))
 
 #pragma GCC diagnostic ignored "-Wsign-compare"  // suppress warning in bison template code
-
-using namespace omnetpp::nedxml;
 
 %}
 
