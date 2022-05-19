@@ -1,4 +1,3 @@
-qtenv.pri
 moc_*.cpp
 ui_*.h
 qrc_*.cpp
