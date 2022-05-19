@@ -41,7 +41,7 @@ OBJS= $O/astnode.o $O/sourcedocument.o $O/errorstore.o $O/exception.o \
       $O/ned2.tab.o $O/ned2.lex.o $O/nedtools.o $O/nedutil.o \
       $O/nedgenerator.o $O/msggenerator.o $O/xmlgenerator.o \
       $O/xmlastparser.o $O/astbuilder.o \
-      $O/msg2.tab.o $O/lex.msg2yy.o \
+      $O/msg2.tab.o $O/msg2.lex.o \
       $O/msgcompiler.o $O/msgtypetable.o $O/msganalyzer.o $O/msgcodegenerator.o \
       $O/sim_std_msg.o $O/nedresourcecache.o $O/nedtypeinfo.o
 
@@ -50,7 +50,7 @@ GENERATED_SOURCES=nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h \
                   msgelements.cc msgelements.h msgvalidator.cc msgvalidator.h \
                   msgdtdvalidator.h msgdtdvalidator.cc \
                   ned2.tab.h ned2.tab.cc ned2.lex.h ned2.lex.cc \
-                  msg2.tab.hh msg2.tab.cc lex.msg2yy.cc \
+                  msg2.tab.h msg2.tab.cc msg2.lex.h msg2.lex.cc \
                   sim_std_msg.cc
 
 # macro is used in $(EXPORT_DEFINES) with clang-msabi when building a shared lib
@@ -149,13 +149,14 @@ clean:
 	$(qecho) LEX: $<
 	$(Q)$(LEX) -oned2.lex.cc --header-file=ned2.lex.h -Pned2yy ned2.lex
 
-%sg2.tab.hh %sg2.tab.cc : msg2.y
+%sg2.tab.h %sg2.tab.cc : msg2.y
 	$(qecho) YACC: $<
-	$(Q)$(YACC) -o msg2.tab.cc -p msg2yy -d msg2.y
+	$(Q)$(YACC) -o msg2.tab.cc --defines=msg2.tab.h -p msg2yy -d msg2.y
 
-lex.msg2yy.cc: msg2.lex
+%sg2.lex.h %sg2.lex.cc: msg2.lex
 	$(qecho) LEX: $<
-	$(Q)$(LEX) -olex.msg2yy.cc -Pmsg2yy msg2.lex
+	$(Q)$(LEX) -omsg2.lex.cc --header-file=msg2.lex.h -Pmsg2yy msg2.lex
+
 
 sim_std_msg.cc : ../sim/sim_std.msg
 	$(qecho) STRINGIFY: $<

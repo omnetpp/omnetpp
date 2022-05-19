@@ -103,7 +103,7 @@ bool MsgParser::loadText(const char *text, const char *fname)
 ASTNode *MsgParser::parseMsg()
 {
     np.errors->clear();
-    return ::doParseMsg(&np, np.source->getFullText());
+    return ::doParseMsg(&np);
 }
 
 }  // namespace nedxml

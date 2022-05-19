@@ -8,21 +8,15 @@
  ==================================================*/
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992,2005 Andras Varga
+  Copyright (C) 2006-2017 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-
-/*
- * MSG-2 reserved words:
- *    non-component:   cplusplus import namespace using
- *    component:       struct message class noncobject enum
- *    inheritance:     extends
- *    field types:     char short int long double unsigned string const true false
- *    field modifiers: abstract
- */
+%option noyywrap 8bit reentrant
+%option bison-bridge bison-locations
+%option never-interactive nounistd
 
 D  [0-9]
 L  [a-zA-Z_]
@@ -37,249 +31,185 @@ S  [ \t\v\n\r\f]
 %x propertyindex
 %x propertyvalue
 
-/* the following option keeps isatty() out */
-%option never-interactive
-%option nounistd
-
-/*%option debug*/
-
 %{
 #include <cstring>
 #include "yydefs.h"
+#include "msg2.tab.h"
 #include "exception.h"
-#include "msg2.tab.hh"
 
-#define yylloc msg2yylloc
-extern YYSTYPE yylval;
-extern YYLTYPE yylloc;
-
-#define YY_USER_INIT  parenDepth = 0
-
-// wrap symbols to allow several .lex files coexist
-#define comment     msgcomment
-#define countChars  msgcount
-#define extendCount msgextendCount
-#define debugPrint  msgdebugPrint
-
-void comment();
-void countChars();
-void extendCount();
-int debugPrint(int c);
+//TODO eliminate prevpos, make pos static here
 
 static int parenDepth = 0;
 
-#define P(x)  (x)
-//#define P(x)  debugPrint(x)  /*for debugging*/
+#define YY_USER_INIT  {parenDepth = 0; pos = {1,0}; yylloc->first_line = yylloc->last_line = 1; yylloc->first_column = yylloc->last_column = 0;}
 
-using namespace omnetpp::nedxml;
+static void msg2count(const char *text, YYLTYPE *loc, bool extend);
+
+#define COUNT()  msg2count(yytext, yylloc, false)
+#define EXTEND() msg2count(yytext, yylloc, true)
+
+#define P(x)  (x)
+//#define P(x) (printf("lexer: token %s '%s' at %d:%d..%d.%d, parenDepth=%d\n", #x, yytext, yylloc->first_line, yylloc->first_column, yylloc->last_line, yylloc->last_column, parenDepth), (x))
 
 #pragma GCC diagnostic ignored "-Wsign-compare"  // suppress warning in bison template code
+
+using namespace omnetpp::nedxml;
 
 %}
 
 %%
-"//"                     { comment(); }
+"//"                     {
+                            int c;
+                            while ((c = yyinput(yyscanner))!='\n' && c!=0 && c!=EOF);
+                            if (c=='\n') unput(c);
+                         }
 
-"namespace"              { countChars(); return NAMESPACE; }
-"using"                  { countChars(); return USING; /*reserved for future use*/ }
-"cplusplus"              { countChars(); return CPLUSPLUS; }
-"import"                 { countChars(); return IMPORT; }
-"struct"                 { countChars(); return STRUCT; }
-"message"                { countChars(); return MESSAGE; }
-"packet"                 { countChars(); return PACKET; }
-"class"                  { countChars(); return CLASS; }
-"noncobject"             { countChars(); return NONCOBJECT; /*obsolete*/ }
-"enum"                   { countChars(); return ENUM; }
-"extends"                { countChars(); return EXTENDS; }
-"abstract"               { countChars(); return ABSTRACT; }
+"namespace"              { COUNT(); return P(NAMESPACE); }
+"using"                  { COUNT(); return P(USING); /*reserved for future use*/ }
+"cplusplus"              { COUNT(); return P(CPLUSPLUS); }
+"import"                 { COUNT(); return P(IMPORT); }
+"struct"                 { COUNT(); return P(STRUCT); }
+"message"                { COUNT(); return P(MESSAGE); }
+"packet"                 { COUNT(); return P(PACKET); }
+"class"                  { COUNT(); return P(CLASS); }
+"noncobject"             { COUNT(); return P(NONCOBJECT); /*obsolete*/ }
+"enum"                   { COUNT(); return P(ENUM); }
+"extends"                { COUNT(); return P(EXTENDS); }
+"abstract"               { COUNT(); return P(ABSTRACT); }
 
-"bool"                   { countChars(); return BOOL_; }
-"char"                   { countChars(); return CHAR_; }
-"short"                  { countChars(); return SHORT_; }
-"int"                    { countChars(); return INT_; }
-"long"                   { countChars(); return LONG_; }
-"double"                 { countChars(); return DOUBLE_; }
-"unsigned"               { countChars(); return UNSIGNED_; }
-"const"                  { countChars(); return CONST_; /*reserved for future use*/ }
-"string"                 { countChars(); return STRING_; }
-"true"                   { countChars(); return TRUE_; }
-"false"                  { countChars(); return FALSE_; }
+"bool"                   { COUNT(); return P(BOOL_); }
+"char"                   { COUNT(); return P(CHAR_); }
+"short"                  { COUNT(); return P(SHORT_); }
+"int"                    { COUNT(); return P(INT_); }
+"long"                   { COUNT(); return P(LONG_); }
+"double"                 { COUNT(); return P(DOUBLE_); }
+"unsigned"               { COUNT(); return P(UNSIGNED_); }
+"const"                  { COUNT(); return P(CONST_); /*reserved for future use*/ }
+"string"                 { COUNT(); return P(STRING_); }
+"true"                   { COUNT(); return P(TRUE_); }
+"false"                  { COUNT(); return P(FALSE_); }
 
-{L}({L}|{D})*            { countChars(); return NAME; }
-{D}+                     { countChars(); return INTCONSTANT; }
-0[xX]{X}+                { countChars(); return INTCONSTANT; }
-{D}+{E}                  { countChars(); return REALCONSTANT; }
-{D}*"."{D}+({E})?        { countChars(); return REALCONSTANT; }
-\'[^\']\'                { countChars(); return CHARCONSTANT; }
+{L}({L}|{D})*            { COUNT(); return P(NAME); }
+{D}+                     { COUNT(); return P(INTCONSTANT); }
+0[xX]{X}+                { COUNT(); return P(INTCONSTANT); }
+{D}+{E}                  { COUNT(); return P(REALCONSTANT); }
+{D}*"."{D}+({E})?        { COUNT(); return P(REALCONSTANT); }
+\'[^\']\'                { COUNT(); return P(CHARCONSTANT); }
 
-\"                       { countChars(); BEGIN(stringliteral); }
+\"                       { COUNT(); BEGIN(stringliteral); }
 <stringliteral>{
-    \n                   { BEGIN(INITIAL); parenDepth=0; throw NedException("Unterminated string literal"); }
-    \\\n                 { extendCount(); /* line continuation */ }
-    \\\"                 { extendCount(); /* qouted quote */ }
-    \\[^\n\"]            { extendCount(); /* qouted char */ }
-    [^\\\n\"]+           { extendCount(); /* character inside string literal */ }
-    \"                   { extendCount(); if (parenDepth==0) BEGIN(INITIAL);else BEGIN(propertyvalue); return STRINGCONSTANT; /* closing quote */ }
+    \n                   { BEGIN(INITIAL); parenDepth=0; throw NedException("Unterminated string literal (append backslash to line for multi-line strings)"); /* NOTE: BEGIN(INITIAL) is important, otherwise parsing of the next file (!) will start from the <stringliteral> state! */ }
+    \\\n                 { EXTEND(); /* line continuation */ }
+    \\\"                 { EXTEND(); /* quoted quote */ }
+    \\[^\n\"]            { EXTEND(); /* quoted char */ }
+    [^\\\n\"]+           { EXTEND(); /* character inside string literal */ }
+    \"                   { EXTEND(); if (parenDepth==0) BEGIN(INITIAL); else BEGIN(propertyvalue); return P(STRINGCONSTANT); /* closing quote */ }
 }
 
-"@"                      { countChars(); BEGIN(propertyname); return '@'; }
+"@"                      { COUNT(); BEGIN(propertyname); return P('@'); }
 <propertyname>{
-    ({L}|{D}|[:.-])+     { countChars(); BEGIN(afterpropertyname); return PROPNAME; }
-    {S}                  { countChars(); }
-    .                    { BEGIN(INITIAL); yyless(0); }
+    ({L}|{D}|[:.-])+     { COUNT(); BEGIN(afterpropertyname); return P(PROPNAME); }
+    {S}                  { COUNT(); }
+    .                    { yyless(0); BEGIN(INITIAL); }
 }
 
 <afterpropertyname>{
-    "["                  { countChars(); BEGIN(propertyindex); return P('['); }
-    "("                  { countChars(); BEGIN(propertyvalue); parenDepth=1; return P('('); }
-    {S}                  { countChars(); }
-    .                    { BEGIN(INITIAL); yyless(0); }
+    "["                  { COUNT(); BEGIN(propertyindex); return P('['); }
+    "("                  { COUNT(); BEGIN(propertyvalue); parenDepth=1; return P('('); }
+    {S}                  { COUNT(); }
+    .                    { yyless(0); BEGIN(INITIAL); }
 }
 
 <propertyindex>{
-    "]"                  { countChars(); BEGIN(afterpropertyname); return P(']'); }
-    ({L}|{D}|[:.-])+     { countChars(); return PROPNAME; }
-    {S}                  { countChars(); }
-    .                    { BEGIN(INITIAL); yyless(0); }
+    "]"                  { COUNT(); BEGIN(afterpropertyname); return P(']'); }
+    ({L}|{D}|[:.-])+     { COUNT(); return P(PROPNAME); }
+    {S}                  { COUNT(); }
+    .                    { yyless(0); BEGIN(INITIAL); }
 }
 
 <propertyvalue>{
-    [({[]                { countChars(); ++parenDepth; return P(COMMONCHAR); }
-    [)}\]]               { countChars(); if (--parenDepth==0) {BEGIN(INITIAL); return P(yytext[0]);} else return P(COMMONCHAR); }
-    "="                  { countChars(); return P(parenDepth==1 ? '=' : COMMONCHAR); }
-    ","                  { countChars(); return P(parenDepth==1 ? ',' : COMMONCHAR); }
-    ";"                  { countChars(); return P(parenDepth==1 ? ';' : COMMONCHAR); }
-    \"                   { countChars(); BEGIN(stringliteral); }
-    "\n"                 { countChars(); return P(COMMONCHAR); }
-    .                    { countChars(); return P(COMMONCHAR); }
+    [({[]                { COUNT(); ++parenDepth; return P(COMMONCHAR); }
+    [)}\]]               { COUNT(); if (--parenDepth==0) {BEGIN(INITIAL); return P(yytext[0]);} else return P(COMMONCHAR); }
+    "="                  { COUNT(); return parenDepth==1 ? P('=') : P(COMMONCHAR); }
+    ","                  { COUNT(); return parenDepth==1 ? P(',') : P(COMMONCHAR); }
+    ";"                  { COUNT(); return parenDepth==1 ? P(';') : P(COMMONCHAR); }
+    \"                   { COUNT(); BEGIN(stringliteral); }
+    "\n"                 { COUNT(); return P(COMMONCHAR); }
+    .                    { COUNT(); return P(COMMONCHAR); }
 }
 
-"{{"                     { countChars(); BEGIN(cplusplusbody); }
+"{{"                     { COUNT(); BEGIN(cplusplusbody); }
 <cplusplusbody>{
-    "}}"                 { extendCount(); BEGIN(INITIAL); return CPLUSPLUSBODY; }
-    {S}                  { extendCount(); }
-    .                    { extendCount(); }
+    "}}"                 { EXTEND(); BEGIN(INITIAL); return P(CPLUSPLUSBODY); }
+    {S}                  { EXTEND(); }
+    .                    { EXTEND(); }
 }
 
-";"                      { countChars(); return ';'; }
-","                      { countChars(); return ','; }
-":"                      { countChars(); return ':'; }
-"="                      { countChars(); return '='; }
-"("                      { countChars(); return '('; }
-")"                      { countChars(); return ')'; }
-"["                      { countChars(); return '['; }
-"]"                      { countChars(); return ']'; }
-"{"                      { countChars(); return '{'; }
-"}"                      { countChars(); return '}'; }
-"."                      { countChars(); return '.'; }
-"?"                      { countChars(); return '?'; }
+";"                      { COUNT(); return P(';'); }
+","                      { COUNT(); return P(','); }
+":"                      { COUNT(); return P(':'); }
+"="                      { COUNT(); return P('='); }
+"("                      { COUNT(); return P('('); }
+")"                      { COUNT(); return P(')'); }
+"["                      { COUNT(); return P('['); }
+"]"                      { COUNT(); return P(']'); }
+"{"                      { COUNT(); return P('{'); }
+"}"                      { COUNT(); return P('}'); }
+"."                      { COUNT(); return P('.'); }
+"?"                      { COUNT(); return P('?'); }
 
    /* XXX are the next ones really needed? */
 
-"::"                     { countChars(); return DOUBLECOLON; }
-"||"                     { countChars(); return OR; }
-"&&"                     { countChars(); return AND; }
-"##"                     { countChars(); return XOR; }
-"!"                      { countChars(); return '!'; }
+"::"                     { COUNT(); return P(DOUBLECOLON); }
+"||"                     { COUNT(); return P(OR); }
+"&&"                     { COUNT(); return P(AND); }
+"##"                     { COUNT(); return P(XOR); }
+"!"                      { COUNT(); return P('!'); }
 
-"|"                      { countChars(); return '|'; }
-"&"                      { countChars(); return '&'; }
-"#"                      { countChars(); return '#'; }
-"~"                      { countChars(); return '~'; }
-"<<"                     { countChars(); return SHIFT_LEFT; }
-">>"                     { countChars(); return SHIFT_RIGHT; }
+"|"                      { COUNT(); return P('|'); }
+"&"                      { COUNT(); return P('&'); }
+"#"                      { COUNT(); return P('#'); }
+"~"                      { COUNT(); return P('~'); }
+"<<"                     { COUNT(); return P(SHIFT_LEFT); }
+">>"                     { COUNT(); return P(SHIFT_RIGHT); }
 
-"^"                      { countChars(); return '^'; }
-"+"                      { countChars(); return '+'; }
-"-"                      { countChars(); return '-'; }
-"*"                      { countChars(); return '*'; }
-"/"                      { countChars(); return '/'; }
-"%"                      { countChars(); return '%'; }
-"<"                      { countChars(); return '<'; }
-">"                      { countChars(); return '>'; }
+"^"                      { COUNT(); return P('^'); }
+"+"                      { COUNT(); return P('+'); }
+"-"                      { COUNT(); return P('-'); }
+"*"                      { COUNT(); return P('*'); }
+"/"                      { COUNT(); return P('/'); }
+"%"                      { COUNT(); return P('%'); }
+"<"                      { COUNT(); return P('<'); }
+">"                      { COUNT(); return P('>'); }
 
-"=="                     { countChars(); return EQ; }
-"!="                     { countChars(); return NE; }
-"<="                     { countChars(); return LE; }
-">="                     { countChars(); return GE; }
+"=="                     { COUNT(); return P(EQ); }
+"!="                     { COUNT(); return P(NE); }
+"<="                     { COUNT(); return P(LE); }
+">="                     { COUNT(); return P(GE); }
 
 "\xEF\xBB\xBF"           { /* UTF-8 BOM mark, ignore */ }
-{S}                      { countChars(); }
-.                        { countChars(); return INVALID_CHAR; }
+{S}                      { COUNT(); }
+.                        { COUNT(); return P(INVALID_CHAR); }
 
 %%
 
-int yywrap()
+static void msg2count(const char *text, YYLTYPE *loc, bool extend)
 {
-     return 1;
-}
-
-/*
- * - discards all remaining characters of a line of
- *   text from the inputstream.
- * - the characters are read with the input() and
- *   unput() functions.
- * - input() is sometimes called yyinput()...
- */
-#ifdef __cplusplus
-#define input  yyinput
-#endif
-
-/* the following #define is needed for broken flex versions */
-#define yytext_ptr yytext
-
-void comment()
-{
-    int c;
-    while ((c = input())!='\n' && c!=0 && c!=EOF);
-    if (c=='\n') unput(c);
-}
-
-/*
- * - counts the line and column number of the current token in `pos'
- * - yytext[] is the current token passed by (f)lex
- */
-static void _count(bool updateprevpos)
-{
-    int i;
-
-    // printf("DBG: countChars(): prev=%d,%d  pos=%d,%d yytext=>>%s<<\n", prevpos.li, prevpos.co, pos.li, pos.co, yytext);
-
-    if (updateprevpos)
-        prevpos = pos;
-
-    for (i = 0; yytext[i] != '\0'; i++) {
-        if (yytext[i] == '\n') {
+    for (const char *s = text; *s; s++) {
+        if (*s == '\n') {
             pos.co = 0;
             pos.li++;
-        } else if (yytext[i] == '\t')
+        } else if (*s == '\t')
             pos.co += 8 - (pos.co % 8);
         else
             pos.co++;
     }
 
-    // printf("count '%s': %d:%d-%d:%d\n", strcmp(yytext,"\n")==0?"\\n":yytext, prevpos.li, prevpos.co, pos.li, pos.co);
-    yylloc.first_line   = prevpos.li;
-    yylloc.first_column = prevpos.co;
-    yylloc.last_line    = pos.li;
-    yylloc.last_column  = pos.co;
-}
+    if (!extend) {
+        loc->first_line = loc->last_line;
+        loc->first_column = loc->last_column;
+    }
 
-void countChars()
-{
-    _count(true);
-}
-
-void extendCount()
-{
-    _count(false);
-}
-
-int debugPrint(int c)
-{
-    if (c==COMMONCHAR) fprintf(stderr, " ret=COMMONCHAR\n");
-    else if (c==STRINGCONSTANT) fprintf(stderr, " ret=STRINGCONSTANT\n");
-    else if (c>0 && c<=255) fprintf(stderr, " ret='%c'\n", c);
-    else fprintf(stderr, " ret=%d\n", c);
-    return c;
+    loc->last_line = pos.li;
+    loc->last_column = pos.co;
 }
