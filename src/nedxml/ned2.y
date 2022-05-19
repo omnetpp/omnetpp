@@ -1437,8 +1437,10 @@ opt_subgate
                       ps.subgate = SUBGATE_I;
                   else if (!strcmp(s,"o"))
                       ps.subgate = SUBGATE_O;
-                  else
-                       np->getErrors()->addError(currentLocation(np), "invalid subgate spec '%s', must be 'i' or 'o'", toString(np, @2));
+                  else {
+                      std::string msg = opp_stringf("invalid subgate spec '%s', must be 'i' or 'o'", s); 
+                      np->error(msg.c_str(), @2.first_line);
+                  }
                 }
         | %empty
                 { ps.subgate = SUBGATE_NONE; }

@@ -37,7 +37,7 @@ S  [ \t\v\n\r\f]
 #include "msg2.tab.h"
 #include "exception.h"
 
-//TODO eliminate prevpos, make pos static here
+using namespace omnetpp::nedxml;
 
 static int parenDepth = 0;
 
@@ -52,8 +52,6 @@ static void msg2count(const char *text, YYLTYPE *loc, bool extend);
 //#define P(x) (printf("lexer: token %s '%s' at %d:%d..%d.%d, parenDepth=%d\n", #x, yytext, yylloc->first_line, yylloc->first_column, yylloc->last_line, yylloc->last_column, parenDepth), (x))
 
 #pragma GCC diagnostic ignored "-Wsign-compare"  // suppress warning in bison template code
-
-using namespace omnetpp::nedxml;
 
 %}
 

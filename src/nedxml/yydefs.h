@@ -58,8 +58,12 @@ struct ParseContext {
     void error(const char *msg, int line);
 };
 
-typedef struct {int li; int co;} LineColumn;
-extern LineColumn pos;  //FIXME into context!
+struct LineColumn {
+    int li;
+    int co;
+};
+
+extern LineColumn pos;
 
 }  // namespace nedxml
 }  // namespace omnetpp
