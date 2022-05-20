@@ -15,7 +15,7 @@
 *--------------------------------------------------------------*/
 
 /* Tokens */
-%token STRINGLITERAL 
+%token STRINGLITERAL
 %token MATCHES
 %token OR_ AND_ NOT_   /* note: cannot use %left/%right because of implicit "or" operator */
 
@@ -54,10 +54,10 @@ void yyerror (const char *s);  // used by bison 2.x
 
 #define YYSTYPE  char *
 
-typedef struct _MatchExpressionParserState {
+struct MatchExpressionParserState {
     std::vector<MatchExpression::Elem> elems;
     MatchExpressionLexer *lexer;
-} MatchExpressionParserState;
+};
 
 #define YYPARSE_PARAM statePtr
 #define YYLEX_PARAM statePtr
