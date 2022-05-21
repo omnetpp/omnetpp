@@ -135,7 +135,9 @@ const UnitConversion::UnitDesc UnitConversion::unitTable[] = {  // note: imperia
 const UnitConversion::UnitDesc *UnitConversion::hashTable[HASHTABLESIZE];
 int UnitConversion::numCollisions = 0;
 
-bool UnitConversion::initCalled = false;
+static struct Initializer {
+    Initializer() {UnitConversion::init();}
+} dummy;
 
 bool UnitConversion::matches(const UnitDesc *desc, const char *unit)
 {
@@ -164,10 +166,6 @@ inline unsigned UnitConversion::hashCode(const char *unit)
 
 const UnitConversion::UnitDesc *UnitConversion::lookupUnit(const char *unit)
 {
-    // fill hash table on first call
-    if (!initCalled)
-        init();
-
     if (!*unit)
         return nullptr; // empty string is not a unit
 
@@ -199,7 +197,6 @@ void UnitConversion::insert(const char *key, const UnitDesc *desc)
 
 void UnitConversion::init()
 {
-    initCalled = true;
     fillHashtable();
     fillBaseUnitDescs();
 }

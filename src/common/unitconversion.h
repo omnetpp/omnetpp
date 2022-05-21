@@ -36,13 +36,15 @@ class COMMON_API UnitConversion
     static const int HASHTABLESIZE = 2048; // must be power of 2
     static const UnitDesc *hashTable[HASHTABLESIZE];
     static int numCollisions;
-    static bool initCalled;
+
+  public:
+    // internal
+    static void init();
 
   protected:
     static unsigned hashCode(const char *unit);
     static bool matches(const UnitDesc *desc, const char *unit);
     static void insert(const char *key, const UnitDesc *desc);
-    static void init();
     static void fillHashtable();
     static void fillBaseUnitDescs();
 
