@@ -52,6 +52,11 @@ static void fillPowersOfTen()
     }
 }
 
+static struct PowersOfTenInitializer {
+    PowersOfTenInitializer() {fillPowersOfTen();}
+} dummy;
+
+
 inline int64_t exp10(int exponent)
 {
     if (exponent < 0 || exponent > MAX_POWER_OF_TEN)
@@ -67,8 +72,6 @@ void SimTime::setScaleExp(int e)
         throw cRuntimeError("SimTime::setScaleExp(): Attempt to change the scale exponent after initialization");
     if (e < -18 || e > 0)
         throw cRuntimeError("SimTime scale exponent %d is out of accepted range -18..0", e);
-
-    fillPowersOfTen();
 
     scaleexp = e;
     dscale = exp10(-scaleexp);
