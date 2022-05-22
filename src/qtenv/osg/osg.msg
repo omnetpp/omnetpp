@@ -1,5 +1,5 @@
 //==============================================================
-//   SIM_STD_OSG.MSG  - part of
+//   OSG.MSG  - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -12,8 +12,6 @@
 //  `license' for details on this and other legal matters.
 //--------------------------------------------------------------
 
-
-
 cplusplus
 {{
 
@@ -22,6 +20,7 @@ Register_Enum(cOsgCanvas::ViewerStyle, (cOsgCanvas::STYLE_GENERIC, cOsgCanvas::S
 Register_Enum(cOsgCanvas::CameraManipulatorType, (cOsgCanvas::CAM_AUTO, cOsgCanvas::CAM_TRACKBALL, cOsgCanvas::CAM_EARTH));
 } // namespace omnetpp
 
+#include "qtenv/qtenvdefs.h"
 #include "omnetpp/osgutil.h"
 #include <osg/Node>
 #include <osg/Group>
