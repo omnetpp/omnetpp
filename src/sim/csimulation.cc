@@ -47,6 +47,7 @@
 #include "omnetpp/cfingerprint.h"
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/ccoroutine.h"
+#include "omnetpp/cnedloader.h"
 #include "omnetpp/clifecyclelistener.h"
 #include "omnetpp/crngmanager.h"
 #include "omnetpp/platdep/platmisc.h"  // for DEBUG_TRAP
@@ -58,9 +59,6 @@
 #include "sim/parsim/cparsimsynchr.h"
 #endif
 
-#ifdef WITH_NETBUILDER
-#include "sim/netbuilder/cnedloader.h"
-#endif
 
 using namespace omnetpp::common;
 using namespace omnetpp::internal;
@@ -119,10 +117,6 @@ cSimulation::cSimulation(const char *name, cEnvir *env) : cNamedObject(name, fal
     simulationStage = CTX_NONE;
     contextType = CTX_NONE;
 
-#ifdef WITH_NETBUILDER
-    nedLoader = new cNedLoader();
-#endif
-
     // install default objects
     setFES(new cEventHeap("fes"));
     setScheduler(new cSequentialScheduler());
@@ -132,30 +126,34 @@ cSimulation::cSimulation(const char *name, cEnvir *env) : cNamedObject(name, fal
 
 cSimulation::~cSimulation()
 {
-    if (this == activeSimulation) {
-        // note: C++ forbids throwing in a destructor, and noexcept(false) is not workable
-        getEnvir()->alert(cRuntimeError(this, "Cannot delete the active simulation manager object, ABORTING").getFormattedMessage().c_str());
-        abort();
-    }
+//    if (this == activeSimulation) {
+//        // note: C++ forbids throwing in a destructor, and noexcept(false) is not workable
+//        getEnvir()->alert(cRuntimeError(this, "Cannot delete the active simulation manager object, ABORTING").getFormattedMessage().c_str());
+//        abort();
+//    }
 
-    deleteNetwork();
+    deleteNetwork();  // note: requires this being the active simulation
 
     auto copy = listeners;
     for (auto& listener : copy)
         listener->listenerRemoved();
 
-    delete envir;
     delete fingerprint;
     dropAndDelete(rngManager);
     delete scheduler;
     dropAndDelete(fes);
 
-#ifdef WITH_NETBUILDER
-    delete nedLoader;
-#endif
+    if (nedLoaderOwned)
+        delete nedLoader;
+
 #ifdef WITH_PARSIM
     delete parsimPartition;
 #endif
+
+    if (getActiveSimulation() == this)
+        setActiveSimulation(nullptr);
+
+    delete envir;  // after setActiveSimulation(nullptr), due to objectDeleted() callbacks
 }
 
 void cSimulation::setActiveSimulation(cSimulation *sim)
@@ -313,6 +311,14 @@ void cSimulation::snapshot(cObject *object, const char *label)
         throw cRuntimeError("Could not write snapshot");
 }
 
+void cSimulation::setNedLoader(cINedLoader *loader, bool owned)
+{
+    if (nedLoaderOwned)
+        delete nedLoader;
+    nedLoader = loader;
+    nedLoaderOwned = owned;
+}
+
 void cSimulation::setScheduler(cScheduler *sch)
 {
     if (systemModule)
@@ -368,49 +374,37 @@ void cSimulation::setSimulationTimeLimit(simtime_t simTimeLimit)
 
 int cSimulation::loadNedSourceFolder(const char *folder, const char *excludedPackages)
 {
-#ifdef WITH_NETBUILDER
+    if (!nedLoader)
+        throw cRuntimeError("No NED loader installed");
     return nedLoader->loadNedSourceFolder(folder, excludedPackages);
-#else
-    throw cRuntimeError("Cannot load NED files from '%s': Simulation kernel was compiled without "
-                        "support for dynamic loading of NED files (WITH_NETBUILDER=no)", folder);
-#endif
 }
 
 void cSimulation::loadNedFile(const char *nedFilename, const char *expectedPackage, bool isXML)
 {
-#ifdef WITH_NETBUILDER
+    if (!nedLoader)
+        throw cRuntimeError("No NED loader installed");
     nedLoader->loadNedFile(nedFilename, expectedPackage, isXML);
-#else
-    throw cRuntimeError("Cannot load '%s': Simulation kernel was compiled without "
-                        "support for dynamic loading of NED files (WITH_NETBUILDER=no)", nedFilename);
-#endif
 }
 
 void cSimulation::loadNedText(const char *name, const char *nedText, const char *expectedPackage, bool isXML)
 {
-#ifdef WITH_NETBUILDER
+    if (!nedLoader)
+        throw cRuntimeError("No NED loader installed");
     nedLoader->loadNedText(name, nedText, expectedPackage, isXML);
-#else
-    throw cRuntimeError("Cannot source NED text: Simulation kernel was compiled without "
-                        "support for dynamic loading of NED files (WITH_NETBUILDER=no)");
-#endif
 }
 
 void cSimulation::doneLoadingNedFiles()
 {
-#ifdef WITH_NETBUILDER
+    if (!nedLoader)
+        throw cRuntimeError("No NED loader installed");
     nedLoader->doneLoadingNedFiles();
-#endif
 }
 
 std::string cSimulation::getNedPackageForFolder(const char *folder)
 {
-#ifdef WITH_NETBUILDER
-    return dynamic_cast<cNedLoader*>(nedLoader)->getNedPackageForFolder(folder); //TODO why check_and_cast doesn't work?
-    //return check_and_cast<cNedLoader*>(nedLoader)->getNedPackageForFolder(folder);
-#else
-    return "-";
-#endif
+    if (!nedLoader)
+        throw cRuntimeError("No NED loader installed");
+    return nedLoader->getNedPackageForFolder(folder);
 }
 
 int cSimulation::registerComponent(cComponent *component)

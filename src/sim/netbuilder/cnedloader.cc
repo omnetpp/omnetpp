@@ -16,7 +16,10 @@
 
 #include "common/stringutil.h"
 #include "common/fileutil.h"
+#include "common/stringtokenizer.h"
 #include "nedxml/nedelements.h"
+#include "omnetpp/cconfigoption.h"
+#include "omnetpp/cconfiguration.h"
 #include "omnetpp/cproperty.h"
 #include "omnetpp/cproperties.h"
 #include "omnetpp/ccomponenttype.h"
@@ -39,11 +42,15 @@ using namespace omnetpp::internal;
 
 namespace omnetpp {
 
+Register_GlobalConfigOption(CFGID_NED_PATH, "ned-path", CFG_PATH, "", "A semicolon-separated list of directories. The directories will be regarded as roots of the NED package hierarchy, and all NED files will be loaded from their subdirectory trees. This option is normally left empty, as the OMNeT++ IDE sets the NED path automatically, and for simulations started outside the IDE it is more convenient to specify it via command-line option (-n) or via environment variable (OMNETPP_NED_PATH, NEDPATH).");
+Register_GlobalConfigOption(CFGID_NED_PACKAGE_EXCLUSIONS, "ned-package-exclusions", CFG_CUSTOM, "", "A semicolon-separated list of NED packages to be excluded when loading NED files. Sub-packages of excluded ones are also excluded. Additional items may be specified via the `-x` command-line option and the `OMNETPP_NED_PACKAGE_EXCLUSIONS` environment variable.");
+
+
 cINedLoader::~cINedLoader()
 {
 }
 
-cNedLoader::cNedLoader()
+cNedLoader::cNedLoader(const char *name) : cINedLoader(name)
 {
     loadEmbeddedNedFiles();
 }
@@ -74,6 +81,52 @@ void cNedLoader::loadEmbeddedNedFiles()
             nedText = opp_ungarble(file.nedText, file.garblephrase);
         loadNedText(file.fileName.c_str(), nedText.c_str());
     }
+}
+
+void cNedLoader::configure(cConfiguration *cfg, const char *nArg, const char *xArg)
+{
+    setNedPath(extractNedPath(cfg, nArg).c_str());
+    setNedExcludedPackages(extractNedExcludedPackages(cfg, xArg).c_str());
+}
+
+std::string cNedLoader::extractNedPath(cConfiguration *cfg, const char *nArg)
+{
+    // NED path. It is taken from the "-n" command-line options, the OMNETPP_NED_PATH
+    // environment variable, and the "ned-path=" config option. If the result is still
+    // empty, we fall back to "." -- this is needed for single-directory models to work.
+    std::string nedPath = nArg;
+    nedPath = opp_join(";", nedPath, cfg->getAsPath(CFGID_NED_PATH));
+    nedPath = opp_join(";", nedPath, opp_nulltoempty(getenv("OMNETPP_NED_PATH")));
+    nedPath = opp_join(";", nedPath, opp_nulltoempty(getenv("NEDPATH")));
+    if (nedPath.empty())
+        nedPath = ".";
+    return nedPath;
+}
+
+std::string cNedLoader::extractNedExcludedPackages(cConfiguration *cfg, const char *xArg)
+{
+    std::string nedExcludedPackages = xArg;
+    nedExcludedPackages = opp_join(";", nedExcludedPackages, opp_nulltoempty(cfg->getAsCustom(CFGID_NED_PACKAGE_EXCLUSIONS)));
+    nedExcludedPackages = opp_join(";", nedExcludedPackages, opp_nulltoempty(getenv("OMNETPP_NED_PACKAGE_EXCLUSIONS")));
+    return nedExcludedPackages;
+}
+
+void cNedLoader::loadNedFiles()
+{
+    // load NED files from folders on the NED path
+    std::set<std::string> foldersLoaded;
+    for (std::string folder : opp_splitpath(nedPath)) {
+        if (foldersLoaded.find(folder) == foldersLoaded.end()) {
+//TODO verbose mode log:
+//            if (opt->verbose)
+//                out << "Loading NED files from " << folder << ": ";
+            int count = loadNedSourceFolder(folder.c_str(), nedExcludedPackages.c_str());
+//            if (opt->verbose)
+//                out << " " << count << endl;
+            foldersLoaded.insert(folder);
+        }
+    }
+    doneLoadingNedFiles();
 }
 
 cNedDeclaration *cNedLoader::createTypeInfo(const char *qname, bool isInnerType, ASTNode *node)

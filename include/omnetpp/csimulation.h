@@ -36,7 +36,6 @@ class cException;
 class cFutureEventSet;
 class cScheduler;
 class cParsimPartition;
-class cNedFileLoader;
 class cFingerprintCalculator;
 class cModuleType;
 class cEnvir;
@@ -79,6 +78,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
 
     // simulation vars
     cINedLoader *nedLoader = nullptr;   // NED loader/resolver
+    bool nedLoaderOwned = false;
     cIRngManager *rngManager = nullptr; // component-rng mapping
     cEnvir *envir = nullptr;            // the environment that belongs to this simulation object
     cModule *systemModule = nullptr;    // pointer to system (root) module
@@ -287,51 +287,32 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     //@{
 
     /**
-     * Load all NED files from a NED source folder. This involves visiting
-     * each subdirectory, and loading all "*.ned" files from there.
-     * The given folder is assumed to be the root of the NED package hierarchy.
-     * A list of packages to skip may be specified in the excludedPackages parameter
-     * (items must be separated with a semicolon).
-     *
-     * The function returns the number of NED files loaded.
-     *
-     * Note: doneLoadingNedFiles() must be called after the last
-     * loadNedSourceFolder()/loadNedFile()/loadNedText() call.
+     * Returns the NED loader associated with this simulation.
+     */
+    cINedLoader *getNedLoader() const {return nedLoader;}
+
+    /**
+     * Shortcut for <tt>getNedLoader()->loadNedSourceFolder(folderName, excludedPackages)</tt>.
      */
     virtual int loadNedSourceFolder(const char *folderName, const char *excludedPackages="");
 
     /**
-     * Load a single NED file. If the expected package is given (non-nullptr),
-     * it should match the package declaration inside the NED file.
-     *
-     * Note: doneLoadingNedFiles() must be called after the last
-     * loadNedSourceFolder()/loadNedFile()/loadNedText() call.
+     * Shortcut for <tt>getNedLoader()->loadNedFile(nedFilename, expectedPackage, isXML)</tt>.
      */
     virtual void loadNedFile(const char *nedFilename, const char *expectedPackage=nullptr, bool isXML=false);
 
     /**
-     * Parses and loads the NED source code passed in the nedtext argument.
-     * The name argument will be used as filename in error messages, and
-     * and should be unique among the files loaded. If the expected package
-     * is given (non-nullptr), it should match the package declaration inside
-     * the NED file.
-     *
-     * Note: doneLoadingNedFiles() must be called after the last
-     * loadNedSourceFolder()/loadNedFile()/loadNedText() call.
+     * Shortcut for <tt>getNedLoader()->loadNedText(name, nedText, expectedPackage, isXML)</tt>.
      */
     virtual void loadNedText(const char *name, const char *nedText, const char *expectedPackage=nullptr, bool isXML=false);
 
     /**
-     * To be called after all NED folders / files have been loaded
-     * (see loadNedSourceFolder()/loadNedFile()/loadNedText()).
-     * Issues errors for components that could not be fully resolved
-     * because of missing base types or interfaces.
+     * Shortcut for <tt>getNedLoader()->doneLoadingNedFiles()</tt>.
      */
     virtual void doneLoadingNedFiles();
 
     /**
-     * Returns the NED package that corresponds to the given folder. Returns ""
-     * for the default package, and "-" if the folder is outside all NED folders.
+     * Shortcut for <tt>getNedLoader()->getNedPackageForFolder(folder)</tt>.
      */
     virtual std::string getNedPackageForFolder(const char *folder);
     //@}
@@ -344,6 +325,11 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * scheduler, the FES, the RNG manager, the fingerprint calculator, etc.
      */
     virtual void configure(cConfiguration *cfg);
+
+    /**
+     * Sets the NED loader associated with this simulation.
+     */
+    virtual void setNedLoader(cINedLoader *loader, bool owned);
 
     /**
      * Installs a scheduler object. This method may only be called before or

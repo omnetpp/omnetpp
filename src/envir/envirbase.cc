@@ -59,8 +59,6 @@ Register_PerRunConfigOption(CFGID_SNAPSHOTMANAGER_CLASS, "snapshotmanager-class"
 Register_GlobalConfigOption(CFGID_IMAGE_PATH, "image-path", CFG_PATH, "./images", "A semicolon-separated list of directories that contain module icons and other resources. This list will be concatenated with the contents of the `OMNETPP_IMAGE_PATH` environment variable or with a compile-time, hardcoded image path if the environment variable is empty.");
 Register_PerRunConfigOption(CFGID_DEBUG_ON_ERRORS, "debug-on-errors", CFG_BOOL, "false", "When set to true, runtime errors will cause the simulation program to break into the C++ debugger (if the simulation is running under one, or just-in-time debugging is activated). Once in the debugger, you can view the stack trace or examine variables.");
 Register_PerRunConfigOption(CFGID_PRINT_UNDISPOSED, "print-undisposed", CFG_BOOL, "true", "Whether to report objects left (that is, not deallocated by simple module destructors) after network cleanup.");
-Register_GlobalConfigOption(CFGID_NED_PATH, "ned-path", CFG_PATH, "", "A semicolon-separated list of directories. The directories will be regarded as roots of the NED package hierarchy, and all NED files will be loaded from their subdirectory trees. This option is normally left empty, as the OMNeT++ IDE sets the NED path automatically, and for simulations started outside the IDE it is more convenient to specify it via command-line option (-n) or via environment variable (OMNETPP_NED_PATH, NEDPATH).");
-Register_GlobalConfigOption(CFGID_NED_PACKAGE_EXCLUSIONS, "ned-package-exclusions", CFG_CUSTOM, "", "A semicolon-separated list of NED packages to be excluded when loading NED files. Sub-packages of excluded ones are also excluded. Additional items may be specified via the `-x` command-line option and the `OMNETPP_NED_PACKAGE_EXCLUSIONS` environment variable.");
 Register_GlobalConfigOption(CFGID_DEBUGGER_ATTACH_ON_ERROR, "debugger-attach-on-error", CFG_BOOL, "false", "When set to true, runtime errors and crashes will trigger an external debugger to be launched (if not already present), allowing you to perform just-in-time debugging on the simulation process. The debugger command is configurable. Note that debugging (i.e. attaching to) a non-child process needs to be explicitly enabled on some systems, e.g. Ubuntu.");
 Register_PerRunConfigOption(CFGID_RECORD_EVENTLOG, "record-eventlog", CFG_BOOL, "false", "Enables recording an eventlog file, which can be later visualized on a sequence chart. See `eventlog-file` option too.");
 
@@ -92,13 +90,10 @@ void EnvirBase::initialize(cSimulation *simulation, cConfiguration *cfg, ArgList
 
     SimTime::configure(cfg);
 
-    setNedPath(extractNedPath(cfg, args).c_str());
-    setNedExcludedPackages(extractNedExcludedPackages(cfg, args).c_str());
     setImagePath(extractImagePath(cfg, args).c_str());
 
     cCoroutine::configure(cfg);
 
-    // install XML document cache
     xmlCache = new XMLDocCache();
 }
 
@@ -139,29 +134,6 @@ void EnvirBase::configure(cConfiguration *cfg)
     snapshotManager->configure(simulation, cfg);
 
     recordEventlog = cfg->getAsBool(CFGID_RECORD_EVENTLOG);
-}
-
-
-std::string EnvirBase::extractNedPath(cConfiguration *cfg, ArgList *args)
-{
-    // NED path. It is taken from the "-n" command-line options, the OMNETPP_NED_PATH
-    // environment variable, and the "ned-path=" config option. If the result is still
-    // empty, we fall back to "." -- this is needed for single-directory models to work.
-    std::string nedPath = opp_join(args->optionValues('n'), ";", true);
-    nedPath = opp_join(";", nedPath, getConfig()->getAsPath(CFGID_NED_PATH));
-    nedPath = opp_join(";", nedPath, opp_nulltoempty(getenv("OMNETPP_NED_PATH")));
-    nedPath = opp_join(";", nedPath, opp_nulltoempty(getenv("NEDPATH")));
-    if (nedPath.empty())
-        nedPath = ".";
-    return nedPath;
-}
-
-std::string EnvirBase::extractNedExcludedPackages(cConfiguration *cfg, ArgList *args)
-{
-    std::string nedExcludedPackages = opp_join(args->optionValues('x'), ";", true);
-    nedExcludedPackages = opp_join(";", nedExcludedPackages, opp_nulltoempty(getConfig()->getAsCustom(CFGID_NED_PACKAGE_EXCLUSIONS)));
-    nedExcludedPackages = opp_join(";", nedExcludedPackages, opp_nulltoempty(getenv("OMNETPP_NED_PACKAGE_EXCLUSIONS")));
-    return nedExcludedPackages;
 }
 
 std::string EnvirBase::extractImagePath(cConfiguration *cfg, ArgList *args)

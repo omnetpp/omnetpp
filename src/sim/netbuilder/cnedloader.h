@@ -15,71 +15,16 @@
 *--------------------------------------------------------------*/
 
 
-#ifndef __OMNETPP_CNEDLOADER_H
-#define __OMNETPP_CNEDLOADER_H
+#ifndef __OMNETPP_NETBUILDER_CNEDLOADER_H
+#define __OMNETPP_NETBUILDER_CNEDLOADER_H
 
 #include <map>
+#include "omnetpp/cnedloader.h"
 #include "nedxml/nedresourcecache.h"
 #include "nedxml/astnode.h"
-#include "omnetpp/simkerneldefs.h"
 #include "cneddeclaration.h"
 
 namespace omnetpp {
-
-/**
- * @brief Dynamically loads NED files, and creates module/channel type objects.
- */
-class SIM_API cINedLoader : public cNoncopyableOwnedObject
-{
-  public:
-    /** Constructor */
-    cINedLoader() {}
-
-    /** Destructor */
-    virtual ~cINedLoader();
-
-    /**
-     * Load all NED files from a NED source folder. This involves visiting
-     * each subdirectory, and loading all "*.ned" files from there.
-     * The given folder is assumed to be the root of the NED package hierarchy.
-     * A list of packages to skip may be specified in the excludedPackages parameter
-     * (items must be separated with a semicolon).
-     *
-     * The function returns the number of NED files loaded.
-     *
-     * Note: doneLoadingNedFiles() must be called after the last
-     * loadNedSourceFolder()/loadNedFile()/loadNedText() call.
-     */
-    virtual int loadNedSourceFolder(const char *foldername, const char *excludedPackages) = 0;
-
-    /**
-     * Load a single NED file. If the expected package is given (non-nullptr),
-     * it should match the package declaration inside the NED file.
-     *
-     * Note: doneLoadingNedFiles() must be called after the last
-     * loadNedSourceFolder()/loadNedFile()/loadNedText() call.
-     */
-    virtual void loadNedFile(const char *nedfname, const char *expectedPackage=nullptr, bool isXML=false) = 0;
-
-    /**
-     * Parses and loads the NED source code passed in the nedtext argument.
-     * The name argument will be used as filename in error messages, and
-     * and should be unique among the files loaded. If the expected package
-     * is given (non-nullptr), it should match the package declaration inside
-     * the NED file.
-     *
-     * Note: doneLoadingNedFiles() must be called after the last
-     * loadNedSourceFolder()/loadNedFile()/loadNedText() call.
-     */
-    virtual void loadNedText(const char *name, const char *nedtext, const char *expectedPackage=nullptr, bool isXML=false) = 0;
-
-    /**
-     * To be called after all NED folders / files have been loaded. May be
-     * redefined to issue errors for components that could not be fully
-     * resolved because of missing base types or interfaces.
-     */
-    virtual void doneLoadingNedFiles() = 0;
-};
 
 /**
  * @brief Stores dynamically loaded NED files, and one can look up NED declarations
@@ -115,6 +60,10 @@ class SIM_API cNedLoader : public cINedLoader, public nedxml::NedResourceCache
     };
 
   protected:
+    // from the configuration
+    std::string nedPath;
+    std::string nedExcludedPackages;
+
     // expression cache
     std::map<ExprRef, cDynamicExpression*> cachedExpresssions;
 
@@ -125,20 +74,32 @@ class SIM_API cNedLoader : public cINedLoader, public nedxml::NedResourceCache
     // reimplemented so that we can add cModuleType/cChannelType
     virtual void registerNedType(const char *qname, bool isInnerType, NedElement *node) override;
     virtual void loadEmbeddedNedFiles();
+    virtual std::string extractNedPath(cConfiguration *cfg, const char *nArg);
+    virtual std::string extractNedExcludedPackages(cConfiguration *cfg, const char *xArg);
 
   public:
     /** Constructor */
-    cNedLoader();
+    cNedLoader(const char *name = nullptr);
 
     /** Destructor */
     virtual ~cNedLoader();
 
-    /** @name NED loading methods. */
+    const char *getNedExcludedPackages() const override {return nedExcludedPackages.c_str();}
+    void setNedExcludedPackages(const char *nedExcludedPackages) override {this->nedExcludedPackages = nedExcludedPackages;}
+    const char *getNedPath() const override {return nedPath.c_str();}
+    void setNedPath(const char *nedPath) override {this->nedPath = nedPath;}
+
+    virtual void configure(cConfiguration *cfg, const char *nArg, const char *xArg) override;
+    virtual void loadNedFiles() override;
+
+    /** @name Implementation of the cINedLoader interface. */
     //@{
     virtual int loadNedSourceFolder(const char *foldername, const char *excludedPackages) override {return nedxml::NedResourceCache::loadNedSourceFolder(foldername,excludedPackages);}
     virtual void loadNedFile(const char *nedfname, const char *expectedPackage=nullptr, bool isXML=false) override {nedxml::NedResourceCache::loadNedFile(nedfname,expectedPackage,isXML);}
     virtual void loadNedText(const char *name, const char *nedtext, const char *expectedPackage=nullptr, bool isXML=false) override {nedxml::NedResourceCache::loadNedText(name,nedtext,expectedPackage,isXML);}
+    virtual std::vector<std::string> getLoadedNedFolders() const override {return nedxml::NedResourceCache::getLoadedNedFolders();}
     virtual void doneLoadingNedFiles() override {nedxml::NedResourceCache::doneLoadingNedFiles();}
+    virtual std::string getNedPackageForFolder(const char *folder) const override {return nedxml::NedResourceCache::getNedPackageForFolder(folder);}
     //@}
 
     /** @name Methods for use by the module/channel types created by this NED loader. */
@@ -152,7 +113,6 @@ class SIM_API cNedLoader : public cINedLoader, public nedxml::NedResourceCache
 };
 
 }  // namespace omnetpp
-
 
 #endif
 

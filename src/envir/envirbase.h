@@ -149,17 +149,11 @@ class ENVIR_API EnvirBase : public cEnvir
     void setCheckSignals(bool checkSignals) {cComponent::setCheckSignals(checkSignals);}
     const char *getImagePath() const {return imagePath.c_str();}
     void setImagePath(const char *imagePath) {this->imagePath = imagePath;}
-    const char *getNedExcludedPackages() const {return nedExcludedPackages.c_str();}
-    void setNedExcludedPackages(const char *nedExcludedPackages) {this->nedExcludedPackages = nedExcludedPackages;}
-    const char *getNedPath() const {return nedPath.c_str();}
-    void setNedPath(const char *nedPath) {this->nedPath = nedPath;}
     bool getPrintUndisposed() const {return printUndisposed;}
     void setPrintUndisposed(bool printUndisposed) {this->printUndisposed = printUndisposed;}
     bool isVerbose() const {return verbose;}
     void setVerbose(bool verbose) {this->verbose = verbose;}
 
-    virtual std::string extractNedPath(cConfiguration *cfg, ArgList *args);
-    virtual std::string extractNedExcludedPackages(cConfiguration *cfg, ArgList *args);
     virtual std::string extractImagePath(cConfiguration *cfg, ArgList *args);
 
     void clearCurrentEventInfo();

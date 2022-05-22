@@ -25,6 +25,9 @@
 #define ARGSPEC "h?f:u:l:c:r:n:x:i:q:e:avwsm"
 
 namespace omnetpp {
+
+class cINedLoader;
+
 namespace envir {
 
 struct AppBaseOptions
@@ -64,6 +67,7 @@ class ENVIR_API AppBase : public IAllInOne
     int exitCode = 0;
 
     DebuggerSupport *debuggerSupport = new DebuggerSupport();
+    cINedLoader *nedLoader = nullptr;
 
     // CPU and real time limit checking
     Stopwatch stopwatch;

@@ -20,17 +20,20 @@
 #include <sstream>
 #include <set>
 #include <algorithm>
-#include "common/stringtokenizer.h"
 #include "common/stringutil.h"
 #include "common/enumstr.h"
 #include "common/ver.h"
 #include "common/fileutil.h"
 #include "common/stlutil.h"
+#include "omnetpp/simtime.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cfingerprint.h"
 #include "omnetpp/cconfigoption.h"
+#include "omnetpp/ccoroutine.h"
+#include "omnetpp/cnedloader.h"
 #include "omnetpp/platdep/platmisc.h"
+#include "sim/netbuilder/cnedloader.h"
 #include "appbase.h"
 #include "args.h"
 #include "envirbase.h"
@@ -147,6 +150,8 @@ AppBase::AppBase() : out(std::cout) //TODO
 AppBase::~AppBase()
 {
     delete opt;
+    delete debuggerSupport;
+    delete nedLoader;
 }
 
 int AppBase::run(const std::vector<std::string>& args, InifileContents *ini)
@@ -168,6 +173,9 @@ int AppBase::run(int argc, char *argv[], InifileContents *ini)
     opt->useStderr = !args->optionGiven('m');
     opt->verbose = !args->optionGiven('s');
     debuggerSupport->configure(activeCfg);
+
+    nedLoader = new cNedLoader("nedLoader");
+    nedLoader->removeFromOwnershipTree();
 
     try {
         if (activeCfg->getAsBool(CFGID_DEBUGGER_ATTACH_ON_STARTUP) && debuggerSupport->detectDebugger() != DebuggerPresence::PRESENT)
@@ -395,20 +403,11 @@ void AppBase::installCrashHandler()
 
 void AppBase::loadNEDFiles()
 {
-    // load NED files from folders on the NED path
-    EnvirBase *envir = getEnvir();
-    std::set<std::string> foldersLoaded;
-    for (std::string folder : opp_splitpath(envir->getNedPath())) {
-        if (foldersLoaded.find(folder) == foldersLoaded.end()) {
-            if (opt->verbose)
-                out << "Loading NED files from " << folder << ": ";
-            int count = getSimulation()->loadNedSourceFolder(folder.c_str(), envir->getNedExcludedPackages());
-            if (opt->verbose)
-                out << " " << count << endl;
-            foldersLoaded.insert(folder);
-        }
-    }
-    getSimulation()->doneLoadingNedFiles();
+    cConfiguration *cfg = getConfig();
+    std::string nArg = opp_join(args->optionValues('n'), ";", true);
+    std::string xArg = opp_join(args->optionValues('x'), ";", true);
+    nedLoader->configure(cfg, nArg.c_str() , xArg.c_str());
+    nedLoader->loadNedFiles();
 }
 
 void AppBase::printHelp()
