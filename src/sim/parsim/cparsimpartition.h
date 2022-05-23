@@ -82,7 +82,7 @@ class SIM_API cParsimPartition : public cObject, public cISimulationLifecycleLis
     /**
      * Virtual destructor.
      */
-    virtual ~cParsimPartition() {}
+    virtual ~cParsimPartition();
 
     /**
      * Pass cParsimPartition the objects it has to cooperate with.

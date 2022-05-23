@@ -428,7 +428,6 @@ bool AppBase::setup()
 
         // notify listeners when global setup is complete
         CodeFragments::executeAll(CodeFragments::STARTUP);
-        notifyLifecycleListeners(LF_ON_STARTUP);
     }
     catch (std::exception& e) {
         displayException(e);
@@ -602,7 +601,6 @@ void AppBase::shutdown()
 {
     try {
         getSimulation()->deleteNetwork();
-        notifyLifecycleListeners(LF_ON_SHUTDOWN);
     }
     catch (std::exception& e) {
         displayException(e);

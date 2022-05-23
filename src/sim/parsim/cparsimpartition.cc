@@ -52,6 +52,11 @@ cParsimPartition::cParsimPartition()
     debug = getEnvir()->getConfig()->getAsBool(CFGID_PARSIM_DEBUG);
 }
 
+cParsimPartition::~cParsimPartition()
+{
+    shutdown(); //TODO this should probably be done earlier, when things are still up and running
+}
+
 void cParsimPartition::configure(cSimulation *simul, cConfiguration *cfg)
 {
     sim = simul;
@@ -88,7 +93,6 @@ void cParsimPartition::lifecycleEvent(SimulationLifecycleEventType eventType, cO
     switch (eventType) {
         case LF_PRE_NETWORK_INITIALIZE: startRun(); break;
         case LF_ON_RUN_END: endRun(); break;
-        case LF_ON_SHUTDOWN: shutdown(); break;
         default: break;
     }
 }

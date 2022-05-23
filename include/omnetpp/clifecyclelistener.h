@@ -30,13 +30,6 @@ class cSimulation;
 enum SimulationLifecycleEventType
 {
     /**
-     * Fired on the startup of the simulation program, after global
-     * configuration has been applied, but before any simulation
-     * has been set up.
-     */
-    LF_ON_STARTUP,
-
-    /**
      * Fired before network setup. At the time of the call, cSimulation's
      * network type pointer (see getNetworkType()) already points to the type
      * of the network that will be set up.
@@ -144,13 +137,6 @@ enum SimulationLifecycleEventType
      * This event is not fired if an error occurs during deleteNetwork().
      */
     LF_POST_NETWORK_DELETE,
-
-    /**
-     * Fired before the simulation program exits. At the time of the call,
-     * the simulated network has been torn down, but the simulation
-     * infrastructure (scheduler object, etc) is still in place.
-     */
-    LF_ON_SHUTDOWN,
 };
 
 

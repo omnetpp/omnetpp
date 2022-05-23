@@ -29,7 +29,6 @@ const char *cISimulationLifecycleListener::getSimulationLifecycleEventName(Simul
 {
     switch (eventType) {
 #define CASE(X) case LF_ ## X: return #X
-        CASE(ON_STARTUP);
         CASE(PRE_NETWORK_SETUP);
         CASE(POST_NETWORK_SETUP);
         CASE(PRE_NETWORK_INITIALIZE);
@@ -44,7 +43,6 @@ const char *cISimulationLifecycleListener::getSimulationLifecycleEventName(Simul
         CASE(ON_RUN_END);
         CASE(PRE_NETWORK_DELETE);
         CASE(POST_NETWORK_DELETE);
-        CASE(ON_SHUTDOWN);
 #undef CASE
         default: return "???";
     }
