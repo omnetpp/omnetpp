@@ -162,6 +162,20 @@ void Cmdenv::readPerRunOptions()
 void Cmdenv::doRun()
 {
     {
+        envir = new EnvirBase(this);
+        cSimulation *simulation = new cSimulation("simulation", envir);  //TODO: finally: delete simulation
+        cSimulation::setActiveSimulation(simulation);
+        envir->initialize(simulation, cfg, args);
+
+        readOptions();
+
+        if (getAttachDebuggerOnErrors())
+            installCrashHandler();
+
+        loadNEDFiles();
+
+        CodeFragments::executeAll(CodeFragments::STARTUP); // app setup is complete
+
         // '-c' and '-r' option: configuration to activate, and run numbers to run.
         // Both command-line options take precedence over inifile settings.
         // (NOTE: inifile settings *already* got read at this point! as AppBase::setup()
@@ -217,6 +231,13 @@ void Cmdenv::doRun()
         }
 
         exitCode = numErrors > 0 ? 1 : sigintReceived ? 2 : 0;
+
+        //TODO finally:
+        simulation->deleteNetwork();
+        cSimulation::setActiveSimulation(nullptr);
+        delete simulation;
+        //delete envir; -- this is deleted by simulation -- perhaps rightfully so?
+        envir = nullptr; //TODO why delete in dtor?
     }
 }
 

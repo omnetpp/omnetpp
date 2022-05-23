@@ -99,7 +99,6 @@ int setupUserInterface(int argc, char *argv[])
     //
     // SETUP
     //
-    cSimulation *simulation = nullptr;
     AppBase *app = nullptr;
     SectionBasedConfiguration *bootConfig = nullptr;
     cConfigurationEx *config = nullptr;
@@ -276,8 +275,6 @@ int setupUserInterface(int argc, char *argv[])
     try {
         if (app) {
             // install and run app
-            simulation = new cSimulation("simulation", app->getEnvir());
-            cSimulation::setActiveSimulation(simulation);
             exitCode = app->run(argc, argv, config);
         }
         else {
@@ -292,10 +289,12 @@ int setupUserInterface(int argc, char *argv[])
     //
     // SHUTDOWN
     //
+
+    //TODO delete app?
+    //TODO ASSERT(cSimulation::getActiveSimulation() == nullptr);
+
     if (verbose)
         std::cout << "\nEnd." << endl;
-    cSimulation::setActiveSimulation(nullptr);
-    delete simulation;  // will delete app as well
 
     CodeFragments::executeAll(CodeFragments::SHUTDOWN);
 

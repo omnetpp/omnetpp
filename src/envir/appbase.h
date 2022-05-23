@@ -90,7 +90,7 @@ class ENVIR_API AppBase : public IAllInOne
      */
     virtual int run(const std::vector<std::string>& args, cConfiguration *cfg) final;
 
-    cEnvir *getEnvir() const {return envir;}
+    EnvirBase *getEnvir() const {return envir;}
     cSimulation *getSimulation() const {return envir->getSimulation();}
 
     cConfiguration *getConfig() {return envir->getConfig();}
@@ -133,9 +133,6 @@ class ENVIR_API AppBase : public IAllInOne
 
     // functions added locally
     virtual bool simulationRequired();
-    virtual bool setup();  // does not throw; returns true if OK to go on
-    virtual void run();  // does not throw; delegates to doRun()
-    virtual void shutdown(); // does not throw
     virtual void doRun() = 0;
     virtual void loadNEDFiles();
 

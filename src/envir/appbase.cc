@@ -141,7 +141,6 @@ IAllInOne::~IAllInOne()  //TODO move to separate file
 
 AppBase::AppBase() : out(std::cout) //TODO
 {
-    envir = new EnvirBase(this);
 }
 
 AppBase::~AppBase()
@@ -179,10 +178,13 @@ int AppBase::run(int argc, char *argv[], cConfiguration *configobject)
         alert(ex.what());
     }
 
-    if (simulationRequired()) {
-        if (setup())
-            run();  // must not throw, because we want shutdown() always to be called
-        shutdown();
+    try {
+        if (simulationRequired())  // handle help, config queries, etc.
+            doRun();
+    }
+    catch (std::exception& e) {
+        displayException(e);
+        exitCode = 1;
     }
     return exitCode;
 }
@@ -380,29 +382,6 @@ void AppBase::readPerRunOptions()
     opt->warnings = cfg->getAsBool(CFGID_WARNINGS);
 }
 
-bool AppBase::setup()
-{
-    try {
-        cSimulation *simulation = cSimulation::getActiveSimulation();
-        envir->initialize(simulation, cfg, args);
-        readOptions();
-
-        if (getAttachDebuggerOnErrors())
-            installCrashHandler();
-
-        loadNEDFiles();
-
-        // notify listeners when global setup is complete
-        CodeFragments::executeAll(CodeFragments::STARTUP);
-    }
-    catch (std::exception& e) {
-        displayException(e);
-        exitCode = 1;
-        return false;  // don't run the app
-    }
-    return true;
-}
-
 void AppBase::installCrashHandler()
 {
     signal(SIGSEGV, crashHandler);
@@ -560,26 +539,6 @@ void AppBase::printHelp()
         AppBase *app = appreg->createOne();
         app->printUISpecificHelp();
         delete app;
-    }
-}
-
-void AppBase::run()
-{
-    try {
-        doRun();
-    }
-    catch (std::exception& e) {
-        displayException(e);
-    }
-}
-
-void AppBase::shutdown()
-{
-    try {
-        getSimulation()->deleteNetwork();
-    }
-    catch (std::exception& e) {
-        displayException(e);
     }
 }
 

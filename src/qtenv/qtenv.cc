@@ -617,6 +617,17 @@ void Qtenv::doRun()
     //
     // SETUP
     //
+    envir = new EnvirBase(this);
+    cSimulation *simulation = new cSimulation("simulation", envir);  //TODO: finally: delete simulation
+    cSimulation::setActiveSimulation(simulation);
+    envir->initialize(simulation, cfg, args);
+
+    readOptions();
+
+    if (getAttachDebuggerOnErrors())
+        installCrashHandler();
+
+    loadNEDFiles();
 
     // set signal handler
     signal(SIGINT, signalHandler);
@@ -676,7 +687,6 @@ void Qtenv::doRun()
     displayUpdateController = new DisplayUpdateController();
 
     // create windowtitle prefix
-    cSimulation *simulation = cSimulation::getActiveSimulation();
     if (simulation->getParsimNumPartitions() > 0) {
         char tmp[32];
         sprintf(tmp, "Proc %d/%d - ", simulation->getParsimProcId(), simulation->getParsimNumPartitions());
@@ -722,12 +732,15 @@ void Qtenv::doRun()
     // needs to be set here too, the setting in the Designer wasn't enough on Mac
     QApplication::setWindowIcon(QIcon(":/logo/logo128m"));
 
+
     try {
         setLogFormat(opt->logFormat.c_str());
     }
     catch (std::exception&) {
         // ignore
     }
+
+    CodeFragments::executeAll(CodeFragments::STARTUP); // app setup is complete
 
     //
     // RUN
