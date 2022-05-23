@@ -618,125 +618,122 @@ void Qtenv::doRun()
     //
     // SETUP
     //
-    try {
-        // set signal handler
-        signal(SIGINT, signalHandler);
-        signal(SIGTERM, signalHandler);
 
-        icons.setVerbose(opt->verbose);
-        icons.loadImages(opt->imagePath.c_str());
+    // set signal handler
+    signal(SIGINT, signalHandler);
+    signal(SIGTERM, signalHandler);
 
-        // we need to flush streams, otherwise output written from Tcl tends to overtake
-        // output written from C++ so far, at least in the IDE's console view
-        fflush(stdout);
-        fflush(stderr);
+    icons.setVerbose(opt->verbose);
+    icons.loadImages(opt->imagePath.c_str());
 
-        // these three have to be available for the whole lifetime of the application
-        static int argc = 1;
-        static char arg[] = { 'Q', 't', 'e', 'n', 'v', '\0' };
-        static char *argv[] = { arg, nullptr };
+    // we need to flush streams, otherwise output written from Tcl tends to overtake
+    // output written from C++ so far, at least in the IDE's console view
+    fflush(stdout);
+    fflush(stderr);
 
-        QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps, true);
-        QApplication::setAttribute(Qt::AA_EnableHighDpiScaling, true);
+    // these three have to be available for the whole lifetime of the application
+    static int argc = 1;
+    static char arg[] = { 'Q', 't', 'e', 'n', 'v', '\0' };
+    static char *argv[] = { arg, nullptr };
 
-        app = new QApplication(argc, argv);
+    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps, true);
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling, true);
 
-        // our icon color levels are #40 and #F0, halfway between those is 152, which is close to 0.6 * 255
-        if (app->palette().window().color().lightnessF() < 0.6)
-            selectDarkThemeIcons();
-        else
-            selectLightThemeIcons();
+    app = new QApplication(argc, argv);
 
-        initFontsResource();
+    // our icon color levels are #40 and #F0, halfway between those is 152, which is close to 0.6 * 255
+    if (app->palette().window().color().lightnessF() < 0.6)
+        selectDarkThemeIcons();
+    else
+        selectLightThemeIcons();
 
-        QFontDatabase::addApplicationFont(":/fonts/FiraCode-Regular");
-        QFontDatabase::addApplicationFont(":/fonts/FiraCode-Bold");
+    initFontsResource();
 
-        app->setStyle(new QtenvProxyStyle());
+    QFontDatabase::addApplicationFont(":/fonts/FiraCode-Regular");
+    QFontDatabase::addApplicationFont(":/fonts/FiraCode-Bold");
+
+    app->setStyle(new QtenvProxyStyle());
 
 #ifdef Q_OS_MAC
-        ProcessSerialNumber psn;
-        GetCurrentProcess(&psn);
+    ProcessSerialNumber psn;
+    GetCurrentProcess(&psn);
 
-        // This dance is necessary to make the Apple Menu work immediately after launch.
-        TransformProcessType(&psn, kProcessTransformToBackgroundApplication);
-        TransformProcessType(&psn, kProcessTransformToForegroundApplication);
+    // This dance is necessary to make the Apple Menu work immediately after launch.
+    TransformProcessType(&psn, kProcessTransformToBackgroundApplication);
+    TransformProcessType(&psn, kProcessTransformToForegroundApplication);
 #endif
 
-        pauseEventLoop = new QEventLoop(app);
+    pauseEventLoop = new QEventLoop(app);
 
-        globalPrefs = new QSettings(QDir::homePath() + "/.qtenvrc", QSettings::IniFormat);
-        checkQSettingsStatus(globalPrefs);
-        localPrefs = new QSettings(".qtenvrc", QSettings::IniFormat);
-        checkQSettingsStatus(localPrefs);
+    globalPrefs = new QSettings(QDir::homePath() + "/.qtenvrc", QSettings::IniFormat);
+    checkQSettingsStatus(globalPrefs);
+    localPrefs = new QSettings(".qtenvrc", QSettings::IniFormat);
+    checkQSettingsStatus(localPrefs);
 
-        restoreOptsFromPrefs();
-        setLogLevel(opt->logLevel); // we have to tell cLog the level we want
+    restoreOptsFromPrefs();
+    setLogLevel(opt->logLevel); // we have to tell cLog the level we want
 
-        // create windowtitle prefix
-        if (getParsimNumPartitions() > 0) {
-            char tmp[32];
-            sprintf(tmp, "Proc %d/%d - ", getParsimProcId(), getParsimNumPartitions());
-            windowTitlePrefix = tmp;
-        }
-
-        messageAnimator = new MessageAnimator();
-        displayUpdateController = new DisplayUpdateController();
-
-        mainWindow = new MainWindow(this);
-
-        initFonts();
-        updateQtFonts();
-
-        moduleLayouter.loadSeeds();
-
-        mainInspector = static_cast<GenericObjectInspector *>(addEmbeddedInspector(InspectorFactory::get("GenericObjectInspectorFactory"), mainWindow->getObjectInspectorArea()));
-        mainNetworkView = static_cast<ModuleInspector *>(addEmbeddedInspector(InspectorFactory::get("ModuleInspectorFactory"), mainWindow->getMainInspectorArea()));
-        mainLogView = static_cast<LogInspector *>(addEmbeddedInspector(InspectorFactory::get("LogInspectorFactory"), mainWindow->getLogInspectorArea()));
-        mainTimeLine = static_cast<TimeLineInspector *>(addEmbeddedInspector(InspectorFactory::get("TimeLineInspectorFactory"), mainWindow->getTimeLineArea()));
-        mainObjectTree = static_cast<ObjectTreeInspector *>(addEmbeddedInspector(InspectorFactory::get("ObjectTreeInspectorFactory"), mainWindow->getObjectTreeArea()));
-        mainObjectTree->setObject(getSimulation());
-
-        connect(mainNetworkView, SIGNAL(inspectedObjectChanged(cObject *,cObject *)), mainLogView, SLOT(setObject(cObject *)));
-        connect(mainNetworkView, SIGNAL(inspectedObjectChanged(cObject *,cObject *)), mainInspector, SLOT(setObject(cObject *)));
-
-        connect(&moduleLayouter, &ModuleLayouter::layoutVisualisationStarts, mainWindow, &MainWindow::enterLayoutingMode);
-        connect(&moduleLayouter, &ModuleLayouter::layoutVisualisationEnds, mainWindow, &MainWindow::exitLayoutingMode);
-        connect(mainWindow, &MainWindow::closed, &moduleLayouter, &ModuleLayouter::stop);
-        connect(mainWindow->getStopAction(), &QAction::triggered, &moduleLayouter, &ModuleLayouter::stop);
-
-        QApplication::processEvents(); // Part of the hack for Apple Menu functionality, see a few lines up.
-
-        mainWindow->show();
-        mainWindow->raise(); // Part of the hack for Apple Menu functionality, see a few lines up.
-
-        mainWindow->restoreGeometry();
-        mainInspector->setFocus();
-        mainWindow->activateWindow();
-
-        // We have to wait a bit for the window manager to process the trauma of having to show a window,
-        // and only then pop up the RunSelectionDialog. If done instantly, our request to place it
-        // centered over the MainWindow might get ignored/overridden.
-        QTimer::singleShot(500, this, &Qtenv::initialSetUpConfiguration);
-
-        // needs to be set here too, the setting in the Designer wasn't enough on Mac
-        QApplication::setWindowIcon(QIcon(":/logo/logo128m"));
-
-        try {
-            setLogFormat(opt->logFormat.c_str());
-        }
-        catch (std::exception&) {
-            // ignore
-        }
-
-        //
-        // RUN
-        //
-        exitCode = QApplication::exec();
+    // create windowtitle prefix
+    if (getParsimNumPartitions() > 0) {
+        char tmp[32];
+        sprintf(tmp, "Proc %d/%d - ", getParsimProcId(), getParsimNumPartitions());
+        windowTitlePrefix = tmp;
     }
-    catch (std::exception& e) {
-        throw;
+
+    messageAnimator = new MessageAnimator();
+    displayUpdateController = new DisplayUpdateController();
+
+    mainWindow = new MainWindow(this);
+
+    initFonts();
+    updateQtFonts();
+
+    moduleLayouter.loadSeeds();
+
+    mainInspector = static_cast<GenericObjectInspector *>(addEmbeddedInspector(InspectorFactory::get("GenericObjectInspectorFactory"), mainWindow->getObjectInspectorArea()));
+    mainNetworkView = static_cast<ModuleInspector *>(addEmbeddedInspector(InspectorFactory::get("ModuleInspectorFactory"), mainWindow->getMainInspectorArea()));
+    mainLogView = static_cast<LogInspector *>(addEmbeddedInspector(InspectorFactory::get("LogInspectorFactory"), mainWindow->getLogInspectorArea()));
+    mainTimeLine = static_cast<TimeLineInspector *>(addEmbeddedInspector(InspectorFactory::get("TimeLineInspectorFactory"), mainWindow->getTimeLineArea()));
+    mainObjectTree = static_cast<ObjectTreeInspector *>(addEmbeddedInspector(InspectorFactory::get("ObjectTreeInspectorFactory"), mainWindow->getObjectTreeArea()));
+    mainObjectTree->setObject(getSimulation());
+
+    connect(mainNetworkView, SIGNAL(inspectedObjectChanged(cObject *,cObject *)), mainLogView, SLOT(setObject(cObject *)));
+    connect(mainNetworkView, SIGNAL(inspectedObjectChanged(cObject *,cObject *)), mainInspector, SLOT(setObject(cObject *)));
+
+    connect(&moduleLayouter, &ModuleLayouter::layoutVisualisationStarts, mainWindow, &MainWindow::enterLayoutingMode);
+    connect(&moduleLayouter, &ModuleLayouter::layoutVisualisationEnds, mainWindow, &MainWindow::exitLayoutingMode);
+    connect(mainWindow, &MainWindow::closed, &moduleLayouter, &ModuleLayouter::stop);
+    connect(mainWindow->getStopAction(), &QAction::triggered, &moduleLayouter, &ModuleLayouter::stop);
+
+    QApplication::processEvents(); // Part of the hack for Apple Menu functionality, see a few lines up.
+
+    mainWindow->show();
+    mainWindow->raise(); // Part of the hack for Apple Menu functionality, see a few lines up.
+
+    mainWindow->restoreGeometry();
+    mainInspector->setFocus();
+    mainWindow->activateWindow();
+
+    // We have to wait a bit for the window manager to process the trauma of having to show a window,
+    // and only then pop up the RunSelectionDialog. If done instantly, our request to place it
+    // centered over the MainWindow might get ignored/overridden.
+    QTimer::singleShot(500, this, &Qtenv::initialSetUpConfiguration);
+
+    // needs to be set here too, the setting in the Designer wasn't enough on Mac
+    QApplication::setWindowIcon(QIcon(":/logo/logo128m"));
+
+    try {
+        setLogFormat(opt->logFormat.c_str());
     }
+    catch (std::exception&) {
+        // ignore
+    }
+
+    //
+    // RUN
+    //
+    exitCode = QApplication::exec();
+
     //
     // SHUTDOWN
     //
