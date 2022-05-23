@@ -14,6 +14,7 @@
 *--------------------------------------------------------------*/
 
 #include <algorithm>
+#include <mutex>
 #include "common/stringutil.h"
 #include "common/stlutil.h"
 #include "omnetpp/ccomponent.h"
@@ -58,10 +59,6 @@ simsignal_t PRE_MODEL_CHANGE = cComponent::registerSignal("PRE_MODEL_CHANGE");
 simsignal_t POST_MODEL_CHANGE = cComponent::registerSignal("POST_MODEL_CHANGE");
 
 EXECUTE_ON_SHUTDOWN(cComponent::clearSignalRegistrations());
-
-// Calling registerSignal in static initializers of runtime loaded dynamic
-// libraries would cause an assertion failure without this:
-EXECUTE_ON_EARLY_STARTUP(cComponent::clearSignalState());
 
 OPP_THREAD_LOCAL std::vector<cComponent::ResultRecorderList*> cComponent::cachedResultRecorderLists;
 
@@ -509,11 +506,14 @@ int cComponent::SignalListenerList::findListener(cIListener *l) const
     return -1;
 }
 
+static std::recursive_mutex signalRegistrationsMutex;
+
 simsignal_t cComponent::registerSignal(const char *name)
 {
+    std::lock_guard<std::recursive_mutex> lock(signalRegistrationsMutex);
+
     if (signals_ == nullptr)
         signals_ = new SignalRegistrations;
-
     std::map<std::string,simsignal_t>::iterator it = signals_->nameToId.find(name);
     if (it == signals_->nameToId.end()) {
         // assign ID, register name
@@ -531,6 +531,8 @@ simsignal_t cComponent::registerSignal(const char *name)
 
 const char *cComponent::getSignalName(simsignal_t signalID)
 {
+    std::lock_guard<std::recursive_mutex> lock(signalRegistrationsMutex);
+
     if (!signals_)
         return nullptr;
     std::map<simsignal_t,std::string>::iterator it = signals_->idToName.find(signalID);
@@ -539,21 +541,14 @@ const char *cComponent::getSignalName(simsignal_t signalID)
 
 void cComponent::clearSignalState()
 {
-    // note: registered signals remain intact
-    if (signals_ == nullptr)
-        signals_ = new SignalRegistrations;
-
-    // reset listener counts
-    signals_->listenerCounts.resize(signals_->lastId+1);
-    for (int & listenerCount : signals_->listenerCounts)
-        listenerCount = 0;
-
     // clear notification stack
-    notificationSP = 0;
+    ASSERT(notificationSP == 0);
 }
 
 void cComponent::clearSignalRegistrations()
 {
+    std::lock_guard<std::recursive_mutex> lock(signalRegistrationsMutex);
+
     delete signals_;
     signals_ = nullptr;
 }
@@ -630,6 +625,15 @@ void cComponent::removeListenerList(simsignal_t signalID)
             signalTable = nullptr;
         }
     }
+}
+
+bool cComponent::mayHaveListeners(simsignal_t signalID) const
+{
+    std::lock_guard<std::recursive_mutex> lock(signalRegistrationsMutex);
+
+    if (signalID < 0 || signalID > signals_->lastId)
+        throwInvalidSignalID(signalID);
+    return signals_->listenerCounts[signalID] > 0;
 }
 
 bool cComponent::hasListeners(simsignal_t signalID) const
@@ -746,6 +750,8 @@ void cComponent::fireFinish()
 
 void cComponent::subscribe(simsignal_t signalID, cIListener *listener)
 {
+    std::lock_guard<std::recursive_mutex> lock(signalRegistrationsMutex);
+
     // check that the signal exits
     if (signalID > signals_->lastId)
         throw cRuntimeError("subscribe(): Not a valid signal: SignalID=%d", signalID);
@@ -762,6 +768,8 @@ void cComponent::subscribe(simsignal_t signalID, cIListener *listener)
 
 void cComponent::unsubscribe(simsignal_t signalID, cIListener *listener)
 {
+    std::lock_guard<std::recursive_mutex> lock(signalRegistrationsMutex);
+
     // check that the signal exits
     if (signalID > signals_->lastId)
         throw cRuntimeError("unsubscribe(): Not a valid signal: SignalID=%d", signalID);
