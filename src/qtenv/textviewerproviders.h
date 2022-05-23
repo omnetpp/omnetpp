@@ -71,7 +71,7 @@ public:
     virtual eventnumber_t getEventNumberAtLine(int lineIndex) { return -1; };
     virtual int getLineAtEvent(eventnumber_t eventNumber) { return -1; };
 
-signals:
+Q_SIGNALS:
     void textChanged();
     // This is used to move the cursor and anchor up in the viewer
     // so the content will not "slide up underneath them"

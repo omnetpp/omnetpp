@@ -116,7 +116,7 @@ public:
 
     ~GenericObjectTreeModel();
 
-signals:
+Q_SIGNALS:
     void dataEdited(const QModelIndex& index) ;
 };
 

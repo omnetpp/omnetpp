@@ -58,7 +58,7 @@ class QTENV_API OutputVectorInspectorConfigDialog : public QDialog
   public slots:
     void accept() override;
 
-  signals:
+  Q_SIGNALS:
     void applyButtonClicked();
 
   private:

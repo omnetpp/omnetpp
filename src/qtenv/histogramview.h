@@ -50,7 +50,7 @@ class QTENV_API HistogramView : public QGraphicsView
 
     void drawBin(ChartType type, DrawingStyle drawingStyle, int binIndex, bool isOutliers, double leftEdge, double rightEdge, double value, double pdfValue);
 
-  signals:
+  Q_SIGNALS:
     void showCellInfo(int bin);
 
   protected:

@@ -167,7 +167,7 @@ private slots:
     void on_actionRecordVideo_toggled(bool checked);
     void on_actionShowAnimationParams_toggled(bool checked);
 
-signals:
+Q_SIGNALS:
     void setNewNetwork();
     void closed();
 

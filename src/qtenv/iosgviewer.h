@@ -73,7 +73,7 @@ class QTENV_API IOsgViewer : public QOpenGLWidget
     // coordinates in local widget frame
     virtual std::vector<cObject *> objectsAt(const QPoint &pos) = 0;
 
-  signals:
+  Q_SIGNALS:
     void objectsPicked(const std::vector<cObject*>&);
 };
 
@@ -114,7 +114,7 @@ class QTENV_API DummyOsgViewer: public IOsgViewer
 
     std::vector<cObject *> objectsAt(const QPoint &) override { return {}; }
 
-  signals:
+  Q_SIGNALS:
     void objectsPicked(const std::vector<cObject*>&);
 };
 

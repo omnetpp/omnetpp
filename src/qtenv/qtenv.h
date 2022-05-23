@@ -297,7 +297,7 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
       void storeOptsInPrefs();
       void restoreOptsFromPrefs();
 
-  signals:
+  Q_SIGNALS:
       void fontChanged();
       void objectDeletedSignal(cObject *object); // eh, name collisions
 

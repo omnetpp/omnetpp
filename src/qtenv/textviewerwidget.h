@@ -204,7 +204,7 @@ public slots:
      */
     void revealCaret(const QMargins& margins = QMargins());
 
-signals:
+Q_SIGNALS:
     void caretMoved(int lineIndex, int column);
     void rightClicked(QPoint globalPos, int lineIndex, int column);
 

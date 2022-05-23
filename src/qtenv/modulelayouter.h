@@ -58,7 +58,7 @@ class QTENV_API ModuleLayouter : public QObject {
     // to provide positions/rectangles for the animator/environment/model.
     Constraint getSubmoduleCoords(cModule *submod, double zoomFactor = 1.0, double imageSizeFactor = 1.0);
 
-signals:
+Q_SIGNALS:
     void layoutVisualisationStarts(cModule *module, QGraphicsScene *layoutingScene);
     void layoutVisualisationEnds(cModule *module);
     void moduleLayoutChanged(cModule *module);

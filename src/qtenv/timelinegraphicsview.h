@@ -78,7 +78,7 @@ protected:
     int getXForTimeDelta(simtime_t delta);
     QVector<int> computeMessageCoordinates(simtime_t now, QVector<cMessage*> messages);
 
-signals:
+Q_SIGNALS:
     void contextMenuRequested(QVector<cObject*> objects, QPoint globalPos);
     void click(cObject *object);
     void doubleClick(cObject *object);

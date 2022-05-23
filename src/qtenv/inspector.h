@@ -98,7 +98,7 @@ class QTENV_API Inspector : public QWidget
       // Context menu's action's slot
       virtual void goUpInto();
 
-   signals:
+   Q_SIGNALS:
       void selectionChanged(cObject *object);
       void objectDoubleClicked(cObject *object);
       // Had to make the new object the first parameter, because the signal

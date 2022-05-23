@@ -131,7 +131,7 @@ protected:
 
     QRectF getSubmodulesRect();
 
-signals:
+Q_SIGNALS:
     void click(QMouseEvent*);
     void back();
     void forward();

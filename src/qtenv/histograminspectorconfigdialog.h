@@ -54,7 +54,7 @@ class QTENV_API HistogramInspectorConfigDialog : public QDialog
     double getMaxX() const;
     void setMaxX(const double maxX);
 
-  signals:
+  Q_SIGNALS:
     void applyButtonClicked();
 
   public slots:
