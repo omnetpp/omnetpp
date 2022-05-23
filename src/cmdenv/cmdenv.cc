@@ -190,115 +190,8 @@ void Cmdenv::doRun()
         int numErrors = 0;
         for (int runNumber : runNumbers) {
             runsTried++;
-            bool finishedOK = false;
-            bool networkSetupDone = false;
-            bool endRunRequired = false;
-            try {
-                if (opt->verbose)
-                    out << "\nPreparing for running configuration " << opt->configName << ", run #" << runNumber << "..." << endl;
 
-                cfg->activateConfig(opt->configName.c_str(), runNumber);
-                readPerRunOptions();
-
-                const char *iterVars = cfg->getVariable(CFGVAR_ITERATIONVARS);
-                const char *runId = cfg->getVariable(CFGVAR_RUNID);
-                const char *repetition = cfg->getVariable(CFGVAR_REPETITION);
-                if (!opt->verbose)
-                    out << opt->configName << " run " << runNumber << ": " << iterVars << ", $repetition=" << repetition << endl; // print before redirection; useful as progress indication from opp_runall
-
-                if (opt->redirectOutput) {
-                    opt->outputFile = ResultFileUtils(cfg).augmentFileName(opt->outputFile);
-                    if (opt->verbose)
-                        out << "Redirecting output to file \"" << opt->outputFile << "\"..." << endl;
-                    startOutputRedirection(opt->outputFile.c_str());
-                    if (opt->verbose)
-                        out << "\nRunning configuration " << opt->configName << ", run #" << runNumber << "..." << endl;
-                }
-
-                if (opt->verbose) {
-                    if (iterVars && strlen(iterVars) > 0)
-                        out << "Scenario: " << iterVars << ", $repetition=" << repetition << endl;
-                    out << "Assigned runID=" << runId << endl;
-                }
-
-                // find network
-                if (opt->networkName.empty())
-                    throw cRuntimeError("No network specified (missing or empty network= configuration option)");
-                cModuleType *network = resolveNetwork(opt->networkName.c_str());
-                ASSERT(network);
-
-                endRunRequired = true;
-
-                // set up network
-                if (opt->verbose)
-                    out << "Setting up network \"" << opt->networkName.c_str() << "\"..." << endl;
-
-                setupNetwork(network);
-                networkSetupDone = true;
-
-                // prepare for simulation run
-                if (opt->verbose)
-                    out << "Initializing..." << endl;
-
-                setLoggingEnabled(!opt->expressMode);
-
-                prepareForRun();
-
-                // run the simulation
-                if (opt->verbose)
-                    out << "\nRunning simulation..." << endl;
-
-                // simulate() should only throw exception if error occurred and
-                // finish() should not be called.
-                notifyLifecycleListeners(LF_ON_SIMULATION_START);
-                simulate();
-                setLoggingEnabled(true);
-
-                if (opt->verbose)
-                    out << "\nCalling finish() at end of Run #" << runNumber << "..." << endl;
-                getSimulation()->callFinish();
-                cLogProxy::flushLastLine();
-
-                checkFingerprint();
-
-                notifyLifecycleListeners(LF_ON_SIMULATION_SUCCESS);
-
-                finishedOK = true;
-            }
-            catch (std::exception& e) {
-                setLoggingEnabled(true);
-                stoppedWithException(e);
-                notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
-                displayException(e);
-            }
-
-            // send LF_ON_RUN_END notification
-            if (endRunRequired) {
-                try {
-                    notifyLifecycleListeners(LF_ON_RUN_END);
-                }
-                catch (std::exception& e) {
-                    finishedOK = false;
-                    notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
-                    displayException(e);
-                }
-            }
-
-            // delete network
-            if (networkSetupDone) {
-                try {
-                    getSimulation()->deleteNetwork();
-                }
-                catch (std::exception& e) {
-                    numErrors++;
-                    notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
-                    displayException(e);
-                }
-            }
-
-            // stop redirecting into file
-            stopOutputRedirection();
-
+            bool finishedOK = runSimulation(opt->configName.c_str(), runNumber);
             if (!finishedOK)
                 numErrors++;
 
@@ -325,6 +218,120 @@ void Cmdenv::doRun()
 
         exitCode = numErrors > 0 ? 1 : sigintReceived ? 2 : 0;
     }
+}
+
+bool Cmdenv::runSimulation(const char *configName, int runNumber)
+{
+    bool finishedOK = false;
+    bool networkSetupDone = false;
+    bool endRunRequired = false;
+    try {
+        if (opt->verbose)
+            out << "\nPreparing for running configuration " << opt->configName << ", run #" << runNumber << "..." << endl;
+
+        cfg->activateConfig(configName, runNumber);
+        readPerRunOptions();
+
+        const char *iterVars = cfg->getVariable(CFGVAR_ITERATIONVARS);
+        const char *runId = cfg->getVariable(CFGVAR_RUNID);
+        const char *repetition = cfg->getVariable(CFGVAR_REPETITION);
+        if (!opt->verbose)
+            out << opt->configName << " run " << runNumber << ": " << iterVars << ", $repetition=" << repetition << endl; // print before redirection; useful as progress indication from opp_runall
+
+        if (opt->redirectOutput) {
+            opt->outputFile = ResultFileUtils(cfg).augmentFileName(opt->outputFile);
+            if (opt->verbose)
+                out << "Redirecting output to file \"" << opt->outputFile << "\"..." << endl;
+            startOutputRedirection(opt->outputFile.c_str());
+            if (opt->verbose)
+                out << "\nRunning configuration " << opt->configName << ", run #" << runNumber << "..." << endl;
+        }
+
+        if (opt->verbose) {
+            if (iterVars && strlen(iterVars) > 0)
+                out << "Scenario: " << iterVars << ", $repetition=" << repetition << endl;
+            out << "Assigned runID=" << runId << endl;
+        }
+
+        // find network
+        if (opt->networkName.empty())
+            throw cRuntimeError("No network specified (missing or empty network= configuration option)");
+        cModuleType *network = resolveNetwork(opt->networkName.c_str());
+        ASSERT(network);
+
+        endRunRequired = true;
+
+        // set up network
+        if (opt->verbose)
+            out << "Setting up network \"" << opt->networkName.c_str() << "\"..." << endl;
+
+        setupNetwork(network);
+        networkSetupDone = true;
+
+        // prepare for simulation run
+        if (opt->verbose)
+            out << "Initializing..." << endl;
+
+        setLoggingEnabled(!opt->expressMode);
+
+        prepareForRun();
+
+        // run the simulation
+        if (opt->verbose)
+            out << "\nRunning simulation..." << endl;
+
+        // simulate() should only throw exception if error occurred and
+        // finish() should not be called.
+        notifyLifecycleListeners(LF_ON_SIMULATION_START);
+        simulate();
+        setLoggingEnabled(true);
+
+        if (opt->verbose)
+            out << "\nCalling finish() at end of Run #" << runNumber << "..." << endl;
+        getSimulation()->callFinish();
+        cLogProxy::flushLastLine();
+
+        checkFingerprint();
+
+        notifyLifecycleListeners(LF_ON_SIMULATION_SUCCESS);
+
+        finishedOK = true;
+    }
+    catch (std::exception& e) {
+        setLoggingEnabled(true);
+        stoppedWithException(e);
+        notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
+        displayException(e);
+    }
+
+    // send LF_ON_RUN_END notification
+    if (endRunRequired) {
+        try {
+            notifyLifecycleListeners(LF_ON_RUN_END);
+        }
+        catch (std::exception& e) {
+            finishedOK = false;
+            notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
+            displayException(e);
+        }
+    }
+
+    // delete network
+    if (networkSetupDone) {
+        try {
+            getSimulation()->deleteNetwork();
+        }
+        catch (std::exception& e) {
+            finishedOK = false;
+            notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
+            displayException(e);
+        }
+    }
+
+    // stop redirecting into file
+    stopOutputRedirection();
+
+    return finishedOK;
 }
 
 // note: also updates "since" (sets it to the current time) if answer is "true"

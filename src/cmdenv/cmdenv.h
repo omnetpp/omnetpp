@@ -113,6 +113,7 @@ class CMDENV_API Cmdenv : public RunnableEnvir
      virtual void askParameter(cPar *par, bool unassigned) override;
 
      void help();
+     bool runSimulation(const char *configName, int runNumber);
      void simulate();
      const char *progressPercentage();
 
