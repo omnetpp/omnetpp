@@ -121,6 +121,7 @@ class ENVIR_API AppBase : public IAllInOne
     virtual std::ostream& warn();
     void printfmsg(const char *fmt, ...); // internal, TODO rename
     static void crashHandler(int signum);
+    virtual void installCrashHandler();
     virtual std::vector<int> resolveRunFilter(const char *configName, const char *runFilter);
     virtual void printRunInfo(const char *configName, const char *runFilter, const char *query);
     virtual void printConfigValue(const char *configName, const char *runFilter, const char *optionName);

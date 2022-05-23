@@ -387,14 +387,8 @@ bool AppBase::setup()
         envir->initialize(simulation, cfg, args);
         readOptions();
 
-        if (getAttachDebuggerOnErrors()) {
-            signal(SIGSEGV, crashHandler);
-            signal(SIGILL, crashHandler);
-#ifndef _WIN32
-            signal(SIGBUS, crashHandler);
-            signal(SIGUSR1, crashHandler);
-#endif
-        }
+        if (getAttachDebuggerOnErrors())
+            installCrashHandler();
 
         loadNEDFiles();
 
@@ -407,6 +401,16 @@ bool AppBase::setup()
         return false;  // don't run the app
     }
     return true;
+}
+
+void AppBase::installCrashHandler()
+{
+    signal(SIGSEGV, crashHandler);
+    signal(SIGILL, crashHandler);
+#ifndef _WIN32
+    signal(SIGBUS, crashHandler);
+    signal(SIGUSR1, crashHandler);
+#endif
 }
 
 void AppBase::loadNEDFiles()
