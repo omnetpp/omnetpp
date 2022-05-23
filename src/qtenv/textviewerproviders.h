@@ -31,10 +31,6 @@
 #include "textviewerwidget.h"
 #include "loginspector.h"
 
-// the logbuffer.h file included in the header indirectly includes
-// simkerneldefs.h which undefs emit, but we need it here, for Qt reasons
-#define emit
-
 namespace omnetpp {
 namespace qtenv {
 

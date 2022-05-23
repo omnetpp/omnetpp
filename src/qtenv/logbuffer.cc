@@ -21,8 +21,6 @@
 #include "logbuffer.h"
 #include "qtutil.h"
 
-#define emit    // Qt...
-
 using namespace omnetpp::common;
 
 namespace omnetpp {
@@ -81,14 +79,14 @@ void LogBuffer::addEvent(eventnumber_t e, simtime_t t, cModule *mod, const char 
     entries.push_back(entry);
     discardEventsIfLimitExceeded();
 
-    emit logEntryAdded();
+    Q_EMIT logEntryAdded();
 }
 
 void LogBuffer::addInitialize(cComponent *component, const char *banner)
 {
     Entry *entry = new Entry(Entry::Kind::COMPONENT_INIT_STAGE, 0, simTime(), component, banner);
     entries.push_back(entry);
-    emit logEntryAdded();
+    Q_EMIT logEntryAdded();
 }
 
 void LogBuffer::addLogLine(LogLevel logLevel, const char *prefix, const char *text, int len)
@@ -102,7 +100,7 @@ void LogBuffer::addLogLine(LogLevel logLevel, const char *prefix, const char *te
     int contextComponentId = contextComponent ? contextComponent->getId() : 0;
     entry->lines.push_back(Line(contextComponentId, logLevel, opp_strdup(prefix), text, len));
 
-    emit logLineAdded();
+    Q_EMIT logLineAdded();
 }
 
 void LogBuffer::addInfo(const char *text, int len)
@@ -112,7 +110,7 @@ void LogBuffer::addInfo(const char *text, int len)
     entries.push_back(entry);
     discardEventsIfLimitExceeded();
 
-    emit logEntryAdded();
+    Q_EMIT logEntryAdded();
 }
 
 void LogBuffer::beginSend(cMessage *msg, const SendOptions& options)
@@ -185,7 +183,7 @@ void LogBuffer::endSend(cMessage *msg)
     // storing the copy for animation
     messageDups.insert({msg, msgsend.msg});
 
-    emit messageSendAdded();
+    Q_EMIT messageSendAdded();
 }
 
 void LogBuffer::delivery(cMessage *msg)
@@ -209,7 +207,7 @@ void LogBuffer::discardEventsIfLimitExceeded()
         auto discardedEntry = entries.front();
         entries.pop_front();
         entriesDiscarded++;
-        emit entryDiscarded(discardedEntry);
+        Q_EMIT entryDiscarded(discardedEntry);
         delete discardedEntry;
     }
 }

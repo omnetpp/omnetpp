@@ -30,8 +30,6 @@
 
 #include <QtCore/QDebug>
 
-#define emit
-
 namespace omnetpp {
 namespace qtenv {
 
@@ -435,12 +433,12 @@ void TimeLineGraphicsView::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::RightButton) {
         QVector<cObject *> objects = getObjectsUnderCursor(mapToScene(event->pos()));
-        emit contextMenuRequested(objects, mapToGlobal(event->pos()));
+        Q_EMIT contextMenuRequested(objects, mapToGlobal(event->pos()));
     }
     else if (event->button() == Qt::LeftButton) {
         QVector<cObject *> objects = getObjectsUnderCursor(mapToScene(event->pos()));
         if (objects.size() > 0)
-            emit click(objects[0]);
+            Q_EMIT click(objects[0]);
     }
 }
 
@@ -449,7 +447,7 @@ void TimeLineGraphicsView::mouseDoubleClickEvent(QMouseEvent *event)
     if (event->button() == Qt::LeftButton) {
         QVector<cObject *> objects = getObjectsUnderCursor(mapToScene(event->pos()));
         if (objects.size() != 0)
-            emit doubleClick(objects[0]);
+            Q_EMIT doubleClick(objects[0]);
     }
 }
 

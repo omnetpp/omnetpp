@@ -38,8 +38,6 @@
 #include "inspectorutil.h"
 #include "genericobjectinspector.h"
 
-#define emit
-
 using namespace omnetpp::common;
 
 namespace omnetpp {
@@ -199,7 +197,7 @@ void Inspector::doSetObject(cObject *obj)
     createCopyDropdownMenu();
 
     // note that doSetObject() is always followed by refresh(), see setObject()
-    emit inspectedObjectChanged(object, oldObject);
+    Q_EMIT inspectedObjectChanged(object, oldObject);
 }
 
 void Inspector::doSetObjectSafe(cObject *obj)
@@ -400,7 +398,7 @@ void Inspector::inspectParent()
 
 void Inspector::findObjectsWithin()
 {
-    emit getQtenv()->getMainWindow()->showFindObjectsDialog(object);
+    Q_EMIT getQtenv()->getMainWindow()->showFindObjectsDialog(object);
 }
 
 void Inspector::goUpInto()  // XXX weird name

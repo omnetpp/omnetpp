@@ -30,8 +30,6 @@
 #include <common/stlutil.h>
 #include <memory>
 
-#define emit
-
 namespace omnetpp {
 
 using namespace common;

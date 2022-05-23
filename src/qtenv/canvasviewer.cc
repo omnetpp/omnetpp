@@ -22,13 +22,11 @@
 #include <QtGui/QMouseEvent>
 #include <QtCore/QDebug>
 
-#define emit
-
 namespace omnetpp {
 namespace qtenv {
 
-CanvasViewer::CanvasViewer() 
-    
+CanvasViewer::CanvasViewer()
+
 {
     figureLayer = new GraphicsLayer();
     zoomLabelLayer = new GraphicsLayer();
@@ -88,12 +86,12 @@ void CanvasViewer::setZoomFactor(double zoomFactor)
 void CanvasViewer::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton)
-        emit click(event);
+        Q_EMIT click(event);
 }
 
 void CanvasViewer::contextMenuEvent(QContextMenuEvent *event)
 {
-    emit contextMenuRequested(event);
+    Q_EMIT contextMenuRequested(event);
 }
 
 FigureRenderingHints CanvasViewer::makeFigureRenderingHints()

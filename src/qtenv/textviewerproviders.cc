@@ -89,13 +89,13 @@ void ModuleOutputContentProvider::setExcludedModuleIds(std::set<int> excludedMod
 {
     this->excludedModuleIds = excludedModuleIds;
     invalidateIndex();
-    emit textChanged();
+    Q_EMIT textChanged();
 }
 
 void ModuleOutputContentProvider::refresh()
 {
     invalidateIndex();
-    emit textChanged();
+    Q_EMIT textChanged();
 }
 
 void ModuleOutputContentProvider::invalidateIndex()
@@ -259,14 +259,14 @@ void ModuleOutputContentProvider::rebuildIndex()
 void ModuleOutputContentProvider::onContentAdded()
 {
     invalidateIndex();
-    emit textChanged();
+    Q_EMIT textChanged();
 }
 
 void ModuleOutputContentProvider::onEntryDiscarded(LogBuffer::Entry *entry)
 {
     invalidateIndex();
-    emit linesDiscarded(linesProvider->getNumLines(entry));
-    emit textChanged();
+    Q_EMIT linesDiscarded(linesProvider->getNumLines(entry));
+    Q_EMIT textChanged();
 }
 
 StringTextViewerContentProvider::StringTextViewerContentProvider(QString text)

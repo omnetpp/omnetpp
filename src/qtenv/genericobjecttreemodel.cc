@@ -27,8 +27,6 @@
 #include "omnetpp/cwatch.h"
 #include "genericobjecttreenodes.h"
 
-#define emit
-
 namespace omnetpp {
 
 using namespace common;
@@ -179,8 +177,8 @@ bool GenericObjectTreeModel::setData(const QModelIndex& index, const QVariant& v
     else
         success = node->setData(value, role);
 
-    emit dataChanged(index, index); // it is acceptable here, as this doesn't happen often
-    emit dataEdited(index);
+    Q_EMIT dataChanged(index, index); // it is acceptable here, as this doesn't happen often
+    Q_EMIT dataEdited(index);
     return success;
 }
 
@@ -224,7 +222,7 @@ void GenericObjectTreeModel::fetchMore(const QModelIndex &parent)
 
 void GenericObjectTreeModel::refreshTreeStructure()
 {
-    emit layoutAboutToBeChanged();
+    Q_EMIT layoutAboutToBeChanged();
 
     for (int i = 0; i < rootNodes.size(); ++i)
         refreshNodeChildrenRec(index(i, 0, QModelIndex()));
@@ -237,7 +235,7 @@ void GenericObjectTreeModel::refreshTreeStructure()
 
     // also, this will make Qt realize that some nodes have gained or lost children,
     // and the triangle to expand the item will be shown/hidden accordingly
-    emit layoutChanged();
+    Q_EMIT layoutChanged();
 }
 
 void GenericObjectTreeModel::refreshNodeChildrenRec(const QModelIndex &index)
@@ -300,7 +298,7 @@ void GenericObjectTreeModel::setNodeMode(const QModelIndex &index, Mode mode)
     ASSERT(index.model() == this);
     TreeNode *node = static_cast<TreeNode *>(index.internalPointer());
 
-    emit layoutAboutToBeChanged();
+    Q_EMIT layoutAboutToBeChanged();
 
     ASSERT(mode != Mode::PACKET);
     node->doSetMode(mode);
@@ -314,7 +312,7 @@ void GenericObjectTreeModel::setNodeMode(const QModelIndex &index, Mode mode)
     nodeModeOverrides[node->getNodeIdentifier().toStdString()] = mode;
     // also, this will make Qt realize that some nodes have gained or lost children,
     // and the triangle to expand the item will be shown/hidden accordingly
-    emit layoutChanged();
+    Q_EMIT layoutChanged();
 }
 
 void GenericObjectTreeModel::unsetNodeMode(const QModelIndex &index)
@@ -322,7 +320,7 @@ void GenericObjectTreeModel::unsetNodeMode(const QModelIndex &index)
     ASSERT(index.model() == this);
     TreeNode *node = static_cast<TreeNode *>(index.internalPointer());
 
-    emit layoutAboutToBeChanged();
+    Q_EMIT layoutAboutToBeChanged();
 
     Mode parentMode = node->getParent() != nullptr ? node->getParent()->getMode() : inspectorMode;
     ASSERT(parentMode != Mode::PACKET);
@@ -338,7 +336,7 @@ void GenericObjectTreeModel::unsetNodeMode(const QModelIndex &index)
 
     // also, this will make Qt realize that some nodes have gained or lost children,
     // and the triangle to expand the item will be shown/hidden accordingly
-    emit layoutChanged();
+    Q_EMIT layoutChanged();
 }
 
 

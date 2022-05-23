@@ -30,8 +30,6 @@
 
 #include <QtCore/QDebug>
 
-#define emit
-
 namespace omnetpp {
 namespace qtenv {
 
@@ -158,7 +156,7 @@ bool ObjectTreeInspector::gatherVisibleData()
         TreeNode *node = static_cast<TreeNode *>(i.internalPointer());
         if (node->updateData()) { // gatherDataIfMissing()?
             // not doing it, super slow, see caller
-            //emit dataChanged(i, i);
+            //Q_EMIT dataChanged(i, i);
             changed = true;
         }
     }
@@ -191,13 +189,13 @@ void ObjectTreeInspector::resizeEvent(QResizeEvent *event)
 void ObjectTreeInspector::onClick(QModelIndex index)
 {
     if (index.isValid())
-        emit selectionChanged(model->getCObjectPointer(index));
+        Q_EMIT selectionChanged(model->getCObjectPointer(index));
 }
 
 void ObjectTreeInspector::onDoubleClick(QModelIndex index)
 {
     if (index.isValid())
-        emit objectDoubleClicked(model->getCObjectPointerToInspect(index));
+        Q_EMIT objectDoubleClicked(model->getCObjectPointerToInspect(index));
 }
 
 }  // namespace qtenv

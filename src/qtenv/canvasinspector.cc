@@ -36,8 +36,6 @@
 #include <QtCore/QDebug>
 #include <QtWidgets/QScrollBar>
 
-#define emit
-
 using namespace omnetpp::common;
 
 namespace omnetpp {

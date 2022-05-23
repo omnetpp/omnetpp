@@ -20,8 +20,6 @@
 #include <QtGui/QTextLayout>
 #include <QtWidgets/QMessageBox>
 
-#define emit // technicalities...
-
 namespace omnetpp {
 namespace qtenv {
 
@@ -143,13 +141,13 @@ void HighlighterItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *
 
 QWidget *HighlighterItemDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
-    emit editorCreated();
+    Q_EMIT editorCreated();
     return QStyledItemDelegate::createEditor(parent, option, index);
 }
 
 void HighlighterItemDelegate::destroyEditor(QWidget *editor, const QModelIndex& index) const
 {
-    emit editorDestroyed();
+    Q_EMIT editorDestroyed();
     QStyledItemDelegate::destroyEditor(editor, index);
 }
 
