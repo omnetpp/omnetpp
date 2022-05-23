@@ -41,7 +41,7 @@ class QTENV_API LogFilterDialog : public QDialog
     void addModuleChildren(cModule *module, QTreeWidgetItem *item, const std::set<int> &excludedModuleIds);
     static QString getTextForModule(cModule *module);
 
-private slots:
+private Q_SLOTS:
     void onItemChanged(QTreeWidgetItem *item, int column);
 
 public:

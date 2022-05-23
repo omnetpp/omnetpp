@@ -57,7 +57,7 @@ protected:
     // to scale the coords ourselves.
     void scaleCoords(double &x, double &y);
 
-public slots:
+public Q_SLOTS:
     void stop() { stopFlag = true; }
 
 public:

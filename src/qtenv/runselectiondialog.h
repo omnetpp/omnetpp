@@ -57,7 +57,7 @@ class QTENV_API RunSelectionDialog : public QDialog
 protected:
     void accept() override;
 
-private slots:
+private Q_SLOTS:
     void configSelectionChanged(int index);
 
 public:

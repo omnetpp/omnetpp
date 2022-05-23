@@ -46,7 +46,7 @@ public:
     RunMode getMode();
     bool stopOnMsgCancel();
 
-public slots:
+public Q_SLOTS:
     virtual void accept();
 
 private:

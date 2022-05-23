@@ -30,11 +30,11 @@ class QTENV_API TimeLineInspector : public Inspector
 private:
     TimeLineGraphicsView *timeLine;
 
-private slots:
+private Q_SLOTS:
     void runPreferencesDialog();
     void onFontChanged();
 
-public slots:
+public Q_SLOTS:
     void createContextMenu(QVector<cObject*> objects, QPoint globalPos);
     void setObjectToObjectInspector(cObject* object);
     void openInspector(cObject *object);

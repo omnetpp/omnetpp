@@ -40,13 +40,13 @@ class QTENV_API LayersDialog : public QDialog
     QString originalEnabledTags, originalExceptTags;
     QStringList enabledTags, exceptTags;
 
-private slots:
+private Q_SLOTS:
     void onEnabledCheckBoxClicked(bool checked);
     void onExceptCheckBoxClicked(bool checked);
 
     void applyTagFilters();
 
-public slots:
+public Q_SLOTS:
     virtual void accept();
     virtual void reject();
 

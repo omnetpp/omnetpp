@@ -66,7 +66,7 @@ class QTENV_API HistogramInspector : public Inspector
     // return textual information in general or about a value/value pair
     QString generalInfo();
 
-  private slots:
+  private Q_SLOTS:
     void onShowCellInfo(int bin);
     void onCustomContextMenuRequested(QPoint pos);
     void onShowCounts();

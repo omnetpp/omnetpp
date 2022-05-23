@@ -142,7 +142,7 @@ Q_SIGNALS:
     void dragged(QPointF);
     void marqueeZoom(QRectF);
 
-public slots:
+public Q_SLOTS:
     void exportToImage();
     void exportToPdf();
     void print();

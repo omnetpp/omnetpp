@@ -51,11 +51,11 @@ class QTENV_API OutputVectorInspectorConfigDialog : public QDialog
     double getTimeScale() const;
     void setTimeScale(const double timeScale);
 
-  private slots:
+  private Q_SLOTS:
     void onApplyButtonClicked();
     void onTextChanged();
 
-  public slots:
+  public Q_SLOTS:
     void accept() override;
 
   Q_SIGNALS:

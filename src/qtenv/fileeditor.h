@@ -36,7 +36,7 @@ class QTENV_API FileEditor : public QDialog
 {
     Q_OBJECT
 
-private slots:
+private Q_SLOTS:
     void save();
     void find();
     void onCustomContextMenuRequested(const QPoint &pos);

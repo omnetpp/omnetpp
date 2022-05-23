@@ -40,13 +40,13 @@ class QTENV_API CanvasInspector : public Inspector
 
       CanvasViewer *canvasViewer;
 
-   private slots:
+   private Q_SLOTS:
       void zoomIn();
       void zoomOut();
       void onClick(QMouseEvent *event);
       void onContextMenuRequested(QContextMenuEvent *event);
 
-   public slots:
+   public Q_SLOTS:
       virtual void redraw();
 
    public:
