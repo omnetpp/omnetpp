@@ -28,11 +28,11 @@
 #include "inspectorutiltypes.h"
 #include "omnetpp/clog.h"
 
-// Require QT_NO_EMIT to prevent the definition of "emit" as a macro. It is needed
-// because OMNeT++ uses "emit" as a function name. If you want to use "emit" the
-// Qt way, define "emit" as empty, like in <qobjectdefs.h>.
-#ifndef QT_NO_EMIT
-#error "Qtenv must be compiled with -DQT_NO_EMIT, because the simkernel uses 'emit' as function name"
+// Require `QT_NO_KEYWORDS` to prevent the definition of `emit`, `signals`, and `slots` as macros.
+// It is needed because OMNeT++ also uses some of these as identifiers.
+// Use Q_EMIT, Q_SIGNALS and Q_SLOTS instead of these "keywords".
+#ifndef QT_NO_KEYWORDS
+#error "Qtenv must be compiled with -DQT_NO_KEYWORDS, because OMNeT++ uses some Qt "moc keywords" as identifiers."
 #endif
 
 #include <QtCore/QMetaType>
