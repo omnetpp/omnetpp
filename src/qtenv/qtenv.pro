@@ -40,7 +40,7 @@ load(moc)
 CONFIG *= static c++14 qt
 CONFIG -= debug_and_release
 CONFIG -= warn_on warn_off
-DEFINES += "QT_NO_EMIT"
+DEFINES += "QT_NO_KEYWORDS"
 WARNING_FLAGS *= -Wall -Wextra -Wno-unused-parameter -Wno-microsoft-enum-value
 QMAKE_CXXFLAGS += $$(OPP_CFLAGS) $$WARNING_FLAGS
 QMAKE_CFLAGS += $$(OPP_CFLAGS) $$WARNING_FLAGS

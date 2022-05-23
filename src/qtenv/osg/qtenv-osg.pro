@@ -6,7 +6,7 @@ TARGET = qtenv-osg
 # so Qt Creator finds the Qt module headers and can parse the files properly
 QT *= core gui opengl widgets printsupport
 
-DEFINES += "QT_NO_EMIT"
+DEFINES += "QT_NO_KEYWORDS"
 
 SOURCES += osgviewer.cc \
     cameramanipulators.cc
