@@ -54,7 +54,7 @@ namespace omnetpp { namespace common {
 
 %typemap(in) omnetpp::common::BigDecimal* %{
    if (!$input) {
-      $1 = &BigDecimal::Nil;
+      $1 = (BigDecimal*)&BigDecimal::Nil;
    }
    else {
       $1 = *($1_ltype*)(void*)&$input;
