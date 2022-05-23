@@ -57,10 +57,10 @@ class QTENV_API HistogramInspectorConfigDialog : public QDialog
   Q_SIGNALS:
     void applyButtonClicked();
 
-  public slots:
+  public Q_SLOTS:
     void accept() override;
 
-  private slots:
+  private Q_SLOTS:
     void onApplyButtonClicked();
 
   private:

@@ -37,7 +37,7 @@ private:
     int lastSortColumn = 0;
     Qt::SortOrder lastSortOrder = Qt::AscendingOrder;
 
-public slots:
+public Q_SLOTS:
     void sort(int i, Qt::SortOrder order) override;
     void removeObject(cObject *object);
 

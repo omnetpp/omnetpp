@@ -66,7 +66,7 @@ Q_SIGNALS:
     // this is used as a slot from the outside to forward the stop request to the visualizer environment
     void stop();
 
-public slots:
+public Q_SLOTS:
     void clearLayout(cModule *module);
     void forgetPosition(cModule *submodule);
     void refreshPositionFromDS(cModule *submodule);

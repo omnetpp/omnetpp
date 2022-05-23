@@ -41,7 +41,7 @@ class QTENV_API LogInspector : public Inspector
 
       QStringList gatherAllMessagePrinterTags();
 
-   private slots:
+   private Q_SLOTS:
       void runUntil();
       void fastRunUntil();
       void onFontChanged();
@@ -81,7 +81,7 @@ class QTENV_API LogInspector : public Inspector
 Q_SIGNALS:
       void selectionChanged(cObject*);
 
-   protected slots:
+   protected Q_SLOTS:
       void onFindButton(); // opens a dialog
       void findAgain(); // when F3 is pressed, uses the last set options
       void findAgainReverse(); // same, but in the other direction (with shift)

@@ -150,7 +150,7 @@ Q_SIGNALS:
     void playbackSpeedChanged(double speed);
     void runModeChanged(RunMode mode);
 
-public slots:
+public Q_SLOTS:
     void setPlaybackSpeed(double speed);
     void setPlaybackSpeed(double speed, RunModeProfile *profile);
 

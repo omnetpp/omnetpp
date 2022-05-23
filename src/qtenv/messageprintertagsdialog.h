@@ -37,7 +37,7 @@ class QTENV_API MessagePrinterTagsDialog : public QDialog
 
     Ui::messageprintertagsdialog *ui;
 
-private slots:
+private Q_SLOTS:
     void onItemChanged(QListWidgetItem *item);
 
 public:

@@ -36,14 +36,14 @@ private:
 
     void resizeEvent(QResizeEvent *event) override;
 
-private slots:
+private Q_SLOTS:
     void onClick(QModelIndex index);
     void onDoubleClick(QModelIndex index);
 
     bool gatherVisibleData();
     bool gatherVisibleDataIfSafe();
 
-public slots:
+public Q_SLOTS:
     void createContextMenu(QPoint pos);
 
 public:

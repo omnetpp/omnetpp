@@ -182,7 +182,7 @@ protected:
     void handleContentChange();
     bool contentChangedFlag = true; // initially we should update
 
-protected slots:
+protected Q_SLOTS:
 
     void onAutoScrollTimer();
     void onCaretBlinkTimer();
@@ -190,7 +190,7 @@ protected slots:
     void copySelection();
     void copySelectionUnformatted();
 
-public slots:
+public Q_SLOTS:
     // This is the signal handler, but only sets a flag for
     // performance reasons, see handleContentChange().
     void onContentChanged();

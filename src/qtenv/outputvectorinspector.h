@@ -77,7 +77,7 @@ class QTENV_API OutputVectorInspector : public Inspector
     void yRangeCorrection();
     void setConfig();
 
-  protected slots:
+  protected Q_SLOTS:
     void onOptionsDialogTriggerd();
     void onCustomContextMenuRequested(QPoint pos);
     void onClickApply();

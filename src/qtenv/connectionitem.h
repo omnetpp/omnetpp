@@ -54,7 +54,7 @@ protected:
     MultiLineOutlinedTextItem *textItem; // This is a managed sibling!
     ArrowheadItem *arrowItem;
 
-protected slots:
+protected Q_SLOTS:
     void updateLineItem();
     void updateTextItem();
     void updateArrowItem();

@@ -36,10 +36,10 @@ public:
     explicit PreferencesDialog(eTab defaultPage = TAB_NOTDEFINED, QWidget *parent = 0);
     ~PreferencesDialog();
 
-private slots:
+private Q_SLOTS:
     void restoreDefaultFonts();
 
-public slots:
+public Q_SLOTS:
     void accept();
 
 private:

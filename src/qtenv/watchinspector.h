@@ -33,7 +33,7 @@ protected:
     QLabel *label;
     QLineEdit *editor;
 
-protected slots:
+protected Q_SLOTS:
     virtual void commit();
 
 public:

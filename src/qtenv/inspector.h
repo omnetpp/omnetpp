@@ -87,14 +87,14 @@ class QTENV_API Inspector : public QWidget
       void createInspectDropdownMenu();
       void createCopyDropdownMenu();
 
-   public slots:
+   public Q_SLOTS:
       virtual void setObject(cObject *object);
       virtual void goBack();
       virtual void goForward();
       virtual void inspectParent();
       virtual void findObjectsWithin();
 
-   protected slots:
+   protected Q_SLOTS:
       // Context menu's action's slot
       virtual void goUpInto();
 

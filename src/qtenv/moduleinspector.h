@@ -48,7 +48,7 @@ class QTENV_API ModuleInspector : public Inspector
 
 public:
     using SubmoduleNameFormat = ModuleCanvasViewer::SubmoduleNameFormat;
-private slots:
+private Q_SLOTS:
     void runUntil();
     void fastRunUntil();
     void relayout();
@@ -116,7 +116,7 @@ protected:
     ModuleCanvasViewer *canvasViewer;
     IOsgViewer *osgViewer = nullptr;
 
-public slots:
+public Q_SLOTS:
     void onLayoutVisualizationStarts(cModule *module, QGraphicsScene *layoutingScene);
     void onLayoutVisualizationEnds(cModule *module);
     void onModuleLayoutChanged(cModule *module);

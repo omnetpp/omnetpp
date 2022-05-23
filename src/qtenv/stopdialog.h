@@ -35,7 +35,7 @@ public:
     explicit StopDialog(QWidget *parent = 0);
     ~StopDialog();
 
-public slots:
+public Q_SLOTS:
     void onClickStop();
     void onClickUpdate();
     void applyAutoupdate();

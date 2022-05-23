@@ -220,7 +220,7 @@ protected:
     bool isIndexValid();
     void rebuildIndex();
 
-protected slots:
+protected Q_SLOTS:
     void onContentAdded();
     void onEntryDiscarded(LogBuffer::Entry *discardedEntry);
 };

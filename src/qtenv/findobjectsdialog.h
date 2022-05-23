@@ -42,10 +42,10 @@ public:
     explicit FindObjectsDialog(cObject *ptr, QWidget *parent = 0);
     ~FindObjectsDialog();
 
-public slots:
+public Q_SLOTS:
     void invalidate();
 
-private slots:
+private Q_SLOTS:
     void refresh();
     void inspect(QModelIndex index);
     void onListBoxSelectionChanged(QItemSelection selected, QItemSelection deselected);

@@ -42,7 +42,7 @@ class QTENV_API IOsgViewer : public QOpenGLWidget
 
     static void ensureViewerFactory();
 
-  public slots:
+  public Q_SLOTS:
     virtual void applyViewerHints() = 0;
 
   public:
@@ -94,7 +94,7 @@ class QTENV_API DummyOsgViewer: public IOsgViewer
 {
     Q_OBJECT
 
-  public slots:
+  public Q_SLOTS:
     void applyViewerHints() override {}
 
   public:

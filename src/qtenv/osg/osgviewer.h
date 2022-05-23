@@ -126,10 +126,10 @@ class OsgViewer : public IOsgViewer
 
     osgGA::EventQueue *getEventQueue() const;
 
-  protected slots:
+  protected Q_SLOTS:
     void setCameraManipulator(QAction *sender); // will get the type from the QAction data
 
-  public slots:
+  public Q_SLOTS:
     void applyViewerHints() override;
 
   public:

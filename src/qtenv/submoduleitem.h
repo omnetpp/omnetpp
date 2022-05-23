@@ -67,7 +67,7 @@ protected:
     // assumed to be always centered around the origin.
     QRectF shapeImageBoundingRect() const;
 
-protected slots:
+protected Q_SLOTS:
     void onPositionChanged(); // keeping the range items underneath ourselves
 
 public:

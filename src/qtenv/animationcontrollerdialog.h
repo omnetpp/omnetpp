@@ -45,7 +45,7 @@ public:
     explicit AnimationControllerDialog(QWidget *parent = 0);
     ~AnimationControllerDialog();
 
-public slots:
+public Q_SLOTS:
     void switchToRunMode(RunMode mode);
     void displayMetrics();
     void displayControlValues();

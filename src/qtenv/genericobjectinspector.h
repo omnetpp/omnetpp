@@ -76,7 +76,7 @@ protected:
 
     void doSetMode(Mode mode);
 
-protected slots:
+protected Q_SLOTS:
     void onTreeViewActivated(const QModelIndex& index);
     void onDataEdited();
     void gatherVisibleDataIfSafe();

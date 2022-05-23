@@ -92,7 +92,7 @@ public:
     static int playbackSpeedToSliderValue(double speed) { return std::round(std::log10(speed) * 100); }
     static double sliderValueToPlaybackSpeed(int value) { return std::pow(10, value / 100.0); }
 
-public slots:
+public Q_SLOTS:
 
     void on_actionOneStep_triggered() { runSimulation(RUNMODE_STEP); } // has special skipping behavior of its own
     void on_actionRun_triggered() { stopOrRunSimulation(RUNMODE_NORMAL); }
@@ -134,13 +134,13 @@ public slots:
     // Will do no harm if called multiple times, or without any enterLayoutingMode call at all.
     void exitLayoutingMode();
 
-protected slots:
+protected Q_SLOTS:
     void on_actionVerticalLayout_triggered(bool checked);
     void on_actionHorizontalLayout_triggered(bool checked);
     void on_actionFlipWindowLayout_triggered();
     void on_actionTimeline_toggled(bool isSunken);
 
-private slots:
+private Q_SLOTS:
     void onSplitterMoved(int, int);
     void onSimTimeLabelContextMenuRequested(QPoint pos);
     void onSimTimeLabelGroupingTriggered();
