@@ -30,8 +30,6 @@
 using namespace omnetpp::common;
 using namespace omnetpp::layout;
 
-#define emit
-
 namespace omnetpp {
 namespace qtenv {
 
@@ -425,13 +423,13 @@ void ModuleLayouter::ensureLayouted(cModule *module)
             QtenvGraphLayouterEnvironment qtenvEnvironment(module, ds, layoutingScene);
             connect(this, SIGNAL(stop()), &qtenvEnvironment, SLOT(stop()));
 
-            emit layoutVisualisationStarts(module, layoutingScene);
+            Q_EMIT layoutVisualisationStarts(module, layoutingScene);
 
             graphLayouter->setEnvironment(&qtenvEnvironment);
 
             graphLayouter->execute();
 
-            emit layoutVisualisationEnds(module);
+            Q_EMIT layoutVisualisationEnds(module);
         }
 
         delete layoutingScene;
@@ -468,7 +466,7 @@ void ModuleLayouter::ensureLayouted(cModule *module)
     delete graphLayouter;
 
     if (changed)
-        emit moduleLayoutChanged(module);
+        Q_EMIT moduleLayoutChanged(module);
 }
 
 QPointF ModuleLayouter::getModulePosition(cModule *module, double zoomFactor)

@@ -53,8 +53,6 @@
 
 using namespace omnetpp::common;
 
-#define emit
-
 namespace omnetpp {
 namespace qtenv {
 
@@ -612,10 +610,10 @@ void ModuleInspector::click(QMouseEvent *event)
             cObject *assocObj = objects[0];
             // let's check if we were right:
             if (figure && figure->getAssociatedObject() == assocObj)
-                emit selectionChanged(figure);
+                Q_EMIT selectionChanged(figure);
         }
 
-        emit selectionChanged(objects.front());
+        Q_EMIT selectionChanged(objects.front());
     }
 }
 
@@ -627,7 +625,7 @@ void ModuleInspector::doubleClick(QMouseEvent *event)
         if (supportsObject(objects.front()))
             setObject(objects.front());
         else  // If this inspector supports object then no need to inspect one more time.
-            emit objectDoubleClicked(objects.front());
+            Q_EMIT objectDoubleClicked(objects.front());
     } else {
         if (event->modifiers() & Qt::ShiftModifier)
             zoomOut(event->pos().x(), event->pos().y());
@@ -676,7 +674,7 @@ void ModuleInspector::onObjectsPicked(const std::vector<cObject *>& objects)
         }
 
     if (object)
-        emit selectionChanged(object);
+        Q_EMIT selectionChanged(object);
 }
 
 void ModuleInspector::createContextMenu(const std::vector<cObject *>& objects, const QPoint& globalPos)

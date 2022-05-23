@@ -22,8 +22,6 @@
 #include "common/stringutil.h"
 #include "inspectorutil.h"
 
-#define emit
-
 namespace omnetpp {
 using namespace common;
 namespace qtenv {
@@ -48,7 +46,7 @@ HistogramInspectorConfigDialog::~HistogramInspectorConfigDialog()
 void HistogramInspectorConfigDialog::onApplyButtonClicked()
 {
     if (checkInput())
-        emit applyButtonClicked();
+        Q_EMIT applyButtonClicked();
 }
 
 HistogramView::DrawingStyle HistogramInspectorConfigDialog::getDrawingStyle() const

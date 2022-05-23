@@ -22,8 +22,6 @@
 #include "inspectorfactory.h"
 #include "qtenv.h"
 
-#define emit
-
 namespace omnetpp {
 namespace qtenv {
 
@@ -80,7 +78,7 @@ void TimeLineInspector::createContextMenu(QVector<cObject *> objects, QPoint glo
 
 void TimeLineInspector::setObjectToObjectInspector(cObject *object)
 {
-    emit selectionChanged(object);
+    Q_EMIT selectionChanged(object);
 }
 
 void TimeLineInspector::openInspector(cObject *object)

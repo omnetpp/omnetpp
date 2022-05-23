@@ -25,8 +25,6 @@
 
 #include <QtCore/QDebug>
 
-#define emit
-
 namespace omnetpp {
 namespace qtenv {
 

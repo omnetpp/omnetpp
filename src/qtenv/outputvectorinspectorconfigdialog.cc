@@ -22,8 +22,6 @@
 #include "qtenv.h"
 #include "inspectorutil.h"
 
-#define emit
-
 namespace omnetpp {
 using namespace common;
 namespace qtenv {
@@ -108,7 +106,7 @@ void OutputVectorInspectorConfigDialog::setTimeScale(const double timeScale)
 void OutputVectorInspectorConfigDialog::onApplyButtonClicked()
 {
     if (checkInput())
-        emit applyButtonClicked();
+        Q_EMIT applyButtonClicked();
 }
 
 void OutputVectorInspectorConfigDialog::accept()

@@ -78,8 +78,6 @@
 #include "messageanimator.h"
 #include "runselectiondialog.h"
 
-#define emit
-
 using namespace omnetpp::common;
 using namespace omnetpp::envir;
 using namespace omnetpp::internal;
@@ -1891,7 +1889,7 @@ void Qtenv::objectDeleted(cObject *object)
     if (messageAnimator && object == messageAnimator->getMarkedModule())
         messageAnimator->setMarkedModule(nullptr);
 
-    emit objectDeletedSignal(object);
+    Q_EMIT objectDeletedSignal(object);
 
     // TODO: use signals
     for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ) {
@@ -2723,7 +2721,7 @@ void Qtenv::saveFonts()
 
 void Qtenv::updateQtFonts()
 {
-    emit fontChanged();
+    Q_EMIT fontChanged();
     mainWindow->setStyleSheet(
                 // if we dont reapply the font here, it will be overwritten with the default, because Qt.
                 "* { font: " + QString::number(boldFont.pointSize()) + "pt " + boldFont.family() + "; } "

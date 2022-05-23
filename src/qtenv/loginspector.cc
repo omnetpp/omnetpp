@@ -349,7 +349,7 @@ void LogInspector::onCaretMoved(int lineIndex, int column)
 {
     auto msg = (cMessage *)textWidget->getContentProvider()->getUserData(lineIndex);
     if (msg)
-        emit selectionChanged(msg);
+        Q_EMIT selectionChanged(msg);
 }
 
 void LogInspector::onRightClicked(QPoint globalPos, int lineIndex, int column)

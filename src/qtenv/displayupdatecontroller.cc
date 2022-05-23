@@ -30,8 +30,6 @@
 #include "common/fileutil.h"
 #include "envir/speedometer.h"
 
-#define emit
-
 namespace omnetpp {
 using namespace common;
 namespace qtenv {
@@ -220,9 +218,9 @@ void DisplayUpdateController::setRunMode(RunMode value)
     }
 
     if (oldMode != runMode)
-        emit runModeChanged(runMode);
+        Q_EMIT runModeChanged(runMode);
 
-    emit playbackSpeedChanged(getPlaybackSpeed());
+    Q_EMIT playbackSpeedChanged(getPlaybackSpeed());
 }
 
 // this is mostly (maybe even only...) called when the cSocketRTScheduler is used
@@ -502,7 +500,7 @@ void DisplayUpdateController::setPlaybackSpeed(double speed)
         dialog->displayMetrics();
     }
 
-    emit playbackSpeedChanged(speed);
+    Q_EMIT playbackSpeedChanged(speed);
 }
 
 void DisplayUpdateController::setPlaybackSpeed(double speed, RunModeProfile *profile)
@@ -517,7 +515,7 @@ void DisplayUpdateController::setPlaybackSpeed(double speed, RunModeProfile *pro
             dialog->displayMetrics();
         }
 
-        emit playbackSpeedChanged(speed);
+        Q_EMIT playbackSpeedChanged(speed);
     }
 }
 
@@ -546,7 +544,7 @@ void DisplayUpdateController::reset()
 
     filenameBase = "frames/"; // the prefix of the frame files' path
 
-    emit playbackSpeedChanged(getPlaybackSpeed());
+    Q_EMIT playbackSpeedChanged(getPlaybackSpeed());
 
     if (dialog)
         dialog->displayMetrics();

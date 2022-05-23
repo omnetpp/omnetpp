@@ -199,7 +199,7 @@ void TextViewerWidget::setCaretPosition(int lineIndex, int column)
     caretColumn = std::max(0, column);  // do NOT clip to line length! content provider may be O(n)
     clearSelection();
     viewport()->update();
-    emit caretMoved(caretLineIndex, caretColumn);
+    Q_EMIT caretMoved(caretLineIndex, caretColumn);
 }
 
 Pos TextViewerWidget::getCaretPosition()
@@ -218,7 +218,7 @@ void TextViewerWidget::setSelection(int startLineIndex, int startColumn, int end
     caretLineIndex = endLineIndex;
     caretColumn = endColumn;
     viewport()->update();
-    emit caretMoved(caretLineIndex, caretColumn);
+    Q_EMIT caretMoved(caretLineIndex, caretColumn);
 }
 
 Pos TextViewerWidget::getSelectionAnchor()
@@ -552,7 +552,7 @@ void TextViewerWidget::doLineUp(bool select)
     if (!select)
         clearSelection();
 
-    emit caretMoved(caretLineIndex, caretColumn);
+    Q_EMIT caretMoved(caretLineIndex, caretColumn);
 }
 
 void TextViewerWidget::doLineDown(bool select)
@@ -567,7 +567,7 @@ void TextViewerWidget::doLineDown(bool select)
     if (!select)
         clearSelection();
 
-    emit caretMoved(caretLineIndex, caretColumn);
+    Q_EMIT caretMoved(caretLineIndex, caretColumn);
 }
 
 void TextViewerWidget::doCursorPrevious(bool select)
@@ -583,7 +583,7 @@ void TextViewerWidget::doCursorPrevious(bool select)
     }
     if (!select)
         clearSelection();
-    emit caretMoved(caretLineIndex, caretColumn);
+    Q_EMIT caretMoved(caretLineIndex, caretColumn);
 }
 
 void TextViewerWidget::doCursorNext(bool select)
@@ -598,7 +598,7 @@ void TextViewerWidget::doCursorNext(bool select)
     }
     if (!select)
         clearSelection();
-    emit caretMoved(caretLineIndex, caretColumn);
+    Q_EMIT caretMoved(caretLineIndex, caretColumn);
 }
 
 void TextViewerWidget::doPageUp(bool select)
@@ -610,7 +610,7 @@ void TextViewerWidget::doPageUp(bool select)
     followContentEnd = false;
     if (!select)
         clearSelection();
-    emit caretMoved(caretLineIndex, caretColumn);
+    Q_EMIT caretMoved(caretLineIndex, caretColumn);
 }
 
 void TextViewerWidget::doPageDown(bool select)
@@ -624,7 +624,7 @@ void TextViewerWidget::doPageDown(bool select)
         followContentEnd = true;
     if (!select)
         clearSelection();
-    emit caretMoved(caretLineIndex, caretColumn);
+    Q_EMIT caretMoved(caretLineIndex, caretColumn);
 }
 
 void TextViewerWidget::doLineStart(bool select)
@@ -632,7 +632,7 @@ void TextViewerWidget::doLineStart(bool select)
     caretColumn = 0;
     if (!select)
         clearSelection();
-    emit caretMoved(caretLineIndex, caretColumn);
+    Q_EMIT caretMoved(caretLineIndex, caretColumn);
 }
 
 void TextViewerWidget::doLineEnd(bool select)
@@ -640,7 +640,7 @@ void TextViewerWidget::doLineEnd(bool select)
     caretColumn = content->getLineText(caretLineIndex).length();
     if (!select)
         clearSelection();
-    emit caretMoved(caretLineIndex, caretColumn);
+    Q_EMIT caretMoved(caretLineIndex, caretColumn);
 }
 
 void TextViewerWidget::doWordPrevious(bool select)
@@ -666,7 +666,7 @@ void TextViewerWidget::doWordPrevious(bool select)
     }
     if (!select)
         clearSelection();
-    emit caretMoved(caretLineIndex, caretColumn);
+    Q_EMIT caretMoved(caretLineIndex, caretColumn);
 }
 
 void TextViewerWidget::doWordNext(bool select)
@@ -689,7 +689,7 @@ void TextViewerWidget::doWordNext(bool select)
     }
     if (!select)
         clearSelection();
-    emit caretMoved(caretLineIndex, caretColumn);
+    Q_EMIT caretMoved(caretLineIndex, caretColumn);
 }
 
 void TextViewerWidget::doPageStart(bool select)
@@ -698,7 +698,7 @@ void TextViewerWidget::doPageStart(bool select)
     caretColumn = 0;
     if (!select)
         clearSelection();
-    emit caretMoved(caretLineIndex, caretColumn);
+    Q_EMIT caretMoved(caretLineIndex, caretColumn);
 }
 
 void TextViewerWidget::doPageEnd(bool select)
@@ -707,7 +707,7 @@ void TextViewerWidget::doPageEnd(bool select)
     caretColumn = content->getLineText(caretLineIndex).length();
     if (!select)
         clearSelection();
-    emit caretMoved(caretLineIndex, caretColumn);
+    Q_EMIT caretMoved(caretLineIndex, caretColumn);
 }
 
 void TextViewerWidget::doContentStart(bool select)
@@ -717,7 +717,7 @@ void TextViewerWidget::doContentStart(bool select)
     followContentEnd = false;
     if (!select)
         clearSelection();
-    emit caretMoved(caretLineIndex, caretColumn);
+    Q_EMIT caretMoved(caretLineIndex, caretColumn);
 }
 
 void TextViewerWidget::doContentEnd(bool select)
@@ -727,7 +727,7 @@ void TextViewerWidget::doContentEnd(bool select)
     followContentEnd = true;
     if (!select)
         clearSelection();
-    emit caretMoved(caretLineIndex, caretColumn);
+    Q_EMIT caretMoved(caretLineIndex, caretColumn);
 }
 
 void TextViewerWidget::selectAll()
@@ -736,7 +736,7 @@ void TextViewerWidget::selectAll()
     selectionAnchorColumn = 0;
     caretLineIndex = content->getLineCount()-1;
     caretColumn = content->getLineText(caretLineIndex).length();
-    emit caretMoved(caretLineIndex, caretColumn);
+    Q_EMIT caretMoved(caretLineIndex, caretColumn);
 }
 
 void TextViewerWidget::clearSelection()
@@ -1254,7 +1254,7 @@ void TextViewerWidget::mouseMoveEvent(QMouseEvent *event)
         caretColumn = clip(0, content->getLineText(caretLineIndex).length(), lineColumn.column);
         viewport()->update();
         doAutoScroll(event);  // start/stop autoscrolling as needed
-        emit caretMoved(caretLineIndex, caretColumn);
+        Q_EMIT caretMoved(caretLineIndex, caretColumn);
     }
 }
 
@@ -1292,7 +1292,7 @@ void TextViewerWidget::mousePressEvent(QMouseEvent *event)
             bool select = event->modifiers() & Qt::ShiftModifier;
             if (!select)
                 clearSelection();
-            emit caretMoved(caretLineIndex, caretColumn);
+            Q_EMIT caretMoved(caretLineIndex, caretColumn);
         }
 
         revealCaret();
@@ -1306,7 +1306,7 @@ void TextViewerWidget::mousePressEvent(QMouseEvent *event)
         revealCaret();
         viewport()->update();
 
-        emit rightClicked(event->globalPos(), caretLineIndex, caretColumn);
+        Q_EMIT rightClicked(event->globalPos(), caretLineIndex, caretColumn);
     }
 }
 
@@ -1325,7 +1325,7 @@ void TextViewerWidget::mouseDoubleClickEvent(QMouseEvent *event)
     clickCount = 2;
 
     timeSinceLastDoubleClick.restart();
-    emit caretMoved(caretLineIndex, caretColumn);
+    Q_EMIT caretMoved(caretLineIndex, caretColumn);
 }
 
 void TextViewerWidget::doAutoScroll(QMouseEvent *event)
@@ -1471,7 +1471,7 @@ void TextViewerWidget::handleContentChange()
 
     // only emitting the signal if it actually moved
     if (oldCaretLineIndex != caretLineIndex)
-        emit caretMoved(caretLineIndex, caretColumn);
+        Q_EMIT caretMoved(caretLineIndex, caretColumn);
 
     // NOTE: for performance reasons, DO NOT ADJUST COLUMN INDICES!!! An out-of-bounds
     // column index causes no problem, but to clip it to the line length would require

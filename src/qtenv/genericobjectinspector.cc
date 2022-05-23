@@ -41,8 +41,6 @@
 #include <QtWidgets/QApplication>
 #include <QtGui/QClipboard>
 
-#define emit
-
 using namespace omnetpp;
 using namespace omnetpp::common;
 
@@ -429,7 +427,7 @@ bool GenericObjectInspector::updateData()
                 if (node->updateData()) {
                     changed = true;
                     // we should do this here, but we don't because it is super slow
-                    //emit dataChanged(i, i);
+                    //Q_EMIT dataChanged(i, i);
                 }
             }
         }
@@ -527,7 +525,7 @@ bool GenericObjectInspector::gatherMissingData()
         TreeNode *node = static_cast<TreeNode *>(proxyModel->mapToSource(i).internalPointer());
         if (node->gatherDataIfMissing()) {
             // not doing it, super slow, see caller
-            //emit dataChanged(i, i);
+            //Q_EMIT dataChanged(i, i);
             changed = true;
         }
     }

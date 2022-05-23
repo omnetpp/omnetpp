@@ -20,8 +20,6 @@
 #include "chartgriditem.h"
 #include <QtCore/QDebug>
 
-#define emit
-
 // unused? static const int MINOR_TICK_LENGTH = 4;
 // unused? static const int MAJOR_TICK_LENGTH = 6;
 // unused? static const int VERT_TEXT_DISTANCE = 5;
@@ -114,7 +112,7 @@ void HistogramView::showInfo(QPoint mousePos)
             break;
         }
 
-    emit showCellInfo(bin);
+    Q_EMIT showCellInfo(bin);
 }
 
 void HistogramView::drawBin(ChartType type, DrawingStyle drawingStyle, int binIndex, bool isOutliers, double leftEdge, double rightEdge, double value, double pdfValue)

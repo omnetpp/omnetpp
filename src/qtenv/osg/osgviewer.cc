@@ -43,8 +43,6 @@
 #include <osg/DeleteHandler>
 #include <osg/Version>
 
-#define emit
-
 using namespace omnetpp::common;
 
 namespace omnetpp {
@@ -825,7 +823,7 @@ void OsgViewer::mousePressEvent(QMouseEvent *event)
                     insp->setObject(objects.front());
                 }
             } else {
-                emit objectsPicked(objects);
+                Q_EMIT objectsPicked(objects);
             }
         }
     }

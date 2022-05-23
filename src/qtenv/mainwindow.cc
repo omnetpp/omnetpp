@@ -57,8 +57,6 @@
 #include "videorecordingdialog.h"
 #include "qtutil.h"
 
-#define emit
-
 using namespace omnetpp::common;
 using namespace omnetpp::internal;
 
@@ -492,7 +490,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     // finally letting it go, if we got here anyway
     env->setStopSimulationFlag();
     QMainWindow::closeEvent(event);
-    emit closed();
+    Q_EMIT closed();
 }
 
 void MainWindow::runSimulation(RunMode runMode)
@@ -565,7 +563,7 @@ void MainWindow::on_actionSetUpConfiguration_triggered()
     RunSelectionDialog dialog(configEx, configEx->getActiveConfigName(), "", this);
     if (dialog.exec()) {
         busy("Setting up new run...");
-        emit setNewNetwork();
+        Q_EMIT setNewNetwork();
         env->newRun(dialog.getConfigName().c_str(), dialog.getRunNumber());
         busy();
         reflectConfigOnUi();

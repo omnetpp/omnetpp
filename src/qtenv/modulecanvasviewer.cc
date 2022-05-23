@@ -49,8 +49,6 @@
 #include <QtPrintSupport/QPrintDialog>
 #include <QtWidgets/QFileDialog>
 
-#define emit
-
 using namespace omnetpp::common;
 using namespace omnetpp::layout;
 
@@ -207,15 +205,15 @@ void ModuleCanvasViewer::displayStringChanged(cGate *gate)
 void ModuleCanvasViewer::mouseDoubleClickEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::MouseButton::LeftButton)
-        emit doubleClick(event);
+        Q_EMIT doubleClick(event);
 }
 
 void ModuleCanvasViewer::mousePressEvent(QMouseEvent *event)
 {
     switch (event->button()) {
-        case Qt::LeftButton: emit click(event); break;
-        case Qt::XButton1:   emit back();       break;
-        case Qt::XButton2:   emit forward();    break;
+        case Qt::LeftButton: Q_EMIT click(event); break;
+        case Qt::XButton1:   Q_EMIT back();       break;
+        case Qt::XButton2:   Q_EMIT forward();    break;
         default:   /* shut up, compiler! */     break;
     }
 
@@ -248,14 +246,14 @@ void ModuleCanvasViewer::mouseReleaseEvent(QMouseEvent *event)
     if (rubberBand->isVisible()) {
         QRect rect = rubberBand->geometry().normalized();
         if (event->button() == Qt::RightButton) {
-            emit contextMenuRequested(getObjectsAt(rect), event->globalPos());
+            Q_EMIT contextMenuRequested(getObjectsAt(rect), event->globalPos());
         }
         else
-            emit marqueeZoom(rect);
+            Q_EMIT marqueeZoom(rect);
         rubberBand->hide();
     }
     else {
-        emit dragged(mapToScene(viewport()->rect().center()));
+        Q_EMIT dragged(mapToScene(viewport()->rect().center()));
     }
 
     viewport()->setCursor(Qt::ArrowCursor);
@@ -329,7 +327,7 @@ void ModuleCanvasViewer::contextMenuEvent(QContextMenuEvent *event)
     // if Ctrl is held, ignoring the event, so gathering is possible
     if (!(event->modifiers() & Qt::ControlModifier)) {
         auto objects = getObjectsAt(event->pos());
-        emit contextMenuRequested(objects, event->globalPos());
+        Q_EMIT contextMenuRequested(objects, event->globalPos());
     }
 }
 
