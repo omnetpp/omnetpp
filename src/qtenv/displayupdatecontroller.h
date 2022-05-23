@@ -146,7 +146,7 @@ class QTENV_API DisplayUpdateController : public QObject
     void advanceToSimTime(TimeTriplet &triplet, SimTime simTarget); // not touching realtime
     double advanceToRealTimeLimited(TimeTriplet &triplet, double realTarget, SimTime simLimit);
 
-signals:
+Q_SIGNALS:
     void playbackSpeedChanged(double speed);
     void runModeChanged(RunMode mode);
 

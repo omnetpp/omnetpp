@@ -154,7 +154,7 @@ class OsgViewer : public IOsgViewer
 
     ~OsgViewer();
 
-  signals:
+  Q_SIGNALS:
     void objectsPicked(const std::vector<cObject*>&);
 };
 

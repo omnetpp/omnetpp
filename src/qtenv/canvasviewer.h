@@ -58,7 +58,7 @@ protected:
     void resizeEvent(QResizeEvent *event) override;
     void scrollContentsBy(int dx, int dy) override;
 
-signals:
+Q_SIGNALS:
     void click(QMouseEvent*);
     void contextMenuRequested(QContextMenuEvent*);
 

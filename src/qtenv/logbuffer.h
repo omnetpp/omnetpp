@@ -139,7 +139,7 @@ class QTENV_API LogBuffer : public QObject
 
     void dump() const;
 
-signals:
+Q_SIGNALS:
     void logEntryAdded();
     void logLineAdded();
     void messageSendAdded();

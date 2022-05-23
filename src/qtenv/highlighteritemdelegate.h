@@ -29,7 +29,7 @@ class QTENV_API HighlighterItemDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
 
-  signals:
+  Q_SIGNALS:
     void editorCreated() const;
     void editorDestroyed() const;
   public:

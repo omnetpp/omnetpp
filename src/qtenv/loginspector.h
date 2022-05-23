@@ -78,7 +78,7 @@ class QTENV_API LogInspector : public Inspector
 
       QSize sizeHint() const override { return QSize(700, 300); }
 
-signals:
+Q_SIGNALS:
       void selectionChanged(cObject*);
 
    protected slots:
