@@ -9,6 +9,7 @@ package org.omnetpp.scave.python;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -63,7 +64,7 @@ public class NativeChartViewer extends ChartViewerBase {
         chartPlotter = new NativeChartPlotter(plot);
     }
 
-    public void runPythonScript(String script, File workingDir, Runnable runAfterDone, ExceptionHandler runAfterError) {
+    public void runPythonScript(String script, File workingDir, List<String> additionalPythonPath, Runnable runAfterDone, ExceptionHandler runAfterError) {
         if (plot.isDisposed())
             return;
 
@@ -191,7 +192,7 @@ public class NativeChartViewer extends ChartViewerBase {
         };
 
         proc.pythonCallerThread.asyncExec(() -> {
-            changePythonIntoDirectory(workingDir);
+            configurePythonProcess(workingDir, additionalPythonPath);
             proc.getEntryPoint().execute(script);
         }, ownRunAfterDone, ownRunAfterError);
     }
