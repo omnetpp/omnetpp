@@ -508,7 +508,7 @@ public class DocumentationGenerator {
         if (typeElement instanceof INedTypeElement) {
             return ((INedTypeElement)typeElement).getNedTypeInfo().getFullyQualifiedName();
         } else if (typeElement instanceof IMsgTypeElement) {
-//            return ((IMsgTypeElement)typeElement).getMsgTypeInfo().getFullyQualifiedName(); // TODO not yet exist
+            return ((IMsgTypeElement)typeElement).getMsgTypeInfo().getFullyQualifiedCppClassName();
         }
         return typeElement.getName();  // return unqualified name by default
     }
