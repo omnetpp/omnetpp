@@ -1327,7 +1327,7 @@ public class DocumentationGenerator {
 
                     generateUsageDiagram(nedTypeElement);
                     generateInheritanceDiagram(nedTypeElement);
-                    generateExtensionFragment(ExtType.NED, qName, "dafter-iagrams");
+                    generateExtensionFragment(ExtType.NED, qName, "after-diagrams");
 
                     if (typeElement instanceof IInterfaceTypeElement)
                         generateImplementorsTable(nedTypeElement);
