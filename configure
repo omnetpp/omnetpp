@@ -614,6 +614,7 @@ LIBXML_CFLAGS
 QTENV_LDFLAGS
 QT_LIBS
 QT_CFLAGS
+HAVE_SWAPCONTEXT
 HAVE_DLOPEN
 LIB_PREFIX
 EXE_SUFFIX
@@ -6082,6 +6083,7 @@ ac_config_files="$ac_config_files Makefile.inc src/qtenv/qtenv.pri"
 #----------------------
 # Substitutions.
 #----------------------
+
 
 
 
