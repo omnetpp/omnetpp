@@ -99,9 +99,12 @@ public abstract class ChartViewerBase {
 
     }
 
-    protected void changePythonIntoDirectory(File workingDir) {
+    protected void configurePythonProcess(File workingDir, List<String> additionalPythonPath) {
         proc.getEntryPoint().execute("import os; os.chdir(r\"\"\"" + workingDir.getAbsolutePath() + "\"\"\"); del os;");
-        proc.getEntryPoint().execute("import site; site.addsitedir(r\"\"\"" + workingDir.getAbsolutePath() + "\"\"\"); del site;");
+        proc.getEntryPoint().execute("import sys; sys.path.insert(1, r\"\"\"" + workingDir.getAbsolutePath() + "\"\"\"); del sys;");
+
+        for (String path : additionalPythonPath)
+            proc.getEntryPoint().execute("import sys; sys.path.insert(1, r\"\"\"" + path + "\"\"\"); del sys;");
 
         if (PythonProcess.getMatplotlibRcParams() == null) {
             try {
@@ -133,7 +136,7 @@ public abstract class ChartViewerBase {
 
     // Note: runAfterError is only used for fatal (internal) errors - most Python exceptions
     // are supposed to be caught and reported back through a IPlotWarningAnnotator.
-    public abstract void runPythonScript(String script, File workingDir, Runnable runAfterDone, ExceptionHandler runAfterError);
+    public abstract void runPythonScript(String script, File workingDir, List<String> additionalPythonPath, Runnable runAfterDone, ExceptionHandler runAfterError);
 
     public abstract Control getWidget();
 

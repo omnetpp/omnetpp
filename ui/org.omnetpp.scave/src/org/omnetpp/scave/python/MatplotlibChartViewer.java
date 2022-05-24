@@ -87,7 +87,7 @@ public class MatplotlibChartViewer extends ChartViewerBase {
         plotWidget = new MatplotlibWidget(parent, SWT.DOUBLE_BUFFERED, proc, null);
     }
 
-    public void runPythonScript(String script, File workingDir, Runnable runAfterDone, ExceptionHandler runAfterError) {
+    public void runPythonScript(String script, File workingDir, List<String> additionalPythonPath, Runnable runAfterDone, ExceptionHandler runAfterError) {
         if (plotWidget.isDisposed())
             return;
 
@@ -147,7 +147,8 @@ public class MatplotlibChartViewer extends ChartViewerBase {
         };
 
         proc.pythonCallerThread.asyncExec(() -> {
-            changePythonIntoDirectory(workingDir);
+            configurePythonProcess(workingDir, additionalPythonPath);
+
             proc.getEntryPoint().execute(script);
         }, ownRunAfterDone, ownRunAfterError);
     }

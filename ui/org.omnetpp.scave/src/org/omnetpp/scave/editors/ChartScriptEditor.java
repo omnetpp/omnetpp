@@ -15,6 +15,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.IMenuListener;
@@ -66,6 +67,7 @@ import org.omnetpp.common.Debug;
 import org.omnetpp.common.canvas.LargeScrollableCanvas;
 import org.omnetpp.common.canvas.ZoomableCachingCanvas;
 import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
+import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.common.util.StringUtils;
@@ -781,6 +783,16 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         });
     }
 
+    protected List<String> collectAdditionalPythonPath() throws CoreException, IOException {
+        IProject[] projects = ProjectUtils.getAllReferencedProjects(scaveEditor.getAnfFile().getProject(), false, true);
+
+        List<String> result = new ArrayList<String>();
+        for (IProject project : projects)
+            result.add(project.getFolder("python").getLocation().toOSString());
+
+        return result;
+    }
+
     public void runChartScript() {
         scriptNotYetExecuted = false;
 
@@ -824,7 +836,16 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
             };
 
             File anfFileDirectory = scaveEditor.getAnfFile().getLocation().removeLastSegments(1).toFile();
-            getChartViewer().runPythonScript(getDocument().get(), anfFileDirectory, afterRun, errorHandler);
+
+            List<String> additionalPythonPath = new ArrayList<String>();
+            try {
+                additionalPythonPath = collectAdditionalPythonPath();
+            }
+            catch (Exception e) {
+                ScavePlugin.logError(e);
+            }
+
+            getChartViewer().runPythonScript(getDocument().get(), anfFileDirectory, additionalPythonPath, afterRun, errorHandler);
             updateActions();
         });
     }
