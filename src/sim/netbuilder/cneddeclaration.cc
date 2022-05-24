@@ -39,12 +39,13 @@ cNedDeclaration::cNedDeclaration(cNedLoader *nedLoader, const char *qname, bool 
 
 cNedDeclaration::~cNedDeclaration()
 {
-    if (props && props->removeRef() == 0)
-        delete props;
-    clearPropsMap(paramPropsMap);
-    clearPropsMap(gatePropsMap);
-    clearPropsMap(submodulePropsMap);
-    clearPropsMap(connectionPropsMap);
+    //TODO
+//    if (props && props->removeRef() == 0)
+//        delete props;
+//    clearPropsMap(paramPropsMap);
+//    clearPropsMap(gatePropsMap);
+//    clearPropsMap(submodulePropsMap);
+//    clearPropsMap(connectionPropsMap);
 
     clearSharedParImpls();
 
@@ -70,9 +71,10 @@ void cNedDeclaration::clearPropsMap(StringPropsMap& propsMap)
 
 void cNedDeclaration::clearSharedParImpls()
 {
-    for (auto & it : parimplMap)
+    auto& d = perThreadData[std::this_thread::get_id()]; //TODO NONO -- ALL THREADS!!!
+    for (auto & it : d.parimplMap)
         delete it.second;
-    parimplMap.clear();
+    d.parimplMap.clear();
 }
 
 cNedDeclaration *cNedDeclaration::getSuperDecl() const
@@ -116,6 +118,7 @@ cProperties *cNedDeclaration::getProperties() const
 
 cProperties *cNedDeclaration::doProperties() const
 {
+    auto& props = perThreadData[std::this_thread::get_id()].props;
     if (props)
         return props;  // already computed
 
@@ -139,6 +142,7 @@ cProperties *cNedDeclaration::getParamProperties(const char *paramName) const
 
 cProperties *cNedDeclaration::doParamProperties(const char *paramName) const
 {
+    auto& paramPropsMap = perThreadData[std::this_thread::get_id()].paramPropsMap;
     cProperties *props = getFromPropsMap(paramPropsMap, paramName);
     if (props)
         return props;  // already computed
@@ -167,6 +171,7 @@ cProperties *cNedDeclaration::getGateProperties(const char *gateName) const
 
 cProperties *cNedDeclaration::doGateProperties(const char *gateName) const
 {
+    auto& gatePropsMap = perThreadData[std::this_thread::get_id()].gatePropsMap;
     cProperties *props = getFromPropsMap(gatePropsMap, gateName);
     if (props)
         return props;  // already computed
@@ -195,6 +200,7 @@ cProperties *cNedDeclaration::getSubmoduleProperties(const char *submoduleName, 
 
 cProperties *cNedDeclaration::doSubmoduleProperties(const char *submoduleName, const char *submoduleType) const
 {
+    auto& submodulePropsMap = perThreadData[std::this_thread::get_id()].submodulePropsMap;
     std::string key = std::string(submoduleName) + ":" + submoduleType;
     cProperties *props = getFromPropsMap(submodulePropsMap, key.c_str());
     if (props)
@@ -227,6 +233,7 @@ cProperties *cNedDeclaration::getConnectionProperties(int connectionId, const ch
 
 cProperties *cNedDeclaration::doConnectionProperties(int connectionId, const char *channelType) const
 {
+    auto& connectionPropsMap = perThreadData[std::this_thread::get_id()].connectionPropsMap;
     std::string key = opp_stringf("%d:%s", connectionId, channelType);
     cProperties *props = getFromPropsMap(connectionPropsMap, key.c_str());
     if (props)
@@ -335,15 +342,17 @@ void cNedDeclaration::updateDisplayProperty(cProperty *prop, PropertyElement *wi
 
 internal::cParImpl *cNedDeclaration::getSharedParImplFor(NedElement *node)
 {
-    auto it = parimplMap.find(node->getId());
-    return it == parimplMap.end() ? nullptr : it->second;
+    auto& d = perThreadData[std::this_thread::get_id()];
+    auto it = d.parimplMap.find(node->getId());
+    return it == d.parimplMap.end() ? nullptr : it->second;
 }
 
 void cNedDeclaration::putSharedParImplFor(NedElement *node, cParImpl *value)
 {
-    auto it = parimplMap.find(node->getId());
-    ASSERT(it == parimplMap.end());
-    parimplMap[node->getId()] = value;
+    auto& d = perThreadData[std::this_thread::get_id()];
+    auto it = d.parimplMap.find(node->getId());
+    ASSERT(it == d.parimplMap.end());
+    d.parimplMap[node->getId()] = value;
 }
 
 const std::vector<cNedDeclaration::PatternData>& cNedDeclaration::getParamPatterns()

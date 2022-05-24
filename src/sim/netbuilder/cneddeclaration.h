@@ -21,6 +21,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <thread>
 #include "nedxml/nedtypeinfo.h"
 #include "omnetpp/simkerneldefs.h"
 #include "omnetpp/globals.h"
@@ -71,16 +72,18 @@ class SIM_API cNedDeclaration : public nedxml::NedTypeInfo
 
     // properties
     typedef std::map<std::string, cProperties *> StringPropsMap;
-    mutable cProperties *props = nullptr;
-    mutable StringPropsMap paramPropsMap;
-    mutable StringPropsMap gatePropsMap;
-    mutable StringPropsMap submodulePropsMap;
-    mutable StringPropsMap connectionPropsMap;
 
-    // cached expressions: NED expressions (ExpressionElement) compiled into
-    // cParImpl get cached here, indexed by exprNode->getId().
-    typedef std::map<long, cParImpl *> SharedParImplMap;
-    SharedParImplMap parimplMap;
+    struct PerThreadData {
+        mutable cProperties *props = nullptr;
+        mutable StringPropsMap paramPropsMap;
+        mutable StringPropsMap gatePropsMap;
+        mutable StringPropsMap submodulePropsMap;
+        mutable StringPropsMap connectionPropsMap;
+        // cached expressions: NED expressions (ExpressionElement) compiled into
+        // cParImpl get cached here, indexed by exprNode->getId().
+        std::map<long, cParImpl*> parimplMap;
+    };
+    mutable std::map<std::thread::id,PerThreadData> perThreadData;
 
     // wildcard-based parameter assignments
     std::vector<PatternData> patterns;  // contains patterns defined in super types as well

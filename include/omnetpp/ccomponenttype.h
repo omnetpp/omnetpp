@@ -19,6 +19,7 @@
 #include <string>
 #include <map>
 #include <set>
+#include <thread>
 #include "cpar.h"
 #include "cgate.h"
 #include "cownedobject.h"
@@ -55,15 +56,15 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
     bool available = false;
 
     typedef internal::cParImpl cParImpl;
-    typedef std::map<std::string, cParImpl *> StringToParMap;
-    StringToParMap sharedParMap;
-
     struct Less {bool operator()(cParImpl *a, cParImpl *b) const;};
-    typedef std::set<cParImpl *, Less> ParImplSet;
-    ParImplSet sharedParSet;
-
     struct SignalDesc { SimsignalType type; cObjectFactory *objectType; bool isNullable; };
-    std::map<simsignal_t,SignalDesc> signalsSeen;
+
+    struct PerThreadData {
+        std::map<std::string,cParImpl*> sharedParMap;
+        std::set<cParImpl*,Less> sharedParSet;
+        std::map<simsignal_t,SignalDesc> signalsSeen;
+    };
+    mutable std::map<std::thread::id,PerThreadData> perThreadData;
 
     mutable bool sourceFileDirectoryCached = false;
     mutable std::string sourceFileDirectory;

@@ -107,25 +107,28 @@ cComponentType *cComponentType::get(const char *qname)
 
 void cComponentType::clearSharedParImpls()
 {
-    for (auto & it : sharedParMap)
+    auto& d = perThreadData[std::this_thread::get_id()];
+    for (auto & it : d.sharedParMap)
         delete it.second;
-    for (auto it : sharedParSet)
+    for (auto it : d.sharedParSet)
         delete it;
-    sharedParMap.clear();
-    sharedParSet.clear();
+    d.sharedParMap.clear();
+    d.sharedParSet.clear();
 }
 
 internal::cParImpl *cComponentType::getSharedParImpl(const char *key) const
 {
-    StringToParMap::const_iterator it = sharedParMap.find(key);
-    return it == sharedParMap.end() ? nullptr : it->second;
+    auto& d = perThreadData[std::this_thread::get_id()];
+    auto it = d.sharedParMap.find(key);
+    return it == d.sharedParMap.end() ? nullptr : it->second;
 }
 
 void cComponentType::putSharedParImpl(const char *key, cParImpl *value)
 {
-    ASSERT(sharedParMap.find(key) == sharedParMap.end());  // not yet in there
+    auto& d = perThreadData[std::this_thread::get_id()];
+    ASSERT(d.sharedParMap.find(key) == d.sharedParMap.end());  // not yet in there
     value->setIsShared(true);
-    sharedParMap[key] = value;
+    d.sharedParMap[key] = value;
 }
 
 // cannot go inline due to declaration order
@@ -136,15 +139,17 @@ bool cComponentType::Less::operator()(cParImpl *a, cParImpl *b) const
 
 internal::cParImpl *cComponentType::getSharedParImpl(cParImpl *value) const
 {
-    ParImplSet::const_iterator it = sharedParSet.find(value);
-    return it == sharedParSet.end() ? nullptr : *it;
+    auto& d = perThreadData[std::this_thread::get_id()];
+    auto it = d.sharedParSet.find(value);
+    return it == d.sharedParSet.end() ? nullptr : *it;
 }
 
 void cComponentType::putSharedParImpl(cParImpl *value)
 {
-    ASSERT(sharedParSet.find(value) == sharedParSet.end());  // not yet in there
+    auto& d = perThreadData[std::this_thread::get_id()];
+    ASSERT(d.sharedParSet.find(value) == d.sharedParSet.end());  // not yet in there
     value->setIsShared(true);
-    sharedParSet.insert(value);
+    d.sharedParSet.insert(value);
 }
 
 bool cComponentType::isAvailable()
@@ -160,8 +165,9 @@ bool cComponentType::isAvailable()
 void cComponentType::checkSignal(simsignal_t signalID, SimsignalType type, cObject *obj)
 {
     // check that this signal is allowed
-    std::map<simsignal_t, SignalDesc>::const_iterator it = signalsSeen.find(signalID);
-    if (it == signalsSeen.end()) {
+    auto& d = perThreadData[std::this_thread::get_id()];
+    std::map<simsignal_t, SignalDesc>::const_iterator it = d.signalsSeen.find(signalID);
+    if (it == d.signalsSeen.end()) {
         // ignore built-in signals
         if (signalID == PRE_MODEL_CHANGE || signalID == POST_MODEL_CHANGE)
             return;
@@ -173,8 +179,8 @@ void cComponentType::checkSignal(simsignal_t signalID, SimsignalType type, cObje
             throw cRuntimeError("Undeclared signal '%s' emitted (@signal missing from NED file?)", signalName);
 
         // found; extract info from it, and add signal to signalsSeen
-        SignalDesc& desc = signalsSeen[signalID];
         const char *declaredType = prop->getValue("type");
+        SignalDesc& desc = d.signalsSeen[signalID];
         const char *typeWhereSignalTypeWasDeclared = prop->getValueOriginType("type");
         desc.type = !declaredType ? SIMSIGNAL_UNDEF : getSignalType(declaredType, SIMSIGNAL_OBJECT);
         desc.objectType = nullptr;
@@ -195,7 +201,7 @@ void cComponentType::checkSignal(simsignal_t signalID, SimsignalType type, cObje
                                     "registered class name optionally followed by a question mark",
                         declaredType, prop->getIndex(), getFullName());
         }
-        it = signalsSeen.find(signalID);
+        it = d.signalsSeen.find(signalID);
     }
 
     // check data type
