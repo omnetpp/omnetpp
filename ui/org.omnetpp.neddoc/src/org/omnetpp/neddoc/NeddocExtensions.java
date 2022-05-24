@@ -84,18 +84,18 @@ public class NeddocExtensions {
                     String text = element.getTextContent();
 
                     Map<String, Map<String, String>> extensions = null;
-                    String location = null;
+                    String key = null;
                     if (nedtype != null) {
                         extensions = nedExtensions;
-                        location = nedtype;
+                        key = nedtype;
                     }
                     else if (msgtype != null) {
                         extensions = msgExtensions;
-                        location = msgtype;
+                        key = msgtype;
                     }
                     else if (filename != null) {
                         extensions = fileExtensions;
-                        location = filename;
+                        key = filename;
                     }
                     else {
                         // skip the element if neither of the nedtype, msgtype, filename attributes are present
@@ -103,8 +103,8 @@ public class NeddocExtensions {
                         continue;
                     }
 
-                    Map<String, String> ext4location = extensions.getOrDefault(location, new HashMap<>());
-                    extensions.put(location, ext4location);  // put extLocation back in case it was not yet present and was just crated
+                    Map<String, String> ext4location = extensions.getOrDefault(key, new HashMap<>());
+                    extensions.put(key, ext4location);  // put extLocation back in case it was not yet present and was just created
 
                     ext4location.put(anchor, ext4location.getOrDefault(anchor, "") + text);
                 }
@@ -115,11 +115,11 @@ public class NeddocExtensions {
         }
     }
 
-    public String getFragment(ExtType type, String location, String anchor) {
+    public String getFragment(ExtType type, String key, String anchor) {
         Map<String, String> exts4location =
-                type == ExtType.NED ? nedExtensions.get(location) :
-                type == ExtType.MSG ? msgExtensions.get(location) :
-                type == ExtType.FILE ? fileExtensions.get(location) : null;
+                type == ExtType.NED ? nedExtensions.get(key) :
+                type == ExtType.MSG ? msgExtensions.get(key) :
+                type == ExtType.FILE ? fileExtensions.get(key) : null;
         return exts4location == null ? null : exts4location.get(anchor);
     }
 }

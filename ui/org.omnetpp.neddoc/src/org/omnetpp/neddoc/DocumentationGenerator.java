@@ -65,8 +65,8 @@ import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.common.editor.text.Keywords;
 import org.omnetpp.common.editor.text.NedCommentFormatter;
-import org.omnetpp.common.editor.text.SyntaxHighlightHelper;
 import org.omnetpp.common.editor.text.NedCommentFormatter.INeddocProcessor;
+import org.omnetpp.common.editor.text.SyntaxHighlightHelper;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.IPredicate;
@@ -503,7 +503,6 @@ public class DocumentationGenerator {
             return "default";
     }
 
-    // return the fully qualified name for the type (except for default package)
     protected String getFullyQalifiedName(ITypeElement typeElement) {
         if (typeElement instanceof INedTypeElement) {
             return ((INedTypeElement)typeElement).getNedTypeInfo().getFullyQualifiedName();
@@ -1246,9 +1245,10 @@ public class DocumentationGenerator {
                 generatePage(getOutputBaseNameForFile(file), file.getName(), () -> {
                         monitor.subTask(file.getFullPath().toString());
                         String fileType = nedResources.isNedFile(file) ? "NED" : msgResources.isMsgFile(file) ? "Msg" : "";
+                        String fragmentKey = file.getProjectRelativePath().toString();
 
                         out(renderer.sectionTag(fileType + " File " + file.getProjectRelativePath(), "comptitle"));
-                        generateExtensionFragment(ExtType.FILE, file.getProjectRelativePath().toString(), "top");
+                        generateExtensionFragment(ExtType.FILE, fragmentKey, "top");
 
                         INedFileElement fileElement = msgResources.isMsgFile(file) ?
                                 msgResources.getMsgFileElement(file) : nedResources.getNedFileElement(file);
@@ -1263,10 +1263,10 @@ public class DocumentationGenerator {
 
                             out(renderer.tableTrailerTag());
                         }
-                        generateExtensionFragment(ExtType.FILE, file.getProjectRelativePath().toString(), "after-types");
+                        generateExtensionFragment(ExtType.FILE, fragmentKey, "after-types");
 
                         generateSourceContent(file);
-                        generateExtensionFragment(ExtType.FILE, file.getProjectRelativePath().toString(), "bottom");
+                        generateExtensionFragment(ExtType.FILE, fragmentKey, "bottom");
                         monitor.worked(1);
                     }
                 );
@@ -1294,13 +1294,13 @@ public class DocumentationGenerator {
 
     protected void generateTypePage(ITypeElement typeElement) throws Exception {
         generatePage(getOutputBaseFileName(typeElement), typeElement.getName(), () -> {
-                String qName = getFullyQalifiedName(typeElement);
+                String fragmentKey = getFullyQalifiedName(typeElement);
 
                 boolean isNedTypeElement = typeElement instanceof INedTypeElement;
                 boolean isMsgTypeElement = typeElement instanceof IMsgTypeElement;
 
-                if (isNedTypeElement) generateExtensionFragment(ExtType.NED, qName, "top");
-                if (isMsgTypeElement) generateExtensionFragment(ExtType.MSG, qName, "top");
+                if (isNedTypeElement) generateExtensionFragment(ExtType.NED, fragmentKey, "top");
+                if (isMsgTypeElement) generateExtensionFragment(ExtType.MSG, fragmentKey, "top");
 
                 if (isNedTypeElement)
                     out(renderer.pTag(packageReferenceString(getPackageName((INedTypeElement)typeElement))));
@@ -1315,48 +1315,48 @@ public class DocumentationGenerator {
                     out(renderer.pTag("(no description)"));
                 else
                     out(processHTMLContent("comment", comment));
-                if (isNedTypeElement) generateExtensionFragment(ExtType.NED, qName, "after-description");
-                if (isMsgTypeElement) generateExtensionFragment(ExtType.MSG, qName, "after-description");
+                if (isNedTypeElement) generateExtensionFragment(ExtType.NED, fragmentKey, "after-description");
+                if (isMsgTypeElement) generateExtensionFragment(ExtType.MSG, fragmentKey, "after-description");
 
                 if (isNedTypeElement) {
                     INedTypeElement nedTypeElement = (INedTypeElement)typeElement;
                     monitor.subTask(nedTypeElement.getReadableTagName() + ": " + nedTypeElement.getNedTypeInfo().getFullyQualifiedName());
 
                     generateTypeDiagram(nedTypeElement);
-                    generateExtensionFragment(ExtType.NED, qName, "after-image");
+                    generateExtensionFragment(ExtType.NED, fragmentKey, "after-image");
 
                     generateUsageDiagram(nedTypeElement);
                     generateInheritanceDiagram(nedTypeElement);
-                    generateExtensionFragment(ExtType.NED, qName, "after-diagrams");
+                    generateExtensionFragment(ExtType.NED, fragmentKey, "after-diagrams");
 
                     if (typeElement instanceof IInterfaceTypeElement)
                         generateImplementorsTable(nedTypeElement);
                     generateUsedInTables(nedTypeElement);
-                    generateExtensionFragment(ExtType.NED, qName, "after-usage");
+                    generateExtensionFragment(ExtType.NED, fragmentKey, "after-usage");
 
                     generateKnownSubtypesTable(nedTypeElement);
                     generateExtendsTable(nedTypeElement);
-                    generateExtensionFragment(ExtType.NED, qName, "after-inheritance");
+                    generateExtensionFragment(ExtType.NED, fragmentKey, "after-inheritance");
 
                     generateParametersTable(nedTypeElement);
-                    generateExtensionFragment(ExtType.NED, qName, "after-parameters");
+                    generateExtensionFragment(ExtType.NED, fragmentKey, "after-parameters");
 
                     generatePropertiesTable(nedTypeElement);
-                    generateExtensionFragment(ExtType.NED, qName, "after-properties");
+                    generateExtensionFragment(ExtType.NED, fragmentKey, "after-properties");
 
                     if (typeElement instanceof IModuleTypeElement)
                         generateGatesTable(nedTypeElement);
-                    generateExtensionFragment(ExtType.NED, qName, "after-gates");
+                    generateExtensionFragment(ExtType.NED, fragmentKey, "after-gates");
 
                     generateSignalsTable(nedTypeElement);
-                    generateExtensionFragment(ExtType.NED, qName, "after-signals");
+                    generateExtensionFragment(ExtType.NED, fragmentKey, "after-signals");
 
                     generateStatisticsTable(nedTypeElement);
-                    generateExtensionFragment(ExtType.NED, qName, "after-statistics");
+                    generateExtensionFragment(ExtType.NED, fragmentKey, "after-statistics");
 
                     if (typeElement instanceof CompoundModuleElementEx)
                         generateUnassignedParametersTable(nedTypeElement);
-                    generateExtensionFragment(ExtType.NED, qName, "after-unassigned-parameters");
+                    generateExtensionFragment(ExtType.NED, fragmentKey, "after-unassigned-parameters");
                 }
                 else if (isMsgTypeElement) {
                     IMsgTypeElement msgTypeElement = (IMsgTypeElement)typeElement;
@@ -1364,17 +1364,17 @@ public class DocumentationGenerator {
 
                     generateUsageDiagram(msgTypeElement);
                     generateInheritanceDiagram(msgTypeElement);
-                    generateExtensionFragment(ExtType.MSG, qName, "after-diagrams");
+                    generateExtensionFragment(ExtType.MSG, fragmentKey, "after-diagrams");
 
                     generateExtendsTable(msgTypeElement);
                     generateKnownSubtypesTable(msgTypeElement);
-                    generateExtensionFragment(ExtType.MSG, qName, "after-inheritance");
+                    generateExtensionFragment(ExtType.MSG, fragmentKey, "after-inheritance");
 
                     generateFieldsTable(msgTypeElement);
-                    generateExtensionFragment(ExtType.MSG, qName, "after-fields");
+                    generateExtensionFragment(ExtType.MSG, fragmentKey, "after-fields");
 
                     generatePropertiesTable(msgTypeElement);
-                    generateExtensionFragment(ExtType.MSG, qName, "after-properties");
+                    generateExtensionFragment(ExtType.MSG, fragmentKey, "after-properties");
                 }
 
                 if (generateSourceListings) {
@@ -1385,17 +1385,17 @@ public class DocumentationGenerator {
                     else
                         generateFileReference(getNedOrMsgFile(typeElement));
                 }
-                if (isNedTypeElement) generateExtensionFragment(ExtType.NED, qName, "bottom");
-                if (isMsgTypeElement) generateExtensionFragment(ExtType.MSG, qName, "bottom");
+                if (isNedTypeElement) generateExtensionFragment(ExtType.NED, fragmentKey, "bottom");
+                if (isMsgTypeElement) generateExtensionFragment(ExtType.MSG, fragmentKey, "bottom");
 
                 monitor.worked(1);
             }
         );
     }
 
-    protected void generateExtensionFragment(ExtType extensionType, String qualifiedName, String anchor) throws IOException {
+    protected void generateExtensionFragment(ExtType extensionType, String key, String anchor) throws IOException {
         if (neddocExtensions != null) {
-            String fragment = neddocExtensions.getFragment(extensionType, qualifiedName, anchor);
+            String fragment = neddocExtensions.getFragment(extensionType, key, anchor);
             if (fragment != null)
                 out(processHTMLContent("fragment", fragment));
         }
@@ -1772,10 +1772,12 @@ public class DocumentationGenerator {
             final ExportDiagramFilesOperation exportOperation =
                 new ExportDiagramFilesOperation(nedFiles,
                     new SVGDiagramExporter() {
+                        @Override
                         public String getName() {
                             return "NED Figure Provider";
                         }
 
+                        @Override
                         public String getDescription() {
                             return "NED Figure Provider";
                         }
