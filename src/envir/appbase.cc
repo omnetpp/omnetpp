@@ -145,7 +145,6 @@ AppBase::AppBase() : out(std::cout) //TODO
 
 AppBase::~AppBase()
 {
-    delete envir;
     delete opt;
 }
 
@@ -364,7 +363,7 @@ void AppBase::readOptions()
 
 void AppBase::readPerRunOptions()
 {
-    envir->configure(cfg);
+    getEnvir()->configure(cfg);
 
     opt->networkName = cfg->getAsString(CFGID_NETWORK);
 
@@ -395,6 +394,7 @@ void AppBase::installCrashHandler()
 void AppBase::loadNEDFiles()
 {
     // load NED files from folders on the NED path
+    EnvirBase *envir = getEnvir();
     std::set<std::string> foldersLoaded;
     for (std::string folder : opp_splitpath(envir->getNedPath())) {
         if (foldersLoaded.find(folder) == foldersLoaded.end()) {
@@ -544,23 +544,27 @@ void AppBase::printHelp()
 
 void AppBase::setupNetwork(cModuleType *network)
 {
+    EnvirBase *envir = getEnvir();
+    cSimulation *simulation = getSimulation();
+
     envir->clearCurrentEventInfo();
 
-    getSimulation()->setupNetwork(network);
+    simulation->setupNetwork(network);
     envir->getEventlogManager()->flush();
 
     if (opt->debugStatisticsRecording)
-        EnvirUtils::dumpResultRecorders(out, getSimulation()->getSystemModule());
+        EnvirUtils::dumpResultRecorders(out, simulation->getSystemModule());
 }
 
 void AppBase::prepareForRun()
 {
     resetClock();
+    cSimulation *simulation = getSimulation();
     if (opt->simtimeLimit >= SIMTIME_ZERO)
-        getSimulation()->setSimulationTimeLimit(opt->simtimeLimit);
+        simulation->setSimulationTimeLimit(opt->simtimeLimit);
     stopwatch.setCPUTimeLimit(opt->cpuTimeLimit);
     stopwatch.setRealTimeLimit(opt->realTimeLimit);
-    getSimulation()->callInitialize();
+    simulation->callInitialize();
     cLogProxy::flushLastLine();
 }
 
@@ -803,13 +807,13 @@ void AppBase::stoppedWithTerminationException(cTerminationException& e)
     // if we're running in parallel and this exception is NOT one we received
     // from other partitions, then notify other partitions
 #ifdef WITH_PARSIM
-    cSimulation *simulation = cSimulation::getActiveSimulation();
+    cSimulation *simulation = getSimulation();
     if (simulation->isParsimEnabled() && !dynamic_cast<cReceivedTerminationException *>(&e))
         simulation->getParsimPartition()->broadcastTerminationException(e);
 #endif
     if (getEventlogRecording()) {
         //FIXME should not be in this function (Andras)
-        envir->getEventlogManager()->endRun(e.isError(), e.getErrorCode(), e.getFormattedMessage().c_str());
+        getEnvir()->getEventlogManager()->endRun(e.isError(), e.getErrorCode(), e.getFormattedMessage().c_str());
     }
 }
 
@@ -818,13 +822,13 @@ void AppBase::stoppedWithException(std::exception& e)
     // if we're running in parallel and this exception is NOT one we received
     // from other partitions, then notify other partitions
 #ifdef WITH_PARSIM
-    cSimulation *simulation = cSimulation::getActiveSimulation();
+    cSimulation *simulation = getSimulation();
     if (simulation->isParsimEnabled() && !dynamic_cast<cReceivedException *>(&e))
         simulation->getParsimPartition()->broadcastException(e);
 #endif
     if (getEventlogRecording()) {
         // TODO: get error code from the exception?
-        envir->getEventlogManager()->endRun(true, E_CUSTOM, e.what());  //FIXME this should be rather in endRun(), or? (Andras)
+        getEnvir()->getEventlogManager()->endRun(true, E_CUSTOM, e.what());  //FIXME this should be rather in endRun(), or? (Andras)
     }
 }
 
@@ -866,7 +870,7 @@ cModuleType *AppBase::resolveNetwork(const char *networkname)
 
 void AppBase::notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details)
 {
-    envir->getSimulation()->notifyLifecycleListeners(eventType, details);
+    getSimulation()->notifyLifecycleListeners(eventType, details);
 }
 
 

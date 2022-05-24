@@ -162,7 +162,7 @@ void Cmdenv::readPerRunOptions()
 void Cmdenv::doRun()
 {
     {
-        envir = new EnvirBase(this);
+        EnvirBase *envir = new EnvirBase(this);
         cSimulation *simulation = new cSimulation("simulation", envir);  //TODO: finally: delete simulation
         cSimulation::setActiveSimulation(simulation);
         envir->initialize(simulation, cfg, args);

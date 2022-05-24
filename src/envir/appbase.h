@@ -52,8 +52,6 @@ struct AppBaseOptions
 class ENVIR_API AppBase : public IAllInOne
 {
   protected:
-    EnvirBase *envir;
-
     AppBaseOptions *opt;   // alias to EnvirBase::opt
 
     ArgList *args;  //TODO init!!!
@@ -90,29 +88,29 @@ class ENVIR_API AppBase : public IAllInOne
      */
     virtual int run(const std::vector<std::string>& args, cConfiguration *cfg) final;
 
-    EnvirBase *getEnvir() const {return envir;}
-    cSimulation *getSimulation() const {return envir->getSimulation();}
+    EnvirBase *getEnvir() const {return dynamic_cast<EnvirBase*>(cSimulation::getActiveEnvir());}
+    cSimulation *getSimulation() const {return cSimulation::getActiveSimulation();}
 
-    cConfiguration *getConfig() {return envir->getConfig();}
-    cConfigurationEx *getConfigEx() {return envir->getConfigEx();}
-    cIOutputVectorManager *getOutVectorManager() const {return envir->getOutVectorManager();}
-    cIOutputScalarManager *getOutScalarManager() const {return envir->getOutScalarManager();}
-    cISnapshotManager *getSnapshotManager() const {return envir->getSnapshotManager();}
+    cConfiguration *getConfig() {return getEnvir()->getConfig();}
+    cConfigurationEx *getConfigEx() {return getEnvir()->getConfigEx();}
+    cIOutputVectorManager *getOutVectorManager() const {return getEnvir()->getOutVectorManager();}
+    cIOutputScalarManager *getOutScalarManager() const {return getEnvir()->getOutScalarManager();}
+    cISnapshotManager *getSnapshotManager() const {return getEnvir()->getSnapshotManager();}
     DebuggerSupport *getDebuggerSupport() const {return debuggerSupport;}
 
-    bool isLoggingEnabled() const {return envir->isLoggingEnabled();}
-    void setLoggingEnabled(bool enabled) {envir->setLoggingEnabled(enabled);}
-    bool getDebugOnErrors() const {return envir->getDebugOnErrors();}
-    void setDebugOnErrors(bool enable) {envir->setDebugOnErrors(enable);}
-    bool getAttachDebuggerOnErrors() const {return envir->getAttachDebuggerOnErrors();}
-    void setAttachDebuggerOnErrors(bool enable) {envir->setAttachDebuggerOnErrors(enable);}
+    bool isLoggingEnabled() const {return getEnvir()->isLoggingEnabled();}
+    void setLoggingEnabled(bool enabled) {getEnvir()->setLoggingEnabled(enabled);}
+    bool getDebugOnErrors() const {return getEnvir()->getDebugOnErrors();}
+    void setDebugOnErrors(bool enable) {getEnvir()->setDebugOnErrors(enable);}
+    bool getAttachDebuggerOnErrors() const {return getEnvir()->getAttachDebuggerOnErrors();}
+    void setAttachDebuggerOnErrors(bool enable) {getEnvir()->setAttachDebuggerOnErrors(enable);}
 
-    void setLogLevel(LogLevel logLevel) {envir->setLogLevel(logLevel);};
-    void setLogFormat(const char *logFormat) {envir->setLogFormat(logFormat);}
-    LogFormatter& getLogFormatter() {return envir->getLogFormatter();}
+    void setLogLevel(LogLevel logLevel) {getEnvir()->setLogLevel(logLevel);};
+    void setLogFormat(const char *logFormat) {getEnvir()->setLogFormat(logFormat);}
+    LogFormatter& getLogFormatter() {return getEnvir()->getLogFormatter();}
 
-    bool getEventlogRecording() const {return envir->getEventlogRecording();}
-    void setEventlogRecording(bool enabled) {envir->setEventlogRecording(enabled);}
+    bool getEventlogRecording() const {return getEnvir()->getEventlogRecording();}
+    void setEventlogRecording(bool enabled) {getEnvir()->setEventlogRecording(enabled);}
 
   protected:
     void notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details=nullptr);
