@@ -122,23 +122,100 @@ class Workspace:
         """
         if not dir:
             dir = os.getcwd()
+        origdir = dir
+
         while True:
-            if os.path.isdir(os.path.join(dir,".metadata")):  # Eclipse metadata dir
+            if os.path.isdir(os.path.join(dir, ".metadata")):  # Eclipse metadata dir
                 return dir
+            parent_dir = os.path.dirname(dir)
+            if parent_dir == dir:
+                break
+            dir = parent_dir
+
+        projdir = Workspace.find_enclosing_project_location(origdir)
+        return os.path.dirname(projdir) if projdir else None
+
+    @staticmethod
+    def find_enclosing_project_location(file=None):
+        """
+        Utility function: Find the project directory searching from the
+        given directory (or the current dir if not given) upwards. Project
+        directories of the Eclipse-based IDE can be recognized by having a
+        `.project` file in them.
+        """
+        dir = os.path.abspath(file) if file else os.getcwd()
+
+        while True:
+            if os.path.isfile(os.path.join(dir, ".project")):  # Eclipse project dir
+                break
             parent_dir = os.path.dirname(dir)
             if parent_dir == dir:
                 return None
             dir = parent_dir
 
+        return dir
+
+    @staticmethod
+    def find_enclosing_project(file=None):
+        """
+        Utility function: Find the project name searching from the
+        given directory (or the current dir if not given) upwards. Project
+        directories of the Eclipse-based IDE can be recognized by having a
+        `.project` file in them.
+        """
+        dir = Workspace.find_enclosing_project_location(file)
+
+        if not dir:
+            raise RuntimeError("Could not find enclosing project" + (" for file '{}'".format(file) if file else ""))
+
+        # find real name of the project
+        project_dom = minidom.parse(os.path.join(dir, ".project"))
+        names = [name.firstChild.nodeValue for name in project_dom.getElementsByTagName("name") if name.parentNode.tagName == "projectDescription"]
+
+        return names[0] if names else None
+
+
     def get_project_location(self, project_name):
         """
         Returns the location of the given workspace project in the filesystem path.
         """
-        if project_name not in self.project_paths:
-            return os.path.join(self.workspace_dir, project_name)
+        location_filename = self.workspace_dir + "/.metadata/.plugins/org.eclipse.core.resources/.projects/" + project_name + "/.location"
+
+        if not os.path.isfile(location_filename):
+            location = self.workspace_dir + "/" + project_name
         else:
-            project_dir = self.project_paths[project_name]
-            return project_dir if os.path.isabs(project_dir) else os.path.join(self.workspace_dir, project_dir)
+            with open(location_filename, "rb") as locfile:
+                loc = locfile.read()
+                start = b"URI//file:"
+                locindex = loc.find(start) + len(start)
+                endindex = locindex + loc[locindex:].find(b"\0")
+                location = loc[locindex:endindex].decode("utf-8")
+
+        if not os.path.isfile(location+"/.project"):
+            raise RuntimeError("Location found does not look like a project (no `.project` file): " + location)
+
+        return location
+
+    def get_referenced_projects(self, project_name):
+        """
+        Returns a list of projects that are referenced by the given project.
+        """
+        project_file = self.get_project_location(project_name) + "/.project"
+        project_dom = minidom.parse(project_file)
+        return [ref.firstChild.nodeValue for ref in project_dom.getElementsByTagName("project")]
+
+    def get_all_referenced_projects(self, project_name, include_self):
+        """
+        Returns a list of projects that are referenced by the given project, even transitively.
+        """
+        result = [project_name] if include_self else []
+
+        projs = self.get_referenced_projects(project_name)
+        result += projs
+        for proj in projs:
+            result += self.get_all_referenced_projects(proj, False)
+
+        return result
 
     def to_filesystem_path(self, wspath):
         """
@@ -227,6 +304,7 @@ class Analysis:
                 charts.append(item)
             elif type(item) == Folder:
                 charts += self.collect_charts(item)
+
         return charts
 
     def get_item_path(self, item):
@@ -289,11 +367,19 @@ class Analysis:
         _show_called = False
 
         od = os.getcwd()
+        orig_sys_path = sys.path.copy()
         orig_rcparams = mpl.rcParams.copy()
 
         try:
             os.chdir(wd)
-            site.addsitedir(wd)
+            sys.path.insert(1, wd)
+
+            project = Workspace.find_enclosing_project(wd)
+            refprojs = workspace.get_all_referenced_projects(project, True)
+
+            for rp in refprojs:
+                sys.path.insert(1, workspace.get_project_location(rp) + "/python")
+
             exec(chart.script, { "exit": sys.exit })
             if show and not _show_called:
                 plt.show()
@@ -302,6 +388,7 @@ class Analysis:
                 raise RuntimeError("Chart script exited with code " + str(se.code))
         finally:
             os.chdir(od)
+            sys.path = orig_sys_path
             mpl.rcParams.clear()
             mpl.rcParams.update(orig_rcparams)
 
