@@ -1,0 +1,6 @@
+
+This test checks that the `python` folder of the project containing the anf file,
+and of all referenced projects, are added to the module import path of chart scripts.
+
+Locating projects by reading their `.location` file is not tested, because that has
+to contain an absolute path, so it's not portable.
