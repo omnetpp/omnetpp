@@ -862,9 +862,12 @@ Sharing Code Among Charts
 
 For future releases, we are planning to support "snippets" as part of the
 analysis file, as a means of sharing code among charts. Until that feature is
-implemented, a workaround is to put shared code in ``.py`` files located next to
-the analysis file. Chart scripts can import these files as modules, and thereby
-use the functionality they provide. This also makes it possible to use external
+implemented, a workaround is to put shared code in ``.py`` files.
+These scripts can be imported as modules. They will be looked for in the
+folder containing the ``.anf`` file, and in the ``python`` folders of the
+containing project and all of its referenced projects.
+Chart scripts can import these files as modules, and thereby use the
+functionality they provide. This also makes it possible to use external
 code editors for parts of your code.
 
 Customizing the Legend
