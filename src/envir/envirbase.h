@@ -119,7 +119,6 @@ class ENVIR_API EnvirBase : public cEnvir
     IAllInOne *getApp() {return app;}
     cSimulation *getSimulation() const {return simulation;}
     virtual cConfiguration *getConfig() override;
-    virtual cConfigurationEx *getConfigEx() override;
 
     cIEventlogManager *getEventlogManager() const {return eventlogManager;}
     void setEventlogManager(cIEventlogManager *obj);

@@ -19,6 +19,7 @@
 #include "envirdefs.h"
 #include "envirbase.h"
 #include "iallinone.h"
+#include "inifilecontents.h"
 #include "debuggersupport.h"
 
 #define ARGSPEC "h?f:u:l:c:r:n:x:i:q:e:avwsm"
@@ -56,7 +57,8 @@ class ENVIR_API AppBase : public IAllInOne
 
     ArgList *args;  //TODO init!!!
     std::ostream& out; //TODO FIXME
-    cConfigurationEx *cfg; //TODO FIXME user EnvirBase's
+    InifileContents *ini;
+    cConfiguration *activeCfg;
 
     std::string redirectionFilename;
     int exitCode = 0;
@@ -80,19 +82,20 @@ class ENVIR_API AppBase : public IAllInOne
      * Runs the user interface. The return value will become the exit code
      * of the simulation program.
      */
-    virtual int run(int argc, char *argv[], cConfiguration *config);
+    virtual int run(int argc, char *argv[], InifileContents *ini);
 
     /**
      * Runs the user interface. The return value will become the exit code
      * of the simulation program. Delegates to the other run() overload.
      */
-    virtual int run(const std::vector<std::string>& args, cConfiguration *cfg) final;
+    virtual int run(const std::vector<std::string>& args, InifileContents *ini) final;
 
+    InifileContents *getConfigEx() {return ini;}  //TODO rename
+
+    //TODO the methods below assume that there is only one active simulation, which might not be true
     EnvirBase *getEnvir() const {return dynamic_cast<EnvirBase*>(cSimulation::getActiveEnvir());}
     cSimulation *getSimulation() const {return cSimulation::getActiveSimulation();}
-
     cConfiguration *getConfig() {return getEnvir()->getConfig();}
-    cConfigurationEx *getConfigEx() {return getEnvir()->getConfigEx();}
     cIOutputVectorManager *getOutVectorManager() const {return getEnvir()->getOutVectorManager();}
     cIOutputScalarManager *getOutScalarManager() const {return getEnvir()->getOutScalarManager();}
     cISnapshotManager *getSnapshotManager() const {return getEnvir()->getSnapshotManager();}

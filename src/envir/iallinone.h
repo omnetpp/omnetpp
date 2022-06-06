@@ -45,7 +45,6 @@ class cRNG;
 class cXMLElement;
 class cEnvir;
 class cConfiguration;
-class cConfigurationEx;
 struct SendOptions;
 struct ChannelResult;
 

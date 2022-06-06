@@ -552,7 +552,8 @@ void MainWindow::on_actionSetUpConfiguration_triggered()
     if (env->checkRunning())
         return;
 
-    cConfigurationEx *configEx = getQtenv()->getConfigEx();
+    InifileContents *ini = getQtenv()->getConfigEx();
+    cConfiguration *config = getQtenv()->getConfig();
 
     // No filter used for subsequent run selections.
     // Note that if invoked this way, we pretty much avoid all possibility of an exception,
@@ -560,7 +561,7 @@ void MainWindow::on_actionSetUpConfiguration_triggered()
     // This, and the fact that Qtenv::displayException is protected, along with Qt not supporting
     // throwing exceptions from slots, justifies the omission of a try-catch block.
     // It would only be an ASSERT(false) or something similar anyway.
-    RunSelectionDialog dialog(configEx, configEx->getActiveConfigName(), "", this);
+    RunSelectionDialog dialog(ini, config->getActiveConfigName(), "", this);
     if (dialog.exec()) {
         busy("Setting up new run...");
         Q_EMIT setNewNetwork();
@@ -724,15 +725,15 @@ void MainWindow::updateNextEventDisplay()
 
 void MainWindow::updateNetworkRunDisplay()
 {
-    const char *configName = opp_nulltoempty(env->getConfigEx()->getActiveConfigName());
+    const char *configName = opp_nulltoempty(env->getConfig()->getActiveConfigName());
     const char *network = !getSimulation()->getNetworkType() ? "" : getSimulation()->getNetworkType()->getName();
     std::string scheduler = getSimulation()->getScheduler()->str();
     const char *sep = scheduler.empty() ? "" : " - ";
 
-    // TODO
+// TODO
 //    if {$configname==""} {set configName "n/a"}
 //    if {$network==""} {set network "(no network)"}
-    ui->labelConfigName->setText(QString(configName) + " #" + QString::number(env->getConfigEx()->getActiveRunNumber()) + ": " + network + sep + scheduler.c_str());
+    ui->labelConfigName->setText(QString(configName) + " #" + QString::number(env->getConfig()->getActiveRunNumber()) + ": " + network + sep + scheduler.c_str());
 }
 
 void MainWindow::excludeMessageFromAnimation(cObject *msg)
@@ -1411,8 +1412,8 @@ void MainWindow::on_actionRecordVideo_toggled(bool checked)
     // have to resize the mainwindow to be a size of a multiple of 4 in both dimensions
     // because many video encoders (like x264) demand it
     if (checked) {
-        QString configRun = env->getConfigEx()->getActiveConfigName();
-        configRun += "#" + QString::number(env->getConfigEx()->getActiveRunNumber());
+        QString configRun = env->getConfig()->getActiveConfigName();
+        configRun += "#" + QString::number(env->getConfig()->getActiveRunNumber());
 
         VideoRecordingDialog dialog(this, configRun);
 

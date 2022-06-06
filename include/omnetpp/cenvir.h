@@ -46,7 +46,6 @@ class cRNG;
 class cXMLElement;
 class cEnvir;
 class cConfiguration;
-class cConfigurationEx;
 struct SendOptions;
 struct ChannelResult;
 
@@ -421,13 +420,6 @@ class SIM_API cEnvir
      * they should rely on module parameters to get input.
      */
     virtual cConfiguration *getConfig() = 0;
-
-    /**
-     * Returns the configuration as used by the Envir library. It will throw
-     * an error if the configuration object does not subclass from cConfigurationEx.
-     * This method should not be used from the simulation kernel or model code.
-     */
-    virtual cConfigurationEx *getConfigEx();
 
     /**
      * Searches a number of folders for a resource given with its file name or

@@ -19,6 +19,7 @@
 
 #include <QtWidgets/QDialog>
 #include <map>
+#include <envir/inifilecontents.h>
 #include <omnetpp/cconfiguration.h>
 #include "qtenvdefs.h"
 
@@ -35,14 +36,16 @@ class QTENV_API RunSelectionDialog : public QDialog
 {
     Q_OBJECT
 
+    typedef envir::InifileContents InifileContents;
+
     Ui::RunSelectionDialog *ui;
 
-    cConfigurationEx *configuration;
+    InifileContents *configuration;
 
     std::vector<std::string> configNames;
 
     // these two are filled/updated in updateRuns()
-    std::vector<cConfigurationEx::RunInfo> runDescriptions;
+    std::vector<InifileContents::RunInfo> runDescriptions;
     std::vector<int> matchingRunNumbers;
 
     std::string configNameArg; // the name of the config the user specified with the -c command line argument, or empty if none
@@ -62,7 +65,7 @@ private Q_SLOTS:
 
 public:
     // Beware: This throws exceptions if configNameArg isn't an existing config, or the run filter is invalid, etc...
-    explicit RunSelectionDialog(cConfigurationEx *configuration, const std::string& configNameArg, const std::string &runFilter, QWidget *parent = nullptr);
+    explicit RunSelectionDialog(InifileContents *configuration, const std::string& configNameArg, const std::string &runFilter, QWidget *parent = nullptr);
 
     // Returns true if no choice is required from the user to determine which config and run to set up, because
     // it is already determined by the combination of the existing configs/runs and the used command line arguments.

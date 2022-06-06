@@ -39,10 +39,9 @@ class EmptyConfig : public cConfiguration
     virtual const KeyValue& getConfigEntry(const char *key) const override {return nullKeyValue;}
     virtual const char *getPerObjectConfigValue(const char *objectFullPath, const char *keySuffix) const override {return nullptr;}
     virtual const KeyValue& getPerObjectConfigEntry(const char *objectFullPath, const char *keySuffix) const override {return nullKeyValue;}
+    virtual std::map<std::string,std::string> getPredefinedVariables() const override {return {};}
+    virtual std::map<std::string,std::string> getIterationVariables() const override {return {};}
     virtual const char *getVariable(const char *varname) const override {return nullptr;}
-    virtual std::vector<const char *> getIterationVariableNames() const override {return {};}
-    virtual std::vector<const char *> getPredefinedVariableNames() const override {return {};}
-    virtual const char *getVariableDescription(const char *varname) const override {return nullptr;}
     virtual std::vector<const char *> getMatchingConfigKeys(const char *pattern) const override {return {};}
     virtual const char *getParameterValue(const char *moduleFullPath, const char *paramName, bool hasDefaultValue) const override {return nullptr;}
     virtual const KeyValue& getParameterEntry(const char *moduleFullPath, const char *paramName, bool hasDefaultValue) const override {return nullKeyValue;}

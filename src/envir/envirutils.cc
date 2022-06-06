@@ -17,6 +17,7 @@
 #include "common/unitconversion.h"
 #include "common/opp_ctype.h"
 #include "common/sqliteresultfileschema.h"
+#include "common/stlutil.h"
 #include "nedxml/nedparser.h"  // NedParser::getBuiltInDeclarations()
 #include "omnetpp/ccanvas.h"
 #include "omnetpp/cconfigoption.h"
@@ -31,6 +32,8 @@
 #include "sim/expressionfilter.h"
 #include "args.h"
 #include "appreg.h"
+#include "envirbase.h"
+#include "inifilecontents.h"
 #include "envirutils.h"
 
 using namespace omnetpp::common;
@@ -70,7 +73,8 @@ std::string EnvirUtils::getConfigOptionType(cConfigOption *option)
 
 void EnvirUtils::dumpComponentList(std::ostream& out, const char *category, bool verbose)
 {
-    cConfiguration *config = cSimulation::getActiveEnvir()->getConfig();
+    InifileContents tmp;
+    InifileContents *ini = &tmp;
     bool wantAll = !strcmp(category, "all");
     bool processed = false;
     out << "\n";
@@ -114,10 +118,10 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category, bool
         processed = true;
         if (verbose)
             out << "Predefined variables that can be used in config values:\n";
-        std::vector<const char *> varNames = config->getPredefinedVariableNames();
-        for (const char *varName : varNames) {
+        auto varNames = ini->getPredefinedVariableNames();
+        for (const std::string& varName : varNames) {
             out << "${" << varName << "}\n";
-            const char *desc = config->getVariableDescription(varName);
+            const char *desc = ini->getVariableDescription(varName.c_str());
             out << opp_indentlines(opp_breaklines(desc, 75), "    ") << "\n";
         }
         out << "\n";
@@ -145,11 +149,11 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category, bool
     }
     if (!strcmp(category, "latexconfigvars")) {  // internal undocumented option, for maintenance purposes
         processed = true;
-        std::vector<const char *> varNames = config->getPredefinedVariableNames();
+        auto varNames = ini->getPredefinedVariableNames();
         out << "\\begin{description}\n";
-        for (auto & varName : varNames) {
+        for (const std::string& varName : varNames) {
             out << "\\item[\\$\\{" << varName << "\\}] : \\\\\n";
-            const char *desc = config->getVariableDescription(varName);
+            const char *desc = ini->getVariableDescription(varName.c_str());
             out << opp_indentlines(opp_breaklines(opp_markup2latex(opp_latexquote(desc)), 75), "    ") << "\n";
         }
         out << "\\end{description}\n\n";
@@ -229,10 +233,10 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category, bool
         }
         out << "\n";
 
-        std::vector<const char *> varNames = config->getPredefinedVariableNames();
-        for (const char *varName : varNames) {
-            const char *desc = config->getVariableDescription(varName);
-            out << "    public static final String CFGVAR_" << opp_strupper(varName) << " = addConfigVariable(";
+        auto varNames = ini->getPredefinedVariableNames();
+        for (const std::string& varName : varNames) {
+            const char *desc = ini->getVariableDescription(varName.c_str());
+            out << "    public static final String CFGVAR_" << opp_strupper(varName.c_str()) << " = addConfigVariable(";
             out << "\"" << varName << "\", \"" << opp_replacesubstring(desc, "\"", "\\\"", true) << "\");\n";
         }
         out << "\n";

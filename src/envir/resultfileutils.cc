@@ -44,21 +44,14 @@ std::string ResultFileUtils::getRunId()
 
 StringMap ResultFileUtils::getRunAttributes()
 {
-    std::vector<const char *> keys = cfg->getPredefinedVariableNames();
-    StringMap attrs;
-    for (const char *key : keys)
-        if (strcmp(key, CFGVAR_RUNID) != 0)  // skip runId
-            attrs[key] = cfg->getVariable(key);
-    return attrs;
+    StringMap result = cfg->getPredefinedVariables();
+    result.erase(CFGVAR_RUNID);
+    return result;
 }
 
 StringMap ResultFileUtils::getIterationVariables()
 {
-    StringMap itervars;
-    std::vector<const char *> keys2 = cfg->getIterationVariableNames();
-    for (const char *key : keys2)
-        itervars[key] = cfg->getVariable(key);
-    return itervars;
+    return cfg->getIterationVariables();
 }
 
 static std::string removeOptionalQuotes(const char *key, const char *value)
@@ -90,15 +83,15 @@ OrderedKeyValueList ResultFileUtils::getSelectedConfigEntries()
         if (e == "none")
             flags |= 0;
         else if (e == "all")
-            flags |= cConfigurationEx::FILT_ALL;
+            flags |= cConfiguration::FILT_ALL;
         else if (e == "config")
-            flags |= cConfigurationEx::FILT_CONFIG;
+            flags |= cConfiguration::FILT_CONFIG;
         else if (e == "params")
-            flags |= cConfigurationEx::FILT_PARAM;
+            flags |= cConfiguration::FILT_PARAM;
         else if (e == "essentials")
-            flags |= cConfigurationEx::FILT_ESSENTIAL_CONFIG;
+            flags |= cConfiguration::FILT_ESSENTIAL_CONFIG;
         else if (e == "globalconfig")
-            flags |= cConfigurationEx::FILT_GLOBAL_CONFIG;
+            flags |= cConfiguration::FILT_GLOBAL_CONFIG;
         else
             throw cRuntimeError("Unrecognized value '%s' for option '%s'", e.c_str(), CFGID_CONFIG_RECORDING->getName());
     }

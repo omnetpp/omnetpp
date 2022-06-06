@@ -21,6 +21,7 @@
 #include <list>
 #include "envir/appbase.h"
 #include "envir/speedometer.h"
+#include "envir/inifilecontents.h"
 #include "omnetpp/cchannel.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/ccanvas.h"

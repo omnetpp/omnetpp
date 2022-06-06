@@ -620,7 +620,7 @@ void Qtenv::doRun()
     EnvirBase *envir = new EnvirBase(this);
     cSimulation *simulation = new cSimulation("simulation", envir);  //TODO: finally: delete simulation
     cSimulation::setActiveSimulation(simulation);
-    envir->initialize(simulation, cfg, args);
+    envir->initialize(simulation, activeCfg, args);
 
     readOptions();
 
@@ -819,7 +819,7 @@ void Qtenv::printUISpecificHelp()
 void Qtenv::rebuildSim()
 {
     if (isConfigRun)
-        newRun(std::string(getConfigEx()->getActiveConfigName()).c_str(), getConfigEx()->getActiveRunNumber());
+        newRun(getConfig()->getActiveConfigName(), getConfig()->getActiveRunNumber());
     else if (getSimulation()->getNetworkType() != nullptr)
         newNetwork(getSimulation()->getNetworkType()->getName());
     else
@@ -1244,7 +1244,7 @@ void Qtenv::newNetwork(const char *networkname)
 
         // set up new network with config General.
         isConfigRun = false;
-        getConfigEx()->activateConfig("General", 0);
+        activeCfg = getConfigEx()->activateConfig("General", 0); //TODO leak
         readPerRunOptions();
         opt->networkName = network->getName();  // override config setting
         setupNetwork(network);
@@ -1295,7 +1295,7 @@ void Qtenv::newRun(const char *configname, int runnumber)
 
         // set up new network
         isConfigRun = true;
-        getConfigEx()->activateConfig(configname, runnumber);
+        activeCfg = getConfigEx()->activateConfig(configname, runnumber); //TODO leak
         readPerRunOptions();
 
         if (opt->networkName.empty()) {
@@ -1519,8 +1519,8 @@ void Qtenv::skipHoldAnimations()
 
 std::string Qtenv::getWindowTitle()
 {
-    const char *configName = getConfigEx()->getActiveConfigName();
-    int runNumber = getConfigEx()->getActiveRunNumber();
+    const char *configName = getConfig()->getActiveConfigName();
+    int runNumber = getConfig()->getActiveRunNumber();
     const char *inifile = getConfigEx()->getFileName();
 
 #ifdef NDEBUG

@@ -29,7 +29,7 @@ namespace omnetpp {
 using namespace common;
 namespace qtenv {
 
-RunSelectionDialog::RunSelectionDialog(cConfigurationEx *configuration, const std::string& configNameArg, const std::string &runFilter, QWidget *parent)
+RunSelectionDialog::RunSelectionDialog(InifileContents *configuration, const std::string& configNameArg, const std::string &runFilter, QWidget *parent)
     : QDialog(parent), ui(new Ui::RunSelectionDialog), configuration(configuration), configNameArg(configNameArg), runFilter(runFilter)
 {
     ui->setupUi(this);

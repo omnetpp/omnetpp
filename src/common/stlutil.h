@@ -47,6 +47,15 @@ inline std::map<K,V,C>& addAll(std::map<K,V,C>& m, const std::map<K,V,C2>& n) {
     return m;
 }
 
+template<typename K, typename V, typename C>
+inline std::map<K,V,C> unionOf(const std::map<K,V,C>& a, const std::map<K,V,C>& b)
+{
+    std::map<K,V,C> res;
+    addAll(res, a);
+    addAll(res, b);
+    return res;
+}
+
 template<typename T>
 typename std::vector<T>::iterator find(std::vector<T>& v, const T& a) {
     return std::find(v.begin(), v.end(), a);

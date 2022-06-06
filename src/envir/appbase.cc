@@ -25,6 +25,7 @@
 #include "common/enumstr.h"
 #include "common/ver.h"
 #include "common/fileutil.h"
+#include "common/stlutil.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cfingerprint.h"
@@ -148,29 +149,28 @@ AppBase::~AppBase()
     delete opt;
 }
 
-int AppBase::run(const std::vector<std::string>& args, cConfiguration *cfg)
+int AppBase::run(const std::vector<std::string>& args, InifileContents *ini)
 {
     char **argv = new char *[args.size()];
     for (int i = 0; i < args.size(); i++)
         argv[i] = const_cast<char*>(args[i].c_str());
-    return run(args.size(), argv, cfg);
+    return run(args.size(), argv, ini);
 }
 
-int AppBase::run(int argc, char *argv[], cConfiguration *configobject)
+int AppBase::run(int argc, char *argv[], InifileContents *ini)
 {
-    cfg = dynamic_cast<cConfigurationEx *>(configobject);
-    if (!cfg)
-        throw cRuntimeError("Cannot cast configuration object %s to cConfigurationEx", configobject->getClassName());
+    this->ini = ini;
+    this->activeCfg = ini->activateGlobalConfig();
 
     opt = createOptions();
     args = new ArgList();
     args->parse(argc, argv, ARGSPEC);
     opt->useStderr = !args->optionGiven('m');
     opt->verbose = !args->optionGiven('s');
-    debuggerSupport->configure(cfg);
+    debuggerSupport->configure(activeCfg);
 
     try {
-        if (cfg->getAsBool(CFGID_DEBUGGER_ATTACH_ON_STARTUP) && debuggerSupport->detectDebugger() != DebuggerPresence::PRESENT)
+        if (activeCfg->getAsBool(CFGID_DEBUGGER_ATTACH_ON_STARTUP) && debuggerSupport->detectDebugger() != DebuggerPresence::PRESENT)
             debuggerSupport->attachDebugger();
     }
     catch(opp_runtime_error& ex) {
@@ -210,9 +210,9 @@ bool AppBase::simulationRequired()
 
     // -a option: print all config names, and number of runs in them
     if (args->optionGiven('a')) {
-        std::vector<std::string> configNames = cfg->getConfigNames();
+        std::vector<std::string> configNames = ini->getConfigNames();
         for (auto & configName : configNames)
-            out << "Config " << configName << ": " << cfg->getNumRunsInConfig(configName.c_str()) << "" << endl;
+            out << "Config " << configName << ": " << ini->getNumRunsInConfig(configName.c_str()) << "" << endl;
         return false;
     }
 
@@ -262,12 +262,12 @@ void AppBase::printRunInfo(const char *configName, const char *runFilter, const 
 
         if (opt->verbose) {
             out <<"Config: " << configName << endl;
-            out <<"Number of runs: " << cfg->getNumRunsInConfig(configName) << endl;
+            out <<"Number of runs: " << ini->getNumRunsInConfig(configName) << endl;
             if (!opp_isblank(runFilter))
                 out << "Number of runs selected: " << runNumbers.size() << endl;
         }
 
-        std::vector<cConfiguration::RunInfo> runInfos = cfg->unrollConfig(configName);
+        std::vector<InifileContents::RunInfo> runInfos = ini->unrollConfig(configName);
         if (q == "numruns") {
             if (!opt->verbose) // otherwise it was already printed
                 out << runNumbers.size() << endl;
@@ -285,7 +285,7 @@ void AppBase::printRunInfo(const char *configName, const char *runFilter, const 
             if (opt->verbose)
                 out << endl;
             for (int runNumber : runNumbers) {
-                const cConfiguration::RunInfo& runInfo = runInfos[runNumber];
+                const InifileContents::RunInfo& runInfo = runInfos[runNumber];
                 out << "Run " << runNumber << ": " << runInfo.info << endl;
             }
         }
@@ -293,7 +293,7 @@ void AppBase::printRunInfo(const char *configName, const char *runFilter, const 
             if (opt->verbose)
                 out << endl;
             for (int runNumber : runNumbers) {
-                const cConfiguration::RunInfo& runInfo = runInfos[runNumber];
+                const InifileContents::RunInfo& runInfo = runInfos[runNumber];
                 out << "Run " << runNumber << ": " << runInfo.info << endl;
                 out << opp_indentlines(runInfo.configBrief, "\t");
                 if (runNumber != runNumbers.back())
@@ -304,10 +304,10 @@ void AppBase::printRunInfo(const char *configName, const char *runFilter, const 
             if (opt->verbose)
                 out << endl;
             for (int runNumber : runNumbers) {
-                const cConfiguration::RunInfo& runInfo = runInfos[runNumber];
+                const InifileContents::RunInfo& runInfo = runInfos[runNumber];
                 out << "Run " << runNumber << ": " << runInfo.info << endl;
-                cfg->activateConfig(configName, runNumber);
-                std::vector<const char *> keysValues = cfg->getKeyValuePairs(cConfigurationEx::FILT_ALL);
+                cConfiguration *cfg = ini->activateConfig(configName, runNumber);
+                std::vector<const char *> keysValues = cfg->getKeyValuePairs(cConfiguration::FILT_ALL);
                 for (int i = 0; i < (int)keysValues.size(); i += 2) {
                     const char *key = keysValues[i];
                     const char *value = keysValues[i+1];
@@ -315,6 +315,7 @@ void AppBase::printRunInfo(const char *configName, const char *runFilter, const 
                 }
                 if (runNumber != runNumbers.back())
                     out << endl;
+                delete cfg;
             }
         }
         else {
@@ -325,7 +326,7 @@ void AppBase::printRunInfo(const char *configName, const char *runFilter, const 
     else if (q == "sectioninheritance") {
         if (opt->verbose)
             out << endl;
-        std::vector<std::string> configNames = cfg->getConfigChain(configName);
+        std::vector<std::string> configNames = ini->getConfigChain(configName);
         for (auto configName : configNames) {
             if (configName != "General")
                 configName = "Config " + configName;
@@ -347,38 +348,39 @@ void AppBase::printConfigValue(const char *configName, const char *runFilter, co
     if (runNumbers.size() > 1)
         throw cRuntimeError("Run filter matches more than one run (%d)", (int)runNumbers.size());
     int runNumber = runNumbers[0];
-    cfg->activateConfig(configName, runNumber);
+    cConfiguration *cfg = ini->activateConfig(configName, runNumber);
 
     // query option
     cConfigOption *option = cConfigOption::get(optionName);
     const char *value = cfg->getConfigValue(option, "");
     out << value << endl;
+    delete cfg;
 }
 
 void AppBase::readOptions()
 {
     // note: this is read per run as well, but Qtenv needs its value on startup too
-    opt->inifileNetworkDir = cfg->getConfigEntry(CFGID_NETWORK->getName()).getBaseDirectory();
+    opt->inifileNetworkDir = activeCfg->getConfigEntry(CFGID_NETWORK->getName()).getBaseDirectory();
 }
 
 void AppBase::readPerRunOptions()
 {
-    getEnvir()->configure(cfg);
+    getEnvir()->configure(activeCfg);
 
-    opt->networkName = cfg->getAsString(CFGID_NETWORK);
+    opt->networkName = activeCfg->getAsString(CFGID_NETWORK);
 
     // note: this is read per run as well, but Qtenv needs its value on startup too
-    opt->inifileNetworkDir = cfg->getConfigEntry(CFGID_NETWORK->getName()).getBaseDirectory();
+    opt->inifileNetworkDir = activeCfg->getConfigEntry(CFGID_NETWORK->getName()).getBaseDirectory();
 
     // make time limits effective
-    opt->simtimeLimit = cfg->getAsDouble(CFGID_SIM_TIME_LIMIT, -1);
-    opt->realTimeLimit = cfg->getAsDouble(CFGID_REAL_TIME_LIMIT, -1);
-    opt->cpuTimeLimit = cfg->getAsDouble(CFGID_CPU_TIME_LIMIT, -1);
-    opt->warmupPeriod = cfg->getAsDouble(CFGID_WARMUP_PERIOD);
+    opt->simtimeLimit = activeCfg->getAsDouble(CFGID_SIM_TIME_LIMIT, -1);
+    opt->realTimeLimit = activeCfg->getAsDouble(CFGID_REAL_TIME_LIMIT, -1);
+    opt->cpuTimeLimit = activeCfg->getAsDouble(CFGID_CPU_TIME_LIMIT, -1);
+    opt->warmupPeriod = activeCfg->getAsDouble(CFGID_WARMUP_PERIOD);
     getSimulation()->setWarmupPeriod(opt->warmupPeriod);
 
-    opt->debugStatisticsRecording = cfg->getAsBool(CFGID_DEBUG_STATISTICS_RECORDING);
-    opt->warnings = cfg->getAsBool(CFGID_WARNINGS);
+    opt->debugStatisticsRecording = activeCfg->getAsBool(CFGID_DEBUG_STATISTICS_RECORDING);
+    opt->warnings = activeCfg->getAsBool(CFGID_WARNINGS);
 }
 
 void AppBase::installCrashHandler()
@@ -575,7 +577,7 @@ std::vector<int> AppBase::resolveRunFilter(const char *configName, const char *r
     std::vector<int> runNumbers;
 
     if (opp_isblank(runFilter)) {
-        int numRuns = cfg->getNumRunsInConfig(configName);
+        int numRuns = ini->getNumRunsInConfig(configName);
         for (int i = 0; i < numRuns; i++)
             runNumbers.push_back(i);
         return runNumbers;
@@ -583,7 +585,7 @@ std::vector<int> AppBase::resolveRunFilter(const char *configName, const char *r
 
     // if filter contains a list of run numbers (e.g. "0..4,9,12"), parse it accordingly
     if (strspn (runFilter, "0123456789,.- ") == strlen(runFilter)) {
-        int numRuns = cfg->getNumRunsInConfig(configName);
+        int numRuns = ini->getNumRunsInConfig(configName);
         EnumStringIterator it(runFilter);
         while (true) {
             int runNumber = it();
@@ -599,11 +601,11 @@ std::vector<int> AppBase::resolveRunFilter(const char *configName, const char *r
     }
     else {
         // evaluate filter as constraint expression
-        std::vector<cConfiguration::RunInfo> runDescriptions = cfg->unrollConfig(configName);
+        std::vector<InifileContents::RunInfo> runDescriptions = ini->unrollConfig(configName);
         for (int runNumber = 0; runNumber < (int) runDescriptions.size(); runNumber++) {
             try {
-                cConfiguration::RunInfo runInfo = runDescriptions[runNumber];
-                std::string expandedRunFilter = opp_substitutevariables(runFilter, runInfo.runAttrs);
+                InifileContents::RunInfo runInfo = runDescriptions[runNumber];
+                std::string expandedRunFilter = opp_substitutevariables(runFilter, unionOf(runInfo.runAttrs, runInfo.iterVars));
                 ValueIterator::Expr expr(expandedRunFilter.c_str());
                 expr.substituteVariables(ValueIterator::VariableMap());
                 expr.evaluate();

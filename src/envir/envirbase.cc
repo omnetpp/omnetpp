@@ -309,11 +309,6 @@ cConfiguration *EnvirBase::getConfig()
     return cfg;
 }
 
-cConfigurationEx *EnvirBase::getConfigEx()
-{
-    return dynamic_cast<cConfigurationEx *>(getConfig());
-}
-
 std::string EnvirBase::resolveResourcePath(const char *fileName, cComponentType *context)
 {
     // search in current directory (or with absolute path)

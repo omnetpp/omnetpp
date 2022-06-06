@@ -285,11 +285,11 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
 
             // simulation run related
             case CONFIGNAME:
-                stream << simulation->getActiveEnvir()->getConfigEx()->getActiveConfigName();
+                stream << simulation->getActiveEnvir()->getConfig()->getActiveConfigName();
                 break;
 
             case RUNNUMBER:
-                stream << simulation->getActiveEnvir()->getConfigEx()->getActiveRunNumber();
+                stream << simulation->getActiveEnvir()->getConfig()->getActiveRunNumber();
                 break;
 
             case NETWORK_MODULE_CLASSNAME:

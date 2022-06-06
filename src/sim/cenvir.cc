@@ -24,14 +24,6 @@ using namespace omnetpp::common;
 
 namespace omnetpp {
 
-cConfigurationEx *cEnvir::getConfigEx()
-{
-    cConfigurationEx *cfg = dynamic_cast<cConfigurationEx *>(getConfig());
-    if (!cfg)
-        throw cRuntimeError("Illegal call to cEnvir::getConfigEx(): Configuration object is not subclassed from cConfigurationEx");
-    return cfg;
-}
-
 #define BUFLEN    1024
 
 void cEnvir::printfmsg(const char *fmt, ...)

@@ -30,7 +30,8 @@
 #include "envirbase.h" // ARGSPEC
 #include "args.h"
 #include "inifilereader.h"
-#include "sectionbasedconfig.h"
+#include "inifilecontents.h"
+#include "configuration.h"
 #include "appreg.h"
 #include "fsutils.h"
 #include "startup.h"
@@ -51,8 +52,8 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace envir {
 
+Register_GlobalConfigOption(CFGID_CONFIGURATION_READER_CLASS, "configuration-reader-class", CFG_STRING, "", "Selects the configuration reader C++ class, which must subclass from `cConfigurationReader`. This option allows configuration to come from sources other than ini files, e.g. from database.");
 Register_GlobalConfigOption(CFGID_LOAD_LIBS, "load-libs", CFG_FILENAMES, "", "A space-separated list of dynamic libraries to be loaded on startup. The libraries should be given without the `.dll` or `.so` suffix -- that will be automatically appended.");
-Register_GlobalConfigOption(CFGID_CONFIGURATION_CLASS, "configuration-class", CFG_STRING, "", "Part of the Envir plugin mechanism: selects the class from which all configuration information will be obtained. This option lets you replace omnetpp.ini with some other implementation, e.g. database input. The simulation program still has to bootstrap from an omnetpp.ini (which contains the configuration-class setting). The class should implement the `cConfigurationEx` interface.");
 Register_GlobalConfigOption(CFGID_USER_INTERFACE, "user-interface", CFG_STRING, "", "Selects the user interface to be started. Known good values are Cmdenv and Qtenv. This option is normally left empty, as it is more convenient to specify the user interface via a command-line option or the IDE's Run and Debug dialogs. New user interfaces can be defined by subclassing `AppBase`.");
 
 // helper macro
@@ -100,8 +101,8 @@ int setupUserInterface(int argc, char *argv[])
     // SETUP
     //
     AppBase *app = nullptr;
-    SectionBasedConfiguration *bootConfig = nullptr;
-    cConfigurationEx *config = nullptr;
+    InifileContents *ini = nullptr;
+    cConfiguration *bootConfig = nullptr;
     bool verbose = false;
     int exitCode = 0;
     try {
@@ -155,25 +156,24 @@ int setupUserInterface(int argc, char *argv[])
         // First, load the ini file(s). It might contain the name of the user interface
         // to instantiate.
         //
-        InifileReader *iniReader = new InifileReader();
+        ini = new InifileContents();
         const char *fname;
         int inifilesRead = 0;
         for (int k = 0; (fname = args.optionValue('f', k)) != nullptr; k++, inifilesRead++)
-            iniReader->readFile(fname);
+            ini->readFile(fname);
         for (int k = 0; (fname = args.argument(k)) != nullptr; k++, inifilesRead++)
-            iniReader->readFile(fname);
+            ini->readFile(fname);
         if (inifilesRead == 0) {
             fname = "omnetpp.ini";
             if (fileExists(fname))
-                iniReader->readFile(fname);
+                ini->readFile(fname);
             else if (!args.optionGiven('v') && !args.optionGiven('h') && !args.longOptionGiven("network"))
                 throw cRuntimeError("Missing configuration: No ini files specified and no 'omnetpp.ini' in the current working directory (specify at least --network=<name> to suppress this message)");
         }
 
         // activate [General] section so that we can read global settings from it
-        bootConfig = new SectionBasedConfiguration();
-        bootConfig->setConfigurationReader(iniReader);
-        bootConfig->setCommandLineConfigOptions(args.getLongOptions(), getWorkingDir().c_str());
+        ini->setCommandLineConfigOptions(args.getLongOptions(), getWorkingDir().c_str());
+        bootConfig = ini->activateGlobalConfig();
 
         //
         // Load all libraries specified on the command line ('-l' options),
@@ -190,19 +190,19 @@ int setupUserInterface(int argc, char *argv[])
         //
         // Create custom configuration object, if needed.
         //
-        std::string configClass = bootConfig->getAsString(CFGID_CONFIGURATION_CLASS);
-        if (configClass.empty()) {
-            config = bootConfig;
-        }
-        else {
-            // create custom configuration object
-            CREATE_BY_CLASSNAME(config, configClass.c_str(), cConfigurationEx, "configuration");
-            config->initializeFrom(bootConfig);
+        std::string configReaderClass = bootConfig->getAsString(CFGID_CONFIGURATION_READER_CLASS);
+        if (!configReaderClass.empty()) {
+            cConfigurationReader *reader;
+            CREATE_BY_CLASSNAME(reader, configReaderClass.c_str(), cConfigurationReader, "configuration");
+            InifileContents *newIni = new InifileContents();
+            newIni->readUsing(reader, bootConfig);
+            delete ini;
             delete bootConfig;
-            bootConfig = nullptr;
+            ini = newIni;
+            bootConfig = ini->activateGlobalConfig();
 
             // load libs from this config as well
-            std::vector<std::string> libs = config->getAsFilenames(CFGID_LOAD_LIBS);
+            std::vector<std::string> libs = bootConfig->getAsFilenames(CFGID_LOAD_LIBS);
             for (auto & lib : libs)
                 loadExtensionLibrary(lib.c_str());
         }
@@ -217,7 +217,7 @@ int setupUserInterface(int argc, char *argv[])
 #ifndef WITH_PARSIM
         ignorableKeys += " parsim-*";
 #endif
-        config->validate(ignorableKeys.c_str());
+        ini->validate(ignorableKeys.c_str());
 
         //
         // Choose and set up user interface (EnvirBase subclass). Everything else
@@ -226,7 +226,7 @@ int setupUserInterface(int argc, char *argv[])
 
         std::string appName = opp_nulltoempty(args.optionValue('u')); // last -u argument
         if (appName.empty())
-            appName = config->getAsString(CFGID_USER_INTERFACE);
+            appName = bootConfig->getAsString(CFGID_USER_INTERFACE);
 
         cOmnetAppRegistration *appReg = nullptr;
         if (!appName.empty()) {
@@ -275,7 +275,7 @@ int setupUserInterface(int argc, char *argv[])
     try {
         if (app) {
             // install and run app
-            exitCode = app->run(argc, argv, config);
+            exitCode = app->run(argc, argv, ini);
         }
         else {
             exitCode = 1;

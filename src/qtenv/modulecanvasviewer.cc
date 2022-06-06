@@ -347,7 +347,7 @@ void ModuleCanvasViewer::exportToImage()
     }
 
     QString selF = "PNG(*.png)";
-    QString fileName = QString(getQtenv()->getConfigEx()->getActiveConfigName()) + "_" + getObjectShortTypeName(object) + QString(".png");
+    QString fileName = QString(getQtenv()->getConfig()->getActiveConfigName()) + "_" + getObjectShortTypeName(object) + QString(".png");
     fileName = QFileDialog::getSaveFileName(this, "Export to Image", fileName, filter, &selF);
 
     if (fileName.isNull())
@@ -367,7 +367,7 @@ void ModuleCanvasViewer::exportToPdf()
     if (exportArea.isNull())
         return;
 
-    QString fileName = QString(getQtenv()->getConfigEx()->getActiveConfigName()) + "_" + getObjectShortTypeName(object) + QString(".pdf");
+    QString fileName = QString(getQtenv()->getConfig()->getActiveConfigName()) + "_" + getObjectShortTypeName(object) + QString(".pdf");
     fileName = QFileDialog::getSaveFileName(this, "Export to PDF", fileName, "PDF files (*.pdf)");
 
     if (fileName.isNull())

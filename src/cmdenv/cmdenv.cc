@@ -165,7 +165,7 @@ void Cmdenv::doRun()
         EnvirBase *envir = new EnvirBase(this);
         cSimulation *simulation = new cSimulation("simulation", envir);  //TODO: finally: delete simulation
         cSimulation::setActiveSimulation(simulation);
-        envir->initialize(simulation, cfg, args);
+        envir->initialize(simulation, activeCfg, args);
 
         readOptions();
 
@@ -250,17 +250,17 @@ bool Cmdenv::runSimulation(const char *configName, int runNumber)
         if (opt->verbose)
             out << "\nPreparing for running configuration " << opt->configName << ", run #" << runNumber << "..." << endl;
 
-        cfg->activateConfig(configName, runNumber);
+        activeCfg = ini->activateConfig(configName, runNumber); //TODO delete previous cfg
         readPerRunOptions();
 
-        const char *iterVars = cfg->getVariable(CFGVAR_ITERATIONVARS);
-        const char *runId = cfg->getVariable(CFGVAR_RUNID);
-        const char *repetition = cfg->getVariable(CFGVAR_REPETITION);
+        const char *iterVars = activeCfg->getVariable(CFGVAR_ITERATIONVARS);
+        const char *runId = activeCfg->getVariable(CFGVAR_RUNID);
+        const char *repetition = activeCfg->getVariable(CFGVAR_REPETITION);
         if (!opt->verbose)
             out << opt->configName << " run " << runNumber << ": " << iterVars << ", $repetition=" << repetition << endl; // print before redirection; useful as progress indication from opp_runall
 
         if (opt->redirectOutput) {
-            opt->outputFile = ResultFileUtils(cfg).augmentFileName(opt->outputFile);
+            opt->outputFile = ResultFileUtils(activeCfg).augmentFileName(opt->outputFile);
             if (opt->verbose)
                 out << "Redirecting output to file \"" << opt->outputFile << "\"..." << endl;
             startOutputRedirection(opt->outputFile.c_str());

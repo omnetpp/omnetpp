@@ -286,7 +286,7 @@ void EventlogFileManager::truncate()
     // truncate only if a snapshot entry is found
     if (foundSnapshot) {
         // write begin simulation entry to the very beginning
-        const char *runId = getEnvir()->getConfigEx()->getVariable(CFGVAR_RUNID);
+        const char *runId = cfg->getVariable(CFGVAR_RUNID);
         beginningFileOffset = toVirtualFileOffset(copyFromOffset);
         opp_fseek(feventlog, 0, SEEK_SET);
         if (ferror(feventlog))
@@ -872,7 +872,7 @@ void EventlogFileManager::recordSimulationBegin()
 {
     FileLockAcquirer fileLockAcquirer(fileLock, FILE_LOCK_EXCLUSIVE);
     beginningFileOffset = 0;
-    const char *runId = getEnvir()->getConfigEx()->getVariable(CFGVAR_RUNID);
+    const char *runId = cfg->getVariable(CFGVAR_RUNID);
     EventLogWriter::recordSimulationBeginEntry_ov_ev_rid(feventlog, OMNETPP_VERSION, EVENTLOG_VERSION, runId);
     eventNumber = -1;
     entryIndex = 0;

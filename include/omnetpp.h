@@ -38,6 +38,7 @@
 #include "omnetpp/ccomponenttype.h"
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/cconfiguration.h"
+#include "omnetpp/cconfigurationreader.h"
 #include "omnetpp/ccontextswitcher.h"
 #include "omnetpp/ccoroutine.h"
 #include "omnetpp/cdataratechannel.h"
