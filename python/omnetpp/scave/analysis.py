@@ -7,7 +7,7 @@ module is `opp_charttool`.
 
 import os
 import sys
-import site
+import importlib
 import xml.etree.ElementTree as ET
 import xml.dom.minidom as minidom # because ET cannot pretty-print
 import matplotlib as mpl
@@ -417,6 +417,12 @@ class Analysis:
             props['image_export_height'] = str(height)
         if dpi:
             props['image_export_dpi'] = str(dpi)
+
+        # have to reload these modules, otherwise some charts are not entirely
+        # reproducible, elements can be shifted around by about 1 pixel
+        importlib.reload(mpl)
+        importlib.reload(plt)
+        mpl.use(utils._get_mpl_backend_for_image_format(str(format)))
 
         self.run_chart(chart, wd, workspace, extra_props=props, show=False)
 
