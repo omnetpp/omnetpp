@@ -1020,24 +1020,7 @@ def export_image_if_needed(props):
 
         # Explicitly select a non-interactive backend appropriate for the export format,
         # and keep auto-selection for any other formats not listed here.
-        backend = {
-            "png":  "AGG",
-            "jpg":  "AGG",
-            "jpeg": "AGG",
-            "tif":  "AGG",
-            "tiff": "AGG",
-            "raw":  "AGG",
-
-            "svg":  "SVG",
-            "svgz": "SVG",
-
-            "ps" :  "PS",
-            "eps":  "PS",
-
-            "pdf":  "PDF",
-
-            "pgf":  "PGF",
-        }.get(format.lower(), None)
+        backend = _get_mpl_backend_for_image_format(format)
 
         # save image
         retry = True
@@ -1089,6 +1072,28 @@ def _format_to_extension(format):
         format = format_to_extension[format]
 
     return format
+
+
+def _get_mpl_backend_for_image_format(format):
+    return {
+        "png":  "AGG",
+        "jpg":  "AGG",
+        "jpeg": "AGG",
+        "tif":  "AGG",
+        "tiff": "AGG",
+        "raw":  "AGG",
+
+        "svg":  "SVG",
+        "svgz": "SVG",
+
+        "ps" :  "PS",
+        "eps":  "PS",
+
+        "pdf":  "PDF",
+
+        "pgf":  "PGF",
+    }.get(format.lower(), None)
+
 
 def _export_df_as(df, format, filepath, **kwargs):
     extension = _format_to_extension(format)
