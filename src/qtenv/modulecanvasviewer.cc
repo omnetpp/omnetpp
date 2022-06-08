@@ -677,6 +677,9 @@ QLineF ModuleCanvasViewer::getConnectionLine(cGate *gate)
     if (channel) {
         cDisplayString ds = channel->getDisplayString();
 
+        std::string buffer;
+        ds = substituteDisplayStringParamRefs(ds, buffer, channel, true);
+
         const char *modeString = ds.getTagArg("m", 0);
         if (modeString[0] && QString("amnews").contains(modeString[0]))
             mode = modeString[0];
