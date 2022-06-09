@@ -3723,11 +3723,13 @@ public class SequenceChart
                         graphics.setBackgroundColor(styleProvider.getComponentMethodCallColor(componentMethodBeginEntry));
                         if (fromAxisIndex != eventAxisIndex) {
                             EventLogEntry nextComponentMethodEntry = sequenceChartFacade.EventLogEntry_getNextComponentMethodEntry(componentMethodEndEntry);
-                            graphics.fillRectangle(xEnd, fromY - 2, (int)getEventLogEntryXViewportCoordinateBegin(nextComponentMethodEntry) - xEnd, 5);
+                            if (nextComponentMethodEntry != null)
+                                graphics.fillRectangle(xEnd, fromY - 2, (int)getEventLogEntryXViewportCoordinateBegin(nextComponentMethodEntry) - xEnd, 5);
                         }
                         if (toAxisIndex != eventAxisIndex) {
                             EventLogEntry nextComponentMethodEntry = sequenceChartFacade.EventLogEntry_getNextComponentMethodEntry(componentMethodBeginEntry);
-                            graphics.fillRectangle(xBegin, toY - 2, (int)getEventLogEntryXViewportCoordinateBegin(nextComponentMethodEntry) - xBegin, 5);
+                            if (nextComponentMethodEntry != null)
+                                graphics.fillRectangle(xBegin, toY - 2, (int)getEventLogEntryXViewportCoordinateBegin(nextComponentMethodEntry) - xBegin, 5);
                         }
                         graphics.setLineStyle(styleProvider.getComponentMethodCallLineStyle(componentMethodBeginEntry));
                         if (styleProvider.getComponentMethodCallLineDash(componentMethodBeginEntry) != null)
