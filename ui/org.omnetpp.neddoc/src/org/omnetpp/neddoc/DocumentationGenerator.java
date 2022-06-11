@@ -503,7 +503,7 @@ public class DocumentationGenerator {
             return "default";
     }
 
-    protected String getFullyQalifiedName(ITypeElement typeElement) {
+    protected String getFullyQualifiedName(ITypeElement typeElement) {
         if (typeElement instanceof INedTypeElement) {
             return ((INedTypeElement)typeElement).getNedTypeInfo().getFullyQualifiedName();
         } else if (typeElement instanceof IMsgTypeElement) {
@@ -1294,7 +1294,7 @@ public class DocumentationGenerator {
 
     protected void generateTypePage(ITypeElement typeElement) throws Exception {
         generatePage(getOutputBaseFileName(typeElement), typeElement.getName(), () -> {
-                String fragmentKey = getFullyQalifiedName(typeElement);
+                String fragmentKey = getFullyQualifiedName(typeElement);
 
                 boolean isNedTypeElement = typeElement instanceof INedTypeElement;
                 boolean isMsgTypeElement = typeElement instanceof IMsgTypeElement;
