@@ -33,6 +33,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.FileUtils;
+import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.NedElement;
 import org.omnetpp.ned.model.NedTreeUtil;
 import org.omnetpp.ned.model.SysoutNedErrorStore;
@@ -188,18 +189,32 @@ public class MsgResources implements IMsgTypeResolver, IResourceChangeListener {
 
             // purge cached types
             for (IMsgTypeElement typeElement : element.getTopLevelTypeNodes())
-                msgTypes.remove(typeElement.getName());
+                msgTypes.remove(typeElement.getMsgTypeInfo().getFullyQualifiedCppClassName());
         }
     }
 
     private void readMsgFile(IFile file) throws IOException, CoreException {
+        // forget types that used to be in this msg file
+        forgetMsgFile(file);
+
+        // register msg file
         String source = FileUtils.readTextFile(file.getContents(), file.getCharset());
-        MsgFileElementEx element = NedTreeUtil.parseMsgSource(source, new SysoutNedErrorStore(), file.toString());
+        MsgFileElementEx element = NedTreeUtil.parseMsgSource(source, new SysoutNedErrorStore(), file.toString());  //TODO why SysoutNedErrorStore?
         msgFiles.put(file, element);
         msgElementFiles.put(element, file);
 
-        for (IMsgTypeElement typeElement : element.getTopLevelTypeNodes())
-            msgTypes.put(typeElement.getName(), typeElement);
+        // register types in msg file
+        String currentNamespace = null;
+        for (INedElement child : element.getChildren()) {
+            if (child instanceof NamespaceElement)
+                currentNamespace = ((NamespaceElement) child).getName();
+            else if (child instanceof IMsgTypeElement) {
+                IMsgTypeElement typeElement = (IMsgTypeElement)child;
+                String name = typeElement.getName();
+                String fullyQualifieldCppName = currentNamespace == null ? name : currentNamespace + "::" + name;
+                msgTypes.put(fullyQualifieldCppName, typeElement);
+            }
+        }
     }
 
     /**
