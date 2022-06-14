@@ -11,7 +11,10 @@ import org.eclipse.swt.graphics.Color;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.ned.model.interfaces.ITypeElement;
 
-public class HtmlRenderer implements DocumentationGenerator.IRenderer {
+/**
+ * The default HTML version of INeddocRenderer.
+ */
+public class HtmlRenderer implements INeddocRenderer {
 
     IPath destinationPath;
 
