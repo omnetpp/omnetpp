@@ -417,15 +417,18 @@ public abstract class NedElement extends PlatformObject implements INedElement, 
         return null;
     }
 
-    public INedElement getNextSiblingWithTag(int tagcode) {
-        INedElement node = this.nextsibling;
-        while (node!=null)
-        {
-            if (node.getTagCode()==tagcode)
-                return node;
+    public INedElement getNextSiblingWithTag(int tag) {
+        INedElement node = getNextSibling();
+        while (node != null && node.getTagCode() != tag)
             node = node.getNextSibling();
-        }
-        return null;
+        return node;
+    }
+
+    public INedElement getPreviousSiblingWithTag(int tag) {
+        INedElement node = getPrevSibling();
+        while (node != null && node.getTagCode() != tag)
+            node = node.getPrevSibling();
+        return node;
     }
 
     public List<INedElement> getChildrenWithTag(int tagcode) {

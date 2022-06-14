@@ -294,12 +294,17 @@ ASTNode *ASTNode::getFirstChildWithTag(int tagcode) const
 ASTNode *ASTNode::getNextSiblingWithTag(int tagcode) const
 {
     ASTNode *node = this->nextSibling;
-    while (node) {
-        if (node->getTagCode() == tagcode)
-            return node;
+    while (node && node->getTagCode() != tagcode)
         node = node->getNextSibling();
-    }
-    return nullptr;
+    return node;
+}
+
+ASTNode *ASTNode::getPreviousSiblingWithTag(int tagcode) const
+{
+    ASTNode *node = this->prevSibling;
+    while (node && node->getTagCode() != tagcode)
+        node = node->getPrevSibling();
+    return node;
 }
 
 int ASTNode::getNumChildren() const

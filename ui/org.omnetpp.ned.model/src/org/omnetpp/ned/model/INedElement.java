@@ -264,7 +264,7 @@ public interface INedElement extends Iterable<INedElement>, NedElementTags, NedE
 
     /**
      * Returns pointer to the next sibling of this element with the given
-     * tag code. Return null if there're no such subsequent elements.
+     * tag code. Returns null if there's no such element.
      *
      * getFirstChildWithTag() and getNextSiblingWithTag() are a convenient way
      * to loop through elements with a certain tag code in the child list:
@@ -277,6 +277,12 @@ public interface INedElement extends Iterable<INedElement>, NedElementTags, NedE
      * </pre>
      */
     public INedElement getNextSiblingWithTag(int tagcode);
+
+    /**
+     * Returns pointer to the previous sibling of this element with the given
+     * tag code. Returns null if there's no such element.
+     */
+    public INedElement getPreviousSiblingWithTag(int tagcode);
 
     /**
      * Creates and returns a list containing the child elements that have the given tagcode.
