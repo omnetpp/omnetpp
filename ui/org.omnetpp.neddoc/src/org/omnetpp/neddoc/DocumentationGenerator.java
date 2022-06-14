@@ -715,7 +715,7 @@ public class DocumentationGenerator {
     protected void generatePage(String pageName, String title, Runnable content) throws Exception {
         FileOutputStream oldCurrentOutputStream = currentOutputStream;
 
-        File file = getOutputFile(renderer.addExtension(pageName));
+        File file = getOutputFile(renderer.appendFilenameExtension(pageName));
         currentOutputStream = new FileOutputStream(file);
 
         String splitPage[] = readTextFromResource("page.tmpl").replace("@title@", title).split("@content@");
@@ -726,7 +726,7 @@ public class DocumentationGenerator {
         content.run();
 
         if (APPLY_CC)
-            out(renderer.ccFooterString());
+            out(renderer.copyrightNotice());
 
         out(splitPage[1]);
 
@@ -757,17 +757,17 @@ public class DocumentationGenerator {
                     prefix = prefix.substring(0, prefix.length() / 2);
 
                     if (typeElements == null) {
-                        return prefix + renderer.spanTag(identifier, "error", null);
+                        return prefix + renderer.styled(identifier, "error", null);
                     }
                     else if (typeElements.size() == 1) {
-                        return prefix + renderer.refTag(typeElements.get(0).getName(), renderer.addExtension(getOutputBaseFileName(typeElements.get(0))), null); // use simple name in hyperlink
+                        return prefix + renderer.link(typeElements.get(0).getName(), renderer.appendFilenameExtension(getOutputBaseFileName(typeElements.get(0))), null); // use simple name in hyperlink
                     }
                     else {
                         // several types with the same simple name
                         String replacement = prefix + typeElements.get(0).getName() + "(";
                         int i = 1;
                         for (ITypeElement typeElement : typeElements)
-                            replacement += renderer.refTag(String.valueOf(i++), renderer.addExtension(getOutputBaseFileName(typeElement)), null) + ",";
+                            replacement += renderer.link(String.valueOf(i++), renderer.appendFilenameExtension(getOutputBaseFileName(typeElement)), null) + ",";
                         replacement = replacement.substring(0, replacement.length()-1) + ")";
                         return replacement;
                     }
@@ -798,7 +798,7 @@ public class DocumentationGenerator {
 
     protected void generateProjectIndexReference(IProject project) throws Exception {
         String projectName = project.getName();
-        IPath indexPath = new Path("..").append(neddocRelativeRootPath).append(projectName).append(DocumentationGeneratorPropertyPage.getNeddocPath(project)).append(renderer.addExtension("index"));
+        IPath indexPath = new Path("..").append(neddocRelativeRootPath).append(projectName).append(DocumentationGeneratorPropertyPage.getNeddocPath(project)).append(renderer.appendFilenameExtension("index"));
         generateNavigationMenuItem(1, projectName, indexPath.toPortableString(), null);
     }
 
@@ -818,14 +818,14 @@ public class DocumentationGenerator {
     }
 
     protected String packageReferenceString(String packageName) throws IOException {
-        return "Package: " + renderer.refTag(packageName, renderer.addExtension("packages") + "#" + packageName.replace('.', '_'), "reference-ned");
+        return "Package: " + renderer.link(packageName, renderer.appendFilenameExtension("packages") + "#" + packageName.replace('.', '_'), "reference-ned");
     }
 
     protected void generatePackageIndex() throws Exception {
         if (packageNames.size() != 0)
-            generateNavigationMenuItem(1, "Packages", renderer.addExtension("packages"), () -> {
+            generateNavigationMenuItem(1, "Packages", renderer.appendFilenameExtension("packages"), () -> {
                     for (String packageName : packageNames) {
-                        generateTypeIndex(2, packageName, renderer.addExtension("packages")+"#"+packageName.replace('.', '_'), (object) -> {
+                        generateTypeIndex(2, packageName, renderer.appendFilenameExtension("packages")+"#"+packageName.replace('.', '_'), (object) -> {
                             if (object instanceof INedTypeElement)
                                 return getPackageName((INedTypeElement)object).equals(packageName);
 
@@ -840,7 +840,7 @@ public class DocumentationGenerator {
         if (files.size() != 0)
             generateNavigationMenuItem(1, "Files", null, () -> {
                     for (IFile file : files)
-                        generateNavigationMenuItem(2, file.getProjectRelativePath().toPortableString(), renderer.addExtension(getOutputBaseNameForFile(file)), null);
+                        generateNavigationMenuItem(2, file.getProjectRelativePath().toPortableString(), renderer.appendFilenameExtension(getOutputBaseNameForFile(file)), null);
                 }
             );
     }
@@ -850,7 +850,7 @@ public class DocumentationGenerator {
             monitor.beginTask("Generating navigation tree...", IProgressMonitor.UNKNOWN);
 
             generateNavigationTree("navtreedata.js", () -> {
-                    generateNavigationMenuItem(0, project.getName(), renderer.addExtension("index"), () -> {
+                    generateNavigationMenuItem(0, project.getName(), renderer.appendFilenameExtension("index"), () -> {
 
                         generateOverview();
                         generateSelectedTopics();
@@ -946,20 +946,20 @@ public class DocumentationGenerator {
     private void generateCppIndex() throws Exception {
         if (isCppProject(project) && generateDoxy)
             generateNavigationMenuItem(1, "C++", null, () -> {
-                    generateCppMenuItem("Main Page", renderer.addExtension("main"));
-                    generateCppMenuItem("File List", renderer.addExtension("files"));
-                    generateCppMenuItem("Class List", renderer.addExtension("annotated"));
-                    generateCppMenuItem("Class Hierarchy", renderer.addExtension("hierarchy"));
-                    generateCppMenuItem("Class Members", renderer.addExtension("functions"));
-                    generateCppMenuItem("Namespace List", renderer.addExtension("namespaces"));
-                    generateCppMenuItem("File Members", renderer.addExtension("globals"));
-                    generateCppMenuItem("Namespace Members", renderer.addExtension("namespacemembers"));
+                    generateCppMenuItem("Main Page", renderer.appendFilenameExtension("main"));
+                    generateCppMenuItem("File List", renderer.appendFilenameExtension("files"));
+                    generateCppMenuItem("Class List", renderer.appendFilenameExtension("annotated"));
+                    generateCppMenuItem("Class Hierarchy", renderer.appendFilenameExtension("hierarchy"));
+                    generateCppMenuItem("Class Members", renderer.appendFilenameExtension("functions"));
+                    generateCppMenuItem("Namespace List", renderer.appendFilenameExtension("namespaces"));
+                    generateCppMenuItem("File Members", renderer.appendFilenameExtension("globals"));
+                    generateCppMenuItem("Namespace Members", renderer.appendFilenameExtension("namespacemembers"));
                 }
             );
     }
 
     protected void generateOverview() throws Exception {
-        generateNavigationMenuItem(1, "Overview", renderer.addExtension("index"), null);
+        generateNavigationMenuItem(1, "Overview", renderer.appendFilenameExtension("index"), null);
         final boolean[] titlePageFound = new boolean[1];
         mapPageMatchers(new IPageMatcherVisitor() {
         public boolean visit(PageType pageType, String file, String title, String content) throws Exception {
@@ -998,7 +998,7 @@ public class DocumentationGenerator {
                             if (pageType == PageType.PAGE) {
                                 generateNavigationMenuItem(2, title, file, null);
                                 generatePage(new Path(file).removeFileExtension().toPortableString(), title,
-                                        renderer.sectionTag(title, null) + processHTMLContent("comment", content));
+                                        renderer.sectionHeading(title, null) + processHTMLContent("comment", content));
 
                             }
                             else if (pageType == PageType.EXTERNAL_PAGE) {
@@ -1136,7 +1136,7 @@ public class DocumentationGenerator {
     }
 
     protected void generateTypeIndexEntry(int level, ITypeElement typeElement) throws Exception {
-        generateNavigationMenuItem(level, typeElement.getName(), renderer.addExtension(getOutputBaseFileName(typeElement)), null);
+        generateNavigationMenuItem(level, typeElement.getName(), renderer.appendFilenameExtension(getOutputBaseFileName(typeElement)), null);
     }
 
     protected void generateTypeIndex(int level, String title, final Class<?> clazz) throws Exception {
@@ -1175,7 +1175,7 @@ public class DocumentationGenerator {
                 out("  <compound kind=\"class\">\n");
                 String pkgname = getPackageName(e);
                 out("    <name>"+ (("default".equals(pkgname)) ? "" : pkgname+".") +e.getName()+"</name>\n");
-                out("    <filename>"+renderer.addExtension(getOutputBaseFileName(e))+"</filename>\n");
+                out("    <filename>"+renderer.appendFilenameExtension(getOutputBaseFileName(e))+"</filename>\n");
                 out("  </compound>\n");
             }
         out("</tagfile>\n");
@@ -1195,7 +1195,7 @@ public class DocumentationGenerator {
             if (typeElement instanceof IMsgTypeElement){
                 out("  <compound kind=\"class\">\n");
                 out("    <name>"+ typeElement.getName()+"</name>\n");
-                out("    <filename>"+renderer.addExtension(getOutputBaseFileName(typeElement))+"</filename>\n");
+                out("    <filename>"+renderer.appendFilenameExtension(getOutputBaseFileName(typeElement))+"</filename>\n");
                 out("  </compound>\n");
             }
         out("</tagfile>\n");
@@ -1206,13 +1206,13 @@ public class DocumentationGenerator {
 
     protected void generatePackagesPage() throws Exception {
         generatePage("packages", "Packages", () -> {
-            out(renderer.sectionTag("Packages", "comptitle"));
+            out(renderer.sectionHeading("Packages", "comptitle"));
             for (final String packageName : packageNames) {
-                        out(renderer.anchorTag(packageName.replace('.', '_')));
-                        out(renderer.sectionTag(packageName, "subtitle"));
+                        out(renderer.anchor(packageName.replace('.', '_')));
+                        out(renderer.sectionHeading(packageName, "subtitle"));
                         generateExtensionFragment(ExtType.NED, packageName, "top");
 
-                        out(renderer.tableHeaderTag("typestable"));
+                        out(renderer.beginTable("typestable"));
                         generateTypesTableHead();
 
                         for (ITypeElement typeElement : typeElements)
@@ -1220,7 +1220,7 @@ public class DocumentationGenerator {
                                 if (packageName.equals(getPackageName((INedTypeElement)typeElement)))
                                     generateTypeReferenceLine(typeElement);
 
-                        out(renderer.tableTrailerTag());
+                        out(renderer.endTable());
                         generateExtensionFragment(ExtType.NED, packageName, "bottom");
                     }
             }
@@ -1237,7 +1237,7 @@ public class DocumentationGenerator {
                         String fileType = nedResources.isNedFile(file) ? "NED" : msgResources.isMsgFile(file) ? "Msg" : "";
                         String fragmentKey = file.getProjectRelativePath().toString();
 
-                        out(renderer.sectionTag(fileType + " File " + file.getProjectRelativePath(), "comptitle"));
+                        out(renderer.sectionHeading(fileType + " File " + file.getProjectRelativePath(), "comptitle"));
                         generateExtensionFragment(ExtType.FILE, fragmentKey, "top");
 
                         INedFileElement fileElement = msgResources.isMsgFile(file) ?
@@ -1245,13 +1245,13 @@ public class DocumentationGenerator {
                         List<? extends ITypeElement> typeElements = fileElement.getTopLevelTypeNodes();
 
                         if (!typeElements.isEmpty()) {
-                            out(renderer.tableHeaderTag("typestable"));
+                            out(renderer.beginTable("typestable"));
                             generateTypesTableHead();
 
                             for (ITypeElement typeElement : typeElements)
                                 generateTypeReferenceLine(typeElement);
 
-                            out(renderer.tableTrailerTag());
+                            out(renderer.endTable());
                         }
                         generateExtensionFragment(ExtType.FILE, fragmentKey, "after-types");
 
@@ -1293,16 +1293,16 @@ public class DocumentationGenerator {
                 if (isMsgTypeElement) generateExtensionFragment(ExtType.MSG, fragmentKey, "top");
 
                 if (isNedTypeElement)
-                    out(renderer.pTag(packageReferenceString(getPackageName((INedTypeElement)typeElement))));
+                    out(renderer.paragraph(packageReferenceString(getPackageName((INedTypeElement)typeElement))));
 
-                out(renderer.typeSectionTag(typeElement));
+                out(renderer.typeSectionHeading(typeElement));
 
                 if (typeElement instanceof SimpleModuleElementEx || typeElement instanceof IMsgTypeElement)
                     generateNedTypeCppDefinitionReference(typeElement);
 
                 String comment = getExpandedComment(typeElement);
                 if (comment == null)
-                    out(renderer.pTag("(no description)"));
+                    out(renderer.paragraph("(no description)"));
                 else
                     out(processHTMLContent("comment", comment));
                 if (isNedTypeElement) generateExtensionFragment(ExtType.NED, fragmentKey, "after-description");
@@ -1395,9 +1395,9 @@ public class DocumentationGenerator {
         Map<String, FieldElement> fields = msgTypeElement.getMsgTypeInfo().getFields();
         Map<String, FieldElement> localFields = msgTypeElement.getMsgTypeInfo().getLocalFields();
         if (fields.size() != 0) {
-            out(renderer.subSectionTag("Fields", "subtitle") +
-                renderer.tableHeaderTag("fieldstable") +
-                renderer.tableHeaderRowTag("Name","name", "Type","type", "Description","description"));
+            out(renderer.subsectionHeading("Fields", "subtitle") +
+                renderer.beginTable("fieldstable") +
+                renderer.tableHeading("Name","name", "Type","type", "Description","description"));
 
             for (String name : fields.keySet())
             {
@@ -1410,9 +1410,9 @@ public class DocumentationGenerator {
                 if (field.getIsVector())
                     type += "[" + field.getVectorSize() + "]"; // note: no whitespace between type name and "["
 
-                out(renderer.tableDataRowTag(trClass, name, type, tableCommentString(getExpandedComment(field))));
+                out(renderer.tableRow(trClass, name, type, tableCommentString(getExpandedComment(field))));
             }
-            out(renderer.tableTrailerTag());
+            out(renderer.endTable());
         }
     }
 
@@ -1420,19 +1420,19 @@ public class DocumentationGenerator {
         Map<String, Map<String, PropertyElementEx>> properties = typeElement.getProperties();
 
         if (properties.size() != 0) {
-            out(renderer.subSectionTag("Properties", "subtitle")+
-                renderer.tableHeaderTag("propertiestable") +
-                renderer.tableHeaderRowTag("Name","name", "Value","value", "Description","description"));
+            out(renderer.subsectionHeading("Properties", "subtitle")+
+                renderer.beginTable("propertiestable") +
+                renderer.tableHeading("Name","name", "Value","value", "Description","description"));
 
             for (String name : properties.keySet())
             {
                 PropertyElementEx property = properties.get(name).get(PropertyElementEx.DEFAULT_PROPERTY_INDEX);
 
                 if (property != null)
-                    out(renderer.tableDataRowTag(null, name, propertyLiteralValuesString(property), tableCommentString(getExpandedComment(property))));
+                    out(renderer.tableRow(null, name, propertyLiteralValuesString(property), tableCommentString(getExpandedComment(property))));
             }
 
-            out(renderer.tableTrailerTag());
+            out(renderer.endTable());
         }
     }
 
@@ -1464,27 +1464,27 @@ public class DocumentationGenerator {
             }
 
             if (compoundModules.size() != 0) {
-                out(renderer.subSectionTag("Used in compound modules", "subtitle"));
+                out(renderer.subsectionHeading("Used in compound modules", "subtitle"));
 
-                out(renderer.tableHeaderTag("typestable"));
+                out(renderer.beginTable("typestable"));
                 generateTypesTableHead();
 
                 for (INedTypeElement userElement : compoundModules)
                     generateTypeReferenceLine(userElement);
 
-                out(renderer.tableTrailerTag());
+                out(renderer.endTable());
             }
 
             if (networks.size() != 0) {
-                out(renderer.subSectionTag("Used in", "subtitle"));
+                out(renderer.subsectionHeading("Used in", "subtitle"));
 
-                out(renderer.tableHeaderTag("typestable"));
+                out(renderer.beginTable("typestable"));
                 generateTypesTableHead();
 
                 for (INedTypeElement userElement : networks)
                     generateTypeReferenceLine(userElement);
 
-                out(renderer.tableTrailerTag());
+                out(renderer.endTable());
             }
         }
     }
@@ -1495,55 +1495,55 @@ public class DocumentationGenerator {
         Map<String, ParamElementEx> paramsAssignments = typeElement.getParamAssignments();
 
         if (!paramsDeclarations.isEmpty()) {
-            out(renderer.subSectionTag("Parameters", "subtitle")+
-                renderer.tableHeaderTag("paramstable") +
-                renderer.tableHeaderRowTag("Name","name", "Type","type", "Default value","defaultvalue", "Description","description"));
+            out(renderer.subsectionHeading("Parameters", "subtitle")+
+                renderer.beginTable("paramstable") +
+                renderer.tableHeading("Name","name", "Type","type", "Default value","defaultvalue", "Description","description"));
 
             for (String name : paramsDeclarations.keySet()) {
                 ParamElementEx paramDeclaration = paramsDeclarations.get(name);
                 ParamElementEx paramAssignment = paramsAssignments.get(name);
                 String trClass = localParamsDeclarations.containsKey(name) ? "local" : "inherited";
 
-                out(renderer.tableDataRowTag(trClass,
+                out(renderer.tableRow(trClass,
                         name,
                         getParamTypeAsString(paramDeclaration),
                         (paramAssignment == null ? "" : paramAssignment.getValue()),
                         tableCommentString(getExpandedComment(paramDeclaration))));
             }
 
-            out(renderer.tableTrailerTag());
+            out(renderer.endTable());
         }
     }
 
     protected void generateSignalsTable(INedTypeElement typeElement) throws IOException {
         Map<String, PropertyElementEx> propertyMap = typeElement.getProperties().get("signal");
         if (propertyMap != null) {
-            out(renderer.subSectionTag("Signals", "subtitle")+
-                renderer.tableHeaderTag("signalstable") +
-                renderer.tableHeaderRowTag("Name","name", "Type","type", "Unit","unit"));
+            out(renderer.subsectionHeading("Signals", "subtitle")+
+                renderer.beginTable("signalstable") +
+                renderer.tableHeading("Name","name", "Type","type", "Unit","unit"));
             for (String name : propertyMap.keySet()) {
                 PropertyElementEx propertyElement = propertyMap.get(name);
                 String cppType = getPropertyElementValue(propertyElement, "type");
-                out(renderer.tableDataRowTag("local",
+                out(renderer.tableRow("local",
                         name,
                         cppReferenceString(cppType, cppType),
                         getPropertyElementValue(propertyElement, "unit")));
             }
-            out(renderer.tableTrailerTag());
+            out(renderer.endTable());
         }
     }
 
     protected void generateStatisticsTable(INedTypeElement typeElement) throws IOException {
         Map<String, PropertyElementEx> propertyMap = typeElement.getProperties().get("statistic");
         if (propertyMap != null) {
-            out(renderer.subSectionTag("Statistics", "subtitle")+
-                renderer.tableHeaderTag("statisticstable") +
-                renderer.tableHeaderRowTag("Name","name", "Title","title", "Source","source",
+            out(renderer.subsectionHeading("Statistics", "subtitle")+
+                renderer.beginTable("statisticstable") +
+                renderer.tableHeading("Name","name", "Title","title", "Source","source",
                             "Record","record", "Unit","unit", "Interpolation Mode","interpolationmode"));
 
             for (String name : propertyMap.keySet()) {
                 PropertyElementEx propertyElement = propertyMap.get(name);
-                out(renderer.tableDataRowTag("local", name,
+                out(renderer.tableRow("local", name,
                         getPropertyElementValue(propertyElement, "title"),
                         getPropertyElementValue(propertyElement, "source"),
                         getPropertyElementValue(propertyElement, "record"),
@@ -1551,7 +1551,7 @@ public class DocumentationGenerator {
                         getPropertyElementValue(propertyElement, "interpolationmode")));
 
             }
-            out(renderer.tableTrailerTag());
+            out(renderer.endTable());
         }
     }
 
@@ -1560,20 +1560,20 @@ public class DocumentationGenerator {
         collectUnassignedParameters(null, typeElement.getNedTypeInfo().getSubmodules(), params);
 
         if (params.size() != 0) {
-            out(renderer.subSectionTag("Unassigned submodule parameters", "subtitle")+
-                renderer.tableHeaderTag("deepparamstable") +
-                renderer.tableHeaderRowTag("Name","name", "Type","type", "Default value","defaultvalue", "Description","description"));
+            out(renderer.subsectionHeading("Unassigned submodule parameters", "subtitle")+
+                renderer.beginTable("deepparamstable") +
+                renderer.tableHeading("Name","name", "Type","type", "Default value","defaultvalue", "Description","description"));
 
             for (ArrayList<Object> tuple : params) {
                 ParamElementEx paramDeclaration = (ParamElementEx)tuple.get(1);
                 ParamElementEx paramAssignment = (ParamElementEx)tuple.get(2);
 
-                out(renderer.tableDataRowTag(null, (String)tuple.get(0),
+                out(renderer.tableRow(null, (String)tuple.get(0),
                         getParamTypeAsString(paramDeclaration),
                         (paramAssignment == null ? "" : paramAssignment.getValue()),
                         tableCommentString(getExpandedComment(paramDeclaration))));
             }
-            out(renderer.tableTrailerTag());
+            out(renderer.endTable());
         }
     }
 
@@ -1582,7 +1582,7 @@ public class DocumentationGenerator {
             INedTypeElement typeElement = submodule.getEffectiveTypeRef();
 
             if (typeElement != null) {
-                String newPrefix = (prefix == null ? "" : prefix + ".") + renderer.refTag(submodule.getName(), renderer.addExtension(getOutputBaseFileName(typeElement)), null);
+                String newPrefix = (prefix == null ? "" : prefix + ".") + renderer.link(submodule.getName(), renderer.appendFilenameExtension(getOutputBaseFileName(typeElement)), null);
 
                 if (typeElement instanceof CompoundModuleElementEx)
                     collectUnassignedParameters(newPrefix, typeElement.getNedTypeInfo().getSubmodules(), params);
@@ -1616,23 +1616,23 @@ public class DocumentationGenerator {
         Map<String, GateElementEx> gatesSizes = module.getGateSizes();
 
         if (!gateDeclarations.isEmpty()) {
-            out(renderer.subSectionTag("Gates", "subtitle")+
-                renderer.tableHeaderTag("gatestable") +
-                renderer.tableHeaderRowTag("Name","name", "Direction","type", "Size","gatesize", "Description","description"));
+            out(renderer.subsectionHeading("Gates", "subtitle")+
+                renderer.beginTable("gatestable") +
+                renderer.tableHeading("Name","name", "Direction","type", "Size","gatesize", "Description","description"));
 
             for (String name : gateDeclarations.keySet()) {
                 GateElementEx gateDeclaration = gateDeclarations.get(name);
                 GateElementEx gateSize = gatesSizes.get(name);
                 String trClass = localGateDeclarations.containsKey(name) ? "local" : "inherited";
 
-                out(renderer.tableDataRowTag(trClass,
+                out(renderer.tableRow(trClass,
                         name + (gateDeclaration.getIsVector() ? " [ ]" : ""),
                         gateDeclaration.getAttribute(GateElementEx.ATT_TYPE),
                         (gateSize != null && gateSize.getIsVector() ? gateSize.getVectorSize() : ""),
                         tableCommentString(getExpandedComment(gateDeclaration))));
             }
 
-            out(renderer.tableTrailerTag());
+            out(renderer.endTable());
         }
     }
 
@@ -1641,22 +1641,22 @@ public class DocumentationGenerator {
     }
 
     protected void generateTypesTableHead() throws IOException {
-        out(renderer.tableHeaderRowTag("Name","name", "Type","type", "Description","description"));
+        out(renderer.tableHeading("Name","name", "Type","type", "Description","description"));
     }
 
     protected void generateTypeReferenceLine(ITypeElement typeElement) throws IOException {
-        out(renderer.tableDataRowTag(null,
+        out(renderer.tableRow(null,
                 typeReferenceString(typeElement),
                 typeTypeString(typeElement),
                 typeCommentString(typeElement)));
     }
 
     protected String typeReferenceString(ITypeElement typeElement) throws IOException {
-        return renderer.refTag(typeElement.getName(), renderer.addExtension(getOutputBaseFileName(typeElement)), "reference-ned");
+        return renderer.link(typeElement.getName(), renderer.appendFilenameExtension(getOutputBaseFileName(typeElement)), "reference-ned");
     }
 
     protected String typeTypeString(ITypeElement typeElement) {
-        return renderer.iTag(typeElement.getReadableTagName().replaceAll(" ", "&nbsp;"));
+        return renderer.italic(typeElement.getReadableTagName().replaceAll(" ", "&nbsp;"));
     }
 
     protected String typeCommentString(ITypeElement typeElement) throws IOException {
@@ -1664,12 +1664,12 @@ public class DocumentationGenerator {
         if (comment != null)
             return processHTMLContent("briefcomment", comment);
         else
-            return renderer.iTag("(no description)");
+            return renderer.italic("(no description)");
     }
 
     protected void generateUnresolvedTypeReferenceLine(String name) throws IOException {
-        out(renderer.tableDataRowTag(null,
-                name, renderer.iTag("(unknown -- not in documented files)"),""));
+        out(renderer.tableRow(null,
+                name, renderer.italic("(unknown -- not in documented files)"),""));
     }
 
     protected void generateNedTypeCppDefinitionReference(ITypeElement typeElement) throws IOException {
@@ -1683,12 +1683,12 @@ public class DocumentationGenerator {
             throw new RuntimeException("Unknown type element: " + typeElement);
 
         if (doxyMap.containsKey(cppClassName))
-            out(renderer.pTag(cppReferenceString(cppClassName, "C++ definition")));
+            out(renderer.paragraph(cppReferenceString(cppClassName, "C++ definition")));
     }
 
     protected String cppReferenceString(String cppClassName, String label) throws IOException {
         if (doxyMap.containsKey(cppClassName))
-            return renderer.refTag(label, getRelativePath(rootRelativeNeddocPath, rootRelativeDoxyPath).append(doxyMap.get(cppClassName)).toString(), "reference-cpp");
+            return renderer.link(label, getRelativePath(rootRelativeNeddocPath, rootRelativeDoxyPath).append(doxyMap.get(cppClassName)).toString(), "reference-cpp");
         else
             return label;
     }
@@ -1699,44 +1699,44 @@ public class DocumentationGenerator {
 
     protected void generateFileReference(IFile file) throws IOException {
         if (generateFileListings)
-            out("File: " + renderer.refTag(file.getProjectRelativePath().toString(), renderer.addExtension(getOutputBaseNameForFile(file)), null));
+            out("File: " + renderer.link(file.getProjectRelativePath().toString(), renderer.appendFilenameExtension(getOutputBaseNameForFile(file)), null));
         else
             out("File: " + file.getProjectRelativePath());
     }
 
     protected void generateKnownSubtypesTable(ITypeElement typeElement) throws IOException {
         if (subtypesMap.containsKey(typeElement)) {
-            out(renderer.subSectionTag("Known subclasses", "subtitle"));
+            out(renderer.subsectionHeading("Known subclasses", "subtitle"));
 
-            out(renderer.tableHeaderTag("typestable"));
+            out(renderer.beginTable("typestable"));
             generateTypesTableHead();
 
             for (ITypeElement subtype : subtypesMap.get(typeElement))
                 generateTypeReferenceLine(subtype);
 
-            out(renderer.tableTrailerTag());
+            out(renderer.endTable());
         }
     }
 
     protected void generateImplementorsTable(ITypeElement typeElement) throws IOException {
         if (allImplementorsMap.containsKey(typeElement)) {
-            out(renderer.subSectionTag("Implemented by", "subtitle"));
+            out(renderer.subsectionHeading("Implemented by", "subtitle"));
 
-            out(renderer.tableHeaderTag("implementorstable"));
+            out(renderer.beginTable("implementorstable"));
             generateTypesTableHead();
 
             for (ITypeElement subtype : allImplementorsMap.get(typeElement))
                 generateTypeReferenceLine(subtype);
 
-            out(renderer.tableTrailerTag());
+            out(renderer.endTable());
         }
     }
 
     protected void generateExtendsTable(ITypeElement typeElement) throws IOException {
         if (typeElement.getFirstExtends() != null) {
-            out(renderer.subSectionTag("Extends", "subtitle"));
+            out(renderer.subsectionHeading("Extends", "subtitle"));
 
-            out(renderer.tableHeaderTag("typestable"));
+            out(renderer.beginTable("typestable"));
             generateTypesTableHead();
 
             if (typeElement instanceof IInterfaceTypeElement)
@@ -1751,7 +1751,7 @@ public class DocumentationGenerator {
                     generateUnresolvedTypeReferenceLine(typeElement.getFirstExtends());
             }
 
-            out(renderer.tableTrailerTag());
+            out(renderer.endTable());
         }
     }
 
@@ -1824,7 +1824,7 @@ public class DocumentationGenerator {
                         ScrollingGraphicalViewer viewer = NedFigureProvider.createNedViewer(modelRoot);
                         NedEditPart editPart = (NedEditPart)viewer.getEditPartRegistry().get(typeElement);
 
-                        out(renderer.typeImageMapHeaderTag());
+                        out(renderer.typeImageMap());
 
                         if (editPart instanceof CompoundModuleEditPart) {
                             CompoundModuleEditPart compoundModuleEditPart = (CompoundModuleEditPart)editPart;
@@ -1842,7 +1842,7 @@ public class DocumentationGenerator {
                             outMapReference(nedTypeEditPart.getModel(), nedTypeEditPart.getFigure());
                         }
 
-                        out(renderer.typeImageMapTrailerTag());
+                        out(renderer.endTypeImageMap());
                     }
                     catch (IOException e) {
                         throw new RuntimeException(e);
@@ -1867,8 +1867,8 @@ public class DocumentationGenerator {
 
             if (generateFullUsageDiagrams) {
                 generatePage("full-ned-usage-diagram", "Full NED Usage Diagram", () -> {
-                        out(renderer.sectionTag("Full NED Usage Diagram", "comptitle")+
-                            renderer.pTag("The following diagram shows usage relationships between simple and compound modules, module interfaces, networks, channels and channel interfaces.\n" +
+                        out(renderer.sectionHeading("Full NED Usage Diagram", "comptitle")+
+                            renderer.paragraph("The following diagram shows usage relationships between simple and compound modules, module interfaces, networks, channels and channel interfaces.\n" +
                             "Unresolved types are missing from the diagram."));
                         generateUsageDiagram(nedTypeElements, "full-ned-usage-diagram.svg");
                     }
@@ -1878,8 +1878,8 @@ public class DocumentationGenerator {
 
             if (generateFullInheritanceDiagrams) {
                 generatePage("full-ned-inheritance-diagram", "Full NED Inheritance Diagram", () -> {
-                        out(renderer.sectionTag("Full NED Inheritance Diagram", "comptitle")+
-                            renderer.pTag("The following diagram shows the inheritance hierarchy between simple and compound modules, module interfaces, networks, channels and channel interfaces.\n" +
+                        out(renderer.sectionHeading("Full NED Inheritance Diagram", "comptitle")+
+                            renderer.paragraph("The following diagram shows the inheritance hierarchy between simple and compound modules, module interfaces, networks, channels and channel interfaces.\n" +
                             "Unresolved types are missing from the diagram."));
                         generateInheritanceDiagram(nedTypeElements, "full-ned-inheritance-diagram.svg");
                     }
@@ -1889,8 +1889,8 @@ public class DocumentationGenerator {
 
             if (generateFullUsageDiagrams) {
                 generatePage("full-msg-usage-diagram", "Full MSG Usage Diagram", () -> {
-                        out(renderer.sectionTag("Full MSG Usage Diagram", "comptitle")+
-                            renderer.pTag("The following diagram shows usage relationships between messages, packets, classes and structs.\n" +
+                        out(renderer.sectionHeading("Full MSG Usage Diagram", "comptitle")+
+                            renderer.paragraph("The following diagram shows usage relationships between messages, packets, classes and structs.\n" +
                             "Unresolved types are missing from the diagram."));
                         generateUsageDiagram(msgTypeElements, "full-msg-usage-diagram.svg");
                     }
@@ -1900,8 +1900,8 @@ public class DocumentationGenerator {
 
             if (generateFullInheritanceDiagrams) {
                 generatePage("full-msg-inheritance-diagram", "Full MSG Inheritance Diagram", () -> {
-                        out(renderer.sectionTag("Full MSG Inheritance Diagram", "comptitle")+
-                            renderer.pTag("The following diagram shows the inheritance hierarchy between messages, packets, classes and structs.\n" +
+                        out(renderer.sectionHeading("Full MSG Inheritance Diagram", "comptitle")+
+                            renderer.paragraph("The following diagram shows the inheritance hierarchy between messages, packets, classes and structs.\n" +
                             "Unresolved types are missing from the diagram."));
                         generateInheritanceDiagram(msgTypeElements, "full-msg-inheritance-diagram.svg");
                     }
@@ -1921,10 +1921,10 @@ public class DocumentationGenerator {
 
             String diagramType = typeElement instanceof INedTypeElement ? "ned" : "msg";
             String fullRef = !generateFullUsageDiagrams ?
-                    "" : " Click " + renderer.refTag("here", renderer.addExtension("full-"+diagramType+"-usage-diagram"), null) + " to see the full picture.";
+                    "" : " Click " + renderer.link("here", renderer.appendFilenameExtension("full-"+diagramType+"-usage-diagram"), null) + " to see the full picture.";
 
-            out(renderer.subSectionTag("Usage diagram", "subtitle")+
-                renderer.pTag("The following diagram shows usage relationships between types.\n" +
+            out(renderer.subsectionHeading("Usage diagram", "subtitle")+
+                renderer.paragraph("The following diagram shows usage relationships between types.\n" +
                 "Unresolved types are missing from the diagram."+fullRef));
 
             generateUsageDiagram(typeElements, getOutputFileName(typeElement, "usage", ".svg"));
@@ -1961,7 +1961,7 @@ public class DocumentationGenerator {
 
             generateDotOutput(dot, getOutputFile(imageFileName), "svg");
 
-            out(renderer.svgObjectTag(imageFileName));
+            out(renderer.svgImage(imageFileName));
         }
     }
 
@@ -1976,14 +1976,14 @@ public class DocumentationGenerator {
             if (dot.getNumNodes() > 1) { // has content
                 String diagramType = typeElement instanceof INedTypeElement ? "ned" : "msg";
                 String fullRef = !generateFullInheritanceDiagrams ?
-                        "" : " Click "+ renderer.refTag("here", renderer.addExtension("full-"+diagramType+"-inheritance-diagram"), null) + " to see the full picture.";
+                        "" : " Click "+ renderer.link("here", renderer.appendFilenameExtension("full-"+diagramType+"-inheritance-diagram"), null) + " to see the full picture.";
 
-                out(renderer.subSectionTag("Inheritance diagram", "subtitle") +
-                    renderer.pTag("The following diagram shows inheritance relationships for this type.\n" +
+                out(renderer.subsectionHeading("Inheritance diagram", "subtitle") +
+                    renderer.paragraph("The following diagram shows inheritance relationships for this type.\n" +
                     "Unresolved types are missing from the diagram."+fullRef));
 
                 generateDotOutput(dot, getOutputFile(imageFileName), "svg");
-                out(renderer.svgObjectTag(imageFileName));
+                out(renderer.svgImage(imageFileName));
             }
         }
     }
@@ -1991,7 +1991,7 @@ public class DocumentationGenerator {
     protected void generateInheritanceDiagram(List<? extends ITypeElement> typeElements, String imageFileName) throws IOException {
         DotGraph dot = generateInheritanceDotGraph(typeElements, imageFileName);
         generateDotOutput(dot, getOutputFile(imageFileName), "svg");
-        out(renderer.svgObjectTag(imageFileName));
+        out(renderer.svgImage(imageFileName));
     }
 
     protected DotGraph generateInheritanceDotGraph(List<? extends ITypeElement> typeElements, String imageFileName) throws IOException {
@@ -2064,8 +2064,8 @@ public class DocumentationGenerator {
     }
 
     protected void generateSourceContent(String source, boolean nedSource) throws IOException {
-        out(renderer.subSectionTag("Source code", "subtitle"));
-        out(renderer.sourceHeaderTag());
+        out(renderer.subsectionHeading("Source code", "subtitle"));
+        out(renderer.beginSource());
 
         org.eclipse.jface.text.Document document = new org.eclipse.jface.text.Document(source);
         ITokenScanner partitioner = nedSource ? new NedSyntaxHighlightPartitionScanner() : new MsgSyntaxHighlightPartitionScanner();
@@ -2121,7 +2121,7 @@ public class DocumentationGenerator {
             }
         }
 
-        out(renderer.sourceTrailerTag());
+        out(renderer.endSource());
     }
 
     protected void generateSourcePartition(ITokenScanner scanner, String source) throws IOException {
@@ -2135,7 +2135,7 @@ public class DocumentationGenerator {
 
             if (token.isEOF()) {
                 if (buffer.length() != 0)
-                    out(renderer.spanTag(StringEscapeUtils.escapeHtml4(buffer.toString()), null, (TextAttribute)bufferTokenData));
+                    out(renderer.styled(StringEscapeUtils.escapeHtml4(buffer.toString()), null, (TextAttribute)bufferTokenData));
 
                 break;
             }
@@ -2143,7 +2143,7 @@ public class DocumentationGenerator {
             Object data = token.getData();
 
             if (bufferTokenData != data && buffer.length() != 0) {
-                out(renderer.spanTag(StringEscapeUtils.escapeHtml4(buffer.toString()), null, (TextAttribute)bufferTokenData));
+                out(renderer.styled(StringEscapeUtils.escapeHtml4(buffer.toString()), null, (TextAttribute)bufferTokenData));
                 buffer = new StringBuffer();
                 bufferTokenData = null;
             }
@@ -2279,7 +2279,7 @@ public class DocumentationGenerator {
             }
         }
 
-        out(renderer.areaRefTag(model.getName(), renderer.addExtension(getOutputBaseFileName(model)), bounds));
+        out(renderer.areaRef(model.getName(), renderer.appendFilenameExtension(getOutputBaseFileName(model)), bounds));
     }
 
     protected IPath getOutputFilePath(IFile file) {
@@ -2390,7 +2390,7 @@ public class DocumentationGenerator {
                 String name = typeElement.getName();
                 append("\"" + name + "\" ");
 
-                append("[URL=\"" + renderer.addExtension(getOutputBaseFileName(typeElement)) + "\", target=\"_parent\"");
+                append("[URL=\"" + renderer.appendFilenameExtension(getOutputBaseFileName(typeElement)) + "\", target=\"_parent\"");
 
                 String color = "#ff0000";
                 if (typeElement instanceof CompoundModuleElementEx && ((CompoundModuleElementEx)typeElement).isNetwork())
