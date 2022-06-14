@@ -903,7 +903,7 @@ public class OmnetppLaunchUtils {
 
             ProcessResult result = getSimulationOutput(configuration, additionalArgs);
             String info;
-            String allOutput = StringUtils.join(result.stdout.trim(), "\n", result.stderr.trim());
+            String allOutput = StringUtils.joinWithSeparator(result.stdout.trim(), "\n", result.stderr.trim());
             allOutput = StringUtils.quoteForHtml(allOutput).replace("\n", "<br>\n");
             if (result.exitCode != 0) {
                 // error case: show both stdout and stderr

@@ -260,13 +260,4 @@ public class MsgResources implements IMsgTypeResolver, IResourceChangeListener {
             NedResourcesPlugin.logError("Error during workspace change notification: ", e);
         }
     }
-
-    public String getCppNamespaceForFile(MsgFileElementEx element) {
-        NamespaceElement namespace = element.getFirstNamespaceChild();
-
-        if (namespace != null)
-            return namespace.getName();
-        else
-            return null;
-    }
 }

@@ -12,11 +12,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.omnetpp.ned.model.ex.MsgFileElementEx;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.ex.PropertyElementEx;
 import org.omnetpp.ned.model.interfaces.IMsgTypeElement;
 import org.omnetpp.ned.model.interfaces.IMsgTypeInfo;
 import org.omnetpp.ned.model.pojo.FieldElement;
+import org.omnetpp.ned.model.pojo.NamespaceElement;
 import org.omnetpp.ned.model.pojo.NedElementTags;
 
 /**
@@ -81,16 +82,12 @@ public class MsgTypeInfo implements IMsgTypeInfo, NedElementTags {
         return new LinkedHashMap<String, Map<String, PropertyElementEx>>();
     }
 
+    public String getNamespaceName() {
+        NamespaceElement namespaceElement = (NamespaceElement)typeNode.getPreviousSiblingWithTag(NED_NAMESPACE);
+        return namespaceElement == null ? "" : namespaceElement.getName();
+    }
+
     public String getFullyQualifiedCppClassName() {
-        String className = typeNode.getName();
-
-        MsgFileElementEx fileElement = typeNode.getContainingMsgFileElement();
-        String namespace = NedResourcesPlugin.getMsgResources().getCppNamespaceForFile(fileElement);
-
-        if (namespace == null)
-            return className;
-        else
-            return namespace + "::" + className;
-
+        return StringUtils.joinWithSeparator(getNamespaceName(), "::", typeNode.getName());
     }
 }
