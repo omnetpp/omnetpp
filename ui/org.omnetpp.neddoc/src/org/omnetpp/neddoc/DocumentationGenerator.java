@@ -494,12 +494,12 @@ public class DocumentationGenerator {
     }
 
     protected String getFullyQualifiedName(ITypeElement typeElement) {
-        if (typeElement instanceof INedTypeElement) {
+        if (typeElement instanceof INedTypeElement)
             return ((INedTypeElement)typeElement).getNedTypeInfo().getFullyQualifiedName();
-        } else if (typeElement instanceof IMsgTypeElement) {
+        else if (typeElement instanceof IMsgTypeElement)
             return ((IMsgTypeElement)typeElement).getMsgTypeInfo().getFullyQualifiedCppClassName();
-        }
-        return typeElement.getName();  // return unqualified name by default
+        else
+            return typeElement.getName();  // return unqualified name by default
     }
 
     protected void collectPackageNames() {
@@ -1294,6 +1294,12 @@ public class DocumentationGenerator {
 
                 if (isNedTypeElement)
                     out(renderer.paragraph(packageReferenceString(getPackageName((INedTypeElement)typeElement))));
+
+                if (isMsgTypeElement) {
+                    String namespaceName = ((IMsgTypeElement)typeElement).getMsgTypeInfo().getNamespaceName();
+                    if (!StringUtils.isEmpty(namespaceName))
+                        out(renderer.paragraph("Namespace " + renderer.code(namespaceName, null)));
+                }
 
                 out(renderer.typeSectionHeading(typeElement));
 
@@ -2313,9 +2319,8 @@ public class DocumentationGenerator {
         if (typeElement instanceof INedTypeElement)
             fileName += ((INedTypeElement)typeElement).getNedTypeInfo().getFullyQualifiedName();
         else if (typeElement instanceof IMsgTypeElement) {
-            MsgFileElementEx msgFileElement = typeElement.getContainingMsgFileElement();
-            IFile file = msgResources.getMsgFile(msgFileElement);
-            fileName += file.getProjectRelativePath().removeLastSegments(1).toPortableString().replace('/', '-') + "-" + typeElement.getName();
+            String cppName = ((IMsgTypeElement)typeElement).getMsgTypeInfo().getFullyQualifiedCppClassName();
+            fileName += cppName.replace("::", "-");
         }
 
         if (discriminator != null)
