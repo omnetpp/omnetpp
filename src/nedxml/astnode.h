@@ -370,9 +370,9 @@ class NEDXML_API ASTNode
 
     /**
      * Returns pointer to the next sibling of this element with the given
-     * tag code. Return nullptr if there're no such subsequent elements.
+     * tag code. Returns nullptr if there's no such element.
      *
-     * getFirstChildWithTag() and getNextSiblingWithTag() are a convient way
+     * getFirstChildWithTag() and getNextSiblingWithTag() are a convenient way
      * to loop through elements with a certain tag code in the child list:
      *
      * <pre>
@@ -383,6 +383,12 @@ class NEDXML_API ASTNode
      * </pre>
      */
     virtual ASTNode *getNextSiblingWithTag(int tagcode) const;
+
+    /**
+     * Returns pointer to the previous sibling of this element with the given
+     * tag code. Returns nullptr if there's no such element.
+     */
+    virtual ASTNode *getPreviousSiblingWithTag(int tagcode) const;
 
     /**
      * Returns the number of child elements.
