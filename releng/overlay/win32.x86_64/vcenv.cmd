@@ -6,6 +6,7 @@ rem Specify Visual Studio batch file to start a developer console for 64-bit hos
 set VCVARS64=%VS_INSTALL_DIR%\VC\Auxiliary\Build\vcvars64.bat
 
 rem *** Do not change anything below this line ***
+set HOME=
 set HOME=%~dp0
 
 cd "%HOME%\tools"
