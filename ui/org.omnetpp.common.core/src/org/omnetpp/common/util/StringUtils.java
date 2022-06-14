@@ -616,9 +616,9 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     }
 
     /**
-     * Joins two string with a separator, s1 and s2 can be NULL.
+     * Joins two strings with a separator. Any of s1 and s2 can be null.
      */
-    public static String join(String s1, String separator, String s2) {
+    public static String joinWithSeparator(String s1, String separator, String s2) { //  Note: purposely not called "join()", to disambiguate from join() variants in Apache StringUtils.
         if (isEmpty(s1))
             return nullToEmpty(s2);
         if (isEmpty(s2))

@@ -37,7 +37,14 @@ public interface IMsgTypeInfo {
     public Map<String, FieldElement> getFields();
 
     /**
-     * Returns the fully qualified C++ class name using the @namespace property and the type's name.
+     * Returns the C++ namespace this type is in, or "" if the type is not in a namespace.
+     */
+    public String getNamespaceName();
+
+    /**
+     * Returns the fully qualified C++ class name.
      */
     public String getFullyQualifiedCppClassName();
+
+
 }
