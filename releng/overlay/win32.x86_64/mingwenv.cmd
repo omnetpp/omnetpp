@@ -1,4 +1,5 @@
 @echo off
+set HOME=
 set HOME=%~dp0
 cd "%HOME%\tools"
 
