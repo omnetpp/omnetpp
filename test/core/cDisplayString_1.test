@@ -1,31 +1,114 @@
 %description:
 basic cDisplayString functionality: parse and regenerate
 
+%global
+
+static void test(const char *s)
+{
+    cDisplayString ds;
+    ds.parse(s);
+    EV << s;
+    if (strcmp(s, ds.str()) != 0)
+        EV << " --> " << ds.str() << " <- MISMATCH!";
+    EV << endl;
+    ds.dump(EV);
+}
+
 %activity:
-cDisplayString ds;
-const char *s;
 
-s="a=foo";
-ds.parse(s); EV << ds.str() << endl;
-
-s="a=foo;b=22";
-ds.parse(s); EV << ds.str() << endl;
-
-s="a=,foo,22;;b=,bar,,453";
-ds.parse(s); EV << ds.str() << endl;
-
-s="a=;b=";
-ds.parse(s); EV << ds.str() << endl;
-
-s="";
-ds.parse(s); EV << ds.str() << endl;
+test("a=foo");
+test("a=foo;b=22");
+test("a=,foo,22;;b=,bar,,453");
+test("a=;b=");
+test("a=foo${oo;b=bar,quop;aa=45}3");
+test("");
+test("a=aa${foo}${bar}bb");
+test(R"(a="${",b="}")");
+test("a=${expr1 , $param , ${expr2}}");
+test("a=foo{bar");
+test("a=$${notexpr}");
+test("a=$$dollar");
+test("a=$$${expr}");
+test("a=$");
+test("a=$${bb");
+test("a=$${bb,cc}");
 
 EV << ".\n";
 
 %contains: stdout
 a=foo
+`a=foo`
+  `a` =
+    [0] `foo`
 a=foo;b=22
+`a=foo;b=22`
+  `a` =
+    [0] `foo`
+  `b` =
+    [0] `22`
 a=,foo,22;;b=,bar,,453
+`a=,foo,22;;b=,bar,,453`
+  `a` =
+    [0] ``
+    [1] `foo`
+    [2] `22`
+  `` =
+  `b` =
+    [0] ``
+    [1] `bar`
+    [2] ``
+    [3] `453`
 a=;b=
+`a=;b=`
+  `a` =
+    [0] ``
+  `b` =
+    [0] ``
+a=foo${oo;b=bar,quop;aa=45}3
+`a=foo${oo;b=bar,quop;aa=45}3`
+  `a` =
+    [0] `foo${oo;b=bar,quop;aa=45}3`
 
+``
+a=aa${foo}${bar}bb
+`a=aa${foo}${bar}bb`
+  `a` =
+    [0] `aa${foo}${bar}bb`
+a="${",b="}"
+`a="${",b="}"`
+  `a` =
+    [0] `"${",b="}"`
+a=${expr1 , $param , ${expr2}}
+`a=${expr1 , $param , ${expr2}}`
+  `a` =
+    [0] `${expr1 , $param , ${expr2}}`
+a=foo{bar
+`a=foo{bar`
+  `a` =
+    [0] `foo{bar`
+a=$${notexpr}
+`a=$${notexpr}`
+  `a` =
+    [0] `$${notexpr}`
+a=$$dollar
+`a=$$dollar`
+  `a` =
+    [0] `$$dollar`
+a=$$${expr}
+`a=$$${expr}`
+  `a` =
+    [0] `$$${expr}`
+a=$
+`a=$`
+  `a` =
+    [0] `$`
+a=$${bb
+`a=$${bb`
+  `a` =
+    [0] `$${bb`
+a=$${bb,cc}
+`a=$${bb,cc}`
+  `a` =
+    [0] `$${bb`
+    [1] `cc}`
 .

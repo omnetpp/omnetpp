@@ -14,7 +14,17 @@ P("t=foo;bar=1");
 P("t=foo\\;bar=1");
 P("t=fo\\o\\\\b\\ar");
 P("t=foo\\,bar;baz=1;t2=more stuff");
-
+P("t=foo${a=1}bar");
+P("t=foo${b=1,2}bar");
+P("t=foo${c=1,2}bar");
+P("t=foo${c=1,2;d=3}bar");
+P("t=foo${c=1,2; d=3}bar");
+P("t=${;kukac=1}bar");
+P("t=${';kukac=1'}bar");
+P("t=fo${o,bar;baz=1;t2=more stu}ff");
+P("");
+P(R"(t="${",b="}")");
+P("t=${expr1 , $param , ${expr2}}");
 
 EV << ".\n";
 
@@ -26,5 +36,16 @@ EV << ".\n";
 't=foo\;bar=1' --> t[0]='foo;bar=1'
 't=fo\o\\b\ar' --> t[0]='foo\bar'
 't=foo\,bar;baz=1;t2=more stuff' --> t[0]='foo,bar'
+'t=foo${a=1}bar' --> t[0]='foo${a=1}bar'
+'t=foo${b=1,2}bar' --> t[0]='foo${b=1,2}bar'
+'t=foo${c=1,2}bar' --> t[0]='foo${c=1,2}bar'
+'t=foo${c=1,2;d=3}bar' --> t[0]='foo${c=1,2;d=3}bar'
+'t=foo${c=1,2; d=3}bar' --> t[0]='foo${c=1,2; d=3}bar'
+'t=${;kukac=1}bar' --> t[0]='${;kukac=1}bar'
+'t=${';kukac=1'}bar' --> t[0]='${';kukac=1'}bar'
+'t=fo${o,bar;baz=1;t2=more stu}ff' --> t[0]='fo${o,bar;baz=1;t2=more stu}ff'
+'' --> t[0]=''
+'t="${",b="}"' --> t[0]='"${",b="}"'
+'t=${expr1 , $param , ${expr2}}' --> t[0]='${expr1 , $param , ${expr2}}'
 .
 
