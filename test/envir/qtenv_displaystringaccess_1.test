@@ -1,0 +1,347 @@
+%description:
+Tests the DisplayStringAccess class
+
+%file: test.ned
+
+simple Dump
+{
+    parameters:
+        string str = "submod str";
+        int lng = 10;
+        double dbl = 3.14;
+        bool bol = false;
+        object obj = {"a": 1, "b": [2, 3]};
+
+        volatile int volint = intuniform(1, 10);
+}
+
+network Test
+{
+    parameters:
+        string parentstr = "parent str";
+        int parentlng = 1000;
+        double parentdbl = 6.28;
+        bool parentbol = true;
+        object parentobj = {"a": 1, "b": [2, 3]};
+
+    submodules:
+        dump: Dump;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+#include <qtenv/displaystringaccess.h>
+
+using namespace omnetpp;
+using namespace omnetpp::qtenv;
+
+namespace @TESTNAME@ {
+
+class Dump : public cSimpleModule
+{
+  public:
+    Dump() : cSimpleModule(1024*1024) { }
+    virtual void activity() override;
+};
+
+Define_Module(Dump);
+
+#define TRY(x) \
+    try { \
+        x; \
+    } catch (std::exception& e) { \
+        EV << "ERROR: " << e.what() << endl; \
+    }
+
+#define P(ds) \
+    TRY(EV << (ds) << " --> as string --> "; \
+    setDisplayString(ds); \
+    EV << dsa.getTagArg("a", 0, buffer) << endl;);
+
+bool ok;
+
+#define PL(ds) \
+    TRY(EV << (ds) << " --> as long --> "; \
+    setDisplayString(ds); \
+    EV << dsa.getTagArgAsLong("a", 0, -1, &ok) << " " << (ok ? "(OK)" : "(NOK)") << endl;);
+
+#define PD(ds) \
+    TRY(EV << (ds) << " --> as double --> "; \
+    setDisplayString(ds); \
+    EV << dsa.getTagArgAsDouble("a", 0, -0.1, &ok) << " " << (ok ? "(OK)" : "(NOK)") << endl;);
+
+#define PB(ds) \
+    TRY(EV << (ds) << " --> as bool --> "; \
+    setDisplayString(ds); \
+    EV << std::boolalpha << dsa.getTagArgAsBool("a", 0, false, &ok) << " " << (ok ? "(OK)" : "(NOK)") << endl;);
+
+void Dump::activity()
+{
+    std::string buffer;
+    DisplayStringAccess dsa(this);
+
+    // testing parameter access, including fallback to parent parameters
+    // and absence of parameter with the given name - of different types
+    P("a=$str");
+    P("a=$parentstr");
+    P("a=$missing");
+
+    P("a=$lng");
+    P("a=$parentlng");
+    P("a=$missinglng");
+
+    P("a=$dbl");
+    P("a=$parentdbl");
+    P("a=$missingdbl");
+
+    P("a=$bol");
+    P("a=$parentbol");
+    P("a=$missingbol");
+
+    // similar to the above, but queried as a different type than string
+    PL("a=$lng");
+    PL("a=$parentlng");
+    PL("a=$missinglng");
+
+    PD("a=$dbl");
+    PD("a=$parentdbl");
+    PD("a=$missingdbl");
+
+    PB("a=$bol");
+    PB("a=$parentbol");
+    PB("a=$missingbol");
+
+    // accessing a volatile parameter as various types
+    P("a=$volint");
+    PL("a=$volint");
+    PD("a=$volint");
+    PB("a=$volint");
+
+    // testing the evaluationg of simple expression, queried as various types
+    P("a=${12}");
+    PL("a=${12}");
+    PD("a=${12}");
+    PB("a=${12}");
+
+    P("a=${12.4}");
+    PL("a=${12.4}");
+    PD("a=${12.4}");
+    PB("a=${12.4}");
+
+    P("a=${21m}");
+    PL("a=${21m}");
+    PD("a=${21m}");
+    PB("a=${21m}");
+
+    P("a=${24.3s}");
+    PL("a=${24.3s}");
+    PD("a=${24.3s}");
+    PB("a=${24.3s}");
+
+    P("a=${false}");
+    PL("a=${false}");
+    PD("a=${false}");
+    PB("a=${false}");
+
+    // passing through literals of different types
+    P("a=12");
+    PL("a=12");
+    PD("a=12");
+    PB("a=12");
+
+    P("a=12.4");
+    PL("a=12.4");
+    PD("a=12.4");
+    PB("a=12.4");
+
+    P("a=true");
+    PL("a=true");
+    PD("a=true");
+    PB("a=true");
+
+    // empty string and empty value queried as different types
+    P("");
+    PL("");
+    PD("");
+    PB("");
+
+    P("a=");
+    PL("a=");
+    PD("a=");
+    PB("a=");
+
+    // empty expression, nil result type, error in expression
+    P("a=${undefined}");
+    PL("a=${undefined}");
+    PD("a=${undefined}");
+    PB("a=${undefined}");
+
+    P("a=${}");
+    PL("a=${}");
+    PD("a=${}");
+    PB("a=${}");
+
+    P("a=${parentlng + 10}");
+    PL("a=${parentlng + 10}");
+    PD("a=${parentlng + 10}");
+    PB("a=${parentlng + 10}");
+
+
+    // testing parameter access in expressions, with no fallback to parent
+    P("a=${str}");
+    P("a=${parentstr}");
+    P("a=${missing}");
+
+    P("a=${parent.str}");
+    P("a=${parent.parentstr}");
+    P("a=${parent.missing}");
+
+    // testing different expression result types
+    PB("a=${!true}");
+    PL("a=${42 * 10}");
+    PD("a=${sin(3.14)}");
+
+    P("a=${obj}");
+    P("a=${parent.parentobj}");
+
+    // testing substitution of a string expression, but querying the result
+    // as a type other than string
+    PB("a=t${'r' + 'u'}e");
+    PL("a=1${11 + 12}4");
+    PL("a=1${11 + 12}${44 * 2}9");
+    PD("a=3${'.' + '1'}4");
+
+    // testing parameter references inside "words", separator handling
+    P("a=a$parentstr b");
+    P("a=a$parentstr,b");
+
+    // special characters within expressions
+    P("a=${normal(100,10)}");
+    P("a=a${' $ $$ , ; = '}b");
+    P("a=foo${normal(100,10)}bar");
+    P(R"(a="${",b="}")");
+    P("a=${\"expr1 , $param , ${expr2}\"}");
+
+    // invalid param references
+    P("a=${");
+    P("a=}");
+    P("a=$}");
+
+    EV << "." << endl;
+}
+
+} // namespace
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+# debug-on-errors = true
+
+%subst: /syntax error, unexpected \$end/syntax error/
+
+%contains: stdout
+a=$str --> as string --> submod str
+a=$parentstr --> as string --> parent str
+a=$missing --> as string --> ERROR: module 'Test.dump' and its parent have no parameter 'missing'
+a=$lng --> as string --> 10
+a=$parentlng --> as string --> 1000
+a=$missinglng --> as string --> ERROR: module 'Test.dump' and its parent have no parameter 'missinglng'
+a=$dbl --> as string --> 3.14
+a=$parentdbl --> as string --> 6.28
+a=$missingdbl --> as string --> ERROR: module 'Test.dump' and its parent have no parameter 'missingdbl'
+a=$bol --> as string --> false
+a=$parentbol --> as string --> true
+a=$missingbol --> as string --> ERROR: module 'Test.dump' and its parent have no parameter 'missingbol'
+a=$lng --> as long --> 10 (OK)
+a=$parentlng --> as long --> 1000 (OK)
+a=$missinglng --> as long --> ERROR: module 'Test.dump' and its parent have no parameter 'missinglng'
+a=$dbl --> as double --> 3.14 (OK)
+a=$parentdbl --> as double --> 6.28 (OK)
+a=$missingdbl --> as double --> ERROR: module 'Test.dump' and its parent have no parameter 'missingdbl'
+a=$bol --> as bool --> false (OK)
+a=$parentbol --> as bool --> true (OK)
+a=$missingbol --> as bool --> ERROR: module 'Test.dump' and its parent have no parameter 'missingbol'
+a=$volint --> as string --> 6
+a=$volint --> as long --> 1 (OK)
+a=$volint --> as double --> 4 (OK)
+a=$volint --> as bool --> false (NOK)
+a=${12} --> as string --> 12
+a=${12} --> as long --> 12 (OK)
+a=${12} --> as double --> 12 (OK)
+a=${12} --> as bool --> false (NOK)
+a=${12.4} --> as string --> 12.4
+a=${12.4} --> as long --> -1 (NOK)
+a=${12.4} --> as double --> 12.4 (OK)
+a=${12.4} --> as bool --> false (NOK)
+a=${21m} --> as string --> 21m
+a=${21m} --> as long --> ERROR: Attempt to use the value '21m' as a dimensionless number
+a=${21m} --> as double --> ERROR: Attempt to use the value '21m' as a dimensionless number
+a=${21m} --> as bool --> false (NOK)
+a=${24.3s} --> as string --> 24.3s
+a=${24.3s} --> as long --> -1 (NOK)
+a=${24.3s} --> as double --> ERROR: Attempt to use the value '24.3s' as a dimensionless number
+a=${24.3s} --> as bool --> false (NOK)
+a=${false} --> as string --> false
+a=${false} --> as long --> -1 (NOK)
+a=${false} --> as double --> -0.1 (NOK)
+a=${false} --> as bool --> false (OK)
+a=12 --> as string --> 12
+a=12 --> as long --> 12 (OK)
+a=12 --> as double --> 12 (OK)
+a=12 --> as bool --> false (NOK)
+a=12.4 --> as string --> 12.4
+a=12.4 --> as long --> -1 (NOK)
+a=12.4 --> as double --> 12.4 (OK)
+a=12.4 --> as bool --> false (NOK)
+a=true --> as string --> true
+a=true --> as long --> -1 (NOK)
+a=true --> as double --> -0.1 (NOK)
+a=true --> as bool --> true (OK)
+ --> as string -->
+ --> as long --> -1 (NOK)
+ --> as double --> -0.1 (NOK)
+ --> as bool --> false (NOK)
+a= --> as string -->
+a= --> as long --> -1 (NOK)
+a= --> as double --> -0.1 (NOK)
+a= --> as bool --> false (NOK)
+a=${undefined} --> as string --> undefined
+a=${undefined} --> as long --> -1 (NOK)
+a=${undefined} --> as double --> -0.1 (NOK)
+a=${undefined} --> as bool --> false (NOK)
+a=${} --> as string --> ERROR: syntax error
+a=${} --> as long --> ERROR: syntax error
+a=${} --> as double --> ERROR: syntax error
+a=${} --> as bool --> ERROR: syntax error
+a=${parentlng + 10} --> as string --> ERROR: (Dump)Test.dump has no parameter named 'parentlng' (did you mean 'parent.parentlng'?)
+a=${parentlng + 10} --> as long --> ERROR: (Dump)Test.dump has no parameter named 'parentlng' (did you mean 'parent.parentlng'?)
+a=${parentlng + 10} --> as double --> ERROR: (Dump)Test.dump has no parameter named 'parentlng' (did you mean 'parent.parentlng'?)
+a=${parentlng + 10} --> as bool --> ERROR: (Dump)Test.dump has no parameter named 'parentlng' (did you mean 'parent.parentlng'?)
+a=${str} --> as string --> submod str
+a=${parentstr} --> as string --> ERROR: (Dump)Test.dump has no parameter named 'parentstr' (did you mean 'parent.parentstr'?)
+a=${missing} --> as string --> ERROR: (Dump)Test.dump has no parameter named 'missing'
+a=${parent.str} --> as string --> ERROR: (Test)Test has no parameter named 'str'
+a=${parent.parentstr} --> as string --> parent str
+a=${parent.missing} --> as string --> ERROR: (Test)Test has no parameter named 'missing'
+a=${!true} --> as bool --> false (OK)
+a=${42 * 10} --> as long --> 420 (OK)
+a=${sin(3.14)} --> as double --> 0.00159265 (OK)
+a=${obj} --> as string --> {a: 1, b: [2, 3]}
+a=${parent.parentobj} --> as string --> {a: 1, b: [2, 3]}
+a=t${'r' + 'u'}e --> as bool --> true (OK)
+a=1${11 + 12}4 --> as long --> 1234 (OK)
+a=1${11 + 12}${44 * 2}9 --> as long --> 123889 (OK)
+a=3${'.' + '1'}4 --> as double --> 3.14 (OK)
+a=a$parentstr b --> as string --> aparent str b
+a=a$parentstr,b --> as string --> aparent str
+a=${normal(100,10)} --> as string --> 92.51
+a=a${' $ $$ , ; = '}b --> as string --> a $ $$ , ; = b
+a=foo${normal(100,10)}bar --> as string --> foo89.2284bar
+a="${",b="}" --> as string --> ",b="
+a=${"expr1 , $param , ${expr2}"} --> as string --> expr1 , $param , ${expr2}
+a=${ --> as string --> ERROR: Unmatched '{' in 'a=${'
+a=} --> as string --> }
+a=$} --> as string --> ERROR: Illegal '$' in display string, $parName, ${NED-expression}, or $$ expected
+.
