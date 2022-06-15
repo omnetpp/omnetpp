@@ -35,23 +35,23 @@ namespace omnetpp {
 namespace qtenv {
 
 QtenvGraphLayouterEnvironment::QtenvGraphLayouterEnvironment(cModule *parentModule, const cDisplayString& displayString, QGraphicsScene *scene)
-    : parentModule(parentModule), displayString(displayString), scene(scene)
+    : parentModule(parentModule), displayString(displayString), dsa(&this->displayString, this->parentModule), scene(scene)
 {
 }
 
 bool QtenvGraphLayouterEnvironment::getBoolParameter(const char *tagName, int index, bool defaultValue)
 {
-    return resolveBoolDispStrArg(displayString.getTagArg(tagName, index), parentModule, defaultValue);
+    return dsa.getTagArgAsBool(tagName, index, defaultValue);
 }
 
 long QtenvGraphLayouterEnvironment::getLongParameter(const char *tagName, int index, long defaultValue)
 {
-    return resolveLongDispStrArg(displayString.getTagArg(tagName, index), parentModule, defaultValue);
+    return dsa.getTagArgAsLong(tagName, index, defaultValue);
 }
 
 double QtenvGraphLayouterEnvironment::getDoubleParameter(const char *tagName, int index, double defaultValue)
 {
-    return resolveDoubleDispStrArg(displayString.getTagArg(tagName, index), parentModule, defaultValue);
+    return dsa.getTagArgAsDouble(tagName, index, defaultValue);
 }
 
 void QtenvGraphLayouterEnvironment::showGraphics(const char *text)

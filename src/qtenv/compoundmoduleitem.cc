@@ -24,6 +24,7 @@
 #include <omnetpp/cdisplaystring.h>
 #include "qtenv.h"
 #include "qtutil.h"
+#include "displaystringaccess.h"
 
 namespace omnetpp {
 namespace qtenv {
@@ -317,9 +318,8 @@ void CompoundModuleItemUtil::setupFromDisplayString(CompoundModuleItem *cmi, cMo
             ? mod->getDisplayString()
             : cDisplayString();
 
-    // replacing $param args with the actual parameter values
-    std::string buffer;
-    ds = substituteDisplayStringParamRefs(ds, buffer, mod, true);
+    std::string buffer; // stores getTagArg return values after substitution
+    DisplayStringAccess dsa(&ds, mod);
 
     QRectF border = submodulesRect;
 
@@ -343,8 +343,8 @@ void CompoundModuleItemUtil::setupFromDisplayString(CompoundModuleItem *cmi, cMo
 
     bool widthOk, heightOk;
     double width, height;
-    width = QString(ds.getTagArg("bgb", 0)).toDouble(&widthOk) * zoomFactor;
-    height = QString(ds.getTagArg("bgb", 1)).toDouble(&heightOk) * zoomFactor;
+    width = dsa.getTagArgAsDouble("bgb", 0, 0.0, &widthOk) * zoomFactor;
+    height = dsa.getTagArgAsDouble("bgb", 1, 0.0, &heightOk) * zoomFactor;
 
     if (widthOk)
         border.setWidth(width);
@@ -360,24 +360,18 @@ void CompoundModuleItemUtil::setupFromDisplayString(CompoundModuleItem *cmi, cMo
     cmi->setZoomFactor(zoomFactor);
     cmi->setArea(border);
 
-    cmi->setBackgroundColor(parseColor(ds.getTagArg("bgb", 2), parseColor("grey82")));
-    cmi->setOutlineColor(parseColor(ds.getTagArg("bgb", 3), QColor("black")));
-
-    double outlineWidth;
-    bool ok;
-    outlineWidth = QString(ds.getTagArg("bgb", 4)).toDouble(&ok);
-    if (!ok)
-        outlineWidth = 2;
-    cmi->setOutlineWidth(outlineWidth);
+    cmi->setBackgroundColor(parseColor(dsa.getTagArg("bgb", 2, buffer), parseColor("grey82")));
+    cmi->setOutlineColor(parseColor(dsa.getTagArg("bgb", 3, buffer), QColor("black")));
+    cmi->setOutlineWidth(dsa.getTagArgAsDouble("bgb", 4, 2.0));
 
     cmi->setData(ITEMDATA_COBJECT, QVariant::fromValue((cObject *)mod));
-    cmi->setData(ITEMDATA_TOOLTIP, QString(ds.getTagArg("bgtt", 0)));
+    cmi->setData(ITEMDATA_TOOLTIP, QString(dsa.getTagArg("bgtt", 0, buffer)));
 
     // background image
-    const char *imageName = ds.getTagArg("bgi", 0);
-    const char *imageMode = ds.getTagArg("bgi", 1);
-
+    const char *imageName = dsa.getTagArg("bgi", 0, buffer);
     cmi->setImage(imageName[0] ? getQtenv()->icons.getImage(imageName) : nullptr);
+
+    const char *imageMode = dsa.getTagArg("bgi", 1, buffer);
     switch (imageMode[0]) {
         case 's': cmi->setImageMode(CompoundModuleItem::MODE_STRETCH); break;
         case 'c': cmi->setImageMode(CompoundModuleItem::MODE_CENTER);  break;
@@ -387,10 +381,10 @@ void CompoundModuleItemUtil::setupFromDisplayString(CompoundModuleItem *cmi, cMo
 
     // grid
     // if failed to parse, the default 0 will disable the grid
-    cmi->setGridMajorDistance(QString(ds.getTagArg("bgg", 0)).toDouble());
+    cmi->setGridMajorDistance(dsa.getTagArgAsDouble("bgg", 0));
     // if failed to parse, the default 0 will disable the minor lines
-    cmi->setGridMinorNum(QString(ds.getTagArg("bgg", 1)).toInt());
-    cmi->setGridColor(parseColor(ds.getTagArg("bgg", 2), QColor("grey")));
+    cmi->setGridMinorNum(dsa.getTagArgAsLong("bgg", 1));
+    cmi->setGridColor(parseColor(dsa.getTagArg("bgg", 2, buffer), QColor("grey")));
 
     // the text in the top left corner
     cmi->setModulePath(mod->getFullPath().c_str());
@@ -404,10 +398,10 @@ void CompoundModuleItemUtil::setupFromDisplayString(CompoundModuleItem *cmi, cMo
             break;
 
         cmi->addText(QPointF(
-                         QString(ds.getTagArg(tagName.c_str(), 0)).toDouble(),
-                         QString(ds.getTagArg(tagName.c_str(), 1)).toDouble()),
-                     ds.getTagArg(tagName.c_str(), 2),
-                     parseColor(ds.getTagArg(tagName.c_str(), 3), QColor("black")));
+                         dsa.getTagArgAsDouble(tagName.c_str(), 0),
+                         dsa.getTagArgAsDouble(tagName.c_str(), 1)),
+                     dsa.getTagArg(tagName.c_str(), 2, buffer),
+                     parseColor(dsa.getTagArg(tagName.c_str(), 3, buffer), QColor("black")));
 
         ++textIndex;
     }

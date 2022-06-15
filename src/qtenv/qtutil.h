@@ -19,6 +19,7 @@
 
 #include "envir/visitor.h"
 #include "omnetpp/cobject.h"
+#include "omnetpp/cdisplaystring.h"
 #include "qtenvdefs.h"
 #include "charttickdecimal.h"
 #include <QtGui/QIcon>
@@ -135,33 +136,7 @@ cGate *getGateOtherHalf(cGate *gate);
 // to the this gate's pair from the next gate's pair)
 bool isTwoWayConnection(cGate *gate);
 
-/**
- * Looks up the given parameter
- */
-cPar *displayStringPar(const char *parname, cComponent *component, bool searchparent);
 
-/**
- * Returns true if the given (partial or full) display string contains
- * module or channel parameter references ("$param" or "${param}")
- */
-bool displayStringContainsParamRefs(const char *dispstr);
-
-/**
- * If the given string is a single parameter reference in the syntax "$name" or
- * "${name}", returns the parameter, otherwise returns nullptr.
- */
-cPar *resolveDisplayStringParamRef(const char *dispstr, cComponent *component, bool searchparent);
-
-/**
- * Substitutes module/channel param references into the given (partial)
- * display string. The returned string may be the same as the one passed in,
- * or may point into the buffer std::string.
- */
-const char *substituteDisplayStringParamRefs(const char *dispstr, std::string& buffer, cComponent *component, bool searchparent);
-
-bool resolveBoolDispStrArg(const char *arg, cComponent *component, bool defaultValue);
-long resolveLongDispStrArg(const char *arg, cComponent *component, int defaultValue);
-double resolveDoubleDispStrArg(const char *arg, cComponent *component, double defaultValue);
 
 /**
  * Get linear ticks. This vector contains minor and major ticks.

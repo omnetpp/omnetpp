@@ -97,6 +97,9 @@ class DisplayStringAccess {
     const char *getTagArg(const char *tagname, int index, std::string& buffer) const;
     const char *getTagArg(int tagindex, int index, std::string& buffer) const;
 
+    std::string getTagArg(const char *tagname, int index) const;
+    std::string getTagArg(int tagindex, int index) const;
+
     bool getTagArgAsBool(const char *tagname, int index, bool defaultValue = false, bool *okp = nullptr) const;
     bool getTagArgAsBool(int tagindex, int index, bool defaultValue = false, bool *okp = nullptr) const;
 

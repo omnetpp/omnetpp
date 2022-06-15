@@ -73,6 +73,9 @@ ModuleLayouter::Constraint ModuleLayouter::getSubmoduleCoords(cModule *submod, d
     const cDisplayString blank;
     const cDisplayString& ds = submod->hasDisplayString() && submod->parametersFinalized() ? submod->getDisplayString() : blank;
 
+    std::string buffer;
+    DisplayStringAccess dsa(&ds, submod);
+
     // get size -- we'll need to return that too, and may be needed for matrix, ring etc. layout
     // -1 means unspecified
     double shapesx = -1, shapesy = -1;
@@ -80,8 +83,8 @@ ModuleLayouter::Constraint ModuleLayouter::getSubmoduleCoords(cModule *submod, d
 
     // getting the "shape" (box or ellipse) size
     if (ds.containsTag("b")) {
-        shapesx = resolveDoubleDispStrArg(ds.getTagArg("b", 0), submod, -1);
-        shapesy = resolveDoubleDispStrArg(ds.getTagArg("b", 1), submod, -1);
+        shapesx = dsa.getTagArgAsDouble("b", 0, -1);
+        shapesy = dsa.getTagArgAsDouble("b", 1, -1);
 
         // if only one is present, use it for both
         if (shapesy == -1)
@@ -100,16 +103,17 @@ ModuleLayouter::Constraint ModuleLayouter::getSubmoduleCoords(cModule *submod, d
 
     // getting the "image" size
     if (ds.containsTag("i")) {
-        const char *imgName = ds.getTagArg("i", 0);
-        if (*imgName) {
+        const char *imgName = dsa.getTagArg("i", 0, buffer);
+        if (imgName[0]) {
+            std::string buffer2; // can't reuse `buffer` yet, still need `imgName`
             // will return the unknownImage if imgName not found
-            auto img = getQtenv()->icons.getImage(imgName, ds.getTagArg("is", 0));
+            auto img = getQtenv()->icons.getImage(imgName, dsa.getTagArg("is", 0, buffer2));
             iconsx = img->width(); // note: no need to take image scaling factor and zoom level into account
             iconsy = img->height();
         }
     }
     else if (!ds.containsTag("b")) { // if no image nor shape size is specified, using the default submodule icon
-        auto img = getQtenv()->icons.getImage(SubmoduleItem::DEFAULT_ICON, ds.getTagArg("is", 0));
+        auto img = getQtenv()->icons.getImage(SubmoduleItem::DEFAULT_ICON, dsa.getTagArg("is", 0, buffer));
         iconsx = img->width();
         iconsy = img->height();
     }
@@ -131,8 +135,8 @@ ModuleLayouter::Constraint ModuleLayouter::getSubmoduleCoords(cModule *submod, d
     double sy = std::max(iconsy, shapesy);
 
     // first, see if there's an explicit position ("p=" tag) given
-    double x = resolveDoubleDispStrArg(ds.getTagArg("p", 0), submod, -1);
-    double y = resolveDoubleDispStrArg(ds.getTagArg("p", 1), submod, -1);
+    double x = dsa.getTagArgAsDouble("p", 0, -1);
+    double y = dsa.getTagArgAsDouble("p", 1, -1);
     bool explicitCoords = x != -1 && y != -1;
 
     // set missing coordinates to zero
@@ -141,22 +145,23 @@ ModuleLayouter::Constraint ModuleLayouter::getSubmoduleCoords(cModule *submod, d
     if (y == -1)
         y = 0;
 
-    const char *layout = ds.getTagArg("p", 2);  // matrix, row, column, ring, exact etc.
+    const char *layout = dsa.getTagArg("p", 2, buffer);  // matrix, row, column, ring, exact etc.
     bool obeysLayout = !opp_isempty(layout);
     const char *groupName = "";
+    std::string buffer2; // for `groupName`, as `buffer` is still needed for `layout`
 
     // modify x,y using predefined layouts
     if (!obeysLayout) {
         // we're happy
     }
     else if (!strcmp(layout, "e") || !strcmp(layout, "x") || !strcmp(layout, "exact")) {
-        double dx = resolveDoubleDispStrArg(ds.getTagArg("p", 3), submod, 0);
-        double dy = resolveDoubleDispStrArg(ds.getTagArg("p", 4), submod, 0);
+        double dx = dsa.getTagArgAsDouble("p", 3, 0);
+        double dy = dsa.getTagArgAsDouble("p", 4, 0);
         x += dx;
         y += dy;
     }
     else {
-        groupName = ds.getTagArg("g", 0);
+        groupName = dsa.getTagArg("g", 0, buffer2);
         int index = 0, groupSize = 1;
         if (opp_isempty(groupName)) {
             groupName = submod->getName();
@@ -185,18 +190,18 @@ ModuleLayouter::Constraint ModuleLayouter::getSubmoduleCoords(cModule *submod, d
 
         if (!strcmp(layout, "r") || !strcmp(layout, "row")) {
             // perhaps we should use the size of the 1st element in the vector?
-            double dx = resolveDoubleDispStrArg(ds.getTagArg("p", 3), submod, 2*sx);
+            double dx = dsa.getTagArgAsDouble("p", 3, 2*sx);
             x += index * dx;
         }
         else if (!strcmp(layout, "c") || !strcmp(layout, "col") || !strcmp(layout, "column")) {
-            double dy = resolveDoubleDispStrArg(ds.getTagArg("p", 3), submod, 2*sy);
+            double dy = dsa.getTagArgAsDouble("p", 3, 2*sy);
             y += index * dy;
         }
         else if (!strcmp(layout, "m") || !strcmp(layout, "matrix")) {
             // perhaps we should use the size of the 1st element in the vector?
-            int columns = resolveLongDispStrArg(ds.getTagArg("p", 3), submod, 5);
-            double dx = resolveDoubleDispStrArg(ds.getTagArg("p", 4), submod, 2*sx);
-            double dy = resolveDoubleDispStrArg(ds.getTagArg("p", 5), submod, 2*sy);
+            int columns = dsa.getTagArgAsLong("p", 3, 5);
+            double dx = dsa.getTagArgAsDouble("p", 4, 2*sx);
+            double dy = dsa.getTagArgAsDouble("p", 5, 2*sy);
             if (columns < 1)
                 columns = 1;
             x += (index % columns) * dx;
@@ -204,8 +209,8 @@ ModuleLayouter::Constraint ModuleLayouter::getSubmoduleCoords(cModule *submod, d
         }
         else if (!strcmp(layout, "i") || !strcmp(layout, "ri") || !strcmp(layout, "ring")) {
             // perhaps we should use the size of the 1st element in the vector?
-            double rx = resolveDoubleDispStrArg(ds.getTagArg("p", 3), submod, (sx+sy)*groupSize/4);
-            double ry = resolveDoubleDispStrArg(ds.getTagArg("p", 4), submod, rx);
+            double rx = dsa.getTagArgAsDouble("p", 3, (sx+sy)*groupSize/4);
+            double ry = dsa.getTagArgAsDouble("p", 4, rx);
 
             x += rx - rx * sin(index * 2 * M_PI / groupSize);
             y += ry - ry * cos(index * 2 * M_PI / groupSize);
@@ -306,6 +311,8 @@ void ModuleLayouter::ensureLayouted(cModule *module)
     const cDisplayString blank;
     const cDisplayString& ds = module->hasDisplayString() && module->parametersFinalized() ? module->getDisplayString() : blank;
 
+    DisplayStringAccess dsa(&ds, module);
+
     // create and configure layouter object
     LayouterChoice choice = getQtenv()->opt->layouterChoice;
     if (choice == LAYOUTER_AUTO) {
@@ -328,8 +335,8 @@ void ModuleLayouter::ensureLayouted(cModule *module)
     graphLayouter->setSeed(layoutSeeds[fullName]);
 
     // background size
-    double sx = resolveDoubleDispStrArg(ds.getTagArg("bgb", 0), module, 0);
-    double sy = resolveDoubleDispStrArg(ds.getTagArg("bgb", 1), module, 0);
+    double sx = dsa.getTagArgAsDouble("bgb", 0, 0);
+    double sy = dsa.getTagArgAsDouble("bgb", 1, 0);
     double border = 30;
     if (sx != 0 && sx < 2*border)
         border = sx/2;

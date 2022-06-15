@@ -23,6 +23,8 @@
 #include <QtCore/QObject>
 #include <climits>
 #include "qtenvdefs.h"
+#include "qtutil.h"
+#include "displaystringaccess.h"
 
 namespace omnetpp {
 
@@ -41,6 +43,7 @@ protected:
     // configuration
     cModule *parentModule;
     const cDisplayString& displayString;
+    DisplayStringAccess dsa;
     QGraphicsScene *scene;
 
     // state

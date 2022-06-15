@@ -21,6 +21,7 @@
 #include <omnetpp/cgate.h>
 #include <omnetpp/cchannel.h>
 #include "graphicsitems.h"
+#include "displaystringaccess.h"
 #include "qtutil.h"
 
 namespace omnetpp {
@@ -36,32 +37,32 @@ void ConnectionItemUtil::setupFromDisplayString(ConnectionItem *ci, cGate *gate,
 
     // replacing $param args with the actual parameter values
     std::string buffer;
-    ds = substituteDisplayStringParamRefs(ds, buffer, chan, true);
+    DisplayStringAccess dsa(&ds, chan);
 
     ci->setData(ITEMDATA_COBJECT, QVariant::fromValue((cObject *)gate));
-    ci->setData(ITEMDATA_TOOLTIP, ds.getTagArg("tt", 0));
+    ci->setData(ITEMDATA_TOOLTIP, dsa.getTagArg("tt", 0, buffer));
 
-    ci->setColor(parseColor(ds.getTagArg("ls", 0), QColor("black")));
+    ci->setColor(parseColor(dsa.getTagArg("ls", 0, buffer), QColor("black")));
 
     bool ok;
-    double width = QString(ds.getTagArg("ls", 1)).toDouble(&ok);
+    double width = dsa.getTagArgAsDouble("ls", 1, 0.0, &ok);
     ci->setWidth(width);  // will display even with 0 width, as hairline
 
     // explicit 0 width, so hiding the line completely
     if (ok && width == 0)
         ci->setColor(QColor("transparent"));
 
-    const char *style = ds.getTagArg("ls", 2);
+    const char *style = dsa.getTagArg("ls", 2, buffer);
     ci->setLineStyle(style[0] == 'd'
                       ? style[1] == 'a'
                          ? Qt::DashLine
                          : Qt::DotLine
                       : Qt::SolidLine);
 
-    const char *text = ds.getTagArg("t", 0);
+    const char *text = dsa.getTagArg("t", 0, buffer);
     ci->setText(text);
 
-    const char *textPos = ds.getTagArg("t", 1);
+    const char *textPos = dsa.getTagArg("t", 1, buffer);
 
     switch (textPos[0]) {
         case 'l': ci->setTextPosition(Qt::AlignLeft);   break;
@@ -69,7 +70,7 @@ void ConnectionItemUtil::setupFromDisplayString(ConnectionItem *ci, cGate *gate,
         default:  ci->setTextPosition(Qt::AlignCenter); break;
     }
 
-    ci->setTextColor(parseColor(ds.getTagArg("t", 2), QColor("#005030")));
+    ci->setTextColor(parseColor(dsa.getTagArg("t", 2, buffer), QColor("#005030")));
 
     bool twoWay = isTwoWayConnection(gate);
 
