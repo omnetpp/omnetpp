@@ -1,4 +1,4 @@
-om %description:
+%description:
 Tests the ChartTickDecimal class
 
 %includes:
