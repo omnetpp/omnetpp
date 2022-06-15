@@ -50,7 +50,7 @@ module NumericParams
 module ParamsWithBraces
 {
     parameters:
-        @display("bgb=0${ww}0,0${hh}0;bgg=${gridmajor},${gridminor};bgi=backgro${ii}en,${imagemode};bgt=8,8,Hel${label}ld");
+        @display("bgb=0${ww}0,0${hh * 10};bgg=${gridmajor},${gridminor};bgi=back${'gro' + ii}en,${imagemode};bgt=8,8,Hel${label}ld");
         int ww = 5; // --> "050"
         int hh = 3; // --> "030"
         int gridmajor = 10;
@@ -63,7 +63,7 @@ module ParamsWithBraces
     types:
         module Node {}
     submodules:
-        node: Node {@display("p=0${nodex},0${nodey}");}
+        node: Node {@display("p=0${parent.nodex},0${parent.nodey}");}
 }
 
 
