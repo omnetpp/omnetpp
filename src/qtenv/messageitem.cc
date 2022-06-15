@@ -96,6 +96,11 @@ void MessageItemUtil::setupSymbolFromDisplayString(SymbolMessageItem *mi, cMessa
         mi->setImage(nullptr);
     }
     else {  // as defined in the dispstr
+        // Not using DisplaySringAccess here, because there is no cComponent
+        // here to get parameters from. So expressions aren't evaluated either.
+        // Since display strings for messages can't be set directly from NED,
+        // users should compute whatever expressions they want in their
+        // overrides of cMessage::getDisplayString().
         bool widthOk, heightOk;
         double shapeWidth = QString(ds.getTagArg("b", 0)).toDouble(&widthOk);
         double shapeHeight = QString(ds.getTagArg("b", 1)).toDouble(&heightOk);

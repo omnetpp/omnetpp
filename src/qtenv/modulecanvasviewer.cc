@@ -676,23 +676,23 @@ QLineF ModuleCanvasViewer::getConnectionLine(cGate *gate)
         cDisplayString ds = channel->getDisplayString();
 
         std::string buffer;
-        ds = substituteDisplayStringParamRefs(ds, buffer, channel, true);
+        DisplayStringAccess dsa(&ds, channel);
 
-        const char *modeString = ds.getTagArg("m", 0);
+        const char *modeString = dsa.getTagArg("m", 0, buffer);
         if (modeString[0] && QString("amnews").contains(modeString[0]))
             mode = modeString[0];
 
         bool xOk, yOk;
-        int x = QString(ds.getTagArg("m", 1)).toInt(&xOk);
-        int y = QString(ds.getTagArg("m", 2)).toInt(&yOk);
+        int x = dsa.getTagArgAsLong("m", 1, 0.0, &xOk);
+        int y = dsa.getTagArgAsLong("m", 2, 0.0, &yOk);
 
         if (xOk)
             srcAnch.setX(x);
         if (yOk)
             srcAnch.setY(y);
 
-        x = QString(ds.getTagArg("m", 3)).toInt(&xOk);
-        y = QString(ds.getTagArg("m", 4)).toInt(&yOk);
+        x = dsa.getTagArgAsLong("m", 3, 0.0, &xOk);
+        y = dsa.getTagArgAsLong("m", 4, 0.0, &yOk);
 
         if (xOk)
             destAnch.setX(x);

@@ -19,6 +19,7 @@
 #include "qtenv.h"
 #include "qtutil.h"
 #include "graphicsitems.h"
+#include "displaystringaccess.h"
 
 #include <QtCore/QDebug>
 #include <QtGui/QPainter>
@@ -42,13 +43,12 @@ void SubmoduleItemUtil::setupFromDisplayString(SubmoduleItem *si, cModule *mod)
     // making a copy, so we can modify freely
     cDisplayString ds = mod->getDisplayString();
 
-    // replacing $param args with the actual parameter values
-    std::string buffer;
-    ds = substituteDisplayStringParamRefs(ds, buffer, mod, true);
+    std::string buffer; // stores getTagArg return values after substitution
+    DisplayStringAccess dsa(&ds, mod);
 
     bool widthOk, heightOk;
-    double shapeWidth = QString(ds.getTagArg("b", 0)).toDouble(&widthOk);
-    double shapeHeight = QString(ds.getTagArg("b", 1)).toDouble(&heightOk);
+    double shapeWidth = dsa.getTagArgAsDouble("b", 0, 0.0, &widthOk);
+    double shapeHeight = dsa.getTagArgAsDouble("b", 1, 0.0, &heightOk);
 
     if (!widthOk)
         shapeWidth = shapeHeight;
@@ -62,45 +62,45 @@ void SubmoduleItemUtil::setupFromDisplayString(SubmoduleItem *si, cModule *mod)
     si->setWidth(shapeWidth);
     si->setHeight(shapeHeight);
 
-    QString shapeName = QString(ds.getTagArg("b", 2));
+    const char *shapeName = dsa.getTagArg("b", 2, buffer);
 
     auto shape = (ds.getNumArgs("b") <= 0)
                    ? SubmoduleItem::SHAPE_NONE
-                   : shapeName == "oval"
+                   : opp_streq(shapeName, "oval")
                        ? SubmoduleItem::SHAPE_OVAL
                        : SubmoduleItem::SHAPE_RECT; // if unknown, this is the default
     si->setShape(shape);
 
-    si->setFillColor(parseColor(ds.getTagArg("b", 3)));
-    si->setOutlineColor(parseColor(ds.getTagArg("b", 4)));
-    bool ok;
-    int outlineWidth = QString(ds.getTagArg("b", 5)).toInt(&ok);
-    si->setOutlineWidth(ok ? outlineWidth : 2);
+    si->setFillColor(parseColor(dsa.getTagArg("b", 3, buffer)));
+    si->setOutlineColor(parseColor(dsa.getTagArg("b", 4, buffer)));
+    si->setOutlineWidth(dsa.getTagArgAsLong("b", 5, 2));
 
-    const char *imageName = ds.getTagArg("i", 0);
+    // storing in a std::string because it will be still needed after we use `buffer` again
+    std::string imageName = dsa.getTagArg("i", 0, buffer);
 
-    if (!imageName[0] && shape == SubmoduleItem::SHAPE_NONE)
+    if (imageName.empty() && shape == SubmoduleItem::SHAPE_NONE)
         imageName = SubmoduleItem::DEFAULT_ICON;
 
-    if (imageName[0]) {
-        const char *imageColor = ds.getTagArg("i", 1);
-        double tintAmount = ((ds.getNumArgs("i") == 2 && strlen(ds.getTagArg("i", 1)) > 0)
+    if (!imageName.empty()) {
+        const char *imageColor = dsa.getTagArg("i", 1, buffer);
+        double tintAmount = ((ds.getNumArgs("i") == 2 && strlen(imageColor) > 0)
                 ? 30  // color given, but no percentage
-                : QString(ds.getTagArg("i", 2)).toDouble()) / 100.0;
+                : dsa.getTagArgAsDouble("i", 2) / 100.0);
 
         si->setIcon(getQtenv()->icons.getTintedPixmap(
-                        imageName, ds.getTagArg("is", 0), parseColor(imageColor), tintAmount));
+                        imageName.c_str(), dsa.getTagArg("is", 0, buffer), parseColor(imageColor), tintAmount));
     }
     else {
         si->setIcon(QPixmap());
     }
 
-    const char *decoratorImageName = ds.getTagArg("i2", 0);
+    const char *decoratorImageName = dsa.getTagArg("i2", 0, buffer);
     if (decoratorImageName[0]) {
-        const char *decoratorImageColor = ds.getTagArg("i2", 1);
-        double tintAmount = ((ds.getNumArgs("i2") == 2 && strlen(ds.getTagArg("i2", 1)) > 0)
+        std::string buffer2; // can't reuse `buffer` yet, still need `decoratorImageName`
+        const char *decoratorImageColor = dsa.getTagArg("i2", 1, buffer2);
+        double tintAmount = ((ds.getNumArgs("i2") == 2 && strlen(decoratorImageColor) > 0)
                 ? 30  // color given, but no percentage
-                : QString(ds.getTagArg("i2", 2)).toDouble()) / 100.0;
+                : dsa.getTagArgAsDouble("i2", 2) / 100.0);
 
         si->setDecoratorIcon(getQtenv()->icons.getTintedPixmap(
                                  decoratorImageName, parseColor(decoratorImageColor), tintAmount));
@@ -109,19 +109,19 @@ void SubmoduleItemUtil::setupFromDisplayString(SubmoduleItem *si, cModule *mod)
         si->setDecoratorIcon(QPixmap());
     }
 
-    const char *text = ds.getTagArg("t", 0);
-    const char *textPosition = ds.getTagArg("t", 1);
-    const char *textColor = ds.getTagArg("t", 2);
-
+    const char *textPosition = dsa.getTagArg("t", 1, buffer);
     SubmoduleItem::TextPos textPos;
     switch (textPosition[0]) {
         case 'l': textPos = SubmoduleItem::TEXTPOS_LEFT;  break;
         case 'r': textPos = SubmoduleItem::TEXTPOS_RIGHT; break;
         default:  textPos = SubmoduleItem::TEXTPOS_TOP;   break;
     }
-    auto color = parseColor(textColor);
-    if (!color.isValid())
-        color = QColor("blue");
+
+    const char *textColor = dsa.getTagArg("t", 2, buffer);
+    auto color = parseColor(textColor, QColor("blue"));
+
+    // have to be last, position and color cobble `buffer`
+    const char *text = dsa.getTagArg("t", 0, buffer);
     si->setInfoText(text, textPos, color);
 
     si->clearRangeItems();
@@ -139,13 +139,11 @@ void SubmoduleItemUtil::setupFromDisplayString(SubmoduleItem *si, cModule *mod)
         if (!ok)
             continue;
 
-        double r = QString(ds.getTagArg(i, 0)).toDouble();
-        QColor rangeFillColor = parseColor(ds.getTagArg(i, 1));
-        QColor rangeOutlineColor = parseColor(ds.getTagArg(i, 2));
+        double r = dsa.getTagArgAsDouble(i, 0);
+        QColor rangeFillColor = parseColor(dsa.getTagArg(i, 1, buffer));
+        QColor rangeOutlineColor = parseColor(dsa.getTagArg(i, 2, buffer));
 
-        int rangeOutlineWidth = QString(ds.getTagArg(i, 3)).toInt(&ok);
-        if (!ok)
-            rangeOutlineWidth = 1;
+        int rangeOutlineWidth = dsa.getTagArgAsLong(i, 3, 1);
         if (!rangeOutlineColor.isValid() && rangeOutlineWidth > 0)
             rangeOutlineColor = QColor("black");
         si->addRangeItem(r, rangeOutlineWidth, rangeFillColor, rangeOutlineColor);
@@ -160,11 +158,11 @@ void SubmoduleItemUtil::updateQueueSizeLabel(SubmoduleItem *si, cModule *mod)
 {
     cDisplayString ds = mod->getDisplayString();
     std::string buffer;
-    ds = substituteDisplayStringParamRefs(ds, buffer, mod, true);
+    DisplayStringAccess dsa(&ds, mod);
 
     QString queueText;
     if (ds.containsTag("q"))
-        if (cQueue *q = dynamic_cast<cQueue *>(mod->findObject(ds.getTagArg("q", 0))))
+        if (cQueue *q = dynamic_cast<cQueue *>(mod->findObject(dsa.getTagArg("q", 0, buffer))))
             queueText = QString("q: %1").arg(q->getLength());
     si->setQueueText(queueText);
 }
