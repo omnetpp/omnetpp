@@ -66,21 +66,21 @@ namespace qtenv {
 
 #define INSPECTORLISTBOX_MAX_ITEMS    100000
 
-QColor parseColor(const QString& name, const QColor& fallbackColor)
+QColor parseColor(const char *name, const QColor& fallbackColor)
 {
-    if (name.isEmpty())
+    if (opp_isempty(name))
         return fallbackColor;
 
-    if (name == "-")
+    if (opp_streq(name, "-"))
         return QColor("transparent");
 
     try {
         uint8_t r, g, b;
-        omnetpp::common::parseColor(name.toStdString().c_str(), r, g, b);
+        common::parseColor(name, r, g, b);
         return QColor(r, g, b);
     }
     catch (std::runtime_error& e) {
-        qDebug() << "Failed to parse color" << name << "because:" << e.what();
+        qDebug() << "Failed to parse color " << name << " because:" << e.what();
         return fallbackColor;
     }
 }

@@ -21,6 +21,9 @@
 #include "graphicsitems.h"
 #include "omnetpp/cdisplaystring.h"
 #include "omnetpp/cpacket.h"
+#include "common/stringutil.h"
+
+using namespace omnetpp::common;
 
 namespace omnetpp {
 namespace qtenv {
@@ -60,8 +63,8 @@ void MessageItemUtil::setupLineFromDisplayString(LineMessageItem *mi, cMessage *
         mi->setColor(color);
     }
     else {  // as defined in the dispstr
-        QString fillColorName = ds.getTagArg("b", 3);
-        QColor fillColor = fillColorName == "kind"
+        const char *fillColorName = ds.getTagArg("b", 3);
+        QColor fillColor = opp_streq(fillColorName, "kind")
                             ? kindColor
                             : parseColor(fillColorName, "red");
         mi->setColor(fillColor);
@@ -126,13 +129,13 @@ void MessageItemUtil::setupSymbolFromDisplayString(SymbolMessageItem *mi, cMessa
                            : SymbolMessageItem::SHAPE_OVAL; // if unknown, this is the default
         mi->setShape(shape);
 
-        QString fillColorName = ds.getTagArg("b", 3);
-        QColor fillColor = fillColorName == "kind"
+        const char *fillColorName = ds.getTagArg("b", 3);
+        QColor fillColor = opp_streq(fillColorName, "kind")
                             ? kindColor
                             : parseColor(fillColorName, "red");
         mi->setFillColor(fillColor);
-        QString outlineColorName = ds.getTagArg("b", 4);
-        mi->setOutlineColor(outlineColorName == "kind"
+        const char *outlineColorName = ds.getTagArg("b", 4);
+        mi->setOutlineColor(opp_streq(outlineColorName, "kind")
                              ? kindColor
                              : parseColor(outlineColorName, fillColor));
 
@@ -143,8 +146,8 @@ void MessageItemUtil::setupSymbolFromDisplayString(SymbolMessageItem *mi, cMessa
         const char *imageName = ds.getTagArg("i", 0);
         mi->setImage(imageName[0] ? getQtenv()->icons.getImage(imageName, ds.getTagArg("is", 0)) : nullptr);
 
-        QString imageColorName = ds.getTagArg("i", 1);
-        mi->setImageColor(imageColorName == "kind" ? kindColor : parseColor(imageColorName));
+        const char *imageColorName = ds.getTagArg("i", 1);
+        mi->setImageColor(opp_streq(imageColorName, "kind") ? kindColor : parseColor(imageColorName));
         mi->setImageColorPercentage((ds.getNumArgs("i") == 2) // color given, but no percentage
                                       ? 30
                                       : QString(ds.getTagArg("i", 2)).toDouble());

@@ -46,7 +46,7 @@ class ModuleInspector;
 
 // wraps the one in common to be more convenient, also adds support for a fallback color
 // and accepts 2 special values: "-" (the fallback), and "transparent" (obvious)
-QColor parseColor(const QString &name, const QColor &fallbackColor = QColor());
+QColor parseColor(const char *name, const QColor &fallbackColor = QColor());
 
 /**
  * Find objects by full path, and optionally also matching class name and/or Id.
