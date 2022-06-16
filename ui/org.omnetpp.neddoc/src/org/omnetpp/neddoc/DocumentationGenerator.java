@@ -178,7 +178,7 @@ public class DocumentationGenerator {
     protected boolean generateSourceListings = true;
     protected boolean generateMsgDefinitions = true;
     protected boolean generateFileListings = true;
-    protected boolean automaticHyperlinking = true;  // true: tilde notation; false: autolinking
+    protected boolean automaticHyperlinking = true;  // false: tilde notation; true: autolinking
     protected boolean verboseMode = false;
     protected boolean generateDoxy = true;
     protected boolean generateCppSourceListings = false;
