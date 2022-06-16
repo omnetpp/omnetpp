@@ -173,13 +173,21 @@ public class HtmlRenderer implements INeddocRenderer {
         return "<b>" + text + "</b>";
     }
 
+    public String code(String text, String clazz) {
+        String result = "<code";
+        if (clazz != null)
+            result += " class=\""+clazz+"\"";
+        result += ">" + text + "</code>";
+        return result;
+    }
+
     public String styled(String text, String clazz, TextAttribute textAttribute) {
         String result = "<span";
         if (clazz != null)
             result += " class=\""+clazz+"\"";
         if (textAttribute != null)
-            result += " style=\""+styleString(textAttribute);
-        result += "\">" + text + "</span>";
+            result += " style=\""+styleString(textAttribute)+"\"";
+        result += ">" + text + "</span>";
         return result;
     }
 
