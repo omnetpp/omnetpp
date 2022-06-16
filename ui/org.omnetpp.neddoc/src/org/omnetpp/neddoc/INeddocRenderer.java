@@ -40,6 +40,7 @@ public interface INeddocRenderer {
     String paragraph(String text);
     String italic(String text);
     String bold(String text);
+    String code(String text, String clazz);
     String styled(String text, String clazz, TextAttribute textAttribute);
     /** copy all static resources to the generated doc's target dir (css, fonts, java script etc. */
     void copyStaticResources(IPath cssPath) throws Exception;
