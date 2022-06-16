@@ -14,7 +14,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -515,38 +514,41 @@ public class DocumentationGenerator {
 
     protected void collectTypeNames() {
         monitor.subTask("Collecting type names");
-        StringBuffer buffer = new StringBuffer();
         for (ITypeElement typeElement : typeElements) {
-            String name = typeElement.getName();
-
             if (typeElement instanceof INedTypeElement) {
+                // add simple and fully qualified NED names
+                String name = typeElement.getName();
                 String qname = ((INedTypeElement)typeElement).getNedTypeInfo().getFullyQualifiedName();
-                if (!qname.equals(name)) {
-                    buffer.append(qname + "|");
-                    typeNamesMap.put(qname, Arrays.asList(new ITypeElement[] {typeElement} ));
-                }
+                addToTypeNamesMap(name, typeElement);
+                if (!qname.equals(name))
+                    addToTypeNamesMap(qname, typeElement);
             }
 
-            if (!typeNamesMap.containsKey(name)) {
-                buffer.append(name + "|");
-                typeNamesMap.put(name, new ArrayList<ITypeElement>());
+            if (typeElement instanceof IMsgTypeElement) {
+                // add C++ simple name
+                String name = typeElement.getName();
+                addToTypeNamesMap(name, typeElement);
             }
-            typeNamesMap.get(name).add(typeElement);
         }
-        if (buffer.length() > 0)
-            buffer.deleteCharAt(buffer.length() - 1);  // remove last "|"
 
-        String typeNamesPattern = buffer.toString().replace(".", "\\.");
         if (!automaticHyperlinking) {
             // tilde syntax; we match any name prefixed with a tilde (or more tildes);
             // a double tilde means one literal tilde, so we'll have to count them when we do the replacement
             possibleTypeReferencesPattern = Pattern.compile("(~+)(" + Keywords.NED_IDENT_REGEX + "(\\." + Keywords.NED_IDENT_REGEX + ")*)\\b");
-        } else {
+        }
+        else {
             // autolinking: match recognized names, optionally prefixed with a backslash (or more backslashes);
             // a double backslash means one literal backslash, so we'll have to count them when we do the replacement
+            String typeNamesPattern = StringUtils.join(typeNamesMap.keySet(), "|").replace(".", "\\.");
             possibleTypeReferencesPattern = Pattern.compile("(\\\\*)\\b(" + typeNamesPattern + ")\\b");
         }
         monitor.worked(1);
+    }
+
+    private void addToTypeNamesMap(String name, ITypeElement typeElement) {
+        if (!typeNamesMap.containsKey(name))
+            typeNamesMap.put(name, new ArrayList<ITypeElement>());
+        typeNamesMap.get(name).add(typeElement);
     }
 
     protected void collectSubtypesMap() {
