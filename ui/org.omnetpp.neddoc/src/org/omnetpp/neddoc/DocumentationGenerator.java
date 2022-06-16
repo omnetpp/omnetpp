@@ -16,7 +16,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -467,11 +466,7 @@ public class DocumentationGenerator {
             return !path.matches(excludedDirsRegexPattern);
 
         }).collect(Collectors.toList());
-        Collections.sort(files, new Comparator<IFile>() {
-            public int compare(IFile o1, IFile o2) {
-                return o1.toString().compareToIgnoreCase(o2.toString());
-            }
-        });
+        Collections.sort(files, (IFile o1, IFile o2)-> o1.toString().compareToIgnoreCase(o2.toString()));
         monitor.worked(1);
     }
 
@@ -485,12 +480,7 @@ public class DocumentationGenerator {
             else if (msgResources.isMsgFile(file))
                 typeElements.addAll(msgResources.getMsgFileElement(file).getTopLevelTypeNodes());
         }
-
-        Collections.sort(typeElements, new Comparator<ITypeElement>() {
-            public int compare(ITypeElement o1, ITypeElement o2) {
-                return o1.getName().compareToIgnoreCase(o2.getName());
-            }
-        });
+        Collections.sort(typeElements, (ITypeElement o1, ITypeElement o2) -> o1.getName().compareToIgnoreCase(o2.getName()));
         monitor.worked(1);
     }
 
