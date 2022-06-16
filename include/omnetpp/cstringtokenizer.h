@@ -18,6 +18,7 @@
 
 #include <string>
 #include <vector>
+#include <stdint.h>
 #include "simkerneldefs.h"
 
 namespace omnetpp {
@@ -155,6 +156,12 @@ class SIM_API cStringTokenizer
      * in a vector.
      */
     std::vector<int> asIntVector();
+
+    /**
+     * Utility function: converts all tokens to uint64_t, and returns them
+     * in a vector.
+     */
+    std::vector<uint64_t> asUint64Vector();
 
     /**
      * Utility function: converts all tokens to double, and returns them

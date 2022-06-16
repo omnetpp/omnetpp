@@ -77,6 +77,24 @@ std::vector<std::string> cStringTokenizer::asVector()
     return vec;
 }
 
+std::vector<uint64_t> cStringTokenizer::asUint64Vector()
+{
+    const char *s;
+    std::vector<uint64_t> v;
+    while ((s = nextToken()) != nullptr) {
+        char *e;
+        errno = 0;
+
+        uint64_t d = strtoull(s, &e, 10);
+        if (*e)
+            throw cRuntimeError("Converting string to a vector of ints: Error at token '%s'", s);
+        if (errno == ERANGE)
+            throw cRuntimeError("Converting string to a vector of ints: '%s' does not fit into an int", s);
+        v.push_back(d);
+    }
+    return v;
+}
+
 std::vector<int> cStringTokenizer::asIntVector()
 {
     const char *s;
