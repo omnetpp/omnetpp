@@ -172,6 +172,12 @@ public class DocumentationGenerator {
     // matches @debug and extracts its options
     private final static Pattern debugPattern = Pattern.compile("(?m)^//[ \t]*@debug[ \t]+(.*?)$");
 
+    // matches optionally qualified NED type names
+    private final static Pattern nedTypePattern = Pattern.compile(Keywords.NED_IDENT_REGEX + "(\\." + Keywords.NED_IDENT_REGEX + ")*");
+
+    // matches optionally qualified C++ type names, leading "::" is optional
+    private final static Pattern msgTypePattern = Pattern.compile("(::)?" + Keywords.MSG_IDENT_REGEX + "(::" + Keywords.MSG_IDENT_REGEX + ")*");
+
     // configuration flags
     protected boolean headless = false;
     protected boolean generateNedTypeFigures = true;
@@ -549,22 +555,53 @@ public class DocumentationGenerator {
             }
 
             if (typeElement instanceof IMsgTypeElement) {
-                // add C++ simple name
-                String name = typeElement.getName();
+                // add simple, fully and all partially qualified C++ names.
+                // (we want inet::foo::Foo to be found as any of: inet::foo::Foo, foo::Foo, Foo)
+                String qname = ((IMsgTypeElement)typeElement).getMsgTypeInfo().getFullyQualifiedCppClassName();
+                addToTypeNamesMap("::" + qname, typeElement);
+                while (qname.contains("::")) {
+                    addToTypeNamesMap(qname, typeElement);
+                    qname = StringUtils.substringAfter(qname, "::");
+                }
+                String name = typeElement.getName(); // should be same as qname remainder
                 addToTypeNamesMap(name, typeElement);
             }
         }
 
+        final String QCHAR = "[a-zA-Z\\u0080-\\uffff_0-9.:]"; // char that may occur in fully qualified NED or C++ type names
+        final String NCHAR = "[a-zA-Z\\u0080-\\uffff_0-9]";   // char that may occur in NED or C++ simple type names
+
         if (!automaticHyperlinking) {
-            // tilde syntax; we match any name prefixed with a tilde (or more tildes);
-            // a double tilde means one literal tilde, so we'll have to count them when we do the replacement
-            possibleTypeReferencesPattern = Pattern.compile("(~+)(" + Keywords.NED_IDENT_REGEX + "(\\." + Keywords.NED_IDENT_REGEX + ")*)\\b");
+            // Tilde syntax: we match fully/partially/un qualified NED and C++ names prefixed with a tilde.
+            // Include all preceding tildes into the match (because a double tilde means one literal tilde in the output)
+            //
+            // Note 1: We can't just join known type names with "|", because we want invalid references to be
+            // marked as errors (colored red), not just be ignored.
+            //
+            // Note 2: This is a very plain regex, but we don't need a more sophisticated one. False positives
+            // will be filtered out in the replacement phase.
+            //
+            possibleTypeReferencesPattern = Pattern.compile("(~+)(" + QCHAR + "*" + NCHAR + ")");
+
+            // rudimentary test
+            Assert.isTrue(possibleTypeReferencesPattern.matcher("~Foo").matches());
+            Assert.isTrue(possibleTypeReferencesPattern.matcher("~foo.Bar").matches());
+            Assert.isTrue(possibleTypeReferencesPattern.matcher("~foo::Bar").matches());
+            Assert.isTrue(possibleTypeReferencesPattern.matcher("~::foo::Bar").matches());
+            Assert.isTrue(possibleTypeReferencesPattern.matcher("~~~~Foo").matches());
+            Assert.isTrue(!possibleTypeReferencesPattern.matcher("~").matches()); // do not match tildes not in front of candidates
+            Assert.isTrue(!possibleTypeReferencesPattern.matcher("foo").matches());
         }
         else {
-            // autolinking: match recognized names, optionally prefixed with a backslash (or more backslashes);
-            // a double backslash means one literal backslash, so we'll have to count them when we do the replacement
+            // Autolinking: Match recognized names, optionally prefixed with a backslash (or more backslashes).
+            // Include all preceding backslashes into the match (because a double backslash means one literal backslash in the output)
             String typeNamesPattern = StringUtils.join(typeNamesMap.keySet(), "|").replace(".", "\\.");
-            possibleTypeReferencesPattern = Pattern.compile("(\\\\*)\\b(" + typeNamesPattern + ")\\b");
+
+            // we need to match this too, in order to be able to turn remove the backslash from in front of unrecognized type names ("\NoSuchType" --> "NoSuchType"):
+            final String ESCAPEDNAME = "(\\\\+" + QCHAR + "+)";
+
+            // note: "(?<!" is a lookbehind assertion to sure "Bar" won't match "FooBar" ("\b" is not good because it won't work for "::Foo", ":" doesn't make a word boundary)
+            possibleTypeReferencesPattern = Pattern.compile("(\\\\*)(?<!" + QCHAR + ")(" + typeNamesPattern + "|" + ESCAPEDNAME + ")\\b");
         }
         monitor.worked(1);
     }
@@ -771,47 +808,86 @@ public class DocumentationGenerator {
             }});
     }
 
+    private static int countPrefixChars(String str) {
+        int i = 0;
+        while (i < str.length() && (str.charAt(i) == '~' || str.charAt(i) == '\\'))
+            i++;
+        return i;
+    }
+
     protected String replaceTypeReferences(String comment, boolean debug) {
         // note: Chinese characters in the comment must be unescaped at this point (not as numeric entities),
         // otherwise we our regex won't find them and Chinese identifiers won't be hyperlinked
         return StringUtils.replaceMatches(comment, possibleTypeReferencesPattern, new IRegexpReplacementProvider() {
             public String getReplacement(Matcher matcher) {
                 String match = matcher.group();
-                String prefix = matcher.group(1); // one or more tildes, or zero or more backslashes, depending on generateExplicitLinksOnly
-                boolean evenPrefixes = prefix.length() % 2 == 0;
-                String identifier = matcher.group(2);
+                int prefixLen = countPrefixChars(match);
+                String prefix = match.substring(0, prefixLen);
+                String identifier = match.substring(prefixLen);
+
+                // This match may be a false positive, because the original regex is not specific enough.
+                // To check, we try match it as NED type name and as C++ type name, and take the longer match.
+                // Note that matching with the regex "<nedTypePatter>|<msgTypePattern>" won't work, because
+                // "|" is not greedy enough and doesn't take the longer of the two alternatives but the first one.
+                // Illustration: the regex "a|apple" will NEVER match "apple" only its first "a"!
+                // This is why we need separate match operations and manually take the longer one.
+                Matcher nedTypeMatcher = nedTypePattern.matcher(identifier);
+                Matcher msgTypeMatcher = msgTypePattern.matcher(identifier);
+                int nedTypeLen = nedTypeMatcher.lookingAt() ? nedTypeMatcher.end() : 0;
+                int msgTypeLen = msgTypeMatcher.lookingAt() ? msgTypeMatcher.end() : 0;
+                int len = Math.max(nedTypeLen, msgTypeLen); // the longer of the two will be the real one
+                if (len == 0)
+                    return null; // leave "as is"
+
+                // If the match contains some trailing garbage (e.g. "::100"), it should be chopped off and added to "suffix"
                 String suffix = "";
+                if (len < identifier.length()) {
+                    suffix = identifier.substring(len);
+                    identifier = identifier.substring(0, len);
+                }
+
                 List<ITypeElement> typeElements = typeNamesMap.get(identifier);
-
-                if ((!automaticHyperlinking && !evenPrefixes) || (automaticHyperlinking && evenPrefixes && typeElements != null))
-                {
-                    // literal backslashes and tildes are doubled in the neddoc source when they are in front of an identifier
-                    prefix = prefix.substring(0, prefix.length() / 2);
-
-                    if (debug) {
-                        prefix = "[" + match + " ➜ " + prefix;
-                        suffix = suffix + "]";
+                if (typeElements == null && identifier.contains("::")) {
+                    // identifier might be an enum member, e.g. "State::IDLE" -- try again without the last segment
+                    int pos = identifier.lastIndexOf("::");
+                    typeElements = typeNamesMap.get(identifier.substring(0, pos));
+                    // if successful, go with it
+                    if (typeElements != null) {
+                        suffix += identifier.substring(pos); // e.g. "::IDLE"
+                        identifier = identifier.substring(0, pos);
                     }
+                }
 
+                // literal backslashes and tildes are doubled in the neddoc source when they are in front of an identifier
+                boolean evenPrefixes = prefix.length() % 2 == 0;
+
+                prefix = prefix.substring(0, prefix.length() / 2);
+
+                if (debug) {
+                    prefix = "[" + match + " ➜ " + prefix;
+                    suffix = suffix + "]";
+                }
+
+                if ((!automaticHyperlinking && !evenPrefixes) || (automaticHyperlinking && evenPrefixes && typeElements != null)) {
                     if (typeElements == null) {
                         return prefix + renderer.styled(identifier, "error", null) + suffix;
                     }
                     else if (typeElements.size() == 1) {
-                        return prefix + renderer.link(typeElements.get(0).getName(), renderer.appendFilenameExtension(getOutputBaseFileName(typeElements.get(0))), null) + suffix; // use simple name in hyperlink
+                        ITypeElement typeElement = typeElements.get(0);
+                        return prefix + typeReferenceString(typeElement) + suffix;
                     }
                     else {
                         // several types with the same simple name
-                        String replacement = prefix + typeElements.get(0).getName() + "(";
+                        String links = "";
                         int i = 1;
                         for (ITypeElement typeElement : typeElements)
-                            replacement += renderer.link(String.valueOf(i++), renderer.appendFilenameExtension(getOutputBaseFileName(typeElement)), null) + ",";
-                        replacement = replacement.substring(0, replacement.length()-1) + ")";
-                        replacement += suffix;
-                        return replacement;
+                            links += typeReferenceString(typeElement, String.valueOf(i++)) + ",";
+                        links = StringUtils.removeEnd(links, ",");
+                        return prefix + typeElements.get(0).getName() + "(" + links + ")" + suffix;
                     }
                 }
                 else
-                    return null;
+                    return prefix + identifier + suffix;
             }
         });
     }
@@ -1374,9 +1450,8 @@ public class DocumentationGenerator {
                     out(renderer.paragraph(packageReferenceString(getPackageName((INedTypeElement)typeElement))));
 
                 if (isMsgTypeElement) {
-                    String namespaceName = ((IMsgTypeElement)typeElement).getMsgTypeInfo().getNamespaceName();
-                    if (!StringUtils.isEmpty(namespaceName))
-                        out(renderer.paragraph("Namespace " + renderer.code(namespaceName, null)));
+                    String namespaceName = getNamespaceName((IMsgTypeElement)typeElement);
+                    out(renderer.paragraph("Namespace " + renderer.code(namespaceName, null)));
                 }
 
                 out(renderer.typeSectionHeading(typeElement));
@@ -1666,7 +1741,7 @@ public class DocumentationGenerator {
             INedTypeElement typeElement = submodule.getEffectiveTypeRef();
 
             if (typeElement != null) {
-                String newPrefix = (prefix == null ? "" : prefix + ".") + renderer.link(submodule.getName(), renderer.appendFilenameExtension(getOutputBaseFileName(typeElement)), null);
+                String newPrefix = (prefix == null ? "" : prefix + ".") + typeReferenceString(typeElement, submodule.getName());
 
                 if (typeElement instanceof CompoundModuleElementEx)
                     collectUnassignedParameters(newPrefix, typeElement.getNedTypeInfo().getSubmodules(), params);
@@ -1735,8 +1810,15 @@ public class DocumentationGenerator {
                 typeCommentString(typeElement)));
     }
 
-    protected String typeReferenceString(ITypeElement typeElement) throws IOException {
-        return renderer.link(typeElement.getName(), renderer.appendFilenameExtension(getOutputBaseFileName(typeElement)), "reference-ned");
+    protected String typeReferenceString(ITypeElement typeElement) {
+        return typeReferenceString(typeElement, typeElement.getName());
+    }
+
+    protected String typeReferenceString(ITypeElement typeElement, String label) {
+        // note: label might also be "1", "2", "3",etc (for ambiguous type references), not only name/qname
+        String qname = getFullyQualifiedName(typeElement);
+        String tooltip = label.equals(qname) ? null : qname;
+        return renderer.link(label, renderer.appendFilenameExtension(getOutputBaseFileName(typeElement)), null, tooltip);
     }
 
     protected String typeTypeString(ITypeElement typeElement) {

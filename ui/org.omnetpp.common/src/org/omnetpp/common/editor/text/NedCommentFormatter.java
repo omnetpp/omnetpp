@@ -170,21 +170,6 @@ public class NedCommentFormatter {
         comment = comment.replaceAll("&lt;((" + ANY_RECOGNIZED_HTML_TAG + ")( [^\n]*?)?/?)&gt;", "<$1>");
         comment = comment.replaceAll("&lt;(/(" + ANY_RECOGNIZED_HTML_TAG + "))&gt;", "<$1>");
 
-        // remove backslashes and tildes before identifiers; double backslashes and tildes become single ones
-        // (note: this will only process tildes and backslashes not hyperlinked by INeddocProcessor already)
-        //  !tildeMode                          tildeMode
-        // \TCP    ->  TCP                   ~TCP   -> TCP
-        // \Hello  ->  Hello                 ~Hello -> Hello
-        // \\TCP   ->  \TCP                  ~~TCP  -> ~TCP
-        // \100    ->  \100                  ~100   -> 100
-        // \\100   ->  \\100                 ~~100  -> ~~100
-        String pattern = tildeMode ? "(?i)(~+)([a-z_])" : "(?i)(\\\\+)([a-z_])";
-        comment = StringUtils.replaceMatches(comment, pattern, new IRegexpReplacementProvider() {
-            public String getReplacement(Matcher matcher) {
-                String prefix = matcher.group(1);
-                return prefix.substring(0, prefix.length() / 2) + matcher.group(2);
-            }
-        });
 
         // put back <nohtml> sections
         comment = StringUtils.replaceMatches(comment, "<nohtml(\\d+)/>", new IRegexpReplacementProvider() {
