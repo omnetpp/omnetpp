@@ -527,6 +527,8 @@ DEF(nedf_fullPath,
 
 cValue nedf_fullPath(cComponent *contextComponent, cValue argv[], int argc)
 {
+    if (!contextComponent)
+        throw cRuntimeError("No context component");
     return contextComponent->getFullPath();
 }
 
@@ -537,6 +539,8 @@ DEF(nedf_fullName,
 
 cValue nedf_fullName(cComponent *contextComponent, cValue argv[], int argc)
 {
+    if (!contextComponent)
+        throw cRuntimeError("No context component");
     return contextComponent->getFullName();
 }
 
@@ -547,6 +551,8 @@ DEF(nedf_parentIndex,
 
 cValue nedf_parentIndex(cComponent *contextComponent, cValue argv[], int argc)
 {
+    if (!contextComponent)
+        throw cRuntimeError("No context component");
     cModule *mod = contextComponent->getParentModule();
     if (!mod)
         throw cRuntimeError("'%s' has no parent module", contextComponent->getFullPath().c_str());
@@ -562,6 +568,8 @@ DEF(nedf_ancestorIndex,
 
 cValue nedf_ancestorIndex(cComponent *contextComponent, cValue argv[], int argc)
 {
+    if (!contextComponent)
+        throw cRuntimeError("No context component");
     int levels = (int)argv[0];
     if (levels < 0)
         throw cRuntimeError("Negative number of levels");
@@ -590,6 +598,8 @@ DEF(nedf_uniform,
 
 cValue nedf_uniform(cComponent *contextComponent, cValue argv[], int argc)
 {
+    if (!contextComponent)
+        throw cRuntimeError("No context component");
     int rng = argc == 3 ? (int)argv[2] : 0;
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
     return cValue(contextComponent->uniform(argv[0].doubleValueRaw(), argv1converted, rng), argv[0].getUnit());
@@ -602,6 +612,8 @@ DEF(nedf_exponential,
 
 cValue nedf_exponential(cComponent *contextComponent, cValue argv[], int argc)
 {
+    if (!contextComponent)
+        throw cRuntimeError("No context component");
     int rng = argc == 2 ? (int)argv[1] : 0;
     return cValue(contextComponent->exponential(argv[0].doubleValueRaw(), rng), argv[0].getUnit());
 }
@@ -613,6 +625,8 @@ DEF(nedf_normal,
 
 cValue nedf_normal(cComponent *contextComponent, cValue argv[], int argc)
 {
+    if (!contextComponent)
+        throw cRuntimeError("No context component");
     int rng = argc == 3 ? (int)argv[2] : 0;
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
     return cValue(contextComponent->normal(argv[0].doubleValueRaw(), argv1converted, rng), argv[0].getUnit());
@@ -625,6 +639,8 @@ DEF(nedf_truncnormal,
 
 cValue nedf_truncnormal(cComponent *contextComponent, cValue argv[], int argc)
 {
+    if (!contextComponent)
+        throw cRuntimeError("No context component");
     int rng = argc == 3 ? (int)argv[2] : 0;
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
     return cValue(contextComponent->truncnormal(argv[0].doubleValueRaw(), argv1converted, rng), argv[0].getUnit());
@@ -637,6 +653,8 @@ DEF(nedf_gamma_d,
 
 cValue nedf_gamma_d(cComponent *contextComponent, cValue argv[], int argc)
 {
+    if (!contextComponent)
+        throw cRuntimeError("No context component");
     int rng = argc == 3 ? (int)argv[2] : 0;
     return cValue(contextComponent->gamma_d((double)argv[0], argv[1].doubleValueRaw(), rng), argv[1].getUnit());
 }
@@ -648,6 +666,8 @@ DEF(nedf_beta,
 
 cValue nedf_beta(cComponent *contextComponent, cValue argv[], int argc)
 {
+    if (!contextComponent)
+        throw cRuntimeError("No context component");
     int rng = argc == 3 ? (int)argv[2] : 0;
     argv[0] = contextComponent->beta((double)argv[0], (double)argv[1], rng);
     return argv[0];
@@ -660,6 +680,8 @@ DEF(nedf_erlang_k,
 
 cValue nedf_erlang_k(cComponent *contextComponent, cValue argv[], int argc)
 {
+    if (!contextComponent)
+        throw cRuntimeError("No context component");
     int k = (int)argv[0];
     if (k < 0)
         throw cRuntimeError("k parameter (number of phases) must be positive (k=%d)", k);
@@ -674,6 +696,8 @@ DEF(nedf_chi_square,
 
 cValue nedf_chi_square(cComponent *contextComponent, cValue argv[], int argc)
 {
+    if (!contextComponent)
+        throw cRuntimeError("No context component");
     int k = (int)argv[0];
     if (k < 0)
         throw cRuntimeError("k parameter (degrees of freedom) must be positive (k=%d)", k);
@@ -688,6 +712,8 @@ DEF(nedf_student_t,
 
 cValue nedf_student_t(cComponent *contextComponent, cValue argv[], int argc)
 {
+    if (!contextComponent)
+        throw cRuntimeError("No context component");
     int i = (int)argv[0];
     if (i < 0)
         throw cRuntimeError("i parameter (degrees of freedom) must be positive (i=%d)", i);
@@ -702,6 +728,8 @@ DEF(nedf_cauchy,
 
 cValue nedf_cauchy(cComponent *contextComponent, cValue argv[], int argc)
 {
+    if (!contextComponent)
+        throw cRuntimeError("No context component");
     int rng = argc == 3 ? (int)argv[2] : 0;
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
     return cValue(contextComponent->cauchy(argv[0].doubleValueRaw(), argv1converted, rng), argv[0].getUnit());
@@ -714,6 +742,8 @@ DEF(nedf_triang,
 
 cValue nedf_triang(cComponent *contextComponent, cValue argv[], int argc)
 {
+    if (!contextComponent)
+        throw cRuntimeError("No context component");
     int rng = argc == 4 ? (int)argv[3] : 0;
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
     double argv2converted = argv[2].doubleValueInUnit(argv[0].getUnit());
@@ -727,6 +757,8 @@ DEF(nedf_lognormal,
 
 cValue nedf_lognormal(cComponent *contextComponent, cValue argv[], int argc)
 {
+    if (!contextComponent)
+        throw cRuntimeError("No context component");
     int rng = argc == 3 ? (int)argv[2] : 0;
     return contextComponent->lognormal((double)argv[0], (double)argv[1], rng);
 }
@@ -738,6 +770,8 @@ DEF(nedf_weibull,
 
 cValue nedf_weibull(cComponent *contextComponent, cValue argv[], int argc)
 {
+    if (!contextComponent)
+        throw cRuntimeError("No context component");
     int rng = argc == 3 ? (int)argv[2] : 0;
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
     return cValue(contextComponent->weibull(argv[0].doubleValueRaw(), argv1converted, rng), argv[0].getUnit());
@@ -750,6 +784,8 @@ DEF(nedf_pareto_shifted,
 
 cValue nedf_pareto_shifted(cComponent *contextComponent, cValue argv[], int argc)
 {
+    if (!contextComponent)
+        throw cRuntimeError("No context component");
     int rng = argc == 4 ? (int)argv[3] : 0;
     double argv2converted = argv[2].doubleValueInUnit(argv[1].getUnit());
     return cValue(contextComponent->pareto_shifted((double)argv[0], argv[1].doubleValueRaw(), argv2converted, rng), argv[1].getUnit());
@@ -764,6 +800,8 @@ DEF(nedf_intuniform,
 
 cValue nedf_intuniform(cComponent *contextComponent, cValue argv[], int argc)
 {
+    if (!contextComponent)
+        throw cRuntimeError("No context component");
     int rng = argc == 3 ? (int)argv[2] : 0;
     if (opp_strcmp(argv[0].getUnit(), argv[1].getUnit()) != 0)
         throw cRuntimeError("Arguments must have the same unit, got (%s,%s)", argv[0].stdstringValue().c_str(), argv[1].stdstringValue().c_str());
@@ -777,6 +815,8 @@ DEF(nedf_intuniformexcl,
 
 cValue nedf_intuniformexcl(cComponent *contextComponent, cValue argv[], int argc)
 {
+    if (!contextComponent)
+        throw cRuntimeError("No context component");
     int rng = argc == 3 ? (int)argv[2] : 0;
     if (opp_strcmp(argv[0].getUnit(), argv[1].getUnit()) != 0)
         throw cRuntimeError("Arguments must have the same unit, got (%s,%s)", argv[0].stdstringValue().c_str(), argv[1].stdstringValue().c_str());
@@ -790,6 +830,8 @@ DEF(nedf_bernoulli,
 
 cValue nedf_bernoulli(cComponent *contextComponent, cValue argv[], int argc)
 {
+    if (!contextComponent)
+        throw cRuntimeError("No context component");
     int rng = argc == 2 ? (int)argv[1] : 0;
     return (intval_t)contextComponent->bernoulli((double)argv[0], rng);
 }
@@ -801,6 +843,8 @@ DEF(nedf_binomial,
 
 cValue nedf_binomial(cComponent *contextComponent, cValue argv[], int argc)
 {
+    if (!contextComponent)
+        throw cRuntimeError("No context component");
     int rng = argc == 3 ? (int)argv[2] : 0;
     return (intval_t)contextComponent->binomial((int)argv[0], (double)argv[1], rng);
 }
@@ -812,6 +856,8 @@ DEF(nedf_geometric,
 
 cValue nedf_geometric(cComponent *contextComponent, cValue argv[], int argc)
 {
+    if (!contextComponent)
+        throw cRuntimeError("No context component");
     int rng = argc == 2 ? (int)argv[1] : 0;
     return (intval_t)contextComponent->geometric((double)argv[0], rng);
 }
@@ -823,6 +869,8 @@ DEF(nedf_negbinomial,
 
 cValue nedf_negbinomial(cComponent *contextComponent, cValue argv[], int argc)
 {
+    if (!contextComponent)
+        throw cRuntimeError("No context component");
     int rng = argc == 3 ? (int)argv[2] : 0;
     return (intval_t)contextComponent->negbinomial((int)argv[0], (double)argv[1], rng);
 }
@@ -834,6 +882,8 @@ DEF(nedf_poisson,
 
 cValue nedf_poisson(cComponent *contextComponent, cValue argv[], int argc)
 {
+    if (!contextComponent)
+        throw cRuntimeError("No context component");
     int rng = argc == 2 ? (int)argv[1] : 0;
     return (intval_t)contextComponent->poisson((double)argv[0], rng);
 }
