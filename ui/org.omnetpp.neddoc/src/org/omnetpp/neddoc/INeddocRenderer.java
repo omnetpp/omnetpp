@@ -37,6 +37,7 @@ public interface INeddocRenderer {
     String tableRow(String clazz, String ...cells);
     String anchor(String id);
     String link(String text, String url, String clazz);
+    String link(String text, String url, String clazz, String tooltip);
     String paragraph(String text);
     String italic(String text);
     String bold(String text);
