@@ -261,9 +261,6 @@ cValue DisplayStringAccess::resolveSingleValue(const char *arg) const
         if (*end != '}' || opp_findmatchingparen(arg+1) != end)
             return cValue();
 
-        if (!component)
-            throw cRuntimeError("Cannot evaluate expression '%s' in display string: no context component", arg);
-
         std::string exprText = std::string(arg+2, len-3); // skip ${ and }
         cDynamicExpression expr;
         expr.parseNedExpr(exprText.c_str());
@@ -304,10 +301,6 @@ const char *DisplayStringAccess::substituteParamRefs(const char *src, std::strin
                     throw cRuntimeError("Unclosed '{' in display string");
 
                 std::string exprText = std::string(s + 1, end - s - 1); // skip { and }
-
-                if (!component)
-                    throw cRuntimeError("Cannot evaluate expression '%s' in display string: no context component", exprText.c_str());
-
                 cDynamicExpression expr;
                 expr.parseNedExpr(exprText.c_str());
                 cValue value = expr.evaluate(component);
