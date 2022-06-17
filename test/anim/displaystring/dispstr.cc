@@ -172,7 +172,8 @@ void Gen::messages()
         "i=msg/packet,lightgreen",
         "i=msg/mail,purple,100",
         "b=25,25,oval;i=misc/cloud_s",
-        "i=device/antennatower_vl"
+        "i=device/antennatower_vl",
+        "b=${3*10},${100/100}5,r${'e'+'c'}t}", // NED expressions
     };
 
     EV << "Messages:\n";
