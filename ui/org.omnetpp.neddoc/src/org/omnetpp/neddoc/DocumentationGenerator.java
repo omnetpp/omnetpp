@@ -65,6 +65,7 @@ import org.omnetpp.common.editor.text.Keywords;
 import org.omnetpp.common.editor.text.NedCommentFormatter;
 import org.omnetpp.common.editor.text.NedCommentFormatter.INeddocProcessor;
 import org.omnetpp.common.editor.text.SyntaxHighlightHelper;
+import org.omnetpp.common.util.CollectionUtils;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.IPredicate;
@@ -213,6 +214,8 @@ public class DocumentationGenerator {
     protected Pattern possibleTypeReferencesPattern;
 
     protected ArrayList<String> packageNames;
+    protected ArrayList<String> namespaceNames;
+
     protected int levelIndex[] = {0, 0, 0, 0};  // navigation level indexes for generating breadcrumbs (note that the 0th element is not used)
     protected int previousLevel = 0;
     protected TreeMap<String, ArrayList<Integer>> navigationItemIndex;
@@ -350,6 +353,8 @@ public class DocumentationGenerator {
             generateNavTreeIndex();
             generateNedTypeFigures();
             generatePackagesPage();
+            if (generateMsgDefinitions)
+                generateNamespacesPage();
             if (generateFileListings)
                 generateFilePages();
             generateTypePages();
@@ -444,6 +449,8 @@ public class DocumentationGenerator {
             collectFiles();
             collectTypes();
             collectPackageNames();
+            if (generateMsgDefinitions)
+                collectNamespaceNames();
             collectTypeNames();
             collectSubtypesMap();
             collectImplementorsMap();
@@ -485,11 +492,12 @@ public class DocumentationGenerator {
 
     protected String getPackageName(INedTypeElement typeElement) {
         String packageName = typeElement.getNedTypeInfo().getPackageName();
+        return StringUtils.defaultIfEmpty(packageName, "default");
+    }
 
-        if (packageName != null)
-            return packageName;
-        else
-            return "default";
+    protected String getNamespaceName(IMsgTypeElement typeElement) {
+        String namespaceName = typeElement.getMsgTypeInfo().getNamespaceName();
+        return StringUtils.defaultIfEmpty(namespaceName, "default");
     }
 
     protected String getFullyQualifiedName(ITypeElement typeElement) {
@@ -509,7 +517,18 @@ public class DocumentationGenerator {
             if (typeElement instanceof INedTypeElement)
                 packageNames.add(getPackageName((INedTypeElement)typeElement));
 
-        this.packageNames = (ArrayList<String>)org.omnetpp.common.util.CollectionUtils.toSorted(new ArrayList<String>(packageNames));
+        this.packageNames = (ArrayList<String>)CollectionUtils.toSorted(new ArrayList<String>(packageNames));
+    }
+
+    protected void collectNamespaceNames() {
+        monitor.subTask("Collecting namespace names");
+        Set<String> namespaceNames = new LinkedHashSet<String>();
+
+        for (ITypeElement typeElement : typeElements)
+            if (typeElement instanceof IMsgTypeElement)
+                namespaceNames.add(getNamespaceName((IMsgTypeElement)typeElement));
+
+        this.namespaceNames = (ArrayList<String>)CollectionUtils.toSorted(new ArrayList<String>(namespaceNames));
     }
 
     protected void collectTypeNames() {
@@ -838,6 +857,21 @@ public class DocumentationGenerator {
             );
     }
 
+    protected void generateNamespaceIndex() throws Exception {
+        if (packageNames.size() != 0)
+            generateNavigationMenuItem(1, "Namespaces", renderer.appendFilenameExtension("namespaces"), () -> {
+                    for (String namespaceName : namespaceNames) {
+                        generateTypeIndex(2, namespaceName, renderer.appendFilenameExtension("namespaces")+"#"+namespaceName.replace("::", "_"), (object) -> {
+                            if (object instanceof IMsgTypeElement)
+                                return getNamespaceName((IMsgTypeElement)object).equals(namespaceName);
+
+                            return false;
+                        });
+                    }
+                }
+            );
+    }
+
     protected void generateFileIndex() throws Exception {
         if (files.size() != 0)
             generateNavigationMenuItem(1, "Files", null, () -> {
@@ -869,8 +903,10 @@ public class DocumentationGenerator {
                         generateTypeIndex(1, "Module Interfaces", ModuleInterfaceElementEx.class);
                         generateTypeIndex(1, "Channels", ChannelElementEx.class);
                         generateTypeIndex(1, "Channel Interfaces", ChannelInterfaceElementEx.class);
-                        if (generateMsgDefinitions)
+                        if (generateMsgDefinitions) {
+                            generateNamespaceIndex();
                             generateMsgIndex();
+                        }
                         if (generateFileListings)
                             generateFileIndex();
                         generateCppIndex();
@@ -1224,6 +1260,29 @@ public class DocumentationGenerator {
 
                         out(renderer.endTable());
                         generateExtensionFragment(ExtType.NED, packageName, "bottom");
+                    }
+            }
+        );
+    }
+
+    protected void generateNamespacesPage() throws Exception {
+        generatePage("namespaces", "Namespaces", () -> {
+            out(renderer.sectionHeading("Namespaces", "comptitle"));
+            for (final String namespaceName : namespaceNames) {
+                        out(renderer.anchor(namespaceName.replace("::", "_")));
+                        out(renderer.sectionHeading(namespaceName, "subtitle"));
+                        generateExtensionFragment(ExtType.MSG, namespaceName, "top");
+
+                        out(renderer.beginTable("typestable"));
+                        generateTypesTableHead();
+
+                        for (ITypeElement typeElement : typeElements)
+                            if (typeElement instanceof IMsgTypeElement)
+                                if (namespaceName.equals(getNamespaceName((IMsgTypeElement)typeElement)))
+                                    generateTypeReferenceLine(typeElement);
+
+                        out(renderer.endTable());
+                        generateExtensionFragment(ExtType.MSG, namespaceName, "bottom");
                     }
             }
         );
