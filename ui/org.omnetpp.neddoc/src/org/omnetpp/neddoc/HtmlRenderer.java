@@ -154,9 +154,15 @@ public class HtmlRenderer implements INeddocRenderer {
     }
 
     public String link(String text, String url, String clazz) {
+        return link(text, url, clazz, null);
+    }
+
+    public String link(String text, String url, String clazz, String tooltip) {
         String result = "<a";
         if (clazz != null)
             result += " class=\""+clazz+"\"";
+        if (tooltip != null)
+            result += " title=\""+tooltip+"\"";
         result += " href=\""+url+"\">" + text + "</a>";
         return result;
     }
