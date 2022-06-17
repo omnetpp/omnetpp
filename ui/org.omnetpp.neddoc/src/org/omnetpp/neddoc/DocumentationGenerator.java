@@ -14,7 +14,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -166,6 +168,9 @@ public class DocumentationGenerator {
 
     // matches @include and extracts filename
     private final static Pattern includePattern = Pattern.compile("(?m)^//[ \t]*@include[ \t]+(.*?)$");
+
+    // matches @debug and extracts its options
+    private final static Pattern debugPattern = Pattern.compile("(?m)^//[ \t]*@debug[ \t]+(.*?)$");
 
     // configuration flags
     protected boolean headless = false;
@@ -756,20 +761,26 @@ public class DocumentationGenerator {
     }
 
     protected String processHTMLContent(String clazz, String comment) {
+        Set<String> debugOptions = new HashSet<>();
+        comment = processDebugOptions(comment, debugOptions);
+        boolean debugLinks = debugOptions.contains("links");
+
         return NedCommentFormatter.makeHtmlDocu(comment, clazz.equals("briefcomment"), !automaticHyperlinking, new INeddocProcessor() {
             public String process(String comment) {
-                return replaceTypeReferences(comment);
+                return replaceTypeReferences(comment, debugLinks);
             }});
     }
 
-    protected String replaceTypeReferences(String comment) {
+    protected String replaceTypeReferences(String comment, boolean debug) {
         // note: Chinese characters in the comment must be unescaped at this point (not as numeric entities),
         // otherwise we our regex won't find them and Chinese identifiers won't be hyperlinked
         return StringUtils.replaceMatches(comment, possibleTypeReferencesPattern, new IRegexpReplacementProvider() {
             public String getReplacement(Matcher matcher) {
+                String match = matcher.group();
                 String prefix = matcher.group(1); // one or more tildes, or zero or more backslashes, depending on generateExplicitLinksOnly
                 boolean evenPrefixes = prefix.length() % 2 == 0;
                 String identifier = matcher.group(2);
+                String suffix = "";
                 List<ITypeElement> typeElements = typeNamesMap.get(identifier);
 
                 if ((!automaticHyperlinking && !evenPrefixes) || (automaticHyperlinking && evenPrefixes && typeElements != null))
@@ -777,11 +788,16 @@ public class DocumentationGenerator {
                     // literal backslashes and tildes are doubled in the neddoc source when they are in front of an identifier
                     prefix = prefix.substring(0, prefix.length() / 2);
 
+                    if (debug) {
+                        prefix = "[" + match + " ➜ " + prefix;
+                        suffix = suffix + "]";
+                    }
+
                     if (typeElements == null) {
-                        return prefix + renderer.styled(identifier, "error", null);
+                        return prefix + renderer.styled(identifier, "error", null) + suffix;
                     }
                     else if (typeElements.size() == 1) {
-                        return prefix + renderer.link(typeElements.get(0).getName(), renderer.appendFilenameExtension(getOutputBaseFileName(typeElements.get(0))), null); // use simple name in hyperlink
+                        return prefix + renderer.link(typeElements.get(0).getName(), renderer.appendFilenameExtension(getOutputBaseFileName(typeElements.get(0))), null) + suffix; // use simple name in hyperlink
                     }
                     else {
                         // several types with the same simple name
@@ -790,6 +806,7 @@ public class DocumentationGenerator {
                         for (ITypeElement typeElement : typeElements)
                             replacement += renderer.link(String.valueOf(i++), renderer.appendFilenameExtension(getOutputBaseFileName(typeElement)), null) + ",";
                         replacement = replacement.substring(0, replacement.length()-1) + ")";
+                        replacement += suffix;
                         return replacement;
                     }
                 }
@@ -2313,6 +2330,21 @@ public class DocumentationGenerator {
                 matcher.appendReplacement(buffer, content.replace("\\", "\\\\").replace("$", "\\$"));
             }
 
+            matcher.appendTail(buffer);
+            comment = buffer.toString();
+        }
+        return comment;
+    }
+
+    private String processDebugOptions(String comment, Set<String> options) {
+        if (comment.contains("@debug")) {
+            Matcher matcher = debugPattern.matcher(comment);
+            StringBuffer buffer = new StringBuffer();
+
+            while (matcher.find()) {
+                options.addAll(Arrays.asList(matcher.group(1).split("[ \t]")));
+                matcher.appendReplacement(buffer, "");
+            }
             matcher.appendTail(buffer);
             comment = buffer.toString();
         }
