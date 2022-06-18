@@ -43,7 +43,6 @@
 #include "omnetpp/cintparimpl.h"
 #include "omnetpp/cstringparimpl.h"
 #include "omnetpp/cobjectparimpl.h"
-#include "common/displaystring.h"
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/cenvir.h"
