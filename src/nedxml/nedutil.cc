@@ -21,7 +21,6 @@
 #include <cstring>
 #include <cmath>
 #include "common/stringutil.h"
-#include "common/displaystring.h"
 #include "exception.h"
 #include "nedutil.h"
 #include "nedelements.h"
