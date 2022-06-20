@@ -60,10 +60,10 @@
 // -----------------
 // This text is after the divider.
 //
-// @page Non-HTML tags 
+// @page Non-HTML tags
 //
 // Non-HTML tags are not interpreted.
-// 
+//
 // <><x><yy><zzz>foo</zzz></yy> should read: <nohtml><><x><yy><zzz>foo</zzz></yy></nohtml>
 // (an empty tag, and "x", "yy" a d "zzz" tags, the first two unclosed.)
 //
@@ -86,7 +86,7 @@
 //
 // Printing "nohtml" itself: <nohtml><nohtml></nohtml> or &lt;/nohtml>.
 //
-// Backslash inside "nohtml": <nohtml>\</nohtml> <== should display as a single backslash 
+// Backslash inside "nohtml": <nohtml>\</nohtml> <== should display as a single backslash
 //
 // @page @ Tags
 //
@@ -99,11 +99,14 @@
 //
 // @page Backslash handling
 //
-// Backslash handling: a single backslash should prevent hyperlinking a word.
-// So this should be hyperlinked: Formatting_1, but this not: \Formatting_1.
-// Single backslashes should also be removed, so none should be here:
-// \one,\Two, Th\ree. Double backslashes should become one, so you should
-// see one \\here, another here: \\, and two here: \\\\.
+// Backslash handling: a single backslash should prevent hyperlinking a word
+// in auto-hyperlinking mode. So, in auto mode, this should be hyperlinked:
+// Bar, but this not: \Bar.
+//
+// Use double backslash to add one literal backslash, like here: \\Formatting_1.
+//
+// Backslashes in non-ambiguous positions are preserved, so you should see
+// one, two, three, four backslashes here: \, \\, \\\, \\\\.
 //
 
 package org.omnetpp.neddoc;
