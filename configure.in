@@ -386,27 +386,24 @@ else
         PLATFORM=linux
         ARCH=aarch64
         ;;
-    x86_64-*-darwin*)
-        PLATFORM=macos
-        ARCH=x86_64
-        OMNETPP_TOOLS_DIR=$OMNETPP_ROOT_DIR/tools/$PLATFORM.$ARCH
-        CFLAGS_ARCH="$CFLAGS_ARCH -isystem \$(OMNETPP_TOOLS_DIR)/include"
-        CFLAGS_TOOLS_MACOSX="-isystem $OMNETPP_TOOLS_DIR/include"
-        LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L\$(OMNETPP_TOOLS_DIR)/lib -F\$(OMNETPP_TOOLS_DIR)/lib"
-        LDFLAGS_TOOLS_MACOSX="-L$OMNETPP_TOOLS_DIR/lib -F$OMNETPP_TOOLS_DIR/lib"
+    *-*-darwin*)
         SO_LIB_SUFFIX=".dylib"
         JNI_LIB_SUFFIX=".jnilib"
-        ;;
-    arm-*-darwin*)
         PLATFORM=macos
-        ARCH=aarch64
-        OMNETPP_TOOLS_DIR=$OMNETPP_ROOT_DIR/tools/$PLATFORM.$ARCH
-        CFLAGS_ARCH="$CFLAGS_ARCH -isystem \$(OMNETPP_TOOLS_DIR)/include"
-        CFLAGS_TOOLS_MACOSX="-isystem $OMNETPP_TOOLS_DIR/include"
-        LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L\$(OMNETPP_TOOLS_DIR)/lib -F\$(OMNETPP_TOOLS_DIR)/lib"
-        LDFLAGS_TOOLS_MACOSX="-L$OMNETPP_TOOLS_DIR/lib -F$OMNETPP_TOOLS_DIR/lib"
-        SO_LIB_SUFFIX=".dylib"
-        JNI_LIB_SUFFIX=".jnilib"
+        if test $(uname -m) = "x86_64"; then
+          ARCH=x86_64
+        elif test $(uname -m) = "arm64"; then
+          ARCH=aarch64
+        fi
+
+        LDFLAGS_ARCH="$LDFLAGS_ARCH -Wl,-rpath,@loader_path/../lib"
+        if test -d "$OMNETPP_ROOT_DIR/tools/$PLATFORM.$ARCH"; then
+          OMNETPP_TOOLS_DIR=$OMNETPP_ROOT_DIR/tools/$PLATFORM.$ARCH
+          CFLAGS_ARCH="$CFLAGS_ARCH -isystem \$(OMNETPP_TOOLS_DIR)/include"
+          CFLAGS_TOOLS_MACOSX="-isystem $OMNETPP_TOOLS_DIR/include"
+          LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L\$(OMNETPP_TOOLS_DIR)/lib -F\$(OMNETPP_TOOLS_DIR)/lib -Wl,-rpath,\$(OMNETPP_TOOLS_DIR)/lib"
+          LDFLAGS_TOOLS_MACOSX="-L$OMNETPP_TOOLS_DIR/lib -F$OMNETPP_TOOLS_DIR/lib -Wl,-rpath,$OMNETPP_TOOLS_DIR/lib"
+        fi
         ;;
     *)
         ;;
@@ -692,7 +689,7 @@ rm -f conftest_a.* conftest_m.* libconftest_a.a conftest
 # Also, we add "." to rpath so that opp_run -L option does not need full path of the library
 AC_MSG_CHECKING(whether linker supports -rpath)
 LDFLAGS_SAVE="$LDFLAGS"
-LDFLAGS="$LDFLAGS -Wl,-rpath,\$(OMNETPP_LIB_DIR) -Wl,-rpath,\$(OMNETPP_TOOLS_DIR)/lib -Wl,-rpath,."
+LDFLAGS="$LDFLAGS -Wl,-rpath,\$(OMNETPP_LIB_DIR) -Wl,-rpath,."
 AC_LINK_IFELSE(
      [AC_LANG_PROGRAM()],
      [AC_MSG_RESULT(yes)],
@@ -891,7 +888,7 @@ if test "$WITH_QTENV" = "yes"; then
         QT_CFLAGS=${QT_CFLAGS:-"-isystem $QT_INSTALL_HEADERS"}
         QT_LIBS=${QT_LIBS:-"-lQt5Gui -lQt5Core -lQt5Widgets -lQt5PrintSupport -lQt5OpenGL $LDFLAG_LIBPATH$QT_INSTALL_LIBS"}
         if test -z "$RPATH_UNSUPPORTED"; then
-            QTENV_LDFLAGS="-Wl,-rpath=$QT_INSTALL_LIBS"
+            QTENV_LDFLAGS="-Wl,-rpath,$QT_INSTALL_LIBS"
         fi
 
 QT_VERSIONCHECK_CODE=$(cat <<-EOT

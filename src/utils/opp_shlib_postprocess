@@ -20,8 +20,7 @@ fi
 # the install name must be absolute on Mac OS X
 if [ "`uname`" = "Darwin" ];  then
   libname=$(basename "$1")
-  basedir=$(cd $(dirname "$1"); pwd)
-  install_name_tool -id $basedir/$libname $1
+  install_name_tool -id @rpath/$libname $1
 fi
 
 true
