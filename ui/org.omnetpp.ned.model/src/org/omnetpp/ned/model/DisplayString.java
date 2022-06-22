@@ -9,7 +9,6 @@ package org.omnetpp.ned.model;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.Vector;
 
 import org.eclipse.core.runtime.Assert;
@@ -63,11 +62,10 @@ public class DisplayString implements IDisplayString {
         private Vector<String> args = new Vector<String>(1);
 
         /**
-         * Creates a tag by parsing the given string
+         * Creates a tag with the given string as name
          */
-        public TagInstance(String tagString) {
-            if (tagString != null)
-                parseTag(tagString);
+        public TagInstance(String name) {
+            this.name = name;
         }
 
         /**
@@ -153,26 +151,6 @@ public class DisplayString implements IDisplayString {
             if (isEmpty())
                 return "";
             return getName() + "=" + getArgString();
-        }
-
-        // parse a single tag and its values into a string vector
-        private void parseTag(String tagStr) {
-            args = new Vector<String>(2);
-            Scanner scanner = new Scanner(tagStr);
-
-            // TODO string literal and escaping must be correctly handled
-            // StreamParser can handle comments too, maybe it would be a better choice
-            scanner.useDelimiter("=|,");
-
-            // parse for the tag name
-            if (scanner.hasNext())
-                name = scanner.next().trim();
-
-            // parse for the tag values with a new tokenizer
-            while (scanner.hasNext())
-                args.add(scanner.next().trim());
-
-            scanner.close();
         }
     }
 
@@ -325,16 +303,66 @@ public class DisplayString implements IDisplayString {
 
     public static LinkedHashMap<String, TagInstance> parseTags(String text) {
         LinkedHashMap<String, TagInstance> tagMap = new LinkedHashMap<String, TagInstance>();
-        tagMap.clear();
-        if (text != null) {
-            // parse the display string into tags along ";"
-            Scanner scanner = new Scanner(text);
-            scanner.useDelimiter(";");
-            while (scanner.hasNext()) {
-                TagInstance parsedTag = new TagInstance(scanner.next().trim());
-                tagMap.put(parsedTag.getName(), parsedTag);  //FIXME must resolve escaped ";" and "," ??? --Andras
+        TagInstance currentTag = null;
+
+        StringBuilder sb = new StringBuilder(); // collects the current tag name or arg value
+        boolean insideTagName = true;
+        int len = text.length();
+
+        for (int pos = 0; pos < len; pos++) {
+            char c = text.charAt(pos);
+            if (c == '\\' && (pos+1) < len) {
+                // allow escaping display string special chars (=,;) with backslash.
+                // No need to deal with "\t", "\n" etc here, since they already got
+                // interpreted by opp_parsequotedstr().
+                sb.append(text.charAt(++pos));
             }
-            scanner.close();
+            else if (c == ';') {
+                if (insideTagName) {
+                    String name = sb.toString();
+                    sb = new StringBuilder();
+                    currentTag = new TagInstance(name);
+                    tagMap.put(name, currentTag);
+                    insideTagName = false;
+                }
+                else
+                    currentTag.args.add(sb.toString());
+                sb = new StringBuilder();
+                insideTagName = true;
+            }
+            else if (c == '$' && (pos+1) < len && text.charAt(pos+1) == '$' && !insideTagName) {
+                sb.append(text.charAt(pos+1));
+            }
+            else if (c == '$' && (pos+1) < len && text.charAt(pos+1) == '{' && !insideTagName) {
+                // skip expression
+                int end = StringUtils.findCloseParen(text, pos+1);
+                sb.append(text.substring(pos, end+1));
+                pos = end;
+            }
+            else if (c == '=' && insideTagName) {
+                String name = sb.toString();
+                sb = new StringBuilder();
+                currentTag = new TagInstance(name);
+                tagMap.put(name, currentTag);
+                insideTagName = false;
+            }
+            else if (c == ',' && !insideTagName) {
+                // new argument of current tag begins
+                currentTag.args.add(sb.toString());
+                sb = new StringBuilder();
+            }
+            else
+                sb.append(c);
+        }
+
+        if (!sb.isEmpty()) {
+            if (insideTagName) {
+                String name = sb.toString();
+                currentTag = new TagInstance(name);
+                tagMap.put(name, currentTag);
+            }
+            else
+                currentTag.args.add(sb.toString());
         }
         return tagMap;
     }
@@ -572,6 +600,15 @@ public class DisplayString implements IDisplayString {
             Debug.println("\\\\ \n \\hline");
         }
         Debug.println("\\end{longtable}");
+    }
+
+    void dump() {
+        for (TagInstance tag : tagMap.values()) {
+            Debug.println("'" + tag.name + "':");
+            for (String arg : tag.args) {
+                Debug.println("    '" + arg + "'");
+            }
+        }
     }
 
 //    static {
