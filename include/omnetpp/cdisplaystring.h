@@ -32,14 +32,23 @@ namespace omnetpp {
  * A display string consist of several named tags, where each tag may have
  * several arguments (parameters). The syntax: "tag1=value1,val2,val3;tag2=val4,val5".
  *
+ * The special characters ",", ";", and "=" may be included in tag argument
+ * values by preceding (escaping) them with a "\". A literal backslash may
+ * be written as "\\".
+ *
+ * Tag values may also contain expressions in the following form: "${expression}".
+ * The three special characters mentioned above lose their meaning within these
+ * expressions even without escaping. A literal dollar sign may be written as "$$".
+ *
  * This class facilitates tasks such as adding new tags, adding arguments to
  * existing tags, removing tags or replacing arguments. The internal storage
  * method allows very fast operation; it will generally be faster than
  * direct string manipulation.
  *
  * The this class does not know about the meaning or semantics of various
- * display string tags, it merely parses the string as data elements separated
- * by semicolons, equal signs and commas.
+ * display string tags, nor does it care about what is written in the embedded
+ * expressions, it merely parses the string as data elements separated by
+ * semicolons, equal signs and commas.
  *
  * An example:
  * <pre>
