@@ -398,11 +398,17 @@ void cDisplayString::doParse()
     char *s, *d;
     bool insideTagName = true;
     for (s = assembledString, d = buffer; *s; s++, d++) {
-        if (*s == '\\' && *(s+1)) {
+        if (*s == '\\') {
             // allow escaping display string special chars (=,;) with backslash.
             // No need to deal with "\t", "\n" etc here, since they already got
             // interpreted by opp_parsequotedstr().
-            *d = *++s;
+            if (*(s+1) == '\0')
+                throw cRuntimeError("Incomplete escape sequence in '%s'", assembledString);
+
+            if (strchr(",;=", *(s+1)) == nullptr)
+                throw cRuntimeError("Invalid escape sequence '\\%c' in '%s'", *(s+1), assembledString);
+            else
+                *d = *++s;
         }
         else if (*s == ';') {
             // new tag begins
