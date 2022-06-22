@@ -170,7 +170,7 @@ class SIM_API cValue
      * with the unit it was given in. If there are several numbers and units
      * (see syntax), everything is converted into the last unit.
      *
-     * Syntax: <number> | (<number> <unit>)+
+     * Syntax: `<number> | (<number> <unit>)+`
      *
      * If there is a syntax error, or if unit mismatch is found (i.e. distance
      * is given instead of time), the method throws an exception.

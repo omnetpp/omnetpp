@@ -43,7 +43,7 @@ class SIM_API cObjectParImpl : public cParImpl
     // selector: flags & FL_ISEXPR
     cExpression *expr = nullptr;
     mutable cObject *obj = nullptr; // stores the result of the last evaluation
-    opp_staticpooledstring expectedType; // value of the @class property or ""
+    opp_staticpooledstring expectedType; // value of the "@class" property, or ""
 
   private:
     void copy(const cObjectParImpl& other);
@@ -187,7 +187,7 @@ class SIM_API cObjectParImpl : public cParImpl
     virtual bool isNumeric() const override;
 
     /**
-     * Sets the expected type (@class property in NED)
+     * Sets the expected type ("@class" property in NED)
      */
     virtual void setExpectedType(const char *s);
     //@}
