@@ -1273,9 +1273,10 @@ void MainWindow::on_actionCreate_Snapshot_triggered()
     if (inputBox("Snapshot", "Enter label for current simulation snapshot:", variable) == QDialog::Accepted) {
         getQtenv()->createSnapshot(variable.toStdString().c_str());
 
-        QString msg = QString(getQtenv()->getSnapshotFileName()).isEmpty()
+        QString snapshotFileName = getQtenv()->getSnapshotFileName();
+        QString msg = snapshotFileName.isEmpty()
                 ? "Current state of simulation has been saved."
-                : QString("Current state of simulation has been saved into \"") + getQtenv()->getSnapshotFileName() + "\".";
+                : QString("Current state of simulation has been saved into \"") + snapshotFileName + "\".";
 
         QMessageBox::information(this, tr("Snapshot created"), msg, QMessageBox::Ok);
     }

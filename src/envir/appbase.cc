@@ -692,7 +692,7 @@ void AppBase::printfmsg(const char *fmt, ...)
 
 bool AppBase::ensureDebugger(cRuntimeError *error)
 {
-    if (error == nullptr || getAttachDebuggerOnErrors()) {
+    if (error == nullptr || getEnvir()->getAttachDebuggerOnErrors()) {
         try {
             if (debuggerSupport->detectDebugger() == DebuggerPresence::NOT_PRESENT)
                 debuggerSupport->attachDebugger();
@@ -813,7 +813,7 @@ void AppBase::stoppedWithTerminationException(cTerminationException& e)
     if (simulation->isParsimEnabled() && !dynamic_cast<cReceivedTerminationException *>(&e))
         simulation->getParsimPartition()->broadcastTerminationException(e);
 #endif
-    if (getEventlogRecording()) {
+    if (getEnvir()->getEventlogRecording()) {
         //FIXME should not be in this function (Andras)
         getEnvir()->getEventlogManager()->endRun(e.isError(), e.getErrorCode(), e.getFormattedMessage().c_str());
     }
@@ -828,7 +828,7 @@ void AppBase::stoppedWithException(std::exception& e)
     if (simulation->isParsimEnabled() && !dynamic_cast<cReceivedException *>(&e))
         simulation->getParsimPartition()->broadcastException(e);
 #endif
-    if (getEventlogRecording()) {
+    if (getEnvir()->getEventlogRecording()) {
         // TODO: get error code from the exception?
         getEnvir()->getEventlogManager()->endRun(true, E_CUSTOM, e.what());  //FIXME this should be rather in endRun(), or? (Andras)
     }

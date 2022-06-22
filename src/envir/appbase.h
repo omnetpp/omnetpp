@@ -96,24 +96,7 @@ class ENVIR_API AppBase : public IAllInOne
     EnvirBase *getEnvir() const {return dynamic_cast<EnvirBase*>(cSimulation::getActiveEnvir());}
     cSimulation *getSimulation() const {return cSimulation::getActiveSimulation();}
     cConfiguration *getConfig() {return getEnvir()->getConfig();}
-    cIOutputVectorManager *getOutVectorManager() const {return getEnvir()->getOutVectorManager();}
-    cIOutputScalarManager *getOutScalarManager() const {return getEnvir()->getOutScalarManager();}
-    cISnapshotManager *getSnapshotManager() const {return getEnvir()->getSnapshotManager();}
     DebuggerSupport *getDebuggerSupport() const {return debuggerSupport;}
-
-    bool isLoggingEnabled() const {return getEnvir()->isLoggingEnabled();}
-    void setLoggingEnabled(bool enabled) {getEnvir()->setLoggingEnabled(enabled);}
-    bool getDebugOnErrors() const {return getEnvir()->getDebugOnErrors();}
-    void setDebugOnErrors(bool enable) {getEnvir()->setDebugOnErrors(enable);}
-    bool getAttachDebuggerOnErrors() const {return getEnvir()->getAttachDebuggerOnErrors();}
-    void setAttachDebuggerOnErrors(bool enable) {getEnvir()->setAttachDebuggerOnErrors(enable);}
-
-    void setLogLevel(LogLevel logLevel) {getEnvir()->setLogLevel(logLevel);};
-    void setLogFormat(const char *logFormat) {getEnvir()->setLogFormat(logFormat);}
-    LogFormatter& getLogFormatter() {return getEnvir()->getLogFormatter();}
-
-    bool getEventlogRecording() const {return getEnvir()->getEventlogRecording();}
-    void setEventlogRecording(bool enabled) {getEnvir()->setEventlogRecording(enabled);}
 
   protected:
     void notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details=nullptr);

@@ -146,7 +146,7 @@ void Cmdenv::readPerRunOptions()
     opt->detailedEventBanners = cfg->getAsBool(CFGID_CMDENV_EVENT_BANNER_DETAILS);
     opt->statusFrequencyMs = 1000*cfg->getAsDouble(CFGID_CMDENV_STATUS_FREQUENCY);
     opt->printPerformanceData = cfg->getAsBool(CFGID_CMDENV_PERFORMANCE_DISPLAY);
-    setLogFormat(getConfig()->getAsString(CFGID_CMDENV_LOG_PREFIX).c_str());
+    getEnvir()->setLogFormat(getConfig()->getAsString(CFGID_CMDENV_LOG_PREFIX).c_str());
     opt->outputFile = cfg->getAsFilename(CFGID_CMDENV_OUTPUT_FILE).c_str();
     opt->redirectOutput = cfg->getAsBool(CFGID_CMDENV_REDIRECT_OUTPUT);
     opt->fakeGUI = cfg->getAsBool(CFGID_CMDENV_FAKE_GUI);
@@ -169,7 +169,7 @@ void Cmdenv::doRun()
 
         readOptions();
 
-        if (getAttachDebuggerOnErrors())
+        if (envir->getAttachDebuggerOnErrors())
             installCrashHandler();
 
         loadNEDFiles();
@@ -246,6 +246,9 @@ bool Cmdenv::runSimulation(const char *configName, int runNumber)
     bool finishedOK = false;
     bool networkSetupDone = false;
     bool endRunRequired = false;
+
+    EnvirBase *envir = check_and_cast<EnvirBase*>(cSimulation::getActiveEnvir());
+
     try {
         if (opt->verbose)
             out << "\nPreparing for running configuration " << opt->configName << ", run #" << runNumber << "..." << endl;
@@ -293,7 +296,7 @@ bool Cmdenv::runSimulation(const char *configName, int runNumber)
         if (opt->verbose)
             out << "Initializing..." << endl;
 
-        setLoggingEnabled(!opt->expressMode);
+        envir->setLoggingEnabled(!opt->expressMode);
 
         prepareForRun();
 
@@ -305,7 +308,7 @@ bool Cmdenv::runSimulation(const char *configName, int runNumber)
         // finish() should not be called.
         notifyLifecycleListeners(LF_ON_SIMULATION_START);
         simulate();
-        setLoggingEnabled(true);
+        envir->setLoggingEnabled(true);
 
         if (opt->verbose)
             out << "\nCalling finish() at end of Run #" << runNumber << "..." << endl;
@@ -319,7 +322,7 @@ bool Cmdenv::runSimulation(const char *configName, int runNumber)
         finishedOK = true;
     }
     catch (std::exception& e) {
-        setLoggingEnabled(true);
+        envir->setLoggingEnabled(true);
         stoppedWithException(e);
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
         displayException(e);
@@ -387,7 +390,7 @@ void Cmdenv::simulate()
 #define FINALLY() { \
         if (opt->expressMode) \
             doStatusUpdate(speedometer); \
-        setLoggingEnabled(true); \
+        getEnvir()->setLoggingEnabled(true); \
         stopClock(); \
         deinstallSignalHandler(); \
     }
@@ -639,8 +642,9 @@ void Cmdenv::log(cLogEntry *entry)
 {
     AppBase::log(entry);
 
-    if (!getLogFormatter().isBlank())
-        out << getLogFormatter().formatPrefix(entry);
+    LogFormatter& logFormatter = getEnvir()->getLogFormatter();
+    if (!logFormatter.isBlank())
+        out << logFormatter.formatPrefix(entry);
 
     out.write(entry->text, entry->textLength);
     if (opt->autoflush)

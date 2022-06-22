@@ -384,6 +384,22 @@ class QTENV_API Qtenv : public QObject, public AppBase
       void inspectorDeleted(Inspector *insp);
       const std::list<Inspector*>& getInspectors() {return inspectors;}
 
+      EnvirBase *getEnvir() const {return dynamic_cast<EnvirBase*>(cSimulation::getActiveEnvir());}
+
+      bool isLoggingEnabled() const {return getEnvir()->isLoggingEnabled();}
+      void setLoggingEnabled(bool enabled) {getEnvir()->setLoggingEnabled(enabled);}
+      bool getDebugOnErrors() const {return getEnvir()->getDebugOnErrors();}
+      void setDebugOnErrors(bool enable) {getEnvir()->setDebugOnErrors(enable);}
+      bool getAttachDebuggerOnErrors() const {return getEnvir()->getAttachDebuggerOnErrors();}
+      void setAttachDebuggerOnErrors(bool enable) {getEnvir()->setAttachDebuggerOnErrors(enable);}
+
+      void setLogLevel(LogLevel logLevel) {getEnvir()->setLogLevel(logLevel);};
+      void setLogFormat(const char *logFormat) {getEnvir()->setLogFormat(logFormat);}
+      LogFormatter& getLogFormatter() {return getEnvir()->getLogFormatter();}
+
+      bool getEventlogRecording() const {return getEnvir()->getEventlogRecording();}
+      void setEventlogRecording(bool enabled) {getEnvir()->setEventlogRecording(enabled);}
+
       eState getSimulationState() {return simulationState;}
       void setStopSimulationFlag() {stopSimulationFlag = true;}
       bool getStopSimulationFlag() {return stopSimulationFlag;}
@@ -418,9 +434,9 @@ class QTENV_API Qtenv : public QObject, public AppBase
 
       std::string getLocalPackage()      {return getSimulation()->getNedPackageForFolder(opt->inifileNetworkDir.c_str());}
       const char *getIniFileName()       {return getConfigEx()->getFileName();}
-      const char *getOutVectorFileName() {return getOutVectorManager()->getFileName();}
-      const char *getOutScalarFileName() {return getOutScalarManager()->getFileName();}
-      const char *getSnapshotFileName()  {return getSnapshotManager()->getFileName();}
+      const char *getOutVectorFileName() {return getEnvir()->getOutVectorManager()->getFileName();}
+      const char *getOutScalarFileName() {return getEnvir()->getOutScalarManager()->getFileName();}
+      const char *getSnapshotFileName()  {return getEnvir()->getSnapshotManager()->getFileName();}
       const char *getWindowTitlePrefix() {return windowTitlePrefix.c_str();}
 
       QFont getBoldFont() const {return boldFont;}
