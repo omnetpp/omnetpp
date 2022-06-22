@@ -212,28 +212,25 @@ void swapConnection(ASTNode *conn)
     swapAttributes(conn, "src-gate-subg", "dest-gate-subg");
 }
 
+static bool isStringLiteral(const char *text)
+{
+    while (opp_isspace(*text))
+        text++;
+    if (*text == '"') {
+        const char *endp = opp_findclosequote(text);
+        if (endp && *endp && *(endp + 1) == '\0')
+            return true;
+    }
+    return false;
+}
+
 LiteralElement *createPropertyValue(ParseContext *np, YYLoc textpos)  // which is a spec or a string literal
 {
     np->getSource()->trimSpaceAndComments(textpos);
-
-    bool isString = false;
-    try {
-        const char *text = toString(np, textpos);
-        while (opp_isspace(*text))
-            text++;
-        if (*text == '"') {
-            const char *endp;
-            opp_parsequotedstr(text, endp);
-            if (*endp == '\0')
-                isString = true;
-        }
-    }
-    catch (std::exception& e) {  /*not string*/
-    }
-    if (isString)
-        return createStringLiteral(np, textpos);
-    else
-        return createLiteral(np, LIT_SPEC, textpos, textpos);
+    const char *text = toString(np, textpos);
+    return isStringLiteral(text)
+               ? createStringLiteral(np, textpos)
+               : createLiteral(np, LIT_SPEC, textpos, textpos);
 }
 
 LiteralElement *createLiteral(ParseContext *np, int type, YYLoc valuepos, YYLoc textpos)
