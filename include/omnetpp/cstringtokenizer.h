@@ -42,7 +42,7 @@ class StringTokenizer;
  *
  * KEEP_EMPTY is advised for delimiters that act as field separators, such as
  * comma, semicolon, colon or tab. When KEEP_EMPTY is enabled, the number of
- * tokens returned is #separators+1, except for empty input which produces zero
+ * tokens returned is \#separators+1, except for empty input which produces zero
  * items, and blank input which produces zero or one token, depending on whether
  * NO_TRIM was also specified.
  *

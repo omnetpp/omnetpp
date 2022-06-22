@@ -130,7 +130,7 @@ SIM_API std::vector<std::string> opp_splitandtrim(const std::string& text);
 
 /**
  * @brief Split a string into parts separated by the given separator. If the input string
- * is empty, it returns an empty array. Otherwise, it returns exactly #separators+1 items.
+ * is empty, it returns an empty array. Otherwise, it returns exactly \#separators+1 items.
  * The separator cannot be empty.
  */
 SIM_API std::vector<std::string> opp_split(const std::string& text, const std::string& separator);
