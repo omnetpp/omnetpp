@@ -433,7 +433,7 @@ class QTENV_API Qtenv : public QObject, public AppBase
       void addEventToLog(cEvent *event);
 
       std::string getLocalPackage()      {return getSimulation()->getNedPackageForFolder(opt->inifileNetworkDir.c_str());}
-      const char *getIniFileName()       {return getConfigEx()->getFileName();}
+      const char *getIniFileName()       {return getInifileContents()->getFileName();}
       const char *getOutVectorFileName() {return getEnvir()->getOutVectorManager()->getFileName();}
       const char *getOutScalarFileName() {return getEnvir()->getOutScalarManager()->getFileName();}
       const char *getSnapshotFileName()  {return getEnvir()->getSnapshotManager()->getFileName();}

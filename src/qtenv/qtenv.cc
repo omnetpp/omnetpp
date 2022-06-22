@@ -1244,7 +1244,7 @@ void Qtenv::newNetwork(const char *networkname)
 
         // set up new network with config General.
         isConfigRun = false;
-        activeCfg = getConfigEx()->activateConfig("General", 0); //TODO leak
+        activeCfg = getInifileContents()->activateConfig("General", 0); //TODO leak
         readPerRunOptions();
         opt->networkName = network->getName();  // override config setting
         setupNetwork(network);
@@ -1295,7 +1295,7 @@ void Qtenv::newRun(const char *configname, int runnumber)
 
         // set up new network
         isConfigRun = true;
-        activeCfg = getConfigEx()->activateConfig(configname, runnumber); //TODO leak
+        activeCfg = getInifileContents()->activateConfig(configname, runnumber); //TODO leak
         readPerRunOptions();
 
         if (opt->networkName.empty()) {
@@ -1521,7 +1521,7 @@ std::string Qtenv::getWindowTitle()
 {
     const char *configName = getConfig()->getActiveConfigName();
     int runNumber = getConfig()->getActiveRunNumber();
-    const char *inifile = getConfigEx()->getFileName();
+    const char *inifile = getInifileContents()->getFileName();
 
 #ifdef NDEBUG
     bool ndebug = true;
@@ -1713,16 +1713,16 @@ void Qtenv::initialSetUpConfiguration()
     std::string config;
     int run = -1;
 
-    auto conf = getConfigEx();
+    auto ini = getInifileContents();
 
-    if (conf->getConfigNames().empty()) {
+    if (ini->getConfigNames().empty()) {
         mainWindow->configureNetwork();
         return;
     }
     else {
         try {
             // defaultConfig and runFilter are what were specified in either the omnetpp.ini file or as a command line argument
-            RunSelectionDialog dialog(conf, opt->defaultConfig, opt->runFilter, mainWindow);
+            RunSelectionDialog dialog(ini, opt->defaultConfig, opt->runFilter, mainWindow);
 
 #ifdef QT_OS_MAC
             // Makes the Apple Menu work on Mac (together with TransformProcessType) right

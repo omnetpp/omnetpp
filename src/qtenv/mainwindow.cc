@@ -552,7 +552,7 @@ void MainWindow::on_actionSetUpConfiguration_triggered()
     if (env->checkRunning())
         return;
 
-    InifileContents *ini = getQtenv()->getConfigEx();
+    InifileContents *ini = getQtenv()->getInifileContents();
     cConfiguration *config = getQtenv()->getConfig();
 
     // No filter used for subsequent run selections.

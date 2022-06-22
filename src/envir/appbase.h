@@ -90,12 +90,13 @@ class ENVIR_API AppBase : public IAllInOne
      */
     virtual int run(const std::vector<std::string>& args, InifileContents *ini) final;
 
-    InifileContents *getConfigEx() {return ini;}  //TODO rename
+    InifileContents *getInifileContents() {return ini;}
 
     //TODO the methods below assume that there is only one active simulation, which might not be true
     EnvirBase *getEnvir() const {return dynamic_cast<EnvirBase*>(cSimulation::getActiveEnvir());}
     cSimulation *getSimulation() const {return cSimulation::getActiveSimulation();}
     cConfiguration *getConfig() {return getEnvir()->getConfig();}
+
     DebuggerSupport *getDebuggerSupport() const {return debuggerSupport;}
 
   protected:
