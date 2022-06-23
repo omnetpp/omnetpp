@@ -340,9 +340,6 @@ int EventEntryLinesProvider::getNumLines(LogBuffer::Entry *entry)
     // the line below might iterate on the lines again, but can break early
     if (shouldShowBanner(entry, shouldShowAnyLine))
         count++; // the banner line
-    else
-        if (!entry->isGenesis())
-            count = 0; // must not show anything without a banner - except for the genesis entry
 
     return count;
 }
