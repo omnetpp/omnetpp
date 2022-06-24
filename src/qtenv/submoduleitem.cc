@@ -118,7 +118,7 @@ void SubmoduleItemUtil::setupFromDisplayString(SubmoduleItem *si, cModule *mod)
     }
 
     const char *textColor = dsa.getTagArg("t", 2, buffer);
-    auto color = parseColor(textColor, QColor("blue"));
+    auto color = parseColor(textColor, colors::BLUE);
 
     // have to be last, position and color cobble `buffer`
     const char *text = dsa.getTagArg("t", 0, buffer);
@@ -145,7 +145,7 @@ void SubmoduleItemUtil::setupFromDisplayString(SubmoduleItem *si, cModule *mod)
 
         int rangeOutlineWidth = dsa.getTagArgAsLong(i, 3, 1);
         if (!rangeOutlineColor.isValid() && rangeOutlineWidth > 0)
-            rangeOutlineColor = QColor("black");
+            rangeOutlineColor = colors::BLACK;
         si->addRangeItem(r, rangeOutlineWidth, rangeFillColor, rangeOutlineColor);
     }
 
@@ -216,12 +216,12 @@ void SubmoduleItem::realignAnchoredItems()
 void SubmoduleItem::updateShapeItem()
 {
     if (shapeItem) {
-        shapeItem->setBrush(shapeFillColor.isValid() ? shapeFillColor : QColor("#8080ff"));
+        shapeItem->setBrush(shapeFillColor.isValid() ? shapeFillColor : colors::PURPLE);
         auto pen = shapeOutlineWidth == 0
                      ? Qt::NoPen
                      : QPen(shapeOutlineColor.isValid()
                               ? shapeOutlineColor
-                              : QColor("black"),
+                              : colors::BLACK,
                             shapeOutlineWidth);
         pen.setJoinStyle(Qt::MiterJoin);
         shapeItem->setPen(pen);

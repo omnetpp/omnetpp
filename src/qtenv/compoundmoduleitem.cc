@@ -361,7 +361,7 @@ void CompoundModuleItemUtil::setupFromDisplayString(CompoundModuleItem *cmi, cMo
     cmi->setArea(border);
 
     cmi->setBackgroundColor(parseColor(dsa.getTagArg("bgb", 2, buffer), parseColor("grey82")));
-    cmi->setOutlineColor(parseColor(dsa.getTagArg("bgb", 3, buffer), QColor("black")));
+    cmi->setOutlineColor(parseColor(dsa.getTagArg("bgb", 3, buffer), colors::BLACK));
     cmi->setOutlineWidth(dsa.getTagArgAsDouble("bgb", 4, 2.0));
 
     cmi->setData(ITEMDATA_COBJECT, QVariant::fromValue((cObject *)mod));
@@ -384,7 +384,7 @@ void CompoundModuleItemUtil::setupFromDisplayString(CompoundModuleItem *cmi, cMo
     cmi->setGridMajorDistance(dsa.getTagArgAsDouble("bgg", 0));
     // if failed to parse, the default 0 will disable the minor lines
     cmi->setGridMinorNum(dsa.getTagArgAsLong("bgg", 1));
-    cmi->setGridColor(parseColor(dsa.getTagArg("bgg", 2, buffer), QColor("grey")));
+    cmi->setGridColor(parseColor(dsa.getTagArg("bgg", 2, buffer), colors::GREY));
 
     // the text in the top left corner
     cmi->setModulePath(mod->getFullPath().c_str());
@@ -401,7 +401,7 @@ void CompoundModuleItemUtil::setupFromDisplayString(CompoundModuleItem *cmi, cMo
                          dsa.getTagArgAsDouble(tagName.c_str(), 0),
                          dsa.getTagArgAsDouble(tagName.c_str(), 1)),
                      dsa.getTagArg(tagName.c_str(), 2, buffer),
-                     parseColor(dsa.getTagArg(tagName.c_str(), 3, buffer), QColor("black")));
+                     parseColor(dsa.getTagArg(tagName.c_str(), 3, buffer), colors::BLACK));
 
         ++textIndex;
     }

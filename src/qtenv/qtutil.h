@@ -48,6 +48,22 @@ class ModuleInspector;
 // and accepts 2 special values: "-" (the fallback), and "transparent" (obvious)
 QColor parseColor(const char *name, const QColor &fallbackColor = QColor());
 
+// A collection of global QColor constant instances used throughout various parts of Qtenv.
+// Their names don't necessarily coincide with any existing X11 or SVG color names.
+// They are collected here to avoid looking up the colors by name at every usage.
+namespace colors {
+    extern const QColor BLACK;
+    extern const QColor TRANSPARENT;
+    extern const QColor GREY;
+    extern const QColor GREY82;
+    extern const QColor LIGHTGREY;
+    extern const QColor RED;
+    extern const QColor DARKGREEN;
+    extern const QColor LIGHTGREEN;
+    extern const QColor BLUE;
+    extern const QColor PURPLE;
+}
+
 /**
  * Find objects by full path, and optionally also matching class name and/or Id.
  */

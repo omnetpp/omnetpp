@@ -23,6 +23,7 @@
 #include "omnetpp/cfutureeventset.h"
 #include "common/stlutil.h"
 #include "qtenv.h"
+#include "qtutil.h"
 #include "mainwindow.h"
 #include "layouterenv.h"
 #include "figurerenderers.h"
@@ -96,7 +97,7 @@ ModuleCanvasViewer::ModuleCanvasViewer()
     canvasRenderer->setLayer(figureLayer, nullptr, networkLayer);
 
     // that beautiful green shade behind everything
-    setBackgroundBrush(QColor("#a0e0a0"));
+    setBackgroundBrush(colors::LIGHTGREEN);
     setAlignment(Qt::AlignLeft | Qt::AlignTop);
     setDragMode(ScrollHandDrag);
     // otherwise it would be a hand, that's why this is in mousePressEvent and mouseReleaseEvent too

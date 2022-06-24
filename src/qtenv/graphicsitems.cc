@@ -22,6 +22,7 @@
 #include <QtGui/QFontMetricsF>
 #include <QtCore/QDebug>
 #include "qtenv.h"
+#include "qtutil.h"
 
 namespace omnetpp {
 namespace qtenv {
@@ -57,7 +58,7 @@ ArrowheadItem::ArrowheadItem(QGraphicsItem *parent)
     // setFlags(QGraphicsItem::ItemIgnoresTransformations);
     setFillRule(Qt::WindingFill);
 
-    setPen(QPen(QColor("black"), 1, Qt::SolidLine, Qt::FlatCap, Qt::MiterJoin));
+    setPen(QPen(colors::BLACK, 1, Qt::SolidLine, Qt::FlatCap, Qt::MiterJoin));
     setSizeForPenWidth(1);
 
     updatePolygon();
@@ -474,7 +475,7 @@ void BubbleItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
     }
 
     painter->save();
-    painter->setPen(QPen(QColor("black"), 0));
+    painter->setPen(QPen(colors::BLACK, 0));
     painter->setBrush(QColor(248, 248, 216));  // yellowish
     painter->drawPath(path);
     // uses the pen as color, also have to move up by the descent, to align the baseline

@@ -532,7 +532,7 @@ void MessageAnimator::updateNextEventMarkers()
             item->setVisible(true);
             item->setRect(mi->getSubmodRect(modParent).adjusted(-2, -2, 2, 2));
             item->setBrush(Qt::NoBrush);
-            item->setPen(QPen(QColor("red"), markedModule == modParent ? 2 : 1));
+            item->setPen(QPen(colors::RED, markedModule == modParent ? 2 : 1));
             item->setZValue(10);
         } else {
             item->setVisible(false);

@@ -42,7 +42,7 @@ CanvasViewer::CanvasViewer()
     zoomLabelLayer->addItem(zoomLabel);
 
     // that beautiful green shade behind everything
-    setBackgroundBrush(QColor("#a0e0a0"));
+    setBackgroundBrush(colors::LIGHTGREEN);
     setAlignment(Qt::AlignLeft | Qt::AlignTop);
 }
 
