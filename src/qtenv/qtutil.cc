@@ -72,7 +72,7 @@ QColor parseColor(const char *name, const QColor& fallbackColor)
         return fallbackColor;
 
     if (opp_streq(name, "-"))
-        return QColor("transparent");
+        return colors::TRANSPARENT;
 
     try {
         uint8_t r, g, b;
@@ -83,6 +83,19 @@ QColor parseColor(const char *name, const QColor& fallbackColor)
         qDebug() << "Failed to parse color " << name << " because:" << e.what();
         return fallbackColor;
     }
+}
+
+namespace colors {
+    const QColor BLACK("black");
+    const QColor TRANSPARENT("transparent");
+    const QColor GREY("grey");
+    const QColor GREY82("grey82");
+    const QColor LIGHTGREY("#eeeeee");
+    const QColor RED("red");
+    const QColor DARKGREEN("#005030");
+    const QColor LIGHTGREEN("#a0e0a0");
+    const QColor BLUE("blue");
+    const QColor PURPLE("#8080ff");
 }
 
 //----------------------------------------------------------------------

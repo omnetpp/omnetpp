@@ -42,7 +42,7 @@ void ConnectionItemUtil::setupFromDisplayString(ConnectionItem *ci, cGate *gate,
     ci->setData(ITEMDATA_COBJECT, QVariant::fromValue((cObject *)gate));
     ci->setData(ITEMDATA_TOOLTIP, dsa.getTagArg("tt", 0, buffer));
 
-    ci->setColor(parseColor(dsa.getTagArg("ls", 0, buffer), QColor("black")));
+    ci->setColor(parseColor(dsa.getTagArg("ls", 0, buffer), colors::BLACK));
 
     bool ok;
     double width = dsa.getTagArgAsDouble("ls", 1, 0.0, &ok);
@@ -50,7 +50,7 @@ void ConnectionItemUtil::setupFromDisplayString(ConnectionItem *ci, cGate *gate,
 
     // explicit 0 width, so hiding the line completely
     if (ok && width == 0)
-        ci->setColor(QColor("transparent"));
+        ci->setColor(colors::TRANSPARENT);
 
     const char *style = dsa.getTagArg("ls", 2, buffer);
     ci->setLineStyle(style[0] == 'd'
@@ -70,7 +70,7 @@ void ConnectionItemUtil::setupFromDisplayString(ConnectionItem *ci, cGate *gate,
         default:  ci->setTextPosition(Qt::AlignCenter); break;
     }
 
-    ci->setTextColor(parseColor(dsa.getTagArg("t", 2, buffer), QColor("#005030")));
+    ci->setTextColor(parseColor(dsa.getTagArg("t", 2, buffer), colors::DARKGREEN));
 
     bool twoWay = isTwoWayConnection(gate);
 

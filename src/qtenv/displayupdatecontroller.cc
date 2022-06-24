@@ -22,6 +22,7 @@
 #include <QtGui/QPainter>
 #include <QtCore/QThread>
 
+#include "qtutil.h"
 #include "mainwindow.h"
 #include "moduleinspector.h"
 #include "messageanimator.h"
@@ -440,8 +441,8 @@ void DisplayUpdateController::recordFrame()
 
     painter.setFont(QFont("Arial", 28));
     painter.setBackgroundMode(Qt::OpaqueMode);
-    painter.setPen(QColor("black"));
-    painter.setBackground(QBrush(QColor("#eeeeee")));
+    painter.setPen(colors::BLACK);
+    painter.setBackground(colors::LIGHTGREY);
     sprintf(temp, "time: %s s", now.str().c_str());
     //painter.drawText(size.width() - 380, 200, temp);
     simtime_t frameTime = now - lastRecordedFrame;

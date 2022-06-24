@@ -20,6 +20,7 @@
 #include <QtWidgets/QGraphicsColorizeEffect>
 #include <QtWidgets/QGraphicsObject>
 #include "qtenvdefs.h"
+#include "qtutil.h"
 
 namespace omnetpp {
 
@@ -135,8 +136,8 @@ public:
 protected:
     double imageSizeFactor = 1; // no zoom factor, it doesn't affect messages
     QImage *image = nullptr;
-    QColor shapeFillColor = QColor("red");
-    QColor shapeOutlineColor = QColor("red");
+    QColor shapeFillColor = colors::RED;
+    QColor shapeOutlineColor = colors::RED;
     double shapeOutlineWidth = 0;
     double shapeWidth = 10;
     double shapeHeight = 10;

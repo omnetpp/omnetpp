@@ -20,6 +20,7 @@
 #include <QtWidgets/QGraphicsObject>
 #include "omnetpp/cdisplaystring.h"
 #include "qtenvdefs.h"
+#include "qtutil.h"
 
 namespace omnetpp {
 namespace qtenv {
@@ -41,12 +42,12 @@ class QTENV_API ConnectionItem : public QGraphicsObject
 protected:
     QPointF src, dest;
     double lineWidth = 1;
-    QColor lineColor = QColor("black");
+    QColor lineColor = colors::BLACK;
     Qt::PenStyle lineStyle = Qt::SolidLine; // not directly fed to the lineItem
     double dashOffset = 0;
     QString text;
     Qt::Alignment textAlignment = Qt::AlignCenter; // Left for source, Right for dest, Center for middle
-    QColor textColor = QColor("#005030");
+    QColor textColor = colors::DARKGREEN;
     bool lineEnabled = true;
     bool halfLength = false;
 

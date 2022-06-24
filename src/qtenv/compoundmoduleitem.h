@@ -22,6 +22,7 @@
 #include <QtGui/QColor>
 #include <QtWidgets/QGraphicsObject>
 #include "qtenvdefs.h"
+#include "qtutil.h"
 
 namespace omnetpp {
 
@@ -58,14 +59,14 @@ public:
 protected:
     double zoomFactor = 1;
     QRectF area; // the whole inner region of the module, not including the border outline
-    QColor backgroundColor = QColor("grey82");
-    QColor outlineColor = QColor("black");
+    QColor backgroundColor = colors::GREY82;
+    QColor outlineColor = colors::BLACK;
     double outlineWidth = 2;
     QImage *image = nullptr;
     ImageMode imageMode = MODE_FIX;
     double gridMajorDistance = -1;
     int gridMinorNum = 0;
-    QColor gridColor = QColor("grey");
+    QColor gridColor = colors::GREY;
 
     QGraphicsRectItem *rectangle; // That big grey thing in the back with black sides.
     QGraphicsPixmapItem *imageItem = nullptr; // not used in tiling mode
@@ -112,7 +113,7 @@ public:
 
     // these return the newly added item index for possible future reference
     int addText(const TextData &data);
-    int addText(const QPointF &pos, const QString &text, const QColor &color = QColor("black"));
+    int addText(const QPointF &pos, const QString &text, const QColor &color = colors::BLACK);
 
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
