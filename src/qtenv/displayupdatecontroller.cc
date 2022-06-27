@@ -203,7 +203,6 @@ void DisplayUpdateController::setRunMode(RunMode value)
             break;
         case RUNMODE_FAST:
             currentProfile = &fastProfile;
-            msgAnim->clear();
             break;
         case RUNMODE_NOT_RUNNING:
             msgAnim->clearDeliveries();

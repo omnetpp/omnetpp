@@ -982,7 +982,7 @@ bool Qtenv::doRunSimulation()
         ASSERT(simTime() <= event->getArrivalTime());
         sim->setSimTime(event->getArrivalTime());
 
-        animating = (runMode == RUNMODE_NORMAL || runMode == RUNMODE_STEP) || untilmodule_reached;
+        animating = (runMode == RUNMODE_NORMAL || runMode == RUNMODE_STEP || runMode == RUNMODE_FAST) || untilmodule_reached;
 
         speedometer.addEvent(sim->getSimTime());
 
