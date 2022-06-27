@@ -83,12 +83,13 @@ void SubmoduleItemUtil::setupFromDisplayString(SubmoduleItem *si, cModule *mod)
 
     if (!imageName.empty()) {
         const char *imageColor = dsa.getTagArg("i", 1, buffer);
-        double tintAmount = ((ds.getNumArgs("i") == 2 && strlen(imageColor) > 0)
-                ? 30  // color given, but no percentage
-                : dsa.getTagArgAsDouble("i", 2) / 100.0);
+        double tintPercentage = (ds.getNumArgs("i") == 2 && strlen(imageColor) > 0)
+                ? 30.0  // color given, but no percentage
+                : dsa.getTagArgAsDouble("i", 2);
 
         si->setIcon(getQtenv()->icons.getTintedPixmap(
-                        imageName.c_str(), dsa.getTagArg("is", 0, buffer), parseColor(imageColor), tintAmount));
+                        imageName.c_str(), dsa.getTagArg("is", 0, buffer),
+                        parseColor(imageColor), tintPercentage / 100.0));
     }
     else {
         si->setIcon(QPixmap());
@@ -98,12 +99,13 @@ void SubmoduleItemUtil::setupFromDisplayString(SubmoduleItem *si, cModule *mod)
     if (decoratorImageName[0]) {
         std::string buffer2; // can't reuse `buffer` yet, still need `decoratorImageName`
         const char *decoratorImageColor = dsa.getTagArg("i2", 1, buffer2);
-        double tintAmount = ((ds.getNumArgs("i2") == 2 && strlen(decoratorImageColor) > 0)
-                ? 30  // color given, but no percentage
-                : dsa.getTagArgAsDouble("i2", 2) / 100.0);
+        double tintPercentage = (ds.getNumArgs("i2") == 2 && strlen(decoratorImageColor) > 0)
+                ? 30.0  // color given, but no percentage
+                : dsa.getTagArgAsDouble("i2", 2);
 
-        si->setDecoratorIcon(getQtenv()->icons.getTintedPixmap(
-                                 decoratorImageName, parseColor(decoratorImageColor), tintAmount));
+        si->setDecoratorIcon(
+            getQtenv()->icons.getTintedPixmap(decoratorImageName,
+                parseColor(decoratorImageColor), tintPercentage / 100.0));
     }
     else {
         si->setDecoratorIcon(QPixmap());
