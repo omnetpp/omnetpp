@@ -244,13 +244,11 @@ void MessageAnimator::endSend(cMessage *msg)
     ASSERT2(!(currentSending->hops.empty()), "No messageSendDirect() nor messageSendHop() was called between beginSend() and endSend()");
 
     bool isUpdatePacket = false;
-    txid_t transmissionId = -1;
     if (msg->isPacket()) {
         cPacket *packet = static_cast<cPacket *>(msg);
         if (packet->isUpdate()) {
             cutUpdatedPacketAnimation(packet);
             isUpdatePacket = true;
-            transmissionId = packet->getTransmissionId();
         }
     }
 
