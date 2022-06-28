@@ -404,16 +404,24 @@ void AnimationGroup::begin()
 void AnimationGroup::update()
 {
     Animation::update();
+
+    bool anyStillPlaying = false;
     for (Animation *p : parts)
-        if (p->getState() == PLAYING) // some may have ended on their own already
+        if (p->getState() == PLAYING) { // some may have ended on their own already
             p->update();
+            anyStillPlaying |= (p->getState() == PLAYING);
+        }
+
+    if (!anyStillPlaying)
+        end();
 }
 
 void AnimationGroup::end()
 {
     Animation::end();
     for (Animation *p : parts)
-        p->end();
+        if (p->getState() == PLAYING) // some may have ended on their own already
+            p->end();
 }
 
 void AnimationGroup::cleanup()
