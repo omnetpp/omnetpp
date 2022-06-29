@@ -790,8 +790,10 @@ void SendOnConnAnimation::update()
     MessageAnimation::update();
 
     cMessage *msg = msgToUse();
-    if (!msg)
+    if (!msg) {
+        end();
         return;
+    }
 
     if (holding) {
         if (isEmpty() || holdExpired()) {
@@ -960,8 +962,10 @@ void SendDirectAnimation::update()
     MessageAnimation::update();
 
     cMessage *msg = msgToUse();
-    if (!msg)
+    if (!msg) {
+        end();
         return;
+    }
 
     auto path = findDirectPath(getSimulation()->getModule(srcModuleId), dest->getOwnerModule());
 
