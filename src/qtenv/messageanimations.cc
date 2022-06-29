@@ -360,8 +360,8 @@ void AnimationSequence::removeMessagePointer(cMessage *msg)
 QString AnimationSequence::str() const
 {
     QString result = "AnimationSequence of " + QString::number(parts.size()) + " parts, state " + stateText[state];
-    for (Animation *a : parts)
-        result += "\n    - " + a->str().replace("\n", "\n      ");
+    for (Animation *p : parts)
+        result += "\n    - " + p->str().replace("\n", "\n      ");
     return result;
 }
 
@@ -471,9 +471,9 @@ void AnimationGroup::removeMessagePointer(cMessage *msg)
 
 QString AnimationGroup::str() const
 {
-    QString result = QString("Animation Group of ") + QString::number(parts.size()) + " parts:\n";
+    QString result = QString("Animation Group of ") + QString::number(parts.size()) + " parts, state " + stateText[state];
     for (const auto &p : parts)
-        result += "   " + p->str() + "\n";
+        result += "\n    - " + p->str().replace("\n", "\n      ");
     return result;
 }
 
