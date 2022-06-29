@@ -744,5 +744,11 @@ void MessageAnimator::removeMessagePointer(cMessage *msg)
         deliveries->removeMessagePointer(msg);
 }
 
+void MessageAnimator::dump()
+{
+    for (Animation *a : animations)
+        std::cout << a->str().toStdString() << std::endl;
+}
+
 }  // namespace qtenv
 }  // namespace omnetpp
