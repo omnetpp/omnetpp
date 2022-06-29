@@ -218,6 +218,8 @@ public:
     // to an invalid, already deleted message.
     void removeMessagePointer(cMessage *msg);
 
+    void dump(); // for debugging purposes
+
     ~MessageAnimator() { clear(); }
 };
 
