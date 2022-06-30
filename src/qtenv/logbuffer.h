@@ -133,7 +133,7 @@ class QTENV_API LogBuffer : public QObject
     // Returns the last private copy we made of a given message,
     // ot nullptr if no copy is found. The parameter doesn't have
     // to point to an existing message, or be valid at all.
-    cMessage *getLastMessageDup(cMessage *of);
+    cMessage *getLastMessageDup(cMessage *of) const;
 
     void clear();
 

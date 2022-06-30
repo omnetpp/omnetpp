@@ -40,6 +40,7 @@ class ModuleInspector;
 class ConnectionItem;
 class MessageItem;
 class Animation;
+class LogBuffer;
 class AnimationSequence;
 class MethodcallAnimation;
 class DeliveryAnimation;
@@ -53,6 +54,8 @@ class QTENV_API MessageAnimator
     // The Animations that are currently requesting a hold.
     // If empty, no hold is in effect.
     std::set<const Animation*> holdRequests;
+
+    const LogBuffer *logBuffer;
 
     // cursor in the tree - NOT necessarily the root
     MethodcallAnimation *currentMethodCall = nullptr;
@@ -159,6 +162,8 @@ class QTENV_API MessageAnimator
     MethodcallAnimation *getCurrentMethodCallRoot() const;
 
 public:
+
+    MessageAnimator(const LogBuffer *logBuffer) : logBuffer(logBuffer) { }
 
     // Must be used by the animations only!
     void requestHold(const Animation *source) { holdRequests.insert(source); }
