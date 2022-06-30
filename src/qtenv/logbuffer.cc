@@ -247,7 +247,7 @@ LogBuffer::Entry *LogBuffer::getEntryByEventNumber(eventnumber_t eventNumber)
     return i == -1 ? nullptr : entries[i];
 }
 
-cMessage *LogBuffer::getLastMessageDup(cMessage *of)
+cMessage *LogBuffer::getLastMessageDup(cMessage *of) const
 {
     auto range = messageDups.equal_range(of);
     if (range.first == range.second)

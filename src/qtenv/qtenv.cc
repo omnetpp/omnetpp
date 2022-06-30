@@ -680,7 +680,7 @@ void Qtenv::doRun()
         windowTitlePrefix = tmp;
     }
 
-    messageAnimator = new MessageAnimator();
+    messageAnimator = new MessageAnimator(&logBuffer);
     displayUpdateController = new DisplayUpdateController();
 
     mainWindow = new MainWindow(this);

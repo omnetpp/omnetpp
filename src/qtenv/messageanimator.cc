@@ -21,6 +21,7 @@
 #include "messageitem.h"
 #include "messageanimations.h"
 #include "graphicsitems.h"
+#include "logbuffer.h"
 
 #include <QtCore/QDebug>
 #include <omnetpp/cfutureeventset.h>
@@ -253,7 +254,7 @@ void MessageAnimator::endSend(cMessage *msg)
         }
     }
 
-    auto dup = getQtenv()->getLogBuffer()->getLastMessageDup(msg);
+    auto dup = logBuffer->getLastMessageDup(msg);
     ASSERT(dup);
     // have to do it before turning the sending into an animation, because  ???? TODO
     messageDuplicated(msg, dup);
@@ -540,7 +541,7 @@ void MessageAnimator::updateNextEventMarkers()
 
 void MessageAnimator::addDeliveryAnimation(cMessage *msg, cModule *showIn, DeliveryAnimation *anim)
 {
-    auto dup = getQtenv()->getLogBuffer()->getLastMessageDup(msg);
+    auto dup = logBuffer->getLastMessageDup(msg);
     ASSERT(dup);
 
     anim->messageDuplicated(msg, dup);
