@@ -355,7 +355,7 @@ public class DisplayString implements IDisplayString {
                 sb.append(c);
         }
 
-        if (!sb.isEmpty()) {
+        if (sb.length() > 0) {
             if (insideTagName) {
                 String name = sb.toString();
                 currentTag = new TagInstance(name);
