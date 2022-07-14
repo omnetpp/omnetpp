@@ -573,7 +573,6 @@ Qtenv::Qtenv() : opt((QtenvOptions *&)EnvirBase::opt), icons(out)
 
     simulationState = SIM_NONET;
     stopSimulationFlag = false;
-    animating = false;
     isConfigRun = false;
     runUntil.msg = nullptr;  // deactivate corresponding checks in eventCancelled()/objectDeleted()
     runUntil.stopOnMsgCancel = true;
@@ -875,7 +874,7 @@ void Qtenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t unti
     stopClock();
     stopSimulationFlag = false;
 
-    animating = true;
+    messageAnimator->setShowAnimations(true);
     loggingEnabled = true;
     runUntil.msg = nullptr;
 
@@ -995,7 +994,7 @@ bool Qtenv::doRunSimulation()
         ASSERT(simTime() <= event->getArrivalTime());
         sim->setSimTime(event->getArrivalTime());
 
-        animating = (runMode == RUNMODE_NORMAL || runMode == RUNMODE_STEP || runMode == RUNMODE_FAST) || untilmodule_reached;
+        messageAnimator->setShowAnimations((runMode == RUNMODE_NORMAL || runMode == RUNMODE_STEP || runMode == RUNMODE_FAST) || untilmodule_reached);
 
         speedometer.addEvent(sim->getSimTime());
 
@@ -1007,7 +1006,7 @@ bool Qtenv::doRunSimulation()
         inspectorsFresh = false;
         pausePointNumber = 0;
 
-        if (animating && runMode != RUNMODE_FAST)
+        if (messageAnimator->getShowAnimations() && runMode != RUNMODE_FAST)
             performHoldAnimations();
 
         messageAnimator->setMarkedModule(sim->guessNextModule());
@@ -1059,8 +1058,8 @@ bool Qtenv::doRunSimulationExpress()
     // OK, let's begin
     speedometer.start(getSimulation()->getSimTime());
     loggingEnabled = false;
-    animating = false;
 
+    messageAnimator->setShowAnimations(false);
     messageAnimator->clear();
 
     int64_t last_update = opp_get_monotonic_clock_usecs();
@@ -1249,7 +1248,7 @@ void Qtenv::newNetwork(const char *networkname)
         simulationState = SIM_ERROR;
     }
 
-    animating = true;  // affects how network graphics is drawn!
+    messageAnimator->setShowAnimations(true);  // affects how network graphics is drawn!
     messageAnimator->redrawMessages();
     messageAnimator->setMarkedModule(getSimulation()->guessNextModule());
     updateNetworkRunDisplay();
@@ -1307,7 +1306,7 @@ void Qtenv::newRun(const char *configname, int runnumber)
         simulationState = SIM_ERROR;
     }
 
-    animating = true;  // affects how network graphics is drawn!
+    messageAnimator->setShowAnimations(true);  // affects how network graphics is drawn!
     messageAnimator->redrawMessages();
     messageAnimator->setMarkedModule(getSimulation()->guessNextModule());
     updateNetworkRunDisplay();
@@ -1931,7 +1930,7 @@ void Qtenv::simulationEvent(cEvent *event)
 
     displayUpdateController->simulationEvent();
 
-    if (animating && opt->animationEnabled) {
+    if (messageAnimator->getShowAnimations() && opt->animationEnabled) {
         if (event->isMessage()) {
             cMessage *msg = static_cast<cMessage *>(event);
             cGate *arrivalGate = msg->getArrivalGate();
@@ -1981,7 +1980,7 @@ void Qtenv::beginSend(cMessage *msg, const SendOptions& options)
     if (loggingEnabled)
         logBuffer.beginSend(msg, options);
 
-    if (animating && opt->animationEnabled && !isSilentEvent(msg))
+    if (messageAnimator->getShowAnimations() && opt->animationEnabled && !isSilentEvent(msg))
         messageAnimator->beginSend(msg, options);
 }
 
@@ -1992,7 +1991,7 @@ void Qtenv::messageSendDirect(cMessage *msg, cGate *toGate, const ChannelResult&
     if (loggingEnabled)
         logBuffer.messageSendDirect(msg, toGate, result);
 
-    if (animating && opt->animationEnabled && !isSilentEvent(msg))
+    if (messageAnimator->getShowAnimations() && opt->animationEnabled && !isSilentEvent(msg))
         messageAnimator->sendDirect(msg, msg->getSenderModule(), toGate, result);
 }
 
@@ -2003,7 +2002,7 @@ void Qtenv::messageSendHop(cMessage *msg, cGate *srcGate)
     if (loggingEnabled)
         logBuffer.messageSendHop(msg, srcGate);
 
-    if (animating && opt->animationEnabled && !isSilentEvent(msg)) {
+    if (messageAnimator->getShowAnimations() && opt->animationEnabled && !isSilentEvent(msg)) {
         bool isLastHop = srcGate->getNextGate() == msg->getArrivalGate();
         messageAnimator->sendHop(msg, srcGate, isLastHop);
     }
@@ -2016,7 +2015,7 @@ void Qtenv::messageSendHop(cMessage *msg, cGate *srcGate, const cChannel::Result
     if (loggingEnabled)
         logBuffer.messageSendHop(msg, srcGate, result);
 
-    if (animating && opt->animationEnabled && !isSilentEvent(msg)) {
+    if (messageAnimator->getShowAnimations() && opt->animationEnabled && !isSilentEvent(msg)) {
         bool isLastHop = srcGate->getNextGate() == msg->getArrivalGate();
         messageAnimator->sendHop(msg, srcGate, isLastHop, result);
     }
@@ -2029,7 +2028,7 @@ void Qtenv::endSend(cMessage *msg)
     if (loggingEnabled)
         logBuffer.endSend(msg);
 
-    if (animating && opt->animationEnabled && !isSilentEvent(msg))
+    if (messageAnimator->getShowAnimations() && opt->animationEnabled && !isSilentEvent(msg))
         messageAnimator->endSend(msg);
 }
 
@@ -2048,7 +2047,7 @@ void Qtenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
     EnvirBase::componentMethodBegin(fromComp, toComp, methodFmt, va2, silent);
     va_end(va2);
 
-    if (animating && opt->animateMethodCalls && messageAnimator) {
+    if (messageAnimator->getShowAnimations() && opt->animateMethodCalls && messageAnimator) {
         static char methodText[MAX_METHODCALL];
         vsnprintf(methodText, MAX_METHODCALL, opp_nulltoempty(methodFmt), va);
         methodText[MAX_METHODCALL-1] = '\0';
@@ -2061,7 +2060,7 @@ void Qtenv::componentMethodEnd()
 {
     EnvirBase::componentMethodEnd();
 
-    if (animating && opt->animateMethodCalls && messageAnimator)
+    if (messageAnimator->getShowAnimations() && opt->animateMethodCalls && messageAnimator)
         messageAnimator->methodcallEnd();
 }
 

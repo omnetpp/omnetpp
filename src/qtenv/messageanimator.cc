@@ -118,7 +118,7 @@ void MessageAnimator::redrawMessages()
     clearMessages();
 
     // this thingy is only needed if animation is going on
-    if (!(getQtenv()->animating && getQtenv()->opt->animationEnabled))
+    if (!(showAnimations && getQtenv()->opt->animationEnabled))
         return;
 
     // loop through all messages in the event queue and display them
@@ -498,6 +498,22 @@ void MessageAnimator::clearMessages()
     messageItems.clear();
 }
 
+void MessageAnimator::setShowAnimations(bool show)
+{
+    if (showAnimations != show) {
+        if (show) {
+            for (ModuleInspector *mi : inspectors)
+                addGraphicsToInspector(mi);
+        }
+        else {
+            for (ModuleInspector *mi : inspectors)
+                removeGraphicsFromInspector(mi);
+        }
+    }
+
+    showAnimations = show;
+}
+
 void MessageAnimator::updateNextEventMarkers()
 {
     // Have to add the markers we might have cleared before.
@@ -513,7 +529,7 @@ void MessageAnimator::updateNextEventMarkers()
         p.second->setVisible(false);
 
     // this thingy is only needed if animation is going on
-    if (!getQtenv()->animating || !markedModule || !getQtenv()->opt->showNextEventMarkers)
+    if (!showAnimations || !markedModule || !getQtenv()->opt->showNextEventMarkers)
         return;
 
     for (auto p : nextEventMarkers) {
@@ -664,7 +680,12 @@ void MessageAnimator::clear()
 void MessageAnimator::addInspector(ModuleInspector *insp)
 {
     inspectors.push_back(insp);
+    if (showAnimations)
+        addGraphicsToInspector(insp);
+}
 
+void MessageAnimator::addGraphicsToInspector(ModuleInspector *insp)
+{
     redrawMessages();
     for (auto &p : animations)
         p->addToInspector(insp);
@@ -687,8 +708,13 @@ void MessageAnimator::updateInspector(ModuleInspector *insp)
 
 void MessageAnimator::removeInspector(ModuleInspector *insp)
 {
+    if (showAnimations)
+        removeGraphicsFromInspector(insp);
     remove(inspectors, insp);
+}
 
+void MessageAnimator::removeGraphicsFromInspector(ModuleInspector *insp)
+{
     for (auto &p : animations)
         p->removeFromInspector(insp);
 
