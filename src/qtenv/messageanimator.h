@@ -55,6 +55,9 @@ class QTENV_API MessageAnimator
     // If empty, no hold is in effect.
     std::set<const Animation*> holdRequests;
 
+    // The set of inspectors that the animator shows graphics within
+    std::vector<ModuleInspector *> inspectors;
+
     const LogBuffer *logBuffer;
 
     // cursor in the tree - NOT necessarily the root
@@ -213,7 +216,7 @@ public:
 
     // Removes any animation and items on the given inspector,
     // so it can be deleted safely. called from the ModuleInspector dtor.
-    void clearInspector(ModuleInspector *insp);
+    void removeInspector(ModuleInspector *insp);
 
     // Called by the LogBuffer when it clones a message. XXX: should be a slot?
     void messageDuplicated(cMessage *msg, cMessage *dup);

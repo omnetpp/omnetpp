@@ -133,7 +133,7 @@ ModuleInspector::~ModuleInspector()
     // so the window can be closed safely, without
     // double deleting the message items (by the
     // animations and the scene itself)
-    getQtenv()->getMessageAnimator()->clearInspector(this);
+    getQtenv()->getMessageAnimator()->removeInspector(this);
 }
 
 void ModuleInspector::createViews(bool isTopLevel)
@@ -252,7 +252,7 @@ void ModuleInspector::doSetObject(cObject *obj)
 
     setOsgCanvas(nullptr);
 
-    getQtenv()->getMessageAnimator()->clearInspector(this);
+    getQtenv()->getMessageAnimator()->removeInspector(this);
 
     if (object) {
         canvasViewer->refreshLayout();

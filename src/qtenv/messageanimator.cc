@@ -140,10 +140,8 @@ void MessageAnimator::redrawMessages()
         if (!showIn || !showIn->getBuiltinAnimationsAllowed())
             continue;
 
-        for (auto& insp : getQtenv()->getInspectors()) {
-            auto moduleInsp = dynamic_cast<ModuleInspector *>(insp);
-
-            if (moduleInsp && !willAnimate(msg)
+        for (auto moduleInsp : inspectors) {
+            if (!willAnimate(msg)
                     && showIn == moduleInsp->getObject()
                     && msg->getArrivalGateId() >= 0) {
                 cGate *arrivalGate = msg->getArrivalGate();
@@ -202,7 +200,7 @@ void MessageAnimator::methodcallEnd()
 
     if (!parent) {
         // when the root method call returns, add the whole tree recursively to all inspectors
-        for (auto insp : getQtenv()->getInspectors())
+        for (auto insp : inspectors)
             currentMethodCall->addToInspector(insp);
 
         animations.putMulti(METHODCALL, currentMethodCall);
@@ -508,7 +506,7 @@ void MessageAnimator::clearMessages()
 void MessageAnimator::updateNextEventMarkers()
 {
     // Have to add the markers we might have cleared before.
-    for (auto in : getQtenv()->getInspectors())
+    for (auto in : inspectors)
         if (auto mi = dynamic_cast<ModuleInspector*>(in))
             if (!containsKey(nextEventMarkers, mi)) {
                 auto marker = new QGraphicsRectItem;
@@ -551,9 +549,9 @@ void MessageAnimator::addDeliveryAnimation(cMessage *msg, cModule *showIn, Deliv
 
     anim->messageDuplicated(msg, dup);
 
-    for (auto in : getQtenv()->getInspectors())
-        if (auto insp = isModuleInspectorFor(showIn, in))
-            anim->addToInspector(insp);
+    for (auto mi : inspectors)
+        if (mi->getObject() == showIn)
+            anim->addToInspector(mi);
 
     if (!deliveries)
         deliveries = new AnimationSequence();
@@ -670,6 +668,8 @@ void MessageAnimator::clear()
 
 void MessageAnimator::addInspector(ModuleInspector *insp)
 {
+    inspectors.push_back(insp);
+
     redrawMessages();
     for (auto &p : animations)
         p->addToInspector(insp);
@@ -690,8 +690,10 @@ void MessageAnimator::updateInspector(ModuleInspector *insp)
     updateNextEventMarkers();
 }
 
-void MessageAnimator::clearInspector(ModuleInspector *insp)
+void MessageAnimator::removeInspector(ModuleInspector *insp)
 {
+    remove(inspectors, insp);
+
     for (auto &p : animations)
         p->removeFromInspector(insp);
 
