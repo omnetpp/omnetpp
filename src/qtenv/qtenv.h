@@ -135,8 +135,6 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
 
       QtenvOptions *&opt;          // alias to EnvirBase::opt
 
-      // state variables
-      bool animating;              // while execution, do message animation or not
       ImageCache icons;
 
    protected:

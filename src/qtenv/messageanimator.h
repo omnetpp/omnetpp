@@ -58,6 +58,7 @@ class QTENV_API MessageAnimator
     // The set of inspectors that the animator shows graphics within
     std::vector<ModuleInspector *> inspectors;
 
+    bool showAnimations = false;
     const LogBuffer *logBuffer;
 
     // cursor in the tree - NOT necessarily the root
@@ -164,6 +165,9 @@ class QTENV_API MessageAnimator
 
     MethodcallAnimation *getCurrentMethodCallRoot() const;
 
+    void addGraphicsToInspector(ModuleInspector *insp);
+    void removeGraphicsFromInspector(ModuleInspector *insp);
+
 public:
 
     MessageAnimator(const LogBuffer *logBuffer) : logBuffer(logBuffer) { }
@@ -179,6 +183,10 @@ public:
     void setAnimationSpeed(double speed, const Animation *source);
     // DisplayUpdateController can query what the animations requested using this:
     double getAnimationSpeed();
+
+
+    bool getShowAnimations() { return showAnimations; }
+    void setShowAnimations(bool show);
 
     void updateNextEventMarkers();
     void updateAnimations();
