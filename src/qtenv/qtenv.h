@@ -145,16 +145,17 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
       QEventLoop *pauseEventLoop = nullptr; // has to be a pointer so it's not constructed unnecessarily. always exists, only started/stopped as needed
       int pausePointNumber = 0;    // which "stop" are we within an event, incremented in pause(), reset after an event is done
 
-      bool isConfigRun;            // true after newRun(), and false after newConfig()
-      eState simulationState;      // state of the simulation run
+      bool isConfigRun = false;              // true after newRun(), and false after newConfig()
+      eState simulationState = SIM_NONET;    // state of the simulation run
       RunMode runMode = RUNMODE_NOT_RUNNING; // the current mode the simulation is executing under
       struct RunUntil {
-          simtime_t time;           // time limit in current "Run Until" execution, or zero
-          eventnumber_t eventNumber;// event number in current "Run Until" execution, or zero
-          cMessage *msg;            // stop before this event; also when this message is cancelled
-          cModule *module;          // stop before and after events in this module; ignored with EXPRESS mode
-          bool stopOnMsgCancel;     // with rununtil_msg: whether to stop when the message gets cancelled
+          simtime_t time;                // time limit in current "Run Until" execution, or zero
+          eventnumber_t eventNumber = 0; // event number in current "Run Until" execution, or zero
+          cMessage *msg = nullptr;       // stop before this event; also when this message is cancelled
+          cModule *module = nullptr;     // stop before and after events in this module; ignored with EXPRESS mode
+          bool stopOnMsgCancel = true;   // with rununtil_msg: whether to stop when the message gets cancelled
       } runUntil;
+
       bool doNextEventInStep = false;// true if the next event should be executed in STEP mode, or we should stop before
       Speedometer speedometer;
 

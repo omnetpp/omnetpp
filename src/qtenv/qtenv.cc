@@ -571,12 +571,6 @@ Qtenv::Qtenv() : opt((QtenvOptions *&)EnvirBase::opt), icons(out)
     // the class may be instantiated only for the purpose of calling
     // printUISpecificHelp() on it
 
-    simulationState = SIM_NONET;
-    stopSimulationFlag = false;
-    isConfigRun = false;
-    runUntil.msg = nullptr;  // deactivate corresponding checks in eventCancelled()/objectDeleted()
-    runUntil.stopOnMsgCancel = true;
-
     // set the name here, to prevent warning from StringPool on shutdown when Cmdenv runs
     inspectorfactories.getInstance()->setName("inspectorfactories");
 }
