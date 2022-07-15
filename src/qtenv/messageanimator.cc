@@ -438,7 +438,7 @@ void MessageAnimator::updateAnimations()
 
     // Finally continuing with the rest of the animations, that are holding.
 
-    if (getQtenv()->getPref("concurrent-anim", false).toBool()) {
+    if (broadcastAnimation) {
         bool first = true;
 
         // This is the ID of the source module of the first animation.

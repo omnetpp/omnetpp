@@ -207,6 +207,7 @@ void Qtenv::storeOptsInPrefs()
     setPref("senddirect_arrows", opt->showSendDirectArrows);
     setPref("animation_methodcalls", opt->animateMethodCalls);
     setPref("methodcalls_duration", opt->methodCallAnimDuration);
+    setPref("concurrent-anim", messageAnimator->getBroadcastAnimation());
     setPref("animation_msgnames", opt->animationMsgNames);
     setPref("animation_msgclassnames", opt->animationMsgClassNames);
     setPref("animation_msgcolors", opt->animationMsgColors);
@@ -294,6 +295,10 @@ void Qtenv::restoreOptsFromPrefs()
     pref = getPref("methodcalls_duration");
     if (pref.isValid())
         opt->methodCallAnimDuration = pref.toInt();
+
+    pref = getPref("concurrent-anim");
+    if (pref.isValid())
+        messageAnimator->setBroadcastAnimation(pref.toBool());
 
     pref = getPref("animation_msgnames");
     if (pref.isValid())
@@ -658,6 +663,8 @@ void Qtenv::doRun()
 
     pauseEventLoop = new QEventLoop(app);
 
+    messageAnimator = new MessageAnimator(&logBuffer);
+
     globalPrefs = new QSettings(QDir::homePath() + "/.qtenvrc", QSettings::IniFormat);
     checkQSettingsStatus(globalPrefs);
     localPrefs = new QSettings(".qtenvrc", QSettings::IniFormat);
@@ -665,6 +672,7 @@ void Qtenv::doRun()
 
     restoreOptsFromPrefs();
     setLogLevel(opt->logLevel); // we have to tell cLog the level we want
+    displayUpdateController = new DisplayUpdateController();
 
     // create windowtitle prefix
     if (getParsimNumPartitions() > 0) {
@@ -672,9 +680,6 @@ void Qtenv::doRun()
         sprintf(tmp, "Proc %d/%d - ", getParsimProcId(), getParsimNumPartitions());
         windowTitlePrefix = tmp;
     }
-
-    messageAnimator = new MessageAnimator(&logBuffer);
-    displayUpdateController = new DisplayUpdateController();
 
     mainWindow = new MainWindow(this);
 
@@ -757,6 +762,8 @@ void Qtenv::doRun()
 
     moduleLayouter.saveSeeds();
 
+    storeOptsInPrefs();
+
     delete messageAnimator;
     messageAnimator = nullptr;
     delete displayUpdateController;
@@ -772,8 +779,6 @@ void Qtenv::doRun()
 
     delete mainWindow;
     mainWindow = nullptr;
-
-    storeOptsInPrefs();
 
     delete globalPrefs;
     globalPrefs = nullptr;
