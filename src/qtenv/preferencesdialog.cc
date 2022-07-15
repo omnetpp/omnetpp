@@ -18,6 +18,7 @@
 #include "ui_preferencesdialog.h"
 #include "qtenv.h"
 #include "mainwindow.h"
+#include "messageanimator.h"
 #include "inspectorutil.h"
 
 #include <QtCore/QDebug>
@@ -46,8 +47,7 @@ PreferencesDialog::PreferencesDialog(eTab defaultPage, QWidget *parent) :
 void PreferencesDialog::init()
 {
     // General tab
-    QVariant variant;
-    variant = getQtenv()->getPref("confirm-exit");
+    QVariant variant = getQtenv()->getPref("confirm-exit");
     ui->confirmExit->setChecked(variant.isValid() ? variant.value<bool>() : true);
     ui->express->setText(QString::number(getQtenv()->opt->updateFreqExpress));
 
@@ -80,8 +80,7 @@ void PreferencesDialog::init()
 
     // Animation tab
     ui->animMsg->setChecked(getQtenv()->opt->animationEnabled);
-    variant = getQtenv()->getPref("concurrent-anim");
-    ui->animBroadcast->setChecked(variant.isValid() ? variant.value<bool>() : false);
+    ui->animBroadcast->setChecked(getQtenv()->getMessageAnimator()->getBroadcastAnimation());
     ui->showMarker->setChecked(getQtenv()->opt->showNextEventMarkers);
     ui->showArrows->setChecked(getQtenv()->opt->showSendDirectArrows);
     ui->showBubbles->setChecked(getQtenv()->opt->showBubbles);
@@ -174,7 +173,7 @@ void PreferencesDialog::accept()
     getQtenv()->setLogLevel(logLevel);
 
     getQtenv()->opt->animationEnabled = ui->animMsg->isChecked();
-    getQtenv()->setPref("concurrent-anim", ui->animBroadcast->isChecked());
+    getQtenv()->getMessageAnimator()->setBroadcastAnimation(ui->animBroadcast->isChecked());
     getQtenv()->opt->showNextEventMarkers = ui->showMarker->isChecked();
     getQtenv()->opt->showSendDirectArrows = ui->showArrows->isChecked();
     getQtenv()->opt->animateMethodCalls = ui->animCalls->isChecked();

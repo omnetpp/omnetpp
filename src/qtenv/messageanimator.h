@@ -59,6 +59,8 @@ class QTENV_API MessageAnimator
     std::vector<ModuleInspector *> inspectors;
 
     bool showAnimations = false;
+    bool broadcastAnimation = false;
+
     const LogBuffer *logBuffer;
 
     // cursor in the tree - NOT necessarily the root
@@ -187,6 +189,9 @@ public:
 
     bool getShowAnimations() { return showAnimations; }
     void setShowAnimations(bool show);
+
+    bool getBroadcastAnimation() { return broadcastAnimation; }
+    void setBroadcastAnimation(bool broadcast) { broadcastAnimation = broadcast; }
 
     void updateNextEventMarkers();
     void updateAnimations();
