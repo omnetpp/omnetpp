@@ -60,16 +60,18 @@ cNedLoader::~cNedLoader()
     for (auto it : cachedExpresssions)
         delete it.second;
 
-    // delete module/channel types created by us
-    std::vector<cOwnedObject*> trash;
-    for (cOwnedObject *obj : *componentTypes.getInstance())
-        if (dynamic_cast<cDynamicModuleType*>(obj) && ((cDynamicModuleType*)obj)->getNedLoader() == this)
-            trash.push_back(obj);
-        else if (dynamic_cast<cDynamicChannelType*>(obj) && ((cDynamicChannelType*)obj)->getNedLoader() == this)
-            trash.push_back(obj);
+    // delete module/channel types
+    for (cComponentType *type : types)
+        dropAndDelete(type);
+    types.clear();
+    typesByQName.clear();
+}
 
-    for (cOwnedObject *obj : trash)
-        delete componentTypes.getInstance()->remove(obj);
+void cNedLoader::forEachChild(cVisitor *v)
+{
+    for (cComponentType *type : types)
+        if (!v->visit(type))
+            return;
 }
 
 void cNedLoader::loadEmbeddedNedFiles()
@@ -144,8 +146,16 @@ void cNedLoader::registerNedType(const char *qname, bool isInnerType, NedElement
         type = new cDynamicModuleType(this, qname);
     else if (node->getTagCode() == NED_CHANNEL)
         type = new cDynamicChannelType(this, qname);
+
     if (type)
-        componentTypes.getInstance()->add(type);
+        registerComponentType(type);
+}
+
+void cNedLoader::registerComponentType(cComponentType *type)
+{
+    take(type);
+    types.push_back(type);
+    typesByQName[type->getFullName()] = type;
 }
 
 cNedDeclaration *cNedLoader::getDecl(const char *qname)
@@ -153,6 +163,12 @@ cNedDeclaration *cNedLoader::getDecl(const char *qname)
     cNedDeclaration *decl = dynamic_cast<cNedDeclaration *>(NedResourceCache::getDecl(qname));
     ASSERT(decl);
     return decl;
+}
+
+cComponentType *cNedLoader::lookupComponentType(const char *qname) const
+{
+    auto it = typesByQName.find(qname);
+    return it == typesByQName.end() ? nullptr : it->second;
 }
 
 cDynamicExpression *cNedLoader::getCompiledExpression(const ExprRef& key)

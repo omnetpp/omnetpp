@@ -37,6 +37,7 @@
 #include "omnetpp/cenum.h"
 #include "omnetpp/ccanvas.h"
 #include "omnetpp/cobjectfactory.h"
+#include "omnetpp/cnedloader.h"
 
 #ifdef WITH_PARSIM
 #include "omnetpp/ccommbuffer.h"
@@ -92,7 +93,7 @@ cComponentType::~cComponentType()
 
 cComponentType *cComponentType::find(const char *qname)
 {
-    return dynamic_cast<cComponentType *>(componentTypes.getInstance()->lookup(qname));
+    return cSimulation::getActiveSimulation()->getNedLoader()->lookupComponentType(qname);
 }
 
 cComponentType *cComponentType::get(const char *qname)
@@ -410,7 +411,7 @@ cModule *cModuleType::createScheduleInit(const char *name, cModule *parentModule
 
 cModuleType *cModuleType::find(const char *qname)
 {
-    return dynamic_cast<cModuleType *>(componentTypes.getInstance()->lookup(qname));
+    return dynamic_cast<cModuleType *>(cComponentType::find(qname));
 }
 
 cModuleType *cModuleType::get(const char *qname)
@@ -488,7 +489,7 @@ cChannel *cChannelType::create(const char *name, cSimulation *simulation)
 
 cChannelType *cChannelType::find(const char *qname)
 {
-    return dynamic_cast<cChannelType *>(componentTypes.getInstance()->lookup(qname));
+    return dynamic_cast<cChannelType *>(cComponentType::find(qname));
 }
 
 cChannelType *cChannelType::get(const char *qname)

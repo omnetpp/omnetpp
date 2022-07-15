@@ -18,6 +18,7 @@
 #include "ui_findobjectsdialog.h"
 #include "omnetpp/cobject.h"
 #include "omnetpp/csimulation.h"
+#include "omnetpp/cnedloader.h"
 #include "omnetpp/globals.h"
 #include "envir/visitor.h"
 #include "common/matchexpression.h"
@@ -267,7 +268,7 @@ void FindObjectsDialog::refresh()
 
     std::vector<cObject*> roots {
         getSimulation(),
-        componentTypes.getInstance(),
+        getSimulation()->getNedLoader(),
         nedFunctions.getInstance(),
         classes.getInstance(),
         enums.getInstance(),

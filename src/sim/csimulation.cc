@@ -173,7 +173,16 @@ void cSimulation::forEachChild(cVisitor *v)
 {
     if (systemModule != nullptr)
         v->visit(systemModule);
-    v->visit(fes);
+    if (fes)
+        v->visit(fes);
+    if (scheduler)
+        v->visit(scheduler);
+    if (rngManager)
+        v->visit(rngManager);
+    if (nedLoader)
+        v->visit(nedLoader);
+    if (fingerprint)
+        v->visit(fingerprint);
 }
 
 std::string cSimulation::getFullPath() const
@@ -604,8 +613,8 @@ void cSimulation::deleteNetwork()
 
     networkType = nullptr;
 
-    for (auto p : componentTypes)
-        static_cast<cComponentType *>(p)->clearSharedParImpls();
+    for (cComponentType *p : nedLoader->getComponentTypes())
+        p->clearSharedParImpls();
     cModule::clearNamePools();
 
     notifyLifecycleListeners(LF_POST_NETWORK_DELETE);

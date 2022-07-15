@@ -20,7 +20,6 @@
 namespace omnetpp {
 namespace internal {
 
-cGlobalRegistrationList componentTypes("component types");
 cGlobalRegistrationList nedFunctions("NED functions");
 cGlobalRegistrationList classes("classes");
 cGlobalRegistrationList enums("enums");
@@ -33,7 +32,6 @@ std::map<std::string,std::string> figureTypes;
 std::vector<EmbeddedNedFile> embeddedNedFiles;
 
 EXECUTE_ON_SHUTDOWN(
-        componentTypes.clear();
         nedFunctions.clear();
         classes.clear();
         enums.clear();

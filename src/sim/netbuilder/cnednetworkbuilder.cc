@@ -556,7 +556,7 @@ std::string cNedNetworkBuilder::resolveComponentType(const NedLookupContext& con
     // instance. Lookup is based on component names registered in the simkernel,
     // NOT on the NED files loaded. This allows the user to instantiate
     // cModuleTypes/cChannelTypes which are not declared in NED.
-    return nedLoader->lookupNedType(context, nedTypeName, ComponentTypeNames());
+    return nedLoader->lookupNedType(context, nedTypeName, ComponentTypeNames(nedLoader));
 }
 
 cModuleType *cNedNetworkBuilder::findAndCheckModuleType(const char *modTypeName, cModule *modp, const char *submodName)
@@ -622,7 +622,7 @@ std::vector<std::string> cNedNetworkBuilder::findTypeWithInterface(const char *n
     std::vector<std::string> candidates;
 
     // try to interpret it as a fully qualified name
-    ComponentTypeNames qnames;
+    ComponentTypeNames qnames(nedLoader);  //TODO eliminate
     if (qnames.contains(nedTypeName)) {
         cNedDeclaration *decl = nedLoader->getDecl(nedTypeName);
         ASSERT(decl);

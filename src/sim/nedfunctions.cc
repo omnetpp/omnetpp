@@ -29,6 +29,7 @@
 #include "omnetpp/distrib.h"
 #include "omnetpp/cnedmathfunction.h"
 #include "omnetpp/cnedfunction.h"
+#include "omnetpp/cnedloader.h"
 #include "omnetpp/cexception.h"
 #include "omnetpp/cstringtokenizer.h"
 #include "omnetpp/cconfiguration.h"
@@ -1309,24 +1310,25 @@ DEF(nedf_firstAvailable,
     "string firstAvailable(...)",
     "misc",
     "Accepts any number of strings, interprets them as NED type names "
-    "(qualified or unqualified), and returns the first one that exists and "
-    "its C++ implementation class is also available. Throws an error if "
-    "none of the types are available.")
+    "(qualified or unqualified), and returns the (fully qualified name of the) "
+    "first one that exists and its C++ implementation class is also available. "
+    "Throws an error if none of the types are available.")
 
 cValue nedf_firstAvailable(cComponent *contextComponent, cValue argv[], int argc)
 {
-    cRegistrationList *types = componentTypes.getInstance();
+    cINedLoader *nedLoader = contextComponent->getSimulation()->getNedLoader();
     for (int i = 0; i < argc; i++) {
         if (argv[i].getType() != cValue::STRING)
             throw cRuntimeError("String arguments expected");
         const char *name = argv[i].stringValue();
-        cComponentType *c;
-        c = dynamic_cast<cComponentType *>(types->lookup(name));  // by qualified name
-        if (c && c->isAvailable())
-            return argv[i];
-        c = dynamic_cast<cComponentType *>(types->find(name));  // by simple name
-        if (c && c->isAvailable())
-            return argv[i];
+        // by qualified name
+        cComponentType *type = nedLoader->lookupComponentType(name);
+        if (type && type->isAvailable())
+            return type->getFullName();
+        // by simple name
+        for (cComponentType *type : nedLoader->getComponentTypes())
+            if (type->isName(name) && type->isAvailable())
+                return type->getFullName();
     }
 
     std::string typelist;

@@ -64,6 +64,10 @@ class SIM_API cNedLoader : public cINedLoader, public nedxml::NedResourceCache
     std::string nedPath;
     std::string nedExcludedPackages;
 
+    // types
+    std::vector<cComponentType *> types;  // for fast iteration
+    std::map<std::string,cComponentType*> typesByQName;
+
     // expression cache
     std::map<ExprRef, cDynamicExpression*> cachedExpresssions;
 
@@ -84,6 +88,9 @@ class SIM_API cNedLoader : public cINedLoader, public nedxml::NedResourceCache
     /** Destructor */
     virtual ~cNedLoader();
 
+    /** Iterate over component types */
+    virtual void forEachChild(cVisitor *v) override;
+
     const char *getNedExcludedPackages() const override {return nedExcludedPackages.c_str();}
     void setNedExcludedPackages(const char *nedExcludedPackages) override {this->nedExcludedPackages = nedExcludedPackages;}
     const char *getNedPath() const override {return nedPath.c_str();}
@@ -100,6 +107,9 @@ class SIM_API cNedLoader : public cINedLoader, public nedxml::NedResourceCache
     virtual std::vector<std::string> getLoadedNedFolders() const override {return nedxml::NedResourceCache::getLoadedNedFolders();}
     virtual void doneLoadingNedFiles() override {nedxml::NedResourceCache::doneLoadingNedFiles();}
     virtual std::string getNedPackageForFolder(const char *folder) const override {return nedxml::NedResourceCache::getNedPackageForFolder(folder);}
+    virtual void registerComponentType(cComponentType *type) override;
+    virtual cComponentType *lookupComponentType(const char *qname) const override;
+    virtual const std::vector<cComponentType*>& getComponentTypes() const override {return types;}
     //@}
 
     /** @name Methods for use by the module/channel types created by this NED loader. */

@@ -14,13 +14,14 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-
 #ifndef __OMNETPP_CNEDLOADER_H
 #define __OMNETPP_CNEDLOADER_H
 
 #include "cownedobject.h"
 
 namespace omnetpp {
+
+class cComponentType;
 
 /**
  * @brief Dynamically loads NED files, and creates module/channel type objects.
@@ -125,6 +126,24 @@ class SIM_API cINedLoader : public cNoncopyableOwnedObject
      * for the default package, and "-" if the folder is outside all NED folders.
      */
     virtual std::string getNedPackageForFolder(const char *folder) const = 0;
+
+    /**
+     * Allows a custom-made module or channel type object to be registered
+     * in this NED loader.
+     */
+    virtual void registerComponentType(cComponentType *type) = 0;
+
+    /**
+     * Returns the module and channel type object with the given fully qualified name,
+     * or nullptr if one does not exist.
+     */
+    virtual cComponentType *lookupComponentType(const char *qname) const = 0;
+
+    /**
+     * Returns the list of all module and channel types objects registered
+     * in this NED loader.
+     */
+    virtual const std::vector<cComponentType*>& getComponentTypes() const = 0;
 };
 
 }  // namespace omnetpp

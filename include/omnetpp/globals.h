@@ -26,7 +26,6 @@ namespace omnetpp {
 namespace internal {
 
 // Global registration lists
-SIM_API extern cGlobalRegistrationList componentTypes;  ///< List of all component types (cComponentType)
 SIM_API extern cGlobalRegistrationList nedFunctions;    ///< List if all NED functions (cNedFunction and cNedMathFunction)
 SIM_API extern cGlobalRegistrationList classes;         ///< List of all classes that can be instantiated using createOne(); see cObjectFactory and Register_Class() macro
 SIM_API extern cGlobalRegistrationList enums;           ///< List of all enum objects (cEnum)

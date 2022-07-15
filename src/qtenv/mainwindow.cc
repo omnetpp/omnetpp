@@ -36,6 +36,7 @@
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cfutureeventset.h"
 #include "omnetpp/cscheduler.h"
+#include "omnetpp/cnedloader.h"
 #include "common/stringutil.h"
 #include "common/ver.h"
 
@@ -1078,9 +1079,9 @@ void MainWindow::configureNetwork()
 
     // get list of network names
     QVector<cModuleType *> networks;
-    cRegistrationList *types = componentTypes.getInstance();
-    for (int i = 0; i < types->size(); i++) {
-        cModuleType *t = dynamic_cast<cModuleType *>(types->get(i));
+    const auto& types = cSimulation::getActiveSimulation()->getNedLoader()->getComponentTypes();
+    for (cComponentType *type : types) {
+        cModuleType *t = dynamic_cast<cModuleType *>(type);
         if (t && t->isNetwork())
             networks.push_back(t);
     }
@@ -1350,7 +1351,9 @@ void MainWindow::on_actionSimulation_triggered()
 // inspectComponentTypes
 void MainWindow::on_actionNedComponentTypes_triggered()
 {
-    getQtenv()->inspect(componentTypes.getInstance(), INSP_DEFAULT, true);
+    cINedLoader *nedLoader = getSimulation()->getNedLoader();
+    if (cObject *nedLoaderObj = dynamic_cast<cObject*>(nedLoader))
+        getQtenv()->inspect(nedLoaderObj, INSP_DEFAULT, true);
 }
 
 // inspectClasses

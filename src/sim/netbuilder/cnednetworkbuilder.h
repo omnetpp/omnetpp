@@ -57,10 +57,13 @@ class SIM_API cNedNetworkBuilder
 
   protected:
     class ComponentTypeNames : public NedResourceCache::INedTypeNames {
+      private:
+        cNedLoader *nedLoader;
       public:
-        virtual bool contains(const char *qname) const override  {return omnetpp::internal::componentTypes.getInstance()->lookup(qname)!=nullptr;}
-        virtual int size() const override  {return omnetpp::internal::componentTypes.getInstance()->size();}
-        virtual const char *get(int k) const override  {return omnetpp::internal::componentTypes.getInstance()->get(k)->getFullName();}
+        ComponentTypeNames(cNedLoader *nedLoader) : nedLoader(nedLoader) {}
+        virtual bool contains(const char *qname) const override  {return nedLoader->lookupComponentType(qname)!=nullptr;}
+        virtual int size() const override  {return nedLoader->getComponentTypes().size();}  //TODO FIXME cache list!
+        virtual const char *get(int k) const override  {return nedLoader->getComponentTypes()[k]->getFullName();} //TODO FIXME cache list!
     };
 
     typedef cNedDeclaration::PatternData PatternData;  // abbreviation
