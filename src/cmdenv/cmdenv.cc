@@ -120,24 +120,19 @@ Cmdenv::Cmdenv() : opt((CmdenvOptions *&)AppBase::opt)
         logStream = stdout;
 }
 
-void Cmdenv::readOptions()
+void Cmdenv::readOptions(cConfiguration *cfg)
 {
-    AppBase::readOptions();
-
-    cConfiguration *cfg = getConfig();
+    AppBase::readOptions(cfg);
 
     // note: configName and runFilter will possibly be overwritten
     // with the -c, -r command-line options in our setup() method
-    opt->configName = cfg->getAsString(CFGID_CMDENV_CONFIG_NAME);
-    opt->runFilter = cfg->getAsString(CFGID_CMDENV_RUNS_TO_EXECUTE);
     opt->extraStack = (size_t)cfg->getAsDouble(CFGID_CMDENV_EXTRA_STACK);
 }
 
-void Cmdenv::readPerRunOptions()
+void Cmdenv::readPerRunOptions(cConfiguration *cfg)
 {
-    AppBase::readPerRunOptions();
+    AppBase::readPerRunOptions(cfg);
 
-    cConfiguration *cfg = getConfig();
     opt->stopBatchOnError = cfg->getAsBool(CFGID_CMDENV_STOP_BATCH_ON_ERROR);
     opt->expressMode = cfg->getAsBool(CFGID_CMDENV_EXPRESS_MODE);
     opt->interactive = cfg->getAsBool(CFGID_CMDENV_INTERACTIVE);
@@ -146,7 +141,7 @@ void Cmdenv::readPerRunOptions()
     opt->detailedEventBanners = cfg->getAsBool(CFGID_CMDENV_EVENT_BANNER_DETAILS);
     opt->statusFrequencyMs = 1000*cfg->getAsDouble(CFGID_CMDENV_STATUS_FREQUENCY);
     opt->printPerformanceData = cfg->getAsBool(CFGID_CMDENV_PERFORMANCE_DISPLAY);
-    getEnvir()->setLogFormat(getConfig()->getAsString(CFGID_CMDENV_LOG_PREFIX).c_str());
+    getEnvir()->setLogFormat(cfg->getAsString(CFGID_CMDENV_LOG_PREFIX).c_str());
     opt->outputFile = cfg->getAsFilename(CFGID_CMDENV_OUTPUT_FILE).c_str();
     opt->redirectOutput = cfg->getAsBool(CFGID_CMDENV_REDIRECT_OUTPUT);
     opt->fakeGUI = cfg->getAsBool(CFGID_CMDENV_FAKE_GUI);
@@ -162,37 +157,35 @@ void Cmdenv::readPerRunOptions()
 void Cmdenv::doRun()
 {
     {
-        EnvirBase *envir = new EnvirBase(this);
-        cSimulation *simulation = new cSimulation("simulation", envir);  //TODO: finally: delete simulation
-        simulation->setNedLoader(nedLoader, false);
-        cSimulation::setActiveSimulation(simulation);
-        envir->initialize(simulation, activeCfg, args);
+        cConfiguration *globalCfg = ini->activateGlobalConfig();
+        readOptions(globalCfg);
+        loadNEDFiles(globalCfg, args);
 
-        readOptions();
-
-        if (envir->getAttachDebuggerOnErrors())
-            installCrashHandler();
-
-        loadNEDFiles();
+        //TODO how?
+        // if (envir->getAttachDebuggerOnErrors())
+        //    installCrashHandler();
 
         CodeFragments::executeAll(CodeFragments::STARTUP); // app setup is complete
 
         // '-c' and '-r' option: configuration to activate, and run numbers to run.
         // Both command-line options take precedence over inifile settings.
-        // (NOTE: inifile settings *already* got read at this point! as AppBase::setup()
-        // invokes readOptions()).
 
-        if (args->optionGiven('c'))  // note: do not overwrite value from cmdenv-config-name option
-            opt->configName = args->optionValue('c');
-        if (opt->configName.empty())
-            opt->configName = "General";
+        std::string configName = globalCfg->getAsString(CFGID_CMDENV_CONFIG_NAME);
+        std::string runFilter = globalCfg->getAsString(CFGID_CMDENV_RUNS_TO_EXECUTE);
 
-        if (args->optionGiven('r'))  // note: do not overwrite value from cmdenv-runs-to-execute option!
-            opt->runFilter = args->optionValue('r');
+        delete globalCfg;
+
+        if (args->optionGiven('c'))
+            configName = opp_nulltoempty(args->optionValue('c'));
+        if (configName.empty())
+            configName = "General";
+
+        if (args->optionGiven('r'))
+            runFilter = args->optionValue('r');
 
         std::vector<int> runNumbers;
         try {
-            runNumbers = resolveRunFilter(opt->configName.c_str(), opt->runFilter.c_str());
+            runNumbers = resolveRunFilter(configName.c_str(), runFilter.c_str());
         }
         catch (std::exception& e) {
             displayException(e);
@@ -202,21 +195,9 @@ void Cmdenv::doRun()
 
         numRuns = (int)runNumbers.size();
         runsTried = 0;
-        int numErrors = 0;
-        for (int runNumber : runNumbers) {
-            runsTried++;
+        numErrors = 0;
 
-            bool finishedOK = runSimulation(opt->configName.c_str(), runNumber);
-            if (!finishedOK)
-                numErrors++;
-
-            // skip further runs if signal was caught
-            if (sigintReceived)
-                break;
-
-            if (!finishedOK && opt->stopBatchOnError)
-                break;
-        }
+        runSimulations(configName.c_str(), runNumbers);
 
         if (numRuns > 1 && opt->verbose) {
             int numSkipped = numRuns - runsTried;
@@ -233,43 +214,64 @@ void Cmdenv::doRun()
 
         exitCode = numErrors > 0 ? 1 : sigintReceived ? 2 : 0;
 
-        //TODO finally:
-        simulation->deleteNetwork();
-        cSimulation::setActiveSimulation(nullptr);
-        delete simulation;
-        //delete envir; -- this is deleted by simulation -- perhaps rightfully so?
-        envir = nullptr; //TODO why delete in dtor?
+    }
+}
+
+void Cmdenv::runSimulations(const char *configName, const std::vector<int>& runNumbers)
+{
+    for (int runNumber : runNumbers) {
+        runsTried++;
+
+        bool finishedOK = runSimulation(configName, runNumber);
+        if (!finishedOK)
+            numErrors++;
+
+        // skip further runs if signal was caught
+        if (sigintReceived)
+            break;
+
+        if (!finishedOK && opt->stopBatchOnError)
+            break;
     }
 }
 
 bool Cmdenv::runSimulation(const char *configName, int runNumber)
 {
+    EnvirBase *envir = new EnvirBase(this);
+    cSimulation *simulation = new cSimulation("simulation", envir);  //TODO: finally: delete simulation
+    simulation->setNedLoader(nedLoader, false);
+    cSimulation::setActiveSimulation(simulation);
+
+    cConfiguration *globalCfg = ini->activateGlobalConfig();
+    envir->initialize(simulation, globalCfg, args);
+    readOptions(globalCfg);
+    delete globalCfg;
+
     bool finishedOK = false;
     bool networkSetupDone = false;
     bool endRunRequired = false;
 
-    EnvirBase *envir = check_and_cast<EnvirBase*>(cSimulation::getActiveEnvir());
-
+    cConfiguration *cfg = nullptr;
     try {
         if (opt->verbose)
-            out << "\nPreparing for running configuration " << opt->configName << ", run #" << runNumber << "..." << endl;
+            out << "\nPreparing for running configuration " << configName << ", run #" << runNumber << "..." << endl;
 
-        activeCfg = ini->activateConfig(configName, runNumber); //TODO delete previous cfg
-        readPerRunOptions();
+        cfg = ini->activateConfig(configName, runNumber);
+        readPerRunOptions(cfg);
 
-        const char *iterVars = activeCfg->getVariable(CFGVAR_ITERATIONVARS);
-        const char *runId = activeCfg->getVariable(CFGVAR_RUNID);
-        const char *repetition = activeCfg->getVariable(CFGVAR_REPETITION);
+        const char *iterVars = cfg->getVariable(CFGVAR_ITERATIONVARS);
+        const char *runId = cfg->getVariable(CFGVAR_RUNID);
+        const char *repetition = cfg->getVariable(CFGVAR_REPETITION);
         if (!opt->verbose)
-            out << opt->configName << " run " << runNumber << ": " << iterVars << ", $repetition=" << repetition << endl; // print before redirection; useful as progress indication from opp_runall
+            out << configName << " run " << runNumber << ": " << iterVars << ", $repetition=" << repetition << endl; // print before redirection; useful as progress indication from opp_runall
 
         if (opt->redirectOutput) {
-            opt->outputFile = ResultFileUtils(activeCfg).augmentFileName(opt->outputFile);
+            opt->outputFile = ResultFileUtils(cfg).augmentFileName(opt->outputFile);
             if (opt->verbose)
                 out << "Redirecting output to file \"" << opt->outputFile << "\"..." << endl;
             startOutputRedirection(opt->outputFile.c_str());
             if (opt->verbose)
-                out << "\nRunning configuration " << opt->configName << ", run #" << runNumber << "..." << endl;
+                out << "\nRunning configuration " << configName << ", run #" << runNumber << "..." << endl;
         }
 
         if (opt->verbose) {
@@ -355,6 +357,9 @@ bool Cmdenv::runSimulation(const char *configName, int runNumber)
 
     // stop redirecting into file
     stopOutputRedirection();
+
+    delete simulation;  // deletes envir too
+    delete cfg;
 
     return finishedOK;
 }
@@ -603,7 +608,8 @@ void Cmdenv::configureComponent(cComponent *component)
 {
     AppBase::configureComponent(component);
 
-    LogLevel level = cLog::resolveLogLevel(getConfig()->getAsString(component->getFullPath().c_str(), CFGID_CMDENV_LOGLEVEL).c_str());
+    cConfiguration *cfg = component->getSimulation()->getEnvir()->getConfig();
+    LogLevel level = cLog::resolveLogLevel(cfg->getAsString(component->getFullPath().c_str(), CFGID_CMDENV_LOGLEVEL).c_str());
     component->setLogLevel(level);
 }
 

@@ -31,8 +31,6 @@ using namespace omnetpp::envir;
 struct CMDENV_API CmdenvOptions : public AppBaseOptions
 {
     // note: these values will be overwritten in setup()/readOptions() before taking effect
-    std::string configName;
-    std::string runFilter;
     bool stopBatchOnError = true;
     size_t extraStack = 0;
     std::string outputFile;
@@ -62,6 +60,7 @@ class CMDENV_API Cmdenv : public AppBase
      // the number of runs already started (>1 if multiple runs are running in the same process)
      int runsTried = 0;
      int numRuns = 0;
+     int numErrors = 0;
 
      // logging
      bool logging = true;
@@ -105,16 +104,17 @@ class CMDENV_API Cmdenv : public AppBase
      virtual void displayException(std::exception& ex) override;
      virtual void doRun() override;
      virtual void printUISpecificHelp() override;
-     virtual void loadNEDFiles() override { AppBase::loadNEDFiles(); }
 
      virtual CmdenvOptions *createOptions() override {return new CmdenvOptions();}
-     virtual void readOptions() override;
-     virtual void readPerRunOptions() override;
+     virtual void readOptions(cConfiguration *cfg) override;
+     virtual void readPerRunOptions(cConfiguration *cfg) override;
      virtual void configureComponent(cComponent *component) override;
      virtual void askParameter(cPar *par, bool unassigned) override;
 
      void help();
+
      bool runSimulation(const char *configName, int runNumber);
+     void runSimulations(const char *configName, const std::vector<int>& runNumbers);
      void simulate();
      const char *progressPercentage();
 

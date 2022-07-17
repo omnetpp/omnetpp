@@ -165,25 +165,34 @@ int AppBase::run(const std::vector<std::string>& args, InifileContents *ini)
 int AppBase::run(int argc, char *argv[], InifileContents *ini)
 {
     this->ini = ini;
-    this->activeCfg = ini->activateGlobalConfig();
 
     opt = createOptions();
     args = new ArgList();
     args->parse(argc, argv, ARGSPEC);
     opt->useStderr = !args->optionGiven('m');
     opt->verbose = !args->optionGiven('s');
-    debuggerSupport->configure(activeCfg);
 
     nedLoader = new cNedLoader("nedLoader");
     nedLoader->removeFromOwnershipTree();
 
+    // ensure correct numeric format in output files
+    setPosixLocale();
+
+    cConfiguration *globalCfg = ini->activateGlobalConfig();
+    debuggerSupport->configure(globalCfg);
+    SimTime::configure(globalCfg);
+    cCoroutine::configure(globalCfg);
+    bool attachOnStartup = globalCfg->getAsBool(CFGID_DEBUGGER_ATTACH_ON_STARTUP);
+    delete globalCfg;
+
     try {
-        if (activeCfg->getAsBool(CFGID_DEBUGGER_ATTACH_ON_STARTUP) && debuggerSupport->detectDebugger() != DebuggerPresence::PRESENT)
+        if (attachOnStartup && debuggerSupport->detectDebugger() != DebuggerPresence::PRESENT)
             debuggerSupport->attachDebugger();
     }
     catch(opp_runtime_error& ex) {
         alert(ex.what());
     }
+
 
     try {
         if (simulationRequired())  // handle help, config queries, etc.
@@ -365,30 +374,30 @@ void AppBase::printConfigValue(const char *configName, const char *runFilter, co
     delete cfg;
 }
 
-void AppBase::readOptions()
+void AppBase::readOptions(cConfiguration *cfg)
 {
     // note: this is read per run as well, but Qtenv needs its value on startup too
-    opt->inifileNetworkDir = activeCfg->getConfigEntry(CFGID_NETWORK->getName()).getBaseDirectory();
+    opt->inifileNetworkDir = cfg->getConfigEntry(CFGID_NETWORK->getName()).getBaseDirectory();
 }
 
-void AppBase::readPerRunOptions()
+void AppBase::readPerRunOptions(cConfiguration *cfg)
 {
-    getEnvir()->configure(activeCfg);
+    getEnvir()->configure(cfg);
 
-    opt->networkName = activeCfg->getAsString(CFGID_NETWORK);
+    opt->networkName = cfg->getAsString(CFGID_NETWORK);
 
     // note: this is read per run as well, but Qtenv needs its value on startup too
-    opt->inifileNetworkDir = activeCfg->getConfigEntry(CFGID_NETWORK->getName()).getBaseDirectory();
+    opt->inifileNetworkDir = cfg->getConfigEntry(CFGID_NETWORK->getName()).getBaseDirectory();
 
     // make time limits effective
-    opt->simtimeLimit = activeCfg->getAsDouble(CFGID_SIM_TIME_LIMIT, -1);
-    opt->realTimeLimit = activeCfg->getAsDouble(CFGID_REAL_TIME_LIMIT, -1);
-    opt->cpuTimeLimit = activeCfg->getAsDouble(CFGID_CPU_TIME_LIMIT, -1);
-    opt->warmupPeriod = activeCfg->getAsDouble(CFGID_WARMUP_PERIOD);
+    opt->simtimeLimit = cfg->getAsDouble(CFGID_SIM_TIME_LIMIT, -1);
+    opt->realTimeLimit = cfg->getAsDouble(CFGID_REAL_TIME_LIMIT, -1);
+    opt->cpuTimeLimit = cfg->getAsDouble(CFGID_CPU_TIME_LIMIT, -1);
+    opt->warmupPeriod = cfg->getAsDouble(CFGID_WARMUP_PERIOD);
     getSimulation()->setWarmupPeriod(opt->warmupPeriod);
 
-    opt->debugStatisticsRecording = activeCfg->getAsBool(CFGID_DEBUG_STATISTICS_RECORDING);
-    opt->warnings = activeCfg->getAsBool(CFGID_WARNINGS);
+    opt->debugStatisticsRecording = cfg->getAsBool(CFGID_DEBUG_STATISTICS_RECORDING);
+    opt->warnings = cfg->getAsBool(CFGID_WARNINGS);
 }
 
 void AppBase::installCrashHandler()
@@ -401,9 +410,8 @@ void AppBase::installCrashHandler()
 #endif
 }
 
-void AppBase::loadNEDFiles()
+void AppBase::loadNEDFiles(cConfiguration *cfg, ArgList *args)
 {
-    cConfiguration *cfg = getConfig();
     std::string nArg = opp_join(args->optionValues('n'), ";", true);
     std::string xArg = opp_join(args->optionValues('x'), ";", true);
     nedLoader->configure(cfg, nArg.c_str() , xArg.c_str());

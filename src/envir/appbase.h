@@ -61,7 +61,6 @@ class ENVIR_API AppBase : public IAllInOne
     ArgList *args;  //TODO init!!!
     std::ostream& out; //TODO FIXME
     InifileContents *ini;
-    cConfiguration *activeCfg;
 
     std::string redirectionFilename;
     int exitCode = 0;
@@ -99,7 +98,6 @@ class ENVIR_API AppBase : public IAllInOne
     //TODO the methods below assume that there is only one active simulation, which might not be true
     EnvirBase *getEnvir() const {return dynamic_cast<EnvirBase*>(cSimulation::getActiveEnvir());}
     cSimulation *getSimulation() const {return cSimulation::getActiveSimulation();}
-    cConfiguration *getConfig() {return getEnvir()->getConfig();}
 
     DebuggerSupport *getDebuggerSupport() const {return debuggerSupport;}
 
@@ -123,7 +121,7 @@ class ENVIR_API AppBase : public IAllInOne
     // functions added locally
     virtual bool simulationRequired();
     virtual void doRun() = 0;
-    virtual void loadNEDFiles();
+    virtual void loadNEDFiles(cConfiguration *cfg, ArgList *args);
 
     virtual void setupNetwork(cModuleType *network);
     virtual void prepareForRun();
@@ -138,8 +136,8 @@ class ENVIR_API AppBase : public IAllInOne
     virtual bool isOutputRedirected();
 
     virtual AppBaseOptions *createOptions() {return new AppBaseOptions();}
-    virtual void readOptions();
-    virtual void readPerRunOptions();
+    virtual void readOptions(cConfiguration *cfg);
+    virtual void readPerRunOptions(cConfiguration *cfg);
 
     // Utility function; never returns nullptr
     cModuleType *resolveNetwork(const char *networkname);

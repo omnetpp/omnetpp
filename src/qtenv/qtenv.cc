@@ -621,14 +621,16 @@ void Qtenv::doRun()
     cSimulation *simulation = new cSimulation("simulation", envir);  //TODO: finally: delete simulation
     simulation->setNedLoader(nedLoader, false);
     cSimulation::setActiveSimulation(simulation);
+
+    activeCfg = ini->activateGlobalConfig();
     envir->initialize(simulation, activeCfg, args);
 
-    readOptions();
+    readOptions(activeCfg);
 
     if (getAttachDebuggerOnErrors())
         installCrashHandler();
 
-    loadNEDFiles();
+    loadNEDFiles(activeCfg, args);
 
     // set signal handler
     signal(SIGINT, signalHandler);
@@ -1246,7 +1248,7 @@ void Qtenv::newNetwork(const char *networkname)
         // set up new network with config General.
         isConfigRun = false;
         activeCfg = getInifileContents()->activateConfig("General", 0); //TODO leak
-        readPerRunOptions();
+        readPerRunOptions(activeCfg);
         opt->networkName = network->getName();  // override config setting
         setupNetwork(network);
         prepareForRun();
@@ -1297,7 +1299,7 @@ void Qtenv::newRun(const char *configname, int runnumber)
         // set up new network
         isConfigRun = true;
         activeCfg = getInifileContents()->activateConfig(configname, runnumber); //TODO leak
-        readPerRunOptions();
+        readPerRunOptions(activeCfg);
 
         if (opt->networkName.empty()) {
             confirm(ERROR, "No network specified in the configuration.");
@@ -1679,11 +1681,9 @@ bool Qtenv::isSilentEvent(cMessage *msg)
 
 //=========================================================================
 
-void Qtenv::readOptions()
+void Qtenv::readOptions(cConfiguration *cfg)
 {
-    AppBase::readOptions();
-
-    cConfiguration *cfg = getConfig();
+    AppBase::readOptions(cfg);
 
     opt->extraStack = (size_t)cfg->getAsDouble(CFGID_QTENV_EXTRA_STACK);
 
@@ -1694,11 +1694,11 @@ void Qtenv::readOptions()
     opt->runFilter = r ? r : cfg->getAsString(CFGID_QTENV_DEFAULT_RUN);
 }
 
-void Qtenv::readPerRunOptions()
+void Qtenv::readPerRunOptions(cConfiguration *cfg)
 {
     bool origDebugOnErrors = getDebugOnErrors();
 
-    AppBase::readPerRunOptions();
+    AppBase::readPerRunOptions(cfg);
 
     // don't let the configuration turn off a debug-on-errors setting that the user (presumably) turned
     // on manually, using the menu

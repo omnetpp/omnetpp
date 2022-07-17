@@ -146,6 +146,8 @@ class QTENV_API Qtenv : public QObject, public AppBase
       QEventLoop *pauseEventLoop = nullptr; // has to be a pointer so it's not constructed unnecessarily. always exists, only started/stopped as needed
       int pausePointNumber = 0;    // which "stop" are we within an event, incremented in pause(), reset after an event is done
 
+      cConfiguration *activeCfg = nullptr;
+
       bool isConfigRun = false;              // true after newRun(), and false after newConfig()
       eState simulationState = SIM_NONET;    // state of the simulation run
       RunMode runMode = RUNMODE_NOT_RUNNING; // the current mode the simulation is executing under
@@ -328,8 +330,8 @@ class QTENV_API Qtenv : public QObject, public AppBase
       virtual void printUISpecificHelp() override;
 
       virtual QtenvOptions *createOptions() override {return new QtenvOptions();}
-      virtual void readOptions() override;
-      virtual void readPerRunOptions() override;
+      virtual void readOptions(cConfiguration *cfg) override;
+      virtual void readPerRunOptions(cConfiguration *cfg) override;
 
       virtual void setupNetwork(cModuleType *network) override;
 
@@ -385,6 +387,7 @@ class QTENV_API Qtenv : public QObject, public AppBase
       const std::list<Inspector*>& getInspectors() {return inspectors;}
 
       EnvirBase *getEnvir() const {return dynamic_cast<EnvirBase*>(cSimulation::getActiveEnvir());}
+      cConfiguration *getConfig() {return getEnvir()->getConfig();}
 
       bool isLoggingEnabled() const {return getEnvir()->isLoggingEnabled();}
       void setLoggingEnabled(bool enabled) {getEnvir()->setLoggingEnabled(enabled);}

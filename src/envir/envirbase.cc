@@ -69,9 +69,7 @@ EnvirBase::EnvirBase(IAllInOne *app) : app(app), out(std::cout.rdbuf())
 
 EnvirBase::~EnvirBase()
 {
-    delete cfg;
     delete xmlCache;
-
     delete eventlogManager;
     delete outVectorManager;
     delete outScalarManager;
@@ -83,16 +81,9 @@ void EnvirBase::initialize(cSimulation *simulation, cConfiguration *cfg, ArgList
     this->cfg = cfg;
     this->simulation = simulation;
 
-    // ensure correct numeric format in output files
-    setPosixLocale();
-
     attachDebuggerOnErrors = cfg->getAsBool(CFGID_DEBUGGER_ATTACH_ON_ERROR);
 
-    SimTime::configure(cfg);
-
     setImagePath(extractImagePath(cfg, args).c_str());
-
-    cCoroutine::configure(cfg);
 
     xmlCache = new XMLDocCache();
 }
