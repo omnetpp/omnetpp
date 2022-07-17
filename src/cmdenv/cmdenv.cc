@@ -20,6 +20,8 @@
 #include <csignal>
 #include <algorithm>
 
+#include <thread>
+
 #include "common/opp_ctype.h"
 #include "common/commonutil.h"
 #include "common/fileutil.h"
@@ -197,7 +199,14 @@ void Cmdenv::doRun()
         runsTried = 0;
         numErrors = 0;
 
-        runSimulations(configName.c_str(), runNumbers);
+        bool threaded = false; //TODO config
+        if (!threaded) {
+            runSimulations(configName.c_str(), runNumbers);
+        }
+        else {
+            int numThreads = 3; //TODO config
+            runSimulationsInThreads(configName.c_str(), runNumbers, numThreads);
+        }
 
         if (numRuns > 1 && opt->verbose) {
             int numSkipped = numRuns - runsTried;
@@ -215,6 +224,31 @@ void Cmdenv::doRun()
         exitCode = numErrors > 0 ? 1 : sigintReceived ? 2 : 0;
 
     }
+}
+
+void Cmdenv::runSimulationsInThreads(const char *configName, const std::vector<int>& runNumbers, int numThreads)
+{
+    // statically assign jobs to threads
+    std::vector<std::vector<int>> runListPerThread(numThreads);
+    for (int i = 0; i < runNumbers.size(); i++)
+        runListPerThread[i % numThreads].push_back(runNumbers[i]);
+
+    // create and launch threads
+    std::vector<std::thread> threads;
+    for (int i = 0; i < numThreads; i++)
+        threads.push_back(startThread(configName, runListPerThread[i]));
+
+    // wait for them to finish
+    for (int i = 0; i < numThreads; i++)
+        threads[i].join();
+}
+
+std::thread Cmdenv::startThread(const char *configName, const std::vector<int>& runNumbers)
+{
+    auto fn = [this](std::string configName, std::vector<int> runNumbers) {
+        runSimulations(configName.c_str(), runNumbers);
+    };
+    return std::thread(fn, configName, runNumbers);
 }
 
 void Cmdenv::runSimulations(const char *configName, const std::vector<int>& runNumbers)

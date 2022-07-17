@@ -17,7 +17,7 @@
 #define __OMNETPP_CMDENV_CMDENV_H
 
 #include <map>
-
+#include <atomic>
 #include "envir/appbase.h"
 #include "envir/speedometer.h"
 #include "omnetpp/csimulation.h"
@@ -58,9 +58,9 @@ class CMDENV_API Cmdenv : public AppBase
      static bool sigintReceived;
 
      // the number of runs already started (>1 if multiple runs are running in the same process)
-     int runsTried = 0;
-     int numRuns = 0;
-     int numErrors = 0;
+     std::atomic_int numRuns;
+     std::atomic_int runsTried;
+     std::atomic_int numErrors;
 
      // logging
      bool logging = true;
@@ -115,6 +115,8 @@ class CMDENV_API Cmdenv : public AppBase
 
      bool runSimulation(const char *configName, int runNumber);
      void runSimulations(const char *configName, const std::vector<int>& runNumbers);
+     void runSimulationsInThreads(const char *configName, const std::vector<int>& runNumbers, int numThreads);
+     std::thread startThread(const char *configName, const std::vector<int>& runNumbers);
      void simulate();
      const char *progressPercentage();
 
