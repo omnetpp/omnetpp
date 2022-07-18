@@ -27,7 +27,7 @@
 #include "omnetpp/cchannel.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/simtime_t.h"
-#include "stlutil.h"
+#include "common/stlutil.h"
 #include "qtutil.h"
 
 namespace omnetpp {
@@ -41,6 +41,7 @@ class ModuleInspector;
 class ConnectionItem;
 class MessageItem;
 class Animation;
+class MessageAnimation;
 class LogBuffer;
 class AnimationSequence;
 class MethodcallAnimation;
@@ -150,7 +151,18 @@ class QTENV_API MessageAnimator
     // The non-delivery animations.
     // Additionally, METHODCALL is used as a key for methodcall animations,
     // since they are potentially interleaved.
+    // The animations here are compound (sequence or group) animations,
+    // they either show a message along an entire connection path, or
+    // a method call tree.
     OrderedMultiMap<MessageSendKey, Animation *> animations;
+
+    // Provides quick access to any leaf animations that are currently animating
+    // any given message. Every message can be animated by several animations
+    // at the same time, and one animation might animate up to two messages
+    // (the one used by the simulation model if it still exists, or the copy
+    // of it in the log buffer, also while that exists). Should always be
+    // kept in sync with the rest of the animation data structures.
+    std::unordered_multimap<cMessage *, MessageAnimation *> animationsForMessages;
 
     // The delivery animation(s), these take precedence over the rest.
     AnimationSequence *deliveries = nullptr;
@@ -159,10 +171,9 @@ class QTENV_API MessageAnimator
     // Only needed because std::hash has no implementation for std::pair.
     struct PairHasher {
         template <class T1, class T2>
-        inline size_t operator()(const std::pair<T1, T2>& p) const
-        {
+        inline size_t operator()(const std::pair<T1, T2>& p) const {
             size_t result = std::hash<T1>{}(p.first);
-            hash_combine(result, std::hash<T2>{}(p.second));
+            common::hash_combine(result, std::hash<T2>{}(p.second));
             return result;
         }
     };
@@ -198,6 +209,8 @@ public:
     // DisplayUpdateController can query how the holds are using these:
     bool isHoldActive() { return !holdRequests.empty(); }
     double getAnimationHoldEndTime() const; // ONLY AN ESTIMATE!
+
+    void messageAnimationDeleted(MessageAnimation *anim);
 
     // Must be used by the animations only!
     void setAnimationSpeed(double speed, const Animation *source);

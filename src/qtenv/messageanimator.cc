@@ -283,20 +283,32 @@ void MessageAnimator::endSend(cMessage *msg)
                 ASSERT(h.directDestGate);
                 ASSERT(!h.connSrcGate);
 
-                if (h.propDelay.isZero() && transDuration.isZero() && !isUpdatePacket)
-                    animSeq->addAnimation(new SendDirectAnimation(h.directSrcModule, msg, h.directDestGate));
-                else
-                    animSeq->addAnimation(new SendDirectAnimation(h.directSrcModule, msg, h.directDestGate, h.hopStartTime, h.propDelay, transDuration));
+                if (h.propDelay.isZero() && transDuration.isZero() && !isUpdatePacket) {
+                    MessageAnimation *newAnim = new SendDirectAnimation(h.directSrcModule, msg, h.directDestGate);
+                    animSeq->addAnimation(newAnim);
+                    animationsForMessages.insert(std::make_pair(msg, newAnim));
+                }
+                else {
+                    MessageAnimation *newAnim = new SendDirectAnimation(h.directSrcModule, msg, h.directDestGate, h.hopStartTime, h.propDelay, transDuration);
+                    animSeq->addAnimation(newAnim);
+                    animationsForMessages.insert(std::make_pair(msg, newAnim));
+                }
             }
             else {
                 // it was sent on a connection
                 ASSERT(!h.directDestGate);
                 ASSERT(h.connSrcGate);
 
-                if (h.propDelay.isZero() && transDuration.isZero() && !isUpdatePacket)
-                    animSeq->addAnimation(new SendOnConnAnimation(h.connSrcGate, msg));
-                else
-                    animSeq->addAnimation(new SendOnConnAnimation(h.connSrcGate, msg, h.hopStartTime, h.propDelay, transDuration, h.discard));
+                if (h.propDelay.isZero() && transDuration.isZero() && !isUpdatePacket) {
+                    MessageAnimation *newAnim = new SendOnConnAnimation(h.connSrcGate, msg);
+                    animSeq->addAnimation(newAnim);
+                    animationsForMessages.insert(std::make_pair(msg, newAnim));
+                }
+                else {
+                    MessageAnimation *newAnim = new SendOnConnAnimation(h.connSrcGate, msg, h.hopStartTime, h.propDelay, transDuration, h.discard);
+                    animSeq->addAnimation(newAnim);
+                    animationsForMessages.insert(std::make_pair(msg, newAnim));
+                }
             }
         }
 
@@ -316,13 +328,16 @@ void MessageAnimator::endSend(cMessage *msg)
                 ASSERT(h.directDestGate);
                 ASSERT(!h.connSrcGate);
 
-                animGroup->addAnimation(new SendDirectAnimation(h.directSrcModule, msg, h.directDestGate, h.hopStartTime, h.propDelay, transDuration));
+                MessageAnimation *newAnim = new SendDirectAnimation(h.directSrcModule, msg, h.directDestGate, h.hopStartTime, h.propDelay, transDuration);
+                animGroup->addAnimation(newAnim);
+                animationsForMessages.insert(std::make_pair(msg, newAnim));
             }
             else {
                 ASSERT(h.connSrcGate);
                 ASSERT(!h.directDestGate);
-
-                animGroup->addAnimation(new SendOnConnAnimation(h.connSrcGate, msg, h.hopStartTime, h.propDelay, transDuration, h.discard));
+                MessageAnimation *newAnim = new SendOnConnAnimation(h.connSrcGate, msg, h.hopStartTime, h.propDelay, transDuration, h.discard);
+                animGroup->addAnimation(newAnim);
+                animationsForMessages.insert(std::make_pair(msg, newAnim));
             }
         }
 
@@ -629,6 +644,21 @@ double MessageAnimator::getAnimationHoldEndTime() const
     return rem;
 }
 
+void MessageAnimator::messageAnimationDeleted(MessageAnimation *anim)
+{
+    std::vector<cMessage *> messages = anim->collectAnimatedMessages();
+
+    for (cMessage *msg : messages) {
+        auto range = animationsForMessages.equal_range(msg);
+        for (auto it = range.first; it != range.second;) {
+            if (it->second == anim)
+                it = animationsForMessages.erase(it);
+            else
+                ++it;
+        }
+    }
+}
+
 void MessageAnimator::setAnimationSpeed(double speed, const Animation *source)
 {
     auto existingRequest = animSpeedMap.find(source); // may be end() if not found
@@ -765,8 +795,15 @@ void MessageAnimator::removeGraphicsFromInspector(ModuleInspector *insp)
 
 void MessageAnimator::messageDuplicated(cMessage *msg, cMessage *dup)
 {
-    for (auto a : animations)
-        a->messageDuplicated(msg, dup);
+    auto range = animationsForMessages.equal_range(msg);
+    std::vector<std::pair<cMessage *, MessageAnimation *>> toInsert;
+     for (auto a = range.first; a != range.second; ++a) {
+        (*a).second->messageDuplicated(msg, dup);
+        toInsert.push_back({dup, (*a).second});
+     }
+
+    for (auto p : toInsert)
+        animationsForMessages.insert(p);
 
     if (currentSending)
         currentSending->messageDuplicated(msg, dup);
@@ -785,8 +822,11 @@ void MessageAnimator::removeMessagePointer(cMessage *msg)
         if (i.first.second == msg)
             i.second->setData(ITEMDATA_COBJECT, QVariant());
 
-    for (auto a : animations)
-        a->removeMessagePointer(msg);
+    auto range = animationsForMessages.equal_range(msg);
+    for (auto it = range.first; it != range.second;) {
+        it->second->removeMessagePointer(msg);
+        it = animationsForMessages.erase(it);
+    }
 
     if (currentSending)
         // most likely a channel was disabled, or discarded the message for some other reason - between a beginSend()/endSend() pair.

@@ -19,6 +19,7 @@
 
 #include <vector>
 #include <map>
+#include <unordered_map>
 #include <QtCore/QString>
 #include <QtCore/QLineF>
 #include "omnetpp/simtime_t.h"
@@ -120,7 +121,6 @@ public:
     // object can be changed.
     // Also see MessageAnimator::clearInspector.
     virtual void removeFromInspector(Inspector *insp) = 0;
-
 
     // True if currently no part of this animation is visible in any open inspectors.
     virtual bool isEmpty() const = 0;
@@ -320,6 +320,8 @@ protected:
     cMessage *msgToUse() const { return msg ? msg : msgDup; }
 
 public:
+
+    virtual std::vector<cMessage *> collectAnimatedMessages();
 
     void begin() override;
     void end() override;

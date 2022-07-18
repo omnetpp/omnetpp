@@ -704,6 +704,16 @@ MethodcallAnimation::~MethodcallAnimation()
 
 // --------  MessageAnimation methods  --------
 
+std::vector<cMessage *> MessageAnimation::collectAnimatedMessages()
+{
+    std::vector<cMessage *> result;
+    if (msg)
+        result.push_back(msg);
+    if (msgDup)
+        result.push_back(msgDup);
+    return result;
+}
+
 void MessageAnimation::begin()
 {
     Animation::begin();
@@ -738,8 +748,9 @@ void MessageAnimation::removeMessagePointer(cMessage *msg)
 
 void MessageAnimation::messageDuplicated(cMessage *msg, cMessage *dup)
 {
-    if (msg == this->msg && !msgDup)
+    if (msg == this->msg && !msgDup) {
         msgDup = dup;
+    }
 }
 
 void MessageAnimation::removeFromInspector(Inspector *insp)
@@ -765,6 +776,8 @@ MessageAnimation::~MessageAnimation()
         delete p.second;
 
     requestAnimationSpeed(0.0);
+
+    getQtenv()->getMessageAnimator()->messageAnimationDeleted(this);
 }
 
 // --------  SendOnConnAnimation methods  --------
