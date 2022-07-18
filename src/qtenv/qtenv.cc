@@ -840,7 +840,8 @@ void Qtenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t unti
                 cont = doRunSimulation();
         }
         if (runMode != RUNMODE_NORMAL) { // in NORMAL mode, doRunSimulation() already calls refreshDisplay() after each event
-            messageAnimator->updateAnimations();
+            if (runMode != RUNMODE_FAST)
+                messageAnimator->updateAnimations();
             callRefreshDisplay();
         }
         simulationState = SIM_READY;
@@ -945,7 +946,9 @@ bool Qtenv::doRunSimulation()
 
         displayUpdateController->setRunMode(runMode);
         bool stoppedBeforeEventReached = !displayUpdateController->animateUntilNextEvent();
-        performHoldAnimations();
+
+        if (runMode != RUNMODE_FAST)
+            performHoldAnimations();
 
         // if there is no event, we have to let the control through to
         // takeNextEvent, and it will terminate the simulation with an exception.
@@ -994,7 +997,7 @@ bool Qtenv::doRunSimulation()
         inspectorsFresh = false;
         pausePointNumber = 0;
 
-        if (animating)
+        if (animating && runMode != RUNMODE_FAST)
             performHoldAnimations();
 
         messageAnimator->setMarkedModule(sim->guessNextModule());
@@ -1930,7 +1933,8 @@ void Qtenv::simulationEvent(cEvent *event)
             // deliveries must be played immediately, since we
             // are right before the processing of the message,
             // and it would disappear otherwise
-            performHoldAnimations();
+            if (runMode != RUNMODE_FAST)
+                performHoldAnimations();
         }
     }
 }

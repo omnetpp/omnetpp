@@ -209,7 +209,8 @@ void MessageAnimator::methodcallEnd()
 
     currentMethodCall = parent;
 
-    updateAnimations();
+    if (getQtenv()->getSimulationRunMode() != RUNMODE_FAST)
+        updateAnimations();
 }
 
 void MessageAnimator::beginSend(cMessage *msg, const SendOptions& options)
@@ -262,7 +263,8 @@ void MessageAnimator::endSend(cMessage *msg)
     // have to do it before turning the sending into an animation, because  ???? TODO
     messageDuplicated(msg, dup);
 
-    updateAnimations();
+    if (getQtenv()->getSimulationRunMode() != RUNMODE_FAST)
+        updateAnimations();
 
     // extract the transmission duration from the single hop that may have it as a non-zero value
     simtime_t transDuration = 0;
@@ -352,7 +354,8 @@ void MessageAnimator::endSend(cMessage *msg)
     delete currentSending;
     currentSending = nullptr;
 
-    updateAnimations();
+    if (getQtenv()->getSimulationRunMode() != RUNMODE_FAST)
+        updateAnimations();
 }
 
 void MessageAnimator::deliveryDirect(cMessage *msg)
@@ -558,7 +561,8 @@ void MessageAnimator::addDeliveryAnimation(cMessage *msg, cModule *showIn, Deliv
 
     anim->removeMessagePointer(msg);
 
-    updateAnimations();
+    if (getQtenv()->getSimulationRunMode() != RUNMODE_FAST)
+        updateAnimations();
 }
 
 void MessageAnimator::cutUpdatedPacketAnimation(cPacket *updatePacket)

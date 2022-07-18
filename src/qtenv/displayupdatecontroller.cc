@@ -67,7 +67,8 @@ bool DisplayUpdateController::animateUntilNextEvent(bool onlyHold)
         }
 
         // so the fresh animations can begin, and we get an updated animSpeed / holdTime
-        msgAnim->updateAnimations();
+        if (runMode != RUNMODE_FAST)
+            msgAnim->updateAnimations();
 
         double animationSpeed = getAnimationSpeed();
         double holdTime = qtenv->getRemainingAnimationHoldTime();
