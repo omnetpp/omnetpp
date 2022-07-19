@@ -66,31 +66,18 @@ class CMDENV_API Cmdenv : public AppBase
      bool logging = true;
      FILE *logStream;
 
-     FakeGUI *fakeGUI = nullptr;
-
-     Stopwatch stopwatch;      // CPU and real time limit checking
-     simtime_t simulatedTime;  // sim. time after finishing simulation
+     FakeGUI *fakeGUI = nullptr;  //TODO how to share beween threads?????
 
    protected:
      virtual void log(cLogEntry *entry) override;
      virtual void alert(const char *msg) override;
      virtual bool askYesNo(const char *question) override;
-     virtual void printEventBanner(cEvent *event);
-     virtual void doStatusUpdate(Speedometer& speedometer);
-
-     // Measuring elapsed time
-     void checkTimeLimits();
-     void resetClock();
-     void startClock();
-     void stopClock();
-     double getElapsedSecs(); //FIXME into cEnvir, so it can be put into exception texts
 
    public:
      Cmdenv();
      virtual ~Cmdenv() {}
 
      virtual void componentInitBegin(cComponent *component, int stage) override;
-     virtual void simulationEvent(cEvent *event) override;
 
      virtual bool isGUI() const override {return opt->fakeGUI;}
      virtual bool isExpressMode() const override {return opt->expressMode;}
@@ -127,9 +114,7 @@ class CMDENV_API Cmdenv : public AppBase
      void runSimulations(const char *configName, const std::vector<int>& runNumbers);
      void runSimulationsInThreads(const char *configName, const std::vector<int>& runNumbers, int numThreads);
      std::thread startThread(const char *configName, const std::vector<int>& runNumbers);
-     void prepareForRun();
      void simulate();
-     const char *progressPercentage();
 
      void installSignalHandler();
      void deinstallSignalHandler();

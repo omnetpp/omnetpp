@@ -31,6 +31,8 @@ class ENVIR_API Stopwatch
 {
 private:
     // configuration
+    double realTimeLimit = -1;
+    double cpuTimeLimit = -1;
     int64_t realtimeLimitUsecs = -1;
     int64_t cpuTimeLimitClocks = -1;
     bool clockRunning;
@@ -51,7 +53,9 @@ private:
 public:
     Stopwatch();
     void setRealTimeLimit(double seconds); // specify negative value to clear limit
+    double getRealTimeLimit() const {return realTimeLimit;}
     void setCPUTimeLimit(double seconds); // specify negative value to clear limit
+    double getCPUTimeLimit() const {return cpuTimeLimit;}
     void resetClock(); // call on network setup
     void startClock(); // call when simulation is started or paused
     void stopClock(); // call when simulation is paused or terminated

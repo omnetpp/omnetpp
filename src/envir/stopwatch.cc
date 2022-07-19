@@ -28,12 +28,14 @@ Stopwatch::Stopwatch()
 
 void Stopwatch::setRealTimeLimit(double seconds)
 {
+    realTimeLimit = seconds;
     realtimeLimitUsecs = seconds < 0 ? -1 : (int64_t)(seconds * 1000000);
     hasTimeLimit_ = realtimeLimitUsecs >= 0 || cpuTimeLimitClocks >= 0;
 }
 
 void Stopwatch::setCPUTimeLimit(double seconds)
 {
+    cpuTimeLimit = seconds;
     cpuTimeLimitClocks = seconds < 0 ? -1 : CLOCKS_PER_SEC*seconds;
     hasTimeLimit_ = realtimeLimitUsecs >= 0 || cpuTimeLimitClocks >= 0;
 }
