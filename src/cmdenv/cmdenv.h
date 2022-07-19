@@ -68,12 +68,22 @@ class CMDENV_API Cmdenv : public AppBase
 
      FakeGUI *fakeGUI = nullptr;
 
+     Stopwatch stopwatch;      // CPU and real time limit checking
+     simtime_t simulatedTime;  // sim. time after finishing simulation
+
    protected:
      virtual void log(cLogEntry *entry) override;
      virtual void alert(const char *msg) override;
      virtual bool askYesNo(const char *question) override;
      virtual void printEventBanner(cEvent *event);
      virtual void doStatusUpdate(Speedometer& speedometer);
+
+     // Measuring elapsed time
+     void checkTimeLimits();
+     void resetClock();
+     void startClock();
+     void stopClock();
+     double getElapsedSecs(); //FIXME into cEnvir, so it can be put into exception texts
 
    public:
      Cmdenv();
@@ -117,6 +127,7 @@ class CMDENV_API Cmdenv : public AppBase
      void runSimulations(const char *configName, const std::vector<int>& runNumbers);
      void runSimulationsInThreads(const char *configName, const std::vector<int>& runNumbers, int numThreads);
      std::thread startThread(const char *configName, const std::vector<int>& runNumbers);
+     void prepareForRun();
      void simulate();
      const char *progressPercentage();
 

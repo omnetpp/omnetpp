@@ -68,11 +68,6 @@ class ENVIR_API AppBase : public IAllInOne
     DebuggerSupport *debuggerSupport = new DebuggerSupport();
     cINedLoader *nedLoader = nullptr;
 
-    // CPU and real time limit checking
-    Stopwatch stopwatch;
-
-    simtime_t simulatedTime;  // sim. time after finishing simulation
-
   public:
     /**
      * Constructor
@@ -124,7 +119,6 @@ class ENVIR_API AppBase : public IAllInOne
     virtual void loadNEDFiles(cConfiguration *cfg, ArgList *args);
 
     virtual void setupNetwork(cModuleType *network);
-    virtual void prepareForRun();
 
     ArgList *argList()  {return args;}
     void printHelp();
@@ -150,13 +144,6 @@ class ENVIR_API AppBase : public IAllInOne
 
     // Utility function for getXMLDocument() and getParsedXMLString()
     cXMLElement *resolveXMLPath(cXMLElement *documentnode, const char *path);
-
-    // Measuring elapsed time
-    void checkTimeLimits();
-    void resetClock();
-    void startClock();
-    void stopClock();
-    double getElapsedSecs(); //FIXME into cEnvir, so it can be put into exception texts
 
     // Hook called when the simulation terminates normally.
     // Its current use is to notify parallel simulation part.

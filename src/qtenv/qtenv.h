@@ -162,6 +162,9 @@ class QTENV_API Qtenv : public QObject, public AppBase
       bool doNextEventInStep = false;// true if the next event should be executed in STEP mode, or we should stop before
       Speedometer speedometer;
 
+      Stopwatch stopwatch;      // CPU and real time limit checking
+      simtime_t simulatedTime;  // sim. time after finishing simulation
+
       bool stopSimulationFlag;      // indicates that the simulation should be stopped (STOP button pressed in the UI)
       bool callFinishOnExitFlag = false;
 
@@ -339,6 +342,13 @@ class QTENV_API Qtenv : public QObject, public AppBase
       virtual void displayException(std::exception& e) override;
       virtual std::string getWindowTitle();
 
+      // Measuring elapsed time
+      void checkTimeLimits();
+      void resetClock();
+      void startClock();
+      void stopClock();
+      double getElapsedSecs(); //FIXME into cEnvir, so it can be put into exception texts
+
   public:
       // New functions:
       void newNetwork(const char *networkname);
@@ -351,6 +361,7 @@ class QTENV_API Qtenv : public QObject, public AppBase
       RunMode getSimulationRunMode() const {return runMode;}
       void setSimulationRunUntil(simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg, bool stopOnMsgCancel=true);
       void setSimulationRunUntilModule(cModule *until_module);
+      void prepareForRun();
       bool doRunSimulation();
       bool doRunSimulationExpress();
 

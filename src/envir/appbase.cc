@@ -565,18 +565,6 @@ void AppBase::setupNetwork(cModuleType *network)
         EnvirUtils::dumpResultRecorders(out, simulation->getSystemModule());
 }
 
-void AppBase::prepareForRun()
-{
-    resetClock();
-    cSimulation *simulation = getSimulation();
-    if (opt->simtimeLimit >= SIMTIME_ZERO)
-        simulation->setSimulationTimeLimit(opt->simtimeLimit);
-    stopwatch.setCPUTimeLimit(opt->cpuTimeLimit);
-    stopwatch.setRealTimeLimit(opt->realTimeLimit);
-    simulation->callInitialize();
-    cLogProxy::flushLastLine();
-}
-
 //-------------------------------------------------------------
 
 std::vector<int> AppBase::resolveRunFilter(const char *configName, const char *runFilter)
@@ -780,36 +768,6 @@ void AppBase::displayException(std::exception& ex)
 }
 
 //-------------------------------------------------------------
-
-void AppBase::resetClock()
-{
-    stopwatch.resetClock();
-}
-
-void AppBase::startClock()
-{
-    stopwatch.startClock();
-}
-
-void AppBase::stopClock()
-{
-    stopwatch.stopClock();
-    simulatedTime = getSimulation()->getSimTime();
-}
-
-double AppBase::getElapsedSecs()
-{
-    return stopwatch.getElapsedSecs();
-}
-
-void AppBase::checkTimeLimits()
-{
-    if (!stopwatch.hasTimeLimits())
-        return;
-    if (isExpressMode() && (getSimulation()->getEventNumber() & 1023) != 0)  // optimize: in Express mode, don't read the clock on every event
-        return;
-    stopwatch.checkTimeLimits();
-}
 
 void AppBase::stoppedWithTerminationException(cTerminationException& e)
 {

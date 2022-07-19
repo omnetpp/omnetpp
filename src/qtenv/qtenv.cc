@@ -955,6 +955,18 @@ inline bool elapsed(long millis, int64_t& since, bool restart)
     return ret;
 }
 
+void Qtenv::prepareForRun()
+{
+    resetClock();
+    cSimulation *simulation = getSimulation();
+    if (opt->simtimeLimit >= SIMTIME_ZERO)
+        simulation->setSimulationTimeLimit(opt->simtimeLimit);
+    stopwatch.setCPUTimeLimit(opt->cpuTimeLimit);
+    stopwatch.setRealTimeLimit(opt->realTimeLimit);
+    simulation->callInitialize();
+    cLogProxy::flushLastLine();
+}
+
 bool Qtenv::doRunSimulation()
 {
     //
@@ -1609,6 +1621,36 @@ void Qtenv::addEventToLog(cEvent *event)
 
     // insert into log buffer
     logBuffer.addEvent(getSimulation()->getEventNumber(), getSimulation()->getSimTime(), module, banner);
+}
+
+void Qtenv::resetClock()
+{
+    stopwatch.resetClock();
+}
+
+void Qtenv::startClock()
+{
+    stopwatch.startClock();
+}
+
+void Qtenv::stopClock()
+{
+    stopwatch.stopClock();
+    simulatedTime = getSimulation()->getSimTime();
+}
+
+double Qtenv::getElapsedSecs()
+{
+    return stopwatch.getElapsedSecs();
+}
+
+void Qtenv::checkTimeLimits()
+{
+    if (!stopwatch.hasTimeLimits())
+        return;
+    if (isExpressMode() && (getSimulation()->getEventNumber() & 1023) != 0)  // optimize: in Express mode, don't read the clock on every event
+        return;
+    stopwatch.checkTimeLimits();
 }
 
 void Qtenv::displayException(std::exception& ex)

@@ -408,6 +408,18 @@ inline bool elapsed(long millis, int64_t& since)
     return ret;
 }
 
+void Cmdenv::prepareForRun()
+{
+    resetClock();
+    cSimulation *simulation = getSimulation();
+    if (opt->simtimeLimit >= SIMTIME_ZERO)
+        simulation->setSimulationTimeLimit(opt->simtimeLimit);
+    stopwatch.setCPUTimeLimit(opt->cpuTimeLimit);
+    stopwatch.setRealTimeLimit(opt->realTimeLimit);
+    simulation->callInitialize();
+    cLogProxy::flushLastLine();
+}
+
 void Cmdenv::simulate()
 {
     // implement graceful exit when Ctrl-C is hit during simulation. We want
@@ -592,6 +604,36 @@ const char *Cmdenv::progressPercentage()
         snprintf(buf, 32, "  %d%% completed  (%d%% total)", (int)(100*ratio), (int)(100*totalRatio));
         return buf;
     }
+}
+
+void Cmdenv::resetClock()
+{
+    stopwatch.resetClock();
+}
+
+void Cmdenv::startClock()
+{
+    stopwatch.startClock();
+}
+
+void Cmdenv::stopClock()
+{
+    stopwatch.stopClock();
+    simulatedTime = getSimulation()->getSimTime();
+}
+
+double Cmdenv::getElapsedSecs()
+{
+    return stopwatch.getElapsedSecs();
+}
+
+void Cmdenv::checkTimeLimits()
+{
+    if (!stopwatch.hasTimeLimits())
+        return;
+    if (isExpressMode() && (getSimulation()->getEventNumber() & 1023) != 0)  // optimize: in Express mode, don't read the clock on every event
+        return;
+    stopwatch.checkTimeLimits();
 }
 
 void Cmdenv::displayException(std::exception& ex)
