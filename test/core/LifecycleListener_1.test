@@ -6,19 +6,19 @@ Basic test for lifecycle listeners.
 
 %global:
 
-namespace {
-class LocalLifecycleListener : public cISimulationLifecycleListener {
+// Use a scheduler, as cScheduler is already also a cISimulationLifecycleListener
+
+class NoisyScheduler : public cSequentialScheduler {
     virtual void lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details) override {
-      std::cout << "Received lifecycle event " << getSimulationLifecycleEventName(eventType) << std::endl;
+        std::cout << "Received lifecycle event " << getSimulationLifecycleEventName(eventType) << std::endl;
+        cSequentialScheduler::lifecycleEvent(eventType, details);
     }
-} listener;
-}
+};
 
-EXECUTE_ON_STARTUP(
-    if (testlib::isRunningTest("@TESTNAME@"))
-        cSimulation::getActiveSimulation()->addLifecycleListener(&listener)
-);
+Register_Class(NoisyScheduler);
 
+%inifile: scheduler.ini
+scheduler-class = @TESTNAME@::NoisyScheduler
 
 %subst: /Assigned runID=.*/Assigned runID=xxx/
 %activity:
