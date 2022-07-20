@@ -27,6 +27,7 @@
 #include "omnetpp/cchannel.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/simtime_t.h"
+#include "stlutil.h"
 #include "qtutil.h"
 
 namespace omnetpp {
@@ -49,11 +50,11 @@ class QTENV_API MessageAnimator
 {
     // This stores the animation speed requests of all running,
     // non-empty, non-holding animations.
-    std::map<const Animation*, double> animSpeedMap;
+    std::unordered_map<const Animation*, double> animSpeedMap;
 
     // The Animations that are currently requesting a hold.
     // If empty, no hold is in effect.
-    std::set<const Animation*> holdRequests;
+    std::unordered_set<const Animation*> holdRequests;
 
     // The set of inspectors that the animator shows graphics within
     std::vector<ModuleInspector *> inspectors;
@@ -127,15 +128,18 @@ class QTENV_API MessageAnimator
         int arrivalModuleId = 0;
         int arrivalGateId = 0;
 
+        using tuple_t = std::tuple<msgid_t, txid_t, int, int, int, int>;
+
         static MessageSendKey fromMessage(cMessage *msg);
 
         // to make implementing operator < easier
-        std::tuple<msgid_t, txid_t, int, int, int, int> asTuple() const {
+        inline tuple_t asTuple() const {
             return { messageId, transmissionId, senderModuleId, senderGateId, arrivalModuleId, arrivalGateId };
         }
 
         // just so we can use it as a key for an std::map
-        bool operator < (const MessageSendKey& other) const { return asTuple() < other.asTuple(); }
+        inline bool operator < (const MessageSendKey& other) const { return asTuple() < other.asTuple(); }
+        inline bool operator == (const MessageSendKey& other) const { return asTuple() == other.asTuple(); }
 
         std::string str() const;
     };
@@ -149,13 +153,25 @@ class QTENV_API MessageAnimator
     // The delivery animation(s), these take precedence over the rest.
     AnimationSequence *deliveries = nullptr;
 
+    // A hash functor used to hash a pair of any kind
+    // Only needed because std::hash has no implementation for std::pair.
+    struct PairHasher {
+        template <class T1, class T2>
+        inline size_t operator()(const std::pair<T1, T2>& p) const
+        {
+            size_t result = std::hash<T1>{}(p.first);
+            hash_combine(result, std::hash<T2>{}(p.second));
+            return result;
+        }
+    };
+
     // the static items waiting for delivery on the border or center of the arrival module
-    std::map<std::pair<ModuleInspector *, cMessage *>, MessageItem *> messageItems;
+    std::unordered_map<std::pair<ModuleInspector *, cMessage *>, MessageItem *, PairHasher> messageItems;
 
     // the red rectangles around the submodule that is expected to execute the next event.
     // The idea is that we (almost) always have exactly one rectangle on the animation
     // layer of all open moduleinspectors, just hide it if it's not needed.
-    std::map<ModuleInspector *, QGraphicsRectItem *> nextEventMarkers;
+    std::unordered_map<ModuleInspector *, QGraphicsRectItem *> nextEventMarkers;
 
     void clearMessages();
 
