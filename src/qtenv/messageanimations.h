@@ -263,7 +263,7 @@ class QTENV_API MethodcallAnimation : public Animation
     // inspectors of the corresponding (containing) module.
     PathVec path;
     // The graphical represenations of each "hop" in the path from srcMod to destMod.
-    std::vector<std::map<ModuleInspector *, ConnectionItem *>> connectionItems;
+    std::vector<std::unordered_map<ModuleInspector *, ConnectionItem *>> connectionItems;
 
     // The animation the body of which this one is.
     // Needed so we can walk up the tree in methodcallEnd.
@@ -310,7 +310,7 @@ protected:
     cMessage *msgDup = nullptr;
 
     // The graphical representations of the animated message.
-    std::map<ModuleInspector *, MessageItem *> messageItems;
+    std::unordered_map<ModuleInspector *, MessageItem *> messageItems;
 
     explicit MessageAnimation(cMessage *msg, double holdDuration): Animation(holdDuration), msg(msg) { }
     explicit MessageAnimation(cMessage *msg): Animation(), msg(msg) { }
@@ -382,7 +382,7 @@ class QTENV_API SendDirectAnimation : public MessageAnimation
     cGate *dest;
     SimTime start, prop, trans;
 
-    std::map<ModuleInspector *, ConnectionItem *> connectionItems;
+    std::unordered_map<ModuleInspector *, ConnectionItem *> connectionItems;
 
 public:
     // The holding variant with 0 delays.
