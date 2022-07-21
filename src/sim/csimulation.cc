@@ -378,7 +378,19 @@ void cSimulation::setRngManager(cIRngManager *mgr)
 
 void cSimulation::setSimulationTimeLimit(simtime_t simTimeLimit)
 {
-    getFES()->insert(new cEndSimulationEvent("endsimulation", simTimeLimit));
+    if (getSimTime() > simTimeLimit)
+        throw cRuntimeError(this, "setSimulationTimeLimit(): requested time limit has already passed");
+    if (endSimulationEvent) {
+        getFES()->remove(endSimulationEvent);
+        delete endSimulationEvent;
+    }
+    endSimulationEvent = new cEndSimulationEvent("endsimulation", simTimeLimit);
+    getFES()->insert(endSimulationEvent);
+}
+
+simtime_t cSimulation::getSimulationTimeLimit() const
+{
+    return endSimulationEvent != nullptr ? endSimulationEvent->getArrivalTime() : SIMTIME_ZERO;
 }
 
 int cSimulation::loadNedSourceFolder(const char *folder, const char *excludedPackages)

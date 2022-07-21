@@ -89,6 +89,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     cFutureEventSet *fes = nullptr;     // stores future events
     cScheduler *scheduler = nullptr;    // event scheduler
     simtime_t warmupPeriod;             // warm-up period
+    cEvent *endSimulationEvent = nullptr; // only present if simulation time limit is set
 
     ContextType simulationStage;        // simulation stage
     simtime_t currentSimtime;           // simulation time (time of current event)
@@ -382,8 +383,15 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     /**
      * Sets the simulation stop time be scheduling an appropriate
      * "end-simulation" event. May only be called once per run.
+     * The limit only takes effect for the current simulation run, and is
+     * cleared when the run terminates.
      */
     virtual void setSimulationTimeLimit(simtime_t simTimeLimit);
+
+    /**
+     * Returns the simulation stop time if one has been set, and zero otherwise.
+     */
+    virtual simtime_t getSimulationTimeLimit() const;
 
     /**
      * Builds a new network.
