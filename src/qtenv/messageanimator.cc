@@ -631,23 +631,50 @@ double MessageAnimator::getAnimationHoldEndTime() const
 
 void MessageAnimator::setAnimationSpeed(double speed, const Animation *source)
 {
-    if (speed <= 0.0)
-        animSpeedMap.erase(source);
-    else
-        animSpeedMap[source] = speed;
+    auto existingRequest = animSpeedMap.find(source); // may be end() if not found
+
+    if (speed <= 0.0) {
+        // Cancelling an animation speed request.
+        // If an animation speed request was cancelled, and it was the current minimum, the cached
+        // value should be cleared, in case there are no other requests left with the same speed.
+        if (existingRequest != animSpeedMap.end() && existingRequest->second == minAnimSpeed)
+            minAnimSpeed = -1;
+        animSpeedMap.erase(source); // doing this last to not invalidate `existingRequest`
+    }
+    else {
+        // Adding a new animation speed request or updating an existing one.
+        if (minAnimSpeed >= 0) {
+            // If we have a cached minimum speed value..
+            if (speed < minAnimSpeed)
+                // ... and the newly inserted one is smaller, we can simply update the cached value.
+                minAnimSpeed = speed;
+            else
+                // ... otherwise, if an existing request is updated, which also happened to be the
+                // minimum until now, the minimum might be higher now so we have to clear the cached value.
+                if (existingRequest != animSpeedMap.end() && existingRequest->second == minAnimSpeed)
+                    minAnimSpeed = -1;
+        }
+        animSpeedMap[source] = speed; // doing this last to not invalidate `existingRequest`
+    }
 }
 
 double MessageAnimator::getAnimationSpeed()
 {
+    if (minAnimSpeed >= 0)
+        return minAnimSpeed;
+
+    if (animSpeedMap.empty())
+        return 0;
+
     double speed = DBL_MAX;
 
     for (auto p : animSpeedMap)
         speed = std::min(speed, p.second);
 
-    if (speed == DBL_MAX)
-        speed = 0;
+    ASSERT(speed != DBL_MAX);
 
-    return speed;
+    minAnimSpeed = speed;
+    return minAnimSpeed;
 }
 
 void MessageAnimator::clear()
@@ -666,6 +693,7 @@ void MessageAnimator::clear()
     nextEventMarkers.clear();
 
     animSpeedMap.clear();
+    minAnimSpeed = -1;
     holdRequests.clear();
 
     currentMethodCall = nullptr;
