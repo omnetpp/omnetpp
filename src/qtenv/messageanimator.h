@@ -51,6 +51,8 @@ class QTENV_API MessageAnimator
     // This stores the animation speed requests of all running,
     // non-empty, non-holding animations.
     std::unordered_map<const Animation*, double> animSpeedMap;
+    // Cached the minimum of the values in the map above, -1 if needs to be recomputed.
+    double minAnimSpeed = -1;
 
     // The Animations that are currently requesting a hold.
     // If empty, no hold is in effect.
