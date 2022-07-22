@@ -257,7 +257,7 @@ bool Cmdenv::runSimulation(const char *configName, int runNumber)
 {
     EnvirBase *envir = new EnvirBase(this);
     cSimulation *simulation = new cSimulation("simulation", envir);  //TODO: finally: delete simulation
-    simulation->setNedLoader(nedLoader, false);
+    simulation->setNedLoader(nedLoader);
     cSimulation::setActiveSimulation(simulation);
 
     cConfiguration *globalCfg = ini->activateGlobalConfig();

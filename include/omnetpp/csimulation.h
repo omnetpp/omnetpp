@@ -77,8 +77,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     int lastComponentId = 0;            // index of last used pos. in componentv[]
 
     // simulation vars
-    cINedLoader *nedLoader = nullptr;   // NED loader/resolver
-    bool nedLoaderOwned = false;
+    cINedLoader *nedLoader = nullptr;   // NED loader/resolver - NOT OWNED
     cIRngManager *rngManager = nullptr; // component-rng mapping
     cEnvir *envir = nullptr;            // the environment that belongs to this simulation object
     cModule *systemModule = nullptr;    // pointer to system (root) module
@@ -328,9 +327,12 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     virtual void configure(cConfiguration *cfg);
 
     /**
-     * Sets the NED loader associated with this simulation.
+     * Sets the NED loader associated with this simulation. In order to allow
+     * several simulation instances to share the same NED loader, the simulation
+     * does NOT become the owner of the NED loader, i.e. the caller needs to
+     * arrange it to be deleted when it is no longer used by any simulation.
      */
-    virtual void setNedLoader(cINedLoader *loader, bool owned);
+    virtual void setNedLoader(cINedLoader *loader);
 
     /**
      * Installs a scheduler object. This method may only be called before or

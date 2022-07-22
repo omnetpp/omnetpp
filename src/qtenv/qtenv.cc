@@ -619,7 +619,7 @@ void Qtenv::doRun()
     //
     EnvirBase *envir = new EnvirBase(this);
     cSimulation *simulation = new cSimulation("simulation", envir);  //TODO: finally: delete simulation
-    simulation->setNedLoader(nedLoader, false);
+    simulation->setNedLoader(nedLoader);
     cSimulation::setActiveSimulation(simulation);
 
     activeCfg = ini->activateGlobalConfig();

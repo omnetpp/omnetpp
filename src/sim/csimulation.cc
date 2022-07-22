@@ -143,9 +143,6 @@ cSimulation::~cSimulation()
     delete scheduler;
     dropAndDelete(fes);
 
-    if (nedLoaderOwned)
-        delete nedLoader;
-
 #ifdef WITH_PARSIM
     delete parsimPartition;
 #endif
@@ -320,12 +317,9 @@ void cSimulation::snapshot(cObject *object, const char *label)
         throw cRuntimeError("Could not write snapshot");
 }
 
-void cSimulation::setNedLoader(cINedLoader *loader, bool owned)
+void cSimulation::setNedLoader(cINedLoader *loader)
 {
-    if (nedLoaderOwned)
-        delete nedLoader;
     nedLoader = loader;
-    nedLoaderOwned = owned;
 }
 
 void cSimulation::setScheduler(cScheduler *sch)
