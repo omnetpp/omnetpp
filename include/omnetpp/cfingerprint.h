@@ -22,6 +22,7 @@
 #include "cmessage.h"
 #include "chasher.h"
 #include "cmatchexpression.h"
+#include "cownedobject.h"
 
 namespace omnetpp {
 
@@ -31,7 +32,7 @@ namespace omnetpp {
  * @see cSimulation::getFingerprintCalculator()
  * @ingroup Misc
  */
-class SIM_API cFingerprintCalculator : public cObject, noncopyable
+class SIM_API cFingerprintCalculator : public cNoncopyableOwnedObject
 {
   public:
     /** @name Constructor, destructor. */

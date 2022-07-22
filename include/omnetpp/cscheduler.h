@@ -16,7 +16,7 @@
 #ifndef __OMNETPP_CSCHEDULER_H
 #define __OMNETPP_CSCHEDULER_H
 
-#include "cobject.h"
+#include "cownedobject.h"
 #include "simtime_t.h"
 #include "clifecyclelistener.h"
 
@@ -44,7 +44,7 @@ class cSimulation;
  *
  * @ingroup SimCore
  */
-class SIM_API cScheduler : public cObject, public cISimulationLifecycleListener
+class SIM_API cScheduler : public cNoncopyableOwnedObject, public cISimulationLifecycleListener
 {
   protected:
     cSimulation *sim = nullptr;

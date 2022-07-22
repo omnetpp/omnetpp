@@ -138,9 +138,9 @@ cSimulation::~cSimulation()
     for (auto& listener : copy)
         listener->listenerRemoved();
 
-    delete fingerprint;
+    dropAndDelete(fingerprint);
     dropAndDelete(rngManager);
-    delete scheduler;
+    dropAndDelete(scheduler);
     dropAndDelete(fes);
 
 #ifdef WITH_PARSIM
@@ -330,9 +330,10 @@ void cSimulation::setScheduler(cScheduler *sch)
         throw cRuntimeError(this, "setScheduler(): New scheduler cannot be nullptr");
 
     if (scheduler)
-        delete scheduler;
+        dropAndDelete(scheduler);
 
     scheduler = sch;
+    take(scheduler);
 }
 
 void cSimulation::setFES(cFutureEventSet *f)
@@ -344,10 +345,8 @@ void cSimulation::setFES(cFutureEventSet *f)
     if (!f)
         throw cRuntimeError(this, "setFES(): New FES cannot be nullptr");
 
-    if (fes) {
-        drop(fes);
-        delete fes;
-    }
+    if (fes)
+        dropAndDelete(fes);
 
     fes = f;
     fes->setName("scheduled-events");
@@ -361,10 +360,8 @@ void cSimulation::setRngManager(cIRngManager *mgr)
     if (!mgr)
         throw cRuntimeError(this, "setRngManager(): New RNG manager cannot be nullptr");
 
-    if (rngManager) {
-        drop(rngManager);
-        delete rngManager;
-    }
+    if (rngManager)
+        dropAndDelete(rngManager);
 
     rngManager = mgr;
     take(rngManager);
@@ -474,6 +471,7 @@ void cSimulation::setSystemModule(cModule *module)
     systemModule = module;
     take(module);
 }
+
 cModule *cSimulation::getModuleByPath(const char *path) const
 {
     cModule *module = findModuleByPath(path);
@@ -864,8 +862,10 @@ int cSimulation::getParsimNumPartitions() const
 void cSimulation::setFingerprintCalculator(cFingerprintCalculator *f)
 {
     if (fingerprint)
-        delete fingerprint;
+        dropAndDelete(fingerprint);
     fingerprint = f;
+    if (fingerprint)
+        take(fingerprint);
 }
 
 void cSimulation::insertEvent(cEvent *event)
