@@ -84,7 +84,6 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     cSimpleModule *currentActivityModule = nullptr; // the module currently executing activity() (nullptr if handleMessage() or in main)
     cComponent *contextComponent = nullptr;  // component in context (or nullptr)
     ContextType contextType;            // the innermost context type
-    cModuleType *networkType = nullptr; // network type
     cFutureEventSet *fes = nullptr;     // stores future events
     cScheduler *scheduler = nullptr;    // event scheduler
     simtime_t warmupPeriod;             // warm-up period
@@ -434,7 +433,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * Returns the cModuleType object that was instantiated to set up
      * the current simulation model.
      */
-    cModuleType *getNetworkType() const  {return networkType;}  // note: intentionally non-virtual
+    cModuleType *getNetworkType() const;  // note: intentionally non-virtual
 
     /**
      * INTERNAL USE ONLY. This method should NEVER be invoked from

@@ -298,6 +298,8 @@ void cSimulation::snapshot(cObject *object, const char *label)
 
     ostream& os = *osptr;
 
+    cModuleType *networkType = getNetworkType();
+
     os << "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n";
     os << "<snapshot\n";
     os << "    object=\"" << opp_xmlquote(object->getFullPath()) << "\"\n";
@@ -490,7 +492,7 @@ cModule *cSimulation::findModuleByPath(const char *path) const
     return root->findModuleByPath(path);
 }
 
-void cSimulation::setupNetwork(cModuleType *network)
+void cSimulation::setupNetwork(cModuleType *networkType)
 {
 #ifdef DEVELOPER_DEBUG
     printf("DEBUG: before setupNetwork: %d objects\n", cOwnedObject::getLiveObjectCount());
@@ -498,13 +500,10 @@ void cSimulation::setupNetwork(cModuleType *network)
 #endif
 
     checkActive();
-    if (!network)
+    if (!networkType)
         throw cRuntimeError("setupNetwork(): nullptr received");
-    if (!network->isNetwork())
-        throw cRuntimeError("Cannot set up network: '%s' is not a network type", network->getFullName());
-
-    // set cNetworkType pointer
-    networkType = network;
+    if (!networkType->isNetwork())
+        throw cRuntimeError("Cannot set up network: '%s' is not a network type", networkType->getFullName());
 
     // just to be sure
     fes->clear();
@@ -615,8 +614,6 @@ void cSimulation::deleteNetwork()
     size = 0;
     lastComponentId = 0;
 
-    networkType = nullptr;
-
     for (cComponentType *p : nedLoader->getComponentTypes())
         p->clearSharedParImpls();
     cModule::clearNamePools();
@@ -632,6 +629,11 @@ void cSimulation::deleteNetwork()
     printf("DEBUG: after deleteNetwork: %d objects\n", cOwnedObject::getLiveObjectCount());
     printAllObjects();
 #endif
+}
+
+cModuleType *cSimulation::getNetworkType() const
+{
+    return systemModule ? systemModule->getModuleType() : nullptr;
 }
 
 cEvent *cSimulation::takeNextEvent()
