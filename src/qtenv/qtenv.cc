@@ -61,6 +61,7 @@
 #include "omnetpp/ccontextswitcher.h"
 #include "qtenvdefs.h"
 #include "qtenv.h"
+#include "qtenvir.h"
 #include "inspector.h"
 #include "inspectorfactory.h"
 #include "inspectorutil.h"
@@ -86,6 +87,14 @@
 using namespace omnetpp::common;
 using namespace omnetpp::envir;
 using namespace omnetpp::internal;
+
+//TODO use this code:
+//va_list va2;
+//va_copy(va2, va);  // see bug #107
+//AppBase::componentMethodBegin(fromComp, toComp, methodFmt, va2, silent);
+//va_end(va2);
+
+
 
 
 // The icons and icons_dark resources contain the exact same resource aliases, with slightly different content.
@@ -617,7 +626,9 @@ void Qtenv::doRun()
     //
     // SETUP
     //
-    EnvirBase *envir = new EnvirBase(this);
+    QtEnvir *envir = new QtEnvir(this);
+    envir->setIsGUI(true);
+
     cSimulation *simulation = new cSimulation("simulation", envir);  //TODO: finally: delete simulation
     simulation->setNedLoader(nedLoader);
     cSimulation::setActiveSimulation(simulation);
@@ -929,6 +940,7 @@ void Qtenv::setSimulationRunMode(RunMode mode)
     }
 
     runMode = mode;
+    getEnvir()->setExpressMode(runMode == RUNMODE_EXPRESS);
 }
 
 void Qtenv::setSimulationRunUntil(simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg, bool stopOnMsgCancel)
@@ -1667,8 +1679,6 @@ void Qtenv::displayException(std::exception& ex)
 
 void Qtenv::componentInitBegin(cComponent *component, int stage)
 {
-    AppBase::componentInitBegin(component, stage);
-
     auto logLevel = getPref(QString("ComponentLogLevels/") + component->getFullPath().c_str());
     if (logLevel.isValid() && logLevel.canConvert(QVariant::Int))
         setComponentLogLevel(component, (LogLevel)logLevel.toInt());
@@ -1728,6 +1738,7 @@ void Qtenv::readOptions(cConfiguration *cfg)
     AppBase::readOptions(cfg);
 
     opt->extraStack = (size_t)cfg->getAsDouble(CFGID_QTENV_EXTRA_STACK);
+    getEnvir()->setExtraStackForEnvir(opt->extraStack);
 
     const char *s = args->optionValue('c');
     opt->defaultConfig = s ? s : cfg->getAsString(CFGID_QTENV_DEFAULT_CONFIG);
@@ -1990,8 +2001,6 @@ void Qtenv::objectDeleted(cObject *object)
 
 void Qtenv::simulationEvent(cEvent *event)
 {
-    AppBase::simulationEvent(event);
-
     if (isLoggingEnabled())
         addEventToLog(event);  // must be done here, because eventnum and simtime are updated inside executeEvent()
 
@@ -2026,7 +2035,6 @@ void Qtenv::simulationEvent(cEvent *event)
 
 void Qtenv::messageScheduled(cMessage *msg)
 {
-    AppBase::messageScheduled(msg);
 }
 
 void Qtenv::messageCancelled(cMessage *msg)
@@ -2037,13 +2045,10 @@ void Qtenv::messageCancelled(cMessage *msg)
         runUntil.msg = nullptr;
         runUntil.eventNumber = getSimulation()->getEventNumber();  // stop the simulation using the event number limit
     }
-    AppBase::messageCancelled(msg);
 }
 
 void Qtenv::beginSend(cMessage *msg, const SendOptions& options)
 {
-    AppBase::beginSend(msg, options);
-
     if (isLoggingEnabled())
         logBuffer.beginSend(msg, options);
 
@@ -2053,8 +2058,6 @@ void Qtenv::beginSend(cMessage *msg, const SendOptions& options)
 
 void Qtenv::messageSendDirect(cMessage *msg, cGate *toGate, const ChannelResult& result)
 {
-    AppBase::messageSendDirect(msg, toGate, result);
-
     if (isLoggingEnabled())
         logBuffer.messageSendDirect(msg, toGate, result);
 
@@ -2064,8 +2067,6 @@ void Qtenv::messageSendDirect(cMessage *msg, cGate *toGate, const ChannelResult&
 
 void Qtenv::messageSendHop(cMessage *msg, cGate *srcGate)
 {
-    AppBase::messageSendHop(msg, srcGate);
-
     if (isLoggingEnabled())
         logBuffer.messageSendHop(msg, srcGate);
 
@@ -2077,8 +2078,6 @@ void Qtenv::messageSendHop(cMessage *msg, cGate *srcGate)
 
 void Qtenv::messageSendHop(cMessage *msg, cGate *srcGate, const cChannel::Result& result)
 {
-    AppBase::messageSendHop(msg, srcGate, result);
-
     if (isLoggingEnabled())
         logBuffer.messageSendHop(msg, srcGate, result);
 
@@ -2090,8 +2089,6 @@ void Qtenv::messageSendHop(cMessage *msg, cGate *srcGate, const cChannel::Result
 
 void Qtenv::endSend(cMessage *msg)
 {
-    AppBase::endSend(msg);
-
     if (isLoggingEnabled())
         logBuffer.endSend(msg);
 
@@ -2101,19 +2098,12 @@ void Qtenv::endSend(cMessage *msg)
 
 void Qtenv::messageDeleted(cMessage *msg)
 {
-    AppBase::messageDeleted(msg);
-
     if (messageAnimator)
         messageAnimator->removeMessagePointer(msg);
 }
 
 void Qtenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const char *methodFmt, va_list va, bool silent)
 {
-    va_list va2;
-    va_copy(va2, va);  // see bug #107
-    AppBase::componentMethodBegin(fromComp, toComp, methodFmt, va2, silent);
-    va_end(va2);
-
     if (messageAnimator->getShowAnimations() && opt->animateMethodCalls && messageAnimator) {
         static char methodText[MAX_METHODCALL];
         vsnprintf(methodText, MAX_METHODCALL, opp_nulltoempty(methodFmt), va);
@@ -2125,16 +2115,12 @@ void Qtenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
 
 void Qtenv::componentMethodEnd()
 {
-    AppBase::componentMethodEnd();
-
     if (messageAnimator->getShowAnimations() && opt->animateMethodCalls && messageAnimator)
         messageAnimator->methodcallEnd();
 }
 
 void Qtenv::moduleCreated(cModule *newmodule)
 {
-    AppBase::moduleCreated(newmodule);
-
     cModule *mod = newmodule->getParentModule();
 
     for (auto & inspector : inspectors) {
@@ -2146,8 +2132,6 @@ void Qtenv::moduleCreated(cModule *newmodule)
 
 void Qtenv::moduleDeleted(cModule *module)
 {
-    AppBase::moduleDeleted(module);
-
     componentHistory.componentDeleted(module);
 
     moduleLayouter.clearLayout(module);
@@ -2164,8 +2148,6 @@ void Qtenv::moduleDeleted(cModule *module)
 
 void Qtenv::moduleReparented(cModule *module, cModule *oldParent, int oldId)
 {
-    AppBase::moduleReparented(module, oldParent, oldId);
-
     componentHistory.componentReparented(module, oldParent, oldId);
 
     // pretend it got deleted from under the 1st module, and got created under the 2nd
@@ -2185,8 +2167,6 @@ void Qtenv::moduleReparented(cModule *module, cModule *oldParent, int oldId)
 
 void Qtenv::connectionCreated(cGate *srcgate)
 {
-    AppBase::connectionCreated(srcgate);
-
     // notify compound module where the connection (whose source is this gate) is displayed
     cModule *notifymodule = nullptr;
     if (srcgate->getType() == cGate::OUTPUT)
@@ -2203,8 +2183,6 @@ void Qtenv::connectionCreated(cGate *srcgate)
 
 void Qtenv::connectionDeleted(cGate *srcgate)
 {
-    AppBase::connectionDeleted(srcgate);
-
     if (srcgate->getChannel())
         componentHistory.componentDeleted(srcgate->getChannel());
 
@@ -2225,8 +2203,6 @@ void Qtenv::connectionDeleted(cGate *srcgate)
 
 void Qtenv::displayStringChanged(cComponent *component)
 {
-    AppBase::displayStringChanged(component);
-
     if (cModule *module = dynamic_cast<cModule *>(component))
         moduleDisplayStringChanged(module);
     else if (cChannel *channel = dynamic_cast<cChannel *>(component))
@@ -2443,8 +2419,6 @@ void Qtenv::onObjectDoubleClicked(cObject *object)
 
 void Qtenv::bubble(cComponent *component, const char *text)
 {
-    AppBase::bubble(component, text);
-
     if (!opt->showBubbles)
         return;
 
@@ -2481,8 +2455,6 @@ void Qtenv::alert(const char *msg)
 
 void Qtenv::log(cLogEntry *entry)
 {
-    AppBase::log(entry);
-
     if (!isLoggingEnabled())
         return;
 
@@ -2577,11 +2549,6 @@ bool Qtenv::askYesNo(const char *question)
         case QMessageBox::No:  return false;
         default: throw cRuntimeError(E_CANCEL);
     }
-}
-
-unsigned Qtenv::getExtraStackForEnvir() const
-{
-    return opt->extraStack;
 }
 
 QPoint Qtenv::getDefaultStopDialogCorner(const QPoint& offset)

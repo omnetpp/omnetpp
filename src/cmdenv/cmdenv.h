@@ -66,36 +66,13 @@ class CMDENV_API Cmdenv : public AppBase
      bool logging = true;
      FILE *logStream;
 
-     FakeGUI *fakeGUI = nullptr;  //TODO how to share beween threads?????
-
    protected:
-     virtual void log(cLogEntry *entry) override;
      virtual void alert(const char *msg) override;
-     virtual bool askYesNo(const char *question) override;
 
    public:
      Cmdenv();
      virtual ~Cmdenv() {}
 
-     virtual void componentInitBegin(cComponent *component, int stage) override;
-
-     virtual bool isGUI() const override {return opt->fakeGUI;}
-     virtual bool isExpressMode() const override {return opt->expressMode;}
-     virtual std::string gets(const char *prompt, const char *defaultReply) override;
-     virtual bool idle() override;
-     virtual void pausePoint() override { /* currently no-op */ };
-     virtual unsigned getExtraStackForEnvir() const override;
-
-     virtual void getImageSize(const char *imageName, double& outWidth, double& outHeight) override;
-     virtual void getTextExtent(const cFigure::Font& font, const char *text, double& outWidth, double& outHeight, double& outAscent) override;
-     virtual void appendToImagePath(const char *directory) override;
-     virtual void loadImage(const char *fileName, const char *imageName=nullptr) override;
-     virtual cFigure::Rectangle getSubmoduleBounds(const cModule *submodule) override;
-     virtual std::vector<cFigure::Point> getConnectionLine(const cGate *sourceGate) override;
-     virtual double getZoomLevel(const cModule *module) override;
-     virtual double getAnimationTime() const override;
-     virtual double getAnimationSpeed() const override;
-     virtual double getRemainingAnimationHoldTime() const override;
 
    protected:
      virtual void displayException(std::exception& ex) override;
@@ -105,8 +82,6 @@ class CMDENV_API Cmdenv : public AppBase
      virtual CmdenvOptions *createOptions() override {return new CmdenvOptions();}
      virtual void readOptions(cConfiguration *cfg) override;
      virtual void readPerRunOptions(cConfiguration *cfg) override;
-     virtual void configureComponent(cComponent *component) override;
-     virtual void askParameter(cPar *par, bool unassigned) override;
 
      void help();
 

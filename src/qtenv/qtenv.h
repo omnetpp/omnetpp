@@ -226,62 +226,59 @@ class QTENV_API Qtenv : public QObject, public AppBase
       Qtenv();
       virtual ~Qtenv();
 
-      virtual void objectDeleted(cObject *object) override; // notify environment
-      virtual void componentInitBegin(cComponent *component, int stage) override;
-      virtual void simulationEvent(cEvent *event) override;
-      virtual void messageScheduled(cMessage *msg) override;
-      virtual void messageCancelled(cMessage *msg) override;
-      virtual void beginSend(cMessage *msg, const SendOptions& options) override;
-      virtual void messageSendDirect(cMessage *msg, cGate *toGate, const ChannelResult& result) override;
-      virtual void messageSendHop(cMessage *msg, cGate *srcGate) override;
-      virtual void messageSendHop(cMessage *msg, cGate *srcGate, const cChannel::Result& result) override;
-      virtual void endSend(cMessage *msg) override;
-      virtual void messageDeleted(cMessage *msg) override;
-      virtual void componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va, bool silent) override;
-      virtual void componentMethodEnd() override;
-      virtual void moduleCreated(cModule *newmodule) override;
-      virtual void moduleDeleted(cModule *module) override;
-      virtual void moduleReparented(cModule *module, cModule *oldParent, int oldId) override;
-      virtual void connectionCreated(cGate *srcgate) override;
-      virtual void connectionDeleted(cGate *srcgate) override;
-      virtual void displayStringChanged(cComponent *component) override;
+      virtual void objectDeleted(cObject *object); // notify environment
+      virtual void componentInitBegin(cComponent *component, int stage);
+      virtual void simulationEvent(cEvent *event);
+      virtual void messageScheduled(cMessage *msg);
+      virtual void messageCancelled(cMessage *msg);
+      virtual void beginSend(cMessage *msg, const SendOptions& options);
+      virtual void messageSendDirect(cMessage *msg, cGate *toGate, const ChannelResult& result);
+      virtual void messageSendHop(cMessage *msg, cGate *srcGate);
+      virtual void messageSendHop(cMessage *msg, cGate *srcGate, const cChannel::Result& result);
+      virtual void endSend(cMessage *msg);
+      virtual void messageDeleted(cMessage *msg);
+      virtual void componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va, bool silent);
+      virtual void componentMethodEnd();
+      virtual void moduleCreated(cModule *newmodule);
+      virtual void moduleDeleted(cModule *module);
+      virtual void moduleReparented(cModule *module, cModule *oldParent, int oldId);
+      virtual void connectionCreated(cGate *srcgate);
+      virtual void connectionDeleted(cGate *srcgate);
+      virtual void displayStringChanged(cComponent *component);
 
-      virtual bool isGUI() const override {return true;}
-      virtual bool isExpressMode() const override {return runMode == RUNMODE_EXPRESS;}
+      virtual bool isExpressMode() const {return runMode == RUNMODE_EXPRESS;}
 
-      virtual void getImageSize(const char *imageName, double& outWidth, double& outHeight) override;
-      virtual void getTextExtent(const cFigure::Font& font, const char *text, double& outWidth, double& outHeight, double& outAscent) override;
-      virtual void appendToImagePath(const char *directory) override;
-      virtual void loadImage(const char *fileName, const char *imageName=nullptr) override;
-      virtual cFigure::Rectangle getSubmoduleBounds(const cModule *submodule) override;
-      virtual std::vector<cFigure::Point> getConnectionLine(const cGate *sourceGate) override;
-      virtual double getZoomLevel(const cModule *module) override;
+      virtual void getImageSize(const char *imageName, double& outWidth, double& outHeight);
+      virtual void getTextExtent(const cFigure::Font& font, const char *text, double& outWidth, double& outHeight, double& outAscent);
+      virtual void appendToImagePath(const char *directory);
+      virtual void loadImage(const char *fileName, const char *imageName=nullptr);
+      virtual cFigure::Rectangle getSubmoduleBounds(const cModule *submodule);
+      virtual std::vector<cFigure::Point> getConnectionLine(const cGate *sourceGate);
+      virtual double getZoomLevel(const cModule *module);
 
       // smooth animation API
-      virtual double getAnimationTime() const override;
-      virtual double getAnimationSpeed() const override;
-      virtual double getRemainingAnimationHoldTime() const override;
+      virtual double getAnimationTime() const;
+      virtual double getAnimationSpeed() const;
+      virtual double getRemainingAnimationHoldTime() const;
 
-      virtual void bubble(cComponent *component, const char *text) override;
+      virtual void bubble(cComponent *component, const char *text);
 
-      virtual void log(cLogEntry *entry) override;
-      virtual void alert(const char *msg) override;
-      virtual std::string gets(const char *prompt, const char *defaultReply = nullptr) override;
-      virtual bool askYesNo(const char *question) override;
+      virtual void log(cLogEntry *entry);
+      virtual void alert(const char *msg);
+      virtual std::string gets(const char *prompt, const char *defaultReply = nullptr);
+      virtual bool askYesNo(const char *question);
+      virtual void askParameter(cPar *par, bool unassigned);
 
-      virtual void refOsgNode(osg::Node *scene) override;
-      virtual void unrefOsgNode(osg::Node *scene) override;
-      virtual bool idle() override;
+      virtual void refOsgNode(osg::Node *scene);
+      virtual void unrefOsgNode(osg::Node *scene);
+      virtual bool idle();
 
-      virtual void pausePoint() override;
+      virtual void pausePoint();
       virtual void requestQuitFromPausePointEventLoop(RunMode continueIn); // internal
       virtual bool isPaused() { return pauseEventLoop->isRunning(); }
       virtual int getPausePointNumber() { return pausePointNumber; }
 
-      virtual bool ensureDebugger(cRuntimeError *error = nullptr) override;
-
-      // with Qtenv, activity() modules need extra stack
-      virtual unsigned getExtraStackForEnvir() const override;
+      virtual bool ensureDebugger(cRuntimeError *error = nullptr);
 
       MainWindow *getMainWindow() { return mainWindow; }
       MessageAnimator *getMessageAnimator() { return messageAnimator; }
@@ -338,7 +335,6 @@ class QTENV_API Qtenv : public QObject, public AppBase
 
       virtual void setupNetwork(cModuleType *network) override;
 
-      virtual void askParameter(cPar *par, bool unassigned) override;
       virtual void displayException(std::exception& e) override;
       virtual std::string getWindowTitle();
 
@@ -486,8 +482,7 @@ class QTENV_API Qtenv : public QObject, public AppBase
  */
 inline Qtenv *getQtenv()
 {
-    //return dynamic_cast<Qtenv *>(cSimulation::getActiveEnvir());
-    return (Qtenv*)((EnvirBase*)cSimulation::getActiveEnvir())->getApp();
+    return dynamic_cast<Qtenv *>(AppBase::getActiveApp());
 }
 
 }  // namespace qtenv

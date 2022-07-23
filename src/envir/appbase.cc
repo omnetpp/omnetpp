@@ -1,5 +1,5 @@
 //==========================================================================
-//  RUNNABLEENVIR.CC - part of
+//  APPBASE.CC - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -139,16 +139,18 @@ static const char *buildOptions = ""
     #endif
     ;
 
-IAllInOne::~IAllInOne()  //TODO move to separate file
-{
-}
+AppBase *AppBase::activeApp = nullptr;
+
 
 AppBase::AppBase() : out(std::cout) //TODO
 {
+    ASSERT(activeApp == nullptr);
+    activeApp = this;
 }
 
 AppBase::~AppBase()
 {
+    activeApp = nullptr;
     delete opt;
     delete debuggerSupport;
     delete nedLoader;
@@ -735,8 +737,7 @@ bool AppBase::ensureDebugger(cRuntimeError *error)
 
 void AppBase::crashHandler(int)
 {
-    EnvirBase *envir = dynamic_cast<EnvirBase*>(cSimulation::getActiveEnvir());
-    AppBase *app = envir ? dynamic_cast<AppBase*>(envir->getApp()) : nullptr;
+    AppBase *app = AppBase::getActiveApp();
     if (!app)
         return; // not running an AppBase
 

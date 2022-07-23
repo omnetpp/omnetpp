@@ -55,6 +55,7 @@
 #include "omnetpp/cdisplaystring.h"
 #include "cmddefs.h"
 #include "cmdenv.h"
+#include "cmdenvir.h"
 #include "runner.h"
 
 using namespace omnetpp::common;
@@ -130,14 +131,10 @@ void Cmdenv::readPerRunOptions(cConfiguration *cfg)
     getEnvir()->setLogFormat(cfg->getAsString(CFGID_CMDENV_LOG_PREFIX).c_str());
     opt->outputFile = cfg->getAsFilename(CFGID_CMDENV_OUTPUT_FILE).c_str();
     opt->redirectOutput = cfg->getAsBool(CFGID_CMDENV_REDIRECT_OUTPUT);
+
     opt->fakeGUI = cfg->getAsBool(CFGID_CMDENV_FAKE_GUI);
-    delete fakeGUI;
-    fakeGUI = nullptr;
-    if (opt->fakeGUI) {
+    if (opt->fakeGUI)
         out << "\n*** WARNING: FAKEGUI IS AN EXPERIMENTAL FEATURE -- DO NOT RELY ON FINGERPRINTS GENERATED UNDER FAKEGUI UNTIL CODE IS FINALIZED!\n" << endl;
-        fakeGUI = new FakeGUI();
-        fakeGUI->configure(getSimulation(), cfg);
-    }
 }
 
 void Cmdenv::doRun()
@@ -255,10 +252,12 @@ void Cmdenv::runSimulations(const char *configName, const std::vector<int>& runN
 
 bool Cmdenv::runSimulation(const char *configName, int runNumber)
 {
-    EnvirBase *envir = new EnvirBase(this);
+    CmdEnvir *envir = new CmdEnvir(this, sigintReceived);
     cSimulation *simulation = new cSimulation("simulation", envir);  //TODO: finally: delete simulation
     simulation->setNedLoader(nedLoader);
     cSimulation::setActiveSimulation(simulation);
+
+    envir->setExtraStackForEnvir(opt->extraStack);
 
     cConfiguration *globalCfg = ini->extractGlobalConfig();
     envir->initialize(simulation, globalCfg, args);
@@ -276,6 +275,24 @@ bool Cmdenv::runSimulation(const char *configName, int runNumber)
 
         cfg = ini->extractConfig(configName, runNumber);
         readPerRunOptions(cfg); //TODO opts are global!!!
+
+        FakeGUI *fakeGUI = opt->fakeGUI ? new FakeGUI() : nullptr;
+        envir->setFakeGUI(fakeGUI);
+
+        envir->setIsGUI(fakeGUI != nullptr);
+        envir->setExpressMode(opt->expressMode);
+        envir->setAutoflush(opt->autoflush);
+        envir->setInteractive(opt->interactive);
+        envir->setPrintEventBanners(opt->printEventBanners);
+
+//TODO:
+//        envir->setLoggingEnabled(TODO);
+//        envir->setAttachDebuggerOnErrors(TODO);
+//        envir->setLogLevel(LogLevel logLevel);
+//        envir->setLogFormat(const char *logFormat);
+//        envir->setCheckSignals(TODO)
+//        envir->setImagePath(const char *imagePath);
+//        envir->setVerbose(bool verbose);
 
         const char *iterVars = cfg->getVariable(CFGVAR_ITERATIONVARS);
         const char *runId = cfg->getVariable(CFGVAR_RUNID);
@@ -395,6 +412,7 @@ void Cmdenv::simulate()
     try {
         cSimulation *simulation = cSimulation::getActiveSimulation();
 
+        FakeGUI *fakeGUI = nullptr; //TODO
         Runner runner(simulation, fakeGUI, out, sigintReceived);
         if (opt->simtimeLimit >= SIMTIME_ZERO)
             runner.setSimulationTimeLimit(opt->simtimeLimit);
@@ -430,14 +448,6 @@ void Cmdenv::displayException(std::exception& ex)
     AppBase::displayException(ex);
 }
 
-void Cmdenv::componentInitBegin(cComponent *component, int stage)
-{
-    AppBase::componentInitBegin(component, stage);
-
-    // TODO: make this an EV_INFO in the component?
-    if (!opt->expressMode && opt->printEventBanners && component->getLogLevel() != LOGLEVEL_OFF)
-        out << "Initializing " << (component->isModule() ? "module" : "channel") << " " << component->getFullPath() << ", stage " << stage << endl;
-}
 
 void Cmdenv::signalHandler(int signum)
 {
@@ -457,171 +467,12 @@ void Cmdenv::deinstallSignalHandler()
     signal(SIGTERM, SIG_DFL);
 }
 
-//-----------------------------------------------------
-
-void Cmdenv::configureComponent(cComponent *component)
-{
-    AppBase::configureComponent(component);
-
-    cConfiguration *cfg = component->getSimulation()->getEnvir()->getConfig();
-    LogLevel level = cLog::resolveLogLevel(cfg->getAsString(component->getFullPath().c_str(), CFGID_CMDENV_LOGLEVEL).c_str());
-    component->setLogLevel(level);
-}
-
-void Cmdenv::askParameter(cPar *par, bool unassigned)
-{
-    bool success = false;
-    while (!success) {
-        cProperties *props = par->getProperties();
-        cProperty *prop = props->get("prompt");
-        std::string prompt = prop ? prop->getValue(cProperty::DEFAULTKEY) : "";
-        std::string reply;
-
-        // ask the user. note: gets() will signal "cancel" by throwing an exception
-        if (!prompt.empty())
-            reply = this->gets(prompt.c_str(), par->str().c_str());
-        else
-            // DO NOT change the "Enter parameter" string. The IDE launcher plugin matches
-            // against this string for detecting user input
-            reply = this->gets((std::string("Enter parameter '")+par->getFullPath()+"' ("+(unassigned ? "unassigned" : "ask")+"):").c_str(), par->str().c_str());
-
-        try {
-            par->parse(reply.c_str());
-            success = true;
-        }
-        catch (std::exception& e) {
-            out << "<!> " << e.what() << " -- please try again" << endl;
-        }
-    }
-}
 
 void Cmdenv::alert(const char *msg)
 {
     out << "\n<!> " << msg << endl << endl;
 }
 
-void Cmdenv::log(cLogEntry *entry)
-{
-    AppBase::log(entry);
-
-    LogFormatter& logFormatter = getEnvir()->getLogFormatter();
-    if (!logFormatter.isBlank())
-        out << logFormatter.formatPrefix(entry);
-
-    out.write(entry->text, entry->textLength);
-    if (opt->autoflush)
-        out.flush();
-}
-
-std::string Cmdenv::gets(const char *prompt, const char *defaultReply)
-{
-    if (!opt->interactive)
-        throw cRuntimeError("The simulation attempted to prompt for user input, set cmdenv-interactive=true to allow it: \"%s\"", prompt);
-
-    out << prompt;
-    if (!opp_isempty(defaultReply))
-        out << "(default: " << defaultReply << ") ";
-    out.flush();
-
-    {
-        std::string buffer;
-        std::getline(std::cin, buffer);
-        if (buffer == "\x1b")  // ESC?
-            throw cRuntimeError(E_CANCEL);
-        return buffer;
-    }
-}
-
-bool Cmdenv::askYesNo(const char *question)
-{
-    if (!opt->interactive)
-        throw cRuntimeError("Simulation needs user input in non-interactive mode (prompt text: \"%s (y/n)\")", question);
-
-    {
-        for (;;) {
-            out << question <<" (y/n) ";
-            out.flush();
-            std::string buffer;
-            std::getline(std::cin, buffer);
-            if (buffer == "\x1b")  // ESC?
-                throw cRuntimeError(E_CANCEL);
-            if (buffer == "y" || buffer == "Y")
-                return true;
-            else if (buffer == "n" || buffer == "N")
-                return false;
-            else
-                out << "Please type 'y' or 'n'!" << endl;
-        }
-    }
-}
-
-bool Cmdenv::idle()
-{
-    return sigintReceived;
-}
-
-double Cmdenv::getAnimationTime() const
-{
-    return fakeGUI ? fakeGUI->getAnimationTime() : 0;
-}
-
-double Cmdenv::getAnimationSpeed() const
-{
-    return fakeGUI ? fakeGUI->getAnimationSpeed() : 0;
-}
-
-double Cmdenv::getRemainingAnimationHoldTime() const
-{
-    return fakeGUI ? fakeGUI->getRemainingAnimationHoldTime() : 0;
-}
-
-void Cmdenv::getImageSize(const char *imageName, double& outWidth, double& outHeight)
-{
-    if (fakeGUI)
-        fakeGUI->getImageSize(imageName, outWidth, outHeight);
-    else
-        outWidth = outHeight = 32;
-}
-
-void Cmdenv::getTextExtent(const cFigure::Font& font, const char *text, double& outWidth, double& outHeight, double& outAscent)
-{
-    if (!*text)
-        outWidth = outHeight = outAscent = 0;
-    else if (fakeGUI)
-        fakeGUI->getTextExtent(font, text, outWidth, outHeight, outAscent);
-    else {
-        outWidth = 10 * strlen(text);
-        outHeight = 12;
-        outAscent = 8;
-    }
-}
-
-void Cmdenv::appendToImagePath(const char *directory)
-{
-    if (fakeGUI)
-        fakeGUI->appendToImagePath(directory);
-}
-
-void Cmdenv::loadImage(const char *fileName, const char *imageName)
-{
-    if (fakeGUI)
-        fakeGUI->loadImage(fileName, imageName);
-}
-
-cFigure::Rectangle Cmdenv::getSubmoduleBounds(const cModule *submodule)
-{
-    return fakeGUI ? fakeGUI->getSubmoduleBounds(submodule) : cFigure::Rectangle(NAN, NAN, NAN, NAN);
-}
-
-std::vector<cFigure::Point> Cmdenv::getConnectionLine(const cGate *sourceGate)
-{
-    return fakeGUI ? fakeGUI->getConnectionLine(sourceGate) : std::vector<cFigure::Point>();
-}
-
-double Cmdenv::getZoomLevel(const cModule *module)
-{
-    return fakeGUI ? fakeGUI->getZoomLevel(module) : NAN;
-}
 
 void Cmdenv::printUISpecificHelp()
 {
@@ -632,10 +483,6 @@ void Cmdenv::printUISpecificHelp()
     out << endl;
 }
 
-unsigned Cmdenv::getExtraStackForEnvir() const
-{
-    return opt->extraStack;
-}
 }  // namespace cmdenv
 }  // namespace omnetpp
 

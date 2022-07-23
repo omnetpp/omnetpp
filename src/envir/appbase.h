@@ -18,7 +18,6 @@
 
 #include "envirdefs.h"
 #include "envirbase.h"
-#include "iallinone.h"
 #include "inifilecontents.h"
 #include "debuggersupport.h"
 
@@ -53,7 +52,7 @@ struct AppBaseOptions
  *
  * @ingroup SimSupport
  */
-class ENVIR_API AppBase : public IAllInOne
+class ENVIR_API AppBase
 {
   protected:
     AppBaseOptions *opt;   // alias to EnvirBase::opt
@@ -67,6 +66,8 @@ class ENVIR_API AppBase : public IAllInOne
 
     DebuggerSupport *debuggerSupport = new DebuggerSupport();
     cINedLoader *nedLoader = nullptr;
+
+    static AppBase *activeApp;
 
   public:
     /**
@@ -87,6 +88,8 @@ class ENVIR_API AppBase : public IAllInOne
      * of the simulation program. Delegates to the other run() overload.
      */
     virtual int run(const std::vector<std::string>& args, InifileContents *ini) final;
+
+    static AppBase *getActiveApp() {return activeApp;}
 
     InifileContents *getInifileContents() {return ini;}
 
@@ -109,9 +112,11 @@ class ENVIR_API AppBase : public IAllInOne
     virtual void printRunInfo(const char *configName, const char *runFilter, const char *query);
     virtual void printConfigValue(const char *configName, const char *runFilter, const char *optionName);
 
-    virtual bool ensureDebugger(cRuntimeError *error = nullptr) override;
+  public:
+    virtual bool ensureDebugger(cRuntimeError *error = nullptr);
+    virtual void alert(const char *msg) = 0;
 
-    virtual void log(cLogEntry *entry) override {}   //TODO why needed?
+  protected:
 
     // functions added locally
     virtual bool simulationRequired();

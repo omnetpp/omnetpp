@@ -61,11 +61,10 @@ class ENVIR_API EnvirBase : public cEnvir
 {
   protected:
     cSimulation *simulation = nullptr;
-    IAllInOne *app = nullptr;
     cConfiguration *cfg = nullptr;
     XMLDocCache *xmlCache = nullptr;
 
-    std::ostream out; //TODO move to AppBase, modulo EnvirBase::undisposedObject()
+    std::ostream out; //TODO move to AppBase?
 
     // log related
     LogFormatter logFormatter;
@@ -76,7 +75,10 @@ class ENVIR_API EnvirBase : public cEnvir
     int currentModuleId = -1;
 
     // misc
+    bool expressMode = true;
+    bool gui = false;
     bool verbose = true;
+    size_t extraStack = 0;
 
     // paths
     std::string nedPath;
@@ -92,16 +94,17 @@ class ENVIR_API EnvirBase : public cEnvir
     // It MUST be in sync with EventlogFileManager::isRecordingEnabled.
     bool recordEventlog = false;
 
+    bool attachDebuggerOnErrors = false;
+
     // Output file managers
     cIEventlogManager *eventlogManager = nullptr;  // nullptr if no eventlog is being written, must be non nullptr if record_eventlog is true
     cIOutputVectorManager *outVectorManager = nullptr;
     cIOutputScalarManager *outScalarManager = nullptr;
     cISnapshotManager *snapshotManager = nullptr;
 
-  public:
-    bool attachDebuggerOnErrors = false;
-
   protected:
+    [[noreturn]] void unsupported(const char *method) const;
+
     // Called internally from readParameter(), to interactively prompt the
     // user for a parameter value.
     virtual void askParameter(cPar *par, bool unassigned);
@@ -110,13 +113,12 @@ class ENVIR_API EnvirBase : public cEnvir
     cXMLElement *resolveXMLPath(cXMLElement *documentnode, const char *path);
 
   public:
-    EnvirBase(IAllInOne *app);
+    EnvirBase();
     virtual ~EnvirBase();
     virtual void initialize(cSimulation *simulation, cConfiguration *cfg, ArgList *args); // call once, on startup
     virtual void configure(cConfiguration *cfg); // call before each simulation run
 
     // getters/setters
-    IAllInOne *getApp() {return app;}
     cSimulation *getSimulation() const {return simulation;}
     virtual cConfiguration *getConfig() override;
 
@@ -130,6 +132,10 @@ class ENVIR_API EnvirBase : public cEnvir
     void setSnapshotManager(cISnapshotManager *obj);
 
     XMLDocCache *getXMLDocCache() const {return xmlCache;}
+
+    void setExpressMode(bool enabled) {expressMode = enabled;}
+    void setIsGUI(bool enabled) {gui = enabled;}
+    void setExtraStackForEnvir(size_t size) {extraStack = size;}
 
     bool isLoggingEnabled() const {return loggingEnabled;}
     void setLoggingEnabled(bool enabled) {loggingEnabled = enabled;}
