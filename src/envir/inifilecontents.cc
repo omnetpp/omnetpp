@@ -400,7 +400,7 @@ int InifileContents::resolveConfigName(const char *configName) const
    return findSection(configName);
 }
 
-cConfiguration *InifileContents::activateGlobalConfig()
+cConfiguration *InifileContents::extractGlobalConfig()
 {
    std::vector<Entry> entries;
    for (auto & e : commandLineOptions)
@@ -416,7 +416,7 @@ cConfiguration *InifileContents::activateGlobalConfig()
    return new Configuration(entries, empty, empty, rootFilename.c_str());
 }
 
-cConfiguration *InifileContents::activateConfig(const char *configName, int runNumber)
+cConfiguration *InifileContents::extractConfig(const char *configName, int runNumber)
 {
    // determine the list of sections, from this one up to [General]
    std::vector<int> sectionChain = resolveSectionChain(configName);

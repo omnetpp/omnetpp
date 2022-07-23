@@ -159,8 +159,8 @@ class ENVIR_API InifileContents
 
    virtual void validate(const char *ignorableConfigKeys) const;
    virtual std::vector<std::string> getConfigNames();
-   virtual cConfiguration *activateGlobalConfig();
-   virtual cConfiguration *activateConfig(const char *configName, int runNumber=0);
+   virtual cConfiguration *extractGlobalConfig();
+   virtual cConfiguration *extractConfig(const char *configName, int runNumber=0);
    virtual std::string getConfigDescription(const char *configName) const;
    virtual std::vector<std::string> getBaseConfigs(const char *configName) const;
    virtual std::vector<std::string> getConfigChain(const char *configName) const;

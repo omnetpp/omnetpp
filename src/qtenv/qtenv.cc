@@ -622,7 +622,7 @@ void Qtenv::doRun()
     simulation->setNedLoader(nedLoader);
     cSimulation::setActiveSimulation(simulation);
 
-    activeCfg = ini->activateGlobalConfig();
+    activeCfg = ini->extractGlobalConfig();
     envir->initialize(simulation, activeCfg, args);
 
     readOptions(activeCfg);
@@ -1259,7 +1259,7 @@ void Qtenv::newNetwork(const char *networkname)
 
         // set up new network with config General.
         isConfigRun = false;
-        activeCfg = getInifileContents()->activateConfig("General", 0); //TODO leak
+        activeCfg = getInifileContents()->extractConfig("General", 0); //TODO leak
         readPerRunOptions(activeCfg);
         opt->networkName = network->getName();  // override config setting
         setupNetwork(network);
@@ -1310,7 +1310,7 @@ void Qtenv::newRun(const char *configname, int runnumber)
 
         // set up new network
         isConfigRun = true;
-        activeCfg = getInifileContents()->activateConfig(configname, runnumber); //TODO leak
+        activeCfg = getInifileContents()->extractConfig(configname, runnumber); //TODO leak
         readPerRunOptions(activeCfg);
 
         if (opt->networkName.empty()) {

@@ -86,7 +86,7 @@ f.close();
 InifileContents *ini = new InifileContents();
 ini->readFile(filename);
 
-cConfiguration *cfg = ini->activateConfig("General");
+cConfiguration *cfg = ini->extractConfig("General");
 
 // test lookup with random keys
 int maxvalue = 0;

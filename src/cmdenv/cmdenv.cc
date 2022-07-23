@@ -143,7 +143,7 @@ void Cmdenv::readPerRunOptions(cConfiguration *cfg)
 void Cmdenv::doRun()
 {
     {
-        cConfiguration *globalCfg = ini->activateGlobalConfig();
+        cConfiguration *globalCfg = ini->extractGlobalConfig();
         readOptions(globalCfg);
         loadNEDFiles(globalCfg, args);
 
@@ -260,7 +260,7 @@ bool Cmdenv::runSimulation(const char *configName, int runNumber)
     simulation->setNedLoader(nedLoader);
     cSimulation::setActiveSimulation(simulation);
 
-    cConfiguration *globalCfg = ini->activateGlobalConfig();
+    cConfiguration *globalCfg = ini->extractGlobalConfig();
     envir->initialize(simulation, globalCfg, args);
     readOptions(globalCfg);
     delete globalCfg;
@@ -274,7 +274,7 @@ bool Cmdenv::runSimulation(const char *configName, int runNumber)
         if (opt->verbose)
             out << "\nPreparing for running configuration " << configName << ", run #" << runNumber << "..." << endl;
 
-        cfg = ini->activateConfig(configName, runNumber);
+        cfg = ini->extractConfig(configName, runNumber);
         readPerRunOptions(cfg); //TODO opts are global!!!
 
         const char *iterVars = cfg->getVariable(CFGVAR_ITERATIONVARS);

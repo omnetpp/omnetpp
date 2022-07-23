@@ -14,7 +14,7 @@ static void printValues(const char *configName, const char *iterationVariable)
     int n = ini.getNumRunsInConfig(configName);
     EV << iterationVariable << "\n";
     for (int i = 0; i < n; ++i) {
-        cConfiguration *cfg = ini.activateConfig(configName, i);
+        cConfiguration *cfg = ini.extractConfig(configName, i);
         const char *value = cfg->getVariable(iterationVariable);
         EV << "  " << value << "\n";
         delete cfg;

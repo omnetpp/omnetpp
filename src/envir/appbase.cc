@@ -178,7 +178,7 @@ int AppBase::run(int argc, char *argv[], InifileContents *ini)
     // ensure correct numeric format in output files
     setPosixLocale();
 
-    cConfiguration *globalCfg = ini->activateGlobalConfig();
+    cConfiguration *globalCfg = ini->extractGlobalConfig();
     debuggerSupport->configure(globalCfg);
     SimTime::configure(globalCfg);
     cCoroutine::configure(globalCfg);
@@ -323,7 +323,7 @@ void AppBase::printRunInfo(const char *configName, const char *runFilter, const 
             for (int runNumber : runNumbers) {
                 const InifileContents::RunInfo& runInfo = runInfos[runNumber];
                 out << "Run " << runNumber << ": " << runInfo.info << endl;
-                cConfiguration *cfg = ini->activateConfig(configName, runNumber);
+                cConfiguration *cfg = ini->extractConfig(configName, runNumber);
                 std::vector<const char *> keysValues = cfg->getKeyValuePairs(cConfiguration::FILT_ALL);
                 for (int i = 0; i < (int)keysValues.size(); i += 2) {
                     const char *key = keysValues[i];
@@ -365,7 +365,7 @@ void AppBase::printConfigValue(const char *configName, const char *runFilter, co
     if (runNumbers.size() > 1)
         throw cRuntimeError("Run filter matches more than one run (%d)", (int)runNumbers.size());
     int runNumber = runNumbers[0];
-    cConfiguration *cfg = ini->activateConfig(configName, runNumber);
+    cConfiguration *cfg = ini->extractConfig(configName, runNumber);
 
     // query option
     cConfigOption *option = cConfigOption::get(optionName);

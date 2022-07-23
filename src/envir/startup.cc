@@ -173,7 +173,7 @@ int setupUserInterface(int argc, char *argv[])
 
         // activate [General] section so that we can read global settings from it
         ini->setCommandLineConfigOptions(args.getLongOptions(), getWorkingDir().c_str());
-        bootConfig = ini->activateGlobalConfig();
+        bootConfig = ini->extractGlobalConfig();
 
         //
         // Load all libraries specified on the command line ('-l' options),
@@ -199,7 +199,7 @@ int setupUserInterface(int argc, char *argv[])
             delete ini;
             delete bootConfig;
             ini = newIni;
-            bootConfig = ini->activateGlobalConfig();
+            bootConfig = ini->extractGlobalConfig();
 
             // load libs from this config as well
             std::vector<std::string> libs = bootConfig->getAsFilenames(CFGID_LOAD_LIBS);
