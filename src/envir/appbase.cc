@@ -551,14 +551,14 @@ void AppBase::printHelp()
     }
 }
 
-void AppBase::setupNetwork(cModuleType *network)
+void AppBase::setupNetwork(cModuleType *networkType)
 {
     EnvirBase *envir = getEnvir();
     cSimulation *simulation = getSimulation();
 
     envir->clearCurrentEventInfo();
 
-    simulation->setupNetwork(network);
+    simulation->setupNetwork(networkType);
     envir->getEventlogManager()->flush();
 
     if (opt->debugStatisticsRecording)

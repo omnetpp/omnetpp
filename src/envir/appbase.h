@@ -118,7 +118,7 @@ class ENVIR_API AppBase : public IAllInOne
     virtual void doRun() = 0;
     virtual void loadNEDFiles(cConfiguration *cfg, ArgList *args);
 
-    virtual void setupNetwork(cModuleType *network);
+    virtual void setupNetwork(cModuleType *networkType);
 
     ArgList *argList()  {return args;}
     void printHelp();
