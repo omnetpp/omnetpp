@@ -61,7 +61,7 @@ class CMDENV_API CmdEnvir : public EnvirBase
     virtual void alert(const char *msg) override;
     virtual bool askYesNo(const char *question) override;
     virtual void componentInitBegin(cComponent *component, int stage) override;
-    virtual std::string gets(const char *prompt, const char *defaultReply) override;
+    virtual std::string input(const char *prompt, const char *defaultReply) override;
 
     virtual bool idle() override;
     virtual void pausePoint() override { /* currently no-op */ };

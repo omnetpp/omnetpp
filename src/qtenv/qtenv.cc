@@ -1864,7 +1864,7 @@ void Qtenv::askParameter(cPar *par, bool unassigned)
                 answers[key] = reply;
         }
         catch (std::exception& e) {
-            printfmsg("%s -- please try again.", e.what());
+            alertf("%s -- please try again.", e.what());
         }
     }
 }

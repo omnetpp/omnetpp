@@ -482,7 +482,7 @@ class SIM_API cEnvir
      * Interactively prompts the user to enter a string. This function should
      * be used sparingly from models, if ever.
      */
-    virtual std::string gets(const char *prompt, const char *defaultReply=nullptr) = 0;
+    virtual std::string input(const char *prompt, const char *defaultReply=nullptr) = 0;
 
     /**
      * Asks the user a yes/no question with the given prompt. The return value

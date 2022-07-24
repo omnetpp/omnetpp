@@ -165,7 +165,7 @@ void QtEnvir::alert(const char *msg)
     app->alert(msg);
 }
 
-std::string QtEnvir::gets(const char *prompt, const char *defaultReply)
+std::string QtEnvir::input(const char *prompt, const char *defaultReply)
 {
     return app->gets(prompt, defaultReply);
 }

@@ -73,7 +73,7 @@ class QTENV_API QtEnvir : public EnvirBase
     virtual bool ensureDebugger(cRuntimeError *error = nullptr) override;
 
     virtual void alert(const char *msg) override;
-    virtual std::string gets(const char *prompt, const char *defaultReply=nullptr) override;
+    virtual std::string input(const char *prompt, const char *defaultReply=nullptr) override;
     virtual bool askYesNo(const char *prompt) override;
     virtual void getImageSize(const char *imageName, double& outWidth, double& outHeight) override;
     virtual void getTextExtent(const cFigure::Font& font, const char *text, double& outWidth, double& outHeight, double& outAscent) override;

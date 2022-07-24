@@ -59,13 +59,13 @@ void CmdEnvir::askParameter(cPar *par, bool unassigned)
         std::string prompt = prop ? prop->getValue(cProperty::DEFAULTKEY) : "";
         std::string reply;
 
-        // ask the user. note: gets() will signal "cancel" by throwing an exception
+        // ask the user. note: input() will signal "cancel" by throwing an exception
         if (!prompt.empty())
-            reply = this->gets(prompt.c_str(), par->str().c_str());
+            reply = input(prompt.c_str(), par->str().c_str());
         else
             // DO NOT change the "Enter parameter" string. The IDE launcher plugin matches
             // against this string for detecting user input
-            reply = this->gets((std::string("Enter parameter '")+par->getFullPath()+"' ("+(unassigned ? "unassigned" : "ask")+"):").c_str(), par->str().c_str());
+            reply = this->input((std::string("Enter parameter '")+par->getFullPath()+"' ("+(unassigned ? "unassigned" : "ask")+"):").c_str(), par->str().c_str());
 
         try {
             par->parse(reply.c_str());
@@ -94,7 +94,7 @@ void CmdEnvir::log(cLogEntry *entry)
         out.flush();
 }
 
-std::string CmdEnvir::gets(const char *prompt, const char *defaultReply)
+std::string CmdEnvir::input(const char *prompt, const char *defaultReply)
 {
     if (!interactive)
         throw cRuntimeError("The simulation attempted to prompt for user input, set cmdenv-interactive=true to allow it: \"%s\"", prompt);

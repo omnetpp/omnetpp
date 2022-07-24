@@ -208,8 +208,6 @@ class ENVIR_API EnvirBase : public cEnvir
 
     // UI functions
     virtual void bubble(cComponent *component, const char *text) override;
-    // leave to subclasses: virtual std::string gets(const char *prompt, const char *defaultreply=nullptr);
-    // leave to subclasses: virtual cEnvir& flush();
 
     // output vectors
     virtual void *registerOutputVector(const char *modulename, const char *vectorname) override;
@@ -240,7 +238,7 @@ class ENVIR_API EnvirBase : public cEnvir
     virtual bool isGUI() const override;
     virtual bool isExpressMode() const override;
     virtual void alert(const char *msg) override;
-    virtual std::string gets(const char *prompt, const char *defaultReply=nullptr) override;
+    virtual std::string input(const char *prompt, const char *defaultReply=nullptr) override;
     virtual bool askYesNo(const char *prompt) override;
     virtual void getImageSize(const char *imageName, double& outWidth, double& outHeight) override;
     virtual void getTextExtent(const cFigure::Font& font, const char *text, double& outWidth, double& outHeight, double& outAscent) override;

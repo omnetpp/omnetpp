@@ -120,7 +120,7 @@ class SIM_API cNullEnvir : public cEnvir
 
     // UI functions (see also protected ones)
     virtual void bubble(cComponent *component, const char *text) override  {}
-    virtual std::string gets(const char *prompt, const char *defaultreply=nullptr) override  {unsupported(); return "";}
+    virtual std::string input(const char *prompt, const char *defaultreply=nullptr) override  {unsupported(); return "";}
     virtual cEnvir& flush()  {::fflush(stdout); return *this;}
 
     // output vectors

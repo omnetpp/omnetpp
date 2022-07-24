@@ -606,9 +606,9 @@ void EnvirBase::alert(const char *msg)
     unsupported("alert");
 }
 
-std::string EnvirBase::gets(const char *prompt, const char *defaultReply)
+std::string EnvirBase::input(const char *prompt, const char *defaultReply)
 {
-    unsupported("gets");
+    unsupported("input");
 }
 
 bool EnvirBase::askYesNo(const char *prompt)
