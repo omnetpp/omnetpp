@@ -648,7 +648,7 @@ std::ostream& AppBase::warn()
     return err;
 }
 
-void AppBase::printfmsg(const char *fmt, ...)
+void AppBase::alertf(const char *fmt, ...)
 {
     char buffer[1000];
     va_list va;
@@ -780,9 +780,9 @@ void AppBase::checkFingerprint()
 
     auto flags = opp_substringafterlast(fingerprint->str(), "/");
     if (fingerprint->checkFingerprint())
-        printfmsg("Fingerprint successfully verified: %s", fingerprint->str().c_str());
+        alertf("Fingerprint successfully verified: %s", fingerprint->str().c_str());
     else
-        printfmsg("Fingerprint mismatch! calculated: %s, expected: %s",
+        alertf("Fingerprint mismatch! calculated: %s, expected: %s",
                 fingerprint->str().c_str(), fingerprint->getExpected().c_str());
 }
 

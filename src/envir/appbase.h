@@ -96,7 +96,8 @@ class ENVIR_API AppBase
     virtual std::ostream& err();
     virtual std::ostream& errWithoutPrefix();
     virtual std::ostream& warn();
-    void printfmsg(const char *fmt, ...); // internal, TODO rename
+    void alertf(const char *fmt, ...);
+
     static void crashHandler(int signum);
     virtual void installCrashHandler();
     virtual std::vector<int> resolveRunFilter(const char *configName, const char *runFilter);
