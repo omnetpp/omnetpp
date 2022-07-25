@@ -92,6 +92,7 @@ class ENVIR_API InifileContents
     static cConfigOption *lookupConfigOption(const char *key);
     static void splitKey(const char *key, std::string& outOwnerName, std::string& outBinName);
     static bool isPredefinedVariable(const char *varname);
+    static bool isGlobalOrPerRunOption(const char *key);
 
     const Section& getSection(int sectionId) const;
     void checkSectionIndex(int sectionId) const;

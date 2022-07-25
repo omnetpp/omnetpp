@@ -114,8 +114,8 @@ InifileContents::~InifileContents()
 
 void InifileContents::readUsing(cConfigurationReader *reader, cConfiguration *readerConfig)
 {
-    //TODO rootFilename = filename;
-    //TODO set defaultBasedir?
+    //TODO:rootFilename = ...
+    //TODO:defaultBasedir = ...
 
     InifileContentsBuilder builder(this);
     reader->setCallback(&builder);
@@ -125,7 +125,7 @@ void InifileContents::readUsing(cConfigurationReader *reader, cConfiguration *re
 void InifileContents::readFile(const char *filename)
 {
     rootFilename = filename;
-    //TODO set defaultBasedir?
+    defaultBasedir = directoryOf(filename);
 
     InifileContentsBuilder builder(this);
     InifileReader reader;
@@ -136,7 +136,7 @@ void InifileContents::readFile(const char *filename)
 void InifileContents::readText(const char *text, const char *filename="<string>", const char *baseDir=nullptr)
 {
     rootFilename = filename;
-    //TODO set defaultBasedir?
+    defaultBasedir = baseDir;
 
     InifileReader reader;
     InifileContentsBuilder builder(this);
@@ -147,7 +147,7 @@ void InifileContents::readText(const char *text, const char *filename="<string>"
 void InifileContents::readStream(std::istream& in, const char *filename="<string>", const char *baseDir=nullptr)
 {
     rootFilename = filename;
-    //TODO set defaultBasedir?
+    defaultBasedir = baseDir;
 
     InifileReader reader;
     InifileContentsBuilder builder(this);
@@ -400,20 +400,36 @@ int InifileContents::resolveConfigName(const char *configName) const
    return findSection(configName);
 }
 
+bool InifileContents::isGlobalOrPerRunOption(const char *key)
+{
+    if (strchr(key, '.') != nullptr)
+        return false;
+    cConfigOption *option = lookupConfigOption(key);
+    return option != nullptr && (option->isGlobal() || option->isPerRun());
+}
+
 cConfiguration *InifileContents::extractGlobalConfig()
 {
-   std::vector<Entry> entries;
-   for (auto & e : commandLineOptions)
-       entries.push_back(Entry(e.getBaseDirectory(), e.getKey(), e.getValue())); // note: no substituteVariables() on value, it's too early for that
-   int sectionId = resolveConfigName("General");
-   if (sectionId != -1) {
-       for (int entryId = 0; entryId < getNumEntries(sectionId); entryId++) {
-           const auto& e = getEntry(sectionId, entryId);
-           entries.push_back(e); // note: no substituteVariables() on value, it's too early for that
-       }
-   }
-   const StringMap empty;
-   return new Configuration(entries, empty, empty, rootFilename.c_str());
+    // extract the global options only
+    std::vector<Entry> entries;
+    for (auto & e : commandLineOptions)
+        if (isGlobalOrPerRunOption(e.getKey()))
+            entries.push_back(Entry(e.getBaseDirectory(), e.getKey(), e.getValue())); // note: no substituteVariables() on value, it's too early for that
+
+    int sectionId = resolveConfigName("General");
+    if (sectionId != -1) {
+        for (int entryId = 0; entryId < getNumEntries(sectionId); entryId++) {
+            const auto& e = getEntry(sectionId, entryId);
+            if (isGlobalOrPerRunOption(e.getKey()))
+                entries.push_back(e); // note: no substituteVariables() on value, it's too early for that
+        }
+    }
+
+//   VariablesInfo variables = computeVariables(configName, runNumber, sectionChain, &scenario, locationToVarName); //TODO
+
+    const StringMap predefinedVars = StringMap(); //TODO
+    const StringMap iterationVars;  // empty
+    return new Configuration(entries, predefinedVars, iterationVars, rootFilename.c_str());
 }
 
 cConfiguration *InifileContents::extractConfig(const char *configName, int runNumber)
