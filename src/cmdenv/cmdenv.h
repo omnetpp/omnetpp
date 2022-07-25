@@ -28,8 +28,22 @@ namespace cmdenv {
 
 using namespace omnetpp::envir;
 
-struct CMDENV_API CmdenvOptions : public AppBaseOptions
+struct CMDENV_API CmdenvOptions
 {
+    // Common options:
+    std::string networkName;
+    std::string inifileNetworkDir;
+
+    simtime_t simtimeLimit;
+    simtime_t warmupPeriod;
+    double realTimeLimit = 0;
+    double cpuTimeLimit = 0;
+
+    bool warnings = true;
+    bool debugStatisticsRecording = false;
+
+    // Cmdenv specific:
+
     // note: these values will be overwritten in setup()/readOptions() before taking effect
     bool stopBatchOnError = true;
     size_t extraStack = 0;
@@ -52,8 +66,6 @@ struct CMDENV_API CmdenvOptions : public AppBaseOptions
 class CMDENV_API Cmdenv : public AppBase
 {
    protected:
-     CmdenvOptions *&opt;         // alias to EnvirBase::opt
-
      // set to true on SIGINT/SIGTERM signals
      static bool sigintReceived;
 
@@ -61,6 +73,8 @@ class CMDENV_API Cmdenv : public AppBase
      std::atomic_int numRuns;
      std::atomic_int runsTried;
      std::atomic_int numErrors;
+
+     bool stopBatchOnError = true;
 
      // logging
      bool logging = true;
@@ -71,7 +85,7 @@ class CMDENV_API Cmdenv : public AppBase
 
    public:
      Cmdenv();
-     virtual ~Cmdenv() {}
+     virtual ~Cmdenv();
 
 
    protected:
@@ -79,9 +93,7 @@ class CMDENV_API Cmdenv : public AppBase
      virtual void doRun() override;
      virtual void printUISpecificHelp() override;
 
-     virtual CmdenvOptions *createOptions() override {return new CmdenvOptions();}
-     virtual void readOptions(cConfiguration *cfg) override;
-     virtual void readPerRunOptions(cConfiguration *cfg) override;
+     void readPerRunOptions(CmdenvOptions *opt, cConfiguration *cfg);
 
      void help();
 

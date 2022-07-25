@@ -70,9 +70,23 @@ enum LayouterChoice
     LAYOUTER_AUTO
 };
 
-struct QtenvOptions : public AppBaseOptions
+struct QtenvOptions
 {
-    // note: these values will be overwritten in setup()/readOptions() before taking effect
+    // Common options:
+    std::string networkName;
+    std::string inifileNetworkDir;
+
+    simtime_t simtimeLimit;
+    simtime_t warmupPeriod;
+    double realTimeLimit = 0;
+    double cpuTimeLimit = 0;
+
+    bool useStderr = true;
+    bool verbose = true;
+    bool warnings = true;
+    bool debugStatisticsRecording = false;
+
+    // Qtenv specific:
     size_t extraStack;                     // per-module extra stack for activity() modules
     std::string defaultConfig;             // automatically set up this config at startup
     std::string runFilter;                 // groups the matching runs to the beginning of the list, or if only one matches, will set up that one automatically
@@ -134,7 +148,7 @@ class QTENV_API Qtenv : public QObject, public AppBase
           ERROR
       };
 
-      QtenvOptions *&opt;          // alias to EnvirBase::opt
+      QtenvOptions *opt = new QtenvOptions();
 
       ImageCache icons;
 
@@ -329,9 +343,8 @@ class QTENV_API Qtenv : public QObject, public AppBase
       virtual void doRun() override;
       virtual void printUISpecificHelp() override;
 
-      virtual QtenvOptions *createOptions() override {return new QtenvOptions();}
-      virtual void readOptions(cConfiguration *cfg) override;
-      virtual void readPerRunOptions(cConfiguration *cfg) override;
+      virtual void readOptions(cConfiguration *cfg);
+      virtual void readPerRunOptions(cConfiguration *cfg);
 
       virtual void setupNetwork(cModuleType *network) override;
 

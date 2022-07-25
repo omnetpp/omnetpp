@@ -29,22 +29,13 @@ class cINedLoader;
 
 namespace envir {
 
-struct AppBaseOptions
-{
-    // note: these values will be overwritten in setup()/readOptions() before taking effect
-    std::string networkName;
-    std::string inifileNetworkDir;
-
-    simtime_t simtimeLimit;
-    simtime_t warmupPeriod;
-    double realTimeLimit = 0;
-    double cpuTimeLimit = 0;
-
-    bool useStderr = true;
-    bool verbose = true;
-    bool warnings = true;
-    bool debugStatisticsRecording = false;
-};
+extern cConfigOption *CFGID_NETWORK;
+extern cConfigOption *CFGID_SIM_TIME_LIMIT;
+extern cConfigOption *CFGID_REAL_TIME_LIMIT;
+extern cConfigOption *CFGID_CPU_TIME_LIMIT;
+extern cConfigOption *CFGID_WARMUP_PERIOD;
+extern cConfigOption *CFGID_DEBUG_STATISTICS_RECORDING;
+extern cConfigOption *CFGID_WARNINGS;
 
 /**
  * @brief An Envir that can be instantiated as a user interface, like Cmdenv
@@ -55,12 +46,12 @@ struct AppBaseOptions
 class ENVIR_API AppBase
 {
   protected:
-    AppBaseOptions *opt;   // alias to EnvirBase::opt
-
     ArgList *args;  //TODO init!!!
     std::ostream& out; //TODO FIXME
     InifileContents *ini;
 
+    bool verbose;
+    bool useStderr;
     std::string redirectionFilename;
     int exitCode = 0;
 
@@ -134,12 +125,8 @@ class ENVIR_API AppBase
     virtual void stopOutputRedirection();
     virtual bool isOutputRedirected();
 
-    virtual AppBaseOptions *createOptions() {return new AppBaseOptions();}
-    virtual void readOptions(cConfiguration *cfg);
-    virtual void readPerRunOptions(cConfiguration *cfg);
-
     // Utility function; never returns nullptr
-    cModuleType *resolveNetwork(const char *networkname);
+    cModuleType *resolveNetwork(const char *networkName, const char *baseDirectory);
 
     virtual void displayException(std::exception& e);
     virtual std::string getFormattedMessage(std::exception& ex);

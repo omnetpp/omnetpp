@@ -580,7 +580,7 @@ double Qtenv::computeModelHoldEndTime()
     return holdEndTime;
 }
 
-Qtenv::Qtenv() : opt((QtenvOptions *&)AppBase::opt), icons(out)
+Qtenv::Qtenv() : icons(out)
 {
     // Note: ctor should only contain trivial initializations, because
     // the class may be instantiated only for the purpose of calling
@@ -606,6 +606,7 @@ Qtenv::~Qtenv()
     delete messageAnimator;
     for (auto & silentEventFilter : silentEventFilters)
         delete silentEventFilter;
+    delete opt;
 }
 
 static void signalHandler(int signum)
@@ -647,7 +648,7 @@ void Qtenv::doRun()
     signal(SIGINT, signalHandler);
     signal(SIGTERM, signalHandler);
 
-    icons.setVerbose(opt->verbose);
+    icons.setVerbose(verbose);
     icons.loadImages(envir->getImagePath());
 
     // we need to flush streams, otherwise output written from Tcl tends to overtake
@@ -1266,7 +1267,7 @@ void Qtenv::newNetwork(const char *networkname)
         logBuffer.clear();
         componentHistory.clear();
 
-        cModuleType *network = resolveNetwork(networkname);
+        cModuleType *network = resolveNetwork(networkname, opt->inifileNetworkDir.c_str());
         ASSERT(network);
 
         // set up new network with config General.
@@ -1330,10 +1331,10 @@ void Qtenv::newRun(const char *configname, int runnumber)
             return;
         }
 
-        cModuleType *network = resolveNetwork(opt->networkName.c_str());
-        ASSERT(network);
+        cModuleType *networkType = resolveNetwork(opt->networkName.c_str(), opt->inifileNetworkDir.c_str());
+        ASSERT(networkType);
 
-        setupNetwork(network);
+        setupNetwork(networkType);
         prepareForRun();
 
         simulationState = SIM_NEW;
@@ -1735,7 +1736,8 @@ bool Qtenv::isSilentEvent(cMessage *msg)
 
 void Qtenv::readOptions(cConfiguration *cfg)
 {
-    AppBase::readOptions(cfg);
+    // note: this is read per run as well, but Qtenv needs its value on startup too
+    opt->inifileNetworkDir = cfg->getConfigEntry(CFGID_NETWORK->getName()).getBaseDirectory();
 
     opt->extraStack = (size_t)cfg->getAsDouble(CFGID_QTENV_EXTRA_STACK);
     getEnvir()->setExtraStackForEnvir(opt->extraStack);
@@ -1751,12 +1753,28 @@ void Qtenv::readPerRunOptions(cConfiguration *cfg)
 {
     bool origDebugOnErrors = getDebugOnErrors();
 
-    AppBase::readPerRunOptions(cfg);
+    getEnvir()->configure(cfg);
 
     // don't let the configuration turn off a debug-on-errors setting that the user (presumably) turned
     // on manually, using the menu
     if (origDebugOnErrors == true && getDebugOnErrors() == false)
         setDebugOnErrors(true);
+
+    opt->networkName = cfg->getAsString(CFGID_NETWORK);
+
+    // note: this is read per run as well, but Qtenv needs its value on startup too
+    opt->inifileNetworkDir = cfg->getConfigEntry(CFGID_NETWORK->getName()).getBaseDirectory();
+
+    // make time limits effective
+    opt->simtimeLimit = cfg->getAsDouble(CFGID_SIM_TIME_LIMIT, -1);
+    opt->realTimeLimit = cfg->getAsDouble(CFGID_REAL_TIME_LIMIT, -1);
+    opt->cpuTimeLimit = cfg->getAsDouble(CFGID_CPU_TIME_LIMIT, -1);
+    opt->warmupPeriod = cfg->getAsDouble(CFGID_WARMUP_PERIOD);
+    getSimulation()->setWarmupPeriod(opt->warmupPeriod);
+
+    opt->debugStatisticsRecording = cfg->getAsBool(CFGID_DEBUG_STATISTICS_RECORDING);
+    opt->warnings = cfg->getAsBool(CFGID_WARNINGS);
+
 }
 
 void Qtenv::initialSetUpConfiguration()

@@ -151,7 +151,6 @@ AppBase::AppBase() : out(std::cout) //TODO
 AppBase::~AppBase()
 {
     activeApp = nullptr;
-    delete opt;
     delete debuggerSupport;
     delete nedLoader;
 }
@@ -167,12 +166,10 @@ int AppBase::run(const std::vector<std::string>& args, InifileContents *ini)
 int AppBase::run(int argc, char *argv[], InifileContents *ini)
 {
     this->ini = ini;
-
-    opt = createOptions();
     args = new ArgList();
     args->parse(argc, argv, ARGSPEC);
-    opt->useStderr = !args->optionGiven('m');
-    opt->verbose = !args->optionGiven('s');
+    useStderr = !args->optionGiven('m');
+    verbose = !args->optionGiven('s');
 
     nedLoader = new cNedLoader("nedLoader");
     nedLoader->removeFromOwnershipTree();
@@ -215,7 +212,7 @@ bool AppBase::simulationRequired()
         if (!category)
             printHelp();
         else
-            EnvirUtils::dumpComponentList(out, category, opt->verbose);
+            EnvirUtils::dumpComponentList(out, category, verbose);
         return false;
     }
 
@@ -279,7 +276,7 @@ void AppBase::printRunInfo(const char *configName, const char *runFilter, const 
     if (q.find("run") != q.npos) {
         std::vector<int> runNumbers = resolveRunFilter(configName, runFilter);
 
-        if (opt->verbose) {
+        if (verbose) {
             out <<"Config: " << configName << endl;
             out <<"Number of runs: " << ini->getNumRunsInConfig(configName) << endl;
             if (!opp_isblank(runFilter))
@@ -288,11 +285,11 @@ void AppBase::printRunInfo(const char *configName, const char *runFilter, const 
 
         std::vector<InifileContents::RunInfo> runInfos = ini->unrollConfig(configName);
         if (q == "numruns") {
-            if (!opt->verbose) // otherwise it was already printed
+            if (!verbose) // otherwise it was already printed
                 out << runNumbers.size() << endl;
         }
         else if (q == "runnumbers") {
-            if (opt->verbose) {
+            if (verbose) {
                 out << endl;
                 out << "Run numbers:";
             }
@@ -301,7 +298,7 @@ void AppBase::printRunInfo(const char *configName, const char *runFilter, const 
             out << endl;
         }
         else if (q == "runs") {
-            if (opt->verbose)
+            if (verbose)
                 out << endl;
             for (int runNumber : runNumbers) {
                 const InifileContents::RunInfo& runInfo = runInfos[runNumber];
@@ -309,7 +306,7 @@ void AppBase::printRunInfo(const char *configName, const char *runFilter, const 
             }
         }
         else if (q == "rundetails") {
-            if (opt->verbose)
+            if (verbose)
                 out << endl;
             for (int runNumber : runNumbers) {
                 const InifileContents::RunInfo& runInfo = runInfos[runNumber];
@@ -320,7 +317,7 @@ void AppBase::printRunInfo(const char *configName, const char *runFilter, const 
             }
         }
         else if (q == "runconfig") {
-            if (opt->verbose)
+            if (verbose)
                 out << endl;
             for (int runNumber : runNumbers) {
                 const InifileContents::RunInfo& runInfo = runInfos[runNumber];
@@ -343,7 +340,7 @@ void AppBase::printRunInfo(const char *configName, const char *runFilter, const 
         }
     }
     else if (q == "sectioninheritance") {
-        if (opt->verbose)
+        if (verbose)
             out << endl;
         std::vector<std::string> configNames = ini->getConfigChain(configName);
         for (auto configName : configNames) {
@@ -374,32 +371,6 @@ void AppBase::printConfigValue(const char *configName, const char *runFilter, co
     const char *value = cfg->getConfigValue(option, "");
     out << value << endl;
     delete cfg;
-}
-
-void AppBase::readOptions(cConfiguration *cfg)
-{
-    // note: this is read per run as well, but Qtenv needs its value on startup too
-    opt->inifileNetworkDir = cfg->getConfigEntry(CFGID_NETWORK->getName()).getBaseDirectory();
-}
-
-void AppBase::readPerRunOptions(cConfiguration *cfg)
-{
-    getEnvir()->configure(cfg);
-
-    opt->networkName = cfg->getAsString(CFGID_NETWORK);
-
-    // note: this is read per run as well, but Qtenv needs its value on startup too
-    opt->inifileNetworkDir = cfg->getConfigEntry(CFGID_NETWORK->getName()).getBaseDirectory();
-
-    // make time limits effective
-    opt->simtimeLimit = cfg->getAsDouble(CFGID_SIM_TIME_LIMIT, -1);
-    opt->realTimeLimit = cfg->getAsDouble(CFGID_REAL_TIME_LIMIT, -1);
-    opt->cpuTimeLimit = cfg->getAsDouble(CFGID_CPU_TIME_LIMIT, -1);
-    opt->warmupPeriod = cfg->getAsDouble(CFGID_WARMUP_PERIOD);
-    getSimulation()->setWarmupPeriod(opt->warmupPeriod);
-
-    opt->debugStatisticsRecording = cfg->getAsBool(CFGID_DEBUG_STATISTICS_RECORDING);
-    opt->warnings = cfg->getAsBool(CFGID_WARNINGS);
 }
 
 void AppBase::installCrashHandler()
@@ -563,7 +534,8 @@ void AppBase::setupNetwork(cModuleType *networkType)
     simulation->setupNetwork(networkType);
     envir->getEventlogManager()->flush();
 
-    if (opt->debugStatisticsRecording)
+    bool debugStatisticsRecording = envir->getConfig()->getAsBool(CFGID_DEBUG_STATISTICS_RECORDING);
+    if (debugStatisticsRecording)
         EnvirUtils::dumpResultRecorders(out, simulation->getSystemModule());
 }
 
@@ -651,27 +623,27 @@ bool AppBase::isOutputRedirected()
 
 std::ostream& AppBase::err()
 {
-    std::ostream& err = opt->useStderr && !isOutputRedirected() ? std::cerr : out;
+    std::ostream& err = useStderr && !isOutputRedirected() ? std::cerr : out;
     if (isOutputRedirected())
-        (opt->useStderr ? std::cerr : std::cout) << "<!> Error -- see " << redirectionFilename << " for details" << endl;
+        (useStderr ? std::cerr : std::cout) << "<!> Error -- see " << redirectionFilename << " for details" << endl;
     err << endl << "<!> Error: ";
     return err;
 }
 
 std::ostream& AppBase::errWithoutPrefix()
 {
-    std::ostream& err = opt->useStderr && !isOutputRedirected() ? std::cerr : out;
+    std::ostream& err = useStderr && !isOutputRedirected() ? std::cerr : out;
     if (isOutputRedirected())
-        (opt->useStderr ? std::cerr : std::cout) << "<!> Error -- see " << redirectionFilename << " for details" << endl;
+        (useStderr ? std::cerr : std::cout) << "<!> Error -- see " << redirectionFilename << " for details" << endl;
     err << endl << "<!> ";
     return err;
 }
 
 std::ostream& AppBase::warn()
 {
-    std::ostream& err = opt->useStderr && !isOutputRedirected() ? std::cerr : out;
+    std::ostream& err = useStderr && !isOutputRedirected() ? std::cerr : out;
     if (isOutputRedirected())
-        (opt->useStderr ? std::cerr : std::cout) << "<!> Warning -- see " << redirectionFilename << " for details" << endl;
+        (useStderr ? std::cerr : std::cout) << "<!> Warning -- see " << redirectionFilename << " for details" << endl;
     err << endl << "<!> Warning: ";
     return err;
 }
@@ -814,10 +786,10 @@ void AppBase::checkFingerprint()
                 fingerprint->str().c_str(), fingerprint->getExpected().c_str());
 }
 
-cModuleType *AppBase::resolveNetwork(const char *networkname)
+cModuleType *AppBase::resolveNetwork(const char *networkname, const char *baseDirectory)
 {
     cModuleType *network = nullptr;
-    std::string inifilePackage = getSimulation()->getNedPackageForFolder(opt->inifileNetworkDir.c_str());
+    std::string inifilePackage = getSimulation()->getNedPackageForFolder(baseDirectory);
 
     bool hasInifilePackage = !inifilePackage.empty() && strcmp(inifilePackage.c_str(), "-") != 0;
     if (hasInifilePackage)

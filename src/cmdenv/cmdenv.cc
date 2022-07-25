@@ -96,7 +96,7 @@ extern "C" CMDENV_API void _cmdenv_lib() {}
 
 bool Cmdenv::sigintReceived;
 
-Cmdenv::Cmdenv() : opt((CmdenvOptions *&)AppBase::opt)
+Cmdenv::Cmdenv()
 {
     // Note: ctor should only contain trivial initializations, because
     // the class may be instantiated only for the purpose of calling
@@ -107,9 +107,15 @@ Cmdenv::Cmdenv() : opt((CmdenvOptions *&)AppBase::opt)
         logStream = stdout;
 }
 
+Cmdenv::~Cmdenv()
+{
+    delete opt;
+}
+
 void Cmdenv::readOptions(cConfiguration *cfg)
 {
-    AppBase::readOptions(cfg);
+    // note: this is read per run as well, but Qtenv needs its value on startup too
+    opt->inifileNetworkDir = cfg->getConfigEntry(CFGID_NETWORK->getName()).getBaseDirectory();
 
     // note: configName and runFilter will possibly be overwritten
     // with the -c, -r command-line options in our setup() method
@@ -118,7 +124,22 @@ void Cmdenv::readOptions(cConfiguration *cfg)
 
 void Cmdenv::readPerRunOptions(cConfiguration *cfg)
 {
-    AppBase::readPerRunOptions(cfg);
+    getEnvir()->configure(cfg);
+
+    opt->networkName = cfg->getAsString(CFGID_NETWORK);
+
+    // note: this is read per run as well, but Qtenv needs its value on startup too
+    opt->inifileNetworkDir = cfg->getConfigEntry(CFGID_NETWORK->getName()).getBaseDirectory();
+
+    // make time limits effective
+    opt->simtimeLimit = cfg->getAsDouble(CFGID_SIM_TIME_LIMIT, -1);
+    opt->realTimeLimit = cfg->getAsDouble(CFGID_REAL_TIME_LIMIT, -1);
+    opt->cpuTimeLimit = cfg->getAsDouble(CFGID_CPU_TIME_LIMIT, -1);
+    opt->warmupPeriod = cfg->getAsDouble(CFGID_WARMUP_PERIOD);
+    getSimulation()->setWarmupPeriod(opt->warmupPeriod);
+
+    opt->debugStatisticsRecording = cfg->getAsBool(CFGID_DEBUG_STATISTICS_RECORDING);
+    opt->warnings = cfg->getAsBool(CFGID_WARNINGS);
 
     opt->stopBatchOnError = cfg->getAsBool(CFGID_CMDENV_STOP_BATCH_ON_ERROR);
     opt->expressMode = cfg->getAsBool(CFGID_CMDENV_EXPRESS_MODE);
@@ -189,7 +210,7 @@ void Cmdenv::doRun()
             runSimulationsInThreads(configName.c_str(), runNumbers, numThreads);
         }
 
-        if (numRuns > 1 && opt->verbose) {
+        if (numRuns > 1 && verbose) {
             int numSkipped = numRuns - runsTried;
             int numSuccess = runsTried - numErrors;
             out << "\nRun statistics: total " << numRuns;
@@ -270,7 +291,7 @@ bool Cmdenv::runSimulation(const char *configName, int runNumber)
 
     cConfiguration *cfg = nullptr;
     try {
-        if (opt->verbose)
+        if (verbose)
             out << "\nPreparing for running configuration " << configName << ", run #" << runNumber << "..." << endl;
 
         cfg = ini->extractConfig(configName, runNumber);
@@ -297,19 +318,19 @@ bool Cmdenv::runSimulation(const char *configName, int runNumber)
         const char *iterVars = cfg->getVariable(CFGVAR_ITERATIONVARS);
         const char *runId = cfg->getVariable(CFGVAR_RUNID);
         const char *repetition = cfg->getVariable(CFGVAR_REPETITION);
-        if (!opt->verbose)
+        if (!verbose)
             out << configName << " run " << runNumber << ": " << iterVars << ", $repetition=" << repetition << endl; // print before redirection; useful as progress indication from opp_runall
 
         if (opt->redirectOutput) {
             opt->outputFile = ResultFileUtils(cfg).augmentFileName(opt->outputFile);
-            if (opt->verbose)
+            if (verbose)
                 out << "Redirecting output to file \"" << opt->outputFile << "\"..." << endl;
             startOutputRedirection(opt->outputFile.c_str());
-            if (opt->verbose)
+            if (verbose)
                 out << "\nRunning configuration " << configName << ", run #" << runNumber << "..." << endl;
         }
 
-        if (opt->verbose) {
+        if (verbose) {
             if (iterVars && strlen(iterVars) > 0)
                 out << "Scenario: " << iterVars << ", $repetition=" << repetition << endl;
             out << "Assigned runID=" << runId << endl;
@@ -318,20 +339,20 @@ bool Cmdenv::runSimulation(const char *configName, int runNumber)
         // find network
         if (opt->networkName.empty())
             throw cRuntimeError("No network specified (missing or empty network= configuration option)");
-        cModuleType *network = resolveNetwork(opt->networkName.c_str());
+        cModuleType *network = resolveNetwork(opt->networkName.c_str(), opt->inifileNetworkDir.c_str());
         ASSERT(network);
 
         endRunRequired = true;
 
         // set up network
-        if (opt->verbose)
+        if (verbose)
             out << "Setting up network \"" << opt->networkName.c_str() << "\"..." << endl;
 
         setupNetwork(network);
         networkSetupDone = true;
 
         // prepare for simulation run
-        if (opt->verbose)
+        if (verbose)
             out << "Initializing..." << endl;
 
         envir->setLoggingEnabled(!opt->expressMode);
@@ -340,7 +361,7 @@ bool Cmdenv::runSimulation(const char *configName, int runNumber)
         cLogProxy::flushLastLine();
 
         // run the simulation
-        if (opt->verbose)
+        if (verbose)
             out << "\nRunning simulation..." << endl;
 
         // simulate() should only throw exception if error occurred and
@@ -349,7 +370,7 @@ bool Cmdenv::runSimulation(const char *configName, int runNumber)
         simulate();
         envir->setLoggingEnabled(true);
 
-        if (opt->verbose)
+        if (verbose)
             out << "\nCalling finish() at end of Run #" << runNumber << "..." << endl;
         getSimulation()->callFinish();
         cLogProxy::flushLastLine();
