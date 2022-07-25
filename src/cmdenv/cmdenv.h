@@ -28,38 +28,6 @@ namespace cmdenv {
 
 using namespace omnetpp::envir;
 
-struct CMDENV_API CmdenvOptions
-{
-    // Common options:
-    std::string networkName;
-    std::string inifileNetworkDir;
-
-    simtime_t simtimeLimit;
-    simtime_t warmupPeriod;
-    double realTimeLimit = 0;
-    double cpuTimeLimit = 0;
-
-    bool warnings = true;
-    bool debugStatisticsRecording = false;
-
-    // Cmdenv specific:
-
-    // note: these values will be overwritten in setup()/readOptions() before taking effect
-    bool stopBatchOnError = true;
-    size_t extraStack = 0;
-    std::string outputFile;
-    bool redirectOutput = false;
-    bool expressMode = false;
-    bool interactive = false;
-    bool autoflush = true; // all modes
-    bool printModuleMsgs = false;  // if normal mode
-    bool printEventBanners = true; // if normal mode
-    bool detailedEventBanners = false; // if normal mode
-    long statusFrequencyMs = 2000; // if express mode
-    bool printPerformanceData = false; // if express mode
-    bool fakeGUI = false; // all modes
-};
-
 /**
  * Command line user interface.
  */
@@ -93,15 +61,12 @@ class CMDENV_API Cmdenv : public AppBase
      virtual void doRun() override;
      virtual void printUISpecificHelp() override;
 
-     void readPerRunOptions(CmdenvOptions *opt, cConfiguration *cfg);
-
      void help();
 
      bool runSimulation(const char *configName, int runNumber);
      void runSimulations(const char *configName, const std::vector<int>& runNumbers);
      void runSimulationsInThreads(const char *configName, const std::vector<int>& runNumbers, int numThreads);
      std::thread startThread(const char *configName, const std::vector<int>& runNumbers);
-     void simulate();
 
      void installSignalHandler();
      void deinstallSignalHandler();
