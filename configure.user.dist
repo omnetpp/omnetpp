@@ -75,6 +75,11 @@ WITH_OSGEARTH=no
 WITH_NETBUILDER=yes
 
 #
+# Whether to support embedded Python.
+#
+WITH_PYTHON=yes
+
+#
 # Set to "yes" to allow the use of LibXML2. OMNeT++ will only use LibXML for loading
 # XML files that have a DOCTYPE declaration such as an associated DTD. All other XML files
 # are loaded using an embedded XML parser, which is both faster and more memory-efficient.

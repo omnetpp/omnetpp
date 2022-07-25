@@ -3,6 +3,7 @@
 
 // Configuration coming from the user:
 #undef WITH_NETBUILDER
+#undef WITH_PYTHON
 #undef WITH_LIBXML
 #undef WITH_PARSIM
 #undef WITH_MPI

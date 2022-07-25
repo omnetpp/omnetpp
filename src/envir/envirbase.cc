@@ -257,6 +257,10 @@ static const char *buildOptions = ""
     " WITH_NETBUILDER"
     #endif
 
+    #ifdef WITH_PYTHON
+    " WITH_PYTHON"
+    #endif
+
     #ifdef WITH_QTENV
     " WITH_QTENV"
     #endif

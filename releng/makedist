@@ -104,6 +104,7 @@ $TWEAKCONFIG set configure.user WITH_NETBUILDER yes || exit 1
 $TWEAKCONFIG set configure.user WITH_PARSIM yes || exit 1
 $TWEAKCONFIG set configure.user WITH_QTENV no || exit 1
 $TWEAKCONFIG set configure.user WITH_OSG no || exit 1
+$TWEAKCONFIG set configure.user WITH_PYTHON no || exit 1
 
 # set vars for documentation
 $TWEAKCONFIG set doc/src/api.doxyfile    PROJECT_NUMBER $VERSION || exit 1

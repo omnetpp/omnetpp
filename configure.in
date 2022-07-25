@@ -221,6 +221,9 @@ WITH_SYSTEMC=${WITH_SYSTEMC:-no}
 # No Akaroa support by default
 WITH_AKAROA=${WITH_AKAROA:-no}
 
+# Support Python embedding by default
+WITH_PYTHON=${WITH_PYTHON:-yes}
+
 LDFLAG_LIBPATH=${LDFLAG_LIBPATH:--L}
 LDFLAG_INCLUDE=${LDFLAG_INCLUDE:--Wl,-u,}
 LDFLAG_LIB=${LDFLAG_LIB:--l}
@@ -818,6 +821,18 @@ fi
 #   import prettyplotlib
 #   import seaborn
 
+#-------------------------------------------
+# Check for python embedding cflags and libs
+#-------------------------------------------
+if test "$WITH_PYTHON" = "yes"; then
+  PYTHON_CFLAGS=$(pkg-config --cflags python3-embed)
+  PYTHON_LIBS=$(pkg-config --libs python3-embed)
+
+  OPP_CHECK_LIB(python3-dev, Python.h, Py_Initialize(), $PYTHON_CFLAGS, $PYTHON_LIBS, python3_found)
+  if test $python3_found = no; then
+     AC_MSG_ERROR([Python embeding was configured (WITH_PYTHON=yes), but the 'python3-dev' package was not found.])
+  fi
+fi
 
 #----------------------
 # Checks for standard libraries.
@@ -861,6 +876,7 @@ else
    HAVE_DLOPEN=0
    AC_MSG_WARN([no dlopen(): dynamic loading of libs not possible])
 fi
+
 
 #-----------------------------
 # Check for Qt cflags and libs
@@ -1127,6 +1143,10 @@ if test "$WITH_NETBUILDER" = "yes"; then
   AC_DEFINE([WITH_NETBUILDER], [], [])
 fi
 
+if test "$WITH_PYTHON" = "yes"; then
+  AC_DEFINE([WITH_PYTHON], [], [])
+fi
+
 if test "$WITH_LIBXML" = "yes"; then
   AC_DEFINE([WITH_LIBXML], [], [])
 fi
@@ -1237,6 +1257,8 @@ AC_SUBST(LIB_PREFIX)
 
 AC_SUBST(HAVE_DLOPEN)
 AC_SUBST(HAVE_SWAPCONTEXT)
+AC_SUBST(PYTHON_CFLAGS)
+AC_SUBST(PYTHON_LIBS)
 AC_SUBST(QT_CFLAGS)
 AC_SUBST(QT_LIBS)
 AC_SUBST(QTENV_LDFLAGS)
@@ -1258,6 +1280,7 @@ AC_SUBST(AKAROA_CFLAGS)
 AC_SUBST(AKAROA_LIBS)
 
 AC_SUBST(WITH_NETBUILDER)
+AC_SUBST(WITH_PYTHON)
 AC_SUBST(WITH_LIBXML)
 AC_SUBST(WITH_PARSIM)
 AC_SUBST(WITH_QTENV)

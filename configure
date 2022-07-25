@@ -625,6 +625,7 @@ WITH_OSG
 WITH_QTENV
 WITH_PARSIM
 WITH_LIBXML
+WITH_PYTHON
 WITH_NETBUILDER
 AKAROA_LIBS
 AKAROA_CFLAGS
@@ -645,6 +646,8 @@ LIBXML_CFLAGS
 QTENV_LDFLAGS
 QT_LIBS
 QT_CFLAGS
+PYTHON_LIBS
+PYTHON_CFLAGS
 HAVE_SWAPCONTEXT
 HAVE_DLOPEN
 LIB_PREFIX
@@ -2869,6 +2872,9 @@ WITH_SYSTEMC=${WITH_SYSTEMC:-no}
 
 # No Akaroa support by default
 WITH_AKAROA=${WITH_AKAROA:-no}
+
+# support python embedding by default
+WITH_PYTHON=${WITH_PYTHON:-yes}
 
 LDFLAG_LIBPATH=${LDFLAG_LIBPATH:--L}
 LDFLAG_INCLUDE=${LDFLAG_INCLUDE:--Wl,-u,}
@@ -5483,6 +5489,52 @@ fi
 #   import prettyplotlib
 #   import seaborn
 
+#-------------------------------------------
+# Check for python embedding cflags and libs
+#-------------------------------------------
+if test "$WITH_PYTHON" = "yes"; then
+  PYTHON_CFLAGS=$(pkg-config --cflags python3-embed)
+  PYTHON_LIBS=$(pkg-config --libs python3-embed)
+
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS="$PYTHON_CFLAGS"
+   LIBS="$PYTHON_LIBS"
+
+   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for python3-dev with CFLAGS=\"$PYTHON_CFLAGS\" LIBS=\"$PYTHON_LIBS\"" >&5
+printf %s "checking for python3-dev with CFLAGS=\"$PYTHON_CFLAGS\" LIBS=\"$PYTHON_LIBS\"... " >&6; }
+
+   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <Python.h>
+int
+main (void)
+{
+Py_Initialize();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"
+then :
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+printf "%s\n" "yes" >&6; }; python3_found=yes;
+else $as_nop
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }; python3_found=no;
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+  if test $python3_found = no; then
+     as_fn_error $? "Python embeding was configured (WITH_PYTHON=yes), but the 'python3-dev' package was not found." "$LINENO" 5
+  fi
+fi
 
 #----------------------
 # Checks for standard libraries.
@@ -5765,6 +5817,7 @@ else
    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: no dlopen(): dynamic loading of libs not possible" >&5
 printf "%s\n" "$as_me: WARNING: no dlopen(): dynamic loading of libs not possible" >&2;}
 fi
+
 
 #-----------------------------
 # Check for Qt cflags and libs
@@ -7104,6 +7157,11 @@ if test "$WITH_NETBUILDER" = "yes"; then
 
 fi
 
+if test "$WITH_PYTHON" = "yes"; then
+  printf "%s\n" "#define WITH_PYTHON /**/" >>confdefs.h
+
+fi
+
 if test "$WITH_LIBXML" = "yes"; then
   printf "%s\n" "#define WITH_LIBXML /**/" >>confdefs.h
 
@@ -7170,6 +7228,9 @@ ac_config_headers="$ac_config_headers include/omnetpp/platdep/config.h"
 #----------------------
 # Substitutions.
 #----------------------
+
+
+
 
 
 
