@@ -33,7 +33,6 @@
 #include "omnetpp/ccoroutine.h"
 #include "omnetpp/cnedloader.h"
 #include "omnetpp/platdep/platmisc.h"
-#include "sim/netbuilder/cnedloader.h"
 #include "appbase.h"
 #include "args.h"
 #include "envirbase.h"
@@ -151,7 +150,6 @@ AppBase::~AppBase()
 {
     activeApp = nullptr;
     delete debuggerSupport;
-    delete nedLoader;
 }
 
 int AppBase::run(const std::vector<std::string>& args, InifileContents *ini)
@@ -169,9 +167,6 @@ int AppBase::run(int argc, char *argv[], InifileContents *ini)
     args->parse(argc, argv, ARGSPEC);
     useStderr = !args->optionGiven('m');
     verbose = !args->optionGiven('s');
-
-    nedLoader = new cNedLoader("nedLoader");
-    nedLoader->removeFromOwnershipTree();
 
     // ensure correct numeric format in output files
     setPosixLocale();
@@ -386,7 +381,7 @@ void AppBase::installCrashHandler()
 #endif
 }
 
-void AppBase::loadNEDFiles(cConfiguration *cfg, ArgList *args)
+void AppBase::loadNEDFiles(cINedLoader *nedLoader, cConfiguration *cfg, ArgList *args)
 {
     std::string nArg = opp_join(args->optionValues('n'), ";", true);
     std::string xArg = opp_join(args->optionValues('x'), ";", true);

@@ -59,6 +59,7 @@
 #include "omnetpp/cfutureeventset.h"
 #include "omnetpp/platdep/platmisc.h"
 #include "omnetpp/ccontextswitcher.h"
+#include "sim/netbuilder/cnedloader.h"
 #include "qtenvdefs.h"
 #include "qtenv.h"
 #include "qtenvir.h"
@@ -627,6 +628,9 @@ void Qtenv::doRun()
     //
     // SETUP
     //
+    cINedLoader *nedLoader = new cNedLoader("nedLoader");
+    nedLoader->removeFromOwnershipTree();
+
     QtEnvir *envir = new QtEnvir(this);
     envir->setIsGUI(true);
     envir->setArgs(args);
@@ -643,7 +647,7 @@ void Qtenv::doRun()
     if (getAttachDebuggerOnErrors())
         installCrashHandler();
 
-    loadNEDFiles(activeCfg, args);
+    loadNEDFiles(nedLoader, activeCfg, args);
 
     // set signal handler
     signal(SIGINT, signalHandler);
@@ -818,6 +822,8 @@ void Qtenv::doRun()
 
     delete pauseEventLoop;
     pauseEventLoop = nullptr;
+
+    delete nedLoader;
 
     delete app;
     app = nullptr;

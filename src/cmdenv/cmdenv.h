@@ -34,6 +34,8 @@ using namespace omnetpp::envir;
 class CMDENV_API Cmdenv : public AppBase
 {
    protected:
+     cINedLoader *nedLoader = nullptr;
+
      // set to true on SIGINT/SIGTERM signals
      static bool sigintReceived;
 

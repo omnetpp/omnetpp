@@ -55,7 +55,6 @@ class ENVIR_API AppBase
     int exitCode = 0;
 
     DebuggerSupport *debuggerSupport = new DebuggerSupport();
-    cINedLoader *nedLoader = nullptr;
 
     static AppBase *activeApp;
 
@@ -112,8 +111,8 @@ class ENVIR_API AppBase
     // functions added locally
     virtual bool simulationRequired();
     virtual void doRun() = 0;
-    virtual void loadNEDFiles(cConfiguration *cfg, ArgList *args);
 
+    virtual void loadNEDFiles(cINedLoader *nedLoader, cConfiguration *cfg, ArgList *args);
     virtual void setupNetwork(cModuleType *networkType);
 
     ArgList *argList()  {return args;}

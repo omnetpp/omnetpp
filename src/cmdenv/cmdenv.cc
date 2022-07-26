@@ -53,6 +53,7 @@
 #include "omnetpp/cabstracthistogram.h"
 #include "omnetpp/cwatch.h"
 #include "omnetpp/cdisplaystring.h"
+#include "sim/netbuilder/cnedloader.h"
 #include "cmddefs.h"
 #include "cmdenv.h"
 #include "cmdenvir.h"
@@ -114,8 +115,11 @@ Cmdenv::~Cmdenv()
 void Cmdenv::doRun()
 {
     {
+        nedLoader = new cNedLoader("nedLoader");
+        nedLoader->removeFromOwnershipTree();
+
         cConfiguration *globalCfg = ini->extractGlobalConfig();
-        loadNEDFiles(globalCfg, args);
+        loadNEDFiles(nedLoader, globalCfg, args);
 
         CodeFragments::executeAll(CodeFragments::STARTUP); // app setup is complete
 
@@ -172,6 +176,8 @@ void Cmdenv::doRun()
         }
 
         exitCode = numErrors > 0 ? 1 : sigintReceived ? 2 : 0;
+
+        delete nedLoader;
 
     }
 }
