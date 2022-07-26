@@ -47,6 +47,8 @@ class cIEventlogManager;
 
 namespace envir {
 
+extern cConfigOption *CFGID_DEBUGGER_ATTACH_ON_ERROR;
+
 class IAllInOne;
 class XMLDocCache;
 

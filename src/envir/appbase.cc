@@ -181,7 +181,11 @@ int AppBase::run(int argc, char *argv[], InifileContents *ini)
     SimTime::configure(globalCfg);
     cCoroutine::configure(globalCfg);
     bool attachOnStartup = globalCfg->getAsBool(CFGID_DEBUGGER_ATTACH_ON_STARTUP);
+    bool attachOnError = globalCfg->getAsBool(CFGID_DEBUGGER_ATTACH_ON_ERROR);
     delete globalCfg;
+
+     if (attachOnError)
+        installCrashHandler();
 
     try {
         if (attachOnStartup && debuggerSupport->detectDebugger() != DebuggerPresence::PRESENT)

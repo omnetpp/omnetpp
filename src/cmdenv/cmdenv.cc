@@ -117,10 +117,6 @@ void Cmdenv::doRun()
         cConfiguration *globalCfg = ini->extractGlobalConfig();
         loadNEDFiles(globalCfg, args);
 
-        //TODO how?
-        // if (envir->getAttachDebuggerOnErrors())
-        //    installCrashHandler();
-
         CodeFragments::executeAll(CodeFragments::STARTUP); // app setup is complete
 
         // '-c' and '-r' option: configuration to activate, and run numbers to run.
@@ -279,12 +275,12 @@ bool Cmdenv::runSimulation(const char *configName, int runNumber)
         envir->setLogFormat(cfg->getAsString(CFGID_CMDENV_LOG_PREFIX).c_str());
         envir->setExtraStackForEnvir((size_t)cfg->getAsDouble(CFGID_CMDENV_EXTRA_STACK));
 
+        envir->setAttachDebuggerOnErrors(cfg->getAsBool(CFGID_DEBUGGER_ATTACH_ON_ERROR));  //TODO in Qtenv too!
+
 //TODO:
 //        envir->setLoggingEnabled(TODO);
-//        envir->setAttachDebuggerOnErrors(TODO);
 //        envir->setLogLevel(LogLevel logLevel);
 //        envir->setLogFormat(const char *logFormat);
-//        envir->setCheckSignals(TODO)
 //        envir->setImagePath(const char *imagePath);
 
         envir->setVerbose(verbose);

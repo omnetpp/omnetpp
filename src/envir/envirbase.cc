@@ -80,8 +80,6 @@ void EnvirBase::initialize(cSimulation *simulation, cConfiguration *cfg, ArgList
     this->cfg = cfg;
     this->simulation = simulation;
 
-    attachDebuggerOnErrors = cfg->getAsBool(CFGID_DEBUGGER_ATTACH_ON_ERROR);
-
     setImagePath(extractImagePath(cfg, args).c_str());
 }
 
