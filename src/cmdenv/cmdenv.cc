@@ -250,7 +250,6 @@ bool Cmdenv::runSimulation(const char *configName, int runNumber)
         std::string inifileNetworkDir  = cfg->getConfigEntry(CFGID_NETWORK->getName()).getBaseDirectory();
 
         simtime_t simtimeLimit = cfg->getAsDouble(CFGID_SIM_TIME_LIMIT, -1);
-        simtime_t warmupPeriod = cfg->getAsDouble(CFGID_WARMUP_PERIOD);
         double realTimeLimit = cfg->getAsDouble(CFGID_REAL_TIME_LIMIT, -1);
         double cpuTimeLimit = cfg->getAsDouble(CFGID_CPU_TIME_LIMIT, -1);
 
@@ -263,8 +262,6 @@ bool Cmdenv::runSimulation(const char *configName, int runNumber)
         bool expressMode = cfg->getAsBool(CFGID_CMDENV_EXPRESS_MODE);
         bool autoflush = cfg->getAsBool(CFGID_CMDENV_AUTOFLUSH);
 
-
-        simulation->setWarmupPeriod(warmupPeriod);
         simulation->configure(cfg);  // include envir->configure()
 
         bool useFakeGUI = cfg->getAsBool(CFGID_CMDENV_FAKE_GUI);

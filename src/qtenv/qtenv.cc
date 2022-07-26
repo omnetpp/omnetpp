@@ -1769,8 +1769,6 @@ void Qtenv::readPerRunOptions(cConfiguration *cfg)
     opt->simtimeLimit = cfg->getAsDouble(CFGID_SIM_TIME_LIMIT, -1);
     opt->realTimeLimit = cfg->getAsDouble(CFGID_REAL_TIME_LIMIT, -1);
     opt->cpuTimeLimit = cfg->getAsDouble(CFGID_CPU_TIME_LIMIT, -1);
-    opt->warmupPeriod = cfg->getAsDouble(CFGID_WARMUP_PERIOD);
-    getSimulation()->setWarmupPeriod(opt->warmupPeriod);
 
     opt->debugStatisticsRecording = cfg->getAsBool(CFGID_DEBUG_STATISTICS_RECORDING);
     opt->warnings = cfg->getAsBool(CFGID_WARNINGS);
