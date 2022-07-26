@@ -399,8 +399,9 @@ void MessageAnimator::delivery(cMessage *msg)
 
 bool MessageAnimator::willAnimate(cMessage *msg)
 {
-    for (auto p : animations)
-        if (p && p->willAnimate(msg))
+    auto range = animationsForMessages.equal_range(msg);
+    for (auto p = range.first; p != range.second; p++)
+        if (p->second && p->second->willAnimate(msg))
             return true;
 
     return currentSending && currentSending->msg == msg;
@@ -826,13 +827,6 @@ void MessageAnimator::removeMessagePointer(cMessage *msg)
     if (currentSending)
         // most likely a channel was disabled, or discarded the message for some other reason - between a beginSend()/endSend() pair.
         currentSending->removeMessagePointer(msg);
-
-    MethodcallAnimation *methodCallRoot = getCurrentMethodCallRoot();
-    if (methodCallRoot)
-        methodCallRoot->removeMessagePointer(msg);
-
-    if (deliveries)
-        deliveries->removeMessagePointer(msg);
 }
 
 void MessageAnimator::dump()
