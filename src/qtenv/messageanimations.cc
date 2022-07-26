@@ -337,20 +337,6 @@ bool AnimationSequence::isEmpty() const
     });
 }
 
-bool AnimationSequence::willAnimate(cMessage *msg)
-{
-    return std::any_of(parts.begin(), parts.end(),
-                       [&msg](Animation *p) {
-        return p->willAnimate(msg);
-    });
-}
-
-void AnimationSequence::removeMessagePointer(cMessage *msg)
-{
-    for (auto& p : parts)
-        p->removeMessagePointer(msg);
-}
-
 QString AnimationSequence::str() const
 {
     QString result = "AnimationSequence of " + QString::number(parts.size()) + " parts, state " + stateText[state];
@@ -441,20 +427,6 @@ void AnimationGroup::removeFromInspector(Inspector *insp)
 {
     for (Animation *p : parts)
         p->removeFromInspector(insp);
-}
-
-bool AnimationGroup::willAnimate(cMessage *msg)
-{
-    for (Animation *p : parts)
-        if (p->willAnimate(msg))
-            return true;
-    return false;
-}
-
-void AnimationGroup::removeMessagePointer(cMessage *msg)
-{
-    for (Animation *p : parts)
-        p->removeMessagePointer(msg);
 }
 
 QString AnimationGroup::str() const

@@ -125,16 +125,6 @@ public:
     // True if currently no part of this animation is visible in any open inspectors.
     virtual bool isEmpty() const = 0;
 
-    // True if this animation (tree) is currently, or will in the future,
-    // show a representation of msg. Needed to avoid drawing the static
-    // message item where it has not "arrived" yet in the animation.
-    virtual bool willAnimate(cMessage *msg) = 0;
-
-    // This is called when the message is delivered or deleted, so
-    // the graphics items can remove their references to it.
-    // If needed, animations might clone the message for later use.
-    virtual void removeMessagePointer(cMessage *msg) = 0;
-
     // Only needed for debugging.
     virtual QString str() const = 0;
 
@@ -189,8 +179,6 @@ public:
     void removeFromInspector(Inspector *insp) override;
 
     bool isEmpty() const override;
-    bool willAnimate(cMessage *msg) override;
-    void removeMessagePointer(cMessage *msg) override;
 
     QString str() const override;
 
@@ -228,10 +216,6 @@ public:
     void removeFromInspector(Inspector *insp) override;
 
     bool isEmpty() const override { return parts.empty(); }
-
-    bool willAnimate(cMessage *msg) override;
-
-    void removeMessagePointer(cMessage *msg) override;
 
     QString str() const override;
 
@@ -283,8 +267,6 @@ public:
     void removeFromInspector(Inspector *insp) override;
 
     bool isEmpty() const override;
-    bool willAnimate(cMessage *msg) override { return body.willAnimate(msg); }
-    void removeMessagePointer(cMessage *msg) override { body.removeMessagePointer(msg); }
 
     QString str() const override;
 
@@ -320,12 +302,20 @@ public:
     void end() override;
 
     bool isEmpty() const override { return messageItems.empty(); }
-    bool willAnimate(cMessage *msg) override { return state < FINISHED && msg == this->msg; }
-    void removeMessagePointer(cMessage *msg) override;
+
+    // True if this animation is currently, or will in the future,
+    // show a representation of msg. Needed to avoid drawing the static
+    // message item where it has not "arrived" yet in the animation.
+    virtual bool willAnimate(cMessage *msg) { return state < FINISHED && msg == this->msg; }
 
     // This is used to notify the animations about the creation of a
     // cMessage's private clone by the LogBuffer.
     virtual bool messageDuplicated(cMessage *msg, cMessage *dup);
+
+    // This is called when the message is delivered or deleted, so
+    // the graphics items can remove their references to it.
+    // If needed, animations might clone the message for later use.
+    virtual void removeMessagePointer(cMessage *msg);
 
     virtual SimTime getStartTime() const = 0;
 

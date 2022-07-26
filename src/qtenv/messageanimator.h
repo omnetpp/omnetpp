@@ -242,7 +242,7 @@ public:
     void deliveryDirect(cMessage *msg);
     void delivery(cMessage *msg);
 
-    // see Animation::willAnimate
+    // see MessageAnimation::willAnimate
     bool willAnimate(cMessage *msg);
 
     void setMarkedModule(cModule *mod);
