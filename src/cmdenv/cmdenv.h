@@ -59,7 +59,6 @@ class CMDENV_API Cmdenv : public AppBase
 
 
    protected:
-     virtual void displayException(std::exception& ex) override;
      virtual void doRun() override;
      virtual void printUISpecificHelp() override;
 

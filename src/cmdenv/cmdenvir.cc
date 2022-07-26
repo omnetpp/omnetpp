@@ -26,11 +26,41 @@ namespace omnetpp {
 namespace cmdenv {
 
 extern cConfigOption *CFGID_CMDENV_LOGLEVEL;
+extern cConfigOption *CFGID_CMDENV_EXPRESS_MODE;
+extern cConfigOption *CFGID_CMDENV_AUTOFLUSH;
+extern cConfigOption *CFGID_CMDENV_INTERACTIVE;
+extern cConfigOption *CFGID_CMDENV_EVENT_BANNERS;
+extern cConfigOption *CFGID_CMDENV_LOG_PREFIX;
+extern cConfigOption *CFGID_CMDENV_EXTRA_STACK;
+extern cConfigOption *CFGID_CMDENV_FAKE_GUI;
+
 
 void CmdEnvir::configure(cConfiguration *cfg)
 {
     EnvirBase::configure(cfg);
-    //TODO
+
+    setExpressMode(cfg->getAsBool(CFGID_CMDENV_EXPRESS_MODE));
+    setAutoflush(cfg->getAsBool(CFGID_CMDENV_AUTOFLUSH));
+    setInteractive(cfg->getAsBool(CFGID_CMDENV_INTERACTIVE));
+    setPrintEventBanners(cfg->getAsBool(CFGID_CMDENV_EVENT_BANNERS));
+    setLogFormat(cfg->getAsString(CFGID_CMDENV_LOG_PREFIX).c_str());
+    setExtraStackForEnvir((size_t)cfg->getAsDouble(CFGID_CMDENV_EXTRA_STACK));
+
+    bool useFakeGUI = cfg->getAsBool(CFGID_CMDENV_FAKE_GUI);
+    FakeGUI *fakeGUI = useFakeGUI ? new FakeGUI() : nullptr;
+    setFakeGUI(fakeGUI);
+    setIsGUI(useFakeGUI);
+
+    if (fakeGUI)
+        fakeGUI->configure(getSimulation(), cfg);
+}
+
+void CmdEnvir::setFakeGUI(FakeGUI *fakeGUI)
+{
+    delete this->fakeGUI;
+    this->fakeGUI = fakeGUI;
+    if (fakeGUI)
+        out << "\n*** WARNING: FAKEGUI IS AN EXPERIMENTAL FEATURE -- DO NOT RELY ON FINGERPRINTS GENERATED UNDER FAKEGUI UNTIL CODE IS FINALIZED!\n" << endl;
 }
 
 void CmdEnvir::componentInitBegin(cComponent *component, int stage)

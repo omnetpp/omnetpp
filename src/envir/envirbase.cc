@@ -80,6 +80,8 @@ void EnvirBase::configure(cConfiguration *cfg)
 {
     this->cfg = cfg;
 
+    setAttachDebuggerOnErrors(cfg->getAsBool(CFGID_DEBUGGER_ATTACH_ON_ERROR));
+
     // install eventlog manager
     std::string eventlogManagerClass = cfg->getAsString(CFGID_EVENTLOGMANAGER_CLASS);
     cIEventlogManager *eventlogManager = createByClassName<cIEventlogManager>(eventlogManagerClass.c_str(), "eventlog manager");

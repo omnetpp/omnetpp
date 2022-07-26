@@ -35,19 +35,19 @@ class CMDENV_API CmdEnvir : public EnvirBase
     Cmdenv *app = nullptr;
     bool& sigintReceived;
 
-    FakeGUI *fakeGUI = nullptr;
+    FakeGUI *fakeGUI = nullptr; // owned
     bool printEventBanners = false;
     bool autoflush = false;
     bool interactive = false;
 
    public:
     CmdEnvir(Cmdenv *app, bool& sigintReceived) : app(app), sigintReceived(sigintReceived) {}
-    virtual ~CmdEnvir() {}
+    virtual ~CmdEnvir() {delete fakeGUI;}
     virtual void configure(cConfiguration *cfg) override;
 
     Cmdenv *getApp() const {return app;}
 
-    void setFakeGUI(FakeGUI *fakeGUI) {this->fakeGUI = fakeGUI;}
+    void setFakeGUI(FakeGUI *fakeGUI);
     FakeGUI *getFakeGui() const {return fakeGUI;}
 
     bool getAutoflush() const {return autoflush;}

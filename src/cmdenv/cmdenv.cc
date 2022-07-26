@@ -112,6 +112,15 @@ Cmdenv::~Cmdenv()
 {
 }
 
+void Cmdenv::printUISpecificHelp()
+{
+    out << "Cmdenv-specific information:\n";
+    out << "    Cmdenv executes all runs denoted by the -c and -r options. The number\n";
+    out << "    of runs executed and the number of runs that ended with an error are\n";
+    out << "    reported at the end.\n";
+    out << endl;
+}
+
 void Cmdenv::doRun()
 {
     {
@@ -229,6 +238,7 @@ bool Cmdenv::runSimulation(const char *configName, int runNumber)
 {
     CmdEnvir *envir = new CmdEnvir(this, sigintReceived);
     envir->setArgs(args);
+    envir->setVerbose(verbose);
     cSimulation *simulation = new cSimulation("simulation", envir);  //TODO: finally: delete simulation
     simulation->setNedLoader(nedLoader);
     cSimulation::setActiveSimulation(simulation);
@@ -244,48 +254,9 @@ bool Cmdenv::runSimulation(const char *configName, int runNumber)
 
         cfg = ini->extractConfig(configName, runNumber);
 
-        // Common options:
-        std::string networkName = cfg->getAsString(CFGID_NETWORK);
-        std::string inifileNetworkDir  = cfg->getConfigEntry(CFGID_NETWORK->getName()).getBaseDirectory();
-
-        simtime_t simtimeLimit = cfg->getAsDouble(CFGID_SIM_TIME_LIMIT, -1);
-        double realTimeLimit = cfg->getAsDouble(CFGID_REAL_TIME_LIMIT, -1);
-        double cpuTimeLimit = cfg->getAsDouble(CFGID_CPU_TIME_LIMIT, -1);
-
-        //TODO unused: bool warnings = cfg->getAsBool(CFGID_WARNINGS);
-
-        // Cmdenv specific:
         stopBatchOnError = cfg->getAsBool(CFGID_CMDENV_STOP_BATCH_ON_ERROR);
-        std::string outputFile = cfg->getAsFilename(CFGID_CMDENV_OUTPUT_FILE).c_str();
-        bool redirectOutput = cfg->getAsBool(CFGID_CMDENV_REDIRECT_OUTPUT);
-        bool expressMode = cfg->getAsBool(CFGID_CMDENV_EXPRESS_MODE);
-        bool autoflush = cfg->getAsBool(CFGID_CMDENV_AUTOFLUSH);
 
         simulation->configure(cfg);  // include envir->configure()
-
-        bool useFakeGUI = cfg->getAsBool(CFGID_CMDENV_FAKE_GUI);
-        FakeGUI *fakeGUI = useFakeGUI ? new FakeGUI() : nullptr;
-        envir->setFakeGUI(fakeGUI);
-        if (useFakeGUI)
-            out << "\n*** WARNING: FAKEGUI IS AN EXPERIMENTAL FEATURE -- DO NOT RELY ON FINGERPRINTS GENERATED UNDER FAKEGUI UNTIL CODE IS FINALIZED!\n" << endl;
-
-        envir->setIsGUI(fakeGUI != nullptr);
-        envir->setExpressMode(expressMode);
-        envir->setAutoflush(autoflush);
-        envir->setInteractive(cfg->getAsBool(CFGID_CMDENV_INTERACTIVE));
-        envir->setPrintEventBanners(cfg->getAsBool(CFGID_CMDENV_EVENT_BANNERS));
-
-        envir->setLogFormat(cfg->getAsString(CFGID_CMDENV_LOG_PREFIX).c_str());
-        envir->setExtraStackForEnvir((size_t)cfg->getAsDouble(CFGID_CMDENV_EXTRA_STACK));
-
-        envir->setAttachDebuggerOnErrors(cfg->getAsBool(CFGID_DEBUGGER_ATTACH_ON_ERROR));  //TODO in Qtenv too!
-
-//TODO:
-//        envir->setLoggingEnabled(TODO);
-//        envir->setLogLevel(LogLevel logLevel);
-//        envir->setLogFormat(const char *logFormat);
-
-        envir->setVerbose(verbose);
 
         const char *iterVars = cfg->getVariable(CFGVAR_ITERATIONVARS);
         const char *runId = cfg->getVariable(CFGVAR_RUNID);
@@ -293,7 +264,9 @@ bool Cmdenv::runSimulation(const char *configName, int runNumber)
         if (!verbose)
             out << configName << " run " << runNumber << ": " << iterVars << ", $repetition=" << repetition << endl; // print before redirection; useful as progress indication from opp_runall
 
+        bool redirectOutput = cfg->getAsBool(CFGID_CMDENV_REDIRECT_OUTPUT);
         if (redirectOutput) {
+            std::string outputFile = cfg->getAsFilename(CFGID_CMDENV_OUTPUT_FILE);
             outputFile = ResultFileUtils(cfg).augmentFileName(outputFile);
             if (verbose)
                 out << "Redirecting output to file \"" << outputFile << "\"..." << endl;
@@ -309,6 +282,8 @@ bool Cmdenv::runSimulation(const char *configName, int runNumber)
         }
 
         // find network
+        std::string networkName = cfg->getAsString(CFGID_NETWORK);
+        std::string inifileNetworkDir  = cfg->getConfigEntry(CFGID_NETWORK->getName()).getBaseDirectory();
         if (networkName.empty())
             throw cRuntimeError("No network specified (missing or empty network= configuration option)");
         cModuleType *network = resolveNetwork(networkName.c_str(), inifileNetworkDir.c_str());
@@ -327,7 +302,7 @@ bool Cmdenv::runSimulation(const char *configName, int runNumber)
         if (verbose)
             out << "Initializing..." << endl;
 
-        cLog::setLoggingEnabled(!expressMode);
+        cLog::setLoggingEnabled(!envir->isExpressMode());
 
         simulation->callInitialize();
         cLogProxy::flushLastLine();
@@ -348,13 +323,18 @@ bool Cmdenv::runSimulation(const char *configName, int runNumber)
         sigintReceived = false;
 
         try {
+            FakeGUI *fakeGUI = envir->getFakeGui();
             Runner runner(simulation, fakeGUI, out, sigintReceived);
+
+            simtime_t simtimeLimit = cfg->getAsDouble(CFGID_SIM_TIME_LIMIT, -1);
+            double realTimeLimit = cfg->getAsDouble(CFGID_REAL_TIME_LIMIT, -1);
+            double cpuTimeLimit = cfg->getAsDouble(CFGID_CPU_TIME_LIMIT, -1);
             if (simtimeLimit >= SIMTIME_ZERO)
                 runner.setSimulationTimeLimit(simtimeLimit);
             runner.setCPUTimeLimit(cpuTimeLimit);
             runner.setRealTimeLimit(realTimeLimit);
-            runner.setExpressMode(expressMode);
-            runner.setAutoFlush(autoflush);
+            runner.setExpressMode(envir->isExpressMode());
+            runner.setAutoFlush(envir->getAutoflush());
             runner.setStatusFrequencyMs(1000*cfg->getAsDouble(CFGID_CMDENV_STATUS_FREQUENCY));
             runner.setPrintPerformanceData(cfg->getAsBool(CFGID_CMDENV_PERFORMANCE_DISPLAY));
             runner.setPrintThreadId(false); //TODO
@@ -429,12 +409,6 @@ bool Cmdenv::runSimulation(const char *configName, int runNumber)
     return finishedOK;
 }
 
-void Cmdenv::displayException(std::exception& ex)
-{
-    AppBase::displayException(ex);
-}
-
-
 void Cmdenv::signalHandler(int signum)
 {
     if (signum == SIGINT || signum == SIGTERM)
@@ -453,20 +427,9 @@ void Cmdenv::deinstallSignalHandler()
     signal(SIGTERM, SIG_DFL);
 }
 
-
 void Cmdenv::alert(const char *msg)
 {
     out << "\n<!> " << msg << endl << endl;
-}
-
-
-void Cmdenv::printUISpecificHelp()
-{
-    out << "Cmdenv-specific information:\n";
-    out << "    Cmdenv executes all runs denoted by the -c and -r options. The number\n";
-    out << "    of runs executed and the number of runs that ended with an error are\n";
-    out << "    reported at the end.\n";
-    out << endl;
 }
 
 }  // namespace cmdenv
