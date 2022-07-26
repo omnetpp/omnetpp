@@ -83,13 +83,13 @@ void EnvirBase::initialize(cSimulation *simulation, cConfiguration *cfg, ArgList
     attachDebuggerOnErrors = cfg->getAsBool(CFGID_DEBUGGER_ATTACH_ON_ERROR);
 
     setImagePath(extractImagePath(cfg, args).c_str());
-
-    xmlCache = new XMLDocCache();
 }
 
 void EnvirBase::configure(cConfiguration *cfg)
 {
     this->cfg = cfg;
+
+    xmlCache = new XMLDocCache();
 
     // install eventlog manager
     std::string eventlogManagerClass = cfg->getAsString(CFGID_EVENTLOGMANAGER_CLASS);

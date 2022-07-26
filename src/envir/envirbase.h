@@ -60,9 +60,9 @@ class XMLDocCache;
 class ENVIR_API EnvirBase : public cEnvir
 {
   protected:
+    // context
     cSimulation *simulation = nullptr;
     cConfiguration *cfg = nullptr;
-    XMLDocCache *xmlCache = nullptr;
 
     std::ostream out; //TODO move to AppBase?
 
@@ -96,7 +96,8 @@ class ENVIR_API EnvirBase : public cEnvir
 
     bool attachDebuggerOnErrors = false;
 
-    // Output file managers
+    // Output file managers, etc
+    XMLDocCache *xmlCache = nullptr;
     cIEventlogManager *eventlogManager = nullptr;  // nullptr if no eventlog is being written, must be non nullptr if record_eventlog is true
     cIOutputVectorManager *outVectorManager = nullptr;
     cIOutputScalarManager *outScalarManager = nullptr;
