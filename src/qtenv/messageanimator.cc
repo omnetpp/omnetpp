@@ -252,11 +252,6 @@ void MessageAnimator::endSend(cMessage *msg)
         }
     }
 
-    auto dup = logBuffer->getLastMessageDup(msg);
-    ASSERT(dup);
-    // have to do it before turning the sending into an animation, because  ???? TODO
-    messageDuplicated(msg, dup);
-
     if (getQtenv()->getSimulationRunMode() != RUNMODE_FAST)
         updateAnimations();
 
@@ -345,7 +340,9 @@ void MessageAnimator::endSend(cMessage *msg)
             animGroup->advance();
     }
 
-    sendAnim->messageDuplicated(msg, dup);
+    auto dup = logBuffer->getLastMessageDup(msg);
+    ASSERT(dup);
+    messageDuplicated(msg, dup);
 
     for (auto insp : getQtenv()->getInspectors())
         sendAnim->addToInspector(insp);
@@ -798,8 +795,8 @@ void MessageAnimator::messageDuplicated(cMessage *msg, cMessage *dup)
     auto range = animationsForMessages.equal_range(msg);
     std::vector<std::pair<cMessage *, MessageAnimation *>> toInsert;
      for (auto a = range.first; a != range.second; ++a) {
-        (*a).second->messageDuplicated(msg, dup);
-        toInsert.push_back({dup, (*a).second});
+        if ((*a).second->messageDuplicated(msg, dup))
+            toInsert.push_back({dup, (*a).second});
      }
 
     for (auto p : toInsert)
@@ -807,13 +804,6 @@ void MessageAnimator::messageDuplicated(cMessage *msg, cMessage *dup)
 
     if (currentSending)
         currentSending->messageDuplicated(msg, dup);
-
-    MethodcallAnimation *methodCallRoot = getCurrentMethodCallRoot();
-    if (methodCallRoot)
-        methodCallRoot->messageDuplicated(msg, dup);
-
-    if (deliveries)
-        deliveries->messageDuplicated(msg, dup);
 }
 
 void MessageAnimator::removeMessagePointer(cMessage *msg)

@@ -345,12 +345,6 @@ bool AnimationSequence::willAnimate(cMessage *msg)
     });
 }
 
-void AnimationSequence::messageDuplicated(cMessage *msg, cMessage *dup)
-{
-    for (auto& p : parts)
-        p->messageDuplicated(msg, dup);
-}
-
 void AnimationSequence::removeMessagePointer(cMessage *msg)
 {
     for (auto& p : parts)
@@ -455,12 +449,6 @@ bool AnimationGroup::willAnimate(cMessage *msg)
         if (p->willAnimate(msg))
             return true;
     return false;
-}
-
-void AnimationGroup::messageDuplicated(cMessage *msg, cMessage *dup)
-{
-    for (Animation *p : parts)
-        p->messageDuplicated(msg, dup);
 }
 
 void AnimationGroup::removeMessagePointer(cMessage *msg)
@@ -746,11 +734,13 @@ void MessageAnimation::removeMessagePointer(cMessage *msg)
     }
 }
 
-void MessageAnimation::messageDuplicated(cMessage *msg, cMessage *dup)
+bool MessageAnimation::messageDuplicated(cMessage *msg, cMessage *dup)
 {
     if (msg == this->msg && !msgDup) {
         msgDup = dup;
+        return true;
     }
+    return false;
 }
 
 void MessageAnimation::removeFromInspector(Inspector *insp)
