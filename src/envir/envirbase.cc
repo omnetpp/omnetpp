@@ -91,9 +91,6 @@ void EnvirBase::configure(cConfiguration *cfg)
 {
     this->cfg = cfg;
 
-    // note: call to cSimulation::configure() must precede result manager initializations, as they call cSimulation::isParsimEnabled()
-    getSimulation()->configure(cfg);  //TODO remove this
-
     // install eventlog manager
     std::string eventlogManagerClass = cfg->getAsString(CFGID_EVENTLOGMANAGER_CLASS);
     cIEventlogManager *eventlogManager = createByClassName<cIEventlogManager>(eventlogManagerClass.c_str(), "eventlog manager");

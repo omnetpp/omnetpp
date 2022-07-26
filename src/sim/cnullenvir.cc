@@ -20,11 +20,6 @@
 
 using namespace omnetpp;
 
-cNullEnvir::cNullEnvir(cConfiguration *cfg) :
-    cfg(cfg), rng(new cMersenneTwister())
-{
-}
-
 cNullEnvir::~cNullEnvir()
 {
     while (!listeners.empty()) {

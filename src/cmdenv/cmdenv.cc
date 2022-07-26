@@ -263,9 +263,9 @@ bool Cmdenv::runSimulation(const char *configName, int runNumber)
         bool expressMode = cfg->getAsBool(CFGID_CMDENV_EXPRESS_MODE);
         bool autoflush = cfg->getAsBool(CFGID_CMDENV_AUTOFLUSH);
 
-        envir->configure(cfg);
 
         simulation->setWarmupPeriod(warmupPeriod);
+        simulation->configure(cfg);  // include envir->configure()
 
         bool useFakeGUI = cfg->getAsBool(CFGID_CMDENV_FAKE_GUI);
         FakeGUI *fakeGUI = useFakeGUI ? new FakeGUI() : nullptr;

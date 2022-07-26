@@ -49,8 +49,8 @@ namespace omnetpp {
 class SIM_API cNullEnvir : public cEnvir
 {
   protected:
-    cConfiguration *cfg;
-    cRNG *rng;
+    cConfiguration *cfg = nullptr;
+    cRNG *rng = new cMersenneTwister();
     uint64_t nextUniqueNumber = 0;
     std::vector<cISimulationLifecycleListener*> listeners;
 
@@ -62,8 +62,9 @@ class SIM_API cNullEnvir : public cEnvir
 
   public:
     // constructor, destructor
-    cNullEnvir(cConfiguration *cfg);
+    cNullEnvir() {}
     virtual ~cNullEnvir();
+    virtual void configure(cConfiguration *cfg) override {this->cfg = cfg;}
 
     // eventlog callback interface
     virtual void objectDeleted(cObject *object) override {}

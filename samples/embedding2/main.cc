@@ -58,23 +58,17 @@ class MinimalEnv : public cNullEnvir
     std::string iaTime;
     int numHosts;
 
-    // constructor
-    MinimalEnv(cConfiguration *cfg) : cNullEnvir(cfg) {}
-
-    void setParameters(int numHosts, std::string iaTime)
-    {
+    void setParameters(int numHosts, std::string iaTime) {
         this->iaTime = iaTime;
         this->numHosts = numHosts;
     }
 
-    double getStatistic(std::string name)
-    {
+    double getStatistic(std::string name) {
         return scalarResults[name];
     }
 
     // model parameters
-    virtual void readParameter(cPar *par) override
-    {
+    virtual void readParameter(cPar *par) override {
         if (strcmp(par->getName(), "iaTime") == 0)
             par->parse(iaTime.c_str());
         else if (strcmp(par->getName(), "numHosts") == 0)
@@ -85,15 +79,13 @@ class MinimalEnv : public cNullEnvir
             throw cRuntimeError("no value for parameter %s", par->getFullPath().c_str());
     }
 
-    virtual void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes = nullptr) override
-    {
-        // store all reported scalar results into a map for later use
+    // store all reported scalar results into a map for later use
+    virtual void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes = nullptr) override {
         scalarResults[component->getFullPath()+"."+name] = value;
     }
 
     // dump any scalar result gathered by the simulation model
-    void dumpResults()
-    {
+    void dumpResults() {
         if (!scalarResults.empty()) {
             ::printf("Scalar statistics:\n");
             for (StringDoubleMap::const_iterator it = scalarResults.begin(); it != scalarResults.end(); ++it)
@@ -106,7 +98,7 @@ class MinimalEnv : public cNullEnvir
 double simulateAloha(simtime_t limit, int numHosts, double iaMean)
 {
     // set up an environment for the simulation
-    MinimalEnv *menv = new MinimalEnv(new EmptyConfig());
+    MinimalEnv *menv = new MinimalEnv();
     cSimulation *sim = new cSimulation("simulation", menv);
     cSimulation::setActiveSimulation(sim);
     CodeFragments::executeAll(CodeFragments::STARTUP, false);
@@ -116,6 +108,9 @@ double simulateAloha(simtime_t limit, int numHosts, double iaMean)
     sim->loadNedText("server", SERVER_NED);
     sim->loadNedText("host", HOST_NED);
     // sim->loadNedSourceFolder("./model");
+
+    cConfiguration *cfg = new EmptyConfig();
+    sim->configure(cfg);
 
     // set the simulation parameters in the environment
     std::ostringstream iaParam;
@@ -162,6 +157,7 @@ double simulateAloha(simtime_t limit, int numHosts, double iaMean)
     // delete simulation
     cSimulation::setActiveSimulation(nullptr);
     delete sim;  // deletes menv as well
+    delete cfg;
 
     return result;
 }

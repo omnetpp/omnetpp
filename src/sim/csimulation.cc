@@ -263,7 +263,10 @@ void cSimulation::configure(cConfiguration *cfg)
     bool allowObjectStealing = cfg->getAsBool(CFGID_ALLOW_OBJECT_STEALING_ON_DELETION);
     cSoftOwner::setAllowObjectStealing(allowObjectStealing);
 
-    getRngManager()->configure(this, cfg, getParsimProcId(), getParsimNumPartitions());
+    rngManager->configure(this, cfg, getParsimProcId(), getParsimNumPartitions());
+
+    // note: this must come last, as e.g. result manager initializations call cSimulation::isParsimEnabled()
+    envir->configure(cfg);
 }
 
 class cSnapshotWriterVisitor : public cVisitor
@@ -968,6 +971,7 @@ class StaticEnv : public cEnvir
     // constructor, destructor
     StaticEnv() {}
     virtual ~StaticEnv() {}
+    virtual void configure(cConfiguration *cfg) override {}
 
     // eventlog callback interface
     virtual void objectDeleted(cObject *object) override {}

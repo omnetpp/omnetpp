@@ -44,7 +44,6 @@ class cStatistic;
 class cProperty;
 class cRNG;
 class cXMLElement;
-class cEnvir;
 class cConfiguration;
 struct SendOptions;
 struct ChannelResult;
@@ -96,6 +95,15 @@ class SIM_API cEnvir
      * Destructor.
      */
     virtual ~cEnvir() {}
+    //@}
+
+    /** @name Setup. */
+    //@{
+
+    /**
+     * Configures the environment instance.
+     */
+    virtual void configure(cConfiguration *cfg) = 0;
     //@}
 
     /** @name Methods to be called by the simulation kernel to notify the environment about events. */

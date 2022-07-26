@@ -1753,7 +1753,7 @@ void Qtenv::readPerRunOptions(cConfiguration *cfg)
 {
     bool origDebugOnErrors = getDebugOnErrors();
 
-    getEnvir()->configure(cfg);
+    getSimulation()->configure(cfg);  // includes envir->configure()
 
     // don't let the configuration turn off a debug-on-errors setting that the user (presumably) turned
     // on manually, using the menu

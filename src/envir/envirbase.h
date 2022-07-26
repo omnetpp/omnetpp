@@ -116,7 +116,7 @@ class ENVIR_API EnvirBase : public cEnvir
     EnvirBase();
     virtual ~EnvirBase();
     virtual void initialize(cSimulation *simulation, cConfiguration *cfg, ArgList *args); // call once, on startup
-    virtual void configure(cConfiguration *cfg); // call before each simulation run
+    virtual void configure(cConfiguration *cfg) override; // call before each simulation run
 
     // getters/setters
     cSimulation *getSimulation() const {return simulation;}

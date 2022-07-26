@@ -54,9 +54,6 @@ class EmptyConfig : public cConfiguration
 class MinimalEnv : public cNullEnvir
 {
   public:
-    // constructor
-    MinimalEnv(cConfiguration *cfg) : cNullEnvir(cfg) {}
-
     // model parameters
     virtual void readParameter(cPar *par) override {
         if (par->containsValue())
@@ -121,9 +118,12 @@ int main(int argc, char *argv[])
     SimTime::setScaleExp(-12);
 
     // set up an environment for the simulation
-    cEnvir *envir = new MinimalEnv(new EmptyConfig());
+    cEnvir *envir = new MinimalEnv();
     cSimulation *simulation = new cSimulation("simulation", envir);
     cSimulation::setActiveSimulation(simulation);
+
+    cConfiguration *cfg = new EmptyConfig();
+    simulation->configure(cfg);
 
     // load NED files
     simulation->loadNedSourceFolder("model");
@@ -136,6 +136,7 @@ int main(int argc, char *argv[])
     // exit
     cSimulation::setActiveSimulation(nullptr);
     delete simulation;
+    delete cfg;
 
     // deallocate registration lists, loaded NED files, etc.
     CodeFragments::executeAll(CodeFragments::SHUTDOWN);
