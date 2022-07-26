@@ -64,6 +64,7 @@ Register_PerRunConfigOption(CFGID_RECORD_EVENTLOG, "record-eventlog", CFG_BOOL, 
 
 EnvirBase::EnvirBase() : out(std::cout.rdbuf())
 {
+    xmlCache = new XMLDocCache();
 }
 
 EnvirBase::~EnvirBase()
@@ -75,19 +76,9 @@ EnvirBase::~EnvirBase()
     delete snapshotManager;
 }
 
-void EnvirBase::initialize(cSimulation *simulation, cConfiguration *cfg, ArgList *args)
-{
-    this->cfg = cfg;
-    this->simulation = simulation;
-
-    setImagePath(extractImagePath(cfg, args).c_str());
-}
-
 void EnvirBase::configure(cConfiguration *cfg)
 {
     this->cfg = cfg;
-
-    xmlCache = new XMLDocCache();
 
     // install eventlog manager
     std::string eventlogManagerClass = cfg->getAsString(CFGID_EVENTLOGMANAGER_CLASS);
@@ -115,6 +106,7 @@ void EnvirBase::configure(cConfiguration *cfg)
     snapshotManager->configure(simulation, cfg);
 
     // settings
+    setImagePath(extractImagePath(cfg, argList).c_str());
     setDebugOnErrors(cfg->getAsBool(CFGID_DEBUG_ON_ERRORS));  // note: handling overridden in Qtenv::readPerRunOptions() due to interference with GUI
     setPrintUndisposed(cfg->getAsBool(CFGID_PRINT_UNDISPOSED));
     setEventlogRecording(cfg->getAsBool(CFGID_RECORD_EVENTLOG));
@@ -123,9 +115,11 @@ void EnvirBase::configure(cConfiguration *cfg)
 std::string EnvirBase::extractImagePath(cConfiguration *cfg, ArgList *args)
 {
     std::string imagePath;
-    for (std::string opt : args->optionValues('i'))
-        imagePath = opp_join(";", imagePath, opt);
-    imagePath = opp_join(";", imagePath, getConfig()->getAsPath(CFGID_IMAGE_PATH));
+    if (args)
+        for (std::string opt : args->optionValues('i'))
+            imagePath = opp_join(";", imagePath, opt);
+    if (cfg)
+        imagePath = opp_join(";", imagePath, cfg->getAsPath(CFGID_IMAGE_PATH));
     std::string builtinImagePath = opp_removestart(OMNETPP_IMAGE_PATH, "/;"); // strip away the /; sequence from the beginning (a workaround for MinGW path conversion). See #785
     imagePath = opp_join(";", imagePath, opp_emptytodefault(getenv("OMNETPP_IMAGE_PATH"), builtinImagePath.c_str()));
     return imagePath;

@@ -222,13 +222,10 @@ void Cmdenv::runSimulations(const char *configName, const std::vector<int>& runN
 bool Cmdenv::runSimulation(const char *configName, int runNumber)
 {
     CmdEnvir *envir = new CmdEnvir(this, sigintReceived);
+    envir->setArgs(args);
     cSimulation *simulation = new cSimulation("simulation", envir);  //TODO: finally: delete simulation
     simulation->setNedLoader(nedLoader);
     cSimulation::setActiveSimulation(simulation);
-
-    cConfiguration *globalCfg = ini->extractGlobalConfig();
-    envir->initialize(simulation, globalCfg, args);
-    delete globalCfg;
 
     bool finishedOK = false;
     bool networkSetupDone = false;
@@ -281,7 +278,6 @@ bool Cmdenv::runSimulation(const char *configName, int runNumber)
 //        envir->setLoggingEnabled(TODO);
 //        envir->setLogLevel(LogLevel logLevel);
 //        envir->setLogFormat(const char *logFormat);
-//        envir->setImagePath(const char *imagePath);
 
         envir->setVerbose(verbose);
 

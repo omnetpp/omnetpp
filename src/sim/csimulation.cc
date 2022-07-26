@@ -113,6 +113,7 @@ cSimulation::cSimulation(const char *name, cEnvir *env) : cNamedObject(name, fal
     ASSERT(cStaticFlag::insideMain());  // cannot be instantiated as global variable
 
     envir = env;
+    envir->setSimulation(this);
 
     // these are not set inline because the declaring header is included here
     simulationStage = CTX_NONE;

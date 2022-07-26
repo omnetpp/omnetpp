@@ -63,8 +63,8 @@ class ENVIR_API EnvirBase : public cEnvir
 {
   protected:
     // context
-    cSimulation *simulation = nullptr;
     cConfiguration *cfg = nullptr;
+    ArgList *argList = nullptr;
 
     std::ostream out; //TODO move to AppBase?
 
@@ -118,8 +118,9 @@ class ENVIR_API EnvirBase : public cEnvir
   public:
     EnvirBase();
     virtual ~EnvirBase();
-    virtual void initialize(cSimulation *simulation, cConfiguration *cfg, ArgList *args); // call once, on startup
-    virtual void configure(cConfiguration *cfg) override; // call before each simulation run
+    virtual void setArgs(ArgList *args) {this->argList = args;}
+
+    virtual void configure(cConfiguration *cfg) override;
 
     // getters/setters
     cSimulation *getSimulation() const {return simulation;}

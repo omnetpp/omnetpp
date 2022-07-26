@@ -629,13 +629,14 @@ void Qtenv::doRun()
     //
     QtEnvir *envir = new QtEnvir(this);
     envir->setIsGUI(true);
+    envir->setArgs(args);
 
     cSimulation *simulation = new cSimulation("simulation", envir);  //TODO: finally: delete simulation
     simulation->setNedLoader(nedLoader);
     cSimulation::setActiveSimulation(simulation);
 
     activeCfg = ini->extractGlobalConfig();
-    envir->initialize(simulation, activeCfg, args);
+    simulation->configure(activeCfg);
 
     readOptions(activeCfg);
 

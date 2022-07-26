@@ -72,7 +72,9 @@ using std::endl;
  */
 class SIM_API cEnvir
 {
-    friend class evbuf;
+  protected:
+    cSimulation *simulation = nullptr;
+
   public:
     // Internal flag. When set to true, the simulation kernel MAY omit calling
     // the following cEnvir methods: messageScheduled(), messageCancelled(),
@@ -81,6 +83,10 @@ class SIM_API cEnvir
     // componentMethodBegin(), moduleCreated(), moduleDeleted(), connectionCreated(),
     // connectionDeleted(), displayStringChanged().
     bool suppressNotifications = false; //FIXME set to true when not needed!
+
+  public:
+    // internal: called from cSimulation's ctor
+    void setSimulation(cSimulation *simulation) {this->simulation = simulation;}
 
   public:
     /** @name Constructor, destructor. */
