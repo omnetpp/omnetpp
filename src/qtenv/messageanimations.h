@@ -130,10 +130,6 @@ public:
     // message item where it has not "arrived" yet in the animation.
     virtual bool willAnimate(cMessage *msg) = 0;
 
-    // This is used to notify the animations about the creation of a
-    // cMessage's private clone by the LogBuffer.
-    virtual void messageDuplicated(cMessage *msg, cMessage *dup) = 0;
-
     // This is called when the message is delivered or deleted, so
     // the graphics items can remove their references to it.
     // If needed, animations might clone the message for later use.
@@ -194,7 +190,6 @@ public:
 
     bool isEmpty() const override;
     bool willAnimate(cMessage *msg) override;
-    void messageDuplicated(cMessage *msg, cMessage *dup) override;
     void removeMessagePointer(cMessage *msg) override;
 
     QString str() const override;
@@ -236,7 +231,6 @@ public:
 
     bool willAnimate(cMessage *msg) override;
 
-    void messageDuplicated(cMessage *msg, cMessage *dup) override;
     void removeMessagePointer(cMessage *msg) override;
 
     QString str() const override;
@@ -290,7 +284,6 @@ public:
 
     bool isEmpty() const override;
     bool willAnimate(cMessage *msg) override { return body.willAnimate(msg); }
-    void messageDuplicated(cMessage *msg, cMessage *dup) override { body.messageDuplicated(msg, dup); }
     void removeMessagePointer(cMessage *msg) override { body.removeMessagePointer(msg); }
 
     QString str() const override;
@@ -329,7 +322,10 @@ public:
     bool isEmpty() const override { return messageItems.empty(); }
     bool willAnimate(cMessage *msg) override { return state < FINISHED && msg == this->msg; }
     void removeMessagePointer(cMessage *msg) override;
-    void messageDuplicated(cMessage *msg, cMessage *dup) override;
+
+    // This is used to notify the animations about the creation of a
+    // cMessage's private clone by the LogBuffer.
+    virtual bool messageDuplicated(cMessage *msg, cMessage *dup);
 
     virtual SimTime getStartTime() const = 0;
 
