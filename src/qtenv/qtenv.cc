@@ -876,7 +876,6 @@ void Qtenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t unti
 
     animating = true;
     loggingEnabled = true;
-    recordEventlog = false;
     runUntil.msg = nullptr;
 
     runMode = RUNMODE_NOT_RUNNING;
