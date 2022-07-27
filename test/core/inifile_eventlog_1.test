@@ -34,10 +34,6 @@ E # 2 t 1 m 1 ce 1 msg 0
 BS id 0 tid 0 eid 0 etid 0 c cMessage n timeout-1 k -2 m 1 pe 2
 ES id 0 tid 0 eid 0 etid 0 c cMessage n timeout-1 k -2 m 1 pe 2
 
-E # 3 t 2 m 1 ce 2 msg 0
-BS id 0 tid 0 eid 0 etid 0 c cMessage n timeout-1 k -2 m 1 pe 3
-ES id 0 tid 0 eid 0 etid 0 c cMessage n timeout-1 k -2 m 1 pe 3
-
 E # 4 t 3 m 1 ce 3 msg 0
 BS id 0 tid 0 eid 0 etid 0 c cMessage n timeout-1 k -2 m 1 pe 4
 ES id 0 tid 0 eid 0 etid 0 c cMessage n timeout-1 k -2 m 1 pe 4
@@ -49,10 +45,6 @@ ES id 0 tid 0 eid 0 etid 0 c cMessage n timeout-1 k -2 m 1 pe 5
 E # 6 t 5 m 1 ce 5 msg 0
 BS id 0 tid 0 eid 0 etid 0 c cMessage n timeout-1 k -2 m 1 pe 6
 ES id 0 tid 0 eid 0 etid 0 c cMessage n timeout-1 k -2 m 1 pe 6
-
-E # 7 t 6 m 1 ce 6 msg 0
-BS id 0 tid 0 eid 0 etid 0 c cMessage n timeout-1 k -2 m 1 pe 7
-ES id 0 tid 0 eid 0 etid 0 c cMessage n timeout-1 k -2 m 1 pe 7
 
 E # 8 t 7 m 1 ce 7 msg 0
 BS id 0 tid 0 eid 0 etid 0 c cMessage n timeout-1 k -2 m 1 pe 8
