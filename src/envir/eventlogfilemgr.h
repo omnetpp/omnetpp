@@ -100,7 +100,7 @@ class ENVIR_API EventlogFileManager : public cIEventlogManager, public cISimulat
     std::string filename;
 
     // configuration that does not change over time
-    bool recordEventLog = false;
+    bool recordEventLog = false;  // value of the CFGID_RECORD_EVENTLOG config option
     int64_t maxSize = -1;
     int64_t minTruncatedSize = -1;
     int64_t snapshotFrequency = -1;
@@ -122,12 +122,12 @@ class ENVIR_API EventlogFileManager : public cIEventlogManager, public cISimulat
     file_offset_t previousSnapshotFileOffset = -1; // virtual file offset
 
     // general recording flags
-    bool isRecordingEnabled = true;
-    bool isEventRecordingEnabled = true;
+    bool isRecordingEnabled = true;  // whether eventlog recording is currently enabled (recording turned on, and not currently suspended)
+    bool isEventRecordingEnabled = true;  // whether the current event should be recorded (recording is enabled, module and interval filters match, etc)
 
     // recording flags for filters
-    bool isModuleFilterRecordingEnabled = true;
-    bool isIntervalFilterRecordingEnabled = true;
+    bool isModuleFilterRecordingEnabled = true; // module filter matches the current event
+    bool isIntervalFilterRecordingEnabled = true; // interval filter matches the current event
 
     // recording flags based on entry kind
     bool isTextRecordingEnabled = true;

@@ -153,7 +153,8 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     const char *currentEventClassName;
     int currentModuleId;
 
-    // Indicates whether eventlog recording is currently enabled (note: eventlogManager contains further filters)
+    // Indicates whether eventlog recording is currently enabled (note: eventlogManager contains further filters).
+    // It MUST be in sync with EventlogFileManager::isRecordingEnabled.
     bool recordEventlog;
 
     // Output file managers
