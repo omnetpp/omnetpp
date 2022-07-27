@@ -327,6 +327,8 @@ void EventlogFileManager::suspend()
 {
     ASSERT(isRecordingEnabled);
     isRecordingEnabled = false;
+    if (hasRecordingIntervals())
+        clearRecordingIntervals();
 }
 
 void EventlogFileManager::resume()
@@ -335,6 +337,8 @@ void EventlogFileManager::resume()
     if (!isOpen()) {
         open();
         recordSimulationBegin();
+        if (hasRecordingIntervals())
+            clearRecordingIntervals();
     }
     if (lastChunk != SNAPSHOT && (eventNumber == -1 || eventNumber != cSimulation::getActiveSimulation()->getEventNumber() - 1))
         recordSnapshot();
@@ -347,8 +351,6 @@ void EventlogFileManager::startRun()
         recordSimulationBegin();
         recordInitialize();
     }
-    if (hasRecordingIntervals())
-        clearRecordingIntervals();
 }
 
 void EventlogFileManager::endRun(bool isError, int resultCode, const char *message)
