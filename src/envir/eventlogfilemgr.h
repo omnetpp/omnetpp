@@ -124,8 +124,6 @@ class ENVIR_API EventlogFileManager : public cIEventlogManager, public cISimulat
     // general recording flags
     bool isRecordingEnabled = true;
     bool isEventRecordingEnabled = true;
-    bool isUserRecordingEnabled = true;
-    bool isCombinedRecordingEnabled = true;  // combines several other enablement flags
 
     // recording flags for filters
     bool isModuleFilterRecordingEnabled = true;
