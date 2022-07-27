@@ -131,8 +131,6 @@ void EventlogFileManager::clearInternalState()
     previousIndexFileOffset = -1;
     previousSnapshotFileOffset = -1;
     isEventRecordingEnabled = true;
-    isUserRecordingEnabled = true;
-    isCombinedRecordingEnabled = true;
     isIntervalFilterRecordingEnabled = true;
     isModuleFilterRecordingEnabled = true;
     isTextRecordingEnabled = true;
@@ -245,8 +243,6 @@ void EventlogFileManager::close()
     fclose(feventlog);
     feventlog = nullptr;
     isEventRecordingEnabled = false;
-    isUserRecordingEnabled = false;
-    isCombinedRecordingEnabled = false;
     delete fileLock;
     fileLock = nullptr;
 }
@@ -353,7 +349,6 @@ void EventlogFileManager::startRun()
     }
     if (hasRecordingIntervals())
         clearRecordingIntervals();
-    isUserRecordingEnabled = true;
 }
 
 void EventlogFileManager::endRun(bool isError, int resultCode, const char *message)
