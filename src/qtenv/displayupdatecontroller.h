@@ -170,7 +170,9 @@ public:
 
     void setRunMode(RunMode value);
 
-    // returns true if really reached the time for the next event, false if interrupted/stopped before
+    // Returns true if really reached the time for the next event, false if stopped before,
+    // either because the user requested it (stop button), or in the case of `animateUntilHoldEnds`,
+    // we are done with the holding part, but there is still simTime left until the next event.
     bool animateUntilNextEvent() { return animateUntilNextEvent(false); }
     bool animateUntilHoldEnds() { return animateUntilNextEvent(true); }
 

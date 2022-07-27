@@ -959,12 +959,12 @@ bool Qtenv::doRunSimulation()
             return true;  // should continue, but in a different mode
 
         displayUpdateController->setRunMode(runMode);
-        bool reached = displayUpdateController->animateUntilNextEvent();
+        bool stoppedBeforeEventReached = !displayUpdateController->animateUntilNextEvent();
         performHoldAnimations();
 
         // if there is no event, we have to let the control through to
         // takeNextEvent, and it will terminate the simulation with an exception.
-        if ((!reached || messageAnimator->isHoldActive()) && sim->guessNextEvent())
+        if (stoppedBeforeEventReached && sim->guessNextEvent())
             break;
 
         // if there is no event, we have to let the control through to
