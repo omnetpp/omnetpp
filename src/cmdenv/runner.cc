@@ -21,6 +21,7 @@
 #include "omnetpp/ccomponenttype.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cfutureeventset.h"
+#include "cmdenvir.h"
 #include "fakegui.h"
 #include "runner.h"
 
@@ -29,6 +30,28 @@ using namespace omnetpp::internal;
 
 namespace omnetpp {
 namespace cmdenv {
+
+extern cConfigOption *CFGID_CMDENV_STATUS_FREQUENCY;
+extern cConfigOption *CFGID_CMDENV_PERFORMANCE_DISPLAY;
+extern cConfigOption *CFGID_CMDENV_EVENT_BANNERS;
+extern cConfigOption *CFGID_CMDENV_EVENT_BANNER_DETAILS;
+
+void Runner::configure(cConfiguration *cfg)
+{
+    CmdEnvir *envir = dynamic_cast<CmdEnvir *>(simulation->getEnvir());
+    double realTimeLimit = cfg->getAsDouble(CFGID_REAL_TIME_LIMIT, -1);
+    double cpuTimeLimit = cfg->getAsDouble(CFGID_CPU_TIME_LIMIT, -1);
+    setCPUTimeLimit(cpuTimeLimit);
+    setRealTimeLimit(realTimeLimit);
+    setExpressMode(envir->isExpressMode());
+    setFakeGUI(envir->getFakeGui());
+    setAutoFlush(envir->getAutoflush());
+    setStatusFrequencyMs(1000*cfg->getAsDouble(CFGID_CMDENV_STATUS_FREQUENCY));
+    setPrintPerformanceData(cfg->getAsBool(CFGID_CMDENV_PERFORMANCE_DISPLAY));
+    setPrintThreadId(false); //TODO
+    setPrintEventBanners(cfg->getAsBool(CFGID_CMDENV_EVENT_BANNERS));
+    setDetailedEventBanners(cfg->getAsBool(CFGID_CMDENV_EVENT_BANNER_DETAILS));
+}
 
 double Runner::getElapsedSecs()
 {

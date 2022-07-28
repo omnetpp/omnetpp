@@ -37,8 +37,8 @@ using namespace envir;
 class CMDENV_API Runner
 {
   protected:
-    cSimulation *simulation;
-    FakeGUI *fakeGUI = nullptr;
+    cSimulation *simulation; // not owned
+    FakeGUI *fakeGUI = nullptr; // not owned
     std::ostream& out;
     bool& sigintReceived;
     int runsTried=1, numRuns=1; // for progress reporting
@@ -69,9 +69,11 @@ class CMDENV_API Runner
     double getElapsedSecs(); //TODO make it accessible to cException, so it can be put into error messages (maybe move stopwatch into cSimulation?)
 
   public:
-    Runner(cSimulation *simulation, FakeGUI *fakeGUI, std::ostream& out, bool& sigintReceived) : simulation(simulation), fakeGUI(fakeGUI), out(out), sigintReceived(sigintReceived) {}
+    Runner(cSimulation *simulation, std::ostream& out, bool& sigintReceived) : simulation(simulation), out(out), sigintReceived(sigintReceived) {}
     virtual ~Runner() {}
+    virtual void configure(cConfiguration *cfg);
 
+    virtual void setFakeGUI(FakeGUI *fakeGUI) {this->fakeGUI = fakeGUI;}
     virtual void setSimulationTimeLimit(simtime_t limit) {simulation->setSimulationTimeLimit(limit);}
     virtual void setCPUTimeLimit(double limit) {stopwatch.setCPUTimeLimit(limit);}
     virtual void setRealTimeLimit(double limit) {stopwatch.setRealTimeLimit(limit);}

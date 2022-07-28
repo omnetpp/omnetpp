@@ -313,20 +313,8 @@ bool Cmdenv::runSimulation(const char *configName, int runNumber)
         notifyLifecycleListeners(LF_ON_SIMULATION_START);
 
         try {
-            FakeGUI *fakeGUI = envir->getFakeGui();
-            Runner runner(simulation, fakeGUI, out, sigintReceived);
-
-            double realTimeLimit = cfg->getAsDouble(CFGID_REAL_TIME_LIMIT, -1);
-            double cpuTimeLimit = cfg->getAsDouble(CFGID_CPU_TIME_LIMIT, -1);
-            runner.setCPUTimeLimit(cpuTimeLimit);
-            runner.setRealTimeLimit(realTimeLimit);
-            runner.setExpressMode(envir->isExpressMode());
-            runner.setAutoFlush(envir->getAutoflush());
-            runner.setStatusFrequencyMs(1000*cfg->getAsDouble(CFGID_CMDENV_STATUS_FREQUENCY));
-            runner.setPrintPerformanceData(cfg->getAsBool(CFGID_CMDENV_PERFORMANCE_DISPLAY));
-            runner.setPrintThreadId(false); //TODO
-            runner.setPrintEventBanners(cfg->getAsBool(CFGID_CMDENV_EVENT_BANNERS));
-            runner.setDetailedEventBanners(cfg->getAsBool(CFGID_CMDENV_EVENT_BANNER_DETAILS));
+            Runner runner(simulation, out, sigintReceived);
+            runner.configure(cfg);
             runner.setBatchProgress((int)runsTried, (int)numRuns);
 
             runner.run();
