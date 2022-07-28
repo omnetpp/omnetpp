@@ -46,10 +46,6 @@ class CMDENV_API Cmdenv : public AppBase
 
      bool stopBatchOnError = true;
 
-     // logging
-     bool logging = true;
-     FILE *logStream;
-
    protected:
      virtual void alert(const char *msg) override;
 
