@@ -123,72 +123,69 @@ void Cmdenv::printUISpecificHelp()
 
 void Cmdenv::doRun()
 {
-    {
-        nedLoader = new cNedLoader("nedLoader");
-        nedLoader->removeFromOwnershipTree();
+    nedLoader = new cNedLoader("nedLoader");
+    nedLoader->removeFromOwnershipTree();
 
-        cConfiguration *globalCfg = ini->extractGlobalConfig();
-        loadNEDFiles(nedLoader, globalCfg, args);
+    cConfiguration *globalCfg = ini->extractGlobalConfig();
+    loadNEDFiles(nedLoader, globalCfg, args);
 
-        CodeFragments::executeAll(CodeFragments::STARTUP); // app setup is complete
+    CodeFragments::executeAll(CodeFragments::STARTUP); // app setup is complete
 
-        // '-c' and '-r' option: configuration to activate, and run numbers to run.
-        // Both command-line options take precedence over inifile settings.
+    // '-c' and '-r' option: configuration to activate, and run numbers to run.
+    // Both command-line options take precedence over inifile settings.
 
-        std::string configName = globalCfg->getAsString(CFGID_CMDENV_CONFIG_NAME);
-        std::string runFilter = globalCfg->getAsString(CFGID_CMDENV_RUNS_TO_EXECUTE);
+    std::string configName = globalCfg->getAsString(CFGID_CMDENV_CONFIG_NAME);
+    std::string runFilter = globalCfg->getAsString(CFGID_CMDENV_RUNS_TO_EXECUTE);
 
-        delete globalCfg;
+    delete globalCfg;
 
-        if (args->optionGiven('c'))
-            configName = opp_nulltoempty(args->optionValue('c'));
-        if (configName.empty())
-            configName = "General";
+    if (args->optionGiven('c'))
+        configName = opp_nulltoempty(args->optionValue('c'));
+    if (configName.empty())
+        configName = "General";
 
-        if (args->optionGiven('r'))
-            runFilter = args->optionValue('r');
+    if (args->optionGiven('r'))
+        runFilter = args->optionValue('r');
 
-        std::vector<int> runNumbers;
-        try {
-            runNumbers = resolveRunFilter(configName.c_str(), runFilter.c_str());
-        }
-        catch (std::exception& e) {
-            displayException(e);
-            exitCode = 1;
-            return;
-        }
-
-        numRuns = (int)runNumbers.size();
-        runsTried = 0;
-        numErrors = 0;
-
-        bool threaded = false; //TODO config
-        if (!threaded) {
-            runSimulations(configName.c_str(), runNumbers);
-        }
-        else {
-            int numThreads = 3; //TODO config
-            runSimulationsInThreads(configName.c_str(), runNumbers, numThreads);
-        }
-
-        if (numRuns > 1 && verbose) {
-            int numSkipped = numRuns - runsTried;
-            int numSuccess = runsTried - numErrors;
-            out << "\nRun statistics: total " << numRuns;
-            if (numSuccess > 0)
-                out << ", successful " << numSuccess;
-            if (numErrors > 0)
-                out << ", errors " << numErrors;
-            if (numSkipped > 0)
-                out << ", skipped " << numSkipped;
-            out << endl;
-        }
-
-        exitCode = numErrors > 0 ? 1 : sigintReceived ? 2 : 0;
-
-        delete nedLoader;
-
+    std::vector<int> runNumbers;
+    try {
+        runNumbers = resolveRunFilter(configName.c_str(), runFilter.c_str());
     }
+    catch (std::exception& e) {
+        displayException(e);
+        exitCode = 1;
+        return;
+    }
+
+    numRuns = (int)runNumbers.size();
+    runsTried = 0;
+    numErrors = 0;
+
+    bool threaded = false; //TODO config
+    if (!threaded) {
+        runSimulations(configName.c_str(), runNumbers);
+    }
+    else {
+        int numThreads = 3; //TODO config
+        runSimulationsInThreads(configName.c_str(), runNumbers, numThreads);
+    }
+
+    if (numRuns > 1 && verbose) {
+        int numSkipped = numRuns - runsTried;
+        int numSuccess = runsTried - numErrors;
+        out << "\nRun statistics: total " << numRuns;
+        if (numSuccess > 0)
+            out << ", successful " << numSuccess;
+        if (numErrors > 0)
+            out << ", errors " << numErrors;
+        if (numSkipped > 0)
+            out << ", skipped " << numSkipped;
+        out << endl;
+    }
+
+    exitCode = numErrors > 0 ? 1 : sigintReceived ? 2 : 0;
+
+    delete nedLoader;
 }
 
 void Cmdenv::runSimulationsInThreads(const char *configName, const std::vector<int>& runNumbers, int numThreads)
