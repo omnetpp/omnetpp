@@ -117,7 +117,7 @@ void Cmdenv::printUISpecificHelp()
     out << endl;
 }
 
-void Cmdenv::doRun()
+int Cmdenv::doRunApp()
 {
     nedLoader = new cNedLoader("nedLoader");
     nedLoader->removeFromOwnershipTree();
@@ -149,8 +149,7 @@ void Cmdenv::doRun()
     }
     catch (std::exception& e) {
         displayException(e);
-        exitCode = 1;
-        return;
+        return 1;
     }
 
     // implement graceful exit when Ctrl-C is hit during simulation. We want
@@ -171,6 +170,8 @@ void Cmdenv::doRun()
         runSimulationsInThreads(configName.c_str(), runNumbers, numThreads);
     }
 
+    delete nedLoader;
+
     if (numRuns > 1 && verbose) {
         int numSkipped = numRuns - runsTried;
         int numSuccess = runsTried - numErrors;
@@ -184,9 +185,7 @@ void Cmdenv::doRun()
         out << endl;
     }
 
-    exitCode = numErrors > 0 ? 1 : sigintReceived ? 2 : 0;
-
-    delete nedLoader;
+    return numErrors > 0 ? 1 : sigintReceived ? 2 : 0;
 }
 
 void Cmdenv::runSimulationsInThreads(const char *configName, const std::vector<int>& runNumbers, int numThreads)

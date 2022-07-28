@@ -52,7 +52,6 @@ class ENVIR_API AppBase
     bool verbose;
     bool useStderr;
     std::string redirectionFilename;
-    int exitCode = 0;
 
     DebuggerSupport *debuggerSupport = new DebuggerSupport();
 
@@ -70,13 +69,13 @@ class ENVIR_API AppBase
      * Runs the user interface. The return value will become the exit code
      * of the simulation program.
      */
-    virtual int run(int argc, char *argv[], InifileContents *ini);
+    virtual int runApp(int argc, char *argv[], InifileContents *ini);
 
     /**
      * Runs the user interface. The return value will become the exit code
      * of the simulation program. Delegates to the other run() overload.
      */
-    virtual int run(const std::vector<std::string>& args, InifileContents *ini) final;
+    virtual int runApp(const std::vector<std::string>& args, InifileContents *ini) final;
 
     static AppBase *getActiveApp() {return activeApp;}
 
@@ -110,7 +109,7 @@ class ENVIR_API AppBase
 
     // functions added locally
     virtual bool simulationRequired();
-    virtual void doRun() = 0;
+    virtual int doRunApp() = 0;
 
     virtual void loadNEDFiles(cINedLoader *nedLoader, cConfiguration *cfg, ArgList *args);
     virtual void setupNetwork(cModuleType *networkType);
@@ -132,9 +131,6 @@ class ENVIR_API AppBase
 
     // Utility function: checks simulation fingerprint and displays a message accordingly
     void checkFingerprint();
-
-    // Utility function for getXMLDocument() and getParsedXMLString()
-    cXMLElement *resolveXMLPath(cXMLElement *documentnode, const char *path);
 
     // Hook called when the simulation terminates normally.
     // Its current use is to notify parallel simulation part.

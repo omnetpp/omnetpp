@@ -275,7 +275,7 @@ int setupUserInterface(int argc, char *argv[])
     try {
         if (app) {
             // install and run app
-            exitCode = app->run(argc, argv, ini);
+            exitCode = app->runApp(argc, argv, ini);
         }
         else {
             exitCode = 1;

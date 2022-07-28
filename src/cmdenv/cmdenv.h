@@ -54,7 +54,7 @@ class CMDENV_API Cmdenv : public AppBase
      virtual ~Cmdenv();
 
    protected:
-     virtual void doRun() override;
+     virtual int doRunApp() override;
      virtual void printUISpecificHelp() override;
 
      bool runSimulation(const char *configName, int runNumber);

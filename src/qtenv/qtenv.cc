@@ -623,7 +623,7 @@ static void signalHandler(int signum)
     QApplication::exit(2);
 }
 
-void Qtenv::doRun()
+int Qtenv::doRunApp()
 {
     //
     // SETUP
@@ -765,7 +765,7 @@ void Qtenv::doRun()
     //
     // RUN
     //
-    exitCode = QApplication::exec();
+    int exitCode = QApplication::exec();
 
     //
     // SHUTDOWN
@@ -827,6 +827,8 @@ void Qtenv::doRun()
 
     delete app;
     app = nullptr;
+
+    return exitCode;
 }
 
 void Qtenv::printUISpecificHelp()

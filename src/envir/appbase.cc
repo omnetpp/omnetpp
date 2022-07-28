@@ -152,15 +152,15 @@ AppBase::~AppBase()
     delete debuggerSupport;
 }
 
-int AppBase::run(const std::vector<std::string>& args, InifileContents *ini)
+int AppBase::runApp(const std::vector<std::string>& args, InifileContents *ini)
 {
     char **argv = new char *[args.size()];
     for (int i = 0; i < args.size(); i++)
         argv[i] = const_cast<char*>(args[i].c_str());
-    return run(args.size(), argv, ini);
+    return runApp(args.size(), argv, ini);
 }
 
-int AppBase::run(int argc, char *argv[], InifileContents *ini)
+int AppBase::runApp(int argc, char *argv[], InifileContents *ini)
 {
     this->ini = ini;
     args = new ArgList();
@@ -190,10 +190,10 @@ int AppBase::run(int argc, char *argv[], InifileContents *ini)
         alert(ex.what());
     }
 
-
+    int exitCode = 0;
     try {
         if (simulationRequired())  // handle help, config queries, etc.
-            doRun();
+            exitCode = doRunApp();
     }
     catch (std::exception& e) {
         displayException(e);
@@ -333,8 +333,7 @@ void AppBase::printRunInfo(const char *configName, const char *runFilter, const 
             }
         }
         else {
-            err() << "Unrecognized -q argument '" << q << "'" << endl;
-            exitCode = 1;
+            throw opp_runtime_error("Unrecognized -q argument '%s'", q.c_str());
         }
     }
     else if (q == "sectioninheritance") {
@@ -348,8 +347,7 @@ void AppBase::printRunInfo(const char *configName, const char *runFilter, const 
         }
     }
     else {
-        err() << "Unrecognized -q argument '" << q << "'" << endl;
-        exitCode = 1;
+        throw opp_runtime_error("Unrecognized -q argument '%s'", q.c_str());
     }
 }
 

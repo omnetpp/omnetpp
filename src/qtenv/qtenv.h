@@ -340,7 +340,7 @@ class QTENV_API Qtenv : public QObject, public AppBase
 
   protected:
       // redefined virtual functions from EnvirBase
-      virtual void doRun() override;
+      virtual int doRunApp() override;
       virtual void printUISpecificHelp() override;
 
       virtual void readOptions(cConfiguration *cfg);
