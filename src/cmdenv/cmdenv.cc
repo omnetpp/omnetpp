@@ -153,6 +153,11 @@ void Cmdenv::doRun()
         return;
     }
 
+    // implement graceful exit when Ctrl-C is hit during simulation. We want
+    // to finish the current event, then normally exit via callFinish() etc
+    // so that simulation results are not lost.
+    installSigintHandler();
+
     numRuns = (int)runNumbers.size();
     runsTried = 0;
     numErrors = 0;
@@ -308,13 +313,6 @@ bool Cmdenv::runSimulation(const char *configName, int runNumber)
         // finish() should not be called.
         notifyLifecycleListeners(LF_ON_SIMULATION_START);
 
-        // implement graceful exit when Ctrl-C is hit during simulation. We want
-        // to finish the current event, then normally exit via callFinish() etc
-        // so that simulation results are not lost.
-        installSignalHandler();
-
-        sigintReceived = false;
-
         try {
             FakeGUI *fakeGUI = envir->getFakeGui();
             Runner runner(simulation, fakeGUI, out, sigintReceived);
@@ -336,17 +334,10 @@ bool Cmdenv::runSimulation(const char *configName, int runNumber)
             runner.setBatchProgress((int)runsTried, (int)numRuns);
 
             runner.run();
-
-            deinstallSignalHandler(); // TODO this might not be the best place, if needed at all
         }
         catch (cTerminationException& e) {
-            deinstallSignalHandler();
             stoppedWithTerminationException(e);
             displayException(e);
-        }
-        catch (std::exception& e) {
-            deinstallSignalHandler();
-            throw;
         }
 
          cLog::setLoggingEnabled(true);
@@ -402,19 +393,19 @@ bool Cmdenv::runSimulation(const char *configName, int runNumber)
     return finishedOK;
 }
 
-void Cmdenv::signalHandler(int signum)
+void Cmdenv::sigintHandler(int signum)
 {
     if (signum == SIGINT || signum == SIGTERM)
         sigintReceived = true;
 }
 
-void Cmdenv::installSignalHandler()
+void Cmdenv::installSigintHandler()
 {
-    signal(SIGINT, signalHandler);
-    signal(SIGTERM, signalHandler);
+    signal(SIGINT, sigintHandler);
+    signal(SIGTERM, sigintHandler);
 }
 
-void Cmdenv::deinstallSignalHandler()
+void Cmdenv::deinstallSigintHandler()
 {
     signal(SIGINT, SIG_DFL);
     signal(SIGTERM, SIG_DFL);

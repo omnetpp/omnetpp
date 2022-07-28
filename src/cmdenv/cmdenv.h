@@ -53,21 +53,18 @@ class CMDENV_API Cmdenv : public AppBase
      Cmdenv();
      virtual ~Cmdenv();
 
-
    protected:
      virtual void doRun() override;
      virtual void printUISpecificHelp() override;
-
-     void help();
 
      bool runSimulation(const char *configName, int runNumber);
      void runSimulations(const char *configName, const std::vector<int>& runNumbers);
      void runSimulationsInThreads(const char *configName, const std::vector<int>& runNumbers, int numThreads);
      std::thread startThread(const char *configName, const std::vector<int>& runNumbers);
 
-     void installSignalHandler();
-     void deinstallSignalHandler();
-     static void signalHandler(int signum);
+     void installSigintHandler();
+     void deinstallSigintHandler();
+     static void sigintHandler(int signum);
 };
 
 }  // namespace cmdenv
