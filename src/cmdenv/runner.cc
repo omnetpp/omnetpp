@@ -253,7 +253,7 @@ std::string Runner::getProgressPercentage()
 {
     double simtimeRatio = -1;
     simtime_t simtimeLimit = simulation->getSimulationTimeLimit();
-    if (!simtimeLimit.isZero())
+    if (simtimeLimit != SIMTIME_ZERO)
         simtimeRatio = simulation->getSimTime() / simtimeLimit;
 
     double elapsedTimeRatio = -1;

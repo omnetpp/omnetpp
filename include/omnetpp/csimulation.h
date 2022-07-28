@@ -87,6 +87,8 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     cFutureEventSet *fes = nullptr;     // stores future events
     cScheduler *scheduler = nullptr;    // event scheduler
     simtime_t warmupPeriod;             // warm-up period
+
+    simtime_t simTimeLimit = 0;         // simulation time limit (0 -> no limit)
     cEvent *endSimulationEvent = nullptr; // only present if simulation time limit is set
 
     ContextType simulationStage;        // simulation stage
@@ -115,6 +117,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
   private:
     // internal
     void checkActive()  {if (getActiveSimulation()!=this) throw cRuntimeError(this, E_WRONGSIM);}
+    void scheduleEndSimulationEvent();
 
   public:
     // internal
@@ -383,9 +386,8 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
 
     /**
      * Sets the simulation stop time be scheduling an appropriate
-     * "end-simulation" event. May only be called once per run.
-     * The limit only takes effect for the current simulation run, and is
-     * cleared when the run terminates.
+     * "end-simulation" event. Supply zero to clear an existing simulation
+     * time limit.
      */
     virtual void setSimulationTimeLimit(simtime_t simTimeLimit);
 
@@ -408,7 +410,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
 
     /**
      * Recursively calls finish() on the modules of the network.
-     * This method simply invokes callfinish() on the system module.
+     * This method simply invokes callFinish() on the system module.
      */
     virtual void callFinish();
 

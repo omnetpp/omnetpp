@@ -369,21 +369,33 @@ void cSimulation::setRngManager(cIRngManager *mgr)
     take(rngManager);
 }
 
-void cSimulation::setSimulationTimeLimit(simtime_t simTimeLimit)
+void cSimulation::setSimulationTimeLimit(simtime_t limit)
 {
-    if (getSimTime() > simTimeLimit)
-        throw cRuntimeError(this, "setSimulationTimeLimit(): requested time limit has already passed");
+    if (limit != SIMTIME_ZERO && limit < getSimTime())
+        throw cRuntimeError(this, "setSimulationTimeLimit(): Requested time limit has already passed");
+
+    simTimeLimit = limit;
+
+    if (getSystemModule() != nullptr)
+        scheduleEndSimulationEvent();
+}
+
+void cSimulation::scheduleEndSimulationEvent()
+{
     if (endSimulationEvent) {
         getFES()->remove(endSimulationEvent);
         delete endSimulationEvent;
+        endSimulationEvent = nullptr;
     }
-    endSimulationEvent = new cEndSimulationEvent("endsimulation", simTimeLimit);
-    getFES()->insert(endSimulationEvent);
+    if (simTimeLimit != SIMTIME_ZERO) {
+        endSimulationEvent = new cEndSimulationEvent("endSimulation", simTimeLimit);
+        getFES()->insert(endSimulationEvent);
+    }
 }
 
 simtime_t cSimulation::getSimulationTimeLimit() const
 {
-    return endSimulationEvent != nullptr ? endSimulationEvent->getArrivalTime() : SIMTIME_ZERO;
+    return simTimeLimit;
 }
 
 int cSimulation::loadNedSourceFolder(const char *folder, const char *excludedPackages)
@@ -518,6 +530,7 @@ void cSimulation::setupNetwork(cModuleType *networkType)
         cModule *module = networkType->create(networkType->getName(), this);
         module->finalizeParameters();
         module->buildInside();
+        scheduleEndSimulationEvent();
         notifyLifecycleListeners(LF_POST_NETWORK_SETUP);
     }
     catch (std::exception& e) {
