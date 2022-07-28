@@ -84,6 +84,10 @@ Register_PerRunConfigOption(CFGID_CHECK_SIGNALS, "check-signals", CFG_BOOL, CHEC
 Register_PerRunConfigOption(CFGID_PARAMETER_MUTABILITY_CHECK, "parameter-mutability-check", CFG_BOOL, "true", "Setting to false will disable errors raised when trying to change the values of module/channel parameters not marked as @mutable. This is primarily a compatibility setting intended to facilitate running simulation models that were not yet annotated with @mutable.");
 Register_PerRunConfigOption(CFGID_ALLOW_OBJECT_STEALING_ON_DELETION, "allow-object-stealing-on-deletion", CFG_BOOL, "false", "Setting it to true disables the \"Context component is deleting an object it doesn't own\" error message. This option exists primarily for backward compatibility with pre-6.0 versions that were more permissive during object deletion.");
 
+namespace envir {
+extern cConfigOption *CFGID_SIM_TIME_LIMIT;  //TODO remove
+};
+using namespace envir;
 
 #ifdef DEVELOPER_DEBUG
 #include <set>
@@ -257,6 +261,9 @@ void cSimulation::configure(cConfiguration *cfg)
 #endif
 
     // misc
+    simtime_t simtimeLimit = cfg->getAsDouble(CFGID_SIM_TIME_LIMIT, 0);
+    setSimulationTimeLimit(simtimeLimit);
+
     simtime_t warmupPeriod = cfg->getAsDouble(CFGID_WARMUP_PERIOD);
     setWarmupPeriod(warmupPeriod);
 
@@ -383,7 +390,7 @@ void cSimulation::setRngManager(cIRngManager *mgr)
 void cSimulation::setSimulationTimeLimit(simtime_t limit)
 {
     if (limit != SIMTIME_ZERO && limit < getSimTime())
-        throw cRuntimeError(this, "setSimulationTimeLimit(): Requested time limit has already passed");
+        throw cRuntimeError(this, "setSimulationTimeLimit(): Requested time limit %s has already passed", limit.str().c_str());
 
     simTimeLimit = limit;
 

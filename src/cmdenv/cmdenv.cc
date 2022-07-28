@@ -316,11 +316,8 @@ bool Cmdenv::runSimulation(const char *configName, int runNumber)
             FakeGUI *fakeGUI = envir->getFakeGui();
             Runner runner(simulation, fakeGUI, out, sigintReceived);
 
-            simtime_t simtimeLimit = cfg->getAsDouble(CFGID_SIM_TIME_LIMIT, -1);
             double realTimeLimit = cfg->getAsDouble(CFGID_REAL_TIME_LIMIT, -1);
             double cpuTimeLimit = cfg->getAsDouble(CFGID_CPU_TIME_LIMIT, -1);
-            if (simtimeLimit >= SIMTIME_ZERO)
-                runner.setSimulationTimeLimit(simtimeLimit);
             runner.setCPUTimeLimit(cpuTimeLimit);
             runner.setRealTimeLimit(realTimeLimit);
             runner.setExpressMode(envir->isExpressMode());
