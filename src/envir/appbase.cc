@@ -522,8 +522,8 @@ void AppBase::printHelp()
 
 void AppBase::setupNetwork(cModuleType *networkType)
 {
-    EnvirBase *envir = getEnvir();
-    cSimulation *simulation = getSimulation();
+    EnvirBase *envir = getActiveEnvir();
+    cSimulation *simulation = getActiveSimulation();
 
     envir->clearCurrentEventInfo();
 
@@ -657,7 +657,7 @@ void AppBase::alertf(const char *fmt, ...)
 
 bool AppBase::ensureDebugger(cRuntimeError *error)
 {
-    if (error == nullptr || getEnvir()->getAttachDebuggerOnErrors()) {
+    if (error == nullptr || getActiveEnvir()->getAttachDebuggerOnErrors()) {
         try {
             if (debuggerSupport->detectDebugger() == DebuggerPresence::NOT_PRESENT)
                 debuggerSupport->attachDebugger();
@@ -743,13 +743,13 @@ void AppBase::stoppedWithTerminationException(cTerminationException& e)
     // if we're running in parallel and this exception is NOT one we received
     // from other partitions, then notify other partitions
 #ifdef WITH_PARSIM
-    cSimulation *simulation = getSimulation();
+    cSimulation *simulation = getActiveSimulation();
     if (simulation->isParsimEnabled() && !dynamic_cast<cReceivedTerminationException *>(&e))
         simulation->getParsimPartition()->broadcastTerminationException(e);
 #endif
-    if (getEnvir()->getEventlogRecording()) {
+    if (getActiveEnvir()->getEventlogRecording()) {
         //FIXME should not be in this function (Andras)
-        getEnvir()->getEventlogManager()->endRun(e.isError(), e.getErrorCode(), e.getFormattedMessage().c_str());
+        getActiveEnvir()->getEventlogManager()->endRun(e.isError(), e.getErrorCode(), e.getFormattedMessage().c_str());
     }
 }
 
@@ -758,20 +758,20 @@ void AppBase::stoppedWithException(std::exception& e)
     // if we're running in parallel and this exception is NOT one we received
     // from other partitions, then notify other partitions
 #ifdef WITH_PARSIM
-    cSimulation *simulation = getSimulation();
+    cSimulation *simulation = getActiveSimulation();
     if (simulation->isParsimEnabled() && !dynamic_cast<cReceivedException *>(&e))
         simulation->getParsimPartition()->broadcastException(e);
 #endif
-    if (getEnvir()->getEventlogRecording()) {
+    if (getActiveEnvir()->getEventlogRecording()) {
         // TODO: get error code from the exception?
-        getEnvir()->getEventlogManager()->endRun(true, E_CUSTOM, e.what());  //FIXME this should be rather in endRun(), or? (Andras)
+        getActiveEnvir()->getEventlogManager()->endRun(true, E_CUSTOM, e.what());  //FIXME this should be rather in endRun(), or? (Andras)
     }
 }
 
 void AppBase::checkFingerprint()
 {
-    cFingerprintCalculator *fingerprint = getSimulation()->getFingerprintCalculator();
-    if (!getSimulation()->getFingerprintCalculator())
+    cFingerprintCalculator *fingerprint = getActiveSimulation()->getFingerprintCalculator();
+    if (!getActiveSimulation()->getFingerprintCalculator())
         return;
 
     auto flags = opp_substringafterlast(fingerprint->str(), "/");
@@ -785,7 +785,7 @@ void AppBase::checkFingerprint()
 cModuleType *AppBase::resolveNetwork(const char *networkname, const char *baseDirectory)
 {
     cModuleType *network = nullptr;
-    std::string inifilePackage = getSimulation()->getNedPackageForFolder(baseDirectory);
+    std::string inifilePackage = getActiveSimulation()->getNedPackageForFolder(baseDirectory);
 
     bool hasInifilePackage = !inifilePackage.empty() && strcmp(inifilePackage.c_str(), "-") != 0;
     if (hasInifilePackage)
@@ -806,7 +806,7 @@ cModuleType *AppBase::resolveNetwork(const char *networkname, const char *baseDi
 
 void AppBase::notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details)
 {
-    getSimulation()->notifyLifecycleListeners(eventType, details);
+    getActiveSimulation()->notifyLifecycleListeners(eventType, details);
 }
 
 

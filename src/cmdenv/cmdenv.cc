@@ -328,7 +328,7 @@ bool Cmdenv::runSimulation(const char *configName, int runNumber)
 
         if (verbose)
             out << "\nCalling finish() at end of Run #" << runNumber << "..." << endl;
-        getSimulation()->callFinish();
+        simulation->callFinish();
         cLogProxy::flushLastLine();
 
         checkFingerprint();
@@ -359,7 +359,7 @@ bool Cmdenv::runSimulation(const char *configName, int runNumber)
     // delete network
     if (networkSetupDone) {
         try {
-            getSimulation()->deleteNetwork();
+            simulation->deleteNetwork();
         }
         catch (std::exception& e) {
             finishedOK = false;

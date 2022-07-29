@@ -81,9 +81,8 @@ class ENVIR_API AppBase
 
     InifileContents *getInifileContents() {return ini;}
 
-    //TODO the methods below assume that there is only one active simulation, which might not be true
-    EnvirBase *getEnvir() const {return dynamic_cast<EnvirBase*>(cSimulation::getActiveEnvir());}
-    cSimulation *getSimulation() const {return cSimulation::getActiveSimulation();}
+    static EnvirBase *getActiveEnvir() {return dynamic_cast<EnvirBase*>(cSimulation::getActiveEnvir());}
+    static cSimulation *getActiveSimulation() {return cSimulation::getActiveSimulation();}
 
     DebuggerSupport *getDebuggerSupport() const {return debuggerSupport;}
 
