@@ -2539,7 +2539,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
         }
 
         private void setNonLinearMinimumTimelineCoordinateDeltaText() {
-            java.math.BigDecimal value = new java.math.BigDecimal(100 * getNonLinearMinimumTimelineCoordinateDelta());
+            BigDecimal value = new BigDecimal(100 * getNonLinearMinimumTimelineCoordinateDelta());
             value = value.round(new MathContext(3));
             minimumLabel.setText("Relative minimum distance to maximum distance: " + value + "%");
         }

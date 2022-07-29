@@ -1,6 +1,5 @@
 package org.omnetpp.sequencechart.widgets;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -12,6 +11,7 @@ import org.omnetpp.common.engineext.IMatchableObject;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
 import org.omnetpp.common.util.Pair;
+import org.omnetpp.common.util.BigDecimal;
 import org.omnetpp.eventlog.FilteredMessageDependency;
 import org.omnetpp.eventlog.IEvent;
 import org.omnetpp.eventlog.IEventLog;
