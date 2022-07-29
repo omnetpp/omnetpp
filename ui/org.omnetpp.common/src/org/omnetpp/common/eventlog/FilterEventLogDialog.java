@@ -9,7 +9,6 @@ package org.omnetpp.common.eventlog;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -66,6 +65,7 @@ import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeLabelProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.common.util.BigDecimal;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.eventlog.EventLogEntry;
 import org.omnetpp.eventlog.IEventLog;

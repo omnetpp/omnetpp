@@ -1,9 +1,8 @@
 package org.omnetpp.sequencechart.widgets;
 
-import java.math.BigDecimal;
-
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
+import org.omnetpp.common.util.BigDecimal;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
 import org.omnetpp.eventlog.IEvent;
