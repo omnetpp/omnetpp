@@ -640,8 +640,7 @@ int Qtenv::doRunApp()
     cSimulation::setActiveSimulation(simulation);
 
     activeCfg = ini->extractGlobalConfig();
-    simulation->configure(activeCfg);
-
+    std::string imagePath = envir->extractImagePath(activeCfg, args);
     readOptions(activeCfg);
 
     if (getAttachDebuggerOnErrors())
@@ -654,7 +653,7 @@ int Qtenv::doRunApp()
     signal(SIGTERM, signalHandler);
 
     icons.setVerbose(verbose);
-    icons.loadImages(envir->getImagePath());
+    icons.loadImages(imagePath.c_str());
 
     // we need to flush streams, otherwise output written from Tcl tends to overtake
     // output written from C++ so far, at least in the IDE's console view
