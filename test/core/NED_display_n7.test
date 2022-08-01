@@ -1,0 +1,20 @@
+%description:
+Test that incorrectly escaping special display string characters (=,;) with a
+single backslash results in a helpful error message for the user.
+In display strings put into NED files, the backslashes need to be doubled, because
+they are first parsed as string literals, which removes one "layer" of escaping.
+
+%file: test.ned
+
+network Test {
+    @display("a=foo\\,bar\;b=baz");  // single backslash instead of double before ;
+}
+
+%exitcode: 1
+
+%contains-regex: stdout
+End\.$
+
+%contains: stderr
+Illegal escape sequence '\;' (Hint: use double backslashes to quote display string special chars:
+
