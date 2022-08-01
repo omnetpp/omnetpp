@@ -399,9 +399,15 @@ void cDisplayString::doParse()
     bool insideTagName = true;
     for (s = assembledString, d = buffer; *s; s++, d++) {
         if (*s == '\\' && *(s+1)) {
-            // allow escaping display string special chars (=,;) with backslash.
-            // No need to deal with "\t", "\n" etc here, since they already got
-            // interpreted by opp_parsequotedstr().
+            // Allow escaping display string special chars (=,;) with backslash.
+            // No need to deal with "\t", "\n" etc here. For display strings in
+            // NED files, they are already interpreted during NED parsing of
+            // string literals, and one level of backslashes is also removed.
+            // The backslashes that remain after don't add any special meaning
+            // (like tab or newline) to the character following them, they only
+            // take away special meaning they might have otherwise (as value or
+            // tag separators). The "$" does not lose its meaning (not even in
+            // "${expression(1, b)}"), as that is interpreted in a later stage.
             *d = *++s;
         }
         else if (*s == ';') {
