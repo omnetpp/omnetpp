@@ -1,20 +1,20 @@
 %description:
 Test NED display strings:
-1. The "\n", "\t", "\\" and "\"" escape sequences are resolved by the 
+1. The "\n", "\t", "\\" and "\"" escape sequences are resolved by the
    NED parser into LF, TAB, \, ", as in any other string contant
 2. Backslash (doubled to protect from the above mechanism) can be used to protect
    commas and semicolons from being interpreted as tag argument separator.
 
 %file: test.ned
 
-simple Dump 
+simple Dump
 {
 }
 
 network Test
 {
     parameters:
-        @display("t1=A1\tB1\tC1\nA2\tB2\tC2;t2=backslash: \\ quote: \";t3=foo\\,bar\\;baz=1;t4=back\\\\slash");
+        @display("t1=A1\tB1\tC1\nA2\tB2\tC2;t2=literal quote: \" disappearing backslash: \\ literal backslash: \\\\;t3=foo\\,bar\\;baz=1;t4=three backslashes (tab): \\\tx");
     submodules:
         dump: Dump;
 }
@@ -36,7 +36,7 @@ class Dump : public cSimpleModule
 
 Define_Module(Dump);
 
-void Dump::activity() 
+void Dump::activity()
 {
     cDisplayString& ds = getParentModule()->getDisplayString();
     EV << "t1[0]:" << endl << ds.getTagArg("t1",0) << endl << endl;
@@ -59,13 +59,13 @@ A1	B1	C1
 A2	B2	C2
 
 t2[0]:
-backslash:  quote: "
+literal quote: " disappearing backslash:  literal backslash: \
 
 t3[0]:
 foo,bar;baz=1
 
 t4[0]:
-back\slash
+three backslashes (tab): 	x
 
 .
 
