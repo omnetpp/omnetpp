@@ -159,6 +159,11 @@ class SIM_API cLog
 
   public:
     /**
+     * Master switch for logging. (This flag used to live in the cEnvir class.)
+     */
+    static OPP_THREAD_LOCAL bool loggingEnabled;
+
+    /**
      * This log level specifies a globally applied runtime modifiable filter. This is
      * the fastest runtime filter, it works with a simple integer comparison at the call
      * site.
@@ -180,6 +185,17 @@ class SIM_API cLog
     static OPP_THREAD_LOCAL ComponentLogPredicate componentLogPredicate;
 
   public:
+    /**
+     * Returns true if logging is enabled. (Logging is normally disabled while
+     * the simulation is running in Express mode, and enabled otherwise.)
+     */
+    static bool isLoggingEnabled() { return loggingEnabled; }
+
+    /**
+     * Sets the enablement of logging, see isLoggingEnabled().
+     */
+    static void setLoggingEnabled(bool enabled) {loggingEnabled = enabled;}
+
     /**
      * Returns a human-readable string representing the provided log level.
      */

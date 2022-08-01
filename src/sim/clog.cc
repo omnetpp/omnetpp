@@ -21,6 +21,7 @@
 
 namespace omnetpp {
 
+OPP_THREAD_LOCAL bool cLog::loggingEnabled = true;
 OPP_THREAD_LOCAL LogLevel cLog::logLevel = LOGLEVEL_TRACE;
 OPP_THREAD_LOCAL cLog::NoncomponentLogPredicate cLog::noncomponentLogPredicate = &cLog::defaultNoncomponentLogPredicate;
 OPP_THREAD_LOCAL cLog::ComponentLogPredicate cLog::componentLogPredicate = &cLog::defaultComponentLogPredicate;
@@ -80,17 +81,13 @@ bool cLog::defaultNoncomponentLogPredicate(const void *object, LogLevel logLevel
     // log called from outside cComponent methods, use context component to decide enablement
     cSimulation *simulation = cSimulation::getActiveSimulation();
     const cModule *contextModule = simulation->getContextModule();
-    return logLevel >= cLog::logLevel &&
-           (!contextModule || logLevel >= contextModule->getLogLevel()) &&
-           simulation->getEnvir()->isLoggingEnabled();
+    return isLoggingEnabled() && logLevel >= cLog::logLevel && (!contextModule || logLevel >= contextModule->getLogLevel());
 }
 
 bool cLog::defaultComponentLogPredicate(const cComponent *sourceComponent, LogLevel logLevel, const char *category)
 {
     // log called from a cComponent method, check whether logging for that component is enabled
-    return logLevel >= cLog::logLevel &&
-           logLevel >= sourceComponent->getLogLevel() &&
-           sourceComponent->getEnvir()->isLoggingEnabled();
+    return isLoggingEnabled() && logLevel >= cLog::logLevel && logLevel >= sourceComponent->getLogLevel();
 }
 
 //----

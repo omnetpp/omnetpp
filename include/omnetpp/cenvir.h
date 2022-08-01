@@ -75,9 +75,6 @@ class SIM_API cEnvir
 {
     friend class evbuf;
   public:
-    // Internal flag for express mode.
-    bool loggingEnabled = true;
-
     // Internal flag. When set to true, the simulation kernel MAY omit calling
     // the following cEnvir methods: messageScheduled(), messageCancelled(),
     // beginSend(), messageSendDirect(), messageSendHop(), messageSendHop(),
@@ -449,7 +446,7 @@ class SIM_API cEnvir
      * Returns true if logging is enabled. This is false in Express mode while
      * the simulation is actually running.
      */
-    bool isLoggingEnabled() const { return loggingEnabled; }
+    [[deprecated]] bool isLoggingEnabled() const;
 
     /**
      * Returns true if the simulation is running under a GUI in Express mode.

@@ -904,7 +904,7 @@ void Qtenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t unti
     stopSimulationFlag = false;
 
     messageAnimator->setShowAnimations(true);
-    setLoggingEnabled(true);
+    cLog::setLoggingEnabled(true);
     runUntil.msg = nullptr;
 
     runMode = RUNMODE_NOT_RUNNING;
@@ -991,7 +991,7 @@ bool Qtenv::doRunSimulation()
     //
     cSimulation *sim = getSimulation();
     speedometer.start(sim->getSimTime());
-    setLoggingEnabled(true);
+    cLog::setLoggingEnabled(true);
     bool firstevent = true;
 
     while (true) {
@@ -1102,7 +1102,7 @@ bool Qtenv::doRunSimulationExpress()
 
     // OK, let's begin
     speedometer.start(getSimulation()->getSimTime());
-    setLoggingEnabled(false);
+    cLog::setLoggingEnabled(false);
 
     messageAnimator->setShowAnimations(false);
     messageAnimator->clear();
@@ -2019,7 +2019,7 @@ void Qtenv::objectDeleted(cObject *object)
 
 void Qtenv::simulationEvent(cEvent *event)
 {
-    if (isLoggingEnabled())
+    if (cLog::isLoggingEnabled())
         addEventToLog(event);  // must be done here, because eventnum and simtime are updated inside executeEvent()
 
     displayUpdateController->simulationEvent();
@@ -2031,7 +2031,7 @@ void Qtenv::simulationEvent(cEvent *event)
             if (!arrivalGate)
                 return;
 
-            if (isLoggingEnabled())
+            if (cLog::isLoggingEnabled())
                 logBuffer.delivery(msg);
 
             if (!isSilentEvent(msg)) {
@@ -2067,7 +2067,7 @@ void Qtenv::messageCancelled(cMessage *msg)
 
 void Qtenv::beginSend(cMessage *msg, const SendOptions& options)
 {
-    if (isLoggingEnabled())
+    if (cLog::isLoggingEnabled())
         logBuffer.beginSend(msg, options);
 
     if (messageAnimator->getShowAnimations() && opt->animationEnabled && !isSilentEvent(msg))
@@ -2076,7 +2076,7 @@ void Qtenv::beginSend(cMessage *msg, const SendOptions& options)
 
 void Qtenv::messageSendDirect(cMessage *msg, cGate *toGate, const ChannelResult& result)
 {
-    if (isLoggingEnabled())
+    if (cLog::isLoggingEnabled())
         logBuffer.messageSendDirect(msg, toGate, result);
 
     if (messageAnimator->getShowAnimations() && opt->animationEnabled && !isSilentEvent(msg))
@@ -2085,7 +2085,7 @@ void Qtenv::messageSendDirect(cMessage *msg, cGate *toGate, const ChannelResult&
 
 void Qtenv::messageSendHop(cMessage *msg, cGate *srcGate)
 {
-    if (isLoggingEnabled())
+    if (cLog::isLoggingEnabled())
         logBuffer.messageSendHop(msg, srcGate);
 
     if (messageAnimator->getShowAnimations() && opt->animationEnabled && !isSilentEvent(msg)) {
@@ -2096,7 +2096,7 @@ void Qtenv::messageSendHop(cMessage *msg, cGate *srcGate)
 
 void Qtenv::messageSendHop(cMessage *msg, cGate *srcGate, const cChannel::Result& result)
 {
-    if (isLoggingEnabled())
+    if (cLog::isLoggingEnabled())
         logBuffer.messageSendHop(msg, srcGate, result);
 
     if (messageAnimator->getShowAnimations() && opt->animationEnabled && !isSilentEvent(msg)) {
@@ -2107,7 +2107,7 @@ void Qtenv::messageSendHop(cMessage *msg, cGate *srcGate, const cChannel::Result
 
 void Qtenv::endSend(cMessage *msg)
 {
-    if (isLoggingEnabled())
+    if (cLog::isLoggingEnabled())
         logBuffer.endSend(msg);
 
     if (messageAnimator->getShowAnimations() && opt->animationEnabled && !isSilentEvent(msg))
@@ -2473,7 +2473,7 @@ void Qtenv::alert(const char *msg)
 
 void Qtenv::log(cLogEntry *entry)
 {
-    if (!isLoggingEnabled())
+    if (!cLog::isLoggingEnabled())
         return;
 
     std::string prefix = getLogFormatter().formatPrefix(entry);

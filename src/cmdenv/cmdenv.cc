@@ -332,7 +332,7 @@ bool Cmdenv::runSimulation(const char *configName, int runNumber)
         if (verbose)
             out << "Initializing..." << endl;
 
-        envir->setLoggingEnabled(!expressMode);
+        cLog::setLoggingEnabled(!expressMode);
 
         simulation->callInitialize();
         cLogProxy::flushLastLine();
@@ -381,7 +381,7 @@ bool Cmdenv::runSimulation(const char *configName, int runNumber)
             throw;
         }
 
-         envir->setLoggingEnabled(true);
+         cLog::setLoggingEnabled(true);
 
         if (verbose)
             out << "\nCalling finish() at end of Run #" << runNumber << "..." << endl;
@@ -395,7 +395,7 @@ bool Cmdenv::runSimulation(const char *configName, int runNumber)
         finishedOK = true;
     }
     catch (std::exception& e) {
-        envir->setLoggingEnabled(true);
+        cLog::setLoggingEnabled(true);
         stoppedWithException(e);
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
         displayException(e);

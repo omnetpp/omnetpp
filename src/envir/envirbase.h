@@ -137,8 +137,6 @@ class ENVIR_API EnvirBase : public cEnvir
     void setIsGUI(bool enabled) {gui = enabled;}
     void setExtraStackForEnvir(size_t size) {extraStack = size;}
 
-    bool isLoggingEnabled() const {return loggingEnabled;}
-    void setLoggingEnabled(bool enabled) {loggingEnabled = enabled;}
     bool getDebugOnErrors() const {return debugOnErrors;}
     void setDebugOnErrors(bool enable) {debugOnErrors = enable;}
     bool getAttachDebuggerOnErrors() const {return attachDebuggerOnErrors;}

@@ -19,12 +19,18 @@
 #include "omnetpp/cenvir.h"
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/csimulation.h"
+#include "omnetpp/clog.h"
 
 using namespace omnetpp::common;
 
 namespace omnetpp {
 
 #define BUFLEN    1024
+
+bool cEnvir::isLoggingEnabled() const
+{
+    return cLog::isLoggingEnabled();
+}
 
 void cEnvir::printfmsg(const char *fmt, ...)
 {

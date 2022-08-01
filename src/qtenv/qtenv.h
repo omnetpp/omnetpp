@@ -409,8 +409,6 @@ class QTENV_API Qtenv : public QObject, public AppBase
       EnvirBase *getEnvir() const {return dynamic_cast<EnvirBase*>(cSimulation::getActiveEnvir());}
       cConfiguration *getConfig() {return getEnvir()->getConfig();}
 
-      bool isLoggingEnabled() const {return getEnvir()->isLoggingEnabled();}
-      void setLoggingEnabled(bool enabled) {getEnvir()->setLoggingEnabled(enabled);}
       bool getDebugOnErrors() const {return getEnvir()->getDebugOnErrors();}
       void setDebugOnErrors(bool enable) {getEnvir()->setDebugOnErrors(enable);}
       bool getAttachDebuggerOnErrors() const {return getEnvir()->getAttachDebuggerOnErrors();}
