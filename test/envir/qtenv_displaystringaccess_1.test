@@ -356,8 +356,8 @@ a=a${' $ $$ , ; = '}b --> as string --> a $ $$ , ; = b
 a=foo${normal(100,10)}bar --> as string --> foo89.2284bar
 a="${",b="}" --> as string --> ",b="
 a=${"expr1 , $param , ${expr2}"} --> as string --> expr1 , $param , ${expr2}
-a=a\b --> as string --> ERROR: Invalid escape sequence '\b' in 'a=a\b'
-a=ab\ --> as string --> ERROR: Incomplete escape sequence in 'a=ab\'
+a=a\b --> as string --> ab
+a=ab\ --> as string --> ab
 a=a\,b --> as string --> a,b
 a=a\;b --> as string --> a;b
 a=a\=b --> as string --> a=b
@@ -366,9 +366,9 @@ a=dollar $ sign --> as string --> ERROR: Illegal '$' in display string, $parName
 a=dollar $$ signs --> as string --> dollar $ signs
 a=ab$ --> as string --> ERROR: Illegal '$' in display string, $parName, ${NED-expression}, or $$ expected
 a=a$${4}b --> as string --> a${4}b
-a=a\$b --> as string --> ERROR: Invalid escape sequence '\$' in 'a=a\$b'
-a=a\${4}b --> as string --> ERROR: Invalid escape sequence '\$' in 'a=a\${4}b'
-a=a$\{4}b --> as string --> ERROR: Invalid escape sequence '\{' in 'a=a$\{4}b'
+a=a\$b --> as string --> ERROR: module 'Test.dump' and its parent have no parameter 'b'
+a=a\${4}b --> as string --> a4b
+a=a$\{4}b --> as string --> a4b
 a=${ --> as string --> ERROR: Unmatched '{' in 'a=${'
 a=} --> as string --> }
 a=$} --> as string --> ERROR: Illegal '$' in display string, $parName, ${NED-expression}, or $$ expected
