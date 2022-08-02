@@ -189,6 +189,8 @@ std::string cSimulation::getFullPath() const
 
 void cSimulation::configure(cConfiguration *cfg)
 {
+    this->cfg = cfg;
+
     parsim = cfg->getAsBool(CFGID_PARALLEL_SIMULATION);
 
 #ifndef WITH_PARSIM

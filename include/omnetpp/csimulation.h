@@ -80,6 +80,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     cINedLoader *nedLoader = nullptr;   // NED loader/resolver - NOT OWNED
     cIRngManager *rngManager = nullptr; // component-rng mapping
     cEnvir *envir = nullptr;            // the environment that belongs to this simulation object
+    cConfiguration *cfg = nullptr;      // the configuration object passed in the last configure() call -- NOT OWNED
     cModule *systemModule = nullptr;    // pointer to system (root) module
     cSimpleModule *currentActivityModule = nullptr; // the module currently executing activity() (nullptr if handleMessage() or in main)
     cComponent *contextComponent = nullptr;  // component in context (or nullptr)
@@ -197,6 +198,11 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * Returns the environment object associated with this simulation object.
      */
     cEnvir *getEnvir() const  {return envir;}  // note: intentionally non-virtual
+
+    /**
+     * Returns the configuration object passed in the last configure(cConfiguration*) call.
+     */
+    cConfiguration *getConfig() const {return cfg;}  // note: intentionally not virtual
     //@}
 
     /** @name Accessing modules and channels. */
