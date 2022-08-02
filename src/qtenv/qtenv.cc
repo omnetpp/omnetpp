@@ -899,14 +899,17 @@ void Qtenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t unti
 
 void Qtenv::setSimulationRunMode(RunMode mode)
 {
+    // We want to skip even in STEP mode, because we want the
+    // next event to be executed immediately.
+    skipHoldAnimations();
+
     if (mode == RUNMODE_STEP) { // if the user wants to step,
-        // first quitting any holding animations in progress
-        skipHoldAnimations();
         // then if we are in between events, not stopped right before the next event, jumping there
         displayUpdateController->skipToNextEvent();
         // finally we indicate that the next event should be executed, and we should not stop before that
         doNextEventInStep = true;
     }
+
     runMode = mode;
 }
 
