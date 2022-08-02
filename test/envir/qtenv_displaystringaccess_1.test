@@ -221,6 +221,7 @@ void Dump::activity()
     P("a=a${' $ $$ , ; = '}b");
     P("a=foo${normal(100,10)}bar");
     P(R"(a="${",b="}")");
+    P(R"(a="${"\\"}")"); // expression with a single string literal in it, containing a backslash
     P("a=${\"expr1 , $param , ${expr2}\"}");
 
     // escape sequences
@@ -355,6 +356,7 @@ a=${normal(100,10)} --> as string --> 92.51
 a=a${' $ $$ , ; = '}b --> as string --> a $ $$ , ; = b
 a=foo${normal(100,10)}bar --> as string --> foo89.2284bar
 a="${",b="}" --> as string --> ",b="
+a="${"\\"}" --> as string --> "\"
 a=${"expr1 , $param , ${expr2}"} --> as string --> expr1 , $param , ${expr2}
 a=a\b --> as string --> ab
 a=ab\ --> as string --> ab
