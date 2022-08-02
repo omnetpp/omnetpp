@@ -390,6 +390,9 @@ Display strings can be used in the following contexts:
 \subsection{Syntax and Placement}
 \label{sec:graphics:displaystring-syntax-and-placement}
 
+\subsubsection{Syntax}
+\label{sec:graphics:dispstr-syntax}
+
 Display strings are specified in \fprop{@display} properties. The property
 must contain a single string as value. The string should contain a
 semicolon-separated list of tags. Each tag consists of a key, an equal sign
@@ -406,6 +409,9 @@ example, the first and second arguments of the \ttt{b} tag are omitted.
 \begin{ned}
 @display("p=100,100;b=,,rect,blue")
 \end{ned}
+
+\subsubsection{Placement}
+\label{sec:graphics:dispstr-placement}
 
 Display strings can be placed in the \fkeyword{parameters} section of module
 and channel type definitions, and in submodules and connections. The
@@ -434,28 +440,53 @@ network Example
 }
 \end{ned}
 
-Inside a NED file, to include \ttt{,} \ttt{;} or \ttt{=} in a tag value, prefix it with two backslashes:
-\ttt{\textbackslash\textbackslash,} \ttt{\textbackslash\textbackslash;} \ttt{\textbackslash\textbackslash=}.
-To put a literal backslash in a tag value, write \ttt{{\textbackslash}{\textbackslash}{\textbackslash}{\textbackslash}} instead.
-Tab or newline characters can be included in a tag value by writing them as \ttt{{\textbackslash}t} or \ttt{{\textbackslash}n}.
+\subsubsection{Quoting}
+\label{sec:graphics:dispstr-quoting}
 
-The reason it works this way is that display strings specified in NED files
-are string literals, so backslash escape sequences are interpreted by the NED parser first.
-This handles tabs, newlines, and literal backslashes and quotes.
+Since commas and semicolons are part of the display string syntax, they need to
+be escaped in the NED file when they occur as part of a value (e.g. annotation
+label or tooltip text). Specifically, to include a comma, semicolon or equal
+sign in a tag value, prefix it with two backslashes:
+\ttt{\textbackslash\textbackslash,}, \ttt{\textbackslash\textbackslash;},
+\ttt{\textbackslash\textbackslash=}. To put a literal backslash in a tag
+value, write four backslashes:
+\ttt{{\textbackslash}{\textbackslash}{\textbackslash}{\textbackslash}}.
+Tab or newline characters can be included in a tag value by writing them as
+\ttt{{\textbackslash}t} and \ttt{{\textbackslash}n}, respectively.
 
-Then, the string value is parsed by the display string parser, which splits the
-string into tags and values. In this step, the remaining backslashes take away any special
-meaning of commas, semicolons and equals signs.
+The reason for the above rules is that display strings specified in NED files
+are string literals, so backslash escape sequences are interpreted by the NED
+parser first. It handles tabs, newlines, and literal backslashes and quotation
+marks. Double backslashes become single backslashes after this step. Then, the
+string value is parsed by the display string parser, which splits the string
+into tags and values. In this step, the remaining backslashes which are in front of
+commas, semicolons or equal signs take away their special meanings, a backslash
+in front of another backslash generates a single backslash, and the rest of
+the backslashes are ignored.
 
 Examples:
 
 \begin{ned}
-  @display("t=Hello\\, world!");
+  @display("t=Hello\\, world!");  // -> Hello, world!
+  @display("t=C:\\\\Windows\\\\Temp"); // -> C:\Windows\Temp
+  @display("t=\"Hello\\,\" Martin said."); // -> "Hello," Martin said.
 \end{ned}
 
+\subsubsection{Parameter References}
+\label{sec:graphics:dispstr-paramrefs}
+
+In addition to literal values, display strings may also contain embedded
+NED expressions and references to module/channel parameters, made available
+with the \ttt{\$\{...\}} and \ttt{\$foo} syntaxes, respectively. These features
+are described in detail in \ref{sec:graphics:displaystring-parameter-substitution}
+and \ref{sec:graphics:displaystring-embedded-expressions}.
+To add a literal dollar sign to a display string value, double it:
+
 \begin{ned}
-  @display("t=This is a backslash character: '\\\\', this is a letter in quotes: \"x\".");
+  @display("t=Price: $$50");  // -> Price: $50
 \end{ned}
+
+Commas and semicolons inside \ttt{\$\{...\}} do not need to be escaped with backslash.
 
 \subsection{Inheritance}
 \label{sec:graphics:displaystring-inheritance}
@@ -949,27 +980,26 @@ simple MobileNode
 
 There is also a fallback to the parameters of the parent component.
 
-Expressions:
+\subsection{Embedded Expressions}
+\label{sec:graphics:displaystring-embedded-expressions}
 
-Arbitrary NED expressions can also be embedded in display strings using the \ttt{\${expression}} notation.
-These expressions are evaluated in the context of the display string's owner component, which means
-that identifiers refer to the parameters of the component.
+Arbitrary NED expressions can be embedded in display strings using the
+\ttt{\$\{...\}} notation. These expressions are evaluated in the context of the
+display string's owner component, which means that identifiers refer to the
+parameters of the component.
 
-As opposed to the \ttt{\$foo} syntax, there is no fallback to parent component parameters.
-To refer to the parent component's \ttt{foo} parameter, write this: \ttt{\${parent.foo}}.
+As opposed to the \ttt{\$foo} syntax, there is no fallback to the parameters of
+the parent module. To refer to the parent module's \ttt{foo} parameter, the
+parameter name must be qualified with the \fkeyword{parent} keyword:
+\ttt{\$\{parent.foo\}}.
 
 \begin{ned}
-    @display("p=${parent.xpos + r * cos(phi)},${$parent.ypos + r * sin(phi)}");
+    @display("p=${parent.xpos + r*cos(phi)},${$parent.ypos + r*sin(phi)}");
 \end{ned}
 
 These expressions are evaluated every time the appearance of the component is refreshed,
 so volatile parameters and random numbers will take effect at every display refresh.
 
-To make passing parameters to functions easier, \ttt{,} does not separate tag values within
-embedded expressions, so they don't have to be escaped within \ttt{\${}};
-
-
-% escaping with "$$" or "$${}", "\\$" or "$\\{}" has no effect, "\\" disappears before that
 
 \subsection{Colors}
 \label{sec:graphics:displaystring-colors}
