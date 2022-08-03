@@ -86,6 +86,7 @@ namespace omnetpp {
 //void _dummy_for_env();
 void std_sim_descriptor_dummy();
 void nedfunctions_dummy();
+void nedpythonfunctions_dummy();
 void _sim_dummy_func()
 {
     bool bb = false;
@@ -124,6 +125,7 @@ void _sim_dummy_func()
     h.draw();
 
     nedfunctions_dummy();
+    nedpythonfunctions_dummy();
     //_dummy_for_env();
 }
 
