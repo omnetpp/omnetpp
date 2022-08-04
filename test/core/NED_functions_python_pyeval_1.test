@@ -1,0 +1,84 @@
+%description:
+Tests that the `pyeval` NED function can take parameters of all
+types, can perform some operations on them, and return results
+of all types, with value conversions in both directions.
+
+
+%file: test.ned
+
+import testlib.Dump;
+
+network Test
+{
+    parameters:
+
+        // ==== expressions of various types: ====
+
+        int pye_i = pyeval("(2 ** 10) // 5");
+        double pye_d = pyeval("(2 ** 10) / 2.5");
+        bool pye_b = pyeval("'Hello World!'.startswith('Hello ')");
+        string pye_s = pyeval("'Hello World!'.removeprefix('Hello ')");
+        object pye_l = pyeval("['Hello', 42]");
+        object pye_m = pyeval("{'Hello': 'World!', 'answer': 42}");
+        object pye_ll = pyeval("[['Hello', 'World!'], ['answer', 42]]");
+        object pye_mm = pyeval("{'greeting': {'Hello': 'World!'}, 'everything': {'answer': 42}}");
+        object pye_lm = pyeval("[{'Hello': 'World'}, {'answer': 42}]");
+        object pye_ml = pyeval("{'greeting': ['Hello', 'World!'], 'everything': ['answer', 42]}");
+        object pye_n = pyeval("None");
+
+        // passing parameters of all types, including lists and dicts, in all four nesting combos
+
+        string pyl_pi = pyeval("x: str(type(x)) + ' ' + str(x)", 2 ^ 10 / 5);
+        string pyl_pd = pyeval("x: str(type(x)) + ' ' + str(x)", (2 * 10) / 2.5);
+        string pyl_pb = pyeval("x: str(type(x)) + ' ' + str(x)", false);
+        string pyl_ps = pyeval("x: str(type(x)) + ' ' + str(x)", "foobar");
+
+        string pyl_pn = pyeval("x: str(type(x)) + ' ' + str(x)", nullptr);
+        string pyl_pu = pyeval("x: str(type(x)) + ' ' + str(x)", undefined);
+
+        string pyl_pl = pyeval("x: str(type(x)) + ' ' + str(x)", ['hello', 42]);
+        string pyl_pm = pyeval("x: str(type(x)) + ' ' + str(x)", {'hello': 42});
+
+        string pyl_pll = pyeval("x: str(type(x)) + ' ' + str(x)", ['hello', ['answer', 42]]);
+        string pyl_pmm = pyeval("x: str(type(x)) + ' ' + str(x)", {'hello': {'answer': 42}});
+        string pyl_plm = pyeval("x: str(type(x)) + ' ' + str(x)", ['hello', {'answer': 42}]);
+        string pyl_pml = pyeval("x: str(type(x)) + ' ' + str(x)", {'hello': ['answer', 42]});
+
+    submodules:
+        dump : Dump;
+}
+
+%# stripping absolute paths from output
+%subst: / -- at .*\n/ -- at ...\n/
+
+%contains: stdout
+==============================
+module Test: Test {
+    parameters:
+        @isNetwork
+        pye_i = 204
+        pye_d = 409.6
+        pye_b = true
+        pye_s = "World!"
+        pye_l = ["Hello", 42]
+        pye_m = {Hello: "World!", answer: 42}
+        pye_ll = [["Hello", "World!"], ["answer", 42]]
+        pye_mm = {everything: {answer: 42}, greeting: {Hello: "World!"}}
+        pye_lm = [{Hello: "World"}, {answer: 42}]
+        pye_ml = {everything: ["answer", 42], greeting: ["Hello", "World!"]}
+        pye_n = nullptr
+        pyl_pi = "<class 'float'> 204.8"
+        pyl_pd = "<class 'float'> 8.0"
+        pyl_pb = "<class 'bool'> False"
+        pyl_ps = "<class 'str'> foobar"
+        pyl_pn = "<class 'NoneType'> None"
+        pyl_pu = "<class 'NoneType'> None"
+        pyl_pl = "<class 'list'> ['hello', 42]"
+        pyl_pm = "<class 'dict'> {'hello': 42}"
+        pyl_pll = "<class 'list'> ['hello', ['answer', 42]]"
+        pyl_pmm = "<class 'dict'> {'hello': {'answer': 42}}"
+        pyl_plm = "<class 'list'> ['hello', {'answer': 42}]"
+        pyl_pml = "<class 'dict'> {'hello': ['answer', 42]}"
+    submodules:
+}
+==============================

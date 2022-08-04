@@ -1,0 +1,122 @@
+%description:
+Tests that the `pyeval` and `pycode` NED functions can
+access the context component as `this`, and read its
+parameters of any type directly.
+
+%file: test.ned
+
+import testlib.Dump;
+
+network Test
+{
+    parameters:
+
+        // ==== simple data for testing: ====
+
+        int a = 1;
+        double b = 1.5;
+        string c = "foo";
+        bool d = true;
+
+        object e = [42, 13.37, "bar"];
+        object f = {"x":1, "y":2.5, "z":"foobar"};
+        object g = [[42, "foo"], ["bar", 13.37]];
+        object h = {"x": {"A": "foo"}, "y": {"bar": 13.37}};
+        object i = [{42: "foo"}, {"bar": 13.37}];
+        object j = {"x": [42, "foo"], "y": ["bar", 13.37]};
+        object k = nullptr;
+        object l = undefined;
+
+        object m = 1;
+        object n = 1.5;
+        object o = "foo";
+        object p = true;
+
+        // ==== accessing parameters through `this` ====
+
+        int pye_t_i = pyeval("this.a * 2");
+        double pye_t_d = pyeval("this.b * 2.5");
+        string pye_t_s = pyeval("this.c + 'bar'");
+        bool pye_t_b = pyeval("not this.d");
+
+        object pye_t_l = pyeval("this.e");
+        object pye_t_m = pyeval("this.f");
+        object pye_t_ll = pyeval("this.g");
+        object pye_t_mm = pyeval("this.h");
+        object pye_t_lm = pyeval("this.i");
+        object pye_t_ml = pyeval("this.j");
+        object pye_t_n = pyeval("this.k");
+        object pye_t_u = pyeval("this.l");
+
+        int pye_t_oii = pyeval("this.m * 2");
+        double pye_t_odd = pyeval("this.n * 2.5");
+        string pye_t_oss = pyeval("this.o + 'bar'");
+        bool pye_t_obb = pyeval("not this.p");
+
+        object pye_t_oi = pyeval("this.m * 2");
+        object pye_t_od = pyeval("this.n * 2.5");
+        object pye_t_os = pyeval("this.o + 'bar'");
+        object pye_t_ob = pyeval("not this.p");
+
+        // ==== `this` is also bound in `pycode` ====
+
+        int pyc_t_i = pycode("return this.a * 2");
+        double pyc_t_d = pycode("return this.b * 2.5");
+        string pyc_t_s = pycode("return this.c + 'bar'");
+        bool pyc_t_b = pycode("return not this.d");
+
+    submodules:
+        dump : Dump;
+}
+
+%# stripping absolute paths from output
+%subst: / -- at .*\n/ -- at ...\n/
+
+%contains: stdout
+==============================
+module Test: Test {
+    parameters:
+        @isNetwork
+        a = 1
+        b = 1.5
+        c = "foo"
+        d = true
+        e = [42, 13.37, "bar"]
+        f = {x: 1, y: 2.5, z: "foobar"}
+        g = [[42, "foo"], ["bar", 13.37]]
+        h = {x: {A: "foo"}, y: {bar: 13.37}}
+        i = [{42: "foo"}, {bar: 13.37}]
+        j = {x: [42, "foo"], y: ["bar", 13.37]}
+        k = nullptr
+        l = (omnetpp::cValueHolder)holder: undefined
+        m = (omnetpp::cValueHolder)holder: 1
+        n = (omnetpp::cValueHolder)holder: 1.5
+        o = (omnetpp::cValueHolder)holder: "foo"
+        p = (omnetpp::cValueHolder)holder: true
+        pye_t_i = 2
+        pye_t_d = 3.75
+        pye_t_s = "foobar"
+        pye_t_b = false
+        pye_t_l = [42, 13.37, "bar"]
+        pye_t_m = {x: 1, y: 2.5, z: "foobar"}
+        pye_t_ll = [[42, "foo"], ["bar", 13.37]]
+        pye_t_mm = {x: {A: "foo"}, y: {bar: 13.37}}
+        pye_t_lm = [{42: "foo"}, {bar: 13.37}]
+        pye_t_ml = {x: [42, "foo"], y: ["bar", 13.37]}
+        pye_t_n = nullptr
+        pye_t_u = nullptr
+        pye_t_oii = 2
+        pye_t_odd = 3.75
+        pye_t_oss = "foobar"
+        pye_t_obb = false
+        pye_t_oi = (omnetpp::cValueHolder)holder: 2
+        pye_t_od = (omnetpp::cValueHolder)holder: 3.75
+        pye_t_os = (omnetpp::cValueHolder)holder: "foobar"
+        pye_t_ob = (omnetpp::cValueHolder)holder: false
+        pyc_t_i = 2
+        pyc_t_d = 3.75
+        pyc_t_s = "foobar"
+        pyc_t_b = false
+    submodules:
+}
+==============================

@@ -1,0 +1,93 @@
+%description:
+Test that many different kinds of errors happening during evaluating
+the `pyeval` and `pycode` NED functions are handled appropriately.
+
+%file: test.ned
+
+import testlib.Dump;
+
+network Test
+{
+    parameters:
+
+        // Python syntax error
+        volatile int se_e = pyeval("syntax(error,here!");
+        volatile int se_l = pyeval("x: syntax(error,here!", 0);
+        volatile int se_c = pycode("return syntax(error,here!");
+
+        // Python exception
+        volatile int ex_e = pyeval("'not' + defined");
+        volatile int ex_l = pyeval("x: 'not' + defined", 0);
+        volatile int ex_c = pycode("return 'not' + defined");
+
+        // unconvertable result
+        volatile int uc_e = pyeval("{'sets', 'not', 'in', 'NED'}");
+        volatile int uc_l = pyeval("x: {'sets', 'not', 'in', 'NED'}", 0);
+        volatile int uc_c = pycode("return {'sets', 'not', 'in', 'NED'}");
+
+        // C++ exception
+        volatile int ce_e = pyeval("this.uniform(2, 1)");
+        volatile int ce_l = pyeval("x: this.uniform(2, 1)", 0);
+        volatile int ce_c = pycode("return this.uniform(2, 1)");
+
+        // nonexistent parameter/field
+        volatile int ne_e = pyeval("this.bubu");
+        volatile int ne_l = pyeval("x: this.baba", 0);
+        volatile int ne_c = pycode("return this.bebe");
+
+        // non-unwrappable C++ object result
+        volatile int nu_e = pyeval("this.getComponentType()");
+        volatile int nu_l = pyeval("x: this.getComponentType()", 0);
+        volatile int nu_c = pycode("return this.getComponentType()");
+
+        // non-string map key
+        volatile int ns_e = pyeval("{1: 2}");
+        volatile int ns_l = pyeval("x: {1: 2}", 0);
+        volatile int ns_c = pycode("return {1: 2}");
+
+    submodules:
+        dump : Dump;
+}
+
+%# stripping absolute paths from output
+%subst: / -- at .*\n/ -- at ...\n/
+
+%# stripping pointers from output
+%subst: / at 0x[a-fA-F0-9]+/ at 0x########/
+
+%# printing order of sets could change by implementation, stripping all but a single element
+%subst: /\(<class 'set'>\) '{.*'sets'.*}'/(<class 'set'>) '{ ... 'sets' ... }'/
+
+
+%contains: stdout
+==============================
+module Test: Test {
+    parameters:
+        @isNetwork
+        se_e = pyeval("syntax(error,here!") <error>: Cannot assign parameter 'se_e': pyeval(): Python expression evaluation failed: invalid syntax (<string>, line 1) -- at ...
+        se_l = pyeval("x: syntax(error,here!", 0) <error>: Cannot assign parameter 'se_l': pyeval(): Python expression evaluation failed: invalid syntax (<string>, line 1) -- at ...
+        se_c = pycode("return syntax(error,here!") <error>: Cannot assign parameter 'se_c': pycode(): Python expression evaluation failed: invalid syntax (<string>, line 2) -- at ...
+        ex_e = pyeval("'not' + defined") <error>: Cannot assign parameter 'ex_e': pyeval(): Python expression evaluation failed: name 'defined' is not defined -- at ...
+        ex_l = pyeval("x: 'not' + defined", 0) <error>: Cannot assign parameter 'ex_l': pyeval(): Python expression evaluation failed: name 'defined' is not defined -- at ...
+        ex_c = pycode("return 'not' + defined") <error>: Cannot assign parameter 'ex_c': pycode(): Python expression evaluation failed: name 'defined' is not defined -- at ...
+        uc_e = pyeval("{'sets', 'not', 'in', 'NED'}") <error>: Cannot assign parameter 'uc_e': pyeval(): Python object could not be converted to cValue: (<class 'set'>) '{ ... 'sets' ... }' -- at ...
+        uc_l = pyeval("x: {'sets', 'not', 'in', 'NED'}", 0) <error>: Cannot assign parameter 'uc_l': pyeval(): Python object could not be converted to cValue: (<class 'set'>) '{ ... 'sets' ... }' -- at ...
+        uc_c = pycode("return {'sets', 'not', 'in', 'NED'}") <error>: Cannot assign parameter 'uc_c': pycode(): Python object could not be converted to cValue: (<class 'set'>) '{ ... 'sets' ... }' -- at ...
+        ce_e = pyeval("this.uniform(2, 1)") <error>: Cannot assign parameter 'ce_e': pyeval(): Python expression evaluation failed: double omnetpp::cComponent::uniform(double a, double b, int rng = 0) =>
+    cRuntimeError: uniform(): Wrong parameters a=2 and b=1: a <= b required -- at ...
+        ce_l = pyeval("x: this.uniform(2, 1)", 0) <error>: Cannot assign parameter 'ce_l': pyeval(): Python expression evaluation failed: double omnetpp::cComponent::uniform(double a, double b, int rng = 0) =>
+    cRuntimeError: uniform(): Wrong parameters a=2 and b=1: a <= b required -- at ...
+        ce_c = pycode("return this.uniform(2, 1)") <error>: Cannot assign parameter 'ce_c': pycode(): Python expression evaluation failed: double omnetpp::cComponent::uniform(double a, double b, int rng = 0) =>
+    cRuntimeError: uniform(): Wrong parameters a=2 and b=1: a <= b required -- at ...
+        ne_e = pyeval("this.bubu") <error>: Cannot assign parameter 'ne_e': pyeval(): Python expression evaluation failed: 'cComponent' object has no attribute 'bubu' -- at ...
+        ne_l = pyeval("x: this.baba", 0) <error>: Cannot assign parameter 'ne_l': pyeval(): Python expression evaluation failed: 'cComponent' object has no attribute 'baba' -- at ...
+        ne_c = pycode("return this.bebe") <error>: Cannot assign parameter 'ne_c': pycode(): Python expression evaluation failed: 'cComponent' object has no attribute 'bebe' -- at ...
+        nu_e = pyeval("this.getComponentType()") <error>: Cannot assign parameter 'nu_e': pyeval(): Python object could not be converted to cValue: (<class cppyy.gbl.omnetpp.cComponentType at 0x########>) '(omnetpp::cDynamicModuleType)Test C++ class: omnetpp::cModule' -- at ...
+        nu_l = pyeval("x: this.getComponentType()", 0) <error>: Cannot assign parameter 'nu_l': pyeval(): Python object could not be converted to cValue: (<class cppyy.gbl.omnetpp.cComponentType at 0x########>) '(omnetpp::cDynamicModuleType)Test C++ class: omnetpp::cModule' -- at ...
+        nu_c = pycode("return this.getComponentType()") <error>: Cannot assign parameter 'nu_c': pycode(): Python object could not be converted to cValue: (<class cppyy.gbl.omnetpp.cComponentType at 0x########>) '(omnetpp::cDynamicModuleType)Test C++ class: omnetpp::cModule' -- at ...
+        ns_e = pyeval("{1: 2}") <error>: Cannot assign parameter 'ns_e': pyeval(): Keys in a NED dictionary must be strings, not <class 'int'> -- at ...
+        ns_l = pyeval("x: {1: 2}", 0) <error>: Cannot assign parameter 'ns_l': pyeval(): Keys in a NED dictionary must be strings, not <class 'int'> -- at ...
+        ns_c = pycode("return {1: 2}") <error>: Cannot assign parameter 'ns_c': pycode(): Keys in a NED dictionary must be strings, not <class 'int'> -- at ...
+    submodules:
+}
+==============================

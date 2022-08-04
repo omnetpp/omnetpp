@@ -1,0 +1,84 @@
+%description:
+Tests that the `pycode` NED function can take parameters of all
+types, can perform some operations on them, and return results
+of all types, with value conversions in both directions.
+
+%file: test.ned
+
+import testlib.Dump;
+
+network Test
+{
+    parameters:
+
+        // ==== expressions of various types: ====
+
+        int pyc_i = pycode("return (2 ** 10) // 5");
+        double pyc_d = pycode("return (2 ** 10) / 2.5");
+        bool pyc_b = pycode("return 'Hello World!'.startswith('Hello ')");
+        string pyc_s = pycode("return 'Hello World!'.removeprefix('Hello ')");
+        object pyc_l = pycode("return ['Hello', 42]");
+        object pyc_m = pycode("return {'Hello': 'World!', 'answer': 42}");
+        object pyc_ll = pycode("return [['Hello', 'World!'], ['answer', 42]]");
+        object pyc_mm = pycode("return {'greeting': {'Hello': 'World!'}, 'everything': {'answer': 42}}");
+        object pyc_lm = pycode("return [{'Hello': 'World'}, {'answer': 42}]");
+        object pyc_ml = pycode("return {'greeting': ['Hello', 'World!'], 'everything': ['answer', 42]}");
+        object pyc_n = pycode("return None");
+
+        // passing parameters of all types, including lists and dicts, in all four nesting combos
+
+        string pyc_pi = pycode("x = args[0]; return str(type(x)) + ' ' + str(x)", 2 ^ 10 / 5);
+        string pyc_pd = pycode("x = args[0]; return str(type(x)) + ' ' + str(x)", (2 * 10) / 2.5);
+        string pyc_pb = pycode("x = args[0]; return str(type(x)) + ' ' + str(x)", false);
+        string pyc_ps = pycode("x = args[0]; return str(type(x)) + ' ' + str(x)", "foobar");
+
+        string pyc_pn = pycode("x = args[0]; return str(type(x)) + ' ' + str(x)", nullptr);
+        string pyc_pu = pycode("x = args[0]; return str(type(x)) + ' ' + str(x)", undefined);
+
+        string pyc_pl = pycode("x = args[0]; return str(type(x)) + ' ' + str(x)", ['hello', 42]);
+        string pyc_pm = pycode("x = args[0]; return str(type(x)) + ' ' + str(x)", {'hello': 42});
+
+        string pyc_pll = pycode("x = args[0]; return str(type(x)) + ' ' + str(x)", ['hello', ['answer', 42]]);
+        string pyc_pmm = pycode("x = args[0]; return str(type(x)) + ' ' + str(x)", {'hello': {'answer': 42}});
+        string pyc_plm = pycode("x = args[0]; return str(type(x)) + ' ' + str(x)", ['hello', {'answer': 42}]);
+        string pyc_pml = pycode("x = args[0]; return str(type(x)) + ' ' + str(x)", {'hello': ['answer', 42]});
+
+
+    submodules:
+        dump : Dump;
+}
+
+%# stripping absolute paths from output
+%subst: / -- at .*\n/ -- at ...\n/
+
+%contains: stdout
+==============================
+module Test: Test {
+    parameters:
+        @isNetwork
+        pyc_i = 204
+        pyc_d = 409.6
+        pyc_b = true
+        pyc_s = "World!"
+        pyc_l = ["Hello", 42]
+        pyc_m = {Hello: "World!", answer: 42}
+        pyc_ll = [["Hello", "World!"], ["answer", 42]]
+        pyc_mm = {everything: {answer: 42}, greeting: {Hello: "World!"}}
+        pyc_lm = [{Hello: "World"}, {answer: 42}]
+        pyc_ml = {everything: ["answer", 42], greeting: ["Hello", "World!"]}
+        pyc_n = nullptr
+        pyc_pi = "<class 'float'> 204.8"
+        pyc_pd = "<class 'float'> 8.0"
+        pyc_pb = "<class 'bool'> False"
+        pyc_ps = "<class 'str'> foobar"
+        pyc_pn = "<class 'NoneType'> None"
+        pyc_pu = "<class 'NoneType'> None"
+        pyc_pl = "<class 'list'> ['hello', 42]"
+        pyc_pm = "<class 'dict'> {'hello': 42}"
+        pyc_pll = "<class 'list'> ['hello', ['answer', 42]]"
+        pyc_pmm = "<class 'dict'> {'hello': {'answer': 42}}"
+        pyc_plm = "<class 'list'> ['hello', {'answer': 42}]"
+        pyc_pml = "<class 'dict'> {'hello': ['answer', 42]}"
+    submodules:
+}
+==============================
