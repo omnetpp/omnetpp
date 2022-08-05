@@ -74,7 +74,17 @@ void Dump::dump(cModule *mod, std::string currentIndent)
             printf("%s    parameters:\n", indent);
             paramheadingprinted = true;
         }
-        printf("%s        %s%s = %s\n", indent, mod->par(i).getFullName(), props2str(mod->par(i).getProperties()).c_str(), mod->par(i).str().c_str());
+        cPar& par = mod->par(i);
+        std::string valueString = par.str();
+        if (par.isVolatile()) {
+            try {
+                valueString += " <volatile value>: " + par.getValue().str();
+            }
+            catch (std::exception& e) {
+                valueString += std::string(" <error>: ") + e.what();
+            }
+        }
+        printf("%s        %s%s = %s\n", indent, mod->par(i).getFullName(), props2str(par.getProperties()).c_str(), valueString.c_str());
     }
 
     bool gateheadingprinted = false;

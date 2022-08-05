@@ -29,8 +29,8 @@ network Test
 module Test: Test {
     parameters:
         @isNetwork
-        randomTypeName = choose(intuniform(0, 1), "Compound1 Compound2")
-        oneOrTwo = intuniform(1, 2)
+        randomTypeName = choose(intuniform(0, 1), "Compound1 Compound2") <volatile value>: "Compound2"
+        oneOrTwo = intuniform(1, 2) <volatile value>: 1
     submodules:
         module Test.a: Compound1 {
         }
