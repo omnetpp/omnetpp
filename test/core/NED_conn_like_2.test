@@ -34,8 +34,8 @@ network Test
 module Test: Test {
     parameters:
         @isNetwork
-        randomTypeName = choose(intuniform(0, 1), "Channel1 Channel2")
-        oneOrTwo = intuniform(1, 2)
+        randomTypeName = choose(intuniform(0, 1), "Channel1 Channel2") <volatile value>: "Channel2"
+        oneOrTwo = intuniform(1, 2) <volatile value>: 1
     submodules:
         module Test.a: Node {
             gates:

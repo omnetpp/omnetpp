@@ -128,47 +128,47 @@ module Test: Test {
         module Test.node[0]: Node {
             parameters:
                 fixed = {moduleindex: 0, rndvalue: 44}
-                volatile_fixed = { moduleindex: ancestorIndex(0), rndvalue: intuniform(0, 100) }
+                volatile_fixed = { moduleindex: ancestorIndex(0), rndvalue: intuniform(0, 100) } <volatile value>: {moduleindex: 0, rndvalue: 0}
                 defaultval = {moduleindex: 0, rndvalue: 47}
-                volatile_defaultval = { moduleindex: ancestorIndex(0), rndvalue: intuniform(0, 100) }
+                volatile_defaultval = { moduleindex: ancestorIndex(0), rndvalue: intuniform(0, 100) } <volatile value>: {moduleindex: 0, rndvalue: 0}
                 fromned_nodef = {moduleindex: 0, rndvalue: 64}
                 fromned_wdef = {moduleindex: 0, rndvalue: 67}
-                volatile_fromned_nodef = { moduleindex: index, rndvalue: intuniform(0, 100) }
-                volatile_fromned_wdef = { moduleindex: index, rndvalue: intuniform(0, 100) }
+                volatile_fromned_nodef = { moduleindex: index, rndvalue: intuniform(0, 100) } <volatile value>: {moduleindex: 0, rndvalue: 36}
+                volatile_fromned_wdef = { moduleindex: index, rndvalue: intuniform(0, 100) } <volatile value>: {moduleindex: 0, rndvalue: 53}
                 fromini_nodef = {moduleindex: 0, rndvalue: 67}
                 fromini_wdef = {moduleindex: 0, rndvalue: 9}
-                volatile_fromini_nodef = { moduleindex: index, rndvalue: intuniform(0, 100) }
-                volatile_fromini_wdef = { moduleindex: index, rndvalue: intuniform(0, 100) }
+                volatile_fromini_nodef = { moduleindex: index, rndvalue: intuniform(0, 100) } <volatile value>: {moduleindex: 0, rndvalue: 5}
+                volatile_fromini_wdef = { moduleindex: index, rndvalue: intuniform(0, 100) } <volatile value>: {moduleindex: 0, rndvalue: 38}
         }
         module Test.node[1]: Node {
             parameters:
                 fixed = {moduleindex: 1, rndvalue: 83}
-                volatile_fixed = { moduleindex: ancestorIndex(0), rndvalue: intuniform(0, 100) }
+                volatile_fixed = { moduleindex: ancestorIndex(0), rndvalue: intuniform(0, 100) } <volatile value>: {moduleindex: 1, rndvalue: 17}
                 defaultval = {moduleindex: 1, rndvalue: 21}
-                volatile_defaultval = { moduleindex: ancestorIndex(0), rndvalue: intuniform(0, 100) }
+                volatile_defaultval = { moduleindex: ancestorIndex(0), rndvalue: intuniform(0, 100) } <volatile value>: {moduleindex: 1, rndvalue: 79}
                 fromned_nodef = {moduleindex: 1, rndvalue: 36}
                 fromned_wdef = {moduleindex: 1, rndvalue: 87}
-                volatile_fromned_nodef = { moduleindex: index, rndvalue: intuniform(0, 100) }
-                volatile_fromned_wdef = { moduleindex: index, rndvalue: intuniform(0, 100) }
+                volatile_fromned_nodef = { moduleindex: index, rndvalue: intuniform(0, 100) } <volatile value>: {moduleindex: 1, rndvalue: 4}
+                volatile_fromned_wdef = { moduleindex: index, rndvalue: intuniform(0, 100) } <volatile value>: {moduleindex: 1, rndvalue: 42}
                 fromini_nodef = {moduleindex: 1, rndvalue: 70}
                 fromini_wdef = {moduleindex: 1, rndvalue: 88}
-                volatile_fromini_nodef = { moduleindex: index, rndvalue: intuniform(0, 100) }
-                volatile_fromini_wdef = { moduleindex: index, rndvalue: intuniform(0, 100) }
+                volatile_fromini_nodef = { moduleindex: index, rndvalue: intuniform(0, 100) } <volatile value>: {moduleindex: 1, rndvalue: 58}
+                volatile_fromini_wdef = { moduleindex: index, rndvalue: intuniform(0, 100) } <volatile value>: {moduleindex: 1, rndvalue: 31}
         }
         module Test.node[2]: Node {
             parameters:
                 fixed = {moduleindex: 2, rndvalue: 88}
-                volatile_fixed = { moduleindex: ancestorIndex(0), rndvalue: intuniform(0, 100) }
+                volatile_fixed = { moduleindex: ancestorIndex(0), rndvalue: intuniform(0, 100) } <volatile value>: {moduleindex: 2, rndvalue: 1}
                 defaultval = {moduleindex: 2, rndvalue: 12}
-                volatile_defaultval = { moduleindex: ancestorIndex(0), rndvalue: intuniform(0, 100) }
+                volatile_defaultval = { moduleindex: ancestorIndex(0), rndvalue: intuniform(0, 100) } <volatile value>: {moduleindex: 2, rndvalue: 65}
                 fromned_nodef = {moduleindex: 2, rndvalue: 58}
                 fromned_wdef = {moduleindex: 2, rndvalue: 65}
-                volatile_fromned_nodef = { moduleindex: index, rndvalue: intuniform(0, 100) }
-                volatile_fromned_wdef = { moduleindex: index, rndvalue: intuniform(0, 100) }
+                volatile_fromned_nodef = { moduleindex: index, rndvalue: intuniform(0, 100) } <volatile value>: {moduleindex: 2, rndvalue: 41}
+                volatile_fromned_wdef = { moduleindex: index, rndvalue: intuniform(0, 100) } <volatile value>: {moduleindex: 2, rndvalue: 57}
                 fromini_nodef = {moduleindex: 2, rndvalue: 39}
                 fromini_wdef = {moduleindex: 2, rndvalue: 87}
-                volatile_fromini_nodef = { moduleindex: index, rndvalue: intuniform(0, 100) }
-                volatile_fromini_wdef = { moduleindex: index, rndvalue: intuniform(0, 100) }
+                volatile_fromini_nodef = { moduleindex: index, rndvalue: intuniform(0, 100) } <volatile value>: {moduleindex: 2, rndvalue: 35}
+                volatile_fromini_wdef = { moduleindex: index, rndvalue: intuniform(0, 100) } <volatile value>: {moduleindex: 2, rndvalue: 11}
         }
 }
 
