@@ -17,22 +17,24 @@
 #define __OMNETPP_CMDENV_FAKEGUI_H
 
 #include "cmddefs.h"
-#include "omnetpp/ccanvas.h"
-#include "omnetpp/cgate.h"
-#include "omnetpp/cevent.h"
-#include "omnetpp/cconfiguration.h"
+#include "envir/ifakegui.h"
 #include "common/lcgrandom.h"
 #include "common/expression.h"
 
 namespace omnetpp {
+
+class cConfigOption;
+
 namespace cmdenv {
+
+using namespace omnetpp::envir;
 
 /**
  * Fake GUI for Cmdenv.
  */
-class CMDENV_API FakeGUI
+class CMDENV_API FakeGUI : public IFakeGUI
 {
-   private:
+  private:
     cSimulation *simulation = nullptr;
     bool debug = false;
     double beforeEventProbability;
@@ -73,20 +75,20 @@ class CMDENV_API FakeGUI
    public:
      FakeGUI() {}
      virtual ~FakeGUI() {}
-     virtual void configure(cSimulation *simulation, cConfiguration *cfg);
      cSimulation *getSimulation() const {return simulation;}
-     virtual void beforeEvent(cEvent *event);
-     virtual void afterEvent();
-     virtual void getImageSize(const char *imageName, double& outWidth, double& outHeight);
-     virtual void getTextExtent(const cFigure::Font& font, const char *text, double& outWidth, double& outHeight, double& outAscent);
-     virtual void appendToImagePath(const char *directory);
-     virtual void loadImage(const char *fileName, const char *imageName=nullptr);
-     virtual cFigure::Rectangle getSubmoduleBounds(const cModule *submodule);
-     virtual std::vector<cFigure::Point> getConnectionLine(const cGate *sourceGate);
-     virtual double getZoomLevel(const cModule *module);
-     virtual double getAnimationTime() const;
-     virtual double getAnimationSpeed() const;
-     virtual double getRemainingAnimationHoldTime() const;
+     virtual void configure(cSimulation *simulation, cConfiguration *cfg) override;
+     virtual void beforeEvent(cEvent *event) override;
+     virtual void afterEvent() override;
+     virtual void getImageSize(const char *imageName, double& outWidth, double& outHeight) override;
+     virtual void getTextExtent(const cFigure::Font& font, const char *text, double& outWidth, double& outHeight, double& outAscent) override;
+     virtual void appendToImagePath(const char *directory) override;
+     virtual void loadImage(const char *fileName, const char *imageName=nullptr) override;
+     virtual cFigure::Rectangle getSubmoduleBounds(const cModule *submodule) override;
+     virtual std::vector<cFigure::Point> getConnectionLine(const cGate *sourceGate) override;
+     virtual double getZoomLevel(const cModule *module) override;
+     virtual double getAnimationTime() const override;
+     virtual double getAnimationSpeed() const override;
+     virtual double getRemainingAnimationHoldTime() const override;
 };
 
 }  // namespace cmdenv
