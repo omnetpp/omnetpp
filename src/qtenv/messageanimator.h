@@ -145,16 +145,34 @@ class QTENV_API MessageAnimator
         inline bool operator == (const MessageSendKey& other) const { return asTuple() == other.asTuple(); }
 
         std::string str() const;
+
+        struct hasher {
+            inline size_t operator()(const MessageSendKey& k) const
+            {
+              using common::hash_combine;
+              size_t result = 0;
+              hash_combine(result, k.messageId);
+              hash_combine(result, k.transmissionId);
+              hash_combine(result, k.senderModuleId);
+              hash_combine(result, k.senderGateId);
+              hash_combine(result, k.arrivalModuleId);
+              hash_combine(result, k.arrivalGateId);
+              return result;
+            }
+        };
     };
     static const MessageSendKey METHODCALL; // a special "invalid" key instance for the MethodCall animations
 
-    // The non-delivery animations.
-    // Additionally, METHODCALL is used as a key for methodcall animations,
-    // since they are potentially interleaved.
-    // The animations here are compound (sequence or group) animations,
-    // they either show a message along an entire connection path, or
-    // a method call tree.
-    OrderedMultiMap<MessageSendKey, Animation *> animations;
+    // The non-delivery holding animations, in the order they should be played.
+    // METHODCALL is used as a key for methodcall animations, since they are
+    // potentially interleaved.
+    // The animations here are either compound (sequence or group) animations
+    // (showing a message along an entire connection path), or method call trees.
+    std::vector<std::pair<MessageSendKey, Animation *>> holdingAnims;
+    // The holding (transmission) animations. A multimap is still needed, because
+    // all updates of a transmission are separate animations under the same key.
+    // The last value under each key shows the latest update packet of the transmission.
+    std::unordered_multimap<MessageSendKey, Animation *, MessageSendKey::hasher> nonHoldingAnims;
 
     // Provides quick access to any leaf animations that are currently animating
     // any given message. Every message can be animated by several animations
@@ -198,6 +216,13 @@ class QTENV_API MessageAnimator
 
     void addGraphicsToInspector(ModuleInspector *insp);
     void removeGraphicsFromInspector(ModuleInspector *insp);
+
+    // Removes any `nullptr` values from `nonHoldingAnims`, and moves any
+    // animations that have become holding into `holdingAnims`.
+    void cleanupNonHoldingAnims();
+    // Removes any `nullptr` values from `holdingAnims`, and moves any
+    // animations that have become non-holding into `nonHoldingAnims`.
+    void cleanupHoldingAnims();
 
 public:
 
