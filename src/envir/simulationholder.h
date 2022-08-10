@@ -69,12 +69,12 @@ class SimulationHolder
     // Utility function; never returns nullptr
     virtual cModuleType *resolveNetwork(const char *networkName, const char *baseDirectory);
 
-    virtual void printException(std::exception& e);
+    virtual void printException(std::exception& e, const char *when=nullptr);
 
     // Utility function: checks simulation fingerprint and displays a message accordingly
     virtual void checkFingerprint();
 
-    virtual void afterRunFinally(cSimulation *simulation, bool endRunRequired, bool networkSetupDone); // wish C++ had 'finally'
+    virtual void afterRunFinally(cSimulation *simulation, bool endRunRequired); // wish C++ had 'finally'
 
     // Hook called when the simulation terminates normally.
     // Its current use is to notify parallel simulation part.

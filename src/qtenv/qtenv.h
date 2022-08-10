@@ -351,7 +351,7 @@ class QTENV_API Qtenv : public QObject, public AppBase, public SimulationHolder
 
       virtual void setupNetwork(cModuleType *network) override;
 
-      virtual void printException(std::exception& e) override;
+      virtual void printException(std::exception& e, const char *when=nullptr) override;
       virtual std::string getWindowTitle();
 
       // Measuring elapsed time

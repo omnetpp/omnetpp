@@ -81,7 +81,6 @@ void SimulationHolder::runConfiguredSimulation(cSimulation *simulation, IRunner 
 {
     cSimulation::setActiveSimulation(simulation);
 
-    bool networkSetupDone = false;
     bool endRunRequired = false;
 
     try {
@@ -124,7 +123,6 @@ void SimulationHolder::runConfiguredSimulation(cSimulation *simulation, IRunner 
             out << "Setting up network \"" << networkName.c_str() << "\"..." << endl;
 
         setupNetwork(network);
-        networkSetupDone = true;
 
         // prepare for simulation run
         if (verbose)
@@ -169,36 +167,31 @@ void SimulationHolder::runConfiguredSimulation(cSimulation *simulation, IRunner 
         stoppedWithException(e);
         simulation->notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
         printException(e);  // must display the exception here (and not inside catch), so that it doesn't appear out-of-order in the output
-        afterRunFinally(simulation, endRunRequired, networkSetupDone);
+        afterRunFinally(simulation, endRunRequired);
         throw;
     }
-    afterRunFinally(simulation, endRunRequired, networkSetupDone);
+    afterRunFinally(simulation, endRunRequired);
 }
 
-void SimulationHolder::afterRunFinally(cSimulation *simulation, bool endRunRequired, bool networkSetupDone)
+void SimulationHolder::afterRunFinally(cSimulation *simulation, bool endRunRequired)
 {
+    //TODO should any exception in here cause nonzero Cmdenv exit code?
+    //TODO is LF_ON_RUN_END needed at all??
+
     // send LF_ON_RUN_END notification
-    if (endRunRequired) { //TODO is LF_ON_RUN_END needed at all??
-        try {
+    try {
+        if (endRunRequired)
             simulation->notifyLifecycleListeners(LF_ON_RUN_END);
-        }
-        catch (std::exception& e) {
-            //TODO what to do here?
-            simulation->notifyLifecycleListeners(LF_ON_SIMULATION_ERROR); //TODO catch&ignore? but should cause cmdenv exitcode!=0!
-            printException(e);  //TODO add "During notification" to msg?
-        }
+    }
+    catch (std::exception& e) {
+        printException(e, "during cleanup");
     }
 
-    // delete network
-    if (networkSetupDone) {  //TODO unconditionally?
-        try {
-            simulation->deleteNetwork();
-        }
-        catch (std::exception& e) {
-            //TODO what to do here?
-            simulation->notifyLifecycleListeners(LF_ON_SIMULATION_ERROR); //TODO catch&ignore? but should cause cmdenv exitcode!=0!
-            printException(e); //TODO add "During cleanup" to msg?
-        }
+    try {
+        simulation->deleteNetwork();
+    }
+    catch (std::exception& e) {
+        printException(e, "during cleanup");
     }
 
     // stop redirecting into file
@@ -270,9 +263,11 @@ std::string SimulationHolder::getFormattedMessage(std::exception& ex)
         return ex.what();
 }
 
-void SimulationHolder::printException(std::exception& ex)
+void SimulationHolder::printException(std::exception& ex, const char *when)
 {
     std::string msg = getFormattedMessage(ex);
+    if (!opp_isempty(when))
+        msg = std::string("Error ") + when + ": " + msg;
     if (dynamic_cast<cTerminationException*>(&ex) != nullptr)
         out << endl << "<!> " << msg << endl;
     else if (msg.substr(0,5) == "Error")
