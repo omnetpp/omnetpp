@@ -916,10 +916,21 @@ std::vector<cISimulationLifecycleListener*> cSimulation::getLifecycleListeners()
 
 void cSimulation::notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details)
 {
-    // make a copy of the listener list, to avoid problems from listeners getting added/removed during notification
-    auto copy = listeners;
-    for (auto& listener : copy)
-        listener->lifecycleEvent(eventType, details);  // let exceptions through, because errors must cause exitCode!=0
+    try {
+        // make a copy of the listener list, to avoid problems from listeners getting added/removed during notification
+        auto copy = listeners;
+        for (auto& listener : copy)
+            listener->lifecycleEvent(eventType, details);  // let exceptions through, because errors must cause exitCode!=0
+    }
+    catch (cException& e) {
+        e.setLifecycleListenerType(eventType);
+        throw;
+    }
+    catch (std::exception& e) {
+        cRuntimeError e2(e);
+        e2.setLifecycleListenerType(eventType);
+        throw e2;
+    }
 }
 
 //----

@@ -22,6 +22,7 @@
 #include "simkerneldefs.h"
 #include "simtime_t.h"
 #include "errmsg.h"
+#include "clifecyclelistener.h"
 
 namespace omnetpp {
 
@@ -59,6 +60,7 @@ class SIM_API cException : public std::exception
     int simulationStage;
     eventnumber_t eventNumber;
     simtime_t simtime;
+    SimulationLifecycleEventType lifecycleListenerType = LF_NONE;
 
     bool hasContext_;
     std::string contextClassName;
@@ -89,6 +91,10 @@ class SIM_API cException : public std::exception
     // main() has started, we print the error message and call exit(1).
     //
     void exitIfStartupError();
+
+  public:
+    // internal, for use in cSimulation::notifyLifecycleListeners()
+    void setLifecycleListenerType(SimulationLifecycleEventType t) {lifecycleListenerType = t;}
 
   public:
     /** @name Constructors, destructor */
@@ -229,6 +235,14 @@ class SIM_API cException : public std::exception
      * occurred. (The return value can be safely cast to cComponent::ComponentKind.)
      */
     virtual int getContextComponentKind() const {return contextComponentKind;}
+
+
+    /**
+     * If the exception occurred within a simulation lifecycle listener
+     * (cISimulationLifecycleListener), returns the lifecycle event type.
+     * Otherwise, it returns -1.
+     */
+    virtual SimulationLifecycleEventType getLifecycleListenerType() const {return lifecycleListenerType;}
     //@}
 };
 
@@ -331,7 +345,7 @@ class SIM_API cRuntimeError : public cException
     /**
      * Constructor for re-throwing an exception with location info.
      */
-    cRuntimeError(const std::exception& e, const char *location);
+    cRuntimeError(const std::exception& e, const char *location=nullptr);
 
     /**
      * Copy constructor. We unfortunately need to copy exception objects when

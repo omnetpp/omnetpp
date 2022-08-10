@@ -1,0 +1,30 @@
+%description:
+Test handling exceptions thrown in lifecycle listeners.
+
+%includes:
+#include "../lib/testutil.h"
+
+%global:
+
+// Use a scheduler, as cScheduler is already also a cISimulationLifecycleListener
+
+class ThrowingScheduler : public cSequentialScheduler {
+    virtual void lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details) override {
+        cSequentialScheduler::lifecycleEvent(eventType, details);
+        if (eventType == LF_ON_SIMULATION_START)
+            throw cRuntimeError("Boom!");
+    }
+};
+
+Register_Class(ThrowingScheduler);
+
+%inifile: scheduler.ini
+scheduler-class = @TESTNAME@::ThrowingScheduler
+
+%activity:
+wait(1.0);
+
+%exitcode: 1
+
+%contains: stderr
+<!> Error: Boom! -- at t=0s, event #0 in a ON_SIMULATION_START listener

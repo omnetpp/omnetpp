@@ -1,0 +1,32 @@
+%description:
+Test handling exceptions thrown in lifecycle listeners.
+
+NOTE: EXCEPTIONS IN THE CLEANUP PHASE DON'T CAUSE NONZERO EXIT CODE
+
+%includes:
+#include "../lib/testutil.h"
+
+%global:
+
+// Use a scheduler, as cScheduler is already also a cISimulationLifecycleListener
+
+class ThrowingScheduler : public cSequentialScheduler {
+    virtual void lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details) override {
+        cSequentialScheduler::lifecycleEvent(eventType, details);
+        if (eventType == LF_POST_NETWORK_DELETE)
+            throw cRuntimeError("Boom!");
+    }
+};
+
+Register_Class(ThrowingScheduler);
+
+%inifile: scheduler.ini
+scheduler-class = @TESTNAME@::ThrowingScheduler
+
+%activity:
+wait(1.0);
+
+%exitcode: 0
+
+%contains: stderr
+<!> Error during cleanup: Boom! -- during network cleanup in a POST_NETWORK_DELETE listener

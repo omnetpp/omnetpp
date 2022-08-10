@@ -1,0 +1,30 @@
+%description:
+Test handling exceptions thrown in lifecycle listeners.
+
+%includes:
+#include "../lib/testutil.h"
+
+%global:
+
+// Use a scheduler, as cScheduler is already also a cISimulationLifecycleListener
+
+class ThrowingScheduler : public cSequentialScheduler {
+    virtual void lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details) override {
+        cSequentialScheduler::lifecycleEvent(eventType, details);
+        if (eventType == LF_PRE_NETWORK_SETUP)
+            throw cRuntimeError("Boom!");
+    }
+};
+
+Register_Class(ThrowingScheduler);
+
+%inifile: scheduler.ini
+scheduler-class = @TESTNAME@::ThrowingScheduler
+
+%activity:
+wait(1.0);
+
+%exitcode: 1
+
+%contains: stderr
+<!> Error: Boom! -- during network setup in a PRE_NETWORK_SETUP listener

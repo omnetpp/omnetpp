@@ -161,6 +161,9 @@ std::string cException::getFormattedMessage() const
         case CTX_CLEANUP: when = " during network cleanup"; break;
     }
 
+    if (lifecycleListenerType != LF_NONE)
+        when = when + " in a " + cISimulationLifecycleListener::getSimulationLifecycleEventName(lifecycleListenerType) + " listener";
+
     //TODO include event name
     if (hasContext()) {
         where = opp_stringf(" in %s (%s) %s (id=%d)",

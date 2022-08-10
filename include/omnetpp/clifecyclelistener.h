@@ -16,10 +16,11 @@
 #ifndef __OMNETPP_CLIFECYCLELISTENER_H
 #define __OMNETPP_CLIFECYCLELISTENER_H
 
-#include "cobject.h"
+#include "simkerneldefs.h"
 
 namespace omnetpp {
 
+class cObject;
 class cSimulation;
 
 /**
@@ -29,6 +30,11 @@ class cSimulation;
  */
 enum SimulationLifecycleEventType
 {
+    /**
+     * Stands for "No lifecycle event", can be used as the invalid value.
+     */
+    LF_NONE,
+
     /**
      * Fired before network setup. At the time of the call, cSimulation's
      * network type pointer (see getNetworkType()) already points to the type
