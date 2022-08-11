@@ -51,6 +51,7 @@ Register_PerRunConfigOption(CFGID_CMDENV_PERFORMANCE_DISPLAY, "cmdenv-performanc
 Register_PerRunConfigOption(CFGID_CMDENV_LOG_PREFIX, "cmdenv-log-prefix", CFG_STRING, "[%l]\t", "Specifies the format string that determines the prefix of each log line. The format string may contain format directives in the syntax `%x` (a `%` followed by a single format character).  For example `%l` stands for log level, and `%J` for source component. See the manual for the list of available format characters.");
 Register_PerRunConfigOption(CFGID_CMDENV_FAKE_GUI, "cmdenv-fake-gui", CFG_BOOL, "false", "Causes Cmdenv to lie to simulations that is a GUI (isGui()=true), and to periodically invoke refreshDisplay() during simulation execution.");
 Register_PerObjectConfigOption(CFGID_CMDENV_LOGLEVEL, "cmdenv-log-level", KIND_MODULE, CFG_STRING, "TRACE", "Specifies the per-component level of detail recorded by log statements, output below the specified level is omitted. Available values are (case insensitive): `off`, `fatal`, `error`, `warn`, `info`, `detail`, `debug` or `trace`. Note that the level of detail is also controlled by the globally specified runtime log level and the `COMPILETIME_LOGLEVEL` macro that is used to completely remove log statements from the executable.")
+Register_PerRunConfigOption(CFGID_CMDENV_NUM_THREADS, "cmdenv-num-threads", CFG_INT, "1", "Specifies the number of threads to use when running multiple simulations is requested. (Each simulation will still run sequentially in its thread.) When -1 is given, the number of concurrent threads supported by the hardware will be used.");
 
 //
 // Register the Cmdenv user interface
@@ -100,6 +101,14 @@ int Cmdenv::doRunApp()
     std::string configName = globalCfg->getAsString(CFGID_CMDENV_CONFIG_NAME);
     std::string runFilter = globalCfg->getAsString(CFGID_CMDENV_RUNS_TO_EXECUTE);
 
+    int numThreads = globalCfg->getAsInt(CFGID_CMDENV_NUM_THREADS);
+    if (numThreads <= 0) {
+        numThreads = std::thread::hardware_concurrency();
+        if (numThreads <= 0)
+            numThreads = 1;
+    }
+    bool threaded = numThreads != 1;
+
     delete globalCfg;
 
     if (args->optionGiven('c'))
@@ -128,12 +137,11 @@ int Cmdenv::doRunApp()
     runsTried = 0;
     numErrors = 0;
 
-    bool threaded = false; //TODO config
-    if (!threaded) {
+    if (!threaded)
         runSimulations(configName.c_str(), runNumbers);
-    }
     else {
-        int numThreads = 3; //TODO config
+        if (verbose)
+            out << "Running simulations on " << numThreads << " threads\n";
         runSimulationsInThreads(configName.c_str(), runNumbers, numThreads);
     }
 
