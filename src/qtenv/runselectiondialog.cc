@@ -19,6 +19,7 @@
 #include <vector>
 #include <set>
 #include <QtCore/QDebug>
+#include <QtWidgets/QPushButton>
 #include "common/stlutil.h"
 #include "runselectiondialog.h"
 #include "ui_runselectiondialog.h"
@@ -107,6 +108,8 @@ RunSelectionDialog::RunSelectionDialog(cConfigurationEx *configuration, const st
     // so far the horizontal policy was "MinimumExpanding" to make sure it will enlarge the dialog
     // if needed in adjustSize(), but now we want to allow the user to resize it to a smaller width
     ui->configName->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+
+    ui->buttonBox->button(QDialogButtonBox::Ok)->setFocus(Qt::PopupFocusReason);
 }
 
 RunSelectionDialog::~RunSelectionDialog()
