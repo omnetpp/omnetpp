@@ -6,6 +6,14 @@ simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
 
+OMNeT++ 6.0.1 (August 2022)
+---------------------------
+
+This is a maintenance release.
+
+ - Minor bug fixes and improvements in Qtenv.
+
+
 OMNeT++ 6.0 (April 2022)
 ------------------------
 
