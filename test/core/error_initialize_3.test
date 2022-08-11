@@ -1,6 +1,6 @@
 %description:
 Test that the simulation exits gracefully if simulation is interrupted (SIGTERM).
-Exit codes: Windows: 3; Linux: 143
+Exit code: 2 (returned explicitly on sigintReceived); to be checked on Windows (=3?)
 
 %includes:
 #include <csignal>
@@ -16,4 +16,5 @@ class Foo : public cSimpleModule
 
 Define_Module(Foo);
 
-%exitcode: 3 143
+%# note: multiple exit codes accepted below (space separated)
+%exitcode: 2
