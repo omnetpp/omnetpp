@@ -11,8 +11,8 @@
     <tycho.extras.version>2.3.0</tycho.extras.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <eclipse-repo.url>https://download.eclipse.org/releases/2021-12</eclipse-repo.url>
-    <justj-repo.url>https://download.eclipse.org/justj/jres/17/updates/release/17.0.1</justj-repo.url>
-    <pydev-repo.url>https://pydev.org/update_sites/9.2.0</pydev-repo.url>
+    <justj-repo.url>https://download.eclipse.org/justj/jres/17/updates/release/17.0.4</justj-repo.url>
+    <pydev-repo.url>https://pydev.org/update_sites/9.3.0</pydev-repo.url>
     <ansiconsole-repo.url>https://www.mihai-nita.net/eclipse</ansiconsole-repo.url>
   </properties>
 
