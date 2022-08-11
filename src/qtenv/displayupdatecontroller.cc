@@ -176,6 +176,9 @@ double DisplayUpdateController::getAnimationSpeed() const
     if (!std::isnan(maxSpeed))
         computedSpeed = std::min(maxSpeed, computedSpeed);
 
+    if (computedSpeed != 0.0)
+        computedSpeed = std::max(computedSpeed, 1e-9);
+
     return computedSpeed;
 }
 
