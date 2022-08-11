@@ -92,19 +92,31 @@ class SIM_API cConfigOption : public cNoncopyableOwnedObject
 
     /** @name Getter methods */
     //@{
+
     /**
-     * Returns whether this is a per-object configuration. Per-object
+     * Returns true if this is a per-object configuration. Per-object
      * configuration entries take the form of
      * \<object-full-path\>.\<configname\> = \<value\> in the inifile,
-     * instead of \<configname\> = \<value\>
+     * instead of \<configname\> = \<value\>.
+     *
+     * @see Register_PerObjectConfigOption()
      */
     bool isPerObject() const {return isPerObject_;}
 
     /**
-     * Returns whether this is a global setting. Global settings may only
+     * Returns true if this is a global setting. Global settings may only
      * occur in the [General] section.
+     *
+     * @see Register_GlobalConfigOption()
      */
     bool isGlobal() const  {return isGlobal_;}
+
+    /**
+     * Returns true if this is a per-run setting.
+     *
+     * @see Register_PerRunConfigOption()
+     */
+    bool isPerRun() const {return !isGlobal_ && !isPerObject_;}
 
     /**
      * Returns the object kind for per-object configuration options,
