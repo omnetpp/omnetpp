@@ -339,7 +339,7 @@ bool AnimationSequence::isEmpty() const
 
 QString AnimationSequence::str() const
 {
-    QString result = "AnimationSequence of " + QString::number(parts.size()) + " parts, state " + stateText[state];
+    QString result = "AnimationSequence of " + QString::number(parts.size()) + " parts, state " + stateText[state] + (isHolding() ? " HOLDING" : " NONHOLDING");
     for (Animation *p : parts)
         result += "\n    - " + p->str().replace("\n", "\n      ");
     return result;
@@ -431,7 +431,7 @@ void AnimationGroup::removeFromInspector(Inspector *insp)
 
 QString AnimationGroup::str() const
 {
-    QString result = QString("Animation Group of ") + QString::number(parts.size()) + " parts, state " + stateText[state];
+    QString result = QString("Animation Group of ") + QString::number(parts.size()) + " parts, state " + stateText[state] + (isHolding() ? " HOLDING" : " NONHOLDING");
     for (const auto &p : parts)
         result += "\n    - " + p->str().replace("\n", "\n      ");
     return result;
@@ -894,7 +894,7 @@ void SendOnConnAnimation::updateInInspector(Inspector *insp)
 QString SendOnConnAnimation::str() const {
     return QString("SendOnConn ")
             + QString("0x%1").arg(quintptr(msg), 0, 16)
-            + (holding ? " holding" : "")
+            + (holding ? " HOLDING" : " NONHOLDING")
             + " state: " + stateText[state]
             + " visible in " + QString::number(messageItems.size()) + " inspectors"
             + " start: " + start.str().c_str() + " prop: " + prop.str().c_str() + " trans: " + trans.str().c_str()
@@ -1134,6 +1134,7 @@ QString SendDirectAnimation::str() const
 {
     cModule *src = getSimulation()->getModule(srcModuleId);
     return QString("SendDirect ") + (msgToUse() ? msgToUse()->getFullName() : "nullptr") +
+            + (isHolding() ? " HOLDING" : " NONHOLDING")
             + "from: " + (src ? src->getFullPath().c_str() : "<deleted>") + " to: " + dest->getFullPath().c_str()
             + " state: " + stateText[state];
 }
