@@ -91,7 +91,7 @@ class SIM_API SimTime
     static int parseSimtimeResolution(const char *resolution);
 
   private:
-    template<typename T> void assertInited(T d) {if (scaleexp==SCALEEXP_UNINITIALIZED) initError(d);}
+    template<typename T> void assertInited(T d) {if (scaleexp==SCALEEXP_UNINITIALIZED && d!=0) initError(d);}
     [[noreturn]] void initError(double d);
 
     bool haveSameSign(int64_t a, int64_t b) { return (a^b) >= 0; }
