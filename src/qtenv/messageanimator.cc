@@ -261,87 +261,64 @@ void MessageAnimator::endSend(cMessage *msg)
         }
     }
 
+    std::vector<MessageAnimation *> parts;
+    parts.reserve(currentSending->hops.size());
+
     // turn the collected hops into either a sequence or a group animation
+    for (const auto& h : currentSending->hops) {
+        MessageAnimation *hopAnim = nullptr;
+
+        if (h.directSrcModule) {
+            // it was a direct send
+            ASSERT(h.directDestGate);
+            ASSERT(!h.connSrcGate);
+
+            if (transDuration.isZero() && h.propDelay.isZero() && !isUpdatePacket)
+                hopAnim = new SendDirectAnimation(h.directSrcModule, msg, h.directDestGate);
+            else
+                hopAnim = new SendDirectAnimation(h.directSrcModule, msg, h.directDestGate, h.hopStartTime, h.propDelay, transDuration);
+        }
+        else {
+            // it was sent on a connection
+            ASSERT(!h.directDestGate);
+            ASSERT(h.connSrcGate);
+
+            if (transDuration.isZero() && h.propDelay.isZero() && !isUpdatePacket)
+                hopAnim = new SendOnConnAnimation(h.connSrcGate, msg);
+            else
+                hopAnim = new SendOnConnAnimation(h.connSrcGate, msg, h.hopStartTime, h.propDelay, transDuration, h.discard);
+        }
+
+        ASSERT(hopAnim);
+        animationsForMessages.insert(std::make_pair(msg, hopAnim));
+        parts.push_back(hopAnim);
+    }
+
+    MessageSendKey key = MessageSendKey::fromMessage(msg);
+
     Animation *sendAnim;
     if (transDuration.isZero()) {
-        // not a transmission
-
         AnimationSequence *animSeq = new AnimationSequence();
         sendAnim = animSeq;
 
-        for (const auto& h : currentSending->hops) {
-            if (h.directSrcModule) {
-                ASSERT(h.directDestGate);
-                ASSERT(!h.connSrcGate);
-
-                if (h.propDelay.isZero() && transDuration.isZero() && !isUpdatePacket) {
-                    MessageAnimation *newAnim = new SendDirectAnimation(h.directSrcModule, msg, h.directDestGate);
-                    animSeq->addAnimation(newAnim);
-                    animationsForMessages.insert(std::make_pair(msg, newAnim));
-                }
-                else {
-                    MessageAnimation *newAnim = new SendDirectAnimation(h.directSrcModule, msg, h.directDestGate, h.hopStartTime, h.propDelay, transDuration);
-                    animSeq->addAnimation(newAnim);
-                    animationsForMessages.insert(std::make_pair(msg, newAnim));
-                }
-            }
-            else {
-                // it was sent on a connection
-                ASSERT(!h.directDestGate);
-                ASSERT(h.connSrcGate);
-
-                if (h.propDelay.isZero() && transDuration.isZero() && !isUpdatePacket) {
-                    MessageAnimation *newAnim = new SendOnConnAnimation(h.connSrcGate, msg);
-                    animSeq->addAnimation(newAnim);
-                    animationsForMessages.insert(std::make_pair(msg, newAnim));
-                }
-                else {
-                    MessageAnimation *newAnim = new SendOnConnAnimation(h.connSrcGate, msg, h.hopStartTime, h.propDelay, transDuration, h.discard);
-                    animSeq->addAnimation(newAnim);
-                    animationsForMessages.insert(std::make_pair(msg, newAnim));
-                }
-            }
-        }
-
-        if (!animSeq->isEmpty())
-            animSeq->advance();
+        for (MessageAnimation *p : parts)
+            animSeq->addAnimation(p);
     }
     else {
-        // a transmission
-
         // an AnimationGroup is needed here, so the transmission (message in line form)
         // can be shown and animated on multiple connections on the same path at the same time
         AnimationGroup *animGroup = new AnimationGroup();
         sendAnim = animGroup;
 
-        for (const auto& h : currentSending->hops) {
-            if (h.directSrcModule) {
-                ASSERT(h.directDestGate);
-                ASSERT(!h.connSrcGate);
-
-                MessageAnimation *newAnim = new SendDirectAnimation(h.directSrcModule, msg, h.directDestGate, h.hopStartTime, h.propDelay, transDuration);
-                animGroup->addAnimation(newAnim);
-                animationsForMessages.insert(std::make_pair(msg, newAnim));
-            }
-            else {
-                ASSERT(h.connSrcGate);
-                ASSERT(!h.directDestGate);
-                MessageAnimation *newAnim = new SendOnConnAnimation(h.connSrcGate, msg, h.hopStartTime, h.propDelay, transDuration, h.discard);
-                animGroup->addAnimation(newAnim);
-                animationsForMessages.insert(std::make_pair(msg, newAnim));
-            }
-        }
-
-        if (!animGroup->isEmpty())
-            animGroup->advance();
+        for (MessageAnimation *p : parts)
+            animGroup->addAnimation(p);
     }
-
-    auto dup = logBuffer->getLastMessageDup(msg);
-    ASSERT(dup);
-    messageDuplicated(msg, dup);
 
     for (auto insp : getQtenv()->getInspectors())
         sendAnim->addToInspector(insp);
+
+    if (!sendAnim->isEmpty())
+        sendAnim->advance();
 
     // if we are in a method, and this whole message sequence will take 0 SimTime, performing it in the method
     if (currentMethodCall && sendAnim->isHolding() && transDuration.isZero())
@@ -352,6 +329,10 @@ void MessageAnimator::endSend(cMessage *msg)
         MessageSendKey key = MessageSendKey::fromMessage(msg);
         nonHoldingAnims.insert({key, sendAnim});
     }
+
+    auto dup = logBuffer->getLastMessageDup(msg);
+    ASSERT(dup);
+    messageDuplicated(msg, dup);
 
     delete currentSending;
     currentSending = nullptr;
