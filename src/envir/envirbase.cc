@@ -109,7 +109,7 @@ void EnvirBase::configure(cConfiguration *cfg)
     setImagePath(extractImagePath(cfg, argList).c_str());
     setDebugOnErrors(cfg->getAsBool(CFGID_DEBUG_ON_ERRORS));  // note: handling overridden in Qtenv::readPerRunOptions() due to interference with GUI
     setPrintUndisposed(cfg->getAsBool(CFGID_PRINT_UNDISPOSED));
-    setEventlogRecording(cfg->getAsBool(CFGID_RECORD_EVENTLOG));
+    recordEventlog = cfg->getAsBool(CFGID_RECORD_EVENTLOG);  // TODO tmp solution: cannot call setEventlogRecording(), because it calls eventlogRecorder->suspend()/resume(), which is NOT what we want here
 }
 
 std::string EnvirBase::extractImagePath(cConfiguration *cfg, ArgList *args)

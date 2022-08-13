@@ -100,7 +100,7 @@ class ENVIR_API EnvirBase : public cEnvir
 
     // Output file managers, etc
     XMLDocCache *xmlCache = nullptr;
-    cIEventlogManager *eventlogManager = nullptr;  // nullptr if no eventlog is being written, must be non nullptr if record_eventlog is true
+    cIEventlogManager *eventlogManager = nullptr;
     cIOutputVectorManager *outVectorManager = nullptr;
     cIOutputScalarManager *outScalarManager = nullptr;
     cISnapshotManager *snapshotManager = nullptr;
@@ -150,7 +150,7 @@ class ENVIR_API EnvirBase : public cEnvir
     void setLogFormat(const char *logFormat);
     LogFormatter& getLogFormatter() {return logFormatter;}
 
-    void setEventlogRecording(bool enabled);
+    void setEventlogRecording(bool enabled);  //TODO note: currently this does suspend()/resume(), which is mostly only useful for Qtenv
     bool getEventlogRecording() const {return recordEventlog;}
 
     bool getCheckSignals() const {return cComponent::getCheckSignals();}
