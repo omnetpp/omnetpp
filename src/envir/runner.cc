@@ -15,42 +15,35 @@
 *--------------------------------------------------------------*/
 
 #include <thread>
+#include "common/stringutil.h"
 #include "omnetpp/cevent.h"
 #include "omnetpp/cmessage.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/ccomponenttype.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cfutureeventset.h"
-#include "cmdenvir.h"
-#include "fakegui.h"
+#include "omnetpp/cconfiguration.h"
+#include "omnetpp/cconfigoption.h"
+#include "ifakegui.h"
 #include "runner.h"
 
 using namespace omnetpp::common;
 using namespace omnetpp::internal;
 
 namespace omnetpp {
-namespace cmdenv {
+namespace envir {
 
-extern cConfigOption *CFGID_CMDENV_STATUS_FREQUENCY;
-extern cConfigOption *CFGID_CMDENV_PERFORMANCE_DISPLAY;
-extern cConfigOption *CFGID_CMDENV_EVENT_BANNERS;
-extern cConfigOption *CFGID_CMDENV_EVENT_BANNER_DETAILS;
+extern cConfigOption *CFGID_CPU_TIME_LIMIT;
+extern cConfigOption *CFGID_REAL_TIME_LIMIT;
+
+IRunner::~IRunner()
+{
+}
 
 void Runner::configure(cConfiguration *cfg)
 {
-    CmdEnvir *envir = dynamic_cast<CmdEnvir *>(simulation->getEnvir());
-    double realTimeLimit = cfg->getAsDouble(CFGID_REAL_TIME_LIMIT, -1);
-    double cpuTimeLimit = cfg->getAsDouble(CFGID_CPU_TIME_LIMIT, -1);
-    setCPUTimeLimit(cpuTimeLimit);
-    setRealTimeLimit(realTimeLimit);
-    setExpressMode(envir->isExpressMode());
-    setFakeGUI(envir->getFakeGui());
-    setAutoFlush(envir->getAutoflush());
-    setStatusFrequencyMs(1000*cfg->getAsDouble(CFGID_CMDENV_STATUS_FREQUENCY));
-    setPrintPerformanceData(cfg->getAsBool(CFGID_CMDENV_PERFORMANCE_DISPLAY));
-    setPrintThreadId(false); //TODO
-    setPrintEventBanners(cfg->getAsBool(CFGID_CMDENV_EVENT_BANNERS));
-    setDetailedEventBanners(cfg->getAsBool(CFGID_CMDENV_EVENT_BANNER_DETAILS));
+    setCPUTimeLimit(cfg->getAsDouble(CFGID_CPU_TIME_LIMIT, -1));
+    setRealTimeLimit(cfg->getAsDouble(CFGID_REAL_TIME_LIMIT, -1));
 }
 
 double Runner::getElapsedSecs()
@@ -197,6 +190,24 @@ void Runner::doRunExpressNoFakeGuiNoTimelimit()
     }
 }
 
+void Runner::doRunExpressNoStatusUpdates()
+{
+    ASSERT(fakeGUI == nullptr);
+    ASSERT(!stopwatch.hasTimeLimits());
+    ASSERT(statusFrequencyMs <= 0);
+
+    while (true) {
+        cEvent *event = simulation->takeNextEvent();
+        if (!event)
+            throw cTerminationException("Scheduler interrupted while waiting");
+
+        simulation->executeEvent(event);
+
+        if (sigintReceived)
+            throw cTerminationException("SIGINT or SIGTERM received, exiting");
+    }
+}
+
 void Runner::run()
 {
     ASSERT(simulation == cSimulation::getActiveSimulation());
@@ -217,8 +228,10 @@ void Runner::run()
             doRunExpressWithFakeGUI();
         else if (stopwatch.hasTimeLimits())
             doRunExpressNoFakeGui();
-        else
+        else if (statusFrequencyMs > 0)
             doRunExpressNoFakeGuiNoTimelimit();
+        else
+            doRunExpressNoStatusUpdates();
         FINALLY;
     }
     catch (std::exception& e) {
@@ -327,6 +340,6 @@ void Runner::printEventBanner(eventnumber_t eventNumber, cEvent *event)
     }
 }
 
-}  // namespace cmdenv
+}  // namespace envir
 }  // namespace omnetpp
 

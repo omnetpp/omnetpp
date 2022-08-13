@@ -1,4 +1,3 @@
-import re
 import cppyy
 
 omnetpp_root = "/home/andras/projects/omnetpp-dev"
@@ -25,64 +24,48 @@ cppyy.load_library("liboppsim" + libsuffix)
 
 # include omnetpp header files
 cppyy.include("omnetpp.h")
-cppyy.include("cmdenv/cmdenv.h")
-cppyy.include("envir/inifilereader.h")
-cppyy.include("envir/sectionbasedconfig.h")
+cppyy.include("envir/args.h")
+cppyy.include("envir/fsutils.h")
+cppyy.include("envir/inifilecontents.h")
+cppyy.include("cmdenv/cmdenvsimholder.h")
+cppyy.include("sim/netbuilder/cnedloader.h")
 
 # setup omnetpp namespace
 from cppyy.gbl import omnetpp
+
 cStaticFlag = omnetpp.cStaticFlag
 SimTime = omnetpp.SimTime
+cCoroutine = omnetpp.cCoroutine
 CodeFragments = omnetpp.CodeFragments
-cSimulation = omnetpp.cSimulation
-cEvent = omnetpp.cEvent
-Cmdenv = omnetpp.cmdenv.Cmdenv
-InifileReader = omnetpp.envir.InifileReader
-SectionBasedConfiguration = omnetpp.envir.SectionBasedConfiguration
+cNedLoader = omnetpp.cNedLoader
+CmdenvSimulationHolder = omnetpp.cmdenv.CmdenvSimulationHolder
+ArgList = omnetpp.envir.ArgList
+InifileContents = omnetpp.envir.InifileContents
+loadExtensionLibrary = omnetpp.envir.loadExtensionLibrary
 
-# define a modified Cmdenv
-class PythonCmdenv(Cmdenv):
-    def loadNEDFiles(self):
-        pass
-
-# startup
-#SimTime.setScaleExp(-12)
+# initialization boilerplate
 static_flag = cStaticFlag()
 static_flag.__python_owns__ = False
 CodeFragments.executeAll(CodeFragments.EARLY_STARTUP)
 
-# Long version:
-# iniReader = InifileReader()
-# iniReader.readFile("omnetpp.ini")
-# configuration = SectionBasedConfiguration()
-# configuration.setConfigurationReader(iniReader)
-# iniReader.__python_owns__ = False
+# setup: load ini,ned,libs,etc.
+ini = InifileContents("omnetpp.ini")
 
-# Shorter:
-# configuration = SectionBasedConfiguration()
-# configuration.readFile("omnetpp.ini")
+globalCfg = ini.extractGlobalConfig()
+SimTime.configure(globalCfg);
+cCoroutine.configure(globalCfg);
 
-configuration = SectionBasedConfiguration("omnetpp.ini")
+loadExtensionLibrary("aloha")
+CodeFragments.executeAll(CodeFragments.STARTUP) # setup complete
 
-cppyy.load_library("libaloha" + libsuffix)  #TODO should use omnet's own lib loaded which does EARLY_STARTUP too
-CodeFragments.executeAll(CodeFragments.EARLY_STARTUP)
-args = [ "<progname>", "-c", "PureAloha1" ]
-extra_config_options = { "cpu-time-limit" : "1s" }
-configuration.setCommandLineConfigOptions(extra_config_options, ".")
+nedLoader = CmdenvSimulationHolder.loadNEDFiles(globalCfg)
 
-environment = PythonCmdenv()
-#environment.loggingEnabled = False
-simulation = cSimulation("simulation", environment.getEnvir())
-environment.__python_owns__ = False
-cSimulation.setActiveSimulation(simulation)  # TODO should be done inside methods like doOneEvent()
-simulation.loadNedSourceFolder(omnetpp_root + "/samples/aloha")
-simulation.doneLoadingNedFiles()  # TODO clumsy -- cannot this be implicit?
+# run simulation
+# TODO { "cpu-time-limit" : "1s" }
+sim = CmdenvSimulationHolder(nedLoader)
+cfg = ini.extractConfig("PureAloha1")
+sim.runCmdenvSimulation(cfg)
 
-# run
-returncode = environment.run(args, configuration)
-
-# shutdown
-cSimulation.setActiveSimulation(cppyy.nullptr)
-simulation.__python_owns__ = False
+# shutdown boilerplate
 CodeFragments.executeAll(CodeFragments.SHUTDOWN)
 del static_flag

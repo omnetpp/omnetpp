@@ -22,6 +22,7 @@
 #include "envir/appbase.h"
 #include "envir/speedometer.h"
 #include "envir/inifilecontents.h"
+#include "envir/simulationholder.h"
 #include "omnetpp/cchannel.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/ccanvas.h"
@@ -119,11 +120,13 @@ struct QtenvOptions
 /**
  * A Qt-based user interface.
  */
-class QTENV_API Qtenv : public QObject, public AppBase
+class QTENV_API Qtenv : public QObject, public AppBase, public SimulationHolder
 {
    Q_OBJECT
 
    public:
+       using AppBase::out;
+
       //
       // state transitions:
       //    SIM_NONET -> SIM_NEW -> (SIM_RUNNING <-> SIM_READY) -> SIM_TERMINATED -> SIM_FINISHCALLED -> SIM_NONET
@@ -348,7 +351,7 @@ class QTENV_API Qtenv : public QObject, public AppBase
 
       virtual void setupNetwork(cModuleType *network) override;
 
-      virtual void displayException(std::exception& e) override;
+      virtual void printException(std::exception& e) override;
       virtual std::string getWindowTitle();
 
       // Measuring elapsed time
@@ -485,6 +488,7 @@ class QTENV_API Qtenv : public QObject, public AppBase
       QFont getFirstAvailableFontFamily(std::initializer_list<QString> preferenceList, int pointSize, QFont defaultValue = QString());
 
       void runSimulationLocal(RunMode runMode, cObject *object = nullptr, Inspector *insp = nullptr);
+      void notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details = nullptr);
 };
 
 

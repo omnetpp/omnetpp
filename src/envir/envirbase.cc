@@ -62,9 +62,8 @@ Register_GlobalConfigOption(CFGID_DEBUGGER_ATTACH_ON_ERROR, "debugger-attach-on-
 Register_PerRunConfigOption(CFGID_RECORD_EVENTLOG, "record-eventlog", CFG_BOOL, "false", "Enables recording an eventlog file, which can be later visualized on a sequence chart. See `eventlog-file` option too.");
 
 
-EnvirBase::EnvirBase() : out(std::cout.rdbuf())
+EnvirBase::EnvirBase()
 {
-    xmlCache = new XMLDocCache();
 }
 
 EnvirBase::~EnvirBase()
@@ -81,6 +80,8 @@ void EnvirBase::configure(cConfiguration *cfg)
     this->cfg = cfg;
 
     setAttachDebuggerOnErrors(cfg->getAsBool(CFGID_DEBUGGER_ATTACH_ON_ERROR));
+
+    xmlCache = new XMLDocCache();
 
     // install eventlog manager
     std::string eventlogManagerClass = cfg->getAsString(CFGID_EVENTLOGMANAGER_CLASS);
@@ -468,7 +469,7 @@ void EnvirBase::log(cLogEntry *entry)
 void EnvirBase::undisposedObject(cObject *obj)
 {
     if (printUndisposed)
-        out << "undisposed object: (" << obj->getClassName() << ") " << obj->getFullPath() << " -- check module destructor" << endl;
+        std::cerr << "undisposed object: (" << obj->getClassName() << ") " << obj->getFullPath() << " -- check module destructor" << endl;
 }
 
 void EnvirBase::setEventlogRecording(bool enabled)

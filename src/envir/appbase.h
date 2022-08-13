@@ -16,18 +16,23 @@
 #ifndef __OMNETPP_ENVIR_APPBASE_H
 #define __OMNETPP_ENVIR_APPBASE_H
 
+#include <iostream>
+#include <vector>
+#include <string>
 #include "envirdefs.h"
-#include "envirbase.h"
-#include "inifilecontents.h"
-#include "debuggersupport.h"
 
 #define ARGSPEC "h?f:u:l:c:r:n:x:i:q:e:avwsm"
 
 namespace omnetpp {
 
-class cINedLoader;
+class cConfigOption;
+class cRuntimeError;
 
 namespace envir {
+
+class ArgList;
+class InifileContents;
+class DebuggerSupport;
 
 extern cConfigOption *CFGID_NETWORK;
 extern cConfigOption *CFGID_SIM_TIME_LIMIT;
@@ -46,14 +51,13 @@ class ENVIR_API AppBase
 {
   protected:
     ArgList *args;  //TODO init!!!
-    std::ostream& out; //TODO FIXME
+    std::ostream& out;
     InifileContents *ini;
 
     bool verbose;
-    bool useStderr;
-    std::string redirectionFilename;
+    bool useStderr; // only used in subclasses
 
-    DebuggerSupport *debuggerSupport = new DebuggerSupport();
+    DebuggerSupport *debuggerSupport;
 
     static AppBase *activeApp;
 
@@ -61,7 +65,7 @@ class ENVIR_API AppBase
     /**
      * Constructor
      */
-    AppBase();
+    AppBase(std::ostream& out = std::cout);
 
     virtual ~AppBase();
 
@@ -79,19 +83,27 @@ class ENVIR_API AppBase
 
     static AppBase *getActiveApp() {return activeApp;}
 
-    InifileContents *getInifileContents() {return ini;}
+    InifileContents *getInifileContents() const {return ini;}
 
-    static EnvirBase *getActiveEnvir() {return dynamic_cast<EnvirBase*>(cSimulation::getActiveEnvir());}
-    static cSimulation *getActiveSimulation() {return cSimulation::getActiveSimulation();}
+    std::ostream& getOutputStream() const {return out;}
+
+    ArgList *getArgList() const {return args;}
+
+    bool isVerbose() const {return verbose;}
 
     DebuggerSupport *getDebuggerSupport() const {return debuggerSupport;}
 
-  protected:
-    void notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details=nullptr);
+    void displayException(std::exception& ex);
 
-    virtual std::ostream& err();
-    virtual std::ostream& errWithoutPrefix();
-    virtual std::ostream& warn();
+//  protected:
+    // functions added locally
+    virtual bool simulationRequired();
+    virtual int doRunApp() = 0;
+    void printHelp();
+    virtual void printUISpecificHelp() = 0;
+
+    virtual bool ensureDebugger(cRuntimeError *error = nullptr);
+    virtual void alert(const char *msg) = 0;
     void alertf(const char *fmt, ...);
 
     static void crashHandler(int signum);
@@ -99,46 +111,6 @@ class ENVIR_API AppBase
     virtual std::vector<int> resolveRunFilter(const char *configName, const char *runFilter);
     virtual void printRunInfo(const char *configName, const char *runFilter, const char *query);
     virtual void printConfigValue(const char *configName, const char *runFilter, const char *optionName);
-
-  public:
-    virtual bool ensureDebugger(cRuntimeError *error = nullptr);
-    virtual void alert(const char *msg) = 0;
-
-  protected:
-
-    // functions added locally
-    virtual bool simulationRequired();
-    virtual int doRunApp() = 0;
-
-    virtual void loadNEDFiles(cINedLoader *nedLoader, cConfiguration *cfg, ArgList *args);
-    virtual void setupNetwork(cModuleType *networkType);
-
-    ArgList *argList()  {return args;}
-    void printHelp();
-    void setupEventLog();
-    virtual void printUISpecificHelp() = 0;
-
-    virtual void startOutputRedirection(const char *fileName);
-    virtual void stopOutputRedirection();
-    virtual bool isOutputRedirected();
-
-    // Utility function; never returns nullptr
-    cModuleType *resolveNetwork(const char *networkName, const char *baseDirectory);
-
-    virtual void displayException(std::exception& e);
-    virtual std::string getFormattedMessage(std::exception& ex);
-
-    // Utility function: checks simulation fingerprint and displays a message accordingly
-    void checkFingerprint();
-
-    // Hook called when the simulation terminates normally.
-    // Its current use is to notify parallel simulation part.
-    void stoppedWithTerminationException(cTerminationException& e);
-
-    // Hook called when the simulation is stopped with an error.
-    // Its current use is to notify parallel simulation part.
-    void stoppedWithException(std::exception& e);
-
 };
 
 }  // namespace envir

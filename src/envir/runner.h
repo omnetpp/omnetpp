@@ -13,32 +13,34 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_CMDENV_RUNNER_H
-#define __OMNETPP_CMDENV_RUNNER_H
+#ifndef __OMNETPP_ENVIR_RUNNER_H
+#define __OMNETPP_ENVIR_RUNNER_H
 
-#include "cmddefs.h"
-#include "envir/stopwatch.h"
-#include "envir/speedometer.h"
+#include "envirdefs.h"
+#include "omnetpp/csimulation.h"
+#include "stopwatch.h"
+#include "speedometer.h"
 
 namespace omnetpp {
 
 class cEvent;
 class cSimulation;
 
-namespace cmdenv {
+namespace envir {
 
-class FakeGUI;
+class IFakeGUI;
 
-using namespace envir;
+class IRunner {
+  public:
+    virtual ~IRunner();
+    virtual void run() = 0;
+};
 
-/**
- * TODO
- */
-class CMDENV_API Runner
+class ENVIR_API Runner : public IRunner
 {
   protected:
     cSimulation *simulation; // not owned
-    FakeGUI *fakeGUI = nullptr; // not owned
+    IFakeGUI *fakeGUI = nullptr; // not owned
     std::ostream& out;
     bool& sigintReceived;
     int runsTried=1, numRuns=1; // for progress reporting
@@ -60,6 +62,7 @@ class CMDENV_API Runner
     virtual void doRunExpressWithFakeGUI();
     virtual void doRunExpressNoFakeGui();
     virtual void doRunExpressNoFakeGuiNoTimelimit();
+    virtual void doRunExpressNoStatusUpdates();
 
     virtual void printEventBanner(eventnumber_t eventNumber, cEvent *event);
     virtual void printStatusUpdate();
@@ -73,7 +76,7 @@ class CMDENV_API Runner
     virtual ~Runner() {}
     virtual void configure(cConfiguration *cfg);
 
-    virtual void setFakeGUI(FakeGUI *fakeGUI) {this->fakeGUI = fakeGUI;}
+    virtual void setFakeGUI(IFakeGUI *fakeGUI) {this->fakeGUI = fakeGUI;}
     virtual void setSimulationTimeLimit(simtime_t limit) {simulation->setSimulationTimeLimit(limit);}
     virtual void setCPUTimeLimit(double limit) {stopwatch.setCPUTimeLimit(limit);}
     virtual void setRealTimeLimit(double limit) {stopwatch.setRealTimeLimit(limit);}
@@ -89,7 +92,7 @@ class CMDENV_API Runner
     virtual void run();
 };
 
-}  // namespace cmdenv
+}  // namespace envir
 }  // namespace omnetpp
 
 #endif

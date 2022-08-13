@@ -13,7 +13,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-
 #include <cstdio>
 #include <csignal>
 #include <fstream>
@@ -28,7 +27,6 @@
 #include "omnetpp/simtime.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cmodule.h"
-#include "omnetpp/cfingerprint.h"
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/ccoroutine.h"
 #include "omnetpp/cnedloader.h"
@@ -38,13 +36,10 @@
 #include "envirbase.h"
 #include "envirutils.h"
 #include "appreg.h"
-#include "valueiterator.h"
 #include "debuggersupport.h"
-
-#ifdef WITH_PARSIM
-#include "sim/parsim/cparsimpartition.h"
-#include "sim/parsim/creceivedexception.h"
-#endif
+#include "simulationholder.h"
+#include "inifilecontents.h"
+#include "debuggersupport.h"
 
 using namespace omnetpp::common;
 using namespace omnetpp::internal;
@@ -140,7 +135,7 @@ static const char *buildOptions = ""
 AppBase *AppBase::activeApp = nullptr;
 
 
-AppBase::AppBase() : out(std::cout) //TODO
+AppBase::AppBase(std::ostream& out) : out(out), debuggerSupport(new DebuggerSupport())
 {
     ASSERT(activeApp == nullptr);
     activeApp = this;
@@ -379,14 +374,6 @@ void AppBase::installCrashHandler()
 #endif
 }
 
-void AppBase::loadNEDFiles(cINedLoader *nedLoader, cConfiguration *cfg, ArgList *args)
-{
-    std::string nArg = opp_join(args->optionValues('n'), ";", true);
-    std::string xArg = opp_join(args->optionValues('x'), ";", true);
-    nedLoader->configure(cfg, nArg.c_str() , xArg.c_str());
-    nedLoader->loadNedFiles();
-}
-
 void AppBase::printHelp()
 {
     out << "Command line options:\n";
@@ -520,23 +507,6 @@ void AppBase::printHelp()
     }
 }
 
-void AppBase::setupNetwork(cModuleType *networkType)
-{
-    EnvirBase *envir = getActiveEnvir();
-    cSimulation *simulation = getActiveSimulation();
-
-    envir->clearCurrentEventInfo();
-
-    simulation->setupNetwork(networkType);
-    envir->getEventlogManager()->flush();
-
-    bool debugStatisticsRecording = envir->getConfig()->getAsBool(CFGID_DEBUG_STATISTICS_RECORDING);
-    if (debugStatisticsRecording)
-        EnvirUtils::dumpResultRecorders(out, simulation->getSystemModule());
-}
-
-//-------------------------------------------------------------
-
 std::vector<int> AppBase::resolveRunFilter(const char *configName, const char *runFilter)
 {
     std::vector<int> runNumbers;
@@ -585,65 +555,6 @@ std::vector<int> AppBase::resolveRunFilter(const char *configName, const char *r
     return runNumbers;
 }
 
-//-------------------------------------------------------------
-
-void AppBase::startOutputRedirection(const char *fileName)
-{
-    ASSERT(!isOutputRedirected());
-
-    mkPath(directoryOf(fileName).c_str());
-
-    std::filebuf *fbuf = new std::filebuf;
-    fbuf->open(fileName, std::ios_base::out);
-    if (!fbuf->is_open())
-       throw cRuntimeError("Cannot open output redirection file '%s'", fileName);
-    out.rdbuf(fbuf);
-    redirectionFilename = fileName;
-}
-
-void AppBase::stopOutputRedirection()
-{
-    if (isOutputRedirected()) {
-        std::streambuf *fbuf = out.rdbuf();
-        fbuf->pubsync();
-        out.rdbuf(std::cout.rdbuf());
-        delete fbuf;
-        redirectionFilename = "";
-    }
-}
-
-bool AppBase::isOutputRedirected()
-{
-    return out.rdbuf() != std::cout.rdbuf();
-}
-
-std::ostream& AppBase::err()
-{
-    std::ostream& err = useStderr && !isOutputRedirected() ? std::cerr : out;
-    if (isOutputRedirected())
-        (useStderr ? std::cerr : std::cout) << "<!> Error -- see " << redirectionFilename << " for details" << endl;
-    err << endl << "<!> Error: ";
-    return err;
-}
-
-std::ostream& AppBase::errWithoutPrefix()
-{
-    std::ostream& err = useStderr && !isOutputRedirected() ? std::cerr : out;
-    if (isOutputRedirected())
-        (useStderr ? std::cerr : std::cout) << "<!> Error -- see " << redirectionFilename << " for details" << endl;
-    err << endl << "<!> ";
-    return err;
-}
-
-std::ostream& AppBase::warn()
-{
-    std::ostream& err = useStderr && !isOutputRedirected() ? std::cerr : out;
-    if (isOutputRedirected())
-        (useStderr ? std::cerr : std::cout) << "<!> Warning -- see " << redirectionFilename << " for details" << endl;
-    err << endl << "<!> Warning: ";
-    return err;
-}
-
 void AppBase::alertf(const char *fmt, ...)
 {
     char buffer[1000];
@@ -657,7 +568,8 @@ void AppBase::alertf(const char *fmt, ...)
 
 bool AppBase::ensureDebugger(cRuntimeError *error)
 {
-    if (error == nullptr || getActiveEnvir()->getAttachDebuggerOnErrors()) {
+    EnvirBase *envirBase = dynamic_cast<EnvirBase*>(cSimulation::getActiveEnvir());
+    if (error == nullptr || (envirBase && envirBase->getAttachDebuggerOnErrors())) { //TODO why ask Envir? move check out of this function
         try {
             if (debuggerSupport->detectDebugger() == DebuggerPresence::NOT_PRESENT)
                 debuggerSupport->attachDebugger();
@@ -717,98 +629,11 @@ void AppBase::crashHandler(int)
     }
 }
 
-std::string AppBase::getFormattedMessage(std::exception& ex)
-{
-    if (cException *e = dynamic_cast<cException *>(&ex))
-        return e->getFormattedMessage();
-    else
-        return ex.what();
-}
-
 void AppBase::displayException(std::exception& ex)
 {
-    std::string msg = getFormattedMessage(ex);
-    if (dynamic_cast<cTerminationException*>(&ex) != nullptr)
-        out << endl << "<!> " << msg << endl;
-    else if (msg.substr(0,5) == "Error")
-        errWithoutPrefix() << msg << endl;
-    else
-        err() << msg << endl;
+    std::string msg = SimulationHolder::getFormattedMessage(ex);
+    alert(msg.c_str());
 }
-
-//-------------------------------------------------------------
-
-void AppBase::stoppedWithTerminationException(cTerminationException& e)
-{
-    // if we're running in parallel and this exception is NOT one we received
-    // from other partitions, then notify other partitions
-#ifdef WITH_PARSIM
-    cSimulation *simulation = getActiveSimulation();
-    if (simulation->isParsimEnabled() && !dynamic_cast<cReceivedTerminationException *>(&e))
-        simulation->getParsimPartition()->broadcastTerminationException(e);
-#endif
-    if (getActiveEnvir()->getEventlogRecording()) {
-        //FIXME should not be in this function (Andras)
-        getActiveEnvir()->getEventlogManager()->endRun(e.isError(), e.getErrorCode(), e.getFormattedMessage().c_str());
-    }
-}
-
-void AppBase::stoppedWithException(std::exception& e)
-{
-    // if we're running in parallel and this exception is NOT one we received
-    // from other partitions, then notify other partitions
-#ifdef WITH_PARSIM
-    cSimulation *simulation = getActiveSimulation();
-    if (simulation->isParsimEnabled() && !dynamic_cast<cReceivedException *>(&e))
-        simulation->getParsimPartition()->broadcastException(e);
-#endif
-    if (getActiveEnvir()->getEventlogRecording()) {
-        // TODO: get error code from the exception?
-        getActiveEnvir()->getEventlogManager()->endRun(true, E_CUSTOM, e.what());  //FIXME this should be rather in endRun(), or? (Andras)
-    }
-}
-
-void AppBase::checkFingerprint()
-{
-    cFingerprintCalculator *fingerprint = getActiveSimulation()->getFingerprintCalculator();
-    if (!getActiveSimulation()->getFingerprintCalculator())
-        return;
-
-    auto flags = opp_substringafterlast(fingerprint->str(), "/");
-    if (fingerprint->checkFingerprint())
-        alertf("Fingerprint successfully verified: %s", fingerprint->str().c_str());
-    else
-        alertf("Fingerprint mismatch! calculated: %s, expected: %s",
-                fingerprint->str().c_str(), fingerprint->getExpected().c_str());
-}
-
-cModuleType *AppBase::resolveNetwork(const char *networkname, const char *baseDirectory)
-{
-    cModuleType *network = nullptr;
-    std::string inifilePackage = getActiveSimulation()->getNedPackageForFolder(baseDirectory);
-
-    bool hasInifilePackage = !inifilePackage.empty() && strcmp(inifilePackage.c_str(), "-") != 0;
-    if (hasInifilePackage)
-        network = cModuleType::find((inifilePackage+"."+networkname).c_str());
-    if (!network)
-        network = cModuleType::find(networkname);
-    if (!network) {
-        if (hasInifilePackage)
-            throw cRuntimeError("Network '%s' or '%s' not found, check .ini and .ned files",
-                    networkname, (inifilePackage+"."+networkname).c_str());
-        else
-            throw cRuntimeError("Network '%s' not found, check .ini and .ned files", networkname);
-    }
-    if (!network->isNetwork())
-        throw cRuntimeError("Module type '%s' is not a network", network->getFullName());
-    return network;
-}
-
-void AppBase::notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details)
-{
-    getActiveSimulation()->notifyLifecycleListeners(eventType, details);
-}
-
 
 }  // namespace envir
 }  // namespace omnetpp

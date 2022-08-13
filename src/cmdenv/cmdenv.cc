@@ -19,45 +19,15 @@
 #include <cstring>
 #include <csignal>
 #include <algorithm>
-
 #include <thread>
 
-#include "common/opp_ctype.h"
-#include "common/commonutil.h"
-#include "common/fileutil.h"
-#include "common/enumstr.h"
-#include "common/stringutil.h"
-#include "common/stringtokenizer.h"
 #include "envir/appreg.h"
-#include "envir/args.h"
-#include "envir/speedometer.h"
-#include "envir/resultfileutils.h"
-#include "envir/visitor.h"
-#include "omnetpp/csimplemodule.h"
-#include "omnetpp/ccomponenttype.h"
-#include "omnetpp/cmessage.h"
+#include "envir/inifilecontents.h"
 #include "omnetpp/cconfigoption.h"
-#include "omnetpp/checkandcast.h"
-#include "omnetpp/cproperties.h"
-#include "omnetpp/cproperty.h"
-#include "omnetpp/cenum.h"
-#include "omnetpp/cscheduler.h"
-#include "omnetpp/cfutureeventset.h"
-#include "omnetpp/cresultfilter.h"
-#include "omnetpp/cresultrecorder.h"
-#include "omnetpp/cclassdescriptor.h"
-#include "omnetpp/cqueue.h"
-#include "omnetpp/cchannel.h"
-#include "omnetpp/coutvector.h"
-#include "omnetpp/cstatistic.h"
-#include "omnetpp/cabstracthistogram.h"
-#include "omnetpp/cwatch.h"
-#include "omnetpp/cdisplaystring.h"
-#include "sim/netbuilder/cnedloader.h"
-#include "cmddefs.h"
+#include "omnetpp/cnedloader.h"
 #include "cmdenv.h"
 #include "cmdenvir.h"
-#include "runner.h"
+#include "cmdenvsimholder.h"
 
 using namespace omnetpp::common;
 using namespace omnetpp::internal;
@@ -119,11 +89,8 @@ void Cmdenv::printUISpecificHelp()
 
 int Cmdenv::doRunApp()
 {
-    nedLoader = new cNedLoader("nedLoader");
-    nedLoader->removeFromOwnershipTree();
-
     cConfiguration *globalCfg = ini->extractGlobalConfig();
-    loadNEDFiles(nedLoader, globalCfg, args);
+    nedLoader = SimulationHolder::loadNEDFiles(globalCfg, args);
 
     CodeFragments::executeAll(CodeFragments::STARTUP); // app setup is complete
 
@@ -233,148 +200,22 @@ void Cmdenv::runSimulations(const char *configName, const std::vector<int>& runN
 
 bool Cmdenv::runSimulation(const char *configName, int runNumber)
 {
-    CmdEnvir *envir = new CmdEnvir(this, sigintReceived);
-    envir->setArgs(args);
-    envir->setVerbose(verbose);
-    cSimulation *simulation = new cSimulation("simulation", envir);  //TODO: finally: delete simulation
-    simulation->setNedLoader(nedLoader);
-    cSimulation::setActiveSimulation(simulation);
-
-    bool finishedOK = false;
-    bool networkSetupDone = false;
-    bool endRunRequired = false;
-
-    cConfiguration *cfg = nullptr;
     try {
         if (verbose)
             out << "\nPreparing for running configuration " << configName << ", run #" << runNumber << "..." << endl;
 
-        cfg = ini->extractConfig(configName, runNumber);
-
+        cConfiguration *cfg = ini->extractConfig(configName, runNumber);
+        std::unique_ptr<cConfiguration> deleter(cfg);
         stopBatchOnError = cfg->getAsBool(CFGID_CMDENV_STOP_BATCH_ON_ERROR);
 
-        simulation->configure(cfg);  // include envir->configure()
-
-        const char *iterVars = cfg->getVariable(CFGVAR_ITERATIONVARS);
-        const char *runId = cfg->getVariable(CFGVAR_RUNID);
-        const char *repetition = cfg->getVariable(CFGVAR_REPETITION);
-        if (!verbose)
-            out << configName << " run " << runNumber << ": " << iterVars << ", $repetition=" << repetition << endl; // print before redirection; useful as progress indication from opp_runall
-
-        bool redirectOutput = cfg->getAsBool(CFGID_CMDENV_REDIRECT_OUTPUT);
-        if (redirectOutput) {
-            std::string outputFile = cfg->getAsFilename(CFGID_CMDENV_OUTPUT_FILE);
-            outputFile = ResultFileUtils(cfg).augmentFileName(outputFile);
-            if (verbose)
-                out << "Redirecting output to file \"" << outputFile << "\"..." << endl;
-            startOutputRedirection(outputFile.c_str());
-            if (verbose)
-                out << "\nRunning configuration " << configName << ", run #" << runNumber << "..." << endl;
-        }
-
-        if (verbose) {
-            if (iterVars && strlen(iterVars) > 0)
-                out << "Scenario: " << iterVars << ", $repetition=" << repetition << endl;
-            out << "Assigned runID=" << runId << endl;
-        }
-
-        // find network
-        std::string networkName = cfg->getAsString(CFGID_NETWORK);
-        std::string inifileNetworkDir  = cfg->getConfigEntry(CFGID_NETWORK->getName()).getBaseDirectory();
-        if (networkName.empty())
-            throw cRuntimeError("No network specified (missing or empty network= configuration option)");
-        cModuleType *network = resolveNetwork(networkName.c_str(), inifileNetworkDir.c_str());
-        ASSERT(network);
-
-        endRunRequired = true;
-
-        // set up network
-        if (verbose)
-            out << "Setting up network \"" << networkName.c_str() << "\"..." << endl;
-
-        setupNetwork(network);
-        networkSetupDone = true;
-
-        // prepare for simulation run
-        if (verbose)
-            out << "Initializing..." << endl;
-
-        cLog::setLoggingEnabled(!envir->isExpressMode());
-
-        simulation->callInitialize();
-        cLogProxy::flushLastLine();
-
-        // run the simulation
-        if (verbose)
-            out << "\nRunning simulation..." << endl;
-
-        // simulate() should only throw exception if error occurred and
-        // finish() should not be called.
-        notifyLifecycleListeners(LF_ON_SIMULATION_START);
-
-        try {
-            Runner runner(simulation, out, sigintReceived);
-            runner.configure(cfg);
-            runner.setBatchProgress((int)runsTried, (int)numRuns);
-
-            runner.run();
-        }
-        catch (cTerminationException& e) {
-            stoppedWithTerminationException(e);
-            displayException(e);
-        }
-
-         cLog::setLoggingEnabled(true);
-
-        if (verbose)
-            out << "\nCalling finish() at end of Run #" << runNumber << "..." << endl;
-        simulation->callFinish();
-        cLogProxy::flushLastLine();
-
-        checkFingerprint();
-
-        notifyLifecycleListeners(LF_ON_SIMULATION_SUCCESS);
-
-        finishedOK = true;
+        CmdenvSimulationHolder holder(this);
+        holder.runCmdenvSimulation(cfg, (int)runsTried, (int)numRuns);
+        return true;
     }
     catch (std::exception& e) {
-        cLog::setLoggingEnabled(true);
-        stoppedWithException(e);
-        notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
-        displayException(e);
+        // no displayException(e) -- already displayed inside the run call
+        return false;
     }
-
-    // send LF_ON_RUN_END notification
-    if (endRunRequired) {
-        try {
-            notifyLifecycleListeners(LF_ON_RUN_END);
-        }
-        catch (std::exception& e) {
-            finishedOK = false;
-            notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
-            displayException(e);
-        }
-    }
-
-    // delete network
-    if (networkSetupDone) {
-        try {
-            simulation->deleteNetwork();
-        }
-        catch (std::exception& e) {
-            finishedOK = false;
-            notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
-            displayException(e);
-        }
-    }
-
-    // stop redirecting into file
-    stopOutputRedirection();
-
-    delete simulation;  // deletes envir too
-    delete cfg;
-
-    return finishedOK;
 }
 
 void Cmdenv::sigintHandler(int signum)
@@ -397,7 +238,8 @@ void Cmdenv::deinstallSigintHandler()
 
 void Cmdenv::alert(const char *msg)
 {
-    out << "\n<!> " << msg << endl << endl;
+    std::ostream& err = useStderr ? std::cerr : out;
+    err << "\n<!> " << msg << endl << endl;
 }
 
 }  // namespace cmdenv

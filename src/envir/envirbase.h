@@ -63,10 +63,8 @@ class ENVIR_API EnvirBase : public cEnvir
 {
   protected:
     // context
-    cConfiguration *cfg = nullptr;
     ArgList *argList = nullptr;
-
-    std::ostream out; //TODO move to AppBase?
+    cConfiguration *cfg = nullptr;
 
     // log related
     LogFormatter logFormatter;
@@ -77,7 +75,7 @@ class ENVIR_API EnvirBase : public cEnvir
     int currentModuleId = -1;
 
     // misc
-    bool expressMode = true;
+    bool expressMode = true;  //TODO this is only used inside CmdEnvir
     bool gui = false;
     bool verbose = true;
     size_t extraStack = 0;

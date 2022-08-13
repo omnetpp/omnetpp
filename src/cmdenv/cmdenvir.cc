@@ -35,6 +35,16 @@ extern cConfigOption *CFGID_CMDENV_EXTRA_STACK;
 extern cConfigOption *CFGID_CMDENV_FAKE_GUI;
 
 
+CmdEnvir::CmdEnvir(Cmdenv *app) : out(app->getOutputStream()), sigintReceived(app->sigintReceived)
+{
+    setArgs(app->getArgList());
+    setVerbose(app->isVerbose());
+}
+
+CmdEnvir::CmdEnvir(std::ostream& out, bool& sigintReceived) : out(out), sigintReceived(sigintReceived)
+{
+}
+
 void CmdEnvir::configure(cConfiguration *cfg)
 {
     EnvirBase::configure(cfg);
@@ -162,6 +172,13 @@ bool CmdEnvir::askYesNo(const char *question)
     }
 }
 
+void CmdEnvir::undisposedObject(cObject *obj)
+{
+    // overridden to use the "right" stream
+    if (printUndisposed)
+        out << "undisposed object: (" << obj->getClassName() << ") " << obj->getFullPath() << " -- check module destructor" << endl;
+}
+
 bool CmdEnvir::idle()
 {
     return sigintReceived;
@@ -232,7 +249,8 @@ double CmdEnvir::getZoomLevel(const cModule *module)
 
 bool CmdEnvir::ensureDebugger(cRuntimeError *error)
 {
-    return app->ensureDebugger(error);
+    AppBase *app = AppBase::getActiveApp();  //TODO should not rely on active App
+    return app ? app->ensureDebugger(error) : false;
 }
 
 }  // namespace cmdenv

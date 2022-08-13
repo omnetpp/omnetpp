@@ -581,7 +581,7 @@ double Qtenv::computeModelHoldEndTime()
     return holdEndTime;
 }
 
-Qtenv::Qtenv() : icons(out)
+Qtenv::Qtenv() : SimulationHolder(AppBase::out), icons(out)
 {
     // Note: ctor should only contain trivial initializations, because
     // the class may be instantiated only for the purpose of calling
@@ -625,18 +625,17 @@ static void signalHandler(int signum)
 
 int Qtenv::doRunApp()
 {
+    SimulationHolder::setVerbose(AppBase::verbose);
+    SimulationHolder::setUseStderr(AppBase::useStderr);
+
     //
     // SETUP
     //
-    cINedLoader *nedLoader = new cNedLoader("nedLoader");
-    nedLoader->removeFromOwnershipTree();
-
     QtEnvir *envir = new QtEnvir(this);
     envir->setIsGUI(true);
     envir->setArgs(args);
 
     cSimulation *simulation = new cSimulation("simulation", envir);  //TODO: finally: delete simulation
-    simulation->setNedLoader(nedLoader);
     cSimulation::setActiveSimulation(simulation);
 
     activeCfg = ini->extractGlobalConfig();
@@ -646,13 +645,14 @@ int Qtenv::doRunApp()
     if (getAttachDebuggerOnErrors())
         installCrashHandler();
 
-    loadNEDFiles(nedLoader, activeCfg, args);
+    cINedLoader *nedLoader = loadNEDFiles(activeCfg, args);
+    simulation->setNedLoader(nedLoader);
 
     // set signal handler
     signal(SIGINT, signalHandler);
     signal(SIGTERM, signalHandler);
 
-    icons.setVerbose(verbose);
+    icons.setVerbose(AppBase::verbose);
     icons.loadImages(imagePath.c_str());
 
     // we need to flush streams, otherwise output written from Tcl tends to overtake
@@ -900,13 +900,13 @@ void Qtenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t unti
         simulationState = SIM_TERMINATED;
         stoppedWithTerminationException(e);
         notifyLifecycleListeners(LF_ON_SIMULATION_SUCCESS);
-        displayException(e);
+        printException(e);
     }
     catch (std::exception& e) {
         simulationState = SIM_ERROR;
         stoppedWithException(e);
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
-        displayException(e);
+        printException(e);
     }
     stopClock();
     stopSimulationFlag = false;
@@ -1202,7 +1202,7 @@ void Qtenv::finishSimulation()
     catch (std::exception& e) {
         stoppedWithException(e);
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
-        displayException(e);
+        printException(e);
     }
     // then endrun
     try {
@@ -1210,7 +1210,7 @@ void Qtenv::finishSimulation()
     }
     catch (std::exception& e) {
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
-        displayException(e);
+        printException(e);
     }
 
     simulationState = SIM_FINISHCALLED;
@@ -1251,7 +1251,7 @@ void Qtenv::loadNedFile(const char *fname, const char *expectedPackage, bool isX
         getSimulation()->loadNedFile(fname, expectedPackage, isXML);
     }
     catch (std::exception& e) {
-        displayException(e);
+        printException(e);
     }
 }
 
@@ -1292,7 +1292,7 @@ void Qtenv::newNetwork(const char *networkname)
     }
     catch (std::exception& e) {
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
-        displayException(e);
+        printException(e);
         simulationState = SIM_ERROR;
     }
 
@@ -1355,7 +1355,7 @@ void Qtenv::newRun(const char *configname, int runnumber)
      }
     catch (std::exception& e) {
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
-        displayException(e);
+        printException(e);
         simulationState = SIM_ERROR;
     }
 
@@ -1369,7 +1369,7 @@ void Qtenv::newRun(const char *configname, int runnumber)
 
 void Qtenv::setupNetwork(cModuleType *network)
 {
-    AppBase::setupNetwork(network);
+    SimulationHolder::setupNetwork(network);
 
     // collapsing all nodes in the object tree, because even if a new network is
     // loaded, there is a chance that some objects will be on the same place
@@ -1422,7 +1422,7 @@ Inspector *Qtenv::inspect(cObject *obj, InspectorType type, bool ignoreEmbedded)
         inspector->setObject(obj);
     }
     catch (std::exception& e) {
-        displayException(e);
+        printException(e);
     }
     return inspector;
 }
@@ -1496,7 +1496,7 @@ void Qtenv::callRefreshDisplaySafe()
         simulationState = SIM_ERROR;
         stoppedWithException(e);
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
-        displayException(e);
+        printException(e);
     }
 }
 
@@ -1528,7 +1528,7 @@ void Qtenv::callRefreshInspectors()
         simulationState = SIM_ERROR;
         stoppedWithException(e);
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
-        displayException(e);
+        printException(e);
     }
 }
 
@@ -1674,7 +1674,7 @@ void Qtenv::checkTimeLimits()
     stopwatch.checkTimeLimits();
 }
 
-void Qtenv::displayException(std::exception& ex)
+void Qtenv::printException(std::exception& ex)
 {
     // print exception text into main window
     cException *e = dynamic_cast<cException *>(&ex);
@@ -1821,7 +1821,7 @@ void Qtenv::initialSetUpConfiguration()
         }
         catch (std::exception& e) {
             // if nonexistent config was given as argument or the run filter couldn't be applied, etc...
-            displayException(e);
+            printException(e);
             return;
         }
     }
@@ -2627,6 +2627,11 @@ void Qtenv::runSimulationLocal(RunMode runMode, cObject *object, Inspector *insp
         getQtenv()->runSimulation(runMode, 0, 0, nullptr, mod);
         mainWindow->setGuiForRunmode(RUNMODE_NOT_RUNNING);
     }
+}
+
+void Qtenv::notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details)
+{
+    cSimulation::getActiveSimulation()->notifyLifecycleListeners(eventType, details);
 }
 
 void Qtenv::refOsgNode(osg::Node *scene)

@@ -32,20 +32,19 @@ using namespace omnetpp::envir;
 class CMDENV_API CmdEnvir : public EnvirBase
 {
    protected:
-    Cmdenv *app = nullptr;
+    std::ostream& out;
     bool& sigintReceived;
 
-    FakeGUI *fakeGUI = nullptr; // owned
+    FakeGUI *fakeGUI = nullptr; // owned  --TODO not owned
     bool printEventBanners = false;
     bool autoflush = false;
     bool interactive = false;
 
    public:
-    CmdEnvir(Cmdenv *app, bool& sigintReceived) : app(app), sigintReceived(sigintReceived) {}
+    CmdEnvir(Cmdenv *app);  // take all settings from app
+    CmdEnvir(std::ostream& out, bool& sigintReceived);
     virtual ~CmdEnvir() {delete fakeGUI;}
     virtual void configure(cConfiguration *cfg) override;
-
-    Cmdenv *getApp() const {return app;}
 
     void setFakeGUI(FakeGUI *fakeGUI);
     FakeGUI *getFakeGui() const {return fakeGUI;}
@@ -62,6 +61,7 @@ class CMDENV_API CmdEnvir : public EnvirBase
     virtual bool askYesNo(const char *question) override;
     virtual void componentInitBegin(cComponent *component, int stage) override;
     virtual std::string input(const char *prompt, const char *defaultReply) override;
+    virtual void undisposedObject(cObject *obj) override;
 
     virtual bool idle() override;
     virtual void pausePoint() override { /* currently no-op */ };

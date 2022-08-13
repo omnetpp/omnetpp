@@ -18,6 +18,7 @@
 
 #include <map>
 #include <atomic>
+#include <thread>
 #include "envir/appbase.h"
 #include "envir/speedometer.h"
 #include "omnetpp/csimulation.h"
@@ -28,11 +29,15 @@ namespace cmdenv {
 
 using namespace omnetpp::envir;
 
+class CmdEnvir;
+
 /**
  * Command line user interface.
  */
 class CMDENV_API Cmdenv : public AppBase
 {
+     friend class CmdEnvir;
+     friend class CmdenvSimulationHolder;
    protected:
      cINedLoader *nedLoader = nullptr;
 
