@@ -25,15 +25,15 @@ using namespace omnetpp::internal;
 namespace omnetpp {
 namespace cmdenv {
 
-extern cConfigOption *CFGID_CMDENV_LOGLEVEL;
+Register_GlobalConfigOptionU(CFGID_CMDENV_EXTRA_STACK, "cmdenv-extra-stack", "B", "8KiB", "Specifies the extra amount of stack that is reserved for each `activity()` simple module when the simulation is run under Cmdenv.")
+Register_PerRunConfigOption(CFGID_CMDENV_INTERACTIVE, "cmdenv-interactive", CFG_BOOL, "false", "Defines what Cmdenv should do when the model contains unassigned parameters. In interactive mode, it asks the user. In non-interactive mode (which is more suitable for batch execution), Cmdenv stops with an error.")
+Register_PerRunConfigOption(CFGID_CMDENV_LOG_PREFIX, "cmdenv-log-prefix", CFG_STRING, "[%l]\t", "Specifies the format string that determines the prefix of each log line. The format string may contain format directives in the syntax `%x` (a `%` followed by a single format character).  For example `%l` stands for log level, and `%J` for source component. See the manual for the list of available format characters.");
+Register_PerRunConfigOption(CFGID_CMDENV_FAKE_GUI, "cmdenv-fake-gui", CFG_BOOL, "false", "Causes Cmdenv to lie to simulations that is a GUI (isGui()=true), and to periodically invoke refreshDisplay() during simulation execution.");
+Register_PerObjectConfigOption(CFGID_CMDENV_LOGLEVEL, "cmdenv-log-level", KIND_MODULE, CFG_STRING, "TRACE", "Specifies the per-component level of detail recorded by log statements, output below the specified level is omitted. Available values are (case insensitive): `off`, `fatal`, `error`, `warn`, `info`, `detail`, `debug` or `trace`. Note that the level of detail is also controlled by the globally specified runtime log level and the `COMPILETIME_LOGLEVEL` macro that is used to completely remove log statements from the executable.")
+
 extern cConfigOption *CFGID_CMDENV_EXPRESS_MODE;
 extern cConfigOption *CFGID_CMDENV_AUTOFLUSH;
-extern cConfigOption *CFGID_CMDENV_INTERACTIVE;
 extern cConfigOption *CFGID_CMDENV_EVENT_BANNERS;
-extern cConfigOption *CFGID_CMDENV_LOG_PREFIX;
-extern cConfigOption *CFGID_CMDENV_EXTRA_STACK;
-extern cConfigOption *CFGID_CMDENV_FAKE_GUI;
-
 
 CmdEnvir::CmdEnvir(Cmdenv *app) : out(app->getOutputStream()), sigintReceived(app->sigintReceived)
 {

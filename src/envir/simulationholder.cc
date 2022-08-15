@@ -42,6 +42,8 @@ using namespace omnetpp::internal;
 namespace omnetpp {
 namespace envir {
 
+extern cConfigOption *CFGID_DEBUG_STATISTICS_RECORDING;
+
 inline EnvirBase *getActiveEnvir() {return dynamic_cast<EnvirBase*>(cSimulation::getActiveEnvir());}
 inline cSimulation *getActiveSimulation() {return cSimulation::getActiveSimulation();}
 

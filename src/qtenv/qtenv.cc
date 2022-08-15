@@ -96,8 +96,6 @@ using namespace omnetpp::internal;
 //va_end(va2);
 
 
-
-
 // The icons and icons_dark resources contain the exact same resource aliases, with slightly different content.
 //  - In a static library build, resources are not initialized automatically, so one of them has to be initialized manually.
 //  - In a dynamic library build, all resources are automatically initialized, causing a collision, so one of them has to be cleaned up.
@@ -121,6 +119,15 @@ void initFontsResource()
 }
 
 namespace omnetpp {
+
+extern cConfigOption *CFGID_SIM_TIME_LIMIT;
+
+namespace envir {
+extern cConfigOption *CFGID_REAL_TIME_LIMIT;
+extern cConfigOption *CFGID_CPU_TIME_LIMIT;
+extern cConfigOption *CFGID_DEBUG_STATISTICS_RECORDING;
+extern cConfigOption *CFGID_WARNINGS;
+}
 
 namespace qtenv {
 

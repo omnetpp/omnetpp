@@ -35,11 +35,6 @@ class InifileContents;
 class DebuggerSupport;
 
 extern cConfigOption *CFGID_NETWORK;
-extern cConfigOption *CFGID_SIM_TIME_LIMIT;
-extern cConfigOption *CFGID_REAL_TIME_LIMIT;
-extern cConfigOption *CFGID_CPU_TIME_LIMIT;
-extern cConfigOption *CFGID_DEBUG_STATISTICS_RECORDING;
-extern cConfigOption *CFGID_WARNINGS;
 
 /**
  * @brief An Envir that can be instantiated as a user interface, like Cmdenv
