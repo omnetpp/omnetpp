@@ -168,8 +168,6 @@ int AppBase::runApp(int argc, char *argv[], InifileContents *ini)
 
     cConfiguration *globalCfg = ini->extractGlobalConfig();
     debuggerSupport->configure(globalCfg);
-    SimTime::configure(globalCfg);
-    cCoroutine::configure(globalCfg);
     bool attachOnStartup = globalCfg->getAsBool(CFGID_DEBUGGER_ATTACH_ON_STARTUP);
     bool attachOnError = globalCfg->getAsBool(CFGID_DEBUGGER_ATTACH_ON_ERROR);
     delete globalCfg;

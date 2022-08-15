@@ -91,26 +91,12 @@ void Cmdenv::printUISpecificHelp()
 int Cmdenv::doRunApp()
 {
     cConfiguration *globalCfg = ini->extractGlobalConfig();
-    nedLoader = SimulationHolder::loadNEDFiles(globalCfg, args);
-
-    CodeFragments::executeAll(CodeFragments::STARTUP); // app setup is complete
+    std::string configName = globalCfg->getAsString(CFGID_CMDENV_CONFIG_NAME);
+    std::string runFilter = globalCfg->getAsString(CFGID_CMDENV_RUNS_TO_EXECUTE);
+    delete globalCfg;
 
     // '-c' and '-r' option: configuration to activate, and run numbers to run.
     // Both command-line options take precedence over inifile settings.
-
-    std::string configName = globalCfg->getAsString(CFGID_CMDENV_CONFIG_NAME);
-    std::string runFilter = globalCfg->getAsString(CFGID_CMDENV_RUNS_TO_EXECUTE);
-
-    int numThreads = globalCfg->getAsInt(CFGID_CMDENV_NUM_THREADS);
-    if (numThreads <= 0) {
-        numThreads = std::thread::hardware_concurrency();
-        if (numThreads <= 0)
-            numThreads = 1;
-    }
-    bool threaded = numThreads != 1;
-
-    delete globalCfg;
-
     if (args->optionGiven('c'))
         configName = opp_nulltoempty(args->optionValue('c'));
     if (configName.empty())
@@ -127,6 +113,31 @@ int Cmdenv::doRunApp()
         displayException(e);
         return 1;
     }
+
+    if (runNumbers.empty()) {
+        std::cout << "No matching simulation run, exiting without simulation\n"; //TODO refine
+        return 1;
+    }
+
+    // NED path and the number of threads are decided by the first run; this allows
+    // specifying different values for these options in different sections.
+    cConfiguration *masterCfg = ini->extractConfig(configName.c_str(), runNumbers[0]);
+
+    nedLoader = SimulationHolder::loadNEDFiles(masterCfg, args);
+
+    int numThreads = globalCfg->getAsInt(CFGID_CMDENV_NUM_THREADS);
+    if (numThreads <= 0) {
+        numThreads = std::thread::hardware_concurrency();
+        if (numThreads <= 0)
+            numThreads = 1;
+    }
+    bool threaded = numThreads != 1;
+
+    delete masterCfg;
+
+    CodeFragments::executeAll(CodeFragments::STARTUP); // app setup is complete
+
+    //TODO important: cSimulation::configure() SHOULD configure simtime-scale and coroutine lib too!!!!
 
     // implement graceful exit when Ctrl-C is hit during simulation. We want
     // to finish the current event, then normally exit via callFinish() etc
@@ -221,7 +232,7 @@ bool Cmdenv::runSimulation(const char *configName, int runNumber)
         return true;
     }
     catch (std::exception& e) {
-        // no displayException(e) -- already displayed inside the run call
+        displayException(e); //TODO may be duplicate -- if already displayed inside the run call
         return false;
     }
 }

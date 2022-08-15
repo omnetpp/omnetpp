@@ -197,6 +197,9 @@ void cSimulation::configure(cConfiguration *cfg)
 {
     this->cfg = cfg;
 
+    SimTime::configure(cfg);
+    cCoroutine::configure(cfg);
+
     parsim = cfg->getAsBool(CFGID_PARALLEL_SIMULATION);
 
 #ifndef WITH_PARSIM

@@ -1155,8 +1155,6 @@ void InifileContents::validate(const char *ignorableConfigKeys) const
                    throw cRuntimeError("Unknown configuration option: %s", key);
                if (e->isPerObject())
                    throw cRuntimeError("Configuration option %s should be specified per object, try **.%s=", key, key); //TODO this could now be allowed (it works)
-               if (e->isGlobal() && strcmp(section, "General") != 0)
-                   throw cRuntimeError("Configuration option %s may only occur in the [General] section", key);
 
                // check section hierarchy
                if (strcmp(key, CFGID_EXTENDS->getName()) == 0) {
