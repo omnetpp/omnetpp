@@ -134,7 +134,7 @@ void SimTime::setScaleExp(int e)
     if (e == scaleexp)
         return;
     if (scaleexp != SCALEEXP_UNINITIALIZED)
-        throw cRuntimeError("SimTime::setScaleExp(): Attempt to change the scale exponent after initialization");
+        throw cRuntimeError("SimTime scale exponent (i.e. simulation time resolution) cannot be changed once it has been set up (currently %d, requested %d)", scaleexp, e);
     if (e < -18 || e > 0)
         throw cRuntimeError("SimTime scale exponent %d is out of accepted range -18..0", e);
 
@@ -152,9 +152,9 @@ static std::string range()
 
 void SimTime::initError(double d)
 {
-    throw cRuntimeError("Global simtime_t variable found, with value %g. Global simtime_t variables are "
-                        "forbidden, because scale exponent is not yet known at the time they are initialized. "
-                        "Please use double or const_simtime_t instead", d);
+    throw cRuntimeError("Attempting to initialize a simtime_t variable with a nonzero value (%g) "
+                        "before the scale exponent has been set; if such early initialization is needed, "
+                        "you may want to use double or const_simtime_t instead of simtime_t", d);
 }
 
 void SimTime::rangeErrorInt64(double i64)
@@ -191,13 +191,13 @@ void SimTime::overflowNegating()
 
 SimTime::SimTime(int64_t value, SimTimeUnit unit)
 {
+    int exponent = unit;
     if (scaleexp == SCALEEXP_UNINITIALIZED)
-        throw cRuntimeError("Global simtime_t variable found, initialized with SimTime(%" PRId64 ", %d). "
-                "Global simtime_t variables are forbidden, because scale exponent is not yet known "
-                "at the time they are initialized. Please use double or const_simtime_t instead", value, unit);
+        throw cRuntimeError("Attempting to initialize a simtime_t variable with a nonzero value (%" PRId64 "*10^%ds) "
+                            "before the scale exponent has been set; if such early initialization is needed, "
+                            "you may want to use double or const_simtime_t instead of simtime_t", value, exponent);
 
     t = value;
-    int exponent = unit;
     int expdiff = exponent - scaleexp;
     if (expdiff < 0) {
         int64_t mul = exp10(-expdiff);
