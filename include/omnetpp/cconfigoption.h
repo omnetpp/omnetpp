@@ -62,7 +62,6 @@ class SIM_API cConfigOption : public cNoncopyableOwnedObject
 
     // note: option name (e.g. "sim-time-limit") is stored in object's name field
     bool isPerObject_;         // if true, entries must be in <object-full-path>.config-name format
-    bool isGlobal_;            // if true, entries may only occur in the [General] section
     ObjectKind objectKind;     // kind of the object if isPerObject is true, KIND_NONE otherwise
     Type type;                 // option data type
     std::string unit;          // if numeric, its unit ("s") or empty string
@@ -75,7 +74,7 @@ class SIM_API cConfigOption : public cNoncopyableOwnedObject
     /**
      * Constructor for non per-object options.
      */
-    cConfigOption(const char *name, bool isGlobal, Type type, const char *unit,
+    cConfigOption(const char *name, Type type, const char *unit,
                const char *defaultValue, const char *description);
 
     /**
@@ -102,21 +101,6 @@ class SIM_API cConfigOption : public cNoncopyableOwnedObject
      * @see Register_PerObjectConfigOption()
      */
     bool isPerObject() const {return isPerObject_;}
-
-    /**
-     * Returns true if this is a global setting. Global settings may only
-     * occur in the [General] section.
-     *
-     * @see Register_GlobalConfigOption()
-     */
-    bool isGlobal() const  {return isGlobal_;}
-
-    /**
-     * Returns true if this is a per-run setting.
-     *
-     * @see Register_PerRunConfigOption()
-     */
-    bool isPerRun() const {return !isGlobal_ && !isPerObject_;}
 
     /**
      * Returns the object kind for per-object configuration options,

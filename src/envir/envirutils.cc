@@ -47,10 +47,8 @@ using std::ostream;
 
 std::string EnvirUtils::getConfigOptionType(cConfigOption *option)
 {
-    if (option->isGlobal())
-        return "Global setting (applies to all simulation runs)";
-    else if (!option->isPerObject())
-        return "Per-simulation-run setting";
+    if (!option->isPerObject())
+        return "Global setting";
     else {
         const char *typeComment = "";
         switch (option->getObjectKind()) {
@@ -100,7 +98,7 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category, bool
             if (obj->getDefaultValue())
                 out << ", default:" << obj->getDefaultValue() << "";
             if (!printDescriptions)
-                out << "; " << (obj->isGlobal() ? "global" : obj->isPerObject() ? "per-object" : "per-run") << " setting"; // TODO getOptionKindName()
+                out << "; " << (obj->isPerObject() ? "per-object" : "global") << " setting"; // TODO getOptionKindName()
 
             out << "\n";
             if (printDescriptions)
@@ -172,9 +170,7 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category, bool
             std::string id = "CFGID_";
             for (const char *s = key->getName(); *s; s++)
                 id.append(1, opp_isalpha(*s) ? opp_toupper(*s) : *s == '-' ? '_' : *s == '%' ? 'n' : *s);
-            const char *method = key->isGlobal() ? "addGlobalOption" :
-                                 !key->isPerObject() ? "addPerRunOption" :
-                                 "addPerObjectOption";
+            const char *method = key->isPerObject() ? "addPerObjectOption" : "addGlobalOption";
             #define CASE(X)  case cConfigOption::X: typestring = #X; break;
             const char *typestring;
             switch (key->getType()) {

@@ -400,12 +400,12 @@ int InifileContents::resolveConfigName(const char *configName) const
    return findSection(configName);
 }
 
-bool InifileContents::isGlobalOrPerRunOption(const char *key)
+bool InifileContents::isGlobalOption(const char *key)
 {
     if (strchr(key, '.') != nullptr)
         return false;
     cConfigOption *option = lookupConfigOption(key);
-    return option != nullptr && (option->isGlobal() || option->isPerRun());
+    return option != nullptr && !option->isPerObject();
 }
 
 cConfiguration *InifileContents::extractGlobalConfig()
@@ -413,14 +413,14 @@ cConfiguration *InifileContents::extractGlobalConfig()
     // extract the global options only
     std::vector<Entry> entries;
     for (auto & e : commandLineOptions)
-        if (isGlobalOrPerRunOption(e.getKey()))
+        if (isGlobalOption(e.getKey()))
             entries.push_back(Entry(e.getBaseDirectory(), e.getKey(), e.getValue())); // note: no substituteVariables() on value, it's too early for that
 
     int sectionId = resolveConfigName("General");
     if (sectionId != -1) {
         for (int entryId = 0; entryId < getNumEntries(sectionId); entryId++) {
             const auto& e = getEntry(sectionId, entryId);
-            if (isGlobalOrPerRunOption(e.getKey()))
+            if (isGlobalOption(e.getKey()))
                 entries.push_back(e); // note: no substituteVariables() on value, it's too early for that
         }
     }

@@ -26,10 +26,10 @@ using namespace omnetpp::internal;
 namespace omnetpp {
 
 
-cConfigOption::cConfigOption(const char *name, bool isGlobal, Type type, const char *unit,
+cConfigOption::cConfigOption(const char *name, Type type, const char *unit,
                              const char *defaultValue, const char *description):
     cNoncopyableOwnedObject(name, false),
-    isPerObject_(false), isGlobal_(isGlobal), objectKind(KIND_NONE), type(type), unit(unit ? unit : "")
+    isPerObject_(false), objectKind(KIND_NONE), type(type), unit(unit ? unit : "")
 {
     if (type==CFG_BOOL && defaultValue)
         defaultValue = (defaultValue[0]=='0' || defaultValue[0]=='f') ? "false" : "true";
@@ -40,7 +40,7 @@ cConfigOption::cConfigOption(const char *name, bool isGlobal, Type type, const c
 cConfigOption::cConfigOption(const char *name, ObjectKind kind, Type type, const char *unit,
                        const char *defaultValue, const char *description):
     cNoncopyableOwnedObject(name, false),
-    isPerObject_(true), isGlobal_(false), objectKind(kind), type(type), unit(unit ? unit : "")
+    isPerObject_(true), objectKind(kind), type(type), unit(unit ? unit : "")
 {
     if (type==CFG_BOOL && defaultValue)
         defaultValue = (defaultValue[0]=='0' || defaultValue[0]=='f') ? "false" : "true";
@@ -55,8 +55,7 @@ cConfigOption::cConfigOption(const char *name, ObjectKind kind, Type type, const
 std::string cConfigOption::str() const
 {
     std::stringstream out;
-    out << (isPerObject_ ? "per-object " : "");
-    out << (isGlobal_ ? "global" : "per-run");
+    out << (isPerObject_ ? "per-object " : "global");
     if (isPerObject_) out << ", object-kind=\"" << getObjectKindName(objectKind) << "\"";
     out << ", type=" << getTypeName(type);
     if (!unit.empty()) out << ", unit=\"" << unit << "\"";

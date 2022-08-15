@@ -177,7 +177,7 @@ namespace omnetpp {
  * @hideinitializer
  */
 #define Register_GlobalConfigOption(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION) \
-  __REGISTER_CONFIGOPTION(ID, (NAME, true, omnetpp::cConfigOption::TYPE, nullptr, DEFAULTVALUE, DESCRIPTION))
+  __REGISTER_CONFIGOPTION(ID, (NAME, omnetpp::cConfigOption::TYPE, nullptr, DEFAULTVALUE, DESCRIPTION))
 
 /**
  * @brief Registers a per-run configuration option.
@@ -185,7 +185,7 @@ namespace omnetpp {
  * @hideinitializer
  */
 #define Register_PerRunConfigOption(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION) \
-  __REGISTER_CONFIGOPTION(ID, (NAME, false, omnetpp::cConfigOption::TYPE, nullptr, DEFAULTVALUE, DESCRIPTION))
+        Register_GlobalConfigOption(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION)
 
 /**
  * @brief Registers a global configuration option with type==CFG_DOUBLE and an
@@ -194,7 +194,7 @@ namespace omnetpp {
  * @hideinitializer
  */
 #define Register_GlobalConfigOptionU(ID, NAME, UNIT, DEFAULTVALUE, DESCRIPTION) \
-  __REGISTER_CONFIGOPTION(ID, (NAME, true, omnetpp::cConfigOption::CFG_DOUBLE, UNIT, DEFAULTVALUE, DESCRIPTION))
+  __REGISTER_CONFIGOPTION(ID, (NAME, omnetpp::cConfigOption::CFG_DOUBLE, UNIT, DEFAULTVALUE, DESCRIPTION))
 
 /**
  * @brief Registers a per-run configuration option with type==CFG_DOUBLE and an
@@ -203,7 +203,7 @@ namespace omnetpp {
  * @hideinitializer
  */
 #define Register_PerRunConfigOptionU(ID, NAME, UNIT, DEFAULTVALUE, DESCRIPTION) \
-  __REGISTER_CONFIGOPTION(ID, (NAME, false, omnetpp::cConfigOption::CFG_DOUBLE, UNIT, DEFAULTVALUE, DESCRIPTION))
+        Register_GlobalConfigOptionU(ID, NAME, UNIT, DEFAULTVALUE, DESCRIPTION)
 
 /**
  * @brief Registers a per-object configuration option.
