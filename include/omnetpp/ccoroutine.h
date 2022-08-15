@@ -74,15 +74,18 @@ class SIM_API cCoroutine
     unsigned stackSize = 0;
 #endif
 #ifdef USE_POSIX_COROUTINES
-    static OPP_THREAD_LOCAL ucontext_t mainContext;
-    static OPP_THREAD_LOCAL ucontext_t *curContextPtr;
+    static OPP_THREAD_LOCAL bool initialized;
     static OPP_THREAD_LOCAL unsigned totalStackLimit;
     static OPP_THREAD_LOCAL unsigned totalStackUsage;
+    static OPP_THREAD_LOCAL ucontext_t mainContext;
+    static OPP_THREAD_LOCAL ucontext_t *curContextPtr;
     unsigned stackSize = 0;
     char *stackPtr = nullptr;
     ucontext_t context;
 #endif
 #ifdef USE_PORTABLE_COROUTINES
+    static OPP_THREAD_LOCAL unsigned totalStack;
+    static OPP_THREAD_LOCAL unsigned mainStack;
     _Task *task;
 #endif
 
@@ -91,13 +94,16 @@ class SIM_API cCoroutine
     //@{
 
     /**
-     * TODO
+     * Configure the coroutine library based on the settings in the given
+     * configuration. This method delegates to init().
      */
     static void configure(cConfiguration *cfg);
 
     /**
-     * Initializes the coroutine library. This function has to be called
-     * exactly once in a program, possibly at the top of main().
+     * Initializes the coroutine library. This function must be called before
+     * creating the first coroutine. It may be called multiple times, but note
+     * that some coroutine library implementations do not allow changing
+     * the settings after the first initialization.
      */
     static void init(unsigned totalStack, unsigned mainStack);
 

@@ -62,10 +62,12 @@ void cCoroutine::configure(cConfiguration *cfg)
 
 #ifdef USE_WIN32_FIBERS
 
-OPP_THREAD_LOCAL LPVOID cCoroutine::lpMainFiber;  //FIXME this sounds fishy!
+OPP_THREAD_LOCAL LPVOID cCoroutine::lpMainFiber;
 
-void cCoroutine::init(unsigned totalStack, unsigned mainStack)
+void cCoroutine::init(unsigned /*totalStack*/, unsigned /*mainStack*/)
 {
+    if (lpMainFiber != 0)
+        return; // already initialized
     lpMainFiber = ConvertThreadToFiber(0);
     if (!lpMainFiber) {
         DWORD err = GetLastError();
@@ -98,15 +100,11 @@ cCoroutine::~cCoroutine()
 
 bool cCoroutine::setup(CoroutineFnp fnp, void *arg, unsigned stkSize)
 {
-    // stack_size sets the *committed* stack size; *reserved* (=available)
-    // stack size is 1MB by default; this allows ~2048 coroutines in a
-    // 2GB address space
+    // stackSize sets the *committed* stack size; *reserved* stack size (available
+    // address range) is 1 MiB by default. In a 32-bit process, this limits the
+    // number of fibres to less than 2048.
     stackSize = stkSize;
-
-    // XXX: CreateFiberEx() does not seem to work any better than CreateFiber(),
-    // it appears to have the same limit for the number of fibers that can be created.
-    // lpFiber = CreateFiberEx(stackSize, stackSize, 0, (LPFIBER_START_ROUTINE)fnp, arg);
-    lpFiber = CreateFiber(stkSize, (LPFIBER_START_ROUTINE)fnp, arg);
+    lpFiber = CreateFiber(stackSize, (LPFIBER_START_ROUTINE)fnp, arg);
     return lpFiber != nullptr;
 }
 
@@ -129,16 +127,24 @@ unsigned cCoroutine::getStackUsage() const
 
 #ifdef USE_POSIX_COROUTINES
 
-OPP_THREAD_LOCAL ucontext_t cCoroutine::mainContext;
-OPP_THREAD_LOCAL ucontext_t *cCoroutine::curContextPtr;
+OPP_THREAD_LOCAL bool cCoroutine::initialized;
 OPP_THREAD_LOCAL unsigned cCoroutine::totalStackUsage;
 OPP_THREAD_LOCAL unsigned cCoroutine::totalStackLimit;
+OPP_THREAD_LOCAL ucontext_t cCoroutine::mainContext;
+OPP_THREAD_LOCAL ucontext_t *cCoroutine::curContextPtr;
 
-void cCoroutine::init(unsigned totalStack, unsigned mainStack)
+void cCoroutine::init(unsigned totalStackReq, unsigned /*mainStack*/)
 {
+    if (initialized) {
+        if (totalStackReq != 0 && totalStackUsage > totalStackReq)
+            throw cRuntimeError("cCoroutine::init(): Already using more stack space for coroutines than the newly requested limit (usage=%u, new limit=%u)", totalStackUsage, totalStackReq);
+        totalStackLimit = totalStackReq;
+        return;
+    }
     curContextPtr = &mainContext;
     totalStackUsage = 0;
-    totalStackLimit = totalStack;
+    totalStackLimit = totalStackReq;
+    initialized = true;
 }
 
 void cCoroutine::switchTo(cCoroutine *cor)
@@ -208,8 +214,17 @@ unsigned cCoroutine::getStackUsage() const
 
 #ifdef USE_PORTABLE_COROUTINES
 
-void cCoroutine::init(unsigned totalStack, unsigned mainStack)
+OPP_THREAD_LOCAL unsigned cCoroutine::totalStack;
+OPP_THREAD_LOCAL unsigned cCoroutine::mainStack;
+
+void cCoroutine::init(unsigned totalStackReq, unsigned mainStackReq)
 {
+    if (totalStack != 0)
+        return; // already initialized
+    if (totalStack != totalStackReq || mainStack != mainStackReq)
+        throw cRuntimeError("cCoroutine::init(): Cannot change total stack size or main stack size after first the initialization (original size=%u/%u, new size=%u/%u)", totalStack, mainStack, totalStackReq, mainStackReq);
+    totalStack = totalStackReq;
+    mainStack = mainStackReq;
     task_init(totalStack, mainStack);
 }
 
