@@ -85,26 +85,26 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category, bool
         cRegistrationList *table = configOptions.getInstance();
         table->sort();
         for (int i = 0; i < table->size(); i++) {
-            cConfigOption *obj = dynamic_cast<cConfigOption *>(table->get(i));
-            ASSERT(obj);
+            cConfigOption *option = dynamic_cast<cConfigOption *>(table->get(i));
+            ASSERT(option);
             if (!printDescriptions)
                 out << "  ";
-            if (obj->isPerObject())
+            if (option->isPerObject())
                 out << "**.";
-            out << obj->getName() << "=";
-            out << "<" << cConfigOption::getTypeName(obj->getType()) << ">";
-            if (obj->getUnit())
-                out << ", unit=\"" << obj->getUnit() << "\"";
-            if (obj->getDefaultValue())
-                out << ", default:" << obj->getDefaultValue() << "";
+            out << option->getName() << "=";
+            out << "<" << cConfigOption::getTypeName(option->getType()) << ">";
+            if (option->getUnit())
+                out << ", unit=\"" << option->getUnit() << "\"";
+            if (option->getDefaultValue())
+                out << ", default:" << option->getDefaultValue() << "";
             if (!printDescriptions)
-                out << "; " << (obj->isPerObject() ? "per-object" : "global") << " setting"; // TODO getOptionKindName()
+                out << "; " << (option->isPerObject() ? "per-object" : "global") << " setting"; // TODO getOptionKindName()
 
             out << "\n";
             if (printDescriptions)
-                out << "    " << getConfigOptionType(obj) << ".\n";
-            if (printDescriptions && !opp_isempty(obj->getDescription()))
-                out << opp_indentlines(opp_breaklines(obj->getDescription(), 75), "    ") << "\n";
+                out << "    " << getConfigOptionType(option) << ".\n";
+            if (printDescriptions && !opp_isempty(option->getDescription()))
+                out << opp_indentlines(opp_breaklines(option->getDescription(), 75), "    ") << "\n";
             if (printDescriptions)
                 out << "\n";
         }
@@ -131,17 +131,17 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category, bool
         table->sort();
         out << "\\begin{description}\n";
         for (int i = 0; i < table->size(); i++) {
-            cConfigOption *obj = dynamic_cast<cConfigOption *>(table->get(i));
-            ASSERT(obj);
-            out << "\\item[" << (obj->isPerObject() ? "**." : "") << opp_latexquote(obj->getName()) << "] = ";
-            out << "\\textit{<" << cConfigOption::getTypeName(obj->getType()) << ">}";
-            if (obj->getUnit())
-                out << ", unit=\\ttt{" << obj->getUnit() << "}";
-            if (obj->getDefaultValue())
-                out << ", default: \\ttt{" << opp_latex_insert_breaks(opp_latexquote(obj->getDefaultValue())) << "}";
+            cConfigOption *option = dynamic_cast<cConfigOption *>(table->get(i));
+            ASSERT(option);
+            out << "\\item[" << (option->isPerObject() ? "**." : "") << opp_latexquote(option->getName()) << "] = ";
+            out << "\\textit{<" << cConfigOption::getTypeName(option->getType()) << ">}";
+            if (option->getUnit())
+                out << ", unit=\\ttt{" << option->getUnit() << "}";
+            if (option->getDefaultValue())
+                out << ", default: \\ttt{" << opp_latex_insert_breaks(opp_latexquote(option->getDefaultValue())) << "}";
             out << "\\\\\n";
-            out << "    \\textit{" << getConfigOptionType(obj) << ".}\\\\\n";
-            out << opp_indentlines(opp_breaklines(opp_markup2latex(opp_latexquote(obj->getDescription())), 75), "    ") << "\n";
+            out << "    \\textit{" << getConfigOptionType(option) << ".}\\\\\n";
+            out << opp_indentlines(opp_breaklines(opp_markup2latex(opp_latexquote(option->getDescription())), 75), "    ") << "\n";
         }
         out << "\\end{description}\n\n";
     }
@@ -164,16 +164,16 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category, bool
         cRegistrationList *table = configOptions.getInstance();
         table->sort();
         for (int i = 0; i < table->size(); i++) {
-            cConfigOption *key = dynamic_cast<cConfigOption *>(table->get(i));
-            ASSERT(key);
+            cConfigOption *option = dynamic_cast<cConfigOption *>(table->get(i));
+            ASSERT(option);
 
             std::string id = "CFGID_";
-            for (const char *s = key->getName(); *s; s++)
+            for (const char *s = option->getName(); *s; s++)
                 id.append(1, opp_isalpha(*s) ? opp_toupper(*s) : *s == '-' ? '_' : *s == '%' ? 'n' : *s);
-            const char *method = key->isPerObject() ? "addPerObjectOption" : "addGlobalOption";
+            const char *method = option->isPerObject() ? "addPerObjectOption" : "addGlobalOption";
             #define CASE(X)  case cConfigOption::X: typestring = #X; break;
             const char *typestring;
-            switch (key->getType()) {
+            switch (option->getType()) {
                 CASE(CFG_BOOL)
                 CASE(CFG_INT)
                 CASE(CFG_DOUBLE)
@@ -187,7 +187,7 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category, bool
 
             #define CASE(X)  case cConfigOption::X: kindstring = #X; break;
             const char *kindstring;
-            switch (key->getObjectKind()) {
+            switch (option->getObjectKind()) {
                 CASE(KIND_COMPONENT)
                 CASE(KIND_CHANNEL)
                 CASE(KIND_MODULE)
@@ -203,21 +203,21 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category, bool
             #undef CASE
 
             out << "    public OPP_THREAD_LOCAL final ConfigOption " << id << " = ";
-            out << method << (key->getUnit() ? "U" : "") << "(\n";
-            out << "        \"" << key->getName() << "\", ";
-            if (key->isPerObject())
+            out << method << (option->getUnit() ? "U" : "") << "(\n";
+            out << "        \"" << option->getName() << "\", ";
+            if (option->isPerObject())
                 out << kindstring << ", ";
-            if (!key->getUnit())
+            if (!option->getUnit())
                 out << typestring << ", ";
             else
-                out << "\"" << key->getUnit() << "\", ";
-            if (!key->getDefaultValue())
+                out << "\"" << option->getUnit() << "\", ";
+            if (!option->getDefaultValue())
                 out << "null";
             else
-                out << "\"" << opp_replacesubstring(key->getDefaultValue(), "\"", "\\\"", true) << "\"";
+                out << "\"" << opp_replacesubstring(option->getDefaultValue(), "\"", "\\\"", true) << "\"";
             out << ",\n";
 
-            std::string desc = key->getDescription();
+            std::string desc = option->getDescription();
             desc = opp_replacesubstring(desc, "\n", "\\n\n", true);  // keep explicit line breaks
             desc = opp_breaklines(desc, 75);  // break long lines
             desc = opp_replacesubstring(desc, "\"", "\\\"", true);
