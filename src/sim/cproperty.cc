@@ -101,7 +101,7 @@ void cProperty::printValues(std::ostream& os) const
         if (!keyv[i].empty())
             os << keyv[i].c_str() << "=";
         for (int j = 0; j < (int)valuesv[i].size(); j++)
-            os << (j == 0 ? "" : ",") << valuesv[i][j].c_str();  //FIXME value may need quoting
+            os << (j == 0 ? "" : ",") << valuesv[i][j].value.c_str();  //FIXME value may need quoting?
     }
 }
 
@@ -211,10 +211,36 @@ const char *cProperty::getValue(const char *key, int index) const
     const ValueList& v = valuesv[k];
     if (index < 0 || index >= (int)v.size())
         return nullptr;
-    return v[index].c_str();
+    return v[index].value.c_str();
 }
 
-void cProperty::setValue(const char *key, int index, const char *value)
+const char *cProperty::getValueOriginFile(const char *key, int index) const
+{
+    if (!key)
+        key = "";
+    int k = findKey(key);
+    if (k == -1)
+        return nullptr;
+    const ValueList& v = valuesv[k];
+    if (index < 0 || index >= (int)v.size())
+        return nullptr;
+    return v[index].originFile.c_str();
+}
+
+const char *cProperty::getValueOriginType(const char *key, int index) const
+{
+    if (!key)
+        key = "";
+    int k = findKey(key);
+    if (k == -1)
+        return nullptr;
+    const ValueList& v = valuesv[k];
+    if (index < 0 || index >= (int)v.size())
+        return nullptr;
+    return v[index].originType.c_str();
+}
+
+void cProperty::setValue(const char *key, int index, const char *value, const char *originFile, const char *originType)
 {
     if (isLocked())
         throw cRuntimeError(this, E_LOCKED);
@@ -225,7 +251,9 @@ void cProperty::setValue(const char *key, int index, const char *value)
         throw cRuntimeError(this, "Negative property value index %d for key '%s'", index, key);
     if (index >= (int)v.size())
         setNumValues(key, index+1);
-    v[index] = value;
+    v[index].value = value;
+    v[index].originFile = originFile;
+    v[index].originType = originType;
 }
 
 void cProperty::erase(const char *key)
@@ -252,7 +280,10 @@ void cProperty::updateWith(const cProperty *other)
             const char *value = other->getValue(key, index);
             if (value && value[0]) {  // is set
                 bool isAntivalue = strcmp(value, "-")==0;
-                setValue(key, index, isAntivalue ? "" : value);
+                if (isAntivalue)
+                    setValue(key, index, "", nullptr, nullptr);
+                else
+                    setValue(key, index, value, other->getValueOriginFile(key, index), other->getValueOriginType(key, index));
             }
         }
     }

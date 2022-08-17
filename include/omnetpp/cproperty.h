@@ -52,7 +52,12 @@ class SIM_API cProperty : public cNamedObject
     opp_staticpooledstring indexString = nullptr;
     mutable opp_staticpooledstring fullName = nullptr;
 
-    typedef std::vector<opp_staticpooledstring> ValueList;
+    struct Value {
+        opp_staticpooledstring value;
+        opp_staticpooledstring originFile;
+        opp_staticpooledstring originType;
+    };
+    typedef std::vector<Value> ValueList;
     std::vector<opp_staticpooledstring> keyv;
     std::vector<ValueList> valuesv;
 
@@ -216,15 +221,31 @@ class SIM_API cProperty : public cNamedObject
     virtual const char *getValue(const char *key="", int index=0) const;
 
     /**
-     * Replaces a value for the given key in the property. Specify "" or
-     * DEFAULTKEY for the default key. cProperty will create its own copy
-     * of the string passed. index may be greater than getNumValues(key);
-     * that will cause the values list to expand, the new elements filled with "".
-     *
-     * Throws an error if the given key does not exist, or the index is
-     * negative.
+     * Returns the name (path) of the file where the indexth value of the given key
+     * in the property came from. Specify "" or DEFAULTKEY for the default key.
+     * If the key does not exist, the index is out of bounds, or the directory
+     * is not known, nullptr is returned.
      */
-    virtual void setValue(const char *key, int index, const char *value);
+    virtual const char *getValueOriginFile(const char *key="", int index=0) const;
+
+    /**
+     * Returns the fully qualified name of the type where the indexth value of the
+     * given key in the property came from. Specify "" or DEFAULTKEY for the default key.
+     * If the key does not exist, the index is out of bounds, or the directory
+     * is not known, nullptr is returned.
+     */
+    virtual const char *getValueOriginType(const char *key="", int index=0) const;
+
+    /**
+     * Replaces a value (and its origin type, see getValueOriginType())
+     * for the given key in the property. Specify "" or DEFAULTKEY for the default key.
+     * cProperty will create its own copy of the string passed. The index parameter
+     * may be greater than getNumValues(key); that will cause the values list to expand,
+     * the new elements filled with "".
+     *
+     * Throws an error if the given key does not exist, or the index is negative.
+     */
+    virtual void setValue(const char *key, int index, const char *value, const char *originFile, const char *originType);
 
     /**
      * Erases the given key and all its values.
