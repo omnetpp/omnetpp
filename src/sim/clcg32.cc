@@ -28,7 +28,7 @@ namespace omnetpp {
 
 Register_Class(cLCG32);
 
-Register_PerRunConfigOption(CFGID_SEED_N_LCG32, "seed-%-lcg32", CFG_INT, nullptr, "When cLCG32 is selected as random number generator: seed for the kth RNG. (Substitute k for '%' in the key.)");
+Register_GlobalConfigOption(CFGID_SEED_N_LCG32, "seed-%-lcg32", CFG_INT, nullptr, "When cLCG32 is selected as random number generator: seed for the kth RNG. (Substitute k for '%' in the key.)");
 
 void cLCG32::configure(int seedSet, int rngId, int numRngs,
         int  /*parsimProcId*/, int parsimNumPartitions,

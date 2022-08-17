@@ -180,7 +180,7 @@ namespace omnetpp {
   __REGISTER_CONFIGOPTION(ID, (NAME, omnetpp::cConfigOption::TYPE, nullptr, DEFAULTVALUE, DESCRIPTION))
 
 /**
- * @brief Registers a per-run configuration option.
+ * @brief Deprecated equivalent of Register_GlobalConfigOption().
  *
  * @hideinitializer
  */
@@ -197,8 +197,7 @@ namespace omnetpp {
   __REGISTER_CONFIGOPTION(ID, (NAME, omnetpp::cConfigOption::CFG_DOUBLE, UNIT, DEFAULTVALUE, DESCRIPTION))
 
 /**
- * @brief Registers a per-run configuration option with type==CFG_DOUBLE and an
- * expected unit of measurement.
+ * @brief Deprecated equivalent of Register_GlobalConfigOptionU().
  *
  * @hideinitializer
  */

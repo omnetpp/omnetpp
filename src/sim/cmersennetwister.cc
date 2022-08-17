@@ -28,8 +28,8 @@ namespace omnetpp {
 
 Register_Class(cMersenneTwister);
 
-Register_PerRunConfigOption(CFGID_SEED_N_MT, "seed-%-mt", CFG_INT, nullptr, "When Mersenne Twister is selected as random number generator (default): seed for RNG number k. (Substitute k for '%' in the key.)");
-Register_PerRunConfigOption(CFGID_SEED_N_MT_P, "seed-%-mt-p%", CFG_INT, nullptr, "With parallel simulation: When Mersenne Twister is selected as random number generator (default): seed for RNG number k in partition number p. (Substitute k for the first '%' in the key, and p for the second.)");
+Register_GlobalConfigOption(CFGID_SEED_N_MT, "seed-%-mt", CFG_INT, nullptr, "When Mersenne Twister is selected as random number generator (default): seed for RNG number k. (Substitute k for '%' in the key.)");
+Register_GlobalConfigOption(CFGID_SEED_N_MT_P, "seed-%-mt-p%", CFG_INT, nullptr, "With parallel simulation: When Mersenne Twister is selected as random number generator (default): seed for RNG number k in partition number p. (Substitute k for the first '%' in the key, and p for the second.)");
 
 void cMersenneTwister::configure(int seedSet, int rngId, int numRngs,
         int parsimProcId, int parsimNumPartitions,

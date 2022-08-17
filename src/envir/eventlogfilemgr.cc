@@ -45,13 +45,13 @@ namespace envir {
 
 Register_Class(EventlogFileManager)
 
-Register_PerRunConfigOption(CFGID_EVENTLOG_FILE, "eventlog-file", CFG_FILENAME, "${resultdir}/${configname}-${iterationvarsf}#${repetition}.elog", "Name of the eventlog file to generate.");
-Register_PerRunConfigOptionU(CFGID_EVENTLOG_MAX_SIZE, "eventlog-max-size", "B", "10 GiB", "Specify the maximum size of the eventlog file in bytes. The eventlog file is automatically truncated when this limit is reached.");
-Register_PerRunConfigOptionU(CFGID_EVENTLOG_MIN_TRUNCATED_SIZE, "eventlog-min-truncated-size", "B", "1 GiB", "Specify the minimum size of the eventlog file in bytes after the file is truncated. Truncation means older events are discarded while newer ones are kept.");
-Register_PerRunConfigOptionU(CFGID_EVENTLOG_SNAPSHOT_FREQUENCY, "eventlog-snapshot-frequency", "B", "100 MiB", "The eventlog file contains snapshots periodically. Each one describes the complete simulation state at a specific event. Snapshots help various tools to handle large eventlog files more efficiently. Specifying greater value means less help, while smaller value means bigger eventlog files.");
-Register_PerRunConfigOptionU(CFGID_EVENTLOG_INDEX_FREQUENCY, "eventlog-index-frequency", "B", "1 MiB", "The eventlog file contains incremental snapshots called index. An index is much smaller than a full snapshot, but it only contains the differences since the last index.");
-Register_PerRunConfigOption(CFGID_EVENTLOG_OPTIONS, "eventlog-options", CFG_CUSTOM, nullptr, "The content of the eventlog is diveded into categories. This option allows to record only certain categories reducing the file size. Specify a comma separated subset of the following keywords: text, message, module, methodcall, displaystring and custom. By default all categories are enabled.");
-Register_PerRunConfigOption(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "eventlog-message-detail-pattern", CFG_CUSTOM, nullptr,
+Register_GlobalConfigOption(CFGID_EVENTLOG_FILE, "eventlog-file", CFG_FILENAME, "${resultdir}/${configname}-${iterationvarsf}#${repetition}.elog", "Name of the eventlog file to generate.");
+Register_GlobalConfigOptionU(CFGID_EVENTLOG_MAX_SIZE, "eventlog-max-size", "B", "10 GiB", "Specify the maximum size of the eventlog file in bytes. The eventlog file is automatically truncated when this limit is reached.");
+Register_GlobalConfigOptionU(CFGID_EVENTLOG_MIN_TRUNCATED_SIZE, "eventlog-min-truncated-size", "B", "1 GiB", "Specify the minimum size of the eventlog file in bytes after the file is truncated. Truncation means older events are discarded while newer ones are kept.");
+Register_GlobalConfigOptionU(CFGID_EVENTLOG_SNAPSHOT_FREQUENCY, "eventlog-snapshot-frequency", "B", "100 MiB", "The eventlog file contains snapshots periodically. Each one describes the complete simulation state at a specific event. Snapshots help various tools to handle large eventlog files more efficiently. Specifying greater value means less help, while smaller value means bigger eventlog files.");
+Register_GlobalConfigOptionU(CFGID_EVENTLOG_INDEX_FREQUENCY, "eventlog-index-frequency", "B", "1 MiB", "The eventlog file contains incremental snapshots called index. An index is much smaller than a full snapshot, but it only contains the differences since the last index.");
+Register_GlobalConfigOption(CFGID_EVENTLOG_OPTIONS, "eventlog-options", CFG_CUSTOM, nullptr, "The content of the eventlog is diveded into categories. This option allows to record only certain categories reducing the file size. Specify a comma separated subset of the following keywords: text, message, module, methodcall, displaystring and custom. By default all categories are enabled.");
+Register_GlobalConfigOption(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "eventlog-message-detail-pattern", CFG_CUSTOM, nullptr,
         "A list of patterns separated by '|' character which will be used to write "
         "message detail information into the eventlog for each message sent during "
         "the simulation. The message detail will be presented in the sequence chart "
@@ -69,7 +69,7 @@ Register_PerRunConfigOption(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "eventlog-mes
         "  `*Frame:*Address,*Id`: captures all fields named somethingAddress and somethingId from messages of any class named somethingFrame\n"
         "  `MyMessage:declaredOn=~MyMessage`: captures instances of MyMessage recording the fields declared on the MyMessage class\n"
         "  `*:(not declaredOn=~cMessage and not declaredOn=~cNamedObject and not declaredOn=~cObject)`: records user-defined fields from all messages");
-Register_PerRunConfigOption(CFGID_EVENTLOG_RECORDING_INTERVALS, "eventlog-recording-intervals", CFG_CUSTOM, nullptr, "Simulation time interval(s) when events should be recorded. Syntax: `[<from>]..[<to>],...` That is, both start and end of an interval are optional, and intervals are separated by comma. Example: `..10.2, 22.2..100, 233.3..`");
+Register_GlobalConfigOption(CFGID_EVENTLOG_RECORDING_INTERVALS, "eventlog-recording-intervals", CFG_CUSTOM, nullptr, "Simulation time interval(s) when events should be recorded. Syntax: `[<from>]..[<to>],...` That is, both start and end of an interval are optional, and intervals are separated by comma. Example: `..10.2, 22.2..100, 233.3..`");
 Register_PerObjectConfigOption(CFGID_MODULE_EVENTLOG_RECORDING, "module-eventlog-recording", KIND_SIMPLE_MODULE, CFG_BOOL, "true", "Enables recording events on a per module basis. This is meaningful for simple modules only. Usage: `<module-full-path>.module-eventlog-recording=true/false`. Examples: `**.router[10..20].**.module-eventlog-recording = true`; `**.module-eventlog-recording = false`");
 
 extern cConfigOption *CFGID_RECORD_EVENTLOG;

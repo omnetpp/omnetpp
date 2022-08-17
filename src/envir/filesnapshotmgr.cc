@@ -33,7 +33,7 @@ using std::ostream;
 using std::ofstream;
 using std::ios;
 
-Register_PerRunConfigOption(CFGID_SNAPSHOT_FILE, "snapshot-file", CFG_FILENAME, "${resultdir}/${configname}-${iterationvarsf}#${repetition}.sna", "Name of the snapshot file.");
+Register_GlobalConfigOption(CFGID_SNAPSHOT_FILE, "snapshot-file", CFG_FILENAME, "${resultdir}/${configname}-${iterationvarsf}#${repetition}.sna", "Name of the snapshot file.");
 
 Register_Class(FileSnapshotManager);
 

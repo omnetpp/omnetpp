@@ -24,8 +24,7 @@ namespace omnetpp {
 /**
  * @brief Describes a configuration option.
  *
- * @see Register_GlobalConfigOption(), Register_PerRunConfigOption(),
- *      Register_GlobalConfigOptionU(), Register_PerRunConfigOptionU(),
+ * @see Register_GlobalConfigOption(), Register_GlobalConfigOptionU(),
  *      Register_PerObjectConfigOption(), Register_PerObjectConfigOptionU()
  *
  * @ingroup Misc
