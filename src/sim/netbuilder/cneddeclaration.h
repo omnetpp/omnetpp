@@ -90,9 +90,9 @@ class SIM_API cNedDeclaration : public NedTypeInfo
 
     void clearPropsMap(StringPropsMap& propsMap);
 
-    static cProperties *mergeProperties(const cProperties *baseprops, NedElement *parent);
-    static void updateProperty(PropertyElement *propNode, cProperty *prop);
-    static void updateDisplayProperty(PropertyElement *propNode, cProperty *prop);
+    cProperties *mergeProperties(const cProperties *baseprops, NedElement *parent) const;
+    void updateProperty(PropertyElement *propNode, cProperty *prop) const;
+    void updateDisplayProperty(PropertyElement *propNode, cProperty *prop) const;
 
     cProperties *doProperties() const;
     cProperties *doParamProperties(const char *paramName) const;

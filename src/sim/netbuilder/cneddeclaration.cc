@@ -249,7 +249,7 @@ cProperties *cNedDeclaration::doConnectionProperties(int connectionId, const cha
     return props;
 }
 
-cProperties *cNedDeclaration::mergeProperties(const cProperties *baseprops, NedElement *parent)
+cProperties *cNedDeclaration::mergeProperties(const cProperties *baseprops, NedElement *parent) const
 {
     // returns parent's properties merged with props; both can be nullptr.
     // retval is never nullptr but can be an empty cProperties.
@@ -280,7 +280,7 @@ cProperties *cNedDeclaration::mergeProperties(const cProperties *baseprops, NedE
     return props;
 }
 
-void cNedDeclaration::updateProperty(PropertyElement *propNode, cProperty *prop)
+void cNedDeclaration::updateProperty(PropertyElement *propNode, cProperty *prop) const
 {
     prop->setIsImplicit(propNode->getIsImplicit());
 
@@ -297,15 +297,15 @@ void cNedDeclaration::updateProperty(PropertyElement *propNode, cProperty *prop)
             const char *value = literalNode->getValue();  // XXX what about unitType()?
             if (value && *value) {
                 if (!strcmp(value, "-"))  // "anti-value"
-                    prop->setValue(key, k, "");
+                    prop->setValue(key, k, "", nullptr, nullptr);
                 else
-                    prop->setValue(key, k, value);
+                    prop->setValue(key, k, value, literalNode->getSourceFileName(), getFullName());
             }
         }
     }
 }
 
-void cNedDeclaration::updateDisplayProperty(PropertyElement *propNode, cProperty *prop)
+void cNedDeclaration::updateDisplayProperty(PropertyElement *propNode, cProperty *prop) const
 {
     // @display() has to be treated specially
     // find new display string
@@ -315,22 +315,22 @@ void cNedDeclaration::updateDisplayProperty(PropertyElement *propNode, cProperty
     LiteralElement *literalNode = (LiteralElement *)propKeyNode->getFirstChildWithTag(NED_LITERAL);
     if (!literalNode)
         return;
-    const char *newdisplaystring = literalNode->getValue();
+    const char *newDisplayString = literalNode->getValue();
 
     // if old display string is empty, just set it
     if (!prop->containsKey(cProperty::DEFAULTKEY))
         prop->addKey(cProperty::DEFAULTKEY);
     if (prop->getNumValues(cProperty::DEFAULTKEY) == 0) {
-        prop->setValue(cProperty::DEFAULTKEY, 0, newdisplaystring);
+        prop->setValue(cProperty::DEFAULTKEY, 0, newDisplayString, literalNode->getSourceFileName(), getFullName());
         return;
     }
 
     // merge
-    const char *olddisplaystring = prop->getValue(cProperty::DEFAULTKEY, 0);
-    cDisplayString d(olddisplaystring);
-    cDisplayString dnew(newdisplaystring);
+    const char *oldDisplayString = prop->getValue(cProperty::DEFAULTKEY, 0);
+    cDisplayString d(oldDisplayString);
+    cDisplayString dnew(newDisplayString);
     d.updateWith(dnew);
-    prop->setValue(cProperty::DEFAULTKEY, 0, d.str());
+    prop->setValue(cProperty::DEFAULTKEY, 0, d.str(), literalNode->getSourceFileName(), getFullName()); // in fact, different parts of the value may come from different source file dirs, but we cannot represent that
 }
 
 internal::cParImpl *cNedDeclaration::getSharedParImplFor(NedElement *node)
