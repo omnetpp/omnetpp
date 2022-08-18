@@ -1050,9 +1050,9 @@ if test $pthread_ok = yes; then
         fi
         PTHREAD_LIBS="$PTHREAD_LIBS -mthreads"
     fi
+    SYS_LIBS="$PTHREAD_LIBS $SYS_LIBS"
 else
-    PTHREAD_CFLAGS=""
-    PTHREAD_LIBS=""
+    AC_MSG_ERROR([Pthreads library not found.])
 fi
 
 #----------------------
