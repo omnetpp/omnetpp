@@ -34,8 +34,6 @@ class ArgList;
 class InifileContents;
 class DebuggerSupport;
 
-extern cConfigOption *CFGID_NETWORK;
-
 /**
  * @brief An Envir that can be instantiated as a user interface, like Cmdenv
  * and Qtenv.

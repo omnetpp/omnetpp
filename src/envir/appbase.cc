@@ -47,14 +47,8 @@ using namespace omnetpp::internal;
 namespace omnetpp {
 namespace envir {
 
+//TODO CFGID_DEBUGGER_ATTACH_ON_ERROR?
 Register_GlobalConfigOption(CFGID_DEBUGGER_ATTACH_ON_STARTUP, "debugger-attach-on-startup", CFG_BOOL, "false", "When set to true, the simulation program will launch an external debugger attached to it (if not already present), allowing you to set breakpoints before proceeding. The debugger command is configurable. Note that debugging (i.e. attaching to) a non-child process needs to be explicitly enabled on some systems, e.g. Ubuntu.");
-
-// note: many of the following options are also used by SectionBasedConfiguration to initialize run attributes
-Register_GlobalConfigOption(CFGID_NETWORK, "network", CFG_STRING, nullptr, "The name of the network to be simulated.  The package name can be omitted if the ini file is in the same directory as the NED file that contains the network.");
-Register_GlobalConfigOption(CFGID_WARNINGS, "warnings", CFG_BOOL, "true", "Enables warnings.");
-Register_GlobalConfigOptionU(CFGID_CPU_TIME_LIMIT, "cpu-time-limit", "s", nullptr, "Stops the simulation when CPU usage has reached the given limit. The default is no limit. Note: To reduce per-event overhead, this time limit is only checked every N events (by default, N=1024).");
-Register_GlobalConfigOptionU(CFGID_REAL_TIME_LIMIT, "real-time-limit", "s", nullptr, "Stops the simulation after the specified amount of time has elapsed. The default is no limit. Note: To reduce per-event overhead, this time limit is only checked every N events (by default, N=1024).");
-Register_GlobalConfigOption(CFGID_DEBUG_STATISTICS_RECORDING, "debug-statistics-recording", CFG_BOOL, "false", "Turns on the printing of debugging information related to statistics recording (`@statistic` properties)");
 
 #define STRINGIZE0(x)    #x
 #define STRINGIZE(x)     STRINGIZE0(x)
@@ -165,6 +159,7 @@ int AppBase::runApp(int argc, char *argv[], InifileContents *ini)
     // ensure correct numeric format in output files
     setPosixLocale();
 
+//TODO move this out of here?
     cConfiguration *globalCfg = ini->extractGlobalConfig();
     debuggerSupport->configure(globalCfg);
     bool attachOnStartup = globalCfg->getAsBool(CFGID_DEBUGGER_ATTACH_ON_STARTUP);

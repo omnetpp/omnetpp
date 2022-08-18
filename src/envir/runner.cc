@@ -33,8 +33,8 @@ using namespace omnetpp::internal;
 namespace omnetpp {
 namespace envir {
 
-extern cConfigOption *CFGID_CPU_TIME_LIMIT;
-extern cConfigOption *CFGID_REAL_TIME_LIMIT;
+Register_GlobalConfigOptionU(CFGID_CPU_TIME_LIMIT, "cpu-time-limit", "s", nullptr, "Stops the simulation when CPU usage has reached the given limit. The default is no limit. Note: To reduce per-event overhead, this time limit is only checked every N events (by default, N=1024).");
+Register_GlobalConfigOptionU(CFGID_REAL_TIME_LIMIT, "real-time-limit", "s", nullptr, "Stops the simulation after the specified amount of time has elapsed. The default is no limit. Note: To reduce per-event overhead, this time limit is only checked every N events (by default, N=1024).");
 
 IRunner::~IRunner()
 {

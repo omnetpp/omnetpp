@@ -42,7 +42,8 @@ using namespace omnetpp::internal;
 namespace omnetpp {
 namespace envir {
 
-extern cConfigOption *CFGID_DEBUG_STATISTICS_RECORDING;
+Register_GlobalConfigOption(CFGID_NETWORK, "network", CFG_STRING, nullptr, "The name of the network to be simulated.  The package name can be omitted if the ini file is in the same directory as the NED file that contains the network.");
+Register_GlobalConfigOption(CFGID_DEBUG_STATISTICS_RECORDING, "debug-statistics-recording", CFG_BOOL, "false", "Turns on the printing of debugging information related to statistics recording (`@statistic` properties)");
 
 inline EnvirBase *getActiveEnvir() {return dynamic_cast<EnvirBase*>(cSimulation::getActiveEnvir());}
 inline cSimulation *getActiveSimulation() {return cSimulation::getActiveSimulation();}
