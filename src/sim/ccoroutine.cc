@@ -44,7 +44,7 @@ namespace omnetpp {
 #endif
 
 
-Register_GlobalConfigOptionU(CFGID_TOTAL_STACK, "total-stack", "B", nullptr, "Specifies the maximum memory for `activity()` simple module stacks. You need to increase this value if you get a \"Cannot allocate coroutine stack\" error.");
+Register_GlobalConfigOptionU(CFGID_TOTAL_STACK, "total-stack", "B", nullptr, "Specifies the total amount of memory made available for `activity()` simple module stacks. You need to increase this value if you get a \"Cannot allocate coroutine stack\" error. Note: Some of the coroutine library implementations underlying the simulation kernel do not allow changing this option once it is set.");
 
 
 void cCoroutine::configure(cConfiguration *cfg)
