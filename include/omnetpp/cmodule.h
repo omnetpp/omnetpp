@@ -398,7 +398,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
     // internal utility function. Takes O(n) time as it iterates on the gates
     cGate *gateByOrdinal(int k) const;
 
-    // internal: calls refreshDisplay() recursively
+    // internal: calls refreshDisplay() recursively -- call via cSimulation
     virtual void callRefreshDisplay() override;
 
     // internal: calls preDelete() recursively

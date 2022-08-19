@@ -23,6 +23,7 @@
 #include "omnetpp/cfingerprint.h"
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/cnedloader.h"
+#include "omnetpp/crunner.h"
 #include "sim/netbuilder/cnedloader.h"
 #include "appbase.h"
 #include "args.h"
@@ -80,7 +81,7 @@ void SimulationHolder::configureAndRunSimulation(cSimulation *simulation, cConfi
     runConfiguredSimulation(simulation, runner, redirectFileName);
 }
 
-void SimulationHolder::runConfiguredSimulation(cSimulation *simulation, IRunner *runner, const char *redirectFileName)
+void SimulationHolder::runConfiguredSimulation(cSimulation *simulation, IRunner *runner, const char *redirectFileName)  //TODO misleading name (the network is not actually set up yet)
 {
     cSimulation::setActiveSimulation(simulation);
 
@@ -141,16 +142,13 @@ void SimulationHolder::runConfiguredSimulation(cSimulation *simulation, IRunner 
         if (verbose)
             out << "\nRunning simulation..." << endl;
 
-        // simulate() should only throw exception if error occurred and
-        // finish() should not be called.
-        simulation->notifyLifecycleListeners(LF_ON_SIMULATION_START);
+        simulation->run(runner, false);
 
-        try {
-            runner->run();
-        }
-        catch (cTerminationException& e) {
-            stoppedWithTerminationException(e);
-            printException(e);  // must display the exception here (and not inside catch), so that it doesn't appear out-of-order in the output
+        bool isTerminated = simulation->getState() == cSimulation::SIM_TERMINATED;
+        if (isTerminated) {
+            cTerminationException *e = simulation->getTerminationReason();
+            stoppedWithTerminationException(*e);
+            printException(*e);  // must display the exception here (and not inside catch), so that it doesn't appear out-of-order in the output
             terminationReason = e;
         }
 
@@ -158,17 +156,15 @@ void SimulationHolder::runConfiguredSimulation(cSimulation *simulation, IRunner 
 
         if (verbose)
             out << "\nCalling finish() at end of Run #" << runNumber << "..." << endl;
+
         simulation->callFinish();
         cLogProxy::flushLastLine();
 
         checkFingerprint();
-
-        simulation->notifyLifecycleListeners(LF_ON_SIMULATION_SUCCESS);
     }
     catch (std::exception& e) {
         cLog::setLoggingEnabled(true);
         stoppedWithException(e);
-        simulation->notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
         printException(e);  // must display the exception here (and not inside catch), so that it doesn't appear out-of-order in the output
         afterRunFinally(simulation, endRunRequired);
         throw;
@@ -179,16 +175,6 @@ void SimulationHolder::runConfiguredSimulation(cSimulation *simulation, IRunner 
 void SimulationHolder::afterRunFinally(cSimulation *simulation, bool endRunRequired)
 {
     //TODO should any exception in here cause nonzero Cmdenv exit code?
-    //TODO is LF_ON_RUN_END needed at all??
-
-    // send LF_ON_RUN_END notification
-    try {
-        if (endRunRequired)
-            simulation->notifyLifecycleListeners(LF_ON_RUN_END);
-    }
-    catch (std::exception& e) {
-        printException(e, "during cleanup");
-    }
 
     try {
         simulation->deleteNetwork();

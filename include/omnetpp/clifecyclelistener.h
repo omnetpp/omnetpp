@@ -117,15 +117,10 @@ enum SimulationLifecycleEventType
     LF_POST_NETWORK_FINISH,
 
     /**
-     * Fired after the simulation has been terminated, either by calling finish()
-     * or because of an error any previous state (including network setup).
-     * This event is distinct from LF_PRE_NETWORK_DELETE, because when using
-     * a GUI, there might be a delay between the simulation terminating and
-     * the user action that causes the network to be deleted.
-     * Note that using the GUI, it is also possible for the user to skip
-     * finalization of the network (even if there was no error), so
-     * LF_PRE_NETWORK_FINISH / LF_POST_NETWORK_FINISH are not guaranteed to
-     * have been fired prior to this event.
+     * Fired between LF_POST_NETWORK_FINISH and LF_PRE_NETWORK_DELETE. It is fired
+     * just after LF_POST_NETWORK_FINISH if the simulation has completed successfully,
+     * and just before LF_PRE_NETWORK_DELETE if it has not (i.e. there was no
+     * LF_POST_NETWORK_FINISH notification, e.g. due to a previous error).
      */
     LF_ON_RUN_END,
 

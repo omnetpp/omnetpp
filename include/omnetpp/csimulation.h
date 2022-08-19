@@ -41,8 +41,7 @@ class cEnvir;
 class cSoftOwner;
 class cINedLoader;
 class cIRngManager;
-
-enum ContextType {CTX_NONE /*TODO CTX_IDLE? */, CTX_BUILD, CTX_INITIALIZE, CTX_EVENT /*TODO CTX_RUNNING*/, CTX_REFRESHDISPLAY, CTX_FINISH, CTX_CLEANUP};  //TODO CTX_BUSY instead of SIM_BUSY
+class IRunner;
 
 SIM_API extern OPP_THREAD_LOCAL cSoftOwner globalOwningContext; // also in globals.h
 
@@ -65,6 +64,36 @@ SIM_API extern OPP_THREAD_LOCAL cSoftOwner globalOwningContext; // also in globa
 class SIM_API cSimulation : public cNamedObject, noncopyable
 {
     friend class cSimpleModule;
+
+  public:
+    /**
+     * State of the simulation.
+     */
+    enum State {
+        SIM_NONETWORK,
+        SIM_NETWORKBUILT,
+        SIM_INITIALIZED,
+        SIM_RUNNING,
+        SIM_PAUSED,
+        SIM_TERMINATED,
+        SIM_FINISHCALLED,
+        SIM_ERROR
+    };
+
+    /**
+     * What cSimulation is doing currently.
+     */
+    enum Stage {
+        STAGE_NONE,
+        STAGE_BUILD,
+        STAGE_INITIALIZE,
+        STAGE_EVENT,
+        STAGE_REFRESHDISPLAY,
+        STAGE_BUSY,  //TODO remove?
+        STAGE_FINISH,
+        STAGE_CLEANUP
+    };
+
   private:
     // global variables
     static OPP_THREAD_LOCAL cSimulation *activeSimulation;
@@ -92,9 +121,12 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     simtime_t simTimeLimit = 0;         // simulation time limit (0 -> no limit)
     cEvent *endSimulationEvent = nullptr; // only present if simulation time limit is set
 
-    ContextType simulationStage;        // simulation stage
+    State state = SIM_NONETWORK;        // simulation state
+    Stage stage = STAGE_NONE;           // what the simulation is currently doing
+    bool onRunEndFired = false;         // whether LF_ON_RUN_END has been fired in this run
     simtime_t currentSimtime;           // simulation time (time of current event)
     eventnumber_t currentEventNumber = 0; // sequence number of current event
+    cTerminationException *terminationReason = nullptr; // filled in after the TERMINATED state
 
     cException *exception;    // helper variable to get exceptions back from activity()
     bool trapOnNextEvent = false;  // when set, next handleMessage or activity() will execute debugger interrupt
@@ -118,7 +150,18 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
   private:
     // internal
     void checkActive()  {if (getActiveSimulation()!=this) throw cRuntimeError(this, E_WRONGSIM);}
+    void gotoState(State stage);
+    void setStage(Stage stage);
     void scheduleEndSimulationEvent();
+    void notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details=nullptr);
+    void setTerminationReason(cTerminationException *e);
+
+    struct StageSwitcher {
+        cSimulation *simulation;
+        Stage oldStage;
+        StageSwitcher(cSimulation *self, Stage newStage) : simulation(self), oldStage(simulation->stage) {simulation->setStage(newStage);}
+        ~StageSwitcher() {simulation->setStage(oldStage);}
+    };
 
   public:
     // internal
@@ -430,12 +473,29 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     /** @name Information about the current simulation run. */
     //@{
     /**
-     * Returns the current simulation stage: network building (CTX_BUILD),
-     * network initialization (CTX_INIT), simulation execution (CTX_EVENT),
-     * simulation finalization (CTX_FINISH), network cleanup (CTX_CLEANUP),
-     * or other (CTX_NONE).
+     * Returns the state of the simulation.
      */
-    int getSimulationStage() const  {return simulationStage;}  // note: intentionally non-virtual
+    State getState() const {return state;}  // note: intentionally non-virtual
+
+    /**
+     * Returns the current simulation stage.
+     */
+    Stage getStage() const  {return stage;}  // note: intentionally non-virtual
+
+    /**
+     * Returns the textual representation of the given enum value.
+     */
+    static const char *getStateName(State s);
+
+    /**
+     * Returns the textual representation of the given enum value.
+     */
+    static const char *getStageName(Stage s);
+
+    /**
+     * Returns the message that the simulation successfully terminated with.
+     */
+    cTerminationException *getTerminationReason() {return terminationReason;}
 
     /**
      * Returns the cModuleType object that was instantiated to set up
@@ -521,9 +581,24 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
 
     /**
      * Executes an event as part of the simulation. Also increments the event
-     * number (see getEventNumber()).
+     * number (see getEventNumber()). This method may not be called directly,
+     * only from run() via runners (see cIRunner).
      */
     virtual void executeEvent(cEvent *event);
+
+    /**
+     * Runs the simulation with the given runner. The network is initialized
+     * if it has not been initialized already. After the simulation completes
+     * (provided it is allowed to run through), finish is automatically called
+     * if allowed by the 2nd argument.
+     *
+     * The return value tells whether the simulation can be continued (=true)
+     * or has successfully completed (false). In the latter case, the
+     * corresponding message can be obtained with getTerminationReason().
+     * If there was an error, it manifests as an exception which is allowed
+     * to propagate out of this method.
+     */
+    virtual bool run(IRunner *runner, bool shouldCallFinish=true);
 
     /**
      * Invoke callRefreshDisplay() on the system module.
@@ -621,12 +696,6 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * Returns the list of installed lifecycle listeners.
      */
     virtual std::vector<cISimulationLifecycleListener*> getLifecycleListeners() const;
-
-    /**
-     * Notify lifecycle listeners. This is needed because several lifecycle events
-     * are triggered outside cSimulation, e.g. from the Envir library.
-     */
-    virtual void notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details=nullptr);
     //@}
 
     /** @name Parallel simulation. */

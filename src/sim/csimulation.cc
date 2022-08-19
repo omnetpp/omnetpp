@@ -34,6 +34,7 @@
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/globals.h"
 #include "omnetpp/regmacros.h"
+#include "omnetpp/crunner.h"
 
 #include "ctemporaryowner.h"
 #include "omnetpp/cscheduler.h"
@@ -115,9 +116,6 @@ cSimulation::cSimulation(const char *name, cEnvir *env) : cNamedObject(name, fal
     envir = env;
     envir->setSimulation(this);
 
-    // these are not set inline because the declaring header is included here
-    simulationStage = CTX_NONE;
-
     // install default objects
     setFES(new cEventHeap("fes"));
     setScheduler(new cSequentialScheduler());
@@ -156,6 +154,8 @@ cSimulation::~cSimulation()
 
 void cSimulation::setActiveSimulation(cSimulation *sim)
 {
+    if (sim != activeSimulation && activeSimulation && activeSimulation->stage != STAGE_NONE)
+        throw cRuntimeError("cSimulation::setActiveSimulation(): May not be called while the active simulation is doing something (stage!=STAGE_NONE)");
     activeSimulation = sim;
     activeEnvir = sim == nullptr ? staticEnvir : sim->envir;
 }
@@ -502,6 +502,50 @@ void cSimulation::setSystemModule(cModule *module)
     take(module);
 }
 
+const char *cSimulation::getStateName(State state)
+{
+#define CASE(X) case SIM_ ## X: return #X
+    switch (state) {
+        CASE(NONETWORK);
+        CASE(NETWORKBUILT);
+        CASE(INITIALIZED);
+        CASE(RUNNING);
+        CASE(PAUSED);
+        CASE(TERMINATED);
+        CASE(FINISHCALLED);
+        CASE(ERROR);
+        default: return "???";
+    }
+#undef CASE
+}
+
+const char *cSimulation::getStageName(Stage stage)
+{
+#define CASE(X) case STAGE_ ## X: return #X
+    switch (stage) {
+        CASE(NONE);
+        CASE(BUILD);
+        CASE(INITIALIZE);
+        CASE(EVENT);
+        CASE(REFRESHDISPLAY);
+        CASE(BUSY);
+        CASE(FINISH);
+        CASE(CLEANUP);
+        default: return "???";
+    }
+#undef CASE
+}
+
+void cSimulation::gotoState(State s)
+{
+    state = s;
+}
+
+void cSimulation::setStage(Stage s)
+{
+    stage = s;
+}
+
 cModule *cSimulation::getModuleByPath(const char *path) const
 {
     cModule *module = findModuleByPath(path);
@@ -528,8 +572,12 @@ void cSimulation::setupNetwork(cModuleType *networkType)
 #endif
 
     checkActive();
+    if (state != SIM_NONETWORK)
+        throw cRuntimeError("setupNetwork(): A network is already set up");
+    ASSERT(systemModule == nullptr);
+
     if (!networkType)
-        throw cRuntimeError("setupNetwork(): nullptr received");
+        throw cRuntimeError("setupNetwork(): networkType cannot be nullptr");
     if (!networkType->isNetwork())
         throw cRuntimeError("Cannot set up network: '%s' is not a network type", networkType->getFullName());
 
@@ -537,18 +585,21 @@ void cSimulation::setupNetwork(cModuleType *networkType)
     fes->clear();
     cComponent::clearSignalState();
 
-    simulationStage = CTX_BUILD;
+    StageSwitcher _(this, STAGE_BUILD);
 
     try {
         // set up the network by instantiating the toplevel module
         notifyLifecycleListeners(LF_PRE_NETWORK_SETUP);
         cModule *module = networkType->create(networkType->getName(), this);
+        ASSERT(systemModule == module);
         module->finalizeParameters();
         module->buildInside();
         scheduleEndSimulationEvent();
+        gotoState(SIM_NETWORKBUILT);
         notifyLifecycleListeners(LF_POST_NETWORK_SETUP);
     }
     catch (std::exception& e) {
+        gotoState(SIM_ERROR);
         // Note: no deleteNetwork() call here. We could call it here, but it's
         // dangerous: module destructors may try to delete uninitialized pointers
         // and crash. (Often pointers incorrectly get initialized in initialize()
@@ -561,48 +612,78 @@ void cSimulation::callInitialize()
 {
     checkActive();
 
+    if (state != SIM_NETWORKBUILT)
+        throw cRuntimeError("callInitialize(): A newly set up network is expected");
+    ASSERT(systemModule != nullptr);
+
     // reset counters. Note fes->clear() was already called from setupNetwork()
     currentSimtime = 0;
     currentEventNumber = 0;  // initialize() has event number 0
     trapOnNextEvent = false;
     cMessage::resetMessageCounters();
 
-    simulationStage = CTX_INITIALIZE;
+    StageSwitcher _(this, STAGE_INITIALIZE);
 
-    // prepare simple modules for simulation run:
-    //    1. create starter message for all modules,
-    //    2. then call initialize() for them (recursively)
-    //  This order is important because initialize() functions might contain
-    //  send() calls which could otherwise insert msgs BEFORE starter messages
-    //  for the destination module and cause trouble in cSimpleMod's activate().
-    if (systemModule) {
+    // Prepare simple modules for simulation run:
+    //    1. create starter message for activity() modules,
+    //    2. then call initialize() on the module tree
+    // This order is important because initialize() functions might contain
+    // send() calls which could otherwise insert msgs BEFORE starter messages
+    // for the destination module and cause trouble in cSimpleModule's activate().
+    try {
         cContextSwitcher tmp(systemModule);
         systemModule->scheduleStart(SIMTIME_ZERO);
         notifyLifecycleListeners(LF_PRE_NETWORK_INITIALIZE);
         systemModule->callInitialize();
+        gotoState(SIM_INITIALIZED);
         notifyLifecycleListeners(LF_POST_NETWORK_INITIALIZE);
     }
-
-    simulationStage = CTX_EVENT;
+    catch (std::exception& e) {
+        gotoState(SIM_ERROR);
+        throw;
+    }
 }
 
 void cSimulation::callFinish()
 {
     checkActive();
 
-    simulationStage = CTX_FINISH;
+    switch (state) {
+        case SIM_NONETWORK: throw cRuntimeError("callFinish(): No network set up");
+        case SIM_NETWORKBUILT: throw cRuntimeError("callFinish(): Network not yet initialized");
+        case SIM_INITIALIZED: break;
+        case SIM_PAUSED: break;
+        case SIM_RUNNING: throw cRuntimeError("callFinish(): Simulation currently running");
+        case SIM_TERMINATED: break;
+        case SIM_FINISHCALLED: throw cRuntimeError("callFinish(): Finish already called");
+        case SIM_ERROR: throw cRuntimeError("callFinish(): Cannot continue after an error");
+    }
 
-    // call user-defined finish() functions for all modules recursively
-    if (systemModule) {
+    if (state == SIM_INITIALIZED || state == SIM_PAUSED) {
+        cTerminationException e("Implicitly terminated by callFinish() call");
+        notifyLifecycleListeners(LF_ON_SIMULATION_SUCCESS, &e); // not done before
+    }
+
+    StageSwitcher _(this, STAGE_FINISH);
+
+    try {
         notifyLifecycleListeners(LF_PRE_NETWORK_FINISH);
         systemModule->callFinish();
+        gotoState(SIM_FINISHCALLED);
         notifyLifecycleListeners(LF_POST_NETWORK_FINISH);
+        onRunEndFired = true;
+        notifyLifecycleListeners(LF_ON_RUN_END);
+    }
+    catch (std::exception& e) {
+        gotoState(SIM_ERROR);
+        throw;
     }
 }
 
 void cSimulation::callRefreshDisplay()
 {
     if (systemModule) {
+        StageSwitcher _(this, STAGE_REFRESHDISPLAY);
         systemModule->callRefreshDisplay();
         if (fingerprint)
             fingerprint->addVisuals();
@@ -620,38 +701,49 @@ void cSimulation::deleteNetwork()
     if (getContextModule() != nullptr)
         throw cRuntimeError("Attempt to delete network during simulation");
 
-    simulationStage = CTX_CLEANUP;
-
-    notifyLifecycleListeners(LF_PRE_NETWORK_DELETE);
-
-    // delete all modules recursively
-    systemModule->deleteModule();
-
-    // remove stray channel objects (created by cChannelType::create() but not inserted into the network)
-    for (int i = 1; i < size; i++) {
-        if (componentv[i]) {
-            ASSERT(componentv[i]->isChannel() && componentv[i]->getParentModule()==nullptr);
-            componentv[i]->setFlag(cComponent::FL_DELETING, true);
-            delete componentv[i];
+    try {
+        if (!onRunEndFired) {
+            onRunEndFired = true;
+            notifyLifecycleListeners(LF_ON_RUN_END);
         }
+
+        StageSwitcher _(this, STAGE_CLEANUP);
+        notifyLifecycleListeners(LF_PRE_NETWORK_DELETE);
+
+        // delete all modules recursively
+        systemModule->deleteModule();
+
+        // remove stray channel objects (created by cChannelType::create() but not inserted into the network)
+        for (int i = 1; i < size; i++) {
+            if (componentv[i]) {
+                ASSERT(componentv[i]->isChannel() && componentv[i]->getParentModule()==nullptr);
+                componentv[i]->setFlag(cComponent::FL_DELETING, true);
+                delete componentv[i];
+            }
+        }
+
+        // and clean up
+        delete[] componentv;
+        componentv = nullptr;
+        size = 0;
+        lastComponentId = 0;
+        onRunEndFired = false;
+        setTerminationReason(nullptr);
+
+        for (cComponentType *p : nedLoader->getComponentTypes())
+            p->clearSharedParImpls();
+        cModule::clearNamePools();
+
+        gotoState(SIM_NONETWORK);
+        notifyLifecycleListeners(LF_POST_NETWORK_DELETE);
+
+        // clear remaining messages (module dtors may have cancelled & deleted some of them)
+        fes->clear();
     }
-
-    // and clean up
-    delete[] componentv;
-    componentv = nullptr;
-    size = 0;
-    lastComponentId = 0;
-
-    for (cComponentType *p : nedLoader->getComponentTypes())
-        p->clearSharedParImpls();
-    cModule::clearNamePools();
-
-    notifyLifecycleListeners(LF_POST_NETWORK_DELETE);
-
-    // clear remaining messages (module dtors may have cancelled & deleted some of them)
-    fes->clear();
-
-    simulationStage = CTX_NONE;
+    catch (std::exception&) {
+        gotoState(SIM_ERROR);
+        throw;
+    }
 
 #ifdef DEVELOPER_DEBUG
     printf("DEBUG: after deleteNetwork: %d objects\n", cOwnedObject::getLiveObjectCount());
@@ -765,20 +857,7 @@ void cSimulation::transferTo(cSimpleModule *module)
 
 void cSimulation::executeEvent(cEvent *event)
 {
-#ifndef NDEBUG
-    checkActive();
-
-    // Sanity check to prevent reentrant event execution - which might
-    // happen for example in a faulty cEnvir::pausePoint() implementation.
-    static OPP_THREAD_LOCAL bool inExecuteEvent = false;
-    ASSERT(!inExecuteEvent);
-    inExecuteEvent = true;
-    struct ResetInExecEventFlag {
-        ~ResetInExecEventFlag() {
-            inExecuteEvent = false;
-        }
-    } flagResetter;
-#endif
+    ASSERT(state == SIM_RUNNING);  // must be called from run()
 
     // increment event count
     currentEventNumber++;
@@ -795,12 +874,15 @@ void cSimulation::executeEvent(cEvent *event)
     event->setPreviousEventNumber(currentEventNumber);
 
     // ignore fingerprint of plain events, as they tend to be internal (like cEndSimulationEvent)
-    if (getFingerprintCalculator() && event->isMessage())
-        getFingerprintCalculator()->addEvent(event);
+    if (fingerprint && event->isMessage())
+        fingerprint->addEvent(event);
+
+#ifndef NDEBUG
+    if (trapOnNextEvent && !event->isMessage())
+        DEBUG_TRAP_IF_REQUESTED;  // ABOUT TO PROCESS THE EVENT YOU REQUESTED TO DEBUG -- SELECT "STEP INTO" IN YOUR DEBUGGER
+#endif
 
     try {
-        if (!event->isMessage())
-            DEBUG_TRAP_IF_REQUESTED;  // ABOUT TO PROCESS THE EVENT YOU REQUESTED TO DEBUG -- SELECT "STEP INTO" IN YOUR DEBUGGER
         event->execute();
     }
     catch (cDeleteModuleException& e) {
@@ -831,12 +913,59 @@ void cSimulation::executeEvent(cEvent *event)
 
 #undef DEBUG_TRAP_IF_REQUESTED
 
+bool cSimulation::run(IRunner *runner, bool shouldCallFinish)
+{
+    ASSERT(stage == STAGE_NONE);  // must not be doing something else
+
+    switch (state) {
+        case SIM_NONETWORK: throw cRuntimeError("run(): No network set up");
+        case SIM_NETWORKBUILT: callInitialize(); break;
+        case SIM_INITIALIZED: case SIM_PAUSED: break;
+        case SIM_RUNNING: throw cRuntimeError("run(): Simulation already running");
+        case SIM_TERMINATED: case SIM_FINISHCALLED: throw cRuntimeError("run(): Simulation already terminated");
+        case SIM_ERROR: throw cRuntimeError("run(): Cannot continue after an error");
+    }
+
+    bool firstRun = (state == SIM_INITIALIZED);
+
+    gotoState(SIM_RUNNING);
+    StageSwitcher _(this, STAGE_EVENT);
+
+    try {
+        notifyLifecycleListeners(firstRun ? LF_ON_SIMULATION_START : LF_ON_SIMULATION_RESUME);
+        runner->run();
+        gotoState(SIM_PAUSED);
+        notifyLifecycleListeners(LF_ON_SIMULATION_PAUSE);
+        return true;
+    }
+    catch (cTerminationException& ex) {
+        gotoState(SIM_TERMINATED);
+        setTerminationReason(ex.dup());
+        notifyLifecycleListeners(LF_ON_SIMULATION_SUCCESS);
+
+        if (shouldCallFinish)
+            callFinish();
+        return false;
+    }
+    catch (std::exception& e) {
+        gotoState(SIM_ERROR);
+        notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
+        throw;
+    }
+}
+
 void cSimulation::transferToMain()
 {
     if (currentActivityModule != nullptr) {
         currentActivityModule = nullptr;
         cCoroutine::switchToMain();  // stack switch
     }
+}
+
+void cSimulation::setTerminationReason(cTerminationException *e)
+{
+    delete terminationReason;
+    terminationReason = e;
 }
 
 void cSimulation::setContext(cComponent *p)
@@ -935,11 +1064,13 @@ void cSimulation::notifyLifecycleListeners(SimulationLifecycleEventType eventTyp
     }
     catch (cException& e) {
         e.setLifecycleListenerType(eventType);
+        gotoState(SIM_ERROR);
         throw;
     }
     catch (std::exception& e) {
         cRuntimeError e2(e);
         e2.setLifecycleListenerType(eventType);
+        gotoState(SIM_ERROR);
         throw e2;
     }
 }

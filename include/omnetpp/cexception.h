@@ -187,9 +187,9 @@ class SIM_API cException : public std::exception
 
     /**
      * Returns in which stage of the simulation the exception object was created:
-     * during network building (CTX_BUILD), network initialization (CTX_INITIALIZE),
-     * simulation execution (CTX_EVENT), finalization (CTX_FINISH), or network
-     * cleanup (CTX_CLEANUP).
+     * during network building (STAGE_BUILD), network initialization (STAGE_INITIALIZE),
+     * simulation execution (STAGE_EVENT), finalization (STAGE_FINISH), or network
+     * cleanup (STAGE_CLEANUP).
      */
     virtual int getSimulationStage() const {return simulationStage;}
 

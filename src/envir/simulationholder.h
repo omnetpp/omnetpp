@@ -28,10 +28,10 @@ class cSimulation;
 class cINedLoader;
 class cTerminationException;
 class cModuleType;
+class IRunner;
 
 namespace envir {
 
-class IRunner;
 
 class SimulationHolder
 {
@@ -40,10 +40,10 @@ class SimulationHolder
     bool verbose; // for subclasses
     bool useStderr = false;
     std::string redirectionFilename;
-    cTerminationException terminationReason;
+    cTerminationException *terminationReason = nullptr;
 
   public:
-    SimulationHolder(std::ostream& out) : out(out), terminationReason(0) {}
+    SimulationHolder(std::ostream& out) : out(out) {}
     virtual void setVerbose(bool verbose) {this->verbose = verbose;}
     virtual void setUseStderr(bool useStderr) {this->useStderr = useStderr;}
 
@@ -53,7 +53,7 @@ class SimulationHolder
     virtual void configureAndRunSimulation(cSimulation *simulation, cConfiguration *cfg, IRunner *runner, const char *redirectFileName);
     virtual void runConfiguredSimulation(cSimulation *simulation, IRunner *runner, const char *redirectFileName);
 
-    const cTerminationException& getTerminationReason() const {return terminationReason;}  // stopping reason in case of normal (error-free) simulation execution
+    const cTerminationException *getTerminationReason() const {return terminationReason;}  // stopping reason in case of normal (error-free) simulation execution
 
   protected:
     virtual std::ostream& err();

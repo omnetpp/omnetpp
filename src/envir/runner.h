@@ -17,6 +17,7 @@
 #define __OMNETPP_ENVIR_RUNNER_H
 
 #include "envirdefs.h"
+#include "omnetpp/crunner.h"
 #include "omnetpp/csimulation.h"
 #include "stopwatch.h"
 #include "speedometer.h"
@@ -29,12 +30,6 @@ class cSimulation;
 namespace envir {
 
 class IFakeGUI;
-
-class IRunner {
-  public:
-    virtual ~IRunner();
-    virtual void run() = 0;
-};
 
 class ENVIR_API Runner : public IRunner
 {

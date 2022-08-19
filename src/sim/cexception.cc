@@ -75,12 +75,12 @@ void cException::storeContext()
     cSimulation *sim = cSimulation::getActiveSimulation();
 
     if (!sim) {
-        simulationStage = CTX_NONE;
+        simulationStage = cSimulation::STAGE_NONE;
         eventNumber = 0;
         simtime = SIMTIME_ZERO;
     }
     else {
-        simulationStage = sim->getSimulationStage();
+        simulationStage = sim->getStage();
         eventNumber = sim->getEventNumber();
         simtime = sim->getSimTime();
     }
@@ -153,12 +153,12 @@ std::string cException::getFormattedMessage() const
 {
     std::string when, where;
     switch (getSimulationStage()) {
-        case CTX_NONE: when = ""; break;
-        case CTX_BUILD: when = " during network setup"; break; // note leading spaces
-        case CTX_INITIALIZE: when = " during network initialization"; break;
-        case CTX_EVENT: when = opp_stringf(" at t=%ss, event #%" PRId64, SIMTIME_STR(getSimtime()), getEventNumber()); break;
-        case CTX_FINISH: when = " during finalization"; break;
-        case CTX_CLEANUP: when = " during network cleanup"; break;
+        case cSimulation::STAGE_NONE: when = ""; break;
+        case cSimulation::STAGE_BUILD: when = " during network setup"; break; // note leading spaces
+        case cSimulation::STAGE_INITIALIZE: when = " during network initialization"; break;
+        case cSimulation::STAGE_EVENT: when = opp_stringf(" at t=%ss, event #%" PRId64, SIMTIME_STR(getSimtime()), getEventNumber()); break;
+        case cSimulation::STAGE_FINISH: when = " during finalization"; break;
+        case cSimulation::STAGE_CLEANUP: when = " during network cleanup"; break;
     }
 
     if (lifecycleListenerType != LF_NONE)

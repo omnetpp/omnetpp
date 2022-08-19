@@ -98,7 +98,7 @@ cModule::~cModule()
 
 void cModule::deleteModule()
 {
-    if (getSystemModule() == this && getSimulation()->getSimulationStage() != CTX_CLEANUP)
+    if (getSystemModule() == this && getSimulation()->getStage() != cSimulation::STAGE_CLEANUP)
         throw cRuntimeError(this, "deleteModule(): It is not allowed to delete the system module during simulation");
 
     // If a coroutine wants to delete itself (maybe as part of a module subtree),
@@ -1790,7 +1790,8 @@ void cModule::callPreDelete(cComponent *root)
 
 void cModule::callRefreshDisplay()
 {
-    // This is the interface for calling refreshDisplay().
+    // should be called via cSimulation
+    ASSERT(getSimulation()->getStage() == cSimulation::STAGE_REFRESHDISPLAY);
 
     // first call it for submodules and channels...
     for (ChannelIterator it(this); !it.end(); ++it)
