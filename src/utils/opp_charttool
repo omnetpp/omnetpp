@@ -116,8 +116,6 @@ if __name__ == "__main__":
     if not workspace_dir:
         anf_dir = os.path.dirname(os.path.abspath(anf_file))
         workspace_dir = Workspace.find_workspace(anf_dir)
-        if not workspace_dir:
-            workspace_dir = anf_dir
     workspace = Workspace(workspace_dir, project_paths)
 
     selected_charts = None
