@@ -35,7 +35,7 @@ def _make_id(id_attr:str):
     try:
         id = None if id_attr is None else int(id_attr)
     except:
-        raise RuntimeError("Wrong Chart or Folder id '{}': IDs are expected to be numeric strings".format(id_attr))
+        raise RuntimeError(f"Wrong Chart or Folder id '{id_attr}': IDs are expected to be numeric strings")
 
     if id is None:
         id = _next_id
@@ -76,7 +76,7 @@ class Chart:
         self.properties = properties.copy()
 
     def __repr__(self):
-        return "Chart(type='{}',name='{}',id={})".format(self.type, self.name, self.id)
+        return f"Chart(type='{self.type}',name='{self.name}',id={self.id})"
 
 class Folder:
     """
@@ -94,7 +94,7 @@ class Folder:
         return len(self.items)
 
     def __repr__(self):
-        return "Folder(name='{}', {} items)".format(self.name, len(self.items))
+        return f"Folder(name='{self.name}', {len(self.items)} items)"
 
 class Workspace:
     """
@@ -182,7 +182,7 @@ class Workspace:
         """
         dir = Workspace.find_enclosing_project_location(file)
         if not dir:
-            raise RuntimeError("Could not find enclosing project" + (" for file '{}'".format(file) if file else ""))
+            raise RuntimeError("Could not find enclosing project" + (f" for file '{file}'" if file else ""))
 
         name = self.get_project_name(dir)
         if name:
@@ -210,7 +210,7 @@ class Workspace:
                     endindex = locindex + loc[locindex:].find(b"\0")
                     location = loc[locindex:endindex].decode("utf-8")
             if not os.path.isfile(location + "/.project"):
-                raise RuntimeError("Cannot determine location for project '" + project_name + "' from Eclipse workspace data: stated location '" + location+ "' is not valid")
+                raise RuntimeError(f"Cannot determine location for project '{project_name}' from Eclipse workspace data: stated location '{location}' is not valid")
         else:
             # no workspace metadata, look in other places
             workspace_candidates = [os.path.dirname(v) for k, v in self.project_paths]
@@ -234,7 +234,7 @@ class Workspace:
 
             location = find_project_in_any_of(workspace_candidates)
             if location is None or not os.path.isfile(location + "/.project"):
-                raise RuntimeError("Cannot determine location for project '" + project_name + "': It is not at any obvious location, and an Eclipse workspace is not available for more info")
+                raise RuntimeError(f"Cannot determine location for project '{project_name}': It is not next to any known project, and an Eclipse workspace is not available for more info")
 
         # cache and return result
         self.project_paths[project_name] = location
@@ -273,13 +273,13 @@ class Workspace:
             project_name,*rest = wspath[1:].split('/', 1)
             project_loc = self.get_project_location(project_name)
             if not os.path.isdir(project_loc):
-                raise RuntimeError("Directory for project {} doesn't exist (workspace dir not specified?): {}".format(project_name, project_loc))
+                raise RuntimeError(f"Directory for project {project_name} doesn't exist (workspace dir not specified?): {project_loc}")
             return os.path.join(project_loc, *rest)
         else:
             return wspath # part is relative to current working directory
 
     def __repr__(self):
-        return "Workspace(workspace_dir='{}', project_paths={})".format(self.workspace_dir, self.project_paths)
+        return f"Workspace(workspace_dir='{self.workspace_dir}', project_paths={self.project_paths})"
 
 class Analysis:
     """
@@ -299,7 +299,7 @@ class Analysis:
         analysis = ET.parse(anf_file_name).getroot()
         version = analysis.get('version')
         if version != "2":
-            raise RuntimeError("Unsupported analysis file version: \"{}\" (only \"2\" is supported).".format(version))
+            raise RuntimeError(f"Unsupported analysis file version: \"{version}\" (only \"2\" is supported).")
 
         def make_folder(folder_elem):
             items = list()
@@ -504,7 +504,7 @@ class Analysis:
 
     def _check_file_created(self, fname, what, enforce):
         if not os.path.isfile(fname):
-            msg = "Chart script silently failed to create {} file '{}'".format(what, fname)
+            msg = f"Chart script silently failed to create {what} file '{fname}'"
             if enforce:
                 raise RuntimeError(msg)
             else:
