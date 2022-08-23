@@ -103,7 +103,7 @@ class QTENV_API MessageAnimator
             std::string str() const;
         };
 
-        cMessage *msg;
+        cMessage *msg; // currently immediately "forgotten" when the send() procedure is completed
         cMessage *dupMsg = nullptr;
 
         std::vector<Hop> hops; // also includes the optional first direct "hop"

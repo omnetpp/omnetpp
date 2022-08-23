@@ -356,6 +356,8 @@ void MessageAnimator::endSend(cMessage *msg)
     delete currentSending;
     currentSending = nullptr;
 
+    removeMessagePointer(msg);
+
     if (getQtenv()->getSimulationRunMode() != RUNMODE_FAST)
         updateAnimations();
 }
@@ -394,6 +396,14 @@ bool MessageAnimator::willAnimate(cMessage *msg)
     for (auto p = range.first; p != range.second; p++)
         if (p->second && p->second->willAnimate(msg))
             return true;
+
+    cMessage *msgDup = logBuffer->getLastMessageDup(msg);
+    if (msgDup) {
+        auto rangeDup = animationsForMessages.equal_range(msgDup);
+        for (auto p = rangeDup.first; p != rangeDup.second; p++)
+            if (p->second && p->second->willAnimate(msgDup))
+                return true;
+    }
 
     return currentSending && currentSending->msg == msg;
 }
