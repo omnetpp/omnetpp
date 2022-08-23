@@ -10,6 +10,7 @@ import sys
 import importlib
 import xml.etree.ElementTree as ET
 import xml.dom.minidom as minidom # because ET cannot pretty-print
+from xml.parsers.expat import ExpatError
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import omnetpp.scave.impl.results_standalone as results_module
@@ -159,6 +160,20 @@ class Workspace:
 
         return dir
 
+    def get_project_name(self, project_dir):
+        """
+        Returns the "real" name of the project from the `.project` (project
+        description) file in the given project directory.
+        """
+        try:
+            desc = os.path.join(project_dir, ".project")
+            project_dom = minidom.parse(desc)
+            names = [name.firstChild.nodeValue for name in project_dom.getElementsByTagName("name") if name.parentNode.tagName == "projectDescription"]
+            return names[0] if names else None
+        except Exception as e:
+            raise RuntimeError("Missing or invalid .project file in " + project_dir) from e
+
+
     def find_enclosing_project(self, file=None):
         """
         Find the project name searching from the given directory (or the current
@@ -166,21 +181,13 @@ class Workspace:
         can be recognized by having a `.project` file in them.
         """
         dir = Workspace.find_enclosing_project_location(file)
-
         if not dir:
             raise RuntimeError("Could not find enclosing project" + (" for file '{}'".format(file) if file else ""))
 
-        # find real name of the project
-        project_dom = minidom.parse(os.path.join(dir, ".project"))
-        names = [name.firstChild.nodeValue for name in project_dom.getElementsByTagName("name") if name.parentNode.tagName == "projectDescription"]
-
-        # remember its location
-        if names:
-            name = names[0]
+        name = self.get_project_name(dir)
+        if name:
             self.project_paths[name] = dir
-            return name
-        else:
-            return None
+        return name
 
     def get_project_location(self, project_name):
         """
@@ -193,27 +200,41 @@ class Workspace:
             # parse workspace metadata
             location_filename = self.workspace_dir + "/.metadata/.plugins/org.eclipse.core.resources/.projects/" + project_name + "/.location"
             if not os.path.isfile(location_filename):
-                raise RuntimeError("Cannot determine location for project '" + project_name + "': No info about it in the Eclipse workspace at '" + self.workspace_dir + "'")
-            with open(location_filename, "rb") as locfile:
-                loc = locfile.read()
-                start = b"URI//file:"
-                locindex = loc.find(start) + len(start)
-                endindex = locindex + loc[locindex:].find(b"\0")
-                location = loc[locindex:endindex].decode("utf-8")
+                # Eclipse doesn't create a .location file if project's name equals its folder's name and it is at the default location
+                location = os.path.join(self.workspace_dir, project_name)
+            else:
+                with open(location_filename, "rb") as locfile:
+                    loc = locfile.read()
+                    start = b"URI//file:"
+                    locindex = loc.find(start) + len(start)
+                    endindex = locindex + loc[locindex:].find(b"\0")
+                    location = loc[locindex:endindex].decode("utf-8")
             if not os.path.isfile(location + "/.project"):
                 raise RuntimeError("Cannot determine location for project '" + project_name + "' from Eclipse workspace data: stated location '" + location+ "' is not valid")
         else:
             # no workspace metadata, look in other places
-            # TODO should we look in all subdirs, in case project is renamed (i.e. name in .project is different from directory name)?
             workspace_candidates = [os.path.dirname(v) for k, v in self.project_paths]
             if self.workspace_dir:
                 workspace_candidates.insert(0, self.workspace_dir)
-            for workspace_candidate in workspace_candidates:
-                location = workspace_candidate + "/" + project_name
-                if os.path.isfile(location + "/.project"):
-                    break
-            if not os.path.isfile(location + "/.project"):
-                raise RuntimeError("Cannot determine location for project '" + project_name + "': It is not under assumed location '" + location+ "' (missing directory or `.project` file), and an Eclipse workspace is not available for more info")
+            workspace_candidates = list(set(workspace_candidates))  # filter out duplicates
+
+            def get_project_name_or_none(location):
+                try:
+                    return self.get_project_name(location)
+                except:
+                    return None
+
+            def find_project_in_any_of(workspace_candidates):
+                for workspace_candidate in workspace_candidates:
+                    for fname in os.listdir(workspace_candidate):
+                        location = os.path.join(workspace_candidate, fname)
+                        if get_project_name_or_none(location) == project_name:
+                            return location
+                return None
+
+            location = find_project_in_any_of(workspace_candidates)
+            if location is None or not os.path.isfile(location + "/.project"):
+                raise RuntimeError("Cannot determine location for project '" + project_name + "': It is not at any obvious location, and an Eclipse workspace is not available for more info")
 
         # cache and return result
         self.project_paths[project_name] = location
@@ -224,10 +245,14 @@ class Workspace:
         Returns a list of projects that are referenced by the given project.
         """
         project_file = self.get_project_location(project_name) + "/.project"
-        project_dom = minidom.parse(project_file)
-        return [ref.firstChild.nodeValue for ref in project_dom.getElementsByTagName("project")]
+        try:
+            project_dom = minidom.parse(project_file)
+            return [ref.firstChild.nodeValue for ref in project_dom.getElementsByTagName("project")]
+        except Exception as e:
+            raise RuntimeError("Missing or invalid .project file: " + project_file) from e
 
-    def get_all_referenced_projects(self, project_name, include_self):
+
+    def get_all_referenced_projects(self, project_name, include_self=False):
         """
         Returns a list of projects that are referenced by the given project, even transitively.
         """
