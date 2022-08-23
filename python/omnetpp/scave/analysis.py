@@ -104,7 +104,7 @@ class Workspace:
     metadata (the `.metadata` subdirectory) is missing; then it looks for projects
     in directories adjacent to other known projects.
     """
-    def __init__(self, workspace_dir=None, project_paths={}):
+    def __init__(self, workspace_dir=None, project_locations={}):
         """
         Accepts the workspace location, plus a dict that contains the (absolute,
         or workspace-location-relative) location of projects by name. The latter is
@@ -118,7 +118,7 @@ class Workspace:
             self.workspace_dir = os.path.abspath(workspace_dir)
         else:
             self.workspace_dir = None
-        self.project_paths = project_paths
+        self.project_locations = project_locations
 
     @staticmethod
     def find_workspace(dir=None):
@@ -186,15 +186,15 @@ class Workspace:
 
         name = self.get_project_name(dir)
         if name:
-            self.project_paths[name] = dir
+            self.project_locations[name] = dir
         return name
 
     def get_project_location(self, project_name):
         """
         Returns the location of the given workspace project in the filesystem path.
         """
-        if project_name in self.project_paths:
-            return self.project_paths[project_name]
+        if project_name in self.project_locations:
+            return self.project_locations[project_name]
 
         if self.workspace_dir and os.path.isdir(self.workspace_dir + "/.metadata"):
             # parse workspace metadata
@@ -213,7 +213,7 @@ class Workspace:
                 raise RuntimeError(f"Cannot determine location for project '{project_name}' from Eclipse workspace data: stated location '{location}' is not valid")
         else:
             # no workspace metadata, look in other places
-            workspace_candidates = [os.path.dirname(v) for k, v in self.project_paths]
+            workspace_candidates = [os.path.dirname(loc) for loc in self.project_locations.values()]
             if self.workspace_dir:
                 workspace_candidates.insert(0, self.workspace_dir)
             workspace_candidates = list(set(workspace_candidates))  # filter out duplicates
@@ -237,7 +237,7 @@ class Workspace:
                 raise RuntimeError(f"Cannot determine location for project '{project_name}': It is not next to any known project, and an Eclipse workspace is not available for more info")
 
         # cache and return result
-        self.project_paths[project_name] = location
+        self.project_locations[project_name] = location
         return location
 
     def get_referenced_projects(self, project_name):
@@ -279,7 +279,7 @@ class Workspace:
             return wspath # part is relative to current working directory
 
     def __repr__(self):
-        return f"Workspace(workspace_dir='{self.workspace_dir}', project_paths={self.project_paths})"
+        return f"Workspace(workspace_dir='{self.workspace_dir}', project_locations={self.project_locations})"
 
 class Analysis:
     """
