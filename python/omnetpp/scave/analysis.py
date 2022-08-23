@@ -99,17 +99,24 @@ class Workspace:
     """
     This is an abstraction of an IDE workspace, and makes it possible to map
     workspace paths to filesystem paths. This is necessary because the inputs
-    in the `Analysis` are workspace paths.
+    in the `Analysis` are workspace paths. The class tolerates if workspace
+    metadata (the `.metadata` subdirectory) is missing; then it looks for projects
+    in directories adjacent to other known projects.
     """
-    def __init__(self, workspace_dir, project_paths={}):
+    def __init__(self, workspace_dir=None, project_paths={}):
         """
         Accepts the workspace location, plus a dict that contains the (absolute,
-        or workspace-relative) location of projects by name, for projects that
-        are NOT under the <workspace_dir>/<projectname> location.
+        or workspace-location-relative) location of projects by name. The latter is
+        useful for projects that are NOT at the <workspace_dir>/<projectname> location.
         """
-        if not os.path.isdir(workspace_dir):
-            raise RuntimeError("Specified workspace directory doesn't exist, or is not a directory: " + workspace_dir)
-        self.workspace_dir = os.path.abspath(workspace_dir)
+        if workspace_dir:
+            if not os.path.isdir(workspace_dir):
+                raise RuntimeError("Specified workspace directory doesn't exist, or is not a directory: " + workspace_dir)
+            #if not os.path.isdir(workspace_dir + "/.metadata"):
+            #   print("Warning: Directory does not look like a workspace (it has no .metadata subdirectory): " + workspace_dir)
+            self.workspace_dir = os.path.abspath(workspace_dir)
+        else:
+            self.workspace_dir = None
         self.project_paths = project_paths
 
     @staticmethod
@@ -118,11 +125,10 @@ class Workspace:
         Utility function: Find the IDE workspace directory searching from the
         given directory (or the current dir if not given) upwards. The workspace
         directory of the Eclipse-based IDE can be recognized by having a `.metadata`
-        subdir.
+        subdir. If the workspace is not found, None is returned.
         """
         if not dir:
             dir = os.getcwd()
-        origdir = dir
 
         while True:
             if os.path.isdir(os.path.join(dir, ".metadata")):  # Eclipse metadata dir
@@ -131,9 +137,7 @@ class Workspace:
             if parent_dir == dir:
                 break
             dir = parent_dir
-
-        projdir = Workspace.find_enclosing_project_location(origdir)
-        return os.path.dirname(projdir) if projdir else None
+        return None
 
     @staticmethod
     def find_enclosing_project_location(file=None):
@@ -185,22 +189,31 @@ class Workspace:
         if project_name in self.project_paths:
             return self.project_paths[project_name]
 
-        location_filename = self.workspace_dir + "/.metadata/.plugins/org.eclipse.core.resources/.projects/" + project_name + "/.location"
-
-        if not os.path.isfile(location_filename):
-            location = self.workspace_dir + "/" + project_name
-            if not os.path.isfile(location+"/.project"):
-                raise RuntimeError("Cannot determine location for project '" + project_name + "': It is not under assumed location '" + location+ "' (missing directory or `.project` file), and an Eclipse workspace is not available for more info")
-        else:
-            # try decode Eclipse internal file in .metadata
+        if self.workspace_dir and os.path.isdir(self.workspace_dir + "/.metadata"):
+            # parse workspace metadata
+            location_filename = self.workspace_dir + "/.metadata/.plugins/org.eclipse.core.resources/.projects/" + project_name + "/.location"
+            if not os.path.isfile(location_filename):
+                raise RuntimeError("Cannot determine location for project '" + project_name + "': No info about it in the Eclipse workspace at '" + self.workspace_dir + "'")
             with open(location_filename, "rb") as locfile:
                 loc = locfile.read()
                 start = b"URI//file:"
                 locindex = loc.find(start) + len(start)
                 endindex = locindex + loc[locindex:].find(b"\0")
                 location = loc[locindex:endindex].decode("utf-8")
-            if not os.path.isfile(location+"/.project"):
-                raise RuntimeError("Cannot determine location for project '" + project_name + "' from Eclipse workspace data: location '" + location+ "' is not valid")
+            if not os.path.isfile(location + "/.project"):
+                raise RuntimeError("Cannot determine location for project '" + project_name + "' from Eclipse workspace data: stated location '" + location+ "' is not valid")
+        else:
+            # no workspace metadata, look in other places
+            # TODO should we look in all subdirs, in case project is renamed (i.e. name in .project is different from directory name)?
+            workspace_candidates = [os.path.dirname(v) for k, v in self.project_paths]
+            if self.workspace_dir:
+                workspace_candidates.insert(0, self.workspace_dir)
+            for workspace_candidate in workspace_candidates:
+                location = workspace_candidate + "/" + project_name
+                if os.path.isfile(location + "/.project"):
+                    break
+            if not os.path.isfile(location + "/.project"):
+                raise RuntimeError("Cannot determine location for project '" + project_name + "': It is not under assumed location '" + location+ "' (missing directory or `.project` file), and an Eclipse workspace is not available for more info")
 
         # cache and return result
         self.project_paths[project_name] = location
