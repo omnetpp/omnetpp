@@ -183,16 +183,18 @@ class Workspace:
 
         if not os.path.isfile(location_filename):
             location = self.workspace_dir + "/" + project_name
+            if not os.path.isfile(location+"/.project"):
+                raise RuntimeError("Cannot determine location for project '" + project_name + "': It is not under assumed location '" + location+ "' (missing directory or `.project` file), and an Eclipse workspace is not available for more info")
         else:
+            # try decode Eclipse internal file in .metadata
             with open(location_filename, "rb") as locfile:
                 loc = locfile.read()
                 start = b"URI//file:"
                 locindex = loc.find(start) + len(start)
                 endindex = locindex + loc[locindex:].find(b"\0")
                 location = loc[locindex:endindex].decode("utf-8")
-
-        if not os.path.isfile(location+"/.project"):
-            raise RuntimeError("Location found does not look like a project (no `.project` file): " + location)
+            if not os.path.isfile(location+"/.project"):
+                raise RuntimeError("Cannot determine location for project '" + project_name + "' from Eclipse workspace data: location '" + location+ "' is not valid")
 
         return location
 
