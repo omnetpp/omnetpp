@@ -155,13 +155,11 @@ class Workspace:
 
         return dir
 
-    @staticmethod
-    def find_enclosing_project(file=None):
+    def find_enclosing_project(self, file=None):
         """
-        Utility function: Find the project name searching from the
-        given directory (or the current dir if not given) upwards. Project
-        directories of the Eclipse-based IDE can be recognized by having a
-        `.project` file in them.
+        Find the project name searching from the given directory (or the current
+        dir if not given) upwards. Project directories of the Eclipse-based IDE
+        can be recognized by having a `.project` file in them.
         """
         dir = Workspace.find_enclosing_project_location(file)
 
@@ -172,13 +170,21 @@ class Workspace:
         project_dom = minidom.parse(os.path.join(dir, ".project"))
         names = [name.firstChild.nodeValue for name in project_dom.getElementsByTagName("name") if name.parentNode.tagName == "projectDescription"]
 
-        return names[0] if names else None
-
+        # remember its location
+        if names:
+            name = names[0]
+            self.project_paths[name] = dir
+            return name
+        else:
+            return None
 
     def get_project_location(self, project_name):
         """
         Returns the location of the given workspace project in the filesystem path.
         """
+        if project_name in self.project_paths:
+            return self.project_paths[project_name]
+
         location_filename = self.workspace_dir + "/.metadata/.plugins/org.eclipse.core.resources/.projects/" + project_name + "/.location"
 
         if not os.path.isfile(location_filename):
@@ -196,6 +202,8 @@ class Workspace:
             if not os.path.isfile(location+"/.project"):
                 raise RuntimeError("Cannot determine location for project '" + project_name + "' from Eclipse workspace data: location '" + location+ "' is not valid")
 
+        # cache and return result
+        self.project_paths[project_name] = location
         return location
 
     def get_referenced_projects(self, project_name):
@@ -376,7 +384,7 @@ class Analysis:
             os.chdir(wd)
             sys.path.insert(1, wd)
 
-            project = Workspace.find_enclosing_project(wd)
+            project = workspace.find_enclosing_project(wd)
             refprojs = workspace.get_all_referenced_projects(project, True)
 
             for rp in refprojs:
