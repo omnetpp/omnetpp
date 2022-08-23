@@ -38,7 +38,7 @@ To install the required packages, type in the terminal:
 .. code::
 
    $ su -c 'yum install make gcc gcc-c++ clang lld bison flex perl \
-       python3 python3-pip qt-devel libxml2-devel zlib-devel doxygen graphviz'
+       python3 python3-pip qt-devel libxml2-devel zlib-devel doxygen graphviz xdg-utils'
    $ python3 -m pip install --user --upgrade numpy pandas matplotlib scipy seaborn posix_ipc
 
 To use 3D visualization support in Qtenv (recommended), you should install the OpenSceneGraph-devel (3.2 or later) and
@@ -83,7 +83,7 @@ of each package.
 The packages:
 
 -  make, gcc, gcc-c++, clang, lld, bison, flex, perl, python3, qt-devel, libxml2-devel, zlib-devel, doxygen, graphviz,
-   openmpi-devel
+   openmpi-devel, xdg-utils
 
 Click *Apply*, then follow the instructions.
 

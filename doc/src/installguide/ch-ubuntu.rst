@@ -41,7 +41,7 @@ To install the required packages, type in the terminal:
 
 .. code::
 
-   $ sudo apt-get install build-essential clang lld gdb bison flex perl \
+   $ sudo apt-get install build-essential clang lld gdb bison flex perl xdg-utils \
         python3 python3-pip qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools \
         libqt5opengl5-dev libxml2-dev zlib1g-dev doxygen graphviz libwebkit2gtk-4.0-37
    $ python3 -m pip install --user --upgrade numpy pandas matplotlib scipy seaborn posix_ipc
@@ -99,7 +99,7 @@ If the *Mark additional required changes?* dialog comes up, choose the *Mark* bu
 The packages:
 
 -  required: build-essential, gcc, g++, bison, flex, perl, qtbase5-dev, qtchooser, qt5-qmake, qtbase5-dev-tools,
-   python3, doxygen, graphviz, libwebkit2gtk-4.0-37
+   python3, doxygen, graphviz, libwebkit2gtk-4.0-37, xdg-utils
 -  recommended: libopenscenegraph-dev, openscenegraph-plugin-osgearth, libosgearth-dev, mpi-default-dev, libxml2-dev, zlib1g-dev
 
 .. figure:: pictures/ubuntu-synaptic.png
