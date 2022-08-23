@@ -1,0 +1,14 @@
+#! /bin/sh
+
+# exit on first error
+set -e
+
+python3 workspace.py | sed "s:[^' ]*test/scave/workspace:...:g" > test.out
+
+if diff -q test.out expected.out; then
+    echo PASS
+else
+    echo FAIL
+    exit 1
+fi
+

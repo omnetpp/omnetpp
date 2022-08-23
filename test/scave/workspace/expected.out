@@ -1,0 +1,68 @@
+
+*** single project in workspace
+foo: "Sample file in project foo in work/projs/foo"
+
+*** single project, no workspace given
+foo: "Sample file in project foo in work/projs/foo"
+
+*** single project, missing .metadata
+foo: "Sample file in project foo in work/projs/foo"
+
+*** single project, invalid workspace
+RuntimeError : Specified workspace directory doesn't exist, or is not a directory: work/nonexistent
+
+*** single project, empty .metadata
+foo: "Sample file in project foo in work/projs/foo"
+
+*** single renamed project in workspace
+Foo: "Sample file in project Foo in work/projs/foo"
+
+*** broken .project
+RuntimeError : Missing or invalid .project file in .../work/projs/foo
+
+*** broken .location
+foo: "Sample file in project foo in work/projs/foo"
+RuntimeError : Cannot determine location for project 'Bar' from Eclipse workspace data: stated location '' is not valid
+
+*** referenced project
+foo: "Sample file in project foo in work/projs/foo"
+ - bar: "Sample file in project bar in work/projs/bar"
+
+*** multiple referenced projects
+foo: "Sample file in project foo in work/projs/foo"
+ - bar: "Sample file in project bar in work/projs/bar"
+ - baz: "Sample file in project baz in work/projs/baz"
+
+*** missing referenced project
+foo: "Sample file in project foo in work/projs/foo"
+RuntimeError : Cannot determine location for project 'bar': It is not next to any known project, and an Eclipse workspace is not available for more info
+
+*** indirectly referenced project
+foo: "Sample file in project foo in work/projs/foo"
+ - bar: "Sample file in project bar in work/projs/bar"
+ - baz: "Sample file in project baz in work/projs/baz"
+
+*** renamed project
+Foo: "Sample file in project Foo in work/projs/foo"
+
+*** renamed referenced project
+foo: "Sample file in project foo in work/projs/foo"
+ - Bar: "Sample file in project Bar in work/projs/bar"
+
+*** renamed referenced project with workspace
+foo: "Sample file in project foo in work/projs/foo"
+ - Bar: "Sample file in project Bar in work/projs/bar"
+
+*** moved project
+Foo: "Sample file in project Foo in work/projs/foo"
+
+*** moved referenced project not found
+foo: "Sample file in project foo in work/ws/foo"
+RuntimeError : Cannot determine location for project 'Bar' from Eclipse workspace data: stated location '.../work/ws/Bar' is not valid
+
+*** moved referenced project found
+foo: "Sample file in project foo in work/ws/foo"
+ - Bar: "Sample file in project Bar in work/projs/bar"
+
+*** finding workspace
+work/ws
