@@ -706,6 +706,14 @@ void MessageAnimation::removeMessagePointer(cMessage *msg)
     }
 }
 
+bool MessageAnimation::willAnimate(cMessage *msg)
+{
+    if (!msg || !msgToUse())
+        return false;
+
+    return (state < FINISHED) && (msg->getId() == msgToUse()->getId());
+}
+
 bool MessageAnimation::messageDuplicated(cMessage *msg, cMessage *dup)
 {
     if (msg == this->msg && !msgDup) {

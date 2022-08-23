@@ -306,7 +306,8 @@ public:
     // True if this animation is currently, or will in the future,
     // show a representation of msg. Needed to avoid drawing the static
     // message item where it has not "arrived" yet in the animation.
-    virtual bool willAnimate(cMessage *msg) { return state < FINISHED && msg == this->msg; }
+    // Compares to either the original or the duplicate message, by ID.
+    virtual bool willAnimate(cMessage *msg);
 
     // This is used to notify the animations about the creation of a
     // cMessage's private clone by the LogBuffer.
