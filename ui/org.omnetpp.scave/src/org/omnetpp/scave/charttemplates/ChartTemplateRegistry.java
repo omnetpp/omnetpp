@@ -35,10 +35,10 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.Markers;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ui.ScaveUtil;
-import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Chart.ChartType;
 import org.omnetpp.scave.model.Chart.DialogPage;
+import org.omnetpp.scave.model2.ScaveModelUtil;
 import org.omnetpp.scave.model.ChartTemplate;
 import org.osgi.framework.Bundle;
 
@@ -166,17 +166,8 @@ public class ChartTemplateRegistry {
         // parse result types
         int resultTypes = 0;
         String resultTypesProp = props.getProperty("resultTypes");
-        if (resultTypesProp != null) {
-            for (String resultType : resultTypesProp.split(",")) {
-                switch (resultType) {
-                    case "parameter":  resultTypes |= ResultFileManager.PARAMETER;  break;
-                    case "scalar":     resultTypes |= ResultFileManager.SCALAR;     break;
-                    case "vector":     resultTypes |= ResultFileManager.VECTOR;     break;
-                    case "statistics": resultTypes |= ResultFileManager.STATISTICS; break;
-                    case "histogram":  resultTypes |= ResultFileManager.HISTOGRAM;  break;
-                }
-            }
-        }
+        if (resultTypesProp != null)
+            resultTypes = ScaveModelUtil.parseResultTypes(resultTypesProp);
 
         ChartTemplate template = new ChartTemplate(id, name, description, chartType, icon, resultTypes, script, pages, score, menuIcon, properties, originFolder.toString());
 

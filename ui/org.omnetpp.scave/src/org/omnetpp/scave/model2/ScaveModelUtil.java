@@ -18,6 +18,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.common.Debug;
+import org.omnetpp.common.IConstants;
+import org.omnetpp.common.OmnetppDirs;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
 import org.omnetpp.scave.engine.IDList;
@@ -66,6 +68,7 @@ public class ScaveModelUtil {
         Chart chart = new Chart(template.getChartType());
         chart.setTemplateID(template.getId());
         chart.setSupportedResultTypes(template.getSupportedResultTypes());
+        chart.setCreatedWith(IConstants.PRODUCT_NAME + " " + OmnetppDirs.getVersion());
 
         chart.setScript(template.getPythonScript());
 
@@ -108,6 +111,25 @@ public class ScaveModelUtil {
 
     public static String getResultTypesAsString(int resultTypes) {
         return StringUtils.join(getResultTypesAsStringList(resultTypes), ",");
+    }
+
+    public static int parseResultTypes(String resultTypes) {
+        int result = 0;
+
+        for (String resultType : resultTypes.split(",")) {
+            if (Scave.PARAMETER.equals(resultType))
+                result |= ResultFileManager.PARAMETER;
+            if (Scave.SCALAR.equals(resultType))
+                result |= ResultFileManager.SCALAR;
+            if (Scave.VECTOR.equals(resultType))
+                result |= ResultFileManager.VECTOR;
+            if (Scave.STATISTICS.equals(resultType))
+                result |= ResultFileManager.STATISTICS;
+            if (Scave.HISTOGRAM.equals(resultType))
+                result |= ResultFileManager.HISTOGRAM;
+        }
+
+        return result;
     }
 
     public static void addInputFiles(CommandStack commandStack, Analysis analysis, List<String> list) {
