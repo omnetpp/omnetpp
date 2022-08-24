@@ -3,6 +3,7 @@ package org.omnetpp.eventlog;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -109,7 +110,7 @@ public class FilteredEventLog extends EventLogBase implements IEventLog
         this.lastConsideredEventNumber = lastConsideredEventNumber;
     }
 
-    public void setExcludedEventNumbers(final ArrayList<Long> excludedEventNumbers) {
+    public void setExcludedEventNumbers(final List<Long> excludedEventNumbers) {
         for (var eventNumber : excludedEventNumbers)
             this.excludedEventNumbers.add(eventNumber);
     }
@@ -139,11 +140,11 @@ public class FilteredEventLog extends EventLogBase implements IEventLog
         setPatternMatchers(this.moduleClassNames, moduleClassNames);
     }
 
-    public final void setModuleNedTypeNames(ArrayList<String> moduleNedTypeNames) {
+    public final void setModuleNedTypeNames(List<String> moduleNedTypeNames) {
         setPatternMatchers(this.moduleNedTypeNames, moduleNedTypeNames);
     }
 
-    public final void setModuleIds(ArrayList<Integer> moduleIds) {
+    public final void setModuleIds(List<Integer> moduleIds) {
         this.moduleIds = new ArrayList<Integer>(moduleIds);
     }
 
@@ -156,27 +157,27 @@ public class FilteredEventLog extends EventLogBase implements IEventLog
             this.messageExpression.setPattern(messageExpression, false, true, false);
     }
 
-    public final void setMessageNames(ArrayList<String> messageNames) {
+    public final void setMessageNames(List<String> messageNames) {
         setPatternMatchers(this.messageNames, messageNames);
     }
 
-    public final void setMessageClassNames(ArrayList<String> messageClassNames) {
+    public final void setMessageClassNames(List<String> messageClassNames) {
         setPatternMatchers(this.messageClassNames, messageClassNames);
     }
 
-    public final void setMessageIds(ArrayList<Long> messageIds) {
+    public final void setMessageIds(List<Long> messageIds) {
         this.messageIds = new ArrayList<Long>(messageIds);
     }
 
-    public final void setMessageTreeIds(ArrayList<Long> messageTreeIds) {
+    public final void setMessageTreeIds(List<Long> messageTreeIds) {
         this.messageTreeIds = new ArrayList<Long>(messageTreeIds);
     }
 
-    public final void setMessageEncapsulationIds(ArrayList<Long> messageEncapsulationIds) {
+    public final void setMessageEncapsulationIds(List<Long> messageEncapsulationIds) {
         this.messageEncapsulationIds = new ArrayList<Long>(messageEncapsulationIds);
     }
 
-    public final void setMessageEncapsulationTreeIds(ArrayList<Long> messageEncapsulationTreeIds) {
+    public final void setMessageEncapsulationTreeIds(List<Long> messageEncapsulationTreeIds) {
         this.messageEncapsulationTreeIds = new ArrayList<Long>(messageEncapsulationTreeIds);
     }
 
@@ -864,11 +865,11 @@ public class FilteredEventLog extends EventLogBase implements IEventLog
         return eventNumberToTraceableEventFlagMap.put(consequenceEventNumber, false);
     }
 
-    protected final void setPatternMatchers(java.util.ArrayList<PatternMatcher> patternMatchers, java.util.ArrayList<String> patterns) {
+    protected final void setPatternMatchers(java.util.ArrayList<PatternMatcher> patternMatchers, List<String> patterns) {
         setPatternMatchers(patternMatchers, patterns, false);
     }
 
-    protected final void setPatternMatchers(ArrayList<PatternMatcher> patternMatchers, ArrayList<String> patterns, boolean dottedPath) {
+    protected final void setPatternMatchers(ArrayList<PatternMatcher> patternMatchers, List<String> patterns, boolean dottedPath) {
         for (var pattern : patterns) {
             PatternMatcher matcher = new PatternMatcher();
             matcher.setPattern(pattern, dottedPath, true, false);
