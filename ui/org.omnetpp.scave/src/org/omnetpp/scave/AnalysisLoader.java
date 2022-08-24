@@ -21,6 +21,7 @@ import org.omnetpp.scave.model.ChartTemplate;
 import org.omnetpp.scave.model.Folder;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Property;
+import org.omnetpp.scave.model2.ScaveModelUtil;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -211,6 +212,15 @@ public class AnalysisLoader {
             Property prop = new Property(name, value);
             chart.addProperty(prop);
         }
+
+        String resultTypesAttr = chartNode.getAttribute("resultTypes");
+        if (!resultTypesAttr.isEmpty())
+            chart.setSupportedResultTypes(ScaveModelUtil.parseResultTypes(resultTypesAttr));
+
+        String createdWithAttr = chartNode.getAttribute("createdWith");
+        if (!createdWithAttr.isEmpty())
+            chart.setCreatedWith(createdWithAttr);
+
         return chart;
     }
 

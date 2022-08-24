@@ -24,6 +24,7 @@ import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.AnalysisItem;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Chart.DialogPage;
+import org.omnetpp.scave.model2.ScaveModelUtil;
 import org.omnetpp.scave.model.Folder;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Property;
@@ -115,6 +116,8 @@ public class AnalysisSaver {
 
                 chartElem.setAttribute("type", chart.getType().toString());
                 chartElem.setAttribute("icon", chart.getIconPath());
+                chartElem.setAttribute("resultTypes", ScaveModelUtil.getResultTypesAsString(chart.getSupportedResultTypes()));
+                chartElem.setAttribute("createdWith", chart.getCreatedWith());
 
                 for (Property p : chart.getProperties()) {
                     Element e = document.createElement("property");

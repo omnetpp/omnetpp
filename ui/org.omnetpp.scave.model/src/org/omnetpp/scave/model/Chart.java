@@ -62,6 +62,7 @@ public class Chart extends AnalysisItem {
     protected ChartType type;
     protected String iconPath = "";
     protected int supportedResultTypes; // a bitwise OR of the constants in ResultFileManager
+    protected String createdWith; // used to store the OMNeT++ version at creation
 
     public Chart() {
     }
@@ -84,7 +85,7 @@ public class Chart extends AnalysisItem {
             properties = new ArrayList<Property>(other.properties.size());
 
             for (int i = 0; i < other.properties.size(); ++i)
-                    properties.add(other.properties.get(i).clone());
+                properties.add(other.properties.get(i).clone());
 
             // other fields are copied from the template upon creation and are never changed
             notifyListeners();
@@ -245,6 +246,15 @@ public class Chart extends AnalysisItem {
 
     public void setSupportedResultTypes(int supportedResultTypes) {
         this.supportedResultTypes = supportedResultTypes;
+        notifyListeners();
+    }
+
+    public String getCreatedWith() {
+        return createdWith;
+    }
+
+    public void setCreatedWith(String createdWith) {
+        this.createdWith = createdWith;
         notifyListeners();
     }
 
