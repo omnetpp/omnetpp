@@ -24,7 +24,7 @@ export SHARED_LIBS=yes
 export WITH_QTENV=yes
 export WITH_LIBXML=no
 export WITH_OSG=yes
-export WITH_OSGEARTH=yes
+export WITH_OSGEARTH=no
 export WITH_SYSTEMC=no
 export PREFER_CLANG=yes
 export PREFER_LLD=yes
@@ -168,7 +168,7 @@ contains "Qtenv : Qt-based graphical user interface" yes
 (TEST_PROG="opp_run -v" contains "CLANG" yes)
 (TEST_PROG="opp_run -v" contains "WITH_NETBUILDER" yes)
 (TEST_PROG="opp_run -v" contains "WITH_OSG" yes)
-(TEST_PROG="opp_run -v" contains "WITH_OSGEARTH" yes)
+(TEST_PROG="opp_run -v" contains "WITH_OSGEARTH" no)
 (runtest core)
 (runtest common)
 (runtest envir)
@@ -184,7 +184,7 @@ contains "Qtenv : Qt-based graphical user interface" yes
 (TEST_PROG="opp_run -v" contains "WITH_LIBXML" yes)
 (TEST_PROG="opp_run -v" contains "WITH_NETBUILDER" yes)
 (TEST_PROG="opp_run -v" contains "WITH_OSG" yes)
-(TEST_PROG="opp_run -v" contains "WITH_OSGEARTH" yes)
+(TEST_PROG="opp_run -v" contains "WITH_OSGEARTH" no)
 (runtest core)
 (runtest common)
 (runtest envir)
@@ -199,18 +199,18 @@ contains "Qtenv : Qt-based graphical user interface" yes
 (TEST_PROG="opp_run -v" contains "GCC" yes)
 (TEST_PROG="opp_run -v" contains "WITH_NETBUILDER" yes)
 (TEST_PROG="opp_run -v" contains "WITH_OSG" yes)
-(TEST_PROG="opp_run -v" contains "WITH_OSGEARTH" yes)
+(TEST_PROG="opp_run -v" contains "WITH_OSGEARTH" no)
 (runtest core)
 (runtest common)
 (runtest envir)
 (runtest makemake)
 
 #########################################
-# check building without OSGEARTH
-CFG=without_osgearth
-(WITH_OSG=yes WITH_OSGEARTH=no compile)
+# check building with OSGEARTH
+CFG=with_osgearth
+(WITH_OSG=yes WITH_OSGEARTH=yes compile)
 (TEST_PROG="opp_run -v" contains "WITH_OSG" yes)
-(TEST_PROG="opp_run -v" contains "WITH_OSGEARTH" no)
+(TEST_PROG="opp_run -v" contains "WITH_OSGEARTH" yes)
 (runtest makemake)
 
 #########################################
@@ -241,7 +241,7 @@ CFG=default_static
 (TEST_PROG="samples/aloha/aloha -h all" contains "Cmdenv : command-line user interface" yes)
 (TEST_PROG="samples/aloha/aloha -v" contains "WITH_NETBUILDER" yes)
 (TEST_PROG="samples/aloha/aloha -v" contains "WITH_OSG" yes)
-(TEST_PROG="samples/aloha/aloha -v" contains "WITH_OSGEARTH" yes)
+(TEST_PROG="samples/aloha/aloha -v" contains "WITH_OSGEARTH" no)
 
 ########################################
 # Test MPI/parsim only on linux where MPI libs are available
