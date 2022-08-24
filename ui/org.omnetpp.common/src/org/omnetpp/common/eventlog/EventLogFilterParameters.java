@@ -109,13 +109,13 @@ public class EventLogFilterParameters implements Serializable {
 
     public String messageFilterExpression;
 
-    public EnabledInt[] messageIds;
+    public EnabledLong[] messageIds;
 
-    public EnabledInt[] messageTreeIds;
+    public EnabledLong[] messageTreeIds;
 
-    public EnabledInt[] messageEncapsulationIds;
+    public EnabledLong[] messageEncapsulationIds;
 
-    public EnabledInt[] messageEncapsulationTreeIds;
+    public EnabledLong[] messageEncapsulationTreeIds;
 
     public boolean collectMessageReuses = true;
 
@@ -251,15 +251,15 @@ public class EventLogFilterParameters implements Serializable {
             return limit;
     }
 
-    public Int64Vector getExcludedEventNumbers() {
+    public List<Long> getExcludedEventNumbers() {
         if (enableExcludedEventNumberFilter)
-            return createInt64Vector(excludedEventNumbers);
+            return createLongVector(excludedEventNumbers);
         else
-            return new Int64Vector();
+            return new ArrayList<Long>();
     }
 
-    public IntVector getModuleIds() {
-        IntVector vector = new IntVector();
+    public List<Integer> getModuleIds() {
+        ArrayList<Integer> vector = new ArrayList<Integer>();
 
         if (enableModuleNameFilter)
             for (int id : moduleNameIds)
@@ -272,44 +272,44 @@ public class EventLogFilterParameters implements Serializable {
         return vector;
     }
 
-    public StringVector getModuleNEDTypeNames() {
-        return createStringVector(moduleNEDTypeNames);
+    public List<String> getModuleNEDTypeNames() {
+        return Arrays.asList(moduleNEDTypeNames);
     }
 
-    public StringVector getMessageClassNames() {
-        return createStringVector(messageClassNames);
+    public List<String> getMessageClassNames() {
+        return Arrays.asList(messageClassNames);
     }
 
-    public StringVector getMessageNames() {
-        return createStringVector(messageNames);
+    public List<String> getMessageNames() {
+        return Arrays.asList(messageNames);
     }
 
-    public LongVector getSelectedMessageIds() {
+    public List<Long> getSelectedMessageIds() {
         if (enableMessageIdFilter)
             return createLongVector(messageIds);
         else
-            return new LongVector();
+            return new ArrayList<Long>();
     }
 
-    public LongVector getSelectedMessageTreeIds() {
+    public List<Long> getSelectedMessageTreeIds() {
         if (enableMessageTreeIdFilter)
             return createLongVector(messageTreeIds);
         else
-            return new LongVector();
+            return new ArrayList<Long>();
     }
 
-    public LongVector getSelectedMessageEncapsulationIds() {
+    public List<Long> getSelectedMessageEncapsulationIds() {
         if (enableMessageEncapsulationIdFilter)
             return createLongVector(messageEncapsulationIds);
         else
-            return new LongVector();
+            return new ArrayList<Long>();
     }
 
-    public LongVector getSelectedMessageEcapsulationTreeIds() {
+    public List<Long> getSelectedMessageEcapsulationTreeIds() {
         if (enableMessageEncapsulationTreeIdFilter)
             return createLongVector(messageEncapsulationTreeIds);
         else
-            return new LongVector();
+            return new ArrayList<Long>();
     }
 
     public IntVector createIntVector(int[] ids) {
@@ -321,10 +321,10 @@ public class EventLogFilterParameters implements Serializable {
         return vector;
     }
 
-    public LongVector createLongVector(EnabledInt[] ids) {
-        LongVector vector = new LongVector();
+    public List<Long> createLongVector(EnabledLong[] ids) {
+        ArrayList<Long> vector = new ArrayList<Long>();
 
-        for (EnabledInt id : ids)
+        for (EnabledLong id : ids)
             if (id.enabled)
                 vector.add(id.value);
 
@@ -337,15 +337,6 @@ public class EventLogFilterParameters implements Serializable {
         for (EnabledLong id : ids)
             if (id.enabled)
                 vector.add(id.value);
-
-        return vector;
-    }
-
-    public StringVector createStringVector(String[] names) {
-        StringVector vector = new StringVector();
-
-        for (String name : names)
-            vector.add(name);
 
         return vector;
     }

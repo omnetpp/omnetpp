@@ -334,18 +334,18 @@ public class EventLogInput extends FileEditorInput
         // enable is handled in filter parameters
         filteredEventLog.setFirstConsideredEventNumber(eventLogFilterParameters.getFirstEventNumber());
         filteredEventLog.setLastConsideredEventNumber(eventLogFilterParameters.getLastEventNumber());
-//        filteredEventLog.setExcludedEventNumbers(eventLogFilterParameters.getExcludedEventNumbers());
+        filteredEventLog.setExcludedEventNumbers(eventLogFilterParameters.getExcludedEventNumbers());
 
         filteredEventLog.setEnableModuleFilter(eventLogFilterParameters.enableModuleFilter);
         if (eventLogFilterParameters.enableModuleFilter) {
             if (eventLogFilterParameters.enableModuleExpressionFilter)
                 filteredEventLog.setModuleExpression(eventLogFilterParameters.moduleFilterExpression);
 
-//            if (eventLogFilterParameters.enableModuleIdFilter || eventLogFilterParameters.enableModuleNameFilter)
-//                filteredEventLog.setModuleIds(eventLogFilterParameters.getModuleIds());
-//
-//            if (eventLogFilterParameters.enableModuleNEDTypeNameFilter)
-//                filteredEventLog.setModuleNedTypeNames(eventLogFilterParameters.getModuleNEDTypeNames());
+            if (eventLogFilterParameters.enableModuleIdFilter || eventLogFilterParameters.enableModuleNameFilter)
+                filteredEventLog.setModuleIds(eventLogFilterParameters.getModuleIds());
+
+            if (eventLogFilterParameters.enableModuleNEDTypeNameFilter)
+                filteredEventLog.setModuleNedTypeNames(eventLogFilterParameters.getModuleNEDTypeNames());
         }
 
         if (eventLogFilterParameters.enableTraceFilter) {
@@ -362,24 +362,24 @@ public class EventLogInput extends FileEditorInput
         if (eventLogFilterParameters.enableMessageFilter) {
             if (eventLogFilterParameters.enableMessageExpressionFilter)
                 filteredEventLog.setMessageExpression(eventLogFilterParameters.messageFilterExpression);
-//
-//            if (eventLogFilterParameters.enableMessageClassNameFilter)
-//                filteredEventLog.setMessageClassNames(eventLogFilterParameters.getMessageClassNames());
-//
-//            if (eventLogFilterParameters.enableMessageNameFilter)
-//                filteredEventLog.setMessageNames(eventLogFilterParameters.getMessageNames());
-//
-//            if (eventLogFilterParameters.enableMessageIdFilter)
-//                filteredEventLog.setMessageIds(eventLogFilterParameters.getSelectedMessageIds());
-//
-//            if (eventLogFilterParameters.enableMessageTreeIdFilter)
-//                filteredEventLog.setMessageTreeIds(eventLogFilterParameters.getSelectedMessageTreeIds());
-//
-//            if (eventLogFilterParameters.enableMessageEncapsulationIdFilter)
-//                filteredEventLog.setMessageEncapsulationIds(eventLogFilterParameters.getSelectedMessageEncapsulationIds());
-//
-//            if (eventLogFilterParameters.enableMessageEncapsulationTreeIdFilter)
-//                filteredEventLog.setMessageEncapsulationTreeIds(eventLogFilterParameters.getSelectedMessageEcapsulationTreeIds());
+
+            if (eventLogFilterParameters.enableMessageClassNameFilter)
+                filteredEventLog.setMessageClassNames(eventLogFilterParameters.getMessageClassNames());
+
+            if (eventLogFilterParameters.enableMessageNameFilter)
+                filteredEventLog.setMessageNames(eventLogFilterParameters.getMessageNames());
+
+            if (eventLogFilterParameters.enableMessageIdFilter)
+                filteredEventLog.setMessageIds(eventLogFilterParameters.getSelectedMessageIds());
+
+            if (eventLogFilterParameters.enableMessageTreeIdFilter)
+                filteredEventLog.setMessageTreeIds(eventLogFilterParameters.getSelectedMessageTreeIds());
+
+            if (eventLogFilterParameters.enableMessageEncapsulationIdFilter)
+                filteredEventLog.setMessageEncapsulationIds(eventLogFilterParameters.getSelectedMessageEncapsulationIds());
+
+            if (eventLogFilterParameters.enableMessageEncapsulationTreeIdFilter)
+                filteredEventLog.setMessageEncapsulationTreeIds(eventLogFilterParameters.getSelectedMessageEcapsulationTreeIds());
         }
 
         // store event log

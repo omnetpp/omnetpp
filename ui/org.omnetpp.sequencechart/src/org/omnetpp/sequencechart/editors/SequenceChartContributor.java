@@ -1766,12 +1766,12 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                 filterParameters.enableMessageFilter = true;
                 filterParameters.enableMessageEncapsulationTreeIdFilter = true;
 
-                EventLogFilterParameters.EnabledInt enabledInt = null;
+                EventLogFilterParameters.EnabledLong enabledLong = null;
 
                 if (filterParameters.messageEncapsulationTreeIds != null) {
-                    for (EventLogFilterParameters.EnabledInt messageEncapsulationTreeId : filterParameters.messageEncapsulationTreeIds) {
+                    for (EventLogFilterParameters.EnabledLong messageEncapsulationTreeId : filterParameters.messageEncapsulationTreeIds) {
                         if (messageEncapsulationTreeId.value == messageDescriptionEntry.getMessageEncapsulationId()) {
-                            enabledInt = messageEncapsulationTreeId;
+                            enabledLong = messageEncapsulationTreeId;
                             messageEncapsulationTreeId.enabled = true;
                         }
                         else
@@ -1779,9 +1779,9 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                     }
                 }
 
-                if (enabledInt == null) {
-                    enabledInt = new EventLogFilterParameters.EnabledInt(true, (int)messageDescriptionEntry.getMessageEncapsulationTreeId());
-                    filterParameters.messageEncapsulationTreeIds = (EventLogFilterParameters.EnabledInt[])ArrayUtils.add(filterParameters.messageEncapsulationTreeIds, enabledInt);
+                if (enabledLong == null) {
+                    enabledLong = new EventLogFilterParameters.EnabledLong(true, messageDescriptionEntry.getMessageEncapsulationTreeId());
+                    filterParameters.messageEncapsulationTreeIds = (EventLogFilterParameters.EnabledLong[])ArrayUtils.add(filterParameters.messageEncapsulationTreeIds, enabledLong);
                 }
 
                 // range filter
