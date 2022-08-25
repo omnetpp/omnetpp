@@ -7,8 +7,10 @@
 // `license' for details on this and other legal matters.
 //
 
-#if defined(WITH_OSG) && defined(WITH_OSGEARTH)
 #include "RambleNode.h"
+
+#ifdef WITH_OSGEARTH
+
 #include "OsgEarthScene.h"
 #include "ChannelController.h"
 #include <osg/Depth>

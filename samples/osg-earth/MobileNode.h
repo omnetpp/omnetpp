@@ -12,6 +12,8 @@
 
 #include <omnetpp.h>
 
+#ifdef WITH_OSGEARTH
+
 #include <osg/PositionAttitudeTransform>
 #include <osgEarth/MapNode>
 #include <osgEarth/GeoTransform>
@@ -88,4 +90,6 @@ class MobileNode : public cSimpleModule, public IMobileNode
     virtual void move() = 0;
 };
 
-#endif
+#endif // WITH_OSGEARTH
+
+#endif // __MOBILENODE_H__

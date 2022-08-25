@@ -7,8 +7,9 @@
 // `license' for details on this and other legal matters.
 //
 
-#if defined(WITH_OSG) && defined(WITH_OSGEARTH)
 #include "ChannelController.h"
+
+#ifdef WITH_OSGEARTH
 
 #include <osg/PositionAttitudeTransform>
 #include <osgEarth/Version>
@@ -130,4 +131,4 @@ void ChannelController::handleMessage(cMessage *msg)
     throw cRuntimeError("This module does not process messages");
 }
 
-#endif // WITH_OSG
+#endif // WITH_OSGEARTH

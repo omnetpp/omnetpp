@@ -12,6 +12,8 @@
 
 #include <omnetpp.h>
 
+#ifdef WITH_OSGEARTH
+
 #include "OsgEarthScene.h"
 #include "GroundStation.h"
 #include "Satellite.h"
@@ -69,4 +71,6 @@ class ChannelController : public cSimpleModule
     void addGroundStation(GroundStation *p); // to be called exactly in initialize stage 1
 };
 
-#endif
+#endif // WITH_OSGEARTH
+
+#endif // __CHANNELCONTROLLER_H_

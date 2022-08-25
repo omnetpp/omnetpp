@@ -8,7 +8,9 @@
 //
 
 #include <omnetpp.h>
+
 #ifdef WITH_OSG
+
 #include <osgDB/ReadFile>
 
 using namespace omnetpp;

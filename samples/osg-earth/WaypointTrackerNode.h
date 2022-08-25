@@ -10,9 +10,12 @@
 #ifndef __WAYPOINTTRACKERNODE_H__
 #define __WAYPOINTTRACKERNODE_H__
 
+#include <omnetpp.h>
+
+#ifdef WITH_OSGEARTH
+
 #include <vector>
 #include <string>
-#include <omnetpp.h>
 #include "MobileNode.h"
 
 using namespace omnetpp;
@@ -57,4 +60,6 @@ class WaypointTrackerNode : public MobileNode
     void readWaypointsFromFile(const char *fileName);
 };
 
-#endif
+#endif // WITH_OSGEARTH
+
+#endif // __WAYPOINTTRACKERNODE_H__

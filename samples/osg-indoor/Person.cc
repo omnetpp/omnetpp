@@ -7,8 +7,10 @@
 // `license' for details on this and other legal matters.
 //
 
-#ifdef WITH_OSG
 #include "Person.h"
+
+#ifdef WITH_OSG
+
 #include "omnetpp/osgutil.h"
 #include <osgDB/ReadFile>
 #include "OsgScene.h"

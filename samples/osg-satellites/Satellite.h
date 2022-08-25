@@ -11,6 +11,9 @@
 #define __MOBILENODE_H__
 
 #include <omnetpp.h>
+
+#ifdef WITH_OSGEARTH
+
 #include "OsgEarthScene.h"
 
 #include <osgEarth/MapNode>
@@ -62,5 +65,7 @@ class Satellite : public cSimpleModule
     virtual void handleMessage(cMessage *msg) override;
     virtual void refreshDisplay() const override;
 };
+
+#endif
 
 #endif

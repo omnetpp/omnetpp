@@ -11,6 +11,9 @@
 #define __RAMBLENODE_H__
 
 #include <omnetpp.h>
+
+#ifdef WITH_OSGEARTH
+
 #include "MobileNode.h"
 #include <osgAnimation/BasicAnimationManager>
 
@@ -52,4 +55,6 @@ class RambleNode : public MobileNode
     virtual void transmit();
 };
 
-#endif
+#endif // WITH_OSGEARTH
+
+#endif // __RAMBLENODE_H__
