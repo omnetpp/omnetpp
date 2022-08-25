@@ -7,9 +7,9 @@
 // `license' for details on this and other legal matters.
 //
 
-#if defined(WITH_OSG) && defined(WITH_OSGEARTH)
-
 #include "ChannelController.h"
+
+#ifdef WITH_OSGEARTH
 
 #include <osgEarthUtil/LinearLineOfSight>
 #include <osgUtil/UpdateVisitor>

@@ -7,8 +7,9 @@
 // `license' for details on this and other legal matters.
 //
 
-#if defined(WITH_OSG) && defined(WITH_OSGEARTH)
 #include "OsgEarthScene.h"
+
+#ifdef WITH_OSGEARTH
 
 #include <osgDB/ReadFile>
 #include <osgEarth/Version>

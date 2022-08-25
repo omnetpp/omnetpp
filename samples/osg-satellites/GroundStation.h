@@ -11,6 +11,9 @@
 #define __GROUNDSTATION_H__
 
 #include <omnetpp.h>
+
+#ifdef WITH_OSGEARTH
+
 #include "OsgEarthScene.h"
 
 #include <osgEarth/MapNode>
@@ -55,4 +58,6 @@ class GroundStation : public cSimpleModule
     virtual void refreshVisuals();
 };
 
-#endif
+#endif // WITH_OSGEARTH
+
+#endif // __GROUNDSTATION_H__

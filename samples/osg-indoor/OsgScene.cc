@@ -7,8 +7,10 @@
 // `license' for details on this and other legal matters.
 //
 
-#ifdef WITH_OSG
 #include "OsgScene.h"
+
+#ifdef WITH_OSG
+
 #include <osgDB/ReadFile>
 
 using namespace omnetpp;

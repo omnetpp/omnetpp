@@ -12,6 +12,8 @@
 
 #include <omnetpp.h>
 
+#ifdef WITH_OSGEARTH
+
 #include <osg/Node>
 #include <osgEarth/MapNode>
 #include <osgEarthAnnotation/FeatureNode>
@@ -57,4 +59,6 @@ class ChannelController : public cSimpleModule
     virtual void refreshDisplay() const override;
 };
 
-#endif
+#endif // WITH_OSGEARTH
+
+#endif // __CHANNELCONTROLLER_H_

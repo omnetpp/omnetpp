@@ -7,10 +7,11 @@
 // `license' for details on this and other legal matters.
 //
 
-#if !defined(WITH_OSG) || !defined(WITH_OSGEARTH)
 #include <omnetpp.h>
 
-// fallbac code used in case OpenSceneGraph and osgEarth is not present on the system
+#ifndef WITH_OSGEARTH
+
+// fallback code used in case OpenSceneGraph and osgEarth is not present on the system
 using namespace omnetpp;
 
 class Satellite : public cSimpleModule
@@ -49,4 +50,4 @@ class ChannelController : public cSimpleModule
 
 Define_Module(ChannelController);
 
-#endif // WITH_OSG
+#endif // !WITH_OSGEARTH
