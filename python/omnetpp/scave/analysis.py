@@ -104,7 +104,7 @@ class Workspace:
     metadata (the `.metadata` subdirectory) is missing; then it looks for projects
     in directories adjacent to other known projects.
     """
-    def __init__(self, workspace_dir=None, project_locations={}):
+    def __init__(self, workspace_dir=None, project_locations=None):
         """
         Accepts the workspace location, plus a dict that contains the (absolute,
         or workspace-location-relative) location of projects by name. The latter is
@@ -118,7 +118,7 @@ class Workspace:
             self.workspace_dir = os.path.abspath(workspace_dir)
         else:
             self.workspace_dir = None
-        self.project_locations = project_locations
+        self.project_locations = project_locations or {}
 
     @staticmethod
     def find_workspace(dir=None):
