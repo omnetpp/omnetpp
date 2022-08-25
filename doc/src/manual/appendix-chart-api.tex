@@ -2503,17 +2503,40 @@ and properties (which are what the \textit{Chart Properties} dialog in the IDE e
 
 \par This is an abstraction of an IDE workspace, and makes it possible to map
 workspace paths to filesystem paths. This is necessary because the inputs
-in the \ttt{Analysis} are workspace paths.
+in the \ttt{Analysis} are workspace paths. The class tolerates if workspace
+metadata (the \ttt{.metadata} subdirectory) is missing; then it looks for projects
+in directories adjacent to other known projects.
 
 \label{cha:chart-api:omnetpp.scave.analysis:Workspace:--init--}
 
 \begin{flushleft}
-\ttt{Workspace(self, workspace\_dir, project\_paths=\{\})}
+\ttt{Workspace(self, workspace\_dir=None, project\_locations=None)}
 \end{flushleft}
 
 \par Accepts the workspace location, plus a dict that contains the (absolute,
-or workspace-relative) location of projects by name, for projects that
-are NOT under the <workspace\_dir>/<projectname> location.
+or workspace-location-relative) location of projects by name. The latter is
+useful for projects that are NOT at the <workspace\_dir>/<projectname> location.
+
+\label{cha:chart-api:omnetpp.scave.analysis:Workspace:find-enclosing-project}
+
+\begin{flushleft}
+\ttt{\small{Workspace.}find\_enclosing\_project(self, file=None)}
+\end{flushleft}
+
+\par Find the project name searching from the given directory (or the current
+dir if not given) upwards. Project directories of the Eclipse-based IDE
+can be recognized by having a \ttt{.project} file in them.
+
+\label{cha:chart-api:omnetpp.scave.analysis:Workspace:find-enclosing-project-location}
+
+\begin{flushleft}
+\ttt{\small{Workspace.}find\_enclosing\_project\_location(file=None)}
+\end{flushleft}
+
+\par Utility function: Find the project directory searching from the
+given directory (or the current dir if not given) upwards. Project
+directories of the Eclipse-based IDE can be recognized by having a
+\ttt{.project} file in them.
 
 \label{cha:chart-api:omnetpp.scave.analysis:Workspace:find-workspace}
 
@@ -2524,7 +2547,15 @@ are NOT under the <workspace\_dir>/<projectname> location.
 \par Utility function: Find the IDE workspace directory searching from the
 given directory (or the current dir if not given) upwards. The workspace
 directory of the Eclipse-based IDE can be recognized by having a \ttt{.metadata}
-subdir.
+subdir. If the workspace is not found, None is returned.
+
+\label{cha:chart-api:omnetpp.scave.analysis:Workspace:get-all-referenced-projects}
+
+\begin{flushleft}
+\ttt{\small{Workspace.}get\_all\_referenced\_projects(self, project\_name, include\_self=False)}
+\end{flushleft}
+
+\par Returns a list of projects that are referenced by the given project, even transitively.
 
 \label{cha:chart-api:omnetpp.scave.analysis:Workspace:get-project-location}
 
@@ -2533,6 +2564,23 @@ subdir.
 \end{flushleft}
 
 \par Returns the location of the given workspace project in the filesystem path.
+
+\label{cha:chart-api:omnetpp.scave.analysis:Workspace:get-project-name}
+
+\begin{flushleft}
+\ttt{\small{Workspace.}get\_project\_name(self, project\_dir)}
+\end{flushleft}
+
+\par Returns the "real" name of the project from the \ttt{.project} (project
+description) file in the given project directory.
+
+\label{cha:chart-api:omnetpp.scave.analysis:Workspace:get-referenced-projects}
+
+\begin{flushleft}
+\ttt{\small{Workspace.}get\_referenced\_projects(self, project\_name)}
+\end{flushleft}
+
+\par Returns a list of projects that are referenced by the given project.
 
 \label{cha:chart-api:omnetpp.scave.analysis:Workspace:to-filesystem-path}
 
@@ -2644,7 +2692,8 @@ properties in addition to the chart's properties. If \ttt{show=True}, it calls
 \ttt{load\_anf\_file(anf\_file\_name)}
 \end{flushleft}
 
-
+\par Reads the given anf file and returns its content as an \ttt{Analysis} object.
+This is synonym for \ttt{Analysis.from\_anf\_file()}.
 
 \subsection{Module omnetpp.scave.charttemplate}
 \label{cha:chart-api:omnetpp.scave.charttemplate}
