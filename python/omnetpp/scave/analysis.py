@@ -576,4 +576,8 @@ class Analysis:
             f.write(xml.replace("💩", "&#10;"))
 
 def load_anf_file(anf_file_name):
+    """
+    Reads the given anf file and returns its content as an `Analysis` object.
+    This is synonym for `Analysis.from_anf_file()`.
+    """
     return Analysis.from_anf_file(anf_file_name)
