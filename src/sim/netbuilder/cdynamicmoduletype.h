@@ -57,6 +57,7 @@ class SIM_API cDynamicModuleType : public cModuleType
     virtual cProperties *getConnectionProperties(int connectionId, const char *channelType) const override;
     virtual std::string getPackageProperty(const char *name) const override;
     virtual const char *getImplementationClassName() const override;
+    virtual std::string getCxxNamespaceForType(const char *type) const override;
     virtual std::string getCxxNamespace() const override;
     virtual const char *getSourceFileName() const override;
     virtual bool isInnerType() const override;

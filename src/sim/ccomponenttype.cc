@@ -172,8 +172,9 @@ void cComponentType::checkSignal(simsignal_t signalID, SimsignalType type, cObje
             throw cRuntimeError("Undeclared signal '%s' emitted (@signal missing from NED file?)", signalName);
 
         // found; extract info from it, and add signal to signalsSeen
-        const char *declaredType = prop->getValue("type");
         SignalDesc& desc = signalsSeen[signalID];
+        const char *declaredType = prop->getValue("type");
+        const char *typeWhereSignalTypeWasDeclared = prop->getValueOriginType("type");
         desc.type = !declaredType ? SIMSIGNAL_UNDEF : getSignalType(declaredType, SIMSIGNAL_OBJECT);
         desc.objectType = nullptr;
         desc.isNullable = false;
@@ -181,11 +182,11 @@ void cComponentType::checkSignal(simsignal_t signalID, SimsignalType type, cObje
             // if declaredType ends in a question mark, the signal allows nullptr to be emitted as well
             if (declaredType[strlen(declaredType) - 1] == '?') {
                 std::string netDeclaredType = std::string(declaredType, strlen(declaredType) - 1);
-                desc.objectType = lookupClass(netDeclaredType.c_str());
+                desc.objectType = lookupClass(netDeclaredType.c_str(), typeWhereSignalTypeWasDeclared);
                 desc.isNullable = true;
             }
             else {
-                desc.objectType = lookupClass(declaredType);
+                desc.objectType = lookupClass(declaredType, typeWhereSignalTypeWasDeclared);
             }
             if (!desc.objectType)
                 throw cRuntimeError("Wrong type '%s' in the @signal[%s] property in the '%s' NED type, "
@@ -260,9 +261,10 @@ cProperty *cComponentType::getSignalDeclaration(const char *signalName)
     return found ? getProperties()->get("signal", declaredSignalNames[i]) : nullptr;
 }
 
-cObjectFactory *cComponentType::lookupClass(const char *className) const
+cObjectFactory *cComponentType::lookupClass(const char *className, const char *sourceType) const
 {
-    return cObjectFactory::find(className, getCxxNamespace().c_str(), true);
+    std::string cxxNamespace = getCxxNamespaceForType(sourceType);
+    return cObjectFactory::find(className, cxxNamespace.c_str(), true);
 }
 
 const char *cComponentType::getSourceFileDirectory() const

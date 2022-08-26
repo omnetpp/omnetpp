@@ -97,6 +97,9 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
     // internal: returns the name of the C++ class that implements this NED type
     virtual const char *getImplementationClassName() const = 0;
 
+    // internal: returns the default C++ namespace for the given NED type (for NED it's the @namespace package property)
+    virtual std::string getCxxNamespaceForType(const char *type) const = 0;
+
     // internal: apply pattern-based ("deep") parameter settings in NED
     virtual void applyPatternAssignments(cComponent *component) = 0;
 
@@ -112,7 +115,7 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
     virtual void clearSharedParImpls();
 
     // internal: helper for checkSignal()
-    cObjectFactory *lookupClass(const char *className) const;
+    cObjectFactory *lookupClass(const char *className, const char *sourceType) const;
 
   public:
     // internal: delegates to the similar NedTypeInfo method
