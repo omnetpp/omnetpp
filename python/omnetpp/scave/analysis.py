@@ -63,7 +63,7 @@ class Chart:
     dialog pages (which make up the contents of the Chart Properties dialog in the IDE),
     and properties (which are what the *Chart Properties* dialog in the IDE edits).
     """
-    def __init__(self, id:str=None, name:str="", type:str="MATPLOTLIB", template:str=None, icon:str=None, script:str="", dialog_pages=list(), properties=dict()):
+    def __init__(self, id:str=None, name:str="", type:str="MATPLOTLIB", template:str=None, icon:str=None, script:str="", dialog_pages=list(), properties=dict(), created_with:str=None):
         assert type in ["MATPLOTLIB", "BAR", "LINE", "HISTOGRAM"]
         self.id = _make_id(id)
         self.name = name
@@ -74,6 +74,8 @@ class Chart:
         self.script = script
         self.dialog_pages = dialog_pages.copy()
         self.properties = properties.copy()
+        self.created_with = created_with
+
 
     def __repr__(self):
         return f"Chart(type='{self.type}',name='{self.name}',id={self.id})"
@@ -333,7 +335,8 @@ class Analysis:
                 icon = chart_elem.get('icon'),
                 script = script,
                 dialog_pages = dialog_pages,
-                properties = props)
+                properties = props,
+                created_with = chart_elem.get('createdWith'))
 
         inputs = [input_elem.get('pattern') for input_elem in analysis.findall("inputs/input")]
         items = make_folder(analysis.find('charts')).items
