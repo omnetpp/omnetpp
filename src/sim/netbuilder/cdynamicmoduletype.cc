@@ -131,6 +131,12 @@ const char *cDynamicModuleType::getImplementationClassName() const
     return decl->getImplementationClassName();
 }
 
+std::string cDynamicModuleType::getCxxNamespaceForType(const char *type) const
+{
+    cNedDeclaration *decl = cNedLoader::getInstance()->getDecl(type);
+    return decl->getPackageProperty("namespace");
+}
+
 std::string cDynamicModuleType::getCxxNamespace() const
 {
     cNedDeclaration *decl = getDecl();

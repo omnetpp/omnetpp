@@ -105,6 +105,12 @@ const char *cDynamicChannelType::getImplementationClassName() const
     return decl->getImplementationClassName();
 }
 
+std::string cDynamicChannelType::getCxxNamespaceForType(const char *type) const
+{
+    cNedDeclaration *decl = cNedLoader::getInstance()->getDecl(type);
+    return decl->getPackageProperty("namespace");
+}
+
 std::string cDynamicChannelType::getCxxNamespace() const
 {
     cNedDeclaration *decl = getDecl();
