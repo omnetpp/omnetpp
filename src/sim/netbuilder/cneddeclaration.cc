@@ -123,7 +123,7 @@ cProperties *cNedDeclaration::doProperties() const
         props = getSuperDecl()->doProperties();
 
     // update with local properties
-    props = mergeProperties(props, getParametersElement());
+    props = updateProperties(props, getParametersElement());
     props->addRef();
     return props;
 }
@@ -151,7 +151,7 @@ cProperties *cNedDeclaration::doParamProperties(const char *paramName) const
     NedElement *paramNode = paramsNode ? paramsNode->getFirstChildWithAttribute(NED_PARAM, "name", paramName) : nullptr;
     if (!paramNode && !props)
         return nullptr;  // error: parameter not found anywhere
-    props = mergeProperties(props, paramNode);
+    props = updateProperties(props, paramNode);
     putIntoPropsMap(paramPropsMap, paramName, props);
     return props;
 }
@@ -179,7 +179,7 @@ cProperties *cNedDeclaration::doGateProperties(const char *gateName) const
     NedElement *gateNode = gatesNode ? gatesNode->getFirstChildWithAttribute(NED_GATE, "name", gateName) : nullptr;
     if (!gateNode && !props)
         return nullptr;  // error: gate not found anywhere
-    props = mergeProperties(props, gateNode);
+    props = updateProperties(props, gateNode);
     putIntoPropsMap(gatePropsMap, gateName, props);
     return props;
 }
@@ -211,7 +211,7 @@ cProperties *cNedDeclaration::doSubmoduleProperties(const char *submoduleName, c
     if (!subcomponentNode && !props)
         return nullptr;  // error: no such submodule FIXME must not return nullptr!
     NedElement *paramsNode = subcomponentNode ? subcomponentNode->getFirstChildWithTag(NED_PARAMETERS) : nullptr;
-    props = mergeProperties(props, paramsNode);
+    props = updateProperties(props, paramsNode);
     putIntoPropsMap(submodulePropsMap, key.c_str(), props);
     return props;
 }
@@ -244,21 +244,20 @@ cProperties *cNedDeclaration::doConnectionProperties(int connectionId, const cha
         return nullptr;  // error: no such connection
 
     NedElement *paramsNode = connectionNode ? connectionNode->getFirstChildWithTag(NED_PARAMETERS) : nullptr;
-    props = mergeProperties(props, paramsNode);
+    props = updateProperties(props, paramsNode);
     putIntoPropsMap(connectionPropsMap, key.c_str(), props);
     return props;
 }
 
-cProperties *cNedDeclaration::mergeProperties(const cProperties *baseprops, NedElement *parent) const
+cProperties *cNedDeclaration::updateProperties(cProperties *props, NedElement *withPropsParent) const
 {
     // returns parent's properties merged with props; both can be nullptr.
     // retval is never nullptr but can be an empty cProperties.
     // the props object doesn't get modified -- if it would have to be modified,
     // it gets dupped first.
-    cProperties *props = const_cast<cProperties *>(baseprops);
-    if (!parent)
+    if (!withPropsParent)
         return props ? props : new cProperties();
-    NedElement *firstPropertyChild = parent->getFirstChildWithTag(NED_PROPERTY);
+    NedElement *firstPropertyChild = withPropsParent->getFirstChildWithTag(NED_PROPERTY);
     if (!firstPropertyChild)
         return props ? props : new cProperties();
 
@@ -273,18 +272,18 @@ cProperties *cNedDeclaration::mergeProperties(const cProperties *baseprops, NedE
         if (!prop)
             props->add(prop = new cProperty(propName, propIndex));
         if (!strcmp(propName, "display"))
-            updateDisplayProperty(propNode, prop);
+            updateDisplayProperty(prop, propNode);
         else
-            updateProperty(propNode, prop);
+            updateProperty(prop, propNode);
     }
     return props;
 }
 
-void cNedDeclaration::updateProperty(PropertyElement *propNode, cProperty *prop) const
+void cNedDeclaration::updateProperty(cProperty *prop, PropertyElement *withPropNode) const
 {
-    prop->setIsImplicit(propNode->getIsImplicit());
+    prop->setIsImplicit(withPropNode->getIsImplicit());
 
-    for (NedElement *child = propNode->getFirstChildWithTag(NED_PROPERTY_KEY); child; child = child->getNextSiblingWithTag(NED_PROPERTY_KEY)) {
+    for (NedElement *child = withPropNode->getFirstChildWithTag(NED_PROPERTY_KEY); child; child = child->getNextSiblingWithTag(NED_PROPERTY_KEY)) {
         PropertyKeyElement *propKeyNode = (PropertyKeyElement *)child;
         const char *key = propKeyNode->getName();
         if (!prop->containsKey(key))
@@ -305,11 +304,11 @@ void cNedDeclaration::updateProperty(PropertyElement *propNode, cProperty *prop)
     }
 }
 
-void cNedDeclaration::updateDisplayProperty(PropertyElement *propNode, cProperty *prop) const
+void cNedDeclaration::updateDisplayProperty(cProperty *prop, PropertyElement *withPropNode) const
 {
     // @display() has to be treated specially
     // find new display string
-    PropertyKeyElement *propKeyNode = (PropertyKeyElement *)propNode->getFirstChildWithTag(NED_PROPERTY_KEY);
+    PropertyKeyElement *propKeyNode = (PropertyKeyElement *)withPropNode->getFirstChildWithTag(NED_PROPERTY_KEY);
     if (!propKeyNode)
         return;
     LiteralElement *literalNode = (LiteralElement *)propKeyNode->getFirstChildWithTag(NED_LITERAL);
