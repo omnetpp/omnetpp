@@ -1,0 +1,114 @@
+%description:
+Test cProperty::getValueOriginType() and getValueOriginFile() methods
+
+%file: base.ned
+
+module Base
+{
+    @prop(base1,base2,base3,base4);
+}
+
+%file: derived.ned
+
+module Derived extends Base
+{
+    @prop(derived1,derived2,-);
+}
+
+%file: test.ned
+
+simple Dump
+{
+}
+
+network Test
+{
+    submodules:
+        base: Base;
+        derived: Derived;
+        base2: Base { @prop(submod1); }
+        derived2: Derived { @prop(submod1); }
+        dump: Dump;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class Dump : public cSimpleModule
+{
+  public:
+    virtual void initialize() override;
+    void dumpProperties(cComponent *component);
+};
+
+Define_Module(Dump);
+
+void Dump::initialize()
+{
+    cSimulation *simulation = getSimulation();
+    for (int id = 0; id <= simulation->getLastComponentId(); id++)
+        if (cComponent *component = simulation->getComponent(id))
+            dumpProperties(component);
+}
+
+void Dump::dumpProperties(cComponent *component)
+{
+    EV << component->getFullPath() << std::endl;
+    cProperties *properties = component->getProperties();
+    for (int k = 0; k < properties->getNumProperties(); k++) {
+        cProperty *property = properties->get(k);
+        EV << "  @" << property->getFullName() << ":" << std::endl;
+        for (const char *key : property->getKeys()) {
+            EV << "    key '" << opp_nulltoempty(key) << "'" << std::endl;
+            for (int i = 0; i < property->getNumValues(key); i++) {
+                const char *value = opp_nulltoempty(property->getValue(key, i));
+                const char *type = opp_nulltoempty(property->getValueOriginType(key, i));
+                const char *file = opp_nulltoempty(property->getValueOriginFile(key, i));
+                EV << "      [" << i << "]: '" << value << "' from type=" << type << " file=" << file << std::endl;
+            }
+        }
+    }
+}
+
+}; //namespace
+
+%subst: |file=.*@TESTNAME@/|file=.../|
+
+%contains: stdout
+Test
+  @isNetwork:
+Test.base
+  @prop:
+    key ''
+      [0]: 'base1' from type=Base file=.../base.ned
+      [1]: 'base2' from type=Base file=.../base.ned
+      [2]: 'base3' from type=Base file=.../base.ned
+      [3]: 'base4' from type=Base file=.../base.ned
+Test.derived
+  @prop:
+    key ''
+      [0]: 'derived1' from type=Derived file=.../derived.ned
+      [1]: 'derived2' from type=Derived file=.../derived.ned
+      [2]: '' from type= file=
+      [3]: 'base4' from type=Base file=.../base.ned
+Test.base2
+  @prop:
+    key ''
+      [0]: 'submod1' from type=Test file=.../test.ned
+      [1]: 'base2' from type=Base file=.../base.ned
+      [2]: 'base3' from type=Base file=.../base.ned
+      [3]: 'base4' from type=Base file=.../base.ned
+Test.derived2
+  @prop:
+    key ''
+      [0]: 'submod1' from type=Test file=.../test.ned
+      [1]: 'derived2' from type=Derived file=.../derived.ned
+      [2]: '' from type= file=
+      [3]: 'base4' from type=Base file=.../base.ned
+Test.dump
+
