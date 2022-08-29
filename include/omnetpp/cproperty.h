@@ -245,7 +245,7 @@ class SIM_API cProperty : public cNamedObject
      *
      * Throws an error if the given key does not exist, or the index is negative.
      */
-    virtual void setValue(const char *key, int index, const char *value, const char *originFile, const char *originType);
+    virtual void setValue(const char *key, int index, const char *value, const char *originFile=nullptr, const char *originType=nullptr);
 
     /**
      * Erases the given key and all its values.
