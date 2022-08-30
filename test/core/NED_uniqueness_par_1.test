@@ -5,7 +5,7 @@ NOTE: This test used to be called NED_submodule_n1.test
 
 %file: test.ned
 
-network TestNetwork
+network Test
 {
     parameters:
         int foo;

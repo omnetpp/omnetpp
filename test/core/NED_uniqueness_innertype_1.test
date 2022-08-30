@@ -3,7 +3,7 @@ Check that inner type names must be unique.
 
 %file: test.ned
 
-network TestNetwork 
+network Test
 {
     types:
         simple Foo {}
