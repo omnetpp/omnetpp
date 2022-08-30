@@ -113,15 +113,13 @@ std::string cConfiguration::adjustPath(const char *s, const char *baseDir, const
         s = defaultValue;
     if (!s)
         s = "";
-    std::string str = s[0]=='"' ? evaluate(s).stringValue() : s;
+    std::string path = s[0]=='"' ? evaluate(s).stringValue() : s;
 
     std::string result;
-    StringTokenizer tokenizer(str.c_str(), PATH_SEPARATOR);
-    const char *dirName;
-    while ((dirName = tokenizer.nextToken()) != nullptr) {
-        if (result.size() != 0)
+    for (std::string dir : opp_splitpath(path)) {
+        if (!result.empty())
             result += ";";
-        result += tidyFilename(concatDirAndFile(baseDir, dirName).c_str());
+        result += tidyFilename(concatDirAndFile(baseDir, dir.c_str()).c_str());
     }
     return result;
 }

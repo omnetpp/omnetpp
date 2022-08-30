@@ -74,10 +74,8 @@ static std::vector<std::string> resolvePath(const char *folder, const char *path
 {
     PushDir pushDir(folder); // so that relative paths are interpreted as relative to the given folder
     std::vector<std::string> result;
-    StringTokenizer tokenizer(path, PATH_SEPARATOR);
-    while (tokenizer.hasMoreTokens()) {
-        const char *item = tokenizer.nextToken();
-        std::string folder = canonicalize(item);
+    for (std::string item : opp_splitpath(path)) {
+        std::string folder = canonicalize(item.c_str());
         if (fileExists(folder.c_str()) && !contains(result, folder))
             result.push_back(folder);
     }
@@ -87,13 +85,7 @@ static std::vector<std::string> resolvePath(const char *folder, const char *path
 int NedResourceCache::loadNedSourceFolder(const char *folderName, const char *excludedPackagesStr)
 {
     try {
-        std::vector<std::string> excludedPackages;
-        StringTokenizer tokenizer(excludedPackagesStr, PATH_SEPARATOR);
-        while (tokenizer.hasMoreTokens()) {
-            const char *pkg = tokenizer.nextToken();
-            if (!opp_isempty(pkg))
-                excludedPackages.push_back(pkg);
-        }
+        std::vector<std::string> excludedPackages = opp_splitpath(excludedPackagesStr);
         std::string canonicalFolderName = canonicalize(folderName);
         std::string rootPackageName = determineRootPackageName(folderName);
         folderPackages[canonicalFolderName] = rootPackageName;
