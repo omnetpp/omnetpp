@@ -1,3 +1,9 @@
+2022-05-18  Attila Torok
+
+	* build: Disable implicit make rules by setting .SUFFIXES to empty
+
+	* Fix build by including <memory> for std::unique_ptr
+
 2022-04-11  ------ omnetpp-6.0 released ------
 
 2022-04-06  Andras Varga

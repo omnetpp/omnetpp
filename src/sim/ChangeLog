@@ -1,3 +1,24 @@
+2022-08-26  Andras Varga
+
+	* Fix: proper namespace resolution for C++ types in @signal declarations.
+	This fixes signals_namespace1.test.
+
+2022-08-17  Andras Varga
+
+	* Feature: added cProperty::getValueOriginFile(), getValueOriginType()
+
+2022-06-17  Attila Torok
+
+	* Check for context component in all built-in NED functions that need it,
+	and throw an exception if there is none, instead of just crashing. This
+	is needed when evaluating expressions in display strings of messages.
+
+2022-05-18  Attila Torok
+
+	* build: Disable implicit make rules by setting .SUFFIXES to empty
+
+	* Fix build by including <memory> for std::unique_ptr
+
 2022-04-11  ------ omnetpp-6.0 released ------
 
 2022-04-07  Andras Varga

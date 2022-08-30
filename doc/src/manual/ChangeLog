@@ -1,3 +1,11 @@
+2022-08-25  Andras Varga
+
+	* Update the documentation of the omnetpp.scave.* Python classes
+
+2022-07-27  Andras Varga
+
+	* Fix: List fingerprint ingredients added in 6.0
+
 2022-04-11  ------ omnetpp-6.0 released ------
 
 2022-04-08  Rudolf Hornig
