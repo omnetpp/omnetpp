@@ -120,6 +120,7 @@ class NEDXML_API NedResourceCache
     virtual void collectNedType(const char *qname, bool isInnerType, ASTNode *node);
     virtual bool areDependenciesResolved(const char *qname, ASTNode *node);
     virtual void registerPendingNedTypes();
+    virtual NedTypeInfo *createTypeInfo(const char *qname, bool isInnerType, ASTNode *node);
     virtual void registerNedType(const char *qname, bool isInnerType, ASTNode *node);
     virtual std::string getFirstError(ErrorStore *errors, const char *prefix=nullptr);
 

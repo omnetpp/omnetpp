@@ -63,14 +63,16 @@ void cNedLoader::clear()
     inst = nullptr;
 }
 
+cNedDeclaration *cNedLoader::createTypeInfo(const char *qname, bool isInnerType, ASTNode *node)
+{
+    return new cNedDeclaration(this, qname, isInnerType, node);
+}
+
 void cNedLoader::registerNedType(const char *qname, bool isInnerType, NedElement *node)
 {
-    // wrap, and add to the table (Note: we cannot reuse base class impl, because it creates a NedTypeInfo)
-    cNedDeclaration *decl = new cNedDeclaration(this, qname, isInnerType, node);
-    nedTypes[qname] = decl;
-    nedTypeNames.clear();  // invalidate
+    NedResourceCache::registerNedType(qname, isInnerType, node);
 
-    // if module or channel, register corresponding object which can be used to instantiate it
+    // additionally, if module or channel, register corresponding object which can be used to instantiate it
     cComponentType *type = nullptr;
     if (node->getTagCode() == NED_SIMPLE_MODULE || node->getTagCode() == NED_COMPOUND_MODULE)
         type = new cDynamicModuleType(qname);

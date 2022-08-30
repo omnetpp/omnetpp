@@ -349,9 +349,14 @@ void NedResourceCache::registerPendingNedTypes()
     }
 }
 
+NedTypeInfo *NedResourceCache::createTypeInfo(const char *qname, bool isInnerType, ASTNode *node)
+{
+    return new NedTypeInfo(this, qname, isInnerType, node);
+}
+
 void NedResourceCache::registerNedType(const char *qname, bool isInnerType, ASTNode *node)
 {
-    NedTypeInfo *decl = new NedTypeInfo(this, qname, isInnerType, node);
+    NedTypeInfo *decl = createTypeInfo(qname, isInnerType, node);
     nedTypes[qname] = decl;
     nedTypeNames.clear();  // invalidate
 }
