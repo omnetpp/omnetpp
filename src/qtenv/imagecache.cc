@@ -29,7 +29,7 @@
 #include "omnetpp/cexception.h"
 #include "common/fileutil.h"
 #include "common/stlutil.h"
-#include "common/stringtokenizer.h"
+#include "common/stringutil.h"
 #include "imagecache.h"
 #include "qtutil.h"
 
@@ -56,20 +56,13 @@ ImageCache::~ImageCache()
 
 void ImageCache::loadImages(const char *path)
 {
-    //# On Windows, we use ";" to separate directories in $path. Using ":" (the
-    //# Unix separator) would cause trouble with dirs containing drive letter
-    //# (like "c:\bitmaps"). Using a space is also not an option (think of
-    //# "C:\Program Files\...").
-
     if (verbose)
         out << std::endl;
 
-    StringTokenizer dir(path, PATH_SEPARATOR);
-    while (dir.hasMoreTokens()) {
-        auto cd = dir.nextToken();
+    for (std::string cd : opp_splitpath(path)) {
         if (verbose)
             out << "Loading images from '" << cd << "':";
-        doLoadImages("", toAbsolutePath(cd).c_str());
+        doLoadImages("", toAbsolutePath(cd.c_str()).c_str());
         if (verbose)
             out << std::endl;
     }
