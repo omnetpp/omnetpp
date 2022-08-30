@@ -555,8 +555,7 @@ std::string cNedNetworkBuilder::resolveComponentType(const NedLookupContext& con
     // instance. Lookup is based on component names registered in the simkernel,
     // NOT on the NED files loaded. This allows the user to instantiate
     // cModuleTypes/cChannelTypes which are not declared in NED.
-    ComponentTypeNames qnames;
-    return cNedLoader::getInstance()->resolveNedType(context, nedTypeName, &qnames);
+    return cNedLoader::getInstance()->lookupNedType(context, nedTypeName, ComponentTypeNames());
 }
 
 cModuleType *cNedNetworkBuilder::findAndCheckModuleType(const char *modTypeName, cModule *modp, const char *submodName)
@@ -580,7 +579,7 @@ cModuleType *cNedNetworkBuilder::findAndCheckModuleTypeLike(const char *modTypeN
 
     // resolve the interface
     NedLookupContext context(currentDecl->getTree(), currentDecl->getFullName());
-    std::string interfaceQName = cNedLoader::getInstance()->resolveNedType(context, likeType);
+    std::string interfaceQName = cNedLoader::getInstance()->lookupNedType(context, likeType);
     cNedDeclaration *interfaceDecl = interfaceQName.empty() ? nullptr : (cNedDeclaration *)cNedLoader::getInstance()->lookup(interfaceQName.c_str());
     if (!interfaceDecl)
         throw cRuntimeError(modp, "Submodule %s: Cannot resolve module interface '%s'",
@@ -1263,7 +1262,7 @@ cChannelType *cNedNetworkBuilder::findAndCheckChannelTypeLike(const char *channe
 
     // resolve the interface
     NedLookupContext context(currentDecl->getTree(), currentDecl->getFullName());
-    std::string interfaceQName = cNedLoader::getInstance()->resolveNedType(context, likeType);
+    std::string interfaceQName = cNedLoader::getInstance()->lookupNedType(context, likeType);
     cNedDeclaration *interfaceDecl = interfaceQName.empty() ? nullptr : (cNedDeclaration *)cNedLoader::getInstance()->lookup(interfaceQName.c_str());
     if (!interfaceDecl)
         throw cRuntimeError(modp, "Cannot resolve channel interface '%s'", likeType);

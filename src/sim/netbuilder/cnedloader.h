@@ -78,7 +78,7 @@ class SIM_API cNedLoader : public NedResourceCache
     static void clear();
 
     /** Redefined to make return type more specific. */
-    virtual cNedDeclaration *getDecl(const char *qname) const override;
+    virtual cNedDeclaration *getDecl(const char *qname) override;
 
     /** Compile NED expression (which occurs in given attribute of the given node) to a cDynamicExpression, and cache it */
     virtual cDynamicExpression *getCompiledExpression(const ExprRef& expr);

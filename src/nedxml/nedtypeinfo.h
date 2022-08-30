@@ -54,6 +54,11 @@ class NEDXML_API NedTypeInfo
     bool isInner;  // whether it is an inner type
     ASTNode *tree; // points into resolver
 
+    bool resolved = false;
+    bool resolving = false;
+
+    // Important: The fields below are only filled in when the "resolved" flag is true.
+
     typedef std::vector<std::string> StringVector;
     typedef std::map<std::string,ASTNode*> NameToElementMap;
 
@@ -80,6 +85,7 @@ class NEDXML_API NedTypeInfo
     void collectLocalDeclarations();
     void addToElementMap(NameToElementMap& elementMap, ASTNode *node);
     void mergeElementMap(NameToElementMap& destMap, const NameToElementMap& elementMap);
+    void resolveIfNeeded() const {if (!isResolved()) const_cast<NedTypeInfo*>(this)->resolve(); /*ouch*/}
 
   public:
     /** Constructor. It expects fully qualified name */
@@ -107,6 +113,12 @@ class NEDXML_API NedTypeInfo
     virtual Type getType() const {return type;}
 
     /**
+     * Returns true if this NED type has a local (non-inherited)
+     * \@network (or \@network(true)) property.
+     */
+    virtual bool isNetwork() const;
+
+    /**
      * Returns the path of the source file this NED type was loaded from.
      */
     virtual const char *getSourceFileName() const;
@@ -116,48 +128,6 @@ class NEDXML_API NedTypeInfo
      * NED file.)
      */
     virtual std::string getPackage() const;
-
-    /**
-     * Returns a one-line summary (base class, implemented interfaces, etc)
-     */
-    virtual std::string str() const;
-
-    /**
-     * Returns the NED declaration.
-     */
-    virtual std::string getNedSource() const;
-
-    /**
-     * Returns the number of "extends" names. This includes indirect
-     * base types as well (i.e. base types of base types, etc).
-     */
-    virtual int numExtendsNames() const  {return extendsNames.size();}
-
-    /**
-     * Returns the name of the kth "extends" name (k=0..numExtendsNames()-1),
-     * resolved to fully qualified name.
-     */
-    virtual const char *getExtendsName(int k) const;
-
-    /**
-     * Returns the number of interfaces. This includes indirectly implemented
-     * interfaces as well. (That is, the list contains interfaces implemented
-     * by this type and all its base types, plus base types of all those
-     * interfaces).
-     */
-    virtual int numInterfaceNames() const  {return interfaceNames.size();}
-
-    /**
-     * Returns the name of the kth interface (k=0..numInterfaceNames()-1),
-     * resolved to fully qualified name.
-     */
-    virtual const char *getInterfaceName(int k) const;
-
-    /**
-     * Returns true if this NED type extends/"is like" the given module interface
-     * or channel interface
-     */
-    virtual bool supportsInterface(const char *qname);
 
     /**
      * Returns true if this NED type is an inner type
@@ -171,10 +141,51 @@ class NEDXML_API NedTypeInfo
     virtual const char *getEnclosingTypeName() const;
 
     /**
-     * Returns true if this NED type has a local (non-inherited)
-     * \@network (or \@network(true)) property.
+     * Returns a one-line summary (base class, implemented interfaces, etc)
      */
-    virtual bool isNetwork() const;
+    virtual std::string str() const;
+
+    /**
+     * Returns the NED declaration.
+     */
+    virtual std::string getNedSource() const;
+
+    virtual bool isResolved() const {return resolved;}
+
+    virtual void resolve();
+
+    /**
+     * Returns the number of "extends" names. This includes indirect
+     * base types as well (i.e. base types of base types, etc).
+     */
+    virtual int numExtendsNames() const  {resolveIfNeeded(); return extendsNames.size();}
+
+    /**
+     * Returns the name of the kth "extends" name (k=0..numExtendsNames()-1),
+     * resolved to fully qualified name.
+     */
+    virtual const char *getExtendsName(int k) const;
+
+    /**
+     * Returns the number of interfaces. This includes indirectly implemented
+     * interfaces as well. (That is, the list contains interfaces implemented
+     * by this type and all its base types, plus base types of all those
+     * interfaces).
+     */
+    virtual int numInterfaceNames() const  {resolveIfNeeded(); return interfaceNames.size();}
+
+    /**
+     * Returns the name of the kth interface (k=0..numInterfaceNames()-1),
+     * resolved to fully qualified name.
+     */
+    virtual const char *getInterfaceName(int k) const;
+
+    /**
+     * Returns true if this NED type extends/"is like" the given module interface
+     * or channel interface
+     */
+    virtual bool supportsInterface(const char *qname);
+
 
     /**
      * For modules and channels, it returns the name of the C++ class that
