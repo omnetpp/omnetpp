@@ -43,65 +43,6 @@ NedTypeInfo::NedTypeInfo(NedResourceCache *resolver, const char *qname, bool isI
         case NED_CHANNEL_INTERFACE: type = CHANNELINTERFACE; break;
         default: throw NedException("NedTypeInfo: Element of wrong type (<%s>) passed into constructor", tree->getTagName());
     }
-    bool isInterface = type == MODULEINTERFACE || type == CHANNELINTERFACE;
-
-    // collect local params, gates, etc., as checkComplianceToInterface() will need them
-    collectLocalDeclarations();
-
-    // add "extends" and "like" names, after resolving them
-    NedLookupContext context = NedResourceCache::getParentContextOf(qname, tree);
-    for (ASTNode *child = tree->getFirstChild(); child; child = child->getNextSibling()) {
-        if (child->getTagCode() == NED_EXTENDS) {
-            // resolve and store base type name
-            const char *extendsName = ((ExtendsElement *)child)->getName();
-            std::string extendsQName = getResolver()->resolveNedType(context, extendsName);
-            Assert(!extendsQName.empty());
-            extendsNames.push_back(extendsQName);
-
-            // check the type
-            NedTypeInfo *decl = getResolver()->lookup(extendsQName.c_str());
-            Assert(decl);
-            bool moduleExtendsSimple = (getType() == COMPOUND_MODULE) && (decl->getType() == SIMPLE_MODULE);
-            if (getType() != decl->getType() && !moduleExtendsSimple)
-                throw NedException(getTree(), "A %s cannot extend a %s (%s)", getTree()->getTagName(), decl->getTree()->getTagName(), extendsQName.c_str());
-
-            // collect interfaces from our base types
-            if (isInterface)
-                for (int i = 0; i < decl->numExtendsNames(); i++)
-                    extendsNames.push_back(decl->getExtendsName(i));
-
-            else
-                for (int i = 0; i < decl->numInterfaceNames(); i++)
-                    interfaceNames.push_back(decl->getInterfaceName(i));
-
-        }
-        if (child->getTagCode() == NED_INTERFACE_NAME) {
-            // resolve and store base type
-            const char *interfaceName = ((InterfaceNameElement *)child)->getName();
-            std::string interfaceQName = getResolver()->resolveNedType(context, interfaceName);
-            Assert(!interfaceQName.empty());
-            interfaceNames.push_back(interfaceQName);
-
-            // check the type (must be an interface)
-            NedTypeInfo *decl = getResolver()->lookup(interfaceQName.c_str());
-            Assert(decl);
-            if (decl->getType() != (getType() == CHANNEL ? CHANNELINTERFACE : MODULEINTERFACE))
-                throw NedException(getTree(), "Base type %s is expected to be a %s interface", interfaceQName.c_str(), (getType() == CHANNEL ? "channel" : "module"));
-
-            // we support all interfaces that our base interfaces extend
-            for (int i = 0; i < decl->numExtendsNames(); i++)
-                interfaceNames.push_back(decl->getExtendsName(i));
-        }
-    }
-
-    if (!isInterface) {
-        // check that we have all parameters and gates required by the interfaces we support
-        for (auto & interfaceName : interfaceNames) {
-            NedTypeInfo *interfaceDecl = getResolver()->lookup(interfaceName.c_str());
-            Assert(interfaceDecl);
-            checkComplianceToInterface(interfaceDecl);
-        }
-    }
 
     // fill in enclosingTypeName for inner types
     if (isInner) {
@@ -109,29 +50,6 @@ NedTypeInfo::NedTypeInfo(NedResourceCache *resolver, const char *qname, bool isI
         Assert(lastDot);  // if it's an inner type, must have a parent
         enclosingTypeName = std::string(qname, lastDot-qname);
     }
-
-    // resolve C++ class name for modules/channels; for interfaces it remains empty
-    if (getType() == SIMPLE_MODULE || getType() == COMPOUND_MODULE || getType() == CHANNEL) {
-        // Note: @class() be used to override inherited implementation class.
-        // The @class property itself does NOT get inherited.
-        const char *explicitClassName = ASTNodeUtil::getLocalStringProperty(getTree(), "class");
-        if (!opp_isempty(explicitClassName)) {
-            if (explicitClassName[0] == ':' && explicitClassName[1] == ':')
-                implClassName = explicitClassName+2;
-            else
-                implClassName = opp_join("::", getCxxNamespace().c_str(), explicitClassName);  // note: if the name doesn't exist in the namespace, we could try the global namespace as C++ does, but doing so would have little to no (or even negative) benefit in practice
-        }
-        else {
-            if (numExtendsNames() != 0)
-                implClassName = opp_nulltoempty(getSuperDecl()->getImplementationClassName());
-            else if (getType() == COMPOUND_MODULE)
-                implClassName = "omnetpp::cModule";
-            else
-                implClassName = opp_join("::", getCxxNamespace().c_str(), getName());
-        }
-    }
-
-    // TODO check that parameter, gate, submodule and inner type declarations don't conflict with those in super types
 }
 
 NedTypeInfo::~NedTypeInfo()
@@ -191,6 +109,9 @@ std::string NedTypeInfo::getCxxNamespace() const
 std::string NedTypeInfo::str() const
 {
     std::stringstream out;
+    if (!isResolved())
+        return "not yet resolved";
+
     if (numExtendsNames() > 0) {
         out << "extends ";
         for (int i = 0; i < numExtendsNames(); i++)
@@ -219,8 +140,106 @@ std::string NedTypeInfo::getNedSource() const
     return out.str();
 }
 
+void NedTypeInfo::resolve()
+{
+    if (resolved)
+        return;
+
+    if (resolving)
+        throw NedException(getTree(), "Cycle in the inheritance tree of %s type %s", tree->getTagName(), qualifiedName.c_str());
+
+    resolving = true;
+
+    // collect local params, gates, etc., as checkComplianceToInterface() will need them
+    collectLocalDeclarations();
+
+    // add "extends" and "like" names, after resolving them
+    bool isInterface = type == MODULEINTERFACE || type == CHANNELINTERFACE;
+    NedLookupContext context = NedResourceCache::getParentContextOf(qualifiedName.c_str(), tree);
+    for (ASTNode *child = tree->getFirstChild(); child; child = child->getNextSibling()) {
+        if (child->getTagCode() == NED_EXTENDS) {
+            // resolve and store base type name
+            const char *extendsName = ((ExtendsElement *)child)->getName();
+            std::string extendsQName = resolver->lookupNedType(context, extendsName);
+            if (extendsQName.empty())
+                throw NedException(child, "Cannot resolve type %s", extendsName);
+            extendsNames.push_back(extendsQName);
+
+            // check the type
+            NedTypeInfo *decl = resolver->lookup(extendsQName.c_str());
+            Assert(decl);
+            bool moduleExtendsSimple = (getType() == COMPOUND_MODULE) && (decl->getType() == SIMPLE_MODULE);
+            if (getType() != decl->getType() && !moduleExtendsSimple)
+                throw NedException(getTree(), "A %s cannot extend a %s (%s)", getTree()->getTagName(), decl->getTree()->getTagName(), extendsQName.c_str());
+
+            // collect interfaces from our base types
+            if (isInterface)
+                for (int i = 0; i < decl->numExtendsNames(); i++)
+                    extendsNames.push_back(decl->getExtendsName(i));
+
+            else
+                for (int i = 0; i < decl->numInterfaceNames(); i++)
+                    interfaceNames.push_back(decl->getInterfaceName(i));
+
+        }
+        if (child->getTagCode() == NED_INTERFACE_NAME) {
+            // resolve and store base type
+            const char *interfaceName = ((InterfaceNameElement *)child)->getName();
+            std::string interfaceQName = resolver->lookupNedType(context, interfaceName);
+            if (interfaceQName.empty())
+                throw NedException(child, "Cannot resolve type %s", interfaceName);
+            interfaceNames.push_back(interfaceQName);
+
+            // check the type (must be an interface)
+            NedTypeInfo *decl = resolver->lookup(interfaceQName.c_str());
+            Assert(decl);
+            if (decl->getType() != (getType() == CHANNEL ? CHANNELINTERFACE : MODULEINTERFACE))
+                throw NedException(getTree(), "Base type %s is expected to be a %s interface", interfaceQName.c_str(), (getType() == CHANNEL ? "channel" : "module"));
+
+            // we support all interfaces that our base interfaces extend
+            for (int i = 0; i < decl->numExtendsNames(); i++)
+                interfaceNames.push_back(decl->getExtendsName(i));
+        }
+    }
+
+    // resolve C++ class name for modules/channels; for interfaces it remains empty
+    if (getType() == SIMPLE_MODULE || getType() == COMPOUND_MODULE || getType() == CHANNEL) {
+        // Note: @class() be used to override inherited implementation class.
+        // The @class property itself does NOT get inherited.
+        const char *explicitClassName = ASTNodeUtil::getLocalStringProperty(getTree(), "class");
+        if (!opp_isempty(explicitClassName)) {
+            if (explicitClassName[0] == ':' && explicitClassName[1] == ':')
+                implClassName = explicitClassName+2;
+            else
+                implClassName = opp_join("::", getCxxNamespace().c_str(), explicitClassName);  // note: if the name doesn't exist in the namespace, we could try the global namespace as C++ does, but doing so would have little to no (or even negative) benefit in practice
+        }
+        else {
+            if (!extendsNames.empty())
+                implClassName = opp_nulltoempty(resolver->getDecl(extendsNames[0].c_str())->getImplementationClassName());
+            else if (getType() == COMPOUND_MODULE)
+                implClassName = "omnetpp::cModule";
+            else
+                implClassName = opp_join("::", getCxxNamespace().c_str(), getName());
+        }
+    }
+
+    resolved = true;
+    resolving = false;
+
+    if (!isInterface) {
+        // check that we have all parameters and gates required by the interfaces we support
+        for (auto & interfaceName : interfaceNames) {
+            NedTypeInfo *interfaceDecl = resolver->getDecl(interfaceName.c_str());
+            checkComplianceToInterface(interfaceDecl);
+        }
+
+        // TODO check that parameter, gate, submodule and inner type declarations don't conflict with those in super types
+    }
+}
+
 const char *NedTypeInfo::getInterfaceName(int k) const
 {
+    resolveIfNeeded();
     if (k < 0 || k >= (int)interfaceNames.size())
         throw NedException("NedTypeInfo: Interface index %d out of range 0..%d", k, (int)interfaceNames.size()-1);
     return interfaceNames[k].c_str();
@@ -228,6 +247,8 @@ const char *NedTypeInfo::getInterfaceName(int k) const
 
 bool NedTypeInfo::supportsInterface(const char *qname)
 {
+    resolveIfNeeded();
+
     // linear search is OK because #interfaces is typically just one or two
     for (auto & interfaceName : interfaceNames)
         if (interfaceName == qname)
@@ -238,6 +259,7 @@ bool NedTypeInfo::supportsInterface(const char *qname)
 
 const char *NedTypeInfo::getExtendsName(int k) const
 {
+    resolveIfNeeded();
     if (k < 0 || k >= (int)extendsNames.size())
         throw NedException("NedTypeInfo: extendsName(): Index %d out of range 0..%d", k, (int)extendsNames.size()-1);
     return extendsNames[k].c_str();
@@ -245,16 +267,19 @@ const char *NedTypeInfo::getExtendsName(int k) const
 
 const char *NedTypeInfo::getEnclosingTypeName() const
 {
+    resolveIfNeeded();
     return isInner ? enclosingTypeName.c_str() : nullptr;
 }
 
 const char *NedTypeInfo::getImplementationClassName() const
 {
+    resolveIfNeeded();
     return implClassName.empty() ? nullptr : implClassName.c_str();
 }
 
 NedTypeInfo *NedTypeInfo::getSuperDecl() const
 {
+    resolveIfNeeded();
     const char *superName = getExtendsName(0);
     return getResolver()->getDecl(superName);
 }
@@ -291,6 +316,8 @@ ConnectionsElement *NedTypeInfo::getConnectionsElement() const
 
 void NedTypeInfo::collectLocalDeclarations()
 {
+    Assert(!isResolved());
+
     if (TypesElement *types = getTypesElement()) {
         for (ASTNode *child = types->getFirstChild(); child; child = child->getNextSibling()) {
             int code = child->getTagCode();
@@ -354,6 +381,7 @@ void NedTypeInfo::mergeElementMap(NameToElementMap& destMap, const NameToElement
 
 SubmoduleElement *NedTypeInfo::getLocalSubmoduleElement(const char *subcomponentName) const
 {
+    resolveIfNeeded();
     auto it = localSubmoduleDecls.find(subcomponentName);
     return it != localSubmoduleDecls.end() ? (SubmoduleElement*)it->second : nullptr;
 }
@@ -362,6 +390,8 @@ ConnectionElement *NedTypeInfo::getLocalConnectionElement(long id) const
 {
     if (id == -1)
         return nullptr;  // "not a NED connection"
+
+    resolveIfNeeded();
 
     ConnectionsElement *connectionsNode = getConnectionsElement();
     if (connectionsNode) {
@@ -383,6 +413,8 @@ ConnectionElement *NedTypeInfo::getLocalConnectionElement(long id) const
 
 SubmoduleElement *NedTypeInfo::getSubmoduleElement(const char *name) const
 {
+    resolveIfNeeded();
+
     SubmoduleElement *submodule = getLocalSubmoduleElement(name);
     if (submodule)
         return submodule;
@@ -395,6 +427,8 @@ SubmoduleElement *NedTypeInfo::getSubmoduleElement(const char *name) const
 
 ConnectionElement *NedTypeInfo::getConnectionElement(long id) const
 {
+    resolveIfNeeded();
+
     ConnectionElement *conn = getLocalConnectionElement(id);
     if (conn)
         return conn;
@@ -407,12 +441,15 @@ ConnectionElement *NedTypeInfo::getConnectionElement(long id) const
 
 ParamElement *NedTypeInfo::findLocalParamDecl(const char *name) const
 {
+    resolveIfNeeded();
     auto it = localParamDecls.find(name);
     return it != localParamDecls.end() ? (ParamElement*)it->second : nullptr;
 }
 
 ParamElement *NedTypeInfo::findParamDecl(const char *name) const
 {
+    resolveIfNeeded();
+
     ParamElement *param = findLocalParamDecl(name);
     if (param)
         return param;
@@ -425,12 +462,15 @@ ParamElement *NedTypeInfo::findParamDecl(const char *name) const
 
 GateElement *NedTypeInfo::findLocalGateDecl(const char *name) const
 {
+    resolveIfNeeded();
     auto it = localGateDecls.find(name);
     return it != localGateDecls.end() ? (GateElement*)it->second : nullptr;
 }
 
 GateElement *NedTypeInfo::findGateDecl(const char *name) const
 {
+    resolveIfNeeded();
+
     GateElement *gate = findLocalGateDecl(name);
     if (gate)
         return gate;
@@ -443,6 +483,8 @@ GateElement *NedTypeInfo::findGateDecl(const char *name) const
 
 void NedTypeInfo::checkComplianceToInterface(NedTypeInfo *idecl)
 {
+    resolveIfNeeded();
+
     // TODO check properties
 
     // check parameters

@@ -58,16 +58,17 @@ void NedResourceCache::registerBuiltinDeclarations()
 
     ErrorStore errors;
     NedParser parser(&errors);
-    ASTNode *tree = parser.parseNedText(nedCode, "built-in-declarations");
+
+    // note: file must be called package.ned so that @namespace takes effect
+    ASTNode *tree = parser.parseNedText(nedCode, "/[built-in-declarations]/package.ned");
     if (errors.containsError()) {
         delete tree;
         throw NedException("%s", getFirstError(&errors).c_str());
     }
+
     NedFileElement *nedFileElement = dynamic_cast<NedFileElement*>(tree);
     Assert(nedFileElement);
-
-    // note: file must be called package.ned so that @namespace takes effect
-    addFile("/[built-in-declarations]/package.ned", nedFileElement);
+    addFile(nedFileElement, nullptr);
 }
 
 static std::vector<std::string> resolvePath(const char *folder, const char *path)
@@ -134,12 +135,17 @@ void NedResourceCache::doLoadNedFileOrText(const char *nedFilename, const char *
     if (containsKey(nedFiles, canonicalFilename))
         return; // already loaded
 
-    if (doneLoadingNedFilesCalled && isPackageNedFile(canonicalFilename.c_str()))
-        throw NedException("Cannot load %s: 'package.ned' files can no longer be loaded at this point", canonicalFilename.c_str()); // as it could contain e.g. @namespace
-
     // parse file
     NedFileElement *tree = parseAndValidateNedFileOrText(canonicalFilename.c_str(), nedText, isXML);
     Assert(tree);
+
+    addFile(tree, expectedPackage);
+}
+
+void NedResourceCache::addFile(NedFileElement *tree, const char *expectedPackage)
+{
+    const char *nedFilename = tree->getFilename();
+    Assert(!containsKey(nedFiles, std::string(nedFilename)));
 
     // check that declared package matches expected package
     PackageElement *packageDecl = (PackageElement *)tree->getFirstChildWithTag(NED_PACKAGE);
@@ -149,14 +155,28 @@ void NedResourceCache::doLoadNedFileOrText(const char *nedFilename, const char *
                 declaredPackage.c_str(), expectedPackage, nedFilename);
 
     // register it
-    addFile(canonicalFilename.c_str(), tree);
+    nedFiles[nedFilename] = tree;
 
-    // if doneLoadingNedFiles() has already been called, we cannot defer resolving the types in it
-    if (doneLoadingNedFilesCalled) {
-        std::string packagePrefix = declaredPackage.empty() ? "" : declaredPackage + ".";
-        collectNedTypesFrom(tree, packagePrefix, false);
-        registerPendingNedTypes();
+    // collect package.ned files
+    if (isPackageNedFile(nedFilename)) {
+        if (containsKey(packageDotNedFiles, declaredPackage))
+            throw NedException("More than one package.ned file for package '%s'%s: '%s' and '%s'",
+                    declaredPackage.c_str(), (declaredPackage.empty() ? " (the default package)" : ""),
+                    nedFilename, packageDotNedFiles[declaredPackage]->getFilename());
+
+        bool containsFileProperty = tree->getFirstPropertyChild() != nullptr;
+        if (containsFileProperty && hasResolvedTypeUnder(declaredPackage))
+            throw NedException("Too late for loading %s: It is a 'package.ned' file for the package '%s' "
+                               "that contains properties that may possibly affect NED types in its package tree, "
+                               "and some types in that package tree have already been used",
+                               nedFilename, declaredPackage.c_str()); // as it could contain e.g. @namespace
+
+        packageDotNedFiles[declaredPackage] = tree;
     }
+
+    // load types
+    std::string packagePrefix = declaredPackage.empty() ? "" : declaredPackage + ".";
+    collectNedTypesFrom(tree, packagePrefix, false);
 }
 
 NedFileElement *NedResourceCache::parseAndValidateNedFileOrText(const char *fname, const char *nedText, bool isXML)
@@ -239,13 +259,6 @@ void NedResourceCache::loadNedText(const char *name, const char *nedText, const 
     doLoadNedFileOrText(name, nedText, expectedPackage, isXML);
 }
 
-void NedResourceCache::addFile(const char *nedFilename, NedFileElement *node)
-{
-    Assert(!containsKey(nedFiles, std::string(nedFilename)));
-    //Assert(opp_streq(nedFilename, node->getFilename())); // would fail for "[built-in-declarations]"
-    nedFiles[nedFilename] = node;
-}
-
 void NedResourceCache::collectNedTypesFrom(ASTNode *node, const std::string& packagePrefix, bool areInnerTypes)
 {
     for (ASTNode *child = node->getFirstChild(); child; child = child->getNextSibling()) {
@@ -254,7 +267,7 @@ void NedResourceCache::collectNedTypesFrom(ASTNode *node, const std::string& pac
             tag == NED_COMPOUND_MODULE || tag == NED_MODULE_INTERFACE)
         {
             std::string qname = packagePrefix + child->getAttribute("name");
-            collectNedType(qname.c_str(), areInnerTypes, child);
+            registerNedType(qname.c_str(), areInnerTypes, child);
 
             if (ASTNode *types = child->getFirstChildWithTag(NED_TYPES))
                 collectNedTypesFrom(types, qname+".", true);
@@ -262,91 +275,17 @@ void NedResourceCache::collectNedTypesFrom(ASTNode *node, const std::string& pac
     }
 }
 
-void NedResourceCache::collectNedType(const char *qname, bool isInnerType, ASTNode *node)
+void NedResourceCache::resolveAllNedTypes()
 {
-    // we'll process it later, from doneLoadingNedFiles()
-    pendingList.push_back(PendingNedType(qname, isInnerType, node));
-}
-
-bool NedResourceCache::areDependenciesResolved(const char *qname, ASTNode *node)
-{
-    // check that all base types are resolved
-    NedLookupContext context = getParentContextOf(qname, node);
-    for (ASTNode *child = node->getFirstChild(); child; child = child->getNextSibling()) {
-        if (child->getTagCode() != NED_EXTENDS && child->getTagCode() != NED_INTERFACE_NAME)
-            continue;
-
-        const char *name = child->getAttribute("name");
-        std::string qname = resolveNedType(context, name);
-        if (qname.empty())
-            return false;
-    }
-    return true;
+    for (auto& nedType : nedTypes)
+        if (!nedType.second->isResolved())
+            nedType.second->resolve();
 }
 
 void NedResourceCache::doneLoadingNedFiles()
 {
-    if (doneLoadingNedFilesCalled)
-        throw NedException("NedResourceCache::doneLoadingNedFiles() may only be called once");
-    doneLoadingNedFilesCalled = true;
-
-    // collect package.ned files
-    for (auto& entry : nedFiles) {
-        NedFileElement *nedFile = entry.second;
-        const char *fileName = nedFile->getFilename();
-        if (isPackageNedFile(fileName)) {
-            std::string packageName;
-            if (PackageElement *packageDecl = (PackageElement *)nedFile->getFirstChildWithTag(NED_PACKAGE))
-                packageName = packageDecl->getName();
-            if (containsKey(packageDotNedFiles, packageName))
-                throw NedException("More than one package.ned file for package '%s'%s: '%s' and '%s'",
-                        packageName.c_str(), (packageName.empty() ? " (the default package)" : ""),
-                        fileName, packageDotNedFiles[packageName]->getFilename());
-            packageDotNedFiles[packageName] = nedFile;
-        }
-    }
-
-    // collect types from loaded NED files
-    for (auto& entry : nedFiles) {
-        NedFileElement *nedFile = entry.second;
-        std::string packagePrefix;
-        if (PackageElement *packageDecl = nedFile->getFirstPackageChild())
-            packagePrefix = std::string(packageDecl->getName()) + ".";
-        collectNedTypesFrom(nedFile, packagePrefix, false);
-    }
-
-    // register NED types from all the files we've loaded
-    registerPendingNedTypes();
-}
-
-void NedResourceCache::registerPendingNedTypes()
-{
-    bool again = true;
-    while (again) {
-        again = false;
-        for (int i = 0; i < (int)pendingList.size(); i++) {
-            PendingNedType type = pendingList[i];
-            if (areDependenciesResolved(type.qname.c_str(), type.node)) {
-                if (lookup(type.qname.c_str()))
-                    throw NedException(type.node, "Redeclaration of %s %s", type.node->getTagName(), type.qname.c_str());
-
-                registerNedType(type.qname.c_str(), type.isInnerType, type.node);
-                pendingList.erase(pendingList.begin() + i--);
-                again = true;
-            }
-        }
-    }
-
-    // report errors
-    if (!pendingList.empty()) {
-        std::string unresolvedNames;
-        for (int i = 0; i < (int)pendingList.size(); i++)
-            unresolvedNames += std::string(i == 0 ? "" : ", ") + pendingList[i].qname;
-        if (pendingList.size() == 1)
-            throw NedException(pendingList[0].node, "NED type '%s' could not be fully resolved due to a missing base type or interface", unresolvedNames.c_str());
-        else
-            throw NedException("The following NED types could not be fully resolved due to a missing base type or interface: %s", unresolvedNames.c_str());
-    }
+    // note: this call is not really needed unless one wants to know about errors in unused types too
+    resolveAllNedTypes();
 }
 
 NedTypeInfo *NedResourceCache::createTypeInfo(const char *qname, bool isInnerType, ASTNode *node)
@@ -356,19 +295,26 @@ NedTypeInfo *NedResourceCache::createTypeInfo(const char *qname, bool isInnerTyp
 
 void NedResourceCache::registerNedType(const char *qname, bool isInnerType, ASTNode *node)
 {
+    if (containsKey(nedTypes, std::string(qname))) {
+        NedTypeInfo *otherDecl = nedTypes[qname];
+        const char *simpleName = otherDecl->getName();
+        ASTNode *otherTree = otherDecl->getTree();
+        throw NedException(node, "Redeclaration: %s %s clashes with %s %s defined at %s",
+                node->getTagName(), qname, otherTree->getTagName(), simpleName, otherTree->getSourceLocation().str().c_str());
+    }
+
     NedTypeInfo *decl = createTypeInfo(qname, isInnerType, node);
     nedTypes[qname] = decl;
-    nedTypeNames.clear();  // invalidate
+    nedTypeNames.push_back(qname);
 }
 
 NedTypeInfo *NedResourceCache::lookup(const char *qname) const
 {
-    // hash table lookup
     auto it = nedTypes.find(qname);
-    return it == nedTypes.end() ? nullptr : it->second;
+    return it != nedTypes.end() ? it->second : nullptr;
 }
 
-NedTypeInfo *NedResourceCache::getDecl(const char *qname) const
+NedTypeInfo *NedResourceCache::getDecl(const char *qname)
 {
     NedTypeInfo *decl = lookup(qname);
     if (!decl)
@@ -464,7 +410,7 @@ NedLookupContext NedResourceCache::getParentContextOf(const char *qname, ASTNode
     return NedLookupContext(contextNode, contextQName.c_str());
 }
 
-std::string NedResourceCache::resolveNedType(const NedLookupContext& context, const char *nedTypeName, INedTypeNames *qnames)
+std::string NedResourceCache::lookupNedType(const NedLookupContext& context, const char *nedTypeName, const INedTypeNames& qnames)
 {
     // note: this method is to be kept consistent with NedResources.lookupNedType() in the Java code
     // note2: partially qualified names are not supported: name must be either simplename or fully qualified
@@ -483,7 +429,7 @@ std::string NedResourceCache::resolveNedType(const NedLookupContext& context, co
                 qname = qname.substr(0, index);
             }
             qname = qname + "." + nedTypeName;
-            if (qnames->contains(qname.c_str()))
+            if (qnames.contains(qname.c_str()))
                 return qname;
             // TODO: try with ancestor types (i.e. maybe nedTypeName is an inherited inner type)
         }
@@ -499,7 +445,7 @@ std::string NedResourceCache::resolveNedType(const NedLookupContext& context, co
         // try a shortcut first: if the import doesn't contain wildcards
         std::string dot_nedtypename = std::string(".")+nedTypeName;
         for (auto & import : imports)
-            if (qnames->contains(import) && (opp_stringendswith(import, dot_nedtypename.c_str()) || strcmp(import, nedTypeName) == 0))
+            if (qnames.contains(import) && (opp_stringendswith(import, dot_nedtypename.c_str()) || strcmp(import, nedTypeName) == 0))
                 return import;
 
 
@@ -507,15 +453,15 @@ std::string NedResourceCache::resolveNedType(const NedLookupContext& context, co
         PackageElement *packageNode = nedfileNode->getFirstPackageChild();
         const char *packageName = packageNode ? packageNode->getName() : "";
         std::string qname = opp_isempty(packageName) ? nedTypeName : std::string(packageName) + "." + nedTypeName;
-        if (qnames->contains(qname.c_str()))
+        if (qnames.contains(qname.c_str()))
             return qname;
 
         // try harder, using wildcards
         for (auto & import : imports) {
             if (PatternMatcher::containsWildcards(import)) {
                 PatternMatcher importPattern(import, true, true, true);
-                for (int j = 0; j < qnames->size(); j++) {
-                    const char *qname = qnames->get(j);
+                for (int j = 0; j < qnames.size(); j++) {
+                    const char *qname = qnames.get(j);
                     if ((opp_stringendswith(qname, dot_nedtypename.c_str()) || strcmp(qname, nedTypeName) == 0))
                         if (importPattern.matches(qname))
                             return qname;
@@ -526,21 +472,20 @@ std::string NedResourceCache::resolveNedType(const NedLookupContext& context, co
     }
     else {
         // fully qualified name?
-        if (qnames->contains(nedTypeName))
+        if (qnames.contains(nedTypeName))
             return nedTypeName;
     }
 
     return "";
 }
 
-const std::vector<std::string>& NedResourceCache::getTypeNames() const
+bool NedResourceCache::hasResolvedTypeUnder(const std::string& packageName) const
 {
-    if (nedTypeNames.empty() && !nedTypes.empty()) {
-        // fill in nedTypeNames vector
-        for (const auto & nedType : nedTypes)
-            nedTypeNames.push_back(nedType.first);
-    }
-    return nedTypeNames;
+    std::string prefix = std::string(packageName) + ".";
+    for (const auto & nedType : nedTypes)
+        if (nedType.second->isResolved() && opp_stringbeginswith(nedType.first.c_str(), prefix.c_str()))
+            return true;
+    return false;
 }
 
 }  // namespace nedxml

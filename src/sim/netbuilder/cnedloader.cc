@@ -72,7 +72,7 @@ void cNedLoader::registerNedType(const char *qname, bool isInnerType, NedElement
 {
     NedResourceCache::registerNedType(qname, isInnerType, node);
 
-    // additionally, if module or channel, register corresponding object which can be used to instantiate it
+    // if module or channel, register corresponding object which can be used to instantiate it
     cComponentType *type = nullptr;
     if (node->getTagCode() == NED_SIMPLE_MODULE || node->getTagCode() == NED_COMPOUND_MODULE)
         type = new cDynamicModuleType(qname);
@@ -82,7 +82,7 @@ void cNedLoader::registerNedType(const char *qname, bool isInnerType, NedElement
         componentTypes.getInstance()->add(type);
 }
 
-cNedDeclaration *cNedLoader::getDecl(const char *qname) const
+cNedDeclaration *cNedLoader::getDecl(const char *qname)
 {
     cNedDeclaration *decl = dynamic_cast<cNedDeclaration *>(NedResourceCache::getDecl(qname));
     ASSERT(decl);
