@@ -5,13 +5,13 @@ NOTE: This test used to be called NED_submodule_n1.test
 
 %file: test.ned
 
-simple Node 
+simple Node
 {
     gates:
         inout g[];
 }
 
-network TestNetwork
+network Test
 {
     submodules:
         a: Node;
