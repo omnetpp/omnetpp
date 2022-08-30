@@ -263,6 +263,16 @@ COMMON_API std::vector<std::string> opp_split(const std::string& text, const std
 COMMON_API std::vector<std::string> opp_splitandtrim(const std::string& text, const std::string& separator);
 
 /**
+ * Split a string that contains a series of file system paths (directory names),
+ * like the PATH variable on Windows and *nix systems. Both colons and semicolons
+ * are regarded as separators, regardless of the operating systems. Care is taken
+ * not to split the string after possible Windows path letters, e.g. "foo:C:\tmp"
+ * is parsed correcly as ["foo", "C:\tmp"], and not as ["foo", "C", "\tmp"].
+ * Empty items are skipped.
+ */
+COMMON_API std::vector<std::string> opp_splitpath(const std::string& path);
+
+/**
  * Aligns columns of a table. Table columns should be separated by tab.
  * Columns widths are automatically determined, but can be overridden
  * by specifying positive numbers at the respective indices in userColumnWidths[]
