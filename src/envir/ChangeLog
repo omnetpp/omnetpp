@@ -1,3 +1,16 @@
+2022-07-27  Andras Varga
+
+	* EventlogFileManager: state vars commented for clarity
+
+	* Fix #933: EventlogFileManager: eventlog recording intervals were ignored
+	even in Cmdenv
+
+	* EventlogFileManager: remove unused ("write-only") state variables
+
+2022-05-18  Attila Torok
+
+	* build: Disable implicit make rules by setting .SUFFIXES to empty
+
 2022-04-11  ------ omnetpp-6.0 released ------
 
 2022-04-08  Rudolf Hornig

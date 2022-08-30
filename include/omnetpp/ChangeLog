@@ -1,3 +1,16 @@
+2022-08-26  Andras Varga
+
+	* Fix: proper namespace resolution for C++ types in @signal declarations
+
+2022-08-17  Andras Varga
+
+	* Feature: cProperty: added getValueOriginFile() and getValueOriginType();
+	new arguments added to the setValue() method.
+
+2022-06-22  Andras Varga
+
+	* Fix formatting glitches in Doxygen comments
+
 2022-04-11  ------ omnetpp-6.0 released ------
 
 2022-04-08  Andras Varga

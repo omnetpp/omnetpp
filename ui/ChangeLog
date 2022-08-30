@@ -1,3 +1,73 @@
+2022-08-24  Levente Mészáros
+
+	* Fixed issue #938, filtering the eventlog in the sequence chart makes it empty.
+	Several parts were commented out during the porting of the old implementation
+	from C++ to Java. The missing parts were revived and tested manually.
+
+2022-08-17  Andras Varga
+
+	* NED Editor: Fix #896 "NED Visual editor cannot show warning symbol.
+	Showing image not found placeholder instead".
+
+2022-06-11  Andras Varga
+
+	* MSG: MsgResources: fix handling of changed msg files.
+	  1. take namespace of C++ classes into account
+	  2. types deleted from a msg file were not forgotten when file was reloaded
+
+2022-06-16  Andras Varga
+
+    Neddoc fixes and enhancements:
+
+	* Refined support for msg types with namespace. Accepts various forms:
+	unqualified, (fully or partially) qualified, explicitly fully qualified
+	(starting with "::"). Links now have a tooltip which shows the fully
+	qualified name of the type unless the link label is exactly the same string.
+
+	* Added support for the `@debug links` page directive. When a page or comment
+	contains `@debug links`, NED/MSG types will be hyperlinked in a way that
+	also shows the original code. E.g. "~inet::Foo" in the page will not simply
+	be rendered as a link with the text "Foo", but like this: "[~inet::Foo ->
+	Foo]" (where the last "Foo" is the link). This is useful for the test in
+	test/misc/neddoc.
+
+	* Make namespaces appear in the navigation tree. Added a "Namespaces" node
+	to the navigation tree with namespaces as children, and a namespaces.html
+	page that lists classes grouped by namespace.
+
+	* Added rudimentary namespace support to msg documentation
+	  1. Include namespace in names of doc pages generated from msg types
+	  2. Display namespace on doc pages generated from msg pages
+
+2022-05-24  Attila Torok
+
+	* Analysis Tool: Added the `python/` folders of the [referenced] project[s]
+	to the `PYTHONPATH` of chart scripts.
+
+2022-03-18  Andras Varga
+
+	* NED editor: fix #634. Eliminated NED file launcher class (which opened
+	either a NED editor or a plain text editor, depending on whether the NED
+	file is part of a NED folder or not), and instead make the normal NED editor
+	capable of handling files outside NED folders. This makes clicking in the
+	Search Results view work as advertised.
+
+2022-08-11  Rudolf Hornig
+
+	* New builder image with updated MINGW toolchain 220810
+
+	* Upgrade to CDT 10.6.2
+
+2022-07-29  Rudolf Hornig
+
+	* Fix #932: Use our own BigDecimal in Sequence Chart. It caused an exception
+	when the Filter button was clicked in the Sequence Chart editor.
+
+2022-06-09  Levente Meszaros
+
+	* SequenceChart: Added guard condition for the case when there is no next
+	component method entry.
+
 2022-04-11  ------ omnetpp-6.0 released ------
 
 2022-04-07  Attila Torok

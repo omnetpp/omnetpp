@@ -1,3 +1,7 @@
+2022-08-23  Rudolf Hornig
+
+	* Added xdg-utils as a required package in the install guide
+
 2022-04-11  ------ omnetpp-6.0 released ------
 
 2022-04-11  Rudolf Hornig

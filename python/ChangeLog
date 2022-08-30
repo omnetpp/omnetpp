@@ -1,3 +1,34 @@
+2022-08-23  Andras Varga
+
+	* Workspace class: Revised to have a more correct and well-defined handling
+	of Eclipse workspaces and projects of the IDE, now with tests. Changes include:
+
+	  - Improved handling of "renamed" projects, i.e. those where the name in
+	    the .project file differs from the folder name.
+
+	  - Improved handling of "moved" projects, i.e. those not under the workspace
+	    directory. When the main project references such projects, they are now
+	    found more reliably. If there is no Eclipse workspace, referenced
+	    projects are looked for next to existing known projects.
+
+	  - Better (more informative) error messages if something goes wrong.
+
+	  - Workspace class constructor now accepts workspace_dir=None, for "not known".
+
+      - find_workspace() now returns None if a .metadata directory was not found,
+        instead of making up something.
+
+	  - find_enclosing_project() is no longer static.
+
+2022-06-08  Attila Torok
+
+	* Reload mpl and plt before exporting an image to make it reproducible
+
+2022-05-26  Attila Torok
+
+	* Add the `python/` folders of [referenced] project[s] to the Python
+	path in opp_charttool as well.
+
 2022-04-11  ------ omnetpp-6.0 released ------
 
 2022-03-31  Attila Torok

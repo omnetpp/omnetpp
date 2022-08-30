@@ -1,3 +1,52 @@
+2022-08-11  Attila Torok
+
+	* Fix: Clamp non-zero computed animation speed to at least 1e-9.
+	This fixes the case where an INET wireless simulation would just stop
+	when the playback speed is too small, due to the limited precision of the
+	time deltas, resulting in zero progress in simtime.
+
+2022-08-11  Attila Torok
+
+	* Fix: Set the focus to the "OK" button on the run selection dialog.
+	This resolves the annoyance of not being able to simply press enter after
+	launching Qtenv to set up the last selected config/run.
+
+2022-07-27  Andras Varga
+
+	* Fix #934: Eliminate assertion failure on stopping eventlog recording from Qtenv.
+	Manually setting Qtenv::recordEventlog brought it out of sync with
+	EventlogFileManager's isRecordingEnabled variable, causing an assertion
+	in EventlogFileManager::resume() [which Qtenv wrongly invoked instead of
+	EventlogFileManager::suspend()].
+
+2022-05-18  Attila Torok
+
+	* build: Disable implicit make rules by setting .SUFFIXES to empty
+
+2022-06-29  Attila Torok
+
+	* Tidy up AnimationGroup::str() and AnimationSequence::str().
+	Include AnimationGroup state, fix missing newline before the first part,
+	matching parts separation and indentation, consistent variable names.
+
+	* end() MessageAnimations when their messages were rotated out of the LogBuffer.
+	This fixes the ever-increasing number of "PLAYING" animations in FAST mode.
+
+	* Fix: AnimationGroup::update() never end()-ing.
+	Fixes the performance degradation over time: groups with all parts
+	finished, but themselves still "playing", were piling up endlessly.
+
+	* nit: Remove unused transmissionId variable (replaced by usage in
+	MessageSendKey::fromMessage).
+
+2022-06-23  Attila Torok
+
+	* Fix missing logs with disabled event/initialization banners
+
+2022-06-08  Rudolf Hornig
+
+	* Fix for non-working parameter replacements in channel display strings
+
 2022-04-11  ------ omnetpp-6.0 released ------
 
 2022-04-06  Attila Torok

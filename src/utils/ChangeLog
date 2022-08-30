@@ -1,3 +1,12 @@
+2022-05-26  Attila Torok
+
+	* scave/python: Add "python" folders of [referenced] project[s] to python
+	path in opp_charttool as well
+
+2022-05-18  Attila Torok
+
+	* build: Disable implicit make rules by setting .SUFFIXES to empty
+
 2022-04-11  ------ omnetpp-6.0 released ------
 
 2022-01-06  Rudolf Hornig
