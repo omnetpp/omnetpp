@@ -478,6 +478,30 @@ std::vector<std::string> opp_splitandtrim(const std::string& text, const std::st
     return items;
 }
 
+std::vector<std::string> opp_splitpath(const std::string& path)
+{
+    std::vector<std::string> items;
+    size_t itemStart = 0;
+    while (true) {
+        size_t separatorPos = path.find_first_of(":;", itemStart);
+
+        // do not split after drive letter in Windows (i.e. ignore ":" in "C:\Projects\...")
+        if (path.length() >= separatorPos+2 && separatorPos == itemStart+1 && opp_isalpha(path[itemStart]) && path[itemStart+1] == ':' && (path[itemStart+2] == '/' || path[itemStart+2] == '\\'))
+            separatorPos = path.find_first_of(":;", separatorPos+1);
+
+        if (separatorPos == path.npos)
+            break;
+
+        if (separatorPos != itemStart)  // token not empty
+            items.push_back(path.substr(itemStart, separatorPos - itemStart));
+
+        itemStart = separatorPos + 1;
+    }
+    if (path.length() > itemStart) // token not empty
+        items.push_back(path.substr(itemStart));
+    return items;
+}
+
 // helper for opp_formattable()
 static std::vector<int> computeMaxColumnWidths(const std::string& text)
 {
