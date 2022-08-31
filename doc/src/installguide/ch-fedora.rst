@@ -86,4 +86,5 @@ Open a terminal and enter the following command to install the required Python p
 
 .. code::
 
-   $ python3 -m pip install --user --upgrade numpy pandas matplotlib scipy seaborn posix_ipc
+   $ python3 -m pip install --user --upgrade numpy pandas matplotlib scipy \
+       seaborn posix_ipc
