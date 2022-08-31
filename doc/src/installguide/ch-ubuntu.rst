@@ -41,10 +41,12 @@ To install the required packages, type in the terminal:
 
 .. code::
 
-   $ sudo apt-get install build-essential clang lld gdb bison flex perl xdg-utils \
-        python3 python3-pip qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools \
-        libqt5opengl5-dev libxml2-dev zlib1g-dev doxygen graphviz libwebkit2gtk-4.0-37
-   $ python3 -m pip install --user --upgrade numpy pandas matplotlib scipy seaborn posix_ipc
+   $ sudo apt-get install build-essential clang lld gdb bison flex perl \
+       python3 python3-pip qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools \
+       libqt5opengl5-dev libxml2-dev zlib1g-dev doxygen graphviz \
+       libwebkit2gtk-4.0-37 xdg-utils
+   $ python3 -m pip install --user --upgrade numpy pandas matplotlib scipy \
+       seaborn posix_ipc
 
 To use Qtenv with 3D visualization support, install the development packages for OpenSceneGraph (3.4 or later) and the
 osgEarth (2.9 or later) packages. (You may need to enable the *Universe* software repository in Software Sources.
@@ -114,7 +116,8 @@ After this, you still have to install some required Python packages from command
 
 .. code::
 
-   $ python3 -m pip install --user --upgrade numpy pandas matplotlib scipy seaborn posix_ipc
+   $ python3 -m pip install --user --upgrade numpy pandas matplotlib scipy \
+       seaborn posix_ipc
 
 Post-Installation Steps
 ~~~~~~~~~~~~~~~~~~~~~~~
