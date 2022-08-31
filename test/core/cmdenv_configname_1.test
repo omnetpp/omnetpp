@@ -1,0 +1,22 @@
+%description:
+Test that cmdenv-config-name works
+
+%inifile: omnetpp.ini
+[General]
+cmdenv-config-name = Foo
+
+[Bar1]
+network = NoSuchThing
+
+[Foo]
+network = testlib.ThrowError
+**.throwError = false
+
+[Bar2]
+network = NoSuchThing
+
+%contains: stdout
+Preparing for running configuration Foo, run #0...
+
+%not-contains: stdout
+Preparing for running configuration Bar

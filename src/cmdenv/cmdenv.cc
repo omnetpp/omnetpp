@@ -166,11 +166,12 @@ void Cmdenv::doRun()
         // (NOTE: inifile settings *already* got read at this point! as EnvirBase::setup()
         // invokes readOptions()).
 
-        opt->configName = opp_nulltoempty(args->optionValue('c'));
+        if (args->optionGiven('c'))  // note: do not overwrite value from cmdenv-config-name option
+            opt->configName = args->optionValue('c');
         if (opt->configName.empty())
             opt->configName = "General";
 
-        if (args->optionGiven('r'))  // note: there's also a cmdenv-runs-to-execute option!
+        if (args->optionGiven('r'))  // note: do not overwrite value from cmdenv-runs-to-execute option!
             opt->runFilter = args->optionValue('r');
 
         std::vector<int> runNumbers;
