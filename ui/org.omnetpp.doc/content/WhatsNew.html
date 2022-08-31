@@ -1,4 +1,58 @@
 <pre>
+  OMNeT++ 6.0.1
+  -------------
+
+  Simulation kernel:
+
+    - fix: Proper namespace resolution for C++ types in `@signal` declarations.
+    - Added `cProperty::getValueOriginFile()`, `getValueOriginType()`
+    - fix: Build errors on newer versions of `clang`
+    - fix #933: eventlog recording intervals were ignored.
+    - fix: Check for context component in all built-in NED functions that need it
+      and throw an exception if there is none, instead of just crashing.
+
+  Analysis:
+
+    - Various fixes in the Python analysis package.
+    - Add "python" folder of referenced project(s) to python path in `opp_charttool`.
+    - On Windows, the bundled Python was upgraded to 3.10 (fixing several issues
+      in numpy, matplotlib).
+
+  IDE:
+
+    - CDT component upgraded to 10.6.2
+    - fix #938: Filtering the eventlog in the sequence chart makes it empty.
+    - fix #896: NED visual editor cannot show warning symbol.
+    - fix #634: NED files in search results now open properly in NED editor.
+    - fix #932: Exception when the filter button was clicked on the seqchart window.
+    - fix #936: Illegible text on build output console in dark mode.
+    - Various fixes in neddoc generator:
+      - Refined support for msg types with namespace.
+      - Added support for "@debug links" page directive.
+      - Made namespaces appear in the navigation tree.
+
+  Qtenv:
+    
+    - fix: Non-working parameter replacements in channel display strings.
+    - fix: Missing logs with disabled event/initialization banners.
+    - fix: AnimationGroup::update() never end()-ing
+    - Various other minor bug fixes.
+
+  Documentation:
+
+    - Minor corrections in the InstallGuide.
+    - Updated documentation for the omnetpp.scave Python classes.
+    - Listed fingerprint ingredients added in 6.0.
+
+  Tests:
+
+    - signals_namespace1.test has been fixed, no longer an expected failure.
+    - Added cProperty_value_2.test.
+
+
+  OMNeT++ 6.0
+  -----------
+    
   OMNeT++ 6.0 is the result of more than three years of work, and includes many
   essential new features that we would already have a hard time without. The
   present changelog summarizes all changes made during the 15+ pre-releases.

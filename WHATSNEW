@@ -6,12 +6,60 @@ simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
 
-OMNeT++ 6.0.1 (August 2022)
----------------------------
+OMNeT++ 6.0.1 (September 2022)
+------------------------------
 
-This is a maintenance release.
+This is a maintenance release containing several bugfixes.
 
- - Minor bug fixes and improvements in Qtenv.
+Simulation kernel:
+
+  - Fix: Proper namespace resolution for C++ types in `@signal` declarations.
+  - Added `cProperty::getValueOriginFile()`, `getValueOriginType()`.
+  - Fix: Build errors on newer versions of clang.
+  - Fix #933: eventlog recording intervals were ignored.
+  - Fix: Check for context component in all built-in NED functions that need it
+	  and throw an exception if there is none, instead of just crashing.
+
+IDE:
+
+  - CDT component upgraded to 10.6.2
+  - Fix #938: Filtering the eventlog in the sequence chart makes it empty.
+  - Fix #896: NED visual editor cannot show warning symbol.
+  - Fix #634: NED files in search results now open properly in NED editor.
+  - Fix #932: Exception when the filter button was clicked on the Sequence
+    Chart window.
+  - Fix #936: Illegible text on build output console in dark mode.
+
+Analysis Tool:
+
+  - Various fixes in the Python analysis package.
+  - Added the `python/` folders of referenced project(s) to Python path of chart scripts.
+  - On Windows, the bundled Python was upgraded to 3.10, fixing several issues
+    in NumPy and Matplotlib.
+
+NED Documentation Generator:
+
+    - Refined support for msg types with namespace.
+    - Added support for "@debug links" page directive.
+    - Made namespaces appear in the navigation tree.
+
+Qtenv:
+
+  - Fix: Non-working parameter replacements in channel display strings.
+  - Fix: Missing logs with disabled event/initialization banners.
+  - Fix #934: Eliminate assertion failure on stopping eventlog recording from Qtenv.
+  - Fix: Clamp nonzero computed animation speed to at least 1e-9. (Very low
+    animation speed could result in simulation time not progressing at all,
+    due to finite precision in the computations.)
+  - Various other minor bug fixes.
+
+Documentation:
+
+  - Minor corrections in the Installation Guide.
+  - Updated documentation for the `omnetpp.scave` Python classes.
+  - Document fingerprint ingredients added in 6.0.
+
+See ChangeLogs in individual folders for details.
 
 
 OMNeT++ 6.0 (April 2022)
@@ -1685,7 +1733,7 @@ Build environment:
   - Debug builds are now compiled with -O0 for maximum debuggability. Release builds
     are compiled with `-O2 -ffp-contract=off` to disable fused multiply-add operations.
     This ensures that floating point operations will generate exactly the same results
-    in DEBUG and RELEASE mode and their accuracy would not depend on unpredictable 
+    in DEBUG and RELEASE mode and their accuracy would not depend on unpredictable
     optimizations.
 
 Windows Support:
