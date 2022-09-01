@@ -13,5 +13,5 @@ network Test
 %exitcode: 1
 
 %contains: stderr
-Name 'Foo' is not unique within its component
+Redeclaration: channel Test.Foo clashes with simple-module Foo defined at
 
