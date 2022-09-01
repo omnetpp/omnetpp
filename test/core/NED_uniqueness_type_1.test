@@ -11,5 +11,5 @@ network Test  {}
 %exitcode: 1
 
 %contains: stderr
-Redeclaration of channel Foo
+Redeclaration: channel Foo clashes with simple-module Foo defined at
 
