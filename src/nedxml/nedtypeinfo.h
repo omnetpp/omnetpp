@@ -150,19 +150,31 @@ class NEDXML_API NedTypeInfo
      */
     virtual std::string getNedSource() const;
 
+    /**
+     * Returns true if this NED type has already been resolved. See resolve().
+     */
     virtual bool isResolved() const {return resolved;}
 
+    /**
+     * Resolves all base classes and interfaces, so that the full list of gates,
+     * parameters, submodules, inner types etc. are available. Most getter methods
+     * need that information, and thus, they internally call resolve() if
+     * it has not yet been done. When this method is called, NED files containing
+     * the required types must have already been loaded.
+     */
     virtual void resolve();
 
     /**
      * Returns the number of "extends" names. This includes indirect
      * base types as well (i.e. base types of base types, etc).
+     * Internally calls resolve() if it has not yet been done.
      */
     virtual int numExtendsNames() const  {resolveIfNeeded(); return extendsNames.size();}
 
     /**
      * Returns the name of the kth "extends" name (k=0..numExtendsNames()-1),
      * resolved to fully qualified name.
+     * Internally calls resolve() if it has not yet been done.
      */
     virtual const char *getExtendsName(int k) const;
 
@@ -171,26 +183,29 @@ class NEDXML_API NedTypeInfo
      * interfaces as well. (That is, the list contains interfaces implemented
      * by this type and all its base types, plus base types of all those
      * interfaces).
+     * Internally calls resolve() if it has not yet been done.
      */
     virtual int numInterfaceNames() const  {resolveIfNeeded(); return interfaceNames.size();}
 
     /**
      * Returns the name of the kth interface (k=0..numInterfaceNames()-1),
      * resolved to fully qualified name.
+     * Internally calls resolve() if it has not yet been done.
      */
     virtual const char *getInterfaceName(int k) const;
 
     /**
      * Returns true if this NED type extends/"is like" the given module interface
      * or channel interface
+     * Internally calls resolve() if it has not yet been done.
      */
     virtual bool supportsInterface(const char *qname);
-
 
     /**
      * For modules and channels, it returns the name of the C++ class that
      * has to be instantiated (for compound modules this defaults to
      * "cModule"); for interface types it returns nullptr.
+     * Internally calls resolve() if it has not yet been done.
      */
     virtual const char *getImplementationClassName() const;
 
@@ -200,13 +215,20 @@ class NEDXML_API NedTypeInfo
      * to the root (the NED source folder this NED file is in). Returns
      * the simple value of the property (1st value of default key), or
      * empty string if not found.
+     * Internally calls resolve() if it has not yet been done.
      */
     virtual std::string getPackageProperty(const char *name) const;
 
-    /** The C++ namespace for this NED type; implemented as getPackageProperty("namespace"). */
+    /**
+     * Returns the C++ namespace for this NED type. Implemented as
+     * getPackageProperty("namespace").
+     */
     virtual std::string getCxxNamespace() const;
 
-    /** Returns the first "extends" clause, or nullptr */
+    /**
+     * Returns the NED type the first "extends" clause refers to, or nullptr.
+     * Internally calls resolve() if it has not yet been done.
+     */
     virtual NedTypeInfo *getSuperDecl() const;
 
     /** @name Convenience method to query the tree */
