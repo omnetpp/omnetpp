@@ -170,21 +170,32 @@ class NEDXML_API NedResourceCache
      */
     std::vector<NedFileElement*> getPackageNedListForLookup(const char *packageName) const;
 
-    /** Look up a fully qualified NED type name from the cache. Returns nullptr if not found. */
+    /**
+     * Look up a fully qualified NED type name. Returns nullptr if not found.
+     */
     virtual NedTypeInfo *lookup(const char *qname) const;
 
-    /** Like lookup(), but asserts non-nullptr return value */
+    /**
+     * Like lookup(), but asserts non-nullptr return value.
+     */
     virtual NedTypeInfo *getDecl(const char *qname);
 
-    /** Resolves the given NED type name in the given context, among the given type names. Returns "" if not found. */
+    /**
+     * Resolves the given NED type name in the given context among the given
+     * fully qualified type names. Returns "" if not found.
+     */
     virtual std::string lookupNedType(const NedLookupContext& context, const char *nedTypeName, const INedTypeNames& amongQNames);
 
-    /** Resolves NED type name, based on the NED files loaded */
+    /**
+     * Resolves given NED type name, based on the NED files loaded. Returns "" if not found.
+     */
     virtual std::string lookupNedType(const NedLookupContext& context, const char *nedTypeName) {
         return lookupNedType(context, nedTypeName, CachedTypeNames{this});
     }
 
-    /** Available NED type names */
+    /**
+     * Returns the list of available (fully qualified) NED type names.
+     */
     virtual const std::vector<std::string>& getTypeNames() const {return nedTypeNames;}
 
     /**
