@@ -20,6 +20,7 @@
 #include <cfloat>
 #include <cmath>
 #include <cstdint>
+#include <cinttypes>
 #include "platdep/platdefs.h"
 
 namespace omnetpp {

@@ -16,17 +16,7 @@
 #ifndef __OMNETPP_CCONTEXTSWITCHER_H
 #define __OMNETPP_CCONTEXTSWITCHER_H
 
-#include <type_traits> // is_integer
-#include <limits>   // numeric_limits
-#include <cstring>  // for strlen, etc.
-#include <cstdarg>  // for va_list
-#include <cstdio>   // for sprintf
-#include <cstdlib>  // for gcvt
-#include <typeinfo>  // for type_info
-#include <string>    // for std::string
-#include "platdep/platmisc.h" // for gcvt, etc
 #include "simkerneldefs.h"
-#include "errmsg.h"
 
 namespace omnetpp {
 

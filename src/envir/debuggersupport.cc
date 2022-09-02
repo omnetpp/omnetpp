@@ -19,6 +19,7 @@
 #include <sstream>
 #include <set>
 #include <algorithm>
+#include "omnetpp/platdep/platmisc.h"  // getpid
 #include "debuggersupport.h"
 #include "common/stringutil.h"
 #include "omnetpp/csimulation.h"

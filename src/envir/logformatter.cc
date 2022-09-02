@@ -13,6 +13,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include "omnetpp/platdep/platmisc.h"  // getpid
 #include "common/commonutil.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/ccomponenttype.h"

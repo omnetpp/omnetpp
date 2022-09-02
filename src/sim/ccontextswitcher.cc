@@ -16,18 +16,9 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "common/commonutil.h"
-#include "common/unitconversion.h"
-#include "common/opp_ctype.h"
-#include "omnetpp/simutil.h"
 #include "omnetpp/cenvir.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/ccontextswitcher.h"
-#include "omnetpp/cmodule.h"
-#include "omnetpp/globals.h"
-#include "omnetpp/cexception.h"
-
-using namespace omnetpp::common;
 
 namespace omnetpp {
 
