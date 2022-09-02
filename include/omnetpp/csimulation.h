@@ -19,7 +19,6 @@
 #include "simkerneldefs.h"
 #include "simtime_t.h"
 #include "ccomponent.h"
-#include "ccontextswitcher.h"
 #include "cexception.h"
 
 namespace omnetpp {
@@ -42,6 +41,8 @@ class cEnvir;
 class cSoftOwner;
 class cINedLoader;
 class cIRngManager;
+
+enum ContextType {CTX_NONE /*TODO CTX_IDLE? */, CTX_BUILD, CTX_INITIALIZE, CTX_EVENT /*TODO CTX_RUNNING*/, CTX_REFRESHDISPLAY, CTX_FINISH, CTX_CLEANUP};  //TODO CTX_BUSY instead of SIM_BUSY
 
 SIM_API extern OPP_THREAD_LOCAL cSoftOwner globalOwningContext; // also in globals.h
 
@@ -84,7 +85,6 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     cModule *systemModule = nullptr;    // pointer to system (root) module
     cSimpleModule *currentActivityModule = nullptr; // the module currently executing activity() (nullptr if handleMessage() or in main)
     cComponent *contextComponent = nullptr;  // component in context (or nullptr)
-    ContextType contextType;            // the innermost context type
     cFutureEventSet *fes = nullptr;     // stores future events
     cScheduler *scheduler = nullptr;    // event scheduler
     simtime_t warmupPeriod;             // warm-up period
@@ -554,11 +554,6 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     virtual void setContext(cComponent *component);
 
     /**
-     * Sets the context type for the context module. Used internally.
-     */
-    virtual void setContextType(ContextType type)  {contextType = type;}
-
-    /**
      * Sets global context. Used internally.
      */
     virtual void setGlobalContext()  {contextComponent=nullptr; cOwnedObject::setOwningContext(&globalOwningContext);}
@@ -574,15 +569,6 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * Returns the component (module or channel) currently in context.
      */
     cComponent *getContext() const {return contextComponent;}  // note: intentionally non-virtual
-
-    /**
-     * Returns one of the CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_FINISH constants,
-     * depending on what the module in context is doing. In case of nested contexts
-     * (e.g. when a module is dynamically created, initialized or manually
-     * finalized during simulation), the innermost context type is returned.
-     * The return value is only valid if getContextModule() != nullptr.
-     */
-    ContextType getContextType() const {return contextType;}  // note: intentionally non-virtual
 
     /**
      * If the current context is a module, returns its pointer,

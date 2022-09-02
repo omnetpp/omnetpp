@@ -88,20 +88,5 @@ cMethodCallContextSwitcher::~cMethodCallContextSwitcher()
         EVCB.componentMethodEnd();
 }
 
-//----
-
-cContextTypeSwitcher::cContextTypeSwitcher(ContextType contextType)
-{
-    // save current context type and switch to new one
-    simulation = cSimulation::getActiveSimulation();
-    savedContextType = simulation->getContextType();
-    simulation->setContextType(contextType);
-}
-
-cContextTypeSwitcher::~cContextTypeSwitcher()
-{
-    simulation->setContextType(savedContextType);
-}
-
 }  // namespace omnetpp
 

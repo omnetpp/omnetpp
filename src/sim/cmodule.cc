@@ -1494,7 +1494,6 @@ void cModule::finalizeParameters()
 {
     // temporarily switch context
     cContextSwitcher tmp(this);
-    cContextTypeSwitcher tmp2(CTX_BUILD);
 
     cComponent::finalizeParameters();  // this will read input parameters
 
@@ -1525,7 +1524,6 @@ void cModule::buildInside()
 
     // temporarily switch context
     cContextSwitcher tmp(this);
-    cContextTypeSwitcher tmp2(CTX_BUILD);
 
     // call doBuildInside() in this context
     doBuildInside();
@@ -1625,7 +1623,6 @@ void cModule::callInitialize()
     // and channels must be ready for that at that time, i.e. passed at least
     // stage==0.
     //
-    cContextTypeSwitcher tmp(CTX_INITIALIZE);
     int stage = 0;
     bool moreChannelStages = true, moreModuleStages = true;
     while (moreChannelStages || moreModuleStages) {
@@ -1639,7 +1636,6 @@ void cModule::callInitialize()
 
 bool cModule::callInitialize(int stage)
 {
-    cContextTypeSwitcher tmp(CTX_INITIALIZE);
     bool moreChannelStages = initializeChannels(stage);
     bool moreModuleStages = initializeModules(stage);
     return moreChannelStages || moreModuleStages;
@@ -1647,9 +1643,6 @@ bool cModule::callInitialize(int stage)
 
 bool cModule::initializeChannels(int stage)
 {
-    if (getSimulation()->getContextType() != CTX_INITIALIZE)
-        throw cRuntimeError("Internal function initializeChannels() may only be called via callInitialize()");
-
     // initialize channels directly under this module
     bool moreStages = false;
     for (ChannelIterator it(this); !it.end(); ++it)
@@ -1667,9 +1660,6 @@ bool cModule::initializeChannels(int stage)
 bool cModule::initializeModules(int stage)
 {
     cSimulation *simulation = getSimulation();
-    if (simulation->getContextType() != CTX_INITIALIZE)
-        throw cRuntimeError("Internal function initializeModules() may only be called via callInitialize()");
-
     if (stage == 0) {
         // call buildInside() if user has forgotten to do it; this is needed
         // to make dynamic module creation more robust
@@ -1761,7 +1751,6 @@ void cModule::callFinish()
 
     // ...then for this module, in our context: save parameters, then finish()
     cContextSwitcher tmp(this);
-    cContextTypeSwitcher tmp2(CTX_FINISH);
     try {
         recordParameters();
         //Enter_Method_Silent("finish()");
@@ -1788,7 +1777,6 @@ void cModule::callPreDelete(cComponent *root)
 
     // ...then for this module, in our context
     cContextSwitcher tmp(this);
-    cContextTypeSwitcher tmp2(CTX_CLEANUP);
     try {
         preDelete(root);
     }
@@ -1812,7 +1800,6 @@ void cModule::callRefreshDisplay()
 
     // ...then for this module, in our context: save parameters, then finish()
     cContextSwitcher tmp(this);
-    cContextTypeSwitcher tmp2(CTX_REFRESHDISPLAY);
     try {
         refreshDisplay();
     }

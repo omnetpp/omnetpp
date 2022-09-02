@@ -1,6 +1,6 @@
 %description:
 Test initialize() and finish() of a channel;
-e.g. simulation.getContext() and simulation.getContextType() should be correctly set.
+e.g. simulation.getContext() should be correctly set.
 
 %file: test.ned
 
@@ -38,20 +38,16 @@ class TestChannel: public cIdealChannel
 
     virtual void initialize() override {
         ASSERT(getSimulation()->getContext() == this);
-        ASSERT(getSimulation()->getContextType() == CTX_INITIALIZE);
         EV << "- " << getFullPath() << " initialize\n";
     }
 
     virtual Result processMessage(cMessage *msg, const SendOptions& options, simtime_t t) override {
-        //FIXME this fails: ASSERT(getSimulation()->getContext() == this);
-        ASSERT(getSimulation()->getContextType() == CTX_EVENT);
         EV << "- " << getFullPath() << " process: \"" << msg->getName() << "\"\n";
         return cIdealChannel::processMessage(msg, options, t);
     }
 
     virtual void finish() override {
         ASSERT(getSimulation()->getContext() == this);
-        ASSERT(getSimulation()->getContextType() == CTX_FINISH);
         EV << "- " << getFullPath() << " finish\n";
     }
 };
@@ -66,14 +62,12 @@ class Node : public cSimpleModule
 
     virtual void initialize() override {
         ASSERT(getSimulation()->getContext() == this);
-        ASSERT(getSimulation()->getContextType() == CTX_INITIALIZE);
         EV << "- " << getFullPath() << " initialize\n";
         scheduleAt(1, new cMessage("timer"));
     }
 
     virtual void handleMessage(cMessage *msg) override {
         ASSERT(getSimulation()->getContext() == this);
-        ASSERT(getSimulation()->getContextType() == CTX_EVENT);
         EV << "- " << getFullPath() << " handleMessage: \"" << msg->getName() << "\"\n";
         if (msg->isSelfMessage())
             send(new cMessage("packet"), "g$o");
@@ -82,7 +76,6 @@ class Node : public cSimpleModule
 
     virtual void finish() override {
         ASSERT(getSimulation()->getContext() == this);
-        ASSERT(getSimulation()->getContextType() == CTX_FINISH);
         EV << "- " << getFullPath() << " finish\n";
     }
 };

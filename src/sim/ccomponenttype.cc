@@ -26,6 +26,7 @@
 #include "omnetpp/csimplemodule.h"
 #include "omnetpp/cchannel.h"
 #include "omnetpp/cenvir.h"
+#include "omnetpp/csimulation.h"
 #include "omnetpp/cparimpl.h"
 #include "omnetpp/cexception.h"
 #include "omnetpp/globals.h"
@@ -305,9 +306,6 @@ cModule *cModuleType::create(const char *moduleName, cSimulation *simulation)
 
 cModule *cModuleType::doCreate(cSimulation *simulation, cModule *parentModule, const char *moduleName, int index)
 {
-    // set context type to "BUILD"
-    cContextTypeSwitcher _(CTX_BUILD);
-
     cEnvir *envir = simulation->getEnvir();
 
     // create the new module object
@@ -445,8 +443,6 @@ cChannel *cChannelType::instantiateChannelClass(const char *className)
 
 cChannel *cChannelType::create(const char *name, cSimulation *simulation)
 {
-    cContextTypeSwitcher _(CTX_BUILD);
-
     // create channel object
     cTemporaryOwner tmp(cTemporaryOwner::DestructorMode::ASSERTNONE); // for collecting members of the new object
     cChannel *channel = createChannelObject();

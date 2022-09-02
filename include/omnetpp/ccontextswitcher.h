@@ -17,15 +17,12 @@
 #define __OMNETPP_CCONTEXTSWITCHER_H
 
 #include "simkerneldefs.h"
+#include "csimulation.h"
 
 namespace omnetpp {
 
 class cObject;
 class cComponent;
-
-// logically belongs to csimulation.h but must be here because of declaration order
-enum ContextType {CTX_NONE, CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_REFRESHDISPLAY, CTX_FINISH, CTX_CLEANUP};
-
 
 /**
  * @brief Denotes module class member function as callable from other modules.
@@ -137,32 +134,6 @@ class SIM_API cMethodCallContextSwitcher : public cContextSwitcher
      */
     static int getDepth() {return depth;}
 };
-
-/**
- * @brief The constructor switches the context type, and the destructor restores
- * the original context type.
- *
- * @see cSimulation::getContextModule(), cSimulation::setContextModule()
- * @ingroup Internals
- */
-class SIM_API cContextTypeSwitcher
-{
-  private:
-    cSimulation *simulation;
-    ContextType savedContextType;
-
-  public:
-    /**
-     * Switches the to the given context type.
-     */
-    cContextTypeSwitcher(ContextType contexttype);
-
-    /**
-     * Restores the original context type
-     */
-    ~cContextTypeSwitcher();
-};
-
 
 }  // namespace omnetpp
 

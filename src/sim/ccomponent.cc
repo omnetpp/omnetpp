@@ -305,7 +305,6 @@ void cComponent::finalizeParameters()
 
     // temporarily switch context
     cContextSwitcher tmp(this);
-    cContextTypeSwitcher tmp2(CTX_BUILD);
 
     getComponentType()->applyPatternAssignments(this);
 

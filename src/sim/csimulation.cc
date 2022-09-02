@@ -117,7 +117,6 @@ cSimulation::cSimulation(const char *name, cEnvir *env) : cNamedObject(name, fal
 
     // these are not set inline because the declaring header is included here
     simulationStage = CTX_NONE;
-    contextType = CTX_NONE;
 
     // install default objects
     setFES(new cEventHeap("fes"));
@@ -542,7 +541,6 @@ void cSimulation::setupNetwork(cModuleType *networkType)
 
     try {
         // set up the network by instantiating the toplevel module
-        cContextTypeSwitcher tmp(CTX_BUILD);
         notifyLifecycleListeners(LF_PRE_NETWORK_SETUP);
         cModule *module = networkType->create(networkType->getName(), this);
         module->finalizeParameters();
@@ -781,8 +779,6 @@ void cSimulation::executeEvent(cEvent *event)
         }
     } flagResetter;
 #endif
-
-    setContextType(CTX_EVENT);
 
     // increment event count
     currentEventNumber++;

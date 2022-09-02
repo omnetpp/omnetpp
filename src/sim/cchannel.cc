@@ -79,7 +79,6 @@ void cChannel::finalizeParameters()
 
 void cChannel::callInitialize()
 {
-    cContextTypeSwitcher tmp(CTX_INITIALIZE);
     int stage = 0;
     while (initializeChannel(stage))
         ++stage;
@@ -88,17 +87,11 @@ void cChannel::callInitialize()
 bool cChannel::callInitialize(int stage)
 {
     // note: numInitStages() will be checked inside initializeChannel()
-    cContextTypeSwitcher tmp(CTX_INITIALIZE);
     return initializeChannel(stage);
 }
 
 bool cChannel::initializeChannel(int stage)
 {
-    // channels don't contain further subcomponents, so just we just invoke
-    // initialize(stage) in the right context here.
-    if (getSimulation()->getContextType() != CTX_INITIALIZE)
-        throw cRuntimeError("Internal function initializeChannel() may only be called via callInitialize()");
-
     if (stage == 0) {
         // call finalizeParameters() if user has forgotten to do it; this is needed
         // to make dynamic module/channel creation more robust
@@ -148,7 +141,6 @@ void cChannel::callFinish()
     // This is the interface for calling finish(). Channels don't contain further
     // subcomponents, so just we just invoke finish() in the right context here.
     cContextSwitcher tmp(this);
-    cContextTypeSwitcher tmp2(CTX_FINISH);
     try {
         recordParameters();
         finish();
@@ -165,7 +157,6 @@ void cChannel::callFinish()
 void cChannel::callPreDelete(cComponent *root)
 {
     cContextSwitcher tmp(this);
-    cContextTypeSwitcher tmp2(CTX_CLEANUP);
     try {
         preDelete(root);
     }
@@ -180,7 +171,6 @@ void cChannel::callPreDelete(cComponent *root)
 void cChannel::callRefreshDisplay()
 {
     cContextSwitcher tmp(this);
-    cContextTypeSwitcher tmp2(CTX_REFRESHDISPLAY);
     try {
         refreshDisplay();
     }
