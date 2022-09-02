@@ -307,9 +307,9 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     virtual void loadNedText(const char *name, const char *nedText, const char *expectedPackage=nullptr, bool isXML=false);
 
     /**
-     * Shortcut for <tt>getNedLoader()->doneLoadingNedFiles()</tt>.
+     * Shortcut for <tt>getNedLoader()->checkLoadedTypes()</tt>.
      */
-    virtual void doneLoadingNedFiles();
+    virtual void checkLoadedTypes();
 
     /**
      * Shortcut for <tt>getNedLoader()->getNedPackageForFolder(folder)</tt>.

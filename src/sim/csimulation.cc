@@ -402,11 +402,11 @@ void cSimulation::loadNedText(const char *name, const char *nedText, const char 
     nedLoader->loadNedText(name, nedText, expectedPackage, isXML);
 }
 
-void cSimulation::doneLoadingNedFiles()
+void cSimulation::checkLoadedTypes()
 {
     if (!nedLoader)
         throw cRuntimeError("No NED loader installed");
-    nedLoader->doneLoadingNedFiles();
+    nedLoader->checkLoadedTypes();
 }
 
 std::string cSimulation::getNedPackageForFolder(const char *folder)

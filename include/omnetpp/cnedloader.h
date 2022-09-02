@@ -81,18 +81,12 @@ class SIM_API cINedLoader : public cNoncopyableOwnedObject
      * (items must be separated with a semicolon).
      *
      * The function returns the number of NED files loaded.
-     *
-     * Note: doneLoadingNedFiles() must be called after the last
-     * loadNedSourceFolder()/loadNedFile()/loadNedText() call.
      */
     virtual int loadNedSourceFolder(const char *foldername, const char *excludedPackages) = 0;
 
     /**
      * Load a single NED file. If the expected package is given (non-nullptr),
      * it should match the package declaration inside the NED file.
-     *
-     * Note: doneLoadingNedFiles() must be called after the last
-     * loadNedSourceFolder()/loadNedFile()/loadNedText() call.
      */
     virtual void loadNedFile(const char *nedfname, const char *expectedPackage=nullptr, bool isXML=false) = 0;
 
@@ -102,9 +96,6 @@ class SIM_API cINedLoader : public cNoncopyableOwnedObject
      * and should be unique among the files loaded. If the expected package
      * is given (non-nullptr), it should match the package declaration inside
      * the NED file.
-     *
-     * Note: doneLoadingNedFiles() must be called after the last
-     * loadNedSourceFolder()/loadNedFile()/loadNedText() call.
      */
     virtual void loadNedText(const char *name, const char *nedtext, const char *expectedPackage=nullptr, bool isXML=false) = 0;
 
@@ -115,11 +106,10 @@ class SIM_API cINedLoader : public cNoncopyableOwnedObject
     virtual std::vector<std::string> getLoadedNedFolders() const = 0;
 
     /**
-     * To be called after all NED folders / files have been loaded. May be
-     * redefined to issue errors for components that could not be fully
-     * resolved because of missing base types or interfaces.
+     * Forces checking for missing base classes and other problems in the loaded
+     * NED types. (Without calling this method, errors are only discovered on first use.)
      */
-    virtual void doneLoadingNedFiles() = 0;
+    virtual void checkLoadedTypes() = 0;
 
     /**
      * Returns the NED package that corresponds to the given folder. Returns ""

@@ -116,7 +116,6 @@ double simulateAloha(simtime_t limit, int numHosts, double iaMean)
     sim->loadNedText("server", SERVER_NED);
     sim->loadNedText("host", HOST_NED);
     // sim->loadNedSourceFolder("./model");
-    sim->doneLoadingNedFiles();
 
     // set the simulation parameters in the environment
     std::ostringstream iaParam;

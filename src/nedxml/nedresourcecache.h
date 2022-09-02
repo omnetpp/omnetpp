@@ -124,18 +124,12 @@ class NEDXML_API NedResourceCache
      * (items must be separated with a semicolon).
      *
      * The function returns the number of NED files loaded.
-     *
-     * Note: doneLoadingNedFiles() must be called after the last
-     * loadNedSourceFolder()/loadNedFile()/loadNedText() call.
      */
     virtual int loadNedSourceFolder(const char *foldername, const char *excludedPackages);
 
     /**
      * Load a single NED file. If the expected package is given (non-nullptr),
      * it should match the package declaration inside the NED file.
-     *
-     * Note: doneLoadingNedFiles() must be called after the last
-     * loadNedSourceFolder()/loadNedFile()/loadNedText() call.
      */
     virtual void loadNedFile(const char *nedfname, const char *expectedPackage, bool isXML);
 
@@ -145,24 +139,15 @@ class NEDXML_API NedResourceCache
      * and should be unique among the files loaded. If the expected package
      * is given (non-nullptr), it should match the package declaration inside
      * the NED file.
-     *
-     * Note: doneLoadingNedFiles() must be called after the last
-     * loadNedSourceFolder()/loadNedFile()/loadNedText() call.
      */
     virtual void loadNedText(const char *name, const char *nedtext, const char *expectedPackage, bool isXML);
 
     /**
-     * Forces resolving (see NedTypeInfo::resolve()) all loaded NED types, so
-     * that missing base types and other problems are detected. Without calling
-     * this function, such errors only surface on the first use of the NED type.
+     * Calls resolveAllNedTypes() to force checking for missing base classes and
+     * other problems in the loaded NED files. (Without calling this method,
+     * errors are only discovered on first use.)
      */
-    virtual void resolveAllNedTypes();
-
-    /**
-     * Deprecated. Calling this method is no longer required. Currently delegates
-     * to resolveAllNedTypes().
-     */
-    virtual void doneLoadingNedFiles();
+    virtual void checkLoadedTypes();
 
     /**
      * Return a list of "package.ned" files relevant for the given package.

@@ -282,17 +282,11 @@ void NedResourceCache::collectNedTypesFrom(ASTNode *node, const std::string& pac
     }
 }
 
-void NedResourceCache::resolveAllNedTypes()
+void NedResourceCache::checkLoadedTypes()
 {
     for (auto& nedType : nedTypes)
         if (!nedType.second->isResolved())
             nedType.second->resolve();
-}
-
-void NedResourceCache::doneLoadingNedFiles()
-{
-    // note: this call is not really needed unless one wants to know about errors in unused types too
-    resolveAllNedTypes();
 }
 
 NedTypeInfo *NedResourceCache::createTypeInfo(const char *qname, bool isInnerType, ASTNode *node)

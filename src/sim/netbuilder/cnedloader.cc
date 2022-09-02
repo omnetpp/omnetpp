@@ -128,7 +128,7 @@ void cNedLoader::loadNedFiles()
             foldersLoaded.insert(folder);
         }
     }
-    doneLoadingNedFiles();
+    checkLoadedTypes();
 }
 
 cNedDeclaration *cNedLoader::createTypeInfo(const char *qname, bool isInnerType, ASTNode *node)
