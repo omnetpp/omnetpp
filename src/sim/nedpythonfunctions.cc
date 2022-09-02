@@ -23,6 +23,7 @@
 
 #include <cstddef>
 #include <string>
+#include <regex>
 
 #include "common/stringutil.h"
 #include "omnetpp/cvalue.h"
@@ -397,9 +398,26 @@ cValue nedf_pycode(cComponent *contextComponent, cValue argv[], int argc)
 {
 #ifdef WITH_PYTHON
     std::string code = argv[0].stringValue();
-    // Using *args, so we don't have to also create a list
-    // inside the argument pack tuple when calling.
-    code = "def fun(*args):\n" + opp_indentlines(code, "    ");
+
+    std::smatch match;
+
+    std::string ident = "([a-zA-Z_][a-zA-Z0-9_]*)";
+    std::string identList = "(" + ident + "(\\s*,\\s*" + ident + ")*)?";
+    std::regex_match(code, match, std::regex("(^\\s*" + identList + "\\s*:\\s*).*"));
+
+    if (match.size() >= 2) {
+        std::string header = match[1];
+        std::string arglist = match[2];
+        if (!std::regex_search(header, std::regex("\\btry\\b"))) {
+            code = code.substr(header.length());
+            code = "def fun(" + arglist + "):\n" + opp_indentlines(code, "    ");
+        }
+    }
+    else {
+        // Using *args, so we don't have to also create a list
+        // inside the argument pack tuple when calling.
+        code = "def fun(*args):\n" + opp_indentlines(code, "    ");
+    }
 
     PyObject *globals = makeGlobalsWithAccessor(contextComponent);
 
