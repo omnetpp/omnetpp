@@ -320,8 +320,7 @@ void MainWindow::onEventNumLabelContextMenuRequested(QPoint pos)
 
 bool MainWindow::isRunning()
 {
-    Qtenv::eState state = (Qtenv::eState)env->getSimulationState();
-    return state == Qtenv::SIM_RUNNING || state == Qtenv::SIM_BUSY;
+    return getSimulation()->getState() == cSimulation::SIM_RUNNING;
 }
 
 void MainWindow::setGuiForRunmode(RunMode runMode, bool untilMode)
@@ -425,7 +424,7 @@ void MainWindow::updateSpeedSlider()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    Qtenv::eState state = env->getSimulationState();
+    auto state = getSimulation()->getState();
 
     enum Action {
         QUIT, // no dialog, no finish, quit
@@ -439,23 +438,23 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
     // First, deciding what to do
     switch (state) {
-        case Qtenv::SIM_NONET: // if there is no network, we simply quit
-        case Qtenv::SIM_NEW: // if there's a network, but not started, always exiting
+        case cSimulation::SIM_NONETWORK: // if there is no network, we simply quit
+        case cSimulation::SIM_NETWORKBUILT: // if there's a network, but not started, always exit
+        case cSimulation::SIM_INITIALIZED:
             action = QUIT;
             break;
 
-        case Qtenv::SIM_READY: // during simulation (running or paused), either ask to finish, or just do it
-        case Qtenv::SIM_RUNNING:
-        case Qtenv::SIM_BUSY:
+        case cSimulation::SIM_PAUSED: // during simulation (running or paused), either ask to finish, or just do it
+        case cSimulation::SIM_RUNNING:
             action = confirmExit ? YES_NO_CANCEL : FINISH_QUIT;
             break;
 
-        case Qtenv::SIM_TERMINATED: // <- this can't happen by the way, we always finish() after termination right away
-        case Qtenv::SIM_FINISHCALLED: // if the simulation ended properly, a simple confirmation or nothing
+        case cSimulation::SIM_TERMINATED: // <- this can't happen by the way, we always finish() after termination right away
+        case cSimulation::SIM_FINISHCALLED: // if the simulation ended properly, a simple confirmation or nothing
             action = QUIT;
             break;
 
-        case Qtenv::SIM_ERROR: // after an error, do not ask for confirmation [Andras]
+        case cSimulation::SIM_ERROR: // after an error, do not ask for confirmation [Andras]
             action = QUIT;
             break;
     }
@@ -525,7 +524,7 @@ void MainWindow::stopSimulation()
         // no return here!
 
     // implements Simulate|Stop
-    if (env->getSimulationState() == Qtenv::SIM_RUNNING || env->getSimulationState() == Qtenv::SIM_BUSY) {
+    if (getSimulation()->getState() == cSimulation::SIM_RUNNING) {
         // This just *asks* the simulation to stop, causing it to break from the loop in env->runSimulation().
         // setGuiForRunmode(...NOT_RUNNING) will be called after env->runSimulation() has returned.
         env->setStopSimulationFlag();
@@ -653,7 +652,7 @@ void MainWindow::updateStatusDisplay()
 
     if (showStatusDetails) {
         //FIXME: switching between NextEvent Display and Performance Display should be explicit and in the Qtenv class not here! --Andras
-        if (env->getSimulationState() == Qtenv::SIM_RUNNING
+        if (getSimulation()->getState() == cSimulation::SIM_RUNNING
                 && (env->getSimulationRunMode() == RUNMODE_FAST
                     || env->getSimulationRunMode() == RUNMODE_EXPRESS))
             updatePerformanceDisplay();
@@ -696,8 +695,8 @@ void MainWindow::updateNextEventDisplay()
     cSimpleModule *modptr = nullptr;
     cEvent *msgptr = nullptr;
 
-    int state = env->getSimulationState();
-    if (state == Qtenv::SIM_NEW || state == Qtenv::SIM_READY || state == Qtenv::SIM_RUNNING || state == Qtenv::SIM_BUSY) {
+    auto state = getSimulation()->getState();
+    if (state == cSimulation::SIM_INITIALIZED || state == cSimulation::SIM_RUNNING || state == cSimulation::SIM_PAUSED) {
         modptr = getSimulation()->guessNextModule();
         msgptr = getSimulation()->guessNextEvent();
     }
@@ -820,8 +819,8 @@ bool MainWindow::networkReady()
 
 bool MainWindow::isSimulationOk()
 {
-    int state = env->getSimulationState();
-    return state == Qtenv::SIM_NEW || state == Qtenv::SIM_RUNNING || state == Qtenv::SIM_READY;
+    auto state = getSimulation()->getState();
+    return state == cSimulation::SIM_NETWORKBUILT || state == cSimulation::SIM_INITIALIZED || state == cSimulation::SIM_RUNNING || state == cSimulation::SIM_PAUSED;
 }
 
 bool MainWindow::networkPresent()
@@ -1294,13 +1293,13 @@ void MainWindow::on_actionConcludeSimulation_triggered()
         return;
 
     // check state is not SIM_FINISHCALLED
-    if (getQtenv()->getSimulationState() == Qtenv::SIM_FINISHCALLED) {
+    if (getSimulation()->getState() == cSimulation::SIM_FINISHCALLED) {
         QMessageBox::information(this, tr("Error"), tr("finish() has been invoked already."), QMessageBox::Ok);
         return;
     }
 
     // check state is not SIM_ERROR
-    if (getQtenv()->getSimulationState() == Qtenv::SIM_ERROR) {
+    if (getSimulation()->getState() == cSimulation::SIM_ERROR) {
         QMessageBox::StandardButton ans =
             QMessageBox::question(this, tr("Warning"),
                     "Simulation has stopped with error, calling finish() might produce unexpected results. Proceed anyway?",

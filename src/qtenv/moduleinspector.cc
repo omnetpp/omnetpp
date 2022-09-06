@@ -443,7 +443,7 @@ void ModuleInspector::fastRunUntil()
 
 void ModuleInspector::relayout()
 {
-    if (getQtenv()->getSimulationState() != Qtenv::SIM_ERROR) {
+    if (getSimulation()->getState() != cSimulation::SIM_ERROR) {
         // TODO: use some simpler signals-slots mechanism
         getQtenv()->getMainWindow()->busy("Relayouting...");
         getQtenv()->getModuleLayouter()->fullRelayout(static_cast<cModule*>(object));

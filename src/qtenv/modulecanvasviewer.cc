@@ -919,7 +919,7 @@ void ModuleCanvasViewer::refresh()
         canvasRenderer->setCanvas(canvas);
 
     // must not give control to the model after an error, it might be inconsistent
-    if (canvas && getQtenv()->getSimulationState() != Qtenv::SIM_ERROR)
+    if (canvas && getSimulation()->getState() != cSimulation::SIM_ERROR)
         canvas->getRootFigure()->callRefreshDisplay();
 
     // redraw from scratch only if really needed

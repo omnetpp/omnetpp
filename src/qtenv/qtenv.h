@@ -127,23 +127,6 @@ class QTENV_API Qtenv : public QObject, public AppBase, public SimulationHolder
    public:
        using AppBase::out;
 
-      //
-      // state transitions:
-      //    SIM_NONET -> SIM_NEW -> (SIM_RUNNING <-> SIM_READY) -> SIM_TERMINATED -> SIM_FINISHCALLED -> SIM_NONET
-      //                                               `-> SIM_ERROR
-      // plus, at any time it may be temporarily BUSY inside an in idle() call
-      //
-      enum eState {
-          SIM_NONET = 0,
-          SIM_NEW = 1,
-          SIM_RUNNING = 2,
-          SIM_READY = 3,
-          SIM_TERMINATED = 4,
-          SIM_ERROR = 5,
-          SIM_FINISHCALLED = 6,
-          SIM_BUSY = 7  // busy doing active wait
-      };
-
       enum DialogKind
       {
           INFO,
@@ -166,7 +149,6 @@ class QTENV_API Qtenv : public QObject, public AppBase, public SimulationHolder
       cConfiguration *activeCfg = nullptr;
 
       bool isConfigRun = false;              // true after newRun(), and false after newConfig()
-      eState simulationState = SIM_NONET;    // state of the simulation run
       RunMode runMode = RUNMODE_NOT_RUNNING; // the current mode the simulation is executing under
       struct RunUntil {
           simtime_t time;                // time limit in current "Run Until" execution, or zero
@@ -424,7 +406,6 @@ class QTENV_API Qtenv : public QObject, public AppBase, public SimulationHolder
       bool getEventlogRecording() const {return getEnvir()->getEventlogRecording();}
       void setEventlogRecording(bool enabled) {getEnvir()->setEventlogRecording(enabled);}
 
-      eState getSimulationState() {return simulationState;}
       void setStopSimulationFlag() {stopSimulationFlag = true;}
       bool getStopSimulationFlag() {return stopSimulationFlag;}
       bool getCallFinishOnExitFlag() { return callFinishOnExitFlag; }
@@ -488,7 +469,6 @@ class QTENV_API Qtenv : public QObject, public AppBase, public SimulationHolder
       QFont getFirstAvailableFontFamily(std::initializer_list<QString> preferenceList, int pointSize, QFont defaultValue = QString());
 
       void runSimulationLocal(RunMode runMode, cObject *object = nullptr, Inspector *insp = nullptr);
-      void notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details = nullptr);
 };
 
 

@@ -54,6 +54,7 @@
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/regmacros.h"
+#include "omnetpp/crunner.h"
 #include "omnetpp/cproperties.h"
 #include "omnetpp/cproperty.h"
 #include "omnetpp/cfutureeventset.h"
@@ -778,15 +779,13 @@ int Qtenv::doRunApp()
     // SHUTDOWN
     //
 
-    if (simulationState == SIM_READY && callFinishOnExitFlag)
+    if (getSimulation()->getState() == cSimulation::SIM_PAUSED && callFinishOnExitFlag)
         finishSimulation();
 
     // saving the open toplevel inspectors to the .qtenvrc file
     storeInspectors(false);
 
     // delete network if not yet done
-    if (simulationState != SIM_NONET && simulationState != SIM_FINISHCALLED)
-        notifyLifecycleListeners(LF_ON_RUN_END);
     getSimulation()->deleteNetwork();
 
     // close all inspectors before exiting,
@@ -857,11 +856,33 @@ void Qtenv::rebuildSim()
         confirm(INFO, "Choose File|New Network or File|New Run.");
 }
 
+class QtenvRunner : public IRunner
+{
+    private:
+        Qtenv *qtenv;
+    public:
+        QtenvRunner(Qtenv *qtenv) : qtenv(qtenv) {}
+        virtual void run() override;
+};
+
+void QtenvRunner::run()
+{
+    // initial, "cheap" version of a Qtenv runner -- just delegates back to Qtenv
+    // TODO move out to its own file, and move Qtenv's running-related functionality into it
+    bool cont = true;
+    while (cont) {
+        if (qtenv->getSimulationRunMode() == RUNMODE_EXPRESS)
+            cont = qtenv->doRunSimulationExpress();
+        else
+            cont = qtenv->doRunSimulation();
+    }
+}
+
 void Qtenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg, cModule *until_module,
                           bool stopOnMsgCancel)
 {
     if (!isPaused())
-        ASSERT(simulationState == SIM_NEW || simulationState == SIM_READY);
+        ASSERT(getSimulation()->getState() == cSimulation::SIM_INITIALIZED || getSimulation()->getState() == cSimulation::SIM_PAUSED);
 
     setSimulationRunMode(mode);
 
@@ -872,7 +893,6 @@ void Qtenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t unti
     runUntil.stopOnMsgCancel = stopOnMsgCancel;
 
     stopSimulationFlag = false;
-    simulationState = SIM_RUNNING;
     // if there's some animating to do before the event, only do that if stepping.
 
     if (isPaused()) {
@@ -886,34 +906,25 @@ void Qtenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t unti
     QApplication::processEvents();
 
     startClock();
-    notifyLifecycleListeners(LF_ON_SIMULATION_RESUME);
     try {
-        // funky while loop to handle switching to and from EXPRESS mode....
-        bool cont = true;
-        while (cont) {
-            if (runMode == RUNMODE_EXPRESS)
-                cont = doRunSimulationExpress();
-            else
-                cont = doRunSimulation();
-        }
+        QtenvRunner runner(this);
+        bool paused = getSimulation()->run(&runner, false);
+
         if (runMode != RUNMODE_NORMAL) { // in NORMAL mode, doRunSimulation() already calls refreshDisplay() after each event
             if (runMode != RUNMODE_FAST)
                 messageAnimator->updateAnimations();
             callRefreshDisplay();
         }
-        simulationState = SIM_READY;
-        notifyLifecycleListeners(LF_ON_SIMULATION_PAUSE);
-    }
-    catch (cTerminationException& e) {
-        simulationState = SIM_TERMINATED;
-        stoppedWithTerminationException(e);
-        notifyLifecycleListeners(LF_ON_SIMULATION_SUCCESS);
-        printException(e);
+
+        if (!paused) {
+            cTerminationException *e = getSimulation()->getTerminationReason();
+            stoppedWithTerminationException(*e);
+            printException(*e);
+        }
+
     }
     catch (std::exception& e) {
-        simulationState = SIM_ERROR;
         stoppedWithException(e);
-        notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
         printException(e);
     }
     stopClock();
@@ -928,7 +939,7 @@ void Qtenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t unti
     if (!messageAnimator->isHoldActive())
         messageAnimator->setMarkedModule(getSimulation()->guessNextModule());
 
-    if (simulationState == SIM_TERMINATED) {
+    if (getSimulation()->getState() == cSimulation::SIM_TERMINATED) {
         // call wrapper around simulation.callFinish() and simulation.endRun()
         //
         // NOTE: if the simulation is in SIM_ERROR, we don't want endRun() to be
@@ -1190,9 +1201,9 @@ void Qtenv::startAll()
 void Qtenv::finishSimulation()
 {
     // strictly speaking, we shouldn't allow callFinish() after SIM_ERROR, but it comes handy in practice...
-    ASSERT(simulationState != SIM_NONET && simulationState != SIM_FINISHCALLED);
+    ASSERT(getSimulation()->getState() != cSimulation::SIM_NONETWORK && getSimulation()->getState() != cSimulation::SIM_FINISHCALLED);
 
-    if (simulationState == SIM_NEW || simulationState == SIM_READY) {
+    if (getSimulation()->getState() == cSimulation::SIM_INITIALIZED || getSimulation()->getState() == cSimulation::SIM_PAUSED) {
         cTerminationException e("The user has finished the simulation");
         stoppedWithTerminationException(e);
     }
@@ -1209,19 +1220,8 @@ void Qtenv::finishSimulation()
     }
     catch (std::exception& e) {
         stoppedWithException(e);
-        notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
         printException(e);
     }
-    // then endrun
-    try {
-        notifyLifecycleListeners(LF_ON_RUN_END);
-    }
-    catch (std::exception& e) {
-        notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
-        printException(e);
-    }
-
-    simulationState = SIM_FINISHCALLED;
 
     updateStatusDisplay();
     callRefreshInspectors();
@@ -1231,14 +1231,15 @@ bool Qtenv::checkRunning()
 {
     const char *warningText = nullptr;
 
-    if (getSimulationState() == Qtenv::SIM_RUNNING) {
+    if (getSimulation()->getStage() == cSimulation::STAGE_EVENT) {
         if (getQtenv()->isPaused())
             warningText = "The simulation is paused in the middle of an event -- press STOP to finish processing it.";
         else
             warningText = "Sorry, you cannot do this while the simulation is running. Please stop it first.";
     }
-    if (getSimulationState() == Qtenv::SIM_BUSY)
+    else if (getSimulation()->getStage() == cSimulation::STAGE_BUSY) {
         warningText = "The simulation is waiting for external synchronization -- press STOP to interrupt it.";
+    }
 
     if (warningText != nullptr) {
         QMessageBox::warning(mainWindow, "Warning", warningText, QMessageBox::Ok);
@@ -1268,12 +1269,9 @@ void Qtenv::newNetwork(const char *networkname)
 {
     try {
         // finish & cleanup previous run if we haven't done so yet
-        if (simulationState != SIM_NONET) {
+        if (getSimulation()->getState() != cSimulation::SIM_NONETWORK) {
             storeInspectors(true);
-            if (simulationState != SIM_FINISHCALLED)
-                notifyLifecycleListeners(LF_ON_RUN_END);
             getSimulation()->deleteNetwork();
-            simulationState = SIM_NONET;
         }
 
         refreshDisplayCount = 0;
@@ -1294,14 +1292,11 @@ void Qtenv::newNetwork(const char *networkname)
         setupNetwork(network);
         prepareForRun();
 
-        simulationState = SIM_NEW;
         callRefreshDisplay(); // the one without exception handling!
 
     }
     catch (std::exception& e) {
-        notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
         printException(e);
-        simulationState = SIM_ERROR;
     }
 
     // update GUI
@@ -1322,12 +1317,9 @@ void Qtenv::newRun(const char *configname, int runnumber)
 {
     try {
         // finish & cleanup previous run if we haven't done so yet
-        if (simulationState != SIM_NONET) {
+        if (getSimulation()->getState() != cSimulation::SIM_NONETWORK) {
             storeInspectors(true);
-            if (simulationState != SIM_FINISHCALLED)
-                notifyLifecycleListeners(LF_ON_RUN_END);
             getSimulation()->deleteNetwork();
-            simulationState = SIM_NONET;
         }
 
         refreshDisplayCount = 0;
@@ -1353,7 +1345,6 @@ void Qtenv::newRun(const char *configname, int runnumber)
         setupNetwork(networkType);
         prepareForRun();
 
-        simulationState = SIM_NEW;
         callRefreshDisplay(); // the one without exception handling!
 
         // update GUI
@@ -1362,9 +1353,7 @@ void Qtenv::newRun(const char *configname, int runnumber)
         mainInspector->setObject(module);
      }
     catch (std::exception& e) {
-        notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
         printException(e);
-        simulationState = SIM_ERROR;
     }
 
     messageAnimator->setShowAnimations(true);  // affects how network graphics is drawn!
@@ -1474,7 +1463,7 @@ void Qtenv::inspectorDeleted(Inspector *insp)
 
 void Qtenv::callRefreshDisplay()
 {
-    ASSERT(simulationState != SIM_ERROR && simulationState != SIM_NONET);
+    ASSERT(getSimulation()->getState() != cSimulation::SIM_ERROR && getSimulation()->getState() != cSimulation::SIM_NONETWORK);
 
     LogLevel oldLogLevel = cLog::logLevel;
     if (opt->noLoggingRefreshDisplay)
@@ -1496,14 +1485,12 @@ void Qtenv::callRefreshDisplay()
 void Qtenv::callRefreshDisplaySafe()
 {
     try { // if we are _in_ a callback, inside deleteNetwork, the state might not have been updated yet...
-        if (simulationState != SIM_ERROR && simulationState != SIM_NONET && getSimulation()->getSystemModule())
+        if (getSimulation()->getState() != cSimulation::SIM_ERROR && getSimulation()->getState() != cSimulation::SIM_NONETWORK)
             callRefreshDisplay();
     }
     catch (std::exception& e) {
-        ASSERT(simulationState != SIM_ERROR); // the exception must have come from refreshDisplay calls in the model
-        simulationState = SIM_ERROR;
+        ASSERT(getSimulation()->getState() != cSimulation::SIM_ERROR); // the exception must have come from refreshDisplay calls in the model
         stoppedWithException(e);
-        notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
         printException(e);
     }
 }
@@ -1533,9 +1520,7 @@ void Qtenv::callRefreshInspectors()
         refreshInspectors();
     }
     catch (std::exception& e) {
-        simulationState = SIM_ERROR;
         stoppedWithException(e);
-        notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
         printException(e);
     }
 }
@@ -1686,7 +1671,7 @@ void Qtenv::printException(std::exception& ex, const char *when)
 {
     // print exception text into main window
     cException *e = dynamic_cast<cException *>(&ex);
-    if (e && e->getSimulationStage() != CTX_NONE) {
+    if (e && e->getSimulationStage() != cSimulation::STAGE_NONE) {
         //TODO add "when" info
         std::string txt = opp_stringf("<!> %s\n", e->getFormattedMessage().c_str());
         logBuffer.addInfo(txt.c_str());
@@ -1887,12 +1872,7 @@ void Qtenv::askParameter(cPar *par, bool unassigned)
 bool Qtenv::idle()
 {
     // process UI events
-    eState origsimstate = simulationState;
-    simulationState = SIM_BUSY;
-
-    displayUpdateController->idle();
-
-    simulationState = origsimstate;
+    displayUpdateController->idle(); // TODO switch simulationStage to STAGE_BUSY for the duration of this call
 
     return stopSimulationFlag;
 }
@@ -2011,7 +1991,7 @@ void Qtenv::objectDeleted(cObject *object)
         // message to "run until" deleted -- stop the simulation by other means
         runUntil.msg = nullptr;
         runUntil.eventNumber = getSimulation()->getEventNumber();
-        if (simulationState == SIM_RUNNING || simulationState == SIM_BUSY)
+        if (getSimulation()->getState() == cSimulation::SIM_RUNNING)
             confirm(INFO, "Message to run until has just been deleted.");
     }
 
@@ -2073,7 +2053,7 @@ void Qtenv::messageScheduled(cMessage *msg)
 void Qtenv::messageCancelled(cMessage *msg)
 {
     if (msg == runUntil.msg && runUntil.stopOnMsgCancel) {
-        if (simulationState == SIM_RUNNING || simulationState == SIM_BUSY)
+        if (getSimulation()->getState() == cSimulation::SIM_RUNNING)
             confirm(INFO, opp_stringf("Run-until message '%s' got cancelled.", msg->getFullName()).c_str());
         runUntil.msg = nullptr;
         runUntil.eventNumber = getSimulation()->getEventNumber();  // stop the simulation using the event number limit
@@ -2636,11 +2616,6 @@ void Qtenv::runSimulationLocal(RunMode runMode, cObject *object, Inspector *insp
         getQtenv()->runSimulation(runMode, 0, 0, nullptr, mod);
         mainWindow->setGuiForRunmode(RUNMODE_NOT_RUNNING);
     }
-}
-
-void Qtenv::notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details)
-{
-    cSimulation::getActiveSimulation()->notifyLifecycleListeners(eventType, details);
 }
 
 void Qtenv::refOsgNode(osg::Node *scene)
