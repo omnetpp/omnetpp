@@ -326,8 +326,7 @@ void MessageAnimator::endSend(cMessage *msg)
     else {
         // otherwise after the method.
         // XXX maybe split it in two, so if the first few parts are instantaneous, play them, and continue later?
-        MessageSendKey key = MessageSendKey::fromMessage(msg);
-        nonHoldingAnims.insert({key, sendAnim});
+        nonHoldingAnims[key].push_back(sendAnim);
     }
 
     auto dup = logBuffer->getLastMessageDup(msg);
@@ -406,14 +405,14 @@ void MessageAnimator::updateAnimations()
     // Always updating all non-holding animations first that are already playing.
     // But not beginning any pending/waiting anims before the deliveries.
     for (auto& e : nonHoldingAnims) {
-        auto& p = e.second;
-        if (p->getState() == Animation::PLAYING) {
-            p->update();
-            if (p->getState() == Animation::DONE) {
-                delete p;
-                p = nullptr;
+        for (auto& p : e.second)
+            if (p->getState() == Animation::PLAYING) {
+                p->update();
+                if (p->getState() == Animation::DONE) {
+                    delete p;
+                    p = nullptr;
+                }
             }
-        }
     }
     cleanupNonHoldingAnims();
 
@@ -430,11 +429,11 @@ void MessageAnimator::updateAnimations()
 
     // Then advancing the holding anims that we haven't already.
     for (auto& e : nonHoldingAnims) {
-        auto& p = e.second;
-        if (!p->isHolding() && (p->getState() != Animation::PLAYING) && !p->advance()) {
-            delete p;
-            p = nullptr;
-        }
+        for (auto& p : e.second)
+            if (!p->isHolding() && (p->getState() != Animation::PLAYING) && !p->advance()) {
+                delete p;
+                p = nullptr;
+            }
     }
     cleanupNonHoldingAnims();
 
@@ -496,12 +495,19 @@ void MessageAnimator::cleanupNonHoldingAnims()
 {
     // Removing the ones that are done, moving the holding ones to holding...
     for (auto it = nonHoldingAnims.begin(); it != nonHoldingAnims.end(); ) {
-        if (it->second == nullptr)
-            it = nonHoldingAnims.erase(it);
-        else if (it->second->isHolding()) {
-            holdingAnims.push_back(*it);
-            it = nonHoldingAnims.erase(it);
+        for (auto vectorIt = it->second.begin(); vectorIt != it->second.end(); ) {
+            if (*vectorIt == nullptr)
+                vectorIt = it->second.erase(vectorIt);
+            else if ((*vectorIt)->isHolding()) {
+                holdingAnims.push_back({it->first, *vectorIt});
+                vectorIt = it->second.erase(vectorIt);
+            }
+            else
+                ++vectorIt;
         }
+
+        if (it->second.empty())
+            it = nonHoldingAnims.erase(it);
         else
             ++it;
     }
@@ -514,7 +520,7 @@ void MessageAnimator::cleanupHoldingAnims()
         if (it->second == nullptr)
             it = holdingAnims.erase(it);
         else if (!it->second->isHolding()) {
-            nonHoldingAnims.insert(*it);
+            nonHoldingAnims[it->first].push_back(it->second);
             it = holdingAnims.erase(it);
         }
         else
@@ -611,21 +617,9 @@ void MessageAnimator::cutUpdatedPacketAnimation(cPacket *updatePacket)
     // the original animation was supposed to take the same path
     MessageSendKey key = MessageSendKey::fromMessage(updatePacket);
 
-    bool inNonHoldingAnims = false;
-    for (auto& p : nonHoldingAnims) {
-        if (p.first == key) {
-            inNonHoldingAnims = true;
-            break;
-        }
-    }
-    if (inNonHoldingAnims) {
-        // This getLast() will make sure that always the last (of the previous ones) animation
-        // will be cut short (in case this is not the first update packet of this transmission).
-        auto range = nonHoldingAnims.equal_range(key);
-        ASSERT(range.first != range.second);
-        ASSERT(range.first != nonHoldingAnims.end());
-        std::advance(range.first, std::distance(range.first, range.second) - 1);
-        Animation *lastAnim = (range.first)->second;
+    auto iter = nonHoldingAnims.find(key);
+    if (iter != nonHoldingAnims.end()) {
+        Animation *lastAnim = iter->second.back();
 
         auto group = dynamic_cast<AnimationGroup*>(lastAnim);
         auto sequence = dynamic_cast<AnimationSequence*>(lastAnim);
@@ -649,8 +643,9 @@ void MessageAnimator::cutUpdatedPacketAnimation(cPacket *updatePacket)
         // animates zero-length (non-transmission) sends anyway
     }
     else {
-        // The animation for the updated packet has already ended, or this is a
-        // bogus update. Either way, we ignore it now. Should we be stricter?
+        // The animation for the updated packet has already ended, is holding
+        // at the moment (which it should never be), or this is a bogus update.
+        // Either way, we ignore it now. Should we be stricter?
     }
 }
 
@@ -744,8 +739,9 @@ void MessageAnimator::clear()
 
     holdingAnims.clear();
 
-    for (auto a : nonHoldingAnims)
-        delete a.second;
+    for (auto& a : nonHoldingAnims)
+        for (auto p : a.second)
+            delete p;
 
     nonHoldingAnims.clear();
 
@@ -778,10 +774,11 @@ void MessageAnimator::addInspector(ModuleInspector *insp)
 void MessageAnimator::addGraphicsToInspector(ModuleInspector *insp)
 {
     redrawMessages();
-    for (auto &p : holdingAnims)
+    for (auto& p : holdingAnims)
         p.second->addToInspector(insp);
-    for (auto &p : nonHoldingAnims)
-        p.second->addToInspector(insp);
+    for (auto& p : nonHoldingAnims)
+        for (auto& a : p.second)
+            a->addToInspector(insp);
     if (deliveries)
         deliveries->addToInspector(insp);
     updateAnimations();
@@ -791,10 +788,11 @@ void MessageAnimator::addGraphicsToInspector(ModuleInspector *insp)
 void MessageAnimator::updateInspector(ModuleInspector *insp)
 {
     redrawMessages();
-    for (auto &p : holdingAnims)
+    for (auto& p : holdingAnims)
         p.second->updateInInspector(insp);
-    for (auto &p : nonHoldingAnims)
-        p.second->updateInInspector(insp);
+    for (auto& p : nonHoldingAnims)
+        for (auto& a : p.second)
+            a->updateInInspector(insp);
     if (deliveries)
         deliveries->updateInInspector(insp);
     updateAnimations();
@@ -810,10 +808,11 @@ void MessageAnimator::removeInspector(ModuleInspector *insp)
 
 void MessageAnimator::removeGraphicsFromInspector(ModuleInspector *insp)
 {
-    for (auto &p : holdingAnims)
+    for (auto& p : holdingAnims)
         p.second->removeFromInspector(insp);
-    for (auto &p : nonHoldingAnims)
-        p.second->removeFromInspector(insp);
+    for (auto& p : nonHoldingAnims)
+        for (auto& a : p.second)
+            a->removeFromInspector(insp);
 
     if (deliveries)
         deliveries->removeFromInspector(insp);
@@ -873,8 +872,11 @@ void MessageAnimator::dump()
         std::cout << a.first.str() << " -> " << (a.second ? a.second->str().toStdString() : "<NULL>") << std::endl;
     std::cout << "--------" << std::endl;
     std::cout << "nonholding anims:" << std::endl;
-    for (auto a : nonHoldingAnims)
-        std::cout << a.first.str() << " -> " << (a.second ? a.second->str().toStdString() : "<NULL>") << std::endl;
+    for (auto p : nonHoldingAnims) {
+        std::cout << p.first.str() << " -> " << std::endl;
+        for (auto& a : p.second)
+            std::cout << "    " << (a ? a->str().toStdString() : "<NULL>") << std::endl;
+    }
 }
 
 }  // namespace qtenv
