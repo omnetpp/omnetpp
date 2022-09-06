@@ -169,10 +169,10 @@ class QTENV_API MessageAnimator
     // The animations here are either compound (sequence or group) animations
     // (showing a message along an entire connection path), or method call trees.
     std::vector<std::pair<MessageSendKey, Animation *>> holdingAnims;
-    // The holding (transmission) animations. A multimap is still needed, because
+    // The holding (transmission) animations. A vector for each key is needed, because
     // all updates of a transmission are separate animations under the same key.
     // The last value under each key shows the latest update packet of the transmission.
-    std::unordered_multimap<MessageSendKey, Animation *, MessageSendKey::hasher> nonHoldingAnims;
+    std::unordered_map<MessageSendKey, std::vector<Animation *>, MessageSendKey::hasher> nonHoldingAnims;
 
     // Provides quick access to any leaf animations that are currently animating
     // any given message. Every message can be animated by several animations
