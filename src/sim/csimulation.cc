@@ -913,6 +913,24 @@ void cSimulation::executeEvent(cEvent *event)
 
 #undef DEBUG_TRAP_IF_REQUESTED
 
+class DefaultRunner : public IRunner {
+  private:
+    cSimulation *simulation;
+  public:
+    DefaultRunner(cSimulation *simulation) : simulation(simulation) {}
+    virtual void run() override;
+};
+
+void DefaultRunner::run()
+{
+    while (true) {
+        cEvent *event = simulation->takeNextEvent();
+        if (!event)
+            throw cTerminationException("Scheduler interrupted while waiting");
+        simulation->executeEvent(event);
+    }
+}
+
 bool cSimulation::run(IRunner *runner, bool shouldCallFinish)
 {
     ASSERT(stage == STAGE_NONE);  // must not be doing something else
@@ -925,6 +943,10 @@ bool cSimulation::run(IRunner *runner, bool shouldCallFinish)
         case SIM_TERMINATED: case SIM_FINISHCALLED: throw cRuntimeError("run(): Simulation already terminated");
         case SIM_ERROR: throw cRuntimeError("run(): Cannot continue after an error");
     }
+
+    DefaultRunner defaultRunner(this);
+    if (runner == nullptr)
+        runner = &defaultRunner;
 
     bool firstRun = (state == SIM_INITIALIZED);
 

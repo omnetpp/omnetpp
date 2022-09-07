@@ -592,13 +592,15 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * (provided it is allowed to run through), finish is automatically called
      * if allowed by the 2nd argument.
      *
+     * If the runner argument is nullptr, a barebones runner will be used as default.
+     *
      * The return value tells whether the simulation can be continued (=true)
      * or has successfully completed (false). In the latter case, the
      * corresponding message can be obtained with getTerminationReason().
      * If there was an error, it manifests as an exception which is allowed
      * to propagate out of this method.
      */
-    virtual bool run(IRunner *runner, bool shouldCallFinish=true);
+    virtual bool run(IRunner *runner=nullptr, bool shouldCallFinish=true);
 
     /**
      * Invoke callRefreshDisplay() on the system module.
