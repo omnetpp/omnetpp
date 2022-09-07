@@ -419,7 +419,7 @@ std::string opp_breaklines(const std::string& text, int lineLength)
 
 std::string opp_indentlines(const std::string& text, const std::string& indent)
 {
-    if (indent.empty())
+    if (indent.empty() || text.empty())
         return text;
     std::string tmp = indent + opp_replacesubstring(text, "\n", std::string("\n")+indent, true);
     if (text[text.length()-1] == '\n')
