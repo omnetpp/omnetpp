@@ -39,13 +39,13 @@ Running simulation...
 Received lifecycle event ON_SIMULATION_START
 ** Event #1  t=0   Test (Test, id=1)
 ** Event #2  t=1   Test (Test, id=1)
+Received lifecycle event ON_SIMULATION_SUCCESS
 
 <!> No more events, simulation completed -- at t=1s, event #2
 
 Calling finish() at end of Run #0...
 Received lifecycle event PRE_NETWORK_FINISH
 Received lifecycle event POST_NETWORK_FINISH
-Received lifecycle event ON_SIMULATION_SUCCESS
 Received lifecycle event ON_RUN_END
 Received lifecycle event PRE_NETWORK_DELETE
 Received lifecycle event POST_NETWORK_DELETE
