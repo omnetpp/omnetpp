@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: OMNeT++ Python Charting Support
 Bundle-SymbolicName: org.omnetpp.scave.pychart;singleton:=true
-Bundle-Version: 6.0.1.qualifier
+Bundle-Version: 6.1.0.qualifier
 Bundle-ClassPath: .,
  lib/py4j-0.10.9.3.jar,
  lib/pickle-1.0.jar

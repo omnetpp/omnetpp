@@ -25,10 +25,10 @@
 namespace omnetpp {
 
 // OMNeT++ version, (major<<8)|minor
-#define OMNETPP_VERSION  0x0600
+#define OMNETPP_VERSION  0x0601
 
 // OMNeT++ build number
-#define OMNETPP_BUILDNUM   1532
+#define OMNETPP_BUILDNUM   1540
 
 #if defined(SIM_EXPORT)
 #  define SIM_API OPP_DLLEXPORT
