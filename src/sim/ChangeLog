@@ -1,3 +1,5 @@
+2022-09-07  ------ omnetpp-6.0.1 released ------
+
 2022-08-26  Andras Varga
 
 	* Fix: proper namespace resolution for C++ types in @signal declarations.

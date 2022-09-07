@@ -1,3 +1,5 @@
+2022-09-07  ------ omnetpp-6.0.1 released ------
+
 2022-06-14  Andras Varga
 
 	* ide/ned,src/nedxml: NedElement: added get getPreviousSiblingWithTag()

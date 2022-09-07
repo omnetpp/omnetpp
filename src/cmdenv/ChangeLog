@@ -1,3 +1,5 @@
+2022-09-07  ------ omnetpp-6.0.1 released ------
+
 2022-05-18  Andras Varga
 
 	* Fix #705: Configuration option "cmdenv-config-name" is ignored
