@@ -26,6 +26,7 @@
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/regmacros.h"
 #include "omnetpp/csimplemodule.h" // SendOptions
+#include "omnetpp/checkandcast.h"
 #include "common/enumstr.h"
 #include "cplaceholdermod.h"
 #include "cproxygate.h"
@@ -94,6 +95,18 @@ void cParsimPartition::lifecycleEvent(SimulationLifecycleEventType eventType, cO
     switch (eventType) {
         case LF_PRE_NETWORK_INITIALIZE: startRun(); break;
         case LF_ON_RUN_END: endRun(); break;
+        case LF_ON_SIMULATION_SUCCESS: {
+            cTerminationException *e = check_and_cast<cTerminationException *>(details);
+            bool isReceivedException = dynamic_cast<cReceivedTerminationException *>(e) != nullptr;
+            if (!isReceivedException)
+                broadcastTerminationException(*e);
+        }
+        case LF_ON_SIMULATION_ERROR: {
+            cException *e = check_and_cast<cException *>(details);
+            bool isReceivedException = dynamic_cast<cReceivedException *>(e) != nullptr;
+            if (!isReceivedException)
+                broadcastException(*e);
+        }
         default: break;
     }
 }

@@ -147,7 +147,6 @@ void SimulationHolder::runConfiguredSimulation(cSimulation *simulation, IRunner 
         bool isTerminated = simulation->getState() == cSimulation::SIM_TERMINATED;
         if (isTerminated) {
             cTerminationException *e = simulation->getTerminationReason();
-            stoppedWithTerminationException(*e);
             printException(*e);  // must display the exception here (and not inside catch), so that it doesn't appear out-of-order in the output
             terminationReason = e;
         }
@@ -164,7 +163,6 @@ void SimulationHolder::runConfiguredSimulation(cSimulation *simulation, IRunner 
     }
     catch (std::exception& e) {
         cLog::setLoggingEnabled(true);
-        stoppedWithException(e);
         printException(e);  // must display the exception here (and not inside catch), so that it doesn't appear out-of-order in the output
         afterRunFinally(simulation, endRunRequired);
         throw;
@@ -263,36 +261,6 @@ void SimulationHolder::printException(std::exception& ex, const char *when)
         errWithoutPrefix() << msg << endl;
     else
         err() << msg << endl;
-}
-
-void SimulationHolder::stoppedWithTerminationException(cTerminationException& e)
-{
-    // if we're running in parallel and this exception is NOT one we received
-    // from other partitions, then notify other partitions
-#ifdef WITH_PARSIM
-    cSimulation *simulation = getActiveSimulation();
-    if (simulation->isParsimEnabled() && !dynamic_cast<cReceivedTerminationException *>(&e))
-        simulation->getParsimPartition()->broadcastTerminationException(e);
-#endif
-    if (getActiveEnvir()->getEventlogRecording()) {
-        //FIXME should not be in this function (Andras)
-        getActiveEnvir()->getEventlogManager()->endRun(e.isError(), e.getErrorCode(), e.getFormattedMessage().c_str());
-    }
-}
-
-void SimulationHolder::stoppedWithException(std::exception& e)
-{
-    // if we're running in parallel and this exception is NOT one we received
-    // from other partitions, then notify other partitions
-#ifdef WITH_PARSIM
-    cSimulation *simulation = getActiveSimulation();
-    if (simulation->isParsimEnabled() && !dynamic_cast<cReceivedException *>(&e))
-        simulation->getParsimPartition()->broadcastException(e);
-#endif
-    if (getActiveEnvir()->getEventlogRecording()) {
-        // TODO: get error code from the exception?
-        getActiveEnvir()->getEventlogManager()->endRun(true, E_CUSTOM, e.what());  //FIXME this should be rather in endRun(), or? (Andras)
-    }
 }
 
 void SimulationHolder::checkFingerprint()

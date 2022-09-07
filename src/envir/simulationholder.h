@@ -75,14 +75,6 @@ class SimulationHolder
     virtual void checkFingerprint();
 
     virtual void afterRunFinally(cSimulation *simulation, bool endRunRequired); // wish C++ had 'finally'
-
-    // Hook called when the simulation terminates normally.
-    // Its current use is to notify parallel simulation part.
-    virtual void stoppedWithTerminationException(cTerminationException& e);
-
-    // Hook called when the simulation is stopped with an error.
-    // Its current use is to notify parallel simulation part.
-    virtual void stoppedWithException(std::exception& e);
 };
 
 }  // namespace envir

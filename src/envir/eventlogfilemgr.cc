@@ -222,6 +222,10 @@ void EventlogFileManager::lifecycleEvent(SimulationLifecycleEventType eventType,
         case LF_ON_SIMULATION_PAUSE:
             flush();
             break;
+        case LF_ON_SIMULATION_SUCCESS: case LF_ON_SIMULATION_ERROR: {
+            cException *e = check_and_cast<cException *>(details);
+            endRun(e->isError(), e->getErrorCode(), e->getFormattedMessage().c_str());
+        }
         default:
             break;
     }

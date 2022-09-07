@@ -918,13 +918,11 @@ void Qtenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t unti
 
         if (!paused) {
             cTerminationException *e = getSimulation()->getTerminationReason();
-            stoppedWithTerminationException(*e);
             printException(*e);
         }
 
     }
     catch (std::exception& e) {
-        stoppedWithException(e);
         printException(e);
     }
     stopClock();
@@ -1203,11 +1201,6 @@ void Qtenv::finishSimulation()
     // strictly speaking, we shouldn't allow callFinish() after SIM_ERROR, but it comes handy in practice...
     ASSERT(getSimulation()->getState() != cSimulation::SIM_NONETWORK && getSimulation()->getState() != cSimulation::SIM_FINISHCALLED);
 
-    if (getSimulation()->getState() == cSimulation::SIM_INITIALIZED || getSimulation()->getState() == cSimulation::SIM_PAUSED) {
-        cTerminationException e("The user has finished the simulation");
-        stoppedWithTerminationException(e);
-    }
-
     logBuffer.addInfo("** Calling finish() methods of modules\n");
 
     // now really call finish()
@@ -1219,7 +1212,6 @@ void Qtenv::finishSimulation()
         checkFingerprint();
     }
     catch (std::exception& e) {
-        stoppedWithException(e);
         printException(e);
     }
 
@@ -1490,7 +1482,6 @@ void Qtenv::callRefreshDisplaySafe()
     }
     catch (std::exception& e) {
         ASSERT(getSimulation()->getState() != cSimulation::SIM_ERROR); // the exception must have come from refreshDisplay calls in the model
-        stoppedWithException(e);
         printException(e);
     }
 }
@@ -1520,7 +1511,6 @@ void Qtenv::callRefreshInspectors()
         refreshInspectors();
     }
     catch (std::exception& e) {
-        stoppedWithException(e);
         printException(e);
     }
 }
