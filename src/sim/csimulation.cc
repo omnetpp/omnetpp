@@ -600,6 +600,7 @@ void cSimulation::setupNetwork(cModuleType *networkType)
     }
     catch (std::exception& e) {
         gotoState(SIM_ERROR);
+        notifyLifecycleListeners(LF_ON_SIMULATION_ERROR, e);
         // Note: no deleteNetwork() call here. We could call it here, but it's
         // dangerous: module destructors may try to delete uninitialized pointers
         // and crash. (Often pointers incorrectly get initialized in initialize()
@@ -640,6 +641,7 @@ void cSimulation::callInitialize()
     }
     catch (std::exception& e) {
         gotoState(SIM_ERROR);
+        notifyLifecycleListeners(LF_ON_SIMULATION_ERROR, e);
         throw;
     }
 }
@@ -676,6 +678,7 @@ void cSimulation::callFinish()
     }
     catch (std::exception& e) {
         gotoState(SIM_ERROR);
+        notifyLifecycleListeners(LF_ON_SIMULATION_ERROR, e);
         throw;
     }
 }
@@ -740,8 +743,9 @@ void cSimulation::deleteNetwork()
         // clear remaining messages (module dtors may have cancelled & deleted some of them)
         fes->clear();
     }
-    catch (std::exception&) {
+    catch (std::exception& e) {
         gotoState(SIM_ERROR);
+        notifyLifecycleListeners(LF_ON_SIMULATION_ERROR, e);
         throw;
     }
 
@@ -960,10 +964,10 @@ bool cSimulation::run(IRunner *runner, bool shouldCallFinish)
         notifyLifecycleListeners(LF_ON_SIMULATION_PAUSE);
         return true;
     }
-    catch (cTerminationException& ex) {
+    catch (cTerminationException& e) {
         gotoState(SIM_TERMINATED);
-        setTerminationReason(ex.dup());
-        notifyLifecycleListeners(LF_ON_SIMULATION_SUCCESS);
+        setTerminationReason(e.dup());
+        notifyLifecycleListeners(LF_ON_SIMULATION_SUCCESS, &e);
 
         if (shouldCallFinish)
             callFinish();
@@ -971,7 +975,7 @@ bool cSimulation::run(IRunner *runner, bool shouldCallFinish)
     }
     catch (std::exception& e) {
         gotoState(SIM_ERROR);
-        notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
+        notifyLifecycleListeners(LF_ON_SIMULATION_ERROR, e);
         throw;
     }
 }
@@ -1076,6 +1080,12 @@ std::vector<cISimulationLifecycleListener*> cSimulation::getLifecycleListeners()
     return listeners;
 }
 
+void cSimulation::notifyLifecycleListeners(SimulationLifecycleEventType eventType, const std::exception& e)
+{
+    cRuntimeError re(e);
+    notifyLifecycleListeners(eventType, &re);
+}
+
 void cSimulation::notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details)
 {
     try {
@@ -1087,12 +1097,14 @@ void cSimulation::notifyLifecycleListeners(SimulationLifecycleEventType eventTyp
     catch (cException& e) {
         e.setLifecycleListenerType(eventType);
         gotoState(SIM_ERROR);
+        notifyLifecycleListeners(LF_ON_SIMULATION_ERROR, &e);
         throw;
     }
     catch (std::exception& e) {
+        gotoState(SIM_ERROR);
+        notifyLifecycleListeners(LF_ON_SIMULATION_ERROR, e);
         cRuntimeError e2(e);
         e2.setLifecycleListenerType(eventType);
-        gotoState(SIM_ERROR);
         throw e2;
     }
 }

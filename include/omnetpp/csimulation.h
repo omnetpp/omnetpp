@@ -153,6 +153,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     void gotoState(State stage);
     void setStage(Stage stage);
     void scheduleEndSimulationEvent();
+    void notifyLifecycleListeners(SimulationLifecycleEventType eventType, const std::exception& e);
     void notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details=nullptr);
     void setTerminationReason(cTerminationException *e);
 

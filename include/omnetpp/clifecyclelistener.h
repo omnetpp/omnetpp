@@ -90,6 +90,9 @@ enum SimulationLifecycleEventType
      * Fired just after processing the last event of the simulation (i.e. still
      * before finalization). If the simulation stops with an error,
      * LF_ON_SIMULATION_ERROR will be fired instead of this event.
+     *
+     * The detail object in the notification is the exception object (usually a
+     * cTerminationException).
      */
     LF_ON_SIMULATION_SUCCESS,
 
@@ -97,8 +100,10 @@ enum SimulationLifecycleEventType
      * Fired on a runtime error, in any stage of a simulation run's lifecycle
      * (during network setup, initialization, in an event during simulation,
      * during finalization and network deletion.)
+     *
+     * The detail object in the notification is the exception object (usually a
+     * cRuntimeError).
      */
-    //TODO the detail object should contain the exception object
     LF_ON_SIMULATION_ERROR,
 
     /**

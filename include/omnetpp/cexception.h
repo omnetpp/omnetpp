@@ -23,10 +23,10 @@
 #include "simtime_t.h"
 #include "errmsg.h"
 #include "clifecyclelistener.h"
+#include "cobject.h"
 
 namespace omnetpp {
 
-class cObject;
 class cComponent;
 class cModule;
 class cSimulation;
@@ -49,7 +49,7 @@ typedef int ErrorCodeInt;
  *
  * @ingroup Fundamentals
  */
-class SIM_API cException : public std::exception
+class SIM_API cException : public std::exception, public cObject
 {
   protected:
     ErrorCode errorCode;
@@ -139,7 +139,7 @@ class SIM_API cException : public std::exception
      * Creates and returns an exact copy of this object. We unfortunately need
      * to copy exception objects when handing them back from an activity() method.
      */
-    virtual cException *dup() const {return new cException(*this);}
+    virtual cException *dup() const override {return new cException(*this);}
 
     /**
      * Destructor.
