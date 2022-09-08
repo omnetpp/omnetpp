@@ -52,6 +52,7 @@
 #include "omnetpp/clifecyclelistener.h"
 #include "omnetpp/crngmanager.h"
 #include "omnetpp/platdep/platmisc.h"  // for DEBUG_TRAP
+#include "envir/envirbase.h"
 
 #ifdef WITH_PARSIM
 #include "omnetpp/ccommbuffer.h"
@@ -62,6 +63,7 @@
 
 
 using namespace omnetpp::common;
+using namespace omnetpp::envir;
 using namespace omnetpp::internal;
 
 namespace omnetpp {
@@ -114,7 +116,7 @@ cSimulation::cSimulation(const char *name, cEnvir *env) : cNamedObject(name, fal
 {
     ASSERT(cStaticFlag::insideMain());  // cannot be instantiated as global variable
 
-    envir = env;
+    envir = env ? env : new EnvirBase();
     envir->setSimulation(this);
 
     // install default objects

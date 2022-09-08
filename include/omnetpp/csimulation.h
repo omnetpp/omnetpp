@@ -177,9 +177,10 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     //@{
     /**
      * Constructor. The environment object will be associated with this simulation
-     * object, and gets deleted in the simulation object's destructor.
+     * object, and gets deleted in the simulation object's destructor. If no
+     * environment object is given, a default one will be constructed.
      */
-    cSimulation(const char *name, cEnvir *env);
+    cSimulation(const char *name, cEnvir *envir=nullptr);
 
     /**
      * Destructor.
