@@ -90,7 +90,7 @@ static std::vector<std::string> resolvePath(const char *folder, const char *path
 int NedResourceCache::loadNedSourceFolder(const char *folderName, const char *excludedPackagesStr)
 {
     try {
-        std::vector<std::string> excludedPackages = opp_splitpath(excludedPackagesStr);
+        std::vector<std::string> excludedPackages = opp_splitpath(opp_nulltoempty(excludedPackagesStr));
         std::string canonicalFolderName = canonicalize(folderName);
         std::string rootPackageName = determineRootPackageName(folderName);
         folderPackages[canonicalFolderName] = rootPackageName;
