@@ -150,7 +150,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
   private:
     // internal
     void checkActive()  {if (getActiveSimulation()!=this) throw cRuntimeError(this, E_WRONGSIM);}
-    void gotoState(State stage);
+    void gotoState(State state);
     void setStage(Stage stage);
     void scheduleEndSimulationEvent();
     void notifyLifecycleListeners(SimulationLifecycleEventType eventType, const std::exception& e);
@@ -375,6 +375,9 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     /**
      * Configures this simulation instance and the objects it relies on: the
      * scheduler, the FES, the RNG manager, the fingerprint calculator, etc.
+     * The configuration object is remembered, and will also be used for
+     * values for unassigned module parameters and additional configuration
+     * when a network is set up for simulation (see setupNetwork()).
      */
     virtual void configure(cConfiguration *cfg);
 
@@ -447,9 +450,27 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     virtual simtime_t getSimulationTimeLimit() const;
 
     /**
-     * Builds a new network.
+     * Resolves the module type name. The name may be a fully qualified NED type name,
+     * or the package name can be omitted if the ini file is in the same directory as
+     * the NED file that contains the network.
      */
-    virtual void setupNetwork(cModuleType *networkType);
+    virtual cModuleType *resolveNetwork(const char *networkName, const char *baseDirectory);
+
+    /**
+     * Sets up the network specified by the "network" option in the given configuration,
+     * or if none is given, in the configuration object previously passed to the
+     * configure() method. Values for unassigned module parameters and additional
+     * configuration also come from the configuration object.
+     */
+    virtual void setupNetwork(cConfiguration *cfg=nullptr);
+
+    /**
+     * Sets up the given module type as a network to simulate. Values for unassigned
+     * module parameters and additional configuration come from the configuration
+     * object passed in the second argument, or if none is given, from the configuration
+     * object previously passed to the configure() method.
+     */
+    virtual void setupNetwork(cModuleType *networkType, cConfiguration *cfg=nullptr);
 
     /**
      * Should be called after setupNetwork(), but before the first

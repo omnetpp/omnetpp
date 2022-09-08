@@ -74,6 +74,7 @@ using std::ostream;
 #define CHECKSIGNALS_DEFAULT        "true"
 #endif
 
+Register_GlobalConfigOption(CFGID_NETWORK, "network", CFG_STRING, nullptr, "The name of the network to be simulated. The package name can be omitted if the ini file is in the same directory as the NED file that contains the network.");
 Register_GlobalConfigOption(CFGID_PARALLEL_SIMULATION, "parallel-simulation", CFG_BOOL, "false", "Enables parallel distributed simulation.");
 Register_GlobalConfigOption(CFGID_FUTUREEVENTSET_CLASS, "futureeventset-class", CFG_STRING, "omnetpp::cEventHeap", "Part of the Envir plugin mechanism: selects the class for storing the future events in the simulation. The class has to implement the `cFutureEventSet` interface.");
 Register_GlobalConfigOption(CFGID_SCHEDULER_CLASS, "scheduler-class", CFG_STRING, "omnetpp::cSequentialScheduler", "Part of the Envir plugin mechanism: selects the scheduler class. This plugin interface allows for implementing real-time, hardware-in-the-loop, distributed and distributed parallel simulation. The class has to implement the `cScheduler` interface.");
@@ -564,7 +565,45 @@ cModule *cSimulation::findModuleByPath(const char *path) const
     return root->findModuleByPath(path);
 }
 
-void cSimulation::setupNetwork(cModuleType *networkType)
+cModuleType *cSimulation::resolveNetwork(const char *networkName, const char *baseDirectory)
+{
+    cModuleType *networkType = nullptr;
+    std::string inifilePackage = getNedPackageForFolder(baseDirectory);
+
+    bool hasInifilePackage = !inifilePackage.empty() && strcmp(inifilePackage.c_str(), "-") != 0;
+    if (hasInifilePackage)
+        networkType = cModuleType::find((inifilePackage+"."+networkName).c_str());
+    if (!networkType)
+        networkType = cModuleType::find(networkName);
+    if (!networkType) {
+        if (hasInifilePackage)
+            throw cRuntimeError("Network '%s' or '%s' not found, check .ini and .ned files",
+                    networkName, (inifilePackage+"."+networkName).c_str());
+        else
+            throw cRuntimeError("Network '%s' not found, check .ini and .ned files", networkName);
+    }
+    if (!networkType->isNetwork())
+        throw cRuntimeError("Module type '%s' is not a network", networkType->getFullName());
+    return networkType;
+}
+
+void cSimulation::setupNetwork(cConfiguration *cfg)
+{
+    cConfiguration *effectiveCfg = cfg ? cfg : this->cfg;
+    if (!effectiveCfg)
+        throw cRuntimeError("setupNetwork(): No configuration object");
+
+    std::string networkName = effectiveCfg->getAsString(CFGID_NETWORK);
+    std::string inifileNetworkDir  = effectiveCfg->getConfigEntry(CFGID_NETWORK->getName()).getBaseDirectory();
+    if (networkName.empty())
+        throw cRuntimeError("No network specified (missing or empty network= configuration option)");
+    cModuleType *networkType = resolveNetwork(networkName.c_str(), inifileNetworkDir.c_str());
+    ASSERT(networkType);
+
+    setupNetwork(networkType, cfg); // use original arg which can be nullptr, so that the configure() call inside setupNetwork() is not repeated unnecessarily
+}
+
+void cSimulation::setupNetwork(cModuleType *networkType, cConfiguration *cfg)
 {
 #ifdef DEVELOPER_DEBUG
     printf("DEBUG: before setupNetwork: %d objects\n", cOwnedObject::getLiveObjectCount());
@@ -584,6 +623,9 @@ void cSimulation::setupNetwork(cModuleType *networkType)
     // just to be sure
     fes->clear();
     cComponent::clearSignalState();
+
+    if (cfg)
+        configure(cfg);
 
     StageSwitcher _(this, STAGE_BUILD);
 

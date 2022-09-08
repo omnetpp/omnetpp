@@ -28,13 +28,12 @@ using namespace omnetpp::internal;
 
 namespace omnetpp {
 
+extern cConfigOption *CFGID_NETWORK;
 extern cConfigOption *CFGID_SIM_TIME_LIMIT;
 
 namespace envir {
 
-extern cConfigOption *CFGID_NETWORK;
 extern cConfigOption *CFGID_REPEAT;
-
 
 Register_Class(Configuration);
 

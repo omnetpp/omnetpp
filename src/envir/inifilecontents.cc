@@ -37,6 +37,7 @@ using namespace omnetpp::internal;
 
 namespace omnetpp {
 
+extern cConfigOption *CFGID_NETWORK;
 extern cConfigOption *CFGID_SEED_SET;
 
 namespace envir {
@@ -57,7 +58,6 @@ Register_GlobalConfigOption(CFGID_RUNNUMBER_WIDTH, "runnumber-width", CFG_INT, "
 Register_GlobalConfigOption(CFGID_RESULT_DIR, "result-dir", CFG_STRING, "results", "Base value for the `${resultdir}` variable, which is used as the default directory for result files (output vector file, output scalar file, eventlog file, etc.). See also the `resultdir-subdivision` config option.");
 Register_GlobalConfigOption(CFGID_RESULTDIR_SUBDIVISION, "resultdir-subdivision", CFG_BOOL, "false", "Makes the results directory hierarchical by appending `${iterationvarsd}` to the value of the `result-dir` config option. This is useful if a parameter study produces a large number of runs (>10000), as many file managers and other tools (including the OMNeT++ IDE) struggle with directories containing that many files. An alternative to using this option is to include iteration variables directly in the value of the `result-dir` option.");
 
-extern cConfigOption *CFGID_NETWORK;
 
 // table to be kept consistent with scave/fields.cc
 static struct ConfigVarDescription { const char *name, *description; } configVarDescriptions[] = {

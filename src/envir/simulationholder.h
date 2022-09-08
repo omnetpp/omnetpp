@@ -66,9 +66,6 @@ class SimulationHolder
     virtual void stopOutputRedirection();
     virtual bool isOutputRedirected();
 
-    // Utility function; never returns nullptr
-    virtual cModuleType *resolveNetwork(const char *networkName, const char *baseDirectory);
-
     virtual void printException(std::exception& e, const char *when=nullptr);
 
     // Utility function: checks simulation fingerprint and displays a message accordingly

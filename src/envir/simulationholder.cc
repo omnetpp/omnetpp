@@ -41,9 +41,11 @@ using namespace omnetpp::common;
 using namespace omnetpp::internal;
 
 namespace omnetpp {
+
+extern cConfigOption *CFGID_NETWORK;
+
 namespace envir {
 
-Register_GlobalConfigOption(CFGID_NETWORK, "network", CFG_STRING, nullptr, "The name of the network to be simulated.  The package name can be omitted if the ini file is in the same directory as the NED file that contains the network.");
 Register_GlobalConfigOption(CFGID_DEBUG_STATISTICS_RECORDING, "debug-statistics-recording", CFG_BOOL, "false", "Turns on the printing of debugging information related to statistics recording (`@statistic` properties)");
 
 inline EnvirBase *getActiveEnvir() {return dynamic_cast<EnvirBase*>(cSimulation::getActiveEnvir());}
@@ -117,7 +119,7 @@ void SimulationHolder::runConfiguredSimulation(cSimulation *simulation, IRunner 
         std::string inifileNetworkDir  = cfg->getConfigEntry(CFGID_NETWORK->getName()).getBaseDirectory();
         if (networkName.empty())
             throw cRuntimeError("No network specified (missing or empty network= configuration option)");
-        cModuleType *network = resolveNetwork(networkName.c_str(), inifileNetworkDir.c_str());
+        cModuleType *network = simulation->resolveNetwork(networkName.c_str(), inifileNetworkDir.c_str());
         ASSERT(network);
 
         endRunRequired = true;
@@ -275,28 +277,6 @@ void SimulationHolder::checkFingerprint()
     else
         AppBase::getActiveApp()->alertf("Fingerprint mismatch! calculated: %s, expected: %s",
                 fingerprint->str().c_str(), fingerprint->getExpected().c_str());
-}
-
-cModuleType *SimulationHolder::resolveNetwork(const char *networkname, const char *baseDirectory)
-{
-    cModuleType *network = nullptr;
-    std::string inifilePackage = getActiveSimulation()->getNedPackageForFolder(baseDirectory);
-
-    bool hasInifilePackage = !inifilePackage.empty() && strcmp(inifilePackage.c_str(), "-") != 0;
-    if (hasInifilePackage)
-        network = cModuleType::find((inifilePackage+"."+networkname).c_str());
-    if (!network)
-        network = cModuleType::find(networkname);
-    if (!network) {
-        if (hasInifilePackage)
-            throw cRuntimeError("Network '%s' or '%s' not found, check .ini and .ned files",
-                    networkname, (inifilePackage+"."+networkname).c_str());
-        else
-            throw cRuntimeError("Network '%s' not found, check .ini and .ned files", networkname);
-    }
-    if (!network->isNetwork())
-        throw cRuntimeError("Module type '%s' is not a network", network->getFullName());
-    return network;
 }
 
 }  // namespace envir

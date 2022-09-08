@@ -121,10 +121,10 @@ void initFontsResource()
 
 namespace omnetpp {
 
+extern cConfigOption *CFGID_NETWORK;
 extern cConfigOption *CFGID_SIM_TIME_LIMIT;
 
 namespace envir {
-extern cConfigOption *CFGID_NETWORK;
 extern cConfigOption *CFGID_REAL_TIME_LIMIT;
 extern cConfigOption *CFGID_CPU_TIME_LIMIT;
 extern cConfigOption *CFGID_DEBUG_STATISTICS_RECORDING;
@@ -1273,7 +1273,7 @@ void Qtenv::newNetwork(const char *networkname)
         logBuffer.clear();
         componentHistory.clear();
 
-        cModuleType *network = resolveNetwork(networkname, opt->inifileNetworkDir.c_str());
+        cModuleType *network = getSimulation()->resolveNetwork(networkname, opt->inifileNetworkDir.c_str());
         ASSERT(network);
 
         // set up new network with config General.
@@ -1331,7 +1331,7 @@ void Qtenv::newRun(const char *configname, int runnumber)
             return;
         }
 
-        cModuleType *networkType = resolveNetwork(opt->networkName.c_str(), opt->inifileNetworkDir.c_str());
+        cModuleType *networkType = getSimulation()->resolveNetwork(opt->networkName.c_str(), opt->inifileNetworkDir.c_str());
         ASSERT(networkType);
 
         setupNetwork(networkType);
