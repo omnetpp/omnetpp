@@ -45,9 +45,6 @@
 #include "sqliteoutscalarmgr.h"
 #include "sqliteoutvectormgr.h"
 
-#ifdef WITH_PYTHON
-#include "Python.h"
-#endif
 
 using namespace omnetpp::common;
 
@@ -107,16 +104,8 @@ int setupUserInterface(int argc, char *argv[])
     SectionBasedConfiguration *bootConfig = nullptr;
     cConfigurationEx *config = nullptr;
     bool verbose = false;
-    bool pythonInitializedHere = false;
     int exitCode = 0;
     try {
-        #ifdef WITH_PYTHON
-        if (!Py_IsInitialized()) {
-            Py_Initialize();
-            pythonInitializedHere = true;
-        }
-        #endif
-
         // construct global lists
         CodeFragments::executeAll(CodeFragments::STARTUP);
 
@@ -313,11 +302,6 @@ int setupUserInterface(int argc, char *argv[])
     delete simulation;  // will delete app as well
 
     CodeFragments::executeAll(CodeFragments::SHUTDOWN);
-
-    #ifdef WITH_PYTHON
-    if (pythonInitializedHere)
-        Py_Finalize();
-    #endif
 
     return exitCode;
 }

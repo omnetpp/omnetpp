@@ -29,8 +29,7 @@
 #include "omnetpp/cvalue.h"
 #include "omnetpp/cvaluearray.h"
 #include "omnetpp/cvaluemap.h"
-
-#include "Python.h"
+#include "pythonutil.h"
 
 #endif
 
@@ -111,12 +110,6 @@ def unwrap(obj):
 
 
 static const char *COMPONENT_WRAPPER_CODE = R"(
-import os
-
-OMNETPP_ROOT = os.getenv("__omnetpp_root_dir")
-
-if not OMNETPP_ROOT:
-    raise RuntimeError("The OMNeT++ root directory was not found, make sure the shell is set up appropriately (`. setenv`)!")
 
 import cppyy
 
@@ -132,9 +125,6 @@ def replace_cvalue_str(klass, name):
             pass
 
 cppyy.py.add_pythonization(replace_cvalue_str, 'omnetpp')
-
-cppyy.add_include_path(OMNETPP_ROOT + "/include")
-cppyy.include("omnetpp.h")
 
 class Accessor:
     """
@@ -168,23 +158,6 @@ class Accessor:
             return getattr(self.contextComponent, name)
 )";
 
-/** Internal helper. Checks if the Python interpreter has an exception
- * being thrown, and if so, clears it, and rethrows it as a C++ exception.
- */
-static void checkPythonException()
-{
-    PyObject *type, *value, *traceback;
-    PyErr_Fetch(&type, &value, &traceback);
-
-    if (type || value || traceback) {
-        PyErr_NormalizeException(&type, &value, &traceback);
-        std::string message = PyUnicode_AsUTF8(PyObject_Str(value));
-        Py_XDECREF(type);
-        Py_XDECREF(value);
-        Py_XDECREF(traceback);
-        throw cRuntimeError("Python expression evaluation failed: %s", message.c_str());
-    }
-}
 
 // Internal helper. Unwraps a Python object, that is actually
 // a C++ object wrapped by Cppyy, into a "simple" Python object.
@@ -364,31 +337,38 @@ PyObject *makeGlobalsWithAccessor(cComponent *contextComponent)
 cValue nedf_pyeval(cComponent *contextComponent, cValue argv[], int argc)
 {
 #ifdef WITH_PYTHON
-    std::string code = argv[0].stringValue();
+    try {
+        ensurePythonInterpreter();
 
-    if (argc > 1)
-        code = "lambda " + code;
+        std::string code = argv[0].stringValue();
 
-    PyObject *compiled = Py_CompileString(code.c_str(), "<string>", Py_eval_input);
-    checkPythonException();
+        if (argc > 1)
+            code = "lambda " + code;
 
-    PyObject *globals = makeGlobalsWithAccessor(contextComponent);
-
-    PyObject *result = PyEval_EvalCode(compiled, globals, globals);
-    checkPythonException();
-
-    if (argc > 1) {
-        // in this case, the result is a lambda we should call
-        PyObject *args = PyTuple_New(argc-1);
-
-        for (int i = 1; i < argc; ++i)
-            PyTuple_SetItem(args, i-1, valueToPyObject(argv[i]));
-
-        result = PyObject_Call(result, args, NULL);
+        PyObject *compiled = Py_CompileString(code.c_str(), "<string>", Py_eval_input);
         checkPythonException();
-    }
 
-    return pyObjectToValue(result);
+        PyObject *globals = makeGlobalsWithAccessor(contextComponent);
+
+        PyObject *result = PyEval_EvalCode(compiled, globals, globals);
+        checkPythonException();
+
+        if (argc > 1) {
+            // in this case, the result is a lambda we should call
+            PyObject *args = PyTuple_New(argc-1);
+
+            for (int i = 1; i < argc; ++i)
+                PyTuple_SetItem(args, i-1, valueToPyObject(argv[i]));
+
+            result = PyObject_Call(result, args, NULL);
+            checkPythonException();
+        }
+
+        return pyObjectToValue(result);
+    }
+    catch (std::exception& e) {
+        throw cRuntimeError("Error evaluating Python expression: %s", e.what());
+    }
 #else
     throw cRuntimeError("Embedded Python support was not enabled at build time");
 #endif
@@ -397,48 +377,55 @@ cValue nedf_pyeval(cComponent *contextComponent, cValue argv[], int argc)
 cValue nedf_pycode(cComponent *contextComponent, cValue argv[], int argc)
 {
 #ifdef WITH_PYTHON
-    std::string code = argv[0].stringValue();
+    try {
+        ensurePythonInterpreter();
 
-    std::smatch match;
+        std::string code = argv[0].stringValue();
 
-    std::string ident = "([a-zA-Z_][a-zA-Z0-9_]*)";
-    std::string identList = "(" + ident + "(\\s*,\\s*" + ident + ")*)?";
-    std::regex_match(code, match, std::regex("(^\\s*" + identList + "\\s*:\\s*).*"));
+        std::smatch match;
 
-    if (match.size() >= 2) {
-        std::string header = match[1];
-        std::string arglist = match[2];
-        if (!std::regex_search(header, std::regex("\\btry\\b"))) {
-            code = code.substr(header.length());
-            code = "def fun(" + arglist + "):\n" + opp_indentlines(code, "    ");
+        std::string ident = "([a-zA-Z_][a-zA-Z0-9_]*)";
+        std::string identList = "(" + ident + "(\\s*,\\s*" + ident + ")*)?";
+        std::regex_match(code, match, std::regex("(^\\s*" + identList + "\\s*:\\s*).*"));
+
+        if (match.size() >= 2) {
+            std::string header = match[1];
+            std::string arglist = match[2];
+            if (!std::regex_search(header, std::regex("\\btry\\b"))) {
+                code = code.substr(header.length());
+                code = "def fun(" + arglist + "):\n" + opp_indentlines(code, "    ");
+            }
         }
+        else {
+            // Using *args, so we don't have to also create a list
+            // inside the argument pack tuple when calling.
+            code = "def fun(*args):\n" + opp_indentlines(code, "    ");
+        }
+
+        PyObject *globals = makeGlobalsWithAccessor(contextComponent);
+
+        // always returns `None`
+        PyRun_String(code.c_str(), Py_file_input, globals, globals);
+        checkPythonException();
+
+        PyObject *fun = PyDict_GetItemString(globals, "fun");
+
+        if (!fun)
+            throw cRuntimeError("Internal error: Defined internal function not found in locals");
+
+        PyObject *args = PyTuple_New(argc-1);
+
+        for (int i = 1; i < argc; ++i)
+            PyTuple_SetItem(args, i-1, valueToPyObject(argv[i]));
+
+        PyObject *result = PyObject_CallObject(fun, args);
+        checkPythonException();
+
+        return pyObjectToValue(result);
     }
-    else {
-        // Using *args, so we don't have to also create a list
-        // inside the argument pack tuple when calling.
-        code = "def fun(*args):\n" + opp_indentlines(code, "    ");
+    catch (std::exception& e) {
+        throw cRuntimeError("Error executing Python code: %s", e.what());
     }
-
-    PyObject *globals = makeGlobalsWithAccessor(contextComponent);
-
-    // always returns `None`
-    PyRun_String(code.c_str(), Py_file_input, globals, globals);
-    checkPythonException();
-
-    PyObject *fun = PyDict_GetItemString(globals, "fun");
-
-    if (!fun)
-        throw cRuntimeError("Internal error: Defined internal function not found in locals");
-
-    PyObject *args = PyTuple_New(argc-1);
-
-    for (int i = 1; i < argc; ++i)
-        PyTuple_SetItem(args, i-1, valueToPyObject(argv[i]));
-
-    PyObject *result = PyObject_CallObject(fun, args);
-    checkPythonException();
-
-    return pyObjectToValue(result);
 #else
     throw cRuntimeError("Embedded Python support was not enabled at build time");
 #endif
