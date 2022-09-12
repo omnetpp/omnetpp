@@ -56,6 +56,20 @@ void Stopwatch::addClockDelta()
     lastClock = now;
 }
 
+void Stopwatch::clear()
+{
+    realTimeLimit = -1;
+    cpuTimeLimit = -1;
+    realtimeLimitUsecs = -1;
+    cpuTimeLimitClocks = -1;
+    clockRunning = false;
+    hasTimeLimit_ = false;
+    elapsedTimeUsecs = 0;
+    lastTimeUsecs = 0;
+    elapsedClocks = 0;
+    lastClock = 0;
+}
+
 void Stopwatch::resetClock()
 {
     elapsedTimeUsecs = 0;

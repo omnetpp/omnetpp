@@ -33,18 +33,8 @@ using namespace omnetpp::internal;
 namespace omnetpp {
 namespace envir {
 
-Register_GlobalConfigOptionU(CFGID_CPU_TIME_LIMIT, "cpu-time-limit", "s", nullptr, "Stops the simulation when CPU usage has reached the given limit. The default is no limit. Note: To reduce per-event overhead, this time limit is only checked every N events (by default, N=1024).");
-Register_GlobalConfigOptionU(CFGID_REAL_TIME_LIMIT, "real-time-limit", "s", nullptr, "Stops the simulation after the specified amount of time has elapsed. The default is no limit. Note: To reduce per-event overhead, this time limit is only checked every N events (by default, N=1024).");
-
 void Runner::configure(cConfiguration *cfg)
 {
-    setCPUTimeLimit(cfg->getAsDouble(CFGID_CPU_TIME_LIMIT, -1));
-    setRealTimeLimit(cfg->getAsDouble(CFGID_REAL_TIME_LIMIT, -1));
-}
-
-double Runner::getElapsedSecs()
-{
-    return stopwatch.getElapsedSecs();
 }
 
 bool Runner::elapsed(long millis, int64_t& since)
@@ -84,8 +74,8 @@ void Runner::doRunNormal()
         // flush so that output from different modules don't get mixed
         cLogProxy::flushLastLine();
 
-        if (stopwatch.hasTimeLimits())
-            stopwatch.checkTimeLimits();
+        if (simulation->hasRealTimeLimit())
+            simulation->checkRealTimeLimits();
 
         if (sigintReceived)
             throw cTerminationException("SIGINT or SIGTERM received, exiting");
@@ -118,8 +108,8 @@ void Runner::doRunExpressWithFakeGUI()
         if ((simulation->getEventNumber() & 1023) == 0) {
             if (elapsed(statusFrequencyMs, lastUpdateTime))
                 printStatusUpdate();
-            if (stopwatch.hasTimeLimits())
-                stopwatch.checkTimeLimits();
+            if (simulation->hasRealTimeLimit())
+                simulation->checkRealTimeLimits();
         }
 
         if (sigintReceived)
@@ -149,8 +139,8 @@ void Runner::doRunExpressNoFakeGui()
         if ((simulation->getEventNumber() & 1023) == 0) {
             if (elapsed(statusFrequencyMs, lastUpdateTime))
                 printStatusUpdate();
-            if (stopwatch.hasTimeLimits())
-                stopwatch.checkTimeLimits();
+            if (simulation->hasRealTimeLimit())
+                simulation->checkRealTimeLimits();
         }
 
         if (sigintReceived)
@@ -161,7 +151,7 @@ void Runner::doRunExpressNoFakeGui()
 void Runner::doRunExpressNoFakeGuiNoTimelimit()
 {
     ASSERT(fakeGUI == nullptr);
-    ASSERT(!stopwatch.hasTimeLimits());
+    ASSERT(!simulation->hasRealTimeLimit());
 
     speedometer.start(simulation->getSimTime());
 
@@ -189,7 +179,7 @@ void Runner::doRunExpressNoFakeGuiNoTimelimit()
 void Runner::doRunExpressNoStatusUpdates()
 {
     ASSERT(fakeGUI == nullptr);
-    ASSERT(!stopwatch.hasTimeLimits());
+    ASSERT(!simulation->hasRealTimeLimit());
     ASSERT(statusFrequencyMs <= 0);
 
     while (true) {
@@ -207,13 +197,10 @@ void Runner::doRunExpressNoStatusUpdates()
 void Runner::run()
 {
     ASSERT(simulation == cSimulation::getActiveSimulation());
-    stopwatch.resetClock();
-    stopwatch.startClock();
 
 #define FINALLY { \
         if (expressMode) \
             printStatusUpdate(); \
-        stopwatch.stopClock(); \
         simulatedTime = simulation->getSimTime(); \
     }
 
@@ -222,7 +209,7 @@ void Runner::run()
             doRunNormal();
         else if (fakeGUI)
             doRunExpressWithFakeGUI();
-        else if (stopwatch.hasTimeLimits())
+        else if (simulation->hasRealTimeLimit())
             doRunExpressNoFakeGui();
         else if (statusFrequencyMs > 0)
             doRunExpressNoFakeGuiNoTimelimit();
@@ -256,7 +243,7 @@ void Runner::printStatusUpdate()
         char buf[64];
         out << "** Event #" << simulation->getEventNumber()
             << "   t=" << simulation->getSimTime()
-            << "   Elapsed: " << timeToStr(getElapsedSecs(), buf);
+            << "   Elapsed: " << timeToStr(simulation->getElapsedTime(), buf);
         if (printThreadId)
             out << "  Thread " << std::this_thread::get_id();
         out << "  " << getProgressPercentage() << std::endl;  // note: IDE launcher uses this to track progress
@@ -272,7 +259,7 @@ void Runner::printStatusUpdate()
     else {
         char buf[64];
         out << "** Event #" << simulation->getEventNumber() << "   t=" << simulation->getSimTime()
-            << "   Elapsed: " << timeToStr(getElapsedSecs(), buf)
+            << "   Elapsed: " << timeToStr(simulation->getElapsedTime(), buf)
             << getProgressPercentage() // note: IDE launcher uses this to track progress
             << "   ev/sec=" << speedometer.getEventsPerSec() << std::endl;
     }
@@ -289,14 +276,14 @@ std::string Runner::getProgressPercentage()
         simtimeRatio = simulation->getSimTime() / simtimeLimit;
 
     double elapsedTimeRatio = -1;
-    double realTimeLimit = stopwatch.getRealTimeLimit();
+    double realTimeLimit = simulation->getElapsedTimeLimit();
     if (realTimeLimit > 0)
-        elapsedTimeRatio = stopwatch.getElapsedSecs() / realTimeLimit;
+        elapsedTimeRatio = simulation->getElapsedTime() / realTimeLimit;
 
     double cpuTimeRatio = -1;
-    double cpuTimeLimit = stopwatch.getCPUTimeLimit();
+    double cpuTimeLimit = simulation->getCpuTimeLimit();
     if (cpuTimeLimit > 0)
-        cpuTimeRatio = stopwatch.getCPUUsageSecs() / cpuTimeLimit;
+        cpuTimeRatio = simulation->getCpuUsageTime() / cpuTimeLimit;
 
     double ratio = std::max(simtimeRatio, std::max(elapsedTimeRatio, cpuTimeRatio));
     ratio = std::min(ratio, 1.0);  // eliminate occasional "101% completed" message
@@ -329,7 +316,7 @@ void Runner::printEventBanner(eventnumber_t eventNumber, cEvent *event)
 
     if (detailedEventBanners) {
         char buf[64];
-        out << "   Elapsed: " << timeToStr(stopwatch.getElapsedSecs(), buf)
+        out << "   Elapsed: " << timeToStr(simulation->getElapsedTime(), buf)
             << "   Messages: created: " << cMessage::getTotalMessageCount()
             << "  present: " << cMessage::getLiveMessageCount()
             << "  in FES: " << simulation->getFES()->getLength() << "\n"; // note: "\n" not endl, because we don't want auto-flush on each event

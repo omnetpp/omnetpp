@@ -123,10 +123,10 @@ namespace omnetpp {
 
 extern cConfigOption *CFGID_NETWORK;
 extern cConfigOption *CFGID_SIM_TIME_LIMIT;
-
-namespace envir {
 extern cConfigOption *CFGID_REAL_TIME_LIMIT;
 extern cConfigOption *CFGID_CPU_TIME_LIMIT;
+
+namespace envir {
 extern cConfigOption *CFGID_DEBUG_STATISTICS_RECORDING;
 extern cConfigOption *CFGID_WARNINGS;
 }
@@ -644,13 +644,13 @@ int Qtenv::doRunApp()
     envir->setIsGUI(true);
     envir->setArgs(args);
 
+    activeCfg = ini->extractGlobalConfig();
+
     cINedLoader *nedLoader = loadNEDFiles(activeCfg, args);
 
     cSimulation *simulation = new cSimulation("simulation", envir, nedLoader);  //TODO: finally: delete simulation
     cSimulation::setActiveSimulation(simulation);
 
-    activeCfg = ini->extractGlobalConfig();
-    std::string imagePath = envir->extractImagePath(activeCfg, args);
     readOptions(activeCfg);
 
     if (getAttachDebuggerOnErrors())
@@ -660,6 +660,7 @@ int Qtenv::doRunApp()
     signal(SIGINT, signalHandler);
     signal(SIGTERM, signalHandler);
 
+    std::string imagePath = envir->extractImagePath(activeCfg, args);
     icons.setVerbose(AppBase::verbose);
     icons.loadImages(imagePath.c_str());
 

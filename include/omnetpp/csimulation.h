@@ -43,6 +43,10 @@ class cINedLoader;
 class cIRngManager;
 class IRunner;
 
+namespace envir {
+class Stopwatch;
+}
+
 SIM_API extern OPP_THREAD_LOCAL cSoftOwner globalOwningContext; // also in globals.h
 
 
@@ -121,6 +125,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
 
     simtime_t simTimeLimit = 0;         // simulation time limit (0 -> no limit)
     cEvent *endSimulationEvent = nullptr; // only present if simulation time limit is set
+    envir::Stopwatch *stopwatch;        // elapsed time, CPU usage time, and related time limits
 
     State state = SIM_NONETWORK;        // simulation state
     Stage stage = STAGE_NONE;           // what the simulation is currently doing
@@ -715,6 +720,63 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * interrupt on the next event.
      */
     bool isTrapOnNextEventRequested() const {return trapOnNextEvent;}  // note: intentionally non-virtual
+    //@}
+
+    /** @name Real time limits */
+    //@{
+
+    /**
+     * Sets an elapsed time (a.k.a. wall clock time) limit for the simulation,
+     * in seconds. Only the time spent inside the run() method counts as runtime.
+     * Supply -1 or any negative value to clear the limit. Setting the limit resets
+     * the current elapsed time, so the new limit controls the remaining amount of
+     * elapsed time allowed for the simulation.
+     */
+    virtual void setElapsedTimeLimit(double seconds);
+
+    /**
+     * Returns the elapsed time (a.k.a. wall clock time) limit for the simulation
+     * in seconds, or -1 if there is no limit set.
+     */
+    virtual double getElapsedTimeLimit() const;
+
+    /**
+     * Sets a CPU time limit for the simulation, in seconds. Only the time spent inside
+     * the run() method counts as runtime. Supply -1 or any negative value to clear the limit.
+     * Setting the limit resets the current CPU time usage to zero, so the new limit
+     * expresses the remaining amount of time allowed for the simulation.
+     */
+    virtual void setCpuTimeLimit(double seconds);
+
+    /**
+     * Returns the CPU limit for the simulation in seconds, or -1 if there is no limit set.
+     */
+    virtual double getCpuTimeLimit() const;
+
+    /**
+     * Returns true of either the elapsed time limit or the CPU time limit is set
+     * (see getElapsedTimeLimit() and getCpuTimeLimit()).
+     */
+    virtual bool hasRealTimeLimit() const {return getElapsedTimeLimit() >= 0 || getCpuTimeLimit() >= 0;}
+
+    /**
+     * Returns the total amount of wall clock time in seconds that the simulation
+     * spent running, i.e. inside the run() method.
+     */
+    virtual double getElapsedTime() const;
+
+    /**
+     * Returns the total amount of CPU time in seconds that the simulation spent running,
+     * i.e. inside the run() method.
+     */
+    virtual double getCpuUsageTime() const;
+
+    /**
+     * Checks that the simulation hasn't exceeded the elapsed time or CPU time limit.
+     * If so, a cTerminationException is thrown. This is a function that runners need
+     * to regularly call from the their run() method.
+     */
+    virtual void checkRealTimeLimits();
     //@}
 
     /** @name Lifecycle listeners */

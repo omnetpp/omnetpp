@@ -48,7 +48,6 @@ class ENVIR_API Runner : public IRunner
     bool printEventBanners = false;
     bool detailedEventBanners = false;
 
-    Stopwatch stopwatch; // CPU and real time limit checking
     Speedometer speedometer;
     simtime_t simulatedTime;  // sim. time after finishing simulation
 
@@ -64,7 +63,6 @@ class ENVIR_API Runner : public IRunner
     virtual std::string getProgressPercentage();
 
     bool elapsed(long millis, int64_t& since);
-    double getElapsedSecs(); //TODO make it accessible to cException, so it can be put into error messages (maybe move stopwatch into cSimulation?)
 
   public:
     Runner(cSimulation *simulation, std::ostream& out, bool& sigintReceived) : simulation(simulation), out(out), sigintReceived(sigintReceived) {}
@@ -72,9 +70,6 @@ class ENVIR_API Runner : public IRunner
     virtual void configure(cConfiguration *cfg);
 
     virtual void setFakeGUI(IFakeGUI *fakeGUI) {this->fakeGUI = fakeGUI;}
-    virtual void setSimulationTimeLimit(simtime_t limit) {simulation->setSimulationTimeLimit(limit);}
-    virtual void setCPUTimeLimit(double limit) {stopwatch.setCPUTimeLimit(limit);}
-    virtual void setRealTimeLimit(double limit) {stopwatch.setRealTimeLimit(limit);}
     virtual void setExpressMode(bool express) {expressMode = express;}
     virtual void setAutoFlush(bool flush) {autoflush = flush;}
     virtual void setStatusFrequencyMs(long freq) {statusFrequencyMs = freq;}

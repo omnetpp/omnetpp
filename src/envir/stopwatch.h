@@ -54,8 +54,11 @@ public:
     Stopwatch();
     void setRealTimeLimit(double seconds); // specify negative value to clear limit
     double getRealTimeLimit() const {return realTimeLimit;}
+    void resetRealTimeUsage() {addRealtimeDelta(); elapsedTimeUsecs = 0;}
     void setCPUTimeLimit(double seconds); // specify negative value to clear limit
     double getCPUTimeLimit() const {return cpuTimeLimit;}
+    void resetCPUTimeUsage() {addClockDelta(); elapsedClocks = 0;}
+    void clear();  // clear all settings and members
     void resetClock(); // call on network setup
     void startClock(); // call when simulation is started or paused
     void stopClock(); // call when simulation is paused or terminated

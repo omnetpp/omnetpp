@@ -54,6 +54,7 @@
 #include "omnetpp/platdep/platmisc.h"  // for DEBUG_TRAP
 #include "sim/netbuilder/cnedloader.h"
 #include "envir/envirbase.h"
+#include "envir/stopwatch.h"
 
 #ifdef WITH_PARSIM
 #include "omnetpp/ccommbuffer.h"
@@ -85,6 +86,8 @@ Register_GlobalConfigOption(CFGID_FINGERPRINT, "fingerprint", CFG_STRING, nullpt
 Register_GlobalConfigOption(CFGID_FINGERPRINTER_CLASS, "fingerprintcalculator-class", CFG_STRING, "omnetpp::cSingleFingerprintCalculator", "Part of the Envir plugin mechanism: selects the fingerprint calculator class to be used to calculate the simulation fingerprint. The class has to implement the `cFingerprintCalculator` interface.");
 Register_GlobalConfigOption(CFGID_RNGMANAGER_CLASS, "rngmanager-class", CFG_STRING, "omnetpp::cRngManager", "Part of the Envir plugin mechanism: selects the RNG manager class to be used for providing RNGs to modules and channels. The class has to implement the `cIRngManager` interface.");
 Register_GlobalConfigOptionU(CFGID_SIM_TIME_LIMIT, "sim-time-limit", "s", nullptr, "Stops the simulation when simulation time reaches the given limit. The default is no limit.");
+Register_GlobalConfigOptionU(CFGID_CPU_TIME_LIMIT, "cpu-time-limit", "s", nullptr, "Stops the simulation when CPU usage has reached the given limit. The default is no limit. Note: To reduce per-event overhead, this time limit is only checked every N events (by default, N=1024).");
+Register_GlobalConfigOptionU(CFGID_REAL_TIME_LIMIT, "real-time-limit", "s", nullptr, "Stops the simulation after the specified amount of time has elapsed. The default is no limit. Note: To reduce per-event overhead, this time limit is only checked every N events (by default, N=1024).");
 Register_GlobalConfigOptionU(CFGID_WARMUP_PERIOD, "warmup-period", "s", nullptr, "Length of the initial warm-up period. When set, results belonging to the first x seconds of the simulation will not be recorded into output vectors, and will not be counted into output scalars (see option `**.result-recording-modes`). This option is useful for steady-state simulations. The default is 0s (no warmup period). Note that models that compute and record scalar results manually (via `recordScalar()`) will not automatically obey this setting.");
 Register_GlobalConfigOption(CFGID_CHECK_SIGNALS, "check-signals", CFG_BOOL, CHECKSIGNALS_DEFAULT, "Controls whether the simulation kernel will validate signals emitted by modules and channels against signal declarations (`@signal` properties) in NED files. The default setting depends on the build type: `true` in DEBUG, and `false` in RELEASE mode.");
 Register_GlobalConfigOption(CFGID_PARAMETER_MUTABILITY_CHECK, "parameter-mutability-check", CFG_BOOL, "true", "Setting to false will disable errors raised when trying to change the values of module/channel parameters not marked as @mutable. This is primarily a compatibility setting intended to facilitate running simulation models that were not yet annotated with @mutable.");
@@ -123,6 +126,8 @@ cSimulation::cSimulation(const char *name, cEnvir *env, cINedLoader *loader) : c
     envir = env ? env : new EnvirBase();
     envir->setSimulation(this);
 
+    stopwatch = new Stopwatch;
+
     // install default objects
     setFES(new cEventHeap("fes"));
     setScheduler(new cSequentialScheduler());
@@ -155,6 +160,8 @@ cSimulation::~cSimulation()
 
     if (getActiveSimulation() == this)
         setActiveSimulation(nullptr);
+
+    delete stopwatch;
 
     delete envir;  // after setActiveSimulation(nullptr), due to objectDeleted() callbacks
 
@@ -271,6 +278,9 @@ void cSimulation::configure(cConfiguration *cfg)
     // misc
     simtime_t simtimeLimit = cfg->getAsDouble(CFGID_SIM_TIME_LIMIT, 0);
     setSimulationTimeLimit(simtimeLimit);
+
+    setElapsedTimeLimit(cfg->getAsDouble(CFGID_REAL_TIME_LIMIT, -1));
+    setCpuTimeLimit(cfg->getAsDouble(CFGID_CPU_TIME_LIMIT, -1));
 
     simtime_t warmupPeriod = cfg->getAsDouble(CFGID_WARMUP_PERIOD);
     setWarmupPeriod(warmupPeriod);
@@ -800,6 +810,8 @@ void cSimulation::deleteNetwork()
 
         // clear remaining messages (module dtors may have cancelled & deleted some of them)
         fes->clear();
+
+        stopwatch->clear();
     }
     catch (std::exception& e) {
         gotoState(SIM_ERROR);
@@ -985,11 +997,15 @@ class DefaultRunner : public IRunner {
 
 void DefaultRunner::run()
 {
+    bool hasTimeLimit = simulation->hasRealTimeLimit();
+    unsigned int i = 0;
     while (true) {
         cEvent *event = simulation->takeNextEvent();
         if (!event)
             throw cTerminationException("Scheduler interrupted while waiting");
         simulation->executeEvent(event);
+        if (hasTimeLimit && (i++ & 1023) == 0)
+            simulation->checkRealTimeLimits();
     }
 }
 
@@ -1010,6 +1026,8 @@ bool cSimulation::run(IRunner *runner, bool shouldCallFinish)
     if (runner == nullptr)
         runner = &defaultRunner;
 
+    stopwatch->startClock();
+
     bool firstRun = (state == SIM_INITIALIZED);
 
     gotoState(SIM_RUNNING);
@@ -1018,11 +1036,13 @@ bool cSimulation::run(IRunner *runner, bool shouldCallFinish)
     try {
         notifyLifecycleListeners(firstRun ? LF_ON_SIMULATION_START : LF_ON_SIMULATION_RESUME);
         runner->run();
+        stopwatch->stopClock();
         gotoState(SIM_PAUSED);
         notifyLifecycleListeners(LF_ON_SIMULATION_PAUSE);
         return true;
     }
     catch (cTerminationException& e) {
+        stopwatch->stopClock();
         gotoState(SIM_TERMINATED);
         setTerminationReason(e.dup());
         notifyLifecycleListeners(LF_ON_SIMULATION_SUCCESS, &e);
@@ -1032,6 +1052,7 @@ bool cSimulation::run(IRunner *runner, bool shouldCallFinish)
         return false;
     }
     catch (std::exception& e) {
+        stopwatch->stopClock();
         gotoState(SIM_ERROR);
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR, e);
         throw;
@@ -1050,6 +1071,43 @@ void cSimulation::setTerminationReason(cTerminationException *e)
 {
     delete terminationReason;
     terminationReason = e;
+}
+
+void cSimulation::setElapsedTimeLimit(double seconds)
+{
+    stopwatch->setRealTimeLimit(seconds);
+    stopwatch->resetRealTimeUsage();
+}
+
+double cSimulation::getElapsedTimeLimit() const
+{
+    return stopwatch->getRealTimeLimit();
+}
+
+void cSimulation::setCpuTimeLimit(double seconds)
+{
+    stopwatch->setCPUTimeLimit(seconds);
+    stopwatch->resetCPUTimeUsage();
+}
+
+double cSimulation::getCpuTimeLimit() const
+{
+    return stopwatch->getCPUTimeLimit();
+}
+
+double cSimulation::getElapsedTime() const
+{
+    return stopwatch->getElapsedSecs();
+}
+
+double cSimulation::getCpuUsageTime() const
+{
+    return stopwatch->getCPUUsageSecs();
+}
+
+void cSimulation::checkRealTimeLimits()
+{
+    stopwatch->checkTimeLimits();
 }
 
 void cSimulation::setContext(cComponent *p)

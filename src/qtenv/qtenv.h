@@ -161,7 +161,7 @@ class QTENV_API Qtenv : public QObject, public AppBase, public SimulationHolder
       bool doNextEventInStep = false;// true if the next event should be executed in STEP mode, or we should stop before
       Speedometer speedometer;
 
-      Stopwatch stopwatch;      // CPU and real time limit checking
+      Stopwatch stopwatch;      // CPU and real time limit checking --TODO already in cSimulation, eliminate!!!
       simtime_t simulatedTime;  // sim. time after finishing simulation
 
       bool stopSimulationFlag;      // indicates that the simulation should be stopped (STOP button pressed in the UI)
