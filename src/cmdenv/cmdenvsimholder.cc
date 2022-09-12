@@ -56,8 +56,7 @@ CmdenvSimulationHolder::CmdenvSimulationHolder(cINedLoader *nedLoader) :
 void CmdenvSimulationHolder::runCmdenvSimulation(cConfiguration *cfg, int numRuns, int runsTried)
 {
     CmdEnvir *envir = new CmdEnvir(out, sigintReceived);
-    cSimulation *simulation = new cSimulation("simulation", envir);
-    simulation->setNedLoader(nedLoader);
+    cSimulation *simulation = new cSimulation("simulation", envir, nedLoader);
 
     CmdenvRunner runner(simulation, out, sigintReceived);
     runner.configure(cfg);

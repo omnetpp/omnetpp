@@ -644,7 +644,9 @@ int Qtenv::doRunApp()
     envir->setIsGUI(true);
     envir->setArgs(args);
 
-    cSimulation *simulation = new cSimulation("simulation", envir);  //TODO: finally: delete simulation
+    cINedLoader *nedLoader = loadNEDFiles(activeCfg, args);
+
+    cSimulation *simulation = new cSimulation("simulation", envir, nedLoader);  //TODO: finally: delete simulation
     cSimulation::setActiveSimulation(simulation);
 
     activeCfg = ini->extractGlobalConfig();
@@ -653,9 +655,6 @@ int Qtenv::doRunApp()
 
     if (getAttachDebuggerOnErrors())
         installCrashHandler();
-
-    cINedLoader *nedLoader = loadNEDFiles(activeCfg, args);
-    simulation->setNedLoader(nedLoader);
 
     // set signal handler
     signal(SIGINT, signalHandler);

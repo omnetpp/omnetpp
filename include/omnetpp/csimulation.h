@@ -107,7 +107,8 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     int lastComponentId = 0;            // index of last used pos. in componentv[]
 
     // simulation vars
-    cINedLoader *nedLoader = nullptr;   // NED loader/resolver - NOT OWNED
+    cINedLoader *nedLoader = nullptr;   // NED loader/resolver
+    bool nedLoaderOwned = false;
     cIRngManager *rngManager = nullptr; // component-rng mapping
     cEnvir *envir = nullptr;            // the environment that belongs to this simulation object
     cConfiguration *cfg = nullptr;      // the configuration object passed in the last configure() call -- NOT OWNED
@@ -179,8 +180,22 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * Constructor. The environment object will be associated with this simulation
      * object, and gets deleted in the simulation object's destructor. If no
      * environment object is given, a default one will be constructed.
+     *
+     * If no NED loader object is given, a default one will be created.
+     * The NED loader will not be owned by the simulation object, i.e. it will
+     * NOT be deleted in the constructor, unless it is a NED loader created by
+     * the simulation itself.
+     *
+     * Also, if there is currently no active simulation instance
+     * (i.e. cSimulation::getActiveSimulation() == nullptr),
+     * then the new instance is made the active simulation.
      */
-    cSimulation(const char *name, cEnvir *envir=nullptr);
+    cSimulation(const char *name, cEnvir *envir=nullptr, cINedLoader *nedLoader=nullptr);
+
+    /**
+     * Alternative constructor. Delegates to the 3-argument constructor.
+     */
+    cSimulation(const char *name, cINedLoader *nedLoader) : cSimulation(name, nullptr, nedLoader) {}
 
     /**
      * Destructor.

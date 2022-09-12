@@ -52,6 +52,7 @@
 #include "omnetpp/clifecyclelistener.h"
 #include "omnetpp/crngmanager.h"
 #include "omnetpp/platdep/platmisc.h"  // for DEBUG_TRAP
+#include "sim/netbuilder/cnedloader.h"
 #include "envir/envirbase.h"
 
 #ifdef WITH_PARSIM
@@ -112,9 +113,12 @@ class SIM_API cEndSimulationEvent : public cEvent, public noncopyable
     virtual void execute() override { delete this; throw cTerminationException(E_SIMTIME); }
 };
 
-cSimulation::cSimulation(const char *name, cEnvir *env) : cNamedObject(name, false)
+cSimulation::cSimulation(const char *name, cEnvir *env, cINedLoader *loader) : cNamedObject(name, false)
 {
     ASSERT(cStaticFlag::insideMain());  // cannot be instantiated as global variable
+
+    nedLoader = loader ? loader : new cNedLoader();
+    nedLoaderOwned = (loader == nullptr); // only owned if we created it
 
     envir = env ? env : new EnvirBase();
     envir->setSimulation(this);
@@ -153,6 +157,9 @@ cSimulation::~cSimulation()
         setActiveSimulation(nullptr);
 
     delete envir;  // after setActiveSimulation(nullptr), due to objectDeleted() callbacks
+
+    if (nedLoaderOwned)
+        delete nedLoader;
 }
 
 void cSimulation::setActiveSimulation(cSimulation *sim)
@@ -340,7 +347,14 @@ void cSimulation::snapshot(cObject *object, const char *label)
 
 void cSimulation::setNedLoader(cINedLoader *loader)
 {
+    if (getSystemModule() != nullptr)
+        throw cRuntimeError(this, "setNedLoader(): Cannot switch NED loaders when a network is already set up");
+
+    if (nedLoaderOwned)
+        delete nedLoader;
+
     nedLoader = loader;
+    nedLoaderOwned = false;
 }
 
 void cSimulation::setScheduler(cScheduler *sch)
