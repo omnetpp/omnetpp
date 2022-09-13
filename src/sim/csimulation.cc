@@ -133,6 +133,9 @@ cSimulation::cSimulation(const char *name, cEnvir *env, cINedLoader *loader) : c
     setScheduler(new cSequentialScheduler());
     setRngManager(new cRngManager());
     setFingerprintCalculator(new cSingleFingerprintCalculator());
+
+    if (getActiveSimulation() == nullptr)
+        setActiveSimulation(this);
 }
 
 cSimulation::~cSimulation()
