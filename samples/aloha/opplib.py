@@ -38,6 +38,7 @@ SimTime = omnetpp.SimTime
 cCoroutine = omnetpp.cCoroutine
 CodeFragments = omnetpp.CodeFragments
 cNedLoader = omnetpp.cNedLoader
+cSimulation = omnetpp.cSimulation
 CmdenvSimulationHolder = omnetpp.cmdenv.CmdenvSimulationHolder
 ArgList = omnetpp.envir.ArgList
 InifileContents = omnetpp.envir.InifileContents
