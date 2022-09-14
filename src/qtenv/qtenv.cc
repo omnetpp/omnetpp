@@ -1003,7 +1003,6 @@ void Qtenv::prepareForRun()
     stopwatch.setCPUTimeLimit(opt->cpuTimeLimit);
     stopwatch.setRealTimeLimit(opt->realTimeLimit);
     simulation->callInitialize();
-    cLogProxy::flushLastLine();
 }
 
 bool Qtenv::doRunSimulation()
@@ -1208,7 +1207,6 @@ void Qtenv::finishSimulation()
     try {
         getSimulation()->callFinish();
         callRefreshDisplaySafe();
-        cLogProxy::flushLastLine();
     }
     catch (std::exception& e) {
         printException(e);

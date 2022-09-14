@@ -137,7 +137,6 @@ void SimulationHolder::runConfiguredSimulation(cSimulation *simulation, IRunner 
         cLog::setLoggingEnabled(!envir->isExpressMode());
 
         simulation->callInitialize();
-        cLogProxy::flushLastLine();
 
         // run the simulation
         if (verbose)
@@ -158,7 +157,6 @@ void SimulationHolder::runConfiguredSimulation(cSimulation *simulation, IRunner 
             out << "\nCalling finish() at end of Run #" << runNumber << "..." << endl;
 
         simulation->callFinish();
-        cLogProxy::flushLastLine();
     }
     catch (std::exception& e) {
         cLog::setLoggingEnabled(true);

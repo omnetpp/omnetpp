@@ -707,10 +707,12 @@ void cSimulation::callInitialize()
         systemModule->scheduleStart(SIMTIME_ZERO);
         notifyLifecycleListeners(LF_PRE_NETWORK_INITIALIZE);
         systemModule->callInitialize();
+        cLogProxy::flushLastLine();
         gotoState(SIM_INITIALIZED);
         notifyLifecycleListeners(LF_POST_NETWORK_INITIALIZE);
     }
     catch (std::exception& e) {
+        cLogProxy::flushLastLine();
         gotoState(SIM_ERROR);
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR, e);
         throw;
@@ -742,12 +744,14 @@ void cSimulation::callFinish()
     try {
         notifyLifecycleListeners(LF_PRE_NETWORK_FINISH);
         systemModule->callFinish();
+        cLogProxy::flushLastLine();
         gotoState(SIM_FINISHCALLED);
         notifyLifecycleListeners(LF_POST_NETWORK_FINISH);
         onRunEndFired = true;
         notifyLifecycleListeners(LF_ON_RUN_END);
     }
     catch (std::exception& e) {
+        cLogProxy::flushLastLine();
         gotoState(SIM_ERROR);
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR, e);
         throw;
