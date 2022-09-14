@@ -68,9 +68,10 @@ class SIM_API cFingerprintCalculator : public cObject, noncopyable
     //@}
 
     /**
-     * Compare computed fingerprint with the expected one, and throw
-     * error if it doesn't match.
-     */
+    /**
+     * Compares the computed fingerprint with the expected one, and returns
+     * true if they match, and false otherwise.
+    */
     virtual bool checkFingerprint() const = 0;
 };
 
