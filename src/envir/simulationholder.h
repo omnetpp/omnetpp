@@ -68,7 +68,7 @@ class SimulationHolder
 
     virtual void printException(std::exception& e, const char *when=nullptr);
 
-    virtual void afterRunFinally(cSimulation *simulation, bool endRunRequired); // wish C++ had 'finally'
+    virtual void afterRunFinally(cSimulation *simulation); // wish C++ had 'finally'
 };
 
 }  // namespace envir

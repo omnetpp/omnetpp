@@ -86,8 +86,6 @@ void SimulationHolder::runConfiguredSimulation(cSimulation *simulation, IRunner 
 {
     cSimulation::setActiveSimulation(simulation);
 
-    bool endRunRequired = false;
-
     try {
         cConfiguration *cfg = simulation->getConfig();
 
@@ -120,8 +118,6 @@ void SimulationHolder::runConfiguredSimulation(cSimulation *simulation, IRunner 
             throw cRuntimeError("No network specified (missing or empty network= configuration option)");
         cModuleType *network = simulation->resolveNetwork(networkName.c_str(), inifileNetworkDir.c_str());
         ASSERT(network);
-
-        endRunRequired = true;
 
         // set up network
         if (verbose)
@@ -161,13 +157,13 @@ void SimulationHolder::runConfiguredSimulation(cSimulation *simulation, IRunner 
     catch (std::exception& e) {
         cLog::setLoggingEnabled(true);
         printException(e);  // must display the exception here (and not inside catch), so that it doesn't appear out-of-order in the output
-        afterRunFinally(simulation, endRunRequired);
+        afterRunFinally(simulation);
         throw;
     }
-    afterRunFinally(simulation, endRunRequired);
+    afterRunFinally(simulation);
 }
 
-void SimulationHolder::afterRunFinally(cSimulation *simulation, bool endRunRequired)
+void SimulationHolder::afterRunFinally(cSimulation *simulation)
 {
     //TODO should any exception in here cause nonzero Cmdenv exit code?
 
