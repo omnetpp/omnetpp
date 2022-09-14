@@ -160,8 +160,6 @@ void SimulationHolder::runConfiguredSimulation(cSimulation *simulation, IRunner 
 
         simulation->callFinish();
         cLogProxy::flushLastLine();
-
-        checkFingerprint();
     }
     catch (std::exception& e) {
         cLog::setLoggingEnabled(true);
@@ -263,20 +261,6 @@ void SimulationHolder::printException(std::exception& ex, const char *when)
         errWithoutPrefix() << msg << endl;
     else
         err() << msg << endl;
-}
-
-void SimulationHolder::checkFingerprint()
-{
-    cFingerprintCalculator *fingerprint = getActiveSimulation()->getFingerprintCalculator();
-    if (!getActiveSimulation()->getFingerprintCalculator())
-        return;
-
-    auto flags = opp_substringafterlast(fingerprint->str(), "/");
-    if (fingerprint->checkFingerprint())
-        AppBase::getActiveApp()->alertf("Fingerprint successfully verified: %s", fingerprint->str().c_str());
-    else
-        AppBase::getActiveApp()->alertf("Fingerprint mismatch! calculated: %s, expected: %s",
-                fingerprint->str().c_str(), fingerprint->getExpected().c_str());
 }
 
 }  // namespace envir

@@ -507,6 +507,13 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     virtual void callFinish();
 
     /**
+     * To be called after the simulation has terminated, it verifies that
+     * the fingerprint computed from the simulation matches the expected
+     * fingerprint.
+     */
+    virtual void checkFingerprint();
+
+    /**
      * Cleans up the network currently set up. This involves deleting
      * all modules and deleting the messages in the scheduled-event list.
      */

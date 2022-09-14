@@ -68,9 +68,6 @@ class SimulationHolder
 
     virtual void printException(std::exception& e, const char *when=nullptr);
 
-    // Utility function: checks simulation fingerprint and displays a message accordingly
-    virtual void checkFingerprint();
-
     virtual void afterRunFinally(cSimulation *simulation, bool endRunRequired); // wish C++ had 'finally'
 };
 

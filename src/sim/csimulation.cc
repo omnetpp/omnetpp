@@ -752,6 +752,19 @@ void cSimulation::callFinish()
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR, e);
         throw;
     }
+
+    checkFingerprint();
+}
+
+void cSimulation::checkFingerprint()
+{
+    if (!fingerprint)
+        return;
+
+    if (fingerprint->checkFingerprint())
+        getEnvir()->alert(opp_stringf("Fingerprint successfully verified: %s", fingerprint->str().c_str()).c_str());
+    else
+        getEnvir()->alert(opp_stringf("Fingerprint mismatch! calculated: %s, expected: %s", fingerprint->str().c_str(), fingerprint->getExpected().c_str()).c_str());
 }
 
 void cSimulation::callRefreshDisplay()

@@ -1208,8 +1208,6 @@ void Qtenv::finishSimulation()
         getSimulation()->callFinish();
         callRefreshDisplaySafe();
         cLogProxy::flushLastLine();
-
-        checkFingerprint();
     }
     catch (std::exception& e) {
         printException(e);
