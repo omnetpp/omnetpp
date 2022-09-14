@@ -430,61 +430,6 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category, bool
         throw cRuntimeError("Unrecognized category for '-h' option: %s", category);
 }
 
-void EnvirUtils::dumpResultRecorders(std::ostream& out, cComponent *component)
-{
-    dumpComponentResultRecorders(out, component);
-    if (component->isModule()) {
-        cModule *module = (cModule *)component;
-        for (cModule::SubmoduleIterator it(module); !it.end(); ++it)
-            dumpResultRecorders(out, *it);
-        for (cModule::ChannelIterator it(module); !it.end(); ++it)
-            dumpResultRecorders(out, *it);
-    }
-}
-
-void EnvirUtils::dumpComponentResultRecorders(std::ostream& out, cComponent *component)
-{
-    bool componentPathPrinted = false;
-    std::vector<simsignal_t> signals = component->getLocalListenedSignals();
-    for (int signalID : signals) {
-        bool signalNamePrinted = false;
-        std::vector<cIListener *> listeners = component->getLocalSignalListeners(signalID);
-        for (auto & listener : listeners) {
-            if (dynamic_cast<cResultListener *>(listener)) {
-                if (!componentPathPrinted) {
-                    out << component->getFullPath() << " (" << component->getNedTypeName() << "):\n";
-                    componentPathPrinted = true;
-                }
-                if (!signalNamePrinted) {
-                    out << "    \"" << cComponent::getSignalName(signalID) << "\" (signalID="  << signalID << "):\n";
-                    signalNamePrinted = true;
-                }
-                dumpResultRecorderChain(out, (cResultListener *)listener, 0);
-            }
-        }
-    }
-}
-
-void EnvirUtils::dumpResultRecorderChain(std::ostream& out, cResultListener *listener, int depth)
-{
-    std::string indent(4*depth+8, ' ');
-    out << indent;
-    if (ExpressionFilter *expressionFilter = dynamic_cast<ExpressionFilter *>(listener))
-        out << expressionFilter->getExpression().str(Expression::SPACIOUSNESS_MAX) << " (" << listener->getClassName() << ")";
-    else
-        out << listener->getClassName();
-
-    if (cResultRecorder *resultRecorder = dynamic_cast<cResultRecorder *>(listener))
-        out << " ==> " << resultRecorder->getResultName();
-    out << "\n";
-
-    if (cResultFilter *resultFilter = dynamic_cast<cResultFilter *>(listener)) {
-        std::vector<cResultListener *> delegates = resultFilter->getDelegates();
-        for (auto & delegate : delegates)
-            dumpResultRecorderChain(out, delegate, depth+1);
-    }
-}
-
 }  // namespace envir
 }  // namespace omnetpp
 

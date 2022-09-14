@@ -17,6 +17,9 @@
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/resultfilters.h"
+#include "omnetpp/resultrecorders.h"
+#include "omnetpp/cmodule.h"
+#include "omnetpp/cchannel.h"
 #include "common/stringtokenizer.h"
 #include "common/stringutil.h"
 #include "common/opp_ctype.h"
@@ -230,6 +233,61 @@ void cStatisticBuilder::doResultRecorder(const SignalSource& source, const char 
     catch (std::exception& e) {
         throw cRuntimeError("Cannot add statistic '%s' to module %s (NED type: %s): Bad recording mode '%s': %s",
                 statisticName, component->getFullPath().c_str(), component->getNedTypeName(), recordingMode, e.what());
+    }
+}
+
+void cStatisticBuilder::dumpResultRecorders(std::ostream& out, cComponent *component)
+{
+    dumpComponentResultRecorders(out, component);
+    if (component->isModule()) {
+        cModule *module = (cModule *)component;
+        for (cModule::SubmoduleIterator it(module); !it.end(); ++it)
+            dumpResultRecorders(out, *it);
+        for (cModule::ChannelIterator it(module); !it.end(); ++it)
+            dumpResultRecorders(out, *it);
+    }
+}
+
+void cStatisticBuilder::dumpComponentResultRecorders(std::ostream& out, cComponent *component)
+{
+    bool componentPathPrinted = false;
+    std::vector<simsignal_t> signals = component->getLocalListenedSignals();
+    for (int signalID : signals) {
+        bool signalNamePrinted = false;
+        std::vector<cIListener *> listeners = component->getLocalSignalListeners(signalID);
+        for (auto & listener : listeners) {
+            if (dynamic_cast<cResultListener *>(listener)) {
+                if (!componentPathPrinted) {
+                    out << component->getFullPath() << " (" << component->getNedTypeName() << "):\n";
+                    componentPathPrinted = true;
+                }
+                if (!signalNamePrinted) {
+                    out << "    \"" << cComponent::getSignalName(signalID) << "\" (signalID="  << signalID << "):\n";
+                    signalNamePrinted = true;
+                }
+                dumpResultRecorderChain(out, (cResultListener *)listener, 0);
+            }
+        }
+    }
+}
+
+void cStatisticBuilder::dumpResultRecorderChain(std::ostream& out, cResultListener *listener, int depth)
+{
+    std::string indent(4*depth+8, ' ');
+    out << indent;
+    if (ExpressionFilter *expressionFilter = dynamic_cast<ExpressionFilter *>(listener))
+        out << expressionFilter->getExpression().str(Expression::SPACIOUSNESS_MAX) << " (" << listener->getClassName() << ")";
+    else
+        out << listener->getClassName();
+
+    if (cResultRecorder *resultRecorder = dynamic_cast<cResultRecorder *>(listener))
+        out << " ==> " << resultRecorder->getResultName();
+    out << "\n";
+
+    if (cResultFilter *resultFilter = dynamic_cast<cResultFilter *>(listener)) {
+        std::vector<cResultListener *> delegates = resultFilter->getDelegates();
+        for (auto & delegate : delegates)
+            dumpResultRecorderChain(out, delegate, depth+1);
     }
 }
 

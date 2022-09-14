@@ -26,6 +26,9 @@ extern const char *PROPKEY_STATISTIC_RECORD;
 extern const char *PROPKEY_STATISTIC_CHECKSIGNALS;
 
 class cConfiguration;
+class cComponent;
+class cResultListener;
+
 struct SignalSource;
 
 /**
@@ -54,6 +57,16 @@ class SIM_API cStatisticBuilder
          */
         void addResultRecorders(cComponent *component, simsignal_t signal, const char *statisticName, cProperty *statisticTemplateProperty);
 
+        /**
+         * TODO
+         */
+        static void dumpResultRecorders(std::ostream& out, cComponent *component);
+
+        /**
+         * TODO
+         */
+        static void dumpComponentResultRecorders(std::ostream& out, cComponent *component);
+
     protected:
         // Utility function: adds result recording listeners for the given signal (if it's non-null) or for the given @statistic property.
         // If signal is specified, it will override the source= key in statisticProperty.
@@ -65,6 +78,9 @@ class SIM_API cStatisticBuilder
         SignalSource doStatisticSource(cComponent *component, cProperty *statisticProperty, const char *statisticName, const char *sourceSpec, TristateBool checkSignalDecl, bool needWarmupFilter);
         void doResultRecorder(const SignalSource& source, const char *mode, cComponent *component, const char *statisticName, cProperty *attrsProperty);
         TristateBool parseTristateBool(const char *s, const char *what);
+
+        static void dumpResultRecorderChain(std::ostream& out, cResultListener *listener, int depth);
+
 };
 
 }  // namespace omnetpp

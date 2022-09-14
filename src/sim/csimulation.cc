@@ -51,6 +51,8 @@
 #include "omnetpp/cnedloader.h"
 #include "omnetpp/clifecyclelistener.h"
 #include "omnetpp/crngmanager.h"
+#include "omnetpp/cstatisticbuilder.h"
+#include "omnetpp/clog.h"
 #include "omnetpp/platdep/platmisc.h"  // for DEBUG_TRAP
 #include "sim/netbuilder/cnedloader.h"
 #include "envir/envirbase.h"
@@ -92,6 +94,8 @@ Register_GlobalConfigOptionU(CFGID_WARMUP_PERIOD, "warmup-period", "s", nullptr,
 Register_GlobalConfigOption(CFGID_CHECK_SIGNALS, "check-signals", CFG_BOOL, CHECKSIGNALS_DEFAULT, "Controls whether the simulation kernel will validate signals emitted by modules and channels against signal declarations (`@signal` properties) in NED files. The default setting depends on the build type: `true` in DEBUG, and `false` in RELEASE mode.");
 Register_GlobalConfigOption(CFGID_PARAMETER_MUTABILITY_CHECK, "parameter-mutability-check", CFG_BOOL, "true", "Setting to false will disable errors raised when trying to change the values of module/channel parameters not marked as @mutable. This is primarily a compatibility setting intended to facilitate running simulation models that were not yet annotated with @mutable.");
 Register_GlobalConfigOption(CFGID_ALLOW_OBJECT_STEALING_ON_DELETION, "allow-object-stealing-on-deletion", CFG_BOOL, "false", "Setting it to true disables the \"Context component is deleting an object it doesn't own\" error message. This option exists primarily for backward compatibility with pre-6.0 versions that were more permissive during object deletion.");
+Register_GlobalConfigOption(CFGID_DEBUG_STATISTICS_RECORDING, "debug-statistics-recording", CFG_BOOL, "false", "Turns on the printing of debugging information related to statistics recording (`@statistic` properties)");
+
 
 #ifdef DEVELOPER_DEBUG
 #include <set>
@@ -678,6 +682,10 @@ void cSimulation::setupNetwork(cModuleType *networkType, cConfiguration *cfg)
         // and not in the constructor.)
         throw;
     }
+
+    bool debugStatisticsRecording = getConfig()->getAsBool(CFGID_DEBUG_STATISTICS_RECORDING);
+    if (debugStatisticsRecording)
+        cStatisticBuilder::dumpResultRecorders(EV_INFO, getSystemModule());
 }
 
 void cSimulation::callInitialize()

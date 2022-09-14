@@ -46,8 +46,6 @@ extern cConfigOption *CFGID_NETWORK;
 
 namespace envir {
 
-Register_GlobalConfigOption(CFGID_DEBUG_STATISTICS_RECORDING, "debug-statistics-recording", CFG_BOOL, "false", "Turns on the printing of debugging information related to statistics recording (`@statistic` properties)");
-
 inline EnvirBase *getActiveEnvir() {return dynamic_cast<EnvirBase*>(cSimulation::getActiveEnvir());}
 inline cSimulation *getActiveSimulation() {return cSimulation::getActiveSimulation();}
 
@@ -70,10 +68,6 @@ void SimulationHolder::setupNetwork(cModuleType *networkType)
 
     simulation->setupNetwork(networkType);
     envir->getEventlogManager()->flush();
-
-    bool debugStatisticsRecording = envir->getConfig()->getAsBool(CFGID_DEBUG_STATISTICS_RECORDING);
-    if (debugStatisticsRecording)
-        EnvirUtils::dumpResultRecorders(out, simulation->getSystemModule());
 }
 
 void SimulationHolder::configureAndRunSimulation(cSimulation *simulation, cConfiguration *cfg, IRunner *runner, const char *redirectFileName)

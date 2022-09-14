@@ -125,9 +125,9 @@ extern cConfigOption *CFGID_NETWORK;
 extern cConfigOption *CFGID_SIM_TIME_LIMIT;
 extern cConfigOption *CFGID_REAL_TIME_LIMIT;
 extern cConfigOption *CFGID_CPU_TIME_LIMIT;
+extern cConfigOption *CFGID_DEBUG_STATISTICS_RECORDING;
 
 namespace envir {
-extern cConfigOption *CFGID_DEBUG_STATISTICS_RECORDING;
 extern cConfigOption *CFGID_WARNINGS;
 }
 
