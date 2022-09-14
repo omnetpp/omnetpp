@@ -110,7 +110,8 @@ int Cmdenv::doRunApp()
     // specifying different values for these options in different sections.
     cConfiguration *masterCfg = ini->extractConfig(configName.c_str(), runNumbers[0]);
 
-    nedLoader = SimulationHolder::loadNEDFiles(masterCfg, args);
+    nedLoader = SimulationHolder::createConfiguredNedLoader(masterCfg, args);
+    nedLoader->loadNedFiles();
 
     int numThreads = globalCfg->getAsInt(CFGID_CMDENV_NUM_THREADS);
     if (numThreads <= 0) {

@@ -47,7 +47,7 @@ class SimulationHolder
     virtual void setVerbose(bool verbose) {this->verbose = verbose;}
     virtual void setUseStderr(bool useStderr) {this->useStderr = useStderr;}
 
-    static cINedLoader *loadNEDFiles(cConfiguration *cfg, ArgList *args=nullptr);
+    static cINedLoader *createConfiguredNedLoader(cConfiguration *cfg, ArgList *args=nullptr);
     static std::string getFormattedMessage(std::exception& ex);
 
     virtual void configureAndRunSimulation(cSimulation *simulation, cConfiguration *cfg, IRunner *runner, const char *redirectFileName);

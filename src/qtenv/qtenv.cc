@@ -646,7 +646,8 @@ int Qtenv::doRunApp()
 
     activeCfg = ini->extractGlobalConfig();
 
-    cINedLoader *nedLoader = loadNEDFiles(activeCfg, args);
+    cINedLoader *nedLoader = createConfiguredNedLoader(activeCfg, args);
+    nedLoader->loadNedFiles();
 
     cSimulation *simulation = new cSimulation("simulation", envir, nedLoader);  //TODO: finally: delete simulation
     cSimulation::setActiveSimulation(simulation);

@@ -51,14 +51,13 @@ Register_GlobalConfigOption(CFGID_DEBUG_STATISTICS_RECORDING, "debug-statistics-
 inline EnvirBase *getActiveEnvir() {return dynamic_cast<EnvirBase*>(cSimulation::getActiveEnvir());}
 inline cSimulation *getActiveSimulation() {return cSimulation::getActiveSimulation();}
 
-cINedLoader *SimulationHolder::loadNEDFiles(cConfiguration *cfg, ArgList *args)
+cINedLoader *SimulationHolder::createConfiguredNedLoader(cConfiguration *cfg, ArgList *args)
 {
-    std::string nArg = args == nullptr ? "" : opp_join(args->optionValues('n'), ";", true);
-    std::string xArg = args == nullptr ? "" : opp_join(args->optionValues('x'), ";", true);
     cINedLoader *nedLoader = new cNedLoader("nedLoader");
     nedLoader->removeFromOwnershipTree();
+    std::string nArg = args == nullptr ? "" : opp_join(args->optionValues('n'), ";", true);
+    std::string xArg = args == nullptr ? "" : opp_join(args->optionValues('x'), ";", true);
     nedLoader->configure(cfg, nArg.c_str() , xArg.c_str());
-    nedLoader->loadNedFiles();
     return nedLoader;
 }
 
