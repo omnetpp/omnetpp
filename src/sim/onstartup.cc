@@ -72,5 +72,16 @@ void CodeFragments::executeAll(Type type, bool removeDoneItems)
     }
 }
 
+bool CodeFragments::hasItemsOfType(Type type)
+{
+    CodeFragments *p = CodeFragments::head;
+    while (p) {
+        if (p->type == type && p->code != nullptr)
+            return true;
+        p = p->next;
+    }
+    return false;
+}
+
 }  // namespace omnetpp
 

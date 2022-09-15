@@ -122,8 +122,19 @@ class SIM_API cEndSimulationEvent : public cEvent, public noncopyable
 
 cSimulation::cSimulation(const char *name, cEnvir *env, cINedLoader *loader) : cNamedObject(name, false)
 {
+    // sanity checks regarding library setup
     ASSERT(cStaticFlag::insideMain());  // cannot be instantiated as global variable
 
+    static bool firstInstance = true;
+    if (firstInstance) {
+        if (CodeFragments::hasItemsOfType(CodeFragments::EARLY_STARTUP))
+            throw cRuntimeError("'CodeFragments::executeAll(CodeFragments::EARLY_STARTUP)' must have been called by the time the first cSimulation object is created (it must be called after dynamically loading libraries, too)");
+        if (CodeFragments::hasItemsOfType(CodeFragments::STARTUP))
+            CodeFragments::executeAll(CodeFragments::STARTUP); // better late than never
+        firstInstance = false;
+    }
+
+    // member initialization
     nedLoader = loader ? loader : new cNedLoader();
     nedLoaderOwned = (loader == nullptr); // only owned if we created it
 

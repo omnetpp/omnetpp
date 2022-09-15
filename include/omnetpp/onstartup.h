@@ -97,6 +97,7 @@ class SIM_API CodeFragments
     CodeFragments(void (*code)(), const char *sourceCode, Type type);
     ~CodeFragments() {}
     static void executeAll(Type type, bool removeDoneItems=true);
+    static bool hasItemsOfType(Type type);
 };
 
 }  // namespace omnetpp
