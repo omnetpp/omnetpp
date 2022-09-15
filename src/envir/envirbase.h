@@ -59,9 +59,11 @@ class XMLDocCache;
  * IN PARTICULAR, IT SHOULD *NEVER* BE EXTENDED WITH CODE RELATED TO SETTING UP AND
  * RUNNING SIMULATIONS. (Such code may go into AppBase).
  */
-class ENVIR_API EnvirBase : public cEnvir
+class ENVIR_API EnvirBase : public cEnvir, protected cISimulationLifecycleListener
 {
   protected:
+    using cEnvir::simulation;
+
     // context
     ArgList *argList = nullptr;
     cConfiguration *cfg = nullptr;
@@ -113,15 +115,18 @@ class ENVIR_API EnvirBase : public cEnvir
     // Utility function for getXMLDocument() and getParsedXMLString()
     cXMLElement *resolveXMLPath(cXMLElement *documentnode, const char *path);
 
+    virtual void lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details) override;
+
   public:
     EnvirBase();
     virtual ~EnvirBase();
     virtual void setArgs(ArgList *args) {this->argList = args;}
 
+    virtual void setSimulation(cSimulation *simulation) override;
     virtual void configure(cConfiguration *cfg) override;
 
     // getters/setters
-    cSimulation *getSimulation() const {return simulation;}
+    cSimulation *getSimulation() const override {return simulation;}
     virtual cConfiguration *getConfig() override;
 
     cIEventlogManager *getEventlogManager() const {return eventlogManager;}

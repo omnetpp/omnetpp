@@ -58,12 +58,7 @@ cINedLoader *SimulationHolder::createConfiguredNedLoader(cConfiguration *cfg, Ar
 
 void SimulationHolder::setupNetwork(cSimulation *simulation, cModuleType *networkType)
 {
-    EnvirBase *envir = dynamic_cast<EnvirBase*>(simulation->getEnvir());
-
-    envir->clearCurrentEventInfo();
-
     simulation->setupNetwork(networkType);
-    envir->getEventlogManager()->flush();
 }
 
 void SimulationHolder::configureAndRunSimulation(cSimulation *simulation, cConfiguration *cfg, IRunner *runner, const char *redirectFileName)

@@ -85,10 +85,6 @@ class SIM_API cEnvir
     bool suppressNotifications = false; //FIXME set to true when not needed!
 
   public:
-    // internal: called from cSimulation's ctor
-    void setSimulation(cSimulation *simulation) {this->simulation = simulation;}
-
-  public:
     /** @name Constructor, destructor. */
     //@{
 
@@ -105,6 +101,11 @@ class SIM_API cEnvir
 
     /** @name Setup. */
     //@{
+
+    /**
+     * Called from cSimulation's constructor.
+     */
+    virtual void setSimulation(cSimulation *simulation) {this->simulation = simulation;}
 
     /**
      * Configures the environment instance.

@@ -75,6 +75,12 @@ EnvirBase::~EnvirBase()
     delete snapshotManager;
 }
 
+void EnvirBase::setSimulation(cSimulation *simulation)
+{
+    cEnvir::setSimulation(simulation);
+    simulation->addLifecycleListener(this);
+}
+
 void EnvirBase::configure(cConfiguration *cfg)
 {
     this->cfg = cfg;
@@ -306,7 +312,14 @@ std::string EnvirBase::resolveResourcePath(const char *fileName, cComponentType 
     return ""; // not found
 }
 
-//-------------------------------------------------------------
+void EnvirBase::lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details)
+{
+    switch (eventType) {
+    case LF_PRE_NETWORK_SETUP: clearCurrentEventInfo(); break;
+    case LF_POST_NETWORK_SETUP: getEventlogManager()->flush(); break;
+    default: break;
+    }
+}
 
 void EnvirBase::bubble(cComponent *component, const char *text)
 {
