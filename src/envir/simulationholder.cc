@@ -91,11 +91,6 @@ void SimulationHolder::configureAndRunSimulation(cSimulation *simulation, cConfi
 
 void SimulationHolder::runConfiguredSimulation(cSimulation *simulation, IRunner *runner, const char *redirectFileName)  //TODO misleading name (the network is not actually set up yet)
 {
-    if (verbose)
-        simulation->addLifecycleListener(new VerboseListener(out));
-
-    cSimulation::setActiveSimulation(simulation);
-
     try {
         cConfiguration *cfg = simulation->getConfig();
 
@@ -122,6 +117,11 @@ void SimulationHolder::runConfiguredSimulation(cSimulation *simulation, IRunner 
         }
 
         // set up and run simulation
+        if (verbose)
+            simulation->addLifecycleListener(new VerboseListener(out));
+
+        cSimulation::setActiveSimulation(simulation);
+
         simulation->setupNetwork(cfg);
         simulation->run(runner, false);
 
@@ -133,29 +133,28 @@ void SimulationHolder::runConfiguredSimulation(cSimulation *simulation, IRunner 
         }
 
         simulation->callFinish();
+
+        deleteNetwork(simulation);
+        if (isOutputRedirected())
+            stopOutputRedirection();
     }
     catch (std::exception& e) {
         printException(e);  // must display the exception here (and not inside catch), so that it doesn't appear out-of-order in the output
-        afterRunFinally(simulation);
+        deleteNetwork(simulation);
+        if (isOutputRedirected())
+            stopOutputRedirection();
         throw;
     }
-    afterRunFinally(simulation);
 }
 
-void SimulationHolder::afterRunFinally(cSimulation *simulation)
+void SimulationHolder::deleteNetwork(cSimulation *simulation)
 {
-    //TODO should any exception in here cause nonzero Cmdenv exit code?
-
     try {
         simulation->deleteNetwork();
     }
     catch (std::exception& e) {
         printException(e, "during cleanup");
     }
-
-    // stop redirecting into file
-    if (isOutputRedirected())
-        stopOutputRedirection();
 }
 
 void SimulationHolder::startOutputRedirection(const char *fileName)
@@ -187,52 +186,24 @@ bool SimulationHolder::isOutputRedirected()
     return out.rdbuf() != std::cout.rdbuf();
 }
 
-std::ostream& SimulationHolder::err()
-{
-    std::ostream& err = useStderr && !isOutputRedirected() ? std::cerr : out;
-    if (isOutputRedirected())
-        (useStderr ? std::cerr : std::cout) << "<!> Error -- see " << redirectionFilename << " for details" << endl;
-    err << endl << "<!> Error: ";
-    return err;
-}
-
-std::ostream& SimulationHolder::errWithoutPrefix()
-{
-    std::ostream& err = useStderr && !isOutputRedirected() ? std::cerr : out;
-    if (isOutputRedirected())
-        (useStderr ? std::cerr : std::cout) << "<!> Error -- see " << redirectionFilename << " for details" << endl;
-    err << endl << "<!> ";
-    return err;
-}
-
-std::ostream& SimulationHolder::warn()
-{
-    std::ostream& err = useStderr && !isOutputRedirected() ? std::cerr : out;
-    if (isOutputRedirected())
-        (useStderr ? std::cerr : std::cout) << "<!> Warning -- see " << redirectionFilename << " for details" << endl;
-    err << endl << "<!> Warning: ";
-    return err;
-}
-
-std::string SimulationHolder::getFormattedMessage(std::exception& ex)
-{
-    if (cException *e = dynamic_cast<cException *>(&ex))
-        return e->getFormattedMessage();
-    else
-        return ex.what();
-}
-
 void SimulationHolder::printException(std::exception& ex, const char *when)
 {
-    std::string msg = getFormattedMessage(ex);
-    if (!opp_isempty(when))
-        msg = std::string("Error ") + when + ": " + msg;
-    if (dynamic_cast<cTerminationException*>(&ex) != nullptr)
+    std::string msg = dynamic_cast<cException *>(&ex) ? ((cException*)(&ex))->getFormattedMessage() : ex.what();
+    if (dynamic_cast<cTerminationException*>(&ex) != nullptr) {
         out << endl << "<!> " << msg << endl;
-    else if (msg.substr(0,5) == "Error")
-        errWithoutPrefix() << msg << endl;
-    else
-        err() << msg << endl;
+    }
+    else {
+        if (!opp_isempty(when))
+            msg = std::string("Error ") + when + ": " + msg;
+        std::ostream& err = useStderr && !isOutputRedirected() ? std::cerr : out;
+        if (isOutputRedirected())
+            (useStderr ? std::cerr : std::cout) << "<!> Error -- see " << redirectionFilename << " for details" << endl;
+
+        if (msg.substr(0,5) == "Error")
+            err << endl << "<!> " << msg << endl;
+        else
+            err << endl << "<!> Error: " << msg << endl;
+    }
 }
 
 }  // namespace envir

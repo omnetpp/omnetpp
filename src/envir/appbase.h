@@ -86,6 +86,8 @@ class ENVIR_API AppBase
 
     DebuggerSupport *getDebuggerSupport() const {return debuggerSupport;}
 
+    std::string getFormattedMessage(std::exception& ex);
+
     void displayException(std::exception& ex);
 
 //  protected:

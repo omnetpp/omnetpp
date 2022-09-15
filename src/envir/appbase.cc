@@ -621,10 +621,14 @@ void AppBase::crashHandler(int)
     }
 }
 
+std::string AppBase::getFormattedMessage(std::exception& ex)
+{
+    return dynamic_cast<cException *>(&ex) ? ((cException*)(&ex))->getFormattedMessage() : ex.what();
+}
+
 void AppBase::displayException(std::exception& ex)
 {
-    std::string msg = SimulationHolder::getFormattedMessage(ex);
-    alert(msg.c_str());
+    alert(getFormattedMessage(ex).c_str());
 }
 
 }  // namespace envir

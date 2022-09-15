@@ -48,7 +48,6 @@ class SimulationHolder
     virtual void setUseStderr(bool useStderr) {this->useStderr = useStderr;}
 
     static cINedLoader *createConfiguredNedLoader(cConfiguration *cfg, ArgList *args=nullptr);
-    static std::string getFormattedMessage(std::exception& ex);
 
     virtual void configureAndRunSimulation(cSimulation *simulation, cConfiguration *cfg, IRunner *runner, const char *redirectFileName);
     virtual void runConfiguredSimulation(cSimulation *simulation, IRunner *runner, const char *redirectFileName);
@@ -56,17 +55,11 @@ class SimulationHolder
     const cTerminationException *getTerminationReason() const {return terminationReason;}  // stopping reason in case of normal (error-free) simulation execution
 
   protected:
-    virtual std::ostream& err();
-    virtual std::ostream& errWithoutPrefix();
-    virtual std::ostream& warn();
-
     virtual void startOutputRedirection(const char *fileName);
     virtual void stopOutputRedirection();
     virtual bool isOutputRedirected();
-
     virtual void printException(std::exception& e, const char *when=nullptr);
-
-    virtual void afterRunFinally(cSimulation *simulation); // wish C++ had 'finally'
+    virtual void deleteNetwork(cSimulation *simulation);
 };
 
 }  // namespace envir
