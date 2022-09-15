@@ -1238,17 +1238,17 @@ void Qtenv::newNetwork(const char *networkname)
         simulationState = SIM_NEW;
         callRefreshDisplay(); // the one without exception handling!
 
-        // update GUI
-        auto module = getSimulation()->getSystemModule();
-        mainNetworkView->setObject(module);
-        mainInspector->setObject(module);
-
     }
     catch (std::exception& e) {
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
         displayException(e);
         simulationState = SIM_ERROR;
     }
+
+    // update GUI
+    auto module = getSimulation()->getSystemModule();
+    mainNetworkView->setObject(module);
+    mainInspector->setObject(module);
 
     messageAnimator->setShowAnimations(true);  // affects how network graphics is drawn!
     messageAnimator->redrawMessages();
