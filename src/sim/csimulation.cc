@@ -675,7 +675,7 @@ void cSimulation::setupNetwork(cModuleType *networkType, cConfiguration *cfg)
 
     try {
         // set up the network by instantiating the toplevel module
-        notifyLifecycleListeners(LF_PRE_NETWORK_SETUP);
+        notifyLifecycleListeners(LF_PRE_NETWORK_SETUP, networkType);
         cModule *module = networkType->create(networkType->getName(), this);
         ASSERT(systemModule == module);
         module->finalizeParameters();
