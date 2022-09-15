@@ -24,6 +24,7 @@
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/cnedloader.h"
 #include "omnetpp/crunner.h"
+#include "omnetpp/checkandcast.h"
 #include "sim/netbuilder/cnedloader.h"
 #include "appbase.h"
 #include "args.h"
@@ -45,6 +46,35 @@ namespace omnetpp {
 extern cConfigOption *CFGID_NETWORK;
 
 namespace envir {
+
+class VerboseListener : public cISimulationLifecycleListener
+{
+  private:
+    std::ostream& out;
+  public:
+    VerboseListener(std::ostream& out) : out(out) {}
+    virtual void lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details) override;
+    virtual void listenerRemoved() override;
+};
+
+void VerboseListener::lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details)
+{
+    switch (eventType) {
+    case LF_PRE_NETWORK_SETUP: out << "Setting up network \"" << check_and_cast<cModuleType *>(details)->getFullName() << "\"..." << endl; break;
+    case LF_PRE_NETWORK_INITIALIZE: out << "Initializing..." << endl; break;
+    case LF_ON_SIMULATION_START: out << "\nRunning simulation..." << endl; break;
+    case LF_PRE_NETWORK_FINISH: out << "\nCalling finish() at end of Run #" << cSimulation::getActiveSimulation()->getConfig()->getVariable(CFGVAR_RUNNUMBER) << "..." << endl;
+    default: break;
+    }
+}
+
+void VerboseListener::listenerRemoved()
+{
+    cISimulationLifecycleListener::listenerRemoved();
+    delete this;
+}
+
+//---
 
 cINedLoader *SimulationHolder::createConfiguredNedLoader(cConfiguration *cfg, ArgList *args)
 {
@@ -69,6 +99,9 @@ void SimulationHolder::configureAndRunSimulation(cSimulation *simulation, cConfi
 
 void SimulationHolder::runConfiguredSimulation(cSimulation *simulation, IRunner *runner, const char *redirectFileName)  //TODO misleading name (the network is not actually set up yet)
 {
+    if (verbose)
+        simulation->addLifecycleListener(new VerboseListener(out));
+
     cSimulation::setActiveSimulation(simulation);
 
     try {
@@ -105,24 +138,15 @@ void SimulationHolder::runConfiguredSimulation(cSimulation *simulation, IRunner 
         ASSERT(networkType);
 
         // set up network
-        if (verbose)
-            out << "Setting up network \"" << networkName.c_str() << "\"..." << endl;
-
         setupNetwork(simulation, networkType);
 
         // prepare for simulation run
-        if (verbose)
-            out << "Initializing..." << endl;
-
         cEnvir *envir = simulation->getEnvir();
         cLog::setLoggingEnabled(!envir->isExpressMode());
 
         simulation->callInitialize();
 
         // run the simulation
-        if (verbose)
-            out << "\nRunning simulation..." << endl;
-
         simulation->run(runner, false);
 
         bool isTerminated = simulation->getState() == cSimulation::SIM_TERMINATED;
@@ -133,9 +157,6 @@ void SimulationHolder::runConfiguredSimulation(cSimulation *simulation, IRunner 
         }
 
         cLog::setLoggingEnabled(true);
-
-        if (verbose)
-            out << "\nCalling finish() at end of Run #" << runNumber << "..." << endl;
 
         simulation->callFinish();
     }
