@@ -42,9 +42,6 @@ using namespace omnetpp::common;
 using namespace omnetpp::internal;
 
 namespace omnetpp {
-
-extern cConfigOption *CFGID_NETWORK;
-
 namespace envir {
 
 class VerboseListener : public cISimulationLifecycleListener
@@ -86,11 +83,6 @@ cINedLoader *SimulationHolder::createConfiguredNedLoader(cConfiguration *cfg, Ar
     return nedLoader;
 }
 
-void SimulationHolder::setupNetwork(cSimulation *simulation, cModuleType *networkType)
-{
-    simulation->setupNetwork(networkType);
-}
-
 void SimulationHolder::configureAndRunSimulation(cSimulation *simulation, cConfiguration *cfg, IRunner *runner, const char *redirectFileName)
 {
     simulation->configure(cfg);
@@ -129,24 +121,8 @@ void SimulationHolder::runConfiguredSimulation(cSimulation *simulation, IRunner 
             out << "Assigned runID=" << runId << endl;
         }
 
-        // find network
-        std::string networkName = cfg->getAsString(CFGID_NETWORK);
-        std::string inifileNetworkDir  = cfg->getConfigEntry(CFGID_NETWORK->getName()).getBaseDirectory();
-        if (networkName.empty())
-            throw cRuntimeError("No network specified (missing or empty network= configuration option)");
-        cModuleType *networkType = simulation->resolveNetwork(networkName.c_str(), inifileNetworkDir.c_str());
-        ASSERT(networkType);
-
-        // set up network
-        setupNetwork(simulation, networkType);
-
-        // prepare for simulation run
-        cEnvir *envir = simulation->getEnvir();
-        cLog::setLoggingEnabled(!envir->isExpressMode());
-
-        simulation->callInitialize();
-
-        // run the simulation
+        // set up and run simulation
+        simulation->setupNetwork(cfg);
         simulation->run(runner, false);
 
         bool isTerminated = simulation->getState() == cSimulation::SIM_TERMINATED;
@@ -156,12 +132,9 @@ void SimulationHolder::runConfiguredSimulation(cSimulation *simulation, IRunner 
             terminationReason = e;
         }
 
-        cLog::setLoggingEnabled(true);
-
         simulation->callFinish();
     }
     catch (std::exception& e) {
-        cLog::setLoggingEnabled(true);
         printException(e);  // must display the exception here (and not inside catch), so that it doesn't appear out-of-order in the output
         afterRunFinally(simulation);
         throw;

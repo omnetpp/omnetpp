@@ -1355,7 +1355,7 @@ void Qtenv::newRun(const char *configname, int runnumber)
 
 void Qtenv::setupNetwork(cModuleType *networkType)
 {
-    SimulationHolder::setupNetwork(cSimulation::getActiveSimulation(), networkType);
+    cSimulation::getActiveSimulation()->setupNetwork(networkType);
 
     // collapsing all nodes in the object tree, because even if a new network is
     // loaded, there is a chance that some objects will be on the same place

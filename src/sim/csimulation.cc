@@ -713,6 +713,8 @@ void cSimulation::callInitialize()
     trapOnNextEvent = false;
     cMessage::resetMessageCounters();
 
+    cLog::setLoggingEnabled(!envir->isExpressMode());
+
     StageSwitcher _(this, STAGE_INITIALIZE);
 
     // Prepare simple modules for simulation run:
@@ -757,6 +759,8 @@ void cSimulation::callFinish()
         cTerminationException e("Implicitly terminated by callFinish() call");
         notifyLifecycleListeners(LF_ON_SIMULATION_SUCCESS, &e); // not done before
     }
+
+    cLog::setLoggingEnabled(true);
 
     StageSwitcher _(this, STAGE_FINISH);
 

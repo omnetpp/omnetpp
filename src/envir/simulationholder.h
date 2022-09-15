@@ -37,7 +37,7 @@ class SimulationHolder
 {
   protected:
     std::ostream& out;
-    bool verbose; // for subclasses
+    bool verbose;
     bool useStderr = false;
     std::string redirectionFilename;
     cTerminationException *terminationReason = nullptr;
@@ -59,8 +59,6 @@ class SimulationHolder
     virtual std::ostream& err();
     virtual std::ostream& errWithoutPrefix();
     virtual std::ostream& warn();
-
-    virtual void setupNetwork(cSimulation *simulation, cModuleType *networkType);
 
     virtual void startOutputRedirection(const char *fileName);
     virtual void stopOutputRedirection();

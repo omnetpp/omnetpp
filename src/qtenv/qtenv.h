@@ -332,7 +332,6 @@ class QTENV_API Qtenv : public QObject, public AppBase, public SimulationHolder
       virtual void readPerRunOptions(cConfiguration *cfg);
 
       virtual void setupNetwork(cModuleType *network);
-      using SimulationHolder::setupNetwork;
 
       virtual void printException(std::exception& e, const char *when=nullptr) override;
       virtual std::string getWindowTitle();
