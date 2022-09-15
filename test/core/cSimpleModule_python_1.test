@@ -1,0 +1,38 @@
+%description:
+Basic test for Python module
+
+%file: test.ned
+
+simple MyModule {
+    @pythonClass;
+}
+
+network Test
+{
+    submodules:
+        mod:      MyModule;
+}
+
+%file: test.py
+
+import cppyy
+
+cppyy.include("omnetpp.h")
+from cppyy.gbl import omnetpp
+
+class MyModule(omnetpp.cSimpleModule):
+    def __init__(self):
+        super().__init__()
+        print("constructor")
+
+    def initialize(self, stage):
+        print("initialize")
+
+    def finish(self):
+        print("finish")
+
+
+%contains: stdout
+constructor
+initialize
+finish
