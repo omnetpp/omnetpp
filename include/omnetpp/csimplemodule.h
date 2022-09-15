@@ -236,6 +236,10 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
     virtual void doMessageEvent(cMessage *msg);
 
   protected:
+    // A workaround for this bug: https://github.com/wlav/cppyy/issues/93
+    using cModule::initialize;
+    using cModule::finish;
+
     /** @name Hooks for defining module behavior.
      *
      * Exactly one of activity() and handleMessage() must be redefined
