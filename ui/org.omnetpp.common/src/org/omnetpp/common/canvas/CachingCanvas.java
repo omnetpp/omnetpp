@@ -267,8 +267,7 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
         int width = getClientArea().width, height = getClientArea().height;
         GraphicsSVG graphics = GraphicsSVG.getInstance(new Rectangle(0, -1, width, height));
         try {
-            SVGGraphics2D g = graphics.getSVGGraphics2D();
-            g.setClip(0, 0, width, height);
+            graphics.setClip(new Rectangle(0, 0, width, height));     
             paintWithoutCaching(graphics);
             writeXML(graphics, fileName);
         }

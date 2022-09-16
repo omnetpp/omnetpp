@@ -2,6 +2,7 @@ package org.omnetpp.common.util;
 
 import java.lang.reflect.Field;
 
+import org.apache.batik.svggen.SVGGraphics2D;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -18,7 +19,7 @@ public class GraphicsUtils {
      */
     public static Point getTextExtent(Graphics graphics, String string) {
         if (graphics instanceof GraphicsSVG) {
-            java.awt.Graphics g = ((GraphicsSVG)graphics).getSVGGraphics2D();
+            SVGGraphics2D g = ((GraphicsSVG)graphics).getSVGGraphics2D();
             java.awt.geom.Rectangle2D r = g.getFontMetrics().getStringBounds(string, g);
             return new Point((int)Math.ceil(r.getWidth()), (int)Math.ceil(r.getHeight()));
         }
