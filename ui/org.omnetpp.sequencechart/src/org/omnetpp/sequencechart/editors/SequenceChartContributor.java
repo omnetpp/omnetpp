@@ -2258,9 +2258,8 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
                 GraphicsSVG graphics = GraphicsSVG.getInstance(new Rectangle(0, -1, width, height));
                 SVGGraphics2D g = graphics.getSVGGraphics2D();
-                g.setClip(0, 0, width, height);
-                g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-                //graphics.setClip(new Rectangle(-1000, -100, 1000, 100));
+                graphics.setClip(new Rectangle(0, 0, width, height));
+                // g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
                 graphics.translate(0, 1);
                 graphics.setAntialias(SWT.ON);
 
