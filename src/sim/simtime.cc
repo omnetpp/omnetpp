@@ -16,6 +16,7 @@
 #include <sstream>
 #include <limits>
 #include <cinttypes>  // PRId64
+#include <mutex>
 #include "common/opp_ctype.h"
 #include "common/unitconversion.h"
 #include "common/stringutil.h"
@@ -129,14 +130,18 @@ int SimTime::parseSimtimeResolution(const char *resolution)
     }
 }
 
+static std::mutex scaleExpMutex;
+
 void SimTime::setScaleExp(int e)
 {
+    if (e < -18 || e > 0)
+        throw cRuntimeError("SimTime scale exponent %d is out of accepted range -18..0", e);
+
+    std::lock_guard<std::mutex> guard(scaleExpMutex);
     if (e == scaleexp)
         return;
     if (scaleexp != SCALEEXP_UNINITIALIZED)
         throw cRuntimeError("SimTime scale exponent (i.e. simulation time resolution) cannot be changed once it has been set up (currently %d, requested %d)", scaleexp, e);
-    if (e < -18 || e > 0)
-        throw cRuntimeError("SimTime scale exponent %d is out of accepted range -18..0", e);
 
     scaleexp = e;
     dscale = exp10(-scaleexp);
