@@ -29,7 +29,7 @@ WORKDIR $OMNETPP_DIR
 RUN git checkout master && \
     cp configure.user.dist configure.user && \
     source ./setenv -f && \
-    ./configure WITH_QTENV=no WITH_OSG=no WITH_OSGEARTH=no && \
+    ./configure WITH_QTENV=no WITH_OSG=no WITH_OSGEARTH=no WITH_PYTHON=no && \
     make MODE=release ui -j$(nproc) && \
     OFFLINE=no releng/ide/java/build-ide-java && \
     rm -rf $OMNETPP_DIR
