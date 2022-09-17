@@ -109,7 +109,7 @@ class SIM_API cINedLoader : public cNoncopyableOwnedObject
      * Forces checking for missing base classes and other problems in the loaded
      * NED types. (Without calling this method, errors are only discovered on first use.)
      */
-    virtual void checkLoadedTypes() = 0;
+    virtual void checkLoadedTypes() const = 0;
 
     /**
      * Returns the NED package that corresponds to the given folder. Returns ""

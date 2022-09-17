@@ -481,7 +481,7 @@ GateElement *NedTypeInfo::findGateDecl(const char *name) const
     return nullptr;
 }
 
-void NedTypeInfo::checkComplianceToInterface(NedTypeInfo *idecl)
+void NedTypeInfo::checkComplianceToInterface(NedTypeInfo *idecl) const
 {
     resolveIfNeeded();
 

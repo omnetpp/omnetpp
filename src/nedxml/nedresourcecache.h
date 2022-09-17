@@ -69,9 +69,9 @@ class NEDXML_API NedResourceCache
 
       class CachedTypeNames : public INedTypeNames {
         protected:
-          NedResourceCache *p;
+          const NedResourceCache *p;
         public:
-          CachedTypeNames(NedResourceCache *p) {this->p=p;}
+          CachedTypeNames(const NedResourceCache *p) {this->p=p;}
           virtual bool contains(const char *qname) const override {return p->lookup(qname)!=nullptr;}
           virtual int size() const override {return p->getTypeNames().size();}
           virtual const char *get(int k) const override {return p->getTypeNames()[k].c_str();}
@@ -100,14 +100,14 @@ class NEDXML_API NedResourceCache
     virtual void registerBuiltinDeclarations();
     virtual int doLoadNedSourceFolder(const char *foldername, const char *expectedPackage, const std::vector<std::string>& excludedFolders);
     virtual void doLoadNedFileOrText(const char *nedfname, const char *nedtext, const char *expectedPackage, bool isXML);
-    virtual NedFileElement *parseAndValidateNedFileOrText(const char *nedfname, const char *nedtext, bool isXML);
-    virtual std::string determineRootPackageName(const char *nedSourceFolderName);
+    virtual NedFileElement *parseAndValidateNedFileOrText(const char *nedfname, const char *nedtext, bool isXML) const;
+    virtual std::string determineRootPackageName(const char *nedSourceFolderName) const;
     virtual std::string getNedSourceFolderForFolder(const char *folder) const;
     virtual void collectNedTypesFrom(ASTNode *node, const std::string& packagePrefix, bool areInnerTypes);
     virtual NedTypeInfo *createTypeInfo(const char *qname, bool isInnerType, ASTNode *node);
     virtual void registerNedType(const char *qname, bool isInnerType, ASTNode *node);
     virtual bool hasResolvedTypeUnder(const std::string& packageName) const;
-    virtual std::string getFirstError(ErrorStore *errors, const char *prefix=nullptr);
+    virtual std::string getFirstError(ErrorStore *errors, const char *prefix=nullptr) const;
 
   public:
     /** Constructor */
@@ -147,13 +147,13 @@ class NEDXML_API NedResourceCache
      * other problems in the loaded NED files. (Without calling this method,
      * errors are only discovered on first use.)
      */
-    virtual void checkLoadedTypes();
+    virtual void checkLoadedTypes() const;
 
     /**
      * Return a list of "package.ned" files relevant for the given package.
      * Files are in bottom-up order, the order they should be searched for package properties.
      */
-    std::vector<NedFileElement*> getPackageNedListForLookup(const char *packageName) const;
+    virtual std::vector<NedFileElement*> getPackageNedListForLookup(const char *packageName) const;
 
     /**
      * Look up a fully qualified NED type name. Returns nullptr if not found.
@@ -163,18 +163,18 @@ class NEDXML_API NedResourceCache
     /**
      * Like lookup(), but asserts non-nullptr return value.
      */
-    virtual NedTypeInfo *getDecl(const char *qname);
+    virtual NedTypeInfo *getDecl(const char *qname) const;
 
     /**
      * Resolves the given NED type name in the given context among the given
      * fully qualified type names. Returns "" if not found.
      */
-    virtual std::string lookupNedType(const NedLookupContext& context, const char *nedTypeName, const INedTypeNames& amongQNames);
+    virtual std::string lookupNedType(const NedLookupContext& context, const char *nedTypeName, const INedTypeNames& amongQNames) const;
 
     /**
      * Resolves given NED type name, based on the NED files loaded. Returns "" if not found.
      */
-    virtual std::string lookupNedType(const NedLookupContext& context, const char *nedTypeName) {
+    virtual std::string lookupNedType(const NedLookupContext& context, const char *nedTypeName) const {
         return lookupNedType(context, nedTypeName, CachedTypeNames{this});
     }
 

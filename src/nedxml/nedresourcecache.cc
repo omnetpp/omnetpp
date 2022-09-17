@@ -139,6 +139,9 @@ void NedResourceCache::doLoadNedFileOrText(const char *nedFilename, const char *
     if (containsKey(nedFiles, canonicalFilename))
         return; // already loaded
 
+    if (nedTypes.empty())
+        registerBuiltinDeclarations();
+
     // parse file
     NedFileElement *tree = parseAndValidateNedFileOrText(canonicalFilename.c_str(), nedText, isXML);
     Assert(tree);
@@ -183,11 +186,8 @@ void NedResourceCache::addFile(NedFileElement *tree, const char *expectedPackage
     collectNedTypesFrom(tree, packagePrefix, false);
 }
 
-NedFileElement *NedResourceCache::parseAndValidateNedFileOrText(const char *fname, const char *nedText, bool isXML)
+NedFileElement *NedResourceCache::parseAndValidateNedFileOrText(const char *fname, const char *nedText, bool isXML) const
 {
-    if (nedTypes.empty())
-        registerBuiltinDeclarations();
-
     // load file
     ASTNode *tree = nullptr;
     ErrorStore errors;
@@ -229,7 +229,7 @@ NedFileElement *NedResourceCache::parseAndValidateNedFileOrText(const char *fnam
     return nedFileElement;
 }
 
-std::string NedResourceCache::getFirstError(ErrorStore *errors, const char *prefix)
+std::string NedResourceCache::getFirstError(ErrorStore *errors, const char *prefix) const
 {
     // find first error
     int i;
@@ -282,7 +282,7 @@ void NedResourceCache::collectNedTypesFrom(ASTNode *node, const std::string& pac
     }
 }
 
-void NedResourceCache::checkLoadedTypes()
+void NedResourceCache::checkLoadedTypes() const
 {
     for (auto& nedType : nedTypes)
         if (!nedType.second->isResolved())
@@ -318,7 +318,7 @@ NedTypeInfo *NedResourceCache::lookup(const char *qname) const
     return it != nedTypes.end() ? it->second : nullptr;
 }
 
-NedTypeInfo *NedResourceCache::getDecl(const char *qname)
+NedTypeInfo *NedResourceCache::getDecl(const char *qname) const
 {
     NedTypeInfo *decl = lookup(qname);
     if (!decl)
@@ -346,7 +346,7 @@ std::vector<NedFileElement*> NedResourceCache::getPackageNedListForLookup(const 
     return result;
 }
 
-std::string NedResourceCache::determineRootPackageName(const char *nedSourceFolderName)
+std::string NedResourceCache::determineRootPackageName(const char *nedSourceFolderName) const
 {
     // determine if a package.ned file exists
     std::string packageNedFilename = std::string(nedSourceFolderName) + "/package.ned";
@@ -423,7 +423,7 @@ NedLookupContext NedResourceCache::getParentContextOf(const char *qname, ASTNode
     return NedLookupContext(contextNode, contextQName.c_str());
 }
 
-std::string NedResourceCache::lookupNedType(const NedLookupContext& context, const char *nedTypeName, const INedTypeNames& qnames)
+std::string NedResourceCache::lookupNedType(const NedLookupContext& context, const char *nedTypeName, const INedTypeNames& qnames) const
 {
     // note: this method is to be kept consistent with NedResources.lookupNedType() in the Java code
     // note2: partially qualified names are not supported: name must be either simplename or fully qualified

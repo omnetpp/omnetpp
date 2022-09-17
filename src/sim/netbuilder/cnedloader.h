@@ -105,7 +105,7 @@ class SIM_API cNedLoader : public cINedLoader, public nedxml::NedResourceCache
     virtual void loadNedFile(const char *nedfname, const char *expectedPackage=nullptr, bool isXML=false) override {nedxml::NedResourceCache::loadNedFile(nedfname,expectedPackage,isXML);}
     virtual void loadNedText(const char *name, const char *nedtext, const char *expectedPackage=nullptr, bool isXML=false) override {nedxml::NedResourceCache::loadNedText(name,nedtext,expectedPackage,isXML);}
     virtual std::vector<std::string> getLoadedNedFolders() const override {return nedxml::NedResourceCache::getLoadedNedFolders();}
-    virtual void checkLoadedTypes() override {nedxml::NedResourceCache::checkLoadedTypes();}
+    virtual void checkLoadedTypes() const override {nedxml::NedResourceCache::checkLoadedTypes();}
     virtual std::string getNedPackageForFolder(const char *folder) const override {return nedxml::NedResourceCache::getNedPackageForFolder(folder);}
     virtual void registerComponentType(cComponentType *type) override;
     virtual cComponentType *lookupComponentType(const char *qname) const override;
@@ -115,7 +115,7 @@ class SIM_API cNedLoader : public cINedLoader, public nedxml::NedResourceCache
     /** @name Methods for use by the module/channel types created by this NED loader. */
     //@{
     /** Returns the NED declaration for the given type. */
-    virtual cNedDeclaration *getDecl(const char *qname) override;
+    virtual cNedDeclaration *getDecl(const char *qname) const override;
 
     /** Compile NED expression (which occurs in given attribute of the given node) to a cDynamicExpression, and cache it */
     virtual cDynamicExpression *getCompiledExpression(const ExprRef& expr);

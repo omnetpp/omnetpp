@@ -81,10 +81,10 @@ class NEDXML_API NedTypeInfo
     NameToElementMap allLocalDecls;
 
   protected:
-    void checkComplianceToInterface(NedTypeInfo *interfaceDecl);
+    void checkComplianceToInterface(NedTypeInfo *interfaceDecl) const;
     void collectLocalDeclarations();
-    void addToElementMap(NameToElementMap& elementMap, ASTNode *node);
-    void mergeElementMap(NameToElementMap& destMap, const NameToElementMap& elementMap);
+    static void addToElementMap(NameToElementMap& elementMap, ASTNode *node);
+    static void mergeElementMap(NameToElementMap& destMap, const NameToElementMap& elementMap);
     void resolveIfNeeded() const {if (!isResolved()) const_cast<NedTypeInfo*>(this)->resolve(); /*ouch*/}
 
   public:

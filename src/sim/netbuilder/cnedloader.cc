@@ -158,7 +158,7 @@ void cNedLoader::registerComponentType(cComponentType *type)
     typesByQName[type->getFullName()] = type;
 }
 
-cNedDeclaration *cNedLoader::getDecl(const char *qname)
+cNedDeclaration *cNedLoader::getDecl(const char *qname) const
 {
     cNedDeclaration *decl = dynamic_cast<cNedDeclaration *>(NedResourceCache::getDecl(qname));
     ASSERT(decl);
