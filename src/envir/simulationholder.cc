@@ -46,9 +46,6 @@ extern cConfigOption *CFGID_NETWORK;
 
 namespace envir {
 
-inline EnvirBase *getActiveEnvir() {return dynamic_cast<EnvirBase*>(cSimulation::getActiveEnvir());}
-inline cSimulation *getActiveSimulation() {return cSimulation::getActiveSimulation();}
-
 cINedLoader *SimulationHolder::createConfiguredNedLoader(cConfiguration *cfg, ArgList *args)
 {
     cINedLoader *nedLoader = new cNedLoader("nedLoader");
@@ -59,10 +56,9 @@ cINedLoader *SimulationHolder::createConfiguredNedLoader(cConfiguration *cfg, Ar
     return nedLoader;
 }
 
-void SimulationHolder::setupNetwork(cModuleType *networkType)
+void SimulationHolder::setupNetwork(cSimulation *simulation, cModuleType *networkType)
 {
-    EnvirBase *envir = getActiveEnvir();
-    cSimulation *simulation = getActiveSimulation();
+    EnvirBase *envir = dynamic_cast<EnvirBase*>(simulation->getEnvir());
 
     envir->clearCurrentEventInfo();
 
@@ -110,14 +106,14 @@ void SimulationHolder::runConfiguredSimulation(cSimulation *simulation, IRunner 
         std::string inifileNetworkDir  = cfg->getConfigEntry(CFGID_NETWORK->getName()).getBaseDirectory();
         if (networkName.empty())
             throw cRuntimeError("No network specified (missing or empty network= configuration option)");
-        cModuleType *network = simulation->resolveNetwork(networkName.c_str(), inifileNetworkDir.c_str());
-        ASSERT(network);
+        cModuleType *networkType = simulation->resolveNetwork(networkName.c_str(), inifileNetworkDir.c_str());
+        ASSERT(networkType);
 
         // set up network
         if (verbose)
             out << "Setting up network \"" << networkName.c_str() << "\"..." << endl;
 
-        setupNetwork(network);
+        setupNetwork(simulation, networkType);
 
         // prepare for simulation run
         if (verbose)

@@ -60,7 +60,7 @@ class SimulationHolder
     virtual std::ostream& errWithoutPrefix();
     virtual std::ostream& warn();
 
-    virtual void setupNetwork(cModuleType *networkType);
+    virtual void setupNetwork(cSimulation *simulation, cModuleType *networkType);
 
     virtual void startOutputRedirection(const char *fileName);
     virtual void stopOutputRedirection();
