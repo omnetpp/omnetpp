@@ -29,27 +29,34 @@
 
 using namespace omnetpp::common;
 
+#define LOCK   std::lock_guard<std::recursive_mutex> guard(NedResourceCache::nedMutex)
+
 namespace omnetpp {
 namespace nedxml {
 
-NedTypeInfo::NedTypeInfo(NedResourceCache *resolver, const char *qname, bool isInnerType, ASTNode *tree) :
-    resolver(resolver), qualifiedName(qname), isInner(isInnerType), tree(tree)
+NedTypeInfo::Type NedTypeInfo::typeFromTagCode(ASTNode *tree)
 {
     switch (tree->getTagCode()) {
-        case NED_SIMPLE_MODULE: type = SIMPLE_MODULE; break;
-        case NED_COMPOUND_MODULE: type = COMPOUND_MODULE; break;
-        case NED_MODULE_INTERFACE: type = MODULEINTERFACE; break;
-        case NED_CHANNEL: type = CHANNEL; break;
-        case NED_CHANNEL_INTERFACE: type = CHANNELINTERFACE; break;
+        case NED_SIMPLE_MODULE: return SIMPLE_MODULE;
+        case NED_COMPOUND_MODULE: return COMPOUND_MODULE;
+        case NED_MODULE_INTERFACE: return MODULEINTERFACE;
+        case NED_CHANNEL: return CHANNEL;
+        case NED_CHANNEL_INTERFACE: return CHANNELINTERFACE;
         default: throw NedException("NedTypeInfo: Element of wrong type (<%s>) passed into constructor", tree->getTagName());
     }
+}
 
-    // fill in enclosingTypeName for inner types
-    if (isInner) {
-        const char *lastDot = strrchr(qname, '.');
-        Assert(lastDot);  // if it's an inner type, must have a parent
-        enclosingTypeName = std::string(qname, lastDot-qname);
-    }
+static std::string removeLastSegment(const char *qname)
+{
+    const char *lastDot = strrchr(qname, '.');
+    Assert(lastDot != nullptr);
+    return std::string(qname, lastDot-qname);
+}
+
+NedTypeInfo::NedTypeInfo(NedResourceCache *resolver, const char *qname, bool isInnerType, ASTNode *tree) :
+    resolver(resolver), type(typeFromTagCode(tree)), qualifiedName(qname), isInner(isInnerType),
+    enclosingTypeName(isInner ? removeLastSegment(qname) : ""), tree(tree)
+{
 }
 
 NedTypeInfo::~NedTypeInfo()
@@ -63,16 +70,6 @@ const char *NedTypeInfo::getName() const
     const char *qname = getFullName();
     const char *lastdot = strrchr(qname, '.');
     return !lastdot ? qname : lastdot + 1;
-}
-
-const char *NedTypeInfo::getFullName() const
-{
-    return qualifiedName.c_str();
-}
-
-ASTNode *NedTypeInfo::getTree() const
-{
-    return tree;
 }
 
 const char *NedTypeInfo::getSourceFileName() const
@@ -108,6 +105,8 @@ std::string NedTypeInfo::getCxxNamespace() const
 
 std::string NedTypeInfo::str() const
 {
+    LOCK;
+
     std::stringstream out;
     if (!isResolved())
         return "not yet resolved";
@@ -142,6 +141,8 @@ std::string NedTypeInfo::getNedSource() const
 
 void NedTypeInfo::resolve()
 {
+    LOCK;
+
     if (resolved)
         return;
 
@@ -239,6 +240,7 @@ void NedTypeInfo::resolve()
 
 const char *NedTypeInfo::getInterfaceName(int k) const
 {
+    LOCK;
     resolveIfNeeded();
     if (k < 0 || k >= (int)interfaceNames.size())
         throw NedException("NedTypeInfo: Interface index %d out of range 0..%d", k, (int)interfaceNames.size()-1);
@@ -247,6 +249,7 @@ const char *NedTypeInfo::getInterfaceName(int k) const
 
 bool NedTypeInfo::supportsInterface(const char *qname)
 {
+    LOCK;
     resolveIfNeeded();
 
     // linear search is OK because #interfaces is typically just one or two
@@ -259,6 +262,7 @@ bool NedTypeInfo::supportsInterface(const char *qname)
 
 const char *NedTypeInfo::getExtendsName(int k) const
 {
+    LOCK;
     resolveIfNeeded();
     if (k < 0 || k >= (int)extendsNames.size())
         throw NedException("NedTypeInfo: extendsName(): Index %d out of range 0..%d", k, (int)extendsNames.size()-1);
@@ -267,18 +271,19 @@ const char *NedTypeInfo::getExtendsName(int k) const
 
 const char *NedTypeInfo::getEnclosingTypeName() const
 {
-    resolveIfNeeded();
     return isInner ? enclosingTypeName.c_str() : nullptr;
 }
 
 const char *NedTypeInfo::getImplementationClassName() const
 {
+    LOCK;
     resolveIfNeeded();
     return implClassName.empty() ? nullptr : implClassName.c_str();
 }
 
 NedTypeInfo *NedTypeInfo::getSuperDecl() const
 {
+    LOCK;
     resolveIfNeeded();
     const char *superName = getExtendsName(0);
     return getResolver()->getDecl(superName);
@@ -316,6 +321,7 @@ ConnectionsElement *NedTypeInfo::getConnectionsElement() const
 
 void NedTypeInfo::collectLocalDeclarations()
 {
+    LOCK;
     Assert(!isResolved());
 
     if (TypesElement *types = getTypesElement()) {
@@ -381,6 +387,7 @@ void NedTypeInfo::mergeElementMap(NameToElementMap& destMap, const NameToElement
 
 SubmoduleElement *NedTypeInfo::getLocalSubmoduleElement(const char *subcomponentName) const
 {
+    LOCK;
     resolveIfNeeded();
     auto it = localSubmoduleDecls.find(subcomponentName);
     return it != localSubmoduleDecls.end() ? (SubmoduleElement*)it->second : nullptr;
@@ -413,6 +420,7 @@ ConnectionElement *NedTypeInfo::getLocalConnectionElement(long id) const
 
 SubmoduleElement *NedTypeInfo::getSubmoduleElement(const char *name) const
 {
+    LOCK;
     resolveIfNeeded();
 
     SubmoduleElement *submodule = getLocalSubmoduleElement(name);
@@ -427,6 +435,7 @@ SubmoduleElement *NedTypeInfo::getSubmoduleElement(const char *name) const
 
 ConnectionElement *NedTypeInfo::getConnectionElement(long id) const
 {
+    LOCK;
     resolveIfNeeded();
 
     ConnectionElement *conn = getLocalConnectionElement(id);
@@ -441,6 +450,7 @@ ConnectionElement *NedTypeInfo::getConnectionElement(long id) const
 
 ParamElement *NedTypeInfo::findLocalParamDecl(const char *name) const
 {
+    LOCK;
     resolveIfNeeded();
     auto it = localParamDecls.find(name);
     return it != localParamDecls.end() ? (ParamElement*)it->second : nullptr;
@@ -448,6 +458,7 @@ ParamElement *NedTypeInfo::findLocalParamDecl(const char *name) const
 
 ParamElement *NedTypeInfo::findParamDecl(const char *name) const
 {
+    LOCK;
     resolveIfNeeded();
 
     ParamElement *param = findLocalParamDecl(name);
@@ -462,6 +473,7 @@ ParamElement *NedTypeInfo::findParamDecl(const char *name) const
 
 GateElement *NedTypeInfo::findLocalGateDecl(const char *name) const
 {
+    LOCK;
     resolveIfNeeded();
     auto it = localGateDecls.find(name);
     return it != localGateDecls.end() ? (GateElement*)it->second : nullptr;
@@ -469,6 +481,7 @@ GateElement *NedTypeInfo::findLocalGateDecl(const char *name) const
 
 GateElement *NedTypeInfo::findGateDecl(const char *name) const
 {
+    LOCK;
     resolveIfNeeded();
 
     GateElement *gate = findLocalGateDecl(name);
@@ -483,6 +496,7 @@ GateElement *NedTypeInfo::findGateDecl(const char *name) const
 
 void NedTypeInfo::checkComplianceToInterface(NedTypeInfo *idecl) const
 {
+    LOCK;
     resolveIfNeeded();
 
     // TODO check properties

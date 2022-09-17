@@ -38,6 +38,10 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace nedxml {
 
+std::recursive_mutex NedResourceCache::nedMutex;
+
+#define LOCK   std::lock_guard<std::recursive_mutex> guard(nedMutex)
+
 inline std::string canonicalize(const char *pathname)
 {
     return tidyFilename(toAbsolutePath(pathname).c_str(), true);
@@ -57,6 +61,8 @@ NedResourceCache::~NedResourceCache()
 
 void NedResourceCache::registerBuiltinDeclarations()
 {
+    LOCK;
+
     // NED code to define built-in types
     const char *nedCode = NedParser::getBuiltInDeclarations();
 
@@ -89,6 +95,8 @@ static std::vector<std::string> resolvePath(const char *folder, const char *path
 
 int NedResourceCache::loadNedSourceFolder(const char *folderName, const char *excludedPackagesStr)
 {
+    LOCK;
+
     try {
         std::vector<std::string> excludedPackages = opp_splitpath(opp_nulltoempty(excludedPackagesStr));
         std::string canonicalFolderName = canonicalize(folderName);
@@ -103,6 +111,8 @@ int NedResourceCache::loadNedSourceFolder(const char *folderName, const char *ex
 
 int NedResourceCache::doLoadNedSourceFolder(const char *folderName, const char *expectedPackage, const std::vector<std::string>& excludedPackages)
 {
+    LOCK;
+
     if (!opp_isempty(expectedPackage) && contains(excludedPackages, std::string(expectedPackage)))  // note: the root package "" cannot be excluded
         return 0;
 
@@ -133,6 +143,8 @@ inline bool isPackageNedFile(const char *fname)
 
 void NedResourceCache::doLoadNedFileOrText(const char *nedFilename, const char *nedText, const char *expectedPackage, bool isXML)
 {
+    LOCK;
+
     // checks
     Assert(nedFilename);
     std::string canonicalFilename = nedText ? nedFilename : canonicalize(nedFilename);  // so that NedFileElement stores absolute file name
@@ -151,6 +163,8 @@ void NedResourceCache::doLoadNedFileOrText(const char *nedFilename, const char *
 
 void NedResourceCache::addFile(NedFileElement *tree, const char *expectedPackage)
 {
+    LOCK;
+
     const char *nedFilename = tree->getFilename();
     Assert(!containsKey(nedFiles, std::string(nedFilename)));
 
@@ -188,6 +202,8 @@ void NedResourceCache::addFile(NedFileElement *tree, const char *expectedPackage
 
 NedFileElement *NedResourceCache::parseAndValidateNedFileOrText(const char *fname, const char *nedText, bool isXML) const
 {
+    LOCK;
+
     // load file
     ASTNode *tree = nullptr;
     ErrorStore errors;
@@ -231,6 +247,8 @@ NedFileElement *NedResourceCache::parseAndValidateNedFileOrText(const char *fnam
 
 std::string NedResourceCache::getFirstError(ErrorStore *errors, const char *prefix) const
 {
+    LOCK;
+
     // find first error
     int i;
     for (i = 0; i < errors->numMessages(); i++)
@@ -253,6 +271,8 @@ std::string NedResourceCache::getFirstError(ErrorStore *errors, const char *pref
 
 void NedResourceCache::loadNedFile(const char *nedFilename, const char *expectedPackage, bool isXML)
 {
+    LOCK;
+
     if (!nedFilename)
         throw NedException("loadNedFile(): File name is nullptr");
 
@@ -261,6 +281,8 @@ void NedResourceCache::loadNedFile(const char *nedFilename, const char *expected
 
 void NedResourceCache::loadNedText(const char *name, const char *nedText, const char *expectedPackage, bool isXML)
 {
+    LOCK;
+
     if (!name)
         throw NedException("loadNedText(): Name is nullptr");
     doLoadNedFileOrText(name, nedText, expectedPackage, isXML);
@@ -268,6 +290,8 @@ void NedResourceCache::loadNedText(const char *name, const char *nedText, const 
 
 void NedResourceCache::collectNedTypesFrom(ASTNode *node, const std::string& packagePrefix, bool areInnerTypes)
 {
+    LOCK;
+
     for (ASTNode *child = node->getFirstChild(); child; child = child->getNextSibling()) {
         int tag = child->getTagCode();
         if (tag == NED_CHANNEL || tag == NED_CHANNEL_INTERFACE || tag == NED_SIMPLE_MODULE ||
@@ -284,6 +308,8 @@ void NedResourceCache::collectNedTypesFrom(ASTNode *node, const std::string& pac
 
 void NedResourceCache::checkLoadedTypes() const
 {
+    LOCK;
+
     for (auto& nedType : nedTypes)
         if (!nedType.second->isResolved())
             nedType.second->resolve();
@@ -296,6 +322,8 @@ NedTypeInfo *NedResourceCache::createTypeInfo(const char *qname, bool isInnerTyp
 
 void NedResourceCache::registerNedType(const char *qname, bool isInnerType, ASTNode *node)
 {
+    LOCK;
+
     if (containsKey(nedTypes, std::string(qname))) {
         NedTypeInfo *otherDecl = nedTypes[qname];
         const char *simpleName = otherDecl->getName();
@@ -311,6 +339,8 @@ void NedResourceCache::registerNedType(const char *qname, bool isInnerType, ASTN
 
 NedTypeInfo *NedResourceCache::lookup(const char *qname) const
 {
+    LOCK;
+
     if (nedTypes.empty())
         const_cast<NedResourceCache*>(this)->registerBuiltinDeclarations();
 
@@ -334,6 +364,8 @@ inline std::string getParentPackage(std::string& package)
 
 std::vector<NedFileElement*> NedResourceCache::getPackageNedListForLookup(const char *packageName) const
 {
+    LOCK;
+
     std::vector<NedFileElement*> result;
     std::string package = packageName;
     while (true) {
@@ -348,6 +380,8 @@ std::vector<NedFileElement*> NedResourceCache::getPackageNedListForLookup(const 
 
 std::string NedResourceCache::determineRootPackageName(const char *nedSourceFolderName) const
 {
+    LOCK;
+
     // determine if a package.ned file exists
     std::string packageNedFilename = std::string(nedSourceFolderName) + "/package.ned";
     if (!fileExists(packageNedFilename.c_str()))
@@ -380,6 +414,8 @@ static bool isPathPrefixOf(const char *prefix, const char *path)
 
 std::string NedResourceCache::getNedSourceFolderForFolder(const char *folder) const
 {
+    LOCK;
+
     // find NED source folder which is a prefix of folder.
     // note: this is unambiguous because nested NED source folders are not allowed
     std::string folderName = canonicalize(folder);
@@ -392,6 +428,8 @@ std::string NedResourceCache::getNedSourceFolderForFolder(const char *folder) co
 
 std::string NedResourceCache::getNedPackageForFolder(const char *folder) const
 {
+    LOCK;
+
     std::string sourceFolder = getNedSourceFolderForFolder(folder);
     if (sourceFolder.empty())
         return "";
@@ -415,6 +453,8 @@ std::vector<std::string> NedResourceCache::getLoadedNedFolders() const
 
 NedLookupContext NedResourceCache::getParentContextOf(const char *qname, ASTNode *node)
 {
+    LOCK;
+
     ASTNode *contextNode = node->getParent();
     if (contextNode->getTagCode() == NED_TYPES)
         contextNode = contextNode->getParent();
@@ -425,6 +465,8 @@ NedLookupContext NedResourceCache::getParentContextOf(const char *qname, ASTNode
 
 std::string NedResourceCache::lookupNedType(const NedLookupContext& context, const char *nedTypeName, const INedTypeNames& qnames) const
 {
+    LOCK;
+
     // note: this method is to be kept consistent with NedResources.lookupNedType() in the Java code
     // note2: partially qualified names are not supported: name must be either simplename or fully qualified
     if (!strchr(nedTypeName, '.')) {
@@ -494,6 +536,8 @@ std::string NedResourceCache::lookupNedType(const NedLookupContext& context, con
 
 bool NedResourceCache::hasResolvedTypeUnder(const std::string& packageName) const
 {
+    LOCK;
+
     std::string prefix = std::string(packageName) + ".";
     for (const auto & nedType : nedTypes)
         if (nedType.second->isResolved() && opp_stringbeginswith(nedType.first.c_str(), prefix.c_str()))

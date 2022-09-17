@@ -32,6 +32,8 @@ namespace omnetpp {
 using namespace omnetpp::common;
 using namespace omnetpp::nedxml;
 
+#define LOCK   std::lock_guard<std::recursive_mutex> guard(NedResourceCache::nedMutex)
+
 cNedDeclaration::cNedDeclaration(cNedLoader *nedLoader, const char *qname, bool isInnerType, NedElement *tree) :
     NedTypeInfo(nedLoader, qname, isInnerType, tree), nedLoader(nedLoader)
 {
@@ -61,6 +63,7 @@ cNedDeclaration::~cNedDeclaration()
 
 void cNedDeclaration::clearPropsMap(StringPropsMap& propsMap)
 {
+    LOCK;
     // decrement refs in the props maps, and delete object if refcount reaches zero
     for (auto & it : propsMap)
         if (it.second->removeRef() == 0)
@@ -71,6 +74,7 @@ void cNedDeclaration::clearPropsMap(StringPropsMap& propsMap)
 
 void cNedDeclaration::clearSharedParImpls()
 {
+    LOCK;
     auto& d = perThreadData[std::this_thread::get_id()]; //TODO NONO -- ALL THREADS!!!
     for (auto & it : d.parimplMap)
         delete it.second;
@@ -79,6 +83,7 @@ void cNedDeclaration::clearSharedParImpls()
 
 cNedDeclaration *cNedDeclaration::getSuperDecl() const
 {
+    LOCK;
     cNedDeclaration *decl = dynamic_cast<cNedDeclaration *>(NedTypeInfo::getSuperDecl());
     ASSERT(decl);
     return decl;
@@ -86,6 +91,7 @@ cNedDeclaration *cNedDeclaration::getSuperDecl() const
 
 const std::vector<cNedDeclaration*>& cNedDeclaration::getInheritanceChain()
 {
+    LOCK;
     if (inheritanceChain.empty()) {
         for (cNedDeclaration *d = this; d; d = d->numExtendsNames() == 0 ? nullptr : d->getSuperDecl())
             inheritanceChain.push_back(d);
@@ -96,6 +102,7 @@ const std::vector<cNedDeclaration*>& cNedDeclaration::getInheritanceChain()
 
 void cNedDeclaration::putIntoPropsMap(StringPropsMap& propsMap, const std::string& name, cProperties *props) const
 {
+    LOCK;
     StringPropsMap::const_iterator it = propsMap.find(name);
     ASSERT(it == propsMap.end());  // XXX or?
     propsMap[name] = props;
@@ -104,12 +111,14 @@ void cNedDeclaration::putIntoPropsMap(StringPropsMap& propsMap, const std::strin
 
 cProperties *cNedDeclaration::getFromPropsMap(const StringPropsMap& propsMap, const std::string& name) const
 {
+    LOCK;
     StringPropsMap::const_iterator it = propsMap.find(name);
     return it == propsMap.end() ? nullptr : it->second;
 }
 
 cProperties *cNedDeclaration::getProperties() const
 {
+    LOCK;
     cProperties *props = doProperties();
     if (!props)
         throw cRuntimeError("Internal error in NED type '%s': No properties", getFullName());
@@ -118,6 +127,7 @@ cProperties *cNedDeclaration::getProperties() const
 
 cProperties *cNedDeclaration::doProperties() const
 {
+    LOCK;
     auto& props = perThreadData[std::this_thread::get_id()].props;
     if (props)
         return props;  // already computed
@@ -134,6 +144,7 @@ cProperties *cNedDeclaration::doProperties() const
 
 cProperties *cNedDeclaration::getParamProperties(const char *paramName) const
 {
+    LOCK;
     cProperties *props = doParamProperties(paramName);
     if (!props)
         throw cRuntimeError("Internal error in NED type '%s': No properties for parameter %s", getFullName(), paramName);
@@ -142,6 +153,7 @@ cProperties *cNedDeclaration::getParamProperties(const char *paramName) const
 
 cProperties *cNedDeclaration::doParamProperties(const char *paramName) const
 {
+    LOCK;
     auto& paramPropsMap = perThreadData[std::this_thread::get_id()].paramPropsMap;
     cProperties *props = getFromPropsMap(paramPropsMap, paramName);
     if (props)
@@ -163,6 +175,7 @@ cProperties *cNedDeclaration::doParamProperties(const char *paramName) const
 
 cProperties *cNedDeclaration::getGateProperties(const char *gateName) const
 {
+    LOCK;
     cProperties *props = doGateProperties(gateName);
     if (!props)
         throw cRuntimeError("Internal error in NED type '%s': No properties for gate %s", getFullName(), gateName);
@@ -171,6 +184,7 @@ cProperties *cNedDeclaration::getGateProperties(const char *gateName) const
 
 cProperties *cNedDeclaration::doGateProperties(const char *gateName) const
 {
+    LOCK;
     auto& gatePropsMap = perThreadData[std::this_thread::get_id()].gatePropsMap;
     cProperties *props = getFromPropsMap(gatePropsMap, gateName);
     if (props)
@@ -192,6 +206,7 @@ cProperties *cNedDeclaration::doGateProperties(const char *gateName) const
 
 cProperties *cNedDeclaration::getSubmoduleProperties(const char *submoduleName, const char *submoduleType) const
 {
+    LOCK;
     cProperties *props = doSubmoduleProperties(submoduleName, submoduleType);
     if (!props)
         throw cRuntimeError("Internal error in NED type '%s': No properties for submodule %s, type %s", getFullName(), submoduleName, submoduleType);
@@ -200,6 +215,7 @@ cProperties *cNedDeclaration::getSubmoduleProperties(const char *submoduleName, 
 
 cProperties *cNedDeclaration::doSubmoduleProperties(const char *submoduleName, const char *submoduleType) const
 {
+    LOCK;
     auto& submodulePropsMap = perThreadData[std::this_thread::get_id()].submodulePropsMap;
     std::string key = std::string(submoduleName) + ":" + submoduleType;
     cProperties *props = getFromPropsMap(submodulePropsMap, key.c_str());
@@ -225,6 +241,7 @@ cProperties *cNedDeclaration::doSubmoduleProperties(const char *submoduleName, c
 
 cProperties *cNedDeclaration::getConnectionProperties(int connectionId, const char *channelType) const
 {
+    LOCK;
     cProperties *props = doConnectionProperties(connectionId, channelType);
     if (!props)
         throw cRuntimeError("Internal error in NED type '%s': No properties for connection with id=%d type=%s", getFullName(), connectionId, channelType);
@@ -233,6 +250,7 @@ cProperties *cNedDeclaration::getConnectionProperties(int connectionId, const ch
 
 cProperties *cNedDeclaration::doConnectionProperties(int connectionId, const char *channelType) const
 {
+    LOCK;
     auto& connectionPropsMap = perThreadData[std::this_thread::get_id()].connectionPropsMap;
     std::string key = opp_stringf("%d:%s", connectionId, channelType);
     cProperties *props = getFromPropsMap(connectionPropsMap, key.c_str());
@@ -259,6 +277,7 @@ cProperties *cNedDeclaration::doConnectionProperties(int connectionId, const cha
 
 cProperties *cNedDeclaration::updateProperties(cProperties *props, NedElement *withPropsParent) const
 {
+    LOCK;
     // returns parent's properties merged with props; both can be nullptr.
     // retval is never nullptr but can be an empty cProperties.
     // the props object doesn't get modified -- if it would have to be modified,
@@ -289,6 +308,7 @@ cProperties *cNedDeclaration::updateProperties(cProperties *props, NedElement *w
 
 void cNedDeclaration::updateProperty(cProperty *prop, PropertyElement *withPropNode) const
 {
+    LOCK;
     prop->setIsImplicit(withPropNode->getIsImplicit());
 
     for (NedElement *child = withPropNode->getFirstChildWithTag(NED_PROPERTY_KEY); child; child = child->getNextSiblingWithTag(NED_PROPERTY_KEY)) {
@@ -314,6 +334,7 @@ void cNedDeclaration::updateProperty(cProperty *prop, PropertyElement *withPropN
 
 void cNedDeclaration::updateDisplayProperty(cProperty *prop, PropertyElement *withPropNode) const
 {
+    LOCK;
     // @display() has to be treated specially
     // find new display string
     PropertyKeyElement *propKeyNode = (PropertyKeyElement *)withPropNode->getFirstChildWithTag(NED_PROPERTY_KEY);
@@ -342,6 +363,7 @@ void cNedDeclaration::updateDisplayProperty(cProperty *prop, PropertyElement *wi
 
 internal::cParImpl *cNedDeclaration::getSharedParImplFor(NedElement *node)
 {
+    LOCK;
     auto& d = perThreadData[std::this_thread::get_id()];
     auto it = d.parimplMap.find(node->getId());
     return it == d.parimplMap.end() ? nullptr : it->second;
@@ -349,6 +371,7 @@ internal::cParImpl *cNedDeclaration::getSharedParImplFor(NedElement *node)
 
 void cNedDeclaration::putSharedParImplFor(NedElement *node, cParImpl *value)
 {
+    LOCK;
     auto& d = perThreadData[std::this_thread::get_id()];
     auto it = d.parimplMap.find(node->getId());
     ASSERT(it == d.parimplMap.end());
@@ -357,6 +380,7 @@ void cNedDeclaration::putSharedParImplFor(NedElement *node, cParImpl *value)
 
 const std::vector<cNedDeclaration::PatternData>& cNedDeclaration::getParamPatterns()
 {
+    LOCK;
     if (!patternsValid) {
         // collect param assignment patterns from all super classes (in base-to-derived order)
         for (cNedDeclaration *d : getInheritanceChain()) {
@@ -371,6 +395,7 @@ const std::vector<cNedDeclaration::PatternData>& cNedDeclaration::getParamPatter
 
 const std::vector<cNedDeclaration::PatternData>& cNedDeclaration::getSubmoduleParamPatterns(const char *submoduleName)
 {
+    LOCK;
     StringPatternDataMap::iterator it = submodulePatterns.find(submoduleName);
     if (it == submodulePatterns.end()) {
         // do super classes as well (due to inherited submodules!)

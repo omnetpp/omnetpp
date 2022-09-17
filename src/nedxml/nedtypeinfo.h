@@ -46,13 +46,12 @@ class NEDXML_API NedTypeInfo
     enum Type {SIMPLE_MODULE, COMPOUND_MODULE, MODULEINTERFACE, CHANNEL, CHANNELINTERFACE};
 
   protected:
-    // the resolver this type is in
-    NedResourceCache *resolver;
-
-    Type type;
-    std::string qualifiedName;
-    bool isInner;  // whether it is an inner type
-    ASTNode *tree; // points into resolver
+    NedResourceCache * const resolver;  // the resolver this type is in
+    const Type type;
+    const std::string qualifiedName;
+    const bool isInner;  // whether it is an inner type
+    const std::string enclosingTypeName;
+    ASTNode * const tree; // points into resolver
 
     bool resolved = false;
     bool resolving = false;
@@ -67,8 +66,6 @@ class NEDXML_API NedTypeInfo
     StringVector extendsNames;
     StringVector interfaceNames;
 
-    std::string enclosingTypeName;
-
     // simple module/channel C++ class to instantiate
     std::string implClassName;
 
@@ -81,6 +78,7 @@ class NEDXML_API NedTypeInfo
     NameToElementMap allLocalDecls;
 
   protected:
+    static Type typeFromTagCode(ASTNode *tree);
     void checkComplianceToInterface(NedTypeInfo *interfaceDecl) const;
     void collectLocalDeclarations();
     static void addToElementMap(NameToElementMap& elementMap, ASTNode *node);
@@ -98,13 +96,13 @@ class NEDXML_API NedTypeInfo
     virtual const char *getName() const;
 
     /** Returns the fully qualified name of the NED type */
-    virtual const char *getFullName() const;
+    virtual const char *getFullName() const {return qualifiedName.c_str();}
 
     /** Returns the raw ASTNode tree representing the component */
-    virtual ASTNode *getTree() const;
+    virtual ASTNode *getTree() const {return tree;}
 
     /** The NED type resolver this type is registered in */
-    NedResourceCache *getResolver() const  {return resolver;}
+    const NedResourceCache *getResolver() const {return resolver;}
 
     /**
      * Returns the type of this declaration: simple module, compound module,

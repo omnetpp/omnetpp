@@ -21,6 +21,7 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <mutex>
 #include "nedelements.h"
 #include "nedtypeinfo.h"
 
@@ -94,6 +95,10 @@ class NEDXML_API NedResourceCache
     // to package names
     typedef std::map<std::string,std::string> StringMap;
     StringMap folderPackages;
+
+  public:
+    // internal: members must be protected against concurrent access from multiple threads
+    static std::recursive_mutex nedMutex;
 
   protected:
     virtual void addFile(NedFileElement *node, const char *expectedPackage);
