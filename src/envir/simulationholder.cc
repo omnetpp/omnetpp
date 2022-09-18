@@ -83,17 +83,20 @@ cINedLoader *SimulationHolder::createConfiguredNedLoader(cConfiguration *cfg, Ar
     return nedLoader;
 }
 
-void SimulationHolder::configureAndRunSimulation(cSimulation *simulation, cConfiguration *cfg, IRunner *runner, const char *redirectFileName)
+void SimulationHolder::setupAndRunSimulation(cConfiguration *cfg, IRunner *runner, const char *redirectFileName)
 {
-    simulation->configure(cfg);
-    runConfiguredSimulation(simulation, runner, redirectFileName);
+    std::unique_ptr<cSimulation> simulation(createSimulation());
+    setupAndRunSimulation(simulation.get(), cfg, runner, redirectFileName);
 }
 
-void SimulationHolder::runConfiguredSimulation(cSimulation *simulation, IRunner *runner, const char *redirectFileName)  //TODO misleading name (the network is not actually set up yet)
+cSimulation *SimulationHolder::createSimulation()
+{
+    return new cSimulation("simulation", nedLoader);
+}
+
+void SimulationHolder::setupAndRunSimulation(cSimulation *simulation, cConfiguration *cfg, IRunner *runner, const char *redirectFileName)
 {
     try {
-        cConfiguration *cfg = simulation->getConfig();
-
         const char *configName = cfg->getVariable(CFGVAR_CONFIGNAME);
         const char *runNumber = cfg->getVariable(CFGVAR_RUNNUMBER);
         const char *iterVars = cfg->getVariable(CFGVAR_ITERATIONVARS);

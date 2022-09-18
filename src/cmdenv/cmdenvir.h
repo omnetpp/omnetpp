@@ -47,7 +47,7 @@ class CMDENV_API CmdEnvir : public EnvirBase
     virtual void configure(cConfiguration *cfg) override;
 
     void setFakeGUI(FakeGUI *fakeGUI);
-    FakeGUI *getFakeGui() const {return fakeGUI;}
+    virtual FakeGUI *getFakeGui() const override {return fakeGUI;}
 
     bool getAutoflush() const {return autoflush;}
     void setAutoflush(bool autoflush = false) {this->autoflush = autoflush;}

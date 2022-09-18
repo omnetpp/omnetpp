@@ -49,8 +49,8 @@ namespace envir {
 
 extern cConfigOption *CFGID_DEBUGGER_ATTACH_ON_ERROR;
 
-class IAllInOne;
 class XMLDocCache;
+class IFakeGUI;
 
 /**
  * Default implementation of cEnvir. It was designed to only contain code necessary
@@ -139,6 +139,8 @@ class ENVIR_API EnvirBase : public cEnvir, protected cISimulationLifecycleListen
     void setSnapshotManager(cISnapshotManager *obj);
 
     XMLDocCache *getXMLDocCache() const {return xmlCache;}
+
+    virtual IFakeGUI *getFakeGui() const {return nullptr;}
 
     void setExpressMode(bool enabled) {expressMode = enabled;}
     void setIsGUI(bool enabled) {gui = enabled;}

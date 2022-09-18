@@ -37,29 +37,28 @@ class SimulationHolder
 {
   protected:
     std::ostream& out;
+    cINedLoader *nedLoader;
     bool verbose;
     bool useStderr = false;
     std::string redirectionFilename;
     cTerminationException *terminationReason = nullptr;
 
-  public:
-    SimulationHolder(std::ostream& out) : out(out) {}
-    virtual void setVerbose(bool verbose) {this->verbose = verbose;}
-    virtual void setUseStderr(bool useStderr) {this->useStderr = useStderr;}
-
-    static cINedLoader *createConfiguredNedLoader(cConfiguration *cfg, ArgList *args=nullptr);
-
-    virtual void configureAndRunSimulation(cSimulation *simulation, cConfiguration *cfg, IRunner *runner, const char *redirectFileName);
-    virtual void runConfiguredSimulation(cSimulation *simulation, IRunner *runner, const char *redirectFileName);
-
-    const cTerminationException *getTerminationReason() const {return terminationReason;}  // stopping reason in case of normal (error-free) simulation execution
-
   protected:
+    virtual cSimulation *createSimulation();
     virtual void startOutputRedirection(const char *fileName);
     virtual void stopOutputRedirection();
     virtual bool isOutputRedirected();
     virtual void printException(std::exception& e, const char *when=nullptr);
     virtual void deleteNetwork(cSimulation *simulation);
+
+  public:
+    static cINedLoader *createConfiguredNedLoader(cConfiguration *cfg, ArgList *args=nullptr);
+    SimulationHolder(std::ostream& out, cINedLoader *nedLoader=nullptr) : out(out), nedLoader(nedLoader) {}
+    virtual void setVerbose(bool verbose) {this->verbose = verbose;}
+    virtual void setUseStderr(bool useStderr) {this->useStderr = useStderr;}
+    virtual void setupAndRunSimulation(cConfiguration *cfg, IRunner *runner=nullptr, const char *redirectFileName=nullptr);
+    virtual void setupAndRunSimulation(cSimulation *simulation, cConfiguration *cfg, IRunner *runner=nullptr, const char *redirectFileName=nullptr);
+    const cTerminationException *getTerminationReason() const {return terminationReason;}  // stopping reason in case of normal (error-free) simulation execution
 };
 
 }  // namespace envir

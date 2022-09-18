@@ -211,12 +211,12 @@ bool Cmdenv::runSimulation(const char *configName, int runNumber)
         if (verbose)
             out << "\nPreparing for running configuration " << configName << ", run #" << runNumber << "..." << endl;
 
-        cConfiguration *cfg = ini->extractConfig(configName, runNumber);
-        std::unique_ptr<cConfiguration> deleter(cfg);
+        std::unique_ptr<cConfiguration> cfg(ini->extractConfig(configName, runNumber));
         stopBatchOnError = cfg->getAsBool(CFGID_CMDENV_STOP_BATCH_ON_ERROR);
 
         CmdenvSimulationHolder holder(this);
-        holder.runCmdenvSimulation(cfg, (int)runsTried, (int)numRuns);
+        holder.setBatchProgress((int)runsTried, (int)numRuns);
+        holder.setupAndRunSimulation(cfg.get());
         return true;
     }
     catch (std::exception& e) {

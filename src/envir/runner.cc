@@ -25,6 +25,7 @@
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/cconfigoption.h"
 #include "ifakegui.h"
+#include "envirbase.h"
 #include "runner.h"
 
 using namespace omnetpp::common;
@@ -197,6 +198,9 @@ void Runner::doRunExpressNoStatusUpdates()
 void Runner::run()
 {
     ASSERT(simulation == cSimulation::getActiveSimulation());
+
+    if (EnvirBase *envir = dynamic_cast<EnvirBase*>(simulation->getEnvir()))
+        setFakeGUI(envir->getFakeGui());
 
 #define FINALLY { \
         if (expressMode) \
