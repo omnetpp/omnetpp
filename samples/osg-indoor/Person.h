@@ -11,6 +11,9 @@
 #define __PERSON_H__
 
 #include <omnetpp.h>
+
+#ifdef WITH_OSG
+
 #include <osg/PositionAttitudeTransform>
 
 using namespace omnetpp;
@@ -65,4 +68,5 @@ class Person : public cSimpleModule
     void readWaypointsFromFile(const char *fileName);
 };
 
+#endif
 #endif
