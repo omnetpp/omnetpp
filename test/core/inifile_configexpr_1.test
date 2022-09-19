@@ -33,6 +33,7 @@ run General-000-xxx
 attr configname General
 attr datetime xxx
 attr datetimef xxx
+attr description "Hello world"
 attr experiment "Experiment One"
 attr inifile _defaults.ini
 attr iterationvars "$a=st, $i=5"

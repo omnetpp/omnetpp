@@ -44,6 +44,7 @@ class cConfigOption;
 #define CFGVAR_INIFILE          "inifile"         ///< Name of the "inifile" configuration variable and run attribute
 #define CFGVAR_CONFIGNAME       "configname"      ///< Name of the "configname" configuration variable and run attribute
 #define CFGVAR_RUNNUMBER        "runnumber"       ///< Name of the "runnumber" configuration variable and run attribute
+#define CFGVAR_DESCRIPTION      "description"     ///< Name of the "description" configuration variable and run attribute
 #define CFGVAR_NETWORK          "network"         ///< Name of the "network" configuration variable and run attribute
 #define CFGVAR_EXPERIMENT       "experiment"      ///< Name of the "experiment" configuration variable and run attribute
 #define CFGVAR_MEASUREMENT      "measurement"     ///< Name of the "measurement" configuration variable and run attribute

@@ -65,6 +65,7 @@ static struct ConfigVarDescription { const char *name, *description; } configVar
     { CFGVAR_INIFILE,          "Name of the (primary) inifile" },
     { CFGVAR_CONFIGNAME,       "Name of the active configuration" },
     { CFGVAR_RUNNUMBER,        "Sequence number of the current run within all runs in the active configuration" },
+    { CFGVAR_DESCRIPTION       "Description of the current configuration" },
     { CFGVAR_NETWORK,          "Value of the `network` configuration option" },
     { CFGVAR_EXPERIMENT,       "Value of the `experiment-label` configuration option" },
     { CFGVAR_MEASUREMENT,      "Value of the `measurement-label` configuration option" },
@@ -537,9 +538,13 @@ InifileContents::VariablesInfo InifileContents::computeVariables(const char *con
    runnumberWidth = std::max(0, std::min(6, runnumberWidth));
    std::string datetime = opp_makedatetimestring();
    result.predefinedVariables[CFGVAR_REPETITION] = scenario->getVariable(CFGVAR_REPETITION);
-   result.predefinedVariables[CFGVAR_INIFILE] = opp_nulltoempty(getFileName());
+   if (!opp_isempty(getFileName()))
+       result.predefinedVariables[CFGVAR_INIFILE] = getFileName();
    result.predefinedVariables[CFGVAR_CONFIGNAME] = configName;
    result.predefinedVariables[CFGVAR_RUNNUMBER] = opp_stringf("%0*d", runnumberWidth, runNumber);
+   std::string description = internalGetConfigAsString(CFGID_DESCRIPTION, sectionChain, result);
+   if (!description.empty())
+       result.predefinedVariables[CFGVAR_DESCRIPTION] = description;
    result.predefinedVariables[CFGVAR_NETWORK] = internalGetConfigAsString(CFGID_NETWORK, sectionChain, result);
    result.predefinedVariables[CFGVAR_PROCESSID] = opp_stringf("%d", (int)getpid());
    result.predefinedVariables[CFGVAR_DATETIME] = datetime;
