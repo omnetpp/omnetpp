@@ -11,6 +11,9 @@
 #define __OSGSCENE_H__
 
 #include <omnetpp.h>
+
+#ifdef WITH_OSG
+
 #include <osg/Node>
 
 using namespace omnetpp;
@@ -36,4 +39,5 @@ class OsgScene : public cSimpleModule
     virtual void handleMessage(cMessage *msg) override;
 };
 
+#endif
 #endif

@@ -12,6 +12,8 @@
 
 #include <omnetpp.h>
 
+#ifdef WITH_OSGEARTH
+
 #include <osg/Node>
 #include <osgEarth/MapNode>
 
@@ -50,4 +52,5 @@ class OsgEarthScene : public cSimpleModule
     virtual void handleMessage(cMessage *msg) override;
 };
 
+#endif
 #endif

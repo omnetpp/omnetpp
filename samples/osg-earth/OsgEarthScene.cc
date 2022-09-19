@@ -97,4 +97,4 @@ void OsgEarthScene::handleMessage(cMessage *msg)
     throw cRuntimeError("This module does not handle messages from the outside");
 }
 
-#endif // WITH_OSG
+#endif // WITH_OSGEARTH
