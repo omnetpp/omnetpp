@@ -113,19 +113,6 @@ static const char *COMPONENT_WRAPPER_CODE = R"(
 
 import cppyy
 
-def replace_cvalue_str(klass, name):
-    """
-    Pythonization so str() works on cValue objects of type other than STRING,
-    by switching it to the "printer" function instead of the "string getter
-    """
-    if name == "cValue":
-        try:
-            klass.__str__ = lambda self: str(self.str())
-        except KeyError:
-            pass
-
-cppyy.py.add_pythonization(replace_cvalue_str, 'omnetpp')
-
 class Accessor:
     """
     Wraps a cComponent object given by its pointer, to give more direct

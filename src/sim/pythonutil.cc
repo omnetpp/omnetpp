@@ -115,6 +115,17 @@ def enable_simtime_arithmetic(klass, name):
 cppyy.py.add_pythonization(enable_simtime_arithmetic, 'omnetpp')
 
 
+def replace_cvalue_str(klass, name):
+    """
+    Pythonization so str() works on cValue objects of type other than STRING, by
+    switching it to the "printer" function instead of the "string getter" one.
+    """
+    if name == "cValue":
+        klass.__str__ = lambda self: str(self.str())
+
+cppyy.py.add_pythonization(replace_cvalue_str, 'omnetpp')
+
+
 cppyy.add_include_path(OMNETPP_ROOT + "/include")
 cppyy.include("omnetpp.h")
 )");
