@@ -11,23 +11,13 @@
       <eclipse-repo.url>https://download.eclipse.org/releases/2022-09</eclipse-repo.url>
       <justj-repo.url>https://download.eclipse.org/justj/jres/17/updates/release/</justj-repo.url>
       <pydev-repo.url>https://pydev.org/update_sites/9.3.0</pydev-repo.url>
-      <ansiconsole-repo.url>https://www.mihai-nita.net/eclipse</ansiconsole-repo.url>
    </properties>
 
    <repositories>
       <repository><id>main</id><url>${eclipse-repo.url}</url><layout>p2</layout></repository>
       <repository><id>justj</id><url>${justj-repo.url}</url><layout>p2</layout></repository>
       <repository><id>pydev</id><url>${pydev-repo.url}</url><layout>p2</layout></repository>
-      <repository><id>ansiconsole</id><url>${ansiconsole-repo.url}</url><layout>p2</layout></repository>
    </repositories>
-<!--
-   <pluginRepositories>
-      <pluginRepository>
-         <id>tycho-snapshots</id>
-         <url>https://repo.eclipse.org/content/repositories/tycho-snapshots/</url>
-      </pluginRepository>
-   </pluginRepositories>
--->
    <build>
       <extensions>
          <extension>

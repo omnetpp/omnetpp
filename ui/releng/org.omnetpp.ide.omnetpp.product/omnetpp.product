@@ -56,7 +56,6 @@
       <feature id="org.eclipse.tm.terminal.feature"/>
       <feature id="org.eclipse.tips.feature"/>
       <feature id="org.eclipse.epp.mpc"/>
-      <feature id="net.mihai-nita.ansicon"/>
 
       <feature id="org.omnetpp.ide.omnetpp"/>
       <feature id="org.omnetpp.ide.source"/>
