@@ -32,7 +32,7 @@ IMPLIBS= $(LIBXML_LIBS)
 
 OBJS= $O/lcgrandom.o $O/filelock.o $O/filereader.o $O/linetokenizer.o \
       $O/stringpool.o $O/pooledstring.o $O/stringtokenizer.o $O/fnamelisttokenizer.o \
-      $O/expression.o $O/expression.lex.o $O/expression.tab.o \
+      $O/expression.o $O/expression.lex.o $O/expression.tab.o $O/quantityformatter.o \
       $O/matchexpression.o $O/matchexpressionlexer.o $O/matchexpression.tab.o \
       $O/patternmatcher.o $O/unitconversion.o $O/fileglobber.o \
       $O/fileutil.o $O/stringutil.o $O/commonutil.o $O/exception.o $O/bigdecimal.o \
