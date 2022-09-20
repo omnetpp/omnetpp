@@ -491,9 +491,12 @@ const char *UnitConversion::getBestUnit(double d, const char *unit)
     d = fabs(d);
     double valueInBaseUnit = d * unitDesc->mult;
     auto better = [=](UnitDesc *a, UnitDesc *b) {
+        // take slow path if base units are different
+        double valueInBaseUnitA = strcmp(a->baseUnit, unitDesc->baseUnit) ? convertUnit(d, unit, a->unit) : valueInBaseUnit / a->mult;
+        double valueInBaseUnitB = strcmp(b->baseUnit, unitDesc->baseUnit) ? convertUnit(d, unit, b->unit) : valueInBaseUnit / b->mult;
         // return true if "a" is better than "b", false otherwise
-        bool greaterThanOneInUnitA = (valueInBaseUnit / a->mult) >= 1.0;
-        bool greaterThanOneInUnitB = (valueInBaseUnit / b->mult) >= 1.0;
+        bool greaterThanOneInUnitA = valueInBaseUnitA >= 1.0;
+        bool greaterThanOneInUnitB = valueInBaseUnitB >= 1.0;
         if (greaterThanOneInUnitA && greaterThanOneInUnitB)
             return a->mult > b->mult; // prefer bigger unit (results in smaller value)
         else if (!greaterThanOneInUnitA && !greaterThanOneInUnitB)
