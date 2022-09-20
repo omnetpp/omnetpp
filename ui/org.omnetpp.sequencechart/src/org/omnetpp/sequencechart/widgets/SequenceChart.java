@@ -3783,12 +3783,10 @@ public class SequenceChart
             for (int i = 0; i < messageDependencies.size(); i++) {
                 IMessageDependency messageDependency = messageDependencies.get(i);
                 IEvent causeEvent = messageDependency.getCauseEvent();
-                if (causeEvent == null)
-                    causeEvent = messageDependency.getCauseEvent();
                 Color color = styleProvider.getMessageDependencyColor(messageDependency);
                 graphics.setForegroundColor(color);
                 graphics.setBackgroundColor(color);
-                if (!isInitializationEvent(causeEvent) || showInitializationEvent)
+                if ((causeEvent != null && !isInitializationEvent(causeEvent)) || showInitializationEvent)
                     drawOrFitMessageDependency(graphics, messageDependency, -1, -1, vlineBuffer, startEvent, endEvent);
             }
         }
@@ -3978,7 +3976,7 @@ public class SequenceChart
                 Color color = selectedObjects.contains(object) ? styleProvider.getSelectionColor() : styleProvider.getMessageDependencyColor(messageDependency);
                 graphics.setForegroundColor(color);
                 graphics.setBackgroundColor(color);
-                if (!isInitializationEvent(causeEvent) || showInitializationEvent)
+                if ((causeEvent != null && !isInitializationEvent(causeEvent)) || showInitializationEvent)
                     drawOrFitMessageDependency(graphics, messageDependency, -1, -1, vlineBuffer, startEvent, endEvent);
             }
             else if (object instanceof ComponentMethodBeginEntry) {
@@ -5327,14 +5325,14 @@ public class SequenceChart
 
     private IEvent getFirstVisibleEvent() {
         IEvent event = eventLog.getFirstEvent();
-        if (!showInitializationEvent && isInitializationEvent(event))
+        if (event != null && !showInitializationEvent && isInitializationEvent(event))
             event = event.getNextEvent();
         return event;
     }
 
     private IEvent getLastVisibleEvent() {
         IEvent event = eventLog.getLastEvent();
-        if (!showInitializationEvent && isInitializationEvent(event))
+        if (event != null && !showInitializationEvent && isInitializationEvent(event))
             event = null;
         return event;
     }
