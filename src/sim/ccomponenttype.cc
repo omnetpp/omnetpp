@@ -20,6 +20,7 @@
 #include "ctemporaryowner.h"
 #include "common/patternmatcher.h"
 #include "common/fileutil.h"
+#include "common/stringutil.h"
 #include "omnetpp/ccomponenttype.h"
 #include "omnetpp/crngmanager.h"
 #include "omnetpp/ccontextswitcher.h"
@@ -110,6 +111,23 @@ cComponentType *cComponentType::get(const char *qname)
         throw cRuntimeError("NED type '%s' not found%s", qname, hint);
     }
     return componentType;
+}
+
+template<typename T>
+std::vector<T*> filter(const std::vector<cComponentType*>& types, const char *name=nullptr)
+{
+    std::vector<T*> result;
+    for (cComponentType *t : types)
+        if (name == nullptr || opp_streq(t->getName(), name))
+            if (T *tt = dynamic_cast<T*>(t))
+                result.push_back(tt);
+    return result;
+}
+
+std::vector<cComponentType*> cComponentType::findAll(const char *name)
+{
+    //TODO allow user to add custom types (that DID NOT come from the NED loader) -- e.g. add getComponentTypes() to cSimulation? TODO store cSimulation* in cComponentType?
+    return filter<cComponentType>(cSimulation::getActiveSimulation()->getNedLoader()->getComponentTypes(), name);
 }
 
 void cComponentType::clearSharedParImpls()
@@ -431,6 +449,11 @@ cModuleType *cModuleType::get(const char *qname)
     return p;
 }
 
+std::vector<cModuleType*> cModuleType::findAll(const char *name)
+{
+    return filter<cModuleType>(cSimulation::getActiveSimulation()->getNedLoader()->getComponentTypes(), name);
+}
+
 //----
 
 OPP_THREAD_LOCAL cChannelType *cChannelType::idealChannelType;
@@ -505,6 +528,11 @@ cChannelType *cChannelType::get(const char *qname)
         throw cRuntimeError("NED channel type '%s' not found%s", qname, hint);
     }
     return p;
+}
+
+std::vector<cChannelType*> cChannelType::findAll(const char *name)
+{
+    return filter<cChannelType>(cSimulation::getActiveSimulation()->getNedLoader()->getComponentTypes(), name);
 }
 
 cChannelType *cChannelType::getIdealChannelType()

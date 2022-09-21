@@ -194,6 +194,11 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
      * Throws an error if not found.
      */
     static cComponentType *get(const char *qname);
+
+    /**
+     * Finds all component types with the given simple name a.k.a. unqualified name.
+     */
+    static std::vector<cComponentType*> findAll(const char *name=nullptr);
 };
 
 
@@ -325,6 +330,11 @@ class SIM_API cModuleType : public cComponentType
      * Throws an error if not found.
      */
     static cModuleType *get(const char *qname);
+
+    /**
+     * Finds all module types with the given simple name a.k.a. unqualified name.
+     */
+    static std::vector<cModuleType*> findAll(const char *name=nullptr);
 };
 
 
@@ -387,6 +397,11 @@ class SIM_API cChannelType : public cComponentType
      * Throws an error if not found.
      */
     static cChannelType *get(const char *qname);
+
+    /**
+     * Finds all channel types with the given simple name a.k.a. unqualified name.
+     */
+    static std::vector<cChannelType*> findAll(const char *name=nullptr);
 
     /**
      * Equivalent to <tt>cChannelType::get("ned.IdealChannel")</tt>,
