@@ -1248,11 +1248,14 @@ void cSimulation::notifyLifecycleListeners(SimulationLifecycleEventType eventTyp
 
 void cSimulation::notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details)
 {
+    checkActive();
+
     try {
         // make a copy of the listener list, to avoid problems from listeners getting added/removed during notification
         auto copy = listeners;
         for (auto& listener : copy)
             listener->lifecycleEvent(eventType, details);  // let exceptions through, because errors must cause exitCode!=0
+        CodeFragments::executeAll(eventType, false);
     }
     catch (cException& e) {
         e.setLifecycleListenerType(eventType);

@@ -52,18 +52,24 @@ StartupChecker startupChecker;
 
 CodeFragments *CodeFragments::head;
 
-CodeFragments::CodeFragments(void(*code)(), const char *sourceCode, Type type) : type(type), code(code), sourceCode(sourceCode)
+CodeFragments::CodeFragments(void (*code)(), const char *sourceCode, Type type, SimulationLifecycleEventType lifecycleEvent) :
+type(type), lifecycleEvent(lifecycleEvent), code(code), sourceCode(sourceCode)
 {
-    // add to list
     next = head;
     head = this;
 }
 
-void CodeFragments::executeAll(Type type, bool removeDoneItems)
+CodeFragments::CodeFragments(void(*code)(), const char *sourceCode, Type type) :
+        CodeFragments(code, sourceCode, type, LF_NONE) {}
+
+CodeFragments::CodeFragments(void(*code)(), const char *sourceCode, SimulationLifecycleEventType lifecycleEvent) :
+        CodeFragments(code, sourceCode, SIMULATION_LIFECYCLE_EVENT, lifecycleEvent) {}
+
+void CodeFragments::executeAll(Type type, SimulationLifecycleEventType lifecycleEvent, bool removeDoneItems)
 {
     CodeFragments *p = CodeFragments::head;
     while (p) {
-        if (p->type == type && p->code != nullptr) {
+        if (p->type == type && p->lifecycleEvent == lifecycleEvent && p->code != nullptr) {
             p->code();
             if (removeDoneItems)
                 p->code = nullptr;
@@ -72,11 +78,11 @@ void CodeFragments::executeAll(Type type, bool removeDoneItems)
     }
 }
 
-bool CodeFragments::hasItemsOfType(Type type)
+bool CodeFragments::hasItemsOfType(Type type, SimulationLifecycleEventType lifecycleEvent)
 {
     CodeFragments *p = CodeFragments::head;
     while (p) {
-        if (p->type == type && p->code != nullptr)
+        if (p->type == type && p->lifecycleEvent == lifecycleEvent && p->code != nullptr)
             return true;
         p = p->next;
     }

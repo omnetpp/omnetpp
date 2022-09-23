@@ -41,6 +41,7 @@ namespace omnetpp {
  * - @ref Misc
  * - @ref WatchMacros
  * - @ref RegMacros
+ * - @ref ExecMacros
  * - @ref StringFunctions
  * - @ref UtilityFunctions
  * - @ref EnvirAndExtensions
@@ -328,6 +329,13 @@ namespace omnetpp {
  * @brief Macros for registering various classes, functions and other extension
  * items with the simulation kernel. Registration is necessary for allowing
  * instantiation by class name and attaching meta-information.
+ */
+
+/**
+ * @defgroup ExecMacros Execution Macros
+ *
+ * @brief Macros for registering global (simulation-independent) code fragments
+ * to run on various events.
  */
 
 /**

@@ -23,7 +23,6 @@
 
 namespace omnetpp {
 
-
 // Generating identifiers unique for this file. See MSVC Help for __COUNTER__ for more info.
 #define __OPPCONCAT1(x,y) x##y
 #define __OPPCONCAT2(prefix,line) __OPPCONCAT1(prefix,line)
@@ -36,6 +35,11 @@ namespace omnetpp {
 
 // helper
 #define __FILEUNIQUENAME__  MAKE_UNIQUE_WITHIN_FILE(__uniquename_)
+
+/**
+ * @ingroup ExecMacros
+ * @{
+ */
 
 /**
  * @brief Allows code fragments to be collected in global scope which will
@@ -80,6 +84,64 @@ namespace omnetpp {
   }
 
 /**
+ * @brief Registers a code fragment to be executed when the given lifecycle
+ * event occurs on any cSimulation instance. EVENT should be a lifecycle event
+ * type, a value from the SimulationLifecycleEventType enum.
+ *
+ * @hideinitializer
+ */
+#define EXECUTE_ON_SIMULATION_LIFECYCLE_EVENT(EVENT, CODE)  \
+  namespace { \
+    void __ONSTARTUP_FUNC() {CODE;} \
+    static omnetpp::CodeFragments __ONSTARTUP_OBJ(__ONSTARTUP_FUNC, #CODE, omnetpp::EVENT); \
+  }
+
+
+/** @brief Registers a code fragment to be executed before a network is set up. */
+#define EXECUTE_PRE_NETWORK_SETUP(CODE)       EXECUTE_ON_SIMULATION_LIFECYCLE_EVENT(LF_PRE_NETWORK_SETUP, CODE)
+
+/** @brief Registers a code fragment to be executed after a network is set up. */
+#define EXECUTE_POST_NETWORK_SETUP(CODE)      EXECUTE_ON_SIMULATION_LIFECYCLE_EVENT(LF_POST_NETWORK_SETUP, CODE)
+
+/** @brief Registers a code fragment to be executed before a network is initialized. */
+#define EXECUTE_PRE_NETWORK_INITIALIZE(CODE)  EXECUTE_ON_SIMULATION_LIFECYCLE_EVENT(LF_PRE_NETWORK_INITIALIZE, CODE)
+
+/** @brief Registers a code fragment to be executed after a network is initialized. */
+#define EXECUTE_POST_NETWORK_INITIALIZE(CODE) EXECUTE_ON_SIMULATION_LIFECYCLE_EVENT(LF_POST_NETWORK_INITIALIZE, CODE)
+
+/** @brief Registers a code fragment to be executed before processing the first simulation event of a simulation. */
+#define EXECUTE_ON_SIMULATION_START(CODE)     EXECUTE_ON_SIMULATION_LIFECYCLE_EVENT(LF_ON_SIMULATION_START, CODE)
+
+/** @brief Registers a code fragment to be executed when a simulation is paused. */
+#define EXECUTE_ON_SIMULATION_PAUSE(CODE)     EXECUTE_ON_SIMULATION_LIFECYCLE_EVENT(LF_ON_SIMULATION_PAUSE, CODE)
+
+/** @brief Registers a code fragment to be executed when a paused simulation is resumed. */
+#define EXECUTE_ON_SIMULATION_RESUME(CODE)    EXECUTE_ON_SIMULATION_LIFECYCLE_EVENT(LF_ON_SIMULATION_RESUME, CODE)
+
+/** @brief Registers a code fragment to be executed after processing the last event of a simulation.  */
+#define EXECUTE_ON_SIMULATION_SUCCESS(CODE)   EXECUTE_ON_SIMULATION_LIFECYCLE_EVENT(LF_ON_SIMULATION_SUCCESS, CODE)
+
+/** @brief Registers a code fragment to be executed when an error (exception) occurs in a simulation. */
+#define EXECUTE_ON_SIMULATION_ERROR(CODE)     EXECUTE_ON_SIMULATION_LIFECYCLE_EVENT(LF_ON_SIMULATION_ERROR, CODE)
+
+/** @brief Registers a code fragment to be executed before finalizing a simulation. */
+#define EXECUTE_PRE_NETWORK_FINISH(CODE)      EXECUTE_ON_SIMULATION_LIFECYCLE_EVENT(LF_PRE_NETWORK_FINISH, CODE)
+
+/** @brief Registers a code fragment to be executed after finalizing a simulation. */
+#define EXECUTE_POST_NETWORK_FINISH(CODE)     EXECUTE_ON_SIMULATION_LIFECYCLE_EVENT(LF_POST_NETWORK_FINISH, CODE)
+
+/** @brief Registers a code fragment to be executed at the end of processing events in a simulation, whether simulation terminated successfully or with an error. */
+#define EXECUTE_ON_RUN_END(CODE)              EXECUTE_ON_SIMULATION_LIFECYCLE_EVENT(LF_ON_RUN_END, CODE)
+
+/** @brief Registers a code fragment to be executed before a network is deleted. */
+#define EXECUTE_PRE_NETWORK_DELETE(CODE)      EXECUTE_ON_SIMULATION_LIFECYCLE_EVENT(LF_PRE_NETWORK_DELETE, CODE)
+
+/** @brief Registers a code fragment to be executed after a network is deleted. */
+#define EXECUTE_POST_NETWORK_DELETE(CODE)     EXECUTE_ON_SIMULATION_LIFECYCLE_EVENT(LF_POST_NETWORK_DELETE, CODE)
+
+/** @} */
+
+/**
  * @brief Supporting class for the EXECUTE_ON_STARTUP and EXECUTE_ON_SHUTDOWN macros.
  *
  * @ingroup Internals
@@ -87,21 +149,29 @@ namespace omnetpp {
 class SIM_API CodeFragments
 {
   public:
-    enum Type {EARLY_STARTUP, STARTUP, SHUTDOWN};
+    enum Type {EARLY_STARTUP, STARTUP, SHUTDOWN, SIMULATION_LIFECYCLE_EVENT};
+  private:
     Type type;
-    void (*code)();
+    SimulationLifecycleEventType lifecycleEvent;
+    void (*code)();  //TODO std::function?  "done" flag instead of setting code ptr to null
     const char *sourceCode;
     CodeFragments *next;
     static CodeFragments *head;
+  private:
+    CodeFragments(void (*code)(), const char *sourceCode, Type type, SimulationLifecycleEventType lifecycleEvent);
+    static void executeAll(Type type, SimulationLifecycleEventType lifecycleEvent, bool removeDoneItems);
+    static bool hasItemsOfType(Type type, SimulationLifecycleEventType lifecycleEvent);
   public:
     CodeFragments(void (*code)(), const char *sourceCode, Type type);
+    CodeFragments(void (*code)(), const char *sourceCode, SimulationLifecycleEventType lifecycleEvent);
     ~CodeFragments() {}
-    static void executeAll(Type type, bool removeDoneItems=true);
-    static bool hasItemsOfType(Type type);
+    static void executeAll(Type type, bool removeDoneItems=true) {executeAll(type, LF_NONE, removeDoneItems);}
+    static void executeAll(SimulationLifecycleEventType lifecycleEvent, bool removeDoneItems=true) {executeAll(SIMULATION_LIFECYCLE_EVENT, lifecycleEvent, removeDoneItems);}
+    static bool hasItemsOfType(Type type) {return hasItemsOfType(type, LF_NONE);}
+    static bool hasItemsOfType(SimulationLifecycleEventType lifecycleEvent) {return hasItemsOfType(SIMULATION_LIFECYCLE_EVENT, lifecycleEvent);}
 };
 
 }  // namespace omnetpp
-
 
 #endif
 
