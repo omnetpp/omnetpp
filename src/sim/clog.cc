@@ -80,7 +80,7 @@ bool cLog::defaultNoncomponentLogPredicate(const void *object, LogLevel logLevel
 {
     // log called from outside cComponent methods, use context component to decide enablement
     cSimulation *simulation = cSimulation::getActiveSimulation();
-    const cModule *contextModule = simulation->getContextModule();
+    const cModule *contextModule = simulation ? simulation->getContextModule() : nullptr;
     return isLoggingEnabled() && logLevel >= cLog::logLevel && (!contextModule || logLevel >= contextModule->getLogLevel());
 }
 
