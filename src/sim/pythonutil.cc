@@ -55,6 +55,34 @@ if not OMNETPP_ROOT:
     raise RuntimeError("The OMNeT++ root directory was not found, make sure the shell is set up appropriately (`source setenv`)!")
 
 import cppyy
+
+def _set_arg_owned(klass, method_name, arg_index, owned):
+    orig_method = getattr(klass, method_name)
+    def wrapper(self, *args):
+        args[arg_index].__python_owns__ = owned
+        return orig_method(self, *args)
+
+    setattr(klass, method_name, wrapper)
+
+def csimplemodule_msg_ownership(klass, name):
+    if name == "cSimpleModule":
+
+        _set_arg_owned(klass, "send", 0, False)
+        _set_arg_owned(klass, "sendDirect", 0, False)
+        _set_arg_owned(klass, "sendDelayed", 0, False)
+
+        _set_arg_owned(klass, "scheduleAt", 1, False)
+        _set_arg_owned(klass, "scheduleAfter", 1, False)
+        _set_arg_owned(klass, "rescheduleAt", 1, False)
+        _set_arg_owned(klass, "rescheduleAfter", 1, False)
+
+        # FIXME: DOES NOT WORK!
+        #_set_arg_owned(klass, "handleMessage", 0, True)
+
+cppyy.py.add_pythonization(csimplemodule_msg_ownership, 'omnetpp')
+
+# TODO: add all pythonizations here?
+
 cppyy.add_include_path(OMNETPP_ROOT + "/include")
 cppyy.include("omnetpp.h")
 )");
@@ -85,6 +113,71 @@ void checkPythonException()
         Py_XDECREF(traceback);
         throw cRuntimeError("%s", message.c_str());
     }
+}
+
+
+std::string getQualifiedPythonClassName(cNedDeclaration *declaration)
+{
+    cProperty *pythonClassProp = declaration->getProperties()->get("pythonClass");
+
+    if (!pythonClassProp)
+        return "";
+
+    const char *className = opp_emptytodefault(pythonClassProp->getValue(), declaration->getName());
+
+    if (strchr(className, '.') != nullptr) {
+        // qualified name: expect the Python module to import to be found in the existing Python path
+
+        return className;
+    }
+    else {
+        // simple name: load the class from the .py file next to the NED file that contains the @pythonClass property
+
+        const char *sourceFile = opp_emptytodefault(pythonClassProp->getValueOriginFile(), declaration->getSourceFileName());
+        std::string nedFileName = removeFileExtension(filenameOf(sourceFile).c_str());
+        std::string moduleName = opp_join(".", declaration->getPackage().c_str(), nedFileName.c_str());
+
+        return opp_join(".", moduleName.c_str(), className);
+    }
+}
+
+
+void *instantiatePythonObject(const char *pythonClassQName)
+{
+#ifdef WITH_PYTHON
+    ASSERT2(strchr(pythonClassQName, '.'), "Python class name must be qualified");
+
+    std::string moduleToImport = opp_substringbeforelast(pythonClassQName, ".");
+    std::string classToInstantiate = opp_substringafterlast(pythonClassQName, ".");
+
+    ensurePythonInterpreter();
+
+    try {
+        PyObject *globals = PyDict_New();
+        PyDict_SetItemString(globals, "__builtins__", PyEval_GetBuiltins());
+
+        PyRun_String(("from " + moduleToImport + " import " + classToInstantiate + "\n"
+            "inst = " + classToInstantiate + "()\n"
+            "inst.__python_owns__ = False\n"
+            "import cppyy.ll").c_str(), Py_file_input, globals, globals);
+        checkPythonException();
+
+        PyObject *code = Py_CompileString("cppyy.ll.addressof(inst)", "<addressof>", Py_eval_input);
+        checkPythonException();
+
+        PyObject *result = PyEval_EvalCode(code, globals, globals);
+        checkPythonException();
+
+        void *pythonObject = (void *)PyLong_AsLong(result);
+        ASSERT2(pythonObject, "Instance is `nullptr` (Make sure to call `super().__init__()` in the Python class constructor!)");
+        return pythonObject;
+    }
+    catch (std::exception& e) {
+        throw cRuntimeError("Cannot instantiate Python class '%s': %s", pythonClassQName, e.what());
+    }
+#else
+    throw cRuntimeError("Embedded Python support was not enabled at build time");
+#endif
 }
 
 }  // namespace omnetpp

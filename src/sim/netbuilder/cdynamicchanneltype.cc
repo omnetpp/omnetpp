@@ -23,8 +23,13 @@
 #include "cdynamicchanneltype.h"
 #include "cnedloader.h"
 #include "cnednetworkbuilder.h"
+#include "common/fileutil.h"
+#include "common/stringutil.h"
+#include "sim/pythonutil.h"
 
 namespace omnetpp {
+
+using namespace common;
 
 cDynamicChannelType::cDynamicChannelType(const char *name) : cChannelType(name)
 {
@@ -51,8 +56,14 @@ std::string cDynamicChannelType::getNedSource() const
 
 cChannel *cDynamicChannelType::createChannelObject()
 {
-    const char *classname = getDecl()->getImplementationClassName();
-    return instantiateChannelClass(classname);
+    std::string pythonClassName = getQualifiedPythonClassName(getDecl());
+    if (!pythonClassName.empty())
+        return instantiatePythonObjectChecked<cChannel>(pythonClassName.c_str());
+    else {
+        const char *classname = getDecl()->getImplementationClassName();
+        ASSERT(classname != nullptr);
+        return instantiateChannelClass(classname);
+    }
 }
 
 void cDynamicChannelType::addParametersTo(cChannel *channel)

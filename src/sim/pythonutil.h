@@ -39,6 +39,17 @@ void ensurePythonInterpreter();
  */
 void checkPythonException();
 
+std::string getQualifiedPythonClassName(cNedDeclaration *declaration);
+
+void *instantiatePythonObject(const char *pythonClassQName);
+
+template <class T>
+T *instantiatePythonObjectChecked(const char *pythonClassQName) {
+    void *result = instantiatePythonObject(pythonClassQName);
+    // TODO: add an actual type check somehow
+    return (T*)result;
+}
+
 }  // namespace omnetpp
 
 #endif  // WITH_PYTHON

@@ -23,8 +23,15 @@
 #include "cneddeclaration.h"
 #include "cnedloader.h"
 #include "cnednetworkbuilder.h"
+#include "omnetpp/csimplemodule.h"
+#include "common/fileutil.h"
+#include "common/stringutil.h"
+
+#include "sim/pythonutil.h"
 
 namespace omnetpp {
+
+using namespace common;
 
 cDynamicModuleType::cDynamicModuleType(const char *name) : cModuleType(name)
 {
@@ -61,9 +68,15 @@ bool cDynamicModuleType::isSimple() const
 
 cModule *cDynamicModuleType::createModuleObject()
 {
-    const char *classname = getDecl()->getImplementationClassName();
-    ASSERT(classname != nullptr);
-    return instantiateModuleClass(classname);
+    std::string pythonClassName = getQualifiedPythonClassName(getDecl());
+    if (!pythonClassName.empty())
+        return instantiatePythonObjectChecked<cSimpleModule>(pythonClassName.c_str());
+    else {
+        const char *classname = getDecl()->getImplementationClassName();
+        ASSERT(classname != nullptr);
+
+        return instantiateModuleClass(classname);
+    }
 }
 
 void cDynamicModuleType::addParametersAndGatesTo(cModule *module)
