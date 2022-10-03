@@ -397,7 +397,7 @@ std::string NedResourceCache::getNedPackageForFolder(const char *folder) const
     if (suffix.length() > 0 && suffix[0] == '/')
         suffix = suffix.substr(1);
     std::string subpackage = opp_replacesubstring(suffix, "/", ".", true);
-    return opp_join(".", const_cast<StringMap&>(folderPackages)[sourceFolder].c_str(), subpackage.c_str());
+    return opp_join(".", folderPackages.at(sourceFolder).c_str(), subpackage.c_str());
 }
 
 NedLookupContext NedResourceCache::getParentContextOf(const char *qname, ASTNode *node)
