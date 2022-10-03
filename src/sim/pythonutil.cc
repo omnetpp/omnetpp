@@ -59,6 +59,10 @@ cppyy.add_include_path(OMNETPP_ROOT + "/include")
 cppyy.include("omnetpp.h")
 )");
 
+        PyObject *pyPath = PySys_GetObject("path");
+        for (auto f : cNedLoader::getInstance()->getLoadedNedFolders())
+            PyList_Append(pyPath, PyUnicode_FromString(f.c_str()));
+
         pythonConfigured = true;
     }
 }

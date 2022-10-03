@@ -400,6 +400,15 @@ std::string NedResourceCache::getNedPackageForFolder(const char *folder) const
     return opp_join(".", folderPackages.at(sourceFolder).c_str(), subpackage.c_str());
 }
 
+std::vector<std::string> NedResourceCache::getLoadedNedFolders() const
+{
+    std::vector<std::string> results;
+    results.reserve(folderPackages.size());
+    for (const auto& kv : folderPackages)
+        results.push_back(kv.first);
+    return results;
+}
+
 NedLookupContext NedResourceCache::getParentContextOf(const char *qname, ASTNode *node)
 {
     ASTNode *contextNode = node->getParent();

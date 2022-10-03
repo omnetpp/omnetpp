@@ -205,6 +205,12 @@ class NEDXML_API NedResourceCache
     virtual std::string getNedPackageForFolder(const char *folder) const;
 
     /**
+     * Returns the list of NED source folders loaded by loadNedSourceFolder()
+     * in their canonical forms.
+     */
+    virtual std::vector<std::string> getLoadedNedFolders() const;
+
+    /**
      * Utility method, useful with resolveNedType()/resolveComponentType()
      */
     static NedLookupContext getParentContextOf(const char *qname, ASTNode *node);
