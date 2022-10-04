@@ -19,6 +19,7 @@
 %parse-param {AstNode *&resultAstTree}
 
 %code top {
+#include <limits>
 #include "commonutil.h"
 #include "exception.h"
 #include "stringutil.h"
@@ -378,7 +379,7 @@ numliteral
         | NAN_
                 { $<node>$ = newConstant(std::nan("")); }
         | INF_
-                { $<node>$ = newConstant(1/0.0); }
+                { $<node>$ = newConstant(std::numeric_limits<double>::infinity()); }
         | quantity
                 {
                   double d = 0;
