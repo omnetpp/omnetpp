@@ -140,7 +140,7 @@ class SIM_API cEnum : public cOwnedObject
     /**
      * Returns a map with the enum members (names as key, and numeric value map value).
      */
-    std::map<std::string,int> getNameValueMap() const {return nameToValueMap;}
+    const std::map<std::string,int>& getNameValueMap() const {return nameToValueMap;}
     //@}
 
     /** @name cEnum lookup. */
