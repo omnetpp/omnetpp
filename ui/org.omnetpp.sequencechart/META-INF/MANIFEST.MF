@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: OMNeT++ Sequence Chart
 Bundle-SymbolicName: org.omnetpp.sequencechart;singleton:=true
 Bundle-Version: 6.1.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.omnetpp.sequencechart.SequenceChartPlugin
 Bundle-Vendor: OpenSim Ltd.

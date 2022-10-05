@@ -88,6 +88,6 @@ Export-Package: org.omnetpp.common;uses:="org.eclipse.jface.resource,org.eclipse
 Bundle-ClassPath: .
 Bundle-Vendor: OpenSim Ltd.
 Bundle-Activator: org.omnetpp.common.CommonPlugin
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-ActivationPolicy: lazy
 Automatic-Module-Name: org.omnetpp.common
