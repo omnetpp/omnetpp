@@ -29,7 +29,7 @@ namespace omnetpp {
 #define OMNETPP_VERSION  0x0700
 
 // OMNeT++ build number
-#define OMNETPP_BUILDNUM   1700
+#define OMNETPP_BUILDNUM   2000
 
 #if defined(SIM_EXPORT)
 #  define SIM_API OPP_DLLEXPORT
