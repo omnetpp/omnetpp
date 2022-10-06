@@ -39,5 +39,30 @@ void cEnvir::printfmsg(const char *fmt, ...)
     alert(staticbuf);
 }
 
+void cEnvir::addLifecycleListener(cISimulationLifecycleListener *listener)
+{
+    getSimulation()->addLifecycleListener(listener);
+}
+
+void cEnvir::removeLifecycleListener(cISimulationLifecycleListener *listener)
+{
+    getSimulation()->removeLifecycleListener(listener);
+}
+
+uint64_t cEnvir::getUniqueNumber()
+{
+    return getSimulation()->getUniqueNumber();
+}
+
+int cEnvir::getParsimProcId() const
+{
+    return getSimulation()->getParsimProcId();
+}
+
+int cEnvir::getParsimNumPartitions() const
+{
+    return getSimulation()->getParsimNumPartitions();
+}
+
 }  // namespace omnetpp
 

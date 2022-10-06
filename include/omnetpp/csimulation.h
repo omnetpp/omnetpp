@@ -533,6 +533,11 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     Stage getStage() const  {return stage;}  // note: intentionally non-virtual
 
     /**
+     * Deprecated in favor of getStage().
+     */
+    [[deprecated]] Stage getSimulationStage() const  {return getStage();}
+
+    /**
      * Returns the textual representation of the given enum value.
      */
     static const char *getStateName(State s);

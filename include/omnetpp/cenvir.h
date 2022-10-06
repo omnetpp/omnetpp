@@ -828,7 +828,33 @@ class SIM_API cEnvir
      * Includes a call to ensureDebugger().
      */
     virtual bool shouldDebugNow(cRuntimeError *error = nullptr) = 0;
+
+    /**
+     * Delegates to cSimulation.
+     */
+    [[deprecated]] virtual void addLifecycleListener(cISimulationLifecycleListener *listener);
+
+    /**
+     * Delegates to cSimulation.
+     */
+    [[deprecated]] virtual void removeLifecycleListener(cISimulationLifecycleListener *listener);
+
+    /**
+     * Delegates to cSimulation.
+     */
+    [[deprecated]] virtual uint64_t getUniqueNumber();
+
+    /**
+     * Delegates to cSimulation.
+     */
+    [[deprecated]] virtual int getParsimProcId() const;
+
+    /**
+     * Delegates to cSimulation.
+     */
+    [[deprecated]] virtual int getParsimNumPartitions() const;
     //@}
+
 };
 
 }  // namespace omnetpp
