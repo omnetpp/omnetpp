@@ -59,12 +59,12 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
     struct Less {bool operator()(cParImpl *a, cParImpl *b) const;};
     struct SignalDesc { SimsignalType type; cObjectFactory *objectType; bool isNullable; };
 
-    struct PerThreadData {
+    struct PerThreadPerTypeData {
         std::map<std::string,cParImpl*> sharedParMap;
         std::set<cParImpl*,Less> sharedParSet;
         std::map<simsignal_t,SignalDesc> signalsSeen;
     };
-    mutable std::map<std::thread::id,PerThreadData> perThreadData;
+    static OPP_THREAD_LOCAL std::map<const cComponentType*,PerThreadPerTypeData> perTypeData;
 
     mutable bool sourceFileDirectoryCached = false;
     mutable std::string sourceFileDirectory;

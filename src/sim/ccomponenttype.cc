@@ -16,6 +16,7 @@
 
 #include <algorithm>
 #include <cstring>
+#include <mutex>
 #include "ctemporaryowner.h"
 #include "common/patternmatcher.h"
 #include "common/fileutil.h"
@@ -50,6 +51,10 @@ using namespace omnetpp::common;
 using namespace omnetpp::internal;
 
 namespace omnetpp {
+
+OPP_THREAD_LOCAL std::map<const cComponentType*,cComponentType::PerThreadPerTypeData> cComponentType::perTypeData;
+
+static std::mutex mutex;
 
 static const char *getSignalTypeName(SimsignalType type)
 {
@@ -109,7 +114,7 @@ cComponentType *cComponentType::get(const char *qname)
 
 void cComponentType::clearSharedParImpls()
 {
-    auto& d = perThreadData[std::this_thread::get_id()];
+    auto& d = perTypeData[this];
     for (auto & it : d.sharedParMap)
         delete it.second;
     for (auto it : d.sharedParSet)
@@ -120,14 +125,14 @@ void cComponentType::clearSharedParImpls()
 
 internal::cParImpl *cComponentType::getSharedParImpl(const char *key) const
 {
-    auto& d = perThreadData[std::this_thread::get_id()];
+    auto& d = perTypeData[this];
     auto it = d.sharedParMap.find(key);
     return it == d.sharedParMap.end() ? nullptr : it->second;
 }
 
 void cComponentType::putSharedParImpl(const char *key, cParImpl *value)
 {
-    auto& d = perThreadData[std::this_thread::get_id()];
+    auto& d = perTypeData[this];
     ASSERT(d.sharedParMap.find(key) == d.sharedParMap.end());  // not yet in there
     value->setIsShared(true);
     d.sharedParMap[key] = value;
@@ -141,14 +146,14 @@ bool cComponentType::Less::operator()(cParImpl *a, cParImpl *b) const
 
 internal::cParImpl *cComponentType::getSharedParImpl(cParImpl *value) const
 {
-    auto& d = perThreadData[std::this_thread::get_id()];
+    auto& d = perTypeData[this];
     auto it = d.sharedParSet.find(value);
     return it == d.sharedParSet.end() ? nullptr : *it;
 }
 
 void cComponentType::putSharedParImpl(cParImpl *value)
 {
-    auto& d = perThreadData[std::this_thread::get_id()];
+    auto& d = perTypeData[this];
     ASSERT(d.sharedParSet.find(value) == d.sharedParSet.end());  // not yet in there
     value->setIsShared(true);
     d.sharedParSet.insert(value);
@@ -156,6 +161,8 @@ void cComponentType::putSharedParImpl(cParImpl *value)
 
 bool cComponentType::isAvailable()
 {
+    std::lock_guard<std::mutex> guard(mutex);
+
     if (!availabilityTested) {
         const char *className = getImplementationClassName();
         available = classes.getInstance()->lookup(className) != nullptr;
@@ -167,7 +174,7 @@ bool cComponentType::isAvailable()
 void cComponentType::checkSignal(simsignal_t signalID, SimsignalType type, cObject *obj)
 {
     // check that this signal is allowed
-    auto& d = perThreadData[std::this_thread::get_id()];
+    auto& d = perTypeData[this];
     std::map<simsignal_t, SignalDesc>::const_iterator it = d.signalsSeen.find(signalID);
     if (it == d.signalsSeen.end()) {
         // ignore built-in signals
@@ -278,6 +285,8 @@ cObjectFactory *cComponentType::lookupClass(const char *className, const char *s
 
 const char *cComponentType::getSourceFileDirectory() const
 {
+    std::lock_guard<std::mutex> guard(mutex);
+
     if (!sourceFileDirectoryCached) {
         const char *fname = getSourceFileName();
         sourceFileDirectory = fname ? directoryOf(fname) : "";
