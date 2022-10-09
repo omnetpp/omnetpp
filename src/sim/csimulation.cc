@@ -853,6 +853,7 @@ void cSimulation::deleteNetwork()
 
         // clear remaining messages (module dtors may have cancelled & deleted some of them)
         fes->clear();
+        endSimulationEvent = nullptr;
 
         stopwatch->clear();
     }
