@@ -24,6 +24,7 @@
 #include <cstdio>
 #include <climits>
 #include <algorithm> // copy_n()
+#include <mutex>
 #include "common/stringutil.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/csimplemodule.h"
@@ -103,6 +104,7 @@ extern std::set<cOwnedObject *> objectlist;
 void printAllObjects();
 #endif
 
+cSimulation::SharedDataHandles *cSimulation::sharedDataHandles = nullptr;
 
 /**
  * Stops the simulation at the time it is scheduled for.
@@ -836,6 +838,14 @@ void cSimulation::deleteNetwork()
             }
         }
 
+        // delete "simulation global" variables
+        int i = 0;
+        for (auto& item : sharedData) {
+            std::cout << "deleting simulation global \"" << getSharedVariableName(i++) << "\" (" << item.first.typeName() << ")" << std::endl;
+            item.second(); // call stored destructor
+        }
+        sharedData.clear();
+
         // and clean up
         delete[] componentv;
         componentv = nullptr;
@@ -1182,6 +1192,35 @@ uint64_t cSimulation::getUniqueNumber()
     if (nextUniqueNumber == uniqueNumbersEnd)
         throw cRuntimeError("getUniqueNumber(): All values have been consumed");
     return ret;
+}
+
+static std::recursive_mutex sharedDataMutex;
+
+sharedvarhandle_t cSimulation::registerSharedVariableName(const char *key)
+{
+    std::lock_guard<std::recursive_mutex> lock(sharedDataMutex);
+
+    if (sharedDataHandles == nullptr)
+        sharedDataHandles = new SharedDataHandles();
+    auto it = sharedDataHandles->keyToHandle.find(key);
+    if (it != sharedDataHandles->keyToHandle.end())
+        return it->second;
+    else {
+        sharedDataHandles->keyToHandle[key] = ++sharedDataHandles->lastHandle;
+        return sharedDataHandles->lastHandle;
+    }
+}
+
+const char *cSimulation::getSharedVariableName(sharedvarhandle_t handle)
+{
+    std::lock_guard<std::recursive_mutex> lock(sharedDataMutex);
+
+    // linear search should suffice here (small number of items, non-performance-critical)
+    if (sharedDataHandles)
+        for (auto& pair : sharedDataHandles->keyToHandle)
+            if (pair.second == handle)
+                return pair.first.c_str();
+    return nullptr;
 }
 
 int cSimulation::getParsimProcId() const

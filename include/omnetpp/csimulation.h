@@ -16,10 +16,12 @@
 #ifndef __OMNETPP_CSIMULATION_H
 #define __OMNETPP_CSIMULATION_H
 
+#include <functional>
 #include "simkerneldefs.h"
 #include "simtime_t.h"
 #include "ccomponent.h"
 #include "cexception.h"
+#include "any_ptr.h"
 
 namespace omnetpp {
 
@@ -49,6 +51,12 @@ class Stopwatch;
 
 SIM_API extern OPP_THREAD_LOCAL cSoftOwner globalOwningContext; // also in globals.h
 
+/**
+ * @brief Handles used for accessing simulation-wide shared variables.
+ *
+ * @see cSimulation::registerSharedVariableName(), cSimulation::getSharedVariable()
+ */
+typedef int sharedvarhandle_t;
 
 /**
  * @brief Simulation manager class.
@@ -145,6 +153,15 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
 #ifdef WITH_PARSIM
     cParsimPartition *parsimPartition = nullptr;
 #endif
+
+    struct SharedDataHandles {
+        std::map<std::string,int> keyToHandle;
+        int lastHandle = -1;
+    };
+    static SharedDataHandles *sharedDataHandles;
+
+    // items allocated via getSharedVariable()
+    std::vector<std::pair<any_ptr,std::function<void()>>> sharedData; // handle -> (data,destructor)
 
     // Data for getUniqueNumber()
     uint64_t nextUniqueNumber;
@@ -842,6 +859,48 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
 
     /** @name Miscellaneous. */
     //@{
+
+    /**
+     * Assigns a handle to the given name, and returns it. The handle can be
+     * used as an argument for the getSharedVariable() method instead of
+     * the name, to speed up lookup. It is allowed/recommended to allocate
+     * handles in static initializers. E.g:
+     *
+     * sharedvarhandle_t Foo::counterHandle =
+     *     cSimulation::registerSharedVariableName("Foo::counter");
+     */
+    static sharedvarhandle_t registerSharedVariableName(const char *name);
+
+    /**
+     * The inverse of registerSharedVariableName(): Returns the variable name
+     * from the handle, or nullptr if the handle is not in use.
+     */
+    static const char *getSharedVariableName(sharedvarhandle_t handle);
+
+    /**
+     * Like getSharedVariable(const char *name, Args&&... args), but uses a
+     * a handle allocated via registerSharedVariableName() instead of a name.
+     * Using a handle results in better performance due to faster lookup.
+     */
+    template <typename T, typename... Args>
+    T& getSharedVariable(sharedvarhandle_t handle, Args&&... args);
+
+    /**
+     * Returns a "simulation global" object of type T identified by the given name.
+     * Any additional arguments will be passed to the constructor of type T.
+     * The object will be allocated on the first call, and subsequent calls with
+     * the same name will return the same object. The object will be automatically
+     * deallocated on network teardown. In model code, objects allocated via getSharedVariable()
+     * should be preferred to actual global variables (e.g. static class members),
+     * exactly because getSharedVariable() ensures that the variables will be properly
+     * initialized for each simulation (enabling repeatable simulations) and
+     * deallocated at the end, without the help of any extra code. Example:
+     *
+     * <tt>int& globalCounter = getSharedVariable<int>("Foo::globalCounter");</tt>
+     */
+    template <typename T, typename... Args>
+    T& getSharedVariable(const char *name, Args&&... args);
+
     /**
      * This function is guaranteed to return a different integer every time
      * it is called (usually 0, 1, 2, ...). This method works with parallel
@@ -858,6 +917,27 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     virtual void snapshot(cObject *obj, const char *label);
     //@}
 };
+
+template <typename T, typename... Args>
+T& cSimulation::getSharedVariable(const char *name, Args&&... args)
+{
+    return getSharedVariable<T>(registerSharedVariableName(name), args...);
+}
+
+template <typename T, typename... Args>
+T& cSimulation::getSharedVariable(sharedvarhandle_t handle, Args&&... args)
+{
+    if (sharedData.size() <= handle)
+        sharedData.resize(handle+1);
+    auto& item = sharedData[handle];
+    if (item.first != nullptr)
+        return *item.first.get<T>();
+    else {
+        T *p = new T(args...);
+        item = std::make_pair(any_ptr(p), [=]() {delete p;});
+        return *p;
+    }
+}
 
 /**
  * @brief Returns the current simulation time.
