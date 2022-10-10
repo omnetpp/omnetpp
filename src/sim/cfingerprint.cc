@@ -180,7 +180,7 @@ void cSingleFingerprintCalculator::addEvent(cEvent *event)
                     if (!addEventIngredient(event, ingredient)) {
                         switch (ingredient) {
                             case EVENT_NUMBER:
-                                hasher_ << getSimulation()->getEventNumber(); break;
+                                hasher_ << cSimulation::getActiveSimulation()->getEventNumber(); break;
                             case SIMULATION_TIME:
                                 hasher_ << simTime(); break;
                             case MESSAGE_FULL_NAME:
@@ -233,7 +233,7 @@ void cSingleFingerprintCalculator::addEvent(cEvent *event)
                                     hasher_ << module->getComponentType()->getClassName();
                                 break;
                             case RANDOM_NUMBERS_DRAWN:
-                                hasher_ << getSimulation()->getRngManager()->getHash();
+                                hasher_ << cSimulation::getActiveSimulation()->getRngManager()->getHash();
                                 break;
                             case CLEAN_HASHER:
                                 hasher_.reset();
@@ -319,7 +319,7 @@ void cSingleFingerprintCalculator::addVisuals()
     bool displayStrings = ingredients.find(DISPLAY_STRINGS) != std::string::npos;
     bool figures = ingredients.find(CANVAS_FIGURES) != std::string::npos;
     if (displayStrings || figures)
-        addModuleVisuals(getSimulation()->getSystemModule(), displayStrings, figures);
+        addModuleVisuals(cSimulation::getActiveSimulation()->getSystemModule(), displayStrings, figures);
 }
 
 void cSingleFingerprintCalculator::addModuleVisuals(cModule *module, bool displayStrings, bool figures)
