@@ -130,13 +130,14 @@ AppBase *AppBase::activeApp = nullptr;
 
 AppBase::AppBase(std::ostream& out) : out(out), debuggerSupport(new DebuggerSupport())
 {
-    ASSERT(activeApp == nullptr);
-    activeApp = this;
+    if (activeApp == nullptr)
+        activeApp = this;
 }
 
 AppBase::~AppBase()
 {
-    activeApp = nullptr;
+    if (activeApp == this)
+        activeApp = nullptr;
     delete debuggerSupport;
 }
 
@@ -150,6 +151,10 @@ int AppBase::runApp(const std::vector<std::string>& args, InifileContents *ini)
 
 int AppBase::runApp(int argc, char *argv[], InifileContents *ini)
 {
+    if (activeApp && activeApp != this)
+        throw opp_runtime_error("AppBase::runApp(): Another app is already active");
+    activeApp = this;
+
     this->ini = ini;
     args = new ArgList();
     args->parse(argc, argv, ARGSPEC);
@@ -186,6 +191,7 @@ int AppBase::runApp(int argc, char *argv[], InifileContents *ini)
         displayException(e);
         exitCode = 1;
     }
+    activeApp = nullptr;
     return exitCode;
 }
 
