@@ -81,7 +81,39 @@ def csimplemodule_msg_ownership(klass, name):
 
 cppyy.py.add_pythonization(csimplemodule_msg_ownership, 'omnetpp')
 
-# TODO: add all pythonizations here?
+
+# This is a workaround for: https://github.com/wlav/cppyy/issues/95
+def enable_simtime_arithmetic(klass, name):
+    if name == "SimTime":
+        def add(self, other):
+            c = cppyy.gbl.omnetpp.SimTime(self)
+            c += other
+            return c
+        klass.__add__ = add
+
+        def sub(self, other):
+            c = cppyy.gbl.omnetpp.SimTime(self)
+            c -= other
+            return c
+        klass.__sub__ = sub
+
+        """ TODO:
+        *	__mul__(self, other)
+        /	__truediv__(self, other)
+        //	__floordiv__(self, other)
+        %	__mod__(self, other)
+        **	__pow__(self, other)
+        >>	__rshift__(self, other)
+        <<	__lshift__(self, other)
+        &	__and__(self, other)
+        |	__or__(self, other)
+        ^	__xor__(self, other)
+        """
+
+        # also TODO: i... and r... methods?
+
+cppyy.py.add_pythonization(enable_simtime_arithmetic, 'omnetpp')
+
 
 cppyy.add_include_path(OMNETPP_ROOT + "/include")
 cppyy.include("omnetpp.h")
