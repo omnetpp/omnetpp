@@ -27,6 +27,10 @@
 #include "common/stringutil.h"
 #include "omnetpp/cexception.h"
 
+#if PY_MAJOR_VERSION == 3 && PY_MINOR_VERSION < 10
+#define Py_IsNone(x)  ((x) == Py_None)
+#endif
+
 namespace omnetpp {
 
 class cNedDeclaration;
