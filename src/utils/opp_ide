@@ -32,6 +32,10 @@ case $PLATFORM in
 	$IDEDIR/${LAUNCHER}.exe --launcher.openFile "$@" $DEFAULT_WORKSPACE_ARGS 2>$IDEDIR/error.log &
         ;;
 *Linux*)
+        if [[ $(grep -i microsoft /proc/version) ]]; then
+            # on WSLg we have to force an x11 backend because the default wayland backend has rendering issues
+            export GDK_BACKEND=x11
+        fi
 	$IDEDIR/${LAUNCHER} --launcher.openFile "$@" $DEFAULT_WORKSPACE_ARGS 2>$IDEDIR/error.log &
         ;;
 *Darwin*)
