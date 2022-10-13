@@ -839,9 +839,9 @@ void cSimulation::deleteNetwork()
         }
 
         // delete "simulation global" variables
-        int i = 0;
+        //int i = 0;
         for (auto& item : sharedData) {
-            std::cout << "deleting simulation global \"" << getSharedVariableName(i++) << "\" (" << item.first.typeName() << ")" << std::endl;
+            //std::cout << "deleting simulation global \"" << getSharedVariableName(i++) << "\" (" << item.first.typeName() << ")" << std::endl;
             item.second(); // call stored destructor
         }
         sharedData.clear();
