@@ -1,19 +1,21 @@
 %description:
 Basic test for Python module
 
-%file: test.ned
+%# Note: names of .ned and .py files must match
+%file: testx.ned
 
 simple MyModule {
-    @pythonClass;
+    @pythonClass;   // looks for "MyModule" in "testx.py"
 }
 
 network Test
 {
     submodules:
-        mod:      MyModule;
+        mod: MyModule;
 }
 
-%file: test.py
+%# Note: Don't call it "test.py", because it collides with Python's built-in "test" package
+%file: testx.py
 
 import cppyy
 
