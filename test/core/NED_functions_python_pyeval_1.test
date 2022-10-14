@@ -17,7 +17,7 @@ network Test
         int pye_i = pyeval("(2 ** 10) // 5");
         double pye_d = pyeval("(2 ** 10) / 2.5");
         bool pye_b = pyeval("'Hello World!'.startswith('Hello ')");
-        string pye_s = pyeval("'Hello World!'.removeprefix('Hello ')");
+        string pye_s = pyeval("'Hello World!'.replace('Hello','Bonjour')");
         object pye_l = pyeval("['Hello', 42]");
         object pye_m = pyeval("{'Hello': 'World!', 'answer': 42}");
         object pye_ll = pyeval("[['Hello', 'World!'], ['answer', 42]]");
@@ -59,7 +59,7 @@ module Test: Test {
         pye_i = 204
         pye_d = 409.6
         pye_b = true
-        pye_s = "World!"
+        pye_s = "Bonjour World!"
         pye_l = ["Hello", 42]
         pye_m = {Hello: "World!", answer: 42}
         pye_ll = [["Hello", "World!"], ["answer", 42]]

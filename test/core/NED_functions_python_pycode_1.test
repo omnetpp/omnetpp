@@ -16,7 +16,7 @@ network Test
         int pyc_i = pycode("return (2 ** 10) // 5");
         double pyc_d = pycode("return (2 ** 10) / 2.5");
         bool pyc_b = pycode("return 'Hello World!'.startswith('Hello ')");
-        string pyc_s = pycode("return 'Hello World!'.removeprefix('Hello ')");
+        string pyc_s = pycode("return 'Hello World!'.replace('Hello', 'Bonjour')");
         object pyc_l = pycode("return ['Hello', 42]");
         object pyc_m = pycode("return {'Hello': 'World!', 'answer': 42}");
         object pyc_ll = pycode("return [['Hello', 'World!'], ['answer', 42]]");
@@ -59,7 +59,7 @@ module Test: Test {
         pyc_i = 204
         pyc_d = 409.6
         pyc_b = true
-        pyc_s = "World!"
+        pyc_s = "Bonjour World!"
         pyc_l = ["Hello", 42]
         pyc_m = {Hello: "World!", answer: 42}
         pyc_ll = [["Hello", "World!"], ["answer", 42]]
