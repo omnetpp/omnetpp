@@ -68,15 +68,20 @@ bool cDynamicModuleType::isSimple() const
 
 cModule *cDynamicModuleType::createModuleObject()
 {
-    std::string pythonClassName = getQualifiedPythonClassName(getDecl());
+    cNedDeclaration *decl = getDecl();
+
+#ifdef WITH_PYTHONSIM
+    std::string pythonClassName = getQualifiedPythonClassName(decl);
     if (!pythonClassName.empty())
         return instantiatePythonObjectChecked<cSimpleModule>(pythonClassName.c_str());
-    else {
-        const char *classname = getDecl()->getImplementationClassName();
-        ASSERT(classname != nullptr);
+#else
+    if (decl->getProperties()->get("pythonClass") != nullptr)
+        throw cRuntimeError("Cannot instantiate module `%s': Python support is not enabled", getFullName());
+#endif
 
-        return instantiateModuleClass(classname);
-    }
+    const char *classname = decl->getImplementationClassName();
+    ASSERT(classname != nullptr);
+    return instantiateModuleClass(classname);
 }
 
 void cDynamicModuleType::addParametersAndGatesTo(cModule *module)

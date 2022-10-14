@@ -56,14 +56,20 @@ std::string cDynamicChannelType::getNedSource() const
 
 cChannel *cDynamicChannelType::createChannelObject()
 {
-    std::string pythonClassName = getQualifiedPythonClassName(getDecl());
+    cNedDeclaration *decl = getDecl();
+
+#ifdef WITH_PYTHONSIM
+    std::string pythonClassName = getQualifiedPythonClassName(decl);
     if (!pythonClassName.empty())
         return instantiatePythonObjectChecked<cChannel>(pythonClassName.c_str());
-    else {
-        const char *classname = getDecl()->getImplementationClassName();
-        ASSERT(classname != nullptr);
-        return instantiateChannelClass(classname);
-    }
+#else
+    if (decl->getProperties()->get("pythonClass") != nullptr)
+        throw cRuntimeError("Cannot instantiate channel `%s': Python support is not enabled", getFullName());
+#endif
+
+    const char *classname = decl->getImplementationClassName();
+    ASSERT(classname != nullptr);
+    return instantiateChannelClass(classname);
 }
 
 void cDynamicChannelType::addParametersTo(cChannel *channel)
