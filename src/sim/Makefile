@@ -85,7 +85,7 @@ ifeq ($(WITH_PARSIM),yes)
   IMPLIBS += $(MPI_LIBS)
 endif
 
-ifeq ($(WITH_PYTHON),yes)
+ifeq ($(WITH_PYTHONSIM),yes)
   COPTS += $(PYTHON_CFLAGS)
   IMPLIBS += $(PYTHON_LIBS)
 endif

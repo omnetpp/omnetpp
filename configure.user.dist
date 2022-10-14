@@ -77,7 +77,7 @@ WITH_NETBUILDER=yes
 #
 # Whether to support embedded Python.
 #
-WITH_PYTHON=yes
+WITH_PYTHONSIM=yes
 
 #
 # Set to "yes" to allow the use of LibXML2. OMNeT++ will only use LibXML for loading

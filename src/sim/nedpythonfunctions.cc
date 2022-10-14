@@ -19,7 +19,7 @@
 #include "omnetpp/cnedfunction.h"
 #include "omnetpp/cexception.h"
 
-#ifdef WITH_PYTHON
+#ifdef WITH_PYTHONSIM
 
 #include <cstddef>
 #include <string>
@@ -41,7 +41,7 @@ class cComponent;
 
 void nedpythonfunctions_dummy() {} //see util.cc
 
-#ifdef WITH_PYTHON
+#ifdef WITH_PYTHONSIM
 
 static const char *CPP_CONTAINER_UNWRAP_CODE = R"(
 import cppyy
@@ -318,12 +318,12 @@ PyObject *makeGlobalsWithAccessor(cComponent *contextComponent)
     return globals;
 }
 
-#endif // WITH_PYTHON
+#endif // WITH_PYTHONSIM
 
 
 cValue nedf_pyeval(cComponent *contextComponent, cValue argv[], int argc)
 {
-#ifdef WITH_PYTHON
+#ifdef WITH_PYTHONSIM
     try {
         ensurePythonInterpreter();
 
@@ -363,7 +363,7 @@ cValue nedf_pyeval(cComponent *contextComponent, cValue argv[], int argc)
 
 cValue nedf_pycode(cComponent *contextComponent, cValue argv[], int argc)
 {
-#ifdef WITH_PYTHON
+#ifdef WITH_PYTHONSIM
     try {
         ensurePythonInterpreter();
 

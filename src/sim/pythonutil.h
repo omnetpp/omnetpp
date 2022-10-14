@@ -19,7 +19,7 @@
 
 #include "omnetpp/platdep/config.h"
 
-#ifdef WITH_PYTHON
+#ifdef WITH_PYTHONSIM
 
 #include <string>
 #include <Python.h>
@@ -56,7 +56,7 @@ T *instantiatePythonObjectChecked(const char *pythonClassQName) {
 
 }  // namespace omnetpp
 
-#endif  // WITH_PYTHON
+#endif  // WITH_PYTHONSIM
 
 #endif // __OMNETPP_PYTHONUTIL_H
 
