@@ -15,8 +15,8 @@
 #CXX=g++
 
 #
-# Set to "no" if you want to use gcc/g++ instead of default clang/clang++ when both
-# compiler is installed.
+# Set to "no" if you want to use gcc/g++ instead of the default clang/clang++ when both
+# compilers are installed.
 #
 PREFER_CLANG=yes
 
@@ -75,7 +75,9 @@ WITH_OSGEARTH=no
 WITH_NETBUILDER=yes
 
 #
-# Whether to support embedded Python.
+# Whether to support using Python in simulations. This feature includes the
+# availability of the pyeval()/pycode() NED functions, the @pythonClass NED module
+# property, etc.
 #
 WITH_PYTHONSIM=yes
 
