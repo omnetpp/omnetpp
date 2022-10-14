@@ -58,6 +58,8 @@ network Test
 %# printing order of sets could change by implementation, stripping all but a single element
 %subst: /\(<class 'set'>\) '{.*'sets'.*}'/(<class 'set'>) '{ ... 'sets' ... }'/
 
+%# error message has changed somewhere between Python 3.8 and 3.10
+%subst: /unexpected EOF while parsing/invalid syntax/
 
 %contains: stdout
 ==============================
