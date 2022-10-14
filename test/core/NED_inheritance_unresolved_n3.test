@@ -1,0 +1,12 @@
+%description:
+unresolved base class etc
+
+%file: test.ned
+
+moduleinterface A extends Missing { }
+
+%exitcode: 1
+
+%contains: stderr
+Cannot resolve type Missing, at
+
