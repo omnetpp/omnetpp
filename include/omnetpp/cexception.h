@@ -19,6 +19,7 @@
 #include <cstdarg>
 #include <exception>
 #include <stdexcept>
+#include <vector>
 #include "simkerneldefs.h"
 #include "simtime_t.h"
 #include "errmsg.h"
@@ -44,6 +45,8 @@ class cEnvir;
  */
 typedef int ErrorCodeInt;
 
+class cRuntimeError;
+
 /**
  * @brief Exception class.
  *
@@ -68,6 +71,8 @@ class SIM_API cException : public std::exception, public cObject
     int contextComponentId;
     int contextComponentKind; // actually cComponent::ComponentKind
 
+    std::vector<cRuntimeError*> nestedExceptions; // exceptions that occur while handling this exception
+
     /**
      * Helper function for constructors: assembles and stores the message text.
      * If the first arg is non-nullptr, the message text will be prepended (if needed)
@@ -91,6 +96,9 @@ class SIM_API cException : public std::exception, public cObject
     // main() has started, we print the error message and call exit(1).
     //
     void exitIfStartupError();
+
+  private:
+    void copy(const cException& other);
 
   public:
     // internal, for use in cSimulation::notifyLifecycleListeners()
@@ -133,18 +141,23 @@ class SIM_API cException : public std::exception, public cObject
      * Copy constructor. We unfortunately need to copy exception objects when
      * handing them back from an activity() method.
      */
-    cException(const cException&) = default;
+    cException(const cException&);
+
+    /**
+     * Destructor
+     */
+    virtual ~cException();
+
+    /**
+     * Assignment operator.
+     */
+    cException& operator=(const cException& other);
 
     /**
      * Creates and returns an exact copy of this object. We unfortunately need
      * to copy exception objects when handing them back from an activity() method.
      */
     virtual cException *dup() const override {return new cException(*this);}
-
-    /**
-     * Destructor.
-     */
-    virtual ~cException() throw() {}
     //@}
 
     /** @name Updating the exception message */
@@ -158,6 +171,16 @@ class SIM_API cException : public std::exception, public cObject
      * Prefixes the message with the given text and a colon.
      */
     virtual void prependMessage(const char *txt) {msg = std::string(txt) + ": " + msg;}
+
+    /**
+     * Adds a nested exception.
+     */
+    virtual void addNestedException(std::exception& e);
+
+    /**
+     * Adds a nested exception.
+     */
+    virtual void addNestedException(cRuntimeError& e);
     //@}
 
     /** @name Getting exception info */
@@ -167,6 +190,11 @@ class SIM_API cException : public std::exception, public cObject
      * terminating condition (e.g. "Simulation completed").
      */
     virtual bool isError() const {return true;}
+
+    /**
+     * Delegates to e.isError() is e is a cException, and return true otherwise.
+     */
+    static bool isError(std::exception& e);
 
     /**
      * Returns the error code.
@@ -236,13 +264,18 @@ class SIM_API cException : public std::exception, public cObject
      */
     virtual int getContextComponentKind() const {return contextComponentKind;}
 
-
     /**
      * If the exception occurred within a simulation lifecycle listener
      * (cISimulationLifecycleListener), returns the lifecycle event type.
      * Otherwise, it returns -1.
      */
     virtual SimulationLifecycleEventType getLifecycleListenerType() const {return lifecycleListenerType;}
+
+    /**
+     * Returns the list of nested exceptions. Nested exceptions are exceptions
+     * that were thrown while handling this exception.
+     */
+    const std::vector<cRuntimeError*>& getNestedExceptions() const {return nestedExceptions;}
     //@}
 };
 

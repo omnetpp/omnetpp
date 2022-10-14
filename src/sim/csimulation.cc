@@ -689,12 +689,7 @@ void cSimulation::setupNetwork(cModuleType *networkType, cConfiguration *cfg)
     }
     catch (std::exception& e) {
         gotoState(SIM_ERROR);
-        notifyLifecycleListeners(LF_ON_SIMULATION_ERROR, e);
-        // Note: no deleteNetwork() call here. We could call it here, but it's
-        // dangerous: module destructors may try to delete uninitialized pointers
-        // and crash. (Often pointers incorrectly get initialized in initialize()
-        // and not in the constructor.)
-        throw;
+        notifyLifecycleListenersOnErrorThenRethrow(e);
     }
 
     bool debugStatisticsRecording = getConfig()->getAsBool(CFGID_DEBUG_STATISTICS_RECORDING);
@@ -738,8 +733,7 @@ void cSimulation::callInitialize()
     catch (std::exception& e) {
         cLogProxy::flushLastLine();
         gotoState(SIM_ERROR);
-        notifyLifecycleListeners(LF_ON_SIMULATION_ERROR, e);
-        throw;
+        notifyLifecycleListenersOnErrorThenRethrow(e);
     }
 }
 
@@ -779,8 +773,7 @@ void cSimulation::callFinish()
     catch (std::exception& e) {
         cLogProxy::flushLastLine();
         gotoState(SIM_ERROR);
-        notifyLifecycleListeners(LF_ON_SIMULATION_ERROR, e);
-        throw;
+        notifyLifecycleListenersOnErrorThenRethrow(e);
     }
 
     checkFingerprint();
@@ -870,8 +863,7 @@ void cSimulation::deleteNetwork()
     }
     catch (std::exception& e) {
         gotoState(SIM_ERROR);
-        notifyLifecycleListeners(LF_ON_SIMULATION_ERROR, e);
-        throw;
+        notifyLifecycleListenersOnErrorThenRethrow(e);
     }
 
 #ifdef DEVELOPER_DEBUG
@@ -1026,7 +1018,7 @@ void cSimulation::executeEvent(cEvent *event)
     catch (std::exception& e) {
         // restore global context before throwing the exception further
         // but wrap into a cRuntimeError which captures the module before that
-        cRuntimeError e2("%s: %s", opp_typename(typeid(e)), e.what());
+        cRuntimeError e2(e);
         setGlobalContext();
         throw e2;
     }
@@ -1101,7 +1093,6 @@ bool cSimulation::run(IRunner *runner, bool shouldCallFinish)
         gotoState(SIM_TERMINATED);
         setTerminationReason(e.dup());
         notifyLifecycleListeners(LF_ON_SIMULATION_SUCCESS, &e);
-
         if (shouldCallFinish)
             callFinish();
         return false;
@@ -1109,8 +1100,7 @@ bool cSimulation::run(IRunner *runner, bool shouldCallFinish)
     catch (std::exception& e) {
         stopwatch->stopClock();
         gotoState(SIM_ERROR);
-        notifyLifecycleListeners(LF_ON_SIMULATION_ERROR, e);
-        throw;
+        notifyLifecycleListenersOnErrorThenRethrow(e);
     }
 }
 
@@ -1315,10 +1305,29 @@ std::vector<cISimulationLifecycleListener*> cSimulation::getLifecycleListeners()
     return listeners;
 }
 
-void cSimulation::notifyLifecycleListeners(SimulationLifecycleEventType eventType, const std::exception& e)
+void cSimulation::notifyLifecycleListenersOnErrorThenRethrow(std::exception& exceptionBeingHandled)
 {
-    cRuntimeError re(e);
-    notifyLifecycleListeners(eventType, &re);
+    if (dynamic_cast<cRuntimeError*>(&exceptionBeingHandled)) {
+        cRuntimeError& re = static_cast<cRuntimeError&>(exceptionBeingHandled); // cast
+        notifyLifecycleListenersOnError(re);
+        throw re;
+    }
+    else {
+        cRuntimeError re(exceptionBeingHandled); // wrap
+        notifyLifecycleListenersOnError(re);
+        throw re;
+    }
+}
+
+void cSimulation::notifyLifecycleListenersOnError(cRuntimeError& exceptionBeingHandled)
+{
+    // To be called while handling an exception. Exceptions during handling will be added to the (parent) exception.
+    try {
+        notifyLifecycleListeners(LF_ON_SIMULATION_ERROR, &exceptionBeingHandled);
+    }
+    catch (std::exception& e) {
+        exceptionBeingHandled.addNestedException(e);
+    }
 }
 
 void cSimulation::notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details)
@@ -1332,20 +1341,20 @@ void cSimulation::notifyLifecycleListeners(SimulationLifecycleEventType eventTyp
             listener->lifecycleEvent(eventType, details);  // let exceptions through, because errors must cause exitCode!=0
         CodeFragments::executeAll(eventType, false);
     }
-    catch (cException& e) {
+    catch (cRuntimeError& e) {
         e.setLifecycleListenerType(eventType);
         gotoState(SIM_ERROR);
         if (eventType != LF_ON_SIMULATION_ERROR) // prevent the same error from occurring again
-            notifyLifecycleListeners(LF_ON_SIMULATION_ERROR, &e);
+            notifyLifecycleListenersOnErrorThenRethrow(e);
         throw;
     }
     catch (std::exception& e) {
         gotoState(SIM_ERROR);
+        cRuntimeError re(e);
+        re.setLifecycleListenerType(eventType);
         if (eventType != LF_ON_SIMULATION_ERROR) // prevent the same error from occurring again
-            notifyLifecycleListeners(LF_ON_SIMULATION_ERROR, e);
-        cRuntimeError e2(e);
-        e2.setLifecycleListenerType(eventType);
-        throw e2;
+            notifyLifecycleListenersOnErrorThenRethrow(re);
+        throw;
     }
 }
 

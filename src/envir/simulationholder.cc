@@ -126,37 +126,47 @@ void SimulationHolder::setupAndRunSimulation(cSimulation *simulation, cConfigura
         cSimulation::setActiveSimulation(simulation);
 
         simulation->setupNetwork(cfg);
-        simulation->run(runner, false);
-
-        bool isTerminated = simulation->getState() == cSimulation::SIM_TERMINATED;
+        bool isTerminated = !simulation->run(runner, false);
         if (isTerminated) {
             cTerminationException *e = simulation->getTerminationReason();
-            printException(*e);  // must display the exception here (and not inside catch), so that it doesn't appear out-of-order in the output
-            terminationReason = e;
+            terminationReason = e->dup();
         }
 
         simulation->callFinish();
 
-        deleteNetwork(simulation);
+        simulation->deleteNetwork();
+
+        if (isOutputRedirected())
+            logException(*terminationReason);
         if (isOutputRedirected())
             stopOutputRedirection();
     }
-    catch (std::exception& e) {
-        printException(e);  // must display the exception here (and not inside catch), so that it doesn't appear out-of-order in the output
-        deleteNetwork(simulation);
+    catch (cRuntimeError& e) {
+        deleteNetworkOnError(simulation, e);
+        if (isOutputRedirected())
+            logException(e);
         if (isOutputRedirected())
             stopOutputRedirection();
         throw;
     }
+    catch (std::exception& e) {
+        cRuntimeError re(e);
+        deleteNetworkOnError(simulation, re);
+        if (isOutputRedirected())
+            logException(re);
+        if (isOutputRedirected())
+            stopOutputRedirection();
+        throw re;
+    }
 }
 
-void SimulationHolder::deleteNetwork(cSimulation *simulation)
+void SimulationHolder::deleteNetworkOnError(cSimulation *simulation, cRuntimeError& error)
 {
     try {
         simulation->deleteNetwork();
     }
     catch (std::exception& e) {
-        printException(e, "during cleanup");
+        error.addNestedException(e);
     }
 }
 
@@ -189,25 +199,14 @@ bool SimulationHolder::isOutputRedirected()
     return out.rdbuf() != std::cout.rdbuf();
 }
 
-void SimulationHolder::printException(std::exception& ex, const char *when)
+void SimulationHolder::logException(std::exception& ex)
 {
-    std::string msg = dynamic_cast<cException *>(&ex) ? ((cException*)(&ex))->getFormattedMessage() : ex.what();
-    if (dynamic_cast<cTerminationException*>(&ex) != nullptr) {
-        out << endl << "<!> " << msg << endl;
-    }
-    else {
-        if (!opp_isempty(when))
-            msg = std::string("Error ") + when + ": " + msg;
-        std::ostream& err = useStderr && !isOutputRedirected() ? std::cerr : out;
-        if (isOutputRedirected())
-            (useStderr ? std::cerr : std::cout) << "<!> Error -- see " << redirectionFilename << " for details" << endl;
-
-        if (msg.substr(0,5) == "Error")
-            err << endl << "<!> " << msg << endl;
-        else
-            err << endl << "<!> Error: " << msg << endl;
-    }
+    std::string msg = dynamic_cast<cException *>(&ex) ? ((cException*)(&ex))->getFormattedMessage() : ex.what();  //TODO override what()?
+    if (dynamic_cast<cTerminationException*>(&ex) == nullptr && msg.substr(0,5) != "Error")
+        msg = "Error: " + msg;
+    out << "\n<!> " << msg << endl << endl;
 }
+
 
 }  // namespace envir
 }  // namespace omnetpp

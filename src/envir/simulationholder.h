@@ -48,8 +48,8 @@ class SimulationHolder
     virtual void startOutputRedirection(const char *fileName);
     virtual void stopOutputRedirection();
     virtual bool isOutputRedirected();
-    virtual void printException(std::exception& e, const char *when=nullptr);
-    virtual void deleteNetwork(cSimulation *simulation);
+    virtual void deleteNetworkOnError(cSimulation *simulation, cRuntimeError& error);
+    virtual void logException(std::exception& e);
 
   public:
     static cINedLoader *createConfiguredNedLoader(cConfiguration *cfg, ArgList *args=nullptr);
@@ -58,7 +58,7 @@ class SimulationHolder
     virtual void setUseStderr(bool useStderr) {this->useStderr = useStderr;}
     virtual void setupAndRunSimulation(cConfiguration *cfg, IRunner *runner=nullptr, const char *redirectFileName=nullptr);
     virtual void setupAndRunSimulation(cSimulation *simulation, cConfiguration *cfg, IRunner *runner=nullptr, const char *redirectFileName=nullptr);
-    const cTerminationException *getTerminationReason() const {return terminationReason;}  // stopping reason in case of normal (error-free) simulation execution
+    cTerminationException *getTerminationReason() const {return terminationReason;}  // stopping reason in case of normal (error-free) simulation execution
 };
 
 }  // namespace envir

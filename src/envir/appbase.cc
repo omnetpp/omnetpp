@@ -634,7 +634,10 @@ std::string AppBase::getFormattedMessage(std::exception& ex)
 
 void AppBase::displayException(std::exception& ex)
 {
-    alert(getFormattedMessage(ex).c_str());
+    std::string msg = getFormattedMessage(ex);
+    if (dynamic_cast<cTerminationException*>(&ex) == nullptr && msg.substr(0,5) != "Error")
+        msg = "Error: " + msg;
+    alert(msg.c_str());
 }
 
 }  // namespace envir

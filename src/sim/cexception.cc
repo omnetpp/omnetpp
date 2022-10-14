@@ -70,6 +70,28 @@ cException::cException(const cObject *where, const char *msgFormat...) : std::ex
     init(where, E_CUSTOM, msg);
 }
 
+cException::cException(const cException& other)
+{
+    copy(other);
+}
+
+cException::~cException()
+{
+    for (cRuntimeError *e : nestedExceptions)
+        delete e;
+}
+
+cException& cException::operator=(const cException& other)
+{
+    if (this == &other)
+        return *this;
+    for (cRuntimeError *e : nestedExceptions)
+        delete e;
+    nestedExceptions.clear();
+    copy(other);
+    return *this;
+}
+
 void cException::storeContext()
 {
     cSimulation *sim = cSimulation::getActiveSimulation();
@@ -140,6 +162,43 @@ void cException::init(const cObject *where, ErrorCode errorcode, const std::stri
     exitIfStartupError();
 }
 
+void cException::addNestedException(std::exception& e)
+{
+    if (dynamic_cast<cRuntimeError*>(&e) != nullptr)
+        addNestedException(static_cast<cRuntimeError&>(e));
+    else {
+        cRuntimeError re(e);
+        addNestedException(re);
+    }
+}
+
+void cException::addNestedException(cRuntimeError& e)
+{
+    std::cout << "addNestedException " << e.getFormattedMessage() << std::endl;
+    nestedExceptions.push_back(e.dup());
+    std::cout << "  result: " << getFormattedMessage() << std::endl;
+}
+
+void cException::copy(const cException& other)
+{
+    errorCode = other.errorCode;
+    msg = other.msg;
+    simulation = other.simulation;
+    envir = other.envir;
+    simulationStage = other.simulationStage;
+    eventNumber = other.eventNumber;
+    simtime = other.simtime;
+    lifecycleListenerType = other.lifecycleListenerType;
+    hasContext_ = other.hasContext_;
+    contextClassName = other.contextClassName;
+    contextFullPath = other.contextFullPath;
+    contextComponentId = other.contextComponentId;
+    contextComponentKind = other.contextComponentKind;
+
+    for (cRuntimeError *e : other.nestedExceptions)
+        nestedExceptions.push_back(e->dup());
+}
+
 static const char *getKindStr(cComponent::ComponentKind kind, bool capitalized)
 {
     switch (kind) {
@@ -172,8 +231,19 @@ std::string cException::getFormattedMessage() const
     }
 
     std::string whereWhen = opp_join(",", where.c_str(), when.c_str());
+
     std::string result = opp_join(" --", what(), whereWhen.c_str());  // note: isError() is not used
+
+    if (!nestedExceptions.empty())
+        result += " (also: further exceptions occurred while handling this exception)";  //TODO add details if requested?
+
     return result;
+}
+
+bool cException::isError(std::exception& e)
+{
+    cException *ex = dynamic_cast<cException*>(&e);
+    return ex ? ex->isError() : true;
 }
 
 //---
@@ -222,7 +292,11 @@ cRuntimeError::cRuntimeError(const cObject *where, const char *msgFormat...)
 
 cRuntimeError::cRuntimeError(const std::exception& e, const char *location)
 {
+    //ASSERT(dynamic_cast<cException *>(&e) == nullptr);  // do not use this if this is a cException, as it loses information!
     std::string msg = e.what();
+    std::string typeName = opp_typename(typeid(e));
+    if (opp_stringbeginswith(typeName.c_str(), "std::"))
+        msg = typeName + ": " + msg;
     if (!opp_isempty(location))
         msg += " -- at "s + location;
     init(nullptr, E_CUSTOM, msg);

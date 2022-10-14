@@ -217,10 +217,12 @@ bool Cmdenv::runSimulation(const char *configName, int runNumber)
         CmdenvSimulationHolder holder(this);
         holder.setBatchProgress((int)runsTried, (int)numRuns);
         holder.setupAndRunSimulation(cfg.get());
+        ASSERT(holder.getTerminationReason() != nullptr);
+        displayException(*holder.getTerminationReason());
         return true;
     }
     catch (std::exception& e) {
-        displayException(e); //TODO may be duplicate -- if already displayed inside the run call
+        displayException(e);
         return false;
     }
 }
