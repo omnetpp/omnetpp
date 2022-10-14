@@ -1,0 +1,12 @@
+%description:
+unresolved base class etc
+
+%file: test.ned
+
+module A like Missing { }
+
+%exitcode: 1
+
+%contains: stderr
+Cannot resolve type Missing, at
+
