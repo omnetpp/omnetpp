@@ -5459,6 +5459,9 @@ if os.name == 'posix':
 else:
   try_import("msvcrt")
 
+if os.environ['WITH_PYTHONSIM'] == 'yes':
+  try_import("cppyy")
+
 if failed:
   print(" ".join(failed))
   exit(1)
@@ -5469,18 +5472,18 @@ from omnetpp.scave import utils
 EOT
 )
 
-if output=$(python3 -c "$PYTHON_PACKAGE_CHECK_CODE") ; then
+if output=$(WITH_PYTHONSIM=$WITH_PYTHONSIM python3 -c "$PYTHON_PACKAGE_CHECK_CODE") ; then
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 printf "%s\n" "yes" >&6; }
 else
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
 printf "%s\n" "no" >&6; }
     if test -d ide; then
-      as_fn_error $? "Some Python modules required by the IDE were not found: $output" "$LINENO" 5
+      as_fn_error $? "The following Python modules required by the IDE and/or WITH_PYTHONSIM were not found: $output" "$LINENO" 5
     else
-      OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  Python modules ($output)"
-      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: Some Python modules required by the IDE were not found: $output" >&5
-printf "%s\n" "$as_me: WARNING: Some Python modules required by the IDE were not found: $output" >&2;}
+      OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  $output (python3 module/modules)"
+      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: The following Python modules required by the IDE and/or WITH_PYTHONSIM were not found: $output" >&5
+printf "%s\n" "$as_me: WARNING: The following Python modules required by the IDE and/or WITH_PYTHONSIM were not found: $output" >&2;}
     fi
 fi
 

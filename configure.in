@@ -794,6 +794,9 @@ if os.name == 'posix':
 else:
   try_import("msvcrt")
 
+if os.environ[['WITH_PYTHONSIM']] == 'yes':
+  try_import("cppyy")
+
 if failed:
   print(" ".join(failed))
   exit(1)
@@ -804,15 +807,15 @@ from omnetpp.scave import utils
 EOT
 )
 
-if output=$(python3 -c "$PYTHON_PACKAGE_CHECK_CODE") ; then
+if output=$(WITH_PYTHONSIM=$WITH_PYTHONSIM python3 -c "$PYTHON_PACKAGE_CHECK_CODE") ; then
     AC_MSG_RESULT(yes)
 else
     AC_MSG_RESULT(no)
     if test -d ide; then
-      AC_MSG_ERROR([Some Python modules required by the IDE were not found: $output])
+      AC_MSG_ERROR([The following Python modules required by the IDE and/or WITH_PYTHONSIM were not found: $output])
     else
-      OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  Python modules ($output)"
-      AC_MSG_WARN([Some Python modules required by the IDE were not found: $output])
+      OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  $output (python3 module/modules)"
+      AC_MSG_WARN([The following Python modules required by the IDE and/or WITH_PYTHONSIM were not found: $output])
     fi
 fi
 
