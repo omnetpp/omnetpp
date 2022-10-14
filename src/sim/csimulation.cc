@@ -1335,12 +1335,14 @@ void cSimulation::notifyLifecycleListeners(SimulationLifecycleEventType eventTyp
     catch (cException& e) {
         e.setLifecycleListenerType(eventType);
         gotoState(SIM_ERROR);
-        notifyLifecycleListeners(LF_ON_SIMULATION_ERROR, &e);
+        if (eventType != LF_ON_SIMULATION_ERROR) // prevent the same error from occurring again
+            notifyLifecycleListeners(LF_ON_SIMULATION_ERROR, &e);
         throw;
     }
     catch (std::exception& e) {
         gotoState(SIM_ERROR);
-        notifyLifecycleListeners(LF_ON_SIMULATION_ERROR, e);
+        if (eventType != LF_ON_SIMULATION_ERROR) // prevent the same error from occurring again
+            notifyLifecycleListeners(LF_ON_SIMULATION_ERROR, e);
         cRuntimeError e2(e);
         e2.setLifecycleListenerType(eventType);
         throw e2;
