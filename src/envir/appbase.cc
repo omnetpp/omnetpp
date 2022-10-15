@@ -627,16 +627,9 @@ void AppBase::crashHandler(int)
     }
 }
 
-std::string AppBase::getFormattedMessage(std::exception& ex)
-{
-    return dynamic_cast<cException *>(&ex) ? ((cException*)(&ex))->getFormattedMessage() : ex.what();
-}
-
 void AppBase::displayException(std::exception& ex)
 {
-    std::string msg = getFormattedMessage(ex);
-    if (dynamic_cast<cTerminationException*>(&ex) == nullptr && msg.substr(0,5) != "Error")
-        msg = "Error: " + msg;
+    std::string msg = cException::getFormattedMessage(ex);
     alert(msg.c_str());
 }
 

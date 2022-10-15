@@ -1904,7 +1904,7 @@ bool Qtenv::ensureDebugger(cRuntimeError *error)
     if (error) {
         title = "Runtime Error";
         message = QString("A runtime error occurred:\n\n") +
-                error->getFormattedMessage().c_str();
+                error->getFormattedMessage(false).c_str();
         error->displayed = true;
 
         if (debuggerPresent)
@@ -2522,7 +2522,7 @@ void Qtenv::showException(std::exception& e)
         if (runtimeError->displayed)
             return;
 
-    confirm(ERROR, getFormattedMessage(e).c_str());
+    confirm(ERROR, cException::getFormattedMessage(e,false).c_str());
 }
 
 std::string Qtenv::gets(const char *prompt, const char *defaultReply)

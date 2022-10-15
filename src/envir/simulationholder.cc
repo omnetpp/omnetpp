@@ -44,7 +44,7 @@ using namespace omnetpp::internal;
 namespace omnetpp {
 namespace envir {
 
-class VerboseListener : public cISimulationLifecycleListener
+class VerboseListener : public cISimulationLifecycleListener //TODO merge into Holder
 {
   private:
     std::ostream& out;
@@ -60,7 +60,9 @@ void VerboseListener::lifecycleEvent(SimulationLifecycleEventType eventType, cOb
     case LF_PRE_NETWORK_SETUP: out << "Setting up network \"" << check_and_cast<cModuleType *>(details)->getFullName() << "\"..." << endl; break;
     case LF_PRE_NETWORK_INITIALIZE: out << "Initializing..." << endl; break;
     case LF_ON_SIMULATION_START: out << "\nRunning simulation..." << endl; break;
-    case LF_PRE_NETWORK_FINISH: out << "\nCalling finish() at end of Run #" << cSimulation::getActiveSimulation()->getConfig()->getVariable(CFGVAR_RUNNUMBER) << "..." << endl;
+    case LF_PRE_NETWORK_FINISH: out << "\nCalling finish() at end of Run #" << cSimulation::getActiveSimulation()->getConfig()->getVariable(CFGVAR_RUNNUMBER) << "..." << endl; break;
+    case LF_ON_SIMULATION_SUCCESS: out << "\n<!> " << check_and_cast<cException*>(details)->getFormattedMessage() << endl; break;
+    case LF_ON_SIMULATION_ERROR: out << "\n<!> " << check_and_cast<cException*>(details)->getFormattedMessage() << endl; break;
     default: break;
     }
 }
@@ -201,9 +203,7 @@ bool SimulationHolder::isOutputRedirected()
 
 void SimulationHolder::logException(std::exception& ex)
 {
-    std::string msg = dynamic_cast<cException *>(&ex) ? ((cException*)(&ex))->getFormattedMessage() : ex.what();  //TODO override what()?
-    if (dynamic_cast<cTerminationException*>(&ex) == nullptr && msg.substr(0,5) != "Error")
-        msg = "Error: " + msg;
+    std::string msg = cException::getFormattedMessage(ex);
     out << "\n<!> " << msg << endl << endl;
 }
 

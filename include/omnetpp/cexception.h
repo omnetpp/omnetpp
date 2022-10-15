@@ -186,13 +186,13 @@ class SIM_API cException : public std::exception, public cObject
     /** @name Getting exception info */
     //@{
     /**
-     * Whether the exception represents an error or a normal (non-error)
-     * terminating condition (e.g. "Simulation completed").
+     * Whether the exception represents an error, or a non-error condition
+     * such as warning or normal termination (e.g. "Simulation completed").
      */
-    virtual bool isError() const {return true;}
+    virtual bool isError() const {return false;}
 
     /**
-     * Delegates to e.isError() is e is a cException, and return true otherwise.
+     * Delegates to e.isError() if e is a cException, and returns true otherwise.
      */
     static bool isError(std::exception& e);
 
@@ -211,7 +211,12 @@ class SIM_API cException : public std::exception, public cObject
      * information, the event number and simulation time if available
      * and relevant, in addition to the exception message (what()).
      */
-    virtual std::string getFormattedMessage() const;
+    virtual std::string getFormattedMessage(bool addPrefix=true) const;
+
+    /**
+     * Delegates to e.getFormattedMessage() if e is a cException, and returns e.what() otherwise.
+     */
+    static std::string getFormattedMessage(std::exception& e, bool addPrefix=true);
 
     /**
      * Returns in which stage of the simulation the exception object was created:
@@ -391,6 +396,12 @@ class SIM_API cRuntimeError : public cException
      * exception objects when handing them back from an activity() method.
      */
     virtual cRuntimeError *dup() const override {return new cRuntimeError(*this);}
+
+    /**
+     * Overridden to return true.
+     */
+    virtual bool isError() const override {return true;}
+
 };
 
 /**

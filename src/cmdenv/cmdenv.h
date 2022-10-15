@@ -53,6 +53,7 @@ class CMDENV_API Cmdenv : public AppBase
 
    protected:
      virtual void alert(const char *msg) override;
+     virtual void displayException(std::exception& ex) override;
 
    public:
      Cmdenv();

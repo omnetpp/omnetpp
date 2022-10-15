@@ -26,7 +26,7 @@ scheduler-class = @TESTNAME@::ThrowingScheduler
 %activity:
 wait(1.0);
 
-%exitcode: 0
+%exitcode: 1
 
 %contains: stderr
-<!> Error during cleanup: Boom! -- during network cleanup in a POST_NETWORK_DELETE listener
+<!> Error: Boom! -- during network cleanup in a POST_NETWORK_DELETE listener

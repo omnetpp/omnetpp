@@ -218,11 +218,11 @@ bool Cmdenv::runSimulation(const char *configName, int runNumber)
         holder.setBatchProgress((int)runsTried, (int)numRuns);
         holder.setupAndRunSimulation(cfg.get());
         ASSERT(holder.getTerminationReason() != nullptr);
-        displayException(*holder.getTerminationReason());
         return true;
     }
     catch (std::exception& e) {
-        displayException(e);
+        if (!verbose || useStderr) // if verbose, it was already printed (maybe only in the redirection file though)
+            displayException(e);
         return false;
     }
 }
@@ -243,6 +243,13 @@ void Cmdenv::deinstallSigintHandler()
 {
     signal(SIGINT, SIG_DFL);
     signal(SIGTERM, SIG_DFL);
+}
+
+void Cmdenv::displayException(std::exception& ex)
+{
+    std::string msg = cException::getFormattedMessage(ex);
+    std::ostream& os = (cException::isError(ex) && useStderr) ? std::cerr : out;
+    os << "\n<!> " << msg << endl << endl;
 }
 
 void Cmdenv::alert(const char *msg)

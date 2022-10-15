@@ -10,8 +10,6 @@ class Noisy
     virtual ~Noisy() {EV << "Noisy dtor!\n";}
 };
 
-
-
 %activity:
 EV << "begin\n";
 Noisy x;

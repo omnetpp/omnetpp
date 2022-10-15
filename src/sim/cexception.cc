@@ -174,9 +174,7 @@ void cException::addNestedException(std::exception& e)
 
 void cException::addNestedException(cRuntimeError& e)
 {
-    std::cout << "addNestedException " << e.getFormattedMessage() << std::endl;
     nestedExceptions.push_back(e.dup());
-    std::cout << "  result: " << getFormattedMessage() << std::endl;
 }
 
 void cException::copy(const cException& other)
@@ -208,7 +206,7 @@ static const char *getKindStr(cComponent::ComponentKind kind, bool capitalized)
     }
 }
 
-std::string cException::getFormattedMessage() const
+std::string cException::getFormattedMessage(bool addPrefix) const
 {
     std::string when, where;
     switch (getSimulationStage()) {
@@ -234,6 +232,9 @@ std::string cException::getFormattedMessage() const
 
     std::string result = opp_join(" --", what(), whereWhen.c_str());  // note: isError() is not used
 
+    if (addPrefix && isError() && result.substr(0,5) != "Error")
+        result = "Error: " + result;
+
     if (!nestedExceptions.empty())
         result += " (also: further exceptions occurred while handling this exception)";  //TODO add details if requested?
 
@@ -244,6 +245,12 @@ bool cException::isError(std::exception& e)
 {
     cException *ex = dynamic_cast<cException*>(&e);
     return ex ? ex->isError() : true;
+}
+
+std::string cException::getFormattedMessage(std::exception& e, bool addPrefix)
+{
+    cException *ex = dynamic_cast<cException*>(&e);
+    return ex ? ex->getFormattedMessage(addPrefix) : std::string(e.what());
 }
 
 //---

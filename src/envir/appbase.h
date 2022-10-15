@@ -76,9 +76,8 @@ class ENVIR_API AppBase
     ArgList *getArgList() const {return args;}
     bool isVerbose() const {return verbose;}
     DebuggerSupport *getDebuggerSupport() const {return debuggerSupport;}
-    std::string getFormattedMessage(std::exception& ex);
 
-    void displayException(std::exception& ex);
+    virtual void displayException(std::exception& ex);
 
     virtual bool simulationRequired();
     virtual int doRunApp() = 0;

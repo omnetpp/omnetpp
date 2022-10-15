@@ -124,7 +124,7 @@ void Sender::trySend(cMessage *msg, const SendOptions& options)
         EV << endl;
     }
     catch (const cRuntimeError& e) {
-        EV << "ERROR: " << e.getFormattedMessage() << endl;
+        EV << "ERROR: " << e.what() << endl;
         delete msg;
     }
 }
@@ -234,16 +234,16 @@ MESSAGES:
 setting channel datarate=1e+06
 at t=100s send message with default --> ok, arrival=100.1s; channel idle
 at t=100s send message with sendDelay=200ms --> ok, arrival=100.3s; channel idle
-at t=100s send message with propagationDelay=100ms --> ERROR: send()/sendDelayed(): Specifying a propagation delay in the options is only allowed for sendDirect() -- in module (cSimpleModule_sendOptions_2::Sender) Test.sender (id=2), at t=100s, event #2
-at t=100s send message with duration=0s --> ERROR: send(): (omnetpp::cMessage) is a message, and the duration, remainingDuration, isUpdate and transmissionId send options are only allowed on packets -- in module (cSimpleModule_sendOptions_2::Sender) Test.sender (id=2), at t=100s, event #2
-at t=100s send message with duration=100ms --> ERROR: send(): (omnetpp::cMessage) is a message, and the duration, remainingDuration, isUpdate and transmissionId send options are only allowed on packets -- in module (cSimpleModule_sendOptions_2::Sender) Test.sender (id=2), at t=100s, event #2
-at t=100s send message with isUpdate transmissionId=99 --> ERROR: send(): (omnetpp::cMessage) is a message, and the duration, remainingDuration, isUpdate and transmissionId send options are only allowed on packets -- in module (cSimpleModule_sendOptions_2::Sender) Test.sender (id=2), at t=100s, event #2
+at t=100s send message with propagationDelay=100ms --> ERROR: send()/sendDelayed(): Specifying a propagation delay in the options is only allowed for sendDirect()
+at t=100s send message with duration=0s --> ERROR: send(): (omnetpp::cMessage) is a message, and the duration, remainingDuration, isUpdate and transmissionId send options are only allowed on packets
+at t=100s send message with duration=100ms --> ERROR: send(): (omnetpp::cMessage) is a message, and the duration, remainingDuration, isUpdate and transmissionId send options are only allowed on packets
+at t=100s send message with isUpdate transmissionId=99 --> ERROR: send(): (omnetpp::cMessage) is a message, and the duration, remainingDuration, isUpdate and transmissionId send options are only allowed on packets
 at t=100s send packet(len=1000) with duration=500ms --> ok, duration=500ms, arrival=100.6s; channel busy until t=100.5s
 at t=100.25s send message with default --> ok, arrival=100.35s; channel busy until t=100.5s
 
 DURATION: implicit, explicit:
 setting channel datarate=0
-at t=201s send packet(len=1000) with default --> ERROR: (omnetpp::cDatarateChannel)Test.sender.out.channel: Cannot send packet (omnetpp::cPacket): Unknown duration: No channel datarate, and no explicit duration supplied in the send call -- in module (cSimpleModule_sendOptions_2::Sender) Test.sender (id=2), at t=201s, event #9
+at t=201s send packet(len=1000) with default --> ERROR: (omnetpp::cDatarateChannel)Test.sender.out.channel: Cannot send packet (omnetpp::cPacket): Unknown duration: No channel datarate, and no explicit duration supplied in the send call
 at t=202s send packet(len=1000) with duration=0s --> ok, duration=0s, arrival=202.1s; channel idle
 at t=203s send packet(len=1000) with duration=100ms --> ok, duration=100ms, arrival=203.2s; channel busy until t=203.1s
 setting channel datarate=1e+06
@@ -254,13 +254,13 @@ at t=206s send packet(len=1000) with duration=300ms --> ok, duration=300ms, arri
 BUSY CHANNEL:
 setting channel datarate=1e+06
 at t=301s send packet(len=1000) with duration=500ms --> ok, duration=500ms, arrival=301.6s; channel busy until t=301.5s
-at t=301s send packet(len=1000) with default --> ERROR: Cannot send packet (omnetpp::cPacket): Channel is currently busy with an ongoing transmission -- please rewrite the sender module to only send when the previous transmission has already finished, using cGate::getTransmissionFinishTime(), scheduleAt(), and possibly a cPacketQueue for storing packets waiting to be transmitted -- in module (cSimpleModule_sendOptions_2::Sender) Test.sender (id=2), at t=301s, event #21
-at t=301.1s send packet(len=1000) with default --> ERROR: Cannot send packet (omnetpp::cPacket): Channel is currently busy with an ongoing transmission -- please rewrite the sender module to only send when the previous transmission has already finished, using cGate::getTransmissionFinishTime(), scheduleAt(), and possibly a cPacketQueue for storing packets waiting to be transmitted -- in module (cSimpleModule_sendOptions_2::Sender) Test.sender (id=2), at t=301.1s, event #22
+at t=301s send packet(len=1000) with default --> ERROR: Cannot send packet (omnetpp::cPacket): Channel is currently busy with an ongoing transmission -- please rewrite the sender module to only send when the previous transmission has already finished, using cGate::getTransmissionFinishTime(), scheduleAt(), and possibly a cPacketQueue for storing packets waiting to be transmitted
+at t=301.1s send packet(len=1000) with default --> ERROR: Cannot send packet (omnetpp::cPacket): Channel is currently busy with an ongoing transmission -- please rewrite the sender module to only send when the previous transmission has already finished, using cGate::getTransmissionFinishTime(), scheduleAt(), and possibly a cPacketQueue for storing packets waiting to be transmitted
 at t=301.5s send packet(len=1000) with default --> ok, duration=1ms, arrival=301.601s; channel busy until t=301.501s
 
 TX UPDATE: invalid transmissionId:
 setting channel datarate=1e+06
-at t=401s send packet(len=1000) with isUpdate transmissionId=99 --> ERROR: Cannot send transmission update packet (omnetpp::cPacket): transmissionId=99 does not match that of the last transmission on the channel -- in module (cSimpleModule_sendOptions_2::Sender) Test.sender (id=2), at t=401s, event #27
+at t=401s send packet(len=1000) with isUpdate transmissionId=99 --> ERROR: Cannot send transmission update packet (omnetpp::cPacket): transmissionId=99 does not match that of the last transmission on the channel
 
 TX UPDATE: with no datarate
 setting channel datarate=0
@@ -270,7 +270,7 @@ at t=402s send packet(len=1000) with duration=100ms transmissionId=20 --> ok, du
 at t=402.05s send packet(len=1000) with duration=100ms isUpdate transmissionId=20 --> ok, update with remainingDuration=50ms, duration=100ms, arrival=402.15s; channel busy until t=402.1s
 at t=402.06s send packet(len=1000) with isUpdate transmissionId=20 remainingDuration=20ms --> ok, update with remainingDuration=20ms, duration=80ms, arrival=402.16s; channel busy until t=402.08s
 at t=402.07s send packet(len=1000) with isUpdate transmissionId=20 remainingDuration=0s --> ok, update with remainingDuration=0s, duration=70ms, arrival=402.17s; channel idle
-at t=402.071s send packet(len=1000) with isUpdate transmissionId=20 remainingDuration=0s --> ERROR: Cannot send transmission update packet (omnetpp::cPacket): It has missed the end of the transmission to be updated -- in module (cSimpleModule_sendOptions_2::Sender) Test.sender (id=2), at t=402.071s, event #32
+at t=402.071s send packet(len=1000) with isUpdate transmissionId=20 remainingDuration=0s --> ERROR: Cannot send transmission update packet (omnetpp::cPacket): It has missed the end of the transmission to be updated
 
 TX UPDATE: with datarate
 setting channel datarate=10000

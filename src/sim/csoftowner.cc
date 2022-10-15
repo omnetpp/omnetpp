@@ -98,7 +98,7 @@ void cSoftOwner::objectStealingOnDeletion(cOwnedObject *obj)
     if (!allowObjectStealing) {
         // note 1: we cannot throw an exception, as C++ forbids throwing in a destructor, and noexcept(false) is not workable
         // note 2: cannot print obj->getClassName(), as type is already lost at this point (will always be cOwnedObject)
-        cRuntimeError ex("Warning: Context component %s is deleting an object named \"%s\" it doesn't own, owner is %s; set %s=true to disable this error message",
+        cException ex("Warning: Context component %s is deleting an object named \"%s\" it doesn't own, owner is %s; set %s=true to disable this error message",
                 owningContext->getClassAndFullName().c_str(),
                 obj->getFullName(),
                 getClassAndFullName().c_str(),

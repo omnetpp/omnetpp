@@ -69,7 +69,7 @@ cModule::~cModule()
 {
     // ensure we are invoked from deleteModule()
     if (componentId !=-1 && (flags&FL_DELETING) == 0) {
-        alert(this, "Fatal: Direct deletion of a module is illegal, use deleteModule() instead; ABORTING");
+        alert(this, "Direct deletion of a module is illegal, use deleteModule() instead; ABORTING");
         abort();
     }
 

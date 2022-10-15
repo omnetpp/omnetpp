@@ -57,4 +57,4 @@ cmdenv-express-mode = false
 cmdenv-event-banners = false
 
 %contains: stdout
-<!> (omnetpp::cModule)Test.node: Fatal: Direct deletion of a module is illegal, use deleteModule() instead; ABORTING -- in module (cModule_deleteModule_n2::Tester) Test.tester (id=3), at t=0s, event #1
+<!> Error: (omnetpp::cModule)Test.node: Direct deletion of a module is illegal, use deleteModule() instead; ABORTING -- in module (cModule_deleteModule_n2::Tester) Test.tester (id=3), at t=0s, event #1
