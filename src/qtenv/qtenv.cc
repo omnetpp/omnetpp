@@ -1654,12 +1654,11 @@ void Qtenv::checkTimeLimits()
     stopwatch.checkTimeLimits();
 }
 
-void Qtenv::printException(std::exception& ex, const char *when)
+void Qtenv::printException(std::exception& ex)
 {
     // print exception text into main window
     cException *e = dynamic_cast<cException *>(&ex);
     if (e && e->getSimulationStage() != cSimulation::STAGE_NONE) {
-        //TODO add "when" info
         std::string txt = opp_stringf("<!> %s\n", e->getFormattedMessage().c_str());
         logBuffer.addInfo(txt.c_str());
     }

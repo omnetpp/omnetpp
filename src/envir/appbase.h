@@ -35,8 +35,7 @@ class InifileContents;
 class DebuggerSupport;
 
 /**
- * @brief An Envir that can be instantiated as a user interface, like Cmdenv
- * and Qtenv.
+ * @brief Base class for user interfaces like Cmdenv and Qtenv.
  *
  * @ingroup SimSupport
  */
@@ -55,11 +54,7 @@ class ENVIR_API AppBase
     static AppBase *activeApp;
 
   public:
-    /**
-     * Constructor
-     */
     AppBase(std::ostream& out = std::cout);
-
     virtual ~AppBase();
 
     /**
@@ -77,21 +72,14 @@ class ENVIR_API AppBase
     static AppBase *getActiveApp() {return activeApp;}
 
     InifileContents *getInifileContents() const {return ini;}
-
     std::ostream& getOutputStream() const {return out;}
-
     ArgList *getArgList() const {return args;}
-
     bool isVerbose() const {return verbose;}
-
     DebuggerSupport *getDebuggerSupport() const {return debuggerSupport;}
-
     std::string getFormattedMessage(std::exception& ex);
 
     void displayException(std::exception& ex);
 
-//  protected:
-    // functions added locally
     virtual bool simulationRequired();
     virtual int doRunApp() = 0;
     void printHelp();
