@@ -130,6 +130,7 @@ void cNedLoader::loadNedFiles()
 //            if (opt->verbose)
 //                out << "Loading NED files from " << folder << ": ";
             int count = loadNedSourceFolder(folder.c_str(), nedExcludedPackages.c_str());
+            (void)count;
 //            if (opt->verbose)
 //                out << " " << count << endl;
             foldersLoaded.insert(folder);

@@ -57,6 +57,7 @@ type(type), lifecycleEvent(lifecycleEvent), code(code), sourceCode(sourceCode)
 {
     next = head;
     head = this;
+    (void)this->sourceCode; // eliminate warning
 }
 
 CodeFragments::CodeFragments(void(*code)(), const char *sourceCode, Type type) :
