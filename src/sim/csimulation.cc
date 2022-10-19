@@ -104,7 +104,8 @@ extern std::set<cOwnedObject *> objectlist;
 void printAllObjects();
 #endif
 
-cSimulation::SharedDataHandles *cSimulation::sharedDataHandles = nullptr;
+cSimulation::SharedDataHandles *cSimulation::sharedVariableHandles = nullptr;
+cSimulation::SharedDataHandles *cSimulation::sharedCounterHandles = nullptr;
 
 /**
  * Stops the simulation at the time it is scheduled for.
@@ -840,11 +841,11 @@ void cSimulation::deleteNetwork()
 
         // delete "simulation global" variables
         //int i = 0;
-        for (auto& item : sharedData) {
+        for (auto& item : sharedVariables) {
             //std::cout << "deleting simulation global \"" << getSharedVariableName(i++) << "\" (" << item.first.typeName() << ")" << std::endl;
             item.second(); // call stored destructor
         }
-        sharedData.clear();
+        sharedVariables.clear();
 
         // and clean up
         delete[] componentv;
@@ -1194,33 +1195,68 @@ uint64_t cSimulation::getUniqueNumber()
     return ret;
 }
 
-static std::recursive_mutex sharedDataMutex;
 
-sharedvarhandle_t cSimulation::registerSharedVariableName(const char *key)
+int cSimulation::SharedDataHandles::registerName(const char *name)
 {
-    std::lock_guard<std::recursive_mutex> lock(sharedDataMutex);
-
-    if (sharedDataHandles == nullptr)
-        sharedDataHandles = new SharedDataHandles();
-    auto it = sharedDataHandles->keyToHandle.find(key);
-    if (it != sharedDataHandles->keyToHandle.end())
+    auto it = nameToHandle.find(name);
+    if (it != nameToHandle.end())
         return it->second;
     else {
-        sharedDataHandles->keyToHandle[key] = ++sharedDataHandles->lastHandle;
-        return sharedDataHandles->lastHandle;
+        nameToHandle[name] = ++lastHandle;
+        return lastHandle;
     }
+}
+
+const char *cSimulation::SharedDataHandles::getNameFor(int handle)
+{
+    // linear search should suffice here (small number of items, non-performance-critical)
+    for (auto& pair : nameToHandle)
+        if (pair.second == handle)
+            return pair.first.c_str();
+    return nullptr;
+}
+
+static std::recursive_mutex sharedVariablesMutex;
+
+sharedvarhandle_t cSimulation::registerSharedVariableName(const char *name)
+{
+    std::lock_guard<std::recursive_mutex> lock(sharedVariablesMutex);
+    if (sharedVariableHandles == nullptr)
+        sharedVariableHandles = new SharedDataHandles();
+    return sharedVariableHandles->registerName(name);
 }
 
 const char *cSimulation::getSharedVariableName(sharedvarhandle_t handle)
 {
-    std::lock_guard<std::recursive_mutex> lock(sharedDataMutex);
+    std::lock_guard<std::recursive_mutex> lock(sharedVariablesMutex);
+    return sharedVariableHandles ? sharedVariableHandles->getNameFor(handle) : nullptr;
+}
 
-    // linear search should suffice here (small number of items, non-performance-critical)
-    if (sharedDataHandles)
-        for (auto& pair : sharedDataHandles->keyToHandle)
-            if (pair.second == handle)
-                return pair.first.c_str();
-    return nullptr;
+static std::recursive_mutex sharedCountersMutex;
+
+sharedcounterhandle_t cSimulation::registerSharedCounterName(const char *name)
+{
+    std::lock_guard<std::recursive_mutex> lock(sharedCountersMutex);
+    if (sharedCounterHandles == nullptr)
+        sharedCounterHandles = new SharedDataHandles();
+    return sharedCounterHandles->registerName(name);
+}
+
+const char *cSimulation::getSharedCounterName(sharedcounterhandle_t handle)
+{
+    std::lock_guard<std::recursive_mutex> lock(sharedCountersMutex);
+    return sharedCounterHandles ? sharedCounterHandles->getNameFor(handle) : nullptr;
+}
+
+uint64_t& cSimulation::getSharedCounter(sharedcounterhandle_t handle, uint64_t initialValue)
+{
+    const uint64_t INVALID = (uint64_t)-1;
+    if (sharedCounters.size() <= handle)
+        sharedCounters.resize(handle+1, INVALID);
+    uint64_t& counter = sharedCounters[handle];
+    if (counter == INVALID)
+        counter = initialValue;
+    return counter;
 }
 
 int cSimulation::getParsimProcId() const

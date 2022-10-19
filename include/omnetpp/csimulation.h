@@ -59,6 +59,14 @@ SIM_API extern OPP_THREAD_LOCAL cSoftOwner globalOwningContext; // also in globa
 typedef int sharedvarhandle_t;
 
 /**
+ * @brief Handles used for accessing simulation-wide counters.
+ *
+ * @see cSimulation::registerSharedCounterName(), cSimulation::getSharedCounter(),
+ * cSimulation::getNextSharedCounterValue()
+ */
+typedef int sharedcounterhandle_t;
+
+/**
  * @brief Simulation manager class.
  *
  * cSimulation is the central class in \opp. It stores the active simulation
@@ -155,17 +163,23 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
 #endif
 
     struct SharedDataHandles {
-        std::map<std::string,int> keyToHandle;
+        std::map<std::string,int> nameToHandle;
         int lastHandle = -1;
+        int registerName(const char *);
+        const char *getNameFor(int handle);
     };
-    static SharedDataHandles *sharedDataHandles;
 
-    // items allocated via getSharedVariable()
-    std::vector<std::pair<any_ptr,std::function<void()>>> sharedData; // handle -> (data,destructor)
+    // shared variables
+    static SharedDataHandles *sharedVariableHandles;
+    std::vector<std::pair<any_ptr,std::function<void()>>> sharedVariables; // handle -> (data,destructor)
 
-    // Data for getUniqueNumber()
+    // data for getUniqueNumber()
     uint64_t nextUniqueNumber;
     uint64_t uniqueNumbersEnd;
+
+    // shared counters
+    static SharedDataHandles *sharedCounterHandles;
+    std::vector<uint64_t> sharedCounters; // handle -> counter
 
     // Lifecycle listeners
     std::vector<cISimulationLifecycleListener*> listeners;
@@ -910,6 +924,38 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     virtual uint64_t getUniqueNumber();
 
     /**
+     * Assigns a handle to the given name, and returns it. The handle can be
+     * used as an argument for the getNextSharedCounterValue() method.
+     * It is allowed/recommended to allocate handles in static initializers. E.g:
+     *
+     * sharedcounterhandle_t Foo::counterHandle =
+     *     cSimulation::registerSharedCounterName("Foo::counter");
+     */
+    static sharedcounterhandle_t registerSharedCounterName(const char *name);
+
+    /**
+     * The inverse of registerSharedCounterName(): Returns the variable name
+     * from the handle, or nullptr if the handle is not in use.
+     */
+    static const char *getSharedCounterName(sharedcounterhandle_t handle);
+
+    /**
+     * Returns a reference to the shared counter identified by the handle.
+     * The handle should be allocated via registerSharedCounterName(). The
+     * initialValue argument is only used if the call is the first one to access
+     * the counter.
+     */
+    uint64_t& getSharedCounter(sharedcounterhandle_t handle, uint64_t initialValue=0);
+
+    /**
+     * Returns the next value from the shared counter identified by the handle.
+     * The handle should be allocated via registerSharedCounterName(). The
+     * initialValue argument is only used if the call is the first one to access
+     * the counter.
+     */
+    uint64_t getNextSharedCounterValue(sharedcounterhandle_t handle, uint64_t initialValue=0) {return ++getSharedCounter(handle,initialValue);}
+
+    /**
      * Writes a snapshot of the given object and its children to the
      * textual snapshot file.
      * This method is called internally from cSimpleModule's snapshot().
@@ -927,9 +973,9 @@ T& cSimulation::getSharedVariable(const char *name, Args&&... args)
 template <typename T, typename... Args>
 T& cSimulation::getSharedVariable(sharedvarhandle_t handle, Args&&... args)
 {
-    if (sharedData.size() <= handle)
-        sharedData.resize(handle+1);
-    auto& item = sharedData[handle];
+    if (sharedVariables.size() <= handle)
+        sharedVariables.resize(handle+1);
+    auto& item = sharedVariables[handle];
     if (item.first != nullptr)
         return *item.first.get<T>();
     else {
