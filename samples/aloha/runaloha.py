@@ -1,5 +1,5 @@
 import sys
-from opplib import *
+from omnetpp.runtime import *
 
 # #TODO into lib? with more options
 # def loadNedFiles(nedFolders):
@@ -16,6 +16,7 @@ CodeFragments.executeAll(CodeFragments.STARTUP) # setup complete
 
 ini = InifileContents("omnetpp.ini") # + args?
 cfg = ini.extractConfig("PureAloha1")
+assert cfg.__python_owns__ == True
 
 # v1:
 # nedLoader = CmdenvSimulationHolder.loadNEDFiles(cfg)
@@ -30,7 +31,11 @@ simulation = cSimulation("simulation", nedLoader)
 nedLoader.__python_owns__ = False
 
 simulation.setupNetwork(cfg)
-cfg.__python_owns__ = False
+#cfg.__python_owns__ = False
+
+print(simulation)
+
+root = simulation.getSystemModule()
 
 simulation.run()
 
