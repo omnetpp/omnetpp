@@ -511,6 +511,21 @@ class SIM_API cModule : public cComponent //implies noncopyable
     virtual void setGateSize(const char *gatename, int size);
 
     /**
+     * Helper function for implementing NED's "gate++" syntax. Returns the index
+     * of the next unconnected gate from an input or output gate vector,
+     * or input/output half of an inout vector. When gatename names an inout gate
+     * vector, the suffix parameter should be set to 'i' or 'o' to select
+     * "gatename$i" or "gatename$o"; otherwise suffix should be zero.
+     * The inside parameter selects whether to use isConnectedInside() or
+     * isConnectedOutside() to test if the gate is connected. The expand
+     * parameter tells whether the gate vector should be expanded if all its
+     * gates are used up. If all gates are connected and expanding is not
+     * allowed, -1 is returned.
+     */
+    virtual int getOrCreateFirstUnconnectedGateIndex(const char *gatename, char suffix,
+                                                     bool inside, bool expand);
+
+    /**
      * Helper function for implementing NED's "gate++" syntax.
      * Returns the next unconnected gate from an input or output gate vector,
      * or input/output half of an inout vector. When gatename names an inout gate
@@ -519,16 +534,28 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * The inside parameter selects whether to use isConnectedInside() or
      * isConnectedOutside() to test if the gate is connected. The expand
      * parameter tells whether the gate vector should be expanded if all its
-     * gates are used up.
+     * gates are used up.  If all gates are connected and expanding is not
+     * allowed, nullptr is returned.
      */
     virtual cGate *getOrCreateFirstUnconnectedGate(const char *gatename, char suffix,
                                                    bool inside, bool expand);
 
     /**
      * Helper function to implement NED's "gate++" syntax. This variant accepts
+     * inout gates only, and returns the index of the first unconnected gate pair.
+     * The meaning of the inside and expand parameters is the same as
+     * with getOrCreateFirstUnconnectedGateIndex(). If all gates are connected
+     * and expanding is not allowed, -1 is returned.
+     */
+    virtual int getOrCreateFirstUnconnectedGatePairIndex(const char *gatename,
+                                                         bool inside, bool expand);
+
+    /**
+     * Helper function to implement NED's "gate++" syntax. This variant accepts
      * inout gates only, and the result is returned in the gatein and gateout
      * parameters. The meaning of the inside and expand parameters is the same as
-     * with getOrCreateFirstUnconnectedGate().
+     * with getOrCreateFirstUnconnectedGate(). If all gates are connected
+     * and expanding is not allowed, nullptr's are returned.
      */
     virtual void getOrCreateFirstUnconnectedGatePair(const char *gatename,
                                                      bool inside, bool expand,

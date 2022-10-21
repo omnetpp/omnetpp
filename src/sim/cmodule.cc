@@ -1122,8 +1122,7 @@ struct less_gatePairConnectedOutside
     }
 };
 
-cGate *cModule::getOrCreateFirstUnconnectedGate(const char *gatename, char suffix,
-        bool inside, bool expand)
+cGate *cModule::getOrCreateFirstUnconnectedGate(const char *gatename, char suffix, bool inside, bool expand)
 {
     // look up gate
     char suffix1;
@@ -1179,9 +1178,13 @@ cGate *cModule::getOrCreateFirstUnconnectedGate(const char *gatename, char suffi
     }
 }
 
-void cModule::getOrCreateFirstUnconnectedGatePair(const char *gatename,
-        bool inside, bool expand,
-        cGate *& gatein, cGate *& gateout)
+int cModule::getOrCreateFirstUnconnectedGateIndex(const char *gatename, char suffix, bool inside, bool expand)
+{
+    cGate *g = getOrCreateFirstUnconnectedGate(gatename, suffix, inside, expand);
+    return g == nullptr ? -1 : g->getIndex();
+}
+
+int cModule::getOrCreateFirstUnconnectedGatePairIndex(const char *gatename, bool inside, bool expand)
 {
     // look up gate
     char suffix;
@@ -1200,31 +1203,33 @@ void cModule::getOrCreateFirstUnconnectedGatePair(const char *gatename,
     cGate **it = inside ?
         std::lower_bound(inputgatev, inputgatev + oldSize, (cGate *)nullptr, less_gatePairConnectedInside(outputgatev)) :
         std::lower_bound(inputgatev, inputgatev + oldSize, (cGate *)nullptr, less_gatePairConnectedOutside(outputgatev));
-    if (it != inputgatev + oldSize) {
-        gatein = *it;
-        gateout = outputgatev[gatein->getIndex()];
-        return;
-    }
+    if (it != inputgatev + oldSize)
+        return (*it)->getIndex();
 
     // no unconnected gate: expand gate vector
     if (expand) {
         setGateSize(desc->name->name.c_str(), oldSize + 1);
-        gatein = desc->input.gatev[oldSize];
-        gateout = desc->output.gatev[oldSize];
-        return;
+        return oldSize;
     }
     else {
         // gate is not allowed to expand, so let's try harder to find an unconnected gate
         // (in case the binary search missed it)
         for (int i = 0; i < oldSize; i++)
             if (inside ? !inputgatev[i]->isConnectedInside() : !inputgatev[i]->isConnectedOutside())
-                if (inside ? !outputgatev[i]->isConnectedInside() : !outputgatev[i]->isConnectedOutside()) {
-                    gatein = inputgatev[i];
-                    gateout = outputgatev[i];
-                    return;
-                }
+                if (inside ? !outputgatev[i]->isConnectedInside() : !outputgatev[i]->isConnectedOutside())
+                    return i;
+        return -1;  // sorry
+    }
+}
 
-        gatein = gateout = nullptr;  // sorry
+void cModule::getOrCreateFirstUnconnectedGatePair(const char *gatename, bool inside, bool expand, cGate *& gatein, cGate *& gateout)
+{
+    int index = getOrCreateFirstUnconnectedGatePairIndex(gatename, inside, expand);
+    if (index == -1)
+        gatein = gateout = nullptr;
+    else {
+        gatein = gateHalf(gatename, cGate::INPUT, index);
+        gateout = gateHalf(gatename, cGate::OUTPUT, index);
     }
 }
 
