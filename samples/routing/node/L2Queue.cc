@@ -45,6 +45,7 @@ class L2Queue : public cSimpleModule, public cListener
     virtual void startTransmittingFromQueue();
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details) override;
     virtual void refreshDisplay() const override;
+    virtual void shout(const char *s);
 };
 
 Define_Module(L2Queue);
@@ -118,6 +119,7 @@ void L2Queue::handleMessage(cMessage *msg)
         cPacket *packet = check_and_cast<cPacket *>(msg);
         if (!isInterfaceUp()) {
             EV << "Received " << packet << " but interface is down\n";
+            shout("Line down, dropping packet");
             emit(dropSignal, (intval_t)packet->getByteLength());
             delete packet;
         }
@@ -125,6 +127,7 @@ void L2Queue::handleMessage(cMessage *msg)
             // queue up the packet if there's space left in the queue
             if (frameCapacity && queue.getLength() >= frameCapacity) {
                 EV << "Received " << packet << " but transmitter busy and queue full: discarding\n";
+                shout("Queue full, dropping packet");
                 emit(dropSignal, (intval_t)packet->getByteLength());
                 delete packet;
             }
@@ -137,7 +140,7 @@ void L2Queue::handleMessage(cMessage *msg)
         }
         else {
             // We are idle, so we can start transmitting right away.
-            EV << "Received " << packet << endl;
+            EV << "Received " << packet << ", starting transmission" << endl;
             emit(queueingTimeSignal, SIMTIME_ZERO);
             startTransmitting(packet);
         }
@@ -177,3 +180,7 @@ void L2Queue::refreshDisplay() const
     getDisplayString().setTagArg("i", 1, isBusy ? (queue.getLength() >= 3 ? "red" : "yellow") : "");
 }
 
+void L2Queue::shout(const char *s)
+{
+    getParentModule()->bubble(s);
+}

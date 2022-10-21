@@ -9,16 +9,19 @@
 
 package node;
 
+//TODO implement App that uses array of dict to control sessions! { startTime, endTime, iaTimes, packetLength, etc. }
+
 //
 // Application model to generate traffic for the network.
 //
-simple App like IApp
+simple App2 like IApp
 {
     parameters:
         int address;  // local node address
-        string destAddresses = default("");  // destination addresses
-        volatile double sendIaTime @unit(s); // time between generating packets
-        volatile int packetLength @unit(byte);  // length of one message (fixed! no "volatile" modifier)
+        string destAddresses;  // destination addresses
+        volatile object iaTimes = default([]);
+        bool cycleIaTimes = default(false); // when all values in iaTimes are used up, read iaTimes again for another array?
+        volatile int packetLength @unit(byte);  // length of one message
         @display("i=block/browser");
         @signal[endToEndDelay](type="simtime_t");
         @signal[hopCount](type="long");

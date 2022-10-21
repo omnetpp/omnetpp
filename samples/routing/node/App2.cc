@@ -7,22 +7,21 @@
 // `license' for details on this and other legal matters.
 //
 
-#include "App.h"
+#include "App2.h"
 
 using namespace omnetpp;
 
-Define_Module(App);
+Define_Module(App2);
 
-App::~App()
+App2::~App2()
 {
     cancelAndDelete(generatePacketTimer);
 }
 
-void App::initialize()
+void App2::initialize()
 {
     myAddress = par("address");
     packetLengthBytes = &par("packetLength");
-    sendIATime = &par("sendIaTime");  // volatile parameter
     pkCounter = 0;
 
     WATCH(pkCounter);
@@ -32,7 +31,7 @@ void App::initialize()
 
     if (!destAddresses.empty()) {
         generatePacketTimer = new cMessage("nextPacket");
-        scheduleAt(sendIATime->doubleValue(), generatePacketTimer);
+        scheduleAt(getIaTime(), generatePacketTimer);
     }
 
     endToEndDelaySignal = registerSignal("endToEndDelay");
@@ -40,24 +39,24 @@ void App::initialize()
     sourceAddressSignal = registerSignal("sourceAddress");
 }
 
-bool App::isRunning()
+bool App2::isRunning()
 {
     return generatePacketTimer->isScheduled();
 }
 
-void App::start()
+void App2::start()
 {
     if (!isRunning())
         generatePacket();
 }
 
-void App::stop()
+void App2::stop()
 {
     if (isRunning() && !destAddresses.empty())
         cancelEvent(generatePacketTimer);
 }
 
-void App::handleMessage(cMessage *msg)
+void App2::handleMessage(cMessage *msg)
 {
     if (msg == generatePacketTimer)
         generatePacket();
@@ -65,7 +64,19 @@ void App::handleMessage(cMessage *msg)
         processReceivedPacket(check_and_cast<Packet *>(msg));
 }
 
-void App::generatePacket()
+double App2::getIaTime()
+{
+    while (nextIaTimeIndex >= (int)sendIATimes.size()) {
+        EV << "rereading iaTimes parameter\n";
+        sendIATimes =  check_and_cast<cValueArray*>(par("iaTimes").objectValue())->asDoubleVector();
+        nextIaTimeIndex = 0;
+    }
+    double result = sendIATimes[nextIaTimeIndex++];
+    EV << "iaTime = " << result << endl;
+    return result;
+}
+
+void App2::generatePacket()
 {
     int destAddress = destAddresses[intuniform(0, destAddresses.size()-1)];
 
@@ -79,12 +90,12 @@ void App::generatePacket()
     pk->setDestAddr(destAddress);
     send(pk, "out");
 
-    scheduleAt(simTime() + sendIATime->doubleValue(), generatePacketTimer);
+    scheduleAt(simTime() + getIaTime(), generatePacketTimer);
 
     // shout("Generating packet...");
 }
 
-void App::processReceivedPacket(Packet *pk)
+void App2::processReceivedPacket(Packet *pk)
 {
     EV << "received packet " << pk->getName() << " after " << pk->getHopCount() << "hops" << endl;
     emit(endToEndDelaySignal, simTime() - pk->getCreationTime());
@@ -95,7 +106,7 @@ void App::processReceivedPacket(Packet *pk)
     // shout("Arrived!");
 }
 
-void App::shout(const char *s)
+void App2::shout(const char *s)
 {
     getParentModule()->bubble(s);
 }

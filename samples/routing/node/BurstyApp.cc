@@ -60,6 +60,7 @@ class BurstyApp : public cSimpleModule
     virtual void processTimer(cMessage *msg);
     virtual void processPacket(Packet *pk);
     virtual void generatePacket();
+    virtual void shout(const char *s);
 };
 
 Define_Module(BurstyApp);
@@ -79,6 +80,7 @@ void BurstyApp::initialize()
     fsm.setName("fsm");
 
     destAddresses = cStringTokenizer(par("destAddresses").stdstringValue().c_str()).asIntVector();
+
     myAddress = par("address");
     sleepTime = &par("sleepTime");
     burstTime = &par("burstTime");
@@ -94,7 +96,8 @@ void BurstyApp::initialize()
     startStopBurst = new cMessage("startStopBurst");
     sendMessage = new cMessage("sendMessage");
 
-    scheduleAt(0, startStopBurst);
+    if (!destAddresses.empty())
+        scheduleAt(0, startStopBurst);
 }
 
 void BurstyApp::handleMessage(cMessage *msg)
@@ -122,7 +125,7 @@ void BurstyApp::processTimer(cMessage *msg)
 
             // display message, restore normal icon color
             EV << "sleeping for " << d << "s\n";
-            bubble("burst ended, sleeping");
+            shout("Burst ended, sleeping");
             getDisplayString().setTagArg("i", 1, "");
             break;
 
@@ -133,7 +136,7 @@ void BurstyApp::processTimer(cMessage *msg)
 
             // display message, turn icon yellow
             EV << "starting burst of duration " << d << "s\n";
-            bubble("burst started");
+            shout("Burst started");
             getDisplayString().setTagArg("i", 1, "yellow");
 
             // transition to ACTIVE state:
@@ -208,3 +211,7 @@ void BurstyApp::refreshDisplay() const
     getDisplayString().setTagArg("t", 0, txt);
 }
 
+void BurstyApp::shout(const char *s)
+{
+    getParentModule()->bubble(s);
+}
