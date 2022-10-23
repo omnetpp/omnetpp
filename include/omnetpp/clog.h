@@ -189,7 +189,7 @@ class SIM_API cLog
      * Returns true if logging is enabled. (Logging is normally disabled while
      * the simulation is running in Express mode, and enabled otherwise.)
      */
-    static bool isLoggingEnabled() { return loggingEnabled; }
+    static bool isLoggingEnabled();
 
     /**
      * Sets the enablement of logging, see isLoggingEnabled().
@@ -456,7 +456,7 @@ class SIM_API cLogProxy
     cLogProxy(const cComponent *sourceComponent, LogLevel logLevel, const char *category, const char *sourceFile, int sourceLine, const char *sourceFunction);
     ~cLogProxy();
 
-    std::ostream& getStream() { return stream; }
+    std::ostream& getStream();
     static void flushLastLine();
 };
 

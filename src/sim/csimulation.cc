@@ -190,6 +190,18 @@ cSimulation::~cSimulation()
         delete nedLoader;
 }
 
+cSimulation *cSimulation::getActiveSimulation()
+{
+    // note: the reason this function is not inline is this cppyy bug: https://github.com/wlav/cppyy/issues/60
+    return activeSimulation;
+}
+
+cEnvir *cSimulation::getActiveEnvir()
+{
+    // note: the reason this function is not inline is this cppyy bug: https://github.com/wlav/cppyy/issues/60
+    return activeEnvir;
+}
+
 void cSimulation::setActiveSimulation(cSimulation *sim)
 {
     if (sim != activeSimulation && activeSimulation && activeSimulation->stage != STAGE_NONE)

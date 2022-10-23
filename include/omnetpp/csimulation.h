@@ -265,13 +265,13 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     /**
      * Returns the active simulation object. May be nullptr.
      */
-    static cSimulation *getActiveSimulation()  {return activeSimulation;}
+    static cSimulation *getActiveSimulation();
 
     /**
      * Returns the environment object for the active simulation. Never returns nullptr;
      * setActiveSimulation(nullptr) will cause a static "do-nothing" instance to step in.
      */
-    static cEnvir *getActiveEnvir()  {return activeEnvir;}
+    static cEnvir *getActiveEnvir();
 
     /**
      * Activate the given simulation object, and its associated environment

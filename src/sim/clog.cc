@@ -39,6 +39,12 @@ OPP_THREAD_LOCAL cLogProxy::nullstream cLogProxy::dummyStream;
 
 //----
 
+bool cLog::isLoggingEnabled()
+{
+    // log called from a cComponent method, check whether logging for that component is enabled
+    return loggingEnabled;
+}
+
 const char *cLog::getLogLevelName(LogLevel logLevel)
 {
     switch (logLevel) {
@@ -144,6 +150,12 @@ cLogProxy::~cLogProxy()
     stream.flush();
     previousLogLevel = currentEntry.logLevel;
     previousCategory = currentEntry.category;
+}
+
+std::ostream& cLogProxy::getStream()
+{
+    // note: the reason this function is not inline is this cppyy bug: https://github.com/wlav/cppyy/issues/60
+    return stream;
 }
 
 void cLogProxy::fillEntry(LogLevel logLevel, const char *category, const char *sourceFile, int sourceLine, const char *sourceFunction)
