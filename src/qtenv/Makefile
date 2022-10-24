@@ -29,6 +29,11 @@ COPTS = $(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_SRC_DIR)" $(QT_CFLAGS) -W
 DEFINES += -DUNICODE -DQT_NO_KEYWORDS -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB
 IMPLIBS = -loppsim$D -loppenvir$D -lopplayout$D -loppcommon$D $(QT_LIBS)
 
+ifeq ($(WITH_PYTHONSIM),yes)
+  COPTS += $(PYTHON_CFLAGS)
+  IMPLIBS += $(PYTHON_LIBS)
+endif
+
 # Required only on macOS
 ifeq ($(PLATFORM),macos)
   COPTS += -Wno-deprecated-declarations
