@@ -60,10 +60,23 @@ import cppyy
 def _set_arg_owned(klass, method_name, arg_index, owned):
     orig_method = getattr(klass, method_name)
     def wrapper(self, *args):
+        assert(args[arg_index].__python_owns__ != owned)
         args[arg_index].__python_owns__ = owned
         return orig_method(self, *args)
 
     setattr(klass, method_name, wrapper)
+
+
+def _set_return_value_owned(klass, method_name, owned):
+    orig_method = getattr(klass, method_name)
+    def wrapper(self, *args):
+        result = orig_method(self, *args)
+        assert(result.__python_owns__ != owned)
+        result.__python_owns__ = owned
+        return result
+
+    setattr(klass, method_name, wrapper)
+
 
 def csimplemodule_msg_ownership(klass, name):
     if name == "cSimpleModule":
@@ -124,6 +137,18 @@ def replace_cvalue_str(klass, name):
         klass.__str__ = lambda self: str(self.str())
 
 cppyy.py.add_pythonization(replace_cvalue_str, 'omnetpp')
+
+
+def cqueue_element_ownership(klass, name):
+    if name == "cQueue":
+        _set_arg_owned(klass, "insert", 0, False)
+        _set_arg_owned(klass, "insertBefore", 1, False)
+        _set_arg_owned(klass, "insertAfter", 1, False)
+
+        _set_return_value_owned(klass, "remove", True)
+        _set_return_value_owned(klass, "pop", True)
+
+cppyy.py.add_pythonization(cqueue_element_ownership, 'omnetpp')
 
 
 cppyy.add_include_path(OMNETPP_ROOT + "/include")
