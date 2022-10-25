@@ -19,7 +19,6 @@ class Source(omnetpp.cSimpleModule):
         self.scheduleAt(omnetpp.simTime(), self.sendMessageEvent)
 
     def handleMessage(self, msg : omnetpp.cMessage):
-        msg.__python_owns__ = True # TODO: should be automatic
         assert msg == self.sendMessageEvent
 
         job = omnetpp.cMessage("job")

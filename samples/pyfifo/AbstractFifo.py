@@ -32,7 +32,6 @@ class AbstractFifo(omnetpp.cSimpleModule):
         self.emit(self.busySignal, False)
 
     def handleMessage(self, msg : omnetpp.cMessage):
-        msg.__python_owns__ = True # TODO: should be automatic
         if msg == self.endServiceMsg:
             self.endService(self.msgServiced)
             if self.queue.isEmpty():

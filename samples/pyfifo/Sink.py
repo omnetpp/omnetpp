@@ -18,7 +18,6 @@ class Sink(omnetpp.cSimpleModule):
         self.lifetimeSignal = type(self).registerSignal("lifetime")
 
     def handleMessage(self, msg : omnetpp.cMessage):
-        msg.__python_owns__ = True # TODO: should be automatic
         lifetime = omnetpp.simTime() - msg.getCreationTime()
         EV(f"Received {msg.getName()}, lifetime: {lifetime}s")
         self.emit(self.lifetimeSignal, lifetime)
