@@ -67,6 +67,10 @@
 #endif
 
 
+#ifdef DEVELOPER_DEBUG
+#include <set>
+#endif
+
 using namespace omnetpp::common;
 using namespace omnetpp::envir;
 using namespace omnetpp::internal;
@@ -99,7 +103,6 @@ Register_GlobalConfigOption(CFGID_DEBUG_STATISTICS_RECORDING, "debug-statistics-
 
 
 #ifdef DEVELOPER_DEBUG
-#include <set>
 extern std::set<cOwnedObject *> objectlist;
 void printAllObjects();
 #endif
@@ -669,7 +672,7 @@ void cSimulation::setupNetwork(cConfiguration *cfg)
 void cSimulation::setupNetwork(cModuleType *networkType, cConfiguration *cfg)
 {
 #ifdef DEVELOPER_DEBUG
-    printf("DEBUG: before setupNetwork: %d objects\n", cOwnedObject::getLiveObjectCount());
+    printf("DEBUG: before setupNetwork: %d objects\n", (int)cOwnedObject::getLiveObjectCount());
     objectlist.clear();
 #endif
 
@@ -894,7 +897,7 @@ void cSimulation::deleteNetwork()
     }
 
 #ifdef DEVELOPER_DEBUG
-    printf("DEBUG: after deleteNetwork: %d objects\n", cOwnedObject::getLiveObjectCount());
+    printf("DEBUG: after deleteNetwork: %d objects\n", (int)cOwnedObject::getLiveObjectCount());
     printAllObjects();
 #endif
 }
