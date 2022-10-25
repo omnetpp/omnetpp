@@ -30,6 +30,10 @@
 #include "omnetpp/ccommbuffer.h"
 #endif
 
+#ifdef DEVELOPER_DEBUG
+#include <set>
+#endif
+
 namespace omnetpp {
 
 using std::ostream;
@@ -37,7 +41,6 @@ using std::ostream;
 Register_Class(cOwnedObject);
 
 #ifdef DEVELOPER_DEBUG
-#include <set>
 
 std::set<cOwnedObject *> objectlist;
 void printAllObjects()

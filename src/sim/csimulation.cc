@@ -54,6 +54,10 @@
 #include "sim/netbuilder/cnedloader.h"
 #endif
 
+#ifdef DEVELOPER_DEBUG
+#include <set>
+#endif
+
 using namespace omnetpp::common;
 using namespace omnetpp::internal;
 
@@ -62,7 +66,6 @@ namespace omnetpp {
 using std::ostream;
 
 #ifdef DEVELOPER_DEBUG
-#include <set>
 extern std::set<cOwnedObject *> objectlist;
 void printAllObjects();
 #endif
@@ -353,7 +356,7 @@ cModule *cSimulation::findModuleByPath(const char *path) const
 void cSimulation::setupNetwork(cModuleType *network)
 {
 #ifdef DEVELOPER_DEBUG
-    printf("DEBUG: before setupNetwork: %d objects\n", cOwnedObject::getLiveObjectCount());
+    printf("DEBUG: before setupNetwork: %d objects\n", (int)cOwnedObject::getLiveObjectCount());
     objectlist.clear();
 #endif
 
@@ -489,7 +492,7 @@ void cSimulation::deleteNetwork()
     simulationStage = CTX_NONE;
 
 #ifdef DEVELOPER_DEBUG
-    printf("DEBUG: after deleteNetwork: %d objects\n", cOwnedObject::getLiveObjectCount());
+    printf("DEBUG: after deleteNetwork: %d objects\n", (int)cOwnedObject::getLiveObjectCount());
     printAllObjects();
 #endif
 }
