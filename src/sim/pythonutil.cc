@@ -77,8 +77,7 @@ def csimplemodule_msg_ownership(klass, name):
         _set_arg_owned(klass, "rescheduleAt", 1, False)
         _set_arg_owned(klass, "rescheduleAfter", 1, False)
 
-        # FIXME: DOES NOT WORK!
-        #_set_arg_owned(klass, "handleMessage", 0, True)
+        # handleMessage is done after instantiation
 
 cppyy.py.add_pythonization(csimplemodule_msg_ownership, 'omnetpp')
 
@@ -271,6 +270,19 @@ void *instantiatePythonObject(const char *pythonClassQName)
         PyRun_String(("from " + moduleToImport + " import " + classToInstantiate + "\n"
             "inst = " + classToInstantiate + "()\n"
             "inst.__python_owns__ = False\n"
+            "import cppyy\n"
+            // Since regular pythonization callbacks act on the class level,
+            // and overrides in the user's subclasses would in fact override
+            // any custom wrappers that we could add there, in this case, we
+            // add the wrapper at the instance level, where it is effective.
+            "if cppyy.gbl.omnetpp.cSimpleModule in type(inst).mro():\n"
+            "  inst.__orig_handleMessage = inst.handleMessage\n"
+            "  def __new_handleMessage(self, msg):\n"
+            "    assert(msg.__python_owns__ == False)\n"
+            "    msg.__python_owns__ = True\n"
+            "    return self.__orig_handleMessage(msg)\n"
+            "  import types\n"
+            "  inst.handleMessage = types.MethodType(__new_handleMessage, inst)\n"
             "import cppyy.ll").c_str(), Py_file_input, globals, globals);
         checkPythonException();
 
