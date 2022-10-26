@@ -202,7 +202,10 @@ class SIM_API cGate : public cObject, noncopyable
     /**
      * Connects the gate to another gate, using the given channel object
      * (if one is specified). This method can be used to manually create
-     * connections for dynamically created modules.
+     * connections for dynamically created modules. After the call,
+     * this gate's getNextGate() method will return the specified gate,
+     * and the specified gate's getPreviousGate() methods will return
+     * this gate.
      *
      * This method invokes callInitialize() on the channel object, unless the
      * compound module containing this connection is not yet initialized
@@ -224,7 +227,9 @@ class SIM_API cGate : public cObject, noncopyable
     /**
      * Disconnects the gate, and also deletes the associated channel object
      * if one has been set. disconnect() must be invoked on the source gate
-     * ("from" side) of the connection.
+     * of the connection, i.e. on which the connectTo() was invoked to create
+     * the connection. After the call, this gate's getNextGate() method and the
+     * "next" gate's getPreviousGate() method will both return nullptr.
      *
      * The method has no effect if the gate is not connected.
      */
