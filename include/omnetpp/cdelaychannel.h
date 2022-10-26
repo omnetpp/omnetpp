@@ -116,6 +116,11 @@ class SIM_API cDelayChannel : public cChannel //implies noncopyable
     virtual void setDisabled(bool d);
 
     /**
+     * Disables or enables the channel.
+     */
+    virtual void setEnabled(bool d) final {setDisabled(!d);}
+
+    /**
      * Returns the propagation delay of the channel, in seconds.
      * This method is equivalent to reading the "delay" parameter, via par("delay").
      */

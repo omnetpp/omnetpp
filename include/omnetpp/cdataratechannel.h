@@ -219,6 +219,11 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
     virtual void setDisabled(bool d);
 
     /**
+     * Disables or enables the channel.
+     */
+    virtual void setEnabled(bool d) final {setDisabled(!d);}
+
+    /**
      * Returns the operating mode.
      */
     virtual Mode getMode() const {return mode;}

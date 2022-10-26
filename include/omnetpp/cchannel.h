@@ -307,10 +307,16 @@ class SIM_API cChannel : public cComponent //implies noncopyable
     [[deprecated]] virtual void forceTransmissionFinishTime(simtime_t t) {}
 
     /**
-     * Returns whether the channel is disabled.
-     * A disabled channel discards all messages sent on it.
+     * Returns true if the channel is disabled. A disabled channel discards
+     * all messages sent on it.
      */
     virtual bool isDisabled() const  { return false; }
+
+    /**
+     * Returns false if the channel is disabled. A disabled channel discards
+     * all messages sent on it.
+     */
+    virtual bool isEnabled() const final {return !isDisabled();}
     //@}
 };
 
