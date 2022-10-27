@@ -54,6 +54,28 @@ T *instantiatePythonObjectChecked(const char *pythonClassQName) {
     return (T*)result;
 }
 
+
+class SIM_API PythonGilLock {
+    PyGILState_STATE state;
+
+public:
+    PythonGilLock()
+      : state(PyGILState_Ensure())
+    {
+      // nothing
+    }
+
+    PythonGilLock(const PythonGilLock&) = delete;
+    PythonGilLock(PythonGilLock&&) = delete;
+    PythonGilLock& operator=(const PythonGilLock&) = delete;
+    PythonGilLock& operator=(PythonGilLock&&) = delete;
+
+    ~PythonGilLock() {
+        PyGILState_Release(state);
+    }
+};
+
+
 }  // namespace omnetpp
 
 #endif  // WITH_PYTHONSIM

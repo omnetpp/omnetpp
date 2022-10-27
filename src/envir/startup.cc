@@ -18,6 +18,12 @@
 #include <cstring>
 #include <cstdint>
 
+#include "omnetpp/platdep/config.h"
+
+#ifdef WITH_PYTHONSIM
+#include <Python.h>
+#endif
+
 #include "common/opp_ctype.h"
 #include "common/fnamelisttokenizer.h"
 #include "common/stringutil.h"
@@ -50,6 +56,9 @@
 using namespace omnetpp::common;
 
 namespace omnetpp {
+
+extern bool pythonInitializedHere; //TODO refine
+
 namespace envir {
 
 Register_GlobalConfigOption(CFGID_CONFIGURATION_READER_CLASS, "configuration-reader-class", CFG_STRING, "", "Selects the configuration reader C++ class, which must subclass from `cConfigurationReader`. This option allows configuration to come from sources other than ini files, e.g. from database.");
@@ -111,6 +120,13 @@ int setupUserInterface(int argc, char *argv[])
 
         // verify definitions of int64_t, int32_t, etc.
         verifyIntTypes();
+
+#ifdef WITH_PYTHONSIM
+        if (!Py_IsInitialized()) {
+            Py_Initialize();
+            pythonInitializedHere = true;
+        }
+#endif
 
         // args
         ArgList args;

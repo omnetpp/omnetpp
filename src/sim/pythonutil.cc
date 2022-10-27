@@ -37,18 +37,18 @@ namespace omnetpp {
 
 using namespace common;
 
-static bool pythonInitializedHere = false;
+bool pythonInitializedHere = false;
 
 void ensurePythonInterpreter()
 {
-    if (!Py_IsInitialized()) {
-        Py_Initialize();
-        pythonInitializedHere = true;
-    }
+    PythonGilLock gilLock;
+
+    ASSERT(Py_IsInitialized());
 
     static bool pythonConfigured = false;
 
     if (!pythonConfigured) {
+
         PyRun_SimpleString(R"(
 import os
 OMNETPP_ROOT = os.getenv("__omnetpp_root_dir")
@@ -147,8 +147,11 @@ EXECUTE_ON_SHUTDOWN(
         Py_Finalize();
 );
 
+
 void checkPythonException()
 {
+    PythonGilLock gilLock;
+
     PyObject *type, *value, *traceback;
     PyErr_Fetch(&type, &value, &traceback);
 
@@ -198,6 +201,7 @@ void *instantiatePythonObject(const char *pythonClassQName)
     std::string classToInstantiate = opp_substringafterlast(pythonClassQName, ".");
 
     ensurePythonInterpreter();
+    PythonGilLock gilLock;
 
     try {
         PyObject *globals = PyDict_New();

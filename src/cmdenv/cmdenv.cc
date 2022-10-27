@@ -29,6 +29,13 @@
 #include "cmdenvir.h"
 #include "cmdenvsimholder.h"
 
+#ifdef WITH_PYTHONSIM
+#include <Python.h>
+#else
+#define Py_BEGIN_ALLOW_THREADS  /*no-op*/
+#define Py_END_ALLOW_THREADS    /*no-op*/
+#endif
+
 using namespace omnetpp::common;
 using namespace omnetpp::internal;
 
@@ -141,7 +148,9 @@ int Cmdenv::doRunApp()
     else {
         if (verbose)
             out << "Running simulations on " << numThreads << " threads\n";
+        Py_BEGIN_ALLOW_THREADS
         runSimulationsInThreads(configName.c_str(), runNumbers, numThreads);
+        Py_END_ALLOW_THREADS
     }
 
     delete nedLoader;

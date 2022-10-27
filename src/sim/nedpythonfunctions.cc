@@ -249,6 +249,7 @@ static cValue pyObjectToValue(PyObject *obj)
 // If not, throws an exception.
 static PyObject *valueToPyObject(const cValue& val)
 {
+    PythonGilLock gilLock;
     switch (val.getType()) {
         case cValue::UNDEF:   return Py_None;
         case cValue::BOOL:    return PyBool_FromLong(val.boolValue());
@@ -292,7 +293,7 @@ static PyObject *valueToPyObject(const cValue& val)
 // Internal helper. Creates a dictionary to be used as a `globals`
 // context for evaluating and executing Python code in. It has
 // the interpreter builtins and our helper code already defined.
-PyObject *makeGlobalsWithAccessor(cComponent *contextComponent)
+static PyObject *makeGlobalsWithAccessor(cComponent *contextComponent)
 {
     PyObject *globals = PyDict_New();
     PyDict_SetItemString(globals, "__builtins__", PyEval_GetBuiltins());
@@ -326,6 +327,7 @@ cValue nedf_pyeval(cComponent *contextComponent, cValue argv[], int argc)
 #ifdef WITH_PYTHONSIM
     try {
         ensurePythonInterpreter();
+        PythonGilLock gilLock;
 
         std::string code = argv[0].stringValue();
 
@@ -366,6 +368,7 @@ cValue nedf_pycode(cComponent *contextComponent, cValue argv[], int argc)
 #ifdef WITH_PYTHONSIM
     try {
         ensurePythonInterpreter();
+        PythonGilLock gilLock;
 
         std::string code = argv[0].stringValue();
 
