@@ -4,6 +4,7 @@
 #pragma SWIG nowarn=822
 
 %include "loadlib.i"
+%include "defs.i"
 #%include "enums.swg"
 #%javaconst(1);
 
@@ -40,12 +41,6 @@ using namespace omnetpp::scave;
 %}
 
 #define THREADED
-
-%include "defs.i"
-
-// hide export/import macros from swig
-#define SCAVE_API
-#define COMMON_API
 
 namespace omnetpp { namespace scave {
 

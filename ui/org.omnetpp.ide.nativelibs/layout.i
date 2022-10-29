@@ -20,12 +20,6 @@
 using namespace omnetpp::layout;
 %}
 
-// hide export/import macros from swig
-#define COMMON_API
-#define LAYOUT_API
-#define OPP_DLLEXPORT
-#define OPP_DLLIMPORT
-
 // %typemap(jni)    cModule* "jobject"
 // %typemap(jtype)  cModule* "Object"
 // %typemap(jstype) cModule* "Object"

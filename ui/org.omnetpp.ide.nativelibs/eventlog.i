@@ -21,12 +21,6 @@ using namespace omnetpp::common;
 using namespace omnetpp::common::expression;
 %}
 
-// hide export/import macros from swig
-#define COMMON_API
-#define OPP_DLLEXPORT
-#define OPP_DLLIMPORT
-#define _OPP_GNU_ATTRIBUTE(x)
-
 %typemap(javacode) omnetpp::common::FileReader %{
     public FileReader(String fileName, boolean cMemoryOwn) {
         this(fileName);

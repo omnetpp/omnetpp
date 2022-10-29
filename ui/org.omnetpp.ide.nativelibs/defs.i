@@ -6,10 +6,17 @@
 #include "jprogressmonitor.h"
 %}
 
-// Swig doesn't understand C++11 syntax
-#define override
-%ignore nullptr;
-#define nullptr 0
+// Define all _API macros as empty (SWIG does not care about them)
+#define COMMON_API
+#define LAYOUT_API
+#define NEDXML_API
+#define SCAVE_API
+#define OPP_DLLEXPORT
+#define OPP_DLLIMPORT
+#define _OPP_GNU_ATTRIBUTE(x)
+
+// The following is defined by platdefs.h which we don't want to include
+#define OPP_THREAD_LOCAL thread_local
 
 %exception {
     try {

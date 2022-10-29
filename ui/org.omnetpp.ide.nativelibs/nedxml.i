@@ -29,13 +29,6 @@
 using namespace omnetpp::nedxml;
 %}
 
-// hide export/import macros from swig
-#define COMMON_API
-#define NEDXML_API
-#define OPP_DLLEXPORT
-#define OPP_DLLIMPORT
-#define _OPP_GNU_ATTRIBUTE(x)
-
 namespace std {
 //class ostream;
 };
