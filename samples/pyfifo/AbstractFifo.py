@@ -7,11 +7,7 @@
 # `license' for details on this and other legal matters.
 #
 
-import cppyy
-
-cppyy.include("omnetpp.h")
-
-from cppyy.gbl import omnetpp
+from omnetpp.runtime import *
 
 class AbstractFifo(omnetpp.cSimpleModule):
     """
@@ -23,7 +19,6 @@ class AbstractFifo(omnetpp.cSimpleModule):
     def __init__(self):
         super().__init__()
         self.queue = omnetpp.cQueue()
-        # self.queue.__python_owns__ = True # TODO: is this needed?
         self.msgServiced = None
 
     def initialize(self, stage : int):
@@ -36,18 +31,15 @@ class AbstractFifo(omnetpp.cSimpleModule):
         self.emit(self.qlenSignal, self.queue.getLength())
         self.emit(self.busySignal, False)
 
-    def __del__(self):
-        self.cancel(self.endServiceMsg) # optional?
-
     def handleMessage(self, msg : omnetpp.cMessage):
-        #msg.__python_owns__ = True # TODO: should be automatic
+        msg.__python_owns__ = True # TODO: should be automatic
         if msg == self.endServiceMsg:
             self.endService(self.msgServiced)
             if self.queue.isEmpty():
                 self.msgServiced = None
                 self.emit(self.busySignal, False)
             else:
-                self.msgServiced = self.queue.pop() # cast to cMessage ?
+                self.msgServiced = self.queue.pop()
                 self.emit(self.qlenSignal, self.queue.getLength())
                 self.emit(self.queueingTimeSignal, omnetpp.simTime() - self.msgServiced.getTimestamp())
                 serviceTime = self.startService(self.msgServiced)
@@ -65,8 +57,7 @@ class AbstractFifo(omnetpp.cSimpleModule):
             msg.setTimestamp()
             self.emit(self.qlenSignal, self.queue.getLength())
 
-
-    # hook functions to (re)define behaviour
+    # hook functions to (re)define behavior
     def arrival(self, msg : omnetpp.cMessage):
         pass
 
@@ -75,4 +66,3 @@ class AbstractFifo(omnetpp.cSimpleModule):
 
     def endService(self, msg : omnetpp.cMessage):
         raise NotImplementedError("endService() must be implemented in subclasses")
-

@@ -7,12 +7,7 @@
 # `license' for details on this and other legal matters.
 #
 
-import cppyy
-
-cppyy.include("omnetpp.h")
-
-from cppyy.gbl import omnetpp
-
+from omnetpp.runtime import *
 from AbstractFifo import AbstractFifo
 
 class Fifo(AbstractFifo):
@@ -21,10 +16,10 @@ class Fifo(AbstractFifo):
     """
 
     def startService(self, msg : omnetpp.cMessage):
-        #EV << "Starting service of " << msg.getName() << endl
+        EV("Starting service of", msg.getName())
         return self.par("serviceTime")
 
     def endService(self, msg : omnetpp.cMessage):
-        #EV << "Completed service of " << msg.getName() << endl
+        EV("Completed service of", msg.getName())
         self.send(msg, "out")
 

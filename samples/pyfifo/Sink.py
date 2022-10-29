@@ -7,13 +7,7 @@
 # `license' for details on this and other legal matters.
 #
 
-
-import cppyy
-
-cppyy.include("omnetpp.h")
-
-from cppyy.gbl import omnetpp
-
+from omnetpp.runtime import *
 
 class Sink(omnetpp.cSimpleModule):
     """
@@ -26,6 +20,6 @@ class Sink(omnetpp.cSimpleModule):
     def handleMessage(self, msg : omnetpp.cMessage):
         msg.__python_owns__ = True # TODO: should be automatic
         lifetime = omnetpp.simTime() - msg.getCreationTime()
-        # EV << "Received " << msg->getName() << ", lifetime: " << lifetime << "s" << endl;
+        EV(f"Received {msg.getName()}, lifetime: {lifetime}s")
         self.emit(self.lifetimeSignal, lifetime)
 
