@@ -92,15 +92,23 @@ endif
 .PHONY: check-env cleanall cleanall-samples makefiles clean apis doc tests all allmodes \
         components base ui uilibs samples common layout eventlog scave nedxml sim \
         envir cmdenv qtenv utils systemc help install uninstall \
-		create-shortcuts delete-shortcuts install-shortcuts uninstall-shortcuts
+        create-shortcuts delete-shortcuts install-shortcuts uninstall-shortcuts
 #
 # Group targets.
 #
-base: $(BASE)
-ifeq "$(SHARED_LIBS)" "yes"
-	@echo ===== Compiling opp_run ====
-	$(Q)cd $(OMNETPP_SRC_DIR)/envir && $(MAKE) opp_run_executable
-endif
+base: $(BASE) nedxml-tools envir-tools eventlog-tools scave-tools
+
+nedxml-tools: nedxml
+	$(Q)cd $(OMNETPP_SRC_DIR)/nedxml && $(MAKE) executables
+
+envir-tools: envir cmdenv qtenv
+	$(Q)cd $(OMNETPP_SRC_DIR)/envir && $(MAKE) executables
+
+eventlog-tools: common eventlog
+	$(Q)cd $(OMNETPP_SRC_DIR)/eventlog && $(MAKE) executables
+
+scave-tools: common scave
+	$(Q)cd $(OMNETPP_SRC_DIR)/scave && $(MAKE) executables
 
 samples: $(SAMPLES)
 
@@ -118,10 +126,10 @@ ide:
 # dependencies (because of ver.h, opp_msgtool, etc)
 common layout eventlog scave nedxml sim envir cmdenv qtenv systemc makefiles: utils
 layout eventlog scave nedxml sim envir cmdenv qtenv: common
-envir : sim
+envir: sim
 cmdenv qtenv: envir
 qtenv: layout
-sim : nedxml common
+sim: nedxml nedxml-tools common
 $(SAMPLES) : makefiles base
 $(BASE) : check-env
 queueinglibext : queueinglib

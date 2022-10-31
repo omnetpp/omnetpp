@@ -77,7 +77,7 @@ ifneq ("$(COPTS)","$(shell cat $(COPTS_FILE) 2>/dev/null || echo '')")
   $(file >$(COPTS_FILE),$(COPTS))
 endif
 
-.PHONY: all clean opp_run_executable
+.PHONY: all clean executables
 .SECONDARY: $(OBJS) $O/$(LIBNAME)$(LIB_SUFFIX) $(GENERATED_SOURCES)
 
 # disabling all implicit rules
@@ -97,7 +97,14 @@ $O/%.o: %.cc $(GENERATED_SOURCES) $(CONFIGFILE) $(COPTS_FILE)
 #
 all : $(TARGET_LIB_FILES)
 
-opp_run_executable: $(TARGET_EXE_FILES)
+ifeq "$(SHARED_LIBS)" "yes"
+# we need opp_run only if we are building shared libraries
+executables: $(TARGET_EXE_FILES)
+$(TARGET_EXE_FILES): $(TARGET_LIB_FILES)
+else
+# do not build opp_run for static builds
+executables:
+endif
 
 ifeq ($(SHARED_LIBS),yes)
 # dynamically linked library (on all platforms except Windows)

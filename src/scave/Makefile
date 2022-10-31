@@ -59,7 +59,7 @@ ifneq ("$(COPTS)","$(shell cat $(COPTS_FILE) 2>/dev/null || echo '')")
   $(file >$(COPTS_FILE),$(COPTS))
 endif
 
-.PHONY: all clean
+.PHONY: all clean executables
 .SECONDARY: $(OBJS) $O/$(LIBNAME)$(LIB_SUFFIX) $(GENERATED_SOURCES)
 
 # disabling all implicit rules
@@ -77,7 +77,10 @@ $O/%.o: %.cc $(GENERATED_SOURCES) $(CONFIGFILE) $(COPTS_FILE)
 #
 # Targets
 #
-all : $(TARGET_LIB_FILES) $(TARGET_EXE_FILES)
+all : $(TARGET_LIB_FILES)
+
+executables: $(TARGET_EXE_FILES)
+$(TARGET_EXE_FILES): $(TARGET_LIB_FILES)
 
 ifeq ($(SHARED_LIBS),yes)
 # dynamically linked library (on all platforms except Windows)
