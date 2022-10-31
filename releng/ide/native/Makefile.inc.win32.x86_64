@@ -3,8 +3,8 @@
 # Your changes will be lost the next time ./configure is run.
 #
 OMNETPP_PRODUCT = OMNeT++
-OMNETPP_RELEASE = omnetpp-6.0
-OMNETPP_VERSION = 6.0
+OMNETPP_RELEASE = omnetpp-7.0
+OMNETPP_VERSION = 7.0
 OMNETPP_BUILDID = internal
 OMNETPP_EDITION = Academic Public License -- NOT FOR COMMERCIAL USE
 
@@ -15,9 +15,11 @@ WITH_QTENV = no
 WITH_OSG = no
 WITH_OSGEARTH = no
 WITH_NETBUILDER = yes
+WITH_PYTHONSIM = yes
 WITH_LIBXML = no
 WITH_PARSIM = yes
 WITH_SYSTEMC = no
+WITH_AKAROA = no
 PREFER_SQLITE_RESULT_FILES = no
 
 #
@@ -138,7 +140,6 @@ AS_NEEDED_ON = -Wl,--as-needed
 AS_NEEDED_OFF = -Wl,--no-as-needed
 PIC_FLAGS =
 MSGC = opp_msgc
-SMC = opp_smc
 NEDTOOL = opp_nedtool
 AS = x86_64-w64-mingw32-as
 AR_CR = x86_64-w64-mingw32-ar cr
@@ -174,8 +175,8 @@ PTHREAD_CFLAGS =  -mthreads
 PTHREAD_LIBS = -lpthread -mthreads
 LIBXML_CFLAGS = 
 LIBXML_LIBS = 
-AKAROA_CFLAGS = -I/usr/local/akaroa/include
-AKAROA_LIBS = -L/usr/local/akaroa/lib -lakaroa -lfl
+AKAROA_CFLAGS = 
+AKAROA_LIBS = 
 
 #
 # platform specific library and executable prefixes and extensions
@@ -185,10 +186,10 @@ SO_LIB_SUFFIX = .so
 DLL_LIB_SUFFIX = .dll
 IMPLIB_SUFFIX = .dll.a
 IMPDEF_SUFFIX = .def
-JNI_LIB_SUFFIX = $(DLL_LIB_SUFFIX)
+SHARED_LIB_SUFFIX = $(DLL_LIB_SUFFIX)
+JNI_LIB_SUFFIX = $(SHARED_LIB_SUFFIX)
 EXE_SUFFIX = .exe
 LIB_PREFIX = lib
-SHARED_LIB_SUFFIX = $(DLL_LIB_SUFFIX)
 
 #
 # omnetpp and system libraries linked with the simulations
@@ -230,7 +231,6 @@ ifeq ($(WITH_PARSIM),yes)
     KERNEL_LIBS += $(MPI_LIBS)
   endif
 endif
-
 
 # this macro can be used to pass EXPORT macros to the compiler if omnet is built as shared library
 ifeq ($(SHARED_LIBS),yes)
