@@ -44,6 +44,7 @@ cCoroutine = omnetpp.cCoroutine
 CodeFragments = omnetpp.CodeFragments
 cNedLoader = omnetpp.cNedLoader
 cSimulation = omnetpp.cSimulation
+cSimulation.run.__release_gil__ = True
 
 CmdenvSimulationHolder = omnetpp.cmdenv.CmdenvSimulationHolder
 ArgList = omnetpp.envir.ArgList
