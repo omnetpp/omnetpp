@@ -314,6 +314,7 @@ static PyObject *makeGlobalsWithAccessor(cComponent *contextComponent)
     checkPythonException();
 
     PyDict_SetItemString(globals, "this", accessor);
+    PyDict_SetItemString(globals, "self", accessor);
     checkPythonException();
 
     return globals;
