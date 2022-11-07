@@ -827,9 +827,6 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * only the base name is returned (without gate index, "[]" or the "$i"/"$o"
      * suffix). Zero-size gate vectors will also be included.
      *
-     * The strings in the returned array do not need to be deallocated and
-     * must not be modified.
-     *
      * @see gateType(), isGateVector(), gateSize()
      */
     virtual std::vector<std::string> getGateNames() const;
