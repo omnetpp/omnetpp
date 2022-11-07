@@ -1,0 +1,39 @@
+%description:
+Tests that the `pyeval` and `pycode` functions can add attributes to `self` and
+that they are available in further invocations.
+
+%file: test.ned
+
+import testlib.Dump;
+
+network Test
+{
+    parameters:
+
+        bool has_before = pyeval("hasattr(self, 'foobar')");
+        object assign = pycode("self.foobar = 42");
+        bool has_after = pyeval("hasattr(self, 'foobar')");
+        int read = pyeval("self.foobar");
+        object alter = pycode("self.foobar = 'fizzbuzz'");
+        string read_altered = pyeval("self.foobar");
+        string read_altered_again = pycode("return self.foobar");
+
+    submodules:
+        dump : Dump;
+}
+
+%contains: stdout
+==============================
+module Test: Test {
+    parameters:
+        @isNetwork
+        has_before = false
+        assign = nullptr
+        has_after = true
+        read = 42
+        alter = nullptr
+        read_altered = "fizzbuzz"
+        read_altered_again = "fizzbuzz"
+    submodules:
+}
+==============================
