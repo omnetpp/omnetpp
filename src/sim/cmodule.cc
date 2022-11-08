@@ -1053,12 +1053,14 @@ void cModule::deleteGate(const char *gatename)
     disposeGateDesc(desc, true);
 }
 
-std::vector<std::string> cModule::getGateNames() const
+std::vector<std::string> cModule::getGateNames(cGate::Type type) const
 {
     std::vector<std::string> result;
-    for (int i = 0; i < gateDescArraySize; i++)
-        if (gateDescArray[i].name)
-            result.push_back(gateDescArray[i].name->name.c_str());
+    for (int i = 0; i < gateDescArraySize; i++) {
+        const auto& desc = gateDescArray[i];
+        if (desc.name && (type==cGate::NONE || desc.getType() == type))
+            result.push_back(desc.name->name.c_str());
+    }
 
     return result;
 }

@@ -850,13 +850,14 @@ class SIM_API cModule : public cComponent //implies noncopyable
     virtual void deleteGate(const char *gatename);
 
     /**
-     * Returns the names of the module's gates. For gate vectors and inout gates,
-     * only the base name is returned (without gate index, "[]" or the "$i"/"$o"
-     * suffix). Zero-size gate vectors will also be included.
+     * Returns the names of the module's gates if the given type. If type is NONE,
+     * no filtering is done. If type is INPUT or OUTPUT, the corresponding halves
+     * of INOUT gates will NOT be included in the list. Zero-size gate vectors
+     * will also be included.
      *
      * @see gateType(), isGateVector(), gateSize()
      */
-    virtual std::vector<std::string> getGateNames() const;
+    virtual std::vector<std::string> getGateNames(cGate::Type type=cGate::NONE) const;
 
     /**
      * Returns the type of the gate (or gate vector) with the given name.
