@@ -148,6 +148,61 @@ EXECUTE_ON_SHUTDOWN(
 );
 
 
+static std::string extractExceptionLocation(PyObject *traceback)
+{
+    std::string location;
+
+    // to not leave the refcount lower than it was
+    Py_XINCREF(traceback);
+
+    while (traceback && traceback != Py_None) {
+        PyObject *frame = PyObject_GetAttrString(traceback, "tb_frame");
+        PyObject *code = PyObject_GetAttrString(frame, "f_code");
+
+        PyObject *filename = PyObject_GetAttrString(code, "co_filename");
+        PyObject *filenameStr = PyObject_Str(filename);
+        location = PyUnicode_AsUTF8(filenameStr);
+
+        Py_DECREF(frame);
+        Py_DECREF(code);
+        Py_DECREF(filename);
+        Py_DECREF(filenameStr);
+
+        if (location == "<string>") {
+            location.clear();
+            PyObject *nextTraceback = PyObject_GetAttrString(traceback, "tb_next");
+            Py_DECREF(traceback);
+            traceback = nextTraceback;
+            continue;
+        }
+
+        location = filenameOf(location.c_str());
+
+        PyObject *lineno = PyObject_GetAttrString(traceback, "tb_lineno");
+        location += ":" + std::to_string(PyLong_AsLong(lineno));
+        Py_DECREF(lineno);
+
+        PyObject *name = PyObject_GetAttrString(code, "co_name");
+        PyObject *nameStr = PyObject_Str(name);
+        const char *nameUtf8 = PyUnicode_AsUTF8(nameStr);
+        if (!opp_isempty(nameUtf8)) {
+            location += " in ";
+            location += nameUtf8;
+        }
+
+        Py_DECREF(name);
+        Py_DECREF(nameStr);
+
+        break;
+    }
+
+    // to not leak the last considered traceback
+    Py_XDECREF(traceback);
+
+    return location;
+}
+
+
 void checkPythonException()
 {
     PythonGilLock gilLock;
@@ -158,9 +213,15 @@ void checkPythonException()
     if (type || value || traceback) {
         PyErr_NormalizeException(&type, &value, &traceback);
         std::string message = PyUnicode_AsUTF8(PyObject_Str(value));
+        std::string location = extractExceptionLocation(traceback);
+
+        if (!location.empty())
+            message += " - at " + location;
+
         Py_XDECREF(type);
         Py_XDECREF(value);
         Py_XDECREF(traceback);
+
         throw cRuntimeError("%s", message.c_str());
     }
 }
