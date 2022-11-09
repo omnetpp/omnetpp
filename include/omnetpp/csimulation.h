@@ -227,7 +227,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * (i.e. cSimulation::getActiveSimulation() == nullptr),
      * then the new instance is made the active simulation.
      */
-    cSimulation(const char *name, cEnvir *envir=nullptr, cINedLoader *nedLoader=nullptr);
+    cSimulation(const char *name=nullptr, cEnvir *envir=nullptr, cINedLoader *nedLoader=nullptr);
 
     /**
      * Alternative constructor. Delegates to the 3-argument constructor.
