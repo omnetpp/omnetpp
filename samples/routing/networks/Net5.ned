@@ -18,7 +18,7 @@ import ned.DatarateChannel;
 network Net5
 {
     types:
-        channel C extends DatarateChannel
+        channel Link extends DatarateChannel
         {
             delay = uniform(0.01ms, 1s);
             datarate = uniform(1kbps, 100kbps);
@@ -28,12 +28,12 @@ network Net5
             address = index;
         }
     connections:
-        rte[1].port++ <--> C <--> rte[0].port++;
-        rte[0].port++ <--> C <--> rte[2].port++;
-        rte[4].port++ <--> C <--> rte[3].port++;
-        rte[3].port++ <--> C <--> rte[1].port++;
-        rte[3].port++ <--> C <--> rte[2].port++;
-        rte[2].port++ <--> C <--> rte[4].port++;
-        rte[1].port++ <--> C <--> rte[2].port++;
+        rte[1].port++ <--> Link <--> rte[0].port++;
+        rte[0].port++ <--> Link <--> rte[2].port++;
+        rte[4].port++ <--> Link <--> rte[3].port++;
+        rte[3].port++ <--> Link <--> rte[1].port++;
+        rte[3].port++ <--> Link <--> rte[2].port++;
+        rte[2].port++ <--> Link <--> rte[4].port++;
+        rte[1].port++ <--> Link <--> rte[2].port++;
 }
 

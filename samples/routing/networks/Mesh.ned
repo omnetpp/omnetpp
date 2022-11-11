@@ -17,7 +17,7 @@ network Mesh
         int height @prompt("Number of rows") = default(9);
         int width @prompt("Number of columns") = default(7);
     types:
-        channel C extends ned.DatarateChannel
+        channel Link extends ned.DatarateChannel
         {
             parameters:
                 delay = default(0.1ms);
@@ -33,8 +33,8 @@ network Mesh
         }
     connections allowunconnected:
         for i=0..height-1, for j=0..width-1 {
-            node[i*width+j].port[0] <--> C <--> node[(i+1)*width+j].port[1] if i!=height-1;
-            node[i*width+j].port[2] <--> C <--> node[(i*width+j)+1].port[3] if j!=width-1;
+            node[i*width+j].port[0] <--> Link <--> node[(i+1)*width+j].port[1] if i!=height-1;
+            node[i*width+j].port[2] <--> Link <--> node[(i*width+j)+1].port[3] if j!=width-1;
         }
 }
 

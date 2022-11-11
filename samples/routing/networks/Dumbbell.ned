@@ -17,7 +17,7 @@ network Dumbbell
         int numLeft = default(9);
         int numRight = default(4);
     types:
-        channel C extends ned.DatarateChannel
+        channel Link extends ned.DatarateChannel
         {
             delay = default(uniform(0.1ms, 1ms));
             datarate = default(1Mbps);
@@ -29,9 +29,9 @@ network Dumbbell
         nodeL[numLeft]: Node {address = 101+index;}
         nodeR[numRight]: Node {address = 201+index;}
     connections:
-        switchL.port++ <--> C <--> switchR.port++;
-        nodeL[i].port++ <--> C <--> switchL.port++ for i=0..numLeft-1;
-        nodeR[i].port++ <--> C <--> switchR.port++ for i=0..numRight-1;
+        switchL.port++ <--> Link <--> switchR.port++;
+        nodeL[i].port++ <--> Link <--> switchL.port++ for i=0..numLeft-1;
+        nodeR[i].port++ <--> Link <--> switchR.port++ for i=0..numRight-1;
 }
 
 
