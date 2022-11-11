@@ -129,7 +129,34 @@ static_flag = cStaticFlag()
 static_flag.__python_owns__ = False
 CodeFragments.executeAll(CodeFragments.EARLY_STARTUP)
 
-import atexit
+def EV(*args, level=omnetpp.LOGLEVEL_INFO, category="", sep=""):
+    if omnetpp.cLog.isLoggingEnabled(): #TODO cLog::componentLogPredicate
+        s = sep.join([str(e) for e in args])
+        obj, file, line, func = (cppyy.nullptr, "<python>", -1, "?")  #TODO maybe using traceback.extract_stack()?
+        lp = omnetpp.internal.cLogProxy(cppyy.nullptr, level, category, file, line, func)
+        lp.getStream().write(s, len(s))
+        lp.getStream().write("\n", 1)
+
+def EV_TRACE(*args, category="", sep=""):
+    EV(*args, level=omnetpp.LOGLEVEL_TRACE, category=category, sep=sep)
+
+def EV_DEBUG(*args, category="", sep=""):
+    EV(*args, level=omnetpp.LOGLEVEL_DEBUG, category=category, sep=sep)
+
+def EV_DETAIL(*args, category="", sep=""):
+    EV(*args, level=omnetpp.LOGLEVEL_DETAIL, category=category, sep=sep)
+
+def EV_INFO(*args, category="", sep=""):
+    EV(*args, level=omnetpp.LOGLEVEL_INFO, category=category, sep=sep)
+
+def EV_WARN(*args, category="", sep=""):
+    EV(*args, level=omnetpp.LOGLEVEL_WARN, category=category, sep=sep)
+
+def EV_ERROR(*args, category="", sep=""):
+    EV(*args, level=omnetpp.LOGLEVEL_ERROR, category=category, sep=sep)
+
+def EV_FATAL(*args, category="", sep=""):
+    EV(*args, level=omnetpp.LOGLEVEL_FATAL, category=category, sep=sep)
 
 def cleanup():
     # shutdown boilerplate
@@ -139,6 +166,7 @@ def cleanup():
     #del static_flag
     pass
 
+import atexit
 atexit.register(cleanup)
 
 
