@@ -24,7 +24,7 @@ namespace omnetpp {
 class cSimulation;
 class cConfiguration;
 class cINedLoader;
-class IRunner;
+class cIRunner;
 
 namespace cmdenv {
 
@@ -41,14 +41,14 @@ class CmdenvSimulationHolder : public SimulationHolder
 
   protected:
     virtual cSimulation *createSimulation() override;
-    virtual void configureRunner(IRunner *runner, cConfiguration *cfg);
+    virtual void configureRunner(cIRunner *runner, cConfiguration *cfg);
 
   public:
     CmdenvSimulationHolder(Cmdenv *app);
     CmdenvSimulationHolder(cINedLoader *nedLoader);
     CmdenvSimulationHolder(std::ostream& out, cINedLoader *nedLoader, bool& sigintReceived);
     void setBatchProgress(int runsTried, int numRuns) {this->runsTried = runsTried; this->numRuns = numRuns;}
-    virtual void setupAndRunSimulation(cSimulation *simulation, cConfiguration *cfg, IRunner *runner=nullptr, const char *redirectFileName=nullptr) override;
+    virtual void setupAndRunSimulation(cSimulation *simulation, cConfiguration *cfg, cIRunner *runner=nullptr, const char *redirectFileName=nullptr) override;
     using SimulationHolder::setupAndRunSimulation;
 };
 

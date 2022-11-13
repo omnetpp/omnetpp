@@ -43,7 +43,7 @@ class cEnvir;
 class cSoftOwner;
 class cINedLoader;
 class cIRngManager;
-class IRunner;
+class cIRunner;
 
 namespace envir {
 class Stopwatch;
@@ -687,7 +687,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * If there was an error, it manifests as an exception which is allowed
      * to propagate out of this method.
      */
-    virtual bool run(IRunner *runner=nullptr, bool shouldCallFinish=true);
+    virtual bool run(cIRunner *runner=nullptr, bool shouldCallFinish=true);
 
     /**
      * Invoke callRefreshDisplay() on the system module.

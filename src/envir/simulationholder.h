@@ -28,7 +28,7 @@ class cSimulation;
 class cINedLoader;
 class cTerminationException;
 class cModuleType;
-class IRunner;
+class cIRunner;
 
 namespace envir {
 
@@ -56,8 +56,8 @@ class SimulationHolder
     SimulationHolder(std::ostream& out, cINedLoader *nedLoader=nullptr) : out(out), nedLoader(nedLoader) {}
     virtual void setVerbose(bool verbose) {this->verbose = verbose;}
     virtual void setUseStderr(bool useStderr) {this->useStderr = useStderr;}
-    virtual void setupAndRunSimulation(cConfiguration *cfg, IRunner *runner=nullptr, const char *redirectFileName=nullptr);
-    virtual void setupAndRunSimulation(cSimulation *simulation, cConfiguration *cfg, IRunner *runner=nullptr, const char *redirectFileName=nullptr);
+    virtual void setupAndRunSimulation(cConfiguration *cfg, cIRunner *runner=nullptr, const char *redirectFileName=nullptr);
+    virtual void setupAndRunSimulation(cSimulation *simulation, cConfiguration *cfg, cIRunner *runner=nullptr, const char *redirectFileName=nullptr);
     cTerminationException *getTerminationReason() const {return terminationReason;}  // stopping reason in case of normal (error-free) simulation execution
 };
 

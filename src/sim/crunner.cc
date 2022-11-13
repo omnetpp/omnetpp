@@ -18,7 +18,7 @@
 
 namespace omnetpp {
 
-IRunner::~IRunner()
+cIRunner::~cIRunner()
 {
 }
 

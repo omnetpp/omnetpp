@@ -21,8 +21,8 @@
 namespace omnetpp {
 
 /**
- * @brief Encapsulates the discrete simulation event loop. The loop
- * repeats the two steps of (1) getting the next event from the FES
+ * @brief Encapsulates the discrete simulation event loop in cSimulation.
+ * The loop repeats the two steps of (1) getting the next event from the FES
  * and (2) executing the event, until the simulation is over.
  *
  * In practice, the event loop may contain additional stuff like printing
@@ -30,11 +30,13 @@ namespace omnetpp {
  * with some frequency, or implementing "run until" functionality. This
  * is why various implementations exist.
  *
+ * @see cSimulation::run()
+ *
  * @ingroup SimSupport
  */
-class SIM_API IRunner {
+class SIM_API cIRunner {
   public:
-    virtual ~IRunner();
+    virtual ~cIRunner();
 
     /**
      * Exceptions thrown from the simulation are propagated. The method is

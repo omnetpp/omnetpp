@@ -31,7 +31,7 @@ namespace envir {
 
 class IFakeGUI;
 
-class ENVIR_API Runner : public IRunner
+class ENVIR_API Runner : public cIRunner
 {
   protected:
     cSimulation *simulation; // not owned

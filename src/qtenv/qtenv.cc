@@ -857,7 +857,7 @@ void Qtenv::rebuildSim()
         confirm(INFO, "Choose File|New Network or File|New Run.");
 }
 
-class QtenvRunner : public IRunner
+class QtenvRunner : public cIRunner
 {
     private:
         Qtenv *qtenv;

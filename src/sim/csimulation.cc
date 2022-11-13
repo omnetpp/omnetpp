@@ -1046,7 +1046,7 @@ void cSimulation::executeEvent(cEvent *event)
 
 #undef DEBUG_TRAP_IF_REQUESTED
 
-class DefaultRunner : public IRunner {
+class DefaultRunner : public cIRunner {
   private:
     cSimulation *simulation;
   public:
@@ -1068,7 +1068,7 @@ void DefaultRunner::run()
     }
 }
 
-bool cSimulation::run(IRunner *runner, bool shouldCallFinish)
+bool cSimulation::run(cIRunner *runner, bool shouldCallFinish)
 {
     ASSERT(stage == STAGE_NONE);  // must not be doing something else
 

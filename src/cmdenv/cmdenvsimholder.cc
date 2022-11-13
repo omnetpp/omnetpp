@@ -66,7 +66,7 @@ cSimulation *CmdenvSimulationHolder::createSimulation()
     return new cSimulation("simulation", envir, nedLoader);
 }
 
-void CmdenvSimulationHolder::configureRunner(IRunner *irunner, cConfiguration *cfg)
+void CmdenvSimulationHolder::configureRunner(cIRunner *irunner, cConfiguration *cfg)
 {
     if (Runner *runner = dynamic_cast<Runner*>(irunner)) {
         runner->setExpressMode(cfg->getAsBool(CFGID_CMDENV_EXPRESS_MODE));
@@ -80,7 +80,7 @@ void CmdenvSimulationHolder::configureRunner(IRunner *irunner, cConfiguration *c
     }
 }
 
-void CmdenvSimulationHolder::setupAndRunSimulation(cSimulation *simulation, cConfiguration *cfg, IRunner *runner, const char *redirectFileName)
+void CmdenvSimulationHolder::setupAndRunSimulation(cSimulation *simulation, cConfiguration *cfg, cIRunner *runner, const char *redirectFileName)
 {
     Runner localRunner(simulation, out, sigintReceived);
     if (runner == nullptr)

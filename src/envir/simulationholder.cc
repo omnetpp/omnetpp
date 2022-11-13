@@ -85,7 +85,7 @@ cINedLoader *SimulationHolder::createConfiguredNedLoader(cConfiguration *cfg, Ar
     return nedLoader;
 }
 
-void SimulationHolder::setupAndRunSimulation(cConfiguration *cfg, IRunner *runner, const char *redirectFileName)
+void SimulationHolder::setupAndRunSimulation(cConfiguration *cfg, cIRunner *runner, const char *redirectFileName)
 {
     std::unique_ptr<cSimulation> simulation(createSimulation());
     setupAndRunSimulation(simulation.get(), cfg, runner, redirectFileName);
@@ -96,7 +96,7 @@ cSimulation *SimulationHolder::createSimulation()
     return new cSimulation("simulation", nedLoader);
 }
 
-void SimulationHolder::setupAndRunSimulation(cSimulation *simulation, cConfiguration *cfg, IRunner *runner, const char *redirectFileName)
+void SimulationHolder::setupAndRunSimulation(cSimulation *simulation, cConfiguration *cfg, cIRunner *runner, const char *redirectFileName)
 {
     try {
         const char *configName = cfg->getVariable(CFGVAR_CONFIGNAME);
