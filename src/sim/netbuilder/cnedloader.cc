@@ -129,7 +129,7 @@ void cNedLoader::loadNedFiles()
 //TODO verbose mode log:
 //            if (opt->verbose)
 //                out << "Loading NED files from " << folder << ": ";
-            int count = loadNedSourceFolder(folder.c_str(), nedExcludedPackages.c_str());
+            int count = loadNedFolder(folder.c_str(), nedExcludedPackages.c_str());
             (void)count;
 //            if (opt->verbose)
 //                out << " " << count << endl;

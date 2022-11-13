@@ -474,11 +474,11 @@ simtime_t cSimulation::getSimulationTimeLimit() const
     return simTimeLimit;
 }
 
-int cSimulation::loadNedSourceFolder(const char *folder, const char *excludedPackages)
+int cSimulation::loadNedFolder(const char *folder, const char *excludedPackages)
 {
     if (!nedLoader)
         throw cRuntimeError("No NED loader installed");
-    return nedLoader->loadNedSourceFolder(folder, excludedPackages);
+    return nedLoader->loadNedFolder(folder, excludedPackages);
 }
 
 void cSimulation::loadNedFile(const char *nedFilename, const char *expectedPackage, bool isXML)

@@ -93,7 +93,7 @@ static std::vector<std::string> resolvePath(const char *folder, const char *path
     return result;
 }
 
-int NedResourceCache::loadNedSourceFolder(const char *folderName, const char *excludedPackagesStr)
+int NedResourceCache::loadNedFolder(const char *folderName, const char *excludedPackagesStr)
 {
     LOCK;
 

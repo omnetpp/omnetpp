@@ -82,7 +82,7 @@ class SIM_API cINedLoader : public cNoncopyableOwnedObject
      *
      * The function returns the number of NED files loaded.
      */
-    virtual int loadNedSourceFolder(const char *foldername, const char *excludedPackages="") = 0;
+    virtual int loadNedFolder(const char *foldername, const char *excludedPackages="") = 0;
 
     /**
      * Load a single NED file. If the expected package is given (non-nullptr),

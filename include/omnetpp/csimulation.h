@@ -397,9 +397,9 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     cINedLoader *getNedLoader() const {return nedLoader;}
 
     /**
-     * Shortcut for <tt>getNedLoader()->loadNedSourceFolder(folderName, excludedPackages)</tt>.
+     * Shortcut for <tt>getNedLoader()->loadNedFolder(folderName, excludedPackages)</tt>.
      */
-    virtual int loadNedSourceFolder(const char *folderName, const char *excludedPackages="");
+    virtual int loadNedFolder(const char *folderName, const char *excludedPackages="");
 
     /**
      * Shortcut for <tt>getNedLoader()->loadNedFile(nedFilename, expectedPackage, isXML)</tt>.

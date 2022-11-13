@@ -130,7 +130,7 @@ class NEDXML_API NedResourceCache
      *
      * The function returns the number of NED files loaded.
      */
-    virtual int loadNedSourceFolder(const char *foldername, const char *excludedPackages);
+    virtual int loadNedFolder(const char *foldername, const char *excludedPackages);
 
     /**
      * Load a single NED file. If the expected package is given (non-nullptr),
@@ -195,7 +195,7 @@ class NEDXML_API NedResourceCache
     virtual std::string getNedPackageForFolder(const char *folder) const;
 
     /**
-     * Returns the list of NED source folders loaded by loadNedSourceFolder()
+     * Returns the list of NED source folders loaded by loadNedFolder()
      * in their canonical forms.
      */
     virtual std::vector<std::string> getLoadedNedFolders() const;

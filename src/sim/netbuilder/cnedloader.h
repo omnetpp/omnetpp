@@ -101,7 +101,7 @@ class SIM_API cNedLoader : public cINedLoader, public nedxml::NedResourceCache
 
     /** @name Implementation of the cINedLoader interface. */
     //@{
-    virtual int loadNedSourceFolder(const char *foldername, const char *excludedPackages=nullptr) override {return nedxml::NedResourceCache::loadNedSourceFolder(foldername,excludedPackages);}
+    virtual int loadNedFolder(const char *foldername, const char *excludedPackages=nullptr) override {return nedxml::NedResourceCache::loadNedFolder(foldername,excludedPackages);}
     virtual void loadNedFile(const char *nedfname, const char *expectedPackage=nullptr, bool isXML=false) override {nedxml::NedResourceCache::loadNedFile(nedfname,expectedPackage,isXML);}
     virtual void loadNedText(const char *name, const char *nedtext, const char *expectedPackage=nullptr, bool isXML=false) override {nedxml::NedResourceCache::loadNedText(name,nedtext,expectedPackage,isXML);}
     virtual std::vector<std::string> getLoadedNedFolders() const override {return nedxml::NedResourceCache::getLoadedNedFolders();}

@@ -126,7 +126,7 @@ int main(int argc, char *argv[])
     simulation->configure(cfg);
 
     // load NED files
-    simulation->loadNedSourceFolder("model");
+    simulation->loadNedFolder("model");
 
     CodeFragments::executeAll(CodeFragments::STARTUP);
 
