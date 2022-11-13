@@ -36,7 +36,7 @@
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cfutureeventset.h"
 #include "omnetpp/cscheduler.h"
-#include "omnetpp/cnedloader.h"
+#include "omnetpp/cinedloader.h"
 #include "common/stringutil.h"
 #include "common/ver.h"
 

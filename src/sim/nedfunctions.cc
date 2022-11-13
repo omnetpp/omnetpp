@@ -29,7 +29,7 @@
 #include "omnetpp/distrib.h"
 #include "omnetpp/cnedmathfunction.h"
 #include "omnetpp/cnedfunction.h"
-#include "omnetpp/cnedloader.h"
+#include "omnetpp/cinedloader.h"
 #include "omnetpp/cexception.h"
 #include "omnetpp/cstringtokenizer.h"
 #include "omnetpp/cconfiguration.h"

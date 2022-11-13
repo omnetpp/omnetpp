@@ -29,7 +29,7 @@
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/ccoroutine.h"
-#include "omnetpp/cnedloader.h"
+#include "omnetpp/cinedloader.h"
 #include "omnetpp/platdep/platmisc.h"
 #include "appbase.h"
 #include "args.h"

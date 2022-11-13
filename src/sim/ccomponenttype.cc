@@ -40,7 +40,7 @@
 #include "omnetpp/cenum.h"
 #include "omnetpp/ccanvas.h"
 #include "omnetpp/cobjectfactory.h"
-#include "omnetpp/cnedloader.h"
+#include "omnetpp/cinedloader.h"
 
 #ifdef WITH_PARSIM
 #include "omnetpp/ccommbuffer.h"

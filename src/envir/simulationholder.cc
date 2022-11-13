@@ -22,7 +22,7 @@
 #include "omnetpp/ccomponenttype.h"
 #include "omnetpp/cfingerprint.h"
 #include "omnetpp/cconfigoption.h"
-#include "omnetpp/cnedloader.h"
+#include "omnetpp/cinedloader.h"
 #include "omnetpp/crunner.h"
 #include "omnetpp/checkandcast.h"
 #include "sim/netbuilder/cnedloader.h"

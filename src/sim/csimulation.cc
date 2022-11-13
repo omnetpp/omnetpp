@@ -49,7 +49,7 @@
 #include "omnetpp/cfingerprint.h"
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/ccoroutine.h"
-#include "omnetpp/cnedloader.h"
+#include "omnetpp/cinedloader.h"
 #include "omnetpp/clifecyclelistener.h"
 #include "omnetpp/crngmanager.h"
 #include "omnetpp/cstatisticbuilder.h"

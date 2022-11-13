@@ -18,7 +18,7 @@
 #include "ui_findobjectsdialog.h"
 #include "omnetpp/cobject.h"
 #include "omnetpp/csimulation.h"
-#include "omnetpp/cnedloader.h"
+#include "omnetpp/cinedloader.h"
 #include "omnetpp/globals.h"
 #include "envir/visitor.h"
 #include "common/matchexpression.h"

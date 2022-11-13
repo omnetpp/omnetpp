@@ -19,7 +19,7 @@
 #define __OMNETPP_NETBUILDER_CNEDLOADER_H
 
 #include <map>
-#include "omnetpp/cnedloader.h"
+#include "omnetpp/cinedloader.h"
 #include "nedxml/nedresourcecache.h"
 #include "nedxml/astnode.h"
 #include "cneddeclaration.h"

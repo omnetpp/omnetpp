@@ -24,7 +24,7 @@
 #include "envir/appreg.h"
 #include "envir/inifilecontents.h"
 #include "omnetpp/cconfigoption.h"
-#include "omnetpp/cnedloader.h"
+#include "omnetpp/cinedloader.h"
 #include "cmdenv.h"
 #include "cmdenvir.h"
 #include "cmdenvsimholder.h"

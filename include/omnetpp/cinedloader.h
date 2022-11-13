@@ -1,5 +1,5 @@
 //==========================================================================
-// CNEDLOADER.H -
+// CINEDLOADER.H -
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_CNEDLOADER_H
-#define __OMNETPP_CNEDLOADER_H
+#ifndef __OMNETPP_CINEDLOADER_H
+#define __OMNETPP_CINEDLOADER_H
 
 #include "cownedobject.h"
 
