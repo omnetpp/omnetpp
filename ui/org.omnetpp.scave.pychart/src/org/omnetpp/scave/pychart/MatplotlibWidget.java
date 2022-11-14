@@ -10,6 +10,8 @@ package org.omnetpp.scave.pychart;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
@@ -175,6 +177,16 @@ public class MatplotlibWidget extends Canvas implements IMatplotlibWidget {
     private static final int EVENTSTREAM_RESIZE = 2;
 
     private static final Font warningFont = new Font(null, new FontData("Arial", 10, SWT.NORMAL));
+
+    private static final Map<String, Integer> CURSOR_TYPES = new HashMap<String, Integer>();
+
+    static {
+        CURSOR_TYPES.put("HAND", SWT.CURSOR_HAND);
+        CURSOR_TYPES.put("POINTER", SWT.CURSOR_ARROW);
+        CURSOR_TYPES.put("SELECT_REGION", SWT.CURSOR_CROSS);
+        CURSOR_TYPES.put("MOVE", SWT.CURSOR_SIZEALL);
+        CURSOR_TYPES.put("WAIT", SWT.CURSOR_WAIT);
+    }
 
     /**
      * Creates a new MatplotlibWidget in the given parent Control, with the
@@ -473,10 +485,14 @@ public class MatplotlibWidget extends Canvas implements IMatplotlibWidget {
     }
 
     @Override
-    public void setCursorType(int cursor) {
-        // in matplotlib/backend_tools.py: HAND, POINTER, SELECT_REGION, MOVE, WAIT = range(5)
-        int[] cursors = new int[] { SWT.CURSOR_HAND, SWT.CURSOR_ARROW, SWT.CURSOR_CROSS, SWT.CURSOR_SIZEALL, SWT.CURSOR_WAIT };
-        cursorType = cursors[cursor];
+    public void setCursorType(String cursor) {
+        try {
+            cursorType = CURSOR_TYPES.get(cursor.toUpperCase());
+        }
+        catch (NullPointerException e) {
+            PyChartPlugin.logError("Unknown cursor type: " + cursor, e);
+            cursorType = SWT.CURSOR_ARROW;
+        };
         Display.getDefault().asyncExec(() -> { if (!isDisposed()) setCursor(new Cursor(getDisplay(), cursorType)); });
     }
 
