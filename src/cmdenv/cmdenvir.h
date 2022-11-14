@@ -41,7 +41,6 @@ class CMDENV_API CmdEnvir : public EnvirBase
     bool interactive = false;
 
    public:
-    CmdEnvir(Cmdenv *app);  // take all settings from app
     CmdEnvir(std::ostream& out, bool& sigintReceived);
     virtual ~CmdEnvir() {delete fakeGUI;}
     virtual void configure(cConfiguration *cfg) override;

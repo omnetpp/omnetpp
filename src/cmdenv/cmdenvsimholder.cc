@@ -41,12 +41,12 @@ Register_GlobalConfigOption(CFGID_CMDENV_EVENT_BANNER_DETAILS, "cmdenv-event-ban
 Register_GlobalConfigOptionU(CFGID_CMDENV_STATUS_FREQUENCY, "cmdenv-status-frequency", "s", "2s", "When `cmdenv-express-mode=true`: print status update every n seconds.")
 Register_GlobalConfigOption(CFGID_CMDENV_PERFORMANCE_DISPLAY, "cmdenv-performance-display", CFG_BOOL, "true", "When `cmdenv-express-mode=true`: print detailed performance information. Turning it on results in a 3-line entry printed on each update, containing ev/sec, simsec/sec, ev/simsec, number of messages created/still present/currently scheduled in FES.")
 
-CmdenvSimulationHolder::CmdenvSimulationHolder(Cmdenv *app) :
-        CmdenvSimulationHolder(app->getOutputStream(), app->nedLoader, app->sigintReceived)
-{
-    setVerbose(app->verbose);
-    setUseStderr(app->useStderr);
-}
+//CmdenvSimulationHolder::CmdenvSimulationHolder(Cmdenv *app) :
+//        CmdenvSimulationHolder(app->getOutputStream(), app->nedLoader, app->sigintReceived)
+//{
+//    setVerbose(app->verbose);
+//    setUseStderr(app->useStderr);
+//}
 
 CmdenvSimulationHolder::CmdenvSimulationHolder(std::ostream& out, cINedLoader *nedLoader, bool& sigintReceived) :
         SimulationHolder(out, nedLoader), sigintReceived(sigintReceived)
@@ -63,6 +63,10 @@ CmdenvSimulationHolder::CmdenvSimulationHolder(cINedLoader *nedLoader) :
 cSimulation *CmdenvSimulationHolder::createSimulation()
 {
     CmdEnvir *envir = new CmdEnvir(out, sigintReceived);
+
+    //TODO envir->setArgs(app->getArgList());
+    //TODO envir->setVerbose(app->isVerbose());
+
     return new cSimulation("simulation", envir, nedLoader);
 }
 

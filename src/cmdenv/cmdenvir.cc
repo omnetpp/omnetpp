@@ -35,12 +35,6 @@ extern cConfigOption *CFGID_CMDENV_EXPRESS_MODE;
 extern cConfigOption *CFGID_CMDENV_AUTOFLUSH;
 extern cConfigOption *CFGID_CMDENV_EVENT_BANNERS;
 
-CmdEnvir::CmdEnvir(Cmdenv *app) : out(app->getOutputStream()), sigintReceived(app->sigintReceived)
-{
-    setArgs(app->getArgList());
-    setVerbose(app->isVerbose());
-}
-
 CmdEnvir::CmdEnvir(std::ostream& out, bool& sigintReceived) : out(out), sigintReceived(sigintReceived)
 {
 }

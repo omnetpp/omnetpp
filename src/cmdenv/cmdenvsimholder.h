@@ -44,7 +44,7 @@ class CmdenvSimulationHolder : public SimulationHolder
     virtual void configureRunner(cIRunner *runner, cConfiguration *cfg);
 
   public:
-    CmdenvSimulationHolder(Cmdenv *app);
+    //CmdenvSimulationHolder(Cmdenv *app);
     CmdenvSimulationHolder(cINedLoader *nedLoader);
     CmdenvSimulationHolder(std::ostream& out, cINedLoader *nedLoader, bool& sigintReceived);
     void setBatchProgress(int runsTried, int numRuns) {this->runsTried = runsTried; this->numRuns = numRuns;}
