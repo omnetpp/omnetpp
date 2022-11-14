@@ -59,10 +59,10 @@ public interface IMatplotlibWidget {
     void clearRect();
 
     /**
-     * Sets the mouse cursor type. The cursors are encoded as:
-     * HAND = 0, POINTER = 1, SELECT_REGION = 2, MOVE = 3, WAIT = 4
+     * Sets the mouse cursor type. The following cursors are accepted:
+     * HAND, POINTER, SELECT_REGION, MOVE, WAIT (case insensitive)
      */
-    void setCursorType(int cursor);
+    void setCursorType(String cursor);
 
     /**
      * Sets the tool message to show to the user. This commonly contains
