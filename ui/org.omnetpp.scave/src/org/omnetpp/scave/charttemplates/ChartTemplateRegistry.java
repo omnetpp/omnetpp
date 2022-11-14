@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -65,38 +66,60 @@ public class ChartTemplateRegistry {
         }
     }
 
-    public void reloadTemplates() {
-        Debug.time("Reloading templates", 1, () -> {
-            templates = new ArrayList<>();
+    public void reloadBuiltinTemplates() {
+        Debug.time("Reloading builtin chart templates", 1, () -> {
+            templates.removeIf(x -> x.isBuiltin());
 
             try {
                 // load from the plugin
                 String pluginTemplatesFolder = getTemplatesFolder(null);
                 for (String propertiesFile : readFile(pluginTemplatesFolder, "FILELIST").split("\n"))
-                    registerChartTemplate(pluginTemplatesFolder, propertiesFile);
+                    registerChartTemplate(pluginTemplatesFolder, propertiesFile, true);
+            }
+            catch (IOException|CoreException e) {
+                ScavePlugin.logError("Error loading builtin chart templates", e);
+            }
 
+            lastTimeLoaded = System.currentTimeMillis();
+            // custom ones should come first, and Collections.sort is guaranteed to be stable
+            Collections.sort(templates, (a, b) -> Boolean.compare(a.isBuiltin(), b.isBuiltin()));
+        });
+    }
+
+    public void reloadUserTemplates() {
+        Debug.time("Reloading custom chart templates", 1, () -> {
+            templates.removeIf(x -> !x.isBuiltin());
+
+            try {
                 // load from projects
                 IProject[] projectsToScan = ProjectUtils.getAllReferencedProjects(project, true, true);
                 for (IProject project : projectsToScan)
                     if (project.getFolder(CHARTTEMPLATES_FOLDER).exists())
                         for (IResource member : project.getFolder(CHARTTEMPLATES_FOLDER).members())
                             if (member instanceof IFile && member.getName().endsWith(".properties"))
-                                registerChartTemplate(getTemplatesFolder(project), member.getName());
+                                registerChartTemplate(getTemplatesFolder(project), member.getName(), false);
             }
-            catch (IOException|CoreException e ) {
-                ScavePlugin.logError("Error loading chart templates", e);
+            catch (CoreException e) {
+                ScavePlugin.logError("Error loading custom chart templates", e);
             }
 
             lastTimeLoaded = System.currentTimeMillis();
+            // custom ones should come first, and Collections.sort is guaranteed to be stable
+            Collections.sort(templates, (a, b) -> Boolean.compare(a.isBuiltin(), b.isBuiltin()));
         });
     }
 
-    private void registerChartTemplate(String templatesFolder, String propertiesFile) {
+    public void reloadAllTemplates() {
+        reloadBuiltinTemplates();
+        reloadUserTemplates();
+    }
+
+    private void registerChartTemplate(String templatesFolder, String propertiesFile, boolean builtin) {
         IContainer workspaceFolder = getWorkspaceFolder(templatesFolder);
         try {
             if (workspaceFolder != null)
                 workspaceFolder.getFile(new Path(propertiesFile)).deleteMarkers(Markers.CHARTTEMPLATE_PROBLEMMARKER_ID, true, IResource.DEPTH_ZERO);
-            ChartTemplate chartTemplate = loadChartTemplate(templatesFolder, propertiesFile);
+            ChartTemplate chartTemplate = loadChartTemplate(templatesFolder, propertiesFile, builtin);
             if (doFindTemplateByID(templates, chartTemplate.getId()) != null)
                 throw new RuntimeException("template ID is not unique");
             templates.add(chartTemplate);
@@ -110,7 +133,7 @@ public class ChartTemplateRegistry {
         }
     }
 
-    private ChartTemplate loadChartTemplate(String templatesFolder, String propertiesFile) throws IOException, CoreException {
+    private ChartTemplate loadChartTemplate(String templatesFolder, String propertiesFile, boolean builtin) throws IOException, CoreException {
         Properties props = new Properties();
         props.load(new StringReader(readFile(templatesFolder, propertiesFile)));
 
@@ -178,7 +201,7 @@ public class ChartTemplateRegistry {
             }
         }
 
-        ChartTemplate template = new ChartTemplate(id, name, description, chartType, icon, resultTypes, script, pages, score, menuIcon, properties, originFolder.toString());
+        ChartTemplate template = new ChartTemplate(id, name, description, chartType, icon, resultTypes, script, pages, score, menuIcon, properties, originFolder.toString(), builtin);
 
         return template;
     }
@@ -273,10 +296,14 @@ public class ChartTemplateRegistry {
     public ArrayList<ChartTemplate> getAllTemplates() {
         if (templates == null) {
             templates = new ArrayList<ChartTemplate>();
-            reloadTemplates();
+            reloadAllTemplates();
         }
-        if (Debug.isDebugging() && (System.currentTimeMillis() > lastTimeLoaded + 1000))
-            reloadTemplates();
+        if (System.currentTimeMillis() > lastTimeLoaded + 1000) {
+            if (Debug.isDebugging())
+                reloadAllTemplates();
+            else
+                reloadUserTemplates();
+        }
         return templates;
     }
 
