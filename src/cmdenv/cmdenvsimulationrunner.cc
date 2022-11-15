@@ -324,7 +324,7 @@ cTerminationException *CmdenvSimulationRunner::setupAndRunSimulation(cConfigurat
     const char *runId = opp_nulltodefault(cfg->getVariable(CFGVAR_RUNID), "?");
     const char *repetition = opp_nulltodefault(cfg->getVariable(CFGVAR_REPETITION), "?");
     if (!verbose)
-        out << configName << " run " << runNumber << ": " << iterVars << ", $repetition=" << repetition << endl; // print before redirection; useful as progress indication from opp_runall
+        out << configName << " run " << runNumber << ": " << iterVars << ", $repetition=" << repetition << " --> runID=" << runId << endl; // print before redirection; useful as progress indication from opp_runall
 
     std::ofstream fout;
 
@@ -336,17 +336,10 @@ cTerminationException *CmdenvSimulationRunner::setupAndRunSimulation(cConfigurat
         if (!fout.is_open())
             throw cRuntimeError("Cannot open file '%s' for write", redirectFileName);
         if (verbose)
-            //TODO fout << "\nRunning configuration " << configName << " run " << runNumber << ": " << iterVars << ", $repetition=" << repetition << "..." << endl;
-            fout << "\nRunning configuration " << configName << ", run #" << runNumber << "..." << endl;
+            fout << "\nRunning configuration " << configName << " run " << runNumber << ": " << iterVars << ", $repetition=" << repetition << " --> runID=" << runId << endl;
     }
 
     std::ostream& simout = redirectOutput ? fout : out;
-
-    if (verbose) {
-        if (!opp_isempty(iterVars))
-            simout << "Scenario: " << iterVars << ", $repetition=" << repetition << endl; //TODO redundant, remove
-        simout << "Assigned runID=" << runId << endl;  //TODO merge into printouts above
-    }
 
     std::unique_ptr<cSimulation> tmp(createSimulation(simout));
     cSimulation *simulation = tmp.get();
