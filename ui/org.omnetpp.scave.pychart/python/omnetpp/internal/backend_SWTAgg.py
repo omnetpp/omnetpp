@@ -95,6 +95,7 @@ class NavigationToolbar2SWT(NavigationToolbar2):
         if self.widget is not None:
             self.widget.setMessage(s)
 
+    # for compatibility with MPL < 3.5
     def set_cursor(self, cursor):
         self.canvas.setCursor(cursor)
 
@@ -213,6 +214,10 @@ class FigureCanvasSWT(FigureCanvasBase):
 
     def setCursor(self, cursor):
         self.widget.setCursorType(cursor.name)
+
+    # for compatibility with MPL >= 3.5
+    def set_cursor(self, cursor):
+        return self.setCursor(cursor)
 
     def drawRectangle(self, rect):
         if rect is None:
