@@ -164,7 +164,12 @@ cSimulation::~cSimulation()
 //        abort();
 //    }
 
-    deleteNetwork();  // note: requires this being the active simulation
+    try {
+        deleteNetwork();  // note: requires this being the active simulation
+    }
+    catch (std::exception&) {
+        // ignore (C++ doesn't allow throwing from a destructor)
+    }
 
     auto copy = listeners;
     for (auto& listener : copy)
