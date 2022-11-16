@@ -1,0 +1,69 @@
+%description:
+Tests that the `pyeval` and `pycode` functions can add attributes to `self` and
+that they are available in further invocations.
+
+%file: test.ned
+
+import testlib.Dump;
+
+network Test
+{
+    parameters:
+        @class(Test);
+
+        volatile int counter = pycode("self.cntr = ((self.cntr + 1) if hasattr(self, 'cntr') else 0); return self.cntr");
+        volatile string words = pycode("self.wrds = ((self.wrds + ' hi') if hasattr(self, 'wrds') else 'hi'); return self.wrds");
+        object dummy = pycode("def gen():\n for a in 'lorem ipsum dolor sit amet'.split():\n  yield a\nself.lipsumgen = gen()");
+        volatile string lipsum = pyeval("next(self.lipsumgen)");
+}
+
+%file: test.cc
+
+#include "omnetpp.h"
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class Test : public cSimpleModule {
+    public:
+        virtual void initialize() override {
+            EV_INFO << "----" << std::endl;
+
+            for (int i = 0; i < 4; i++)
+                EV_INFO << par("counter").intValue() << std::endl;
+            EV_INFO << std::endl;
+
+            for (int i = 0; i < 4; i++)
+                EV_INFO << par("words").stdstringValue() << std::endl;
+            EV_INFO << std::endl;
+
+            for (int i = 0; i < 4; i++)
+                EV_INFO << par("lipsum").stdstringValue() << std::endl;
+
+            EV_INFO << "----" << std::endl;
+        }
+        virtual void handleMessage(cMessage *msg) override {}
+};
+
+Define_Module(Test);
+
+}
+
+%contains: stdout
+----
+0
+1
+2
+3
+
+hi
+hi hi
+hi hi hi
+hi hi hi hi
+
+lorem
+ipsum
+dolor
+sit
+----
