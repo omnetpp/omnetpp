@@ -14,22 +14,40 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <algorithm>
+#include <csignal>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <csignal>
-#include <algorithm>
+#include <fstream>
+#include <sstream>
 #include <thread>
 
-#include "envir/appreg.h"
-#include "envir/inifilecontents.h"
-#include "common/enumstr.h"
-#include "common/stlutil.h"
-#include "omnetpp/cconfigoption.h"
-#include "omnetpp/cinedloader.h"
+#include "cmddefs.h"
+#include "cmdenvapp.h"
 #include "cmdenvcore.h"
 #include "cmdenvir.h"
-#include "cmdenvsimholder.h"
+#include "common/enumstr.h"
+#include "common/fileutil.h"
+#include "common/stlutil.h"
+#include "common/stringutil.h"
+#include "envir/appbase.h"
+#include "envir/appreg.h"
+#include "envir/args.h"
+#include "envir/envirbase.h"
+#include "envir/envirutils.h"
+#include "envir/inifilecontents.h"
+#include "envir/resultfileutils.h"
+#include "envir/runner.h"
+#include "omnetpp/ccomponenttype.h"
+#include "omnetpp/cconfigoption.h"
+#include "omnetpp/cfingerprint.h"
+#include "omnetpp/checkandcast.h"
+#include "omnetpp/cinedloader.h"
+#include "omnetpp/cmodule.h"
+#include "omnetpp/crunner.h"
+#include "omnetpp/csimulation.h"
+#include "sim/netbuilder/cnedloader.h"
 #include "sim/pythonutil.h"
 
 #ifdef WITH_PYTHONSIM
@@ -50,8 +68,50 @@ Register_GlobalConfigOption(CFGID_CMDENV_RUNS_TO_EXECUTE, "cmdenv-runs-to-execut
 Register_GlobalConfigOption(CFGID_CMDENV_STOP_BATCH_ON_ERROR, "cmdenv-stop-batch-on-error", CFG_BOOL, "true", "Decides whether CmdenvCore should skip the rest of the runs when an error occurs during the execution of one run.")
 Register_GlobalConfigOption(CFGID_CMDENV_NUM_THREADS, "cmdenv-num-threads", CFG_INT, "1", "Specifies the number of threads to use when running multiple simulations is requested. (Each simulation will still run sequentially in its thread.) When -1 is given, the number of concurrent threads supported by the hardware will be used.");
 
+Register_GlobalConfigOption(CFGID_CMDENV_OUTPUT_FILE, "cmdenv-output-file", CFG_FILENAME, "${resultdir}/${configname}-${iterationvarsf}#${repetition}.out", "When `cmdenv-record-output=true`: file name to redirect standard output to. See also `fname-append-host`.")
+Register_GlobalConfigOption(CFGID_CMDENV_REDIRECT_OUTPUT, "cmdenv-redirect-output", CFG_BOOL, "false", "Causes Cmdenv to redirect standard output of simulation runs to a file or separate files per run. This option can be useful with running simulation campaigns (e.g. using opp_runall), and also with parallel simulation. See also: `cmdenv-output-file`, `fname-append-host`.");
+Register_GlobalConfigOption(CFGID_CMDENV_EXPRESS_MODE, "cmdenv-express-mode", CFG_BOOL, "true", "Selects normal (debug/trace) or express mode.")
+Register_GlobalConfigOption(CFGID_CMDENV_AUTOFLUSH, "cmdenv-autoflush", CFG_BOOL, "false", "Call `fflush(stdout)` after each event banner or status update; affects both express and normal mode. Turning on autoflush may have a performance penalty, but it can be useful with printf-style debugging for tracking down program crashes.")
+Register_GlobalConfigOption(CFGID_CMDENV_EVENT_BANNERS, "cmdenv-event-banners", CFG_BOOL, "true", "When `cmdenv-express-mode=false`: turns printing event banners on/off.")
+Register_GlobalConfigOption(CFGID_CMDENV_EVENT_BANNER_DETAILS, "cmdenv-event-banner-details", CFG_BOOL, "false", "When `cmdenv-express-mode=false`: print extra information after event banners.")
+Register_GlobalConfigOptionU(CFGID_CMDENV_STATUS_FREQUENCY, "cmdenv-status-frequency", "s", "2s", "When `cmdenv-express-mode=true`: print status update every n seconds.")
+Register_GlobalConfigOption(CFGID_CMDENV_PERFORMANCE_DISPLAY, "cmdenv-performance-display", CFG_BOOL, "true", "When `cmdenv-express-mode=true`: print detailed performance information. Turning it on results in a 3-line entry printed on each update, containing ev/sec, simsec/sec, ev/simsec, number of messages created/still present/currently scheduled in FES.")
+
 bool CmdenvCore::sigintReceived;
 
+
+class VerboseListener : public cISimulationLifecycleListener
+{
+  private:
+    std::ostream& out;
+  public:
+    VerboseListener(std::ostream& out) : out(out) {}
+    virtual void lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details) override;
+    virtual void listenerRemoved() override;
+};
+
+void VerboseListener::lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details)
+{
+    switch (eventType) {
+    case LF_PRE_NETWORK_SETUP: out << "Setting up network \"" << check_and_cast<cModuleType *>(details)->getFullName() << "\"..." << endl; break;
+    case LF_PRE_NETWORK_INITIALIZE: out << "Initializing..." << endl; break;
+    case LF_ON_SIMULATION_START: out << "\nRunning simulation..." << endl; break;
+    case LF_PRE_NETWORK_FINISH: out << "\nCalling finish() at end of Run #" << cSimulation::getActiveSimulation()->getConfig()->getVariable(CFGVAR_RUNNUMBER) << "..." << endl; break;
+    case LF_ON_SIMULATION_SUCCESS: out << "\n<!> " << check_and_cast<cException*>(details)->getFormattedMessage() << endl; break;
+    case LF_ON_SIMULATION_ERROR: out << "\n<!> " << check_and_cast<cException*>(details)->getFormattedMessage() << endl; break;
+    default: break;
+    }
+}
+
+void VerboseListener::listenerRemoved()
+{
+    cISimulationLifecycleListener::listenerRemoved();
+    delete this;
+}
+
+//---
+
+//TODO better ctors!
 CmdenvCore::CmdenvCore()
 {
 }
@@ -78,11 +138,12 @@ int CmdenvCore::runCmdenv(InifileContents *ini, ArgList *args)
         runFilter = args->optionValue('r');
 
     return runParameterStudy(ini, configName.c_str(), runFilter.c_str(), args);
-
 }
 
-int CmdenvCore::runParameterStudy(InifileContents *ini, const char *configName, const char *runFilter, ArgList *args) //TODO args: only for createConfiguredNedLoader()
+int CmdenvCore::runParameterStudy(InifileContents *ini, const char *configName, const char *runFilter, ArgList *args)
 {
+    this->args = args;
+
     std::vector<int> runNumbers;
     try {
         runNumbers = ini->resolveRunFilter(configName, runFilter);
@@ -93,7 +154,7 @@ int CmdenvCore::runParameterStudy(InifileContents *ini, const char *configName, 
     }
 
     if (runNumbers.empty()) {
-        std::cout << "No matching simulation run, exiting without simulation\n"; //TODO refine
+        std::cout << "No matching simulation run\n"; //TODO refine
         return 1;
     }
 
@@ -101,7 +162,7 @@ int CmdenvCore::runParameterStudy(InifileContents *ini, const char *configName, 
     // specifying different values for these options in different sections.
     cConfiguration *masterCfg = ini->extractConfig(configName, runNumbers[0]);
 
-    nedLoader = SimulationHolder::createConfiguredNedLoader(masterCfg, args);
+    nedLoader = createConfiguredNedLoader(masterCfg);
     nedLoader->loadNedFiles();
 
     int numThreads = masterCfg->getAsInt(CFGID_CMDENV_NUM_THREADS);
@@ -141,7 +202,6 @@ int CmdenvCore::runParameterStudy(InifileContents *ini, const char *configName, 
         }
     }
 
-
     // implement graceful exit when Ctrl-C is hit during simulation. We want
     // to finish the current event, then normally exit via callFinish() etc
     // so that simulation results are not lost.
@@ -177,6 +237,16 @@ int CmdenvCore::runParameterStudy(InifileContents *ini, const char *configName, 
     }
 
     return numErrors > 0 ? 1 : sigintReceived ? 2 : 0;
+}
+
+cINedLoader *CmdenvCore::createConfiguredNedLoader(cConfiguration *cfg)
+{
+    cINedLoader *nedLoader = new cNedLoader("nedLoader");
+    nedLoader->removeFromOwnershipTree();
+    std::string nArg = args == nullptr ? "" : opp_join(args->optionValues('n'), ";", true);
+    std::string xArg = args == nullptr ? "" : opp_join(args->optionValues('x'), ";", true);
+    nedLoader->configure(cfg, nArg.c_str() , xArg.c_str());
+    return nedLoader;
 }
 
 void CmdenvCore::runSimulationsInThreads(InifileContents *ini, const char *configName, const std::vector<int>& runNumbers, int numThreads)
@@ -231,17 +301,127 @@ bool CmdenvCore::runSimulation(InifileContents *ini, const char *configName, int
         std::unique_ptr<cConfiguration> cfg(ini->extractConfig(configName, runNumber));
         stopBatchOnError = cfg->getAsBool(CFGID_CMDENV_STOP_BATCH_ON_ERROR);
 
-        CmdenvSimulationHolder holder(out, nedLoader, sigintReceived);
-
-        holder.setBatchProgress((int)runsTried, (int)numRuns);
-        holder.setupAndRunSimulation(cfg.get());
-        ASSERT(holder.getTerminationReason() != nullptr);
+        bool redirectOutput = cfg->getAsBool(CFGID_CMDENV_REDIRECT_OUTPUT);
+        std::string outputFile = redirectOutput ? ResultFileUtils(cfg.get()).augmentFileName(cfg->getAsFilename(CFGID_CMDENV_OUTPUT_FILE)) : "";
+        cTerminationException *reason = setupAndRunSimulation(cfg.get(), nullptr, redirectOutput ? outputFile.c_str() : nullptr);
+        delete reason;
         return true;
     }
     catch (std::exception& e) {
         if (!verbose || useStderr) // if verbose, it was already printed (maybe only in the redirection file though)
             displayException(e);
         return false;
+    }
+}
+
+static void deleteNetworkOnError(cSimulation *simulation, cRuntimeError& error)
+{
+    try {
+        simulation->deleteNetwork();
+    }
+    catch (std::exception& e) {
+        error.addNestedException(e);
+    }
+}
+
+inline const char *opp_nulltodefault(const char *s, const char *defaultString)  {return s == nullptr ? defaultString : s;}
+
+cTerminationException *CmdenvCore::setupAndRunSimulation(cConfiguration *cfg, cIRunner *runner, const char *redirectFileName)
+{
+    //TODO more factories? createSimulation(), createEnvir(), createRunner()?
+
+    bool redirectOutput = redirectFileName != nullptr;
+
+    const char *configName = opp_nulltodefault(cfg->getVariable(CFGVAR_CONFIGNAME), "?");
+    const char *runNumber = opp_nulltodefault(cfg->getVariable(CFGVAR_RUNNUMBER), "?");
+    const char *iterVars = opp_nulltodefault(cfg->getVariable(CFGVAR_ITERATIONVARS), "?");
+    const char *runId = opp_nulltodefault(cfg->getVariable(CFGVAR_RUNID), "?");
+    const char *repetition = opp_nulltodefault(cfg->getVariable(CFGVAR_REPETITION), "?");
+    if (!verbose)
+        out << configName << " run " << runNumber << ": " << iterVars << ", $repetition=" << repetition << endl; // print before redirection; useful as progress indication from opp_runall
+
+    std::ofstream fout;
+
+    if (redirectOutput) {
+        if (verbose)
+            out << "Redirecting output to file \"" << redirectFileName << "\"..." << endl;
+        mkPath(directoryOf(redirectFileName).c_str());
+        fout.open(redirectFileName);
+        if (!fout.is_open())
+            throw cRuntimeError("Cannot open file '%s' for write", redirectFileName);
+        if (verbose)
+            //TODO fout << "\nRunning configuration " << configName << " run " << runNumber << ": " << iterVars << ", $repetition=" << repetition << "..." << endl;
+            fout << "\nRunning configuration " << configName << ", run #" << runNumber << "..." << endl;
+    }
+
+    std::ostream& simout = redirectOutput ? fout : out;
+
+    if (verbose) {
+        if (!opp_isempty(iterVars))
+            simout << "Scenario: " << iterVars << ", $repetition=" << repetition << endl; //TODO redundant, remove
+        simout << "Assigned runID=" << runId << endl;  //TODO merge into printouts above
+    }
+
+    std::unique_ptr<cSimulation> tmp(createSimulation(simout));
+    cSimulation *simulation = tmp.get();
+
+    Runner localRunner(simulation, simout, sigintReceived);
+    if (runner == nullptr)
+        runner = &localRunner;
+    configureRunner(runner, cfg);
+
+    if (verbose)
+        simulation->addLifecycleListener(new VerboseListener(simout));
+
+    cSimulation::setActiveSimulation(simulation);
+
+    try {
+        simulation->setupNetwork(cfg);
+
+        bool isTerminated = !simulation->run(runner, true);
+        if (!isTerminated)
+            throw cRuntimeError("Simulation paused before running to completion");
+
+        cTerminationException *terminationReason = simulation->getTerminationReason()->dup();
+        if (redirectOutput)
+            logException(fout, *terminationReason);
+        return terminationReason;
+    }
+    catch (cRuntimeError& e) {
+        deleteNetworkOnError(simulation, e);
+        if (redirectOutput)
+            logException(fout, e);
+        throw;
+    }
+    catch (std::exception& e) {
+        cRuntimeError re(e);
+        deleteNetworkOnError(simulation, re);
+        if (redirectOutput)
+            logException(fout, re);
+        throw re;
+    }
+}
+
+cSimulation *CmdenvCore::createSimulation(std::ostream& out)
+{
+    CmdEnvir *envir = new CmdEnvir(out, sigintReceived);
+    envir->setArgs(args);
+    envir->setVerbose(verbose);
+
+    return new cSimulation("simulation", envir, nedLoader);
+}
+
+void CmdenvCore::configureRunner(cIRunner *irunner, cConfiguration *cfg)
+{
+    if (Runner *runner = dynamic_cast<Runner*>(irunner)) {
+        runner->setExpressMode(cfg->getAsBool(CFGID_CMDENV_EXPRESS_MODE));
+        runner->setAutoFlush(cfg->getAsBool(CFGID_CMDENV_AUTOFLUSH));
+        runner->setStatusFrequencyMs(1000*cfg->getAsDouble(CFGID_CMDENV_STATUS_FREQUENCY));
+        runner->setPrintPerformanceData(cfg->getAsBool(CFGID_CMDENV_PERFORMANCE_DISPLAY));
+        runner->setPrintThreadId(false); //TODO
+        runner->setPrintEventBanners(cfg->getAsBool(CFGID_CMDENV_EVENT_BANNERS));
+        runner->setDetailedEventBanners(cfg->getAsBool(CFGID_CMDENV_EVENT_BANNER_DETAILS));
+        runner->setBatchProgress(runsTried, numRuns);
     }
 }
 
@@ -275,6 +455,13 @@ void CmdenvCore::alert(const char *msg)
     std::ostream& err = useStderr ? std::cerr : out;
     err << "\n<!> " << msg << endl << endl;
 }
+
+void CmdenvCore::logException(std::ostream& out, std::exception& ex)
+{
+    std::string msg = cException::getFormattedMessage(ex);
+    out << "\n<!> " << msg << endl << endl;
+}
+
 
 }  // namespace cmdenv
 }  // namespace omnetpp

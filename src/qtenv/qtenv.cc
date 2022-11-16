@@ -590,7 +590,7 @@ double Qtenv::computeModelHoldEndTime()
     return holdEndTime;
 }
 
-Qtenv::Qtenv() : SimulationHolder(AppBase::out), icons(out)
+Qtenv::Qtenv() : icons(out)
 {
     // Note: ctor should only contain trivial initializations, because
     // the class may be instantiated only for the purpose of calling
@@ -634,9 +634,6 @@ static void signalHandler(int signum)
 
 int Qtenv::doRunApp()
 {
-    SimulationHolder::setVerbose(AppBase::verbose);
-    SimulationHolder::setUseStderr(AppBase::useStderr);
-
     //
     // SETUP
     //
@@ -877,6 +874,16 @@ void QtenvRunner::run()
         else
             cont = qtenv->doRunSimulation();
     }
+}
+
+cINedLoader *Qtenv::createConfiguredNedLoader(cConfiguration *cfg, ArgList *args)
+{
+    cINedLoader *nedLoader = new cNedLoader("nedLoader");
+    nedLoader->removeFromOwnershipTree();
+    std::string nArg = args == nullptr ? "" : opp_join(args->optionValues('n'), ";", true);
+    std::string xArg = args == nullptr ? "" : opp_join(args->optionValues('x'), ";", true);
+    nedLoader->configure(cfg, nArg.c_str() , xArg.c_str());
+    return nedLoader;
 }
 
 void Qtenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg, cModule *until_module,

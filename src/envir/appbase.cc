@@ -37,7 +37,6 @@
 #include "envirutils.h"
 #include "appreg.h"
 #include "debuggersupport.h"
-#include "simulationholder.h"
 #include "inifilecontents.h"
 #include "debuggersupport.h"
 

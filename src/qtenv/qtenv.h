@@ -22,7 +22,6 @@
 #include "envir/appbase.h"
 #include "envir/speedometer.h"
 #include "envir/inifilecontents.h"
-#include "envir/simulationholder.h"
 #include "omnetpp/cchannel.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/ccanvas.h"
@@ -120,7 +119,7 @@ struct QtenvOptions
 /**
  * A Qt-based user interface.
  */
-class QTENV_API Qtenv : public QObject, public AppBase, public SimulationHolder
+class QTENV_API Qtenv : public QObject, public AppBase
 {
    Q_OBJECT
 
@@ -327,6 +326,8 @@ class QTENV_API Qtenv : public QObject, public AppBase, public SimulationHolder
       // redefined virtual functions from EnvirBase
       virtual int doRunApp() override;
       virtual void printUISpecificHelp() override;
+
+      virtual cINedLoader *createConfiguredNedLoader(cConfiguration *cfg, ArgList *args);
 
       virtual void readOptions(cConfiguration *cfg);
       virtual void readPerRunOptions(cConfiguration *cfg);

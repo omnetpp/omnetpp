@@ -51,7 +51,7 @@ IMPLIBS= -loppsim$D -loppnedxml$D -loppcommon$D
 OBJS= $O/appreg.o $O/args.o $O/startup.o $O/evmain.o $O/logformatter.o $O/envirbase.o $O/appbase.o $O/fsutils.o \
       $O/configuration.o $O/inifilecontents.o $O/inifilereader.o $O/scenario.o $O/valueiterator.o \
       $O/filesnapshotmgr.o $O/akoutvectormgr.o $O/debuggersupport.o \
-      $O/simulationholder.o $O/speedometer.o $O/stopwatch.o $O/matchableobject.o $O/matchablefield.o \
+      $O/speedometer.o $O/stopwatch.o $O/matchableobject.o $O/matchablefield.o \
       $O/akaroarng.o $O/xmldoccache.o $O/eventlogwriter.o $O/objectprinter.o \
       $O/eventlogfilemgr.o $O/resultfileutils.o $O/intervals.o \
       $O/omnetppoutscalarmgr.o $O/omnetppoutvectormgr.o $O/runner.o $O/ifakegui.o \

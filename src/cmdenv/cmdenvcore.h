@@ -29,17 +29,14 @@ namespace cmdenv {
 
 using namespace omnetpp::envir;
 
-class CmdEnvir;
-
 /**
  * Exposes the core functionality of Cmdenv, in a reusable and customizable form.
  */
 class CMDENV_API CmdenvCore
 {
-     friend class CmdEnvir;
-     friend class CmdenvSimulationHolder;
    protected:
      cINedLoader *nedLoader = nullptr;
+     ArgList *args = nullptr;
 
      std::ostream& out = std::cout; //TODO
 
@@ -57,6 +54,10 @@ class CMDENV_API CmdenvCore
      bool stopBatchOnError = true;
 
    protected:
+     virtual cSimulation *createSimulation(std::ostream& out);
+     virtual void configureRunner(cIRunner *runner, cConfiguration *cfg);
+     virtual void logException(std::ostream& out, std::exception& e);
+
      virtual void alert(const char *msg);
      virtual void displayException(std::exception& ex);
      std::thread startThread(InifileContents *ini, const char *configName, const std::vector<int>& runNumbers);
@@ -75,9 +76,12 @@ class CMDENV_API CmdenvCore
      virtual int runCmdenv(InifileContents *ini, ArgList *args);
      virtual int runParameterStudy(InifileContents *ini, const char *configName, const char *runFilter, ArgList *args);
 
-     virtual bool runSimulation(InifileContents *ini, const char *configName, int runNumber);
+     virtual cINedLoader *createConfiguredNedLoader(cConfiguration *cfg);
      virtual void runSimulations(InifileContents *ini, const char *configName, const std::vector<int>& runNumbers);
      virtual void runSimulationsInThreads(InifileContents *ini, const char *configName, const std::vector<int>& runNumbers, int numThreads);
+     virtual bool runSimulation(InifileContents *ini, const char *configName, int runNumber);
+
+     virtual cTerminationException *setupAndRunSimulation(cConfiguration *cfg, cIRunner *runner=nullptr, const char *redirectFileName=nullptr);
 };
 
 }  // namespace cmdenv
