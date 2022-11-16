@@ -1,5 +1,5 @@
 //==========================================================================
-//  CMDENVCORE.CC - part of
+//  CMDENVSIMULATIONRUNNER.CC - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -25,7 +25,6 @@
 
 #include "cmddefs.h"
 #include "cmdenvapp.h"
-#include "cmdenvcore.h"
 #include "cmdenvir.h"
 #include "common/enumstr.h"
 #include "common/fileutil.h"
@@ -49,6 +48,7 @@
 #include "omnetpp/csimulation.h"
 #include "sim/netbuilder/cnedloader.h"
 #include "sim/pythonutil.h"
+#include "cmdenvsimulationrunner.h"
 
 #ifdef WITH_PYTHONSIM
 #include <Python.h>
@@ -77,7 +77,7 @@ Register_GlobalConfigOption(CFGID_CMDENV_EVENT_BANNER_DETAILS, "cmdenv-event-ban
 Register_GlobalConfigOptionU(CFGID_CMDENV_STATUS_FREQUENCY, "cmdenv-status-frequency", "s", "2s", "When `cmdenv-express-mode=true`: print status update every n seconds.")
 Register_GlobalConfigOption(CFGID_CMDENV_PERFORMANCE_DISPLAY, "cmdenv-performance-display", CFG_BOOL, "true", "When `cmdenv-express-mode=true`: print detailed performance information. Turning it on results in a 3-line entry printed on each update, containing ev/sec, simsec/sec, ev/simsec, number of messages created/still present/currently scheduled in FES.")
 
-bool CmdenvCore::sigintReceived;
+bool CmdenvSimulationRunner::sigintReceived;
 
 
 class VerboseListener : public cISimulationLifecycleListener
@@ -112,15 +112,15 @@ void VerboseListener::listenerRemoved()
 //---
 
 //TODO better ctors!
-CmdenvCore::CmdenvCore()
+CmdenvSimulationRunner::CmdenvSimulationRunner()
 {
 }
 
-CmdenvCore::~CmdenvCore()
+CmdenvSimulationRunner::~CmdenvSimulationRunner()
 {
 }
 
-int CmdenvCore::runCmdenv(InifileContents *ini, ArgList *args)
+int CmdenvSimulationRunner::runCmdenv(InifileContents *ini, ArgList *args)
 {
     cConfiguration *globalCfg = ini->extractGlobalConfig();
     std::string configName = globalCfg->getAsString(CFGID_CMDENV_CONFIG_NAME);
@@ -140,7 +140,7 @@ int CmdenvCore::runCmdenv(InifileContents *ini, ArgList *args)
     return runParameterStudy(ini, configName.c_str(), runFilter.c_str(), args);
 }
 
-int CmdenvCore::runParameterStudy(InifileContents *ini, const char *configName, const char *runFilter, ArgList *args)
+int CmdenvSimulationRunner::runParameterStudy(InifileContents *ini, const char *configName, const char *runFilter, ArgList *args)
 {
     this->args = args;
 
@@ -239,7 +239,7 @@ int CmdenvCore::runParameterStudy(InifileContents *ini, const char *configName, 
     return numErrors > 0 ? 1 : sigintReceived ? 2 : 0;
 }
 
-cINedLoader *CmdenvCore::createConfiguredNedLoader(cConfiguration *cfg)
+cINedLoader *CmdenvSimulationRunner::createConfiguredNedLoader(cConfiguration *cfg)
 {
     cINedLoader *nedLoader = new cNedLoader("nedLoader");
     nedLoader->removeFromOwnershipTree();
@@ -249,7 +249,7 @@ cINedLoader *CmdenvCore::createConfiguredNedLoader(cConfiguration *cfg)
     return nedLoader;
 }
 
-void CmdenvCore::runSimulationsInThreads(InifileContents *ini, const char *configName, const std::vector<int>& runNumbers, int numThreads)
+void CmdenvSimulationRunner::runSimulationsInThreads(InifileContents *ini, const char *configName, const std::vector<int>& runNumbers, int numThreads)
 {
     // statically assign jobs to threads
     std::vector<std::vector<int>> runListPerThread(numThreads);
@@ -266,7 +266,7 @@ void CmdenvCore::runSimulationsInThreads(InifileContents *ini, const char *confi
         threads[i].join();
 }
 
-std::thread CmdenvCore::startThread(InifileContents *ini, const char *configName, const std::vector<int>& runNumbers)
+std::thread CmdenvSimulationRunner::startThread(InifileContents *ini, const char *configName, const std::vector<int>& runNumbers)
 {
     auto fn = [this](InifileContents *ini, std::string configName, std::vector<int> runNumbers) {
         runSimulations(ini, configName.c_str(), runNumbers);
@@ -274,7 +274,7 @@ std::thread CmdenvCore::startThread(InifileContents *ini, const char *configName
     return std::thread(fn, ini, configName, runNumbers);
 }
 
-void CmdenvCore::runSimulations(InifileContents *ini, const char *configName, const std::vector<int>& runNumbers)
+void CmdenvSimulationRunner::runSimulations(InifileContents *ini, const char *configName, const std::vector<int>& runNumbers)
 {
     for (int runNumber : runNumbers) {
         runsTried++;
@@ -292,7 +292,7 @@ void CmdenvCore::runSimulations(InifileContents *ini, const char *configName, co
     }
 }
 
-bool CmdenvCore::runSimulation(InifileContents *ini, const char *configName, int runNumber)
+bool CmdenvSimulationRunner::runSimulation(InifileContents *ini, const char *configName, int runNumber)
 {
     try {
         if (verbose)
@@ -326,7 +326,7 @@ static void deleteNetworkOnError(cSimulation *simulation, cRuntimeError& error)
 
 inline const char *opp_nulltodefault(const char *s, const char *defaultString)  {return s == nullptr ? defaultString : s;}
 
-cTerminationException *CmdenvCore::setupAndRunSimulation(cConfiguration *cfg, cIRunner *runner, const char *redirectFileName)
+cTerminationException *CmdenvSimulationRunner::setupAndRunSimulation(cConfiguration *cfg, cIRunner *runner, const char *redirectFileName)
 {
     //TODO more factories? createSimulation(), createEnvir(), createRunner()?
 
@@ -402,7 +402,7 @@ cTerminationException *CmdenvCore::setupAndRunSimulation(cConfiguration *cfg, cI
     }
 }
 
-cSimulation *CmdenvCore::createSimulation(std::ostream& out)
+cSimulation *CmdenvSimulationRunner::createSimulation(std::ostream& out)
 {
     CmdEnvir *envir = new CmdEnvir(out, sigintReceived);
     envir->setArgs(args);
@@ -411,7 +411,7 @@ cSimulation *CmdenvCore::createSimulation(std::ostream& out)
     return new cSimulation("simulation", envir, nedLoader);
 }
 
-void CmdenvCore::configureRunner(cIRunner *irunner, cConfiguration *cfg)
+void CmdenvSimulationRunner::configureRunner(cIRunner *irunner, cConfiguration *cfg)
 {
     if (Runner *runner = dynamic_cast<Runner*>(irunner)) {
         runner->setExpressMode(cfg->getAsBool(CFGID_CMDENV_EXPRESS_MODE));
@@ -425,38 +425,38 @@ void CmdenvCore::configureRunner(cIRunner *irunner, cConfiguration *cfg)
     }
 }
 
-void CmdenvCore::sigintHandler(int signum)
+void CmdenvSimulationRunner::sigintHandler(int signum)
 {
     if (signum == SIGINT || signum == SIGTERM)
         sigintReceived = true;
 }
 
-void CmdenvCore::installSigintHandler()
+void CmdenvSimulationRunner::installSigintHandler()
 {
     signal(SIGINT, sigintHandler);
     signal(SIGTERM, sigintHandler);
 }
 
-void CmdenvCore::deinstallSigintHandler()
+void CmdenvSimulationRunner::deinstallSigintHandler()
 {
     signal(SIGINT, SIG_DFL);
     signal(SIGTERM, SIG_DFL);
 }
 
-void CmdenvCore::displayException(std::exception& ex)
+void CmdenvSimulationRunner::displayException(std::exception& ex)
 {
     std::string msg = cException::getFormattedMessage(ex);
     std::ostream& os = (cException::isError(ex) && useStderr) ? std::cerr : out;
     os << "\n<!> " << msg << endl << endl;
 }
 
-void CmdenvCore::alert(const char *msg)
+void CmdenvSimulationRunner::alert(const char *msg)
 {
     std::ostream& err = useStderr ? std::cerr : out;
     err << "\n<!> " << msg << endl << endl;
 }
 
-void CmdenvCore::logException(std::ostream& out, std::exception& ex)
+void CmdenvSimulationRunner::logException(std::ostream& out, std::exception& ex)
 {
     std::string msg = cException::getFormattedMessage(ex);
     out << "\n<!> " << msg << endl << endl;

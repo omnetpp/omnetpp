@@ -1,5 +1,5 @@
 //==========================================================================
-//  CMDENVCORE.H - part of
+//  CMDENVSIMULATIONRUNNER.H - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_CMDENV_CMDENVCORE_H
-#define __OMNETPP_CMDENV_CMDENVCORE_H
+#ifndef __OMNETPP_CMDENV_CMDENVSIMULATIONRUNNER_H
+#define __OMNETPP_CMDENV_CMDENVSIMULATIONRUNNER_H
 
 #include <map>
 #include <atomic>
@@ -32,7 +32,7 @@ using namespace omnetpp::envir;
 /**
  * Exposes the core functionality of Cmdenv, in a reusable and customizable form.
  */
-class CMDENV_API CmdenvCore
+class CMDENV_API CmdenvSimulationRunner
 {
    protected:
      cINedLoader *nedLoader = nullptr;
@@ -67,8 +67,8 @@ class CMDENV_API CmdenvCore
      static void sigintHandler(int signum);
 
    public:
-     CmdenvCore();
-     virtual ~CmdenvCore();
+     CmdenvSimulationRunner();
+     virtual ~CmdenvSimulationRunner();
 
      virtual void setVerbose(bool verbose) {this->verbose = verbose;}
      virtual void setUseStderr(bool useStderr) {this->useStderr = useStderr;}
@@ -77,6 +77,7 @@ class CMDENV_API CmdenvCore
      virtual int runParameterStudy(InifileContents *ini, const char *configName, const char *runFilter, ArgList *args);
 
      virtual cINedLoader *createConfiguredNedLoader(cConfiguration *cfg);
+
      virtual void runSimulations(InifileContents *ini, const char *configName, const std::vector<int>& runNumbers);
      virtual void runSimulationsInThreads(InifileContents *ini, const char *configName, const std::vector<int>& runNumbers, int numThreads);
      virtual bool runSimulation(InifileContents *ini, const char *configName, int runNumber);

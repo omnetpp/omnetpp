@@ -16,8 +16,8 @@
 
 #include "cmdenvapp.h"
 
+#include "cmdenvsimulationrunner.h"
 #include "envir/appreg.h"
-#include "cmdenvcore.h"
 
 namespace omnetpp {
 namespace cmdenv {
@@ -57,7 +57,7 @@ void CmdenvApp::printUISpecificHelp()
 
 int CmdenvApp::doRunApp()
 {
-    CmdenvCore core;
+    CmdenvSimulationRunner core;
     core.setVerbose(verbose);
     core.setUseStderr(useStderr);
     return core.runCmdenv(ini, args);
