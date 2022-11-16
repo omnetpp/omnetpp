@@ -148,7 +148,7 @@ void RunSelectionDialog::updateRuns(const char *configName)
 
     try {
         // we try to apply the filter to all configurations
-        matchingRunNumbers = getQtenv()->resolveRunFilter(configName, runFilter.c_str());
+        matchingRunNumbers = configuration->resolveRunFilter(configName, runFilter.c_str());
     }
     catch (std::exception&) {
         // but only report an error if it is applied to the config the user specifically selected

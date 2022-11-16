@@ -1238,11 +1238,6 @@ bool Qtenv::checkRunning()
         return false;
 }
 
-std::vector<int> Qtenv::resolveRunFilter(const char *configName, const char *runFilter)
-{
-    return AppBase::resolveRunFilter(configName, runFilter);
-}
-
 void Qtenv::loadNedFile(const char *fname, const char *expectedPackage, bool isXML)
 {
     try {

@@ -265,7 +265,7 @@ void AppBase::printRunInfo(const char *configName, const char *runFilter, const 
     std::string q = opp_strlower(query); // make match case-insensitive
 
     if (q.find("run") != q.npos) {
-        std::vector<int> runNumbers = resolveRunFilter(configName, runFilter);
+        std::vector<int> runNumbers = ini->resolveRunFilter(configName, runFilter);
 
         if (verbose) {
             out <<"Config: " << configName << endl;
@@ -347,7 +347,7 @@ void AppBase::printRunInfo(const char *configName, const char *runFilter, const 
 void AppBase::printConfigValue(const char *configName, const char *runFilter, const char *optionName)
 {
     // activate the selected configuration
-    std::vector<int> runNumbers = resolveRunFilter(configName, runFilter);
+    std::vector<int> runNumbers = ini->resolveRunFilter(configName, runFilter);
     if (runNumbers.size() == 0)
         throw cRuntimeError("Run filter does not match any run");
     if (runNumbers.size() > 1)
@@ -503,54 +503,6 @@ void AppBase::printHelp()
         app->printUISpecificHelp();
         delete app;
     }
-}
-
-std::vector<int> AppBase::resolveRunFilter(const char *configName, const char *runFilter)
-{
-    std::vector<int> runNumbers;
-
-    if (opp_isblank(runFilter)) {
-        int numRuns = ini->getNumRunsInConfig(configName);
-        for (int i = 0; i < numRuns; i++)
-            runNumbers.push_back(i);
-        return runNumbers;
-    }
-
-    // if filter contains a list of run numbers (e.g. "0..4,9,12"), parse it accordingly
-    if (strspn (runFilter, "0123456789,.- ") == strlen(runFilter)) {
-        int numRuns = ini->getNumRunsInConfig(configName);
-        EnumStringIterator it(runFilter);
-        while (true) {
-            int runNumber = it();
-            if (runNumber == -1)
-                break;
-            if (runNumber >= numRuns)
-                throw cRuntimeError("Run number %d in run list '%s' is out of range 0..%d", runNumber, runFilter, numRuns-1);
-            runNumbers.push_back(runNumber);
-            it++;
-        }
-        if (it.hasError())
-            throw cRuntimeError("Syntax error in run list '%s'", runFilter);
-    }
-    else {
-        // evaluate filter as constraint expression
-        std::vector<InifileContents::RunInfo> runDescriptions = ini->unrollConfig(configName);
-        for (int runNumber = 0; runNumber < (int) runDescriptions.size(); runNumber++) {
-            try {
-                InifileContents::RunInfo runInfo = runDescriptions[runNumber];
-                std::string expandedRunFilter = opp_substitutevariables(runFilter, unionOf(runInfo.runAttrs, runInfo.iterVars));
-                ValueIterator::Expr expr(expandedRunFilter.c_str());
-                expr.substituteVariables(ValueIterator::VariableMap());
-                expr.evaluate();
-                if (expr.boolValue())
-                    runNumbers.push_back(runNumber);
-            }
-            catch (std::exception& e) {
-                throw cRuntimeError("Cannot evaluate run filter: %s", e.what());
-            }
-        }
-    }
-    return runNumbers;
 }
 
 void AppBase::alertf(const char *fmt, ...)

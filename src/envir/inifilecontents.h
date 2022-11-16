@@ -166,6 +166,7 @@ class ENVIR_API InifileContents
    virtual std::vector<std::string> getBaseConfigs(const char *configName) const;
    virtual std::vector<std::string> getConfigChain(const char *configName) const;
    virtual int getNumRunsInConfig(const char *configName) const;
+   virtual std::vector<int> resolveRunFilter(const char *configName, const char *runFilter);
    virtual std::vector<RunInfo> unrollConfig(const char *configName) const;
    virtual void dump(bool printBaseDir=true) const;
 };

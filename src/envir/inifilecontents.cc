@@ -23,6 +23,7 @@
 #include "common/stringutil.h"
 #include "common/fileutil.h"
 #include "common/stlutil.h"
+#include "common/enumstr.h"
 #include "omnetpp/cexception.h"
 #include "omnetpp/globals.h"
 #include "omnetpp/cconfigoption.h"
@@ -674,6 +675,54 @@ std::vector<InifileContents::RunInfo> InifileContents::unrollConfig(const char *
    catch (std::exception& e) {
        throw cRuntimeError("Scenario generator: %s", e.what());
    }
+}
+
+std::vector<int> InifileContents::resolveRunFilter(const char *configName, const char *runFilter)
+{
+    std::vector<int> runNumbers;
+
+    if (opp_isblank(runFilter)) {
+        int numRuns = getNumRunsInConfig(configName);
+        for (int i = 0; i < numRuns; i++)
+            runNumbers.push_back(i);
+        return runNumbers;
+    }
+
+    // if filter contains a list of run numbers (e.g. "0..4,9,12"), parse it accordingly
+    if (strspn (runFilter, "0123456789,.- ") == strlen(runFilter)) {
+        int numRuns = getNumRunsInConfig(configName);
+        EnumStringIterator it(runFilter);
+        while (true) {
+            int runNumber = it();
+            if (runNumber == -1)
+                break;
+            if (runNumber >= numRuns)
+                throw cRuntimeError("Run number %d in run list '%s' is out of range 0..%d", runNumber, runFilter, numRuns-1);
+            runNumbers.push_back(runNumber);
+            it++;
+        }
+        if (it.hasError())
+            throw cRuntimeError("Syntax error in run list '%s'", runFilter);
+    }
+    else {
+        // evaluate filter as constraint expression
+        std::vector<InifileContents::RunInfo> runDescriptions = unrollConfig(configName);
+        for (int runNumber = 0; runNumber < (int) runDescriptions.size(); runNumber++) {
+            try {
+                InifileContents::RunInfo runInfo = runDescriptions[runNumber];
+                std::string expandedRunFilter = opp_substitutevariables(runFilter, unionOf(runInfo.runAttrs, runInfo.iterVars));
+                ValueIterator::Expr expr(expandedRunFilter.c_str());
+                expr.substituteVariables(ValueIterator::VariableMap());
+                expr.evaluate();
+                if (expr.boolValue())
+                    runNumbers.push_back(runNumber);
+            }
+            catch (std::exception& e) {
+                throw cRuntimeError("Cannot evaluate run filter: %s", e.what());
+            }
+        }
+    }
+    return runNumbers;
 }
 
 std::vector<Scenario::IterationVariable> InifileContents::collectIterationVariables(const std::vector<int>& sectionChain, StringMap& outLocationToNameMap) const

@@ -363,9 +363,6 @@ class QTENV_API Qtenv : public QObject, public AppBase, public SimulationHolder
       void finishSimulation(); // wrapper around simulation.callFinish() and simulation.endRun()
       bool checkRunning();
 
-      // declared here just to make it public, simply delegates back to the base class
-      virtual std::vector<int> resolveRunFilter(const char *configName, const char *runFilter) override;
-
       void loadNedFile(const char *fname, const char *expectedPackage=nullptr, bool isXML=false);
 
       void callRefreshDisplay();
