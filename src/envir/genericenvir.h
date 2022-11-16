@@ -79,7 +79,6 @@ class ENVIR_API GenericEnvir : public cEnvir, protected cISimulationLifecycleLis
     // misc
     bool expressMode = true;  //TODO this is only used inside CmdEnvir
     bool gui = false;
-    bool verbose = true;
     size_t extraStack = 0;
 
     // paths
@@ -164,8 +163,6 @@ class ENVIR_API GenericEnvir : public cEnvir, protected cISimulationLifecycleLis
     void setImagePath(const char *imagePath) {this->imagePath = imagePath;}
     bool getPrintUndisposed() const {return printUndisposed;}
     void setPrintUndisposed(bool printUndisposed) {this->printUndisposed = printUndisposed;}
-    bool isVerbose() const {return verbose;}
-    void setVerbose(bool verbose) {this->verbose = verbose;}
 
     virtual std::string extractImagePath(cConfiguration *cfg, ArgList *args);
 

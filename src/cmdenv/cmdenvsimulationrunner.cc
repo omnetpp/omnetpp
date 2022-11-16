@@ -28,26 +28,21 @@
 #include "common/fileutil.h"
 #include "common/stlutil.h"
 #include "common/stringutil.h"
-#include "envir/appbase.h"
-#include "envir/appreg.h"
-#include "envir/args.h"
 #include "envir/genericenvir.h"
 #include "envir/genericeventlooprunner.h"
-#include "envir/envirutils.h"
 #include "envir/inifilecontents.h"
 #include "envir/resultfileutils.h"
 #include "omnetpp/ccomponenttype.h"
 #include "omnetpp/cconfigoption.h"
-#include "omnetpp/cfingerprint.h"
 #include "omnetpp/checkandcast.h"
-#include "omnetpp/cinedloader.h"
-#include "omnetpp/cmodule.h"
 #include "omnetpp/ceventlooprunner.h"
-#include "omnetpp/csimulation.h"
 #include "sim/netbuilder/cnedloader.h"
-#include "sim/pythonutil.h"
 #include "cmdenvsimulationrunner.h"
+#include "cmdenvnarrator.h"
 #include "cmdenvenvir.h"
+
+using namespace omnetpp::common;
+using namespace omnetpp::internal;
 
 #ifdef WITH_PYTHONSIM
 #include <Python.h>
@@ -55,9 +50,6 @@
 #define Py_BEGIN_ALLOW_THREADS  /*no-op*/
 #define Py_END_ALLOW_THREADS    /*no-op*/
 #endif
-
-using namespace omnetpp::common;
-using namespace omnetpp::internal;
 
 namespace omnetpp {
 namespace cmdenv {
@@ -76,93 +68,59 @@ Register_GlobalConfigOption(CFGID_CMDENV_EVENT_BANNER_DETAILS, "cmdenv-event-ban
 Register_GlobalConfigOptionU(CFGID_CMDENV_STATUS_FREQUENCY, "cmdenv-status-frequency", "s", "2s", "When `cmdenv-express-mode=true`: print status update every n seconds.")
 Register_GlobalConfigOption(CFGID_CMDENV_PERFORMANCE_DISPLAY, "cmdenv-performance-display", CFG_BOOL, "true", "When `cmdenv-express-mode=true`: print detailed performance information. Turning it on results in a 3-line entry printed on each update, containing ev/sec, simsec/sec, ev/simsec, number of messages created/still present/currently scheduled in FES.")
 
+// Used for graceful exit when Ctrl-C is hit during simulation. We want to finish the
+// current event, then normally exit via callFinish() so that simulation results are not lost.
 bool CmdenvSimulationRunner::sigintReceived;
 
-
-class VerboseListener : public cISimulationLifecycleListener
-{
-  private:
-    std::ostream& out;
-  public:
-    VerboseListener(std::ostream& out) : out(out) {}
-    virtual void lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details) override;
-    virtual void listenerRemoved() override;
-};
-
-void VerboseListener::lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details)
-{
-    switch (eventType) {
-    case LF_PRE_NETWORK_SETUP: out << "Setting up network \"" << check_and_cast<cModuleType *>(details)->getFullName() << "\"..." << endl; break;
-    case LF_PRE_NETWORK_INITIALIZE: out << "Initializing..." << endl; break;
-    case LF_ON_SIMULATION_START: out << "\nRunning simulation..." << endl; break;
-    case LF_PRE_NETWORK_FINISH: out << "\nCalling finish() at end of Run #" << cSimulation::getActiveSimulation()->getConfig()->getVariable(CFGVAR_RUNNUMBER) << "..." << endl; break;
-    case LF_ON_SIMULATION_SUCCESS: out << "\n<!> " << check_and_cast<cException*>(details)->getFormattedMessage() << endl; break;
-    case LF_ON_SIMULATION_ERROR: out << "\n<!> " << check_and_cast<cException*>(details)->getFormattedMessage() << endl; break;
-    default: break;
-    }
-}
-
-void VerboseListener::listenerRemoved()
-{
-    cISimulationLifecycleListener::listenerRemoved();
-    delete this;
-}
-
-//---
 
 CmdenvSimulationRunner::CmdenvSimulationRunner(std::ostream& out, ArgList *args) : out(out), args(args)
 {
     homeThreadId = std::this_thread::get_id();
+    narrator = new CmdenvNarrator(out);
 }
 
 CmdenvSimulationRunner::~CmdenvSimulationRunner()
 {
+    delete nedLoader;
+    delete narrator;
 }
 
 int CmdenvSimulationRunner::runCmdenv(InifileContents *ini)
 {
-    cConfiguration *globalCfg = ini->extractGlobalConfig();
-    std::string configName = globalCfg->getAsString(CFGID_CMDENV_CONFIG_NAME);
-    std::string runFilter = globalCfg->getAsString(CFGID_CMDENV_RUNS_TO_EXECUTE);
-    delete globalCfg;
-
-    // '-c' and '-r' option: configuration to activate, and run numbers to run.
-    // Both command-line options take precedence over inifile settings.
-    if (args->optionGiven('c'))
-        configName = opp_nulltoempty(args->optionValue('c'));
-    if (configName.empty())
-        configName = "General";
-
-    if (args->optionGiven('r'))
-        runFilter = args->optionValue('r');
-
-    return runParameterStudy(ini, configName.c_str(), runFilter.c_str());
-}
-
-int CmdenvSimulationRunner::runParameterStudy(InifileContents *ini, const char *configName, const char *runFilter)
-{
-    std::vector<int> runNumbers;
     try {
-        runNumbers = ini->resolveRunFilter(configName, runFilter);
+        cConfiguration *globalCfg = ini->extractGlobalConfig();
+        std::string configName = globalCfg->getAsString(CFGID_CMDENV_CONFIG_NAME);
+        std::string runFilter = globalCfg->getAsString(CFGID_CMDENV_RUNS_TO_EXECUTE);
+        delete globalCfg;
+
+        // '-c' and '-r' option: configuration to activate, and run numbers to run.
+        // Both command-line options take precedence over inifile settings.
+        if (args->optionGiven('c'))
+            configName = opp_nulltoempty(args->optionValue('c'));
+        if (configName.empty())
+            configName = "General";
+
+        if (args->optionGiven('r'))
+            runFilter = args->optionValue('r');
+
+        runParameterStudy(ini, configName.c_str(), runFilter.c_str());
+        return 0;
     }
     catch (std::exception& e) {
-        displayException(e);
-        return 1;
+        return sigintReceived ? 2 : 1;
     }
+}
 
-    if (runNumbers.empty()) {
-        std::cout << "Run filter '" << runFilter << "' does not match any simulation run in config " << configName << std::endl;
-        return 1;
-    }
+void CmdenvSimulationRunner::runParameterStudy(InifileContents *ini, const char *configName, const char *runFilter)
+{
+    std::vector<int> runNumbers = ini->resolveRunFilter(configName, runFilter);
+    if (runNumbers.empty())
+        throw cRuntimeError("Run filter '%s' does not match any run in config '%s'", runFilter, configName);
 
-    // NED path and the number of threads are decided by the first run; this allows
-    // specifying different values for these options in different sections.
     cConfiguration *masterCfg = ini->extractConfig(configName, runNumbers[0]);
-
-    nedLoader = createConfiguredNedLoader(masterCfg);
-    nedLoader->loadNedFiles();
-
     int numThreads = masterCfg->getAsInt(CFGID_CMDENV_NUM_THREADS);
+    delete masterCfg;
+
     if (numThreads <= 0) {
         numThreads = std::thread::hardware_concurrency();
         if (numThreads <= 0)
@@ -170,43 +128,29 @@ int CmdenvSimulationRunner::runParameterStudy(InifileContents *ini, const char *
     }
     bool threaded = numThreads != 1;
 
-    delete masterCfg;
-
-    // implement graceful exit when Ctrl-C is hit during simulation. We want
-    // to finish the current event, then normally exit via callFinish() etc
-    // so that simulation results are not lost.
-    installSigintHandler();
-
     numRuns = (int)runNumbers.size();
     runsTried = 0;
     numErrors = 0;
 
-    if (!threaded)
-        runSimulations(ini, configName, runNumbers);
-    else {
-        if (verbose)
-            out << "Running simulations on " << numThreads << " threads\n";
-        Py_BEGIN_ALLOW_THREADS
-        runSimulationsInThreads(ini, configName, runNumbers, numThreads);
-        Py_END_ALLOW_THREADS
+    if (numRuns == 1)
+        runSimulation(ini, configName, runNumbers[0]);  // throws
+    else if (!threaded)
+        runSimulations(ini, configName, runNumbers); // does not throw
+    else
+        runSimulationsInThreads(ini, configName, runNumbers, numThreads); // does not throw
+
+    narrator->summary(numRuns, runsTried, numErrors);
+
+    if (numErrors > 0)
+        throw cRuntimeError("An error occurred in %d simulation%s (tried %d/%d)", (int)numErrors, (numErrors==1?"":"s"), (int)runsTried, (int)numRuns); //TODO or ctrl+c??
+}
+
+void CmdenvSimulationRunner::ensureNedLoader(cConfiguration *cfg)
+{
+    if (nedLoader == nullptr) {
+        nedLoader = createConfiguredNedLoader(cfg);
+        nedLoader->loadNedFiles();
     }
-
-    delete nedLoader;
-
-    if (numRuns > 1 && verbose) {
-        int numSkipped = numRuns - runsTried;
-        int numSuccess = runsTried - numErrors;
-        out << "\nRun statistics: total " << numRuns;
-        if (numSuccess > 0)
-            out << ", successful " << numSuccess;
-        if (numErrors > 0)
-            out << ", errors " << numErrors;
-        if (numSkipped > 0)
-            out << ", skipped " << numSkipped;
-        out << endl;
-    }
-
-    return numErrors > 0 ? 1 : sigintReceived ? 2 : 0;
 }
 
 cINedLoader *CmdenvSimulationRunner::createConfiguredNedLoader(cConfiguration *cfg)
@@ -221,10 +165,18 @@ cINedLoader *CmdenvSimulationRunner::createConfiguredNedLoader(cConfiguration *c
 
 void CmdenvSimulationRunner::runSimulationsInThreads(InifileContents *ini, const char *configName, const std::vector<int>& runNumbers, int numThreads)
 {
+    cConfiguration *firstCfg = ini->extractConfig(configName, runNumbers[0]);
+    ensureNedLoader(firstCfg);
+    delete firstCfg;
+
     // statically assign jobs to threads
     std::vector<std::vector<int>> runListPerThread(numThreads);
     for (int i = 0; i < runNumbers.size(); i++)
         runListPerThread[i % numThreads].push_back(runNumbers[i]);
+
+    narrator->usingThreads(numThreads);
+
+    Py_BEGIN_ALLOW_THREADS
 
     // create and launch threads
     std::vector<std::thread> threads;
@@ -234,6 +186,8 @@ void CmdenvSimulationRunner::runSimulationsInThreads(InifileContents *ini, const
     // wait for them to finish
     for (int i = 0; i < numThreads; i++)
         threads[i].join();
+
+    Py_END_ALLOW_THREADS
 }
 
 std::thread CmdenvSimulationRunner::startThread(InifileContents *ini, const char *configName, const std::vector<int>& runNumbers)
@@ -249,7 +203,7 @@ void CmdenvSimulationRunner::runSimulations(InifileContents *ini, const char *co
     for (int runNumber : runNumbers) {
         runsTried++;
 
-        bool finishedOK = runSimulation(ini, configName, runNumber);
+        bool finishedOK = runSimulationSafe(ini, configName, runNumber);
         if (!finishedOK)
             numErrors++;
 
@@ -262,57 +216,51 @@ void CmdenvSimulationRunner::runSimulations(InifileContents *ini, const char *co
     }
 }
 
-bool CmdenvSimulationRunner::runSimulation(InifileContents *ini, const char *configName, int runNumber)
+bool CmdenvSimulationRunner::runSimulationSafe(InifileContents *ini, const char *configName, int runNumber)
 {
     try {
-        if (verbose)
-            out << "\nPreparing for running configuration " << configName << ", run #" << runNumber << "..." << endl;
-
-        std::unique_ptr<cConfiguration> cfg(ini->extractConfig(configName, runNumber));
-        stopBatchOnError = cfg->getAsBool(CFGID_CMDENV_STOP_BATCH_ON_ERROR);
-
-        bool redirectOutput = cfg->getAsBool(CFGID_CMDENV_REDIRECT_OUTPUT);
-        std::string outputFile = redirectOutput ? ResultFileUtils(cfg.get()).augmentFileName(cfg->getAsFilename(CFGID_CMDENV_OUTPUT_FILE)) : "";
-
-        cTerminationException *reason = setupAndRunSimulation(cfg.get(), redirectOutput ? outputFile.c_str() : nullptr);
-        delete reason;
+        runSimulation(ini, configName, runNumber);
         return true;
     }
     catch (std::exception& e) {
-        if (!verbose || useStderr) // if verbose, it was already printed (maybe only in the redirection file though)
-            displayException(e);
+        narrator->displayException(e);  // note: must take care not to print again if it was already printed
         return false;
     }
 }
 
-inline const char *opp_nulltodefault(const char *s, const char *defaultString)  {return s == nullptr ? defaultString : s;}
+void CmdenvSimulationRunner::runSimulation(InifileContents *ini, const char *configName, int runNumber)
+{
+    narrator->preparing(configName, runNumber);
+
+    std::unique_ptr<cConfiguration> cfg(ini->extractConfig(configName, runNumber));
+    stopBatchOnError = cfg->getAsBool(CFGID_CMDENV_STOP_BATCH_ON_ERROR);
+
+    bool redirectOutput = cfg->getAsBool(CFGID_CMDENV_REDIRECT_OUTPUT);
+    std::string outputFile = redirectOutput ? ResultFileUtils(cfg.get()).augmentFileName(cfg->getAsFilename(CFGID_CMDENV_OUTPUT_FILE)) : "";
+
+    cTerminationException *reason = setupAndRunSimulation(cfg.get(), redirectOutput ? outputFile.c_str() : nullptr);
+    delete reason;
+}
 
 cTerminationException *CmdenvSimulationRunner::setupAndRunSimulation(cConfiguration *cfg, const char *redirectFileName)
 {
     bool redirectOutput = redirectFileName != nullptr;
 
-    const char *configName = opp_nulltodefault(cfg->getVariable(CFGVAR_CONFIGNAME), "?");
-    const char *runNumber = opp_nulltodefault(cfg->getVariable(CFGVAR_RUNNUMBER), "?");
-    const char *iterVars = opp_nulltodefault(cfg->getVariable(CFGVAR_ITERATIONVARS), "?");
-    const char *runId = opp_nulltodefault(cfg->getVariable(CFGVAR_RUNID), "?");
-    const char *repetition = opp_nulltodefault(cfg->getVariable(CFGVAR_REPETITION), "?");
-    if (!verbose)
-        out << configName << " run " << runNumber << ": " << iterVars << ", $repetition=" << repetition << " --> runID=" << runId << endl; // print before redirection; useful as progress indication from opp_runall
-
+    narrator->beforeRedirecting(cfg);
     std::ofstream fout;
 
     if (redirectOutput) {
-        if (verbose)
-            out << "Redirecting output to file \"" << redirectFileName << "\"..." << endl;
+        narrator->redirectingTo(cfg, redirectFileName);
         mkPath(directoryOf(redirectFileName).c_str());
         fout.open(redirectFileName);
         if (!fout.is_open())
             throw cRuntimeError("Cannot open file '%s' for write", redirectFileName);
-        if (verbose)
-            fout << "\nRunning configuration " << configName << " run " << runNumber << ": " << iterVars << ", $repetition=" << repetition << " --> runID=" << runId << endl;
+        narrator->onRedirectionFileOpen(fout, cfg, redirectFileName);
     }
 
     std::ostream& simout = redirectOutput ? fout : out;
+
+    ensureNedLoader(cfg);
 
     std::unique_ptr<cSimulation> tmp(createSimulation(simout));
     cSimulation *simulation = tmp.get();
@@ -320,11 +268,11 @@ cTerminationException *CmdenvSimulationRunner::setupAndRunSimulation(cConfigurat
     std::unique_ptr<cIEventLoopRunner> tmp2(createEventLoopRunner(simulation, simout, cfg));
     cIEventLoopRunner *runner = tmp2.get();
 
-    if (verbose)
-        simulation->addLifecycleListener(new VerboseListener(simout));
+    narrator->simulationCreated(simulation, fout);
 
     cSimulation::setActiveSimulation(simulation);
 
+    //TODO some errors logged from lifecycle listener, but not those thrown directly! -- DO NOT LOG VIA LIFECYCLE LISTENER
     try {
         simulation->setupNetwork(cfg);
 
@@ -334,7 +282,7 @@ cTerminationException *CmdenvSimulationRunner::setupAndRunSimulation(cConfigurat
 
         cTerminationException *terminationReason = simulation->getTerminationReason()->dup();
         if (redirectOutput)
-            logException(fout, *terminationReason);
+            narrator->logException(fout, *terminationReason);  //TODO why not from listener?
 
         simulation->deleteNetwork();  // note: without this, exceptions during teardown would be swallowed by cSimulation dtor
 
@@ -343,14 +291,14 @@ cTerminationException *CmdenvSimulationRunner::setupAndRunSimulation(cConfigurat
     catch (cRuntimeError& e) {
         simulation->deleteNetworkOnError(e);
         if (redirectOutput)
-            logException(fout, e);
+            narrator->logException(fout, e); //TODO needed?
         throw;
     }
     catch (std::exception& e) {
         cRuntimeError re(e);
         simulation->deleteNetworkOnError(re);
         if (redirectOutput)
-            logException(fout, re);
+            narrator->logException(fout, re); //TODO needed?
         throw re;
     }
 }
@@ -359,7 +307,6 @@ cSimulation *CmdenvSimulationRunner::createSimulation(std::ostream& simout)
 {
     CmdenvEnvir *envir = new CmdenvEnvir(simout, sigintReceived);
     envir->setArgs(args);
-    envir->setVerbose(verbose);
 
     return new cSimulation("simulation", envir, nedLoader);
 }
@@ -394,25 +341,6 @@ void CmdenvSimulationRunner::deinstallSigintHandler()
 {
     signal(SIGINT, SIG_DFL);
     signal(SIGTERM, SIG_DFL);
-}
-
-void CmdenvSimulationRunner::displayException(std::exception& ex)
-{
-    std::string msg = cException::getFormattedMessage(ex);
-    std::ostream& os = (cException::isError(ex) && useStderr) ? std::cerr : out;
-    os << "\n<!> " << msg << endl << endl;
-}
-
-void CmdenvSimulationRunner::alert(const char *msg)
-{
-    std::ostream& err = useStderr ? std::cerr : out;
-    err << "\n<!> " << msg << endl << endl;
-}
-
-void CmdenvSimulationRunner::logException(std::ostream& out, std::exception& ex)
-{
-    std::string msg = cException::getFormattedMessage(ex);
-    out << "\n<!> " << msg << endl << endl;
 }
 
 

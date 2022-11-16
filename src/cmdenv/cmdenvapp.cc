@@ -87,10 +87,16 @@ int CmdenvApp::doRunApp()
         }
     }
 
-    CmdenvSimulationRunner core(out, args);
-    core.setVerbose(verbose);
-    core.setUseStderr(useStderr);
-    return core.runCmdenv(ini);
+    CmdenvSimulationRunner::installSigintHandler();
+
+    CmdenvSimulationRunner cmdenvRunner(out, args);
+    cmdenvRunner.setVerbose(verbose);
+    cmdenvRunner.setUseStderr(useStderr);
+    int exitCode = cmdenvRunner.runCmdenv(ini);
+
+    CmdenvSimulationRunner::deinstallSigintHandler();
+
+    return exitCode;
 }
 
 void CmdenvApp::displayException(std::exception& ex)

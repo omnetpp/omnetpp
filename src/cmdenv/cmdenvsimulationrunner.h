@@ -19,10 +19,10 @@
 #include <map>
 #include <atomic>
 #include <thread>
-#include "envir/appbase.h"
-#include "envir/speedometer.h"
+#include "envir/args.h"
 #include "omnetpp/csimulation.h"
-#include "fakegui.h"
+#include "omnetpp/cinedloader.h"
+#include "cmdenvnarrator.h"
 
 namespace omnetpp {
 namespace cmdenv {
@@ -40,10 +40,9 @@ class CMDENV_API CmdenvSimulationRunner
      cINedLoader *nedLoader = nullptr;
      ArgList *args = nullptr;
 
-     std::thread::id homeThreadId;
+     ICmdenvNarrator *narrator;
 
-     bool verbose;
-     bool useStderr;
+     std::thread::id homeThreadId;
 
      // set to true on SIGINT/SIGTERM signals
      static bool sigintReceived;
@@ -52,38 +51,41 @@ class CMDENV_API CmdenvSimulationRunner
      std::atomic_int numRuns;
      std::atomic_int runsTried;
      std::atomic_int numErrors;
+     //TODO numCompleted?  interrupted ones should be counted separately from error ones!
 
      bool stopBatchOnError = true;
 
    protected:
+     // overridable factory methods
      virtual cINedLoader *createConfiguredNedLoader(cConfiguration *cfg);
      virtual cSimulation *createSimulation(std::ostream& simout);
      virtual cIEventLoopRunner *createEventLoopRunner(cSimulation *simulation, std::ostream& simout, cConfiguration *cfg);
-     virtual void logException(std::ostream& out, std::exception& e);
 
-     virtual void alert(const char *msg);
-     virtual void displayException(std::exception& ex);
+     // internal
      std::thread startThread(InifileContents *ini, const char *configName, const std::vector<int>& runNumbers);
+     virtual void ensureNedLoader(cConfiguration *cfg);
+     virtual bool runSimulationSafe(InifileContents *ini, const char *configName, int runNumber);
+     virtual cTerminationException *setupAndRunSimulation(cConfiguration *cfg, const char *redirectFileName=nullptr);
 
-     void installSigintHandler();
-     void deinstallSigintHandler();
      static void sigintHandler(int signum);
 
    public:
      CmdenvSimulationRunner(std::ostream& out, ArgList *args);
      virtual ~CmdenvSimulationRunner();
 
-     virtual void setVerbose(bool verbose) {this->verbose = verbose;}
-     virtual void setUseStderr(bool useStderr) {this->useStderr = useStderr;}
+     static void installSigintHandler();
+     static void deinstallSigintHandler();
 
-     virtual int runCmdenv(InifileContents *ini);
-     virtual int runParameterStudy(InifileContents *ini, const char *configName, const char *runFilter);
+     virtual void setVerbose(bool verbose) {narrator->setVerbose(verbose);}
+     virtual void setUseStderr(bool useStderr) {narrator->setUseStderr(useStderr);}
 
+     virtual int runCmdenv(InifileContents *ini); // does not throw, returns exit code
+
+     // these ones throw:
+     virtual void runParameterStudy(InifileContents *ini, const char *configName, const char *runFilter);
      virtual void runSimulations(InifileContents *ini, const char *configName, const std::vector<int>& runNumbers);
      virtual void runSimulationsInThreads(InifileContents *ini, const char *configName, const std::vector<int>& runNumbers, int numThreads);
-     virtual bool runSimulation(InifileContents *ini, const char *configName, int runNumber);
-
-     virtual cTerminationException *setupAndRunSimulation(cConfiguration *cfg, const char *redirectFileName=nullptr);
+     virtual void runSimulation(InifileContents *ini, const char *configName, int runNumber);
 };
 
 }  // namespace cmdenv
