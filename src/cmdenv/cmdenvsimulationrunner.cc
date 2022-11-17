@@ -151,7 +151,7 @@ int CmdenvSimulationRunner::runParameterStudy(InifileContents *ini, const char *
     }
 
     if (runNumbers.empty()) {
-        std::cout << "No matching simulation run\n"; //TODO refine
+        std::cout << "Run filter '" << runFilter << "' does not match any simulation run in config " << configName << std::endl;
         return 1;
     }
 
@@ -171,33 +171,6 @@ int CmdenvSimulationRunner::runParameterStudy(InifileContents *ini, const char *
     bool threaded = numThreads != 1;
 
     delete masterCfg;
-
-    CodeFragments::executeAll(CodeFragments::STARTUP); // app setup is complete
-
-    //TODO important: cSimulation::configure() SHOULD configure simtime-scale and coroutine lib too!!!!
-
-    //TODO also into Qtenv
-    const char *fname;
-    for (int k = 0; (fname = args->argument(k)) != nullptr; k++) {
-        if (opp_stringendswith(fname, ".ini")) {
-            // ignore -- already processed
-        }
-        else if (opp_stringendswith(fname, ".py")) {
-#ifdef WITH_PYTHONSIM
-            ensurePythonInterpreter();
-            FILE *f = fopen(fname, "r");
-            if (f) {
-                PyRun_AnyFile(f, fname);
-                fclose(f);
-            }
-#else
-            throw opp_runtime_error("Cannot process command-line argument '%s': No OMNeT++ was compiled with WITH_PYTHONSIM=no", fname);
-#endif
-        }
-        else {
-            throw opp_runtime_error("Cannot process command-line argument '%s': Unknown file extension", fname);
-        }
-    }
 
     // implement graceful exit when Ctrl-C is hit during simulation. We want
     // to finish the current event, then normally exit via callFinish() etc

@@ -15,9 +15,14 @@
 *--------------------------------------------------------------*/
 
 #include "cmdenvapp.h"
-
 #include "cmdenvsimulationrunner.h"
+#include "envir/args.h"
 #include "envir/appreg.h"
+#include "common/stringutil.h"
+#include "sim/pythonutil.h"
+
+using namespace omnetpp::common;
+using namespace omnetpp::internal;
 
 namespace omnetpp {
 namespace cmdenv {
@@ -57,6 +62,31 @@ void CmdenvApp::printUISpecificHelp()
 
 int CmdenvApp::doRunApp()
 {
+    CodeFragments::executeAll(CodeFragments::STARTUP); //TODO probably remove this from here
+
+    //TODO cleanup; also into Qtenv
+    const char *fname;
+    for (int k = 0; (fname = args->argument(k)) != nullptr; k++) {
+        if (opp_stringendswith(fname, ".ini")) {
+            // ignore -- already processed
+        }
+        else if (opp_stringendswith(fname, ".py")) {
+#ifdef WITH_PYTHONSIM
+            ensurePythonInterpreter();
+            FILE *f = fopen(fname, "r");
+            if (f) {
+                PyRun_AnyFile(f, fname);
+                fclose(f);
+            }
+#else
+            throw opp_runtime_error("Cannot process command-line argument '%s': No OMNeT++ was compiled with WITH_PYTHONSIM=no", fname);
+#endif
+        }
+        else {
+            throw opp_runtime_error("Cannot process command-line argument '%s': Unknown file extension", fname);
+        }
+    }
+
     CmdenvSimulationRunner core(out, args);
     core.setVerbose(verbose);
     core.setUseStderr(useStderr);
