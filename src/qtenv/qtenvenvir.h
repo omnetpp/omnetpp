@@ -1,5 +1,5 @@
 //==========================================================================
-//  QTENVIR.H - part of
+//  QTENVENVIR.H - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_QTENV_QTENVIR_H
-#define __OMNETPP_QTENV_QTENVIR_H
+#ifndef __OMNETPP_QTENV_QTENVENVIR_H
+#define __OMNETPP_QTENV_QTENVENVIR_H
 
 #include "qtenvdefs.h"
 #include "envir/envirbase.h"
@@ -26,7 +26,7 @@ namespace qtenv {
 
 class Qtenv;
 
-class QTENV_API QtEnvir : public EnvirBase
+class QTENV_API QtenvEnvir : public EnvirBase
 {
   protected:
     Qtenv *app = nullptr;
@@ -37,8 +37,8 @@ class QTENV_API QtEnvir : public EnvirBase
     virtual void askParameter(cPar *par, bool unassigned) override;
 
   public:
-    QtEnvir(Qtenv *app) : app(app) {}
-    virtual ~QtEnvir() {}
+    QtenvEnvir(Qtenv *app) : app(app) {}
+    virtual ~QtenvEnvir() {}
 
     // getters/setters
     Qtenv *getApp() {return app;}

@@ -63,7 +63,6 @@
 #include "sim/netbuilder/cnedloader.h"
 #include "qtenvdefs.h"
 #include "qtenv.h"
-#include "qtenvir.h"
 #include "inspector.h"
 #include "inspectorfactory.h"
 #include "inspectorutil.h"
@@ -80,6 +79,7 @@
 #include "messageanimator.h"
 #include "displayupdatecontroller.h"
 #include "messageanimator.h"
+#include "qtenvenvir.h"
 #include "runselectiondialog.h"
 
 #ifdef Q_OS_MAC
@@ -637,7 +637,7 @@ int Qtenv::doRunApp()
     //
     // SETUP
     //
-    QtEnvir *envir = new QtEnvir(this);
+    QtenvEnvir *envir = new QtenvEnvir(this);
     envir->setIsGUI(true);
     envir->setArgs(args);
 

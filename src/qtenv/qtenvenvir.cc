@@ -1,5 +1,5 @@
 //==========================================================================
-//  QTENVIR.CC - part of
+//  QTENVENVIR.CC - part of
 //                     OMNeT++/OMNEST
 //             Discrete System Simulation in C++
 //
@@ -13,220 +13,221 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include "qtenvenvir.h"
+
 #include "qtenv.h"
-#include "qtenvir.h"
 
 namespace omnetpp {
 namespace qtenv {
 
-void QtEnvir::askParameter(cPar *par, bool unassigned)
+void QtenvEnvir::askParameter(cPar *par, bool unassigned)
 {
     app->askParameter(par, unassigned);
 }
 
-void QtEnvir::bubble(cComponent *component, const char *text)
+void QtenvEnvir::bubble(cComponent *component, const char *text)
 {
     EnvirBase::bubble(component, text);
     app->bubble(component, text);
 }
 
-void QtEnvir::objectDeleted(cObject *object)
+void QtenvEnvir::objectDeleted(cObject *object)
 {
     EnvirBase::objectDeleted(object);
     app->objectDeleted(object);
 }
 
-void QtEnvir::simulationEvent(cEvent *event)
+void QtenvEnvir::simulationEvent(cEvent *event)
 {
     EnvirBase::simulationEvent(event);
     app->simulationEvent(event);
 }
 
-void QtEnvir::componentInitBegin(cComponent *component, int stage)
+void QtenvEnvir::componentInitBegin(cComponent *component, int stage)
 {
     EnvirBase::componentInitBegin(component, stage);
     app->componentInitBegin(component, stage);
 }
 
-void QtEnvir::beginSend(cMessage *msg, const SendOptions& options)
+void QtenvEnvir::beginSend(cMessage *msg, const SendOptions& options)
 {
     EnvirBase::beginSend(msg, options);
     app->beginSend(msg, options);
 }
 
-void QtEnvir::messageScheduled(cMessage *msg)
+void QtenvEnvir::messageScheduled(cMessage *msg)
 {
     EnvirBase::messageScheduled(msg);
     app->messageScheduled(msg);
 }
 
-void QtEnvir::messageCancelled(cMessage *msg)
+void QtenvEnvir::messageCancelled(cMessage *msg)
 {
     EnvirBase::messageCancelled(msg);
     app->messageCancelled(msg);
 }
 
-void QtEnvir::messageSendDirect(cMessage *msg, cGate *toGate, const ChannelResult& result)
+void QtenvEnvir::messageSendDirect(cMessage *msg, cGate *toGate, const ChannelResult& result)
 {
     EnvirBase::messageSendDirect(msg, toGate, result);
     app->messageSendDirect(msg, toGate, result);
 }
 
-void QtEnvir::messageSendHop(cMessage *msg, cGate *srcGate)
+void QtenvEnvir::messageSendHop(cMessage *msg, cGate *srcGate)
 {
     EnvirBase::messageSendHop(msg, srcGate);
     app->messageSendHop(msg, srcGate);
 }
 
-void QtEnvir::messageSendHop(cMessage *msg, cGate *srcGate, const cChannel::Result& result)
+void QtenvEnvir::messageSendHop(cMessage *msg, cGate *srcGate, const cChannel::Result& result)
 {
     EnvirBase::messageSendHop(msg, srcGate, result);
     app->messageSendHop(msg, srcGate, result);
 }
 
-void QtEnvir::endSend(cMessage *msg)
+void QtenvEnvir::endSend(cMessage *msg)
 {
     EnvirBase::endSend(msg);
     app->endSend(msg);
 }
 
-void QtEnvir::messageDeleted(cMessage *msg)
+void QtenvEnvir::messageDeleted(cMessage *msg)
 {
     EnvirBase::messageDeleted(msg);
     app->messageDeleted(msg);
 }
 
-void QtEnvir::componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va, bool silent)
+void QtenvEnvir::componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va, bool silent)
 {
     EnvirBase::componentMethodBegin(from, to, methodFmt, va, silent);
     app->componentMethodBegin(from, to, methodFmt, va, silent);
 }
 
-void QtEnvir::componentMethodEnd()
+void QtenvEnvir::componentMethodEnd()
 {
     EnvirBase::componentMethodEnd();
     app->componentMethodEnd();
 }
 
-void QtEnvir::moduleCreated(cModule *newmodule)
+void QtenvEnvir::moduleCreated(cModule *newmodule)
 {
     EnvirBase::moduleCreated(newmodule);
     app->moduleCreated(newmodule);
 }
 
-void QtEnvir::moduleDeleted(cModule *module)
+void QtenvEnvir::moduleDeleted(cModule *module)
 {
     EnvirBase::moduleDeleted(module);
     app->moduleDeleted(module);
 }
 
-void QtEnvir::moduleReparented(cModule *module, cModule *oldparent, int oldId)
+void QtenvEnvir::moduleReparented(cModule *module, cModule *oldparent, int oldId)
 {
     EnvirBase::moduleReparented(module, oldparent, oldId);
     app->moduleReparented(module, oldparent, oldId);
 }
 
-void QtEnvir::connectionCreated(cGate *srcgate)
+void QtenvEnvir::connectionCreated(cGate *srcgate)
 {
     EnvirBase::connectionCreated(srcgate);
     app->connectionCreated(srcgate);
 }
 
-void QtEnvir::connectionDeleted(cGate *srcgate)
+void QtenvEnvir::connectionDeleted(cGate *srcgate)
 {
     EnvirBase::connectionDeleted(srcgate);
     app->connectionDeleted(srcgate);
 }
 
-void QtEnvir::displayStringChanged(cComponent *component)
+void QtenvEnvir::displayStringChanged(cComponent *component)
 {
     EnvirBase::displayStringChanged(component);
     app->displayStringChanged(component);
 }
 
-void QtEnvir::log(cLogEntry *entry)
+void QtenvEnvir::log(cLogEntry *entry)
 {
     EnvirBase::log(entry);
     app->log(entry);
 }
 
-bool QtEnvir::idle()
+bool QtenvEnvir::idle()
 {
     return app->idle();
 }
 
-bool QtEnvir::ensureDebugger(cRuntimeError *error)
+bool QtenvEnvir::ensureDebugger(cRuntimeError *error)
 {
     return app->ensureDebugger(error);
 }
 
-void QtEnvir::alert(const char *msg)
+void QtenvEnvir::alert(const char *msg)
 {
     app->alert(msg);
 }
 
-std::string QtEnvir::input(const char *prompt, const char *defaultReply)
+std::string QtenvEnvir::input(const char *prompt, const char *defaultReply)
 {
     return app->gets(prompt, defaultReply);
 }
 
-bool QtEnvir::askYesNo(const char *prompt)
+bool QtenvEnvir::askYesNo(const char *prompt)
 {
     return app->askYesNo(prompt);
 }
 
-void QtEnvir::getImageSize(const char *imageName, double &outWidth, double &outHeight)
+void QtenvEnvir::getImageSize(const char *imageName, double &outWidth, double &outHeight)
 {
     app->getImageSize(imageName, outWidth, outHeight);
 }
 
-void QtEnvir::getTextExtent(const cFigure::Font &font, const char *text,
+void QtenvEnvir::getTextExtent(const cFigure::Font &font, const char *text,
         double &outWidth, double &outHeight, double &outAscent)
 {
     app->getTextExtent(font, text, outWidth, outHeight, outAscent);
 }
 
-void QtEnvir::appendToImagePath(const char *directory)
+void QtenvEnvir::appendToImagePath(const char *directory)
 {
     app->appendToImagePath(directory);
 }
 
-void QtEnvir::loadImage(const char *fileName, const char *imageName)
+void QtenvEnvir::loadImage(const char *fileName, const char *imageName)
 {
     app->loadImage(fileName, imageName);
 }
 
-cFigure::Rectangle QtEnvir::getSubmoduleBounds(const cModule *submodule)
+cFigure::Rectangle QtenvEnvir::getSubmoduleBounds(const cModule *submodule)
 {
     return app->getSubmoduleBounds(submodule);
 }
 
-std::vector<cFigure::Point> QtEnvir::getConnectionLine(const cGate *sourceGate)
+std::vector<cFigure::Point> QtenvEnvir::getConnectionLine(const cGate *sourceGate)
 {
     return app->getConnectionLine(sourceGate);
 }
 
-double QtEnvir::getZoomLevel(const cModule *module)
+double QtenvEnvir::getZoomLevel(const cModule *module)
 {
     return app->getZoomLevel(module);
 }
 
-double QtEnvir::getAnimationTime() const
+double QtenvEnvir::getAnimationTime() const
 {
     return app->getAnimationTime();
 }
 
-double QtEnvir::getAnimationSpeed() const
+double QtenvEnvir::getAnimationSpeed() const
 {
     return app->getAnimationSpeed();
 }
 
-double QtEnvir::getRemainingAnimationHoldTime() const
+double QtenvEnvir::getRemainingAnimationHoldTime() const
 {
     return app->getRemainingAnimationHoldTime();
 }
 
-void QtEnvir::pausePoint()
+void QtenvEnvir::pausePoint()
 {
     EnvirBase::pausePoint();
     app->pausePoint();
