@@ -302,6 +302,7 @@ bool CmdenvSimulationRunner::runSimulation(InifileContents *ini, const char *con
 
         bool redirectOutput = cfg->getAsBool(CFGID_CMDENV_REDIRECT_OUTPUT);
         std::string outputFile = redirectOutput ? ResultFileUtils(cfg.get()).augmentFileName(cfg->getAsFilename(CFGID_CMDENV_OUTPUT_FILE)) : "";
+
         cTerminationException *reason = setupAndRunSimulation(cfg.get(), nullptr, redirectOutput ? outputFile.c_str() : nullptr);
         delete reason;
         return true;
@@ -310,16 +311,6 @@ bool CmdenvSimulationRunner::runSimulation(InifileContents *ini, const char *con
         if (!verbose || useStderr) // if verbose, it was already printed (maybe only in the redirection file though)
             displayException(e);
         return false;
-    }
-}
-
-static void deleteNetworkOnError(cSimulation *simulation, cRuntimeError& error)
-{
-    try {
-        simulation->deleteNetwork();
-    }
-    catch (std::exception& e) {
-        error.addNestedException(e);
     }
 }
 
@@ -384,17 +375,20 @@ cTerminationException *CmdenvSimulationRunner::setupAndRunSimulation(cConfigurat
         cTerminationException *terminationReason = simulation->getTerminationReason()->dup();
         if (redirectOutput)
             logException(fout, *terminationReason);
+
+        simulation->deleteNetwork();  // note: without this, exceptions during teardown would be swallowed by cSimulation dtor
+
         return terminationReason;
     }
     catch (cRuntimeError& e) {
-        deleteNetworkOnError(simulation, e);
+        simulation->deleteNetworkOnError(e);
         if (redirectOutput)
             logException(fout, e);
         throw;
     }
     catch (std::exception& e) {
         cRuntimeError re(e);
-        deleteNetworkOnError(simulation, re);
+        simulation->deleteNetworkOnError(re);
         if (redirectOutput)
             logException(fout, re);
         throw re;
