@@ -389,7 +389,7 @@ class QTENV_API Qtenv : public QObject, public AppBase
       void inspectorDeleted(Inspector *insp);
       const std::list<Inspector*>& getInspectors() {return inspectors;}
 
-      EnvirBase *getEnvir() const {return dynamic_cast<EnvirBase*>(cSimulation::getActiveEnvir());}
+      GenericEnvir *getEnvir() const {return dynamic_cast<GenericEnvir*>(cSimulation::getActiveEnvir());}
       cConfiguration *getConfig() {return getEnvir()->getConfig();}
 
       bool getDebugOnErrors() const {return getEnvir()->getDebugOnErrors();}

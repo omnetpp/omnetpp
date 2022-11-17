@@ -17,7 +17,7 @@
 #define __OMNETPP_QTENV_QTENVENVIR_H
 
 #include "qtenvdefs.h"
-#include "envir/envirbase.h"
+#include "envir/genericenvir.h"
 
 using namespace omnetpp::envir;
 
@@ -26,7 +26,7 @@ namespace qtenv {
 
 class Qtenv;
 
-class QTENV_API QtenvEnvir : public EnvirBase
+class QTENV_API QtenvEnvir : public GenericEnvir
 {
   protected:
     Qtenv *app = nullptr;

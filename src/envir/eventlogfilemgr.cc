@@ -35,7 +35,7 @@
 #include "omnetpp/checkandcast.h"
 #include "eventlogfilemgr.h"
 #include "eventlogwriter.h"
-#include "envirbase.h"
+#include "genericenvir.h"
 #include "resultfileutils.h"
 
 using namespace omnetpp::common;

@@ -43,7 +43,7 @@ CmdenvEnvir::CmdenvEnvir(std::ostream& out, bool& sigintReceived) : out(out), si
 
 void CmdenvEnvir::configure(cConfiguration *cfg)
 {
-    EnvirBase::configure(cfg);
+    GenericEnvir::configure(cfg);
 
     setExpressMode(cfg->getAsBool(CFGID_CMDENV_EXPRESS_MODE));
     setAutoflush(cfg->getAsBool(CFGID_CMDENV_AUTOFLUSH));
@@ -71,7 +71,7 @@ void CmdenvEnvir::setFakeGUI(FakeGUI *fakeGUI)
 
 void CmdenvEnvir::componentInitBegin(cComponent *component, int stage)
 {
-    EnvirBase::componentInitBegin(component, stage);
+    GenericEnvir::componentInitBegin(component, stage);
 
     // TODO: make this an EV_INFO in the component?
     if (!expressMode && printEventBanners && component->getLogLevel() != LOGLEVEL_OFF)
@@ -80,7 +80,7 @@ void CmdenvEnvir::componentInitBegin(cComponent *component, int stage)
 
 void CmdenvEnvir::configureComponent(cComponent *component)
 {
-    EnvirBase::configureComponent(component);
+    GenericEnvir::configureComponent(component);
 
     LogLevel level = cLog::resolveLogLevel(cfg->getAsString(component->getFullPath().c_str(), CFGID_CMDENV_LOGLEVEL).c_str());
     component->setLogLevel(level);
@@ -120,7 +120,7 @@ void CmdenvEnvir::alert(const char *msg)
 
 void CmdenvEnvir::log(cLogEntry *entry)
 {
-    EnvirBase::log(entry);
+    GenericEnvir::log(entry);
 
     if (!logFormatter.isBlank())
         out << logFormatter.formatPrefix(entry);

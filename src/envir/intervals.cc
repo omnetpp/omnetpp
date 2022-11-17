@@ -15,8 +15,8 @@
 
 #include "common/opp_ctype.h"
 #include "common/stringutil.h"
-#include "envirbase.h"
 #include "intervals.h"
+#include "genericenvir.h"
 
 using namespace omnetpp::common;
 

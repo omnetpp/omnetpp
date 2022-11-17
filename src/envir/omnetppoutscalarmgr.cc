@@ -29,9 +29,9 @@
 #include "omnetpp/cstatistic.h"
 #include "omnetpp/cabstracthistogram.h"
 #include "omnetpp/ccomponenttype.h"
-#include "envirbase.h"
 #include "resultfileutils.h"
 #include "omnetppoutscalarmgr.h"
+#include "genericenvir.h"
 
 using namespace omnetpp::common;
 

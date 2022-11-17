@@ -18,7 +18,7 @@
 
 #include "cmddefs.h"
 #include "fakegui.h"
-#include "envir/envirbase.h"
+#include "envir/genericenvir.h"
 
 namespace omnetpp {
 namespace cmdenv {
@@ -28,7 +28,7 @@ using namespace omnetpp::envir;
 /**
  * Envir class for the command line user interface.
  */
-class CMDENV_API CmdenvEnvir : public EnvirBase
+class CMDENV_API CmdenvEnvir : public GenericEnvir
 {
    protected:
     std::ostream& out;

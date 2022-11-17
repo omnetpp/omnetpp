@@ -33,12 +33,12 @@
 #include "omnetpp/platdep/platmisc.h"
 #include "appbase.h"
 #include "args.h"
-#include "envirbase.h"
 #include "envirutils.h"
 #include "appreg.h"
 #include "debuggersupport.h"
 #include "inifilecontents.h"
 #include "debuggersupport.h"
+#include "genericenvir.h"
 
 using namespace omnetpp::common;
 using namespace omnetpp::internal;
@@ -517,7 +517,7 @@ void AppBase::alertf(const char *fmt, ...)
 
 bool AppBase::ensureDebugger(cRuntimeError *error)
 {
-    EnvirBase *envirBase = dynamic_cast<EnvirBase*>(cSimulation::getActiveEnvir());
+    GenericEnvir *envirBase = dynamic_cast<GenericEnvir*>(cSimulation::getActiveEnvir());
     if (error == nullptr || (envirBase && envirBase->getAttachDebuggerOnErrors())) { //TODO why ask Envir? move check out of this function
         try {
             if (debuggerSupport->detectDebugger() == DebuggerPresence::NOT_PRESENT)

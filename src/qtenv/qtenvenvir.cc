@@ -27,127 +27,127 @@ void QtenvEnvir::askParameter(cPar *par, bool unassigned)
 
 void QtenvEnvir::bubble(cComponent *component, const char *text)
 {
-    EnvirBase::bubble(component, text);
+    GenericEnvir::bubble(component, text);
     app->bubble(component, text);
 }
 
 void QtenvEnvir::objectDeleted(cObject *object)
 {
-    EnvirBase::objectDeleted(object);
+    GenericEnvir::objectDeleted(object);
     app->objectDeleted(object);
 }
 
 void QtenvEnvir::simulationEvent(cEvent *event)
 {
-    EnvirBase::simulationEvent(event);
+    GenericEnvir::simulationEvent(event);
     app->simulationEvent(event);
 }
 
 void QtenvEnvir::componentInitBegin(cComponent *component, int stage)
 {
-    EnvirBase::componentInitBegin(component, stage);
+    GenericEnvir::componentInitBegin(component, stage);
     app->componentInitBegin(component, stage);
 }
 
 void QtenvEnvir::beginSend(cMessage *msg, const SendOptions& options)
 {
-    EnvirBase::beginSend(msg, options);
+    GenericEnvir::beginSend(msg, options);
     app->beginSend(msg, options);
 }
 
 void QtenvEnvir::messageScheduled(cMessage *msg)
 {
-    EnvirBase::messageScheduled(msg);
+    GenericEnvir::messageScheduled(msg);
     app->messageScheduled(msg);
 }
 
 void QtenvEnvir::messageCancelled(cMessage *msg)
 {
-    EnvirBase::messageCancelled(msg);
+    GenericEnvir::messageCancelled(msg);
     app->messageCancelled(msg);
 }
 
 void QtenvEnvir::messageSendDirect(cMessage *msg, cGate *toGate, const ChannelResult& result)
 {
-    EnvirBase::messageSendDirect(msg, toGate, result);
+    GenericEnvir::messageSendDirect(msg, toGate, result);
     app->messageSendDirect(msg, toGate, result);
 }
 
 void QtenvEnvir::messageSendHop(cMessage *msg, cGate *srcGate)
 {
-    EnvirBase::messageSendHop(msg, srcGate);
+    GenericEnvir::messageSendHop(msg, srcGate);
     app->messageSendHop(msg, srcGate);
 }
 
 void QtenvEnvir::messageSendHop(cMessage *msg, cGate *srcGate, const cChannel::Result& result)
 {
-    EnvirBase::messageSendHop(msg, srcGate, result);
+    GenericEnvir::messageSendHop(msg, srcGate, result);
     app->messageSendHop(msg, srcGate, result);
 }
 
 void QtenvEnvir::endSend(cMessage *msg)
 {
-    EnvirBase::endSend(msg);
+    GenericEnvir::endSend(msg);
     app->endSend(msg);
 }
 
 void QtenvEnvir::messageDeleted(cMessage *msg)
 {
-    EnvirBase::messageDeleted(msg);
+    GenericEnvir::messageDeleted(msg);
     app->messageDeleted(msg);
 }
 
 void QtenvEnvir::componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va, bool silent)
 {
-    EnvirBase::componentMethodBegin(from, to, methodFmt, va, silent);
+    GenericEnvir::componentMethodBegin(from, to, methodFmt, va, silent);
     app->componentMethodBegin(from, to, methodFmt, va, silent);
 }
 
 void QtenvEnvir::componentMethodEnd()
 {
-    EnvirBase::componentMethodEnd();
+    GenericEnvir::componentMethodEnd();
     app->componentMethodEnd();
 }
 
 void QtenvEnvir::moduleCreated(cModule *newmodule)
 {
-    EnvirBase::moduleCreated(newmodule);
+    GenericEnvir::moduleCreated(newmodule);
     app->moduleCreated(newmodule);
 }
 
 void QtenvEnvir::moduleDeleted(cModule *module)
 {
-    EnvirBase::moduleDeleted(module);
+    GenericEnvir::moduleDeleted(module);
     app->moduleDeleted(module);
 }
 
 void QtenvEnvir::moduleReparented(cModule *module, cModule *oldparent, int oldId)
 {
-    EnvirBase::moduleReparented(module, oldparent, oldId);
+    GenericEnvir::moduleReparented(module, oldparent, oldId);
     app->moduleReparented(module, oldparent, oldId);
 }
 
 void QtenvEnvir::connectionCreated(cGate *srcgate)
 {
-    EnvirBase::connectionCreated(srcgate);
+    GenericEnvir::connectionCreated(srcgate);
     app->connectionCreated(srcgate);
 }
 
 void QtenvEnvir::connectionDeleted(cGate *srcgate)
 {
-    EnvirBase::connectionDeleted(srcgate);
+    GenericEnvir::connectionDeleted(srcgate);
     app->connectionDeleted(srcgate);
 }
 
 void QtenvEnvir::displayStringChanged(cComponent *component)
 {
-    EnvirBase::displayStringChanged(component);
+    GenericEnvir::displayStringChanged(component);
     app->displayStringChanged(component);
 }
 
 void QtenvEnvir::log(cLogEntry *entry)
 {
-    EnvirBase::log(entry);
+    GenericEnvir::log(entry);
     app->log(entry);
 }
 
@@ -229,7 +229,7 @@ double QtenvEnvir::getRemainingAnimationHoldTime() const
 
 void QtenvEnvir::pausePoint()
 {
-    EnvirBase::pausePoint();
+    GenericEnvir::pausePoint();
     app->pausePoint();
 }
 

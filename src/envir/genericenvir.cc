@@ -1,5 +1,5 @@
 //==========================================================================
-//  ENVIRBASE.CC - part of
+//  GENERICENVIR.CC - part of
 //                     OMNeT++/OMNEST
 //             Discrete System Simulation in C++
 //
@@ -12,6 +12,8 @@
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
+
+#include "genericenvir.h"
 
 #include <cstdio>
 #include <csignal>
@@ -31,7 +33,6 @@
 #include "omnetpp/platdep/platmisc.h"
 #include "omnetpp/cstatisticbuilder.h"
 #include "args.h"
-#include "envirbase.h"
 #include "xmldoccache.h"
 
 #ifdef PREFER_SQLITE_RESULT_FILES
@@ -62,11 +63,11 @@ Register_GlobalConfigOption(CFGID_DEBUGGER_ATTACH_ON_ERROR, "debugger-attach-on-
 Register_GlobalConfigOption(CFGID_RECORD_EVENTLOG, "record-eventlog", CFG_BOOL, "false", "Enables recording an eventlog file, which can be later visualized on a sequence chart. See `eventlog-file` option too.");
 
 
-EnvirBase::EnvirBase()
+GenericEnvir::GenericEnvir()
 {
 }
 
-EnvirBase::~EnvirBase()
+GenericEnvir::~GenericEnvir()
 {
     delete xmlCache;
     delete eventlogManager;
@@ -75,13 +76,13 @@ EnvirBase::~EnvirBase()
     delete snapshotManager;
 }
 
-void EnvirBase::setSimulation(cSimulation *simulation)
+void GenericEnvir::setSimulation(cSimulation *simulation)
 {
     cEnvir::setSimulation(simulation);
     simulation->addLifecycleListener(this);
 }
 
-void EnvirBase::configure(cConfiguration *cfg)
+void GenericEnvir::configure(cConfiguration *cfg)
 {
     this->cfg = cfg;
 
@@ -121,7 +122,7 @@ void EnvirBase::configure(cConfiguration *cfg)
     recordEventlog = cfg->getAsBool(CFGID_RECORD_EVENTLOG);  // TODO tmp solution: cannot call setEventlogRecording(), because it calls eventlogRecorder->suspend()/resume(), which is NOT what we want here
 }
 
-std::string EnvirBase::extractImagePath(cConfiguration *cfg, ArgList *args)
+std::string GenericEnvir::extractImagePath(cConfiguration *cfg, ArgList *args)
 {
     std::string imagePath;
     if (args)
@@ -134,49 +135,49 @@ std::string EnvirBase::extractImagePath(cConfiguration *cfg, ArgList *args)
     return imagePath;
 }
 
-void EnvirBase::unsupported(const char *method) const
+void GenericEnvir::unsupported(const char *method) const
 {
     throw new cRuntimeError("Unsupported method '%s()' -- override method in a subclass to implement it", method);
 }
 
-void EnvirBase::setEventlogManager(cIEventlogManager *obj)
+void GenericEnvir::setEventlogManager(cIEventlogManager *obj)
 {
     delete eventlogManager;
     eventlogManager = obj;
 }
 
-void EnvirBase::setOutVectorManager(cIOutputVectorManager *obj)
+void GenericEnvir::setOutVectorManager(cIOutputVectorManager *obj)
 {
     delete outVectorManager;
     outVectorManager = obj;
 }
 
-void EnvirBase::setOutScalarManager(cIOutputScalarManager *obj)
+void GenericEnvir::setOutScalarManager(cIOutputScalarManager *obj)
 {
     delete outScalarManager;
     outScalarManager = obj;
 }
 
-void EnvirBase::setSnapshotManager(cISnapshotManager *obj)
+void GenericEnvir::setSnapshotManager(cISnapshotManager *obj)
 {
     delete snapshotManager;
     snapshotManager = obj;
 }
 
-void EnvirBase::preconfigureComponent(cComponent *component)
+void GenericEnvir::preconfigureComponent(cComponent *component)
 {
 }
 
-void EnvirBase::configureComponent(cComponent *component)
+void GenericEnvir::configureComponent(cComponent *component)
 {
 }
 
-void EnvirBase::addResultRecorders(cComponent *component, simsignal_t signal, const char *statisticName, cProperty *statisticTemplateProperty)
+void GenericEnvir::addResultRecorders(cComponent *component, simsignal_t signal, const char *statisticName, cProperty *statisticTemplateProperty)
 {
     cStatisticBuilder(getConfig()).addResultRecorders(component, signal, statisticName, statisticTemplateProperty);
 }
 
-void EnvirBase::readParameter(cPar *par)
+void GenericEnvir::readParameter(cPar *par)
 {
     ASSERT(!par->isSet());  // must be unset at this point
 
@@ -211,24 +212,24 @@ void EnvirBase::readParameter(cPar *par)
     ASSERT(par->isSet());  // and must be set after
 }
 
-void EnvirBase::askParameter(cPar *par, bool unassigned)
+void GenericEnvir::askParameter(cPar *par, bool unassigned)
 {
     unsupported("askParameter");
 }
 
-cXMLElement *EnvirBase::getXMLDocument(const char *filename, const char *path)
+cXMLElement *GenericEnvir::getXMLDocument(const char *filename, const char *path)
 {
     cXMLElement *documentnode = xmlCache->getDocument(filename);
     return resolveXMLPath(documentnode, path);
 }
 
-cXMLElement *EnvirBase::getParsedXMLString(const char *content, const char *path)
+cXMLElement *GenericEnvir::getParsedXMLString(const char *content, const char *path)
 {
     cXMLElement *documentnode = xmlCache->getParsed(content);
     return resolveXMLPath(documentnode, path);
 }
 
-cXMLElement *EnvirBase::resolveXMLPath(cXMLElement *documentnode, const char *path)
+cXMLElement *GenericEnvir::resolveXMLPath(cXMLElement *documentnode, const char *path)
 {
     ASSERT(documentnode);
     if (path) {
@@ -241,37 +242,37 @@ cXMLElement *EnvirBase::resolveXMLPath(cXMLElement *documentnode, const char *pa
     }
 }
 
-void EnvirBase::forgetXMLDocument(const char *filename)
+void GenericEnvir::forgetXMLDocument(const char *filename)
 {
     xmlCache->forgetDocument(filename);
 }
 
-void EnvirBase::forgetParsedXMLString(const char *content)
+void GenericEnvir::forgetParsedXMLString(const char *content)
 {
     xmlCache->forgetParsed(content);
 }
 
-void EnvirBase::flushXMLDocumentCache()
+void GenericEnvir::flushXMLDocumentCache()
 {
     xmlCache->flushDocumentCache();
 }
 
-void EnvirBase::flushXMLParsedContentCache()
+void GenericEnvir::flushXMLParsedContentCache()
 {
     xmlCache->flushParsedContentCache();
 }
 
-unsigned EnvirBase::getExtraStackForEnvir() const
+unsigned GenericEnvir::getExtraStackForEnvir() const
 {
     return extraStack;
 }
 
-cConfiguration *EnvirBase::getConfig()
+cConfiguration *GenericEnvir::getConfig()
 {
     return cfg;
 }
 
-std::string EnvirBase::resolveResourcePath(const char *fileName, cComponentType *context)
+std::string GenericEnvir::resolveResourcePath(const char *fileName, cComponentType *context)
 {
     // search in current directory (or with absolute path)
     if (fileExists(fileName))
@@ -312,7 +313,7 @@ std::string EnvirBase::resolveResourcePath(const char *fileName, cComponentType 
     return ""; // not found
 }
 
-void EnvirBase::lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details)
+void GenericEnvir::lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details)
 {
     switch (eventType) {
     case LF_PRE_NETWORK_SETUP: clearCurrentEventInfo(); break;
@@ -321,17 +322,17 @@ void EnvirBase::lifecycleEvent(SimulationLifecycleEventType eventType, cObject *
     }
 }
 
-void EnvirBase::bubble(cComponent *component, const char *text)
+void GenericEnvir::bubble(cComponent *component, const char *text)
 {
     if (recordEventlog)
         eventlogManager->bubble(component, text);
 }
 
-void EnvirBase::objectDeleted(cObject *object)
+void GenericEnvir::objectDeleted(cObject *object)
 {
 }
 
-void EnvirBase::simulationEvent(cEvent *event)
+void GenericEnvir::simulationEvent(cEvent *event)
 {
     if (logFormatUsesEventName)
         currentEventName = event->getFullName();
@@ -342,7 +343,7 @@ void EnvirBase::simulationEvent(cEvent *event)
         eventlogManager->simulationEvent(event);
 }
 
-void EnvirBase::componentInitBegin(cComponent *component, int stage)
+void GenericEnvir::componentInitBegin(cComponent *component, int stage)
 {
     // To make initialization similar to processed events in this regard.
     // Unfortunately, for modules created (initialized) dynamically,
@@ -351,127 +352,127 @@ void EnvirBase::componentInitBegin(cComponent *component, int stage)
     currentModuleId = (component && component->isModule()) ? component->getId() : -1;
 }
 
-void EnvirBase::beginSend(cMessage *msg, const SendOptions& options)
+void GenericEnvir::beginSend(cMessage *msg, const SendOptions& options)
 {
     if (recordEventlog)
         eventlogManager->beginSend(msg, options);
 }
 
-void EnvirBase::messageScheduled(cMessage *msg)
+void GenericEnvir::messageScheduled(cMessage *msg)
 {
     if (recordEventlog)
         eventlogManager->messageScheduled(msg);
 }
 
-void EnvirBase::messageCancelled(cMessage *msg)
+void GenericEnvir::messageCancelled(cMessage *msg)
 {
     if (recordEventlog)
         eventlogManager->messageCancelled(msg);
 }
 
-void EnvirBase::messageSendDirect(cMessage *msg, cGate *toGate, const ChannelResult& result)
+void GenericEnvir::messageSendDirect(cMessage *msg, cGate *toGate, const ChannelResult& result)
 {
     if (recordEventlog)
         eventlogManager->messageSendDirect(msg, toGate, result);
 }
 
-void EnvirBase::messageSendHop(cMessage *msg, cGate *srcGate)
+void GenericEnvir::messageSendHop(cMessage *msg, cGate *srcGate)
 {
     if (recordEventlog)
         eventlogManager->messageSendHop(msg, srcGate);
 }
 
-void EnvirBase::messageSendHop(cMessage *msg, cGate *srcGate, const cChannel::Result& result)
+void GenericEnvir::messageSendHop(cMessage *msg, cGate *srcGate, const cChannel::Result& result)
 {
     if (recordEventlog)
         eventlogManager->messageSendHop(msg, srcGate, result);
 }
 
-void EnvirBase::endSend(cMessage *msg)
+void GenericEnvir::endSend(cMessage *msg)
 {
     if (recordEventlog)
         eventlogManager->endSend(msg);
 }
 
-void EnvirBase::messageCreated(cMessage *msg)
+void GenericEnvir::messageCreated(cMessage *msg)
 {
     if (recordEventlog)
         eventlogManager->messageCreated(msg);
 }
 
-void EnvirBase::messageCloned(cMessage *msg, cMessage *clone)
+void GenericEnvir::messageCloned(cMessage *msg, cMessage *clone)
 {
     if (recordEventlog)
         eventlogManager->messageCloned(msg, clone);
 }
 
-void EnvirBase::messageDeleted(cMessage *msg)
+void GenericEnvir::messageDeleted(cMessage *msg)
 {
     if (recordEventlog)
         eventlogManager->messageDeleted(msg);
 }
 
-void EnvirBase::componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va, bool silent)
+void GenericEnvir::componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va, bool silent)
 {
     if (recordEventlog)
         eventlogManager->componentMethodBegin(from, to, methodFmt, va);
 }
 
-void EnvirBase::componentMethodEnd()
+void GenericEnvir::componentMethodEnd()
 {
     if (recordEventlog)
         eventlogManager->componentMethodEnd();
 }
 
-void EnvirBase::moduleCreated(cModule *newmodule)
+void GenericEnvir::moduleCreated(cModule *newmodule)
 {
     if (recordEventlog)
         eventlogManager->moduleCreated(newmodule);
 }
 
-void EnvirBase::moduleDeleted(cModule *module)
+void GenericEnvir::moduleDeleted(cModule *module)
 {
     if (recordEventlog)
         eventlogManager->moduleDeleted(module);
 }
 
-void EnvirBase::moduleReparented(cModule *module, cModule *oldparent, int oldId)
+void GenericEnvir::moduleReparented(cModule *module, cModule *oldparent, int oldId)
 {
     if (recordEventlog)
         eventlogManager->moduleReparented(module, oldparent, oldId);
 }
 
-void EnvirBase::gateCreated(cGate *newgate)
+void GenericEnvir::gateCreated(cGate *newgate)
 {
     if (recordEventlog)
         eventlogManager->gateCreated(newgate);
 }
 
-void EnvirBase::gateDeleted(cGate *gate)
+void GenericEnvir::gateDeleted(cGate *gate)
 {
     if (recordEventlog)
         eventlogManager->gateDeleted(gate);
 }
 
-void EnvirBase::connectionCreated(cGate *srcgate)
+void GenericEnvir::connectionCreated(cGate *srcgate)
 {
     if (recordEventlog)
         eventlogManager->connectionCreated(srcgate);
 }
 
-void EnvirBase::connectionDeleted(cGate *srcgate)
+void GenericEnvir::connectionDeleted(cGate *srcgate)
 {
     if (recordEventlog)
         eventlogManager->connectionDeleted(srcgate);
 }
 
-void EnvirBase::displayStringChanged(cComponent *component)
+void GenericEnvir::displayStringChanged(cComponent *component)
 {
     if (recordEventlog)
         eventlogManager->displayStringChanged(component);
 }
 
-void EnvirBase::log(cLogEntry *entry)
+void GenericEnvir::log(cLogEntry *entry)
 {
     if (recordEventlog) {
         std::string prefix = logFormatter.formatPrefix(entry);
@@ -479,13 +480,13 @@ void EnvirBase::log(cLogEntry *entry)
     }
 }
 
-void EnvirBase::undisposedObject(cObject *obj)
+void GenericEnvir::undisposedObject(cObject *obj)
 {
     if (printUndisposed)
         std::cerr << "undisposed object: (" << obj->getClassName() << ") " << obj->getFullPath() << " -- check module destructor" << endl;
 }
 
-void EnvirBase::setEventlogRecording(bool enabled)
+void GenericEnvir::setEventlogRecording(bool enabled)
 {
     // NOTE: eventlogManager must be non-nullptr when recordEventlog is true
     if (recordEventlog != enabled) {
@@ -497,44 +498,44 @@ void EnvirBase::setEventlogRecording(bool enabled)
     }
 }
 
-void EnvirBase::setLogLevel(LogLevel logLevel)
+void GenericEnvir::setLogLevel(LogLevel logLevel)
 {
     cLog::logLevel = logLevel;
 }
 
-void EnvirBase::setLogFormat(const char *logFormat)
+void GenericEnvir::setLogFormat(const char *logFormat)
 {
     logFormatter.setFormat(logFormat);
     logFormatUsesEventName = logFormatter.usesEventName();
     logFormatUsesEventClassName = logFormatter.usesEventClassName();
 }
 
-void EnvirBase::clearCurrentEventInfo()
+void GenericEnvir::clearCurrentEventInfo()
 {
     currentEventName = "";
     currentEventClassName = nullptr;
     currentModuleId = -1;
 }
 
-void *EnvirBase::registerOutputVector(const char *modulename, const char *vectorname)
+void *GenericEnvir::registerOutputVector(const char *modulename, const char *vectorname)
 {
     ASSERT(outVectorManager);
     return outVectorManager->registerVector(modulename, vectorname);
 }
 
-void EnvirBase::deregisterOutputVector(void *vechandle)
+void GenericEnvir::deregisterOutputVector(void *vechandle)
 {
     ASSERT(outVectorManager);
     outVectorManager->deregisterVector(vechandle);
 }
 
-void EnvirBase::setVectorAttribute(void *vechandle, const char *name, const char *value)
+void GenericEnvir::setVectorAttribute(void *vechandle, const char *name, const char *value)
 {
     ASSERT(outVectorManager);
     outVectorManager->setVectorAttribute(vechandle, name, value);
 }
 
-bool EnvirBase::recordInOutputVector(void *vechandle, simtime_t t, double value)
+bool GenericEnvir::recordInOutputVector(void *vechandle, simtime_t t, double value)
 {
     ASSERT(outVectorManager);
     if (getSimulation()->getFingerprintCalculator())
@@ -543,7 +544,7 @@ bool EnvirBase::recordInOutputVector(void *vechandle, simtime_t t, double value)
     return outVectorManager->record(vechandle, t, value);
 }
 
-void EnvirBase::recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes)
+void GenericEnvir::recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes)
 {
     ASSERT(outScalarManager);
     outScalarManager->recordScalar(component, name, value, attributes);
@@ -551,7 +552,7 @@ void EnvirBase::recordScalar(cComponent *component, const char *name, double val
         getSimulation()->getFingerprintCalculator()->addScalarResult(component, name, value);
 }
 
-void EnvirBase::recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes)
+void GenericEnvir::recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes)
 {
     ASSERT(outScalarManager);
     outScalarManager->recordStatistic(component, name, statistic, attributes);
@@ -559,120 +560,120 @@ void EnvirBase::recordStatistic(cComponent *component, const char *name, cStatis
         getSimulation()->getFingerprintCalculator()->addStatisticResult(component, name, statistic);
 }
 
-void EnvirBase::recordParameter(cPar *par)
+void GenericEnvir::recordParameter(cPar *par)
 {
     assert(outScalarManager);
     outScalarManager->recordParameter(par);
 }
 
-void EnvirBase::recordComponentType(cComponent *component)
+void GenericEnvir::recordComponentType(cComponent *component)
 {
     assert(outScalarManager);
     outScalarManager->recordComponentType(component);
 }
 
-std::ostream *EnvirBase::getStreamForSnapshot()
+std::ostream *GenericEnvir::getStreamForSnapshot()
 {
     return snapshotManager->getStreamForSnapshot();
 }
 
-void EnvirBase::releaseStreamForSnapshot(std::ostream *os)
+void GenericEnvir::releaseStreamForSnapshot(std::ostream *os)
 {
     snapshotManager->releaseStreamForSnapshot(os);
 }
 
-bool EnvirBase::idle()
+bool GenericEnvir::idle()
 {
     return false;
 }
 
-bool EnvirBase::ensureDebugger(cRuntimeError *error)
+bool GenericEnvir::ensureDebugger(cRuntimeError *error)
 {
     unsupported("ensureDebugger");
 }
 
-bool EnvirBase::shouldDebugNow(cRuntimeError *error)
+bool GenericEnvir::shouldDebugNow(cRuntimeError *error)
 {
     return debugOnErrors && ensureDebugger(error);
 }
 
-bool EnvirBase::isGUI() const
+bool GenericEnvir::isGUI() const
 {
     return gui;
 }
 
-bool EnvirBase::isExpressMode() const
+bool GenericEnvir::isExpressMode() const
 {
     return expressMode;
 }
 
-void EnvirBase::alert(const char *msg)
+void GenericEnvir::alert(const char *msg)
 {
     unsupported("alert");
 }
 
-std::string EnvirBase::input(const char *prompt, const char *defaultReply)
+std::string GenericEnvir::input(const char *prompt, const char *defaultReply)
 {
     unsupported("input");
 }
 
-bool EnvirBase::askYesNo(const char *prompt)
+bool GenericEnvir::askYesNo(const char *prompt)
 {
     unsupported("askYesNo");
 }
 
-void EnvirBase::getImageSize(const char *imageName, double &outWidth, double &outHeight)
+void GenericEnvir::getImageSize(const char *imageName, double &outWidth, double &outHeight)
 {
     unsupported("getImageSize");
 }
 
-void EnvirBase::getTextExtent(const cFigure::Font &font, const char *text,
+void GenericEnvir::getTextExtent(const cFigure::Font &font, const char *text,
         double &outWidth, double &outHeight, double &outAscent)
 {
     unsupported("getTextExtent");
 }
 
-void EnvirBase::appendToImagePath(const char *directory)
+void GenericEnvir::appendToImagePath(const char *directory)
 {
     unsupported("appendToImagePath");
 }
 
-void EnvirBase::loadImage(const char *fileName, const char *imageName)
+void GenericEnvir::loadImage(const char *fileName, const char *imageName)
 {
     unsupported("loadImage");
 }
 
-cFigure::Rectangle EnvirBase::getSubmoduleBounds(const cModule *submodule)
+cFigure::Rectangle GenericEnvir::getSubmoduleBounds(const cModule *submodule)
 {
     unsupported("getSubmoduleBounds");
 }
 
-std::vector<cFigure::Point> EnvirBase::getConnectionLine(const cGate *sourceGate)
+std::vector<cFigure::Point> GenericEnvir::getConnectionLine(const cGate *sourceGate)
 {
     unsupported("getConnectionLine");
 }
 
-double EnvirBase::getZoomLevel(const cModule *module)
+double GenericEnvir::getZoomLevel(const cModule *module)
 {
     unsupported("getZoomLevel");
 }
 
-double EnvirBase::getAnimationTime() const
+double GenericEnvir::getAnimationTime() const
 {
     unsupported("getAnimationTime");
 }
 
-double EnvirBase::getAnimationSpeed() const
+double GenericEnvir::getAnimationSpeed() const
 {
     unsupported("getAnimationSpeed");
 }
 
-double EnvirBase::getRemainingAnimationHoldTime() const
+double GenericEnvir::getRemainingAnimationHoldTime() const
 {
     unsupported("getRemainingAnimationHoldTime");
 }
 
-void EnvirBase::pausePoint()
+void GenericEnvir::pausePoint()
 {
 }
 

@@ -26,9 +26,9 @@
 #include "omnetpp/cstatistic.h"
 #include "omnetpp/cabstracthistogram.h"
 #include "omnetpp/ccomponenttype.h"
-#include "envir/envirbase.h"
 #include "resultfileutils.h"
 #include "sqliteoutscalarmgr.h"
+#include "genericenvir.h"
 
 using namespace omnetpp::common;
 

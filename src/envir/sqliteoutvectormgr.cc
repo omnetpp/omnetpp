@@ -27,9 +27,9 @@
 #include "omnetpp/cmodule.h"
 #include "omnetpp/ccomponenttype.h"
 #include "omnetpp/platdep/platmisc.h"
-#include "envir/envirbase.h"
 #include "resultfileutils.h"
 #include "sqliteoutvectormgr.h"
+#include "genericenvir.h"
 
 using namespace omnetpp::common;
 

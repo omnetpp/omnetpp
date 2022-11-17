@@ -32,9 +32,9 @@
 #include "sim/expressionfilter.h"
 #include "args.h"
 #include "appreg.h"
-#include "envirbase.h"
 #include "inifilecontents.h"
 #include "envirutils.h"
+#include "genericenvir.h"
 
 using namespace omnetpp::common;
 using namespace omnetpp::nedxml;

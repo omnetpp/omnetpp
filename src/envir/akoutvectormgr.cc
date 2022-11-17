@@ -26,7 +26,7 @@
 #include "omnetpp/regmacros.h"
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/cconfigoption.h"
-#include "envirbase.h"
+#include "genericenvir.h"
 #include "akoutvectormgr.h"
 
 namespace omnetpp {

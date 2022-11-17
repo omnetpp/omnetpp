@@ -33,7 +33,7 @@
 #include "omnetpp/cmodule.h"
 #include "omnetpp/platdep/platmisc.h" // for SetErrorMode(0)
 #include "common/ver.h"
-#include "envirbase.h" // ARGSPEC
+#include "genericenvir.h" // ARGSPEC
 #include "args.h"
 #include "inifilereader.h"
 #include "inifilecontents.h"

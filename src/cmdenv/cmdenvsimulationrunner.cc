@@ -31,7 +31,7 @@
 #include "envir/appbase.h"
 #include "envir/appreg.h"
 #include "envir/args.h"
-#include "envir/envirbase.h"
+#include "envir/genericenvir.h"
 #include "envir/envirutils.h"
 #include "envir/inifilecontents.h"
 #include "envir/resultfileutils.h"

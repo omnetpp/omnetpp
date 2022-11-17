@@ -24,9 +24,10 @@
 #include "omnetpp/cmodule.h"
 #include "omnetpp/ccomponenttype.h"
 #include "omnetpp/platdep/platmisc.h"
-#include "envirbase.h"
 #include "resultfileutils.h"
 #include "omnetppoutvectormgr.h"
+
+#include "genericenvir.h"
 #include "resultfileutils.h"
 
 using namespace omnetpp::common;

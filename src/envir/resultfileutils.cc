@@ -20,13 +20,13 @@
 #include <cstring>
 #include "common/stringutil.h"
 #include "common/stringtokenizer.h"
+#include "genericenvir.h"
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cproperties.h"
 #include "omnetpp/cproperty.h"
 #include "omnetpp/opp_string.h"
 #include "omnetpp/platdep/platmisc.h"
-#include "envirbase.h"
 
 using namespace omnetpp::common;
 using namespace omnetpp::internal;

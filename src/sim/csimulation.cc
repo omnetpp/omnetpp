@@ -56,7 +56,7 @@
 #include "omnetpp/clog.h"
 #include "omnetpp/platdep/platmisc.h"  // for DEBUG_TRAP
 #include "sim/netbuilder/cnedloader.h"
-#include "envir/envirbase.h"
+#include "envir/genericenvir.h"
 #include "envir/stopwatch.h"
 
 #ifdef WITH_PARSIM
@@ -141,7 +141,7 @@ cSimulation::cSimulation(const char *name, cEnvir *env, cINedLoader *loader) : c
     nedLoader = loader ? loader : new cNedLoader();
     nedLoaderOwned = (loader == nullptr); // only owned if we created it
 
-    envir = env ? env : new EnvirBase();
+    envir = env ? env : new GenericEnvir();
     envir->setSimulation(this);
 
     stopwatch = new Stopwatch;

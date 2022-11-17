@@ -20,9 +20,9 @@
 #include <fstream>
 #include "common/fileutil.h"
 #include "omnetpp/cconfigoption.h"
-#include "envirbase.h"
 #include "resultfileutils.h"
 #include "filesnapshotmgr.h"
+#include "genericenvir.h"
 
 using namespace omnetpp::common;
 

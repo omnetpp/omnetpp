@@ -1,5 +1,5 @@
 //==========================================================================
-//  ENVIRBASE.H - part of
+//  GENERICENVIR.H - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -17,8 +17,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_ENVIR_ENVIRBASE_H
-#define __OMNETPP_ENVIR_ENVIRBASE_H
+#ifndef __OMNETPP_ENVIR_GENERICENVIR_H
+#define __OMNETPP_ENVIR_GENERICENVIR_H
 
 #include "omnetpp/carray.h"
 #include "omnetpp/csimulation.h"
@@ -59,7 +59,7 @@ class IFakeGUI;
  * IN PARTICULAR, IT SHOULD *NEVER* BE EXTENDED WITH CODE RELATED TO SETTING UP AND
  * RUNNING SIMULATIONS. (Such code may go into AppBase).
  */
-class ENVIR_API EnvirBase : public cEnvir, protected cISimulationLifecycleListener
+class ENVIR_API GenericEnvir : public cEnvir, protected cISimulationLifecycleListener
 {
   protected:
     using cEnvir::simulation;
@@ -118,8 +118,8 @@ class ENVIR_API EnvirBase : public cEnvir, protected cISimulationLifecycleListen
     virtual void lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details) override;
 
   public:
-    EnvirBase();
-    virtual ~EnvirBase();
+    GenericEnvir();
+    virtual ~GenericEnvir();
     virtual void setArgs(ArgList *args) {this->argList = args;}
 
     virtual void setSimulation(cSimulation *simulation) override;
