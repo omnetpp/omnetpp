@@ -817,6 +817,18 @@ void cSimulation::callRefreshDisplay()
     }
 }
 
+bool cSimulation::deleteNetworkOnError(cRuntimeError& primaryError)
+{
+    try {
+        deleteNetwork();
+        return true;
+    }
+    catch (std::exception& e) {
+        primaryError.addNestedException(e);
+        return false;
+    }
+}
+
 void cSimulation::deleteNetwork()
 {
     if (!systemModule)

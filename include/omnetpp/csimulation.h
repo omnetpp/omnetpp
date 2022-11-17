@@ -548,8 +548,22 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     /**
      * Cleans up the network currently set up. This involves deleting
      * all modules and deleting the messages in the scheduled-event list.
+     * Note that if an exception is thrown from this method, the cSimulation
+     * instance is in an undefined state, and may not be safely used any further.
      */
     virtual void deleteNetwork();
+
+    /**
+     * A non-throwing variant of deleteNetwork(), meant for use during error
+     * handling (i.e. from a catch block). It delegates to deleteNetwork(),
+     * and if it throws an exception, it is added to primaryError as a
+     * nested exception. A return value of true indicates success, and false
+     * indicates that an exception occurred. Note that in the latter case,
+     * this cSimulation instance is in an undefined state, and may not be used
+     * any further.
+     */
+    virtual bool deleteNetworkOnError(cRuntimeError& primaryError);
+
     //@}
 
     /** @name Information about the current simulation run. */
